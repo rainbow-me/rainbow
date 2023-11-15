@@ -2,7 +2,7 @@ import React from 'react';
 import isEqual from 'react-fast-compare';
 import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
 import { isNativeAsset } from '@/handlers/assets';
-import { Network } from '@/helpers';
+import { Network } from '@/networks/types';
 import { useAccountAsset, useDimensions } from '@/hooks';
 import { ethereumUtils } from '@/utils';
 import FastCoinIcon from '../asset-list/RecyclerAssetList2/FastComponents/FastCoinIcon';
@@ -69,7 +69,7 @@ export default React.memo(function ExchangeTokenRow({
               <Box
                 as={FastCoinIcon}
                 address={address || item?.address}
-                assetType={type ?? item?.type}
+                network={network}
                 mainnetAddress={mainnet_address ?? item?.mainnet_address}
                 symbol={symbol ?? item?.symbol}
                 theme={theme}

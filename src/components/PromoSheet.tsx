@@ -3,8 +3,8 @@ import { ImageSourcePropType, StatusBar, ImageBackground } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { SheetActionButton, SheetHandle, SlackSheet } from '@/components/sheet';
-import { CampaignKey } from '@/campaigns/campaignChecks';
-import { analytics } from '@/analytics';
+import { CampaignKey } from '@/components/remote-promo-sheet/localCampaignChecks';
+import { analyticsV2 } from '@/analytics';
 import {
   AccentColorProvider,
   Box,
@@ -38,7 +38,7 @@ type PromoSheetProps = {
   backgroundColor: string;
   accentColor: string;
   sheetHandleColor?: string;
-  campaignKey: CampaignKey;
+  campaignKey: CampaignKey | string;
   header: string;
   subHeader: string;
   primaryButtonProps: SheetActionButtonProps;
@@ -74,7 +74,7 @@ export function PromoSheet({
     () => () => {
       if (!activated) {
         const timeElapsed = (Date.now() - renderedAt) / 1000;
-        analytics.track('Dismissed Feature Promo', {
+        analyticsV2.track(analyticsV2.event.promoSheetDismissed, {
           campaign: campaignKey,
           time_viewed: timeElapsed,
         });
@@ -86,12 +86,12 @@ export function PromoSheet({
   const primaryButtonOnPress = useCallback(() => {
     activate();
     const timeElapsed = (Date.now() - renderedAt) / 1000;
-    analytics.track('Activated Feature Promo Action', {
+    analyticsV2.track(analyticsV2.event.promoSheetShown, {
       campaign: campaignKey,
       time_viewed: timeElapsed,
     });
     primaryButtonProps.onPress();
-  }, [activate, campaignKey, primaryButtonProps.onPress, renderedAt]);
+  }, [activate, campaignKey, primaryButtonProps, renderedAt]);
 
   // We are not using `isSmallPhone` from `useDimensions` here as we
   // want to explicitly set a min height.
