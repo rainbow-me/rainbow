@@ -14,6 +14,7 @@ import * as i18n from '@/languages';
 import { usePoints } from '@/resources/points';
 import PointsContent from './content/PointsContent';
 import PlaceholderContent from './content/PlaceholderContent';
+import TestContent from './content/TestContent';
 
 export default function PointsScreen() {
   const {
@@ -59,7 +60,8 @@ export default function PointsScreen() {
         }
         title={i18n.t(i18n.l.account.tab_points)}
       />
-      {pointsFullyEnabled ? <PointsContent /> : <PlaceholderContent />}
+      {/* {pointsFullyEnabled ? <PointsContent /> : <PlaceholderContent />} */}
+      <TestContent />
     </Box>
   );
 }
