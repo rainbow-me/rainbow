@@ -27,6 +27,18 @@ export default function TestContent() {
             const x = await signPersonalMessage(challenge);
             console.log('signature');
             console.log(x);
+            console.log('onboardPoints');
+            console.log(x?.result);
+            try {
+              const z = await metadataClient.onboardPoints({
+                address: accountAddress,
+                referral: 'TBDTBDTBDTBD',
+                signature: x?.result as string,
+              });
+              console.log(z);
+            } catch (e) {
+              console.log(e);
+            }
           }}
           style={{ width: 100, height: 100, backgroundColor: 'blue' }}
         ></ButtonPressAnimation>
@@ -34,7 +46,7 @@ export default function TestContent() {
         <ButtonPressAnimation
           onPress={async () => {
             const x = await metadataClient.getPointsOnboardChallenge({
-              address: '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266',
+              address: accountAddress,
               referral: 'TBDTBDTBDTBD',
             });
             console.log(x);

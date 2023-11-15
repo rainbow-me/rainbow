@@ -154,3 +154,39 @@ query getPointsDataForWallet($address: String!) {
 query getPointsOnboardChallenge($address: String!, $referral: String) {
   pointsOnboardChallenge(address: $address, referral: $referral)
 }
+
+mutation onboardPoints(
+  $address: String!
+  $signature: String!
+  $referral: String
+) {
+  onboardPoints(address: $address, signature: $signature, referral: $referral) {
+    meta {
+      distribution {
+        next
+      }
+      status
+    }
+    leaderboard {
+      accounts {
+        address
+        earnings {
+          total
+        }
+        ens
+        avatarURL
+      }
+    }
+    user {
+      referralCode
+      earnings {
+        total
+      }
+      stats {
+        position {
+          current
+        }
+      }
+    }
+  }
+}
