@@ -112,13 +112,7 @@ export default function PointsScreen() {
   return (
     <Box as={Page} flex={1} testID="points-screen" width="full">
       <Navbar hasStatusBarInset title={lang.t('account.tab_points')} />
-      <Box
-        alignItems="center"
-        as={Page}
-        flex={1}
-        height="full"
-        justifyContent="center"
-      >
+      <Box alignItems="center" flexGrow={1} justifyContent="center">
         <Box paddingBottom="104px" paddingHorizontal="20px" width="full">
           <Stack space="32px">
             <Stack alignHorizontal="center" space="28px">
@@ -203,6 +197,7 @@ const PointsActionButton = ({
     <ButtonPressAnimation
       onPress={onPress}
       scaleTo={0.88}
+      style={styles.actionButtonWrapper}
       transformOrigin="top"
     >
       <Box
@@ -235,7 +230,6 @@ const PointsActionButton = ({
 const styles = StyleSheet.create({
   actionButton: {
     alignContent: 'center',
-    alignSelf: 'center',
     borderRadius: 24,
     justifyContent: 'center',
     shadowOffset: { width: 0, height: 13 },
@@ -243,5 +237,8 @@ const styles = StyleSheet.create({
   },
   actionButtonOutline: {
     borderWidth: 2,
+  },
+  actionButtonWrapper: {
+    alignSelf: 'center',
   },
 });
