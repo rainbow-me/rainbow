@@ -1,4 +1,4 @@
-import { getProviderForNetwork } from '@/handlers/web3';
+import { getProviderForNetwork, proxyRpcEndpoint } from '@/handlers/web3';
 import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { bsc } from '@wagmi/chains';
@@ -26,7 +26,7 @@ export const getBSCNetworkObject = (): NetworkProperties => {
     },
 
     // this should be refactored to have less deps
-    rpc: config.bsc_mainnet_rpc,
+    rpc: proxyRpcEndpoint(bsc.id),
     getProvider: getProviderForNetwork(Network.bsc),
     balanceCheckerAddress: '0x400A9f1Bb1Db80643C33710C2232A0D74EF5CFf1',
 
