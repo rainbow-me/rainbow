@@ -504,12 +504,21 @@ export const SignTransactionSheet = () => {
           ),
           message: {
             method: transactionDetails?.payload?.method,
-            params: request.message,
+            params: [request.message],
           },
           domain: transactionDetails?.dappUrl,
         });
+
+        if (
+          isNil(simulationData?.simulateMessage?.simulation) &&
+          isNil(simulationData?.simulateMessage?.error)
+        ) {
+          setSimulationData({ in: [], out: [], approvals: [] });
+          return;
+        }
         if (simulationData?.simulateMessage?.error && !simulationUnavailable) {
           setSimulationError(simulationData?.simulateMessage?.error?.type);
+          return;
         }
         if (
           simulationData.simulateMessage?.simulation &&
@@ -535,17 +544,24 @@ export const SignTransactionSheet = () => {
           ],
           domain: transactionDetails?.dappUrl,
         });
+        if (
+          isNil(simulationData?.simulateTransactions?.[0]?.simulation) &&
+          isNil(simulationData?.simulateTransactions?.[0]?.error)
+        ) {
+          setSimulationData({ in: [], out: [], approvals: [] });
+          return;
+        }
         if (simulationData?.simulateTransactions?.[0]?.error) {
           setSimulationError(
             simulationData?.simulateTransactions?.[0]?.error?.type
           );
+          return;
         }
         if (simulationData.simulateTransactions?.[0]?.simulation) {
           setSimulationData(simulationData.simulateTransactions[0]?.simulation);
         }
       }
     }, 1000);
-    // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
   }, [
     accountAddress,
     currentNetwork,
@@ -560,6 +576,7 @@ export const SignTransactionSheet = () => {
     transactionDetails?.dappUrl,
     transactionDetails?.payload?.method,
     transactionDetails?.walletConnectV2RequestValues?.chainId,
+    // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
     walletConnector?._chainId,
   ]);
 
@@ -1295,6 +1312,8 @@ const SimulationCard = ({
     (simulation?.in?.length || 0) +
     (simulation?.out?.length || 0) +
     (simulation?.approvals?.length || 0);
+  const simulationUnavailable =
+    isPersonalSign || currentNetwork === Network.zora;
 
   const noChanges = simulation && itemCount === 0;
 
@@ -1311,9 +1330,6 @@ const SimulationCard = ({
     ),
   }));
 
-  const simulationUnavailable =
-    isPersonalSign || currentNetwork === Network.zora;
-
   const spinnerStyle = useAnimatedStyle(() => {
     return {
       transform: [{ rotate: `${spinnerRotation.value}deg` }],
@@ -1321,7 +1337,7 @@ const SimulationCard = ({
   });
 
   useEffect(() => {
-    if (!isBalanceEnough || simulationUnavailable) return;
+    if (!isBalanceEnough || simulationUnavailable || simulationError) return;
     if (!isNil(simulation)) {
       spinnerRotation.value = withTiming(360, timingConfig);
     } else {
@@ -1331,7 +1347,13 @@ const SimulationCard = ({
         false
       );
     }
-  }, [isBalanceEnough, simulation, simulationUnavailable, spinnerRotation]);
+  }, [
+    isBalanceEnough,
+    simulation,
+    simulationError,
+    simulationUnavailable,
+    spinnerRotation,
+  ]);
 
   const renderSimulationEventRows = () => {
     return (
@@ -1458,7 +1480,7 @@ const SimulationCard = ({
               {titleText}
             </Text>
           </Inline>
-          <Animated.View style={listStyle}>
+          {/* <Animated.View style={listStyle}>
             <ButtonPressAnimation disabled={!simulation}>
               <IconContainer hitSlop={14} size={16} opacity={0.6}>
                 <Text
@@ -1470,27 +1492,42 @@ const SimulationCard = ({
                 </Text>
               </IconContainer>
             </ButtonPressAnimation>
-          </Animated.View>
+          </Animated.View> */}
         </Box>
         <Animated.View style={listStyle}>
           <Stack space="20px">
             {noChanges &&
               !simulationUnavailable &&
               !simulationError &&
-              !isBalanceEnough && (
-                <Text color="labelTertiary" size="17pt" weight="bold">
-                  {i18n.t(
-                    i18n.l.walletconnect.simulation.simulation_card.messages
-                      .no_changes
-                  )}
-                </Text>
+              isBalanceEnough && (
+                <Inline alignVertical="center" space="12px">
+                  <IconContainer>
+                    <Text
+                      align="center"
+                      color="labelTertiary"
+                      size="icon 15px"
+                      weight="bold"
+                    >
+                      {'􀻾'}
+                    </Text>
+                  </IconContainer>
+                  <Text color="labelTertiary" size="17pt" weight="bold">
+                    {i18n.t(
+                      i18n.l.walletconnect.simulation.simulation_card.messages
+                        .no_changes
+                    )}
+                  </Text>
+                </Inline>
               )}
             {!isBalanceEnough && (
               <Text color="labelQuaternary" size="13pt" weight="semibold">
                 {i18n.t(
                   i18n.l.walletconnect.simulation.simulation_card.messages
                     .need_more_native,
-                  { symbol: getNetworkObj(currentNetwork!)?.name }
+                  {
+                    symbol: walletBalance?.symbol,
+                    network: getNetworkObj(currentNetwork!).name,
+                  }
                 )}
               </Text>
             )}
@@ -1515,7 +1552,7 @@ const SimulationCard = ({
                 )}
               </Text>
             )}
-            {isBalanceEnough && renderSimulationEventRows()}
+            {!noChanges && isBalanceEnough && renderSimulationEventRows()}
           </Stack>
         </Animated.View>
       </Stack>
@@ -1648,7 +1685,6 @@ const DetailsCard = ({
                   value={meta.to.sourceCodeStatus}
                 />
               )}
-              {/* <DetailRow detailType="nonce" /> */}
             </Stack>
           </Animated.View>
         </Stack>
@@ -1757,8 +1793,9 @@ const SimulatedEventRow = ({
       : convertRawAmountToBalance(
           amount,
           { decimals: asset?.decimals || 18, symbol: asset?.symbol },
-          6
+          2
         ).display;
+
   const formattedAmount = `${eventInfo.amountPrefix}${
     amount === 'UNLIMITED'
       ? i18n.t(
