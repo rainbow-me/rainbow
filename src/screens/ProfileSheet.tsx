@@ -1,6 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import React, { createContext, useEffect, useMemo } from 'react';
-import { StatusBar } from 'react-native';
+import { Dimensions } from 'react-native';
 import RecyclerAssetList2 from '../components/asset-list/RecyclerAssetList2';
 import ProfileSheetHeader from '../components/ens-profile/ProfileSheetHeader';
 import Skeleton from '../components/skeleton/Skeleton';
@@ -125,11 +125,15 @@ export default function ProfileSheet() {
 }
 
 function AndroidWrapper({ children }: { children: React.ReactElement }) {
+  const screenHeight = Dimensions.get('screen').height;
+  const windowHeight = Dimensions.get('window').height;
+  const navbarHeight = screenHeight - windowHeight;
+
   return android ? (
     <Box
       borderTopRadius={30}
       style={{ overflow: 'hidden' }}
-      top={{ custom: StatusBar.currentHeight || 0 }}
+      top={{ custom: navbarHeight }}
     >
       {children}
     </Box>

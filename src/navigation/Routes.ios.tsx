@@ -23,7 +23,6 @@ import { SettingsSheet } from '../screens/SettingsSheet';
 import ShowcaseScreen from '../screens/ShowcaseSheet';
 import { SignTransactionSheet } from '../screens/SignTransactionSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
-import SwapsPromoSheet from '../screens/SwapsPromoSheet';
 import NotificationsPromoSheet from '../screens/NotificationsPromoSheet';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
@@ -97,6 +96,7 @@ import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
 import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
 import MintSheet from '@/screens/mints/MintSheet';
 import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
+import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoSheet';
 
 type StackNavigatorParams = {
   [Routes.SEND_SHEET]: unknown;
@@ -266,8 +266,8 @@ function NativeStackNavigator() {
         {...explainSheetConfig}
       />
       <NativeStack.Screen
-        component={SwapsPromoSheet}
-        name={Routes.SWAPS_PROMO_SHEET}
+        component={RemotePromoSheet}
+        name={Routes.REMOTE_PROMO_SHEET}
         {...promoSheetConfig}
       />
       <NativeStack.Screen

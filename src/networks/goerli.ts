@@ -1,4 +1,4 @@
-import { getProviderForNetwork } from '@/handlers/web3';
+import { getProviderForNetwork, proxyRpcEndpoint } from '@/handlers/web3';
 import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { goerli } from '@wagmi/chains';
@@ -25,7 +25,7 @@ export const getGoerliNetworkObject = (): NetworkProperties => {
 
     // this should be refactored to have less deps
     getProvider: getProviderForNetwork(Network.goerli),
-    rpc: config.ethereum_goerli_rpc,
+    rpc: proxyRpcEndpoint(goerli.id),
     balanceCheckerAddress: '0xf3352813b612a2d198e437691557069316b84ebe',
 
     // features
