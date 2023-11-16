@@ -15,6 +15,11 @@ import { usePoints } from '@/resources/points';
 import PointsContent from './content/PointsContent';
 import PlaceholderContent from './content/PlaceholderContent';
 import TestContent from './content/TestContent';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { deviceUtils } from '@/utils';
+import ClaimContent from './content/ClaimContent';
+
+const Swipe = createMaterialTopTabNavigator();
 
 export default function PointsScreen() {
   const {
@@ -60,8 +65,56 @@ export default function PointsScreen() {
         }
         title={i18n.t(i18n.l.account.tab_points)}
       />
-      {/* {pointsFullyEnabled ? <PointsContent /> : <PlaceholderContent />} */}
-      <TestContent />
+      {pointsFullyEnabled ? (
+        <Swipe.Navigator
+          initialLayout={deviceUtils.dimensions}
+          initialRouteName="ClaimContent"
+          screenOptions={{ swipeEnabled: false }}
+          tabBar={() => null}
+        >
+          <Swipe.Screen
+            component={PointsContent}
+            // initialParams={{ isFirstWallet, userData }}
+            name="PointsContent"
+            // listeners={{
+            //   focus: () => {
+            //     setScrollEnabled(true);
+            //   },
+            // }}
+          />
+          <Swipe.Screen
+            component={ClaimContent}
+            // initialParams={{ isFirstWallet, userData }}
+            name="ClaimContent"
+            // listeners={{
+            //   focus: () => {
+            //     setScrollEnabled(true);
+            //   },
+            // }}
+          />
+          <Swipe.Screen
+            component={() => (
+              <Box
+                as={ButtonPressAnimation}
+                onPress={() => navigate('NFTOffersSheet')}
+                background="green"
+                width="full"
+                height="full"
+              />
+            )}
+            // initialParams={{ type }}
+            name="test2"
+            // listeners={{
+            //   focus: () => {
+            //     setScrollEnabled(false);
+            //   },
+            // }}
+          />
+        </Swipe.Navigator>
+      ) : (
+        <PlaceholderContent />
+      )}
+      {/* <TestContent /> */}
     </Box>
   );
 }
