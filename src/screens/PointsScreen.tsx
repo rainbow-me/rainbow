@@ -1,5 +1,8 @@
 import lang from 'i18n-js';
-import React from 'react';
+import c from 'chroma-js';
+import React, { useMemo } from 'react';
+import { StyleSheet } from 'react-native';
+import { IS_TESTING } from 'react-native-dotenv';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -10,14 +13,21 @@ import Animated, {
   withTiming,
   withSequence,
 } from 'react-native-reanimated';
-import { FloatingEmojisTapper } from '@/components/floating-emojis';
+import { ButtonPressAnimation } from '@/components/animations';
 import { TabBarIcon } from '@/components/icons/TabBarIcon';
 import { Page } from '@/components/layout';
 import { Navbar } from '@/components/navbar/Navbar';
-import { Box, Stack, Text } from '@/design-system';
-import { useAccountAccentColor, useDimensions } from '@/hooks';
+import {
+  Box,
+  Stack,
+  Text,
+  globalColors,
+  useForegroundColor,
+} from '@/design-system';
+import { useAccountAccentColor } from '@/hooks';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
-import { IS_TESTING } from 'react-native-dotenv';
 
 const fallConfig = {
   duration: 2000,
@@ -34,8 +44,8 @@ const flyUpConfig = {
 
 export default function PointsScreen() {
   const { accentColor } = useAccountAccentColor();
+  const { navigate } = useNavigation();
   const { colors, isDarkMode } = useTheme();
-  const { height: deviceHeight, width: deviceWidth } = useDimensions();
 
   const iconState = useSharedValue(1);
   const progress = useSharedValue(0);
@@ -72,6 +82,10 @@ export default function PointsScreen() {
     };
   });
 
+  const handlePressGetStarted = React.useCallback(() => {
+    navigate(Routes.CONSOLE_SHEET);
+  }, [navigate]);
+
   React.useEffect(() => {
     if (IS_TESTING === 'true') return;
 
@@ -105,72 +119,129 @@ export default function PointsScreen() {
         height="full"
         justifyContent="center"
       >
-        <Box paddingBottom="104px" width="full">
-          <Stack alignHorizontal="center" space="28px">
-            <Box
-              alignItems="center"
-              as={Animated.View}
-              justifyContent="center"
-              style={[{ height: 28, width: 28 }, animatedStyle]}
-            >
-              <TabBarIcon
-                accentColor={accentColor}
-                hideShadow
-                icon="tabPoints"
-                index={1}
-                reanimatedPosition={iconState}
-                size={56}
-                tintBackdrop={colors.white}
-                tintOpacity={isDarkMode ? 0.25 : 0.1}
-              />
-            </Box>
-            <Stack alignHorizontal="center" space="20px">
-              <Text
-                align="center"
-                color="labelTertiary"
-                size="26pt"
-                weight="semibold"
+        <Box paddingBottom="104px" paddingHorizontal="20px" width="full">
+          <Stack space="32px">
+            <Stack alignHorizontal="center" space="28px">
+              <Box
+                alignItems="center"
+                as={Animated.View}
+                justifyContent="center"
+                style={[{ height: 28, width: 28 }, animatedStyle]}
               >
-                {lang.t('points.coming_soon_title')}
-              </Text>
-              <Text
-                align="center"
-                color="labelQuaternary"
-                size="15pt"
-                weight="medium"
-              >
-                {lang.t('points.coming_soon_description')}
-              </Text>
+                <TabBarIcon
+                  accentColor={accentColor}
+                  hideShadow
+                  icon="tabPoints"
+                  index={1}
+                  reanimatedPosition={iconState}
+                  size={56}
+                  tintBackdrop={colors.white}
+                  tintOpacity={isDarkMode ? 0.25 : 0.1}
+                />
+              </Box>
+              <Stack alignHorizontal="center" space="20px">
+                <Text align="center" color="label" size="22pt" weight="heavy">
+                  Claim your points
+                </Text>
+                <Box style={{ maxWidth: 260 }}>
+                  <Text
+                    align="center"
+                    color="labelTertiary"
+                    size="15pt"
+                    weight="semibold"
+                  >
+                    Points are here. Find out how many you’ve been awarded.
+                  </Text>
+                </Box>
+              </Stack>
             </Stack>
+            <PointsActionButton
+              color={accentColor}
+              label="Get Started"
+              onPress={handlePressGetStarted}
+            />
           </Stack>
         </Box>
-      </Box>
-      <Box
-        as={FloatingEmojisTapper}
-        distance={500}
-        duration={4000}
-        emojis={[
-          'rainbow',
-          'rainbow',
-          'rainbow',
-          'slot_machine',
-          'slot_machine',
-        ]}
-        gravityEnabled
-        position="absolute"
-        range={[0, 0]}
-        size={80}
-        wiggleFactor={0}
-        yOffset={-66}
-      >
-        <Box
-          position="absolute"
-          style={{
-            height: deviceHeight,
-            width: deviceWidth,
-          }}
-        />
       </Box>
     </Box>
   );
 }
+
+const PointsActionButton = ({
+  color,
+  label,
+  onPress,
+  outline,
+  small = false,
+}: {
+  color?: string;
+  label: string;
+  onPress?: () => void;
+  outline?: boolean;
+  small?: boolean;
+}) => {
+  const { isDarkMode } = useTheme();
+
+  const fallbackColor = useForegroundColor('blue');
+  const separatorSecondary = useForegroundColor('separatorSecondary');
+  const separatorTeriary = useForegroundColor('separatorTertiary');
+
+  const borderColor = isDarkMode ? separatorSecondary : separatorTeriary;
+
+  const textColor = useMemo(() => {
+    if (!color) return globalColors.white100;
+    const contrastWithWhite = c.contrast(color, globalColors.white100);
+
+    if (contrastWithWhite < 2.125) {
+      return globalColors.grey100;
+    } else {
+      return globalColors.white100;
+    }
+  }, [color]);
+
+  return (
+    <ButtonPressAnimation
+      onPress={onPress}
+      scaleTo={0.88}
+      transformOrigin="top"
+    >
+      <Box
+        paddingHorizontal={small ? '20px' : '24px'}
+        style={[
+          styles.actionButton,
+          outline && styles.actionButtonOutline,
+          {
+            backgroundColor: outline ? 'transparent' : color || fallbackColor,
+            borderColor: outline ? borderColor : undefined,
+            height: small ? 44 : 48,
+            shadowColor: outline ? 'transparent' : color || fallbackColor,
+            shadowOpacity: isDarkMode ? 0.2 : 0.4,
+          },
+        ]}
+      >
+        <Text
+          align="center"
+          color={{ custom: outline ? color || fallbackColor : textColor }}
+          size={small ? '17pt' : '20pt'}
+          weight="heavy"
+        >
+          {label}
+        </Text>
+      </Box>
+    </ButtonPressAnimation>
+  );
+};
+
+const styles = StyleSheet.create({
+  actionButton: {
+    alignContent: 'center',
+    alignSelf: 'center',
+    borderRadius: 24,
+    justifyContent: 'center',
+    shadowOffset: { width: 0, height: 13 },
+    shadowRadius: 26,
+  },
+  actionButtonOutline: {
+    borderWidth: 2,
+  },
+});
