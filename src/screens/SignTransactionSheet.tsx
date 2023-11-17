@@ -82,6 +82,7 @@ import { getAccountProfileInfo } from '@/helpers/accountInfo';
 import {
   useAccountSettings,
   useCurrentNonce,
+  useDimensions,
   useGas,
   useWallets,
 } from '@/hooks';
@@ -134,6 +135,7 @@ import { isAddress } from '@ethersproject/address';
 import { methodRegistryLookupAndParse } from '@/utils/methodRegistry';
 import { sanitizeTypedData } from '@/utils/signingUtils';
 import { colors } from '@/styles';
+import CopyFloatingEmojis from '@/components/floating-emojis/CopyFloatingEmojis';
 
 const COLLAPSED_CARD_HEIGHT = 56;
 const MAX_CARD_HEIGHT = 176;
@@ -1180,14 +1182,16 @@ export const SignTransactionSheet = () => {
                           .signing_with
                       )}
                     </Text>
-                    <Text
-                      color="label"
-                      size="15pt"
-                      weight="bold"
-                      numberOfLines={1}
-                    >
-                      {accountInfo.accountName}
-                    </Text>
+                    <Box style={{ maxWidth: 170 }}>
+                      <Text
+                        color="label"
+                        size="15pt"
+                        weight="bold"
+                        numberOfLines={1}
+                      >
+                        {accountInfo.accountName}
+                      </Text>
+                    </Box>
                   </Inline>
                   <Inline alignVertical="center" space="4px" wrap={false}>
                     <Bleed vertical="4px">
@@ -1704,6 +1708,7 @@ const MessageCard = ({
   const contentHeight = useSharedValue(
     COLLAPSED_CARD_HEIGHT - CARD_BORDER_WIDTH * 2
   );
+  const { width: deviceWidth } = useDimensions();
 
   const listStyle = useAnimatedStyle(() => ({
     opacity: interpolate(
@@ -1733,45 +1738,61 @@ const MessageCard = ({
   }
 
   return (
-    <FadedScrollCard
-      cardHeight={cardHeight}
-      contentHeight={contentHeight}
-      isExpanded
-    >
-      <Stack space="24px">
-        <Box
-          alignItems="flex-end"
-          flexDirection="row"
-          justifyContent="space-between"
-          height={{ custom: CARD_ROW_HEIGHT }}
-        >
-          <Inline alignVertical="center" space="12px">
-            <IconContainer>
-              <Text align="center" color="label" size="icon 15px" weight="bold">
-                􀙤
-              </Text>
-            </IconContainer>
-            <Text color="label" size="17pt" weight="bold">
-              {i18n.t(i18n.l.walletconnect.simulation.message_card.title)}
+    <>
+      {/* @ts-ignore JS component */}
+      <CopyFloatingEmojis
+        textToCopy={message}
+        style={{
+          position: 'absolute',
+          top: 24,
+          zIndex: 99,
+          left: deviceWidth - 100,
+        }}
+      >
+        <Bleed space="24px">
+          <Box style={{ margin: 24 }}>
+            <Text align="right" color="blue" size="15pt" weight="bold">
+              {i18n.t(i18n.l.walletconnect.simulation.message_card.copy)}
             </Text>
-          </Inline>
-          <ButtonPressAnimation>
-            <Bleed space="24px">
-              <Box style={{ margin: 24 }}>
-                <Text align="right" color="blue" size="15pt" weight="bold">
-                  {i18n.t(i18n.l.walletconnect.simulation.message_card.copy)}
+          </Box>
+        </Bleed>
+      </CopyFloatingEmojis>
+      <FadedScrollCard
+        cardHeight={cardHeight}
+        contentHeight={contentHeight}
+        isExpanded
+      >
+        <Stack space="24px">
+          <Box
+            alignItems="flex-end"
+            flexDirection="row"
+            justifyContent="space-between"
+            height={{ custom: CARD_ROW_HEIGHT }}
+          >
+            <Inline alignVertical="center" space="12px">
+              <IconContainer>
+                <Text
+                  align="center"
+                  color="label"
+                  size="icon 15px"
+                  weight="bold"
+                >
+                  􀙤
                 </Text>
-              </Box>
-            </Bleed>
-          </ButtonPressAnimation>
-        </Box>
-        <Animated.View style={listStyle}>
-          <Text color="labelTertiary" size="15pt" weight="medium">
-            {displayMessage}
-          </Text>
-        </Animated.View>
-      </Stack>
-    </FadedScrollCard>
+              </IconContainer>
+              <Text color="label" size="17pt" weight="bold">
+                {i18n.t(i18n.l.walletconnect.simulation.message_card.title)}
+              </Text>
+            </Inline>
+          </Box>
+          <Animated.View style={listStyle}>
+            <Text color="labelTertiary" size="15pt" weight="medium">
+              {displayMessage}
+            </Text>
+          </Animated.View>
+        </Stack>
+      </FadedScrollCard>
+    </>
   );
 };
 
