@@ -44,28 +44,13 @@ export const tokenSearch = async (searchParams: {
     query: searchParams.query,
   };
 
-  // if (searchParams.fromChainId) {
-  //   queryParams.fromChainId = searchParams.fromChainId;
-  // }
-
   try {
     if (isAddress(searchParams.query)) {
       // @ts-ignore
       params.keys = `networks.${params.chainId}.address`;
     }
     const url = `/?${qs.stringify(queryParams)}`;
-    console.log({ url });
     const tokenSearch = await tokenSearchApi.get<TokenSearchApiResponse>(url);
-    tokenSearch.data.data.map(token => {
-      console.log(token.networks['1']?.address);
-      return {
-        ...token,
-        address:
-          token.networks[`${searchParams.chainId}`]?.address ||
-          token.networks['1']?.address,
-        mainnet_address: token.networks['1']?.address,
-      };
-    })[0];
     return tokenSearch.data?.data.map(token => ({
       ...token,
       address:
