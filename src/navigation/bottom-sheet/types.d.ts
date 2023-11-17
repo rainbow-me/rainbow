@@ -1,4 +1,5 @@
 import { BottomSheetProps } from '@gorhom/bottom-sheet';
+import { BackdropPressBehavior } from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types';
 import type {
   Descriptor,
   NavigationHelpers,
@@ -122,6 +123,7 @@ export type BottomSheetNavigationOptions = Partial<
 > & {
   backdropOpacity?: number;
   backdropColor?: string;
+  backdropPressBehavior?: BackdropPressBehavior;
   height?: number | string;
   offsetY?: number;
 };

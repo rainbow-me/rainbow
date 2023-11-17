@@ -123,7 +123,7 @@ interface WalletconnectAddUriAction {
 /**
  * Represents a WalletConnect result passed to a callback function.
  */
-type WalletconnectResultType =
+export type WalletconnectResultType =
   | 'timedOut'
   | 'sign'
   | 'transaction'

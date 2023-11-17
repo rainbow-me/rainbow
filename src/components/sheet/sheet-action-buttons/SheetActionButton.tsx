@@ -45,7 +45,7 @@ const addChartsStyling = (isCharts: boolean) =>
 const Button = styled(Centered)(
   ({ isCharts, size }: { isCharts?: boolean; size?: string }) => ({
     ...addChartsStyling(!!isCharts),
-    height: size === 'big' ? 56 : 46,
+    height: size === 'big' ? 52 : 46,
   })
 );
 
@@ -53,7 +53,7 @@ const Content = styled(RowWithMargins).attrs({
   align: 'center',
   margin: 4,
 })({
-  height: ({ size }: Pick<Props, 'size'>) => (size === 'big' ? 56 : 46),
+  height: ({ size }: Pick<Props, 'size'>) => (size === 'big' ? 52 : 46),
   paddingBottom: ({ label }: Pick<Props, 'label'>) =>
     label && containsEmoji(label) ? 2.5 : 1,
   paddingHorizontal: 19,
@@ -76,7 +76,7 @@ const WhiteButtonGradient = React.memo(
 );
 
 const SheetActionButton: React.FC<Props> = ({
-  borderRadius = 56,
+  borderRadius = 52,
   children,
   color: givenColor,
   disabled = false,
@@ -136,7 +136,7 @@ const SheetActionButton: React.FC<Props> = ({
     <Button
       as={ButtonPressAnimation}
       contentContainerStyle={{
-        height: size === 'big' ? 56 : 46,
+        height: size === 'big' ? 52 : 46,
       }}
       elevation={android ? elevation : null}
       isCharts={isCharts}
@@ -156,7 +156,7 @@ const SheetActionButton: React.FC<Props> = ({
         {...position.coverAsObject}
         backgroundColor={color}
         borderRadius={borderRadius}
-        height={size === 'big' ? 56 : 46}
+        height={size === 'big' ? 52 : 46}
         shadows={shadowsForButtonColor}
       >
         {isWhite && <WhiteButtonGradient colors={colors} />}
@@ -177,7 +177,7 @@ const SheetActionButton: React.FC<Props> = ({
           <Text
             align="center"
             color={textColor}
-            lineHeight={size === 'big' ? 56 : 46}
+            lineHeight={size === 'big' ? 52 : 46}
             numberOfLines={truncate ? 1 : undefined}
             size={textSize ?? (size === 'big' ? 'larger' : 'large')}
             style={{ width: '100%' }}

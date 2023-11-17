@@ -32,6 +32,14 @@ const sizeConfigs = (colors, isDarkMode) => ({
     ],
     textSize: 28,
   },
+  sim: {
+    dimensions: 44,
+    shadow: [
+      [0, 4, 6, colors.shadow, 0.04],
+      [0, 1, 3, colors.shadow, 0.08],
+    ],
+    textSize: 'larger',
+  },
   medium: {
     dimensions: 40,
     shadow: [[0, 4, 12, colors.shadow, isDarkMode ? 0.3 : 0.15]],
