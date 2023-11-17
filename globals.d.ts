@@ -90,4 +90,8 @@ declare module 'react-native-dotenv' {
   export const ARC_GRAPHQL_API_KEY: string;
   export const RESERVOIR_API_KEY_PROD: string;
   export const RESERVOIR_API_KEY_DEV: string;
+  export const RPC_PROXY_BASE_URL_PROD: string;
+  export const RPC_PROXY_BASE_URL_DEV: string;
+  export const RPC_PROXY_API_KEY_PROD: string;
+  export const RPC_PROXY_API_KEY_DEV: string;
 }
