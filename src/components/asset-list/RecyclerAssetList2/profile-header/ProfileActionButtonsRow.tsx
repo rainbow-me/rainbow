@@ -283,8 +283,7 @@ export function MoreButton() {
       {/* @ts-expect-error JavaScript component */}
       <CopyFloatingEmojis textToCopy={accountAddress}>
         <ActionButton
-          // onPress={handlePressCopy}
-          onPress={navigateToSigningSheet}
+          onPress={handlePressCopy}
           icon="􀐅"
           testID="receive-button"
         >
