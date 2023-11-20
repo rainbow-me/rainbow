@@ -1,21 +1,26 @@
 import { ButtonPressAnimation } from '@/components/animations';
+import { Input } from '@/components/inputs';
 import {
   Box,
+  Cover,
+  DebugLayout,
+  Inline,
   Stack,
   Text,
   useBackgroundColor,
   useForegroundColor,
+  useTextStyle,
 } from '@/design-system';
 import { useAccountAccentColor, useAccountProfile } from '@/hooks';
-import { useNavigation } from '@/navigation';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
+import { fonts } from '@/styles';
 import { safeAreaInsetValues } from '@/utils';
 import React from 'react';
+import { TextInput } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
-export default function ClaimContent() {
+export default function ReferralCodeContent() {
   const { accentColor } = useAccountAccentColor();
-  const { navigate } = useNavigation();
 
   const separatorSecondary = useForegroundColor('separatorSecondary');
   const surfacePrimary = useBackgroundColor('surfacePrimary');
@@ -41,7 +46,7 @@ export default function ClaimContent() {
                 />
               </Svg>
               <Text size="22pt" weight="heavy" align="center" color="label">
-                Claim your points
+                Enter your referral code
               </Text>
             </Stack>
             <Text
@@ -50,53 +55,96 @@ export default function ClaimContent() {
               align="center"
               color="labelTertiary"
             >
-              {"Points are here. Find out how many you've been awarded."}
+              Enter a referral code below to claim your bonus reward.
             </Text>
           </Stack>
-          <ButtonPressAnimation
+          <Box
             style={{
-              backgroundColor: accentColor,
-              borderRadius: 26,
+              borderRadius: 18,
+              borderWidth: 2,
+              borderColor: accentColor,
               height: 48,
-              paddingVertical: 12,
-              paddingHorizontal: 24,
+              paddingLeft: 20,
               alignItems: 'center',
               justifyContent: 'center',
+              // width: 115,
             }}
           >
-            <Text
-              size="20pt"
-              weight="heavy"
-              align="center"
-              color={{ custom: surfacePrimary }}
-            >
-              Get Started
-            </Text>
-          </ButtonPressAnimation>
+            <Input
+              style={{
+                backgroundColor: 'transparent',
+                zIndex: 1000,
+                height: 48,
+                width: 95,
+                ...useTextStyle({
+                  align: 'left',
+                  color: { custom: accentColor },
+                  size: '20pt',
+                  weight: 'heavy',
+                }),
+              }}
+              autoFocus
+              maxLength={7}
+              selectionColor={accentColor}
+              textAlign="center"
+              width={95}
+              // placeholder="XXX-XXX"
+            />
+            <Cover>
+              <DebugLayout>
+                <Box
+                  style={{
+                    height: 48,
+                    // width: 115,
+                    paddingLeft: 20,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Inline wrap={false}>
+                    <Text
+                      size="20pt"
+                      weight="heavy"
+                      align="left"
+                      color={{ custom: 'transparent' }}
+                      numberOfLines={1}
+                    >
+                      X
+                    </Text>
+                    <Text
+                      size="20pt"
+                      weight="heavy"
+                      align="left"
+                      color="labelQuaternary"
+                      numberOfLines={1}
+                    >
+                      XX-XXX
+                    </Text>
+                  </Inline>
+                </Box>
+              </DebugLayout>
+            </Cover>
+          </Box>
         </Stack>
       </Box>
       <ButtonPressAnimation
         style={{
+          backgroundColor: accentColor,
           borderRadius: 26,
           height: 48,
           paddingVertical: 12,
-          paddingHorizontal: 20,
+          paddingHorizontal: 24,
           alignItems: 'center',
           justifyContent: 'center',
-          borderWidth: 2,
-          borderColor: separatorSecondary,
-        }}
-        onPress={() => {
-          navigate('ReferralCodeContent');
         }}
       >
         <Text
-          size="17pt"
+          size="20pt"
           weight="heavy"
           align="center"
-          color={{ custom: accentColor }}
+          color={{ custom: surfacePrimary }}
         >
-          Use Referral Code
+          Get Started
         </Text>
       </ButtonPressAnimation>
     </Box>

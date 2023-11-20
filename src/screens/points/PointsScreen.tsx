@@ -18,6 +18,7 @@ import TestContent from './content/TestContent';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { deviceUtils } from '@/utils';
 import ClaimContent from './content/ClaimContent';
+import ReferralCodeContent from './content/ReferralCodeContent';
 
 const Swipe = createMaterialTopTabNavigator();
 
@@ -86,6 +87,16 @@ export default function PointsScreen() {
             component={ClaimContent}
             // initialParams={{ isFirstWallet, userData }}
             name="ClaimContent"
+            // listeners={{
+            //   focus: () => {
+            //     setScrollEnabled(true);
+            //   },
+            // }}
+          />
+          <Swipe.Screen
+            component={ReferralCodeContent}
+            // initialParams={{ isFirstWallet, userData }}
+            name="ReferralCodeContent"
             // listeners={{
             //   focus: () => {
             //     setScrollEnabled(true);
