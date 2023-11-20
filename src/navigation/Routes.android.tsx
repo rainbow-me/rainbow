@@ -387,10 +387,6 @@ function BSNavigator() {
         name={Routes.CONFIRM_REQUEST}
         options={walletconnectBottomSheetPreset}
       />
-      <BSStack.Screen
-        name={Routes.SIGN_TRANSACTION_SHEET}
-        component={SignTransactionSheet}
-      />
     </BSStack.Navigator>
   );
 }

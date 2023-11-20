@@ -330,15 +330,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={SignTransactionSheet}
         name={Routes.CONFIRM_REQUEST}
-        options={{
-          allowsDragToDismiss: false,
-          allowsTapToDismiss: false,
-          backgroundOpacity: 1,
-          customStack: true,
-          headerHeight: 0,
-          isShortFormEnabled: false,
-          topOffset: 0,
-        }}
+        {...signTransactionSheetConfig}
       />
       <NativeStack.Screen
         component={ExpandedAssetSheet}
@@ -423,11 +415,6 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={SendFlowNavigator}
         name={Routes.SEND_SHEET_NAVIGATOR}
-      />
-      <NativeStack.Screen
-        component={SignTransactionSheet}
-        name={Routes.SIGN_TRANSACTION_SHEET}
-        {...signTransactionSheetConfig}
       />
       <NativeStack.Screen
         component={WalletConnectApprovalSheet}
