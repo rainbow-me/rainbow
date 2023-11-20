@@ -369,7 +369,6 @@ const ChartPathInner = React.memo(
     });
 
     return (
-      // @ts-expect-error We use an old version of RNGH which doesn't support React 18 types well
       <LongPressGestureHandler
         enabled={gestureEnabled}
         maxDist={100000}
