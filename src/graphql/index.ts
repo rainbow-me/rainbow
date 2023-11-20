@@ -10,7 +10,7 @@ export const metadataClient = getMetadataSdk(
   getFetchRequester(config.metadata)
 );
 export const simulationClient = getMetadataSdk(
-  getFetchRequester(config.metadata)
+  getFetchRequester(config.simulation)
 );
 export const arcClient = getArcSdk(getFetchRequester(config.arc));
 export const arcDevClient = getArcDevSdk(getFetchRequester(config.arcDev));
