@@ -212,7 +212,7 @@ export const SignTransactionSheet = () => {
   const [methodName, setMethodName] = useState<string | null>(null);
   const calculatingGasLimit = useRef(false);
   const [isBalanceEnough, setIsBalanceEnough] = useState<boolean>();
-  const [nonceForDisplay, setNonceForDisplay] = useState<number>();
+  const [nonceForDisplay, setNonceForDisplay] = useState<string>();
 
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
@@ -510,11 +510,24 @@ export const SignTransactionSheet = () => {
 
   useEffect(() => {
     (async () => {
-      if (accountInfo.address && currentNetwork && !isMessageRequest) {
-        const nonce = await getNextNonce();
-        setNonceForDisplay(nonce);
+      if (
+        accountInfo.address &&
+        currentNetwork &&
+        !isMessageRequest &&
+        !nonceForDisplay
+      ) {
+        try {
+          const nonce = await getNextNonce();
+          if (nonce || nonce === 0) {
+            const nonceAsString = nonce.toString();
+            setNonceForDisplay(nonceAsString);
+          }
+        } catch (error) {
+          console.error('Failed to get nonce for display:', error);
+        }
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accountInfo.address, currentNetwork, getNextNonce, isMessageRequest]);
 
   useEffect(() => {
@@ -1828,7 +1841,7 @@ const DetailsCard = ({
                 value={formatDate(meta?.to?.created)}
               />
             )}
-            {nonce && <DetailRow detailType="nonce" value={nonce.toString()} />}
+            {nonce && <DetailRow detailType="nonce" value={nonce} />}
           </Stack>
         </Animated.View>
       </Stack>
@@ -2625,8 +2638,6 @@ const FadedScrollCard = ({
               width: '100%',
             },
             cardStyle,
-            // skipCollapsedState &&
-            //   !isFullyExpanded && { maxHeight: MAX_CARD_HEIGHT },
           ]}
         >
           <Animated.ScrollView
