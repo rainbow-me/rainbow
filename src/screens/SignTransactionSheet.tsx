@@ -2370,7 +2370,6 @@ const FadedScrollCard = ({
   const { isDarkMode } = useTheme();
 
   const cardRef = useAnimatedRef<Animated.View>();
-  const panRef = useRef(null);
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
 
   const [scrollEnabled, setScrollEnabled] = useState(initialScrollEnabled);
@@ -2461,11 +2460,8 @@ const FadedScrollCard = ({
         isDarkMode
           ? ['#1F2023', '#1F2023', '#242527']
           : ['#F5F7F8', '#F5F7F8', '#FBFCFD']
-        // ? ['#1F2023', '#1F2023', isFullyExpanded ? '#242527' : '#1F2023']
-        // : ['#F5F7F8', '#F5F7F8', isFullyExpanded ? '#FBFCFD' : '#F5F7F8']
       ),
       height: cardHeight.value > MAX_CARD_HEIGHT ? cardHeight.value : undefined,
-      maxHeight: cardHeight.value > MAX_CARD_HEIGHT ? 2000 : MAX_CARD_HEIGHT,
       position: canExpandFully && isFullyExpanded ? 'absolute' : 'relative',
       transform: [
         {
@@ -2649,10 +2645,7 @@ const FadedScrollCard = ({
             scrollEventThrottle={16}
           >
             {/* @ts-expect-error Property 'children' does not exist on type */}
-            <PanGestureHandler
-              enabled={isFullyExpanded && !scrollEnabled}
-              ref={panRef}
-            >
+            <PanGestureHandler enabled={isFullyExpanded && !scrollEnabled}>
               <TouchableWithoutFeedback
                 onPress={
                   !isExpanded
