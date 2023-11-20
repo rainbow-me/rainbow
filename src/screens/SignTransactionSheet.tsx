@@ -1719,7 +1719,7 @@ interface DetailsCardProps {
   meta: TransactionSimulationMeta | undefined;
   methodName: string;
   noChanges: boolean;
-  nonce: number | undefined;
+  nonce: string | undefined;
   toAddress: string;
 }
 
