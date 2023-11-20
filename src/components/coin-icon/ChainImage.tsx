@@ -14,11 +14,9 @@ import ZoraBadge from '../../assets/badges/zora.png';
 import { ImgixImage } from '../images';
 
 export function ChainImage({
-  borderRadius = 20,
   chain,
   size = 20,
 }: {
-  borderRadius?: number;
   chain: Network | null | undefined;
   size?: number;
 }) {
@@ -48,7 +46,7 @@ export function ChainImage({
     <ImgixImage
       size={size}
       source={source}
-      style={{ borderRadius, height: size, width: size }}
+      style={{ borderRadius: size / 2, height: size, width: size }}
     />
   );
 }
