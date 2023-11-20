@@ -1983,7 +1983,8 @@ const SimulatedEventRow = ({
         : convertRawAmountToBalance(
             amount,
             { decimals: asset?.decimals || 18, symbol: shortenedDisplayName },
-            3
+            3,
+            true
           ).display;
 
     const unlimitedApproval = `${i18n.t(
