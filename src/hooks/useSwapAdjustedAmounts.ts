@@ -43,7 +43,6 @@ export default function useSwapAdjustedAmounts(tradeDetails: Quote) {
 
   const priceValue = ethereumUtils.getAssetPrice(address);
 
-
   // ETH_ADDRESS is a misleading name– this address is used to represent any network's native asset
   if (
     // eth <-> weth swap
