@@ -273,11 +273,6 @@ export function MoreButton() {
     Clipboard.setString(accountAddress);
   }, [accountAddress, isToastActive, setToastActive]);
 
-  const { navigate } = useNavigation();
-  const navigateToSigningSheet = React.useCallback(() => {
-    navigate(Routes.SIGN_TRANSACTION_SHEET);
-  }, [navigate]);
-
   return (
     <>
       {/* @ts-expect-error JavaScript component */}
