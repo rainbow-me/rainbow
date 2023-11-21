@@ -8,6 +8,7 @@ import {
   WMATIC_POLYGON_ADDRESS,
   WBNB_BSC_ADDRESS,
   WETH_ARBITRUM_ADDRESS,
+  WETH_ZORA_ADDRESS,
 } from '@/references';
 import { fromWei, updatePrecisionToDisplay } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
@@ -63,7 +64,12 @@ export default function useSwapAdjustedAmounts(tradeDetails: Quote) {
     (tradeDetails.buyTokenAddress === ETH_ADDRESS &&
       tradeDetails.sellTokenAddress === WETH_ARBITRUM_ADDRESS) ||
     (tradeDetails.sellTokenAddress === ETH_ADDRESS &&
-      tradeDetails.buyTokenAddress === WETH_ARBITRUM_ADDRESS)
+      tradeDetails.buyTokenAddress === WETH_ARBITRUM_ADDRESS) ||
+    // zora eth <-> weth swap
+    (tradeDetails.buyTokenAddress === ETH_ADDRESS &&
+      tradeDetails.sellTokenAddress === WETH_ZORA_ADDRESS) ||
+    (tradeDetails.sellTokenAddress === ETH_ADDRESS &&
+      tradeDetails.buyTokenAddress === WETH_ZORA_ADDRESS)
   ) {
     amountReceivedSold = fromWei(amountReceivedSold.toString());
   }

@@ -45,5 +45,5 @@ export const isUsingButtonNavigation = () => {
   const deviceHeight = Dimensions.get('screen').height;
   const windowHeight = Dimensions.get('window').height;
   const bottomNavBarHeight = deviceHeight - windowHeight;
-  return bottomNavBarHeight > 80;
+  return bottomNavBarHeight > 24;
 };
