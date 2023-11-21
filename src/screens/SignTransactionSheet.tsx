@@ -1106,7 +1106,7 @@ export const SignTransactionSheet = () => {
                 zIndex: 2,
               }}
             >
-              <Stack space="24px">
+              <Box style={{ gap: 24 }}>
                 <Inset horizontal="12px" right={{ custom: 110 }}>
                   <Inline alignVertical="center" space="12px" wrap={false}>
                     <Box
@@ -1339,7 +1339,7 @@ export const SignTransactionSheet = () => {
                     {...(simulationError && { color: colors.red })}
                   />
                 </Columns>
-              </Stack>
+              </Box>
 
               {/* Extra ScrollView to prevent the sheet from hijacking the real ScrollViews */}
               {IS_IOS && (
