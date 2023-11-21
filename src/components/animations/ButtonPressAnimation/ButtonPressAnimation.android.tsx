@@ -157,7 +157,6 @@ const ScaleButton = ({
           hitSlop={-overflowMargin}
           onGestureEvent={gestureHandler}
           rippleColor={transparentColor}
-          // @ts-ignore
           style={sx.overflow}
         >
           <View style={sx.transparentBackground}>
