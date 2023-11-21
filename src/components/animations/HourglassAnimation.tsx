@@ -47,7 +47,8 @@ export default function HourglassAnimation() {
         withTiming(34, sandConfig),
         withTiming(0, sandConfig)
       ),
-      -1
+      -1,
+      true
     )
   );
 
