@@ -1085,9 +1085,9 @@ export const SignTransactionSheet = () => {
     EXPANDED_CARD_BOTTOM_INSET + (isMessageRequest ? 0 : GAS_BUTTON_SPACE);
 
   return (
-    // This PanGestureHandler blocks sheet dismiss gestures
+    // This PanGestureHandler blocks sheet dismiss gestures on iOS
     // @ts-expect-error Property 'children' does not exist on type
-    <PanGestureHandler>
+    <PanGestureHandler enabled={IS_IOS}>
       <Animated.View>
         <Inset bottom={{ custom: SCREEN_BOTTOM_INSET }}>
           <Box
@@ -2644,24 +2644,21 @@ const FadedScrollCard = ({
             scrollEnabled={scrollEnabled}
             scrollEventThrottle={16}
           >
-            {/* @ts-expect-error Property 'children' does not exist on type */}
-            <PanGestureHandler enabled={isFullyExpanded && !scrollEnabled}>
-              <TouchableWithoutFeedback
-                onPress={
-                  !isExpanded
-                    ? onPressCollapsedCard
-                    : () => {
-                        if (!isFullyExpanded) {
-                          setIsFullyExpanded(true);
-                        } else setIsFullyExpanded(false);
-                      }
-                }
-              >
-                <Animated.View style={centerVerticallyWhenCollapsedStyle}>
-                  {children}
-                </Animated.View>
-              </TouchableWithoutFeedback>
-            </PanGestureHandler>
+            <TouchableWithoutFeedback
+              onPress={
+                !isExpanded
+                  ? onPressCollapsedCard
+                  : () => {
+                      if (!isFullyExpanded) {
+                        setIsFullyExpanded(true);
+                      } else setIsFullyExpanded(false);
+                    }
+              }
+            >
+              <Animated.View style={centerVerticallyWhenCollapsedStyle}>
+                {children}
+              </Animated.View>
+            </TouchableWithoutFeedback>
           </Animated.ScrollView>
           <FadeGradient side="top" style={topGradientStyle} />
           <FadeGradient side="bottom" style={bottomGradientStyle} />
