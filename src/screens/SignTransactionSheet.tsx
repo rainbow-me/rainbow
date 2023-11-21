@@ -30,7 +30,6 @@ import Animated, {
   useAnimatedReaction,
   useAnimatedRef,
   useAnimatedStyle,
-  useScrollViewOffset,
   useSharedValue,
   withRepeat,
   withTiming,
@@ -1208,7 +1207,7 @@ export const SignTransactionSheet = () => {
                   )}
                 </Box>
 
-                <Box pointerEvents="none">
+                <Box pointerEvents="none" style={{ zIndex: -1 }}>
                   <Inset horizontal="12px">
                     <Inline alignVertical="center" space="12px" wrap={false}>
                       {accountInfo.accountImage ? (
@@ -1354,11 +1353,12 @@ export const SignTransactionSheet = () => {
                 </Box>
               )}
             </Box>
+
             {!isMessageRequest && (
               <Box
                 alignItems="center"
                 justifyContent="center"
-                style={{ height: 30 }}
+                style={{ height: 30, zIndex: -1 }}
               >
                 <GasSpeedButton
                   marginTop={0}
@@ -2370,50 +2370,14 @@ const FadedScrollCard = ({
   const { isDarkMode } = useTheme();
 
   const cardRef = useAnimatedRef<Animated.View>();
-  const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
 
   const [scrollEnabled, setScrollEnabled] = useState(initialScrollEnabled);
   const [isFullyExpanded, setIsFullyExpanded] = useState(false);
 
-  const offset = useScrollViewOffset(scrollViewRef);
   const yPosition = useSharedValue(0);
 
   const maxExpandedHeight =
     deviceHeight - (expandedCardBottomInset + expandedCardTopInset);
-
-  const topGradientStyle = useAnimatedStyle(() => {
-    if (!scrollEnabled) {
-      return { opacity: withTiming(0, timingConfig) };
-    }
-    return {
-      opacity:
-        offset.value <= 0
-          ? withTiming(0, timingConfig)
-          : withTiming(1, timingConfig),
-    };
-  });
-
-  const bottomGradientStyle = useAnimatedStyle(() => {
-    const canExpandFully =
-      contentHeight.value + CARD_BORDER_WIDTH * 2 > MAX_CARD_HEIGHT;
-    if (!scrollEnabled) {
-      return { opacity: withTiming(0, timingConfig) };
-    }
-    if (scrollEnabled && offset.value === 0) {
-      return { opacity: withTiming(1, timingConfig) };
-    }
-    return {
-      opacity:
-        offset.value >
-        contentHeight.value +
-          CARD_BORDER_WIDTH -
-          (canExpandFully && isFullyExpanded
-            ? maxExpandedHeight
-            : MAX_CARD_HEIGHT)
-          ? withTiming(0, timingConfig)
-          : withTiming(1, timingConfig),
-    };
-  });
 
   const containerStyle = useAnimatedStyle(() => {
     return {
@@ -2637,12 +2601,9 @@ const FadedScrollCard = ({
           ]}
         >
           <Animated.ScrollView
-            contentContainerStyle={{ padding: 24 - CARD_BORDER_WIDTH }}
             onContentSizeChange={handleContentSizeChange}
-            ref={scrollViewRef}
             showsVerticalScrollIndicator={false}
             scrollEnabled={scrollEnabled}
-            scrollEventThrottle={16}
           >
             <TouchableWithoutFeedback
               onPress={
@@ -2655,13 +2616,18 @@ const FadedScrollCard = ({
                     }
               }
             >
-              <Animated.View style={centerVerticallyWhenCollapsedStyle}>
+              <Animated.View
+                style={[
+                  centerVerticallyWhenCollapsedStyle,
+                  { padding: 24 - CARD_BORDER_WIDTH },
+                ]}
+              >
                 {children}
               </Animated.View>
             </TouchableWithoutFeedback>
           </Animated.ScrollView>
-          <FadeGradient side="top" style={topGradientStyle} />
-          <FadeGradient side="bottom" style={bottomGradientStyle} />
+          <FadeGradient side="top" />
+          <FadeGradient side="bottom" />
         </Animated.View>
       </Animated.View>
     </Animated.View>
@@ -2673,7 +2639,7 @@ const FadeGradient = ({
   style,
 }: {
   side: 'top' | 'bottom';
-  style: StyleProp<Animated.AnimateStyle<StyleProp<ViewStyle>>>;
+  style?: StyleProp<Animated.AnimateStyle<StyleProp<ViewStyle>>>;
 }) => {
   const { colors, isDarkMode } = useTheme();
 
@@ -2684,7 +2650,7 @@ const FadeGradient = ({
   return (
     <Box
       as={Animated.View}
-      height={{ custom: 40 }}
+      height={{ custom: 20 }}
       pointerEvents="none"
       position="absolute"
       style={[
@@ -2703,7 +2669,7 @@ const FadeGradient = ({
         pointerEvents="none"
         start={{ x: 0.5, y: isTop ? 0 : 1 }}
         style={{
-          height: 40,
+          height: 20,
           width: '100%',
         }}
       />
