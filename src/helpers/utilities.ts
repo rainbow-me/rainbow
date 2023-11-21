@@ -374,14 +374,20 @@ export const convertRawAmountToNativeDisplay = (
 export const convertRawAmountToBalance = (
   value: BigNumberish,
   asset: { decimals: number; symbol?: string },
-  buffer?: number
+  buffer?: number,
+  trimTrailingZeros?: boolean
 ) => {
   const decimals = asset?.decimals ?? 18;
   const assetBalance = convertRawAmountToDecimalFormat(value, decimals);
 
   return {
     amount: assetBalance,
-    display: convertAmountToBalanceDisplay(assetBalance, asset, buffer),
+    display: convertAmountToBalanceDisplay(
+      assetBalance,
+      asset,
+      buffer,
+      trimTrailingZeros
+    ),
   };
 };
 
@@ -391,11 +397,15 @@ export const convertRawAmountToBalance = (
 export const convertAmountToBalanceDisplay = (
   value: BigNumberish,
   asset: { decimals: number; symbol?: string },
-  buffer?: number
+  buffer?: number,
+  trimTrailingZeros?: boolean
 ) => {
   const decimals = asset?.decimals ?? 18;
   const display = handleSignificantDecimals(value, decimals, buffer);
-  return `${display} ${asset?.symbol || ''}`;
+  const formattedDisplay = trimTrailingZeros
+    ? display.replace(/\.?0+$/, '')
+    : display;
+  return `${formattedDisplay} ${asset?.symbol || ''}`;
 };
 
 /**

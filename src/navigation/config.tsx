@@ -204,6 +204,7 @@ export const signTransactionSheetConfig = {
       backgroundOpacity: 1,
       cornerRadius: 0,
       springDamping: 1,
+      topOffset: 0,
       transitionDuration: 0.3,
     }),
   }),
