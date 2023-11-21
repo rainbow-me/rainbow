@@ -2363,7 +2363,8 @@
           "types": {
             "chain": "Network",
             "contract": "Contract",
-            "contract_created": "Contact Created",
+            "contract_created": "Contract Created",
+            "to": "To",
             "function": "Function",
             "source_code": "Source Code",
             "nonce": "Nonce"
@@ -2385,6 +2386,15 @@
           "confirm": "􀎽 Confirm",
           "get_native_token": "Get %{symbol}",
           "buy_native_token": "Buy %{symbol}"
+        },
+        "formatted_dates": {
+          "today": "Today",
+          "day_ago": "day ago",
+          "days_ago": "days ago",
+          "week_ago": "week ago",
+          "weeks_ago": "weeks ago",
+          "month_ago": "month ago",
+          "months_ago": "months ago"
         }
       }
     },

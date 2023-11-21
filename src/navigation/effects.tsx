@@ -463,6 +463,7 @@ export const walletconnectBottomSheetPreset: BottomSheetNavigationOptions = {
   backdropOpacity: 1,
   enableContentPanningGesture: false,
   backdropPressBehavior: 'none',
+  height: '100%',
 };
 
 export const expandedPresetWithSmallGestureResponseDistance: StackNavigationOptions &

@@ -24,6 +24,7 @@ type Props = PropsWithChildren<{
   label?: string;
   lightShadows?: boolean;
   marginBottom?: number;
+  newShadows?: boolean;
   nftShadows?: boolean;
   onPress?: () => void;
   scaleTo?: number;
@@ -89,6 +90,7 @@ const SheetActionButton: React.FC<Props> = ({
   label = null,
   lightShadows,
   onPress,
+  newShadows,
   nftShadows,
   scaleTo = 0.9,
   size = null,
@@ -105,7 +107,12 @@ const SheetActionButton: React.FC<Props> = ({
   const isWhite = color === colors.white;
   const textColor = givenTextColor || colors.whiteLabel;
   const shadowsForButtonColor = useMemo(() => {
-    if (nftShadows) {
+    if (newShadows) {
+      return [
+        [0, 2, 6, colors.trueBlack, 0.02],
+        [0, 10, 30, isDarkMode ? colors.shadow : color, 0.4],
+      ];
+    } else if (nftShadows) {
       return [[0, 10, 30, colors.alpha(colors.shadowBlack, 0.3)]];
     } else if (!forceShadows && (disabled || isTransparent)) {
       return [[0, 0, 0, colors.transparent, 0]];
@@ -128,6 +135,7 @@ const SheetActionButton: React.FC<Props> = ({
     isTransparent,
     isDarkMode,
     lightShadows,
+    newShadows,
     nftShadows,
     isWhite,
   ]);
