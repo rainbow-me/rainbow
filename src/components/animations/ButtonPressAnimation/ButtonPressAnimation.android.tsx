@@ -218,9 +218,7 @@ const SimpleScaleButton = ({
 
   // we won't guess if there are any animated styles in there but we can
   // not render the Animated.View if we don't use that prop at all
-  const Wrapper: React.ComponentType<any> = contentContainerStyle
-    ? Animated.View
-    : View;
+  const Wrapper = contentContainerStyle ? Animated.View : View;
   // hack to lay out BottomTab buttons normally instead of being stacked on top of each other
   const [overflowMarginHelper, setOverflowMargin] = useState(overflowMargin);
   const layoutHelper = () => setOverflowMargin(overflowMargin - 1);
