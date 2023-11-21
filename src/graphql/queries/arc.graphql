@@ -237,3 +237,42 @@ query getPromoSheet($id: String!) {
     subHeader
   }
 }
+
+fragment card on Card {
+  sys {
+    id
+  }
+  cardKey
+  placement
+  index
+  backgroundColor
+  padding
+  imageCollection {
+    items {
+      url
+    }
+  }
+  imageRadius
+  subtitle
+  subtitleColor
+  title
+  titleColor
+  description
+  descriptionColor
+  items
+  primaryButton
+}
+
+query getCard($id: String!) {
+  card(id: $id) {
+    ...card
+  }
+}
+
+query getCardCollection($order: [CardOrder], $where: CardFilter) {
+  cardCollection(order: $order, where: $where) {
+    items {
+      ...card
+    }
+  }
+}
