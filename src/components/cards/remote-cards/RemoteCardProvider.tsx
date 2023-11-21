@@ -25,7 +25,7 @@ const TRIMMED_CARD_KEYS = [
   'primaryButton',
 ] as const;
 
-type TrimmedCard = Pick<Card, typeof TRIMMED_CARD_KEYS[number]> & {
+export type TrimmedCard = Pick<Card, typeof TRIMMED_CARD_KEYS[number]> & {
   sys: Pick<Card['sys'], 'id'>;
   imageCollection: {
     items: {
@@ -118,8 +118,6 @@ export const RemoteCardProvider: React.FC<
         return a.index - b.index;
       });
   };
-
-  console.log(cards);
 
   return (
     <RemoteCardContext.Provider
