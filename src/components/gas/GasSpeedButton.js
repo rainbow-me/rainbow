@@ -627,22 +627,26 @@ const GasSpeedButton = ({
                 )}
               </AnimatePresence>
             </NativeCoinIconWrapper>
-            <AnimateNumber
-              formatter={formatGasPrice}
-              interval={6}
-              renderContent={renderGasPriceText}
-              steps={6}
-              timing="linear"
-              value={price}
-            />
-            <Text letterSpacing="one" size="lmedium" weight="heavy">
-              {' '}
-            </Text>
-            <TransactionTimeLabel
-              formatter={formatTransactionTime}
-              theme={theme}
-              isLongWait={isLongWait}
-            />
+            <TextContainer>
+              <Text>
+                <AnimateNumber
+                  formatter={formatGasPrice}
+                  interval={6}
+                  renderContent={renderGasPriceText}
+                  steps={6}
+                  timing="linear"
+                  value={price}
+                />
+                <Text letterSpacing="one" size="lmedium" weight="heavy">
+                  {' '}
+                </Text>
+                <TransactionTimeLabel
+                  formatter={formatTransactionTime}
+                  theme={theme}
+                  isLongWait={isLongWait}
+                />
+              </Text>
+            </TextContainer>
           </Row>
           <Row justify="space-between">
             <Label

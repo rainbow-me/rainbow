@@ -1809,7 +1809,7 @@ const DetailsCard = ({
                 value={getNetworkObj(currentNetwork).name}
               />
             }
-            {(meta?.to?.address || toAddress) && (
+            {!!(meta?.to?.address || toAddress) && (
               <DetailRow
                 detailType={isContract ? 'contract' : 'to'}
                 onPress={() =>
@@ -1829,13 +1829,13 @@ const DetailsCard = ({
             {showFunctionRow && (
               <DetailRow detailType="function" value={methodName} />
             )}
-            {meta?.to?.sourceCodeStatus && (
+            {!!meta?.to?.sourceCodeStatus && (
               <DetailRow
                 detailType="sourceCodeVerification"
                 value={meta.to.sourceCodeStatus}
               />
             )}
-            {meta?.to?.created && (
+            {!!meta?.to?.created && (
               <DetailRow
                 detailType="dateCreated"
                 value={formatDate(meta?.to?.created)}
