@@ -1,13 +1,17 @@
 import {
-  AddressWithRelationship,
   DEFAULT_ENABLED_TOPIC_SETTINGS,
-  getAllNotificationSettingsFromStorage,
   NotificationRelationship,
-  notificationSettingsStorage,
-  publishAndSaveWalletSettings,
   WALLET_GROUPS_STORAGE_KEY,
+} from '@/notifications/settings/constants';
+import { publishAndSaveWalletSettings } from '@/notifications/settings/settings';
+import {
+  getAllNotificationSettingsFromStorage,
+  notificationSettingsStorage,
+} from '@/notifications/settings/storage';
+import {
+  AddressWithRelationship,
   WalletNotificationSettings,
-} from '@/notifications/settings';
+} from '@/notifications/settings/types';
 import { InteractionManager } from 'react-native';
 
 type InitializationStateType = {
