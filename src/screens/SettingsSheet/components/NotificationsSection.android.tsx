@@ -260,42 +260,40 @@ const NotificationsSection = () => {
   const neverGranted = permissionStatus === RESULTS.DENIED;
   const disabledInSystem = permissionStatus === RESULTS.BLOCKED;
 
-  const toggleAllOwnedNotifications = useCallback(() => {
+  const toggleAllOwnedNotifications = useCallback(async () => {
     if (!isConnected) {
       showOfflineAlert();
       return;
     }
     setOwnedState(prev => ({ status: !prev.status, loading: true }));
-    updateGroupSettingsAndSubscriptions(
+    const isSuccess = await updateGroupSettingsAndSubscriptions(
       NotificationRelationship.OWNER,
       !storedOwnerEnabled
-    )
-      .then(() => {
-        setOwnedState(prev => ({ ...prev, loading: false }));
-      })
-      .catch(() => {
-        showNotificationSubscriptionErrorAlert();
-        setOwnedState(prev => ({ status: !prev.status, loading: false }));
-      });
+    );
+    if (isSuccess) {
+      setOwnedState(prev => ({ ...prev, loading: false }));
+    } else {
+      showNotificationSubscriptionErrorAlert();
+      setOwnedState(prev => ({ status: !prev.status, loading: false }));
+    }
   }, [storedOwnerEnabled, updateGroupSettingsAndSubscriptions, isConnected]);
 
-  const toggleAllWatchedNotifications = useCallback(() => {
+  const toggleAllWatchedNotifications = useCallback(async () => {
     if (!isConnected) {
       showOfflineAlert();
       return;
     }
     setWatchedState(prev => ({ status: !prev.status, loading: true }));
-    updateGroupSettingsAndSubscriptions(
+    const isSuccess = await updateGroupSettingsAndSubscriptions(
       NotificationRelationship.WATCHER,
       !storedWatcherEnabled
-    )
-      .then(() => {
-        setWatchedState(prev => ({ ...prev, loading: false }));
-      })
-      .catch(() => {
-        showNotificationSubscriptionErrorAlert();
-        setWatchedState(prev => ({ status: !prev.status, loading: false }));
-      });
+    );
+    if (isSuccess) {
+      setWatchedState(prev => ({ ...prev, loading: false }));
+    } else {
+      showNotificationSubscriptionErrorAlert();
+      setWatchedState(prev => ({ status: !prev.status, loading: false }));
+    }
   }, [updateGroupSettingsAndSubscriptions, storedWatcherEnabled, isConnected]);
 
   const openSystemSettings = Linking.openSettings;
