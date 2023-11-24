@@ -1,6 +1,4 @@
-// TODO JIN - remove this file
 export {
-  DEFAULT_ENABLED_TOPIC_SETTINGS,
   NotificationRelationship,
   NotificationTopic,
   WALLET_GROUPS_STORAGE_KEY,
@@ -14,10 +12,7 @@ export {
   useAllNotificationSettingsFromStorage,
   useWalletGroupNotificationSettings,
 } from './hooks';
-export {
-  publishAndSaveWalletSettings,
-  removeNotificationSettingsForWallet,
-} from './settings';
+export { removeNotificationSettingsForWallet } from './settings';
 export type {
   AddressWithRelationship,
   GroupSettings,
@@ -25,9 +20,4 @@ export type {
   NotificationTopicType,
   WalletNotificationSettings,
 } from './types';
-export {
-  getAllNotificationSettingsFromStorage,
-  notificationSettingsStorage,
-  setAllNotificationSettingsToStorage,
-  updateGroupSettings,
-} from './storage';
+export { notificationSettingsStorage, updateGroupSettings } from './storage';

@@ -16,12 +16,14 @@ import {
   NotificationRelationship,
   NotificationTopic,
   NotificationTopicType,
-  toggleGroupNotifications,
-  toggleTopicForWallet,
   updateGroupSettings,
   useWalletGroupNotificationSettings,
   WalletNotificationSettings,
 } from '@/notifications/settings';
+import {
+  toggleGroupNotifications,
+  toggleTopicForWallet,
+} from '@/notifications/settings/settings';
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
 import {
   showNotificationSubscriptionErrorAlert,
