@@ -30,7 +30,6 @@ import {
   showOfflineAlert,
 } from '@/screens/SettingsSheet/components/notificationAlerts';
 import { useNetInfo } from '@react-native-community/netinfo';
-import { updateSettingsForWalletWithAddress } from '@/notifications/settings/storage';
 import { BackgroundProvider, Box, Inline, Inset, Text } from '@/design-system';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { useWallets } from '@/hooks';
@@ -116,18 +115,16 @@ const WalletNotificationsSettings = () => {
     notifications,
     setNotificationSettings,
   ] = useState<WalletNotificationSettings>(notificationSettings);
+
   const updateSettings = useCallback(
     (options: Partial<WalletNotificationSettings>) => {
-      const newSettingsForWallet = updateSettingsForWalletWithAddress(
-        address,
-        options
-      );
-
-      if (newSettingsForWallet) {
-        setNotificationSettings(newSettingsForWallet);
-      }
+      const newSettingsForWallet = {
+        ...notifications,
+        ...options,
+      };
+      setNotificationSettings(newSettingsForWallet);
     },
-    [address]
+    [address, notifications]
   );
 
   const {
@@ -181,31 +178,33 @@ const WalletNotificationsSettings = () => {
     setTopicSubscriptionInProgress,
   ] = useState<NotificationTopicType | null>(null);
 
-  const toggleAllowNotifications = useCallback(() => {
+  const toggleAllowNotifications = useCallback(async () => {
     if (!isConnected) {
       showOfflineAlert();
       return;
     }
     setAllState(prev => ({ status: !prev.status, loading: true }));
-    toggleGroupNotifications([notifications], !notificationsEnabled)
-      .then(() => {
-        if (
-          !notificationsSectionEnabled ||
-          (notificationsSectionEnabled && lastWalletEnabled)
-        ) {
-          updateGroupSettings({
-            [notifications.type]: !notificationsEnabled,
-          });
-        }
-        updateSettings({
-          enabled: !notificationsEnabled,
+    const success = await toggleGroupNotifications(
+      [notifications],
+      !notificationsEnabled
+    );
+    if (success) {
+      if (
+        !notificationsSectionEnabled ||
+        (notificationsSectionEnabled && lastWalletEnabled)
+      ) {
+        updateGroupSettings({
+          [notifications.type]: !notificationsEnabled,
         });
-        setAllState(prev => ({ ...prev, loading: false }));
-      })
-      .catch(() => {
-        showNotificationSubscriptionErrorAlert();
-        setAllState(prev => ({ status: !prev.status, loading: false }));
+      }
+      updateSettings({
+        enabled: !notificationsEnabled,
       });
+      setAllState(prev => ({ ...prev, loading: false }));
+    } else {
+      showNotificationSubscriptionErrorAlert();
+      setAllState(prev => ({ status: !prev.status, loading: false }));
+    }
   }, [
     notificationsSectionEnabled,
     lastWalletEnabled,
@@ -216,33 +215,30 @@ const WalletNotificationsSettings = () => {
   ]);
 
   const toggleTopic = useCallback(
-    (topic: NotificationTopicType) => {
+    async (topic: NotificationTopicType) => {
       if (!isConnected) {
         showOfflineAlert();
         return;
       }
       toggleStateForTopic(topic);
       setTopicSubscriptionInProgress(topic);
-      toggleTopicForWallet(
+      const success = await toggleTopicForWallet(
         notifications.address,
         topic,
         !notifications?.topics[topic]
-      )
-        .then(() => {
-          updateSettings({
-            topics: {
-              ...notifications.topics,
-              [topic]: !notifications?.topics[topic],
-            },
-          });
-        })
-        .catch(() => {
-          showNotificationSubscriptionErrorAlert();
-          toggleStateForTopic(topic);
-        })
-        .finally(() => {
-          setTopicSubscriptionInProgress(null);
+      );
+      if (success) {
+        updateSettings({
+          topics: {
+            ...notifications.topics,
+            [topic]: !notifications?.topics[topic],
+          },
         });
+      } else {
+        showNotificationSubscriptionErrorAlert();
+        toggleStateForTopic(topic);
+      }
+      setTopicSubscriptionInProgress(null);
     },
     [notifications, updateSettings, isConnected]
   );
