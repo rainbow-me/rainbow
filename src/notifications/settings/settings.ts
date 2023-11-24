@@ -15,23 +15,21 @@ import { publishWalletSettings } from '@/notifications/settings/firebase';
  3. Excludes that wallet from the array and saves the new array.
  4. Updates the notification subscription
  */
-export const removeNotificationSettingsForWallet = async (
-  address: string
-): Promise<void> => {
+export const removeNotificationSettingsForWallet = async (address: string) => {
   const allSettings = getAllNotificationSettingsFromStorage();
   const settingsForWallet = allSettings.find(
     (wallet: WalletNotificationSettings) => wallet.address === address
   );
 
   if (!settingsForWallet) {
-    return Promise.resolve();
+    return;
   }
 
   const newSettings = allSettings.filter(
     (wallet: WalletNotificationSettings) => wallet.address !== address
   );
 
-  publishAndSaveWalletSettings(newSettings, true);
+  publishAndSaveWalletSettings(newSettings);
 };
 
 /**
@@ -42,7 +40,7 @@ export const removeNotificationSettingsForWallet = async (
 export async function toggleGroupNotifications(
   wallets: WalletNotificationSettings[],
   enableNotifications: boolean
-) {
+): Promise<boolean> {
   const allSettings = getAllNotificationSettingsFromStorage();
   const toBeUpdated = new Map<string, boolean>();
   wallets.forEach(entry => {
@@ -61,7 +59,7 @@ export async function toggleGroupNotifications(
     return walletSetting;
   });
 
-  publishAndSaveWalletSettings(proposedSettings);
+  return publishAndSaveWalletSettings(proposedSettings, true);
 }
 
 /**
@@ -71,7 +69,7 @@ export async function toggleTopicForWallet(
   address: string,
   topic: NotificationTopicType,
   enableTopic: boolean
-) {
+): Promise<boolean> {
   const allSettings = getAllNotificationSettingsFromStorage();
   const newSettings = allSettings.map(walletSetting => {
     if (walletSetting.address !== address) {
@@ -86,18 +84,20 @@ export async function toggleTopicForWallet(
       },
     };
   });
-  publishAndSaveWalletSettings(newSettings);
+  return publishAndSaveWalletSettings(newSettings, true);
 }
 
 export const publishAndSaveWalletSettings = async (
   proposedSettings: WalletNotificationSettings[],
   skipPreSave: boolean = false
-): Promise<void> => {
+): Promise<boolean> => {
   if (!skipPreSave) {
     setAllNotificationSettingsToStorage(proposedSettings);
   }
   const finalizedSettings = await publishWalletSettings(proposedSettings);
   if (finalizedSettings) {
     setAllNotificationSettingsToStorage(finalizedSettings);
+    return true;
   }
+  return false;
 };
