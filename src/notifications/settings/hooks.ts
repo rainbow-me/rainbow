@@ -110,27 +110,23 @@ export const useWalletGroupNotificationSettings = () => {
       const options: GroupSettings = {
         [type]: enabled,
       };
+
       const newSettings: GroupSettings = {
         ...existingGroupSettings,
         ...options,
       };
-      const newOwnerEnabled = newSettings[NotificationRelationship.OWNER];
-      const newWatcherEnabled = newSettings[NotificationRelationship.WATCHER];
 
-      const updateStore = () => {
+      const walletsToUpdate =
+        type === NotificationRelationship.OWNER ? ownedWallets : watchedWallets;
+
+      const isSuccess = await toggleGroupNotifications(
+        walletsToUpdate,
+        enabled
+      );
+      if (isSuccess) {
         updateGroupSettings(newSettings);
-      };
-
-      if (newOwnerEnabled !== ownerEnabled) {
-        return toggleGroupNotifications(ownedWallets, newOwnerEnabled).then(
-          updateStore
-        );
-      } else if (newWatcherEnabled !== watcherEnabled) {
-        return toggleGroupNotifications(watchedWallets, newWatcherEnabled).then(
-          updateStore
-        );
       }
-      return Promise.resolve();
+      return isSuccess;
     },
     [
       existingGroupSettings,
@@ -145,6 +141,7 @@ export const useWalletGroupNotificationSettings = () => {
     () => ownerEnabled && !allOwnedWalletsDisabled,
     [allOwnedWalletsDisabled, ownerEnabled]
   );
+
   const isWatcherEnabled = useMemo(
     () => watcherEnabled && !allWatchedWalletsDisabled,
     [allWatchedWalletsDisabled, watcherEnabled]
