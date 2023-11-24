@@ -11,12 +11,14 @@ import {
   WalletNotificationRelationship,
   WalletNotificationTopic,
   WalletNotificationTopicType,
-  toggleGroupNotifications,
-  toggleTopicForWallet,
   updateGroupSettings,
   useWalletGroupNotificationSettings,
   WalletNotificationSettings,
 } from '@/notifications/settings';
+import {
+  toggleGroupNotifications,
+  toggleTopicForWallet,
+} from '@/notifications/settings/settings';
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
 import { showNotificationSubscriptionErrorAlert, showOfflineAlert } from '@/screens/SettingsSheet/components/notificationAlerts';
 import { useNetInfo } from '@react-native-community/netinfo';

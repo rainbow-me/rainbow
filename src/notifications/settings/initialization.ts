@@ -4,17 +4,15 @@ import {
   WALLET_GROUPS_STORAGE_KEY,
 } from '@/notifications/settings/constants';
 import { AddressWithRelationship, WalletNotificationSettings } from '@/notifications/settings/types';
-import { publishAndSaveWalletSettings } from './settings';
+import { publishAndSaveWalletSettings, toggleGlobalNotificationTopic } from '@/notifications/settings/settings';
 import {
   getAllGlobalNotificationSettingsFromStorage,
   getAllWalletNotificationSettingsFromStorage,
   notificationSettingsStorage,
-  setAllWalletNotificationSettingsToStorage,
 } from '@/notifications/settings/storage';
 import { notificationsSubscription } from '@/redux/explorer';
 import store from '@/redux/store';
 import { InteractionManager } from 'react-native';
-import { removeNotificationSettingsForWallet, toggleGlobalNotificationTopic } from '@/notifications/settings/settings';
 
 type InitializationStateType = {
   alreadySaved: Map<string, { index: number; settings: WalletNotificationSettings }>;
