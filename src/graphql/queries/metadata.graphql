@@ -188,5 +188,9 @@ mutation onboardPoints(
         }
       }
     }
+    error {
+      message
+      type
+    }
   }
 }

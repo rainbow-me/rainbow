@@ -85,6 +85,8 @@ export default function ClaimContent() {
           justifyContent: 'center',
           borderWidth: 2,
           borderColor: separatorSecondary,
+          position: 'absolute',
+          bottom: 134,
         }}
         onPress={() => {
           navigate('ReferralCodeContent');
