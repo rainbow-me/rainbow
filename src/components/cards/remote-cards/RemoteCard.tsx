@@ -108,7 +108,12 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
 
   return (
     <Box
-      padding={{ custom: 12 }}
+      shadow={'12px'}
+      style={{
+        flex: IS_IOS ? 0 : undefined,
+      }}
+      padding={`${card.padding}px` as Space}
+      testID={`remote-card-${card.cardKey}`}
       borderRadius={14}
       width="full"
       background={backgroundColor ?? 'sufaceSecondary'}
