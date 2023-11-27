@@ -1,4 +1,5 @@
 import { NOTIFICATIONS_API_KEY } from 'react-native-dotenv';
+import { logger, RainbowError } from '@/logger';
 import { RainbowNetworks } from '@/networks';
 import {
   NotificationSubscriptionWalletsType,
@@ -34,6 +35,8 @@ const updateNotificationSubscription = async (
         Authorization: `Bearer ${NOTIFICATIONS_API_KEY}`,
       },
     });
+
+    // success
     return {
       error: false,
       shouldRetry: false,
@@ -47,7 +50,10 @@ const updateNotificationSubscription = async (
       };
     }
 
-    // TODO JIN - sentry log this error
+    logger.error(new RainbowError('Failed to subscribe to notifications'), {
+      message: (error as Error).message,
+    });
+
     return {
       error: true,
       shouldRetry: false,
@@ -68,6 +74,7 @@ const updateNotificationSubscriptionWithRetry = async (
     // success
     return true;
   } else if (subscriptionResponse.shouldRetry) {
+    // retry with an updated FCM token
     await saveFCMToken();
     const refreshedFirebaseToken = await getFCMToken();
     if (!refreshedFirebaseToken) return false;
@@ -76,35 +83,49 @@ const updateNotificationSubscriptionWithRetry = async (
       refreshedFirebaseToken,
       wallets
     );
-    if (!subscriptionRetryResponse.error) {
-      return true;
-    } else {
-      return false;
-    }
+    return !subscriptionRetryResponse.error;
   } else {
     return false;
   }
 };
 
+// returns updated wallet settings on success, undefined otherwise
 export const publishWalletSettings = async (
   walletSettings: WalletNotificationSettings[]
 ): Promise<WalletNotificationSettings[] | undefined> => {
-  const subscriptionPayload = parseWalletSettings(walletSettings);
-  const firebaseToken = await getFCMToken();
+  try {
+    const subscriptionPayload = parseWalletSettings(walletSettings);
+    let firebaseToken = await getFCMToken();
 
-  if (!firebaseToken) return;
-  const success = await updateNotificationSubscriptionWithRetry(
-    firebaseToken,
-    subscriptionPayload
-  );
-  if (success) {
-    return walletSettings.map(setting => {
-      return {
-        ...setting,
-        successfullyFinishedInitialSubscription: true,
-      };
-    });
-  } else {
+    // refresh the FCM token if not found
+    if (!firebaseToken) {
+      await saveFCMToken();
+      firebaseToken = await getFCMToken();
+      if (!firebaseToken) return;
+    }
+
+    const success = await updateNotificationSubscriptionWithRetry(
+      firebaseToken,
+      subscriptionPayload
+    );
+    if (success) {
+      return walletSettings.map(setting => {
+        return {
+          ...setting,
+          successfullyFinishedInitialSubscription: true,
+        };
+      });
+    } else {
+      return;
+    }
+  } catch (e: any) {
+    logger.error(
+      new RainbowError('Failed to publish wallet notification settings'),
+      {
+        message: (e as Error).message,
+      }
+    );
+
     return;
   }
 };
