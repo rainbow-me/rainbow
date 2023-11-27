@@ -2,7 +2,15 @@ import { Linking } from 'react-native';
 import React, { useCallback } from 'react';
 import { get } from 'lodash';
 
-import { Box, Stack, Text, Columns, Column, Bleed } from '@/design-system';
+import {
+  Box,
+  Stack,
+  Text,
+  Columns,
+  Column,
+  Bleed,
+  Space,
+} from '@/design-system';
 import { Icon } from '@/components/icons';
 import { ButtonPressAnimation } from '@/components/animations';
 import { TrimmedCard, useRemoteCardContext } from './RemoteCardProvider';
@@ -10,22 +18,24 @@ import { IS_IOS } from '@/env';
 import { useNavigation } from '@/navigation';
 import { Language } from '@/languages';
 import { useAccountSettings } from '@/hooks';
-import { TextColor } from '@/design-system/color/palettes';
+import { BackgroundColor, TextColor } from '@/design-system/color/palettes';
 import { CustomColor } from '@/design-system/color/useForegroundColor';
 import { maybeSignUri } from '@/handlers/imgix';
 import { Media } from '@/components/Media';
+import { SheetActionButton } from '@/components/sheet';
+import { colors } from '@/styles';
 
-const getKeyForLanguage = (
-  key: string,
-  promoSheet: any,
-  language: Language
-) => {
-  if (!promoSheet) {
+const getKeyForLanguage = (key: string, object: any, language: Language) => {
+  if (!object) {
     return '';
   }
 
-  const objectOrPrimitive = get(promoSheet, key);
+  const objectOrPrimitive = get(object, key);
   if (typeof objectOrPrimitive === 'undefined') {
+    return '';
+  }
+
+  if (objectOrPrimitive === null) {
     return '';
   }
 
@@ -40,12 +50,6 @@ type RemoteCardProps = {
   card: TrimmedCard;
 };
 
-type CardItem = {
-  text: string;
-  icon: string;
-  color: TextColor | CustomColor;
-};
-
 export const RemoteCard: React.FC<RemoteCardProps> = ({
   card = {} as TrimmedCard,
 }) => {
@@ -55,10 +59,10 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
 
   const { backgroundColor, primaryButton } = card;
 
-  const onDismissCard = useCallback(
-    () => dismissCard(card.sys.id as keyof TrimmedCard['sys']['id']),
-    [card.sys.id, dismissCard]
-  );
+  const onDismissCard = useCallback(() => dismissCard(card.sys.id), [
+    card.sys.id,
+    dismissCard,
+  ]);
 
   const onPress = useCallback(() => {
     const internalNavigation = (route: string) => {
@@ -108,15 +112,11 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
 
   return (
     <Box
-      shadow={'12px'}
-      style={{
-        flex: IS_IOS ? 0 : undefined,
-      }}
       padding={`${card.padding}px` as Space}
       testID={`remote-card-${card.cardKey}`}
       borderRadius={14}
       width="full"
-      background={backgroundColor ?? 'sufaceSecondary'}
+      background={(backgroundColor as BackgroundColor) ?? 'sufaceSecondary'}
     >
       <Columns>
         <Column width="content">
@@ -142,7 +142,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
               <Box flexDirection="row" justifyContent="space-between">
                 <Text
                   uppercase
-                  color={card.subtitleColor ?? 'accent'}
+                  color={(card.subtitleColor as TextColor) ?? 'purple'}
                   size="13pt / 135%"
                   weight="heavy"
                 >
@@ -164,7 +164,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
               </Box>
 
               <Text
-                color={card.titleColor ?? 'label'}
+                color={(card.titleColor as TextColor) ?? 'label'}
                 size="15pt"
                 weight="bold"
               >
@@ -174,6 +174,32 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
           </Box>
         </Column>
       </Columns>
+
+      <Stack space="16px">
+        <Text
+          color={(card.descriptionColor as TextColor) ?? 'label'}
+          size="13pt"
+          weight="regular"
+        >
+          {getKeyForLanguage('description', card, language as Language)}
+        </Text>
+
+        {!!primaryButton && (
+          <SheetActionButton
+            color={primaryButton.color ?? colors.purple}
+            label={getKeyForLanguage(
+              'primaryButton.text',
+              card,
+              language as Language
+            )}
+            onPress={onPress}
+            textColor={primaryButton.textColor ?? colors.white}
+            textSize="large"
+            lightShadows
+            weight="heavy"
+          />
+        )}
+      </Stack>
     </Box>
   );
 };

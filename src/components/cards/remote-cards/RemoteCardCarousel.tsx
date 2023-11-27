@@ -9,7 +9,6 @@ import { Box, Separator, Bleed } from '@/design-system';
 import { REMOTE_CARDS, getExperimetalFlag } from '@/config';
 import Animated from 'react-native-reanimated';
 import { useDimensions } from '@/hooks';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type RenderItemProps = {
   item: TrimmedCard;
@@ -21,8 +20,6 @@ export const RemoteCardCarousel = ({ withSeparator = true }) => {
   const remoteCardsEnabled = getExperimetalFlag(REMOTE_CARDS);
   const { getCardsForPlacement } = useRemoteCardContext();
   const [index, setIndex] = useState(0);
-
-  const insets = useSafeAreaInsets();
   const { width } = useDimensions();
 
   const carouselRef = useRef(null);
@@ -75,16 +72,18 @@ export const RemoteCardCarousel = ({ withSeparator = true }) => {
 const styles = StyleSheet.create({
   slider: {
     marginTop: 12,
-    marginBottom: 0,
-    marginVertical: 0,
-    overflow: 'visible', // for custom animations
+    marginBottom: 12,
+    paddingBottom: 12,
+    height: '100%',
   },
   sliderContentContainer: {
     paddingVertical: 0, // for custom animation
     marginVertical: 0,
+    paddingBottom: 12,
   },
   paginationContainer: {
-    paddingVertical: 12,
+    paddingTop: 16,
+    paddingBottom: 12,
   },
   paginationDot: {
     width: 8,

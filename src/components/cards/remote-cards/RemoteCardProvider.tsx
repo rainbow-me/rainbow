@@ -26,6 +26,8 @@ const TRIMMED_CARD_KEYS = [
   'primaryButton',
 ] as const;
 
+type RoutesWithIndex = typeof Routes & { [key: string]: string };
+
 export type TrimmedCard = Pick<Card, typeof TRIMMED_CARD_KEYS[number]> & {
   sys: Pick<Card['sys'], 'id'>;
   imageCollection: {
@@ -40,11 +42,9 @@ type CardProviderProps = {
 };
 
 type CardContextProps = {
-  cards: Record<keyof TrimmedCard['cardKey'], TrimmedCard>;
-  setCards: React.Dispatch<
-    React.SetStateAction<Record<keyof TrimmedCard['cardKey'], TrimmedCard>>
-  >;
-  dismissCard: (cardKey: keyof TrimmedCard['sys']['id']) => void;
+  cards: Record<string, TrimmedCard>;
+  setCards: React.Dispatch<React.SetStateAction<Record<string, TrimmedCard>>>;
+  dismissCard: (cardId: string) => void;
   getCardsForPlacement: (placement: string) => TrimmedCard[];
 };
 
@@ -58,9 +58,7 @@ export const RemoteCardContext = createContext<CardContextProps>({
 export const RemoteCardProvider: React.FC<
   PropsWithChildren<CardProviderProps>
 > = ({ children }) => {
-  const [cards, setCards] = useState<
-    Record<keyof TrimmedCard['cardKey'], TrimmedCard>
-  >({});
+  const [cards, setCards] = useState<Record<string, TrimmedCard>>({});
   const enabled = useExperimentalFlag(REMOTE_CARDS);
 
   useCardCollectionQuery(
@@ -92,16 +90,14 @@ export const RemoteCardProvider: React.FC<
           };
         }, {} as Record<keyof TrimmedCard['cardKey'], Card>);
 
-        if (!newCards) return;
-
+        if (!Object.values(newCards).length) return;
         setCards(newCards);
       },
     }
   );
 
-  const dismissCard = (cardId: keyof TrimmedCard['sys']['id']) => {
+  const dismissCard = (cardId: string) => {
     ls.cards.set([cardId], true);
-    console.log('dismissing card: ', cardId);
     setCards(prev => {
       const { [cardId]: _, ...rest } = prev;
       return rest;
@@ -110,7 +106,11 @@ export const RemoteCardProvider: React.FC<
 
   const getCardsForPlacement = (placement: string) => {
     return (Object.values(cards) as TrimmedCard[])
-      .filter(card => Routes[card.placement] === placement)
+      .filter(
+        card =>
+          card.placement &&
+          (Routes as RoutesWithIndex)[card.placement.toString()] === placement
+      )
       .sort((a, b) => {
         if (a.index === b.index) return 0;
         if (!a.index || a.index === undefined) return 1;

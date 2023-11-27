@@ -144,12 +144,7 @@ export const buildBriefCoinsList = (
     pinnedCoins,
     hiddenCoins
   );
-  const briefAssets = [
-    {
-      type: 'REMOTE_CARD_CAROUSEL',
-      uid: 'remote-card-carousel',
-    },
-  ];
+  const briefAssets = [];
   if (assets) {
     for (const asset of assets) {
       if (asset.coinDivider) {
