@@ -30,6 +30,7 @@ import { RotatingLearnCard } from '@/components/cards/RotatingLearnCard';
 import WrappedPosition from '../WrappedPosition';
 import WrappedPositionsListHeader from '../WrappedPositionsListHeader';
 import * as lang from '@/languages';
+import { RemoteCard } from '@/components/cards/remote-cards';
 
 function rowRenderer(
   type: CellType,
