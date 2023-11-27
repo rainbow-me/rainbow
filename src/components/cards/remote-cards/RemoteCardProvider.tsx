@@ -68,7 +68,6 @@ export const RemoteCardProvider: React.FC<
       enabled,
       refetchInterval: 60_000,
       onSuccess: (data: CardCollectionResult) => {
-        console.log({ data });
         if (!data?.cardCollection?.items.length) return;
 
         const newCards = data.cardCollection.items.reduce((acc, card) => {
