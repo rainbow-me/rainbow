@@ -15,6 +15,24 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.10] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.10)
+
+### Added
+
+- Tx Simulation
+- RPC Proxy updates
+- Remote promo sheet capabilities
+- ‘An error occurred’ popup changes
+
+### Changed
+
+- ‘An error occurred’ popup changes
+
+### Fixed
+
+- Android navigation bar now matches app theme
+- Infinite render on swaps modal bug fix
+
 ## [1.9.9] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.9)
 
 ### Added
