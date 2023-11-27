@@ -1,27 +1,19 @@
-import { Linking, Image } from 'react-native';
+import { Linking } from 'react-native';
 import React, { useCallback } from 'react';
 import { get } from 'lodash';
 
-import {
-  Box,
-  Space,
-  Stack,
-  Inline,
-  Text,
-  Columns,
-  Column,
-  Bleed,
-  Cover,
-} from '@/design-system';
+import { Box, Stack, Text, Columns, Column, Bleed } from '@/design-system';
+import { Icon } from '@/components/icons';
 import { ButtonPressAnimation } from '@/components/animations';
-import { TrimmedCard } from './RemoteCardProvider';
-import { IS_ANDROID, IS_IOS } from '@/env';
+import { TrimmedCard, useRemoteCardContext } from './RemoteCardProvider';
+import { IS_IOS } from '@/env';
 import { useNavigation } from '@/navigation';
 import { Language } from '@/languages';
 import { useAccountSettings } from '@/hooks';
 import { TextColor } from '@/design-system/color/palettes';
 import { CustomColor } from '@/design-system/color/useForegroundColor';
 import { maybeSignUri } from '@/handlers/imgix';
+import { Media } from '@/components/Media';
 
 const getKeyForLanguage = (
   key: string,
@@ -59,8 +51,14 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
 }) => {
   const { navigate } = useNavigation();
   const { language } = useAccountSettings();
+  const { dismissCard } = useRemoteCardContext();
 
   const { backgroundColor, primaryButton } = card;
+
+  const onDismissCard = useCallback(
+    () => dismissCard(card.sys.id as keyof TrimmedCard['sys']['id']),
+    [card.sys.id, dismissCard]
+  );
 
   const onPress = useCallback(() => {
     const internalNavigation = (route: string) => {
@@ -110,112 +108,72 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
 
   return (
     <Box
-      background={backgroundColor ?? 'surfacePrimaryElevated'}
-      width="full"
-      borderRadius={14}
-      shadow={backgroundColor ? '18px accent' : '18px'}
+      shadow={'12px'}
       style={{
         flex: IS_IOS ? 0 : undefined,
       }}
       padding={`${card.padding}px` as Space}
       testID={`remote-card-${card.cardKey}`}
+      borderRadius={14}
+      width="full"
+      background={backgroundColor ?? 'sufaceSecondary'}
     >
-      <Stack>
-        <Inline wrap={false} space="20px">
-          {imageUri && (
-            <Cover>
-              <Box
-                as={Image}
-                source={{ uri: imageUri }}
-                resizeMode="cover"
-                width="full"
-                height="full"
-                borderRadius={card.imageRadius ?? 12}
-                overflow="hidden"
-              />
-            </Cover>
-          )}
-
+      <Columns>
+        <Column width="content">
+          <Media
+            url={imageUri ?? ''}
+            style={{
+              width: 80,
+              height: 80,
+            }}
+            size={80}
+          />
+        </Column>
+        <Column width="4/5">
           <Box
-            flexDirection="column"
-            justifyContent="flex-start"
             alignItems="flex-start"
+            justifyContent="flex-start"
+            flexGrow={1}
+            flexBasis={0}
+            width="full"
+            padding="8px"
           >
-            <Stack space={{ custom: 5 }}>
-              <Text
-                color={card.subtitleColor ?? 'accent'}
-                size="13pt"
-                weight="heavy"
-              >
-                {getKeyForLanguage('subtitle', card, language as Language)}
-              </Text>
+            <Stack space="12px">
+              <Box flexDirection="row" justifyContent="space-between">
+                <Text
+                  uppercase
+                  color={card.subtitleColor ?? 'accent'}
+                  size="13pt / 135%"
+                  weight="heavy"
+                >
+                  {getKeyForLanguage('subtitle', card, language as Language)}
+                </Text>
+                <Bleed top="2px">
+                  <Box alignItems="flex-end" justifyContent="flex-end">
+                    <ButtonPressAnimation
+                      scaleTo={0.96}
+                      overflowMargin={50}
+                      skipTopMargin
+                      disallowInterruption
+                      onPress={onDismissCard}
+                    >
+                      <Icon name="close" size="8" />
+                    </ButtonPressAnimation>
+                  </Box>
+                </Bleed>
+              </Box>
 
               <Text
                 color={card.titleColor ?? 'label'}
-                size="18px / 27px (Deprecated)"
+                size="15pt"
                 weight="bold"
               >
                 {getKeyForLanguage('title', card, language as Language)}
               </Text>
             </Stack>
-
-            <Stack space={{ custom: 14 }}>
-              {card.items.map((item: CardItem) => (
-                <Columns key={item.text} space={{ custom: 13 }}>
-                  <Column width="content">
-                    <Box paddingTop={IS_ANDROID ? '6px' : undefined}>
-                      <Text
-                        align="center"
-                        color={item.color ?? 'accent'}
-                        size="11pt"
-                        weight="bold"
-                      >
-                        {item.icon}
-                      </Text>
-                    </Box>
-                  </Column>
-                  <Bleed top="3px">
-                    <Text color="label" size="13pt" weight="bold">
-                      {item.text}
-                    </Text>
-                  </Bleed>
-                </Columns>
-              ))}
-            </Stack>
           </Box>
-        </Inline>
-
-        {card.description && (
-          <Text
-            color={card.descriptionColor ?? 'labelSecondary'}
-            size="13pt"
-            weight="medium"
-          >
-            {getKeyForLanguage(
-              'description',
-              card,
-              language as Language
-            ).replace(/\n/g, ' ')}
-          </Text>
-        )}
-
-        {card.primaryButton && (
-          <ButtonPressAnimation
-            onPress={onPress}
-            scaleTo={0.96}
-            overflowMargin={50}
-            skipTopMargin
-          >
-            <Text color="label" size="13pt" weight="bold">
-              {getKeyForLanguage(
-                'card.primaryButton.text',
-                card,
-                language as Language
-              )}
-            </Text>
-          </ButtonPressAnimation>
-        )}
-      </Stack>
+        </Column>
+      </Columns>
     </Box>
   );
 };

@@ -1,6 +1,7 @@
 import { noop, pick } from 'lodash';
 import React, { PropsWithChildren, createContext, useState } from 'react';
 import { Card } from '@/graphql/__generated__/arc';
+import Routes from '@/navigation/routesNames';
 import {
   CardCollectionResult,
   useCardCollectionQuery,
@@ -43,7 +44,7 @@ type CardContextProps = {
   setCards: React.Dispatch<
     React.SetStateAction<Record<keyof TrimmedCard['cardKey'], TrimmedCard>>
   >;
-  dismissCard: (cardKey: keyof TrimmedCard['cardKey']) => void;
+  dismissCard: (cardKey: keyof TrimmedCard['sys']['id']) => void;
   getCardsForPlacement: (placement: string) => TrimmedCard[];
 };
 
@@ -66,15 +67,15 @@ export const RemoteCardProvider: React.FC<
     {},
     {
       enabled,
-      refetchInterval: 60_000,
+      refetchInterval: 5_000,
       onSuccess: (data: CardCollectionResult) => {
         if (!data?.cardCollection?.items.length) return;
 
         const newCards = data.cardCollection.items.reduce((acc, card) => {
           if (!card) return acc;
 
-          const hasDismissed = ls.cards.get([card.sys.id]);
-          if (hasDismissed) return acc;
+          // const hasDismissed = ls.cards.get([card.sys.id]);
+          // if (hasDismissed) return acc;
 
           const newCard: TrimmedCard = {
             ...pick(card, ...TRIMMED_CARD_KEYS),
@@ -98,17 +99,18 @@ export const RemoteCardProvider: React.FC<
     }
   );
 
-  const dismissCard = async (cardKey: keyof TrimmedCard['cardKey']) => {
-    ls.cards.set([cardKey], true);
+  const dismissCard = (cardId: keyof TrimmedCard['sys']['id']) => {
+    ls.cards.set([cardId], true);
+    console.log('dismissing card: ', cardId);
     setCards(prev => {
-      const { [cardKey]: _, ...rest } = prev;
+      const { [cardId]: _, ...rest } = prev;
       return rest;
     });
   };
 
   const getCardsForPlacement = (placement: string) => {
     return (Object.values(cards) as TrimmedCard[])
-      .filter(card => card.placement === placement)
+      .filter(card => Routes[card.placement] === placement)
       .sort((a, b) => {
         if (a.index === b.index) return 0;
         if (!a.index || a.index === undefined) return 1;

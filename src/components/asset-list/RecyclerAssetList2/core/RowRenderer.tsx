@@ -30,7 +30,7 @@ import { RotatingLearnCard } from '@/components/cards/RotatingLearnCard';
 import WrappedPosition from '../WrappedPosition';
 import WrappedPositionsListHeader from '../WrappedPositionsListHeader';
 import * as lang from '@/languages';
-import { RemoteCard } from '@/components/cards/remote-cards';
+import { RemoteCardCarousel } from '@/components/cards/remote-cards';
 
 function rowRenderer(
   type: CellType,
@@ -39,6 +39,9 @@ function rowRenderer(
   extendedState: ExtendedState
 ) {
   const data = extendedState.additionalData[uid];
+
+  console.log(type, uid);
+
   switch (type) {
     case CellType.ASSETS_HEADER_SPACE_AFTER:
     case CellType.NFT_SPACE_AFTER:
@@ -92,6 +95,12 @@ function rowRenderer(
       );
     case CellType.PROFILE_STICKY_HEADER:
       return <ProfileStickyHeader />;
+    case CellType.REMOTE_CARD_CAROUSEL:
+      return (
+        <CardRowWrapper>
+          <RemoteCardCarousel withSeparator={false} />
+        </CardRowWrapper>
+      );
     case CellType.COIN:
       return (
         <FastBalanceCoinRow
