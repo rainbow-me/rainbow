@@ -70,7 +70,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
     if (primaryButton && primaryButton.url) {
       Linking.openURL(primaryButton.url);
     } else if (primaryButton && primaryButton.action === 'internal') {
-      internalNavigation(primaryButton.url, primaryButton.props);
+      internalNavigation(primaryButton.route, primaryButton.props);
     }
   }, [navigate, primaryButton]);
 
@@ -110,95 +110,94 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
 
   return (
     <Box
+      flexDirection="column"
       padding={card.padding ? { custom: card.padding } : undefined}
       testID={`remote-card-${card.cardKey}`}
-      borderRadius={14}
+      justifyContent="flex-start"
+      alignItems="flex-start"
+      width="full"
+      overflow="hidden"
+      borderRadius={12}
       background={(backgroundColor as BackgroundColor) ?? 'sufaceSecondary'}
     >
-      <Columns>
-        <Column width="content">
-          <Media
-            url={imageUri ?? ''}
-            style={{
-              width: 80,
-              height: 80,
-            }}
-            size={80}
-          />
-        </Column>
-        <Column width="content">
+      <Box justifyContent="flex-start" flexDirection="row">
+        <Media
+          url={imageUri ?? ''}
+          style={{
+            width: 80,
+            height: 80,
+          }}
+          size={80}
+        />
+
+        <Stack space="12px">
           <Box
+            flexDirection="row"
             alignItems="flex-start"
-            justifyContent="flex-start"
-            flexGrow={1}
-            flexBasis={0}
-            width="full"
-            padding="8px"
+            justifyContent="space-between"
+            paddingTop="8px"
           >
-            <Stack space="12px">
-              <Box flexDirection="row" justifyContent="space-between">
-                <Text
-                  uppercase
-                  color={(card.subtitleColor as TextColor) ?? 'accent'}
-                  size="13pt / 135%"
-                  weight="heavy"
+            <Text
+              uppercase
+              color={(card.subtitleColor as TextColor) ?? 'accent'}
+              size="13pt / 135%"
+              weight="heavy"
+            >
+              {getKeyForLanguage('subtitle', card, language as Language)}
+            </Text>
+            <Bleed>
+              <Box alignItems="flex-end" justifyContent="flex-end">
+                <ButtonPressAnimation
+                  scaleTo={0.96}
+                  overflowMargin={50}
+                  skipTopMargin
+                  disallowInterruption
+                  onPress={onDismissCard}
                 >
-                  {getKeyForLanguage('subtitle', card, language as Language)}
-                </Text>
-                <Bleed top="2px">
-                  <Box alignItems="flex-end" justifyContent="flex-end">
-                    <ButtonPressAnimation
-                      scaleTo={0.96}
-                      overflowMargin={50}
-                      skipTopMargin
-                      disallowInterruption
-                      onPress={onDismissCard}
-                    >
-                      <Icon name="close" size="8" />
-                    </ButtonPressAnimation>
-                  </Box>
-                </Bleed>
+                  <Icon name="close" size="8" />
+                </ButtonPressAnimation>
               </Box>
-
-              <Text
-                color={(card.titleColor as TextColor) ?? 'label'}
-                size="15pt"
-                weight="bold"
-              >
-                {getKeyForLanguage('title', card, language as Language)}
-              </Text>
-
-              {!!card.items.length && (
-                <Box
-                  flexDirection="row"
-                  width="full"
-                  justifyContent="space-between"
-                >
-                  {card.items.map((item: CardItem) => (
-                    <Box key={item.text} flexDirection="row">
-                      <Text
-                        align="center"
-                        color={item.color ?? 'accent'}
-                        size="11pt"
-                        weight="bold"
-                      >
-                        {item.icon}
-                      </Text>
-                      <Text
-                        color={{ custom: '#000' }}
-                        size="13pt"
-                        weight="bold"
-                      >
-                        {getKeyForLanguage('text', item, language as Language)}
-                      </Text>
-                    </Box>
-                  ))}
-                </Box>
-              )}
-            </Stack>
+            </Bleed>
           </Box>
-        </Column>
-      </Columns>
+
+          <Text
+            color={(card.titleColor as TextColor) ?? 'label'}
+            size="18px / 27px (Deprecated)"
+            weight="bold"
+          >
+            {getKeyForLanguage('title', card, language as Language)}
+          </Text>
+
+          {!!card.items.length && (
+            <Box
+              flexDirection="row"
+              justifyContent="space-between"
+              width="full"
+              alignItems="flex-start"
+            >
+              {card.items.map((item: CardItem) => (
+                <Columns alignHorizontal="center" key={item.text} space="4px">
+                  <Column width="content">
+                    <Text
+                      align="center"
+                      color={item.color ?? 'accent'}
+                      size="11pt"
+                      weight="bold"
+                    >
+                      {item.icon}
+                    </Text>
+                  </Column>
+                  <Column width="content">
+                    <Text color={{ custom: '#000' }} size="13pt" weight="bold">
+                      {getKeyForLanguage('text', item, language as Language)}
+                    </Text>
+                  </Column>
+                </Columns>
+              ))}
+            </Box>
+          )}
+        </Stack>
+      </Box>
 
       <Stack>
         <Text
@@ -220,7 +219,6 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
             onPress={onPress}
             textColor={primaryButton.textColor ?? colors.white}
             textSize="large"
-            lightShadows
             weight="heavy"
           />
         )}

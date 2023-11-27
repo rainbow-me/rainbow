@@ -113,8 +113,8 @@ export const RemoteCardProvider: React.FC<
       )
       .sort((a, b) => {
         if (a.index === b.index) return 0;
-        if (!a.index || a.index === undefined) return 1;
-        if (!b.index || b.index === undefined) return -1;
+        if (a.index === undefined || a.index === null) return 1;
+        if (b.index === undefined || b.index === null) return -1;
 
         return a.index - b.index;
       });
