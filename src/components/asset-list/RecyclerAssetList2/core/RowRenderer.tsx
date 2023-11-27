@@ -39,9 +39,6 @@ function rowRenderer(
   extendedState: ExtendedState
 ) {
   const data = extendedState.additionalData[uid];
-
-  console.log(type, uid);
-
   switch (type) {
     case CellType.ASSETS_HEADER_SPACE_AFTER:
     case CellType.NFT_SPACE_AFTER:

@@ -5,7 +5,7 @@ import { StyleSheet } from 'react-native';
 import Carousel, { Pagination } from 'react-native-snap-carousel'; // Version can be specified in package.json
 import { TrimmedCard, useRemoteCardContext } from './RemoteCardProvider';
 import { RemoteCard } from './RemoteCard';
-import { Box, Separator, Bleed } from '@/design-system';
+import { Box, Separator } from '@/design-system';
 import { REMOTE_CARDS, getExperimetalFlag } from '@/config';
 import Animated from 'react-native-reanimated';
 import { useDimensions } from '@/hooks';
@@ -40,31 +40,29 @@ export const RemoteCardCarousel = ({ withSeparator = true }) => {
   return (
     <Box as={Animated.View} width="full">
       {withSeparator && <Separator color="separatorTertiary" thickness={1} />}
-      <Bleed>
-        <Carousel
-          ref={carouselRef}
-          data={data}
-          containerCustomStyle={styles.slider}
-          contentContainerCustomStyle={styles.sliderContentContainer}
-          renderItem={_renderItem}
-          sliderWidth={width - 40}
-          itemWidth={width - 40}
-          inactiveSlideShift={0}
-          onSnapToItem={index => setIndex(index)}
+      <Carousel
+        ref={carouselRef}
+        data={data}
+        containerCustomStyle={styles.slider}
+        contentContainerCustomStyle={styles.sliderContentContainer}
+        renderItem={_renderItem}
+        sliderWidth={width - 40}
+        itemWidth={width - 40}
+        inactiveSlideShift={0}
+        onSnapToItem={index => setIndex(index)}
+      />
+      {data.length > 1 && (
+        <Pagination
+          activeDotIndex={index}
+          dotsLength={data.length}
+          containerStyle={styles.paginationContainer}
+          dotColor={'#C4C8D3'}
+          dotStyle={styles.paginationDot}
+          inactiveDotColor={'#F2F4FB'}
+          inactiveDotOpacity={1}
+          inactiveDotScale={1}
         />
-        {data.length > 1 && (
-          <Pagination
-            activeDotIndex={index}
-            dotsLength={data.length}
-            containerStyle={styles.paginationContainer}
-            dotColor={'#C4C8D3'}
-            dotStyle={styles.paginationDot}
-            inactiveDotColor={'#F2F4FB'}
-            inactiveDotOpacity={1}
-            inactiveDotScale={1}
-          />
-        )}
-      </Bleed>
+      )}
     </Box>
   );
 };
@@ -72,14 +70,11 @@ export const RemoteCardCarousel = ({ withSeparator = true }) => {
 const styles = StyleSheet.create({
   slider: {
     marginTop: 12,
-    marginBottom: 12,
-    paddingBottom: 12,
-    height: '100%',
+    marginBottom: 0,
+    paddingBottom: 0,
   },
   sliderContentContainer: {
-    paddingVertical: 0, // for custom animation
     marginVertical: 0,
-    paddingBottom: 12,
   },
   paginationContainer: {
     paddingTop: 16,

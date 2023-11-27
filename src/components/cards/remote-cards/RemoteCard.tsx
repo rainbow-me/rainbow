@@ -2,15 +2,7 @@ import { Linking } from 'react-native';
 import React, { useCallback } from 'react';
 import { get } from 'lodash';
 
-import {
-  Box,
-  Stack,
-  Text,
-  Columns,
-  Column,
-  Bleed,
-  Space,
-} from '@/design-system';
+import { Box, Stack, Text, Columns, Column, Bleed } from '@/design-system';
 import { Icon } from '@/components/icons';
 import { ButtonPressAnimation } from '@/components/animations';
 import { TrimmedCard, useRemoteCardContext } from './RemoteCardProvider';
@@ -50,6 +42,12 @@ type RemoteCardProps = {
   card: TrimmedCard;
 };
 
+type CardItem = {
+  icon: string;
+  text: string;
+  color?: TextColor | CustomColor;
+};
+
 export const RemoteCard: React.FC<RemoteCardProps> = ({
   card = {} as TrimmedCard,
 }) => {
@@ -65,14 +63,14 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
   ]);
 
   const onPress = useCallback(() => {
-    const internalNavigation = (route: string) => {
-      navigate(route);
+    const internalNavigation = (route: string, options: any) => {
+      navigate(route, options);
     };
 
     if (primaryButton && primaryButton.url) {
       Linking.openURL(primaryButton.url);
     } else if (primaryButton && primaryButton.action === 'internal') {
-      internalNavigation(primaryButton.url);
+      internalNavigation(primaryButton.url, primaryButton.props);
     }
   }, [navigate, primaryButton]);
 
@@ -112,10 +110,9 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
 
   return (
     <Box
-      padding={`${card.padding}px` as Space}
+      padding={card.padding ? { custom: card.padding } : undefined}
       testID={`remote-card-${card.cardKey}`}
       borderRadius={14}
-      width="full"
       background={(backgroundColor as BackgroundColor) ?? 'sufaceSecondary'}
     >
       <Columns>
@@ -129,7 +126,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
             size={80}
           />
         </Column>
-        <Column width="4/5">
+        <Column width="content">
           <Box
             alignItems="flex-start"
             justifyContent="flex-start"
@@ -142,7 +139,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
               <Box flexDirection="row" justifyContent="space-between">
                 <Text
                   uppercase
-                  color={(card.subtitleColor as TextColor) ?? 'purple'}
+                  color={(card.subtitleColor as TextColor) ?? 'accent'}
                   size="13pt / 135%"
                   weight="heavy"
                 >
@@ -170,12 +167,40 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
               >
                 {getKeyForLanguage('title', card, language as Language)}
               </Text>
+
+              {!!card.items.length && (
+                <Box
+                  flexDirection="row"
+                  width="full"
+                  justifyContent="space-between"
+                >
+                  {card.items.map((item: CardItem) => (
+                    <Box key={item.text} flexDirection="row">
+                      <Text
+                        align="center"
+                        color={item.color ?? 'accent'}
+                        size="11pt"
+                        weight="bold"
+                      >
+                        {item.icon}
+                      </Text>
+                      <Text
+                        color={{ custom: '#000' }}
+                        size="13pt"
+                        weight="bold"
+                      >
+                        {getKeyForLanguage('text', item, language as Language)}
+                      </Text>
+                    </Box>
+                  ))}
+                </Box>
+              )}
             </Stack>
           </Box>
         </Column>
       </Columns>
 
-      <Stack space="16px">
+      <Stack>
         <Text
           color={(card.descriptionColor as TextColor) ?? 'label'}
           size="13pt"
@@ -186,7 +211,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
 
         {!!primaryButton && (
           <SheetActionButton
-            color={primaryButton.color ?? colors.purple}
+            color={primaryButton.color ?? ''}
             label={getKeyForLanguage(
               'primaryButton.text',
               card,
