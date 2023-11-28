@@ -71,7 +71,7 @@ export default function PointsScreen() {
       {pointsFullyEnabled ? (
         <Swipe.Navigator
           initialLayout={deviceUtils.dimensions}
-          initialRouteName="ReferralCodeContent"
+          initialRouteName="ClaimContent"
           screenOptions={{ swipeEnabled: false }}
           // tabBar={() => (
           //   <Box

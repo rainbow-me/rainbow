@@ -33,7 +33,7 @@ import RecyclerListViewScrollToTopProvider, {
 } from '@/navigation/RecyclerListViewScrollToTopContext';
 import { discoverOpenSearchFnRef } from '@/screens/discover/components/DiscoverSearchContainer';
 import { InteractionManager, View } from 'react-native';
-import { IS_DEV, IS_IOS, IS_TEST } from '@/env';
+import { IS_ANDROID, IS_DEV, IS_IOS, IS_TEST } from '@/env';
 import config from '@/model/config';
 import SectionListScrollToTopProvider, {
   useSectionListScrollToTopContext,
@@ -122,197 +122,205 @@ const TabBar = ({
   //     ],
   //   };
   // });
-  return (
-    <Box
-      as={Animated.View}
-      style={[
-        // offScreenTabBar,
-        {
-          shadowColor: colors.shadowBlack,
-          shadowOffset: { width: 0, height: -4 },
-          shadowOpacity: isDarkMode ? 0.2 : 0.04,
-          shadowRadius: 20,
-        },
-      ]}
-    >
+
+  const ShadowWrapper = ({ children }) => {
+    return IS_ANDROID ? (
+      children
+    ) : (
       <Box
-        style={{
-          shadowColor: colors.shadowBlack,
-          shadowOffset: { width: 0, height: -1 },
-          shadowOpacity: isDarkMode ? 0.2 : 0.04,
-          shadowRadius: 3,
-        }}
+        as={Animated.View}
+        style={[
+          // offScreenTabBar,
+          {
+            shadowColor: colors.shadowBlack,
+            shadowOffset: { width: 0, height: -4 },
+            shadowOpacity: isDarkMode ? 0.2 : 0.04,
+            shadowRadius: 20,
+          },
+        ]}
       >
         <Box
-          height={{ custom: TAB_BAR_HEIGHT }}
-          position="absolute"
           style={{
-            bottom: 0,
-            overflow: 'hidden',
+            shadowColor: colors.shadowBlack,
+            shadowOffset: { width: 0, height: -1 },
+            shadowOpacity: isDarkMode ? 0.2 : 0.04,
+            shadowRadius: 3,
           }}
+        >
+          {children}
+        </Box>
+      </Box>
+    );
+  };
+
+  return (
+    <ShadowWrapper>
+      <Box
+        height={{ custom: TAB_BAR_HEIGHT }}
+        position="absolute"
+        style={{
+          bottom: 0,
+          overflow: 'hidden',
+        }}
+        width="full"
+      >
+        <Box
+          as={IS_IOS ? BlurView : View}
+          blurAmount={40}
+          blurType={isDarkMode ? 'chromeMaterialDark' : 'chromeMaterialLight'}
           width="full"
+          height={{ custom: TAB_BAR_HEIGHT }}
         >
           <Box
-            as={IS_IOS ? BlurView : View}
-            blurAmount={40}
-            blurType={isDarkMode ? 'chromeMaterialDark' : 'chromeMaterialLight'}
+            height="full"
+            position="absolute"
+            style={{
+              backgroundColor: isDarkMode
+                ? colors.alpha('#191A1C', IS_IOS ? 0.7 : 1)
+                : colors.alpha(colors.white, IS_IOS ? 0.7 : 1),
+            }}
             width="full"
-            height={{ custom: TAB_BAR_HEIGHT }}
-          >
-            <Box
-              height="full"
-              position="absolute"
-              style={{
-                backgroundColor: isDarkMode
-                  ? colors.alpha('#191A1C', IS_IOS ? 0.7 : 1)
-                  : colors.alpha(colors.white, IS_IOS ? 0.7 : 1),
-              }}
-              width="full"
-            />
-            <Box
-              alignItems="center"
-              as={Animated.View}
-              style={[
-                tabStyle,
-                {
-                  backgroundColor: colors.alpha(
-                    accentColor,
-                    isDarkMode ? 0.25 : 0.1
-                  ),
-                  top: 6,
-                },
-              ]}
-              justifyContent="center"
-              height="36px"
-              borderRadius={18}
-              position="absolute"
-              width="72px"
-            />
-            <Box
-              height="1px"
-              position="absolute"
-              style={{
-                backgroundColor: isDarkMode
-                  ? colors.alpha('#ffffff', 0.4)
-                  : colors.alpha(colors.white, 0.5),
-                top: 0,
-              }}
-              width="full"
-            />
-            <Box paddingHorizontal="6px">
-              <Columns alignVertical="center">
-                {state.routes.map((route, index) => {
-                  const { options } = descriptors[route.key];
-                  const isFocused = state.index === index;
+          />
+          <Box
+            alignItems="center"
+            as={Animated.View}
+            style={[
+              tabStyle,
+              {
+                backgroundColor: colors.alpha(
+                  accentColor,
+                  isDarkMode ? 0.25 : 0.1
+                ),
+                top: 6,
+              },
+            ]}
+            justifyContent="center"
+            height="36px"
+            borderRadius={18}
+            position="absolute"
+            width="72px"
+          />
+          <Box
+            height="1px"
+            position="absolute"
+            style={{
+              backgroundColor: isDarkMode
+                ? colors.alpha('#ffffff', 0.4)
+                : colors.alpha(colors.white, 0.5),
+              top: 0,
+            }}
+            width="full"
+          />
+          <Box paddingHorizontal="6px">
+            <Columns alignVertical="center">
+              {state.routes.map((route, index) => {
+                const { options } = descriptors[route.key];
+                const isFocused = state.index === index;
 
-                  const onPress = () => {
-                    if (!canSwitch) return;
+                const onPress = () => {
+                  if (!canSwitch) return;
 
-                    const event = navigation.emit({
-                      type: 'tabPress',
-                      target: route.key,
+                  const event = navigation.emit({
+                    type: 'tabPress',
+                    target: route.key,
+                  });
+
+                  const time = new Date().getTime();
+                  const delta = time - lastPress;
+
+                  const DOUBLE_PRESS_DELAY = 400;
+
+                  if (!isFocused && !event.defaultPrevented) {
+                    setCanSwitch(false);
+                    jumpTo(route.key);
+                    reanimatedPosition.value = index;
+                    setTimeout(() => {
+                      setCanSwitch(true);
+                    }, 10);
+                  } else if (
+                    isFocused &&
+                    options.tabBarIcon === 'tabDiscover'
+                  ) {
+                    if (delta < DOUBLE_PRESS_DELAY) {
+                      discoverOpenSearchFnRef?.();
+                      return;
+                    }
+
+                    if (discoverScrollToTopFnRef?.() === 0) {
+                      discoverOpenSearchFnRef?.();
+                      return;
+                    }
+                  } else if (isFocused && options.tabBarIcon === 'tabHome') {
+                    recyclerList.scrollToTop?.();
+                  } else if (
+                    isFocused &&
+                    options.tabBarIcon === 'tabActivity'
+                  ) {
+                    sectionList.scrollToTop?.();
+                  }
+
+                  setLastPress(time);
+                };
+
+                const onLongPress = async () => {
+                  navigation.emit({
+                    type: 'tabLongPress',
+                    target: route.key,
+                  });
+
+                  if (options.tabBarIcon === 'tabHome') {
+                    navigation.navigate(Routes.CHANGE_WALLET_SHEET);
+                  }
+                  if (options.tabBarIcon === 'tabDiscover') {
+                    navigation.navigate(Routes.DISCOVER_SCREEN);
+                    InteractionManager.runAfterInteractions(() => {
+                      discoverOpenSearchFnRef?.();
                     });
+                  }
+                };
 
-                    const time = new Date().getTime();
-                    const delta = time - lastPress;
-
-                    const DOUBLE_PRESS_DELAY = 400;
-
-                    if (!isFocused && !event.defaultPrevented) {
-                      setCanSwitch(false);
-                      jumpTo(route.key);
-                      reanimatedPosition.value = index;
-                      setTimeout(() => {
-                        setCanSwitch(true);
-                      }, 10);
-                    } else if (
-                      isFocused &&
-                      options.tabBarIcon === 'tabDiscover'
-                    ) {
-                      if (delta < DOUBLE_PRESS_DELAY) {
-                        discoverOpenSearchFnRef?.();
-                        return;
-                      }
-
-                      if (discoverScrollToTopFnRef?.() === 0) {
-                        discoverOpenSearchFnRef?.();
-                        return;
-                      }
-                    } else if (isFocused && options.tabBarIcon === 'tabHome') {
-                      recyclerList.scrollToTop?.();
-                    } else if (
-                      isFocused &&
-                      options.tabBarIcon === 'tabActivity'
-                    ) {
-                      sectionList.scrollToTop?.();
-                    }
-
-                    setLastPress(time);
-                  };
-
-                  const onLongPress = async () => {
-                    navigation.emit({
-                      type: 'tabLongPress',
-                      target: route.key,
-                    });
-
-                    if (options.tabBarIcon === 'tabHome') {
-                      navigation.navigate(Routes.CHANGE_WALLET_SHEET);
-                    }
-                    if (options.tabBarIcon === 'tabDiscover') {
-                      navigation.navigate(Routes.DISCOVER_SCREEN);
-                      InteractionManager.runAfterInteractions(() => {
-                        discoverOpenSearchFnRef?.();
-                      });
-                    }
-                  };
-
-                  return (
-                    options.tabBarIcon !== 'none' && (
-                      <Box
-                        key={route.key}
-                        height="full"
-                        width="full"
-                        justifyContent="flex-start"
-                        paddingTop="6px"
-                        testID={`tab-bar-icon-${route.name}`}
+                return (
+                  options.tabBarIcon !== 'none' && (
+                    <Box
+                      key={route.key}
+                      height="full"
+                      width="full"
+                      justifyContent="flex-start"
+                      paddingTop="6px"
+                      testID={`tab-bar-icon-${route.name}`}
+                    >
+                      <ButtonPressAnimation
+                        onPress={onPress}
+                        onLongPress={onLongPress}
+                        disallowInterruption
+                        scaleTo={0.75}
                       >
-                        <ButtonPressAnimation
-                          onPress={onPress}
-                          onLongPress={onLongPress}
-                          disallowInterruption
-                          scaleTo={0.75}
-                        >
-                          <Stack
-                            alignVertical="center"
-                            alignHorizontal="center"
+                        <Stack alignVertical="center" alignHorizontal="center">
+                          <Box
+                            alignItems="center"
+                            justifyContent="center"
+                            height="36px"
+                            borderRadius={20}
                           >
-                            <Box
-                              alignItems="center"
-                              justifyContent="center"
-                              height="36px"
-                              borderRadius={20}
-                            >
-                              <TabBarIcon
-                                accentColor={accentColor}
-                                icon={options.tabBarIcon}
-                                index={index}
-                                rawScrollPosition={position}
-                                reanimatedPosition={reanimatedPosition}
-                              />
-                            </Box>
-                          </Stack>
-                        </ButtonPressAnimation>
-                      </Box>
-                    )
-                  );
-                })}
-              </Columns>
-            </Box>
+                            <TabBarIcon
+                              accentColor={accentColor}
+                              icon={options.tabBarIcon}
+                              index={index}
+                              rawScrollPosition={position}
+                              reanimatedPosition={reanimatedPosition}
+                            />
+                          </Box>
+                        </Stack>
+                      </ButtonPressAnimation>
+                    </Box>
+                  )
+                );
+              })}
+            </Columns>
           </Box>
         </Box>
       </Box>
-    </Box>
+    </ShadowWrapper>
   );
 };
 
