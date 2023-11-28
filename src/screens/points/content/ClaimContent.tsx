@@ -6,7 +6,11 @@ import {
   useBackgroundColor,
   useForegroundColor,
 } from '@/design-system';
-import { useAccountAccentColor, useAccountProfile } from '@/hooks';
+import {
+  useAccountAccentColor,
+  useAccountProfile,
+  useDimensions,
+} from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { safeAreaInsetValues } from '@/utils';
@@ -17,6 +21,8 @@ export default function ClaimContent() {
   const { accentColor } = useAccountAccentColor();
   const { navigate } = useNavigation();
 
+  const { height: deviceHeight } = useDimensions();
+
   const separatorSecondary = useForegroundColor('separatorSecondary');
   const surfacePrimary = useBackgroundColor('surfacePrimary');
 
@@ -25,10 +31,12 @@ export default function ClaimContent() {
       background="surfacePrimary"
       height="full"
       alignItems="center"
-      justifyContent="center"
+      justifyContent="space-between"
       paddingHorizontal="60px"
+      paddingBottom="52px"
+      paddingTop={{ custom: deviceHeight / 5 }}
     >
-      <Box paddingBottom={{ custom: 178 }}>
+      <Box>
         <Stack space="32px" alignHorizontal="center">
           <Stack space="20px" alignHorizontal="center">
             <Stack space="28px" alignHorizontal="center">
@@ -75,31 +83,34 @@ export default function ClaimContent() {
           </ButtonPressAnimation>
         </Stack>
       </Box>
+
       <ButtonPressAnimation
-        style={{
-          borderRadius: 26,
-          height: 48,
-          paddingVertical: 12,
-          paddingHorizontal: 20,
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderWidth: 2,
-          borderColor: separatorSecondary,
-          position: 'absolute',
-          bottom: 134,
-        }}
         onPress={() => {
           navigate('ReferralCodeContent');
         }}
+        style={{ width: '100%', height: '100' }}
       >
-        <Text
-          size="17pt"
-          weight="heavy"
-          align="center"
-          color={{ custom: accentColor }}
+        <Box
+          style={{
+            borderRadius: 26,
+            height: 48,
+            paddingVertical: 12,
+            paddingHorizontal: 20,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderWidth: 2,
+            borderColor: separatorSecondary,
+          }}
         >
-          Use Referral Code
-        </Text>
+          <Text
+            size="17pt"
+            weight="heavy"
+            align="center"
+            color={{ custom: accentColor }}
+          >
+            Use Referral Code
+          </Text>
+        </Box>
       </ButtonPressAnimation>
     </Box>
   );

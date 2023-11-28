@@ -19,6 +19,8 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { deviceUtils } from '@/utils';
 import ClaimContent from './content/ClaimContent';
 import ReferralCodeContent from './content/ReferralCodeContent';
+import { IS_ANDROID } from '@/env';
+import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 
 const Swipe = createMaterialTopTabNavigator();
 
@@ -37,7 +39,7 @@ export default function PointsScreen() {
   });
 
   return (
-    <Box as={Page} flex={1} testID="points-screen" width="full">
+    <Box as={Page} flex={1} height="full" testID="points-screen" width="full">
       <Navbar
         hasStatusBarInset
         leftComponent={
@@ -69,8 +71,16 @@ export default function PointsScreen() {
       {pointsFullyEnabled ? (
         <Swipe.Navigator
           initialLayout={deviceUtils.dimensions}
-          initialRouteName="ClaimContent"
+          initialRouteName="ReferralCodeContent"
           screenOptions={{ swipeEnabled: false }}
+          // tabBar={() => (
+          //   <Box
+          //     height={{ custom: TAB_BAR_HEIGHT }}
+          //     position="absolute"
+          //     bottom="0px"
+          //   />
+          // )}
+          tabBarPosition="bottom"
           tabBar={() => null}
         >
           <Swipe.Screen

@@ -12,6 +12,7 @@ import {
   useForegroundColor,
   useTextStyle,
 } from '@/design-system';
+import { IS_IOS } from '@/env';
 import { metadataClient } from '@/graphql';
 import {
   useAccountAccentColor,
@@ -52,6 +53,10 @@ export default function ReferralCodeContent() {
   const textInputRef = React.useRef<TextInput>(null);
 
   const validateReferralCode = useCallback(async () => {
+    const res1 = await metadataClient.getPointsDataForWallet({
+      address: '0x2DC92aA78358310A87276cF6f893F48E896d8Fc5',
+    });
+    console.log(res1.points?.user);
     const res = await metadataClient.onboardPoints({
       address: accountAddress,
       referral: 'xxBBBB',
@@ -67,12 +72,13 @@ export default function ReferralCodeContent() {
     }
   }, [accountAddress]);
 
-  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+  const [isKeyboardOpening, setIsKeyboardOpening] = useState(false);
 
   const contentBottom =
-    (isKeyboardVisible ? keyboardHeight : TAB_BAR_HEIGHT) +
+    (isKeyboardOpening ? keyboardHeight : TAB_BAR_HEIGHT) +
     (deviceHeight -
-      (isKeyboardVisible ? keyboardHeight : 0) -
+      (isKeyboardOpening ? keyboardHeight : 0) -
       navbarHeight -
       300) /
       2;
@@ -87,19 +93,33 @@ export default function ReferralCodeContent() {
     const keyboardDidShowListener = Keyboard.addListener(
       'keyboardDidShow',
       () => {
-        setKeyboardVisible(true);
+        setIsKeyboardVisible(true);
       }
     );
     const keyboardDidHideListener = Keyboard.addListener(
       'keyboardDidHide',
       () => {
-        setKeyboardVisible(false);
+        setIsKeyboardVisible(false);
+      }
+    );
+    const keyboardWillShowListener = Keyboard.addListener(
+      'keyboardWillShow',
+      () => {
+        setIsKeyboardOpening(true);
+      }
+    );
+    const keyboardWillHideListener = Keyboard.addListener(
+      'keyboardWillHide',
+      () => {
+        setIsKeyboardOpening(false);
       }
     );
 
     return () => {
       keyboardDidHideListener.remove();
       keyboardDidShowListener.remove();
+      keyboardWillHideListener.remove();
+      keyboardWillShowListener.remove();
     };
   }, []);
 
@@ -156,7 +176,7 @@ export default function ReferralCodeContent() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 paddingHorizontal: 20,
-                minWidth: 135,
+                minWidth: IS_IOS ? 135 : 180,
                 shadowOffset: {
                   width: 0,
                   height: 13,
@@ -164,7 +184,7 @@ export default function ReferralCodeContent() {
                 shadowRadius: 26,
                 shadowColor: statusColor,
                 shadowOpacity: 0.1,
-                elevation: 13,
+                elevation: 26,
               }}
             >
               <Inline alignVertical="center" space="6px">
@@ -173,13 +193,13 @@ export default function ReferralCodeContent() {
                   style={{
                     height: 48,
                     ...useTextStyle({
-                      align: 'center',
+                      align: 'left',
                       color: 'label',
                       size: '20pt',
                       weight: 'heavy',
                     }),
                   }}
-                  autoFocus={true}
+                  autoFocus={false}
                   maxLength={7}
                   selectionColor={statusColor}
                   textAlign="center"
@@ -216,7 +236,7 @@ export default function ReferralCodeContent() {
           </Text>
         </Stack>
       </Box>
-      {isKeyboardVisible && (
+      {isKeyboardOpening && (
         <Box
           position="absolute"
           as={ButtonPressAnimation}
@@ -231,7 +251,7 @@ export default function ReferralCodeContent() {
           </Text>
         </Box>
       )}
-      {!isKeyboardVisible && (
+      {!isKeyboardOpening && status === 'valid' && (
         <ButtonPressAnimation
           style={{
             backgroundColor: accentColor,
