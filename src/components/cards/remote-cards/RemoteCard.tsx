@@ -1,30 +1,23 @@
-import { Linking } from 'react-native';
+import { Linking, View } from 'react-native';
 import React, { useCallback } from 'react';
 import { get } from 'lodash';
 
-import {
-  Box,
-  Stack,
-  Text,
-  Columns,
-  Column,
-  Bleed,
-  DebugLayout,
-} from '@/design-system';
+import { Box, Stack, Text, DebugLayout, Inline } from '@/design-system';
 import { Icon } from '@/components/icons';
 import { ButtonPressAnimation } from '@/components/animations';
 import { TrimmedCard, useRemoteCardContext } from './RemoteCardProvider';
 import { IS_IOS } from '@/env';
 import { useNavigation } from '@/navigation';
 import { Language } from '@/languages';
-import { useAccountSettings } from '@/hooks';
+import { useAccountSettings, useDimensions } from '@/hooks';
 import { BackgroundColor, TextColor } from '@/design-system/color/palettes';
 import { CustomColor } from '@/design-system/color/useForegroundColor';
 import { maybeSignUri } from '@/handlers/imgix';
 import { Media } from '@/components/Media';
 import { SheetActionButton } from '@/components/sheet';
 import { colors } from '@/styles';
-import Routes from '@/navigation/routesNames';
+
+const GUTTER_SIZE = 40;
 
 const getKeyForLanguage = (key: string, object: any, language: Language) => {
   if (!object) {
@@ -62,6 +55,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
 }) => {
   const { navigate } = useNavigation();
   const { language } = useAccountSettings();
+  const { width } = useDimensions();
   const { dismissCard } = useRemoteCardContext();
 
   const { backgroundColor, primaryButton } = card;
@@ -121,13 +115,16 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
     <Box
       padding={card.padding ? { custom: card.padding } : undefined}
       testID={`remote-card-${card.cardKey}`}
-      justifyContent="flex-start"
       overflow="hidden"
-      width="full"
+      width={{ custom: width - GUTTER_SIZE }}
       borderRadius={12}
       background={(backgroundColor as BackgroundColor) ?? 'sufaceSecondary'}
     >
-      <Box justifyContent="flex-start" flexDirection="row" width="full">
+      <Box
+        flexDirection="row"
+        width={{ custom: width - GUTTER_SIZE - Number(card.padding) * 2 }}
+        gap={12}
+      >
         <Media
           url={imageUri ?? ''}
           style={{
@@ -136,8 +133,35 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
           }}
           size={80}
         />
-        <Stack space="12px">
-          <Box flexDirection="row" width="full" paddingTop="8px">
+
+        <Box position="absolute" top={{ custom: 8 }} right={{ custom: 8 }}>
+          <ButtonPressAnimation
+            scaleTo={0.96}
+            overflowMargin={50}
+            skipTopMargin
+            disallowInterruption
+            onPress={onDismissCard}
+          >
+            <Icon name="close" size="8" />
+          </ButtonPressAnimation>
+        </Box>
+
+        <Box
+          width={{
+            custom:
+              width - 40 - Number(card.padding) * 2 - GUTTER_SIZE * 2 - 12,
+          }}
+          flexDirection="column"
+          gap={12}
+        >
+          <Box
+            width={{
+              custom:
+                width - 40 - Number(card.padding) * 2 - GUTTER_SIZE * 2 - 18,
+            }}
+            flexDirection="row"
+            paddingTop="8px"
+          >
             <Text
               uppercase
               color={(card.subtitleColor as TextColor) ?? 'accent'}
@@ -146,17 +170,6 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
             >
               {getKeyForLanguage('subtitle', card, language as Language)}
             </Text>
-            <Box alignItems="flex-end" justifyContent="flex-end">
-              <ButtonPressAnimation
-                scaleTo={0.96}
-                overflowMargin={50}
-                skipTopMargin
-                disallowInterruption
-                onPress={onDismissCard}
-              >
-                <Icon name="close" size="8" />
-              </ButtonPressAnimation>
-            </Box>
           </Box>
 
           <Text
@@ -168,35 +181,40 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
           </Text>
 
           {!!card.items.length && (
-            <DebugLayout>
-              <Box
-                width="full"
-                flexDirection="row"
-                justifyContent="space-between"
-              >
-                {/* {card.items.map((item: CardItem) => (
-                <Columns key={item.text} space="4px">
-                  <Column width="content">
+            <Box
+              flexDirection="row"
+              width={{
+                custom: width - 40 - Number(card.padding) * 2 - 80 - 18,
+              }}
+              justifyContent="space-between"
+            >
+              {card.items.map((item: CardItem) => (
+                <View key={item.text} style={{ flex: 1 }}>
+                  <Inline wrap={false} alignVertical="center" space="4px">
                     <Text
                       align="center"
                       color={item.color ?? 'accent'}
                       size="11pt"
                       weight="bold"
+                      numberOfLines={1}
                     >
                       {item.icon}
                     </Text>
-                  </Column>
-                  <Column width="content">
-                    <Text color={{ custom: '#000' }} size="13pt" weight="bold">
+                    <Text
+                      color={'labelSecondary'}
+                      size="13pt"
+                      weight="bold"
+                      numberOfLines={1}
+                      ellipsizeMode="middle"
+                    >
                       {getKeyForLanguage('text', item, language as Language)}
                     </Text>
-                  </Column>
-                </Columns>
-              ))} */}
-              </Box>
-            </DebugLayout>
+                  </Inline>
+                </View>
+              ))}
+            </Box>
           )}
-        </Stack>
+        </Box>
       </Box>
 
       <Stack>

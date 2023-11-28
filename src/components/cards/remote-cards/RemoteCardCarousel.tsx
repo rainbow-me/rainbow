@@ -9,6 +9,7 @@ import { Box, Separator } from '@/design-system';
 import { REMOTE_CARDS, getExperimetalFlag } from '@/config';
 import Animated from 'react-native-reanimated';
 import { useDimensions } from '@/hooks';
+import { useTheme } from '@/theme';
 
 type RenderItemProps = {
   item: TrimmedCard;
@@ -19,6 +20,7 @@ export const RemoteCardCarousel = ({ withSeparator = true }) => {
   const { name } = useRoute();
   const remoteCardsEnabled = getExperimetalFlag(REMOTE_CARDS);
   const { getCardsForPlacement } = useRemoteCardContext();
+  const { isDarkMode } = useTheme();
   const [index, setIndex] = useState(0);
   const { width } = useDimensions();
 
@@ -58,9 +60,9 @@ export const RemoteCardCarousel = ({ withSeparator = true }) => {
           activeDotIndex={index}
           dotsLength={data.length}
           containerStyle={styles.paginationContainer}
-          dotColor={'#C4C8D3'}
+          dotColor={isDarkMode ? '#F2F4FB' : '#C4C8D3'}
           dotStyle={styles.paginationDot}
-          inactiveDotColor={'#F2F4FB'}
+          inactiveDotColor={isDarkMode ? '#C4C8D3' : '#F2F4FB'}
           inactiveDotOpacity={1}
           inactiveDotScale={1}
         />
