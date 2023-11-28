@@ -24,6 +24,7 @@ type Props = PropsWithChildren<{
   label?: string;
   lightShadows?: boolean;
   marginBottom?: number;
+  newShadows?: boolean;
   nftShadows?: boolean;
   onPress?: () => void;
   scaleTo?: number;
@@ -45,7 +46,7 @@ const addChartsStyling = (isCharts: boolean) =>
 const Button = styled(Centered)(
   ({ isCharts, size }: { isCharts?: boolean; size?: string }) => ({
     ...addChartsStyling(!!isCharts),
-    height: size === 'big' ? 56 : 46,
+    height: size === 'big' ? 52 : 46,
   })
 );
 
@@ -53,7 +54,7 @@ const Content = styled(RowWithMargins).attrs({
   align: 'center',
   margin: 4,
 })({
-  height: ({ size }: Pick<Props, 'size'>) => (size === 'big' ? 56 : 46),
+  height: ({ size }: Pick<Props, 'size'>) => (size === 'big' ? 52 : 46),
   paddingBottom: ({ label }: Pick<Props, 'label'>) =>
     label && containsEmoji(label) ? 2.5 : 1,
   paddingHorizontal: 19,
@@ -76,7 +77,7 @@ const WhiteButtonGradient = React.memo(
 );
 
 const SheetActionButton: React.FC<Props> = ({
-  borderRadius = 56,
+  borderRadius = 52,
   children,
   color: givenColor,
   disabled = false,
@@ -89,6 +90,7 @@ const SheetActionButton: React.FC<Props> = ({
   label = null,
   lightShadows,
   onPress,
+  newShadows,
   nftShadows,
   scaleTo = 0.9,
   size = null,
@@ -105,7 +107,12 @@ const SheetActionButton: React.FC<Props> = ({
   const isWhite = color === colors.white;
   const textColor = givenTextColor || colors.whiteLabel;
   const shadowsForButtonColor = useMemo(() => {
-    if (nftShadows) {
+    if (newShadows) {
+      return [
+        [0, 2, 6, colors.trueBlack, 0.02],
+        [0, 10, 30, isDarkMode ? colors.shadow : color, 0.4],
+      ];
+    } else if (nftShadows) {
       return [[0, 10, 30, colors.alpha(colors.shadowBlack, 0.3)]];
     } else if (!forceShadows && (disabled || isTransparent)) {
       return [[0, 0, 0, colors.transparent, 0]];
@@ -128,6 +135,7 @@ const SheetActionButton: React.FC<Props> = ({
     isTransparent,
     isDarkMode,
     lightShadows,
+    newShadows,
     nftShadows,
     isWhite,
   ]);
@@ -136,7 +144,7 @@ const SheetActionButton: React.FC<Props> = ({
     <Button
       as={ButtonPressAnimation}
       contentContainerStyle={{
-        height: size === 'big' ? 56 : 46,
+        height: size === 'big' ? 52 : 46,
       }}
       elevation={android ? elevation : null}
       isCharts={isCharts}
@@ -156,7 +164,7 @@ const SheetActionButton: React.FC<Props> = ({
         {...position.coverAsObject}
         backgroundColor={color}
         borderRadius={borderRadius}
-        height={size === 'big' ? 56 : 46}
+        height={size === 'big' ? 52 : 46}
         shadows={shadowsForButtonColor}
       >
         {isWhite && <WhiteButtonGradient colors={colors} />}
@@ -177,7 +185,7 @@ const SheetActionButton: React.FC<Props> = ({
           <Text
             align="center"
             color={textColor}
-            lineHeight={size === 'big' ? 56 : 46}
+            lineHeight={size === 'big' ? 52 : 46}
             numberOfLines={truncate ? 1 : undefined}
             size={textSize ?? (size === 'big' ? 'larger' : 'large')}
             style={{ width: '100%' }}

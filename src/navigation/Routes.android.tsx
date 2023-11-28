@@ -81,6 +81,7 @@ import PoapSheet from '@/screens/mints/PoapSheet';
 import { PositionSheet } from '@/screens/positions/PositionSheet';
 import MintSheet from '@/screens/mints/MintSheet';
 import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
+import { SignTransactionSheet } from '@/screens/SignTransactionSheet';
 import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoSheet';
 
 const Stack = createStackNavigator();
@@ -382,7 +383,7 @@ function BSNavigator() {
       />
       <BSStack.Screen name={Routes.MINTS_SHEET} component={MintsSheet} />
       <BSStack.Screen
-        component={TransactionConfirmationScreen}
+        component={SignTransactionSheet}
         name={Routes.CONFIRM_REQUEST}
         options={walletconnectBottomSheetPreset}
       />

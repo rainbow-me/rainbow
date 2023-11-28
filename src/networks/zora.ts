@@ -1,4 +1,4 @@
-import { getProviderForNetwork } from '@/handlers/web3';
+import { getProviderForNetwork, proxyRpcEndpoint } from '@/handlers/web3';
 import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { zora } from '@wagmi/chains';
@@ -24,7 +24,7 @@ export const getZoraNetworkObject = (): NetworkProperties => {
       address: ZORA_ETH_ADDRESS,
     },
 
-    rpc: config.zora_mainnet_rpc,
+    rpc: proxyRpcEndpoint(zora.id),
     getProvider: getProviderForNetwork(Network.zora),
     balanceCheckerAddress: '0x1C8cFdE3Ba6eFc4FF8Dd5C93044B9A690b6CFf36',
 

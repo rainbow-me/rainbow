@@ -1,5 +1,10 @@
 import React, { useCallback, useEffect, useReducer } from 'react';
-import { ImageSourcePropType, StatusBar, ImageBackground } from 'react-native';
+import {
+  ImageSourcePropType,
+  Dimensions,
+  StatusBar,
+  ImageBackground,
+} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { SheetActionButton, SheetHandle, SlackSheet } from '@/components/sheet';
