@@ -2,7 +2,7 @@ import { useRoute } from '@react-navigation/native';
 import React, { useState, useRef, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 
-import Carousel, { Pagination } from 'react-native-snap-carousel'; // Version can be specified in package.json
+import Carousel, { Pagination } from 'react-native-snap-carousel';
 import { TrimmedCard, useRemoteCardContext } from './RemoteCardProvider';
 import { RemoteCard } from './RemoteCard';
 import { Box, Separator } from '@/design-system';
