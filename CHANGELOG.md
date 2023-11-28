@@ -21,11 +21,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 - Tx Simulation (#5177)
 - RPC Proxy updates (#5169)
-- Remote promo sheet capabilities (#5140) 
+- Remote promo sheet capabilities (#5140)
 
 ### Changed
 
-- ‘An error occurred’ popup changes (#5187) 
+- ‘An error occurred’ popup changes (#5187)
 
 ### Fixed
 
