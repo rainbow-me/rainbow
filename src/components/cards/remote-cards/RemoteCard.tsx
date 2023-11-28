@@ -2,7 +2,15 @@ import { Linking } from 'react-native';
 import React, { useCallback } from 'react';
 import { get } from 'lodash';
 
-import { Box, Stack, Text, Columns, Column, Bleed } from '@/design-system';
+import {
+  Box,
+  Stack,
+  Text,
+  Columns,
+  Column,
+  Bleed,
+  DebugLayout,
+} from '@/design-system';
 import { Icon } from '@/components/icons';
 import { ButtonPressAnimation } from '@/components/animations';
 import { TrimmedCard, useRemoteCardContext } from './RemoteCardProvider';
@@ -16,6 +24,7 @@ import { maybeSignUri } from '@/handlers/imgix';
 import { Media } from '@/components/Media';
 import { SheetActionButton } from '@/components/sheet';
 import { colors } from '@/styles';
+import Routes from '@/navigation/routesNames';
 
 const getKeyForLanguage = (key: string, object: any, language: Language) => {
   if (!object) {
@@ -69,7 +78,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
 
     if (primaryButton && primaryButton.url) {
       Linking.openURL(primaryButton.url);
-    } else if (primaryButton && primaryButton.action === 'internal') {
+    } else if (primaryButton && primaryButton.route) {
       internalNavigation(primaryButton.route, primaryButton.props);
     }
   }, [navigate, primaryButton]);
@@ -110,17 +119,15 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
 
   return (
     <Box
-      flexDirection="column"
       padding={card.padding ? { custom: card.padding } : undefined}
       testID={`remote-card-${card.cardKey}`}
       justifyContent="flex-start"
-      alignItems="flex-start"
-      width="full"
       overflow="hidden"
+      width="full"
       borderRadius={12}
       background={(backgroundColor as BackgroundColor) ?? 'sufaceSecondary'}
     >
-      <Box justifyContent="flex-start" flexDirection="row" width="2/3">
+      <Box justifyContent="flex-start" flexDirection="row" width="full">
         <Media
           url={imageUri ?? ''}
           style={{
@@ -129,14 +136,8 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
           }}
           size={80}
         />
-
         <Stack space="12px">
-          <Box
-            flexDirection="row"
-            alignItems="flex-start"
-            justifyContent="space-between"
-            paddingTop="8px"
-          >
+          <Box flexDirection="row" width="full" paddingTop="8px">
             <Text
               uppercase
               color={(card.subtitleColor as TextColor) ?? 'accent'}
@@ -145,19 +146,17 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
             >
               {getKeyForLanguage('subtitle', card, language as Language)}
             </Text>
-            <Bleed>
-              <Box alignItems="flex-end" justifyContent="flex-end">
-                <ButtonPressAnimation
-                  scaleTo={0.96}
-                  overflowMargin={50}
-                  skipTopMargin
-                  disallowInterruption
-                  onPress={onDismissCard}
-                >
-                  <Icon name="close" size="8" />
-                </ButtonPressAnimation>
-              </Box>
-            </Bleed>
+            <Box alignItems="flex-end" justifyContent="flex-end">
+              <ButtonPressAnimation
+                scaleTo={0.96}
+                overflowMargin={50}
+                skipTopMargin
+                disallowInterruption
+                onPress={onDismissCard}
+              >
+                <Icon name="close" size="8" />
+              </ButtonPressAnimation>
+            </Box>
           </Box>
 
           <Text
@@ -169,14 +168,14 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
           </Text>
 
           {!!card.items.length && (
-            <Box
-              flexDirection="row"
-              justifyContent="space-between"
-              width="full"
-              alignItems="flex-start"
-            >
-              {card.items.map((item: CardItem) => (
-                <Columns alignHorizontal="center" key={item.text} space="4px">
+            <DebugLayout>
+              <Box
+                width="full"
+                flexDirection="row"
+                justifyContent="space-between"
+              >
+                {/* {card.items.map((item: CardItem) => (
+                <Columns key={item.text} space="4px">
                   <Column width="content">
                     <Text
                       align="center"
@@ -193,8 +192,9 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
                     </Text>
                   </Column>
                 </Columns>
-              ))}
-            </Box>
+              ))} */}
+              </Box>
+            </DebugLayout>
           )}
         </Stack>
       </Box>
