@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import useExperimentalFlag, {
   OP_REWARDS,
   PROFILES,
@@ -28,9 +28,16 @@ import { MintsCard } from '@/components/cards/MintsCard/MintsCard';
 import { FeaturedMintCard } from '@/components/cards/FeaturedMintCard';
 import { useMints } from '@/resources/mints';
 import { IS_TEST } from '@/env';
+import {
+  RemoteCardCarousel,
+  useRemoteCardContext,
+} from '@/components/cards/remote-cards';
+import { useRoute } from '@react-navigation/native';
 
 export default function DiscoverHome() {
   const { accountAddress, network } = useAccountSettings();
+  const { getCardsForPlacement } = useRemoteCardContext();
+  const { name } = useRoute();
   const profilesEnabledLocalFlag = useExperimentalFlag(PROFILES);
   const profilesEnabledRemoteFlag = config.profiles_enabled;
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
@@ -54,6 +61,11 @@ export default function DiscoverHome() {
       key => wallets[key].type === walletTypes.bluetooth
     ).length > 0;
 
+  const cards = useMemo(() => getCardsForPlacement(name), [
+    name,
+    getCardsForPlacement,
+  ]);
+
   return (
     <Inset top="20px" bottom={{ custom: 200 }} horizontal="20px">
       {!testNetwork ? (
@@ -62,6 +74,7 @@ export default function DiscoverHome() {
             <GasCard />
             {isProfilesEnabled && <ENSSearchCard />}
           </Inline>
+          {!!cards.length && <RemoteCardCarousel withSeparator={false} />}
           {mintsEnabled && (mints?.length || isFetching) && (
             <Stack space="20px">
               {!!featuredMint && <FeaturedMintCard />}
