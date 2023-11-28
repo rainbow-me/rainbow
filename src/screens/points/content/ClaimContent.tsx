@@ -33,7 +33,7 @@ export default function ClaimContent() {
       alignItems="center"
       justifyContent="space-between"
       paddingHorizontal="60px"
-      paddingBottom="52px"
+      paddingBottom={{ custom: 132 }}
       paddingTop={{ custom: deviceHeight / 5 }}
     >
       <Box>
@@ -88,29 +88,25 @@ export default function ClaimContent() {
         onPress={() => {
           navigate('ReferralCodeContent');
         }}
-        style={{ width: '100%', height: '100' }}
+        style={{
+          borderRadius: 26,
+          height: 48,
+          paddingVertical: 12,
+          paddingHorizontal: 20,
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderWidth: 2,
+          borderColor: separatorSecondary,
+        }}
       >
-        <Box
-          style={{
-            borderRadius: 26,
-            height: 48,
-            paddingVertical: 12,
-            paddingHorizontal: 20,
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderWidth: 2,
-            borderColor: separatorSecondary,
-          }}
+        <Text
+          size="17pt"
+          weight="heavy"
+          align="center"
+          color={{ custom: accentColor }}
         >
-          <Text
-            size="17pt"
-            weight="heavy"
-            align="center"
-            color={{ custom: accentColor }}
-          >
-            Use Referral Code
-          </Text>
-        </Box>
+          Use Referral Code
+        </Text>
       </ButtonPressAnimation>
     </Box>
   );

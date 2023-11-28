@@ -75,12 +75,11 @@ export default function ReferralCodeContent() {
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const [isKeyboardOpening, setIsKeyboardOpening] = useState(false);
 
+  const hasKeyboard = IS_IOS ? isKeyboardOpening : isKeyboardVisible;
+
   const contentBottom =
-    (isKeyboardOpening ? keyboardHeight : TAB_BAR_HEIGHT) +
-    (deviceHeight -
-      (isKeyboardOpening ? keyboardHeight : 0) -
-      navbarHeight -
-      300) /
+    (hasKeyboard ? keyboardHeight : TAB_BAR_HEIGHT) +
+    (deviceHeight - (hasKeyboard ? keyboardHeight : 0) - navbarHeight - 300) /
       2;
 
   const contentBottomSharedValue = useSharedValue(contentBottom);
@@ -131,7 +130,7 @@ export default function ReferralCodeContent() {
 
   const red = useForegroundColor('red');
   const statusColor = status === 'invalid' ? red : accentColor;
-
+  console.log(keyboardHeight);
   return (
     <Box background="surfacePrimary" height="full" alignItems="center">
       <Box
@@ -236,22 +235,22 @@ export default function ReferralCodeContent() {
           </Text>
         </Stack>
       </Box>
-      {isKeyboardOpening && (
+      {hasKeyboard && (
         <Box
           position="absolute"
-          as={ButtonPressAnimation}
-          onPress={() => navigate('ClaimContent')}
           bottom={{
             custom: keyboardHeight + 28,
           }}
           left={{ custom: 20 }}
         >
-          <Text color={{ custom: accentColor }} size="20pt" weight="bold">
-            􀆉 Back
-          </Text>
+          <ButtonPressAnimation onPress={() => navigate('ClaimContent')}>
+            <Text color={{ custom: accentColor }} size="20pt" weight="bold">
+              􀆉 Back
+            </Text>
+          </ButtonPressAnimation>
         </Box>
       )}
-      {!isKeyboardOpening && status === 'valid' && (
+      {!hasKeyboard && status === 'valid' && (
         <ButtonPressAnimation
           style={{
             backgroundColor: accentColor,
