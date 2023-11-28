@@ -2,7 +2,7 @@ import { Linking, View } from 'react-native';
 import React, { useCallback } from 'react';
 import { get } from 'lodash';
 
-import { Box, Stack, Text, DebugLayout, Inline } from '@/design-system';
+import { Box, Stack, Text, Inline } from '@/design-system';
 import { Icon } from '@/components/icons';
 import { ButtonPressAnimation } from '@/components/animations';
 import { TrimmedCard, useRemoteCardContext } from './RemoteCardProvider';
