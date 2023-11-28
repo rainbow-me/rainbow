@@ -134,7 +134,13 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
           size={80}
         />
 
-        <Box position="absolute" top={{ custom: 8 }} right={{ custom: 8 }}>
+        <Box
+          zIndex={1}
+          position="absolute"
+          top={{ custom: 8 }}
+          right={{ custom: 8 }}
+          hitSlop={{ top: 4, right: 4, bottom: 4, left: 4 }}
+        >
           <ButtonPressAnimation
             scaleTo={0.96}
             overflowMargin={50}

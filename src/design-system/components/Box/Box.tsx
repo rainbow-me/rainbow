@@ -53,6 +53,7 @@ export type BoxProps = {
   height?: Height;
   left?: PositionSpace;
   gap?: number;
+  zIndex?: number;
   justifyContent?:
     | 'flex-start'
     | 'flex-end'
