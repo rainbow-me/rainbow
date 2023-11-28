@@ -46,9 +46,11 @@ export const RemoteCardCarousel = ({ withSeparator = true }) => {
         containerCustomStyle={styles.slider}
         contentContainerCustomStyle={styles.sliderContentContainer}
         renderItem={_renderItem}
+        removeClippedSubviews
         sliderWidth={width - 40}
         itemWidth={width - 40}
         inactiveSlideShift={0}
+        scrollEnabled={data.length > 1}
         onSnapToItem={index => setIndex(index)}
       />
       {data.length > 1 && (
@@ -69,7 +71,7 @@ export const RemoteCardCarousel = ({ withSeparator = true }) => {
 
 const styles = StyleSheet.create({
   slider: {
-    marginTop: 12,
+    marginTop: 0,
     marginBottom: 0,
     paddingBottom: 0,
   },
@@ -78,7 +80,7 @@ const styles = StyleSheet.create({
   },
   paginationContainer: {
     paddingTop: 16,
-    paddingBottom: 12,
+    paddingBottom: 0,
   },
   paginationDot: {
     width: 8,

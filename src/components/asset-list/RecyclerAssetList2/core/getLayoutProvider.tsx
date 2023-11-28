@@ -7,6 +7,7 @@ import {
 import ViewDimensions from './ViewDimensions';
 import { BaseCellType, CellType } from './ViewTypes';
 import { deviceUtils } from '@/utils';
+import { TrimmedCard } from '@/components/cards/remote-cards';
 
 const getStyleOverridesForIndex = (indices: number[]) => (index: number) => {
   if (indices.includes(index)) {
@@ -51,7 +52,8 @@ class BetterLayoutProvider extends LayoutProvider {
 
 const getLayoutProvider = (
   briefSectionsData: BaseCellType[],
-  isCoinListEdited: boolean
+  isCoinListEdited: boolean,
+  cards: TrimmedCard[]
 ) => {
   const indicesToOverride = [];
   for (let i = 0; i < briefSectionsData.length; i++) {
@@ -76,6 +78,14 @@ const getLayoutProvider = (
       if (ViewDimensions[type]) {
         dim.height = ViewDimensions[type].height;
         dim.width = ViewDimensions[type].width || dim.width;
+
+        if (type === CellType.REMOTE_CARD_CAROUSEL && !cards.length) {
+          dim.height = 0;
+        }
+
+        if (type === CellType.REMOTE_CARD_CAROUSEL && cards.length === 1) {
+          dim.height -= 24;
+        }
       }
     },
     indicesToOverride

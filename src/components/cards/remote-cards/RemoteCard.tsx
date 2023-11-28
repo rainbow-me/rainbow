@@ -120,7 +120,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
       borderRadius={12}
       background={(backgroundColor as BackgroundColor) ?? 'sufaceSecondary'}
     >
-      <Box justifyContent="flex-start" flexDirection="row">
+      <Box justifyContent="flex-start" flexDirection="row" width="2/3">
         <Media
           url={imageUri ?? ''}
           style={{
@@ -216,6 +216,8 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
               card,
               language as Language
             )}
+            lightShadows
+            scaleTo={0.96}
             onPress={onPress}
             textColor={primaryButton.textColor ?? colors.white}
             textSize="large"

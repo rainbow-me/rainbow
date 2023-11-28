@@ -31,6 +31,8 @@ import {
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { useTheme } from '@/theme';
+import { useRemoteCardContext } from '@/components/cards/remote-cards';
+import { useRoute } from '@react-navigation/native';
 
 const dataProvider = new DataProvider((r1, r2) => {
   return r1.uid !== r2.uid;
@@ -71,9 +73,17 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   const { isCoinListEdited, setIsCoinListEdited } = useCoinListEdited();
   const y = useRecyclerAssetListPosition()!;
 
-  const layoutProvider = useMemoOne(
-    () => getLayoutProvider(briefSectionsData, isCoinListEdited),
-    [briefSectionsData]
+  const { name } = useRoute();
+  const { getCardsForPlacement } = useRemoteCardContext();
+
+  const cards = useMemo(() => getCardsForPlacement(name as string), [
+    getCardsForPlacement,
+    name,
+  ]);
+
+  const layoutProvider = useMemo(
+    () => getLayoutProvider(briefSectionsData, isCoinListEdited, cards),
+    [briefSectionsData, isCoinListEdited, cards]
   );
 
   const { accountAddress } = useAccountSettings();
