@@ -1,15 +1,24 @@
-import { Linking } from 'react-native';
+import { Linking, View } from 'react-native';
 import React, { useCallback } from 'react';
 import { get } from 'lodash';
 
-import { Box, Stack, Text, Columns, Column, Bleed } from '@/design-system';
+import {
+  Box,
+  Stack,
+  Text,
+  Columns,
+  Column,
+  Bleed,
+  DebugLayout,
+  Inline,
+} from '@/design-system';
 import { Icon } from '@/components/icons';
 import { ButtonPressAnimation } from '@/components/animations';
 import { TrimmedCard, useRemoteCardContext } from './RemoteCardProvider';
 import { IS_IOS } from '@/env';
 import { useNavigation } from '@/navigation';
 import { Language } from '@/languages';
-import { useAccountSettings } from '@/hooks';
+import { useAccountSettings, useDimensions } from '@/hooks';
 import { BackgroundColor, TextColor } from '@/design-system/color/palettes';
 import { CustomColor } from '@/design-system/color/useForegroundColor';
 import { maybeSignUri } from '@/handlers/imgix';
@@ -54,7 +63,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
   const { navigate } = useNavigation();
   const { language } = useAccountSettings();
   const { dismissCard } = useRemoteCardContext();
-
+  const { width: deviceWidth } = useDimensions();
   const { backgroundColor, primaryButton } = card;
 
   const onDismissCard = useCallback(() => dismissCard(card.sys.id), [
@@ -169,32 +178,91 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
           </Text>
 
           {!!card.items.length && (
-            <Box
-              flexDirection="row"
-              justifyContent="space-between"
-              width="full"
-              alignItems="flex-start"
-            >
-              {card.items.map((item: CardItem) => (
-                <Columns alignHorizontal="center" key={item.text} space="4px">
-                  <Column width="content">
+            // <Box
+            //   flexDirection="row"
+            //   justifyContent="space-between"
+            //   width="full"
+            //   alignItems="flex-start"
+            // >
+            <DebugLayout>
+              <Box
+                flexDirection="row"
+                justifyContent="space-between"
+                width={{ custom: deviceWidth - 40 - 80 - 40 - 10 }}
+                // width="full"
+                maxWidth={400}
+                gap={30}
+                // overflow="hidden"
+                // flexWrap="wrap"
+              >
+                <View style={{ flex: 1 }}>
+                  <Inline wrap={false} alignVertical="center" space="4px">
                     <Text
                       align="center"
-                      color={item.color ?? 'accent'}
+                      color={card.items[0].color ?? 'accent'}
                       size="11pt"
                       weight="bold"
+                      numberOfLines={1}
                     >
-                      {item.icon}
+                      {card.items[0].icon}
                     </Text>
-                  </Column>
-                  <Column width="content">
-                    <Text color={{ custom: '#000' }} size="13pt" weight="bold">
-                      {getKeyForLanguage('text', item, language as Language)}
+                    <Text
+                      color={{ custom: '#000' }}
+                      size="13pt"
+                      weight="bold"
+                      numberOfLines={1}
+                      ellipsizeMode="middle"
+                    >
+                      fds
                     </Text>
-                  </Column>
-                </Columns>
-              ))}
-            </Box>
+                  </Inline>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Inline wrap={false} alignVertical="center" space="4px">
+                    <Text
+                      align="center"
+                      color={card.items[1].color ?? 'accent'}
+                      size="11pt"
+                      weight="bold"
+                      numberOfLines={1}
+                    >
+                      {card.items[1].icon}
+                    </Text>
+                    <Text
+                      color={{ custom: '#000' }}
+                      size="13pt"
+                      weight="bold"
+                      numberOfLines={1}
+                      ellipsizeMode="middle"
+                    >
+                      fds
+                    </Text>
+                  </Inline>
+                </View>
+
+                {/* {card.items.map((item: CardItem) => (
+                    <Inline key={item.text}>
+                      <Text
+                        align="center"
+                        color={item.color ?? 'accent'}
+                        size="11pt"
+                        weight="bold"
+                        numberOfLines={1}
+                      >
+                        {item.icon}
+                      </Text>
+                      <Text
+                        color={{ custom: '#000' }}
+                        size="13pt"
+                        weight="bold"
+                        numberOfLines={1}
+                      >
+                        fdsffdafdafdsfdsfhj
+                      </Text>
+                    </Inline>
+                  ))} */}
+              </Box>
+            </DebugLayout>
           )}
         </Stack>
       </Box>
