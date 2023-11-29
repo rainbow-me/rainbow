@@ -2,6 +2,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { Input } from '@/components/inputs';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import {
+  Bleed,
   Box,
   Cover,
   DebugLayout,
@@ -24,6 +25,7 @@ import { useNavigation } from '@/navigation';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { fonts } from '@/styles';
 import { haptics, safeAreaInsetValues } from '@/utils';
+import { delay } from '@/utils/delay';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Keyboard, TextInput, View } from 'react-native';
@@ -46,6 +48,7 @@ export default function ReferralCodeContent() {
   const surfacePrimary = useBackgroundColor('surfacePrimary');
 
   const [referralCode, setReferralCode] = useState('');
+  const [referralCodeDisplay, setReferralCodeDisplay] = useState('');
   const [status, setStatus] = useState<'incomplete' | 'valid' | 'invalid'>(
     'incomplete'
   );
@@ -54,19 +57,21 @@ export default function ReferralCodeContent() {
 
   const validateReferralCode = useCallback(async () => {
     const res1 = await metadataClient.getPointsDataForWallet({
-      address: '0x2DC92aA78358310A87276cF6f893F48E896d8Fc5',
+      address: accountAddress,
     });
     console.log(res1.points?.user);
     const res = await metadataClient.onboardPoints({
       address: accountAddress,
-      referral: 'xxBBBB',
+      referral: 'a',
       signature: '',
     });
+    console.log(res?.onboardPoints);
     if (res?.onboardPoints?.error) {
       setStatus('invalid');
       haptics.notificationError();
     } else {
       setStatus('valid');
+      textInputRef.current?.blur();
       console.log(res);
       haptics.notificationSuccess();
     }
@@ -79,7 +84,7 @@ export default function ReferralCodeContent() {
 
   const contentBottom =
     (hasKeyboard ? keyboardHeight : TAB_BAR_HEIGHT) +
-    (deviceHeight - (hasKeyboard ? keyboardHeight : 0) - navbarHeight - 300) /
+    (deviceHeight - (hasKeyboard ? keyboardHeight : 0) - navbarHeight - 270) /
       2;
 
   const contentBottomSharedValue = useSharedValue(contentBottom);
@@ -87,6 +92,17 @@ export default function ReferralCodeContent() {
   useEffect(() => {
     contentBottomSharedValue.value = withTiming(contentBottom);
   }, [contentBottom, contentBottomSharedValue]);
+
+  useFocusEffect(
+    useCallback(() => {
+      delay(400).then(() => textInputRef.current?.focus());
+
+      return () => {
+        setReferralCodeDisplay('');
+        setStatus('incomplete');
+      };
+    }, [])
+  );
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -130,9 +146,21 @@ export default function ReferralCodeContent() {
 
   const red = useForegroundColor('red');
   const statusColor = status === 'invalid' ? red : accentColor;
-  console.log(keyboardHeight);
+  const inputTextStyle = useTextStyle({
+    align: 'left',
+    color: 'label',
+    size: '20pt',
+    weight: 'heavy',
+  });
+
   return (
-    <Box background="surfacePrimary" height="full" alignItems="center">
+    <Box
+      background="surfacePrimary"
+      height="full"
+      justifyContent="flex-end"
+      alignItems="center"
+      paddingBottom={{ custom: 134 }}
+    >
       <Box
         as={Animated.View}
         position="absolute"
@@ -175,7 +203,6 @@ export default function ReferralCodeContent() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 paddingHorizontal: 20,
-                minWidth: IS_IOS ? 135 : 180,
                 shadowOffset: {
                   width: 0,
                   height: 13,
@@ -187,24 +214,41 @@ export default function ReferralCodeContent() {
               }}
             >
               <Inline alignVertical="center" space="6px">
-                <Input
+                <TextInput
                   ref={textInputRef}
+                  value={referralCodeDisplay}
                   style={{
                     height: 48,
-                    ...useTextStyle({
-                      align: 'left',
-                      color: 'label',
-                      size: '20pt',
-                      weight: 'heavy',
-                    }),
+                    ...(IS_IOS ? inputTextStyle : inputTextStyle),
+                    // letterSpacing: 0.36,
+                    width: 105,
+                    // ...useTextStyle({
+                    //   align: 'left',
+                    //   color: 'label',
+                    //   size: '20pt',
+                    //   weight: 'heavy',
+                    // }),
                   }}
+                  // onBlur={() => textInputRef.current?.focus()}
+                  // width={95}
                   autoFocus={false}
                   maxLength={7}
                   selectionColor={statusColor}
-                  textAlign="center"
+                  textAlign="left"
                   autoCapitalize="characters"
                   placeholder="XXX-XXX"
                   onChangeText={(text: string) => {
+                    console.log(text.length, referralCodeDisplay.length);
+                    if (text.length === 3 && referralCodeDisplay.length === 2) {
+                      setReferralCodeDisplay(text + '-');
+                    } else if (
+                      text.length === 3 &&
+                      referralCodeDisplay.length === 4
+                    ) {
+                      setReferralCodeDisplay(text.slice(0, text.length - 1));
+                    } else {
+                      setReferralCodeDisplay(text);
+                    }
                     if (text.length !== 7) {
                       setStatus('incomplete');
                     } else {
@@ -213,14 +257,16 @@ export default function ReferralCodeContent() {
                   }}
                 />
                 {status === 'valid' && (
-                  <Text
-                    weight="heavy"
-                    size="17pt"
-                    align="center"
-                    color={{ custom: accentColor }}
-                  >
-                    􀁣
-                  </Text>
+                  <Bleed horizontal="2px">
+                    <Text
+                      weight="heavy"
+                      size="17pt"
+                      align="center"
+                      color={{ custom: accentColor }}
+                    >
+                      􀁣
+                    </Text>
+                  </Bleed>
                 )}
               </Inline>
             </Box>
@@ -260,8 +306,6 @@ export default function ReferralCodeContent() {
             paddingHorizontal: 24,
             alignItems: 'center',
             justifyContent: 'center',
-            position: 'absolute',
-            bottom: 134,
           }}
         >
           <Text

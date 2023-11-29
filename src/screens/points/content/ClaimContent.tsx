@@ -1,4 +1,5 @@
 import { ButtonPressAnimation } from '@/components/animations';
+import { navbarHeight } from '@/components/navbar/Navbar';
 import {
   Box,
   Stack,
@@ -26,17 +27,19 @@ export default function ClaimContent() {
   const separatorSecondary = useForegroundColor('separatorSecondary');
   const surfacePrimary = useBackgroundColor('surfacePrimary');
 
+  const contentBottom =
+    TAB_BAR_HEIGHT + (deviceHeight - navbarHeight - 218) / 2;
+
   return (
     <Box
       background="surfacePrimary"
       height="full"
       alignItems="center"
-      justifyContent="space-between"
+      justifyContent="flex-end"
       paddingHorizontal="60px"
       paddingBottom={{ custom: 132 }}
-      paddingTop={{ custom: deviceHeight / 5 }}
     >
-      <Box>
+      <Box position="absolute" bottom={{ custom: contentBottom }}>
         <Stack space="32px" alignHorizontal="center">
           <Stack space="20px" alignHorizontal="center">
             <Stack space="28px" alignHorizontal="center">
@@ -83,7 +86,6 @@ export default function ClaimContent() {
           </ButtonPressAnimation>
         </Stack>
       </Box>
-
       <ButtonPressAnimation
         onPress={() => {
           navigate('ReferralCodeContent');

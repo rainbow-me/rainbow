@@ -72,7 +72,7 @@ export default function PointsScreen() {
         <Swipe.Navigator
           initialLayout={deviceUtils.dimensions}
           initialRouteName="ClaimContent"
-          screenOptions={{ swipeEnabled: false }}
+          screenOptions={{ swipeEnabled: true }}
           // tabBar={() => (
           //   <Box
           //     height={{ custom: TAB_BAR_HEIGHT }}
