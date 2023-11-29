@@ -2,6 +2,7 @@ import { noop, pick } from 'lodash';
 import React, { PropsWithChildren, createContext, useState } from 'react';
 import { Card } from '@/graphql/__generated__/arc';
 import Routes from '@/navigation/routesNames';
+import { IS_TESTING } from 'react-native-dotenv';
 import {
   CardCollectionResult,
   useCardCollectionQuery,
@@ -64,7 +65,7 @@ export const RemoteCardProvider: React.FC<
   useCardCollectionQuery(
     {},
     {
-      enabled,
+      enabled: enabled && !IS_TESTING,
       refetchInterval: 60_000,
       onSuccess: (data: CardCollectionResult) => {
         if (!data?.cardCollection?.items.length) return;

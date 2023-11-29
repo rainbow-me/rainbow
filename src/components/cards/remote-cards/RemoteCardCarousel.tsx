@@ -1,10 +1,14 @@
-import { useRoute } from '@react-navigation/native';
 import React, { useState, useRef, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-
 import Carousel, { Pagination } from 'react-native-snap-carousel';
-import { TrimmedCard, useRemoteCardContext } from './RemoteCardProvider';
-import { RemoteCard } from './RemoteCard';
+import { useRoute } from '@react-navigation/native';
+import { IS_TESTING } from 'react-native-dotenv';
+
+import {
+  TrimmedCard,
+  useRemoteCardContext,
+  RemoteCard,
+} from '@/components/cards/remote-cards';
 import { Box, Separator } from '@/design-system';
 import { REMOTE_CARDS, getExperimetalFlag } from '@/config';
 import Animated from 'react-native-reanimated';
@@ -35,7 +39,7 @@ export const RemoteCardCarousel = ({ withSeparator = true }) => {
     name,
   ]);
 
-  if (!remoteCardsEnabled || !data.length) {
+  if (IS_TESTING || !remoteCardsEnabled || !data.length) {
     return null;
   }
 
