@@ -6,6 +6,7 @@ import messaging, {
 } from '@react-native-firebase/messaging';
 import {
   FixedRemoteMessage,
+  MarketingNotificationData,
   MinimalNotification,
   NotificationTypes,
   TransactionNotificationData,
@@ -300,6 +301,19 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
         `NotificationsHandler: handling wallet connect notification`,
         { notification }
       );
+    } else if (type === NotificationTypes.marketing) {
+      logger.info(`NotificationsHandler: handling marketing notification`, {
+        notification,
+      });
+      const data = (notification.data as unknown) as MarketingNotificationData;
+      if (data?.route) {
+        const parsedProps = JSON.parse(data?.routeProps || '{}');
+        Navigation.handleAction((Routes as any)[data.route], {
+          params: {
+            ...(parsedProps || {}),
+          },
+        });
+      }
     } else {
       logger.warn(`NotificationsHandler: received unknown notification`, {
         notification,
