@@ -22,10 +22,6 @@ if [ -n "$RAINBOW_SCRIPTS_INTERNALS" ]; then
 	git clone $RAINBOW_SCRIPTS_INTERNALS
 fi
 
-if [ -n "$RAINBOW_INTERNALS" ]; then
-    git clone $RAINBOW_INTERNALS
-fi
-
 if [ "$EAS_BUILD_PLATFORM" = "ios" ]; then
     eval $RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK > /dev/null 2>&1;
     echo "✅ executed ios prebuild hook"
