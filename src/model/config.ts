@@ -69,6 +69,7 @@ export interface RainbowConfig
   base_swaps_enabled: boolean;
   mints_enabled: boolean;
   points_enabled: boolean;
+  points_fully_enabled: boolean;
 }
 
 const DEFAULT_CONFIG: RainbowConfig = {
@@ -129,6 +130,7 @@ const DEFAULT_CONFIG: RainbowConfig = {
   base_swaps_enabled: false,
   mints_enabled: true,
   points_enabled: true,
+  points_fully_enabled: false,
 };
 
 // Initialize with defaults in case firebase doesn't respond
@@ -183,7 +185,8 @@ const init = async () => {
         key === 'goerli_enabled' ||
         key === 'base_swaps_enabled' ||
         key === 'mints_enabled' ||
-        key === 'points_enabled'
+        key === 'points_enabled' ||
+        key === 'points_fully_enabled'
       ) {
         config[key] = entry.asBoolean();
       } else {

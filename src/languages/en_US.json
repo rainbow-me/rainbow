@@ -1230,8 +1230,44 @@
       }
     },
     "points": {
-      "coming_soon_title": "Coming Soon",
-      "coming_soon_description": "Points are just around the corner.\nStart earning today."
+      "placeholder": {
+        "coming_soon_title": "Coming Soon",
+        "coming_soon_description": "Points are just around the corner.\nStart earning today."
+      },
+      "claim": {
+        "title": "Claim your points",
+        "subtitle": "Points are here. Find out how many you've been awarded",
+        "get_started": "Get Started",
+        "use_referral_code": "Use Referral Code"
+      },
+      "referral": {
+        "title": "Enter your referral code",
+        "subtitle": "Enter a referral code below to claim your bonus reward.",
+        "back": "Back",
+        "error": "Something went wrong. Please restart the app and try again.",
+        "get_started": "Get Started"
+      },
+      "points": {
+        "referral_link": "Referral Link",
+        "share": "Share",
+        "next_reward": "Next Reward",
+        "referrals": "Referrals",
+        "streak": "Streak",
+        "longest_yet": "Longest yet",
+        "day": "day",
+        "days": "days",
+        "leaderboard": "Leaderboard",
+        "sunday": "Sunday",
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday",
+        "error": "Oops!\nPlease pull to refresh.",
+        "points": "points",
+        "link_copied": "Link copied"
+      }
     },
     "pools": {
       "deposit": "Deposit",
