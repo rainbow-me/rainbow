@@ -45,7 +45,10 @@ import { signPersonalMessage } from '@/model/wallet';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { RainbowError, logger } from '@/logger';
-import { PointsErrorType } from '@/graphql/__generated__/metadata';
+import {
+  OnboardPointsMutation,
+  PointsErrorType,
+} from '@/graphql/__generated__/metadata';
 import { pointsQueryKey } from '@/resources/points';
 import { queryClient } from '@/react-query';
 
@@ -64,16 +67,23 @@ export const ConsoleSheet = () => {
 
   const [didConfirmOwnership, setDidConfirmOwnership] = useState(false);
   const [showSignInButton, setShowSignInButton] = useState(false);
+  const [showSwapButton, setShowSwapButton] = useState(false);
+  const [showGetEthButton, setShowGetEthButton] = useState(false);
+  const [pointsProfile, setPointsProfile] = useState<OnboardPointsMutation>();
   const { accountAddress } = useAccountProfile();
 
   useEffect(() => {
     if (IS_DEV) {
       setDidConfirmOwnership(false);
       setShowSignInButton(false);
+      setShowGetEthButton(false);
+      setShowSwapButton(false);
     }
   }, []);
 
   const signIn = useCallback(async () => {
+    setDidConfirmOwnership(true);
+    return;
     let points;
     let signature;
     let challenge;
@@ -112,6 +122,7 @@ export const ConsoleSheet = () => {
         }
       } else {
         setDidConfirmOwnership(true);
+        setPointsProfile(points);
         queryClient.setQueryData(
           pointsQueryKey({ address: accountAddress }),
           points
@@ -143,8 +154,11 @@ export const ConsoleSheet = () => {
             width={{ custom: 36 }}
           />
           <ClaimRetroactivePointsFlow
+            pointsProfile={pointsProfile}
             didConfirmOwnership={didConfirmOwnership}
             setShowSignInButton={setShowSignInButton}
+            setShowSwapButton={setShowSwapButton}
+            setShowGetEthButton={setShowGetEthButton}
           />
         </Animated.View>
       </Box>
@@ -152,11 +166,13 @@ export const ConsoleSheet = () => {
         condition={showSignInButton && !didConfirmOwnership}
         duration={300}
       >
-        <NeonButton
-          label="􀎽 Sign In"
-          // onPress={() => setTimeout(() => setDidConfirmOwnership(true), 1000)}
-          onPress={signIn}
-        />
+        <NeonButton label="􀎽 Sign In" onPress={signIn} />
+      </AnimatePresence>
+      <AnimatePresence condition={showSwapButton} duration={300}>
+        <NeonButton color="#FEC101" label="􀖅 Try a Swap" onPress={() => {}} />
+      </AnimatePresence>
+      <AnimatePresence condition={showSwapButton} duration={300}>
+        <NeonButton color="#FEC101" label="􀁍 Get Some ETH" onPress={() => {}} />
       </AnimatePresence>
     </Inset>
   );
@@ -241,11 +257,17 @@ const NeonButton = ({
 const ClaimRetroactivePointsFlow = ({
   didConfirmOwnership,
   onComplete,
+  pointsProfile,
   setShowSignInButton,
+  setShowSwapButton,
+  setShowGetEthButton,
 }: {
   didConfirmOwnership: boolean;
   onComplete?: () => void;
+  pointsProfile?: OnboardPointsMutation;
   setShowSignInButton: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowSwapButton: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowGetEthButton: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const [animationKey, setAnimationKey] = useState(0);
   const [animationPhase, setAnimationPhase] = useState(0);
@@ -258,6 +280,31 @@ const ClaimRetroactivePointsFlow = ({
       setIsCalculationComplete(false);
     }
   }, []);
+
+  const onboardingData = pointsProfile?.onboardPoints?.user?.onboarding;
+  const rainbowSwaps = onboardingData?.categories?.find(
+    c => c.type === 'rainbow-swaps'
+  );
+  const metamaskSwaps = onboardingData?.categories?.find(
+    c => c.type === 'metamask-swaps'
+  );
+  const rainbowBridges = onboardingData?.categories?.find(
+    c => c.type === 'metamask-swaps'
+  );
+  const nftCollections = onboardingData?.categories?.find(
+    c => c.type === 'nft-collections'
+  );
+  const historicBalance = onboardingData?.categories?.find(
+    c => c.type === 'historic-balance'
+  );
+  const bonus = onboardingData?.categories?.find(c => c.type === 'bonus');
+
+  const hasRetroactivePoints =
+    rainbowSwaps?.earnings?.total ||
+    metamaskSwaps?.earnings?.total ||
+    rainbowBridges?.earnings?.total ||
+    nftCollections?.earnings?.total ||
+    historicBalance?.earnings?.total;
 
   return (
     <TypingAnimation key={animationKey}>
@@ -358,103 +405,172 @@ const ClaimRetroactivePointsFlow = ({
           </Paragraph>
         </>
       )}
-      {animationPhase === 1 && (
-        <Stack separator={<LineBreak lines={3} />}>
-          <Paragraph>
-            <Line>
-              <AnimatedText
-                delayStart={500}
-                color={textColors.gray}
-                skipAnimation
-                textContent="Account:"
-                weight="normal"
-              />
-              <AnimatedText
-                color={textColors.account}
-                skipAnimation
-                textContent="0xtester.eth"
-              />
-            </Line>
-            <Line gap={0}>
+      {animationPhase === 1 &&
+        (hasRetroactivePoints ? (
+          <Stack separator={<LineBreak lines={3} />}>
+            <Paragraph>
+              <Line>
+                <AnimatedText
+                  delayStart={500}
+                  color={textColors.gray}
+                  skipAnimation
+                  textContent="Account:"
+                  weight="normal"
+                />
+                <AnimatedText
+                  color={textColors.account}
+                  skipAnimation
+                  textContent="0xtester.eth"
+                />
+              </Line>
+              <Line gap={0}>
+                <AnimatedText
+                  color={textColors.gray}
+                  delayStart={1000}
+                  textContent="> Calculating points"
+                  weight="normal"
+                />
+                <AnimatedText
+                  color={textColors.gray}
+                  repeat={!isCalculationComplete}
+                  textContent="..."
+                  typingSpeed={500}
+                  weight="normal"
+                />
+              </Line>
+            </Paragraph>
+            <Stack separator={<LineBreak lines={2} />}>
+              <Line alignHorizontal="justify">
+                <AnimatedText
+                  color={rainbowColors.blue}
+                  enableHapticTyping
+                  textContent="Rainbow Swaps:"
+                />
+                <AnimatedText
+                  color={rainbowColors.blue}
+                  delayStart={1000}
+                  enableHapticTyping
+                  textAlign="right"
+                  textContent="$24.4k"
+                  typingSpeed={100}
+                />
+              </Line>
+              <Line alignHorizontal="justify">
+                <AnimatedText
+                  color={rainbowColors.green}
+                  delayStart={1000}
+                  enableHapticTyping
+                  textContent="Rainbow NFTs Owned:"
+                />
+                <AnimatedText
+                  color={rainbowColors.green}
+                  delayStart={1000}
+                  enableHapticTyping
+                  textAlign="right"
+                  textContent="4 of 14"
+                  typingSpeed={100}
+                />
+              </Line>
+              <Line alignHorizontal="justify">
+                <AnimatedText
+                  color={rainbowColors.yellow}
+                  delayStart={1000}
+                  enableHapticTyping
+                  textContent="Wallet Balance:"
+                />
+                <AnimatedText
+                  color={rainbowColors.yellow}
+                  delayStart={1000}
+                  enableHapticTyping
+                  textAlign="right"
+                  textContent="$2,425"
+                  typingSpeed={100}
+                />
+              </Line>
+              <Line alignHorizontal="justify">
+                <AnimatedText
+                  color={rainbowColors.red}
+                  delayStart={1000}
+                  enableHapticTyping
+                  textContent="MetaMask Swaps:"
+                />
+                <AnimatedText
+                  color={rainbowColors.red}
+                  delayStart={1000}
+                  enableHapticTyping
+                  textAlign="right"
+                  textContent="$8,481"
+                  typingSpeed={100}
+                />
+              </Line>
+              <Line alignHorizontal="justify">
+                <AnimatedText
+                  color={rainbowColors.purple}
+                  delayStart={1000}
+                  enableHapticTyping
+                  textContent="Bonus Points:"
+                />
+                <AnimatedText
+                  color={rainbowColors.purple}
+                  delayStart={1000}
+                  enableHapticTyping
+                  onComplete={() => setIsCalculationComplete(true)}
+                  textAlign="right"
+                  textContent="+ 500"
+                  typingSpeed={100}
+                />
+              </Line>
+            </Stack>{' '}
+            <Paragraph gap={30}>
               <AnimatedText
                 color={textColors.gray}
                 delayStart={1000}
-                textContent="> Calculating points"
+                textContent="> Calculation complete"
                 weight="normal"
               />
-              <AnimatedText
-                color={textColors.gray}
-                repeat={!isCalculationComplete}
-                textContent="..."
-                typingSpeed={500}
-                weight="normal"
-              />
-            </Line>
-          </Paragraph>
+              <Line alignHorizontal="justify">
+                <AnimatedText
+                  color={textColors.white}
+                  delayStart={1000}
+                  enableHapticTyping
+                  textContent="Points Earned:"
+                />
+                <AnimatedText
+                  color={textColors.white}
+                  delayStart={1000}
+                  enableHapticTyping
+                  hapticType="impactHeavy"
+                  textAlign="right"
+                  textContent="42,588"
+                  typingSpeed={100}
+                />
+              </Line>
+            </Paragraph>
+          </Stack>
+        ) : (
           <Stack separator={<LineBreak lines={2} />}>
-            <Line alignHorizontal="justify">
-              <AnimatedText
-                color={rainbowColors.blue}
-                enableHapticTyping
-                textContent="Rainbow Swaps:"
-              />
-              <AnimatedText
-                color={rainbowColors.blue}
-                delayStart={1000}
-                enableHapticTyping
-                textAlign="right"
-                textContent="$24.4k"
-                typingSpeed={100}
-              />
-            </Line>
-            <Line alignHorizontal="justify">
-              <AnimatedText
-                color={rainbowColors.green}
-                delayStart={1000}
-                enableHapticTyping
-                textContent="Rainbow NFTs Owned:"
-              />
-              <AnimatedText
-                color={rainbowColors.green}
-                delayStart={1000}
-                enableHapticTyping
-                textAlign="right"
-                textContent="4 of 14"
-                typingSpeed={100}
-              />
-            </Line>
-            <Line alignHorizontal="justify">
-              <AnimatedText
-                color={rainbowColors.yellow}
-                delayStart={1000}
-                enableHapticTyping
-                textContent="Wallet Balance:"
-              />
-              <AnimatedText
-                color={rainbowColors.yellow}
-                delayStart={1000}
-                enableHapticTyping
-                textAlign="right"
-                textContent="$2,425"
-                typingSpeed={100}
-              />
-            </Line>
-            <Line alignHorizontal="justify">
-              <AnimatedText
-                color={rainbowColors.red}
-                delayStart={1000}
-                enableHapticTyping
-                textContent="MetaMask Swaps:"
-              />
-              <AnimatedText
-                color={rainbowColors.red}
-                delayStart={1000}
-                enableHapticTyping
-                textAlign="right"
-                textContent="$8,481"
-                typingSpeed={100}
-              />
-            </Line>
+            <Paragraph>
+              <Line>
+                <AnimatedText
+                  delayStart={500}
+                  color={textColors.gray}
+                  skipAnimation
+                  textContent="Account:"
+                  weight="normal"
+                />
+                <AnimatedText
+                  color={textColors.account}
+                  skipAnimation
+                  textContent="0xtester.eth"
+                />
+              </Line>
+              <Line>
+                <AnimatedText
+                  color={textColors.green}
+                  textContent="> Registration complete"
+                />
+              </Line>
+            </Paragraph>
             <Line alignHorizontal="justify">
               <AnimatedText
                 color={rainbowColors.purple}
@@ -466,40 +582,22 @@ const ClaimRetroactivePointsFlow = ({
                 color={rainbowColors.purple}
                 delayStart={1000}
                 enableHapticTyping
-                onComplete={() => setIsCalculationComplete(true)}
                 textAlign="right"
                 textContent="+ 500"
                 typingSpeed={100}
               />
             </Line>
-          </Stack>
-          <Paragraph gap={30}>
-            <AnimatedText
-              color={textColors.gray}
-              delayStart={1000}
-              textContent="> Calculation complete"
-              weight="normal"
-            />
-            <Line alignHorizontal="justify">
+            <Line alignHorizontal="left">
               <AnimatedText
-                color={textColors.white}
+                color={textColors.gray}
                 delayStart={1000}
-                enableHapticTyping
-                textContent="Points Earned:"
-              />
-              <AnimatedText
-                color={textColors.white}
-                delayStart={1000}
-                enableHapticTyping
-                hapticType="impactHeavy"
-                textAlign="right"
-                textContent="42,588"
-                typingSpeed={100}
+                onComplete={() => setShowSwapButton(true)}
+                weight="normal"
+                textContent="To claim the rest of your bonus points, swap at least $100 through Rainbow."
               />
             </Line>
-          </Paragraph>
-        </Stack>
-      )}
+          </Stack>
+        ))}
     </TypingAnimation>
   );
 };

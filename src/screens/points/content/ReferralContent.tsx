@@ -281,7 +281,7 @@ export default function ReferralContent() {
         >
           <ButtonPressAnimation onPress={goBack}>
             <Text color={{ custom: accentColor }} size="20pt" weight="bold">
-              {`􀆉 ${i18n.t(i18n.l.points.referral.back)}`}`
+              {`􀆉 ${i18n.t(i18n.l.points.referral.back)}`}
             </Text>
           </ButtonPressAnimation>
         </Box>

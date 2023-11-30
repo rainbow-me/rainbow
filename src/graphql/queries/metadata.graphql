@@ -182,13 +182,29 @@ mutation onboardPoints(
       }
     }
     user {
-      referralCode
       earnings {
         total
       }
       stats {
         position {
           current
+        }
+      }
+      onboarding {
+        earnings {
+          total
+        }
+        categories {
+          data {
+            usd_amount
+            total_collections
+            owned_collections
+          }
+          type
+          display_type
+          earnings {
+            total
+          }
         }
       }
     }
