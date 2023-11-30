@@ -10,7 +10,8 @@
       },
       "ios": {
         "buildConfiguration": "Debug",
-        "simulator": true
+        "simulator": true,
+        "scheme": "Rainbow"
       }
     },
     "preview": {
