@@ -10,12 +10,14 @@ import {
 import {
   getAllNotificationSettingsFromStorage,
   notificationSettingsStorage,
+  setAllNotificationSettingsToStorage,
 } from '@/notifications/settings/storage';
 import {
   subscribeWalletToSingleNotificationTopic,
   unsubscribeWalletFromAllNotificationTopics,
   unsubscribeWalletFromSingleNotificationTopic,
 } from '@/notifications/settings/firebase';
+import { publishWalletSettings } from '@/notifications/settings/firebase';
 
 /**
  1. Reads notification settings for all wallets from storage.
@@ -121,3 +123,12 @@ export function toggleTopicForWallet(
     );
   }
 }
+
+export const publishAndSaveWalletSettings = async (
+  proposedSettings: WalletNotificationSettings[]
+): Promise<void> => {
+  const finalizedSettings = await publishWalletSettings(proposedSettings);
+  if (finalizedSettings) {
+    setAllNotificationSettingsToStorage(finalizedSettings);
+  }
+};
