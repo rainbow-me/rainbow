@@ -13,6 +13,7 @@ import {
   getAllWalletNotificationSettingsFromStorage,
   notificationSettingsStorage,
   setAllGlobalNotificationSettingsToStorage,
+  setAllWalletNotificationSettingsToStorage,
 } from '@/notifications/settings/storage';
 import {
   subscribeToGlobalNotificationTopic,
@@ -22,6 +23,7 @@ import {
   unsubscribeWalletFromAllNotificationTopics,
   unsubscribeWalletFromNotificationTopic,
 } from '@/notifications/settings/firebase';
+import { publishWalletSettings } from '@/notifications/settings/firebase';
 
 export const removeGlobalNotificationSettings = (): Promise<void> => {
   return unsubscribeFromAllGlobalNotificationTopics().then(() =>
@@ -112,3 +114,12 @@ export function toggleGlobalNotificationTopic(topic: GlobalNotificationTopicType
     return unsubscribeFromGlobalNotificationTopic(topic);
   }
 }
+
+export const publishAndSaveWalletSettings = async (
+  proposedSettings: WalletNotificationSettings[]
+): Promise<void> => {
+  const finalizedSettings = await publishWalletSettings(proposedSettings);
+  if (finalizedSettings) {
+    setAllWalletNotificationSettingsToStorage(finalizedSettings);
+  }
+};
