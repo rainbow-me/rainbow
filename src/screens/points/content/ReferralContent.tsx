@@ -33,11 +33,12 @@ import Animated, {
 import Svg, { Path } from 'react-native-svg';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as i18n from '@/languages';
+import Routes from '@/navigation/routesNames';
 
 export default function ReferralContent() {
   const { accountAddress } = useAccountProfile();
   const { accentColor } = useAccountAccentColor();
-  const { goBack } = useNavigation();
+  const { goBack, navigate } = useNavigation();
 
   const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
@@ -45,6 +46,7 @@ export default function ReferralContent() {
   const surfacePrimary = useBackgroundColor('surfacePrimary');
 
   const [referralCodeDisplay, setReferralCodeDisplay] = useState('');
+  const [referralCode, setReferralCode] = useState('');
   const [status, setStatus] = useState<'incomplete' | 'valid' | 'invalid'>(
     'incomplete'
   );
@@ -68,6 +70,7 @@ export default function ReferralContent() {
         Alert.alert(i18n.t(i18n.l.points.referral.error));
       } else {
         setStatus('valid');
+        setReferralCode(referralCode);
         textInputRef.current?.blur();
         haptics.notificationSuccess();
       }
@@ -297,6 +300,7 @@ export default function ReferralContent() {
             alignItems: 'center',
             justifyContent: 'center',
           }}
+          onPress={() => navigate(Routes.CONSOLE_SHEET, { referralCode })}
         >
           <Text
             size="20pt"

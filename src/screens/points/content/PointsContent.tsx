@@ -45,6 +45,8 @@ import {
 } from '@/utils/profileUtils';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { useFocusEffect } from '@react-navigation/native';
+import { navbarHeight } from '@/components/navbar/Navbar';
+import { Page } from '@/components/layout';
 
 const STREAKS_ENABLED = true;
 const REFERRALS_ENABLED = true;
@@ -425,7 +427,7 @@ export default function PointsContent() {
   const shouldDisplayError = !isFetching && !data?.points;
 
   return (
-    <Box height="full" background="surfacePrimary">
+    <Box height="full" background="surfacePrimary" as={Page} flex={1}>
       <ScrollView
         scrollIndicatorInsets={{
           bottom: TAB_BAR_HEIGHT - safeAreaInsetValues.bottom,

@@ -70,20 +70,19 @@ export default function PointsScreen() {
         title={i18n.t(i18n.l.account.tab_points)}
       />
       {pointsFullyEnabled ? (
-        isOnboarded ? (
+        true ? (
           <PointsContent />
         ) : (
           <Swipe.Navigator
             backBehavior="history"
             initialLayout={deviceUtils.dimensions}
-            initialRouteName={isOnboarded ? 'PointsContent' : 'ClaimContent'}
-            screenOptions={{ swipeEnabled: true }}
+            initialRouteName="ClaimContent"
+            screenOptions={{ swipeEnabled: false }}
             tabBarPosition="bottom"
             tabBar={() => null}
           >
             <Swipe.Screen component={ClaimContent} name="ClaimContent" />
             <Swipe.Screen component={ReferralContent} name="ReferralContent" />
-            <Swipe.Screen component={PointsContent} name="PointsContent" />
           </Swipe.Navigator>
         )
       ) : (

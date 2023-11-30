@@ -20,7 +20,6 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
-
 import { AnimatePresence } from '@/components/animations/AnimatePresence';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import {
@@ -35,11 +34,16 @@ import {
 } from '@/design-system';
 import { alignHorizontalToFlexAlign } from '@/design-system/layout/alignment';
 import { IS_DEV } from '@/env';
-import { useAccountProfile, useDimensions } from '@/hooks';
+import {
+  useAccountProfile,
+  useDimensions,
+  useSwapCurrencyHandlers,
+} from '@/hooks';
 import { fonts } from '@/styles';
 import { useTheme } from '@/theme';
 import { safeAreaInsetValues } from '@/utils';
 import { HapticFeedbackType } from '@/utils/haptics';
+import { getNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { metadataClient } from '@/graphql';
 import { signPersonalMessage } from '@/model/wallet';
 import { RouteProp, useRoute } from '@react-navigation/native';
@@ -51,6 +55,17 @@ import {
 } from '@/graphql/__generated__/metadata';
 import { pointsQueryKey } from '@/resources/points';
 import { queryClient } from '@/react-query';
+import { Network } from '@/networks/types';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
+import * as i18n from '@/languages';
+import { delay } from '@/utils/delay';
+import { abbreviateNumber } from '@/helpers/utilities';
+import {
+  address as formatAddress,
+  abbreviateEnsForDisplay,
+} from '@/utils/abbreviations';
 
 const SCREEN_BOTTOM_INSET = safeAreaInsetValues.bottom + 20;
 const CHARACTER_WIDTH = 9.2725;
@@ -67,23 +82,36 @@ export const ConsoleSheet = () => {
 
   const [didConfirmOwnership, setDidConfirmOwnership] = useState(false);
   const [showSignInButton, setShowSignInButton] = useState(false);
-  const [showSwapButton, setShowSwapButton] = useState(false);
-  const [showGetEthButton, setShowGetEthButton] = useState(false);
+  const [showSwapOrBuyButton, setShowSwapOrBuyButton] = useState(false);
   const [pointsProfile, setPointsProfile] = useState<OnboardPointsMutation>();
+  const [hasEth, setHasEth] = useState(false);
+
   const { accountAddress } = useAccountProfile();
+  const { goBack, navigate } = useNavigation();
+  const { updateInputCurrency } = useSwapCurrencyHandlers({
+    shouldUpdate: false,
+    type: ExchangeModalTypes.swap,
+  });
+
+  useEffect(() => {
+    (async () => {
+      const ethAsset = await getNativeAssetForNetwork(
+        Network.mainnet,
+        accountAddress
+      );
+      setHasEth(!!Number(ethAsset?.balance?.amount));
+    })();
+  }, [accountAddress]);
 
   useEffect(() => {
     if (IS_DEV) {
       setDidConfirmOwnership(false);
       setShowSignInButton(false);
-      setShowGetEthButton(false);
-      setShowSwapButton(false);
+      setShowSwapOrBuyButton(false);
     }
   }, []);
 
   const signIn = useCallback(async () => {
-    setDidConfirmOwnership(true);
-    return;
     let points;
     let signature;
     let challenge;
@@ -127,10 +155,34 @@ export const ConsoleSheet = () => {
           pointsQueryKey({ address: accountAddress }),
           points
         );
-        console.log(points);
       }
     }
   }, [accountAddress, referralCode]);
+
+  const swap = useCallback(async () => {
+    goBack();
+    await delay(1000);
+    navigate(Routes.WALLET_SCREEN);
+    await delay(1000);
+    navigate(Routes.EXCHANGE_MODAL, {
+      fromDiscover: true,
+      params: {
+        fromDiscover: true,
+        onSelectCurrency: updateInputCurrency,
+        title: i18n.t(i18n.l.swap.modal_types.swap),
+        type: CurrencySelectionTypes.input,
+      },
+      screen: Routes.CURRENCY_SELECT_SCREEN,
+    });
+  }, [goBack, navigate, updateInputCurrency]);
+
+  const getEth = useCallback(async () => {
+    goBack();
+    await delay(1000);
+    navigate(Routes.WALLET_SCREEN);
+    await delay(1000);
+    navigate(Routes.ADD_CASH_SHEET);
+  }, [goBack, navigate]);
 
   return (
     <Inset bottom={{ custom: SCREEN_BOTTOM_INSET }}>
@@ -157,8 +209,7 @@ export const ConsoleSheet = () => {
             pointsProfile={pointsProfile}
             didConfirmOwnership={didConfirmOwnership}
             setShowSignInButton={setShowSignInButton}
-            setShowSwapButton={setShowSwapButton}
-            setShowGetEthButton={setShowGetEthButton}
+            setShowSwapOrBuyButton={setShowSwapOrBuyButton}
           />
         </Animated.View>
       </Box>
@@ -168,11 +219,12 @@ export const ConsoleSheet = () => {
       >
         <NeonButton label="􀎽 Sign In" onPress={signIn} />
       </AnimatePresence>
-      <AnimatePresence condition={showSwapButton} duration={300}>
-        <NeonButton color="#FEC101" label="􀖅 Try a Swap" onPress={() => {}} />
-      </AnimatePresence>
-      <AnimatePresence condition={showSwapButton} duration={300}>
-        <NeonButton color="#FEC101" label="􀁍 Get Some ETH" onPress={() => {}} />
+      <AnimatePresence condition={showSwapOrBuyButton} duration={300}>
+        <NeonButton
+          color="#FEC101"
+          label={hasEth ? '􀖅 Try a Swap' : '􀁍 Get Some ETH'}
+          onPress={hasEth ? swap : getEth}
+        />
       </AnimatePresence>
     </Inset>
   );
@@ -259,19 +311,22 @@ const ClaimRetroactivePointsFlow = ({
   onComplete,
   pointsProfile,
   setShowSignInButton,
-  setShowSwapButton,
-  setShowGetEthButton,
+  setShowSwapOrBuyButton,
 }: {
   didConfirmOwnership: boolean;
   onComplete?: () => void;
   pointsProfile?: OnboardPointsMutation;
   setShowSignInButton: React.Dispatch<React.SetStateAction<boolean>>;
-  setShowSwapButton: React.Dispatch<React.SetStateAction<boolean>>;
-  setShowGetEthButton: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowSwapOrBuyButton: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
+  const { accountENS, accountAddress } = useAccountProfile();
   const [animationKey, setAnimationKey] = useState(0);
   const [animationPhase, setAnimationPhase] = useState(0);
   const [isCalculationComplete, setIsCalculationComplete] = useState(false);
+
+  const accountName =
+    abbreviateEnsForDisplay(accountENS, 10) ||
+    formatAddress(accountAddress, 4, 5);
 
   useEffect(() => {
     if (IS_DEV) {
@@ -322,7 +377,7 @@ const ClaimRetroactivePointsFlow = ({
                 color={textColors.account}
                 enableHapticTyping
                 delayStart={300}
-                textContent="0xtester.eth"
+                textContent={accountName}
               />
             </Line>
             <AnimatedText
@@ -420,7 +475,7 @@ const ClaimRetroactivePointsFlow = ({
                 <AnimatedText
                   color={textColors.account}
                   skipAnimation
-                  textContent="0xtester.eth"
+                  textContent={accountName}
                 />
               </Line>
               <Line gap={0}>
@@ -451,7 +506,10 @@ const ClaimRetroactivePointsFlow = ({
                   delayStart={1000}
                   enableHapticTyping
                   textAlign="right"
-                  textContent="$24.4k"
+                  textContent={`$${abbreviateNumber(
+                    (rainbowSwaps?.data?.usd_amount ?? 0) +
+                      (rainbowBridges?.data?.usd_amount ?? 0)
+                  )}`}
                   typingSpeed={100}
                 />
               </Line>
@@ -467,7 +525,7 @@ const ClaimRetroactivePointsFlow = ({
                   delayStart={1000}
                   enableHapticTyping
                   textAlign="right"
-                  textContent="4 of 14"
+                  textContent={`${nftCollections?.data?.owned_collections} of ${nftCollections?.data?.total_collections}`}
                   typingSpeed={100}
                 />
               </Line>
@@ -483,7 +541,9 @@ const ClaimRetroactivePointsFlow = ({
                   delayStart={1000}
                   enableHapticTyping
                   textAlign="right"
-                  textContent="$2,425"
+                  textContent={`$${abbreviateNumber(
+                    historicBalance?.data?.usd_amount ?? 0
+                  )}`}
                   typingSpeed={100}
                 />
               </Line>
@@ -499,7 +559,9 @@ const ClaimRetroactivePointsFlow = ({
                   delayStart={1000}
                   enableHapticTyping
                   textAlign="right"
-                  textContent="$8,481"
+                  textContent={`$${abbreviateNumber(
+                    metamaskSwaps?.data?.usd_amount ?? 0
+                  )}`}
                   typingSpeed={100}
                 />
               </Line>
@@ -516,11 +578,11 @@ const ClaimRetroactivePointsFlow = ({
                   enableHapticTyping
                   onComplete={() => setIsCalculationComplete(true)}
                   textAlign="right"
-                  textContent="+ 500"
+                  textContent={`+ ${bonus?.earnings?.total}`}
                   typingSpeed={100}
                 />
               </Line>
-            </Stack>{' '}
+            </Stack>
             <Paragraph gap={30}>
               <AnimatedText
                 color={textColors.gray}
@@ -561,15 +623,13 @@ const ClaimRetroactivePointsFlow = ({
                 <AnimatedText
                   color={textColors.account}
                   skipAnimation
-                  textContent="0xtester.eth"
+                  textContent={accountName}
                 />
               </Line>
-              <Line>
-                <AnimatedText
-                  color={textColors.green}
-                  textContent="> Registration complete"
-                />
-              </Line>
+              <AnimatedText
+                color={textColors.green}
+                textContent="> Registration complete"
+              />
             </Paragraph>
             <Line alignHorizontal="justify">
               <AnimatedText
@@ -583,19 +643,17 @@ const ClaimRetroactivePointsFlow = ({
                 delayStart={1000}
                 enableHapticTyping
                 textAlign="right"
-                textContent="+ 500"
+                textContent={`+ ${bonus?.earnings?.total}`}
                 typingSpeed={100}
               />
             </Line>
-            <Line alignHorizontal="left">
-              <AnimatedText
-                color={textColors.gray}
-                delayStart={1000}
-                onComplete={() => setShowSwapButton(true)}
-                weight="normal"
-                textContent="To claim the rest of your bonus points, swap at least $100 through Rainbow."
-              />
-            </Line>
+            <AnimatedText
+              color={textColors.gray}
+              delayStart={1000}
+              onComplete={() => setShowSwapOrBuyButton(true)}
+              weight="normal"
+              textContent={`To claim the rest of your bonus\n\npoints, swap at least $100\n\nthrough Rainbow.`}
+            />
           </Stack>
         ))}
     </TypingAnimation>
