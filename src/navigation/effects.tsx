@@ -463,6 +463,11 @@ export const walletconnectBottomSheetPreset: BottomSheetNavigationOptions = {
   backdropOpacity: 1,
 };
 
+export const consoleSheetPreset: BottomSheetNavigationOptions = {
+  backdropColor: 'black',
+  backdropOpacity: 1,
+};
+
 export const expandedPresetWithSmallGestureResponseDistance: StackNavigationOptions &
   BottomSheetNavigationOptions = {
   ...expandedPreset,

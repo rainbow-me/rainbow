@@ -35,18 +35,36 @@ import {
 } from '@/design-system';
 import { alignHorizontalToFlexAlign } from '@/design-system/layout/alignment';
 import { IS_DEV } from '@/env';
-import { useDimensions } from '@/hooks';
+import { useAccountProfile, useDimensions } from '@/hooks';
 import { fonts } from '@/styles';
 import { useTheme } from '@/theme';
 import { safeAreaInsetValues } from '@/utils';
 import { HapticFeedbackType } from '@/utils/haptics';
+import { metadataClient } from '@/graphql';
+import { signPersonalMessage } from '@/model/wallet';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import { RainbowError, logger } from '@/logger';
+import { PointsErrorType } from '@/graphql/__generated__/metadata';
+import { pointsQueryKey } from '@/resources/points';
+import { queryClient } from '@/react-query';
 
 const SCREEN_BOTTOM_INSET = safeAreaInsetValues.bottom + 20;
 const CHARACTER_WIDTH = 9.2725;
 
+type ConsoleSheetParams = {
+  ConsoleSheet: {
+    referralCode?: string;
+  };
+};
+
 export const ConsoleSheet = () => {
+  const { params } = useRoute<RouteProp<ConsoleSheetParams, 'ConsoleSheet'>>();
+  const referralCode = params?.referralCode;
+
   const [didConfirmOwnership, setDidConfirmOwnership] = useState(false);
   const [showSignInButton, setShowSignInButton] = useState(false);
+  const { accountAddress } = useAccountProfile();
 
   useEffect(() => {
     if (IS_DEV) {
@@ -54,6 +72,54 @@ export const ConsoleSheet = () => {
       setShowSignInButton(false);
     }
   }, []);
+
+  const signIn = useCallback(async () => {
+    let points;
+    let signature;
+    let challenge;
+    const challengeResponse = await metadataClient.getPointsOnboardChallenge({
+      address: accountAddress,
+      referral: referralCode,
+    });
+    challenge = challengeResponse?.pointsOnboardChallenge;
+    if (challenge) {
+      const signatureResponse = await signPersonalMessage(challenge);
+      signature = signatureResponse?.result;
+      if (signature) {
+        points = await metadataClient.onboardPoints({
+          address: accountAddress,
+          signature,
+          referral: referralCode,
+        });
+      }
+    }
+    if (!points) {
+      logger.error(
+        new RainbowError(
+          `Error onboarding points user - accountAddress: ${accountAddress}, referralCode: ${referralCode}, challenge: ${challenge}, signature: ${signature}`
+        )
+      );
+      Alert.alert('Something went wrong, please try again.');
+    } else {
+      if (points.onboardPoints?.error) {
+        const errorType = points.onboardPoints?.error?.type;
+        if (errorType === PointsErrorType.ExistingUser) {
+          Alert.alert('Points already claimed. Please restart the app.');
+        } else if (errorType === PointsErrorType.InvalidReferralCode) {
+          Alert.alert(
+            'Invalid referral code. Please check your code and try again.'
+          );
+        }
+      } else {
+        setDidConfirmOwnership(true);
+        queryClient.setQueryData(
+          pointsQueryKey({ address: accountAddress }),
+          points
+        );
+        console.log(points);
+      }
+    }
+  }, [accountAddress, referralCode]);
 
   return (
     <Inset bottom={{ custom: SCREEN_BOTTOM_INSET }}>
@@ -88,7 +154,8 @@ export const ConsoleSheet = () => {
       >
         <NeonButton
           label="􀎽 Sign In"
-          onPress={() => setTimeout(() => setDidConfirmOwnership(true), 1000)}
+          // onPress={() => setTimeout(() => setDidConfirmOwnership(true), 1000)}
+          onPress={signIn}
         />
       </AnimatePresence>
     </Inset>
@@ -109,55 +176,65 @@ const NeonButton = ({
   const green = useForegroundColor('green');
 
   return (
-    <ButtonPressAnimation
-      hapticType="impactHeavy"
-      onPress={onPress}
-      scaleTo={0.94}
-      style={styles.neonButtonWrapper}
-      transformOrigin="top"
+    <Box
+      alignItems="center"
+      width="full"
+      justifyContent="center"
+      position="absolute"
+      bottom={{ custom: 16 }}
     >
-      <Animated.View
-        style={[
-          styles.neonButton,
-          {
-            borderColor: color || green,
-            shadowColor: color || green,
-            width: deviceWidth - 64,
-          },
-        ]}
+      <ButtonPressAnimation
+        hapticType="impactHeavy"
+        onPress={onPress}
+        scaleTo={0.94}
+        style={styles.neonButtonWrapper}
+        transformOrigin="top"
       >
-        <Cover>
-          <Box
-            borderRadius={11}
-            height={{ custom: 46 }}
-            style={[
-              styles.neonButtonFill,
-              {
-                backgroundColor: colors.alpha(color || green, 0.1),
-              },
-            ]}
-            width={{ custom: deviceWidth - 66 }}
-          />
-        </Cover>
-        <RNText
+        <Animated.View
           style={[
-            styles.neonButtonText,
+            styles.neonButton,
             {
-              textShadowColor: colors.alpha(color || green, 0.6),
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderColor: color || green,
+              shadowColor: color || green,
+              width: deviceWidth - 64,
             },
           ]}
         >
-          <Text
-            align="center"
-            color={color ? { custom: color } : 'green'}
-            size="20pt"
-            weight="heavy"
+          <Cover>
+            <Box
+              borderRadius={11}
+              height={{ custom: 46 }}
+              style={[
+                styles.neonButtonFill,
+                {
+                  backgroundColor: colors.alpha(color || green, 0.1),
+                },
+              ]}
+              width={{ custom: deviceWidth - 66 }}
+            />
+          </Cover>
+          <RNText
+            style={[
+              styles.neonButtonText,
+              {
+                textShadowColor: colors.alpha(color || green, 0.6),
+              },
+            ]}
           >
-            {label}
-          </Text>
-        </RNText>
-      </Animated.View>
-    </ButtonPressAnimation>
+            <Text
+              align="center"
+              color={color ? { custom: color } : 'green'}
+              size="20pt"
+              weight="heavy"
+            >
+              {label}
+            </Text>
+          </RNText>
+        </Animated.View>
+      </ButtonPressAnimation>
+    </Box>
   );
 };
 
@@ -773,8 +850,6 @@ const triggerHapticFeedback = (hapticType: HapticFeedbackType) =>
 const styles = StyleSheet.create({
   neonButtonWrapper: {
     alignSelf: 'center',
-    bottom: 16,
-    position: 'absolute',
   },
   neonButton: {
     alignContent: 'center',
@@ -809,7 +884,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     paddingVertical: 45,
     width: '100%',
-    zIndex: 2,
+    zIndex: -1,
   },
   text: {
     fontFamily: fonts.family.SFMono,

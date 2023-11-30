@@ -121,6 +121,10 @@ query getdApp($shortName: String!, $url: String!, $status: Boolean!) {
 
 query getPointsDataForWallet($address: String!) {
   points(address: $address) {
+    error {
+      message
+      type
+    }
     meta {
       distribution {
         next

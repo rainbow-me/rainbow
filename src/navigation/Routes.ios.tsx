@@ -96,7 +96,7 @@ import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
 import MintSheet from '@/screens/mints/MintSheet';
 import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
 import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoSheet';
-import { ConsoleSheet } from '@/screens/ConsoleSheet';
+import { ConsoleSheet } from '@/screens/points/ConsoleSheet';
 
 type StackNavigatorParams = {
   [Routes.SEND_SHEET]: unknown;

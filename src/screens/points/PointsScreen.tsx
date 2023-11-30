@@ -18,6 +18,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { deviceUtils } from '@/utils';
 import ClaimContent from './content/ClaimContent';
 import ReferralContent from './content/ReferralContent';
+import { PointsErrorType } from '@/graphql/__generated__/metadata';
 
 const Swipe = createMaterialTopTabNavigator();
 
@@ -35,7 +36,8 @@ export default function PointsScreen() {
     walletAddress: accountAddress,
   });
 
-  const isOnboarded = !!data?.points?.user?.referralCode;
+  const isOnboarded =
+    data?.points?.error?.type !== PointsErrorType.NonExistingUser;
 
   return (
     <Box as={Page} flex={1} height="full" testID="points-screen" width="full">
