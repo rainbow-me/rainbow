@@ -324,9 +324,8 @@ const ClaimRetroactivePointsFlow = ({
   const [animationPhase, setAnimationPhase] = useState(0);
   const [isCalculationComplete, setIsCalculationComplete] = useState(false);
 
-  const accountName =
-    abbreviateEnsForDisplay(accountENS, 10) ||
-    formatAddress(accountAddress, 4, 5);
+  const accountName = (abbreviateEnsForDisplay(accountENS, 10) ||
+    formatAddress(accountAddress, 4, 5)) as string;
 
   useEffect(() => {
     if (IS_DEV) {
@@ -652,7 +651,8 @@ const ClaimRetroactivePointsFlow = ({
               delayStart={1000}
               onComplete={() => setShowSwapOrBuyButton(true)}
               weight="normal"
-              textContent={`To claim the rest of your bonus\n\npoints, swap at least $100\n\nthrough Rainbow.`}
+              multiline
+              textContent="To claim the rest of your bonus points, swap at least $100 through Rainbow."
             />
           </Stack>
         ))}
@@ -712,6 +712,7 @@ type AnimatedTextProps = {
   disableShadow?: boolean;
   enableHapticTyping?: boolean;
   hapticType?: HapticFeedbackType;
+  multiline?: boolean;
   onComplete?: () => void;
   opacity?: number;
   rainbowText?: boolean;
@@ -731,6 +732,7 @@ const AnimatedText = ({
   disableShadow,
   enableHapticTyping,
   hapticType = 'selection',
+  multiline,
   onComplete,
   opacity,
   rainbowText,
@@ -910,7 +912,9 @@ const AnimatedText = ({
 
   return (
     <Bleed space="16px">
-      <RNText style={[styles.text, textStyle]}>
+      <RNText
+        style={[styles.text, textStyle, multiline ? { lineHeight: 20.25 } : {}]}
+      >
         {rainbowText
           ? displayedText.split('').map((char, i) => (
               <RNText key={i} style={getRainbowTextStyle(i)}>

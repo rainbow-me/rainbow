@@ -70,7 +70,7 @@ export default function PointsScreen() {
         title={i18n.t(i18n.l.account.tab_points)}
       />
       {pointsFullyEnabled ? (
-        true ? (
+        isOnboarded ? (
           <PointsContent />
         ) : (
           <Swipe.Navigator
