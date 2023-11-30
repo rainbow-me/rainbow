@@ -14,13 +14,10 @@ import * as i18n from '@/languages';
 import { usePoints } from '@/resources/points';
 import PointsContent from './content/PointsContent';
 import PlaceholderContent from './content/PlaceholderContent';
-import TestContent from './content/TestContent';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { deviceUtils } from '@/utils';
 import ClaimContent from './content/ClaimContent';
-import ReferralCodeContent from './content/ReferralCodeContent';
-import { IS_ANDROID } from '@/env';
-import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
+import ReferralContent from './content/ReferralContent';
 
 const Swipe = createMaterialTopTabNavigator();
 
@@ -34,9 +31,11 @@ export default function PointsScreen() {
   const pointsFullyEnabled =
     useExperimentalFlag(POINTS) || config.points_fully_enabled;
   const { navigate } = useNavigation();
-  const { data, isFetching, dataUpdatedAt } = usePoints({
+  const { data } = usePoints({
     walletAddress: accountAddress,
   });
+
+  const isOnboarded = !!data?.points?.user?.referralCode;
 
   return (
     <Box as={Page} flex={1} height="full" testID="points-screen" width="full">
@@ -70,72 +69,20 @@ export default function PointsScreen() {
       />
       {pointsFullyEnabled ? (
         <Swipe.Navigator
+          backBehavior="history"
           initialLayout={deviceUtils.dimensions}
-          initialRouteName="ClaimContent"
+          initialRouteName={isOnboarded ? 'PointsContent' : 'ClaimContent'}
           screenOptions={{ swipeEnabled: true }}
-          // tabBar={() => (
-          //   <Box
-          //     height={{ custom: TAB_BAR_HEIGHT }}
-          //     position="absolute"
-          //     bottom="0px"
-          //   />
-          // )}
           tabBarPosition="bottom"
           tabBar={() => null}
         >
-          <Swipe.Screen
-            component={PointsContent}
-            // initialParams={{ isFirstWallet, userData }}
-            name="PointsContent"
-            // listeners={{
-            //   focus: () => {
-            //     setScrollEnabled(true);
-            //   },
-            // }}
-          />
-          <Swipe.Screen
-            component={ClaimContent}
-            // initialParams={{ isFirstWallet, userData }}
-            name="ClaimContent"
-            // listeners={{
-            //   focus: () => {
-            //     setScrollEnabled(true);
-            //   },
-            // }}
-          />
-          <Swipe.Screen
-            component={ReferralCodeContent}
-            // initialParams={{ isFirstWallet, userData }}
-            name="ReferralCodeContent"
-            // listeners={{
-            //   focus: () => {
-            //     setScrollEnabled(true);
-            //   },
-            // }}
-          />
-          <Swipe.Screen
-            component={() => (
-              <Box
-                as={ButtonPressAnimation}
-                onPress={() => navigate('NFTOffersSheet')}
-                background="green"
-                width="full"
-                height="full"
-              />
-            )}
-            // initialParams={{ type }}
-            name="test2"
-            // listeners={{
-            //   focus: () => {
-            //     setScrollEnabled(false);
-            //   },
-            // }}
-          />
+          <Swipe.Screen component={ClaimContent} name="ClaimContent" />
+          <Swipe.Screen component={ReferralContent} name="ReferralContent" />
+          <Swipe.Screen component={PointsContent} name="PointsContent" />
         </Swipe.Navigator>
       ) : (
         <PlaceholderContent />
       )}
-      {/* <TestContent /> */}
     </Box>
   );
 }

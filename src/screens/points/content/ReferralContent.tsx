@@ -1,11 +1,8 @@
 import { ButtonPressAnimation } from '@/components/animations';
-import { Input } from '@/components/inputs';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import {
   Bleed,
   Box,
-  Cover,
-  DebugLayout,
   Inline,
   Stack,
   Text,
@@ -23,31 +20,30 @@ import {
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
-import { fonts } from '@/styles';
-import { haptics, safeAreaInsetValues } from '@/utils';
+import { haptics } from '@/utils';
 import { delay } from '@/utils/delay';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Keyboard, TextInput, View } from 'react-native';
+import { Keyboard, TextInput } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import * as i18n from '@/languages';
 
-export default function ReferralCodeContent() {
+export default function ReferralContent() {
   const { accountAddress } = useAccountProfile();
   const { accentColor } = useAccountAccentColor();
-  const { goBack, navigate } = useNavigation();
+  const { goBack } = useNavigation();
 
   const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
 
-  const separatorSecondary = useForegroundColor('separatorSecondary');
   const surfacePrimary = useBackgroundColor('surfacePrimary');
 
-  const [referralCode, setReferralCode] = useState('');
   const [referralCodeDisplay, setReferralCodeDisplay] = useState('');
   const [status, setStatus] = useState<'incomplete' | 'valid' | 'invalid'>(
     'incomplete'
@@ -55,27 +51,29 @@ export default function ReferralCodeContent() {
 
   const textInputRef = React.useRef<TextInput>(null);
 
-  const validateReferralCode = useCallback(async () => {
-    const res1 = await metadataClient.getPointsDataForWallet({
-      address: accountAddress,
-    });
-    console.log(res1.points?.user);
-    const res = await metadataClient.onboardPoints({
-      address: accountAddress,
-      referral: 'a',
-      signature: '',
-    });
-    console.log(res?.onboardPoints);
-    if (res?.onboardPoints?.error) {
-      setStatus('invalid');
-      haptics.notificationError();
-    } else {
-      setStatus('valid');
-      textInputRef.current?.blur();
-      console.log(res);
-      haptics.notificationSuccess();
-    }
-  }, [accountAddress]);
+  const validateReferralCode = useCallback(
+    async (text: string) => {
+      const referralCode = text.slice(0, 3) + text.slice(4, 8);
+      if (referralCode.length !== 6) return;
+      const res = await metadataClient.onboardPoints({
+        address: accountAddress,
+        referral: referralCode,
+        signature: '',
+      });
+      if (res?.onboardPoints?.error) {
+        if (res.onboardPoints.error.type === 'INVALID_REFERRAL_CODE') {
+          setStatus('invalid');
+          haptics.notificationError();
+        }
+        Alert.alert(i18n.t(i18n.l.points.referral.error));
+      } else {
+        setStatus('valid');
+        textInputRef.current?.blur();
+        haptics.notificationSuccess();
+      }
+    },
+    [accountAddress]
+  );
 
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const [isKeyboardOpening, setIsKeyboardOpening] = useState(false);
@@ -153,6 +151,24 @@ export default function ReferralCodeContent() {
     weight: 'heavy',
   });
 
+  const onChangeText = useCallback(
+    (text: string) => {
+      if (text.length === 3 && referralCodeDisplay.length === 2) {
+        setReferralCodeDisplay(text + '-');
+      } else if (text.length === 3 && referralCodeDisplay.length === 4) {
+        setReferralCodeDisplay(text.slice(0, text.length - 1));
+      } else {
+        setReferralCodeDisplay(text);
+      }
+      if (text.length !== 7) {
+        setStatus('incomplete');
+      } else {
+        validateReferralCode(text);
+      }
+    },
+    [referralCodeDisplay.length, validateReferralCode]
+  );
+
   return (
     <Box
       background="surfacePrimary"
@@ -180,7 +196,7 @@ export default function ReferralCodeContent() {
                   />
                 </Svg>
                 <Text size="22pt" weight="heavy" align="center" color="label">
-                  Enter your referral code
+                  {i18n.t(i18n.l.points.referral.title)}
                 </Text>
               </Stack>
               <Text
@@ -189,7 +205,7 @@ export default function ReferralCodeContent() {
                 align="center"
                 color="labelTertiary"
               >
-                Enter a referral code below to claim your bonus reward.
+                {i18n.t(i18n.l.points.referral.subtitle)}
               </Text>
             </Stack>
 
@@ -203,6 +219,7 @@ export default function ReferralCodeContent() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 paddingHorizontal: 20,
+                minWidth: IS_IOS ? 140 : undefined,
                 shadowOffset: {
                   width: 0,
                   height: 13,
@@ -219,42 +236,15 @@ export default function ReferralCodeContent() {
                   value={referralCodeDisplay}
                   style={{
                     height: 48,
-                    ...(IS_IOS ? inputTextStyle : inputTextStyle),
-                    // letterSpacing: 0.36,
-                    width: 105,
-                    // ...useTextStyle({
-                    //   align: 'left',
-                    //   color: 'label',
-                    //   size: '20pt',
-                    //   weight: 'heavy',
-                    // }),
+                    ...(IS_IOS ? inputTextStyle : {}),
                   }}
-                  // onBlur={() => textInputRef.current?.focus()}
-                  // width={95}
                   autoFocus={false}
                   maxLength={7}
                   selectionColor={statusColor}
                   textAlign="left"
                   autoCapitalize="characters"
                   placeholder="XXX-XXX"
-                  onChangeText={(text: string) => {
-                    console.log(text.length, referralCodeDisplay.length);
-                    if (text.length === 3 && referralCodeDisplay.length === 2) {
-                      setReferralCodeDisplay(text + '-');
-                    } else if (
-                      text.length === 3 &&
-                      referralCodeDisplay.length === 4
-                    ) {
-                      setReferralCodeDisplay(text.slice(0, text.length - 1));
-                    } else {
-                      setReferralCodeDisplay(text);
-                    }
-                    if (text.length !== 7) {
-                      setStatus('incomplete');
-                    } else {
-                      validateReferralCode();
-                    }
-                  }}
+                  onChangeText={onChangeText}
                 />
                 {status === 'valid' && (
                   <Bleed horizontal="2px">
@@ -289,9 +279,9 @@ export default function ReferralCodeContent() {
           }}
           left={{ custom: 20 }}
         >
-          <ButtonPressAnimation onPress={() => navigate('ClaimContent')}>
+          <ButtonPressAnimation onPress={goBack}>
             <Text color={{ custom: accentColor }} size="20pt" weight="bold">
-              􀆉 Back
+              {`􀆉 ${i18n.t(i18n.l.points.referral.back)}`}`
             </Text>
           </ButtonPressAnimation>
         </Box>
@@ -314,7 +304,7 @@ export default function ReferralCodeContent() {
             align="center"
             color={{ custom: surfacePrimary }}
           >
-            Get Started
+            {i18n.t(i18n.l.points.referral.get_started)}
           </Text>
         </ButtonPressAnimation>
       )}

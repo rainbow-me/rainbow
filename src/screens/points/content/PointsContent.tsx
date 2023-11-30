@@ -1,5 +1,5 @@
-import React from 'react';
-import { Image, RefreshControl } from 'react-native';
+import React, { useCallback } from 'react';
+import { BackHandler, Image, RefreshControl } from 'react-native';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
@@ -44,6 +44,7 @@ import {
   addressHashedEmoji,
 } from '@/utils/profileUtils';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
+import { useFocusEffect } from '@react-navigation/native';
 
 const STREAKS_ENABLED = true;
 const REFERRALS_ENABLED = true;
@@ -51,13 +52,13 @@ const ONE_WEEK_MS = 604_800_000;
 
 const displayNextDistribution = (seconds: number) => {
   const days = [
-    i18n.t(i18n.l.points.sunday),
-    i18n.t(i18n.l.points.monday),
-    i18n.t(i18n.l.points.tuesday),
-    i18n.t(i18n.l.points.wednesday),
-    i18n.t(i18n.l.points.thursday),
-    i18n.t(i18n.l.points.friday),
-    i18n.t(i18n.l.points.saturday),
+    i18n.t(i18n.l.points.points.sunday),
+    i18n.t(i18n.l.points.points.monday),
+    i18n.t(i18n.l.points.points.tuesday),
+    i18n.t(i18n.l.points.points.wednesday),
+    i18n.t(i18n.l.points.points.thursday),
+    i18n.t(i18n.l.points.points.friday),
+    i18n.t(i18n.l.points.points.saturday),
   ];
 
   const ms = seconds * 1000;
@@ -210,7 +211,7 @@ const LeaderboardRow = ({
                   􀙬
                 </Text>
                 <Text color="labelQuaternary" size="13pt" weight="semibold">
-                  {`40 ${i18n.t(i18n.l.points.days)}`}
+                  {`40 ${i18n.t(i18n.l.points.points.days)}`}
                 </Text>
               </Inline>
             )}
@@ -350,6 +351,7 @@ export default function PointsContent() {
   const { data, isFetching, dataUpdatedAt } = usePoints({
     walletAddress: accountAddress,
   });
+  const { navigate } = useNavigation();
 
   const labelSecondary = useForegroundColor('labelSecondary');
   const pink = useForegroundColor('pink');
@@ -357,6 +359,22 @@ export default function PointsContent() {
 
   const [isToastActive, setToastActive] = useRecoilState(
     addressCopiedToastAtom
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      const backAction = () => {
+        navigate(Routes.WALLET_SCREEN);
+        return true;
+      };
+
+      const backHandler = BackHandler.addEventListener(
+        'hardwareBackPress',
+        backAction
+      );
+
+      return () => backHandler.remove();
+    }, [navigate])
   );
 
   const onPressCopy = React.useCallback(
@@ -407,7 +425,7 @@ export default function PointsContent() {
   const shouldDisplayError = !isFetching && !data?.points;
 
   return (
-    <>
+    <Box height="full" background="surfacePrimary">
       <ScrollView
         scrollIndicatorInsets={{
           bottom: TAB_BAR_HEIGHT - safeAreaInsetValues.bottom,
@@ -496,7 +514,7 @@ export default function PointsContent() {
                       {canDisplayNextRewardCard && (
                         <InfoCard
                           onPress={() => {}}
-                          title={i18n.t(i18n.l.points.next_reward)}
+                          title={i18n.t(i18n.l.points.points.next_reward)}
                           mainText={getFormattedTimeQuantity(
                             nextDistributionSeconds
                           )}
@@ -510,21 +528,21 @@ export default function PointsContent() {
                       {canDisplayStreakCard && (
                         <InfoCard
                           onPress={() => {}}
-                          title={i18n.t(i18n.l.points.streak)}
-                          mainText={`36 ${i18n.t(i18n.l.points.days)}`}
+                          title={i18n.t(i18n.l.points.points.streak)}
+                          mainText={`36 ${i18n.t(i18n.l.points.points.days)}`}
                           icon="􀙬"
-                          subtitle={i18n.t(i18n.l.points.longest_yet)}
+                          subtitle={i18n.t(i18n.l.points.points.longest_yet)}
                           accentColor={pink}
                         />
                       )}
                       {canDisplayReferralsCard && (
                         <InfoCard
                           onPress={() => {}}
-                          title={i18n.t(i18n.l.points.referrals)}
+                          title={i18n.t(i18n.l.points.points.referrals)}
                           mainText="12"
                           icon="􀇯"
                           subtitle={`${(8200).toLocaleString('en-US')} ${i18n.t(
-                            i18n.l.points.points
+                            i18n.l.points.points.points
                           )}`}
                           accentColor={yellow}
                         />
@@ -550,7 +568,7 @@ export default function PointsContent() {
                     <ButtonPressAnimation>
                       <Inline space="4px" alignVertical="center">
                         <Text weight="bold" color="labelTertiary" size="15pt">
-                          {i18n.t(i18n.l.points.referral_link)}
+                          {i18n.t(i18n.l.points.points.referral_link)}
                         </Text>
                         <Text
                           weight="heavy"
@@ -591,7 +609,7 @@ export default function PointsContent() {
                                 color="label"
                                 size="15pt"
                               >
-                                {i18n.t(i18n.l.points.share)}
+                                {i18n.t(i18n.l.points.points.share)}
                               </Text>
                             </Box>
                           }
@@ -664,7 +682,7 @@ export default function PointsContent() {
               <Stack space="16px">
                 <Inset left="4px">
                   <Text color="label" size="20pt" weight="heavy">
-                    {i18n.t(i18n.l.points.leaderboard)}
+                    {i18n.t(i18n.l.points.points.leaderboard)}
                   </Text>
                 </Inset>
                 {canDisplayCurrentRank ? (
@@ -762,14 +780,17 @@ export default function PointsContent() {
               align="center"
               color="labelTertiary"
             >
-              {i18n.t(i18n.l.points.error)}
+              {i18n.t(i18n.l.points.points.error)}
             </Text>
           </Box>
         )}
       </ScrollView>
       <ToastPositionContainer>
-        <Toast isVisible={isToastActive} text="􀁣 Link Copied" />
+        <Toast
+          isVisible={isToastActive}
+          text={`􀁣 ${i18n.t(i18n.l.points.points.link_copied)}`}
+        />
       </ToastPositionContainer>
-    </>
+    </Box>
   );
 }

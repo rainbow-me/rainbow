@@ -7,16 +7,12 @@ import {
   useBackgroundColor,
   useForegroundColor,
 } from '@/design-system';
-import {
-  useAccountAccentColor,
-  useAccountProfile,
-  useDimensions,
-} from '@/hooks';
+import { useAccountAccentColor, useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
-import { safeAreaInsetValues } from '@/utils';
 import React from 'react';
 import Svg, { Path } from 'react-native-svg';
+import * as i18n from '@/languages';
 
 export default function ClaimContent() {
   const { accentColor } = useAccountAccentColor();
@@ -52,7 +48,7 @@ export default function ClaimContent() {
                 />
               </Svg>
               <Text size="22pt" weight="heavy" align="center" color="label">
-                Claim your points
+                {i18n.t(i18n.l.points.claim.title)}
               </Text>
             </Stack>
             <Text
@@ -61,7 +57,7 @@ export default function ClaimContent() {
               align="center"
               color="labelTertiary"
             >
-              {"Points are here. Find out how many you've been awarded."}
+              {i18n.t(i18n.l.points.claim.subtitle)}
             </Text>
           </Stack>
           <ButtonPressAnimation
@@ -81,15 +77,13 @@ export default function ClaimContent() {
               align="center"
               color={{ custom: surfacePrimary }}
             >
-              Get Started
+              {i18n.t(i18n.l.points.claim.get_started)}
             </Text>
           </ButtonPressAnimation>
         </Stack>
       </Box>
       <ButtonPressAnimation
-        onPress={() => {
-          navigate('ReferralCodeContent');
-        }}
+        onPress={() => navigate('ReferralContent')}
         style={{
           borderRadius: 26,
           height: 48,
@@ -107,7 +101,7 @@ export default function ClaimContent() {
           align="center"
           color={{ custom: accentColor }}
         >
-          Use Referral Code
+          {i18n.t(i18n.l.points.claim.use_referral_code)}
         </Text>
       </ButtonPressAnimation>
     </Box>

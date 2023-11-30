@@ -130,7 +130,7 @@ export default function PlaceholderContent() {
                 size="26pt"
                 weight="semibold"
               >
-                {i18n.t(i18n.l.points.coming_soon_title)}
+                {i18n.t(i18n.l.points.placeholder.coming_soon_title)}
               </Text>
               <Text
                 align="center"
@@ -138,7 +138,7 @@ export default function PlaceholderContent() {
                 size="15pt"
                 weight="medium"
               >
-                {i18n.t(i18n.l.points.coming_soon_description)}
+                {i18n.t(i18n.l.points.placeholder.coming_soon_description)}
               </Text>
             </Stack>
           </Stack>
