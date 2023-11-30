@@ -5,7 +5,7 @@ interface NetworkNonceInfo {
   nonce: number;
 }
 
-type AccountNonceInfo = Record<Network, NetworkNonceInfo>;
+type AccountNonceInfo = Partial<Record<Network, NetworkNonceInfo>>;
 
 export interface NonceManager {
   [key: EthereumAddress]: AccountNonceInfo;

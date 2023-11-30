@@ -210,7 +210,7 @@ export const NFTOffersSheet = () => {
                       ) {
                         queryClient.invalidateQueries({
                           queryKey: nftOffersQueryKey({
-                            address: accountAddress,
+                            walletAddress: accountAddress,
                           }),
                         });
                       }

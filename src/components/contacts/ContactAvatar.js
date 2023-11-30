@@ -10,8 +10,7 @@ import ShadowStack from '@/react-native-shadow-stack';
 import { IS_ANDROID } from '@/env';
 
 const buildShadows = (color, size, darkMode, colors) => {
-  // TODO: remove `legacySmall` size once rainbow home screen revamp is released
-  if (size === 'small' || size === 'legacySmall') {
+  if (size === 'small') {
     return [
       [0, 3, 5, colors.shadow, 0.14],
       [
@@ -46,6 +45,17 @@ const buildShadows = (color, size, darkMode, colors) => {
         0.4,
       ],
     ];
+  } else if (size === 'signing') {
+    return [
+      [
+        0,
+        4,
+        12,
+        darkMode ? colors.shadow : colors.avatarBackgrounds[color] || color,
+        darkMode ? 0.16 : 0.2,
+      ],
+      [0, 2, 6, colors.trueBlack, 0.02],
+    ];
   } else {
     return sizeConfigs(colors)[size]['shadow'];
   }
@@ -68,6 +78,14 @@ const sizeConfigs = colors => ({
     ],
     textSize: 28,
   },
+  sim: {
+    dimensions: 44,
+    shadow: [
+      [0, 4, 6, colors.shadow, 0.04],
+      [0, 1, 3, colors.shadow, 0.08],
+    ],
+    textSize: 'larger',
+  },
   medium: {
     dimensions: 40,
     shadow: [
@@ -75,6 +93,10 @@ const sizeConfigs = colors => ({
       [0, 1, 3, colors.shadow, 0.08],
     ],
     textSize: 'larger',
+  },
+  signing: {
+    dimensions: 44,
+    textSize: 25,
   },
   small: {
     dimensions: 36,
@@ -84,11 +106,6 @@ const sizeConfigs = colors => ({
     dimensions: 36,
     textSize: 'large',
     shadow: [[0, 0, 0, colors.shadow, 0]],
-  },
-  // TODO: remove `legacySmall` size once rainbow home screen revamp is released
-  legacySmall: {
-    dimensions: 34,
-    textSize: 'large',
   },
   smaller: {
     dimensions: 20,
@@ -127,7 +144,7 @@ const ContactAvatar = ({ color, size = 'medium', value, ...props }) => {
     typeof color === 'number'
       ? // sometimes the color is gonna be missing so we fallback to white
         // otherwise there will be only shadows without the the placeholder "circle"
-        colors.avatarBackgrounds[color] ?? 'white'
+        colors.avatarBackgrounds[color] ?? colors.white
       : color;
 
   return (
