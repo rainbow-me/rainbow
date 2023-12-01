@@ -132,11 +132,11 @@ export const ConsoleSheet = () => {
       }
     }
     if (!points) {
-      logger.error(
-        new RainbowError(
-          `Error onboarding points user - accountAddress: ${accountAddress}, referralCode: ${referralCode}, challenge: ${challenge}, signature: ${signature}`
-        )
-      );
+      logger.error(new RainbowError('Error onboarding points user'), {
+        referralCode,
+        challenge,
+        signature,
+      });
       Alert.alert(i18n.t(i18n.l.points.console.generic_alert));
     } else {
       if (points.onboardPoints?.error) {
