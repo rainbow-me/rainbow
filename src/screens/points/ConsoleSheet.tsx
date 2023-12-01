@@ -137,15 +137,15 @@ export const ConsoleSheet = () => {
           `Error onboarding points user - accountAddress: ${accountAddress}, referralCode: ${referralCode}, challenge: ${challenge}, signature: ${signature}`
         )
       );
-      Alert.alert('Something went wrong, please try again.');
+      Alert.alert(i18n.t(i18n.l.points.console.generic_alert));
     } else {
       if (points.onboardPoints?.error) {
         const errorType = points.onboardPoints?.error?.type;
         if (errorType === PointsErrorType.ExistingUser) {
-          Alert.alert('Points already claimed. Please restart the app.');
+          Alert.alert(i18n.t(i18n.l.points.console.existing_user_alert));
         } else if (errorType === PointsErrorType.InvalidReferralCode) {
           Alert.alert(
-            'Invalid referral code. Please check your code and try again.'
+            i18n.t(i18n.l.points.console.invalid_referral_code_alert)
           );
         }
       } else {
@@ -217,12 +217,19 @@ export const ConsoleSheet = () => {
         condition={showSignInButton && !didConfirmOwnership}
         duration={300}
       >
-        <NeonButton label="􀎽 Sign In" onPress={signIn} />
+        <NeonButton
+          label={`􀎽 ${i18n.t(i18n.l.points.console.sign_in)}`}
+          onPress={signIn}
+        />
       </AnimatePresence>
       <AnimatePresence condition={showSwapOrBuyButton} duration={300}>
         <NeonButton
           color="#FEC101"
-          label={hasEth ? '􀖅 Try a Swap' : '􀁍 Get Some ETH'}
+          label={
+            hasEth
+              ? `􀖅 ${i18n.t(i18n.l.points.console.try_a_swap)}`
+              : `􀁍 ${i18n.t(i18n.l.points.console.get_some_eth)}`
+          }
           onPress={hasEth ? swap : getEth}
         />
       </AnimatePresence>
@@ -369,7 +376,7 @@ const ClaimRetroactivePointsFlow = ({
               <AnimatedText
                 delayStart={500}
                 color={textColors.gray}
-                textContent="Account:"
+                textContent={`${i18n.t(i18n.l.points.console.account)}:`}
                 weight="normal"
               />
               <AnimatedText
@@ -382,20 +389,22 @@ const ClaimRetroactivePointsFlow = ({
             <AnimatedText
               color={textColors.gray}
               delayStart={500}
-              textContent="> Authorization required"
+              textContent={`> ${i18n.t(i18n.l.points.console.auth_required)}`}
               weight="normal"
             />
             <AnimatedText
               color={textColors.gray}
               onComplete={() => setShowSignInButton(true)}
-              textContent="> Sign in with your wallet"
+              textContent={`> ${i18n.t(
+                i18n.l.points.console.sign_in_with_wallet
+              )}`}
               weight="normal"
             />
             <AnimatedText
               color={textColors.green}
               enableHapticTyping
               startWhenTrue={didConfirmOwnership}
-              textContent="> Access granted"
+              textContent={`> ${i18n.t(i18n.l.points.console.access_granted)}`}
             />
           </Paragraph>
           <Paragraph leftIndent={2}>
@@ -468,7 +477,7 @@ const ClaimRetroactivePointsFlow = ({
                   delayStart={500}
                   color={textColors.gray}
                   skipAnimation
-                  textContent="Account:"
+                  textContent={`${i18n.t(i18n.l.points.console.account)}:`}
                   weight="normal"
                 />
                 <AnimatedText
@@ -481,7 +490,9 @@ const ClaimRetroactivePointsFlow = ({
                 <AnimatedText
                   color={textColors.gray}
                   delayStart={1000}
-                  textContent="> Calculating points"
+                  textContent={`> ${i18n.t(
+                    i18n.l.points.console.calculating_points
+                  )}`}
                   weight="normal"
                 />
                 <AnimatedText
@@ -498,7 +509,9 @@ const ClaimRetroactivePointsFlow = ({
                 <AnimatedText
                   color={rainbowColors.blue}
                   enableHapticTyping
-                  textContent="Rainbow Swaps:"
+                  textContent={`${i18n.t(
+                    i18n.l.points.console.rainbow_swaps
+                  )}:`}
                 />
                 <AnimatedText
                   color={rainbowColors.blue}
@@ -517,7 +530,9 @@ const ClaimRetroactivePointsFlow = ({
                   color={rainbowColors.green}
                   delayStart={1000}
                   enableHapticTyping
-                  textContent="Rainbow NFTs Owned:"
+                  textContent={`${i18n.t(
+                    i18n.l.points.console.rainbow_nfts_owned
+                  )}:`}
                 />
                 <AnimatedText
                   color={rainbowColors.green}
@@ -533,7 +548,9 @@ const ClaimRetroactivePointsFlow = ({
                   color={rainbowColors.yellow}
                   delayStart={1000}
                   enableHapticTyping
-                  textContent="Wallet Balance:"
+                  textContent={`${i18n.t(
+                    i18n.l.points.console.wallet_balance
+                  )}:`}
                 />
                 <AnimatedText
                   color={rainbowColors.yellow}
@@ -551,7 +568,9 @@ const ClaimRetroactivePointsFlow = ({
                   color={rainbowColors.red}
                   delayStart={1000}
                   enableHapticTyping
-                  textContent="MetaMask Swaps:"
+                  textContent={`${i18n.t(
+                    i18n.l.points.console.metamask_swaps
+                  )}:`}
                 />
                 <AnimatedText
                   color={rainbowColors.red}
@@ -569,7 +588,7 @@ const ClaimRetroactivePointsFlow = ({
                   color={rainbowColors.purple}
                   delayStart={1000}
                   enableHapticTyping
-                  textContent="Bonus Points:"
+                  textContent={`${i18n.t(i18n.l.points.console.bonus_points)}:`}
                 />
                 <AnimatedText
                   color={rainbowColors.purple}
@@ -586,7 +605,9 @@ const ClaimRetroactivePointsFlow = ({
               <AnimatedText
                 color={textColors.gray}
                 delayStart={1000}
-                textContent="> Calculation complete"
+                textContent={`> ${i18n.t(
+                  i18n.l.points.console.calculation_complete
+                )}`}
                 weight="normal"
               />
               <Line alignHorizontal="justify">
@@ -594,7 +615,9 @@ const ClaimRetroactivePointsFlow = ({
                   color={textColors.white}
                   delayStart={1000}
                   enableHapticTyping
-                  textContent="Points Earned:"
+                  textContent={`${i18n.t(
+                    i18n.l.points.console.points_earned
+                  )}:`}
                 />
                 <AnimatedText
                   color={textColors.white}
@@ -602,7 +625,9 @@ const ClaimRetroactivePointsFlow = ({
                   enableHapticTyping
                   hapticType="impactHeavy"
                   textAlign="right"
-                  textContent="42,588"
+                  textContent={(
+                    onboardingData?.earnings?.total ?? 0
+                  ).toLocaleString('en-US')}
                   typingSpeed={100}
                 />
               </Line>
@@ -616,7 +641,7 @@ const ClaimRetroactivePointsFlow = ({
                   delayStart={500}
                   color={textColors.gray}
                   skipAnimation
-                  textContent="Account:"
+                  textContent={`${i18n.t(i18n.l.points.console.account)}:`}
                   weight="normal"
                 />
                 <AnimatedText
@@ -627,7 +652,9 @@ const ClaimRetroactivePointsFlow = ({
               </Line>
               <AnimatedText
                 color={textColors.green}
-                textContent="> Registration complete"
+                textContent={`> ${i18n.t(
+                  i18n.l.points.console.registration_complete
+                )}`}
               />
             </Paragraph>
             <Line alignHorizontal="justify">
@@ -635,7 +662,7 @@ const ClaimRetroactivePointsFlow = ({
                 color={rainbowColors.purple}
                 delayStart={1000}
                 enableHapticTyping
-                textContent="Bonus Points:"
+                textContent={`${i18n.t(i18n.l.points.console.bonus_points)}:`}
               />
               <AnimatedText
                 color={rainbowColors.purple}
@@ -652,7 +679,7 @@ const ClaimRetroactivePointsFlow = ({
               onComplete={() => setShowSwapOrBuyButton(true)}
               weight="normal"
               multiline
-              textContent="To claim the rest of your bonus points, swap at least $100 through Rainbow."
+              textContent={i18n.t(i18n.l.points.console.claim_bonus_paragraph)}
             />
           </Stack>
         ))}

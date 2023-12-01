@@ -1267,6 +1267,28 @@
         "error": "Oops!\nPlease pull to refresh.",
         "points": "points",
         "link_copied": "Link copied"
+      },
+      "console": {
+        "claim_bonus_paragraph": "To claim the rest of your bonus points, swap at least $100 through Rainbow.",
+        "bonus_points": "Bonus Points",
+        "registration_complete": "Registration complete",
+        "account": "Account",
+        "points_earned": "Points Earned",
+        "calculation_complete": "Calculation complete",
+        "metamask_swaps": "MetaMask Swaps",
+        "wallet_balance": "Wallet Balance",
+        "rainbow_nfts_owned": "Rainbow NFTs Owned",
+        "rainbow_swaps": "Rainbow Swaps",
+        "calculating_points": "Calculating points",
+        "access_granted": "Access granted",
+        "sign_in_with_wallet": "Sign in with your wallet",
+        "auth_required": "Authorization required",
+        "sign_in": "Sign In",
+        "try_a_swap": "Try a Swap",
+        "get_some_eth": "Get Some ETH",
+        "generic_alert": "Something went wrong, please try again.",
+        "existing_user_alert": "Points already claimed. Please restart the app to refresh.",
+        "invalid_referral_code_alert": "Invalid referral code. Please double check your code and try again."
       }
     },
     "pools": {
