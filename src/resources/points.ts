@@ -1,5 +1,5 @@
 import { POINTS, useExperimentalFlag } from '@/config';
-import { metadataClient } from '@/graphql';
+import { metadataPOSTClient } from '@/graphql';
 import { GetPointsDataForWalletQuery } from '@/graphql/__generated__/metadata';
 import config from '@/model/config';
 import { createQueryKey } from '@/react-query';
@@ -20,7 +20,7 @@ export function usePoints({ walletAddress }: { walletAddress: string }) {
   const query = useQuery<GetPointsDataForWalletQuery>(
     queryKey,
     async () =>
-      await metadataClient.getPointsDataForWallet({
+      await metadataPOSTClient.getPointsDataForWallet({
         address: walletAddress,
       }),
     {
