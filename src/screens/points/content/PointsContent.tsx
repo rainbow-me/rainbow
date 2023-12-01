@@ -382,7 +382,10 @@ export default function PointsContent() {
     }, [navigate])
   );
 
-  const referralCode = data?.points?.user?.referralCode;
+  const referralCode =
+    data?.points?.user?.referralCode?.slice(0, 3) +
+    '-' +
+    data?.points?.user?.referralCode?.slice(3, 7);
 
   const onPressCopy = React.useCallback(
     (onNewEmoji: () => void) => {
@@ -608,9 +611,7 @@ export default function PointsContent() {
                                 color="label"
                                 weight="heavy"
                               >
-                                {referralCode?.slice(0, 3) +
-                                  '-' +
-                                  referralCode?.slice(3, 7)}
+                                {referralCode}
                               </Text>
                             </Box>
                           </ButtonPressAnimation>

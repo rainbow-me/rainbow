@@ -34,6 +34,7 @@ import Svg, { Path } from 'react-native-svg';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
+import { PointsErrorType } from '@/graphql/__generated__/metadata';
 
 export default function ReferralContent() {
   const { accountAddress } = useAccountProfile();
@@ -63,11 +64,14 @@ export default function ReferralContent() {
         signature: '',
       });
       if (res?.onboardPoints?.error) {
-        if (res.onboardPoints.error.type === 'INVALID_REFERRAL_CODE') {
+        if (
+          res.onboardPoints.error.type === PointsErrorType.InvalidReferralCode
+        ) {
           setStatus('invalid');
           haptics.notificationError();
+        } else {
+          Alert.alert(i18n.t(i18n.l.points.referral.error));
         }
-        Alert.alert(i18n.t(i18n.l.points.referral.error));
       } else {
         setStatus('valid');
         setReferralCode(referralCode);
