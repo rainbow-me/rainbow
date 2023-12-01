@@ -10,7 +10,6 @@ import {
   Column,
   Columns,
   Cover,
-  DebugLayout,
   Inline,
   Inset,
   Separator,
@@ -98,7 +97,6 @@ const LeaderboardRow = ({
   points: number;
   rank: number;
 }) => {
-  const { navigate } = useNavigation();
   const { colors } = useTheme();
 
   let gradient;
@@ -145,121 +143,112 @@ const LeaderboardRow = ({
   const formattedPoints = points.toLocaleString('en-US');
 
   return (
-    <ButtonPressAnimation
-      onPress={() =>
-        navigate(Routes.PROFILE_SHEET, {
-          address: ens ?? address,
-          fromRoute: 'PointsScreen',
-        })
-      }
+    <Box
+      paddingVertical="10px"
+      flexDirection="row"
+      justifyContent="space-between"
+      alignItems="center"
     >
-      <Box
-        paddingVertical="10px"
-        flexDirection="row"
-        justifyContent="space-between"
-        alignItems="center"
-      >
-        <Inline space="10px" alignVertical="center">
-          {avatarURL ? (
+      <Inline space="10px" alignVertical="center">
+        {avatarURL ? (
+          <Box
+            as={Image}
+            source={{ uri: maybeSignUri(avatarURL) }}
+            style={{ width: 36, height: 36 }}
+            borderRadius={18}
+            background="surfaceSecondaryElevated"
+            shadow="12px"
+          />
+        ) : (
+          <AccentColorProvider
+            color={
+              colors.avatarBackgrounds[addressHashedColorIndex(address) ?? 0]
+            }
+          >
             <Box
-              as={Image}
-              source={{ uri: maybeSignUri(avatarURL) }}
-              style={{ width: 36, height: 36 }}
+              style={{
+                width: 36,
+                height: 36,
+              }}
+              background="accent"
               borderRadius={18}
-              background="surfaceSecondaryElevated"
               shadow="12px"
-            />
-          ) : (
-            <AccentColorProvider
-              color={
-                colors.avatarBackgrounds[addressHashedColorIndex(address) ?? 0]
-              }
+              alignItems="center"
+              justifyContent="center"
             >
-              <Box
-                style={{
-                  width: 36,
-                  height: 36,
-                }}
-                background="accent"
-                borderRadius={18}
-                shadow="12px"
-                alignItems="center"
-                justifyContent="center"
-              >
-                <Text
-                  align="center"
-                  weight="bold"
-                  size="20pt"
-                  color="labelTertiary"
-                  containsEmoji
-                >
-                  {addressHashedEmoji(address) ?? '􀉪'}
-                </Text>
-              </Box>
-            </AccentColorProvider>
-          )}
-          <Stack space="8px">
-            <Box style={{ maxWidth: 145 }}>
               <Text
-                color="label"
+                align="center"
                 weight="bold"
-                size="15pt"
-                ellipsizeMode="middle"
-                numberOfLines={1}
+                size="20pt"
+                color="labelTertiary"
+                containsEmoji
               >
-                {ens ? ens : formatAddress(address, 4, 5)}
+                {addressHashedEmoji(address) ?? '􀉪'}
               </Text>
             </Box>
-            {STREAKS_ENABLED && (
-              <Inline space="2px" alignVertical="center">
-                <Text color="labelQuaternary" size="11pt" weight="bold">
-                  􀙬
-                </Text>
-                <Text color="labelQuaternary" size="13pt" weight="semibold">
-                  {`40 ${i18n.t(i18n.l.points.points.days)}`}
-                </Text>
-              </Inline>
-            )}
-          </Stack>
-        </Inline>
-        <Inline space="8px" alignVertical="center">
-          {rank <= 3 && gradient ? (
-            <Bleed vertical="10px">
-              <MaskedView
-                style={{ height: 30, alignItems: 'center' }}
-                maskElement={
-                  <Box paddingVertical="10px" justifyContent="center">
-                    <Text align="right" weight="bold" color="label" size="15pt">
-                      {formattedPoints}
-                    </Text>
-                  </Box>
-                }
-              >
-                <LinearGradient
-                  style={{ width: 100, height: '100%' }}
-                  colors={gradient}
-                  start={{ x: 0, y: 0.5 }}
-                  end={{ x: 1, y: 0.5 }}
-                />
-              </MaskedView>
-            </Bleed>
-          ) : (
-            <Text align="right" weight="bold" color="labelTertiary" size="15pt">
-              {formattedPoints}
+          </AccentColorProvider>
+        )}
+        <Stack space="8px">
+          <Box style={{ maxWidth: 145 }}>
+            <Text
+              color="label"
+              weight="bold"
+              size="15pt"
+              ellipsizeMode="middle"
+              numberOfLines={1}
+            >
+              {ens ? ens : formatAddress(address, 4, 5)}
             </Text>
+          </Box>
+          {STREAKS_ENABLED && (
+            <Inline space="2px" alignVertical="center">
+              <Text color="labelQuaternary" size="11pt" weight="bold">
+                􀙬
+              </Text>
+              <Text color="labelQuaternary" size="13pt" weight="semibold">
+                {`40 ${i18n.t(i18n.l.points.points.days)}`}
+              </Text>
+            </Inline>
           )}
-          <Text
-            align="center"
-            weight="semibold"
-            color="labelTertiary"
-            size="15pt"
-            containsEmoji={rank <= 3}
-          >
-            {icon}
+        </Stack>
+      </Inline>
+      <Inline space="8px" alignVertical="center">
+        {rank <= 3 && gradient ? (
+          <Bleed vertical="10px">
+            <MaskedView
+              style={{ height: 30, alignItems: 'center' }}
+              maskElement={
+                <Box paddingVertical="10px" justifyContent="center">
+                  <Text align="right" weight="bold" color="label" size="15pt">
+                    {formattedPoints}
+                  </Text>
+                </Box>
+              }
+            >
+              <LinearGradient
+                style={{ width: 100, height: '100%' }}
+                colors={gradient}
+                start={{ x: 0, y: 0.5 }}
+                end={{ x: 1, y: 0.5 }}
+              />
+            </MaskedView>
+          </Bleed>
+        ) : (
+          <Text align="right" weight="bold" color="labelTertiary" size="15pt">
+            {formattedPoints}
           </Text>
-        </Inline>
-      </Box>
-    </ButtonPressAnimation>
+        )}
+        <Text
+          align="center"
+          weight="semibold"
+          color="labelTertiary"
+          size="15pt"
+          containsEmoji={rank <= 3}
+        >
+          {icon}
+        </Text>
+      </Inline>
+    </Box>
   );
 };
 
