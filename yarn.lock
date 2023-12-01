@@ -15431,10 +15431,10 @@ react-native-palette-full@1.2.0:
   resolved "https://registry.yarnpkg.com/react-native-palette-full/-/react-native-palette-full-1.2.0.tgz#db912894a6dfb1352a263a2c8bcb9bdd979c3231"
   integrity sha512-l7X96pdRGoMiS1+BXm8K1XvvezxFxA05QA68IM8PM8qvG0cV4S/EUC124UVS8TcgjMkWZpAda67Hpf8oYB5bwg==
 
-react-native-permissions@3.6.1:
-  version "3.6.1"
-  resolved "https://registry.yarnpkg.com/react-native-permissions/-/react-native-permissions-3.6.1.tgz#73adcc1cef8cd57a9ef167b4507405f4ff5749c4"
-  integrity sha512-fzPpPQXeD34inUccqtoResSwYubfrwUguP4qrVUUv8+KSMjYSaHGoS5HaIJLZHlN9gO+TvLJZ2L5ZljTsb6qnQ==
+react-native-permissions@3.10.1:
+  version "3.10.1"
+  resolved "https://registry.yarnpkg.com/react-native-permissions/-/react-native-permissions-3.10.1.tgz#cb0171c8d12113869deaabbdfb979aad1a44752b"
+  integrity sha512-Gc5BxxpjZn4QNUDiVeHOO0vXh3AH7ToolmwTJozqC6DsxV7NAf3ttap+8BSmzDR8WxuAM3Cror+YNiBhHJx7/w==
 
 react-native-plaid-link-sdk@9.1.0:
   version "9.1.0"

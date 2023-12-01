@@ -1,6 +1,19 @@
 platform :ios, '13.0'
 #use_modular_headers!
 
+# Define the node_require method
+def node_require(script)
+  require Pod::Executable.execute_command('node', ['-p',
+    "require.resolve(
+      '#{script}',
+      {paths: [process.argv[1]]},
+    )", __dir__]).strip
+end
+
+# Use node_require to include the necessary scripts
+node_require('react-native/scripts/react_native_pods.rb')
+node_require('react-native-permissions/scripts/setup.rb')
+
 pod 'Firebase', :modular_headers => true
 pod 'FirebaseCore', :modular_headers => true
 pod 'FirebaseCoreExtension', :modular_headers => true
@@ -29,6 +42,11 @@ target 'ImageNotification' do
 end
 
 target 'Rainbow' do
+
+  setup_permissions([
+    'Camera',
+  ])
+  
   # Pods for Rainbow
   config = use_native_modules!
 
@@ -45,6 +63,7 @@ target 'Rainbow' do
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
+  
   pod 'swift-vibrant'
 
   # Rainbow's Internal Modules.

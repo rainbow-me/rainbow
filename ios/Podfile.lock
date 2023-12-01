@@ -256,11 +256,11 @@ PODS:
   - nanopb/encode (2.30909.0)
   - OpenSSL-Universal (1.1.1100)
   - PanModal (1.2.7)
-  - Permission-Camera (3.6.1):
+  - Permission-Camera (3.10.1):
     - RNPermissions
-  - Permission-FaceID (3.6.1):
+  - Permission-FaceID (3.10.1):
     - RNPermissions
-  - Permission-Notifications (3.6.1):
+  - Permission-Notifications (3.10.1):
     - RNPermissions
   - Plaid (4.4.0)
   - PromisesObjC (2.3.1)
@@ -578,14 +578,6 @@ PODS:
   - react-native-branch (5.3.1):
     - Branch (= 1.40.2)
     - React-Core
-  - react-native-camera (4.2.1):
-    - React-Core
-    - react-native-camera/RCT (= 4.2.1)
-    - react-native-camera/RN (= 4.2.1)
-  - react-native-camera/RCT (4.2.1):
-    - React-Core
-  - react-native-camera/RN (4.2.1):
-    - React-Core
   - react-native-cameraroll (5.7.1):
     - React-Core
   - react-native-change-icon (4.0.0):
@@ -833,7 +825,7 @@ PODS:
     - React-Core
   - RNOS (1.2.8):
     - React
-  - RNPermissions (3.6.1):
+  - RNPermissions (3.10.1):
     - React-Core
   - RNReactNativeHapticFeedback (1.11.0):
     - React-Core
@@ -987,7 +979,6 @@ DEPENDENCIES:
   - react-native-ble-plx (from `../node_modules/react-native-ble-plx`)
   - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
   - react-native-branch (from `../node_modules/react-native-branch`)
-  - react-native-camera (from `../node_modules/react-native-camera`)
   - "react-native-cameraroll (from `../node_modules/@react-native-camera-roll/camera-roll`)"
   - react-native-change-icon (from `../node_modules/react-native-change-icon`)
   - react-native-cloud-fs (from `../node_modules/react-native-cloud-fs`)
@@ -1197,8 +1188,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/blur"
   react-native-branch:
     :path: "../node_modules/react-native-branch"
-  react-native-camera:
-    :path: "../node_modules/react-native-camera"
   react-native-cameraroll:
     :path: "../node_modules/@react-native-camera-roll/camera-roll"
   react-native-change-icon:
@@ -1421,9 +1410,9 @@ SPEC CHECKSUMS:
   nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   PanModal: 421fe72d4af5b7e9016aaa3b4db94a2fb71756d3
-  Permission-Camera: bf6791b17c7f614b6826019fcfdcc286d3a107f6
-  Permission-FaceID: e70223280292a1a5e4b8ad943b70cd9229a7d2c3
-  Permission-Notifications: 150484ae586eb9be4e32217582a78350a9bb31c3
+  Permission-Camera: 9b70902f34a83c10e198d2d01f0e453e58842776
+  Permission-FaceID: 86fb226a8ed2577db819299177a72cba54bb3327
+  Permission-Notifications: 817390e18898f34adad940cd4141e771e77086ea
   Plaid: 29a5506900d372d6d3d77199090b9a7a3af475bd
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
   PromisesSwift: 28dca69a9c40779916ac2d6985a0192a5cb4a265
@@ -1447,7 +1436,6 @@ SPEC CHECKSUMS:
   react-native-ble-plx: f10240444452dfb2d2a13a0e4f58d7783e92d76e
   react-native-blur: cfdad7b3c01d725ab62a8a729f42ea463998afa2
   react-native-branch: 960c897d57b9f4912b08b9d06a25284b6e9879da
-  react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
   react-native-cameraroll: aff50ec1df9d054626dceca9336e6644e153d32f
   react-native-change-icon: ea9bb7255b09e89f41cbf282df16eade91ab1833
   react-native-cloud-fs: e7103d1f693c57b481f820fa5e6b6b0522a5a31e
@@ -1515,7 +1503,7 @@ SPEC CHECKSUMS:
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNNotifee: 8ee6ddabfc44b16600b978983162e0d4db20ce19
   RNOS: 31db6fa4a197d179afbba9e6b4d28d450a7f250b
-  RNPermissions: dcdb7b99796bbeda6975a6e79ad519c41b251b1c
+  RNPermissions: a446c2ce1f3bf54383c283798307cca5f50d70e4
   RNReactNativeHapticFeedback: 653a8c126a0f5e88ce15ffe280b3ff37e1fbb285
   RNReanimated: 726395a2fa2f04cea340274ba57a4e659bc0d9c1
   RNScreens: 6a8a3c6b808aa48dca1780df7b73ea524f602c63
@@ -1541,6 +1529,6 @@ SPEC CHECKSUMS:
   Yoga: 8796b55dba14d7004f980b54bcc9833ee45b28ce
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: fbcce4e8b00962de3fda1a95b6da41d278f831f4
+PODFILE CHECKSUM: 560be0b3ad82e7f8b2e6f3cfeef463999129edab
 
 COCOAPODS: 1.12.1

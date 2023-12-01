@@ -6,10 +6,11 @@ import { darkModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Text } from '../text';
-import { delay } from '@/helpers/utilities';
+import { delay } from '@/utils/delay';
 import styled from '@/styled-thing';
 import { margin, padding, position } from '@/styles';
 import { Box } from '@/design-system';
+import { useFocusEffect } from '@react-navigation/native';
 
 const Button = styled(ButtonPressAnimation).attrs({
   scaleTo: 1.08,
@@ -45,23 +46,25 @@ const Title = styled(Text).attrs(({ theme: { colors } }) => ({
   weight: 'bold',
 }))(margin.object(20.5, 0, 8));
 
-export default function QRCodeScannerNeedsAuthorization({ onGetBack }) {
-  const handlePressSettings = useCallback(async () => {
-    Linking.openSettings();
+export default function QRCodeScannerNeedsAuthorization({ askForPermissions }) {
+  // const handlePressSettings = useCallback(async () => {
+  //   askForPermissions();
+  //   // await delay(1000);
 
-    await delay(1000);
+  //   // await pWaitFor(() => AppState.currentState === 'active');
 
-    await pWaitFor(() => AppState.currentState === 'active');
+  // }, [askForPermissions]);
 
-    onGetBack?.();
-  }, [onGetBack]);
+  useFocusEffect(() => {
+    setTimeout(() => askForPermissions(), 200);
+  });
 
   return (
     <Box alignItems="center">
       <QRIcon />
       <Title>{lang.t('wallet.qr.scan_to_pay_or_connect')}</Title>
       <Subtitle>{lang.t('wallet.qr.camera_access_needed')}</Subtitle>
-      <Button onPress={handlePressSettings}>
+      <Button onPress={askForPermissions}>
         <ButtonLabel>{lang.t('wallet.qr.enable_camera_access')}</ButtonLabel>
       </Button>
     </Box>
