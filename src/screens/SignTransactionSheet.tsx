@@ -222,9 +222,13 @@ export const SignTransactionSheet = () => {
     null
   );
   const formattedDappUrl = useMemo(() => {
-    const { hostname } = new URL(transactionDetails?.dappUrl);
-    return hostname;
-  }, [transactionDetails?.dappUrl]);
+    try {
+      const { hostname } = new URL(transactionDetails?.dappUrl);
+      return hostname;
+    } catch {
+      return transactionDetails?.dappUrl;
+    }
+  }, [transactionDetails]);
 
   const {
     gasLimit,
