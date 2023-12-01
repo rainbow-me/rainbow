@@ -10,10 +10,10 @@ exports.config = {
   metadata: {
     __name: 'metadata',
     document: './queries/metadata.graphql',
-    schema: { method: 'POST', url: 'https://metadata.p.rainbow.me/v1/graph' },
+    schema: { method: 'GET', url: 'https://metadata.p.rainbow.me/v1/graph' },
   },
-  simulation: {
-    __name: 'simulation',
+  metadataPOST: {
+    __name: 'metadataPOST',
     document: './queries/metadata.graphql',
     schema: { method: 'POST', url: 'https://metadata.p.rainbow.me/v1/graph' },
   },

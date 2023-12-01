@@ -11,7 +11,7 @@ import {
   useTextStyle,
 } from '@/design-system';
 import { IS_IOS } from '@/env';
-import { metadataClient } from '@/graphql';
+import { metadataPOSTClient } from '@/graphql';
 import {
   useAccountAccentColor,
   useAccountProfile,
@@ -58,7 +58,7 @@ export default function ReferralContent() {
     async (text: string) => {
       const referralCode = text.slice(0, 3) + text.slice(4, 8);
       if (referralCode.length !== 6) return;
-      const res = await metadataClient.onboardPoints({
+      const res = await metadataPOSTClient.onboardPoints({
         address: accountAddress,
         referral: referralCode,
         signature: '',

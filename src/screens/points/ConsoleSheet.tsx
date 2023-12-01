@@ -44,7 +44,7 @@ import { useTheme } from '@/theme';
 import { safeAreaInsetValues } from '@/utils';
 import { HapticFeedbackType } from '@/utils/haptics';
 import { getNativeAssetForNetwork } from '@/utils/ethereumUtils';
-import { metadataClient } from '@/graphql';
+import { metadataPOSTClient } from '@/graphql';
 import { signPersonalMessage } from '@/model/wallet';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { WrappedAlert as Alert } from '@/helpers/alert';
@@ -115,16 +115,18 @@ export const ConsoleSheet = () => {
     let points;
     let signature;
     let challenge;
-    const challengeResponse = await metadataClient.getPointsOnboardChallenge({
-      address: accountAddress,
-      referral: referralCode,
-    });
+    const challengeResponse = await metadataPOSTClient.getPointsOnboardChallenge(
+      {
+        address: accountAddress,
+        referral: referralCode,
+      }
+    );
     challenge = challengeResponse?.pointsOnboardChallenge;
     if (challenge) {
       const signatureResponse = await signPersonalMessage(challenge);
       signature = signatureResponse?.result;
       if (signature) {
-        points = await metadataClient.onboardPoints({
+        points = await metadataPOSTClient.onboardPoints({
           address: accountAddress,
           signature,
           referral: referralCode,
