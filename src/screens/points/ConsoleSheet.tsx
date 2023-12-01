@@ -33,7 +33,6 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import { alignHorizontalToFlexAlign } from '@/design-system/layout/alignment';
-import { IS_DEV } from '@/env';
 import {
   useAccountProfile,
   useDimensions,
@@ -104,11 +103,9 @@ export const ConsoleSheet = () => {
   }, [accountAddress]);
 
   useEffect(() => {
-    if (IS_DEV) {
-      setDidConfirmOwnership(false);
-      setShowSignInButton(false);
-      setShowSwapOrBuyButton(false);
-    }
+    setDidConfirmOwnership(false);
+    setShowSignInButton(false);
+    setShowSwapOrBuyButton(false);
   }, []);
 
   const signIn = useCallback(async () => {
@@ -328,11 +325,9 @@ const ClaimRetroactivePointsFlow = ({
     formatAddress(accountAddress, 4, 5)) as string;
 
   useEffect(() => {
-    if (IS_DEV) {
-      setAnimationKey(prevKey => prevKey + 1);
-      setAnimationPhase(0);
-      setIsCalculationComplete(false);
-    }
+    setAnimationKey(prevKey => prevKey + 1);
+    setAnimationPhase(0);
+    setIsCalculationComplete(false);
   }, []);
 
   const onboardingData = pointsProfile?.onboardPoints?.user?.onboarding;
@@ -691,10 +686,8 @@ export const TypingAnimation = ({
   }, []);
 
   useEffect(() => {
-    if (IS_DEV) {
-      setCurrentSequenceIndex(0);
-      animationIndexRef.current = 0;
-    }
+    setCurrentSequenceIndex(0);
+    animationIndexRef.current = 0;
   }, []);
 
   return (
