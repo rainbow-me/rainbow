@@ -9,6 +9,19 @@ index 43ce35d..1db1821 100644
 +  s.dependency 'CocoaAsyncSocket'
  
  end
+diff --git a/node_modules/react-native-tcp/android/build.gradle b/node_modules/react-native-tcp/android/build.gradle
+index c582eb7..5785289 100644
+--- a/node_modules/react-native-tcp/android/build.gradle
++++ b/node_modules/react-native-tcp/android/build.gradle
+@@ -44,6 +44,6 @@ repositories {
+ }
+ 
+ dependencies {
+-    compile 'com.facebook.react:react-native:+'
+-    compile 'com.koushikdutta.async:androidasync:2.1.6'
++    implementation 'com.facebook.react:react-native:+'
++    implementation 'com.koushikdutta.async:androidasync:2.1.6'
+ }
 diff --git a/node_modules/react-native-tcp/ios/CocoaAsyncSocket/GCDAsyncSocket.h b/node_modules/react-native-tcp/ios/CocoaAsyncSocket/GCDAsyncSocket.h
 deleted file mode 100644
 index 828951f..0000000

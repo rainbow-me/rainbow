@@ -13,6 +13,9 @@ fi
 echo "🌈 Creating .easignore"
 bash $RAINBOW_SCRIPTS_APP_EASIGNORE_HOOK;
 
+echo "🌈 Running yarn setup..."
+yarn setup
+
 if [ "$EAS_BUILD_PLATFORM" = "ios" ]; then
     echo "🌈 Executing iOS prebuild.sh script"
     bash $RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK;
@@ -20,13 +23,15 @@ if [ "$EAS_BUILD_PLATFORM" = "ios" ]; then
 fi
 
 if [ "$EAS_BUILD_PLATFORM" = "android" ]; then
-    echo "🌈 Executing Android prebuild.sh script"
     bash $RAINBOW_SCRIPTS_APP_ANDROID_PREBUILD_HOOK;
+
+    echo "🌈 Downloading Google Services JSON"
+    curl -H "Authorization: token $RAINBOW_SCRIPTS_TOKEN" -L $RAINBOW_GOOGLE_SERVICES_JSON -o android/app/google-services.json
+
+    echo "🌈 apt-get libsecret-tools"
+    sudo apt-get -y install libsecret-tools
+
     echo "✅ executed android prebuild hook"
 fi
 
-
 echo "🌈 Finished preinstallation..."
-echo "🌈 Running yarn setup..."
-
-yarn setup
