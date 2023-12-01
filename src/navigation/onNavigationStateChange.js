@@ -17,6 +17,7 @@ const isOnSwipeScreen = name =>
     Routes.WALLET_SCREEN,
     Routes.DISCOVER_SCREEN,
     Routes.PROFILE_SCREEN,
+    Routes.POINTS_SCREEN,
   ].includes(name);
 
 export function triggerOnSwipeLayout(newAction) {
@@ -60,6 +61,7 @@ export function onHandleStatusBar(currentState, prevState) {
     case Routes.PROFILE_SCREEN:
     case Routes.WALLET_SCREEN:
     case Routes.DISCOVER_SCREEN:
+    case Routes.POINTS_SCREEN:
     case Routes.WELCOME_SCREEN:
     case Routes.CHANGE_WALLET_SHEET:
       StatusBarHelper.setDarkContent();

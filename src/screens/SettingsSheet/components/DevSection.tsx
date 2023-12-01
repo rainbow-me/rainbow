@@ -57,6 +57,7 @@ import { isAuthenticated } from '@/utils/authentication';
 import { DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS } from '@/redux/data';
 import { saveLocalPendingTransactions } from '@/handlers/localstorage/accountLocal';
 import { getFCMToken } from '@/notifications/tokens';
+import { resetNonces } from '@/redux/nonceManager';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
@@ -213,12 +214,14 @@ const DevSection = () => {
   const clearPendingTransactions = async () => {
     // clear local storage
     saveLocalPendingTransactions([], accountAddress, Network.mainnet);
-
     // clear redux
     dispatch({
       payload: [],
       type: DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS,
     });
+
+    // reset nonces
+    resetNonces(accountAddress);
   };
 
   const clearLocalStorage = async () => {

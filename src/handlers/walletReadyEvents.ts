@@ -1,7 +1,7 @@
 import { IS_TESTING } from 'react-native-dotenv';
 import { triggerOnSwipeLayout } from '../navigation/onNavigationStateChange';
 import { getKeychainIntegrityState } from './localstorage/globalSettings';
-import { runCampaignChecks } from '@/campaigns/campaignChecks';
+import { runLocalCampaignChecks } from '@/components/remote-promo-sheet/localCampaignChecks';
 import { EthereumAddress } from '@/entities';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import WalletTypes from '@/helpers/walletTypes';
@@ -124,9 +124,9 @@ export const runFeatureUnlockChecks = async (): Promise<boolean> => {
   return false;
 };
 
-export const runFeatureAndCampaignChecks = async () => {
+export const runFeatureAndLocalCampaignChecks = async () => {
   const showingFeatureUnlock: boolean = await runFeatureUnlockChecks();
   if (!showingFeatureUnlock) {
-    await runCampaignChecks();
+    await runLocalCampaignChecks();
   }
 };

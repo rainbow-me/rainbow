@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import lang from 'i18n-js';
 import { Linking, View } from 'react-native';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useRoute } from '@react-navigation/native';
@@ -345,8 +346,8 @@ export function NFTSingleOfferSheet() {
           }
           step.items?.forEach(item => {
             if (
-              item.txHash &&
-              !txsRef.current.includes(item.txHash) &&
+              item.txHashes?.[0] &&
+              !txsRef.current.includes(item.txHashes?.[0]) &&
               item.status === 'incomplete'
             ) {
               let tx;
@@ -354,7 +355,7 @@ export function NFTSingleOfferSheet() {
                 tx = {
                   to: item.data?.to,
                   from: item.data?.from,
-                  hash: item.txHash,
+                  hash: item.txHashes[0],
                   network: offer.network,
                   amount: offer.netAmount.decimal,
                   asset: {
@@ -369,7 +370,7 @@ export function NFTSingleOfferSheet() {
                 tx = {
                   to: item.data?.to,
                   from: item.data?.from,
-                  hash: item.txHash,
+                  hash: item.txHashes[0],
                   network: offer.network,
                   nft,
                   type: TransactionType.authorize,
@@ -390,7 +391,7 @@ export function NFTSingleOfferSheet() {
 
               // remove offer from cache
               queryClient.setQueryData(
-                nftOffersQueryKey({ address: accountAddress }),
+                nftOffersQueryKey({ walletAddress: accountAddress }),
                 (
                   cachedData: { nftOffers: NftOffer[] | undefined } | undefined
                 ) => {
@@ -810,9 +811,10 @@ export function NFTSingleOfferSheet() {
                     hideInnerBorder
                     label={
                       insufficientEth
-                        ? i18n.t(
-                            i18n.l.button.confirm_exchange.insufficient_eth
-                          )
+                        ? lang.t('button.confirm_exchange.insufficient_token', {
+                            tokenName: getNetworkObj(offer.network as Network)
+                              .nativeCurrency.symbol,
+                          })
                         : i18n.t(
                             i18n.l.nft_offers.single_offer_sheet.hold_to_sell
                           )

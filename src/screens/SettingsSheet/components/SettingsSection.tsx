@@ -1,7 +1,6 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
-import { Linking, NativeModules, Share } from 'react-native';
+import { Linking, Share } from 'react-native';
 import {
   ContextMenuButton,
   MenuActionConfig,
@@ -35,14 +34,13 @@ import WalletTypes from '@/helpers/walletTypes';
 import { useAccountSettings, useSendFeedback, useWallets } from '@/hooks';
 import { Themes, useTheme } from '@/theme';
 import { showActionSheetWithOptions } from '@/utils';
-import { AppleReviewAddress, REVIEW_DONE_KEY } from '@/utils/reviewAlert';
 import {
   buildRainbowLearnUrl,
   LearnUTMCampaign,
 } from '@/utils/buildRainbowUrl';
 import { getNetworkObj } from '@/networks';
-
-const { RainbowRequestReview, RNReview } = NativeModules;
+import { handleReviewPromptAction } from '@/utils/reviewAlert';
+import { ReviewPromptAction } from '@/storage/schema';
 
 const SettingsExternalURLs = {
   rainbowHomepage: 'https://rainbow.me',
@@ -116,7 +114,6 @@ const SettingsSection = ({
   onPressPrivacy,
   onPressNotifications,
 }: SettingsSectionProps) => {
-  const isReviewAvailable = false;
   const { wallets, isReadOnlyWallet } = useWallets();
   const {
     language,
@@ -134,16 +131,9 @@ const SettingsSection = ({
   const onPressReview = useCallback(async () => {
     if (ios) {
       onCloseModal();
-      RainbowRequestReview.requestReview((handled: boolean) => {
-        if (!handled) {
-          AsyncStorage.setItem(REVIEW_DONE_KEY, 'true');
-          Linking.openURL(AppleReviewAddress);
-        }
-      });
-    } else {
-      RNReview.show();
     }
-  }, [onCloseModal]);
+    handleReviewPromptAction(ReviewPromptAction.UserPrompt);
+  }, []);
 
   const onPressShare = useCallback(() => {
     Share.share({
@@ -438,15 +428,13 @@ const SettingsSection = ({
             />
           }
         />
-        {isReviewAvailable && (
-          <MenuItem
-            leftComponent={<MenuItem.TextIcon icon="❤️" isEmoji />}
-            onPress={onPressReview}
-            size={52}
-            testID="review-section"
-            titleComponent={<MenuItem.Title text={lang.t('settings.review')} />}
-          />
-        )}
+        <MenuItem
+          leftComponent={<MenuItem.TextIcon icon="❤️" isEmoji />}
+          onPress={onPressReview}
+          size={52}
+          testID="review-section"
+          titleComponent={<MenuItem.Title text={lang.t('settings.review')} />}
+        />
         <MenuItem
           leftComponent={<MenuItem.TextIcon icon={ios ? '🚧' : '🐞'} isEmoji />}
           onPress={onPressDev}

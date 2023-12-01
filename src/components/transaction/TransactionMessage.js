@@ -7,22 +7,19 @@ import { Text } from '../text';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { deviceUtils } from '@/utils';
+import { sanitizeTypedData } from '@/utils/signingUtils';
+import { RainbowError, logger } from '@/logger';
 
 const deviceWidth = deviceUtils.dimensions.width;
 const horizontalPadding = 24;
 
 const Container = styled(Row)({
-  maxHeight: ({ maxHeight }) => maxHeight,
   minHeight: ({ minHeight }) => minHeight,
+  overflow: 'visible',
 });
 
 const MessageWrapper = styled(ScrollView)({
-  borderColor: ({ theme: { colors } }) =>
-    colors.alpha(colors.blueGreyDark, 0.08),
-  borderRadius: 20,
-  borderWidth: 1,
   marginBottom: 14,
-  minWidth: deviceWidth - horizontalPadding * 2,
 });
 
 const TransactionMessage = ({ maxHeight = 150, message, method }) => {
@@ -34,23 +31,30 @@ const TransactionMessage = ({ maxHeight = 150, message, method }) => {
     maximumHeight = 200;
     minimumHeight = 200;
     try {
-      msg = JSON.parse(message);
+      const parsedMessage = JSON.parse(message);
+      const sanitizedMessage = sanitizeTypedData(parsedMessage);
+      msg = sanitizedMessage;
       // eslint-disable-next-line no-empty
-    } catch (e) {}
+    } catch (e) {
+      logger.error(
+        new RainbowError('TransactionMessage: Error parsing message ', {
+          messageType: typeof message,
+        })
+      );
+    }
+
     msg = JSON.stringify(msg, null, 4);
   }
 
   return (
     <Container maxHeight={maximumHeight} minHeight={minimumHeight}>
-      <MessageWrapper>
-        <Text
-          color={colors.alpha(colors.blueGreyDark, 0.6)}
-          size="lmedium"
-          style={{ ...padding.object(12, 15) }}
-        >
-          {msg}
-        </Text>
-      </MessageWrapper>
+      <Text
+        color={colors.alpha(colors.blueGreyDark, 0.6)}
+        size="lmedium"
+        style={{ ...padding.object(12, 15) }}
+      >
+        {msg}
+      </Text>
     </Container>
   );
 };

@@ -19,42 +19,43 @@ export function initializeReservoirClient() {
   createClient({
     chains: [
       {
+        name: getMainnetNetworkObject().value,
         id: getMainnetNetworkObject().id,
         baseApiUrl: 'https://api.reservoir.tools',
         active: true,
-        apiKey: RESERVOIR_API_KEY,
       },
       {
+        name: getPolygonNetworkObject().value,
         id: getPolygonNetworkObject().id,
         baseApiUrl: 'https://api-polygon.reservoir.tools',
         active: false,
-        apiKey: RESERVOIR_API_KEY,
       },
       {
+        name: getZoraNetworkObject().value,
         id: getZoraNetworkObject().id,
         baseApiUrl: 'https://api-zora.reservoir.tools',
         active: false,
-        apiKey: RESERVOIR_API_KEY,
       },
       {
+        name: getBaseNetworkObject().value,
         id: getBaseNetworkObject().id,
         baseApiUrl: 'https://api-base.reservoir.tools',
         active: false,
-        apiKey: RESERVOIR_API_KEY,
       },
       {
+        name: getOptimismNetworkObject().value,
         id: getOptimismNetworkObject().id,
         baseApiUrl: 'https://api-optimism.reservoir.tools',
         active: false,
-        apiKey: RESERVOIR_API_KEY,
       },
       {
+        name: getArbitrumNetworkObject().value,
         id: getArbitrumNetworkObject().id,
         baseApiUrl: 'https://api-arbitrum.reservoir.tools',
         active: false,
-        apiKey: RESERVOIR_API_KEY,
       },
     ],
+    apiKey: RESERVOIR_API_KEY,
     logLevel: IS_PROD ? 1 : 4,
   });
 }
