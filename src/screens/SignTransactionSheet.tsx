@@ -99,6 +99,7 @@ import {
   estimateGasWithPadding,
   getFlashbotsProvider,
   getProviderForNetwork,
+  isHexString,
   toHex,
 } from '@/handlers/web3';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
@@ -140,6 +141,7 @@ import { RPCMethod } from '@/walletConnect/types';
 import { isAddress } from '@ethersproject/address';
 import { methodRegistryLookupAndParse } from '@/utils/methodRegistry';
 import { sanitizeTypedData } from '@/utils/signingUtils';
+import { hexToNumber, isHex } from 'viem';
 
 const COLLAPSED_CARD_HEIGHT = 56;
 const MAX_CARD_HEIGHT = 176;
@@ -262,6 +264,9 @@ export const SignTransactionSheet = () => {
   const calculateGasLimit = useCallback(async () => {
     calculatingGasLimit.current = true;
     const txPayload = req;
+    if (isHex(txPayload?.type)) {
+      txPayload.type = hexToNumber(txPayload?.type);
+    }
     // use the default
     let gas = txPayload.gasLimit || txPayload.gas;
 
@@ -281,7 +286,6 @@ export const SignTransactionSheet = () => {
         { gas },
         logger.DebugContext.walletconnect
       );
-
       // safety precaution: we want to ensure these properties are not used for gas estimation
       const cleanTxPayload = omitFlatten(txPayload, [
         'gas',
@@ -907,6 +911,9 @@ export const SignTransactionSheet = () => {
         return;
       }
       if (sendInsteadOfSign) {
+        if (isHex(txPayloadUpdated?.type)) {
+          txPayloadUpdated.type = hexToNumber(txPayloadUpdated?.type);
+        }
         response = await sendTransaction({
           existingWallet: existingWallet,
           provider,
