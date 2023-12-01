@@ -88,6 +88,7 @@ declare module 'react-native-dotenv' {
   export const LOG_DEBUG: string;
   export const QUIET_OLD_LOGGER: string;
   export const ARC_GRAPHQL_API_KEY: string;
+  export const METADATA_GRAPHQL_API_KEY: string;
   export const RESERVOIR_API_KEY_PROD: string;
   export const RESERVOIR_API_KEY_DEV: string;
   export const RPC_PROXY_BASE_URL_PROD: string;
