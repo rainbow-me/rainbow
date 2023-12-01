@@ -93,7 +93,6 @@ export const MainThemeProvider = (
   // Listening to changes of device appearance while in run-time
   useEffect(() => {
     if (colorScheme) {
-      // setIsDarkMode(colorScheme === Themes.DARK);
       saveTheme(colorScheme);
     }
   }, [colorScheme]);

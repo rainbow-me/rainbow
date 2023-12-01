@@ -1489,6 +1489,27 @@
         "subheader": "INTRODUCING"
       }
     },
+    "nft_offers_launch": {
+      "primary_button": {
+        "has_offers": "View Offers",
+        "not_has_offers": "Close"
+      },
+      "secondary_button": "Maybe Later",
+      "info_row_1": {
+        "title": "All your offers in one place",
+        "description": "View your offers across all NFT marketplaces."
+      },
+      "info_row_2": {
+        "title": "Accept from Rainbow",
+        "description": "Accept offers in a single tap and swap to the token of your choosing."
+      },
+      "info_row_3": {
+        "title": "Smart sort modes",
+        "description": "Compare to floor prices, or view your highest or most recent offers."
+      },
+      "header": "Offers",
+      "subheader": "INTRODUCING"
+    },
     "review": {
       "alert": {
         "are_you_enjoying_rainbow": "Are you enjoying Rainbow? 🥰",
@@ -2269,8 +2290,9 @@
       "wallet_alert": {
         "message_support": "Message Support",
         "close": "Close",
-        "message": "For help, please reach out to support! \nWe'll get back to you soon!",
-        "title": "An error occured"
+        "learn_more": "Learn More",
+        "message": "If you've recently swapped phones, you may need to reimport your wallets. For all other help, please reach out to support! \n\nWe'll get back to you soon!",
+        "title": "An error occurred"
       }
     },
     "walletconnect": {
@@ -2340,6 +2362,75 @@
         "info_alert": {
           "title": "This app is likely malicious",
           "description": "Signing messages or transactions from this app could result in losing your assets"
+        }
+      },
+      "simulation": {
+        "titles": {
+          "message_request": "Message Request",
+          "transaction_request": "Transaction Request"
+        },
+        "simulation_card": {
+          "titles": {
+            "not_enough_native_balance": "Not Enough %{symbol}",
+            "likely_to_fail": "Likely to Fail",
+            "simulation_unavailable": "Simulation Unavailable",
+            "simulation_result": "Simulated Result",
+            "simulating": "Simulating"
+          },
+          "messages": {
+            "no_changes": "No Changes Detected",
+            "need_more_native": "You’ll need more %{symbol} on %{network} to pay for this transaction. Get some %{symbol} below to continue with this request.",
+            "unavailable_personal_sign": "Simulation for personal signs is not yet supported",
+            "unavailable_zora_network": "Simulation on Zora is not yet supported",
+            "failed_to_simulate": "The simulation failed, which suggests your transaction is likely to fail. This may be an issue with the app you’re using."
+          },
+          "event_row": {
+            "unlimited": "Unlimited",
+            "types": {
+              "send": "Send",
+              "receive": "Receive",
+              "approve": "Approve",
+              "revoke": "Revoke"
+            }
+          }
+        },
+        "details_card": {
+          "title": "Details",
+          "types": {
+            "chain": "Network",
+            "contract": "Contract",
+            "contract_created": "Contract Created",
+            "to": "To",
+            "function": "Function",
+            "source_code": "Source Code",
+            "nonce": "Nonce"
+          },
+          "unknown": "Unknown"
+        },
+        "message_card": {
+          "title": "Message",
+          "copy": "Copy"
+        },
+        "profile_section": {
+          "signing_with": "Signing with",
+          "free_to_sign": "Free to sign",
+          "no_native_balance": "No %{symbol}",
+          "on_network": "on %{network}"
+        },
+        "buttons": {
+          "cancel": "Cancel",
+          "confirm": "􀎽 Confirm",
+          "get_native_token": "Get %{symbol}",
+          "buy_native_token": "Buy %{symbol}"
+        },
+        "formatted_dates": {
+          "today": "Today",
+          "day_ago": "day ago",
+          "days_ago": "days ago",
+          "week_ago": "week ago",
+          "weeks_ago": "weeks ago",
+          "month_ago": "month ago",
+          "months_ago": "months ago"
         }
       }
     },

@@ -6,6 +6,7 @@ import { Column } from '../layout';
 import { useDimensions, useImageMetadata } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
+import { IS_ANDROID } from '@/env';
 
 const defaultImageDimensions = { height: 512, width: 512 };
 
@@ -127,9 +128,11 @@ export default function SendAssetFormCollectible({
           {buttonRenderer}
           {txSpeedRenderer}
         </ButtonWrapper>
-        <GradientToggler isVisible={!isGradientVisible}>
-          <Gradient isTallPhone={isTallPhone} />
-        </GradientToggler>
+        {!IS_ANDROID && (
+          <GradientToggler isVisible={!isGradientVisible}>
+            <Gradient isTallPhone={isTallPhone} />
+          </GradientToggler>
+        )}
       </Footer>
     </Column>
   );
