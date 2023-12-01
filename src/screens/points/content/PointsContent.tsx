@@ -50,8 +50,6 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Page } from '@/components/layout';
 import { IS_ANDROID } from '@/env';
 
-const STREAKS_ENABLED = true;
-const REFERRALS_ENABLED = true;
 const ONE_WEEK_MS = 604_800_000;
 
 const displayNextDistribution = (seconds: number) => {
@@ -200,16 +198,14 @@ const LeaderboardRow = ({
               {ens ? ens : formatAddress(address, 4, 5)}
             </Text>
           </Box>
-          {STREAKS_ENABLED && (
-            <Inline space="2px" alignVertical="center">
+          {/* <Inline space="2px" alignVertical="center">
               <Text color="labelQuaternary" size="11pt" weight="bold">
                 􀙬
               </Text>
               <Text color="labelQuaternary" size="13pt" weight="semibold">
                 {`40 ${i18n.t(i18n.l.points.points.days)}`}
               </Text>
-            </Inline>
-          )}
+            </Inline> */}
         </Stack>
       </Inline>
       <Inline space="8px" alignVertical="center">
@@ -348,8 +344,9 @@ export default function PointsContent() {
   const { navigate } = useNavigation();
 
   const labelSecondary = useForegroundColor('labelSecondary');
-  const pink = useForegroundColor('pink');
-  const yellow = useForegroundColor('yellow');
+  const green = useForegroundColor('green');
+  // const pink = useForegroundColor('pink');
+  // const yellow = useForegroundColor('yellow');
 
   const [isToastActive, setToastActive] = useRecoilState(
     addressCopiedToastAtom
@@ -411,13 +408,10 @@ export default function PointsContent() {
 
   const canDisplayTotalPoints = !isNil(data?.points?.user?.earnings?.total);
   const canDisplayNextRewardCard = !isNil(nextDistributionSeconds);
-  const canDisplayStreakCard = STREAKS_ENABLED;
-  const canDisplayReferralsCard = REFERRALS_ENABLED;
-  const canDisplayCards =
-    canDisplayNextRewardCard || canDisplayStreakCard || canDisplayReferralsCard;
-  const canDisplayCurrentRank = !isNil(
-    data?.points?.user?.stats?.position.current
-  );
+  const canDisplayCurrentRank = !!data?.points?.user?.stats?.position.current;
+  const canDisplayRankCard =
+    canDisplayCurrentRank && !!data?.points?.leaderboard?.stats?.total_users;
+
   const canDisplayLeaderboard = !!data?.points?.leaderboard?.accounts;
 
   const shouldDisplayError = !isFetching && !data?.points;
@@ -501,60 +495,44 @@ export default function PointsContent() {
                   </Cover>
                 </Box>
               </Bleed>
-              <Bleed space="20px">
-                <ScrollView
-                  horizontal
-                  contentContainerStyle={{ gap: 12, padding: 20 }}
-                  showsHorizontalScrollIndicator={false}
-                >
-                  {canDisplayCards ? (
-                    <>
-                      {canDisplayNextRewardCard && (
-                        <InfoCard
-                          onPress={() => {}}
-                          title={i18n.t(i18n.l.points.points.next_reward)}
-                          mainText={getFormattedTimeQuantity(
-                            nextDistributionSeconds
-                          )}
-                          icon="􀉉"
-                          subtitle={displayNextDistribution(
-                            nextDistributionSeconds
-                          )}
-                          accentColor={labelSecondary}
-                        />
+              <Columns space="12px">
+                <Column width="1/2">
+                  {canDisplayNextRewardCard ? (
+                    <InfoCard
+                      onPress={() => {}}
+                      title={i18n.t(i18n.l.points.points.next_reward)}
+                      mainText={getFormattedTimeQuantity(
+                        nextDistributionSeconds,
+                        2
                       )}
-                      {canDisplayStreakCard && (
-                        <InfoCard
-                          onPress={() => {}}
-                          title={i18n.t(i18n.l.points.points.streak)}
-                          mainText={`36 ${i18n.t(i18n.l.points.points.days)}`}
-                          icon="􀙬"
-                          subtitle={i18n.t(i18n.l.points.points.longest_yet)}
-                          accentColor={pink}
-                        />
+                      icon="􀉉"
+                      subtitle={displayNextDistribution(
+                        nextDistributionSeconds
                       )}
-                      {canDisplayReferralsCard && (
-                        <InfoCard
-                          onPress={() => {}}
-                          title={i18n.t(i18n.l.points.points.referrals)}
-                          mainText="12"
-                          icon="􀇯"
-                          subtitle={`${(8200).toLocaleString('en-US')} ${i18n.t(
-                            i18n.l.points.points.points
-                          )}`}
-                          accentColor={yellow}
-                        />
-                      )}
-                    </>
+                      accentColor={labelSecondary}
+                    />
                   ) : (
-                    <>
-                      <Skeleton height={98} width={140} />
-                      <Skeleton height={98} width={140} />
-                      <Skeleton height={98} width={140} />
-                    </>
+                    <Skeleton height={98} width={(deviceWidth - 40 - 12) / 2} />
                   )}
-                </ScrollView>
-              </Bleed>
+                </Column>
+                <Column width="1/2">
+                  {canDisplayRankCard ? (
+                    <InfoCard
+                      onPress={() => {}}
+                      title={i18n.t(i18n.l.points.points.your_rank)}
+                      mainText={`#${data?.points?.user?.stats?.position?.current}`}
+                      icon="􀉬"
+                      subtitle={i18n.t(i18n.l.points.points.out_of_x, {
+                        totalUsers: data?.points?.leaderboard?.stats
+                          ?.total_users as number,
+                      })}
+                      accentColor={green}
+                    />
+                  ) : (
+                    <Skeleton height={98} width={(deviceWidth - 40 - 12) / 2} />
+                  )}
+                </Column>
+              </Columns>
               <Stack space="16px">
                 <Inset left="4px">
                   <ButtonPressAnimation>

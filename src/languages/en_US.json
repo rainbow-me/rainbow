@@ -1251,6 +1251,8 @@
         "referral_code": "Referral Code",
         "share_link": "Share Link",
         "next_reward": "Next Reward",
+        "your_rank": "Your Rank",
+        "out_of_x": "Out of %{totalUsers}",
         "referrals": "Referrals",
         "streak": "Streak",
         "longest_yet": "Longest yet",
