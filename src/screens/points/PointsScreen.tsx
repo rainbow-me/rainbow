@@ -18,6 +18,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { deviceUtils } from '@/utils';
 import ClaimContent from './content/ClaimContent';
 import ReferralContent from './content/ReferralContent';
+import { PointsErrorType } from '@/graphql/__generated__/metadata';
 
 const Swipe = createMaterialTopTabNavigator();
 
@@ -35,7 +36,8 @@ export default function PointsScreen() {
     walletAddress: accountAddress,
   });
 
-  const isOnboarded = !!data?.points?.user?.referralCode;
+  const isOnboarded =
+    data?.points?.error?.type !== PointsErrorType.NonExistingUser;
 
   return (
     <Box as={Page} flex={1} height="full" testID="points-screen" width="full">
@@ -68,18 +70,21 @@ export default function PointsScreen() {
         title={i18n.t(i18n.l.account.tab_points)}
       />
       {pointsFullyEnabled ? (
-        <Swipe.Navigator
-          backBehavior="history"
-          initialLayout={deviceUtils.dimensions}
-          initialRouteName={isOnboarded ? 'PointsContent' : 'ClaimContent'}
-          screenOptions={{ swipeEnabled: true }}
-          tabBarPosition="bottom"
-          tabBar={() => null}
-        >
-          <Swipe.Screen component={ClaimContent} name="ClaimContent" />
-          <Swipe.Screen component={ReferralContent} name="ReferralContent" />
-          <Swipe.Screen component={PointsContent} name="PointsContent" />
-        </Swipe.Navigator>
+        isOnboarded ? (
+          <PointsContent />
+        ) : (
+          <Swipe.Navigator
+            backBehavior="history"
+            initialLayout={deviceUtils.dimensions}
+            initialRouteName="ClaimContent"
+            screenOptions={{ swipeEnabled: false }}
+            tabBarPosition="bottom"
+            tabBar={() => null}
+          >
+            <Swipe.Screen component={ClaimContent} name="ClaimContent" />
+            <Swipe.Screen component={ReferralContent} name="ReferralContent" />
+          </Swipe.Navigator>
+        )
       ) : (
         <PlaceholderContent />
       )}

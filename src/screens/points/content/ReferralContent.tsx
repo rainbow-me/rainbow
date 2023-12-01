@@ -33,11 +33,13 @@ import Animated, {
 import Svg, { Path } from 'react-native-svg';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as i18n from '@/languages';
+import Routes from '@/navigation/routesNames';
+import { RainbowError, logger } from '@/logger';
 
 export default function ReferralContent() {
   const { accountAddress } = useAccountProfile();
   const { accentColor } = useAccountAccentColor();
-  const { goBack } = useNavigation();
+  const { goBack, navigate } = useNavigation();
 
   const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
@@ -45,6 +47,7 @@ export default function ReferralContent() {
   const surfacePrimary = useBackgroundColor('surfacePrimary');
 
   const [referralCodeDisplay, setReferralCodeDisplay] = useState('');
+  const [referralCode, setReferralCode] = useState('');
   const [status, setStatus] = useState<'incomplete' | 'valid' | 'invalid'>(
     'incomplete'
   );
@@ -64,10 +67,15 @@ export default function ReferralContent() {
         if (res.onboardPoints.error.type === 'INVALID_REFERRAL_CODE') {
           setStatus('invalid');
           haptics.notificationError();
+        } else {
+          logger.error(new RainbowError('Error validating referral code'), {
+            referralCode,
+          });
+          Alert.alert(i18n.t(i18n.l.points.referral.error));
         }
-        Alert.alert(i18n.t(i18n.l.points.referral.error));
       } else {
         setStatus('valid');
+        setReferralCode(referralCode);
         textInputRef.current?.blur();
         haptics.notificationSuccess();
       }
@@ -281,7 +289,7 @@ export default function ReferralContent() {
         >
           <ButtonPressAnimation onPress={goBack}>
             <Text color={{ custom: accentColor }} size="20pt" weight="bold">
-              {`􀆉 ${i18n.t(i18n.l.points.referral.back)}`}`
+              {`􀆉 ${i18n.t(i18n.l.points.referral.back)}`}
             </Text>
           </ButtonPressAnimation>
         </Box>
@@ -297,6 +305,7 @@ export default function ReferralContent() {
             alignItems: 'center',
             justifyContent: 'center',
           }}
+          onPress={() => navigate(Routes.CONSOLE_SHEET, { referralCode })}
         >
           <Text
             size="20pt"

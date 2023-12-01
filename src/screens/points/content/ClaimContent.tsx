@@ -13,6 +13,7 @@ import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import React from 'react';
 import Svg, { Path } from 'react-native-svg';
 import * as i18n from '@/languages';
+import Routes from '@/navigation/routesNames';
 
 export default function ClaimContent() {
   const { accentColor } = useAccountAccentColor();
@@ -70,6 +71,7 @@ export default function ClaimContent() {
               alignItems: 'center',
               justifyContent: 'center',
             }}
+            onPress={() => navigate(Routes.CONSOLE_SHEET)}
           >
             <Text
               size="20pt"

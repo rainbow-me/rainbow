@@ -16,7 +16,6 @@ import { IS_TEST } from '@/env';
 import { useAccountProfile, useDimensions } from '@/hooks';
 import { useTheme } from '@/theme';
 import { FloatingEmojisTapper } from '@/components/floating-emojis';
-import { Page } from '@/components/layout';
 
 const fallConfig = {
   duration: 2000,
