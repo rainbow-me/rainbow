@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { BackHandler, Image, RefreshControl } from 'react-native';
+import { BackHandler, Image, RefreshControl, Share } from 'react-native';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
@@ -7,7 +7,10 @@ import {
   AccentColorProvider,
   Bleed,
   Box,
+  Column,
+  Columns,
   Cover,
+  DebugLayout,
   Inline,
   Inset,
   Separator,
@@ -45,8 +48,8 @@ import {
 } from '@/utils/profileUtils';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { useFocusEffect } from '@react-navigation/native';
-import { navbarHeight } from '@/components/navbar/Navbar';
 import { Page } from '@/components/layout';
+import { IS_ANDROID } from '@/env';
 
 const STREAKS_ENABLED = true;
 const REFERRALS_ENABLED = true;
@@ -379,6 +382,8 @@ export default function PointsContent() {
     }, [navigate])
   );
 
+  const referralCode = data?.points?.user?.referralCode;
+
   const onPressCopy = React.useCallback(
     (onNewEmoji: () => void) => {
       if (!isToastActive) {
@@ -388,9 +393,9 @@ export default function PointsContent() {
         }, 2000);
       }
       onNewEmoji();
-      setClipboard(accountAddress);
+      referralCode && setClipboard(referralCode);
     },
-    [accountAddress, isToastActive, setClipboard, setToastActive]
+    [isToastActive, referralCode, setClipboard, setToastActive]
   );
 
   const [isRefreshing, setIsRefreshing] = React.useState(false);
@@ -418,7 +423,6 @@ export default function PointsContent() {
   const canDisplayReferralsCard = REFERRALS_ENABLED;
   const canDisplayCards =
     canDisplayNextRewardCard || canDisplayStreakCard || canDisplayReferralsCard;
-  const canDisplayReferralLink = REFERRALS_ENABLED;
   const canDisplayCurrentRank = !isNil(
     data?.points?.user?.stats?.position.current
   );
@@ -559,127 +563,150 @@ export default function PointsContent() {
                   )}
                 </ScrollView>
               </Bleed>
-              {REFERRALS_ENABLED && (
-                <Stack space={{ custom: 14 }}>
-                  <Box
-                    flexDirection="row"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    paddingHorizontal="4px"
-                  >
-                    <ButtonPressAnimation>
-                      <Inline space="4px" alignVertical="center">
-                        <Text weight="bold" color="labelTertiary" size="15pt">
-                          {i18n.t(i18n.l.points.points.referral_link)}
-                        </Text>
-                        <Text
-                          weight="heavy"
-                          color="labelQuaternary"
-                          size="13pt"
-                        >
-                          􀅵
-                        </Text>
-                      </Inline>
-                    </ButtonPressAnimation>
-                    <ButtonPressAnimation>
-                      <Bleed vertical="10px">
-                        <MaskedView
-                          style={{
-                            justifyContent: 'flex-end',
-                            alignItems: 'center',
-                            height: 30,
-                          }}
-                          maskElement={
-                            <Box
-                              alignItems="center"
-                              flexDirection="row"
-                              style={{ gap: 4 }}
-                              paddingVertical="10px"
-                              justifyContent="flex-end"
-                            >
-                              <Text
-                                align="right"
-                                weight="heavy"
-                                color="label"
-                                size="13pt"
-                              >
-                                􀈂
-                              </Text>
-                              <Text
-                                align="right"
-                                weight="heavy"
-                                color="label"
-                                size="15pt"
-                              >
-                                {i18n.t(i18n.l.points.points.share)}
-                              </Text>
-                            </Box>
-                          }
-                        >
-                          <LinearGradient
-                            style={{
-                              width: 65,
-                              height: '100%',
-                            }}
-                            colors={['#00E7F3', '#57EA5F']}
-                            start={{ x: 0, y: 0.5 }}
-                            end={{ x: 1, y: 0.5 }}
-                          />
-                        </MaskedView>
-                      </Bleed>
-                    </ButtonPressAnimation>
-                  </Box>
-                  {canDisplayReferralLink ? (
-                    // @ts-ignore
-                    <FloatingEmojis
-                      distance={250}
-                      duration={500}
-                      fadeOut={false}
-                      scaleTo={0}
-                      size={50}
-                      wiggleFactor={0}
-                    >
-                      {({ onNewEmoji }: { onNewEmoji: () => void }) => (
-                        <ButtonPressAnimation
-                          onPress={() => onPressCopy(onNewEmoji)}
-                          overflowMargin={50}
-                        >
-                          <Box
-                            background="surfaceSecondaryElevated"
-                            paddingVertical="12px"
-                            paddingHorizontal="16px"
-                            shadow="12px"
-                            borderRadius={18}
-                            alignItems="center"
-                            flexDirection="row"
-                            style={{ gap: 6, height: 48 }}
+              <Stack space="16px">
+                <Inset left="4px">
+                  <ButtonPressAnimation>
+                    <Inline space="4px" alignVertical="center">
+                      <Text weight="bold" color="labelTertiary" size="15pt">
+                        {i18n.t(i18n.l.points.points.referral_code)}
+                      </Text>
+                      <Text weight="heavy" color="labelQuaternary" size="13pt">
+                        􀅵
+                      </Text>
+                    </Inline>
+                  </ButtonPressAnimation>
+                </Inset>
+                {referralCode ? (
+                  <Columns space="12px">
+                    <Column width="1/2">
+                      {/* @ts-ignore */}
+                      <FloatingEmojis
+                        distance={250}
+                        duration={500}
+                        fadeOut={false}
+                        scaleTo={0}
+                        size={50}
+                        wiggleFactor={0}
+                      >
+                        {({ onNewEmoji }: { onNewEmoji: () => void }) => (
+                          <ButtonPressAnimation
+                            onPress={() => onPressCopy(onNewEmoji)}
+                            overflowMargin={50}
                           >
-                            <Text
-                              color="labelTertiary"
-                              size="15pt"
-                              weight="bold"
+                            <Box
+                              background="surfaceSecondaryElevated"
+                              shadow="12px"
+                              borderRadius={18}
+                              height={{ custom: 48 }}
+                              width="full"
+                              justifyContent="center"
+                              alignItems="center"
                             >
-                              􀉣
-                            </Text>
-                            <Box style={{ width: deviceWidth - 98 }}>
                               <Text
-                                color="labelTertiary"
-                                size="17pt"
-                                weight="semibold"
-                                numberOfLines={1}
+                                size="20pt"
+                                align="center"
+                                color="label"
+                                weight="heavy"
                               >
-                                rainbow.me/points?ref=0x2e6786983232jkl
+                                {referralCode?.slice(0, 3) +
+                                  '-' +
+                                  referralCode?.slice(3, 7)}
                               </Text>
                             </Box>
-                          </Box>
-                        </ButtonPressAnimation>
-                      )}
-                    </FloatingEmojis>
-                  ) : (
-                    <Skeleton width={deviceWidth - 40} height={48} />
-                  )}
-                </Stack>
-              )}
+                          </ButtonPressAnimation>
+                        )}
+                      </FloatingEmojis>
+                    </Column>
+                    <Column width="1/2">
+                      <ButtonPressAnimation
+                        onPress={() =>
+                          Share.share(
+                            IS_ANDROID
+                              ? {
+                                  message: 'rainbow.me',
+                                }
+                              : {
+                                  url: 'rainbow.me',
+                                }
+                          )
+                        }
+                      >
+                        <Box
+                          background="surfaceSecondaryElevated"
+                          shadow="12px"
+                          borderRadius={18}
+                          height={{ custom: 48 }}
+                          width="full"
+                          justifyContent="center"
+                          alignItems="center"
+                        >
+                          <Bleed vertical="10px">
+                            <MaskedView
+                              style={{
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                height: 30,
+                                width: 131,
+                              }}
+                              maskElement={
+                                <Box
+                                  alignItems="center"
+                                  flexDirection="row"
+                                  style={{ gap: 4 }}
+                                  paddingVertical="10px"
+                                  justifyContent="center"
+                                >
+                                  <Text
+                                    align="center"
+                                    weight="heavy"
+                                    color="label"
+                                    size="15pt"
+                                  >
+                                    􀈂
+                                  </Text>
+                                  <Text
+                                    align="center"
+                                    weight="heavy"
+                                    color="label"
+                                    size="16px / 22px (Deprecated)"
+                                  >
+                                    {i18n.t(i18n.l.points.points.share_link)}
+                                  </Text>
+                                </Box>
+                              }
+                            >
+                              <LinearGradient
+                                style={{
+                                  width: 131,
+                                  height: '100%',
+                                }}
+                                colors={['#00E7F3', '#57EA5F']}
+                                start={{ x: 0, y: 0.5 }}
+                                end={{ x: 1, y: 0.5 }}
+                              />
+                            </MaskedView>
+                          </Bleed>
+                        </Box>
+                      </ButtonPressAnimation>
+                    </Column>
+                  </Columns>
+                ) : (
+                  <Columns space="12px">
+                    <Column width="1/2">
+                      <Skeleton
+                        width={(deviceWidth - 40 - 12) / 2}
+                        height={48}
+                      />
+                    </Column>
+                    <Column width="1/2">
+                      <Skeleton
+                        width={(deviceWidth - 40 - 12) / 2}
+                        height={48}
+                      />
+                    </Column>
+                  </Columns>
+                )}
+              </Stack>
               <Separator color="separatorTertiary" thickness={1} />
               <Stack space="16px">
                 <Inset left="4px">
@@ -790,7 +817,7 @@ export default function PointsContent() {
       <ToastPositionContainer>
         <Toast
           isVisible={isToastActive}
-          text={`􀁣 ${i18n.t(i18n.l.points.points.link_copied)}`}
+          text={`􀁣 ${i18n.t(i18n.l.points.points.referral_code_copied)}`}
         />
       </ToastPositionContainer>
     </Box>

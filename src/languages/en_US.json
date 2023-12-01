@@ -1248,8 +1248,8 @@
         "get_started": "Get Started"
       },
       "points": {
-        "referral_link": "Referral Link",
-        "share": "Share",
+        "referral_code": "Referral Code",
+        "share_link": "Share Link",
         "next_reward": "Next Reward",
         "referrals": "Referrals",
         "streak": "Streak",
@@ -1266,7 +1266,7 @@
         "saturday": "Saturday",
         "error": "Oops!\nPlease pull to refresh.",
         "points": "points",
-        "link_copied": "Link copied"
+        "referral_code_copied": "Referral code copied"
       }
     },
     "pools": {
