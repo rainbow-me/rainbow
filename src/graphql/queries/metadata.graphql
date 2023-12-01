@@ -251,3 +251,99 @@ query simulateMessage(
     }
   }
 }
+
+query getPointsDataForWallet($address: String!) {
+  points(address: $address) {
+    error {
+      message
+      type
+    }
+    meta {
+      distribution {
+        next
+      }
+      status
+    }
+    leaderboard {
+      accounts {
+        address
+        earnings {
+          total
+        }
+        ens
+        avatarURL
+      }
+    }
+    user {
+      referralCode
+      earnings {
+        total
+      }
+      stats {
+        position {
+          current
+        }
+      }
+    }
+  }
+}
+
+query getPointsOnboardChallenge($address: String!, $referral: String) {
+  pointsOnboardChallenge(address: $address, referral: $referral)
+}
+
+mutation onboardPoints(
+  $address: String!
+  $signature: String!
+  $referral: String
+) {
+  onboardPoints(address: $address, signature: $signature, referral: $referral) {
+    meta {
+      distribution {
+        next
+      }
+      status
+    }
+    leaderboard {
+      accounts {
+        address
+        earnings {
+          total
+        }
+        ens
+        avatarURL
+      }
+    }
+    user {
+      earnings {
+        total
+      }
+      stats {
+        position {
+          current
+        }
+      }
+      onboarding {
+        earnings {
+          total
+        }
+        categories {
+          data {
+            usd_amount
+            total_collections
+            owned_collections
+          }
+          type
+          display_type
+          earnings {
+            total
+          }
+        }
+      }
+    }
+    error {
+      message
+      type
+    }
+  }
+}

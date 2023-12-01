@@ -36,6 +36,7 @@ import {
   backupSheetConfig,
   basicSheetConfig,
   hardwareWalletTxNavigatorConfig,
+  consoleSheetConfig,
   customGasSheetConfig,
   defaultScreenStackOptions,
   ensAdditionalRecordsSheetConfig,
@@ -97,6 +98,7 @@ import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
 import MintSheet from '@/screens/mints/MintSheet';
 import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
 import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoSheet';
+import { ConsoleSheet } from '@/screens/points/ConsoleSheet';
 
 type StackNavigatorParams = {
   [Routes.SEND_SHEET]: unknown;
@@ -450,6 +452,11 @@ function NativeStackNavigator() {
         name={Routes.MINTS_SHEET}
         component={MintsSheet}
         {...mintsSheetConfig}
+      />
+      <NativeStack.Screen
+        component={ConsoleSheet}
+        name={Routes.CONSOLE_SHEET}
+        {...consoleSheetConfig}
       />
     </NativeStack.Navigator>
   );

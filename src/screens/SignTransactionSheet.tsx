@@ -60,7 +60,7 @@ import { useTheme } from '@/theme';
 import { abbreviations, ethereumUtils, safeAreaInsetValues } from '@/utils';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import { useIsFocused, useRoute } from '@react-navigation/native';
-import { simulationClient } from '@/graphql';
+import { metadataPOSTClient } from '@/graphql';
 import {
   TransactionAssetType,
   TransactionErrorType,
@@ -540,7 +540,7 @@ export const SignTransactionSheet = () => {
         let simulationData;
         if (isMessageRequest) {
           // Message Signing
-          simulationData = await simulationClient.simulateMessage({
+          simulationData = await metadataPOSTClient.simulateMessage({
             address: accountAddress,
             chainId: chainId,
             message: {
@@ -569,7 +569,7 @@ export const SignTransactionSheet = () => {
           }
         } else {
           // TX Signing
-          simulationData = await simulationClient.simulateTransactions({
+          simulationData = await metadataPOSTClient.simulateTransactions({
             chainId: chainId,
             transactions: [
               {

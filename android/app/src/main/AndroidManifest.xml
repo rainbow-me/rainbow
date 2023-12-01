@@ -46,7 +46,7 @@
         android:exported="true"
         android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|uiMode"
         android:launchMode="singleTask"
-        android:windowSoftInputMode="adjustResize">
+        android:windowSoftInputMode="adjustPan">
         <intent-filter>
             <category android:name="android.intent.category.LAUNCHER" />
             <action android:name="android.intent.action.DOWNLOAD_COMPLETE"/>
