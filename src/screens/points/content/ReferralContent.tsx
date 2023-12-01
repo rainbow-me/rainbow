@@ -11,7 +11,7 @@ import {
   useTextStyle,
 } from '@/design-system';
 import { IS_IOS } from '@/env';
-import { metadataClient } from '@/graphql';
+import { metadataPOSTClient } from '@/graphql';
 import {
   useAccountAccentColor,
   useAccountProfile,
@@ -35,6 +35,7 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
 import { PointsErrorType } from '@/graphql/__generated__/metadata';
+import { RainbowError, logger } from '@/logger';
 
 export default function ReferralContent() {
   const { accountAddress } = useAccountProfile();
@@ -58,7 +59,7 @@ export default function ReferralContent() {
     async (text: string) => {
       const referralCode = text.slice(0, 3) + text.slice(4, 8);
       if (referralCode.length !== 6) return;
-      const res = await metadataClient.onboardPoints({
+      const res = await metadataPOSTClient.onboardPoints({
         address: accountAddress,
         referral: referralCode,
         signature: '',
@@ -70,6 +71,9 @@ export default function ReferralContent() {
           setStatus('invalid');
           haptics.notificationError();
         } else {
+          logger.error(new RainbowError('Error validating referral code'), {
+            referralCode,
+          });
           Alert.alert(i18n.t(i18n.l.points.referral.error));
         }
       } else {

@@ -1,8 +1,6 @@
-import React, { useCallback } from 'react';
-import { BackHandler, Image, RefreshControl, Share } from 'react-native';
+import React from 'react';
+import { RefreshControl, Share } from 'react-native';
 import { FloatingEmojis } from '@/components/floating-emojis';
-import Routes from '@/navigation/routesNames';
-import { useNavigation } from '@/navigation';
 import {
   AccentColorProvider,
   Bleed,
@@ -35,7 +33,6 @@ import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { useRecoilState } from 'recoil';
 import * as i18n from '@/languages';
 import { pointsQueryKey, usePoints } from '@/resources/points';
-import { maybeSignUri } from '@/handlers/imgix';
 import { isNil } from 'lodash';
 import { getFormattedTimeQuantity } from '@/helpers/utilities';
 import { address as formatAddress } from '@/utils/abbreviations';
@@ -46,9 +43,10 @@ import {
   addressHashedEmoji,
 } from '@/utils/profileUtils';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
-import { useFocusEffect } from '@react-navigation/native';
 import { Page } from '@/components/layout';
 import { IS_ANDROID } from '@/env';
+import { ImgixImage } from '@/components/images';
+import { Source } from 'react-native-fast-image';
 
 const ONE_WEEK_MS = 604_800_000;
 
@@ -150,8 +148,9 @@ const LeaderboardRow = ({
       <Inline space="10px" alignVertical="center">
         {avatarURL ? (
           <Box
-            as={Image}
-            source={{ uri: maybeSignUri(avatarURL) }}
+            as={ImgixImage}
+            size={36}
+            source={{ uri: avatarURL }}
             style={{ width: 36, height: 36 }}
             borderRadius={18}
             background="surfaceSecondaryElevated"
@@ -341,7 +340,6 @@ export default function PointsContent() {
   const { data, isFetching, dataUpdatedAt } = usePoints({
     walletAddress: accountAddress,
   });
-  const { navigate } = useNavigation();
 
   const labelSecondary = useForegroundColor('labelSecondary');
   const green = useForegroundColor('green');
@@ -350,22 +348,6 @@ export default function PointsContent() {
 
   const [isToastActive, setToastActive] = useRecoilState(
     addressCopiedToastAtom
-  );
-
-  useFocusEffect(
-    useCallback(() => {
-      const backAction = () => {
-        navigate(Routes.WALLET_SCREEN);
-        return true;
-      };
-
-      const backHandler = BackHandler.addEventListener(
-        'hardwareBackPress',
-        backAction
-      );
-
-      return () => backHandler.remove();
-    }, [navigate])
   );
 
   const referralCode =
@@ -460,8 +442,9 @@ export default function PointsContent() {
                         </Box>
                       }
                     >
-                      <Image
-                        source={BlurredRainbow}
+                      <ImgixImage
+                        source={BlurredRainbow as Source}
+                        size={totalPointsMaskSize}
                         style={{
                           width: totalPointsMaskSize,
                           height: totalPointsMaskSize,
@@ -484,8 +467,9 @@ export default function PointsContent() {
                       height="full"
                       paddingRight="4px"
                     >
-                      <Image
-                        source={Planet}
+                      <ImgixImage
+                        source={Planet as Source}
+                        size={60.19}
                         style={{
                           width: 60.19,
                           height: 36,
