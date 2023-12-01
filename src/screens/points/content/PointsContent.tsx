@@ -1,5 +1,5 @@
-import React, { useCallback } from 'react';
-import { BackHandler, Image, RefreshControl } from 'react-native';
+import React from 'react';
+import { Image, RefreshControl } from 'react-native';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
@@ -44,7 +44,6 @@ import {
   addressHashedEmoji,
 } from '@/utils/profileUtils';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
-import { useFocusEffect } from '@react-navigation/native';
 import { Page } from '@/components/layout';
 
 const STREAKS_ENABLED = true;
@@ -352,7 +351,6 @@ export default function PointsContent() {
   const { data, isFetching, dataUpdatedAt } = usePoints({
     walletAddress: accountAddress,
   });
-  const { navigate } = useNavigation();
 
   const labelSecondary = useForegroundColor('labelSecondary');
   const pink = useForegroundColor('pink');
@@ -360,22 +358,6 @@ export default function PointsContent() {
 
   const [isToastActive, setToastActive] = useRecoilState(
     addressCopiedToastAtom
-  );
-
-  useFocusEffect(
-    useCallback(() => {
-      const backAction = () => {
-        navigate(Routes.WALLET_SCREEN);
-        return true;
-      };
-
-      const backHandler = BackHandler.addEventListener(
-        'hardwareBackPress',
-        backAction
-      );
-
-      return () => backHandler.remove();
-    }, [navigate])
   );
 
   const onPressCopy = React.useCallback(
