@@ -346,8 +346,8 @@ export function NFTSingleOfferSheet() {
           }
           step.items?.forEach(item => {
             if (
-              item.txHash &&
-              !txsRef.current.includes(item.txHash) &&
+              item.txHashes?.[0] &&
+              !txsRef.current.includes(item.txHashes?.[0]) &&
               item.status === 'incomplete'
             ) {
               let tx;
@@ -355,7 +355,7 @@ export function NFTSingleOfferSheet() {
                 tx = {
                   to: item.data?.to,
                   from: item.data?.from,
-                  hash: item.txHash,
+                  hash: item.txHashes[0],
                   network: offer.network,
                   amount: offer.netAmount.decimal,
                   asset: {
@@ -370,7 +370,7 @@ export function NFTSingleOfferSheet() {
                 tx = {
                   to: item.data?.to,
                   from: item.data?.from,
-                  hash: item.txHash,
+                  hash: item.txHashes[0],
                   network: offer.network,
                   nft,
                   type: TransactionType.authorize,
@@ -391,7 +391,7 @@ export function NFTSingleOfferSheet() {
 
               // remove offer from cache
               queryClient.setQueryData(
-                nftOffersQueryKey({ address: accountAddress }),
+                nftOffersQueryKey({ walletAddress: accountAddress }),
                 (
                   cachedData: { nftOffers: NftOffer[] | undefined } | undefined
                 ) => {

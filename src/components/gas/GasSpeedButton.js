@@ -4,8 +4,10 @@ import AnimateNumber from '@bankify/react-native-animate-number';
 import lang from 'i18n-js';
 import { isEmpty, isNaN, isNil, upperFirst } from 'lodash';
 import makeColorMoreChill from 'make-color-more-chill';
+import { AnimatePresence, MotiView } from 'moti';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager, Keyboard } from 'react-native';
+import { Easing } from 'react-native-reanimated';
 import { darkModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
 import { ChainBadge, CoinIcon } from '../coin-icon';
@@ -95,7 +97,13 @@ const ChainBadgeContainer = styled.View.attrs({
   ...margin.object(0),
 });
 
-const NativeCoinIconWrapper = styled(Column)(margin.object(1.5, 5, 0, 0));
+const NativeCoinIconWrapper = styled(Column).attrs({})({
+  ...margin.object(1, 5, 0, 0),
+  alignItems: 'center',
+  height: 18,
+  justifyContent: 'center',
+  width: 18,
+});
 
 const Container = styled(Column).attrs({
   alignItems: 'center',
@@ -591,19 +599,33 @@ const GasSpeedButton = ({
         >
           <Row>
             <NativeCoinIconWrapper>
-              {currentNetwork === Network.mainnet ? (
-                <CoinIcon
-                  address={nativeFeeCurrency.address}
-                  size={18}
-                  symbol={nativeFeeCurrency.symbol}
-                />
-              ) : (
-                <ChainBadge
-                  assetType={currentNetwork}
-                  size="gas"
-                  position="relative"
-                />
-              )}
+              <AnimatePresence>
+                {!!currentNetwork && (
+                  <MotiView
+                    animate={{ opacity: 1 }}
+                    from={{ opacity: 0 }}
+                    transition={{
+                      duration: 300,
+                      easing: Easing.bezier(0.2, 0, 0, 1),
+                      type: 'timing',
+                    }}
+                  >
+                    {currentNetwork === Network.mainnet ? (
+                      <CoinIcon
+                        address={nativeFeeCurrency.address}
+                        size={18}
+                        symbol={nativeFeeCurrency.symbol}
+                      />
+                    ) : (
+                      <ChainBadge
+                        assetType={currentNetwork}
+                        size="gas"
+                        position="relative"
+                      />
+                    )}
+                  </MotiView>
+                )}
+              </AnimatePresence>
             </NativeCoinIconWrapper>
             <TextContainer>
               <Text>

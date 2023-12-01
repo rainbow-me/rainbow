@@ -253,7 +253,7 @@ export const NFTOffersCard = () => {
                       setCanRefresh(false);
                       queryClient.invalidateQueries(
                         nftOffersQueryKey({
-                          address: accountAddress,
+                          walletAddress: accountAddress,
                         })
                       );
                     }}

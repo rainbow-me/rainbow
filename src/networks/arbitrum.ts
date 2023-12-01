@@ -1,4 +1,4 @@
-import { getProviderForNetwork } from '@/handlers/web3';
+import { getProviderForNetwork, proxyRpcEndpoint } from '@/handlers/web3';
 import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { arbitrum } from '@wagmi/chains';
@@ -23,7 +23,7 @@ export const getArbitrumNetworkObject = (): NetworkProperties => {
       address: ARBITRUM_ETH_ADDRESS,
     },
 
-    rpc: config.arbitrum_mainnet_rpc,
+    rpc: proxyRpcEndpoint(arbitrum.id),
     getProvider: getProviderForNetwork(Network.arbitrum),
     balanceCheckerAddress: '0x54A4E5800345c01455a7798E0D96438364e22723',
 

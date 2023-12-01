@@ -1,4 +1,4 @@
-import { getProviderForNetwork } from '@/handlers/web3';
+import { getProviderForNetwork, proxyRpcEndpoint } from '@/handlers/web3';
 import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { mainnet } from '@wagmi/chains';
@@ -25,7 +25,7 @@ export const getMainnetNetworkObject = (): NetworkProperties => {
 
     // this should be refactored to have less deps
     getProvider: getProviderForNetwork(Network.mainnet),
-    rpc: config.ethereum_mainnet_rpc,
+    rpc: proxyRpcEndpoint(mainnet.id),
     balanceCheckerAddress: '0x4dcf4562268dd384fe814c00fad239f06c2a0c2b',
 
     // features

@@ -20,6 +20,7 @@ export const DEFI_POSITIONS = 'Defi Positions';
 export const NFT_OFFERS = 'NFT Offers';
 export const MINTS = 'Mints';
 export const POINTS = 'Points';
+export const REMOTE_PROMO_SHEETS = 'RemotePromoSheets';
 
 /**
  * A developer setting that pushes log lines to an array in-memory so that
@@ -49,6 +50,7 @@ export const defaultConfig: Record<string, ExperimentalValue> = {
   [NFT_OFFERS]: { settings: true, value: true },
   [MINTS]: { settings: true, value: false },
   [POINTS]: { settings: true, value: false },
+  [REMOTE_PROMO_SHEETS]: { settings: true, value: false },
 };
 
 const storageKey = 'config';

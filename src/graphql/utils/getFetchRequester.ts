@@ -2,7 +2,10 @@ import { rainbowFetch, RainbowFetchRequestOpts } from '@/rainbow-fetch';
 import { DocumentNode } from 'graphql';
 import { resolveRequestDocument } from 'graphql-request';
 import { buildGetQueryParams } from '@/graphql/utils/buildGetQueryParams';
-import { ARC_GRAPHQL_API_KEY } from 'react-native-dotenv';
+import {
+  ARC_GRAPHQL_API_KEY,
+  METADATA_GRAPHQL_API_KEY,
+} from 'react-native-dotenv';
 
 const allowedOperations = ['mutation', 'query'];
 
@@ -38,6 +41,16 @@ const additionalConfig: {
   arcDev: {
     headers: {
       'x-api-key': ARC_GRAPHQL_API_KEY,
+    },
+  },
+  metadata: {
+    headers: {
+      Authorization: `Bearer ${METADATA_GRAPHQL_API_KEY}`,
+    },
+  },
+  simulation: {
+    headers: {
+      Authorization: `Bearer ${METADATA_GRAPHQL_API_KEY}`,
     },
   },
 };
