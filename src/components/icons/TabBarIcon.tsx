@@ -126,7 +126,13 @@ export function TabBarIcon({
     const backgroundColor = interpolateColor(
       reanimatedPosition.value,
       [index - 0.7, index - 0.3, index, index + 0.3, index + 0.7],
-      [accentColor, accentColor, accentColor, accentColor, accentColor]
+      [
+        accentColor ?? colors.appleBlue,
+        accentColor ?? colors.appleBlue,
+        accentColor ?? colors.appleBlue,
+        accentColor ?? colors.appleBlue,
+        accentColor ?? colors.appleBlue,
+      ]
     );
     const opacity = interpolate(
       reanimatedPosition.value,
