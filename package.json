@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.9.10-1",
+  "version": "1.9.11-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn postinstall && yarn graphql-codegen",
@@ -189,6 +189,7 @@
     "make-color-more-chill": "0.2.2",
     "match-sorter": "6.3.0",
     "mnemonist": "0.38.1",
+    "moti": "0.27.2",
     "multiformats": "9.6.2",
     "nanoid": "3.2.0",
     "p-queue": "7.2.0",

@@ -12,6 +12,11 @@ exports.config = {
     document: './queries/metadata.graphql',
     schema: { method: 'POST', url: 'https://metadata.p.rainbow.me/v1/graph' },
   },
+  simulation: {
+    __name: 'simulation',
+    document: './queries/metadata.graphql',
+    schema: { method: 'POST', url: 'https://metadata.p.rainbow.me/v1/graph' },
+  },
   arc: {
     __name: 'arc',
     document: './queries/arc.graphql',

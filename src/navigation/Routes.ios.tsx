@@ -21,6 +21,7 @@ import { SendConfirmationSheet } from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
 import { SettingsSheet } from '../screens/SettingsSheet';
 import ShowcaseScreen from '../screens/ShowcaseSheet';
+import { SignTransactionSheet } from '../screens/SignTransactionSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import NotificationsPromoSheet from '../screens/NotificationsPromoSheet';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
@@ -57,6 +58,7 @@ import {
   restoreSheetConfig,
   sendConfirmationSheetConfig,
   settingsSheetConfig,
+  signTransactionSheetConfig,
   stackNavigationConfig,
   swapDetailsSheetConfig,
   learnWebViewScreenConfig,
@@ -328,16 +330,9 @@ function NativeStackNavigator() {
         {...restoreSheetConfig}
       />
       <NativeStack.Screen
-        component={TransactionConfirmationScreen}
+        component={SignTransactionSheet}
         name={Routes.CONFIRM_REQUEST}
-        options={{
-          allowsDragToDismiss: true,
-          backgroundOpacity: 1,
-          customStack: true,
-          headerHeight: 0,
-          isShortFormEnabled: false,
-          topOffset: 0,
-        }}
+        {...signTransactionSheetConfig}
       />
       <NativeStack.Screen
         component={ExpandedAssetSheet}

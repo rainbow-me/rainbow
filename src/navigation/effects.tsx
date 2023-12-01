@@ -461,6 +461,9 @@ export const bottomSheetPreset: StackNavigationOptions &
 export const walletconnectBottomSheetPreset: BottomSheetNavigationOptions = {
   backdropColor: 'black',
   backdropOpacity: 1,
+  enableContentPanningGesture: false,
+  backdropPressBehavior: 'none',
+  height: '100%',
 };
 
 export const consoleSheetPreset: BottomSheetNavigationOptions = {

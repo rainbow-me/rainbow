@@ -210,6 +210,19 @@ export const consoleSheetConfig = {
   }),
 };
 
+export const signTransactionSheetConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      cornerRadius: 0,
+      springDamping: 1,
+      topOffset: 0,
+      transitionDuration: 0.3,
+    }),
+  }),
+};
+
 export const walletDiagnosticsSheetConfig = {
   options: ({ route }: { route: { params: any } }) => {
     return buildCoolModalConfig({
