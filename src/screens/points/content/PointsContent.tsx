@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, RefreshControl } from 'react-native';
+import { RefreshControl } from 'react-native';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
@@ -45,6 +45,8 @@ import {
 } from '@/utils/profileUtils';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { Page } from '@/components/layout';
+import { ImgixImage } from '@/components/images';
+import { Source } from 'react-native-fast-image';
 
 const STREAKS_ENABLED = true;
 const REFERRALS_ENABLED = true;
@@ -157,7 +159,8 @@ const LeaderboardRow = ({
         <Inline space="10px" alignVertical="center">
           {avatarURL ? (
             <Box
-              as={Image}
+              as={ImgixImage}
+              size={36}
               source={{ uri: maybeSignUri(avatarURL) }}
               style={{ width: 36, height: 36 }}
               borderRadius={18}
@@ -451,8 +454,9 @@ export default function PointsContent() {
                         </Box>
                       }
                     >
-                      <Image
-                        source={BlurredRainbow}
+                      <ImgixImage
+                        source={BlurredRainbow as Source}
+                        size={totalPointsMaskSize}
                         style={{
                           width: totalPointsMaskSize,
                           height: totalPointsMaskSize,
@@ -475,8 +479,9 @@ export default function PointsContent() {
                       height="full"
                       paddingRight="4px"
                     >
-                      <Image
-                        source={Planet}
+                      <ImgixImage
+                        source={Planet as Source}
+                        size={60.19}
                         style={{
                           width: 60.19,
                           height: 36,
