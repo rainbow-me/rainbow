@@ -66,8 +66,8 @@ export const fonts = {
   },
 } as const;
 
-const { heavy, bold } = fonts.SFProRounded;
-export const headingWeights = { heavy, bold };
+const { black, heavy, bold } = fonts.SFProRounded;
+export const headingWeights = { black, heavy, bold };
 export const textWeights = fonts.SFProRounded;
 
 // Sourced from https://seek-oss.github.io/capsize
