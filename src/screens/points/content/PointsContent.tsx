@@ -235,14 +235,14 @@ const Skeleton = ({ width, height }: { width: number; height: number }) => {
 };
 
 const InfoCard = ({
-  onPress,
+  // onPress,
   title,
   subtitle,
   mainText,
   icon,
   accentColor,
 }: {
-  onPress: () => void;
+  // onPress: () => void;
   title: string;
   subtitle: string;
   mainText: string;
@@ -339,7 +339,7 @@ export default function PointsContent() {
   const totalPointsString = data?.points?.user?.earnings?.total.toLocaleString(
     'en-US'
   );
-  const totalPointsMaskSize = 50 * Math.max(totalPointsString?.length ?? 0, 4);
+  const totalPointsMaskSize = 60 * Math.max(totalPointsString?.length ?? 0, 4);
 
   const canDisplayTotalPoints = !isNil(data?.points?.user?.earnings?.total);
   const canDisplayNextRewardCard = !isNil(nextDistributionSeconds);
@@ -436,7 +436,7 @@ export default function PointsContent() {
                 <Column width="1/2">
                   {canDisplayNextRewardCard ? (
                     <InfoCard
-                      onPress={() => {}}
+                      // onPress={() => {}}
                       title={i18n.t(i18n.l.points.points.next_reward)}
                       mainText={getFormattedTimeQuantity(
                         nextDistributionSeconds,
@@ -455,7 +455,7 @@ export default function PointsContent() {
                 <Column width="1/2">
                   {canDisplayRankCard ? (
                     <InfoCard
-                      onPress={() => {}}
+                      // onPress={() => {}}
                       title={i18n.t(i18n.l.points.points.your_rank)}
                       mainText={`#${data?.points?.user?.stats?.position?.current}`}
                       icon="􀉬"
