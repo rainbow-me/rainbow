@@ -6,7 +6,6 @@ import {
   Inline,
   Stack,
   Text,
-  useBackgroundColor,
   useForegroundColor,
   useTextStyle,
 } from '@/design-system';
@@ -36,6 +35,7 @@ import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
 import { PointsErrorType } from '@/graphql/__generated__/metadata';
 import { RainbowError, logger } from '@/logger';
+import { ActionButton } from '@/screens/points/components/ActionButton';
 
 export default function ReferralContent() {
   const { accountAddress } = useAccountProfile();
@@ -44,8 +44,6 @@ export default function ReferralContent() {
 
   const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
-
-  const surfacePrimary = useBackgroundColor('surfacePrimary');
 
   const [referralCodeDisplay, setReferralCodeDisplay] = useState('');
   const [referralCode, setReferralCode] = useState('');
@@ -298,27 +296,11 @@ export default function ReferralContent() {
         </Box>
       )}
       {!hasKeyboard && status === 'valid' && (
-        <ButtonPressAnimation
-          style={{
-            backgroundColor: accentColor,
-            borderRadius: 26,
-            height: 48,
-            paddingVertical: 12,
-            paddingHorizontal: 24,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
+        <ActionButton
+          color={accentColor}
+          label={i18n.t(i18n.l.points.referral.get_started)}
           onPress={() => navigate(Routes.CONSOLE_SHEET, { referralCode })}
-        >
-          <Text
-            size="20pt"
-            weight="heavy"
-            align="center"
-            color={{ custom: surfacePrimary }}
-          >
-            {i18n.t(i18n.l.points.referral.get_started)}
-          </Text>
-        </ButtonPressAnimation>
+        />
       )}
     </Box>
   );

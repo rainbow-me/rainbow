@@ -1,12 +1,5 @@
-import { ButtonPressAnimation } from '@/components/animations';
 import { navbarHeight } from '@/components/navbar/Navbar';
-import {
-  Box,
-  Stack,
-  Text,
-  useBackgroundColor,
-  useForegroundColor,
-} from '@/design-system';
+import { Box, Stack, Text } from '@/design-system';
 import { useAccountAccentColor, useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
@@ -14,15 +7,13 @@ import React from 'react';
 import Svg, { Path } from 'react-native-svg';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
+import { ActionButton } from '@/screens/points/components/ActionButton';
 
 export default function ClaimContent() {
   const { accentColor } = useAccountAccentColor();
   const { navigate } = useNavigation();
 
   const { height: deviceHeight } = useDimensions();
-
-  const separatorSecondary = useForegroundColor('separatorSecondary');
-  const surfacePrimary = useBackgroundColor('surfacePrimary');
 
   const contentBottom =
     TAB_BAR_HEIGHT + (deviceHeight - navbarHeight - 218) / 2;
@@ -61,51 +52,20 @@ export default function ClaimContent() {
               {i18n.t(i18n.l.points.claim.subtitle)}
             </Text>
           </Stack>
-          <ButtonPressAnimation
-            style={{
-              backgroundColor: accentColor,
-              borderRadius: 26,
-              height: 48,
-              paddingVertical: 12,
-              paddingHorizontal: 24,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
+          <ActionButton
+            color={accentColor}
+            label={i18n.t(i18n.l.points.claim.get_started)}
             onPress={() => navigate(Routes.CONSOLE_SHEET)}
-          >
-            <Text
-              size="20pt"
-              weight="heavy"
-              align="center"
-              color={{ custom: surfacePrimary }}
-            >
-              {i18n.t(i18n.l.points.claim.get_started)}
-            </Text>
-          </ButtonPressAnimation>
+          />
         </Stack>
       </Box>
-      <ButtonPressAnimation
+      <ActionButton
+        color={accentColor}
+        label={i18n.t(i18n.l.points.claim.use_referral_code)}
         onPress={() => navigate('ReferralContent')}
-        style={{
-          borderRadius: 26,
-          height: 48,
-          paddingVertical: 12,
-          paddingHorizontal: 20,
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderWidth: 2,
-          borderColor: separatorSecondary,
-        }}
-      >
-        <Text
-          size="17pt"
-          weight="heavy"
-          align="center"
-          color={{ custom: accentColor }}
-        >
-          {i18n.t(i18n.l.points.claim.use_referral_code)}
-        </Text>
-      </ButtonPressAnimation>
+        outline
+        small
+      />
     </Box>
   );
 }
