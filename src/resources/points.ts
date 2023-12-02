@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { POINTS, useExperimentalFlag } from '@/config';
 import { metadataPOSTClient } from '@/graphql';
 import { GetPointsDataForWalletQuery } from '@/graphql/__generated__/metadata';
@@ -28,6 +29,13 @@ export function usePoints({ walletAddress }: { walletAddress: string }) {
       cacheTime: Infinity,
     }
   );
+
+  useEffect(() => {
+    const nextDistribution = query?.data?.points?.meta?.distribution?.next;
+    if (nextDistribution && Date.now() / 1000 > nextDistribution) {
+      query.refetch();
+    }
+  }, [query]);
 
   return query;
 }

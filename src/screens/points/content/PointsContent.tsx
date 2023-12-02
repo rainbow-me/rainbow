@@ -32,11 +32,10 @@ import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { useRecoilState } from 'recoil';
 import * as i18n from '@/languages';
-import { pointsQueryKey, usePoints } from '@/resources/points';
+import { usePoints } from '@/resources/points';
 import { isNil } from 'lodash';
 import { getFormattedTimeQuantity } from '@/helpers/utilities';
 import { address as formatAddress } from '@/utils/abbreviations';
-import { queryClient } from '@/react-query';
 import { delay } from '@/utils/delay';
 import {
   addressHashedColorIndex,
@@ -337,7 +336,7 @@ export default function PointsContent() {
   const { width: deviceWidth } = useDimensions();
   const { accountAddress, accountENS } = useAccountProfile();
   const { setClipboard } = useClipboard();
-  const { data, isFetching, dataUpdatedAt } = usePoints({
+  const { data, isFetching, dataUpdatedAt, refetch } = usePoints({
     walletAddress: accountAddress,
   });
 
@@ -374,13 +373,11 @@ export default function PointsContent() {
   const refresh = React.useCallback(async () => {
     setIsRefreshing(true);
     if (!dataUpdatedAt || Date.now() - dataUpdatedAt > 30_000) {
-      await queryClient.invalidateQueries(
-        pointsQueryKey({ address: accountAddress })
-      );
+      refetch();
     }
     await delay(2000);
     setIsRefreshing(false);
-  }, [accountAddress, dataUpdatedAt]);
+  }, [dataUpdatedAt, refetch]);
 
   const nextDistributionSeconds = data?.points?.meta?.distribution?.next;
   const totalPointsString = data?.points?.user?.earnings?.total.toLocaleString(
