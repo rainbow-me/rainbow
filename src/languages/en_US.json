@@ -1250,7 +1250,7 @@
       "points": {
         "referral_code": "Referral Code",
         "share_link": "Share Link",
-        "next_reward": "Next Reward",
+        "next_drop": "Next Drop",
         "your_rank": "Your Rank",
         "out_of_x": "Out of %{totalUsers}",
         "referrals": "Referrals",
@@ -1268,7 +1268,8 @@
         "saturday": "Saturday",
         "error": "Oops!\nPlease pull to refresh.",
         "points": "points",
-        "referral_code_copied": "Referral code copied"
+        "referral_code_copied": "Referral code copied",
+        "earn_points_for_referring": "Earn points for referring friends once they swap $100 through Rainbow"
       },
       "console": {
         "claim_bonus_paragraph": "To claim the rest of your bonus points, swap at least $100 through Rainbow.",

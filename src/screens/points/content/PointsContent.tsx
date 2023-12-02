@@ -443,7 +443,7 @@ export default function PointsContent() {
                   {canDisplayNextRewardCard ? (
                     <InfoCard
                       // onPress={() => {}}
-                      title={i18n.t(i18n.l.points.points.next_reward)}
+                      title={i18n.t(i18n.l.points.points.next_drop)}
                       mainText={getFormattedTimeQuantity(
                         nextDistributionSeconds,
                         2
@@ -617,6 +617,16 @@ export default function PointsContent() {
                     </Column>
                   </Columns>
                 )}
+                <Inset horizontal="4px">
+                  <Text
+                    color="labelQuaternary"
+                    size="13pt"
+                    weight="semibold"
+                    align="left"
+                  >
+                    {i18n.t(i18n.l.points.points.earn_points_for_referring)}
+                  </Text>
+                </Inset>
               </Stack>
               <Separator color="separatorTertiary" thickness={1} />
               <Stack space="16px">
