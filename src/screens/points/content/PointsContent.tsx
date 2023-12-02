@@ -1,5 +1,5 @@
 import React from 'react';
-import { RefreshControl, Share } from 'react-native';
+import { RefreshControl, Share, Text as RNText } from 'react-native';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import {
   AccentColorProvider,
@@ -93,7 +93,7 @@ const LeaderboardRow = ({
   rank: number;
 }) => {
   const { colors } = useTheme();
-
+  // const rank = 150;
   let gradient;
   let icon;
   switch (rank) {
@@ -109,29 +109,8 @@ const LeaderboardRow = ({
       gradient = ['#DE8F38', '#AE5F25'];
       icon = '🥉';
       break;
-    case 4:
-      icon = '􀁀';
-      break;
-    case 5:
-      icon = '􀁂';
-      break;
-    case 6:
-      icon = '􀁄';
-      break;
-    case 7:
-      icon = '􀁆';
-      break;
-    case 8:
-      icon = '􀁈';
-      break;
-    case 9:
-      icon = '􀁊';
-      break;
-    case 10:
-      icon = '􀓵';
-      break;
     default:
-      icon = '􀁜';
+      icon = `#${rank}`;
       break;
   }
 
@@ -232,15 +211,18 @@ const LeaderboardRow = ({
             {formattedPoints}
           </Text>
         )}
-        <Text
-          align="center"
-          weight="semibold"
-          color="labelTertiary"
-          size="15pt"
-          containsEmoji={rank <= 3}
-        >
-          {icon}
-        </Text>
+        <Box width={{ custom: 32 }} alignItems="flex-end">
+          <Text
+            align="center"
+            // eslint-disable-next-line no-nested-ternary
+            size={rank >= 100 ? '11pt' : rank > 3 ? '13pt' : '15pt'}
+            color="labelTertiary"
+            weight={rank <= 3 ? 'semibold' : 'heavy'}
+            containsEmoji={rank <= 3}
+          >
+            {icon}
+          </Text>
+        </Box>
       </Inline>
     </Box>
   );
