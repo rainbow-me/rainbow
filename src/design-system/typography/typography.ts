@@ -48,6 +48,10 @@ export const fonts = {
       fontFamily: ios ? 'SF Pro Rounded' : 'SF-Pro-Rounded-Heavy',
       fontWeight: ios ? fontWeights.heavy : 'normal',
     },
+    black: {
+      fontFamily: ios ? 'SF Pro Rounded' : 'SF-Pro-Rounded-Black',
+      fontWeight: ios ? fontWeights.black : 'normal',
+    },
   },
 
   SFMono: {

@@ -436,7 +436,7 @@ export default function PointsContent() {
                       }}
                       maskElement={
                         <Box paddingVertical="10px">
-                          <Text color="label" size="44pt" weight="heavy">
+                          <Text color="label" size="44pt" weight="black">
                             {totalPointsString}
                           </Text>
                         </Box>
