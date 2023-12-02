@@ -16,7 +16,12 @@ import {
   useBackgroundColor,
   useForegroundColor,
 } from '@/design-system';
-import { useAccountProfile, useClipboard, useDimensions } from '@/hooks';
+import {
+  useAccountAccentColor,
+  useAccountProfile,
+  useClipboard,
+  useDimensions,
+} from '@/hooks';
 import { useTheme } from '@/theme';
 import { ScrollView } from 'react-native-gesture-handler';
 import MaskedView from '@react-native-masked-view/masked-view';
@@ -291,6 +296,7 @@ export default function PointsContent() {
   const { colors } = useTheme();
   const { width: deviceWidth } = useDimensions();
   const { accountAddress, accountENS } = useAccountProfile();
+  const { accentColor } = useAccountAccentColor();
   const { setClipboard } = useClipboard();
   const { data, isFetching, dataUpdatedAt, refetch } = usePoints({
     walletAddress: accountAddress,
@@ -460,8 +466,8 @@ export default function PointsContent() {
                       mainText={`#${data?.points?.user?.stats?.position?.current}`}
                       icon="􀉬"
                       subtitle={i18n.t(i18n.l.points.points.out_of_x, {
-                        totalUsers: data?.points?.leaderboard?.stats
-                          ?.total_users as number,
+                        totalUsers: (data?.points?.leaderboard?.stats
+                          ?.total_users as number).toLocaleString('en-US'),
                       })}
                       accentColor={green}
                     />
