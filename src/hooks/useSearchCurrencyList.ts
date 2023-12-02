@@ -12,7 +12,7 @@ import {
   RainbowToken as RT,
   TokenSearchTokenListId,
 } from '@/entities';
-import { swapSearch } from '@/handlers/tokenSearch';
+import { tokenSearch } from '@/handlers/tokenSearch';
 import { addHexPrefix, getProviderForNetwork } from '@/handlers/web3';
 import tokenSectionTypes from '@/helpers/tokenSectionTypes';
 import {
@@ -60,7 +60,7 @@ const searchCurrencyList = async (searchParams: {
   searchList: RT[] | TokenSearchTokenListId;
   query: string;
 }) => {
-  const { searchList, query, chainId, fromChainId } = searchParams;
+  const { searchList, query, chainId } = searchParams;
   const isAddress = query.match(/^(0x)?[0-9a-fA-F]{40}$/);
   const keys: (keyof RT)[] = isAddress ? ['address'] : ['symbol', 'name'];
   const formattedQuery = isAddress ? addHexPrefix(query).toLowerCase() : query;
@@ -73,22 +73,25 @@ const searchCurrencyList = async (searchParams: {
     ) {
       return [];
     }
-    return swapSearch({
+    return tokenSearch({
       chainId,
-      fromChainId,
       keys,
       list: searchList,
       threshold,
       query: formattedQuery,
     });
   } else {
-    return filterList(searchList, formattedQuery, keys, {
-      threshold: isAddress ? rankings.CASE_SENSITIVE_EQUAL : rankings.CONTAINS,
-    });
+    return (
+      filterList(searchList, formattedQuery, keys, {
+        threshold: isAddress
+          ? rankings.CASE_SENSITIVE_EQUAL
+          : rankings.CONTAINS,
+      }) || []
+    );
   }
 };
 
-const useSwapCurrencyList = (
+const useSearchCurrencyList = (
   searchQuery: string,
   searchChainId = MAINNET_CHAINID,
   isDiscover = false
@@ -154,30 +157,21 @@ const useSwapCurrencyList = (
     [favoriteAddresses]
   );
   const handleSearchResponse = useCallback(
-    (tokens: RT[], crosschainNetwork?: Network) => {
+    (tokens: RT[]): RT[] => {
       // These transformations are necessary for L2 tokens to match our spec
-      const activeChainId = crosschainNetwork
-        ? ethereumUtils.getChainIdFromNetwork(crosschainNetwork)
-        : searchChainId;
       return (tokens || [])
         .map(token => {
-          token.address =
-            token.networks?.[activeChainId]?.address || token.address;
-          if (activeChainId !== MAINNET_CHAINID) {
-            const network =
-              crosschainNetwork ||
-              ethereumUtils.getNetworkFromChainId(searchChainId);
-            token.type = network;
-            if (token.networks[MAINNET_CHAINID]) {
-              token.mainnet_address = token.networks[MAINNET_CHAINID].address;
-            }
-            token.uniqueId = `${token.address}_${network}`;
-          }
-          return token;
+          const t: RT = {
+            ...token,
+            type: token?.type || AssetType.token,
+            address: token?.address || token.uniqueId.toLowerCase(),
+          } as RT;
+
+          return t;
         })
         .filter(({ address }) => !isFavorite(address));
     },
-    [searchChainId, isFavorite]
+    [isFavorite]
   );
 
   const getCurated = useCallback(() => {
@@ -288,7 +282,7 @@ const useSwapCurrencyList = (
       });
       setCrosschainVerifiedAssets(state => ({
         ...state,
-        [network]: handleSearchResponse(results, network),
+        [network]: handleSearchResponse(results || []),
       }));
     },
     [handleSearchResponse, inputChainId]
@@ -456,6 +450,7 @@ const useSwapCurrencyList = (
 
   const currencyList = useMemo(() => {
     const list = [];
+
     let bridgeAsset = isCrosschainSearch
       ? verifiedAssets.find(
           asset =>
@@ -468,11 +463,11 @@ const useSwapCurrencyList = (
       let verifiedAssetsWithImport = verifiedAssets;
       let highLiquidityAssetsWithImport = highLiquidityAssets;
       let lowLiquidityAssetsWithoutImport = lowLiquidityAssets;
-      const verifiedAddresses = verifiedAssets.map(({ address }) =>
-        address.toLowerCase()
+      const verifiedAddresses = verifiedAssets.map(({ uniqueId }) =>
+        uniqueId.toLowerCase()
       );
-      const highLiquidityAddresses = verifiedAssets.map(({ address }) =>
-        address.toLowerCase()
+      const highLiquidityAddresses = verifiedAssets.map(({ uniqueId }) =>
+        uniqueId.toLowerCase()
       );
       // this conditional prevents the imported token from jumping
       // sections if verified/highliquidity search responds later
@@ -662,4 +657,4 @@ const useSwapCurrencyList = (
   };
 };
 
-export default useSwapCurrencyList;
+export default useSearchCurrencyList;
