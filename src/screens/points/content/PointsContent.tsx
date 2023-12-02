@@ -23,7 +23,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import BlurredRainbow from '@/assets/blurredRainbow.png';
 import Planet from '@/assets/planet.png';
 import LinearGradient from 'react-native-linear-gradient';
-import { safeAreaInsetValues } from '@/utils';
+import { isENSNFTRecord, safeAreaInsetValues } from '@/utils';
 import {
   ButtonPressAnimation,
   ShimmerAnimation,
@@ -95,7 +95,7 @@ const LeaderboardRow = ({
   rank: number;
 }) => {
   const { colors } = useTheme();
-  // const rank = 150;
+
   let gradient;
   let icon;
   switch (rank) {
@@ -126,7 +126,7 @@ const LeaderboardRow = ({
       alignItems="center"
     >
       <Inline space="10px" alignVertical="center">
-        {avatarURL ? (
+        {avatarURL && !isENSNFTRecord(avatarURL) ? (
           <ImageAvatar image={avatarURL} size="rewards" />
         ) : (
           <ContactAvatar
@@ -249,42 +249,42 @@ const InfoCard = ({
   icon: string;
   accentColor: string;
 }) => (
-  <ButtonPressAnimation onPress={onPress} overflowMargin={50}>
-    <Box
-      padding="20px"
-      background="surfaceSecondaryElevated"
-      shadow="12px"
-      height={{ custom: 98 }}
-      borderRadius={18}
-    >
-      <Stack space="12px">
-        <Inline space="4px" alignVertical="center">
-          <Text color="labelSecondary" weight="bold" size="15pt">
-            {title}
-          </Text>
-          <Text color="labelQuaternary" weight="heavy" size="13pt">
+  // <ButtonPressAnimation onPress={onPress} overflowMargin={50}>
+  <Box
+    padding="20px"
+    background="surfaceSecondaryElevated"
+    shadow="12px"
+    height={{ custom: 98 }}
+    borderRadius={18}
+  >
+    <Stack space="12px">
+      {/* <Inline space="4px" alignVertical="center"> */}
+      <Text color="labelSecondary" weight="bold" size="15pt">
+        {title}
+      </Text>
+      {/* <Text color="labelQuaternary" weight="heavy" size="13pt">
             􀅵
           </Text>
-        </Inline>
-        <Text color="label" weight="heavy" size="22pt">
-          {mainText}
+        </Inline> */}
+      <Text color="label" weight="heavy" size="22pt">
+        {mainText}
+      </Text>
+      <Inline space="4px">
+        <Text
+          align="center"
+          weight="heavy"
+          size="12pt"
+          color={{ custom: accentColor }}
+        >
+          {icon}
         </Text>
-        <Inline space="4px">
-          <Text
-            align="center"
-            weight="heavy"
-            size="12pt"
-            color={{ custom: accentColor }}
-          >
-            {icon}
-          </Text>
-          <Text weight="heavy" size="13pt" color={{ custom: accentColor }}>
-            {subtitle}
-          </Text>
-        </Inline>
-      </Stack>
-    </Box>
-  </ButtonPressAnimation>
+        <Text weight="heavy" size="13pt" color={{ custom: accentColor }}>
+          {subtitle}
+        </Text>
+      </Inline>
+    </Stack>
+  </Box>
+  // </ButtonPressAnimation>
 );
 
 export default function PointsContent() {
@@ -472,16 +472,16 @@ export default function PointsContent() {
               </Columns>
               <Stack space="16px">
                 <Inset left="4px">
-                  <ButtonPressAnimation>
-                    <Inline space="4px" alignVertical="center">
-                      <Text weight="bold" color="labelTertiary" size="15pt">
-                        {i18n.t(i18n.l.points.points.referral_code)}
-                      </Text>
-                      <Text weight="heavy" color="labelQuaternary" size="13pt">
+                  {/* <ButtonPressAnimation>
+                    <Inline space="4px" alignVertical="center"> */}
+                  <Text weight="bold" color="labelTertiary" size="15pt">
+                    {i18n.t(i18n.l.points.points.referral_code)}
+                  </Text>
+                  {/* <Text weight="heavy" color="labelQuaternary" size="13pt">
                         􀅵
                       </Text>
                     </Inline>
-                  </ButtonPressAnimation>
+                  </ButtonPressAnimation> */}
                 </Inset>
                 {referralCode ? (
                   <Columns space="12px">
