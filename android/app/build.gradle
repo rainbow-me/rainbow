@@ -1,6 +1,7 @@
 apply plugin: "com.android.application"
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
+apply plugin: 'kotlin-parcelize'
 
 
 def getPassword(String currentUser, String keyChain) {
@@ -124,10 +125,17 @@ def jscFlavor = 'org.webkit:android-jsc:+'
 android {
     def envFile = project.file('../../.env')
     def env =[:]
-    envFile.eachLine {
-        if (it.contains('=') && (!it.startsWith("#"))) {
-            def (key, value) = it.split('=')
+
+    if (System.getenv('EAS_BUILD')) {
+        System.getenv().each { key, value ->
             env[key] = value
+        }
+    } else {
+        envFile.eachLine {
+            if (it.contains('=') && (!it.startsWith("#"))) {
+                def (key, value) = it.split('=')
+                env[key] = value
+            }
         }
     }
 
@@ -157,8 +165,8 @@ android {
         applicationId "me.rainbow"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 195
-        versionName "1.9.11"
+        versionCode 190
+        versionName "1.9.6"
         missingDimensionStrategy 'react-native-camera', 'general'
         renderscriptTargetApi 23
         renderscriptSupportModeEnabled true
@@ -209,6 +217,10 @@ android {
         }
     }
 
+    buildFeatures {
+        viewBinding true
+    }
+
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
         pickFirst '**/armeabi-v7a/libc++_shared.so'
@@ -218,7 +230,12 @@ android {
         pickFirst '**/x86/libjsc.so'
         pickFirst '**/armeabi-v7a/libjsc.so'
     }
+}
 
+configurations.all {
+    resolutionStrategy {
+        force 'com.google.android.gms:play-services-auth:17.0.0'
+    }
 }
 
 dependencies {
@@ -230,7 +247,6 @@ dependencies {
     implementation 'com.google.android.play:core:1.8.2'
     implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
     implementation "androidx.core:core-splashscreen:1.0.0"
-    implementation project(':react-native-plaid-link-sdk')
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
     debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
