@@ -46,6 +46,8 @@ import { Page } from '@/components/layout';
 import { IS_ANDROID } from '@/env';
 import { ImgixImage } from '@/components/images';
 import { Source } from 'react-native-fast-image';
+import ImageAvatar from '@/components/contacts/ImageAvatar';
+import { ContactAvatar } from '@/components/contacts';
 
 const ONE_WEEK_MS = 604_800_000;
 
@@ -125,43 +127,15 @@ const LeaderboardRow = ({
     >
       <Inline space="10px" alignVertical="center">
         {avatarURL ? (
-          <Box
-            as={ImgixImage}
-            size={36}
-            source={{ uri: avatarURL }}
-            style={{ width: 36, height: 36 }}
-            borderRadius={18}
-            background="surfaceSecondaryElevated"
-            shadow="12px"
-          />
+          <ImageAvatar image={avatarURL} size="rewards" />
         ) : (
-          <AccentColorProvider
+          <ContactAvatar
             color={
               colors.avatarBackgrounds[addressHashedColorIndex(address) ?? 0]
             }
-          >
-            <Box
-              style={{
-                width: 36,
-                height: 36,
-              }}
-              background="accent"
-              borderRadius={18}
-              shadow="12px"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <Text
-                align="center"
-                weight="bold"
-                size="20pt"
-                color="labelTertiary"
-                containsEmoji
-              >
-                {addressHashedEmoji(address) ?? '􀉪'}
-              </Text>
-            </Box>
-          </AccentColorProvider>
+            size="rewards"
+            value={addressHashedEmoji(address)}
+          />
         )}
         <Stack space="8px">
           <Box style={{ maxWidth: 145 }}>
@@ -708,8 +682,8 @@ export default function PointsContent() {
                       }
                     >
                       {data?.points?.leaderboard?.accounts
-                        ?.slice(0, 10)
-                        .map((account, index) => (
+                        ?.slice(0, 100)
+                        ?.map((account, index) => (
                           <LeaderboardRow
                             address={account.address}
                             ens={account.ens}
