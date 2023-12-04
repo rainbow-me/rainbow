@@ -8,10 +8,10 @@ export interface RainbowFetchRequestOpts extends RequestInit {
 /**
  * rainbowFetch fetches data and handles response edge cases and error handling.
  */
-export async function rainbowFetch<T = any>(
+export async function rainbowFetch(
   url: RequestInfo,
   opts: RainbowFetchRequestOpts
-): Promise<{ data: T; headers: Headers; status: number }> {
+) {
   opts = {
     headers: {},
     method: 'get',
@@ -120,8 +120,8 @@ export class RainbowFetchClient {
   /**
    * Perform a GET request with the RainbowFetchClient.
    */
-  get<T = any>(url?: RequestInfo, opts?: RainbowFetchRequestOpts) {
-    return rainbowFetch<T>(`${this.baseURL}${url}`, {
+  get(url?: RequestInfo, opts?: RainbowFetchRequestOpts) {
+    return rainbowFetch(`${this.baseURL}${url}`, {
       ...opts,
       method: 'get',
     });
@@ -130,8 +130,8 @@ export class RainbowFetchClient {
   /**
    * Perform a DELETE request with the RainbowFetchClient.
    */
-  delete<T = any>(url?: RequestInfo, opts?: RainbowFetchRequestOpts) {
-    return rainbowFetch<T>(`${this.baseURL}${url}`, {
+  delete(url?: RequestInfo, opts?: RainbowFetchRequestOpts) {
+    return rainbowFetch(`${this.baseURL}${url}`, {
       ...opts,
       method: 'delete',
     });
@@ -140,8 +140,8 @@ export class RainbowFetchClient {
   /**
    * Perform a HEAD request with the RainbowFetchClient.
    */
-  head<T = any>(url?: RequestInfo, opts?: RainbowFetchRequestOpts) {
-    return rainbowFetch<T>(`${this.baseURL}${url}`, {
+  head(url?: RequestInfo, opts?: RainbowFetchRequestOpts) {
+    return rainbowFetch(`${this.baseURL}${url}`, {
       ...opts,
       method: 'head',
     });
@@ -150,8 +150,8 @@ export class RainbowFetchClient {
   /**
    * Perform a OPTIONS request with the RainbowFetchClient.
    */
-  options<T = any>(url?: RequestInfo, opts?: RainbowFetchRequestOpts) {
-    return rainbowFetch<T>(`${this.baseURL}${url}`, {
+  options(url?: RequestInfo, opts?: RainbowFetchRequestOpts) {
+    return rainbowFetch(`${this.baseURL}${url}`, {
       ...opts,
       method: 'options',
     });
@@ -160,8 +160,8 @@ export class RainbowFetchClient {
   /**
    * Perform a POST request with the RainbowFetchClient.
    */
-  post<T = any>(url?: RequestInfo, body?: any, opts?: RainbowFetchRequestOpts) {
-    return rainbowFetch<T>(`${this.baseURL}${url}`, {
+  post(url?: RequestInfo, body?: any, opts?: RainbowFetchRequestOpts) {
+    return rainbowFetch(`${this.baseURL}${url}`, {
       ...opts,
       body,
       method: 'post',
@@ -171,8 +171,8 @@ export class RainbowFetchClient {
   /**
    * Perform a PUT request with the RainbowFetchClient.
    */
-  put<T = any>(url?: RequestInfo, body?: any, opts?: RainbowFetchRequestOpts) {
-    return rainbowFetch<T>(`${this.baseURL}${url}`, {
+  put(url?: RequestInfo, body?: any, opts?: RainbowFetchRequestOpts) {
+    return rainbowFetch(`${this.baseURL}${url}`, {
       ...opts,
       body,
       method: 'put',
@@ -182,12 +182,8 @@ export class RainbowFetchClient {
   /**
    * Perform a PATCH request with the RainbowFetchClient.
    */
-  patch<T = any>(
-    url?: RequestInfo,
-    body?: any,
-    opts?: RainbowFetchRequestOpts
-  ) {
-    return rainbowFetch<T>(`${this.baseURL}${url}`, {
+  patch(url?: RequestInfo, body?: any, opts?: RainbowFetchRequestOpts) {
+    return rainbowFetch(`${this.baseURL}${url}`, {
       ...opts,
       body,
       method: 'patch',

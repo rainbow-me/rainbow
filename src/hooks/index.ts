@@ -146,7 +146,6 @@ export {
   useHardwareBackOnFocus,
 } from './useHardwareBack';
 export { default as useSwapCurrencyList } from './useSwapCurrencyList';
-export { default as useSearchCurrencyList } from './useSearchCurrencyList';
 export { default as useWalletENSAvatar } from './useWalletENSAvatar';
 export { default as useImagePicker } from './useImagePicker';
 export { default as useLatestCallback } from './useLatestCallback';

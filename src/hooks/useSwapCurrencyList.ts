@@ -12,7 +12,7 @@ import {
   RainbowToken as RT,
   TokenSearchTokenListId,
 } from '@/entities';
-import { swapSearch } from '@/handlers/tokenSearch';
+import { tokenSearch } from '@/handlers/tokenSearch';
 import { addHexPrefix, getProviderForNetwork } from '@/handlers/web3';
 import tokenSectionTypes from '@/helpers/tokenSectionTypes';
 import {
@@ -73,7 +73,7 @@ const searchCurrencyList = async (searchParams: {
     ) {
       return [];
     }
-    return swapSearch({
+    return tokenSearch({
       chainId,
       fromChainId,
       keys,

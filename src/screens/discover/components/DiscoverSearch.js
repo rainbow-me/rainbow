@@ -25,7 +25,7 @@ import {
   useAccountSettings,
   useHardwareBackOnFocus,
   usePrevious,
-  useSearchCurrencyList,
+  useSwapCurrencyList,
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -65,7 +65,7 @@ export default function DiscoverSearch() {
   const currencySelectionListRef = useRef();
   const [searchQueryForSearch] = useDebounce(searchQuery, 350);
   const [ensResults, setEnsResults] = useState([]);
-  const { swapCurrencyList, swapCurrencyListLoading } = useSearchCurrencyList(
+  const { swapCurrencyList, swapCurrencyListLoading } = useSwapCurrencyList(
     searchQueryForSearch,
     ethereumUtils.getChainIdFromNetwork(Network.mainnet),
     true
