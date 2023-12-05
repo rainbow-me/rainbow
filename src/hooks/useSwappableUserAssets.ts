@@ -66,7 +66,6 @@ export const useSwappableUserAssets = (params: {
               ),
             })) as string[];
 
-
             swappableAssetsRef.current[network] = swappableAddresses;
           } else {
             swappableAssetsRef.current[network] = addresses;
