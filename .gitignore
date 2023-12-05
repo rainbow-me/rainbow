@@ -115,6 +115,7 @@ coverage
 .easignore
 dist/
 web-build/
+.xcode.env.local
 
 # VSCode
 .vscode/
