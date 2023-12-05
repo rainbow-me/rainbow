@@ -20,7 +20,7 @@ import {
   getNetwork,
   saveNetwork,
 } from '@/handlers/localstorage/globalSettings';
-import { setRpcEndpoints, web3SetHttpProvider } from '@/handlers/web3';
+import { web3SetHttpProvider } from '@/handlers/web3';
 
 import Logger from '@/utils/logger';
 
@@ -68,6 +68,8 @@ export interface RainbowConfig
 
   base_swaps_enabled: boolean;
   mints_enabled: boolean;
+  points_enabled: boolean;
+  rpc_proxy_enabled: boolean;
 }
 
 const DEFAULT_CONFIG: RainbowConfig = {
@@ -127,11 +129,12 @@ const DEFAULT_CONFIG: RainbowConfig = {
 
   base_swaps_enabled: false,
   mints_enabled: true,
+  points_enabled: true,
+  rpc_proxy_enabled: true,
 };
 
 // Initialize with defaults in case firebase doesn't respond
 const config: RainbowConfig = { ...DEFAULT_CONFIG };
-setRpcEndpoints(config);
 
 const init = async () => {
   try {
@@ -180,7 +183,9 @@ const init = async () => {
         key === 'op_chains_enabled' ||
         key === 'goerli_enabled' ||
         key === 'base_swaps_enabled' ||
-        key === 'mints_enabled'
+        key === 'mints_enabled' ||
+        key === 'points_enabled' ||
+        key === 'rpc_proxy_enabled'
       ) {
         config[key] = entry.asBoolean();
       } else {
@@ -195,7 +200,6 @@ const init = async () => {
     Logger.debug('CURRENT CONFIG', JSON.stringify(config, null, 2));
     // UPDATE THE PROVIDER AFTER LOADING THE NEW CONFIG
     const currentNetwork = await getNetwork();
-    setRpcEndpoints(config);
     web3SetHttpProvider(currentNetwork);
     saveNetwork(currentNetwork);
   }

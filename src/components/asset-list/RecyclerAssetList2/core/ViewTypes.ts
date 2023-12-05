@@ -52,6 +52,7 @@ export type CoinDividerExtraData = {
 export type AssetsHeaderExtraData = {
   type: CellType.PROFILE_STICKY_HEADER;
   value: string;
+  isLoadingUserAssets: boolean;
 };
 export type CoinExtraData = { type: CellType.COIN; uniqueId: string };
 export type NFTExtraData = {

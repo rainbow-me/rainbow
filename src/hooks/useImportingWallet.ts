@@ -36,6 +36,8 @@ import { sanitizeSeedPhrase } from '@/utils';
 import logger from '@/utils/logger';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';
 import { logger as Logger, RainbowError } from '@/logger';
+import { handleReviewPromptAction } from '@/utils/reviewAlert';
+import { ReviewPromptAction } from '@/storage/schema';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();
@@ -326,6 +328,12 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                   if (android) {
                     handleSetImporting(false);
                   }
+
+                  setTimeout(() => {
+                    InteractionManager.runAfterInteractions(() => {
+                      handleReviewPromptAction(ReviewPromptAction.WatchWallet);
+                    });
+                  }, 1_000);
 
                   setTimeout(() => {
                     // If it's not read only or hardware, show the backup sheet

@@ -18,7 +18,6 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import { connect, Provider as ReduxProvider } from 'react-redux';
 import { RecoilRoot } from 'recoil';
-import { runCampaignChecks } from './campaigns/campaignChecks';
 import PortalConsumer from './components/PortalConsumer';
 import ErrorBoundary from './components/error-boundary/ErrorBoundary';
 import { OfflineToast } from './components/toasts';
@@ -33,10 +32,7 @@ import { Playground } from './design-system/playground/Playground';
 import { TransactionType } from './entities';
 import appEvents from './handlers/appEvents';
 import handleDeeplink from './handlers/deeplinks';
-import {
-  runFeatureAndCampaignChecks,
-  runWalletBackupStatusChecks,
-} from './handlers/walletReadyEvents';
+import { runWalletBackupStatusChecks } from './handlers/walletReadyEvents';
 import {
   getCachedProviderForNetwork,
   isHardHat,
@@ -84,6 +80,9 @@ import { initListeners as initWalletConnectListeners } from '@/walletConnect';
 import { saveFCMToken } from '@/notifications/tokens';
 import branch from 'react-native-branch';
 import { initializeReservoirClient } from '@/resources/reservoir/client';
+import { ReviewPromptAction } from '@/storage/schema';
+import { handleReviewPromptAction } from '@/utils/reviewAlert';
+import { RemotePromoSheetProvider } from '@/components/remote-promo-sheet/RemotePromoSheetProvider';
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -168,6 +167,17 @@ class OldApp extends Component {
      * Needs to be called AFTER FCM token is loaded
      */
     initWalletConnectListeners();
+
+    /**
+     * Launch the review prompt after the app is launched
+     * This is to avoid the review prompt showing up when the app is
+     * launched and not shown yet.
+     */
+    InteractionManager.runAfterInteractions(() => {
+      setTimeout(() => {
+        handleReviewPromptAction(ReviewPromptAction.TimesLaunchedSinceInstall);
+      }, 10_000);
+    });
   }
 
   componentDidUpdate(prevProps) {
@@ -175,15 +185,6 @@ class OldApp extends Component {
       // Everything we need to do after the wallet is ready goes here
       logger.info('✅ Wallet ready!');
       runWalletBackupStatusChecks();
-
-      InteractionManager.runAfterInteractions(() => {
-        setTimeout(() => {
-          if (IS_TESTING === 'true') {
-            return;
-          }
-          runFeatureAndCampaignChecks();
-        }, 2000);
-      });
     }
   }
 
@@ -272,13 +273,15 @@ class OldApp extends Component {
       <Portal>
         <View style={containerStyle}>
           {this.state.initialRoute && (
-            <InitialRouteContext.Provider value={this.state.initialRoute}>
-              <RoutesComponent
-                onReady={this.handleSentryNavigationIntegration}
-                ref={this.handleNavigatorRef}
-              />
-              <PortalConsumer />
-            </InitialRouteContext.Provider>
+            <RemotePromoSheetProvider isWalletReady={this.props.walletReady}>
+              <InitialRouteContext.Provider value={this.state.initialRoute}>
+                <RoutesComponent
+                  onReady={this.handleSentryNavigationIntegration}
+                  ref={this.handleNavigatorRef}
+                />
+                <PortalConsumer />
+              </InitialRouteContext.Provider>
+            </RemotePromoSheetProvider>
           )}
           <OfflineToast />
         </View>
@@ -331,6 +334,21 @@ function Root() {
        * `analyticsv2` has all it needs to function.
        */
       analyticsV2.identify({});
+
+      const isReviewInitialized = ls.review.get(['initialized']);
+      if (!isReviewInitialized) {
+        ls.review.set(['hasReviewed'], false);
+        ls.review.set(
+          ['actions'],
+          Object.values(ReviewPromptAction).map(action => ({
+            id: action,
+            numOfTimesDispatched: 0,
+          }))
+        );
+
+        ls.review.set(['timeOfLastPrompt'], 0);
+        ls.review.set(['initialized'], true);
+      }
 
       /**
        * We previously relied on the existence of a deviceId on keychain to

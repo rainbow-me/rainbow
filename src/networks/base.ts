@@ -1,4 +1,4 @@
-import { getProviderForNetwork } from '@/handlers/web3';
+import { getProviderForNetwork, proxyRpcEndpoint } from '@/handlers/web3';
 import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { base } from '@wagmi/chains';
@@ -24,7 +24,7 @@ export const getBaseNetworkObject = (): NetworkProperties => {
       address: BASE_ETH_ADDRESS,
     },
 
-    rpc: config.base_mainnet_rpc,
+    rpc: proxyRpcEndpoint(base.id),
     getProvider: getProviderForNetwork(Network.base),
     balanceCheckerAddress: '0x1C8cFdE3Ba6eFc4FF8Dd5C93044B9A690b6CFf36',
 

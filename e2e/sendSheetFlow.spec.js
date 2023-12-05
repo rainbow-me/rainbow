@@ -100,19 +100,18 @@ describe('Send Sheet Interaction Flow', () => {
   //        populate
   //
   //        SKIPPING all tests after this one, as the app is in the wrong state
-  it.skip('Should show show Contact Button & Asset List on valid public address', async () => {
+  it('Should show show Contact Button & Asset List on valid public address', async () => {
     await Helpers.clearField('send-asset-form-field');
     await Helpers.checkIfVisible('send-asset-form-field');
-    await Helpers.typeText(
+    await Helpers.replaceTextInField(
       'send-asset-form-field',
-      '0xF0f21ab2012731542731df194cfF6c77d29cB31A',
-      false
+      '0xF0f21ab2012731542731df194cfF6c77d29cB31A'
     );
     // await Helpers.checkIfVisible('add-contact-button');
     await Helpers.checkIfVisible('send-asset-list', 20000);
   });
 
-  it.skip('Should show show Contact Button & Asset List on valid ENS & Unstoppable addresses', async () => {
+  it('Should show show Contact Button & Asset List on valid ENS & Unstoppable addresses', async () => {
     await Helpers.clearField('send-asset-form-field');
     await Helpers.checkIfVisible('send-asset-form-field');
     await Helpers.typeText(
@@ -193,32 +192,32 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.waitAndTap('send-asset-form-ETH-token');
   });
 
-  it.skip('Should display Asset Form after tapping on asset ETH', async () => {
+  it('Should display Asset Form after tapping on asset ETH', async () => {
     await Helpers.checkIfVisible('send-asset-ETH-token');
     await Helpers.waitAndTap('send-asset-ETH-token');
     await Helpers.checkIfVisible('selected-asset-field-input');
   });
 
-  it.skip('Should display max button on asset input focus ETH', async () => {
+  it('Should display max button on asset input focus ETH', async () => {
     await Helpers.checkIfVisible('selected-asset-field-input');
     await Helpers.waitAndTap('selected-asset-field-input');
     await Helpers.checkIfElementByTextIsVisible('Max');
   });
 
-  it.skip('Should display max button on asset quantity input focus ETH', async () => {
+  it('Should display max button on asset quantity input focus ETH', async () => {
     await Helpers.checkIfVisible('selected-asset-quantity-field-input');
     await Helpers.waitAndTap('selected-asset-quantity-field-input');
     await Helpers.checkIfElementByTextIsVisible('Max');
   });
 
-  it.skip('Should display Insufficient Funds button if exceeds asset balance ETH', async () => {
+  it('Should display Insufficient Funds button if exceeds asset balance ETH', async () => {
     await Helpers.checkIfVisible('selected-asset-field-input');
     await Helpers.waitAndTap('selected-asset-field-input');
     await Helpers.typeText('selected-asset-field-input', '9999', true);
     await Helpers.checkIfElementByTextIsVisible('Insufficient Funds');
   });
 
-  it.skip('Should prepend a 0 to quantity field on input of . ETH', async () => {
+  it('Should prepend a 0 to quantity field on input of . ETH', async () => {
     await Helpers.waitAndTap('send-asset-form-ETH-token');
     await Helpers.waitAndTap('send-asset-ETH-token');
     await Helpers.checkIfVisible('selected-asset-quantity-field-input');
@@ -227,7 +226,7 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.checkIfElementByTextIsVisible('0.');
   });
 
-  it.skip('Should only show a max of 2 decimals in quantity field ETH', async () => {
+  it('Should only show a max of 2 decimals in quantity field ETH', async () => {
     await Helpers.waitAndTap('send-asset-form-ETH-token');
     await Helpers.waitAndTap('send-asset-ETH-token');
     await Helpers.checkIfVisible('selected-asset-quantity-field-input');

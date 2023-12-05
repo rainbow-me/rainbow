@@ -1,6 +1,6 @@
 import { MMKV } from 'react-native-mmkv';
 
-import { Account, Device } from '@/storage/schema';
+import { Account, Campaigns, Device, Review } from '@/storage/schema';
 import { EthereumAddress } from '@/entities';
 import { Network } from '@/networks/types';
 
@@ -76,3 +76,7 @@ export const device = new Storage<[], Device>({ id: 'global' });
 export const account = new Storage<[EthereumAddress, Network], Account>({
   id: 'account',
 });
+
+export const review = new Storage<[], Review>({ id: 'review' });
+
+export const campaigns = new Storage<[], Campaigns>({ id: 'campaigns' });

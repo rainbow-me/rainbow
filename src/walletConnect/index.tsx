@@ -38,7 +38,7 @@ import {
 import { saveLocalRequests } from '@/handlers/localstorage/walletconnectRequests';
 import { events } from '@/handlers/appEvents';
 import { getFCMToken } from '@/notifications/tokens';
-import { IS_DEV, IS_ANDROID } from '@/env';
+import { IS_DEV, IS_ANDROID, IS_IOS } from '@/env';
 import { loadWallet } from '@/model/wallet';
 import * as portal from '@/screens/Portal';
 import * as explain from '@/screens/Explain';
@@ -53,6 +53,8 @@ import { AuthRequest } from '@/walletConnect/sheets/AuthRequest';
 import { getProviderForNetwork } from '@/handlers/web3';
 import { RainbowNetworks } from '@/networks';
 import { uniq } from 'lodash';
+import { fetchDappMetadata } from '@/resources/metadata/dapp';
+import { DAppStatus } from '@/graphql/__generated__/metadata';
 
 const SUPPORTED_EVM_CHAIN_IDS = RainbowNetworks.filter(
   ({ features }) => features.walletconnect
@@ -93,7 +95,10 @@ export function maybeGoBackAndClearHasPendingRedirect({
     InteractionManager.runAfterInteractions(() => {
       setTimeout(() => {
         setHasPendingDeeplinkPendingRedirect(false);
-        Minimizer.goBack();
+
+        if (!IS_IOS) {
+          Minimizer.goBack();
+        }
       }, delay);
     });
   }
@@ -135,7 +140,6 @@ export function parseRPCParams({
   message?: string;
 } {
   switch (method) {
-    case RPCMethod.Sign:
     case RPCMethod.PersonalSign: {
       const [address, message] = params.sort(a => (isAddress(a) ? -1 : 1));
       const isHex = isHexString(message);
@@ -457,6 +461,7 @@ export async function onSessionProposal(
       logger.DebugContext.walletconnect
     );
 
+    const verifiedData = proposal.verifyContext.verified;
     const receivedTimestamp = Date.now();
     const {
       proposer,
@@ -487,6 +492,7 @@ export async function onSessionProposal(
         peerId: proposer.publicKey,
         isWalletConnectV2: true,
       },
+      verifiedData,
       timedOut: false,
       callback: async (approved, approvedChainId, accountAddress) => {
         const client = await web3WalletClient;
@@ -639,6 +645,23 @@ export async function onSessionRequest(
     logger.DebugContext.walletconnect
   );
 
+  // we allow eth sign for connections but we dont want to support actual singing
+  if (method === RPCMethod.Sign) {
+    await client.respondSessionRequest({
+      topic,
+      response: formatJsonRpcError(
+        id,
+        `Rainbow does not support legacy eth_sign`
+      ),
+    });
+    showErrorSheet({
+      title: lang.t(T.errors.generic_title),
+      body: lang.t(T.errors.eth_sign),
+      sheetHeight: 270,
+      onClose: maybeGoBackAndClearHasPendingRedirect,
+    });
+    return;
+  }
   if (isSupportedMethod(method as RPCMethod)) {
     const isSigningMethod = isSupportedSigningMethod(method as RPCMethod);
     const { address, message } = parseRPCParams({
@@ -774,7 +797,13 @@ export async function onSessionRequest(
         // @ts-ignore we assign address above
         address, // required by screen
         chainId, // required by screen
-        onComplete() {
+        onComplete(type: string) {
+          if (IS_IOS) {
+            Navigation.handleAction(Routes.WALLET_CONNECT_REDIRECT_SHEET, {
+              type,
+            });
+          }
+
           maybeGoBackAndClearHasPendingRedirect({ delay: 300 });
         },
       },
@@ -995,13 +1024,22 @@ export async function onAuthRequest(event: Web3WalletTypes.AuthRequest) {
     }
   };
 
+  // need to prefetch dapp metadata since portal is static
+  const url =
+    // @ts-ignore Web3WalletTypes.AuthRequest type is missing VerifyContext
+    event?.verifyContext?.verifyUrl || event.params.requester.metadata.url;
+  const metadata = await fetchDappMetadata({ url, status: true });
+
+  const isScam = metadata.status === DAppStatus.Scam;
   portal.open(
     () =>
       AuthRequest({
         authenticate,
         requesterMeta: event.params.requester.metadata,
+        // @ts-ignore Web3WalletTypes.AuthRequest type is missing VerifyContext
+        verifiedData: event?.verifyContext,
       }),
-    { sheetHeight: IS_ANDROID ? 560 : 520 }
+    { sheetHeight: IS_ANDROID ? 560 : 520 + (isScam ? 40 : 0) }
   );
 }
 

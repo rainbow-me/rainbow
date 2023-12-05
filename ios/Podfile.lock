@@ -25,7 +25,7 @@ PODS:
     - ExpoModulesCore
   - EXFont (11.4.0):
     - ExpoModulesCore
-  - Expo (49.0.13):
+  - Expo (49.0.16):
     - ExpoModulesCore
   - ExpoKeepAwake (12.3.0):
     - ExpoModulesCore
@@ -610,8 +610,8 @@ PODS:
     - React-Core
   - react-native-cloud-fs (2.6.1):
     - React
-  - react-native-get-random-values (1.5.0):
-    - React
+  - react-native-get-random-values (1.9.0):
+    - React-Core
   - react-native-ios-context-menu (1.15.3):
     - React-Core
   - react-native-mail (4.1.0):
@@ -654,9 +654,9 @@ PODS:
   - react-native-text-input-mask (2.0.0):
     - React
     - RNInputMask
-  - react-native-udp (2.7.0):
+  - react-native-udp (4.1.7):
     - CocoaAsyncSocket
-    - React
+    - React-Core
   - react-native-version-number (0.3.6):
     - React
   - react-native-video (5.2.1):
@@ -799,7 +799,7 @@ PODS:
     - React
   - RNFastImage (8.5.11):
     - React-Core
-    - SDWebImage (~> 5.12.5)
+    - SDWebImage (~> 5.11.1)
     - SDWebImageWebPCoder (~> 0.8.4)
   - RNFBApp (18.3.0):
     - Firebase/CoreOnly (= 10.12.0)
@@ -849,7 +849,7 @@ PODS:
     - React
   - RNPermissions (3.6.1):
     - React-Core
-  - RNReactNativeHapticFeedback (1.11.0):
+  - RNReactNativeHapticFeedback (2.2.0):
     - React-Core
   - RNReanimated (3.4.2):
     - DoubleConversion
@@ -897,9 +897,9 @@ PODS:
     - React-Core
   - RNTextSize (4.0.0-rc.1):
     - React
-  - SDWebImage (5.12.6):
-    - SDWebImage/Core (= 5.12.6)
-  - SDWebImage/Core (5.12.6)
+  - SDWebImage (5.11.1):
+    - SDWebImage/Core (= 5.11.1)
+  - SDWebImage/Core (5.11.1)
   - SDWebImageWebPCoder (0.8.5):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.10)
@@ -917,7 +917,7 @@ PODS:
     - React
   - SSZipArchive (2.2.3)
   - swift-vibrant (1.0.0)
-  - TcpSockets (3.3.2):
+  - TcpSockets (4.0.0):
     - CocoaAsyncSocket
     - React
   - TOCropViewController (2.6.1)
@@ -1410,7 +1410,7 @@ SPEC CHECKSUMS:
   EXConstants: ce5bbea779da8031ac818c36bea41b10e14d04e1
   EXFileSystem: 2b826a3bf1071a4b80a8457e97124783d1ac860e
   EXFont: 738c44c390953ebcbab075a4848bfbef025fd9ee
-  Expo: e7d2116b947e2e6fdeb09ee4f2754f819426d1b6
+  Expo: fcfd60c1ed6806dee5103b210335ae0c72f675ed
   ExpoKeepAwake: be4cbd52d9b177cde0fd66daa1913afa3161fc1d
   ExpoModulesCore: 51cb2e7ab4c8da14be3f40b66d54c1781002e99d
   FBLazyVector: 4cce221dd782d3ff7c4172167bba09d58af67ccb
@@ -1482,7 +1482,7 @@ SPEC CHECKSUMS:
   react-native-cameraroll: aff50ec1df9d054626dceca9336e6644e153d32f
   react-native-change-icon: ea9bb7255b09e89f41cbf282df16eade91ab1833
   react-native-cloud-fs: e7103d1f693c57b481f820fa5e6b6b0522a5a31e
-  react-native-get-random-values: 1404bd5cc0ab0e287f75ee1c489555688fc65f89
+  react-native-get-random-values: dee677497c6a740b71e5612e8dbd83e7539ed5bb
   react-native-ios-context-menu: e529171ba760a1af7f2ef0729f5a7f4d226171c5
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
   react-native-menu: 5b9b82dabcc779cebde15d292ccbcba4469ff311
@@ -1499,7 +1499,7 @@ SPEC CHECKSUMS:
   react-native-skia: d0b0aab6bb1f146eb6f379fb671b719deabd20fb
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
   react-native-text-input-mask: 07227297075f9653315f43b0424d596423a01736
-  react-native-udp: 96a517e5a121cfe69f4b05eeeafefe00c623debf
+  react-native-udp: df79c3cb72c4e71240cd3ce4687bfb8a137140d5
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
   react-native-video: c26780b224543c62d5e1b2a7244a5cd1b50e8253
   react-native-video-cache: 0f8b1b2195f234eabd507cfebdd91c2e82695008
@@ -1530,7 +1530,7 @@ SPEC CHECKSUMS:
   RNCMaskedView: 949696f25ec596bfc697fc88e6f95cf0c79669b6
   RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
   RNExitApp: c4e052df2568b43bec8a37c7cd61194d4cfee2c3
-  RNFastImage: 945abf54742505d790d9024d230c69b1e866bc88
+  RNFastImage: 1f2cab428712a4baaf78d6169eaec7f622556dd7
   RNFBApp: 147c3274daa84d7410d457510548d5fb3b317e37
   RNFBCrashlytics: 4adc1698782408ecc0b0cf9e9b9060c82726afab
   RNFBMessaging: 0e98a1452a60e6828fcd7139b1ad45ebf4452aa8
@@ -1546,7 +1546,7 @@ SPEC CHECKSUMS:
   RNNotifee: 8ee6ddabfc44b16600b978983162e0d4db20ce19
   RNOS: 31db6fa4a197d179afbba9e6b4d28d450a7f250b
   RNPermissions: dcdb7b99796bbeda6975a6e79ad519c41b251b1c
-  RNReactNativeHapticFeedback: 653a8c126a0f5e88ce15ffe280b3ff37e1fbb285
+  RNReactNativeHapticFeedback: ec56a5f81c3941206fd85625fa669ffc7b4545f9
   RNReanimated: 726395a2fa2f04cea340274ba57a4e659bc0d9c1
   RNScreens: 6a8a3c6b808aa48dca1780df7b73ea524f602c63
   RNSentry: fbbdcd7213058e3de5fbaa452b25a06a16b4b382
@@ -1554,7 +1554,7 @@ SPEC CHECKSUMS:
   RNSound: 6c156f925295bdc83e8e422e7d8b38d33bc71852
   RNSVG: 53c661b76829783cdaf9b7a57258f3d3b4c28315
   RNTextSize: 21c94a67819fbf2c358a219bf6d251e3be9e5f29
-  SDWebImage: a47aea9e3d8816015db4e523daff50cfd294499d
+  SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
   segment-analytics-react-native: 2b90f606cda9234dd110d117c4ffc918d9ba29bb
   Sentry: 0c5cd63d714187b4a39c331c1f0eb04ba7868341
@@ -1564,7 +1564,7 @@ SPEC CHECKSUMS:
   SRSRadialGradient: e5a34825dff88c9cf773b58bf39ed6a02e59a084
   SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
   swift-vibrant: 3def73c5c281db74f420ec386590d9c1c5b0995c
-  TcpSockets: bd31674146c0931a064fc254a59812dfd1a73ae0
+  TcpSockets: a8eb6b5867fe643e6cfed5db2e4de62f4d1e8fd0
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
   Yoga: 8796b55dba14d7004f980b54bcc9833ee45b28ce

@@ -1,17 +1,13 @@
 import { useIsFocused } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
-import { IS_TESTING } from 'react-native-dotenv';
 import { ActivityList } from '../components/activity-list';
 import { Page } from '../components/layout';
-import { ProfileMasthead } from '../components/profile';
-import NetworkTypes from '../helpers/networkTypes';
 import { useNavigation } from '../navigation/Navigation';
 import { ButtonPressAnimation } from '@/components/animations';
 import {
   useAccountProfile,
   useAccountSettings,
   useAccountTransactions,
-  useContacts,
   useRequests,
 } from '@/hooks';
 import Routes from '@/navigation/routesNames';
@@ -28,7 +24,7 @@ const ProfileScreenPage = styled(Page)({
   flex: 1,
 });
 
-export default function ProfileScreen({ navigation }) {
+export default function ProfileScreen() {
   const [activityListInitialized, setActivityListInitialized] = useState(false);
   const isFocused = useIsFocused();
   const { navigate } = useNavigation();
@@ -43,7 +39,6 @@ export default function ProfileScreen({ navigation }) {
     sections,
     transactionsCount,
   } = accountTransactions;
-  const { contacts } = useContacts();
   const { pendingRequestCount } = useRequests();
   const { network } = useAccountSettings();
   const { accountSymbol, accountColor, accountImage } = useAccountProfile();
@@ -59,10 +54,6 @@ export default function ProfileScreen({ navigation }) {
   const onChangeWallet = useCallback(() => {
     navigate(Routes.CHANGE_WALLET_SHEET);
   }, [navigate]);
-
-  const addCashSupportedNetworks = network === NetworkTypes.mainnet;
-  const addCashAvailable =
-    IS_TESTING === 'true' ? false : addCashSupportedNetworks;
 
   return (
     <ProfileScreenPage testID="profile-screen">
@@ -90,11 +81,8 @@ export default function ProfileScreen({ navigation }) {
       />
 
       <ActivityList
-        addCashAvailable={addCashAvailable}
-        contacts={contacts}
         isEmpty={isEmpty}
         isLoading={isLoading}
-        navigation={navigation}
         network={network}
         sections={sections}
         {...accountTransactions}

@@ -14,7 +14,7 @@ import FastCoinIcon from './FastCoinIcon';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Text } from '@/design-system';
 import { isNativeAsset } from '@/handlers/assets';
-import { Network } from '@/helpers';
+import { Network } from '@/networks/types';
 import { useAccountAsset } from '@/hooks';
 import { colors, fonts, fontWithWidth, getFontSize } from '@/styles';
 import { deviceUtils, ethereumUtils } from '@/utils';
@@ -151,7 +151,7 @@ export default React.memo(function FastCurrencySelectionRow({
         <View style={sx.rootContainer}>
           <FastCoinIcon
             address={address || item?.address}
-            assetType={type ?? item?.type}
+            network={network}
             mainnetAddress={mainnet_address ?? item?.mainnet_address}
             symbol={symbol ?? item?.symbol}
             theme={theme}

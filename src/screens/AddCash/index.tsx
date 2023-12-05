@@ -24,7 +24,6 @@ import Navigation from '@/navigation/Navigation';
 import { WrappedAlert } from '@/helpers/alert';
 import { logger, RainbowError } from '@/logger';
 
-import { Ratio } from '@/screens/AddCash/providers/Ratio';
 import { Ramp } from '@/screens/AddCash/providers/Ramp';
 import { Coinbase } from '@/screens/AddCash/providers/Coinbase';
 import { Moonpay } from '@/screens/AddCash/providers/Moonpay';
@@ -35,7 +34,6 @@ const deviceHeight = deviceUtils.dimensions.height;
 const statusBarHeight = StatusBar.currentHeight || 0;
 
 const providerComponents = {
-  [FiatProviderName.Ratio]: Ratio,
   [FiatProviderName.Ramp]: Ramp,
   [FiatProviderName.Coinbase]: Coinbase,
   [FiatProviderName.Moonpay]: Moonpay,
@@ -51,7 +49,7 @@ export function AddCashSheet() {
   const skeletonColor = useBackgroundColor('surfaceSecondaryElevated');
   const sheetHeight = IS_IOS
     ? deviceHeight - insets.top
-    : deviceHeight - statusBarHeight;
+    : deviceHeight + statusBarHeight;
 
   const { isLoading, data: providers, error } = useQuery(
     ['f2c', 'providers'],
@@ -140,6 +138,7 @@ export function AddCashSheet() {
               <>
                 {providers.map((provider, index) => {
                   const Comp = providerComponents[provider.id];
+                  if (!Comp) return null;
                   return (
                     <Box key={provider.id} paddingTop="20px">
                       <Comp accountAddress={accountAddress} config={provider} />
@@ -149,7 +148,7 @@ export function AddCashSheet() {
               </>
             ) : (
               <>
-                {Array(4)
+                {Array(3)
                   .fill(0)
                   .map((_, index) => {
                     const height = 140;

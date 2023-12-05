@@ -426,12 +426,34 @@ export const typeHierarchy = {
         ios: 0,
       },
     },
+    'icon 13px': {
+      // ⚠️ IMPORTANT: When modifying these values,
+      // please read the note at the top of this file.
+      fontSize: 13,
+      letterSpacing: 0,
+      lineHeight: 18,
+      marginCorrection: {
+        android: 0,
+        ios: 0,
+      },
+    },
     'icon 14px': {
       // ⚠️ IMPORTANT: When modifying these values,
       // please read the note at the top of this file.
       fontSize: 14,
       letterSpacing: 0,
       lineHeight: 19,
+      marginCorrection: {
+        android: 0,
+        ios: 0,
+      },
+    },
+    'icon 15px': {
+      // ⚠️ IMPORTANT: When modifying these values,
+      // please read the note at the top of this file.
+      fontSize: 15,
+      letterSpacing: 0,
+      lineHeight: 20,
       marginCorrection: {
         android: 0,
         ios: 0,

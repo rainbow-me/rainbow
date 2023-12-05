@@ -22,7 +22,8 @@ describe('Wallet avatar options', () => {
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.waitAndTap('wallet-info-submit-button');
     await Helpers.checkIfVisible('wallet-screen', 40000);
-    await Helpers.swipe('wallet-screen', 'right', 'slow');
+    await Helpers.swipe('wallet-screen', 'left', 'slow');
+    await Helpers.swipe('discover-home', 'left', 'slow');
     await Helpers.checkIfVisible('profile-screen', 40000);
   });
 
@@ -55,7 +56,8 @@ describe('Wallet avatar options', () => {
     }
     // Remove this once https://github.com/rainbow-me/rainbow/pull/4115 is merged.
     await Helpers.relaunchApp();
-    await Helpers.swipe('wallet-screen', 'right', 'slow');
+    await Helpers.swipe('wallet-screen', 'left', 'slow');
+    await Helpers.swipe('discover-home', 'left', 'slow');
     await Helpers.checkIfVisible('profile-screen', 40000);
 
     // TODO: check that wallet has different address (otherwise it means that creating wallet failed!).
