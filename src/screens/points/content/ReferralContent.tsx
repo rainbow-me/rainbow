@@ -115,8 +115,8 @@ export default function ReferralContent() {
       delay(400).then(() => textInputRef.current?.focus());
 
       return () => {
-        setReferralCodeDisplay('');
-        setStatus('incomplete');
+        // setReferralCodeDisplay('');
+        // setStatus('incomplete');
       };
     }, [])
   );
@@ -291,7 +291,13 @@ export default function ReferralContent() {
           }}
           left={{ custom: 20 }}
         >
-          <ButtonPressAnimation onPress={goBack}>
+          <ButtonPressAnimation
+            onPress={() => {
+              goBack();
+              setReferralCodeDisplay('');
+              setStatus('incomplete');
+            }}
+          >
             <Text color={{ custom: accentColor }} size="20pt" weight="bold">
               {`􀆉 ${i18n.t(i18n.l.points.referral.back)}`}
             </Text>
