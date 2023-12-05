@@ -31,6 +31,8 @@ import {
   getPoapAndOpenSheetWithQRHash,
   getPoapAndOpenSheetWithSecretWord,
 } from '@/utils/poaps';
+import { queryClient } from '@/react-query';
+import { pointsReferralCodeQueryKey } from '@/resources/points';
 
 /*
  * You can test these deeplinks with the following command:
@@ -198,9 +200,18 @@ export default async function handleDeeplink(
         break;
       }
 
-      default: {
-        const addressOrENS = pathname?.split('/profile/')?.[1];
+      // case 'points': {
+      //   const referralCode = query?.ref;
+      //   break;
+      // }
 
+      default: {
+        if (true) {
+          queryClient.setQueryData(pointsReferralCodeQueryKey, 'ABCDEF');
+          return;
+        }
+
+        const addressOrENS = pathname?.split('/profile/')?.[1];
         /**
          * This handles ENS profile links on mobile i.e.
          * `https://rainbow.me/0x123...` which is why it's in the default case

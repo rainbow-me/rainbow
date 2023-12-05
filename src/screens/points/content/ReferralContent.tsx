@@ -16,10 +16,11 @@ import {
   useAccountProfile,
   useDimensions,
   useKeyboardHeight,
+  useWallets,
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
-import { haptics } from '@/utils';
+import { haptics, watchingAlert } from '@/utils';
 import { delay } from '@/utils/delay';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -36,14 +37,16 @@ import { PointsErrorType } from '@/graphql/__generated__/metadata';
 import { RainbowError, logger } from '@/logger';
 import { ActionButton } from '@/screens/points/components/ActionButton';
 import { PointsIconAnimation } from '../components/PointsIconAnimation';
+import { usePointsReferralCode } from '@/resources/points';
 
 export default function ReferralContent() {
   const { accountAddress } = useAccountProfile();
   const { accentColor } = useAccountAccentColor();
   const { goBack, navigate } = useNavigation();
-
+  const { isReadOnlyWallet } = useWallets();
   const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
+  const { data: externalReferralCode } = usePointsReferralCode();
 
   const [referralCodeDisplay, setReferralCodeDisplay] = useState('');
   const [referralCode, setReferralCode] = useState('');
@@ -54,12 +57,10 @@ export default function ReferralContent() {
   const textInputRef = React.useRef<TextInput>(null);
 
   const validateReferralCode = useCallback(
-    async (text: string) => {
-      const referralCode = text.slice(0, 3) + text.slice(4, 8);
-      if (referralCode.length !== 6) return;
+    async (code: string) => {
       const res = await metadataPOSTClient.onboardPoints({
         address: accountAddress,
-        referral: referralCode,
+        referral: code,
         signature: '',
       });
       if (res?.onboardPoints?.error) {
@@ -70,19 +71,28 @@ export default function ReferralContent() {
           haptics.notificationError();
         } else {
           logger.error(new RainbowError('Error validating referral code'), {
-            referralCode,
+            code,
           });
           Alert.alert(i18n.t(i18n.l.points.referral.error));
         }
       } else {
         setStatus('valid');
-        setReferralCode(referralCode);
+        setReferralCode(code);
         textInputRef.current?.blur();
         haptics.notificationSuccess();
       }
     },
     [accountAddress]
   );
+
+  useEffect(() => {
+    if (externalReferralCode) {
+      setReferralCodeDisplay(
+        externalReferralCode.slice(0, 3) + '-' + externalReferralCode.slice(3)
+      );
+      validateReferralCode(externalReferralCode);
+    }
+  }, [externalReferralCode, validateReferralCode]);
 
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const [isKeyboardOpening, setIsKeyboardOpening] = useState(false);
@@ -172,7 +182,7 @@ export default function ReferralContent() {
       if (text.length !== 7) {
         setStatus('incomplete');
       } else {
-        validateReferralCode(text);
+        validateReferralCode(text.replace('-', ''));
       }
     },
     [referralCodeDisplay.length, validateReferralCode]
@@ -292,7 +302,11 @@ export default function ReferralContent() {
         <ActionButton
           color={accentColor}
           label={i18n.t(i18n.l.points.referral.get_started)}
-          onPress={() => navigate(Routes.CONSOLE_SHEET, { referralCode })}
+          onPress={() =>
+            isReadOnlyWallet
+              ? watchingAlert()
+              : navigate(Routes.CONSOLE_SHEET, { referralCode })
+          }
         />
       )}
     </Box>

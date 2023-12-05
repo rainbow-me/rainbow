@@ -60,9 +60,7 @@ export default function ClaimContent() {
       <ActionButton
         color={accentColor}
         label={i18n.t(i18n.l.points.claim.use_referral_code)}
-        onPress={() =>
-          isReadOnlyWallet ? watchingAlert() : navigate('ReferralContent')
-        }
+        onPress={() => navigate('ReferralContent')}
         outline
         small
       />

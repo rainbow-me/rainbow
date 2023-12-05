@@ -16,12 +16,7 @@ import {
   useBackgroundColor,
   useForegroundColor,
 } from '@/design-system';
-import {
-  useAccountAccentColor,
-  useAccountProfile,
-  useClipboard,
-  useDimensions,
-} from '@/hooks';
+import { useAccountProfile, useClipboard, useDimensions } from '@/hooks';
 import { useTheme } from '@/theme';
 import { ScrollView } from 'react-native-gesture-handler';
 import MaskedView from '@react-native-masked-view/masked-view';
@@ -296,7 +291,6 @@ export default function PointsContent() {
   const { colors } = useTheme();
   const { width: deviceWidth } = useDimensions();
   const { accountAddress, accountENS } = useAccountProfile();
-  const { accentColor } = useAccountAccentColor();
   const { setClipboard } = useClipboard();
   const { data, isFetching, dataUpdatedAt, refetch } = usePoints({
     walletAddress: accountAddress,
@@ -314,7 +308,7 @@ export default function PointsContent() {
   const referralCode =
     data?.points?.user?.referralCode?.slice(0, 3) +
     '-' +
-    data?.points?.user?.referralCode?.slice(3, 7);
+    data?.points?.user?.referralCode?.slice(3);
 
   const onPressCopy = React.useCallback(
     (onNewEmoji: () => void) => {
