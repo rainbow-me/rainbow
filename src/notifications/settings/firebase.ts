@@ -133,7 +133,10 @@ export const publishWalletSettings = async (
 const parseWalletSettings = (
   walletSettings: WalletNotificationSettings[]
 ): NotificationSubscriptionWalletsType[] => {
-  return walletSettings.flatMap(setting => {
+  const enabledWalletSettings = walletSettings.filter(
+    setting => setting.enabled
+  );
+  return enabledWalletSettings.flatMap(setting => {
     const topics = Object.keys(setting.topics).filter(
       topic => !!setting.topics[topic]
     );
