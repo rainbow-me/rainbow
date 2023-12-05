@@ -130,7 +130,9 @@ android {
         System.getenv().each { key, value ->
             env[key] = value
         }
-    } else {
+    }
+
+    if (envFile.exists()) {
         envFile.eachLine {
             if (it.contains('=') && (!it.startsWith("#"))) {
                 def (key, value) = it.split('=')

@@ -112,6 +112,7 @@ coverage
 
 # Expo
 .expo
+.easignore
 dist/
 web-build/
 
