@@ -120,10 +120,16 @@ export const publishWalletSettings = async (
   }
 };
 
-const parseWalletSettings = (walletSettings: WalletNotificationSettings[]): NotificationSubscriptionWalletsType[] => {
-  const enabledWalletSettings = walletSettings.filter(setting => setting.enabled);
+const parseWalletSettings = (
+  walletSettings: WalletNotificationSettings[]
+): NotificationSubscriptionWalletsType[] => {
+  const enabledWalletSettings = walletSettings.filter(
+    setting => setting.enabled
+  );
   return enabledWalletSettings.flatMap(setting => {
-    const topics = Object.keys(setting.topics).filter(topic => !!setting.topics[topic]);
+    const topics = Object.keys(setting.topics).filter(
+      topic => !!setting.topics[topic]
+    );
     return supportedNotificationsChainIds.map(chainId => {
       return {
         type: setting.type,
