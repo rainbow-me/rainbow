@@ -355,3 +355,13 @@ mutation onboardPoints(
     }
   }
 }
+
+query validateReferral($code: String!) {
+  validateReferral(referral: $code) {
+    valid
+    error {
+      type
+      message
+    }
+  }
+}

@@ -13,7 +13,6 @@ import { IS_IOS } from '@/env';
 import { metadataPOSTClient } from '@/graphql';
 import {
   useAccountAccentColor,
-  useAccountProfile,
   useDimensions,
   useKeyboardHeight,
 } from '@/hooks';
@@ -38,7 +37,6 @@ import { ActionButton } from '@/screens/points/components/ActionButton';
 import { PointsIconAnimation } from '../components/PointsIconAnimation';
 
 export default function ReferralContent() {
-  const { accountAddress } = useAccountProfile();
   const { accentColor } = useAccountAccentColor();
   const { goBack, navigate } = useNavigation();
 
@@ -53,36 +51,32 @@ export default function ReferralContent() {
 
   const textInputRef = React.useRef<TextInput>(null);
 
-  const validateReferralCode = useCallback(
-    async (text: string) => {
-      const referralCode = text.slice(0, 3) + text.slice(4, 8);
-      if (referralCode.length !== 6) return;
-      const res = await metadataPOSTClient.onboardPoints({
-        address: accountAddress,
-        referral: referralCode,
-        signature: '',
-      });
-      if (res?.onboardPoints?.error) {
-        if (
-          res.onboardPoints.error.type === PointsErrorType.InvalidReferralCode
-        ) {
-          setStatus('invalid');
-          haptics.notificationError();
-        } else {
-          logger.error(new RainbowError('Error validating referral code'), {
-            referralCode,
-          });
-          Alert.alert(i18n.t(i18n.l.points.referral.error));
-        }
+  const validateReferralCode = useCallback(async (text: string) => {
+    const referralCode = text.slice(0, 3) + text.slice(4, 8);
+    if (referralCode.length !== 6) return;
+    const res = await metadataPOSTClient.validateReferral({
+      code: referralCode,
+    });
+    if (!res?.validateReferral?.valid) {
+      if (
+        res.validateReferral?.error?.type ===
+        PointsErrorType.InvalidReferralCode
+      ) {
+        setStatus('invalid');
+        haptics.notificationError();
       } else {
-        setStatus('valid');
-        setReferralCode(referralCode);
-        textInputRef.current?.blur();
-        haptics.notificationSuccess();
+        logger.error(new RainbowError('Error validating referral code'), {
+          referralCode,
+        });
+        Alert.alert(i18n.t(i18n.l.points.referral.error));
       }
-    },
-    [accountAddress]
-  );
+    } else {
+      setStatus('valid');
+      setReferralCode(referralCode);
+      textInputRef.current?.blur();
+      haptics.notificationSuccess();
+    }
+  }, []);
 
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const [isKeyboardOpening, setIsKeyboardOpening] = useState(false);
