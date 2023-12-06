@@ -200,17 +200,15 @@ export default async function handleDeeplink(
         break;
       }
 
-      // case 'points': {
-      //   const referralCode = query?.ref;
-      //   break;
-      // }
+      case 'points': {
+        const referralCode = query?.ref;
+        if (referralCode) {
+          queryClient.setQueryData(pointsReferralCodeQueryKey, referralCode);
+        }
+        break;
+      }
 
       default: {
-        if (true) {
-          queryClient.setQueryData(pointsReferralCodeQueryKey, 'ABCDEF');
-          return;
-        }
-
         const addressOrENS = pathname?.split('/profile/')?.[1];
         /**
          * This handles ENS profile links on mobile i.e.
