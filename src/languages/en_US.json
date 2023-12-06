@@ -2339,14 +2339,19 @@
             "likely_to_fail": "Likely to Fail",
             "simulation_unavailable": "Simulation Unavailable",
             "simulation_result": "Simulated Result",
-            "simulating": "Simulating"
+            "simulating": "Simulating",
+            "proceed_carefully": "Proceed Carefully",
+            "suspicious_transaction": "Suspicious Transaction"
           },
           "messages": {
             "no_changes": "No Changes Detected",
             "need_more_native": "You’ll need more %{symbol} on %{network} to pay for this transaction. Get some %{symbol} below to continue with this request.",
             "unavailable_personal_sign": "Simulation for personal signs is not yet supported",
             "unavailable_zora_network": "Simulation on Zora is not yet supported",
-            "failed_to_simulate": "The simulation failed, which suggests your transaction is likely to fail. This may be an issue with the app you’re using."
+            "failed_to_simulate": "The simulation failed, which suggests your transaction is likely to fail. This may be an issue with the app you’re using.",
+            "warning": "No known malicious behavior was detected, but this transaction has characteristics that may pose a risk to your wallet.",
+            "malicious": "Signing this transaction could result in losing access to everything in your wallet."
+            
           },
           "event_row": {
             "unlimited": "Unlimited",
