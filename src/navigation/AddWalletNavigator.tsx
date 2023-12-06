@@ -13,6 +13,8 @@ import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import ReferralContent, {
   ReferralContentParams,
 } from '@/screens/points/content/ReferralContent';
+import { POINTS, useExperimentalFlag } from '@/config';
+import config from '@/model/config';
 
 const Swipe = createMaterialTopTabNavigator();
 
@@ -26,6 +28,9 @@ export const AddWalletNavigator = () => {
   const {
     params: { isFirstWallet, actionType, userData, walletType },
   } = useRoute<RouteProp<RouteParams, 'AddWalletNavigatorParams'>>();
+  const pointsEnabled =
+    (useExperimentalFlag(POINTS) || config.points_fully_enabled) &&
+    config.points_enabled;
 
   const [scrollEnabled, setScrollEnabled] = useState(false);
 
@@ -38,20 +43,26 @@ export const AddWalletNavigator = () => {
         >
           <Swipe.Navigator
             initialLayout={deviceUtils.dimensions}
-            initialRouteName={Routes.ADD_WALLET_SHEET}
+            initialRouteName={
+              isFirstWallet
+                ? Routes.POINTS_REFERRAL_SHEET
+                : Routes.ADD_WALLET_SHEET
+            }
             screenOptions={{ swipeEnabled: false }}
             tabBar={() => null}
           >
-            <Swipe.Screen
-              component={ReferralContent}
-              initialParams={{ walletType }}
-              name={'ReferralContent'}
-              listeners={{
-                focus: () => {
-                  setScrollEnabled(false);
-                },
-              }}
-            />
+            {isFirstWallet && (
+              <Swipe.Screen
+                component={ReferralContent}
+                initialParams={{ walletType }}
+                name={Routes.POINTS_REFERRAL_SHEET}
+                listeners={{
+                  focus: () => {
+                    setScrollEnabled(false);
+                  },
+                }}
+              />
+            )}
             <Swipe.Screen
               component={AddWalletSheet}
               initialParams={{ isFirstWallet, userData }}

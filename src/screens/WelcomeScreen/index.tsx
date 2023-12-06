@@ -231,7 +231,6 @@ export default function WelcomeScreen() {
         userData,
         isFirstWallet: true,
         walletType: 'new',
-        screen: 'ReferralContent',
       });
     }
   }, [dangerouslyGetState, navigate, pointsEnabled, replace, userData]);
@@ -246,9 +245,8 @@ export default function WelcomeScreen() {
       userData,
       isFirstWallet: true,
       walletType: 'existing',
-      screen: pointsEnabled ? 'ReferralContent' : undefined,
     });
-  }, [navigate, pointsEnabled, userData]);
+  }, [navigate, userData]);
 
   useAndroidBackHandler(() => {
     return true;
