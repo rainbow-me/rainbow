@@ -85,14 +85,13 @@ export default function ReferralContent() {
   const textInputRef = React.useRef<TextInput>(null);
 
   const validateReferralCode = useCallback(async (code: string) => {
-    const res = await metadataPOSTClient.onboardPoints({
-      address: REFERRAL_VALIDATION_ADDRESS,
-      referral: code,
-      signature: '',
+    const res = await metadataPOSTClient.validateReferral({
+      code,
     });
-    if (res?.onboardPoints?.error) {
+    if (!res?.validateReferral?.valid) {
       if (
-        res.onboardPoints.error.type === PointsErrorType.InvalidReferralCode
+        res.validateReferral?.error?.type ===
+        PointsErrorType.InvalidReferralCode
       ) {
         setStatus('invalid');
         haptics.notificationError();
