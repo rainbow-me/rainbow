@@ -28,6 +28,7 @@ if [ "$EAS_BUILD_PLATFORM" = "android" ]; then
 
     echo "🌈 Downloading Google Services JSON"
     curl -H "Authorization: token $RAINBOW_SCRIPTS_TOKEN" -L $RAINBOW_GOOGLE_SERVICES_JSON -o android/app/google-services.json
+    ls android/app
 
     if [[ "$OSTYPE" =~ ^linux ]]; then
         echo "🌈 apt-get libsecret-tools"

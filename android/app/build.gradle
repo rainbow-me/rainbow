@@ -151,7 +151,6 @@ android {
     }
 
     compileSdkVersion rootProject.ext.compileSdkVersion
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -163,6 +162,7 @@ android {
         resValue 'string', "CODE_PUSH_APK_BUILD_TIME", String.format("\"%d\"", System.currentTimeMillis())
         resValue 'string', "CodePushDeploymentKey", env.get('CODE_PUSH_DEPLOYMENT_KEY_ANDROID')
         applicationId "me.rainbow"
+
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 190
@@ -229,6 +229,10 @@ android {
         pickFirst '**/x86_64/libc++_shared.so'
         pickFirst '**/x86/libjsc.so'
         pickFirst '**/armeabi-v7a/libjsc.so'
+
+        // Debug protocols
+        exclude 'lib/armeabi-v7a/libconceal.so'
+        exclude 'lib/armeabi-v7a/libucrop.so'
     }
 }
 
@@ -239,7 +243,6 @@ dependencies {
     implementation 'io.github.novacrypto:BIP39:2019.01.27'
     implementation 'com.google.android.play:core:1.8.2'
     implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
-    implementation "androidx.core:core-splashscreen:1.0.0"
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
     debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
