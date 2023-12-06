@@ -3,6 +3,7 @@ import { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
 export const NotificationTypes = {
   transaction: 'transaction',
   walletConnect: 'wc',
+  marketing: 'marketing',
 } as const;
 
 export type NotificationTypesType = typeof NotificationTypes[keyof typeof NotificationTypes];
@@ -44,3 +45,9 @@ export const NotificationTransactionTypes = {
 } as const;
 
 export type NotificationTransactionTypesType = typeof NotificationTransactionTypes[keyof typeof NotificationTransactionTypes];
+
+export interface MarketingNotificationData {
+  type: 'marketing';
+  route?: string;
+  routeProps?: string;
+}
