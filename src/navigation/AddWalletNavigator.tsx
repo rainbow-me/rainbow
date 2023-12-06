@@ -10,17 +10,21 @@ import {
 import { BackgroundProvider } from '@/design-system';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
+import ReferralContent, {
+  ReferralContentParams,
+} from '@/screens/points/content/ReferralContent';
 
 const Swipe = createMaterialTopTabNavigator();
 
 type RouteParams = {
   AddWalletNavigatorParams: AddWalletSheetParams &
-    ImportOrWatchWalletSheetParams;
+    ImportOrWatchWalletSheetParams &
+    ReferralContentParams;
 };
 
 export const AddWalletNavigator = () => {
   const {
-    params: { isFirstWallet, type, userData },
+    params: { isFirstWallet, actionType, userData, walletType },
   } = useRoute<RouteProp<RouteParams, 'AddWalletNavigatorParams'>>();
 
   const [scrollEnabled, setScrollEnabled] = useState(false);
@@ -39,6 +43,16 @@ export const AddWalletNavigator = () => {
             tabBar={() => null}
           >
             <Swipe.Screen
+              component={ReferralContent}
+              initialParams={{ walletType }}
+              name={'ReferralContent'}
+              listeners={{
+                focus: () => {
+                  setScrollEnabled(false);
+                },
+              }}
+            />
+            <Swipe.Screen
               component={AddWalletSheet}
               initialParams={{ isFirstWallet, userData }}
               name={Routes.ADD_WALLET_SHEET}
@@ -50,7 +64,7 @@ export const AddWalletNavigator = () => {
             />
             <Swipe.Screen
               component={ImportOrWatchWalletSheet}
-              initialParams={{ type }}
+              initialParams={{ actionType }}
               name={Routes.IMPORT_OR_WATCH_WALLET_SHEET}
               listeners={{
                 focus: () => {

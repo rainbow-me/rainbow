@@ -43,10 +43,10 @@ export default function PointsScreen() {
   } = usePointsReferralCode();
 
   const isOnboarded =
-    data?.points?.error?.type !== PointsErrorType.NonExistingUser;
+    data && data?.points?.error?.type !== PointsErrorType.NonExistingUser;
 
   useEffect(() => {
-    if (referralCode && pointsFullyEnabled) {
+    if (referralCode && pointsFullyEnabled && !data) {
       delay(1000)
         .then(() => navigate(Routes.POINTS_SCREEN))
         .then(() => delay(1000))
@@ -60,6 +60,7 @@ export default function PointsScreen() {
         .then(() => resetReferralCode());
     }
   }, [
+    data,
     isOnboarded,
     navigate,
     pointsFullyEnabled,

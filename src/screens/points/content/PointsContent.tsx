@@ -1,5 +1,5 @@
 import React from 'react';
-import { RefreshControl, Share, Text as RNText } from 'react-native';
+import { RefreshControl, Share } from 'react-native';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import {
   AccentColorProvider,
@@ -305,10 +305,11 @@ export default function PointsContent() {
     addressCopiedToastAtom
   );
 
-  const referralCode =
-    data?.points?.user?.referralCode?.slice(0, 3) +
-    '-' +
-    data?.points?.user?.referralCode?.slice(3);
+  const referralCode = data?.points?.user?.referralCode
+    ? data.points.user.referralCode.slice(0, 3) +
+      '-' +
+      data.points.user.referralCode.slice(3)
+    : undefined;
 
   const onPressCopy = React.useCallback(
     (onNewEmoji: () => void) => {
@@ -524,6 +525,7 @@ export default function PointsContent() {
                     </Column>
                     <Column width="1/2">
                       <ButtonPressAnimation
+                        overflowMargin={50}
                         onPress={() =>
                           Share.share(
                             IS_ANDROID

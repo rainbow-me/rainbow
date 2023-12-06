@@ -5,7 +5,7 @@ import { useTheme } from '@/theme';
 import c from 'chroma-js';
 import { StyleSheet } from 'react-native';
 
-export const ActionButton = ({
+export const PointsActionButton = ({
   color,
   label,
   onPress,

@@ -36,6 +36,8 @@ import { ThemeContextProps, useTheme } from '@/theme';
 import logger from 'logger';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import { WelcomeScreenRainbowButton } from '@/screens/WelcomeScreen/WelcomeScreenRainbowButton';
+import { POINTS, useExperimentalFlag } from '@/config';
+import config from '@/model/config';
 
 // @ts-expect-error Our implementation of SC complains
 const Container = styled.View({
@@ -89,6 +91,9 @@ export default function WelcomeScreen() {
   const { replace, navigate, getState: dangerouslyGetState } = useNavigation();
   const [userData, setUserData] = useState(null);
   const hideSplashScreen = useHideSplashScreen();
+  const pointsEnabled =
+    (useExperimentalFlag(POINTS) || config.points_fully_enabled) &&
+    config.points_enabled;
 
   const contentAnimation = useSharedValue(1);
   const colorAnimation = useSharedValue(0);
@@ -215,12 +220,21 @@ export default function WelcomeScreen() {
 
   const onCreateWallet = useCallback(async () => {
     analytics.track('Tapped "Get a new wallet"');
-    const operation = dangerouslyGetState().index === 1 ? navigate : replace;
-    operation(Routes.SWIPE_LAYOUT, {
-      params: { emptyWallet: true },
-      screen: Routes.WALLET_SCREEN,
-    });
-  }, [dangerouslyGetState, navigate, replace]);
+    if (!pointsEnabled) {
+      const operation = dangerouslyGetState().index === 1 ? navigate : replace;
+      operation(Routes.SWIPE_LAYOUT, {
+        params: { emptyWallet: true },
+        screen: Routes.WALLET_SCREEN,
+      });
+    } else {
+      navigate(Routes.ADD_WALLET_NAVIGATOR, {
+        userData,
+        isFirstWallet: true,
+        walletType: 'new',
+        screen: 'ReferralContent',
+      });
+    }
+  }, [dangerouslyGetState, navigate, pointsEnabled, replace, userData]);
 
   const handlePressTerms = useCallback(() => {
     Linking.openURL('https://rainbow.me/terms-of-use');
@@ -231,8 +245,10 @@ export default function WelcomeScreen() {
     navigate(Routes.ADD_WALLET_NAVIGATOR, {
       userData,
       isFirstWallet: true,
+      walletType: 'existing',
+      screen: pointsEnabled ? 'ReferralContent' : undefined,
     });
-  }, [navigate, userData]);
+  }, [navigate, pointsEnabled, userData]);
 
   useAndroidBackHandler(() => {
     return true;

@@ -23,7 +23,7 @@ import { LoadingOverlay } from '@/components/modal';
 const TRANSLATIONS = i18n.l.wallet.new.import_or_watch_wallet_sheet;
 
 export type ImportOrWatchWalletSheetParams = {
-  type: 'watch' | 'import';
+  actionType: 'watch' | 'import';
 };
 
 type RouteParams = {
@@ -31,7 +31,7 @@ type RouteParams = {
 };
 
 export const ImportOrWatchWalletSheet = () => {
-  const { params: { type = 'watch' } = {} } = useRoute<
+  const { params: { actionType = 'watch' } = {} } = useRoute<
     RouteProp<RouteParams, 'ImportOrWatchWalletSheetParams'>
   >();
 
@@ -70,9 +70,9 @@ export const ImportOrWatchWalletSheet = () => {
         >
           <Stack space="20px">
             <Text align="center" color="label" size="26pt" weight="bold">
-              {i18n.t(TRANSLATIONS[type].title)}
+              {i18n.t(TRANSLATIONS[actionType].title)}
             </Text>
-            {type === 'import' && (
+            {actionType === 'import' && (
               <Text
                 align="center"
                 color="labelTertiary"
@@ -108,7 +108,7 @@ export const ImportOrWatchWalletSheet = () => {
               // @ts-expect-error callback needs refactor
               if (isSecretValid) handlePressImportButton();
             }}
-            placeholder={i18n.t(TRANSLATIONS[type].placeholder)}
+            placeholder={i18n.t(TRANSLATIONS[actionType].placeholder)}
             placeholderTextColor={labelTertiary}
             ref={inputRef}
             selectionColor={globalColors.purple60}

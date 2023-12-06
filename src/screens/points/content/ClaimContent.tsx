@@ -6,7 +6,7 @@ import { useNavigation } from '@/navigation';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
-import { ActionButton } from '@/screens/points/components/ActionButton';
+import { PointsActionButton } from '@/screens/points/components/PointsActionButton';
 import { PointsIconAnimation } from '../components/PointsIconAnimation';
 import { watchingAlert } from '@/utils';
 
@@ -46,7 +46,7 @@ export default function ClaimContent() {
               {i18n.t(i18n.l.points.claim.subtitle)}
             </Text>
           </Stack>
-          <ActionButton
+          <PointsActionButton
             color={accentColor}
             label={i18n.t(i18n.l.points.claim.get_started)}
             onPress={() =>
@@ -57,7 +57,7 @@ export default function ClaimContent() {
           />
         </Stack>
       </Box>
-      <ActionButton
+      <PointsActionButton
         color={accentColor}
         label={i18n.t(i18n.l.points.claim.use_referral_code)}
         onPress={() => navigate('ReferralContent')}

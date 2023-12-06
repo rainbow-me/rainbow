@@ -69,14 +69,14 @@ import {
 const SCREEN_BOTTOM_INSET = safeAreaInsetValues.bottom + 20;
 const CHARACTER_WIDTH = 9.2725;
 
-type ConsoleSheetParams = {
-  ConsoleSheet: {
+type RouteParams = {
+  ConsoleSheetParams: {
     referralCode?: string;
   };
 };
 
 export const ConsoleSheet = () => {
-  const { params } = useRoute<RouteProp<ConsoleSheetParams, 'ConsoleSheet'>>();
+  const { params } = useRoute<RouteProp<RouteParams, 'ConsoleSheetParams'>>();
   const referralCode = params?.referralCode;
 
   const [didConfirmOwnership, setDidConfirmOwnership] = useState(false);
