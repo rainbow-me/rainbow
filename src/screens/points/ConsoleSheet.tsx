@@ -8,7 +8,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { StyleSheet, Text as RNText, View } from 'react-native';
+import { StyleSheet, Text as RNText, View, Linking } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, {
   Easing,
@@ -26,6 +26,7 @@ import {
   Bleed,
   Box,
   Cover,
+  Inline,
   Inset,
   Stack,
   Text,
@@ -33,16 +34,11 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import { alignHorizontalToFlexAlign } from '@/design-system/layout/alignment';
-import {
-  useAccountProfile,
-  useDimensions,
-  useSwapCurrencyHandlers,
-} from '@/hooks';
+import { useAccountProfile, useDimensions } from '@/hooks';
 import { fonts } from '@/styles';
 import { useTheme } from '@/theme';
 import { safeAreaInsetValues } from '@/utils';
 import { HapticFeedbackType } from '@/utils/haptics';
-import { getNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { metadataPOSTClient } from '@/graphql';
 import { signPersonalMessage } from '@/model/wallet';
 import { RouteProp, useRoute } from '@react-navigation/native';
@@ -54,20 +50,19 @@ import {
 } from '@/graphql/__generated__/metadata';
 import { pointsQueryKey } from '@/resources/points';
 import { queryClient } from '@/react-query';
-import { Network } from '@/networks/types';
-import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
-import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
 import * as i18n from '@/languages';
 import { abbreviateNumber } from '@/helpers/utilities';
+import Routes from '@/navigation/routesNames';
 import {
   address as formatAddress,
   abbreviateEnsForDisplay,
 } from '@/utils/abbreviations';
 import { usePointsTweetIntentQuery } from '@/resources/pointsTweetIntent/pointsTweetIntentQuery';
+import { useNavigation } from '@/navigation';
 
 const SCREEN_BOTTOM_INSET = safeAreaInsetValues.bottom + 20;
 const CHARACTER_WIDTH = 9.2725;
+const POINTS_TWEET_INTENT_ID = '3ttGOpIsbJg3aa00FScp3I';
 
 type ConsoleSheetParams = {
   ConsoleSheet: {
@@ -79,12 +74,16 @@ export const ConsoleSheet = () => {
   const { params } = useRoute<RouteProp<ConsoleSheetParams, 'ConsoleSheet'>>();
   const referralCode = params?.referralCode;
 
+  const { navigate } = useNavigation();
+
   const [didConfirmOwnership, setDidConfirmOwnership] = useState(false);
   const [showSignInButton, setShowSignInButton] = useState(false);
   const [animationPhase, setAnimationPhase] = useState(0);
   const [isCalculationComplete, setIsCalculationComplete] = useState(false);
   const [showShareButtons, setShowShareButtons] = useState(false);
   const [tweetIntent, setTweetIntent] = useState<string>('');
+  const [didShare, setDidShare] = useState(false);
+  const [showDoneButton, setShowDoneButton] = useState(false);
 
   const [pointsProfile, setPointsProfile] = useState<OnboardPointsMutation>();
 
@@ -93,19 +92,25 @@ export const ConsoleSheet = () => {
   useEffect(() => {
     setDidConfirmOwnership(false);
     setShowSignInButton(false);
+    setAnimationPhase(0);
+    setIsCalculationComplete(false);
+    setShowShareButtons(false);
+    setTweetIntent('');
+    setDidShare(false);
+    setShowDoneButton(false);
   }, []);
 
   const signIn = useCallback(async () => {
     let points;
     let signature;
-    let challenge;
     const challengeResponse = await metadataPOSTClient.getPointsOnboardChallenge(
       {
         address: accountAddress,
         referral: referralCode,
       }
     );
-    challenge = challengeResponse?.pointsOnboardChallenge;
+
+    const challenge = challengeResponse?.pointsOnboardChallenge;
     if (challenge) {
       const signatureResponse = await signPersonalMessage(challenge);
       signature = signatureResponse?.result;
@@ -176,6 +181,8 @@ export const ConsoleSheet = () => {
             setIsCalculationComplete={setIsCalculationComplete}
             setShowShareButtons={setShowShareButtons}
             setTweetIntent={setTweetIntent}
+            didShare={didShare}
+            setShowDoneButton={setShowDoneButton}
           />
         </Animated.View>
       </Box>
@@ -204,10 +211,33 @@ export const ConsoleSheet = () => {
         }
         duration={300}
       >
+        <Inline wrap={false} horizontalSpace={{ custom: 12 }}>
+          <NeonButton
+            color="#F5F8FF8F"
+            label={`􀖅 ${i18n.t(i18n.l.points.console.skip_referral)}`}
+            onPress={() => setAnimationPhase(3)}
+          />
+
+          <NeonButton
+            color="#FEC101"
+            label={`􀖅 ${i18n.t(i18n.l.points.console.proceed_to_share)}`}
+            onPress={() => {
+              Linking.openURL(tweetIntent);
+              setDidShare(true);
+              setAnimationPhase(3);
+            }}
+          />
+        </Inline>
+      </AnimatePresence>
+
+      <AnimatePresence
+        condition={animationPhase === 3 && showDoneButton}
+        duration={300}
+      >
         <NeonButton
           color="#FEC101"
-          label={`􀖅 ${i18n.t(i18n.l.points.console.proceed_to_share)}`}
-          onPress={() => setAnimationPhase(2)}
+          label={`􀖅 ${i18n.t(i18n.l.points.console.complete_onboarding)}`}
+          onPress={() => navigate(Routes.POINTS_SCREEN)}
         />
       </AnimatePresence>
     </Inset>
@@ -300,6 +330,8 @@ const ClaimRetroactivePointsFlow = ({
   setIsCalculationComplete,
   setShowShareButtons,
   setTweetIntent,
+  didShare,
+  setShowDoneButton,
 }: {
   pointsProfile?: OnboardPointsMutation;
   animationPhase: number;
@@ -310,6 +342,8 @@ const ClaimRetroactivePointsFlow = ({
   setIsCalculationComplete: React.Dispatch<React.SetStateAction<boolean>>;
   setShowShareButtons: React.Dispatch<React.SetStateAction<boolean>>;
   setTweetIntent: React.Dispatch<React.SetStateAction<string>>;
+  didShare: boolean;
+  setShowDoneButton: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const { accountENS, accountAddress } = useAccountProfile();
   const [animationKey, setAnimationKey] = useState(0);
@@ -319,16 +353,11 @@ const ClaimRetroactivePointsFlow = ({
 
   useEffect(() => {
     setAnimationKey(prevKey => prevKey + 1);
-    setIsCalculationComplete(false);
-    setShowShareButtons(false);
-    setShowSignInButton(false);
-    setTweetIntent('');
-    setAnimationPhase(0);
   }, []);
 
   usePointsTweetIntentQuery(
     {
-      id: '3ttGOpIsbJg3aa00FScp3I',
+      id: POINTS_TWEET_INTENT_ID,
     },
     {
       enabled: animationPhase === 2,
@@ -337,36 +366,42 @@ const ClaimRetroactivePointsFlow = ({
           return;
         }
 
-        const tweetIntent = data.pointsTweetIntent;
-        const pointsValue =
-          pointsProfile?.onboardPoints?.user.onboarding.earnings.total;
-        if (!pointsValue) {
-          // TODO: Fallback to some default msg
-          return;
-        }
+        try {
+          const tweetIntent = data.pointsTweetIntent;
+          const pointsValue =
+            pointsProfile?.onboardPoints?.user.onboarding.earnings.total;
+          if (!pointsValue) {
+            // TODO: Fallback to some default msg
+            return;
+          }
 
-        // do a string replace to replace {POINTS_VALUE} with their points value
-        let text = tweetIntent.text?.replace(
-          '{POINTS_VALUE}',
-          pointsValue?.toString()
-        );
-        if (Number(metamaskSwaps?.earnings.total) > 0) {
-          text += `, including ${metamaskSwaps?.earnings.total} points because I switched from Metamask`;
-        }
+          // do a string replace to replace {POINTS_VALUE} with their points value
+          let text = tweetIntent.text?.replace(
+            '{POINTS_VALUE}',
+            pointsValue?.toString()
+          );
+          if (Number(metamaskSwaps?.earnings.total) > 0) {
+            text += `, including ${metamaskSwaps?.earnings.total} points because I switched from Metamask`;
+          }
 
-        // build the tweet intent url
-        let intent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-          text ?? ''
-        )}`;
-        if (tweetIntent.url) {
-          intent += `&url=${encodeURIComponent(tweetIntent.url)}`;
-        }
+          // build the tweet intent url
+          let intent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+            text ?? ''
+          )}`;
+          if (tweetIntent.url) {
+            intent += `&url=${encodeURIComponent(tweetIntent.url)}`;
+          }
 
-        if (tweetIntent.via) {
-          intent += `&via=${encodeURIComponent(tweetIntent.via)}`;
-        }
+          if (tweetIntent.via) {
+            intent += `&via=${encodeURIComponent(tweetIntent.via)}`;
+          }
 
-        setTweetIntent(intent);
+          console.log({ intent });
+          setTweetIntent(intent);
+        } catch (e) {
+          console.log(e);
+          // TODO: add logging
+        }
       },
     }
   );
@@ -622,7 +657,10 @@ const ClaimRetroactivePointsFlow = ({
                   color={rainbowColors.purple}
                   delayStart={1000}
                   enableHapticTyping
-                  onComplete={() => setIsCalculationComplete(true)}
+                  onComplete={() => {
+                    setAnimationKey(prevKey => prevKey + 1);
+                    setIsCalculationComplete(true);
+                  }}
                   textAlign="right"
                   textContent={`+ ${bonus?.earnings?.total}`}
                   typingSpeed={100}
@@ -679,9 +717,9 @@ const ClaimRetroactivePointsFlow = ({
                 />
               </Line>
               <AnimatedText
-                color={textColors.green}
+                color={textColors.gray}
                 textContent={`> ${i18n.t(
-                  i18n.l.points.console.registration_complete
+                  i18n.l.points.console.calculating_points
                 )}`}
               />
             </Paragraph>
@@ -704,7 +742,10 @@ const ClaimRetroactivePointsFlow = ({
             <AnimatedText
               color={textColors.gray}
               delayStart={1000}
-              onComplete={() => setIsCalculationComplete(true)}
+              onComplete={() => {
+                setAnimationKey(prevKey => prevKey + 1);
+                setIsCalculationComplete(true);
+              }}
               weight="normal"
               multiline
               textContent={i18n.t(i18n.l.points.console.claim_bonus_paragraph)}
@@ -730,39 +771,104 @@ const ClaimRetroactivePointsFlow = ({
               />
             </Line>
             <AnimatedText
+              color={textColors.gray}
+              textContent={`> ${i18n.t(
+                i18n.l.points.console.referral_link_is_ready
+              )}`}
+            />
+          </Paragraph>
+          <AnimatedText
+            color={rainbowColors.yellow}
+            delayStart={1000}
+            weight="normal"
+            multiline
+            textContent={`${i18n.t(
+              i18n.l.points.console.referral_link_bonus_text
+            )}:`}
+          />
+          <AnimatedText
+            color={rainbowColors.yellow}
+            delayStart={1000}
+            onComplete={() => {
+              setAnimationKey(prevKey => prevKey + 1);
+              setShowShareButtons(true);
+            }}
+            weight="normal"
+            multiline
+            textContent={i18n.t(
+              i18n.l.points.console.referral_link_bonus_text_extended
+            )}
+          />
+        </Stack>
+      )}
+
+      {animationPhase === 3 && (
+        <Stack separator={<LineBreak lines={2} />}>
+          <Paragraph>
+            <Line>
+              <AnimatedText
+                delayStart={500}
+                color={textColors.gray}
+                skipAnimation
+                textContent={`${i18n.t(i18n.l.points.console.account)}:`}
+                weight="normal"
+              />
+              <AnimatedText
+                color={textColors.account}
+                skipAnimation
+                textContent={accountName}
+              />
+            </Line>
+            <AnimatedText
               color={textColors.green}
               textContent={`> ${i18n.t(
                 i18n.l.points.console.referral_link_is_ready
               )}`}
             />
           </Paragraph>
-          <Line alignHorizontal="justify">
+          {didShare && (
+            <Line alignHorizontal="justify">
+              <AnimatedText
+                color={rainbowColors.yellow}
+                delayStart={1000}
+                enableHapticTyping
+                textContent={`${i18n.t(i18n.l.points.console.share_bonus)}:`}
+              />
+              <AnimatedText
+                color={rainbowColors.yellow}
+                delayStart={1000}
+                enableHapticTyping
+                textAlign="right"
+                textContent={`+ 250`} // TODO: Where does this amount come from?
+              />
+            </Line>
+          )}
+          <Paragraph>
             <AnimatedText
-              color={rainbowColors.yellow}
-              delayStart={1000}
-              enableHapticTyping
+              delayStart={500}
+              color={textColors.gray}
               textContent={`${i18n.t(
-                i18n.l.points.console.referral_link_bonus_text
+                i18n.l.points.console.share_bonus_paragraph_one
               )}:`}
+              weight="normal"
             />
             <AnimatedText
-              color={rainbowColors.purple}
-              delayStart={1000}
-              enableHapticTyping
-              textAlign="right"
-              textContent={`${i18n.t(
-                i18n.l.points.console.referral_link_bonus_text_extended
+              color={textColors.gray}
+              delayStart={500}
+              textContent={`> ${i18n.t(
+                i18n.l.points.console.share_bonus_paragraph_two
               )}`}
+              weight="normal"
             />
-          </Line>
-          <AnimatedText
-            color={textColors.gray}
-            delayStart={1000}
-            onComplete={() => setShowShareButtons(true)}
-            weight="normal"
-            multiline
-            textContent={i18n.t(i18n.l.points.console.claim_bonus_paragraph)}
-          />
+            <AnimatedText
+              color={textColors.gray}
+              onComplete={() => setShowDoneButton(true)}
+              textContent={`> ${i18n.t(
+                i18n.l.points.console.share_bonus_paragraph_three
+              )}`}
+              weight="normal"
+            />
+          </Paragraph>
         </Stack>
       )}
     </TypingAnimation>
