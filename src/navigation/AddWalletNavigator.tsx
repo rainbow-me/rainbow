@@ -44,14 +44,15 @@ export const AddWalletNavigator = () => {
           <Swipe.Navigator
             initialLayout={deviceUtils.dimensions}
             initialRouteName={
-              isFirstWallet
+              pointsEnabled
                 ? Routes.POINTS_REFERRAL_SHEET
                 : Routes.ADD_WALLET_SHEET
             }
             screenOptions={{ swipeEnabled: false }}
+            backBehavior="history"
             tabBar={() => null}
           >
-            {isFirstWallet && (
+            {pointsEnabled && (
               <Swipe.Screen
                 component={ReferralContent}
                 initialParams={{ walletType }}

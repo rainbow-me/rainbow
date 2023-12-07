@@ -424,6 +424,7 @@ export default function ChangeWalletSheet() {
     goBack();
     InteractionManager.runAfterInteractions(() => {
       navigate(Routes.ADD_WALLET_NAVIGATOR, {
+        screen: Routes.ADD_WALLET_SHEET,
         isFirstWallet: false,
       });
     });

@@ -245,8 +245,9 @@ export default function WelcomeScreen() {
       userData,
       isFirstWallet: true,
       walletType: 'existing',
+      screen: pointsEnabled ? undefined : Routes.ADD_WALLET_SHEET,
     });
-  }, [navigate, userData]);
+  }, [navigate, pointsEnabled, userData]);
 
   useAndroidBackHandler(() => {
     return true;

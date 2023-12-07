@@ -42,15 +42,15 @@ import {
 } from '@/resources/points';
 import { useTheme } from '@/theme';
 import { queryClient } from '@/react-query';
+import { getRawReferralCode } from '../utils';
 
 export type ReferralContentParams = {
   walletType?: 'new' | 'existing';
+  externalReferralCode?: string;
 };
 
 export type RouteParams = {
-  ReferralContentParams: {
-    walletType?: 'new' | 'existing';
-  };
+  ReferralContentParams: ReferralContentParams;
 };
 
 export default function ReferralContent() {
@@ -71,7 +71,6 @@ export default function ReferralContent() {
   const keyboardHeight = useKeyboardHeight();
   const { data: externalReferralCode } = usePointsReferralCode();
 
-  const [referralCodeDisplay, setReferralCodeDisplay] = useState('');
   const [referralCode, setReferralCode] = useState('');
   const [status, setStatus] = useState<'incomplete' | 'valid' | 'invalid'>(
     'incomplete'
@@ -82,9 +81,8 @@ export default function ReferralContent() {
   const textInputRef = React.useRef<TextInput>(null);
 
   const validateReferralCode = useCallback(async (code: string) => {
-    if (code.length !== 6) return;
     const res = await metadataPOSTClient.validateReferral({
-      code,
+      code: getRawReferralCode(code),
     });
     if (!res?.validateReferral?.valid) {
       if (
@@ -101,7 +99,6 @@ export default function ReferralContent() {
       }
     } else {
       setStatus('valid');
-      setReferralCode(code);
       textInputRef.current?.blur();
       haptics.notificationSuccess();
     }
@@ -109,9 +106,7 @@ export default function ReferralContent() {
 
   useEffect(() => {
     if (externalReferralCode) {
-      setReferralCodeDisplay(
-        externalReferralCode.slice(0, 3) + '-' + externalReferralCode.slice(3)
-      );
+      setReferralCode(externalReferralCode);
       validateReferralCode(externalReferralCode);
     }
   }, [externalReferralCode, validateReferralCode]);
@@ -136,11 +131,6 @@ export default function ReferralContent() {
   useFocusEffect(
     useCallback(() => {
       delay(400).then(() => textInputRef.current?.focus());
-
-      return () => {
-        // setReferralCodeDisplay('');
-        // setStatus('incomplete');
-      };
     }, [])
   );
 
@@ -195,11 +185,10 @@ export default function ReferralContent() {
 
   const onChangeText = useCallback(
     (code: string) => {
-      const rawCode = code.replace(/-/g, '').slice(0, 6).toLocaleUpperCase();
-      let formattedCode = rawCode;
+      let formattedCode = getRawReferralCode(code);
 
       // If the user backspaces over the hyphen, remove the character before the hyphen
-      if (referralCodeDisplay.length === 4 && code.length === 3) {
+      if (referralCode.length === 4 && code.length === 3) {
         formattedCode = formattedCode.slice(0, -1);
       }
 
@@ -210,15 +199,15 @@ export default function ReferralContent() {
       }
 
       // Update the state and the input
-      setReferralCodeDisplay(formattedCode); // Limit to 6 characters + '-'
+      setReferralCode(formattedCode); // Limit to 6 characters + '-'
 
       if (formattedCode.length !== 7) {
         setStatus('incomplete');
       } else {
-        validateReferralCode(rawCode);
+        validateReferralCode(formattedCode);
       }
     },
-    [referralCodeDisplay.length, validateReferralCode]
+    [referralCode.length, validateReferralCode]
   );
 
   return (
@@ -287,7 +276,7 @@ export default function ReferralContent() {
                 <Inline alignVertical="center" space="6px">
                   <TextInput
                     ref={textInputRef}
-                    value={referralCodeDisplay}
+                    value={referralCode}
                     style={{
                       height: 48,
                       ...(IS_IOS ? inputTextStyle : {}),
@@ -369,7 +358,7 @@ export default function ReferralContent() {
           <ButtonPressAnimation
             onPress={() => {
               goBack();
-              setReferralCodeDisplay('');
+              setReferralCode('');
               setStatus('incomplete');
             }}
           >
@@ -386,7 +375,9 @@ export default function ReferralContent() {
           onPress={() =>
             isReadOnlyWallet
               ? watchingAlert()
-              : navigate(Routes.CONSOLE_SHEET, { referralCode })
+              : navigate(Routes.CONSOLE_SHEET, {
+                  referralCode,
+                })
           }
         />
       )}

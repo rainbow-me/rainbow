@@ -209,6 +209,8 @@ export default async function handleDeeplink(
       }
 
       default: {
+        queryClient.setQueryData(pointsReferralCodeQueryKey, 'ABC-DEF');
+        return;
         const addressOrENS = pathname?.split('/profile/')?.[1];
         /**
          * This handles ENS profile links on mobile i.e.

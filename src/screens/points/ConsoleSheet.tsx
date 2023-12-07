@@ -64,6 +64,7 @@ import {
   address as formatAddress,
   abbreviateEnsForDisplay,
 } from '@/utils/abbreviations';
+import { getRawReferralCode } from './utils';
 
 const SCREEN_BOTTOM_INSET = safeAreaInsetValues.bottom + 20;
 const CHARACTER_WIDTH = 9.2725;
@@ -76,7 +77,6 @@ type RouteParams = {
 
 export const ConsoleSheet = () => {
   const { params } = useRoute<RouteProp<RouteParams, 'ConsoleSheetParams'>>();
-  const referralCode = params?.referralCode;
 
   const [didConfirmOwnership, setDidConfirmOwnership] = useState(false);
   const [showSignInButton, setShowSignInButton] = useState(false);
@@ -108,13 +108,16 @@ export const ConsoleSheet = () => {
   }, []);
 
   const signIn = useCallback(async () => {
+    const rawReferralCode = params?.referralCode
+      ? getRawReferralCode(params.referralCode)
+      : undefined;
     let points;
     let signature;
     let challenge;
     const challengeResponse = await metadataPOSTClient.getPointsOnboardChallenge(
       {
         address: accountAddress,
-        referral: referralCode,
+        referral: rawReferralCode,
       }
     );
     challenge = challengeResponse?.pointsOnboardChallenge;
@@ -125,13 +128,13 @@ export const ConsoleSheet = () => {
         points = await metadataPOSTClient.onboardPoints({
           address: accountAddress,
           signature,
-          referral: referralCode,
+          referral: rawReferralCode,
         });
       }
     }
     if (!points) {
       logger.error(new RainbowError('Error onboarding points user'), {
-        referralCode,
+        rawReferralCode,
         challenge,
         signature,
       });
@@ -155,7 +158,7 @@ export const ConsoleSheet = () => {
         );
       }
     }
-  }, [accountAddress, referralCode]);
+  }, [accountAddress, params.referralCode]);
 
   const swap = useCallback(async () => {
     goBack();
