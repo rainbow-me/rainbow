@@ -237,3 +237,26 @@ query getPromoSheet($id: String!) {
     subHeader
   }
 }
+
+query getPointsTweetIntentCollection($order: [PointsTweetIntentOrder]) {
+  pointsTweetIntentCollection(order: $order) {
+    items {
+      sys {
+        id
+      }
+      key
+      text
+      via
+      url
+    }
+  }
+}
+
+query getPointsTweetIntent($id: String!) {
+  pointsTweetIntent(id: $id) {
+    key
+    text
+    via
+    url
+  }
+}
