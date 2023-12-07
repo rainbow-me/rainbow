@@ -155,8 +155,13 @@ export default function ReferralContent() {
 
   const onChangeText = useCallback(
     (code: string) => {
-      const rawCode = code.replace(/-/g, '').slice(0, 6);
+      const rawCode = code.replace(/-/g, '').slice(0, 6).toLocaleUpperCase();
       let formattedCode = rawCode;
+
+      // If the user backspaces over the hyphen, remove the character before the hyphen
+      if (referralCodeDisplay.length === 4 && code.length === 3) {
+        formattedCode = formattedCode.slice(0, -1);
+      }
 
       // Insert "-" after the 3rd character if the length is 4 or more
       if (formattedCode.length >= 3) {
@@ -172,21 +177,8 @@ export default function ReferralContent() {
       } else {
         validateReferralCode(rawCode);
       }
-
-      // if (text.length === 3 && referralCodeDisplay.length === 2) {
-      //   setReferralCodeDisplay(text + '-');
-      // } else if (text.length === 3 && referralCodeDisplay.length === 4) {
-      //   setReferralCodeDisplay(text.slice(0, text.length - 1));
-      // } else {
-      //   setReferralCodeDisplay(text);
-      // }
-      // if (text.length !== 7) {
-      //   setStatus('incomplete');
-      // } else {
-      //   validateReferralCode(text);
-      // }
     },
-    [validateReferralCode]
+    [referralCodeDisplay.length, validateReferralCode]
   );
 
   return (
