@@ -38,6 +38,7 @@ import {
   getPoapAndOpenSheetWithSecretWord,
 } from '@/utils/poaps';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
+import { getHeaderHeight } from '@/navigation/SwipeNavigator';
 
 export const SearchContainer = styled(Row)({
   height: '100%',
@@ -61,6 +62,7 @@ export default function DiscoverSearch() {
 
   const { colors } = useTheme();
   const profilesEnabled = useExperimentalFlag(PROFILES);
+  const marginBottom = useMemo(() => getHeaderHeight(), []);
 
   const currencySelectionListRef = useRef();
   const [searchQueryForSearch] = useDebounce(searchQuery, 350);
@@ -277,7 +279,7 @@ export default function DiscoverSearch() {
   return (
     <View
       key={currencyListDataKey}
-      style={{ height: deviceUtils.dimensions.height - 140 }}
+      style={{ height: deviceUtils.dimensions.height - 140 - marginBottom }}
     >
       <SearchContainer>
         <CurrencySelectionList

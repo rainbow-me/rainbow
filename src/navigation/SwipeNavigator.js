@@ -64,7 +64,7 @@ const animationConfig = {
 
 const Swipe = createMaterialTopTabNavigator();
 
-const getHeaderHeight = () => {
+export const getHeaderHeight = () => {
   if (IS_IOS) {
     return 82;
   }
