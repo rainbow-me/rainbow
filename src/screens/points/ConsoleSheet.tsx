@@ -59,7 +59,6 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
 import * as i18n from '@/languages';
-import { delay } from '@/utils/delay';
 import { abbreviateNumber } from '@/helpers/utilities';
 import {
   address as formatAddress,
@@ -160,9 +159,6 @@ export const ConsoleSheet = () => {
 
   const swap = useCallback(async () => {
     goBack();
-    await delay(1000);
-    navigate(Routes.WALLET_SCREEN);
-    await delay(1000);
     navigate(Routes.EXCHANGE_MODAL, {
       fromDiscover: true,
       params: {
@@ -176,12 +172,8 @@ export const ConsoleSheet = () => {
   }, [goBack, navigate, updateInputCurrency]);
 
   const getEth = useCallback(async () => {
-    goBack();
-    await delay(1000);
-    navigate(Routes.WALLET_SCREEN);
-    await delay(1000);
     navigate(Routes.ADD_CASH_SHEET);
-  }, [goBack, navigate]);
+  }, [navigate]);
 
   return (
     <Inset bottom={{ custom: SCREEN_BOTTOM_INSET }}>
