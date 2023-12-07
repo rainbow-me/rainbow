@@ -3,7 +3,7 @@ import { AddWalletItem } from '@/components/add-wallet/AddWalletRow';
 import { Box, globalColors, Inset, Stack, Text } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import React, { useMemo, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import * as i18n from '@/languages';
 import { HARDWARE_WALLETS, PROFILES, useExperimentalFlag } from '@/config';
 import { analytics, analyticsV2 } from '@/analytics';
@@ -33,6 +33,7 @@ const TRANSLATIONS = i18n.l.wallet.new.add_wallet_sheet;
 export type AddWalletSheetParams = {
   isFirstWallet: boolean;
   userData: { wallets: RainbowWallet[] };
+  referralCode?: string;
 };
 
 type RouteParams = {
@@ -41,7 +42,7 @@ type RouteParams = {
 
 export const AddWalletSheet = () => {
   const {
-    params: { isFirstWallet, userData },
+    params: { isFirstWallet, referralCode, userData },
   } = useRoute<RouteProp<RouteParams, 'AddWalletSheetParams'>>();
 
   const { goBack, navigate } = useNavigation();
@@ -65,7 +66,7 @@ export const AddWalletSheet = () => {
     return count;
   }, [userData]);
 
-  const onPressCreate = async () => {
+  const onPressCreate = useCallback(async () => {
     try {
       analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
         isFirstWallet,
@@ -193,9 +194,20 @@ export const AddWalletSheet = () => {
         description: 'Error while trying to add account',
       });
     }
-  };
+  }, [
+    dispatch,
+    goBack,
+    initializeWallet,
+    isDamaged,
+    isFirstWallet,
+    navigate,
+    profilesEnabled,
+    selectedWallet.id,
+    selectedWallet.primary,
+    wallets,
+  ]);
 
-  const onPressRestoreFromSeed = () => {
+  const onPressRestoreFromSeed = useCallback(() => {
     analytics.track('Tapped "Add an existing wallet"');
     analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
       isFirstWallet,
@@ -203,11 +215,11 @@ export const AddWalletSheet = () => {
     });
     navigate(Routes.ADD_WALLET_NAVIGATOR, {
       screen: Routes.IMPORT_OR_WATCH_WALLET_SHEET,
-      params: { type: 'import', isFirstWallet },
+      params: { type: 'import', isFirstWallet, referralCode },
     });
-  };
+  }, [isFirstWallet, navigate, referralCode]);
 
-  const onPressWatch = () => {
+  const onPressWatch = useCallback(() => {
     analytics.track('Tapped "Add an existing wallet"');
     analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
       isFirstWallet,
@@ -215,11 +227,11 @@ export const AddWalletSheet = () => {
     });
     navigate(Routes.ADD_WALLET_NAVIGATOR, {
       screen: Routes.IMPORT_OR_WATCH_WALLET_SHEET,
-      params: { type: 'watch', isFirstWallet },
+      params: { type: 'watch', isFirstWallet, referralCode },
     });
-  };
+  }, [isFirstWallet, navigate, referralCode]);
 
-  const onPressRestoreFromCloud = async () => {
+  const onPressRestoreFromCloud = useCallback(async () => {
     analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
       isFirstWallet,
       type: 'seed',
@@ -259,7 +271,7 @@ export const AddWalletSheet = () => {
     } else {
       navigate(Routes.RESTORE_SHEET, { userData });
     }
-  };
+  }, [isFirstWallet, navigate, userData]);
 
   const cloudRestoreEnabled =
     isFirstWallet && (IS_ANDROID || walletsBackedUp > 0);

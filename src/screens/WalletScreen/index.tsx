@@ -38,6 +38,7 @@ import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { usePositions } from '@/resources/defi/PositionsQuery';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
+import { handlePointsReferralCodeDeeplink } from '@/utils/points';
 
 const WalletPage = styled(Page)({
   ...position.sizeAsObject('100%'),
@@ -139,6 +140,8 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
     if (!initialized || (params?.emptyWallet && initialized)) {
       // We run the migrations only once on app launch
       initializeAndSetParams();
+    } else if (params?.referralCode) {
+      handlePointsReferralCodeDeeplink(params.referralCode);
     }
   }, [initializeWallet, initialized, params, setParams]);
 

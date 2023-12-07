@@ -33,6 +33,7 @@ import {
 } from '@/utils/poaps';
 import { queryClient } from '@/react-query';
 import { pointsReferralCodeQueryKey } from '@/resources/points';
+import { handlePointsReferralCodeDeeplink } from '@/utils/points';
 
 /*
  * You can test these deeplinks with the following command:
@@ -209,7 +210,7 @@ export default async function handleDeeplink(
       }
 
       default: {
-        queryClient.setQueryData(pointsReferralCodeQueryKey, 'ABC-DEF');
+        handlePointsReferralCodeDeeplink('ABC-DEF');
         return;
         const addressOrENS = pathname?.split('/profile/')?.[1];
         /**

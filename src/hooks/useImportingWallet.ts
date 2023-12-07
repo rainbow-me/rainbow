@@ -38,8 +38,12 @@ import { deriveAccountFromWalletInput } from '@/utils/wallet';
 import { logger as Logger, RainbowError } from '@/logger';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
+import { handlePointsReferralCodeDeeplink } from '@/utils/points';
 
-export default function useImportingWallet({ showImportModal = true } = {}) {
+export default function useImportingWallet({
+  showImportModal = true,
+  referralCode = undefined,
+}: { showImportModal?: boolean; referralCode?: string } = {}) {
   const { accountAddress } = useAccountSettings();
   const { selectedWallet, wallets } = useWallets();
 
@@ -109,7 +113,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           asset: [],
           forceColor,
           isNewProfile: true,
-          onCloseModal: ({
+          onCloseModal: async ({
             color,
             name,
             image,
@@ -118,7 +122,10 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             name: string;
             image: string;
           }) => {
-            importWallet(color, name, image);
+            await importWallet(color, name, image);
+            if (referralCode) {
+              handlePointsReferralCodeDeeplink(referralCode);
+            }
           },
           profile: { image: avatarUrl, name },
           type: 'wallet_profile',
@@ -128,7 +135,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         importWallet(forceColor, name, avatarUrl);
       }
     },
-    [handleSetImporting, navigate, showImportModal]
+    [handleSetImporting, navigate, referralCode, showImportModal]
   );
 
   const handlePressImportButton = useCallback(

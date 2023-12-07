@@ -11,7 +11,7 @@ import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ButtonPressAnimation } from '@/components/animations';
 import * as i18n from '@/languages';
-import { usePoints, usePointsReferralCode } from '@/resources/points';
+import { usePoints } from '@/resources/points';
 import PointsContent from './content/PointsContent';
 import PlaceholderContent from './content/PlaceholderContent';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
@@ -19,17 +19,28 @@ import { deviceUtils } from '@/utils';
 import ClaimContent from './content/ClaimContent';
 import ReferralContent from './content/ReferralContent';
 import { PointsErrorType } from '@/graphql/__generated__/metadata';
-import { delay } from '@/utils/delay';
 import { WrappedAlert as Alert } from '@/helpers/alert';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { delay } from '@/utils/delay';
 
 export const POINTS_ROUTES = {
   CLAIM_CONTENT: 'ClaimContent',
   REFERRAL_CONTENT: 'ReferralContent',
 };
 
+export type PointsScreenParams = {
+  referralCode?: string;
+  deeplinkId?: string;
+};
+
+export type RouteParams = {
+  PointsScreenParams: PointsScreenParams;
+};
+
 const Swipe = createMaterialTopTabNavigator();
 
 export default function PointsScreen() {
+  const { params } = useRoute<RouteProp<RouteParams, 'PointsScreenParams'>>();
   const {
     accountAddress,
     accountImage,
@@ -42,34 +53,28 @@ export default function PointsScreen() {
   const { data } = usePoints({
     walletAddress: accountAddress,
   });
-  const {
-    data: referralCode,
-    refetch: resetReferralCode,
-  } = usePointsReferralCode();
 
   const isOnboarded =
     data && data?.points?.error?.type !== PointsErrorType.NonExistingUser;
 
   useEffect(() => {
-    if (referralCode && pointsFullyEnabled && !isOnboarded) {
-      delay(1000)
-        .then(() => navigate(Routes.POINTS_SCREEN))
-        .then(() => delay(1000))
-        .then(() => {
-          if (!isOnboarded) {
-            navigate(POINTS_ROUTES.REFERRAL_CONTENT);
-          } else {
-            Alert.alert(i18n.t(i18n.l.points.points.already_claimed_points));
-          }
-        })
-        .then(() => resetReferralCode());
+    if (params?.referralCode && pointsFullyEnabled) {
+      if (!isOnboarded) {
+        navigate(POINTS_ROUTES.REFERRAL_CONTENT, {
+          externalReferralCode: params?.referralCode,
+        });
+      } else {
+        delay(1000).then(() => {
+          Alert.alert(i18n.t(i18n.l.points.points.already_claimed_points));
+        });
+      }
     }
   }, [
     isOnboarded,
     navigate,
+    params?.referralCode,
     pointsFullyEnabled,
-    referralCode,
-    resetReferralCode,
+    params?.deeplinkId,
   ]);
 
   return (

@@ -24,6 +24,7 @@ const TRANSLATIONS = i18n.l.wallet.new.import_or_watch_wallet_sheet;
 
 export type ImportOrWatchWalletSheetParams = {
   actionType: 'watch' | 'import';
+  referralCode?: string;
 };
 
 type RouteParams = {
@@ -31,7 +32,7 @@ type RouteParams = {
 };
 
 export const ImportOrWatchWalletSheet = () => {
-  const { params: { actionType = 'watch' } = {} } = useRoute<
+  const { params: { actionType = 'watch', referralCode } = {} } = useRoute<
     RouteProp<RouteParams, 'ImportOrWatchWalletSheetParams'>
   >();
 
@@ -43,7 +44,7 @@ export const ImportOrWatchWalletSheet = () => {
     inputRef,
     isSecretValid,
     seedPhrase,
-  } = useImportingWallet();
+  } = useImportingWallet({ referralCode });
   const keyboardHeight = useKeyboardHeight();
 
   const textStyle = useTextStyle({

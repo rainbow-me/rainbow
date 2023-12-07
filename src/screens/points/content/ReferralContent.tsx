@@ -36,12 +36,7 @@ import { PointsErrorType } from '@/graphql/__generated__/metadata';
 import { RainbowError, logger } from '@/logger';
 import { PointsActionButton } from '@/screens/points/components/PointsActionButton';
 import { PointsIconAnimation } from '../components/PointsIconAnimation';
-import {
-  pointsReferralCodeQueryKey,
-  usePointsReferralCode,
-} from '@/resources/points';
 import { useTheme } from '@/theme';
-import { queryClient } from '@/react-query';
 import { getRawReferralCode } from '../utils';
 
 export type ReferralContentParams = {
@@ -69,7 +64,7 @@ export default function ReferralContent() {
   const { isReadOnlyWallet } = useWallets();
   const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
-  const { data: externalReferralCode } = usePointsReferralCode();
+  const externalReferralCode = params?.externalReferralCode;
 
   const [referralCode, setReferralCode] = useState('');
   const [status, setStatus] = useState<'incomplete' | 'valid' | 'invalid'>(
@@ -328,19 +323,19 @@ export default function ReferralContent() {
                   const operation =
                     dangerouslyGetState().index === 1 ? navigate : replace;
                   operation(Routes.SWIPE_LAYOUT, {
-                    params: { emptyWallet: true },
+                    params: {
+                      emptyWallet: true,
+                      referralCode:
+                        status === 'valid' ? referralCode : undefined,
+                    },
                     screen: Routes.WALLET_SCREEN,
                   });
                 } else if (params?.walletType === 'existing') {
-                  navigate(Routes.ADD_WALLET_SHEET);
+                  navigate(Routes.ADD_WALLET_SHEET, {
+                    referralCode: status === 'valid' ? referralCode : undefined,
+                  });
                 } else {
                   return;
-                }
-                if (status === 'valid') {
-                  queryClient.setQueryData(
-                    pointsReferralCodeQueryKey,
-                    referralCode
-                  );
                 }
               }}
             />
