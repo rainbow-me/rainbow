@@ -9,6 +9,7 @@ import Routes from '@/navigation/routesNames';
 import { PointsActionButton } from '@/screens/points/components/PointsActionButton';
 import { PointsIconAnimation } from '../components/PointsIconAnimation';
 import { watchingAlert } from '@/utils';
+import { POINTS_ROUTES } from '../PointsScreen';
 
 export default function ClaimContent() {
   const { accentColor } = useAccountAccentColor();
@@ -60,7 +61,7 @@ export default function ClaimContent() {
       <PointsActionButton
         color={accentColor}
         label={i18n.t(i18n.l.points.claim.use_referral_code)}
-        onPress={() => navigate('ReferralContent')}
+        onPress={() => navigate(POINTS_ROUTES.REFERRAL_CONTENT)}
         outline
         small
       />
