@@ -241,8 +241,7 @@ export const SignTransactionSheet = () => {
     gasFeeParamsBySpeed,
   } = useGas();
 
-  const simulationUnavailable =
-    isPersonalSign || currentNetwork === Network.zora;
+  const simulationUnavailable = isPersonalSign;
 
   const itemCount =
     (simulationData?.in?.length || 0) +
@@ -1427,8 +1426,7 @@ const SimulationCard = ({
   );
   const spinnerRotation = useSharedValue(0);
 
-  const simulationUnavailable =
-    isPersonalSign || currentNetwork === Network.zora;
+  const simulationUnavailable = isPersonalSign;
 
   const listStyle = useAnimatedStyle(() => ({
     opacity: noChanges
@@ -1584,11 +1582,9 @@ const SimulationCard = ({
     const shouldExpandOnLoad =
       isBalanceEnough === false ||
       (!isEmpty(simulation) && !noChanges) ||
-      currentNetwork === Network.zora ||
       !!simulationError;
     return shouldExpandOnLoad;
   }, [
-    currentNetwork,
     isBalanceEnough,
     isLoading,
     isPersonalSign,
@@ -1606,13 +1602,7 @@ const SimulationCard = ({
       isExpanded={isExpanded}
     >
       <Stack
-        space={
-          simulationError ||
-          isBalanceEnough === false ||
-          currentNetwork === Network.zora
-            ? '16px'
-            : '24px'
-        }
+        space={simulationError || isBalanceEnough === false ? '16px' : '24px'}
       >
         <Box
           alignItems="center"
@@ -1694,12 +1684,12 @@ const SimulationCard = ({
               </Text>
             ) : (
               <>
-                {simulationUnavailable && !isPersonalSign && (
+                {simulationUnavailable && isPersonalSign && (
                   <Box style={{ opacity: 0.6 }}>
                     <Text color="labelQuaternary" size="13pt" weight="semibold">
                       {i18n.t(
                         i18n.l.walletconnect.simulation.simulation_card.messages
-                          .unavailable_zora_network
+                          .unavailable_personal_sign
                       )}
                     </Text>
                   </Box>
