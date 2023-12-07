@@ -56,12 +56,17 @@ const animationConfig = {
 
 const Swipe = createMaterialTopTabNavigator();
 
-// eslint-disable-next-line no-nested-ternary
-export const TAB_BAR_HEIGHT = IS_IOS
-  ? 82
-  : !isUsingButtonNavigation()
-  ? 72
-  : 48;
+export const getHeaderHeight = () => {
+  if (IS_IOS) {
+    return 82;
+  }
+
+  if (!isUsingButtonNavigation()) {
+    return 72;
+  }
+
+  return 48;
+};
 
 const TabBar = ({
   state,
@@ -163,7 +168,7 @@ const TabBar = ({
   return (
     <ShadowWrapper>
       <Box
-        height={{ custom: TAB_BAR_HEIGHT }}
+        height={{ custom: getHeaderHeight() }}
         position="absolute"
         style={{
           bottom: 0,
@@ -176,7 +181,7 @@ const TabBar = ({
           blurAmount={40}
           blurType={isDarkMode ? 'chromeMaterialDark' : 'chromeMaterialLight'}
           width="full"
-          height={{ custom: TAB_BAR_HEIGHT }}
+          height={{ custom: getHeaderHeight() }}
         >
           <Box
             height="full"
