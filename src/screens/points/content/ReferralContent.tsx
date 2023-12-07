@@ -51,11 +51,10 @@ export default function ReferralContent() {
 
   const textInputRef = React.useRef<TextInput>(null);
 
-  const validateReferralCode = useCallback(async (text: string) => {
-    const referralCode = text.slice(0, 3) + text.slice(4, 8);
-    if (referralCode.length !== 6) return;
+  const validateReferralCode = useCallback(async (code: string) => {
+    if (code.length !== 6) return;
     const res = await metadataPOSTClient.validateReferral({
-      code: referralCode,
+      code,
     });
     if (!res?.validateReferral?.valid) {
       if (
@@ -66,13 +65,13 @@ export default function ReferralContent() {
         haptics.notificationError();
       } else {
         logger.error(new RainbowError('Error validating referral code'), {
-          referralCode,
+          referralCode: code,
         });
         Alert.alert(i18n.t(i18n.l.points.referral.error));
       }
     } else {
       setStatus('valid');
-      setReferralCode(referralCode);
+      setReferralCode(code);
       textInputRef.current?.blur();
       haptics.notificationSuccess();
     }
@@ -155,21 +154,39 @@ export default function ReferralContent() {
   });
 
   const onChangeText = useCallback(
-    (text: string) => {
-      if (text.length === 3 && referralCodeDisplay.length === 2) {
-        setReferralCodeDisplay(text + '-');
-      } else if (text.length === 3 && referralCodeDisplay.length === 4) {
-        setReferralCodeDisplay(text.slice(0, text.length - 1));
-      } else {
-        setReferralCodeDisplay(text);
+    (code: string) => {
+      const rawCode = code.replace(/-/g, '').slice(0, 6);
+      let formattedCode = rawCode;
+
+      // Insert "-" after the 3rd character if the length is 4 or more
+      if (formattedCode.length >= 3) {
+        formattedCode =
+          formattedCode.slice(0, 3) + '-' + formattedCode.slice(3, 7);
       }
-      if (text.length !== 7) {
+
+      // Update the state and the input
+      setReferralCodeDisplay(formattedCode); // Limit to 6 characters + '-'
+
+      if (formattedCode.length !== 7) {
         setStatus('incomplete');
       } else {
-        validateReferralCode(text);
+        validateReferralCode(rawCode);
       }
+
+      // if (text.length === 3 && referralCodeDisplay.length === 2) {
+      //   setReferralCodeDisplay(text + '-');
+      // } else if (text.length === 3 && referralCodeDisplay.length === 4) {
+      //   setReferralCodeDisplay(text.slice(0, text.length - 1));
+      // } else {
+      //   setReferralCodeDisplay(text);
+      // }
+      // if (text.length !== 7) {
+      //   setStatus('incomplete');
+      // } else {
+      //   validateReferralCode(text);
+      // }
     },
-    [referralCodeDisplay.length, validateReferralCode]
+    [validateReferralCode]
   );
 
   return (
