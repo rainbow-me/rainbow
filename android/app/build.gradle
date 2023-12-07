@@ -229,10 +229,6 @@ android {
         pickFirst '**/x86_64/libc++_shared.so'
         pickFirst '**/x86/libjsc.so'
         pickFirst '**/armeabi-v7a/libjsc.so'
-
-        // Debug protocols
-        exclude 'lib/armeabi-v7a/libconceal.so'
-        exclude 'lib/armeabi-v7a/libucrop.so'
     }
 }
 
