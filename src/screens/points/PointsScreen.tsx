@@ -20,6 +20,11 @@ import ClaimContent from './content/ClaimContent';
 import ReferralContent from './content/ReferralContent';
 import { PointsErrorType } from '@/graphql/__generated__/metadata';
 
+export const POINTS_ROUTES = {
+  CLAIM_CONTENT: 'ClaimContent',
+  REFERRAL_CONTENT: 'ReferralContent',
+};
+
 const Swipe = createMaterialTopTabNavigator();
 
 export default function PointsScreen() {
@@ -77,13 +82,19 @@ export default function PointsScreen() {
           <Swipe.Navigator
             backBehavior="history"
             initialLayout={deviceUtils.dimensions}
-            initialRouteName="ClaimContent"
+            initialRouteName={POINTS_ROUTES.CLAIM_CONTENT}
             screenOptions={{ swipeEnabled: false }}
             tabBarPosition="bottom"
             tabBar={() => null}
           >
-            <Swipe.Screen component={ClaimContent} name="ClaimContent" />
-            <Swipe.Screen component={ReferralContent} name="ReferralContent" />
+            <Swipe.Screen
+              component={ClaimContent}
+              name={POINTS_ROUTES.CLAIM_CONTENT}
+            />
+            <Swipe.Screen
+              component={ReferralContent}
+              name={POINTS_ROUTES.REFERRAL_CONTENT}
+            />
           </Swipe.Navigator>
         )
       ) : (
