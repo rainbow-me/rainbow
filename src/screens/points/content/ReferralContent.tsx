@@ -43,9 +43,6 @@ import {
 import { useTheme } from '@/theme';
 import { queryClient } from '@/react-query';
 
-const REFERRAL_VALIDATION_ADDRESS =
-  '0x2e67869829c734ac13723A138a952F7A8B56e774'; // can be valid address
-
 export type ReferralContentParams = {
   walletType?: 'new' | 'existing';
 };
@@ -85,6 +82,7 @@ export default function ReferralContent() {
   const textInputRef = React.useRef<TextInput>(null);
 
   const validateReferralCode = useCallback(async (code: string) => {
+    if (code.length !== 6) return;
     const res = await metadataPOSTClient.validateReferral({
       code,
     });
@@ -97,7 +95,7 @@ export default function ReferralContent() {
         haptics.notificationError();
       } else {
         logger.error(new RainbowError('Error validating referral code'), {
-          code,
+          referralCode: code,
         });
         Alert.alert(i18n.t(i18n.l.points.referral.error));
       }
@@ -196,18 +194,28 @@ export default function ReferralContent() {
   });
 
   const onChangeText = useCallback(
-    (text: string) => {
-      if (text.length === 3 && referralCodeDisplay.length === 2) {
-        setReferralCodeDisplay(text + '-');
-      } else if (text.length === 3 && referralCodeDisplay.length === 4) {
-        setReferralCodeDisplay(text.slice(0, text.length - 1));
-      } else {
-        setReferralCodeDisplay(text);
+    (code: string) => {
+      const rawCode = code.replace(/-/g, '').slice(0, 6).toLocaleUpperCase();
+      let formattedCode = rawCode;
+
+      // If the user backspaces over the hyphen, remove the character before the hyphen
+      if (referralCodeDisplay.length === 4 && code.length === 3) {
+        formattedCode = formattedCode.slice(0, -1);
       }
-      if (text.length !== 7) {
+
+      // Insert "-" after the 3rd character if the length is 4 or more
+      if (formattedCode.length >= 3) {
+        formattedCode =
+          formattedCode.slice(0, 3) + '-' + formattedCode.slice(3, 7);
+      }
+
+      // Update the state and the input
+      setReferralCodeDisplay(formattedCode); // Limit to 6 characters + '-'
+
+      if (formattedCode.length !== 7) {
         setStatus('incomplete');
       } else {
-        validateReferralCode(text.replace('-', ''));
+        validateReferralCode(rawCode);
       }
     },
     [referralCodeDisplay.length, validateReferralCode]
