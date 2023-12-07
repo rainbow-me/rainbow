@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { noop } from 'lodash';
+
 import {
   createQueryKey,
   queryClient,
@@ -91,7 +92,7 @@ export function usePointsTweetIntentQuery(
     {
       enabled,
       staleTime: defaultStaleTime,
-      onSuccess,
+      onSuccess
     }
   );
 }
