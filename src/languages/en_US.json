@@ -1245,7 +1245,8 @@
         "subtitle": "Enter a referral code below to claim your bonus reward.",
         "back": "Back",
         "error": "Something went wrong. Please restart the app and try again.",
-        "get_started": "Get Started"
+        "get_started": "Get Started",
+        "invalid_code": "Invalid Code"
       },
       "points": {
         "referral_code": "Referral Code",
