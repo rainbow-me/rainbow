@@ -48,7 +48,7 @@ const additionalConfig: {
       Authorization: `Bearer ${METADATA_GRAPHQL_API_KEY}`,
     },
   },
-  simulation: {
+  metadataPOST: {
     headers: {
       Authorization: `Bearer ${METADATA_GRAPHQL_API_KEY}`,
     },
