@@ -33,7 +33,6 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import { alignHorizontalToFlexAlign } from '@/design-system/layout/alignment';
-import { IS_DEV } from '@/env';
 import {
   useAccountProfile,
   useDimensions,
@@ -60,7 +59,6 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
 import * as i18n from '@/languages';
-import { delay } from '@/utils/delay';
 import { abbreviateNumber } from '@/helpers/utilities';
 import {
   address as formatAddress,
@@ -104,11 +102,9 @@ export const ConsoleSheet = () => {
   }, [accountAddress]);
 
   useEffect(() => {
-    if (IS_DEV) {
-      setDidConfirmOwnership(false);
-      setShowSignInButton(false);
-      setShowSwapOrBuyButton(false);
-    }
+    setDidConfirmOwnership(false);
+    setShowSignInButton(false);
+    setShowSwapOrBuyButton(false);
   }, []);
 
   const signIn = useCallback(async () => {
@@ -163,9 +159,6 @@ export const ConsoleSheet = () => {
 
   const swap = useCallback(async () => {
     goBack();
-    await delay(1000);
-    navigate(Routes.WALLET_SCREEN);
-    await delay(1000);
     navigate(Routes.EXCHANGE_MODAL, {
       fromDiscover: true,
       params: {
@@ -179,12 +172,8 @@ export const ConsoleSheet = () => {
   }, [goBack, navigate, updateInputCurrency]);
 
   const getEth = useCallback(async () => {
-    goBack();
-    await delay(1000);
-    navigate(Routes.WALLET_SCREEN);
-    await delay(1000);
     navigate(Routes.ADD_CASH_SHEET);
-  }, [goBack, navigate]);
+  }, [navigate]);
 
   return (
     <Inset bottom={{ custom: SCREEN_BOTTOM_INSET }}>
@@ -337,11 +326,9 @@ const ClaimRetroactivePointsFlow = ({
     formatAddress(accountAddress, 4, 5)) as string;
 
   useEffect(() => {
-    if (IS_DEV) {
-      setAnimationKey(prevKey => prevKey + 1);
-      setAnimationPhase(0);
-      setIsCalculationComplete(false);
-    }
+    setAnimationKey(prevKey => prevKey + 1);
+    setAnimationPhase(0);
+    setIsCalculationComplete(false);
   }, []);
 
   const onboardingData = pointsProfile?.onboardPoints?.user?.onboarding;
@@ -720,10 +707,8 @@ export const TypingAnimation = ({
   }, []);
 
   useEffect(() => {
-    if (IS_DEV) {
-      setCurrentSequenceIndex(0);
-      animationIndexRef.current = 0;
-    }
+    setCurrentSequenceIndex(0);
+    animationIndexRef.current = 0;
   }, []);
 
   return (

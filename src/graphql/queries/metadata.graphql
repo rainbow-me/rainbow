@@ -265,6 +265,10 @@ query getPointsDataForWallet($address: String!) {
       status
     }
     leaderboard {
+      stats {
+        total_users
+        total_points
+      }
       accounts {
         address
         earnings {
@@ -305,6 +309,10 @@ mutation onboardPoints(
       status
     }
     leaderboard {
+      stats {
+        total_users
+        total_points
+      }
       accounts {
         address
         earnings {
@@ -344,6 +352,16 @@ mutation onboardPoints(
     error {
       message
       type
+    }
+  }
+}
+
+query validateReferral($code: String!) {
+  validateReferral(referral: $code) {
+    valid
+    error {
+      type
+      message
     }
   }
 }
