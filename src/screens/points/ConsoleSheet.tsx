@@ -64,6 +64,7 @@ import {
   address as formatAddress,
   abbreviateEnsForDisplay,
 } from '@/utils/abbreviations';
+import { usePointsTweetIntentQuery } from '@/resources/pointsTweetIntent/pointsTweetIntentQuery';
 
 const SCREEN_BOTTOM_INSET = safeAreaInsetValues.bottom + 20;
 const CHARACTER_WIDTH = 9.2725;
@@ -80,31 +81,18 @@ export const ConsoleSheet = () => {
 
   const [didConfirmOwnership, setDidConfirmOwnership] = useState(false);
   const [showSignInButton, setShowSignInButton] = useState(false);
-  const [showSwapOrBuyButton, setShowSwapOrBuyButton] = useState(false);
+  const [animationPhase, setAnimationPhase] = useState(0);
+  const [isCalculationComplete, setIsCalculationComplete] = useState(false);
+  const [showShareButtons, setShowShareButtons] = useState(false);
+  const [tweetIntent, setTweetIntent] = useState<string>('');
+
   const [pointsProfile, setPointsProfile] = useState<OnboardPointsMutation>();
-  const [hasEth, setHasEth] = useState(false);
 
   const { accountAddress } = useAccountProfile();
-  const { goBack, navigate } = useNavigation();
-  const { updateInputCurrency } = useSwapCurrencyHandlers({
-    shouldUpdate: false,
-    type: ExchangeModalTypes.swap,
-  });
-
-  useEffect(() => {
-    (async () => {
-      const ethAsset = await getNativeAssetForNetwork(
-        Network.mainnet,
-        accountAddress
-      );
-      setHasEth(!!Number(ethAsset?.balance?.amount));
-    })();
-  }, [accountAddress]);
 
   useEffect(() => {
     setDidConfirmOwnership(false);
     setShowSignInButton(false);
-    setShowSwapOrBuyButton(false);
   }, []);
 
   const signIn = useCallback(async () => {
@@ -157,24 +145,6 @@ export const ConsoleSheet = () => {
     }
   }, [accountAddress, referralCode]);
 
-  const swap = useCallback(async () => {
-    goBack();
-    navigate(Routes.EXCHANGE_MODAL, {
-      fromDiscover: true,
-      params: {
-        fromDiscover: true,
-        onSelectCurrency: updateInputCurrency,
-        title: i18n.t(i18n.l.swap.modal_types.swap),
-        type: CurrencySelectionTypes.input,
-      },
-      screen: Routes.CURRENCY_SELECT_SCREEN,
-    });
-  }, [goBack, navigate, updateInputCurrency]);
-
-  const getEth = useCallback(async () => {
-    navigate(Routes.ADD_CASH_SHEET);
-  }, [navigate]);
-
   return (
     <Inset bottom={{ custom: SCREEN_BOTTOM_INSET }}>
       <Box
@@ -198,9 +168,14 @@ export const ConsoleSheet = () => {
           />
           <ClaimRetroactivePointsFlow
             pointsProfile={pointsProfile}
+            animationPhase={animationPhase}
+            setAnimationPhase={setAnimationPhase}
             didConfirmOwnership={didConfirmOwnership}
             setShowSignInButton={setShowSignInButton}
-            setShowSwapOrBuyButton={setShowSwapOrBuyButton}
+            isCalculationComplete={isCalculationComplete}
+            setIsCalculationComplete={setIsCalculationComplete}
+            setShowShareButtons={setShowShareButtons}
+            setTweetIntent={setTweetIntent}
           />
         </Animated.View>
       </Box>
@@ -213,15 +188,26 @@ export const ConsoleSheet = () => {
           onPress={signIn}
         />
       </AnimatePresence>
-      <AnimatePresence condition={showSwapOrBuyButton} duration={300}>
+      <AnimatePresence
+        condition={animationPhase === 1 && isCalculationComplete}
+        duration={300}
+      >
         <NeonButton
           color="#FEC101"
-          label={
-            hasEth
-              ? `􀖅 ${i18n.t(i18n.l.points.console.try_a_swap)}`
-              : `􀁍 ${i18n.t(i18n.l.points.console.get_some_eth)}`
-          }
-          onPress={hasEth ? swap : getEth}
+          label={`􀖅 ${i18n.t(i18n.l.points.console.proceed_to_share)}`}
+          onPress={() => setAnimationPhase(2)}
+        />
+      </AnimatePresence>
+      <AnimatePresence
+        condition={
+          animationPhase === 2 && showShareButtons && !!tweetIntent.length
+        }
+        duration={300}
+      >
+        <NeonButton
+          color="#FEC101"
+          label={`􀖅 ${i18n.t(i18n.l.points.console.proceed_to_share)}`}
+          onPress={() => setAnimationPhase(2)}
         />
       </AnimatePresence>
     </Inset>
@@ -305,31 +291,85 @@ const NeonButton = ({
 };
 
 const ClaimRetroactivePointsFlow = ({
-  didConfirmOwnership,
-  onComplete,
   pointsProfile,
+  animationPhase,
+  setAnimationPhase,
+  didConfirmOwnership,
   setShowSignInButton,
-  setShowSwapOrBuyButton,
+  isCalculationComplete,
+  setIsCalculationComplete,
+  setShowShareButtons,
+  setTweetIntent,
 }: {
-  didConfirmOwnership: boolean;
-  onComplete?: () => void;
   pointsProfile?: OnboardPointsMutation;
+  animationPhase: number;
+  setAnimationPhase: React.Dispatch<React.SetStateAction<number>>;
+  didConfirmOwnership: boolean;
   setShowSignInButton: React.Dispatch<React.SetStateAction<boolean>>;
-  setShowSwapOrBuyButton: React.Dispatch<React.SetStateAction<boolean>>;
+  isCalculationComplete: boolean;
+  setIsCalculationComplete: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowShareButtons: React.Dispatch<React.SetStateAction<boolean>>;
+  setTweetIntent: React.Dispatch<React.SetStateAction<string>>;
 }) => {
   const { accountENS, accountAddress } = useAccountProfile();
   const [animationKey, setAnimationKey] = useState(0);
-  const [animationPhase, setAnimationPhase] = useState(0);
-  const [isCalculationComplete, setIsCalculationComplete] = useState(false);
 
   const accountName = (abbreviateEnsForDisplay(accountENS, 10) ||
     formatAddress(accountAddress, 4, 5)) as string;
 
   useEffect(() => {
     setAnimationKey(prevKey => prevKey + 1);
-    setAnimationPhase(0);
     setIsCalculationComplete(false);
+    setShowShareButtons(false);
+    setShowSignInButton(false);
+    setTweetIntent('');
+    setAnimationPhase(0);
   }, []);
+
+  usePointsTweetIntentQuery(
+    {
+      id: '3ttGOpIsbJg3aa00FScp3I',
+    },
+    {
+      enabled: animationPhase === 2,
+      onSuccess: data => {
+        if (!data.pointsTweetIntent) {
+          return;
+        }
+
+        const tweetIntent = data.pointsTweetIntent;
+        const pointsValue =
+          pointsProfile?.onboardPoints?.user.onboarding.earnings.total;
+        if (!pointsValue) {
+          // TODO: Fallback to some default msg
+          return;
+        }
+
+        // do a string replace to replace {POINTS_VALUE} with their points value
+        let text = tweetIntent.text?.replace(
+          '{POINTS_VALUE}',
+          pointsValue?.toString()
+        );
+        if (Number(metamaskSwaps?.earnings.total) > 0) {
+          text += `, including ${metamaskSwaps?.earnings.total} points because I switched from Metamask`;
+        }
+
+        // build the tweet intent url
+        let intent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+          text ?? ''
+        )}`;
+        if (tweetIntent.url) {
+          intent += `&url=${encodeURIComponent(tweetIntent.url)}`;
+        }
+
+        if (tweetIntent.via) {
+          intent += `&via=${encodeURIComponent(tweetIntent.via)}`;
+        }
+
+        setTweetIntent(intent);
+      },
+    }
+  );
 
   const onboardingData = pointsProfile?.onboardPoints?.user?.onboarding;
   const rainbowSwaps = onboardingData?.categories?.find(
@@ -447,7 +487,6 @@ const ClaimRetroactivePointsFlow = ({
                     setAnimationKey(prevKey => prevKey + 1);
                     setAnimationPhase(1);
                   }, 2500);
-                  onComplete?.();
                   return () => clearTimeout(beginNextPhase);
                 }}
                 textContent={rainbowText.row9}
@@ -665,13 +704,67 @@ const ClaimRetroactivePointsFlow = ({
             <AnimatedText
               color={textColors.gray}
               delayStart={1000}
-              onComplete={() => setShowSwapOrBuyButton(true)}
+              onComplete={() => setIsCalculationComplete(true)}
               weight="normal"
               multiline
               textContent={i18n.t(i18n.l.points.console.claim_bonus_paragraph)}
             />
           </Stack>
         ))}
+
+      {animationPhase === 2 && (
+        <Stack separator={<LineBreak lines={2} />}>
+          <Paragraph>
+            <Line>
+              <AnimatedText
+                delayStart={500}
+                color={textColors.gray}
+                skipAnimation
+                textContent={`${i18n.t(i18n.l.points.console.account)}:`}
+                weight="normal"
+              />
+              <AnimatedText
+                color={textColors.account}
+                skipAnimation
+                textContent={accountName}
+              />
+            </Line>
+            <AnimatedText
+              color={textColors.green}
+              textContent={`> ${i18n.t(
+                i18n.l.points.console.referral_link_is_ready
+              )}`}
+            />
+          </Paragraph>
+          <Line alignHorizontal="justify">
+            <AnimatedText
+              color={rainbowColors.yellow}
+              delayStart={1000}
+              enableHapticTyping
+              textContent={`${i18n.t(
+                i18n.l.points.console.referral_link_bonus_text
+              )}:`}
+            />
+            <AnimatedText
+              color={rainbowColors.purple}
+              delayStart={1000}
+              enableHapticTyping
+              textAlign="right"
+              textContent={`${i18n.t(
+                i18n.l.points.console.referral_link_bonus_text_extended
+              )}`}
+            />
+          </Line>
+          <AnimatedText
+            color={textColors.gray}
+            delayStart={1000}
+            onComplete={() => setShowShareButtons(true)}
+            weight="normal"
+            multiline
+            textContent={i18n.t(i18n.l.points.console.claim_bonus_paragraph)}
+          />
+        </Stack>
+      )}
     </TypingAnimation>
   );
 };
@@ -1053,7 +1146,7 @@ const styles = StyleSheet.create({
     borderCurve: 'continuous',
     borderRadius: 28,
     borderWidth: 1.5,
-    height: 444,
+    height: 504,
     gap: 45,
     paddingHorizontal: 30,
     paddingVertical: 45,

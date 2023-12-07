@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-
+import { noop } from 'lodash';
 import {
   createQueryKey,
   queryClient,
@@ -74,7 +74,16 @@ export async function fetchPointsTweetIntent({ id }: PointsTweetIntentArgs) {
 
 export function usePointsTweetIntentQuery(
   { id }: PointsTweetIntentArgs,
-  { enabled }: { enabled?: boolean } = {}
+  {
+    enabled,
+    onSuccess,
+  }: {
+    enabled?: boolean;
+    onSuccess?: (data: PointsTweetIntentResult) => void;
+  } = {
+    enabled: true,
+    onSuccess: noop,
+  }
 ) {
   return useQuery(
     pointsTweetIntentQueryKey({ id }),
@@ -82,6 +91,7 @@ export function usePointsTweetIntentQuery(
     {
       enabled,
       staleTime: defaultStaleTime,
+      onSuccess,
     }
   );
 }
