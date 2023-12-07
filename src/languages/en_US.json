@@ -2351,7 +2351,6 @@
             "failed_to_simulate": "The simulation failed, which suggests your transaction is likely to fail. This may be an issue with the app you’re using.",
             "warning": "No known malicious behavior was detected, but this transaction has characteristics that may pose a risk to your wallet.",
             "malicious": "Signing this transaction could result in losing access to everything in your wallet."
-            
           },
           "event_row": {
             "unlimited": "Unlimited",
