@@ -353,7 +353,7 @@ export default function PointsContent() {
   const shouldDisplayError = !isFetching && !data?.points;
 
   const referralUrl = data?.points?.user?.referralCode
-    ? `rainbow.me/points?ref=${data.points.user.referralCode}`
+    ? `https://www.rainbow.me/points?ref=${data.points.user.referralCode}`
     : undefined;
 
   return (
@@ -537,6 +537,7 @@ export default function PointsContent() {
                                     message: referralUrl,
                                   }
                                 : {
+                                    message: referralUrl,
                                     url: referralUrl,
                                   }
                             );
