@@ -4,7 +4,6 @@ import React, {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useState,
 } from 'react';
 import { noop } from 'lodash';
@@ -16,7 +15,7 @@ import {
   OnboardPointsMutation,
   PointsOnboardingCategory,
   PointsErrorType,
-} from '@/graphql/__generated__/metadata';
+} from '@/graphql/__generated__/metadataPOST';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 
 import { usePointsTweetIntentQuery } from '@/resources/pointsTweetIntent/pointsTweetIntentQuery';

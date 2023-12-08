@@ -18,7 +18,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { deviceUtils } from '@/utils';
 import ClaimContent from './content/ClaimContent';
 import ReferralContent from './content/ReferralContent';
-import { PointsErrorType } from '@/graphql/__generated__/metadata';
+import { PointsErrorType } from '@/graphql/__generated__/metadataPOST';
 
 export const POINTS_ROUTES = {
   CLAIM_CONTENT: 'ClaimContent',

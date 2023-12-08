@@ -31,7 +31,7 @@ import Animated, {
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
-import { PointsErrorType } from '@/graphql/__generated__/metadata';
+import { PointsErrorType } from '@/graphql/__generated__/metadataPOST';
 import { RainbowError, logger } from '@/logger';
 import { ActionButton } from '@/screens/points/components/ActionButton';
 import { PointsIconAnimation } from '../components/PointsIconAnimation';

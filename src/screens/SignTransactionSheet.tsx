@@ -67,7 +67,8 @@ import {
   TransactionSimulationAsset,
   TransactionSimulationMeta,
   TransactionSimulationResult,
-} from '@/graphql/__generated__/metadata';
+  TransactionScanResultType,
+} from '@/graphql/__generated__/metadataPOST';
 import { Network } from '@/networks/types';
 import { ETH_ADDRESS } from '@/references';
 import {
@@ -142,7 +143,6 @@ import { isAddress } from '@ethersproject/address';
 import { methodRegistryLookupAndParse } from '@/utils/methodRegistry';
 import { sanitizeTypedData } from '@/utils/signingUtils';
 import { hexToNumber, isHex } from 'viem';
-import { TransactionScanResultType } from '@/graphql/__generated__/simulation';
 
 const COLLAPSED_CARD_HEIGHT = 56;
 const MAX_CARD_HEIGHT = 176;
