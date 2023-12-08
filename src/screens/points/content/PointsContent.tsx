@@ -357,6 +357,10 @@ export default function PointsContent() {
 
   const shouldDisplayError = !isFetching && !data?.points;
 
+  const referralUrl = data?.points?.user?.referralCode
+    ? `rainbow.me/points?ref=${data.points.user.referralCode}`
+    : undefined;
+
   return (
     <Box height="full" background="surfacePrimary" as={Page} flex={1}>
       <ScrollView
@@ -531,13 +535,14 @@ export default function PointsContent() {
                     <Column width="1/2">
                       <ButtonPressAnimation
                         onPress={() =>
+                          referralUrl &&
                           Share.share(
                             IS_ANDROID
                               ? {
-                                  message: 'rainbow.me',
+                                  message: referralUrl,
                                 }
                               : {
-                                  url: 'rainbow.me',
+                                  url: referralUrl,
                                 }
                           )
                         }
