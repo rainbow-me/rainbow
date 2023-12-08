@@ -1,6 +1,10 @@
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { HapticFeedbackType } from '@/utils/haptics';
 import { safeAreaInsetValues } from '@/utils';
+import {
+  OnboardPointsMutation,
+  PointsOnboardingCategory,
+} from '@/graphql/__generated__/metadata';
 
 export const enum RainbowPointsFlowSteps {
   Initialize = 0,
@@ -65,3 +69,53 @@ export const generateRainbowColors = (
 
 export const triggerHapticFeedback = (hapticType: HapticFeedbackType) =>
   ReactNativeHapticFeedback.trigger(hapticType);
+
+const BASE_URL = `https://twitter.com/intent/tweet?text=`;
+const RAINBOW = `🌈`;
+const RAINBOWS_STRING_GENERATOR = (num: number) => RAINBOW.repeat(num);
+export const buildTwitterIntentMessage = (
+  profile: OnboardPointsMutation | undefined,
+  metamaskSwaps: PointsOnboardingCategory | undefined
+) => {
+  if (!profile) return;
+
+  const ONBOARDING_TOTAL_POINTS =
+    profile.onboardPoints?.user.onboarding.earnings.total;
+  const referralCode = profile.onboardPoints?.user.referralCode;
+
+  if (metamaskSwaps && metamaskSwaps?.earnings?.total > 0) {
+    const METAMASK_POINTS = metamaskSwaps.earnings.total;
+
+    const rainbows = RAINBOWS_STRING_GENERATOR(3);
+
+    let text = rainbows;
+    text += encodeURIComponent('\n\n');
+    text += encodeURIComponent(
+      `I just had ${ONBOARDING_TOTAL_POINTS} Rainbow Points dropped into my wallet — plus an extra ${METAMASK_POINTS} Points as a bonus for migrating my MetaMask wallet into Rainbow`
+    );
+    text += `🦊${encodeURIComponent(' ')}🔫`;
+    text += encodeURIComponent('\n\n');
+    text += `${encodeURIComponent(
+      'Everybody has at least 100 points waiting for them, but you might have more! Claim your drop: '
+    )}https://rainbow.me/points?ref=${referralCode}`;
+    text += encodeURIComponent('\n\n');
+    text += rainbows;
+
+    return BASE_URL + text;
+  }
+
+  const rainbows = RAINBOWS_STRING_GENERATOR(17);
+
+  let text = rainbows;
+  text += encodeURIComponent('\n\n');
+  text += encodeURIComponent(
+    `I just had ${ONBOARDING_TOTAL_POINTS} Rainbow Points dropped into my wallet — everybody has at least 100 points waiting for them, but you might have more!\n\n`
+  );
+  text += `${encodeURIComponent(
+    'Claim your drop: '
+  )}https://rainbow.me/points?ref=${referralCode}`;
+  text += encodeURIComponent('\n\n');
+  text += rainbows;
+
+  return BASE_URL + text;
+};
