@@ -3,7 +3,7 @@ import { navbarHeight } from '@/components/navbar/Navbar';
 import { Box, Stack, Text } from '@/design-system';
 import { useAccountAccentColor, useDimensions, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
+import { getHeaderHeight } from '@/navigation/SwipeNavigator';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
 import { ActionButton } from '@/screens/points/components/ActionButton';
@@ -18,7 +18,7 @@ export default function ClaimContent() {
   const { isReadOnlyWallet } = useWallets();
 
   const contentBottom =
-    TAB_BAR_HEIGHT + (deviceHeight - navbarHeight - 218) / 2;
+    getHeaderHeight() + (deviceHeight - navbarHeight - 218) / 2;
 
   return (
     <Box

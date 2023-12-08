@@ -17,7 +17,7 @@ import {
   useKeyboardHeight,
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
+import { getHeaderHeight } from '@/navigation/SwipeNavigator';
 import { haptics } from '@/utils';
 import { delay } from '@/utils/delay';
 import { useFocusEffect } from '@react-navigation/native';
@@ -83,7 +83,7 @@ export default function ReferralContent() {
   const hasKeyboard = IS_IOS ? isKeyboardOpening : isKeyboardVisible;
 
   const contentBottom =
-    (hasKeyboard ? keyboardHeight : TAB_BAR_HEIGHT) +
+    (hasKeyboard ? keyboardHeight : getHeaderHeight()) +
     (deviceHeight - (hasKeyboard ? keyboardHeight : 0) - navbarHeight - 270) /
       2;
 

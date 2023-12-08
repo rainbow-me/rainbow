@@ -33,7 +33,7 @@ import {
   ButtonPressAnimation,
   ShimmerAnimation,
 } from '@/components/animations';
-import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
+import { getHeaderHeight } from '@/navigation/SwipeNavigator';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { useRecoilState } from 'recoil';
 import * as i18n from '@/languages';
@@ -365,10 +365,10 @@ export default function PointsContent() {
     <Box height="full" background="surfacePrimary" as={Page} flex={1}>
       <ScrollView
         scrollIndicatorInsets={{
-          bottom: TAB_BAR_HEIGHT - safeAreaInsetValues.bottom,
+          bottom: getHeaderHeight() - safeAreaInsetValues.bottom,
         }}
         contentContainerStyle={{
-          paddingBottom: TAB_BAR_HEIGHT + 32,
+          paddingBottom: getHeaderHeight() + 32,
           height: !shouldDisplayError ? undefined : '100%',
         }}
         showsVerticalScrollIndicator={!shouldDisplayError}
@@ -534,18 +534,19 @@ export default function PointsContent() {
                     </Column>
                     <Column width="1/2">
                       <ButtonPressAnimation
-                        onPress={() =>
-                          referralUrl &&
-                          Share.share(
-                            IS_ANDROID
-                              ? {
-                                  message: referralUrl,
-                                }
-                              : {
-                                  url: referralUrl,
-                                }
-                          )
-                        }
+                        onPress={() => {
+                          if (referralUrl) {
+                            Share.share(
+                              IS_ANDROID
+                                ? {
+                                    message: referralUrl,
+                                  }
+                                : {
+                                    url: referralUrl,
+                                  }
+                            );
+                          }
+                        }}
                       >
                         <Box
                           background="surfaceSecondaryElevated"
