@@ -83,6 +83,7 @@ import { initializeReservoirClient } from '@/resources/reservoir/client';
 import { ReviewPromptAction } from '@/storage/schema';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { RemotePromoSheetProvider } from '@/components/remote-promo-sheet/RemotePromoSheetProvider';
+import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileContext';
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -275,11 +276,13 @@ class OldApp extends Component {
           {this.state.initialRoute && (
             <RemotePromoSheetProvider isWalletReady={this.props.walletReady}>
               <InitialRouteContext.Provider value={this.state.initialRoute}>
-                <RoutesComponent
-                  onReady={this.handleSentryNavigationIntegration}
-                  ref={this.handleNavigatorRef}
-                />
-                <PortalConsumer />
+                <PointsProfileProvider>
+                  <RoutesComponent
+                    onReady={this.handleSentryNavigationIntegration}
+                    ref={this.handleNavigatorRef}
+                  />
+                  <PortalConsumer />
+                </PointsProfileProvider>
               </InitialRouteContext.Provider>
             </RemotePromoSheetProvider>
           )}

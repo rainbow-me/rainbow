@@ -1,39 +1,25 @@
 /* eslint-disable no-nested-ternary */
 import React, {
   forwardRef,
-  useCallback,
   useEffect,
   useImperativeHandle,
-  useRef,
   useState,
 } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { Box, Inset, Stack, globalColors } from '@/design-system';
 import { useAccountProfile } from '@/hooks';
-import { metadataPOSTClient } from '@/graphql';
-import { signPersonalMessage } from '@/model/wallet';
-import { RouteProp, useRoute } from '@react-navigation/native';
-import { WrappedAlert as Alert } from '@/helpers/alert';
-import { RainbowError, logger } from '@/logger';
-import {
-  OnboardPointsMutation,
-  PointsErrorType,
-} from '@/graphql/__generated__/metadata';
-import { pointsQueryKey } from '@/resources/points';
-import { queryClient } from '@/react-query';
+import { OnboardPointsMutation } from '@/graphql/__generated__/metadata';
 import * as i18n from '@/languages';
 import { abbreviateNumber } from '@/helpers/utilities';
 import {
   address as formatAddress,
   abbreviateEnsForDisplay,
 } from '@/utils/abbreviations';
-import { usePointsTweetIntentQuery } from '@/resources/pointsTweetIntent/pointsTweetIntentQuery';
-import { useNavigation } from '@/navigation';
 
 import Line from './components/Line';
 import {
-  POINTS_TWEET_INTENT_ID,
+  RainbowPointsFlowSteps,
   SCREEN_BOTTOM_INSET,
   rainbowColors,
   rainbowText,
@@ -43,6 +29,10 @@ import { TypingAnimation } from './contexts/AnimationContext';
 import Paragraph from './components/Paragraph';
 import { AnimatedText } from './components/AnimatedText';
 import LineBreak from './components/LineBreak';
+import { usePointsProfileContext } from './contexts/PointsProfileContext';
+import { Initialize } from './content/console/initialize';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { Calculate } from './content/console/calculate';
 
 type ConsoleSheetParams = {
   ConsoleSheet: {
@@ -50,71 +40,15 @@ type ConsoleSheetParams = {
   };
 };
 
-type ClaimFlowRef = {
-  isCalculationComplete: boolean;
-  setIsCalculationComplete: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
 export const ConsoleSheet = () => {
   const { params } = useRoute<RouteProp<ConsoleSheetParams, 'ConsoleSheet'>>();
   const referralCode = params?.referralCode;
 
-  const claimFlowRef = useRef<ClaimFlowRef>(null);
-  const { navigate } = useNavigation();
+  const { animationKey, setReferralCode } = usePointsProfileContext();
 
-  const [pointsProfile, setPointsProfile] = useState<OnboardPointsMutation>();
-
-  const { accountAddress } = useAccountProfile();
-
-  const signIn = useCallback(async () => {
-    let points;
-    let signature;
-    const challengeResponse = await metadataPOSTClient.getPointsOnboardChallenge(
-      {
-        address: accountAddress,
-        referral: referralCode,
-      }
-    );
-
-    const challenge = challengeResponse?.pointsOnboardChallenge;
-    if (challenge) {
-      const signatureResponse = await signPersonalMessage(challenge);
-      signature = signatureResponse?.result;
-      if (signature) {
-        points = await metadataPOSTClient.onboardPoints({
-          address: accountAddress,
-          signature,
-          referral: referralCode,
-        });
-      }
-    }
-    if (!points) {
-      logger.error(new RainbowError('Error onboarding points user'), {
-        referralCode,
-        challenge,
-        signature,
-      });
-      Alert.alert(i18n.t(i18n.l.points.console.generic_alert));
-    } else {
-      if (points.onboardPoints?.error) {
-        const errorType = points.onboardPoints?.error?.type;
-        if (errorType === PointsErrorType.ExistingUser) {
-          Alert.alert(i18n.t(i18n.l.points.console.existing_user_alert));
-        } else if (errorType === PointsErrorType.InvalidReferralCode) {
-          Alert.alert(
-            i18n.t(i18n.l.points.console.invalid_referral_code_alert)
-          );
-        }
-      } else {
-        setDidConfirmOwnership(true);
-        setPointsProfile(points);
-        queryClient.setQueryData(
-          pointsQueryKey({ address: accountAddress }),
-          points
-        );
-      }
-    }
-  }, [accountAddress, referralCode]);
+  useEffect(() => {
+    setReferralCode(referralCode);
+  }, [setReferralCode, referralCode]);
 
   return (
     <Inset bottom={{ custom: SCREEN_BOTTOM_INSET }}>
@@ -137,10 +71,11 @@ export const ConsoleSheet = () => {
             top={{ custom: 6 }}
             width={{ custom: 36 }}
           />
-          <ClaimRetroactivePointsFlow
-            ref={claimFlowRef}
-            pointsProfile={pointsProfile}
-          />
+          <TypingAnimation key={animationKey}>
+            <ClaimFlow />
+          </TypingAnimation>
+
+          {/* <ClaimRetroactivePointsFlow pointsProfile={pointsProfile} /> */}
         </Animated.View>
       </Box>
       {/* <AnimatePresence
@@ -205,6 +140,19 @@ export const ConsoleSheet = () => {
   );
 };
 
+const ClaimFlow = () => {
+  const { step } = usePointsProfileContext();
+
+  switch (step) {
+    case RainbowPointsFlowSteps.Initialize:
+      return <Initialize />;
+    case RainbowPointsFlowSteps.CalculatePoints:
+      return <Calculate />;
+    default:
+      return null;
+  }
+};
+
 const ClaimRetroactivePointsFlow = forwardRef(
   (
     {
@@ -245,57 +193,6 @@ const ClaimRetroactivePointsFlow = forwardRef(
       setDidShare,
       showDoneButton,
     }));
-
-    usePointsTweetIntentQuery(
-      {
-        id: POINTS_TWEET_INTENT_ID,
-      },
-      {
-        enabled: animationPhase === 2,
-        onSuccess: data => {
-          if (!data.pointsTweetIntent) {
-            return;
-          }
-
-          try {
-            const tweetIntent = data.pointsTweetIntent;
-            const pointsValue =
-              pointsProfile?.onboardPoints?.user.onboarding.earnings.total;
-            if (!pointsValue) {
-              // TODO: Fallback to some default msg
-              return;
-            }
-
-            // do a string replace to replace {POINTS_VALUE} with their points value
-            let text = tweetIntent.text?.replace(
-              '{POINTS_VALUE}',
-              pointsValue?.toString()
-            );
-            if (Number(metamaskSwaps?.earnings.total) > 0) {
-              text += `, including ${metamaskSwaps?.earnings.total} points because I switched from Metamask`;
-            }
-
-            // build the tweet intent url
-            let intent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-              text ?? ''
-            )}`;
-            if (tweetIntent.url) {
-              intent += `&url=${encodeURIComponent(tweetIntent.url)}`;
-            }
-
-            if (tweetIntent.via) {
-              intent += `&via=${encodeURIComponent(tweetIntent.via)}`;
-            }
-
-            console.log({ intent });
-            setTweetIntent(intent);
-          } catch (e) {
-            console.log(e);
-            // TODO: add logging
-          }
-        },
-      }
-    );
 
     const onboardingData = pointsProfile?.onboardPoints?.user?.onboarding;
     const rainbowSwaps = onboardingData?.categories?.find(
