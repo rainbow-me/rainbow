@@ -611,7 +611,8 @@ export const getFormattedTimeQuantity = (
   ms: number,
   maxUnits?: number
 ): string => {
-  const totalMinutes = Math.ceil(ms / (1000 * 60));
+  const totalSeconds = ms / 1000;
+  const totalMinutes = Math.ceil(totalSeconds / 60);
   const totalHours = Math.floor(totalMinutes / 60);
   const days = Math.floor(totalHours / 24);
   const hours = totalHours % 24;

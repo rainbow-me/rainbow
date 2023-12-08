@@ -444,7 +444,7 @@ export default function PointsContent() {
                       // onPress={() => {}}
                       title={i18n.t(i18n.l.points.points.next_drop)}
                       mainText={getFormattedTimeQuantity(
-                        nextDistributionSeconds,
+                        nextDistributionSeconds * 1000 - Date.now(),
                         2
                       )}
                       icon="􀉉"
