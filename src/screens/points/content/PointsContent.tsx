@@ -311,10 +311,11 @@ export default function PointsContent() {
     addressCopiedToastAtom
   );
 
-  const referralCode =
-    data?.points?.user?.referralCode?.slice(0, 3) +
-    '-' +
-    data?.points?.user?.referralCode?.slice(3, 7);
+  const referralCode = data?.points?.user?.referralCode
+    ? data.points.user.referralCode.slice(0, 3) +
+      '-' +
+      data.points.user.referralCode.slice(3, 7)
+    : undefined;
 
   const onPressCopy = React.useCallback(
     (onNewEmoji: () => void) => {
