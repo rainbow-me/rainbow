@@ -96,9 +96,7 @@ export const buildTwitterIntentMessage = (
     text += `🦊${encodeURIComponent(' ')}🔫`;
     text += encodeURIComponent('\n\n');
     text += `${encodeURIComponent(
-      'Claim your drop by downloading '
-    )}@rainbowdotme:${encodeURIComponent(
-      ' '
+      'Everybody has at least 100 points waiting for them, but you might have more! Claim your drop: '
     )}https://rainbow.me/points?ref=${referralCode}`;
     text += encodeURIComponent('\n\n');
     text += rainbows;
@@ -114,9 +112,7 @@ export const buildTwitterIntentMessage = (
     `I just had ${ONBOARDING_TOTAL_POINTS} Rainbow Points dropped into my wallet — everybody has at least 100 points waiting for them, but you might have more!\n\n`
   );
   text += `${encodeURIComponent(
-    'Claim your drop by downloading '
-  )}@rainbowdotme:${encodeURIComponent(
-    ' '
+    'Claim your drop: '
   )}https://rainbow.me/points?ref=${referralCode}`;
   text += encodeURIComponent('\n\n');
   text += rainbows;
