@@ -31,6 +31,7 @@ import {
   getPoapAndOpenSheetWithQRHash,
   getPoapAndOpenSheetWithSecretWord,
 } from '@/utils/poaps';
+import { handlePointsReferralCodeDeeplink } from '@/utils/points';
 
 /*
  * You can test these deeplinks with the following command:
@@ -195,6 +196,14 @@ export default async function handleDeeplink(
         const secretWordOrHash = pathname?.split('/')?.[1];
         await getPoapAndOpenSheetWithSecretWord(secretWordOrHash, false);
         await getPoapAndOpenSheetWithQRHash(secretWordOrHash, false);
+        break;
+      }
+
+      case 'points': {
+        const referralCode = query?.ref;
+        if (referralCode) {
+          handlePointsReferralCodeDeeplink(referralCode);
+        }
         break;
       }
 

@@ -1270,7 +1270,8 @@
         "error": "Oops!\nPlease pull to refresh.",
         "points": "points",
         "referral_code_copied": "Referral code copied",
-        "earn_points_for_referring": "Earn points for referring friends once they swap $100 through Rainbow"
+        "earn_points_for_referring": "Earn points for referring friends once they swap $100 through Rainbow",
+        "already_claimed_points": "Sorry! You have already claimed your points."
       },
       "console": {
         "claim_bonus_paragraph": "You'll receive an additional 100 points once you swap at least $100 through Rainbow",

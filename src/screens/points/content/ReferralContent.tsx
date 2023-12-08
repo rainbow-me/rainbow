@@ -20,7 +20,7 @@ import { useNavigation } from '@/navigation';
 import { getHeaderHeight } from '@/navigation/SwipeNavigator';
 import { haptics } from '@/utils';
 import { delay } from '@/utils/delay';
-import { useFocusEffect } from '@react-navigation/native';
+import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Keyboard, TextInput } from 'react-native';
 import Animated, {
@@ -36,12 +36,27 @@ import { RainbowError, logger } from '@/logger';
 import { ActionButton } from '@/screens/points/components/ActionButton';
 import { PointsIconAnimation } from '../components/PointsIconAnimation';
 
+export type ReferralContentParams = {
+  walletType?: 'new' | 'existing';
+  externalReferralCode?: string;
+};
+
+export type RouteParams = {
+  ReferralContentParams: ReferralContentParams;
+};
+
 export default function ReferralContent() {
+  const { params } = useRoute<
+    RouteProp<RouteParams, 'ReferralContentParams'>
+  >();
+
   const { accentColor } = useAccountAccentColor();
   const { goBack, navigate } = useNavigation();
 
   const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
+  const externalReferralCode = params?.externalReferralCode;
+  console.log({ externalReferralCode });
 
   const [referralCodeDisplay, setReferralCodeDisplay] = useState('');
   const [referralCode, setReferralCode] = useState('');
@@ -57,6 +72,7 @@ export default function ReferralContent() {
       code,
     });
     if (!res?.validateReferral?.valid) {
+      console.log('false black bear');
       if (
         res.validateReferral?.error?.type ===
         PointsErrorType.InvalidReferralCode
@@ -92,17 +108,6 @@ export default function ReferralContent() {
   useEffect(() => {
     contentBottomSharedValue.value = withTiming(contentBottom);
   }, [contentBottom, contentBottomSharedValue]);
-
-  useFocusEffect(
-    useCallback(() => {
-      delay(400).then(() => textInputRef.current?.focus());
-
-      return () => {
-        setReferralCodeDisplay('');
-        setStatus('incomplete');
-      };
-    }, [])
-  );
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -179,6 +184,26 @@ export default function ReferralContent() {
       }
     },
     [referralCodeDisplay.length, validateReferralCode]
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      if (externalReferralCode) {
+        const rawCode = externalReferralCode
+          .replace(/-/g, '')
+          .slice(0, 6)
+          .toLocaleUpperCase();
+        setReferralCodeDisplay(externalReferralCode);
+        validateReferralCode(rawCode);
+      }
+
+      delay(400).then(() => textInputRef.current?.focus());
+
+      return () => {
+        setReferralCodeDisplay('');
+        setStatus('incomplete');
+      };
+    }, [externalReferralCode, validateReferralCode])
   );
 
   return (

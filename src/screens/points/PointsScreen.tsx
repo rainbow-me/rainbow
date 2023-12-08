@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Page } from '@/components/layout';
 import { Navbar } from '@/components/navbar/Navbar';
 import Routes from '@/navigation/routesNames';
@@ -20,14 +20,28 @@ import ClaimContent from './content/ClaimContent';
 import ReferralContent from './content/ReferralContent';
 import { PointsErrorType } from '@/graphql/__generated__/metadataPOST';
 
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { delay } from '@/utils/delay';
+
 export const POINTS_ROUTES = {
   CLAIM_CONTENT: 'ClaimContent',
   REFERRAL_CONTENT: 'ReferralContent',
 };
 
+export type PointsScreenParams = {
+  referralCode?: string;
+  deeplinkId?: string;
+};
+
+export type RouteParams = {
+  PointsScreenParams: PointsScreenParams;
+};
+
 const Swipe = createMaterialTopTabNavigator();
 
 export default function PointsScreen() {
+  const { params } = useRoute<RouteProp<RouteParams, 'PointsScreenParams'>>();
   const {
     accountAddress,
     accountImage,
@@ -43,6 +57,20 @@ export default function PointsScreen() {
 
   const isOnboarded =
     data?.points?.error?.type !== PointsErrorType.NonExistingUser;
+
+  useEffect(() => {
+    if (params?.referralCode && pointsFullyEnabled) {
+      if (!isOnboarded) {
+        navigate(POINTS_ROUTES.REFERRAL_CONTENT, {
+          externalReferralCode: params?.referralCode,
+        });
+      } else {
+        delay(1000).then(() => {
+          Alert.alert(i18n.t(i18n.l.points.points.already_claimed_points));
+        });
+      }
+    }
+  }, [isOnboarded, navigate, params?.referralCode, pointsFullyEnabled]);
 
   return (
     <Box as={Page} flex={1} height="full" testID="points-screen" width="full">
