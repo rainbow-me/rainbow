@@ -36,6 +36,8 @@ type PointsProfileContext = {
   setIntent: Dispatch<SetStateAction<string | undefined>>;
   animationKey: number;
   setAnimationKey: Dispatch<SetStateAction<number>>;
+  clickedShare: boolean;
+  setClickedShare: Dispatch<SetStateAction<boolean>>;
 
   signIn: () => Promise<void>;
 
@@ -69,6 +71,8 @@ const PointsProfileContext = createContext<PointsProfileContext>({
   setIntent: noop,
   animationKey: 0,
   setAnimationKey: noop,
+  clickedShare: false,
+  setClickedShare: noop,
 
   signIn: async () => void 0,
 
@@ -98,6 +102,7 @@ export const PointsProfileProvider = ({
   const [referralCode, setReferralCode] = useState<string>();
   const [intent, setIntent] = useState<string>();
   const [animationKey, setAnimationKey] = useState(0);
+  const [clickedShare, setClickedShare] = useState(false);
 
   const rainbowSwaps = profile?.onboardPoints?.user?.onboarding?.categories?.find(
     ({ type }) => type === PointsOnboardingCategoryType.RainbowSwaps
@@ -215,7 +220,6 @@ export const PointsProfileProvider = ({
             intent += `&via=${encodeURIComponent(tweetIntent.via)}`;
           }
 
-          console.log({ intent });
           setIntent(intent);
         } catch (e) {
           console.log(e);
@@ -239,6 +243,8 @@ export const PointsProfileProvider = ({
         setIntent,
         animationKey,
         setAnimationKey,
+        clickedShare,
+        setClickedShare,
 
         // functions
         signIn,

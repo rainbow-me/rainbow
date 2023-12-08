@@ -4,10 +4,9 @@ import { safeAreaInsetValues } from '@/utils';
 
 export const enum RainbowPointsFlowSteps {
   Initialize = 0,
-  SignIn = 1,
-  CalculatePoints = 2,
-  Share = 3,
-  Done = 4,
+  CalculatePoints = 1,
+  Share = 2,
+  Review = 3,
 }
 
 export const CHARACTER_WIDTH = 9.2725;
