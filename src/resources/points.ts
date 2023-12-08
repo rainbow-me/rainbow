@@ -32,7 +32,7 @@ export function usePoints({ walletAddress }: { walletAddress: string }) {
 
   useEffect(() => {
     const nextDistribution = query?.data?.points?.meta?.distribution?.next;
-    if (nextDistribution && Date.now() / 1000 > nextDistribution) {
+    if (nextDistribution && Date.now() >= nextDistribution * 1000) {
       query.refetch();
     }
   }, [query]);

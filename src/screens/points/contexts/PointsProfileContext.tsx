@@ -155,7 +155,7 @@ export const PointsProfileProvider = ({
         });
       }
     }
-    if (!points) {
+    if (!points || !points.onboardPoints) {
       logger.error(new RainbowError('Error onboarding points user'), {
         referralCode,
         challenge,

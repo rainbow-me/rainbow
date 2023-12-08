@@ -36,6 +36,9 @@ export const Calculate = () => {
   const { accountENS, accountAddress } = useAccountProfile();
 
   const [isCalculationComplete, setIsCalculationComplete] = useState(false);
+  const [shouldShowContinueButton, setShouldShowContinueButton] = useState(
+    false
+  );
 
   const accountName = (abbreviateEnsForDisplay(accountENS, 10) ||
     formatAddress(accountAddress, 4, 5)) as string;
@@ -132,24 +135,30 @@ export const Calculate = () => {
                 typingSpeed={100}
               />
             </Line>
-            <Line alignHorizontal="justify">
-              <AnimatedText
-                color={rainbowColors.red}
-                delayStart={1000}
-                enableHapticTyping
-                textContent={`${i18n.t(i18n.l.points.console.metamask_swaps)}:`}
-              />
-              <AnimatedText
-                color={rainbowColors.red}
-                delayStart={1000}
-                enableHapticTyping
-                textAlign="right"
-                textContent={`$${abbreviateNumber(
-                  metamaskSwaps?.data?.usd_amount ?? 0
-                )}`}
-                typingSpeed={100}
-              />
-            </Line>
+            {metamaskSwaps?.data?.usd_amount ? (
+              <Line alignHorizontal="justify">
+                <AnimatedText
+                  color={rainbowColors.red}
+                  delayStart={1000}
+                  enableHapticTyping
+                  textContent={`${i18n.t(
+                    i18n.l.points.console.metamask_swaps
+                  )}:`}
+                />
+                <AnimatedText
+                  color={rainbowColors.red}
+                  delayStart={1000}
+                  enableHapticTyping
+                  textAlign="right"
+                  textContent={`$${abbreviateNumber(
+                    metamaskSwaps?.data?.usd_amount ?? 0
+                  )}`}
+                  typingSpeed={100}
+                />
+              </Line>
+            ) : (
+              <></>
+            )}
             <Line alignHorizontal="justify">
               <AnimatedText
                 color={rainbowColors.purple}
@@ -162,7 +171,10 @@ export const Calculate = () => {
                 delayStart={1000}
                 enableHapticTyping
                 onComplete={() => {
-                  setIsCalculationComplete(true);
+                  const complete = setTimeout(() => {
+                    setIsCalculationComplete(true);
+                  }, 500);
+                  return () => clearTimeout(complete);
                 }}
                 textAlign="right"
                 textContent={`+ ${bonus?.earnings?.total}`}
@@ -195,6 +207,9 @@ export const Calculate = () => {
                 textContent={(
                   profile?.onboardPoints?.user.onboarding?.earnings?.total ?? 0
                 ).toLocaleString('en-US')}
+                onComplete={() => {
+                  setShouldShowContinueButton(true);
+                }}
                 typingSpeed={100}
               />
             </Line>
@@ -202,7 +217,7 @@ export const Calculate = () => {
         </Stack>
 
         <AnimatePresence
-          condition={isCalculationComplete && !!profile}
+          condition={shouldShowContinueButton && !!profile}
           duration={300}
         >
           <Bleed horizontal={{ custom: 14 }}>
@@ -276,7 +291,11 @@ export const Calculate = () => {
           color={textColors.gray}
           delayStart={1000}
           onComplete={() => {
-            setIsCalculationComplete(true);
+            const complete = setTimeout(() => {
+              setIsCalculationComplete(true);
+              setShouldShowContinueButton(true);
+            }, 500);
+            return () => clearTimeout(complete);
           }}
           weight="normal"
           multiline
@@ -284,7 +303,7 @@ export const Calculate = () => {
         />
       </Stack>
       <AnimatePresence
-        condition={isCalculationComplete && !!profile}
+        condition={shouldShowContinueButton && !!profile}
         duration={300}
       >
         <Bleed horizontal={{ custom: 14 }}>

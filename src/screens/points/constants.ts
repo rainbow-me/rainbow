@@ -91,7 +91,9 @@ export const buildTwitterIntentMessage = (
     let text = rainbows;
     text += encodeURIComponent('\n\n');
     text += encodeURIComponent(
-      `I just had ${ONBOARDING_TOTAL_POINTS} Rainbow Points dropped into my wallet — plus an extra ${METAMASK_POINTS} Points as a bonus for migrating my MetaMask wallet into Rainbow`
+      `I just had ${
+        ONBOARDING_TOTAL_POINTS - METAMASK_POINTS
+      } Rainbow Points dropped into my wallet — plus an extra ${METAMASK_POINTS} Points as a bonus for migrating my MetaMask wallet into Rainbow`
     );
     text += `🦊${encodeURIComponent(' ')}🔫`;
     text += encodeURIComponent('\n\n');

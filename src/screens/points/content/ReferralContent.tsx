@@ -22,7 +22,7 @@ import { haptics } from '@/utils';
 import { delay } from '@/utils/delay';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Keyboard, TextInput } from 'react-native';
+import { InteractionManager, Keyboard, TextInput } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -97,7 +97,7 @@ export default function ReferralContent() {
 
   useFocusEffect(
     useCallback(() => {
-      delay(400).then(() => textInputRef.current?.focus());
+      delay(600).then(() => textInputRef.current?.focus());
 
       return () => {
         setReferralCodeDisplay('');
