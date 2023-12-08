@@ -2,7 +2,7 @@ const font = {};
 
 font.family = {
   SFProRounded: ios ? 'SF Pro Rounded' : 'SF-Pro-Rounded',
-  SFMono: ios ? 'SF Mono' : 'SF-Mono',
+  SFMono: ios ? 'SF Mono' : 'SF-Mono-Medium',
 };
 
 font.letterSpacing = {

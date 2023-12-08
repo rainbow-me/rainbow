@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { AnimatePresence } from '@/components/animations/AnimatePresence';
 import Paragraph from '../../components/Paragraph';
 import Line from '../../components/Line';
@@ -112,9 +112,10 @@ export const Initialize = () => {
             textContent={rainbowText.row8}
             typingSpeed={10}
           />
-          <Line leftIndent={7}>
+          <Line leftIndent={ios ? 7 : 6}>
             <AnimatedText
               color={textColors.white}
+              {...(!ios ? { weight: 'normal' } : {})}
               enableHapticTyping
               onComplete={() => {
                 const beginNextPhase = setTimeout(() => {

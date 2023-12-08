@@ -234,7 +234,10 @@ export const AnimatedText = ({
       >
         {rainbowText
           ? displayedText.split('').map((char, i) => (
-              <RNText key={i} style={getRainbowTextStyle(i)}>
+              <RNText
+                key={i}
+                style={[!ios && styles.android, getRainbowTextStyle(i)]}
+              >
                 {char}
               </RNText>
             ))
@@ -245,6 +248,17 @@ export const AnimatedText = ({
 };
 
 const styles = StyleSheet.create({
+  android: {
+    fontFamily: fonts.family.SFMono,
+    letterSpacing: 3.75,
+    fontSize: 15,
+    fontWeight: 'bold',
+    lineHeight: 11,
+    overflow: 'visible',
+    padding: 16,
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 12,
+  },
   text: {
     fontFamily: fonts.family.SFMono,
     fontSize: 15,
