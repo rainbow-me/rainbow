@@ -3,13 +3,9 @@ import { AnimatePresence } from '@/components/animations/AnimatePresence';
 import Paragraph from '../../components/Paragraph';
 import Line from '../../components/Line';
 import { AnimatedText } from '../../components/AnimatedText';
-import {
-  RainbowPointsFlowSteps,
-  rainbowColors,
-  textColors,
-} from '../../constants';
+import { RainbowPointsFlowSteps, textColors } from '../../constants';
 import * as i18n from '@/languages';
-import { useAccountProfile } from '@/hooks';
+import { useAccountProfile, useDimensions } from '@/hooks';
 import {
   abbreviateEnsForDisplay,
   address as formatAddress,
@@ -17,12 +13,19 @@ import {
 import { usePointsProfileContext } from '../../contexts/PointsProfileContext';
 import { NeonButton } from '../../components/NeonButton';
 import LineBreak from '../../components/LineBreak';
-import { Inline, Stack } from '@/design-system';
+import { Bleed, Box, Inline, Stack } from '@/design-system';
 import { Linking } from 'react-native';
+import { metadataPOSTClient } from '@/graphql';
 
 export const Share = () => {
-  const { intent, setStep } = usePointsProfileContext();
+  const {
+    intent,
+    setAnimationKey,
+    setClickedShare,
+    setStep,
+  } = usePointsProfileContext();
   const { accountENS, accountAddress } = useAccountProfile();
+  const { width: deviceWidth } = useDimensions();
 
   const [showShareButtons, setShowShareButtons] = useState(false);
 
@@ -30,7 +33,7 @@ export const Share = () => {
     formatAddress(accountAddress, 4, 5)) as string;
 
   return (
-    <>
+    <Box height="full" justifyContent="space-between">
       <Stack separator={<LineBreak lines={2} />}>
         <Paragraph>
           <Line>
@@ -55,16 +58,14 @@ export const Share = () => {
           />
         </Paragraph>
         <AnimatedText
-          color={rainbowColors.yellow}
+          color={textColors.account}
           delayStart={1000}
           weight="normal"
           multiline
-          textContent={`${i18n.t(
-            i18n.l.points.console.referral_link_bonus_text
-          )}:`}
+          textContent={i18n.t(i18n.l.points.console.referral_link_bonus_text)}
         />
         <AnimatedText
-          color={rainbowColors.yellow}
+          color={textColors.account}
           delayStart={1000}
           onComplete={() => {
             setShowShareButtons(true);
@@ -80,25 +81,43 @@ export const Share = () => {
         condition={showShareButtons && !!intent?.length}
         duration={300}
       >
-        <Inline wrap={false} horizontalSpace={{ custom: 12 }}>
-          <NeonButton
-            color="#F5F8FF8F"
-            label={`􀖅 ${i18n.t(i18n.l.points.console.skip_referral)}`}
-            onPress={() => setStep(RainbowPointsFlowSteps.Review)}
-          />
-
-          <NeonButton
-            color="#FEC101"
-            label={`􀖅 ${i18n.t(i18n.l.points.console.proceed_to_share)}`}
-            onPress={() => {
-              if (intent) {
-                Linking.openURL(intent);
-              }
-              setStep(RainbowPointsFlowSteps.Review);
-            }}
-          />
-        </Inline>
+        <Bleed horizontal={{ custom: 14 }}>
+          <Inline wrap={false} horizontalSpace="12px">
+            <NeonButton
+              color="#F5F8FF8F"
+              label={i18n.t(i18n.l.points.console.skip_referral)}
+              onPress={() => {
+                const beginNextPhase = setTimeout(() => {
+                  setAnimationKey(prevKey => prevKey + 1);
+                  setStep(RainbowPointsFlowSteps.Review);
+                }, 1000);
+                return () => clearTimeout(beginNextPhase);
+              }}
+              width={115}
+            />
+            <NeonButton
+              color="#FEC101"
+              label={i18n.t(i18n.l.points.console.share_to_x)}
+              onPress={() => {
+                const beginNextPhase = setTimeout(() => {
+                  if (intent) {
+                    Linking.openURL(intent);
+                    metadataPOSTClient.redeemCodeForPoints({
+                      address: accountAddress,
+                      code: 'TWITTERSHARED',
+                    });
+                    setClickedShare(true);
+                  }
+                  setAnimationKey(prevKey => prevKey + 1);
+                  setStep(RainbowPointsFlowSteps.Review);
+                }, 1000);
+                return () => clearTimeout(beginNextPhase);
+              }}
+              width={deviceWidth - 76 - 115 - 4}
+            />
+          </Inline>
+        </Bleed>
       </AnimatePresence>
-    </>
+    </Box>
   );
 };

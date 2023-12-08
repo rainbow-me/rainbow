@@ -17,7 +17,7 @@ import {
 import { usePointsProfileContext } from '../../contexts/PointsProfileContext';
 import { NeonButton } from '../../components/NeonButton';
 import LineBreak from '../../components/LineBreak';
-import { Stack } from '@/design-system';
+import { Box, Stack } from '@/design-system';
 import { abbreviateNumber } from '@/helpers/utilities';
 
 export const Calculate = () => {
@@ -31,6 +31,7 @@ export const Calculate = () => {
     bonus,
     hasRetroActivePoints,
     setStep,
+    setAnimationKey,
   } = usePointsProfileContext();
   const { accountENS, accountAddress } = useAccountProfile();
 
@@ -202,7 +203,7 @@ export const Calculate = () => {
   }
 
   return (
-    <>
+    <Box height="full" justifyContent="space-between">
       <Stack separator={<LineBreak lines={2} />}>
         <Paragraph>
           <Line>
@@ -253,17 +254,22 @@ export const Calculate = () => {
           textContent={i18n.t(i18n.l.points.console.claim_bonus_paragraph)}
         />
       </Stack>
-
       <AnimatePresence
         condition={isCalculationComplete && !!profile}
         duration={300}
       >
         <NeonButton
           color="#FEC101"
-          label={`${i18n.t(i18n.l.points.console.proceed_to_share)}`}
-          onPress={() => setStep(RainbowPointsFlowSteps.Share)}
+          label={i18n.t(i18n.l.points.console.proceed_to_share)}
+          onPress={() => {
+            const beginNextPhase = setTimeout(() => {
+              setAnimationKey(prevKey => prevKey + 1);
+              setStep(RainbowPointsFlowSteps.Share);
+            }, 1000);
+            return () => clearTimeout(beginNextPhase);
+          }}
         />
       </AnimatePresence>
-    </>
+    </Box>
   );
 };

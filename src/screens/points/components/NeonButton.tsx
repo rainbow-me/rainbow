@@ -11,75 +11,69 @@ export const NeonButton = ({
   color,
   label,
   onPress,
+  width,
 }: {
   color?: string;
   label: string;
   onPress?: () => void;
+  width?: number;
 }) => {
   const { width: deviceWidth } = useDimensions();
   const { colors } = useTheme();
   const green = useForegroundColor('green');
 
   return (
-    <Box
-      alignItems="center"
-      width="full"
-      justifyContent="center"
-      position="absolute"
-      bottom={{ custom: 16 }}
+    <ButtonPressAnimation
+      hapticType="impactHeavy"
+      onPress={onPress}
+      scaleTo={0.94}
+      style={styles.neonButtonWrapper}
+      transformOrigin="top"
     >
-      <ButtonPressAnimation
-        hapticType="impactHeavy"
-        onPress={onPress}
-        scaleTo={0.94}
-        style={styles.neonButtonWrapper}
-        transformOrigin="top"
+      <Animated.View
+        style={[
+          styles.neonButton,
+          {
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderColor: color || green,
+            shadowColor: color || green,
+            width: width ?? deviceWidth - 64,
+          },
+        ]}
       >
-        <Animated.View
+        <Cover>
+          <Box
+            borderRadius={11}
+            height={{ custom: 46 }}
+            style={[
+              styles.neonButtonFill,
+              {
+                backgroundColor: colors.alpha(color || green, 0.1),
+              },
+            ]}
+            width={{ custom: width ? width - 2 : deviceWidth - 66 }}
+          />
+        </Cover>
+        <RNText
           style={[
-            styles.neonButton,
+            styles.neonButtonText,
             {
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderColor: color || green,
-              shadowColor: color || green,
-              width: deviceWidth - 64,
+              textShadowColor: colors.alpha(color || green, 0.6),
             },
           ]}
         >
-          <Cover>
-            <Box
-              borderRadius={11}
-              height={{ custom: 46 }}
-              style={[
-                styles.neonButtonFill,
-                {
-                  backgroundColor: colors.alpha(color || green, 0.1),
-                },
-              ]}
-              width={{ custom: deviceWidth - 66 }}
-            />
-          </Cover>
-          <RNText
-            style={[
-              styles.neonButtonText,
-              {
-                textShadowColor: colors.alpha(color || green, 0.6),
-              },
-            ]}
+          <Text
+            align="center"
+            color={color ? { custom: color } : 'green'}
+            size="20pt"
+            weight="heavy"
           >
-            <Text
-              align="center"
-              color={color ? { custom: color } : 'green'}
-              size="20pt"
-              weight="heavy"
-            >
-              {label}
-            </Text>
-          </RNText>
-        </Animated.View>
-      </ButtonPressAnimation>
-    </Box>
+            {label}
+          </Text>
+        </RNText>
+      </Animated.View>
+    </ButtonPressAnimation>
   );
 };
 

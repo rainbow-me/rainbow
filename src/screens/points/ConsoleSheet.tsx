@@ -23,11 +23,24 @@ export const ConsoleSheet = () => {
   const { params } = useRoute<RouteProp<ConsoleSheetParams, 'ConsoleSheet'>>();
   const referralCode = params?.referralCode;
 
-  const { animationKey, setReferralCode } = usePointsProfileContext();
+  const {
+    animationKey,
+    setReferralCode,
+    setProfile,
+    setAnimationKey,
+    setStep,
+    setClickedShare,
+  } = usePointsProfileContext();
 
   useEffect(() => {
     setReferralCode(referralCode);
   }, [setReferralCode, referralCode]);
+  useEffect(() => {
+    setProfile(undefined);
+    setAnimationKey(0);
+    setStep(RainbowPointsFlowSteps.Initialize);
+    setClickedShare(false);
+  }, []);
 
   return (
     <Inset bottom={{ custom: SCREEN_BOTTOM_INSET }}>
@@ -84,7 +97,8 @@ const styles = StyleSheet.create({
     height: 504,
     gap: 45,
     paddingHorizontal: 30,
-    paddingVertical: 45,
+    paddingTop: 45,
+    paddingBottom: 16,
     width: '100%',
     zIndex: -1,
   },

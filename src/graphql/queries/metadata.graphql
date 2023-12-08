@@ -365,3 +365,18 @@ query validateReferral($code: String!) {
     }
   }
 }
+
+mutation redeemCodeForPoints($address: String!, $redemptionCode: String!) {
+  redeemCode(address: $address, code: $redemptionCode) {
+    earnings {
+      total
+    }
+    redemption_code {
+      code
+    }
+    error {
+      type
+      message
+    }
+  }
+}
