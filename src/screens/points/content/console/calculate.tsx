@@ -17,7 +17,7 @@ import {
 import { usePointsProfileContext } from '../../contexts/PointsProfileContext';
 import { NeonButton } from '../../components/NeonButton';
 import LineBreak from '../../components/LineBreak';
-import { Box, Stack } from '@/design-system';
+import { Bleed, Box, Stack } from '@/design-system';
 import { abbreviateNumber } from '@/helpers/utilities';
 
 export const Calculate = () => {
@@ -258,17 +258,19 @@ export const Calculate = () => {
         condition={isCalculationComplete && !!profile}
         duration={300}
       >
-        <NeonButton
-          color="#FEC101"
-          label={i18n.t(i18n.l.points.console.proceed_to_share)}
-          onPress={() => {
-            const beginNextPhase = setTimeout(() => {
-              setAnimationKey(prevKey => prevKey + 1);
-              setStep(RainbowPointsFlowSteps.Share);
-            }, 1000);
-            return () => clearTimeout(beginNextPhase);
-          }}
-        />
+        <Bleed horizontal={{ custom: 14 }}>
+          <NeonButton
+            color="#FEC101"
+            label={i18n.t(i18n.l.points.console.proceed_to_share)}
+            onPress={() => {
+              const beginNextPhase = setTimeout(() => {
+                setAnimationKey(prevKey => prevKey + 1);
+                setStep(RainbowPointsFlowSteps.Share);
+              }, 1000);
+              return () => clearTimeout(beginNextPhase);
+            }}
+          />
+        </Bleed>
       </AnimatePresence>
     </Box>
   );

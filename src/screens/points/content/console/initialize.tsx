@@ -16,7 +16,7 @@ import {
 } from '@/utils/abbreviations';
 import { usePointsProfileContext } from '../../contexts/PointsProfileContext';
 import { NeonButton } from '../../components/NeonButton';
-import { Box, Stack } from '@/design-system';
+import { Bleed, Box, Stack } from '@/design-system';
 
 export const Initialize = () => {
   const [showSignInButton, setShowSignInButton] = useState(false);
@@ -130,10 +130,12 @@ export const Initialize = () => {
         </Paragraph>
       </Stack>
       <AnimatePresence condition={showSignInButton && !profile} duration={300}>
-        <NeonButton
-          label={`􀎽 ${i18n.t(i18n.l.points.console.sign_in)}`}
-          onPress={signIn}
-        />
+        <Bleed horizontal={{ custom: 14 }}>
+          <NeonButton
+            label={`􀎽 ${i18n.t(i18n.l.points.console.sign_in)}`}
+            onPress={signIn}
+          />
+        </Bleed>
       </AnimatePresence>
     </Box>
   );
