@@ -537,7 +537,6 @@ export default function PointsContent() {
                                     message: referralUrl,
                                   }
                                 : {
-                                    message: referralUrl,
                                     url: referralUrl,
                                   }
                             );
