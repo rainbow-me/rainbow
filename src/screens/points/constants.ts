@@ -77,11 +77,11 @@ export const buildTwitterIntentMessage = (
   profile: OnboardPointsMutation | undefined,
   metamaskSwaps: PointsOnboardingCategory | undefined
 ) => {
-  if (!profile) return;
+  if (!profile?.onboardPoints) return;
 
   const ONBOARDING_TOTAL_POINTS =
-    profile.onboardPoints?.user.onboarding.earnings.total;
-  const referralCode = profile.onboardPoints?.user.referralCode;
+    profile.onboardPoints.user.onboarding.earnings.total;
+  const referralCode = profile.onboardPoints.user.referralCode;
 
   if (metamaskSwaps && metamaskSwaps?.earnings?.total > 0) {
     const METAMASK_POINTS = metamaskSwaps.earnings.total;
