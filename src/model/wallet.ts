@@ -419,7 +419,9 @@ export const signPersonalMessage = async (
     const wallet =
       existingWallet || (await loadWallet(undefined, true, provider));
     // have to check inverse or we trigger unwanted BT permissions requests
+    console.log(typeof wallet);
     if (!(wallet instanceof Wallet)) {
+      console.log('we got a hardware wallet ');
       isHardwareWallet = true;
     }
     try {
