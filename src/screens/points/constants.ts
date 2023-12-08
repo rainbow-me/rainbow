@@ -74,35 +74,44 @@ const BASE_URL = `https://twitter.com/intent/tweet?text=`;
 const RAINBOW = `🌈`;
 const RAINBOWS_STRING_GENERATOR = (num: number) => RAINBOW.repeat(num);
 export const buildTwitterIntentMessage = (
-  points: number,
-  metamaskSwaps: PointsOnboardingCategory,
-  referralCode: string
+  profile: OnboardPointsMutation | undefined,
+  metamaskSwaps: PointsOnboardingCategory | undefined
 ) => {
-  if (metamaskSwaps?.earnings?.total > 0) {
-    const mmPoints = metamaskSwaps.earnings.total;
+  if (!profile) return;
+
+  const ONBOARDING_TOTAL_POINTS =
+    profile.onboardPoints?.user.onboarding.earnings.total;
+  const referralCode = profile.onboardPoints?.user.referralCode;
+
+  if (metamaskSwaps && metamaskSwaps?.earnings?.total > 0) {
+    const METAMASK_POINTS = metamaskSwaps.earnings.total;
 
     const rainbows = RAINBOWS_STRING_GENERATOR(3);
+
     let text = rainbows;
     text += encodeURIComponent('\n\n');
     text += encodeURIComponent(
-      `I just had ${points} Rainbow Points dropped into my wallet — plus an extra ${mmPoints} Points as a bonus for migrating my MetaMask wallet into Rainbow`
+      `I just had ${ONBOARDING_TOTAL_POINTS} Rainbow Points dropped into my wallet — plus an extra ${METAMASK_POINTS} Points as a bonus for migrating my MetaMask wallet into Rainbow`
     );
-    text += `🦊 🔫`;
+    text += `🦊${encodeURIComponent(' ')}🔫`;
+    text += encodeURIComponent('\n\n');
+    text += `${encodeURIComponent(
+      'Claim your drop by downloading '
+    )}@rainbowdotme:${encodeURIComponent(
+      ' '
+    )}https://rainbow.me/points?ref=${referralCode}`;
     text += encodeURIComponent('\n\n');
     text += rainbows;
-
-    console.log(BASE_URL + text);
 
     return BASE_URL + text;
   }
 
-  // add beginning rainbow emojis
   const rainbows = RAINBOWS_STRING_GENERATOR(17);
 
   let text = rainbows;
   text += encodeURIComponent('\n\n');
   text += encodeURIComponent(
-    `I just had ${points} Rainbow Points dropped into my wallet — everybody has at least 100 points waiting for them, but you might have more!\n\n`
+    `I just had ${ONBOARDING_TOTAL_POINTS} Rainbow Points dropped into my wallet — everybody has at least 100 points waiting for them, but you might have more!\n\n`
   );
   text += `${encodeURIComponent(
     'Claim your drop by downloading '
@@ -110,11 +119,7 @@ export const buildTwitterIntentMessage = (
     ' '
   )}https://rainbow.me/points?ref=${referralCode}`;
   text += encodeURIComponent('\n\n');
-
-  // add trailing rainbow emojis
   text += rainbows;
-
-  console.log(BASE_URL + text);
 
   return BASE_URL + text;
 };

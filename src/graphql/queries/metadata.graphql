@@ -323,6 +323,7 @@ mutation onboardPoints(
       }
     }
     user {
+      referralCode
       earnings {
         total
       }

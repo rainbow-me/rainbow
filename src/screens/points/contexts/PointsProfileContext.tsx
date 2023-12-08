@@ -4,13 +4,17 @@ import React, {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useState,
 } from 'react';
 import { noop } from 'lodash';
 
 import { pointsQueryKey } from '@/resources/points';
 import * as i18n from '@/languages';
-import { POINTS_TWEET_INTENT_ID, RainbowPointsFlowSteps } from '../constants';
+import {
+  RainbowPointsFlowSteps,
+  buildTwitterIntentMessage,
+} from '../constants';
 import {
   OnboardPointsMutation,
   PointsOnboardingCategory,
@@ -18,7 +22,6 @@ import {
 } from '@/graphql/__generated__/metadataPOST';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 
-import { usePointsTweetIntentQuery } from '@/resources/pointsTweetIntent/pointsTweetIntentQuery';
 import { metadataPOSTClient } from '@/graphql';
 import { useAccountProfile } from '@/hooks';
 import { signPersonalMessage } from '@/model/wallet';
@@ -179,55 +182,10 @@ export const PointsProfileProvider = ({
     }
   }, [accountAddress, referralCode]);
 
-  usePointsTweetIntentQuery(
-    {
-      id: POINTS_TWEET_INTENT_ID,
-    },
-    {
-      enabled: step === RainbowPointsFlowSteps.Share,
-      onSuccess: data => {
-        if (!data.pointsTweetIntent) {
-          return;
-        }
-
-        try {
-          const tweetIntent = data.pointsTweetIntent;
-          const pointsValue =
-            profile?.onboardPoints?.user.onboarding.earnings.total;
-          if (!pointsValue) {
-            // TODO: Fallback to some default msg
-            return;
-          }
-
-          // do a string replace to replace {POINTS_VALUE} with their points value
-          let text = tweetIntent.text?.replace(
-            '{POINTS_VALUE}',
-            pointsValue?.toString()
-          );
-          if (Number(metamaskSwaps?.earnings.total) > 0) {
-            text += `, including ${metamaskSwaps?.earnings.total} points because I switched from Metamask`;
-          }
-
-          // build the tweet intent url
-          let intent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-            text ?? ''
-          )}`;
-          if (tweetIntent.url) {
-            intent += `&url=${encodeURIComponent(tweetIntent.url)}`;
-          }
-
-          if (tweetIntent.via) {
-            intent += `&via=${encodeURIComponent(tweetIntent.via)}`;
-          }
-
-          setIntent(intent);
-        } catch (e) {
-          console.log(e);
-          // TODO: add logging
-        }
-      },
-    }
-  );
+  useEffect(() => {
+    const msg = buildTwitterIntentMessage(profile, metamaskSwaps);
+    setIntent(msg);
+  }, [profile, metamaskSwaps]);
 
   return (
     <PointsProfileContext.Provider
