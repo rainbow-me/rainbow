@@ -1654,7 +1654,6 @@ const SimulationCard = ({
     simulationError,
   ]);
 
-  console.log({ simulationScanResult });
   return (
     <FadedScrollCard
       cardHeight={cardHeight}

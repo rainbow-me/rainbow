@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { AnimatePresence } from '@/components/animations/AnimatePresence';
 import Paragraph from '../../components/Paragraph';
 import Line from '../../components/Line';
