@@ -112,7 +112,7 @@ export const Initialize = () => {
             textContent={rainbowText.row8}
             typingSpeed={10}
           />
-          <Line leftIndent={7}>
+          <Line leftIndent={ios ? 7 : 6}>
             <AnimatedText
               color={textColors.white}
               enableHapticTyping
