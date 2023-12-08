@@ -29,17 +29,20 @@ export const ConsoleSheet = () => {
     setProfile,
     setAnimationKey,
     setStep,
-    setClickedShare,
+    setShareBonusPoints,
+    setIntent,
   } = usePointsProfileContext();
 
   useEffect(() => {
     setReferralCode(referralCode);
   }, [setReferralCode, referralCode]);
+
   useEffect(() => {
     setProfile(undefined);
     setAnimationKey(0);
     setStep(RainbowPointsFlowSteps.Initialize);
-    setClickedShare(false);
+    setShareBonusPoints(0);
+    setIntent(undefined);
   }, []);
 
   return (

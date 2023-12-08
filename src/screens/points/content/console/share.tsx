@@ -21,7 +21,7 @@ export const Share = () => {
   const {
     intent,
     setAnimationKey,
-    setClickedShare,
+    setShareBonusPoints,
     setStep,
   } = usePointsProfileContext();
   const { accountENS, accountAddress } = useAccountProfile();
@@ -99,14 +99,20 @@ export const Share = () => {
               color="#FEC101"
               label={i18n.t(i18n.l.points.console.share_to_x)}
               onPress={() => {
-                const beginNextPhase = setTimeout(() => {
+                const beginNextPhase = setTimeout(async () => {
                   if (intent) {
                     Linking.openURL(intent);
-                    metadataPOSTClient.redeemCodeForPoints({
-                      address: accountAddress,
-                      redemptionCode: 'TWITTERSHARED',
-                    });
-                    setClickedShare(true);
+                    const shareBonusPointsResponse = await metadataPOSTClient.redeemCodeForPoints(
+                      {
+                        address: accountAddress,
+                        redemptionCode: 'TWITTERSHARED',
+                      }
+                    );
+                    if (shareBonusPointsResponse?.redeemCode?.earnings?.total) {
+                      setShareBonusPoints(
+                        shareBonusPointsResponse?.redeemCode?.earnings?.total
+                      );
+                    }
                   }
                   setAnimationKey(prevKey => prevKey + 1);
                   setStep(RainbowPointsFlowSteps.Review);

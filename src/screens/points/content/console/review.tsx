@@ -17,7 +17,7 @@ import { Box, Stack } from '@/design-system';
 import { useNavigation } from '@/navigation';
 
 export const Review = () => {
-  const { clickedShare } = usePointsProfileContext();
+  const { shareBonusPoints } = usePointsProfileContext();
   const { accountENS, accountAddress } = useAccountProfile();
   const { goBack } = useNavigation();
 
@@ -51,7 +51,7 @@ export const Review = () => {
             )}`}
           />
         </Paragraph>
-        {clickedShare && (
+        {shareBonusPoints && (
           <Line alignHorizontal="justify">
             <AnimatedText
               color={textColors.account}
@@ -65,7 +65,7 @@ export const Review = () => {
               enableHapticTyping
               typingSpeed={100}
               textAlign="right"
-              textContent="+ 250" // TODO: Where does this amount come from?
+              textContent={`+ ${shareBonusPoints}`}
             />
           </Line>
         )}
