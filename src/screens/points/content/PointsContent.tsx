@@ -1,5 +1,5 @@
 import React from 'react';
-import { RefreshControl, Share, Text as RNText } from 'react-native';
+import { RefreshControl, Share } from 'react-native';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import {
   AccentColorProvider,
@@ -16,12 +16,7 @@ import {
   useBackgroundColor,
   useForegroundColor,
 } from '@/design-system';
-import {
-  useAccountAccentColor,
-  useAccountProfile,
-  useClipboard,
-  useDimensions,
-} from '@/hooks';
+import { useAccountProfile, useClipboard, useDimensions } from '@/hooks';
 import { useTheme } from '@/theme';
 import { ScrollView } from 'react-native-gesture-handler';
 import MaskedView from '@react-native-masked-view/masked-view';
@@ -296,7 +291,6 @@ export default function PointsContent() {
   const { colors } = useTheme();
   const { width: deviceWidth } = useDimensions();
   const { accountAddress, accountENS } = useAccountProfile();
-  const { accentColor } = useAccountAccentColor();
   const { setClipboard } = useClipboard();
   const { data, isFetching, dataUpdatedAt, refetch } = usePoints({
     walletAddress: accountAddress,
