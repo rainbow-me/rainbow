@@ -113,14 +113,17 @@ export class LedgerSigner extends Signer {
 
   async signMessage(message: Bytes | string): Promise<string> {
     if (typeof message === 'string') {
+      console.log('toUtf8Bytes');
       message = toUtf8Bytes(message);
     }
 
     const messageHex = hexlify(message).substring(2);
+    console.log({ messageHex });
 
     const sig = await this._retry(eth =>
       eth.signPersonalMessage(this.path!, messageHex)
     );
+    console.log('post signatureeee');
     sig.r = '0x' + sig.r;
     sig.s = '0x' + sig.s;
     return joinSignature(sig);
