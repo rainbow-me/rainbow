@@ -145,7 +145,9 @@ export const PointsProfileProvider = ({
 
     const challenge = challengeResponse?.pointsOnboardChallenge;
     if (challenge) {
+      console.log('signing message');
       const signatureResponse = await signPersonalMessage(challenge);
+      console.log('!!!!!!!: ', { signatureResponse });
       signature = signatureResponse?.result;
       if (signature) {
         points = await metadataPOSTClient.onboardPoints({
