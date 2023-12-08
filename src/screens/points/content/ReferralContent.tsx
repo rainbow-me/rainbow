@@ -272,7 +272,7 @@ export default function ReferralContent() {
             align="center"
             color={{ custom: status === 'invalid' ? red : 'transparent' }}
           >
-            Invalid Code
+            {i18n.t(i18n.l.points.referral.invalid_code)}
           </Text>
         </Stack>
       </Box>
