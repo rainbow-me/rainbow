@@ -51,7 +51,7 @@ export const Review = () => {
             )}`}
           />
         </Paragraph>
-        {shareBonusPoints && (
+        {shareBonusPoints ? (
           <Line alignHorizontal="justify">
             <AnimatedText
               color={textColors.account}
@@ -68,6 +68,8 @@ export const Review = () => {
               textContent={`+ ${shareBonusPoints}`}
             />
           </Line>
+        ) : (
+          <></>
         )}
         <Paragraph>
           <AnimatedText
