@@ -220,12 +220,20 @@ export const Calculate = () => {
               textContent={accountName}
             />
           </Line>
-          <AnimatedText
-            color={textColors.gray}
-            textContent={`> ${i18n.t(
-              i18n.l.points.console.calculating_points
-            )}`}
-          />
+          <Line gap={0}>
+            <AnimatedText
+              color={textColors.gray}
+              textContent={`> ${i18n.t(
+                i18n.l.points.console.calculating_points
+              )}`}
+            />
+            <AnimatedText
+              color={textColors.gray}
+              textContent="..."
+              typingSpeed={500}
+              weight="normal"
+            />
+          </Line>
         </Paragraph>
         <Line alignHorizontal="justify">
           <AnimatedText
