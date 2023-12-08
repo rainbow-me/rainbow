@@ -276,21 +276,19 @@ export default function ReferralContent() {
           </Text>
         </Stack>
       </Box>
-      {hasKeyboard && (
-        <Box
-          position="absolute"
-          bottom={{
-            custom: keyboardHeight + 28,
-          }}
-          left={{ custom: 20 }}
-        >
-          <ButtonPressAnimation onPress={goBack}>
-            <Text color={{ custom: accentColor }} size="20pt" weight="bold">
-              {`􀆉 ${i18n.t(i18n.l.points.referral.back)}`}
-            </Text>
-          </ButtonPressAnimation>
-        </Box>
-      )}
+      <Box
+        position="absolute"
+        bottom={{
+          custom: hasKeyboard ? keyboardHeight + 28 : getHeaderHeight() + 28,
+        }}
+        left={{ custom: 20 }}
+      >
+        <ButtonPressAnimation onPress={goBack}>
+          <Text color={{ custom: accentColor }} size="20pt" weight="bold">
+            {`􀆉 ${i18n.t(i18n.l.points.referral.back)}`}
+          </Text>
+        </ButtonPressAnimation>
+      </Box>
       {!hasKeyboard && status === 'valid' && (
         <ActionButton
           color={accentColor}
