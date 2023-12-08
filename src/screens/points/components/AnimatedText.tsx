@@ -60,7 +60,7 @@ export const AnimatedText = ({
   textAlign,
   textContent,
   typingSpeed = 20,
-  weight = 'bold',
+  weight = ios ? 'bold' : 'normal',
 }: AnimatedTextProps) => {
   const { colors } = useTheme();
   const {

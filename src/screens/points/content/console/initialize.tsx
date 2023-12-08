@@ -115,7 +115,6 @@ export const Initialize = () => {
           <Line leftIndent={ios ? 7 : 6}>
             <AnimatedText
               color={textColors.white}
-              {...(!ios ? { weight: 'normal' } : {})}
               enableHapticTyping
               onComplete={() => {
                 const beginNextPhase = setTimeout(() => {
