@@ -1,6 +1,6 @@
 import { BlurView } from '@react-native-community/blur';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import React, { useLayoutEffect, useMemo, useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
