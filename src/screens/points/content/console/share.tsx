@@ -104,7 +104,7 @@ export const Share = () => {
                     Linking.openURL(intent);
                     metadataPOSTClient.redeemCodeForPoints({
                       address: accountAddress,
-                      code: 'TWITTERSHARED',
+                      redemptionCode: 'TWITTERSHARED',
                     });
                     setClickedShare(true);
                   }

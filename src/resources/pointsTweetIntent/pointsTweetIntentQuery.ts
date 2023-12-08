@@ -92,7 +92,7 @@ export function usePointsTweetIntentQuery(
     {
       enabled,
       staleTime: defaultStaleTime,
-      onSuccess
+      onSuccess,
     }
   );
 }
