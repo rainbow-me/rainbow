@@ -276,13 +276,11 @@ class OldApp extends Component {
           {this.state.initialRoute && (
             <RemotePromoSheetProvider isWalletReady={this.props.walletReady}>
               <InitialRouteContext.Provider value={this.state.initialRoute}>
-                <PointsProfileProvider>
-                  <RoutesComponent
-                    onReady={this.handleSentryNavigationIntegration}
-                    ref={this.handleNavigatorRef}
-                  />
-                  <PortalConsumer />
-                </PointsProfileProvider>
+                <RoutesComponent
+                  onReady={this.handleSentryNavigationIntegration}
+                  ref={this.handleNavigatorRef}
+                />
+                <PortalConsumer />
               </InitialRouteContext.Provider>
             </RemotePromoSheetProvider>
           )}

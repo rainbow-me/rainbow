@@ -85,6 +85,7 @@ import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
 import { SignTransactionSheet } from '@/screens/SignTransactionSheet';
 import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoSheet';
 import { ConsoleSheet } from '@/screens/points/ConsoleSheet';
+import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileContext';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -431,7 +432,9 @@ const AppContainerWithAnalytics = React.forwardRef(
       // @ts-ignore
       ref={ref}
     >
-      <AuthNavigator />
+      <PointsProfileProvider>
+        <AuthNavigator />
+      </PointsProfileProvider>
     </NavigationContainer>
   )
 );

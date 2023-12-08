@@ -7,7 +7,7 @@ import React, {
   useState,
 } from 'react';
 import { noop } from 'lodash';
-
+import Routes from '@/navigation/routesNames';
 import { pointsQueryKey } from '@/resources/points';
 import * as i18n from '@/languages';
 import { POINTS_TWEET_INTENT_ID, RainbowPointsFlowSteps } from '../constants';
@@ -20,10 +20,11 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 
 import { usePointsTweetIntentQuery } from '@/resources/pointsTweetIntent/pointsTweetIntentQuery';
 import { metadataPOSTClient } from '@/graphql';
-import { useAccountProfile } from '@/hooks';
+import { useAccountProfile, useWallets } from '@/hooks';
 import { signPersonalMessage } from '@/model/wallet';
 import { RainbowError, logger } from '@/logger';
 import { queryClient } from '@/react-query';
+import { useNavigation } from '@/navigation';
 
 type PointsProfileContext = {
   step: RainbowPointsFlowSteps;
@@ -94,6 +95,8 @@ export const PointsProfileProvider = ({
   children: React.ReactNode;
 }) => {
   const { accountAddress } = useAccountProfile();
+  const { isHardwareWallet } = useWallets();
+  const { navigate } = useNavigation();
 
   const [step, setStep] = useState<RainbowPointsFlowSteps>(
     RainbowPointsFlowSteps.Initialize
@@ -179,6 +182,14 @@ export const PointsProfileProvider = ({
     }
   }, [accountAddress, referralCode]);
 
+  const signInHandler = useCallback(async () => {
+    if (isHardwareWallet) {
+      navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: signIn });
+    } else {
+      signIn();
+    }
+  }, [isHardwareWallet, navigate, signIn]);
+
   usePointsTweetIntentQuery(
     {
       id: POINTS_TWEET_INTENT_ID,
@@ -247,7 +258,7 @@ export const PointsProfileProvider = ({
         setShareBonusPoints,
 
         // functions
-        signIn,
+        signIn: signInHandler,
 
         // helpers
         rainbowSwaps,
