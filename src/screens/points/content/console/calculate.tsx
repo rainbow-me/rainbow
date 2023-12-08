@@ -171,7 +171,10 @@ export const Calculate = () => {
                 delayStart={1000}
                 enableHapticTyping
                 onComplete={() => {
-                  setIsCalculationComplete(true);
+                  const complete = setTimeout(() => {
+                    setIsCalculationComplete(true);
+                  }, 500);
+                  return () => clearTimeout(complete);
                 }}
                 textAlign="right"
                 textContent={`+ ${bonus?.earnings?.total}`}
@@ -288,8 +291,11 @@ export const Calculate = () => {
           color={textColors.gray}
           delayStart={1000}
           onComplete={() => {
-            setIsCalculationComplete(true);
-            setShouldShowContinueButton(true);
+            const complete = setTimeout(() => {
+              setIsCalculationComplete(true);
+              setShouldShowContinueButton(true);
+            }, 500);
+            return () => clearTimeout(complete);
           }}
           weight="normal"
           multiline

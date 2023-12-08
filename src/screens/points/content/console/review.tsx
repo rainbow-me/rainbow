@@ -92,7 +92,12 @@ export const Review = () => {
           />
           <AnimatedText
             color={textColors.gray}
-            onComplete={() => setShowDoneButton(true)}
+            onComplete={() => {
+              const complete = setTimeout(() => {
+                setShowDoneButton(true);
+              }, 500);
+              return () => clearTimeout(complete);
+            }}
             textContent={i18n.t(
               i18n.l.points.console.share_bonus_paragraph_three
             )}
