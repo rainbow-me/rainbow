@@ -543,6 +543,7 @@ export default function PointsContent() {
                             );
                           }
                         }}
+                        overflowMargin={50}
                       >
                         <Box
                           background="surfaceSecondaryElevated"
