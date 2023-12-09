@@ -164,7 +164,7 @@ export const Calculate = () => {
                 color={rainbowColors.purple}
                 delayStart={1000}
                 enableHapticTyping
-                textContent={`${i18n.t(i18n.l.points.console.bonus_points)}:`}
+                textContent={`${i18n.t(i18n.l.points.console.true_believer)}:`}
               />
               <AnimatedText
                 color={rainbowColors.purple}
@@ -276,7 +276,7 @@ export const Calculate = () => {
             color={rainbowColors.purple}
             delayStart={1000}
             enableHapticTyping
-            textContent={`${i18n.t(i18n.l.points.console.bonus_points)}:`}
+            textContent={`${i18n.t(i18n.l.points.console.welcome_bonus)}:`}
           />
           <AnimatedText
             color={rainbowColors.purple}

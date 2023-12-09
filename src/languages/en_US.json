@@ -1274,7 +1274,8 @@
       },
       "console": {
         "claim_bonus_paragraph": "You'll receive an additional 100 points once you swap at least $100 through Rainbow",
-        "bonus_points": "Bonus Points",
+        "welcome_bonus": "Welcome Bonus",
+        "true_believer": "True Believer",
         "registration_complete": "Registration complete",
         "account": "Account",
         "points_earned": "Points Earned",
