@@ -1271,6 +1271,7 @@
         "points": "points",
         "referral_code_copied": "Referral code copied",
         "earn_points_for_referring": "Earn points when your referrals swap $100 through Rainbow, plus earn 10% of the points your referrals earn",
+        "already_claimed_points": "Sorry! You have already claimed your points.",
         "now": "Now"
       },
       "console": {

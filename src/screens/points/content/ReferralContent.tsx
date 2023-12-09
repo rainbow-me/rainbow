@@ -22,7 +22,7 @@ import { haptics } from '@/utils';
 import { delay } from '@/utils/delay';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
-import { InteractionManager, Keyboard, TextInput } from 'react-native';
+import { Keyboard, TextInput } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -35,6 +35,7 @@ import { PointsErrorType } from '@/graphql/__generated__/metadataPOST';
 import { RainbowError, logger } from '@/logger';
 import { ActionButton } from '@/screens/points/components/ActionButton';
 import { PointsIconAnimation } from '../components/PointsIconAnimation';
+import { usePointsReferralCode } from '@/resources/points';
 
 export default function ReferralContent() {
   const { accentColor } = useAccountAccentColor();
@@ -44,6 +45,7 @@ export default function ReferralContent() {
 
   const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
+  const { data: externalReferralCode } = usePointsReferralCode();
 
   const [referralCodeDisplay, setReferralCodeDisplay] = useState('');
   const [referralCode, setReferralCode] = useState('');
@@ -105,6 +107,15 @@ export default function ReferralContent() {
       };
     }, [])
   );
+
+  useEffect(() => {
+    if (externalReferralCode) {
+      setReferralCodeDisplay(externalReferralCode);
+      validateReferralCode(
+        externalReferralCode.replace(/-/g, '').slice(0, 6).toLocaleUpperCase()
+      );
+    }
+  }, [externalReferralCode, validateReferralCode]);
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
