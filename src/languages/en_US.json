@@ -1304,7 +1304,8 @@
         "referral_link_bonus_text": "Tweet your referral link and get an extra 250 points",
         "referral_link_bonus_text_extended": "Plus you'll earn 10% of the points earned by anyone you refer",
         "complete_onboarding": "Done",
-        "share_to_x": "Share to X"
+        "share_to_x": "Share to X",
+        "hardware_wallet_alert": "Hardware wallet support is coming soon!"
       }
     },
     "pools": {
