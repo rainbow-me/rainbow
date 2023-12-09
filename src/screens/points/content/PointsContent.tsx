@@ -197,10 +197,14 @@ export default function PointsContent() {
                     <InfoCard
                       // onPress={() => {}}
                       title={i18n.t(i18n.l.points.points.next_drop)}
-                      mainText={getFormattedTimeQuantity(
-                        nextDistributionSeconds * 1000 - Date.now(),
-                        2
-                      )}
+                      mainText={
+                        Date.now() >= nextDistributionSeconds * 1000
+                          ? i18n.t(i18n.l.points.points.now)
+                          : getFormattedTimeQuantity(
+                              nextDistributionSeconds * 1000 - Date.now(),
+                              2
+                            )
+                      }
                       icon="􀉉"
                       subtitle={displayNextDistribution(
                         nextDistributionSeconds
