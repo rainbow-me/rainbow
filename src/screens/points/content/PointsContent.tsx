@@ -2,18 +2,15 @@ import React from 'react';
 import { RefreshControl, Share } from 'react-native';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import {
-  AccentColorProvider,
   Bleed,
   Box,
   Column,
   Columns,
   Cover,
-  Inline,
   Inset,
   Separator,
   Stack,
   Text,
-  useBackgroundColor,
   useForegroundColor,
 } from '@/design-system';
 import { useAccountProfile, useClipboard, useDimensions } from '@/hooks';
@@ -23,11 +20,8 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import BlurredRainbow from '@/assets/blurredRainbow.png';
 import Planet from '@/assets/planet.png';
 import LinearGradient from 'react-native-linear-gradient';
-import { isENSNFTRecord, safeAreaInsetValues } from '@/utils';
-import {
-  ButtonPressAnimation,
-  ShimmerAnimation,
-} from '@/components/animations';
+import { safeAreaInsetValues } from '@/utils';
+import { ButtonPressAnimation } from '@/components/animations';
 import { getHeaderHeight } from '@/navigation/SwipeNavigator';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { useRecoilState } from 'recoil';
@@ -37,255 +31,15 @@ import { isNil } from 'lodash';
 import { getFormattedTimeQuantity } from '@/helpers/utilities';
 import { address as formatAddress } from '@/utils/abbreviations';
 import { delay } from '@/utils/delay';
-import {
-  addressHashedColorIndex,
-  addressHashedEmoji,
-} from '@/utils/profileUtils';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { Page } from '@/components/layout';
 import { IS_ANDROID } from '@/env';
 import { ImgixImage } from '@/components/images';
 import { Source } from 'react-native-fast-image';
-import ImageAvatar from '@/components/contacts/ImageAvatar';
-import { ContactAvatar } from '@/components/contacts';
-
-const ONE_WEEK_MS = 604_800_000;
-
-const displayNextDistribution = (seconds: number) => {
-  const days = [
-    i18n.t(i18n.l.points.points.sunday),
-    i18n.t(i18n.l.points.points.monday),
-    i18n.t(i18n.l.points.points.tuesday),
-    i18n.t(i18n.l.points.points.wednesday),
-    i18n.t(i18n.l.points.points.thursday),
-    i18n.t(i18n.l.points.points.friday),
-    i18n.t(i18n.l.points.points.saturday),
-  ];
-
-  const ms = seconds * 1000;
-  const date = new Date(ms);
-  let hours = date.getHours();
-  const ampm = hours >= 12 ? 'pm' : 'am';
-  hours = hours % 12;
-  hours = hours ? hours : 12; // the hour '0' should be '12'
-
-  if (ms - Date.now() > ONE_WEEK_MS) {
-    return `${hours}${ampm} ${date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-    })}`;
-  } else {
-    const dayOfWeek = days[date.getDay()];
-
-    return `${hours}${ampm} ${dayOfWeek}`;
-  }
-};
-
-const LeaderboardRow = ({
-  address,
-  ens,
-  avatarURL,
-  points,
-  rank,
-}: {
-  address: string;
-  ens?: string;
-  avatarURL?: string;
-  points: number;
-  rank: number;
-}) => {
-  const { colors } = useTheme();
-
-  let gradient;
-  let icon;
-  switch (rank) {
-    case 1:
-      gradient = ['#FFE456', '#CF9500'];
-      icon = '🥇';
-      break;
-    case 2:
-      gradient = ['#FBFCFE', '#B3BCC7'];
-      icon = '🥈';
-      break;
-    case 3:
-      gradient = ['#DE8F38', '#AE5F25'];
-      icon = '🥉';
-      break;
-    default:
-      icon = `#${rank}`;
-      break;
-  }
-
-  const formattedPoints = points.toLocaleString('en-US');
-
-  return (
-    <Box
-      paddingVertical="10px"
-      flexDirection="row"
-      justifyContent="space-between"
-      alignItems="center"
-    >
-      <Inline space="10px" alignVertical="center">
-        {avatarURL && !isENSNFTRecord(avatarURL) ? (
-          <ImageAvatar image={avatarURL} size="rewards" />
-        ) : (
-          <ContactAvatar
-            color={
-              colors.avatarBackgrounds[addressHashedColorIndex(address) ?? 0]
-            }
-            size="rewards"
-            value={addressHashedEmoji(address)}
-          />
-        )}
-        <Stack space="8px">
-          <Box style={{ maxWidth: 145 }}>
-            <Text
-              color="label"
-              weight="bold"
-              size="15pt"
-              ellipsizeMode="middle"
-              numberOfLines={1}
-            >
-              {ens ? ens : formatAddress(address, 4, 5)}
-            </Text>
-          </Box>
-          {/* <Inline space="2px" alignVertical="center">
-              <Text color="labelQuaternary" size="11pt" weight="bold">
-                􀙬
-              </Text>
-              <Text color="labelQuaternary" size="13pt" weight="semibold">
-                {`40 ${i18n.t(i18n.l.points.points.days)}`}
-              </Text>
-            </Inline> */}
-        </Stack>
-      </Inline>
-      <Inline space="8px" alignVertical="center">
-        {rank <= 3 && gradient ? (
-          <Bleed vertical="10px">
-            <MaskedView
-              style={{ height: 30, alignItems: 'center' }}
-              maskElement={
-                <Box paddingVertical="10px" justifyContent="center">
-                  <Text align="right" weight="bold" color="label" size="15pt">
-                    {formattedPoints}
-                  </Text>
-                </Box>
-              }
-            >
-              <LinearGradient
-                style={{ width: 100, height: '100%' }}
-                colors={gradient}
-                start={{ x: 0, y: 0.5 }}
-                end={{ x: 1, y: 0.5 }}
-              />
-            </MaskedView>
-          </Bleed>
-        ) : (
-          <Text align="right" weight="bold" color="labelTertiary" size="15pt">
-            {formattedPoints}
-          </Text>
-        )}
-        <Box width={{ custom: 32 }} alignItems="flex-end">
-          <Text
-            align="center"
-            // eslint-disable-next-line no-nested-ternary
-            size={rank >= 100 ? '11pt' : rank > 3 ? '13pt' : '15pt'}
-            color="labelTertiary"
-            weight={rank <= 3 ? 'semibold' : 'heavy'}
-            containsEmoji={rank <= 3}
-          >
-            {icon}
-          </Text>
-        </Box>
-      </Inline>
-    </Box>
-  );
-};
-
-const Skeleton = ({ width, height }: { width: number; height: number }) => {
-  const { isDarkMode, colors } = useTheme();
-
-  const surfaceSecondaryElevated = useBackgroundColor(
-    'surfaceSecondaryElevated'
-  );
-  const surfaceSecondary = useBackgroundColor('surfaceSecondary');
-
-  const skeletonColor = isDarkMode
-    ? surfaceSecondaryElevated
-    : surfaceSecondary;
-
-  return (
-    <AccentColorProvider color={skeletonColor}>
-      <Box
-        background="accent"
-        height={{ custom: height }}
-        width={{ custom: width }}
-        borderRadius={18}
-        style={{ overflow: 'hidden' }}
-      >
-        <ShimmerAnimation
-          color={colors.alpha(colors.blueGreyDark, 0.06)}
-          width={width}
-          // @ts-ignore
-          gradientColor={colors.alpha(colors.blueGreyDark, 0.06)}
-        />
-      </Box>
-    </AccentColorProvider>
-  );
-};
-
-const InfoCard = ({
-  // onPress,
-  title,
-  subtitle,
-  mainText,
-  icon,
-  accentColor,
-}: {
-  // onPress: () => void;
-  title: string;
-  subtitle: string;
-  mainText: string;
-  icon: string;
-  accentColor: string;
-}) => (
-  // <ButtonPressAnimation onPress={onPress} overflowMargin={50}>
-  <Box
-    padding="20px"
-    background="surfaceSecondaryElevated"
-    shadow="12px"
-    height={{ custom: 98 }}
-    borderRadius={18}
-  >
-    <Stack space="12px">
-      {/* <Inline space="4px" alignVertical="center"> */}
-      <Text color="labelSecondary" weight="bold" size="15pt">
-        {title}
-      </Text>
-      {/* <Text color="labelQuaternary" weight="heavy" size="13pt">
-            􀅵
-          </Text>
-        </Inline> */}
-      <Text color="label" weight="heavy" size="22pt">
-        {mainText}
-      </Text>
-      <Inline space="4px">
-        <Text
-          align="center"
-          weight="heavy"
-          size="12pt"
-          color={{ custom: accentColor }}
-        >
-          {icon}
-        </Text>
-        <Text weight="heavy" size="13pt" color={{ custom: accentColor }}>
-          {subtitle}
-        </Text>
-      </Inline>
-    </Stack>
-  </Box>
-  // </ButtonPressAnimation>
-);
+import { LeaderboardRow } from '../components/LeaderboardRow';
+import { Skeleton } from '../components/Skeleton';
+import { InfoCard } from '../components/InfoCard';
+import { displayNextDistribution } from '../constants';
 
 export default function PointsContent() {
   const { colors } = useTheme();
@@ -691,7 +445,6 @@ export default function PointsContent() {
                   <Box
                     background="surfaceSecondaryElevated"
                     borderRadius={18}
-                    paddingHorizontal="16px"
                     shadow="12px"
                   >
                     <Stack

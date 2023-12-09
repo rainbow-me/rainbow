@@ -5,6 +5,9 @@ import {
   OnboardPointsMutation,
   PointsOnboardingCategory,
 } from '@/graphql/__generated__/metadata';
+import * as i18n from '@/languages';
+
+const ONE_WEEK_MS = 604_800_000;
 
 export const enum RainbowPointsFlowSteps {
   Initialize = 0,
@@ -120,4 +123,34 @@ export const buildTwitterIntentMessage = (
   text += rainbows;
 
   return BASE_URL + text;
+};
+
+export const displayNextDistribution = (seconds: number) => {
+  const days = [
+    i18n.t(i18n.l.points.points.sunday),
+    i18n.t(i18n.l.points.points.monday),
+    i18n.t(i18n.l.points.points.tuesday),
+    i18n.t(i18n.l.points.points.wednesday),
+    i18n.t(i18n.l.points.points.thursday),
+    i18n.t(i18n.l.points.points.friday),
+    i18n.t(i18n.l.points.points.saturday),
+  ];
+
+  const ms = seconds * 1000;
+  const date = new Date(ms);
+  let hours = date.getHours();
+  const ampm = hours >= 12 ? 'pm' : 'am';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+
+  if (ms - Date.now() > ONE_WEEK_MS) {
+    return `${hours}${ampm} ${date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+    })}`;
+  } else {
+    const dayOfWeek = days[date.getDay()];
+
+    return `${hours}${ampm} ${dayOfWeek}`;
+  }
 };
