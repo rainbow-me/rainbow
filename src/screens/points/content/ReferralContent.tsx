@@ -53,6 +53,8 @@ export default function ReferralContent() {
   const { accentColor } = useAccountAccentColor();
   const { goBack, navigate } = useNavigation();
 
+  const placeholderColor = useForegroundColor('label');
+
   const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
   const externalReferralCode = params?.externalReferralCode;
@@ -108,6 +110,17 @@ export default function ReferralContent() {
   useEffect(() => {
     contentBottomSharedValue.value = withTiming(contentBottom);
   }, [contentBottom, contentBottomSharedValue]);
+
+  useFocusEffect(
+    useCallback(() => {
+      delay(600).then(() => textInputRef.current?.focus());
+
+      return () => {
+        setReferralCodeDisplay('');
+        setStatus('incomplete');
+      };
+    }, [])
+  );
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -266,7 +279,11 @@ export default function ReferralContent() {
                   value={referralCodeDisplay}
                   style={{
                     height: 48,
-                    ...(IS_IOS ? inputTextStyle : {}),
+                    ...(IS_IOS
+                      ? inputTextStyle
+                      : {
+                          color: placeholderColor,
+                        }),
                   }}
                   autoFocus={false}
                   maxLength={7}
@@ -274,6 +291,7 @@ export default function ReferralContent() {
                   textAlign="left"
                   autoCapitalize="characters"
                   placeholder="XXX-XXX"
+                  placeholderTextColor={placeholderColor}
                   onChangeText={onChangeText}
                 />
                 {status === 'valid' && (
@@ -304,7 +322,9 @@ export default function ReferralContent() {
       <Box
         position="absolute"
         bottom={{
-          custom: hasKeyboard ? keyboardHeight + 28 : getHeaderHeight() + 28,
+          custom: hasKeyboard
+            ? keyboardHeight + (ios ? 28 : 42)
+            : getHeaderHeight() + 28,
         }}
         left={{ custom: 20 }}
       >

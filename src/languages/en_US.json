@@ -1270,12 +1270,14 @@
         "error": "Oops!\nPlease pull to refresh.",
         "points": "points",
         "referral_code_copied": "Referral code copied",
-        "earn_points_for_referring": "Earn points for referring friends once they swap $100 through Rainbow",
+        "earn_points_for_referring": "Earn points when your referrals swap $100 through Rainbow, plus earn 10% of the points your referrals earn",
+        "now": "Now",
         "already_claimed_points": "Sorry! You have already claimed your points."
       },
       "console": {
         "claim_bonus_paragraph": "You'll receive an additional 100 points once you swap at least $100 through Rainbow",
-        "bonus_points": "Bonus Points",
+        "welcome_bonus": "Welcome Bonus",
+        "true_believer": "True Believer",
         "registration_complete": "Registration complete",
         "account": "Account",
         "points_earned": "Points Earned",
@@ -1304,7 +1306,8 @@
         "referral_link_bonus_text": "Tweet your referral link and get an extra 250 points",
         "referral_link_bonus_text_extended": "Plus you'll earn 10% of the points earned by anyone you refer",
         "complete_onboarding": "Done",
-        "share_to_x": "Share to X"
+        "share_to_x": "Share to X",
+        "hardware_wallet_alert": "Hardware wallet support is coming soon!"
       }
     },
     "pools": {
