@@ -27,6 +27,7 @@ import { useAccountProfile, useWallets } from '@/hooks';
 import { signPersonalMessage } from '@/model/wallet';
 import { RainbowError, logger } from '@/logger';
 import { queryClient } from '@/react-query';
+import { LedgerSigner } from '@/handlers/LedgerSigner';
 
 type PointsProfileContext = {
   step: RainbowPointsFlowSteps;
@@ -97,7 +98,7 @@ export const PointsProfileProvider = ({
   children: React.ReactNode;
 }) => {
   const { accountAddress } = useAccountProfile();
-  const { isHardwareWallet } = useWallets();
+  const { isHardwareWallet, selectedWallet } = useWallets();
 
   const [step, setStep] = useState<RainbowPointsFlowSteps>(
     RainbowPointsFlowSteps.Initialize
@@ -135,10 +136,10 @@ export const PointsProfileProvider = ({
     historicBalance?.earnings?.total;
 
   const signIn = useCallback(async () => {
-    if (isHardwareWallet) {
-      Alert.alert(i18n.t(i18n.l.points.console.hardware_wallet_alert));
-      return;
-    }
+    // if (isHardwareWallet) {
+    //   Alert.alert(i18n.t(i18n.l.points.console.hardware_wallet_alert));
+    //   return;
+    // }
     let points;
     let signature;
     const challengeResponse = await metadataPOSTClient.getPointsOnboardChallenge(
@@ -150,8 +151,15 @@ export const PointsProfileProvider = ({
 
     const challenge = challengeResponse?.pointsOnboardChallenge;
     if (challenge) {
-      const signatureResponse = await signPersonalMessage(challenge);
-      signature = signatureResponse?.result;
+      let signature;
+      if (isHardwareWallet) {
+        signature = await (selectedWallet as LedgerSigner).signMessage(
+          challenge
+        );
+      } else {
+        const signatureResponse = await signPersonalMessage(challenge);
+        signature = signatureResponse?.result;
+      }
       if (signature) {
         points = await metadataPOSTClient.onboardPoints({
           address: accountAddress,
