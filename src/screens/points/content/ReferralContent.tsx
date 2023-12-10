@@ -41,7 +41,8 @@ export default function ReferralContent() {
   const { accentColor } = useAccountAccentColor();
   const { goBack, navigate } = useNavigation();
 
-  const placeholderColor = useForegroundColor('label');
+  const label = useForegroundColor('label');
+  const labelQuaternary = useForegroundColor('labelQuaternary');
 
   const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
@@ -256,7 +257,7 @@ export default function ReferralContent() {
                     ...(IS_IOS
                       ? inputTextStyle
                       : {
-                          color: placeholderColor,
+                          color: label,
                         }),
                   }}
                   autoFocus={false}
@@ -265,7 +266,7 @@ export default function ReferralContent() {
                   textAlign="left"
                   autoCapitalize="characters"
                   placeholder="XXX-XXX"
-                  placeholderTextColor={placeholderColor}
+                  placeholderTextColor={labelQuaternary}
                   onChangeText={onChangeText}
                 />
                 {status === 'valid' && (
