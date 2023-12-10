@@ -52,6 +52,7 @@ export default function ReferralContent() {
   const [status, setStatus] = useState<'incomplete' | 'valid' | 'invalid'>(
     'incomplete'
   );
+  const [goingBack, setGoingBack] = useState(false);
 
   const textInputRef = React.useRef<TextInput>(null);
 
@@ -100,11 +101,7 @@ export default function ReferralContent() {
   useFocusEffect(
     useCallback(() => {
       delay(600).then(() => textInputRef.current?.focus());
-
-      return () => {
-        setReferralCodeDisplay('');
-        setStatus('incomplete');
-      };
+      setGoingBack(false);
     }, [])
   );
 
@@ -168,6 +165,8 @@ export default function ReferralContent() {
 
   const onChangeText = useCallback(
     (code: string) => {
+      if (goingBack) return;
+
       const rawCode = code.replace(/-/g, '').slice(0, 6).toLocaleUpperCase();
       let formattedCode = rawCode;
 
@@ -191,7 +190,7 @@ export default function ReferralContent() {
         validateReferralCode(rawCode);
       }
     },
-    [referralCodeDisplay.length, validateReferralCode]
+    [goingBack, referralCodeDisplay.length, validateReferralCode]
   );
 
   return (
@@ -298,12 +297,19 @@ export default function ReferralContent() {
         position="absolute"
         bottom={{
           custom: hasKeyboard
-            ? keyboardHeight + (ios ? 28 : 42)
+            ? keyboardHeight + (IS_IOS ? 28 : 42)
             : getHeaderHeight() + 28,
         }}
         left={{ custom: 20 }}
       >
-        <ButtonPressAnimation onPress={goBack}>
+        <ButtonPressAnimation
+          onPress={() => {
+            setReferralCodeDisplay('');
+            setStatus('incomplete');
+            setGoingBack(true);
+            goBack();
+          }}
+        >
           <Text color={{ custom: accentColor }} size="20pt" weight="bold">
             {`􀆉 ${i18n.t(i18n.l.points.referral.back)}`}
           </Text>
