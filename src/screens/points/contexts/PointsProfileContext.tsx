@@ -25,6 +25,8 @@ import { signPersonalMessage } from '@/model/wallet';
 import { RainbowError, logger } from '@/logger';
 import { queryClient } from '@/react-query';
 import { useNavigation } from '@/navigation';
+import { getProviderForNetwork } from '@/handlers/web3';
+import { Network } from '@/networks/types';
 
 type PointsProfileContext = {
   step: RainbowPointsFlowSteps;
@@ -96,7 +98,7 @@ export const PointsProfileProvider = ({
 }) => {
   const { accountAddress } = useAccountProfile();
   const { isHardwareWallet } = useWallets();
-  const { navigate } = useNavigation();
+  const { navigate, goBack } = useNavigation();
 
   const [step, setStep] = useState<RainbowPointsFlowSteps>(
     RainbowPointsFlowSteps.Initialize
@@ -145,9 +147,15 @@ export const PointsProfileProvider = ({
 
     const challenge = challengeResponse?.pointsOnboardChallenge;
     if (challenge) {
-      console.log('signing message');
-      const signatureResponse = await signPersonalMessage(challenge);
-      console.log('!!!!!!!: ', { signatureResponse });
+      const provider = await getProviderForNetwork(Network.mainnet);
+      const signatureResponse = await signPersonalMessage(
+        challenge,
+        undefined,
+        provider
+      );
+      if (signatureResponse && isHardwareWallet) {
+        goBack();
+      }
       signature = signatureResponse?.result;
       if (signature) {
         points = await metadataPOSTClient.onboardPoints({
@@ -182,7 +190,7 @@ export const PointsProfileProvider = ({
         );
       }
     }
-  }, [accountAddress, referralCode]);
+  }, [accountAddress, goBack, isHardwareWallet, referralCode]);
 
   const signInHandler = useCallback(async () => {
     if (isHardwareWallet) {
