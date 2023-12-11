@@ -131,7 +131,7 @@ const DEFAULT_CONFIG: RainbowConfig = {
   base_swaps_enabled: false,
   mints_enabled: true,
   points_enabled: true,
-  points_fully_enabled: false,
+  points_fully_enabled: true,
   rpc_proxy_enabled: true,
 };
 
