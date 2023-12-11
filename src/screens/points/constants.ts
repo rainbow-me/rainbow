@@ -122,7 +122,9 @@ export const displayNextDistribution = (seconds: number) => {
 
   const ms = seconds * 1000;
   const date = new Date(ms);
-  let hours = date.getHours();
+  let minutes = date.getMinutes();
+  minutes = minutes % 60;
+  let hours = date.getHours() + (minutes <= 30 ? 0 : 1);
   const ampm = hours >= 12 ? 'pm' : 'am';
   hours = hours % 12;
   hours = hours ? hours : 12; // the hour '0' should be '12'
