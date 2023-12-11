@@ -145,10 +145,6 @@ export const PointsProfileProvider = ({
     historicBalance?.earnings?.total;
 
   const signIn = useCallback(async () => {
-    // if (isHardwareWallet) {
-    //   Alert.alert(i18n.t(i18n.l.points.console.hardware_wallet_alert));
-    //   return;
-    // }
     analyticsV2.track(
       analyticsV2.event.pointsOnboardingScreenPressedSignInButton,
       {
