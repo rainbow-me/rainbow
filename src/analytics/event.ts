@@ -99,6 +99,29 @@ export const event = {
   mintsMintingNFT: 'Minting NFT',
   mintsMintedNFT: 'Minted NFT',
   mintsErrorMintingNFT: 'Error Minting NFT',
+  pointsViewedClaimScreen: 'Viewed claim your points screen',
+  pointsViewedReferralScreen: 'Viewed points referral code screen',
+  pointsViewedPointsScreen: 'Viewed main points screen',
+  pointsViewedOnboardingSheet: 'Viewed points onboarding screen',
+  pointsOnboardingScreenPressedSignInButton:
+    'Pressed sign in button on points onboarding screen',
+  pointsOnboardingScreenSuccessfullySignedIn:
+    'Successfully signed in on points onboarding screen',
+  pointsOnboardingScreenFailedToSignIn:
+    'Failed to sign in on points onboarding screen',
+  pointsOnboardingScreenPressedShareToXButton:
+    'Pressed share to X on points onboarding screen',
+  pointsOnboardingScreenPressedSkipShareToXButton:
+    'Pressed skip button on onboarding screen',
+  pointsOnboardingScreenPressedContinueButton:
+    'Pressed continue button on onboarding screen',
+  pointsOnboardingScreenPressedDoneButton:
+    'Pressed done button on onboarding screen',
+  pointsReferralCodeDeeplinkOpened: 'Opened points referral code deeplink',
+  pointsPointsScreenPressedCopyReferralCodeButton:
+    'Pressed copy referral code button on points screen',
+  pointsPointsScreenPressedShareReferralLinkButton:
+    'Pressed share referral link button on points screen',
 } as const;
 
 /**
