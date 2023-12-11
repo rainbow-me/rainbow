@@ -1,6 +1,13 @@
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { HapticFeedbackType } from '@/utils/haptics';
 import { safeAreaInsetValues } from '@/utils';
+import {
+  OnboardPointsMutation,
+  PointsOnboardingCategory,
+} from '@/graphql/__generated__/metadata';
+import * as i18n from '@/languages';
+
+const ONE_WEEK_MS = 604_800_000;
 
 export const enum RainbowPointsFlowSteps {
   Initialize = 0,
@@ -65,3 +72,85 @@ export const generateRainbowColors = (
 
 export const triggerHapticFeedback = (hapticType: HapticFeedbackType) =>
   ReactNativeHapticFeedback.trigger(hapticType);
+
+const BASE_URL = `https://twitter.com/intent/tweet?text=`;
+const RAINBOW = `🌈`;
+const RAINBOWS_STRING_GENERATOR = (num: number) => RAINBOW.repeat(num);
+export const buildTwitterIntentMessage = (
+  profile: OnboardPointsMutation | undefined,
+  metamaskSwaps: PointsOnboardingCategory | undefined
+) => {
+  if (!profile?.onboardPoints) return;
+
+  const ONBOARDING_TOTAL_POINTS =
+    profile.onboardPoints.user.onboarding.earnings.total;
+  const referralCode = profile.onboardPoints.user.referralCode;
+
+  if (metamaskSwaps && metamaskSwaps?.earnings?.total > 0) {
+    const METAMASK_POINTS = metamaskSwaps.earnings.total;
+
+    const rainbows = RAINBOWS_STRING_GENERATOR(3);
+
+    let text = rainbows;
+    text += encodeURIComponent('\n\n');
+    text += encodeURIComponent(
+      `I just had ${
+        ONBOARDING_TOTAL_POINTS - METAMASK_POINTS
+      } Rainbow Points dropped into my wallet — plus an extra ${METAMASK_POINTS} Points as a bonus for migrating my MetaMask wallet into Rainbow`
+    );
+    text += `🦊${encodeURIComponent(' ')}🔫`;
+    text += encodeURIComponent('\n\n');
+    text += `${encodeURIComponent(
+      'Everybody has at least 100 points waiting for them, but you might have more! Claim your drop: '
+    )}https://rainbow.me/points?ref=${referralCode}`;
+    text += encodeURIComponent('\n\n');
+    text += rainbows;
+
+    return BASE_URL + text;
+  }
+
+  const rainbows = RAINBOWS_STRING_GENERATOR(17);
+
+  let text = rainbows;
+  text += encodeURIComponent('\n\n');
+  text += encodeURIComponent(
+    `I just had ${ONBOARDING_TOTAL_POINTS} Rainbow Points dropped into my wallet — everybody has at least 100 points waiting for them, but you might have more!\n\n`
+  );
+  text += `${encodeURIComponent(
+    'Claim your drop: '
+  )}https://rainbow.me/points?ref=${referralCode}`;
+  text += encodeURIComponent('\n\n');
+  text += rainbows;
+
+  return BASE_URL + text;
+};
+
+export const displayNextDistribution = (seconds: number) => {
+  const days = [
+    i18n.t(i18n.l.points.points.sunday),
+    i18n.t(i18n.l.points.points.monday),
+    i18n.t(i18n.l.points.points.tuesday),
+    i18n.t(i18n.l.points.points.wednesday),
+    i18n.t(i18n.l.points.points.thursday),
+    i18n.t(i18n.l.points.points.friday),
+    i18n.t(i18n.l.points.points.saturday),
+  ];
+
+  const ms = seconds * 1000;
+  const date = new Date(ms);
+  let hours = date.getHours();
+  const ampm = hours >= 12 ? 'pm' : 'am';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+
+  if (ms - Date.now() > ONE_WEEK_MS) {
+    return `${hours}${ampm} ${date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+    })}`;
+  } else {
+    const dayOfWeek = days[date.getDay()];
+
+    return `${hours}${ampm} ${dayOfWeek}`;
+  }
+};

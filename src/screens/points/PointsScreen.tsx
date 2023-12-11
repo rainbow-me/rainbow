@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Page } from '@/components/layout';
 import { Navbar } from '@/components/navbar/Navbar';
 import Routes from '@/navigation/routesNames';
@@ -11,7 +11,7 @@ import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ButtonPressAnimation } from '@/components/animations';
 import * as i18n from '@/languages';
-import { usePoints } from '@/resources/points';
+import { usePoints, usePointsReferralCode } from '@/resources/points';
 import PointsContent from './content/PointsContent';
 import PlaceholderContent from './content/PlaceholderContent';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
@@ -19,6 +19,8 @@ import { deviceUtils } from '@/utils';
 import ClaimContent from './content/ClaimContent';
 import ReferralContent from './content/ReferralContent';
 import { PointsErrorType } from '@/graphql/__generated__/metadataPOST';
+import { delay } from '@/utils/delay';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 
 export const POINTS_ROUTES = {
   CLAIM_CONTENT: 'ClaimContent',
@@ -40,9 +42,35 @@ export default function PointsScreen() {
   const { data } = usePoints({
     walletAddress: accountAddress,
   });
+  const {
+    data: referralCode,
+    refetch: resetReferralCode,
+  } = usePointsReferralCode();
 
   const isOnboarded =
     data?.points?.error?.type !== PointsErrorType.NonExistingUser;
+
+  useEffect(() => {
+    if (referralCode && pointsFullyEnabled) {
+      navigate(Routes.POINTS_SCREEN);
+      delay(700)
+        .then(() => {
+          if (!isOnboarded) {
+            navigate(POINTS_ROUTES.REFERRAL_CONTENT);
+          } else {
+            Alert.alert(i18n.t(i18n.l.points.points.already_claimed_points));
+          }
+        })
+        .then(() => resetReferralCode());
+    }
+  }, [
+    data,
+    isOnboarded,
+    navigate,
+    pointsFullyEnabled,
+    referralCode,
+    resetReferralCode,
+  ]);
 
   return (
     <Box as={Page} flex={1} height="full" testID="points-screen" width="full">

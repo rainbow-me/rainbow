@@ -35,19 +35,25 @@ import { PointsErrorType } from '@/graphql/__generated__/metadataPOST';
 import { RainbowError, logger } from '@/logger';
 import { ActionButton } from '@/screens/points/components/ActionButton';
 import { PointsIconAnimation } from '../components/PointsIconAnimation';
+import { usePointsReferralCode } from '@/resources/points';
 
 export default function ReferralContent() {
   const { accentColor } = useAccountAccentColor();
   const { goBack, navigate } = useNavigation();
 
+  const label = useForegroundColor('label');
+  const labelQuaternary = useForegroundColor('labelQuaternary');
+
   const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
+  const { data: externalReferralCode } = usePointsReferralCode();
 
   const [referralCodeDisplay, setReferralCodeDisplay] = useState('');
   const [referralCode, setReferralCode] = useState('');
   const [status, setStatus] = useState<'incomplete' | 'valid' | 'invalid'>(
     'incomplete'
   );
+  const [goingBack, setGoingBack] = useState(false);
 
   const textInputRef = React.useRef<TextInput>(null);
 
@@ -95,14 +101,19 @@ export default function ReferralContent() {
 
   useFocusEffect(
     useCallback(() => {
-      delay(400).then(() => textInputRef.current?.focus());
-
-      return () => {
-        setReferralCodeDisplay('');
-        setStatus('incomplete');
-      };
+      delay(600).then(() => textInputRef.current?.focus());
+      setGoingBack(false);
     }, [])
   );
+
+  useEffect(() => {
+    if (externalReferralCode) {
+      setReferralCodeDisplay(externalReferralCode);
+      validateReferralCode(
+        externalReferralCode.replace(/-/g, '').slice(0, 6).toLocaleUpperCase()
+      );
+    }
+  }, [externalReferralCode, validateReferralCode]);
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -155,6 +166,8 @@ export default function ReferralContent() {
 
   const onChangeText = useCallback(
     (code: string) => {
+      if (goingBack) return;
+
       const rawCode = code.replace(/-/g, '').slice(0, 6).toLocaleUpperCase();
       let formattedCode = rawCode;
 
@@ -178,7 +191,7 @@ export default function ReferralContent() {
         validateReferralCode(rawCode);
       }
     },
-    [referralCodeDisplay.length, validateReferralCode]
+    [goingBack, referralCodeDisplay.length, validateReferralCode]
   );
 
   return (
@@ -241,7 +254,11 @@ export default function ReferralContent() {
                   value={referralCodeDisplay}
                   style={{
                     height: 48,
-                    ...(IS_IOS ? inputTextStyle : {}),
+                    ...(IS_IOS
+                      ? inputTextStyle
+                      : {
+                          color: label,
+                        }),
                   }}
                   autoFocus={false}
                   maxLength={7}
@@ -249,6 +266,7 @@ export default function ReferralContent() {
                   textAlign="left"
                   autoCapitalize="characters"
                   placeholder="XXX-XXX"
+                  placeholderTextColor={labelQuaternary}
                   onChangeText={onChangeText}
                 />
                 {status === 'valid' && (
@@ -279,11 +297,20 @@ export default function ReferralContent() {
       <Box
         position="absolute"
         bottom={{
-          custom: hasKeyboard ? keyboardHeight + 28 : getHeaderHeight() + 28,
+          custom: hasKeyboard
+            ? keyboardHeight + (IS_IOS ? 28 : 42)
+            : getHeaderHeight() + 28,
         }}
         left={{ custom: 20 }}
       >
-        <ButtonPressAnimation onPress={goBack}>
+        <ButtonPressAnimation
+          onPress={() => {
+            setReferralCodeDisplay('');
+            setStatus('incomplete');
+            setGoingBack(true);
+            goBack();
+          }}
+        >
           <Text color={{ custom: accentColor }} size="20pt" weight="bold">
             {`􀆉 ${i18n.t(i18n.l.points.referral.back)}`}
           </Text>

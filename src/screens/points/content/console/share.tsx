@@ -68,7 +68,10 @@ export const Share = () => {
           color={textColors.account}
           delayStart={1000}
           onComplete={() => {
-            setShowShareButtons(true);
+            const complete = setTimeout(() => {
+              setShowShareButtons(true);
+            }, 500);
+            return () => clearTimeout(complete);
           }}
           weight="normal"
           multiline

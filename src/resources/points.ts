@@ -10,6 +10,20 @@ export function pointsQueryKey({ address }: { address: string }) {
   return createQueryKey('points', { address }, { persisterVersion: 1 });
 }
 
+export const pointsReferralCodeQueryKey = createQueryKey(
+  'pointsReferralCode',
+  {}
+);
+
+export function usePointsReferralCode() {
+  const query = useQuery<string>(pointsReferralCodeQueryKey, () => '', {
+    enabled: false,
+    staleTime: Infinity,
+  });
+
+  return query;
+}
+
 export function usePoints({ walletAddress }: { walletAddress: string }) {
   const pointsEnabled =
     (useExperimentalFlag(POINTS) || config.points_fully_enabled) &&
@@ -32,7 +46,7 @@ export function usePoints({ walletAddress }: { walletAddress: string }) {
 
   useEffect(() => {
     const nextDistribution = query?.data?.points?.meta?.distribution?.next;
-    if (nextDistribution && Date.now() / 1000 > nextDistribution) {
+    if (nextDistribution && Date.now() >= nextDistribution * 1000) {
       query.refetch();
     }
   }, [query]);
