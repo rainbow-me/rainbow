@@ -22,6 +22,7 @@ import {
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
 import { showNotificationSubscriptionErrorAlert, showOfflineAlert } from '@/screens/SettingsSheet/components/notificationAlerts';
 import { useNetInfo } from '@react-native-community/netinfo';
+import { DEFAULT_ENABLED_TOPIC_SETTINGS } from '@/notifications/settings/constants';
 
 const makeTopicRowsData = (colors: ThemeContextProps['colors']) => [
   {
@@ -97,6 +98,7 @@ const WalletNotificationsSettings = () => {
         ...options,
       };
       setNotificationSettings(newSettingsForWallet);
+      setTopicState(newSettingsForWallet.topics);
     },
     [address, notifications]
   );
@@ -149,6 +151,7 @@ const WalletNotificationsSettings = () => {
       }
       updateSettings({
         enabled: !notificationsEnabled,
+        topics: notificationsEnabled ? {} : DEFAULT_ENABLED_TOPIC_SETTINGS,
       });
       setAllState(prev => ({ ...prev, loading: false }));
     } else {
