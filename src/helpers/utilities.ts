@@ -607,16 +607,23 @@ export const pickBy = <T>(
  * @param ms ms since epoch
  * @returns string of the format "Xd Yh Zm"
  */
-export const getFormattedTimeQuantity = (ms: number): string => {
-  const totalMinutes = Math.ceil(ms / (1000 * 60));
+export const getFormattedTimeQuantity = (
+  ms: number,
+  maxUnits?: number
+): string => {
+  const totalSeconds = ms / 1000;
+  const totalMinutes = Math.ceil(totalSeconds / 60);
   const totalHours = Math.floor(totalMinutes / 60);
   const days = Math.floor(totalHours / 24);
   const hours = totalHours % 24;
   const minutes = totalMinutes % 60;
 
-  const formattedMinutes = minutes || (!hours && !days) ? minutes + 'm' : '';
-  const formattedHours = hours ? hours + 'h ' : '';
-  const formattedDays = days ? days + 'd ' : '';
+  const formattedMinutes = (minutes || (!hours && !days)) && minutes + 'm';
+  const formattedHours = hours && hours + 'h';
+  const formattedDays = days && days + 'd';
 
-  return (formattedDays + formattedHours + formattedMinutes).trim();
+  return [formattedDays, formattedHours, formattedMinutes]
+    .filter(str => str)
+    .slice(0, maxUnits)
+    .join(' ');
 };

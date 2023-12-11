@@ -251,3 +251,133 @@ query simulateMessage(
     }
   }
 }
+
+query getPointsDataForWallet($address: String!) {
+  points(address: $address) {
+    error {
+      message
+      type
+    }
+    meta {
+      distribution {
+        next
+      }
+      status
+    }
+    leaderboard {
+      stats {
+        total_users
+        total_points
+      }
+      accounts {
+        address
+        earnings {
+          total
+        }
+        ens
+        avatarURL
+      }
+    }
+    user {
+      referralCode
+      earnings {
+        total
+      }
+      stats {
+        position {
+          current
+        }
+      }
+    }
+  }
+}
+
+query getPointsOnboardChallenge($address: String!, $referral: String) {
+  pointsOnboardChallenge(address: $address, referral: $referral)
+}
+
+mutation onboardPoints(
+  $address: String!
+  $signature: String!
+  $referral: String
+) {
+  onboardPoints(address: $address, signature: $signature, referral: $referral) {
+    meta {
+      distribution {
+        next
+      }
+      status
+    }
+    leaderboard {
+      stats {
+        total_users
+        total_points
+      }
+      accounts {
+        address
+        earnings {
+          total
+        }
+        ens
+        avatarURL
+      }
+    }
+    user {
+      referralCode
+      earnings {
+        total
+      }
+      stats {
+        position {
+          current
+        }
+      }
+      onboarding {
+        earnings {
+          total
+        }
+        categories {
+          data {
+            usd_amount
+            total_collections
+            owned_collections
+          }
+          type
+          display_type
+          earnings {
+            total
+          }
+        }
+      }
+    }
+    error {
+      message
+      type
+    }
+  }
+}
+
+query validateReferral($code: String!) {
+  validateReferral(referral: $code) {
+    valid
+    error {
+      type
+      message
+    }
+  }
+}
+
+mutation redeemCodeForPoints($address: String!, $redemptionCode: String!) {
+  redeemCode(address: $address, code: $redemptionCode) {
+    earnings {
+      total
+    }
+    redemption_code {
+      code
+    }
+    error {
+      type
+      message
+    }
+  }
+}

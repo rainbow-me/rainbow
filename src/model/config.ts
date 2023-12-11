@@ -69,6 +69,7 @@ export interface RainbowConfig
   base_swaps_enabled: boolean;
   mints_enabled: boolean;
   points_enabled: boolean;
+  points_fully_enabled: boolean;
   rpc_proxy_enabled: boolean;
 }
 
@@ -130,6 +131,7 @@ const DEFAULT_CONFIG: RainbowConfig = {
   base_swaps_enabled: false,
   mints_enabled: true,
   points_enabled: true,
+  points_fully_enabled: false,
   rpc_proxy_enabled: true,
 };
 
@@ -185,6 +187,7 @@ const init = async () => {
         key === 'base_swaps_enabled' ||
         key === 'mints_enabled' ||
         key === 'points_enabled' ||
+        key === 'points_fully_enabled' ||
         key === 'rpc_proxy_enabled'
       ) {
         config[key] = entry.asBoolean();
