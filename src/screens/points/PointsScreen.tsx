@@ -19,10 +19,9 @@ import { deviceUtils } from '@/utils';
 import ClaimContent from './content/ClaimContent';
 import ReferralContent from './content/ReferralContent';
 import { PointsErrorType } from '@/graphql/__generated__/metadataPOST';
-
+import { delay } from '@/utils/delay';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { delay } from '@/utils/delay';
 
 export const POINTS_ROUTES = {
   CLAIM_CONTENT: 'ClaimContent',

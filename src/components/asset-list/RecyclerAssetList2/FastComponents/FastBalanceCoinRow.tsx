@@ -135,14 +135,14 @@ const MemoizedBalanceCoinRow = React.memo(
         <ButtonPressAnimation
           onPress={handlePress}
           scaleTo={0.96}
-          testID={`balance-coin-row-${item.name}`}
+          testID={`balance-coin-row-${item?.name}`}
         >
           <View style={[sx.container]}>
             <FastCoinIcon
-              address={item.address}
-              network={item.network}
-              mainnetAddress={item.mainnet_address}
-              symbol={item.symbol}
+              address={item?.address}
+              network={item?.network}
+              mainnetAddress={item?.mainnet_address}
+              symbol={item?.symbol}
               theme={theme}
             />
 
@@ -155,7 +155,7 @@ const MemoizedBalanceCoinRow = React.memo(
                     size="16px / 22px (Deprecated)"
                     weight="semibold"
                   >
-                    {item.name}
+                    {item?.name}
                   </Text>
                 </View>
 

@@ -53,18 +53,19 @@ export default function ReferralContent() {
   const { accentColor } = useAccountAccentColor();
   const { goBack, navigate } = useNavigation();
 
-  const placeholderColor = useForegroundColor('label');
+  const label = useForegroundColor('label');
+  const labelQuaternary = useForegroundColor('labelQuaternary');
 
   const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
   const externalReferralCode = params?.externalReferralCode;
-  console.log({ externalReferralCode });
 
   const [referralCodeDisplay, setReferralCodeDisplay] = useState('');
   const [referralCode, setReferralCode] = useState('');
   const [status, setStatus] = useState<'incomplete' | 'valid' | 'invalid'>(
     'incomplete'
   );
+  const [goingBack, setGoingBack] = useState(false);
 
   const textInputRef = React.useRef<TextInput>(null);
 
@@ -74,7 +75,6 @@ export default function ReferralContent() {
       code,
     });
     if (!res?.validateReferral?.valid) {
-      console.log('false black bear');
       if (
         res.validateReferral?.error?.type ===
         PointsErrorType.InvalidReferralCode
@@ -114,13 +114,18 @@ export default function ReferralContent() {
   useFocusEffect(
     useCallback(() => {
       delay(600).then(() => textInputRef.current?.focus());
-
-      return () => {
-        setReferralCodeDisplay('');
-        setStatus('incomplete');
-      };
+      setGoingBack(false);
     }, [])
   );
+
+  useEffect(() => {
+    if (externalReferralCode) {
+      setReferralCodeDisplay(externalReferralCode);
+      validateReferralCode(
+        externalReferralCode.replace(/-/g, '').slice(0, 6).toLocaleUpperCase()
+      );
+    }
+  }, [externalReferralCode, validateReferralCode]);
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -173,6 +178,8 @@ export default function ReferralContent() {
 
   const onChangeText = useCallback(
     (code: string) => {
+      if (goingBack) return;
+
       const rawCode = code.replace(/-/g, '').slice(0, 6).toLocaleUpperCase();
       let formattedCode = rawCode;
 
@@ -196,7 +203,7 @@ export default function ReferralContent() {
         validateReferralCode(rawCode);
       }
     },
-    [referralCodeDisplay.length, validateReferralCode]
+    [goingBack, referralCodeDisplay.length, validateReferralCode]
   );
 
   useFocusEffect(
@@ -282,7 +289,7 @@ export default function ReferralContent() {
                     ...(IS_IOS
                       ? inputTextStyle
                       : {
-                          color: placeholderColor,
+                          color: label,
                         }),
                   }}
                   autoFocus={false}
@@ -291,7 +298,7 @@ export default function ReferralContent() {
                   textAlign="left"
                   autoCapitalize="characters"
                   placeholder="XXX-XXX"
-                  placeholderTextColor={placeholderColor}
+                  placeholderTextColor={labelQuaternary}
                   onChangeText={onChangeText}
                 />
                 {status === 'valid' && (
@@ -323,12 +330,19 @@ export default function ReferralContent() {
         position="absolute"
         bottom={{
           custom: hasKeyboard
-            ? keyboardHeight + (ios ? 28 : 42)
+            ? keyboardHeight + (IS_IOS ? 28 : 42)
             : getHeaderHeight() + 28,
         }}
         left={{ custom: 20 }}
       >
-        <ButtonPressAnimation onPress={goBack}>
+        <ButtonPressAnimation
+          onPress={() => {
+            setReferralCodeDisplay('');
+            setStatus('incomplete');
+            setGoingBack(true);
+            goBack();
+          }}
+        >
           <Text color={{ custom: accentColor }} size="20pt" weight="bold">
             {`􀆉 ${i18n.t(i18n.l.points.referral.back)}`}
           </Text>
