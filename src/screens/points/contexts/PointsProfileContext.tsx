@@ -30,6 +30,7 @@ import { queryClient } from '@/react-query';
 import { useNavigation } from '@/navigation';
 import { getProviderForNetwork } from '@/handlers/web3';
 import { Network } from '@/networks/types';
+import { analyticsV2 } from '@/analytics';
 
 type PointsProfileContext = {
   step: RainbowPointsFlowSteps;
@@ -38,6 +39,8 @@ type PointsProfileContext = {
   setProfile: Dispatch<SetStateAction<OnboardPointsMutation | undefined>>;
   referralCode: string | undefined;
   setReferralCode: Dispatch<SetStateAction<string | undefined>>;
+  deeplinked: boolean;
+  setDeeplinked: Dispatch<SetStateAction<boolean>>;
   intent: string | undefined;
   setIntent: Dispatch<SetStateAction<string | undefined>>;
   animationKey: number;
@@ -73,6 +76,8 @@ const PointsProfileContext = createContext<PointsProfileContext>({
   setProfile: noop,
   referralCode: undefined,
   setReferralCode: noop,
+  deeplinked: false,
+  setDeeplinked: noop,
   intent: undefined,
   setIntent: noop,
   animationKey: 0,
@@ -108,6 +113,7 @@ export const PointsProfileProvider = ({
   );
   const [profile, setProfile] = useState<OnboardPointsMutation | undefined>();
   const [referralCode, setReferralCode] = useState<string>();
+  const [deeplinked, setDeeplinked] = useState<boolean>(false);
   const [intent, setIntent] = useState<string>();
   const [animationKey, setAnimationKey] = useState(0);
   const [shareBonusPoints, setShareBonusPoints] = useState(0);
@@ -143,6 +149,15 @@ export const PointsProfileProvider = ({
     //   Alert.alert(i18n.t(i18n.l.points.console.hardware_wallet_alert));
     //   return;
     // }
+    analyticsV2.track(
+      analyticsV2.event.pointsOnboardingScreenPressedSignInButton,
+      {
+        deeplinked,
+        referralCode: !!referralCode,
+        hardwareWallet: isHardwareWallet,
+      }
+    );
+
     let points;
     let signature;
     const challengeResponse = await metadataPOSTClient.getPointsOnboardChallenge(
@@ -190,14 +205,28 @@ export const PointsProfileProvider = ({
           );
         }
       } else {
+        analyticsV2.track(
+          analyticsV2.event.pointsOnboardingScreenSuccessfullySignedIn,
+          {
+            deeplinked,
+            referralCode: !!referralCode,
+            hardwareWallet: isHardwareWallet,
+          }
+        );
         setProfile(points);
         queryClient.setQueryData(
           pointsQueryKey({ address: accountAddress }),
           points
         );
+        return;
       }
     }
-  }, [accountAddress, goBack, isHardwareWallet, referralCode]);
+    analyticsV2.track(analyticsV2.event.pointsOnboardingScreenFailedToSignIn, {
+      deeplinked,
+      referralCode: !!referralCode,
+      hardwareWallet: isHardwareWallet,
+    });
+  }, [accountAddress, deeplinked, goBack, isHardwareWallet, referralCode]);
 
   const signInHandler = useCallback(async () => {
     if (isHardwareWallet) {
@@ -222,6 +251,8 @@ export const PointsProfileProvider = ({
         setProfile,
         referralCode,
         setReferralCode,
+        deeplinked,
+        setDeeplinked,
         intent,
         setIntent,
         animationKey,

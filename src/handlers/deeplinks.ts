@@ -203,6 +203,7 @@ export default async function handleDeeplink(
       case 'points': {
         const referralCode = query?.ref;
         if (referralCode) {
+          analyticsV2.track(analyticsV2.event.pointsReferralCodeDeeplinkOpened);
           queryClient.setQueryData(
             pointsReferralCodeQueryKey,
             (

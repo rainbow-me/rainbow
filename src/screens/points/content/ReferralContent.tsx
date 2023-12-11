@@ -36,6 +36,7 @@ import { RainbowError, logger } from '@/logger';
 import { ActionButton } from '@/screens/points/components/ActionButton';
 import { PointsIconAnimation } from '../components/PointsIconAnimation';
 import { usePointsReferralCode } from '@/resources/points';
+import { analyticsV2 } from '@/analytics';
 
 export default function ReferralContent() {
   const { accentColor } = useAccountAccentColor();
@@ -50,6 +51,7 @@ export default function ReferralContent() {
 
   const [referralCodeDisplay, setReferralCodeDisplay] = useState('');
   const [referralCode, setReferralCode] = useState('');
+  const [deeplinked, setDeeplinked] = useState(false);
   const [status, setStatus] = useState<'incomplete' | 'valid' | 'invalid'>(
     'incomplete'
   );
@@ -57,31 +59,38 @@ export default function ReferralContent() {
 
   const textInputRef = React.useRef<TextInput>(null);
 
-  const validateReferralCode = useCallback(async (code: string) => {
-    if (code.length !== 6) return;
-    const res = await metadataPOSTClient.validateReferral({
-      code,
-    });
-    if (!res?.validateReferral?.valid) {
-      if (
-        res.validateReferral?.error?.type ===
-        PointsErrorType.InvalidReferralCode
-      ) {
-        setStatus('invalid');
-        haptics.notificationError();
+  const validateReferralCode = useCallback(
+    async (code: string) => {
+      if (code.length !== 6) return;
+      const res = await metadataPOSTClient.validateReferral({
+        code,
+      });
+      if (!res?.validateReferral?.valid) {
+        if (
+          res.validateReferral?.error?.type ===
+          PointsErrorType.InvalidReferralCode
+        ) {
+          setStatus('invalid');
+          haptics.notificationError();
+        } else {
+          logger.error(new RainbowError('Error validating referral code'), {
+            referralCode: code,
+          });
+          Alert.alert(i18n.t(i18n.l.points.referral.error));
+        }
       } else {
-        logger.error(new RainbowError('Error validating referral code'), {
-          referralCode: code,
-        });
-        Alert.alert(i18n.t(i18n.l.points.referral.error));
+        setStatus('valid');
+        analyticsV2.track(
+          analyticsV2.event.pointsReferralScreenValidatedReferralCode,
+          { deeplinked }
+        );
+        setReferralCode(code);
+        textInputRef.current?.blur();
+        haptics.notificationSuccess();
       }
-    } else {
-      setStatus('valid');
-      setReferralCode(code);
-      textInputRef.current?.blur();
-      haptics.notificationSuccess();
-    }
-  }, []);
+    },
+    [deeplinked]
+  );
 
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const [isKeyboardOpening, setIsKeyboardOpening] = useState(false);
@@ -101,6 +110,7 @@ export default function ReferralContent() {
 
   useFocusEffect(
     useCallback(() => {
+      analyticsV2.track(analyticsV2.event.pointsViewedReferralScreen);
       delay(600).then(() => textInputRef.current?.focus());
       setGoingBack(false);
     }, [])
@@ -108,6 +118,7 @@ export default function ReferralContent() {
 
   useEffect(() => {
     if (externalReferralCode) {
+      setDeeplinked(true);
       setReferralCodeDisplay(externalReferralCode);
       validateReferralCode(
         externalReferralCode.replace(/-/g, '').slice(0, 6).toLocaleUpperCase()
@@ -307,6 +318,7 @@ export default function ReferralContent() {
           onPress={() => {
             setReferralCodeDisplay('');
             setStatus('incomplete');
+            setDeeplinked(false);
             setGoingBack(true);
             goBack();
           }}
@@ -320,7 +332,9 @@ export default function ReferralContent() {
         <ActionButton
           color={accentColor}
           label={i18n.t(i18n.l.points.referral.get_started)}
-          onPress={() => navigate(Routes.CONSOLE_SHEET, { referralCode })}
+          onPress={() =>
+            navigate(Routes.CONSOLE_SHEET, { referralCode, deeplinked })
+          }
         />
       )}
     </Box>

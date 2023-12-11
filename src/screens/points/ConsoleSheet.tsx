@@ -1,9 +1,10 @@
 /* eslint-disable no-nested-ternary */
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { Box, Inset, globalColors } from '@/design-system';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
+import { analyticsV2 } from '@/analytics';
 
 import { RainbowPointsFlowSteps, SCREEN_BOTTOM_INSET } from './constants';
 import { TypingAnimation } from './contexts/AnimationContext';
@@ -15,13 +16,15 @@ import { Review } from './content/console/review';
 
 type ConsoleSheetParams = {
   ConsoleSheet: {
-    referralCode?: string;
+    referralCode: string | undefined;
+    deeplinked: boolean;
   };
 };
 
 export const ConsoleSheet = () => {
   const { params } = useRoute<RouteProp<ConsoleSheetParams, 'ConsoleSheet'>>();
   const referralCode = params?.referralCode;
+  const deeplinked = params?.deeplinked;
 
   const {
     animationKey,
@@ -31,11 +34,13 @@ export const ConsoleSheet = () => {
     setStep,
     setShareBonusPoints,
     setIntent,
+    setDeeplinked,
   } = usePointsProfileContext();
 
   useEffect(() => {
     setReferralCode(referralCode);
-  }, [setReferralCode, referralCode]);
+    setDeeplinked(deeplinked);
+  }, [setReferralCode, referralCode, setDeeplinked, deeplinked]);
 
   useEffect(() => {
     setProfile(undefined);
@@ -44,6 +49,12 @@ export const ConsoleSheet = () => {
     setShareBonusPoints(0);
     setIntent(undefined);
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      analyticsV2.track(analyticsV2.event.pointsViewedOnboardingSheet);
+    }, [])
+  );
 
   return (
     <Inset bottom={{ custom: SCREEN_BOTTOM_INSET }}>

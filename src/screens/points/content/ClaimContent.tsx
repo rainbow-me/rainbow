@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { Box, Stack, Text } from '@/design-system';
 import { useAccountAccentColor, useDimensions, useWallets } from '@/hooks';
@@ -10,6 +10,8 @@ import { ActionButton } from '@/screens/points/components/ActionButton';
 import { PointsIconAnimation } from '../components/PointsIconAnimation';
 import { watchingAlert } from '@/utils';
 import { POINTS_ROUTES } from '../PointsScreen';
+import { analyticsV2 } from '@/analytics';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function ClaimContent() {
   const { accentColor } = useAccountAccentColor();
@@ -19,6 +21,12 @@ export default function ClaimContent() {
 
   const contentBottom =
     getHeaderHeight() + (deviceHeight - navbarHeight - 218) / 2;
+
+  useFocusEffect(
+    useCallback(() => {
+      analyticsV2.track(analyticsV2.event.pointsViewedClaimScreen);
+    }, [])
+  );
 
   return (
     <Box

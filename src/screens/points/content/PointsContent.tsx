@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { RefreshControl, Share } from 'react-native';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import {
@@ -40,6 +40,8 @@ import { LeaderboardRow } from '../components/LeaderboardRow';
 import { Skeleton } from '../components/Skeleton';
 import { InfoCard } from '../components/InfoCard';
 import { displayNextDistribution } from '../constants';
+import { analyticsV2 } from '@/analytics';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function PointsContent() {
   const { colors } = useTheme();
@@ -49,6 +51,12 @@ export default function PointsContent() {
   const { data, isFetching, dataUpdatedAt, refetch } = usePoints({
     walletAddress: accountAddress,
   });
+
+  useFocusEffect(
+    useCallback(() => {
+      analyticsV2.track(analyticsV2.event.pointsViewedPointsScreen);
+    }, [])
+  );
 
   const labelSecondary = useForegroundColor('labelSecondary');
   const green = useForegroundColor('green');
@@ -75,6 +83,9 @@ export default function PointsContent() {
       }
       onNewEmoji();
       referralCode && setClipboard(referralCode);
+      analyticsV2.track(
+        analyticsV2.event.pointsPointsScreenPressedCopyReferralCodeButton
+      );
     },
     [isToastActive, referralCode, setClipboard, setToastActive]
   );
@@ -289,6 +300,10 @@ export default function PointsContent() {
                       <ButtonPressAnimation
                         onPress={() => {
                           if (referralUrl) {
+                            analyticsV2.track(
+                              analyticsV2.event
+                                .pointsPointsScreenPressedShareReferralLinkButton
+                            );
                             Share.share(
                               IS_ANDROID
                                 ? {

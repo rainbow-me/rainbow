@@ -15,6 +15,7 @@ import { NeonButton } from '../../components/NeonButton';
 import LineBreak from '../../components/LineBreak';
 import { Bleed, Box, Stack } from '@/design-system';
 import { useNavigation } from '@/navigation';
+import { analyticsV2 } from '@/analytics';
 
 export const Review = () => {
   const { shareBonusPoints } = usePointsProfileContext();
@@ -111,7 +112,12 @@ export const Review = () => {
           <NeonButton
             color="#FEC101"
             label={i18n.t(i18n.l.points.console.complete_onboarding)}
-            onPress={goBack}
+            onPress={() => {
+              analyticsV2.track(
+                analyticsV2.event.pointsOnboardingScreenPressedDoneButton
+              );
+              goBack();
+            }}
           />
         </Bleed>
       </AnimatePresence>

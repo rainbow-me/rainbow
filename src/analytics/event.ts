@@ -103,6 +103,7 @@ export const event = {
   pointsViewedReferralScreen: 'Viewed points referral code screen',
   pointsViewedPointsScreen: 'Viewed main points screen',
   pointsViewedOnboardingSheet: 'Viewed points onboarding screen',
+  pointsReferralScreenValidatedReferralCode: 'Validated referral code',
   pointsOnboardingScreenPressedSignInButton:
     'Pressed sign in button on points onboarding screen',
   pointsOnboardingScreenSuccessfullySignedIn:
@@ -401,4 +402,33 @@ export type EventProperties = {
   };
   [event.mintsPressedViewAllMintsButton]: undefined;
   [event.mintsChangedFilter]: { filter: string };
+  [event.pointsViewedClaimScreen]: undefined;
+  [event.pointsViewedReferralScreen]: undefined;
+  [event.pointsViewedPointsScreen]: undefined;
+  [event.pointsViewedOnboardingSheet]: undefined;
+  [event.pointsReferralScreenValidatedReferralCode]: {
+    deeplinked: boolean;
+  };
+  [event.pointsOnboardingScreenPressedSignInButton]: {
+    deeplinked: boolean;
+    referralCode: boolean;
+    hardwareWallet: boolean;
+  };
+  [event.pointsOnboardingScreenSuccessfullySignedIn]: {
+    deeplinked: boolean;
+    referralCode: boolean;
+    hardwareWallet: boolean;
+  };
+  [event.pointsOnboardingScreenFailedToSignIn]: {
+    deeplinked: boolean;
+    referralCode: boolean;
+    hardwareWallet: boolean;
+  };
+  [event.pointsOnboardingScreenPressedShareToXButton]: undefined;
+  [event.pointsOnboardingScreenPressedSkipShareToXButton]: undefined;
+  [event.pointsOnboardingScreenPressedContinueButton]: undefined;
+  [event.pointsOnboardingScreenPressedDoneButton]: undefined;
+  [event.pointsReferralCodeDeeplinkOpened]: undefined;
+  [event.pointsPointsScreenPressedCopyReferralCodeButton]: undefined;
+  [event.pointsPointsScreenPressedShareReferralLinkButton]: undefined;
 };
