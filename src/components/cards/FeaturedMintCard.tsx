@@ -200,7 +200,7 @@ export function FeaturedMintCard() {
                       </Inline>
                       <Box
                         height={{ custom: 36 }}
-                        justifyContent="flex-start"
+                        justifyContent="center"
                         alignItems="flex-start"
                       >
                         <Text
@@ -208,7 +208,7 @@ export function FeaturedMintCard() {
                           weight="heavy"
                           color="label"
                           numberOfLines={1}
-                          style={{ lineHeight: 48 }}
+                          style={{ lineHeight: 36 }}
                         >
                           {featuredMint.name}
                         </Text>
