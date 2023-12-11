@@ -8,7 +8,7 @@ import React, {
   useState,
 } from 'react';
 import { noop } from 'lodash';
-
+import Routes from '@/navigation/routesNames';
 import { pointsQueryKey } from '@/resources/points';
 import * as i18n from '@/languages';
 import {
@@ -27,7 +27,9 @@ import { useAccountProfile, useWallets } from '@/hooks';
 import { signPersonalMessage } from '@/model/wallet';
 import { RainbowError, logger } from '@/logger';
 import { queryClient } from '@/react-query';
-import { LedgerSigner } from '@/handlers/LedgerSigner';
+import { useNavigation } from '@/navigation';
+import { getProviderForNetwork } from '@/handlers/web3';
+import { Network } from '@/networks/types';
 
 type PointsProfileContext = {
   step: RainbowPointsFlowSteps;
@@ -98,7 +100,8 @@ export const PointsProfileProvider = ({
   children: React.ReactNode;
 }) => {
   const { accountAddress } = useAccountProfile();
-  const { isHardwareWallet, selectedWallet } = useWallets();
+  const { isHardwareWallet } = useWallets();
+  const { navigate, goBack } = useNavigation();
 
   const [step, setStep] = useState<RainbowPointsFlowSteps>(
     RainbowPointsFlowSteps.Initialize
@@ -151,15 +154,16 @@ export const PointsProfileProvider = ({
 
     const challenge = challengeResponse?.pointsOnboardChallenge;
     if (challenge) {
-      let signature;
-      if (isHardwareWallet) {
-        signature = await (selectedWallet as LedgerSigner).signMessage(
-          challenge
-        );
-      } else {
-        const signatureResponse = await signPersonalMessage(challenge);
-        signature = signatureResponse?.result;
+      const provider = await getProviderForNetwork(Network.mainnet);
+      const signatureResponse = await signPersonalMessage(
+        challenge,
+        undefined,
+        provider
+      );
+      if (signatureResponse && isHardwareWallet) {
+        goBack();
       }
+      signature = signatureResponse?.result;
       if (signature) {
         points = await metadataPOSTClient.onboardPoints({
           address: accountAddress,
@@ -193,7 +197,15 @@ export const PointsProfileProvider = ({
         );
       }
     }
-  }, [accountAddress, isHardwareWallet, referralCode]);
+  }, [accountAddress, goBack, isHardwareWallet, referralCode]);
+
+  const signInHandler = useCallback(async () => {
+    if (isHardwareWallet) {
+      navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: signIn });
+    } else {
+      signIn();
+    }
+  }, [isHardwareWallet, navigate, signIn]);
 
   useEffect(() => {
     const msg = buildTwitterIntentMessage(profile, metamaskSwaps);
@@ -218,7 +230,7 @@ export const PointsProfileProvider = ({
         setShareBonusPoints,
 
         // functions
-        signIn,
+        signIn: signInHandler,
 
         // helpers
         rainbowSwaps,

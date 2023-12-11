@@ -99,6 +99,7 @@ import MintSheet from '@/screens/mints/MintSheet';
 import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
 import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoSheet';
 import { ConsoleSheet } from '@/screens/points/ConsoleSheet';
+import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileContext';
 
 type StackNavigatorParams = {
   [Routes.SEND_SHEET]: unknown;
@@ -475,7 +476,9 @@ const AppContainerWithAnalytics = React.forwardRef(
       // @ts-ignore
       ref={ref}
     >
-      <NativeStackNavigator />
+      <PointsProfileProvider>
+        <NativeStackNavigator />
+      </PointsProfileProvider>
     </NavigationContainer>
   )
 );
