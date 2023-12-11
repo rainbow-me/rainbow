@@ -160,7 +160,7 @@ export default function PointsContent() {
                         style={{
                           width: totalPointsMaskSize,
                           height: totalPointsMaskSize,
-                          left: -100,
+                          left: ios ? -100 : -144,
                           top:
                             -totalPointsMaskSize +
                             (totalPointsString?.length ?? 0) * 5 +
