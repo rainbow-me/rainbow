@@ -35,6 +35,7 @@ import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { useWallets } from '@/hooks';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
+import { DEFAULT_ENABLED_TOPIC_SETTINGS } from '@/notifications/settings/constants';
 
 const makeTopicRowsData = (colors: ThemeContextProps['colors']) => [
   {
@@ -123,6 +124,7 @@ const WalletNotificationsSettings = () => {
         ...options,
       };
       setNotificationSettings(newSettingsForWallet);
+      setTopicState(newSettingsForWallet.topics);
     },
     [address, notifications]
   );
@@ -199,6 +201,7 @@ const WalletNotificationsSettings = () => {
       }
       updateSettings({
         enabled: !notificationsEnabled,
+        topics: notificationsEnabled ? {} : DEFAULT_ENABLED_TOPIC_SETTINGS,
       });
       setAllState(prev => ({ ...prev, loading: false }));
     } else {
