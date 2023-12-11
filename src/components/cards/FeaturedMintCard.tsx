@@ -198,14 +198,21 @@ export function FeaturedMintCard() {
                           )}
                         </Text>
                       </Inline>
-                      <Text
-                        size="20pt"
-                        weight="heavy"
-                        color="label"
-                        numberOfLines={1}
+                      <Box
+                        height={{ custom: 36 }}
+                        justifyContent="flex-start"
+                        alignItems="flex-start"
                       >
-                        {featuredMint.name}
-                      </Text>
+                        <Text
+                          size="20pt"
+                          weight="heavy"
+                          color="label"
+                          numberOfLines={1}
+                          style={{ lineHeight: 48 }}
+                        >
+                          {featuredMint.name}
+                        </Text>
+                      </Box>
                     </Stack>
                     <Stack space={{ custom: 14 }}>
                       <Inline space="6px" alignVertical="center">
