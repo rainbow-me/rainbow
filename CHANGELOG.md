@@ -15,6 +15,29 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.11] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.11)
+
+### Added
+
+- Points v1 (#5174)
+- Graphql api key (#5211)
+- Ability to implement general marketing notifications (#5206)
+- Enabled Zora for transaction simulation (#5226)
+
+### Changed
+
+- Handling of hex transaction types (#5214)
+- Updated client to use new token search aggregator across networks (#5190)
+- Updated messaging on warnings for transaction simulation (#5224)
+- Improved error handling for unknown urls (#5213)
+- Allow special characters in featured mint titles (#5239) 
+
+### Fixed
+
+- Fixed swap input currencylist value bug (#5221)
+- Fixed scroll issue on discover search (#5227)
+- Fixed a crash that would intermittently happen when switching wallets (#5232)
+
 ## [1.9.10] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.10)
 
 ### Added
