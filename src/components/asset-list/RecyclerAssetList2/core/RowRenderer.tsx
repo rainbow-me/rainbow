@@ -6,6 +6,7 @@ import WrappedNFT from '../WrappedNFT';
 import WrappedTokenFamilyHeader from '../WrappedTokenFamilyHeader';
 import { ExtendedState } from './RawRecyclerList';
 import {
+  AssetListHeaderExtraData,
   AssetsHeaderExtraData,
   CellType,
   CoinDividerExtraData,
@@ -128,10 +129,12 @@ function rowRenderer(
         </ProfileRowWrapper>
       );
     case CellType.NFTS_HEADER:
+      console.log(extendedState.collectibleSortBy);
       return (
         // @ts-expect-error JavaScript component
         <AssetListHeader
           isSticky={false}
+          collectibleSortBy={extendedState.collectibleSortBy}
           title={lang.t(lang.l.account.tab_collectibles)}
         />
       );

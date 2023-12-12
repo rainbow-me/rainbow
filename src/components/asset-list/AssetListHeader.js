@@ -149,6 +149,7 @@ const AssetListHeader = ({
   const children = useMemo(() => {
     return (
       <ListHeader
+        key={`nft-headers-${sortByOption}`}
         contextMenuOptions={contextMenuOptions}
         isCoinListEdited={isCoinListEdited}
         title={title}

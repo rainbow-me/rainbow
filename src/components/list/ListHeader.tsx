@@ -39,7 +39,7 @@ const ShareCollectiblesBPA = styled(ButtonPressAnimation)({
 
 const ShareCollectiblesButton = ({ onPress }) => (
   <ShareCollectiblesBPA onPress={onPress} scale={0.9}>
-    <CoinDividerButtonLabel align="center" label={`􀈂`} shareButton />
+    <CoinDividerButtonLabel isVisible align="center" label={`􀈂`} shareButton />
   </ShareCollectiblesBPA>
 );
 

@@ -1,6 +1,7 @@
 import { RecyclerListView, RecyclerListViewProps } from 'recyclerlistview';
 import { RecyclerListViewState } from 'recyclerlistview/dist/reactnative/core/RecyclerListView';
 import { UniqueAsset } from '@/entities';
+import { CollectibleSortByOptions } from '@/storage';
 
 export enum CellType {
   ASSETS_HEADER_SPACE_AFTER = 'ASSETS_HEADER_SPACE_AFTER',
@@ -49,6 +50,12 @@ export type CoinDividerExtraData = {
   value: number;
   defaultToEditButton: boolean;
 };
+
+export type AssetListHeaderExtraData = {
+  type: CellType.NFTS_HEADER;
+  collectibleSortBy: CollectibleSortByOptions;
+};
+
 export type AssetsHeaderExtraData = {
   type: CellType.PROFILE_STICKY_HEADER;
   value: string;
@@ -76,12 +83,12 @@ export type NFTFamilyExtraData = {
 };
 
 export type CellExtraData =
-  | { type: CellType.NFTS_HEADER }
   | { type: CellType.LOADING_ASSETS }
   | NFTFamilyExtraData
   | CoinDividerExtraData
   | CoinExtraData
   | NFTExtraData
+  | AssetListHeaderExtraData
   | AssetsHeaderExtraData
   | PositionExtraData
   | PositionHeaderExtraData;

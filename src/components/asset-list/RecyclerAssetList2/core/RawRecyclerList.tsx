@@ -83,6 +83,10 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   const topMarginRef = useRef<number>(0);
   const ref = useRef<RecyclerListViewRef>();
 
+  const collectibleSortBy =
+    ls.collectibleSortBy.get(['sortBy']) ??
+    ls.CollectibleSortByOptions.MOST_RECENT;
+
   useEffect(() => {
     if (ios) {
       return;
@@ -131,8 +135,6 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
     pinnedCoinsObj: pinnedCoins,
     toggleSelectedCoin,
   } = useCoinListEditOptions();
-
-  const collectibleSortBy = ls.collectibleSortBy.get(['sortBy']);
 
   const { navigate } = useNavigation();
 

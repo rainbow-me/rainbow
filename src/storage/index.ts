@@ -91,4 +91,4 @@ export const campaigns = new Storage<[], Campaigns>({ id: 'campaigns' });
 export const collectibleSortBy = new Storage<[], CollectibleSortBy>({
   id: 'collectibleSortBy',
 });
-export type { CollectibleSortByOptions };
+export { CollectibleSortByOptions };
