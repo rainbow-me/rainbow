@@ -157,6 +157,7 @@ export default function PointsContent() {
                         height: 51,
                         maxWidth: deviceWidth - 60 - 20 - 20,
                       }}
+                      androidRenderingMode="software"
                       maskElement={
                         <Box paddingVertical="10px">
                           <Text color="label" size="44pt" weight="black">
