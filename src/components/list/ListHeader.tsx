@@ -19,7 +19,7 @@ import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import * as i18n from '@/languages';
-import { collectibleSortBy } from '@/storage';
+import * as ls from '@/storage';
 import { CollectibleSortByOptions } from '@/storage/schema';
 import { ListHeaderMenu } from './ListHeaderMenu';
 import { useTheme } from '@/theme';
@@ -39,7 +39,7 @@ const ShareCollectiblesBPA = styled(ButtonPressAnimation)({
 
 const ShareCollectiblesButton = ({ onPress }) => (
   <ShareCollectiblesBPA onPress={onPress} scale={0.9}>
-    <CoinDividerButtonLabel isVisible align="center" label={`􀈂`} shareButton />
+    <CoinDividerButtonLabel align="center" label={`􀈂`} shareButton />
   </ShareCollectiblesBPA>
 );
 
@@ -67,7 +67,7 @@ export default function ListHeader({
   showDivider = true,
   title,
   totalValue,
-  sortByOption = CollectibleSortByOptions.MOST_RECENT,
+  collectibleSortBy,
 }) {
   const deviceDimensions = useDimensions();
   const { colors, isDarkMode } = useTheme();
@@ -126,18 +126,18 @@ export default function ListHeader({
                 <Column align="flex-end" flex={1}>
                   <ListHeaderMenu
                     selected={{
-                      actionKey: sortByOption,
-                      actionTitle: CollectibleSortByOptions[sortByOption],
+                      actionKey: collectibleSortBy,
+                      actionTitle: CollectibleSortByOptions[collectibleSortBy],
                     }}
                     menuItems={Object.entries(CollectibleSortByOptions).map(
                       ([key, value]) => ({
                         actionKey: key,
                         actionTitle: value,
-                        menuState: sortByOption === key ? 'on' : 'off',
+                        menuState: collectibleSortBy === key ? 'on' : 'off',
                       })
                     )}
                     selectItem={item => {
-                      collectibleSortBy.set(
+                      ls.collectibleSortBy.set(
                         ['sortBy'],
                         item as CollectibleSortByOptions
                       );

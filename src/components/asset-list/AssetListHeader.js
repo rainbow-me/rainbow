@@ -113,15 +113,13 @@ const AssetListHeader = ({
   title,
   totalValue,
   isSticky = true,
+  collectibleSortBy,
   ...props
 }) => {
   const { width: deviceWidth } = useDimensions();
   const { accountName } = useAccountProfile();
   const { navigate } = useNavigation();
   const { isLoading: isLoadingUserAssets } = useUserAssetCount();
-
-  const sortByOption =
-    collectibleSortBy.get(['sortBy']) ?? CollectibleSortByOptions.MOST_RECENT;
 
   const onChangeWallet = useCallback(() => {
     navigate(Routes.CHANGE_WALLET_SHEET);
@@ -149,12 +147,11 @@ const AssetListHeader = ({
   const children = useMemo(() => {
     return (
       <ListHeader
-        key={`nft-headers-${sortByOption}`}
         contextMenuOptions={contextMenuOptions}
         isCoinListEdited={isCoinListEdited}
         title={title}
         totalValue={totalValue}
-        sortByOption={sortByOption}
+        collectibleSortBy={collectibleSortBy}
         {...props}
       >
         {!title && (
@@ -192,7 +189,6 @@ const AssetListHeader = ({
     textWidth,
     title,
     totalValue,
-    sortByOption,
   ]);
 
   if (isSticky) {
@@ -206,6 +202,6 @@ export default magicMemo(AssetListHeader, [
   'contextMenuOptions',
   'isCoinListEdited',
   'title',
+  'collectibleSortBy',
   'totalValue',
-  'sortByOption',
 ]);
