@@ -23,12 +23,13 @@ import {
 import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
 import {
   useAccountProfile,
+  useAccountSettings,
   useSwapCurrencyHandlers,
   useWallets,
 } from '@/hooks';
 import { delayNext } from '@/hooks/useMagicAutofocus';
 import { useNavigation } from '@/navigation';
-import { watchingAlert } from '@/utils';
+import { ethereumUtils, watchingAlert } from '@/utils';
 import Routes from '@rainbow-me/routes';
 import showWalletErrorAlert from '@/helpers/support';
 import { analytics } from '@/analytics';
@@ -36,6 +37,7 @@ import { useRecoilState } from 'recoil';
 import config from '@/model/config';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
+import { Network } from '@/networks/types';
 
 export const ProfileActionButtonsRowHeight = 80;
 
@@ -194,35 +196,32 @@ function BuyButton() {
 
 function SwapButton() {
   const { isReadOnlyWallet } = useWallets();
+  const { accountAddress } = useAccountSettings();
 
   const { navigate } = useNavigation();
 
-  const { updateInputCurrency } = useSwapCurrencyHandlers({
-    shouldUpdate: false,
-    type: ExchangeModalTypes.swap,
-  });
-
-  const handlePress = React.useCallback(() => {
+  const handlePress = React.useCallback(async () => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
       analytics.track('Tapped "Swap"', {
         category: 'home screen',
       });
 
       android && delayNext();
+      const mainnetEth = await ethereumUtils.getNativeAssetForNetwork(
+        Network.mainnet,
+        accountAddress
+      );
       navigate(Routes.EXCHANGE_MODAL, {
         fromDiscover: true,
         params: {
-          fromDiscover: true,
-          onSelectCurrency: updateInputCurrency,
-          title: lang.t('swap.modal_types.swap'),
-          type: CurrencySelectionTypes.input,
+          inputAsset: mainnetEth,
         },
-        screen: Routes.CURRENCY_SELECT_SCREEN,
+        screen: Routes.MAIN_EXCHANGE_SCREEN,
       });
     } else {
       watchingAlert();
     }
-  }, [isReadOnlyWallet, navigate, updateInputCurrency]);
+  }, [accountAddress, isReadOnlyWallet, navigate]);
 
   return (
     <ActionButton icon="􀖅" onPress={handlePress} testID="swap-button">
