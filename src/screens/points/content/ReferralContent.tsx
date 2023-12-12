@@ -111,9 +111,11 @@ export default function ReferralContent() {
   useFocusEffect(
     useCallback(() => {
       analyticsV2.track(analyticsV2.event.pointsViewedReferralScreen);
-      delay(600).then(() => textInputRef.current?.focus());
       setGoingBack(false);
-    }, [])
+      if (status !== 'valid') {
+        delay(600).then(() => textInputRef.current?.focus());
+      }
+    }, [status])
   );
 
   useEffect(() => {
