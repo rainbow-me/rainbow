@@ -31,6 +31,7 @@ import {
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { useTheme } from '@/theme';
+import * as ls from '@/storage';
 
 const dataProvider = new DataProvider((r1, r2) => {
   return r1.uid !== r2.uid;
@@ -131,6 +132,8 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
     toggleSelectedCoin,
   } = useCoinListEditOptions();
 
+  const collectibleSortBy = ls.collectibleSortBy.get(['sortBy']);
+
   const { navigate } = useNavigation();
 
   const mergedExtendedState = useMemo<ExtendedState>(() => {
@@ -145,6 +148,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
       setIsCoinListEdited,
       theme,
       toggleSelectedCoin,
+      collectibleSortBy,
     };
   }, [
     extendedState,
@@ -157,6 +161,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
     toggleSelectedCoin,
     isCoinListEdited,
     setIsCoinListEdited,
+    collectibleSortBy,
   ]);
 
   return (

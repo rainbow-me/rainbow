@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import React, { createElement, Fragment } from 'react';
+import React, { Fragment, useCallback } from 'react';
 import { Share } from 'react-native';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
@@ -19,6 +19,10 @@ import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import * as i18n from '@/languages';
+import { collectibleSortBy } from '@/storage';
+import { CollectibleSortByOptions } from '@/storage/schema';
+import { ListHeaderMenu } from './ListHeaderMenu';
+import { useTheme } from '@/theme';
 
 export const ListHeaderHeight = 50;
 
@@ -35,11 +39,7 @@ const ShareCollectiblesBPA = styled(ButtonPressAnimation)({
 
 const ShareCollectiblesButton = ({ onPress }) => (
   <ShareCollectiblesBPA onPress={onPress} scale={0.9}>
-    <CoinDividerButtonLabel
-      align="center"
-      label={`􀈂 ${lang.t('button.share')}`}
-      shareButton
-    />
+    <CoinDividerButtonLabel align="center" label={`􀈂`} shareButton />
   </ShareCollectiblesBPA>
 );
 
@@ -67,6 +67,7 @@ export default function ListHeader({
   showDivider = true,
   title,
   totalValue,
+  sortByOption = CollectibleSortByOptions.MOST_RECENT,
 }) {
   const deviceDimensions = useDimensions();
   const { colors, isDarkMode } = useTheme();
@@ -113,17 +114,34 @@ export default function ListHeader({
           {title && (
             <Row align="center">
               {/* eslint-disable-next-line react/no-children-prop */}
-              <Row style={{ maxWidth: 200 }}>
+              <Row gap={4} style={{ maxWidth: 200 }}>
                 <H1 ellipsizeMode="tail" numberOfLines={1}>
                   {title}
                 </H1>
+                {title === i18n.t(i18n.l.account.tab_collectibles) && (
+                  <ShareCollectiblesButton onPress={handleShare} />
+                )}
               </Row>
               {title === i18n.t(i18n.l.account.tab_collectibles) && (
                 <Column align="flex-end" flex={1}>
-                  <ShareCollectiblesButton
-                    onPress={() =>
-                      handleShare(isReadOnlyWallet, accountAddress)
-                    }
+                  <ListHeaderMenu
+                    selected={{
+                      actionKey: sortByOption,
+                      actionTitle: CollectibleSortByOptions[sortByOption],
+                    }}
+                    menuItems={Object.entries(CollectibleSortByOptions).map(
+                      ([key, value]) => ({
+                        actionKey: key,
+                        actionTitle: value,
+                        menuState: sortByOption === key ? 'on' : 'off',
+                      })
+                    )}
+                    selectItem={item => {
+                      collectibleSortBy.set(
+                        ['sortBy'],
+                        item as CollectibleSortByOptions
+                      );
+                    }}
                   />
                 </Column>
               )}

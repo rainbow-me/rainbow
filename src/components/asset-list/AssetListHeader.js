@@ -17,6 +17,7 @@ import styled from '@/styled-thing';
 import { fonts, position } from '@/styles';
 import { useTheme } from '@/theme';
 import * as lang from '@/languages';
+import { CollectibleSortByOptions, collectibleSortBy } from '@/storage';
 
 export const AssetListHeaderHeight = ListHeaderHeight;
 
@@ -119,6 +120,9 @@ const AssetListHeader = ({
   const { navigate } = useNavigation();
   const { isLoading: isLoadingUserAssets } = useUserAssetCount();
 
+  const sortByOption =
+    collectibleSortBy.get(['sortBy']) ?? CollectibleSortByOptions.MOST_RECENT;
+
   const onChangeWallet = useCallback(() => {
     navigate(Routes.CHANGE_WALLET_SHEET);
   }, [navigate]);
@@ -149,6 +153,7 @@ const AssetListHeader = ({
         isCoinListEdited={isCoinListEdited}
         title={title}
         totalValue={totalValue}
+        sortByOption={sortByOption}
         {...props}
       >
         {!title && (
@@ -186,6 +191,7 @@ const AssetListHeader = ({
     textWidth,
     title,
     totalValue,
+    sortByOption,
   ]);
 
   if (isSticky) {
@@ -200,4 +206,5 @@ export default magicMemo(AssetListHeader, [
   'isCoinListEdited',
   'title',
   'totalValue',
+  'sortByOption',
 ]);
