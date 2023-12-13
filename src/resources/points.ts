@@ -42,6 +42,7 @@ export function usePoints({ walletAddress }: { walletAddress: string }) {
     {
       enabled: pointsEnabled && !!walletAddress,
       cacheTime: Infinity,
+      staleTime: 1000 * 60 * 5,
     }
   );
 
