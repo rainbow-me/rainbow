@@ -31,6 +31,7 @@ import { useNavigation } from '@/navigation';
 import { getProviderForNetwork } from '@/handlers/web3';
 import { Network } from '@/networks/types';
 import { analyticsV2 } from '@/analytics';
+import { delay } from '@/utils/delay';
 
 type PointsProfileContext = {
   step: RainbowPointsFlowSteps;
@@ -210,10 +211,9 @@ export const PointsProfileProvider = ({
           }
         );
         setProfile(points);
-        queryClient.setQueryData(
-          pointsQueryKey({ address: accountAddress }),
-          points
-        );
+        const queryKey = pointsQueryKey({ address: accountAddress });
+        queryClient.setQueryData(queryKey, points);
+        delay(5000).then(() => queryClient.refetchQueries(queryKey));
         return;
       }
     }
