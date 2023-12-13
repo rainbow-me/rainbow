@@ -302,7 +302,7 @@ export default function ReferralContent() {
                         }),
                   }}
                   autoFocus={false}
-                  maxLength={7} // TODO: Figure out how to enable this and allow LINK pasting & parsing
+                  maxLength={7}
                   selectionColor={statusColor}
                   textAlign="left"
                   autoCapitalize="characters"
