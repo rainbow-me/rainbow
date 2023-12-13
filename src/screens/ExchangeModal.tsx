@@ -828,7 +828,7 @@ export default function ExchangeModal({
         outputTokenName: outputCurrency?.name || '',
         outputTokenSymbol: outputCurrency?.symbol || '',
         priceImpact: priceImpactPercentDisplay,
-        slippage: isNaN(slippage) ? 'Error caclulating slippage.' : slippage,
+        slippage: isNaN(slippage) ? 'Error calculating slippage.' : slippage,
         type,
       });
     }

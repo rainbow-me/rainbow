@@ -107,7 +107,7 @@ git update-index --assume-unchanged "android/app/src/main/java/me/rainbow/MainAc
 # package.json and install everything including a bunch devDeps that we don't
 # need like "console"
 rn-nodeify --install --hack 'crypto,buffer,react-native-randombytes,vm,stream,http,https,os,url,net,fs,process'
-echo "✅ rn-nodeify packages hacked succesfully"
+echo "✅ rn-nodeify packages hacked successfully"
 
 # Apply patches.
 patch-package

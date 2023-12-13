@@ -127,7 +127,7 @@ export const updatePrecisionToDisplay = (
 };
 
 /**
- * @desc format inputOne value to signficant decimals given inputTwo
+ * @desc format inputOne value to significant decimals given inputTwo
  * @param  {String}   inputOne
  * @param  {String}   inputTwo
  * @return {String}

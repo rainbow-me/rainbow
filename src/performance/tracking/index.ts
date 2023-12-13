@@ -36,7 +36,7 @@ interface AdditionalParams extends Record<string, any> {
 }
 
 /**
- * Function that allows directly commiting performance events.
+ * Function that allows directly committing performance events.
  * Useful when we already have duration of something and just want to log it.
  *
  * @param metric What you're measuring
@@ -86,7 +86,7 @@ function startMeasuring(
  *
  * @param metric What you're measuring
  * @param additionalParams Any additional context you want to add to your log
- * @returns True if the measurement was collected and commited properly, false otherwise
+ * @returns True if the measurement was collected and committed properly, false otherwise
  */
 function finishMeasuring(
   metric: PerformanceMetricsType,

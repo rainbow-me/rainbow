@@ -170,7 +170,7 @@ export function PairHardwareWalletSigningSheet() {
       } else {
         logger.error(
           new RainbowError(
-            '[importHardwareWallet] - Disconnected or Unkown Error'
+            '[importHardwareWallet] - Disconnected or Unknown Error'
           ),
           { errorType }
         );

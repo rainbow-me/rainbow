@@ -24,7 +24,7 @@ analyticsV2.screen(Routes.SWAPS_PROMO_SHEET, {
 
 Events are managed as const objects in `@/analytics/event` to reduce the possibility of developer
 error and help us strictly type their payloads where we can. Event names should
-adhere to a naming convention as much as possible. Rougly:
+adhere to a naming convention as much as possible. Roughly:
 
 ```bash
 <name_or_category>.<action>

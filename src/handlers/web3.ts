@@ -189,7 +189,7 @@ export const isTestnetNetwork = (network: Network): boolean => {
   return getNetworkObj(network as Network).networkType === 'testnet';
 };
 
-// shoudl figure out better way to include this in networks
+// should figure out better way to include this in networks
 export const getFlashbotsProvider = async () => {
   return new StaticJsonRpcProvider(
     proxyRpcEndpoint(
@@ -432,7 +432,7 @@ export async function estimateGasWithPadding(
 
     // If the safe estimation is above the last block gas limit, use it
     if (greaterThan(estimatedGas.toString(), lastBlockGasLimit)) {
-      logger.info('⛽ returning orginal gas estimation', {
+      logger.info('⛽ returning original gas estimation', {
         esimatedGas: estimatedGas.toString(),
       });
       return estimatedGas.toString();
@@ -669,7 +669,7 @@ export const getTransferTokenTransaction = async (
 export const createSignableTransaction = async (
   transaction: NewTransactionNonNullable
 ): Promise<TransactionDetailsReturned> => {
-  // handle native assets seperately
+  // handle native assets separately
   if (
     transaction.asset.address === ETH_ADDRESS ||
     transaction.asset.address === ARBITRUM_ETH_ADDRESS ||

@@ -512,7 +512,7 @@ export default function CurrencySelectModal() {
       );
       setCurrentChainId(inputChainId);
     });
-    setIsTransitioning(true); // continue to display list while transitiong back
+    setIsTransitioning(true); // continue to display list while transitioning back
   }, [inputCurrency?.type]);
 
   useEffect(() => {

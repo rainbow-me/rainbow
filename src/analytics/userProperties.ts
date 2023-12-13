@@ -1,7 +1,7 @@
 import { NativeCurrencyKey } from '@/entities';
 import { Language } from '@/languages';
 
-// these are all reported seperately so they must be optional
+// these are all reported separately so they must be optional
 export interface UserProperties {
   // settings
   currentAddressHash?: string; // NEW

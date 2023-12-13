@@ -62,7 +62,7 @@ Note: we want to refactor this to use svgs but the current react native svg pack
 
 Add the network to `entities/assetTypes.ts`
 
-Add the relevent socket subscriptions in `redux/explorer/ts`
+Add the relevant socket subscriptions in `redux/explorer/ts`
 
 Note: we can automate this part when we move off websockets
 

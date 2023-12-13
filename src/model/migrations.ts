@@ -722,7 +722,7 @@ export default async function runMigrations() {
     logger.sentry(`Migrations: Running migration v${i}`);
     // @ts-expect-error
     await migrations[i].apply(null);
-    logger.sentry(`Migrations: Migration ${i} completed succesfully`);
+    logger.sentry(`Migrations: Migration ${i} completed successfully`);
     await setMigrationVersion(i + 1);
   }
 }
