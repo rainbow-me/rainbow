@@ -37,6 +37,7 @@ import { ActionButton } from '@/screens/points/components/ActionButton';
 import { PointsIconAnimation } from '../components/PointsIconAnimation';
 import { usePointsReferralCode } from '@/resources/points';
 import { analyticsV2 } from '@/analytics';
+import Clipboard from '@react-native-community/clipboard';
 
 const parseReferralCodeFromLink = (code: string) => {
   if (!code.startsWith('https://rainbow.me/points?ref=')) return;
@@ -192,16 +193,19 @@ export default function ReferralContent() {
   const onChangeText = useCallback(
     async (code: string) => {
       if (goingBack) return;
-
-      const codeFromUrl = parseReferralCodeFromLink(code);
-      if (codeFromUrl) {
-        const isValid = await validateReferralCode(codeFromUrl);
-        if (!isValid) return;
-
-        setReferralCodeDisplay(
-          codeFromUrl.slice(0, 3) + '-' + codeFromUrl.slice(3, 7)
-        );
-        navigate(Routes.CONSOLE_SHEET, { referralCode, deeplinked });
+      if (code === 'https:/') {
+        const url = await Clipboard.getString();
+        const codeFromUrl = parseReferralCodeFromLink(url);
+        if (codeFromUrl) {
+          const formattedCode =
+            codeFromUrl.slice(0, 3) + '-' + codeFromUrl.slice(3, 7);
+          setReferralCodeDisplay(formattedCode);
+          if (formattedCode.length !== 7) {
+            setStatus('incomplete');
+          } else {
+            validateReferralCode(codeFromUrl);
+          }
+        }
         return;
       }
 
@@ -228,14 +232,7 @@ export default function ReferralContent() {
         validateReferralCode(rawCode);
       }
     },
-    [
-      deeplinked,
-      referralCode,
-      navigate,
-      goingBack,
-      referralCodeDisplay.length,
-      validateReferralCode,
-    ]
+    [goingBack, referralCodeDisplay.length, validateReferralCode]
   );
 
   return (
@@ -305,7 +302,7 @@ export default function ReferralContent() {
                         }),
                   }}
                   autoFocus={false}
-                  // maxLength={7} // TODO: Figure out how to enable this and allow LINK pasting & parsing
+                  maxLength={7} // TODO: Figure out how to enable this and allow LINK pasting & parsing
                   selectionColor={statusColor}
                   textAlign="left"
                   autoCapitalize="characters"
