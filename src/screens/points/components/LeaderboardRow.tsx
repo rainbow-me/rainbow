@@ -233,7 +233,7 @@ export const LeaderboardRow = ({
             />
           )}
           <Stack space="8px">
-            <Box style={{ maxWidth: 145 }}>
+            <Box style={{ maxWidth: rank <= 3 ? 120 : 140 }}>
               <Text
                 color="label"
                 weight="bold"
@@ -244,14 +244,6 @@ export const LeaderboardRow = ({
                 {ens ? ens : formattedAddress}
               </Text>
             </Box>
-            {/* <Inline space="2px" alignVertical="center">
-              <Text color="labelQuaternary" size="11pt" weight="bold">
-                􀙬
-              </Text>
-              <Text color="labelQuaternary" size="13pt" weight="semibold">
-                {`40 ${i18n.t(i18n.l.points.points.days)}`}
-              </Text>
-            </Inline> */}
           </Stack>
         </Inline>
         <Inline space="8px" alignVertical="center">
