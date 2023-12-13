@@ -30,7 +30,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 - Updated client to use new token search aggregator across networks (#5190)
 - Updated messaging on warnings for transaction simulation (#5224)
 - Improved error handling for unknown urls (#5213)
-- Allow special characters in featured mint titles (#5239) 
+- Allow special characters in featured mint titles (#5239)
 
 ### Fixed
 
