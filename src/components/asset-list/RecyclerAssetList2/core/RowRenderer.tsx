@@ -129,12 +129,13 @@ function rowRenderer(
         </ProfileRowWrapper>
       );
     case CellType.NFTS_HEADER:
-      console.log(extendedState.collectibleSortBy);
       return (
         // @ts-expect-error JavaScript component
         <AssetListHeader
           isSticky={false}
-          collectibleSortBy={extendedState.collectibleSortBy}
+          collectibleSortBy={
+            (data as AssetListHeaderExtraData).collectibleSortBy
+          }
           title={lang.t(lang.l.account.tab_collectibles)}
         />
       );
