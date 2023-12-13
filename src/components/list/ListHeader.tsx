@@ -23,6 +23,7 @@ import * as ls from '@/storage';
 import { CollectibleSortByOptions } from '@/storage/schema';
 import { ListHeaderMenu } from './ListHeaderMenu';
 import { useTheme } from '@/theme';
+import { Inline, Bleed } from '@/design-system';
 
 export const ListHeaderHeight = 50;
 
@@ -114,14 +115,16 @@ export default function ListHeader({
           {title && (
             <Row align="center">
               {/* eslint-disable-next-line react/no-children-prop */}
-              <Row gap={4} style={{ maxWidth: 200 }}>
+              <Inline alignVertical="center" space={{ custom: 6 }}>
                 <H1 ellipsizeMode="tail" numberOfLines={1}>
                   {title}
                 </H1>
                 {title === i18n.t(i18n.l.account.tab_collectibles) && (
-                  <ShareCollectiblesButton onPress={handleShare} />
+                  <Bleed vertical="10px">
+                    <ShareCollectiblesButton onPress={handleShare} />
+                  </Bleed>
                 )}
-              </Row>
+              </Inline>
               {title === i18n.t(i18n.l.account.tab_collectibles) && (
                 <Column align="flex-end" flex={1}>
                   <ListHeaderMenu

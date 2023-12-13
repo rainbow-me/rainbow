@@ -10,7 +10,6 @@ import useWallets from './useWallets';
 import { buildBriefWalletSectionsSelector } from '@/helpers/buildWalletSections';
 import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import { useLegacyNFTs } from '@/resources/nfts';
-import * as ls from '@/storage';
 
 export default function useWalletSectionsData({
   type,
@@ -46,10 +45,6 @@ export default function useWalletSectionsData({
 
   const { isCoinListEdited } = useCoinListEdited();
 
-  const collectibleSortBy =
-    ls.collectibleSortBy.get(['sortBy']) ??
-    ls.CollectibleSortByOptions.MOST_RECENT;
-
   const walletSections = useMemo(() => {
     const accountInfo = {
       hiddenCoins,
@@ -68,7 +63,6 @@ export default function useWalletSectionsData({
       listType: type,
       showcaseTokens,
       uniqueTokens: allUniqueTokens,
-      collectibleSortBy,
     };
 
     const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(
@@ -99,7 +93,6 @@ export default function useWalletSectionsData({
     sortedAssets,
     type,
     sendableUniqueTokens,
-    collectibleSortBy,
   ]);
   return walletSections;
 }

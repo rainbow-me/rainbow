@@ -1,20 +1,12 @@
 import lang from 'i18n-js';
 import { chunk, compact, groupBy, isEmpty, slice, sortBy } from 'lodash';
-import { add, convertAmountToNativeDisplay, greaterThan } from './utilities';
+import { add, greaterThan } from './utilities';
 import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
-import store from '@/redux/store';
-import {
-  ETH_ADDRESS,
-  ETH_ICON_URL,
-  supportedNativeCurrencies,
-} from '@/references';
-import {
-  ethereumUtils,
-  getUniqueTokenFormat,
-  getUniqueTokenType,
-} from '@/utils';
+import { supportedNativeCurrencies } from '@/references';
+import { getUniqueTokenFormat, getUniqueTokenType } from '@/utils';
 import * as i18n from '@/languages';
 import * as ls from '@/storage';
+import { UniqueAsset } from '@/entities';
 
 const COINS_TO_SHOW = 5;
 
@@ -176,6 +168,10 @@ export const buildBriefCoinsList = (
   return { briefAssets, totalBalancesValue };
 };
 
+interface Dictionary<T> {
+  [index: string]: T;
+}
+
 export const buildUniqueTokenList = (
   uniqueTokens: any,
   selectedShowcaseTokens: any[] = []
@@ -262,6 +258,49 @@ export const buildUniqueTokenList = (
 
 const regex = RegExp(/\s*(the)\s/, 'i');
 
+const sortCollectibles = (
+  assetsByName: Dictionary<UniqueAsset[]>,
+  collectibleSortBy: string
+) => {
+  const families = Object.keys(assetsByName);
+
+  switch (collectibleSortBy) {
+    case 'MOST_RECENT':
+      return families.sort((a, b) => {
+        const maxDateA = Math.max(
+          Number(...assetsByName[a].map(asset => asset.acquisition_date))
+        );
+        const maxDateB = Math.max(
+          Number(...assetsByName[b].map(asset => asset.acquisition_date))
+        );
+        return maxDateB - maxDateA;
+      });
+    case 'ALPHABETICAL':
+      return families.sort((a, b) =>
+        a
+          .replace(regex, '')
+          .toLowerCase()
+          .localeCompare(b.replace(regex, '').toLowerCase())
+      );
+    case 'FLOOR_PRICE':
+      return families.sort((a, b) => {
+        const minPriceA = Math.min(
+          ...assetsByName[a].map(asset =>
+            asset.floorPriceEth !== undefined ? asset.floorPriceEth : Infinity
+          )
+        );
+        const minPriceB = Math.min(
+          ...assetsByName[b].map(asset =>
+            asset.floorPriceEth !== undefined ? asset.floorPriceEth : Infinity
+          )
+        );
+        return minPriceA - minPriceB;
+      });
+    default:
+      return families;
+  }
+};
+
 export const buildBriefUniqueTokenList = (
   uniqueTokens: any,
   selectedShowcaseTokens: any,
@@ -280,8 +319,6 @@ export const buildBriefUniqueTokenList = (
     .filter(({ uniqueId }: any) => selectedShowcaseTokens?.includes(uniqueId))
     .map(({ uniqueId }: any) => uniqueId);
 
-  console.log(uniqueTokens[0]);
-
   const collectibleSortBy =
     ls.collectibleSortBy.get(['sortBy']) ??
     ls.CollectibleSortByOptions.MOST_RECENT;
@@ -295,12 +332,18 @@ export const buildBriefUniqueTokenList = (
     return true;
   });
 
-  const grouped2 = groupBy(filteredUniqueTokens, token => token.familyName);
-  const families2 = sortBy(Object.keys(grouped2), row =>
-    row.replace(regex, '').toLowerCase()
-  );
+  // group the assets by collection name
+  const assetsByName = groupBy(filteredUniqueTokens, token => token.familyName);
+
+  // depending on the sort by option, sort the collections
+  const families2 = sortCollectibles(assetsByName, collectibleSortBy);
+
   const result = [
-    { type: 'NFTS_HEADER', collectibleSortBy, uid: 'nfts-header' },
+    {
+      type: 'NFTS_HEADER',
+      collectibleSortBy,
+      uid: `nft-headers-${collectibleSortBy}`,
+    },
     { type: 'NFTS_HEADER_SPACE_AFTER', uid: 'nfts-header-space-after' },
   ];
   if (uniqueTokensInShowcaseIds.length > 0 && listType !== 'select-nft') {
@@ -348,13 +391,13 @@ export const buildBriefUniqueTokenList = (
   for (const family of families2) {
     result.push({
       // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
-      image: grouped2[family][0].familyImage,
+      image: assetsByName[family][0].familyImage,
       name: family,
-      total: grouped2[family].length,
+      total: assetsByName[family].length,
       type: 'FAMILY_HEADER',
       uid: family,
     });
-    const tokens = grouped2[family].map(({ uniqueId }) => uniqueId);
+    const tokens = assetsByName[family].map(({ uniqueId }) => uniqueId);
     for (let index = 0; index < tokens.length; index++) {
       const uniqueId = tokens[index];
 

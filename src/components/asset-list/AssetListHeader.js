@@ -17,7 +17,6 @@ import styled from '@/styled-thing';
 import { fonts, position } from '@/styles';
 import { useTheme } from '@/theme';
 import * as lang from '@/languages';
-import { CollectibleSortByOptions, collectibleSortBy } from '@/storage';
 
 export const AssetListHeaderHeight = ListHeaderHeight;
 
@@ -189,6 +188,7 @@ const AssetListHeader = ({
     textWidth,
     title,
     totalValue,
+    collectibleSortBy,
   ]);
 
   if (isSticky) {
