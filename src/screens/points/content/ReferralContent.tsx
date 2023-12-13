@@ -38,6 +38,17 @@ import { PointsIconAnimation } from '../components/PointsIconAnimation';
 import { usePointsReferralCode } from '@/resources/points';
 import { analyticsV2 } from '@/analytics';
 
+const parseReferralCodeFromLink = (code: string) => {
+  if (!code.startsWith('https://rainbow.me/points?ref=')) return;
+
+  const [, refCode] = code.split('=');
+  if (!refCode) return;
+
+  const trimmed = refCode.replace(/-/g, '').slice(0, 6).toLocaleUpperCase();
+
+  return trimmed;
+};
+
 export default function ReferralContent() {
   const { accentColor } = useAccountAccentColor();
   const { goBack, navigate } = useNavigation();
@@ -61,7 +72,7 @@ export default function ReferralContent() {
 
   const validateReferralCode = useCallback(
     async (code: string) => {
-      if (code.length !== 6) return;
+      if (code.length !== 6) return false;
       const res = await metadataPOSTClient.validateReferral({
         code,
       });
@@ -87,7 +98,10 @@ export default function ReferralContent() {
         setReferralCode(code);
         textInputRef.current?.blur();
         haptics.notificationSuccess();
+        return true;
       }
+
+      return false;
     },
     [deeplinked]
   );
@@ -176,8 +190,20 @@ export default function ReferralContent() {
   });
 
   const onChangeText = useCallback(
-    (code: string) => {
+    async (code: string) => {
       if (goingBack) return;
+
+      const codeFromUrl = parseReferralCodeFromLink(code);
+      if (codeFromUrl) {
+        const isValid = await validateReferralCode(codeFromUrl);
+        if (!isValid) return;
+
+        setReferralCodeDisplay(
+          codeFromUrl.slice(0, 3) + '-' + codeFromUrl.slice(3, 7)
+        );
+        navigate(Routes.CONSOLE_SHEET, { referralCode, deeplinked });
+        return;
+      }
 
       const rawCode = code.replace(/-/g, '').slice(0, 6).toLocaleUpperCase();
       let formattedCode = rawCode;
@@ -202,7 +228,14 @@ export default function ReferralContent() {
         validateReferralCode(rawCode);
       }
     },
-    [goingBack, referralCodeDisplay.length, validateReferralCode]
+    [
+      deeplinked,
+      referralCode,
+      navigate,
+      goingBack,
+      referralCodeDisplay.length,
+      validateReferralCode,
+    ]
   );
 
   return (
@@ -272,7 +305,7 @@ export default function ReferralContent() {
                         }),
                   }}
                   autoFocus={false}
-                  maxLength={7}
+                  // maxLength={7} // TODO: Figure out how to enable this and allow LINK pasting & parsing
                   selectionColor={statusColor}
                   textAlign="left"
                   autoCapitalize="characters"
