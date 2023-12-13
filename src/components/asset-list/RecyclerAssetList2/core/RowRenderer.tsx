@@ -129,6 +129,7 @@ function rowRenderer(
         </ProfileRowWrapper>
       );
     case CellType.NFTS_HEADER:
+      console.log({ data });
       return (
         // @ts-expect-error JavaScript component
         <AssetListHeader

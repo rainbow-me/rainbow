@@ -48,8 +48,6 @@ function RecyclerAssetList({
     type,
   });
 
-  console.log(briefSectionsData);
-
   const insets = useSafeAreaInsets();
 
   const position = useMemoOne(
