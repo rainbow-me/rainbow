@@ -231,7 +231,9 @@ export default function PointsContent() {
                     <InfoCard
                       // onPress={() => {}}
                       title={i18n.t(i18n.l.points.points.your_rank)}
-                      mainText={`#${data?.points?.user?.stats?.position?.current}`}
+                      mainText={`#${data?.points?.user?.stats?.position?.current.toLocaleString(
+                        'en-US'
+                      )}`}
                       icon="􀉬"
                       subtitle={i18n.t(i18n.l.points.points.out_of_x, {
                         totalUsers: (data?.points?.leaderboard?.stats

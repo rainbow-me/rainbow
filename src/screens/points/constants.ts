@@ -92,9 +92,13 @@ export const buildTwitterIntentMessage = (
     const rainbows = RAINBOWS_STRING_GENERATOR(3);
 
     let text = rainbows;
-    text += `\n\nI just had ${
+    text += `\n\nI just had ${(
       ONBOARDING_TOTAL_POINTS - METAMASK_POINTS
-    } Rainbow Points dropped into my wallet — plus an extra ${METAMASK_POINTS} Points as a bonus for migrating my MetaMask wallet into Rainbow 🦊 🔫\n\nEverybody has at least 100 points waiting for them, but you might have more! Claim your drop: https://rainbow.me/points?ref=${referralCode}\n\n`;
+    ).toLocaleString(
+      'en-US'
+    )} Rainbow Points dropped into my wallet — plus an extra ${METAMASK_POINTS.toLocaleString(
+      'en-US'
+    )} Points as a bonus for migrating my MetaMask wallet into Rainbow 🦊 🔫\n\nEverybody has at least 100 points waiting for them, but you might have more! Claim your drop: https://rainbow.me/points?ref=${referralCode}\n\n`;
     text += rainbows;
 
     return BASE_URL + text;
@@ -103,7 +107,9 @@ export const buildTwitterIntentMessage = (
   const rainbows = RAINBOWS_STRING_GENERATOR(17);
 
   let text = rainbows;
-  text += `\n\nI just had ${ONBOARDING_TOTAL_POINTS} Rainbow Points dropped into my wallet — everybody has at least 100 points waiting for them, but you might have more!\n\nClaim your drop: https://rainbow.me/points?ref=${referralCode}\n\n`;
+  text += `\n\nI just had ${ONBOARDING_TOTAL_POINTS.toLocaleString(
+    'en-US'
+  )} Rainbow Points dropped into my wallet — everybody has at least 100 points waiting for them, but you might have more!\n\nClaim your drop: https://rainbow.me/points?ref=${referralCode}\n\n`;
   text += rainbows;
 
   return BASE_URL + text;
