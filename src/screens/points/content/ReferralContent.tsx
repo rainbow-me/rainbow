@@ -37,6 +37,18 @@ import { ActionButton } from '@/screens/points/components/ActionButton';
 import { PointsIconAnimation } from '../components/PointsIconAnimation';
 import { usePointsReferralCode } from '@/resources/points';
 import { analyticsV2 } from '@/analytics';
+import Clipboard from '@react-native-community/clipboard';
+
+const parseReferralCodeFromLink = (code: string) => {
+  if (!code.startsWith('https://rainbow.me/points?ref=')) return;
+
+  const [, refCode] = code.split('=');
+  if (!refCode) return;
+
+  const trimmed = refCode.replace(/-/g, '').slice(0, 6).toLocaleUpperCase();
+
+  return trimmed;
+};
 
 export default function ReferralContent() {
   const { accentColor } = useAccountAccentColor();
@@ -61,7 +73,7 @@ export default function ReferralContent() {
 
   const validateReferralCode = useCallback(
     async (code: string) => {
-      if (code.length !== 6) return;
+      if (code.length !== 6) return false;
       const res = await metadataPOSTClient.validateReferral({
         code,
       });
@@ -87,7 +99,10 @@ export default function ReferralContent() {
         setReferralCode(code);
         textInputRef.current?.blur();
         haptics.notificationSuccess();
+        return true;
       }
+
+      return false;
     },
     [deeplinked]
   );
@@ -178,8 +193,23 @@ export default function ReferralContent() {
   });
 
   const onChangeText = useCallback(
-    (code: string) => {
+    async (code: string) => {
       if (goingBack) return;
+      if (code === 'https:/') {
+        const url = await Clipboard.getString();
+        const codeFromUrl = parseReferralCodeFromLink(url);
+        if (codeFromUrl) {
+          const formattedCode =
+            codeFromUrl.slice(0, 3) + '-' + codeFromUrl.slice(3, 7);
+          setReferralCodeDisplay(formattedCode);
+          if (formattedCode.length !== 7) {
+            setStatus('incomplete');
+          } else {
+            validateReferralCode(codeFromUrl);
+          }
+        }
+        return;
+      }
 
       const rawCode = code.replace(/-/g, '').slice(0, 6).toLocaleUpperCase();
       let formattedCode = rawCode;
