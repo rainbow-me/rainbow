@@ -25,7 +25,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import BlurredRainbow from '@/assets/blurredRainbow.png';
 import Planet from '@/assets/planet.png';
 import LinearGradient from 'react-native-linear-gradient';
-import { safeAreaInsetValues } from '@/utils';
+import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { ButtonPressAnimation } from '@/components/animations';
 import { getHeaderHeight } from '@/navigation/SwipeNavigator';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
@@ -242,7 +242,11 @@ export default function PointsContent() {
                       // onPress={() => {}}
                       title={i18n.t(i18n.l.points.points.your_rank)}
                       mainText={`#${rank.toLocaleString('en-US')}`}
-                      icon="􀉬"
+                      icon={
+                        totalUsers >= 10_000_000 && deviceUtils.isSmallPhone
+                          ? undefined
+                          : '􀉬'
+                      }
                       subtitle={i18n.t(i18n.l.points.points.of_x, {
                         totalUsers: totalUsers.toLocaleString('en-US'),
                       })}

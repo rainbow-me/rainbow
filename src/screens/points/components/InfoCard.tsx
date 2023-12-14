@@ -14,7 +14,7 @@ export const InfoCard = ({
   title: string;
   subtitle: string;
   mainText: string;
-  icon: string;
+  icon?: string;
   accentColor: string;
 }) => {
   let mainTextFontSize: TextSize;
@@ -50,14 +50,16 @@ export const InfoCard = ({
           </Text>
         </Box>
         <Inline space="4px">
-          <Text
-            align="center"
-            weight="heavy"
-            size="12pt"
-            color={{ custom: accentColor }}
-          >
-            {icon}
-          </Text>
+          {icon && (
+            <Text
+              align="center"
+              weight="heavy"
+              size="12pt"
+              color={{ custom: accentColor }}
+            >
+              {icon}
+            </Text>
+          )}
           <Text weight="heavy" size="13pt" color={{ custom: accentColor }}>
             {subtitle}
           </Text>
