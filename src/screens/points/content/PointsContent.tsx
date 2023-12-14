@@ -13,7 +13,12 @@ import {
   Text,
   useForegroundColor,
 } from '@/design-system';
-import { useAccountProfile, useClipboard, useDimensions } from '@/hooks';
+import {
+  useAccountProfile,
+  useClipboard,
+  useDimensions,
+  useWallets,
+} from '@/hooks';
 import { useTheme } from '@/theme';
 import { ScrollView } from 'react-native-gesture-handler';
 import MaskedView from '@react-native-masked-view/masked-view';
@@ -48,6 +53,8 @@ export default function PointsContent() {
   const { width: deviceWidth } = useDimensions();
   const { accountAddress, accountENS } = useAccountProfile();
   const { setClipboard } = useClipboard();
+  const { isReadOnlyWallet } = useWallets();
+
   const { data, isFetching, dataUpdatedAt, refetch } = usePoints({
     walletAddress: accountAddress,
   });
@@ -245,34 +252,79 @@ export default function PointsContent() {
                   )}
                 </Column>
               </Columns>
-              <Stack space="16px">
-                <Inset left="4px">
-                  {/* <ButtonPressAnimation>
+              {!isReadOnlyWallet && (
+                <>
+                  <Stack space="16px">
+                    <Inset left="4px">
+                      {/* <ButtonPressAnimation>
                     <Inline space="4px" alignVertical="center"> */}
-                  <Text weight="bold" color="labelTertiary" size="15pt">
-                    {i18n.t(i18n.l.points.points.referral_code)}
-                  </Text>
-                  {/* <Text weight="heavy" color="labelQuaternary" size="13pt">
+                      <Text weight="bold" color="labelTertiary" size="15pt">
+                        {i18n.t(i18n.l.points.points.referral_code)}
+                      </Text>
+                      {/* <Text weight="heavy" color="labelQuaternary" size="13pt">
                         􀅵
                       </Text>
                     </Inline>
                   </ButtonPressAnimation> */}
-                </Inset>
-                {referralCode ? (
-                  <Columns space="12px">
-                    <Column width="1/2">
-                      {/* @ts-ignore */}
-                      <FloatingEmojis
-                        distance={250}
-                        duration={500}
-                        fadeOut={false}
-                        scaleTo={0}
-                        size={50}
-                        wiggleFactor={0}
-                      >
-                        {({ onNewEmoji }: { onNewEmoji: () => void }) => (
+                    </Inset>
+                    {referralCode ? (
+                      <Columns space="12px">
+                        <Column width="1/2">
+                          {/* @ts-ignore */}
+                          <FloatingEmojis
+                            distance={250}
+                            duration={500}
+                            fadeOut={false}
+                            scaleTo={0}
+                            size={50}
+                            wiggleFactor={0}
+                          >
+                            {({ onNewEmoji }: { onNewEmoji: () => void }) => (
+                              <ButtonPressAnimation
+                                onPress={() => onPressCopy(onNewEmoji)}
+                                overflowMargin={50}
+                              >
+                                <Box
+                                  background="surfaceSecondaryElevated"
+                                  shadow="12px"
+                                  borderRadius={18}
+                                  height={{ custom: 48 }}
+                                  width="full"
+                                  justifyContent="center"
+                                  alignItems="center"
+                                >
+                                  <Text
+                                    size="20pt"
+                                    align="center"
+                                    color="label"
+                                    weight="heavy"
+                                  >
+                                    {referralCode}
+                                  </Text>
+                                </Box>
+                              </ButtonPressAnimation>
+                            )}
+                          </FloatingEmojis>
+                        </Column>
+                        <Column width="1/2">
                           <ButtonPressAnimation
-                            onPress={() => onPressCopy(onNewEmoji)}
+                            onPress={() => {
+                              if (referralUrl) {
+                                analyticsV2.track(
+                                  analyticsV2.event
+                                    .pointsPointsScreenPressedShareReferralLinkButton
+                                );
+                                Share.share(
+                                  IS_ANDROID
+                                    ? {
+                                        message: referralUrl,
+                                      }
+                                    : {
+                                        url: referralUrl,
+                                      }
+                                );
+                              }
+                            }}
                             overflowMargin={50}
                           >
                             <Box
@@ -284,127 +336,88 @@ export default function PointsContent() {
                               justifyContent="center"
                               alignItems="center"
                             >
-                              <Text
-                                size="20pt"
-                                align="center"
-                                color="label"
-                                weight="heavy"
-                              >
-                                {referralCode}
-                              </Text>
+                              <Bleed vertical="10px">
+                                <MaskedView
+                                  style={{
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    height: 30,
+                                    width: 131,
+                                  }}
+                                  maskElement={
+                                    <Box
+                                      alignItems="center"
+                                      flexDirection="row"
+                                      style={{ gap: 4 }}
+                                      paddingVertical="10px"
+                                      justifyContent="center"
+                                    >
+                                      <Text
+                                        align="center"
+                                        weight="heavy"
+                                        color="label"
+                                        size="15pt"
+                                      >
+                                        􀈂
+                                      </Text>
+                                      <Text
+                                        align="center"
+                                        weight="heavy"
+                                        color="label"
+                                        size="16px / 22px (Deprecated)"
+                                      >
+                                        {i18n.t(
+                                          i18n.l.points.points.share_link
+                                        )}
+                                      </Text>
+                                    </Box>
+                                  }
+                                >
+                                  <LinearGradient
+                                    style={{
+                                      width: 131,
+                                      height: '100%',
+                                    }}
+                                    colors={['#00E7F3', '#57EA5F']}
+                                    start={{ x: 0, y: 0.5 }}
+                                    end={{ x: 1, y: 0.5 }}
+                                  />
+                                </MaskedView>
+                              </Bleed>
                             </Box>
                           </ButtonPressAnimation>
-                        )}
-                      </FloatingEmojis>
-                    </Column>
-                    <Column width="1/2">
-                      <ButtonPressAnimation
-                        onPress={() => {
-                          if (referralUrl) {
-                            analyticsV2.track(
-                              analyticsV2.event
-                                .pointsPointsScreenPressedShareReferralLinkButton
-                            );
-                            Share.share(
-                              IS_ANDROID
-                                ? {
-                                    message: referralUrl,
-                                  }
-                                : {
-                                    url: referralUrl,
-                                  }
-                            );
-                          }
-                        }}
-                        overflowMargin={50}
+                        </Column>
+                      </Columns>
+                    ) : (
+                      <Columns space="12px">
+                        <Column width="1/2">
+                          <Skeleton
+                            width={(deviceWidth - 40 - 12) / 2}
+                            height={48}
+                          />
+                        </Column>
+                        <Column width="1/2">
+                          <Skeleton
+                            width={(deviceWidth - 40 - 12) / 2}
+                            height={48}
+                          />
+                        </Column>
+                      </Columns>
+                    )}
+                    <Inset horizontal="4px">
+                      <Text
+                        color="labelQuaternary"
+                        size="13pt"
+                        weight="semibold"
+                        align="left"
                       >
-                        <Box
-                          background="surfaceSecondaryElevated"
-                          shadow="12px"
-                          borderRadius={18}
-                          height={{ custom: 48 }}
-                          width="full"
-                          justifyContent="center"
-                          alignItems="center"
-                        >
-                          <Bleed vertical="10px">
-                            <MaskedView
-                              style={{
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                height: 30,
-                                width: 131,
-                              }}
-                              maskElement={
-                                <Box
-                                  alignItems="center"
-                                  flexDirection="row"
-                                  style={{ gap: 4 }}
-                                  paddingVertical="10px"
-                                  justifyContent="center"
-                                >
-                                  <Text
-                                    align="center"
-                                    weight="heavy"
-                                    color="label"
-                                    size="15pt"
-                                  >
-                                    􀈂
-                                  </Text>
-                                  <Text
-                                    align="center"
-                                    weight="heavy"
-                                    color="label"
-                                    size="16px / 22px (Deprecated)"
-                                  >
-                                    {i18n.t(i18n.l.points.points.share_link)}
-                                  </Text>
-                                </Box>
-                              }
-                            >
-                              <LinearGradient
-                                style={{
-                                  width: 131,
-                                  height: '100%',
-                                }}
-                                colors={['#00E7F3', '#57EA5F']}
-                                start={{ x: 0, y: 0.5 }}
-                                end={{ x: 1, y: 0.5 }}
-                              />
-                            </MaskedView>
-                          </Bleed>
-                        </Box>
-                      </ButtonPressAnimation>
-                    </Column>
-                  </Columns>
-                ) : (
-                  <Columns space="12px">
-                    <Column width="1/2">
-                      <Skeleton
-                        width={(deviceWidth - 40 - 12) / 2}
-                        height={48}
-                      />
-                    </Column>
-                    <Column width="1/2">
-                      <Skeleton
-                        width={(deviceWidth - 40 - 12) / 2}
-                        height={48}
-                      />
-                    </Column>
-                  </Columns>
-                )}
-                <Inset horizontal="4px">
-                  <Text
-                    color="labelQuaternary"
-                    size="13pt"
-                    weight="semibold"
-                    align="left"
-                  >
-                    {i18n.t(i18n.l.points.points.earn_points_for_referring)}
-                  </Text>
-                </Inset>
-              </Stack>
-              <Separator color="separatorTertiary" thickness={1} />
+                        {i18n.t(i18n.l.points.points.earn_points_for_referring)}
+                      </Text>
+                    </Inset>
+                  </Stack>
+                  <Separator color="separatorTertiary" thickness={1} />
+                </>
+              )}
               <Stack space="16px">
                 <Inset left="4px">
                   <Text color="label" size="20pt" weight="heavy">
