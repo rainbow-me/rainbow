@@ -407,7 +407,7 @@ export const signTransaction = async ({
 
 export const signPersonalMessage = async (
   message: string | Uint8Array,
-  existingWallet?: Signer,
+  existingWallet?: Signer | Wallet | LedgerSigner,
   provider?: Provider
 ): Promise<null | {
   result?: string;

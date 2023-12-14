@@ -167,7 +167,8 @@ export const PointsProfileProvider = ({
     const challenge = challengeResponse?.pointsOnboardChallenge;
     if (challenge) {
       const provider = await getProviderForNetwork(Network.mainnet);
-      const wallet = await loadWallet(accountAddress, true, provider);
+      const wallet =
+        (await loadWallet(accountAddress, true, provider)) ?? undefined;
       const signatureResponse = await signPersonalMessage(
         challenge,
         wallet,
