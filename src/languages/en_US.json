@@ -1267,6 +1267,7 @@
         "thursday": "Thu",
         "friday": "Fri",
         "saturday": "Sat",
+        "today": "Today",
         "error": "Oops!\nPlease pull to refresh.",
         "points": "points",
         "referral_code_copied": "Referral code copied",

@@ -8,6 +8,7 @@ import {
 import * as i18n from '@/languages';
 
 const ONE_WEEK_MS = 604_800_000;
+const ONE_DAY_MS = ONE_WEEK_MS / 7;
 
 export const enum RainbowPointsFlowSteps {
   Initialize = 0,
@@ -122,9 +123,8 @@ export const displayNextDistribution = (seconds: number) => {
 
   const ms = seconds * 1000;
   const date = new Date(ms);
-  let minutes = date.getMinutes();
-  minutes = minutes % 60;
-  let hours = date.getHours() + (minutes <= 30 ? 0 : 1);
+  const minutes = date.getMinutes();
+  let hours = date.getHours();
   const ampm = hours >= 12 ? 'pm' : 'am';
   hours = hours % 12;
   hours = hours ? hours : 12; // the hour '0' should be '12'
@@ -135,8 +135,12 @@ export const displayNextDistribution = (seconds: number) => {
       day: 'numeric',
     })}`;
   } else {
-    const dayOfWeek = days[date.getDay()];
+    let dayOfWeek = days[date.getDay()];
+    const today = new Date().getDay();
+    if (days[today] === dayOfWeek && ms - Date.now() < ONE_DAY_MS) {
+      dayOfWeek = i18n.t(i18n.l.points.points.today);
+    }
 
-    return `${hours}${ampm} ${dayOfWeek}`;
+    return `${hours}:${minutes}${ampm} ${dayOfWeek}`;
   }
 };
