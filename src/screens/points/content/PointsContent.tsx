@@ -33,10 +33,7 @@ import { useRecoilState } from 'recoil';
 import * as i18n from '@/languages';
 import { usePoints } from '@/resources/points';
 import { isNil } from 'lodash';
-import {
-  abbreviateNumber,
-  getFormattedTimeQuantity,
-} from '@/helpers/utilities';
+import { getFormattedTimeQuantity } from '@/helpers/utilities';
 import { address as formatAddress } from '@/utils/abbreviations';
 import { delay } from '@/utils/delay';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
@@ -244,17 +241,10 @@ export default function PointsContent() {
                     <InfoCard
                       // onPress={() => {}}
                       title={i18n.t(i18n.l.points.points.your_rank)}
-                      mainText={`#${
-                        rank >= 1_000_000
-                          ? abbreviateNumber(rank, 2)
-                          : rank.toLocaleString('en-US')
-                      }`}
+                      mainText={`#${rank.toLocaleString('en-US')}`}
                       icon="􀉬"
                       subtitle={i18n.t(i18n.l.points.points.out_of_x, {
-                        totalUsers:
-                          totalUsers >= 1_000_000
-                            ? abbreviateNumber(totalUsers, 2)
-                            : totalUsers.toLocaleString('en-US'),
+                        totalUsers: totalUsers.toLocaleString('en-US'),
                       })}
                       accentColor={green}
                     />
