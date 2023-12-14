@@ -11,7 +11,7 @@ beforeAll(async () => {
     // connecting to hardhat
     await device.reverseTcpPort(8545); //TODO: WIP for android connecting in dev
 
-    // make sure we don't have gesture navigation what might cause collisions
+    // make sure we don't have gesture navigation that might cause collisions
     await exec(
       'yarn adb-all shell cmd overlay enable com.android.internal.systemui.navbar.threebutton'
     );
