@@ -1,13 +1,6 @@
 import { MMKV } from 'react-native-mmkv';
 
-import {
-  Account,
-  Campaigns,
-  Device,
-  Review,
-  CollectibleSortBy,
-  CollectibleSortByOptions,
-} from '@/storage/schema';
+import { Account, Campaigns, Device, Review } from '@/storage/schema';
 import { EthereumAddress } from '@/entities';
 import { Network } from '@/networks/types';
 
@@ -87,8 +80,3 @@ export const account = new Storage<[EthereumAddress, Network], Account>({
 export const review = new Storage<[], Review>({ id: 'review' });
 
 export const campaigns = new Storage<[], Campaigns>({ id: 'campaigns' });
-
-export const collectibleSortBy = new Storage<[], CollectibleSortBy>({
-  id: 'collectibleSortBy',
-});
-export { CollectibleSortByOptions };

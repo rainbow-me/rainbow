@@ -3,6 +3,7 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Inline, Inset, Text } from '@/design-system';
 import { haptics } from '@/utils';
+import { CollectibleSortByOptions } from '@/hooks/useNFTsSortBy';
 
 type MenuItem = {
   actionKey: string;
@@ -11,15 +12,16 @@ type MenuItem = {
 };
 
 type ListHeaderMenuProps = {
-  selected: MenuItem;
+  selected: CollectibleSortByOptions;
   menuItems: MenuItem[];
   selectItem: (item: string) => void;
+  text: string;
 };
 
 export function ListHeaderMenu({
-  selected,
   menuItems,
   selectItem,
+  text,
 }: ListHeaderMenuProps) {
   const menuConfig = {
     menuTitle: '',
@@ -43,11 +45,11 @@ export function ListHeaderMenu({
       <ButtonPressAnimation>
         <Inset top="2px">
           <Inline alignVertical="center" space={{ custom: 5 }}>
-            <Inline alignVertical="center">
-              <Text color="label" size="17pt" weight="bold">
-                {typeof selected === 'string' ? selected : selected.actionTitle}
+            <Inline alignVertical="center" horizontalSpace={'2px'}>
+              <Text color="label" size="17pt" weight="semibold">
+                {text}
               </Text>
-              <Text color="label" size="15pt" weight="bold">
+              <Text color="label" size="15pt" weight="semibold">
                 􀆈
               </Text>
             </Inline>

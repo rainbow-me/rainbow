@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import React, { Fragment, useCallback } from 'react';
+import React, { createElement, Fragment } from 'react';
 import { Share } from 'react-native';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
@@ -19,11 +19,6 @@ import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import * as i18n from '@/languages';
-import * as ls from '@/storage';
-import { CollectibleSortByOptions } from '@/storage/schema';
-import { ListHeaderMenu } from './ListHeaderMenu';
-import { useTheme } from '@/theme';
-import { Inline, Bleed } from '@/design-system';
 
 export const ListHeaderHeight = 50;
 
@@ -40,7 +35,11 @@ const ShareCollectiblesBPA = styled(ButtonPressAnimation)({
 
 const ShareCollectiblesButton = ({ onPress }) => (
   <ShareCollectiblesBPA onPress={onPress} scale={0.9}>
-    <CoinDividerButtonLabel align="center" label={`􀈂`} shareButton />
+    <CoinDividerButtonLabel
+      align="center"
+      label={`􀈂 ${lang.t('button.share')}`}
+      shareButton
+    />
   </ShareCollectiblesBPA>
 );
 
@@ -68,7 +67,6 @@ export default function ListHeader({
   showDivider = true,
   title,
   totalValue,
-  collectibleSortBy,
 }) {
   const deviceDimensions = useDimensions();
   const { colors, isDarkMode } = useTheme();
@@ -115,36 +113,17 @@ export default function ListHeader({
           {title && (
             <Row align="center">
               {/* eslint-disable-next-line react/no-children-prop */}
-              <Inline alignVertical="center" space={{ custom: 6 }}>
+              <Row style={{ maxWidth: 200 }}>
                 <H1 ellipsizeMode="tail" numberOfLines={1}>
                   {title}
                 </H1>
-                {title === i18n.t(i18n.l.account.tab_collectibles) && (
-                  <Bleed vertical="10px">
-                    <ShareCollectiblesButton onPress={handleShare} />
-                  </Bleed>
-                )}
-              </Inline>
+              </Row>
               {title === i18n.t(i18n.l.account.tab_collectibles) && (
                 <Column align="flex-end" flex={1}>
-                  <ListHeaderMenu
-                    selected={{
-                      actionKey: collectibleSortBy,
-                      actionTitle: CollectibleSortByOptions[collectibleSortBy],
-                    }}
-                    menuItems={Object.entries(CollectibleSortByOptions).map(
-                      ([key, value]) => ({
-                        actionKey: key,
-                        actionTitle: value,
-                        menuState: collectibleSortBy === key ? 'on' : 'off',
-                      })
-                    )}
-                    selectItem={item => {
-                      ls.collectibleSortBy.set(
-                        ['sortBy'],
-                        item as CollectibleSortByOptions
-                      );
-                    }}
+                  <ShareCollectiblesButton
+                    onPress={() =>
+                      handleShare(isReadOnlyWallet, accountAddress)
+                    }
                   />
                 </Column>
               )}

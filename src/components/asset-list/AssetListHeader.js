@@ -112,7 +112,6 @@ const AssetListHeader = ({
   title,
   totalValue,
   isSticky = true,
-  collectibleSortBy,
   ...props
 }) => {
   const { width: deviceWidth } = useDimensions();
@@ -150,7 +149,6 @@ const AssetListHeader = ({
         isCoinListEdited={isCoinListEdited}
         title={title}
         totalValue={totalValue}
-        collectibleSortBy={collectibleSortBy}
         {...props}
       >
         {!title && (
@@ -188,7 +186,6 @@ const AssetListHeader = ({
     textWidth,
     title,
     totalValue,
-    collectibleSortBy,
   ]);
 
   if (isSticky) {
@@ -202,6 +199,5 @@ export default magicMemo(AssetListHeader, [
   'contextMenuOptions',
   'isCoinListEdited',
   'title',
-  'collectibleSortBy',
   'totalValue',
 ]);

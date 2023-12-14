@@ -1172,7 +1172,12 @@
       "mintdotfun_unsupported_network": "Mint.fun does not support this network"
     },
     "nfts": {
-      "selling": "Selling"
+      "selling": "Selling",
+      "sort" :{
+        "abc": "Abc",
+        "most_recent": "Most Recent",
+        "floor_price": "Floor Price"
+      }
     },
     "nft_offers": {
       "card": {

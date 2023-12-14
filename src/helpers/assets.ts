@@ -7,6 +7,7 @@ import { getUniqueTokenFormat, getUniqueTokenType } from '@/utils';
 import * as i18n from '@/languages';
 import * as ls from '@/storage';
 import { UniqueAsset } from '@/entities';
+import { CollectibleSortByOptions } from '@/hooks/useNFTsSortBy';
 
 const COINS_TO_SHOW = 5;
 
@@ -265,7 +266,7 @@ const sortCollectibles = (
   const families = Object.keys(assetsByName);
 
   switch (collectibleSortBy) {
-    case 'MOST_RECENT':
+    case CollectibleSortByOptions.MOST_RECENT:
       return families.sort((a, b) => {
         const maxDateA = Math.max(
           Number(...assetsByName[a].map(asset => asset.acquisition_date))
@@ -275,14 +276,14 @@ const sortCollectibles = (
         );
         return maxDateB - maxDateA;
       });
-    case 'ALPHABETICAL':
+    case CollectibleSortByOptions.ABC:
       return families.sort((a, b) =>
         a
           .replace(regex, '')
           .toLowerCase()
           .localeCompare(b.replace(regex, '').toLowerCase())
       );
-    case 'FLOOR_PRICE':
+    case CollectibleSortByOptions.FLOOR_PRICE:
       return families.sort((a, b) => {
         const minPriceA = Math.min(
           ...assetsByName[a].map(asset =>
@@ -307,7 +308,8 @@ export const buildBriefUniqueTokenList = (
   sellingTokens: any[] = [],
   hiddenTokens: string[] = [],
   listType: AssetListType = 'wallet',
-  isReadOnlyWallet = false
+  isReadOnlyWallet = false,
+  nftSort: string
 ) => {
   const hiddenUniqueTokensIds = uniqueTokens
     .filter(({ fullUniqueId }: any) => hiddenTokens.includes(fullUniqueId))
@@ -318,10 +320,6 @@ export const buildBriefUniqueTokenList = (
   const uniqueTokensInShowcaseIds = nonHiddenUniqueTokens
     .filter(({ uniqueId }: any) => selectedShowcaseTokens?.includes(uniqueId))
     .map(({ uniqueId }: any) => uniqueId);
-
-  const collectibleSortBy =
-    ls.collectibleSortBy.get(['sortBy']) ??
-    ls.CollectibleSortByOptions.MOST_RECENT;
 
   const filteredUniqueTokens = nonHiddenUniqueTokens.filter((token: any) => {
     if (listType === 'select-nft') {
@@ -336,13 +334,13 @@ export const buildBriefUniqueTokenList = (
   const assetsByName = groupBy(filteredUniqueTokens, token => token.familyName);
 
   // depending on the sort by option, sort the collections
-  const families2 = sortCollectibles(assetsByName, collectibleSortBy);
+  const families2 = sortCollectibles(assetsByName, nftSort);
 
   const result = [
     {
       type: 'NFTS_HEADER',
-      collectibleSortBy,
-      uid: `nft-headers-${collectibleSortBy}`,
+      nftSort,
+      uid: `nft-headers-${nftSort}`,
     },
     { type: 'NFTS_HEADER_SPACE_AFTER', uid: 'nfts-header-space-after' },
   ];
