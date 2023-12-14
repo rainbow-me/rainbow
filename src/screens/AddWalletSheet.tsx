@@ -145,11 +145,13 @@ export const AddWalletSheet = () => {
                     ) {
                       try {
                         await backupUserDataIntoCloud({ wallets: newWallets });
-                      } catch (e) {
-                        logger.error(e as RainbowError, {
-                          description:
-                            'Updating wallet userdata failed after new account creation',
-                        });
+                      } catch (e: any) {
+                        logger.error(
+                          new RainbowError(
+                            '[AddWalletSheet]: Updating wallet userdata failed after new account creation'
+                          ),
+                          { error: e }
+                        );
                         captureException(e);
                         throw e;
                       }
@@ -166,10 +168,13 @@ export const AddWalletSheet = () => {
                     // @ts-ignore
                     await initializeWallet();
                   }
-                } catch (e) {
-                  logger.error(e as RainbowError, {
-                    description: 'Error while trying to add account',
-                  });
+                } catch (e: any) {
+                  logger.error(
+                    new RainbowError(
+                      '[AddWalletSheet]: Error while trying to add account'
+                    ),
+                    { error: e }
+                  );
                   captureException(e);
                   if (isDamaged) {
                     setTimeout(() => {
@@ -188,10 +193,11 @@ export const AddWalletSheet = () => {
           });
         }, 50);
       });
-    } catch (e) {
-      logger.error(e as RainbowError, {
-        description: 'Error while trying to add account',
-      });
+    } catch (e: any) {
+      logger.error(
+        new RainbowError('[AddWalletSheet]: Error while trying to add account'),
+        { error: e }
+      );
     }
   };
 
@@ -246,7 +252,12 @@ export const AddWalletSheet = () => {
           }
           logger.info(`Downloaded ${cloudPlatform} backup info`);
         } catch (e) {
-          logger.error(e as RainbowError);
+          logger.error(
+            new RainbowError(
+              '[AddWalletSheet]: Error retrieving backup info from cloud'
+            ),
+            { error: e }
+          );
         } finally {
           if (!proceed) {
             Alert.alert(
