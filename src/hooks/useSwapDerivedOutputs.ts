@@ -34,7 +34,7 @@ import {
   updatePrecisionToDisplay,
 } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
-import Logger from '@/utils/logger';
+import { logger } from '@/logger';
 
 const SWAP_POLLING_INTERVAL = 5000;
 
@@ -96,6 +96,19 @@ const getInputAmount = async (
       convertNumberToString(outputAmount),
       outputToken.decimals
     );
+
+    logger.info(`[getInputAmount]: `, {
+      outputToken,
+      outputChainId,
+      outputNetwork,
+      outputTokenAddress,
+      inputToken,
+      inputChainId,
+      inputNetwork,
+      inputTokenAddress,
+      isCrosschainSwap,
+    });
+
     const quoteSource = getSource(source);
     const quoteParams: QuoteParams = {
       buyAmount,
@@ -110,7 +123,7 @@ const getInputAmount = async (
     };
 
     const rand = Math.floor(Math.random() * 100);
-    Logger.debug('Getting quote ', rand, { quoteParams });
+    logger.debug('[getInputAmount]: Getting quote', { rand, quoteParams });
     // Do not deleeeet the comment below 😤
     // @ts-ignore About to get quote
     const quote = await getQuote(quoteParams);
@@ -119,7 +132,7 @@ const getInputAmount = async (
     if (!quote || (quote as QuoteError).error || !(quote as Quote).sellAmount) {
       if ((quote as QuoteError).error) {
         const quoteError = (quote as unknown) as QuoteError;
-        Logger.log('Quote Error', {
+        logger.log('[getInputAmount]: Quote error', {
           code: quoteError.error_code,
           msg: quoteError.message,
         });
@@ -196,6 +209,17 @@ const getOutputAmount = async (
       inputToken.decimals
     );
     const isCrosschainSwap = outputNetwork !== inputNetwork;
+
+    logger.info(`[getOutputAmount]: `, {
+      outputToken,
+      outputChainId,
+      outputNetwork,
+      inputToken,
+      inputChainId,
+      inputNetwork,
+      isCrosschainSwap,
+    });
+
     const quoteSource = getSource(source);
     const quoteParams: QuoteParams = {
       buyTokenAddress,
@@ -212,7 +236,7 @@ const getOutputAmount = async (
     };
 
     const rand = Math.floor(Math.random() * 100);
-    Logger.debug('Getting quote ', rand, { quoteParams });
+    logger.debug('[getOutputAmount]: Getting quote', { rand, quoteParams });
     // Do not deleeeet the comment below 😤
     // @ts-ignore About to get quote
     const quote:
@@ -222,7 +246,7 @@ const getOutputAmount = async (
       | null = await (isCrosschainSwap ? getCrosschainQuote : getQuote)(
       quoteParams
     );
-    Logger.debug('Got quote', rand, quote);
+    logger.debug('[getOutputAmount]: Got quote', { rand, quote });
 
     if (
       !quote ||
@@ -231,7 +255,7 @@ const getOutputAmount = async (
     ) {
       const quoteError = quote as QuoteError;
       if (quoteError.error) {
-        Logger.log('Quote Error', {
+        logger.log('[getOutputAmount]: Quote error', {
           code: quoteError.error_code,
           msg: quoteError.message,
         });
@@ -377,6 +401,18 @@ export default function useSwapDerivedOutputs(type: string) {
         },
       };
     }
+
+    logger.log('[getTradeDetails]: Getting trade details', {
+      independentField,
+      independentValue,
+      inputCurrency,
+      outputCurrency,
+      inputPrice,
+      outputPrice,
+      slippageInBips,
+      source,
+      refuel,
+    });
 
     let tradeDetails = null;
     const slippagePercentage = slippageInBips / 100;
@@ -531,6 +567,10 @@ export default function useSwapDerivedOutputs(type: string) {
       quoteError,
       tradeDetails,
     };
+
+    logger.log('[getTradeDetails]: Got trade details', {
+      data,
+    });
 
     dispatch(
       updateSwapQuote({
