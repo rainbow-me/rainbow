@@ -25,7 +25,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import BlurredRainbow from '@/assets/blurredRainbow.png';
 import Planet from '@/assets/planet.png';
 import LinearGradient from 'react-native-linear-gradient';
-import { safeAreaInsetValues } from '@/utils';
+import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { ButtonPressAnimation } from '@/components/animations';
 import { getHeaderHeight } from '@/navigation/SwipeNavigator';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
@@ -33,10 +33,7 @@ import { useRecoilState } from 'recoil';
 import * as i18n from '@/languages';
 import { usePoints } from '@/resources/points';
 import { isNil } from 'lodash';
-import {
-  abbreviateNumber,
-  getFormattedTimeQuantity,
-} from '@/helpers/utilities';
+import { getFormattedTimeQuantity } from '@/helpers/utilities';
 import { address as formatAddress } from '@/utils/abbreviations';
 import { delay } from '@/utils/delay';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
@@ -244,17 +241,14 @@ export default function PointsContent() {
                     <InfoCard
                       // onPress={() => {}}
                       title={i18n.t(i18n.l.points.points.your_rank)}
-                      mainText={`#${
-                        rank >= 1_000_000
-                          ? abbreviateNumber(rank, 2)
-                          : rank.toLocaleString('en-US')
-                      }`}
-                      icon="􀉬"
-                      subtitle={i18n.t(i18n.l.points.points.out_of_x, {
-                        totalUsers:
-                          totalUsers >= 1_000_000
-                            ? abbreviateNumber(totalUsers, 2)
-                            : totalUsers.toLocaleString('en-US'),
+                      mainText={`#${rank.toLocaleString('en-US')}`}
+                      icon={
+                        totalUsers >= 10_000_000 && deviceUtils.isSmallPhone
+                          ? undefined
+                          : '􀉬'
+                      }
+                      subtitle={i18n.t(i18n.l.points.points.of_x, {
+                        totalUsers: totalUsers.toLocaleString('en-US'),
                       })}
                       accentColor={green}
                     />

@@ -1253,7 +1253,7 @@
         "share_link": "Share Link",
         "next_drop": "Next Drop",
         "your_rank": "Your Rank",
-        "out_of_x": "Out of %{totalUsers}",
+        "of_x": "Of %{totalUsers}",
         "referrals": "Referrals",
         "streak": "Streak",
         "longest_yet": "Longest yet",
