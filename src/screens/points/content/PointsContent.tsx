@@ -243,7 +243,7 @@ export default function PointsContent() {
                       title={i18n.t(i18n.l.points.points.your_rank)}
                       mainText={`#${rank.toLocaleString('en-US')}`}
                       icon="􀉬"
-                      subtitle={i18n.t(i18n.l.points.points.out_of_x, {
+                      subtitle={i18n.t(i18n.l.points.points.of_x, {
                         totalUsers: totalUsers.toLocaleString('en-US'),
                       })}
                       accentColor={green}
