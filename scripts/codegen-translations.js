@@ -87,7 +87,7 @@ type ValidScope =${validTagsAsArrays.map(generateTypeForTag).join('')};
 
 /**
  * Recursively adds all keys of an object and its children to the array
- * `keysArray`. New entires are their own arrays, containing each of their
+ * `keysArray`. New entries are their own arrays, containing each of their
  * parent keys in descending order and then the key itself. The `prefixArray`
  * defines the parents of keys at this level of recursion.
  *
