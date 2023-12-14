@@ -85,13 +85,19 @@ export const buildTwitterIntentMessage = (
     profile.onboardPoints.user.onboarding.earnings.total;
   const referralCode = profile.onboardPoints.user.referralCode;
 
-  let text = `I just had ${ONBOARDING_TOTAL_POINTS} Rainbow Points dropped into my wallet — everybody has at least 100 points waiting for them, but you might have more!\n\nClaim your drop: https://rainbow.me/points?ref=${referralCode}`;
+  let text = `I just had ${ONBOARDING_TOTAL_POINTS.toLocaleString(
+    'en-US'
+  )} Rainbow Points dropped into my wallet — everybody has at least 100 points waiting for them, but you might have more!\n\nClaim your drop: https://rainbow.me/points?ref=${referralCode}`;
 
   if (metamaskSwaps && metamaskSwaps?.earnings?.total > 0) {
     const METAMASK_POINTS = metamaskSwaps.earnings.total;
-    text = `I just had ${
+    text = `I just had ${(
       ONBOARDING_TOTAL_POINTS - METAMASK_POINTS
-    } Rainbow Points dropped into my wallet — plus an extra ${METAMASK_POINTS} Points as a bonus for migrating my MetaMask wallet into Rainbow 🦊 🔫\n\nEverybody has at least 100 points waiting for them, but you might have more! Claim your drop: https://rainbow.me/points?ref=${referralCode}`;
+    ).toLocaleString(
+      'en-US'
+    )} Rainbow Points dropped into my wallet — plus an extra ${METAMASK_POINTS.toLocaleString(
+      'en-US'
+    )} Points as a bonus for migrating my MetaMask wallet into Rainbow 🦊 🔫\n\nEverybody has at least 100 points waiting for them, but you might have more! Claim your drop: https://rainbow.me/points?ref=${referralCode}`;
   }
 
   return BASE_URL + text;
