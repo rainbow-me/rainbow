@@ -274,7 +274,7 @@ export const abbreviateBigNumber = (
  * Abbreviates number like 1,200,000 to "1.2m", 1,000 to "1k", etc.
  * Rounds to 1 decimal place, stripping trailing zeros.
  */
-export const abbreviateNumber = (number: number): string => {
+export const abbreviateNumber = (number: number, decimals = 1): string => {
   let prefix = number;
   let suffix = '';
   if (number >= 1_000_000_000) {
@@ -287,7 +287,7 @@ export const abbreviateNumber = (number: number): string => {
     prefix = number / 1000;
     suffix = 'k';
   }
-  return prefix.toFixed(1).replace(/\.0$/, '') + suffix;
+  return prefix.toFixed(decimals).replace(/\.0$/, '') + suffix;
 };
 
 export const handleSignificantDecimals = (

@@ -24,7 +24,7 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 
 import { metadataPOSTClient } from '@/graphql';
 import { useAccountProfile, useWallets } from '@/hooks';
-import { signPersonalMessage } from '@/model/wallet';
+import { loadWallet, signPersonalMessage } from '@/model/wallet';
 import { RainbowError, logger } from '@/logger';
 import { queryClient } from '@/react-query';
 import { useNavigation } from '@/navigation';
@@ -166,9 +166,10 @@ export const PointsProfileProvider = ({
     const challenge = challengeResponse?.pointsOnboardChallenge;
     if (challenge) {
       const provider = await getProviderForNetwork(Network.mainnet);
+      const wallet = await loadWallet(accountAddress, true, provider);
       const signatureResponse = await signPersonalMessage(
         challenge,
-        undefined,
+        wallet,
         provider
       );
       if (signatureResponse && isHardwareWallet) {

@@ -74,8 +74,6 @@ export const triggerHapticFeedback = (hapticType: HapticFeedbackType) =>
   ReactNativeHapticFeedback.trigger(hapticType);
 
 const BASE_URL = `https://twitter.com/intent/tweet?text=`;
-const RAINBOW = `🌈`;
-const RAINBOWS_STRING_GENERATOR = (num: number) => RAINBOW.repeat(num);
 export const buildTwitterIntentMessage = (
   profile: OnboardPointsMutation | undefined,
   metamaskSwaps: PointsOnboardingCategory | undefined
@@ -86,31 +84,20 @@ export const buildTwitterIntentMessage = (
     profile.onboardPoints.user.onboarding.earnings.total;
   const referralCode = profile.onboardPoints.user.referralCode;
 
+  let text = `I just had ${ONBOARDING_TOTAL_POINTS.toLocaleString(
+    'en-US'
+  )} Rainbow Points dropped into my wallet — everybody has at least 100 points waiting for them, but you might have more!\n\nClaim your drop: https://rainbow.me/points?ref=${referralCode}`;
+
   if (metamaskSwaps && metamaskSwaps?.earnings?.total > 0) {
     const METAMASK_POINTS = metamaskSwaps.earnings.total;
-
-    const rainbows = RAINBOWS_STRING_GENERATOR(3);
-
-    let text = rainbows;
-    text += `\n\nI just had ${(
+    text = `I just had ${(
       ONBOARDING_TOTAL_POINTS - METAMASK_POINTS
     ).toLocaleString(
       'en-US'
     )} Rainbow Points dropped into my wallet — plus an extra ${METAMASK_POINTS.toLocaleString(
       'en-US'
-    )} Points as a bonus for migrating my MetaMask wallet into Rainbow 🦊 🔫\n\nEverybody has at least 100 points waiting for them, but you might have more! Claim your drop: https://rainbow.me/points?ref=${referralCode}\n\n`;
-    text += rainbows;
-
-    return BASE_URL + text;
+    )} Points as a bonus for migrating my MetaMask wallet into Rainbow 🦊 🔫\n\nEverybody has at least 100 points waiting for them, but you might have more! Claim your drop: https://rainbow.me/points?ref=${referralCode}`;
   }
-
-  const rainbows = RAINBOWS_STRING_GENERATOR(17);
-
-  let text = rainbows;
-  text += `\n\nI just had ${ONBOARDING_TOTAL_POINTS.toLocaleString(
-    'en-US'
-  )} Rainbow Points dropped into my wallet — everybody has at least 100 points waiting for them, but you might have more!\n\nClaim your drop: https://rainbow.me/points?ref=${referralCode}\n\n`;
-  text += rainbows;
 
   return BASE_URL + text;
 };
