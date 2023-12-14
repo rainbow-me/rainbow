@@ -70,6 +70,7 @@ export interface RainbowConfig
   mints_enabled: boolean;
   points_enabled: boolean;
   rpc_proxy_enabled: boolean;
+  remote_cards_enabled: boolean;
 }
 
 const DEFAULT_CONFIG: RainbowConfig = {
@@ -131,6 +132,7 @@ const DEFAULT_CONFIG: RainbowConfig = {
   mints_enabled: true,
   points_enabled: true,
   rpc_proxy_enabled: true,
+  remote_cards_enabled: false,
 };
 
 // Initialize with defaults in case firebase doesn't respond
@@ -185,7 +187,8 @@ const init = async () => {
         key === 'base_swaps_enabled' ||
         key === 'mints_enabled' ||
         key === 'points_enabled' ||
-        key === 'rpc_proxy_enabled'
+        key === 'rpc_proxy_enabled' ||
+        key === 'remote_cards_enabled'
       ) {
         config[key] = entry.asBoolean();
       } else {

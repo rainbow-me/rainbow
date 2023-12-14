@@ -14,6 +14,7 @@ import { REMOTE_CARDS, getExperimetalFlag } from '@/config';
 import Animated from 'react-native-reanimated';
 import { useDimensions } from '@/hooks';
 import { useTheme } from '@/theme';
+import config from '@/model/config';
 
 type RenderItemProps = {
   item: TrimmedCard;
@@ -22,7 +23,8 @@ type RenderItemProps = {
 
 export const RemoteCardCarousel = ({ withSeparator = true }) => {
   const { name } = useRoute();
-  const remoteCardsEnabled = getExperimetalFlag(REMOTE_CARDS);
+  const remoteCardsEnabled =
+    getExperimetalFlag(REMOTE_CARDS) || config.remote_cards_enabled;
   const { getCardsForPlacement } = useRemoteCardContext();
   const { isDarkMode } = useTheme();
   const [index, setIndex] = useState(0);

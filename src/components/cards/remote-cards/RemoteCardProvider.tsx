@@ -9,6 +9,7 @@ import {
 } from '@/resources/cards/cardCollectionQuery';
 import * as ls from '@/storage';
 import { REMOTE_CARDS, useExperimentalFlag } from '@/config';
+import config from '@/model/config';
 
 const TRIMMED_CARD_KEYS = [
   'cardKey',
@@ -60,7 +61,8 @@ export const RemoteCardProvider: React.FC<
   PropsWithChildren<CardProviderProps>
 > = ({ children }) => {
   const [cards, setCards] = useState<Record<string, TrimmedCard>>({});
-  const enabled = useExperimentalFlag(REMOTE_CARDS);
+  const enabled =
+    useExperimentalFlag(REMOTE_CARDS) || config.remote_cards_enabled;
 
   useCardCollectionQuery(
     {},
