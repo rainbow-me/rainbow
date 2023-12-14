@@ -24,6 +24,7 @@ export function usePointsReferralCode() {
   return query;
 }
 
+let nextDropTimeout: NodeJS.Timeout | undefined;
 export function usePoints({ walletAddress }: { walletAddress: string }) {
   const pointsEnabled =
     (useExperimentalFlag(POINTS) || config.points_fully_enabled) &&
@@ -41,14 +42,23 @@ export function usePoints({ walletAddress }: { walletAddress: string }) {
     {
       enabled: pointsEnabled && !!walletAddress,
       cacheTime: Infinity,
+      staleTime: 1000 * 60 * 5,
     }
   );
 
   useEffect(() => {
-    const nextDistribution = query?.data?.points?.meta?.distribution?.next;
-    if (nextDistribution && Date.now() >= nextDistribution * 1000) {
-      query.refetch();
-    }
+    const nextDistribution = query.data?.points?.meta.distribution.next;
+    if (!nextDistribution) return;
+    const nextDistributionIn = nextDistribution * 1000 - Date.now();
+
+    nextDropTimeout ??= setTimeout(() => query.refetch(), nextDistributionIn);
+
+    return () => {
+      if (nextDropTimeout) {
+        clearTimeout(nextDropTimeout);
+        nextDropTimeout = undefined;
+      }
+    };
   }, [query]);
 
   return query;
