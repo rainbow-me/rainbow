@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
-import React, { Fragment, useCallback } from 'react';
-import { Share } from 'react-native';
+import React, { Fragment, PropsWithChildren, useCallback } from 'react';
+import { Share, View } from 'react-native';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import CoinDividerButtonLabel from '../coin-divider/CoinDividerButtonLabel';
@@ -28,7 +28,7 @@ import { Inline, Bleed } from '@/design-system';
 export const ListHeaderHeight = 50;
 
 const ShareCollectiblesBPA = styled(ButtonPressAnimation)({
-  backgroundColor: ({ theme: { colors } }) =>
+  backgroundColor: ({ theme: { colors } }: any) =>
     colors.alpha(colors.blueGreyDark, 0.06),
   borderRadius: 15,
   height: 30,
@@ -38,13 +38,22 @@ const ShareCollectiblesBPA = styled(ButtonPressAnimation)({
   paddingHorizontal: 10,
 });
 
-const ShareCollectiblesButton = ({ onPress }) => (
+type ShareCollectibleButtonProps = {
+  onPress: () => void;
+};
+
+const ShareCollectiblesButton = ({ onPress }: ShareCollectibleButtonProps) => (
   <ShareCollectiblesBPA onPress={onPress} scale={0.9}>
-    <CoinDividerButtonLabel align="center" label={`􀈂`} shareButton />
+    <CoinDividerButtonLabel
+      isVisible={false}
+      align="center"
+      label={`􀈂`}
+      shareButton
+    />
   </ShareCollectiblesBPA>
 );
 
-const Content = styled(Row).attrs(({ theme: { colors } }) => ({
+const Content = styled(Row).attrs(({ theme: { colors } }: any) => ({
   align: 'center',
   backgroundColor: colors.white,
   justify: 'space-between',
@@ -54,12 +63,21 @@ const Content = styled(Row).attrs(({ theme: { colors } }) => ({
   width: '100%',
 });
 
-const StickyBackgroundBlocker = styled.View({
-  backgroundColor: ({ theme: { colors } }) => colors.white,
-  height: ({ isEditMode }) => (isEditMode ? ListHeaderHeight : 0),
-  top: ({ isEditMode }) => (isEditMode ? -40 : 0),
-  width: ({ deviceDimensions }) => deviceDimensions.width,
+const StickyBackgroundBlocker = styled(View)({
+  backgroundColor: ({ theme: { colors } }: any) => colors.white,
+  height: ({ isEditMode }: any) => (isEditMode ? ListHeaderHeight : 0),
+  top: ({ isEditMode }: any) => (isEditMode ? -40 : 0),
+  width: ({ deviceDimensions }: any) => deviceDimensions.width,
 });
+
+type ListHeaderProps = {
+  contextMenuOptions?: any;
+  isCoinListEdited: boolean;
+  showDivider?: boolean;
+  title: string;
+  totalValue: string;
+  collectibleSortBy: CollectibleSortByOptions;
+} & PropsWithChildren;
 
 export default function ListHeader({
   children,
@@ -69,7 +87,7 @@ export default function ListHeader({
   title,
   totalValue,
   collectibleSortBy,
-}) {
+}: ListHeaderProps) {
   const deviceDimensions = useDimensions();
   const { colors, isDarkMode } = useTheme();
   const { isReadOnlyWallet } = useWallets();

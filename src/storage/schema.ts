@@ -79,9 +79,9 @@ type CampaignMetadata = {
 export type Campaigns = CampaignKeys & CampaignMetadata;
 
 export enum CollectibleSortByOptions {
-  MOST_RECENT = 'Most Recent',
-  ALPHABETICAL = 'A-Z',
-  FLOOR_PRICE = 'Floor Price',
+  'Most Recent' = 'Most Recent',
+  'A-Z' = 'A-Z',
+  'Floor Price' = 'Floor Price',
 }
 
 export type CollectibleSortBy = {

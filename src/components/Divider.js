@@ -68,7 +68,7 @@ const Container = styled.View({
 });
 
 const Divider = ({
-  backgroundColor,
+  backgroundColor = undefined,
   color,
   horizontal = true,
   inset = [0, 0, 0, 19],
@@ -76,10 +76,16 @@ const Divider = ({
   ...props
 }) => {
   const { colors } = useTheme();
+
+  let bgColor = backgroundColor;
+  if (!backgroundColor) {
+    bgColor = colors.white;
+  }
+
   return (
     <Container
       {...props}
-      backgroundColor={backgroundColor}
+      backgroundColor={bgColor}
       horizontal={horizontal}
       size={size}
     >
