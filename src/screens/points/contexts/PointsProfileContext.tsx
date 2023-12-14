@@ -235,7 +235,7 @@ export const PointsProfileProvider = ({
       if (error instanceof RainbowError) {
         logger.error(error);
       } else {
-        throw error;
+        logger.error(new RainbowError('Points: signIn error'), { error });
       }
     }
   }, [accountAddress, deeplinked, goBack, isHardwareWallet, referralCode]);
