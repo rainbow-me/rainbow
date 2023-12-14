@@ -274,6 +274,7 @@ export default function ExchangeModal({
     crosschainSwapsEnabled,
     inputCurrency?.symbol,
     inputCurrency?.type,
+    network,
     outputCurrency?.symbol,
     outputCurrency?.type,
   ]);

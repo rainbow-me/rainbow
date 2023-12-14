@@ -33,41 +33,24 @@ function SwapActionButton({
       if (params.outputAsset) {
         return {
           params: {
-            chainId: ethereumUtils.getChainIdFromType(asset.type),
             defaultOutputAsset: asset,
-            fromDiscover: true,
-            onSelectCurrency: updateInputCurrency,
             params: {
-              ...params,
-              ignoreInitialTypeCheck: true,
               outputAsset: asset,
             },
-            showCoinIcon: true,
-            title: lang.t('swap.modal_types.get_symbol_with', {
-              symbol: params?.outputAsset?.symbol,
-            }),
-            type: CurrencySelectionTypes.input,
           },
-          screen: Routes.CURRENCY_SELECT_SCREEN,
+          screen: Routes.MAIN_EXCHANGE_SCREEN,
         };
       } else {
+        console.log(asset);
         return {
           params: {
-            chainId: ethereumUtils.getChainIdFromType(asset.type),
             defaultInputAsset: asset,
-            onSelectCurrency: updateOutputCurrency,
-            params: {
-              ...params,
-              ignoreInitialTypeCheck: true,
-            },
-            title: lang.t('swap.modal_types.receive'),
-            type: CurrencySelectionTypes.output,
           },
-          screen: Routes.CURRENCY_SELECT_SCREEN,
+          screen: Routes.MAIN_EXCHANGE_SCREEN,
         };
       }
     });
-  }, [asset, navigate, updateInputCurrency, updateOutputCurrency]);
+  }, [asset, navigate]);
 
   return (
     <SheetActionButton
