@@ -89,7 +89,7 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   // FIXME: This test doesn't clear the "currency-select-search-input" when
-  // coming back from exchange modal and then fails to actually tap the review
+  // coming back from the exchange modal and then fails to actually tap the review
   // button
   it.skip('Should go to swap and open review sheet on optimism swap', async () => {
     await Helpers.waitAndTap('swap-button');
