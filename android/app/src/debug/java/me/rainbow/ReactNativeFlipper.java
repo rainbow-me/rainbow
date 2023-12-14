@@ -47,7 +47,7 @@ public class ReactNativeFlipper {
       client.start();
 
       // Fresco Plugin needs to ensure that ImagePipelineFactory is initialized
-      // Hence we run if after all native modules have been initialized
+      // Hence we run after all native modules have been initialized
       ReactContext reactContext = reactInstanceManager.getCurrentReactContext();
       if (reactContext == null) {
         reactInstanceManager.addReactInstanceEventListener(
