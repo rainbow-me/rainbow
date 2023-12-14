@@ -110,15 +110,15 @@ export default function PointsContent() {
   );
   const totalPointsMaskSize = 60 * Math.max(totalPointsString?.length ?? 0, 4);
 
-  const totalUsers = data?.points?.leaderboard?.stats?.total_users;
-  const rank = data?.points?.user?.stats?.position.current;
+  const totalUsers = data?.points?.leaderboard.stats.total_users;
+  const rank = data?.points?.user.stats.position.current;
 
-  const canDisplayTotalPoints = !isNil(data?.points?.user?.earnings?.total);
+  const canDisplayTotalPoints = !isNil(data?.points?.user.earnings.total);
   const canDisplayNextRewardCard = !isNil(nextDistributionSeconds);
   const canDisplayCurrentRank = !!rank;
   const canDisplayRankCard = canDisplayCurrentRank && !!totalUsers;
 
-  const canDisplayLeaderboard = !!data?.points?.leaderboard?.accounts;
+  const canDisplayLeaderboard = !!data?.points?.leaderboard.accounts;
 
   const shouldDisplayError = !isFetching && !data?.points;
 
