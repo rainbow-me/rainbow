@@ -33,7 +33,10 @@ import { useRecoilState } from 'recoil';
 import * as i18n from '@/languages';
 import { usePoints } from '@/resources/points';
 import { isNil } from 'lodash';
-import { getFormattedTimeQuantity } from '@/helpers/utilities';
+import {
+  abbreviateNumber,
+  getFormattedTimeQuantity,
+} from '@/helpers/utilities';
 import { address as formatAddress } from '@/utils/abbreviations';
 import { delay } from '@/utils/delay';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
@@ -114,13 +117,15 @@ export default function PointsContent() {
   );
   const totalPointsMaskSize = 60 * Math.max(totalPointsString?.length ?? 0, 4);
 
-  const canDisplayTotalPoints = !isNil(data?.points?.user?.earnings?.total);
-  const canDisplayNextRewardCard = !isNil(nextDistributionSeconds);
-  const canDisplayCurrentRank = !!data?.points?.user?.stats?.position.current;
-  const canDisplayRankCard =
-    canDisplayCurrentRank && !!data?.points?.leaderboard?.stats?.total_users;
+  const totalUsers = data?.points?.leaderboard.stats.total_users;
+  const rank = data?.points?.user.stats.position.current;
 
-  const canDisplayLeaderboard = !!data?.points?.leaderboard?.accounts;
+  const canDisplayTotalPoints = !isNil(data?.points?.user.earnings.total);
+  const canDisplayNextRewardCard = !isNil(nextDistributionSeconds);
+  const canDisplayCurrentRank = !!rank;
+  const canDisplayRankCard = canDisplayCurrentRank && !!totalUsers;
+
+  const canDisplayLeaderboard = !!data?.points?.leaderboard.accounts;
 
   const shouldDisplayError = !isFetching && !data?.points;
 
@@ -239,11 +244,17 @@ export default function PointsContent() {
                     <InfoCard
                       // onPress={() => {}}
                       title={i18n.t(i18n.l.points.points.your_rank)}
-                      mainText={`#${data?.points?.user?.stats?.position?.current}`}
+                      mainText={`#${
+                        rank >= 1_000_000
+                          ? abbreviateNumber(rank, 2)
+                          : rank.toLocaleString('en-US')
+                      }`}
                       icon="􀉬"
                       subtitle={i18n.t(i18n.l.points.points.out_of_x, {
-                        totalUsers: (data?.points?.leaderboard?.stats
-                          ?.total_users as number).toLocaleString('en-US'),
+                        totalUsers:
+                          totalUsers >= 1_000_000
+                            ? abbreviateNumber(totalUsers, 2)
+                            : totalUsers.toLocaleString('en-US'),
                       })}
                       accentColor={green}
                     />
@@ -465,9 +476,7 @@ export default function PointsContent() {
                         </Text>
                       </Box>
                       <Text color="label" size="17pt" weight="heavy">
-                        {`#${data?.points?.user?.stats?.position.current.toLocaleString(
-                          'en-US'
-                        )}`}
+                        {`#${rank.toLocaleString('en-US')}`}
                       </Text>
                     </Box>
                   </Box>
