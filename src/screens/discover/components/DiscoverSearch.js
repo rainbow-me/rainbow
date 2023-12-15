@@ -25,7 +25,7 @@ import {
   useAccountSettings,
   useHardwareBackOnFocus,
   usePrevious,
-  useSwapCurrencyList,
+  useSearchCurrencyList,
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -38,6 +38,7 @@ import {
   getPoapAndOpenSheetWithSecretWord,
 } from '@/utils/poaps';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
+import { getHeaderHeight } from '@/navigation/SwipeNavigator';
 
 export const SearchContainer = styled(Row)({
   height: '100%',
@@ -61,11 +62,12 @@ export default function DiscoverSearch() {
 
   const { colors } = useTheme();
   const profilesEnabled = useExperimentalFlag(PROFILES);
+  const marginBottom = useMemo(() => getHeaderHeight(), []);
 
   const currencySelectionListRef = useRef();
   const [searchQueryForSearch] = useDebounce(searchQuery, 350);
   const [ensResults, setEnsResults] = useState([]);
-  const { swapCurrencyList, swapCurrencyListLoading } = useSwapCurrencyList(
+  const { swapCurrencyList, swapCurrencyListLoading } = useSearchCurrencyList(
     searchQueryForSearch,
     ethereumUtils.getChainIdFromNetwork(Network.mainnet),
     true
@@ -277,7 +279,7 @@ export default function DiscoverSearch() {
   return (
     <View
       key={currencyListDataKey}
-      style={{ height: deviceUtils.dimensions.height - 140 }}
+      style={{ height: deviceUtils.dimensions.height - 140 - marginBottom }}
     >
       <SearchContainer>
         <CurrencySelectionList

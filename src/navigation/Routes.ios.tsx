@@ -36,6 +36,7 @@ import {
   backupSheetConfig,
   basicSheetConfig,
   hardwareWalletTxNavigatorConfig,
+  consoleSheetConfig,
   customGasSheetConfig,
   defaultScreenStackOptions,
   ensAdditionalRecordsSheetConfig,
@@ -97,6 +98,8 @@ import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
 import MintSheet from '@/screens/mints/MintSheet';
 import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
 import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoSheet';
+import { ConsoleSheet } from '@/screens/points/ConsoleSheet';
+import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileContext';
 
 type StackNavigatorParams = {
   [Routes.SEND_SHEET]: unknown;
@@ -330,15 +333,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={SignTransactionSheet}
         name={Routes.CONFIRM_REQUEST}
-        options={{
-          allowsDragToDismiss: false,
-          allowsTapToDismiss: false,
-          backgroundOpacity: 1,
-          customStack: true,
-          headerHeight: 0,
-          isShortFormEnabled: false,
-          topOffset: 0,
-        }}
+        {...signTransactionSheetConfig}
       />
       <NativeStack.Screen
         component={ExpandedAssetSheet}
@@ -425,11 +420,6 @@ function NativeStackNavigator() {
         name={Routes.SEND_SHEET_NAVIGATOR}
       />
       <NativeStack.Screen
-        component={SignTransactionSheet}
-        name={Routes.SIGN_TRANSACTION_SHEET}
-        {...signTransactionSheetConfig}
-      />
-      <NativeStack.Screen
         component={WalletConnectApprovalSheet}
         name={Routes.WALLET_CONNECT_APPROVAL_SHEET}
         {...basicSheetConfig}
@@ -464,6 +454,11 @@ function NativeStackNavigator() {
         component={MintsSheet}
         {...mintsSheetConfig}
       />
+      <NativeStack.Screen
+        component={ConsoleSheet}
+        name={Routes.CONSOLE_SHEET}
+        {...consoleSheetConfig}
+      />
     </NativeStack.Navigator>
   );
 }
@@ -481,7 +476,9 @@ const AppContainerWithAnalytics = React.forwardRef(
       // @ts-ignore
       ref={ref}
     >
-      <NativeStackNavigator />
+      <PointsProfileProvider>
+        <NativeStackNavigator />
+      </PointsProfileProvider>
     </NavigationContainer>
   )
 );

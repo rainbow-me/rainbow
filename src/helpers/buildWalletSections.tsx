@@ -125,7 +125,8 @@ const withBriefBalanceSection = (
   isCoinListEdited: boolean,
   pinnedCoins: any,
   hiddenCoins: any,
-  collectibles: any
+  collectibles: any,
+  nftSort: string
 ) => {
   const { briefAssets, totalBalancesValue } = buildBriefCoinsList(
     sortedAssets,
@@ -246,6 +247,7 @@ const briefUniqueTokenDataSelector = createSelector(
     hiddenTokensSelector,
     listTypeSelector,
     isReadOnlyWalletSelector,
+    (state: any, nftSort: string) => nftSort,
   ],
   buildBriefUniqueTokenList
 );
@@ -264,6 +266,10 @@ const briefBalanceSectionSelector = createSelector(
 );
 
 export const buildBriefWalletSectionsSelector = createSelector(
-  [briefBalanceSectionSelector, briefUniqueTokenDataSelector],
+  [
+    briefBalanceSectionSelector,
+    (state: any, nftSort: string) =>
+      briefUniqueTokenDataSelector(state, nftSort),
+  ],
   buildBriefWalletSections
 );

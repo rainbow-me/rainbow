@@ -274,7 +274,7 @@ export const abbreviateBigNumber = (
  * Abbreviates number like 1,200,000 to "1.2m", 1,000 to "1k", etc.
  * Rounds to 1 decimal place, stripping trailing zeros.
  */
-export const abbreviateNumber = (number: number): string => {
+export const abbreviateNumber = (number: number, decimals = 1): string => {
   let prefix = number;
   let suffix = '';
   if (number >= 1_000_000_000) {
@@ -287,7 +287,7 @@ export const abbreviateNumber = (number: number): string => {
     prefix = number / 1000;
     suffix = 'k';
   }
-  return prefix.toFixed(1).replace(/\.0$/, '') + suffix;
+  return prefix.toFixed(decimals).replace(/\.0$/, '') + suffix;
 };
 
 export const handleSignificantDecimals = (
@@ -374,14 +374,20 @@ export const convertRawAmountToNativeDisplay = (
 export const convertRawAmountToBalance = (
   value: BigNumberish,
   asset: { decimals: number; symbol?: string },
-  buffer?: number
+  buffer?: number,
+  trimTrailingZeros?: boolean
 ) => {
   const decimals = asset?.decimals ?? 18;
   const assetBalance = convertRawAmountToDecimalFormat(value, decimals);
 
   return {
     amount: assetBalance,
-    display: convertAmountToBalanceDisplay(assetBalance, asset, buffer),
+    display: convertAmountToBalanceDisplay(
+      assetBalance,
+      asset,
+      buffer,
+      trimTrailingZeros
+    ),
   };
 };
 
@@ -391,11 +397,15 @@ export const convertRawAmountToBalance = (
 export const convertAmountToBalanceDisplay = (
   value: BigNumberish,
   asset: { decimals: number; symbol?: string },
-  buffer?: number
+  buffer?: number,
+  trimTrailingZeros?: boolean
 ) => {
   const decimals = asset?.decimals ?? 18;
   const display = handleSignificantDecimals(value, decimals, buffer);
-  return `${display} ${asset?.symbol || ''}`;
+  const formattedDisplay = trimTrailingZeros
+    ? display.replace(/\.?0+$/, '')
+    : display;
+  return `${formattedDisplay} ${asset?.symbol || ''}`;
 };
 
 /**
@@ -597,16 +607,23 @@ export const pickBy = <T>(
  * @param ms ms since epoch
  * @returns string of the format "Xd Yh Zm"
  */
-export const getFormattedTimeQuantity = (ms: number): string => {
-  const totalMinutes = Math.ceil(ms / (1000 * 60));
+export const getFormattedTimeQuantity = (
+  ms: number,
+  maxUnits?: number
+): string => {
+  const totalSeconds = ms / 1000;
+  const totalMinutes = Math.ceil(totalSeconds / 60);
   const totalHours = Math.floor(totalMinutes / 60);
   const days = Math.floor(totalHours / 24);
   const hours = totalHours % 24;
   const minutes = totalMinutes % 60;
 
-  const formattedMinutes = minutes || (!hours && !days) ? minutes + 'm' : '';
-  const formattedHours = hours ? hours + 'h ' : '';
-  const formattedDays = days ? days + 'd ' : '';
+  const formattedMinutes = (minutes || (!hours && !days)) && minutes + 'm';
+  const formattedHours = hours && hours + 'h';
+  const formattedDays = days && days + 'd';
 
-  return (formattedDays + formattedHours + formattedMinutes).trim();
+  return [formattedDays, formattedHours, formattedMinutes]
+    .filter(str => str)
+    .slice(0, maxUnits)
+    .join(' ');
 };

@@ -1,6 +1,6 @@
 import React from 'react';
 import { CoinDivider } from '../../../coin-divider';
-import { AssetListHeader, AssetListItemSkeleton } from '../../index';
+import { AssetListItemSkeleton } from '../../index';
 import FastBalanceCoinRow from '../FastComponents/FastBalanceCoinRow';
 import WrappedNFT from '../WrappedNFT';
 import WrappedTokenFamilyHeader from '../WrappedTokenFamilyHeader';
@@ -31,6 +31,7 @@ import WrappedPosition from '../WrappedPosition';
 import WrappedPositionsListHeader from '../WrappedPositionsListHeader';
 import * as lang from '@/languages';
 import { RemoteCardCarousel } from '@/components/cards/remote-cards';
+import WrappedCollectiblesHeader from '../WrappedCollectiblesHeader';
 
 function rowRenderer(
   type: CellType,
@@ -135,13 +136,7 @@ function rowRenderer(
         </ProfileRowWrapper>
       );
     case CellType.NFTS_HEADER:
-      return (
-        // @ts-expect-error JavaScript component
-        <AssetListHeader
-          isSticky={false}
-          title={lang.t(lang.l.account.tab_collectibles)}
-        />
-      );
+      return <WrappedCollectiblesHeader />;
     case CellType.FAMILY_HEADER: {
       const { name, image, total } = data as NFTFamilyExtraData;
       return (

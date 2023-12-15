@@ -1,4 +1,4 @@
-import { AssetType, AssetTypes } from '@/entities';
+import { AssetType, AssetTypes, EthereumAddress } from '@/entities';
 import { UniqueAsset } from '@/entities/uniqueAssets';
 import {
   SimpleHashNFT,
@@ -163,7 +163,8 @@ export function filterSimpleHashNFTs(
  * @returns `UniqueAsset`
  */
 export function simpleHashNFTToUniqueAsset(
-  nft: ValidatedSimpleHashNFT
+  nft: ValidatedSimpleHashNFT,
+  address: string
 ): UniqueAsset {
   const collection = nft.collection;
   const lowercasedContractAddress = nft.contract_address?.toLowerCase();
@@ -175,7 +176,6 @@ export function simpleHashNFTToUniqueAsset(
   });
 
   const marketplace = nft.collection.marketplace_pages?.[0];
-
   const floorPrice = collection?.floor_prices?.find(
     (floorPrice: SimpleHashFloorPrice) =>
       floorPrice?.marketplace_id === SimpleHashMarketplaceId.OpenSea &&
@@ -187,6 +187,8 @@ export function simpleHashNFTToUniqueAsset(
   const standard = nft.contract.type;
 
   const isPoap = nft.contract_address.toLowerCase() === POAP_NFT_ADDRESS;
+
+  const ownerEntry = nft.owners.find(o => o.owner_address === address);
 
   return {
     animation_url:
@@ -201,6 +203,7 @@ export function simpleHashNFTToUniqueAsset(
       schema_name: standard,
       symbol: nft.contract.symbol || undefined,
     },
+    acquisition_date: ownerEntry?.last_acquired_date ?? undefined,
     background: nft.background_color,
     collection: {
       description: collection.description,

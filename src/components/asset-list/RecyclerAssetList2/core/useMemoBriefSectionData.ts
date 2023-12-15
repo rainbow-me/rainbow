@@ -11,6 +11,7 @@ import {
   useWalletSectionsData,
 } from '@/hooks';
 import useOpenPositionCards from '@/hooks/useOpenPositionCards';
+import * as ls from '@/storage';
 
 const FILTER_TYPES = {
   'ens-profile': [

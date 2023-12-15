@@ -152,8 +152,6 @@ export default function ENSIntroSheet() {
     enabled: Boolean(uniqueDomain?.name),
   });
 
-  console.log(nonPrimaryDomains.length);
-
   // We are not using `isSmallPhone` from `useDimensions` here as we
   // want to explicitly set a min height.
   const isSmallPhone = deviceHeight < minHeight;
