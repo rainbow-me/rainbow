@@ -71,6 +71,9 @@ import {
 import { DebugContext } from '@/logger/debugContext';
 import { IS_ANDROID } from '@/env';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
+import { Signer } from '@ethersproject/abstract-signer';
+import { sanitizeTypedData } from '@/utils/signingUtils';
+import { Network } from '@/helpers';
 
 export type EthereumPrivateKey = string;
 type EthereumMnemonic = string;
@@ -89,7 +92,7 @@ interface WalletInitialized {
 
 interface TransactionRequestParam {
   transaction: TransactionRequest;
-  existingWallet?: Wallet;
+  existingWallet?: Signer;
   provider?: Provider;
 }
 
@@ -266,11 +269,20 @@ export const walletInit = async (
 
   if (!walletAddress) {
     const wallet = await createWallet({});
-    walletAddress = wallet?.address;
+    if (!wallet?.address) {
+      throw new RainbowError('Error creating wallet address');
+    }
+
+    walletAddress = wallet.address;
     isNew = true;
   }
+
   if (isNew) {
-    saveAccountEmptyState(true, walletAddress?.toLowerCase(), network);
+    saveAccountEmptyState(
+      true,
+      walletAddress.toLowerCase(),
+      network ?? Network.mainnet
+    );
   }
 
   return { isNew, walletAddress };
@@ -405,7 +417,7 @@ export const signTransaction = async ({
 
 export const signPersonalMessage = async (
   message: string | Uint8Array,
-  existingWallet?: Wallet,
+  existingWallet?: Signer,
   provider?: Provider
 ): Promise<null | {
   result?: string;
@@ -455,7 +467,7 @@ export const signPersonalMessage = async (
 
 export const signTypedDataMessage = async (
   message: string | TypedData,
-  existingWallet?: Wallet,
+  existingWallet?: Signer,
   provider?: Provider
 ): Promise<null | {
   result?: string;
@@ -473,8 +485,13 @@ export const signTypedDataMessage = async (
     }
     try {
       let parsedData = message;
+
+      // we need to parse the data different for both possible types
       try {
-        parsedData = typeof message === 'string' && JSON.parse(message);
+        parsedData =
+          typeof message === 'string'
+            ? sanitizeTypedData(JSON.parse(message))
+            : sanitizeTypedData(message);
         // eslint-disable-next-line no-empty
       } catch (e) {}
 

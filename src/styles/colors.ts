@@ -26,7 +26,7 @@ const darkModeColors = {
   darkGrey: '#333333',
   darkModeDark: '#404656',
   exchangeFallback: 'rgba(60, 66, 82, 0.8)',
-  green: '#4BD166',
+  green: '#3ECF5B',
   grey: '#333333',
   grey20: '#333333',
   lighterGrey: '#12131A',
@@ -36,6 +36,7 @@ const darkModeColors = {
   offWhite: '#1F222A',
   offWhite80: '#1C1F27',
   placeholder: 'rgba(224, 232, 255, 0.4)',
+  red: '#FF6257',
   rowDivider: 'rgba(60, 66, 82, 0.075)',
   rowDividerExtraLight: 'rgba(60, 66, 82, 0.0375)',
   rowDividerFaint: 'rgba(60, 66, 82, 0.025)',
@@ -115,7 +116,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
     finiliarPink: '#F89C9C', // '248, 156, 156'
     finiliarPink06: 'rgba(248, 156, 156, 0.06)',
     flamingo: '#E540F1', // '229, 64, 241'
-    green: '#2CCC00', // '58, 166, 134'
+    green: '#1DB847', // '29, 184, 71'
     grey: '#A9ADB9', // '169, 173, 185'
     grey20: '#333333', // '51, 51, 51'
     lighterGrey: '#F7F7F8', // '247, 247, 248'
@@ -144,7 +145,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
     purpleUniswap: '#FF007A', // '255,0,122',
     rainbowBlue: '#001E59', // '0, 30, 89',
     rainbowBlue06: 'rgba(0, 30, 89, 0.06)', // '0, 30, 89, 0.06'
-    red: '#FF494A', // '255, 73, 74'
+    red: '#FA423C', // '250, 66, 60'
     rowDivider: 'rgba(60, 66, 82, 0.03)', // '60, 66, 82, 0.03'
     rowDividerExtraLight: 'rgba(60, 66, 82, 0.015)', // '60, 66, 82, 0.015'
     rowDividerFaint: 'rgba(60, 66, 82, 0.01)', // '60, 66, 82, 0.01'

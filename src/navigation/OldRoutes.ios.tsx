@@ -21,8 +21,8 @@ import { SendConfirmationSheet } from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
 import { SettingsSheet } from '../screens/SettingsSheet';
 import ShowcaseScreen from '../screens/ShowcaseSheet';
+import { SignTransactionSheet } from '../screens/SignTransactionSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
-import SwapsPromoSheet from '../screens/SwapsPromoSheet';
 import NotificationsPromoSheet from '../screens/NotificationsPromoSheet';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
@@ -36,6 +36,7 @@ import {
   backupSheetConfig,
   basicSheetConfig,
   hardwareWalletTxNavigatorConfig,
+  consoleSheetConfig,
   customGasSheetConfig,
   defaultScreenStackOptions,
   ensAdditionalRecordsSheetConfig,
@@ -57,6 +58,7 @@ import {
   restoreSheetConfig,
   sendConfirmationSheetConfig,
   settingsSheetConfig,
+  signTransactionSheetConfig,
   stackNavigationConfig,
   swapDetailsSheetConfig,
   learnWebViewScreenConfig,
@@ -95,6 +97,9 @@ import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
 import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
 import MintSheet from '@/screens/mints/MintSheet';
 import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
+import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoSheet';
+import { ConsoleSheet } from '@/screens/points/ConsoleSheet';
+import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileContext';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -143,7 +148,7 @@ function MainStack() {
   );
 }
 
-export default function NativeStackNavigator() {
+function NativeStackNavigator() {
   const { colors, isDarkMode } = useTheme();
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
@@ -229,8 +234,8 @@ export default function NativeStackNavigator() {
         {...explainSheetConfig}
       />
       <NativeStack.Screen
-        component={SwapsPromoSheet}
-        name={Routes.SWAPS_PROMO_SHEET}
+        component={RemotePromoSheet}
+        name={Routes.REMOTE_PROMO_SHEET}
         {...promoSheetConfig}
       />
       <NativeStack.Screen
@@ -265,16 +270,9 @@ export default function NativeStackNavigator() {
         {...restoreSheetConfig}
       />
       <NativeStack.Screen
-        component={TransactionConfirmationScreen}
+        component={SignTransactionSheet}
         name={Routes.CONFIRM_REQUEST}
-        options={{
-          allowsDragToDismiss: true,
-          backgroundOpacity: 1,
-          customStack: true,
-          headerHeight: 0,
-          isShortFormEnabled: false,
-          topOffset: 0,
-        }}
+        {...signTransactionSheetConfig}
       />
       <NativeStack.Screen
         component={ExpandedAssetSheet}
@@ -381,6 +379,35 @@ export default function NativeStackNavigator() {
         component={MintsSheet}
         {...mintsSheetConfig}
       />
+      <NativeStack.Screen
+        component={ConsoleSheet}
+        name={Routes.CONSOLE_SHEET}
+        {...consoleSheetConfig}
+      />
     </NativeStack.Navigator>
   );
 }
+
+const AppContainerWithAnalytics = React.forwardRef(
+  (
+    props: {
+      onReady: () => void;
+    },
+    ref
+  ) => (
+    <NavigationContainer
+      onReady={props.onReady}
+      onStateChange={onNavigationStateChange}
+      // @ts-ignore
+      ref={ref}
+    >
+      <PointsProfileProvider>
+        <NativeStackNavigator />
+      </PointsProfileProvider>
+    </NavigationContainer>
+  )
+);
+
+AppContainerWithAnalytics.displayName = 'AppContainerWithAnalytics';
+
+export default React.memo(AppContainerWithAnalytics);

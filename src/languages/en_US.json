@@ -1172,7 +1172,12 @@
       "mintdotfun_unsupported_network": "Mint.fun does not support this network"
     },
     "nfts": {
-      "selling": "Selling"
+      "selling": "Selling",
+      "sort": {
+        "abc": "Abc",
+        "most_recent": "Most Recent",
+        "floor_price": "Floor Price"
+      }
     },
     "nft_offers": {
       "card": {
@@ -1230,8 +1235,86 @@
       }
     },
     "points": {
-      "coming_soon_title": "Coming Soon",
-      "coming_soon_description": "Points are just around the corner.\nStart earning today."
+      "placeholder": {
+        "coming_soon_title": "Coming Soon",
+        "coming_soon_description": "Points are just around the corner.\nStart earning today."
+      },
+      "claim": {
+        "title": "Claim your points",
+        "subtitle": "Points are here. Find out how many you've been awarded.",
+        "get_started": "Get Started",
+        "use_referral_code": "Use Referral Code"
+      },
+      "referral": {
+        "title": "Enter your referral code",
+        "subtitle": "Enter a referral code below to claim your bonus reward.",
+        "back": "Back",
+        "error": "Something went wrong. Please restart the app and try again.",
+        "get_started": "Get Started",
+        "invalid_code": "Invalid Code"
+      },
+      "points": {
+        "referral_code": "Referral Code",
+        "share_link": "Share Link",
+        "next_drop": "Next Drop",
+        "your_rank": "Your Rank",
+        "of_x": "Of %{totalUsers}",
+        "referrals": "Referrals",
+        "streak": "Streak",
+        "longest_yet": "Longest yet",
+        "day": "day",
+        "days": "days",
+        "leaderboard": "Leaderboard",
+        "sunday": "Sun",
+        "monday": "Mon",
+        "tuesday": "Tue",
+        "wednesday": "Wed",
+        "thursday": "Thu",
+        "friday": "Fri",
+        "saturday": "Sat",
+        "today": "Today",
+        "error": "Oops!\nPlease pull to refresh.",
+        "points": "points",
+        "referral_code_copied": "Referral code copied",
+        "earn_points_for_referring": "Earn points when your referrals swap $100 through Rainbow, plus earn 10% of the points your referrals earn",
+        "already_claimed_points": "Sorry! You have already claimed your points.",
+        "now": "Now"
+      },
+      "console": {
+        "claim_bonus_paragraph": "You'll receive an additional 100 points once you swap at least $100 through Rainbow",
+        "welcome_bonus": "Welcome Bonus",
+        "true_believer": "True Believer",
+        "registration_complete": "Registration complete",
+        "account": "Account",
+        "points_earned": "Points Earned",
+        "share_bonus": "Share Bonus",
+        "share_bonus_paragraph_one": "You're all set!",
+        "share_bonus_paragraph_two": "Keep earning points by swapping, bridging, minting, referring friends, and more",
+        "share_bonus_paragraph_three": "The more you use Rainbow, the more you'll be rewarded",
+        "calculation_complete": "Calculation complete",
+        "metamask_swaps": "MetaMask Swaps",
+        "wallet_balance": "Wallet Balance",
+        "rainbow_nfts_owned": "Rainbow NFTs Owned",
+        "rainbow_swaps": "Rainbow Swaps",
+        "calculating_points": "Calculating points",
+        "access_granted": "Access granted",
+        "sign_in_with_wallet": "Sign in with your wallet",
+        "auth_required": "Authorization required",
+        "proceed_to_share": "Continue",
+        "skip_referral": "Skip",
+        "sign_in": "Sign In",
+        "try_a_swap": "Try a Swap",
+        "get_some_eth": "Get Some ETH",
+        "generic_alert": "Something went wrong, please try again.",
+        "existing_user_alert": "Points already claimed. Please restart the app to refresh.",
+        "invalid_referral_code_alert": "Invalid referral code. Please double check your code and try again.",
+        "referral_link_is_ready": "Your referral link is ready",
+        "referral_link_bonus_text": "Tweet your referral link and get an extra 250 points",
+        "referral_link_bonus_text_extended": "Plus you'll earn 10% of the points earned by anyone you refer",
+        "complete_onboarding": "Done",
+        "share_to_x": "Share to X",
+        "hardware_wallet_alert": "Hardware wallet support is coming soon!"
+      }
     },
     "pools": {
       "deposit": "Deposit",
@@ -1452,6 +1535,27 @@
         "header": "Notifications",
         "subheader": "INTRODUCING"
       }
+    },
+    "nft_offers_launch": {
+      "primary_button": {
+        "has_offers": "View Offers",
+        "not_has_offers": "Close"
+      },
+      "secondary_button": "Maybe Later",
+      "info_row_1": {
+        "title": "All your offers in one place",
+        "description": "View your offers across all NFT marketplaces."
+      },
+      "info_row_2": {
+        "title": "Accept from Rainbow",
+        "description": "Accept offers in a single tap and swap to the token of your choosing."
+      },
+      "info_row_3": {
+        "title": "Smart sort modes",
+        "description": "Compare to floor prices, or view your highest or most recent offers."
+      },
+      "header": "Offers",
+      "subheader": "INTRODUCING"
     },
     "review": {
       "alert": {
@@ -2233,8 +2337,9 @@
       "wallet_alert": {
         "message_support": "Message Support",
         "close": "Close",
-        "message": "For help, please reach out to support! \nWe'll get back to you soon!",
-        "title": "An error occured"
+        "learn_more": "Learn More",
+        "message": "If you've recently swapped phones, you may need to reimport your wallets. For all other help, please reach out to support! \n\nWe'll get back to you soon!",
+        "title": "An error occurred"
       }
     },
     "walletconnect": {
@@ -2296,6 +2401,7 @@
         "read_only_wallet_on_signing_method": "It looks like you're using a read-only wallet, which is not allowed for this request.",
         "namespaces_invalid": "There was an issue with the namespaces requested by the dapp. Please try again or contact Rainbow and/or dapp support teams.",
         "request_invalid": "The request contained invalid parameters. Please try again or contact Rainbow and/or dapp support teams.",
+        "eth_sign": "Rainbow does not support legacy eth_sign due to security concerns.  \n Please contact Rainbow and/or dapp support teams if you have any questions.",
         "request_unsupported_network": "The network specified in this request is not supported by Rainbow.",
         "request_unsupported_methods": "The RPC method(s) specified in this request are not supported by Rainbow."
       },
@@ -2303,6 +2409,79 @@
         "info_alert": {
           "title": "This app is likely malicious",
           "description": "Signing messages or transactions from this app could result in losing your assets"
+        }
+      },
+      "simulation": {
+        "titles": {
+          "message_request": "Message Request",
+          "transaction_request": "Transaction Request"
+        },
+        "simulation_card": {
+          "titles": {
+            "not_enough_native_balance": "Not Enough %{symbol}",
+            "likely_to_fail": "Likely to Fail",
+            "simulation_unavailable": "Simulation Unavailable",
+            "simulation_result": "Simulated Result",
+            "simulating": "Simulating",
+            "proceed_carefully": "Proceed Carefully",
+            "suspicious_transaction": "Suspicious Transaction"
+          },
+          "messages": {
+            "no_changes": "No Changes Detected",
+            "need_more_native": "You’ll need more %{symbol} on %{network} to pay for this transaction. Get some %{symbol} below to continue with this request.",
+            "unavailable_personal_sign": "Simulation for personal signs is not yet supported",
+            "unavailable_zora_network": "Simulation on Zora is not yet supported",
+            "failed_to_simulate": "The simulation failed, which suggests your transaction is likely to fail. This may be an issue with the app you’re using.",
+            "warning": "No known malicious behavior was detected, but this transaction has characteristics that may pose a risk to your wallet.",
+            "malicious": "Signing this transaction could result in losing access to everything in your wallet."
+          },
+          "event_row": {
+            "unlimited": "Unlimited",
+            "types": {
+              "send": "Send",
+              "receive": "Receive",
+              "approve": "Approve",
+              "revoke": "Revoke"
+            }
+          }
+        },
+        "details_card": {
+          "title": "Details",
+          "types": {
+            "chain": "Network",
+            "contract": "Contract",
+            "contract_created": "Contract Created",
+            "to": "To",
+            "function": "Function",
+            "source_code": "Source Code",
+            "nonce": "Nonce"
+          },
+          "unknown": "Unknown"
+        },
+        "message_card": {
+          "title": "Message",
+          "copy": "Copy"
+        },
+        "profile_section": {
+          "signing_with": "Signing with",
+          "free_to_sign": "Free to sign",
+          "no_native_balance": "No %{symbol}",
+          "on_network": "on %{network}"
+        },
+        "buttons": {
+          "cancel": "Cancel",
+          "confirm": "􀎽 Confirm",
+          "get_native_token": "Get %{symbol}",
+          "buy_native_token": "Buy %{symbol}"
+        },
+        "formatted_dates": {
+          "today": "Today",
+          "day_ago": "day ago",
+          "days_ago": "days ago",
+          "week_ago": "week ago",
+          "weeks_ago": "weeks ago",
+          "month_ago": "month ago",
+          "months_ago": "months ago"
         }
       }
     },

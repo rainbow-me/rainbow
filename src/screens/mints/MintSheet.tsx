@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Linking, View } from 'react-native';
+import { Linking, StatusBar, View } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 import useWallets from '../../hooks/useWallets';
 import { GasSpeedButton } from '@/components/gas';
@@ -77,6 +77,7 @@ import { useDispatch } from 'react-redux';
 import { QuantityButton } from './components/QuantityButton';
 import { estimateGas, getProviderForNetwork } from '@/handlers/web3';
 import { getRainbowFeeAddress } from '@/resources/reservoir/utils';
+import { IS_ANDROID, IS_IOS } from '@/env';
 
 const NFT_IMAGE_HEIGHT = 250;
 // inset * 2 -> 28 *2
@@ -237,7 +238,7 @@ const MintSheet = () => {
   const isMintingAvailable =
     !(isReadOnlyWallet || isHardwareWallet) &&
     !!mintCollection.publicMintInfo &&
-    !gasError;
+    (!gasError || insufficientEth);
 
   const imageColor =
     usePersistentDominantColorFromImage(imageUrl) ?? colors.paleBlue;
@@ -265,9 +266,14 @@ const MintSheet = () => {
             accountAddress
           )
         )?.balance?.amount ?? 0;
+
+      const totalMintPrice = multiply(price.amount, quantity);
+      if (greaterThanOrEqualTo(totalMintPrice, nativeBalance)) {
+        setInsufficientEth(true);
+        return;
+      }
       const txFee = getTotalGasPrice();
       const txFeeWithBuffer = multiply(txFee, 1.2);
-      const totalMintPrice = multiply(price.amount, quantity);
       // gas price + mint price
       setInsufficientEth(
         greaterThanOrEqualTo(
@@ -343,7 +349,6 @@ const MintSheet = () => {
                   value: item.data?.value,
                 };
                 const gas = await estimateGas(tx, provider);
-
                 let l1GasFeeOptimism = null;
                 // add l1Fee for OP Chains
                 if (getNetworkObj(currentNetwork).gas.OptimismTxFee) {
@@ -479,14 +484,14 @@ const MintSheet = () => {
             }
             step.items?.forEach(item => {
               if (
-                item.txHash &&
-                txRef.current !== item.txHash &&
+                item.txHashes?.[0] &&
+                txRef.current !== item.txHashes?.[0] &&
                 item.status === 'incomplete'
               ) {
                 const tx = {
                   to: item.data?.to,
                   from: item.data?.from,
-                  hash: item.txHash,
+                  hash: item.txHashes[0],
                   network: currentNetwork,
                   amount: mintPriceAmount,
                   asset: {
@@ -592,9 +597,10 @@ const MintSheet = () => {
             ? `rgba(22, 22, 22, ${ios ? 0.4 : 1})`
             : `rgba(26, 26, 26, ${ios ? 0.4 : 1})`
         }
-        height={'100%'}
+        {...(IS_IOS ? { height: '100%' } : {})}
         ref={sheetRef}
         scrollEnabled
+        additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
         testID="nft-mint-sheet"
         yPosition={yPosition}
       >
@@ -724,7 +730,6 @@ const MintSheet = () => {
                           plusAction={() => setQuantity(1)}
                           minusAction={() => setQuantity(-1)}
                           buttonColor={imageColor}
-                          disabled={!isMintingAvailable}
                           maxValue={Number(maxMintsPerWallet)}
                         />
                       </Stack>

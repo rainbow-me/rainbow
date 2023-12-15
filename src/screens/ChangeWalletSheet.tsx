@@ -21,7 +21,7 @@ import {
 } from '../redux/wallets';
 import { analytics, analyticsV2 } from '@/analytics';
 import { getExperimetalFlag, HARDWARE_WALLETS } from '@/config';
-import { runCampaignChecks } from '@/campaigns/campaignChecks';
+import { useRemotePromoSheetContext } from '@/components/remote-promo-sheet/RemotePromoSheetProvider';
 import {
   useAccountSettings,
   useInitializeWallet,
@@ -116,6 +116,7 @@ function ChangeWallet() {
   const { params = {} as any } = useRoute();
   const { onChangeWallet, watchOnly = false, currentAccountAddress } = params;
   const { selectedWallet, wallets } = useWallets();
+  const { runChecks } = useRemotePromoSheetContext();
 
   const { colors } = useTheme();
   const { updateWebProfile } = useWebData();
@@ -172,11 +173,7 @@ function ChangeWallet() {
           goBack();
 
           if (IS_TESTING !== 'true') {
-            InteractionManager.runAfterInteractions(() => {
-              setTimeout(async () => {
-                await runCampaignChecks();
-              }, 5000);
-            });
+            runChecks();
           }
         }
       } catch (e) {

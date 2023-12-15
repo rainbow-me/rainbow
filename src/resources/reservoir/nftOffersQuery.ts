@@ -8,15 +8,92 @@ import {
   NftOffer,
   SortCriterion,
 } from '@/graphql/__generated__/arc';
-import { createQueryKey, queryClient } from '@/react-query';
+import {
+  QueryFunctionArgs,
+  QueryFunctionResult,
+  createQueryKey,
+  queryClient,
+} from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { useRecoilValue } from 'recoil';
 
 const graphqlClient = IS_PROD ? arcClient : arcDevClient;
 
-export const nftOffersQueryKey = ({ address }: { address: string }) =>
-  createQueryKey('nftOffers', { address }, { persisterVersion: 1 });
+export type NFTOffersArgs = {
+  walletAddress: string;
+  sortBy?: SortCriterion;
+};
+
+function sortNftOffers(nftOffers: NftOffer[], sortCriterion: SortCriterion) {
+  let sortedOffers;
+  switch (sortCriterion) {
+    case SortCriterion.TopBidValue:
+      sortedOffers = nftOffers
+        .slice()
+        .sort((a, b) => b.netAmount.usd - a.netAmount.usd);
+      break;
+    case SortCriterion.FloorDifferencePercentage:
+      sortedOffers = nftOffers
+        .slice()
+        .sort(
+          (a, b) => b.floorDifferencePercentage - a.floorDifferencePercentage
+        );
+      break;
+    case SortCriterion.DateCreated:
+      sortedOffers = nftOffers
+        .slice()
+        .sort((a, b) => b.createdAt - a.createdAt);
+      break;
+    default:
+      sortedOffers = nftOffers;
+  }
+  return sortedOffers;
+}
+
+export const nftOffersQueryKey = ({
+  walletAddress,
+  sortBy = SortCriterion.TopBidValue,
+}: NFTOffersArgs) =>
+  createQueryKey(
+    'nftOffers',
+    { walletAddress, sortBy },
+    { persisterVersion: 1 }
+  );
+
+type NFTOffersQueryKey = ReturnType<typeof nftOffersQueryKey>;
+
+async function nftOffersQueryFunction({
+  queryKey: [{ walletAddress, sortBy }],
+}: QueryFunctionArgs<typeof nftOffersQueryKey>) {
+  const data = await graphqlClient.getNFTOffers({
+    walletAddress,
+    sortBy,
+  });
+  return data;
+}
+
+export type NftOffersResult = QueryFunctionResult<
+  typeof nftOffersQueryFunction
+>;
+
+export async function fetchNftOffers({
+  walletAddress,
+  sortBy = SortCriterion.TopBidValue,
+}: NFTOffersArgs) {
+  const data = await graphqlClient.getNFTOffers({
+    walletAddress,
+    // TODO: remove sortBy once the backend supports it
+    sortBy: SortCriterion.TopBidValue,
+  });
+
+  if (!data?.nftOffers) {
+    return null;
+  }
+
+  const sortedOffers = sortNftOffers(data.nftOffers, sortBy);
+  return { ...data, nftOffers: sortedOffers };
+}
 
 /**
  * React Query hook that returns the the most profitable `NftOffer` for each NFT owned by the given wallet address.
@@ -28,7 +105,7 @@ export function useNFTOffers({ walletAddress }: { walletAddress: string }) {
   const nftOffersEnabled = useExperimentalFlag(NFT_OFFERS);
   const sortCriterion = useRecoilValue(nftOffersSortAtom);
   const queryKey = nftOffersQueryKey({
-    address: walletAddress,
+    walletAddress,
   });
 
   const query = useQuery<GetNftOffersQuery>(
@@ -47,44 +124,10 @@ export function useNFTOffers({ walletAddress }: { walletAddress: string }) {
     }
   );
 
-  const sortedByValue = useMemo(
-    () =>
-      query.data?.nftOffers
-        ?.slice()
-        .sort((a, b) => b.netAmount.usd - a.netAmount.usd),
-    [query.data?.nftOffers]
+  const sortedOffers = sortNftOffers(
+    query.data?.nftOffers || [],
+    sortCriterion
   );
-
-  const sortedByFloorDifference = useMemo(
-    () =>
-      query.data?.nftOffers
-        ?.slice()
-        .sort(
-          (a, b) => b.floorDifferencePercentage - a.floorDifferencePercentage
-        ),
-    [query.data?.nftOffers]
-  );
-
-  const sortedByDate = useMemo(
-    () =>
-      query.data?.nftOffers?.slice().sort((a, b) => b.createdAt - a.createdAt),
-    [query.data?.nftOffers]
-  );
-
-  let sortedOffers;
-  switch (sortCriterion) {
-    case SortCriterion.TopBidValue:
-      sortedOffers = sortedByValue;
-      break;
-    case SortCriterion.FloorDifferencePercentage:
-      sortedOffers = sortedByFloorDifference;
-      break;
-    case SortCriterion.DateCreated:
-      sortedOffers = sortedByDate;
-      break;
-    default:
-      sortedOffers = query.data?.nftOffers;
-  }
 
   useEffect(() => {
     const nftOffers = query.data?.nftOffers ?? [];

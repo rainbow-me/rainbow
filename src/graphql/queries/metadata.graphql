@@ -118,3 +118,266 @@ query getdApp($shortName: String!, $url: String!, $status: Boolean!) {
     shortName
   }
 }
+
+fragment asset on TransactionSimulationAsset {
+  assetCode
+  decimals
+  iconURL
+  name
+  network
+  symbol
+  type
+  interface
+  tokenId
+  status
+}
+
+fragment asset on TransactionSimulationAsset {
+  assetCode
+  decimals
+  iconURL
+  name
+  network
+  symbol
+  type
+  interface
+  tokenId
+  status
+}
+fragment change on TransactionSimulationChange {
+  asset {
+    ...asset
+  }
+  quantity
+}
+fragment target on TransactionSimulationTarget {
+  address
+  name
+  iconURL
+  function
+  created
+  sourceCodeStatus
+}
+
+fragment simulationError on TransactionError {
+  message
+  type
+}
+
+query simulateTransactions(
+  $chainId: Int!
+  $transactions: [Transaction!]
+  $domain: String!
+) {
+  simulateTransactions(
+    chainID: $chainId
+    transactions: $transactions
+    domain: $domain
+  ) {
+    error {
+      ...simulationError
+    }
+    scanning {
+      result
+      description
+    }
+    simulation {
+      in {
+        ...change
+      }
+      out {
+        ...change
+      }
+      approvals {
+        asset {
+          ...asset
+        }
+        spender {
+          ...target
+        }
+        quantityAllowed
+        quantityAtRisk
+      }
+      meta {
+        to {
+          ...target
+        }
+      }
+    }
+  }
+}
+
+query simulateMessage(
+  $address: String!
+  $chainId: Int!
+  $message: Message!
+  $domain: String!
+) {
+  simulateMessage(
+    address: $address
+    chainID: $chainId
+    message: $message
+    domain: $domain
+  ) {
+    error {
+      ...simulationError
+    }
+    scanning {
+      result
+      description
+    }
+    simulation {
+      in {
+        ...change
+      }
+      out {
+        ...change
+      }
+      approvals {
+        asset {
+          ...asset
+        }
+        spender {
+          ...target
+        }
+        quantityAllowed
+        quantityAtRisk
+      }
+      meta {
+        to {
+          ...target
+        }
+      }
+    }
+  }
+}
+
+query getPointsDataForWallet($address: String!) {
+  points(address: $address) {
+    error {
+      message
+      type
+    }
+    meta {
+      distribution {
+        next
+      }
+      status
+    }
+    leaderboard {
+      stats {
+        total_users
+        total_points
+      }
+      accounts {
+        address
+        earnings {
+          total
+        }
+        ens
+        avatarURL
+      }
+    }
+    user {
+      referralCode
+      earnings {
+        total
+      }
+      stats {
+        position {
+          current
+        }
+      }
+    }
+  }
+}
+
+query getPointsOnboardChallenge($address: String!, $referral: String) {
+  pointsOnboardChallenge(address: $address, referral: $referral)
+}
+
+mutation onboardPoints(
+  $address: String!
+  $signature: String!
+  $referral: String
+) {
+  onboardPoints(address: $address, signature: $signature, referral: $referral) {
+    meta {
+      distribution {
+        next
+      }
+      status
+    }
+    leaderboard {
+      stats {
+        total_users
+        total_points
+      }
+      accounts {
+        address
+        earnings {
+          total
+        }
+        ens
+        avatarURL
+      }
+    }
+    user {
+      referralCode
+      earnings {
+        total
+      }
+      stats {
+        position {
+          current
+        }
+      }
+      onboarding {
+        earnings {
+          total
+        }
+        categories {
+          data {
+            usd_amount
+            total_collections
+            owned_collections
+          }
+          type
+          display_type
+          earnings {
+            total
+          }
+        }
+      }
+    }
+    error {
+      message
+      type
+    }
+  }
+}
+
+query validateReferral($code: String!) {
+  validateReferral(referral: $code) {
+    valid
+    error {
+      type
+      message
+    }
+  }
+}
+
+mutation redeemCodeForPoints($address: String!, $redemptionCode: String!) {
+  redeemCode(address: $address, code: $redemptionCode) {
+    earnings {
+      total
+    }
+    redemption_code {
+      code
+    }
+    error {
+      type
+      message
+    }
+  }
+}

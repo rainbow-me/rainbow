@@ -23,6 +23,7 @@ export interface UniqueAsset {
   traits: UniqueAssetTrait[];
   asset_contract: AssetContract;
   background: string | null;
+  acquisition_date: string | undefined;
   collection: {
     description?: string | null;
     discord_url?: string | null;

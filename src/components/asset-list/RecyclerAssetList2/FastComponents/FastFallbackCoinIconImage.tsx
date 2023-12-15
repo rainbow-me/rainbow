@@ -1,7 +1,6 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { AssetType } from '@/entities';
-import { useForceUpdate } from '@/hooks';
+import { Network } from '@/networks/types';
 import { ImageWithCachedMetadata, ImgixImage } from '@/components/images';
 import { ThemeContextProps } from '@/theme';
 import { getUrlForTrustIconFallback } from '@/utils';
@@ -17,7 +16,7 @@ const imagesCache: { [imageUrl: string]: keyof typeof ImageState } = {};
 export const FastFallbackCoinIconImage = React.memo(
   function FastFallbackCoinIconImage({
     address,
-    assetType,
+    network,
     symbol,
     shadowColor,
     theme,
@@ -25,32 +24,29 @@ export const FastFallbackCoinIconImage = React.memo(
   }: {
     theme: ThemeContextProps;
     address: string;
-    assetType?: AssetType;
+    network: Network;
     symbol: string;
     shadowColor: string;
     children: () => React.ReactNode;
   }) {
     const { colors } = theme;
-    const imageUrl = getUrlForTrustIconFallback(address, assetType)!;
+    const imageUrl = getUrlForTrustIconFallback(address, network)!;
 
     const key = `${symbol}-${imageUrl}`;
 
-    const shouldShowImage = imagesCache[key] !== ImageState.NOT_FOUND;
-    const isLoaded = imagesCache[key] === ImageState.LOADED;
+    const [cacheStatus, setCacheStatus] = useState(imagesCache[key]);
 
-    // we store data inside the object outside the component
-    // so we can share it between component instances
-    // but we still want the component to pick up new changes
-    const forceUpdate = useForceUpdate();
+    const shouldShowImage = cacheStatus !== ImageState.NOT_FOUND;
+    const isLoaded = cacheStatus === ImageState.LOADED;
 
     const onLoad = useCallback(() => {
-      if (imagesCache[key] === ImageState.LOADED) {
+      if (isLoaded) {
         return;
       }
-
       imagesCache[key] = ImageState.LOADED;
-      forceUpdate();
-    }, [key, forceUpdate]);
+      setCacheStatus(ImageState.LOADED);
+    }, [key, isLoaded]);
+
     const onError = useCallback(
       // @ts-expect-error passed to an untyped JS component
       err => {
@@ -58,15 +54,14 @@ export const FastFallbackCoinIconImage = React.memo(
           ? ImageState.NOT_FOUND
           : ImageState.ERROR;
 
-        if (imagesCache[key] === newError) {
+        if (cacheStatus === newError) {
           return;
-        } else {
-          imagesCache[key] = newError;
         }
 
-        forceUpdate();
+        imagesCache[key] = newError;
+        setCacheStatus(newError);
       },
-      [key, forceUpdate]
+      [cacheStatus, key]
     );
 
     return (

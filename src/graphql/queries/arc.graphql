@@ -202,3 +202,61 @@ query getMintableCollections($walletAddress: String!) {
     }
   }
 }
+
+query getPromoSheetCollection($order: [PromoSheetOrder]) {
+  promoSheetCollection(order: $order) {
+    items {
+      sys {
+        id
+      }
+      campaignKey
+      launchDate
+      actions
+      priority
+    }
+  }
+}
+
+query getPromoSheet($id: String!) {
+  promoSheet(id: $id) {
+    accentColor
+    actions
+    backgroundColor
+    backgroundImage {
+      url
+    }
+    header
+    headerImage {
+      url
+    }
+    headerImageAspectRatio
+    items
+    primaryButtonProps
+    secondaryButtonProps
+    sheetHandleColor
+    subHeader
+  }
+}
+
+query getPointsTweetIntentCollection($order: [PointsTweetIntentOrder]) {
+  pointsTweetIntentCollection(order: $order) {
+    items {
+      sys {
+        id
+      }
+      key
+      text
+      via
+      url
+    }
+  }
+}
+
+query getPointsTweetIntent($id: String!) {
+  pointsTweetIntent(id: $id) {
+    key
+    text
+    via
+    url
+  }
+}

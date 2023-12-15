@@ -32,10 +32,7 @@ import { Playground } from './design-system/playground/Playground';
 import { TransactionType } from './entities';
 import appEvents from './handlers/appEvents';
 import handleDeeplink from './handlers/deeplinks';
-import {
-  runFeatureAndCampaignChecks,
-  runWalletBackupStatusChecks,
-} from './handlers/walletReadyEvents';
+import { runWalletBackupStatusChecks } from './handlers/walletReadyEvents';
 import {
   getCachedProviderForNetwork,
   isHardHat,
@@ -84,6 +81,8 @@ import branch from 'react-native-branch';
 import { initializeReservoirClient } from '@/resources/reservoir/client';
 import { ReviewPromptAction } from '@/storage/schema';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
+import { RemotePromoSheetProvider } from '@/components/remote-promo-sheet/RemotePromoSheetProvider';
+import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileContext';
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -186,15 +185,6 @@ class OldApp extends Component {
       // Everything we need to do after the wallet is ready goes here
       logger.info('✅ Wallet ready!');
       runWalletBackupStatusChecks();
-
-      InteractionManager.runAfterInteractions(() => {
-        setTimeout(() => {
-          if (IS_TESTING === 'true') {
-            return;
-          }
-          runFeatureAndCampaignChecks();
-        }, 2000);
-      });
     }
   }
 
@@ -283,13 +273,15 @@ class OldApp extends Component {
       <Portal>
         <View style={containerStyle}>
           {this.state.initialRoute && (
-            <InitialRouteContext.Provider value={this.state.initialRoute}>
-              <AppRouterContainer
-                onReady={this.handleSentryNavigationIntegration}
-                ref={this.handleNavigatorRef}
-              />
-              <PortalConsumer />
-            </InitialRouteContext.Provider>
+            <RemotePromoSheetProvider isWalletReady={this.props.walletReady}>
+              <InitialRouteContext.Provider value={this.state.initialRoute}>
+                <AppRouterContainer
+                  onReady={this.handleSentryNavigationIntegration}
+                  ref={this.handleNavigatorRef}
+                />
+                <PortalConsumer />
+              </InitialRouteContext.Provider>
+            </RemotePromoSheetProvider>
           )}
           <OfflineToast />
         </View>

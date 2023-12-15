@@ -84,7 +84,7 @@ const getNetworkNativeAsset = (
   return getAccountAsset(nativeAssetUniqueId);
 };
 
-const getNativeAssetForNetwork = async (
+export const getNativeAssetForNetwork = async (
   network: Network,
   address: EthereumAddress
 ): Promise<ParsedAddressAsset | undefined> => {
