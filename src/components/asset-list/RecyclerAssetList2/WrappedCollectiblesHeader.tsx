@@ -12,7 +12,6 @@ const CollectiblesHeader = () => {
   const { nftSort, updateNFTSort } = useNftSort();
 
   const getIconForSortType = (selected: string) => {
-    console.log(selected);
     switch (selected) {
       case CollectibleSortByOptions.ABC:
         return '􀋲';
