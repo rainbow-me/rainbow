@@ -1308,6 +1308,7 @@
         "generic_alert": "Something went wrong, please try again.",
         "existing_user_alert": "Points already claimed. Please restart the app to refresh.",
         "invalid_referral_code_alert": "Invalid referral code. Please double check your code and try again.",
+        "no_balance_alert": "To enroll in Points, you must have a non-zero wallet balance.",
         "referral_link_is_ready": "Your referral link is ready",
         "referral_link_bonus_text": "Tweet your referral link and get an extra 250 points",
         "referral_link_bonus_text_extended": "Plus you'll earn 10% of the points earned by anyone you refer",
