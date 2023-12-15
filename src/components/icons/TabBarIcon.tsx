@@ -16,15 +16,26 @@ type TabBarIconProps = {
   icon: string;
   index: number;
   reanimatedPosition: SharedValue<number>;
+  hideShadow?: boolean;
+  size?: number;
+  tintBackdrop?: string;
+  tintOpacity?: number;
 };
 
 export function TabBarIcon({
   accentColor,
+  hideShadow,
   icon,
   index,
   reanimatedPosition,
+  size,
+  tintBackdrop,
+  tintOpacity,
 }: TabBarIconProps) {
   const { colors, isDarkMode } = useTheme();
+
+  const hasTransparentInnerFill =
+    icon === 'tabDiscover' || icon === 'tabPoints';
 
   const outlineColor = isDarkMode
     ? globalColors.blueGrey60
@@ -78,21 +89,24 @@ export function TabBarIcon({
       [index - 0.7, index - 0.3, index, index + 0.3, index + 0.7],
       [
         isDarkMode ? outlineColor : '#FEFEFE',
-        icon === 'tabDiscover'
-          ? isDarkMode
-            ? '#171819'
-            : '#FEFEFE'
-          : accentColor,
-        icon === 'tabDiscover'
-          ? isDarkMode
-            ? '#171819'
-            : '#FEFEFE'
-          : accentColor,
-        icon === 'tabDiscover'
-          ? isDarkMode
-            ? '#171819'
-            : '#FEFEFE'
-          : accentColor,
+        tintBackdrop ||
+          (hasTransparentInnerFill
+            ? isDarkMode
+              ? '#171819'
+              : '#FEFEFE'
+            : accentColor),
+        tintBackdrop ||
+          (hasTransparentInnerFill
+            ? isDarkMode
+              ? '#171819'
+              : '#FEFEFE'
+            : accentColor),
+        tintBackdrop ||
+          (hasTransparentInnerFill
+            ? isDarkMode
+              ? '#171819'
+              : '#FEFEFE'
+            : accentColor),
         isDarkMode ? outlineColor : '#FEFEFE',
       ]
     );
@@ -117,7 +131,7 @@ export function TabBarIcon({
     const opacity = interpolate(
       reanimatedPosition.value,
       [index - 0.7, index - 0.3, index, index + 0.3, index + 0.7],
-      [0, 0.25, 0.25, 0.25, 0]
+      [0, tintOpacity ?? 0.25, tintOpacity ?? 0.25, tintOpacity ?? 0.25, 0]
     );
 
     return {
@@ -157,18 +171,20 @@ export function TabBarIcon({
   });
 
   return (
-    <Animated.View style={iconShadowBlack}>
-      <Animated.View style={iconShadow}>
-        <Box height={{ custom: 28 }} width={{ custom: 28 }}>
+    <Animated.View style={hideShadow ? undefined : iconShadowBlack}>
+      <Animated.View style={hideShadow ? undefined : iconShadow}>
+        <Box height={{ custom: size || 28 }} width={{ custom: size || 28 }}>
           <Cover alignHorizontal="center" alignVertical="center">
-            <MaskedView maskElement={<Icon name={icon + 'InnerFill'} />}>
+            <MaskedView
+              maskElement={<Icon name={icon + 'InnerFill'} size={size} />}
+            >
               <Box
                 as={Animated.View}
-                height={{ custom: 28 }}
+                height={{ custom: size || 28 }}
                 style={innerFillColor}
-                width={{ custom: 28 }}
+                width={{ custom: size || 28 }}
               >
-                {icon === 'tabDiscover' && (
+                {hasTransparentInnerFill && (
                   <Box
                     as={Animated.View}
                     height="full"
@@ -180,23 +196,25 @@ export function TabBarIcon({
             </MaskedView>
           </Cover>
           <Cover alignHorizontal="center" alignVertical="center">
-            <MaskedView maskElement={<Icon name={icon} />}>
+            <MaskedView maskElement={<Icon name={icon} size={size} />}>
               <Box
                 as={Animated.View}
-                height={{ custom: 28 }}
+                height={{ custom: size || 28 }}
                 style={iconColor}
-                width={{ custom: 28 }}
+                width={{ custom: size || 28 }}
               />
             </MaskedView>
           </Cover>
-          {icon !== 'tabDiscover' && (
+          {!hasTransparentInnerFill && (
             <Cover alignHorizontal="center" alignVertical="center">
-              <MaskedView maskElement={<Icon name={icon + 'Inner'} />}>
+              <MaskedView
+                maskElement={<Icon name={icon + 'Inner'} size={size} />}
+              >
                 <Box
                   as={Animated.View}
-                  height={{ custom: 28 }}
+                  height={{ custom: size || 28 }}
                   style={innerIconColor}
-                  width={{ custom: 28 }}
+                  width={{ custom: size || 28 }}
                 >
                   <Box
                     as={Animated.View}

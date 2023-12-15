@@ -9,6 +9,7 @@ export default function FloatingEmojisTapper({
   disabled,
   onPress,
   radiusAndroid,
+  yOffset,
   ...props
 }) {
   return (
@@ -24,6 +25,7 @@ export default function FloatingEmojisTapper({
           disabled={disabled}
           onNewEmoji={onNewEmoji}
           onPress={onPress}
+          yOffset={yOffset}
         >
           <ButtonPressAnimation
             disabled={disabled}

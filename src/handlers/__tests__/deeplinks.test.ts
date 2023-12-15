@@ -65,10 +65,10 @@ function generateWCUri({ version }: { version: number }) {
 beforeEach(() => {
   jest.useFakeTimers();
 
+  // @ts-ignore
   mocked(store.getState).mockReturnValue({
-    // @ts-ignore
-    data: {
-      isLoadingAssets: false,
+    appState: {
+      walletReady: true,
     },
   });
 });
@@ -82,11 +82,11 @@ test(`runs but does nothing`, async () => {
   await handleDeepLink('https://example.com');
 });
 
-test(`waits for isLoadingAssets to be falsy`, async () => {
+test(`waits for walletReady to be truthy`, async () => {
+  // @ts-ignore
   mocked(store.getState).mockReturnValue({
-    // @ts-ignore
-    data: {
-      isLoadingAssets: true,
+    appState: {
+      walletReady: false,
     },
   });
 
@@ -95,10 +95,10 @@ test(`waits for isLoadingAssets to be falsy`, async () => {
 
   jest.advanceTimersByTime(50);
 
+  // @ts-ignore
   mocked(store.getState).mockReturnValue({
-    // @ts-ignore
-    data: {
-      isLoadingAssets: false,
+    appState: {
+      walletReady: true,
     },
   });
 

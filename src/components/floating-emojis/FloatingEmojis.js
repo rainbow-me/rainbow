@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Animated, View } from 'react-native';
 import FloatingEmoji from './FloatingEmoji';
+import GravityEmoji from './GravityEmoji';
 import { useTimeout } from '@/hooks';
 import { position } from '@/styles';
 
@@ -19,6 +20,7 @@ const FloatingEmojis = ({
   duration,
   emojis,
   fadeOut,
+  gravityEnabled,
   marginTop,
   opacity,
   opacityThreshold,
@@ -88,26 +90,39 @@ const FloatingEmojis = ({
           ...position.coverAsObject,
         }}
       >
-        {floatingEmojis.map(({ emojiToRender, x, y }, index) => (
-          <FloatingEmoji
-            centerVertically={centerVertically}
-            disableHorizontalMovement={disableHorizontalMovement}
-            disableVerticalMovement={disableVerticalMovement}
-            distance={Math.ceil(distance)}
-            duration={duration}
-            emoji={emojiToRender}
-            fadeOut={fadeOut}
-            index={index}
-            key={`${x}${y}`}
-            left={x}
-            marginTop={marginTop}
-            opacityThreshold={opacityThreshold}
-            scaleTo={scaleTo}
-            size={size}
-            top={y}
-            wiggleFactor={wiggleFactor}
-          />
-        ))}
+        {gravityEnabled
+          ? floatingEmojis.map(({ emojiToRender, x, y }, index) => (
+              <GravityEmoji
+                key={`${x}${y}`}
+                distance={Math.ceil(distance)}
+                duration={duration}
+                emoji={emojiToRender}
+                index={index}
+                left={x - size / 2}
+                size={size}
+                top={y}
+              />
+            ))
+          : floatingEmojis.map(({ emojiToRender, x, y }, index) => (
+              <FloatingEmoji
+                centerVertically={centerVertically}
+                disableHorizontalMovement={disableHorizontalMovement}
+                disableVerticalMovement={disableVerticalMovement}
+                distance={Math.ceil(distance)}
+                duration={duration}
+                emoji={emojiToRender}
+                fadeOut={fadeOut}
+                index={index}
+                key={`${x}${y}`}
+                left={x}
+                marginTop={marginTop}
+                opacityThreshold={opacityThreshold}
+                scaleTo={scaleTo}
+                size={size}
+                top={y}
+                wiggleFactor={wiggleFactor}
+              />
+            ))}
       </Animated.View>
     </View>
   );
@@ -123,6 +138,7 @@ FloatingEmojis.propTypes = {
   duration: PropTypes.number,
   emojis: PropTypes.arrayOf(PropTypes.string).isRequired,
   fadeOut: PropTypes.bool,
+  gravityEnabled: PropTypes.bool,
   marginTop: PropTypes.number,
   opacity: PropTypes.oneOfType([PropTypes.number, PropTypes.object]),
   opacityThreshold: PropTypes.number,

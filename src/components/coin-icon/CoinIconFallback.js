@@ -31,8 +31,8 @@ const fallbackIconStyle = size => {
 export const CoinIconFallback = fallbackProps => {
   const {
     address,
-    assetType,
     height,
+    network,
     symbol,
     shadowColor,
     theme,
@@ -41,7 +41,7 @@ export const CoinIconFallback = fallbackProps => {
   } = fallbackProps;
 
   const { colors } = theme;
-  const imageUrl = getUrlForTrustIconFallback(address, assetType);
+  const imageUrl = getUrlForTrustIconFallback(address, network);
 
   const key = `${symbol}-${imageUrl}`;
 
@@ -50,7 +50,6 @@ export const CoinIconFallback = fallbackProps => {
 
   const fallbackIconColor = useColorForAsset({
     address,
-    assetType,
   });
 
   // we store data inside the object outside the component

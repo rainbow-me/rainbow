@@ -4,6 +4,7 @@ import { debounce } from 'lodash';
 import Mailer from 'react-native-mail';
 import { Alert } from '../components/alerts';
 import * as i18n from '@/languages';
+import { Linking } from 'react-native';
 
 const SupportEmailAddress = 'support@rainbow.me';
 
@@ -33,23 +34,34 @@ const handleMailError = debounce(
   250
 );
 
+const openLearnMorePage = () =>
+  Linking.openURL(
+    'https://support.rainbow.me/en/articles/7975958-an-error-occurred'
+  );
+
 const messageSupport = () => Mailer.mail(supportEmailOptions, handleMailError);
 
 const supportEmailOptions = {
   recipients: [SupportEmailAddress],
-  subject: '🌈️ Rainbow Support',
+  subject: '🌈️ Rainbow Support: An Error Occurred',
 };
 
 export default function showWalletErrorAlert() {
   Alert({
+    cancelable: true,
     buttons: [
       {
+        onPress: openLearnMorePage,
+        text: i18n.t(i18n.l.support.wallet_alert.learn_more),
+      },
+      {
         onPress: messageSupport,
-        style: 'cancel',
+        isPreferred: true,
         text: i18n.t(i18n.l.support.wallet_alert.message_support),
       },
       {
         text: i18n.t(i18n.l.support.wallet_alert.close),
+        style: 'destructive',
       },
     ],
     message: i18n.t(i18n.l.support.wallet_alert.message),

@@ -10,6 +10,22 @@ index 26961d7..ee5943d 100644
  } else if (!global.nativeExtensions) {
    const bridgeConfig = global.__fbBatchedBridgeConfig;
    invariant(
+diff --git a/node_modules/react-native/React/Views/RCTView.m b/node_modules/react-native/React/Views/RCTView.m
+index 619509f..a9477e5 100644
+--- a/node_modules/react-native/React/Views/RCTView.m
++++ b/node_modules/react-native/React/Views/RCTView.m
+@@ -831,6 +831,11 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
+     layer.backgroundColor = backgroundColor;
+     layer.contents = nil;
+     layer.needsDisplayOnBoundsChange = NO;
++    if (@available(iOS 13.0, *)) {
++      if (layer.cornerRadius < MIN(self.bounds.size.height, self.bounds.size.width) / 2) {
++        layer.cornerCurve = kCACornerCurveContinuous;
++      }
++    }
+     layer.mask = nil;
+     return;
+   }
 diff --git a/node_modules/react-native/ReactCommon/react/renderer/components/rncore/ComponentDescriptors.h b/node_modules/react-native/ReactCommon/react/renderer/components/rncore/ComponentDescriptors.h
 new file mode 100644
 index 0000000..37b7d8d

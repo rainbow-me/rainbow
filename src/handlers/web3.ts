@@ -13,7 +13,7 @@ import {
 import { parseEther } from '@ethersproject/units';
 import Resolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
-import { RainbowConfig } from '../model/config';
+import config from '@/model/config';
 import { AssetType, NewTransaction, ParsedAddressAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
 import { Network } from '@/helpers/networkTypes';
@@ -41,7 +41,7 @@ import {
 } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
-import { IS_IOS } from '@/env';
+import { IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
 import { getNetworkObj } from '@/networks';
 
 export enum TokenStandard {
@@ -53,7 +53,40 @@ export const networkProviders: {
   [network in Network]?: StaticJsonRpcProvider;
 } = {};
 
-const rpcEndpoints: { [network in Network]?: string } = {};
+/**
+ * Creates an rpc endpoint for a given chain id using the Rainbow rpc proxy.
+ * If the firebase config flag is disabled, it will fall back to the deprecated rpc.
+ */
+export const proxyRpcEndpoint = (chainId: number, customEndpoint?: string) => {
+  if (config.rpc_proxy_enabled) {
+    return `${RPC_PROXY_BASE_URL}/${chainId}/${RPC_PROXY_API_KEY}${
+      customEndpoint ? `?custom_rpc=${encodeURIComponent(customEndpoint)}` : ''
+    }`;
+  } else {
+    if (customEndpoint) return customEndpoint;
+    const network = ethereumUtils.getNetworkFromChainId(chainId);
+    switch (network) {
+      case Network.arbitrum:
+        return config.arbitrum_mainnet_rpc;
+      case Network.goerli:
+        return config.ethereum_goerli_rpc;
+      case Network.optimism:
+        return config.optimism_mainnet_rpc;
+      case Network.polygon:
+        return config.polygon_mainnet_rpc;
+      case Network.base:
+        return config.base_mainnet_rpc;
+      case Network.bsc:
+        return config.bsc_mainnet_rpc;
+      case Network.zora:
+        return config.zora_mainnet_rpc;
+      case Network.gnosis:
+      case Network.mainnet:
+      default:
+        return config.ethereum_mainnet_rpc;
+    }
+  }
+};
 
 /**
  * Gas parameter types returned by `getTransactionGasParams`.
@@ -100,21 +133,6 @@ type TransactionDetailsReturned = {
  */
 type NewTransactionNonNullable = {
   [key in keyof NewTransaction]-?: NonNullable<NewTransaction[key]>;
-};
-
-/**
- * @desc Configures `rpcEndpoints` based on a given `RainbowConfig`.
- * @param config The `RainbowConfig` to use.
- */
-export const setRpcEndpoints = (config: RainbowConfig): void => {
-  rpcEndpoints[Network.mainnet] = config.ethereum_mainnet_rpc;
-  rpcEndpoints[Network.goerli] = config.ethereum_goerli_rpc;
-  rpcEndpoints[Network.optimism] = config.optimism_mainnet_rpc;
-  rpcEndpoints[Network.arbitrum] = config.arbitrum_mainnet_rpc;
-  rpcEndpoints[Network.polygon] = config.polygon_mainnet_rpc;
-  rpcEndpoints[Network.bsc] = config.bsc_mainnet_rpc;
-  rpcEndpoints[Network.zora] = config.zora_mainnet_rpc;
-  rpcEndpoints[Network.base] = config.base_mainnet_rpc;
 };
 
 /**
@@ -174,7 +192,10 @@ export const isTestnetNetwork = (network: Network): boolean => {
 // shoudl figure out better way to include this in networks
 export const getFlashbotsProvider = async () => {
   return new StaticJsonRpcProvider(
-    'https://rpc.flashbots.net/?hint=hash&builder=flashbots&builder=f1b.io&builder=rsync&builder=beaverbuild.org&builder=builder0x69&builder=titan&builder=eigenphi&builder=boba-builder',
+    proxyRpcEndpoint(
+      1,
+      'https://rpc.flashbots.net/?hint=hash&builder=flashbots&builder=f1b.io&builder=rsync&builder=beaverbuild.org&builder=builder0x69&builder=titan&builder=eigenphi&builder=boba-builder'
+    ),
     Network.mainnet
   );
 };
@@ -203,7 +224,10 @@ export const getProviderForNetwork = async (
     return provider;
   } else {
     const chainId = getNetworkObj(network).id;
-    const provider = new StaticJsonRpcProvider(rpcEndpoints[network], chainId);
+    const provider = new StaticJsonRpcProvider(
+      getNetworkObj(network).rpc,
+      chainId
+    );
     if (!networkProviders[network]) {
       networkProviders[network] = provider;
     }

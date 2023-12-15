@@ -48,6 +48,10 @@ import * as lang from '@/languages';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { AssetType } from '@/entities';
 import { RainbowNetworks, getNetworkObj } from '@/networks';
+import { IS_IOS } from '@/env';
+import { useDappMetadata } from '@/resources/metadata/dapp';
+import { DAppStatus } from '@/graphql/__generated__/metadata';
+import { InfoAlert } from '@/components/info-alert/info-alert';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   ({ theme: { colors } }) => ({
@@ -252,6 +256,18 @@ export default function WalletConnectApprovalSheet() {
 
   const { dappName, dappUrl, dappScheme, imageUrl, peerId } = meta;
 
+  const verifiedData = params?.verifiedData;
+  const { data: metadata } = useDappMetadata({
+    url: verifiedData?.verifyUrl || dappUrl,
+  });
+
+  const isScam = metadata?.status === DAppStatus.Scam;
+
+  // disabling Verified for now
+  const isVerified = false; //metadata?.status === DAppStatus.Verified;
+
+  const accentColor = isScam ? colors.red : colors.appleBlue;
+
   useEffect(() => {
     return () => {
       clearTimeout(timeout);
@@ -353,8 +369,13 @@ export default function WalletConnectApprovalSheet() {
   const handleConnect = useCallback(() => {
     handled.current = true;
     goBack();
+    if (IS_IOS) {
+      navigate(Routes.WALLET_CONNECT_REDIRECT_SHEET, {
+        type: 'connect',
+      });
+    }
     handleSuccess(true);
-  }, [handleSuccess, goBack]);
+  }, [handleSuccess, goBack, navigate]);
 
   const handleCancel = useCallback(() => {
     handled.current = true;
@@ -458,15 +479,34 @@ export default function WalletConnectApprovalSheet() {
             </Centered>
             <Row marginBottom={30} marginTop={30}>
               <Text
-                color="action (Deprecated)"
+                color={{ custom: accentColor }}
                 size="18px / 27px (Deprecated)"
                 weight="heavy"
               >
+                {isScam && '􁅏 '}
+                {isVerified && '􀇻 '}
                 {formattedDappUrl}
               </Text>
             </Row>
             <Divider color={colors.rowDividerLight} inset={[0, 84]} />
           </Centered>
+          {isScam && (
+            <Box paddingHorizontal={'16px'}>
+              <InfoAlert
+                rightIcon={
+                  <Text size="15pt" color={{ custom: accentColor }}>
+                    􀘰
+                  </Text>
+                }
+                title={lang.t(
+                  lang.l.walletconnect.dapp_warnings.info_alert.title
+                )}
+                description={lang.t(
+                  lang.l.walletconnect.dapp_warnings.info_alert.description
+                )}
+              />
+            </Box>
+          )}
           <SheetActionButtonRow paddingBottom={android ? 20 : 30}>
             <SheetActionButton
               color={colors.white}
@@ -477,7 +517,7 @@ export default function WalletConnectApprovalSheet() {
               weight="bold"
             />
             <SheetActionButton
-              color={colors.appleBlue}
+              color={accentColor}
               label={lang.t('button.connect')}
               onPress={handleConnect}
               size="big"

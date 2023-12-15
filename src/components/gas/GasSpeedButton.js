@@ -1,10 +1,13 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable no-undef */
 import AnimateNumber from '@bankify/react-native-animate-number';
 import lang from 'i18n-js';
 import { isEmpty, isNaN, isNil, upperFirst } from 'lodash';
 import makeColorMoreChill from 'make-color-more-chill';
+import { AnimatePresence, MotiView } from 'moti';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager, Keyboard } from 'react-native';
+import { Easing } from 'react-native-reanimated';
 import { darkModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
 import { ChainBadge, CoinIcon } from '../coin-icon';
@@ -34,6 +37,8 @@ import styled from '@/styled-thing';
 import { fonts, fontWithWidth, margin, padding } from '@/styles';
 import { ethereumUtils, gasUtils } from '@/utils';
 import { getNetworkObj } from '@/networks';
+import { IS_ANDROID } from '@/env';
+import { ContextMenu } from '../context-menu';
 
 const {
   GAS_EMOJIS,
@@ -92,7 +97,13 @@ const ChainBadgeContainer = styled.View.attrs({
   ...margin.object(0),
 });
 
-const NativeCoinIconWrapper = styled(Column)(margin.object(1.5, 5, 0, 0));
+const NativeCoinIconWrapper = styled(Column).attrs({})({
+  ...margin.object(1, 5, 0, 0),
+  alignItems: 'center',
+  height: 18,
+  justifyContent: 'center',
+  width: 18,
+});
 
 const Container = styled(Column).attrs({
   alignItems: 'center',
@@ -249,6 +260,7 @@ const GasSpeedButton = ({
     shouldOpenCustomGasSheet.focusTo,
     flashbotTransaction,
     speeds,
+    fallbackColor,
   ]);
 
   const openCustomOptions = useCallback(
@@ -377,6 +389,25 @@ const GasSpeedButton = ({
     [handlePressSpeedOption]
   );
 
+  const handlePressActionSheet = useCallback(
+    buttonIndex => {
+      switch (buttonIndex) {
+        case 0:
+          handlePressSpeedOption(NORMAL);
+          break;
+        case 1:
+          handlePressSpeedOption(FAST);
+          break;
+        case 2:
+          handlePressSpeedOption(URGENT);
+          break;
+        case 3:
+          handlePressSpeedOption(CUSTOM);
+      }
+    },
+    [handlePressSpeedOption]
+  );
+
   const nativeFeeCurrency = useMemo(() => {
     switch (currentNetwork) {
       case networkTypes.polygon:
@@ -399,6 +430,8 @@ const GasSpeedButton = ({
 
   const menuConfig = useMemo(() => {
     const menuOptions = speedOptions.map(gasOption => {
+      if (IS_ANDROID) return gasOption;
+
       const totalGwei = add(
         gasFeeParamsBySpeed[gasOption]?.maxBaseFee?.gwei,
         gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei
@@ -441,6 +474,7 @@ const GasSpeedButton = ({
     gasFeeParamsBySpeed,
     selectedGasFeeOption,
     speedOptions,
+    isL2,
   ]);
 
   const gasOptionsAvailable = useMemo(() => speedOptions.length > 1, [
@@ -477,6 +511,24 @@ const GasSpeedButton = ({
       />
     );
     if (!gasOptionsAvailable || gasIsNotReady) return pager;
+
+    if (IS_ANDROID) {
+      return (
+        <ContextMenu
+          activeOpacity={0}
+          enableContextMenu
+          isAnchoredToRight
+          isMenuPrimaryAction
+          onPressActionSheet={handlePressActionSheet}
+          options={menuConfig.menuItems}
+          useActionSheetFallback={false}
+          wrapNativeComponent={false}
+        >
+          <Centered>{pager}</Centered>
+        </ContextMenu>
+      );
+    }
+
     return (
       <ContextMenuButton
         activeOpacity={0}
@@ -543,22 +595,37 @@ const GasSpeedButton = ({
           onPress={openGasHelper}
           scaleTo={0.9}
           testID="estimated-fee-label"
+          disallowInterruption={false}
         >
           <Row>
             <NativeCoinIconWrapper>
-              {currentNetwork === Network.mainnet ? (
-                <CoinIcon
-                  address={nativeFeeCurrency.address}
-                  size={18}
-                  symbol={nativeFeeCurrency.symbol}
-                />
-              ) : (
-                <ChainBadge
-                  assetType={currentNetwork}
-                  size="gas"
-                  position="relative"
-                />
-              )}
+              <AnimatePresence>
+                {!!currentNetwork && (
+                  <MotiView
+                    animate={{ opacity: 1 }}
+                    from={{ opacity: 0 }}
+                    transition={{
+                      duration: 300,
+                      easing: Easing.bezier(0.2, 0, 0, 1),
+                      type: 'timing',
+                    }}
+                  >
+                    {currentNetwork === Network.mainnet ? (
+                      <CoinIcon
+                        address={nativeFeeCurrency.address}
+                        size={18}
+                        symbol={nativeFeeCurrency.symbol}
+                      />
+                    ) : (
+                      <ChainBadge
+                        assetType={currentNetwork}
+                        size="gas"
+                        position="relative"
+                      />
+                    )}
+                  </MotiView>
+                )}
+              </AnimatePresence>
             </NativeCoinIconWrapper>
             <TextContainer>
               <Text>

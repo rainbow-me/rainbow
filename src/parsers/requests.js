@@ -12,9 +12,9 @@ import { logger } from '@/logger';
 import { ethereumUtils } from '@/utils';
 import {
   isSignTypedData,
+  SIGN,
   PERSONAL_SIGN,
   SEND_TRANSACTION,
-  SIGN,
   SIGN_TRANSACTION,
 } from '@/utils/signingMethods';
 import { isAddress } from '@ethersproject/address';

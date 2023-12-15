@@ -6,6 +6,7 @@ import { Navigation } from '@/navigation';
 import { logger } from '@/utils';
 import Routes from '@/navigation/routesNames';
 import { analytics } from '@/analytics';
+import { campaigns } from '@/storage';
 
 const mmkv = new MMKV();
 
@@ -69,6 +70,7 @@ export const unlockableAppIconCheck = async (
             }, 300);
           },
           handleClose: () => {
+            campaigns.set(['isCurrentlyShown'], false);
             analytics.track('Dismissed App Icon Unlock', { campaign: key });
           },
         });

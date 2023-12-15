@@ -21,8 +21,8 @@ import { SendConfirmationSheet } from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
 import { SettingsSheet } from '../screens/SettingsSheet';
 import ShowcaseScreen from '../screens/ShowcaseSheet';
+import { SignTransactionSheet } from '../screens/SignTransactionSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
-import SwapsPromoSheet from '../screens/SwapsPromoSheet';
 import NotificationsPromoSheet from '../screens/NotificationsPromoSheet';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
@@ -57,6 +57,7 @@ import {
   restoreSheetConfig,
   sendConfirmationSheetConfig,
   settingsSheetConfig,
+  signTransactionSheetConfig,
   stackNavigationConfig,
   swapDetailsSheetConfig,
   learnWebViewScreenConfig,
@@ -95,6 +96,7 @@ import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
 import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
 import MintSheet from '@/screens/mints/MintSheet';
 import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
+import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoSheet';
 
 type StackNavigatorParams = {
   [Routes.SEND_SHEET]: unknown;
@@ -264,8 +266,8 @@ function NativeStackNavigator() {
         {...explainSheetConfig}
       />
       <NativeStack.Screen
-        component={SwapsPromoSheet}
-        name={Routes.SWAPS_PROMO_SHEET}
+        component={RemotePromoSheet}
+        name={Routes.REMOTE_PROMO_SHEET}
         {...promoSheetConfig}
       />
       <NativeStack.Screen
@@ -326,16 +328,9 @@ function NativeStackNavigator() {
         {...restoreSheetConfig}
       />
       <NativeStack.Screen
-        component={TransactionConfirmationScreen}
+        component={SignTransactionSheet}
         name={Routes.CONFIRM_REQUEST}
-        options={{
-          allowsDragToDismiss: true,
-          backgroundOpacity: 1,
-          customStack: true,
-          headerHeight: 0,
-          isShortFormEnabled: false,
-          topOffset: 0,
-        }}
+        {...signTransactionSheetConfig}
       />
       <NativeStack.Screen
         component={ExpandedAssetSheet}

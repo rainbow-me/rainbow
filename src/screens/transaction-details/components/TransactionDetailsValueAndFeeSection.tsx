@@ -11,9 +11,8 @@ import { TransactionDetailsDivider } from '@/screens/transaction-details/compone
 import * as i18n from '@/languages';
 import { AssetTypes, TransactionType } from '@/entities';
 import { ethereumUtils } from '@/utils';
-import { Network } from '@/helpers';
-import { useSelector } from 'react-redux';
-import { AppState } from '@/redux/store';
+import { Network } from '@/networks/types';
+import { useUserAsset } from '@/resources/assets/useUserAsset';
 
 type Props = {
   transaction: RainbowTransaction;
@@ -26,12 +25,12 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({
   transaction,
 }) => {
   const { network, symbol, type, fee } = transaction;
-  const assetData = useSelector(
-    (state: AppState) =>
-      state.data.accountAssetsData?.[
-        `${transaction.address}_${transaction.network}`
-      ]
-  );
+  const assetUniqueId =
+    transaction.network === Network.mainnet
+      ? `${transaction.address}`
+      : `${transaction.address}_${transaction.network}`;
+  const { data: assetData } = useUserAsset(assetUniqueId);
+
   const coinAddress = assetData?.address ?? transaction.address;
   const mainnetCoinAddress = assetData?.mainnet_address;
   const coinSymbol =

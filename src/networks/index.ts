@@ -61,7 +61,7 @@ export function getNetworkObj(network: Network): NetworkProperties {
 /**
  * Sorts Networks based on addresses assets
  */
-export function sortNetworks(overrideNetwork?: Network): NetworkProperties[] {
+export function sortNetworks(): NetworkProperties[] {
   const accountAddress = store.getState().settings.accountAddress;
 
   // sorting based on # of tokens
@@ -73,10 +73,6 @@ export function sortNetworks(overrideNetwork?: Network): NetworkProperties[] {
       ls.account.get([accountAddress, network1.value, 'totalTokens']) || 0;
     const count2 =
       ls.account.get([accountAddress, network2.value, 'totalTokens']) || 0;
-
-    if (overrideNetwork && network1.value === overrideNetwork) {
-      return -1;
-    }
 
     return count1 > count2 ? -1 : 1;
   };

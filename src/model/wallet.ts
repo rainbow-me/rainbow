@@ -1,5 +1,5 @@
 import { TransactionRequest } from '@ethersproject/abstract-provider';
-import { arrayify, BytesLike, Hexable } from '@ethersproject/bytes';
+import { arrayify } from '@ethersproject/bytes';
 import { HDNode } from '@ethersproject/hdnode';
 import { Provider } from '@ethersproject/providers';
 import { Transaction } from '@ethersproject/transactions';
@@ -41,7 +41,6 @@ import { EthereumAddress } from '@/entities';
 import {
   authenticateWithPIN,
   authenticateWithPINAndCreateIfNeeded,
-  getExistingPIN,
 } from '@/handlers/authentication';
 import { saveAccountEmptyState } from '@/handlers/localstorage/accountLocal';
 import {
@@ -72,6 +71,8 @@ import {
 import { DebugContext } from '@/logger/debugContext';
 import { IS_ANDROID } from '@/env';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
+import { Signer } from '@ethersproject/abstract-signer';
+import { sanitizeTypedData } from '@/utils/signingUtils';
 
 export type EthereumPrivateKey = string;
 type EthereumMnemonic = string;
@@ -90,7 +91,7 @@ interface WalletInitialized {
 
 interface TransactionRequestParam {
   transaction: TransactionRequest;
-  existingWallet?: Wallet;
+  existingWallet?: Signer;
   provider?: Provider;
 }
 
@@ -404,52 +405,9 @@ export const signTransaction = async ({
   }
 };
 
-export const signMessage = async (
-  message: BytesLike | Hexable | number,
-  existingWallet?: Wallet,
-  provider?: Provider
-): Promise<null | {
-  result?: string;
-  error?: any;
-}> => {
-  let isHardwareWallet = false;
-  try {
-    logger.info('wallet: signing message', { message });
-    const wallet =
-      existingWallet || (await loadWallet(undefined, true, provider));
-    // have to check inverse or we trigger unwanted BT permissions requests
-    if (!(wallet instanceof Wallet)) {
-      isHardwareWallet = true;
-    }
-    try {
-      if (!wallet) return null;
-      const result = await wallet.signMessage(arrayify(message));
-      return { result };
-    } catch (error) {
-      if (isHardwareWallet) {
-        setHardwareTXError(true);
-      } else {
-        Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
-      }
-      logger.error(new RainbowError('Failed to sign message'), { error });
-      return { error };
-    }
-  } catch (error) {
-    if (isHardwareWallet) {
-      setHardwareTXError(true);
-    } else {
-      Alert.alert(lang.t('wallet.transaction.alert.authentication'));
-    }
-    logger.error(new RainbowError('Failed to sign message due to auth'), {
-      error,
-    });
-    return null;
-  }
-};
-
 export const signPersonalMessage = async (
   message: string | Uint8Array,
-  existingWallet?: Wallet,
+  existingWallet?: Signer,
   provider?: Provider
 ): Promise<null | {
   result?: string;
@@ -499,7 +457,7 @@ export const signPersonalMessage = async (
 
 export const signTypedDataMessage = async (
   message: string | TypedData,
-  existingWallet?: Wallet,
+  existingWallet?: Signer,
   provider?: Provider
 ): Promise<null | {
   result?: string;
@@ -517,8 +475,13 @@ export const signTypedDataMessage = async (
     }
     try {
       let parsedData = message;
+
+      // we need to parse the data different for both possible types
       try {
-        parsedData = typeof message === 'string' && JSON.parse(message);
+        parsedData =
+          typeof message === 'string'
+            ? sanitizeTypedData(JSON.parse(message))
+            : sanitizeTypedData(message);
         // eslint-disable-next-line no-empty
       } catch (e) {}
 
