@@ -936,7 +936,6 @@
 			files = (
 				C1AA308F27338F2B00136A9A /* SF-Pro-Rounded-Bold.otf in Resources */,
 				C1AA309027338F2B00136A9A /* SF-Pro-Rounded-Regular.otf in Resources */,
-				AA0B1CC02B00C5E100EAF77D /* SF-Pro-Rounded-Black.otf in Resources */,
 				C1C61A83272CBDA100E5C0B3 /* Images.xcassets in Resources */,
 				C1AA309227338F2B00136A9A /* SF-Pro-Rounded-Medium.otf in Resources */,
 				C1AA309527338F2B00136A9A /* SF-Pro-Rounded-Heavy.otf in Resources */,
