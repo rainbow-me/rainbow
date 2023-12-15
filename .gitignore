@@ -110,5 +110,12 @@ __generated__/
 # Test Coverage
 coverage
 
+# Expo
+.expo
+.easignore
+dist/
+web-build/
+.xcode.env.local
+
 # VSCode
 .vscode/

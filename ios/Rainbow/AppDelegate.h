@@ -5,6 +5,7 @@
 
 
 #import <Foundation/Foundation.h>
+#import <Expo/Expo.h>
 #import <Rainbow-Internals/Internals.h>
 
 #import <RCTAppDelegate.h>
@@ -14,7 +15,7 @@
 
 @class RCTBridge;
 
-@interface AppDelegate : RCTAppDelegate
+@interface AppDelegate : EXAppDelegateWrapper
 
 - (void)hideSplashScreenAnimated;
 

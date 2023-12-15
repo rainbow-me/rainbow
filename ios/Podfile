@@ -1,3 +1,4 @@
+require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
 platform :ios, '13.0'
 #use_modular_headers!
 
@@ -29,6 +30,14 @@ target 'ImageNotification' do
 end
 
 target 'Rainbow' do
+  use_expo_modules!
+  post_integrate do |installer|
+    begin
+      expo_patch_react_imports!(installer)
+    rescue => e
+      Pod::UI.warn e
+    end
+  end
   # Pods for Rainbow
   config = use_native_modules!
 
@@ -86,7 +95,7 @@ target 'Rainbow' do
     end
     installer.pods_project.build_configurations.each do |config|
       __apply_Xcode_12_5_M1_post_install_workaround(installer)
-      config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
+      config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = ""
     end
   end
 end
