@@ -6,6 +6,7 @@ import {
   PointsOnboardingCategory,
 } from '@/graphql/__generated__/metadata';
 import * as i18n from '@/languages';
+import { IS_IOS } from '@/env';
 
 const ONE_WEEK_MS = 604_800_000;
 const ONE_DAY_MS = ONE_WEEK_MS / 7;
@@ -75,6 +76,7 @@ export const triggerHapticFeedback = (hapticType: HapticFeedbackType) =>
   ReactNativeHapticFeedback.trigger(hapticType);
 
 const BASE_URL = `https://twitter.com/intent/tweet?text=`;
+const NEWLINE_OR_SPACE = IS_IOS ? '\n\n' : ' ';
 export const buildTwitterIntentMessage = (
   profile: OnboardPointsMutation | undefined,
   metamaskSwaps: PointsOnboardingCategory | undefined
@@ -87,7 +89,7 @@ export const buildTwitterIntentMessage = (
 
   let text = `I just had ${ONBOARDING_TOTAL_POINTS.toLocaleString(
     'en-US'
-  )} Rainbow Points dropped into my wallet — everybody has at least 100 points waiting for them, but you might have more!\n\nClaim your drop: https://rainbow.me/points?ref=${referralCode}`;
+  )} Rainbow Points dropped into my wallet — everybody has at least 100 points waiting for them, but you might have more!${NEWLINE_OR_SPACE}Claim your drop: https://rainbow.me/points?ref=${referralCode}`;
 
   if (metamaskSwaps && metamaskSwaps?.earnings?.total > 0) {
     const METAMASK_POINTS = metamaskSwaps.earnings.total;
@@ -97,10 +99,10 @@ export const buildTwitterIntentMessage = (
       'en-US'
     )} Rainbow Points dropped into my wallet — plus an extra ${METAMASK_POINTS.toLocaleString(
       'en-US'
-    )} Points as a bonus for migrating my MetaMask wallet into Rainbow 🦊 🔫\n\nEverybody has at least 100 points waiting for them, but you might have more! Claim your drop: https://rainbow.me/points?ref=${referralCode}`;
+    )} Points as a bonus for migrating my MetaMask wallet into Rainbow 🦊 🔫.${NEWLINE_OR_SPACE}Everybody has at least 100 points waiting for them, but you might have more! Claim your drop: https://rainbow.me/points?ref=${referralCode}`;
   }
 
-  return BASE_URL + encodeURIComponent(text);
+  return BASE_URL + text;
 };
 
 export const displayNextDistribution = (seconds: number) => {
