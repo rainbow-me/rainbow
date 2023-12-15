@@ -40,14 +40,19 @@ import { analyticsV2 } from '@/analytics';
 import Clipboard from '@react-native-community/clipboard';
 
 const parseReferralCodeFromLink = (code: string) => {
-  if (!code.startsWith('https://rainbow.me/points?ref=')) return;
+  if (
+    code.startsWith('https://rainbow.me/points?ref=') ||
+    code.startsWith('https://www.rainbow.me/points?ref=')
+  ) {
+    const [, refCode] = code.split('=');
+    if (!refCode) return;
 
-  const [, refCode] = code.split('=');
-  if (!refCode) return;
+    const trimmed = refCode.replace(/-/g, '').slice(0, 6).toLocaleUpperCase();
 
-  const trimmed = refCode.replace(/-/g, '').slice(0, 6).toLocaleUpperCase();
+    return trimmed;
+  }
 
-  return trimmed;
+  return;
 };
 
 export default function ReferralContent() {
