@@ -220,7 +220,7 @@ export default function SendSheet(props) {
 
   const sendUpdateAssetAmount = useCallback(
     newAssetAmount => {
-      const _assetAmount = `${newAssetAmount}`.replace(/[^0-9.]/g, '');
+      const _assetAmount = newAssetAmount.replace(/[^0-9.]/g, '');
       let _nativeAmount = '';
       if (_assetAmount.length) {
         const priceUnit = selected?.price?.value ?? 0;

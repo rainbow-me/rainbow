@@ -2,10 +2,9 @@ import { useCallback, useState } from 'react';
 import useGas from './useGas';
 import { ethereumUtils } from '@/utils';
 import { ParsedAddressAsset } from '@/entities';
-import { convertStringToNumber } from '@/helpers/utilities';
 
 export default function useMaxInputBalance() {
-  const [maxInputBalance, setMaxInputBalance] = useState<number>(0);
+  const [maxInputBalance, setMaxInputBalance] = useState<string>('0');
 
   const { selectedGasFee, l1GasFeeOptimism } = useGas();
 
@@ -18,9 +17,8 @@ export default function useMaxInputBalance() {
         l1GasFeeOptimism
       );
 
-      const maxInputBalanceAsNumber = convertStringToNumber(newInputBalance);
-      setMaxInputBalance(maxInputBalanceAsNumber);
-      return maxInputBalanceAsNumber;
+      setMaxInputBalance(newInputBalance);
+      return newInputBalance;
     },
     [l1GasFeeOptimism, selectedGasFee]
   );
