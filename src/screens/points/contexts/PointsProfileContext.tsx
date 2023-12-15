@@ -155,19 +155,24 @@ export const PointsProfileProvider = ({
       }
     );
 
-    let points;
-    let signature;
-    const challengeResponse = await metadataPOSTClient.getPointsOnboardChallenge(
-      {
-        address: accountAddress,
-        referral: referralCode,
+    try {
+      const challengeResponse = await metadataPOSTClient.getPointsOnboardChallenge(
+        {
+          address: accountAddress,
+          referral: referralCode,
+        }
+      );
+      const challenge = challengeResponse?.pointsOnboardChallenge;
+      if (!challenge) {
+        Alert.alert(i18n.t(i18n.l.points.console.generic_alert));
+        throw new RainbowError('Points: Error getting onboard challenge');
       }
-    );
-
-    const challenge = challengeResponse?.pointsOnboardChallenge;
-    if (challenge) {
       const provider = await getProviderForNetwork(Network.mainnet);
       const wallet = await loadWallet(accountAddress, true, provider);
+      if (!wallet) {
+        Alert.alert(i18n.t(i18n.l.points.console.generic_alert));
+        throw new RainbowError('Points: Error loading wallet');
+      }
       const signatureResponse = await signPersonalMessage(
         challenge,
         wallet,
@@ -176,53 +181,63 @@ export const PointsProfileProvider = ({
       if (signatureResponse && isHardwareWallet) {
         goBack();
       }
-      signature = signatureResponse?.result;
-      if (signature) {
-        points = await metadataPOSTClient.onboardPoints({
-          address: accountAddress,
-          signature,
-          referral: referralCode,
-        });
+      const signature = signatureResponse?.result;
+      if (!signature) {
+        Alert.alert(i18n.t(i18n.l.points.console.generic_alert));
+        throw new RainbowError('Points: Error signing challenge');
       }
-    }
-    if (!points || !points.onboardPoints) {
-      logger.error(new RainbowError('Error onboarding points user'), {
-        referralCode,
-        challenge,
+      const points = await metadataPOSTClient.onboardPoints({
+        address: accountAddress,
         signature,
+        referral: referralCode,
       });
-      Alert.alert(i18n.t(i18n.l.points.console.generic_alert));
-    } else {
+      if (!points || !points.onboardPoints) {
+        Alert.alert(i18n.t(i18n.l.points.console.generic_alert));
+        throw new RainbowError('Points: Error onboarding user');
+      }
       if (points.onboardPoints?.error) {
         const errorType = points.onboardPoints?.error?.type;
         if (errorType === PointsErrorType.ExistingUser) {
           Alert.alert(i18n.t(i18n.l.points.console.existing_user_alert));
+          throw new RainbowError(
+            'Points: Error onboarding user: user already onboarded'
+          );
         } else if (errorType === PointsErrorType.InvalidReferralCode) {
           Alert.alert(
             i18n.t(i18n.l.points.console.invalid_referral_code_alert)
           );
+          throw new RainbowError(
+            'Points: Error onboarding user: invalid referral code'
+          );
         }
+      }
+      analyticsV2.track(
+        analyticsV2.event.pointsOnboardingScreenSuccessfullySignedIn,
+        {
+          deeplinked,
+          referralCode: !!referralCode,
+          hardwareWallet: isHardwareWallet,
+        }
+      );
+      setProfile(points);
+      const queryKey = pointsQueryKey({ address: accountAddress });
+      queryClient.setQueryData(queryKey, points);
+      delay(5000).then(() => queryClient.refetchQueries(queryKey));
+    } catch (error) {
+      analyticsV2.track(
+        analyticsV2.event.pointsOnboardingScreenFailedToSignIn,
+        {
+          deeplinked,
+          referralCode: !!referralCode,
+          hardwareWallet: isHardwareWallet,
+        }
+      );
+      if (error instanceof RainbowError) {
+        logger.error(error);
       } else {
-        analyticsV2.track(
-          analyticsV2.event.pointsOnboardingScreenSuccessfullySignedIn,
-          {
-            deeplinked,
-            referralCode: !!referralCode,
-            hardwareWallet: isHardwareWallet,
-          }
-        );
-        setProfile(points);
-        const queryKey = pointsQueryKey({ address: accountAddress });
-        queryClient.setQueryData(queryKey, points);
-        delay(5000).then(() => queryClient.refetchQueries(queryKey));
-        return;
+        logger.error(new RainbowError('Points: signIn error'), { error });
       }
     }
-    analyticsV2.track(analyticsV2.event.pointsOnboardingScreenFailedToSignIn, {
-      deeplinked,
-      referralCode: !!referralCode,
-      hardwareWallet: isHardwareWallet,
-    });
   }, [accountAddress, deeplinked, goBack, isHardwareWallet, referralCode]);
 
   const signInHandler = useCallback(async () => {
