@@ -15,10 +15,11 @@ import {
   useAccountAccentColor,
   useDimensions,
   useKeyboardHeight,
+  useWallets,
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { getHeaderHeight } from '@/navigation/SwipeNavigator';
-import { haptics } from '@/utils';
+import { haptics, watchingAlert } from '@/utils';
 import { delay } from '@/utils/delay';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -53,6 +54,7 @@ const parseReferralCodeFromLink = (code: string) => {
 export default function ReferralContent() {
   const { accentColor } = useAccountAccentColor();
   const { goBack, navigate } = useNavigation();
+  const { isReadOnlyWallet } = useWallets();
 
   const label = useForegroundColor('label');
   const labelQuaternary = useForegroundColor('labelQuaternary');
@@ -365,7 +367,9 @@ export default function ReferralContent() {
           color={accentColor}
           label={i18n.t(i18n.l.points.referral.get_started)}
           onPress={() =>
-            navigate(Routes.CONSOLE_SHEET, { referralCode, deeplinked })
+            isReadOnlyWallet
+              ? watchingAlert()
+              : navigate(Routes.CONSOLE_SHEET, { referralCode, deeplinked })
           }
         />
       )}
