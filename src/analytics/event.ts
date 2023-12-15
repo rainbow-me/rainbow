@@ -99,6 +99,30 @@ export const event = {
   mintsMintingNFT: 'Minting NFT',
   mintsMintedNFT: 'Minted NFT',
   mintsErrorMintingNFT: 'Error Minting NFT',
+  pointsViewedClaimScreen: 'Viewed claim your points screen',
+  pointsViewedReferralScreen: 'Viewed points referral code screen',
+  pointsViewedPointsScreen: 'Viewed main points screen',
+  pointsViewedOnboardingSheet: 'Viewed points onboarding screen',
+  pointsReferralScreenValidatedReferralCode: 'Validated referral code',
+  pointsOnboardingScreenPressedSignInButton:
+    'Pressed sign in button on points onboarding screen',
+  pointsOnboardingScreenSuccessfullySignedIn:
+    'Successfully signed in on points onboarding screen',
+  pointsOnboardingScreenFailedToSignIn:
+    'Failed to sign in on points onboarding screen',
+  pointsOnboardingScreenPressedShareToXButton:
+    'Pressed share to X on points onboarding screen',
+  pointsOnboardingScreenPressedSkipShareToXButton:
+    'Pressed skip button on onboarding screen',
+  pointsOnboardingScreenPressedContinueButton:
+    'Pressed continue button on onboarding screen',
+  pointsOnboardingScreenPressedDoneButton:
+    'Pressed done button on onboarding screen',
+  pointsReferralCodeDeeplinkOpened: 'Opened points referral code deeplink',
+  pointsPointsScreenPressedCopyReferralCodeButton:
+    'Pressed copy referral code button on points screen',
+  pointsPointsScreenPressedShareReferralLinkButton:
+    'Pressed share referral link button on points screen',
 } as const;
 
 /**
@@ -378,4 +402,33 @@ export type EventProperties = {
   };
   [event.mintsPressedViewAllMintsButton]: undefined;
   [event.mintsChangedFilter]: { filter: string };
+  [event.pointsViewedClaimScreen]: undefined;
+  [event.pointsViewedReferralScreen]: undefined;
+  [event.pointsViewedPointsScreen]: undefined;
+  [event.pointsViewedOnboardingSheet]: undefined;
+  [event.pointsReferralScreenValidatedReferralCode]: {
+    deeplinked: boolean;
+  };
+  [event.pointsOnboardingScreenPressedSignInButton]: {
+    deeplinked: boolean;
+    referralCode: boolean;
+    hardwareWallet: boolean;
+  };
+  [event.pointsOnboardingScreenSuccessfullySignedIn]: {
+    deeplinked: boolean;
+    referralCode: boolean;
+    hardwareWallet: boolean;
+  };
+  [event.pointsOnboardingScreenFailedToSignIn]: {
+    deeplinked: boolean;
+    referralCode: boolean;
+    hardwareWallet: boolean;
+  };
+  [event.pointsOnboardingScreenPressedShareToXButton]: undefined;
+  [event.pointsOnboardingScreenPressedSkipShareToXButton]: undefined;
+  [event.pointsOnboardingScreenPressedContinueButton]: undefined;
+  [event.pointsOnboardingScreenPressedDoneButton]: undefined;
+  [event.pointsReferralCodeDeeplinkOpened]: undefined;
+  [event.pointsPointsScreenPressedCopyReferralCodeButton]: undefined;
+  [event.pointsPointsScreenPressedShareReferralLinkButton]: undefined;
 };

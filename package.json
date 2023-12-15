@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.9.6-1",
+  "version": "1.9.12-1",
   "private": true,
   "scripts": {
     "eas-build-pre-install": "chmod -R +x ./scripts && ./scripts/eas-build-pre-install.sh",
@@ -119,7 +119,7 @@
     "@react-navigation/material-top-tabs": "6.6.2",
     "@react-navigation/native": "6.1.6",
     "@react-navigation/stack": "6.3.16",
-    "@reservoir0x/reservoir-sdk": "1.4.5",
+    "@reservoir0x/reservoir-sdk": "1.8.4",
     "@segment/analytics-react-native": "2.15.0",
     "@segment/sovran-react-native": "1.0.4",
     "@sentry/react-native": "3.4.1",
@@ -421,7 +421,7 @@
     "**/simple-plist": "1.3.1",
     "**/plist": "3.0.5",
     "**/minimist": "1.2.6",
-    "react-native/react-devtools-core": "4.24.0",
+    "react-native/react-devtools-core": "4.28.4",
     "cross-fetch": "3.1.5",
     "**/undici": "5.26.2",
     "**/vm2": "3.9.18",
@@ -435,7 +435,9 @@
     "**/@types/react": "18.0.24",
     "**/socket.io-parser": "4.2.3",
     "**/get-func-name": "3.0.0",
-    "**/@babel/traverse": "7.23.2"
+    "**/@babel/traverse": "7.23.2",
+    "**/browserify-sign": "4.2.2",
+    "**/axios": "1.6.1"
   },
   "react-native": {
     "@tanstack/query-async-storage-persister": "@tanstack/query-async-storage-persister/build/esm/index",

@@ -41,6 +41,9 @@
 		A4277DA323CFE85F0042BAF4 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4277DA223CFE85F0042BAF4 /* Theme.swift */; };
 		A4D04BA923D12F99008C1DEC /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4D04BA823D12F99008C1DEC /* Button.swift */; };
 		A4D04BAC23D12FD5008C1DEC /* ButtonManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A4D04BAB23D12FD5008C1DEC /* ButtonManager.m */; };
+		AA0B1CBB2B00C5E100EAF77D /* SF-Mono-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA0B1CB82B00C5E100EAF77D /* SF-Mono-Semibold.otf */; };
+		AA0B1CBD2B00C5E100EAF77D /* SF-Mono-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA0B1CB92B00C5E100EAF77D /* SF-Mono-Bold.otf */; };
+		AA0B1CBF2B00C5E100EAF77D /* SF-Pro-Rounded-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA0B1CBA2B00C5E100EAF77D /* SF-Pro-Rounded-Black.otf */; };
 		AA6228EF24272F510078BDAA /* SF-Pro-Rounded-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228EB24272B200078BDAA /* SF-Pro-Rounded-Bold.otf */; };
 		AA6228F024272F510078BDAA /* SF-Pro-Rounded-Heavy.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228EC24272B200078BDAA /* SF-Pro-Rounded-Heavy.otf */; };
 		AA6228F124272F510078BDAA /* SF-Pro-Rounded-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228ED24272B200078BDAA /* SF-Pro-Rounded-Medium.otf */; };
@@ -258,6 +261,9 @@
 		A4277DA223CFE85F0042BAF4 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		A4D04BA823D12F99008C1DEC /* Button.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
 		A4D04BAB23D12FD5008C1DEC /* ButtonManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ButtonManager.m; sourceTree = "<group>"; };
+		AA0B1CB82B00C5E100EAF77D /* SF-Mono-Semibold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Mono-Semibold.otf"; path = "../src/assets/fonts/SF-Mono-Semibold.otf"; sourceTree = "<group>"; };
+		AA0B1CB92B00C5E100EAF77D /* SF-Mono-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Mono-Bold.otf"; path = "../src/assets/fonts/SF-Mono-Bold.otf"; sourceTree = "<group>"; };
+		AA0B1CBA2B00C5E100EAF77D /* SF-Pro-Rounded-Black.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Rounded-Black.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Black.otf"; sourceTree = "<group>"; };
 		AA6228EA24272B200078BDAA /* SF-Pro-Rounded-Semibold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Rounded-Semibold.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Semibold.otf"; sourceTree = "<group>"; };
 		AA6228EB24272B200078BDAA /* SF-Pro-Rounded-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Rounded-Bold.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Bold.otf"; sourceTree = "<group>"; };
 		AA6228EC24272B200078BDAA /* SF-Pro-Rounded-Heavy.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Rounded-Heavy.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Heavy.otf"; sourceTree = "<group>"; };
@@ -713,6 +719,9 @@
 		DCAC1D8CC45E468FBB7E1395 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				AA0B1CB92B00C5E100EAF77D /* SF-Mono-Bold.otf */,
+				AA0B1CB82B00C5E100EAF77D /* SF-Mono-Semibold.otf */,
+				AA0B1CBA2B00C5E100EAF77D /* SF-Pro-Rounded-Black.otf */,
 				AA6228EB24272B200078BDAA /* SF-Pro-Rounded-Bold.otf */,
 				AA6228EC24272B200078BDAA /* SF-Pro-Rounded-Heavy.otf */,
 				AA6228ED24272B200078BDAA /* SF-Pro-Rounded-Medium.otf */,
@@ -885,6 +894,7 @@
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 				B5D7F2F129E8D41E003D6A54 /* finiliar@2x.png in Resources */,
 				B54C1D1029358946007560D9 /* golddoge@3x.png in Resources */,
+				AA0B1CBD2B00C5E100EAF77D /* SF-Mono-Bold.otf in Resources */,
 				24979E8920F84250007EB0DA /* GoogleService-Info.plist in Resources */,
 				B54C1D162935A54F007560D9 /* zora@3x.png in Resources */,
 				B5CE8FFE29A5758100EB1EFA /* pooly@2x.png in Resources */,
@@ -893,9 +903,11 @@
 				15CF49BD2889AF7C005F92C9 /* optimism@2x.png in Resources */,
 				1539422824C7C7E200E4A9D1 /* Settings.bundle in Resources */,
 				15C398832880EDFF006033AC /* og@2x.png in Resources */,
+				AA0B1CBB2B00C5E100EAF77D /* SF-Mono-Semibold.otf in Resources */,
 				B50C9AEC2A9D18DC00EB0019 /* adworld@2x.png in Resources */,
 				B54C1D1129358946007560D9 /* golddoge@2x.png in Resources */,
 				B54C1D1229358946007560D9 /* raindoge@3x.png in Resources */,
+				AA0B1CBF2B00C5E100EAF77D /* SF-Pro-Rounded-Black.otf in Resources */,
 				15CF49C12889AFAD005F92C9 /* pixel@2x.png in Resources */,
 				C04D10F025AFC8C1003BEF7A /* Extras.json in Resources */,
 				B5CC6D3A2A7873300037D5A3 /* poolboy@3x.png in Resources */,
@@ -924,6 +936,7 @@
 			files = (
 				C1AA308F27338F2B00136A9A /* SF-Pro-Rounded-Bold.otf in Resources */,
 				C1AA309027338F2B00136A9A /* SF-Pro-Rounded-Regular.otf in Resources */,
+				AA0B1CC02B00C5E100EAF77D /* SF-Pro-Rounded-Black.otf in Resources */,
 				C1C61A83272CBDA100E5C0B3 /* Images.xcassets in Resources */,
 				C1AA309227338F2B00136A9A /* SF-Pro-Rounded-Medium.otf in Resources */,
 				C1AA309527338F2B00136A9A /* SF-Pro-Rounded-Heavy.otf in Resources */,
@@ -1561,7 +1574,7 @@
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.9.11;
+				MARKETING_VERSION = 1.9.12;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (
@@ -1628,7 +1641,7 @@
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.9.11;
+				MARKETING_VERSION = 1.9.12;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (
@@ -1740,7 +1753,7 @@
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.9.11;
+				MARKETING_VERSION = 1.9.12;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (
@@ -1853,7 +1866,7 @@
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.9.11;
+				MARKETING_VERSION = 1.9.12;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (

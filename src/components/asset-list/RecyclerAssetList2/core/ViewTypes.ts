@@ -49,6 +49,11 @@ export type CoinDividerExtraData = {
   value: number;
   defaultToEditButton: boolean;
 };
+
+export type AssetListHeaderExtraData = {
+  type: CellType.NFTS_HEADER;
+};
+
 export type AssetsHeaderExtraData = {
   type: CellType.PROFILE_STICKY_HEADER;
   value: string;
@@ -76,12 +81,12 @@ export type NFTFamilyExtraData = {
 };
 
 export type CellExtraData =
-  | { type: CellType.NFTS_HEADER }
   | { type: CellType.LOADING_ASSETS }
   | NFTFamilyExtraData
   | CoinDividerExtraData
   | CoinExtraData
   | NFTExtraData
+  | AssetListHeaderExtraData
   | AssetsHeaderExtraData
   | PositionExtraData
   | PositionHeaderExtraData;

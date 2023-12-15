@@ -48,22 +48,26 @@ export const fonts = {
       fontFamily: ios ? 'SF Pro Rounded' : 'SF-Pro-Rounded-Heavy',
       fontWeight: ios ? fontWeights.heavy : 'normal',
     },
+    black: {
+      fontFamily: ios ? 'SF Pro Rounded' : 'SF-Pro-Rounded-Black',
+      fontWeight: ios ? fontWeights.black : 'normal',
+    },
   },
 
   SFMono: {
     regular: {
-      fontFamily: ios ? 'SF Mono' : 'SFMono-Regular',
+      fontFamily: ios ? 'SF Mono' : 'SF-Mono-Regular',
       fontWeight: ios ? fontWeights.regular : 'normal',
     },
     medium: {
-      fontFamily: ios ? 'SF Mono' : 'SFMono-Medium',
+      fontFamily: ios ? 'SF Mono' : 'SF-Mono-Medium',
       fontWeight: ios ? fontWeights.medium : 'normal',
     },
   },
 } as const;
 
-const { heavy, bold } = fonts.SFProRounded;
-export const headingWeights = { heavy, bold };
+const { black, heavy, bold } = fonts.SFProRounded;
+export const headingWeights = { black, heavy, bold };
 export const textWeights = fonts.SFProRounded;
 
 // Sourced from https://seek-oss.github.io/capsize

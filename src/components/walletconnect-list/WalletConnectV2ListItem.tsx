@@ -121,7 +121,7 @@ export function WalletConnectV2ListItem({
     return {
       dappName: metadata.name || 'Unknown Dapp',
       dappUrl: metadata.url || 'Unknown URL',
-      dappLogo: metadata.icons[0],
+      dappLogo: metadata && metadata.icons ? metadata.icons[0] : undefined,
       address,
       chainIds,
     };

@@ -54,6 +54,7 @@ import {
   addCashSheet,
   nftSingleOfferSheetPreset,
   walletconnectBottomSheetPreset,
+  consoleSheetPreset,
 } from './effects';
 import { InitialRouteContext } from './initialRoute';
 import { onNavigationStateChange } from './onNavigationStateChange';
@@ -83,6 +84,8 @@ import MintSheet from '@/screens/mints/MintSheet';
 import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
 import { SignTransactionSheet } from '@/screens/SignTransactionSheet';
 import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoSheet';
+import { ConsoleSheet } from '@/screens/points/ConsoleSheet';
+import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileContext';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -387,6 +390,11 @@ function BSNavigator() {
         name={Routes.CONFIRM_REQUEST}
         options={walletconnectBottomSheetPreset}
       />
+      <BSStack.Screen
+        component={ConsoleSheet}
+        name={Routes.CONSOLE_SHEET}
+        options={consoleSheetPreset}
+      />
     </BSStack.Navigator>
   );
 }
@@ -424,7 +432,9 @@ const AppContainerWithAnalytics = React.forwardRef(
       // @ts-ignore
       ref={ref}
     >
-      <AuthNavigator />
+      <PointsProfileProvider>
+        <AuthNavigator />
+      </PointsProfileProvider>
     </NavigationContainer>
   )
 );
