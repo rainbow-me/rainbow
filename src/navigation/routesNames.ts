@@ -13,6 +13,7 @@ const Routes = {
   CHANGE_WALLET_SHEET_NAVIGATOR: 'ChangeWalletSheetNavigator',
   CONFIRM_REQUEST: 'ConfirmRequest',
   CONNECTED_DAPPS: 'ConnectedDapps',
+  CONSOLE_SHEET: 'ConsoleSheet',
   CURRENCY_SELECT_SCREEN: 'CurrencySelectScreen',
   CUSTOM_GAS_SHEET: 'CustomGasSheet',
   DIAGNOSTICS_SHEET: 'DiagnosticsSheet',

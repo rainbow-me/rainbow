@@ -10,6 +10,7 @@ import useWallets from './useWallets';
 import { buildBriefWalletSectionsSelector } from '@/helpers/buildWalletSections';
 import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import { useLegacyNFTs } from '@/resources/nfts';
+import useNftSort from './useNFTsSortBy';
 
 export default function useWalletSectionsData({
   type,
@@ -45,6 +46,8 @@ export default function useWalletSectionsData({
 
   const { isCoinListEdited } = useCoinListEdited();
 
+  const { nftSort } = useNftSort();
+
   const walletSections = useMemo(() => {
     const accountInfo = {
       hiddenCoins,
@@ -63,10 +66,12 @@ export default function useWalletSectionsData({
       listType: type,
       showcaseTokens,
       uniqueTokens: allUniqueTokens,
+      nftSort,
     };
 
     const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(
-      accountInfo
+      accountInfo,
+      nftSort
     );
     const hasNFTs = allUniqueTokens.length > 0;
 
@@ -78,21 +83,22 @@ export default function useWalletSectionsData({
       briefSectionsData,
     };
   }, [
-    allUniqueTokens,
     hiddenCoins,
-    hiddenTokens,
     isCoinListEdited,
     isLoadingUserAssets,
-    isReadOnlyWallet,
-    isWalletEthZero,
     language,
     nativeCurrency,
     network,
     pinnedCoins,
-    showcaseTokens,
-    sortedAssets,
-    type,
     sendableUniqueTokens,
+    sortedAssets,
+    isWalletEthZero,
+    hiddenTokens,
+    isReadOnlyWallet,
+    type,
+    showcaseTokens,
+    allUniqueTokens,
+    nftSort,
   ]);
   return walletSections;
 }

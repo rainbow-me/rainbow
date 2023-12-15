@@ -60,14 +60,15 @@ import { useTheme } from '@/theme';
 import { abbreviations, ethereumUtils, safeAreaInsetValues } from '@/utils';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import { useIsFocused, useRoute } from '@react-navigation/native';
-import { simulationClient } from '@/graphql';
+import { metadataPOSTClient } from '@/graphql';
 import {
   TransactionAssetType,
   TransactionErrorType,
   TransactionSimulationAsset,
   TransactionSimulationMeta,
   TransactionSimulationResult,
-} from '@/graphql/__generated__/metadata';
+  TransactionScanResultType,
+} from '@/graphql/__generated__/metadataPOST';
 import { Network } from '@/networks/types';
 import { ETH_ADDRESS } from '@/references';
 import {
@@ -185,6 +186,9 @@ export const SignTransactionSheet = () => {
   const [simulationError, setSimulationError] = useState<
     TransactionErrorType | undefined
   >(undefined);
+  const [simulationScanResult, setSimulationScanResult] = useState<
+    TransactionScanResultType | undefined
+  >(undefined);
   const { params: routeParams } = useRoute<any>();
   const { wallets, walletNames, switchToWalletWithAddress } = useWallets();
   const { callback, transactionDetails } = routeParams;
@@ -241,15 +245,16 @@ export const SignTransactionSheet = () => {
     gasFeeParamsBySpeed,
   } = useGas();
 
-  const simulationUnavailable =
-    isPersonalSign || currentNetwork === Network.zora;
+  const simulationUnavailable = isPersonalSign;
 
   const itemCount =
     (simulationData?.in?.length || 0) +
     (simulationData?.out?.length || 0) +
     (simulationData?.approvals?.length || 0);
 
-  const noChanges = !!(simulationData && itemCount === 0);
+  const noChanges =
+    !!(simulationData && itemCount === 0) &&
+    simulationScanResult === TransactionScanResultType.Ok;
 
   const req = transactionDetails?.payload?.params?.[0];
   const request = useMemo(() => {
@@ -548,7 +553,7 @@ export const SignTransactionSheet = () => {
         let simulationData;
         if (isMessageRequest) {
           // Message Signing
-          simulationData = await simulationClient.simulateMessage({
+          simulationData = await metadataPOSTClient.simulateMessage({
             address: accountAddress,
             chainId: chainId,
             message: {
@@ -563,21 +568,30 @@ export const SignTransactionSheet = () => {
             isNil(simulationData?.simulateMessage?.error)
           ) {
             setSimulationData({ in: [], out: [], approvals: [] });
+            setSimulationScanResult(
+              simulationData?.simulateMessage?.scanning?.result
+            );
           } else if (
             simulationData?.simulateMessage?.error &&
             !simulationUnavailable
           ) {
             setSimulationError(simulationData?.simulateMessage?.error?.type);
+            setSimulationScanResult(
+              simulationData?.simulateMessage?.scanning?.result
+            );
             setSimulationData(undefined);
           } else if (
             simulationData.simulateMessage?.simulation &&
             !simulationUnavailable
           ) {
             setSimulationData(simulationData.simulateMessage?.simulation);
+            setSimulationScanResult(
+              simulationData?.simulateMessage?.scanning?.result
+            );
           }
         } else {
           // TX Signing
-          simulationData = await simulationClient.simulateTransactions({
+          simulationData = await metadataPOSTClient.simulateTransactions({
             chainId: chainId,
             transactions: [
               {
@@ -595,14 +609,23 @@ export const SignTransactionSheet = () => {
             isNil(simulationData?.simulateTransactions?.[0]?.error)
           ) {
             setSimulationData({ in: [], out: [], approvals: [] });
+            setSimulationScanResult(
+              simulationData?.simulateTransactions?.[0]?.scanning?.result
+            );
           } else if (simulationData?.simulateTransactions?.[0]?.error) {
             setSimulationError(
               simulationData?.simulateTransactions?.[0]?.error?.type
             );
             setSimulationData(undefined);
+            setSimulationScanResult(
+              simulationData?.simulateTransactions[0]?.scanning?.result
+            );
           } else if (simulationData.simulateTransactions?.[0]?.simulation) {
             setSimulationData(
               simulationData.simulateTransactions[0]?.simulation
+            );
+            setSimulationScanResult(
+              simulationData?.simulateTransactions[0]?.scanning?.result
             );
           }
         }
@@ -1155,7 +1178,13 @@ export const SignTransactionSheet = () => {
                         wrap={false}
                       >
                         <Text
-                          color="label"
+                          color={
+                            simulationScanResult &&
+                            simulationScanResult !==
+                              TransactionScanResultType.Ok
+                              ? infoForEventType[simulationScanResult].textColor
+                              : 'label'
+                          }
                           numberOfLines={1}
                           size="20pt"
                           weight="heavy"
@@ -1189,6 +1218,7 @@ export const SignTransactionSheet = () => {
                     noChanges={noChanges}
                     simulation={simulationData}
                     simulationError={simulationError}
+                    simulationScanResult={simulationScanResult}
                     walletBalance={walletBalance}
                   />
                   {isMessageRequest ? (
@@ -1347,7 +1377,16 @@ export const SignTransactionSheet = () => {
                     onPress={submitFn}
                     size="big"
                     weight="heavy"
-                    {...(simulationError && { color: colors.red })}
+                    {...((simulationError ||
+                      (simulationScanResult &&
+                        simulationScanResult !==
+                          TransactionScanResultType.Ok)) && {
+                      color:
+                        simulationScanResult ===
+                        TransactionScanResultType.Warning
+                          ? 'orange'
+                          : colors.red,
+                    })}
                   />
                 </Columns>
               </Box>
@@ -1402,6 +1441,7 @@ interface SimulationCardProps {
   noChanges: boolean;
   simulation: TransactionSimulationResult | undefined;
   simulationError: TransactionErrorType | undefined;
+  simulationScanResult: TransactionScanResultType | undefined;
   walletBalance: {
     amount: string | number;
     display: string;
@@ -1419,6 +1459,7 @@ const SimulationCard = ({
   noChanges,
   simulation,
   simulationError,
+  simulationScanResult,
   walletBalance,
 }: SimulationCardProps) => {
   const cardHeight = useSharedValue(COLLAPSED_CARD_HEIGHT);
@@ -1427,8 +1468,7 @@ const SimulationCard = ({
   );
   const spinnerRotation = useSharedValue(0);
 
-  const simulationUnavailable =
-    isPersonalSign || currentNetwork === Network.zora;
+  const simulationUnavailable = isPersonalSign;
 
   const listStyle = useAnimatedStyle(() => ({
     opacity: noChanges
@@ -1524,7 +1564,13 @@ const SimulationCard = ({
     if (noChanges || simulationUnavailable) {
       return 'labelQuaternary';
     }
-    if (simulationError) {
+    if (simulationScanResult === TransactionScanResultType.Warning) {
+      return 'orange';
+    }
+    if (
+      simulationError ||
+      simulationScanResult === TransactionScanResultType.Malicious
+    ) {
       return 'red';
     }
     return 'label';
@@ -1533,6 +1579,7 @@ const SimulationCard = ({
     isLoading,
     noChanges,
     simulationError,
+    simulationScanResult,
     simulationUnavailable,
   ]);
 
@@ -1555,6 +1602,17 @@ const SimulationCard = ({
           .simulation_unavailable
       );
     }
+    if (simulationScanResult === TransactionScanResultType.Warning) {
+      return i18n.t(
+        i18n.l.walletconnect.simulation.simulation_card.titles.proceed_carefully
+      );
+    }
+    if (simulationScanResult === TransactionScanResultType.Malicious) {
+      return i18n.t(
+        i18n.l.walletconnect.simulation.simulation_card.titles
+          .suspicious_transaction
+      );
+    }
     if (noChanges) {
       return i18n.t(
         i18n.l.walletconnect.simulation.simulation_card.messages.no_changes
@@ -1573,6 +1631,7 @@ const SimulationCard = ({
     isLoading,
     noChanges,
     simulationError,
+    simulationScanResult,
     simulationUnavailable,
     walletBalance?.symbol,
   ]);
@@ -1584,11 +1643,9 @@ const SimulationCard = ({
     const shouldExpandOnLoad =
       isBalanceEnough === false ||
       (!isEmpty(simulation) && !noChanges) ||
-      currentNetwork === Network.zora ||
       !!simulationError;
     return shouldExpandOnLoad;
   }, [
-    currentNetwork,
     isBalanceEnough,
     isLoading,
     isPersonalSign,
@@ -1606,13 +1663,7 @@ const SimulationCard = ({
       isExpanded={isExpanded}
     >
       <Stack
-        space={
-          simulationError ||
-          isBalanceEnough === false ||
-          currentNetwork === Network.zora
-            ? '16px'
-            : '24px'
-        }
+        space={simulationError || isBalanceEnough === false ? '16px' : '24px'}
       >
         <Box
           alignItems="center"
@@ -1621,9 +1672,19 @@ const SimulationCard = ({
           height={{ custom: CARD_ROW_HEIGHT }}
         >
           <Inline alignVertical="center" space="12px">
-            {!isLoading && (simulationError || isBalanceEnough === false) ? (
+            {!isLoading &&
+            (simulationError ||
+              isBalanceEnough === false ||
+              simulationScanResult !== TransactionScanResultType.Ok) ? (
               <EventIcon
-                eventType={simulationError ? 'failed' : 'insufficientBalance'}
+                eventType={
+                  simulationScanResult &&
+                  simulationScanResult !== TransactionScanResultType.Ok
+                    ? simulationScanResult
+                    : simulationError
+                    ? 'failed'
+                    : 'insufficientBalance'
+                }
               />
             ) : (
               <IconContainer>
@@ -1694,12 +1755,12 @@ const SimulationCard = ({
               </Text>
             ) : (
               <>
-                {simulationUnavailable && !isPersonalSign && (
+                {simulationUnavailable && isPersonalSign && (
                   <Box style={{ opacity: 0.6 }}>
                     <Text color="labelQuaternary" size="13pt" weight="semibold">
                       {i18n.t(
                         i18n.l.walletconnect.simulation.simulation_card.messages
-                          .unavailable_zora_network
+                          .unavailable_personal_sign
                       )}
                     </Text>
                   </Box>
@@ -1709,6 +1770,23 @@ const SimulationCard = ({
                     {i18n.t(
                       i18n.l.walletconnect.simulation.simulation_card.messages
                         .failed_to_simulate
+                    )}
+                  </Text>
+                )}
+                {simulationScanResult === TransactionScanResultType.Warning && (
+                  <Text color="labelQuaternary" size="13pt" weight="semibold">
+                    {i18n.t(
+                      i18n.l.walletconnect.simulation.simulation_card.messages
+                        .warning
+                    )}{' '}
+                  </Text>
+                )}
+                {simulationScanResult ===
+                  TransactionScanResultType.Malicious && (
+                  <Text color="labelQuaternary" size="13pt" weight="semibold">
+                    {i18n.t(
+                      i18n.l.walletconnect.simulation.simulation_card.messages
+                        .malicious
                     )}
                   </Text>
                 )}
@@ -2169,7 +2247,10 @@ const EventIcon = ({ eventType }: { eventType: EventType }) => {
 
   const hideInnerFill = eventType === 'approve' || eventType === 'revoke';
   const isWarningIcon =
-    eventType === 'failed' || eventType === 'insufficientBalance';
+    eventType === 'failed' ||
+    eventType === 'insufficientBalance' ||
+    eventType === 'MALICIOUS' ||
+    eventType === 'WARNING';
 
   return (
     <IconContainer>
@@ -2728,7 +2809,9 @@ type EventType =
   | 'approve'
   | 'revoke'
   | 'failed'
-  | 'insufficientBalance';
+  | 'insufficientBalance'
+  | 'MALICIOUS'
+  | 'WARNING';
 
 type EventInfo = {
   amountPrefix: string;
@@ -2790,6 +2873,20 @@ const infoForEventType: { [key: string]: EventInfo } = {
     iconColor: 'blue',
     label: '',
     textColor: 'blue',
+  },
+  MALICIOUS: {
+    amountPrefix: '',
+    icon: '􀇿',
+    iconColor: 'red',
+    label: '',
+    textColor: 'red',
+  },
+  WARNING: {
+    amountPrefix: '',
+    icon: '􀇿',
+    iconColor: 'orange',
+    label: '',
+    textColor: 'orange',
   },
 };
 

@@ -73,6 +73,7 @@ import { IS_ANDROID } from '@/env';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import { Signer } from '@ethersproject/abstract-signer';
 import { sanitizeTypedData } from '@/utils/signingUtils';
+import { Network } from '@/helpers';
 
 export type EthereumPrivateKey = string;
 type EthereumMnemonic = string;
@@ -268,11 +269,20 @@ export const walletInit = async (
 
   if (!walletAddress) {
     const wallet = await createWallet({});
-    walletAddress = wallet?.address;
+    if (!wallet?.address) {
+      throw new RainbowError('Error creating wallet address');
+    }
+
+    walletAddress = wallet.address;
     isNew = true;
   }
+
   if (isNew) {
-    saveAccountEmptyState(true, walletAddress?.toLowerCase(), network);
+    saveAccountEmptyState(
+      true,
+      walletAddress.toLowerCase(),
+      network ?? Network.mainnet
+    );
   }
 
   return { isNew, walletAddress };
