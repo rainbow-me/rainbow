@@ -100,7 +100,7 @@ export const buildTwitterIntentMessage = (
     )} Points as a bonus for migrating my MetaMask wallet into Rainbow 🦊 🔫\n\nEverybody has at least 100 points waiting for them, but you might have more! Claim your drop: https://rainbow.me/points?ref=${referralCode}`;
   }
 
-  return BASE_URL + text;
+  return BASE_URL + encodeURIComponent(text);
 };
 
 export const displayNextDistribution = (seconds: number) => {
