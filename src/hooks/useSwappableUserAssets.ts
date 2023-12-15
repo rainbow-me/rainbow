@@ -36,7 +36,7 @@ export const useSwappableUserAssets = (params: {
 
   const filteredAssetsInWallet = useMemo(
     () =>
-      assetsInWallet.filter(asset => {
+      (assetsInWallet || []).filter(asset => {
         // filter out hidden tokens
         if (hiddenCoinsObj[asset.uniqueId]) return true;
 
