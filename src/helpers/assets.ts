@@ -285,26 +285,17 @@ const sortCollectibles = (
       );
     case CollectibleSortByOptions.FLOOR_PRICE:
       return families.sort((a, b) => {
-        const maxPriceA = Math.max(
+        const minPriceA = Math.min(
           ...assetsByName[a].map(asset =>
-            asset.floorPriceEth !== undefined ? asset.floorPriceEth : -Infinity
+            asset.floorPriceEth !== undefined ? asset.floorPriceEth : -1
           )
         );
-        const maxPriceB = Math.max(
+        const minPriceB = Math.min(
           ...assetsByName[b].map(asset =>
-            asset.floorPriceEth !== undefined ? asset.floorPriceEth : -Infinity
+            asset.floorPriceEth !== undefined ? asset.floorPriceEth : -1
           )
         );
-
-        if (maxPriceA === -Infinity && maxPriceB === -Infinity) {
-          return 0;
-        } else if (maxPriceA === -Infinity) {
-          return 1;
-        } else if (maxPriceB === -Infinity) {
-          return -1;
-        } else {
-          return maxPriceB - maxPriceA;
-        }
+        return minPriceB - minPriceA;
       });
     default:
       return families;
@@ -318,7 +309,7 @@ export const buildBriefUniqueTokenList = (
   hiddenTokens: string[] = [],
   listType: AssetListType = 'wallet',
   isReadOnlyWallet = false,
-  nftSort: string = CollectibleSortByOptions.MOST_RECENT
+  nftSort: string
 ) => {
   const hiddenUniqueTokensIds = uniqueTokens
     .filter(({ fullUniqueId }: any) => hiddenTokens.includes(fullUniqueId))
