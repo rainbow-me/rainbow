@@ -274,6 +274,7 @@ query getCardCollection($order: [CardOrder], $where: CardFilter) {
     items {
       ...card
     }
+  }
 }
 
 query getPointsTweetIntentCollection($order: [PointsTweetIntentOrder]) {
