@@ -114,7 +114,7 @@ export default function BackupConfirmPasswordStep() {
   }, []);
 
   useEffect(() => {
-    analytics.track('Confirm Password Step', {
+    analytics.track(analytics.event.backupConfirmPasswordStep, {
       category: 'backup',
       label: cloudPlatform,
     });
@@ -154,7 +154,7 @@ export default function BackupConfirmPasswordStep() {
     }
     // This means the user didn't have the password saved
     // and at least an other wallet already backed up
-    analytics.track('Backup Complete via Confirm Step', {
+    analytics.track(analytics.event.backupCompleted, {
       category: 'backup',
       label: cloudPlatform,
     });
@@ -163,7 +163,10 @@ export default function BackupConfirmPasswordStep() {
 
   const onSubmit = useCallback(async () => {
     if (!validPassword) return;
-    analytics.track('Tapped "Restore from cloud"');
+    analytics.track(analytics.event.pressedButton, {
+      buttonName: 'Restore from cloud',
+      action: 'pressed',
+    });
     await walletCloudBackup({
       onError,
       onSuccess,

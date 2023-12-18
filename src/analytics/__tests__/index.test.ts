@@ -18,7 +18,10 @@ describe('@/analytics', () => {
     const analytics = new Analytics();
 
     analytics.setCurrentWalletAddressHash('hash');
-    analytics.track(analytics.event.pressedButton);
+    analytics.track(analytics.event.pressedButton, {
+      buttonName: 'test_button',
+      action: 'test_action',
+    });
 
     expect(analytics.client.track).toHaveBeenCalledWith(
       analytics.event.pressedButton,
@@ -57,7 +60,10 @@ describe('@/analytics', () => {
 
     analytics.disable();
 
-    analytics.track(analytics.event.pressedButton);
+    analytics.track(analytics.event.pressedButton, {
+      buttonName: 'test_button',
+      action: 'test_action',
+    });
     analytics.identify({ currency: 'USD' });
     analytics.screen(Routes.BACKUP_SHEET);
 

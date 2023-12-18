@@ -141,7 +141,7 @@ export default function BackupCloudStep() {
     setTimeout(() => {
       passwordRef.current?.focus();
     }, 1);
-    analytics.track('Choose Password Step', {
+    analytics.track(analytics.event.backupChoosePasswordStep, {
       category: 'backup',
       label: cloudPlatform,
     });
@@ -272,7 +272,7 @@ export default function BackupCloudStep() {
     }
     // This means the user set a new password
     // and it was the first wallet backed up
-    analytics.track('Backup Complete', {
+    analytics.track(analytics.event.backupCompleted, {
       category: 'backup',
       label: cloudPlatform,
     });
@@ -280,7 +280,10 @@ export default function BackupCloudStep() {
   }, [goBack, isSettingsRoute, password]);
 
   const onConfirmBackup = useCallback(async () => {
-    analytics.track('Tapped "Confirm Backup"');
+    analytics.track(analytics.event.pressedButton, {
+      buttonName: 'Confirm Backup',
+      action: 'confirmation',
+    });
 
     await walletCloudBackup({
       onError,

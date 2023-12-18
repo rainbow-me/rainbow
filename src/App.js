@@ -68,7 +68,7 @@ import Routes from '@/navigation/routesNames';
 import { Portal } from '@/react-native-cool-modals/Portal';
 import { NotificationsHandler } from '@/notifications/NotificationsHandler';
 import { initSentry, sentryRoutingInstrumentation } from '@/logger/sentry';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import {
   getOrCreateDeviceId,
   securelyHashWalletAddress,
@@ -157,7 +157,7 @@ class OldApp extends Component {
     PerformanceTracking.finishMeasuring(
       PerformanceMetrics.loadRootAppComponent
     );
-    analyticsV2.track(analyticsV2.event.applicationDidMount);
+    analytics.track(analytics.event.applicationDidMount);
 
     /**
      * This must be saved in the store as early as possible
@@ -211,7 +211,7 @@ class OldApp extends Component {
     }
     this.setState({ appState: nextAppState });
 
-    analyticsV2.track(analyticsV2.event.appStateChange, {
+    analytics.track(analytics.event.appStateChange, {
       category: 'app state',
       label: nextAppState,
     });
@@ -326,15 +326,15 @@ function Root() {
       /**
        * Add helpful values to `analyticsV2` instance
        */
-      analyticsV2.setDeviceId(deviceId);
+      analytics.setDeviceId(deviceId);
       if (currentWalletAddressHash) {
-        analyticsV2.setCurrentWalletAddressHash(currentWalletAddressHash);
+        analytics.setCurrentWalletAddressHash(currentWalletAddressHash);
       }
 
       /**
        * `analyticsv2` has all it needs to function.
        */
-      analyticsV2.identify({});
+      analytics.identify({});
 
       const isReviewInitialized = ls.review.get(['initialized']);
       if (!isReviewInitialized) {
@@ -370,8 +370,8 @@ function Root() {
           scale: screenScale,
         } = Dimensions.get('screen');
 
-        analyticsV2.identify({ screenHeight, screenWidth, screenScale });
-        analyticsV2.track(analyticsV2.event.firstAppOpen);
+        analytics.identify({ screenHeight, screenWidth, screenScale });
+        analytics.track(analytics.event.firstAppOpen);
       }
 
       /**

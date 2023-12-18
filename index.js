@@ -10,7 +10,7 @@ import { StartTime } from './src/performance/start-time';
 import { PerformanceTracking } from './src/performance/tracking';
 import { PerformanceMetrics } from './src/performance/tracking/types/PerformanceMetrics';
 
-analytics.track('Started executing JavaScript bundle');
+analytics.track(analytics.event.execJSBundle);
 PerformanceTracking.logDirectly(
   PerformanceMetrics.loadJSBundle,
   Date.now() - StartTime.START_TIME

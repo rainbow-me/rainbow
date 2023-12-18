@@ -82,6 +82,9 @@ export default function BackupManualStep() {
   const [secretLoaded, setSecretLoaded] = useState(false);
 
   const onComplete = useCallback(() => {
+    analytics.track(analytics.event.pressedButton, {
+      buttonName: '',
+    });
     analytics.track(`Tapped "I've saved the secret"`, {
       type,
     });

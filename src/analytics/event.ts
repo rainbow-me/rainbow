@@ -1,24 +1,26 @@
 import { CardType } from '@/components/cards/GenericCard';
 import { LearnCategory } from '@/components/cards/utils/types';
 import { FiatProviderName } from '@/entities/f2c';
-import { Network } from '@/networks/types';
 
 /**
  * All events, used by `analytics.track()`
  */
 export const event = {
-  firstAppOpen: 'First App Open',
-  applicationDidMount: 'React component tree finished initial mounting',
-  pressedButton: 'Pressed Button',
-  appStateChange: 'State change',
+  execJSBundle: 'js_bundle.exec',
+  firstAppOpen: 'app.first_open',
+  applicationDidMount: 'app.mounted',
+  appStateChange: 'app_state.change',
   analyticsTrackingDisabled: 'analytics_tracking.disabled',
   analyticsTrackingEnabled: 'analytics_tracking.enabled',
   promoSheetShown: 'promo_sheet.shown',
   promoSheetDismissed: 'promo_sheet.dismissed',
-  swapSubmitted: 'Submitted Swap',
+  backupCompleted: 'backup.completed',
+  backupChoosePasswordStep: 'backup.choose_password_step',
+  backupConfirmPasswordStep: 'backup.confirm_password_step',
+  swapSubmitted: 'swap.submitted',
   // notification promo sheet was shown
   notificationsPromoShown: 'notifications_promo.shown',
-  // only for iOS — initial prompt is not allowed — Android is enabled by default
+  // only for iOS — initial prompt is not allowed - Android is enabled by default
   notificationsPromoPermissionsBlocked:
     'notifications_promo.permissions_blocked',
   // only for iOS, Android is enabled by default
@@ -35,7 +37,6 @@ export const event = {
   cardPressed: 'card.pressed',
   learnArticleOpened: 'learn_article.opened',
   learnArticleShared: 'learn_article.shared',
-  qrCodeViewed: 'qr_code.viewed',
   buyButtonPressed: 'buy_button.pressed',
   addWalletFlowStarted: 'add_wallet_flow.started',
   /**
@@ -68,67 +69,74 @@ export const event = {
   rewardsPressedBridgedCard: 'rewards.pressed_bridged_card',
   rewardsPressedLeaderboardItem: 'rewards.pressed_leaderboard_item',
 
-  wcNewPairing: 'New WalletConnect pairing',
-  wcNewPairingTimeout: 'New WalletConnect pairing time out',
-  wcNewSessionTimeout: 'New WalletConnect session time out',
-  wcNewSessionRejected: 'Rejected new WalletConnect session',
-  wcNewSessionApproved: 'Approved new WalletConnect session',
-  wcShowingSigningRequest: 'Showing Walletconnect signing request',
+  wcNewPairing: 'wc.new_pairing',
+  wcNewPairingTimeout: 'wc.new_pairing_timeout',
+  wcNewSessionTimeout: 'wc.new_session_timeout',
+  wcNewSessionRejected: 'wc.new_session_rejected',
+  wcNewSessionApproved: 'wc.new_session_approved',
+  wcShowingSigningRequest: 'wc.showing_signing_request',
 
-  nftOffersOpenedOffersSheet: 'Opened NFT Offers Sheet',
-  nftOffersOpenedSingleOfferSheet: 'Opened NFT Single Offer Sheet',
-  nftOffersViewedExternalOffer: 'Viewed external NFT Offer',
-  nftOffersSelectedSortCriterion: 'Selected NFT Offers Sort Criterion',
-  nftOffersAcceptedOffer: 'Accepted NFT Offer',
+  nftOffersOpenedOffersSheet: 'nft_offers.opened_offers_sheet',
+  nftOffersOpenedSingleOfferSheet: 'nft_offers.opened_single_offer_sheet',
+  nftOffersViewedExternalOffer: 'nft_offers.viewed_external_offer',
+  nftOffersSelectedSortCriterion: 'nft_offers.selected_sort_criterion',
+  nftOffersAcceptedOffer: 'nft_offers.accepted_offer',
 
-  poapsOpenedMintSheet: 'Opened POAP mint sheet',
-  poapsMintedPoap: 'Minted POAP',
-  poapsViewedOnPoap: 'Viewed POAP on poap.gallery',
+  poapsOpenedMintSheet: 'poaps.opened_mint_sheet',
+  poapsMintedPoap: 'poaps.minted_poap',
+  poapsViewedOnPoap: 'poaps.viewed_on_poap',
 
-  positionsOpenedSheet: 'Opened position Sheet',
-  positionsOpenedExternalDapp: 'Viewed external dapp',
+  positionsOpenedSheet: 'positions.opened_sheet',
+  positionsOpenedExternalDapp: 'positions.opened_external_dapp',
 
-  mintsPressedFeaturedMintCard: 'Pressed featured mint card',
-  mintsPressedCollectionCell: 'Pressed collection cell in mints card',
-  mintsPressedMintButton: 'Pressed mint button in mints sheet',
-  mintsPressedViewAllMintsButton: 'Pressed view all mints button in mints card',
-  mintsChangedFilter: 'Changed mints filter',
+  mintsPressedFeaturedMintCard: 'mints.pressed_featured_mint_card',
+  mintsPressedCollectionCell: 'mints.pressed_collection_cell',
+  mintsPressedMintButton: 'mints.pressed_mint_button',
+  mintsPressedViewAllMintsButton: 'mints.pressed_view_all_mints_button',
+  mintsChangedFilter: 'mints.changed_filter',
+  mintsOpenedSheet: 'mints.opened_sheet',
+  mintsOpeningMintDotFun: 'mints.opening_mint_dot_fun',
+  mintsMintingNFT: 'mints.minting_nft',
+  mintsMintedNFT: 'mints.minted_nft',
+  mintsErrorMintingNFT: 'mints.error_minting_nft',
 
-  mintsOpenedSheet: 'Opened NFT Mint Sheet',
-  mintsOpeningMintDotFun: 'Opening Mintdotfun',
-  mintsMintingNFT: 'Minting NFT',
-  mintsMintedNFT: 'Minted NFT',
-  mintsErrorMintingNFT: 'Error Minting NFT',
-  pointsViewedClaimScreen: 'Viewed claim your points screen',
-  pointsViewedReferralScreen: 'Viewed points referral code screen',
-  pointsViewedPointsScreen: 'Viewed main points screen',
-  pointsViewedOnboardingSheet: 'Viewed points onboarding screen',
-  pointsReferralScreenValidatedReferralCode: 'Validated referral code',
+  pointsViewedClaimScreen: 'points.viewed_claim_screen',
+  pointsViewedReferralScreen: 'points.viewed_referral_screen',
+  pointsViewedPointsScreen: 'points.viewed_points_screen',
+  pointsViewedOnboardingSheet: 'points.viewed_onboarding_sheet',
+  pointsReferralScreenValidatedReferralCode:
+    'points.referral_screen.validated_referral_code',
   pointsOnboardingScreenPressedSignInButton:
-    'Pressed sign in button on points onboarding screen',
+    'points.onboarding_screen.pressed_sign_in_button',
   pointsOnboardingScreenSuccessfullySignedIn:
-    'Successfully signed in on points onboarding screen',
+    'points.onboarding_screen.successfully_signed_in',
   pointsOnboardingScreenFailedToSignIn:
-    'Failed to sign in on points onboarding screen',
+    'points.onboarding_screen.failed_to_sign_in',
   pointsOnboardingScreenPressedShareToXButton:
-    'Pressed share to X on points onboarding screen',
+    'points.onboarding_screen.pressed_share_to_x_button',
   pointsOnboardingScreenPressedSkipShareToXButton:
-    'Pressed skip button on onboarding screen',
+    'points.onboarding_screen.pressed_skip_share_to_x_button',
   pointsOnboardingScreenPressedContinueButton:
-    'Pressed continue button on onboarding screen',
+    'points.onboarding_screen.pressed_continue_button',
   pointsOnboardingScreenPressedDoneButton:
-    'Pressed done button on onboarding screen',
-  pointsReferralCodeDeeplinkOpened: 'Opened points referral code deeplink',
+    'points.onboarding_screen.pressed_done_button',
+  pointsReferralCodeDeeplinkOpened: 'points.referral_code_deeplink_opened',
   pointsPointsScreenPressedCopyReferralCodeButton:
-    'Pressed copy referral code button on points screen',
+    'points.points_screen.pressed_copy_referral_code_button',
   pointsPointsScreenPressedShareReferralLinkButton:
-    'Pressed share referral link button on points screen',
+    'points.points_screen.pressed_share_referral_link_button',
+
+  pressedButton: 'button.pressed',
+
+  qrCodeViewed: 'qr_code.viewed',
+  qrCodeTapped: 'qr_code.tapped',
 } as const;
 
 /**
  * Properties corresponding to each event
  */
 export type EventProperties = {
+  [event.execJSBundle]: undefined;
   [event.firstAppOpen]: undefined;
   [event.applicationDidMount]: undefined;
   [event.appStateChange]: {
@@ -141,6 +149,18 @@ export type EventProperties = {
   };
   [event.analyticsTrackingDisabled]: undefined;
   [event.analyticsTrackingEnabled]: undefined;
+  [event.backupCompleted]: {
+    category: string;
+    label: string;
+  };
+  [event.backupChoosePasswordStep]: {
+    category: string;
+    label: string;
+  };
+  [event.backupConfirmPasswordStep]: {
+    category: string;
+    label: string;
+  };
   [event.swapSubmitted]: {
     usdValue: number;
     inputCurrencySymbol: string;
@@ -431,4 +451,7 @@ export type EventProperties = {
   [event.pointsReferralCodeDeeplinkOpened]: undefined;
   [event.pointsPointsScreenPressedCopyReferralCodeButton]: undefined;
   [event.pointsPointsScreenPressedShareReferralLinkButton]: undefined;
+  [event.qrCodeTapped]: {
+    category: string;
+  };
 };

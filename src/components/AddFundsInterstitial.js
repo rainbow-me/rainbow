@@ -13,7 +13,7 @@ import { ButtonPressAnimation, ScaleButtonZoomableAndroid } from './animations';
 import { Icon } from './icons';
 import { Centered, Row, RowWithMargins } from './layout';
 import { Text } from './text';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { useAccountSettings, useDimensions, useWallets } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
@@ -198,14 +198,14 @@ const AddFundsInterstitial = ({ network }) => {
         params: !isNaN(amount) ? { amount } : null,
         screen: Routes.ADD_CASH_SCREEN_NAVIGATOR,
       });
-      analyticsV2.track(analyticsV2.event.buyButtonPressed, {
+      analytics.track(analytics.event.buyButtonPressed, {
         amount,
         componentName: 'AddFundsInterstitial',
         newWallet: true,
         routeName,
       });
     },
-    [isDamaged, navigate, routeName, accountAddress]
+    [isDamaged, navigate, routeName]
   );
 
   const addFundsToAccountAddress = useCallback(

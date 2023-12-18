@@ -97,7 +97,7 @@ function NavbarOverlay({
   const insets = useSafeAreaInsets();
 
   const handlePressQRCode = React.useCallback(() => {
-    analytics.track('Tapped "My QR Code"', {
+    analytics.track(analytics.event.qrCodeTapped, {
       category: 'home screen',
     });
 

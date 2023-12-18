@@ -20,13 +20,7 @@ import {
   Text,
   useColorMode,
 } from '@/design-system';
-import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
-import {
-  useAccountProfile,
-  useAccountSettings,
-  useSwapCurrencyHandlers,
-  useWallets,
-} from '@/hooks';
+import { useAccountProfile, useAccountSettings, useWallets } from '@/hooks';
 import { delayNext } from '@/hooks/useMagicAutofocus';
 import { useNavigation } from '@/navigation';
 import { ethereumUtils, watchingAlert } from '@/utils';
@@ -89,7 +83,7 @@ export function ProfileActionButtonsRow() {
             </Column>
             <Column>
               <Animated.View style={[expandStyle]}>
-                <MoreButton />
+                <CopyButton />
               </Animated.View>
             </Column>
           </Columns>
@@ -178,8 +172,9 @@ function BuyButton() {
       return;
     }
 
-    analytics.track('Tapped "Add Cash"', {
-      category: 'home screen',
+    analytics.track(analytics.event.pressedButton, {
+      buttonName: 'ProfileActionButtonsRow.BuyButton',
+      action: 'Navigate from WalletScreen to AddCashSheet',
     });
 
     navigate(Routes.ADD_CASH_SHEET);
@@ -202,8 +197,9 @@ function SwapButton() {
 
   const handlePress = React.useCallback(async () => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
-      analytics.track('Tapped "Swap"', {
-        category: 'home screen',
+      analytics.track(analytics.event.pressedButton, {
+        buttonName: 'ProfileActionButtonsRow.SwapButton',
+        action: 'Navigate from WalletScreen to ExchangeModal',
       });
 
       android && delayNext();
@@ -237,8 +233,9 @@ function SendButton() {
 
   const handlePress = React.useCallback(() => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
-      analytics.track('Tapped "Send"', {
-        category: 'home screen',
+      analytics.track(analytics.event.pressedButton, {
+        buttonName: 'ProfileActionButtonsRow.SendButton',
+        action: `Navigate from WalletScreen to ${Routes.SEND_FLOW}`,
       });
 
       navigate(Routes.SEND_FLOW);
@@ -254,7 +251,7 @@ function SendButton() {
   );
 }
 
-export function MoreButton() {
+export function CopyButton() {
   // ////////////////////////////////////////////////////
   // Handlers
 
@@ -263,6 +260,11 @@ export function MoreButton() {
   );
   const { accountAddress } = useAccountProfile();
   const handlePressCopy = React.useCallback(() => {
+    analytics.track(analytics.event.pressedButton, {
+      buttonName: 'ProfileActionButtonsRow.CopyButton',
+      action: 'Copied account address to clipboard',
+    });
+
     if (!isToastActive) {
       setToastActive(true);
       setTimeout(() => {

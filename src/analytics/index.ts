@@ -57,7 +57,9 @@ export class Analytics {
    */
   track<T extends keyof EventProperties>(
     event: T,
-    params?: EventProperties[T]
+    params: EventProperties[T] extends undefined
+      ? undefined
+      : EventProperties[T]
   ) {
     if (this.disabled) return;
     const metadata = this.getDefaultMetadata();
@@ -107,14 +109,4 @@ export class Analytics {
  * Our core analytics tracking client. See individual methods for docs, and
  * review this directory's files for more information.
  */
-export const analyticsV2 = new Analytics();
-
-/**
- * @deprecated Use the `analyticsV2` export from this same file
- */
-export const analytics = createClient({
-  debug: false,
-  trackAppLifecycleEvents: true,
-  trackDeepLinks: true,
-  writeKey: REACT_APP_SEGMENT_API_WRITE_KEY,
-});
+export const analytics = new Analytics();
