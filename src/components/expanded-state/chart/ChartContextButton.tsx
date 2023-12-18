@@ -8,10 +8,19 @@ import {
   useCoinListFinishEditingOptions,
 } from '@/hooks';
 import { ethereumUtils } from '@/utils';
+import { UniqueAsset } from '@/entities';
 
 const emojiSpacing = ios ? '' : '  ';
 
-export default function ChartContextButton({ asset, color }) {
+type ChartContextButtonProps = {
+  asset: UniqueAsset;
+  color?: string;
+};
+
+export default function ChartContextButton({
+  asset,
+  color,
+}: ChartContextButtonProps) {
   const { clearSelectedCoins, pushSelectedCoin } = useCoinListEditOptions();
 
   const {
@@ -30,7 +39,7 @@ export default function ChartContextButton({ asset, color }) {
   }, [asset, clearSelectedCoins, currentAction, pushSelectedCoin]);
 
   const handleActionSheetPress = useCallback(
-    buttonIndex => {
+    (buttonIndex: number) => {
       if (buttonIndex === 0) {
         // 📌️ Pin
         setPinnedCoins();

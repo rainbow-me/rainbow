@@ -13,10 +13,10 @@ import { fonts, fontWithWidth } from '@/styles';
 const ChartPriceRow = styled(Row)({});
 
 const Label = styled(ChartYLabel)({
-  color: ({ theme: { colors } }) => colors.dark,
+  color: ({ theme: { colors } }: any) => colors.dark,
   ...fontWithWidth(fonts.weight.heavy),
   fontSize: fonts.size.big,
-  fontVariant: ({ tabularNums }) => (tabularNums ? ['tabular-nums'] : []),
+  fontVariant: ({ tabularNums }: any) => (tabularNums ? ['tabular-nums'] : []),
   letterSpacing: fonts.letterSpacing.roundedTight,
   ...(android
     ? {
@@ -27,7 +27,7 @@ const Label = styled(ChartYLabel)({
 });
 
 const AndroidCurrencySymbolLabel = styled(ChartYLabel)({
-  color: ({ theme: { colors } }) => colors.dark,
+  color: ({ theme: { colors } }: any) => colors.dark,
   ...fontWithWidth(fonts.weight.heavy),
   fontSize: fonts.size.big,
   letterSpacing: fonts.letterSpacing.roundedTight,
@@ -45,7 +45,11 @@ const AndroidCurrencySymbolLabel = styled(ChartYLabel)({
   top: PixelRatio.get() <= 2.625 ? 22 : 23,
 });
 
-export function formatNative(value, defaultPriceValue, nativeSelected) {
+export function formatNative(
+  value: string | number,
+  defaultPriceValue: string,
+  nativeSelected: Currency
+) {
   'worklet';
   if (!value) {
     return defaultPriceValue || '';
@@ -60,9 +64,12 @@ export function formatNative(value, defaultPriceValue, nativeSelected) {
       ? Math.min(8, value.toString().slice(2).slice('').search(/[^0]/g) + 3)
       : 2;
 
-  let res = `${Number(value).toFixed(decimals).toLocaleString('en-US', {
+  let res = Number(value).toFixed(decimals);
+  res = new Intl.NumberFormat('en-US', {
+    style: 'currency',
     currency: NativeCurrencyKeys.USD,
-  })}`;
+  }).format(Number(res));
+
   res =
     nativeSelected?.alignment === 'left'
       ? `${nativeSelected?.symbol}${res}`
@@ -74,17 +81,37 @@ export function formatNative(value, defaultPriceValue, nativeSelected) {
   return res;
 }
 
-export default function ChartPriceLabel({
+type ChartPriceLabelProps = {
+  defaultValue: string;
+  isNoPriceData: boolean;
+  priceValue: string;
+  tabularNums?: boolean;
+};
+
+type Currency = {
+  alignment: string;
+  assetLimit: number;
+  currency: string;
+  decimals: number;
+  label: string;
+  mask: string;
+  placeholder: string;
+  smallThreshold: number;
+  symbol: string;
+  emojiName?: string;
+};
+
+export function ChartPriceLabel({
   defaultValue,
   isNoPriceData,
   priceValue,
   tabularNums,
-}) {
+}: ChartPriceLabelProps) {
   const { nativeCurrency } = useAccountSettings();
   const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
 
   const format = useWorkletCallback(
-    value => {
+    (value: string) => {
       'worklet';
       const formatted = formatNative(value, priceValue, nativeSelected);
       if (android) {
@@ -112,3 +139,5 @@ export default function ChartPriceLabel({
     </ChartPriceRow>
   );
 }
+
+export default ChartPriceLabel;

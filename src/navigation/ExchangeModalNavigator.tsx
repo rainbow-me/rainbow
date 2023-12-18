@@ -1,9 +1,11 @@
+import { View } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { useMemoOne } from 'use-memo-one';
 import { FlexItem } from '../components/layout';
+import Routes from '@/navigation/routesNames';
 import { cancelNext, uncancelNext } from '../hooks/useMagicAutofocus';
 import CurrencySelectModal from '../screens/CurrencySelectModal';
 import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
@@ -15,7 +17,6 @@ import {
   expandedPreset,
   swapSettingsPreset,
 } from './effects';
-import Routes from './routesNames';
 import { useSwapCurrencies } from '@/hooks';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
@@ -23,16 +24,28 @@ import { position } from '@/styles';
 const Stack = createStackNavigator();
 const Tabs = createMaterialTopTabNavigator();
 
-const GestureBlocker = styled.View.attrs({
+const GestureBlocker = styled(View).attrs({
   pointerEvents: 'none',
 })({
   ...position.sizeAsObject('100%'),
-  backgroundColor: ({ theme: { colors } }) => colors.transparent,
+  backgroundColor: ({ theme: { colors } }: { theme: { colors: any } }) =>
+    colors.transparent,
   position: 'absolute',
 });
 
-export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
-  function MainExchangeNavigator() {
+type ExchangeModalNavigator = {
+  [Routes.MAIN_EXCHANGE_NAVIGATOR]: {
+    fromDiscover?: boolean;
+    params?: {
+      toggleGestureEnabled: (dismissable: boolean) => void;
+    };
+  };
+};
+
+export function ExchangeNavigatorFactory(
+  SwapModal: React.FC = SwapModalScreen
+): React.FC {
+  function MainExchangeNavigator(): JSX.Element {
     const { params } = useRoute();
 
     return (
@@ -65,21 +78,26 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
     );
   }
 
-  return function ExchangeModalNavigator() {
+  return function ExchangeModalNavigator(): JSX.Element {
     const ref = useRef();
-    const { params } = useRoute();
+    const { params } = useRoute<
+      RouteProp<ExchangeModalNavigator, 'MainExchangeNavigator'>
+    >();
+
     const { setOptions, addListener, removeListener } = useNavigation();
 
     const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
     useEffect(() => {
       // Workaround to fix weird keyboard focus issues upon immediate screen focus then unfocus
-      if (android && params.fromDiscover) {
-        addListener('gestureStart', cancelNext);
+      if (android && params?.fromDiscover) {
+        // TODO: This event doesn't exist?
+        // addListener('gestureStart', cancelNext);
         addListener('blur', uncancelNext);
         addListener('focus', uncancelNext);
         return () => {
-          removeListener('gestureStart', cancelNext);
+          // TODO: This event doesn't exist?
+          // removeListener('gestureStart', cancelNext);
           removeListener('blur', uncancelNext);
           removeListener('focus', uncancelNext);
         };
@@ -87,7 +105,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
     }, [addListener, removeListener, params]);
 
     const toggleGestureEnabled = useCallback(
-      dismissable => {
+      (dismissable: boolean) => {
         setOptions({ dismissable, gestureEnabled: dismissable });
       },
       [setOptions]

@@ -7,6 +7,7 @@ import { useRatio } from './useRatio';
 import { useChartData } from '@/react-native-animated-charts/src';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth } from '@/styles';
+import { useTheme } from '@/theme';
 
 Animated.addWhitelistedNativeProps({ color: true });
 
@@ -22,7 +23,7 @@ const PercentLabel = styled(AnimatedTextInput)({
   ...(android && { marginVertical: -19 }),
 });
 
-function formatNumber(num) {
+function formatNumber(num: string) {
   'worklet';
   const first = num.split('.');
   const digits = first[0].split('').reverse();
