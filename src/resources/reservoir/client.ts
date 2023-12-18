@@ -56,6 +56,7 @@ export function initializeReservoirClient() {
       },
     ],
     apiKey: RESERVOIR_API_KEY,
+    source: 'rainbow.me',
     logLevel: IS_PROD ? 1 : 4,
   });
 }
