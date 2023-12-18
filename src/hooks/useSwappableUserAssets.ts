@@ -10,14 +10,13 @@ import {
 } from '@rainbow-me/swaps';
 import { ethereumUtils } from '@/utils';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { RainbowNetworks, getNetworkObj } from '@/networks';
+import {
+  RainbowNetworks,
+  getNetworkObj,
+  getSwappableNetworks,
+} from '@/networks';
 
-type SwappableAddresses = {
-  [Network.mainnet]: EthereumAddress[];
-  [Network.optimism]: EthereumAddress[];
-  [Network.polygon]: EthereumAddress[];
-  [Network.arbitrum]: EthereumAddress[];
-};
+type SwappableAddresses = Record<Network, EthereumAddress[]>;
 
 export const useSwappableUserAssets = (params: {
   outputCurrency: SwappableAsset;
@@ -27,12 +26,12 @@ export const useSwappableUserAssets = (params: {
   const assetsInWallet = sortedAssets as SwappableAsset[];
   const { hiddenCoinsObj } = useCoinListEditOptions();
 
-  const swappableAssetsRef = useRef<SwappableAddresses>({
-    [Network.mainnet]: [],
-    [Network.optimism]: [],
-    [Network.polygon]: [],
-    [Network.arbitrum]: [],
-  });
+  const swappableAssetsRef = useRef<SwappableAddresses>(
+    getSwappableNetworks().reduce((acc, network) => {
+      acc[network.value as Network] = [];
+      return acc;
+    }, {} as SwappableAddresses)
+  );
 
   const filteredAssetsInWallet = useMemo(
     () =>
