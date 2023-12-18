@@ -455,7 +455,6 @@ const UniqueTokenExpandedState = ({
   );
 
   const hideNftMarketplaceAction = isPoap || !slug;
-  const isSaleInfoSupported = getIsSaleInfoSupported(asset.network);
 
   return (
     <>
