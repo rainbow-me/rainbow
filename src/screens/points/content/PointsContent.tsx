@@ -116,6 +116,7 @@ export default function PointsContent() {
 
   const totalUsers = data?.points?.leaderboard.stats.total_users;
   const rank = data?.points?.user.stats.position.current;
+  const isUnranked = !!data?.points?.user?.stats?.position?.unranked;
 
   const canDisplayTotalPoints = !isNil(data?.points?.user.earnings.total);
   const canDisplayNextRewardCard = !isNil(nextDistributionSeconds);
@@ -240,16 +241,27 @@ export default function PointsContent() {
                   {canDisplayRankCard ? (
                     <InfoCard
                       // onPress={() => {}}
-                      title={i18n.t(i18n.l.points.points.your_rank)}
+                      title={
+                        isUnranked
+                          ? i18n.t(i18n.l.points.points.unranked)
+                          : i18n.t(i18n.l.points.points.your_rank)
+                      }
                       mainText={`#${rank.toLocaleString('en-US')}`}
                       icon={
-                        totalUsers >= 10_000_000 && deviceUtils.isSmallPhone
+                        (totalUsers >= 10_000_000 &&
+                          deviceUtils.isSmallPhone) ||
+                        isUnranked
                           ? undefined
                           : '􀉬'
                       }
-                      subtitle={i18n.t(i18n.l.points.points.of_x, {
-                        totalUsers: totalUsers.toLocaleString('en-US'),
-                      })}
+                      subtitle={
+                        isUnranked
+                          ? i18n.t(i18n.l.points.points.points_to_rank)
+                          : i18n.t(i18n.l.points.points.of_x, {
+                              totalUsers: totalUsers.toLocaleString('en-US'),
+                            })
+                      }
+                      mainTextColor={isUnranked ? 'secondary' : 'primary'}
                       accentColor={green}
                     />
                   ) : (
