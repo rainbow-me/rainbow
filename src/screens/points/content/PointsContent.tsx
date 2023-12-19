@@ -481,8 +481,14 @@ export default function PointsContent() {
                             : formatAddress(accountAddress, 4, 5)}
                         </Text>
                       </Box>
-                      <Text color="label" size="17pt" weight="heavy">
-                        {`#${rank.toLocaleString('en-US')}`}
+                      <Text
+                        color={isUnranked ? 'labelQuaternary' : 'label'}
+                        size="17pt"
+                        weight="heavy"
+                      >
+                        {isUnranked
+                          ? i18n.t(i18n.l.points.points.unranked)
+                          : `#${rank.toLocaleString('en-US')}`}
                       </Text>
                     </Box>
                   </Box>
