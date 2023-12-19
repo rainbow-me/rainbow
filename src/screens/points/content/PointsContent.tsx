@@ -241,12 +241,12 @@ export default function PointsContent() {
                   {canDisplayRankCard ? (
                     <InfoCard
                       // onPress={() => {}}
-                      title={
+                      title={i18n.t(i18n.l.points.points.your_rank)}
+                      mainText={
                         isUnranked
                           ? i18n.t(i18n.l.points.points.unranked)
-                          : i18n.t(i18n.l.points.points.your_rank)
+                          : `#${rank.toLocaleString('en-US')}`
                       }
-                      mainText={`#${rank.toLocaleString('en-US')}`}
                       icon={
                         (totalUsers >= 10_000_000 &&
                           deviceUtils.isSmallPhone) ||
