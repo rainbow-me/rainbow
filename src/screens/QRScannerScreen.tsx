@@ -15,10 +15,6 @@ import {
   QRCodeScanner,
 } from '@/components/qrcode-scanner';
 import {
-  CameraState,
-  useCameraPermission,
-} from '@/components/qrcode-scanner/useCameraPermissions';
-import {
   AccentColorProvider,
   Box,
   ColorModeProvider,
@@ -34,7 +30,7 @@ import { useTheme } from '@/theme';
 import { useIsFocused } from '@react-navigation/native';
 import { useIsForeground } from '@/hooks/useIsForeground';
 import {
-  // useCameraPermission,
+  useCameraPermission,
   useCodeScanner,
 } from 'react-native-vision-camera';
 import { IS_ANDROID, IS_IOS } from '@/env';
@@ -68,13 +64,11 @@ export default function QRScannerScreen() {
   const scrollPosition = usePagerPosition();
   const { top: topInset } = useSafeAreaInsets();
   const { colors } = useTheme();
-  // const { hasPermission, requestPermission } = useCameraPermission();
-  const { cameraState, askForPermissions } = useCameraPermission();
+  const { hasPermission, requestPermission } = useCameraPermission();
   const isFocused = useIsFocused();
   const isForeground = useIsForeground();
-  const cameraIsActive = cameraState === CameraState.Scanning;
   const [cameraActive, setCameraActive] = useState(true);
-  const isActive = isFocused && isForeground && cameraIsActive;
+  const isActive = isFocused && isForeground && hasPermission;
   const navigation = useNavigation();
 
   const [flashEnabled, setFlashEnabled] = useState(false);
@@ -83,7 +77,7 @@ export default function QRScannerScreen() {
     setFlashEnabled(false);
   }, [setFlashEnabled]);
 
-  const { onScan } = useScanner(cameraIsActive, hideCamera);
+  const { onScan } = useScanner(hasPermission, hideCamera);
 
   const codeScanner = useCodeScanner({
     codeTypes: ['qr', 'ean-13'],
@@ -220,8 +214,8 @@ export default function QRScannerScreen() {
                 <QRCodeScanner
                   flashEnabled={flashEnabled}
                   codeScanner={codeScanner}
-                  hasPermission={cameraIsActive}
-                  askForPermissions={askForPermissions}
+                  hasPermission={hasPermission}
+                  requestPermission={requestPermission}
                   isActive={isActive && cameraActive}
                 />
               )}

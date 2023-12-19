@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Camera, CodeScanner } from 'react-native-vision-camera';
 import Animated from 'react-native-reanimated';
 import { ErrorText } from '../text';
@@ -11,7 +11,6 @@ import { IS_ANDROID } from '@/env';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
-import { useFocusEffect } from '@react-navigation/native';
 
 const deviceWidth = deviceUtils.dimensions.width;
 const deviceHeight = deviceUtils.dimensions.height;
@@ -23,7 +22,7 @@ interface QRCodeScannerProps {
   isActive: boolean;
   codeScanner: CodeScanner;
   hasPermission: boolean;
-  askForPermissions: () => Promise<boolean>;
+  requestPermission: () => Promise<boolean>;
 }
 
 export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
@@ -31,15 +30,11 @@ export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
   isActive,
   codeScanner,
   hasPermission,
-  askForPermissions,
+  requestPermission,
 }) => {
   const devices = Camera.getAvailableCameraDevices();
   const device = devices.find(d => d.position === 'back');
   const customHeightValue = deviceHeight + androidSoftMenuHeight;
-
-  useFocusEffect(() => {
-    setTimeout(() => askForPermissions(), 200);
-  });
 
   const cameraUI = (
     <>
@@ -68,7 +63,7 @@ export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
               audio={false}
               video={false}
               photo={false}
-              onError={() => askForPermissions}
+              onError={() => requestPermission}
             />
           </Box>
           <Rows>
@@ -124,9 +119,7 @@ export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
           alignItems="center"
           justifyContent="center"
         >
-          <QRCodeScannerNeedsAuthorization
-            askForPermissions={askForPermissions}
-          />
+          <QRCodeScannerNeedsAuthorization onGetBack={requestPermission} />
         </Box>
       )}
     </>
