@@ -213,9 +213,13 @@ export default function RestoreCloudStep({
             );
             logger.info('Done updating backup state');
           }
-          // @ts-expect-error TypeScript doesn't play nicely with Redux types here
-          const firstWallet = wallets[Object.keys(wallets)[0]];
-          const firstAddress = firstWallet.addresses[0].address;
+          const walletKeys = Object.keys(wallets || {});
+          const firstWallet =
+            // @ts-expect-error TypeScript doesn't play nicely with Redux types here
+            walletKeys.length > 0 ? (wallets || {})[walletKeys[0]] : undefined;
+          const firstAddress = firstWallet
+            ? firstWallet.addresses[0].address
+            : undefined;
           const p1 = dispatch(walletsSetSelected(firstWallet));
           const p2 = dispatch(addressSetSelected(firstAddress));
           await Promise.all([p1, p2]);
