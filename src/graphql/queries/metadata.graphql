@@ -254,10 +254,6 @@ query simulateMessage(
 
 query getPointsDataForWallet($address: String!) {
   points(address: $address) {
-    error {
-      message
-      type
-    }
     meta {
       distribution {
         next
@@ -268,6 +264,7 @@ query getPointsDataForWallet($address: String!) {
       stats {
         total_users
         total_points
+        rank_cutoff
       }
       accounts {
         address
@@ -286,8 +283,30 @@ query getPointsDataForWallet($address: String!) {
       stats {
         position {
           current
+          unranked
         }
       }
+      onboarding {
+        earnings {
+          total
+        }
+        categories {
+          data {
+            usd_amount
+            total_collections
+            owned_collections
+          }
+          type
+          display_type
+          earnings {
+            total
+          }
+        }
+      }
+    }
+    error {
+      message
+      type
     }
   }
 }
@@ -310,6 +329,7 @@ mutation onboardPoints(
     }
     leaderboard {
       stats {
+        rank_cutoff
         total_users
         total_points
       }
@@ -330,6 +350,7 @@ mutation onboardPoints(
       stats {
         position {
           current
+          unranked
         }
       }
       onboarding {
