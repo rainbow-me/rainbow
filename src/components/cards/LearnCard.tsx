@@ -9,7 +9,7 @@ import Routes from '@/navigation/routesNames';
 import * as i18n from '@/languages';
 import { useTheme } from '@/theme';
 import { useRoute } from '@react-navigation/native';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 
 type LearnCardProps = {
   cardDetails: LearnCardDetails;
@@ -31,7 +31,7 @@ export const LearnCard = ({ cardDetails, rotate, type }: LearnCardProps) => {
   } = getLearnCardColorway(category, isDarkMode);
 
   const onPress = () => {
-    analyticsV2.track(analyticsV2.event.cardPressed, {
+    analytics.track(analytics.event.cardPressed, {
       cardName: 'LearnCard',
       routeName,
       cardType: type,

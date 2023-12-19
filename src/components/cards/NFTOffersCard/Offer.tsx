@@ -23,7 +23,7 @@ import {
 import { RainbowError, logger } from '@/logger';
 import { ButtonPressAnimation } from '@/components/animations';
 import Routes from '@/navigation/routesNames';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { useTheme } from '@/theme';
 import { CardSize } from '@/components/unique-token/CardSize';
 // import { deviceUtils } from '@/utils';
@@ -188,7 +188,7 @@ export const Offer = ({ offer }: { offer: NftOffer }) => {
   return (
     <ButtonPressAnimation
       onPress={() => {
-        analyticsV2.track(analyticsV2.event.nftOffersOpenedSingleOfferSheet, {
+        analytics.track(analytics.event.nftOffersOpenedSingleOfferSheet, {
           entryPoint: 'NFTOffersCard',
           offerValueUSD: offer.grossAmount.usd,
           offerValue: offer.grossAmount.decimal,

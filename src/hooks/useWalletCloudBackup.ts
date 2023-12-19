@@ -68,7 +68,7 @@ export default function useWalletCloudBackup() {
     }) => {
       const isAvailable = await isCloudBackupAvailable();
       if (!isAvailable) {
-        analytics.track('iCloud not enabled', {
+        analytics.track(analytics.event.backupIcloudNotEnabled, {
           category: 'backup',
         });
         Alert.alert(
@@ -78,7 +78,7 @@ export default function useWalletCloudBackup() {
             {
               onPress: () => {
                 Linking.openURL('https://support.apple.com/en-us/HT204025');
-                analytics.track('View how to Enable iCloud', {
+                analytics.track(analytics.event.backupViewedHowToEnableIcloud, {
                   category: 'backup',
                 });
               },
@@ -86,9 +86,12 @@ export default function useWalletCloudBackup() {
             },
             {
               onPress: () => {
-                analytics.track('Ignore how to enable iCloud', {
-                  category: 'backup',
-                });
+                analytics.track(
+                  analytics.event.backupDismissedHowToEnableIcloud,
+                  {
+                    category: 'backup',
+                  }
+                );
               },
               style: 'cancel',
               text: lang.t('modal.back_up.alerts.cloud_not_enabled.no_thanks'),
@@ -172,7 +175,7 @@ export default function useWalletCloudBackup() {
           `error while trying to backup wallet to ${cloudPlatform}`
         );
         captureException(e);
-        analytics.track(`Error during ${cloudPlatform} Backup`, {
+        analytics.track(analytics.event.backupFailed, {
           category: 'backup',
           error: userError,
           label: cloudPlatform,
@@ -198,7 +201,7 @@ export default function useWalletCloudBackup() {
           new Error(CLOUD_BACKUP_ERRORS.WALLET_BACKUP_STATUS_UPDATE_FAILED)
         );
         !!onError && onError(userError);
-        analytics.track('Error updating Backup status', {
+        analytics.track(analytics.event.backupErrorUpdatingStatus, {
           category: 'backup',
           label: cloudPlatform,
         });

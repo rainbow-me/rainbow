@@ -9,7 +9,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { device } from '@/storage';
 import * as i18n from '@/languages';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { logger } from '@/logger';
 
 const TRANSLATIONS = i18n.l.settings.privacy_section;
@@ -28,16 +28,16 @@ const PrivacySection = () => {
     if (analyticsEnabled) {
       device.set(['doNotTrack'], true);
       logger.debug(`Analytics tracking disabled`);
-      analyticsV2.track(analyticsV2.event.analyticsTrackingDisabled);
+      analytics.track(analytics.event.analyticsTrackingDisabled);
       logger.disable();
-      analyticsV2.disable();
+      analytics.disable();
       return false;
     } else {
       device.set(['doNotTrack'], false);
       logger.enable();
-      analyticsV2.enable();
+      analytics.enable();
       logger.debug(`Analytics tracking enabled`);
-      analyticsV2.track(analyticsV2.event.analyticsTrackingEnabled);
+      analytics.track(analytics.event.analyticsTrackingEnabled);
       return true;
     }
   }, !device.get(['doNotTrack']));

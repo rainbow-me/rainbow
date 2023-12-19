@@ -13,11 +13,11 @@ import {
 } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useTheme } from '@/theme';
-import { Linking, View } from 'react-native';
+import { View } from 'react-native';
 import { MintableCollection } from '@/graphql/__generated__/arc';
 import ethereumUtils, { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { getNetworkObj } from '@/networks';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import * as i18n from '@/languages';
 import { IS_IOS } from '@/env';
 import { ImgixImage } from '@/components/images';
@@ -92,7 +92,7 @@ export function CollectionCell({
   useEffect(() => setMediaRendered(false), [imageUrl]);
 
   const handlePress = useCallback(() => {
-    analyticsV2.track(analyticsV2.event.mintsPressedCollectionCell, {
+    analytics.track(analytics.event.mintsPressedCollectionCell, {
       contractAddress: collection.contractAddress,
       chainId: collection.chainId,
       priceInEth: amount,

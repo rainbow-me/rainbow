@@ -19,7 +19,7 @@ import { NeonButton } from '../../components/NeonButton';
 import LineBreak from '../../components/LineBreak';
 import { Bleed, Box, Stack } from '@/design-system';
 import { abbreviateNumber } from '@/helpers/utilities';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 
 export const Calculate = () => {
   const {
@@ -312,8 +312,8 @@ export const Calculate = () => {
             color="#FEC101"
             label={i18n.t(i18n.l.points.console.proceed_to_share)}
             onPress={() => {
-              analyticsV2.track(
-                analyticsV2.event.pointsOnboardingScreenPressedContinueButton
+              analytics.track(
+                analytics.event.pointsOnboardingScreenPressedContinueButton
               );
               const beginNextPhase = setTimeout(() => {
                 setAnimationKey(prevKey => prevKey + 1);

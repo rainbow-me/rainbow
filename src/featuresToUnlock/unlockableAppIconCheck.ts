@@ -55,11 +55,15 @@ export const unlockableAppIconCheck = async (
           unlockKey,
           'set to true. Wont show up anymore!'
         );
-        analytics.track('Viewed App Icon Unlock', { campaign: key });
+        analytics.track(analytics.event.appIconUnlockViewed, {
+          campaign: key,
+        });
         Navigation.handleAction(Routes.EXPLAIN_SHEET, {
           type: explainSheetType,
           onPress: () => {
-            analytics.track('Activated App Icon Unlock', { campaign: key });
+            analytics.track(analytics.event.appIconUnlockActivated, {
+              campaign: key,
+            });
             setTimeout(() => {
               Navigation.handleAction(Routes.SETTINGS_SHEET, {});
               setTimeout(() => {
@@ -71,7 +75,9 @@ export const unlockableAppIconCheck = async (
           },
           handleClose: () => {
             campaigns.set(['isCurrentlyShown'], false);
-            analytics.track('Dismissed App Icon Unlock', { campaign: key });
+            analytics.track(analytics.event.appIconUnlockDismissed, {
+              campaign: key,
+            });
           },
         });
         return true;

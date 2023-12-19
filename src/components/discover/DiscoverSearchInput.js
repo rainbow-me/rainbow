@@ -134,7 +134,7 @@ const ExchangeSearch = (
 ) => {
   const handleClearInput = useCallback(() => {
     if (isDiscover && searchQuery.length > 1) {
-      analytics.track('Search Query', {
+      analytics.track(analytics.event.searchQuery, {
         category: 'discover',
         length: searchQuery.length,
         query: searchQuery,

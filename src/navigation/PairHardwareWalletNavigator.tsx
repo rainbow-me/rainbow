@@ -10,7 +10,7 @@ import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { atom, useRecoilState } from 'recoil';
 import Routes from '@/navigation/routesNames';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 
 const Swipe = createMaterialTopTabNavigator();
 
@@ -50,12 +50,12 @@ export function PairHardwareWalletNavigator() {
   }, []);
 
   useEffect(
-    () => analyticsV2.track(analyticsV2.event.pairHwWalletNavEntered, params),
+    () => analytics.track(analytics.event.pairHwWalletNavEntered, params),
     []
   );
 
   const onDismiss = () =>
-    analyticsV2.track(analyticsV2.event.pairHwWalletNavExited, {
+    analytics.track(analytics.event.pairHwWalletNavExited, {
       step: currentRouteName,
       ...params,
     });

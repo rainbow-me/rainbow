@@ -483,10 +483,14 @@ export async function saveBackupPassword(
   try {
     if (ios) {
       await kc.setSharedWebCredentials('Backup Password', password);
-      analytics.track('Saved backup password on iCloud');
+      analytics.track(analytics.event.backupSavedToCloud, {
+        time: Date.now(),
+      });
     }
   } catch (e) {
-    analytics.track("Didn't save backup password on iCloud");
+    analytics.track(analytics.event.backupErrorSavingToCloud, {
+      time: Date.now(),
+    });
   }
 }
 

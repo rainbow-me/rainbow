@@ -112,7 +112,6 @@ import { handleSessionRequestResponse } from '@/walletConnect';
 import { isAddress } from '@ethersproject/address';
 import { logger, RainbowError } from '@/logger';
 import { getNetworkObj } from '@/networks';
-import { IS_IOS } from '@/env';
 
 const springConfig = {
   damping: 500,
@@ -392,7 +391,7 @@ export default function TransactionConfirmationScreen() {
         } else {
           setMethodName(lang.t('wallet.message_signing.request'));
         }
-        analytics.track('Shown Walletconnect signing request');
+        analytics.track(analytics.event.wcShownSigningRequest);
       }
     });
   }, [
@@ -471,8 +470,9 @@ export default function TransactionConfirmationScreen() {
           }
           const rejectionType =
             method === SEND_TRANSACTION ? 'transaction' : 'signature';
-          analytics.track(`Rejected WalletConnect ${rejectionType} request`, {
+          analytics.track(analytics.event.wcRejectedTransactionRequest, {
             isHardwareWallet: accountInfo.isHardwareWallet,
+            type: rejectionType,
           });
 
           closeScreen(true);
@@ -800,11 +800,12 @@ export default function TransactionConfirmationScreen() {
           txSavedInCurrentWallet = true;
         }
       }
-      analytics.track('Approved WalletConnect transaction request', {
+      analytics.track(analytics.event.wcApprovedTransactionRequest, {
         dappName,
         dappUrl,
         isHardwareWallet: accountInfo.isHardwareWallet,
         network: currentNetwork,
+        type: sendInsteadOfSign ? 'transaction' : 'signature',
       });
       if (isFocused && requestId) {
         if (walletConnectV2RequestValues) {
@@ -900,11 +901,12 @@ export default function TransactionConfirmationScreen() {
     }
     const { result, error } = response;
     if (result) {
-      analytics.track('Approved WalletConnect signature request', {
+      analytics.track(analytics.event.wcApprovedTransactionRequest, {
         dappName,
         dappUrl,
         isHardwareWallet: accountInfo.isHardwareWallet,
         network: currentNetwork,
+        type: 'signature',
       });
       if (requestId) {
         if (walletConnectV2RequestValues) {
@@ -1092,6 +1094,7 @@ export default function TransactionConfirmationScreen() {
     nativeAsset,
     genericNativeAsset?.price?.value,
     nativeCurrency,
+    request?.nativeAsset,
   ]);
 
   const offset = useSharedValue(0);

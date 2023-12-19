@@ -16,7 +16,7 @@ import LineBreak from '../../components/LineBreak';
 import { Bleed, Box, Inline, Stack } from '@/design-system';
 import { Linking } from 'react-native';
 import { metadataPOSTClient } from '@/graphql';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 
 export const Share = () => {
   const {
@@ -91,8 +91,8 @@ export const Share = () => {
               color="#F5F8FF8F"
               label={i18n.t(i18n.l.points.console.skip_referral)}
               onPress={() => {
-                analyticsV2.track(
-                  analyticsV2.event
+                analytics.track(
+                  analytics.event
                     .pointsOnboardingScreenPressedSkipShareToXButton
                 );
                 const beginNextPhase = setTimeout(() => {
@@ -107,8 +107,8 @@ export const Share = () => {
               color="#FEC101"
               label={i18n.t(i18n.l.points.console.share_to_x)}
               onPress={() => {
-                analyticsV2.track(
-                  analyticsV2.event.pointsOnboardingScreenPressedShareToXButton
+                analytics.track(
+                  analytics.event.pointsOnboardingScreenPressedShareToXButton
                 );
                 const beginNextPhase = setTimeout(async () => {
                   if (intent) {

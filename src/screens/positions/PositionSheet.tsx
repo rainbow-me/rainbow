@@ -11,13 +11,12 @@ import {
 import { IS_IOS } from '@/env';
 import { Linking } from 'react-native';
 import { useRoute } from '@react-navigation/native';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { RequestVendorLogoIcon } from '@/components/coin-icon';
 import startCase from 'lodash/startCase';
 import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '@/components/animations';
 import { SubPositionListItem } from './SubPositionListItem';
-import { event } from '@/analytics/event';
 import * as i18n from '@/languages';
 import { capitalize } from 'lodash';
 import { RainbowPosition } from '@/resources/defi/types';
@@ -67,7 +66,7 @@ export const PositionSheet: React.FC = () => {
     position.dapp.colors.primary || position.dapp.colors.fallback;
 
   const openDapp = useCallback(() => {
-    analyticsV2.track(event.positionsOpenedExternalDapp, {
+    analytics.track(analytics.event.positionsOpenedExternalDapp, {
       dapp: position.type,
       url: position.dapp.url,
     });

@@ -8,8 +8,7 @@ import { CoinIcon, RequestVendorLogoIcon } from '../coin-icon';
 import { AssetType, EthereumAddress } from '@/entities';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { analyticsV2 } from '@/analytics';
-import { event } from '@/analytics/event';
+import { analytics } from '@/analytics';
 import { IS_ANDROID } from '@/env';
 import { capitalize, uniqBy } from 'lodash';
 import { RainbowDeposit, RainbowPosition } from '@/resources/defi/types';
@@ -67,7 +66,9 @@ export const PositionCard = ({ position }: PositionCardProps) => {
   const { navigate } = useNavigation();
 
   const onPressHandler = useCallback(() => {
-    analyticsV2.track(event.positionsOpenedSheet, { dapp: position.type });
+    analytics.track(analytics.event.positionsOpenedSheet, {
+      dapp: position.type,
+    });
     navigate(Routes.POSITION_SHEET, { position });
   }, [navigate, position]);
 

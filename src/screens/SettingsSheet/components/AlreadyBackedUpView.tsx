@@ -64,7 +64,7 @@ export default function AlreadyBackedUpView() {
   const walletId = (params as any)?.walletId;
 
   useEffect(() => {
-    analytics.track('Already Backed Up View', {
+    analytics.track(analytics.event.backupAlreadyBackedUpView, {
       category: 'settings backup',
     });
   }, []);
@@ -115,8 +115,9 @@ export default function AlreadyBackedUpView() {
       return;
     }
 
-    analytics.track(`Back up to ${cloudPlatform} pressed`, {
+    analytics.track(analytics.event.backupToCloudPressed, {
       category: 'settings backup',
+      platform: cloudPlatform,
     });
 
     walletCloudBackup({

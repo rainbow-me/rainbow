@@ -13,7 +13,7 @@ import {
   ShimmerAnimation,
 } from '@/components/animations';
 import { Box, Text, useForegroundColor } from '@/design-system';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import * as i18n from '@/languages';
 
 export function MintsCard() {
@@ -69,7 +69,7 @@ export function MintsCard() {
             overflow: 'hidden',
           }}
           onPress={() => {
-            analyticsV2.track(analyticsV2.event.mintsPressedViewAllMintsButton);
+            analytics.track(analytics.event.mintsPressedViewAllMintsButton);
             navigate(Routes.MINTS_SHEET);
           }}
         >

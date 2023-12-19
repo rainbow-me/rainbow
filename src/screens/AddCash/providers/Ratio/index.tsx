@@ -14,7 +14,7 @@ import { IS_IOS } from '@/env';
 import { WrappedAlert } from '@/helpers/alert';
 import { logger, RainbowError } from '@/logger';
 import * as lang from '@/languages';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { dataAddNewTransaction } from '@/redux/data';
 import { FiatProviderName } from '@/entities/f2c';
 import { Network as InternalNetwork } from '@/helpers';
@@ -61,7 +61,7 @@ export function Ratio({
 
       if (success) {
         try {
-          analyticsV2.track(analyticsV2.event.f2cProviderFlowCompleted, {
+          analytics.track(analytics.event.f2cProviderFlowCompleted, {
             provider: FiatProviderName.Ratio,
             success: true,
             sessionId: analyticsSessionId,
@@ -150,7 +150,7 @@ export function Ratio({
           }
         }
       } else {
-        analyticsV2.track(analyticsV2.event.f2cProviderFlowCompleted, {
+        analytics.track(analytics.event.f2cProviderFlowCompleted, {
           provider: FiatProviderName.Ratio,
           success: false,
           sessionId: analyticsSessionId,
@@ -181,7 +181,7 @@ export function Ratio({
       androidPackageName={IS_IOS ? undefined : 'me.rainbow'}
       onPress={() => {
         logger.debug(`Ratio: clicked`, {}, logger.DebugContext.f2c);
-        analyticsV2.track(analyticsV2.event.f2cProviderFlowStarted, {
+        analytics.track(analytics.event.f2cProviderFlowStarted, {
           provider: FiatProviderName.Ratio,
           sessionId: analyticsSessionId,
         });
@@ -245,7 +245,7 @@ export function Ratio({
             { error }
           );
 
-          analyticsV2.track(analyticsV2.event.f2cProviderFlowErrored, {
+          analytics.track(analytics.event.f2cProviderFlowErrored, {
             provider: FiatProviderName.Ratio,
             sessionId: analyticsSessionId,
           });

@@ -143,13 +143,10 @@ export default function WalletConnectListItem({
           handlePressChangeWallet();
         } else if ((idx === 1 && networksAvailable.length === 1) || idx === 2) {
           walletConnectDisconnectAllByDappUrl(dappUrl);
-          analytics.track(
-            'Manually disconnected from WalletConnect connection',
-            {
-              dappName,
-              dappUrl,
-            }
-          );
+          analytics.track(analytics.event.wcDisconnected, {
+            dappName,
+            dappUrl,
+          });
         }
       }
     );
@@ -166,7 +163,7 @@ export default function WalletConnectListItem({
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === 'disconnect') {
         walletConnectDisconnectAllByDappUrl(dappUrl);
-        analytics.track('Manually disconnected from WalletConnect connection', {
+        analytics.track(analytics.event.wcDisconnected, {
           dappName,
           dappUrl,
         });

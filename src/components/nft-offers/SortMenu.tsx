@@ -6,7 +6,7 @@ import { haptics } from '@/utils';
 import { SortCriterion } from '@/graphql/__generated__/arc';
 import * as i18n from '@/languages';
 import ConditionalWrap from 'conditional-wrap';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { atom, useRecoilState } from 'recoil';
 import { MMKV } from 'react-native-mmkv';
 
@@ -108,7 +108,7 @@ export const SortMenu = ({ type }: { type: 'card' | 'sheet' }) => {
     haptics.selection();
     setSortCriterion(sortCriterion);
     mmkv.set(MMKV_KEY, sortCriterion);
-    analyticsV2.track(analyticsV2.event.nftOffersSelectedSortCriterion, {
+    analytics.track(analytics.event.nftOffersSelectedSortCriterion, {
       sortCriterion: sortCriterion,
     });
   };

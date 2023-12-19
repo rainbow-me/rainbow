@@ -14,7 +14,7 @@ import {
 } from '@/helpers/utilities';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 
 type Props = {
   assetPrice?: number;
@@ -44,7 +44,7 @@ export const RewardsStats: React.FC<Props> = ({
     switch (type) {
       case RewardStatsActionType.Bridge:
         return () => {
-          analyticsV2.track(analyticsV2.event.rewardsPressedBridgedCard);
+          analytics.track(analytics.event.rewardsPressedBridgedCard);
           navigate(Routes.EXPLAIN_SHEET, {
             type: 'op_rewards_bridge',
             percent: bridgeData?.rewardPercent || 0,
@@ -52,7 +52,7 @@ export const RewardsStats: React.FC<Props> = ({
         };
       case RewardStatsActionType.Swap:
         return () => {
-          analyticsV2.track(analyticsV2.event.rewardsPressedSwappedCard);
+          analytics.track(analytics.event.rewardsPressedSwappedCard);
           navigate(Routes.EXPLAIN_SHEET, {
             type: 'op_rewards_swap',
             percent: swapsData?.rewardPercent || 0,

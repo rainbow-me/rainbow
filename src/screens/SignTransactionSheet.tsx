@@ -368,7 +368,7 @@ export const SignTransactionSheet = () => {
         } else {
           setMethodName(i18n.t(i18n.l.wallet.message_signing.request));
         }
-        analytics.track('Shown Walletconnect signing request');
+        analytics.track(analytics.event.wcShownSigningRequest);
       }
     });
   }, [
@@ -735,7 +735,8 @@ export const SignTransactionSheet = () => {
             transactionDetails?.payload?.method === SEND_TRANSACTION
               ? 'transaction'
               : 'signature';
-          analytics.track(`Rejected WalletConnect ${rejectionType} request`, {
+          analytics.track(analytics.event.wcRejectedTransactionRequest, {
+            type: rejectionType,
             isHardwareWallet: accountInfo.isHardwareWallet,
           });
 
@@ -796,11 +797,12 @@ export const SignTransactionSheet = () => {
     }
 
     if (response?.result) {
-      analytics.track('Approved WalletConnect signature request', {
+      analytics.track(analytics.event.wcApprovedTransactionRequest, {
         dappName: transactionDetails?.dappName,
         dappUrl: transactionDetails?.dappUrl,
         isHardwareWallet: accountInfo.isHardwareWallet,
         network: currentNetwork,
+        type: 'signature',
       });
       if (transactionDetails?.requestId) {
         if (
@@ -992,11 +994,12 @@ export const SignTransactionSheet = () => {
           txSavedInCurrentWallet = true;
         }
       }
-      analytics.track('Approved WalletConnect transaction request', {
-        dappName: displayDetails.dappName,
-        dappUrl: displayDetails.dappUrl,
+      analytics.track(analytics.event.wcApprovedTransactionRequest, {
+        dappName: displayDetails?.dappName,
+        dappUrl: displayDetails?.dappUrl,
         isHardwareWallet: accountInfo.isHardwareWallet,
         network: currentNetwork,
+        type: 'transaction',
       });
       if (isFocused && transactionDetails?.requestId) {
         if (

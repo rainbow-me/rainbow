@@ -33,7 +33,7 @@ import Routes from '@/navigation/routesNames';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountSettings, useGas, useWallets } from '@/hooks';
 import { TransactionStatus, TransactionType } from '@/entities';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { BigNumber } from '@ethersproject/bignumber';
 import { HoldToAuthorizeButton } from '@/components/buttons';
 import { GasSpeedButton } from '@/components/gas';
@@ -288,7 +288,7 @@ export function NFTSingleOfferSheet() {
         contractAddress: offer.paymentToken.address,
       },
     };
-    analyticsV2.track(analyticsV2.event.nftOffersAcceptedOffer, {
+    analytics.track(analytics.event.nftOffersAcceptedOffer, {
       status: 'in progress',
       ...analyticsEventObject,
     });
@@ -324,7 +324,7 @@ export function NFTSingleOfferSheet() {
                 `Error selling NFT ${offer.nft.contractAddress} #${offer.nft.tokenId} on marketplace ${offer.marketplace.name}: ${step.error}`
               )
             );
-            analyticsV2.track(analyticsV2.event.nftOffersAcceptedOffer, {
+            analytics.track(analytics.event.nftOffersAcceptedOffer, {
               status: 'failed',
               ...analyticsEventObject,
             });
@@ -407,7 +407,7 @@ export function NFTSingleOfferSheet() {
               logger.info(
                 `Completed sale of NFT ${offer.nft.contractAddress}:${offer.nft.tokenId}`
               );
-              analyticsV2.track(analyticsV2.event.nftOffersAcceptedOffer, {
+              analytics.track(analytics.event.nftOffersAcceptedOffer, {
                 status: 'completed',
                 ...analyticsEventObject,
               });
@@ -764,8 +764,8 @@ export function NFTSingleOfferSheet() {
                     alignItems="center"
                     style={{ overflow: 'hidden' }}
                     onPress={() => {
-                      analyticsV2.track(
-                        analyticsV2.event.nftOffersViewedExternalOffer,
+                      analytics.track(
+                        analytics.event.nftOffersViewedExternalOffer,
                         {
                           marketplace: offer.marketplace.name,
                           offerValueUSD: offer.grossAmount.usd,

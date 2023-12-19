@@ -54,7 +54,9 @@ export default function useHideSplashScreen() {
         Date.now() - StartTime.START_TIME,
         additionalParams
       );
-      analytics.track('Application became interactive');
+      analytics.track(analytics.event.applicationSplashScreenDismissed, {
+        time: Date.now(),
+      });
       alreadyLoggedPerformance.current = true;
 
       // need to load setting straight from storage, redux isnt ready yet

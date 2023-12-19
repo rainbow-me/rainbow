@@ -82,14 +82,11 @@ export default function BackupManualStep() {
   const [secretLoaded, setSecretLoaded] = useState(false);
 
   const onComplete = useCallback(() => {
-    analytics.track(analytics.event.pressedButton, {
-      buttonName: '',
-    });
-    analytics.track(`Tapped "I've saved the secret"`, {
+    analytics.track(analytics.event.backupSecretSaved, {
       type,
     });
     onManuallyBackupWalletId(walletId);
-    analytics.track('Backup Complete', {
+    analytics.track(analytics.event.backupCompleted, {
       category: 'backup',
       label: 'manual',
     });
@@ -97,7 +94,7 @@ export default function BackupManualStep() {
   }, [goBack, onManuallyBackupWalletId, type, walletId]);
 
   useEffect(() => {
-    analytics.track('Manual Backup Step', {
+    analytics.track(analytics.event.backupManualBackupStep, {
       category: 'backup',
       label: 'manual',
     });

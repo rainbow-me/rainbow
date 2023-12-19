@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { Box, Inset, globalColors } from '@/design-system';
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 
 import { RainbowPointsFlowSteps, SCREEN_BOTTOM_INSET } from './constants';
 import { TypingAnimation } from './contexts/AnimationContext';
@@ -52,7 +52,7 @@ export const ConsoleSheet = () => {
 
   useFocusEffect(
     useCallback(() => {
-      analyticsV2.track(analyticsV2.event.pointsViewedOnboardingSheet);
+      analytics.track(analytics.event.pointsViewedOnboardingSheet);
     }, [])
   );
 

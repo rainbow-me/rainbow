@@ -10,7 +10,7 @@ import { useRewards } from '@/resources/rewards/rewardsQuery';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import { useFocusEffect } from '@react-navigation/native';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 
 export const RewardsSheet: React.FC = () => {
   const { height } = useDimensions();
@@ -41,7 +41,7 @@ export const RewardsSheet: React.FC = () => {
 
   useFocusEffect(
     useCallback(() => {
-      analyticsV2.track(analyticsV2.event.rewardsViewedSheet);
+      analytics.track(analytics.event.rewardsViewedSheet);
     }, [])
   );
 

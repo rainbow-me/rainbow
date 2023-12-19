@@ -20,7 +20,7 @@ import { watchingAlert } from '@/utils';
 import { GenericCard, Gradient } from './GenericCard';
 import { IconOrb } from './reusables/IconOrb';
 import * as i18n from '@/languages';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { useRoute } from '@react-navigation/native';
 
 const TRANSLATIONS = i18n.l.cards.ens_search;
@@ -58,7 +58,7 @@ export const ENSSearchCard = () => {
 
   const handlePress = () => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
-      analyticsV2.track(analyticsV2.event.cardPressed, {
+      analytics.track(analytics.event.cardPressed, {
         cardName: 'ENSSearchCard',
         routeName,
         cardType,

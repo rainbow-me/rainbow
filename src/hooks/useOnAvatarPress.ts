@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect } from 'react';
 import { Linking } from 'react-native';
 import { ImageOrVideo } from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
@@ -150,7 +150,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   }, [accountAddress, accountENS]);
 
   const onAvatarViewProfile = useCallback(() => {
-    analytics.track('Viewed ENS profile', {
+    analytics.track(analytics.event.profileViewedENS, {
       category: 'profiles',
       ens: accountENS,
       from: 'Transaction list',

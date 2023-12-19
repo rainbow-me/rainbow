@@ -10,7 +10,7 @@ import { ActionButton } from '@/screens/points/components/ActionButton';
 import { PointsIconAnimation } from '../components/PointsIconAnimation';
 import { watchingAlert } from '@/utils';
 import { POINTS_ROUTES } from '../PointsScreen';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { useFocusEffect } from '@react-navigation/native';
 
 export default function ClaimContent() {
@@ -24,7 +24,7 @@ export default function ClaimContent() {
 
   useFocusEffect(
     useCallback(() => {
-      analyticsV2.track(analyticsV2.event.pointsViewedClaimScreen);
+      analytics.track(analytics.event.pointsViewedClaimScreen);
     }, [])
   );
 

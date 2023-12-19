@@ -1,6 +1,17 @@
 import { CardType } from '@/components/cards/GenericCard';
 import { LearnCategory } from '@/components/cards/utils/types';
 import { FiatProviderName } from '@/entities/f2c';
+import { Network } from '@/helpers';
+import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
+import {
+  NotificationRelationshipType,
+  NotificationTopicType,
+} from '@/notifications/settings';
+import { ProtocolShare } from '@rainbow-me/swaps';
+
+interface IndexedProtocolShare extends ProtocolShare {
+  [key: string]: number | string;
+}
 
 /**
  * All events, used by `analytics.track()`
@@ -9,15 +20,46 @@ export const event = {
   execJSBundle: 'js_bundle.exec',
   firstAppOpen: 'app.first_open',
   applicationDidMount: 'app.mounted',
+  applicationSplashScreenDismissed: 'app.splash_screen.dismissed',
+  applicationInternetDisconnected: 'app.internet_disconnected',
+  applicationInternetConnected: 'app.internet_connected',
+  applicationSecretViewShown: 'app.secret_view.shown',
+  appIconSet: 'app_icon.set',
+  appIconUnlockViewed: 'app_icon_unlock.viewed',
+  appIconUnlockActivated: 'app_icon_unlock.activated',
+  appIconUnlockDismissed: 'app_icon_unlock.dismissed',
   appStateChange: 'app_state.change',
   analyticsTrackingDisabled: 'analytics_tracking.disabled',
   analyticsTrackingEnabled: 'analytics_tracking.enabled',
   promoSheetShown: 'promo_sheet.shown',
   promoSheetDismissed: 'promo_sheet.dismissed',
+  promoSheetExcluded: 'promo_sheet.excluded',
+  profileViewedENS: 'profile.viewed.ens',
+  profileViewedUnstoppable: 'profile.viewed.unstoppable',
+  profileViewedReadOnly: 'profile.viewed.read_only',
+  profileViewedImported: 'profile.viewed.imported',
+
+  backupStarted: 'backup.started',
   backupCompleted: 'backup.completed',
+  backupFailed: 'backup.failed',
+  backupNeedsBackupView: 'backup.needs_backup_view',
+  backupAlreadyBackedUpView: 'backup.already_backed_up_view',
+  backupToCloudPressed: 'backup.to_cloud_pressed',
+  backupManualBackupPressed: 'backup.manual_backup_pressed',
+  backupErrorUpdatingStatus: 'backup.error_updating_status',
   backupChoosePasswordStep: 'backup.choose_password_step',
   backupConfirmPasswordStep: 'backup.confirm_password_step',
+  backupSecretSaved: 'backup.secret_saved',
+  backupManualBackupStep: 'backup.viewed_manual_backup_step',
+  backupIcloudNotEnabled: 'backup.icloud_not_enabled',
+  backupViewedHowToEnableIcloud: 'backup.viewed_how_to_enable_icloud',
+  backupDismissedHowToEnableIcloud: 'backup.dismissed_how_to_enable_icloud',
+  backupSavedToCloud: 'backup.saved_to_cloud',
+  backupErrorSavingToCloud: 'backup.error_saving_to_cloud',
+
   swapSubmitted: 'swap.submitted',
+  swapHighPriceImpactWarning: 'swap.high_price_impact_warning',
+  swapUpdatedDetails: 'swap.updated_details',
   // notification promo sheet was shown
   notificationsPromoShown: 'notifications_promo.shown',
   // only for iOS — initial prompt is not allowed - Android is enabled by default
@@ -34,6 +76,9 @@ export const event = {
     'notifications_promo.notification_settings_opened',
   // user either swiped the sheet away, or clicked "Not Now"
   notificationsPromoDismissed: 'notifications_promo.dismissed',
+  notificationsTappedPushNotification: 'notifications.tapped_push_notification',
+  notificationsChangedNotificationSettings:
+    'notifications.changed_notification_settings',
   cardPressed: 'card.pressed',
   learnArticleOpened: 'learn_article.opened',
   learnArticleShared: 'learn_article.shared',
@@ -69,12 +114,21 @@ export const event = {
   rewardsPressedBridgedCard: 'rewards.pressed_bridged_card',
   rewardsPressedLeaderboardItem: 'rewards.pressed_leaderboard_item',
 
+  wcDisconnected: 'wc.disconnected',
   wcNewPairing: 'wc.new_pairing',
   wcNewPairingTimeout: 'wc.new_pairing_timeout',
   wcNewSessionTimeout: 'wc.new_session_timeout',
   wcNewSessionRejected: 'wc.new_session_rejected',
   wcNewSessionApproved: 'wc.new_session_approved',
   wcShowingSigningRequest: 'wc.showing_signing_request',
+  wcShownSigningRequest: 'wc.shown_signing_request',
+  wcShownSessionRequest: 'wc.shown_session_request',
+  wcReceivedConnectionRequest: 'wc.received_connection_request',
+  wcRejectedTransactionRequest: 'wc.rejected_transaction_request',
+  wcApprovedTransactionRequest: 'wc.approved_transaction_request',
+
+  languageChanged: 'language.changed',
+  currencyChanged: 'currency.changed',
 
   nftOffersOpenedOffersSheet: 'nft_offers.opened_offers_sheet',
   nftOffersOpenedSingleOfferSheet: 'nft_offers.opened_single_offer_sheet',
@@ -99,6 +153,8 @@ export const event = {
   mintsMintingNFT: 'mints.minting_nft',
   mintsMintedNFT: 'mints.minted_nft',
   mintsErrorMintingNFT: 'mints.error_minting_nft',
+  networkChanged: 'network.changed',
+  nftHideToken: 'nft.hide_token',
 
   pointsViewedClaimScreen: 'points.viewed_claim_screen',
   pointsViewedReferralScreen: 'points.viewed_referral_screen',
@@ -130,15 +186,46 @@ export const event = {
 
   qrCodeViewed: 'qr_code.viewed',
   qrCodeTapped: 'qr_code.tapped',
+  qrCodeAddressScanned: 'qr_code.address_scanned',
+  qrCodeRainbowProfileScanned: 'qr_code.rainbow_profile_scanned',
+  qrCodeWalletConnectScanned: 'qr_code.wallet_connect_scanned',
+  qrCodeUnsupportedScan: 'qr_code.unsupported_scan',
+
+  searchQuery: 'search.query',
+  walletImported: 'wallet.imported',
 } as const;
 
 /**
  * Properties corresponding to each event
  */
-export type EventProperties = {
+export type EventProperties = Partial<{
   [event.execJSBundle]: undefined;
   [event.firstAppOpen]: undefined;
   [event.applicationDidMount]: undefined;
+  [event.applicationSplashScreenDismissed]: {
+    time: number;
+  };
+  [event.applicationInternetDisconnected]: {
+    time: number;
+  };
+  [event.applicationInternetConnected]: {
+    time: number;
+  };
+  [event.applicationSecretViewShown]: {
+    category: string;
+  };
+  [event.appIconSet]: {
+    appIcon: string;
+  };
+  [event.appIconUnlockViewed]: {
+    campaign: string;
+  };
+  [event.appIconUnlockActivated]: {
+    campaign: string;
+  };
+  [event.appIconUnlockDismissed]: {
+    campaign: string;
+  };
   [event.appStateChange]: {
     category: 'app state';
     label: string;
@@ -149,7 +236,21 @@ export type EventProperties = {
   };
   [event.analyticsTrackingDisabled]: undefined;
   [event.analyticsTrackingEnabled]: undefined;
+
+  [event.backupStarted]: {
+    category: string;
+    label: string;
+  };
   [event.backupCompleted]: {
+    category: string;
+    label: string;
+  };
+  [event.backupFailed]: {
+    category: string;
+    error: string;
+    label: string;
+  };
+  [event.backupErrorUpdatingStatus]: {
     category: string;
     label: string;
   };
@@ -161,11 +262,99 @@ export type EventProperties = {
     category: string;
     label: string;
   };
+  [event.backupManualBackupStep]: {
+    category: string;
+    label: string;
+  };
+  [event.backupIcloudNotEnabled]: {
+    category: string;
+  };
+  [event.backupToCloudPressed]: {
+    category: string;
+    platform: string;
+  };
+  [event.backupViewedHowToEnableIcloud]: {
+    category: string;
+  };
+  [event.backupDismissedHowToEnableIcloud]: {
+    category: string;
+  };
+  [event.backupSecretSaved]: {
+    type: typeof WalletTypes;
+  };
+  [event.backupAlreadyBackedUpView]: {
+    category: string;
+  };
+  [event.backupNeedsBackupView]: {
+    category: string;
+  };
+  [event.backupSavedToCloud]: {
+    time: number;
+  };
+  [event.backupErrorSavingToCloud]: {
+    time: number;
+  };
+  [event.backupManualBackupPressed]: {
+    category: string;
+  };
+
+  [event.languageChanged]: {
+    language: string;
+  };
+
+  [event.currencyChanged]: {
+    currency: string;
+  };
+
   [event.swapSubmitted]: {
     usdValue: number;
     inputCurrencySymbol: string;
     outputCurrencySymbol: string;
   };
+  [event.swapHighPriceImpactWarning]: {
+    name: string;
+    priceImpact: string | null | undefined;
+    symbol: string;
+    tokenAddress: string;
+    type: string;
+  };
+  [event.swapUpdatedDetails]: {
+    aggregator: string;
+    inputTokenAddress: string;
+    inputTokenName: string;
+    inputTokenSymbol: string;
+    liquiditySources: IndexedProtocolShare[];
+    network: Network;
+    outputTokenAddress: string;
+    outputTokenName: string;
+    outputTokenSymbol: string;
+    slippage: number | string;
+    type: string;
+  };
+
+  [event.profileViewedENS]:
+    | {
+        address: string;
+        input: string;
+      }
+    | {
+        category: string;
+        ens: string;
+        from: string;
+      };
+  [event.profileViewedUnstoppable]: {
+    address: string;
+    input: string;
+  };
+  [event.profileViewedReadOnly]: {
+    ens: string;
+    input: string;
+  };
+  [event.profileViewedImported]: {
+    address: string;
+    type: EthereumWalletType;
+  };
+
   [event.promoSheetShown]: {
     campaign: string;
     time_viewed: number;
@@ -174,7 +363,24 @@ export type EventProperties = {
     campaign: string;
     time_viewed: number;
   };
+  [event.promoSheetExcluded]: {
+    campaign: string;
+    exclusion: string;
+    type: string;
+  };
   [event.notificationsPromoShown]: undefined;
+  [event.notificationsTappedPushNotification]: {
+    campaign: {
+      name: string;
+      medium: string;
+    };
+  };
+  [event.notificationsChangedNotificationSettings]: {
+    chainId: number;
+    topic: NotificationTopicType;
+    type: NotificationRelationshipType;
+    action: 'subscribe' | 'unsubscribe';
+  };
   [event.notificationsPromoPermissionsBlocked]: undefined;
   [event.notificationsPromoPermissionsGranted]: undefined;
   [event.notificationsPromoSystemSettingsOpened]: undefined;
@@ -291,6 +497,10 @@ export type EventProperties = {
   [event.rewardsPressedBridgedCard]: undefined;
   [event.rewardsPressedLeaderboardItem]: { ens?: string };
 
+  [event.wcDisconnected]: {
+    dappName: string;
+    dappUrl: string;
+  };
   [event.wcNewPairing]: {
     dappName: string;
     dappUrl: string;
@@ -306,9 +516,31 @@ export type EventProperties = {
     dappName: string;
     dappUrl: string;
   };
+  [event.wcShownSigningRequest]: undefined;
   [event.wcShowingSigningRequest]: {
     dappName: string;
     dappUrl: string;
+  };
+  [event.wcReceivedConnectionRequest]: {
+    dappName: string;
+    dappUrl: string;
+    waitingTime: number | string;
+  };
+  [event.wcRejectedTransactionRequest]: {
+    isHardwareWallet: boolean;
+    type: string;
+  };
+  [event.wcApprovedTransactionRequest]: {
+    dappName: string;
+    dappUrl: string;
+    isHardwareWallet: boolean;
+    network: Network | null | undefined;
+    type: 'transaction' | 'signature';
+  };
+  [event.nftHideToken]: {
+    collectionContractAddress: string | null;
+    collectionName: string;
+    isHidden: boolean;
   };
   [event.nftOffersOpenedOffersSheet]: {
     entryPoint: string;
@@ -385,6 +617,9 @@ export type EventProperties = {
     chainId: number;
     collectionName: string;
   };
+  [event.networkChanged]: {
+    network: Network;
+  };
   [event.poapsMintedPoap]: {
     eventId: number;
     type: 'qrHash' | 'secretWord';
@@ -454,4 +689,20 @@ export type EventProperties = {
   [event.qrCodeTapped]: {
     category: string;
   };
-};
+  [event.qrCodeAddressScanned]: undefined;
+  [event.qrCodeRainbowProfileScanned]: undefined;
+  [event.qrCodeWalletConnectScanned]: undefined;
+  [event.qrCodeUnsupportedScan]: {
+    qrCodeData: string;
+  };
+  [event.searchQuery]: {
+    category: string;
+    length: number;
+    query: string;
+  };
+
+  [event.walletImported]: {
+    type: EthereumWalletType;
+    nonZeroBalance: boolean;
+  };
+}>;

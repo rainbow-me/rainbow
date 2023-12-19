@@ -19,7 +19,7 @@ import {
 } from '@/helpers/utilities';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { formatTokenDisplayValue } from '@/screens/rewards/helpers/formatTokenDisplayValue';
 
 type Props = {
@@ -95,7 +95,7 @@ export const RewardsClaimed: React.FC<Props> = ({
     const claimedTokenFormatted = Math.floor(claimed).toLocaleString('en-US');
 
     const navigateToAmountsExplainer = () => {
-      analyticsV2.track(analyticsV2.event.rewardsPressedAvailableCard);
+      analytics.track(analytics.event.rewardsPressedAvailableCard);
       navigate(Routes.EXPLAIN_SHEET, { type: 'op_rewards_amount_distributed' });
     };
 

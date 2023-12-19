@@ -1,7 +1,7 @@
 import { isNil, keys } from 'lodash';
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { AppState } from '@/redux/store';
 import logger from '@/utils/logger';
 
@@ -39,7 +39,7 @@ export default function usePortfolios() {
     logger.log('💰 wallet totals', JSON.stringify(total, null, 2));
     keys(total).forEach(key => {
       const data = { [key]: total[key as keyof typeof total] };
-      analyticsV2.identify(data);
+      analytics.identify(data);
     });
   }, [portfolios]);
 

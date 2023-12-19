@@ -62,7 +62,9 @@ export default function useTrackENSProfile() {
   );
 
   const trackENSProfile = useCallback(() => {
-    isSuccess && analytics.identify(undefined, data);
+    // Note, access internal client here instead of using 'identify'
+    // method because we don't want to associate deviceId with this event
+    isSuccess && analytics.client.identify(undefined, data);
   }, [isSuccess, data]);
 
   return { trackENSProfile };

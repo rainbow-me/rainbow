@@ -11,7 +11,7 @@ import Routes from '@/navigation/routesNames';
 import { Navigation } from '@/navigation';
 import { scheduleActionOnAssetReceived } from '@/redux/data';
 import { walletConnectSetPendingRedirect } from '@/redux/walletconnect';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import {
   checkIsValidAddressOrDomain,
   isENSAddressFormat,
@@ -216,7 +216,7 @@ test(`handles https:// protocol for tokens, no asset found`, async () => {
 
 test(`handles https:// protocol for f2c, no query params`, async () => {
   await handleDeepLink(`https://rnbwapp.com/f2c`);
-  expect(analyticsV2.track).not.toHaveBeenCalled();
+  expect(analytics.track).not.toHaveBeenCalled();
 });
 
 test(`handles https:// protocol for f2c, ramp`, async () => {
@@ -227,8 +227,8 @@ test(`handles https:// protocol for f2c, ramp`, async () => {
     `https://rnbwapp.com/f2c?provider=${provider}&sessionId=${sessionId}`
   );
 
-  expect(analyticsV2.track).toHaveBeenCalledWith(
-    analyticsV2.event.f2cProviderFlowCompleted,
+  expect(analytics.track).toHaveBeenCalledWith(
+    analytics.event.f2cProviderFlowCompleted,
     {
       provider,
       sessionId,
@@ -245,8 +245,8 @@ test(`handles https:// protocol for f2c, other provider`, async () => {
     `https://rnbwapp.com/f2c?provider=${provider}&sessionId=${sessionId}`
   );
 
-  expect(analyticsV2.track).toHaveBeenCalledWith(
-    analyticsV2.event.f2cProviderFlowCompleted,
+  expect(analytics.track).toHaveBeenCalledWith(
+    analytics.event.f2cProviderFlowCompleted,
     {
       provider,
       sessionId,

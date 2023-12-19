@@ -38,6 +38,7 @@ import { deriveAccountFromWalletInput } from '@/utils/wallet';
 import { logger as Logger, RainbowError } from '@/logger';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
+import { EthereumWalletType } from '@/helpers/walletTypes';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();
@@ -46,7 +47,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const {
     getParent: dangerouslyGetParent,
     navigate,
-    goBack,
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'replace' does not exist on type '{ dispa... Remove this comment to see the full error message
     replace,
     setParams,
@@ -139,7 +139,10 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
       avatarUrl: any
     ) => {
       setBusy(true);
-      analytics.track('Tapped "Import" button');
+      analytics.track(analytics.event.pressedButton, {
+        buttonName: 'wallet_import',
+        action: 'import',
+      });
       // guard against pressEvent coming in as forceColor if
       // handlePressImportButton is used as onClick handler
       const guardedForceColor =
@@ -171,7 +174,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           avatarUrl = avatarUrl || avatar?.imageUrl;
           setBusy(false);
           startImportProfile(name, guardedForceColor, address, avatarUrl);
-          analytics.track('Show wallet profile modal for ENS address', {
+          analytics.track(analytics.event.profileViewedENS, {
             address,
             input,
           });
@@ -195,7 +198,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           setBusy(false);
           // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 3.
           startImportProfile(name, guardedForceColor, address);
-          analytics.track('Show wallet profile modal for Unstoppable address', {
+          analytics.track(analytics.event.profileViewedUnstoppable, {
             address,
             input,
           });
@@ -214,7 +217,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
               avatarUrl = avatar?.imageUrl;
             }
           }
-          analytics.track('Show wallet profile modal for read only wallet', {
+          analytics.track(analytics.event.profileViewedReadOnly, {
             ens,
             input,
           });
@@ -255,7 +258,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
               walletResult.address,
               avatarUrl
             );
-            analytics.track('Show wallet profile modal for imported wallet', {
+            analytics.track(analytics.event.profileViewedImported, {
               address: walletResult.address,
               type: walletResult.type,
             });
@@ -353,8 +356,9 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                     }
                   }, 1000);
 
-                  analytics.track('Imported seed phrase', {
-                    isWalletEthZero,
+                  analytics.track(analytics.event.walletImported, {
+                    type: EthereumWalletType.seed,
+                    nonZeroBalance: !isWalletEthZero,
                   });
                 });
               } else {

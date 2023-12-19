@@ -1,13 +1,9 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import SheetActionButton from './SheetActionButton';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import showWalletErrorAlert from '@/helpers/support';
-import {
-  useAccountSettings,
-  useExpandedStateNavigation,
-  useWallets,
-} from '@/hooks';
+import { useExpandedStateNavigation, useWallets } from '@/hooks';
 
 import Routes from '@/navigation/routesNames';
 import { useRoute } from '@react-navigation/native';
@@ -17,7 +13,6 @@ function BuyActionButton({ color: givenColor, ...props }) {
   const color = givenColor || colors.paleBlue;
   const navigate = useExpandedStateNavigation();
   const { isDamaged } = useWallets();
-  const { accountAddress } = useAccountSettings();
   const { name: routeName } = useRoute();
 
   const handlePress = useCallback(() => {
@@ -28,11 +23,11 @@ function BuyActionButton({ color: givenColor, ...props }) {
 
     navigate(Routes.ADD_CASH_SHEET, params => params);
 
-    analyticsV2.track(analyticsV2.event.buyButtonPressed, {
+    analytics.track(analytics.event.buyButtonPressed, {
       componentName: 'BuyActionButton',
       routeName,
     });
-  }, [accountAddress, isDamaged, navigate, routeName]);
+  }, [isDamaged, navigate, routeName]);
 
   return (
     <SheetActionButton

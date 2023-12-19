@@ -40,7 +40,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { SortMenu } from '@/components/nft-offers/SortMenu';
 import { NftOffer } from '@/graphql/__generated__/arc';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { useTheme } from '@/theme';
 import { queryClient } from '@/react-query';
 import ActivityIndicator from '@/components/ActivityIndicator';
@@ -221,8 +221,8 @@ export const NFTOffersCard = () => {
                     alignItems="center"
                     style={{ overflow: 'hidden' }}
                     onPress={() => {
-                      analyticsV2.track(
-                        analyticsV2.event.nftOffersOpenedOffersSheet,
+                      analytics.track(
+                        analytics.event.nftOffersOpenedOffersSheet,
                         { entryPoint: 'NFTOffersCard' }
                       );
                       navigate(Routes.NFT_OFFERS_SHEET);

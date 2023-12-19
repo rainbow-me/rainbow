@@ -25,7 +25,7 @@ const LanguageSection = () => {
   const onSelectLanguage = useCallback(
     (language: string) => {
       settingsChangeLanguage(language);
-      analytics.track('Changed language', { language });
+      analytics.track(analytics.event.languageChanged, { language });
     },
     [settingsChangeLanguage]
   );

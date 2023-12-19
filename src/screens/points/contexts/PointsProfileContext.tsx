@@ -30,7 +30,7 @@ import { queryClient } from '@/react-query';
 import { useNavigation } from '@/navigation';
 import { getProviderForNetwork } from '@/handlers/web3';
 import { Network } from '@/networks/types';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { delay } from '@/utils/delay';
 
 type PointsProfileContext = {
@@ -146,14 +146,11 @@ export const PointsProfileProvider = ({
     historicBalance?.earnings?.total;
 
   const signIn = useCallback(async () => {
-    analyticsV2.track(
-      analyticsV2.event.pointsOnboardingScreenPressedSignInButton,
-      {
-        deeplinked,
-        referralCode: !!referralCode,
-        hardwareWallet: isHardwareWallet,
-      }
-    );
+    analytics.track(analytics.event.pointsOnboardingScreenPressedSignInButton, {
+      deeplinked,
+      referralCode: !!referralCode,
+      hardwareWallet: isHardwareWallet,
+    });
 
     try {
       const challengeResponse = await metadataPOSTClient.getPointsOnboardChallenge(
@@ -223,8 +220,8 @@ export const PointsProfileProvider = ({
             );
         }
       }
-      analyticsV2.track(
-        analyticsV2.event.pointsOnboardingScreenSuccessfullySignedIn,
+      analytics.track(
+        analytics.event.pointsOnboardingScreenSuccessfullySignedIn,
         {
           deeplinked,
           referralCode: !!referralCode,
@@ -236,14 +233,11 @@ export const PointsProfileProvider = ({
       queryClient.setQueryData(queryKey, points);
       delay(5000).then(() => queryClient.refetchQueries(queryKey));
     } catch (error) {
-      analyticsV2.track(
-        analyticsV2.event.pointsOnboardingScreenFailedToSignIn,
-        {
-          deeplinked,
-          referralCode: !!referralCode,
-          hardwareWallet: isHardwareWallet,
-        }
-      );
+      analytics.track(analytics.event.pointsOnboardingScreenFailedToSignIn, {
+        deeplinked,
+        referralCode: !!referralCode,
+        hardwareWallet: isHardwareWallet,
+      });
       if (error instanceof RainbowError) {
         logger.error(error);
       } else {

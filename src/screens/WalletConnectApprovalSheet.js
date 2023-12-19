@@ -223,7 +223,7 @@ const NetworkPill = ({ chainIds }) => {
 
 export default function WalletConnectApprovalSheet() {
   const { colors, isDarkMode } = useTheme();
-  const { goBack, getState } = useNavigation();
+  const { goBack } = useNavigation();
   const { params } = useRoute();
   const { network, accountAddress } = useAccountSettings();
   const { navigate } = useNavigation();
@@ -264,7 +264,7 @@ export default function WalletConnectApprovalSheet() {
   const isScam = metadata?.status === DAppStatus.Scam;
 
   // disabling Verified for now
-  const isVerified = false; //metadata?.status === DAppStatus.Verified;
+  const isVerified = false; // metadata?.status === DAppStatus.Verified;
 
   const accentColor = isScam ? colors.red : colors.appleBlue;
 
@@ -355,7 +355,7 @@ export default function WalletConnectApprovalSheet() {
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
-      analytics.track('Shown Walletconnect session request');
+      analytics.track(analytics.event.wcShownSessionRequest);
     });
     // Reject if the modal is dismissed
     return () => {
@@ -399,12 +399,12 @@ export default function WalletConnectApprovalSheet() {
         },
         watchOnly: true,
       });
-  }, [approvalAccount.address, goBack, type, getState]);
+  }, [approvalAccount.address, goBack, type]);
 
   useEffect(() => {
     const waitingTime = (Date.now() - receivedTimestamp) / 1000;
     InteractionManager.runAfterInteractions(() => {
-      analytics.track('Received wc connection', {
+      analytics.track(analytics.event.wcReceivedConnectionRequest, {
         dappName,
         dappUrl,
         waitingTime: isNaN(waitingTime)

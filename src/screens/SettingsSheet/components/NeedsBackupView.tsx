@@ -62,14 +62,15 @@ export default function NeedsBackupView() {
   }, [setParams, walletId, wallets]);
 
   useEffect(() => {
-    analytics.track('Needs Backup View', {
+    analytics.track(analytics.event.backupNeedsBackupView, {
       category: 'settings backup',
     });
   }, []);
 
   const onIcloudBackup = useCallback(() => {
-    analytics.track(`Back up to ${cloudPlatform} pressed`, {
+    analytics.track(analytics.event.backupToCloudPressed, {
       category: 'settings backup',
+      platform: cloudPlatform,
     });
     navigate(ios ? Routes.BACKUP_SHEET : Routes.BACKUP_SCREEN, {
       nativeScreen: true,
@@ -79,7 +80,7 @@ export default function NeedsBackupView() {
   }, [navigate, walletId]);
 
   const onManualBackup = useCallback(() => {
-    analytics.track('Manual Backup pressed', {
+    analytics.track(analytics.event.backupManualBackupPressed, {
       category: 'settings backup',
     });
     navigate(ios ? Routes.BACKUP_SHEET : Routes.BACKUP_SCREEN, {
@@ -136,7 +137,6 @@ export default function NeedsBackupView() {
           <Box width={{ custom: 270 }}>
             <SheetActionButton
               color={colors.white}
-              // @ts-ignore
               label={`🤓 ${lang.t('modal.back_up.default.button.manual')}`}
               onPress={onManualBackup}
               textColor={colors.alpha(colors.blueGreyDark, 0.8)}

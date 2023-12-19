@@ -1,6 +1,5 @@
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { IS_TEST } from '@/env';
 import useUpdateEmoji from '../../../src/hooks/useUpdateEmoji';
 import ProfileModal from './profile/ProfileModal';
 import { analytics } from '@/analytics';
@@ -11,7 +10,6 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
 import { profileUtils } from '@/utils';
-import { delay } from '@rainbow-me/helpers/utilities';
 
 export default function WalletProfileState({
   actionType,
@@ -48,14 +46,20 @@ export default function WalletProfileState({
   const handleCancel = useCallback(() => {
     onCancel?.();
     goBack();
-    analytics.track('Tapped "Cancel" on Wallet Profile modal');
+    analytics.track(analytics.event.pressedButton, {
+      buttonName: 'wallet_profile_modal',
+      action: 'cancel',
+    });
     if (actionType === 'Create') {
       navigate(Routes.CHANGE_WALLET_SHEET);
     }
   }, [actionType, goBack, navigate, onCancel]);
 
   const handleSubmit = useCallback(async () => {
-    analytics.track('Tapped "Submit" on Wallet Profile modal');
+    analytics.track(analytics.event.pressedButton, {
+      buttonName: 'wallet_profile_modal',
+      action: 'submit',
+    });
     onCloseModal({
       color:
         typeof nameColor === 'string'

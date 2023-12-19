@@ -21,7 +21,7 @@ import config from '@/model/config';
 import { deviceUtils, ethereumUtils } from '@/utils';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import {
   ChartPath,
@@ -44,7 +44,7 @@ import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPr
 export const ETH_CARD_HEIGHT = 284.3;
 
 export const EthCard = () => {
-  const { accountAddress, nativeCurrency } = useAccountSettings();
+  const { nativeCurrency } = useAccountSettings();
   const { colors, isDarkMode } = useTheme();
   const { navigate } = useNavigation();
   const { isDamaged } = useWallets();
@@ -70,12 +70,12 @@ export const EthCard = () => {
 
       navigate(Routes.ADD_CASH_SHEET);
 
-      analyticsV2.track(analyticsV2.event.buyButtonPressed, {
+      analytics.track(analytics.event.buyButtonPressed, {
         componentName: 'EthCard',
         routeName,
       });
     },
-    [accountAddress, isDamaged, navigate, routeName]
+    [isDamaged, navigate, routeName]
   );
 
   const assetWithPrice = useMemo(() => {
@@ -91,7 +91,7 @@ export const EthCard = () => {
       asset: assetWithPrice,
       type: 'token',
     });
-    analyticsV2.track(analyticsV2.event.cardPressed, {
+    analytics.track(analytics.event.cardPressed, {
       cardName: 'EthCard',
       routeName,
       cardType,

@@ -8,7 +8,7 @@ import { useRecoilState } from 'recoil';
 import { haptics } from '@/utils';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { IconOrb } from './reusables/IconOrb';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { TintButton } from './reusables/TintButton';
@@ -43,7 +43,7 @@ export const ReceiveAssetsCard = () => {
   );
 
   const onPressQRCode = () => {
-    analyticsV2.track(analyticsV2.event.qrCodeViewed, {
+    analytics.track(analytics.event.qrCodeViewed, {
       component: 'ReceiveAssetsCard',
     });
     navigate(Routes.RECEIVE_MODAL);

@@ -50,16 +50,17 @@ export class Analytics {
     this.client.screen(routeName, { ...params, ...metadata });
   }
 
-  /**
-   * Send an event to Segment. Param `event` must exist in
-   * `@/analytics/event`, and if properties are associated with it, they must
-   * be defined as part of `EventProperties` in the same file
-   */
+  // Overload signatures
+  track<T extends keyof EventProperties>(event: T): void;
   track<T extends keyof EventProperties>(
     event: T,
-    params: EventProperties[T] extends undefined
-      ? undefined
-      : EventProperties[T]
+    params: Exclude<EventProperties[T], undefined>
+  ): void;
+
+  // Implementation
+  track<T extends keyof EventProperties>(
+    event: T,
+    params?: EventProperties[T]
   ) {
     if (this.disabled) return;
     const metadata = this.getDefaultMetadata();

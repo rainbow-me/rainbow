@@ -579,7 +579,7 @@ export default function useSwapDerivedOutputs(type: string) {
         tradeDetails: data.tradeDetails,
       })
     );
-    analytics.track(`Updated ${type} details`, {
+    analytics.track(analytics.event.swapUpdatedDetails, {
       aggregator: data.tradeDetails?.source || '',
       inputTokenAddress: inputCurrency?.address || '',
       inputTokenName: inputCurrency?.name || '',

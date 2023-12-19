@@ -53,8 +53,7 @@ import { ReservoirCollection } from '@/graphql/__generated__/arcDev';
 import { format } from 'date-fns';
 import { TransactionStatus, TransactionType } from '@/entities';
 import * as i18n from '@/languages';
-import { analyticsV2 } from '@/analytics';
-import { event } from '@/analytics/event';
+import { analytics } from '@/analytics';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { RainbowNetworks, getNetworkObj } from '@/networks';
 import { Network } from '@/networks/types';
@@ -248,7 +247,7 @@ const MintSheet = () => {
 
   useFocusEffect(() => {
     if (mintCollection.name && mintCollection.id) {
-      analyticsV2.track(event.mintsOpenedSheet, {
+      analytics.track(analytics.event.mintsOpenedSheet, {
         collectionName: mintCollection?.name,
         contract: mintCollection.id,
         chainId: mintCollection.chainId,
@@ -431,7 +430,7 @@ const MintSheet = () => {
 
     // link to mint.fun if reservoir not supporting
     if (!isMintingAvailable) {
-      analyticsV2.track(event.mintsOpeningMintDotFun, {
+      analytics.track(analytics.event.mintsOpeningMintDotFun, {
         collectionName: mintCollection.name || '',
         contract: mintCollection.id || '',
         chainId: mintCollection.chainId,
@@ -441,7 +440,7 @@ const MintSheet = () => {
     }
 
     logger.info('Minting NFT', { name: mintCollection.name });
-    analyticsV2.track(event.mintsMintingNFT, {
+    analytics.track(analytics.event.mintsMintingNFT, {
       collectionName: mintCollection.name || '',
       contract: mintCollection.id || '',
       chainId: mintCollection.chainId,
@@ -513,7 +512,7 @@ const MintSheet = () => {
                 txRef.current = tx.hash;
                 // @ts-expect-error TODO: fix when we overhaul tx list, types are not good
                 dispatch(dataAddNewTransaction(tx));
-                analyticsV2.track(event.mintsMintedNFT, {
+                analytics.track(analytics.event.mintsMintedNFT, {
                   collectionName: mintCollection.name || '',
                   contract: mintCollection.id || '',
                   chainId: mintCollection.chainId,
@@ -529,7 +528,7 @@ const MintSheet = () => {
       });
     } catch (e) {
       setMintStatus('error');
-      analyticsV2.track(event.mintsErrorMintingNFT, {
+      analytics.track(analytics.event.mintsErrorMintingNFT, {
         collectionName: mintCollection.name || '',
         contract: mintCollection.id || '',
         chainId: mintCollection.chainId,

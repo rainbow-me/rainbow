@@ -26,7 +26,7 @@ export default function useHiddenTokens() {
       !isReadOnlyWallet &&
         updateWebHidden([...hiddenTokens, asset.fullUniqueId]);
 
-      analytics.track('Toggled an NFT as Hidden', {
+      analytics.track(analytics.event.nftHideToken, {
         collectionContractAddress: asset.asset_contract.address || null,
         collectionName: asset.collection.name,
         isHidden: true,
@@ -41,7 +41,7 @@ export default function useHiddenTokens() {
       !isReadOnlyWallet &&
         updateWebHidden(hiddenTokens.filter(id => id !== asset.fullUniqueId));
 
-      analytics.track('Toggled an NFT as Hidden', {
+      analytics.track(analytics.event.nftHideToken, {
         collectionContractAddress: asset.asset_contract.address || null,
         collectionName: asset.collection.name,
         isHidden: false,

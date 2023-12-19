@@ -73,7 +73,10 @@ const SendAssetFormField = (
   const { colors } = useTheme();
   const handlePressMax = useCallback(
     event => {
-      analytics.track('Clicked "Max" in Send flow input');
+      analytics.track(analytics.event.pressedButton, {
+        buttonName: 'send_asset_max_button',
+        action: 'click',
+      });
       onPressButton?.(event);
     },
     [onPressButton]

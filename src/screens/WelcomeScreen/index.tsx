@@ -214,7 +214,10 @@ export default function WelcomeScreen() {
   }));
 
   const onCreateWallet = useCallback(async () => {
-    analytics.track('Tapped "Get a new wallet"');
+    analytics.track(analytics.event.pressedButton, {
+      buttonName: 'welcome_screen_create_wallet',
+      action: 'Tapped "Get a new wallet"',
+    });
     const operation = dangerouslyGetState().index === 1 ? navigate : replace;
     operation(Routes.SWIPE_LAYOUT, {
       params: { emptyWallet: true },
@@ -227,7 +230,10 @@ export default function WelcomeScreen() {
   }, []);
 
   const showRestoreSheet = useCallback(() => {
-    analytics.track('Tapped "I already have one"');
+    analytics.track(analytics.event.pressedButton, {
+      buttonName: 'welcome_screen_restore_wallet',
+      action: 'Tapped "I already have one"',
+    });
     navigate(Routes.ADD_WALLET_NAVIGATOR, {
       userData,
       isFirstWallet: true,

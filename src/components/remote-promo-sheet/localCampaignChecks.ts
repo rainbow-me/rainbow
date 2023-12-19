@@ -34,13 +34,14 @@ export const runLocalCampaignChecks = async (): Promise<boolean> => {
   for (const campaign of activeCampaigns) {
     const response = await campaign.check();
     if (response === GenericCampaignCheckResponse.activated) {
-      analytics.track('Viewed Feature Promo', {
+      analytics.track(analytics.event.promoSheetShown, {
         campaign: campaign.campaignKey,
+        time_viewed: Date.now(),
       });
       return true;
     }
     if (response !== GenericCampaignCheckResponse.nonstarter) {
-      analytics.track('Excluded from Feature Promo', {
+      analytics.track(analytics.event.promoSheetExcluded, {
         campaign: campaign.campaignKey,
         exclusion: response,
         type: campaign.checkType,

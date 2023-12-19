@@ -31,7 +31,6 @@ import { useTheme } from '@/theme';
 import { Box, Text } from '@/design-system';
 import { Source } from 'react-native-fast-image';
 import { IS_TEST } from '@/env';
-import { ChainId } from '@rainbow-me/swaps';
 
 export const ExchangeSearchHeight = 40;
 const DoneButtonWidth = 52;
@@ -139,8 +138,8 @@ const ExchangeSearch: ForwardRefRenderFunction<
   const inputRef = ref as MutableRefObject<TextInput>;
   const handleClearInput = useCallback(() => {
     if (isDiscover && searchQuery.length > 1) {
-      analytics.track('Search Query', {
-        category: 'discover',
+      analytics.track(analytics.event.searchQuery, {
+        category: 'exchange',
         length: searchQuery.length,
         query: searchQuery,
       });

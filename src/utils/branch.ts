@@ -3,7 +3,7 @@ import pako from 'pako';
 import qs from 'qs';
 import branch from 'react-native-branch';
 import { IS_TESTING } from 'react-native-dotenv';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import * as ls from '@/storage';
 import { logger, RainbowError } from '@/logger';
 
@@ -159,7 +159,7 @@ export const branchListener = async (
       });
 
     if (branchParams) {
-      analyticsV2.identify({
+      analytics.identify({
         branchCampaign: branchParams['~campaign'],
         branchReferrer: branchParams['+referrer'],
         branchReferringLink: branchParams['~referring_link'],

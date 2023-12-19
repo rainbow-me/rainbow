@@ -57,7 +57,7 @@ export default function ExchangeDetailsRow({
 
   useEffect(() => {
     if (isHighPriceImpact && !prevIsHighPriceImpact) {
-      analytics.track('Showing high price impact warning in Swap', {
+      analytics.track(analytics.event.swapHighPriceImpactWarning, {
         name: outputCurrency.name,
         priceImpact: priceImpactPercentDisplay,
         symbol: outputCurrency.symbol,

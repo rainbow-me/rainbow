@@ -1,12 +1,6 @@
 import { BlurView } from '@react-native-community/blur';
 
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Linking, View } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 
@@ -48,8 +42,7 @@ import { UniqueAsset } from '@/entities';
 import { IS_DEV, IS_IOS } from '@/env';
 import * as i18n from '@/languages';
 import { PoapMintError } from '@/utils/poaps';
-import { analyticsV2 } from '@/analytics';
-import { event } from '@/analytics/event';
+import { analytics } from '@/analytics';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurAmount: 100,
@@ -89,7 +82,7 @@ type PoapClaimStatus = 'none' | 'claiming' | 'claimed' | 'error';
 const PoapSheet = () => {
   const { accountAddress } = useAccountProfile();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
-  const { navigate, goBack } = useNavigation();
+  const { navigate } = useNavigation();
   const { colors, isDarkMode, lightScheme } = useTheme();
   const { isReadOnlyWallet } = useWallets();
   const params = useRoute();
@@ -142,7 +135,7 @@ const PoapSheet = () => {
     const errorCode = response.claimPoapByQrHash?.error;
 
     if (isSuccess) {
-      analyticsV2.track(event.poapsMintedPoap, {
+      analytics.track(analytics.event.poapsMintedPoap, {
         eventId: poapEvent.id,
         type: poapMintType,
       });
@@ -183,7 +176,7 @@ const PoapSheet = () => {
     const errorCode = response.claimPoapBySecretWord?.error;
 
     if (isSuccess) {
-      analyticsV2.track(event.poapsMintedPoap, {
+      analytics.track(analytics.event.poapsMintedPoap, {
         eventId: poapEvent.id,
         type: poapMintType,
       });
@@ -229,7 +222,6 @@ const PoapSheet = () => {
     claimPoapByQrHash,
     claimPoapBySecret,
     claimStatus,
-    goBack,
     navigate,
     nft,
     poapMintType,
@@ -255,7 +247,7 @@ const PoapSheet = () => {
   };
 
   useFocusEffect(() => {
-    analyticsV2.track(event.poapsOpenedMintSheet, {
+    analytics.track(analytics.event.poapsOpenedMintSheet, {
       eventId: poapEvent.id,
       type: poapMintType,
     });
@@ -355,7 +347,7 @@ const PoapSheet = () => {
                 </SheetActionButtonRow>
                 <ButtonPressAnimation
                   onPress={() => {
-                    analyticsV2.track(event.poapsViewedOnPoap, {
+                    analytics.track(analytics.event.poapsViewedOnPoap, {
                       eventId: poapEvent.id,
                     });
                     Linking.openURL(poapGalleryUrl);

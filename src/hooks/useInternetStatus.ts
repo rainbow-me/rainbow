@@ -13,9 +13,13 @@ export default function useInternetStatus() {
         setIsInternetReachable(newIsInternetReachable);
         if (!isInternetReachable && newIsInternetReachable) {
           refresh();
-          analytics.track('Reconnected after offline');
+          analytics.track(analytics.event.applicationInternetDisconnected, {
+            time: Date.now(),
+          });
         } else {
-          analytics.track('Offline / lost connection');
+          analytics.track(analytics.event.applicationInternetConnected, {
+            time: Date.now(),
+          });
         }
       }
     },

@@ -1,4 +1,3 @@
-import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, {
   forwardRef,
@@ -38,10 +37,10 @@ const CancelText = styled(Text).attrs(({ theme: { colors } }) => ({
 
 const sendQueryAnalytics = query => {
   if (query.length > 1) {
-    analytics.track('Search Query', {
+    analytics.track(analytics.event.searchQuery, {
       category: 'discover',
       length: query.length,
-      query: query,
+      query,
     });
   }
 };
@@ -88,8 +87,9 @@ export default forwardRef(function DiscoverSearchContainer(
       searchInputRef.current.focus();
     } else {
       setIsInputFocused(true);
-      analytics.track('Tapped Search', {
-        category: 'discover',
+      analytics.track(analytics.event.pressedButton, {
+        buttonName: 'discover_search_container_search_button',
+        action: 'search',
       });
     }
   }, [isSearchModeEnabled, scrollToTop, setIsInputFocused]);

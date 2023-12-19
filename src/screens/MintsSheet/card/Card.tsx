@@ -19,9 +19,9 @@ import { getNetworkObj } from '@/networks';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Placeholder, RecentMintCell } from './RecentMintCell';
-import { Linking, View } from 'react-native';
+import { View } from 'react-native';
 import { useTheme } from '@/theme';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import * as i18n from '@/languages';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import { CoinIcon } from '@/components/coin-icon';
@@ -125,7 +125,7 @@ export function Card({ collection }: { collection: MintableCollection }) {
         </Inline>
         <ButtonPressAnimation
           onPress={() => {
-            analyticsV2.track(analyticsV2.event.mintsPressedMintButton, {
+            analytics.track(analytics.event.mintsPressedMintButton, {
               contractAddress: collection.contractAddress,
               chainId: collection.chainId,
               priceInEth: price,

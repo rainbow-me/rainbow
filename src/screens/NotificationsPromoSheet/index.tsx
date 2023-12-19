@@ -14,7 +14,7 @@ import { useTheme } from '@/theme';
 import * as i18n from '@/languages';
 import { IS_IOS } from '@/env';
 import { logger, RainbowError } from '@/logger';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 
 const HEADER_HEIGHT = 255;
 const HEADER_WIDTH = 390;
@@ -42,9 +42,9 @@ export function NotificationsPromoSheetInner({
   const notificationsBlocked = status === perms.RESULTS.BLOCKED;
 
   React.useEffect(() => {
-    analyticsV2.track(analyticsV2.event.notificationsPromoShown);
+    analytics.track(analytics.event.notificationsPromoShown);
     return () => {
-      analyticsV2.track(analyticsV2.event.notificationsPromoDismissed);
+      analytics.track(analytics.event.notificationsPromoDismissed);
     };
   }, []);
 
@@ -67,30 +67,24 @@ export function NotificationsPromoSheetInner({
       );
       const result = await requestNotificationPermissions();
       if (result.status === perms.RESULTS.BLOCKED) {
-        analyticsV2.track(
-          analyticsV2.event.notificationsPromoPermissionsBlocked
-        );
+        analytics.track(analytics.event.notificationsPromoPermissionsBlocked);
         goBack();
       } else if (result.status === perms.RESULTS.GRANTED) {
         // only happens on iOS, Android is enabled by default
-        analyticsV2.track(
-          analyticsV2.event.notificationsPromoPermissionsGranted
-        );
+        analytics.track(analytics.event.notificationsPromoPermissionsGranted);
       }
     } else if (!hasSettingsEnabled || notificationsBlocked) {
       logger.debug(
         `NotificationsPromoSheet: notifications permissions either blocked or all settings are disabled`
       );
-      analyticsV2.track(
-        analyticsV2.event.notificationsPromoSystemSettingsOpened
-      );
+      analytics.track(analytics.event.notificationsPromoSystemSettingsOpened);
       await perms.openSettings();
     } else if (notificationsEnabled) {
       logger.debug(
         `NotificationsPromoSheet: notifications permissions enabled`
       );
-      analyticsV2.track(
-        analyticsV2.event.notificationsPromoNotificationSettingsOpened
+      analytics.track(
+        analytics.event.notificationsPromoNotificationSettingsOpened
       );
       navigateToNotifications();
     } else {
@@ -109,6 +103,7 @@ export function NotificationsPromoSheetInner({
     notificationsEnabled,
     notificationsBlocked,
     navigateToNotifications,
+    requestNotificationPermissions,
   ]);
 
   return (

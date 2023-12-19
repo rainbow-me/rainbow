@@ -7,7 +7,7 @@ import { ContactAvatar } from '../contacts';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { ContextMenuButton } from '../context-menu';
 import { Centered, ColumnWithMargins, Row } from '../layout';
-import { Text, TruncatedText } from '../text';
+import { TruncatedText } from '../text';
 import { analytics } from '@/analytics';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
@@ -155,7 +155,7 @@ export function WalletConnectV2ListItem({
       },
       watchOnly: true,
     });
-  }, [session, address, dappUrl, goBack]);
+  }, [session, address, goBack, reload]);
 
   const onPressAndroid = useCallback(() => {
     showActionSheetWithOptions(
@@ -170,17 +170,14 @@ export function WalletConnectV2ListItem({
         } else if (index === 1) {
           await disconnectSession(session);
           reload();
-          analytics.track(
-            'Manually disconnected from WalletConnect connection',
-            {
-              dappName,
-              dappUrl,
-            }
-          );
+          analytics.track(analytics.event.wcDisconnected, {
+            dappName,
+            dappUrl,
+          });
         }
       }
     );
-  }, [session, address, dappName, dappUrl, handlePressChangeWallet]);
+  }, [session, dappName, dappUrl, handlePressChangeWallet, reload]);
 
   const handleOnPressMenuItem = useCallback(
     // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
@@ -188,7 +185,7 @@ export function WalletConnectV2ListItem({
       if (actionKey === 'disconnect') {
         await disconnectSession(session);
         reload();
-        analytics.track('Manually disconnected from WalletConnect connection', {
+        analytics.track(analytics.event.wcDisconnected, {
           dappName,
           dappUrl,
         });
@@ -196,7 +193,7 @@ export function WalletConnectV2ListItem({
         handlePressChangeWallet();
       }
     },
-    [address, dappName, dappUrl, handlePressChangeWallet]
+    [dappName, dappUrl, session, reload, handlePressChangeWallet]
   );
 
   return (

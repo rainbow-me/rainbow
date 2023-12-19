@@ -16,7 +16,7 @@ import {
 export const trackTappedPushNotification = (
   notification: MinimalNotification | undefined
 ) => {
-  analytics.track('Tapped Push Notification', {
+  analytics.track(analytics.event.notificationsTappedPushNotification, {
     campaign: {
       name: notification?.data?.type ?? 'default',
       medium: 'Push',
@@ -30,7 +30,7 @@ export const trackChangedNotificationSettings = (
   type: NotificationRelationshipType,
   action: 'subscribe' | 'unsubscribe'
 ) => {
-  analytics.track('Changed Notification Settings', {
+  analytics.track(analytics.event.notificationsChangedNotificationSettings, {
     chainId,
     topic,
     type,
@@ -41,7 +41,9 @@ export const trackChangedNotificationSettings = (
 export const trackPushNotificationPermissionStatus = (
   status: PushNotificationPermissionStatus
 ) => {
-  analytics.identify(undefined, { notificationsPermissionStatus: status });
+  analytics.client.identify(undefined, {
+    notificationsPermissionStatus: status,
+  });
 };
 
 type PushNotificationPermissionStatus = 'enabled' | 'disabled' | 'never asked';
@@ -151,7 +153,7 @@ const trackNumberOfWalletsWithNotificationsTurnedOn = (
   imported: number,
   watched: number
 ) => {
-  analytics.identify(undefined, {
+  analytics.client.identify(undefined, {
     numberOfImportedWalletsWithNotificationsTurnedOn: imported,
     numberOfWatchedWalletsWithNotificationsTurnedOn: watched,
   });

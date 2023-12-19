@@ -184,7 +184,7 @@ export default function DiscoverSearch() {
             }
           );
           if (profilesEnabled) {
-            analytics.track('Viewed ENS profile', {
+            analytics.track(analytics.event.profileViewedENS, {
               category: 'profiles',
               ens: item.nickname,
               from: 'Discover search',

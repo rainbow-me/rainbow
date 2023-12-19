@@ -195,7 +195,7 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
 
   // track current app icon
   useEffect(() => {
-    analytics.identify(undefined, { appIcon });
+    analytics.client.identify(undefined, { appIcon });
   }, [appIcon]);
 
   const isAddressCopiedToastActive = useRecoilValue(addressCopiedToastAtom);

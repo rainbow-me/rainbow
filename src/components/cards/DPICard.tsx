@@ -4,7 +4,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '../../navigation/Navigation';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import {
   Box,
   ColorModeProvider,
@@ -47,7 +47,7 @@ export const DPICard = () => {
       nativeCurrency
     );
 
-    analyticsV2.track(analyticsV2.event.cardPressed, {
+    analytics.track(analytics.event.cardPressed, {
       cardName: 'DPICard',
       routeName,
       cardType,

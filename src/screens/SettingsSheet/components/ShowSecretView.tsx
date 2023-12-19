@@ -6,7 +6,7 @@ import { SecretDisplaySection } from '@/components/secret-display/SecretDisplayS
 
 export default function ShowSecretView() {
   useEffect(() => {
-    analytics.track('Show Secret View', {
+    analytics.track(analytics.event.applicationSecretViewShown, {
       category: 'settings backup',
     });
   }, []);
