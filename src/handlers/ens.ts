@@ -78,6 +78,7 @@ const buildEnsToken = ({
       total_supply: null,
     },
     background: null,
+    acquisition_date: undefined,
     collection: {
       description:
         'Ethereum Name Service (ENS) domains are secure domain names for the decentralized world. ENS domains provide a way for users to map human readable names to blockchain and non-blockchain resources, like Ethereum addresses, IPFS hashes, or website URLs. ENS domains can be bought and sold on secondary markets.',
