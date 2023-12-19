@@ -10,7 +10,7 @@ import * as i18n from '@/languages';
 const AnimatedImgixImage = Animated.createAnimatedComponent(Image);
 
 const TokenFamilyHeaderAnimationDuration = 200;
-const TokenFamilyHeaderHeight = 44;
+const TokenFamilyHeaderHeight = 48;
 
 const PositionListHeader = ({ total, ...props }: { total: string }) => {
   const { colors } = useTheme();
