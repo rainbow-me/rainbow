@@ -77,6 +77,7 @@ const buildEnsToken = ({
       symbol: 'ENS',
       total_supply: null,
     },
+    acquisition_date: undefined,
     background: null,
     collection: {
       description:

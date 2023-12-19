@@ -414,7 +414,7 @@ const ensAction = async (
             salt,
           })
         );
-        analytics.track('Initiated ENS registration', {
+        analytics.track(analytics.event.ensRegistrationInitiated, {
           category: 'profiles',
         });
         break;
@@ -428,7 +428,7 @@ const ensAction = async (
           wallet,
           nonce
         );
-        analytics.track('Edited ENS records', {
+        analytics.track(analytics.event.ensRecordEdited, {
           category: 'profiles',
         });
         break;
@@ -450,7 +450,7 @@ const ensAction = async (
             registerTransactionHash: tx?.hash,
           })
         );
-        analytics.track('Completed ENS registration', {
+        analytics.track(analytics.event.ensRegistrationCompleted, {
           category: 'profiles',
         });
         break;
@@ -466,7 +466,7 @@ const ensAction = async (
           wallet,
           nonce
         );
-        analytics.track('Extended ENS', {
+        analytics.track(analytics.event.ensRegistrationExtended, {
           category: 'profiles',
         });
         break;
@@ -480,7 +480,7 @@ const ensAction = async (
           wallet,
           nonce
         );
-        analytics.track('Edited ENS records', {
+        analytics.track(analytics.event.ensRecordEdited, {
           category: 'profiles',
         });
         break;
@@ -494,7 +494,7 @@ const ensAction = async (
           wallet,
           nonce
         );
-        analytics.track('Edited ENS records', {
+        analytics.track(analytics.event.ensRecordEdited, {
           category: 'profiles',
         });
         break;
@@ -508,7 +508,7 @@ const ensAction = async (
           wallet,
           nonce
         );
-        analytics.track('Edited ENS records', {
+        analytics.track(analytics.event.ensRecordEdited, {
           category: 'profiles',
         });
         break;
@@ -523,7 +523,7 @@ const ensAction = async (
           wallet,
           nonce
         );
-        analytics.track('Transferred ENS control', {
+        analytics.track(analytics.event.ensRecordTransferred, {
           category: 'profiles',
         });
         break;
@@ -537,7 +537,7 @@ const ensAction = async (
           wallet,
           nonce
         );
-        analytics.track('Set ENS to primary ', {
+        analytics.track(analytics.event.ensRecordSetToPrimary, {
           category: 'profiles',
         });
     }

@@ -4,7 +4,7 @@ import lang from 'i18n-js';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { Language, updateLanguageLocale } from '../languages';
-import { analyticsV2 as analytics } from '@/analytics';
+import { analytics } from '@/analytics';
 import { NativeCurrencyKey, NativeCurrencyKeys } from '@/entities';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 

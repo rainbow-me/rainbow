@@ -361,7 +361,7 @@ export const walletConnectOnSessionRequest = (
                 accountAddress
               )
             );
-            analytics.track('Approved new WalletConnect session', {
+            analytics.track(analytics.event.wcNewSessionApproved, {
               dappName,
               dappUrl,
               connector,
@@ -371,7 +371,8 @@ export const walletConnectOnSessionRequest = (
               walletConnectRejectSession(peerId, walletConnector!)
             );
             callback?.('reject', dappScheme);
-            analytics.track('Rejected new WalletConnect session', {
+
+            analytics.track(analytics.event.wcNewSessionRejected, {
               dappName,
               dappUrl,
               connector,
@@ -381,7 +382,7 @@ export const walletConnectOnSessionRequest = (
             const url = new URL(uri);
             // @ts-ignore
             const bridge = qs.parse(url?.query)?.bridge;
-            analytics.track('New WalletConnect session time out', {
+            analytics.track(analytics.event.wcNewSessionTimeout, {
               bridge,
               dappName,
               dappUrl,
@@ -395,8 +396,8 @@ export const walletConnectOnSessionRequest = (
       walletConnector?.on('session_request', (error, payload) => {
         clearTimeout(timeout!);
         if (error) {
-          analytics.track('Error on wc session_request', {
-            // @ts-ignore
+          analytics.track(analytics.event.wcNewSessionError, {
+            type: 'session_request',
             error,
             payload,
           });
@@ -413,7 +414,7 @@ export const walletConnectOnSessionRequest = (
         const dappUrl = peerMeta?.url;
         const dappScheme = peerMeta?.scheme;
 
-        analytics.track('Showing Walletconnect session request', {
+        analytics.track(analytics.event.wcShowingSessionRequest, {
           dappName,
           dappUrl,
           connector,
@@ -485,7 +486,8 @@ export const walletConnectOnSessionRequest = (
         new RainbowError('WC: Exception during wc session_request'),
         { error }
       );
-      analytics.track('Exception on wc session_request', {
+      analytics.track(analytics.event.wcNewSessionError, {
+        type: 'catch_session_request',
         error,
       });
       Alert.alert(lang.t('wallet.wallet_connect.error'));
@@ -496,7 +498,8 @@ export const walletConnectOnSessionRequest = (
       new RainbowError('WC: FCM exception during wc session_request'),
       { error }
     );
-    analytics.track('FCM exception on wc session_request', {
+    analytics.track(analytics.event.wcNewSessionError, {
+      type: 'fcm_session_request',
       error,
     });
     Alert.alert(lang.t('wallet.wallet_connect.missing_fcm'));
@@ -521,8 +524,7 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
     );
 
     if (error) {
-      analytics.track('Error on wc call_request', {
-        // @ts-ignore
+      analytics.track(analytics.event.wcCallRequestError, {
         error,
         payload,
       });
@@ -575,7 +577,7 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
                 walletConnector.peerId,
                 walletConnector.session
               );
-              analytics.track('Approved WalletConnect network switch', {
+              analytics.track(analytics.event.wcNewChainApproved, {
                 chainId,
                 dappName,
                 dappUrl,
@@ -586,7 +588,7 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
                 error: { message: 'User rejected request' },
                 id: requestId,
               });
-              analytics.track('Rejected new WalletConnect chain request', {
+              analytics.track(analytics.event.wcNewChainRejected, {
                 dappName,
                 dappUrl,
               });
@@ -651,7 +653,7 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
           transactionDetails: request,
         });
         InteractionManager.runAfterInteractions(() => {
-          analytics.track('Showing Walletconnect signing request', {
+          analytics.track(analytics.event.wcShowingSigningRequest, {
             dappName,
             dappUrl,
           });
@@ -715,8 +717,8 @@ export const walletConnectLoadState = () => async (
       return connector;
     });
   } catch (error) {
-    analytics.track('Error on walletConnectLoadState', {
-      // @ts-ignore
+    analytics.track(analytics.event.wcNewSessionError, {
+      type: 'wc_load_state',
       error,
     });
     logger.error(new RainbowError('WC: Error on wc walletConnectLoadState'), {

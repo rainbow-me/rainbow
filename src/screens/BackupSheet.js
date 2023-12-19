@@ -85,14 +85,17 @@ export default function BackupSheet() {
 
     // This means the user had the password saved
     // and at least an other wallet already backed up
-    analytics.track('Backup Complete via BackupSheet', {
+    analytics.track(analytics.event.backupCompleted, {
       category: 'backup',
       label: cloudPlatform,
     });
   }, [goBack, isSettingsRoute]);
 
   const onIcloudBackup = useCallback(() => {
-    analytics.track('Tapped "Back up to cloud"');
+    analytics.track(analytics.event.pressedButton, {
+      buttonName: 'backup_sheet_icloud_backup_button',
+      action: 'Tapped "Back up to cloud"',
+    });
     if (isDamaged) {
       showWalletErrorAlert();
       captureMessage('Damaged wallet preventing cloud backup');
@@ -118,7 +121,10 @@ export default function BackupSheet() {
   ]);
 
   const onManualBackup = useCallback(() => {
-    analytics.track('Tapped "Back up manually"');
+    analytics.track(analytics.event.pressedButton, {
+      buttonName: 'backup_sheet_manual_backup_button',
+      action: 'Tapped "Back up manually"',
+    });
     if (android) {
       goBack();
       navigate(Routes.BACKUP_SCREEN, {

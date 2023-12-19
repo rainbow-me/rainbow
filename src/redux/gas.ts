@@ -661,7 +661,9 @@ export const gasUpdateGasFeeOption = (newGasPriceOption: string) => (
       payload: selectedGasFee,
       type: GAS_UPDATE_GAS_PRICE_OPTION,
     });
-    analytics.track('Updated Gas Price', { gasPriceOption: gasPriceOption });
+    analytics.track(analytics.event.gasPriceUpdated, {
+      gasPriceOption,
+    });
   });
 
 export const gasUpdateDefaultGasLimit = (

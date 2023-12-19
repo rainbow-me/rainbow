@@ -50,7 +50,8 @@ function logDirectly(
 ) {
   logDurationIfAppropriate(metric, durationInMs);
   if (shouldReportMeasurement) {
-    analytics.track(metric, {
+    // NOTE: cast as any due to strict enforcement in EventProperties
+    analytics.track(metric as any, {
       durationInMs,
       performanceTrackingVersion,
       ...additionalParams, // wondering if we need to protect ourselves here
@@ -101,7 +102,7 @@ function finishMeasuring(
   const durationInMs = finishTime - savedEntry.startTimestamp;
 
   if (shouldReportMeasurement) {
-    analytics.track(metric, {
+    analytics.track(metric as any, {
       durationInMs,
       performanceTrackingVersion,
       ...savedEntry.additionalParams,
@@ -141,7 +142,7 @@ export function withPerformanceTracking<Fn extends (...args: any[]) => any>(
     const durationInMs = performance.now() - startTime;
     logDurationIfAppropriate(metric, durationInMs);
     if (shouldReportMeasurement) {
-      analytics.track(metric, {
+      analytics.track(metric as any, {
         durationInMs,
         performanceTrackingVersion,
         ...additionalParams,

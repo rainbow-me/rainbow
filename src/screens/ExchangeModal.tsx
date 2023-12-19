@@ -695,7 +695,7 @@ export default function ExchangeModal({
 
         logger.log('[exchange - handle submit] executed rap!');
         const slippage = slippageInBips / 100;
-        analytics.track(`Completed ${type}`, {
+        analytics.track(analytics.event.swapSuccessful, {
           aggregator: tradeDetails?.source || '',
           amountInUSD,
           gasSetting: selectedGasFee?.option,
@@ -719,6 +719,7 @@ export default function ExchangeModal({
           slippage: isNaN(slippage) ? 'Error calculating slippage.' : slippage,
           type,
         });
+
         // Tell iOS we finished running a rap (for tracking purposes)
         NotificationManager?.postNotification('rapCompleted');
 
@@ -808,7 +809,7 @@ export default function ExchangeModal({
       logger.log('error getting the swap amount in USD price', e);
     } finally {
       const slippage = slippageInBips / 100;
-      analytics.track(`Submitted ${type}`, {
+      analytics.track(analytics.event.swapSuccessful, {
         aggregator: tradeDetails?.source || '',
         amountInUSD,
         gasSetting: selectedGasFee?.option,
@@ -872,6 +873,7 @@ export default function ExchangeModal({
     outputCurrency?.name,
     outputCurrency?.symbol,
     priceImpactPercentDisplay,
+    isHardwareWallet,
   ]);
 
   const confirmButtonProps = useMemoOne(
@@ -928,7 +930,7 @@ export default function ExchangeModal({
         swapSupportsFlashbots,
         type: 'swap_settings',
       });
-      analytics.track('Opened Swap Settings');
+      analytics.track(analytics.event.swapSettingsOpened);
     };
     if (IS_IOS || !isKeyboardOpen()) {
       internalNavigate();
@@ -973,7 +975,7 @@ export default function ExchangeModal({
           },
           type: 'swap_details',
         });
-        analytics.track('Opened Swap Details modal', {
+        analytics.track(analytics.event.swapViewOpened, {
           inputTokenAddress: inputCurrency?.address || '',
           inputTokenName: inputCurrency?.name || '',
           inputTokenSymbol: inputCurrency?.symbol || '',

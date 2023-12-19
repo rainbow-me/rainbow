@@ -1,4 +1,4 @@
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { useCallback, useEffect, useMemo } from 'react';
 import { MINTS, useExperimentalFlag } from '@/config';
 import { IS_PROD, IS_TEST } from '@/env';
@@ -55,7 +55,7 @@ export function useMintsFilter() {
 
   const setFilter = useCallback(
     (filter: MintsFilter) => {
-      analyticsV2.track(analyticsV2.event.mintsChangedFilter, { filter });
+      analytics.track(analytics.event.mintsChangedFilter, { filter });
       setFilterState(filter);
       mmkv.set(MINTS_FILTER_MMKV_KEY, filter);
     },
@@ -131,7 +131,7 @@ export function useMints({ walletAddress }: { walletAddress: string }) {
 
   useEffect(
     () =>
-      analyticsV2.identify({
+      analytics.identify({
         numberOfMints: allMints?.length ?? 0,
         numberOfFreeMints: freeMints?.length ?? 0,
         numberOfPaidMints: paidMints?.length ?? 0,

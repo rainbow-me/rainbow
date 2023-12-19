@@ -34,10 +34,22 @@ export const event = {
   promoSheetShown: 'promo_sheet.shown',
   promoSheetDismissed: 'promo_sheet.dismissed',
   promoSheetExcluded: 'promo_sheet.excluded',
+  profileViewed: 'profile.viewed',
   profileViewedENS: 'profile.viewed.ens',
   profileViewedUnstoppable: 'profile.viewed.unstoppable',
   profileViewedReadOnly: 'profile.viewed.read_only',
   profileViewedImported: 'profile.viewed.imported',
+
+  ensRegistrationInitiated: 'ens.registration.initiated',
+  ensRegistrationCompleted: 'ens.registration.completed',
+  ensRegistrationExtended: 'ens.registration.extended',
+  ensRecordEdited: 'ens.record.edited',
+  ensRecordTransferred: 'ens.record.transferred',
+  ensRecordSetToPrimary: 'ens.record.set_to_primary',
+
+  rapStarted: 'rap.started',
+  rapCompleted: 'rap.completed',
+  rapFailed: 'rap.failed',
 
   backupStarted: 'backup.started',
   backupCompleted: 'backup.completed',
@@ -58,6 +70,11 @@ export const event = {
   backupErrorSavingToCloud: 'backup.error_saving_to_cloud',
 
   swapSubmitted: 'swap.submitted',
+  swapSuccessful: 'swap.successful',
+  swapFailed: 'swap.failed',
+  swapSearchResultSelected: 'swap.search_result_selected',
+  swapSettingsOpened: 'swap.settings_opened',
+  swapViewOpened: 'swap.view_opened',
   swapHighPriceImpactWarning: 'swap.high_price_impact_warning',
   swapUpdatedDetails: 'swap.updated_details',
   // notification promo sheet was shown
@@ -120,15 +137,23 @@ export const event = {
   wcNewSessionTimeout: 'wc.new_session_timeout',
   wcNewSessionRejected: 'wc.new_session_rejected',
   wcNewSessionApproved: 'wc.new_session_approved',
+  wcNewSessionError: 'wc.new_session_error',
   wcShowingSigningRequest: 'wc.showing_signing_request',
   wcShownSigningRequest: 'wc.shown_signing_request',
+  wcShowingSessionRequest: 'wc.showing_session_request',
   wcShownSessionRequest: 'wc.shown_session_request',
   wcReceivedConnectionRequest: 'wc.received_connection_request',
   wcRejectedTransactionRequest: 'wc.rejected_transaction_request',
   wcApprovedTransactionRequest: 'wc.approved_transaction_request',
+  wcCallRequestError: 'wc.call_request_error',
+  wcNewChainApproved: 'wc.new_chain_approved',
+  wcNewChainRejected: 'wc.new_chain_rejected',
 
   languageChanged: 'language.changed',
   currencyChanged: 'currency.changed',
+  currencyChangedInput: 'currency.changed_input',
+  tokenInputChanged: 'token_input.changed',
+  resetAssetSelection: 'asset_selection.reset',
 
   nftOffersOpenedOffersSheet: 'nft_offers.opened_offers_sheet',
   nftOffersOpenedSingleOfferSheet: 'nft_offers.opened_single_offer_sheet',
@@ -193,6 +218,8 @@ export const event = {
 
   searchQuery: 'search.query',
   walletImported: 'wallet.imported',
+  transactionSent: 'transaction.sent',
+  gasPriceUpdated: 'gas_price.updated',
 } as const;
 
 /**
@@ -306,10 +333,88 @@ export type EventProperties = Partial<{
     currency: string;
   };
 
+  [event.ensRegistrationInitiated]: {
+    category: string;
+  };
+
+  [event.ensRecordEdited]: {
+    category: string;
+  };
+
+  [event.ensRegistrationCompleted]: {
+    category: string;
+  };
+
+  [event.ensRegistrationExtended]: {
+    category: string;
+  };
+
+  [event.ensRecordTransferred]: {
+    category: string;
+  };
+
+  [event.ensRecordSetToPrimary]: {
+    category: string;
+  };
+
+  [event.rapStarted]: {
+    category: string;
+    label: string;
+  };
+
+  [event.rapFailed]: {
+    category: string;
+    failed_action: string;
+    label: string;
+  };
+
+  [event.rapCompleted]: {
+    category: string;
+    label: string;
+  };
+
   [event.swapSubmitted]: {
     usdValue: number;
     inputCurrencySymbol: string;
     outputCurrencySymbol: string;
+  };
+  [event.swapSuccessful]: {
+    aggregator: string;
+    amountInUSD: any;
+    gasSetting: string;
+    inputTokenAddress: string;
+    inputTokenName: string;
+    inputTokenSymbol: string;
+    isHardwareWallet: boolean;
+    isHighPriceImpact: boolean;
+    legacyGasPrice: string;
+    liquiditySources: string;
+    maxNetworkFee: string;
+    network: Network;
+    networkFee: string;
+    outputTokenAddress: string;
+    outputTokenName: string;
+    outputTokenSymbol: string;
+    priceImpact: string | null | undefined;
+    slippage: number | string;
+    type: string;
+  };
+  [event.swapSearchResultSelected]: {
+    name: string;
+    searchQueryForSearch: string;
+    symbol: string;
+    tokenAddress: string;
+    type: string;
+  };
+  [event.swapSettingsOpened]: undefined;
+  [event.swapViewOpened]: {
+    inputTokenAddress: string;
+    inputTokenName: string;
+    inputTokenSymbol: string;
+    outputTokenAddress: string;
+    outputTokenName: string;
+    outputTokenSymbol: string;
+    type: string;
   };
   [event.swapHighPriceImpactWarning]: {
     name: string;
@@ -332,6 +437,11 @@ export type EventProperties = Partial<{
     type: string;
   };
 
+  [event.profileViewed]: {
+    category: string;
+    fromRoute: string;
+    name: string;
+  };
   [event.profileViewedENS]:
     | {
         address: string;
@@ -510,16 +620,34 @@ export type EventProperties = Partial<{
   [event.wcNewSessionApproved]: {
     dappName: string;
     dappUrl: string;
+    connector?: string;
   };
-  [event.wcNewSessionTimeout]: undefined;
+  [event.wcNewSessionTimeout]: {
+    bridge: string;
+    dappName: string;
+    dappUrl: string;
+    connector?: string;
+  };
   [event.wcNewSessionRejected]: {
     dappName: string;
     dappUrl: string;
+    connector?: string;
+  };
+  [event.wcNewSessionError]: {
+    type: string;
+    error?: any;
+    payload?: any;
+  };
+  [event.wcShowingSessionRequest]: {
+    dappName: string;
+    dappUrl: string;
+    connector?: string;
   };
   [event.wcShownSigningRequest]: undefined;
   [event.wcShowingSigningRequest]: {
-    dappName: string;
-    dappUrl: string;
+    dappName?: string;
+    dappUrl?: string;
+    connector?: string;
   };
   [event.wcReceivedConnectionRequest]: {
     dappName: string;
@@ -536,6 +664,19 @@ export type EventProperties = Partial<{
     isHardwareWallet: boolean;
     network: Network | null | undefined;
     type: 'transaction' | 'signature';
+  };
+  [event.wcCallRequestError]: {
+    error?: any;
+    payload?: any;
+  };
+  [event.wcNewChainApproved]: {
+    chainId: string;
+    dappName?: string;
+    dappUrl?: string;
+  };
+  [event.wcNewChainRejected]: {
+    dappName?: string;
+    dappUrl?: string;
   };
   [event.nftHideToken]: {
     collectionContractAddress: string | null;
@@ -704,5 +845,16 @@ export type EventProperties = Partial<{
   [event.walletImported]: {
     type: EthereumWalletType;
     nonZeroBalance: boolean;
+  };
+
+  [event.transactionSent]: {
+    assetName: string;
+    assetType: string;
+    isRecipientENS: boolean;
+    isHardwareWallet: boolean;
+  };
+
+  [event.gasPriceUpdated]: {
+    gasPriceOption: string;
   };
 }>;

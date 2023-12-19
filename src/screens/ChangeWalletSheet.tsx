@@ -12,14 +12,14 @@ import { Centered, Column, Row } from '../components/layout';
 import { Sheet, SheetTitle } from '../components/sheet';
 import { Text } from '../components/text';
 import { removeWalletData } from '../handlers/localstorage/removeWallet';
-import { cleanUpWalletKeys, RainbowWallet } from '../model/wallet';
+import { cleanUpWalletKeys } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import {
   addressSetSelected,
   walletsSetSelected,
   walletsUpdate,
 } from '../redux/wallets';
-import { analytics, analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { getExperimetalFlag, HARDWARE_WALLETS } from '@/config';
 import { useRemotePromoSheetContext } from '@/components/remote-promo-sheet/RemotePromoSheetProvider';
 import {
@@ -188,6 +188,7 @@ export default function ChangeWalletSheet() {
       onChangeWallet,
       wallets,
       watchOnly,
+      runChecks,
     ]
   );
 
@@ -245,8 +246,9 @@ export default function ChangeWalletSheet() {
             onCloseModal: async (args: any) => {
               if (args) {
                 if ('name' in args) {
-                  analytics.track('Tapped "Done" after editing wallet', {
-                    wallet_label: args.name,
+                  analytics.track(analytics.event.pressedButton, {
+                    buttonName: 'change_wallet_sheet_done_button',
+                    action: 'Tapped "Done" after editing wallet',
                   });
 
                   const walletAddresses = wallets[walletId].addresses;
@@ -287,7 +289,10 @@ export default function ChangeWalletSheet() {
 
                   await dispatch(walletsUpdate(updatedWallets));
                 } else {
-                  analytics.track('Tapped "Cancel" after editing wallet');
+                  analytics.track(analytics.event.pressedButton, {
+                    buttonName: 'change_wallet_sheet_cancel_button',
+                    action: 'Tapped "Cancel" after editing wallet',
+                  });
                 }
               }
             },
@@ -314,7 +319,10 @@ export default function ChangeWalletSheet() {
 
   const onPressEdit = useCallback(
     (walletId: string, address: string) => {
-      analytics.track('Tapped "Edit Wallet"');
+      analytics.track(analytics.event.pressedButton, {
+        buttonName: 'change_wallet_sheet_edit_button',
+        action: 'Tapped "Edit Wallet"',
+      });
       renameWallet(walletId, address);
     },
     [renameWallet]
@@ -322,7 +330,10 @@ export default function ChangeWalletSheet() {
 
   const onPressNotifications = useCallback(
     (walletName: string, address: string) => {
-      analytics.track('Tapped "Notification Settings"');
+      analytics.track(analytics.event.pressedButton, {
+        buttonName: 'change_wallet_sheet_notifications_button',
+        action: 'Tapped "Notification Settings"',
+      });
       const walletNotificationSettings = getNotificationSettingsForWalletWithAddress(
         address
       );
@@ -348,7 +359,10 @@ export default function ChangeWalletSheet() {
 
   const onPressRemove = useCallback(
     (walletId: string, address: string) => {
-      analytics.track('Tapped "Delete Wallet"');
+      analytics.track(analytics.event.pressedButton, {
+        buttonName: 'change_wallet_sheet_remove_button',
+        action: 'Tapped "Delete Wallet"',
+      });
       // If there's more than 1 account
       // it's deletable
       let isLastAvailableWallet = false;
@@ -374,7 +388,10 @@ export default function ChangeWalletSheet() {
         },
         async (buttonIndex: number) => {
           if (buttonIndex === 0) {
-            analytics.track('Tapped "Delete Wallet" (final confirm)');
+            analytics.track(analytics.event.pressedButton, {
+              buttonName: 'change_wallet_sheet_remove_confirm_button',
+              action: 'Tapped "Delete Wallet" (final confirm)',
+            });
             await deleteWallet(walletId, address);
             ReactNativeHapticFeedback.trigger('notificationSuccess');
             if (!isLastAvailableWallet) {
@@ -403,7 +420,7 @@ export default function ChangeWalletSheet() {
   );
 
   const onPressPairHardwareWallet = useCallback(() => {
-    analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
+    analytics.track(analytics.event.addWalletFlowStarted, {
       isFirstWallet: false,
       type: 'ledger_nano_x',
     });
@@ -417,7 +434,7 @@ export default function ChangeWalletSheet() {
   }, [goBack, navigate]);
 
   const onPressAddAnotherWallet = useCallback(() => {
-    analyticsV2.track(analyticsV2.event.pressedButton, {
+    analytics.track(analytics.event.pressedButton, {
       buttonName: 'AddAnotherWalletButton',
       action: 'Navigates from WalletList to AddWalletSheet',
     });
@@ -430,7 +447,10 @@ export default function ChangeWalletSheet() {
   }, [goBack, navigate]);
 
   const onPressEditMode = useCallback(() => {
-    analytics.track('Tapped "Edit"');
+    analytics.track(analytics.event.pressedButton, {
+      buttonName: 'change_wallet_sheet_edit_mode_button',
+      action: 'Tapped "Edit"',
+    });
     setEditMode(e => !e);
   }, []);
 

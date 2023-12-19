@@ -22,7 +22,6 @@ import {
   estimateENSSetNameGasLimit,
   estimateENSSetRecordsGasLimit,
 } from '@/handlers/ens';
-import { ExchangeModalTypes } from '@/helpers';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import logger from '@/utils/logger';
 import {
@@ -375,7 +374,8 @@ const executeAction = async (
     logger.debug('Rap blew up', error);
     logger.sentry('[3 INNER] error running action, code:', error?.code);
     captureException(error);
-    analytics.track('Rap failed', {
+
+    analytics.track(analytics.event.rapFailed, {
       category: 'raps',
       failed_action: type,
       label: rapName,
@@ -431,7 +431,7 @@ export const executeRap = async (
   const { actions } = rap;
   const rapName = getRapFullName(actions);
 
-  analytics.track('Rap started', {
+  analytics.track(analytics.event.rapStarted, {
     category: 'raps',
     label: rapName,
   });
@@ -463,7 +463,7 @@ export const executeRap = async (
     }
   }
 
-  analytics.track('Rap completed', {
+  analytics.track(analytics.event.rapCompleted, {
     category: 'raps',
     label: rapName,
   });

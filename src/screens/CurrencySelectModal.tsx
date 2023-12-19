@@ -38,7 +38,6 @@ import { analytics } from '@/analytics';
 import { addHexPrefix, isL2Network } from '@/handlers/web3';
 import { CurrencySelectionTypes, Network, TokenSectionTypes } from '@/helpers';
 import {
-  useCoinListEditOptions,
   useInteraction,
   useMagicAutofocus,
   usePrevious,
@@ -366,7 +365,7 @@ export default function CurrencySelectModal() {
         setCurrentChainId(ethereumUtils.getChainIdFromType(item.type));
       }
       if (searchQueryForSearch) {
-        analytics.track('Selected a search result in Swap', {
+        analytics.track(analytics.event.swapSearchResultSelected, {
           name: item.name,
           searchQueryForSearch,
           symbol: item.symbol,

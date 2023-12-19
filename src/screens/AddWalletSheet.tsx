@@ -6,7 +6,7 @@ import Routes from '@/navigation/routesNames';
 import React, { useMemo, useRef } from 'react';
 import * as i18n from '@/languages';
 import { HARDWARE_WALLETS, PROFILES, useExperimentalFlag } from '@/config';
-import { analytics, analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import { InteractionManager, View } from 'react-native';
 import { createAccountForWallet, walletsLoadState } from '@/redux/wallets';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
@@ -67,11 +67,14 @@ export const AddWalletSheet = () => {
 
   const onPressCreate = async () => {
     try {
-      analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
+      analytics.track(analytics.event.addWalletFlowStarted, {
         isFirstWallet,
         type: 'new',
       });
-      analytics.track('Tapped "Create a new wallet"');
+      analytics.track(analytics.event.pressedButton, {
+        buttonName: 'add_wallet_sheet_create_wallet',
+        action: 'Tapped "Create a new wallet"',
+      });
       if (creatingWallet.current) return;
       creatingWallet.current = true;
 
@@ -196,8 +199,11 @@ export const AddWalletSheet = () => {
   };
 
   const onPressRestoreFromSeed = () => {
-    analytics.track('Tapped "Add an existing wallet"');
-    analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
+    analytics.track(analytics.event.pressedButton, {
+      buttonName: 'add_wallet_sheet_add_existing_wallet',
+      action: 'Tapped "Add an existing wallet"',
+    });
+    analytics.track(analytics.event.addWalletFlowStarted, {
       isFirstWallet,
       type: 'seed',
     });
@@ -208,8 +214,11 @@ export const AddWalletSheet = () => {
   };
 
   const onPressWatch = () => {
-    analytics.track('Tapped "Add an existing wallet"');
-    analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
+    analytics.track(analytics.event.pressedButton, {
+      buttonName: 'add_wallet_sheet_add_watched_wallet',
+      action: 'Tapped "Add a watched wallet"',
+    });
+    analytics.track(analytics.event.addWalletFlowStarted, {
       isFirstWallet,
       type: 'watch',
     });
@@ -220,7 +229,7 @@ export const AddWalletSheet = () => {
   };
 
   const onPressRestoreFromCloud = async () => {
-    analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
+    analytics.track(analytics.event.addWalletFlowStarted, {
       isFirstWallet,
       type: 'seed',
     });
@@ -288,7 +297,7 @@ export const AddWalletSheet = () => {
   }
 
   const onPressConnectHardwareWallet = () => {
-    analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
+    analytics.track(analytics.event.addWalletFlowStarted, {
       isFirstWallet: false,
       type: 'ledger_nano_x',
     });

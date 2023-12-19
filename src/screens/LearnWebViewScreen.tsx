@@ -18,7 +18,7 @@ import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { globalColors } from '@/design-system/color/palettes';
 import { ButtonPressAnimation } from '@/components/animations';
 import { IS_ANDROID } from '@/env';
-import { analyticsV2 } from '@/analytics';
+import { analytics } from '@/analytics';
 import * as i18n from '@/languages';
 import {
   buildRainbowLearnUrl,
@@ -39,7 +39,7 @@ export default function LearnWebViewScreen() {
 
   useEffect(
     () => () => {
-      analyticsV2.track(analyticsV2.event.learnArticleOpened, {
+      analytics.track(analytics.event.learnArticleOpened, {
         durationSeconds: (Date.now() - startTime.current) / 1000,
         url,
         cardId: key,
@@ -55,7 +55,7 @@ export default function LearnWebViewScreen() {
   const onPressShare = useCallback(async () => {
     const shared = await Share.share({ url });
     if (shared.action === Share.sharedAction) {
-      analyticsV2.track(analyticsV2.event.learnArticleShared, {
+      analytics.track(analytics.event.learnArticleShared, {
         url,
         category,
         cardId: key,
