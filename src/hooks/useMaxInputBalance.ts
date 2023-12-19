@@ -17,7 +17,7 @@ export default function useMaxInputBalance() {
         l1GasFeeOptimism
       );
 
-      setMaxInputBalance(newInputBalance);
+      setMaxInputBalance(newInputBalance.toString());
       return newInputBalance;
     },
     [l1GasFeeOptimism, selectedGasFee]
