@@ -19,6 +19,7 @@ export const OP_REWARDS = '$OP Rewards';
 export const DEFI_POSITIONS = 'Defi Positions';
 export const NFT_OFFERS = 'NFT Offers';
 export const MINTS = 'Mints';
+export const POINTS = 'Points';
 export const REMOTE_PROMO_SHEETS = 'RemotePromoSheets';
 
 /**
@@ -48,6 +49,7 @@ export const defaultConfig: Record<string, ExperimentalValue> = {
   [DEFI_POSITIONS]: { settings: true, value: true },
   [NFT_OFFERS]: { settings: true, value: true },
   [MINTS]: { settings: true, value: false },
+  [POINTS]: { settings: true, value: false },
   [REMOTE_PROMO_SHEETS]: { settings: true, value: false },
 };
 

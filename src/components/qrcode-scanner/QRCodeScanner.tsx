@@ -11,6 +11,7 @@ import { IS_ANDROID } from '@/env';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
+import { useNavigation } from '@/navigation';
 
 const deviceWidth = deviceUtils.dimensions.width;
 const deviceHeight = deviceUtils.dimensions.height;

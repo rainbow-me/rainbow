@@ -79,3 +79,7 @@ export function sortNetworks(): NetworkProperties[] {
 
   return RainbowNetworks.sort(tokenSort);
 }
+
+export function getSwappableNetworks(): NetworkProperties[] {
+  return RainbowNetworks.filter(network => network.features.swaps);
+}

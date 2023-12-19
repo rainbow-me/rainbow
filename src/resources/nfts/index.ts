@@ -91,8 +91,8 @@ export function useLegacyNFTs({ address }: { address: string }) {
         fetchPolygonAllowlist(),
       ]);
       const { data, nextCursor } = simplehashResponse;
-      const newNFTs = filterSimpleHashNFTs(data, polygonAllowlist).map(
-        simpleHashNFTToUniqueAsset
+      const newNFTs = filterSimpleHashNFTs(data, polygonAllowlist).map(nft =>
+        simpleHashNFTToUniqueAsset(nft, address)
       );
       return {
         data: newNFTs,
