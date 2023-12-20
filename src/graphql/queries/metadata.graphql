@@ -268,6 +268,7 @@ query getPointsDataForWallet($address: String!) {
       stats {
         total_users
         total_points
+        rank_cutoff
       }
       accounts {
         address
@@ -285,6 +286,7 @@ query getPointsDataForWallet($address: String!) {
       }
       stats {
         position {
+          unranked
           current
         }
       }
@@ -302,6 +304,10 @@ mutation onboardPoints(
   $referral: String
 ) {
   onboardPoints(address: $address, signature: $signature, referral: $referral) {
+    error {
+      message
+      type
+    }
     meta {
       distribution {
         next
@@ -312,6 +318,7 @@ mutation onboardPoints(
       stats {
         total_users
         total_points
+        rank_cutoff
       }
       accounts {
         address
@@ -329,6 +336,7 @@ mutation onboardPoints(
       }
       stats {
         position {
+          unranked
           current
         }
       }
@@ -349,10 +357,6 @@ mutation onboardPoints(
           }
         }
       }
-    }
-    error {
-      message
-      type
     }
   }
 }

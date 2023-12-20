@@ -43,14 +43,22 @@ export default function NFTBriefTokenInfoRow({
 
   useEffect(() => {
     const fetchFloorPrice = async () => {
-      const result = await fetchReservoirNFTFloorPrice(asset);
-      if (result) {
-        setFloorPrice(result);
-      } else {
-        setFloorPrice(formatPrice(asset?.floorPriceEth, 'ETH'));
+      try {
+        const result = await fetchReservoirNFTFloorPrice(asset);
+        if (result !== undefined) {
+          setFloorPrice(result);
+        } else {
+          setFloorPrice(NONE);
+        }
+      } catch (error) {
+        setFloorPrice(NONE);
       }
     };
-    fetchFloorPrice();
+    if (asset?.floorPriceEth) {
+      setFloorPrice(formatPrice(asset?.floorPriceEth, 'ETH'));
+    } else {
+      fetchFloorPrice();
+    }
   }, [asset]);
 
   const { data: listing } = useNFTListing({

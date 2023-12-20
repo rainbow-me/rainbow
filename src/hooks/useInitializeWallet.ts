@@ -24,7 +24,7 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { runKeychainIntegrityChecks } from '@/handlers/walletReadyEvents';
 import { checkPendingTransactionsOnInitialize } from '@/redux/data';
-import logger from '@/utils/logger';
+import { logger } from '@/logger';
 
 export default function useInitializeWallet() {
   const dispatch = useDispatch();
@@ -69,19 +69,19 @@ export default function useInitializeWallet() {
         PerformanceTracking.startMeasuring(
           PerformanceMetrics.useInitializeWallet
         );
-        logger.sentry('Start wallet setup');
+        logger.log('Start wallet setup');
         await resetAccountState();
-        logger.sentry('resetAccountState ran ok');
+        logger.log('resetAccountState ran ok');
 
         const isImporting = !!seedPhrase;
-        logger.sentry('isImporting?', isImporting);
+        logger.log(`isImporting? ${isImporting}`);
 
         if (shouldRunMigrations && !seedPhrase) {
-          logger.sentry('shouldRunMigrations && !seedPhrase? => true');
+          logger.log('shouldRunMigrations && !seedPhrase? => true');
           await dispatch(walletsLoadState(profilesEnabled));
-          logger.sentry('walletsLoadState call #1');
+          logger.log('walletsLoadState call #1');
           await runMigrations();
-          logger.sentry('done with migrations');
+          logger.log('done with migrations');
         }
 
         setIsSmallBalancesOpen(false);
@@ -100,7 +100,7 @@ export default function useInitializeWallet() {
           silent
         );
 
-        logger.sentry('walletInit returned ', {
+        logger.log('walletInit returned', {
           isNew,
           walletAddress,
         });
@@ -112,12 +112,12 @@ export default function useInitializeWallet() {
         }
 
         if (seedPhrase || isNew) {
-          logger.sentry('walletsLoadState call #2');
+          logger.log('walletLoadState call #2');
           await dispatch(walletsLoadState(profilesEnabled));
         }
 
         if (isNil(walletAddress)) {
-          logger.sentry('walletAddress is nil');
+          logger.log('walletAddress is nil');
           Alert.alert(lang.t('wallet.import_failed_invalid_private_key'));
           if (!isImporting) {
             dispatch(appStateUpdate({ walletReady: true }));
@@ -127,27 +127,30 @@ export default function useInitializeWallet() {
 
         if (!(isNew || isImporting)) {
           await loadGlobalEarlyData();
-          logger.sentry('loaded global data...');
+          logger.log('loaded global data...');
         }
 
         await dispatch(settingsUpdateAccountAddress(walletAddress));
-        logger.sentry('updated settings address', walletAddress);
+        logger.log('updated settings address', { walletAddress });
 
         // Newly created / imported accounts have no data in localstorage
         if (!(isNew || isImporting)) {
           await loadAccountData(network);
-          logger.sentry('loaded account data', network);
-        }
-        if (!switching) {
-          hideSplashScreen();
+          logger.log('loaded account data', { network });
         }
 
-        logger.sentry('Hide splash screen');
+        try {
+          hideSplashScreen();
+          logger.log('Hide splash screen');
+        } catch (err) {
+          logger.log('Error while hiding splash screen', { error: err });
+        }
+
         initializeAccountData();
 
         dispatch(appStateUpdate({ walletReady: true }));
+        logger.log('💰 Wallet initialized');
 
-        logger.sentry('💰 Wallet initialized');
         PerformanceTracking.finishMeasuring(
           PerformanceMetrics.useInitializeWallet,
           {
@@ -164,12 +167,18 @@ export default function useInitializeWallet() {
         PerformanceTracking.clearMeasure(
           PerformanceMetrics.useInitializeWallet
         );
-        logger.sentry('Error while initializing wallet');
+        logger.log('Error while initializing wallet', { error });
         // TODO specify error states more granular
         if (!switching) {
           await runKeychainIntegrityChecks();
-          hideSplashScreen();
         }
+
+        try {
+          hideSplashScreen();
+        } catch (err) {
+          logger.log('Error while hiding splash screen', { error: err });
+        }
+
         captureException(error);
         Alert.alert(lang.t('wallet.something_went_wrong_importing'));
         dispatch(appStateUpdate({ walletReady: true }));
