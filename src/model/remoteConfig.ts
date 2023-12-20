@@ -141,7 +141,6 @@ const remoteConfigQueryKey = createQueryKey(
 
 export async function fetchRemoteConfig(): Promise<RainbowConfig> {
   const config: RainbowConfig = { ...DEFAULT_CONFIG };
-  throw new RainbowError('Failed to fetch remote config');
   try {
     const fetchedRemotely = await remoteConfig().fetchAndActivate();
     if (!fetchedRemotely) {
