@@ -134,8 +134,7 @@ export const AddWalletSheet = () => {
                     const newWallets = await dispatch(
                       createAccountForWallet(primaryWalletKey, color, name)
                     );
-                    // @ts-ignore
-                    await initializeWallet();
+                    await initializeWallet({ switching: true });
                     // If this wallet was previously backed up to the cloud
                     // We need to update userData backup so it can be restored too
                     if (
@@ -163,8 +162,7 @@ export const AddWalletSheet = () => {
                       clearCallbackOnStartCreation: true,
                     });
                     await dispatch(walletsLoadState(profilesEnabled));
-                    // @ts-ignore
-                    await initializeWallet();
+                    await initializeWallet({ switching: true });
                   }
                 } catch (e) {
                   logger.error(e as RainbowError, {

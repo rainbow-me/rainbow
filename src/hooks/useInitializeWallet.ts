@@ -26,6 +26,18 @@ import { runKeychainIntegrityChecks } from '@/handlers/walletReadyEvents';
 import { checkPendingTransactionsOnInitialize } from '@/redux/data';
 import { logger } from '@/logger';
 
+type InitializeWalletParams = {
+  seedPhrase?: string | null;
+  color?: string | null;
+  name?: string | null;
+  shouldRunMigrations?: boolean;
+  overwrite?: boolean;
+  checkedWallet?: string | null;
+  switching?: boolean;
+  image?: string | null;
+  silent?: boolean;
+};
+
 export default function useInitializeWallet() {
   const dispatch = useDispatch();
   const resetAccountState = useResetAccountState();
@@ -51,20 +63,17 @@ export default function useInitializeWallet() {
   };
 
   const initializeWallet = useCallback(
-    async (
-      // @ts-expect-error This callback will be refactored to use a single object param with full TS typings
-      seedPhrase,
+    async ({
+      seedPhrase = null,
       color = null,
       name = null,
       shouldRunMigrations = false,
       overwrite = false,
       checkedWallet = null,
-      // @ts-expect-error This callback will be refactored to use a single object param with full TS typings
       switching,
-      // @ts-expect-error This callback will be refactored to use a single object param with full TS typings
-      image,
-      silent = false
-    ) => {
+      image = null,
+      silent = false,
+    }: InitializeWalletParams) => {
       try {
         PerformanceTracking.startMeasuring(
           PerformanceMetrics.useInitializeWallet

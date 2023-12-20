@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { findLatestBackUp } from '../model/backup';
@@ -69,8 +69,9 @@ export default function useWallets() {
     const p1 = dispatch(walletsSetSelected(wallets![walletKey]));
     const p2 = dispatch(addressSetSelected(toChecksumAddress(address)!));
     await Promise.all([p1, p2]);
-    // @ts-expect-error ts-migrate(2554) FIXME: Expected 8-9 arguments, but got 7.
-    return initializeWallet(null, null, null, false, false, null, true);
+    return initializeWallet({
+      switching: true,
+    });
   };
 
   return {

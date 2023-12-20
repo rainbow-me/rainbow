@@ -130,8 +130,10 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
 
   useEffect(() => {
     const initializeAndSetParams = async () => {
-      // @ts-expect-error messed up initializeWallet types
-      await initializeWallet(null, null, null, !params?.emptyWallet);
+      await initializeWallet({
+        shouldRunMigrations: !params?.emptyWallet,
+        switching: false,
+      });
       setInitialized(true);
       setParams({ emptyWallet: false });
     };

@@ -12,7 +12,7 @@ import { Centered, Column, Row } from '../components/layout';
 import { Sheet, SheetTitle } from '../components/sheet';
 import { Text } from '../components/text';
 import { removeWalletData } from '../handlers/localstorage/removeWallet';
-import { cleanUpWalletKeys, RainbowWallet } from '../model/wallet';
+import { cleanUpWalletKeys } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import {
   addressSetSelected,
@@ -166,8 +166,7 @@ export default function ChangeWalletSheet() {
         const p1 = dispatch(walletsSetSelected(wallet));
         const p2 = dispatch(addressSetSelected(address));
         await Promise.all([p1, p2]);
-        // @ts-ignore
-        initializeWallet(null, null, null, false, false, null, true);
+        initializeWallet({ switching: true });
         if (!fromDeletion) {
           goBack();
 
@@ -188,6 +187,7 @@ export default function ChangeWalletSheet() {
       onChangeWallet,
       wallets,
       watchOnly,
+      runChecks,
     ]
   );
 

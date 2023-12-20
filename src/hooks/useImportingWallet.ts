@@ -46,7 +46,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const {
     getParent: dangerouslyGetParent,
     navigate,
-    goBack,
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'replace' does not exist on type '{ dispa... Remove this comment to see the full error message
     replace,
     setParams,
@@ -294,17 +293,14 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           handleSetImporting(false);
         } else {
           const previousWalletCount = keys(wallets).length;
-          initializeWallet(
-            input,
-            // @ts-expect-error Initialize wallet is not typed properly now, will be fixed with a refactoring. TODO: remove comment when changing intializeWallet
+          initializeWallet({
+            seedPhrase: input,
             color,
-            name ? name : '',
-            false,
-            false,
+            name: name ? name : '',
             checkedWallet,
-            undefined,
-            image
-          )
+            switching: false,
+            image,
+          })
             .then(success => {
               ios && handleSetImporting(false);
               if (success) {
@@ -364,8 +360,14 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                 // Wait for error messages then refocus
                 setTimeout(() => {
                   inputRef.current?.focus();
-                  // @ts-expect-error ts-migrate(2554) FIXME: Expected 8-9 arguments, but got 0.
-                  initializeWallet();
+                  // TODO: Check if these parameters match up to OLD empty state
+                  try {
+                    initializeWallet({
+                      switching: false,
+                    });
+                  } catch (err) {
+                    logger.error('error initializing wallet: ', err);
+                  }
                 }, 100);
               }
             })
@@ -375,8 +377,15 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
               logger.error('error importing seed phrase: ', error);
               setTimeout(() => {
                 inputRef.current?.focus();
-                // @ts-expect-error ts-migrate(2554) FIXME: Expected 8-9 arguments, but got 0.
-                initializeWallet();
+
+                try {
+                  // TODO: Check if these parameters match up to OLD empty state
+                  initializeWallet({
+                    switching: false,
+                  });
+                } catch (err) {
+                  logger.error('error initializing wallet: ', err);
+                }
               }, 100);
             });
         }

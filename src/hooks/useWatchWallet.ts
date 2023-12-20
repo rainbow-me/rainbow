@@ -47,8 +47,7 @@ export default function useWatchWallet({
         const p2 = dispatch(addressSetSelected(address));
         await Promise.all([p1, p2]);
 
-        // @ts-expect-error ts-migrate(2554) FIXME: Expected 8-9 arguments, but got 7.
-        initializeWallet(null, null, null, false, false, null, true);
+        initializeWallet({ switching: true });
       } catch (e) {
         logger.log('error while switching account', e);
       }
