@@ -39,6 +39,7 @@ import SectionListScrollToTopProvider, {
   useSectionListScrollToTopContext,
 } from './SectionListScrollToTopContext';
 import { isUsingButtonNavigation } from '@/helpers/statusBarHelper';
+import { useRemoteConfig } from '@/model/remoteConfig';
 
 const HORIZONTAL_TAB_BAR_INSET = 6;
 
@@ -80,6 +81,8 @@ const TabBar = ({
   const { width: deviceWidth } = useDimensions();
   const { colors, isDarkMode } = useTheme();
 
+  const data = useRemoteConfig();
+  console.log(data.test_do_not_use);
   const showPointsTab = IS_DEV || IS_TEST || config.points_enabled;
   const NUMBER_OF_TABS = showPointsTab ? 4 : 3;
 

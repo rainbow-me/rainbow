@@ -195,10 +195,13 @@ export function useRemoteConfig(): RainbowConfig {
     remoteConfigQueryKey,
     fetchRemoteConfig,
     {
-      enabled: false,
-      staleTime: Infinity,
-      cacheTime: 0,
+      staleTime: 600_000, // 10 minutes,
+      cacheTime: Infinity,
+      refetchInterval: 600_000, // 10 minutes
       placeholderData: DEFAULT_CONFIG,
+      retry: true,
+      retryDelay: (attempt: number) =>
+        Math.min(attempt > 1 ? 2 ** attempt * 1000 : 1000, 30 * 1000),
     }
   );
 
