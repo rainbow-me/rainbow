@@ -141,6 +141,7 @@ const remoteConfigQueryKey = createQueryKey(
 
 export async function fetchRemoteConfig(): Promise<RainbowConfig> {
   const config: RainbowConfig = { ...DEFAULT_CONFIG };
+  throw new RainbowError('Failed to fetch remote config');
   try {
     const fetchedRemotely = await remoteConfig().fetchAndActivate();
     if (!fetchedRemotely) {
@@ -209,6 +210,7 @@ const QUERY_PARAMS = {
   retry: 3,
   retryDelay: (attempt: number) =>
     Math.min(attempt > 1 ? 2 ** attempt * 1000 : 1000, 30 * 1000),
+  onError: () => queryClient.setQueryData(remoteConfigQueryKey, DEFAULT_CONFIG),
 };
 
 export async function prefetchRemoteConfig(): Promise<void> {
