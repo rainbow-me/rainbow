@@ -190,6 +190,7 @@ export async function fetchRemoteConfig() {
       config[key] = entry.asString();
     }
   });
+  console.log(config);
   return config;
 }
 
@@ -200,7 +201,8 @@ export function useRemoteConfig(): RainbowConfig {
     {
       // staleTime: 600_000, // 10 minutes,
       staleTime: 0,
-      cacheTime: Infinity,
+      cacheTime: 0,
+      // cacheTime: Infinity,
       refetchInterval: 600_000, // 10 minutes
       placeholderData: DEFAULT_CONFIG,
       retry: true,

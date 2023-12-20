@@ -34,7 +34,6 @@ import RecyclerListViewScrollToTopProvider, {
 import { discoverOpenSearchFnRef } from '@/screens/discover/components/DiscoverSearchContainer';
 import { InteractionManager, View } from 'react-native';
 import { IS_ANDROID, IS_DEV, IS_IOS, IS_TEST } from '@/env';
-import config from '@/model/config';
 import SectionListScrollToTopProvider, {
   useSectionListScrollToTopContext,
 } from './SectionListScrollToTopContext';
@@ -77,15 +76,12 @@ const TabBar = ({
   jumpTo,
   lastPress,
   setLastPress,
+  showPointsTab,
 }) => {
   const { width: deviceWidth } = useDimensions();
   const { colors, isDarkMode } = useTheme();
 
-  const data = useRemoteConfig();
-  console.log(data.test_do_not_use);
-  const showPointsTab = IS_DEV || IS_TEST || config.points_enabled;
   const NUMBER_OF_TABS = showPointsTab ? 4 : 3;
-
   const tabWidth =
     (deviceWidth - HORIZONTAL_TAB_BAR_INSET * 2) / NUMBER_OF_TABS;
   const tabPillStartPosition = (tabWidth - 72) / 2 + HORIZONTAL_TAB_BAR_INSET;
@@ -346,7 +342,9 @@ export function SwipeNavigator() {
 
   const [lastPress, setLastPress] = useState();
 
-  const showPointsTab = IS_DEV || IS_TEST || config.points_enabled;
+  const { points_enabled } = useRemoteConfig();
+
+  const showPointsTab = IS_DEV || IS_TEST || points_enabled;
 
   // ////////////////////////////////////////////////////
   // Animations
@@ -366,6 +364,7 @@ export function SwipeNavigator() {
               tabBar={props => (
                 <TabBar
                   {...props}
+                  showPointsTab={showPointsTab}
                   lastPress={lastPress}
                   setLastPress={setLastPress}
                 />

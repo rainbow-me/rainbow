@@ -6,7 +6,6 @@ import { useNavigation } from '@/navigation';
 import { Box } from '@/design-system';
 import { useAccountProfile } from '@/hooks';
 import { POINTS, useExperimentalFlag } from '@/config';
-import config from '@/model/config';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -21,6 +20,7 @@ import ReferralContent from './content/ReferralContent';
 import { PointsErrorType } from '@/graphql/__generated__/metadataPOST';
 import { delay } from '@/utils/delay';
 import { WrappedAlert as Alert } from '@/helpers/alert';
+import { useRemoteConfig } from '@/model/remoteConfig';
 
 export const POINTS_ROUTES = {
   CLAIM_CONTENT: 'ClaimContent',
@@ -36,8 +36,9 @@ export default function PointsScreen() {
     accountColor,
     accountSymbol,
   } = useAccountProfile();
+  const { points_fully_enabled } = useRemoteConfig();
   const pointsFullyEnabled =
-    useExperimentalFlag(POINTS) || config.points_fully_enabled;
+    useExperimentalFlag(POINTS) || points_fully_enabled;
   const { navigate } = useNavigation();
   const { data } = usePoints({
     walletAddress: accountAddress,
