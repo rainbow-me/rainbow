@@ -12,8 +12,8 @@ import { arcDevClient } from '@/graphql';
 import { CardFilter, CardOrder } from '@/graphql/__generated__/arc';
 import { noop } from 'lodash';
 
-// Set a default stale time of 10 seconds so we don't over-fetch
-// (query will serve cached data & invalidate after 10s).
+// Set a default stale time of 60 seconds so we don't over-fetch
+// (query will serve cached data & invalidate after 60s).
 const defaultStaleTime = 60_000;
 
 export type CardCollectionArgs = {
@@ -75,7 +75,7 @@ export function useCardCollectionQuery(
   props: CardCollectionArgs = {},
   {
     enabled,
-    refetchInterval = 30_000,
+    refetchInterval = 60_000,
     onSuccess = noop,
   }: {
     enabled?: boolean;

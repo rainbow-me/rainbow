@@ -66,40 +66,40 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
   ]);
 
   const onPress = useCallback(() => {
-    const internalNavigation = (route: string, options: any) => {
-      navigate(route, options);
-    };
-
     if (primaryButton && primaryButton.url) {
       Linking.openURL(primaryButton.url);
     } else if (primaryButton && primaryButton.route) {
-      internalNavigation(primaryButton.route, primaryButton.props);
+      navigate(primaryButton.route, primaryButton.props);
     }
   }, [navigate, primaryButton]);
 
   const imageForPlatform = () => {
-    if (card.imageCollection.items.length === 1) {
-      return card.imageCollection.items[0].url;
+    if (!card?.imageCollection?.items?.length) {
+      return undefined;
+    }
+
+    if (card?.imageCollection?.items?.length === 1) {
+      return card?.imageCollection?.items[0].url;
     }
 
     if (IS_IOS) {
-      const image = card.imageCollection.items.find(({ url }) =>
+      const image = card?.imageCollection?.items?.find(({ url }) =>
         /ios/i.test(url)
       );
       if (image) {
         return image.url;
       }
 
-      return card.imageCollection.items[0].url;
+      return card?.imageCollection?.items[0].url;
     } else {
-      const image = card.imageCollection.items.find(({ url }) =>
+      const image = card?.imageCollection?.items?.find(({ url }) =>
         /android/i.test(url)
       );
       if (image) {
         return image.url;
       }
 
-      return card.imageCollection.items[0].url;
+      return card?.imageCollection?.items[0].url;
     }
   };
 
@@ -122,7 +122,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
     >
       <Box
         flexDirection="row"
-        width={{ custom: width - GUTTER_SIZE - Number(card.padding) * 2 }}
+        width={{ custom: width - GUTTER_SIZE - Number(card.padding || 14) * 2 }}
         gap={12}
       >
         <Media
@@ -155,7 +155,11 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
         <Box
           width={{
             custom:
-              width - 40 - Number(card.padding) * 2 - GUTTER_SIZE * 2 - 12,
+              width -
+              40 -
+              Number(card.padding || 14) * 2 -
+              GUTTER_SIZE * 2 -
+              12,
           }}
           flexDirection="column"
           gap={12}
@@ -163,7 +167,11 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
           <Box
             width={{
               custom:
-                width - 40 - Number(card.padding) * 2 - GUTTER_SIZE * 2 - 18,
+                width -
+                40 -
+                Number(card.padding || 14) * 2 -
+                GUTTER_SIZE * 2 -
+                18,
             }}
             flexDirection="row"
             paddingTop="8px"
@@ -190,7 +198,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
             <Box
               flexDirection="row"
               width={{
-                custom: width - 40 - Number(card.padding) * 2 - 80 - 18,
+                custom: width - 40 - Number(card.padding || 14) * 2 - 80 - 18,
               }}
               justifyContent="space-between"
             >
