@@ -73,7 +73,7 @@ export const generateRainbowColors = (
 };
 
 export const triggerHapticFeedback = (hapticType: HapticFeedbackType) =>
-  ReactNativeHapticFeedback.trigger(hapticType);
+  ReactNativeHapticFeedback?.trigger(hapticType);
 
 const BASE_URL = `https://twitter.com/intent/tweet?text=`;
 const NEWLINE_OR_SPACE = IS_IOS ? '\n\n' : ' ';
