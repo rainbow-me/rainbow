@@ -82,7 +82,7 @@ import { initializeReservoirClient } from '@/resources/reservoir/client';
 import { ReviewPromptAction } from '@/storage/schema';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { RemotePromoSheetProvider } from '@/components/remote-promo-sheet/RemotePromoSheetProvider';
-import { fetchRemoteConfig, remoteConfigQueryKey } from '@/model/remoteConfig';
+import { prefetchRemoteConfig } from '@/model/remoteConfig';
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -305,14 +305,9 @@ function Root() {
   React.useEffect(() => {
     async function initializeApplication() {
       await initSentry(); // must be set up immediately
-
+      prefetchRemoteConfig();
       // must happen immediately, but after Sentry
       await migrate();
-
-      queryClient.prefetchQuery({
-        queryKey: remoteConfigQueryKey,
-        queryFn: fetchRemoteConfig,
-      });
 
       const isReturningUser = ls.device.get(['isReturningUser']);
       const [deviceId, deviceIdWasJustCreated] = await getOrCreateDeviceId();

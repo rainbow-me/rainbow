@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { createQueryKey } from '@/react-query';
+import { createQueryKey, queryClient } from '@/react-query';
 import remoteConfig from '@react-native-firebase/remote-config';
 import {
   ARBITRUM_MAINNET_RPC,
@@ -19,8 +19,7 @@ import {
 } from 'react-native-dotenv';
 import { RainbowError, logger } from '@/logger';
 
-export interface RainbowConfig
-  extends Record<string, string | boolean | number> {
+interface RainbowConfig extends Record<string, string | boolean | number> {
   arbitrum_mainnet_rpc: string;
   bsc_mainnet_rpc: string;
   data_api_key: string;
@@ -134,7 +133,7 @@ const DEFAULT_CONFIG: RainbowConfig = {
   test_do_not_use: true,
 };
 
-export const remoteConfigQueryKey = createQueryKey(
+const remoteConfigQueryKey = createQueryKey(
   'remoteConfig',
   {},
   { persisterVersion: 1 }
@@ -201,19 +200,26 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
   }
 }
 
+const QUERY_PARAMS = {
+  queryKey: remoteConfigQueryKey,
+  queryFn: fetchRemoteConfig,
+  staleTime: 600_000, // 10 minutes,
+  cacheTime: Infinity,
+  placeholderData: DEFAULT_CONFIG,
+  retry: 3,
+  retryDelay: (attempt: number) =>
+    Math.min(attempt > 1 ? 2 ** attempt * 1000 : 1000, 30 * 1000),
+};
+
+export async function prefetchRemoteConfig(): Promise<void> {
+  await queryClient.prefetchQuery(QUERY_PARAMS);
+}
+
 export function useRemoteConfig(): RainbowConfig {
   const query = useQuery<RainbowConfig>(
     remoteConfigQueryKey,
     fetchRemoteConfig,
-    {
-      staleTime: 600_000, // 10 minutes,
-      cacheTime: Infinity,
-      refetchInterval: 600_000, // 10 minutes
-      placeholderData: DEFAULT_CONFIG,
-      retry: true,
-      retryDelay: (attempt: number) =>
-        Math.min(attempt > 1 ? 2 ** attempt * 1000 : 1000, 30 * 1000),
-    }
+    QUERY_PARAMS
   );
 
   return query?.data ?? DEFAULT_CONFIG;
