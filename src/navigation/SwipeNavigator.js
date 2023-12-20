@@ -33,12 +33,13 @@ import RecyclerListViewScrollToTopProvider, {
 } from '@/navigation/RecyclerListViewScrollToTopContext';
 import { discoverOpenSearchFnRef } from '@/screens/discover/components/DiscoverSearchContainer';
 import { InteractionManager, View } from 'react-native';
-import { IS_ANDROID, IS_DEV, IS_IOS, IS_TEST } from '@/env';
+import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import SectionListScrollToTopProvider, {
   useSectionListScrollToTopContext,
 } from './SectionListScrollToTopContext';
 import { isUsingButtonNavigation } from '@/helpers/statusBarHelper';
 import { useRemoteConfig } from '@/model/remoteConfig';
+import { useExperimentalFlag, POINTS } from '@/config';
 
 const HORIZONTAL_TAB_BAR_INSET = 6;
 
@@ -340,11 +341,13 @@ export function SwipeNavigator() {
   const { network } = useAccountSettings();
   const { colors } = useTheme();
 
+  const experimentalPointsFlagEnabled = useExperimentalFlag(POINTS);
   const [lastPress, setLastPress] = useState();
 
   const { points_enabled } = useRemoteConfig();
 
-  const showPointsTab = IS_DEV || IS_TEST || points_enabled;
+  const showPointsTab =
+    experimentalPointsFlagEnabled || IS_TEST || points_enabled;
 
   // ////////////////////////////////////////////////////
   // Animations
