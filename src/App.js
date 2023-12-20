@@ -305,7 +305,7 @@ function Root() {
   React.useEffect(() => {
     async function initializeApplication() {
       await initSentry(); // must be set up immediately
-      prefetchRemoteConfig();
+      await prefetchRemoteConfig();
       // must happen immediately, but after Sentry
       await migrate();
 

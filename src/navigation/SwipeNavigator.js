@@ -76,11 +76,14 @@ const TabBar = ({
   jumpTo,
   lastPress,
   setLastPress,
-  showPointsTab,
+  // showPointsTab,
 }) => {
   const { width: deviceWidth } = useDimensions();
   const { colors, isDarkMode } = useTheme();
 
+  const { points_enabled, test_do_not_use } = useRemoteConfig();
+
+  const showPointsTab = test_do_not_use;
   const NUMBER_OF_TABS = showPointsTab ? 4 : 3;
   const tabWidth =
     (deviceWidth - HORIZONTAL_TAB_BAR_INSET * 2) / NUMBER_OF_TABS;
@@ -342,9 +345,9 @@ export function SwipeNavigator() {
 
   const [lastPress, setLastPress] = useState();
 
-  const { points_enabled } = useRemoteConfig();
+  const { points_enabled, test_do_not_use } = useRemoteConfig();
 
-  const showPointsTab = IS_DEV || IS_TEST || points_enabled;
+  const showPointsTab = test_do_not_use;
 
   // ////////////////////////////////////////////////////
   // Animations
