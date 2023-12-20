@@ -141,57 +141,64 @@ export const remoteConfigQueryKey = createQueryKey(
 );
 
 export async function fetchRemoteConfig() {
-  console.log('💙💙💙💙💙');
   const config: RainbowConfig = { ...DEFAULT_CONFIG };
-  const fetchedRemotely = await remoteConfig().fetchAndActivate();
-  if (!fetchedRemotely) {
-    throw new RainbowError('Failed to fetch remote config');
-  }
-  logger.debug('Remote config fetched successfully');
-  const parameters = remoteConfig().getAll();
-  Object.entries(parameters).forEach($ => {
-    const [key, entry] = $;
-    if (key === 'default_slippage_bips') {
-      config[key] = JSON.parse(entry.asString());
-    } else if (
-      key === 'flashbots_enabled' ||
-      key === 'f2c_enabled' ||
-      key === 'swagg_enabled' ||
-      key === 'op_rewards_enabled' ||
-      key === 'profiles_enabled' ||
-      key === 'mainnet_tx_enabled' ||
-      key === 'arbitrum_tx_enabled' ||
-      key === 'bsc_tx_enabled' ||
-      key === 'polygon_tx_enabled' ||
-      key === 'optimism_tx_enabled' ||
-      key === 'zora_tx_enabled' ||
-      key === 'base_tx_enabled' ||
-      key === 'op_chains_tx_enabled' ||
-      key === 'goerli_tx_enabled' ||
-      key === 'mainnet_enabled' ||
-      key === 'arbitrum_enabled' ||
-      key === 'bsc_enabled' ||
-      key === 'polygon_enabled' ||
-      key === 'optimism_enabled' ||
-      key === 'zora_enabled' ||
-      key === 'base_enabled' ||
-      key === 'op_chains_enabled' ||
-      key === 'goerli_enabled' ||
-      key === 'base_swaps_enabled' ||
-      key === 'mints_enabled' ||
-      key === 'points_enabled' ||
-      key === 'points_fully_enabled' ||
-      key === 'rpc_proxy_enabled' ||
-      key === 'remote_promo_enabled' ||
-      key === 'test_do_not_use'
-    ) {
-      config[key] = entry.asBoolean();
-    } else {
-      config[key] = entry.asString();
+  try {
+    const fetchedRemotely = await remoteConfig().fetchAndActivate();
+    if (!fetchedRemotely) {
+      throw new RainbowError('Failed to fetch remote config');
     }
-  });
-  console.log(config);
-  return config;
+    logger.debug('Remote config fetched successfully');
+    const parameters = remoteConfig().getAll();
+    Object.entries(parameters).forEach($ => {
+      const [key, entry] = $;
+      if (key === 'default_slippage_bips') {
+        config[key] = JSON.parse(entry.asString());
+      } else if (
+        key === 'flashbots_enabled' ||
+        key === 'f2c_enabled' ||
+        key === 'swagg_enabled' ||
+        key === 'op_rewards_enabled' ||
+        key === 'profiles_enabled' ||
+        key === 'mainnet_tx_enabled' ||
+        key === 'arbitrum_tx_enabled' ||
+        key === 'bsc_tx_enabled' ||
+        key === 'polygon_tx_enabled' ||
+        key === 'optimism_tx_enabled' ||
+        key === 'zora_tx_enabled' ||
+        key === 'base_tx_enabled' ||
+        key === 'op_chains_tx_enabled' ||
+        key === 'goerli_tx_enabled' ||
+        key === 'mainnet_enabled' ||
+        key === 'arbitrum_enabled' ||
+        key === 'bsc_enabled' ||
+        key === 'polygon_enabled' ||
+        key === 'optimism_enabled' ||
+        key === 'zora_enabled' ||
+        key === 'base_enabled' ||
+        key === 'op_chains_enabled' ||
+        key === 'goerli_enabled' ||
+        key === 'base_swaps_enabled' ||
+        key === 'mints_enabled' ||
+        key === 'points_enabled' ||
+        key === 'points_fully_enabled' ||
+        key === 'rpc_proxy_enabled' ||
+        key === 'remote_promo_enabled' ||
+        key === 'test_do_not_use'
+      ) {
+        config[key] = entry.asBoolean();
+      } else {
+        config[key] = entry.asString();
+      }
+    });
+    return config;
+  } catch (e) {
+    if (e instanceof RainbowError) {
+      logger.error(e);
+    } else {
+      logger.error(new RainbowError('Failed to fetch remote config'), e);
+    }
+    throw e;
+  }
 }
 
 export function useRemoteConfig(): RainbowConfig {
@@ -199,10 +206,8 @@ export function useRemoteConfig(): RainbowConfig {
     remoteConfigQueryKey,
     fetchRemoteConfig,
     {
-      // staleTime: 600_000, // 10 minutes,
-      staleTime: 0,
-      cacheTime: 0,
-      // cacheTime: Infinity,
+      staleTime: 600_000, // 10 minutes,
+      cacheTime: Infinity,
       refetchInterval: 600_000, // 10 minutes
       placeholderData: DEFAULT_CONFIG,
       retry: true,
