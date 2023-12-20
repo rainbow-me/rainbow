@@ -17,6 +17,7 @@ import {
   BSC_MAINNET_RPC,
   ZORA_MAINNET_RPC,
 } from 'react-native-dotenv';
+import { RainbowError, logger } from '@/logger';
 
 export interface RainbowConfig
   extends Record<string, string | boolean | number> {
@@ -65,6 +66,7 @@ export interface RainbowConfig
   points_enabled: boolean;
   points_fully_enabled: boolean;
   rpc_proxy_enabled: boolean;
+  remote_promo_enabled: boolean;
   test_do_not_use: boolean;
 }
 
@@ -128,6 +130,7 @@ const DEFAULT_CONFIG: RainbowConfig = {
   points_enabled: true,
   points_fully_enabled: true,
   rpc_proxy_enabled: true,
+  remote_promo_enabled: false,
   test_do_not_use: true,
 };
 
@@ -141,52 +144,52 @@ export async function fetchRemoteConfig() {
   console.log('💙💙💙💙💙');
   const config: RainbowConfig = { ...DEFAULT_CONFIG };
   const fetchedRemotely = await remoteConfig().fetchAndActivate();
-  if (fetchedRemotely) {
-    console.log('fetched remote config');
-    const parameters = remoteConfig().getAll();
-    Object.entries(parameters).forEach($ => {
-      const [key, entry] = $;
-      if (key === 'default_slippage_bips') {
-        config[key] = JSON.parse(entry.asString());
-      } else if (
-        key === 'flashbots_enabled' ||
-        key === 'f2c_enabled' ||
-        key === 'swagg_enabled' ||
-        key === 'op_rewards_enabled' ||
-        key === 'profiles_enabled' ||
-        key === 'mainnet_tx_enabled' ||
-        key === 'arbitrum_tx_enabled' ||
-        key === 'bsc_tx_enabled' ||
-        key === 'polygon_tx_enabled' ||
-        key === 'optimism_tx_enabled' ||
-        key === 'zora_tx_enabled' ||
-        key === 'base_tx_enabled' ||
-        key === 'op_chains_tx_enabled' ||
-        key === 'goerli_tx_enabled' ||
-        key === 'mainnet_enabled' ||
-        key === 'arbitrum_enabled' ||
-        key === 'bsc_enabled' ||
-        key === 'polygon_enabled' ||
-        key === 'optimism_enabled' ||
-        key === 'zora_enabled' ||
-        key === 'base_enabled' ||
-        key === 'op_chains_enabled' ||
-        key === 'goerli_enabled' ||
-        key === 'base_swaps_enabled' ||
-        key === 'mints_enabled' ||
-        key === 'points_enabled' ||
-        key === 'points_fully_enabled' ||
-        key === 'rpc_proxy_enabled' ||
-        key === 'test_do_not_use'
-      ) {
-        config[key] = entry.asBoolean();
-      } else {
-        config[key] = entry.asString();
-      }
-    });
-  } else {
-    console.log('failed to fetch remote config');
+  if (!fetchedRemotely) {
+    throw new RainbowError('Failed to fetch remote config');
   }
+  logger.debug('Remote config fetched successfully');
+  const parameters = remoteConfig().getAll();
+  Object.entries(parameters).forEach($ => {
+    const [key, entry] = $;
+    if (key === 'default_slippage_bips') {
+      config[key] = JSON.parse(entry.asString());
+    } else if (
+      key === 'flashbots_enabled' ||
+      key === 'f2c_enabled' ||
+      key === 'swagg_enabled' ||
+      key === 'op_rewards_enabled' ||
+      key === 'profiles_enabled' ||
+      key === 'mainnet_tx_enabled' ||
+      key === 'arbitrum_tx_enabled' ||
+      key === 'bsc_tx_enabled' ||
+      key === 'polygon_tx_enabled' ||
+      key === 'optimism_tx_enabled' ||
+      key === 'zora_tx_enabled' ||
+      key === 'base_tx_enabled' ||
+      key === 'op_chains_tx_enabled' ||
+      key === 'goerli_tx_enabled' ||
+      key === 'mainnet_enabled' ||
+      key === 'arbitrum_enabled' ||
+      key === 'bsc_enabled' ||
+      key === 'polygon_enabled' ||
+      key === 'optimism_enabled' ||
+      key === 'zora_enabled' ||
+      key === 'base_enabled' ||
+      key === 'op_chains_enabled' ||
+      key === 'goerli_enabled' ||
+      key === 'base_swaps_enabled' ||
+      key === 'mints_enabled' ||
+      key === 'points_enabled' ||
+      key === 'points_fully_enabled' ||
+      key === 'rpc_proxy_enabled' ||
+      key === 'remote_promo_enabled' ||
+      key === 'test_do_not_use'
+    ) {
+      config[key] = entry.asBoolean();
+    } else {
+      config[key] = entry.asString();
+    }
+  });
   return config;
 }
 
@@ -195,7 +198,8 @@ export function useRemoteConfig(): RainbowConfig {
     remoteConfigQueryKey,
     fetchRemoteConfig,
     {
-      staleTime: 600_000, // 10 minutes,
+      // staleTime: 600_000, // 10 minutes,
+      staleTime: 0,
       cacheTime: Infinity,
       refetchInterval: 600_000, // 10 minutes
       placeholderData: DEFAULT_CONFIG,
