@@ -66,7 +66,6 @@ interface RainbowConfig extends Record<string, string | boolean | number> {
   points_fully_enabled: boolean;
   rpc_proxy_enabled: boolean;
   remote_promo_enabled: boolean;
-  test_do_not_use: boolean;
 }
 
 const DEFAULT_CONFIG: RainbowConfig = {
@@ -130,7 +129,6 @@ const DEFAULT_CONFIG: RainbowConfig = {
   points_fully_enabled: true,
   rpc_proxy_enabled: true,
   remote_promo_enabled: false,
-  test_do_not_use: true,
 };
 
 const remoteConfigQueryKey = createQueryKey(
@@ -182,8 +180,7 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
         key === 'points_enabled' ||
         key === 'points_fully_enabled' ||
         key === 'rpc_proxy_enabled' ||
-        key === 'remote_promo_enabled' ||
-        key === 'test_do_not_use'
+        key === 'remote_promo_enabled'
       ) {
         config[key] = entry.asBoolean();
       } else {
@@ -221,11 +218,7 @@ export async function prefetchRemoteConfig(): Promise<void> {
 }
 
 export function useRemoteConfig(): RainbowConfig {
-  const query = useQuery<RainbowConfig>(
-    remoteConfigQueryKey,
-    fetchRemoteConfig,
-    QUERY_PARAMS
-  );
+  const query = useQuery<RainbowConfig>(QUERY_PARAMS);
 
   return query?.data ?? DEFAULT_CONFIG;
 }
