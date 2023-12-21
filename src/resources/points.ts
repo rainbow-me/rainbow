@@ -26,9 +26,8 @@ export function usePointsReferralCode() {
 
 let nextDropTimeout: NodeJS.Timeout | undefined;
 export function usePoints({ walletAddress }: { walletAddress: string }) {
-  const { points_enabled, points_fully_enabled } = useRemoteConfig();
-  const pointsEnabled =
-    (useExperimentalFlag(POINTS) || points_fully_enabled) && points_enabled;
+  const { points_enabled } = useRemoteConfig();
+  const pointsEnabled = useExperimentalFlag(POINTS) || points_enabled;
   const queryKey = pointsQueryKey({
     address: walletAddress,
   });

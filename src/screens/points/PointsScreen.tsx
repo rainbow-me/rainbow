@@ -36,9 +36,8 @@ export default function PointsScreen() {
     accountColor,
     accountSymbol,
   } = useAccountProfile();
-  const { points_fully_enabled } = useRemoteConfig();
-  const pointsFullyEnabled =
-    useExperimentalFlag(POINTS) || points_fully_enabled;
+  const { points_enabled } = useRemoteConfig();
+  const pointsEnabled = useExperimentalFlag(POINTS) || points_enabled;
   const { navigate } = useNavigation();
   const { data } = usePoints({
     walletAddress: accountAddress,
@@ -52,7 +51,7 @@ export default function PointsScreen() {
     data?.points?.error?.type !== PointsErrorType.NonExistingUser;
 
   useEffect(() => {
-    if (referralCode && pointsFullyEnabled) {
+    if (referralCode && pointsEnabled) {
       navigate(Routes.POINTS_SCREEN);
       delay(700)
         .then(() => {
@@ -68,7 +67,7 @@ export default function PointsScreen() {
     data,
     isOnboarded,
     navigate,
-    pointsFullyEnabled,
+    pointsEnabled,
     referralCode,
     resetReferralCode,
   ]);
@@ -78,7 +77,7 @@ export default function PointsScreen() {
       <Navbar
         hasStatusBarInset
         leftComponent={
-          pointsFullyEnabled && (
+          pointsEnabled && (
             <ButtonPressAnimation
               onPress={() => navigate(Routes.CHANGE_WALLET_SHEET)}
               scaleTo={0.8}
@@ -104,7 +103,7 @@ export default function PointsScreen() {
         title={i18n.t(i18n.l.account.tab_points)}
       />
       {/* eslint-disable-next-line no-nested-ternary */}
-      {pointsFullyEnabled ? (
+      {pointsEnabled ? (
         isOnboarded ? (
           <PointsContent />
         ) : (

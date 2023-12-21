@@ -1,6 +1,6 @@
 import { BlurView } from '@react-native-community/blur';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -81,9 +81,10 @@ const TabBar = ({
   const { width: deviceWidth } = useDimensions();
   const { colors, isDarkMode } = useTheme();
 
-  const { points_enabled, test_do_not_use } = useRemoteConfig();
+  const { points_enabled } = useRemoteConfig();
 
-  const showPointsTab = test_do_not_use;
+  const showPointsTab = useExperimentalFlag(POINTS) || points_enabled;
+
   const NUMBER_OF_TABS = showPointsTab ? 4 : 3;
   const tabWidth =
     (deviceWidth - HORIZONTAL_TAB_BAR_INSET * 2) / NUMBER_OF_TABS;
@@ -94,16 +95,23 @@ const TabBar = ({
   const sectionList = useSectionListScrollToTopContext();
 
   const reanimatedPosition = useSharedValue(0);
+  const pos1 = useSharedValue(tabPillStartPosition);
+  const pos2 = useSharedValue(tabPillStartPosition + tabWidth);
+  const pos3 = useSharedValue(tabPillStartPosition + tabWidth * 2);
+  const pos4 = useSharedValue(tabPillStartPosition + tabWidth * 3);
+
+  useEffect(() => {
+    pos1.value = tabPillStartPosition;
+    pos2.value = tabPillStartPosition + tabWidth;
+    pos3.value = tabPillStartPosition + tabWidth * 2;
+    pos4.value = tabPillStartPosition + tabWidth * 3;
+  }, [pos1, pos2, pos3, pos4, tabPillStartPosition, tabWidth]);
 
   const tabStyle = useAnimatedStyle(() => {
-    const pos1 = tabPillStartPosition;
-    const pos2 = tabPillStartPosition + tabWidth;
-    const pos3 = tabPillStartPosition + tabWidth * 2;
-    const pos4 = tabPillStartPosition + tabWidth * 3;
     const translateX = interpolate(
       reanimatedPosition.value,
       [0, 1, 2, 3],
-      [pos1, pos2, pos3, pos4],
+      [pos1.value, pos2.value, pos3.value, pos4.value],
       Extrapolate.EXTEND
     );
     return {
@@ -343,12 +351,11 @@ export function SwipeNavigator() {
   const { network } = useAccountSettings();
   const { colors } = useTheme();
 
-  const experimentalPointsFlagEnabled = useExperimentalFlag(POINTS);
   const [lastPress, setLastPress] = useState();
 
-  const { points_enabled, test_do_not_use } = useRemoteConfig();
+  const { points_enabled } = useRemoteConfig();
 
-  const showPointsTab = test_do_not_use;
+  const showPointsTab = useExperimentalFlag(POINTS) || points_enabled;
 
   // ////////////////////////////////////////////////////
   // Animations
