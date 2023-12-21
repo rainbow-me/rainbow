@@ -25,6 +25,4 @@ to start before all of the imports.
  */
 require('react-native-gesture-handler');
 require('./shim');
-require('./src/model/remoteConfig');
-
 require('./src/App');
