@@ -23,6 +23,7 @@ import {
   saveNetwork,
 } from '@/handlers/localstorage/globalSettings';
 import { web3SetHttpProvider } from '@/handlers/web3';
+import { delay } from '@/utils/delay';
 
 interface RainbowConfig extends Record<string, string | boolean | number> {
   arbitrum_mainnet_rpc: string;
@@ -213,7 +214,7 @@ export async function initializeRemoteConfig(): Promise<void> {
     minimumFetchIntervalMillis: 120_000,
   });
   await remoteConfig().setDefaults(DEFAULT_CONFIG);
-  await queryClient.prefetchQuery(QUERY_PARAMS);
+  await Promise.race([queryClient.prefetchQuery(QUERY_PARAMS), delay(3000)]);
 }
 
 export function getRemoteConfig(): RainbowConfig {
