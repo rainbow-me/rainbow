@@ -37,7 +37,7 @@ import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { KeyboardFixedOpenLayout } from '../components/layout';
 import { delayNext } from '../hooks/useMagicAutofocus';
-import config from '../model/config';
+import { getRemoteConfig, useRemoteConfig } from '@/model/remoteConfig';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { Box, Row, Rows } from '@/design-system';
@@ -119,7 +119,8 @@ export const DEFAULT_SLIPPAGE_BIPS = {
 };
 
 export const getDefaultSlippageFromConfig = (network: Network) => {
-  const configSlippage = (config.default_slippage_bips as unknown) as {
+  const configSlippage = (getRemoteConfig()
+    .default_slippage_bips as unknown) as {
     [network: string]: number;
   };
   const slippage =
@@ -161,6 +162,7 @@ export default function ExchangeModal({
     name: string;
     params: { inputAsset: SwappableAsset; outputAsset: SwappableAsset };
   }>();
+  const { default_slippage_bips } = useRemoteConfig();
 
   const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
 
@@ -441,14 +443,14 @@ export default function ExchangeModal({
 
   useEffect(() => {
     let slippage = DEFAULT_SLIPPAGE_BIPS?.[currentNetwork];
-    const configSlippage = (config.default_slippage_bips as unknown) as {
+    const configSlippage = (default_slippage_bips as unknown) as {
       [network: string]: number;
     };
     if (configSlippage?.[currentNetwork]) {
       slippage = configSlippage?.[currentNetwork];
     }
     slippage && dispatch(updateSwapSlippage(slippage));
-  }, [currentNetwork, dispatch]);
+  }, [currentNetwork, default_slippage_bips, dispatch]);
 
   useEffect(() => {
     return () => {
