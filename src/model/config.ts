@@ -21,8 +21,9 @@ import {
   saveNetwork,
 } from '@/handlers/localstorage/globalSettings';
 import { web3SetHttpProvider } from '@/handlers/web3';
-
+import { useQuery } from '@tanstack/react-query';
 import Logger from '@/utils/logger';
+import { createQueryKey } from '@/react-query';
 
 export interface RainbowConfig
   extends Record<string, string | boolean | number> {
@@ -72,6 +73,8 @@ export interface RainbowConfig
   points_fully_enabled: boolean;
   rpc_proxy_enabled: boolean;
   remote_promo_enabled: boolean;
+  test_do_not_use: boolean;
+  test_do_not_use2: boolean;
 }
 
 const DEFAULT_CONFIG: RainbowConfig = {
@@ -135,10 +138,19 @@ const DEFAULT_CONFIG: RainbowConfig = {
   points_fully_enabled: true,
   rpc_proxy_enabled: true,
   remote_promo_enabled: false,
+  test_do_not_use: true,
+  test_do_not_use2: true,
 };
 
 // Initialize with defaults in case firebase doesn't respond
 const config: RainbowConfig = { ...DEFAULT_CONFIG };
+
+export function useConfig() {
+  const query = useQuery(createQueryKey('config', {}), async () => config, {
+    refetchInterval: 300,
+  });
+  return query?.data ?? config;
+}
 
 const init = async () => {
   try {
@@ -191,7 +203,9 @@ const init = async () => {
         key === 'points_enabled' ||
         key === 'points_fully_enabled' ||
         key === 'rpc_proxy_enabled' ||
-        key === 'remote_promo_enabled'
+        key === 'remote_promo_enabled' ||
+        key === 'test_do_not_use' ||
+        key === 'test_do_not_use2'
       ) {
         config[key] = entry.asBoolean();
       } else {

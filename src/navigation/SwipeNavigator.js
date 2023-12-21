@@ -34,7 +34,7 @@ import RecyclerListViewScrollToTopProvider, {
 import { discoverOpenSearchFnRef } from '@/screens/discover/components/DiscoverSearchContainer';
 import { InteractionManager, View } from 'react-native';
 import { IS_ANDROID, IS_DEV, IS_IOS, IS_TEST } from '@/env';
-import config from '@/model/config';
+import { useConfig } from '@/model/config';
 import SectionListScrollToTopProvider, {
   useSectionListScrollToTopContext,
 } from './SectionListScrollToTopContext';
@@ -79,8 +79,9 @@ const TabBar = ({
 }) => {
   const { width: deviceWidth } = useDimensions();
   const { colors, isDarkMode } = useTheme();
+  const { points_enabled } = useConfig();
 
-  const showPointsTab = IS_DEV || IS_TEST || config.points_enabled;
+  const showPointsTab = IS_DEV || IS_TEST || points_enabled;
   const NUMBER_OF_TABS = showPointsTab ? 4 : 3;
 
   const tabWidth =
@@ -342,8 +343,9 @@ export function SwipeNavigator() {
   const { colors } = useTheme();
 
   const [lastPress, setLastPress] = useState();
+  const { points_enabled } = useConfig();
 
-  const showPointsTab = IS_DEV || IS_TEST || config.points_enabled;
+  const showPointsTab = IS_DEV || IS_TEST || points_enabled;
 
   // ////////////////////////////////////////////////////
   // Animations
