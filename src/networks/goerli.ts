@@ -3,7 +3,7 @@ import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { goerli } from '@wagmi/chains';
 import { ETH_ADDRESS } from '@/references';
-import config from '@/model/config';
+import { config } from '@/model/remoteConfig';
 
 export const getGoerliNetworkObject = (): NetworkProperties => {
   return {

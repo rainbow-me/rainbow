@@ -9,7 +9,7 @@ import { useQuery } from '@tanstack/react-query';
 import { atom, useRecoilState } from 'recoil';
 import { MMKV } from 'react-native-mmkv';
 import * as i18n from '@/languages';
-import config from '@/model/config';
+import { config } from '@/model/remoteConfig';
 
 const graphqlClient = IS_PROD ? arcClient : arcDevClient;
 const mmkv = new MMKV();

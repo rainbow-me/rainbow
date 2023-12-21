@@ -15,7 +15,7 @@ import { campaigns } from '@/storage';
 import { checkForCampaign } from '@/components/remote-promo-sheet/checkForCampaign';
 import { runFeatureUnlockChecks } from '@/handlers/walletReadyEvents';
 import { runLocalCampaignChecks } from './localCampaignChecks';
-import config from '@/model/config';
+import { config } from '@/model/remoteConfig';
 
 interface WalletReadyContext {
   isWalletReady: boolean;

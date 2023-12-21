@@ -4,7 +4,7 @@ import {
   getProviderForNetwork,
   toHexNoLeadingZeros,
 } from './web3';
-import config from '@/model/config';
+import { config } from '@/model/remoteConfig';
 import { MaxUint256 } from '@ethersproject/constants';
 import { RainbowError, logger } from '@/logger';
 import { Network } from '@/helpers';

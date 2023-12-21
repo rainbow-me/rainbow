@@ -17,7 +17,7 @@ import {
   useGenericAsset,
   useWallets,
 } from '@/hooks';
-import config from '@/model/config';
+import { config } from '@/model/remoteConfig';
 import { deviceUtils, ethereumUtils } from '@/utils';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';

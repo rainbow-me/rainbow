@@ -142,8 +142,9 @@ const remoteConfigQueryKey = createQueryKey(
   { persisterVersion: 1 }
 );
 
+export const config: RainbowConfig = { ...DEFAULT_CONFIG };
+
 export async function fetchRemoteConfig(): Promise<RainbowConfig> {
-  const config: RainbowConfig = { ...DEFAULT_CONFIG };
   try {
     await remoteConfig().fetchAndActivate();
     logger.debug('Remote config fetched successfully');
@@ -195,6 +196,7 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
     });
     throw e;
   } finally {
+    logger.debug(`Current remote config:\n${JSON.stringify(config, null, 2)}`);
     const currentNetwork = await getNetwork();
     web3SetHttpProvider(currentNetwork);
     saveNetwork(currentNetwork);

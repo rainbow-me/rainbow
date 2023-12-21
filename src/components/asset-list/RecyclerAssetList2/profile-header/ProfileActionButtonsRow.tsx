@@ -34,7 +34,7 @@ import Routes from '@rainbow-me/routes';
 import showWalletErrorAlert from '@/helpers/support';
 import { analytics } from '@/analytics';
 import { useRecoilState } from 'recoil';
-import config from '@/model/config';
+import { config } from '@/model/remoteConfig';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { Network } from '@/networks/types';

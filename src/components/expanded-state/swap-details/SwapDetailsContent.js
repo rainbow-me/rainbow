@@ -27,7 +27,7 @@ import { SwapDetailsRewardRow } from './SwapDetailsRewardRow';
 import useExperimentalFlag, {
   OP_REWARDS,
 } from '@rainbow-me/config/experimentalHooks';
-import config from '@/model/config';
+import { config } from '@/model/remoteConfig';
 
 const Container = styled(Box).attrs({
   flex: 1,

@@ -4,7 +4,7 @@ import { gasUtils } from '@/utils';
 import { polygon } from '@wagmi/chains';
 import { MATIC_MAINNET_ADDRESS, MATIC_POLYGON_ADDRESS } from '@/references';
 import { getPolygonGasPrices } from '@/redux/gas';
-import config from '@/model/config';
+import { config } from '@/model/remoteConfig';
 
 export const getPolygonNetworkObject = (): NetworkProperties => {
   return {

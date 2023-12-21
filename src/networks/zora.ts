@@ -4,7 +4,7 @@ import { gasUtils } from '@/utils';
 import { zora } from '@wagmi/chains';
 import { ZORA_ETH_ADDRESS } from '@/references';
 import { getZoraGasPrices } from '@/redux/gas';
-import config from '@/model/config';
+import { config } from '@/model/remoteConfig';
 
 export const getZoraNetworkObject = (): NetworkProperties => {
   return {

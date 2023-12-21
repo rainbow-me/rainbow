@@ -46,7 +46,7 @@ import {
   useDimensions,
   useGenericAsset,
 } from '@/hooks';
-import config from '@/model/config';
+import { config } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation';
 import { DOG_ADDRESS, ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';

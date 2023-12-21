@@ -4,7 +4,7 @@ import { gasUtils } from '@/utils';
 import { arbitrum } from '@wagmi/chains';
 import { ARBITRUM_ETH_ADDRESS } from '@/references';
 import { getArbitrumGasPrices } from '@/redux/gas';
-import config from '@/model/config';
+import { config } from '@/model/remoteConfig';
 
 export const getArbitrumNetworkObject = (): NetworkProperties => {
   return {

@@ -4,7 +4,7 @@ import { gasUtils } from '@/utils';
 import { base } from '@wagmi/chains';
 import { BASE_ETH_ADDRESS } from '@/references';
 import { getBaseGasPrices } from '@/redux/gas';
-import config from '@/model/config';
+import { config } from '@/model/remoteConfig';
 
 export const getBaseNetworkObject = (): NetworkProperties => {
   return {

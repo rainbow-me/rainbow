@@ -4,7 +4,7 @@ import { gasUtils } from '@/utils';
 import { bsc } from '@wagmi/chains';
 import { BNB_BSC_ADDRESS, BNB_MAINNET_ADDRESS } from '@/references';
 import { getBscGasPrices } from '@/redux/gas';
-import config from '@/model/config';
+import { config } from '@/model/remoteConfig';
 
 export const getBSCNetworkObject = (): NetworkProperties => {
   return {

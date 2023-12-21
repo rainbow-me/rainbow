@@ -3,7 +3,7 @@ import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { mainnet } from '@wagmi/chains';
 import { ETH_ADDRESS } from '@/references';
-import config from '@/model/config';
+import { config } from '@/model/remoteConfig';
 
 export const getMainnetNetworkObject = (): NetworkProperties => {
   return {

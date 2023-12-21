@@ -4,7 +4,7 @@ import { gasUtils } from '@/utils';
 import { optimism } from '@wagmi/chains';
 import { OPTIMISM_ETH_ADDRESS } from '@/references';
 import { getOptimismGasPrices } from '@/redux/gas';
-import config from '@/model/config';
+import { config } from '@/model/remoteConfig';
 
 export const getOptimismNetworkObject = (): NetworkProperties => {
   return {

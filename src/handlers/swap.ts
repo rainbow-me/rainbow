@@ -22,7 +22,7 @@ import {
   getProviderForNetwork,
   toHexNoLeadingZeros,
 } from './web3';
-import config from '@/model/config';
+import { config } from '@/model/remoteConfig';
 import { Asset } from '@/entities';
 import {
   add,

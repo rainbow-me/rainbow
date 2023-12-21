@@ -21,7 +21,7 @@ import {
 } from '@/components/cards/utils/constants';
 import { OpRewardsCard } from '@/components/cards/OpRewardsCard';
 import { LedgerCard } from '@/components/cards/LedgerCard';
-import config from '@/model/config';
+import { config } from '@/model/remoteConfig';
 import walletTypes from '@/helpers/walletTypes';
 import { NFTOffersCard } from '@/components/cards/NFTOffersCard';
 import { MintsCard } from '@/components/cards/MintsCard/MintsCard';

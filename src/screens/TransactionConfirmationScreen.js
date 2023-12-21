@@ -49,7 +49,7 @@ import { lightModeThemeColors } from '../styles/colors';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { Text } from '@/design-system';
-import config from '@/model/config';
+import { config } from '@/model/remoteConfig';
 import {
   estimateGas,
   estimateGasWithPadding,
