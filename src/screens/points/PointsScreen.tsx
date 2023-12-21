@@ -21,6 +21,7 @@ import { PointsErrorType } from '@/graphql/__generated__/metadataPOST';
 import { delay } from '@/utils/delay';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useRemoteConfig } from '@/model/remoteConfig';
+import { IS_TEST } from '@/env';
 
 export const POINTS_ROUTES = {
   CLAIM_CONTENT: 'ClaimContent',
@@ -37,7 +38,8 @@ export default function PointsScreen() {
     accountSymbol,
   } = useAccountProfile();
   const { points_enabled } = useRemoteConfig();
-  const pointsEnabled = useExperimentalFlag(POINTS) || points_enabled;
+  const pointsEnabled =
+    useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
   const { navigate } = useNavigation();
   const { data } = usePoints({
     walletAddress: accountAddress,

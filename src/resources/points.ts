@@ -5,6 +5,7 @@ import { GetPointsDataForWalletQuery } from '@/graphql/__generated__/metadata';
 import { createQueryKey } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { useRemoteConfig } from '@/model/remoteConfig';
+import { IS_TEST } from '@/env';
 
 export function pointsQueryKey({ address }: { address: string }) {
   return createQueryKey('points', { address }, { persisterVersion: 1 });
@@ -27,7 +28,8 @@ export function usePointsReferralCode() {
 let nextDropTimeout: NodeJS.Timeout | undefined;
 export function usePoints({ walletAddress }: { walletAddress: string }) {
   const { points_enabled } = useRemoteConfig();
-  const pointsEnabled = useExperimentalFlag(POINTS) || points_enabled;
+  const pointsEnabled =
+    useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
   const queryKey = pointsQueryKey({
     address: walletAddress,
   });

@@ -83,7 +83,8 @@ const TabBar = ({
 
   const { points_enabled } = useRemoteConfig();
 
-  const showPointsTab = useExperimentalFlag(POINTS) || points_enabled;
+  const showPointsTab =
+    useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
 
   const NUMBER_OF_TABS = showPointsTab ? 4 : 3;
   const tabWidth =
@@ -355,7 +356,8 @@ export function SwipeNavigator() {
 
   const { points_enabled } = useRemoteConfig();
 
-  const showPointsTab = useExperimentalFlag(POINTS) || points_enabled;
+  const showPointsTab =
+    useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
 
   // ////////////////////////////////////////////////////
   // Animations
