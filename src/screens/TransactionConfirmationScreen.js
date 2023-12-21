@@ -49,7 +49,7 @@ import { lightModeThemeColors } from '../styles/colors';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { Text } from '@/design-system';
-import config from '@/model/config';
+import { useRemoteConfig } from '@/model/remoteConfig';
 import {
   estimateGas,
   estimateGasWithPadding,
@@ -201,6 +201,7 @@ export default function TransactionConfirmationScreen() {
   const { params: routeParams } = useRoute();
   const { goBack, navigate } = useNavigation();
   const isFocused = useIsFocused();
+  const { flashbots_enabled } = useRemoteConfig();
 
   const pendingRedirect = useSelector(
     ({ walletconnect }) => walletconnect.pendingRedirect
@@ -261,7 +262,7 @@ export default function TransactionConfirmationScreen() {
 
   const isTestnet = isTestnetNetwork(currentNetwork);
   const isL2 = isL2Network(currentNetwork);
-  const disableFlashbotsPostMerge = !config.flashbots_enabled;
+  const disableFlashbotsPostMerge = !flashbots_enabled;
   const flashbotsEnabled =
     useExperimentalFlag(FLASHBOTS_WC) && !disableFlashbotsPostMerge;
 
