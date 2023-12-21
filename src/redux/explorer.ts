@@ -3,7 +3,7 @@ import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { io, Socket } from 'socket.io-client';
 import { getExperimetalFlag, L2_TXS } from '../config/experimental';
-import config from '../model/remoteConfig';
+import { config } from '../model/remoteConfig';
 import {
   assetChartsReceived,
   ChartsReceivedMessage,
