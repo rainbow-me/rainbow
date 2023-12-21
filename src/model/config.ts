@@ -73,8 +73,6 @@ export interface RainbowConfig
   points_fully_enabled: boolean;
   rpc_proxy_enabled: boolean;
   remote_promo_enabled: boolean;
-  test_do_not_use: boolean;
-  test_do_not_use2: boolean;
 }
 
 const DEFAULT_CONFIG: RainbowConfig = {
@@ -138,15 +136,13 @@ const DEFAULT_CONFIG: RainbowConfig = {
   points_fully_enabled: true,
   rpc_proxy_enabled: true,
   remote_promo_enabled: false,
-  test_do_not_use: true,
-  test_do_not_use2: true,
 };
 
 // Initialize with defaults in case firebase doesn't respond
 const config: RainbowConfig = { ...DEFAULT_CONFIG };
 
 export function useConfig() {
-  const query = useQuery(createQueryKey('config', {}), async () => config, {
+  const query = useQuery(createQueryKey('config', {}), () => config, {
     refetchInterval: 300,
   });
   return query?.data ?? config;
@@ -203,9 +199,7 @@ const init = async () => {
         key === 'points_enabled' ||
         key === 'points_fully_enabled' ||
         key === 'rpc_proxy_enabled' ||
-        key === 'remote_promo_enabled' ||
-        key === 'test_do_not_use' ||
-        key === 'test_do_not_use2'
+        key === 'remote_promo_enabled'
       ) {
         config[key] = entry.asBoolean();
       } else {
