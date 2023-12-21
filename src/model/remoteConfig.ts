@@ -144,7 +144,6 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
     if (!fetchedRemotely) {
       throw new RainbowError('Failed to fetch remote config');
     }
-    console.log('🥰');
     logger.debug('Remote config fetched successfully');
     const parameters = remoteConfig().getAll();
     Object.entries(parameters).forEach($ => {
@@ -187,7 +186,6 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
         config[key] = entry.asString();
       }
     });
-    console.log('🚨');
     return config;
   } catch (e) {
     if (e instanceof RainbowError) {
@@ -202,10 +200,8 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
 const QUERY_PARAMS = {
   queryKey: remoteConfigQueryKey,
   queryFn: fetchRemoteConfig,
-  // staleTime: 600_000, // 10 minutes,
-  // cacheTime: Infinity,
-  staleTime: 0, // 10 minutes,
-  cacheTime: 0,
+  staleTime: 600_000, // 10 minutes,
+  cacheTime: Infinity,
   placeholderData: DEFAULT_CONFIG,
   retry: 3,
   retryDelay: (attempt: number) =>
@@ -219,6 +215,5 @@ export async function prefetchRemoteConfig(): Promise<void> {
 
 export function useRemoteConfig(): RainbowConfig {
   const query = useQuery<RainbowConfig>(QUERY_PARAMS);
-
   return query?.data ?? DEFAULT_CONFIG;
 }
