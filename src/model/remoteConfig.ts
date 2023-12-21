@@ -136,12 +136,6 @@ const DEFAULT_CONFIG: RainbowConfig = {
   remote_promo_enabled: false,
 };
 
-const remoteConfigQueryKey = createQueryKey(
-  'remoteConfig',
-  {},
-  { persisterVersion: 1 }
-);
-
 export async function fetchRemoteConfig(): Promise<RainbowConfig> {
   const config: RainbowConfig = { ...DEFAULT_CONFIG };
   try {
@@ -202,19 +196,23 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
   }
 }
 
+const remoteConfigQueryKey = createQueryKey('remoteConfig', {});
+
 const QUERY_PARAMS = {
   queryKey: remoteConfigQueryKey,
   queryFn: fetchRemoteConfig,
   staleTime: 600_000, // 10 minutes,
-  cacheTime: Infinity,
   placeholderData: DEFAULT_CONFIG,
   retry: 3,
   retryDelay: (attempt: number) =>
     Math.min(attempt > 1 ? 2 ** attempt * 1000 : 1000, 30 * 1000),
-  onError: () => queryClient.setQueryData(remoteConfigQueryKey, DEFAULT_CONFIG),
 };
 
-export async function prefetchRemoteConfig(): Promise<void> {
+export async function initializeRemoteConfig(): Promise<void> {
+  await remoteConfig().setConfigSettings({
+    minimumFetchIntervalMillis: 120_000,
+  });
+  await remoteConfig().setDefaults(DEFAULT_CONFIG);
   await queryClient.prefetchQuery(QUERY_PARAMS);
 }
 

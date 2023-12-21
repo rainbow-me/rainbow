@@ -82,7 +82,7 @@ import { initializeReservoirClient } from '@/resources/reservoir/client';
 import { ReviewPromptAction } from '@/storage/schema';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { RemotePromoSheetProvider } from '@/components/remote-promo-sheet/RemotePromoSheetProvider';
-import { prefetchRemoteConfig } from '@/model/remoteConfig';
+import { initializeRemoteConfig } from '@/model/remoteConfig';
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -305,7 +305,7 @@ function Root() {
   React.useEffect(() => {
     async function initializeApplication() {
       await initSentry(); // must be set up immediately
-      await prefetchRemoteConfig();
+      await initializeRemoteConfig();
       // must happen immediately, but after Sentry
       await migrate();
 
