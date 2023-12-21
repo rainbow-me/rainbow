@@ -15,7 +15,7 @@ import { campaigns } from '@/storage';
 import { checkForCampaign } from '@/components/remote-promo-sheet/checkForCampaign';
 import { runFeatureUnlockChecks } from '@/handlers/walletReadyEvents';
 import { runLocalCampaignChecks } from './localCampaignChecks';
-import { config } from '@/model/remoteConfig';
+import { useRemoteConfig } from '@/model/remoteConfig';
 
 interface WalletReadyContext {
   isWalletReady: boolean;
@@ -33,8 +33,9 @@ export const RemotePromoSheetProvider = ({
   isWalletReady = false,
   children,
 }: WalletReadyProvider) => {
+  const { remote_promo_enabled } = useRemoteConfig();
   const remotePromoSheets =
-    useExperimentalFlag(REMOTE_PROMO_SHEETS) || config.remote_promo_enabled;
+    useExperimentalFlag(REMOTE_PROMO_SHEETS) || remote_promo_enabled;
 
   const runChecks = useCallback(async () => {
     if (!isWalletReady) return;

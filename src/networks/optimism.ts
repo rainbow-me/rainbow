@@ -4,15 +4,21 @@ import { gasUtils } from '@/utils';
 import { optimism } from '@wagmi/chains';
 import { OPTIMISM_ETH_ADDRESS } from '@/references';
 import { getOptimismGasPrices } from '@/redux/gas';
-import { config } from '@/model/remoteConfig';
+import { getRemoteConfig } from '@/model/remoteConfig';
 
 export const getOptimismNetworkObject = (): NetworkProperties => {
+  const {
+    optimism_enabled,
+    optimism_tx_enabled,
+    op_chains_enabled,
+    op_chains_tx_enabled,
+  } = getRemoteConfig();
   return {
     // wagmi chain data
     ...optimism,
 
     // network related data
-    enabled: config.optimism_enabled && config.op_chains_enabled,
+    enabled: optimism_enabled && op_chains_enabled,
     name: 'Optimism',
     longName: 'Optimism',
     value: Network.optimism,
@@ -37,7 +43,7 @@ export const getOptimismNetworkObject = (): NetworkProperties => {
       nfts: true,
       savings: false,
       pools: false,
-      txs: config.optimism_tx_enabled && config.op_chains_tx_enabled,
+      txs: optimism_tx_enabled && op_chains_tx_enabled,
     },
 
     gas: {

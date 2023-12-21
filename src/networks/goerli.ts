@@ -3,15 +3,16 @@ import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { goerli } from '@wagmi/chains';
 import { ETH_ADDRESS } from '@/references';
-import { config } from '@/model/remoteConfig';
+import { getRemoteConfig } from '@/model/remoteConfig';
 
 export const getGoerliNetworkObject = (): NetworkProperties => {
+  const { goerli_enabled, goerli_tx_enabled } = getRemoteConfig();
   return {
     // wagmi chain data
     ...goerli,
 
     // network related data
-    enabled: config.goerli_enabled,
+    enabled: goerli_enabled,
     name: 'Goerli',
     longName: 'Goerli',
     value: Network.goerli,
@@ -39,7 +40,7 @@ export const getGoerliNetworkObject = (): NetworkProperties => {
       nfts: false,
       savings: true,
       pools: true,
-      txs: config.goerli_tx_enabled,
+      txs: goerli_tx_enabled,
     },
 
     gas: {

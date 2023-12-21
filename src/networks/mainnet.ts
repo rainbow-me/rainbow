@@ -3,15 +3,16 @@ import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { mainnet } from '@wagmi/chains';
 import { ETH_ADDRESS } from '@/references';
-import { config } from '@/model/remoteConfig';
+import { getRemoteConfig } from '@/model/remoteConfig';
 
 export const getMainnetNetworkObject = (): NetworkProperties => {
+  const { mainnet_enabled, mainnet_tx_enabled } = getRemoteConfig();
   return {
     // wagmi chain data
     ...mainnet,
 
     // network related data
-    enabled: config.mainnet_enabled,
+    enabled: mainnet_enabled,
     name: 'Ethereum',
     longName: 'Ethereum',
     value: Network.mainnet,
@@ -39,7 +40,7 @@ export const getMainnetNetworkObject = (): NetworkProperties => {
       nfts: true,
       savings: true,
       pools: true,
-      txs: config.mainnet_tx_enabled,
+      txs: mainnet_tx_enabled,
     },
 
     gas: {

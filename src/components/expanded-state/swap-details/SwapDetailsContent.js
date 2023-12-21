@@ -27,7 +27,7 @@ import { SwapDetailsRewardRow } from './SwapDetailsRewardRow';
 import useExperimentalFlag, {
   OP_REWARDS,
 } from '@rainbow-me/config/experimentalHooks';
-import { config } from '@/model/remoteConfig';
+import { useRemoteConfig } from '@/model/remoteConfig';
 
 const Container = styled(Box).attrs({
   flex: 1,
@@ -60,9 +60,9 @@ export default function SwapDetailsContent({
   const outputCurrencyNetwork = ethereumUtils.getNetworkFromType(
     outputCurrency?.type
   );
-
+  const { op_rewards_enabled } = useRemoteConfig();
   const hasReward =
-    (useExperimentalFlag(OP_REWARDS) || config.op_rewards_enabled) &&
+    (useExperimentalFlag(OP_REWARDS) || op_rewards_enabled) &&
     !!tradeDetails.reward?.[0];
 
   return (

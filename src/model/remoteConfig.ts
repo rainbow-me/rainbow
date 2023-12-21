@@ -142,9 +142,8 @@ const remoteConfigQueryKey = createQueryKey(
   { persisterVersion: 1 }
 );
 
-export const config: RainbowConfig = { ...DEFAULT_CONFIG };
-
 export async function fetchRemoteConfig(): Promise<RainbowConfig> {
+  const config: RainbowConfig = { ...DEFAULT_CONFIG };
   try {
     await remoteConfig().fetchAndActivate();
     logger.debug('Remote config fetched successfully');
@@ -217,6 +216,10 @@ const QUERY_PARAMS = {
 
 export async function prefetchRemoteConfig(): Promise<void> {
   await queryClient.prefetchQuery(QUERY_PARAMS);
+}
+
+export function getRemoteConfig(): RainbowConfig {
+  return queryClient.getQueryData(remoteConfigQueryKey) ?? DEFAULT_CONFIG;
 }
 
 export function useRemoteConfig(): RainbowConfig {

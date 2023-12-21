@@ -9,7 +9,7 @@ import { useQuery } from '@tanstack/react-query';
 import { atom, useRecoilState } from 'recoil';
 import { MMKV } from 'react-native-mmkv';
 import * as i18n from '@/languages';
-import { config } from '@/model/remoteConfig';
+import { useRemoteConfig } from '@/model/remoteConfig';
 
 const graphqlClient = IS_PROD ? arcClient : arcDevClient;
 const mmkv = new MMKV();
@@ -69,8 +69,9 @@ export function useMintsFilter() {
  * Hook that returns the mintable collections for a given wallet address.
  */
 export function useMints({ walletAddress }: { walletAddress: string }) {
+  const { mints_enabled } = useRemoteConfig();
   const mintsEnabled =
-    (useExperimentalFlag(MINTS) || config.mints_enabled) && !IS_TEST;
+    (useExperimentalFlag(MINTS) || mints_enabled) && !IS_TEST;
   const { filter } = useMintsFilter();
   const queryKey = mintsQueryKey({
     address: walletAddress,
