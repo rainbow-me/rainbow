@@ -18,6 +18,11 @@ import {
   ZORA_MAINNET_RPC,
 } from 'react-native-dotenv';
 import { RainbowError, logger } from '@/logger';
+import {
+  getNetwork,
+  saveNetwork,
+} from '@/handlers/localstorage/globalSettings';
+import { web3SetHttpProvider } from '@/handlers/web3';
 
 interface RainbowConfig extends Record<string, string | boolean | number> {
   arbitrum_mainnet_rpc: string;
@@ -140,10 +145,7 @@ const remoteConfigQueryKey = createQueryKey(
 export async function fetchRemoteConfig(): Promise<RainbowConfig> {
   const config: RainbowConfig = { ...DEFAULT_CONFIG };
   try {
-    const fetchedRemotely = await remoteConfig().fetchAndActivate();
-    if (!fetchedRemotely) {
-      throw new RainbowError('Failed to fetch remote config');
-    }
+    await remoteConfig().fetchAndActivate();
     logger.debug('Remote config fetched successfully');
     const parameters = remoteConfig().getAll();
     Object.entries(parameters).forEach($ => {
@@ -188,12 +190,14 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
     });
     return config;
   } catch (e) {
-    if (e instanceof RainbowError) {
-      logger.error(e);
-    } else {
-      logger.error(new RainbowError('Failed to fetch remote config'), e);
-    }
+    logger.error(new RainbowError('Failed to fetch remote config'), {
+      error: e,
+    });
     throw e;
+  } finally {
+    const currentNetwork = await getNetwork();
+    web3SetHttpProvider(currentNetwork);
+    saveNetwork(currentNetwork);
   }
 }
 
