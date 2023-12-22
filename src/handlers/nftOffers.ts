@@ -4,7 +4,7 @@ import {
   getProviderForNetwork,
   toHexNoLeadingZeros,
 } from './web3';
-import config from '@/model/config';
+import { getRemoteConfig } from '@/model/remoteConfig';
 import { MaxUint256 } from '@ethersproject/constants';
 import { RainbowError, logger } from '@/logger';
 import { Network } from '@/helpers';
@@ -25,6 +25,7 @@ const getStateDiff = async (
   const {
     number: blockNumber,
   } = await (provider.getBlock as () => Promise<Block>)();
+  const { trace_call_block_number_offset } = getRemoteConfig();
 
   // trace_call default params
   const callParams = [
@@ -35,7 +36,7 @@ const getStateDiff = async (
     },
     ['stateDiff'],
     toHexNoLeadingZeros(
-      blockNumber - Number(config.trace_call_block_number_offset || 20)
+      blockNumber - Number(trace_call_block_number_offset || 20)
     ),
   ];
 

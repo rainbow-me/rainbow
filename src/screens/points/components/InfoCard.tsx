@@ -9,6 +9,7 @@ export const InfoCard = ({
   mainText,
   icon,
   accentColor,
+  mainTextColor = 'primary',
 }: {
   // onPress: () => void;
   title: string;
@@ -16,6 +17,7 @@ export const InfoCard = ({
   mainText: string;
   icon?: string;
   accentColor: string;
+  mainTextColor?: 'primary' | 'secondary';
 }) => {
   let mainTextFontSize: TextSize;
   if (mainText.length > 10) {
@@ -45,7 +47,11 @@ export const InfoCard = ({
           </Text>
         </Inline> */}
         <Box height={{ custom: 15 }} justifyContent="flex-end">
-          <Text color="label" weight="heavy" size={mainTextFontSize}>
+          <Text
+            color={mainTextColor === 'primary' ? 'label' : 'labelTertiary'}
+            weight="heavy"
+            size={mainTextFontSize}
+          >
             {mainText}
           </Text>
         </Box>

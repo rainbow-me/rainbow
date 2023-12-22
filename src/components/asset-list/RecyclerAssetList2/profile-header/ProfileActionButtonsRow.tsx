@@ -28,7 +28,7 @@ import Routes from '@rainbow-me/routes';
 import showWalletErrorAlert from '@/helpers/support';
 import { analytics } from '@/analytics';
 import { useRecoilState } from 'recoil';
-import config from '@/model/config';
+import { useRemoteConfig } from '@/model/remoteConfig';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { Network } from '@/networks/types';
@@ -52,10 +52,12 @@ export function ProfileActionButtonsRow() {
     ],
   }));
 
-  if (!accentColorLoaded) return null;
+  const {
+    f2c_enabled: addCashEnabled,
+    swagg_enabled: swapEnabled,
+  } = useRemoteConfig();
 
-  const addCashEnabled = config.f2c_enabled;
-  const swapEnabled = config.swagg_enabled;
+  if (!accentColorLoaded) return null;
 
   return (
     <Box width="full">

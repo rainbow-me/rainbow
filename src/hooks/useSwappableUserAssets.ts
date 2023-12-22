@@ -33,20 +33,16 @@ export const useSwappableUserAssets = (params: {
     }, {} as SwappableAddresses)
   );
 
-  const filteredAssetsInWallet = useMemo(
-    () =>
-      (assetsInWallet || []).filter(asset => {
-        // filter out hidden tokens
-        if (hiddenCoinsObj[asset.uniqueId]) return true;
+  const filteredAssetsInWallet = (assetsInWallet || []).filter(asset => {
+    // filter out hidden tokens
+    if (hiddenCoinsObj[asset.uniqueId]) return true;
 
-        // filter out networks where swaps are not enabled
-        const assetNetwork = ethereumUtils.getNetworkFromType(asset.type);
-        if (getNetworkObj(assetNetwork).features.swaps) return true;
+    // filter out networks where swaps are not enabled
+    const assetNetwork = ethereumUtils.getNetworkFromType(asset.type);
+    if (getNetworkObj(assetNetwork).features.swaps) return true;
 
-        return false;
-      }),
-    [assetsInWallet, hiddenCoinsObj]
-  );
+    return false;
+  });
 
   const getSwappableAddressesForNetwork = useCallback(
     async (addresses: EthereumAddress[], network: keyof SwappableAddresses) => {
@@ -111,8 +107,7 @@ export const useSwappableUserAssets = (params: {
           asset?.address === ETH_ADDRESS
             ? ETH_ADDRESS_AGGREGATORS
             : asset?.address;
-        // we place our testnets (goerli) in the Network type which creates this type issue
-        // @ts-ignore
+
         const isSwappable = swappableAssetsRef.current[assetNetwork]?.includes(
           assetAddress
         );
