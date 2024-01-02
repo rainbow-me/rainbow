@@ -1,4 +1,4 @@
-import { addBreadcrumb, captureException } from '@sentry/react-native';
+import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
 import { isNil } from 'lodash';
 import { useCallback } from 'react';
@@ -71,19 +71,17 @@ export default function useInitializeWallet() {
         );
         logger.log('Start wallet setup');
         await resetAccountState();
-        addBreadcrumb({ message: 'resetAccountState ran ok' });
+        logger.debug('resetAccountState ran ok');
 
         const isImporting = !!seedPhrase;
-        addBreadcrumb({ message: 'isImporting? ' + isImporting });
+        logger.debug('isImporting? ' + isImporting);
 
         if (shouldRunMigrations && !seedPhrase) {
-          addBreadcrumb({
-            message: 'shouldRunMigrations && !seedPhrase? => true',
-          });
+          logger.debug('shouldRunMigrations && !seedPhrase? => true');
           await dispatch(walletsLoadState(profilesEnabled));
-          addBreadcrumb({ message: 'walletsLoadState call #1' });
+          logger.debug('walletsLoadState call #1');
           await runMigrations();
-          addBreadcrumb({ message: 'done with migrations' });
+          logger.debug('done with migrations');
         }
 
         setIsSmallBalancesOpen(false);
@@ -102,9 +100,9 @@ export default function useInitializeWallet() {
           silent
         );
 
-        addBreadcrumb({
-          message: 'walletInit returned',
-          data: { isNew, walletAddress },
+        logger.debug('walletInit returned', {
+          isNew,
+          walletAddress,
         });
 
         if (!switching) {
@@ -114,12 +112,12 @@ export default function useInitializeWallet() {
         }
 
         if (seedPhrase || isNew) {
-          addBreadcrumb({ message: 'walletLoadState call #2' });
+          logger.debug('walletLoadState call #2');
           await dispatch(walletsLoadState(profilesEnabled));
         }
 
         if (isNil(walletAddress)) {
-          addBreadcrumb({ message: 'walletAddress is nil' });
+          logger.debug('walletAddress is nil');
           Alert.alert(lang.t('wallet.import_failed_invalid_private_key'));
           if (!isImporting) {
             dispatch(appStateUpdate({ walletReady: true }));
@@ -129,19 +127,20 @@ export default function useInitializeWallet() {
 
         if (!(isNew || isImporting)) {
           await loadGlobalEarlyData();
-          addBreadcrumb({ message: 'loaded global data...' });
+          logger.debug('loaded global data...');
         }
 
         await dispatch(settingsUpdateAccountAddress(walletAddress));
-        addBreadcrumb({
-          message: 'updated settings address',
-          data: { walletAddress },
+        logger.debug('updated settings address', {
+          walletAddress,
         });
 
         // Newly created / imported accounts have no data in localstorage
         if (!(isNew || isImporting)) {
           await loadAccountData(network);
-          addBreadcrumb({ message: 'loaded account data', data: { network } });
+          logger.debug('loaded account data', {
+            network,
+          });
         }
 
         try {
