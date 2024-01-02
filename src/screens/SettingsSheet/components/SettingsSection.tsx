@@ -290,7 +290,7 @@ const SettingsSection = ({
           testID="currency-section"
           titleComponent={<MenuItem.Title text={lang.t('settings.currency')} />}
         />
-        {(testnetsEnabled || IS_DEV) && (
+        {/* {(testnetsEnabled || IS_DEV) && (
           <MenuItem
             hasRightArrow
             leftComponent={
@@ -310,7 +310,7 @@ const SettingsSection = ({
               <MenuItem.Title text={lang.t('settings.network')} />
             }
           />
-        )}
+        )} */}
         <ContextMenuButton
           menuConfig={themeMenuConfig}
           {...(android ? { onPress: onPressThemeAndroidActions } : {})}
