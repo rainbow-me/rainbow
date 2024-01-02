@@ -159,6 +159,25 @@ export default function QRScannerScreen() {
           >
             <Navbar
               hasStatusBarInset={false}
+              leftComponent={
+                <Navbar.Item onPress={handleCloseScanner}>
+                  <Box
+                    alignItems="center"
+                    justifyContent="center"
+                    height={{ custom: 36 }}
+                    width={{ custom: 36 }}
+                  >
+                    <Text
+                      align="center"
+                      color="label"
+                      size="icon 20px"
+                      weight="semibold"
+                    >
+                      􀆄
+                    </Text>
+                  </Box>
+                </Navbar.Item>
+              }
               rightComponent={
                 <AccentColorProvider color="#FFDA24">
                   <Navbar.Item onPress={() => setFlashEnabled(!flashEnabled)}>
