@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Camera, CodeScanner } from 'react-native-vision-camera';
 import Animated from 'react-native-reanimated';
 import { ErrorText } from '../text';
@@ -11,7 +11,7 @@ import { IS_ANDROID } from '@/env';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
-import { useNavigation } from '@/navigation';
+import { useFocusEffect } from '@react-navigation/native';
 
 const deviceWidth = deviceUtils.dimensions.width;
 const deviceHeight = deviceUtils.dimensions.height;
@@ -36,6 +36,12 @@ export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
   const devices = Camera.getAvailableCameraDevices();
   const device = devices.find(d => d.position === 'back');
   const customHeightValue = deviceHeight + androidSoftMenuHeight;
+
+  useFocusEffect(
+    useCallback(() => {
+      requestPermission();
+    }, [requestPermission])
+  );
 
   const cameraUI = (
     <>
