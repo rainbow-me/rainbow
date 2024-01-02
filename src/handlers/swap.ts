@@ -22,7 +22,7 @@ import {
   getProviderForNetwork,
   toHexNoLeadingZeros,
 } from './web3';
-import config from '@/model/config';
+import { getRemoteConfig } from '@/model/remoteConfig';
 import { Asset } from '@/entities';
 import {
   add,
@@ -150,7 +150,7 @@ export const getStateDiff = async (
     toAddr,
     MaxUint256.toHexString()
   );
-
+  const { trace_call_block_number_offset } = getRemoteConfig();
   // trace_call default params
   const callParams = [
     {
@@ -160,7 +160,7 @@ export const getStateDiff = async (
       value: '0x0',
     },
     ['stateDiff'],
-    blockNumber - Number(config.trace_call_block_number_offset || 20),
+    blockNumber - Number(trace_call_block_number_offset || 20),
   ];
 
   const trace = await provider.send('trace_call', callParams);

@@ -17,7 +17,7 @@ import {
   useGenericAsset,
   useWallets,
 } from '@/hooks';
-import config from '@/model/config';
+import { useRemoteConfig } from '@/model/remoteConfig';
 import { deviceUtils, ethereumUtils } from '@/utils';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -146,7 +146,7 @@ export const EthCard = () => {
     }, 20000);
   }, [loadedChart]);
 
-  const addCashEnabled = config.f2c_enabled;
+  const { f2c_enabled: addCashEnabled } = useRemoteConfig();
 
   return (
     <GenericCard

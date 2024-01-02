@@ -22,6 +22,7 @@
       "tab_investments": "プール",
       "tab_savings": "貯蓄",
       "tab_showcase": "ショーケース",
+      "tab_points": "ポイント",
       "tab_positions": "ポジション",
       "tab_transactions": "取引",
       "tab_transactions_tooltip": "取引とトークンの送金",
@@ -240,6 +241,7 @@
       "exchange_again": "再度交換",
       "exchange_search_placeholder": "トークンの検索",
       "exchange_search_placeholder_network": "%{network}でトークンの検索",
+      "favorites": "お気に入り",
       "go_back": "戻る",
       "go_back_lowercase": "戻る",
       "got_it": "理解しました",
@@ -432,17 +434,6 @@
       "sync_codepush": "CodePushを同期"
     },
     "discover": {
-      "lists": {
-        "lists_title": "リスト",
-        "this_list_is_empty": "このリストは空です！",
-        "types": {
-          "trending": "トレンド",
-          "watchlist": "ウォッチリスト",
-          "favorites": "お気に入り",
-          "defi": "DeFi",
-          "stablecoins": "ステーブルコイン"
-        }
-      },
       "pulse": {
         "pulse_description": "すべての主要なDeFiトークンを集めました",
         "today_suffix": "今日",
@@ -637,6 +628,7 @@
         }
       },
       "swap_details": {
+        "reward": "報酬",
         "exchange_rate": "為替レート",
         "rainbow_fee": "含まれるレインボーフィー",
         "refuel": "追加のネットワークトークン",
@@ -1161,8 +1153,37 @@
       "withdrawal_dropdown_label": "ために",
       "withdrawal_input_label": "ゲット"
     },
+    "minting": {
+      "hold_to_mint": "保留してミント",
+      "minting": "鋳造中...",
+      "minted": "発行済み",
+      "mint_unavailable": "ミント不可",
+      "mint_on_mintdotfun": "􀮶 ミントはmint.funで",
+      "error_minting": "鋳造エラー",
+      "mint_price": "ミント価格",
+      "free": "無料",
+      "by": "By",
+      "unknown": "未知",
+      "max": "最大",
+      "nft_count": "%{number} NFTs",
+      "description": "Description",
+      "total_minted": "ミントされた総数",
+      "first_event": "最初のイベント",
+      "last_event": "最後のイベント",
+      "max_supply": "最大供給量",
+      "contract": "契約",
+      "network": "Network",
+      "could_not_find_collection": "コレクションが見つかりませんでした",
+      "unable_to_find_check_again": "このコレクションが見つかりませんでした。アドレスとネットワークを再確認するか、後でもう一度試してください",
+      "mintdotfun_unsupported_network": "Mint.funはこのネットワークをサポートしていません"
+    },
     "nfts": {
-      "selling": "販売"
+      "selling": "販売",
+      "sort": {
+        "abc": "Abc",
+        "most_recent": "最新順",
+        "floor_price": "フロア価格"
+      }
     },
     "nft_offers": {
       "card": {
@@ -1220,6 +1241,89 @@
       },
       "info": {
         "address_copied_to_clipboard": "アドレスがクリップボードにコピーされました"
+      }
+    },
+    "points": {
+      "placeholder": {
+        "coming_soon_title": "近日公開",
+        "coming_soon_description": "ポイントがもうすぐそこに。\n今日から獲得を始めましょう。"
+      },
+      "claim": {
+        "title": "ポイントを請求する",
+        "subtitle": "ポイントがここに。あなたがいくつ獲得したかを確認してください。",
+        "get_started": "始める",
+        "use_referral_code": "紹介コードを使用する"
+      },
+      "referral": {
+        "title": "あなたの紹介コードを入力してください",
+        "subtitle": "以下に紹介コードを入力して、ボーナス報酬を請求してください。",
+        "back": "戻る",
+        "error": "何か問題が発生しました。アプリを再起動して、もう一度お試しください。",
+        "get_started": "始める",
+        "invalid_code": "無効なコード"
+      },
+      "points": {
+        "referral_code": "紹介コード",
+        "share_link": "リンクを共有する",
+        "next_drop": "次のドロップ",
+        "your_rank": "あなたのランク",
+        "of_x": "%{totalUsers}個中の",
+        "referrals": "紹介",
+        "streak": "ストリーク",
+        "longest_yet": "これまでで最長",
+        "day": "日",
+        "days": "日",
+        "leaderboard": "リーダーボード",
+        "sunday": "日",
+        "monday": "月",
+        "tuesday": "火",
+        "wednesday": "水",
+        "thursday": "木",
+        "friday": "金",
+        "saturday": "土",
+        "today": "今日",
+        "error": "おっと！\nリフレッシュするには引っ張ってください。",
+        "points": "ポイント",
+        "referral_code_copied": "紹介コードをコピーしました",
+        "earn_points_for_referring": "あなたの紹介者がRainbowを通じて$100を交換するとポイントが獲得でき、さらに紹介者が獲得するポイントの10%を獲得できます",
+        "already_claimed_points": "申し訳ありません！ ポイントは既に請求済みです。",
+        "now": "今"
+      },
+      "console": {
+        "claim_bonus_paragraph": "Rainbowで少なくとも$100をスワップすると、追加で100ポイントがもらえます",
+        "welcome_bonus": "ウェルカムボーナス",
+        "true_believer": "真の信者",
+        "registration_complete": "登録完了",
+        "account": "アカウント",
+        "points_earned": "獲得ポイント",
+        "share_bonus": "シェアボーナス",
+        "share_bonus_paragraph_one": "準備は整いました！",
+        "share_bonus_paragraph_two": "スワッピング、ブリッジング、ミンティング、友達の紹介などでポイントを獲得し続けてください",
+        "share_bonus_paragraph_three": "Rainbowを使えば使うほど、報酬を多く受け取れます",
+        "calculation_complete": "計算完了",
+        "metamask_swaps": "MetaMaskスワップ",
+        "wallet_balance": "ウォレット残高",
+        "rainbow_nfts_owned": "所有するレインボーNFTs",
+        "rainbow_swaps": "レインボースワップ",
+        "calculating_points": "ポイント計算中",
+        "access_granted": "アクセス許可",
+        "sign_in_with_wallet": "ウォレットでサインインしてください",
+        "auth_required": "認証が必要です",
+        "proceed_to_share": "続ける",
+        "skip_referral": "スキップ",
+        "sign_in": "サインインする",
+        "try_a_swap": "スワップを試してみてください",
+        "get_some_eth": "ETHを入手",
+        "generic_alert": "何らかの問題が発生しました。もう一度お試しください。",
+        "existing_user_alert": "すでにポイントを請求しています。アプリを再起動して更新してください。",
+        "invalid_referral_code_alert": "紹介コードが無効です。コードを再確認してもう一度お試しください。",
+        "no_balance_alert": "ポイントに登録するには、ウォレット残高がゼロでない必要があります。",
+        "referral_link_is_ready": "あなたの紹介リンクは準備ができました",
+        "referral_link_bonus_text": "紹介リンクをツイートして、さらに250ポイントをゲット",
+        "referral_link_bonus_text_extended": "さらに紹介した人が獲得したポイントの10%を獲得します",
+        "complete_onboarding": "完了",
+        "share_to_x": "Xにシェアする",
+        "hardware_wallet_alert": "ハードウェアウォレットのサポートはもうすぐです！"
       }
     },
     "pools": {
@@ -1442,6 +1546,27 @@
         "subheader": "紹介"
       }
     },
+    "nft_offers_launch": {
+      "primary_button": {
+        "has_offers": "オファーを表示",
+        "not_has_offers": "閉じる"
+      },
+      "secondary_button": "後で",
+      "info_row_1": {
+        "title": "すべてのオファーを1つの場所で確認できます",
+        "description": "すべてのNFTマーケットプレイスでオファーを確認できます"
+      },
+      "info_row_2": {
+        "title": "Rainbowから承諾",
+        "description": "タップひとつでオファーを受け入れ、選んだトークンにスワップできます"
+      },
+      "info_row_3": {
+        "title": "スマートなソートモード",
+        "description": "フロア価格と比較したり、最高のオファーまたは最新のオファーを表示したりできます"
+      },
+      "header": "オファー",
+      "subheader": "紹介"
+    },
     "review": {
       "alert": {
         "are_you_enjoying_rainbow": "Rainbowをお楽しみいただけていますか？ 🥰",
@@ -1493,6 +1618,10 @@
       "error_text": "インターネット接続を確認してから、後で再試行してください",
       "ended_title": "プログラムが終了しました",
       "ended_text": "次回ご利用いただくためにお楽しみに！",
+      "info": {
+        "title": "スワップとブリッジングでOPを獲得",
+        "description": "Optimismにスワップするか、Optimismにブリッジすることでキャッシュバックを受け取れます。報酬は毎月配布されます。"
+      },
       "op": {
         "airdrop_timing": {
           "title": "毎週エアドロップ",
@@ -1705,6 +1834,8 @@
         "failed": "失敗",
         "purchased": "購入済み",
         "purchasing": "購入",
+        "minting": "ミント",
+        "minted": "発行済み",
         "received": "受信済み",
         "receiving": "受け取り",
         "self": "自分自身",
@@ -2216,6 +2347,7 @@
       "wallet_alert": {
         "message_support": "メッセージサポート",
         "close": "閉じる",
+        "learn_more": "詳細を学ぶ",
         "message": "助けが必要な場合は、サポートに連絡してください！ \n私たちはすぐにあなたに連絡します！",
         "title": "エラーが発生しました"
       }
@@ -2226,6 +2358,7 @@
       "available_networks": "利用可能なネットワーク",
       "change_network": "ネットワークを変更する",
       "connected_apps": "接続されたアプリ",
+      "no_connected_apps": "まだ接続されたアプリはありません 😢",
       "disconnect": "切断する",
       "go_back_to_your_browser": "ブラウザに戻る",
       "paste_uri": {
@@ -2275,9 +2408,91 @@
         "pairing_timeout": "接続が確立する前にセッションがタイムアウトしました。通常、ネットワークエラーのためです。もう一度試してください",
         "pairing_unsupported_methods": "DappがRainbowでサポートされていないウォレットRPCメソッドを要求しました",
         "pairing_unsupported_networks": "DappがRainbowでサポートされていないネットワークを要求しました。",
+        "read_only_wallet_on_signing_method": "読み取り専用のウォレットを使用しているようですが、このリクエストには許可されていません。",
+        "namespaces_invalid": "DAppがリクエストした名前空間に問題がありました。もう一度試してみるか、Rainbowと/またはDAppサポートチームに連絡してください。",
         "request_invalid": "リクエストに無効なパラメータが含まれています。もう一度試すか、Rainbowおよび/またはDappのサポートチームに連絡してください",
+        "eth_sign": "Rainbowは、セキュリティ上の懸念から旧式のeth_signをサポートしていません。  \n ご不明な点がありましたら、Rainbowおよび/またはdappのサポートチームにお問い合わせください。",
         "request_unsupported_network": "このリクエストで指定されたネットワークは、Rainbowでサポートされていません。",
         "request_unsupported_methods": "このリクエストで指定されたRPCメソッドはRainbowでサポートされていません"
+      },
+      "dapp_warnings": {
+        "info_alert": {
+          "title": "このアプリはおそらく悪意のあるものです",
+          "description": "このアプリからのメッセージまたはトランザクションの署名は、資産の損失を引き起こす可能性があります"
+        }
+      },
+      "simulation": {
+        "titles": {
+          "message_request": "メッセージリクエスト",
+          "transaction_request": "トランザクションリクエスト"
+        },
+        "simulation_card": {
+          "titles": {
+            "not_enough_native_balance": "不足しています %{symbol}",
+            "likely_to_fail": "失敗する可能性が高い",
+            "simulation_unavailable": "シミュレーションが利用できません",
+            "simulation_result": "シミュレーション結果",
+            "simulating": "シミュレーション中",
+            "proceed_carefully": "慎重に進んでください",
+            "suspicious_transaction": "怪しいトランザクション"
+          },
+          "messages": {
+            "no_changes": "変更が検出されませんでした",
+            "need_more_native": "このトランザクションの支払いには、 %{network} 上でさらに %{symbol} が必要です。下記から %{symbol} を取得して、このリクエストを続行してください。",
+            "unavailable_personal_sign": "パーソナルサインのシミュレーションはまだサポートされていません",
+            "unavailable_zora_network": "Zoraでのシミュレーションはまだサポートされていません",
+            "failed_to_simulate": "シミュレーションに失敗しました。これは使用しているアプリに問題がある可能性があります。",
+            "warning": "悪意のある行動は検出されませんでしたが、このトランザクションには財布にリスクを及ぼす可能性のある特徴があります。",
+            "malicious": "このトランザクションに署名すると、財布の中のすべてにアクセスできなくなる可能性があります。"
+          },
+          "event_row": {
+            "unlimited": "無制限",
+            "types": {
+              "send": "送信する",
+              "receive": "受け取る",
+              "approve": "承認",
+              "revoke": "取り消す"
+            }
+          }
+        },
+        "details_card": {
+          "title": "詳細",
+          "types": {
+            "chain": "Network",
+            "contract": "契約",
+            "contract_created": "契約が作成されました",
+            "to": "宛先",
+            "function": "関数",
+            "source_code": "ソースコード",
+            "nonce": "Nonce"
+          },
+          "unknown": "不明"
+        },
+        "message_card": {
+          "title": "メッセージ",
+          "copy": "Copy"
+        },
+        "profile_section": {
+          "signing_with": "署名付きで",
+          "free_to_sign": "自由に署名",
+          "no_native_balance": "なし %{symbol}",
+          "on_network": "on %{network}"
+        },
+        "buttons": {
+          "cancel": "キャンセル",
+          "confirm": "􀎽 トランザクションを送信する",
+          "get_native_token": "取得します %{symbol}",
+          "buy_native_token": "購入します %{symbol}"
+        },
+        "formatted_dates": {
+          "today": "今日",
+          "day_ago": "1日前",
+          "days_ago": "%s日前",
+          "week_ago": "1週間前",
+          "weeks_ago": "%s週間前",
+          "month_ago": "1ヵ月前",
+          "months_ago": "%sヵ月前"
+        }
       }
     },
     "warning": {
