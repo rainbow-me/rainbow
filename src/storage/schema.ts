@@ -77,3 +77,20 @@ type CampaignMetadata = {
 };
 
 export type Campaigns = CampaignKeys & CampaignMetadata;
+
+export const enum BackupProvider {
+  NoProvider = 'NoProvider',
+  CloudProvider = 'CloudProvider',
+  ManualProvider = 'ManualProvider',
+}
+
+export const enum BackupStatus {
+  UpToDate = 'UpToDate',
+  OutOfDate = 'OutOfDate',
+}
+
+export type BackupsSettings = {
+  lastBackupTimestamp: number;
+  provider: BackupProvider;
+  status: BackupStatus;
+};
