@@ -23,6 +23,7 @@ import { IS_ANDROID, IS_IOS } from '@/env';
 import { useTheme } from '@/theme';
 // @ts-ignore
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
+import { useNavigation } from '@/navigation';
 
 // Display.getRealMetrics
 
@@ -52,9 +53,21 @@ export default function QRCodeScanner({
   const { colors } = useTheme();
   const [cameraState, setCameraState] = useState(CameraState.Waiting);
   const isFocused = useIsFocused();
+  const { setOptions } = useNavigation();
 
   const [enabled, setEnabled] = useState(ios);
   const [isCameraReady, setIsCameraReady] = useState(false);
+
+  useEffect(() => {
+    // We have to do this instead of `useIsFocused` because the
+    // component does not unmount properly when navigating away
+    // from the screen.
+    setOptions({
+      onWillDismiss: () => {
+        setEnabled(false);
+      },
+    });
+  }, [setOptions]);
 
   useEffect(() => {
     if (isFocused) {

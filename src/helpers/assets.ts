@@ -287,15 +287,15 @@ const sortCollectibles = (
       return families.sort((a, b) => {
         const minPriceA = Math.min(
           ...assetsByName[a].map(asset =>
-            asset.floorPriceEth !== undefined ? asset.floorPriceEth : Infinity
+            asset.floorPriceEth !== undefined ? asset.floorPriceEth : -1
           )
         );
         const minPriceB = Math.min(
           ...assetsByName[b].map(asset =>
-            asset.floorPriceEth !== undefined ? asset.floorPriceEth : Infinity
+            asset.floorPriceEth !== undefined ? asset.floorPriceEth : -1
           )
         );
-        return minPriceA - minPriceB;
+        return minPriceB - minPriceA;
       });
     default:
       return families;
@@ -309,7 +309,7 @@ export const buildBriefUniqueTokenList = (
   hiddenTokens: string[] = [],
   listType: AssetListType = 'wallet',
   isReadOnlyWallet = false,
-  nftSort: string
+  nftSort: string = CollectibleSortByOptions.MOST_RECENT
 ) => {
   const hiddenUniqueTokensIds = uniqueTokens
     .filter(({ fullUniqueId }: any) => hiddenTokens.includes(fullUniqueId))

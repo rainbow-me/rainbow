@@ -131,7 +131,6 @@ export default function SendSheet(props) {
     gasLimit,
     isSufficientGas,
     isValidGas,
-    prevSelectedGasFee,
     selectedGasFee,
     startPollingGasFees,
     stopPollingGasFees,
@@ -920,7 +919,7 @@ export default function SendSheet(props) {
     [ensSuggestions]
   );
 
-  const isEmptyWallet = !sortedAssets.length && !sendableUniqueTokens.length;
+  const isEmptyWallet = !sortedAssets?.length && !sendableUniqueTokens?.length;
 
   return (
     <Container testID="send-sheet">

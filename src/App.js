@@ -13,7 +13,6 @@ import {
 
 // eslint-disable-next-line import/default
 import codePush from 'react-native-code-push';
-import { IS_TESTING } from 'react-native-dotenv';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import { connect, Provider as ReduxProvider } from 'react-redux';
@@ -83,7 +82,7 @@ import { initializeReservoirClient } from '@/resources/reservoir/client';
 import { ReviewPromptAction } from '@/storage/schema';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { RemotePromoSheetProvider } from '@/components/remote-promo-sheet/RemotePromoSheetProvider';
-import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileContext';
+import { initializeRemoteConfig } from '@/model/remoteConfig';
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -306,7 +305,7 @@ function Root() {
   React.useEffect(() => {
     async function initializeApplication() {
       await initSentry(); // must be set up immediately
-
+      await initializeRemoteConfig();
       // must happen immediately, but after Sentry
       await migrate();
 

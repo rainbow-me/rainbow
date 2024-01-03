@@ -43,14 +43,16 @@ export default function usePriceImpactDetails(
     };
   }
 
-  const inputTokenAddress = ethereumUtils.getMultichainAssetAddress(
-    inputCurrency as RainbowToken,
-    currentNetwork
-  );
-  const outputTokenAddress = ethereumUtils.getMultichainAssetAddress(
-    outputCurrency as RainbowToken,
-    currentNetwork
-  );
+  const inputTokenAddress =
+    ethereumUtils.getMultichainAssetAddress(
+      inputCurrency as RainbowToken,
+      currentNetwork
+    ) ?? '';
+  const outputTokenAddress =
+    ethereumUtils.getMultichainAssetAddress(
+      outputCurrency as RainbowToken,
+      currentNetwork
+    ) ?? '';
 
   let inputPriceValue =
     genericAssets[inputTokenAddress.toLowerCase()]?.price?.value;

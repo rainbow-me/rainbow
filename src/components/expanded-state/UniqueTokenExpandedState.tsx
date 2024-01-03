@@ -241,15 +241,6 @@ const getIsSupportedOnRainbowWeb = (network: Network) => {
   }
 };
 
-const getIsSaleInfoSupported = (network: Network) => {
-  switch (network) {
-    case Network.mainnet:
-      return true;
-    default:
-      return false;
-  }
-};
-
 const UniqueTokenExpandedState = ({
   asset,
   external,
@@ -464,7 +455,6 @@ const UniqueTokenExpandedState = ({
   );
 
   const hideNftMarketplaceAction = isPoap || !slug;
-  const isSaleInfoSupported = getIsSaleInfoSupported(asset.network);
 
   return (
     <>
@@ -649,7 +639,7 @@ const UniqueTokenExpandedState = ({
                       separator={<Separator color="divider20 (Deprecated)" />}
                       space={sectionSpace}
                     >
-                      {(isNFT || isENS) && isSaleInfoSupported ? (
+                      {isNFT || isENS ? (
                         <Bleed // Manually crop surrounding space until TokenInfoItem uses design system components
                           bottom={android ? '15px (Deprecated)' : '6px'}
                           top={android ? '10px' : '4px'}

@@ -21,7 +21,7 @@ import {
 } from '@/components/cards/utils/constants';
 import { OpRewardsCard } from '@/components/cards/OpRewardsCard';
 import { LedgerCard } from '@/components/cards/LedgerCard';
-import config from '@/model/config';
+import { useRemoteConfig } from '@/model/remoteConfig';
 import walletTypes from '@/helpers/walletTypes';
 import { NFTOffersCard } from '@/components/cards/NFTOffersCard';
 import { MintsCard } from '@/components/cards/MintsCard/MintsCard';
@@ -30,15 +30,20 @@ import { useMints } from '@/resources/mints';
 import { IS_TEST } from '@/env';
 
 export default function DiscoverHome() {
+  const {
+    profiles_enabled,
+    mints_enabled,
+    op_rewards_enabled,
+  } = useRemoteConfig();
   const { accountAddress, network } = useAccountSettings();
   const profilesEnabledLocalFlag = useExperimentalFlag(PROFILES);
-  const profilesEnabledRemoteFlag = config.profiles_enabled;
+  const profilesEnabledRemoteFlag = profiles_enabled;
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
   const nftOffersEnabled = useExperimentalFlag(NFT_OFFERS);
   const mintsEnabled =
-    (useExperimentalFlag(MINTS) || config.mints_enabled) && !IS_TEST;
+    (useExperimentalFlag(MINTS) || mints_enabled) && !IS_TEST;
   const opRewardsLocalFlag = useExperimentalFlag(OP_REWARDS);
-  const opRewardsRemoteFlag = config.op_rewards_enabled;
+  const opRewardsRemoteFlag = op_rewards_enabled;
   const testNetwork = isTestnetNetwork(network);
   const isProfilesEnabled =
     profilesEnabledLocalFlag && profilesEnabledRemoteFlag;
