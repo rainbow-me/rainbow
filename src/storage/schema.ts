@@ -85,12 +85,13 @@ export const enum BackupProvider {
 }
 
 export const enum BackupStatus {
+  NoBackup = 'NoBackup',
   UpToDate = 'UpToDate',
   OutOfDate = 'OutOfDate',
 }
 
 export type BackupsSettings = {
-  lastBackupTimestamp: number;
+  lastBackupTimestamp: string;
   provider: BackupProvider;
   status: BackupStatus;
 };
