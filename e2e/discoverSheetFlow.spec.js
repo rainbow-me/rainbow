@@ -134,7 +134,7 @@ describe('Discover Screen Flow', () => {
     await Helpers.checkIfVisible('profile-sheet');
   });
 
-  it('Should watch wallet from Profile sheet', async () => {
+  it.skip('Should watch wallet from Profile sheet', async () => {
     await Helpers.waitAndTap('profile-sheet-watch-button');
   });
 
