@@ -238,6 +238,7 @@
 		6635730524939991006ACFA6 /* SafeStoreReview.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SafeStoreReview.m; sourceTree = "<group>"; };
 		664612EC2748489B00B43F5A /* PriceWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PriceWidgetExtension.entitlements; sourceTree = "<group>"; };
 		664612ED274848B000B43F5A /* SelectTokenIntent.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SelectTokenIntent.entitlements; sourceTree = "<group>"; };
+		664ECDBBD5A459CD3744964A /* Pods-ImageNotification.localrelease.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ImageNotification.localrelease.xcconfig"; path = "Target Support Files/Pods-ImageNotification/Pods-ImageNotification.localrelease.xcconfig"; sourceTree = "<group>"; };
 		6655FFB325BB2B0700642961 /* ThemeModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThemeModule.m; sourceTree = "<group>"; };
 		668ADB2C25A4E3A40050859D /* Stickers.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Stickers.xcassets; sourceTree = "<group>"; };
 		668ADB2E25A4E3A40050859D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -917,6 +918,7 @@
 			files = (
 				C1AA308F27338F2B00136A9A /* SF-Pro-Rounded-Bold.otf in Resources */,
 				C1AA309027338F2B00136A9A /* SF-Pro-Rounded-Regular.otf in Resources */,
+				AA0B1CC02B00C5E100EAF77D /* SF-Pro-Rounded-Black.otf in Resources */,
 				C1C61A83272CBDA100E5C0B3 /* Images.xcassets in Resources */,
 				C1AA309227338F2B00136A9A /* SF-Pro-Rounded-Medium.otf in Resources */,
 				C1AA309527338F2B00136A9A /* SF-Pro-Rounded-Heavy.otf in Resources */,
