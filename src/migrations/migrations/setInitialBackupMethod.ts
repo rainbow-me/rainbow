@@ -42,8 +42,12 @@ export function setInitialBackupMethod(): Migration {
         wallet.backupDate || `${Date.now()}`
       );
 
-      // TODO: What dictates an out of date backup?
-      backups.set(['status'], BackupStatus.UpToDate);
+      // TODO: Is this all that dictates an out of date backup?
+      const allBackedUp = Object.values(wallets.wallets).every(w => w.backedUp);
+      backups.set(
+        ['status'],
+        allBackedUp ? BackupStatus.UpToDate : BackupStatus.OutOfDate
+      );
     },
   };
 }
