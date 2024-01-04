@@ -51,7 +51,7 @@ describe('Home Screen', () => {
 
   it('tapping "Swap" opens the swap screen', async () => {
     await Helpers.waitAndTap('swap-button');
-    await Helpers.checkIfVisible('exchange-modal');
+    await Helpers.checkIfVisible('exchange-modal-notch');
     await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
   });
 
