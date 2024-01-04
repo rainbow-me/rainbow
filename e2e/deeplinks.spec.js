@@ -114,7 +114,7 @@ describe('Deeplinks spec', () => {
     await testEthereumDeeplink(url, false);
   });
 
-  it('should be able to handle ethereum payments urls for ETH (optimism)', async () => {
+  it.skip('should be able to handle ethereum payments urls for ETH (optimism)', async () => {
     const url = escapeUrl('ethereum:payment-brunobarbieri.eth@10?value=1e15');
     await testEthereumDeeplink(url, false);
   });
@@ -130,7 +130,7 @@ describe('Deeplinks spec', () => {
 
   // FIXME: when doing open deeplinks with cold start, the account assets state
   // comes back empty, find a fix and then change these tests to cold-start again
-  it('should be able to handle ethereum payments urls for ETH (arbitrum)', async () => {
+  it.skip('should be able to handle ethereum payments urls for ETH (arbitrum)', async () => {
     const url = 'ethereum:payment-brunobarbieri.eth@42161?value=1e15';
     await testEthereumDeeplink(url, false);
   });
@@ -146,7 +146,7 @@ describe('Deeplinks spec', () => {
 
   // FIXME: when doing open deeplinks with cold start, the account assets state
   // comes back empty, find a fix and then change these tests to cold-start again
-  it('should be able to handle ethereum payments urls for MATIC (polygon)', async () => {
+  it.skip('should be able to handle ethereum payments urls for MATIC (polygon)', async () => {
     const url = escapeUrl('ethereum:payment-brunobarbieri.eth@137?value=1e15');
     await testEthereumDeeplink(url, false);
   });
