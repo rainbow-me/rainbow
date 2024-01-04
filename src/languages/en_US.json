@@ -1678,7 +1678,7 @@
       "no_thanks": "No thanks"
     },
     "settings": {
-      "backup": "Backup",
+      "backup": "Wallets & Backup",
       "google_account_used": "Google account used for backups",
       "backup_switch_google_account": "Switch Google Account",
       "backup_sign_out": "Sign out",

@@ -12,8 +12,7 @@ import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
 import AppIconIcon from '@/assets/settingsAppIcon.png';
 import AppIconIconDark from '@/assets/settingsAppIconDark.png';
-import BackupIcon from '@/assets/settingsBackup.png';
-import BackupIconDark from '@/assets/settingsBackupDark.png';
+import WalletsAndBackupIcon from '@/assets/walletsAndBackup.png';
 import CurrencyIcon from '@/assets/settingsCurrency.png';
 import CurrencyIconDark from '@/assets/settingsCurrencyDark.png';
 import DarkModeIcon from '@/assets/settingsDarkMode.png';
@@ -26,6 +25,8 @@ import NotificationsIcon from '@/assets/settingsNotifications.png';
 import NotificationsIconDark from '@/assets/settingsNotificationsDark.png';
 import PrivacyIcon from '@/assets/settingsPrivacy.png';
 import PrivacyIconDark from '@/assets/settingsPrivacyDark.png';
+import BackupWarningIcon from '@/assets/BackupWarning.png';
+import CloudBackupWarningIcon from '@/assets/CloudBackupWarning.png';
 import useExperimentalFlag, {
   LANGUAGE_SETTINGS,
   NOTIFICATIONS,
@@ -40,7 +41,8 @@ import {
 } from '@/utils/buildRainbowUrl';
 import { getNetworkObj } from '@/networks';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
-import { ReviewPromptAction } from '@/storage/schema';
+import { BackupProvider, ReviewPromptAction } from '@/storage/schema';
+import * as ls from '@/storage';
 
 const SettingsExternalURLs = {
   rainbowHomepage: 'https://rainbow.me',
@@ -133,7 +135,7 @@ const SettingsSection = ({
       onCloseModal();
     }
     handleReviewPromptAction(ReviewPromptAction.UserPrompt);
-  }, []);
+  }, [onCloseModal]);
 
   const onPressShare = useCallback(() => {
     Share.share({
@@ -229,6 +231,21 @@ const SettingsSection = ({
     [setTheme]
   );
 
+  const getWalletsAndBackupAlertIcon = useCallback(() => {
+    if (allBackedUp) {
+      return undefined;
+    }
+
+    if (areBackedUp) {
+      if (ls.backups.get(['provider']) === BackupProvider.CloudProvider) {
+        return CloudBackupWarningIcon;
+      }
+      return BackupWarningIcon;
+    }
+
+    return BackupWarningIcon;
+  }, [allBackedUp, areBackedUp]);
+
   return (
     <MenuContainer
       testID="settings-menu-container"
@@ -238,21 +255,12 @@ const SettingsSection = ({
         {canBeBackedUp && (
           <MenuItem
             hasRightArrow
-            leftComponent={
-              <MenuItem.ImageIcon
-                source={isDarkMode ? BackupIconDark : BackupIcon}
-              />
-            }
+            leftComponent={<MenuItem.ImageIcon source={WalletsAndBackupIcon} />}
             onPress={onPressBackup}
             rightComponent={
-              <MenuItem.StatusIcon
-                status={
-                  allBackedUp
-                    ? 'complete'
-                    : areBackedUp
-                    ? 'incomplete'
-                    : 'warning'
-                }
+              <MenuItem.ImageIcon
+                size={44}
+                source={getWalletsAndBackupAlertIcon()}
               />
             }
             size={60}

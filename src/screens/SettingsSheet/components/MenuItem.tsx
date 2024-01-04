@@ -12,7 +12,7 @@ import { ImageSourcePropType } from 'react-native';
 
 interface ImageIconProps {
   size?: number;
-  source: ImageSourcePropType | Source;
+  source: ImageSourcePropType | Source | undefined;
 }
 
 const ImageIcon = ({ size = 60, source }: ImageIconProps) => (
