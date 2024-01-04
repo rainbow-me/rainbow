@@ -1,11 +1,11 @@
 import { Migration, MigrationName } from '@/migrations/types';
-// import {  } from '@/redux/wallets';
-// import store from '@/redux/store';
 import { logger } from '@/logger';
 import { getAllWallets } from '@/model/wallet';
 import { backups } from '@/storage';
 import { BackupProvider, BackupStatus } from '@/storage/schema';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
+import WalletTypes from '@/helpers/walletTypes';
+import { findLatestBackUp } from '@/model/backup';
 
 export function setInitialBackupMethod(): Migration {
   return {
@@ -30,20 +30,21 @@ export function setInitialBackupMethod(): Migration {
         case WalletBackupTypes.manual:
           backups.set(['provider'], BackupProvider.ManualProvider);
           break;
-        case WalletBackupTypes.cloud:
+        case WalletBackupTypes.cloud: {
           backups.set(['provider'], BackupProvider.CloudProvider);
+          const latestBackup = findLatestBackUp(wallets.wallets);
+          if (latestBackup) {
+            backups.set(['lastBackupTimestamp'], latestBackup);
+          }
           break;
+        }
         default:
           backups.set(['provider'], BackupProvider.NoProvider);
       }
 
-      backups.set(
-        ['lastBackupTimestamp'],
-        wallet.backupDate || `${Date.now()}`
+      const allBackedUp = Object.values(wallets.wallets).every(
+        w => w.type !== WalletTypes.readOnly && w.backedUp
       );
-
-      // TODO: Is this all that dictates an out of date backup?
-      const allBackedUp = Object.values(wallets.wallets).every(w => w.backedUp);
       backups.set(
         ['status'],
         allBackedUp ? BackupStatus.UpToDate : BackupStatus.OutOfDate
