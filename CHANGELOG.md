@@ -15,6 +15,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.13] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.13)
+
+### Added
+
+- More translations for newer features (#5292)
+
+### Changed
+
+- Remove testnet option from developer settings (#5308)
+- Update what logs get sent to sentry (#5309)
+
 ## [1.9.12] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.12)
 
 ### Added

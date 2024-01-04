@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.9.13-1",
+  "version": "1.9.14-1",
   "private": true,
   "scripts": {
     "eas-build-pre-install": "chmod -R +x ./scripts && ./scripts/eas-build-pre-install.sh",
