@@ -236,11 +236,11 @@ const SettingsSection = ({
       return undefined;
     }
 
-    if (areBackedUp) {
-      if (ls.backups.get(['provider']) === BackupProvider.CloudProvider) {
-        return CloudBackupWarningIcon;
-      }
-      return BackupWarningIcon;
+    if (
+      areBackedUp &&
+      ls.backups.get(['provider']) === BackupProvider.CloudProvider
+    ) {
+      return CloudBackupWarningIcon;
     }
 
     return BackupWarningIcon;
