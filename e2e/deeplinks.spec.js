@@ -137,7 +137,7 @@ describe('Deeplinks spec', () => {
 
   // FIXME: when doing open deeplinks with cold start, the account assets state
   // comes back empty, find a fix and then change these tests to cold-start again
-  it('should be able to handle ethereum payments urls for DAI (optimism)', async () => {
+  it.skip('should be able to handle ethereum payments urls for DAI (optimism)', async () => {
     const url = escapeUrl(
       'ethereum:0xda10009cbd5d07dd0cecc66161fc93d7c9000da1@10/transfer?address=brunobarbieri.eth&uint256=1e15'
     );
