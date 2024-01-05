@@ -126,7 +126,7 @@
     "@reservoir0x/reservoir-sdk": "1.4.5",
     "@segment/analytics-react-native": "2.15.0",
     "@segment/sovran-react-native": "1.0.4",
-    "@sentry/react-native": "3.4.1",
+    "@sentry/react-native": "5.15.2",
     "@shopify/flash-list": "1.5.0",
     "@shopify/react-native-skia": "0.1.200",
     "@tanstack/query-async-storage-persister": "4.2.1",
@@ -178,6 +178,9 @@
     "ethereumjs-wallet": "1.0.1",
     "events": "3.3.0",
     "expo": "^49.0.0",
+    "expo-application": "~5.3.0",
+    "expo-constants": "~14.4.2",
+    "expo-device": "~5.4.0",
     "fast-text-encoding": "1.0.4",
     "flatted": "3.2.7",
     "global": "4.4.0",
@@ -296,6 +299,7 @@
     "redux-thunk": "2.3.0",
     "reselect": "4.0.0",
     "rn-fetch-blob": "0.12.0",
+    "sentry-expo": "~7.1.0",
     "smitter": "1.1.1",
     "socket.io-client": "4.5.3",
     "stream-browserify": "1.0.0",
@@ -534,7 +538,8 @@
       "hardhat>keccak": false,
       "react-native-storage": false,
       "react-native-storage>opencollective>babel-polyfill>core-js": false,
-      "react-native-bootsplash>sharp": false
+      "react-native-bootsplash>sharp": false,
+      "sentry-expo>@sentry/react-native>@sentry/cli": true
     }
   },
   "lint-staged": {

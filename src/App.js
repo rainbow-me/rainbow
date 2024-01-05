@@ -1,5 +1,5 @@
 import './languages';
-import * as Sentry from '@sentry/react-native';
+import * as Sentry from 'sentry-expo';
 import React, { Component } from 'react';
 import {
   AppRegistry,

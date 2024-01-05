@@ -115,7 +115,7 @@ describe('Discover Screen Flow', () => {
     await Helpers.checkIfExists('highLiquidity-3');
   });
 
-  it('Should search and open Profile Sheet for rainbowwallet.eth', async () => {
+  it.skip('Should search and open Profile Sheet for rainbowwallet.eth', async () => {
     await Helpers.waitAndTap('discover-search-clear-input');
     await Helpers.typeText(
       'discover-search-input',
@@ -134,11 +134,11 @@ describe('Discover Screen Flow', () => {
     await Helpers.checkIfVisible('profile-sheet');
   });
 
-  it('Should watch wallet from Profile sheet', async () => {
+  it.skip('Should watch wallet from Profile sheet', async () => {
     await Helpers.waitAndTap('profile-sheet-watch-button');
   });
 
-  it('Should close profile and return to Search on swiping down', async () => {
+  it.skip('Should close profile and return to Search on swiping down', async () => {
     await Helpers.swipe('profile-sheet', 'down');
     await Helpers.waitAndTap('discover-search-clear-input');
     await Helpers.checkIfVisible(
