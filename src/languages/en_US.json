@@ -105,6 +105,9 @@
       "cloud": {
         "back_up_to_platform": "Back up to %{cloudPlatformName}",
         "manage_platform_backups": "Manage %{cloudPlatformName} Backups",
+        "enable_cloud_backups": "Enable Cloud Backups",
+        "enable_cloud_backups_description": "If you prefer to back up your wallets manually, you can do so below.",
+        "latest_backup": "Latest Backup %{date}", 
         "password": {
           "a_password_youll_remember": "Please use a password you'll remember.",
           "backup_password": "Backup Password",
@@ -2093,7 +2096,9 @@
         "and_more_wallets": "And %{moreWalletCount} more wallets",
         "backed_up": "Backed up",
         "backed_up_manually": "Backed up manually",
-        "imported": "Imported"
+        "imported": "Imported",
+        "cloud_backup_title": "Cloud Backup",
+        "cloud_backup_description": "Securely back up your wallets to iCloud so you can restore them if you lose your device or get a new one. Learn more…"
       },
       "balance_title": "Balance",
       "buy": "Buy",

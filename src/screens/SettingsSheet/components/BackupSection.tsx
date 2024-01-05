@@ -5,6 +5,7 @@ import { ContactAvatar } from '../../../components/contacts';
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
+import WalletsAndBackupIcon from '@/assets/walletsAndBackup.png';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes from '@/helpers/walletTypes';
@@ -12,13 +13,14 @@ import { useManageCloudBackups, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { abbreviations } from '@/utils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
-import { GoogleAccountSection } from './GoogleAccountSection';
-import { IS_ANDROID } from '@/env';
+import MenuHeader from './MenuHeader';
 
 const BackupSection = () => {
   const { navigate } = useNavigation();
   const { walletNames, wallets } = useWallets();
   const { manageCloudBackups } = useManageCloudBackups();
+
+  const enabledCloudBackups = useCallback(() => {}, []);
 
   const onPress = useCallback(
     (walletId: string, name: string) => {
@@ -79,86 +81,148 @@ const BackupSection = () => {
     : [];
 
   return (
-    <MenuContainer>
-      {IS_ANDROID && <GoogleAccountSection />}
-      <Menu>
-        {backups.map(
-          ({
-            address,
-            color,
-            key,
-            label: labelOrName,
-            numAccounts,
-            wallet,
-          }) => (
-            <MenuItem
-              hasRightArrow
-              key={key}
-              labelComponent={
-                <MenuItem.Label
-                  text={
-                    numAccounts > 1
-                      ? numAccounts > 2
-                        ? lang.t('wallet.back_ups.and_more_wallets', {
-                            moreWalletCount: numAccounts - 1,
-                          })
-                        : lang.t('wallet.back_ups.and_1_more_wallet')
-                      : wallet.backedUp
-                      ? wallet.backupType === WalletBackupTypes.cloud
-                        ? lang.t('wallet.back_ups.backed_up')
-                        : lang.t('wallet.back_ups.backed_up_manually')
-                      : wallet.imported
-                      ? lang.t('wallet.back_ups.imported')
-                      : lang.t('back_up.needs_backup.not_backed_up')
-                  }
-                  warn={
-                    numAccounts <= 1 && !wallet.backedUp && !wallet.imported
-                  }
-                />
+    <>
+      <MenuContainer>
+        {!cloudBackedUpWallets && (
+          <Menu>
+            <MenuHeader
+              iconComponent={
+                <MenuHeader.ImageIcon source={WalletsAndBackupIcon} size={72} />
               }
-              leftComponent={
-                <ContactAvatar
-                  alignSelf="center"
-                  color={color}
-                  marginRight={10}
-                  size="small"
-                  value={addressHashedEmoji(address)}
-                />
-              }
-              onPress={() =>
-                onPress(
-                  key,
-                  removeFirstEmojiFromString(labelOrName) ||
-                    abbreviations.address(address, 4, 6) ||
-                    ''
-                )
-              }
-              rightComponent={
-                <MenuItem.StatusIcon
-                  status={
-                    wallet.backupType === WalletBackupTypes.cloud
-                      ? 'complete'
-                      : wallet.backedUp || wallet.imported
-                      ? 'incomplete'
-                      : 'warning'
-                  }
-                />
-              }
-              size={60}
               titleComponent={
-                <MenuItem.Title
-                  text={
-                    removeFirstEmojiFromString(labelOrName) ||
-                    abbreviations.address(address, 4, 6) ||
-                    ''
-                  }
+                <MenuHeader.Title
+                  text={lang.t('wallet.back_ups.cloud_backup_title')}
+                  weight="heavy"
+                />
+              }
+              statusComponent={
+                <MenuHeader.StatusIcon
+                  status="not-enabled"
+                  text="Not Enabled"
+                />
+              }
+              labelComponent={
+                <MenuHeader.Label
+                  text={lang.t('wallet.back_ups.cloud_backup_description', {
+                    link: lang.t('wallet.back_ups.cloud_backup_link'),
+                  })}
                 />
               }
             />
-          )
+          </Menu>
         )}
-      </Menu>
-      {cloudBackedUpWallets > 0 && (
+
+        <Menu
+          description={lang.t('back_up.cloud.enable_cloud_backups_description')}
+        >
+          <MenuItem
+            hasSfSymbol
+            leftComponent={<MenuItem.TextIcon icon="􀎽" isLink />}
+            onPress={manageCloudBackups}
+            size={52}
+            titleComponent={
+              <MenuItem.Title
+                isLink
+                text={lang.t('back_up.cloud.enable_cloud_backups')}
+              />
+            }
+          />
+        </Menu>
+      </MenuContainer>
+
+      <MenuContainer space={'24px'}>
+        <Menu>
+          {backups.map(
+            ({
+              address,
+              color,
+              key,
+              label: labelOrName,
+              numAccounts,
+              wallet,
+            }) => (
+              <MenuItem
+                hasRightArrow
+                key={key}
+                labelComponent={
+                  <MenuItem.Label
+                    text={
+                      numAccounts > 1
+                        ? numAccounts > 2
+                          ? lang.t('wallet.back_ups.and_more_wallets', {
+                              moreWalletCount: numAccounts - 1,
+                            })
+                          : lang.t('wallet.back_ups.and_1_more_wallet')
+                        : wallet.backedUp
+                        ? wallet.backupType === WalletBackupTypes.cloud
+                          ? lang.t('wallet.back_ups.backed_up')
+                          : lang.t('wallet.back_ups.backed_up_manually')
+                        : wallet.imported
+                        ? lang.t('wallet.back_ups.imported')
+                        : lang.t('back_up.needs_backup.not_backed_up')
+                    }
+                    warn={
+                      numAccounts <= 1 && !wallet.backedUp && !wallet.imported
+                    }
+                  />
+                }
+                leftComponent={
+                  <ContactAvatar
+                    alignSelf="center"
+                    color={color}
+                    marginRight={10}
+                    size="small"
+                    value={addressHashedEmoji(address)}
+                  />
+                }
+                onPress={() =>
+                  onPress(
+                    key,
+                    removeFirstEmojiFromString(labelOrName) ||
+                      abbreviations.address(address, 4, 6) ||
+                      ''
+                  )
+                }
+                rightComponent={
+                  <MenuItem.StatusIcon
+                    status={
+                      wallet.backupType === WalletBackupTypes.cloud
+                        ? 'complete'
+                        : wallet.backedUp || wallet.imported
+                        ? 'incomplete'
+                        : 'warning'
+                    }
+                  />
+                }
+                size={60}
+                titleComponent={
+                  <MenuItem.Title
+                    text={
+                      removeFirstEmojiFromString(labelOrName) ||
+                      abbreviations.address(address, 4, 6) ||
+                      ''
+                    }
+                  />
+                }
+              />
+            )
+          )}
+        </Menu>
+
+        <Menu>
+          <MenuItem
+            hasSfSymbol
+            leftComponent={<MenuItem.TextIcon icon="􀎽" isLink />}
+            onPress={enabledCloudBackups}
+            size={52}
+            titleComponent={
+              <MenuItem.Title
+                isLink
+                text={lang.t('back_up.cloud.enable_cloud_backups')}
+              />
+            }
+          />
+        </Menu>
         <Menu>
           <MenuItem
             hasSfSymbol
@@ -175,8 +239,8 @@ const BackupSection = () => {
             }
           />
         </Menu>
-      )}
-    </MenuContainer>
+      </MenuContainer>
+    </>
   );
 };
 
