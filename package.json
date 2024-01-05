@@ -538,7 +538,8 @@
       "hardhat>keccak": false,
       "react-native-storage": false,
       "react-native-storage>opencollective>babel-polyfill>core-js": false,
-      "react-native-bootsplash>sharp": false
+      "react-native-bootsplash>sharp": false,
+      "sentry-expo>@sentry/react-native>@sentry/cli": false
     }
   },
   "lint-staged": {
