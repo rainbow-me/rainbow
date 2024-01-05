@@ -126,7 +126,7 @@
     "@reservoir0x/reservoir-sdk": "1.4.5",
     "@segment/analytics-react-native": "2.15.0",
     "@segment/sovran-react-native": "1.0.4",
-    "@sentry/react-native": "5.10.0",
+    "@sentry/react-native": "5.15.2",
     "@shopify/flash-list": "1.5.0",
     "@shopify/react-native-skia": "0.1.200",
     "@tanstack/query-async-storage-persister": "4.2.1",
@@ -539,7 +539,7 @@
       "react-native-storage": false,
       "react-native-storage>opencollective>babel-polyfill>core-js": false,
       "react-native-bootsplash>sharp": false,
-      "sentry-expo>@sentry/react-native>@sentry/cli": false
+      "sentry-expo>@sentry/react-native>@sentry/cli": true
     }
   },
   "lint-staged": {
