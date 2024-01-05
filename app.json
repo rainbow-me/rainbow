@@ -2,6 +2,8 @@
   "name": "Rainbow",
   "displayName": "Rainbow",
   "expo": {
+    "name": "Rainbow",
+    "slug": "rainbow",
     "jsEngine": "hermes",
     "extra": {
       "eas": {
