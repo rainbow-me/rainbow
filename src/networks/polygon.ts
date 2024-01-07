@@ -4,9 +4,10 @@ import { gasUtils } from '@/utils';
 import { polygon } from '@wagmi/chains';
 import { MATIC_MAINNET_ADDRESS, MATIC_POLYGON_ADDRESS } from '@/references';
 import { getPolygonGasPrices } from '@/redux/gas';
-import config from '@/model/config';
+import { getRemoteConfig } from '@/model/remoteConfig';
 
 export const getPolygonNetworkObject = (): NetworkProperties => {
+  const { polygon_tx_enabled } = getRemoteConfig();
   return {
     // wagmi chain data
     ...polygon,
@@ -38,7 +39,7 @@ export const getPolygonNetworkObject = (): NetworkProperties => {
       nfts: true,
       savings: false,
       pools: false,
-      txs: config.polygon_tx_enabled,
+      txs: polygon_tx_enabled,
     },
 
     gas: {

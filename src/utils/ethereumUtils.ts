@@ -224,7 +224,8 @@ const getBalanceAmount = (
   l1GasFeeOptimism?: BigNumberish
 ) => {
   const accountAsset = getAccountAsset(selected?.uniqueId);
-  let amount = selected?.balance?.amount ?? accountAsset?.balance?.amount ?? 0;
+  let amount =
+    selected?.balance?.amount ?? accountAsset?.balance?.amount ?? '0';
   if (selected?.isNativeAsset) {
     if (!isEmpty(selectedGasFee)) {
       const gasFee = selectedGasFee?.gasFee as GasFee;

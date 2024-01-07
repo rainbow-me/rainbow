@@ -195,20 +195,32 @@ export const PointsProfileProvider = ({
         Alert.alert(i18n.t(i18n.l.points.console.generic_alert));
         throw new RainbowError('Points: Error onboarding user');
       }
-      if (points.onboardPoints?.error) {
-        const errorType = points.onboardPoints?.error?.type;
-        if (errorType === PointsErrorType.ExistingUser) {
-          Alert.alert(i18n.t(i18n.l.points.console.existing_user_alert));
-          throw new RainbowError(
-            'Points: Error onboarding user: user already onboarded'
-          );
-        } else if (errorType === PointsErrorType.InvalidReferralCode) {
-          Alert.alert(
-            i18n.t(i18n.l.points.console.invalid_referral_code_alert)
-          );
-          throw new RainbowError(
-            'Points: Error onboarding user: invalid referral code'
-          );
+
+      const errorType = points.onboardPoints?.error?.type;
+      if (errorType) {
+        switch (errorType) {
+          case PointsErrorType.ExistingUser:
+            Alert.alert(i18n.t(i18n.l.points.console.existing_user_alert));
+            throw new RainbowError(
+              'Points: Error onboarding user: user already onboarded'
+            );
+          case PointsErrorType.InvalidReferralCode:
+            Alert.alert(
+              i18n.t(i18n.l.points.console.invalid_referral_code_alert)
+            );
+            throw new RainbowError(
+              'Points: Error onboarding user: invalid referral code'
+            );
+          case 'NO_BALANCE': // replace w/ erro type when available
+            Alert.alert(i18n.t(i18n.l.points.console.no_balance_alert));
+            throw new RainbowError(
+              'Points: Error onboarding user: user has no balance'
+            );
+          default:
+            Alert.alert(i18n.t(i18n.l.points.console.generic_alert));
+            throw new RainbowError(
+              'Points: Error onboarding user: unknown error type'
+            );
         }
       }
       analyticsV2.track(

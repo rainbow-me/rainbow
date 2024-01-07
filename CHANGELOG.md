@@ -15,6 +15,55 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.13] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.13)
+
+### Added
+
+- More translations for newer features (#5292)
+
+### Changed
+
+- Remove testnet option from developer settings (#5308)
+- Update what logs get sent to sentry (#5309)
+
+## [1.9.12] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.12)
+
+### Added
+
+- Added the ability to paste full link into ref code input (#5252)
+- Added debug logs for cross-chain bug discovery (#5246)
+- Added sorting to NFTs (#5270)
+- Added support for handling unknown error types (#5279)
+
+### Changed
+
+- Prevent input autofocus if referral code is already validated (#5244)
+- remove rainbow emojis from tweet intent (#5249)
+- Hide referral section on watched wallets (#5250)
+- Rank card formatting tweaks (#5259)
+- Updated next drop formatting to include minutes and day (#5263)
+- Remote Promo Sheets ability to check for points (#5261)
+- Updated rank card to accommodate for large num (#5265)
+- Updated formatting on rank and tweet intent total points (#5251)
+- Changes to the swap entry point to be the main swap screen instead of the currency select modal (#5247)
+- Refactor points sign in (#5268)
+- Cleaned up NFT sorting (#5289)
+- Changed UI for unranked users (#5293)
+- Remote config overhaul (#5297)
+
+### Fixed
+
+- Fixed total points not updating when switching wallets on Android (#5243)
+- Fixed an onboarding error to points with sign in (#5257)
+- Fixed max width on ENS name for leaderboard formatting issue (#5258)
+- Fixed logic to refetch points after next drop and onboarding (#5260)
+- Fixed .toLowercase() on undefined (#5267)
+- Fixed displaying WalletConnect v2 list items that don't have an icon (#5266)
+- Fixed newline encoding on Android (#5280)
+- Fixed bug that makes it possible for read-only wallets to enter onboarding flow after deeplinking in from a referral link (#5281)
+- Fixed NFT sort by floor price (#5284)
+- Fixed no trade routes appearing on swaps (#5287) (#5295)
+
 ## [1.9.11] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.11)
 
 ### Added

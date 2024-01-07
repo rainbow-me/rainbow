@@ -20,7 +20,7 @@ import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import * as i18n from '@/languages';
 
-export const ListHeaderHeight = 50;
+export const ListHeaderHeight = 48;
 
 const ShareCollectiblesBPA = styled(ButtonPressAnimation)({
   backgroundColor: ({ theme: { colors } }) =>

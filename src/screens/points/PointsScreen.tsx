@@ -6,7 +6,6 @@ import { useNavigation } from '@/navigation';
 import { Box } from '@/design-system';
 import { useAccountProfile } from '@/hooks';
 import { POINTS, useExperimentalFlag } from '@/config';
-import config from '@/model/config';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -21,6 +20,8 @@ import ReferralContent from './content/ReferralContent';
 import { PointsErrorType } from '@/graphql/__generated__/metadataPOST';
 import { delay } from '@/utils/delay';
 import { WrappedAlert as Alert } from '@/helpers/alert';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import { IS_TEST } from '@/env';
 
 export const POINTS_ROUTES = {
   CLAIM_CONTENT: 'ClaimContent',
@@ -36,8 +37,9 @@ export default function PointsScreen() {
     accountColor,
     accountSymbol,
   } = useAccountProfile();
-  const pointsFullyEnabled =
-    useExperimentalFlag(POINTS) || config.points_fully_enabled;
+  const { points_enabled } = useRemoteConfig();
+  const pointsEnabled =
+    useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
   const { navigate } = useNavigation();
   const { data } = usePoints({
     walletAddress: accountAddress,
@@ -51,7 +53,7 @@ export default function PointsScreen() {
     data?.points?.error?.type !== PointsErrorType.NonExistingUser;
 
   useEffect(() => {
-    if (referralCode && pointsFullyEnabled) {
+    if (referralCode && pointsEnabled) {
       navigate(Routes.POINTS_SCREEN);
       delay(700)
         .then(() => {
@@ -67,7 +69,7 @@ export default function PointsScreen() {
     data,
     isOnboarded,
     navigate,
-    pointsFullyEnabled,
+    pointsEnabled,
     referralCode,
     resetReferralCode,
   ]);
@@ -77,7 +79,7 @@ export default function PointsScreen() {
       <Navbar
         hasStatusBarInset
         leftComponent={
-          pointsFullyEnabled && (
+          pointsEnabled && (
             <ButtonPressAnimation
               onPress={() => navigate(Routes.CHANGE_WALLET_SHEET)}
               scaleTo={0.8}
@@ -103,7 +105,7 @@ export default function PointsScreen() {
         title={i18n.t(i18n.l.account.tab_points)}
       />
       {/* eslint-disable-next-line no-nested-ternary */}
-      {pointsFullyEnabled ? (
+      {pointsEnabled ? (
         isOnboarded ? (
           <PointsContent />
         ) : (

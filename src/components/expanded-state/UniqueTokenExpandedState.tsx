@@ -560,6 +560,228 @@ const UniqueTokenExpandedState = () => {
                       />
                     </Animated.View>
                   </Stack>
+                  {isNFT || isENS ? (
+                    <Columns space="15px (Deprecated)">
+                      {hasEditButton ? (
+                        <SheetActionButton
+                          color={imageColor}
+                          label={`􀉮 ${lang.t(
+                            'expanded_state.unique_expanded.edit'
+                          )}`}
+                          nftShadows
+                          onPress={handlePressEdit}
+                          testID="edit"
+                          textColor={textColor}
+                          weight="heavy"
+                        />
+                      ) : isParty ? (
+                        <SheetActionButton
+                          color={imageColor}
+                          nftShadows
+                          onPress={handlePressParty}
+                          testID="unique-expanded-state-party-button"
+                          textColor={textColor}
+                          weight="heavy"
+                        >
+                          <ImgixImage
+                            resizeMode="contain"
+                            source={partyLogo as any}
+                            size={20}
+                            style={{ height: 25, width: 25 }}
+                          />
+                          <Text
+                            weight="heavy"
+                            size="20pt"
+                            color={{ custom: textColor }}
+                          >
+                            Party
+                          </Text>
+                        </SheetActionButton>
+                      ) : asset.permalink ? (
+                        <SheetActionButton
+                          color={imageColor}
+                          label={
+                            hasSendButton
+                              ? `􀮶 ${marketplaceName}`
+                              : `􀮶 ${lang.t(
+                                  'expanded_state.unique_expanded.view_on_marketplace_name',
+                                  {
+                                    marketplaceName,
+                                  }
+                                )}`
+                          }
+                          nftShadows
+                          onPress={handlePressMarketplaceName}
+                          testID="unique-expanded-state-send"
+                          textColor={textColor}
+                          weight="heavy"
+                        />
+                      ) : null}
+                      {hasSendButton ? (
+                        <SendActionButton
+                          asset={asset}
+                          color={imageColor}
+                          nftShadows
+                          textColor={textColor}
+                        />
+                      ) : null}
+                    </Columns>
+                  ) : null}
+                  {asset.network !== Network.mainnet ? (
+                    // @ts-expect-error JavaScript component
+                    <L2Disclaimer
+                      assetType={asset.network}
+                      colors={colors}
+                      hideDivider
+                      isNft
+                      marginBottom={0}
+                      marginHorizontal={0}
+                      onPress={handleL2DisclaimerPress}
+                      symbol="NFT"
+                      forceDarkMode
+                    />
+                  ) : null}
+                  <Stack
+                    separator={<Separator color="divider20 (Deprecated)" />}
+                    space={sectionSpace}
+                  >
+                    {isNFT || isENS ? (
+                      <Bleed // Manually crop surrounding space until TokenInfoItem uses design system components
+                        bottom={android ? '15px (Deprecated)' : '6px'}
+                        top={android ? '10px' : '4px'}
+                      >
+                        {isNFT && <NFTBriefTokenInfoRow asset={asset} />}
+                        {isENS && (
+                          <ENSBriefTokenInfoRow
+                            color={imageColor}
+                            ensName={uniqueId}
+                            expiryDate={ensData?.registration?.expiryDate}
+                            externalAvatarUrl={asset?.lowResUrl}
+                            registrationDate={
+                              ensData?.registration?.registrationDate
+                            }
+                            showExtendDuration={hasExtendDurationButton}
+                          />
+                        )}
+                      </Bleed>
+                    ) : null}
+                    {(isNFT || isPoap) && (
+                      <>
+                        {description ? (
+                          <Section
+                            title={`${lang.t(
+                              'expanded_state.unique_expanded.description'
+                            )}`}
+                            titleEmoji="📖"
+                          >
+                            <Markdown>{description}</Markdown>
+                          </Section>
+                        ) : null}
+                        {filteredTraits.length ? (
+                          <Section
+                            title={`${lang.t(
+                              'expanded_state.unique_expanded.properties'
+                            )}`}
+                            titleEmoji="🎨"
+                          >
+                            <UniqueTokenAttributes
+                              {...asset}
+                              color={imageColor}
+                              hideNftMarketplaceAction={
+                                hideNftMarketplaceAction
+                              }
+                              slug={slug}
+                            />
+                          </Section>
+                        ) : null}
+                      </>
+                    )}
+                    {isENS && (
+                      <>
+                        {profileInfoSectionAvailable && (
+                          <Section
+                            addonComponent={
+                              hasEditButton && (
+                                <TextButton
+                                  align="right"
+                                  onPress={handlePressEdit}
+                                  size="18px / 27px (Deprecated)"
+                                  weight="bold"
+                                >
+                                  {lang.t(
+                                    'expanded_state.unique_expanded.edit'
+                                  )}
+                                </TextButton>
+                              )
+                            }
+                            paragraphSpace={{ custom: 22 }}
+                            title={`${lang.t(
+                              'expanded_state.unique_expanded.profile_info'
+                            )}`}
+                            titleEmoji="🤿"
+                          >
+                            <ProfileInfoSection
+                              allowEdit={hasEditButton}
+                              coinAddresses={ensData?.coinAddresses}
+                              ensName={uniqueId}
+                              images={ensData?.images}
+                              isLoading={ensProfile.isLoading}
+                              records={ensData?.records}
+                            />
+                          </Section>
+                        )}
+                        <Section
+                          paragraphSpace={{ custom: 22 }}
+                          title={`${lang.t(
+                            'expanded_state.unique_expanded.configuration'
+                          )}`}
+                          titleEmoji="⚙️"
+                        >
+                          <ConfigurationSection
+                            externalAvatarUrl={asset?.lowResUrl}
+                            isExternal={external}
+                            isLoading={ensProfile.isLoading}
+                            isOwner={ensProfile?.isOwner}
+                            isPrimary={ensProfile?.isPrimaryName}
+                            isProfilesEnabled={profilesEnabled}
+                            isReadOnlyWallet={isReadOnlyWallet}
+                            isSetNameEnabled={ensProfile?.isSetNameEnabled}
+                            name={cleanENSName}
+                            owner={ensData?.owner}
+                            registrant={ensData?.registrant}
+                          />
+                        </Section>
+                      </>
+                    )}
+                    {familyDescription ? (
+                      <Section
+                        paragraphSpace={{ custom: 26 }}
+                        title={`${lang.t(
+                          'expanded_state.unique_expanded.about',
+                          { assetFamilyName: familyName }
+                        )}`}
+                        titleImageUrl={familyImage}
+                      >
+                        <Stack space={sectionSpace}>
+                          <Markdown>{familyDescription}</Markdown>
+                          {familyLink ? (
+                            <Bleed // Manually crop surrounding space until Link uses design system components
+                              bottom={android ? '15px (Deprecated)' : undefined}
+                              top="15px (Deprecated)"
+                            >
+                              {/* @ts-expect-error JavaScript component */}
+                              <Link
+                                color={imageColor}
+                                display={familyLinkDisplay}
+                                url={familyLink}
+                                weight="bold"
+                              />
+                            </Bleed>
+                          ) : null}
+                        </Stack>
+                      </Section>
+                    ) : null}
+                  </Stack>
                 </Inset>
                 <UniqueTokenExpandedStateContent
                   animationProgress={animationProgress}

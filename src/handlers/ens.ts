@@ -68,6 +68,7 @@ const buildEnsToken = ({
     mimeType: MimeType.SVG,
   });
   return {
+    acquisition_date: undefined,
     animation_url: null,
     asset_contract: {
       address: contractAddress,

@@ -132,7 +132,6 @@ export default function SendSheet(props) {
     gasLimit,
     isSufficientGas,
     isValidGas,
-    prevSelectedGasFee,
     selectedGasFee,
     startPollingGasFees,
     stopPollingGasFees,
@@ -921,7 +920,7 @@ export default function SendSheet(props) {
     [ensSuggestions]
   );
 
-  const isEmptyWallet = !sortedAssets.length && !sendableUniqueTokens.length;
+  const isEmptyWallet = !sortedAssets?.length && !sendableUniqueTokens?.length;
 
   return (
     <StaticBottomSheet>
@@ -1024,7 +1023,7 @@ export default function SendSheet(props) {
           onChangeNativeAmount={onChangeNativeAmount}
           onResetAssetSelection={onResetAssetSelection}
           selected={selected}
-          sendMaxBalance={sendMaxBalance}
+          sendMaxBalance={() => setMaxEnabled(true)}
           setLastFocusedInputHandle={setLastFocusedInputHandle}
           txSpeedRenderer={
             <GasSpeedButton

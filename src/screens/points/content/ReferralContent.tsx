@@ -15,10 +15,11 @@ import {
   useAccountAccentColor,
   useDimensions,
   useKeyboardHeight,
+  useWallets,
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { getHeaderHeight } from '@/navigation/SwipeNavigator';
-import { haptics } from '@/utils';
+import { haptics, watchingAlert } from '@/utils';
 import { delay } from '@/utils/delay';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -40,19 +41,25 @@ import { analyticsV2 } from '@/analytics';
 import Clipboard from '@react-native-community/clipboard';
 
 const parseReferralCodeFromLink = (code: string) => {
-  if (!code.startsWith('https://rainbow.me/points?ref=')) return;
+  if (
+    code.startsWith('https://rainbow.me/points?ref=') ||
+    code.startsWith('https://www.rainbow.me/points?ref=')
+  ) {
+    const [, refCode] = code.split('=');
+    if (!refCode) return;
 
-  const [, refCode] = code.split('=');
-  if (!refCode) return;
+    const trimmed = refCode.replace(/-/g, '').slice(0, 6).toLocaleUpperCase();
 
-  const trimmed = refCode.replace(/-/g, '').slice(0, 6).toLocaleUpperCase();
+    return trimmed;
+  }
 
-  return trimmed;
+  return;
 };
 
 export default function ReferralContent() {
   const { accentColor } = useAccountAccentColor();
   const { goBack, navigate } = useNavigation();
+  const { isReadOnlyWallet } = useWallets();
 
   const label = useForegroundColor('label');
   const labelQuaternary = useForegroundColor('labelQuaternary');
@@ -365,7 +372,9 @@ export default function ReferralContent() {
           color={accentColor}
           label={i18n.t(i18n.l.points.referral.get_started)}
           onPress={() =>
-            navigate(Routes.CONSOLE_SHEET, { referralCode, deeplinked })
+            isReadOnlyWallet
+              ? watchingAlert()
+              : navigate(Routes.CONSOLE_SHEET, { referralCode, deeplinked })
           }
         />
       )}

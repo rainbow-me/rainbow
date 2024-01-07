@@ -1174,8 +1174,8 @@
     "nfts": {
       "selling": "Selling",
       "sort": {
-        "abc": "Abc",
-        "most_recent": "Most Recent",
+        "abc": "Alphabetical",
+        "most_recent": "Recent",
         "floor_price": "Floor Price"
       }
     },
@@ -1278,7 +1278,9 @@
         "referral_code_copied": "Referral code copied",
         "earn_points_for_referring": "Earn points when your referrals swap $100 through Rainbow, plus earn 10% of the points your referrals earn",
         "already_claimed_points": "Sorry! You have already claimed your points.",
-        "now": "Now"
+        "now": "Now",
+        "unranked": "Unranked",
+        "points_to_rank": "750 points to rank"
       },
       "console": {
         "claim_bonus_paragraph": "You'll receive an additional 100 points once you swap at least $100 through Rainbow",
@@ -1308,6 +1310,7 @@
         "generic_alert": "Something went wrong, please try again.",
         "existing_user_alert": "Points already claimed. Please restart the app to refresh.",
         "invalid_referral_code_alert": "Invalid referral code. Please double check your code and try again.",
+        "no_balance_alert": "To enroll in Points, you must have a non-zero wallet balance.",
         "referral_link_is_ready": "Your referral link is ready",
         "referral_link_bonus_text": "Tweet your referral link and get an extra 250 points",
         "referral_link_bonus_text_extended": "Plus you'll earn 10% of the points earned by anyone you refer",

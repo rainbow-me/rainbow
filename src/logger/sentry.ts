@@ -1,4 +1,4 @@
-import * as Sentry from '@sentry/react-native';
+import * as Sentry from 'sentry-expo';
 import { SENTRY_ENDPOINT, SENTRY_ENVIRONMENT } from 'react-native-dotenv';
 import VersionNumber from 'react-native-version-number';
 
@@ -12,7 +12,7 @@ import isTestFlight from '@/helpers/isTestFlight';
  * hangs and timeouts on all test cases
  */
 export const sentryRoutingInstrumentation = IS_PROD
-  ? new Sentry.ReactNavigationInstrumentation()
+  ? new Sentry.Native.ReactNavigationInstrumentation()
   : undefined;
 
 export const defaultOptions = {
@@ -20,7 +20,7 @@ export const defaultOptions = {
   enableAutoSessionTracking: true,
   environment: isTestFlight ? 'Testflight' : SENTRY_ENVIRONMENT,
   integrations: [
-    new Sentry.ReactNativeTracing({
+    new Sentry.Native.ReactNativeTracing({
       routingInstrumentation: sentryRoutingInstrumentation,
       tracingOrigins: ['localhost', /^\//],
     }),
