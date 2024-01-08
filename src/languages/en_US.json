@@ -151,7 +151,8 @@
           "confirm_save": "I’ve saved these words",
           "save_them": "Write them down or save them in your password manager.",
           "these_keys": "These words are the keys to your wallet!"
-        }
+        },
+        "create_new_secret_phrase": "Create a New Secret Phrase"
       },
       "needs_backup": {
         "back_up_your_wallet": "Back up your wallet",
@@ -2092,7 +2093,8 @@
         "please_seed_phrase": "Please authenticate to view private key"
       },
       "back_ups": {
-        "and_1_more_wallet": "And 1 more wallet",
+        "wallet_count": "%{numAccounts} wallet",
+        "wallet_count_gt_one": "%{numAccounts} wallets",
         "and_more_wallets": "And %{moreWalletCount} more wallets",
         "backed_up": "Backed up",
         "backed_up_manually": "Backed up manually",

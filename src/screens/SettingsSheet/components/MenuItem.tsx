@@ -140,13 +140,20 @@ const Title = ({ text, weight = 'semibold', disabled, isLink }: TitleProps) => (
 interface LabelProps {
   text: string;
   warn?: boolean;
+  color?: string;
 }
 
-const Label = ({ text, warn }: LabelProps) => {
+const Label = ({ text, warn, color }: LabelProps) => {
   const { colors } = useTheme();
   return (
     <Text
-      color={warn ? { custom: colors.orangeLight } : 'secondary60 (Deprecated)'}
+      color={
+        color
+          ? { custom: color }
+          : warn
+          ? { custom: colors.orangeLight }
+          : 'secondary60 (Deprecated)'
+      }
       size="14px / 19px (Deprecated)"
       weight="medium"
     >
@@ -158,7 +165,7 @@ const Label = ({ text, warn }: LabelProps) => {
 interface MenuItemProps {
   rightComponent?: React.ReactNode;
   leftComponent?: React.ReactNode;
-  size: 52 | 60;
+  size?: 52 | 60;
   hasRightArrow?: boolean;
   onPress?: () => void;
   titleComponent: React.ReactNode;
@@ -186,7 +193,7 @@ const MenuItem = ({
 
   const Item = () => (
     <Box
-      height={{ custom: size }}
+      height={size ? { custom: size } : 'full'}
       justifyContent="center"
       paddingHorizontal={{ custom: 16 }}
       testID={disabled ? testID : undefined}

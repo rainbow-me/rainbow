@@ -111,7 +111,9 @@ const StatusIcon = ({ status, text }: StatusIconProps) => {
       backgroundColor={statusColors[status].backgroundColor}
       colors={colors}
       borderRadius={23}
-      shadowColor={isDarkMode ? colors.shadow : statusColors[status]}
+      shadowColor={
+        isDarkMode ? colors.shadow : statusColors[status].backgroundColor
+      }
       shadowOffset={{
         height: 4,
         width: 0,
