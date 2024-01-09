@@ -12,11 +12,7 @@ export {
   useAllNotificationSettingsFromStorage,
   useWalletGroupNotificationSettings,
 } from './hooks';
-export {
-  removeNotificationSettingsForWallet,
-  toggleGroupNotifications,
-  toggleTopicForWallet,
-} from './settings';
+export { removeNotificationSettingsForWallet } from './settings';
 export type {
   AddressWithRelationship,
   GroupSettings,
@@ -24,8 +20,4 @@ export type {
   NotificationTopicType,
   WalletNotificationSettings,
 } from './types';
-export {
-  notificationSettingsStorage,
-  updateGroupSettings,
-  updateSettingsForWalletsWithRelationshipType,
-} from './storage';
+export { notificationSettingsStorage, updateGroupSettings } from './storage';

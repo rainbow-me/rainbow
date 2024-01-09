@@ -1,56 +1,35 @@
+import { DEFAULT_ENABLED_TOPIC_SETTINGS } from '@/notifications/settings/constants';
 import {
-  NOTIFICATIONS_DEFAULT_CHAIN_ID,
-  WALLET_TOPICS_STORAGE_KEY,
-} from '@/notifications/settings/constants';
-import {
-  NotificationRelationshipType,
   NotificationTopicType,
   WalletNotificationSettings,
 } from '@/notifications/settings/types';
 import {
   getAllNotificationSettingsFromStorage,
-  notificationSettingsStorage,
   setAllNotificationSettingsToStorage,
 } from '@/notifications/settings/storage';
-import {
-  subscribeWalletToSingleNotificationTopic,
-  unsubscribeWalletFromAllNotificationTopics,
-  unsubscribeWalletFromSingleNotificationTopic,
-} from '@/notifications/settings/firebase';
 import { publishWalletSettings } from '@/notifications/settings/firebase';
 
 /**
  1. Reads notification settings for all wallets from storage.
  2. Matches settings for the wallet with the given address.
  3. Excludes that wallet from the array and saves the new array.
- 4. Unsubscribes the wallet from all notification topics on Firebase.
+ 4. Updates the notification subscription
  */
-export const removeNotificationSettingsForWallet = (
-  address: string
-): Promise<void> => {
+export const removeNotificationSettingsForWallet = async (address: string) => {
   const allSettings = getAllNotificationSettingsFromStorage();
   const settingsForWallet = allSettings.find(
     (wallet: WalletNotificationSettings) => wallet.address === address
   );
 
   if (!settingsForWallet) {
-    return Promise.resolve();
+    return;
   }
 
   const newSettings = allSettings.filter(
     (wallet: WalletNotificationSettings) => wallet.address !== address
   );
 
-  return unsubscribeWalletFromAllNotificationTopics(
-    settingsForWallet.type,
-    NOTIFICATIONS_DEFAULT_CHAIN_ID,
-    address
-  ).then(() => {
-    notificationSettingsStorage.set(
-      WALLET_TOPICS_STORAGE_KEY,
-      JSON.stringify(newSettings)
-    );
-  });
+  publishAndSaveWalletSettings(newSettings);
 };
 
 /**
@@ -58,77 +37,67 @@ export const removeNotificationSettingsForWallet = (
  Also used to batch toggle notifications for a single wallet
  when using the `Allow Notifications` switch in the wallet settings view.
  */
-export function toggleGroupNotifications(
+export async function toggleGroupNotifications(
   wallets: WalletNotificationSettings[],
-  relationship: NotificationRelationshipType,
   enableNotifications: boolean
-): Promise<void[][] | void[]> {
-  if (enableNotifications) {
-    return Promise.all(
-      // loop through all owned wallets, loop through their topics, subscribe to enabled topics
-      wallets.flatMap((wallet: WalletNotificationSettings) => {
-        const { topics, address } = wallet;
-        // when toggling a whole group, check if notifications
-        // are specifically enabled for this wallet
-        return Object.keys(topics).map((topic: NotificationTopicType) => {
-          if (topics[topic]) {
-            return subscribeWalletToSingleNotificationTopic(
-              relationship,
-              NOTIFICATIONS_DEFAULT_CHAIN_ID,
-              address,
-              topic
-            );
-          } else {
-            return Promise.resolve();
-          }
-        });
-      })
-    );
-  } else {
-    // loop through all owned wallets, unsubscribe from all topics
-    return Promise.all(
-      wallets.map((wallet: WalletNotificationSettings) => {
-        return unsubscribeWalletFromAllNotificationTopics(
-          relationship,
-          NOTIFICATIONS_DEFAULT_CHAIN_ID,
-          wallet.address
-        );
-      })
-    );
-  }
+): Promise<boolean> {
+  const allSettings = getAllNotificationSettingsFromStorage();
+  const toBeUpdated = new Map<string, boolean>();
+  wallets.forEach(entry => {
+    toBeUpdated.set(entry.address, true);
+  });
+
+  const proposedSettings = allSettings.map(walletSetting => {
+    if (toBeUpdated.get(walletSetting.address)) {
+      return {
+        ...walletSetting,
+        enabled: enableNotifications,
+        successfullyFinishedInitialSubscription: false,
+        topics: enableNotifications ? DEFAULT_ENABLED_TOPIC_SETTINGS : {},
+      };
+    }
+    return walletSetting;
+  });
+
+  return publishAndSaveWalletSettings(proposedSettings, true);
 }
 
 /**
  Function for subscribing/unsubscribing a wallet to/from a single notification topic.
  */
-export function toggleTopicForWallet(
-  relationship: NotificationRelationshipType,
+export async function toggleTopicForWallet(
   address: string,
   topic: NotificationTopicType,
   enableTopic: boolean
-): Promise<void> {
-  if (enableTopic) {
-    return subscribeWalletToSingleNotificationTopic(
-      relationship,
-      NOTIFICATIONS_DEFAULT_CHAIN_ID,
-      address,
-      topic
-    );
-  } else {
-    return unsubscribeWalletFromSingleNotificationTopic(
-      relationship,
-      NOTIFICATIONS_DEFAULT_CHAIN_ID,
-      address,
-      topic
-    );
-  }
+): Promise<boolean> {
+  const allSettings = getAllNotificationSettingsFromStorage();
+  const newSettings = allSettings.map(walletSetting => {
+    if (walletSetting.address !== address) {
+      return walletSetting;
+    }
+    return {
+      ...walletSetting,
+      successfullyFinishedInitialSubscription: false,
+      topics: {
+        ...walletSetting.topics,
+        [topic]: enableTopic,
+      },
+    };
+  });
+  return publishAndSaveWalletSettings(newSettings, true);
 }
 
 export const publishAndSaveWalletSettings = async (
-  proposedSettings: WalletNotificationSettings[]
-): Promise<void> => {
+  proposedSettings: WalletNotificationSettings[],
+  skipPreSave: boolean = false
+): Promise<boolean> => {
+  if (!skipPreSave) {
+    setAllNotificationSettingsToStorage(proposedSettings);
+  }
   const finalizedSettings = await publishWalletSettings(proposedSettings);
   if (finalizedSettings) {
     setAllNotificationSettingsToStorage(finalizedSettings);
+    return true;
   }
+  return false;
 };

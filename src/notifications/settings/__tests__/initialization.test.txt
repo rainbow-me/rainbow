@@ -7,17 +7,12 @@ import {
 } from '@/notifications/settings';
 import {
   DEFAULT_ENABLED_TOPIC_SETTINGS,
-  NOTIFICATIONS_DEFAULT_CHAIN_ID,
 } from '@/notifications/settings/constants';
 import {
   _prepareInitializationState,
   _prepareSubscriptionQueueAndCreateInitialSettings,
   _processSubscriptionQueue,
 } from '@/notifications/settings/initialization';
-import {
-  subscribeWalletToAllEnabledTopics,
-  unsubscribeWalletFromAllNotificationTopics,
-} from '@/notifications/settings/firebase';
 
 const TEST_ADDRESS_1 = '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045';
 const TEST_ADDRESS_2 = '0xe5501bc2b0df6d0d7daafc18d2ef127d9e612963';
@@ -357,10 +352,9 @@ describe('Notification settings initialization', () => {
         initState
       );
 
-      // changed the current type to "owned" and old to "watched" (previous state), also wallet now is not initialized since it needs to re-subscribe
+      // changed the current type to "owned", also wallet now is not initialized since it needs to re-subscribe
       const changedState = {
         type: NotificationRelationship.OWNER,
-        oldType: NotificationRelationship.WATCHER,
         successfullyFinishedInitialSubscription: false,
       };
 
@@ -400,8 +394,6 @@ describe('Notification settings initialization', () => {
         ])
       );
       await _processSubscriptionQueue([]);
-      expect(subscribeWalletToAllEnabledTopics).not.toBeCalled();
-      expect(unsubscribeWalletFromAllNotificationTopics).not.toBeCalled();
       expect(
         JSON.parse(
           notificationSettingsStorage.getString(WALLET_TOPICS_STORAGE_KEY) ??
@@ -448,10 +440,6 @@ describe('Notification settings initialization', () => {
         topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
         enabled: true,
       };
-      expect(subscribeWalletToAllEnabledTopics).toHaveBeenCalledWith(
-        stateAfter,
-        NOTIFICATIONS_DEFAULT_CHAIN_ID
-      );
       expect(
         JSON.parse(
           notificationSettingsStorage.getString(WALLET_TOPICS_STORAGE_KEY) ??
@@ -464,8 +452,6 @@ describe('Notification settings initialization', () => {
       const stateBefore = {
         address: TEST_ADDRESS_1,
         type: NotificationRelationship.OWNER,
-        // has old type as "watcher" which signifies that it was previously watched
-        oldType: NotificationRelationship.WATCHER,
         successfullyFinishedInitialSubscription: false,
         topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
         enabled: false,
@@ -480,18 +466,7 @@ describe('Notification settings initialization', () => {
         ...stateBefore,
         successfullyFinishedInitialSubscription: true,
         enabled: true,
-        oldType: undefined,
       };
-      expect(unsubscribeWalletFromAllNotificationTopics).toHaveBeenCalledWith(
-        NotificationRelationship.WATCHER,
-        NOTIFICATIONS_DEFAULT_CHAIN_ID,
-        stateBefore.address
-      );
-      expect(subscribeWalletToAllEnabledTopics).toHaveBeenCalledWith(
-        stateAfter,
-        NOTIFICATIONS_DEFAULT_CHAIN_ID
-      );
-
       expect(
         JSON.parse(
           notificationSettingsStorage.getString(WALLET_TOPICS_STORAGE_KEY) ??
@@ -503,11 +478,6 @@ describe('Notification settings initialization', () => {
 
   describe('subscription queue processing implementation error path', () => {
     test('running a subscription queue with no items in it causes zero effects even when firebase fails', async () => {
-      // @ts-ignore
-      subscribeWalletToAllEnabledTopics.mockRejectedValue(undefined);
-      // @ts-ignore
-      unsubscribeWalletFromAllNotificationTopics.mockRejectedValue(undefined);
-
       notificationSettingsStorage.set(
         WALLET_TOPICS_STORAGE_KEY,
         JSON.stringify([
@@ -522,8 +492,6 @@ describe('Notification settings initialization', () => {
       );
 
       await _processSubscriptionQueue([]);
-      expect(subscribeWalletToAllEnabledTopics).not.toBeCalled();
-      expect(unsubscribeWalletFromAllNotificationTopics).not.toBeCalled();
       expect(
         JSON.parse(
           notificationSettingsStorage.getString(WALLET_TOPICS_STORAGE_KEY) ??
@@ -541,11 +509,6 @@ describe('Notification settings initialization', () => {
     });
 
     test('running subscription queue processing while firebase fails should produce no changes in the stored settings', async () => {
-      // @ts-ignore
-      subscribeWalletToAllEnabledTopics.mockRejectedValue(undefined);
-      // @ts-ignore
-      unsubscribeWalletFromAllNotificationTopics.mockRejectedValue(undefined);
-
       const stateBefore = [
         {
           address: TEST_ADDRESS_1,
@@ -557,7 +520,6 @@ describe('Notification settings initialization', () => {
         {
           address: TEST_ADDRESS_2,
           type: NotificationRelationship.OWNER,
-          oldType: NotificationRelationship.WATCHER,
           successfullyFinishedInitialSubscription: false,
           topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
           enabled: false,
@@ -568,9 +530,6 @@ describe('Notification settings initialization', () => {
         JSON.stringify(stateBefore)
       );
       await _processSubscriptionQueue(stateBefore);
-
-      expect(subscribeWalletToAllEnabledTopics).toHaveBeenCalledTimes(2);
-      expect(unsubscribeWalletFromAllNotificationTopics).toHaveBeenCalled();
 
       expect(
         JSON.parse(

@@ -2,14 +2,10 @@ import { NOTIFICATIONS_API_KEY } from 'react-native-dotenv';
 import { logger, RainbowError } from '@/logger';
 import { RainbowNetworks } from '@/networks';
 import {
-  NotificationTopicType,
   NotificationSubscriptionWalletsType,
   WalletNotificationSettings,
 } from '@/notifications/settings/types';
 import { getFCMToken, saveFCMToken } from '@/notifications/tokens';
-import messaging from '@react-native-firebase/messaging';
-import { trackChangedNotificationSettings } from '@/notifications/analytics';
-import { NotificationTopic } from '@/notifications/settings/constants';
 import { rainbowFetch } from '@/rainbow-fetch';
 
 const NOTIFICATION_SUBSCRIPTIONS_URL =
@@ -93,29 +89,6 @@ const updateNotificationSubscriptionWithRetry = async (
   }
 };
 
-/**
- Firebase functions for subscribing/unsubscribing to topics.
- */
-export const subscribeWalletToAllEnabledTopics = (
-  settings: WalletNotificationSettings,
-  chainId: number
-): Promise<void[]> => {
-  return Promise.all(
-    Object.entries(settings.topics).map(([topic, isEnabled]) => {
-      if (isEnabled) {
-        return subscribeWalletToSingleNotificationTopic(
-          settings.type,
-          chainId,
-          settings.address,
-          topic
-        );
-      } else {
-        return Promise.resolve();
-      }
-    })
-  );
-};
-
 // returns updated wallet settings on success, undefined otherwise
 export const publishWalletSettings = async (
   walletSettings: WalletNotificationSettings[]
@@ -160,7 +133,10 @@ export const publishWalletSettings = async (
 const parseWalletSettings = (
   walletSettings: WalletNotificationSettings[]
 ): NotificationSubscriptionWalletsType[] => {
-  return walletSettings.flatMap(setting => {
+  const enabledWalletSettings = walletSettings.filter(
+    setting => setting.enabled
+  );
+  return enabledWalletSettings.flatMap(setting => {
     const topics = Object.keys(setting.topics).filter(
       topic => !!setting.topics[topic]
     );
@@ -177,59 +153,4 @@ const parseWalletSettings = (
       };
     });
   });
-};
-
-export const unsubscribeWalletFromAllNotificationTopics = (
-  type: string,
-  chainId: number,
-  address: string
-): Promise<void[]> => {
-  return Promise.all(
-    Object.values(NotificationTopic).map(topic =>
-      unsubscribeWalletFromSingleNotificationTopic(
-        type,
-        chainId,
-        address,
-        topic
-      )
-    )
-  );
-};
-
-export const subscribeWalletToSingleNotificationTopic = (
-  type: string,
-  chainId: number,
-  address: string,
-  topic: NotificationTopicType
-): Promise<void> => {
-  logger.debug(
-    `Notifications: subscribing ${type}:${address} to [ ${topic.toUpperCase()} ]`,
-    {},
-    logger.DebugContext.notifications
-  );
-  return messaging()
-    .subscribeToTopic(`${type}_${chainId}_${address.toLowerCase()}_${topic}`)
-    .then(() =>
-      trackChangedNotificationSettings(chainId, topic, type, 'subscribe')
-    );
-};
-
-export const unsubscribeWalletFromSingleNotificationTopic = async (
-  type: string,
-  chainId: number,
-  address: string,
-  topic: NotificationTopicType
-) => {
-  logger.debug(
-    `Notifications: unsubscribing ${type}:${address} from [ ${topic.toUpperCase()} ]`,
-    {},
-    logger.DebugContext.notifications
-  );
-  return messaging()
-    .unsubscribeFromTopic(
-      `${type}_${chainId}_${address.toLowerCase()}_${topic}`
-    )
-    .then(() => {
-      trackChangedNotificationSettings(chainId, topic, type, 'unsubscribe');
-    });
 };

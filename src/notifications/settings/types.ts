@@ -29,8 +29,6 @@ export type WalletNotificationSettings = {
   enabled: boolean;
   type: NotificationRelationshipType;
   successfullyFinishedInitialSubscription: boolean;
-  // only set in cases when the user imported an already watched wallet
-  oldType?: NotificationRelationshipType;
 };
 
 export type GroupSettings = {
