@@ -15,13 +15,38 @@ export const checkWalletsForBackupStatus = (
       areBackedUp: false,
       canBeBackedUp: false,
       hasManualBackup: false,
+      hasCloudBackup: false,
+      numberOfSecretPhraseWallets: 0,
+      numberOfPrivateKeyWallets: 0,
     };
   let areBackedUp = true;
   let canBeBackedUp = false;
   let allBackedUp = true;
   let hasManualBackup = false;
+  let hasCloudBackup = false;
+  let numberOfSecretPhraseWallets = 0;
+  let numberOfPrivateKeyWallets = 0;
 
   Object.keys(wallets).forEach(key => {
+    if (wallets[key].type === WalletTypes.privateKey) {
+      numberOfPrivateKeyWallets += 1;
+    }
+
+    if (
+      wallets[key].type === WalletTypes.seed ||
+      wallets[key].type === WalletTypes.mnemonic
+    ) {
+      numberOfSecretPhraseWallets += 1;
+    }
+
+    if (
+      wallets[key].backupType === WalletBackupTypes.cloud &&
+      wallets[key].backedUp &&
+      wallets[key].type !== WalletTypes.readOnly
+    ) {
+      hasCloudBackup = true;
+    }
+
     if (
       !wallets[key].backedUp &&
       wallets[key].type !== WalletTypes.readOnly &&
@@ -55,7 +80,15 @@ export const checkWalletsForBackupStatus = (
       hasManualBackup = true;
     }
   });
-  return { allBackedUp, areBackedUp, canBeBackedUp, hasManualBackup };
+  return {
+    allBackedUp,
+    areBackedUp,
+    canBeBackedUp,
+    hasManualBackup,
+    hasCloudBackup,
+    numberOfSecretPhraseWallets,
+    numberOfPrivateKeyWallets,
+  };
 };
 
 export const getWalletsThatNeedBackedUp = (

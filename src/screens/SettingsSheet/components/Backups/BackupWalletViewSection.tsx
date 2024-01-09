@@ -1,43 +1,50 @@
 import lang from 'i18n-js';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { cloudPlatform } from '@/utils/platform';
-import Menu from './Menu';
-import MenuContainer from './MenuContainer';
-import MenuItem from './MenuItem';
+import Menu from '../Menu';
+import MenuContainer from '../MenuContainer';
+import MenuItem from '../MenuItem';
 import WalletsAndBackupIcon from '@/assets/walletsAndBackup.png';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
-import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
+import WalletTypes from '@/helpers/walletTypes';
 import { useManageCloudBackups, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { abbreviations } from '@/utils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
-import MenuHeader from './MenuHeader';
-import { checkWalletsForBackupStatus } from '../utils';
-import { Inline, Text, Box } from '@/design-system';
+import MenuHeader from '../MenuHeader';
+import { checkWalletsForBackupStatus } from '../../utils';
+import { Inline, Text, Box, Stack } from '@/design-system';
 import { ContactAvatar } from '@/components/contacts';
 import { useTheme } from '@/theme';
+import Routes from '@/navigation/routesNames';
+import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 
-const BackupSection = () => {
+const BackupWalletViewSection = () => {
   const { colors, isDarkMode } = useTheme();
-  const [numOfEachWalletType, setNumOfEachWalletType] = useState({
-    seedPhrase: 0,
-    privateKey: 0,
-  });
 
   const { navigate } = useNavigation();
-  const { walletNames, wallets } = useWallets();
+  const { wallets } = useWallets();
   const { manageCloudBackups } = useManageCloudBackups();
 
-  const enabledCloudBackups = useCallback(() => {}, []);
+  const enabledCloudBackups = useCallback(
+    (walletId: string) => {
+      navigate(ios ? Routes.BACKUP_SHEET : Routes.BACKUP_SCREEN, {
+        nativeScreen: true,
+        step: WalletBackupStepTypes.cloud,
+        walletId,
+      });
+    },
+    [navigate]
+  );
 
   const onCreateNewSecretPhrase = useCallback(() => {}, []);
 
   const {
-    allBackedUp,
-    areBackedUp,
-    canBeBackedUp,
     hasManualBackup,
+    hasCloudBackup,
+    numberOfPrivateKeyWallets,
+    numberOfSecretPhraseWallets,
   } = useMemo(() => checkWalletsForBackupStatus(wallets), [wallets]);
 
   const onNavigateToWalletView = useCallback(
@@ -63,11 +70,10 @@ const BackupSection = () => {
 
   let cloudBackedUpWallets = 0;
   let privateKeyWallets = 1;
-  let seedPhraseWallets = 1;
+  let secretPhraseWallets = 1;
+  let lastBackupDate: number | undefined;
 
-  console.log({ numOfEachWalletType });
-
-  const backups = wallets
+  const visibleWallets = wallets
     ? Object.keys(wallets)
         .filter(
           key =>
@@ -85,9 +91,17 @@ const BackupSection = () => {
             cloudBackedUpWallets += 1;
           }
 
+          if (
+            wallet.backedUp &&
+            wallet.backupDate &&
+            (!lastBackupDate || wallet.backupDate > lastBackupDate)
+          ) {
+            lastBackupDate = wallet.backupDate;
+          }
+
           let name = '';
           if (wallet.type === WalletTypes.privateKey) {
-            if (numOfEachWalletType.privateKey > 1) {
+            if (numberOfPrivateKeyWallets > 1) {
               name = `Private Key ${privateKeyWallets}`;
               privateKeyWallets += 1;
             } else {
@@ -99,9 +113,9 @@ const BackupSection = () => {
             wallet.type === WalletTypes.mnemonic ||
             wallet.type === WalletTypes.seed
           ) {
-            if (numOfEachWalletType.seedPhrase > 1) {
-              name = `Secret Phrase ${seedPhraseWallets}`;
-              seedPhraseWallets += 1;
+            if (numberOfSecretPhraseWallets > 1) {
+              name = `Secret Phrase ${secretPhraseWallets}`;
+              secretPhraseWallets += 1;
             } else {
               name = 'Secret Phrase';
             }
@@ -119,27 +133,10 @@ const BackupSection = () => {
         })
     : [];
 
-  useEffect(() => {
-    if (!wallets) return;
-
-    const seedPhraseWallets = Object.values(wallets).filter(
-      w => w.type === WalletTypes.mnemonic || w.type === WalletTypes.seed
-    ).length;
-
-    const privateKeyWallets = Object.values(wallets).filter(
-      w => w.type === WalletTypes.privateKey
-    ).length;
-
-    setNumOfEachWalletType({
-      seedPhrase: seedPhraseWallets,
-      privateKey: privateKeyWallets,
-    });
-  }, [wallets]);
-
   return (
-    <>
+    <MenuContainer>
       {!hasManualBackup && (
-        <MenuContainer>
+        <>
           <Menu>
             <MenuHeader
               iconComponent={
@@ -167,30 +164,52 @@ const BackupSection = () => {
             />
           </Menu>
 
-          <Menu
-            description={lang.t(
-              'back_up.cloud.enable_cloud_backups_description'
-            )}
-          >
-            <MenuItem
-              hasSfSymbol
-              leftComponent={<MenuItem.TextIcon icon="􀎽" isLink />}
-              onPress={manageCloudBackups}
-              size={52}
-              titleComponent={
-                <MenuItem.Title
-                  isLink
-                  text={lang.t('back_up.cloud.enable_cloud_backups')}
-                />
-              }
-            />
-          </Menu>
-        </MenuContainer>
+          {!hasCloudBackup && (
+            <Menu
+              description={lang.t(
+                'back_up.cloud.enable_cloud_backups_description'
+              )}
+            >
+              <MenuItem
+                hasSfSymbol
+                leftComponent={<MenuItem.TextIcon icon="􀊯" isLink />}
+                onPress={manageCloudBackups}
+                size={52}
+                titleComponent={
+                  <MenuItem.Title
+                    isLink
+                    text={lang.t('back_up.cloud.enable_cloud_backups')}
+                  />
+                }
+              />
+            </Menu>
+          )}
+          {hasCloudBackup && (
+            <Menu
+              description={lang.t('back_up.cloud.latest_backup', {
+                date: lastBackupDate,
+              })}
+            >
+              <MenuItem
+                hasSfSymbol
+                leftComponent={<MenuItem.TextIcon icon="􀎽" isLink />}
+                onPress={manageCloudBackups}
+                size={52}
+                titleComponent={
+                  <MenuItem.Title
+                    isLink
+                    text={lang.t('back_up.cloud.enable_cloud_backups')}
+                  />
+                }
+              />
+            </Menu>
+          )}
+        </>
       )}
 
-      <MenuContainer space={'24px'}>
-        {backups.map(
-          ({ name, isBackedUp, accounts, key, label, numAccounts, wallet }) => (
+      <Stack space={'24px'}>
+        {visibleWallets.map(
+          ({ name, isBackedUp, accounts, key, numAccounts, wallet }) => (
             <Menu key={`wallet-${key}`}>
               <MenuItem
                 hasRightArrow
@@ -311,20 +330,24 @@ const BackupSection = () => {
           />
         </Menu>
 
-        <Menu description={lang.t('wallet.back_ups.cloud_backup_description')}>
-          <MenuItem
-            hasSfSymbol
-            leftComponent={<MenuItem.TextIcon icon="􀊯" isLink />}
-            onPress={enabledCloudBackups}
-            size={52}
-            titleComponent={
-              <MenuItem.Title
-                isLink
-                text={lang.t('back_up.cloud.enable_cloud_backups')}
-              />
-            }
-          />
-        </Menu>
+        {hasManualBackup && (
+          <Menu
+            description={lang.t('wallet.back_ups.cloud_backup_description')}
+          >
+            <MenuItem
+              hasSfSymbol
+              leftComponent={<MenuItem.TextIcon icon="􀊯" isLink />}
+              onPress={() => enabledCloudBackups(wallet.id)}
+              size={52}
+              titleComponent={
+                <MenuItem.Title
+                  isLink
+                  text={lang.t('back_up.cloud.enable_cloud_backups')}
+                />
+              }
+            />
+          </Menu>
+        )}
 
         {!!cloudBackedUpWallets && (
           <Menu>
@@ -344,9 +367,9 @@ const BackupSection = () => {
             />
           </Menu>
         )}
-      </MenuContainer>
-    </>
+      </Stack>
+    </MenuContainer>
   );
 };
 
-export default BackupSection;
+export default BackupWalletViewSection;

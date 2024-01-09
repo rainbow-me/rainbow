@@ -105,7 +105,7 @@ export default function useInitializeWallet() {
           walletAddress,
         });
 
-        if (!switching) {
+        if (switching) {
           // Run keychain integrity checks right after walletInit
           // Except when switching wallets!
           await runKeychainIntegrityChecks();

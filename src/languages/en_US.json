@@ -107,7 +107,7 @@
         "manage_platform_backups": "Manage %{cloudPlatformName} Backups",
         "enable_cloud_backups": "Enable Cloud Backups",
         "enable_cloud_backups_description": "If you prefer to back up your wallets manually, you can do so below.",
-        "latest_backup": "Latest Backup %{date}", 
+        "latest_backup": "Last Backup: %{date}", 
         "password": {
           "a_password_youll_remember": "Please use a password you'll remember.",
           "backup_password": "Backup Password",
@@ -141,6 +141,7 @@
         "if_lose_manual": "If you lose this device, you can restore your wallet with the secret phrase you saved."
       },
       "manual": {
+        "backup_manually": "Back Up Manually",
         "label": "Your secret phrase",
         "pkey": {
           "confirm_save": "I’ve saved my key",
@@ -2096,10 +2097,14 @@
         "wallet_count": "%{numAccounts} wallet",
         "wallet_count_gt_one": "%{numAccounts} wallets",
         "and_more_wallets": "And %{moreWalletCount} more wallets",
+        "create_new_wallet": "Create a New Wallet",
+        "create_new_wallet_description": "Create a new wallet using this Secret Phrase",
         "backed_up": "Backed up",
         "backed_up_manually": "Backed up manually",
         "imported": "Imported",
         "cloud_backup_title": "Cloud Backup",
+        "not_backed_up": "Not backed up",
+        "not_backed_up_message": "This %{backupType} isn't backed up. Back up now so you can restore it if you lose your device or get a new one.",
         "cloud_backup_description": "Securely back up your wallets to iCloud so you can restore them if you lose your device or get a new one. Learn more…"
       },
       "balance_title": "Balance",

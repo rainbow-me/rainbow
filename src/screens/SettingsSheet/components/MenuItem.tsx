@@ -165,7 +165,7 @@ const Label = ({ text, warn, color }: LabelProps) => {
 interface MenuItemProps {
   rightComponent?: React.ReactNode;
   leftComponent?: React.ReactNode;
-  size?: 52 | 60;
+  size?: 52 | 60 | number;
   hasRightArrow?: boolean;
   onPress?: () => void;
   titleComponent: React.ReactNode;

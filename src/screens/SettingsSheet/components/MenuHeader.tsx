@@ -1,6 +1,6 @@
 import React from 'react';
 import { Source } from 'react-native-fast-image';
-import { Box, Stack, Text } from '@/design-system';
+import { Box, Space, Stack, Text } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import { useTheme } from '@/theme';
 import { ImageSourcePropType } from 'react-native';
@@ -178,6 +178,7 @@ interface MenuHeaderProps {
   titleComponent: React.ReactNode;
   statusComponent?: React.ReactNode;
   labelComponent?: React.ReactNode;
+  paddingBottom?: Space;
   testID?: string;
 }
 
@@ -186,12 +187,13 @@ const MenuHeader = ({
   titleComponent,
   statusComponent,
   labelComponent,
+  paddingBottom = { custom: 32 },
   testID,
 }: MenuHeaderProps) => {
   return (
     <Box
       height="full"
-      paddingBottom={{ custom: 32 }}
+      paddingBottom={paddingBottom}
       justifyContent="center"
       alignItems="center"
       testID={testID}
