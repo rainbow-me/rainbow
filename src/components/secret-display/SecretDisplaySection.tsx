@@ -12,7 +12,7 @@ import Spinner from '../Spinner';
 import { CopyFloatingEmojis } from '../floating-emojis';
 import { Icon } from '../icons';
 import SecretDisplayCard from './SecretDisplayCard';
-import { Box, Inline, Stack, Text } from '@/design-system';
+import { Bleed, Box, Inline, Inset, Stack, Text } from '@/design-system';
 import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
 import { useWallets } from '@/hooks';
 import { position } from '@/styles';
@@ -121,42 +121,43 @@ export function SecretDisplaySection({
       return (
         <Wrapper>
           <Box paddingBottom="19px (Deprecated)">
-            {/* @ts-expect-error JS component*/}
-            <CopyFloatingEmojis textToCopy={seed}>
-              <Inline alignVertical="center" space="6px">
-                <Icon
-                  name="copy"
-                  color={colors.appleBlue}
-                  style={styles.copyIcon}
-                />
-                <Text
-                  color="action (Deprecated)"
-                  size="16px / 22px (Deprecated)"
-                  weight="bold"
-                >
-                  {lang.t('back_up.secret.copy_to_clipboard')}
+            <Bleed top={'42px (Deprecated)'}>
+              <Stack space={'20px'}>
+                <Text align="center" color="orange" size="34pt" weight="bold">
+                  {'􀉆'}
                 </Text>
-              </Inline>
-            </CopyFloatingEmojis>
+                <Text align="center" color="label" size="20pt" weight="bold">
+                  {'Your Secret Phrase'}
+                </Text>
+                <Text
+                  align="center"
+                  color="labelSecondary"
+                  size="15pt"
+                  weight="semibold"
+                >
+                  {
+                    'Anyone who has these words can access your wallet! You should never share them.'
+                  }
+                </Text>
+
+                {/* @ts-expect-error JS component*/}
+                <CopyFloatingEmojis textToCopy={seed}>
+                  <Inline alignVertical="center" space="6px">
+                    <Text
+                      color="action (Deprecated)"
+                      size="16px / 22px (Deprecated)"
+                      weight="bold"
+                      align="center"
+                    >
+                      {lang.t('back_up.secret.copy_to_clipboard')}
+                    </Text>
+                  </Inline>
+                </CopyFloatingEmojis>
+              </Stack>
+            </Bleed>
           </Box>
           <Stack alignHorizontal="center" space="19px (Deprecated)">
             <SecretDisplayCard seed={seed ?? ''} type={walletType} />
-            <Text
-              containsEmoji
-              color="primary (Deprecated)"
-              size="16px / 22px (Deprecated)"
-              weight="bold"
-            >
-              👆{lang.t('back_up.secret.for_your_eyes_only')} 👆
-            </Text>
-            <Text
-              align="center"
-              color="secondary60 (Deprecated)"
-              size="16px / 22px (Deprecated)"
-              weight="semibold"
-            >
-              {lang.t('back_up.secret.anyone_who_has_these')}
-            </Text>
           </Stack>
         </Wrapper>
       );

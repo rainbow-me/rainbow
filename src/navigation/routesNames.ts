@@ -93,6 +93,7 @@ const Routes = {
   SETTINGS_WALLET_NOTIFICATIONS: 'WalletNotificationsSettings',
   SETTINGS_BACKUP_VIEW: 'SettingsBackupView',
   SETTINGS_SHOW_SECRET_VIEW: 'ShowSecretView',
+  SETTINGS_WARN_SECRET_VIEW: 'WarnSecretView',
   SETTINGS_SECTION_APP_ICON: 'AppIconSection',
   SETTINGS_SECTION_BACKUP: 'BackupSection',
   SETTINGS_SECTION_CURRENCY: 'CurrencySection',

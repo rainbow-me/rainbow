@@ -10,12 +10,13 @@ import DevSection from './components/DevSection';
 import NetworkSection from './components/NetworkSection';
 import PrivacySection from './components/PrivacySection';
 import NotificationsSection from './components/NotificationsSection';
+import SecretWarningPage from './components/SecretWarningPage';
 
 export const SettingsPages = {
   appIcon: {
-    component: AppIconSection,
+    component: SecretWarningPage,
     getTitle: () => lang.t('settings.app_icon'),
-    key: Routes.SETTINGS_SECTION_APP_ICON,
+    key: Routes.SETTINGS_WARN_SECRET_VIEW,
   },
   backup: {
     component: BackupSection,
