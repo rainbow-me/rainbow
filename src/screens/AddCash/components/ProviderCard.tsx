@@ -12,7 +12,6 @@ import ChainBadge from '@/components/coin-icon/ChainBadge';
 import { CoinIcon } from '@/components/coin-icon';
 
 import { Ramp as RampLogo } from '@/components/icons/svg/Ramp';
-import { Ratio as RatioLogo } from '@/components/icons/svg/Ratio';
 import { Coinbase as CoinbaseLogo } from '@/components/icons/svg/Coinbase';
 import { Moonpay as MoonpayLogo } from '@/components/icons/svg/Moonpay';
 
@@ -32,7 +31,6 @@ type PaymentMethodConfig = {
 
 const providerLogos = {
   [FiatProviderName.Ramp]: RampLogo,
-  [FiatProviderName.Ratio]: RatioLogo,
   [FiatProviderName.Coinbase]: CoinbaseLogo,
   [FiatProviderName.Moonpay]: MoonpayLogo,
 };
