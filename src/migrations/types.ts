@@ -13,6 +13,7 @@ export enum MigrationName {
   prepareDefaultNotificationGroupSettingsState = 'migration_addDefaultNotificationGroupSettings',
   changeLanguageKeys = 'migration_changeLanguageKeys',
   fixHiddenUSDC = 'migration_fixHiddenUSDC',
+  migrateNotificationSettingsToVersion3 = 'migration_migrateNotificationSettingsToVersion3',
 }
 
 export type Migration = {

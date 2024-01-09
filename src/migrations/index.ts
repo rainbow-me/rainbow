@@ -12,6 +12,7 @@ import {
 } from '@/migrations/types';
 import { deleteImgixMMKVCache } from '@/migrations/migrations/deleteImgixMMKVCache';
 import { migrateNotificationSettingsToV2 } from '@/migrations/migrations/migrateNotificationSettingsToV2';
+import { migrateNotificationSettingsToV3 } from '@/migrations/migrations/migrateNotificationSettingsToV3';
 import { prepareDefaultNotificationGroupSettingsState } from '@/migrations/migrations/prepareDefaultNotificationGroupSettingsState';
 import { changeLanguageKeys } from './migrations/changeLanguageKeys';
 import { fixHiddenUSDC } from './migrations/fixHiddenUSDC';
@@ -36,6 +37,7 @@ const migrations: Migration[] = [
   migrateNotificationSettingsToV2(),
   changeLanguageKeys(),
   fixHiddenUSDC(),
+  migrateNotificationSettingsToV3(),
 ];
 
 /**
