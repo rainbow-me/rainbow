@@ -28,18 +28,10 @@ const EMPTY_INIT_STATE = {
 };
 
 /*
- * We need to mock below three mocks because one of the migrations has imported our redux store
- * which has a lot of module dependencies and firebase which mocks aren't working as they should.
- * We don't want to mock all of them so we mock the used redux and firebase files, since we are not testing them here.
+ * We need to mock firebase below because one of the migrations imports
+ * firebase where mocks aren't working as they should.
+ * We don't want to mock all of them so we mock the firebase file, since we are not testing them here.
  */
-jest.mock('@/redux/explorer', () => ({
-  notificationsSubscription: jest.fn(),
-}));
-
-jest.mock('@/redux/store', () => ({
-  dispatch: jest.fn(),
-}));
-
 jest.mock('@/notifications/settings/firebase');
 
 describe('Notification settings initialization', () => {

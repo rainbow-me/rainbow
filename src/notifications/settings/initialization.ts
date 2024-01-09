@@ -13,8 +13,6 @@ import {
   notificationSettingsStorage,
   setAllNotificationSettingsToStorage,
 } from '@/notifications/settings/storage';
-import { notificationsSubscription } from '@/redux/explorer';
-import store from '@/redux/store';
 import {
   subscribeWalletToAllEnabledTopics,
   unsubscribeWalletFromAllNotificationTopics,
@@ -114,7 +112,6 @@ export const _prepareSubscriptionQueueAndCreateInitialSettings = (
   const { alreadySaved, newSettings, subscriptionQueue } = initializationState;
   // preparing list of wallets that need to be subscribed
   addresses.forEach(entry => {
-    store.dispatch(notificationsSubscription(entry.address));
     const alreadySavedEntry = alreadySaved.get(entry.address);
     // handling a case where we import a seed phrase of a previously watched wallet
     if (
