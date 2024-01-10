@@ -67,6 +67,7 @@ describe('Swap Sheet Interaction Flow', () => {
   //        marking the test as SKIP for now
   it.skip('Should go to swap and open review sheet on mainnet swap', async () => {
     await Helpers.waitAndTap('swap-button');
+    await Helpers.tap('exchange-modal-input-selection-button');
     await Helpers.typeText('currency-select-search-input', 'DAI', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-DAI-token');
     await Helpers.waitAndTap('exchange-modal-input-max');
@@ -93,6 +94,7 @@ describe('Swap Sheet Interaction Flow', () => {
   // button
   it.skip('Should go to swap and open review sheet on optimism swap', async () => {
     await Helpers.waitAndTap('swap-button');
+    await Helpers.tap('exchange-modal-input-selection-button');
     await Helpers.typeText('currency-select-search-input', 'OP', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-OP-optimism');
     await Helpers.waitAndTap('exchange-modal-input-max');
@@ -119,6 +121,7 @@ describe('Swap Sheet Interaction Flow', () => {
   // button
   it.skip('Should go to swap and open review sheet on polygon swap', async () => {
     await Helpers.waitAndTap('swap-button');
+    await Helpers.tap('exchange-modal-input-selection-button');
     await Helpers.typeText('currency-select-search-input', 'DAI', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-DAI-polygon');
     await Helpers.waitAndTap('exchange-modal-input-max');
@@ -145,6 +148,7 @@ describe('Swap Sheet Interaction Flow', () => {
   // button
   it.skip('Should go to swap and open review sheet on arbitrum swap', async () => {
     await Helpers.waitAndTap('swap-button');
+    await Helpers.tap('exchange-modal-input-selection-button');
     await Helpers.typeText('currency-select-search-input', 'DAI', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-DAI-arbitrum');
     await Helpers.waitAndTap('exchange-modal-input-max');
@@ -170,6 +174,7 @@ describe('Swap Sheet Interaction Flow', () => {
   it.skip('Should display currency selection screen on swap-button press', async () => {
     await Helpers.checkIfVisible('wallet-screen');
     await Helpers.waitAndTap('swap-button');
+    await Helpers.tap('exchange-modal-input-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
   });
 
@@ -272,6 +277,7 @@ describe('Swap Sheet Interaction Flow', () => {
   // FIXME: Dependent on a state from the previous test
   it.skip('Should clear inputs when typing a number in inputs and then clearing it', async () => {
     await Helpers.waitAndTap('swap-button');
+    await Helpers.tap('exchange-modal-input-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-token');
     await Helpers.checkIfVisible('exchange-modal-input');
@@ -315,6 +321,7 @@ describe('Swap Sheet Interaction Flow', () => {
   // FIXME: Dependent on a state from the previous test
   it.skip('Should clear inputs when typing a number in inputs and then clearing it optimism', async () => {
     await Helpers.waitAndTap('swap-button');
+    await Helpers.tap('exchange-modal-input-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'ETH\n', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-optimism');
@@ -351,6 +358,7 @@ describe('Swap Sheet Interaction Flow', () => {
   // FIXME: Dependent on a state from the previous test
   it.skip('Should clear inputs when typing a number in inputs and then clearing it arbitrum', async () => {
     await Helpers.waitAndTap('swap-button');
+    await Helpers.tap('exchange-modal-input-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'ETH\n', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-arbitrum');
@@ -371,6 +379,7 @@ describe('Swap Sheet Interaction Flow', () => {
   // FIXME: Dependent on a state from the previous test
   it.skip('Should clear inputs when typing a number in inputs and then clearing it polygon', async () => {
     await Helpers.waitAndTap('swap-button');
+    await Helpers.tap('exchange-modal-input-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.typeText('currency-select-search-input', 'WETH', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-WETH-polygon');
