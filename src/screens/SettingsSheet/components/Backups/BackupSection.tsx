@@ -6,7 +6,6 @@ import MenuContainer from '../MenuContainer';
 import MenuItem from '../MenuItem';
 import WalletsAndBackupIcon from '@/assets/walletsAndBackup.png';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
-import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes from '@/helpers/walletTypes';
 import { useManageCloudBackups, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
@@ -27,17 +26,14 @@ const BackupSection = () => {
   const { wallets } = useWallets();
   const { manageCloudBackups } = useManageCloudBackups();
 
-  const enabledCloudBackups = useCallback(
-    (walletId: string) => {
-      navigate(Routes.BACKUP_SHEET, {
-        nativeScreen: true,
-        step: WalletBackupStepTypes.cloud,
-        type: 'AlreadyBackedUpView',
-        walletId,
-      });
-    },
-    [navigate]
-  );
+  const enabledCloudBackups = useCallback(() => {
+    navigate(Routes.BACKUP_SHEET, {
+      nativeScreen: true,
+      step: WalletBackupStepTypes.cloud,
+    });
+  }, [navigate]);
+
+  const onBackupToCloud = useCallback(() => {}, []);
 
   const onCreateNewSecretPhrase = useCallback(() => {}, []);
 
@@ -66,7 +62,6 @@ const BackupSection = () => {
     [navigate, wallets]
   );
 
-  let cloudBackedUpWallets = 0;
   let privateKeyWallets = 1;
   let secretPhraseWallets = 1;
   let lastBackupDate: number | undefined;
@@ -80,13 +75,8 @@ const BackupSection = () => {
         )
         .map(key => {
           const wallet = wallets[key];
-          const visibleAccounts = wallet.addresses.filter(
-            (a: any) => a.visible
-          );
+          const visibleAccounts = wallet.addresses.filter(a => a.visible);
           const totalAccounts = visibleAccounts.length;
-          if (wallet.backupType === WalletBackupTypes.cloud) {
-            cloudBackedUpWallets += 1;
-          }
 
           if (
             wallet.backedUp &&
@@ -160,7 +150,6 @@ const BackupSection = () => {
               }
             />
           </Menu>
-
           {!hasCloudBackup && (
             <Menu
               description={lang.t(
@@ -170,7 +159,7 @@ const BackupSection = () => {
               <MenuItem
                 hasSfSymbol
                 leftComponent={<MenuItem.TextIcon icon="􀊯" isLink />}
-                onPress={manageCloudBackups}
+                onPress={enabledCloudBackups}
                 size={52}
                 titleComponent={
                   <MenuItem.Title
@@ -181,6 +170,7 @@ const BackupSection = () => {
               />
             </Menu>
           )}
+
           {hasCloudBackup && (
             <Menu
               description={lang.t('back_up.cloud.latest_backup', {
@@ -190,12 +180,14 @@ const BackupSection = () => {
               <MenuItem
                 hasSfSymbol
                 leftComponent={<MenuItem.TextIcon icon="􀎽" isLink />}
-                onPress={manageCloudBackups}
+                onPress={onBackupToCloud}
                 size={52}
                 titleComponent={
                   <MenuItem.Title
                     isLink
-                    text={lang.t('back_up.cloud.enable_cloud_backups')}
+                    text={lang.t('back_up.cloud.backup_to_cloud_now', {
+                      cloudPlatformName: cloudPlatform,
+                    })}
                   />
                 }
               />
@@ -266,7 +258,7 @@ const BackupSection = () => {
                 disabled
                 titleComponent={
                   <Inline wrap verticalSpace="4px" horizontalSpace="4px">
-                    {accounts.map(({ address, label, color }: any) => {
+                    {accounts.map(({ address, label, color }) => {
                       return (
                         <Box
                           key={address}
@@ -334,7 +326,7 @@ const BackupSection = () => {
             <MenuItem
               hasSfSymbol
               leftComponent={<MenuItem.TextIcon icon="􀊯" isLink />}
-              onPress={() => enabledCloudBackups('')} // TODO: Add walletId
+              onPress={enabledCloudBackups}
               size={52}
               titleComponent={
                 <MenuItem.Title
@@ -346,7 +338,7 @@ const BackupSection = () => {
           </Menu>
         )}
 
-        {!!cloudBackedUpWallets && (
+        {hasCloudBackup && (
           <Menu>
             <MenuItem
               hasSfSymbol
