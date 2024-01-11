@@ -10940,6 +10940,11 @@ expo-modules-core@1.5.12:
     compare-versions "^3.4.0"
     invariant "^2.2.4"
 
+expo-standard-web-crypto@1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/expo-standard-web-crypto/-/expo-standard-web-crypto-1.7.0.tgz#a566d1ab8f5d7bdbd2f71d2ea32f7070667c5da4"
+  integrity sha512-5A2UjOgvtGaYO0Ep7fChMV8bl0Y8BFylPR70hkbgiHwt7FBUuregC/jiRM0JunZHhe+AD4HSdgp9/3YgrwuPPw==
+
 expo@^49.0.0:
   version "49.0.21"
   resolved "https://registry.yarnpkg.com/expo/-/expo-49.0.21.tgz#32a66b32d0a233879ec3afdec35fb63d2cc8a4c3"

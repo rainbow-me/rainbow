@@ -1,4 +1,4 @@
-import 'react-native-get-random-values';
+import { polyfillWebCrypto } from 'expo-standard-web-crypto';
 import 'react-native-url-polyfill/auto';
 import '@ethersproject/shims';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -10,6 +10,8 @@ import { mmkvStorageBackend } from '@/handlers/localstorage/mmkvStorageBackend';
 import toLocaleStringPolyfill from '@/helpers/toLocaleStringPolyfill';
 import logger from '@/utils/logger';
 import 'fast-text-encoding';
+
+polyfillWebCrypto();
 
 if (typeof BigInt === 'undefined') global.BigInt = require('big-integer');
 

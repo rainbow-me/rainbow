@@ -181,6 +181,7 @@
     "expo-application": "~5.3.0",
     "expo-constants": "~14.4.2",
     "expo-device": "~5.4.0",
+    "expo-standard-web-crypto": "1.7.0",
     "fast-text-encoding": "1.0.4",
     "flatted": "3.2.7",
     "global": "4.4.0",
