@@ -245,15 +245,9 @@ export async function authenticatePin(pin) {
 }
 
 export async function disableSynchronization() {
-  if (device.getPlatform() === 'ios') {
-    await device.disableSynchronization();
-  }
   return true;
 }
 export async function enableSynchronization() {
-  if (device.getPlatform() === 'ios') {
-    await device.enableSynchronization();
-  }
   return true;
 }
 
