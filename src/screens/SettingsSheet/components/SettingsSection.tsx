@@ -19,8 +19,6 @@ import DarkModeIcon from '@/assets/settingsDarkMode.png';
 import DarkModeIconDark from '@/assets/settingsDarkModeDark.png';
 import LanguageIcon from '@/assets/settingsLanguage.png';
 import LanguageIconDark from '@/assets/settingsLanguageDark.png';
-import NetworkIcon from '@/assets/settingsNetwork.png';
-import NetworkIconDark from '@/assets/settingsNetworkDark.png';
 import NotificationsIcon from '@/assets/settingsNotifications.png';
 import NotificationsIconDark from '@/assets/settingsNotificationsDark.png';
 import PrivacyIcon from '@/assets/settingsPrivacy.png';
@@ -34,7 +32,6 @@ import useExperimentalFlag, {
 import { useAccountSettings, useSendFeedback, useWallets } from '@/hooks';
 import { Themes, useTheme } from '@/theme';
 import { showActionSheetWithOptions } from '@/utils';
-import { getNetworkObj } from '@/networks';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { BackupProvider, ReviewPromptAction } from '@/storage/schema';
 import * as ls from '@/storage';
@@ -60,17 +57,11 @@ const SettingsSection = ({
   onPressCurrency,
   onPressDev,
   onPressLanguage,
-  onPressNetwork,
   onPressPrivacy,
   onPressNotifications,
 }: SettingsSectionProps) => {
   const { wallets, isReadOnlyWallet } = useWallets();
-  const {
-    language,
-    nativeCurrency,
-    network,
-    testnetsEnabled,
-  } = useAccountSettings();
+  const { language, nativeCurrency } = useAccountSettings();
   const isLanguageSelectionEnabled = useExperimentalFlag(LANGUAGE_SETTINGS);
   const isNotificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 

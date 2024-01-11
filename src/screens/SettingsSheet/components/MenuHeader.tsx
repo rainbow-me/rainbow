@@ -17,7 +17,7 @@ const ImageIcon = ({ size = 60, source }: ImageIconProps) => (
     height={{ custom: size }}
     marginLeft={{ custom: -12 }}
     marginRight={{ custom: -12 }}
-    marginTop={{ custom: 16 }}
+    marginTop={{ custom: 0 }}
     marginBottom={{ custom: 0 }}
     source={source as Source}
     width={{ custom: size }}
@@ -178,6 +178,7 @@ interface MenuHeaderProps {
   titleComponent: React.ReactNode;
   statusComponent?: React.ReactNode;
   labelComponent?: React.ReactNode;
+  paddingTop?: Space;
   paddingBottom?: Space;
   testID?: string;
 }
@@ -187,12 +188,14 @@ const MenuHeader = ({
   titleComponent,
   statusComponent,
   labelComponent,
+  paddingTop = { custom: 32 },
   paddingBottom = { custom: 32 },
   testID,
 }: MenuHeaderProps) => {
   return (
     <Box
       height="full"
+      paddingTop={paddingTop}
       paddingBottom={paddingBottom}
       justifyContent="center"
       alignItems="center"

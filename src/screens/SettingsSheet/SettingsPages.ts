@@ -3,7 +3,7 @@ import lang from 'i18n-js';
 import Routes from '@/navigation/routesNames';
 
 import AppIconSection from './components/AppIconSection';
-import BackupSection from './components/Backups/BackupSection';
+import BackupSection from './components/Backups/WalletsAndBackup';
 import CurrencySection from './components/CurrencySection';
 import LanguageSection from './components/LanguageSection';
 import DevSection from './components/DevSection';

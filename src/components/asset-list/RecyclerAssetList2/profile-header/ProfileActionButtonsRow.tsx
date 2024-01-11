@@ -20,13 +20,7 @@ import {
   Text,
   useColorMode,
 } from '@/design-system';
-import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
-import {
-  useAccountProfile,
-  useAccountSettings,
-  useSwapCurrencyHandlers,
-  useWallets,
-} from '@/hooks';
+import { useAccountProfile, useAccountSettings, useWallets } from '@/hooks';
 import { delayNext } from '@/hooks/useMagicAutofocus';
 import { useNavigation } from '@/navigation';
 import { ethereumUtils, watchingAlert } from '@/utils';

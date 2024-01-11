@@ -1,5 +1,8 @@
 import lang from 'i18n-js';
 import { RouteProp, useRoute } from '@react-navigation/native';
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import Clipboard from '@react-native-community/clipboard';
+
 import React, { useCallback } from 'react';
 import Menu from '../Menu';
 import MenuContainer from '../MenuContainer';
@@ -13,24 +16,96 @@ import MenuHeader from '../MenuHeader';
 import { Box, Stack } from '@/design-system';
 import { ContactAvatar } from '@/components/contacts';
 import WalletTypes from '@/helpers/walletTypes';
+import { useRecoilState } from 'recoil';
+import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
+import Routes from '@/navigation/routesNames';
+import { navigate } from '@/navigation/Navigation';
 
-type SettingsBackupViewParams = {
-  SettingsBackupView: { imported: string; title: string; walletId: string };
+type ViewWalletBackupParams = {
+  ViewWalletBackup: { walletId: string };
 };
 
-const SettingsBackupView = () => {
+const enum WalletMenuAction {
+  ViewPrivateKey = 'view_private_key',
+  CopyWalletAddress = 'copy_wallet_address',
+}
+
+type MenuEvent = {
+  nativeEvent: {
+    actionKey: WalletMenuAction;
+  };
+  address: string;
+};
+
+const ViewWalletBackup = () => {
   const { params } = useRoute<
-    RouteProp<SettingsBackupViewParams, 'SettingsBackupView'>
+    RouteProp<ViewWalletBackupParams, 'ViewWalletBackup'>
   >();
 
   const { walletId } = params;
-
   const { wallets } = useWallets();
-  const { manageCloudBackups } = useManageCloudBackups();
-
   const wallet = wallets?.[walletId];
 
+  const { manageCloudBackups } = useManageCloudBackups();
+
+  const [isToastActive, setToastActive] = useRecoilState(
+    addressCopiedToastAtom
+  );
+
   const onCreateNewWallet = useCallback(() => {}, []);
+
+  const handleCopyAddress = React.useCallback(
+    (address: string) => {
+      if (!isToastActive) {
+        setToastActive(true);
+        setTimeout(() => {
+          setToastActive(false);
+        }, 2000);
+      }
+      Clipboard.setString(address);
+    },
+    [isToastActive, setToastActive]
+  );
+
+  const menuConfig = {
+    menuTitle: '',
+    menuItems: [
+      {
+        actionKey: WalletMenuAction.ViewPrivateKey,
+        actionTitle: lang.t('wallet.back_ups.view_private_key'),
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: 'key',
+        },
+      },
+      {
+        actionKey: WalletMenuAction.CopyWalletAddress,
+        actionTitle: lang.t('wallet.back_ups.copy_wallet_address'),
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: 'square.on.square',
+        },
+      },
+    ],
+  };
+
+  const onPressMenuItem = ({
+    nativeEvent: { actionKey: menuAction },
+    address,
+  }: MenuEvent) => {
+    switch (menuAction) {
+      case WalletMenuAction.ViewPrivateKey:
+        navigate(Routes.SETTINGS_WARN_SECRET_VIEW, {
+          walletId,
+        });
+        break;
+      case WalletMenuAction.CopyWalletAddress:
+        handleCopyAddress(address);
+        break;
+      default:
+        break;
+    }
+  };
 
   return (
     <MenuContainer>
@@ -38,6 +113,8 @@ const SettingsBackupView = () => {
         <>
           <Menu>
             <MenuHeader
+              paddingTop={{ custom: 8 }}
+              paddingBottom={{ custom: 24 }}
               iconComponent={
                 <MenuHeader.ImageIcon source={BackupWarningIcon} size={72} />
               }
@@ -123,7 +200,16 @@ const SettingsBackupView = () => {
                     weight="semibold"
                   />
                 }
-                rightComponent={<MenuItem.TextIcon icon="􀍡" />}
+                rightComponent={
+                  <ContextMenuButton
+                    menuConfig={menuConfig}
+                    onPressMenuItem={(e: MenuEvent) =>
+                      onPressMenuItem({ ...e, address })
+                    }
+                  >
+                    <MenuItem.TextIcon icon="􀍡" />
+                  </ContextMenuButton>
+                }
               />
             </Menu>
           ))}
@@ -153,4 +239,4 @@ const SettingsBackupView = () => {
   );
 };
 
-export default SettingsBackupView;
+export default ViewWalletBackup;

@@ -9,7 +9,7 @@ import { Box, Inline, Text, BackgroundProvider } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import { SettingsPages } from './SettingsPages';
 import { settingsCardStyleInterpolator } from './settingsCardStyleInterpolator';
-import SettingsBackupView from './components/Backups/SettingsBackupView';
+import SettingsBackupView from './components/Backups/ViewWalletBackup';
 import ShowSecretView from './components/ShowSecretView';
 import { CUSTOM_MARGIN_TOP_ANDROID } from './constants';
 import SettingsSection from './components/SettingsSection';

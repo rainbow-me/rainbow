@@ -19,7 +19,7 @@ import { useTheme } from '@/theme';
 import Routes from '@/navigation/routesNames';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 
-const BackupSection = () => {
+const WalletsAndBackup = () => {
   const { colors, isDarkMode } = useTheme();
 
   const { navigate } = useNavigation();
@@ -126,6 +126,8 @@ const BackupSection = () => {
         <>
           <Menu>
             <MenuHeader
+              paddingBottom={{ custom: 24 }}
+              paddingTop={{ custom: 8 }}
               iconComponent={
                 <MenuHeader.ImageIcon source={WalletsAndBackupIcon} size={72} />
               }
@@ -361,4 +363,4 @@ const BackupSection = () => {
   );
 };
 
-export default BackupSection;
+export default WalletsAndBackup;

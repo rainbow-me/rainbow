@@ -2106,7 +2106,9 @@
         "cloud_backup_title": "Cloud Backup",
         "not_backed_up": "Not backed up",
         "not_backed_up_message": "This %{backupType} isn't backed up. Back up now so you can restore it if you lose your device or get a new one.",
-        "cloud_backup_description": "Securely back up your wallets to iCloud so you can restore them if you lose your device or get a new one. Learn more…"
+        "cloud_backup_description": "Securely back up your wallets to iCloud so you can restore them if you lose your device or get a new one. Learn more…",
+        "view_private_key": "View private key",
+        "copy_wallet_address": "Copy wallet address"
       },
       "balance_title": "Balance",
       "buy": "Buy",
