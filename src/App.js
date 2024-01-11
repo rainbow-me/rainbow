@@ -425,7 +425,7 @@ function Root() {
   );
 }
 
-const RootWithSentry = Sentry.wrap(Root);
+const RootWithSentry = Sentry.Native.wrap(Root);
 const RootWithCodePush = codePush(RootWithSentry);
 
 const PlaygroundWithReduxStore = () => (
