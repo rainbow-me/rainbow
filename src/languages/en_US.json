@@ -105,6 +105,10 @@
       "cloud": {
         "back_up_to_platform": "Back up to %{cloudPlatformName}",
         "manage_platform_backups": "Manage %{cloudPlatformName} Backups",
+        "enable_cloud_backups": "Enable Cloud Backups",
+        "backup_to_cloud_now": "Back Up to %{cloudPlatformName} Now",
+        "enable_cloud_backups_description": "If you prefer to back up your wallets manually, you can do so below.",
+        "latest_backup": "Last Backup: %{date}", 
         "password": {
           "a_password_youll_remember": "Please use a password you'll remember.",
           "backup_password": "Backup Password",
@@ -138,6 +142,7 @@
         "if_lose_manual": "If you lose this device, you can restore your wallet with the secret phrase you saved."
       },
       "manual": {
+        "backup_manually": "Back Up Manually",
         "label": "Your secret phrase",
         "pkey": {
           "confirm_save": "I’ve saved my key",
@@ -148,7 +153,8 @@
           "confirm_save": "I’ve saved these words",
           "save_them": "Write them down or save them in your password manager.",
           "these_keys": "These words are the keys to your wallet!"
-        }
+        },
+        "create_new_secret_phrase": "Create a New Secret Phrase"
       },
       "needs_backup": {
         "back_up_your_wallet": "Back up your wallet",
@@ -2089,11 +2095,20 @@
         "please_seed_phrase": "Please authenticate to view private key"
       },
       "back_ups": {
-        "and_1_more_wallet": "And 1 more wallet",
+        "wallet_count": "%{numAccounts} wallet",
+        "wallet_count_gt_one": "%{numAccounts} wallets",
         "and_more_wallets": "And %{moreWalletCount} more wallets",
+        "create_new_wallet": "Create a New Wallet",
+        "create_new_wallet_description": "Create a new wallet using this Secret Phrase",
         "backed_up": "Backed up",
         "backed_up_manually": "Backed up manually",
-        "imported": "Imported"
+        "imported": "Imported",
+        "cloud_backup_title": "Cloud Backup",
+        "not_backed_up": "Not backed up",
+        "not_backed_up_message": "This %{backupType} isn't backed up. Back up now so you can restore it if you lose your device or get a new one.",
+        "cloud_backup_description": "Securely back up your wallets to iCloud so you can restore them if you lose your device or get a new one. Learn more…",
+        "view_private_key": "View private key",
+        "copy_wallet_address": "Copy wallet address"
       },
       "balance_title": "Balance",
       "buy": "Buy",

@@ -19,8 +19,6 @@ import DarkModeIcon from '@/assets/settingsDarkMode.png';
 import DarkModeIconDark from '@/assets/settingsDarkModeDark.png';
 import LanguageIcon from '@/assets/settingsLanguage.png';
 import LanguageIconDark from '@/assets/settingsLanguageDark.png';
-import NetworkIcon from '@/assets/settingsNetwork.png';
-import NetworkIconDark from '@/assets/settingsNetworkDark.png';
 import NotificationsIcon from '@/assets/settingsNotifications.png';
 import NotificationsIconDark from '@/assets/settingsNotificationsDark.png';
 import PrivacyIcon from '@/assets/settingsPrivacy.png';
@@ -31,67 +29,14 @@ import useExperimentalFlag, {
   LANGUAGE_SETTINGS,
   NOTIFICATIONS,
 } from '@/config/experimentalHooks';
-import WalletTypes from '@/helpers/walletTypes';
 import { useAccountSettings, useSendFeedback, useWallets } from '@/hooks';
 import { Themes, useTheme } from '@/theme';
 import { showActionSheetWithOptions } from '@/utils';
-import {
-  buildRainbowLearnUrl,
-  LearnUTMCampaign,
-} from '@/utils/buildRainbowUrl';
-import { getNetworkObj } from '@/networks';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { BackupProvider, ReviewPromptAction } from '@/storage/schema';
 import * as ls from '@/storage';
-
-const SettingsExternalURLs = {
-  rainbowHomepage: 'https://rainbow.me',
-  rainbowLearn: buildRainbowLearnUrl({
-    url: 'https://learn.rainbow.me',
-    query: { campaign: LearnUTMCampaign.Settings },
-  }),
-  review:
-    'itms-apps://itunes.apple.com/us/app/appName/id1457119021?mt=8&action=write-review',
-  twitterDeepLink: 'twitter://user?screen_name=rainbowdotme',
-  twitterWebUrl: 'https://twitter.com/rainbowdotme',
-};
-
-const capitalizeFirstLetter = (str: string) => {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-};
-
-const checkAllWallets = (wallets: any) => {
-  if (!wallets)
-    return { allBackedUp: false, areBackedUp: false, canBeBackedUp: false };
-  let areBackedUp = true;
-  let canBeBackedUp = false;
-  let allBackedUp = true;
-  Object.keys(wallets).forEach(key => {
-    if (
-      !wallets[key].backedUp &&
-      wallets[key].type !== WalletTypes.readOnly &&
-      wallets[key].type !== WalletTypes.bluetooth
-    ) {
-      allBackedUp = false;
-    }
-
-    if (
-      !wallets[key].backedUp &&
-      wallets[key].type !== WalletTypes.readOnly &&
-      wallets[key].type !== WalletTypes.bluetooth &&
-      !wallets[key].imported
-    ) {
-      areBackedUp = false;
-    }
-    if (
-      wallets[key].type !== WalletTypes.readOnly &&
-      wallets[key].type !== WalletTypes.readOnly
-    ) {
-      canBeBackedUp = true;
-    }
-  });
-  return { allBackedUp, areBackedUp, canBeBackedUp };
-};
+import { SettingsExternalURLs } from '../constants';
+import { capitalizeFirstLetter, checkWalletsForBackupStatus } from '../utils';
 
 interface SettingsSectionProps {
   onCloseModal: () => void;
@@ -112,17 +57,11 @@ const SettingsSection = ({
   onPressCurrency,
   onPressDev,
   onPressLanguage,
-  onPressNetwork,
   onPressPrivacy,
   onPressNotifications,
 }: SettingsSectionProps) => {
   const { wallets, isReadOnlyWallet } = useWallets();
-  const {
-    language,
-    nativeCurrency,
-    network,
-    testnetsEnabled,
-  } = useAccountSettings();
+  const { language, nativeCurrency } = useAccountSettings();
   const isLanguageSelectionEnabled = useExperimentalFlag(LANGUAGE_SETTINGS);
   const isNotificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
@@ -159,7 +98,7 @@ const SettingsSection = ({
   );
 
   const { allBackedUp, areBackedUp, canBeBackedUp } = useMemo(
-    () => checkAllWallets(wallets),
+    () => checkWalletsForBackupStatus(wallets),
     [wallets]
   );
 

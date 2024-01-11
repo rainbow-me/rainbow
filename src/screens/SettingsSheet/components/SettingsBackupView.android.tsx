@@ -31,9 +31,4 @@ export default function SettingsBackupView() {
       )}
     </BackgroundProvider>
   );
-  if ((params as any)?.type === 'AlreadyBackedUpView') {
-    return <AlreadyBackedUpView />;
-  } else {
-    return <NeedsBackupView />;
-  }
 }
