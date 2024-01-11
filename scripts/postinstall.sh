@@ -112,3 +112,23 @@ else
     echo "$DEBUGFILE does not exist. You use default debug settings."
     cp src/config/defaultDebug.ts $DEBUGFILE
 fi
+
+if [ -n "$EAS_BUILD"]; then
+  if [ -n "$RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK" ]; then
+    if [ -n "$CI" ]; then
+      eval $RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK > /dev/null 2>&1;
+    else
+      eval $RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK;
+      echo "✅ executed ios prebuild hook"
+    fi
+  fi
+
+  if [ -n "$RAINBOW_SCRIPTS_APP_ANDROID_PREBUILD_HOOK" ]; then
+    if [ -n "$CI" ]; then
+      eval $RAINBOW_SCRIPTS_APP_ANDROID_PREBUILD_HOOK > /dev/null 2>&1;
+    else
+      eval $RAINBOW_SCRIPTS_APP_ANDROID_PREBUILD_HOOK;
+      echo "✅ executed android prebuild hook"
+    fi
+  fi
+fi
