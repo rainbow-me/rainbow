@@ -65,11 +65,11 @@ export async function typeText(
   }
   // this is way faster now
   if (device.getPlatform() === 'android' && !syncOnAndroid) {
-    // await device.disableSynchronization();
+    await device.disableSynchronization();
   }
   await element(by.id(elementId)).typeText(text);
   if (device.getPlatform() === 'android' && !syncOnAndroid) {
-    //await device.enableSynchronization();
+    await device.enableSynchronization();
   }
 }
 
@@ -236,11 +236,11 @@ export async function checkIfDisabled(elementId) {
 
 export async function authenticatePin(pin) {
   const digits = pin.split('');
-  //await device.disableSynchronization();
+  await device.disableSynchronization();
   for (let i = 0; i < digits.length; i++) {
     await tap(`numpad-button-${digits[i]}`);
   }
-  //await device.enableSynchronization();
+  await device.enableSynchronization();
   return Promise.resolve();
 }
 
@@ -302,9 +302,9 @@ export async function openDeeplinkColdStart(url) {
 }
 
 export async function openDeeplinkFromBackground(url) {
-  //await device.disableSynchronization();
+  await device.disableSynchronization();
   await device.sendToHome();
-  //await device.enableSynchronization();
+  await device.enableSynchronization();
   await device.launchApp({
     newInstance: false,
     url,
