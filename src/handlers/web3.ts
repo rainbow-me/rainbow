@@ -13,7 +13,7 @@ import {
 import { parseEther } from '@ethersproject/units';
 import Resolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
-import config from '@/model/config';
+import { getRemoteConfig } from '@/model/remoteConfig';
 import { AssetType, NewTransaction, ParsedAddressAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
 import { Network } from '@/helpers/networkTypes';
@@ -58,7 +58,18 @@ export const networkProviders: {
  * If the firebase config flag is disabled, it will fall back to the deprecated rpc.
  */
 export const proxyRpcEndpoint = (chainId: number, customEndpoint?: string) => {
-  if (config.rpc_proxy_enabled) {
+  const {
+    rpc_proxy_enabled,
+    arbitrum_mainnet_rpc,
+    ethereum_goerli_rpc,
+    optimism_mainnet_rpc,
+    polygon_mainnet_rpc,
+    base_mainnet_rpc,
+    bsc_mainnet_rpc,
+    zora_mainnet_rpc,
+    ethereum_mainnet_rpc,
+  } = getRemoteConfig();
+  if (rpc_proxy_enabled) {
     return `${RPC_PROXY_BASE_URL}/${chainId}/${RPC_PROXY_API_KEY}${
       customEndpoint ? `?custom_rpc=${encodeURIComponent(customEndpoint)}` : ''
     }`;
@@ -67,23 +78,23 @@ export const proxyRpcEndpoint = (chainId: number, customEndpoint?: string) => {
     const network = ethereumUtils.getNetworkFromChainId(chainId);
     switch (network) {
       case Network.arbitrum:
-        return config.arbitrum_mainnet_rpc;
+        return arbitrum_mainnet_rpc;
       case Network.goerli:
-        return config.ethereum_goerli_rpc;
+        return ethereum_goerli_rpc;
       case Network.optimism:
-        return config.optimism_mainnet_rpc;
+        return optimism_mainnet_rpc;
       case Network.polygon:
-        return config.polygon_mainnet_rpc;
+        return polygon_mainnet_rpc;
       case Network.base:
-        return config.base_mainnet_rpc;
+        return base_mainnet_rpc;
       case Network.bsc:
-        return config.bsc_mainnet_rpc;
+        return bsc_mainnet_rpc;
       case Network.zora:
-        return config.zora_mainnet_rpc;
+        return zora_mainnet_rpc;
       case Network.gnosis:
       case Network.mainnet:
       default:
-        return config.ethereum_mainnet_rpc;
+        return ethereum_mainnet_rpc;
     }
   }
 };

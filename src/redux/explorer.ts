@@ -2,8 +2,8 @@ import { concat, isEmpty, isNil, keys, toLower } from 'lodash';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { io, Socket } from 'socket.io-client';
-import { getExperimetalFlag, L2_TXS } from '../config/experimental';
-import config from '../model/config';
+import { getExperimetalFlag, L2_TXS } from '@/config/experimental';
+import { getRemoteConfig } from '@/model/remoteConfig';
 import {
   assetChartsReceived,
   ChartsReceivedMessage,
@@ -131,14 +131,16 @@ type SocketEmitArguments = Parameters<Socket['emit']>;
  * @param endpoint The endpoint.
  * @returns The new socket
  */
-const createSocket = (endpoint: string): Socket =>
-  io(`${config.data_endpoint}/${endpoint}`, {
-    extraHeaders: { origin: config.data_origin },
+const createSocket = (endpoint: string): Socket => {
+  const { data_endpoint, data_origin, data_api_key } = getRemoteConfig();
+  return io(`${data_endpoint}/${endpoint}`, {
+    extraHeaders: { origin: data_origin },
     query: {
-      api_token: config.data_api_key,
+      api_token: data_api_key,
     },
     transports: ['websocket'],
   });
+};
 
 /**
  * Configures a subscription to an address.

@@ -46,7 +46,7 @@ import {
   useDimensions,
   useGenericAsset,
 } from '@/hooks';
-import config from '@/model/config';
+import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation';
 import { DOG_ADDRESS, ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
@@ -328,9 +328,11 @@ export default function ChartExpandedState({ asset }) {
     : AvailableNetworksv2;
 
   const assetNetwork = ethereumUtils.getNetworkFromType(assetWithPrice.type);
+
+  const { swagg_enabled, f2c_enabled } = useRemoteConfig();
   const swapEnabled =
-    config.swagg_enabled && getNetworkObj(assetNetwork).features.swaps;
-  const addCashEnabled = config.f2c_enabled;
+    swagg_enabled && getNetworkObj(assetNetwork).features.swaps;
+  const addCashEnabled = f2c_enabled;
 
   return (
     <SlackSheet

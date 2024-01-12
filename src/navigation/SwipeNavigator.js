@@ -1,6 +1,6 @@
 import { BlurView } from '@react-native-community/blur';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -33,12 +33,13 @@ import RecyclerListViewScrollToTopProvider, {
 } from '@/navigation/RecyclerListViewScrollToTopContext';
 import { discoverOpenSearchFnRef } from '@/screens/discover/components/DiscoverSearchContainer';
 import { InteractionManager, View } from 'react-native';
-import { IS_ANDROID, IS_DEV, IS_IOS, IS_TEST } from '@/env';
-import config from '@/model/config';
+import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import SectionListScrollToTopProvider, {
   useSectionListScrollToTopContext,
 } from './SectionListScrollToTopContext';
 import { isUsingButtonNavigation } from '@/helpers/statusBarHelper';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import { useExperimentalFlag, POINTS } from '@/config';
 
 const HORIZONTAL_TAB_BAR_INSET = 6;
 
@@ -80,9 +81,12 @@ const TabBar = ({
   const { width: deviceWidth } = useDimensions();
   const { colors, isDarkMode } = useTheme();
 
-  const showPointsTab = IS_DEV || IS_TEST || config.points_enabled;
-  const NUMBER_OF_TABS = showPointsTab ? 4 : 3;
+  const { points_enabled } = useRemoteConfig();
 
+  const showPointsTab =
+    useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
+
+  const NUMBER_OF_TABS = showPointsTab ? 4 : 3;
   const tabWidth =
     (deviceWidth - HORIZONTAL_TAB_BAR_INSET * 2) / NUMBER_OF_TABS;
   const tabPillStartPosition = (tabWidth - 72) / 2 + HORIZONTAL_TAB_BAR_INSET;
@@ -92,16 +96,23 @@ const TabBar = ({
   const sectionList = useSectionListScrollToTopContext();
 
   const reanimatedPosition = useSharedValue(0);
+  const pos1 = useSharedValue(tabPillStartPosition);
+  const pos2 = useSharedValue(tabPillStartPosition + tabWidth);
+  const pos3 = useSharedValue(tabPillStartPosition + tabWidth * 2);
+  const pos4 = useSharedValue(tabPillStartPosition + tabWidth * 3);
+
+  useEffect(() => {
+    pos1.value = tabPillStartPosition;
+    pos2.value = tabPillStartPosition + tabWidth;
+    pos3.value = tabPillStartPosition + tabWidth * 2;
+    pos4.value = tabPillStartPosition + tabWidth * 3;
+  }, [pos1, pos2, pos3, pos4, tabPillStartPosition, tabWidth]);
 
   const tabStyle = useAnimatedStyle(() => {
-    const pos1 = tabPillStartPosition;
-    const pos2 = tabPillStartPosition + tabWidth;
-    const pos3 = tabPillStartPosition + tabWidth * 2;
-    const pos4 = tabPillStartPosition + tabWidth * 3;
     const translateX = interpolate(
       reanimatedPosition.value,
       [0, 1, 2, 3],
-      [pos1, pos2, pos3, pos4],
+      [pos1.value, pos2.value, pos3.value, pos4.value],
       Extrapolate.EXTEND
     );
     return {
@@ -343,7 +354,10 @@ export function SwipeNavigator() {
 
   const [lastPress, setLastPress] = useState();
 
-  const showPointsTab = IS_DEV || IS_TEST || config.points_enabled;
+  const { points_enabled } = useRemoteConfig();
+
+  const showPointsTab =
+    useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
 
   // ////////////////////////////////////////////////////
   // Animations

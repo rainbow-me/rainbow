@@ -1,5 +1,6 @@
+import { useQuery } from '@tanstack/react-query';
+import { createQueryKey, queryClient } from '@/react-query';
 import remoteConfig from '@react-native-firebase/remote-config';
-import { captureException } from '@sentry/react-native';
 import {
   ARBITRUM_MAINNET_RPC,
   DATA_API_KEY,
@@ -16,16 +17,15 @@ import {
   BSC_MAINNET_RPC,
   ZORA_MAINNET_RPC,
 } from 'react-native-dotenv';
+import { RainbowError, logger } from '@/logger';
 import {
   getNetwork,
   saveNetwork,
 } from '@/handlers/localstorage/globalSettings';
 import { web3SetHttpProvider } from '@/handlers/web3';
+import { delay } from '@/utils/delay';
 
-import Logger from '@/utils/logger';
-
-export interface RainbowConfig
-  extends Record<string, string | boolean | number> {
+interface RainbowConfig extends Record<string, string | boolean | number> {
   arbitrum_mainnet_rpc: string;
   bsc_mainnet_rpc: string;
   data_api_key: string;
@@ -139,26 +139,11 @@ const DEFAULT_CONFIG: RainbowConfig = {
   remote_promo_enabled: false,
 };
 
-// Initialize with defaults in case firebase doesn't respond
-const config: RainbowConfig = { ...DEFAULT_CONFIG };
-
-const init = async () => {
+export async function fetchRemoteConfig(): Promise<RainbowConfig> {
+  const config: RainbowConfig = { ...DEFAULT_CONFIG };
   try {
-    await remoteConfig().setConfigSettings({
-      minimumFetchIntervalMillis: 120000,
-    });
-
-    await remoteConfig().setDefaults(DEFAULT_CONFIG);
-
-    const fetchedRemotely = await remoteConfig().fetchAndActivate();
-
-    if (fetchedRemotely) {
-      Logger.debug('Configs were retrieved from the backend and activated.');
-    } else {
-      Logger.debug(
-        'No configs were fetched from the backend, and the local configs were already activated'
-      );
-    }
+    await remoteConfig().fetchAndActivate();
+    logger.debug('Remote config fetched successfully');
     const parameters = remoteConfig().getAll();
     Object.entries(parameters).forEach($ => {
       const [key, entry] = $;
@@ -201,19 +186,45 @@ const init = async () => {
         config[key] = entry.asString();
       }
     });
+    return config;
   } catch (e) {
-    Logger.sentry('error getting remote config', e);
-    captureException(e);
-    Logger.sentry('using default config instead...');
+    logger.error(new RainbowError('Failed to fetch remote config'), {
+      error: e,
+    });
+    throw e;
   } finally {
-    Logger.debug('CURRENT CONFIG', JSON.stringify(config, null, 2));
-    // UPDATE THE PROVIDER AFTER LOADING THE NEW CONFIG
+    logger.debug(`Current remote config:\n${JSON.stringify(config, null, 2)}`);
     const currentNetwork = await getNetwork();
     web3SetHttpProvider(currentNetwork);
     saveNetwork(currentNetwork);
   }
+}
+
+const remoteConfigQueryKey = createQueryKey('remoteConfig', {});
+
+const QUERY_PARAMS = {
+  queryKey: remoteConfigQueryKey,
+  queryFn: fetchRemoteConfig,
+  staleTime: 600_000, // 10 minutes,
+  placeholderData: DEFAULT_CONFIG,
+  retry: 3,
+  retryDelay: (attempt: number) =>
+    Math.min(attempt > 1 ? 2 ** attempt * 1000 : 1000, 30 * 1000),
 };
 
-init();
+export async function initializeRemoteConfig(): Promise<void> {
+  await remoteConfig().setConfigSettings({
+    minimumFetchIntervalMillis: 120_000,
+  });
+  await remoteConfig().setDefaults(DEFAULT_CONFIG);
+  await Promise.race([queryClient.prefetchQuery(QUERY_PARAMS), delay(3000)]);
+}
 
-export default config;
+export function getRemoteConfig(): RainbowConfig {
+  return queryClient.getQueryData(remoteConfigQueryKey) ?? DEFAULT_CONFIG;
+}
+
+export function useRemoteConfig(): RainbowConfig {
+  const query = useQuery<RainbowConfig>(QUERY_PARAMS);
+  return query?.data ?? DEFAULT_CONFIG;
+}

@@ -83,6 +83,7 @@ import { ReviewPromptAction } from '@/storage/schema';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { RemotePromoSheetProvider } from '@/components/remote-promo-sheet/RemotePromoSheetProvider';
 import { RemoteCardProvider } from '@/components/cards/remote-cards';
+import { initializeRemoteConfig } from '@/model/remoteConfig';
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -307,7 +308,7 @@ function Root() {
   React.useEffect(() => {
     async function initializeApplication() {
       await initSentry(); // must be set up immediately
-
+      await initializeRemoteConfig();
       // must happen immediately, but after Sentry
       await migrate();
 
