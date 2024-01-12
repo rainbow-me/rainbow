@@ -34,7 +34,7 @@ import {
   updatePrecisionToDisplay,
 } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
-import { logger } from '@/logger';
+import { logger, RainbowError } from '@/logger';
 
 const SWAP_POLLING_INTERVAL = 5000;
 
@@ -132,7 +132,7 @@ const getInputAmount = async (
     if (!quote || (quote as QuoteError).error || !(quote as Quote).sellAmount) {
       if ((quote as QuoteError).error) {
         const quoteError = (quote as unknown) as QuoteError;
-        logger.log('[getInputAmount]: Quote error', {
+        logger.error(new RainbowError('[getInputAmount]: Quote error'), {
           code: quoteError.error_code,
           msg: quoteError.message,
         });
@@ -255,7 +255,7 @@ const getOutputAmount = async (
     ) {
       const quoteError = quote as QuoteError;
       if (quoteError.error) {
-        logger.log('[getOutputAmount]: Quote error', {
+        logger.error(new RainbowError('[getOutputAmount]: Quote error'), {
           code: quoteError.error_code,
           msg: quoteError.message,
         });
@@ -402,7 +402,7 @@ export default function useSwapDerivedOutputs(type: string) {
       };
     }
 
-    logger.log('[getTradeDetails]: Getting trade details', {
+    logger.debug('[getTradeDetails]: Getting trade details', {
       independentField,
       independentValue,
       inputCurrency,
@@ -568,7 +568,7 @@ export default function useSwapDerivedOutputs(type: string) {
       tradeDetails,
     };
 
-    logger.log('[getTradeDetails]: Got trade details', {
+    logger.debug('[getTradeDetails]: Got trade details', {
       data,
     });
 
