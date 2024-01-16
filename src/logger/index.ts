@@ -8,6 +8,16 @@ import { device } from '@/storage';
 import { push } from '@/logger/logDump';
 import { getExperimetalFlag, LOG_PUSH } from '@/config/experimental';
 
+// Not exported from Sentry anymore so have copied the types here
+export enum SentrySeverityLevel {
+  Debug = 'debug',
+  Info = 'info',
+  Log = 'log',
+  Warning = 'warning',
+  Error = 'error',
+  Fatal = 'fatal',
+}
+
 export enum LogLevel {
   Debug = 'debug',
   Info = 'info',
@@ -164,11 +174,11 @@ export const sentryTransport: Transport = (
    */
   if (typeof message === 'string') {
     const severity = {
-      [LogLevel.Debug]: Sentry.Severity.Debug,
-      [LogLevel.Info]: Sentry.Severity.Info,
-      [LogLevel.Log]: Sentry.Severity.Log, // Sentry value here is undefined
-      [LogLevel.Warn]: Sentry.Severity.Warning,
-      [LogLevel.Error]: Sentry.Severity.Error,
+      [LogLevel.Debug]: SentrySeverityLevel.Debug,
+      [LogLevel.Info]: SentrySeverityLevel.Info,
+      [LogLevel.Log]: SentrySeverityLevel.Log, // Sentry value here is undefined
+      [LogLevel.Warn]: SentrySeverityLevel.Warning,
+      [LogLevel.Error]: SentrySeverityLevel.Error,
     }[level];
 
     Sentry.addBreadcrumb({
@@ -194,7 +204,7 @@ export const sentryTransport: Transport = (
      */
     if (level === LogLevel.Warn) {
       Sentry.captureMessage(message, {
-        level: Sentry.Severity.Warning,
+        level: SentrySeverityLevel.Warning,
         tags,
         extra: metadata,
       });

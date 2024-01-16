@@ -35,7 +35,7 @@ export { default as promiseUtils } from './promise';
 export { default as pseudoRandomArrayItemFromString } from './pseudoRandomArrayItemFromString';
 export { default as reduceArrayToObject } from './reduceArrayToObject';
 export { default as safeAreaInsetValues } from './safeAreaInsetValues';
-export { default as sentryUtils } from './sentry';
+export { sentryUtils } from './sentry';
 export { default as showActionSheetWithOptions } from './actionsheet';
 export { default as simplifyChartData } from './simplifyChartData';
 export { filterList } from './search';

@@ -58,7 +58,7 @@ export interface RainbowTransaction {
   value?: BigNumberish; // for pending tx
   fee?: RainbowTransactionFee;
   fiatProvider?: {
-    name: FiatProviderName.Ratio;
+    name: FiatProviderName;
     orderId: string;
     userId: string;
     /**

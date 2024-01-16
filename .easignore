@@ -1,5 +1,4 @@
-.env
-ios/GoogleService-Info.plist
+#!/bin/bash
 
 # OSX
 #
@@ -12,7 +11,6 @@ ios/debug.xcconfig
 ios/release.xcconfig
 ios/localrelease.xcconfig
 ios/staging.xcconfig
-ios/Frameworks/GoogleService-Info.plist
 
 # Xcode
 #
@@ -39,13 +37,10 @@ src/config/debug.ts
 # Android/IntelliJ
 #
 build/
-android/app/src/main/java/me/rainbow/NativeModules/Internals/
 .idea
 .gradle
 local.properties
 *.iml
-android/app/google-services.json
-android/rainbow-google-play-key.json
 android/app/src/main/java/me/rainbow/MainActivity.java-e
 
 # node.js
@@ -60,17 +55,6 @@ buck-out/
 *.keystore
 !debug.keystore
 
-# fastlane
-#
-# It is recommended to not store the screenshots in the git repo. Instead, use fastlane to re-generate the
-# screenshots whenever they are needed.
-# For more information about the recommended setup visit:
-# https://docs.fastlane.tools/best-practices/source-control/
-
-*/fastlane/report.xml
-*/fastlane/Preview.html
-*/fastlane/screenshots
-
 # Bundle artifact
 *.jsbundle
 
@@ -78,20 +62,16 @@ buck-out/
 src/screens/ExamplePage.js
 
 #e2e output
-e2e/logs/*/*.xml
+e2e/logs//.xml
 
-# android playstore credentials
-pc-api-8090318172169087080-31-b8ee34328314.json
+# # android playstore credentials
+# pc-api-8090318172169087080-31-b8ee34328314.json
 
 # ios internal files (any additional files will be ignored)
-ios/Internals
 ios/Extras.json
 
 # Rainbow scripts
 rainbow-scripts
-
-# Patches
-patches/react-native-webview+13.2.3.patch
 
 .eslintcache
 
@@ -105,7 +85,7 @@ coverage-ts
 
 # Generated TypeScript declarations
 src/languages/types-generated.d.ts
-__generated__/
+_generated_/
 
 # Test Coverage
 coverage
@@ -114,7 +94,6 @@ coverage
 .expo
 dist/
 web-build/
-.xcode.env.local
 
 # VSCode
 .vscode/

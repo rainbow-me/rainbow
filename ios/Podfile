@@ -95,7 +95,7 @@ target 'Rainbow' do
     end
     installer.pods_project.build_configurations.each do |config|
       __apply_Xcode_12_5_M1_post_install_workaround(installer)
-      config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = ""
+      config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
     end
   end
 end
