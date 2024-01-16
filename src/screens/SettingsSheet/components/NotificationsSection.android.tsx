@@ -223,7 +223,9 @@ const NotificationsSection = () => {
     status: storedWatcherEnabled,
     loading: false,
   });
-  const { notificationSettings } = useAllNotificationSettingsFromStorage();
+  const {
+    walletNotificationSettings,
+  } = useAllNotificationSettingsFromStorage();
   const { ownedWallets, watchedWallets } = useMemo(() => {
     const ownedWallets: RainbowAccount[] = [];
     const watchedWallets: RainbowAccount[] = [];
@@ -471,7 +473,7 @@ const NotificationsSection = () => {
                           isTestnet={isTestnet}
                           key={wallet.address}
                           loading={ownedState.loading}
-                          notificationSettings={notificationSettings}
+                          notificationSettings={walletNotificationSettings}
                           wallet={wallet}
                         />
                       ))}
@@ -520,7 +522,7 @@ const NotificationsSection = () => {
                           isTestnet={isTestnet}
                           key={wallet.address}
                           loading={watchedState.loading}
-                          notificationSettings={notificationSettings}
+                          notificationSettings={walletNotificationSettings}
                           wallet={wallet}
                         />
                       ))}

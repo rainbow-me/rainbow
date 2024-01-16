@@ -24,7 +24,7 @@ export const useAllNotificationSettingsFromStorage = () => {
   const data = getAllNotificationSettingsFromStorage();
   const existingGroupSettingsData = getExistingGroupSettingsFromStorage();
 
-  const [notificationSettings, setNotificationSettings] = useState<
+  const [walletNotificationSettings, setWalletNotificationSettings] = useState<
     WalletNotificationSettings[]
   >(data);
   const [
@@ -35,7 +35,7 @@ export const useAllNotificationSettingsFromStorage = () => {
     changedKey => {
       if (changedKey === WALLET_TOPICS_STORAGE_KEY) {
         const newSettings = notificationSettingsStorage.getString(changedKey);
-        newSettings && setNotificationSettings(JSON.parse(newSettings));
+        newSettings && setWalletNotificationSettings(JSON.parse(newSettings));
       } else if (changedKey === WALLET_GROUPS_STORAGE_KEY) {
         const newSettings = notificationSettingsStorage.getString(changedKey);
         newSettings && setExistingGroupSettings(JSON.parse(newSettings));
@@ -45,7 +45,7 @@ export const useAllNotificationSettingsFromStorage = () => {
   useEffect(() => () => {
     listener.remove();
   });
-  return { notificationSettings, existingGroupSettings };
+  return { walletNotificationSettings, existingGroupSettings };
 };
 
 /**
@@ -57,7 +57,7 @@ export const useAllNotificationSettingsFromStorage = () => {
  */
 export const useWalletGroupNotificationSettings = () => {
   const {
-    notificationSettings,
+    walletNotificationSettings,
     existingGroupSettings,
   } = useAllNotificationSettingsFromStorage();
 
@@ -73,11 +73,11 @@ export const useWalletGroupNotificationSettings = () => {
     watchedWallets,
     ownedWallets,
   } = useMemo(() => {
-    const ownedWallets = notificationSettings.filter(
+    const ownedWallets = walletNotificationSettings.filter(
       (wallet: WalletNotificationSettings) =>
         wallet.type === NotificationRelationship.OWNER
     );
-    const watchedWallets = notificationSettings.filter(
+    const watchedWallets = walletNotificationSettings.filter(
       (wallet: WalletNotificationSettings) =>
         wallet.type === NotificationRelationship.WATCHER
     );
@@ -103,7 +103,7 @@ export const useWalletGroupNotificationSettings = () => {
       watchedWallets,
       ownedWallets,
     };
-  }, [notificationSettings]);
+  }, [walletNotificationSettings]);
 
   const updateGroupSettingsAndSubscriptions = useCallback(
     (type: NotificationRelationshipType, enabled: boolean) => {
