@@ -1,4 +1,4 @@
-import Sentry from '@sentry/react-native';
+import * as Sentry from '@sentry/react-native';
 import { SENTRY_ENDPOINT, SENTRY_ENVIRONMENT } from 'react-native-dotenv';
 import VersionNumber from 'react-native-version-number';
 
