@@ -9,9 +9,9 @@ import {
   WalletNotificationSettings,
 } from '@/notifications/settings/types';
 import {
-  getAllNotificationSettingsFromStorage,
+  getAllWalletNotificationSettingsFromStorage,
   notificationSettingsStorage,
-  setAllNotificationSettingsToStorage,
+  setAllWalletNotificationSettingsToStorage,
 } from '@/notifications/settings/storage';
 import { notificationsSubscription } from '@/redux/explorer';
 import store from '@/redux/store';
@@ -158,7 +158,7 @@ export const _prepareSubscriptionQueueAndCreateInitialSettings = (
     }
   });
 
-  setAllNotificationSettingsToStorage(newSettings);
+  setAllWalletNotificationSettingsToStorage(newSettings);
   return subscriptionQueue;
 };
 
@@ -166,7 +166,7 @@ export const _prepareSubscriptionQueueAndCreateInitialSettings = (
  * exported for testing only
  */
 export const _prepareInitializationState = (): InitializationStateType => {
-  const currentSettings = getAllNotificationSettingsFromStorage();
+  const currentSettings = getAllWalletNotificationSettingsFromStorage();
   const newSettings: WalletNotificationSettings[] = [...currentSettings];
   const alreadySaved = new Map<
     string,
@@ -195,7 +195,7 @@ export const _processSubscriptionQueue = async (
   const results = await Promise.all(
     subscriptionQueue.map(item => processSubscriptionQueueItem(item))
   );
-  const newSettings = [...getAllNotificationSettingsFromStorage()];
+  const newSettings = [...getAllWalletNotificationSettingsFromStorage()];
   const settingsIndexMap = new Map<string, number>(
     newSettings.map((entry, index) => [entry.address, index])
   );
@@ -206,7 +206,7 @@ export const _processSubscriptionQueue = async (
     }
   });
 
-  setAllNotificationSettingsToStorage(newSettings);
+  setAllWalletNotificationSettingsToStorage(newSettings);
 };
 
 const processSubscriptionQueueItem = async (

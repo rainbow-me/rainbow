@@ -8,7 +8,7 @@ import {
   WalletNotificationSettings,
 } from '@/notifications/settings/types';
 import {
-  getAllNotificationSettingsFromStorage,
+  getAllWalletNotificationSettingsFromStorage,
   notificationSettingsStorage,
 } from '@/notifications/settings/storage';
 import {
@@ -26,7 +26,7 @@ import {
 export const removeNotificationSettingsForWallet = (
   address: string
 ): Promise<void> => {
-  const allSettings = getAllNotificationSettingsFromStorage();
+  const allSettings = getAllWalletNotificationSettingsFromStorage();
   const settingsForWallet = allSettings.find(
     (wallet: WalletNotificationSettings) => wallet.address === address
   );

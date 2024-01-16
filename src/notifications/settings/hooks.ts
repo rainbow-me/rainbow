@@ -11,7 +11,7 @@ import {
 } from '@/notifications/settings/constants';
 import { toggleGroupNotifications } from '@/notifications/settings/settings';
 import {
-  getAllNotificationSettingsFromStorage,
+  getAllWalletNotificationSettingsFromStorage,
   getExistingGroupSettingsFromStorage,
   notificationSettingsStorage,
   updateGroupSettings,
@@ -21,7 +21,7 @@ import {
  Hook to constantly listen to notification settings.
  */
 export const useAllNotificationSettingsFromStorage = () => {
-  const data = getAllNotificationSettingsFromStorage();
+  const data = getAllWalletNotificationSettingsFromStorage();
   const existingGroupSettingsData = getExistingGroupSettingsFromStorage();
 
   const [walletNotificationSettings, setWalletNotificationSettings] = useState<

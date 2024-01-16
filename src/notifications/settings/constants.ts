@@ -8,11 +8,15 @@ export const NotificationTopic = {
   APPROVALS: 'approvals',
   OTHER: 'other',
 };
+export const AppNotificationTopic = {
+  POINTS: 'points',
+};
 export const NotificationRelationship = {
   OWNER: 'owner',
   WATCHER: 'watcher',
 };
 export const WALLET_TOPICS_STORAGE_KEY = 'notificationSettings';
+export const APP_TOPICS_STORAGE_KEY = 'appNotificationSettings';
 export const WALLET_GROUPS_STORAGE_KEY = 'notificationGroupToggle';
 export const NOTIFICATIONS_DEFAULT_CHAIN_ID = 1; // hardcoded mainnet until we get multi-chain support
 export const DEFAULT_ENABLED_TOPIC_SETTINGS = {};

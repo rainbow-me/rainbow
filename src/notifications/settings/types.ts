@@ -1,14 +1,21 @@
 import {
+  AppNotificationTopic,
   NotificationRelationship,
   NotificationTopic,
 } from '@/notifications/settings/constants';
 
 export type NotificationTopicType = typeof NotificationTopic[keyof typeof NotificationTopic];
 
+export type AppNotificationTopicType = typeof AppNotificationTopic[keyof typeof AppNotificationTopic];
+
 export type NotificationRelationshipType = typeof NotificationRelationship[keyof typeof NotificationRelationship];
 
 export type WalletNotificationTopics = {
   [key: NotificationTopicType]: boolean;
+};
+
+export type AppNotificationTopics = {
+  [key: AppNotificationTopicType]: boolean;
 };
 
 export type WalletNotificationSettings = {
