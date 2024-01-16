@@ -25,10 +25,10 @@ export const trackTappedPushNotification = (
 };
 
 export const trackChangedNotificationSettings = (
-  chainId: number,
   topic: NotificationTopicType,
-  type: NotificationRelationshipType,
-  action: 'subscribe' | 'unsubscribe'
+  action: 'subscribe' | 'unsubscribe',
+  chainId?: number,
+  type?: NotificationRelationshipType
 ) => {
   analytics.track('Changed Notification Settings', {
     chainId,

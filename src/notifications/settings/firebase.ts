@@ -61,7 +61,7 @@ export const subscribeWalletToSingleNotificationTopic = (
   return messaging()
     .subscribeToTopic(`${type}_${chainId}_${address.toLowerCase()}_${topic}`)
     .then(() =>
-      trackChangedNotificationSettings(chainId, topic, type, 'subscribe')
+      trackChangedNotificationSettings(topic, 'subscribe', chainId, type)
     );
 };
 
@@ -81,6 +81,34 @@ export const unsubscribeWalletFromSingleNotificationTopic = async (
       `${type}_${chainId}_${address.toLowerCase()}_${topic}`
     )
     .then(() => {
-      trackChangedNotificationSettings(chainId, topic, type, 'unsubscribe');
+      trackChangedNotificationSettings(topic, 'unsubscribe', chainId, type);
+    });
+};
+
+export const subscribeToSingleNotificationTopic = (
+  topic: NotificationTopicType
+): Promise<void> => {
+  logger.debug(
+    `Notifications: subscribing to [ ${topic.toUpperCase()} ]`,
+    {},
+    logger.DebugContext.notifications
+  );
+  return messaging()
+    .subscribeToTopic(topic)
+    .then(() => trackChangedNotificationSettings(topic, 'subscribe'));
+};
+
+export const unsubscribeFromSingleNotificationTopic = async (
+  topic: NotificationTopicType
+) => {
+  logger.debug(
+    `Notifications: unsubscribing from [ ${topic.toUpperCase()} ]`,
+    {},
+    logger.DebugContext.notifications
+  );
+  return messaging()
+    .unsubscribeFromTopic(topic)
+    .then(() => {
+      trackChangedNotificationSettings(topic, 'unsubscribe');
     });
 };
