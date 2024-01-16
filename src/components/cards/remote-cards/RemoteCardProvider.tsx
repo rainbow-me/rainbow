@@ -2,7 +2,7 @@ import { noop, pick } from 'lodash';
 import React, { PropsWithChildren, createContext, useState } from 'react';
 import { Card } from '@/graphql/__generated__/arc';
 import Routes from '@/navigation/routesNames';
-import { IS_TESTING } from 'react-native-dotenv';
+import { IS_TEST } from '@/env';
 import {
   CardCollectionResult,
   useCardCollectionQuery,
@@ -13,18 +13,18 @@ import { useRemoteConfig } from '@/model/remoteConfig';
 
 const TRIMMED_CARD_KEYS = [
   'cardKey',
+  'dismissable',
   'placement',
   'index',
   'backgroundColor',
+  'accentColor',
   'padding',
+  'imageIcon',
   'imageRadius',
-  'subtitle',
-  'subtitleColor',
   'title',
   'titleColor',
-  'description',
-  'descriptionColor',
-  'items',
+  'subtitle',
+  'subtitleColor',
   'primaryButton',
 ] as const;
 
@@ -69,16 +69,16 @@ export const RemoteCardProvider: React.FC<
   useCardCollectionQuery(
     {},
     {
-      enabled: enabled && !IS_TESTING,
-      refetchInterval: 60_000,
+      enabled: enabled && !IS_TEST,
+      refetchInterval: 5_000,
       onSuccess: (data: CardCollectionResult) => {
         if (!data?.cardCollection?.items?.length) return;
 
         const newCards = data.cardCollection.items.reduce((acc, card) => {
           if (!card) return acc;
 
-          const hasDismissed = ls.cards.get([card.sys.id]);
-          if (hasDismissed) return acc;
+          // const hasDismissed = ls.cards.get([card.sys.id]);
+          // if (hasDismissed) return acc;
 
           const newCard: TrimmedCard = {
             ...pick(card, ...TRIMMED_CARD_KEYS),

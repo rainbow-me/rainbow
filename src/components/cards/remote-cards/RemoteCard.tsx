@@ -1,25 +1,28 @@
-import { Linking, View } from 'react-native';
+import { Linking, Text as RNText, StyleSheet } from 'react-native';
 import React, { useCallback } from 'react';
 import { get } from 'lodash';
 
-import { Box, Stack, Text, Inline } from '@/design-system';
-import { Icon } from '@/components/icons';
+import { Box, Cover, Stack, Text, useForegroundColor } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import { TrimmedCard, useRemoteCardContext } from './RemoteCardProvider';
 import { IS_IOS } from '@/env';
 import { useNavigation } from '@/navigation';
 import { Language } from '@/languages';
 import { useAccountSettings, useDimensions } from '@/hooks';
-import { BackgroundColor, TextColor } from '@/design-system/color/palettes';
-import { CustomColor } from '@/design-system/color/useForegroundColor';
+import {
+  BackgroundColor,
+  ForegroundColor,
+  TextColor,
+} from '@/design-system/color/palettes';
 import { maybeSignUri } from '@/handlers/imgix';
-import { Media } from '@/components/Media';
-import { SheetActionButton } from '@/components/sheet';
 import { colors } from '@/styles';
+import { useTheme } from '@/theme';
+import LinearGradient from 'react-native-linear-gradient';
+import { ImgixImage } from '@/components/images';
 
 const GUTTER_SIZE = 40;
 
-const getKeyForLanguage = (key: string, object: any, language: Language) => {
+const getKeyForLanguage = (key: string, object: object, language: Language) => {
   if (!object) {
     return '';
   }
@@ -40,30 +43,36 @@ const getKeyForLanguage = (key: string, object: any, language: Language) => {
   return objectOrPrimitive[Language.EN_US] ?? '';
 };
 
-type RemoteCardProps = {
-  card: TrimmedCard;
+const getColorFromString = (color: string | undefined | null) => {
+  if (!color) {
+    return 'green';
+  }
+
+  if (color.startsWith('#')) {
+    return { custom: color };
+  }
+
+  // assume it's in the list of ForegroundColors
+  return color as ForegroundColor;
 };
 
-type CardItem = {
-  icon: string;
-  text: string;
-  color?: TextColor | CustomColor;
+type RemoteCardProps = {
+  card: TrimmedCard;
 };
 
 export const RemoteCard: React.FC<RemoteCardProps> = ({
   card = {} as TrimmedCard,
 }) => {
+  const { isDarkMode } = useTheme();
   const { navigate } = useNavigation();
   const { language } = useAccountSettings();
   const { width } = useDimensions();
   const { dismissCard } = useRemoteCardContext();
 
-  const { backgroundColor, primaryButton } = card;
+  const { accentColor, backgroundColor, primaryButton, imageIcon } = card;
 
-  const onDismissCard = useCallback(() => dismissCard(card.sys.id), [
-    card.sys.id,
-    dismissCard,
-  ]);
+  const accent = useForegroundColor(getColorFromString(accentColor));
+  const border = useForegroundColor('separatorSecondary');
 
   const onPress = useCallback(() => {
     if (primaryButton && primaryButton.url) {
@@ -108,155 +117,166 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
   }
 
   const imageUri = imageForPlatform()
-    ? maybeSignUri(imageForPlatform())
+    ? maybeSignUri(imageForPlatform(), { w: 40, h: 40 })
     : undefined;
 
   return (
     <Box
-      padding={card.padding ? { custom: card.padding } : undefined}
       testID={`remote-card-${card.cardKey}`}
-      overflow="hidden"
       width={{ custom: width - GUTTER_SIZE }}
-      borderRadius={12}
-      background={(backgroundColor as BackgroundColor) ?? 'sufaceSecondary'}
+      overflow="visible"
+      height={'full'}
+      borderRadius={18}
+      padding={{ custom: 16 }}
+      shadow="12px"
+      style={{
+        borderColor: border,
+        borderWidth: 1,
+      }}
+      background={
+        (backgroundColor as BackgroundColor) ?? 'surfaceSecondaryElevated'
+      }
     >
       <Box
         flexDirection="row"
-        width={{ custom: width - GUTTER_SIZE - Number(card.padding || 14) * 2 }}
+        alignItems="center"
+        width={{ custom: width - GUTTER_SIZE - 16 * 2 }}
         gap={12}
+        height={'full'}
       >
-        <Media
-          url={imageUri ?? ''}
+        <Box
+          as={LinearGradient}
           style={{
-            width: 80,
-            height: 80,
+            borderColor: colors.alpha(accent, 0.06),
+            borderWidth: 1,
           }}
-          size={80}
-        />
-
-        <Box
-          zIndex={1}
-          position="absolute"
-          top={{ custom: 8 }}
-          right={{ custom: 8 }}
-          hitSlop={{ top: 4, right: 4, bottom: 4, left: 4 }}
-        >
-          <ButtonPressAnimation
-            scaleTo={0.96}
-            overflowMargin={50}
-            skipTopMargin
-            disallowInterruption
-            onPress={onDismissCard}
-          >
-            <Icon name="close" size="8" />
-          </ButtonPressAnimation>
-        </Box>
-
-        <Box
-          width={{
-            custom:
-              width -
-              40 -
-              Number(card.padding || 14) * 2 -
-              GUTTER_SIZE * 2 -
-              12,
-          }}
-          flexDirection="column"
-          gap={12}
+          colors={[
+            colors.alpha(accent, 0.1),
+            colors.alpha(accent, 0.1),
+            colors.alpha(accent, 0.12),
+            colors.alpha(accent, 0.12),
+          ]}
+          start={{ x: -0.69, y: 0 }}
+          end={{ x: 0.99, y: 1 }}
+          borderRadius={card.imageRadius ?? 10}
+          height={{ custom: 40 }}
+          width={{ custom: 40 }}
         >
           <Box
-            width={{
-              custom:
-                width -
-                40 -
-                Number(card.padding || 14) * 2 -
-                GUTTER_SIZE * 2 -
-                18,
+            height="full"
+            style={{
+              shadowColor: isDarkMode ? colors.shadowBlack : accent,
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.3,
+              shadowRadius: 3,
             }}
-            flexDirection="row"
-            paddingTop="8px"
+            width="full"
           >
-            <Text
-              uppercase
-              color={(card.subtitleColor as TextColor) ?? 'accent'}
-              size="13pt / 135%"
-              weight="heavy"
-            >
-              {getKeyForLanguage('subtitle', card, language as Language)}
-            </Text>
-          </Box>
+            <Cover alignHorizontal="center" alignVertical="center">
+              {imageIcon && (
+                <Text
+                  align="center"
+                  color={{ custom: accent }}
+                  size="icon 17px"
+                  weight="bold"
+                >
+                  {imageIcon}
+                </Text>
+              )}
 
+              {!imageIcon && imageUri && (
+                <ImgixImage
+                  source={{ uri: imageUri }}
+                  resizeMode="cover"
+                  size={40}
+                  style={{
+                    height: 40,
+                    width: 40,
+                  }}
+                />
+              )}
+            </Cover>
+          </Box>
+        </Box>
+
+        {card.dismissable && (
+          <Box
+            zIndex={1}
+            position="absolute"
+            top={{ custom: 2 }}
+            right={{ custom: 4 }}
+            hitSlop={{ top: 8, right: 8, bottom: 8, left: 8 }}
+          >
+            <ButtonPressAnimation
+              scaleTo={0.96}
+              overflowMargin={50}
+              skipTopMargin
+              disallowInterruption
+              onPress={() => dismissCard(card.sys.id)}
+            >
+              <Text color={'labelTertiary'} size="13pt" weight="bold">
+                􀆄
+              </Text>
+            </ButtonPressAnimation>
+          </Box>
+        )}
+
+        <Stack space="10px">
           <Text
             color={(card.titleColor as TextColor) ?? 'label'}
-            size="18px / 27px (Deprecated)"
+            size="17pt"
+            weight="heavy"
+          >
+            {getKeyForLanguage('subtitle', card, language as Language)}
+          </Text>
+
+          <Text
+            color={(card.subtitleColor as TextColor) ?? 'labelQuaternary'}
+            size="13pt"
             weight="bold"
           >
             {getKeyForLanguage('title', card, language as Language)}
           </Text>
 
-          {!!card.items.length && (
-            <Box
-              flexDirection="row"
-              width={{
-                custom: width - 40 - Number(card.padding || 14) * 2 - 80 - 18,
-              }}
-              justifyContent="space-between"
+          {primaryButton && (
+            <ButtonPressAnimation
+              hapticType="impactHeavy"
+              onPress={onPress}
+              scaleTo={0.94}
+              transformOrigin="top"
             >
-              {card.items.map((item: CardItem) => (
-                <View key={item.text} style={{ flex: 1 }}>
-                  <Inline wrap={false} alignVertical="center" space="4px">
-                    <Text
-                      align="center"
-                      color={item.color ?? 'accent'}
-                      size="11pt"
-                      weight="bold"
-                      numberOfLines={1}
-                    >
-                      {item.icon}
-                    </Text>
-                    <Text
-                      color={'labelSecondary'}
-                      size="13pt"
-                      weight="bold"
-                      numberOfLines={1}
-                      ellipsizeMode="middle"
-                    >
-                      {getKeyForLanguage('text', item, language as Language)}
-                    </Text>
-                  </Inline>
-                </View>
-              ))}
-            </Box>
+              <RNText
+                style={[
+                  styles.neonButtonText,
+                  {
+                    textShadowColor: colors.alpha(accent, 0.6),
+                  },
+                ]}
+              >
+                <Text
+                  align="left"
+                  color={{ custom: accent }}
+                  size="13pt"
+                  weight="heavy"
+                >
+                  {getKeyForLanguage(
+                    'primaryButton.text',
+                    card,
+                    language as Language
+                  )}
+                </Text>
+              </RNText>
+            </ButtonPressAnimation>
           )}
-        </Box>
+        </Stack>
       </Box>
-
-      <Stack>
-        <Text
-          color={(card.descriptionColor as TextColor) ?? 'label'}
-          size="13pt"
-          weight="regular"
-        >
-          {getKeyForLanguage('description', card, language as Language)}
-        </Text>
-
-        {!!primaryButton && (
-          <SheetActionButton
-            color={primaryButton.color ?? ''}
-            label={getKeyForLanguage(
-              'primaryButton.text',
-              card,
-              language as Language
-            )}
-            lightShadows
-            scaleTo={0.96}
-            onPress={onPress}
-            textColor={primaryButton.textColor ?? colors.white}
-            textSize="large"
-            weight="heavy"
-          />
-        )}
-      </Stack>
     </Box>
   );
 };
+
+const styles = StyleSheet.create({
+  neonButtonText: {
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 4,
+  },
+});

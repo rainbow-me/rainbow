@@ -42,10 +42,10 @@ export function CarouselCard<T>({
   canRefresh,
   isRefreshing,
 }: {
-  title: string | React.ReactNode;
+  title?: string | React.ReactNode;
   data: T[] | null | undefined;
   carouselItem: CarouselItem<T>;
-  button: React.ReactNode;
+  button?: React.ReactNode;
   menu?: React.ReactNode;
   refresh?: () => void;
   canRefresh?: boolean;
@@ -60,20 +60,22 @@ export function CarouselCard<T>({
 
   return (
     <Stack space="20px">
-      <Box
-        flexDirection="row"
-        alignItems="center"
-        justifyContent="space-between"
-      >
-        {typeof title === 'string' ? (
-          <Text color="label" weight="heavy" size="20pt">
-            {title}
-          </Text>
-        ) : (
-          <Box width="full">{title}</Box>
-        )}
-        {menu}
-      </Box>
+      {!!title && (
+        <Box
+          flexDirection="row"
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          {typeof title === 'string' ? (
+            <Text color="label" weight="heavy" size="20pt">
+              {title}
+            </Text>
+          ) : (
+            <Box width="full">{title}</Box>
+          )}
+          {menu}
+        </Box>
+      )}
       {/* FlashList vertical visible overflow does not work due to a bug,
       so we need to manually add vertical padding to the recycled component.
       The vertical bleed here is to accommodate the vertical padding w/o affecting the layout. 
@@ -86,6 +88,7 @@ export function CarouselCard<T>({
           {data?.length ? (
             <FlashList
               data={data}
+              scrollEnabled={(data && data.length > 1) ?? true}
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{
                 paddingHorizontal: HORIZONTAL_PADDING,
@@ -116,6 +119,7 @@ export function CarouselCard<T>({
             // need this due to FlashList bug https://github.com/Shopify/flash-list/issues/757
             <ScrollView
               horizontal
+              scrollEnabled={(data && data.length > 1) ?? true}
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{
                 paddingHorizontal: HORIZONTAL_PADDING,
@@ -132,39 +136,40 @@ export function CarouselCard<T>({
           )}
         </Box>
       </Bleed>
-      <Columns space="10px">
-        <Column>{button}</Column>
-        {!!refresh && (
-          <Column width="content">
-            <Box
-              as={ButtonPressAnimation}
-              // @ts-ignore
-              disabled={!canRefresh}
-              onPress={refresh}
-              justifyContent="center"
-              alignItems="center"
-              borderRadius={18}
-              style={{
-                borderWidth: isRefreshing ? 0 : 1,
-                borderColor,
-                width: 36,
-                height: 36,
-              }}
-            >
-              {isRefreshing ? (
-                <LoadingSpinner
-                  color={colorMode === 'light' ? 'black' : 'white'}
-                  size={20}
-                />
-              ) : (
-                <Text align="center" color="label" size="17pt" weight="bold">
-                  􀅈
-                </Text>
-              )}
-            </Box>
-          </Column>
-        )}
-      </Columns>
+      {!!button && (
+        <Columns space="10px">
+          <Column>{button}</Column>
+          {!!refresh && (
+            <Column width="content">
+              <Box
+                as={ButtonPressAnimation}
+                disabled={!canRefresh}
+                onPress={refresh}
+                justifyContent="center"
+                alignItems="center"
+                borderRadius={18}
+                style={{
+                  borderWidth: isRefreshing ? 0 : 1,
+                  borderColor,
+                  width: 36,
+                  height: 36,
+                }}
+              >
+                {isRefreshing ? (
+                  <LoadingSpinner
+                    color={colorMode === 'light' ? 'black' : 'white'}
+                    size={20}
+                  />
+                ) : (
+                  <Text align="center" color="label" size="17pt" weight="bold">
+                    􀅈
+                  </Text>
+                )}
+              </Box>
+            </Column>
+          )}
+        </Columns>
+      )}
     </Stack>
   );
 }

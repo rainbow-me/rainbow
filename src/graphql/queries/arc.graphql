@@ -243,23 +243,24 @@ fragment card on Card {
     id
   }
   cardKey
+  dismissable
   placement
   index
   backgroundColor
+  accentColor
   padding
+  borderRadius
+  imageIcon
   imageCollection {
     items {
       url
     }
   }
   imageRadius
-  subtitle
-  subtitleColor
   title
   titleColor
-  description
-  descriptionColor
-  items
+  subtitle
+  subtitleColor
   primaryButton
 }
 

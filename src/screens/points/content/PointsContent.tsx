@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { RefreshControl, Share } from 'react-native';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import {
@@ -46,11 +46,17 @@ import { Skeleton } from '../components/Skeleton';
 import { InfoCard } from '../components/InfoCard';
 import { displayNextDistribution } from '../constants';
 import { analyticsV2 } from '@/analytics';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useRoute } from '@react-navigation/native';
+import {
+  RemoteCardCarousel,
+  useRemoteCardContext,
+} from '@/components/cards/remote-cards';
 
 export default function PointsContent() {
   const { colors } = useTheme();
+  const { name } = useRoute();
   const { width: deviceWidth } = useDimensions();
+  const { getCardsForPlacement } = useRemoteCardContext();
   const { accountAddress, accountENS } = useAccountProfile();
   const { setClipboard } = useClipboard();
   const { isReadOnlyWallet } = useWallets();
@@ -58,6 +64,11 @@ export default function PointsContent() {
   const { data, isFetching, dataUpdatedAt, refetch } = usePoints({
     walletAddress: accountAddress,
   });
+
+  const cards = useMemo(() => getCardsForPlacement(name as string), [
+    getCardsForPlacement,
+    name,
+  ]);
 
   useFocusEffect(
     useCallback(() => {
@@ -213,6 +224,12 @@ export default function PointsContent() {
                   </Cover>
                 </Box>
               </Bleed>
+              {!!cards.length && (
+                <>
+                  <RemoteCardCarousel key="remote-cards" />
+                  <Separator color="separatorTertiary" thickness={1} />
+                </>
+              )}
               <Columns space="12px">
                 <Column width="1/2">
                   {canDisplayNextRewardCard ? (

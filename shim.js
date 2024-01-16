@@ -74,7 +74,7 @@ global.storage = storage;
 
 // shimming for reanimated need to happen before importing globalVariables.js
 // eslint-disable-next-line import/no-commonjs
-for (let variable of Object.entries(require('./globalVariables').default)) {
+for (const variable of Object.entries(require('./globalVariables').default)) {
   Object.defineProperty(global, variable[0], {
     get: () => variable[1],
     set: () => {
@@ -110,6 +110,13 @@ if (SHORTEN_PROP_TYPES_ERROR) {
     ) {
       return;
     }
+
+    if (
+      typeof arguments[0] === 'string' &&
+      arguments[0].startsWith('ViewPropTypes will be removed from React Native')
+    ) {
+      return;
+    }
     oldConsoleError?.apply(this, arguments);
   };
 }
@@ -119,7 +126,7 @@ if (typeof process === 'undefined') {
   global.process = require('process');
 } else {
   const bProcess = require('process');
-  for (var p in bProcess) {
+  for (const p in bProcess) {
     if (!(p in process)) {
       process[p] = bProcess[p];
     }
