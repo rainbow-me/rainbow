@@ -1,5 +1,5 @@
 import './languages';
-import * as Sentry from 'sentry-expo';
+import Sentry from '@sentry/react-native';
 import React, { Component } from 'react';
 import {
   AppRegistry,
@@ -425,7 +425,7 @@ function Root() {
   );
 }
 
-const RootWithSentry = Sentry.Native.wrap(Root);
+const RootWithSentry = Sentry.wrap(Root);
 const RootWithCodePush = codePush(RootWithSentry);
 
 const PlaygroundWithReduxStore = () => (
