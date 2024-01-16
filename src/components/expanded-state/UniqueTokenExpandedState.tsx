@@ -2,26 +2,9 @@ import { BlurView } from '@react-native-community/blur';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import c from 'chroma-js';
 import lang from 'i18n-js';
-import React, {
-  ReactNode,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import {
-  InteractionManager,
-  Linking,
-  Share,
-  StyleProp,
-  View,
-  ViewStyle,
-} from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useDerivedValue,
-  useSharedValue,
-} from 'react-native-reanimated';
+import React, { ReactNode, useCallback, useMemo, useRef, useState } from 'react';
+import { InteractionManager, Linking, Share, StyleProp, View, ViewStyle } from 'react-native';
+import Animated, { useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import URL from 'url-parse';
 import useWallets from '../../hooks/useWallets';
 import L2Disclaimer from '../L2Disclaimer';
@@ -35,10 +18,7 @@ import { UniqueTokenAttributes, UniqueTokenImage } from '../unique-token';
 import { CardSize } from '../unique-token/CardSize';
 import ConfigurationSection from './ens/ConfigurationSection';
 import ProfileInfoSection from './ens/ProfileInfoSection';
-import {
-  UniqueTokenExpandedStateContent,
-  UniqueTokenExpandedStateHeader,
-} from './unique-token';
+import { UniqueTokenExpandedStateContent, UniqueTokenExpandedStateHeader } from './unique-token';
 import ENSBriefTokenInfoRow from './unique-token/ENSBriefTokenInfoRow';
 import NFTBriefTokenInfoRow from './unique-token/NFTBriefTokenInfoRow';
 import { PROFILES, useExperimentalFlag } from '@/config';
@@ -191,9 +171,7 @@ const Section = ({
               <Heading
                 containsEmoji
                 color="primary (Deprecated)"
-                size={
-                  ios ? '23px / 27px (Deprecated)' : '20px / 22px (Deprecated)'
-                }
+                size={ios ? '23px / 27px (Deprecated)' : '20px / 22px (Deprecated)'}
                 weight="heavy"
               >
                 {titleEmoji}
@@ -211,11 +189,7 @@ const Section = ({
   </Stack>
 );
 
-const Markdown = ({
-  children,
-}: {
-  children: MarkdownTextProps['children'];
-}) => {
+const Markdown = ({ children }: { children: MarkdownTextProps['children'] }) => {
   const openUntrustedUrl = useUntrustedUrlOpener();
 
   return (
@@ -281,13 +255,7 @@ const renderUniqueTokenBlur = ({
       <>
         <BlurWrapper height={height} width={width} style={containerStyle}>
           <BackgroundImage>
-            <UniqueTokenImage
-              backgroundColor={assetBackgroundColor}
-              imageUrl={imageUrl}
-              item={item}
-              resizeMode="cover"
-              size={CardSize}
-            />
+            <UniqueTokenImage backgroundColor={assetBackgroundColor} imageUrl={imageUrl} item={item} resizeMode="cover" size={CardSize} />
             <BackgroundBlur />
           </BackgroundImage>
         </BlurWrapper>
@@ -318,10 +286,7 @@ const UniqueTokenExpandedState = () => {
   const { colors, isDarkMode } = useTheme();
   const { isReadOnlyWallet } = useWallets();
 
-  const [
-    isRefreshMetadataToastActive,
-    setIsRefreshMetadataToastActive,
-  ] = useState(false);
+  const [isRefreshMetadataToastActive, setIsRefreshMetadataToastActive] = useState(false);
 
   const activateRefreshMetadataToast = useCallback(() => {
     if (!isRefreshMetadataToastActive) {
@@ -333,11 +298,7 @@ const UniqueTokenExpandedState = () => {
   }, [isRefreshMetadataToastActive]);
 
   const {
-    collection: {
-      description: familyDescription,
-      external_url: familyLink,
-      slug,
-    },
+    collection: { description: familyDescription, external_url: familyLink, slug },
     description,
     familyImage,
     familyName,
@@ -349,12 +310,7 @@ const UniqueTokenExpandedState = () => {
   } = asset;
 
   const filteredTraits = traits.filter(
-    trait =>
-      trait.value !== undefined &&
-      trait.value !== null &&
-      trait.value !== '' &&
-      trait.trait_type &&
-      !isHttpUrl(trait.value)
+    trait => trait.value !== undefined && trait.value !== null && trait.value !== '' && trait.trait_type && !isHttpUrl(trait.value)
   );
 
   const uniqueTokenType = getUniqueTokenType(asset);
@@ -365,11 +321,7 @@ const UniqueTokenExpandedState = () => {
   const isNFT = uniqueTokenType === 'NFT';
 
   // Fetch the ENS profile if the unique token is an ENS name.
-  const cleanENSName = isENS
-    ? uniqueId
-      ? uniqueId?.split(' ')?.[0]
-      : uniqueId
-    : '';
+  const cleanENSName = isENS ? (uniqueId ? uniqueId?.split(' ')?.[0] : uniqueId) : '';
   const ensProfile = useENSProfile(cleanENSName, {
     enabled: isENS,
   });
@@ -384,24 +336,14 @@ const UniqueTokenExpandedState = () => {
   );
 
   const profileInfoSectionAvailable = useMemo(() => {
-    const available = Object.keys(ensData?.records || {}).some(
-      key => key !== ENS_RECORDS.avatar
-    );
+    const available = Object.keys(ensData?.records || {}).some(key => key !== ENS_RECORDS.avatar);
     return available;
   }, [ensData?.records]);
 
-  const {
-    addShowcaseToken,
-    removeShowcaseToken,
-    showcaseTokens,
-  } = useShowcaseTokens();
+  const { addShowcaseToken, removeShowcaseToken, showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens, removeHiddenToken } = useHiddenTokens();
 
-  const [
-    contentFocused,
-    handleContentFocus,
-    handleContentBlur,
-  ] = useBooleanState();
+  const [contentFocused, handleContentFocus, handleContentBlur] = useBooleanState();
   const animationProgress = useSharedValue(0);
   const ensCoverAnimationProgress = useSharedValue(0);
   // TODO(jxom): This is temporary until `ZoomableWrapper` refactor
@@ -413,9 +355,7 @@ const UniqueTokenExpandedState = () => {
     opacity: 1 - (animationProgress.value || ensCoverAnimationProgress.value),
   }));
   // TODO(jxom): This is temporary until `ZoomableWrapper` refactor
-  const contentOpacity = useDerivedValue(
-    () => 1 - ensCoverAnimationProgress.value
-  );
+  const contentOpacity = useDerivedValue(() => 1 - ensCoverAnimationProgress.value);
   // TODO(jxom): This is temporary until `ZoomableWrapper` refactor
   const ensCoverOpacity = useDerivedValue(() => 1 - animationProgress.value);
 
@@ -425,19 +365,12 @@ const UniqueTokenExpandedState = () => {
     });
   }, [asset.network, navigate]);
 
-  const isHiddenAsset = useMemo(
-    () => hiddenTokens.includes(fullUniqueId) as boolean,
-    [hiddenTokens, fullUniqueId]
-  );
-  const isShowcaseAsset = useMemo(
-    () => showcaseTokens.includes(uniqueId) as boolean,
-    [showcaseTokens, uniqueId]
-  );
+  const isHiddenAsset = useMemo(() => hiddenTokens.includes(fullUniqueId) as boolean, [hiddenTokens, fullUniqueId]);
+  const isShowcaseAsset = useMemo(() => showcaseTokens.includes(uniqueId) as boolean, [showcaseTokens, uniqueId]);
 
   const rainbowWebUrl = buildRainbowUrl(asset, cleanENSName, accountAddress);
 
-  const imageColor =
-    usePersistentDominantColorFromImage(asset.lowResUrl) ?? colors.paleBlue;
+  const imageColor = usePersistentDominantColorFromImage(asset.lowResUrl) ?? colors.paleBlue;
 
   const textColor = useMemo(() => {
     const contrastWithWhite = c.contrast(imageColor, colors.whiteLabel);
@@ -449,14 +382,8 @@ const UniqueTokenExpandedState = () => {
     }
   }, [colors.whiteLabel, imageColor]);
 
-  const handlePressMarketplaceName = useCallback(
-    () => Linking.openURL(asset.permalink),
-    [asset.permalink]
-  );
-  const handlePressParty = useCallback(
-    () => Linking.openURL(asset.external_link!),
-    [asset.external_link]
-  );
+  const handlePressMarketplaceName = useCallback(() => Linking.openURL(asset.permalink), [asset.permalink]);
+  const handlePressParty = useCallback(() => Linking.openURL(asset.external_link!), [asset.external_link]);
 
   const handlePressShowcase = useCallback(() => {
     if (isShowcaseAsset) {
@@ -468,14 +395,7 @@ const UniqueTokenExpandedState = () => {
         removeHiddenToken(asset);
       }
     }
-  }, [
-    addShowcaseToken,
-    isHiddenAsset,
-    isShowcaseAsset,
-    removeHiddenToken,
-    removeShowcaseToken,
-    asset,
-  ]);
+  }, [addShowcaseToken, isHiddenAsset, isShowcaseAsset, removeHiddenToken, removeShowcaseToken, asset]);
 
   const handlePressShare = useCallback(() => {
     const shareUrl = isSupportedOnRainbowWeb ? rainbowWebUrl : asset.permalink;
@@ -509,21 +429,14 @@ const UniqueTokenExpandedState = () => {
   const hasSendButton = isSendable;
   const isParty = asset?.external_link?.includes('party.app');
 
-  const hasEditButton =
-    isActionsEnabled && profilesEnabled && isENS && ensProfile.isOwner;
+  const hasEditButton = isActionsEnabled && profilesEnabled && isENS && ensProfile.isOwner;
   const hasExtendDurationButton = !isReadOnlyWallet && profilesEnabled && isENS;
 
-  const familyLinkDisplay = useMemo(
-    () =>
-      familyLink ? new URL(familyLink).hostname.replace(/^www\./, '') : null,
-    [familyLink]
-  );
+  const familyLinkDisplay = useMemo(() => (familyLink ? new URL(familyLink).hostname.replace(/^www\./, '') : null), [familyLink]);
 
   const hideNftMarketplaceAction = isPoap || !slug;
   const isSaleInfoSupported = getIsSaleInfoSupported(asset.network);
-  const backgroundColor = isDarkMode
-    ? `rgba(22, 22, 22, ${ios ? 0.8 : 1})`
-    : `rgba(26, 26, 26, ${ios ? 0.8 : 1})`;
+  const backgroundColor = isDarkMode ? `rgba(22, 22, 22, ${ios ? 0.8 : 1})` : `rgba(26, 26, 26, ${ios ? 0.8 : 1})`;
   const insets = useSafeAreaInsets();
 
   return (
@@ -546,241 +459,13 @@ const UniqueTokenExpandedState = () => {
         >
           <ColorModeProvider value="darkTinted">
             <AccentColorProvider color={imageColor}>
-              <ImagePreviewOverlay
-                enableZoom={ios}
-                opacity={ensCoverOpacity}
-                yPosition={yPosition}
-              >
+              <ImagePreviewOverlay enableZoom={ios} opacity={ensCoverOpacity} yPosition={yPosition}>
                 <Inset bottom={sectionSpace}>
                   <Stack alignHorizontal="center">
                     <Animated.View style={sheetHandleStyle}>
                       {/* @ts-expect-error JavaScript component */}
-                      <SheetHandle
-                        color={colors.alpha(colors.whiteLabel, 0.24)}
-                      />
+                      <SheetHandle color={colors.alpha(colors.whiteLabel, 0.24)} />
                     </Animated.View>
-                  </Stack>
-                  {isNFT || isENS ? (
-                    <Columns space="15px (Deprecated)">
-                      {hasEditButton ? (
-                        <SheetActionButton
-                          color={imageColor}
-                          label={`􀉮 ${lang.t(
-                            'expanded_state.unique_expanded.edit'
-                          )}`}
-                          nftShadows
-                          onPress={handlePressEdit}
-                          testID="edit"
-                          textColor={textColor}
-                          weight="heavy"
-                        />
-                      ) : isParty ? (
-                        <SheetActionButton
-                          color={imageColor}
-                          nftShadows
-                          onPress={handlePressParty}
-                          testID="unique-expanded-state-party-button"
-                          textColor={textColor}
-                          weight="heavy"
-                        >
-                          <ImgixImage
-                            resizeMode="contain"
-                            source={partyLogo as any}
-                            size={20}
-                            style={{ height: 25, width: 25 }}
-                          />
-                          <Text
-                            weight="heavy"
-                            size="20pt"
-                            color={{ custom: textColor }}
-                          >
-                            Party
-                          </Text>
-                        </SheetActionButton>
-                      ) : asset.permalink ? (
-                        <SheetActionButton
-                          color={imageColor}
-                          label={
-                            hasSendButton
-                              ? `􀮶 ${marketplaceName}`
-                              : `􀮶 ${lang.t(
-                                  'expanded_state.unique_expanded.view_on_marketplace_name',
-                                  {
-                                    marketplaceName,
-                                  }
-                                )}`
-                          }
-                          nftShadows
-                          onPress={handlePressMarketplaceName}
-                          testID="unique-expanded-state-send"
-                          textColor={textColor}
-                          weight="heavy"
-                        />
-                      ) : null}
-                      {hasSendButton ? (
-                        <SendActionButton
-                          asset={asset}
-                          color={imageColor}
-                          nftShadows
-                          textColor={textColor}
-                        />
-                      ) : null}
-                    </Columns>
-                  ) : null}
-                  {asset.network !== Network.mainnet ? (
-                    // @ts-expect-error JavaScript component
-                    <L2Disclaimer
-                      assetType={asset.network}
-                      colors={colors}
-                      hideDivider
-                      isNft
-                      marginBottom={0}
-                      marginHorizontal={0}
-                      onPress={handleL2DisclaimerPress}
-                      symbol="NFT"
-                      forceDarkMode
-                    />
-                  ) : null}
-                  <Stack
-                    separator={<Separator color="divider20 (Deprecated)" />}
-                    space={sectionSpace}
-                  >
-                    {isNFT || isENS ? (
-                      <Bleed // Manually crop surrounding space until TokenInfoItem uses design system components
-                        bottom={android ? '15px (Deprecated)' : '6px'}
-                        top={android ? '10px' : '4px'}
-                      >
-                        {isNFT && <NFTBriefTokenInfoRow asset={asset} />}
-                        {isENS && (
-                          <ENSBriefTokenInfoRow
-                            color={imageColor}
-                            ensName={uniqueId}
-                            expiryDate={ensData?.registration?.expiryDate}
-                            externalAvatarUrl={asset?.lowResUrl}
-                            registrationDate={
-                              ensData?.registration?.registrationDate
-                            }
-                            showExtendDuration={hasExtendDurationButton}
-                          />
-                        )}
-                      </Bleed>
-                    ) : null}
-                    {(isNFT || isPoap) && (
-                      <>
-                        {description ? (
-                          <Section
-                            title={`${lang.t(
-                              'expanded_state.unique_expanded.description'
-                            )}`}
-                            titleEmoji="📖"
-                          >
-                            <Markdown>{description}</Markdown>
-                          </Section>
-                        ) : null}
-                        {filteredTraits.length ? (
-                          <Section
-                            title={`${lang.t(
-                              'expanded_state.unique_expanded.properties'
-                            )}`}
-                            titleEmoji="🎨"
-                          >
-                            <UniqueTokenAttributes
-                              {...asset}
-                              color={imageColor}
-                              hideNftMarketplaceAction={
-                                hideNftMarketplaceAction
-                              }
-                              slug={slug}
-                            />
-                          </Section>
-                        ) : null}
-                      </>
-                    )}
-                    {isENS && (
-                      <>
-                        {profileInfoSectionAvailable && (
-                          <Section
-                            addonComponent={
-                              hasEditButton && (
-                                <TextButton
-                                  align="right"
-                                  onPress={handlePressEdit}
-                                  size="18px / 27px (Deprecated)"
-                                  weight="bold"
-                                >
-                                  {lang.t(
-                                    'expanded_state.unique_expanded.edit'
-                                  )}
-                                </TextButton>
-                              )
-                            }
-                            paragraphSpace={{ custom: 22 }}
-                            title={`${lang.t(
-                              'expanded_state.unique_expanded.profile_info'
-                            )}`}
-                            titleEmoji="🤿"
-                          >
-                            <ProfileInfoSection
-                              allowEdit={hasEditButton}
-                              coinAddresses={ensData?.coinAddresses}
-                              ensName={uniqueId}
-                              images={ensData?.images}
-                              isLoading={ensProfile.isLoading}
-                              records={ensData?.records}
-                            />
-                          </Section>
-                        )}
-                        <Section
-                          paragraphSpace={{ custom: 22 }}
-                          title={`${lang.t(
-                            'expanded_state.unique_expanded.configuration'
-                          )}`}
-                          titleEmoji="⚙️"
-                        >
-                          <ConfigurationSection
-                            externalAvatarUrl={asset?.lowResUrl}
-                            isExternal={external}
-                            isLoading={ensProfile.isLoading}
-                            isOwner={ensProfile?.isOwner}
-                            isPrimary={ensProfile?.isPrimaryName}
-                            isProfilesEnabled={profilesEnabled}
-                            isReadOnlyWallet={isReadOnlyWallet}
-                            isSetNameEnabled={ensProfile?.isSetNameEnabled}
-                            name={cleanENSName}
-                            owner={ensData?.owner}
-                            registrant={ensData?.registrant}
-                          />
-                        </Section>
-                      </>
-                    )}
-                    {familyDescription ? (
-                      <Section
-                        paragraphSpace={{ custom: 26 }}
-                        title={`${lang.t(
-                          'expanded_state.unique_expanded.about',
-                          { assetFamilyName: familyName }
-                        )}`}
-                        titleImageUrl={familyImage}
-                      >
-                        <Stack space={sectionSpace}>
-                          <Markdown>{familyDescription}</Markdown>
-                          {familyLink ? (
-                            <Bleed // Manually crop surrounding space until Link uses design system components
-                              bottom={android ? '15px (Deprecated)' : undefined}
-                              top="15px (Deprecated)"
-                            >
-                              {/* @ts-expect-error JavaScript component */}
-                              <Link
-                                color={imageColor}
-                                display={familyLinkDisplay}
-                                url={familyLink}
-                                weight="bold"
-                              />
-                            </Bleed>
-                          ) : null}
-                        </Stack>
-                      </Section>
-                    ) : null}
                   </Stack>
                 </Inset>
                 <UniqueTokenExpandedStateContent
@@ -805,21 +490,14 @@ const UniqueTokenExpandedState = () => {
                           {isActionsEnabled ? (
                             <TextButton onPress={handlePressShowcase}>
                               {isShowcaseAsset
-                                ? `􀁏 ${lang.t(
-                                    'expanded_state.unique_expanded.in_showcase'
-                                  )}`
-                                : `􀁍 ${lang.t(
-                                    'expanded_state.unique_expanded.showcase'
-                                  )}`}
+                                ? `􀁏 ${lang.t('expanded_state.unique_expanded.in_showcase')}`
+                                : `􀁍 ${lang.t('expanded_state.unique_expanded.showcase')}`}
                             </TextButton>
                           ) : (
                             <View />
                           )}
                           {isSupportedOnRainbowWeb || asset.permalink ? (
-                            <TextButton
-                              align="right"
-                              onPress={handlePressShare}
-                            >
+                            <TextButton align="right" onPress={handlePressShare}>
                               􀈂 {lang.t('button.share')}
                             </TextButton>
                           ) : null}
@@ -838,9 +516,7 @@ const UniqueTokenExpandedState = () => {
                           {hasEditButton ? (
                             <SheetActionButton
                               color={imageColor}
-                              label={`􀉮 ${lang.t(
-                                'expanded_state.unique_expanded.edit'
-                              )}`}
+                              label={`􀉮 ${lang.t('expanded_state.unique_expanded.edit')}`}
                               nftShadows
                               onPress={handlePressEdit}
                               testID="edit"
@@ -856,17 +532,8 @@ const UniqueTokenExpandedState = () => {
                               textColor={textColor}
                               weight="heavy"
                             >
-                              <ImgixImage
-                                resizeMode="contain"
-                                source={partyLogo as any}
-                                size={20}
-                                style={{ height: 25, width: 25 }}
-                              />
-                              <Text
-                                weight="heavy"
-                                size="20pt"
-                                color={{ custom: textColor }}
-                              >
+                              <ImgixImage resizeMode="contain" source={partyLogo as any} size={20} style={{ height: 25, width: 25 }} />
+                              <Text weight="heavy" size="20pt" color={{ custom: textColor }}>
                                 Party
                               </Text>
                             </SheetActionButton>
@@ -876,12 +543,9 @@ const UniqueTokenExpandedState = () => {
                               label={
                                 hasSendButton
                                   ? `􀮶 ${marketplaceName}`
-                                  : `􀮶 ${lang.t(
-                                      'expanded_state.unique_expanded.view_on_marketplace_name',
-                                      {
-                                        marketplaceName,
-                                      }
-                                    )}`
+                                  : `􀮶 ${lang.t('expanded_state.unique_expanded.view_on_marketplace_name', {
+                                      marketplaceName,
+                                    })}`
                               }
                               nftShadows
                               onPress={handlePressMarketplaceName}
@@ -890,14 +554,7 @@ const UniqueTokenExpandedState = () => {
                               weight="heavy"
                             />
                           ) : null}
-                          {hasSendButton ? (
-                            <SendActionButton
-                              asset={asset}
-                              color={imageColor}
-                              nftShadows
-                              textColor={textColor}
-                            />
-                          ) : null}
+                          {hasSendButton ? <SendActionButton asset={asset} color={imageColor} nftShadows textColor={textColor} /> : null}
                         </Columns>
                       ) : null}
                       {asset.network !== Network.mainnet ? (
@@ -914,10 +571,7 @@ const UniqueTokenExpandedState = () => {
                           forceDarkMode
                         />
                       ) : null}
-                      <Stack
-                        separator={<Separator color="divider20 (Deprecated)" />}
-                        space={sectionSpace}
-                      >
+                      <Stack separator={<Separator color="divider20 (Deprecated)" />} space={sectionSpace}>
                         {(isNFT || isENS) && isSaleInfoSupported ? (
                           <Bleed // Manually crop surrounding space until TokenInfoItem uses design system components
                             bottom={android ? '15px (Deprecated)' : '6px'}
@@ -930,9 +584,7 @@ const UniqueTokenExpandedState = () => {
                                 ensName={uniqueId}
                                 expiryDate={ensData?.registration?.expiryDate}
                                 externalAvatarUrl={asset?.lowResUrl}
-                                registrationDate={
-                                  ensData?.registration?.registrationDate
-                                }
+                                registrationDate={ensData?.registration?.registrationDate}
                                 showExtendDuration={hasExtendDurationButton}
                               />
                             )}
@@ -941,28 +593,16 @@ const UniqueTokenExpandedState = () => {
                         {(isNFT || isPoap) && (
                           <>
                             {description ? (
-                              <Section
-                                title={`${lang.t(
-                                  'expanded_state.unique_expanded.description'
-                                )}`}
-                                titleEmoji="📖"
-                              >
+                              <Section title={`${lang.t('expanded_state.unique_expanded.description')}`} titleEmoji="📖">
                                 <Markdown>{description}</Markdown>
                               </Section>
                             ) : null}
                             {filteredTraits.length ? (
-                              <Section
-                                title={`${lang.t(
-                                  'expanded_state.unique_expanded.properties'
-                                )}`}
-                                titleEmoji="🎨"
-                              >
+                              <Section title={`${lang.t('expanded_state.unique_expanded.properties')}`} titleEmoji="🎨">
                                 <UniqueTokenAttributes
                                   {...asset}
                                   color={imageColor}
-                                  hideNftMarketplaceAction={
-                                    hideNftMarketplaceAction
-                                  }
+                                  hideNftMarketplaceAction={hideNftMarketplaceAction}
                                   slug={slug}
                                 />
                               </Section>
@@ -975,22 +615,13 @@ const UniqueTokenExpandedState = () => {
                               <Section
                                 addonComponent={
                                   hasEditButton && (
-                                    <TextButton
-                                      align="right"
-                                      onPress={handlePressEdit}
-                                      size="18px / 27px (Deprecated)"
-                                      weight="bold"
-                                    >
-                                      {lang.t(
-                                        'expanded_state.unique_expanded.edit'
-                                      )}
+                                    <TextButton align="right" onPress={handlePressEdit} size="18px / 27px (Deprecated)" weight="bold">
+                                      {lang.t('expanded_state.unique_expanded.edit')}
                                     </TextButton>
                                   )
                                 }
                                 paragraphSpace={{ custom: 22 }}
-                                title={`${lang.t(
-                                  'expanded_state.unique_expanded.profile_info'
-                                )}`}
+                                title={`${lang.t('expanded_state.unique_expanded.profile_info')}`}
                                 titleEmoji="🤿"
                               >
                                 <ProfileInfoSection
@@ -1005,9 +636,7 @@ const UniqueTokenExpandedState = () => {
                             )}
                             <Section
                               paragraphSpace={{ custom: 22 }}
-                              title={`${lang.t(
-                                'expanded_state.unique_expanded.configuration'
-                              )}`}
+                              title={`${lang.t('expanded_state.unique_expanded.configuration')}`}
                               titleEmoji="⚙️"
                             >
                               <ConfigurationSection
@@ -1029,28 +658,18 @@ const UniqueTokenExpandedState = () => {
                         {familyDescription ? (
                           <Section
                             paragraphSpace={{ custom: 26 }}
-                            title={`${lang.t(
-                              'expanded_state.unique_expanded.about',
-                              { assetFamilyName: familyName }
-                            )}`}
+                            title={`${lang.t('expanded_state.unique_expanded.about', { assetFamilyName: familyName })}`}
                             titleImageUrl={familyImage}
                           >
                             <Stack space={sectionSpace}>
                               <Markdown>{familyDescription}</Markdown>
                               {familyLink ? (
                                 <Bleed // Manually crop surrounding space until Link uses design system components
-                                  bottom={
-                                    android ? '15px (Deprecated)' : undefined
-                                  }
+                                  bottom={android ? '15px (Deprecated)' : undefined}
                                   top="15px (Deprecated)"
                                 >
                                   {/* @ts-expect-error JavaScript component */}
-                                  <Link
-                                    color={imageColor}
-                                    display={familyLinkDisplay}
-                                    url={familyLink}
-                                    weight="bold"
-                                  />
+                                  <Link color={imageColor} display={familyLinkDisplay} url={familyLink} weight="bold" />
                                 </Bleed>
                               ) : null}
                             </Stack>
@@ -1068,18 +687,11 @@ const UniqueTokenExpandedState = () => {
       </FullscreenBlurSheet>
       <ToastPositionContainer>
         <ToggleStateToast
-          addCopy={lang.t(
-            'expanded_state.unique_expanded.toast_added_to_showcase'
-          )}
+          addCopy={lang.t('expanded_state.unique_expanded.toast_added_to_showcase')}
           isAdded={isShowcaseAsset}
-          removeCopy={lang.t(
-            'expanded_state.unique_expanded.toast_removed_from_showcase'
-          )}
+          removeCopy={lang.t('expanded_state.unique_expanded.toast_removed_from_showcase')}
         />
-        <Toast
-          isVisible={isRefreshMetadataToastActive}
-          text="Requesting metadata..."
-        />
+        <Toast isVisible={isRefreshMetadataToastActive} text="Requesting metadata..." />
       </ToastPositionContainer>
     </>
   );
