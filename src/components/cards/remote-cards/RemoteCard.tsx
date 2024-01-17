@@ -20,8 +20,7 @@ import { useTheme } from '@/theme';
 import LinearGradient from 'react-native-linear-gradient';
 import { ImgixImage } from '@/components/images';
 import { analyticsV2 } from '@/analytics';
-
-const GUTTER_SIZE = 40;
+import { getGutterSizeForCardAmount } from './RemoteCardCarousel';
 
 const getKeyForLanguage = (key: string, object: object, language: Language) => {
   if (!object) {
@@ -59,10 +58,12 @@ const getColorFromString = (color: string | undefined | null) => {
 
 type RemoteCardProps = {
   card: TrimmedCard;
+  gutterSize: number;
 };
 
 export const RemoteCard: React.FC<RemoteCardProps> = ({
   card = {} as TrimmedCard,
+  gutterSize,
 }) => {
   const { isDarkMode } = useTheme();
   const { navigate } = useNavigation();
@@ -137,11 +138,12 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
       hapticType="impactHeavy"
       onPress={onPress}
       scaleTo={0.94}
+      disallowInterruption
       testID={`remote-card-${card.cardKey}-button`}
     >
       <Box
         testID={`remote-card-${cardKey}`}
-        width={{ custom: width - GUTTER_SIZE }}
+        width={{ custom: width - gutterSize }}
         overflow="visible"
         height={'full'}
         borderRadius={18}
@@ -157,7 +159,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
       >
         <Box
           flexDirection="row"
-          width={{ custom: width - GUTTER_SIZE - 16 * 2 }}
+          width={{ custom: width - gutterSize - 16 * 2 }}
           gap={12}
         >
           <Box
