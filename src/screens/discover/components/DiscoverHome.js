@@ -79,7 +79,7 @@ export default function DiscoverHome() {
             <GasCard />
             {isProfilesEnabled && <ENSSearchCard />}
           </Inline>
-          {!!cards.length && <RemoteCardCarousel withSeparator={false} />}
+          {!!cards.length && <RemoteCardCarousel />}
           {mintsEnabled && (mints?.length || isFetching) && (
             <Stack space="20px">
               {!!featuredMint && <FeaturedMintCard />}
