@@ -35,7 +35,34 @@ export const ViewWeeklyEarnings = () => {
   const accountName = (abbreviateEnsForDisplay(accountENS, 10) ||
     formatAddress(accountAddress, 4, 5)) as string;
 
-  console.log(JSON.stringify(points?.points, null, 2));
+  const newTotal = points?.points?.user.stats.last_airdrop.earnings.total;
+
+  const retroactive = points?.points?.user.stats.last_airdrop.differences?.find(
+    difference => difference?.type === 'retroactive'
+  );
+  const referral = points?.points?.user.stats.last_airdrop.differences?.find(
+    difference => difference?.type === 'referral'
+  );
+  const transaction = points?.points?.user.stats.last_airdrop.differences?.find(
+    difference => difference?.type === 'transaction'
+  );
+  const redemption = points?.points?.user.stats.last_airdrop.differences?.find(
+    difference => difference?.type === 'redemption'
+  );
+
+  const totalWeeklyEarnings =
+    (retroactive?.earnings?.total ?? 0) +
+    (transaction?.earnings?.total ?? 0) +
+    (referral?.earnings?.total ?? 0) +
+    (redemption?.earnings?.total ?? 0);
+
+  console.log({
+    retroactive,
+    referral,
+    transaction,
+    redemption,
+    newTotal,
+  });
 
   return (
     <Box height="full" justifyContent="space-between">
@@ -81,18 +108,43 @@ export const ViewWeeklyEarnings = () => {
           </Line>
         </Paragraph>
         <Stack separator={<LineBreak lines={2} />}>
+          {!!retroactive?.earnings?.total && (
+            <Line alignHorizontal="justify">
+              <AnimatedText
+                color={rainbowColors.purple}
+                enableHapticTyping
+                textContent={`${i18n.t(
+                  i18n.l.points.console.view_weekly_earnings_retroactive_points
+                )}:`}
+              />
+              <AnimatedText
+                color={rainbowColors.purple}
+                delayStart={1000}
+                enableHapticTyping
+                textAlign="right"
+                textContent={`+ ${abbreviateNumber(
+                  retroactive.earnings.total ?? 0
+                )}`}
+                typingSpeed={100}
+              />
+            </Line>
+          )}
           <Line alignHorizontal="justify">
             <AnimatedText
               color={rainbowColors.blue}
               enableHapticTyping
-              textContent={`${i18n.t(i18n.l.points.console.rainbow_swaps)}:`}
+              textContent={`${i18n.t(
+                i18n.l.points.console.view_weekly_earnings_activity
+              )}:`}
             />
             <AnimatedText
               color={rainbowColors.blue}
               delayStart={1000}
               enableHapticTyping
               textAlign="right"
-              textContent={`$${abbreviateNumber(0)}`}
+              textContent={`+ ${abbreviateNumber(
+                transaction?.earnings.total ?? 0
+              )}`}
               typingSpeed={100}
             />
           </Line>
@@ -102,7 +154,7 @@ export const ViewWeeklyEarnings = () => {
               delayStart={1000}
               enableHapticTyping
               textContent={`${i18n.t(
-                i18n.l.points.console.rainbow_nfts_owned
+                i18n.l.points.console.view_weekly_earnings_referral_activity
               )}:`}
             />
             <AnimatedText
@@ -110,11 +162,13 @@ export const ViewWeeklyEarnings = () => {
               delayStart={1000}
               enableHapticTyping
               textAlign="right"
-              textContent={`${abbreviateNumber(0)}`}
+              textContent={`+ ${abbreviateNumber(
+                referral?.earnings.total ?? 0
+              )}`}
               typingSpeed={100}
             />
           </Line>
-          <Line alignHorizontal="justify">
+          {/* <Line alignHorizontal="justify">
             <AnimatedText
               color={rainbowColors.yellow}
               delayStart={1000}
@@ -129,6 +183,24 @@ export const ViewWeeklyEarnings = () => {
               textContent={`$${abbreviateNumber(0)}`}
               typingSpeed={100}
             />
+          </Line> */}
+          <Line alignHorizontal="justify">
+            <AnimatedText
+              color={textColors.gray}
+              delayStart={1000}
+              enableHapticTyping
+              textContent={`${i18n.t(
+                i18n.l.points.console.view_weekly_earnings_total_earnings
+              )}:`}
+            />
+            <AnimatedText
+              color={textColors.white}
+              delayStart={1000}
+              enableHapticTyping
+              textAlign="right"
+              textContent={`+ ${abbreviateNumber(totalWeeklyEarnings ?? 0)}`}
+              typingSpeed={100}
+            />
           </Line>
         </Stack>
         <Paragraph gap={30}>
@@ -136,7 +208,7 @@ export const ViewWeeklyEarnings = () => {
             color={textColors.gray}
             delayStart={1000}
             textContent={`> ${i18n.t(
-              i18n.l.points.console.calculation_complete
+              i18n.l.points.console.view_weekly_earnings_counted
             )}`}
             weight="normal"
           />
@@ -153,9 +225,7 @@ export const ViewWeeklyEarnings = () => {
               enableHapticTyping
               hapticType="impactHeavy"
               textAlign="right"
-              textContent={`${(
-                points?.points?.user.stats.last_airdrop.earnings.total ?? 0
-              ).toLocaleString('en-US')} Points`}
+              textContent={`${(newTotal ?? 0).toLocaleString('en-US')} Points`}
               onComplete={() => {
                 const complete = setTimeout(() => {
                   setShowCloseButton(true);
