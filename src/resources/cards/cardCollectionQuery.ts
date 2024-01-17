@@ -88,12 +88,5 @@ export function useCardCollectionQuery(
     staleTime: defaultStaleTime,
     refetchInterval,
     onSuccess,
-    onSettled(data, error) {
-      if (error) {
-        console.error(error);
-      }
-      console.log(data);
-    },
-    onError: err => console.error(err),
   });
 }

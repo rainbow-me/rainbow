@@ -99,6 +99,7 @@ export const event = {
   mintsMintingNFT: 'Minting NFT',
   mintsMintedNFT: 'Minted NFT',
   mintsErrorMintingNFT: 'Error Minting NFT',
+  pointsViewedWeeklyEarnings: 'Viewed weekly earnings',
   pointsViewedClaimScreen: 'Viewed claim your points screen',
   pointsViewedReferralScreen: 'Viewed points referral code screen',
   pointsViewedPointsScreen: 'Viewed main points screen',
@@ -123,6 +124,8 @@ export const event = {
     'Pressed copy referral code button on points screen',
   pointsPointsScreenPressedShareReferralLinkButton:
     'Pressed share referral link button on points screen',
+
+  remoteCardPrimaryButtonPressed: 'remote_card.primary_button_pressed',
 } as const;
 
 /**
@@ -406,6 +409,7 @@ export type EventProperties = {
   [event.pointsViewedReferralScreen]: undefined;
   [event.pointsViewedPointsScreen]: undefined;
   [event.pointsViewedOnboardingSheet]: undefined;
+  [event.pointsViewedWeeklyEarnings]: undefined;
   [event.pointsReferralScreenValidatedReferralCode]: {
     deeplinked: boolean;
   };
@@ -431,4 +435,10 @@ export type EventProperties = {
   [event.pointsReferralCodeDeeplinkOpened]: undefined;
   [event.pointsPointsScreenPressedCopyReferralCodeButton]: undefined;
   [event.pointsPointsScreenPressedShareReferralLinkButton]: undefined;
+
+  [event.remoteCardPrimaryButtonPressed]: {
+    cardKey: string;
+    type: string;
+    props: string;
+  };
 };

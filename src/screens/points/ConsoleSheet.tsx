@@ -13,11 +13,13 @@ import { Initialize } from './content/console/initialize';
 import { Calculate } from './content/console/calculate';
 import { Share } from './content/console/share';
 import { Review } from './content/console/review';
+import { ViewWeeklyEarnings } from './content/console/view-weekly-earnings';
 
 type ConsoleSheetParams = {
   ConsoleSheet: {
     referralCode: string | undefined;
     deeplinked: boolean;
+    viewWeeklyEarnings: boolean;
   };
 };
 
@@ -25,6 +27,7 @@ export const ConsoleSheet = () => {
   const { params } = useRoute<RouteProp<ConsoleSheetParams, 'ConsoleSheet'>>();
   const referralCode = params?.referralCode;
   const deeplinked = params?.deeplinked;
+  const viewWeeklyEarnings = params?.viewWeeklyEarnings;
 
   const {
     animationKey,
@@ -38,22 +41,47 @@ export const ConsoleSheet = () => {
   } = usePointsProfileContext();
 
   useEffect(() => {
+    if (viewWeeklyEarnings) return;
+
     setReferralCode(referralCode);
     setDeeplinked(deeplinked);
-  }, [setReferralCode, referralCode, setDeeplinked, deeplinked]);
+  }, [
+    setReferralCode,
+    referralCode,
+    setDeeplinked,
+    deeplinked,
+    viewWeeklyEarnings,
+  ]);
 
   useEffect(() => {
+    if (viewWeeklyEarnings) {
+      setStep(RainbowPointsFlowSteps.ViewWeeklyEarnings);
+      return;
+    }
+
     setProfile(undefined);
     setAnimationKey(0);
     setStep(RainbowPointsFlowSteps.Initialize);
     setShareBonusPoints(0);
     setIntent(undefined);
-  }, []);
+  }, [
+    viewWeeklyEarnings,
+    setProfile,
+    setAnimationKey,
+    setStep,
+    setShareBonusPoints,
+    setIntent,
+  ]);
 
   useFocusEffect(
     useCallback(() => {
+      if (viewWeeklyEarnings) {
+        analyticsV2.track(analyticsV2.event.pointsViewedWeeklyEarnings);
+        return;
+      }
+
       analyticsV2.track(analyticsV2.event.pointsViewedOnboardingSheet);
-    }, [])
+    }, [viewWeeklyEarnings])
   );
 
   return (
@@ -98,6 +126,8 @@ const ClaimFlow = () => {
       return <Share />;
     case RainbowPointsFlowSteps.Review:
       return <Review />;
+    case RainbowPointsFlowSteps.ViewWeeklyEarnings:
+      return <ViewWeeklyEarnings />;
   }
 };
 
