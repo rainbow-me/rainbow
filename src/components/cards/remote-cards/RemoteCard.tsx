@@ -20,7 +20,6 @@ import { useTheme } from '@/theme';
 import LinearGradient from 'react-native-linear-gradient';
 import { ImgixImage } from '@/components/images';
 import { analyticsV2 } from '@/analytics';
-import { getGutterSizeForCardAmount } from './RemoteCardCarousel';
 
 const getKeyForLanguage = (key: string, object: object, language: Language) => {
   if (!object) {
