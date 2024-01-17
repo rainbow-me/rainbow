@@ -110,13 +110,6 @@ if (SHORTEN_PROP_TYPES_ERROR) {
     ) {
       return;
     }
-
-    if (
-      typeof arguments[0] === 'string' &&
-      arguments[0].startsWith('ViewPropTypes will be removed from React Native')
-    ) {
-      return;
-    }
     oldConsoleError?.apply(this, arguments);
   };
 }
