@@ -35,7 +35,19 @@ import {
   useWalletGroupNotificationSettings,
   WalletNotificationSettings,
 } from '@/notifications/settings';
-import { getNotificationSettingsForWalletWithAddress } from '@/notifications/settings/storage';
+import {
+  getNotificationSettingsForWalletWithAddress,
+  setAllAppWalletNotificationSettingsToStorage,
+} from '@/notifications/settings/storage';
+import { toggleTopicForApp } from '@/notifications/settings/settings';
+import {
+  AppNotificationTopicType,
+  AppNotificationTopics,
+} from '@/notifications/settings/types';
+import { AppNotificationTopic } from '@/notifications/settings/constants';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import { POINTS, useExperimentalFlag } from '@/config';
+import { IS_TEST } from '@/env';
 
 type WalletRowProps = {
   ens: string;
@@ -207,12 +219,26 @@ const NotificationsSection = () => {
   const isTestnet = isTestnetNetwork(network);
   const { wallets, walletNames } = useWallets();
   const { isConnected } = useNetInfo();
+  const { points_enabled } = useRemoteConfig();
+  const pointsEnabled =
+    useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
 
   const {
     ownerEnabled: storedOwnerEnabled,
     updateGroupSettingsAndSubscriptions,
     watcherEnabled: storedWatcherEnabled,
   } = useWalletGroupNotificationSettings();
+  const {
+    appNotificationSettings,
+    walletNotificationSettings,
+  } = useAllNotificationSettingsFromStorage();
+
+  const [topicState, setTopicState] = useState<AppNotificationTopics>(
+    appNotificationSettings
+  );
+  const toggleStateForTopic = (topic: AppNotificationTopicType) =>
+    setTopicState(prev => ({ ...prev, [topic]: !prev[topic] }));
+
   // local state controls the switch UI for better UX
   const [ownedState, setOwnedState] = useState({
     status: storedOwnerEnabled,
@@ -222,9 +248,13 @@ const NotificationsSection = () => {
     status: storedWatcherEnabled,
     loading: false,
   });
-  const {
-    walletNotificationSettings,
-  } = useAllNotificationSettingsFromStorage();
+  // We allow only one subscription in progress
+  // this states controls which we are currently updating
+  const [
+    topicSubscriptionInProgress,
+    setTopicSubscriptionInProgress,
+  ] = useState<AppNotificationTopicType | null>(null);
+
   const { ownedWallets, watchedWallets } = useMemo(() => {
     const ownedWallets: RainbowAccount[] = [];
     const watchedWallets: RainbowAccount[] = [];
@@ -313,6 +343,32 @@ const NotificationsSection = () => {
         setWatchedState(prev => ({ status: !prev.status, loading: false }));
       });
   }, [updateGroupSettingsAndSubscriptions, storedWatcherEnabled, isConnected]);
+
+  const toggleTopic = useCallback(
+    (topic: AppNotificationTopicType) => {
+      if (!isConnected) {
+        showOfflineAlert();
+        return;
+      }
+      toggleStateForTopic(topic);
+      setTopicSubscriptionInProgress(topic);
+      toggleTopicForApp(topic, !appNotificationSettings[topic])
+        .then(() => {
+          setAllAppWalletNotificationSettingsToStorage({
+            ...topicState,
+            [topic]: !topicState[topic],
+          });
+        })
+        .catch(() => {
+          showNotificationSubscriptionErrorAlert();
+          toggleStateForTopic(topic);
+        })
+        .finally(() => {
+          setTopicSubscriptionInProgress(null);
+        });
+    },
+    [appNotificationSettings, isConnected, topicState]
+  );
 
   const openSystemSettings = Linking.openSettings;
   const openNetworkSettings = useCallback(
@@ -502,6 +558,33 @@ const NotificationsSection = () => {
               ))}
             </Menu>
           </>
+        )}
+        {pointsEnabled && (
+          <Menu>
+            <MenuItem
+              disabled
+              rightComponent={
+                <>
+                  {topicSubscriptionInProgress ===
+                    AppNotificationTopic.POINTS && <SettingsLoadingIndicator />}
+                  <Switch
+                    disabled={topicSubscriptionInProgress !== null}
+                    onValueChange={() =>
+                      toggleTopic(AppNotificationTopic.POINTS)
+                    }
+                    value={topicState[AppNotificationTopic.POINTS]}
+                  />
+                </>
+              }
+              size={52}
+              titleComponent={
+                <MenuItem.Title
+                  text={lang.t('settings.notifications_section.points')}
+                  weight="bold"
+                />
+              }
+            />
+          </Menu>
         )}
       </MenuContainer>
     </Box>

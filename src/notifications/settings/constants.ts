@@ -25,3 +25,9 @@ Object.values(NotificationTopic).forEach(
   // @ts-expect-error: Object.values() returns a string[]
   topic => (DEFAULT_ENABLED_TOPIC_SETTINGS[topic] = true)
 );
+export const DEFAULT_ENABLED_APP_TOPIC_SETTINGS = {};
+Object.values(AppNotificationTopic).forEach(
+  // looping through topics and setting them all as true by default
+  // @ts-expect-error: Object.values() returns a string[]
+  topic => (DEFAULT_ENABLED_APP_TOPIC_SETTINGS[topic] = true)
+);

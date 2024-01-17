@@ -1,16 +1,19 @@
 import {
+  AppNotificationTopics,
   GroupSettings,
   NotificationRelationshipType,
   WalletNotificationSettings,
 } from '@/notifications/settings/types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
+  APP_TOPICS_STORAGE_KEY,
   NotificationRelationship,
   WALLET_GROUPS_STORAGE_KEY,
   WALLET_TOPICS_STORAGE_KEY,
 } from '@/notifications/settings/constants';
 import { toggleGroupNotifications } from '@/notifications/settings/settings';
 import {
+  getAllAppNotificationSettingsFromStorage,
   getAllWalletNotificationSettingsFromStorage,
   getExistingGroupSettingsFromStorage,
   notificationSettingsStorage,
@@ -21,12 +24,17 @@ import {
  Hook to constantly listen to notification settings.
  */
 export const useAllNotificationSettingsFromStorage = () => {
-  const data = getAllWalletNotificationSettingsFromStorage();
+  const walletNotificationSettingsData = getAllWalletNotificationSettingsFromStorage();
+  const appNotificationSettingsData = getAllAppNotificationSettingsFromStorage();
   const existingGroupSettingsData = getExistingGroupSettingsFromStorage();
 
   const [walletNotificationSettings, setWalletNotificationSettings] = useState<
     WalletNotificationSettings[]
-  >(data);
+  >(walletNotificationSettingsData);
+  const [
+    appNotificationSettings,
+    setAppNotificationSettings,
+  ] = useState<AppNotificationTopics>(appNotificationSettingsData);
   const [
     existingGroupSettings,
     setExistingGroupSettings,
@@ -39,13 +47,20 @@ export const useAllNotificationSettingsFromStorage = () => {
       } else if (changedKey === WALLET_GROUPS_STORAGE_KEY) {
         const newSettings = notificationSettingsStorage.getString(changedKey);
         newSettings && setExistingGroupSettings(JSON.parse(newSettings));
+      } else if (changedKey === APP_TOPICS_STORAGE_KEY) {
+        const newSettings = notificationSettingsStorage.getString(changedKey);
+        newSettings && setAppNotificationSettings(JSON.parse(newSettings));
       }
     }
   );
   useEffect(() => () => {
     listener.remove();
   });
-  return { walletNotificationSettings, existingGroupSettings };
+  return {
+    appNotificationSettings,
+    walletNotificationSettings,
+    existingGroupSettings,
+  };
 };
 
 /**

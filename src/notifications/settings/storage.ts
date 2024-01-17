@@ -1,5 +1,6 @@
 import {
   APP_TOPICS_STORAGE_KEY,
+  DEFAULT_ENABLED_APP_TOPIC_SETTINGS,
   WALLET_GROUPS_STORAGE_KEY,
   WALLET_TOPICS_STORAGE_KEY,
 } from '@/notifications/settings/constants';
@@ -18,20 +19,20 @@ export const notificationSettingsStorage = new MMKV({
 
 /**
  Grabs app notification settings if they exist,
- otherwise returns an empty array.
+ otherwise returns default settings.
  */
 export const getAllAppNotificationSettingsFromStorage = () => {
   const data = notificationSettingsStorage.getString(APP_TOPICS_STORAGE_KEY);
 
   if (data) return JSON.parse(data) as AppNotificationTopics;
-  return [];
+  return DEFAULT_ENABLED_APP_TOPIC_SETTINGS as AppNotificationTopics;
 };
 
 /**
  * Writes an updated settings object to storage
  */
 export const setAllAppWalletNotificationSettingsToStorage = (
-  settings: AppNotificationTopics[]
+  settings: AppNotificationTopics
 ) => {
   notificationSettingsStorage.set(
     APP_TOPICS_STORAGE_KEY,

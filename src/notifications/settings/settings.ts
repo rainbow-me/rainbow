@@ -12,7 +12,9 @@ import {
   notificationSettingsStorage,
 } from '@/notifications/settings/storage';
 import {
+  subscribeToSingleNotificationTopic,
   subscribeWalletToSingleNotificationTopic,
+  unsubscribeFromSingleNotificationTopic,
   unsubscribeWalletFromAllNotificationTopics,
   unsubscribeWalletFromSingleNotificationTopic,
 } from '@/notifications/settings/firebase';
@@ -119,5 +121,19 @@ export function toggleTopicForWallet(
       address,
       topic
     );
+  }
+}
+
+/**
+ Function for subscribing/unsubscribing the app to/from a single notification topic.
+ */
+export function toggleTopicForApp(
+  topic: NotificationTopicType,
+  enableTopic: boolean
+): Promise<void> {
+  if (enableTopic) {
+    return subscribeToSingleNotificationTopic(topic);
+  } else {
+    return unsubscribeFromSingleNotificationTopic(topic);
   }
 }
