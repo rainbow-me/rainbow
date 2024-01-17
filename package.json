@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.9.13-1",
+  "version": "1.9.14-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn postinstall && yarn graphql-codegen",
@@ -241,7 +241,7 @@
     "react-native-mail": "4.1.0",
     "react-native-markdown-display": "7.0.0-alpha.2",
     "react-native-minimizer": "rainbow-me/react-native-minimizer#26ae6dce10d353de701cebc3a1ae126729bf87f0",
-    "react-native-mmkv": "2.10.1",
+    "react-native-mmkv": "2.11.0",
     "react-native-os": "rainbow-me/react-native-os#41a08e45260b8c1c53c77ad00e13ae954cb9337c",
     "react-native-pager-view": "5.4.24",
     "react-native-palette-full": "1.2.0",
@@ -412,7 +412,7 @@
     "**/set-value": "4.1.0",
     "**/validator": "13.7.0",
     "**/json-schema": "0.4.0",
-    "**/follow-redirects": "1.14.8",
+    "**/follow-redirects": "1.15.4",
     "**/markdown-it": "12.3.2",
     "**/simple-get": "4.0.1",
     "**/simple-plist": "1.3.1",
