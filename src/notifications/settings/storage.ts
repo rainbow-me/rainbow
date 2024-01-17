@@ -31,7 +31,7 @@ export const getAllAppNotificationSettingsFromStorage = () => {
 /**
  * Writes an updated settings object to storage
  */
-export const setAllAppWalletNotificationSettingsToStorage = (
+export const setAllAppNotificationSettingsToStorage = (
   settings: AppNotificationTopics
 ) => {
   notificationSettingsStorage.set(

@@ -4,7 +4,10 @@ import {
 } from '@/notifications/settings/types';
 import messaging from '@react-native-firebase/messaging';
 import { trackChangedNotificationSettings } from '@/notifications/analytics';
-import { NotificationTopic } from '@/notifications/settings/constants';
+import {
+  AppNotificationTopic,
+  NotificationTopic,
+} from '@/notifications/settings/constants';
 import { logger } from '@/logger';
 
 /**
@@ -43,6 +46,14 @@ export const unsubscribeWalletFromAllNotificationTopics = (
         address,
         topic
       )
+    )
+  );
+};
+
+export const unsubscribeAppFromAllNotificationTopics = (): Promise<void[]> => {
+  return Promise.all(
+    Object.values(AppNotificationTopic).map(topic =>
+      unsubscribeFromSingleNotificationTopic(topic)
     )
   );
 };

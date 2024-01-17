@@ -37,7 +37,7 @@ import {
 } from '@/notifications/settings';
 import {
   getNotificationSettingsForWalletWithAddress,
-  setAllAppWalletNotificationSettingsToStorage,
+  setAllAppNotificationSettingsToStorage,
 } from '@/notifications/settings/storage';
 import { toggleTopicForApp } from '@/notifications/settings/settings';
 import {
@@ -354,7 +354,7 @@ const NotificationsSection = () => {
       setTopicSubscriptionInProgress(topic);
       toggleTopicForApp(topic, !appNotificationSettings[topic])
         .then(() => {
-          setAllAppWalletNotificationSettingsToStorage({
+          setAllAppNotificationSettingsToStorage({
             ...topicState,
             [topic]: !topicState[topic],
           });

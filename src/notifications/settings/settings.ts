@@ -1,4 +1,5 @@
 import {
+  DEFAULT_ENABLED_APP_TOPIC_SETTINGS,
   NOTIFICATIONS_DEFAULT_CHAIN_ID,
   WALLET_TOPICS_STORAGE_KEY,
 } from '@/notifications/settings/constants';
@@ -10,14 +11,22 @@ import {
 import {
   getAllWalletNotificationSettingsFromStorage,
   notificationSettingsStorage,
+  setAllAppNotificationSettingsToStorage,
 } from '@/notifications/settings/storage';
 import {
   subscribeToSingleNotificationTopic,
   subscribeWalletToSingleNotificationTopic,
+  unsubscribeAppFromAllNotificationTopics,
   unsubscribeFromSingleNotificationTopic,
   unsubscribeWalletFromAllNotificationTopics,
   unsubscribeWalletFromSingleNotificationTopic,
 } from '@/notifications/settings/firebase';
+
+export const removeNotificationSettingsForApp = (): Promise<void> => {
+  return unsubscribeAppFromAllNotificationTopics().then(() =>
+    setAllAppNotificationSettingsToStorage(DEFAULT_ENABLED_APP_TOPIC_SETTINGS)
+  );
+};
 
 /**
  1. Reads notification settings for all wallets from storage.
