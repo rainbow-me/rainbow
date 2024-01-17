@@ -25,9 +25,11 @@ import useLayoutItemAnimator from './useLayoutItemAnimator';
 import { UniqueAsset } from '@/entities';
 import { useRecyclerListViewScrollToTopContext } from '@/navigation/RecyclerListViewScrollToTopContext';
 import {
+  useAccountProfile,
   useAccountSettings,
   useCoinListEdited,
   useCoinListEditOptions,
+  useWallets,
 } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { useTheme } from '@/theme';
@@ -75,6 +77,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
 
   const { name } = useRoute();
   const { getCardsForPlacement } = useRemoteCardContext();
+  const { isReadOnlyWallet } = useWallets();
 
   const cards = useMemo(() => getCardsForPlacement(name as string), [
     getCardsForPlacement,
@@ -82,8 +85,14 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   ]);
 
   const layoutProvider = useMemo(
-    () => getLayoutProvider(briefSectionsData, isCoinListEdited, cards),
-    [briefSectionsData, isCoinListEdited, cards]
+    () =>
+      getLayoutProvider(
+        briefSectionsData,
+        isCoinListEdited,
+        cards,
+        isReadOnlyWallet
+      ),
+    [briefSectionsData, isCoinListEdited, cards, isReadOnlyWallet]
   );
 
   const { accountAddress } = useAccountSettings();

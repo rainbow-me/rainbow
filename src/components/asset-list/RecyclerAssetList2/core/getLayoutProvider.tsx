@@ -53,7 +53,8 @@ class BetterLayoutProvider extends LayoutProvider {
 const getLayoutProvider = (
   briefSectionsData: BaseCellType[],
   isCoinListEdited: boolean,
-  cards: TrimmedCard[]
+  cards: TrimmedCard[],
+  isReadOnlyWallet: boolean
 ) => {
   const indicesToOverride = [];
   for (let i = 0; i < briefSectionsData.length; i++) {
@@ -79,10 +80,12 @@ const getLayoutProvider = (
         dim.height = ViewDimensions[type].height;
         dim.width = ViewDimensions[type].width || dim.width;
 
-        if (type === CellType.REMOTE_CARD_CAROUSEL && !cards.length) {
+        if (
+          (type === CellType.REMOTE_CARD_CAROUSEL && !cards.length) ||
+          (type === CellType.REMOTE_CARD_CAROUSEL && isReadOnlyWallet)
+        ) {
           dim.height = 0;
         }
-
       }
     },
     indicesToOverride
