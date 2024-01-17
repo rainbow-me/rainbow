@@ -6,7 +6,7 @@ import { AnimatedText } from '../../components/AnimatedText';
 import { textColors, rainbowColors } from '../../constants';
 import * as i18n from '@/languages';
 import { useAccountProfile } from '@/hooks';
-import { startOfWeek, endOfWeek, format } from 'date-fns';
+import { startOfWeek, endOfWeek, format, subWeeks } from 'date-fns';
 import {
   abbreviateEnsForDisplay,
   address as formatAddress,
@@ -20,23 +20,23 @@ import { usePoints } from '@/resources/points';
 import { abbreviateNumber } from '@/helpers/utilities';
 
 export const ViewWeeklyEarnings = () => {
-  const { accountENS, accountAddress } = useAccountProfile();
-  const { goBack } = useNavigation();
+  const [showCloseButton, setShowCloseButton] = useState(false);
 
+  const { goBack } = useNavigation();
+  const { accountENS, accountAddress } = useAccountProfile();
   const { data: points } = usePoints({
     walletAddress: accountAddress,
   });
 
-  const weekBegins = startOfWeek(new Date(), { weekStartsOn: 1 });
-  const weekEnds = endOfWeek(new Date(), { weekStartsOn: 1 });
-
-  const [showCloseButton, setShowCloseButton] = useState(false);
+  // NOTE: Tuesday is the first day of the week since points drop that day
+  const weekBegins = startOfWeek(subWeeks(new Date(), 1), { weekStartsOn: 2 });
+  const weekEnds = endOfWeek(subWeeks(new Date(), 1), { weekStartsOn: 3 });
 
   const accountName = (abbreviateEnsForDisplay(accountENS, 10) ||
     formatAddress(accountAddress, 4, 5)) as string;
 
-  const newTotal = points?.points?.user.stats.last_airdrop.earnings.total;
-
+  const newTotalEarnings =
+    points?.points?.user.stats.last_airdrop.earnings.total;
   const retroactive = points?.points?.user.stats.last_airdrop.differences?.find(
     difference => difference?.type === 'retroactive'
   );
@@ -55,14 +55,6 @@ export const ViewWeeklyEarnings = () => {
     (transaction?.earnings?.total ?? 0) +
     (referral?.earnings?.total ?? 0) +
     (redemption?.earnings?.total ?? 0);
-
-  console.log({
-    retroactive,
-    referral,
-    transaction,
-    redemption,
-    newTotal,
-  });
 
   return (
     <Box height="full" justifyContent="space-between">
@@ -184,6 +176,8 @@ export const ViewWeeklyEarnings = () => {
               typingSpeed={100}
             />
           </Line> */}
+        </Stack>
+        <Paragraph gap={45}>
           <Line alignHorizontal="justify">
             <AnimatedText
               color={textColors.gray}
@@ -198,12 +192,12 @@ export const ViewWeeklyEarnings = () => {
               delayStart={1000}
               enableHapticTyping
               textAlign="right"
-              textContent={`+ ${abbreviateNumber(totalWeeklyEarnings ?? 0)}`}
+              textContent={`+ ${abbreviateNumber(
+                totalWeeklyEarnings ?? 0
+              )} Points`}
               typingSpeed={100}
             />
           </Line>
-        </Stack>
-        <Paragraph gap={30}>
           <AnimatedText
             color={textColors.gray}
             delayStart={1000}
@@ -212,6 +206,8 @@ export const ViewWeeklyEarnings = () => {
             )}`}
             weight="normal"
           />
+        </Paragraph>
+        <Paragraph gap={30}>
           <Line alignHorizontal="justify">
             <AnimatedText
               color={textColors.white}
@@ -225,7 +221,9 @@ export const ViewWeeklyEarnings = () => {
               enableHapticTyping
               hapticType="impactHeavy"
               textAlign="right"
-              textContent={`${(newTotal ?? 0).toLocaleString('en-US')} Points`}
+              textContent={`${(newTotalEarnings ?? 0).toLocaleString(
+                'en-US'
+              )} Points`}
               onComplete={() => {
                 const complete = setTimeout(() => {
                   setShowCloseButton(true);
