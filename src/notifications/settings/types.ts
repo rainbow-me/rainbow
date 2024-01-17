@@ -1,38 +1,38 @@
 import {
-  AppNotificationTopic,
-  NotificationRelationship,
-  NotificationTopic,
+  GlobalNotificationTopic,
+  WalletNotificationRelationship,
+  WalletNotificationTopic,
 } from '@/notifications/settings/constants';
 
-export type NotificationTopicType = typeof NotificationTopic[keyof typeof NotificationTopic];
+export type WalletNotificationTopicType = typeof WalletNotificationTopic[keyof typeof WalletNotificationTopic];
 
-export type AppNotificationTopicType = typeof AppNotificationTopic[keyof typeof AppNotificationTopic];
+export type GlobalNotificationTopicType = typeof GlobalNotificationTopic[keyof typeof GlobalNotificationTopic];
 
-export type NotificationRelationshipType = typeof NotificationRelationship[keyof typeof NotificationRelationship];
+export type WalletNotificationRelationshipType = typeof WalletNotificationRelationship[keyof typeof WalletNotificationRelationship];
 
 export type WalletNotificationTopics = {
-  [key: NotificationTopicType]: boolean;
+  [key: WalletNotificationTopicType]: boolean;
 };
 
-export type AppNotificationTopics = {
-  [key: AppNotificationTopicType]: boolean;
+export type GlobalNotificationTopics = {
+  [key: GlobalNotificationTopicType]: boolean;
 };
 
 export type WalletNotificationSettings = {
   address: string;
   topics: WalletNotificationTopics;
   enabled: boolean;
-  type: NotificationRelationshipType;
+  type: WalletNotificationRelationshipType;
   successfullyFinishedInitialSubscription: boolean;
   // only set in cases when the user imported an already watched wallet
-  oldType?: NotificationRelationshipType;
+  oldType?: WalletNotificationRelationshipType;
 };
 
 export type GroupSettings = {
-  [key: NotificationRelationshipType]: boolean;
+  [key: WalletNotificationRelationshipType]: boolean;
 };
 
 export type AddressWithRelationship = {
   address: string;
-  relationship: NotificationRelationshipType;
+  relationship: WalletNotificationRelationshipType;
 };

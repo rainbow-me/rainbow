@@ -1,19 +1,19 @@
 import {
-  AppNotificationTopics,
+  GlobalNotificationTopics,
   GroupSettings,
-  NotificationRelationshipType,
+  WalletNotificationRelationshipType,
   WalletNotificationSettings,
 } from '@/notifications/settings/types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  APP_TOPICS_STORAGE_KEY,
-  NotificationRelationship,
+  GLOBAL_TOPICS_STORAGE_KEY,
+  WalletNotificationRelationship,
   WALLET_GROUPS_STORAGE_KEY,
   WALLET_TOPICS_STORAGE_KEY,
 } from '@/notifications/settings/constants';
 import { toggleGroupNotifications } from '@/notifications/settings/settings';
 import {
-  getAllAppNotificationSettingsFromStorage,
+  getAllGlobalNotificationSettingsFromStorage,
   getAllWalletNotificationSettingsFromStorage,
   getExistingGroupSettingsFromStorage,
   notificationSettingsStorage,
@@ -25,16 +25,16 @@ import {
  */
 export const useAllNotificationSettingsFromStorage = () => {
   const walletNotificationSettingsData = getAllWalletNotificationSettingsFromStorage();
-  const appNotificationSettingsData = getAllAppNotificationSettingsFromStorage();
+  const globalNotificationSettingsData = getAllGlobalNotificationSettingsFromStorage();
   const existingGroupSettingsData = getExistingGroupSettingsFromStorage();
 
   const [walletNotificationSettings, setWalletNotificationSettings] = useState<
     WalletNotificationSettings[]
   >(walletNotificationSettingsData);
   const [
-    appNotificationSettings,
-    setAppNotificationSettings,
-  ] = useState<AppNotificationTopics>(appNotificationSettingsData);
+    globalNotificationSettings,
+    setGlobalNotificationSettings,
+  ] = useState<GlobalNotificationTopics>(globalNotificationSettingsData);
   const [
     existingGroupSettings,
     setExistingGroupSettings,
@@ -47,9 +47,9 @@ export const useAllNotificationSettingsFromStorage = () => {
       } else if (changedKey === WALLET_GROUPS_STORAGE_KEY) {
         const newSettings = notificationSettingsStorage.getString(changedKey);
         newSettings && setExistingGroupSettings(JSON.parse(newSettings));
-      } else if (changedKey === APP_TOPICS_STORAGE_KEY) {
+      } else if (changedKey === GLOBAL_TOPICS_STORAGE_KEY) {
         const newSettings = notificationSettingsStorage.getString(changedKey);
-        newSettings && setAppNotificationSettings(JSON.parse(newSettings));
+        newSettings && setGlobalNotificationSettings(JSON.parse(newSettings));
       }
     }
   );
@@ -57,7 +57,7 @@ export const useAllNotificationSettingsFromStorage = () => {
     listener.remove();
   });
   return {
-    appNotificationSettings,
+    globalNotificationSettings,
     walletNotificationSettings,
     existingGroupSettings,
   };
@@ -76,9 +76,10 @@ export const useWalletGroupNotificationSettings = () => {
     existingGroupSettings,
   } = useAllNotificationSettingsFromStorage();
 
-  const ownerEnabled = existingGroupSettings[NotificationRelationship.OWNER];
+  const ownerEnabled =
+    existingGroupSettings[WalletNotificationRelationship.OWNER];
   const watcherEnabled =
-    existingGroupSettings[NotificationRelationship.WATCHER];
+    existingGroupSettings[WalletNotificationRelationship.WATCHER];
 
   const {
     lastWatchedWalletEnabled,
@@ -90,11 +91,11 @@ export const useWalletGroupNotificationSettings = () => {
   } = useMemo(() => {
     const ownedWallets = walletNotificationSettings.filter(
       (wallet: WalletNotificationSettings) =>
-        wallet.type === NotificationRelationship.OWNER
+        wallet.type === WalletNotificationRelationship.OWNER
     );
     const watchedWallets = walletNotificationSettings.filter(
       (wallet: WalletNotificationSettings) =>
-        wallet.type === NotificationRelationship.WATCHER
+        wallet.type === WalletNotificationRelationship.WATCHER
     );
     const allOwnedWalletsDisabled = ownedWallets.reduce(
       (prevWalletDisabled, wallet) => prevWalletDisabled && !wallet.enabled,
@@ -121,7 +122,7 @@ export const useWalletGroupNotificationSettings = () => {
   }, [walletNotificationSettings]);
 
   const updateGroupSettingsAndSubscriptions = useCallback(
-    (type: NotificationRelationshipType, enabled: boolean) => {
+    (type: WalletNotificationRelationshipType, enabled: boolean) => {
       const options: GroupSettings = {
         [type]: enabled,
       };
@@ -129,8 +130,9 @@ export const useWalletGroupNotificationSettings = () => {
         ...existingGroupSettings,
         ...options,
       };
-      const newOwnerEnabled = newSettings[NotificationRelationship.OWNER];
-      const newWatcherEnabled = newSettings[NotificationRelationship.WATCHER];
+      const newOwnerEnabled = newSettings[WalletNotificationRelationship.OWNER];
+      const newWatcherEnabled =
+        newSettings[WalletNotificationRelationship.WATCHER];
 
       const updateStore = () => {
         updateGroupSettings(newSettings);
@@ -139,13 +141,13 @@ export const useWalletGroupNotificationSettings = () => {
       if (newOwnerEnabled !== ownerEnabled) {
         return toggleGroupNotifications(
           ownedWallets,
-          NotificationRelationship.OWNER,
+          WalletNotificationRelationship.OWNER,
           newOwnerEnabled
         ).then(updateStore);
       } else if (newWatcherEnabled !== watcherEnabled) {
         return toggleGroupNotifications(
           watchedWallets,
-          NotificationRelationship.WATCHER,
+          WalletNotificationRelationship.WATCHER,
           newWatcherEnabled
         ).then(updateStore);
       }

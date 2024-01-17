@@ -1,6 +1,6 @@
 export {
-  NotificationRelationship,
-  NotificationTopic,
+  WalletNotificationRelationship,
+  WalletNotificationTopic,
   WALLET_GROUPS_STORAGE_KEY,
   WALLET_TOPICS_STORAGE_KEY,
 } from './constants';
@@ -19,10 +19,10 @@ export {
 } from './settings';
 export type {
   AddressWithRelationship,
-  AppNotificationTopicType,
+  GlobalNotificationTopicType,
   GroupSettings,
-  NotificationRelationshipType,
-  NotificationTopicType,
+  WalletNotificationRelationshipType,
+  WalletNotificationTopicType,
   WalletNotificationSettings,
 } from './types';
 export {

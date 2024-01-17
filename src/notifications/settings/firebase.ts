@@ -1,13 +1,13 @@
 import {
-  AppNotificationTopicType,
-  NotificationTopicType,
+  GlobalNotificationTopicType,
+  WalletNotificationTopicType,
   WalletNotificationSettings,
 } from '@/notifications/settings/types';
 import messaging from '@react-native-firebase/messaging';
 import { trackChangedNotificationSettings } from '@/notifications/analytics';
 import {
-  AppNotificationTopic,
-  NotificationTopic,
+  GlobalNotificationTopic,
+  WalletNotificationTopic,
 } from '@/notifications/settings/constants';
 import { logger } from '@/logger';
 
@@ -21,7 +21,7 @@ export const subscribeWalletToAllEnabledTopics = (
   return Promise.all(
     Object.entries(settings.topics).map(([topic, isEnabled]) => {
       if (isEnabled) {
-        return subscribeWalletToSingleNotificationTopic(
+        return subscribeWalletToNotificationTopic(
           settings.type,
           chainId,
           settings.address,
@@ -40,30 +40,27 @@ export const unsubscribeWalletFromAllNotificationTopics = (
   address: string
 ): Promise<void[]> => {
   return Promise.all(
-    Object.values(NotificationTopic).map(topic =>
-      unsubscribeWalletFromSingleNotificationTopic(
-        type,
-        chainId,
-        address,
-        topic
-      )
+    Object.values(WalletNotificationTopic).map(topic =>
+      unsubscribeWalletFromNotificationTopic(type, chainId, address, topic)
     )
   );
 };
 
-export const unsubscribeAppFromAllNotificationTopics = (): Promise<void[]> => {
+export const unsubscribeFromAllGlobalNotificationTopics = (): Promise<
+  void[]
+> => {
   return Promise.all(
-    Object.values(AppNotificationTopic).map(topic =>
-      unsubscribeFromSingleNotificationTopic(topic)
+    Object.values(GlobalNotificationTopic).map(topic =>
+      unsubscribeFromGlobalNotificationTopic(topic)
     )
   );
 };
 
-export const subscribeWalletToSingleNotificationTopic = (
+export const subscribeWalletToNotificationTopic = async (
   type: string,
   chainId: number,
   address: string,
-  topic: NotificationTopicType
+  topic: WalletNotificationTopicType
 ): Promise<void> => {
   logger.debug(
     `Notifications: subscribing ${type}:${address} to [ ${topic.toUpperCase()} ]`,
@@ -77,11 +74,11 @@ export const subscribeWalletToSingleNotificationTopic = (
     );
 };
 
-export const unsubscribeWalletFromSingleNotificationTopic = async (
+export const unsubscribeWalletFromNotificationTopic = async (
   type: string,
   chainId: number,
   address: string,
-  topic: NotificationTopicType
+  topic: WalletNotificationTopicType
 ) => {
   logger.debug(
     `Notifications: unsubscribing ${type}:${address} from [ ${topic.toUpperCase()} ]`,
@@ -97,8 +94,8 @@ export const unsubscribeWalletFromSingleNotificationTopic = async (
     });
 };
 
-export const subscribeToSingleNotificationTopic = (
-  topic: AppNotificationTopicType
+export const subscribeToGlobalNotificationTopic = async (
+  topic: GlobalNotificationTopicType
 ): Promise<void> => {
   logger.debug(
     `Notifications: subscribing to [ ${topic.toUpperCase()} ]`,
@@ -110,8 +107,8 @@ export const subscribeToSingleNotificationTopic = (
     .then(() => trackChangedNotificationSettings(topic, 'subscribe'));
 };
 
-export const unsubscribeFromSingleNotificationTopic = async (
-  topic: AppNotificationTopicType
+export const unsubscribeFromGlobalNotificationTopic = async (
+  topic: GlobalNotificationTopicType
 ) => {
   logger.debug(
     `Notifications: unsubscribing from [ ${topic.toUpperCase()} ]`,

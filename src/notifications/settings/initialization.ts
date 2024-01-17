@@ -1,6 +1,6 @@
 import {
   DEFAULT_ENABLED_TOPIC_SETTINGS,
-  NotificationRelationship,
+  WalletNotificationRelationship,
   NOTIFICATIONS_DEFAULT_CHAIN_ID,
   WALLET_GROUPS_STORAGE_KEY,
 } from '@/notifications/settings/constants';
@@ -9,7 +9,7 @@ import {
   WalletNotificationSettings,
 } from '@/notifications/settings/types';
 import {
-  getAllAppNotificationSettingsFromStorage,
+  getAllGlobalNotificationSettingsFromStorage,
   getAllWalletNotificationSettingsFromStorage,
   notificationSettingsStorage,
   setAllWalletNotificationSettingsToStorage,
@@ -24,7 +24,7 @@ import { InteractionManager } from 'react-native';
 import { logger, RainbowError } from '@/logger';
 import {
   removeNotificationSettingsForWallet,
-  toggleTopicForApp,
+  toggleGlobalNotificationTopic,
 } from '@/notifications/settings/settings';
 
 type InitializationStateType = {
@@ -45,8 +45,8 @@ export const addDefaultNotificationGroupSettings = (override = false) => {
 
   if (!data || override) {
     const defaultSettings = {
-      [NotificationRelationship.OWNER]: true,
-      [NotificationRelationship.WATCHER]: false,
+      [WalletNotificationRelationship.OWNER]: true,
+      [WalletNotificationRelationship.WATCHER]: false,
     };
     notificationSettingsStorage.set(
       WALLET_GROUPS_STORAGE_KEY,
@@ -55,12 +55,13 @@ export const addDefaultNotificationGroupSettings = (override = false) => {
   }
 };
 
-export const initializeAppNotificationSettings = () => {
-  const currentSettings = getAllAppNotificationSettingsFromStorage();
+export const initializeGlobalNotificationSettings = () => {
+  const currentSettings = getAllGlobalNotificationSettingsFromStorage();
   return Promise.all(
-    Object.entries(currentSettings).map(([topic, isEnabled]) =>
-      toggleTopicForApp(topic, isEnabled)
-    )
+    Object.entries(currentSettings).map(([topic, isEnabled]) => {
+      console.log(topic, isEnabled);
+      toggleGlobalNotificationTopic(topic, isEnabled);
+    })
   );
 };
 
@@ -156,7 +157,8 @@ export const _prepareSubscriptionQueueAndCreateInitialSettings = (
     }
     // case where there are no settings for the wallet and there will be subscriptions to process for imported wallets
     else if (!alreadySaved.has(entry.address)) {
-      const isImported = entry.relationship === NotificationRelationship.OWNER;
+      const isImported =
+        entry.relationship === WalletNotificationRelationship.OWNER;
       const newSettingsEntry: WalletNotificationSettings = {
         type: entry.relationship,
         address: entry.address,
@@ -243,7 +245,7 @@ const processSubscriptionQueueItem = async (
     }
   }
   if (
-    newSettings.type === NotificationRelationship.OWNER &&
+    newSettings.type === WalletNotificationRelationship.OWNER &&
     !newSettings.successfullyFinishedInitialSubscription
   ) {
     try {

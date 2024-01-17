@@ -58,7 +58,7 @@ import { DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS } from '@/redux/data';
 import { saveLocalPendingTransactions } from '@/handlers/localstorage/accountLocal';
 import { getFCMToken } from '@/notifications/tokens';
 import { resetNonces } from '@/redux/nonceManager';
-import { removeNotificationSettingsForApp } from '@/notifications/settings/settings';
+import { removeGlobalNotificationSettings } from '@/notifications/settings/settings';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
@@ -204,7 +204,7 @@ const DevSection = () => {
     // loop through notification settings and unsubscribe all wallets
     // from firebase first or we’re gonna keep getting them even after
     // clearing storage and before changing settings
-    removeNotificationSettingsForApp();
+    removeGlobalNotificationSettings();
     if (walletNotificationSettings.length > 0) {
       return Promise.all(
         walletNotificationSettings.map(wallet =>

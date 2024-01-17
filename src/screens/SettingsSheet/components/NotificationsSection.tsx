@@ -29,7 +29,7 @@ import {
 } from '@/screens/SettingsSheet/components/notificationAlerts';
 import { useNetInfo } from '@react-native-community/netinfo';
 import {
-  NotificationRelationship,
+  WalletNotificationRelationship,
   updateSettingsForWalletsWithRelationshipType,
   useAllNotificationSettingsFromStorage,
   useWalletGroupNotificationSettings,
@@ -37,14 +37,14 @@ import {
 } from '@/notifications/settings';
 import {
   getNotificationSettingsForWalletWithAddress,
-  setAllAppNotificationSettingsToStorage,
+  setAllGlobalNotificationSettingsToStorage,
 } from '@/notifications/settings/storage';
-import { toggleTopicForApp } from '@/notifications/settings/settings';
+import { toggleGlobalNotificationTopic } from '@/notifications/settings/settings';
 import {
-  AppNotificationTopicType,
-  AppNotificationTopics,
+  GlobalNotificationTopicType,
+  GlobalNotificationTopics,
 } from '@/notifications/settings/types';
-import { AppNotificationTopic } from '@/notifications/settings/constants';
+import { GlobalNotificationTopic } from '@/notifications/settings/constants';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { POINTS, useExperimentalFlag } from '@/config';
 import { IS_TEST } from '@/env';
@@ -229,14 +229,14 @@ const NotificationsSection = () => {
     watcherEnabled: storedWatcherEnabled,
   } = useWalletGroupNotificationSettings();
   const {
-    appNotificationSettings,
+    globalNotificationSettings,
     walletNotificationSettings,
   } = useAllNotificationSettingsFromStorage();
 
-  const [topicState, setTopicState] = useState<AppNotificationTopics>(
-    appNotificationSettings
+  const [topicState, setTopicState] = useState<GlobalNotificationTopics>(
+    globalNotificationSettings
   );
-  const toggleStateForTopic = (topic: AppNotificationTopicType) =>
+  const toggleStateForTopic = (topic: GlobalNotificationTopicType) =>
     setTopicState(prev => ({ ...prev, [topic]: !prev[topic] }));
 
   // local state controls the switch UI for better UX
@@ -253,7 +253,7 @@ const NotificationsSection = () => {
   const [
     topicSubscriptionInProgress,
     setTopicSubscriptionInProgress,
-  ] = useState<AppNotificationTopicType | null>(null);
+  ] = useState<GlobalNotificationTopicType | null>(null);
 
   const { ownedWallets, watchedWallets } = useMemo(() => {
     const ownedWallets: RainbowAccount[] = [];
@@ -299,13 +299,13 @@ const NotificationsSection = () => {
     }
     setOwnedState(prev => ({ status: !prev.status, loading: true }));
     updateGroupSettingsAndSubscriptions(
-      NotificationRelationship.OWNER,
+      WalletNotificationRelationship.OWNER,
       !storedOwnerEnabled
     )
       .then(() => {
         setOwnedState(prev => ({ ...prev, loading: false }));
         updateSettingsForWalletsWithRelationshipType(
-          NotificationRelationship.OWNER,
+          WalletNotificationRelationship.OWNER,
           {
             successfullyFinishedInitialSubscription: true,
             enabled: !storedOwnerEnabled,
@@ -325,13 +325,13 @@ const NotificationsSection = () => {
     }
     setWatchedState(prev => ({ status: !prev.status, loading: true }));
     updateGroupSettingsAndSubscriptions(
-      NotificationRelationship.WATCHER,
+      WalletNotificationRelationship.WATCHER,
       !storedWatcherEnabled
     )
       .then(() => {
         setWatchedState(prev => ({ ...prev, loading: false }));
         updateSettingsForWalletsWithRelationshipType(
-          NotificationRelationship.WATCHER,
+          WalletNotificationRelationship.WATCHER,
           {
             successfullyFinishedInitialSubscription: true,
             enabled: !storedWatcherEnabled,
@@ -345,16 +345,16 @@ const NotificationsSection = () => {
   }, [updateGroupSettingsAndSubscriptions, storedWatcherEnabled, isConnected]);
 
   const toggleTopic = useCallback(
-    (topic: AppNotificationTopicType) => {
+    (topic: GlobalNotificationTopicType) => {
       if (!isConnected) {
         showOfflineAlert();
         return;
       }
       toggleStateForTopic(topic);
       setTopicSubscriptionInProgress(topic);
-      toggleTopicForApp(topic, !appNotificationSettings[topic])
+      toggleGlobalNotificationTopic(topic, !globalNotificationSettings[topic])
         .then(() => {
-          setAllAppNotificationSettingsToStorage({
+          setAllGlobalNotificationSettingsToStorage({
             ...topicState,
             [topic]: !topicState[topic],
           });
@@ -367,7 +367,7 @@ const NotificationsSection = () => {
           setTopicSubscriptionInProgress(null);
         });
     },
-    [appNotificationSettings, isConnected, topicState]
+    [globalNotificationSettings, isConnected, topicState]
   );
 
   const openSystemSettings = Linking.openSettings;
@@ -566,13 +566,15 @@ const NotificationsSection = () => {
               rightComponent={
                 <>
                   {topicSubscriptionInProgress ===
-                    AppNotificationTopic.POINTS && <SettingsLoadingIndicator />}
+                    GlobalNotificationTopic.POINTS && (
+                    <SettingsLoadingIndicator />
+                  )}
                   <Switch
                     disabled={topicSubscriptionInProgress !== null}
                     onValueChange={() =>
-                      toggleTopic(AppNotificationTopic.POINTS)
+                      toggleTopic(GlobalNotificationTopic.POINTS)
                     }
-                    value={topicState[AppNotificationTopic.POINTS]}
+                    value={topicState[GlobalNotificationTopic.POINTS]}
                   />
                 </>
               }

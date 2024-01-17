@@ -52,10 +52,10 @@ import {
 } from '@/notifications/analytics';
 import {
   AddressWithRelationship,
-  NotificationRelationship,
+  WalletNotificationRelationship,
 } from '@/notifications/settings';
 import {
-  initializeAppNotificationSettings,
+  initializeGlobalNotificationSettings,
   initializeNotificationSettingsForAllAddressesAndCleanupSettingsForRemovedWallets,
 } from '@/notifications/settings/initialization';
 import { logger } from '@/logger';
@@ -384,12 +384,12 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
               address,
               relationship:
                 wallet.type === walletTypes.readOnly
-                  ? NotificationRelationship.WATCHER
-                  : NotificationRelationship.OWNER,
+                  ? WalletNotificationRelationship.WATCHER
+                  : WalletNotificationRelationship.OWNER,
             })
         )
       );
-      initializeAppNotificationSettings();
+      initializeGlobalNotificationSettings();
       initializeNotificationSettingsForAllAddressesAndCleanupSettingsForRemovedWallets(
         addresses
       );

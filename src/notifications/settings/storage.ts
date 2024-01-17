@@ -1,13 +1,13 @@
 import {
-  APP_TOPICS_STORAGE_KEY,
-  DEFAULT_ENABLED_APP_TOPIC_SETTINGS,
+  GLOBAL_TOPICS_STORAGE_KEY,
+  DEFAULT_ENABLED_GLOBAL_TOPIC_SETTINGS,
   WALLET_GROUPS_STORAGE_KEY,
   WALLET_TOPICS_STORAGE_KEY,
 } from '@/notifications/settings/constants';
 import {
-  AppNotificationTopics,
+  GlobalNotificationTopics,
   GroupSettings,
-  NotificationRelationshipType,
+  WalletNotificationRelationshipType,
   WalletNotificationSettings,
 } from '@/notifications/settings/types';
 import { MMKV } from 'react-native-mmkv';
@@ -21,21 +21,21 @@ export const notificationSettingsStorage = new MMKV({
  Grabs app notification settings if they exist,
  otherwise returns default settings.
  */
-export const getAllAppNotificationSettingsFromStorage = () => {
-  const data = notificationSettingsStorage.getString(APP_TOPICS_STORAGE_KEY);
+export const getAllGlobalNotificationSettingsFromStorage = () => {
+  const data = notificationSettingsStorage.getString(GLOBAL_TOPICS_STORAGE_KEY);
 
-  if (data) return JSON.parse(data) as AppNotificationTopics;
-  return DEFAULT_ENABLED_APP_TOPIC_SETTINGS as AppNotificationTopics;
+  if (data) return JSON.parse(data) as GlobalNotificationTopics;
+  return DEFAULT_ENABLED_GLOBAL_TOPIC_SETTINGS as GlobalNotificationTopics;
 };
 
 /**
  * Writes an updated settings object to storage
  */
-export const setAllAppNotificationSettingsToStorage = (
-  settings: AppNotificationTopics
+export const setAllGlobalNotificationSettingsToStorage = (
+  settings: GlobalNotificationTopics
 ) => {
   notificationSettingsStorage.set(
-    APP_TOPICS_STORAGE_KEY,
+    GLOBAL_TOPICS_STORAGE_KEY,
     JSON.stringify(settings)
   );
 };
@@ -87,7 +87,7 @@ export const getExistingGroupSettingsFromStorage = () => {
  * @returns updated wallet settings array
  */
 export const updateSettingsForWalletsWithRelationshipType = (
-  type: NotificationRelationshipType,
+  type: WalletNotificationRelationshipType,
   options: Partial<WalletNotificationSettings>
 ): WalletNotificationSettings[] => {
   const data = getAllWalletNotificationSettingsFromStorage();

@@ -29,7 +29,7 @@ import {
 } from '@/screens/SettingsSheet/components/notificationAlerts';
 import { useNetInfo } from '@react-native-community/netinfo';
 import {
-  NotificationRelationship,
+  WalletNotificationRelationship,
   updateSettingsForWalletsWithRelationshipType,
   useAllNotificationSettingsFromStorage,
   useWalletGroupNotificationSettings,
@@ -270,13 +270,13 @@ const NotificationsSection = () => {
     }
     setOwnedState(prev => ({ status: !prev.status, loading: true }));
     updateGroupSettingsAndSubscriptions(
-      NotificationRelationship.OWNER,
+      WalletNotificationRelationship.OWNER,
       !storedOwnerEnabled
     )
       .then(() => {
         setOwnedState(prev => ({ ...prev, loading: false }));
         updateSettingsForWalletsWithRelationshipType(
-          NotificationRelationship.OWNER,
+          WalletNotificationRelationship.OWNER,
           {
             successfullyFinishedInitialSubscription: true,
             enabled: !storedOwnerEnabled,
@@ -296,13 +296,13 @@ const NotificationsSection = () => {
     }
     setWatchedState(prev => ({ status: !prev.status, loading: true }));
     updateGroupSettingsAndSubscriptions(
-      NotificationRelationship.WATCHER,
+      WalletNotificationRelationship.WATCHER,
       !storedWatcherEnabled
     )
       .then(() => {
         setWatchedState(prev => ({ ...prev, loading: false }));
         updateSettingsForWalletsWithRelationshipType(
-          NotificationRelationship.WATCHER,
+          WalletNotificationRelationship.WATCHER,
           {
             successfullyFinishedInitialSubscription: true,
             enabled: !storedWatcherEnabled,
