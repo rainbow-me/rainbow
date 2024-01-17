@@ -23,9 +23,9 @@ const IPHONE_DEVICES: Record<string, number> = {
   'iPhone14,4': 44,
   'iPhone14,5': 47.33,
   'iPhone14,7': 47.33,
-  'iPhone14,8': 53.33,
-  'iPhone15,2': 55,
-  'iPhone15,3': 55,
+  'iPhone14,8': 47.33,
+  'iPhone15,2': 40,
+  'iPhone15,3': 44,
 };
 
 export function getDeviceRadius(): number {
