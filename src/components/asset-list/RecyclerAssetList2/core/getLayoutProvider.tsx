@@ -83,9 +83,6 @@ const getLayoutProvider = (
           dim.height = 0;
         }
 
-        if (type === CellType.REMOTE_CARD_CAROUSEL && cards.length === 1) {
-          dim.height -= 24;
-        }
       }
     },
     indicesToOverride
