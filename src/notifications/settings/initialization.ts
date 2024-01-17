@@ -9,6 +9,7 @@ import {
   WalletNotificationSettings,
 } from '@/notifications/settings/types';
 import {
+  getAllAppNotificationSettingsFromStorage,
   getAllWalletNotificationSettingsFromStorage,
   notificationSettingsStorage,
   setAllWalletNotificationSettingsToStorage,
@@ -21,7 +22,10 @@ import {
 } from '@/notifications/settings/firebase';
 import { InteractionManager } from 'react-native';
 import { logger, RainbowError } from '@/logger';
-import { removeNotificationSettingsForWallet } from '@/notifications/settings/settings';
+import {
+  removeNotificationSettingsForWallet,
+  toggleTopicForApp,
+} from '@/notifications/settings/settings';
 
 type InitializationStateType = {
   alreadySaved: Map<
@@ -49,6 +53,15 @@ export const addDefaultNotificationGroupSettings = (override = false) => {
       JSON.stringify(defaultSettings)
     );
   }
+};
+
+export const initializeAppNotificationSettings = () => {
+  const currentSettings = getAllAppNotificationSettingsFromStorage();
+  return Promise.all(
+    Object.entries(currentSettings).map(([topic, isEnabled]) =>
+      toggleTopicForApp(topic, isEnabled)
+    )
+  );
 };
 
 /**

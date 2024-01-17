@@ -54,7 +54,10 @@ import {
   AddressWithRelationship,
   NotificationRelationship,
 } from '@/notifications/settings';
-import { initializeNotificationSettingsForAllAddressesAndCleanupSettingsForRemovedWallets } from '@/notifications/settings/initialization';
+import {
+  initializeAppNotificationSettings,
+  initializeNotificationSettingsForAllAddressesAndCleanupSettingsForRemovedWallets,
+} from '@/notifications/settings/initialization';
 import { logger } from '@/logger';
 import { setHasPendingDeeplinkPendingRedirect } from '@/walletConnect';
 
@@ -386,10 +389,11 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
             })
         )
       );
-
+      initializeAppNotificationSettings();
       initializeNotificationSettingsForAllAddressesAndCleanupSettingsForRemovedWallets(
         addresses
       );
+
       alreadyRanInitialization.current = true;
     }
   }, [dispatch, walletReady]);
