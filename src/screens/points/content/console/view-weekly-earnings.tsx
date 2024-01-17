@@ -65,7 +65,6 @@ export const ViewWeeklyEarnings = () => {
               delayStart={500}
               color={textColors.gray}
               textContent={`${i18n.t(i18n.l.points.console.account)}:`}
-              weight="normal"
             />
             <AnimatedText
               color={textColors.account}
@@ -89,13 +88,11 @@ export const ViewWeeklyEarnings = () => {
               textContent={`> ${i18n.t(
                 i18n.l.points.console.view_weekly_earnings_title
               )}`}
-              weight="normal"
             />
             <AnimatedText
               color={textColors.gray}
               textContent="..."
               typingSpeed={500}
-              weight="normal"
             />
           </Line>
         </Paragraph>
@@ -204,7 +201,6 @@ export const ViewWeeklyEarnings = () => {
             textContent={`> ${i18n.t(
               i18n.l.points.console.view_weekly_earnings_counted
             )}`}
-            weight="normal"
           />
         </Paragraph>
         <Paragraph gap={30}>

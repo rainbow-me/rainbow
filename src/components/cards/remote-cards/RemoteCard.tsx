@@ -1,6 +1,7 @@
 import { Linking, Text as RNText, StyleSheet } from 'react-native';
 import React, { useCallback } from 'react';
 import { get } from 'lodash';
+import ConditionalWrap from 'conditional-wrap';
 
 import { Box, Cover, Stack, Text, useForegroundColor } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -83,7 +84,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
 
   const onPress = useCallback(() => {
     analyticsV2.track(analyticsV2.event.remoteCardPrimaryButtonPressed, {
-      cardKey: cardKey ?? 'unknown-backend-driven-card',
+      cardKey: cardKey ?? 'unknown-backend-driven -card',
       type: primaryButton.url ? 'url' : 'route',
       props: JSON.stringify(primaryButton.props),
     });
@@ -133,12 +134,18 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
     : undefined;
 
   return (
-    <ButtonPressAnimation
-      hapticType="impactHeavy"
-      onPress={onPress}
-      scaleTo={0.94}
-      disallowInterruption
-      testID={`remote-card-${card.cardKey}-button`}
+    <ConditionalWrap
+      condition={primaryButton.route || primaryButton.url}
+      wrap={children => (
+        <ButtonPressAnimation
+          hapticType="impactHeavy"
+          onPress={onPress}
+          scaleTo={0.94}
+          disallowInterruption
+        >
+          {children}
+        </ButtonPressAnimation>
+      )}
     >
       <Box
         testID={`remote-card-${cardKey}`}
@@ -269,23 +276,38 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
                 },
               ]}
             >
-              <Text
-                numberOfLines={1}
-                color={{ custom: accent }}
-                size="13pt"
-                weight="heavy"
-              >
-                {getKeyForLanguage(
-                  'primaryButton.text',
-                  card,
-                  language as Language
-                )}
-              </Text>
+              {primaryButton.endsAtDate ? (
+                <Text
+                  numberOfLines={1}
+                  color={{ custom: accent }}
+                  size="13pt"
+                  weight="heavy"
+                >
+                  {getKeyForLanguage(
+                    'primaryButton.text',
+                    card,
+                    language as Language
+                  )}
+                </Text>
+              ) : (
+                <Text
+                  numberOfLines={1}
+                  color={{ custom: accent }}
+                  size="13pt"
+                  weight="heavy"
+                >
+                  {getKeyForLanguage(
+                    'primaryButton.text',
+                    card,
+                    language as Language
+                  )}
+                </Text>
+              )}
             </RNText>
           </Stack>
         </Box>
       </Box>
-    </ButtonPressAnimation>
+    </ConditionalWrap>
   );
 };
 
