@@ -6,7 +6,7 @@ import ConditionalWrap from 'conditional-wrap';
 import { Box, Cover, Stack, Text, useForegroundColor } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import { TrimmedCard, useRemoteCardContext } from './RemoteCardProvider';
-import { IS_IOS } from '@/env';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { useNavigation } from '@/navigation';
 import { Language } from '@/languages';
 import { useAccountSettings, useDimensions } from '@/hooks';
@@ -21,6 +21,7 @@ import { useTheme } from '@/theme';
 import LinearGradient from 'react-native-linear-gradient';
 import { ImgixImage } from '@/components/images';
 import { analyticsV2 } from '@/analytics';
+import { FlashList } from '@shopify/flash-list';
 
 const getKeyForLanguage = (key: string, object: object, language: Language) => {
   if (!object) {
@@ -58,12 +59,16 @@ const getColorFromString = (color: string | undefined | null) => {
 
 type RemoteCardProps = {
   card: TrimmedCard;
+  cards: TrimmedCard[];
   gutterSize: number;
+  carouselRef: React.RefObject<FlashList<TrimmedCard>> | null;
 };
 
 export const RemoteCard: React.FC<RemoteCardProps> = ({
   card = {} as TrimmedCard,
+  cards,
   gutterSize,
+  carouselRef,
 }) => {
   const { isDarkMode } = useTheme();
   const { navigate } = useNavigation();
@@ -84,8 +89,8 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
 
   const onPress = useCallback(() => {
     analyticsV2.track(analyticsV2.event.remoteCardPrimaryButtonPressed, {
-      cardKey: cardKey ?? 'unknown-backend-driven -card',
-      type: primaryButton.url ? 'url' : 'route',
+      cardKey: cardKey ?? 'unknown-backend-driven-card',
+      action: primaryButton.url || primaryButton.route,
       props: JSON.stringify(primaryButton.props),
     });
     if (primaryButton && primaryButton.url) {
@@ -94,6 +99,20 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
       navigate(primaryButton.route, primaryButton.props);
     }
   }, [navigate, primaryButton, cardKey]);
+
+  const onDismiss = useCallback(() => {
+    analyticsV2.track(analyticsV2.event.remoteCardDismissed, {
+      cardKey: cardKey ?? 'unknown-backend-driven-card',
+    });
+    dismissCard(card.sys.id);
+    if (carouselRef?.current) {
+      const currentCardIdx = cards.findIndex(c => c.cardKey === cardKey);
+      carouselRef.current.scrollToIndex({
+        index: currentCardIdx > 0 ? currentCardIdx - 1 : 0,
+        animated: true,
+      });
+    }
+  }, [carouselRef, dismissCard, cards, cardKey, card.sys.id]);
 
   const imageForPlatform = () => {
     if (!card?.imageCollection?.items?.length) {
@@ -140,6 +159,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
         <ButtonPressAnimation
           hapticType="impactHeavy"
           onPress={onPress}
+          disabled={IS_ANDROID}
           scaleTo={0.94}
           disallowInterruption
         >
@@ -238,7 +258,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
                 overflowMargin={50}
                 skipTopMargin
                 disallowInterruption
-                onPress={() => dismissCard(card.sys.id)}
+                onPress={onDismiss}
               >
                 <Text color={'labelTertiary'} size="13pt" weight="bold">
                   􀆄
@@ -266,17 +286,24 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
               {getKeyForLanguage('title', card, language as Language)}
             </Text>
 
-            <RNText
-              style={[
-                styles.buttonText,
-                {
-                  textShadowColor: isDarkMode
-                    ? colors.alpha(accent, 0.6)
-                    : colors.alpha(accent, 0.2),
-                },
-              ]}
+            <ButtonPressAnimation
+              scaleTo={0.96}
+              overflowMargin={50}
+              skipTopMargin
+              disabled={!IS_ANDROID}
+              disallowInterruption
+              onPress={onPress}
             >
-              {primaryButton.endsAtDate ? (
+              <RNText
+                style={[
+                  styles.buttonText,
+                  {
+                    textShadowColor: isDarkMode
+                      ? colors.alpha(accent, 0.6)
+                      : colors.alpha(accent, 0.2),
+                  },
+                ]}
+              >
                 <Text
                   numberOfLines={1}
                   color={{ custom: accent }}
@@ -289,21 +316,8 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
                     language as Language
                   )}
                 </Text>
-              ) : (
-                <Text
-                  numberOfLines={1}
-                  color={{ custom: accent }}
-                  size="13pt"
-                  weight="heavy"
-                >
-                  {getKeyForLanguage(
-                    'primaryButton.text',
-                    card,
-                    language as Language
-                  )}
-                </Text>
-              )}
-            </RNText>
+              </RNText>
+            </ButtonPressAnimation>
           </Stack>
         </Box>
       </Box>

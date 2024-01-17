@@ -77,8 +77,8 @@ export const RemoteCardProvider: React.FC<
         const newCards = data.cardCollection.items.reduce((acc, card) => {
           if (!card) return acc;
 
-          // const hasDismissed = ls.cards.get([card.sys.id]);
-          // if (hasDismissed) return acc;
+          const hasDismissed = ls.cards.get([card.sys.id]);
+          if (hasDismissed) return acc;
 
           const newCard: TrimmedCard = {
             ...pick(card, ...TRIMMED_CARD_KEYS),

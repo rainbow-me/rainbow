@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { CarouselCard } from '../CarouselCard';
 import { useRoute } from '@react-navigation/native';
 import { IS_TEST } from '@/env';
@@ -11,6 +11,7 @@ import {
 import { REMOTE_CARDS, getExperimetalFlag } from '@/config';
 import { useDimensions, useWallets } from '@/hooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
+import { FlashList } from '@shopify/flash-list';
 
 type RenderItemProps = {
   item: TrimmedCard;
@@ -26,6 +27,7 @@ export const getGutterSizeForCardAmount = (amount: number) => {
 };
 
 export const RemoteCardCarousel = () => {
+  const carouselRef = useRef<FlashList<TrimmedCard>>(null);
   const { name } = useRoute();
   const config = useRemoteConfig();
   const { isReadOnlyWallet } = useWallets();
@@ -43,7 +45,14 @@ export const RemoteCardCarousel = () => {
   const gutterSize = getGutterSizeForCardAmount(data.length);
 
   const _renderItem = ({ item }: RenderItemProps) => {
-    return <RemoteCard card={item} gutterSize={gutterSize} />;
+    return (
+      <RemoteCard
+        card={item}
+        cards={data}
+        gutterSize={gutterSize}
+        carouselRef={carouselRef}
+      />
+    );
   };
 
   if (isReadOnlyWallet || IS_TEST || !remoteCardsEnabled || !data.length) {
@@ -52,8 +61,10 @@ export const RemoteCardCarousel = () => {
 
   return (
     <CarouselCard
+      key={name as string}
       data={data}
       carouselItem={{
+        carouselRef,
         renderItem: _renderItem,
         keyExtractor: item => item.cardKey!,
         placeholder: null,

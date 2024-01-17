@@ -1,7 +1,6 @@
 import { CardType } from '@/components/cards/GenericCard';
 import { LearnCategory } from '@/components/cards/utils/types';
 import { FiatProviderName } from '@/entities/f2c';
-import { Network } from '@/networks/types';
 
 /**
  * All events, used by `analytics.track()`
@@ -128,6 +127,7 @@ export const event = {
     'Pressed share referral link button on points screen',
 
   remoteCardPrimaryButtonPressed: 'remote_card.primary_button_pressed',
+  remoteCardDismissed: 'remote_card.dismissed',
 } as const;
 
 /**
@@ -441,7 +441,11 @@ export type EventProperties = {
 
   [event.remoteCardPrimaryButtonPressed]: {
     cardKey: string;
-    type: string;
+    action: string;
     props: string;
+  };
+
+  [event.remoteCardDismissed]: {
+    cardKey: string;
   };
 };

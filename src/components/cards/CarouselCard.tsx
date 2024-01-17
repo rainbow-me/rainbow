@@ -22,7 +22,8 @@ const HORIZONTAL_PADDING = 20;
 
 const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 
-type CarouselItem<T> = {
+export type CarouselItem<T> = {
+  carouselRef?: React.Ref<FlashList<T>>;
   renderItem: ListRenderItem<T>;
   keyExtractor: (item: T, index: number) => string;
   placeholder: React.ReactNode;
@@ -95,6 +96,7 @@ export function CarouselCard<T>({
               }}
               estimatedItemSize={carouselItem.width}
               horizontal
+              ref={carouselItem.carouselRef}
               estimatedListSize={{
                 height: actualItemHeight,
                 width: deviceWidth * 2,
