@@ -1,4 +1,5 @@
 import {
+  AppNotificationTopicType,
   NotificationTopicType,
   WalletNotificationSettings,
 } from '@/notifications/settings/types';
@@ -97,7 +98,7 @@ export const unsubscribeWalletFromSingleNotificationTopic = async (
 };
 
 export const subscribeToSingleNotificationTopic = (
-  topic: NotificationTopicType
+  topic: AppNotificationTopicType
 ): Promise<void> => {
   logger.debug(
     `Notifications: subscribing to [ ${topic.toUpperCase()} ]`,
@@ -110,7 +111,7 @@ export const subscribeToSingleNotificationTopic = (
 };
 
 export const unsubscribeFromSingleNotificationTopic = async (
-  topic: NotificationTopicType
+  topic: AppNotificationTopicType
 ) => {
   logger.debug(
     `Notifications: unsubscribing from [ ${topic.toUpperCase()} ]`,

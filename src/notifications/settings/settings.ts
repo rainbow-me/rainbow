@@ -4,6 +4,7 @@ import {
   WALLET_TOPICS_STORAGE_KEY,
 } from '@/notifications/settings/constants';
 import {
+  AppNotificationTopicType,
   NotificationRelationshipType,
   NotificationTopicType,
   WalletNotificationSettings,
@@ -137,7 +138,7 @@ export function toggleTopicForWallet(
  Function for subscribing/unsubscribing the app to/from a single notification topic.
  */
 export function toggleTopicForApp(
-  topic: NotificationTopicType,
+  topic: AppNotificationTopicType,
   enableTopic: boolean
 ): Promise<void> {
   if (enableTopic) {

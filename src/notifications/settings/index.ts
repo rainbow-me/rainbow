@@ -19,6 +19,7 @@ export {
 } from './settings';
 export type {
   AddressWithRelationship,
+  AppNotificationTopicType,
   GroupSettings,
   NotificationRelationshipType,
   NotificationTopicType,
