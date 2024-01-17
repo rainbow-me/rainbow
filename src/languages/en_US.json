@@ -1288,6 +1288,7 @@
         "true_believer": "True Believer",
         "registration_complete": "Registration complete",
         "account": "Account",
+        "points_you_have": "You Have",
         "points_earned": "Points Earned",
         "share_bonus": "Share Bonus",
         "share_bonus_paragraph_one": "You're all set!",
@@ -1316,7 +1317,10 @@
         "referral_link_bonus_text_extended": "Plus you'll earn 10% of the points earned by anyone you refer",
         "complete_onboarding": "Done",
         "share_to_x": "Share to X",
-        "hardware_wallet_alert": "Hardware wallet support is coming soon!"
+        "hardware_wallet_alert": "Hardware wallet support is coming soon!",
+        "view_weekly_earnings_week_of": "Week of %{startOfWeek} - %{endOfWeek}",
+        "view_weekly_earnings_title": "Counting earned points",
+        "view_weekly_earnings_close_button": "Close"
       }
     },
     "pools": {

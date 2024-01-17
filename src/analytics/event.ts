@@ -119,6 +119,8 @@ export const event = {
     'Pressed continue button on onboarding screen',
   pointsOnboardingScreenPressedDoneButton:
     'Pressed done button on onboarding screen',
+  pointsViewedWeeklyEarningsScreenPressedCloseButton:
+    'Pressed close button on weekly earnings screen',
   pointsReferralCodeDeeplinkOpened: 'Opened points referral code deeplink',
   pointsPointsScreenPressedCopyReferralCodeButton:
     'Pressed copy referral code button on points screen',
@@ -432,6 +434,7 @@ export type EventProperties = {
   [event.pointsOnboardingScreenPressedSkipShareToXButton]: undefined;
   [event.pointsOnboardingScreenPressedContinueButton]: undefined;
   [event.pointsOnboardingScreenPressedDoneButton]: undefined;
+  [event.pointsViewedWeeklyEarningsScreenPressedCloseButton]: undefined;
   [event.pointsReferralCodeDeeplinkOpened]: undefined;
   [event.pointsPointsScreenPressedCopyReferralCodeButton]: undefined;
   [event.pointsPointsScreenPressedShareReferralLinkButton]: undefined;

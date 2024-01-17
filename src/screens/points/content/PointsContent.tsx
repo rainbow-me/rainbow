@@ -31,7 +31,6 @@ import { getHeaderHeight } from '@/navigation/SwipeNavigator';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { useRecoilState } from 'recoil';
 import * as i18n from '@/languages';
-import { usePoints } from '@/resources/points';
 import { isNil } from 'lodash';
 import { getFormattedTimeQuantity } from '@/helpers/utilities';
 import { address as formatAddress } from '@/utils/abbreviations';
@@ -51,6 +50,7 @@ import {
   RemoteCardCarousel,
   useRemoteCardContext,
 } from '@/components/cards/remote-cards';
+import { usePoints } from '@/resources/points';
 
 export default function PointsContent() {
   const { colors } = useTheme();
@@ -61,7 +61,7 @@ export default function PointsContent() {
   const { setClipboard } = useClipboard();
   const { isReadOnlyWallet } = useWallets();
 
-  const { data, isFetching, dataUpdatedAt, refetch } = usePoints({
+  const { data: points, isFetching, dataUpdatedAt, refetch } = usePoints({
     walletAddress: accountAddress,
   });
 
@@ -85,10 +85,10 @@ export default function PointsContent() {
     addressCopiedToastAtom
   );
 
-  const referralCode = data?.points?.user?.referralCode
-    ? data.points.user.referralCode.slice(0, 3) +
+  const referralCode = points?.points?.user?.referralCode
+    ? points.points.user.referralCode.slice(0, 3) +
       '-' +
-      data.points.user.referralCode.slice(3, 7)
+      points.points.user.referralCode.slice(3, 7)
     : undefined;
 
   const onPressCopy = React.useCallback(
@@ -119,27 +119,27 @@ export default function PointsContent() {
     setIsRefreshing(false);
   }, [dataUpdatedAt, refetch]);
 
-  const nextDistributionSeconds = data?.points?.meta?.distribution?.next;
-  const totalPointsString = data?.points?.user?.earnings?.total.toLocaleString(
+  const nextDistributionSeconds = points?.points?.meta?.distribution?.next;
+  const totalPointsString = points?.points?.user?.earnings?.total.toLocaleString(
     'en-US'
   );
   const totalPointsMaskSize = 60 * Math.max(totalPointsString?.length ?? 0, 4);
 
-  const totalUsers = data?.points?.leaderboard.stats.total_users;
-  const rank = data?.points?.user.stats.position.current;
-  const isUnranked = !!data?.points?.user?.stats?.position?.unranked;
+  const totalUsers = points?.points?.leaderboard.stats.total_users;
+  const rank = points?.points?.user.stats.position.current;
+  const isUnranked = !!points?.points?.user?.stats?.position?.unranked;
 
-  const canDisplayTotalPoints = !isNil(data?.points?.user.earnings.total);
+  const canDisplayTotalPoints = !isNil(points?.points?.user.earnings.total);
   const canDisplayNextRewardCard = !isNil(nextDistributionSeconds);
   const canDisplayCurrentRank = !!rank;
   const canDisplayRankCard = canDisplayCurrentRank && !!totalUsers;
 
-  const canDisplayLeaderboard = !!data?.points?.leaderboard.accounts;
+  const canDisplayLeaderboard = !!points?.points?.leaderboard.accounts;
 
-  const shouldDisplayError = !isFetching && !data?.points;
+  const shouldDisplayError = !isFetching && !points?.points;
 
-  const referralUrl = data?.points?.user?.referralCode
-    ? `https://www.rainbow.me/points?ref=${data.points.user.referralCode}`
+  const referralUrl = points?.points?.user?.referralCode
+    ? `https://www.rainbow.me/points?ref=${points.points.user.referralCode}`
     : undefined;
 
   return (
@@ -224,7 +224,7 @@ export default function PointsContent() {
                   </Cover>
                 </Box>
               </Bleed>
-              {!!cards.length && (
+              {!!cards.length && !isReadOnlyWallet && (
                 <>
                   <RemoteCardCarousel key="remote-cards" />
                   <Separator color="separatorTertiary" thickness={1} />
@@ -523,7 +523,7 @@ export default function PointsContent() {
                         <Separator color="separatorTertiary" thickness={1} />
                       }
                     >
-                      {data?.points?.leaderboard?.accounts
+                      {points?.points?.leaderboard?.accounts
                         ?.slice(0, 100)
                         ?.map((account, index) => (
                           <LeaderboardRow
