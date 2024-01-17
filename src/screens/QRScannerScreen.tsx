@@ -33,7 +33,6 @@ import {
   useCameraPermission,
   useCodeScanner,
 } from 'react-native-vision-camera';
-import { IS_ANDROID, IS_IOS } from '@/env';
 
 const Background = styled(View)({
   backgroundColor: 'black',
@@ -205,26 +204,14 @@ export default function QRScannerScreen() {
           <ScannerContainer>
             <Background />
             <CameraDimmer cameraVisible={true}>
-              {IS_ANDROID && (
-                <ScannerHeader>
-                  <EmulatorPasteUriButton />
-                </ScannerHeader>
-              )}
-              {!isEmulator && (
-                <QRCodeScanner
-                  flashEnabled={flashEnabled}
-                  codeScanner={codeScanner}
-                  hasPermission={hasPermission}
-                  requestPermission={requestPermission}
-                  isActive={isActive && cameraActive}
-                />
-              )}
+              <QRCodeScanner
+                flashEnabled={flashEnabled}
+                codeScanner={codeScanner}
+                hasPermission={hasPermission}
+                requestPermission={requestPermission}
+                isActive={isActive && cameraActive}
+              />
             </CameraDimmer>
-            {IS_IOS && (
-              <ScannerHeader>
-                <EmulatorPasteUriButton />
-              </ScannerHeader>
-            )}
           </ScannerContainer>
         </ColorModeProvider>
         <Box

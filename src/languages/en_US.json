@@ -2253,13 +2253,13 @@
         "please_enable_title": "Rainbow would like to send you push notifications"
       },
       "qr": {
-        "camera_access_needed": "Camera access needed to scan!",
+        "camera_access_needed": "Enabling this allows you to scan QR codes so you can connect to dApps and discover wallets.",
         "enable_camera_access": "Enable camera access",
         "error_mounting_camera": "Error mounting camera",
         "find_a_code": "Find a code to scan",
         "qr_1_app_connected": "1 Connected App",
         "qr_multiple_apps_connected": "%{appsConnectedCount} Connected Apps",
-        "scan_to_pay_or_connect": "Scan to pay or connect",
+        "scan_to_pay_or_connect": "Camera access needed",
         "simulator_mode": "Simulator Mode",
         "sorry_could_not_be_recognized": "Sorry, this QR code could not be recognized.",
         "unrecognized_qr_code_title": "Unrecognized QR Code"
