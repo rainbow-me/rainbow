@@ -294,29 +294,25 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
               disallowInterruption
               onPress={onPress}
             >
-              <RNText
-                style={[
-                  styles.buttonText,
-                  {
-                    textShadowColor: isDarkMode
-                      ? colors.alpha(accent, 0.6)
-                      : colors.alpha(accent, 0.2),
-                  },
-                ]}
+              <Text
+                numberOfLines={1}
+                color={{ custom: accent }}
+                size="13pt"
+                weight="heavy"
+                style={{
+                  textShadowOffset: { width: 0, height: 0 },
+                  textShadowRadius: 4,
+                  textShadowColor: isDarkMode
+                    ? colors.alpha(accent, 0.6)
+                    : colors.alpha(accent, 0.2),
+                }}
               >
-                <Text
-                  numberOfLines={1}
-                  color={{ custom: accent }}
-                  size="13pt"
-                  weight="heavy"
-                >
-                  {getKeyForLanguage(
-                    'primaryButton.text',
-                    card,
-                    language as Language
-                  )}
-                </Text>
-              </RNText>
+                {getKeyForLanguage(
+                  'primaryButton.text',
+                  card,
+                  language as Language
+                )}
+              </Text>
             </ButtonPressAnimation>
           </Stack>
         </Box>
