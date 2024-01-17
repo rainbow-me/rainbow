@@ -96,7 +96,7 @@ function rowRenderer(
     case CellType.REMOTE_CARD_CAROUSEL:
       return (
         <CardRowWrapper>
-          <RemoteCardCarousel withSeparator={false} />
+          <RemoteCardCarousel />
         </CardRowWrapper>
       );
     case CellType.COIN:
