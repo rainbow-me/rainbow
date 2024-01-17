@@ -69,7 +69,7 @@ export default function useInitializeWallet() {
         PerformanceTracking.startMeasuring(
           PerformanceMetrics.useInitializeWallet
         );
-        logger.log('Start wallet setup');
+        logger.debug('Start wallet setup');
         await resetAccountState();
         logger.debug('resetAccountState ran ok');
 
@@ -154,7 +154,7 @@ export default function useInitializeWallet() {
         initializeAccountData();
 
         dispatch(appStateUpdate({ walletReady: true }));
-        logger.log('💰 Wallet initialized');
+        logger.debug('💰 Wallet initialized');
 
         PerformanceTracking.finishMeasuring(
           PerformanceMetrics.useInitializeWallet,
