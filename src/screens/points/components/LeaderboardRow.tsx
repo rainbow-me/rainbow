@@ -240,8 +240,9 @@ export const LeaderboardRow = ({
                 size="15pt"
                 ellipsizeMode="middle"
                 numberOfLines={1}
+                containsEmoji
               >
-                {ens ? ens : formattedAddress}
+                {ens ?? formattedAddress ?? ''}
               </Text>
             </Box>
           </Stack>

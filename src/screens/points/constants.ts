@@ -16,6 +16,8 @@ export const enum RainbowPointsFlowSteps {
   CalculatePoints = 1,
   Share = 2,
   Review = 3,
+
+  ViewWeeklyEarnings = 4,
 }
 
 export const CHARACTER_WIDTH = 9.2725;
