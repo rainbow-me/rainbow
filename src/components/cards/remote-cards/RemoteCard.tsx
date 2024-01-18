@@ -22,6 +22,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { ImgixImage } from '@/components/images';
 import { analyticsV2 } from '@/analytics';
 import { FlashList } from '@shopify/flash-list';
+import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
 
 const ICON_SIZE = 40;
 
@@ -102,19 +103,25 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
     }
   }, [navigate, primaryButton, cardKey]);
 
-  const onDismiss = useCallback(() => {
-    analyticsV2.track(analyticsV2.event.remoteCardDismissed, {
-      cardKey: cardKey ?? 'unknown-backend-driven-card',
-    });
-    dismissCard(card.sys.id);
-    if (carouselRef?.current) {
-      const currentCardIdx = cards.findIndex(c => c.cardKey === cardKey);
-      carouselRef.current.scrollToIndex({
-        index: currentCardIdx > 0 ? currentCardIdx - 1 : 0,
-        animated: true,
+  const onDismiss = useCallback(
+    (e: ButtonPressAnimationTouchEvent) => {
+      if (e && 'stopPropagation' in e) {
+        e.stopPropagation();
+      }
+      analyticsV2.track(analyticsV2.event.remoteCardDismissed, {
+        cardKey: cardKey ?? 'unknown-backend-driven-card',
       });
-    }
-  }, [carouselRef, dismissCard, cards, cardKey, card.sys.id]);
+      dismissCard(card.sys.id);
+      if (carouselRef?.current) {
+        const currentCardIdx = cards.findIndex(c => c.cardKey === cardKey);
+        carouselRef.current.scrollToIndex({
+          index: currentCardIdx > 0 ? currentCardIdx - 1 : 0,
+          animated: true,
+        });
+      }
+    },
+    [carouselRef, dismissCard, cards, cardKey, card.sys.id]
+  );
 
   const imageForPlatform = () => {
     if (!card?.imageCollection?.items?.length) {
@@ -258,7 +265,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
               hitSlop={{ top: 8, right: 8, bottom: 8, left: 8 }}
             >
               <ButtonPressAnimation
-                scaleTo={0.96}
+                scaleTo={0.8}
                 overflowMargin={50}
                 skipTopMargin
                 disallowInterruption
