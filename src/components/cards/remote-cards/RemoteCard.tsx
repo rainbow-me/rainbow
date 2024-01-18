@@ -23,6 +23,8 @@ import { ImgixImage } from '@/components/images';
 import { analyticsV2 } from '@/analytics';
 import { FlashList } from '@shopify/flash-list';
 
+const ICON_SIZE = 40;
+
 const getKeyForLanguage = (key: string, object: object, language: Language) => {
   if (!object) {
     return '';
@@ -152,6 +154,8 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
     ? maybeSignUri(imageForPlatform(), { w: 40, h: 40 })
     : undefined;
 
+  // device width - gutter - icon size
+  const contentWidth = width - gutterSize - 16 * 2 - ICON_SIZE;
   return (
     <ConditionalWrap
       condition={primaryButton.route || primaryButton.url}
@@ -205,8 +209,8 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
             start={{ x: -0.69, y: 0 }}
             end={{ x: 0.99, y: 1 }}
             borderRadius={card.imageRadius ?? 10}
-            height={{ custom: 40 }}
-            width={{ custom: 40 }}
+            height={{ custom: ICON_SIZE }}
+            width={{ custom: ICON_SIZE }}
           >
             <Box
               height="full"
@@ -237,7 +241,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
                     source={{ uri: imageUri }}
                     resizeMode="cover"
                     borderRadius={card.imageRadius ?? 10}
-                    size={40}
+                    size={ICON_SIZE}
                     style={styles.image}
                   />
                 )}
@@ -266,55 +270,56 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
               </ButtonPressAnimation>
             </Box>
           )}
-
-          <Stack space="10px">
-            <Text
-              color={(card.titleColor as TextColor) ?? 'label'}
-              size="17pt"
-              weight="heavy"
-              numberOfLines={1}
-            >
-              {getKeyForLanguage('subtitle', card, language as Language)}
-            </Text>
-
-            <Text
-              color={(card.subtitleColor as TextColor) ?? 'labelQuaternary'}
-              size="13pt"
-              weight="bold"
-              numberOfLines={1}
-            >
-              {getKeyForLanguage('title', card, language as Language)}
-            </Text>
-
-            <ButtonPressAnimation
-              scaleTo={0.96}
-              overflowMargin={50}
-              skipTopMargin
-              disabled={!IS_ANDROID}
-              disallowInterruption
-              onPress={onPress}
-            >
+          <Box width={{ custom: contentWidth }}>
+            <Stack space="10px">
               <Text
-                numberOfLines={1}
-                color={{ custom: accent }}
-                size="13pt"
+                color={(card.titleColor as TextColor) ?? 'label'}
+                size="17pt"
                 weight="heavy"
-                style={{
-                  textShadowOffset: { width: 0, height: 0 },
-                  textShadowRadius: 4,
-                  textShadowColor: isDarkMode
-                    ? colors.alpha(accent, 0.6)
-                    : colors.alpha(accent, 0.2),
-                }}
+                numberOfLines={1}
               >
-                {getKeyForLanguage(
-                  'primaryButton.text',
-                  card,
-                  language as Language
-                )}
+                {getKeyForLanguage('subtitle', card, language as Language)}
               </Text>
-            </ButtonPressAnimation>
-          </Stack>
+
+              <Text
+                color={(card.subtitleColor as TextColor) ?? 'labelQuaternary'}
+                size="13pt"
+                weight="bold"
+                numberOfLines={1}
+              >
+                {getKeyForLanguage('title', card, language as Language)}
+              </Text>
+
+              <ButtonPressAnimation
+                scaleTo={0.96}
+                overflowMargin={50}
+                skipTopMargin
+                disabled={!IS_ANDROID}
+                disallowInterruption
+                onPress={onPress}
+              >
+                <Text
+                  numberOfLines={1}
+                  color={{ custom: accent }}
+                  size="13pt"
+                  weight="heavy"
+                  style={{
+                    textShadowOffset: { width: 0, height: 0 },
+                    textShadowRadius: 4,
+                    textShadowColor: isDarkMode
+                      ? colors.alpha(accent, 0.6)
+                      : colors.alpha(accent, 0.2),
+                  }}
+                >
+                  {getKeyForLanguage(
+                    'primaryButton.text',
+                    card,
+                    language as Language
+                  )}
+                </Text>
+              </ButtonPressAnimation>
+            </Stack>
+          </Box>
         </Box>
       </Box>
     </ConditionalWrap>
@@ -327,7 +332,7 @@ const styles = StyleSheet.create({
     textShadowRadius: 4,
   },
   image: {
-    height: 40,
-    width: 40,
+    height: ICON_SIZE,
+    width: ICON_SIZE,
   },
 });
