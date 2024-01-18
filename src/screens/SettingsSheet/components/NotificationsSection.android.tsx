@@ -34,9 +34,19 @@ import {
   useAllNotificationSettingsFromStorage,
   useWalletGroupNotificationSettings,
   WalletNotificationSettings,
+  GlobalNotificationTopicType,
 } from '@/notifications/settings';
-import { getNotificationSettingsForWalletWithAddress } from '@/notifications/settings/storage';
+import {
+  getNotificationSettingsForWalletWithAddress,
+  setAllGlobalNotificationSettingsToStorage,
+} from '@/notifications/settings/storage';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import { POINTS, useExperimentalFlag } from '@/config';
+import { IS_TEST } from '@/env';
+import { GlobalNotificationTopic } from '@/notifications/settings/constants';
+import { GlobalNotificationTopics } from '@/notifications/settings/types';
+import { toggleGlobalNotificationTopic } from '@/notifications/settings/settings';
 
 type WalletRowProps = {
   ens: string;
@@ -208,12 +218,26 @@ const NotificationsSection = () => {
   const isTestnet = isTestnetNetwork(network);
   const { wallets, walletNames } = useWallets();
   const { isConnected } = useNetInfo();
+  const { points_enabled } = useRemoteConfig();
+  const pointsEnabled =
+    useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
 
   const {
     ownerEnabled: storedOwnerEnabled,
     updateGroupSettingsAndSubscriptions,
     watcherEnabled: storedWatcherEnabled,
   } = useWalletGroupNotificationSettings();
+  const {
+    globalNotificationSettings,
+    walletNotificationSettings,
+  } = useAllNotificationSettingsFromStorage();
+
+  const [topicState, setTopicState] = useState<GlobalNotificationTopics>(
+    globalNotificationSettings
+  );
+  const toggleStateForTopic = (topic: GlobalNotificationTopicType) =>
+    setTopicState(prev => ({ ...prev, [topic]: !prev[topic] }));
+
   // local state controls the switch UI for better UX
   const [ownedState, setOwnedState] = useState({
     status: storedOwnerEnabled,
@@ -223,9 +247,14 @@ const NotificationsSection = () => {
     status: storedWatcherEnabled,
     loading: false,
   });
-  const {
-    walletNotificationSettings,
-  } = useAllNotificationSettingsFromStorage();
+
+  // We allow only one subscription in progress
+  // this states controls which we are currently updating
+  const [
+    topicSubscriptionInProgress,
+    setTopicSubscriptionInProgress,
+  ] = useState<GlobalNotificationTopicType | null>(null);
+
   const { ownedWallets, watchedWallets } = useMemo(() => {
     const ownedWallets: RainbowAccount[] = [];
     const watchedWallets: RainbowAccount[] = [];
@@ -314,6 +343,32 @@ const NotificationsSection = () => {
         setWatchedState(prev => ({ status: !prev.status, loading: false }));
       });
   }, [updateGroupSettingsAndSubscriptions, storedWatcherEnabled, isConnected]);
+
+  const toggleTopic = useCallback(
+    (topic: GlobalNotificationTopicType) => {
+      if (!isConnected) {
+        showOfflineAlert();
+        return;
+      }
+      toggleStateForTopic(topic);
+      setTopicSubscriptionInProgress(topic);
+      toggleGlobalNotificationTopic(topic, !globalNotificationSettings[topic])
+        .then(() => {
+          setAllGlobalNotificationSettingsToStorage({
+            ...topicState,
+            [topic]: !topicState[topic],
+          });
+        })
+        .catch(() => {
+          showNotificationSubscriptionErrorAlert();
+          toggleStateForTopic(topic);
+        })
+        .finally(() => {
+          setTopicSubscriptionInProgress(null);
+        });
+    },
+    [globalNotificationSettings, isConnected, topicState]
+  );
 
   const openSystemSettings = Linking.openSettings;
   const openNetworkSettings = useCallback(
@@ -529,6 +584,35 @@ const NotificationsSection = () => {
                     </Menu>
                   </>
                 )}
+                <Menu>
+                  {pointsEnabled && (
+                    <MenuItem
+                      disabled
+                      rightComponent={
+                        <>
+                          {topicSubscriptionInProgress ===
+                            GlobalNotificationTopic.POINTS && (
+                            <SettingsLoadingIndicator />
+                          )}
+                          <Switch
+                            disabled={topicSubscriptionInProgress !== null}
+                            onValueChange={() =>
+                              toggleTopic(GlobalNotificationTopic.POINTS)
+                            }
+                            value={topicState[GlobalNotificationTopic.POINTS]}
+                          />
+                        </>
+                      }
+                      size={52}
+                      titleComponent={
+                        <MenuItem.Title
+                          text={lang.t('settings.notifications_section.points')}
+                          weight="bold"
+                        />
+                      }
+                    />
+                  )}
+                </Menu>
               </MenuContainer>
             </Box>
           </Inset>

@@ -59,6 +59,7 @@ import { saveLocalPendingTransactions } from '@/handlers/localstorage/accountLoc
 import { getFCMToken } from '@/notifications/tokens';
 import { BackgroundProvider, Box, Inline, Inset, Text } from '@/design-system';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
+import { removeGlobalNotificationSettings } from '@/notifications/settings/settings';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
@@ -204,6 +205,7 @@ const DevSection = () => {
     // loop through notification settings and unsubscribe all wallets
     // from firebase first or we’re gonna keep getting them even after
     // clearing storage and before changing settings
+    removeGlobalNotificationSettings();
     if (walletNotificationSettings.length > 0) {
       return Promise.all(
         walletNotificationSettings.map(wallet =>

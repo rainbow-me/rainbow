@@ -559,8 +559,8 @@ const NotificationsSection = () => {
             </Menu>
           </>
         )}
-        {pointsEnabled && (
-          <Menu>
+        <Menu>
+          {pointsEnabled && (
             <MenuItem
               disabled
               rightComponent={
@@ -586,8 +586,8 @@ const NotificationsSection = () => {
                 />
               }
             />
-          </Menu>
-        )}
+          )}
+        </Menu>
       </MenuContainer>
     </Box>
   );
