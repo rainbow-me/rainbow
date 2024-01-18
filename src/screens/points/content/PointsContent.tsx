@@ -51,6 +51,7 @@ import {
   useRemoteCardContext,
 } from '@/components/cards/remote-cards';
 import { usePoints } from '@/resources/points';
+import { TextColor } from '@/design-system/color/palettes';
 
 export default function PointsContent() {
   const { colors } = useTheme();
@@ -127,6 +128,8 @@ export default function PointsContent() {
 
   const totalUsers = points?.points?.leaderboard.stats.total_users;
   const rank = points?.points?.user.stats.position.current;
+  const lastWeekRank = points?.points?.user.stats.last_airdrop.position.current;
+  const rankChange = rank && lastWeekRank ? rank - lastWeekRank : undefined;
   const isUnranked = !!points?.points?.user?.stats?.position?.unranked;
 
   const canDisplayTotalPoints = !isNil(points?.points?.user.earnings.total);
@@ -142,6 +145,24 @@ export default function PointsContent() {
     ? `https://www.rainbow.me/points?ref=${points.points.user.referralCode}`
     : undefined;
 
+  const getRankChangeIcon = () => {
+    if (rankChange === undefined || isUnranked) return '';
+
+    if (rankChange === 0) return '􁘶';
+
+    if (rankChange > 0) return '􀑁';
+
+    return '􁘳';
+  };
+
+  const getRankChangeIconColor = () => {
+    if (rankChange !== undefined) {
+      if (rankChange === 0) return colors.yellow;
+      else if (rankChange > 0) return green;
+    }
+
+    return colors.red;
+  };
   return (
     <Box height="full" background="surfacePrimary" as={Page} flex={1}>
       <ScrollView
@@ -264,22 +285,16 @@ export default function PointsContent() {
                           ? i18n.t(i18n.l.points.points.unranked)
                           : `#${rank.toLocaleString('en-US')}`
                       }
-                      icon={
-                        (totalUsers >= 10_000_000 &&
-                          deviceUtils.isSmallPhone) ||
-                        isUnranked
-                          ? undefined
-                          : '􀉬'
-                      }
+                      icon={getRankChangeIcon()}
                       subtitle={
                         isUnranked
                           ? i18n.t(i18n.l.points.points.points_to_rank)
-                          : i18n.t(i18n.l.points.points.of_x, {
-                              totalUsers: totalUsers.toLocaleString('en-US'),
-                            })
+                          : rankChange?.toString() || ''
                       }
                       mainTextColor={isUnranked ? 'secondary' : 'primary'}
-                      accentColor={green}
+                      accentColor={
+                        isUnranked ? green : getRankChangeIconColor()
+                      }
                     />
                   ) : (
                     <Skeleton height={98} width={(deviceWidth - 40 - 12) / 2} />
