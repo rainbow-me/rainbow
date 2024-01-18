@@ -36,24 +36,39 @@ export const ViewWeeklyEarnings = () => {
     formatAddress(accountAddress, 4, 5)) as string;
 
   const newTotalEarnings = points?.points?.user.earnings.total;
-  const retroactive = points?.points?.user.stats.last_airdrop.differences?.find(
-    difference => difference?.type === 'retroactive'
-  );
-  const referral = points?.points?.user.stats.last_airdrop.differences?.find(
-    difference => difference?.type === 'referral'
-  );
-  const transaction = points?.points?.user.stats.last_airdrop.differences?.find(
-    difference => difference?.type === 'transaction'
-  );
-  const redemption = points?.points?.user.stats.last_airdrop.differences?.find(
-    difference => difference?.type === 'redemption'
-  );
+  const retroactive =
+    points?.points?.user.stats.last_airdrop.differences
+      ?.filter(difference => difference && difference.type === 'retroactive')
+      .reduce(
+        (sum, difference) => sum + (difference?.earnings?.total ?? 0),
+        0
+      ) || 0;
 
-  const totalWeeklyEarnings =
-    (retroactive?.earnings?.total ?? 0) +
-    (transaction?.earnings?.total ?? 0) +
-    (referral?.earnings?.total ?? 0) +
-    (redemption?.earnings?.total ?? 0);
+  const referral =
+    points?.points?.user.stats.last_airdrop.differences
+      ?.filter(difference => difference && difference.type === 'referral')
+      .reduce(
+        (sum, difference) => sum + (difference?.earnings?.total ?? 0),
+        0
+      ) || 0;
+
+  const transaction =
+    points?.points?.user.stats.last_airdrop.differences
+      ?.filter(difference => difference && difference.type === 'transaction')
+      .reduce(
+        (sum, difference) => sum + (difference?.earnings?.total ?? 0),
+        0
+      ) || 0;
+
+  const redemption =
+    points?.points?.user.stats.last_airdrop.differences
+      ?.filter(difference => difference && difference.type === 'redemption')
+      .reduce(
+        (sum, difference) => sum + (difference?.earnings?.total ?? 0),
+        0
+      ) || 0;
+
+  const totalWeeklyEarnings = retroactive + transaction + referral + redemption;
 
   return (
     <Box height="full" justifyContent="space-between">
@@ -96,7 +111,7 @@ export const ViewWeeklyEarnings = () => {
           </Line>
         </Paragraph>
         <Stack separator={<LineBreak lines={2} />}>
-          {!!retroactive?.earnings?.total && (
+          {retroactive !== 0 && (
             <Line alignHorizontal="justify">
               <AnimatedText
                 color={rainbowColors.purple}
@@ -110,9 +125,7 @@ export const ViewWeeklyEarnings = () => {
                 delayStart={1000}
                 enableHapticTyping
                 textAlign="right"
-                textContent={`+ ${abbreviateNumber(
-                  retroactive.earnings.total ?? 0
-                )}`}
+                textContent={`+ ${abbreviateNumber(retroactive)}`}
                 typingSpeed={100}
               />
             </Line>
@@ -130,9 +143,7 @@ export const ViewWeeklyEarnings = () => {
               delayStart={1000}
               enableHapticTyping
               textAlign="right"
-              textContent={`+ ${abbreviateNumber(
-                transaction?.earnings.total ?? 0
-              )}`}
+              textContent={`+ ${abbreviateNumber(transaction)}`}
               typingSpeed={100}
             />
           </Line>
@@ -150,9 +161,7 @@ export const ViewWeeklyEarnings = () => {
               delayStart={1000}
               enableHapticTyping
               textAlign="right"
-              textContent={`+ ${abbreviateNumber(
-                referral?.earnings.total ?? 0
-              )}`}
+              textContent={`+ ${abbreviateNumber(referral)}`}
               typingSpeed={100}
             />
           </Line>
