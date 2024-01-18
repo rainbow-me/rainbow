@@ -35,8 +35,7 @@ export const ViewWeeklyEarnings = () => {
   const accountName = (abbreviateEnsForDisplay(accountENS, 10) ||
     formatAddress(accountAddress, 4, 5)) as string;
 
-  const newTotalEarnings =
-    points?.points?.user.stats.last_airdrop.earnings.total;
+  const newTotalEarnings = points?.points?.user.earnings.total;
   const retroactive = points?.points?.user.stats.last_airdrop.differences?.find(
     difference => difference?.type === 'retroactive'
   );
