@@ -22,6 +22,7 @@ import { delay } from '@/utils/delay';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { IS_TEST } from '@/env';
+import { NotificationToggleContextMenu } from './components/NotificationToggleContextMenu';
 
 export const POINTS_ROUTES = {
   CLAIM_CONTENT: 'ClaimContent',
@@ -102,6 +103,7 @@ export default function PointsScreen() {
             </ButtonPressAnimation>
           )
         }
+        rightComponent={<NotificationToggleContextMenu />}
         title={i18n.t(i18n.l.account.tab_points)}
       />
       {/* eslint-disable-next-line no-nested-ternary */}
