@@ -114,8 +114,10 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
       dismissCard(card.sys.id);
       if (carouselRef?.current) {
         const currentCardIdx = cards.findIndex(c => c.cardKey === cardKey);
+        if (currentCardIdx === -1) return;
+
         carouselRef.current.scrollToIndex({
-          index: currentCardIdx > 0 ? currentCardIdx - 1 : 0,
+          index: currentCardIdx,
           animated: true,
         });
       }

@@ -2,7 +2,7 @@ import { noop, pick } from 'lodash';
 import React, { PropsWithChildren, createContext, useState } from 'react';
 import { Card } from '@/graphql/__generated__/arc';
 import Routes from '@/navigation/routesNames';
-import { IS_TEST } from '@/env';
+import { IS_PROD, IS_TEST } from '@/env';
 import {
   CardCollectionResult,
   useCardCollectionQuery,
@@ -77,8 +77,10 @@ export const RemoteCardProvider: React.FC<
         const newCards = data.cardCollection.items.reduce((acc, card) => {
           if (!card) return acc;
 
-          const hasDismissed = ls.cards.get([card.sys.id]);
-          if (hasDismissed) return acc;
+          if (IS_PROD) {
+            const hasDismissed = ls.cards.get([card.sys.id]);
+            if (hasDismissed) return acc;
+          }
 
           const newCard: TrimmedCard = {
             ...pick(card, ...TRIMMED_CARD_KEYS),
