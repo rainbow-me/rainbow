@@ -41,7 +41,6 @@ function SwapActionButton({
           screen: Routes.MAIN_EXCHANGE_SCREEN,
         };
       } else {
-        console.log(asset);
         return {
           params: {
             defaultInputAsset: asset,

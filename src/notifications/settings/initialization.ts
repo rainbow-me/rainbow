@@ -59,7 +59,6 @@ export const initializeGlobalNotificationSettings = () => {
   const currentSettings = getAllGlobalNotificationSettingsFromStorage();
   return Promise.all(
     Object.entries(currentSettings).map(([topic, isEnabled]) => {
-      console.log(topic, isEnabled);
       toggleGlobalNotificationTopic(topic, isEnabled);
     })
   );

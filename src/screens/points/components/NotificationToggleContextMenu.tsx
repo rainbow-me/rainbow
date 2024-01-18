@@ -17,10 +17,6 @@ import {
   showOfflineAlert,
 } from '@/screens/SettingsSheet/components/notificationAlerts';
 import { useAllNotificationSettingsFromStorage } from '@/notifications/settings';
-import {
-  GlobalNotificationTopicType,
-  GlobalNotificationTopics,
-} from '@/notifications/settings/types';
 import { toggleGlobalNotificationTopic } from '@/notifications/settings/settings';
 import { setAllGlobalNotificationSettingsToStorage } from '@/notifications/settings/storage';
 import { IS_ANDROID } from '@/env';
@@ -37,13 +33,6 @@ export const NotificationToggleContextMenu = () => {
     globalNotificationSettings,
   } = useAllNotificationSettingsFromStorage();
 
-  const [topicState, setTopicState] = useState<GlobalNotificationTopics>(
-    globalNotificationSettings
-  );
-
-  const toggleStateForTopic = (topic: GlobalNotificationTopicType) =>
-    setTopicState(prev => ({ ...prev, [topic]: !prev[topic] }));
-
   const [
     topicSubscriptionInProgress,
     setTopicSubscriptionInProgress,
@@ -54,7 +43,6 @@ export const NotificationToggleContextMenu = () => {
       showOfflineAlert();
       return;
     }
-    toggleStateForTopic(GlobalNotificationTopic.POINTS);
     setTopicSubscriptionInProgress(true);
     toggleGlobalNotificationTopic(
       GlobalNotificationTopic.POINTS,
@@ -62,27 +50,26 @@ export const NotificationToggleContextMenu = () => {
     )
       .then(() => {
         setAllGlobalNotificationSettingsToStorage({
-          ...topicState,
-          [GlobalNotificationTopic.POINTS]: !topicState[
+          ...globalNotificationSettings,
+          [GlobalNotificationTopic.POINTS]: !globalNotificationSettings[
             GlobalNotificationTopic.POINTS
           ],
         });
       })
       .catch(() => {
         showNotificationSubscriptionErrorAlert();
-        toggleStateForTopic(GlobalNotificationTopic.POINTS);
       })
       .finally(() => {
         setTopicSubscriptionInProgress(false);
       });
-  }, [globalNotificationSettings, isConnected, topicState]);
+  }, [globalNotificationSettings, isConnected]);
 
   const menuConfig = {
     menuTitle: '',
     menuItems: [
       {
         actionKey: 'toggle',
-        actionTitle: topicState[GlobalNotificationTopic.POINTS]
+        actionTitle: globalNotificationSettings[GlobalNotificationTopic.POINTS]
           ? 'Disable Points Notifications'
           : 'Enable Points Notifications',
       },
@@ -115,7 +102,9 @@ export const NotificationToggleContextMenu = () => {
           <ColorModeProvider value={colorMode}>
             {!topicSubscriptionInProgress ? (
               <Text size="17pt" weight="heavy" color="label" align="center">
-                {topicState[GlobalNotificationTopic.POINTS] ? '􀋚' : '􀋞'}
+                {globalNotificationSettings[GlobalNotificationTopic.POINTS]
+                  ? '􀋚'
+                  : '􀋞'}
               </Text>
             ) : (
               <LoadingSpinner
