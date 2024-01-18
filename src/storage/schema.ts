@@ -77,3 +77,7 @@ type CampaignMetadata = {
 };
 
 export type Campaigns = CampaignKeys & CampaignMetadata;
+
+export type Cards = {
+  [cardKey: string]: boolean;
+};
