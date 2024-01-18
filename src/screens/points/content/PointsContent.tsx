@@ -156,12 +156,11 @@ export default function PointsContent() {
   };
 
   const getRankChangeIconColor = () => {
-    if (rankChange !== undefined) {
-      if (rankChange === 0) return colors.yellow;
-      else if (rankChange > 0) return green;
-    }
+    if (rankChange === undefined || rankChange < 0) return colors.red;
 
-    return colors.red;
+    if (rankChange === 0) return colors.yellow;
+
+    return colors.green;
   };
   return (
     <Box height="full" background="surfacePrimary" as={Page} flex={1}>
