@@ -29,6 +29,9 @@
       android:resizeableActivity="false"
     >
       <meta-data
+          android:name="com.google.mlkit.vision.DEPENDENCIES"
+          android:value="barcode" />
+      <meta-data
         android:name="com.google.firebase.messaging.default_notification_icon"
         android:resource="@mipmap/ic_state_ic_notification"
       />
