@@ -23,7 +23,7 @@ export const getGutterSizeForCardAmount = (amount: number) => {
     return 40;
   }
 
-  return 80;
+  return 55;
 };
 
 export const RemoteCardCarousel = () => {
