@@ -70,7 +70,7 @@ export const RemoteCardProvider: React.FC<
     {},
     {
       enabled: enabled && !IS_TEST,
-      refetchInterval: 5_000,
+      refetchInterval: 60_000,
       onSuccess: (data: CardCollectionResult) => {
         if (!data?.cardCollection?.items?.length) return;
 
