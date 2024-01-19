@@ -21,6 +21,7 @@ export const NFT_OFFERS = 'NFT Offers';
 export const MINTS = 'Mints';
 export const POINTS = 'Points';
 export const REMOTE_PROMO_SHEETS = 'RemotePromoSheets';
+export const REMOTE_CARDS = 'RemoteCards';
 
 /**
  * A developer setting that pushes log lines to an array in-memory so that
@@ -51,6 +52,7 @@ export const defaultConfig: Record<string, ExperimentalValue> = {
   [MINTS]: { settings: true, value: false },
   [POINTS]: { settings: true, value: false },
   [REMOTE_PROMO_SHEETS]: { settings: true, value: false },
+  [REMOTE_CARDS]: { settings: true, value: false },
 };
 
 const storageKey = 'config';

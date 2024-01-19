@@ -95,3 +95,7 @@ export type BackupsSettings = {
   provider: BackupProvider;
   status: BackupStatus;
 };
+
+export type Cards = {
+  [cardKey: string]: boolean;
+};

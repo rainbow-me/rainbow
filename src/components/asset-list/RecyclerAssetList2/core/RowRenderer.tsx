@@ -29,6 +29,8 @@ import { DiscoverMoreButton } from './DiscoverMoreButton';
 import { RotatingLearnCard } from '@/components/cards/RotatingLearnCard';
 import WrappedPosition from '../WrappedPosition';
 import WrappedPositionsListHeader from '../WrappedPositionsListHeader';
+import * as lang from '@/languages';
+import { RemoteCardCarousel } from '@/components/cards/remote-cards';
 import WrappedCollectiblesHeader from '../WrappedCollectiblesHeader';
 
 function rowRenderer(
@@ -91,6 +93,12 @@ function rowRenderer(
       );
     case CellType.PROFILE_STICKY_HEADER:
       return <ProfileStickyHeader />;
+    case CellType.REMOTE_CARD_CAROUSEL:
+      return (
+        <CardRowWrapper>
+          <RemoteCardCarousel />
+        </CardRowWrapper>
+      );
     case CellType.COIN:
       return (
         <FastBalanceCoinRow

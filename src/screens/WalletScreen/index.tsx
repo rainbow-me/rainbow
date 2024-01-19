@@ -37,7 +37,6 @@ import { AppState } from '@/redux/store';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { usePositions } from '@/resources/defi/PositionsQuery';
 import styled from '@/styled-thing';
-import { useTheme } from '@/theme';
 
 const WalletPage = styled(Page)({
   ...position.sizeAsObject('100%'),
@@ -203,8 +202,6 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
   const isLoadingUserAssetsAndAddress = isLoadingUserAssets && !!accountAddress;
 
   const { accentColor } = useAccountAccentColor();
-
-  const { colors } = useTheme();
 
   return (
     <View
