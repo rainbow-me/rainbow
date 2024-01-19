@@ -127,9 +127,9 @@ export default function PointsContent() {
   const totalPointsMaskSize = 60 * Math.max(totalPointsString?.length ?? 0, 4);
 
   const totalUsers = points?.points?.leaderboard.stats.total_users;
-  const rank = points?.points?.user.stats?.position?.current;
+  const rank = points?.points?.user.stats.position.current;
   const lastWeekRank =
-    points?.points?.user?.stats?.last_airdrop?.position?.current;
+    points?.points?.user.stats.last_airdrop?.position.current;
   const rankChange = rank && lastWeekRank ? rank - lastWeekRank : undefined;
   const isUnranked = !!points?.points?.user?.stats?.position?.unranked;
 
@@ -151,18 +151,26 @@ export default function PointsContent() {
 
     if (rankChange === 0) return '􁘶';
 
-    if (rankChange > 0) return '􀑁';
+    if (rankChange < 0) return '􀑁';
 
     return '􁘳';
   };
 
   const getRankChangeIconColor = () => {
-    if (rankChange === undefined || rankChange < 0) return colors.red;
+    if (rankChange === undefined || rankChange > 0) return colors.red;
 
     if (rankChange === 0) return colors.yellow;
 
     return colors.green;
   };
+
+  const getRankChangeText = () => {
+    if (rankChange !== undefined) {
+      return Math.abs(rankChange).toLocaleString('en-US');
+    }
+    return '';
+  };
+
   return (
     <Box height="full" background="surfacePrimary" as={Page} flex={1}>
       <ScrollView
@@ -289,7 +297,7 @@ export default function PointsContent() {
                       subtitle={
                         isUnranked
                           ? i18n.t(i18n.l.points.points.points_to_rank)
-                          : rankChange?.toString() || ''
+                          : getRankChangeText()
                       }
                       mainTextColor={isUnranked ? 'secondary' : 'primary'}
                       accentColor={
