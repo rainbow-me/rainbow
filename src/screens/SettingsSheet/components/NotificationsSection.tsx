@@ -46,7 +46,11 @@ import {
 } from '@/notifications/settings/types';
 import { GlobalNotificationTopic } from '@/notifications/settings/constants';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { POINTS, useExperimentalFlag } from '@/config';
+import {
+  POINTS,
+  POINTS_NOTIFICATIONS_TOGGLE,
+  useExperimentalFlag,
+} from '@/config';
 import { IS_TEST } from '@/env';
 
 type WalletRowProps = {
@@ -219,9 +223,12 @@ const NotificationsSection = () => {
   const isTestnet = isTestnetNetwork(network);
   const { wallets, walletNames } = useWallets();
   const { isConnected } = useNetInfo();
-  const { points_enabled } = useRemoteConfig();
+  const { points_enabled, points_notifications_toggle } = useRemoteConfig();
   const pointsEnabled =
     useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
+  const pointsNotificationsToggleEnabled =
+    useExperimentalFlag(POINTS_NOTIFICATIONS_TOGGLE) ||
+    points_notifications_toggle;
 
   const {
     ownerEnabled: storedOwnerEnabled,
@@ -560,7 +567,7 @@ const NotificationsSection = () => {
           </>
         )}
         <Menu>
-          {pointsEnabled && (
+          {pointsEnabled && pointsNotificationsToggleEnabled && (
             <MenuItem
               disabled
               rightComponent={
