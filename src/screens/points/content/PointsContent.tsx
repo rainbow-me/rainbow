@@ -25,7 +25,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import BlurredRainbow from '@/assets/blurredRainbow.png';
 import Planet from '@/assets/planet.png';
 import LinearGradient from 'react-native-linear-gradient';
-import { deviceUtils, safeAreaInsetValues } from '@/utils';
+import { safeAreaInsetValues } from '@/utils';
 import { ButtonPressAnimation } from '@/components/animations';
 import { getHeaderHeight } from '@/navigation/SwipeNavigator';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';

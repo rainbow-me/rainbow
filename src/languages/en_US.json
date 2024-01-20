@@ -1253,6 +1253,10 @@
         "get_started": "Get Started",
         "invalid_code": "Invalid Code"
       },
+      "notifications": {
+        "enable": "Enable Points Notifications",
+        "disable": "Disable Points Notifications"
+      },
       "points": {
         "referral_code": "Referral Code",
         "share_link": "Share Link",
@@ -1711,6 +1715,7 @@
       "notifications": "Notifications",
       "notifications_section": {
         "my_wallets": "My Wallets",
+        "points": "Points",
         "watched_wallets": "Watched Wallets",
         "allow_notifications": "Allow Notifications",
         "sent": "Sent",

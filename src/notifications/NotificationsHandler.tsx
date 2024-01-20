@@ -52,9 +52,12 @@ import {
 } from '@/notifications/analytics';
 import {
   AddressWithRelationship,
-  NotificationRelationship,
+  WalletNotificationRelationship,
 } from '@/notifications/settings';
-import { initializeNotificationSettingsForAllAddressesAndCleanupSettingsForRemovedWallets } from '@/notifications/settings/initialization';
+import {
+  initializeGlobalNotificationSettings,
+  initializeNotificationSettingsForAllAddressesAndCleanupSettingsForRemovedWallets,
+} from '@/notifications/settings/initialization';
 import { logger } from '@/logger';
 import { setHasPendingDeeplinkPendingRedirect } from '@/walletConnect';
 
@@ -381,15 +384,16 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
               address,
               relationship:
                 wallet.type === walletTypes.readOnly
-                  ? NotificationRelationship.WATCHER
-                  : NotificationRelationship.OWNER,
+                  ? WalletNotificationRelationship.WATCHER
+                  : WalletNotificationRelationship.OWNER,
             })
         )
       );
-
+      initializeGlobalNotificationSettings();
       initializeNotificationSettingsForAllAddressesAndCleanupSettingsForRemovedWallets(
         addresses
       );
+
       alreadyRanInitialization.current = true;
     }
   }, [dispatch, walletReady]);
