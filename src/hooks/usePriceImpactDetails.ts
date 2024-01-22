@@ -108,17 +108,6 @@ export default function usePriceImpactDetails(
     tradeDetails?.buyAmountInEth,
   ]);
 
-  const inputTokenAddress =
-    ethereumUtils.getMultichainAssetAddress(
-      inputCurrency as RainbowToken,
-      currentNetwork
-    ) ?? '';
-  const outputTokenAddress =
-    ethereumUtils.getMultichainAssetAddress(
-      outputCurrency as RainbowToken,
-      currentNetwork
-    ) ?? '';
-
   const { impactDisplay, priceImpact, percentDisplay } = useMemo(() => {
     const nativeAmountImpact = subtract(inputNativeAmount, outputNativeAmount);
     const priceImpact = divide(nativeAmountImpact, inputNativeAmount);
