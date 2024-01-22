@@ -32,6 +32,7 @@ import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 import { abbreviations } from '@/utils';
 import { getCrosschainSwapServiceTime } from '@/handlers/swap';
+import { SwapPriceImpactType } from '@/hooks/usePriceImpactDetails';
 
 const AnimatedContainer = styled(Animated.View)({
   ...position.sizeAsObject('100%'),
@@ -104,17 +105,13 @@ export default function SwapDetailsState({
   } = useSelector(state => state.swap);
 
   const {
-    inputPriceValue,
-    isHighPriceImpact,
-    outputPriceValue,
-    priceImpactColor,
-    priceImpactNativeAmount,
-    priceImpactPercentDisplay,
+    priceImpact,
+    inputNativeAmount,
+    outputNativeAmount,
   } = usePriceImpactDetails(
-    inputAmount,
-    outputAmount,
     inputCurrency,
     outputCurrency,
+    tradeDetails,
     currentNetwork
   );
 
@@ -194,23 +191,23 @@ export default function SwapDetailsState({
         <SwapDetailsMasthead
           inputAmount={inputAmount}
           inputAmountDisplay={inputAmountDisplay}
-          inputPriceValue={inputPriceValue}
-          isHighPriceImpact={isHighPriceImpact}
+          inputPriceValue={inputNativeAmount}
+          isHighPriceImpact={priceImpact.type !== SwapPriceImpactType.none}
           outputAmount={outputAmount}
           outputAmountDisplay={outputAmountDisplay}
-          outputPriceValue={outputPriceValue}
-          priceImpactColor={priceImpactColor}
+          outputPriceValue={outputNativeAmount}
+          priceImpactColor={priceImpact.color}
         />
         <SwapDetailsSlippageMessage
-          isHighPriceImpact={isHighPriceImpact}
+          isHighPriceImpact={priceImpact.type !== SwapPriceImpactType.none}
           onLayout={setSlippageMessageHeight}
-          priceImpactColor={priceImpactColor}
-          priceImpactNativeAmount={priceImpactNativeAmount}
-          priceImpactPercentDisplay={priceImpactPercentDisplay}
+          priceImpactColor={priceImpact.color}
+          priceImpactNativeAmount={priceImpact.impactDisplay}
+          priceImpactPercentDisplay={priceImpact.percentDisplay}
         />
         <SwapDetailsContent
           isRefuelTx={isRefuelTx}
-          isHighPriceImpact={isHighPriceImpact}
+          isHighPriceImpact={priceImpact.type !== SwapPriceImpactType.none}
           onCopySwapDetailsText={onCopySwapDetailsText}
           onLayout={onContentHeightChange}
           onPressMore={onPressMore}
