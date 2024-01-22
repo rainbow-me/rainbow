@@ -9,7 +9,7 @@ export const WalletNotificationTopic = {
   OTHER: 'other',
 };
 export const GlobalNotificationTopic = {
-  POINTS: 'points',
+  POINTS: 'marketing-points',
 };
 export const WalletNotificationRelationship = {
   OWNER: 'owner',
