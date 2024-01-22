@@ -30,6 +30,7 @@ export type TextProps = {
   testID?: string;
   uppercase?: boolean;
   weight?: TextWeight;
+  onPress?: () => void;
 } & (
   | {
       containsEmoji: true;
@@ -53,6 +54,7 @@ export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(
       testID,
       uppercase,
       weight,
+      onPress,
       style,
     },
     ref
@@ -94,6 +96,7 @@ export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(
         ref={ref}
         style={[textStyle, style || {}]}
         testID={testID}
+        onPress={onPress}
       >
         {ios && containsEmojiProp && nodeIsString(children)
           ? renderStringWithEmoji(children)

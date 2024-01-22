@@ -289,6 +289,21 @@ query getPointsDataForWallet($address: String!) {
           unranked
           current
         }
+        last_airdrop {
+          position {
+            unranked
+            current
+          }
+          earnings {
+            total
+          }
+          differences {
+            type
+            earnings {
+              total
+            }
+          }
+        }
       }
     }
   }

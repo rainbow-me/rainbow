@@ -155,7 +155,7 @@ export interface RainbowWallet {
   type: EthereumWalletType;
   backedUp?: boolean;
   backupFile?: string | null;
-  backupDate?: string;
+  backupDate?: number;
   backupType?: string;
   damaged?: boolean;
   deviceId?: string;

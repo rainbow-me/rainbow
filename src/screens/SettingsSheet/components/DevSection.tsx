@@ -299,7 +299,7 @@ const DevSection = () => {
   return (
     <MenuContainer testID="developer-settings-sheet">
       <Menu header={IS_DEV || isTestFlight ? 'Normie Settings' : ''}>
-        <MenuItem
+        {/* <MenuItem
           disabled
           leftComponent={<MenuItem.TextIcon icon="🕹️" isEmoji />}
           rightComponent={
@@ -316,7 +316,7 @@ const DevSection = () => {
             />
           }
         />
-        {testnetsEnabled && <NetworkSection inDevSection />}
+        {testnetsEnabled && <NetworkSection inDevSection />} */}
         <MenuItem
           leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
           onPress={clearLocalStorage}

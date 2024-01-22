@@ -188,7 +188,7 @@
 		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Accesses the Camera to scan QR codes for connecting to dApps and discovering wallets</string>
+	<string>This lets you scan QR codes for connecting to dApps and discovering wallets</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Used to sign transactions and access wallet keys</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>

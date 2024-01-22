@@ -226,7 +226,14 @@ const withBriefBalanceSection = (
   }
 
   return {
-    balanceSection: [...header, ...content],
+    balanceSection: [
+      ...header,
+      {
+        type: 'REMOTE_CARD_CAROUSEL',
+        uid: 'remote-card-carousel',
+      },
+      ...content,
+    ],
     isLoadingUserAssets,
     isEmpty,
   };

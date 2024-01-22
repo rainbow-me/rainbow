@@ -67,6 +67,7 @@ const ViewDimensions: Record<CellType, Dim> = {
     height: 130,
     width: deviceUtils.dimensions.width / 2 - 0.1,
   },
+  [CellType.REMOTE_CARD_CAROUSEL]: { height: 112 },
 };
 
 export default ViewDimensions;

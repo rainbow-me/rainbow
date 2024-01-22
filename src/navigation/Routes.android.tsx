@@ -4,7 +4,7 @@ import React, { useContext } from 'react';
 import { StatusBar } from 'react-native';
 import { AddCashSheet } from '../screens/AddCash';
 import AvatarBuilder from '../screens/AvatarBuilder';
-import BackupSheet from '../screens/BackupSheet';
+import BackupSheet from '../screens/SettingsSheet/components/Backups/BackupSheet';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
 import ConnectedDappsSheet from '../screens/ConnectedDappsSheet';
 import ENSAdditionalRecordsSheet from '../screens/ENSAdditionalRecordsSheet';
