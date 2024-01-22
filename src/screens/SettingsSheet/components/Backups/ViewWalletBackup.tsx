@@ -19,7 +19,8 @@ import WalletTypes from '@/helpers/walletTypes';
 import { useRecoilState } from 'recoil';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import Routes from '@/navigation/routesNames';
-import { navigate } from '@/navigation/Navigation';
+import { navigate, useNavigation } from '@/navigation/Navigation';
+import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 
 type ViewWalletBackupParams = {
   ViewWalletBackup: { walletId: string };
@@ -46,11 +47,21 @@ const ViewWalletBackup = () => {
   const { wallets } = useWallets();
   const wallet = wallets?.[walletId];
 
+  const { navigate } = useNavigation();
+
   const { manageCloudBackups } = useManageCloudBackups();
 
   const [isToastActive, setToastActive] = useRecoilState(
     addressCopiedToastAtom
   );
+
+  const enableCloudBackups = useCallback(() => {}, []);
+
+  const onManualBackup = useCallback(() => {
+    navigate(Routes.SETTINGS_WARN_SECRET_VIEW, {
+      walletId,
+    });
+  }, [navigate]);
 
   const onCreateNewWallet = useCallback(() => {}, []);
 
@@ -140,7 +151,7 @@ const ViewWalletBackup = () => {
             <MenuItem
               hasSfSymbol
               leftComponent={<MenuItem.TextIcon icon="􀊯" isLink />}
-              onPress={manageCloudBackups}
+              onPress={enableCloudBackups}
               size={52}
               titleComponent={
                 <MenuItem.Title
@@ -152,7 +163,7 @@ const ViewWalletBackup = () => {
             <MenuItem
               hasSfSymbol
               leftComponent={<MenuItem.TextIcon icon="􀈊" isLink />}
-              onPress={manageCloudBackups}
+              onPress={onManualBackup}
               size={52}
               titleComponent={
                 <MenuItem.Title

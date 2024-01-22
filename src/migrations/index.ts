@@ -15,7 +15,6 @@ import { migrateNotificationSettingsToV2 } from '@/migrations/migrations/migrate
 import { prepareDefaultNotificationGroupSettingsState } from '@/migrations/migrations/prepareDefaultNotificationGroupSettingsState';
 import { changeLanguageKeys } from './migrations/changeLanguageKeys';
 import { fixHiddenUSDC } from './migrations/fixHiddenUSDC';
-import { setInitialBackupMethod } from './migrations/setInitialBackupMethod';
 
 /**
  * Local storage for migrations only. Should not be exported.
@@ -37,7 +36,6 @@ const migrations: Migration[] = [
   migrateNotificationSettingsToV2(),
   changeLanguageKeys(),
   fixHiddenUSDC(),
-  setInitialBackupMethod(),
 ];
 
 /**

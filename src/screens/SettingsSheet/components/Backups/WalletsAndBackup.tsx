@@ -18,6 +18,7 @@ import { ContactAvatar } from '@/components/contacts';
 import { useTheme } from '@/theme';
 import Routes from '@/navigation/routesNames';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import { backupsCard } from '@/components/cards/utils/constants';
 
 const WalletsAndBackup = () => {
   const { colors, isDarkMode } = useTheme();
@@ -33,7 +34,12 @@ const WalletsAndBackup = () => {
     });
   }, [navigate]);
 
-  const onBackupToCloud = useCallback(() => {}, []);
+  const onBackupToCloud = useCallback(() => {
+    navigate(Routes.BACKUP_SHEET, {
+      nativeScreen: true,
+      step: WalletBackupStepTypes.cloud,
+    });
+  }, [navigate]);
 
   const onCreateNewSecretPhrase = useCallback(() => {}, []);
 
@@ -148,6 +154,13 @@ const WalletsAndBackup = () => {
                   text={lang.t('wallet.back_ups.cloud_backup_description', {
                     link: lang.t('wallet.back_ups.cloud_backup_link'),
                   })}
+                  linkText={lang.t('wallet.back_ups.cloud_backup_link')}
+                  onPress={() =>
+                    navigate(Routes.LEARN_WEB_VIEW_SCREEN, {
+                      ...backupsCard,
+                      type: 'square',
+                    })
+                  }
                 />
               }
             />

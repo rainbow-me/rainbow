@@ -1,9 +1,10 @@
 import React from 'react';
 import { Source } from 'react-native-fast-image';
-import { Box, Space, Stack, Text } from '@/design-system';
+import { Box, Inline, Space, Stack, Text } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import { useTheme } from '@/theme';
 import { ImageSourcePropType } from 'react-native';
+import { ButtonPressAnimation } from '@/components/animations';
 
 interface ImageIconProps {
   size?: number;
@@ -156,19 +157,30 @@ const Title = ({ text, weight = 'semibold' }: TitleProps) => (
 
 interface LabelProps {
   text: string;
-  warn?: boolean;
+  linkText?: string;
+  onPress?: () => void;
 }
 
-const Label = ({ text, warn }: LabelProps) => {
-  const { colors } = useTheme();
+const Label = ({ text, linkText, onPress }: LabelProps) => {
   return (
     <Text
-      color={warn ? { custom: colors.orangeLight } : 'secondary60 (Deprecated)'}
+      color={'secondary60 (Deprecated)'}
       size="14px / 19px (Deprecated)"
       align="center"
       weight="medium"
     >
       {text}
+      {linkText && onPress && (
+        <Text
+          onPress={onPress}
+          color="blue"
+          size="14px / 19px (Deprecated)"
+          weight="medium"
+        >
+          {' '}
+          {linkText}
+        </Text>
+      )}
     </Text>
   );
 };

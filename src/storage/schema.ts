@@ -78,24 +78,6 @@ type CampaignMetadata = {
 
 export type Campaigns = CampaignKeys & CampaignMetadata;
 
-export const enum BackupProvider {
-  NoProvider = 'NoProvider',
-  CloudProvider = 'CloudProvider',
-  ManualProvider = 'ManualProvider',
-}
-
-export const enum BackupStatus {
-  NoBackup = 'NoBackup',
-  UpToDate = 'UpToDate',
-  OutOfDate = 'OutOfDate',
-}
-
-export type BackupsSettings = {
-  lastBackupTimestamp: string;
-  provider: BackupProvider;
-  status: BackupStatus;
-};
-
 export type Cards = {
   [cardKey: string]: boolean;
 };

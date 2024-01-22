@@ -165,13 +165,13 @@ export default function BackupSheet() {
         );
       case WalletBackupStepTypes.imported:
         return (
-          // TODO: ADD CloudPlatform to back_up.description
           <BackupSheetSection
             descriptionText={lang.t('modal.back_up.imported.description', {
               cloudPlatformName: cloudPlatform,
             })}
             onPrimaryAction={onIcloudBackup}
             onSecondaryAction={goBack}
+            primaryButtonTestId="backup-sheet-imported-back-up-button"
             primaryLabel={`􀙶 ${lang.t('modal.back_up.imported.button.back_up', {
               cloudPlatformName: cloudPlatform,
             })}`}
