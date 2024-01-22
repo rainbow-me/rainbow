@@ -2,8 +2,7 @@ import { useMemo } from 'react';
 import useAccountSettings from './useAccountSettings';
 import { RainbowToken, SwappableAsset } from '@/entities';
 import { Network } from '@/helpers';
-import { AppState } from '@/redux/store';
-import { ETH_ADDRESS, WETH_ADDRESS } from '@/references';
+
 import { useTheme } from '@/theme';
 import {
   convertAmountToNativeDisplay,
@@ -23,15 +22,14 @@ export enum SwapPriceImpactType {
   severe = 'severe',
 }
 
-const PriceImpactWarningThreshold = 0.00001;
+const PriceImpactWarningThreshold = 0.05;
 const SeverePriceImpactThreshold = 0.1;
 
 export default function usePriceImpactDetails(
   inputCurrency: SwappableAsset | null,
   outputCurrency: SwappableAsset | null,
   tradeDetails: CrosschainQuote | Quote | null,
-  currentNetwork = Network.mainnet,
-  loading = false
+  currentNetwork = Network.mainnet
 ) {
   const { nativeCurrency } = useAccountSettings();
   const { colors } = useTheme();
