@@ -211,11 +211,10 @@ export const PointsProfileProvider = ({
             throw new RainbowError(
               'Points: Error onboarding user: invalid referral code'
             );
-          case 'NO_BALANCE': // replace w/ erro type when available
-            Alert.alert(i18n.t(i18n.l.points.console.no_balance_alert));
-            throw new RainbowError(
-              'Points: Error onboarding user: user has no balance'
-            );
+          case PointsErrorType.NoBalance:
+            setAnimationKey(prevKey => prevKey + 1);
+            setStep(RainbowPointsFlowSteps.RequireWalletBalance);
+            break;
           default:
             Alert.alert(i18n.t(i18n.l.points.console.generic_alert));
             throw new RainbowError(

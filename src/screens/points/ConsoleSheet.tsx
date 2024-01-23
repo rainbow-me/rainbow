@@ -14,6 +14,7 @@ import { Calculate } from './content/console/calculate';
 import { Share } from './content/console/share';
 import { Review } from './content/console/review';
 import { ViewWeeklyEarnings } from './content/console/view-weekly-earnings';
+import { RequireWalletBalance } from './content/console/require-wallet-balance';
 
 type ConsoleSheetParams = {
   ConsoleSheet: {
@@ -128,6 +129,8 @@ const ClaimFlow = () => {
       return <Review />;
     case RainbowPointsFlowSteps.ViewWeeklyEarnings:
       return <ViewWeeklyEarnings />;
+    case RainbowPointsFlowSteps.RequireWalletBalance:
+      return <RequireWalletBalance />;
   }
 };
 
