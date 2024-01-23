@@ -397,8 +397,7 @@ export default function ExchangeModal({
     inputCurrency,
     outputCurrency,
     tradeDetails,
-    currentNetwork,
-    loading
+    currentNetwork
   );
   const [debouncedIsHighPriceImpact] = useDebounce(
     priceImpact.type !== SwapPriceImpactType.none,
