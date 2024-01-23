@@ -1,4 +1,4 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React from 'react';
 import CopyTooltip from '../copy-tooltip';
 import { Centered } from '../layout';
@@ -22,14 +22,14 @@ export default function SecretDisplayCard({
         <Box
           background="card (Deprecated)"
           borderRadius={25}
-          height={{ custom: 240 }}
+          height={{ custom: type === WalletTypes.privateKey ? 90 : 240 }}
           paddingHorizontal="30px (Deprecated)"
           paddingVertical="19px (Deprecated)"
           shadow="21px light (Deprecated)"
         >
           <CopyTooltip
             textToCopy={seed}
-            tooltipText={lang.t('back_up.secret.copy_to_clipboard')}
+            tooltipText={i18n.t(i18n.l.back_up.secret.copy_to_clipboard)}
           >
             <Box alignItems="center" height="full" justifyContent="center">
               {seed && type === WalletTypes.mnemonic && (

@@ -9,8 +9,9 @@ import { Box, Inline, Text, BackgroundProvider } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import { SettingsPages } from './SettingsPages';
 import { settingsCardStyleInterpolator } from './settingsCardStyleInterpolator';
-import SettingsBackupView from './components/Backups/ViewWalletBackup';
-import ShowSecretView from './components/ShowSecretView';
+import WiewWalletBackup from './components/Backups/ViewWalletBackup';
+import ShowSecretView from './components/Backups/ShowSecretView';
+import SecretWarning from './components/Backups/SecretWarning';
 import { CUSTOM_MARGIN_TOP_ANDROID } from './constants';
 import SettingsSection from './components/SettingsSection';
 import WalletNotificationsSettings from './components/WalletNotificationsSettings';
@@ -124,8 +125,16 @@ export function SettingsSheet() {
             })}
           />
           <Stack.Screen
-            component={SettingsBackupView}
-            name="SettingsBackupView"
+            component={WiewWalletBackup}
+            name="WiewWalletBackup"
+            options={({ route }: any) => ({
+              cardStyleInterpolator: settingsCardStyleInterpolator,
+              title: route.params?.title || lang.t('settings.backup'),
+            })}
+          />
+          <Stack.Screen
+            component={SecretWarning}
+            name="SecretWarning"
             options={({ route }: any) => ({
               cardStyleInterpolator: settingsCardStyleInterpolator,
               title: route.params?.title || lang.t('settings.backup'),
@@ -164,7 +173,7 @@ export function SettingsSheet() {
             >
               <BStack.Screen
                 name="SettingsSection"
-                //@ts-ignore
+                // @ts-ignore
                 options={bottomSheetPreset}
               >
                 {() => (
@@ -194,13 +203,12 @@ export function SettingsSheet() {
                 )}
               </BStack.Screen>
               {Object.values(SettingsPages).map(
-                ({ component, getTitle, key }) =>
+                ({ component, key }) =>
                   component && (
                     <BStack.Screen
                       component={component}
                       key={key}
                       name={key}
-                      //@ts-ignore
                       options={bottomSheetPreset}
                     />
                   )
@@ -208,13 +216,21 @@ export function SettingsSheet() {
               <BStack.Screen
                 component={WalletNotificationsSettings}
                 name="WalletNotificationsSettings"
-                //@ts-ignore
                 options={bottomSheetPreset}
               />
               <BStack.Screen
-                component={SettingsBackupView}
-                name="SettingsBackupView"
-                //@ts-ignore
+                component={WiewWalletBackup}
+                name="WiewWalletBackup"
+                options={bottomSheetPreset}
+              />
+              <BStack.Screen
+                component={SecretWarning}
+                name="SecretWarning"
+                options={bottomSheetPreset}
+              />
+              <BStack.Screen
+                component={ShowSecretView}
+                name="ShowSecretView"
                 options={bottomSheetPreset}
               />
             </BStack.Navigator>
