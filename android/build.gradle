@@ -10,8 +10,8 @@ buildscript {
         compileSdkVersion = 33
         targetSdkVersion = 33
         ndkVersion = "23.1.7779620"
-        kotlin_version = "1.6.20"
-        kotlinVersion = "1.6.20"
+        kotlin_version = "1.7.21"
+        kotlinVersion = '1.7.21'
         androidXCore = "1.6.0"
     }
 

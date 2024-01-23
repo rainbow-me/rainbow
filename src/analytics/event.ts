@@ -1,7 +1,6 @@
 import { CardType } from '@/components/cards/GenericCard';
 import { LearnCategory } from '@/components/cards/utils/types';
 import { FiatProviderName } from '@/entities/f2c';
-import { Network } from '@/networks/types';
 
 /**
  * All events, used by `analytics.track()`
@@ -99,6 +98,7 @@ export const event = {
   mintsMintingNFT: 'Minting NFT',
   mintsMintedNFT: 'Minted NFT',
   mintsErrorMintingNFT: 'Error Minting NFT',
+  pointsViewedWeeklyEarnings: 'Viewed weekly earnings',
   pointsViewedClaimScreen: 'Viewed claim your points screen',
   pointsViewedReferralScreen: 'Viewed points referral code screen',
   pointsViewedPointsScreen: 'Viewed main points screen',
@@ -118,11 +118,16 @@ export const event = {
     'Pressed continue button on onboarding screen',
   pointsOnboardingScreenPressedDoneButton:
     'Pressed done button on onboarding screen',
+  pointsViewedWeeklyEarningsScreenPressedCloseButton:
+    'Pressed close button on weekly earnings screen',
   pointsReferralCodeDeeplinkOpened: 'Opened points referral code deeplink',
   pointsPointsScreenPressedCopyReferralCodeButton:
     'Pressed copy referral code button on points screen',
   pointsPointsScreenPressedShareReferralLinkButton:
     'Pressed share referral link button on points screen',
+
+  remoteCardPrimaryButtonPressed: 'remote_card.primary_button_pressed',
+  remoteCardDismissed: 'remote_card.dismissed',
 } as const;
 
 /**
@@ -406,6 +411,7 @@ export type EventProperties = {
   [event.pointsViewedReferralScreen]: undefined;
   [event.pointsViewedPointsScreen]: undefined;
   [event.pointsViewedOnboardingSheet]: undefined;
+  [event.pointsViewedWeeklyEarnings]: undefined;
   [event.pointsReferralScreenValidatedReferralCode]: {
     deeplinked: boolean;
   };
@@ -428,7 +434,18 @@ export type EventProperties = {
   [event.pointsOnboardingScreenPressedSkipShareToXButton]: undefined;
   [event.pointsOnboardingScreenPressedContinueButton]: undefined;
   [event.pointsOnboardingScreenPressedDoneButton]: undefined;
+  [event.pointsViewedWeeklyEarningsScreenPressedCloseButton]: undefined;
   [event.pointsReferralCodeDeeplinkOpened]: undefined;
   [event.pointsPointsScreenPressedCopyReferralCodeButton]: undefined;
   [event.pointsPointsScreenPressedShareReferralLinkButton]: undefined;
+
+  [event.remoteCardPrimaryButtonPressed]: {
+    cardKey: string;
+    action: string;
+    props: string;
+  };
+
+  [event.remoteCardDismissed]: {
+    cardKey: string;
+  };
 };

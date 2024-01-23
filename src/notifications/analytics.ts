@@ -3,12 +3,12 @@ import { MinimalNotification } from '@/notifications/types';
 import { getPermissionStatus } from '@/notifications/permissions';
 import messaging from '@react-native-firebase/messaging';
 import {
-  NotificationRelationship,
+  WalletNotificationRelationship,
   WALLET_GROUPS_STORAGE_KEY,
   WALLET_TOPICS_STORAGE_KEY,
   GroupSettings,
-  NotificationRelationshipType,
-  NotificationTopicType,
+  WalletNotificationRelationshipType,
+  WalletNotificationTopicType,
   WalletNotificationSettings,
   notificationSettingsStorage,
 } from '@/notifications/settings';
@@ -25,10 +25,10 @@ export const trackTappedPushNotification = (
 };
 
 export const trackChangedNotificationSettings = (
-  chainId: number,
-  topic: NotificationTopicType,
-  type: NotificationRelationshipType,
-  action: 'subscribe' | 'unsubscribe'
+  topic: WalletNotificationTopicType,
+  action: 'subscribe' | 'unsubscribe',
+  chainId?: number,
+  type?: WalletNotificationRelationshipType
 ) => {
   analytics.track('Changed Notification Settings', {
     chainId,
@@ -80,8 +80,8 @@ export const trackWalletsSubscribedForNotifications = () => {
   const { imported, watched } = countWalletsWithNotificationsTurnedOn(wallets);
 
   trackNumberOfWalletsWithNotificationsTurnedOn(
-    groups[NotificationRelationship.OWNER] ? imported : 0,
-    groups[NotificationRelationship.WATCHER] ? watched : 0
+    groups[WalletNotificationRelationship.OWNER] ? imported : 0,
+    groups[WalletNotificationRelationship.WATCHER] ? watched : 0
   );
 };
 
@@ -118,8 +118,8 @@ const onGroupStateChange = (state: GroupSettings) => {
   const { imported, watched } = countWalletsWithNotificationsTurnedOn(wallets);
 
   trackNumberOfWalletsWithNotificationsTurnedOn(
-    state[NotificationRelationship.OWNER] ? imported : 0,
-    state[NotificationRelationship.WATCHER] ? watched : 0
+    state[WalletNotificationRelationship.OWNER] ? imported : 0,
+    state[WalletNotificationRelationship.WATCHER] ? watched : 0
   );
 };
 
@@ -137,7 +137,7 @@ const countWalletsWithNotificationsTurnedOn = (
 
   wallets.forEach(entry => {
     if (!entry.enabled) return;
-    if (entry.type === NotificationRelationship.OWNER) imported += 1;
+    if (entry.type === WalletNotificationRelationship.OWNER) imported += 1;
     else watched += 1;
   });
 

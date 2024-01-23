@@ -1,6 +1,6 @@
 import {
   addDefaultNotificationGroupSettings,
-  NotificationRelationship,
+  WalletNotificationRelationship,
   notificationSettingsStorage,
   WALLET_GROUPS_STORAGE_KEY,
   WALLET_TOPICS_STORAGE_KEY,
@@ -95,11 +95,11 @@ describe('Notification settings initialization', () => {
         [
           {
             address: TEST_ADDRESS_1,
-            relationship: NotificationRelationship.OWNER,
+            relationship: WalletNotificationRelationship.OWNER,
           },
           {
             address: TEST_ADDRESS_2,
-            relationship: NotificationRelationship.WATCHER,
+            relationship: WalletNotificationRelationship.WATCHER,
           },
         ],
         initState
@@ -108,7 +108,7 @@ describe('Notification settings initialization', () => {
         {
           address: TEST_ADDRESS_1,
           topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
-          type: NotificationRelationship.OWNER,
+          type: WalletNotificationRelationship.OWNER,
           successfullyFinishedInitialSubscription: false,
           enabled: false,
         },
@@ -119,7 +119,7 @@ describe('Notification settings initialization', () => {
       expect(storedAfter).toEqual([
         {
           address: TEST_ADDRESS_1,
-          type: NotificationRelationship.OWNER,
+          type: WalletNotificationRelationship.OWNER,
           successfullyFinishedInitialSubscription: false,
           topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
           enabled: false,
@@ -127,7 +127,7 @@ describe('Notification settings initialization', () => {
         {
           address: TEST_ADDRESS_2,
           topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
-          type: NotificationRelationship.WATCHER,
+          type: WalletNotificationRelationship.WATCHER,
           successfullyFinishedInitialSubscription: true,
           enabled: false,
         },
@@ -145,11 +145,11 @@ describe('Notification settings initialization', () => {
         [
           {
             address: TEST_ADDRESS_1,
-            relationship: NotificationRelationship.WATCHER,
+            relationship: WalletNotificationRelationship.WATCHER,
           },
           {
             address: TEST_ADDRESS_2,
-            relationship: NotificationRelationship.WATCHER,
+            relationship: WalletNotificationRelationship.WATCHER,
           },
         ],
         initState
@@ -161,7 +161,7 @@ describe('Notification settings initialization', () => {
       expect(storedAfter).toEqual([
         {
           address: TEST_ADDRESS_1,
-          type: NotificationRelationship.WATCHER,
+          type: WalletNotificationRelationship.WATCHER,
           successfullyFinishedInitialSubscription: true,
           topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
           enabled: false,
@@ -169,7 +169,7 @@ describe('Notification settings initialization', () => {
         {
           address: TEST_ADDRESS_2,
           topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
-          type: NotificationRelationship.WATCHER,
+          type: WalletNotificationRelationship.WATCHER,
           successfullyFinishedInitialSubscription: true,
           enabled: false,
         },
@@ -180,7 +180,7 @@ describe('Notification settings initialization', () => {
       const stateBefore = [
         {
           address: TEST_ADDRESS_1,
-          type: NotificationRelationship.OWNER,
+          type: WalletNotificationRelationship.OWNER,
           successfullyFinishedInitialSubscription: true,
           topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
           enabled: true,
@@ -188,7 +188,7 @@ describe('Notification settings initialization', () => {
         {
           address: TEST_ADDRESS_2,
           topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
-          type: NotificationRelationship.WATCHER,
+          type: WalletNotificationRelationship.WATCHER,
           successfullyFinishedInitialSubscription: true,
           enabled: false,
         },
@@ -222,11 +222,11 @@ describe('Notification settings initialization', () => {
         [
           {
             address: TEST_ADDRESS_1,
-            relationship: NotificationRelationship.OWNER,
+            relationship: WalletNotificationRelationship.OWNER,
           },
           {
             address: TEST_ADDRESS_2,
-            relationship: NotificationRelationship.WATCHER,
+            relationship: WalletNotificationRelationship.WATCHER,
           },
         ],
         initState
@@ -244,7 +244,7 @@ describe('Notification settings initialization', () => {
       const stateBefore = [
         {
           address: TEST_ADDRESS_1,
-          type: NotificationRelationship.OWNER,
+          type: WalletNotificationRelationship.OWNER,
           // failed to subscribe properly, that's why it's still false
           successfullyFinishedInitialSubscription: false,
           topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
@@ -253,7 +253,7 @@ describe('Notification settings initialization', () => {
         {
           address: TEST_ADDRESS_2,
           topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
-          type: NotificationRelationship.WATCHER,
+          type: WalletNotificationRelationship.WATCHER,
           successfullyFinishedInitialSubscription: true,
           enabled: false,
         },
@@ -287,11 +287,11 @@ describe('Notification settings initialization', () => {
         [
           {
             address: TEST_ADDRESS_1,
-            relationship: NotificationRelationship.OWNER,
+            relationship: WalletNotificationRelationship.OWNER,
           },
           {
             address: TEST_ADDRESS_2,
-            relationship: NotificationRelationship.WATCHER,
+            relationship: WalletNotificationRelationship.WATCHER,
           },
         ],
         initState
@@ -311,7 +311,7 @@ describe('Notification settings initialization', () => {
         {
           address: TEST_ADDRESS_1,
           // before the wallet is a watched one
-          type: NotificationRelationship.WATCHER,
+          type: WalletNotificationRelationship.WATCHER,
           // it was properly initialized before
           successfullyFinishedInitialSubscription: true,
           topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
@@ -320,7 +320,7 @@ describe('Notification settings initialization', () => {
         {
           address: TEST_ADDRESS_2,
           topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
-          type: NotificationRelationship.WATCHER,
+          type: WalletNotificationRelationship.WATCHER,
           successfullyFinishedInitialSubscription: true,
           enabled: false,
         },
@@ -355,11 +355,11 @@ describe('Notification settings initialization', () => {
           {
             address: TEST_ADDRESS_1,
             // changed to be owned from watched wallet
-            relationship: NotificationRelationship.OWNER,
+            relationship: WalletNotificationRelationship.OWNER,
           },
           {
             address: TEST_ADDRESS_2,
-            relationship: NotificationRelationship.WATCHER,
+            relationship: WalletNotificationRelationship.WATCHER,
           },
         ],
         initState
@@ -367,8 +367,8 @@ describe('Notification settings initialization', () => {
 
       // changed the current type to "owned" and old to "watched" (previous state), also wallet now is not initialized since it needs to re-subscribe
       const changedState = {
-        type: NotificationRelationship.OWNER,
-        oldType: NotificationRelationship.WATCHER,
+        type: WalletNotificationRelationship.OWNER,
+        oldType: WalletNotificationRelationship.WATCHER,
         successfullyFinishedInitialSubscription: false,
       };
 
@@ -400,7 +400,7 @@ describe('Notification settings initialization', () => {
         JSON.stringify([
           {
             address: TEST_ADDRESS_1,
-            type: NotificationRelationship.OWNER,
+            type: WalletNotificationRelationship.OWNER,
             successfullyFinishedInitialSubscription: false,
             topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
             enabled: false,
@@ -418,7 +418,7 @@ describe('Notification settings initialization', () => {
       ).toEqual([
         {
           address: TEST_ADDRESS_1,
-          type: NotificationRelationship.OWNER,
+          type: WalletNotificationRelationship.OWNER,
           successfullyFinishedInitialSubscription: false,
           topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
           enabled: false,
@@ -432,7 +432,7 @@ describe('Notification settings initialization', () => {
         JSON.stringify([
           {
             address: TEST_ADDRESS_1,
-            type: NotificationRelationship.OWNER,
+            type: WalletNotificationRelationship.OWNER,
             successfullyFinishedInitialSubscription: false,
             topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
             enabled: false,
@@ -443,7 +443,7 @@ describe('Notification settings initialization', () => {
       await _processSubscriptionQueue([
         {
           address: TEST_ADDRESS_1,
-          type: NotificationRelationship.OWNER,
+          type: WalletNotificationRelationship.OWNER,
           successfullyFinishedInitialSubscription: false,
           topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
           enabled: false,
@@ -451,7 +451,7 @@ describe('Notification settings initialization', () => {
       ]);
       const stateAfter = {
         address: TEST_ADDRESS_1,
-        type: NotificationRelationship.OWNER,
+        type: WalletNotificationRelationship.OWNER,
         successfullyFinishedInitialSubscription: true,
         topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
         enabled: true,
@@ -471,9 +471,9 @@ describe('Notification settings initialization', () => {
     test('running subscription queue processing for wallets that were imported after being watched should unsubscribe them completely and resubscribe them properly again', async () => {
       const stateBefore = {
         address: TEST_ADDRESS_1,
-        type: NotificationRelationship.OWNER,
+        type: WalletNotificationRelationship.OWNER,
         // has old type as "watcher" which signifies that it was previously watched
-        oldType: NotificationRelationship.WATCHER,
+        oldType: WalletNotificationRelationship.WATCHER,
         successfullyFinishedInitialSubscription: false,
         topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
         enabled: false,
@@ -491,7 +491,7 @@ describe('Notification settings initialization', () => {
         oldType: undefined,
       };
       expect(unsubscribeWalletFromAllNotificationTopics).toHaveBeenCalledWith(
-        NotificationRelationship.WATCHER,
+        WalletNotificationRelationship.WATCHER,
         NOTIFICATIONS_DEFAULT_CHAIN_ID,
         stateBefore.address
       );
@@ -521,7 +521,7 @@ describe('Notification settings initialization', () => {
         JSON.stringify([
           {
             address: TEST_ADDRESS_1,
-            type: NotificationRelationship.OWNER,
+            type: WalletNotificationRelationship.OWNER,
             successfullyFinishedInitialSubscription: false,
             topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
             enabled: false,
@@ -540,7 +540,7 @@ describe('Notification settings initialization', () => {
       ).toEqual([
         {
           address: TEST_ADDRESS_1,
-          type: NotificationRelationship.OWNER,
+          type: WalletNotificationRelationship.OWNER,
           successfullyFinishedInitialSubscription: false,
           topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
           enabled: false,
@@ -557,15 +557,15 @@ describe('Notification settings initialization', () => {
       const stateBefore = [
         {
           address: TEST_ADDRESS_1,
-          type: NotificationRelationship.OWNER,
+          type: WalletNotificationRelationship.OWNER,
           successfullyFinishedInitialSubscription: false,
           topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
           enabled: false,
         },
         {
           address: TEST_ADDRESS_2,
-          type: NotificationRelationship.OWNER,
-          oldType: NotificationRelationship.WATCHER,
+          type: WalletNotificationRelationship.OWNER,
+          oldType: WalletNotificationRelationship.WATCHER,
           successfullyFinishedInitialSubscription: false,
           topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
           enabled: false,

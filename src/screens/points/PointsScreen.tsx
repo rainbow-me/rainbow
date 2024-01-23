@@ -5,7 +5,11 @@ import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
 import { Box } from '@/design-system';
 import { useAccountProfile } from '@/hooks';
-import { POINTS, useExperimentalFlag } from '@/config';
+import {
+  POINTS,
+  POINTS_NOTIFICATIONS_TOGGLE,
+  useExperimentalFlag,
+} from '@/config';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -22,6 +26,7 @@ import { delay } from '@/utils/delay';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { IS_TEST } from '@/env';
+import { NotificationToggleContextMenu } from './components/NotificationToggleContextMenu';
 
 export const POINTS_ROUTES = {
   CLAIM_CONTENT: 'ClaimContent',
@@ -37,9 +42,12 @@ export default function PointsScreen() {
     accountColor,
     accountSymbol,
   } = useAccountProfile();
-  const { points_enabled } = useRemoteConfig();
+  const { points_enabled, points_notifications_toggle } = useRemoteConfig();
   const pointsEnabled =
     useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
+  const pointsNotificationsToggleEnabled =
+    useExperimentalFlag(POINTS_NOTIFICATIONS_TOGGLE) ||
+    points_notifications_toggle;
   const { navigate } = useNavigation();
   const { data } = usePoints({
     walletAddress: accountAddress,
@@ -101,6 +109,11 @@ export default function PointsScreen() {
               )}
             </ButtonPressAnimation>
           )
+        }
+        rightComponent={
+          pointsNotificationsToggleEnabled ? (
+            <NotificationToggleContextMenu />
+          ) : undefined
         }
         title={i18n.t(i18n.l.account.tab_points)}
       />

@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { RefreshControl, Share } from 'react-native';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import {
@@ -25,13 +25,12 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import BlurredRainbow from '@/assets/blurredRainbow.png';
 import Planet from '@/assets/planet.png';
 import LinearGradient from 'react-native-linear-gradient';
-import { deviceUtils, safeAreaInsetValues } from '@/utils';
+import { safeAreaInsetValues } from '@/utils';
 import { ButtonPressAnimation } from '@/components/animations';
 import { getHeaderHeight } from '@/navigation/SwipeNavigator';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { useRecoilState } from 'recoil';
 import * as i18n from '@/languages';
-import { usePoints } from '@/resources/points';
 import { isNil } from 'lodash';
 import { getFormattedTimeQuantity } from '@/helpers/utilities';
 import { address as formatAddress } from '@/utils/abbreviations';
@@ -46,18 +45,31 @@ import { Skeleton } from '../components/Skeleton';
 import { InfoCard } from '../components/InfoCard';
 import { displayNextDistribution } from '../constants';
 import { analyticsV2 } from '@/analytics';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useRoute } from '@react-navigation/native';
+import {
+  RemoteCardCarousel,
+  useRemoteCardContext,
+} from '@/components/cards/remote-cards';
+import { usePoints } from '@/resources/points';
+import { TextColor } from '@/design-system/color/palettes';
 
 export default function PointsContent() {
   const { colors } = useTheme();
+  const { name } = useRoute();
   const { width: deviceWidth } = useDimensions();
+  const { getCardsForPlacement } = useRemoteCardContext();
   const { accountAddress, accountENS } = useAccountProfile();
   const { setClipboard } = useClipboard();
   const { isReadOnlyWallet } = useWallets();
 
-  const { data, isFetching, dataUpdatedAt, refetch } = usePoints({
+  const { data: points, isFetching, dataUpdatedAt, refetch } = usePoints({
     walletAddress: accountAddress,
   });
+
+  const cards = useMemo(() => getCardsForPlacement(name as string), [
+    getCardsForPlacement,
+    name,
+  ]);
 
   useFocusEffect(
     useCallback(() => {
@@ -74,10 +86,10 @@ export default function PointsContent() {
     addressCopiedToastAtom
   );
 
-  const referralCode = data?.points?.user?.referralCode
-    ? data.points.user.referralCode.slice(0, 3) +
+  const referralCode = points?.points?.user?.referralCode
+    ? points.points.user.referralCode.slice(0, 3) +
       '-' +
-      data.points.user.referralCode.slice(3, 7)
+      points.points.user.referralCode.slice(3, 7)
     : undefined;
 
   const onPressCopy = React.useCallback(
@@ -108,28 +120,56 @@ export default function PointsContent() {
     setIsRefreshing(false);
   }, [dataUpdatedAt, refetch]);
 
-  const nextDistributionSeconds = data?.points?.meta?.distribution?.next;
-  const totalPointsString = data?.points?.user?.earnings?.total.toLocaleString(
+  const nextDistributionSeconds = points?.points?.meta?.distribution?.next;
+  const totalPointsString = points?.points?.user?.earnings?.total.toLocaleString(
     'en-US'
   );
   const totalPointsMaskSize = 60 * Math.max(totalPointsString?.length ?? 0, 4);
 
-  const totalUsers = data?.points?.leaderboard.stats.total_users;
-  const rank = data?.points?.user.stats.position.current;
-  const isUnranked = !!data?.points?.user?.stats?.position?.unranked;
+  const totalUsers = points?.points?.leaderboard.stats.total_users;
+  const rank = points?.points?.user.stats.position.current;
+  const lastWeekRank =
+    points?.points?.user.stats.last_airdrop?.position.current;
+  const rankChange = rank && lastWeekRank ? rank - lastWeekRank : undefined;
+  const isUnranked = !!points?.points?.user?.stats?.position?.unranked;
 
-  const canDisplayTotalPoints = !isNil(data?.points?.user.earnings.total);
+  const canDisplayTotalPoints = !isNil(points?.points?.user.earnings.total);
   const canDisplayNextRewardCard = !isNil(nextDistributionSeconds);
   const canDisplayCurrentRank = !!rank;
   const canDisplayRankCard = canDisplayCurrentRank && !!totalUsers;
 
-  const canDisplayLeaderboard = !!data?.points?.leaderboard.accounts;
+  const canDisplayLeaderboard = !!points?.points?.leaderboard.accounts;
 
-  const shouldDisplayError = !isFetching && !data?.points;
+  const shouldDisplayError = !isFetching && !points?.points;
 
-  const referralUrl = data?.points?.user?.referralCode
-    ? `https://www.rainbow.me/points?ref=${data.points.user.referralCode}`
+  const referralUrl = points?.points?.user?.referralCode
+    ? `https://www.rainbow.me/points?ref=${points.points.user.referralCode}`
     : undefined;
+
+  const getRankChangeIcon = () => {
+    if (rankChange === undefined || isUnranked) return '';
+
+    if (rankChange === 0) return '􁘶';
+
+    if (rankChange < 0) return '􀑁';
+
+    return '􁘳';
+  };
+
+  const getRankChangeIconColor = () => {
+    if (rankChange === undefined || rankChange > 0) return colors.red;
+
+    if (rankChange === 0) return colors.yellow;
+
+    return colors.green;
+  };
+
+  const getRankChangeText = () => {
+    if (rankChange !== undefined) {
+      return Math.abs(rankChange).toLocaleString('en-US');
+    }
+    return '';
+  };
 
   return (
     <Box height="full" background="surfacePrimary" as={Page} flex={1}>
@@ -213,6 +253,12 @@ export default function PointsContent() {
                   </Cover>
                 </Box>
               </Bleed>
+              {!!cards.length && !isReadOnlyWallet && (
+                <>
+                  <RemoteCardCarousel key="remote-cards" />
+                  <Separator color="separatorTertiary" thickness={1} />
+                </>
+              )}
               <Columns space="12px">
                 <Column width="1/2">
                   {canDisplayNextRewardCard ? (
@@ -247,22 +293,16 @@ export default function PointsContent() {
                           ? i18n.t(i18n.l.points.points.unranked)
                           : `#${rank.toLocaleString('en-US')}`
                       }
-                      icon={
-                        (totalUsers >= 10_000_000 &&
-                          deviceUtils.isSmallPhone) ||
-                        isUnranked
-                          ? undefined
-                          : '􀉬'
-                      }
+                      icon={getRankChangeIcon()}
                       subtitle={
                         isUnranked
                           ? i18n.t(i18n.l.points.points.points_to_rank)
-                          : i18n.t(i18n.l.points.points.of_x, {
-                              totalUsers: totalUsers.toLocaleString('en-US'),
-                            })
+                          : getRankChangeText()
                       }
                       mainTextColor={isUnranked ? 'secondary' : 'primary'}
-                      accentColor={green}
+                      accentColor={
+                        isUnranked ? green : getRankChangeIconColor()
+                      }
                     />
                   ) : (
                     <Skeleton height={98} width={(deviceWidth - 40 - 12) / 2} />
@@ -506,7 +546,7 @@ export default function PointsContent() {
                         <Separator color="separatorTertiary" thickness={1} />
                       }
                     >
-                      {data?.points?.leaderboard?.accounts
+                      {points?.points?.leaderboard?.accounts
                         ?.slice(0, 100)
                         ?.map((account, index) => (
                           <LeaderboardRow

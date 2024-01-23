@@ -13,9 +13,9 @@ import { ThemeContextProps, useTheme } from '@/theme';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
 import {
-  NotificationRelationship,
-  NotificationTopic,
-  NotificationTopicType,
+  WalletNotificationRelationship,
+  WalletNotificationTopic,
+  WalletNotificationTopicType,
   toggleGroupNotifications,
   toggleTopicForWallet,
   updateGroupSettings,
@@ -37,50 +37,50 @@ import { getAccountProfileInfo } from '@/helpers/accountInfo';
 
 const makeTopicRowsData = (colors: ThemeContextProps['colors']) => [
   {
-    topic: NotificationTopic.SENT,
+    topic: WalletNotificationTopic.SENT,
     icon: '􀈟',
     iconColor: colors.appleBlue,
     text: lang.t('settings.notifications_section.sent'),
   },
   {
-    topic: NotificationTopic.RECEIVED,
+    topic: WalletNotificationTopic.RECEIVED,
     icon: '􀅀',
     iconColor: colors.green,
     text: lang.t('settings.notifications_section.received'),
   },
   {
-    topic: NotificationTopic.PURCHASED,
+    topic: WalletNotificationTopic.PURCHASED,
     icon: '􀑉',
     iconColor: colors.pink,
 
     text: lang.t('settings.notifications_section.purchased'),
   },
   {
-    topic: NotificationTopic.SOLD,
+    topic: WalletNotificationTopic.SOLD,
     icon: '􀋡',
     iconColor: colors.orange,
     text: lang.t('settings.notifications_section.sold'),
   },
   {
-    topic: NotificationTopic.MINTED,
+    topic: WalletNotificationTopic.MINTED,
     icon: '􀆿',
     iconColor: colors.yellowOrange,
     text: lang.t('settings.notifications_section.minted'),
   },
   {
-    topic: NotificationTopic.SWAPPED,
+    topic: WalletNotificationTopic.SWAPPED,
     icon: '􀖅',
     iconColor: colors.swapPurple,
     text: lang.t('settings.notifications_section.swapped'),
   },
   {
-    topic: NotificationTopic.APPROVALS,
+    topic: WalletNotificationTopic.APPROVALS,
     icon: '􀁢',
     iconColor: colors.green,
     text: lang.t('settings.notifications_section.approvals'),
   },
   {
-    topic: NotificationTopic.OTHER,
+    topic: WalletNotificationTopic.OTHER,
     icon: '􀍡',
     iconColor: colors.blueGreyDark60,
     text: lang.t('settings.notifications_section.other'),
@@ -140,7 +140,8 @@ const WalletNotificationsSettings = () => {
     notificationsSectionEnabled,
     lastWalletEnabled,
   } = useMemo(() => {
-    const ownedWallet = notifications.type === NotificationRelationship.OWNER;
+    const ownedWallet =
+      notifications.type === WalletNotificationRelationship.OWNER;
     const notificationsSectionEnabled = ownedWallet
       ? ownerEnabled
       : watcherEnabled;
@@ -169,7 +170,7 @@ const WalletNotificationsSettings = () => {
   const [topicState, setTopicState] = useState({
     ...(notifications?.topics ?? {}),
   });
-  const toggleStateForTopic = (topic: NotificationTopicType) =>
+  const toggleStateForTopic = (topic: WalletNotificationTopicType) =>
     setTopicState(prev => ({ ...prev, [topic]: !prev[topic] }));
 
   // We allow only one subscription in progress
@@ -177,7 +178,7 @@ const WalletNotificationsSettings = () => {
   const [
     topicSubscriptionInProgress,
     setTopicSubscriptionInProgress,
-  ] = useState<NotificationTopicType | null>(null);
+  ] = useState<WalletNotificationTopicType | null>(null);
 
   const toggleAllowNotifications = useCallback(() => {
     if (!isConnected) {
@@ -218,7 +219,7 @@ const WalletNotificationsSettings = () => {
   ]);
 
   const toggleTopic = useCallback(
-    (topic: NotificationTopicType) => {
+    (topic: WalletNotificationTopicType) => {
       if (!isConnected) {
         showOfflineAlert();
         return;
@@ -273,7 +274,7 @@ const WalletNotificationsSettings = () => {
     iconColor,
     text,
   }: {
-    topic: NotificationTopicType;
+    topic: WalletNotificationTopicType;
     icon: string;
     iconColor: string;
     text: string;
