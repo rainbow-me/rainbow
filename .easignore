@@ -1,4 +1,4 @@
-#!/bin/bash
+!/bin/bash
 
 # OSX
 #
@@ -63,9 +63,6 @@ src/screens/ExamplePage.js
 
 #e2e output
 e2e/logs//.xml
-
-# # android playstore credentials
-# pc-api-8090318172169087080-31-b8ee34328314.json
 
 # ios internal files (any additional files will be ignored)
 ios/Extras.json
