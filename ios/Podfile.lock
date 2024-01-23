@@ -915,7 +915,6 @@ PODS:
   - SSZipArchive (2.2.3)
   - swift-vibrant (1.0.0)
   - TcpSockets (4.0.0):
-    - CocoaAsyncSocket
     - React
   - TOCropViewController (2.6.1)
   - ToolTipMenu (5.2.1):
@@ -1552,7 +1551,7 @@ SPEC CHECKSUMS:
   RNNotifee: 8ee6ddabfc44b16600b978983162e0d4db20ce19
   RNOS: 31db6fa4a197d179afbba9e6b4d28d450a7f250b
   RNPermissions: 4e3714e18afe7141d000beae3755e5b5fb2f5e05
-  RNReactNativeHapticFeedback: 653a8c126a0f5e88ce15ffe280b3ff37e1fbb285
+  RNReactNativeHapticFeedback: ec56a5f81c3941206fd85625fa669ffc7b4545f9
   RNReanimated: 726395a2fa2f04cea340274ba57a4e659bc0d9c1
   RNScreens: 6a8a3c6b808aa48dca1780df7b73ea524f602c63
   RNSentry: b7f4f53bb7076f119558f8898fca901b48213f12
@@ -1571,13 +1570,13 @@ SPEC CHECKSUMS:
   SRSRadialGradient: e5a34825dff88c9cf773b58bf39ed6a02e59a084
   SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
   swift-vibrant: 3def73c5c281db74f420ec386590d9c1c5b0995c
-  TcpSockets: a8eb6b5867fe643e6cfed5db2e4de62f4d1e8fd0
+  TcpSockets: 4ef55305239923b343ed0a378b1fac188b1373b0
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
   VisionCamera: db57ca079c4f933f1ddd07f2f8fb2d171a826b85
   Yoga: 8796b55dba14d7004f980b54bcc9833ee45b28ce
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 8b17c4fa0961f3117e12254fd96fb54c00880084
+PODFILE CHECKSUM: 6ffd59123812e3a71ca0ffd3ecb555bb57c84fe3
 
 COCOAPODS: 1.12.1
