@@ -27,6 +27,12 @@ const ContextIcon = styled(Text).attrs(({ theme: { colors } }) => ({
   width: '100%',
 });
 
+const CircleBtn = props => (
+  <CircleButton {...props}>
+    <ContextIcon>􀍠</ContextIcon>
+  </CircleButton>
+);
+
 export default function ContextCircleButton(props) {
   const androidItems = useMemo(
     () => ({
@@ -51,9 +57,7 @@ export default function ContextCircleButton(props) {
       menuConfig={androidItems}
       onPressMenuItem={handlePressMenuItem}
     >
-      <CircleButton {...props}>
-        <ContextIcon>􀍠</ContextIcon>
-      </CircleButton>
+      {props.children || <CircleBtn />}
     </ContextMenuButton>
   );
 }
