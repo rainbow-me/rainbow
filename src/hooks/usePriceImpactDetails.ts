@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import useAccountSettings from './useAccountSettings';
-import { RainbowToken, SwappableAsset } from '@/entities';
+import { SwappableAsset } from '@/entities';
 import { Network } from '@/helpers';
 
 import { useTheme } from '@/theme';
@@ -12,7 +12,7 @@ import {
   greaterThanOrEqualTo,
   subtract,
 } from '@/helpers/utilities';
-import { ethereumUtils } from '@/utils';
+
 import { CrosschainQuote, Quote, SwapType } from '@rainbow-me/swaps';
 import { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
 
@@ -44,14 +44,8 @@ export default function usePriceImpactDetails(
 
   const inputNativeAmount = useMemo(() => {
     if (isNormalQuote) {
-      console.log('normal quote: ', {
-        sellamount: tradeDetails?.sellAmountInEth.toString() || '',
-        decimals: nativeAsset?.decimals || 18,
-        price: nativeAsset?.price?.value || '0',
-        nativeCurrency,
-      });
       return convertRawAmountToNativeDisplay(
-        tradeDetails?.sellAmountInEth.toString() || '',
+        tradeDetails?.sellAmountInEth?.toString() || '',
         nativeAsset?.decimals || 18,
         nativeAsset?.price?.value || '0',
         nativeCurrency
@@ -77,14 +71,8 @@ export default function usePriceImpactDetails(
 
   const outputNativeAmount = useMemo(() => {
     if (isNormalQuote) {
-      console.log('normal quote output: ', {
-        sellamount: tradeDetails?.buyAmountInEth.toString() || '',
-        decimals: nativeAsset?.decimals || 18,
-        price: nativeAsset?.price?.value || '0',
-        nativeCurrency,
-      });
       return convertRawAmountToNativeDisplay(
-        tradeDetails?.buyAmountInEth.toString() || '',
+        tradeDetails?.buyAmountInEth?.toString() || '',
         nativeAsset?.decimals || 18,
         nativeAsset?.price?.value || '0',
         nativeCurrency
