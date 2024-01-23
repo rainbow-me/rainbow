@@ -33,7 +33,7 @@ import { useAccountSettings, useSendFeedback, useWallets } from '@/hooks';
 import { Themes, useTheme } from '@/theme';
 import { showActionSheetWithOptions } from '@/utils';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
-import { BackupProvider, ReviewPromptAction } from '@/storage/schema';
+import { ReviewPromptAction } from '@/storage/schema';
 import * as ls from '@/storage';
 import { SettingsExternalURLs } from '../constants';
 import { capitalizeFirstLetter, checkWalletsForBackupStatus } from '../utils';
@@ -68,6 +68,10 @@ const SettingsSection = ({
   const { isDarkMode, setTheme, colorScheme } = useTheme();
 
   const onSendFeedback = useSendFeedback();
+  const { hasCloudBackup } = useMemo(
+    () => checkWalletsForBackupStatus(wallets),
+    [wallets]
+  );
 
   const onPressReview = useCallback(async () => {
     if (ios) {
@@ -175,15 +179,12 @@ const SettingsSection = ({
       return undefined;
     }
 
-    if (
-      areBackedUp &&
-      ls.backups.get(['provider']) === BackupProvider.CloudProvider
-    ) {
+    if (areBackedUp && hasCloudBackup) {
       return CloudBackupWarningIcon;
     }
 
     return BackupWarningIcon;
-  }, [allBackedUp, areBackedUp]);
+  }, [allBackedUp, areBackedUp, hasCloudBackup]);
 
   return (
     <MenuContainer

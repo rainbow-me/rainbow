@@ -143,16 +143,20 @@
       },
       "manual": {
         "backup_manually": "Back Up Manually",
-        "label": "Your secret phrase",
+        "label": "Save your %{typeName}",
         "pkey": {
-          "confirm_save": "I’ve saved my key",
+          "title": "Your Private Key",
+          "confirm_save": "􀆅 I've saved my key",
           "save_them": "Copy it and save it in your password manager, or in another secure spot.",
-          "these_keys": "This is the key to your wallet!"
+          "these_keys": "This is the key to your wallet!",
+          "description": "Anyone who has this key can access your wallet! You should never share it."
         },
         "seed": {
-          "confirm_save": "I’ve saved these words",
+          "title": "Your Secret Phrase",
+          "confirm_save": "􀆅 I've saved these words",
           "save_them": "Write them down or save them in your password manager.",
-          "these_keys": "These words are the keys to your wallet!"
+          "these_keys": "These words are the keys to your wallet!",
+          "description": "These words are the keys to your wallet. Make sure you save them in a secure location."
         },
         "create_new_secret_phrase": "Create a New Secret Phrase"
       },
@@ -175,7 +179,7 @@
         "anyone_who_has_these": "Anyone who has these words can access your entire wallet!",
         "biometrically_secured": "Your account has been secured with biometric data, like fingerprint or face identification. To see your recovery phrase, turn on biometrics in your phone’s settings.",
         "no_seed_phrase": "We couldn't retrieve your seed phrase. Please ensure you've properly authenticated using biometric data, such as your fingerprint or face identification, or entered your PIN code correctly.",
-        "copy_to_clipboard": "􀐅 Copy to Clipboard",
+        "copy_to_clipboard": "Copy to Clipboard",
         "for_your_eyes_only": "For your eyes only",
         "private_key_title": "Private Key",
         "secret_phrase_title": "Secret Phrase",
@@ -185,6 +189,7 @@
         "you_need_to_authenticate": "You need to authenticate in order to access your recovery %{typeName}"
       },
       "warning": {
+        "before_you_proceed": "Before you proceed",
         "title": "View your %{typeName}",
         "never_share": "Never share your %{typeName} or enter it into apps or websites.",
         "access": "Anyone who has your %{typeName} can access your entire wallet.",
@@ -2124,9 +2129,11 @@
         "cloud_backup_title": "Cloud Backup",
         "not_backed_up": "Not backed up",
         "not_backed_up_message": "This %{backupType} isn't backed up. Back up now so you can restore it if you lose your device or get a new one.",
+        "backed_up_message": "You opted to save this %{backupType} yourself. Make sure you have it stored in a secure location.",
         "cloud_backup_description": "Securely back up your wallets to iCloud so you can restore them if you lose your device or get a new one.",
         "cloud_backup_link": "Learn more…",
-        "view_private_key": "View private key",
+        "view_secret_phrase": "View Secret Phrase",
+        "view_private_key": "View Private Key",
         "copy_wallet_address": "Copy wallet address"
       },
       "balance_title": "Balance",

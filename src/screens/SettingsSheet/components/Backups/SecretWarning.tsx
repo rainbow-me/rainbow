@@ -2,7 +2,6 @@ import React, { useCallback, useMemo } from 'react';
 
 import { useDimensions, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
 
 import * as i18n from '@/languages';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
@@ -23,17 +22,30 @@ import { sharedCoolModalTopOffset } from '@/navigation/config';
 
 import { IS_ANDROID } from '@/env';
 import { TextColor } from '@/design-system/color/palettes';
-import { useRoute } from '@react-navigation/native';
-import { WalletBackupStatus } from './AlreadyBackedUpView';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { WalletBackupStatus } from '../AlreadyBackedUpView';
 
 const MIN_HEIGHT = 740;
 
+type SecretWarningPageParams = {
+  SecretWarningPage: {
+    title: string;
+    walletId: string;
+    isBackingUp?: boolean;
+    backupType?: keyof typeof WalletBackupTypes;
+  };
+};
+
 const SecretWarningPage = () => {
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
-  const { selectedWallet, wallets } = useWallets();
+  const { wallets } = useWallets();
   const { navigate } = useNavigation();
-  const { params } = useRoute();
-  const walletId = (params as any)?.walletId || selectedWallet.id;
+  const { params } = useRoute<
+    RouteProp<SecretWarningPageParams, 'SecretWarningPage'>
+  >();
+
+  const { walletId, isBackingUp, backupType, title } = params;
+
   const walletStatus = useMemo(() => {
     let status = null;
     if (wallets?.[walletId]?.backedUp) {
@@ -54,11 +66,14 @@ const SecretWarningPage = () => {
     : i18n.t(i18n.l.back_up.secret.private_key_title);
 
   const handleViewSecretPhrase = useCallback(() => {
-    navigate(Routes.SETTINGS_SHOW_SECRET_VIEW, {
-      title: secretText,
+    navigate('ShowSecretView', {
+      title,
+      isBackingUp,
+      backupType,
       walletId,
+      secretText,
     });
-  }, [navigate, secretText, walletId]);
+  }, [navigate, title, secretText, walletId, isBackingUp, backupType]);
 
   // We are not using `isSmallPhone` from `useDimensions` here as we
   // want to explicitly set a min height.
@@ -107,10 +122,14 @@ const SecretWarningPage = () => {
         <Stack space={'44px'}>
           <Stack space={'20px'}>
             <Text align="center" color="orange" size="34pt" weight="bold">
-              {'􀉆'}
+              {isBackingUp ? '􀇿' : '􀉆'}
             </Text>
             <Text align="center" color="label" size="20pt" weight="bold">
-              {i18n.t(i18n.l.back_up.warning.title, { typeName: secretText })}
+              {isBackingUp
+                ? i18n.t(i18n.l.back_up.warning.before_you_proceed)
+                : i18n.t(i18n.l.back_up.warning.title, {
+                    typeName: secretText,
+                  })}
             </Text>
           </Stack>
           <Stack space={'36px'}>

@@ -74,8 +74,7 @@ export const checkWalletsForBackupStatus = (
       wallets[key].backedUp &&
       wallets[key].backupType === WalletBackupTypes.manual &&
       wallets[key].type !== WalletTypes.readOnly &&
-      wallets[key].type !== WalletTypes.bluetooth &&
-      !wallets[key].imported
+      wallets[key].type !== WalletTypes.bluetooth
     ) {
       hasManualBackup = true;
     }

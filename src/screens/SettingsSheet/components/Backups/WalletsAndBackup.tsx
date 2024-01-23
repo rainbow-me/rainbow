@@ -19,6 +19,7 @@ import { useTheme } from '@/theme';
 import Routes from '@/navigation/routesNames';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { backupsCard } from '@/components/cards/utils/constants';
+import { useVisibleWallets } from '../../useVisibleWallets';
 
 const WalletsAndBackup = () => {
   const { colors, isDarkMode } = useTheme();
@@ -43,16 +44,8 @@ const WalletsAndBackup = () => {
 
   const onCreateNewSecretPhrase = useCallback(() => {}, []);
 
-  const {
-    hasManualBackup,
-    hasCloudBackup,
-    numberOfPrivateKeyWallets,
-    numberOfSecretPhraseWallets,
-  } = useMemo(() => checkWalletsForBackupStatus(wallets), [wallets]);
-
   const onNavigateToWalletView = useCallback(
     (walletId: string, name: string) => {
-      console.log({ walletId, name });
       const wallet = wallets?.[walletId];
 
       const title =
@@ -68,63 +61,12 @@ const WalletsAndBackup = () => {
     [navigate, wallets]
   );
 
-  let privateKeyWallets = 1;
-  let secretPhraseWallets = 1;
-  let lastBackupDate: number | undefined;
+  const { hasManualBackup, hasCloudBackup } = useMemo(
+    () => checkWalletsForBackupStatus(wallets),
+    [wallets]
+  );
 
-  const visibleWallets = wallets
-    ? Object.keys(wallets)
-        .filter(
-          key =>
-            wallets[key].type !== WalletTypes.readOnly &&
-            wallets[key].type !== WalletTypes.bluetooth
-        )
-        .map(key => {
-          const wallet = wallets[key];
-          const visibleAccounts = wallet.addresses.filter(a => a.visible);
-          const totalAccounts = visibleAccounts.length;
-
-          if (
-            wallet.backedUp &&
-            wallet.backupDate &&
-            (!lastBackupDate || wallet.backupDate > lastBackupDate)
-          ) {
-            lastBackupDate = wallet.backupDate;
-          }
-
-          let name = '';
-          if (wallet.type === WalletTypes.privateKey) {
-            if (numberOfPrivateKeyWallets > 1) {
-              name = `Private Key ${privateKeyWallets}`;
-              privateKeyWallets += 1;
-            } else {
-              name = 'Private Key';
-            }
-          }
-
-          if (
-            wallet.type === WalletTypes.mnemonic ||
-            wallet.type === WalletTypes.seed
-          ) {
-            if (numberOfSecretPhraseWallets > 1) {
-              name = `Secret Phrase ${secretPhraseWallets}`;
-              secretPhraseWallets += 1;
-            } else {
-              name = 'Secret Phrase';
-            }
-          }
-
-          return {
-            name,
-            isBackedUp: wallet.backedUp,
-            accounts: visibleAccounts,
-            key,
-            label: wallet.name,
-            numAccounts: totalAccounts,
-            wallet,
-          };
-        })
-    : [];
+  const { visibleWallets, lastBackupDate } = useVisibleWallets({ wallets });
 
   return (
     <MenuContainer>
@@ -165,7 +107,7 @@ const WalletsAndBackup = () => {
               }
             />
           </Menu>
-          {!hasCloudBackup && (
+          {!hasManualBackup && (
             <Menu
               description={lang.t(
                 'back_up.cloud.enable_cloud_backups_description'
@@ -213,7 +155,15 @@ const WalletsAndBackup = () => {
 
       <Stack space={'24px'}>
         {visibleWallets.map(
-          ({ name, isBackedUp, accounts, key, numAccounts, wallet }) => (
+          ({
+            name,
+            isBackedUp,
+            accounts,
+            key,
+            numAccounts,
+            backedUp,
+            imported,
+          }) => (
             <Menu key={`wallet-${key}`}>
               <MenuItem
                 hasRightArrow
@@ -233,13 +183,13 @@ const WalletsAndBackup = () => {
                       </Text>
                     }
                   >
-                    {!wallet.backedUp && (
+                    {!backedUp && (
                       <MenuItem.Label
                         color={'#FF584D'}
                         text={lang.t('back_up.needs_backup.not_backed_up')}
                       />
                     )}
-                    {wallet.imported && (
+                    {imported && (
                       <MenuItem.Label
                         text={lang.t('wallet.back_ups.imported')}
                       />
@@ -334,7 +284,7 @@ const WalletsAndBackup = () => {
           />
         </Menu>
 
-        {hasManualBackup && (
+        {hasManualBackup && !hasCloudBackup && (
           <Menu
             description={lang.t('wallet.back_ups.cloud_backup_description')}
           >
