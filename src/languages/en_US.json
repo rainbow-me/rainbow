@@ -109,6 +109,8 @@
         "backup_to_cloud_now": "Back Up to %{cloudPlatformName} Now",
         "enable_cloud_backups_description": "If you prefer to back up your wallets manually, you can do so below.",
         "latest_backup": "Last Backup: %{date}", 
+        "out_of_date": "Out of Date",
+        "up_to_date": "Up to Date",
         "password": {
           "a_password_youll_remember": "Please use a password you'll remember.",
           "backup_password": "Backup Password",

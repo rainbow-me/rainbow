@@ -78,6 +78,11 @@ export type BoxProps = {
   right?: PositionSpace;
   top?: PositionSpace;
   width?: Width;
+  backgroundColor?: string;
+  shadowColor?: string;
+  elevation?: number;
+  shadowOpacity?: number;
+  shadowRadius?: number;
   overflow?: 'hidden' | 'visible' | 'scroll';
 } & (
   | {

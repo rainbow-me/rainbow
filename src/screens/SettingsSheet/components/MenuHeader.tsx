@@ -1,10 +1,9 @@
 import React from 'react';
 import { Source } from 'react-native-fast-image';
-import { Box, Inline, Space, Stack, Text } from '@/design-system';
+import { Box, Space, Stack, Text } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import { useTheme } from '@/theme';
 import { ImageSourcePropType } from 'react-native';
-import { ButtonPressAnimation } from '@/components/animations';
 
 interface ImageIconProps {
   size?: number;

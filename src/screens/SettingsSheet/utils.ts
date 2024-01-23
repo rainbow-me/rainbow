@@ -2,49 +2,47 @@ import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes from '@/helpers/walletTypes';
 import { RainbowWallet } from '@/model/wallet';
 
+type WalletsByKey = {
+  [key: string]: RainbowWallet;
+};
+
+type WalletBackupStatus = {
+  allBackedUp: boolean;
+  areBackedUp: boolean;
+  canBeBackedUp: boolean;
+  backupProvider: string | undefined;
+};
+
 export const capitalizeFirstLetter = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
 export const checkWalletsForBackupStatus = (
-  wallets: { [key: string]: RainbowWallet } | null
-) => {
+  wallets: WalletsByKey | null
+): WalletBackupStatus => {
   if (!wallets)
     return {
       allBackedUp: false,
       areBackedUp: false,
       canBeBackedUp: false,
-      hasManualBackup: false,
-      hasCloudBackup: false,
-      numberOfSecretPhraseWallets: 0,
-      numberOfPrivateKeyWallets: 0,
+      backupProvider: undefined,
     };
+
+  let backupProvider: string | undefined = undefined;
   let areBackedUp = true;
   let canBeBackedUp = false;
   let allBackedUp = true;
-  let hasManualBackup = false;
-  let hasCloudBackup = false;
-  let numberOfSecretPhraseWallets = 0;
-  let numberOfPrivateKeyWallets = 0;
 
   Object.keys(wallets).forEach(key => {
-    if (wallets[key].type === WalletTypes.privateKey) {
-      numberOfPrivateKeyWallets += 1;
-    }
-
-    if (
-      wallets[key].type === WalletTypes.seed ||
-      wallets[key].type === WalletTypes.mnemonic
-    ) {
-      numberOfSecretPhraseWallets += 1;
-    }
-
-    if (
-      wallets[key].backupType === WalletBackupTypes.cloud &&
-      wallets[key].backedUp &&
-      wallets[key].type !== WalletTypes.readOnly
-    ) {
-      hasCloudBackup = true;
+    if (wallets[key].backedUp && wallets[key].type !== WalletTypes.readOnly) {
+      if (wallets[key].backupType === WalletBackupTypes.cloud) {
+        backupProvider = WalletBackupTypes.cloud;
+      } else if (
+        backupProvider !== WalletBackupTypes.cloud &&
+        wallets[key].backupType === WalletBackupTypes.manual
+      ) {
+        backupProvider = WalletBackupTypes.manual;
+      }
     }
 
     if (
@@ -69,24 +67,12 @@ export const checkWalletsForBackupStatus = (
     ) {
       canBeBackedUp = true;
     }
-
-    if (
-      wallets[key].backedUp &&
-      wallets[key].backupType === WalletBackupTypes.manual &&
-      wallets[key].type !== WalletTypes.readOnly &&
-      wallets[key].type !== WalletTypes.bluetooth
-    ) {
-      hasManualBackup = true;
-    }
   });
   return {
     allBackedUp,
     areBackedUp,
     canBeBackedUp,
-    hasManualBackup,
-    hasCloudBackup,
-    numberOfSecretPhraseWallets,
-    numberOfPrivateKeyWallets,
+    backupProvider,
   };
 };
 
