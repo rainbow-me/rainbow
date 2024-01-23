@@ -25,7 +25,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import BlurredRainbow from '@/assets/blurredRainbow.png';
 import Planet from '@/assets/planet.png';
 import LinearGradient from 'react-native-linear-gradient';
-import { deviceUtils, safeAreaInsetValues } from '@/utils';
+import { safeAreaInsetValues } from '@/utils';
 import { ButtonPressAnimation } from '@/components/animations';
 import { getHeaderHeight } from '@/navigation/SwipeNavigator';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
@@ -128,7 +128,8 @@ export default function PointsContent() {
 
   const totalUsers = points?.points?.leaderboard.stats.total_users;
   const rank = points?.points?.user.stats.position.current;
-  const lastWeekRank = points?.points?.user.stats.last_airdrop.position.current;
+  const lastWeekRank =
+    points?.points?.user.stats.last_airdrop?.position.current;
   const rankChange = rank && lastWeekRank ? rank - lastWeekRank : undefined;
   const isUnranked = !!points?.points?.user?.stats?.position?.unranked;
 
@@ -150,18 +151,26 @@ export default function PointsContent() {
 
     if (rankChange === 0) return '􁘶';
 
-    if (rankChange > 0) return '􀑁';
+    if (rankChange < 0) return '􀑁';
 
     return '􁘳';
   };
 
   const getRankChangeIconColor = () => {
-    if (rankChange === undefined || rankChange < 0) return colors.red;
+    if (rankChange === undefined || rankChange > 0) return colors.red;
 
     if (rankChange === 0) return colors.yellow;
 
     return colors.green;
   };
+
+  const getRankChangeText = () => {
+    if (rankChange !== undefined) {
+      return Math.abs(rankChange).toLocaleString('en-US');
+    }
+    return '';
+  };
+
   return (
     <Box height="full" background="surfacePrimary" as={Page} flex={1}>
       <ScrollView
@@ -288,7 +297,7 @@ export default function PointsContent() {
                       subtitle={
                         isUnranked
                           ? i18n.t(i18n.l.points.points.points_to_rank)
-                          : rankChange?.toString() || ''
+                          : getRankChangeText()
                       }
                       mainTextColor={isUnranked ? 'secondary' : 'primary'}
                       accentColor={

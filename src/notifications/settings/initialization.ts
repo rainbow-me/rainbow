@@ -1,6 +1,6 @@
 import {
   DEFAULT_ENABLED_TOPIC_SETTINGS,
-  NotificationRelationship,
+  WalletNotificationRelationship,
   NOTIFICATIONS_DEFAULT_CHAIN_ID,
   WALLET_GROUPS_STORAGE_KEY,
 } from '@/notifications/settings/constants';
@@ -9,9 +9,10 @@ import {
   WalletNotificationSettings,
 } from '@/notifications/settings/types';
 import {
-  getAllNotificationSettingsFromStorage,
+  getAllGlobalNotificationSettingsFromStorage,
+  getAllWalletNotificationSettingsFromStorage,
   notificationSettingsStorage,
-  setAllNotificationSettingsToStorage,
+  setAllWalletNotificationSettingsToStorage,
 } from '@/notifications/settings/storage';
 import { notificationsSubscription } from '@/redux/explorer';
 import store from '@/redux/store';
@@ -21,7 +22,10 @@ import {
 } from '@/notifications/settings/firebase';
 import { InteractionManager } from 'react-native';
 import { logger, RainbowError } from '@/logger';
-import { removeNotificationSettingsForWallet } from '@/notifications/settings/settings';
+import {
+  removeNotificationSettingsForWallet,
+  toggleGlobalNotificationTopic,
+} from '@/notifications/settings/settings';
 
 type InitializationStateType = {
   alreadySaved: Map<
@@ -41,14 +45,23 @@ export const addDefaultNotificationGroupSettings = (override = false) => {
 
   if (!data || override) {
     const defaultSettings = {
-      [NotificationRelationship.OWNER]: true,
-      [NotificationRelationship.WATCHER]: false,
+      [WalletNotificationRelationship.OWNER]: true,
+      [WalletNotificationRelationship.WATCHER]: false,
     };
     notificationSettingsStorage.set(
       WALLET_GROUPS_STORAGE_KEY,
       JSON.stringify(defaultSettings)
     );
   }
+};
+
+export const initializeGlobalNotificationSettings = () => {
+  const currentSettings = getAllGlobalNotificationSettingsFromStorage();
+  return Promise.all(
+    Object.entries(currentSettings).map(([topic, isEnabled]) => {
+      toggleGlobalNotificationTopic(topic, isEnabled);
+    })
+  );
 };
 
 /**
@@ -143,7 +156,8 @@ export const _prepareSubscriptionQueueAndCreateInitialSettings = (
     }
     // case where there are no settings for the wallet and there will be subscriptions to process for imported wallets
     else if (!alreadySaved.has(entry.address)) {
-      const isImported = entry.relationship === NotificationRelationship.OWNER;
+      const isImported =
+        entry.relationship === WalletNotificationRelationship.OWNER;
       const newSettingsEntry: WalletNotificationSettings = {
         type: entry.relationship,
         address: entry.address,
@@ -158,7 +172,7 @@ export const _prepareSubscriptionQueueAndCreateInitialSettings = (
     }
   });
 
-  setAllNotificationSettingsToStorage(newSettings);
+  setAllWalletNotificationSettingsToStorage(newSettings);
   return subscriptionQueue;
 };
 
@@ -166,7 +180,7 @@ export const _prepareSubscriptionQueueAndCreateInitialSettings = (
  * exported for testing only
  */
 export const _prepareInitializationState = (): InitializationStateType => {
-  const currentSettings = getAllNotificationSettingsFromStorage();
+  const currentSettings = getAllWalletNotificationSettingsFromStorage();
   const newSettings: WalletNotificationSettings[] = [...currentSettings];
   const alreadySaved = new Map<
     string,
@@ -195,7 +209,7 @@ export const _processSubscriptionQueue = async (
   const results = await Promise.all(
     subscriptionQueue.map(item => processSubscriptionQueueItem(item))
   );
-  const newSettings = [...getAllNotificationSettingsFromStorage()];
+  const newSettings = [...getAllWalletNotificationSettingsFromStorage()];
   const settingsIndexMap = new Map<string, number>(
     newSettings.map((entry, index) => [entry.address, index])
   );
@@ -206,7 +220,7 @@ export const _processSubscriptionQueue = async (
     }
   });
 
-  setAllNotificationSettingsToStorage(newSettings);
+  setAllWalletNotificationSettingsToStorage(newSettings);
 };
 
 const processSubscriptionQueueItem = async (
@@ -230,7 +244,7 @@ const processSubscriptionQueueItem = async (
     }
   }
   if (
-    newSettings.type === NotificationRelationship.OWNER &&
+    newSettings.type === WalletNotificationRelationship.OWNER &&
     !newSettings.successfullyFinishedInitialSubscription
   ) {
     try {

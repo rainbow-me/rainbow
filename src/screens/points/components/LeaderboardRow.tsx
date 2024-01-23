@@ -242,7 +242,7 @@ export const LeaderboardRow = ({
                 numberOfLines={1}
                 containsEmoji
               >
-                {ens ?? formattedAddress ?? ''}
+                {ens || formattedAddress || ''}
               </Text>
             </Box>
           </Stack>
