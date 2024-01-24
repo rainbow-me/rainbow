@@ -41,6 +41,7 @@ export default React.memo(function ExchangeTokenRow({
 }: ExchangeTokenRowProps) {
   const { width: deviceWidth } = useDimensions();
 
+  // should this b useAsset instead?
   // TODO https://github.com/rainbow-me/rainbow/pull/3313/files#r876259954
   const item = useAccountAsset(uniqueId, nativeCurrency);
   const network = ethereumUtils.getNetworkFromType(type) ?? Network.mainnet;
