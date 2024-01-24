@@ -210,15 +210,15 @@ const getOutputAmount = async (
     );
     const isCrosschainSwap = outputNetwork !== inputNetwork;
 
-    logger.info(`[getOutputAmount]: `, {
-      outputToken,
-      outputChainId,
-      outputNetwork,
-      inputToken,
-      inputChainId,
-      inputNetwork,
-      isCrosschainSwap,
-    });
+    // logger.info(`[getOutputAmount]: `, {
+    //   outputToken,
+    //   outputChainId,
+    //   outputNetwork,
+    //   inputToken,
+    //   inputChainId,
+    //   inputNetwork,
+    //   isCrosschainSwap,
+    // });
 
     const quoteSource = getSource(source);
     const quoteParams: QuoteParams = {
