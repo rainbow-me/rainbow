@@ -260,32 +260,17 @@ export function MoreButton() {
   // ////////////////////////////////////////////////////
   // Handlers
 
-  const [isToastActive, setToastActive] = useRecoilState(
-    addressCopiedToastAtom
-  );
-  const { accountAddress } = useAccountProfile();
+  const { navigate } = useNavigation();
+
   const handlePressCopy = React.useCallback(() => {
-    if (!isToastActive) {
-      setToastActive(true);
-      setTimeout(() => {
-        setToastActive(false);
-      }, 2000);
-    }
-    Clipboard.setString(accountAddress);
-  }, [accountAddress, isToastActive, setToastActive]);
+    navigate(Routes.SWAP);
+  }, [navigate]);
 
   return (
     <>
-      {/* @ts-expect-error JavaScript component */}
-      <CopyFloatingEmojis textToCopy={accountAddress}>
-        <ActionButton
-          onPress={handlePressCopy}
-          icon="􀐅"
-          testID="receive-button"
-        >
-          {lang.t('wallet.copy')}
-        </ActionButton>
-      </CopyFloatingEmojis>
+      <ActionButton onPress={handlePressCopy} icon="􀐅" testID="receive-button">
+        {lang.t('wallet.copy')}
+      </ActionButton>
     </>
   );
 }
