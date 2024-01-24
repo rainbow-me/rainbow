@@ -15,6 +15,7 @@ export { Cover } from './components/Cover/Cover';
 export { DebugLayout } from './components/DebugLayout/DebugLayout';
 export { globalColors } from './color/palettes';
 export { Heading } from './components/Heading/Heading';
+export { IconContainer } from './components/IconContainer/IconContainer';
 export { Inline } from './components/Inline/Inline';
 export { Inset } from './components/Inset/Inset';
 export { MarkdownText } from './components/MarkdownText/MarkdownText';

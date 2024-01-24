@@ -178,6 +178,8 @@ export type BackgroundColor =
   | 'surfaceSecondaryElevated'
   | 'fill'
   | 'fillSecondary'
+  | 'fillTertiary'
+  | 'fillQuaternary'
   | 'blue'
   | 'green'
   | 'red'
@@ -257,6 +259,26 @@ export const backgroundColors: Record<
     },
     dark: {
       color: globalColors.white20,
+      mode: 'dark',
+    },
+  },
+  'fillTertiary': {
+    light: {
+      color: globalColors.grey20,
+      mode: 'light',
+    },
+    dark: {
+      color: 'rgba(245, 248, 255, 0.08)',
+      mode: 'dark',
+    },
+  },
+  'fillQuaternary': {
+    light: {
+      color: globalColors.grey10,
+      mode: 'light',
+    },
+    dark: {
+      color: 'rgba(245, 248, 255, 0.04)',
       mode: 'dark',
     },
   },
@@ -398,6 +420,8 @@ export type ForegroundColor =
   | 'yellow'
   | 'fill'
   | 'fillSecondary'
+  | 'fillTertiary'
+  | 'fillQuaternary'
   | 'scrim'
   | 'scrimSecondary'
   | 'scrimTertiary'
@@ -475,6 +499,8 @@ export const foregroundColors: Record<
   'yellow': selectBackgroundAsForeground('yellow'),
   'fill': selectBackgroundAsForeground('fill'),
   'fillSecondary': selectBackgroundAsForeground('fillSecondary'),
+  'fillTertiary': selectBackgroundAsForeground('fillTertiary'),
+  'fillQuaternary': selectBackgroundAsForeground('fillQuaternary'),
   'scrim': {
     light: 'rgba(0, 0, 0, 0.2)',
     dark: 'rgba(0, 0, 0, 0.4)',

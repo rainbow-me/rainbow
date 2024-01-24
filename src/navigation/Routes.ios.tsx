@@ -60,6 +60,7 @@ import {
   settingsSheetConfig,
   signTransactionSheetConfig,
   stackNavigationConfig,
+  swapConfig,
   swapDetailsSheetConfig,
   learnWebViewScreenConfig,
   transactionDetailsConfig,
@@ -86,6 +87,7 @@ import createNativeStackNavigator from '@/react-native-cool-modals/createNativeS
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
+import { SwapScreen } from '@/screens/Swap/Swap';
 import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
 import { AddWalletNavigator } from './AddWalletNavigator';
 import { HardwareWalletTxNavigator } from './HardwareWalletTxNavigator';
@@ -458,6 +460,11 @@ function NativeStackNavigator() {
         component={ConsoleSheet}
         name={Routes.CONSOLE_SHEET}
         {...consoleSheetConfig}
+      />
+      <NativeStack.Screen
+        component={SwapScreen}
+        name={Routes.SWAP}
+        {...swapConfig}
       />
     </NativeStack.Navigator>
   );
