@@ -29,15 +29,14 @@ export const RequireWalletBalance = () => {
         <Paragraph>
           <Line>
             <AnimatedText
-              delayStart={500}
               color={textColors.gray}
               textContent={`${i18n.t(i18n.l.points.console.account)}:`}
+              skipAnimation
               weight="normal"
             />
             <AnimatedText
               color={textColors.account}
-              enableHapticTyping
-              delayStart={300}
+              skipAnimation
               textContent={accountName}
             />
           </Line>

@@ -81,6 +81,8 @@ export const ViewWeeklyEarnings = () => {
               textContent={`${i18n.t(i18n.l.points.console.account)}:`}
             />
             <AnimatedText
+              enableHapticTyping
+              delayStart={300}
               color={textColors.account}
               textContent={accountName}
             />
