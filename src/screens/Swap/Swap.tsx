@@ -1404,20 +1404,6 @@ const KeyboardControlPanel = () => {
             label="$8.82"
             title="Network Fee"
           />
-          <ControlPanelItem
-            iconComponent={
-              <SwapCoinIcon
-                address="eth"
-                disableShadow
-                network={Network.mainnet}
-                small
-                symbol="ETH"
-                theme={theme}
-              />
-            }
-            label="Ethereum"
-            title="Network"
-          />
           <ControlPanelItem label="Off" title="Flashbots" />
           <ControlPanelItem
             accessoryComponent={
