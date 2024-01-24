@@ -37,6 +37,7 @@ import { ReviewPromptAction } from '@/storage/schema';
 import * as ls from '@/storage';
 import { SettingsExternalURLs } from '../constants';
 import { capitalizeFirstLetter, checkWalletsForBackupStatus } from '../utils';
+import walletBackupTypes from '@/helpers/walletBackupTypes';
 
 interface SettingsSectionProps {
   onCloseModal: () => void;
@@ -68,7 +69,7 @@ const SettingsSection = ({
   const { isDarkMode, setTheme, colorScheme } = useTheme();
 
   const onSendFeedback = useSendFeedback();
-  const { hasCloudBackup } = useMemo(
+  const { backupProvider } = useMemo(
     () => checkWalletsForBackupStatus(wallets),
     [wallets]
   );
@@ -179,12 +180,12 @@ const SettingsSection = ({
       return undefined;
     }
 
-    if (areBackedUp && hasCloudBackup) {
+    if (areBackedUp && backupProvider === walletBackupTypes.cloud) {
       return CloudBackupWarningIcon;
     }
 
     return BackupWarningIcon;
-  }, [allBackedUp, areBackedUp, hasCloudBackup]);
+  }, [allBackedUp, areBackedUp, backupProvider]);
 
   return (
     <MenuContainer

@@ -24,7 +24,6 @@ import { IS_ANDROID } from '@/env';
 import { TextColor } from '@/design-system/color/palettes';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { WalletBackupStatus } from '../AlreadyBackedUpView';
-
 const MIN_HEIGHT = 740;
 
 type SecretWarningPageParams = {
@@ -162,7 +161,7 @@ const SecretWarningPage = () => {
 
       <Box
         position="absolute"
-        bottom={{ custom: 20 }}
+        bottom={{ custom: IS_ANDROID ? 40 : 20 }}
         alignItems="center"
         style={{ paddingHorizontal: 24 }}
       >

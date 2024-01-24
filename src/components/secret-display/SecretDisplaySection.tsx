@@ -31,6 +31,7 @@ import { SheetActionButton } from '../sheet';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { useNavigation } from '@/navigation';
 import { ImgixImage } from '../images';
+import RoutesWithPlatformDifferences from '@/navigation/routesNames';
 
 const MIN_HEIGHT = 740;
 
@@ -85,6 +86,7 @@ export function SecretDisplaySection({
   >();
   const { selectedWallet, wallets } = useWallets();
   const { onManuallyBackupWalletId } = useWalletManualBackup();
+  const { navigate } = useNavigation();
 
   const { isBackingUp, backupType } = params;
 
@@ -144,9 +146,9 @@ export function SecretDisplaySection({
   const handleConfirmSaved = useCallback(() => {
     if (backupType === WalletBackupTypes.manual) {
       onManuallyBackupWalletId(walletId);
-      goBack();
+      navigate(RoutesWithPlatformDifferences.SETTINGS_SECTION_BACKUP);
     }
-  }, [backupType, walletId, onManuallyBackupWalletId, goBack]);
+  }, [backupType, walletId, onManuallyBackupWalletId, navigate]);
 
   const getIconForBackupType = useCallback(() => {
     if (isBackingUp) {

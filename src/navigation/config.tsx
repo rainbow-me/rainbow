@@ -11,7 +11,6 @@ import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { getNetworkObj } from '@/networks';
 import { getPositionSheetHeight } from '@/screens/positions/PositionSheet';
 
-import BackButton from '@/components/header/BackButton';
 import { Icon } from '@/components/icons';
 import { SheetHandleFixedToTopHeight } from '@/components/sheet';
 import { Text } from '@/components/text';
@@ -27,6 +26,7 @@ import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from '@/navigation/Hardware
 import { StackNavigationOptions } from '@react-navigation/stack';
 import { PartialNavigatorConfigOptions } from '@/navigation/types';
 import { BottomSheetNavigationOptions } from '@/navigation/bottom-sheet/types';
+import { Box } from '@/design-system';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 
@@ -545,7 +545,7 @@ const BackArrow = styled(Icon).attrs({
 })({
   marginLeft: 15,
   marginRight: 5,
-  marginTop: android ? 2 : 0.5,
+  marginTop: android ? 12 : 0.5,
 });
 
 const BackImage = () => <BackArrow />;
@@ -553,8 +553,7 @@ const BackImage = () => <BackArrow />;
 const headerConfigOptions = {
   headerBackTitleStyle: {
     fontFamily: fonts.family.SFProRounded,
-    // @ts-ignore
-    fontSize: parseFloat(fonts.size.large),
+    fontSize: Number(fonts.size.large),
     fontWeight: fonts.weight.medium,
     letterSpacing: fonts.letterSpacing.roundedMedium,
   },
@@ -573,43 +572,39 @@ const headerConfigOptions = {
   headerTitleStyle: {
     color: colors.themedColors?.dark,
     fontFamily: fonts.family.SFProRounded,
-    // @ts-ignore
-    fontSize: parseFloat(fonts.size.large),
+    fontSize: Number(fonts.size.large),
     fontWeight: fonts.weight.heavy,
     letterSpacing: fonts.letterSpacing.roundedMedium,
   },
 };
 
-// @ts-expect-error Styled Thing types are incomplete
-const EmptyButtonPlaceholder = styled.View({
-  flex: 1,
-});
-
 const SettingsTitle = ({ children }: React.PropsWithChildren) => {
   const { colors } = useTheme();
 
   return (
-    <Text
-      align="center"
-      color={colors.dark}
-      letterSpacing="roundedMedium"
-      size="large"
-      weight="bold"
-    >
-      {children}
-    </Text>
+    <Box paddingTop="8px">
+      <Text
+        align="center"
+        color={colors.dark}
+        letterSpacing="roundedMedium"
+        size="large"
+        weight="bold"
+      >
+        {children}
+      </Text>
+    </Box>
   );
 };
 
-export const settingsOptions = (colors: any) => ({
+export const settingsOptions = (colors: any): StackNavigationOptions => ({
   ...headerConfigOptions,
   cardShadowEnabled: false,
   cardStyle: {
     backgroundColor: colors.cardBackdrop,
     overflow: 'visible',
   },
-  gestureEnabled: ios,
-  ...(ios && { headerBackImage: BackImage }),
+  gestureEnabled: true,
+  headerBackImage: BackImage,
   headerBackTitle: ' ',
   headerStatusBarHeight: 0,
   headerStyle: {
@@ -623,8 +618,6 @@ export const settingsOptions = (colors: any) => ({
     color: colors.dark,
   },
   ...(android && {
-    headerLeft: (props: any) => <BackButton {...props} textChevron />,
-    headerRight: () => <EmptyButtonPlaceholder />,
     headerTitle: (props: any) => <SettingsTitle {...props} />,
   }),
 });
