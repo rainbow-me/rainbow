@@ -112,12 +112,14 @@
         "out_of_date": "Out of Date",
         "up_to_date": "Up to Date",
         "password": {
-          "a_password_youll_remember": "Please use a password you'll remember.",
-          "backup_password": "Backup Password",
-          "choose_a_password": "Choose a password",
+          "a_password_youll_remember_part_one": "This password is",
+          "not": "not",
+          "a_password_youll_remember_part_two": "recoverable. Make sure you choose a password you'll remember.",
+          "backup_password": "Password",
+          "choose_a_password": "Create a password to secure your backup",
           "confirm_backup": "Confirm Backup",
           "confirm_password": "Confirm password",
-          "confirm_placeholder": "Confirm Password",
+          "confirm_placeholder": "Reenter Password",
           "it_cant_be_recovered": "It can't be recovered!",
           "minimum_characters": "Minimum %{minimumLength} characters",
           "passwords_dont_match": "Passwords don't match",
@@ -146,15 +148,14 @@
       "manual": {
         "backup_manually": "Back Up Manually",
         "label": "Save your %{typeName}",
+        "with_your_label": "Your %{typeName}",
         "pkey": {
-          "title": "Your Private Key",
           "confirm_save": "􀆅 I've saved my key",
           "save_them": "Copy it and save it in your password manager, or in another secure spot.",
           "these_keys": "This is the key to your wallet!",
           "description": "Anyone who has this key can access your wallet! You should never share it."
         },
         "seed": {
-          "title": "Your Secret Phrase",
           "confirm_save": "􀆅 I've saved these words",
           "save_them": "Write them down or save them in your password manager.",
           "these_keys": "These words are the keys to your wallet!",

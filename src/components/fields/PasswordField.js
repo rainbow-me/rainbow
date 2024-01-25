@@ -10,7 +10,7 @@ import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
 
-const FieldAccessoryBadgeSize = 22;
+const FieldAccessoryBadgeSize = 16;
 const FieldAccessoryBadgeWrapper = styled(ShadowStack).attrs(
   ({ theme: { colors, isDarkMode }, color }) => ({
     ...position.sizeAsObject(FieldAccessoryBadgeSize),
@@ -32,7 +32,9 @@ const Container = styled(ios ? TouchableWithoutFeedback : View)(
         marginTop: -30,
         padding: 30,
       }
-    : {}
+    : {
+        marginLeft: 24,
+      }
 );
 
 const PasswordInput = styled(Input).attrs(({ theme: { colors } }) => ({
@@ -53,7 +55,7 @@ const PasswordInput = styled(Input).attrs(({ theme: { colors } }) => ({
 const ShadowContainer = styled(ShadowStack).attrs(
   ({ deviceWidth, theme: { colors, isDarkMode } }) => ({
     backgroundColor: isDarkMode ? colors.offWhite : colors.white,
-    borderRadius: 23,
+    borderRadius: 16,
     height: 46,
     shadows: [
       [0, 5, 15, colors.shadow, 0.06],
