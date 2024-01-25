@@ -105,6 +105,7 @@ import { getNetworkObj } from '@/networks';
 import Animated from 'react-native-reanimated';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
+import { SwapPriceImpactType } from '@/hooks/usePriceImpactDetails';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -392,21 +393,16 @@ export default function ExchangeModal({
   const lastTradeDetails = usePrevious(tradeDetails);
   const isSufficientBalance = useSwapIsSufficientBalance(inputAmount);
 
-  const {
-    isHighPriceImpact,
-    outputPriceValue,
-    priceImpactColor,
-    priceImpactNativeAmount,
-    priceImpactPercentDisplay,
-  } = usePriceImpactDetails(
-    inputAmount,
-    outputAmount,
+  const { priceImpact, outputNativeAmount } = usePriceImpactDetails(
     inputCurrency,
     outputCurrency,
-    currentNetwork,
-    loading
+    tradeDetails,
+    currentNetwork
   );
-  const [debouncedIsHighPriceImpact] = useDebounce(isHighPriceImpact, 1000);
+  const [debouncedIsHighPriceImpact] = useDebounce(
+    priceImpact.type !== SwapPriceImpactType.none,
+    1000
+  );
   // For a limited period after the merge we need to block the use of flashbots.
   // This line should be removed after reenabling flashbots in remote config.
   const swapSupportsFlashbots = getNetworkObj(currentNetwork).features
@@ -717,7 +713,7 @@ export default function ExchangeModal({
           outputTokenAddress: outputCurrency?.address || '',
           outputTokenName: outputCurrency?.name || '',
           outputTokenSymbol: outputCurrency?.symbol || '',
-          priceImpact: priceImpactPercentDisplay,
+          priceImpact: priceImpact.percentDisplay,
           slippage: isNaN(slippage) ? 'Error calculating slippage.' : slippage,
           type,
         });
@@ -762,7 +758,7 @@ export default function ExchangeModal({
       navigate,
       outputAmount,
       outputCurrency,
-      priceImpactPercentDisplay,
+      priceImpact.percentDisplay,
       selectedGasFee?.gasFee,
       selectedGasFee?.gasFeeParams,
       selectedGasFee?.option,
@@ -830,13 +826,13 @@ export default function ExchangeModal({
         outputTokenAddress: outputCurrency?.address || '',
         outputTokenName: outputCurrency?.name || '',
         outputTokenSymbol: outputCurrency?.symbol || '',
-        priceImpact: priceImpactPercentDisplay,
+        priceImpact: priceImpact.percentDisplay,
         slippage: isNaN(slippage) ? 'Error caclulating slippage.' : slippage,
         type,
       });
     }
 
-    const outputInUSD = multiply(outputPriceValue!, outputAmount!);
+    const outputInUSD = outputNativeAmount;
     const gasPrice =
       (selectedGasFee?.gasFee as GasFee)?.maxFee?.native?.value?.amount ||
       (selectedGasFee?.gasFee as LegacyGasFee)?.estimatedFee?.native?.value
@@ -852,28 +848,31 @@ export default function ExchangeModal({
       return false;
     }
   }, [
-    outputPriceValue,
-    outputAmount,
-    selectedGasFee,
-    submit,
+    outputNativeAmount,
+    selectedGasFee?.gasFee,
+    selectedGasFee?.option,
+    selectedGasFee?.gasFeeParams,
     nativeCurrency,
     nativeAmount,
     genericAssets,
     inputCurrency?.address,
     inputCurrency?.name,
     inputCurrency?.symbol,
+    outputCurrency?.address,
+    outputCurrency?.name,
+    outputCurrency?.symbol,
     inputAmount,
+    outputAmount,
     priceOfEther,
     slippageInBips,
     type,
     tradeDetails?.source,
     tradeDetails?.protocols,
+    isHardwareWallet,
     debouncedIsHighPriceImpact,
     currentNetwork,
-    outputCurrency?.address,
-    outputCurrency?.name,
-    outputCurrency?.symbol,
-    priceImpactPercentDisplay,
+    priceImpact.percentDisplay,
+    submit,
   ]);
 
   const confirmButtonProps = useMemoOne(
@@ -1135,9 +1134,9 @@ export default function ExchangeModal({
                   onFlipCurrencies={loading ? NOOP : flipCurrencies}
                   onPressImpactWarning={navigateToSwapDetailsModal}
                   onPressSettings={navigateToSwapSettingsSheet}
-                  priceImpactColor={priceImpactColor}
-                  priceImpactNativeAmount={priceImpactNativeAmount}
-                  priceImpactPercentDisplay={priceImpactPercentDisplay}
+                  priceImpactColor={priceImpact.color}
+                  priceImpactNativeAmount={priceImpact.impactDisplay}
+                  priceImpactPercentDisplay={priceImpact.percentDisplay}
                   type={type}
                 />
               )}
