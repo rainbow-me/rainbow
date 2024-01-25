@@ -41,6 +41,7 @@ export const getBaseNetworkObject = (): NetworkProperties => {
       walletconnect: true,
       swaps: true,
       nfts: true,
+      notifications: true,
       savings: false,
       pools: false,
       txs: base_tx_enabled && op_chains_tx_enabled,
