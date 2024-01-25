@@ -10,7 +10,7 @@ module.exports = {
   devices: {
     'ios.simulator': {
       type: 'ios.simulator',
-      device: { type: 'iPhone 14 Pro' },
+      device: { type: 'iPhone 15 Pro' },
     },
     'android.attached': {
       type: 'android.attached',
