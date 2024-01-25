@@ -18,10 +18,12 @@ export default function useAsset(asset: ParsedAddressAsset) {
     if (!asset) return null;
 
     let matched = null;
-    if (asset.type === AssetTypes.token) {
-      matched = accountAsset || genericAsset;
-    } else if (asset.type === AssetTypes.nft) {
+    if (asset.type === AssetTypes.nft) {
       matched = uniqueToken;
+    } else if (accountAsset) {
+      matched = accountAsset;
+    } else if (genericAsset) {
+      matched = genericAsset;
     }
 
     return matched || asset;
