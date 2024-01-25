@@ -255,11 +255,9 @@ export default function ExchangeModal({
     const chainId =
       network === Network.goerli
         ? getNetworkObj(Network.goerli).id
-        : inputCurrency?.type || outputCurrency?.type
-        ? ethereumUtils.getChainIdFromType(
-            inputCurrency?.type ?? outputCurrency?.type
-          )
-        : 1;
+        : inputCurrency?.chainId ||
+          outputCurrency?.chainId ||
+          getNetworkObj(Network.mainnet).id;
 
     const currentNetwork = ethereumUtils.getNetworkFromChainId(chainId);
     const isCrosschainSwap =
