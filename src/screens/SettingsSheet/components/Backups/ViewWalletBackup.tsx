@@ -69,7 +69,7 @@ const ViewWalletBackup = () => {
       walletId,
       title,
     });
-  }, []);
+  }, [walletId, title, navigate]);
 
   const onManualBackup = useCallback(() => {
     navigate('SecretWarning', {
@@ -123,6 +123,7 @@ const ViewWalletBackup = () => {
   }: MenuEvent) => {
     switch (menuAction) {
       case WalletMenuAction.ViewPrivateKey: {
+        // TODO: How do we get the private key from an individual account inside of a wallet?
         navigate('SecretWarning', {
           walletId,
           isBackingUp: false,

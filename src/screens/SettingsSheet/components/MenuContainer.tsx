@@ -17,7 +17,12 @@ const MenuContainer = ({
 }: MenuContainerProps) => {
   return (
     // ios scroll fix
-    <Inset {...(ios && { bottom: '42px (Deprecated)', top: '12px' })}>
+    <Inset
+      {...(ios && {
+        bottom: '42px (Deprecated)',
+        top: '12px',
+      })}
+    >
       <ScrollView
         scrollEventThrottle={32}
         // ios scroll fix

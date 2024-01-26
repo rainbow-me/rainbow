@@ -16,8 +16,7 @@ import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
 import { useDimensions, useWalletManualBackup, useWallets } from '@/hooks';
 import { useTheme } from '@/theme';
 import { logger, RainbowError } from '@/logger';
-import { IS_ANDROID, IS_TEST } from '@/env';
-import RadialGradient from 'react-native-radial-gradient';
+import { IS_ANDROID } from '@/env';
 import ManuallyBackedUpIcon from '@/assets/manuallyBackedUp.png';
 
 import {
@@ -25,7 +24,7 @@ import {
   SecretDisplayStatesType,
 } from '@/components/secret-display/states';
 import { SecretDisplayError } from '@/components/secret-display/SecretDisplayError';
-import { InteractionManager, StyleSheet, View } from 'react-native';
+import { InteractionManager, StyleSheet } from 'react-native';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { SheetActionButton } from '../sheet';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
@@ -36,10 +35,6 @@ import RoutesWithPlatformDifferences from '@/navigation/routesNames';
 const MIN_HEIGHT = 740;
 
 const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
-
-const SafeRadialGradient = (IS_TEST
-  ? View
-  : RadialGradient) as typeof RadialGradient;
 
 type WrapperProps = {
   children?: ReactNode;
@@ -78,7 +73,6 @@ export function SecretDisplaySection({
   onSecretLoaded,
   onWalletTypeIdentified,
 }: Props) {
-  const { goBack } = useNavigation();
   const { height: deviceHeight } = useDimensions();
   const { colors } = useTheme();
   const { params } = useRoute<
@@ -165,6 +159,18 @@ export function SecretDisplaySection({
     return '􀟖';
   }, [isBackingUp, backupType, isSecretPhrase]);
 
+  const getTitleForBackupType = useCallback(() => {
+    if (isBackingUp) {
+      return i18n.t(i18n.l.back_up.manual.label, {
+        typeName: isSecretPhrase ? 'Secret Phrase' : 'Private Key',
+      });
+    }
+
+    return i18n.t(i18n.l.back_up.manual.with_your_label, {
+      typeName: isSecretPhrase ? 'Secret Phrase' : 'Private Key',
+    });
+  }, [isBackingUp, isSecretPhrase]);
+
   const isSmallPhone = deviceHeight < MIN_HEIGHT;
   const contentHeight =
     deviceHeight - (!isSmallPhone ? sharedCoolModalTopOffset : 0) - 100;
@@ -214,9 +220,7 @@ export function SecretDisplaySection({
                 )}
 
                 <Text align="center" color="label" size="20pt" weight="bold">
-                  {isSecretPhrase
-                    ? i18n.t(i18n.l.back_up.manual.seed.title)
-                    : i18n.t(i18n.l.back_up.manual.pkey.title)}
+                  {getTitleForBackupType()}
                 </Text>
                 <Stack space="36px">
                   <Text

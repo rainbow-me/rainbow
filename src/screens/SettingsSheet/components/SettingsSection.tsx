@@ -34,7 +34,6 @@ import { Themes, useTheme } from '@/theme';
 import { showActionSheetWithOptions } from '@/utils';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
-import * as ls from '@/storage';
 import { SettingsExternalURLs } from '../constants';
 import { capitalizeFirstLetter, checkWalletsForBackupStatus } from '../utils';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
