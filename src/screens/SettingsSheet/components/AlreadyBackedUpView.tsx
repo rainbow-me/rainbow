@@ -23,7 +23,7 @@ import { useTheme } from '@/theme';
 import { IS_ANDROID } from '@/env';
 import { deviceUtils } from '@/utils';
 
-const WalletBackupStatus = {
+export const WalletBackupStatus = {
   CLOUD_BACKUP: 0,
   IMPORTED: 1,
   MANUAL_BACKUP: 2,

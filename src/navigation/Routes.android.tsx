@@ -4,7 +4,7 @@ import React, { useContext } from 'react';
 import { StatusBar } from 'react-native';
 import { AddCashSheet } from '../screens/AddCash';
 import AvatarBuilder from '../screens/AvatarBuilder';
-import BackupSheet from '../screens/BackupSheet';
+import BackupSheet from '../screens/SettingsSheet/components/Backups/BackupSheet';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
 import ConnectedDappsSheet from '../screens/ConnectedDappsSheet';
 import ENSAdditionalRecordsSheet from '../screens/ENSAdditionalRecordsSheet';
@@ -69,7 +69,7 @@ import { TransactionDetails } from '@/screens/transaction-details/TransactionDet
 import { AddWalletNavigator } from './AddWalletNavigator';
 import { HardwareWalletTxNavigator } from './HardwareWalletTxNavigator';
 import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
-import { SettingsSheet } from '@/screens/SettingsSheet';
+import { SettingsSheet } from '@/screens/SettingsSheet/SettingsSheet';
 import { CUSTOM_MARGIN_TOP_ANDROID } from '@/screens/SettingsSheet/constants';
 import { Portal } from '@/screens/Portal';
 import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
@@ -77,7 +77,7 @@ import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
 // eslint-disable-next-line eslint-comments/disable-enable-pair
 /* eslint-disable import/no-unresolved */
 // @ts-ignore .android and .ios exports cause errors
-import ShowSecretView from '@/screens/SettingsSheet/components/ShowSecretView';
+import ShowSecretView from '@/screens/SettingsSheet/components/Backups/ShowSecretView';
 import PoapSheet from '@/screens/mints/PoapSheet';
 import { PositionSheet } from '@/screens/positions/PositionSheet';
 import MintSheet from '@/screens/mints/MintSheet';
@@ -357,10 +357,7 @@ function BSNavigator() {
         name={Routes.SETTINGS_SHEET}
         options={{
           ...bottomSheetPreset,
-          height:
-            deviceUtils.dimensions.height +
-            CUSTOM_MARGIN_TOP_ANDROID -
-            (StatusBar?.currentHeight || 0),
+          height: deviceUtils.dimensions.height - CUSTOM_MARGIN_TOP_ANDROID,
         }}
       />
       <BSStack.Screen

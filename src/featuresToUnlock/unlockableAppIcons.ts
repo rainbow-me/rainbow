@@ -6,8 +6,10 @@ const OPTIMISTIC_EXPLORER_NFT_ADDRESS: EthereumAddress =
   '0x81b30ff521D1fEB67EDE32db726D95714eb00637';
 
 // smol app icon unlocking NFTs
-const SMOL_BRAINS_NFT_ADDRESS: EthereumAddress =
+const LEGACY_SMOL_BRAINS_NFT_ADDRESS: EthereumAddress =
   '0x6325439389e0797ab35752b4f43a14c004f22a9c';
+const SMOL_BRAINS_NFT_ADDRESS: EthereumAddress =
+  '0xa7f1462e0ecdeebdee4faf6681148ca96db78777';
 const SMOL_BODIES_NFT_ADDRESS: EthereumAddress =
   '0x17dacad7975960833f374622fad08b90ed67d1b5';
 const SMOL_BRAINS_PETS_NFT_ADDRESS: EthereumAddress =
@@ -74,6 +76,7 @@ export const SmolIcon: UnlockableAppIcon = {
   explainSheetType: 'smol_app_icon',
   network: Network.arbitrum,
   unlockingNfts: [
+    LEGACY_SMOL_BRAINS_NFT_ADDRESS,
     SMOL_BRAINS_NFT_ADDRESS,
     SMOL_BODIES_NFT_ADDRESS,
     SMOL_BRAINS_PETS_NFT_ADDRESS,

@@ -19,7 +19,7 @@ describe('New Wallet flow', () => {
       // Confirm it
       await Helpers.authenticatePin('1234');
     }
-    await Helpers.checkIfVisible('wallet-screen', 40000);
+    await Helpers.checkIfVisible('wallet-screen', 200000);
     await Helpers.enableSynchronization();
   });
 

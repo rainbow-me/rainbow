@@ -9,10 +9,28 @@ import styled from '@/styled-thing';
 import { margin } from '@/styles';
 import { magicMemo } from '@/utils';
 
-const RainbowGradientColorsFactory = darkMode => ({
+const RainbowGradientColorsFactory = (
+  darkMode: boolean,
+  disabled: boolean
+) => ({
   inner: {
     addCash: ['#FFB114', '#FF54BB', '#00F0FF'],
     default: darkModeThemeColors.gradients.rainbow,
+    backup: () => {
+      if (darkMode) {
+        if (disabled) {
+          return ['#12131A', '#12131A', '#12131A'];
+        }
+
+        return ['#14C7FF', '#7654FF', '#930AFF'];
+      }
+
+      if (disabled) {
+        return ['#F5F5F5', '#F5F5F5', '#F5F5F5'];
+      }
+
+      return ['#14C7FF', '#7654FF', '#930AFF'];
+    },
     disabled: darkMode
       ? [
           darkModeThemeColors.blueGreyDark20,
@@ -24,6 +42,24 @@ const RainbowGradientColorsFactory = darkMode => ({
   outer: {
     addCash: ['#F5AA13', '#F551B4', '#00E6F5'],
     default: ['#F5AA13', '#F551B4', '#799DD5'],
+    backup: () => {
+      if (darkMode) {
+        if (disabled) {
+          return ['#12131A', '#12131A', '#12131A'];
+        }
+
+        return ['#14C7FF', '#7654FF', '#930AFF'];
+      }
+
+      if (disabled) {
+        return ['#F5F5F5', '#F5F5F5', '#F5F5F5'];
+      }
+
+      return ['#14C7FF', '#7654FF', '#930AFF'];
+    },
+    transparent: darkMode
+      ? ['#12131A', '#12131A', '#12131A']
+      : ['#F5F5F5', '#F5F5F5', '#F5F5F5'],
     disabled: darkMode
       ? [
           darkModeThemeColors.blueGreyDark20,
@@ -33,9 +69,6 @@ const RainbowGradientColorsFactory = darkMode => ({
       : ['#A5A8AE', '#A5A8AE', '#A5A8AE'],
   },
 });
-
-const RainbowGradientColorsDark = RainbowGradientColorsFactory(true);
-const RainbowGradientColorsLight = RainbowGradientColorsFactory(false);
 
 const RainbowButtonGradient = styled(RadialGradient).attrs(
   ({ type, width }) => ({
@@ -49,22 +82,30 @@ const RainbowButtonGradient = styled(RadialGradient).attrs(
 });
 
 const InnerButton = styled(View)(
-  ({ strokeWidth, height, width, theme: { colors } }) => ({
+  ({ strokeWidth, height, width, theme: { colors }, type, disabled }) => ({
     ...margin.object(strokeWidth),
     backgroundColor: colors.dark,
     borderRadius: height / 2 - strokeWidth,
     height: height - strokeWidth * 2,
     width: width - strokeWidth * 2,
+    borderWidth: strokeWidth,
+    ...(type === RainbowButtonTypes.backup && {
+      borderWidth: 1,
+      borderColor: disabled ? colors.white : colors.blueGreyDark,
+    }),
   })
 );
 
 const InnerGradient = styled(RainbowButtonGradient).attrs(
   ({ disabled, type, gradientColors }) => ({
-    colors: disabled
-      ? gradientColors.inner.disabled
-      : type === RainbowButtonTypes.addCash
-      ? gradientColors.inner.addCash
-      : gradientColors.inner.default,
+    colors:
+      type === RainbowButtonTypes.backup
+        ? gradientColors.inner.backup()
+        : disabled
+        ? gradientColors.inner.disabled
+        : type === RainbowButtonTypes.addCash
+        ? gradientColors.inner.addCash
+        : gradientColors.inner.default,
   })
 )(({ width, height }) => ({
   height: width,
@@ -74,17 +115,21 @@ const InnerGradient = styled(RainbowButtonGradient).attrs(
 
 const OuterGradient = styled(RainbowButtonGradient).attrs(
   ({ disabled, type, gradientColors }) => ({
-    colors: disabled
-      ? gradientColors.outer.disabled
-      : type === RainbowButtonTypes.addCash
-      ? gradientColors.outer.addCash
-      : gradientColors.outer.default,
+    colors:
+      type === RainbowButtonTypes.backup
+        ? gradientColors.outer.backup()
+        : disabled
+        ? gradientColors.outer.disabled
+        : type === RainbowButtonTypes.addCash
+        ? gradientColors.outer.addCash
+        : gradientColors.outer.default,
   })
 )(({ width, height }) => ({
   height: width * 2,
   left: -width / 2,
   top: -(width - height / 2),
   width: width * 2,
+  zIndex: -1,
 }));
 
 const WrapperView = android
@@ -105,11 +150,16 @@ const RainbowButtonBackground = ({
 }) => {
   const { isDarkMode } = useTheme();
 
-  const gradientColors = isDarkMode
-    ? RainbowGradientColorsDark
-    : RainbowGradientColorsLight;
+  const gradientColors = RainbowGradientColorsFactory(isDarkMode, disabled);
+
   const maskElement = (
-    <InnerButton height={height} strokeWidth={strokeWidth} width={width} />
+    <InnerButton
+      height={height}
+      strokeWidth={strokeWidth}
+      disabled={disabled}
+      width={width}
+      type={type}
+    />
   );
   const innerGradientCenter = [
     width - strokeWidth * 2,
@@ -145,4 +195,6 @@ export default magicMemo(RainbowButtonBackground, [
   'height',
   'strokeWidth',
   'width',
+  'type',
+  'disabled',
 ]);

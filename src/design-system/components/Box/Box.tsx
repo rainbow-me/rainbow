@@ -52,6 +52,8 @@ export type BoxProps = {
   flexWrap?: 'wrap';
   height?: Height;
   left?: PositionSpace;
+  gap?: number;
+  zIndex?: number;
   justifyContent?:
     | 'flex-start'
     | 'flex-end'
@@ -76,6 +78,11 @@ export type BoxProps = {
   right?: PositionSpace;
   top?: PositionSpace;
   width?: Width;
+  backgroundColor?: string;
+  shadowColor?: string;
+  elevation?: number;
+  shadowOpacity?: number;
+  shadowRadius?: number;
   overflow?: 'hidden' | 'visible' | 'scroll';
 } & (
   | {
@@ -285,7 +292,7 @@ export const Box = forwardRef(function Box(
   }, [styles, styleProp, Component]);
 
   return background ? (
-    //@ts-ignore
+    // @ts-ignore
     <BackgroundProvider color={background} style={style}>
       {({ backgroundColor, backgroundStyle }) => (
         <ApplyShadow backgroundColor={backgroundColor} shadows={shadows}>
@@ -296,7 +303,7 @@ export const Box = forwardRef(function Box(
       )}
     </BackgroundProvider>
   ) : (
-    //@ts-ignore
+    // @ts-ignore
     <Component style={style} {...restProps} ref={ref}>
       {children}
     </Component>

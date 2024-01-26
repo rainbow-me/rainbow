@@ -58,6 +58,7 @@ import { DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS } from '@/redux/data';
 import { saveLocalPendingTransactions } from '@/handlers/localstorage/accountLocal';
 import { getFCMToken } from '@/notifications/tokens';
 import { resetNonces } from '@/redux/nonceManager';
+import { removeGlobalNotificationSettings } from '@/notifications/settings/settings';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
@@ -68,7 +69,9 @@ const DevSection = () => {
     testnetsEnabled,
     settingsChangeTestnetsEnabled,
   } = useAccountSettings();
-  const { notificationSettings } = useAllNotificationSettingsFromStorage();
+  const {
+    walletNotificationSettings,
+  } = useAllNotificationSettingsFromStorage();
   const dispatch = useDispatch();
   const resetAccountState = useResetAccountState();
   const loadAccountData = useLoadAccountData();
@@ -201,15 +204,16 @@ const DevSection = () => {
     // loop through notification settings and unsubscribe all wallets
     // from firebase first or we’re gonna keep getting them even after
     // clearing storage and before changing settings
-    if (notificationSettings.length > 0) {
+    removeGlobalNotificationSettings();
+    if (walletNotificationSettings.length > 0) {
       return Promise.all(
-        notificationSettings.map(wallet =>
+        walletNotificationSettings.map(wallet =>
           removeNotificationSettingsForWallet(wallet.address)
         )
       );
     }
     return Promise.resolve();
-  }, [notificationSettings]);
+  }, [walletNotificationSettings]);
 
   const clearPendingTransactions = async () => {
     // clear local storage
@@ -299,7 +303,7 @@ const DevSection = () => {
   return (
     <MenuContainer testID="developer-settings-sheet">
       <Menu header={IS_DEV || isTestFlight ? 'Normie Settings' : ''}>
-        <MenuItem
+        {/* <MenuItem
           disabled
           leftComponent={<MenuItem.TextIcon icon="🕹️" isEmoji />}
           rightComponent={
@@ -316,7 +320,7 @@ const DevSection = () => {
             />
           }
         />
-        {testnetsEnabled && <NetworkSection inDevSection />}
+        {testnetsEnabled && <NetworkSection inDevSection />} */}
         <MenuItem
           leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
           onPress={clearLocalStorage}

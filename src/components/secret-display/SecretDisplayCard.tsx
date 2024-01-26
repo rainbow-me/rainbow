@@ -1,4 +1,4 @@
-import lang from 'i18n-js';
+import * as i18n from '@/languages';
 import React from 'react';
 import CopyTooltip from '../copy-tooltip';
 import { Centered } from '../layout';
@@ -6,11 +6,19 @@ import { Text } from '../text';
 import { Box, Inset } from '@/design-system';
 import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
 import { SeedWordGrid } from '@/components/secret-display/SeedWordGrid';
+import { IS_ANDROID } from '@/env';
 
 interface SecretDisplayCardProps {
   seed: string;
   type?: EthereumWalletType;
 }
+
+const getHeightForType = (type: EthereumWalletType) => {
+  if (type === WalletTypes.privateKey) {
+    return 90;
+  }
+  return 240;
+};
 
 export default function SecretDisplayCard({
   seed,
@@ -22,14 +30,14 @@ export default function SecretDisplayCard({
         <Box
           background="card (Deprecated)"
           borderRadius={25}
-          height={{ custom: 240 }}
-          paddingHorizontal="30px (Deprecated)"
+          height={{ custom: getHeightForType(type) }}
+          paddingHorizontal="24px"
           paddingVertical="19px (Deprecated)"
           shadow="21px light (Deprecated)"
         >
           <CopyTooltip
             textToCopy={seed}
-            tooltipText={lang.t('back_up.secret.copy_to_clipboard')}
+            tooltipText={i18n.t(i18n.l.back_up.secret.copy_to_clipboard)}
           >
             <Box alignItems="center" height="full" justifyContent="center">
               {seed && type === WalletTypes.mnemonic && (
@@ -40,7 +48,7 @@ export default function SecretDisplayCard({
                   align="center"
                   weight="semibold"
                   lineHeight="looser"
-                  size="lmedium"
+                  size={IS_ANDROID ? 'smedium' : 'lmedium'}
                 >
                   {seed}
                 </Text>

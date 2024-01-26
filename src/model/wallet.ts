@@ -66,7 +66,7 @@ import {
 import {
   AddressWithRelationship,
   initializeNotificationSettingsForAddresses,
-  NotificationRelationship,
+  WalletNotificationRelationship,
 } from '@/notifications/settings';
 import { DebugContext } from '@/logger/debugContext';
 import { IS_ANDROID } from '@/env';
@@ -155,7 +155,7 @@ export interface RainbowWallet {
   type: EthereumWalletType;
   backedUp?: boolean;
   backupFile?: string | null;
-  backupDate?: string;
+  backupDate?: number;
   backupType?: string;
   damaged?: boolean;
   deviceId?: string;
@@ -980,8 +980,8 @@ export const createWallet = async ({
     // create notifications settings entry for newly created wallet
     const relationship =
       type === EthereumWalletType.readOnly
-        ? NotificationRelationship.WATCHER
-        : NotificationRelationship.OWNER;
+        ? WalletNotificationRelationship.WATCHER
+        : WalletNotificationRelationship.OWNER;
     const addressesWithRelationship: AddressWithRelationship[] = addresses.map(
       account => ({
         relationship,
@@ -1345,7 +1345,7 @@ export const generateAccount = async (
       {
         address: walletAddress,
         // Wallet or account created from within the app is attached to a seed phrase so it's an owned wallet
-        relationship: NotificationRelationship.OWNER,
+        relationship: WalletNotificationRelationship.OWNER,
       },
     ]);
 

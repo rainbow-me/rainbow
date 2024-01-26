@@ -6,12 +6,12 @@ buildscript {
 
     ext {
         buildToolsVersion = "33.0.0"
-        minSdkVersion = 21
+        minSdkVersion = 26
         compileSdkVersion = 33
         targetSdkVersion = 33
         ndkVersion = "23.1.7779620"
-        kotlin_version = "1.6.20"
-        kotlinVersion = "1.6.20"
+        kotlin_version = "1.7.21"
+        kotlinVersion = '1.7.21'
         androidXCore = "1.6.0"
     }
 
@@ -27,7 +27,7 @@ buildscript {
     dependencies {
         classpath("com.android.tools.build:gradle")
         classpath("com.facebook.react:react-native-gradle-plugin")
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.20"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.21"
         classpath("de.undercouch:gradle-download-task:5.0.1")
         classpath 'com.google.gms:google-services:4.3.15'
         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.2'

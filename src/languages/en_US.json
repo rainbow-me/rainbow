@@ -104,14 +104,23 @@
       "backup_deleted_successfully": "Backups Deleted Successfully",
       "cloud": {
         "back_up_to_platform": "Back up to %{cloudPlatformName}",
-        "manage_platform_backups": "Manage %{cloudPlatformName} Backups",
+        "manage_platform_backups": "View %{cloudPlatformName} Backups",
+        "cloud_platform_backup_settings": "%{cloudPlatformName} Backup Settings",
+        "enable_cloud_backups": "Enable Cloud Backups",
+        "backup_to_cloud_now": "Back Up to %{cloudPlatformName} Now",
+        "enable_cloud_backups_description": "If you prefer to back up your wallets manually, you can do so below.",
+        "latest_backup": "Last Backup: %{date}", 
+        "out_of_date": "Out of Date",
+        "up_to_date": "Up to Date",
         "password": {
-          "a_password_youll_remember": "Please use a password you'll remember.",
-          "backup_password": "Backup Password",
-          "choose_a_password": "Choose a password",
+          "a_password_youll_remember_part_one": "This password is",
+          "not": "not",
+          "a_password_youll_remember_part_two": "recoverable. Make sure you choose a password you'll remember.",
+          "backup_password": "Password",
+          "choose_a_password": "Create a password to secure your backup",
           "confirm_backup": "Confirm Backup",
           "confirm_password": "Confirm password",
-          "confirm_placeholder": "Confirm Password",
+          "confirm_placeholder": "Reenter Password",
           "it_cant_be_recovered": "It can't be recovered!",
           "minimum_characters": "Minimum %{minimumLength} characters",
           "passwords_dont_match": "Passwords don't match",
@@ -138,17 +147,22 @@
         "if_lose_manual": "If you lose this device, you can restore your wallet with the secret phrase you saved."
       },
       "manual": {
-        "label": "Your secret phrase",
+        "backup_manually": "Back Up Manually",
+        "label": "Save your %{typeName}",
+        "with_your_label": "Your %{typeName}",
         "pkey": {
-          "confirm_save": "I’ve saved my key",
+          "confirm_save": "􀆅 I've saved my key",
           "save_them": "Copy it and save it in your password manager, or in another secure spot.",
-          "these_keys": "This is the key to your wallet!"
+          "these_keys": "This is the key to your wallet!",
+          "description": "Anyone who has this key can access your wallet! You should never share it."
         },
         "seed": {
-          "confirm_save": "I’ve saved these words",
+          "confirm_save": "􀆅 I've saved these words",
           "save_them": "Write them down or save them in your password manager.",
-          "these_keys": "These words are the keys to your wallet!"
-        }
+          "these_keys": "These words are the keys to your wallet!",
+          "description": "These words are the keys to your wallet. Make sure you save them in a secure location."
+        },
+        "create_new_secret_phrase": "Create a New Secret Phrase"
       },
       "needs_backup": {
         "back_up_your_wallet": "Back up your wallet",
@@ -169,7 +183,7 @@
         "anyone_who_has_these": "Anyone who has these words can access your entire wallet!",
         "biometrically_secured": "Your account has been secured with biometric data, like fingerprint or face identification. To see your recovery phrase, turn on biometrics in your phone’s settings.",
         "no_seed_phrase": "We couldn't retrieve your seed phrase. Please ensure you've properly authenticated using biometric data, such as your fingerprint or face identification, or entered your PIN code correctly.",
-        "copy_to_clipboard": "Copy to clipboard",
+        "copy_to_clipboard": "Copy to Clipboard",
         "for_your_eyes_only": "For your eyes only",
         "private_key_title": "Private Key",
         "secret_phrase_title": "Secret Phrase",
@@ -177,6 +191,15 @@
         "view_private_key": "View private key",
         "view_secret_phrase": "View secret phrase",
         "you_need_to_authenticate": "You need to authenticate in order to access your recovery %{typeName}"
+      },
+      "warning": {
+        "before_you_proceed": "Before you proceed",
+        "title": "View your %{typeName}",
+        "never_share": "Never share your %{typeName} or enter it into apps or websites.",
+        "access": "Anyone who has your %{typeName} can access your entire wallet.",
+        "hide": "Make sure nobody can see your screen when viewing your %{typeName}.",
+        "support": "Rainbow Support will never ask you for your %{typeName}.",
+        "button": "􀎽 Show %{typeName}"
       }
     },
     "bluetooth": {
@@ -1253,6 +1276,10 @@
         "get_started": "Get Started",
         "invalid_code": "Invalid Code"
       },
+      "notifications": {
+        "enable": "Enable Points Notifications",
+        "disable": "Disable Points Notifications"
+      },
       "points": {
         "referral_code": "Referral Code",
         "share_link": "Share Link",
@@ -1288,6 +1315,7 @@
         "true_believer": "True Believer",
         "registration_complete": "Registration complete",
         "account": "Account",
+        "points_you_have": "You Have",
         "points_earned": "Points Earned",
         "share_bonus": "Share Bonus",
         "share_bonus_paragraph_one": "You're all set!",
@@ -1316,7 +1344,16 @@
         "referral_link_bonus_text_extended": "Plus you'll earn 10% of the points earned by anyone you refer",
         "complete_onboarding": "Done",
         "share_to_x": "Share to X",
-        "hardware_wallet_alert": "Hardware wallet support is coming soon!"
+        "hardware_wallet_alert": "Hardware wallet support is coming soon!",
+        "view_weekly_earnings_week_of": "Week of %{startOfWeek} - %{endOfWeek}",
+        "view_weekly_earnings_title": "Counting earned points",
+        "view_weekly_earnings_counted": "Weekly earnings counted",
+        "view_weekly_earnings_close_button": "Close",
+        "view_weekly_earnings_retroactive_points": "Retroactive points",
+        "view_weekly_earnings_activity": "Your Activity",
+        "view_weekly_earnings_referral_activity": "Referral Activity",
+        "view_weekly_earnings_total_earnings": "Total",
+        "view_weekly_earnings_new_referrals": "New Referrals"
       }
     },
     "pools": {
@@ -1678,7 +1715,7 @@
       "no_thanks": "No thanks"
     },
     "settings": {
-      "backup": "Backup",
+      "backup": "Wallets & Backup",
       "google_account_used": "Google account used for backups",
       "backup_switch_google_account": "Switch Google Account",
       "backup_sign_out": "Sign out",
@@ -1701,6 +1738,7 @@
       "notifications": "Notifications",
       "notifications_section": {
         "my_wallets": "My Wallets",
+        "points": "Points",
         "watched_wallets": "Watched Wallets",
         "allow_notifications": "Allow Notifications",
         "sent": "Sent",
@@ -2089,11 +2127,23 @@
         "please_seed_phrase": "Please authenticate to view private key"
       },
       "back_ups": {
-        "and_1_more_wallet": "And 1 more wallet",
+        "wallet_count": "%{numAccounts} wallet",
+        "wallet_count_gt_one": "%{numAccounts} wallets",
         "and_more_wallets": "And %{moreWalletCount} more wallets",
+        "create_new_wallet": "Create a New Wallet",
+        "create_new_wallet_description": "Create a new wallet using this Secret Phrase",
         "backed_up": "Backed up",
         "backed_up_manually": "Backed up manually",
-        "imported": "Imported"
+        "imported": "Imported",
+        "cloud_backup_title": "Cloud Backup",
+        "not_backed_up": "Not backed up",
+        "not_backed_up_message": "This %{backupType} isn't backed up. Back up now so you can restore it if you lose your device or get a new one.",
+        "backed_up_message": "You opted to save this %{backupType} yourself. Make sure you have it stored in a secure location.",
+        "cloud_backup_description": "Securely back up your wallets to iCloud so you can restore them if you lose your device or get a new one.",
+        "cloud_backup_link": "Learn more…",
+        "view_secret_phrase": "View Secret Phrase",
+        "view_private_key": "View Private Key",
+        "copy_wallet_address": "Copy wallet address"
       },
       "balance_title": "Balance",
       "buy": "Buy",
@@ -2253,13 +2303,13 @@
         "please_enable_title": "Rainbow would like to send you push notifications"
       },
       "qr": {
-        "camera_access_needed": "Camera access needed to scan!",
+        "camera_access_needed": "Enabling this allows you to scan QR codes so you can connect to dApps and discover wallets.",
         "enable_camera_access": "Enable camera access",
         "error_mounting_camera": "Error mounting camera",
         "find_a_code": "Find a code to scan",
         "qr_1_app_connected": "1 Connected App",
         "qr_multiple_apps_connected": "%{appsConnectedCount} Connected Apps",
-        "scan_to_pay_or_connect": "Scan to pay or connect",
+        "scan_to_pay_or_connect": "Camera access needed",
         "simulator_mode": "Simulator Mode",
         "sorry_could_not_be_recognized": "Sorry, this QR code could not be recognized.",
         "unrecognized_qr_code_title": "Unrecognized QR Code"

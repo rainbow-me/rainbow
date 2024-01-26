@@ -1,19 +1,19 @@
-import { useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { captureMessage } from '@sentry/react-native';
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
-import { DelayedAlert } from '../components/alerts';
+import { DelayedAlert } from '../../../../components/alerts';
 import {
   BackupCloudStep,
   BackupConfirmPasswordStep,
   BackupManualStep,
   BackupSheetSection,
-} from '../components/backup';
-import { Column } from '../components/layout';
-import { SlackSheet } from '../components/sheet';
-import { cloudPlatform } from '../utils/platform';
+} from '../../../../components/backup';
+import { Column } from '../../../../components/layout';
+import { SlackSheet } from '../../../../components/sheet';
+import { cloudPlatform } from '../../../../utils/platform';
 import { analytics } from '@/analytics';
 import showWalletErrorAlert from '@/helpers/support';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
@@ -26,9 +26,19 @@ import {
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 
-const onError = error => DelayedAlert({ title: error }, 500);
+const onError = (error: unknown) => DelayedAlert({ title: error }, 500);
 
 const AndroidHeight = 400;
+
+type BackupSheetParams = {
+  BackupSheet: {
+    longFormHeight?: number;
+    missingPassword?: boolean;
+    step?: typeof WalletBackupStepTypes;
+    walletId?: string;
+    nativeScreen?: boolean;
+  };
+};
 
 export default function BackupSheet() {
   const { selectedWallet, isDamaged } = useWallets();
@@ -43,7 +53,7 @@ export default function BackupSheet() {
       walletId = selectedWallet.id,
       nativeScreen = false,
     } = {},
-  } = useRoute();
+  } = useRoute<RouteProp<BackupSheetParams, 'BackupSheet'>>();
 
   const isSettingsRoute = useRouteExistsInNavigationState(
     Routes.SETTINGS_SHEET
@@ -155,13 +165,13 @@ export default function BackupSheet() {
         );
       case WalletBackupStepTypes.imported:
         return (
-          // TODO: ADD CloudPlatform to back_up.description
           <BackupSheetSection
             descriptionText={lang.t('modal.back_up.imported.description', {
               cloudPlatformName: cloudPlatform,
             })}
             onPrimaryAction={onIcloudBackup}
             onSecondaryAction={goBack}
+            primaryButtonTestId="backup-sheet-imported-back-up-button"
             primaryLabel={`􀙶 ${lang.t('modal.back_up.imported.button.back_up', {
               cloudPlatformName: cloudPlatform,
             })}`}
