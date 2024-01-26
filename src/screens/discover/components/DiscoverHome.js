@@ -11,7 +11,6 @@ import { Inline, Inset, Stack } from '@/design-system';
 import { useAccountSettings, useWallets } from '@/hooks';
 import { ENSCreateProfileCard } from '@/components/cards/ENSCreateProfileCard';
 import { ENSSearchCard } from '@/components/cards/ENSSearchCard';
-import { DPICard } from '@/components/cards/DPICard';
 import { GasCard } from '@/components/cards/GasCard';
 import { LearnCard } from '@/components/cards/LearnCard';
 import {
@@ -98,7 +97,6 @@ export default function DiscoverHome() {
             <LearnCard cardDetails={backupsCard} type="square" />
             <LearnCard cardDetails={avoidScamsCard} type="square" />
           </Inline>
-          <DPICard />
         </Stack>
       ) : (
         <Stack space="20px">
@@ -106,7 +104,6 @@ export default function DiscoverHome() {
             <GasCard />
             <LearnCard cardDetails={cryptoAndWalletsCard} type="square" />
           </Inline>
-          <DPICard />
         </Stack>
       )}
     </Inset>

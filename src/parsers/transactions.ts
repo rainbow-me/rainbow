@@ -28,7 +28,7 @@ import {
 import { getTransactionMethodName } from '@/handlers/transactions';
 import { isL2Network } from '@/handlers/web3';
 import { Network } from '@/helpers/networkTypes';
-import { ETH_ADDRESS, savingsAssetsList } from '@/references';
+import { ETH_ADDRESS } from '@/references';
 import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
@@ -171,43 +171,6 @@ const transformTradeRefund = (
     };
   }
   return compact([updatedOut, txnIn]);
-};
-
-const overrideFailedCompound = (
-  txn: ZerionTransaction,
-  network: string
-): ZerionTransaction => {
-  // Compound shows success status even when there are internal failures
-  // We are overriding to show the user a failure state if the action actually failed
-  const isFailedCompoundTxn =
-    isEmpty(txn?.changes) &&
-    txn.protocol === ProtocolType.compound &&
-    (txn.type === TransactionType.deposit ||
-      txn.type === TransactionType.withdraw);
-  if (!isFailedCompoundTxn) return txn;
-
-  const newTxn = {
-    ...txn,
-  };
-  newTxn.status = ZerionTransactionStatus.failed;
-  const asset =
-    savingsAssetsList[network][txn?.address_to?.toLowerCase() ?? ''];
-
-  const assetInternalTransaction = {
-    address_from: txn.address_from,
-    address_to: txn.address_to,
-    asset: {
-      asset_code: asset.address,
-      icon_url: null,
-      price: null,
-      type: AssetType.compound,
-      ...asset,
-    },
-    direction: TransactionDirection.out,
-    value: 0,
-  };
-  newTxn.changes = [assetInternalTransaction];
-  return newTxn;
 };
 
 const overrideFailedExecution = (txn: ZerionTransaction): ZerionTransaction => {
@@ -375,7 +338,6 @@ const parseTransaction = async (
   let txn = {
     ...transaction,
   };
-  txn = overrideFailedCompound(txn, network);
   txn = overrideFailedExecution(txn);
   txn = overrideAuthorizations(txn);
   txn = overrideSelfWalletConnect(txn);
@@ -519,11 +481,7 @@ export const getTitle = ({
       status === TransactionStatus.sent ||
       status === TransactionStatus.received
     ) {
-      if (protocol === ProtocolType.compound) {
-        return i18n.t(i18n.l.transactions.savings);
-      } else {
-        return ProtocolTypeNames?.[protocol];
-      }
+      return ProtocolTypeNames?.[protocol];
     }
   }
   return upperFirst(status);

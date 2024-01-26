@@ -204,7 +204,13 @@ export default function ChartExpandedState({ asset }) {
     return hasBalance
       ? { ...asset }
       : genericAsset
-      ? ethereumUtils.formatGenericAsset(genericAsset, nativeCurrency)
+      ? asset?.networks
+        ? {
+            ...ethereumUtils.formatGenericAsset(genericAsset, nativeCurrency),
+            type: asset.type,
+            colors: asset?.colors,
+          }
+        : ethereumUtils.formatGenericAsset(genericAsset, nativeCurrency)
       : { ...asset };
   }, [asset, genericAsset, hasBalance, nativeCurrency]);
 
@@ -420,7 +426,7 @@ export default function ChartExpandedState({ asset }) {
           <BuyActionButton color={color} />
         </SheetActionButtonRow>
       ) : null}
-      {isL2 && (
+      {!networks && isL2 && (
         <L2Disclaimer
           assetType={assetWithPrice.type}
           colors={colors}

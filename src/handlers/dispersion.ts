@@ -1,7 +1,7 @@
 import { RainbowFetchClient } from '../rainbow-fetch';
 import { EthereumAddress, IndexToken, RainbowToken } from '@/entities';
 import UniswapAssetsCache from '@/utils/uniswapAssetsCache';
-import { logger, RainbowError } from '@/logger';
+import { logger } from '@/logger';
 
 const dispersionApi = new RainbowFetchClient({
   baseURL: 'https://metadata.p.rainbow.me',
@@ -32,21 +32,6 @@ export const getUniswapV2Tokens = async (
     });
   }
   return null;
-};
-
-export const getDPIBalance = async (): Promise<{
-  base: IndexToken;
-  underlying: IndexToken[];
-} | null> => {
-  try {
-    const res = await dispersionApi.get('/dispersion/v1/dpi');
-    return res?.data?.data ?? null;
-  } catch (e: any) {
-    logger.warn(`dispersionApi: error fetching dpi balance`, {
-      message: e.message,
-    });
-    return null;
-  }
 };
 
 export const getTrendingAddresses = async (): Promise<
