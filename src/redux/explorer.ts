@@ -27,7 +27,6 @@ import currencyTypes from '@/helpers/currencyTypes';
 import { Network } from '@/helpers/networkTypes';
 import {
   BNB_MAINNET_ADDRESS,
-  DPI_ADDRESS,
   ETH_ADDRESS,
   MATIC_MAINNET_ADDRESS,
   OP_ADDRESS,
@@ -231,7 +230,6 @@ const assetPricesSubscription = (
   const assetCodes = concat(
     tokenAddresses,
     ETH_ADDRESS,
-    DPI_ADDRESS,
     MATIC_MAINNET_ADDRESS,
     BNB_MAINNET_ADDRESS,
     OP_ADDRESS
@@ -433,7 +431,7 @@ export const explorerInit = () => async (
 
     if (!disableCharts) {
       // We need this for Uniswap Pools profit calculation
-      dispatch(emitChartsRequest([ETH_ADDRESS, DPI_ADDRESS], ChartTypes.month));
+      dispatch(emitChartsRequest([ETH_ADDRESS], ChartTypes.month));
       dispatch(
         emitChartsRequest([ETH_ADDRESS], ChartTypes.day, currencyTypes.usd)
       );

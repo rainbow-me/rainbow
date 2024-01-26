@@ -32,7 +32,6 @@ export { default as useContacts } from './useContacts';
 // @ts-expect-error ts-migrate(1205) FIXME: Re-exporting a type when the '--isolatedModules' f... Remove this comment to see the full error message
 export { default as useDimensions, DeviceDimensions } from './useDimensions';
 export { default as useDeleteWallet } from './useDeleteWallet';
-export { default as useDPI } from './useDPI';
 export { default as useEffectDebugger } from './useEffectDebugger';
 export { default as useENSLocalTransactions } from './useENSLocalTransactions';
 export { default as useENSPendingRegistrations } from './useENSPendingRegistrations';

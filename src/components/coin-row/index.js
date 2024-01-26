@@ -8,4 +8,3 @@ export { default as ListCoinRow } from './ListCoinRow';
 export { default as RequestCoinRow } from './RequestCoinRow';
 export { default as SendCoinRow } from './SendCoinRow';
 export { default as FastTransactionCoinRow } from './FastTransactionCoinRow';
-export { default as UnderlyingAssetCoinRow } from './UnderlyingAssetCoinRow';

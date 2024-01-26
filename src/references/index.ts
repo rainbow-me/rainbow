@@ -14,7 +14,6 @@ export { default as tokenGateCheckerAbi } from './token-gate-checker-abi.json';
 export { default as optimismGasOracleAbi } from './optimism-gas-oracle-abi.json';
 export { default as ethUnits } from './ethereum-units.json';
 export { default as timeUnits } from './time-units.json';
-export { DPI_ADDRESS } from './indexes';
 
 export { default as supportedNativeCurrencies } from './native-currencies.json';
 export { default as shitcoins } from './shitcoins';
