@@ -18,17 +18,16 @@ import {
   useWallets,
 } from '@/hooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { deviceUtils, ethereumUtils } from '@/utils';
+import { deviceUtils } from '@/utils';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { analyticsV2 } from '@/analytics';
-import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
+import { ETH_ADDRESS } from '@/references';
 import {
   ChartPath,
   ChartPathProvider,
 } from '@/react-native-animated-charts/src';
 import { CoinIcon } from '../coin-icon';
-import { AssetType } from '@/entities';
 import Labels from '../value-chart/ExtremeLabels';
 import showWalletErrorAlert from '@/helpers/support';
 import { IS_IOS } from '@/env';
@@ -40,6 +39,9 @@ import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { useRoute } from '@react-navigation/native';
 import * as i18n from '@/languages';
 import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
+import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
+import { getMainnetNetworkObject } from '@/networks/mainnet';
+import assetTypes from '@/entities/assetTypes';
 
 export const ETH_CARD_HEIGHT = 284.3;
 
@@ -48,7 +50,11 @@ export const EthCard = () => {
   const { colors, isDarkMode } = useTheme();
   const { navigate } = useNavigation();
   const { isDamaged } = useWallets();
-  const genericAsset = useGenericAsset(ETH_ADDRESS);
+  const { data: ethAsset } = useExternalToken({
+    address: ETH_ADDRESS,
+    chainId: getMainnetNetworkObject().id,
+    currency: nativeCurrency,
+  });
   const { loaded: accentColorLoaded } = useAccountAccentColor();
   const { name: routeName } = useRoute();
   const cardType = 'stretch';
@@ -78,17 +84,9 @@ export const EthCard = () => {
     [accountAddress, isDamaged, navigate, routeName]
   );
 
-  const assetWithPrice = useMemo(() => {
-    return {
-      ...ethereumUtils.formatGenericAsset(genericAsset, nativeCurrency),
-      address: ETH_ADDRESS,
-      symbol: ETH_SYMBOL,
-    };
-  }, [genericAsset, nativeCurrency]);
-
   const handleAssetPress = useCallback(() => {
     navigate(Routes.EXPANDED_ASSET_SHEET, {
-      asset: assetWithPrice,
+      asset: ethAsset,
       type: 'token',
     });
     analyticsV2.track(analyticsV2.event.cardPressed, {
@@ -96,41 +94,39 @@ export const EthCard = () => {
       routeName,
       cardType,
     });
-  }, [assetWithPrice, navigate, routeName]);
+  }, [ethAsset, navigate, routeName]);
 
   let colorForAsset = useColorForAsset(
     {
-      address: assetWithPrice.address,
-      mainnet_address: assetWithPrice?.mainnet_address,
-      type: assetWithPrice?.mainnet_address
-        ? AssetType.token
-        : assetWithPrice.type,
+      address: ETH_ADDRESS,
+      mainnet_address: ETH_ADDRESS,
+      type: assetTypes.token,
     },
-    assetWithPrice?.address ? undefined : colors.appleBlue
+    colors.appleBlue
   );
 
-  if (isDarkMode && assetWithPrice?.address === ETH_ADDRESS) {
+  if (isDarkMode) {
     colorForAsset = colors.whiteLabel;
   }
 
   const { throttledData } = useChartThrottledPoints({
-    asset: assetWithPrice,
+    asset: ethAsset,
   });
 
   const CHART_WIDTH = deviceUtils.dimensions.width - 80;
   const CHART_HEIGHT = 80;
 
   let isNegativePriceChange = false;
-  if (assetWithPrice.native.change[0] === '-') {
+  if (ethAsset?.native.change[0] === '-') {
     isNegativePriceChange = true;
   }
   const priceChangeDisplay = isNegativePriceChange
-    ? assetWithPrice.native.change.substring(1)
-    : assetWithPrice.native.change;
+    ? ethAsset?.native.change.substring(1)
+    : ethAsset?.native.change;
 
   const priceChangeColor = isNegativePriceChange ? colors.red : colors.green;
 
-  const loadedPrice = accentColorLoaded && assetWithPrice.native.change;
+  const loadedPrice = accentColorLoaded && ethAsset?.native.change;
   const loadedChart = throttledData?.points.length && loadedPrice;
 
   const [noChartData, setNoChartData] = useState(false);
@@ -176,16 +172,16 @@ export const EthCard = () => {
                 ) : (
                   <>
                     <CoinIcon
-                      address={assetWithPrice.address}
+                      address={ETH_ADDRESS}
                       size={20}
-                      symbol={assetWithPrice.symbol}
+                      symbol={ethAsset?.symbol}
                     />
                     <Text
                       size="17pt"
                       color={{ custom: colorForAsset }}
                       weight="heavy"
                     >
-                      {assetWithPrice.name}
+                      {ethAsset?.name}
                     </Text>
                   </>
                 )}
@@ -233,7 +229,7 @@ export const EthCard = () => {
             </Box>
           ) : (
             <Text size="26pt" color={{ custom: colorForAsset }} weight="heavy">
-              {assetWithPrice.native.price.display}
+              {ethAsset?.native.price.display}
             </Text>
           )}
         </Stack>
