@@ -290,32 +290,6 @@ const l2AddressTransactionHistoryRequest = (
 ];
 
 /**
- * Configures a chart retrieval request for assets.
- *
- * @param assetCodes The asset addresses.
- * @param currency The currency to use.
- * @param chartType The `ChartType` to use.
- * @param action The request action.
- * @returns Arguments for an `emit` function call.
- */
-const chartsRetrieval = (
-  assetCodes: string[],
-  currency: string,
-  chartType: ChartType,
-  action: SocketGetActionType = 'get'
-): SocketEmitArguments => [
-  action,
-  {
-    payload: {
-      asset_codes: assetCodes,
-      charts_type: chartType,
-      currency: toLower(currency),
-    },
-    scope: ['charts'],
-  },
-];
-
-/**
  * Emits an asset price request. The result is handled by a listener in
  * `listenOnAssetMessages`.
  *
@@ -517,11 +491,6 @@ export const emitChartsRequest = (
   const assetCodes = Array.isArray(assetAddress)
     ? assetAddress
     : [assetAddress];
-  if (!isEmpty(assetCodes)) {
-    assetsSocket?.emit(
-      ...chartsRetrieval(assetCodes, nativeCurrency, chartType)
-    );
-  }
 };
 
 /**
