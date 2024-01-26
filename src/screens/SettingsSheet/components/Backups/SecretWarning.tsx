@@ -23,7 +23,7 @@ import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { IS_ANDROID } from '@/env';
 import { TextColor } from '@/design-system/color/palettes';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { WalletBackupStatus } from '../AlreadyBackedUpView';
+
 const MIN_HEIGHT = 740;
 
 type SecretWarningPageParams = {
@@ -44,20 +44,6 @@ const SecretWarningPage = () => {
   >();
 
   const { walletId, isBackingUp, backupType, title } = params;
-
-  const walletStatus = useMemo(() => {
-    let status = null;
-    if (wallets?.[walletId]?.backedUp) {
-      if (wallets?.[walletId].backupType === WalletBackupTypes.manual) {
-        status = WalletBackupStatus.MANUAL_BACKUP;
-      } else {
-        status = WalletBackupStatus.CLOUD_BACKUP;
-      }
-    } else {
-      status = WalletBackupStatus.IMPORTED;
-    }
-    return status;
-  }, [walletId, wallets]);
 
   const isSecretPhrase = WalletTypes.mnemonic === wallets?.[walletId]?.type;
   const secretText = isSecretPhrase

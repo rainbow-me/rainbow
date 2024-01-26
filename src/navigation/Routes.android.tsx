@@ -357,10 +357,7 @@ function BSNavigator() {
         name={Routes.SETTINGS_SHEET}
         options={{
           ...bottomSheetPreset,
-          height:
-            deviceUtils.dimensions.height +
-            CUSTOM_MARGIN_TOP_ANDROID -
-            (StatusBar?.currentHeight || 0),
+          height: deviceUtils.dimensions.height - CUSTOM_MARGIN_TOP_ANDROID,
         }}
       />
       <BSStack.Screen

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Keyboard } from 'react-native';
+import { Keyboard, RegisteredStyle, TextStyle } from 'react-native';
 
 import { useTheme } from '@/theme/ThemeContext';
 import colors from '@/theme/currentColors';
@@ -608,7 +608,7 @@ export const settingsOptions = (colors: any): StackNavigationOptions => ({
   headerBackTitle: ' ',
   headerStatusBarHeight: 0,
   headerStyle: {
-    backgroundColor: ios ? colors.cardBackdrop : 'transparent',
+    backgroundColor: colors.cardBackdrop,
     elevation: 0,
     height: 60,
     shadowColor: 'transparent',

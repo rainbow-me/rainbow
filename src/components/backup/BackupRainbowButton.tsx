@@ -1,27 +1,16 @@
 import MaskedView from '@react-native-masked-view/masked-view';
-import lang from 'i18n-js';
 import React from 'react';
-import AddCashIconSource from '../../../assets/addCashIcon.png';
-import { useTheme } from '../../../theme/ThemeContext';
-import { ButtonPressAnimation } from '../../animations';
-import { RowWithMargins } from '../../layout';
-import { Text } from '../../text';
-import RainbowButtonBackground from './RainbowButtonBackground';
-import RainbowButtonTypes from './RainbowButtonTypes';
+import { useTheme } from '@/theme';
+import { ButtonPressAnimation } from '@/components/animations';
+import { RowWithMargins } from '@/components/layout';
+import { Text } from '@/components/text';
+import RainbowButtonBackground from '@/components/buttons/rainbow-button/RainbowButtonBackground';
+import RainbowButtonTypes from '@/components/buttons/rainbow-button/RainbowButtonTypes';
 import { useDimensions } from '@/hooks';
-import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
-import { position, shadow } from '@/styles';
+import { shadow } from '@/styles';
 import ShadowView from '@/react-native-shadow-stack/ShadowView';
-
-const AddCashIcon = styled(ImgixImage).attrs({
-  resizeMode: ImgixImage.resizeMode.contain,
-  source: AddCashIconSource,
-  size: 45,
-})({
-  ...position.sizeAsObject(45),
-  marginTop: 7.5,
-});
+import BackupRainbowButtonBackground from './BackupRainbowButtonBackground';
 
 const ButtonContainer = styled(MaskedView).attrs({
   pointerEvents: 'none',
@@ -37,7 +26,6 @@ const ButtonContent = styled(RowWithMargins).attrs({
   alignSelf: 'center',
   bottom: 2,
   height: '100%',
-  marginRight: ({ type }) => (type === 'addCash' ? 9 : 0),
 });
 
 const ButtonLabel = styled(Text).attrs(
@@ -89,26 +77,35 @@ const Shadow = styled(ShadowView)(
   })
 );
 
-const RainbowButton = ({
+type BackupRainbowButtonProps = {
+  disabled?: boolean;
+  height?: number;
+  label?: string;
+  onPress?: () => void;
+  strokeWidth?: number;
+  width?: number;
+  overflowMargin?: number;
+  skipTopMargin?: boolean;
+};
+
+const BackupRainbowButton = ({
   disabled,
   height = 56,
   label = 'Press me',
   onPress,
   strokeWidth = 1,
-  type,
   width,
   overflowMargin = 35,
   skipTopMargin = true,
   ...props
-}) => {
+}: BackupRainbowButtonProps) => {
   const { isDarkMode } = useTheme();
 
   const { width: deviceWidth } = useDimensions();
   const maxButtonWidth = deviceWidth - 30;
 
-  height = type === RainbowButtonTypes.small ? 46 : height;
-  strokeWidth = disabled ? 0.5 : strokeWidth;
-  width = type === RainbowButtonTypes.addCash ? 155 : width || maxButtonWidth;
+  const btnStrokeWidth = disabled ? 0.5 : strokeWidth;
+  const btnWidth = width || maxButtonWidth;
 
   const outerButtonMask = (
     <OuterButton
@@ -133,28 +130,24 @@ const RainbowButton = ({
         disabled={disabled}
         height={height}
         isDarkMode={isDarkMode}
-        strokeWidth={strokeWidth}
-        width={width}
+        strokeWidth={btnStrokeWidth}
+        width={btnWidth}
       />
       <ButtonContainer
         elevation={5}
         height={height}
         maskElement={outerButtonMask}
-        width={width}
+        width={btnWidth}
       >
-        <RainbowButtonBackground
+        <BackupRainbowButtonBackground
           disabled={disabled}
           height={height}
-          strokeWidth={strokeWidth}
-          type={type}
-          width={width}
+          strokeWidth={btnStrokeWidth}
+          width={btnWidth}
         />
-        <ButtonContent type={type}>
-          {type === RainbowButtonTypes.addCash && <AddCashIcon />}
-          <ButtonLabel disabled={disabled} isDarkMode={isDarkMode} type={type}>
-            {type === RainbowButtonTypes.addCash
-              ? lang.t('button.add_cash')
-              : label}
+        <ButtonContent>
+          <ButtonLabel disabled={disabled} isDarkMode={isDarkMode}>
+            {label}
           </ButtonLabel>
         </ButtonContent>
       </ButtonContainer>
@@ -162,4 +155,4 @@ const RainbowButton = ({
   );
 };
 
-export default RainbowButton;
+export default BackupRainbowButton;
