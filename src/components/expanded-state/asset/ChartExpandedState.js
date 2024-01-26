@@ -44,7 +44,6 @@ import {
   useChartThrottledPoints,
   useDelayedValueWithLayoutAnimation,
   useDimensions,
-  useGenericAsset,
 } from '@/hooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation';
@@ -56,6 +55,7 @@ import AvailableNetworksv2 from '@/components/expanded-state/AvailableNetworksv2
 import AvailableNetworksv1 from '@/components/expanded-state/AvailableNetworks';
 import { Box } from '@/design-system';
 import { getNetworkObj } from '@/networks';
+import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 
 const defaultCarouselHeight = 60;
 const baseHeight =
@@ -183,13 +183,18 @@ function Description({ text = '' }) {
 }
 
 export default function ChartExpandedState({ asset }) {
-  const genericAsset = useGenericAsset(asset?.address);
+  const { nativeCurrency, network: currentNetwork } = useAccountSettings();
+
+  const { data: genericAsset } = useExternalToken({
+    address: asset?.address,
+    chainId: getNetworkObj(ethereumUtils.getChainIdFromType(asset.type)).id,
+    currency: nativeCurrency,
+  });
   const {
     params: { fromDiscover = false },
   } = useRoute();
 
   const [carouselHeight, setCarouselHeight] = useState(defaultCarouselHeight);
-  const { nativeCurrency, network: currentNetwork } = useAccountSettings();
   const [additionalContentHeight, setAdditionalContentHeight] = useState(0);
 
   // If we don't have a balance for this asset
