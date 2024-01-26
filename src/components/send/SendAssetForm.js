@@ -4,7 +4,6 @@ import { KeyboardArea } from 'react-native-keyboard-area';
 import { ButtonPressAnimation } from '../animations';
 import { SendCoinRow } from '../coin-row';
 import CollectiblesSendRow from '../coin-row/CollectiblesSendRow';
-import SendSavingsCoinRow from '../coin-row/SendSavingsCoinRow';
 import { Column } from '../layout';
 import { Text } from '../text';
 import SendAssetFormCollectible from './SendAssetFormCollectible';
@@ -68,13 +67,8 @@ export default function SendAssetForm({
   const [showNativeValue, setShowNativeValue] = useState(true);
 
   const isNft = selected.type === AssetTypes.nft;
-  const isSavings = selected.type === AssetTypes.compound;
 
-  const AssetRowElement = isNft
-    ? CollectiblesSendRow
-    : isSavings
-    ? SendSavingsCoinRow
-    : SendCoinRow;
+  const AssetRowElement = isNft ? CollectiblesSendRow : SendCoinRow;
 
   const onFocusAssetInput = useCallback(() => {
     setLastFocusedInputHandle(assetInputRef);

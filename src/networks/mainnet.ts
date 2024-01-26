@@ -38,7 +38,6 @@ export const getMainnetNetworkObject = (): NetworkProperties => {
       walletconnect: true,
       swaps: true,
       nfts: true,
-      savings: true,
       pools: true,
       txs: mainnet_tx_enabled,
     },
