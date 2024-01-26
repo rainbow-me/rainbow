@@ -10,7 +10,64 @@ import { DEFAULT_CHART_TYPE } from '../../redux/charts';
 import { emitChartsRequest } from '../../redux/explorer';
 import { useNavigation } from '@/navigation';
 import chartTypes, { ChartType } from '@/helpers/chartTypes';
+import { metadataClient } from '@/graphql';
+import { useQuery } from '@tanstack/react-query';
+import { createQueryKey } from '@/react-query';
+import { getNetworkObj } from '@/networks';
+import { NetworkProperties } from '@/networks/types';
+import { Network } from '@/helpers';
 
+const chartTimes = ['hour', 'day', 'week', 'month', 'year'] as const;
+type ChartTime = typeof chartTimes[number];
+type PriceChartTimeData = { points?: [x: number, y: number][] };
+
+const getChartTimeArg = (selected: ChartTime) =>
+  chartTimes.reduce(
+    (args, time) => ({ ...args, [time]: time === selected }),
+    {} as Record<ChartTime, boolean>
+  );
+
+export type ChartData = { x: number; y: number };
+
+const fetchPriceChart = async (
+  time: ChartTime,
+  chainId: NetworkProperties['id'],
+  address: string
+) => {
+  const priceChart = await metadataClient
+    .priceChart({ address, chainId, ...getChartTimeArg(time) })
+    .then(d => d.token?.priceCharts[time] as PriceChartTimeData);
+  return priceChart?.points?.reduce((result, point) => {
+    result.push({ x: point[0], y: point[1] });
+    return result;
+  }, [] as ChartData[]);
+};
+
+export const usePriceChart = ({
+  mainnetAddress,
+  address,
+  network,
+  time,
+}: {
+  mainnetAddress?: string;
+  address: string;
+  network: Network;
+  time: ChartTime;
+}) => {
+  const chainId = getNetworkObj(network).id;
+  const mainnetChainId = getNetworkObj(Network.mainnet).id;
+  return useQuery({
+    queryFn: async () => {
+      const chart = await fetchPriceChart(time, chainId, address);
+      if (!chart && mainnetAddress)
+        return fetchPriceChart(time, mainnetChainId, mainnetAddress);
+      return chart || null;
+    },
+    queryKey: createQueryKey('price chart', { address, chainId, time }),
+    keepPreviousData: true,
+    staleTime: 1 * 60 * 1000, // 1min
+  });
+};
 const formatChartData = (chart: any) => {
   if (!chart || isEmpty(chart)) return null;
   // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'x' implicitly has an 'any' type.
