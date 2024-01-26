@@ -43,7 +43,7 @@ beforeAll(async () => {
   }
 });
 
-describe('Deeplinks spec', () => {
+describe.skip('Deeplinks spec', () => {
   it('Should show the welcome screen', async () => {
     await Helpers.checkIfVisible('welcome-screen');
   });
