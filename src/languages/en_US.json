@@ -104,7 +104,8 @@
       "backup_deleted_successfully": "Backups Deleted Successfully",
       "cloud": {
         "back_up_to_platform": "Back up to %{cloudPlatformName}",
-        "manage_platform_backups": "Manage %{cloudPlatformName} Backups",
+        "manage_platform_backups": "View %{cloudPlatformName} Backups",
+        "cloud_platform_backup_settings": "%{cloudPlatformName} Backup Settings",
         "enable_cloud_backups": "Enable Cloud Backups",
         "backup_to_cloud_now": "Back Up to %{cloudPlatformName} Now",
         "enable_cloud_backups_description": "If you prefer to back up your wallets manually, you can do so below.",

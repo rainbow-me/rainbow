@@ -21,6 +21,7 @@ import Routes from '@/navigation/routesNames';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { backupsCard } from '@/components/cards/utils/constants';
 import { useVisibleWallets } from '../../useVisibleWallets';
+import { format } from 'date-fns';
 
 export const WalletsAndBackup = () => {
   const { colors, isDarkMode } = useTheme();
@@ -340,7 +341,7 @@ export const WalletsAndBackup = () => {
                 description={
                   lastBackupDate
                     ? i18n.t(i18n.l.back_up.cloud.latest_backup, {
-                        date: `${lastBackupDate}`,
+                        date: format(lastBackupDate, "M/d/yy 'at' h:mm a"),
                       })
                     : undefined
                 }
@@ -433,7 +434,7 @@ export const WalletsAndBackup = () => {
                     />
                     <MenuItem
                       key={key}
-                      size={numAccounts > 1 ? 52 * (numAccounts / 3) : 52}
+                      size={numAccounts > 3 ? 52 * (numAccounts / 3) : 52}
                       disabled
                       titleComponent={
                         <Inline wrap verticalSpace="4px" horizontalSpace="4px">
@@ -504,7 +505,7 @@ export const WalletsAndBackup = () => {
               <Menu>
                 <MenuItem
                   hasSfSymbol
-                  leftComponent={<MenuItem.TextIcon icon="􀡜" isLink />}
+                  leftComponent={<MenuItem.TextIcon icon="􀣔" isLink />}
                   onPress={manageCloudBackups}
                   size={52}
                   titleComponent={
@@ -512,6 +513,23 @@ export const WalletsAndBackup = () => {
                       isLink
                       text={i18n.t(
                         i18n.l.back_up.cloud.manage_platform_backups,
+                        {
+                          cloudPlatformName: cloudPlatform,
+                        }
+                      )}
+                    />
+                  }
+                />
+                <MenuItem
+                  hasSfSymbol
+                  leftComponent={<MenuItem.TextIcon icon="􀍡" isLink />}
+                  onPress={manageCloudBackups}
+                  size={52}
+                  titleComponent={
+                    <MenuItem.Title
+                      isLink
+                      text={i18n.t(
+                        i18n.l.back_up.cloud.cloud_platform_backup_settings,
                         {
                           cloudPlatformName: cloudPlatform,
                         }

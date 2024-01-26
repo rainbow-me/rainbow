@@ -41,7 +41,9 @@ export function Stack({
     throw new Error(`Stack: The 'separator' prop must be a React element`);
   }
 
-  const children = flattenChildren(childrenProp);
+  const children = flattenChildren(childrenProp).filter(child =>
+    isValidElement(child)
+  );
 
   return (
     <Box
