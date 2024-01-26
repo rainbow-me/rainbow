@@ -2225,6 +2225,7 @@
               "description_android": "If you previously backed up your wallet on Google Drive, tap here to restore it.",
               "description_ios_one_wallet": "You have 1 wallet backed up",
               "description_ios_multiple_wallets": "You have %{walletCount} wallets backed up",
+              "description_with_latest_backup_date": "Latest back up %{fromNow} at %{time}",
               "title": "Restore from %{platform}",
               "no_backups": "No backups found",
               "no_google_backups": "We couldn't find any backup on Google Drive. Make sure you are logged in with the right account."
@@ -2238,12 +2239,12 @@
               "title": "Connect your hardware wallet"
             },
             "seed": {
-              "description": "Use your recovery phrase from Rainbow or another crypto wallet",
-              "title": "Restore with a recovery phrase or private key"
+              "description": "Use your Secret Phrase from Rainbow, MetaMask, or another wallet",
+              "title": "Import a Secret Phrase or Private Key"
             },
             "watch": {
-              "description": "Watch a public address or ENS name",
-              "title": "Watch an Ethereum address"
+              "description": "Watch an ENS name or a public address",
+              "title": "Watch a wallet"
             }
           },
           "first_wallet": {

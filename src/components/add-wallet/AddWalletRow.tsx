@@ -8,6 +8,9 @@ import { Icon } from '../icons';
 import ConditionalWrap from 'conditional-wrap';
 import { deviceUtils } from '@/utils';
 import { ButtonPressAnimation } from '../animations';
+import Pill from '../Pill';
+import { ImgixImage } from '../images';
+import { Source } from 'react-native-fast-image';
 
 const RainbowText = styled(GradientText).attrs(
   ({ theme: { colors } }: any) => ({
@@ -20,7 +23,7 @@ const RainbowText = styled(GradientText).attrs(
 )({});
 
 const TextIcon = styled(RNText).attrs({
-  size: 29,
+  size: 28,
   weight: 'medium',
 })({
   marginVertical: IS_ANDROID ? -10 : 0,
@@ -36,6 +39,7 @@ const CaretIcon = styled(Icon).attrs(({ color }: { color: string }) => ({
 export type AddWalletItem = {
   title: string;
   description: string;
+  descriptionColor?: string;
   icon: string;
   iconColor?: string;
   testID?: string;
@@ -51,15 +55,21 @@ export const AddWalletRow = ({
   content,
   totalHorizontalInset,
 }: AddWalletRowProps) => {
-  const { colors } = useTheme();
   const labelQuaternary = useForegroundColor('labelQuaternary');
-  const { title, description, icon, iconColor, testID, onPress } = content;
+  const {
+    title,
+    description,
+    icon,
+    descriptionColor,
+    testID,
+    onPress,
+  } = content;
 
   // device width - 2 * total horizontal inset from device boundaries - caret column width (30)
   const contentWidth =
     deviceUtils.dimensions.width - 2 * totalHorizontalInset - 30;
 
-  const shouldUseRainbowText = !iconColor && !(IS_ANDROID && IS_TEST);
+  const size = 64;
 
   return (
     <Box
@@ -73,30 +83,27 @@ export const AddWalletRow = ({
       testID={testID}
     >
       <Box width={{ custom: contentWidth }}>
-        <Stack space="12px" alignHorizontal="left">
-          <ConditionalWrap
-            condition={shouldUseRainbowText}
-            wrap={(children: React.ReactNode) => (
-              <RainbowText colors={colors}>{children}</RainbowText>
-            )}
+        <Stack space="16px" alignHorizontal="left">
+          <Box
+            as={ImgixImage}
+            borderRadius={size / 2}
+            height={{ custom: size }}
+            marginLeft={{ custom: -12 }}
+            marginRight={{ custom: -12 }}
+            marginTop={{ custom: -12 }}
+            marginBottom={{ custom: -12 }}
+            source={icon as Source}
+            width={{ custom: size }}
+            size={size}
+          />
+          <Text size="20pt" weight="heavy" color="label">
+            {title}
+          </Text>
+          <Text
+            size="15pt"
+            weight="semibold"
+            color={descriptionColor || 'labelTertiary'}
           >
-            <TextIcon color={iconColor}>{icon}</TextIcon>
-          </ConditionalWrap>
-          <ConditionalWrap
-            condition={shouldUseRainbowText}
-            wrap={(children: React.ReactNode) => (
-              <Box marginBottom={{ custom: -4 }}>
-                <RainbowText colors={colors}>
-                  <Box marginBottom={{ custom: 4 }}>{children}</Box>
-                </RainbowText>
-              </Box>
-            )}
-          >
-            <Text size="20pt" weight="bold" color="label">
-              {title}
-            </Text>
-          </ConditionalWrap>
-          <Text size="13pt" weight="semibold" color="labelTertiary">
             {description}
           </Text>
         </Stack>
