@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import useAccountSettings from './useAccountSettings';
-import { SwappableAsset } from '@/entities';
+import { AssetType, SwappableAsset } from '@/entities';
 import { Network } from '@/helpers';
 
 import { useTheme } from '@/theme';
@@ -13,8 +13,9 @@ import {
   subtract,
 } from '@/helpers/utilities';
 
-import { CrosschainQuote, Quote, SwapType } from '@rainbow-me/swaps';
-import { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
+import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
+import ethereumUtils, { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
+import { isUnwrapNative, isWrapNative } from '@/handlers/swap';
 
 export enum SwapPriceImpactType {
   none = 'none',
@@ -33,67 +34,91 @@ export default function usePriceImpactDetails(
 ) {
   const { nativeCurrency } = useAccountSettings();
   const { colors } = useTheme();
-  const nativeAsset = useNativeAssetForNetwork(currentNetwork);
 
-  useMemo;
-
-  const isNormalQuote = useMemo(
-    () => tradeDetails?.swapType === SwapType.normal,
-    [tradeDetails?.swapType]
+  const sellNetwork = (tradeDetails as CrosschainQuote)?.fromChainId
+    ? ethereumUtils.getNetworkFromChainId(
+        (tradeDetails as CrosschainQuote)?.fromChainId
+      )
+    : currentNetwork;
+  const buyNetwork = ethereumUtils.getNetworkFromType(
+    outputCurrency?.type || AssetType.token
   );
+  const sellNativeAsset = useNativeAssetForNetwork(sellNetwork);
+  const buyNativeAsset = useNativeAssetForNetwork(buyNetwork);
+
+  const isWrapOrUnwrap = useMemo(() => {
+    if (!tradeDetails) return false;
+    const chainId = ethereumUtils.getChainIdFromNetwork(buyNetwork);
+    return (
+      isWrapNative({
+        buyTokenAddress: tradeDetails?.buyTokenAddress,
+        sellTokenAddress: tradeDetails?.sellTokenAddress,
+        chainId,
+      }) ||
+      isUnwrapNative({
+        buyTokenAddress: tradeDetails?.buyTokenAddress,
+        sellTokenAddress: tradeDetails?.sellTokenAddress,
+        chainId,
+      })
+    );
+  }, [buyNetwork, tradeDetails]);
 
   const inputNativeAmount = useMemo(() => {
-    if (isNormalQuote) {
+    if (isWrapOrUnwrap) {
+      if (!tradeDetails?.sellAmount || !inputCurrency?.price?.value)
+        return null;
+
       return convertRawAmountToNativeDisplay(
-        tradeDetails?.sellAmountInEth?.toString() || '',
-        nativeAsset?.decimals || 18,
-        nativeAsset?.price?.value || '0',
+        tradeDetails?.sellAmount?.toString(),
+        inputCurrency?.decimals || 18,
+        inputCurrency?.price?.value,
         nativeCurrency
       ).amount;
     } else {
       return convertRawAmountToNativeDisplay(
-        tradeDetails?.sellAmount?.toString() || '',
-        inputCurrency?.decimals || 18,
-        inputCurrency?.price?.value || '0',
+        tradeDetails?.sellAmountInEth?.toString() || '',
+        sellNativeAsset?.decimals || 18,
+        sellNativeAsset?.price?.value || '0',
         nativeCurrency
       ).amount;
     }
   }, [
-    isNormalQuote,
-    tradeDetails?.sellAmountInEth,
+    isWrapOrUnwrap,
     tradeDetails?.sellAmount,
-    nativeAsset?.decimals,
-    nativeAsset?.price?.value,
-    nativeCurrency,
-    inputCurrency?.decimals,
+    tradeDetails?.sellAmountInEth,
     inputCurrency?.price?.value,
+    inputCurrency?.decimals,
+    nativeCurrency,
+    sellNativeAsset?.decimals,
+    sellNativeAsset?.price?.value,
   ]);
 
   const outputNativeAmount = useMemo(() => {
-    if (isNormalQuote) {
+    if (isWrapOrUnwrap) {
+      if (!tradeDetails?.buyAmount || !inputCurrency?.price?.value) return null;
       return convertRawAmountToNativeDisplay(
-        tradeDetails?.buyAmountInEth?.toString() || '',
-        nativeAsset?.decimals || 18,
-        nativeAsset?.price?.value || '0',
+        tradeDetails?.buyAmount?.toString(),
+        inputCurrency?.decimals || 18,
+        inputCurrency?.price?.value,
         nativeCurrency
       ).amount;
     } else {
       return convertRawAmountToNativeDisplay(
-        tradeDetails?.buyAmount?.toString() || '',
-        outputCurrency?.decimals || 18,
-        outputCurrency?.price?.value || '0',
+        tradeDetails?.buyAmountInEth?.toString() || '',
+        buyNativeAsset?.decimals || 18,
+        buyNativeAsset?.price?.value || '0',
         nativeCurrency
       ).amount;
     }
   }, [
-    outputCurrency?.decimals,
-    outputCurrency?.price?.value,
-    nativeCurrency,
-    isNormalQuote,
-    nativeAsset?.decimals,
-    nativeAsset?.price?.value,
+    isWrapOrUnwrap,
     tradeDetails?.buyAmount,
     tradeDetails?.buyAmountInEth,
+    inputCurrency?.price?.value,
+    inputCurrency?.decimals,
+    nativeCurrency,
+    buyNativeAsset?.decimals,
+    buyNativeAsset?.price?.value,
   ]);
 
   const { impactDisplay, priceImpact, percentDisplay } = useMemo(() => {
