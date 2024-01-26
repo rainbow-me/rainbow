@@ -18,6 +18,7 @@ export const enum RainbowPointsFlowSteps {
   Review = 3,
 
   ViewWeeklyEarnings = 4,
+  RequireWalletBalance = 5,
 }
 
 export const CHARACTER_WIDTH = 9.2725;
@@ -37,6 +38,7 @@ export const textColors = {
   gray: { text: '#94969B', shadow: 'rgba(148, 150, 155, 0.8)' },
   green: { text: '#3ECF5B', shadow: 'rgba(62, 207, 91, 0.8)' },
   white: { text: '#FFFFFF', shadow: 'rgba(255, 255, 255, 0.8)' },
+  red: { text: '#F24527', shadow: 'rgba(242, 69, 39, 0.80)' },
 };
 
 export const rainbowText = {
