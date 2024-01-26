@@ -259,6 +259,7 @@ export default function ChartExpandedState({ asset }) {
     };
   }, [assetWithPrice, isL2, asset?.address, networks]);
 
+  console.log(assetWithPrice?.uniqueId);
   const { height: screenHeight } = useDimensions();
 
   const delayedDescriptions = useDelayedValueWithLayoutAnimation(
@@ -423,7 +424,7 @@ export default function ChartExpandedState({ asset }) {
         </SheetActionButtonRow>
       ) : addCashEnabled ? (
         <SheetActionButtonRow paddingBottom={isL2 ? 19 : undefined}>
-          <BuyActionButton color={color} />
+          <BuyActionButton color={color} asset={ogAsset} />
         </SheetActionButtonRow>
       ) : null}
       {!networks && isL2 && (

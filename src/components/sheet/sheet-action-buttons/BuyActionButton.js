@@ -12,10 +12,10 @@ import {
 import Routes from '@/navigation/routesNames';
 import { useRoute } from '@react-navigation/native';
 
-function BuyActionButton({ color: givenColor, ...props }) {
+function BuyActionButton({ color: givenColor, asset, ...props }) {
   const { colors } = useTheme();
   const color = givenColor || colors.paleBlue;
-  const navigate = useExpandedStateNavigation();
+  const navigate = useExpandedStateNavigation(null, true, asset);
   const { isDamaged } = useWallets();
   const { accountAddress } = useAccountSettings();
   const { name: routeName } = useRoute();

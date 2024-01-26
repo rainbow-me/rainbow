@@ -14,7 +14,7 @@ type ExternalToken = Pick<
   Token,
   'decimals' | 'iconUrl' | 'name' | 'networks' | 'symbol' | 'colors' | 'price'
 >;
-type FormattedExternalAsset = ExternalToken & {
+export type FormattedExternalAsset = ExternalToken & {
   native: {
     change: string;
     price: {
@@ -32,7 +32,7 @@ type ExternalTokenArgs = {
 };
 
 // Query Key for Token Price
-const TokenPriceQueryKey = ({
+export const TokenPriceQueryKey = ({
   address,
   chainId,
   currency,
