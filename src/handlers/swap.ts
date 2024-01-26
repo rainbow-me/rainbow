@@ -269,6 +269,17 @@ export const isWrapNative = ({
   sellTokenAddress: string;
   buyTokenAddress: string;
 }) => {
+  console.log({
+    isWrap:
+      sellTokenAddress.toLowerCase() ===
+        ETH_ADDRESS_AGGREGATORS.toLowerCase() &&
+      buyTokenAddress.toLowerCase() === WRAPPED_ASSET[chainId].toLowerCase(),
+  });
+  return (
+    sellTokenAddress.toLowerCase() === ETH_ADDRESS_AGGREGATORS.toLowerCase() &&
+    buyTokenAddress.toLowerCase() === WRAPPED_ASSET[chainId].toLowerCase()
+  );
+};
 
 export const estimateSwapGasLimit = async ({
   chainId,
