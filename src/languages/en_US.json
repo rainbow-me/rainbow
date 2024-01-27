@@ -1333,7 +1333,8 @@
         "wallet_balance_required": "Wallet balance required",
         "require_balance_paragraph_one": "To continue, ensure you have an ETH balance on one of the following networks:",
         "require_balance_paragraph_two": "Or alternatively, a MATIC balance on Polygon or a BNB balance on BSC",
-        "fund_my_wallet": "Fund My Wallet"
+        "fund_my_wallet": "Fund My Wallet",
+        "points": "Points"
       }
     },
     "pools": {

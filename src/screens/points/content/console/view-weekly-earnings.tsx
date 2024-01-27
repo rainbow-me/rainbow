@@ -200,7 +200,7 @@ export const ViewWeeklyEarnings = () => {
               textAlign="right"
               textContent={`+ ${abbreviateNumber(
                 totalWeeklyEarnings ?? 0
-              )} Points`}
+              )} ${i18n.t(i18n.l.points.console.points)}`}
               typingSpeed={100}
             />
           </Line>
@@ -228,7 +228,7 @@ export const ViewWeeklyEarnings = () => {
               textAlign="right"
               textContent={`${(newTotalEarnings ?? 0).toLocaleString(
                 'en-US'
-              )} Points`}
+              )} ${i18n.t(i18n.l.points.console.points)}`}
               onComplete={() => {
                 const complete = setTimeout(() => {
                   setShowCloseButton(true);
