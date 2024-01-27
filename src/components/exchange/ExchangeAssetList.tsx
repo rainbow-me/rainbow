@@ -274,13 +274,11 @@ const ExchangeAssetList: ForwardRefRenderFunction<
             if (rowData.ens) {
               return itemProps.onPress(givenItem);
             }
-            const asset = store.getState().data.genericAssets?.[
-              rowData.uniqueId
-            ];
+
             if (rowData.isVerified || itemProps.showBalance) {
-              itemProps.onPress(rowData ?? asset);
+              itemProps.onPress(rowData);
             } else {
-              handleUnverifiedTokenPress(rowData || asset);
+              handleUnverifiedTokenPress(rowData);
             }
           },
           showBalance: itemProps.showBalance,

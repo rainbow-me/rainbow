@@ -13,10 +13,9 @@ import {
 import { useChartData } from '@/react-native-animated-charts/src';
 import ChartTypes from '@/helpers/chartTypes';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
-import { useAccountSettings, useBooleanState, useDimensions } from '@/hooks';
+import { useAccountSettings, useBooleanState } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { useDispatch, useSelector } from 'react-redux';
 
 const noPriceData = lang.t('expanded_state.chart.no_price_data');
 

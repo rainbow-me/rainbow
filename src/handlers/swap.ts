@@ -240,6 +240,36 @@ export const getSwapGasLimitWithFakeApproval = async (
   return getDefaultGasLimitForTrade(tradeDetails, chainId);
 };
 
+export const isUnwrapNative = ({
+  buyTokenAddress,
+  chainId,
+  sellTokenAddress,
+}: {
+  chainId: ChainId;
+  sellTokenAddress: string;
+  buyTokenAddress: string;
+}) => {
+  return (
+    sellTokenAddress.toLowerCase() === WRAPPED_ASSET[chainId].toLowerCase() &&
+    buyTokenAddress.toLowerCase() === ETH_ADDRESS_AGGREGATORS.toLowerCase()
+  );
+};
+
+export const isWrapNative = ({
+  buyTokenAddress,
+  chainId,
+  sellTokenAddress,
+}: {
+  chainId: ChainId;
+  sellTokenAddress: string;
+  buyTokenAddress: string;
+}) => {
+  return (
+    sellTokenAddress.toLowerCase() === ETH_ADDRESS_AGGREGATORS.toLowerCase() &&
+    buyTokenAddress.toLowerCase() === WRAPPED_ASSET[chainId].toLowerCase()
+  );
+};
+
 export const estimateSwapGasLimit = async ({
   chainId,
   requiresApprove,
@@ -255,12 +285,16 @@ export const estimateSwapGasLimit = async ({
     return ethereumUtils.getBasicSwapGasLimit(Number(chainId));
   }
   const { sellTokenAddress, buyTokenAddress } = tradeDetails;
-  const isWrapNativeAsset =
-    sellTokenAddress === ETH_ADDRESS_AGGREGATORS &&
-    buyTokenAddress === WRAPPED_ASSET[chainId];
-  const isUnwrapNativeAsset =
-    sellTokenAddress === WRAPPED_ASSET[chainId] &&
-    buyTokenAddress === ETH_ADDRESS_AGGREGATORS;
+  const isWrapNativeAsset = isWrapNative({
+    buyTokenAddress,
+    sellTokenAddress,
+    chainId,
+  });
+  const isUnwrapNativeAsset = isUnwrapNative({
+    buyTokenAddress,
+    sellTokenAddress,
+    chainId,
+  });
 
   // Wrap / Unwrap Eth
   if (isWrapNativeAsset || isUnwrapNativeAsset) {

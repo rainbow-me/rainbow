@@ -106,6 +106,7 @@ export function parseAddressAsset({
   return {
     ...parsedAsset,
     balance: convertRawAmountToBalance(quantity, asset),
+    type: asset.network === Network.mainnet ? AssetType.token : asset.network,
   };
 }
 

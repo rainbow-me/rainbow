@@ -174,7 +174,6 @@ const getOutputAmount = async (
   inputAmount: string | null,
   inputToken: SwappableAsset,
   outputToken: SwappableAsset | null,
-  outputPrice: string | number | null | undefined,
   slippage: number,
   source: Source,
   fromAddress: EthereumAddress,
@@ -210,15 +209,15 @@ const getOutputAmount = async (
     );
     const isCrosschainSwap = outputNetwork !== inputNetwork;
 
-    logger.info(`[getOutputAmount]: `, {
-      outputToken,
-      outputChainId,
-      outputNetwork,
-      inputToken,
-      inputChainId,
-      inputNetwork,
-      isCrosschainSwap,
-    });
+    // logger.info(`[getOutputAmount]: `, {
+    //   outputToken,
+    //   outputChainId,
+    //   outputNetwork,
+    //   inputToken,
+    //   inputChainId,
+    //   inputNetwork,
+    //   isCrosschainSwap,
+    // });
 
     const quoteSource = getSource(source);
     const quoteParams: QuoteParams = {
@@ -274,10 +273,8 @@ const getOutputAmount = async (
       tradeDetails.buyAmount.toString(),
       outputToken.decimals
     );
-    const outputAmountDisplay = updatePrecisionToDisplay(
-      outputAmount,
-      outputPrice
-    );
+
+    const outputAmountDisplay = updatePrecisionToDisplay(outputAmount);
 
     return {
       outputAmount,
@@ -330,10 +327,6 @@ export default function useSwapDerivedOutputs(type: string) {
 
   const source = useSelector((state: AppState) => state.swap.source);
 
-  const genericAssets = useSelector(
-    (state: AppState) => state.data.genericAssets
-  );
-
   const [refuel, setRefuel] = useState(false);
 
   const inputPrice = useMemo(() => {
@@ -342,10 +335,6 @@ export default function useSwapDerivedOutputs(type: string) {
     );
     return price !== 0 ? price : inputCurrency?.price?.value;
   }, [inputCurrency]);
-
-  const outputPrice =
-    genericAssets[outputCurrency?.mainnet_address || outputCurrency?.address]
-      ?.price?.value;
 
   const resetSwapInputs = useCallback(() => {
     derivedValues[SwapModalField.input] = null;
@@ -408,7 +397,6 @@ export default function useSwapDerivedOutputs(type: string) {
       inputCurrency,
       outputCurrency,
       inputPrice,
-      outputPrice,
       slippageInBips,
       source,
       refuel,
@@ -433,7 +421,6 @@ export default function useSwapDerivedOutputs(type: string) {
         independentValue,
         inputCurrency,
         outputCurrency,
-        outputPrice,
         slippagePercentage,
         source,
         accountAddress,
@@ -484,7 +471,6 @@ export default function useSwapDerivedOutputs(type: string) {
         inputAmount,
         inputCurrency,
         outputCurrency,
-        outputPrice,
         slippagePercentage,
         source,
         accountAddress,
@@ -604,7 +590,6 @@ export default function useSwapDerivedOutputs(type: string) {
     inputCurrency,
     inputPrice,
     outputCurrency,
-    outputPrice,
     resetSwapInputs,
     slippageInBips,
     source,
@@ -620,7 +605,6 @@ export default function useSwapDerivedOutputs(type: string) {
       inputCurrency,
       outputCurrency,
       inputPrice,
-      outputPrice,
       maxInputUpdate,
       slippageInBips,
       source,

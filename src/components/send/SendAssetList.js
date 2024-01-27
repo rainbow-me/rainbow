@@ -1,4 +1,3 @@
-import lang from 'i18n-js';
 import React, { Fragment } from 'react';
 import { LayoutAnimation } from 'react-native';
 import { View } from 'react-primitives';
@@ -8,21 +7,14 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 import { buildCoinsList } from '../../helpers/assets';
-import networkTypes from '../../helpers/networkTypes';
 import { deviceUtils } from '../../utils';
 import Divider, { DividerSize } from '../Divider';
 import { FlyInAnimation } from '../animations';
 import { CoinDividerOpenButton } from '../coin-divider';
-import {
-  CollectiblesSendRow,
-  SendCoinRow,
-  SendSavingsCoinRow,
-} from '../coin-row';
+import { CollectiblesSendRow, SendCoinRow } from '../coin-row';
 import { Centered } from '../layout';
-import { SavingsListHeader } from '../savings';
 import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
 import styled from '@/styled-thing';
-import { getNetworkObj } from '@/networks';
 
 const dividerMargin = 5;
 const dividerHeight = DividerSize + dividerMargin * 4;
@@ -53,7 +45,6 @@ export default class SendAssetList extends React.Component {
       nativeCurrency,
       network,
       pinnedCoins,
-      savings,
       sortedAssets,
       uniqueTokens,
     } = props;
@@ -86,15 +77,6 @@ export default class SendAssetList extends React.Component {
       this.data.push(smallBalances);
     }
 
-    if (
-      savings &&
-      savings.length > 0 &&
-      getNetworkObj(network).features.savings
-    ) {
-      this.data = this.data.concat([
-        { data: savings, name: lang.t('savings.label') },
-      ]);
-    }
     if (uniqueTokens && uniqueTokens.length > 0) {
       this.data = this.data.concat(uniqueTokens);
     }
@@ -103,7 +85,6 @@ export default class SendAssetList extends React.Component {
         return r1 !== r2;
       }).cloneWithRows(this.data),
       openCards: [],
-      openSavings: true,
       openShitcoins: false,
       visibleAssetsLength: visibleAssetsLength,
     };
@@ -125,8 +106,7 @@ export default class SendAssetList extends React.Component {
         if (i < visibleAssetsLength - 1) {
           return 'COIN_ROW';
         } else if (i === visibleAssetsLength - 1) {
-          return (savings && savings.length !== 0) ||
-            (shitcoins && shitcoins.length !== 0)
+          return shitcoins && shitcoins.length !== 0
             ? 'COIN_ROW'
             : 'COIN_ROW_LAST';
         } else if (
@@ -138,25 +118,12 @@ export default class SendAssetList extends React.Component {
             size: this.state.openShitcoins ? rowHeight * shitcoins.length : 0,
             type: 'SHITCOINS_ROW',
           };
-        } else if (
-          (i === visibleAssetsLength ||
-            (i === visibleAssetsLength + 1 &&
-              shitcoins &&
-              shitcoins.length > 0)) &&
-          savings &&
-          savings.length > 0
-        ) {
-          return {
-            size: this.state.openSavings ? rowHeight * savings.length : 0,
-            type: 'SAVINGS_ROW',
-          };
         } else {
           if (
             this.state.openCards[
               uniqueTokens[
                 i -
                   visibleAssetsLength -
-                  (savings && savings.length > 0 ? 1 : 0) -
                   (shitcoins && shitcoins.length > 0 ? 1 : 0)
               ]?.familyId
             ]
@@ -166,7 +133,6 @@ export default class SendAssetList extends React.Component {
                 uniqueTokens[
                   i -
                     visibleAssetsLength -
-                    (savings && savings.length > 0 ? 1 : 0) -
                     (shitcoins && shitcoins.length > 0 ? 1 : 0)
                 ].data.length + 1,
               type: 'COLLECTIBLE_ROW',
@@ -183,12 +149,7 @@ export default class SendAssetList extends React.Component {
         } else if (type === 'COIN_ROW_LAST') {
           dim.height = rowHeight + dividerHeight;
         } else if (type.type === 'SHITCOINS_ROW') {
-          dim.height =
-            type.size +
-            smallBalancesHeader +
-            (savings && savings.length > 0 ? 0 : dividerHeight);
-        } else if (type.type === 'SAVINGS_ROW') {
-          dim.height = type.size + familyHeaderHeight + dividerHeight;
+          dim.height = type.size + smallBalancesHeader;
         } else if (type.type === 'COLLECTIBLE_ROW') {
           dim.height = familyHeaderHeight + (type.size - 1) * familyRowHeight;
         } else if (type === 'COLLECTIBLE_ROW_CLOSED') {
@@ -212,13 +173,8 @@ export default class SendAssetList extends React.Component {
   };
 
   changeOpenTab = index => {
-    const { savings, sortedAssets, uniqueTokens } = this.props;
-    const {
-      openCards,
-      openSavings,
-      openShitcoins,
-      visibleAssetsLength,
-    } = this.state;
+    const { sortedAssets, uniqueTokens } = this.props;
+    const { openCards, openShitcoins, visibleAssetsLength } = this.state;
 
     LayoutAnimation.configureNext(
       LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
@@ -241,14 +197,10 @@ export default class SendAssetList extends React.Component {
             (openShitcoins
               ? (sortedAssets.length - visibleAssetsLength) * rowHeight
               : 0);
-      const savingsHeight =
-        savings?.length > 0
-          ? familyHeaderHeight + (openSavings ? savings.length * rowHeight : 0)
-          : 0;
+
       const heightBelow =
         visibleAssetsLength * rowHeight +
         smallBalancesheight +
-        savingsHeight +
         familiesHeight +
         dividerHeight;
       const renderSize =
@@ -277,13 +229,6 @@ export default class SendAssetList extends React.Component {
     }
   };
 
-  changeOpenSavings = () => {
-    LayoutAnimation.configureNext(
-      LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
-    );
-    this.setState(prevState => ({ openSavings: !prevState.openSavings }));
-  };
-
   changeOpenShitcoins = () => {
     LayoutAnimation.configureNext(
       LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
@@ -310,16 +255,6 @@ export default class SendAssetList extends React.Component {
       testID="send-asset"
     />
   );
-
-  mapSavings = savings =>
-    savings.map(token => (
-      <SendSavingsCoinRow
-        item={token}
-        key={token.address}
-        onPress={() => this.props.onSelectAsset(token)}
-        testID="send-savings"
-      />
-    ));
 
   mapShitcoins = shitcoins =>
     shitcoins.map(token => (
@@ -364,22 +299,7 @@ export default class SendAssetList extends React.Component {
     );
   };
 
-  savingsRenderItem = item => {
-    const { openSavings } = this.state;
-    return (
-      <View marginTop={dividerMargin}>
-        <SavingsListHeader
-          isOpen={openSavings}
-          onPress={this.changeOpenSavings}
-        />
-        {openSavings && this.mapSavings(item.data)}
-        <SendAssetListDivider />
-      </View>
-    );
-  };
-
   shitcoinsRenderItem = item => {
-    const { savings } = this.props;
     const { openShitcoins } = this.state;
     return (
       <View>
@@ -394,7 +314,6 @@ export default class SendAssetList extends React.Component {
             {this.mapShitcoins(item.assets)}
           </View>
         )}
-        {savings && savings.length > 0 ? null : <SendAssetListDivider />}
       </View>
     );
   };
@@ -406,8 +325,6 @@ export default class SendAssetList extends React.Component {
       return this.balancesRenderLastItem(data);
     } else if (type.type === 'SHITCOINS_ROW') {
       return this.shitcoinsRenderItem(data);
-    } else if (type.type === 'SAVINGS_ROW') {
-      return this.savingsRenderItem(data);
     } else if (type.type === 'COLLECTIBLE_ROW') {
       return this.collectiblesRenderItem(data);
     } else if (type === 'COLLECTIBLE_ROW_CLOSED') {

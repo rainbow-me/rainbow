@@ -15,6 +15,24 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.14] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.14)
+
+### Added
+
+- Included new contract address to unlock Smol icon (#5311)
+- Backend driven cards (#5198)
+- Points notifications toggle opt-out (#5329)
+
+### Changed
+
+- Upgraded camera package (#5178)
+- Bumped fastlane (#5331)
+
+### Fixed
+
+- Bumped react-native-linear-gradient (#5328)
+- Fixes to rank cards in points tab (#5332)
+
 ## [1.9.13] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.13)
 
 ### Added
