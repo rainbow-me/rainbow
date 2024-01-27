@@ -10,7 +10,6 @@ import {
   abbreviateEnsForDisplay,
   address as formatAddress,
 } from '@/utils/abbreviations';
-import { usePointsProfileContext } from '../../contexts/PointsProfileContext';
 import { NeonButton } from '../../components/NeonButton';
 import LineBreak from '../../components/LineBreak';
 import { Bleed, Box, Stack } from '@/design-system';
@@ -18,7 +17,6 @@ import { useNavigation } from '@/navigation';
 import { analyticsV2 } from '@/analytics';
 
 export const Review = () => {
-  const { shareBonusPoints } = usePointsProfileContext();
   const { accountENS, accountAddress } = useAccountProfile();
   const { goBack } = useNavigation();
 
@@ -29,7 +27,7 @@ export const Review = () => {
 
   return (
     <Box height="full" justifyContent="space-between">
-      <Stack separator={<LineBreak lines={2} />}>
+      <Stack separator={<LineBreak lines={3} />}>
         <Paragraph>
           <Line>
             <AnimatedText
@@ -46,65 +44,48 @@ export const Review = () => {
           </Line>
           <AnimatedText
             color={textColors.green}
+            delayStart={500}
             textContent={`> ${i18n.t(
               i18n.l.points.console.registration_complete
             )}`}
           />
         </Paragraph>
-        {shareBonusPoints ? (
-          <Line alignHorizontal="justify">
+        <Stack separator={<LineBreak lines={2} />}>
+          <Paragraph>
             <AnimatedText
-              color={textColors.account}
-              delayStart={1000}
-              enableHapticTyping
-              textContent={`${i18n.t(i18n.l.points.console.share_bonus)}:`}
+              delayStart={500}
+              color={textColors.gray}
+              textContent={i18n.t(
+                i18n.l.points.console.share_bonus_paragraph_one
+              )}
+              multiline
+              weight="normal"
             />
             <AnimatedText
-              color={textColors.account}
-              delayStart={1000}
-              enableHapticTyping
-              typingSpeed={100}
-              textAlign="right"
-              textContent={`+ ${shareBonusPoints}`}
+              color={textColors.gray}
+              delayStart={500}
+              textContent={i18n.t(
+                i18n.l.points.console.share_bonus_paragraph_two
+              )}
+              multiline
+              weight="normal"
             />
-          </Line>
-        ) : (
-          <></>
-        )}
-        <Paragraph>
-          <AnimatedText
-            delayStart={500}
-            color={textColors.gray}
-            textContent={i18n.t(
-              i18n.l.points.console.share_bonus_paragraph_one
-            )}
-            multiline
-            weight="normal"
-          />
-          <AnimatedText
-            color={textColors.gray}
-            delayStart={500}
-            textContent={i18n.t(
-              i18n.l.points.console.share_bonus_paragraph_two
-            )}
-            multiline
-            weight="normal"
-          />
-          <AnimatedText
-            color={textColors.gray}
-            onComplete={() => {
-              const complete = setTimeout(() => {
-                setShowDoneButton(true);
-              }, 500);
-              return () => clearTimeout(complete);
-            }}
-            textContent={i18n.t(
-              i18n.l.points.console.share_bonus_paragraph_three
-            )}
-            multiline
-            weight="normal"
-          />
-        </Paragraph>
+            <AnimatedText
+              color={textColors.gray}
+              onComplete={() => {
+                const complete = setTimeout(() => {
+                  setShowDoneButton(true);
+                }, 500);
+                return () => clearTimeout(complete);
+              }}
+              textContent={i18n.t(
+                i18n.l.points.console.share_bonus_paragraph_three
+              )}
+              multiline
+              weight="normal"
+            />
+          </Paragraph>
+        </Stack>
       </Stack>
       <AnimatePresence condition={showDoneButton} duration={300}>
         <Bleed horizontal={{ custom: 14 }}>

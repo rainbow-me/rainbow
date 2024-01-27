@@ -72,7 +72,7 @@ export const ViewWeeklyEarnings = () => {
 
   return (
     <Box height="full" justifyContent="space-between">
-      <Stack separator={<LineBreak lines={2} />}>
+      <Stack separator={<LineBreak lines={3} />}>
         <Paragraph>
           <Line>
             <AnimatedText
@@ -89,6 +89,7 @@ export const ViewWeeklyEarnings = () => {
           </Line>
           <AnimatedText
             color={textColors.gray}
+            delayStart={500}
             textContent={`> ${i18n.t(
               i18n.l.points.console.view_weekly_earnings_week_of,
               {
@@ -183,8 +184,6 @@ export const ViewWeeklyEarnings = () => {
               typingSpeed={100}
             />
           </Line> */}
-        </Stack>
-        <Paragraph gap={45}>
           <Line alignHorizontal="justify">
             <AnimatedText
               color={textColors.gray}
@@ -205,6 +204,8 @@ export const ViewWeeklyEarnings = () => {
               typingSpeed={100}
             />
           </Line>
+        </Stack>
+        <Stack separator={<LineBreak lines={2} />}>
           <AnimatedText
             color={textColors.gray}
             delayStart={1000}
@@ -212,8 +213,6 @@ export const ViewWeeklyEarnings = () => {
               i18n.l.points.console.view_weekly_earnings_counted
             )}`}
           />
-        </Paragraph>
-        <Paragraph gap={30}>
           <Line alignHorizontal="justify">
             <AnimatedText
               color={textColors.white}
@@ -239,7 +238,7 @@ export const ViewWeeklyEarnings = () => {
               typingSpeed={100}
             />
           </Line>
-        </Paragraph>
+        </Stack>
       </Stack>
       <AnimatePresence condition={showCloseButton} duration={300}>
         <Bleed horizontal={{ custom: 14 }}>

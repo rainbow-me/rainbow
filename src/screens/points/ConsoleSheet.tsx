@@ -36,7 +36,6 @@ export const ConsoleSheet = () => {
     setProfile,
     setAnimationKey,
     setStep,
-    setShareBonusPoints,
     setIntent,
     setDeeplinked,
   } = usePointsProfileContext();
@@ -55,7 +54,7 @@ export const ConsoleSheet = () => {
   ]);
 
   useEffect(() => {
-    if (viewWeeklyEarnings) {
+    if (true) {
       setStep(RainbowPointsFlowSteps.ViewWeeklyEarnings);
       return;
     }
@@ -63,16 +62,8 @@ export const ConsoleSheet = () => {
     setProfile(undefined);
     setAnimationKey(0);
     setStep(RainbowPointsFlowSteps.Initialize);
-    setShareBonusPoints(0);
     setIntent(undefined);
-  }, [
-    viewWeeklyEarnings,
-    setProfile,
-    setAnimationKey,
-    setStep,
-    setShareBonusPoints,
-    setIntent,
-  ]);
+  }, [viewWeeklyEarnings, setProfile, setAnimationKey, setStep, setIntent]);
 
   useFocusEffect(
     useCallback(() => {
