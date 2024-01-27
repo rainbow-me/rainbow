@@ -54,7 +54,7 @@ export const ConsoleSheet = () => {
   ]);
 
   useEffect(() => {
-    if (true) {
+    if (viewWeeklyEarnings) {
       setStep(RainbowPointsFlowSteps.ViewWeeklyEarnings);
       return;
     }
