@@ -21,6 +21,7 @@ import { abbreviateNumber } from '@/helpers/utilities';
 
 export const ViewWeeklyEarnings = () => {
   const [showCloseButton, setShowCloseButton] = useState(false);
+  const [isCalculationComplete, setIsCalculationComplete] = useState(false);
 
   const { goBack } = useNavigation();
   const { accountENS, accountAddress } = useAccountProfile();
@@ -79,6 +80,7 @@ export const ViewWeeklyEarnings = () => {
               delayStart={500}
               color={textColors.gray}
               textContent={`${i18n.t(i18n.l.points.console.account)}:`}
+              weight="normal"
             />
             <AnimatedText
               enableHapticTyping
@@ -90,6 +92,7 @@ export const ViewWeeklyEarnings = () => {
           <AnimatedText
             color={textColors.gray}
             delayStart={500}
+            weight="normal"
             textContent={`> ${i18n.t(
               i18n.l.points.console.view_weekly_earnings_week_of,
               {
@@ -102,14 +105,17 @@ export const ViewWeeklyEarnings = () => {
             <AnimatedText
               color={textColors.gray}
               delayStart={1000}
+              weight="normal"
               textContent={`> ${i18n.t(
                 i18n.l.points.console.view_weekly_earnings_title
               )}`}
             />
             <AnimatedText
               color={textColors.gray}
+              repeat={!isCalculationComplete}
               textContent="..."
               typingSpeed={500}
+              weight="normal"
             />
           </Line>
         </Paragraph>
@@ -188,6 +194,7 @@ export const ViewWeeklyEarnings = () => {
             <AnimatedText
               color={textColors.gray}
               delayStart={1000}
+              weight="normal"
               enableHapticTyping
               textContent={`${i18n.t(
                 i18n.l.points.console.view_weekly_earnings_total_earnings
@@ -198,6 +205,12 @@ export const ViewWeeklyEarnings = () => {
               delayStart={1000}
               enableHapticTyping
               textAlign="right"
+              onComplete={() => {
+                const complete = setTimeout(() => {
+                  setIsCalculationComplete(true);
+                }, 500);
+                return () => clearTimeout(complete);
+              }}
               textContent={`+ ${abbreviateNumber(
                 totalWeeklyEarnings ?? 0
               )} ${i18n.t(i18n.l.points.console.points)}`}
@@ -209,6 +222,7 @@ export const ViewWeeklyEarnings = () => {
           <AnimatedText
             color={textColors.gray}
             delayStart={1000}
+            weight="normal"
             textContent={`> ${i18n.t(
               i18n.l.points.console.view_weekly_earnings_counted
             )}`}

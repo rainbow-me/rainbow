@@ -48,6 +48,7 @@ export const Share = () => {
           <AnimatedText
             color={textColors.gray}
             delayStart={500}
+            weight="normal"
             textContent={`> ${i18n.t(
               i18n.l.points.console.referral_link_is_ready
             )}`}
@@ -56,7 +57,6 @@ export const Share = () => {
         <AnimatedText
           color={textColors.account}
           delayStart={1000}
-          weight="normal"
           multiline
           textContent={i18n.t(i18n.l.points.console.referral_link_bonus_text)}
         />
@@ -69,7 +69,6 @@ export const Share = () => {
             }, 500);
             return () => clearTimeout(complete);
           }}
-          weight="normal"
           multiline
           textContent={i18n.t(
             i18n.l.points.console.referral_link_bonus_text_extended

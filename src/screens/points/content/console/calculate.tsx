@@ -66,6 +66,7 @@ export const Calculate = () => {
             <AnimatedText
               color={textColors.gray}
               delayStart={500}
+              weight="normal"
               textContent={`> ${i18n.t(
                 i18n.l.points.console.calculating_points
               )}`}
