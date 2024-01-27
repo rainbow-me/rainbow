@@ -26,6 +26,7 @@ import Routes from '@/navigation/routesNames';
 import { showActionSheetWithOptions } from '@/utils';
 import useAccountAsset from './useAccountAsset';
 import { ETH_ADDRESS } from '@/references';
+import { isZero } from '@/helpers/utilities';
 import { IS_IOS } from '@/env';
 import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
 
@@ -46,7 +47,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
     accountENS,
   } = useAccountProfile();
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const accountEth = useAccountAsset(ETH_ADDRESS);
+  const accountAsset = useAccountAsset(ETH_ADDRESS);
 
   const profileEnabled = Boolean(accountENS);
 
@@ -171,7 +172,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   const isReadOnly = isReadOnlyWallet && !enableActionsOnReadOnlyWallet;
 
   const isENSProfile = profilesEnabled && profileEnabled && isOwner;
-  const isZeroETH = !accountEth;
+  const isZeroETH = isZero(accountAsset?.balance?.amount);
 
   const callback = useCallback(
     async (buttonIndex: number) => {
