@@ -479,3 +479,27 @@ query externalToken($address: String!, $chainId: Int!, $currency: String) {
     symbol
   }
 }
+
+query tokenMetadata($address: String!, $chainId: Int!, $currency: String) {
+  token(address: $address, chainID: $chainId, currency: $currency) {
+    circulatingSupply
+    colors {
+      ...TokenColorsFragment
+    }
+    description
+    fullyDilutedValuation
+    iconUrl
+    links {
+      ...TokenLinksFragment
+    }
+    marketCap
+    name
+    networks
+    price {
+      relativeChange24h
+      value
+    }
+    totalSupply
+    volume1d
+  }
+}

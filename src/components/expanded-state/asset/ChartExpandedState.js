@@ -56,6 +56,8 @@ import AvailableNetworksv1 from '@/components/expanded-state/AvailableNetworks';
 import { Box } from '@/design-system';
 import { getNetworkObj } from '@/networks';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
+import { bigNumberFormat } from '@/helpers/bigNumberFormat';
+import { greaterThanOrEqualTo } from '@/helpers/utilities';
 
 const defaultCarouselHeight = 60;
 const baseHeight =
@@ -224,29 +226,29 @@ export default function ChartExpandedState({ asset }) {
   ]);
   const isTestnet = isTestnetNetwork(currentNetwork);
 
-  const {
-    description,
-    marketCap,
-    totalLiquidity,
-    totalVolume,
-    loading: additionalAssetDataLoading,
-    links,
-    networks,
-  } = useAdditionalAssetData(
+  console.log(
     asset?.address,
-    assetWithPrice?.price?.value,
-    ethereumUtils.getChainIdFromNetwork(assetWithPrice?.type)
+    ethereumUtils.getNetworkFromType(assetWithPrice.type),
+    nativeCurrency
   );
+  const {
+    data,
+    isLoading: additionalAssetDataLoading,
+  } = useAdditionalAssetData({
+    address: asset?.address,
+    network: ethereumUtils.getNetworkFromType(assetWithPrice.type),
+    currency: nativeCurrency,
+  });
 
   // This one includes the original l2 address if exists
   const ogAsset = useMemo(() => {
-    if (networks) {
+    if (data?.networks) {
       const mappedNetworks = {};
-      Object.keys(networks).forEach(
+      Object.keys(data?.networks).forEach(
         chainId =>
           (mappedNetworks[
             ethereumUtils.getNetworkFromChainId(Number(chainId))
-          ] = networks[chainId])
+          ] = data?.networks[chainId])
       );
       assetWithPrice.implementations = mappedNetworks;
     }
@@ -257,17 +259,15 @@ export default function ChartExpandedState({ asset }) {
         ? assetWithPrice.l2Address || asset?.address
         : assetWithPrice.address,
     };
-  }, [assetWithPrice, isL2, asset?.address, networks]);
+  }, [assetWithPrice, isL2, asset?.address, data?.networks]);
 
   const { height: screenHeight } = useDimensions();
 
   const delayedDescriptions = useDelayedValueWithLayoutAnimation(
-    description?.replace(/\s+/g, '')
+    data?.description?.replace(/\s+/g, '')
   );
 
-  const scrollableContentHeight =
-    !!totalVolume || !!marketCap || !!totalLiquidity ? 68 : 0;
-
+  const scrollableContentHeight = true;
   const {
     chart,
     chartData,
@@ -345,6 +345,20 @@ export default function ChartExpandedState({ asset }) {
     swagg_enabled && getNetworkObj(assetNetwork).features.swaps;
   const addCashEnabled = f2c_enabled;
 
+  const format = useCallback(
+    value => {
+      const test = bigNumberFormat(
+        value,
+        nativeCurrency,
+        greaterThanOrEqualTo(value, 10000)
+      );
+      console.log(test);
+      return test;
+    },
+    [nativeCurrency]
+  );
+
+  console.log(data);
   return (
     <SlackSheet
       additionalTopPadding={android}
@@ -426,7 +440,7 @@ export default function ChartExpandedState({ asset }) {
           <BuyActionButton color={color} asset={ogAsset} />
         </SheetActionButtonRow>
       ) : null}
-      {!networks && isL2 && (
+      {!data?.networks && isL2 && (
         <L2Disclaimer
           assetType={assetWithPrice.type}
           colors={colors}
@@ -434,14 +448,14 @@ export default function ChartExpandedState({ asset }) {
           symbol={assetWithPrice.symbol}
         />
       )}
-      {networks && !hasBalance && (
+      {data?.networks && !hasBalance && (
         <Box paddingBottom={{ custom: 27 }}>
-          <AvailableNetworks asset={assetWithPrice} networks={networks} />
+          <AvailableNetworks asset={assetWithPrice} networks={data?.networks} />
         </Box>
       )}
       <CarouselWrapper
         isAnyItemLoading={additionalAssetDataLoading}
-        isAnyItemVisible={!!(totalVolume || totalLiquidity || marketCap)}
+        isAnyItemVisible={!!(data?.volume1d || data?.marketCap)}
         setCarouselHeight={setCarouselHeight}
       >
         <Carousel>
@@ -451,7 +465,7 @@ export default function ChartExpandedState({ asset }) {
             title={lang.t('expanded_state.asset.volume_24_hours')}
             weight="bold"
           >
-            {totalVolume}
+            {format(data?.volume1d)}
           </CarouselItem>
           <CarouselItem
             loading={additionalAssetDataLoading}
@@ -459,14 +473,14 @@ export default function ChartExpandedState({ asset }) {
             title={lang.t('expanded_state.asset.uniswap_liquidity')}
             weight="bold"
           >
-            {totalLiquidity}
+            {data?.totalLiquidity}
           </CarouselItem>
           <CarouselItem
             loading={additionalAssetDataLoading}
             title={lang.t('expanded_state.asset.market_cap')}
             weight="bold"
           >
-            {marketCap}
+            {format(data?.marketCap)}
           </CarouselItem>
         </Carousel>
         <EdgeFade />
@@ -481,21 +495,21 @@ export default function ChartExpandedState({ asset }) {
           layout?.();
         }}
       >
-        {!!delayedDescriptions && (
+        {data?.description && (
           <ExpandedStateSection
             isL2
             title={lang.t('expanded_state.asset.about_asset', {
               assetName: asset?.name,
             })}
           >
-            <Description text={description || delayedDescriptions} />
+            <Description text={data?.description || delayedDescriptions} />
           </ExpandedStateSection>
         )}
         <SocialLinks
           address={ogAsset.address}
           color={color}
           isNativeAsset={assetWithPrice?.isNativeAsset}
-          links={links}
+          links={data?.links}
           marginTop={!delayedDescriptions && 19}
           type={asset?.type}
         />
