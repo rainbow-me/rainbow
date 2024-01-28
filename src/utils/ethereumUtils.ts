@@ -70,14 +70,12 @@ import Routes from '@/navigation/routesNames';
 import { logger, RainbowError } from '@/logger';
 import { IS_IOS } from '@/env';
 import { RainbowNetworks, getNetworkObj } from '@/networks';
-import { Token } from '@/graphql/__generated__/metadata';
 import {
   ExternalTokenQueryKey,
   FormattedExternalAsset,
   fetchExternalToken,
   useExternalToken,
 } from '@/resources/assets/externalAssetsQuery';
-import { getMainnetNetworkObject } from '@/networks/mainnet';
 
 // TODO: https://linear.app/rainbow/issue/APP-631/remove-networks-from-assettype
 const getNetworkNativeAsset = (
@@ -107,11 +105,10 @@ export const getNativeAssetForNetwork = async (
     const mainnetAddress =
       getNetworkObj(network)?.nativeCurrency?.mainnetAddress || ETH_ADDRESS;
 
-    const chainId = getNetworkObj(network).id;
     const externalAsset = await queryClient.fetchQuery(
-      ExternalTokenQueryKey({ address, chainId, currency: nativeCurrency }),
+      ExternalTokenQueryKey({ address, network, currency: nativeCurrency }),
       async () =>
-        fetchExternalToken({ address, chainId, currency: nativeCurrency }),
+        fetchExternalToken({ address, network, currency: nativeCurrency }),
       {
         staleTime: 60000,
       }
@@ -182,17 +179,20 @@ const getUserAssetFromCache = (uniqueId: string) => {
 const getExternalAssetFromCache = (uniqueId: string) => {
   const { nativeCurrency } = store.getState().settings;
   const { network, address } = getAddressAndNetworkFromUniqueId(uniqueId);
-  const chainId = getNetworkObj(network).id;
 
-  const cachedExternalAsset = queryClient.getQueryData<FormattedExternalAsset>(
-    ExternalTokenQueryKey({
-      address,
-      currency: nativeCurrency,
-      chainId,
-    })
-  );
+  try {
+    const cachedExternalAsset = queryClient.getQueryData<FormattedExternalAsset>(
+      ExternalTokenQueryKey({
+        address,
+        currency: nativeCurrency,
+        network,
+      })
+    );
 
-  return cachedExternalAsset;
+    return cachedExternalAsset;
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 const getAssetFromAllAssets = (uniqueId: EthereumAddress | undefined) => {
@@ -223,7 +223,7 @@ export const useNativeAssetForNetwork = (network: Network) => {
 
   const { data: nativeAsset } = useExternalToken({
     address,
-    chainId: getMainnetNetworkObject().id,
+    network: Network.mainnet,
     currency: nativeCurrency,
   });
 

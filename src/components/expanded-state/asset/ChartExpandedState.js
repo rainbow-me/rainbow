@@ -47,7 +47,7 @@ import {
 } from '@/hooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation';
-import { DOG_ADDRESS, ETH_ADDRESS } from '@/references';
+import { ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { ethereumUtils, safeAreaInsetValues } from '@/utils';
@@ -187,7 +187,7 @@ export default function ChartExpandedState({ asset }) {
 
   const { data: genericAsset } = useExternalToken({
     address: asset?.address,
-    chainId: getNetworkObj(ethereumUtils.getChainIdFromType(asset.type)).id,
+    network: ethereumUtils.getNetworkFromType(asset.type),
     currency: nativeCurrency,
   });
   const {
@@ -206,13 +206,13 @@ export default function ChartExpandedState({ asset }) {
       : genericAsset
       ? asset?.networks
         ? {
-            ...ethereumUtils.formatGenericAsset(genericAsset, nativeCurrency),
+            genericAsset,
             type: asset.type,
             colors: asset?.colors,
           }
-        : ethereumUtils.formatGenericAsset(genericAsset, nativeCurrency)
+        : genericAsset
       : { ...asset };
-  }, [asset, genericAsset, hasBalance, nativeCurrency]);
+  }, [asset, genericAsset, hasBalance]);
 
   if (assetWithPrice?.mainnet_address) {
     assetWithPrice.l2Address = asset?.address;
@@ -259,7 +259,6 @@ export default function ChartExpandedState({ asset }) {
     };
   }, [assetWithPrice, isL2, asset?.address, networks]);
 
-  console.log(assetWithPrice?.uniqueId);
   const { height: screenHeight } = useDimensions();
 
   const delayedDescriptions = useDelayedValueWithLayoutAnimation(

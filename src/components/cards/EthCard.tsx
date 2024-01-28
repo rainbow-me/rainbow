@@ -7,14 +7,13 @@ import {
   Bleed,
 } from '@/design-system';
 import { useTheme } from '@/theme';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { GenericCard } from './GenericCard';
 import { ButtonPressAnimation } from '../animations';
 import {
   useAccountSettings,
   useChartThrottledPoints,
   useColorForAsset,
-  useGenericAsset,
   useWallets,
 } from '@/hooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
@@ -40,19 +39,19 @@ import { useRoute } from '@react-navigation/native';
 import * as i18n from '@/languages';
 import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
-import { getMainnetNetworkObject } from '@/networks/mainnet';
 import assetTypes from '@/entities/assetTypes';
+import { Network } from '@/networks/types';
 
 export const ETH_CARD_HEIGHT = 284.3;
 
 export const EthCard = () => {
-  const { accountAddress, nativeCurrency } = useAccountSettings();
+  const { nativeCurrency } = useAccountSettings();
   const { colors, isDarkMode } = useTheme();
   const { navigate } = useNavigation();
   const { isDamaged } = useWallets();
   const { data: ethAsset } = useExternalToken({
     address: ETH_ADDRESS,
-    chainId: getMainnetNetworkObject().id,
+    network: Network.mainnet,
     currency: nativeCurrency,
   });
   const { loaded: accentColorLoaded } = useAccountAccentColor();
@@ -81,7 +80,7 @@ export const EthCard = () => {
         routeName,
       });
     },
-    [accountAddress, isDamaged, navigate, routeName]
+    [isDamaged, navigate, routeName]
   );
 
   const handleAssetPress = useCallback(() => {

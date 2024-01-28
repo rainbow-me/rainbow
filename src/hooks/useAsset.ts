@@ -20,10 +20,9 @@ export default function useAsset({
   );
   const uniqueId = getUniqueId(address, network);
   const accountAsset = useAccountAsset(uniqueId);
-  const chainId = ethereumUtils.getChainIdFromNetwork(network);
-  const externalAsset = useExternalToken({
+  const { data: externalAsset } = useExternalToken({
     address,
-    chainId,
+    network,
     currency: nativeCurrency,
   });
 

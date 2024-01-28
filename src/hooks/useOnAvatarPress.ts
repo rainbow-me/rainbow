@@ -172,7 +172,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   const isReadOnly = isReadOnlyWallet && !enableActionsOnReadOnlyWallet;
 
   const isENSProfile = profilesEnabled && profileEnabled && isOwner;
-  const isZeroETH = isZero(accountAsset.balance.amount);
+  const isZeroETH = isZero(accountAsset?.balance?.amount);
 
   const callback = useCallback(
     async (buttonIndex: number) => {

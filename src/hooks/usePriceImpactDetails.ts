@@ -65,8 +65,9 @@ export default function usePriceImpactDetails(
 
   const inputNativeAmount = useMemo(() => {
     if (isWrapOrUnwrap) {
-      if (!tradeDetails?.sellAmount || !inputCurrency?.price?.value)
-        return null;
+      if (!tradeDetails?.sellAmount || !inputCurrency?.price?.value) {
+        return '';
+      }
 
       return convertRawAmountToNativeDisplay(
         tradeDetails?.sellAmount?.toString(),
@@ -95,7 +96,9 @@ export default function usePriceImpactDetails(
 
   const outputNativeAmount = useMemo(() => {
     if (isWrapOrUnwrap) {
-      if (!tradeDetails?.buyAmount || !inputCurrency?.price?.value) return null;
+      if (!tradeDetails?.buyAmount || !inputCurrency?.price?.value) {
+        return '';
+      }
       return convertRawAmountToNativeDisplay(
         tradeDetails?.buyAmount?.toString(),
         inputCurrency?.decimals || 18,

@@ -40,16 +40,15 @@ export default React.memo(function ExchangeTokenRow({
   },
 }: ExchangeTokenRowProps) {
   const { width: deviceWidth } = useDimensions();
-  const item = useAsset({
-    uniqueId,
-    mainnet_address,
-    symbol,
-    type,
-    address,
-    name,
-    decimals,
-  });
+
   const network = ethereumUtils.getNetworkFromType(type) ?? Network.mainnet;
+
+  // ideally we pass all info in upfront and dont need to call here;
+  const item = useAsset({
+    address,
+    network,
+  });
+
   const rowTestID = `${testID}-exchange-coin-row-${
     symbol ?? item?.symbol ?? ''
   }-${type || 'token'}`;
