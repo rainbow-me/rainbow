@@ -226,11 +226,6 @@ export default function ChartExpandedState({ asset }) {
   ]);
   const isTestnet = isTestnetNetwork(currentNetwork);
 
-  console.log(
-    asset?.address,
-    ethereumUtils.getNetworkFromType(assetWithPrice.type),
-    nativeCurrency
-  );
   const {
     data,
     isLoading: additionalAssetDataLoading,
@@ -352,13 +347,12 @@ export default function ChartExpandedState({ asset }) {
         nativeCurrency,
         greaterThanOrEqualTo(value, 10000)
       );
-      console.log(test);
+
       return test;
     },
     [nativeCurrency]
   );
 
-  console.log(data);
   return (
     <SlackSheet
       additionalTopPadding={android}

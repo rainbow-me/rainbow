@@ -42,7 +42,6 @@ async function getAdditionalAssetData({
   network,
   currency,
 }: AdditionalAssetDataArgs): Promise<TokenMetadata | null> {
-  console.log('fetching');
   const chainId = ethereumUtils.getChainIdFromNetwork(network);
   const data = await metadataClient.tokenMetadata({
     address,
@@ -51,10 +50,7 @@ async function getAdditionalAssetData({
   });
 
   if (data.token) {
-    console.log({ res: data.token });
     return data.token as TokenMetadata;
-  } else {
-    console.log(data);
   }
   return null;
 }
