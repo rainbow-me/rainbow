@@ -91,6 +91,12 @@ export default async function handleDeeplink(
        * Universal links from WC e.g. when initiating a pairing on mobile, you
        * tap "Rainbow" in Web3Modal and it hits this handler
        */
+      case 'ethereum': {
+         logger.info(`handleDeeplink: ethereum`);
+         const normalizedUrl = url.replace('rainbow://ethereum', 'ethereum:/');
+         ethereumUtils.parseEthereumUrl(normalizedUrl);
+         break; 
+      }
       case 'wc': {
         logger.info(`handleDeeplink: wc`);
         handleWalletConnect(query.uri, query.connector);
