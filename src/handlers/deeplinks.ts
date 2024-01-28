@@ -88,8 +88,7 @@ export default async function handleDeeplink(
 
     switch (action) {
       /**
-       * Universal links from WC e.g. when initiating a pairing on mobile, you
-       * tap "Rainbow" in Web3Modal and it hits this handler
+       * Same as ethereum: but using rainbow:// prefix to avoid wallet collision
        */
       case 'ethereum': {
          logger.info(`handleDeeplink: ethereum`);
@@ -97,6 +96,10 @@ export default async function handleDeeplink(
          ethereumUtils.parseEthereumUrl(normalizedUrl);
          break; 
       }
+      /**
+       * Universal links from WC e.g. when initiating a pairing on mobile, you
+       * tap "Rainbow" in Web3Modal and it hits this handler
+       */
       case 'wc': {
         logger.info(`handleDeeplink: wc`);
         handleWalletConnect(query.uri, query.connector);
