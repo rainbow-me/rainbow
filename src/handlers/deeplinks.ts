@@ -93,7 +93,7 @@ export default async function handleDeeplink(
        */
       case 'ethereum': {
          logger.info(`handleDeeplink: ethereum`);
-         const normalizedUrl = url.replace('rainbow://ethereum', 'ethereum:/');
+         const normalizedUrl = url.replace('rainbow://ethereum/', 'ethereum:');
          ethereumUtils.parseEthereumUrl(normalizedUrl);
          break; 
       }
