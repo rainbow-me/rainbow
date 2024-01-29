@@ -162,7 +162,6 @@ export default function TokenIndexExpandedState({ asset }) {
       >
         <ChartPathProvider data={throttledData}>
           <Chart
-            {...chartData}
             {...initialChartDataLabels}
             asset={assetWithPrice}
             chart={chart}

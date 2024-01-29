@@ -25,7 +25,6 @@ jest.mock('@/redux/data', () => ({
 }));
 jest.mock('@/redux/explorer', () => ({
   emitAssetRequest: jest.fn(),
-  emitChartsRequest: jest.fn(),
 }));
 jest.mock('@/utils/profileUtils', () => ({
   fetchReverseRecordWithRetry: jest.fn(),
