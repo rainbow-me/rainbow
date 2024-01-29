@@ -1,4 +1,4 @@
-import { useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { isEmpty } from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 import isEqual from 'react-fast-compare';
@@ -49,6 +49,13 @@ export const usePriceChart = ({
   address: string;
   network: Network;
 }) => {
+  const { setParams } = useNavigation();
+  const updateChartType = useCallback(
+    (type: any) => {
+      setParams({ chartType: type });
+    },
+    [setParams]
+  );
   const { params } = useRoute<{
     key: string;
     name: string;
@@ -57,7 +64,7 @@ export const usePriceChart = ({
   const chartType = params?.chartType ?? DEFAULT_CHART_TYPE;
   const chainId = getNetworkObj(network).id;
   const mainnetChainId = getNetworkObj(Network.mainnet).id;
-  return useQuery({
+  const query = useQuery({
     queryFn: async () => {
       const chart = await fetchPriceChart(chartType, chainId, address);
       if (!chart && mainnetAddress)
@@ -68,4 +75,5 @@ export const usePriceChart = ({
     keepPreviousData: true,
     staleTime: 1 * 60 * 1000, // 1min
   });
+  return { updateChartType, ...query };
 };
