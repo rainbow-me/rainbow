@@ -43,7 +43,6 @@ function useTabularNumsWhileScrubbing() {
   return tabularNums;
 }
 
-const themeSelector = (state: any) => state.theme;
 export default function ChartExpandedStateHeader({
   asset,
   color: givenColors,
