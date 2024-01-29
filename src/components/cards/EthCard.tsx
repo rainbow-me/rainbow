@@ -53,10 +53,6 @@ export const EthCard = () => {
   const { name: routeName } = useRoute();
   const cardType = 'stretch';
 
-  useEffect(() => {
-    emitChartsRequest([ETH_ADDRESS], chartTypes.day, nativeCurrency);
-  }, [nativeCurrency]);
-
   const handlePressBuy = useCallback(
     (e: ButtonPressAnimationTouchEvent) => {
       if (e && 'stopPropagation' in e) {
