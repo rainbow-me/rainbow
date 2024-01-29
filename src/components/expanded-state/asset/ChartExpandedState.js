@@ -265,7 +265,6 @@ export default function ChartExpandedState({ asset }) {
 
   const {
     chart,
-    chartData,
     chartType,
     color,
     fetchingCharts,
@@ -351,7 +350,6 @@ export default function ChartExpandedState({ asset }) {
     >
       <ChartPathProvider data={throttledData}>
         <Chart
-          {...chartData}
           {...initialChartDataLabels}
           asset={assetWithPrice}
           chart={chart}

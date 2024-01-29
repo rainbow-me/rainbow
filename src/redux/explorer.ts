@@ -402,14 +402,6 @@ export const explorerInit = () => async (
 
     // we want to get ETH info ASAP
     dispatch(emitAssetRequest(ETH_ADDRESS));
-
-    if (!disableCharts) {
-      // We need this for Uniswap Pools profit calculation
-      dispatch(emitChartsRequest([ETH_ADDRESS], ChartTypes.month));
-      dispatch(
-        emitChartsRequest([ETH_ADDRESS], ChartTypes.day, currencyTypes.usd)
-      );
-    }
   });
 };
 
@@ -470,27 +462,6 @@ export const emitAssetRequest = (assetAddress: string | string[]) => (
     setTimeout(() => emitAssetRequest(assetAddress), 100);
   }
   return false;
-};
-
-/**
- * Emits a chart information request for an asset or assets. The result
- * is handled by a listener in `listenOnAssetMessages`.
- *
- * @param assetAddress The asset address or addresses.
- * @param chartType The `ChartType` to request.
- * @param givenNativeCurrency The currency to use.
- */
-export const emitChartsRequest = (
-  assetAddress: string | string[],
-  chartType: ChartType = DEFAULT_CHART_TYPE,
-  givenNativeCurrency?: string | undefined
-) => (_: Dispatch, getState: AppGetState) => {
-  const nativeCurrency =
-    givenNativeCurrency || getState().settings.nativeCurrency;
-  const { assetsSocket } = getState().explorer;
-  const assetCodes = Array.isArray(assetAddress)
-    ? assetAddress
-    : [assetAddress];
 };
 
 /**

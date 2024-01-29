@@ -4,7 +4,6 @@ import { monotoneCubicInterpolation } from '@/react-native-animated-charts/src';
 import {
   useAccountSettings,
   useChartDataLabels,
-  useChartInfo,
   useColorForAsset,
 } from '@/hooks';
 import { useRoute } from '@react-navigation/native';
@@ -107,7 +106,6 @@ export default function useChartThrottledPoints({
 
   const [isFetchingInitially, setIsFetchingInitially] = useState(true);
 
-  const chartData = useChartInfo(asset);
   const { params } = useRoute<{
     key: string;
     name: string;
@@ -188,7 +186,6 @@ export default function useChartThrottledPoints({
 
   return {
     chart,
-    chartData,
     chartType,
     color,
     fetchingCharts,
