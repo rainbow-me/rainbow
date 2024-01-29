@@ -118,7 +118,6 @@ export default function ChartExpandedStateHeader({
     return firstValue === Number(firstValue) ? lastValue / firstValue : 1;
   }, [data]);
 
-  console.log('header: ', asset);
   return (
     <Container showChart={showChart}>
       <Row

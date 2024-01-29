@@ -42,7 +42,6 @@ export const CoinIconFallback = fallbackProps => {
 
   const { colors } = theme;
   const imageUrl = getUrlForTrustIconFallback(address, network);
-  console.log(symbol, '   -   ', imageUrl);
 
   const key = `${symbol}-${imageUrl}`;
 

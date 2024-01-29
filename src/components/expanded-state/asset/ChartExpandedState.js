@@ -183,7 +183,6 @@ function Description({ text = '' }) {
 }
 
 export default function ChartExpandedState({ asset }) {
-  console.log({ asset });
   const genericAsset = useGenericAsset(asset?.address);
   const {
     params: { fromDiscover = false },
@@ -214,10 +213,6 @@ export default function ChartExpandedState({ asset }) {
     assetWithPrice.l2Address = asset?.address;
     assetWithPrice.address = assetWithPrice.mainnet_address;
   }
-  console.log({
-    assetWithPriceNetwork: assetWithPrice.network,
-    assetNetwork: asset.network,
-  });
 
   const isL2 = useMemo(() => isL2Network(assetWithPrice.network), [
     assetWithPrice.network,
