@@ -100,6 +100,7 @@ import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
 import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoSheet';
 import { ConsoleSheet } from '@/screens/points/ConsoleSheet';
 import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileContext';
+import ChooseBackupStep from '@/components/backup/ChooseBackupStep';
 
 type StackNavigatorParams = {
   [Routes.SEND_SHEET]: unknown;

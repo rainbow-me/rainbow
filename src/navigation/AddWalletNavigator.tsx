@@ -10,7 +10,6 @@ import {
 import { BackgroundProvider } from '@/design-system';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
-import { useNavigation } from './Navigation';
 
 const Swipe = createMaterialTopTabNavigator();
 

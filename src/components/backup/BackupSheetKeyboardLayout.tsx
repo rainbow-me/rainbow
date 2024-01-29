@@ -39,24 +39,6 @@ type BackupSheetKeyboardLayout = {
 
 const MIN_HEIGHT = 740;
 
-// <Box
-//   position="absolute"
-//   bottom={{ custom: IS_ANDROID ? 0 : 20 }}
-//   alignItems="center"
-//   style={{ paddingHorizontal: 24 }}
-// >
-//   <RainbowButton
-//     height={46}
-//     disabled={!validPassword}
-//     type="backup"
-//     label={`􀎽 ${lang.t(lang.l.back_up.cloud.back_up_to_platform, {
-//       cloudPlatformName: cloudPlatform,
-//     })}`}
-//     onPress={showExplainerConfirmation}
-//   />
-//   {IS_ANDROID ? <KeyboardSizeView /> : null}
-// </Box>
-
 export default function BackupSheetKeyboardLayout({
   children,
   footerButtonDisabled,
@@ -68,8 +50,6 @@ export default function BackupSheetKeyboardLayout({
   const isSmallPhone = deviceHeight < MIN_HEIGHT;
   const contentHeight =
     deviceHeight - (!isSmallPhone ? sharedCoolModalTopOffset : 0) - 100;
-
-  console.log(contentHeight);
 
   return (
     <Box height={{ custom: contentHeight }}>

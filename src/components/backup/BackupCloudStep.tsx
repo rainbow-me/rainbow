@@ -85,10 +85,6 @@ export default function BackupCloudStep() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const { navigate } = useNavigation();
 
-  const isSmallPhone = deviceHeight < MIN_HEIGHT;
-  const contentHeight =
-    deviceHeight - (!isSmallPhone ? sharedCoolModalTopOffset : 0) - 100;
-
   const isSettingsRoute = useRouteExistsInNavigationState(
     Routes.SETTINGS_SHEET
   );
