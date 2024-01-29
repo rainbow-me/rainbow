@@ -1,11 +1,5 @@
 import lang from 'i18n-js';
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useContext, useRef, useState } from 'react';
 import { Animated, LayoutAnimation, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRecyclerAssetListPosition } from '../asset-list/RecyclerAssetList2/core/Contexts';
@@ -23,7 +17,6 @@ import {
   useDimensions,
   useOpenSmallBalances,
 } from '@/hooks';
-import { emitChartsRequest } from '@/redux/explorer';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -108,10 +101,7 @@ export default function CoinDivider({
   const { isCoinListEdited, setIsCoinListEdited } = extendedState;
   const interpolation = useInterpolationRange(isCoinListEdited);
   const { nativeCurrency } = useAccountSettings();
-  const dispatch = useDispatch();
-  const assets = useSelector(({ data: { assets } }) => assets);
 
-  const [fetchedCharts, setFetchedCharts] = useState(false);
   const { width: deviceWidth } = useDimensions();
 
   const { clearSelectedCoins } = useCoinListEditOptions();
@@ -126,20 +116,6 @@ export default function CoinDivider({
     isSmallBalancesOpen,
     toggleOpenSmallBalances,
   } = useOpenSmallBalances();
-
-  useEffect(() => {
-    if (isSmallBalancesOpen && !fetchedCharts) {
-      const assetCodes = assets?.map(asset => asset.address);
-      dispatch(emitChartsRequest(assetCodes ?? []));
-      setFetchedCharts(true);
-    }
-  }, [
-    assets,
-    dispatch,
-    fetchedCharts,
-    isSmallBalancesOpen,
-    toggleOpenSmallBalances,
-  ]);
 
   const handlePressEdit = useCallback(() => {
     setIsCoinListEdited(prev => !prev);
