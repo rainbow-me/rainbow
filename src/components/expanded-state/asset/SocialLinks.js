@@ -37,7 +37,6 @@ export default function SocialLinks({
 }) {
   const etherscanURL = ethereumUtils.getEtherscanHostForNetwork(type);
   const blockExplorerName = ethereumUtils.getBlockExplorer(type);
-  console.log(JSON.stringify(links));
   return (
     <>
       <Carousel height={59} marginBottom={1} marginTop={marginTop || 0}>
