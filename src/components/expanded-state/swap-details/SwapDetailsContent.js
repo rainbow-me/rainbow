@@ -20,7 +20,7 @@ import {
 import { SwapModalField } from '@/redux/swap';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { ethereumUtils } from '@/utils';
+
 import { useNavigation } from '@/navigation';
 import { Network } from '@/helpers';
 import { SwapDetailsRewardRow } from './SwapDetailsRewardRow';
@@ -54,12 +54,8 @@ export default function SwapDetailsContent({
   const [detailsExpanded, setDetailsExpanded] = useState(false);
 
   const colorForAsset = useColorForAsset(outputCurrency, undefined, true, true);
-  const inputCurrencyNetwork = ethereumUtils.getNetworkFromType(
-    inputCurrency?.type
-  );
-  const outputCurrencyNetwork = ethereumUtils.getNetworkFromType(
-    outputCurrency?.type
-  );
+  const inputCurrencyNetwork = inputCurrency.network;
+  const outputCurrencyNetwork = outputCurrency.network;
   const { op_rewards_enabled } = useRemoteConfig();
   const hasReward =
     (useExperimentalFlag(OP_REWARDS) || op_rewards_enabled) &&

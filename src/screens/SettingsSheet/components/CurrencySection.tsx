@@ -8,6 +8,7 @@ import MenuItem from './MenuItem';
 import { analytics } from '@/analytics';
 import { useAccountSettings } from '@/hooks';
 import { emojis, supportedNativeCurrencies } from '@/references';
+import { Network } from '@/networks/types';
 
 const emojiData = Object.entries(emojis).map(([emoji, { name }]) => [
   name,
@@ -56,6 +57,7 @@ const CurrencySection = () => {
                   size={23}
                   style={{ marginLeft: 7 }}
                   symbol={currency}
+                  network={Network.mainnet}
                 />
               )
             }

@@ -70,7 +70,7 @@ export interface ParsedAsset {
   isNativeAsset?: boolean;
   name: string;
   mainnet_address?: string;
-  network?: Network;
+  network: Network;
   networks?: Record<string, AddysNetworkDetails>;
   price?: {
     changed_at?: number;
@@ -78,7 +78,7 @@ export interface ParsedAsset {
     value?: number;
   };
   symbol: string;
-  type: string;
+  type?: string;
   uniqueId: string;
 }
 

@@ -503,20 +503,12 @@ export default async function runMigrations() {
           const asset = assets?.find(
             (asset: any) => asset.address === address.toLowerCase()
           );
-          if (asset?.type && isL2Asset(asset.type)) {
-            return `${asset.address}_${asset.network}`;
-          } else {
-            return address;
-          }
+          return `${asset.address}_${asset.network}`;
         });
 
         const hiddenCoinsMigrated = hiddenCoins.map((address: string) => {
           const asset = ethereumUtils.getAsset(assets, address);
-          if (asset?.type && isL2Asset(asset.type)) {
-            return `${asset.address}_${asset.network}`;
-          } else {
-            return address;
-          }
+          return `${asset.address}_${asset.network}`;
         });
 
         logger.log(JSON.stringify({ pinnedCoinsMigrated }, null, 2));

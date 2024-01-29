@@ -8,7 +8,6 @@ import { ButtonPressAnimation } from '../animations';
 import { Text } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import { AssetTypes } from '@/entities';
 import { isL2Network } from '@/handlers/web3';
 import { useColorForAsset } from '@/hooks';
 import styled from '@/styled-thing';
@@ -122,8 +121,8 @@ const SendCoinRow = magicMemo(
       : ButtonPressAnimation;
 
     const isL2 = useMemo(() => {
-      return isL2Network(item?.type);
-    }, [item?.type]);
+      return isL2Network(item?.network);
+    }, [item?.network]);
 
     const containerSelectedStyles = {
       height: selectedHeight,

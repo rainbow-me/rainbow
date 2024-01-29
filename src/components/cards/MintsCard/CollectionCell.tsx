@@ -192,6 +192,7 @@ export function CollectionCell({
             size={12}
             symbol={currency.symbol}
             style={{ marginRight: 4, marginVertical: -4 }}
+            network={getNetworkFromChainId(collection.chainId)}
           />
         )}
         <View style={{ width: NFT_IMAGE_SIZE - 16 }}>

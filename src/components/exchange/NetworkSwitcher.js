@@ -100,7 +100,7 @@ const NetworkSwitcherv1 = ({
           <Column justify="center">
             {currentChainId !== 1 ? (
               <ChainBadge
-                assetType={ethereumUtils.getNetworkFromChainId(currentChainId)}
+                network={ethereumUtils.getNetworkFromChainId(currentChainId)}
                 position="relative"
                 size="small"
               />

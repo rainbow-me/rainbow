@@ -34,7 +34,7 @@ export default React.memo(function ExchangeTokenRow({
     mainnet_address,
     name,
     testID,
-    type,
+    network,
     disabled,
     decimals,
   },
@@ -44,15 +44,15 @@ export default React.memo(function ExchangeTokenRow({
     uniqueId,
     mainnet_address,
     symbol,
-    type,
     address,
     name,
     decimals,
+    network,
   });
-  const network = ethereumUtils.getNetworkFromType(type) ?? Network.mainnet;
+
   const rowTestID = `${testID}-exchange-coin-row-${
     symbol ?? item?.symbol ?? ''
-  }-${type || 'token'}`;
+  }-${network}`;
 
   const isInfoButtonVisible =
     !item?.isNativeAsset ||

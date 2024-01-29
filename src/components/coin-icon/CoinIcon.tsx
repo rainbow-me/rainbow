@@ -38,7 +38,7 @@ type Props = {
   forcedShadowColor?: string;
   size?: number;
   symbol?: string;
-  type?: string;
+  network: string;
   mainnet_address?: string;
   shadowOpacity?: number;
 } & Pick<ViewProps, 'testID' | 'style'>;
@@ -52,7 +52,7 @@ const CoinIcon: React.FC<Props> = ({
   forcedShadowColor,
   size = CoinIconSize,
   symbol = '',
-  type,
+  network,
   mainnet_address,
   ...props
 }) => {
@@ -67,12 +67,6 @@ const CoinIcon: React.FC<Props> = ({
 
   const theme = useTheme();
 
-  const network = mainnet_address
-    ? Network.mainnet
-    : type
-    ? ethereumUtils.getNetworkFromType(type)
-    : Network.mainnet;
-
   return (
     <View>
       {isNotContractInteraction ? (
@@ -81,7 +75,7 @@ const CoinIcon: React.FC<Props> = ({
           address={mainnet_address || address}
           color={color}
           fallbackRenderer={CoinIconFallback}
-          forceFallback={forceFallback}
+          forceFallback={true}
           // force update on change symbol due to ImageCache strategy
           key={symbol}
           shadowColor={
@@ -97,7 +91,7 @@ const CoinIcon: React.FC<Props> = ({
       )}
       {!ignoreBadge && (
         <ChainBadge
-          assetType={type}
+          network={network}
           badgeXPosition={badgeXPosition}
           badgeYPosition={badgeYPosition}
           size={badgeSize}

@@ -42,6 +42,7 @@ export const CoinIconFallback = fallbackProps => {
 
   const { colors } = theme;
   const imageUrl = getUrlForTrustIconFallback(address, network);
+  console.log(symbol, '   -   ', imageUrl);
 
   const key = `${symbol}-${imageUrl}`;
 
@@ -50,6 +51,7 @@ export const CoinIconFallback = fallbackProps => {
 
   const fallbackIconColor = useColorForAsset({
     address,
+    network,
   });
 
   // we store data inside the object outside the component
@@ -86,7 +88,6 @@ export const CoinIconFallback = fallbackProps => {
     <View style={[sx.coinIconContainer, sx.withShadow, { shadowColor }]}>
       {shouldShowImage && (
         <ImageWithCachedMetadata
-          cache={ImgixImage.cacheControl.immutable}
           imageUrl={imageUrl}
           onError={onError}
           onLoad={onLoad}

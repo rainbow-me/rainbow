@@ -1,5 +1,6 @@
 import { EthereumAddress, RainbowToken } from '@/entities';
 import { getUniswapV2Tokens } from '@/handlers/dispersion';
+import { Network } from '@/networks/types';
 import { createQueryKey, queryClient } from '@/react-query';
 import {
   DAI_ADDRESS,
@@ -28,7 +29,7 @@ const DEFAULT: Record<EthereumAddress, RainbowToken> = {
     isVerified: true,
     name: 'Dai',
     symbol: 'DAI',
-    type: 'token',
+    network: Network.mainnet,
     uniqueId: DAI_ADDRESS,
   },
   [ETH_ADDRESS]: {
@@ -40,7 +41,7 @@ const DEFAULT: Record<EthereumAddress, RainbowToken> = {
     isVerified: true,
     name: 'Ethereum',
     symbol: 'ETH',
-    type: 'token',
+    network: Network.mainnet,
     uniqueId: ETH_ADDRESS,
   },
   [SOCKS_ADDRESS]: {
@@ -53,7 +54,7 @@ const DEFAULT: Record<EthereumAddress, RainbowToken> = {
     isVerified: true,
     name: 'Unisocks',
     symbol: 'SOCKS',
-    type: 'token',
+    network: Network.mainnet,
     uniqueId: SOCKS_ADDRESS,
   },
   [WBTC_ADDRESS]: {
@@ -66,7 +67,7 @@ const DEFAULT: Record<EthereumAddress, RainbowToken> = {
     isVerified: true,
     name: 'Wrapped Bitcoin',
     symbol: 'WBTC',
-    type: 'token',
+    network: Network.mainnet,
     uniqueId: WBTC_ADDRESS,
   },
 };
@@ -91,7 +92,7 @@ async function fetchMetadata(addresses: string[]) {
         address: ETH_ADDRESS,
         name: 'Ethereum',
         symbol: 'ETH',
-        uniqueId: ETH_ADDRESS,
+        uniqueId: `${ETH_ADDRESS}_${Network.mainnet}`,
       };
     }
     Object.entries(newFavoritesMeta).forEach(([address, favorite]) => {

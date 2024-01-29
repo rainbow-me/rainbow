@@ -123,7 +123,7 @@ export default React.memo(function FastCurrencySelectionRow({
     mainnet_address,
     name,
     testID,
-    type,
+    network,
     disabled,
   },
 }: FastCurrencySelectionRowProps) {
@@ -131,10 +131,9 @@ export default React.memo(function FastCurrencySelectionRow({
 
   // TODO https://github.com/rainbow-me/rainbow/pull/3313/files#r876259954
   const item = useAccountAsset(uniqueId, nativeCurrency);
-  const network = ethereumUtils.getNetworkFromType(type) ?? Network.mainnet;
   const rowTestID = `${testID}-exchange-coin-row-${
     symbol ?? item?.symbol ?? ''
-  }-${type || 'token'}`;
+  }-${network}`;
   const isInfoButtonVisible =
     !item?.isNativeAsset ||
     (!isNativeAsset(address ?? item?.address, network) && !showBalance);

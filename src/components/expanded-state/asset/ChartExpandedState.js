@@ -183,6 +183,7 @@ function Description({ text = '' }) {
 }
 
 export default function ChartExpandedState({ asset }) {
+  console.log({ asset });
   const genericAsset = useGenericAsset(asset?.address);
   const {
     params: { fromDiscover = false },
@@ -202,7 +203,7 @@ export default function ChartExpandedState({ asset }) {
       ? asset?.networks
         ? {
             ...ethereumUtils.formatGenericAsset(genericAsset, nativeCurrency),
-            type: asset.type,
+            network: asset.network,
             colors: asset?.colors,
           }
         : ethereumUtils.formatGenericAsset(genericAsset, nativeCurrency)
@@ -213,9 +214,13 @@ export default function ChartExpandedState({ asset }) {
     assetWithPrice.l2Address = asset?.address;
     assetWithPrice.address = assetWithPrice.mainnet_address;
   }
+  console.log({
+    assetWithPriceNetwork: assetWithPrice.network,
+    assetNetwork: asset.network,
+  });
 
-  const isL2 = useMemo(() => isL2Network(assetWithPrice.type), [
-    assetWithPrice.type,
+  const isL2 = useMemo(() => isL2Network(assetWithPrice.network), [
+    assetWithPrice.network,
   ]);
   const isTestnet = isTestnetNetwork(currentNetwork);
 
@@ -230,7 +235,7 @@ export default function ChartExpandedState({ asset }) {
   } = useAdditionalAssetData(
     asset?.address,
     assetWithPrice?.price?.value,
-    ethereumUtils.getChainIdFromNetwork(assetWithPrice?.type)
+    ethereumUtils.getChainIdFromNetwork(assetWithPrice?.network)
   );
 
   // This one includes the original l2 address if exists
@@ -320,9 +325,9 @@ export default function ChartExpandedState({ asset }) {
 
   const handleL2DisclaimerPress = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
-      type: assetWithPrice.type,
+      type: assetWithPrice.network,
     });
-  }, [assetWithPrice.type, navigate]);
+  }, [assetWithPrice.network, navigate]);
 
   const { layout } = useContext(ModalContext) || {};
 
@@ -333,7 +338,7 @@ export default function ChartExpandedState({ asset }) {
     ? AvailableNetworksv1
     : AvailableNetworksv2;
 
-  const assetNetwork = ethereumUtils.getNetworkFromType(assetWithPrice.type);
+  const assetNetwork = assetWithPrice.network;
 
   const { swagg_enabled, f2c_enabled } = useRemoteConfig();
   const swapEnabled =
@@ -421,9 +426,9 @@ export default function ChartExpandedState({ asset }) {
           <BuyActionButton color={color} />
         </SheetActionButtonRow>
       ) : null}
-      {!networks && isL2 && (
+      {isL2 && (
         <L2Disclaimer
-          assetType={assetWithPrice.type}
+          network={assetWithPrice.network}
           colors={colors}
           onPress={handleL2DisclaimerPress}
           symbol={assetWithPrice.symbol}
@@ -492,7 +497,7 @@ export default function ChartExpandedState({ asset }) {
           isNativeAsset={assetWithPrice?.isNativeAsset}
           links={links}
           marginTop={!delayedDescriptions && 19}
-          type={asset?.type}
+          type={asset?.network}
         />
         <Spacer />
       </AdditionalContentWrapper>

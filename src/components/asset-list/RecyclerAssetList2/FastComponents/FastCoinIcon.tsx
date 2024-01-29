@@ -77,7 +77,8 @@ export default React.memo(function FastCoinIcon({
   });
 
   const shadowColor = theme.isDarkMode ? colors.shadow : fallbackIconColor;
-  const eth = isETH(resolvedAddress);
+  console.log(symbol, ' * ', resolvedAddress);
+  const eth = isETH(resolvedAddress) || symbol === 'WETH';
   const shouldRenderContract = symbol === 'contract';
 
   return (
