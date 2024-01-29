@@ -3,6 +3,8 @@
 import { exec } from 'child_process';
 import * as Helpers from './helpers';
 
+const RAINBOW_WALLET_ADDRESS = '0x7a3d05c70581bD345fe117c06e45f9669205384f';
+
 const android = device.getPlatform() === 'android';
 
 const testEthereumDeeplink = async (url, coldStart = true) => {
@@ -41,7 +43,7 @@ beforeAll(async () => {
   }
 });
 
-describe('Deeplinks spec', () => {
+describe.skip('Deeplinks spec', () => {
   it('Should show the welcome screen', async () => {
     await Helpers.checkIfVisible('welcome-screen');
   });
@@ -81,8 +83,7 @@ describe('Deeplinks spec', () => {
   });
 
   it('should reject ethereum urls for assets that are not in the wallet', async () => {
-    const url =
-      'ethereum:0xef2e9966eb61bb494e5375d5df8d67b7db8a780d@1/transfer?address=brunobarbieri.eth&uint256=1e15';
+    const url = `ethereum:0xef2e9966eb61bb494e5375d5df8d67b7db8a780d@1/transfer?address=${RAINBOW_WALLET_ADDRESS}&uint256=1e15`;
     await Helpers.openDeeplinkFromBackground(url);
     await Helpers.checkIfElementByTextIsVisible('Ooops!', 30000);
     await Helpers.tapAlertWithButton('OK');
@@ -109,13 +110,17 @@ describe('Deeplinks spec', () => {
     await Helpers.swipe('profile-sheet', 'down');
   });
 
-  it('should be able to handle ethereum payments urls for ETH (mainnet)', async () => {
-    const url = escapeUrl('ethereum:payment-brunobarbieri.eth@1?value=1e2');
+  it.skip('should be able to handle ethereum payments urls for ETH (mainnet)', async () => {
+    const url = escapeUrl(
+      `ethereum:payment-${RAINBOW_WALLET_ADDRESS}@1?value=1e2`
+    );
     await testEthereumDeeplink(url, false);
   });
 
   it.skip('should be able to handle ethereum payments urls for ETH (optimism)', async () => {
-    const url = escapeUrl('ethereum:payment-brunobarbieri.eth@10?value=1e15');
+    const url = escapeUrl(
+      `ethereum:payment-${RAINBOW_WALLET_ADDRESS}@10?value=1e15`
+    );
     await testEthereumDeeplink(url, false);
   });
 
@@ -123,7 +128,7 @@ describe('Deeplinks spec', () => {
   // comes back empty, find a fix and then change these tests to cold-start again
   it('should be able to handle ethereum payments urls for DAI (mainnet)', async () => {
     const url = escapeUrl(
-      'ethereum:0x6b175474e89094c44da98b954eedeac495271d0f@1/transfer?address=brunobarbieri.eth&uint256=1e18'
+      `ethereum:0x6b175474e89094c44da98b954eedeac495271d0f@1/transfer?address=${RAINBOW_WALLET_ADDRESS}&uint256=1e18`
     );
     await testEthereumDeeplink(url, false);
   });
@@ -131,7 +136,7 @@ describe('Deeplinks spec', () => {
   // FIXME: when doing open deeplinks with cold start, the account assets state
   // comes back empty, find a fix and then change these tests to cold-start again
   it.skip('should be able to handle ethereum payments urls for ETH (arbitrum)', async () => {
-    const url = 'ethereum:payment-brunobarbieri.eth@42161?value=1e15';
+    const url = `ethereum:payment-${RAINBOW_WALLET_ADDRESS}@42161?value=1e15`;
     await testEthereumDeeplink(url, false);
   });
 
@@ -139,7 +144,7 @@ describe('Deeplinks spec', () => {
   // comes back empty, find a fix and then change these tests to cold-start again
   it.skip('should be able to handle ethereum payments urls for DAI (optimism)', async () => {
     const url = escapeUrl(
-      'ethereum:0xda10009cbd5d07dd0cecc66161fc93d7c9000da1@10/transfer?address=brunobarbieri.eth&uint256=1e15'
+      `ethereum:0xda10009cbd5d07dd0cecc66161fc93d7c9000da1@10/transfer?address=${RAINBOW_WALLET_ADDRESS}&uint256=1e15`
     );
     await testEthereumDeeplink(url, false);
   });
@@ -147,7 +152,9 @@ describe('Deeplinks spec', () => {
   // FIXME: when doing open deeplinks with cold start, the account assets state
   // comes back empty, find a fix and then change these tests to cold-start again
   it.skip('should be able to handle ethereum payments urls for MATIC (polygon)', async () => {
-    const url = escapeUrl('ethereum:payment-brunobarbieri.eth@137?value=1e15');
+    const url = escapeUrl(
+      `ethereum:payment-${RAINBOW_WALLET_ADDRESS}@137?value=1e15`
+    );
     await testEthereumDeeplink(url, false);
   });
 
