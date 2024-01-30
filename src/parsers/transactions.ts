@@ -329,7 +329,7 @@ const parseTransactionWithEmptyChanges = async (
   ];
 };
 
-const parseTransaction = async (
+export const parseTransaction = async (
   transaction: ZerionTransaction,
   nativeCurrency: NativeCurrencyKey,
   purchaseTransactionsHashes: string[],

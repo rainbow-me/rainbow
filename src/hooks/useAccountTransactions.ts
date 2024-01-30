@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { buildTransactionsSectionsSelector } from '../helpers/buildTransactionsSectionsSelector';
 import NetworkTypes from '../helpers/networkTypes';
@@ -10,6 +10,8 @@ import { AppState } from '@/redux/store';
 import { useTheme } from '@/theme';
 import { getCachedProviderForNetwork, isHardHat } from '@/handlers/web3';
 import { useUserAssets } from '@/resources/assets/UserAssetsQuery';
+import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
+import { RainbowTransaction } from '@/entities';
 
 export const NOE_PAGE = 30;
 
@@ -31,12 +33,7 @@ export default function useAccountTransactions(
     connectedToHardhat,
   });
 
-  const {
-    isLoadingTransactions,
-    network,
-    pendingTransactions,
-    transactions,
-  } = useSelector(
+  const { isLoadingTransactions, network, pendingTransactions } = useSelector(
     ({
       data: { isLoadingTransactions, pendingTransactions, transactions },
       settings: { network },
@@ -48,18 +45,26 @@ export default function useAccountTransactions(
     })
   );
 
+  const { data, fetchNextPage } = useConsolidatedTransactions({
+    address: accountAddress,
+    currency: nativeCurrency,
+  });
+  const pages = data?.pages;
+
+  const transactions: RainbowTransaction[] = useMemo(
+    () => pages?.flatMap(p => p.transactions) || [],
+    [pages]
+  );
+  console.log({ transactions });
+
   const allTransactions = useMemo(
     () => pendingTransactions.concat(transactions),
     [pendingTransactions, transactions]
   );
 
-  const [page, setPage] = useState(1);
-  const nextPage = useCallback(() => setPage(page => page + 1), []);
-
-  const slicedTransaction: any[] = useMemo(
-    () => allTransactions.slice(0, page * NOE_PAGE),
-    [allTransactions, page]
-  );
+  const slicedTransaction: any[] = useMemo(() => allTransactions, [
+    allTransactions,
+  ]);
 
   const mainnetAddresses = useMemo(
     () =>
@@ -107,7 +112,7 @@ export default function useAccountTransactions(
   return {
     isLoadingTransactions:
       network === NetworkTypes.mainnet ? isLoadingTransactions : false,
-    nextPage,
+    nextPage: fetchNextPage,
     remainingItemsLabel,
     sections,
     transactions: ios ? allTransactions : slicedTransaction,
