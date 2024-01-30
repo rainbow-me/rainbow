@@ -9,21 +9,28 @@ import {
   todayTimestamp,
   yesterdayTimestamp,
 } from './transactions';
-import { TransactionStatusTypes } from '@/entities';
+import { RainbowTransaction, TransactionStatusTypes } from '@/entities';
 import * as i18n from '@/languages';
+import { RequestData } from '@/redux/requests';
+import { ThemeContextProps } from '@/theme';
+import { Contact } from '@/redux/contacts';
 
-const mainnetAddressesSelector = (state: any) => state.mainnetAddresses;
-const accountAddressSelector = (state: any) => state.accountAddress;
-const contactsSelector = (state: any) => state.contacts;
-const requestsSelector = (state: any) => state.requests;
-const themeSelector = (state: any) => state.theme;
-const transactionsSelector = (state: any) => state.transactions;
-const focusedSelector = (state: any) => state.isFocused;
-const initializedSelector = (state: any) => state.initialized;
-const navigateSelector = (state: any) => state.navigate;
+type RainbowTransactionWithContact = RainbowTransaction & {
+  contact: Contact | null;
+};
 
+type RainbowTransactionWithContactAndMainnetAddress = RainbowTransactionWithContact & {
+  mainnetAddress: string;
+  accountAddress: string;
+};
 // bad news
-const groupTransactionByDate = ({ pending, minedAt }: any) => {
+const groupTransactionByDate = ({
+  pending,
+  minedAt,
+}: {
+  pending: boolean;
+  minedAt: string;
+}) => {
   if (pending) return i18n.t(i18n.l.transactions.pending_title);
 
   const ts = parseInt(minedAt, 10) * 1000;
@@ -38,15 +45,18 @@ const groupTransactionByDate = ({ pending, minedAt }: any) => {
       })
     );
   } catch (e) {
-    console.log(e);
     return i18n.t(i18n.l.transactions.dropped_title);
   }
 };
 
-const addContactInfo = (contacts: any) => (txn: any) => {
+const addContactInfo = (contacts: { [address: string]: Contact }) => (
+  txn: RainbowTransaction
+): RainbowTransaction & {
+  contact: Contact | null;
+} => {
   const { from, to, status } = txn;
   const isSent = status === TransactionStatusTypes.sent;
-  const contactAddress = isSent ? to : from;
+  const contactAddress = (isSent ? to : from) || '';
   const contact = contacts?.[contactAddress?.toLowerCase()] ?? null;
   return {
     ...txn,
@@ -54,21 +64,39 @@ const addContactInfo = (contacts: any) => (txn: any) => {
   };
 };
 
-const buildTransactionsSections = (
-  accountAddress: any,
-  mainnetAddresses: any,
-  contacts: any,
-  requests: any,
-  theme: any,
-  transactions: any,
-  isFocused: any,
-  initialized: any
-) => {
-  if (!isFocused && !initialized) {
+export const buildTransactionsSections = ({
+  accountAddress,
+  mainnetAddresses,
+  contacts,
+  requests,
+  theme,
+  isFocused,
+  initialized,
+  transactions,
+}: {
+  accountAddress: string;
+  mainnetAddresses: { [uniqueId: string]: string };
+  contacts: { [address: string]: Contact };
+  requests: RequestData[];
+  theme: ThemeContextProps;
+  isFocused: boolean;
+  initialized: boolean;
+  navigate: (...args: any[]) => void;
+  transactions: RainbowTransaction[];
+}) => {
+  if ((!isFocused && !initialized) || !transactions) {
     return { sections: [] };
   }
 
-  let sectionedTransactions: any = [];
+  let sectionedTransactions: {
+    title: string;
+    data: RainbowTransactionWithContactAndMainnetAddress[];
+    renderItem: ({
+      item,
+    }: {
+      item: RainbowTransactionWithContactAndMainnetAddress;
+    }) => JSX.Element;
+  }[] = [];
 
   const transactionsWithContacts = transactions?.map(addContactInfo(contacts));
 
@@ -78,22 +106,46 @@ const buildTransactionsSections = (
       groupTransactionByDate
     );
 
-    sectionedTransactions = Object.keys(transactionsByDate)
-      .filter(section => section !== 'Dropped')
-      .map(section => ({
-        data: transactionsByDate[section].map(txn => ({
-          ...txn,
+    const test = Object.keys(transactionsByDate);
+    const filter = test.filter(key => key !== 'Dropped');
+    const sectioned: {
+      title: string;
+      data: RainbowTransactionWithContactAndMainnetAddress[];
+      renderItem: ({
+        item,
+      }: {
+        item: RainbowTransactionWithContactAndMainnetAddress;
+      }) => JSX.Element;
+    }[] = filter.map((section: string) => {
+      const sectionData: RainbowTransactionWithContactAndMainnetAddress[] = transactionsByDate[
+        section
+      ].map(txn => {
+        const typeTxn = txn as RainbowTransactionWithContact;
+        const res = {
+          ...typeTxn,
+          to: typeTxn.to || '',
+          from: typeTxn.from || '',
           accountAddress,
-          mainnetAddress: mainnetAddresses[`${txn.address}_${txn.network}`],
-        })),
-        renderItem: ({ item }: any) => (
-          <FastTransactionCoinRow item={item} theme={theme} />
-        ),
+          mainnetAddress:
+            mainnetAddresses[`${typeTxn.address}_${typeTxn.network}`],
+        };
+
+        return res;
+      });
+
+      return {
+        data: sectionData,
+        renderItem: ({
+          item,
+        }: {
+          item: RainbowTransactionWithContactAndMainnetAddress;
+        }) => <FastTransactionCoinRow item={item} theme={theme} />,
         title: section,
-      }));
+      };
+    });
+    sectionedTransactions = sectioned;
 
     const pendingSectionIndex = sectionedTransactions.findIndex(
-      // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'title' implicitly has an 'any' ty... Remove this comment to see the full error message
       ({ title }) => title === 'Pending'
     );
     if (pendingSectionIndex > 0) {
@@ -122,18 +174,3 @@ const buildTransactionsSections = (
     sections: requestsToApprove.concat(sectionedTransactions),
   };
 };
-
-export const buildTransactionsSectionsSelector = createSelector(
-  [
-    accountAddressSelector,
-    mainnetAddressesSelector,
-    contactsSelector,
-    requestsSelector,
-    themeSelector,
-    transactionsSelector,
-    focusedSelector,
-    initializedSelector,
-    navigateSelector,
-  ],
-  buildTransactionsSections
-);

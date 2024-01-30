@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { buildTransactionsSectionsSelector } from '../helpers/buildTransactionsSectionsSelector';
+import { buildTransactionsSections } from '../helpers/buildTransactionsSectionsSelector';
 import NetworkTypes from '../helpers/networkTypes';
 import useAccountSettings from './useAccountSettings';
 import useContacts from './useContacts';
@@ -55,27 +55,29 @@ export default function useAccountTransactions(
     () => pages?.flatMap(p => p.transactions) || [],
     [pages]
   );
-  console.log({ transactions });
 
   const allTransactions = useMemo(
     () => pendingTransactions.concat(transactions),
     [pendingTransactions, transactions]
   );
 
-  const slicedTransaction: any[] = useMemo(() => allTransactions, [
-    allTransactions,
-  ]);
+  const slicedTransaction = useMemo(() => allTransactions, [allTransactions]);
 
   const mainnetAddresses = useMemo(
     () =>
       userAssets
-        ? slicedTransaction.reduce((acc, txn) => {
-            acc[`${txn.address}_${txn.network}`] =
-              userAssets[`${txn.address}_${txn.network}`]?.mainnet_address;
+        ? slicedTransaction.reduce((acc: { [key: string]: string }, txn) => {
+            if (txn?.network && txn?.address) {
+              const asset =
+                userAssets[`${txn.address}_${txn.network}`]?.mainnet_address;
+              if (asset) {
+                acc[`${txn.address}_${txn.network}`] = asset;
+              }
+            }
 
             return acc;
           }, {})
-        : [],
+        : {},
     [userAssets, slicedTransaction]
   );
 
@@ -96,7 +98,7 @@ export default function useAccountTransactions(
     transactions: slicedTransaction,
   };
 
-  const { sections } = buildTransactionsSectionsSelector(accountState);
+  const { sections } = buildTransactionsSections(accountState);
 
   const remainingItemsLabel = useMemo(() => {
     const remainingLength = allTransactions.length - slicedTransaction.length;
