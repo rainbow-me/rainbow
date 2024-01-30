@@ -51,7 +51,6 @@ import {
   useRemoteCardContext,
 } from '@/components/cards/remote-cards';
 import { usePoints } from '@/resources/points';
-import { TextColor } from '@/design-system/color/palettes';
 
 export default function PointsContent() {
   const { colors } = useTheme();
