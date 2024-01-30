@@ -8,7 +8,7 @@ import {
   QueryFunctionResult,
 } from '@/react-query';
 
-import { arcDevClient } from '@/graphql';
+import { arcClient } from '@/graphql';
 
 // Set a default stale time of 10 seconds so we don't over-fetch
 // (query will serve cached data & invalidate after 10s).
@@ -32,7 +32,7 @@ type PromoSheetQueryKey = ReturnType<typeof promoSheetQueryKey>;
 async function promoSheetQueryFunction({
   queryKey: [{ id }],
 }: QueryFunctionArgs<typeof promoSheetQueryKey>) {
-  const data = await arcDevClient.getPromoSheet({ id });
+  const data = await arcClient.getPromoSheet({ id });
   return data;
 }
 

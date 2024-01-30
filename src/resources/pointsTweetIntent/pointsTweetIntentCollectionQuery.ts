@@ -8,8 +8,8 @@ import {
   QueryFunctionResult,
 } from '@/react-query';
 
-import { arcDevClient } from '@/graphql';
 import { PointsTweetIntentOrder } from '@/graphql/__generated__/arc';
+import { arcClient } from '@/graphql';
 
 // Set a default stale time of 10 seconds so we don't over-fetch
 // (query will serve cached data & invalidate after 10s).
@@ -41,7 +41,7 @@ type PointsTweetIntentCollectionQueryKey = ReturnType<
 async function pointsTweetIntentCollectionQueryFunction({
   queryKey: [{ order }],
 }: QueryFunctionArgs<typeof pointsTweetIntentCollectionQueryKey>) {
-  const data = await arcDevClient.getPointsTweetIntentCollection({ order });
+  const data = await arcClient.getPointsTweetIntentCollection({ order });
   return data;
 }
 

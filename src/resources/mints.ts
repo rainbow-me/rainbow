@@ -1,8 +1,8 @@
 import { analyticsV2 } from '@/analytics';
 import { useCallback, useEffect, useMemo } from 'react';
 import { MINTS, useExperimentalFlag } from '@/config';
-import { IS_PROD, IS_TEST } from '@/env';
-import { arcClient, arcDevClient } from '@/graphql';
+import { IS_TEST } from '@/env';
+import { arcClient } from '@/graphql';
 import { GetMintableCollectionsQuery } from '@/graphql/__generated__/arc';
 import { createQueryKey } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
@@ -11,7 +11,6 @@ import { MMKV } from 'react-native-mmkv';
 import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
 
-const graphqlClient = IS_PROD ? arcClient : arcDevClient;
 const mmkv = new MMKV();
 
 const MINTS_FILTER_MMKV_KEY = 'mintsFilter';
@@ -80,7 +79,7 @@ export function useMints({ walletAddress }: { walletAddress: string }) {
   const query = useQuery<GetMintableCollectionsQuery>(
     queryKey,
     async () =>
-      await graphqlClient.getMintableCollections({
+      await arcClient.getMintableCollections({
         walletAddress,
       }),
     {
