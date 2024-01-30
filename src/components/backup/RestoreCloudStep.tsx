@@ -92,9 +92,11 @@ export default function RestoreCloudStep() {
 
   const { userData, selectedBackup } = params;
 
+  const [loading, setLoading] = useState(false);
+
   const dispatch = useDispatch();
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
-  const { navigate, goBack } = useNavigation();
+  const { navigate, goBack, replace } = useNavigation();
   const [validPassword, setValidPassword] = useState(false);
   const [incorrectPassword, setIncorrectPassword] = useState(false);
   const [password, setPassword] = useState('');
@@ -134,6 +136,7 @@ export default function RestoreCloudStep() {
   );
 
   const onSubmit = useCallback(async () => {
+    setLoading(true);
     try {
       if (!selectedBackup.backupFile) {
         throw new Error('No backup file for selected backup');
@@ -144,11 +147,12 @@ export default function RestoreCloudStep() {
         userData,
         backupSelected: selectedBackup.backupFile,
       });
+
+      goBack();
+
       if (status === RestoreCloudBackupResultStates.success) {
         // Store it in the keychain in case it was missing
         await saveBackupPassword(password);
-
-        navigate(Routes.WALLET_SCREEN);
 
         // Get rid of the old wallets
         for (let i = 0; i < userAccounts.length; i++) {
@@ -159,6 +163,7 @@ export default function RestoreCloudStep() {
         InteractionManager.runAfterInteractions(async () => {
           const wallets = await dispatch(walletsLoadState());
           if (!userData && selectedBackup.backupFile) {
+            goBack();
             logger.info('Updating backup state of wallets');
             let filename = selectedBackup.backupFile;
             if (IS_ANDROID && filename) {
@@ -207,7 +212,9 @@ export default function RestoreCloudStep() {
             null
           );
 
-          navigate(Routes.WALLET_SCREEN);
+          // navigate(Routes.WALLET_SCREEN);
+          replace(Routes.SWIPE_LAYOUT);
+          setLoading(false);
         });
       } else {
         switch (status) {
@@ -225,10 +232,11 @@ export default function RestoreCloudStep() {
     } catch (e) {
       Alert.alert(lang.t('back_up.restore_cloud.error_while_restoring'));
     }
+
+    setLoading(false);
   }, [
     selectedBackup,
     dispatch,
-    goBack,
     initializeWallet,
     navigate,
     password,
@@ -293,7 +301,7 @@ export default function RestoreCloudStep() {
           <RainbowButton
             height={46}
             width={deviceWidth - 48}
-            disabled={!validPassword}
+            disabled={!validPassword || loading}
             type={RainbowButtonTypes.backup}
             label={`􀎽 ${lang.t(lang.l.back_up.cloud.back_up_to_platform, {
               cloudPlatformName: cloudPlatform,
