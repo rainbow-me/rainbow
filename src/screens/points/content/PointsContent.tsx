@@ -7,6 +7,7 @@ import {
   Column,
   Columns,
   Cover,
+  Inline,
   Inset,
   Separator,
   Stack,
@@ -78,8 +79,7 @@ export default function PointsContent() {
 
   const labelSecondary = useForegroundColor('labelSecondary');
   const green = useForegroundColor('green');
-  // const pink = useForegroundColor('pink');
-  // const yellow = useForegroundColor('yellow');
+  const yellow = useForegroundColor('yellow');
 
   const [isToastActive, setToastActive] = useRecoilState(
     addressCopiedToastAtom
@@ -258,56 +258,93 @@ export default function PointsContent() {
                   <Separator color="separatorTertiary" thickness={1} />
                 </>
               )}
-              <Columns space="12px">
-                <Column width="1/2">
-                  {canDisplayNextRewardCard ? (
-                    <InfoCard
-                      // onPress={() => {}}
-                      title={i18n.t(i18n.l.points.points.next_drop)}
-                      mainText={
-                        Date.now() >= nextDistributionSeconds * 1000
-                          ? i18n.t(i18n.l.points.points.now)
-                          : getFormattedTimeQuantity(
-                              nextDistributionSeconds * 1000 - Date.now(),
-                              2
-                            )
-                      }
-                      icon="􀉉"
-                      subtitle={displayNextDistribution(
-                        nextDistributionSeconds
+              <Bleed space="20px">
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                  <Inset space="20px">
+                    <Inline
+                      separator={<Box width={{ custom: 12 }} />}
+                      wrap={false}
+                    >
+                      {canDisplayNextRewardCard ? (
+                        <InfoCard
+                          // onPress={() => {}}
+                          title={i18n.t(i18n.l.points.points.next_drop)}
+                          mainText={
+                            Date.now() >= nextDistributionSeconds * 1000
+                              ? i18n.t(i18n.l.points.points.now)
+                              : getFormattedTimeQuantity(
+                                  nextDistributionSeconds * 1000 - Date.now(),
+                                  2
+                                )
+                          }
+                          icon="􀉉"
+                          subtitle={displayNextDistribution(
+                            nextDistributionSeconds
+                          )}
+                          accentColor={labelSecondary}
+                        />
+                      ) : (
+                        <Skeleton
+                          height={98}
+                          width={(deviceWidth - 40 - 12) / 2}
+                        />
                       )}
-                      accentColor={labelSecondary}
-                    />
-                  ) : (
-                    <Skeleton height={98} width={(deviceWidth - 40 - 12) / 2} />
-                  )}
-                </Column>
-                <Column width="1/2">
-                  {canDisplayRankCard ? (
-                    <InfoCard
-                      // onPress={() => {}}
-                      title={i18n.t(i18n.l.points.points.your_rank)}
-                      mainText={
-                        isUnranked
-                          ? i18n.t(i18n.l.points.points.unranked)
-                          : `#${rank.toLocaleString('en-US')}`
-                      }
-                      icon={getRankChangeIcon()}
-                      subtitle={
-                        isUnranked
-                          ? i18n.t(i18n.l.points.points.points_to_rank)
-                          : getRankChangeText()
-                      }
-                      mainTextColor={isUnranked ? 'secondary' : 'primary'}
-                      accentColor={
-                        isUnranked ? green : getRankChangeIconColor()
-                      }
-                    />
-                  ) : (
-                    <Skeleton height={98} width={(deviceWidth - 40 - 12) / 2} />
-                  )}
-                </Column>
-              </Columns>
+                      {canDisplayNextRewardCard ? (
+                        <InfoCard
+                          // onPress={() => {}}
+                          title={i18n.t(i18n.l.points.points.referrals)}
+                          mainText={
+                            points?.points?.user?.stats?.referral?.qualified_referees.toLocaleString(
+                              'en-US'
+                            ) ?? '0'
+                          }
+                          icon="􀇯"
+                          subtitle={
+                            points?.points?.user?.earnings_by_type
+                              ?.find(
+                                earningsGroup =>
+                                  earningsGroup?.type === 'referral'
+                              )
+                              ?.earnings?.total.toLocaleString('en-US') ?? '0'
+                          }
+                          accentColor={yellow}
+                        />
+                      ) : (
+                        <Skeleton
+                          height={98}
+                          width={(deviceWidth - 40 - 12) / 2}
+                        />
+                      )}
+                      {canDisplayRankCard ? (
+                        <InfoCard
+                          // onPress={() => {}}
+                          title={i18n.t(i18n.l.points.points.your_rank)}
+                          mainText={
+                            isUnranked
+                              ? i18n.t(i18n.l.points.points.unranked)
+                              : `#${rank.toLocaleString('en-US')}`
+                          }
+                          icon={getRankChangeIcon()}
+                          subtitle={
+                            isUnranked
+                              ? i18n.t(i18n.l.points.points.points_to_rank)
+                              : getRankChangeText()
+                          }
+                          mainTextColor={isUnranked ? 'secondary' : 'primary'}
+                          accentColor={
+                            isUnranked ? green : getRankChangeIconColor()
+                          }
+                        />
+                      ) : (
+                        <Skeleton
+                          height={98}
+                          width={(deviceWidth - 40 - 12) / 2}
+                        />
+                      )}
+                    </Inline>
+                  </Inset>
+                </ScrollView>
+              </Bleed>
               {!isReadOnlyWallet && (
                 <>
                   <Stack space="16px">

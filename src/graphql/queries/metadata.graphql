@@ -295,6 +295,10 @@ query getPointsDataForWallet($address: String!) {
           unranked
           current
         }
+        referral {
+          total_referees
+          qualified_referees
+        }
         last_airdrop {
           position {
             unranked
