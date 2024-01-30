@@ -356,14 +356,14 @@ mutation onboardPoints(
     }
     user {
       referralCode
+      earnings_by_type {
+        type
+        earnings {
+          total
+        }
+      }
       earnings {
         total
-      }
-      stats {
-        position {
-          unranked
-          current
-        }
       }
       onboarding {
         earnings {
@@ -379,6 +379,31 @@ mutation onboardPoints(
           display_type
           earnings {
             total
+          }
+        }
+      }
+      stats {
+        position {
+          unranked
+          current
+        }
+        referral {
+          total_referees
+          qualified_referees
+        }
+        last_airdrop {
+          position {
+            unranked
+            current
+          }
+          earnings {
+            total
+          }
+          differences {
+            type
+            earnings {
+              total
+            }
           }
         }
       }
