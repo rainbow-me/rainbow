@@ -50,7 +50,6 @@ export const Calculate = () => {
         <Paragraph>
           <Line>
             <AnimatedText
-              delayStart={500}
               color={textColors.gray}
               skipAnimation
               textContent={`${i18n.t(i18n.l.points.console.account)}:`}

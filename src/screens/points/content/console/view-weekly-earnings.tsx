@@ -104,13 +104,14 @@ export const ViewWeeklyEarnings = () => {
           <Line gap={0}>
             <AnimatedText
               color={textColors.gray}
-              delayStart={1000}
+              delayStart={500}
               weight="normal"
               textContent={`> ${i18n.t(
                 i18n.l.points.console.view_weekly_earnings_title
               )}`}
             />
             <AnimatedText
+              delayStart={500}
               color={textColors.gray}
               repeat={!isCalculationComplete}
               textContent="..."
