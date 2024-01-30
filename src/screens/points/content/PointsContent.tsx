@@ -52,12 +52,13 @@ import {
   useRemoteCardContext,
 } from '@/components/cards/remote-cards';
 import { usePoints } from '@/resources/points';
+import { GetPointsDataForWalletQuery } from '@/graphql/__generated__/metadataPOST';
 
-const InfoCards = () => {
-  const { accountAddress } = useAccountProfile();
-  const { data: points } = usePoints({
-    walletAddress: accountAddress,
-  });
+const InfoCards = ({
+  points,
+}: {
+  points: GetPointsDataForWalletQuery | undefined;
+}) => {
   const labelSecondary = useForegroundColor('labelSecondary');
   const green = useForegroundColor('green');
   const yellow = useForegroundColor('yellow');
@@ -353,7 +354,7 @@ export default function PointsContent() {
                   <Separator color="separatorTertiary" thickness={1} />
                 </>
               )}
-              <InfoCards />
+              <InfoCards points={points} />
               {!isReadOnlyWallet && (
                 <>
                   <Stack space="16px">
