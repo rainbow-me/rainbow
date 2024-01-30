@@ -1,19 +1,18 @@
 import * as lang from '@/languages';
 import React from 'react';
-import { StyleSheet } from 'react-native';
 import { Text } from '../text';
 import WalletAndBackup from '@/assets/walletsAndBackup.png';
 import { useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { margin, padding } from '@/styles';
-import { Box, Inset, Stack } from '@/design-system';
+import { Box, Stack } from '@/design-system';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { ImgixImage } from '../images';
-import { AllRainbowWalletsData } from '@/model/wallet';
+import { AllRainbowWalletsData, RainbowWallet } from '@/model/wallet';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
+import MenuContainer from '@/screens/SettingsSheet/components/MenuContainer';
 
 const Title = styled(Text).attrs({
   align: 'center',
@@ -49,11 +48,25 @@ export default function ChooseBackupStep() {
     return wallet.backupType === walletBackupTypes.cloud && wallet.backedUp;
   });
 
-  console.log(JSON.stringify(cloudBackups, null, 2));
+  const mostRecentBackup = cloudBackups.reduce((prev, current) => {
+    if (!current || !current.backedUp || !current.backupDate) {
+      return prev;
+    }
+
+    if (typeof prev === 'undefined' || !prev.backupDate) {
+      return current;
+    }
+
+    if (current.backupDate > prev.backupDate) {
+      return current;
+    }
+
+    return prev;
+  }, {} as RainbowWallet);
 
   return (
     <Box height={{ custom: deviceHeight - sharedCoolModalTopOffset - 48 }}>
-      <Inset height="full" horizontal={'24px'}>
+      <MenuContainer>
         <Stack alignHorizontal="left" space="8px">
           <Masthead>
             <Box
@@ -75,7 +88,7 @@ export default function ChooseBackupStep() {
             </Stack>
           </Masthead>
         </Stack>
-      </Inset>
+      </MenuContainer>
     </Box>
   );
 }

@@ -29,35 +29,23 @@ export function RestoreSheet() {
   const { height: deviceHeight } = useDimensions();
 
   return (
-    <BackgroundProvider color="surfaceSecondary">
-      {({ backgroundColor }) => (
-        <SlackSheet
-          contentHeight={deviceHeight - SheetHandleFixedToTopHeight}
-          additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
-          backgroundColor={backgroundColor}
-          height="100%"
-          testID="restore-sheet"
-        >
-          <NativeStack.Navigator
-            {...nativeStackConfig}
-            initialLayout={deviceUtils.dimensions}
-            initialRouteName={Routes.CHOOSE_BACKUP_SHEET}
-            screenOptions={{ swipeEnabled: false }}
-            tabBar={() => null}
-          >
-            <NativeStack.Screen
-              component={ChooseBackupStep}
-              initialParams={{ userData }}
-              name={Routes.CHOOSE_BACKUP_SHEET}
-            />
-            <NativeStack.Screen
-              component={RestoreCloudStep}
-              initialParams={{ userData }}
-              name={Routes.RESTORE_SHEET}
-            />
-          </NativeStack.Navigator>
-        </SlackSheet>
-      )}
-    </BackgroundProvider>
+    <NativeStack.Navigator
+      {...nativeStackConfig}
+      initialLayout={deviceUtils.dimensions}
+      initialRouteName={Routes.CHOOSE_BACKUP_SHEET}
+      screenOptions={{ swipeEnabled: false }}
+      tabBar={() => null}
+    >
+      <NativeStack.Screen
+        component={ChooseBackupStep}
+        initialParams={{ userData }}
+        name={Routes.CHOOSE_BACKUP_SHEET}
+      />
+      <NativeStack.Screen
+        component={RestoreCloudStep}
+        initialParams={{ userData }}
+        name={Routes.RESTORE_CLOUD_SHEET}
+      />
+    </NativeStack.Navigator>
   );
 }

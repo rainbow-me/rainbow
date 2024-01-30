@@ -66,6 +66,7 @@ const Routes = {
   REGISTER_ENS_NAVIGATOR: 'RegisterEnsNavigator',
   REMOTE_PROMO_SHEET: 'RemotePromoSheet',
   CHOOSE_BACKUP_SHEET: 'ChooseBackupSheet',
+  RESTORE_CLOUD_SHEET: 'RestoreCloudSheet',
   RESTORE_SHEET: 'RestoreSheet',
   SELECT_ENS_SHEET: 'SelectENSSheet',
   SELECT_UNIQUE_TOKEN_SHEET: 'SelectUniqueTokenSheet',
