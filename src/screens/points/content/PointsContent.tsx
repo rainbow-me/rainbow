@@ -53,6 +53,137 @@ import {
 } from '@/components/cards/remote-cards';
 import { usePoints } from '@/resources/points';
 
+const InfoCards = () => {
+  const { accountAddress } = useAccountProfile();
+  const { data: points } = usePoints({
+    walletAddress: accountAddress,
+  });
+  const labelSecondary = useForegroundColor('labelSecondary');
+  const green = useForegroundColor('green');
+  const yellow = useForegroundColor('yellow');
+  const red = useForegroundColor('red');
+
+  //
+  // NEXT REWARD CARD
+  //
+  const nextDistributionSeconds = points?.points?.meta?.distribution?.next;
+  const isLoadingNextRewardCard = nextDistributionSeconds === undefined;
+
+  const getNextRewardCardMainText = () => {
+    if (nextDistributionSeconds === undefined) return '';
+
+    // if next drop has not happened, show time remaining
+    return Date.now() >= nextDistributionSeconds * 1000
+      ? i18n.t(i18n.l.points.points.now)
+      : getFormattedTimeQuantity(
+          nextDistributionSeconds * 1000 - Date.now(),
+          2
+        );
+  };
+
+  const getNextRewardCardSubtitle = () => {
+    if (nextDistributionSeconds === undefined) return '';
+
+    // date and time of next drop
+    return displayNextDistribution(nextDistributionSeconds);
+  };
+
+  //
+  // REFERRALS CARD
+  //
+  const referralsEarnings = points?.points?.user?.earnings_by_type?.find(
+    earningsGroup => earningsGroup?.type === 'referral'
+  )?.earnings?.total;
+  const qualifiedReferees =
+    points?.points?.user?.stats?.referral?.qualified_referees;
+  const isLoadingReferralsCard =
+    qualifiedReferees === undefined || referralsEarnings == undefined;
+
+  //
+  // RANK CARD
+  //
+  const rank = points?.points?.user.stats.position.current;
+  const isUnranked = points?.points?.user?.stats?.position?.unranked;
+  const lastWeekRank =
+    points?.points?.user.stats.last_airdrop?.position.current;
+  const rankChange = rank && lastWeekRank ? rank - lastWeekRank : undefined;
+  const isLoadingRankCard =
+    (!rank || rankChange === undefined) && isUnranked === undefined;
+
+  const getRankChangeIcon = () => {
+    if (rankChange === undefined || isUnranked) return undefined;
+
+    if (rankChange === 0) return '􁘶';
+
+    if (rankChange < 0) return '􀑁';
+
+    return '􁘳';
+  };
+
+  const getRankCardAccentColor = () => {
+    if (isUnranked) return green;
+
+    if (rankChange === undefined || rankChange > 0) return red;
+
+    if (rankChange === 0) return yellow;
+
+    return green;
+  };
+
+  const getRankCardSubtitle = () => {
+    if (isUnranked) return i18n.t(i18n.l.points.points.points_to_rank);
+
+    if (rankChange === undefined) return '';
+
+    return Math.abs(rankChange).toLocaleString('en-US');
+  };
+
+  const getRankCardMainText = () => {
+    if (!rank) return '';
+    return isUnranked
+      ? i18n.t(i18n.l.points.points.unranked)
+      : `#${rank.toLocaleString('en-US')}`;
+  };
+
+  return (
+    <Bleed space="20px">
+      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+        <Inset space="20px">
+          <Inline separator={<Box width={{ custom: 12 }} />} wrap={false}>
+            <InfoCard
+              loading={isLoadingNextRewardCard}
+              title={i18n.t(i18n.l.points.points.next_drop)}
+              mainText={getNextRewardCardMainText()}
+              icon="􀉉"
+              subtitle={getNextRewardCardSubtitle()}
+              accentColor={labelSecondary}
+            />
+            <InfoCard
+              loading={isLoadingReferralsCard}
+              title={i18n.t(i18n.l.points.points.referrals)}
+              mainText={qualifiedReferees?.toLocaleString('en-US') ?? '0'}
+              icon="􀇯"
+              subtitle={`${
+                referralsEarnings?.toLocaleString('en-US') ?? '0'
+              } ${i18n.t(i18n.l.points.points.points)}`}
+              accentColor={yellow}
+            />
+            <InfoCard
+              loading={isLoadingRankCard}
+              title={i18n.t(i18n.l.points.points.your_rank)}
+              mainText={getRankCardMainText()}
+              icon={getRankChangeIcon()}
+              subtitle={getRankCardSubtitle()}
+              mainTextColor={isUnranked ? 'secondary' : 'primary'}
+              accentColor={getRankCardAccentColor()}
+            />
+          </Inline>
+        </Inset>
+      </ScrollView>
+    </Bleed>
+  );
+};
+
 export default function PointsContent() {
   const { colors } = useTheme();
   const { name } = useRoute();
@@ -76,10 +207,6 @@ export default function PointsContent() {
       analyticsV2.track(analyticsV2.event.pointsViewedPointsScreen);
     }, [])
   );
-
-  const labelSecondary = useForegroundColor('labelSecondary');
-  const green = useForegroundColor('green');
-  const yellow = useForegroundColor('yellow');
 
   const [isToastActive, setToastActive] = useRecoilState(
     addressCopiedToastAtom
@@ -119,23 +246,16 @@ export default function PointsContent() {
     setIsRefreshing(false);
   }, [dataUpdatedAt, refetch]);
 
-  const nextDistributionSeconds = points?.points?.meta?.distribution?.next;
   const totalPointsString = points?.points?.user?.earnings?.total.toLocaleString(
     'en-US'
   );
   const totalPointsMaskSize = 60 * Math.max(totalPointsString?.length ?? 0, 4);
 
-  const totalUsers = points?.points?.leaderboard.stats.total_users;
   const rank = points?.points?.user.stats.position.current;
-  const lastWeekRank =
-    points?.points?.user.stats.last_airdrop?.position.current;
-  const rankChange = rank && lastWeekRank ? rank - lastWeekRank : undefined;
   const isUnranked = !!points?.points?.user?.stats?.position?.unranked;
 
   const canDisplayTotalPoints = !isNil(points?.points?.user.earnings.total);
-  const canDisplayNextRewardCard = !isNil(nextDistributionSeconds);
   const canDisplayCurrentRank = !!rank;
-  const canDisplayRankCard = canDisplayCurrentRank && !!totalUsers;
 
   const canDisplayLeaderboard = !!points?.points?.leaderboard.accounts;
 
@@ -144,31 +264,6 @@ export default function PointsContent() {
   const referralUrl = points?.points?.user?.referralCode
     ? `https://www.rainbow.me/points?ref=${points.points.user.referralCode}`
     : undefined;
-
-  const getRankChangeIcon = () => {
-    if (rankChange === undefined || isUnranked) return '';
-
-    if (rankChange === 0) return '􁘶';
-
-    if (rankChange < 0) return '􀑁';
-
-    return '􁘳';
-  };
-
-  const getRankChangeIconColor = () => {
-    if (rankChange === undefined || rankChange > 0) return colors.red;
-
-    if (rankChange === 0) return colors.yellow;
-
-    return colors.green;
-  };
-
-  const getRankChangeText = () => {
-    if (rankChange !== undefined) {
-      return Math.abs(rankChange).toLocaleString('en-US');
-    }
-    return '';
-  };
 
   return (
     <Box height="full" background="surfacePrimary" as={Page} flex={1}>
@@ -258,107 +353,14 @@ export default function PointsContent() {
                   <Separator color="separatorTertiary" thickness={1} />
                 </>
               )}
-              <Bleed space="20px">
-                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                  <Inset space="20px">
-                    <Inline
-                      separator={<Box width={{ custom: 12 }} />}
-                      wrap={false}
-                    >
-                      {canDisplayNextRewardCard ? (
-                        <InfoCard
-                          // onPress={() => {}}
-                          title={i18n.t(i18n.l.points.points.next_drop)}
-                          mainText={
-                            Date.now() >= nextDistributionSeconds * 1000
-                              ? i18n.t(i18n.l.points.points.now)
-                              : getFormattedTimeQuantity(
-                                  nextDistributionSeconds * 1000 - Date.now(),
-                                  2
-                                )
-                          }
-                          icon="􀉉"
-                          subtitle={displayNextDistribution(
-                            nextDistributionSeconds
-                          )}
-                          accentColor={labelSecondary}
-                        />
-                      ) : (
-                        <Skeleton
-                          height={98}
-                          width={(deviceWidth - 40 - 12) / 2}
-                        />
-                      )}
-                      {canDisplayNextRewardCard ? (
-                        <InfoCard
-                          // onPress={() => {}}
-                          title={i18n.t(i18n.l.points.points.referrals)}
-                          mainText={
-                            points?.points?.user?.stats?.referral?.qualified_referees.toLocaleString(
-                              'en-US'
-                            ) ?? '0'
-                          }
-                          icon="􀇯"
-                          subtitle={
-                            points?.points?.user?.earnings_by_type
-                              ?.find(
-                                earningsGroup =>
-                                  earningsGroup?.type === 'referral'
-                              )
-                              ?.earnings?.total.toLocaleString('en-US') ?? '0'
-                          }
-                          accentColor={yellow}
-                        />
-                      ) : (
-                        <Skeleton
-                          height={98}
-                          width={(deviceWidth - 40 - 12) / 2}
-                        />
-                      )}
-                      {canDisplayRankCard ? (
-                        <InfoCard
-                          // onPress={() => {}}
-                          title={i18n.t(i18n.l.points.points.your_rank)}
-                          mainText={
-                            isUnranked
-                              ? i18n.t(i18n.l.points.points.unranked)
-                              : `#${rank.toLocaleString('en-US')}`
-                          }
-                          icon={getRankChangeIcon()}
-                          subtitle={
-                            isUnranked
-                              ? i18n.t(i18n.l.points.points.points_to_rank)
-                              : getRankChangeText()
-                          }
-                          mainTextColor={isUnranked ? 'secondary' : 'primary'}
-                          accentColor={
-                            isUnranked ? green : getRankChangeIconColor()
-                          }
-                        />
-                      ) : (
-                        <Skeleton
-                          height={98}
-                          width={(deviceWidth - 40 - 12) / 2}
-                        />
-                      )}
-                    </Inline>
-                  </Inset>
-                </ScrollView>
-              </Bleed>
+              <InfoCards />
               {!isReadOnlyWallet && (
                 <>
                   <Stack space="16px">
                     <Inset left="4px">
-                      {/* <ButtonPressAnimation>
-                    <Inline space="4px" alignVertical="center"> */}
                       <Text weight="bold" color="labelTertiary" size="15pt">
                         {i18n.t(i18n.l.points.points.referral_code)}
                       </Text>
-                      {/* <Text weight="heavy" color="labelQuaternary" size="13pt">
-                        􀅵
-                      </Text>
-                    </Inline>
-                  </ButtonPressAnimation> */}
                     </Inset>
                     {referralCode ? (
                       <Columns space="12px">

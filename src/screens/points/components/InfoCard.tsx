@@ -1,24 +1,39 @@
 import React from 'react';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { TextSize } from '@/design-system/components/Text/Text';
+import { Skeleton } from './Skeleton';
 
-export const InfoCard = ({
-  // onPress,
-  title,
-  subtitle,
-  mainText,
-  icon,
-  accentColor,
-  mainTextColor = 'primary',
-}: {
-  // onPress: () => void;
+type LoadedProps = {
   title: string;
   subtitle: string;
   mainText: string;
   icon?: string;
   accentColor: string;
   mainTextColor?: 'primary' | 'secondary';
-}) => {
+  loading?: false;
+};
+
+type LoadingProps = {
+  title?: string;
+  subtitle?: string;
+  mainText?: string;
+  icon?: string;
+  accentColor?: string;
+  mainTextColor?: 'primary' | 'secondary';
+  loading: true;
+};
+
+export const InfoCard = ({
+  title,
+  subtitle,
+  mainText,
+  icon,
+  accentColor,
+  mainTextColor = 'primary',
+  loading,
+}: LoadedProps | LoadingProps) => {
+  if (loading) return <Skeleton height={98} width={120} />;
+
   let mainTextFontSize: TextSize;
   if (mainText.length > 10) {
     mainTextFontSize = '17pt';
@@ -29,7 +44,6 @@ export const InfoCard = ({
   }
 
   return (
-    // <ButtonPressAnimation onPress={onPress} overflowMargin={50}>
     <Box
       padding="20px"
       background="surfaceSecondaryElevated"
@@ -38,14 +52,9 @@ export const InfoCard = ({
       borderRadius={18}
     >
       <Stack space="12px">
-        {/* <Inline space="4px" alignVertical="center"> */}
         <Text color="labelSecondary" weight="bold" size="15pt">
           {title}
         </Text>
-        {/* <Text color="labelQuaternary" weight="heavy" size="13pt">
-            􀅵
-          </Text>
-        </Inline> */}
         <Box height={{ custom: 15 }} justifyContent="flex-end">
           <Text
             color={mainTextColor === 'primary' ? 'label' : 'labelTertiary'}
@@ -55,7 +64,7 @@ export const InfoCard = ({
             {mainText}
           </Text>
         </Box>
-        <Inline space="4px">
+        <Inline space="4px" wrap={false}>
           {icon && (
             <Text
               align="center"
@@ -72,6 +81,5 @@ export const InfoCard = ({
         </Inline>
       </Stack>
     </Box>
-    // </ButtonPressAnimation>
   );
 };
