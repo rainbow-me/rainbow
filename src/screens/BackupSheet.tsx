@@ -4,16 +4,16 @@ import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
-import { DelayedAlert } from '../../../../components/alerts';
+import { DelayedAlert } from '../components/alerts';
 import {
   BackupCloudStep,
   BackupConfirmPasswordStep,
   BackupManualStep,
   BackupSheetSection,
-} from '../../../../components/backup';
-import { Column } from '../../../../components/layout';
-import { SlackSheet } from '../../../../components/sheet';
-import { cloudPlatform } from '../../../../utils/platform';
+} from '../components/backup';
+import { Column } from '../components/layout';
+import { SlackSheet } from '../components/sheet';
+import { cloudPlatform } from '../utils/platform';
 import { analytics } from '@/analytics';
 import showWalletErrorAlert from '@/helpers/support';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';

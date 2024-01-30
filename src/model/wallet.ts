@@ -165,12 +165,12 @@ export interface AllRainbowWallets {
   [key: string]: RainbowWallet;
 }
 
-interface AllRainbowWalletsData {
+export interface AllRainbowWalletsData {
   wallets: AllRainbowWallets;
   version: string;
 }
 
-interface RainbowSelectedWalletData {
+export interface RainbowSelectedWalletData {
   wallet: RainbowWallet;
 }
 

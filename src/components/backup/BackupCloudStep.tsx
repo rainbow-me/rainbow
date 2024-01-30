@@ -69,8 +69,6 @@ const Title = styled(Text).attrs({
   ...padding.object(12, 0, 0),
 });
 
-const MIN_HEIGHT = 740;
-
 export default function BackupCloudStep() {
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
 
@@ -84,10 +82,6 @@ export default function BackupCloudStep() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const { navigate } = useNavigation();
-
-  const isSmallPhone = deviceHeight < MIN_HEIGHT;
-  const contentHeight =
-    deviceHeight - (!isSmallPhone ? sharedCoolModalTopOffset : 0) - 100;
 
   const isSettingsRoute = useRouteExistsInNavigationState(
     Routes.SETTINGS_SHEET

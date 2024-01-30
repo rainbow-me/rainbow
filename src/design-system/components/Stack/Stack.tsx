@@ -47,6 +47,7 @@ export function Stack({
 
   return (
     <Box
+      width="full"
       alignItems={
         alignHorizontal
           ? alignHorizontalToFlexAlign[alignHorizontal]

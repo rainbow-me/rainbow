@@ -15,7 +15,7 @@ const Menu = ({ children, description, header }: MenuProps) => {
           <Text
             color="secondary60 (Deprecated)"
             size="16px / 22px (Deprecated)"
-            weight="regular"
+            weight="bold"
           >
             {header}
           </Text>

@@ -107,11 +107,16 @@
         "manage_platform_backups": "View %{cloudPlatformName} Backups",
         "cloud_platform_backup_settings": "%{cloudPlatformName} Backup Settings",
         "enable_cloud_backups": "Enable Cloud Backups",
+        "choose_backup": "Choose the backup you’d like to restore",
         "backup_to_cloud_now": "Back Up to %{cloudPlatformName} Now",
         "enable_cloud_backups_description": "If you prefer to back up your wallets manually, you can do so below.",
         "latest_backup": "Last Backup: %{date}", 
+        "most_recent_backup": "Most Recent Backup",
         "out_of_date": "Out of Date",
         "up_to_date": "Up to Date",
+        "older_backups": "Older Backups",
+        "no_older_backups": "No Older Backups",
+        "older_backups_title": "%{date} at %{time}",
         "password": {
           "a_password_youll_remember_part_one": "This password is",
           "not": "not",
@@ -119,6 +124,8 @@
           "backup_password": "Password",
           "choose_a_password": "Create a password to secure your backup",
           "confirm_backup": "Confirm Backup",
+          "enter_backup_password": "Enter your backup password",
+          "to_restore_from_backup": "To restore from this backup, enter the password you created when you backed up",
           "confirm_password": "Confirm password",
           "confirm_placeholder": "Reenter Password",
           "it_cant_be_recovered": "It can't be recovered!",
@@ -2227,6 +2234,7 @@
               "description_android": "If you previously backed up your wallet on Google Drive, tap here to restore it.",
               "description_ios_one_wallet": "You have 1 wallet backed up",
               "description_ios_multiple_wallets": "You have %{walletCount} wallets backed up",
+              "description_with_latest_backup_date": "Latest back up %{fromNow} at %{time}",
               "title": "Restore from %{platform}",
               "no_backups": "No backups found",
               "no_google_backups": "We couldn't find any backup on Google Drive. Make sure you are logged in with the right account."
@@ -2240,12 +2248,12 @@
               "title": "Connect your hardware wallet"
             },
             "seed": {
-              "description": "Use your recovery phrase from Rainbow or another crypto wallet",
-              "title": "Restore with a recovery phrase or private key"
+              "description": "Use your Secret Phrase from Rainbow, MetaMask, or another wallet",
+              "title": "Import a Secret Phrase or Private Key"
             },
             "watch": {
-              "description": "Watch a public address or ENS name",
-              "title": "Watch an Ethereum address"
+              "description": "Watch an ENS name or a public address",
+              "title": "Watch a wallet"
             }
           },
           "first_wallet": {
