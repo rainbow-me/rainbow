@@ -69,8 +69,6 @@ const Title = styled(Text).attrs({
   ...padding.object(12, 0, 0),
 });
 
-const MIN_HEIGHT = 740;
-
 export default function BackupCloudStep() {
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
 

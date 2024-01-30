@@ -1,5 +1,5 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StatusBar } from 'react-native';
 import RestoreCloudStep from '../components/backup/RestoreCloudStep';
 import ChooseBackupStep from '@/components/backup/ChooseBackupStep';
@@ -9,11 +9,14 @@ import { IS_ANDROID } from '@/env';
 import { useDimensions } from '@/hooks';
 import { deviceUtils } from '@/utils';
 import Routes from '@/navigation/routesNames';
+import { createStackNavigator } from '@react-navigation/stack';
 
 import createNativeStackNavigator from '@/react-native-cool-modals/createNativeStackNavigator';
 import { nativeStackConfig } from '@/navigation/nativeStackConfig';
+import { settingsOptions } from '@/navigation/config';
+import { useTheme } from '@/theme';
 
-const NativeStack = createNativeStackNavigator();
+const NativeStack = createStackNavigator();
 
 type RestoreSheetParams = {
   RestoreSheet: {
@@ -26,15 +29,14 @@ export function RestoreSheet() {
   const { params: { userData } = {} } = useRoute<
     RouteProp<RestoreSheetParams, 'RestoreSheet'>
   >();
-  const { height: deviceHeight } = useDimensions();
+
+  const { colors } = useTheme();
+  const memoSettingsOptions = useMemo(() => settingsOptions(colors), [colors]);
 
   return (
     <NativeStack.Navigator
-      {...nativeStackConfig}
-      initialLayout={deviceUtils.dimensions}
       initialRouteName={Routes.CHOOSE_BACKUP_SHEET}
-      screenOptions={{ swipeEnabled: false }}
-      tabBar={() => null}
+      screenOptions={{ ...memoSettingsOptions, title: '' }}
     >
       <NativeStack.Screen
         component={ChooseBackupStep}
