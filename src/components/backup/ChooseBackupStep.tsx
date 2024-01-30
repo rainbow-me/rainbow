@@ -83,7 +83,7 @@ export default function ChooseBackupStep() {
             />
             <Stack space="12px">
               <Title>
-                {lang.t(lang.l.back_up.cloud.password.choose_a_password)}
+                {lang.t(lang.l.back_up.cloud.password.backup_password)}
               </Title>
             </Stack>
           </Masthead>
