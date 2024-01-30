@@ -281,6 +281,12 @@ query getPointsDataForWallet($address: String!) {
     }
     user {
       referralCode
+      earnings_by_type {
+        type
+        earnings {
+          total
+        }
+      }
       earnings {
         total
       }
