@@ -20,9 +20,7 @@ import {
   TransactionsReceivedMessage,
 } from './data';
 import { AppGetState, AppState } from './store';
-import { disableCharts } from '@/config/debug';
 import { getProviderForNetwork, isHardHat } from '@/handlers/web3';
-import ChartTypes, { ChartType } from '@/helpers/chartTypes';
 import currencyTypes from '@/helpers/currencyTypes';
 import { Network } from '@/helpers/networkTypes';
 import {
