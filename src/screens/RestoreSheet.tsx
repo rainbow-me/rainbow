@@ -1,32 +1,28 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { useMemo } from 'react';
-import { StatusBar } from 'react-native';
 import RestoreCloudStep from '../components/backup/RestoreCloudStep';
 import ChooseBackupStep from '@/components/backup/ChooseBackupStep';
-import { SheetHandleFixedToTopHeight, SlackSheet } from '../components/sheet';
-import { BackgroundProvider } from '@/design-system';
-import { IS_ANDROID } from '@/env';
-import { useDimensions } from '@/hooks';
-import { deviceUtils } from '@/utils';
 import Routes from '@/navigation/routesNames';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import createNativeStackNavigator from '@/react-native-cool-modals/createNativeStackNavigator';
-import { nativeStackConfig } from '@/navigation/nativeStackConfig';
 import { settingsOptions } from '@/navigation/config';
 import { useTheme } from '@/theme';
+import { Backup, BackupUserData } from '@/model/backup';
 
 const NativeStack = createStackNavigator();
 
-type RestoreSheetParams = {
+export type RestoreSheetParams = {
   RestoreSheet: {
-    userData: any;
+    backups: {
+      files: Backup[];
+    };
+    userData: BackupUserData;
     fromSettings?: boolean;
   };
 };
 
 export function RestoreSheet() {
-  const { params: { userData } = {} } = useRoute<
+  const { params: { backups, userData, fromSettings } = {} } = useRoute<
     RouteProp<RestoreSheetParams, 'RestoreSheet'>
   >();
 
@@ -40,12 +36,12 @@ export function RestoreSheet() {
     >
       <NativeStack.Screen
         component={ChooseBackupStep}
-        initialParams={{ userData }}
+        initialParams={{ backups, userData, fromSettings }}
         name={Routes.CHOOSE_BACKUP_SHEET}
       />
       <NativeStack.Screen
         component={RestoreCloudStep}
-        initialParams={{ userData }}
+        initialParams={{ backups, userData, fromSettings }}
         name={Routes.RESTORE_CLOUD_SHEET}
       />
     </NativeStack.Navigator>

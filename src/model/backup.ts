@@ -35,6 +35,27 @@ import {
 const encryptor = new AesEncryptor();
 const PIN_REGEX = /^\d{4}$/;
 
+export interface Backup {
+  isDirectory: boolean;
+  isFile: boolean;
+  lastModified: string;
+  name: string;
+  path: string;
+  size: number;
+  uri: string;
+}
+
+export const parseTimestampFromFilename = (filename: string) => {
+  return Number(
+    filename
+      .replace('.backup_', '')
+      .replace('backup_', '')
+      .replace('.json', '')
+      .replace('.icloud', '')
+      .replace('rainbow.me/wallet-backups/', '')
+  );
+};
+
 type BackupPassword = string;
 
 interface BackedUpData {

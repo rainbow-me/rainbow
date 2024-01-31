@@ -10,7 +10,7 @@ import { analytics, analyticsV2 } from '@/analytics';
 import { InteractionManager } from 'react-native';
 import { createAccountForWallet, walletsLoadState } from '@/redux/wallets';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
-import { createWallet, RainbowWallet } from '@/model/wallet';
+import { createWallet } from '@/model/wallet';
 import WalletTypes from '@/helpers/walletTypes';
 import { logger, RainbowError } from '@/logger';
 import walletsAndBackup from '@/assets/walletsAndBackup.png';
@@ -21,7 +21,6 @@ import { useDispatch } from 'react-redux';
 import {
   backupUserDataIntoCloud,
   fetchUserDataFromCloud,
-  isCloudBackupAvailable,
   logoutFromGoogleDrive,
 } from '@/handlers/cloudBackup';
 import showWalletErrorAlert from '@/helpers/support';
@@ -31,12 +30,13 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useInitializeWallet, useWallets } from '@/hooks';
 import { format, formatDistance } from 'date-fns';
+import { Backup, parseTimestampFromFilename } from '@/model/backup';
 
 const TRANSLATIONS = i18n.l.wallet.new.add_wallet_sheet;
 
 export type AddWalletSheetParams = {
   isFirstWallet: boolean;
-  userData: { wallets: RainbowWallet[] };
+  backups: { files: Backup[] };
 };
 
 type RouteParams = {
@@ -45,7 +45,7 @@ type RouteParams = {
 
 export const AddWalletSheet = () => {
   const {
-    params: { isFirstWallet, userData },
+    params: { isFirstWallet, backups },
   } = useRoute<RouteProp<RouteParams, 'AddWalletSheetParams'>>();
 
   const { goBack, navigate } = useNavigation();
@@ -59,20 +59,19 @@ export const AddWalletSheet = () => {
 
   const latestWalletBackedUpDate = useMemo(() => {
     let lastBackupDate: number | undefined = undefined;
-    if (userData?.wallets) {
-      Object.values(userData.wallets as RainbowWallet[]).forEach(wallet => {
-        if (
-          wallet.backedUp &&
-          wallet.backupDate &&
-          wallet.backupType === WalletBackupTypes.cloud &&
-          (!lastBackupDate || wallet.backupDate > lastBackupDate)
-        ) {
-          lastBackupDate = wallet.backupDate;
+    if (backups?.files.length) {
+      backups.files.forEach(backup => {
+        if (backup.isFile && backup.name) {
+          const ts = parseTimestampFromFilename(backup.name);
+
+          if (ts > (lastBackupDate || 0)) {
+            lastBackupDate = ts;
+          }
         }
       });
     }
     return lastBackupDate;
-  }, [userData]);
+  }, [backups]);
 
   const onPressCreate = async () => {
     try {
@@ -235,38 +234,21 @@ export const AddWalletSheet = () => {
     });
     if (IS_ANDROID) {
       await logoutFromGoogleDrive();
-      const isAvailable = await isCloudBackupAvailable();
-      if (isAvailable) {
-        let proceed = false;
-        try {
-          const data = await fetchUserDataFromCloud();
-          if (data?.wallets) {
-            Object.values(data.wallets as RainbowWallet[]).forEach(wallet => {
-              if (
-                wallet.backedUp &&
-                wallet.backupType === WalletBackupTypes.cloud
-              ) {
-                proceed = true;
-              }
-            });
-            if (proceed) {
-              navigate(Routes.RESTORE_SHEET, { userData: data });
-            }
-          }
-          logger.info(`Downloaded ${cloudPlatform} backup info`);
-        } catch (e) {
-          logger.error(e as RainbowError);
-        } finally {
-          if (!proceed) {
-            Alert.alert(
-              i18n.t(TRANSLATIONS.options.cloud.no_backups),
-              i18n.t(TRANSLATIONS.options.cloud.no_google_backups)
-            );
-          }
-        }
+    }
+
+    try {
+      const userData = await fetchUserDataFromCloud();
+      if (!userData) {
+        Alert.alert(
+          i18n.t(TRANSLATIONS.options.cloud.no_backups),
+          i18n.t(TRANSLATIONS.options.cloud.no_google_backups)
+        );
+        return;
       }
-    } else {
-      navigate(Routes.RESTORE_SHEET, { userData });
+      navigate(Routes.RESTORE_SHEET, { userData, backups });
+      logger.info(`Downloaded ${cloudPlatform} backup info`);
+    } catch (e) {
+      logger.error(e as RainbowError);
     }
   };
 

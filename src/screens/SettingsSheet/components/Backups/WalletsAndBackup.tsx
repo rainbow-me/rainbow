@@ -37,12 +37,9 @@ export const WalletsAndBackup = () => {
     });
   }, [navigate]);
 
-  const onBackupToCloud = useCallback(() => {
-    navigate(Routes.BACKUP_SHEET, {
-      nativeScreen: true,
-      step: WalletBackupStepTypes.cloud,
-    });
-  }, [navigate]);
+  const onViewCloudBackups = useCallback(() => {
+    navigate(Routes.VIEW_CLOUD_BACKUPS);
+  }, []);
 
   const onCreateNewSecretPhrase = useCallback(() => {}, []);
 
@@ -349,7 +346,7 @@ export const WalletsAndBackup = () => {
                 <MenuItem
                   hasSfSymbol
                   leftComponent={<MenuItem.TextIcon icon="􀎽" isLink />}
-                  onPress={onBackupToCloud}
+                  onPress={enabledCloudBackups}
                   size={52}
                   titleComponent={
                     <MenuItem.Title
@@ -506,7 +503,7 @@ export const WalletsAndBackup = () => {
                 <MenuItem
                   hasSfSymbol
                   leftComponent={<MenuItem.TextIcon icon="􀣔" isLink />}
-                  onPress={manageCloudBackups}
+                  onPress={onViewCloudBackups}
                   size={52}
                   titleComponent={
                     <MenuItem.Title
@@ -729,7 +726,6 @@ export const WalletsAndBackup = () => {
     lastBackupDate,
     manageCloudBackups,
     navigate,
-    onBackupToCloud,
     onCreateNewSecretPhrase,
     onNavigateToWalletView,
     onPressLearnMoreAboutCloudBackups,

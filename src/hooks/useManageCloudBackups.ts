@@ -37,6 +37,7 @@ export default function useManageCloudBackups() {
           const filteredFiles = files.filter(
             (file: any) => file.name.indexOf('backup_') !== -1
           );
+
           const backupFiles = filteredFiles.map((file: any, i: number) => {
             const ts = Number(
               file.name

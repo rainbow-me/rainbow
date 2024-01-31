@@ -20,7 +20,7 @@ type RouteParams = {
 
 export const AddWalletNavigator = () => {
   const {
-    params: { isFirstWallet, type, userData },
+    params: { isFirstWallet, type, backups },
   } = useRoute<RouteProp<RouteParams, 'AddWalletNavigatorParams'>>();
 
   const [scrollEnabled, setScrollEnabled] = useState(false);
@@ -40,7 +40,7 @@ export const AddWalletNavigator = () => {
           >
             <Swipe.Screen
               component={AddWalletSheet}
-              initialParams={{ isFirstWallet, userData }}
+              initialParams={{ isFirstWallet, backups }}
               name={Routes.ADD_WALLET_SHEET}
               listeners={{
                 focus: () => {

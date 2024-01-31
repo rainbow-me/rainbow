@@ -20,7 +20,7 @@ import RainbowText from '../../components/icons/svg/RainbowText';
 import { RainbowsBackground } from '../../components/rainbows-background/RainbowsBackground';
 import { Text } from '../../components/text';
 import {
-  fetchUserDataFromCloud,
+  fetchAllBackups,
   isCloudBackupAvailable,
   syncCloud,
 } from '@rainbow-me/handlers/cloudBackup';
@@ -36,6 +36,7 @@ import { ThemeContextProps, useTheme } from '@/theme';
 import logger from 'logger';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import { WelcomeScreenRainbowButton } from '@/screens/WelcomeScreen/WelcomeScreenRainbowButton';
+import { Backup } from '@/model/backup';
 
 // @ts-expect-error Our implementation of SC complains
 const Container = styled.View({
@@ -87,7 +88,7 @@ export default function WelcomeScreen() {
   const { colors, isDarkMode } = useTheme();
   // @ts-expect-error Navigation types
   const { replace, navigate, getState: dangerouslyGetState } = useNavigation();
-  const [userData, setUserData] = useState(null);
+  const [backups, setBackups] = useState<{ files: Backup[] } | undefined>();
   const hideSplashScreen = useHideSplashScreen();
 
   const contentAnimation = useSharedValue(1);
@@ -112,9 +113,10 @@ export default function WelcomeScreen() {
         if (isAvailable && ios) {
           logger.log('syncing...');
           await syncCloud();
-          logger.log('fetching backup info...');
-          const data = await fetchUserDataFromCloud();
-          setUserData(data);
+          logger.log('fetching backups...');
+          const backups = await fetchAllBackups();
+          setBackups(backups);
+
           logger.log(`Downloaded ${cloudPlatform} backup info`);
         }
       } catch (e) {
@@ -229,10 +231,10 @@ export default function WelcomeScreen() {
   const showRestoreSheet = useCallback(() => {
     analytics.track('Tapped "I already have one"');
     navigate(Routes.ADD_WALLET_NAVIGATOR, {
-      userData,
+      backups,
       isFirstWallet: true,
     });
-  }, [navigate, userData]);
+  }, [navigate, backups]);
 
   useAndroidBackHandler(() => {
     return true;

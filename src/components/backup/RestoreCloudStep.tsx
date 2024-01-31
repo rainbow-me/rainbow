@@ -6,6 +6,7 @@ import WalletAndBackup from '@/assets/walletsAndBackup.png';
 import { KeyboardArea } from 'react-native-keyboard-area';
 
 import {
+  Backup,
   BackupUserData,
   fetchBackupPassword,
   restoreCloudBackup,
@@ -47,7 +48,7 @@ import { ImgixImage } from '../images';
 import { RainbowButton } from '../buttons';
 import RainbowButtonTypes from '../buttons/rainbow-button/RainbowButtonTypes';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { RainbowSelectedWalletData, RainbowWallet } from '@/model/wallet';
+import { RestoreSheetParams } from '@/screens/RestoreSheet';
 
 const Title = styled(Text).attrs({
   size: 'big',
@@ -79,15 +80,14 @@ const KeyboardSizeView = styled(KeyboardArea)({
 });
 
 type RestoreCloudStepParams = {
-  RestoreCloudStep: {
-    userData: BackupUserData;
-    selectedBackup: RainbowWallet;
+  RestoreSheet: {
+    selectedBackup: Backup;
   };
 };
 
 export default function RestoreCloudStep() {
   const { params } = useRoute<
-    RouteProp<RestoreCloudStepParams, 'RestoreCloudStep'>
+    RouteProp<RestoreCloudStepParams & RestoreSheetParams, 'RestoreSheet'>
   >();
 
   const { userData, selectedBackup } = params;
@@ -96,7 +96,7 @@ export default function RestoreCloudStep() {
 
   const dispatch = useDispatch();
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
-  const { navigate, goBack, replace } = useNavigation();
+  const { goBack, replace } = useNavigation();
   const [validPassword, setValidPassword] = useState(false);
   const [incorrectPassword, setIncorrectPassword] = useState(false);
   const [password, setPassword] = useState('');
@@ -138,19 +138,19 @@ export default function RestoreCloudStep() {
   const onSubmit = useCallback(async () => {
     setLoading(true);
     try {
-      if (!selectedBackup.backupFile) {
-        throw new Error('No backup file for selected backup');
+      if (!selectedBackup.name) {
+        throw new Error('No backup file selected');
       }
 
       const status = await restoreCloudBackup({
         password,
         userData,
-        backupSelected: selectedBackup.backupFile,
+        backupSelected: selectedBackup.name,
       });
 
-      goBack();
-
       if (status === RestoreCloudBackupResultStates.success) {
+        goBack();
+
         // Store it in the keychain in case it was missing
         await saveBackupPassword(password);
 
@@ -162,10 +162,10 @@ export default function RestoreCloudStep() {
 
         InteractionManager.runAfterInteractions(async () => {
           const wallets = await dispatch(walletsLoadState());
-          if (!userData && selectedBackup.backupFile) {
+          if (!userData && selectedBackup.name) {
             goBack();
             logger.info('Updating backup state of wallets');
-            let filename = selectedBackup.backupFile;
+            let filename = selectedBackup.name;
             if (IS_ANDROID && filename) {
               /**
                * We need to normalize the filename on Android, because sometimes
@@ -178,8 +178,8 @@ export default function RestoreCloudStep() {
             logger.log('updating backup state of wallets with ids', {
               walletIds: JSON.stringify(walletIdsToUpdate),
             });
-            logger.log('backupSelected.backupFile', {
-              fileName: selectedBackup.backupFile,
+            logger.log('backupSelected.name', {
+              fileName: selectedBackup.name,
             });
             await dispatch(
               setAllWalletsWithIdsAsBackedUp(
@@ -212,7 +212,6 @@ export default function RestoreCloudStep() {
             null
           );
 
-          // navigate(Routes.WALLET_SCREEN);
           replace(Routes.SWIPE_LAYOUT);
           setLoading(false);
         });
@@ -238,7 +237,8 @@ export default function RestoreCloudStep() {
     selectedBackup,
     dispatch,
     initializeWallet,
-    navigate,
+    goBack,
+    replace,
     password,
     userAccounts,
     userData,

@@ -15,6 +15,7 @@ import SecretWarning from './components/Backups/SecretWarning';
 import SettingsSection from './components/SettingsSection';
 import WalletNotificationsSettings from './components/WalletNotificationsSettings';
 import { settingsOptions } from '@/navigation/config';
+import ViewCloudBackups from './components/Backups/ViewCloudBackups';
 
 const Stack = createStackNavigator();
 
@@ -112,7 +113,15 @@ export function SettingsSheet() {
           name="WiewWalletBackup"
           options={({ route }: any) => ({
             cardStyleInterpolator: settingsCardStyleInterpolator,
-            title: route.params?.title || lang.t('settings.backup'),
+            title: route.params?.title,
+          })}
+        />
+        <Stack.Screen
+          component={ViewCloudBackups}
+          name="ViewCloudBackups"
+          options={({ route }: any) => ({
+            cardStyleInterpolator: settingsCardStyleInterpolator,
+            title: route.params?.title,
           })}
         />
         <Stack.Screen
@@ -120,7 +129,7 @@ export function SettingsSheet() {
           name="SecretWarning"
           options={({ route }: any) => ({
             cardStyleInterpolator: settingsCardStyleInterpolator,
-            title: route.params?.title || lang.t('settings.backup'),
+            title: route.params?.title,
           })}
         />
         <Stack.Screen
@@ -128,7 +137,7 @@ export function SettingsSheet() {
           name="ShowSecretView"
           options={({ route }: any) => ({
             cardStyleInterpolator: settingsCardStyleInterpolator,
-            title: route.params?.title || lang.t('settings.backup'),
+            title: route.params?.title,
           })}
         />
       </Stack.Navigator>

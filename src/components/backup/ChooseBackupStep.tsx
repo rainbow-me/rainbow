@@ -17,7 +17,13 @@ import Menu from '@/screens/SettingsSheet/components/Menu';
 import { format } from 'date-fns';
 import MenuItem from '@/screens/SettingsSheet/components/MenuItem';
 import Routes from '@/navigation/routesNames';
-import { BackupUserData } from '@/model/backup';
+import {
+  Backup,
+  BackupUserData,
+  parseTimestampFromFilename,
+} from '@/model/backup';
+import { SheetHandleFixedToTop } from '../sheet';
+import { RestoreSheetParams } from '@/screens/RestoreSheet';
 
 const Title = styled(Text).attrs({
   align: 'left',
@@ -35,45 +41,49 @@ const Masthead = styled(Box).attrs({
   flexShrink: 0,
 });
 
-type ChooseBackupStepParams = {
-  ChooseBackupStep: {
-    userData: BackupUserData;
-  };
-};
-
 export default function ChooseBackupStep() {
   const {
-    params: { userData },
-  } = useRoute<RouteProp<ChooseBackupStepParams, 'ChooseBackupStep'>>();
+    params: { backups, userData, fromSettings },
+  } = useRoute<RouteProp<RestoreSheetParams, 'RestoreSheet'>>();
 
   const { height: deviceHeight } = useDimensions();
   const { navigate } = useNavigation();
 
-  const cloudBackups = Object.values(userData.wallets).filter(wallet => {
-    return wallet.backupType === walletBackupTypes.cloud && wallet.backedUp;
+  const cloudBackups = backups.files.filter(backup => {
+    return (
+      backup.isFile && backup.size > 0 && !backup.name.includes('UserData.json')
+    );
   });
 
   const mostRecentBackup = cloudBackups.reduce((prev, current) => {
-    if (!current || !current.backedUp || !current.backupDate) {
+    if (!current) {
       return prev;
     }
 
-    if (typeof prev === 'undefined' || !prev.backupDate) {
+    if (!prev) {
       return current;
     }
 
-    if (current.backupDate > prev.backupDate) {
+    const prevTimestamp = parseTimestampFromFilename(prev.name);
+    const currentTimestamp = parseTimestampFromFilename(current.name);
+
+    if (currentTimestamp > prevTimestamp) {
       return current;
     }
 
     return prev;
-  }, {} as RainbowWallet);
+  }, undefined as Backup | undefined);
 
   const onSelectCloudBackup = useCallback(
-    (selectedBackup: RainbowWallet) => {
-      navigate(Routes.RESTORE_CLOUD_SHEET, { userData, selectedBackup });
+    (selectedBackup: Backup) => {
+      navigate(Routes.RESTORE_CLOUD_SHEET, {
+        backups,
+        userData,
+        selectedBackup,
+        fromSettings,
+      });
     },
-    [navigate, userData]
+    [navigate, userData, backups, fromSettings]
   );
 
   return (
@@ -103,7 +113,7 @@ export default function ChooseBackupStep() {
               <Menu
                 description={lang.t(lang.l.back_up.cloud.latest_backup, {
                   date: format(
-                    mostRecentBackup.backupDate!,
+                    parseTimestampFromFilename(mostRecentBackup.name),
                     "M/d/yy 'at' h:mm a"
                   ),
                 })}
@@ -126,9 +136,9 @@ export default function ChooseBackupStep() {
             <Menu header={lang.t(lang.l.back_up.cloud.older_backups)}>
               {cloudBackups.map(
                 backup =>
-                  backup.id !== mostRecentBackup?.id && (
+                  backup.name !== mostRecentBackup?.name && (
                     <MenuItem
-                      key={backup.id}
+                      key={backup.name}
                       onPress={() => onSelectCloudBackup(backup)}
                       size={52}
                       titleComponent={
@@ -137,8 +147,14 @@ export default function ChooseBackupStep() {
                           text={lang.t(
                             lang.l.back_up.cloud.older_backups_title,
                             {
-                              date: format(backup.backupDate!, 'M/d/yy'),
-                              time: format(backup.backupDate!, 'p'),
+                              date: format(
+                                parseTimestampFromFilename(backup.name),
+                                'M/d/yy'
+                              ),
+                              time: format(
+                                parseTimestampFromFilename(backup.name),
+                                'p'
+                              ),
                             }
                           )}
                         />
