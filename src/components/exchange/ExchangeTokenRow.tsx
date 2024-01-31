@@ -52,7 +52,7 @@ export default React.memo(function ExchangeTokenRow({
 
   const rowTestID = `${testID}-exchange-coin-row-${
     symbol ?? item?.symbol ?? ''
-  }-${network}`;
+  }-${network || Network.mainnet}`;
 
   const isInfoButtonVisible =
     !item?.isNativeAsset ||
@@ -75,7 +75,7 @@ export default React.memo(function ExchangeTokenRow({
               <Box
                 as={FastCoinIcon}
                 address={address || item?.address}
-                network={network}
+                network={network || Network.mainnet}
                 mainnetAddress={mainnet_address ?? item?.mainnet_address}
                 symbol={symbol ?? item?.symbol}
                 theme={theme}
