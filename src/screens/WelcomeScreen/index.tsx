@@ -1,6 +1,6 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import lang from 'i18n-js';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Linking, StyleSheet } from 'react-native';
 import Reanimated, {
   Easing,
@@ -19,12 +19,6 @@ import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import RainbowText from '../../components/icons/svg/RainbowText';
 import { RainbowsBackground } from '../../components/rainbows-background/RainbowsBackground';
 import { Text } from '../../components/text';
-import {
-  fetchAllBackups,
-  isCloudBackupAvailable,
-  syncCloud,
-} from '@rainbow-me/handlers/cloudBackup';
-import { cloudPlatform } from '@rainbow-me/utils/platform';
 import { analytics } from '@/analytics';
 
 import { useHideSplashScreen } from '@/hooks';
@@ -36,7 +30,7 @@ import { ThemeContextProps, useTheme } from '@/theme';
 import logger from 'logger';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import { WelcomeScreenRainbowButton } from '@/screens/WelcomeScreen/WelcomeScreenRainbowButton';
-import { Backup } from '@/model/backup';
+import useCloudBackups from '@/hooks/useCloudBackups';
 
 // @ts-expect-error Our implementation of SC complains
 const Container = styled.View({
@@ -88,8 +82,9 @@ export default function WelcomeScreen() {
   const { colors, isDarkMode } = useTheme();
   // @ts-expect-error Navigation types
   const { replace, navigate, getState: dangerouslyGetState } = useNavigation();
-  const [backups, setBackups] = useState<{ files: Backup[] } | undefined>();
   const hideSplashScreen = useHideSplashScreen();
+
+  const backups = useCloudBackups();
 
   const contentAnimation = useSharedValue(1);
   const colorAnimation = useSharedValue(0);
@@ -107,68 +102,52 @@ export default function WelcomeScreen() {
 
   useEffect(() => {
     const initialize = async () => {
-      try {
-        logger.log(`downloading ${cloudPlatform} backup info...`);
-        const isAvailable = await isCloudBackupAvailable();
-        if (isAvailable && ios) {
-          logger.log('syncing...');
-          await syncCloud();
-          logger.log('fetching backups...');
-          const backups = await fetchAllBackups();
-          setBackups(backups);
+      hideSplashScreen();
+      shouldAnimateRainbows.value = true;
 
-          logger.log(`Downloaded ${cloudPlatform} backup info`);
-        }
-      } catch (e) {
-        logger.log('error getting userData', e);
-      } finally {
-        hideSplashScreen();
-        shouldAnimateRainbows.value = true;
+      const initialDuration = 120;
 
-        const initialDuration = 120;
+      contentAnimation.value = withSequence(
+        withTiming(1.2, {
+          duration: initialDuration,
+          easing: Easing.bezier(0.165, 0.84, 0.44, 1),
+        }),
+        withSpring(1, {
+          damping: 7,
+          overshootClamping: false,
+          stiffness: 250,
+        })
+      );
 
-        contentAnimation.value = withSequence(
-          withTiming(1.2, {
-            duration: initialDuration,
-            easing: Easing.bezier(0.165, 0.84, 0.44, 1),
-          }),
-          withSpring(1, {
-            damping: 7,
-            overshootClamping: false,
-            stiffness: 250,
+      // We need to disable looping animations
+      // There's no way to disable sync yet
+      // See https://stackoverflow.com/questions/47391019/animated-button-block-the-detox
+      if (!IS_TEST) {
+        createWalletButtonAnimation.value = withDelay(
+          initialDuration,
+          withTiming(1.02, { duration: 1000 }, () => {
+            createWalletButtonAnimation.value = withRepeat(
+              withTiming(0.98, {
+                duration: 1000,
+              }),
+              -1,
+              true
+            );
           })
         );
+        colorAnimation.value = withRepeat(
+          withTiming(5, {
+            duration: 2500,
+            easing: Easing.linear,
+          }),
+          -1
+        );
+      }
 
-        // We need to disable looping animations
-        // There's no way to disable sync yet
-        // See https://stackoverflow.com/questions/47391019/animated-button-block-the-detox
-        if (!IS_TEST) {
-          createWalletButtonAnimation.value = withDelay(
-            initialDuration,
-            withTiming(1.02, { duration: 1000 }, () => {
-              createWalletButtonAnimation.value = withRepeat(
-                withTiming(0.98, {
-                  duration: 1000,
-                }),
-                -1,
-                true
-              );
-            })
-          );
-          colorAnimation.value = withRepeat(
-            withTiming(5, {
-              duration: 2500,
-              easing: Easing.linear,
-            }),
-            -1
-          );
-        }
-
-        if (IS_TEST) {
-          logger.log(
-            'Disabled loop animations in WelcomeScreen due to .env var IS_TESTING === "true"'
-          );
-        }
+      if (IS_TEST) {
+        logger.log(
+          'Disabled loop animations in WelcomeScreen due to .env var IS_TESTING === "true"'
+        );
       }
     };
 

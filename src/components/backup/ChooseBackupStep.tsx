@@ -10,19 +10,12 @@ import { Box, Stack } from '@/design-system';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { ImgixImage } from '../images';
-import { AllRainbowWalletsData, RainbowWallet } from '@/model/wallet';
-import walletBackupTypes from '@/helpers/walletBackupTypes';
 import MenuContainer from '@/screens/SettingsSheet/components/MenuContainer';
 import Menu from '@/screens/SettingsSheet/components/Menu';
 import { format } from 'date-fns';
 import MenuItem from '@/screens/SettingsSheet/components/MenuItem';
 import Routes from '@/navigation/routesNames';
-import {
-  Backup,
-  BackupUserData,
-  parseTimestampFromFilename,
-} from '@/model/backup';
-import { SheetHandleFixedToTop } from '../sheet';
+import { Backup, parseTimestampFromFilename } from '@/model/backup';
 import { RestoreSheetParams } from '@/screens/RestoreSheet';
 
 const Title = styled(Text).attrs({

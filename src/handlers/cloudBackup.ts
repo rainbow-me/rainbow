@@ -6,6 +6,7 @@ import RNFS from 'react-native-fs';
 import AesEncryptor from '../handlers/aesEncryption';
 import { logger, RainbowError } from '@/logger';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import { CloudBackups } from '@/model/backup';
 const REMOTE_BACKUP_WALLET_DIR = 'rainbow.me/wallet-backups';
 const USERDATA_FILE = 'UserData.json';
 const encryptor = new AesEncryptor();
@@ -62,7 +63,7 @@ export async function deleteAllBackups() {
   );
 }
 
-export async function fetchAllBackups() {
+export async function fetchAllBackups(): Promise<CloudBackups> {
   if (android) {
     await RNCloudFs.loginIfNeeded();
   }
@@ -233,6 +234,7 @@ export async function backupUserDataIntoCloud(data: any) {
 export async function fetchUserDataFromCloud() {
   const filename = USERDATA_FILE;
   const password = RAINBOW_MASTER_KEY;
+
   return getDataFromCloud(password, filename);
 }
 

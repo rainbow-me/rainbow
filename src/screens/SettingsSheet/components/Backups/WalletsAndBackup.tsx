@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { cloudPlatform } from '@/utils/platform';
 import Menu from '../Menu';
 import MenuContainer from '../MenuContainer';
@@ -22,12 +22,17 @@ import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { backupsCard } from '@/components/cards/utils/constants';
 import { useVisibleWallets } from '../../useVisibleWallets';
 import { format } from 'date-fns';
+import { fetchAllBackups } from '@/handlers/cloudBackup';
+import useCloudBackups from '@/hooks/useCloudBackups';
 
 export const WalletsAndBackup = () => {
   const { colors, isDarkMode } = useTheme();
 
   const { navigate } = useNavigation();
   const { wallets } = useWallets();
+
+  const backups = useCloudBackups();
+
   const { manageCloudBackups } = useManageCloudBackups();
 
   const enabledCloudBackups = useCallback(() => {
@@ -37,9 +42,12 @@ export const WalletsAndBackup = () => {
     });
   }, [navigate]);
 
-  const onViewCloudBackups = useCallback(() => {
-    navigate(Routes.VIEW_CLOUD_BACKUPS);
-  }, []);
+  const onViewCloudBackups = useCallback(async () => {
+    navigate('ViewCloudBackups', {
+      backups,
+      title: 'My Cloud Backups',
+    });
+  }, [backups, navigate]);
 
   const onCreateNewSecretPhrase = useCallback(() => {}, []);
 

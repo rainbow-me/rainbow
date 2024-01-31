@@ -10,7 +10,7 @@ import MenuItem from '../MenuItem';
 import BackupWarningIcon from '@/assets/BackupWarning.png';
 import ManuallyBackedUpIcon from '@/assets/manuallyBackedUp.png';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
-import { useManageCloudBackups, useWallets } from '@/hooks';
+import { useWallets } from '@/hooks';
 import { abbreviations } from '@/utils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import MenuHeader from '../MenuHeader';
@@ -47,6 +47,8 @@ const ViewWalletBackup = () => {
   const { wallets } = useWallets();
   const wallet = wallets?.[walletId];
 
+  console.log(wallet);
+
   const isSecretPhrase = WalletTypes.mnemonic === wallet?.type;
 
   const title =
@@ -55,8 +57,6 @@ const ViewWalletBackup = () => {
       : wallet?.name;
 
   const { navigate } = useNavigation();
-
-  const { manageCloudBackups } = useManageCloudBackups();
 
   const [isToastActive, setToastActive] = useRecoilState(
     addressCopiedToastAtom

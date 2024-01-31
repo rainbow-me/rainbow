@@ -35,6 +35,10 @@ import {
 const encryptor = new AesEncryptor();
 const PIN_REGEX = /^\d{4}$/;
 
+export interface CloudBackups {
+  files: Backup[];
+}
+
 export interface Backup {
   isDirectory: boolean;
   isFile: boolean;
@@ -299,8 +303,20 @@ export async function restoreCloudBackup({
       ...data.secrets,
     };
 
+    console.log(JSON.stringify(userData, null, 2));
+    console.log(JSON.stringify(data, null, 2));
+
+    const backupToRestoreTiemstamp = parseTimestampFromFilename(
+      Object.values(userData?.wallets)[0].backupFile
+    );
+    console.log(
+      backupToRestoreTiemstamp,
+      data.createdAt,
+      backupToRestoreTiemstamp === data.createdAt
+    );
+
     let restoredSuccessfully = false;
-    if (userData) {
+    if (backupToRestoreTiemstamp === data.createdAt) {
       // Restore only wallets that were backed up in cloud
       // or wallets that are read-only
       const walletsToRestore: AllRainbowWallets = {};

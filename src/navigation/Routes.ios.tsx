@@ -101,6 +101,7 @@ import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoShe
 import { ConsoleSheet } from '@/screens/points/ConsoleSheet';
 import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileContext';
 import ChooseBackupStep from '@/components/backup/ChooseBackupStep';
+import { RestoreCloudStep } from '@/components/backup';
 
 type StackNavigatorParams = {
   [Routes.SEND_SHEET]: unknown;
@@ -246,6 +247,11 @@ function NativeStackNavigator() {
         component={ExpandedAssetSheet}
         name={Routes.TOKEN_INDEX_SHEET}
         {...expandedAssetSheetConfigWithLimit}
+      />
+      <NativeStack.Screen
+        component={RestoreCloudStep}
+        name={Routes.RESTORE_CLOUD_SHEET}
+        {...backupSheetConfig}
       />
       <NativeStack.Screen
         component={SpeedUpAndCancelSheet}
