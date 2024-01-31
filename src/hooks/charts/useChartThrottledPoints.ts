@@ -112,9 +112,12 @@ export default function useChartThrottledPoints({
     params: any;
   }>();
   const chartType = params?.chartType ?? DEFAULT_CHART_TYPE;
-  const { data: chart = [], isLoading: fetchingCharts } = usePriceChart({
+  const {
+    data: chart = [],
+    isLoading: fetchingCharts,
+    updateChartType,
+  } = usePriceChart({
     address: asset.address,
-    time: chartType,
     network: asset.network,
   });
   const [throttledPoints, setThrottledPoints] = useState(() =>
@@ -187,6 +190,7 @@ export default function useChartThrottledPoints({
   return {
     chart,
     chartType,
+    updateChartType,
     color,
     fetchingCharts,
     initialChartDataLabels,

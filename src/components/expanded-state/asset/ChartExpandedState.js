@@ -268,6 +268,7 @@ export default function ChartExpandedState({ asset }) {
     chartType,
     color,
     fetchingCharts,
+    updateChartType,
     initialChartDataLabels,
     showChart,
     throttledData,
@@ -351,6 +352,7 @@ export default function ChartExpandedState({ asset }) {
       <ChartPathProvider data={throttledData}>
         <Chart
           {...initialChartDataLabels}
+          updateChartType={updateChartType}
           asset={assetWithPrice}
           chart={chart}
           chartType={chartType}
