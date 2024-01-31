@@ -15,6 +15,8 @@ import { TransactionDetailsStatusActionsAndTimestampSection } from '@/screens/tr
 import { useTransactionDetailsToasts } from '@/screens/transaction-details/hooks/useTransactionDetailsToasts';
 import { LayoutChangeEvent } from 'react-native';
 import { useDimensions } from '@/hooks';
+import { useTransaction } from '@/resources/transactions/transaction';
+import { Network } from '@/networks/types';
 
 type RouteParams = {
   TransactionDetails: {
@@ -27,7 +29,12 @@ export const TransactionDetails = () => {
   const navigation = useNavigation();
   const route = useRoute<RouteProp<RouteParams, 'TransactionDetails'>>();
   const { setParams } = navigation;
-  const { transaction } = route.params;
+  const { transaction: tx } = route.params;
+  const { data } = useTransaction({
+    hash: tx.hash || '',
+    network: tx.network || Network.mainnet,
+  });
+  const transaction = data;
   const [sheetHeight, setSheetHeight] = useState(0);
   const [statusIconHidden, setStatusIconHidden] = useState(false);
   const { presentedToast, presentToastFor } = useTransactionDetailsToasts();

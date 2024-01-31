@@ -21,9 +21,4 @@ export {
 } from './gas';
 export { parseNewTransaction } from './newTransaction';
 export { getRequestDisplayDetails } from './requests';
-export {
-  parseTransactions,
-  getTitle,
-  getDescription,
-  getTransactionLabel,
-} from './transactions';
+export { getDescription } from './transactions';

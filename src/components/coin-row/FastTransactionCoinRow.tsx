@@ -4,7 +4,7 @@ import { ButtonPressAnimation } from '../animations';
 import FastCoinIcon from '../asset-list/RecyclerAssetList2/FastComponents/FastCoinIcon';
 import FastTransactionStatusBadge from './FastTransactionStatusBadge';
 import { Text, globalColors, useColorMode } from '@/design-system';
-import { TransactionStatusTypes, TransactionTypes } from '@/entities';
+import { RainbowTransaction, TransactionStatusTypes } from '@/entities';
 import { ThemeContextProps } from '@/theme';
 import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
@@ -13,6 +13,7 @@ import { CardSize } from '../unique-token/CardSize';
 import { ChainBadge } from '../coin-icon';
 import { Network } from '@/networks/types';
 import { ethereumUtils } from '@/utils';
+import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 
 const BottomRow = React.memo(function BottomRow({
   description,
@@ -83,15 +84,16 @@ export default React.memo(function TransactionCoinRow({
   item,
   theme,
 }: {
-  item: any;
+  item: RainbowTransaction;
   theme: ThemeContextProps;
 }) {
   const { colorMode } = useColorMode();
-  const { mainnetAddress } = item;
   const { colors } = theme;
   const navigation = useNavigation();
 
   const onPress = useCallback(() => {
+    console.log('changes: ', item?.changes?.[0]?.asset);
+    console.log('asset: ', item?.asset);
     navigation.navigate(Routes.TRANSACTION_DETAILS, {
       transaction: item,
     });
@@ -104,7 +106,7 @@ export default React.memo(function TransactionCoinRow({
         testID={`${item.title}-${item.description}-${item.balance?.display}`}
       >
         <View style={sx.icon}>
-          {item.nft ? (
+          {item.asset?.type === 'nft' ? (
             <View
               style={{
                 shadowColor: globalColors.grey100,
@@ -119,9 +121,9 @@ export default React.memo(function TransactionCoinRow({
               <View
                 style={{
                   shadowColor:
-                    colorMode === 'dark' || !item.nft.predominantColor
+                    colorMode === 'dark' || !item.asset.color
                       ? globalColors.grey100
-                      : item.nft.predominantColor,
+                      : item.asset.color,
                   shadowOffset: { width: 0, height: 6 },
                   shadowOpacity: 0.24,
                   shadowRadius: 9,
@@ -132,13 +134,10 @@ export default React.memo(function TransactionCoinRow({
                   style={{
                     width: 40,
                     height: 40,
-                    borderRadius: 20,
+                    borderRadius: 10,
                   }}
                   source={{
-                    uri:
-                      item.type === TransactionTypes.authorize
-                        ? item.nft.collection.image_url
-                        : item.nft.lowResUrl,
+                    uri: item.asset.icon_url,
                   }}
                 />
               </View>
@@ -153,10 +152,10 @@ export default React.memo(function TransactionCoinRow({
             </View>
           ) : (
             <FastCoinIcon
-              address={mainnetAddress || item.address}
+              address={item.asset?.address || ETH_ADDRESS}
               network={item.network}
-              mainnetAddress={mainnetAddress}
-              symbol={item.symbol}
+              mainnetAddress={item.asset?.mainnet_address}
+              symbol={item.asset?.symbol || ETH_SYMBOL}
               theme={theme}
             />
           )}
@@ -165,8 +164,8 @@ export default React.memo(function TransactionCoinRow({
           <View style={sx.topRow}>
             <FastTransactionStatusBadge
               colors={colors}
-              pending={item.pending}
-              status={item.status}
+              pending={item.status === 'pending'}
+              type={item.type}
               title={item.title}
             />
             <View style={sx.balance}>

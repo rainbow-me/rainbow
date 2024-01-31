@@ -9,10 +9,16 @@ import { CoinIcon } from '@/components/coin-icon';
 import { Box, Stack } from '@/design-system';
 import { TransactionDetailsDivider } from '@/screens/transaction-details/components/TransactionDetailsDivider';
 import * as i18n from '@/languages';
-import { AssetTypes, TransactionType } from '@/entities';
+import { AssetTypes } from '@/entities';
 import { ethereumUtils } from '@/utils';
 import { Network } from '@/networks/types';
 import { useUserAsset } from '@/resources/assets/useUserAsset';
+import {
+  convertAmountAndPriceToNativeDisplay,
+  convertAmountToBalanceDisplay,
+  convertAmountToNativeDisplay,
+} from '@/helpers/utilities';
+import { useAccountSettings } from '@/hooks';
 
 type Props = {
   transaction: RainbowTransaction;
@@ -24,38 +30,31 @@ type Props = {
 export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({
   transaction,
 }) => {
+  const { nativeCurrency } = useAccountSettings();
   const { network, symbol, type, fee } = transaction;
-  const assetUniqueId =
-    transaction.network === Network.mainnet
-      ? `${transaction.address}`
-      : `${transaction.address}_${transaction.network}`;
-  const { data: assetData } = useUserAsset(assetUniqueId);
+  const assetData = transaction?.asset;
+  const change = transaction?.changes?.[0];
 
-  const coinAddress = assetData?.address ?? transaction.address;
+  const coinAddress = assetData?.address;
   const mainnetCoinAddress = assetData?.mainnet_address;
-  const coinSymbol =
-    type === TransactionType.contract_interaction
-      ? ethereumUtils.getNetworkNativeAsset(network ?? Network.mainnet)?.symbol
-      : assetData?.symbol ?? symbol ?? undefined;
+  const coinSymbol = assetData?.symbol ?? symbol ?? undefined;
   const coinType =
     assetData?.type ?? network !== Network.mainnet ? network : AssetTypes.token;
 
-  const value = transaction.balance?.display;
-  const nativeCurrencyValue = transaction.native?.display;
-
+  const value = change?.asset?.balance?.display || transaction.balance?.display;
+  const nativeCurrencyValue = convertAmountAndPriceToNativeDisplay(
+    change?.asset?.balance?.amount,
+    change?.asset?.price?.value,
+    nativeCurrency
+  ).display;
   const feeValue = fee?.value.display ?? '';
   const feeNativeCurrencyValue = fee?.native?.display ?? '';
-
-  if (!fee && !value) {
-    return null;
-  }
-
   return (
     <>
       <TransactionDetailsDivider />
       <Box paddingVertical="20px">
         <Stack space="20px">
-          {value && (
+          {true && (
             <DoubleLineTransactionDetailsRow
               leftComponent={
                 <CoinIcon

@@ -2,24 +2,41 @@ import { BigNumberish } from '@ethersproject/bignumber';
 import { ProtocolType } from '../protocolTypes';
 import { ParsedAddressAsset } from '../tokens';
 import { EthereumAddress } from '../wallet';
-import { TransactionStatus } from './transactionStatus';
-import { TransactionType } from './transactionType';
 import { Network } from '@/helpers/networkTypes';
 import { AddCashCurrencyAsset } from '@/references';
 import { ChainId, SwapType } from '@rainbow-me/swaps';
 import { SwapMetadata } from '@/raps/common';
 import { FiatProviderName } from '@/entities/f2c';
 import { UniqueAsset } from '../uniqueAssets';
+import { ParsedAsset } from '@/resources/assets/types';
+import {
+  TransactionStatus,
+  TransactionType,
+} from '@/resources/transactions/types';
+
+export type TransactionDirection = 'in' | 'out' | 'self';
 
 export interface RainbowTransaction {
   address?: string;
+  asset?: ParsedAsset | null;
   balance?: {
     amount: string;
     display: string;
   } | null;
-  dappName?: string; // for walletconnect
+  changes?: Array<
+    | {
+        asset: ParsedAddressAsset;
+        direction: TransactionDirection;
+        address_from?: string;
+        address_to?: string;
+        value?: number | string;
+        price?: number | string;
+      }
+    | undefined
+  >;
+  direction?: TransactionDirection;
+  description: string;
   data?: string; // for pending tx
-  description?: string | null;
   from: EthereumAddress | null;
   gasLimit?: BigNumberish;
   gasPrice?: BigNumberish;
@@ -32,12 +49,13 @@ export interface RainbowTransaction {
     amount: string;
     display: string;
   };
-  network?: Network;
+  network: Network;
   nft?: UniqueAsset;
   nonce?: number | null;
   pending?: boolean;
   protocol?: ProtocolType | null;
   flashbots?: boolean;
+  approvalAmount?: 'UNLIMITED' | (string & object);
   ensCommitRegistrationName?: string;
   ensRegistration?: boolean;
   sourceAmount?: string; // for purchases
@@ -50,11 +68,11 @@ export interface RainbowTransaction {
   };
   symbol?: string | null;
   timestamp?: number; // for purchases
-  title?: string;
+  title: string;
   to: EthereumAddress | null;
   transferId?: string; // for purchases
   txTo?: EthereumAddress | null;
-  type?: TransactionType;
+  type: TransactionType;
   value?: BigNumberish; // for pending tx
   fee?: RainbowTransactionFee;
   fiatProvider?: {
@@ -84,6 +102,10 @@ export interface NewTransaction {
   amount: string | null;
   asset: ParsedAddressAsset | null;
   dappName?: string; // for walletconnect
+  contract?: {
+    name: string;
+    iconUrl?: string;
+  };
   data?: string;
   from: EthereumAddress | null;
   gasLimit?: BigNumberish;
@@ -99,7 +121,7 @@ export interface NewTransaction {
   ensCommitRegistrationName?: string;
   ensRegistration?: boolean;
   sourceAmount?: string; // for purchases
-  status?: TransactionStatus;
+  status?: 'pending';
   timestamp?: number; // for purchases
   to: EthereumAddress | null;
   transferId?: string; // for purchases

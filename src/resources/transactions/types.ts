@@ -9,6 +9,20 @@ import { Network } from '@/networks/types';
 import { AddysAsset, ParsedAsset } from '../assets/types';
 
 type ChainId = number;
+
+export type TransactionStatus = 'pending' | 'confirmed' | 'failed';
+
+export type TransactionChanges = (
+  | {
+      asset: ParsedAsset;
+      value: number | undefined;
+      direction: TransactionDirection;
+      address_from: string;
+      address_to: string;
+      price: number;
+    }
+  | undefined
+)[];
 /**
  * Metadata for a message from the Zerion API.
  */
@@ -59,8 +73,6 @@ export interface AssetPricesReceivedMessage {
   };
   meta?: MessageMeta;
 }
-
-export type TransactionStatus = 'pending' | 'confirmed' | 'failed';
 
 export type TxHash = `0x${string}`;
 
@@ -169,8 +181,8 @@ const transactionTypes = {
   ],
 } as const;
 
-type TransactionWithChangesType = typeof transactionTypes.withChanges[number];
-type TransactionWithoutChangesType = typeof transactionTypes.withoutChanges[number];
+export type TransactionWithChangesType = typeof transactionTypes.withChanges[number];
+export type TransactionWithoutChangesType = typeof transactionTypes.withoutChanges[number];
 
 export type TransactionType =
   | TransactionWithChangesType
@@ -186,7 +198,7 @@ export type TransactionApiResponse = {
   status: TransactionStatus;
   id: TxHash;
   hash: TxHash;
-  network: number;
+  network: Network;
   protocol?: string;
   direction?: TransactionDirection;
   address_from?: string;

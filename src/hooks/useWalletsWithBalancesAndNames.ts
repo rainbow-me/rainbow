@@ -12,7 +12,6 @@ export default function useWalletsWithBalancesAndNames() {
       mapValues(wallets, wallet => {
         const updatedAccounts = (wallet.addresses ?? []).map(account => ({
           ...account,
-          // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
           balance: walletBalances[account.address],
           ens: walletNames[account.address],
         }));

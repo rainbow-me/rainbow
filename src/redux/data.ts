@@ -32,7 +32,7 @@ import WalletTypes from '@/helpers/walletTypes';
 import { Navigation } from '@/navigation';
 import { triggerOnSwipeLayout } from '@/navigation/onNavigationStateChange';
 import { Network } from '@/helpers/networkTypes';
-import { parseAsset, parseNewTransaction, parseTransactions } from '@/parsers';
+import { parseAsset, parseNewTransaction } from '@/parsers';
 import { ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils, isLowerCaseMatch } from '@/utils';
@@ -453,6 +453,7 @@ export const transactionsReceived = (
   >,
   getState: AppGetState
 ) => {
+  return;
   loggr.debug('transactionsReceived', {
     message: {
       ...message,
@@ -704,6 +705,7 @@ export const dataAddNewTransaction = (
   >,
   getState: AppGetState
 ) => {
+  return;
   loggr.debug('dataAddNewTransaction', {}, loggr.DebugContext.f2c);
 
   const { pendingTransactions } = getState().data;
@@ -854,6 +856,7 @@ export const dataWatchPendingTransactions = (
         minedAt: null,
         pending: true,
       };
+      return;
       try {
         logger.log('Checking pending tx with hash', txHash);
         const p =
@@ -880,20 +883,8 @@ export const dataWatchPendingTransactions = (
           if (tx?.ensRegistration) {
             fetchWalletENSDataAfterRegistration();
           }
-          const transactionStatus = await getTransactionReceiptStatus(
-            updatedPendingTransaction,
-            nonceAlreadyIncluded,
-            txObj
-          );
 
-          // approvals are not via socket so we dont want to check their status with them.
-          const isApproveTx =
-            transactionStatus === TransactionStatus.approved ||
-            transactionStatus === TransactionStatus.approving;
-          if (
-            updatedPendingTransaction?.swap?.type === SwapType.crossChain &&
-            !isApproveTx
-          ) {
+          if (updatedPendingTransaction?.swap?.type === SwapType.crossChain) {
             pendingTransactionData = await getTransactionSocketStatus(
               updatedPendingTransaction
             );
@@ -936,31 +927,6 @@ export const dataWatchPendingTransactions = (
     })
   );
 
-  if (txStatusesDidChange) {
-    const { accountAddress, network } = getState().settings;
-    const [newDataTransactions, pendingTransactions] = partition(
-      updatedPendingTransactions.filter(
-        ({ status }) => status !== TransactionStatus.unknown
-      ),
-      tx => !tx.pending
-    );
-    dispatch({
-      payload: pendingTransactions,
-      type: DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS,
-    });
-    saveLocalPendingTransactions(pendingTransactions, accountAddress, network);
-
-    const { transactions } = getState().data;
-    const updatedTransactions = newDataTransactions.concat(transactions);
-    dispatch({
-      payload: updatedTransactions,
-      type: DATA_LOAD_TRANSACTIONS_SUCCESS,
-    });
-    saveLocalTransactions(updatedTransactions, accountAddress, network);
-    if (!pendingTransactions?.length) {
-      return true;
-    }
-  }
   return false;
 };
 
@@ -987,6 +953,7 @@ export const dataUpdateTransaction = (
   >,
   getState: AppGetState
 ) => {
+  return;
   const { pendingTransactions } = getState().data;
 
   const allOtherTx = pendingTransactions.filter(tx => tx.hash !== txHash);
@@ -1026,6 +993,7 @@ export const checkPendingTransactionsOnInitialize = (
   dispatch: ThunkDispatch<AppState, unknown, never>,
   getState: AppGetState
 ) => {
+  return;
   const {
     accountAddress: currentAccountAddress,
     network,
@@ -1068,6 +1036,7 @@ export const watchPendingTransactions = (
   dispatch: ThunkDispatch<AppState, unknown, never>,
   getState: AppGetState
 ) => {
+  return;
   pendingTransactionsHandle && clearTimeout(pendingTransactionsHandle);
   if (remainingTries === 0) return;
 

@@ -7,15 +7,14 @@ import {
   queryClient,
 } from '@/react-query';
 import { NativeCurrencyKey, RainbowTransaction } from '@/entities';
-import { Network } from '@/networks/types';
-import { TransactionsReceivedMessage } from './types';
+import { TransactionApiResponse, TransactionsReceivedMessage } from './types';
 import { RainbowError, logger } from '@/logger';
 import { rainbowFetch } from '@/rainbow-fetch';
 import { ADDYS_API_KEY } from 'react-native-dotenv';
 import { RainbowNetworks } from '@/networks';
 import { parseTransaction } from '@/parsers/transactions';
 
-const CONSOLIDATED_TRANSACTIONS_INTERVAL = 3000;
+const CONSOLIDATED_TRANSACTIONS_INTERVAL = 30000;
 const CONSOLIDATED_TRANSACTIONS_TIMEOUT = 20000;
 
 // ///////////////////////////////////////////////
@@ -36,7 +35,7 @@ export const consolidatedTransactionsQueryKey = ({
   chainIds,
 }: ConsolidatedTransactionsArgs) =>
   createQueryKey(
-    'consolidatedTransactions',
+    'consolidatedTransactionss',
     { address, currency, chainIds },
     { persisterVersion: 1 }
   );
@@ -126,17 +125,18 @@ type ConsolidatedTransactionsResult = {
 async function parseConsolidatedTransactions(
   message: TransactionsReceivedMessage,
   currency: NativeCurrencyKey
-) {
+): Promise<RainbowTransaction[]> {
   const data = message?.payload?.transactions || [];
-  const parsedTransactionPromises = data
-    .map((tx: any) =>
-      parseTransaction(tx, currency, [], tx?.network ?? Network.mainnet)
-    )
-    .filter(Boolean);
+
+  const parsedTransactionPromises = data.map((tx: TransactionApiResponse) =>
+    parseTransaction(tx, currency)
+  );
+  // Filter out undefined values immediately
 
   const parsedConsolidatedTransactions = (
     await Promise.all(parsedTransactionPromises)
-  ).flat();
+  ).flat(); // Filter out any remaining undefined values
+
   return parsedConsolidatedTransactions;
 }
 

@@ -127,7 +127,7 @@ const ActivityList = ({
       return (
         <SectionList
           ListFooterComponent={() =>
-            remainingItemsLabel && (
+            true && (
               <ListFooterComponent
                 label={remainingItemsLabel}
                 onPress={nextPage}

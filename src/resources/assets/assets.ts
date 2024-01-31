@@ -84,7 +84,7 @@ export function parseAsset({
     // networks: asset?.networks,
     price: asset?.price,
     symbol: asset?.symbol,
-    type: assetType,
+    type: asset.type || 'token',
     uniqueId,
   };
 
@@ -106,7 +106,7 @@ export function parseAddressAsset({
   return {
     ...parsedAsset,
     balance: convertRawAmountToBalance(quantity, asset),
-    type: asset.network === Network.mainnet ? AssetType.token : asset.network,
+    type: asset.type,
   };
 }
 

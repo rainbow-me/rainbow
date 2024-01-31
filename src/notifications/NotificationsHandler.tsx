@@ -218,7 +218,6 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
           type: mapNotificationTransactionType(data.transaction_type),
           network,
           hash: rpcTransaction.hash,
-          status: TransactionStatus.unknown,
           amount: rpcTransaction.value.toString(),
           nonce: rpcTransaction.nonce,
           from: rpcTransaction.from,
@@ -230,7 +229,7 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
           gasPrice: rpcTransaction.gasPrice,
           data: rpcTransaction.data,
         };
-
+        return;
         const parsedTransaction = await parseNewTransaction(
           newTransactionDetails,
           nativeCurrency
