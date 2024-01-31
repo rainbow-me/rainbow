@@ -87,10 +87,10 @@ describe('Discover Screen Flow', () => {
       'discover-currency-select-list-exchange-coin-row-SOCKS-mainnet'
     );
     await Helpers.checkIfNotVisible(
-      'discover-currency-select-list-exchange-coin-row-ETH-token'
+      'discover-currency-select-list-exchange-coin-row-ETH-mainnet'
     );
     await Helpers.waitAndTap(
-      'discover-currency-select-list-exchange-coin-row-SOCKS-token'
+      'discover-currency-select-list-exchange-coin-row-SOCKS-mainnet'
     );
     await Helpers.checkIfVisible('chart-header-Unisocks');
   });
@@ -101,7 +101,7 @@ describe('Discover Screen Flow', () => {
       await Helpers.swipe('expanded-state-header', 'down');
     }
     await Helpers.checkIfNotVisible(
-      'discover-currency-select-list-exchange-coin-row-ETH-token'
+      'discover-currency-select-list-exchange-coin-row-ETH-mainnet'
     );
   });
 
@@ -126,7 +126,7 @@ describe('Discover Screen Flow', () => {
       'discover-currency-select-list-contact-row-rainbowwallet.eth'
     );
     await Helpers.checkIfNotVisible(
-      'discover-currency-select-list-exchange-coin-row-ETH-token'
+      'discover-currency-select-list-exchange-coin-row-ETH-mainnet'
     );
     await Helpers.waitAndTap(
       'discover-currency-select-list-contact-row-rainbowwallet.eth'
@@ -142,7 +142,7 @@ describe('Discover Screen Flow', () => {
     await Helpers.swipe('profile-sheet', 'down');
     await Helpers.waitAndTap('discover-search-clear-input');
     await Helpers.checkIfVisible(
-      'discover-currency-select-list-exchange-coin-row-ETH-token'
+      'discover-currency-select-list-exchange-coin-row-ETH-mainnet'
     );
   });
 

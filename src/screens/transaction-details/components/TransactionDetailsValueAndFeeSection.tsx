@@ -14,6 +14,8 @@ import { ethereumUtils } from '@/utils';
 import { Network } from '@/networks/types';
 import { useUserAsset } from '@/resources/assets/useUserAsset';
 import { getUniqueId } from '@/utils/ethereumUtils';
+import FastCoinIcon from '@/components/asset-list/RecyclerAssetList2/FastComponents/FastCoinIcon';
+import { useTheme } from '@/theme';
 
 type Props = {
   transaction: RainbowTransaction;
@@ -25,6 +27,7 @@ type Props = {
 export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({
   transaction,
 }) => {
+  const theme = useTheme();
   const { network, symbol, type, fee } = transaction;
   const assetUniqueId = getUniqueId(
     transaction?.address || '',
@@ -32,7 +35,7 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({
   );
   const { data: assetData } = useUserAsset(assetUniqueId);
 
-  const coinAddress = assetData?.address ?? transaction.address;
+  const coinAddress = assetData?.address || transaction?.address || '';
   const mainnetCoinAddress = assetData?.mainnet_address;
   const coinSymbol =
     type === TransactionType.contract_interaction
@@ -57,11 +60,12 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({
           {value && (
             <DoubleLineTransactionDetailsRow
               leftComponent={
-                <CoinIcon
-                  mainnet_address={mainnetCoinAddress}
+                <FastCoinIcon
+                  mainnetAddress={mainnetCoinAddress}
                   address={coinAddress}
-                  symbol={coinSymbol}
+                  symbol={coinSymbol || ''}
                   network={network || Network.mainnet}
+                  theme={theme}
                 />
               }
               title={i18n.t(i18n.l.transaction_details.value)}
