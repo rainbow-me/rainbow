@@ -577,7 +577,7 @@ export default function SendSheet(props) {
             submitSuccess = true;
             txDetails.hash = hash;
             txDetails.nonce = nonce;
-            txDetails?.network = currentNetwork;
+            txDetails.network = currentNetwork;
             txDetails.data = data;
             txDetails.value = value;
             txDetails.txTo = signableTransaction.to;

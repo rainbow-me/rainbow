@@ -84,7 +84,7 @@ describe('Discover Screen Flow', () => {
   it('Should search and open expanded state for SOCKS', async () => {
     await Helpers.typeText('discover-search-input', 'SOCKS\n', true);
     await Helpers.checkIfVisible(
-      'discover-currency-select-list-exchange-coin-row-SOCKS-token'
+      'discover-currency-select-list-exchange-coin-row-SOCKS-mainnet'
     );
     await Helpers.checkIfNotVisible(
       'discover-currency-select-list-exchange-coin-row-ETH-token'
