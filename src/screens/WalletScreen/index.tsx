@@ -59,7 +59,6 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
     appIcon,
     nativeCurrency,
   } = useAccountSettings();
-  const { userAccounts } = useUserAccounts();
   usePositions({ address: accountAddress, currency: nativeCurrency });
 
   const loadAccountLateData = useLoadAccountLateData();

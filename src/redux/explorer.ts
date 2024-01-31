@@ -166,30 +166,6 @@ const addressSubscription = (
 ];
 
 /**
- * Configures a portfolio subscription.
- *
- * @param address The address to subscribe to.
- * @param currency The currency to use.
- * @param action The API action.
- * @returns Arguments for an `emit` function call.
- */
-const portfolioSubscription = (
-  address: string,
-  currency: string,
-  action: SocketGetActionType = 'get'
-): SocketEmitArguments => [
-  action,
-  {
-    payload: {
-      address,
-      currency: toLower(currency),
-      portfolio_fields: 'all',
-    },
-    scope: ['portfolio'],
-  },
-];
-
-/**
  * Configures a notifications subscription.
  *
  * @param address The address to subscribe to.
@@ -555,13 +531,6 @@ const listenOnAssetMessages = (socket: Socket) => (
 const listenOnAddressMessages = (socket: Socket) => (
   dispatch: ThunkDispatch<AppState, unknown, never>
 ) => {
-  socket.on(
-    messages.ADDRESS_PORTFOLIO.RECEIVED,
-    (message: PortfolioReceivedMessage) => {
-      dispatch(portfolioReceived(message));
-    }
-  );
-
   socket.on(
     messages.ADDRESS_TRANSACTIONS.RECEIVED,
     (message: TransactionsReceivedMessage) => {
