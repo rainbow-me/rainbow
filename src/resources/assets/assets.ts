@@ -18,6 +18,7 @@ import {
   ParsedAsset,
   RainbowAddressAssets,
 } from './types';
+import { getUniqueId } from '@/utils/ethereumUtils';
 
 const storage = new MMKV();
 
@@ -60,7 +61,7 @@ export function parseAsset({
   const network = chainName;
   const chainId = ethereumUtils.getChainIdFromNetwork(chainName);
   const mainnetAddress = asset?.networks?.[MAINNET_CHAIN_ID]?.address;
-  const uniqueId = `${address}_${network}`;
+  const uniqueId = getUniqueId(address, network);
 
   const parsedAsset = {
     address,

@@ -66,7 +66,7 @@ export default function ChainBadge({
   const source = useMemo(() => {
     let val = null;
     if (size === 'large') {
-      if (network === network.arbitrum) {
+      if (network === Network.arbitrum) {
         val = isDarkMode ? ArbitrumBadgeLargeDark : ArbitrumBadgeLarge;
       } else if (network === Network.optimism) {
         val = isDarkMode ? OptimismBadgeLargeDark : OptimismBadgeLarge;

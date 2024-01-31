@@ -135,7 +135,7 @@ export default function ChartExpandedStateHeader({
             network={asset?.network}
             symbol={asset?.symbol}
             theme={theme}
-          ></FastCoinIcon>
+          />
         ) : (
           <CoinIconGroup tokens={tokens} />
         )}

@@ -29,6 +29,7 @@ import { Network } from '@/helpers';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { IS_TEST } from '@/env';
 import { useFavorites } from '@/resources/favorites';
+import { getUniqueId } from '@/utils/ethereumUtils';
 
 const MAINNET_CHAINID = 1;
 type swapCurrencyListType =
@@ -234,7 +235,7 @@ const useSearchCurrencyList = (
               tokenContract.decimals(),
               getAddress(searchQuery),
             ]);
-            const uniqueId = `${address}_${network}`;
+            const uniqueId = getUniqueId(address, network);
 
             return [
               {

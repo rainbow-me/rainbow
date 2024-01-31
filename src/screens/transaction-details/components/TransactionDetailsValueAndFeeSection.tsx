@@ -13,6 +13,7 @@ import { TransactionType } from '@/entities';
 import { ethereumUtils } from '@/utils';
 import { Network } from '@/networks/types';
 import { useUserAsset } from '@/resources/assets/useUserAsset';
+import { getUniqueId } from '@/utils/ethereumUtils';
 
 type Props = {
   transaction: RainbowTransaction;
@@ -25,7 +26,10 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({
   transaction,
 }) => {
   const { network, symbol, type, fee } = transaction;
-  const assetUniqueId = `${transaction.address}_${transaction.network}`;
+  const assetUniqueId = getUniqueId(
+    transaction?.address || '',
+    transaction?.network || Network.mainnet
+  );
   const { data: assetData } = useUserAsset(assetUniqueId);
 
   const coinAddress = assetData?.address ?? transaction.address;

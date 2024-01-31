@@ -74,7 +74,7 @@ const getNetworkNativeAsset = (
   network: Network
 ): ParsedAddressAsset | undefined => {
   const nativeAssetAddress = getNetworkObj(network).nativeCurrency.address;
-  const nativeAssetUniqueId = `${nativeAssetAddress}_${network}`;
+  const nativeAssetUniqueId = getUniqueId(nativeAssetAddress, network);
 
   return getAccountAsset(nativeAssetUniqueId);
 };
@@ -518,7 +518,7 @@ async function parseEthereumUrl(data: string) {
   });
 }
 
-const getUniqueId = (address: EthereumAddress, network: Network) =>
+export const getUniqueId = (address: EthereumAddress, network: Network) =>
   `${address}_${network}`;
 
 const calculateL1FeeOptimism = async (

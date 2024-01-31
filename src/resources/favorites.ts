@@ -9,6 +9,7 @@ import {
   WBTC_ADDRESS,
   WETH_ADDRESS,
 } from '@/references';
+import { getUniqueId } from '@/utils/ethereumUtils';
 import { useQuery } from '@tanstack/react-query';
 import { without } from 'lodash';
 
@@ -92,7 +93,7 @@ async function fetchMetadata(addresses: string[]) {
         address: ETH_ADDRESS,
         name: 'Ethereum',
         symbol: 'ETH',
-        uniqueId: `${ETH_ADDRESS}_${Network.mainnet}`,
+        uniqueId: getUniqueId(ETH_ADDRESS, Network.mainnet),
       };
     }
     Object.entries(newFavoritesMeta).forEach(([address, favorite]) => {

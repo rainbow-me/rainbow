@@ -106,7 +106,7 @@ export default magicMemo(CoinIcon, [
   'isHidden',
   'isPinned',
   'size',
-  'type',
+  'network',
   'symbol',
   'shadowColor',
 ]);

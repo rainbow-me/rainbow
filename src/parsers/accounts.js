@@ -10,6 +10,7 @@ import {
 } from '@/helpers/utilities';
 import { getTokenMetadata, isLowerCaseMatch } from '@/utils';
 import { memoFn } from '@/utils/memoFn';
+import { getUniqueId } from '@/utils/ethereumUtils';
 
 // eslint-disable-next-line no-useless-escape
 const sanitize = memoFn(s => s.replace(/[^a-z0-9áéíóúñü \.,_@:-]/gim, ''));
@@ -44,8 +45,7 @@ export const parseAsset = ({ asset_code: address, ...asset } = {}) => {
     ),
     name,
     symbol,
-    type: asset.type,
-    uniqueId: `${address}_${asset.network}`,
+    uniqueId: getUniqueId(address, asset.network),
   };
 
   return parsedAsset;

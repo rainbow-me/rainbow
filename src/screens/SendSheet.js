@@ -193,7 +193,7 @@ export default function SendSheet(props) {
   const showAssetList = isValidAddress && isEmpty(selected);
   const showAssetForm = isValidAddress && !isEmpty(selected);
 
-  const isNft = selected?.network === AssetTypes.nft;
+  const isNft = selected?.type === AssetTypes.nft;
 
   let colorForAsset = useColorForAsset(selected, null, false, true);
   if (isNft) {
@@ -250,7 +250,7 @@ export default function SendSheet(props) {
     newSelected => {
       if (isEqual(newSelected, selected)) return;
       updateMaxInputBalance(newSelected);
-      if (newSelected?.network === AssetTypes.nft) {
+      if (newSelected?.type === AssetTypes.nft) {
         setAmountDetails({
           assetAmount: '1',
           isSufficientBalance: true,
@@ -309,7 +309,7 @@ export default function SendSheet(props) {
         startPollingGasFees(currentNetwork);
       });
     }
-  }, [prevNetwork, startPollingGasFees, selected.network, currentNetwork]);
+  }, [prevNetwork, startPollingGasFees, selected?.network, currentNetwork]);
 
   // Stop polling when the sheet is unmounted
   useEffect(() => {
@@ -322,7 +322,7 @@ export default function SendSheet(props) {
 
   useEffect(() => {
     const updateNetworkAndProvider = async () => {
-      const assetNetwork = selected.network;
+      const assetNetwork = selected?.network;
       if (
         assetNetwork &&
         (assetNetwork !== currentNetwork ||
@@ -330,7 +330,7 @@ export default function SendSheet(props) {
           prevNetwork !== currentNetwork)
       ) {
         let provider = web3Provider;
-        const selectedNetwork = selected.network;
+        const selectedNetwork = selected?.network;
         if (network === Network.goerli) {
           setCurrentNetwork(Network.goerli);
           provider = await getProviderForNetwork(Network.goerli);
@@ -348,7 +348,7 @@ export default function SendSheet(props) {
     isNft,
     network,
     prevNetwork,
-    selected.network,
+    selected?.network,
     sendUpdateSelected,
   ]);
 
@@ -577,7 +577,7 @@ export default function SendSheet(props) {
             submitSuccess = true;
             txDetails.hash = hash;
             txDetails.nonce = nonce;
-            txDetails.network = currentNetwork;
+            txDetails?.network = currentNetwork;
             txDetails.data = data;
             txDetails.value = value;
             txDetails.txTo = signableTransaction.to;
@@ -858,7 +858,7 @@ export default function SendSheet(props) {
     const currentProviderNetwork = ethereumUtils.getNetworkFromChainId(
       Number(currentProvider._network.chainId)
     );
-    const assetNetwork = selected.network;
+    const assetNetwork = selected?.network;
 
     if (
       assetNetwork === currentNetwork &&

@@ -63,6 +63,7 @@ import logger from '@/utils/logger';
 import { queryClient } from '@/react-query';
 import { favoritesQueryKey } from '@/resources/favorites';
 import { EthereumAddress, RainbowToken } from '@/entities';
+import { getUniqueId } from '@/utils/ethereumUtils';
 
 export default async function runMigrations() {
   // get current version
@@ -503,12 +504,12 @@ export default async function runMigrations() {
           const asset = assets?.find(
             (asset: any) => asset.address === address.toLowerCase()
           );
-          return `${asset.address}_${asset.network}`;
+          return getUniqueId(asset?.address, network);
         });
 
         const hiddenCoinsMigrated = hiddenCoins.map((address: string) => {
           const asset = ethereumUtils.getAsset(assets, address);
-          return `${asset.address}_${asset.network}`;
+          return getUniqueId(asset?.address, network);
         });
 
         logger.log(JSON.stringify({ pinnedCoinsMigrated }, null, 2));

@@ -87,6 +87,7 @@ export const CoinIconFallback = fallbackProps => {
     <View style={[sx.coinIconContainer, sx.withShadow, { shadowColor }]}>
       {shouldShowImage && (
         <ImageWithCachedMetadata
+          cache={ImgixImage.cacheControl.immutable}
           imageUrl={imageUrl}
           onError={onError}
           onLoad={onLoad}
