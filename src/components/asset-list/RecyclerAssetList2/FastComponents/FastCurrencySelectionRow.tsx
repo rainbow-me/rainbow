@@ -133,7 +133,7 @@ export default React.memo(function FastCurrencySelectionRow({
   const item = useAccountAsset(uniqueId, nativeCurrency);
   const rowTestID = `${testID}-exchange-coin-row-${
     symbol ?? item?.symbol ?? ''
-  }-${network}`;
+  }-${network || Network.mainnet}`;
   const isInfoButtonVisible =
     !item?.isNativeAsset ||
     (!isNativeAsset(address ?? item?.address, network) && !showBalance);
