@@ -71,7 +71,7 @@ import { logger, RainbowError } from '@/logger';
 import { IS_IOS } from '@/env';
 import { RainbowNetworks, getNetworkObj } from '@/networks';
 import {
-  ExternalTokenQueryKey,
+  externalTokenQueryKey,
   FormattedExternalAsset,
   fetchExternalToken,
   useExternalToken,
@@ -106,7 +106,7 @@ export const getNativeAssetForNetwork = async (
       getNetworkObj(network)?.nativeCurrency?.mainnetAddress || ETH_ADDRESS;
 
     const externalAsset = await queryClient.fetchQuery(
-      ExternalTokenQueryKey({ address, network, currency: nativeCurrency }),
+      externalTokenQueryKey({ address, network, currency: nativeCurrency }),
       async () =>
         fetchExternalToken({ address, network, currency: nativeCurrency }),
       {
@@ -182,7 +182,7 @@ const getExternalAssetFromCache = (uniqueId: string) => {
 
   try {
     const cachedExternalAsset = queryClient.getQueryData<FormattedExternalAsset>(
-      ExternalTokenQueryKey({
+      externalTokenQueryKey({
         address,
         currency: nativeCurrency,
         network,
@@ -574,8 +574,8 @@ export const getAddressAndNetworkFromUniqueId = (
   }
 
   // If the unique ID contains '_', the last part is the network and the rest is the address
-  const network = parts.pop() as Network; // Assuming the last part is a valid Network enum value
-  const address = parts.join('_'); // Joining back in case the address itself contained '_'
+  const network = parts[1] as Network; // Assuming the last part is a valid Network enum value
+  const address = parts[0];
 
   return { address, network };
 };

@@ -8,7 +8,7 @@ import {
   QueryFunctionResult,
 } from '@/react-query';
 
-import { NativeCurrencyKey, ZerionAsset } from '@/entities';
+import { NativeCurrencyKey } from '@/entities';
 import { rainbowFetch } from '@/rainbow-fetch';
 import { ADDYS_API_KEY } from 'react-native-dotenv';
 import { RainbowNetworks } from '@/networks';
