@@ -149,7 +149,6 @@ export default function usePriceImpactDetails(
       outputNativeAmount,
     };
   } else if (greaterThanOrEqualTo(priceImpact, PriceImpactWarningThreshold)) {
-    console.log({ inputNativeAmount, outputNativeAmount });
     return {
       priceImpact: {
         type: SwapPriceImpactType.high,
