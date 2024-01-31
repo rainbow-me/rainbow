@@ -440,23 +440,6 @@ export const explorerInit = () => async (
 };
 
 /**
- * Emits a portfolio request. The result is handled by a listener in
- * `listenOnAddressMessages`.
- *
- * @param address The address.
- * @param currency The currency to use.
- */
-export const emitPortfolioRequest = (address: string, currency?: string) => (
-  _: Dispatch,
-  getState: AppGetState
-) => {
-  const nativeCurrency = currency || getState().settings.nativeCurrency;
-  const { addressSocket } = getState().explorer;
-
-  addressSocket?.emit(...portfolioSubscription(address, nativeCurrency));
-};
-
-/**
  * Subscribes to asset price information. The result is handled by a listener
  * in `listenOnAssetMessages`.
  *

@@ -20,13 +20,11 @@ import {
   useLoadAccountData,
   useLoadAccountLateData,
   useLoadGlobalLateData,
-  usePortfolios,
   useResetAccountState,
   useTrackENSProfile,
   useUserAccounts,
   useWalletSectionsData,
 } from '@/hooks';
-import { emitPortfolioRequest } from '@/redux/explorer';
 import Routes from '@rainbow-me/routes';
 import { position } from '@/styles';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
@@ -64,7 +62,6 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
   const { userAccounts } = useUserAccounts();
   usePositions({ address: accountAddress, currency: nativeCurrency });
 
-  const { portfolios, trackPortfolios } = usePortfolios();
   const loadAccountLateData = useLoadAccountLateData();
   const loadGlobalLateData = useLoadGlobalLateData();
   const dispatch = useDispatch();
@@ -140,37 +137,6 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
       initializeAndSetParams();
     }
   }, [initializeWallet, initialized, params, setParams]);
-
-  useEffect(() => {
-    if (initialized && addressSocket && !portfoliosFetched) {
-      setPortfoliosFetched(true);
-      const fetchPortfolios = async () => {
-        for (let i = 0; i < userAccounts.length; i++) {
-          const account = userAccounts[i];
-          // Passing usd for consistency in tracking
-          dispatch(emitPortfolioRequest(account.address.toLowerCase(), 'usd'));
-        }
-      };
-      fetchPortfolios();
-    }
-  }, [
-    addressSocket,
-    dispatch,
-    initialized,
-    portfolios,
-    portfoliosFetched,
-    userAccounts,
-  ]);
-
-  useEffect(() => {
-    if (
-      !isEmpty(portfolios) &&
-      portfoliosFetched &&
-      keys(portfolios).length === userAccounts.length
-    ) {
-      trackPortfolios();
-    }
-  }, [portfolios, portfoliosFetched, trackPortfolios, userAccounts.length]);
 
   useEffect(() => {
     if (walletReady && assetsSocket) {
