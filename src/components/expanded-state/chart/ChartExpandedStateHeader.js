@@ -17,6 +17,7 @@ import { useAccountSettings, useBooleanState } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import FastCoinIcon from '@/components/asset-list/RecyclerAssetList2/FastComponents/FastCoinIcon';
+import { Network } from '@/networks/types';
 
 const noPriceData = lang.t('expanded_state.chart.no_price_data');
 
@@ -132,7 +133,7 @@ export default function ChartExpandedStateHeader({
             badgeYPosition={0}
             address={asset?.address}
             mainnetAddress={asset?.mainnetAddress}
-            network={asset?.network}
+            network={asset?.network || Network.mainnet}
             symbol={asset?.symbol}
             theme={theme}
           />
