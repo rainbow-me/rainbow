@@ -63,7 +63,9 @@ export default function usePriceImpactDetails(
 
   const inputNativeAmount = useMemo(() => {
     if (isWrapOrUnwrap) {
-      if (!tradeDetails?.sellAmount || !inputCurrency?.price?.value) return '';
+      if (!tradeDetails?.sellAmount || !inputCurrency?.price?.value) {
+        return '';
+      }
 
       return convertRawAmountToNativeDisplay(
         tradeDetails?.sellAmount?.toString(),
@@ -92,7 +94,9 @@ export default function usePriceImpactDetails(
 
   const outputNativeAmount = useMemo(() => {
     if (isWrapOrUnwrap) {
-      if (!tradeDetails?.buyAmount || !inputCurrency?.price?.value) return '';
+      if (!tradeDetails?.buyAmount || !inputCurrency?.price?.value) {
+        return '';
+      }
       return convertRawAmountToNativeDisplay(
         tradeDetails?.buyAmount?.toString(),
         inputCurrency?.decimals || 18,
@@ -143,7 +147,6 @@ export default function usePriceImpactDetails(
       outputNativeAmount,
     };
   } else if (greaterThanOrEqualTo(priceImpact, PriceImpactWarningThreshold)) {
-    console.log({ inputNativeAmount, outputNativeAmount });
     return {
       priceImpact: {
         type: SwapPriceImpactType.high,
