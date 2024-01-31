@@ -57,7 +57,6 @@ import {
   useMaxInputBalance,
   usePrevious,
   useSendableUniqueTokens,
-  useSendSavingsAccount,
   useSendSheetInputRefs,
   useTransactionConfirmation,
   useUserAccounts,
@@ -151,7 +150,6 @@ export default function SendSheet(props) {
     step: 'TRANSFER',
   });
 
-  const savings = useSendSavingsAccount();
   const { hiddenCoinsObj, pinnedCoinsObj } = useCoinListEditOptions();
   const [toAddress, setToAddress] = useState();
   const [amountDetails, setAmountDetails] = useState({
@@ -968,7 +966,6 @@ export default function SendSheet(props) {
               network={network}
               onSelectAsset={sendUpdateSelected}
               pinnedCoins={pinnedCoinsObj}
-              savings={savings}
               sortedAssets={sortedAssets}
               theme={theme}
               uniqueTokens={sendableUniqueTokens}

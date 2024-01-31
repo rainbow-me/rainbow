@@ -38,7 +38,6 @@ export const getBSCNetworkObject = (): NetworkProperties => {
       walletconnect: true,
       swaps: true,
       nfts: true,
-      savings: false,
       pools: false,
       txs: bsc_tx_enabled,
     },

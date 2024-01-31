@@ -41,7 +41,6 @@ export const getOptimismNetworkObject = (): NetworkProperties => {
       walletconnect: true,
       swaps: true,
       nfts: true,
-      savings: false,
       pools: false,
       txs: optimism_tx_enabled && op_chains_tx_enabled,
     },
