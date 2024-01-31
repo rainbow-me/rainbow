@@ -1,9 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { cloudPlatform } from '@/utils/platform';
 import Menu from '../Menu';
 import MenuContainer from '../MenuContainer';
 import MenuItem from '../MenuItem';
 import WalletsAndBackupIcon from '@/assets/walletsAndBackup.png';
+import CloudBackupWarningIcon from '@/assets/CloudBackupWarning.png';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import WalletTypes from '@/helpers/walletTypes';
@@ -22,7 +23,6 @@ import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { backupsCard } from '@/components/cards/utils/constants';
 import { useVisibleWallets } from '../../useVisibleWallets';
 import { format } from 'date-fns';
-import { fetchAllBackups } from '@/handlers/cloudBackup';
 import useCloudBackups from '@/hooks/useCloudBackups';
 
 export const WalletsAndBackup = () => {
@@ -302,7 +302,11 @@ export const WalletsAndBackup = () => {
                   paddingTop={{ custom: 8 }}
                   iconComponent={
                     <MenuHeader.ImageIcon
-                      source={WalletsAndBackupIcon}
+                      source={
+                        allBackedUp
+                          ? WalletsAndBackupIcon
+                          : CloudBackupWarningIcon
+                      }
                       size={72}
                     />
                   }
@@ -319,25 +323,37 @@ export const WalletsAndBackup = () => {
                     />
                   }
                   labelComponent={
-                    <MenuHeader.Label
-                      text={i18n.t(
-                        i18n.l.wallet.back_ups.cloud_backup_description,
-                        {
-                          link: i18n.t(
-                            i18n.l.wallet.back_ups.cloud_backup_link
-                          ),
+                    allBackedUp ? (
+                      <MenuHeader.Label
+                        text={i18n.t(
+                          i18n.l.wallet.back_ups.cloud_backup_description,
+                          {
+                            link: i18n.t(
+                              i18n.l.wallet.back_ups.cloud_backup_link
+                            ),
+                          }
+                        )}
+                        linkText={i18n.t(
+                          i18n.l.wallet.back_ups.cloud_backup_link
+                        )}
+                        onPress={() =>
+                          navigate(Routes.LEARN_WEB_VIEW_SCREEN, {
+                            ...backupsCard,
+                            type: 'square',
+                          })
                         }
-                      )}
-                      linkText={i18n.t(
-                        i18n.l.wallet.back_ups.cloud_backup_link
-                      )}
-                      onPress={() =>
-                        navigate(Routes.LEARN_WEB_VIEW_SCREEN, {
-                          ...backupsCard,
-                          type: 'square',
-                        })
-                      }
-                    />
+                      />
+                    ) : (
+                      <MenuHeader.Label
+                        text={i18n.t(
+                          i18n.l.wallet.back_ups
+                            .cloud_backup_out_of_date_description,
+                          {
+                            cloudPlatform,
+                          }
+                        )}
+                      />
+                    )
                   }
                 />
               </Menu>
@@ -731,6 +747,7 @@ export const WalletsAndBackup = () => {
   }, [
     backupProvider,
     enabledCloudBackups,
+    onViewCloudBackups,
     lastBackupDate,
     manageCloudBackups,
     navigate,

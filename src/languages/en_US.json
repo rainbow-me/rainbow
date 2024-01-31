@@ -2146,6 +2146,8 @@
         "not_backed_up": "Not backed up",
         "not_backed_up_message": "This %{backupType} isn't backed up. Back up now so you can restore it if you lose your device or get a new one.",
         "backed_up_message": "You opted to save this %{backupType} yourself. Make sure you have it stored in a secure location.",
+        "backed_up_to_cloud_message": "All your wallets are backed up to %{cloudPlatform}. If you lose your device or get a new one, you'll be able to recover the wallets displayed below.",
+        "cloud_backup_out_of_date_description": "Some of your wallets aren't in your last backup. Back up to %{cloudPlatform} now so you can restore them if you lose your device or get a new one.",
         "cloud_backup_description": "Securely back up your wallets to iCloud so you can restore them if you lose your device or get a new one.",
         "cloud_backup_link": "Learn more…",
         "view_secret_phrase": "View Secret Phrase",

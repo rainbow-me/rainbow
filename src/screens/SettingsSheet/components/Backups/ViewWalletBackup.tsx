@@ -1,6 +1,7 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import Clipboard from '@react-native-community/clipboard';
+import { cloudPlatform } from '@/utils/platform';
 
 import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
@@ -8,6 +9,7 @@ import Menu from '../Menu';
 import MenuContainer from '../MenuContainer';
 import MenuItem from '../MenuItem';
 import BackupWarningIcon from '@/assets/BackupWarning.png';
+import CloudBackupWarningIcon from '@/assets/CloudBackupWarning.png';
 import ManuallyBackedUpIcon from '@/assets/manuallyBackedUp.png';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { useWallets } from '@/hooks';
@@ -21,6 +23,8 @@ import { useRecoilState } from 'recoil';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { useNavigation } from '@/navigation/Navigation';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import Routes from '@/navigation/routesNames';
+import walletBackupTypes from '@/helpers/walletBackupTypes';
 
 type ViewWalletBackupParams = {
   ViewWalletBackup: { walletId: string };
@@ -62,7 +66,13 @@ const ViewWalletBackup = () => {
     addressCopiedToastAtom
   );
 
-  const enableCloudBackups = useCallback(() => {}, []);
+  const enableCloudBackups = useCallback(() => {
+    navigate(Routes.BACKUP_SHEET, {
+      nativeScreen: true,
+      step: walletBackupStepTypes.cloud,
+      walletId,
+    });
+  }, [navigate, walletId]);
 
   const onNavigateToSecretWarning = useCallback(() => {
     navigate('SecretWarning', {
@@ -207,22 +217,42 @@ const ViewWalletBackup = () => {
               paddingTop={{ custom: 8 }}
               paddingBottom={{ custom: 24 }}
               iconComponent={
-                <MenuHeader.ImageIcon source={ManuallyBackedUpIcon} size={72} />
+                <MenuHeader.ImageIcon
+                  source={
+                    wallet.backupType === walletBackupTypes.cloud
+                      ? CloudBackupWarningIcon
+                      : ManuallyBackedUpIcon
+                  }
+                  size={72}
+                />
               }
               titleComponent={
                 <MenuHeader.Title
-                  text={i18n.t(i18n.l.wallet.back_ups.backed_up_manually)}
+                  text={
+                    wallet.backupType === walletBackupTypes.cloud
+                      ? i18n.t(i18n.l.wallet.back_ups.backed_up)
+                      : i18n.t(i18n.l.wallet.back_ups.backed_up_manually)
+                  }
                   weight="heavy"
                 />
               }
               labelComponent={
                 <Box marginTop={{ custom: 16 }}>
                   <MenuHeader.Label
-                    text={i18n.t(i18n.l.wallet.back_ups.backed_up_message, {
-                      backupType: isSecretPhrase
-                        ? 'Secret Phrase'
-                        : 'Private Key',
-                    })}
+                    text={
+                      wallet.backupType === walletBackupTypes.cloud
+                        ? i18n.t(
+                            i18n.l.wallet.back_ups.backed_up_to_cloud_message,
+                            {
+                              cloudPlatform,
+                            }
+                          )
+                        : i18n.t(i18n.l.wallet.back_ups.backed_up_message, {
+                            backupType: isSecretPhrase
+                              ? 'Secret Phrase'
+                              : 'Private Key',
+                          })
+                    }
                   />
                 </Box>
               }
