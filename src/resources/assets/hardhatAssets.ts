@@ -57,7 +57,7 @@ export const fetchHardhatBalances = async (
 ): Promise<RainbowAddressAssets> => {
   const chainAssetsMap = keyBy(
     chainAssets[network as keyof typeof chainAssets],
-    'asset.asset_code'
+    ({ asset }) => `${asset.asset_code}_${asset.network}`
   );
 
   const tokenAddresses = Object.values(

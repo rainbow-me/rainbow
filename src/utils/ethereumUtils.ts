@@ -21,7 +21,6 @@ import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import { useSelector } from 'react-redux';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import {
-  AssetType,
   EthereumAddress,
   GasFee,
   LegacySelectedGasFee,
@@ -36,7 +35,6 @@ import {
   getCachedProviderForNetwork,
   getProviderForNetwork,
   isHardHat,
-  isL2Network,
   isTestnetNetwork,
   toHex,
 } from '@/handlers/web3';
@@ -76,10 +74,7 @@ const getNetworkNativeAsset = (
   network: Network
 ): ParsedAddressAsset | undefined => {
   const nativeAssetAddress = getNetworkObj(network).nativeCurrency.address;
-  const nativeAssetUniqueId =
-    network === Network.mainnet
-      ? nativeAssetAddress
-      : `${nativeAssetAddress}_${network}`;
+  const nativeAssetUniqueId = getUniqueId(nativeAssetAddress, network);
 
   return getAccountAsset(nativeAssetUniqueId);
 };
@@ -306,37 +301,6 @@ const getDataString = (func: string, arrVals: string[]) => {
 };
 
 /**
- * @desc get asset type from network
- * @param  {Network} network
- */
-const getAssetTypeFromNetwork = (network: Network) => {
-  return isL2Network(network)
-    ? ((network as unknown) as AssetType)
-    : AssetType.token;
-};
-
-/**
- * @desc get network string from asset type
- * @param  {String} type
- */
-const getNetworkFromType = (type: string) => {
-  if (type === AssetType.token || type === AssetType.compound) {
-    return Network.mainnet;
-  }
-  return type as Network;
-};
-
-/**
- * @desc get chainId from asset type
- * @param  {String} type
- */
-const getChainIdFromType = (type: string) => {
-  return getChainIdFromNetwork(
-    type === 'token' ? Network.mainnet : (type as Network)
-  );
-};
-
-/**
  * @desc get network string from chainId
  * @param  {Number} chainId
  */
@@ -554,8 +518,8 @@ async function parseEthereumUrl(data: string) {
   });
 }
 
-const getUniqueId = (address: EthereumAddress, network: Network) =>
-  network === Network.mainnet ? address : `${address}_${network}`;
+export const getUniqueId = (address: EthereumAddress, network: Network) =>
+  `${address}_${network}`;
 
 const calculateL1FeeOptimism = async (
   tx: RainbowTransaction,
@@ -671,7 +635,6 @@ export default {
   getBasicSwapGasLimit,
   getBlockExplorer,
   getChainIdFromNetwork,
-  getChainIdFromType,
   getDataString,
   getEtherscanHostForNetwork,
   getEthPriceUnit,
@@ -681,11 +644,9 @@ export default {
   getMultichainAssetAddress,
   getNativeAssetForNetwork,
   getNetworkFromChainId,
-  getNetworkFromType,
   getNetworkNameFromChainId,
   getNetworkNativeAsset,
   getPriceOfNativeAssetForNetwork,
-  getAssetTypeFromNetwork,
   getUniqueId,
   hasPreviousTransactions,
   isEthAddress,

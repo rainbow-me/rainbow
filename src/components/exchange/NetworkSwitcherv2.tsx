@@ -5,11 +5,9 @@ import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import ChainBadge from '../coin-icon/ChainBadge';
 import { Bleed, Box, Columns, Inline, Text } from '@/design-system';
-import { AssetType } from '@/entities';
 import { Network } from '@/helpers';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@rainbow-me/references';
 import { position } from '@rainbow-me/styles';
-import { ethereumUtils } from '@rainbow-me/utils';
 import { useTheme } from '@/theme';
 import { sortNetworks } from '@/networks';
 
@@ -31,8 +29,6 @@ const NetworkSwitcherv2 = ({
         chainId: network.id,
         network: network.value,
         title: network.name,
-        type:
-          network.value !== Network.mainnet ? network.value : AssetType.token,
       }));
   }, []);
 
@@ -68,7 +64,7 @@ const NetworkSwitcherv2 = ({
           testID={'network-switcher-scroll-view'}
         >
           <Columns space="8px">
-            {networkMenuItems.map(({ chainId, title, type, network }) => {
+            {networkMenuItems.map(({ chainId, title, network }) => {
               const isSelected = currentChainId === chainId;
               return (
                 <Box
@@ -95,15 +91,16 @@ const NetworkSwitcherv2 = ({
                     horizontalSpace="4px"
                     wrap={false}
                   >
-                    {type === AssetType.token ? (
+                    {network === Network.mainnet ? (
                       <CoinIcon
                         address={ETH_ADDRESS}
                         size={20}
                         symbol={ETH_SYMBOL}
+                        network={network}
                       />
                     ) : (
                       <ChainBadge
-                        assetType={type}
+                        network={network}
                         position="relative"
                         size="small"
                       />

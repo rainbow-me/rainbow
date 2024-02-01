@@ -9,8 +9,8 @@ import PolygonBadgeDark from '../../assets/badges/polygonBadgeDark.png';
 import BscBadge from '../../assets/badges/bscBadge.png';
 import BscBadgeDark from '../../assets/badges/bscBadgeDark.png';
 import { Centered } from '../layout';
-import { AssetType } from '@/entities';
 import styled from '@/styled-thing';
+import { Network } from '@/networks/types';
 
 const sizeConfigs = {
   large: {
@@ -37,24 +37,24 @@ const Icon = styled(FastImage)(({ iconSize }) => ({
   width: iconSize,
 }));
 
-export default function ChainIcon({ assetType, size = 'small' }) {
+export default function ChainIcon({ network, size = 'small' }) {
   const { isDarkMode } = useTheme();
 
   const { iconSize } = sizeConfigs[size];
 
   const source = useMemo(() => {
     let val = null;
-    if (assetType === AssetType.arbitrum) {
+    if (network === Network.arbitrum) {
       val = isDarkMode ? ArbitrumBadgeDark : ArbitrumBadge;
-    } else if (assetType === AssetType.optimism) {
+    } else if (network === Network.optimism) {
       val = isDarkMode ? OptimismBadgeDark : OptimismBadge;
-    } else if (assetType === AssetType.polygon) {
+    } else if (network === Network.polygon) {
       val = isDarkMode ? PolygonBadgeDark : PolygonBadge;
-    } else if (assetType === AssetType.bsc) {
+    } else if (network === Network.bsc) {
       val = isDarkMode ? BscBadgeDark : BscBadge;
     }
     return val;
-  }, [assetType, isDarkMode]);
+  }, [network, isDarkMode]);
 
   if (!source) return null;
 

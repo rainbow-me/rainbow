@@ -387,7 +387,7 @@ describe.skip('Register ENS Flow', () => {
 
   it('Should use rainbowtestwallet.eth as primary name', async () => {
     await Helpers.delay(2000);
-    await Helpers.swipe('unique-token-expanded-state', 'up', 'slow');
+    await Helpers.swipe('unique-mainnet-expanded-state', 'up', 'slow');
     await Helpers.waitAndTap('ens-reverse-record-switch');
     await Helpers.checkIfVisible(`ens-transaction-action-SET_NAME`);
     if (ios) {
@@ -746,7 +746,7 @@ describe.skip('Register ENS Flow', () => {
   });
 
   it('Should renew rainbowtestwallet.eth', async () => {
-    await Helpers.waitAndTap('unique-token-expanded-state-extend-duration');
+    await Helpers.waitAndTap('unique-mainnet-expanded-state-extend-duration');
     await Helpers.checkIfVisible(`ens-transaction-action-RENEW`);
     if (ios) {
       await Helpers.waitAndTap(`ens-transaction-action-RENEW`);

@@ -163,8 +163,8 @@ const crosschainSwap = async (
     value: (swap && toHex(swap.value)) || undefined,
     swap: {
       type: SwapType.crossChain,
-      fromChainId: ethereumUtils.getChainIdFromType(inputCurrency?.type),
-      toChainId: ethereumUtils.getChainIdFromType(outputCurrency?.type),
+      fromChainId: ethereumUtils.getChainIdFromNetwork(inputCurrency?.network),
+      toChainId: ethereumUtils.getChainIdFromNetwork(outputCurrency?.network),
       isBridge,
     },
   };

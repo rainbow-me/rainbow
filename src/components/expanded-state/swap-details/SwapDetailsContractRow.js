@@ -142,7 +142,7 @@ export default function SwapDetailsContractRow({
   const [menuVisible, setMenuVisible] = useState(false);
 
   const menuConfig = useMemo(() => {
-    const blockExplorerAction = buildBlockExplorerAction(asset?.type);
+    const blockExplorerAction = buildBlockExplorerAction(asset?.network);
     return {
       menuItems: [
         blockExplorerAction,
@@ -155,14 +155,14 @@ export default function SwapDetailsContractRow({
       ],
       menuTitle: `${asset?.name} (${asset?.symbol})`,
     };
-  }, [asset?.address, asset?.name, asset?.symbol, asset?.type]);
+  }, [asset?.address, asset?.name, asset?.symbol, asset?.network]);
 
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === ContractActionsEnum.copyAddress) {
         handleCopyContractAddress(asset?.address);
       } else if (actionKey === ContractActionsEnum.blockExplorer) {
-        ethereumUtils.openTokenEtherscanURL(asset?.address, asset?.type);
+        ethereumUtils.openTokenEtherscanURL(asset?.address, asset?.network);
       }
     },
     [asset, handleCopyContractAddress]
@@ -170,7 +170,9 @@ export default function SwapDetailsContractRow({
 
   const onPressAndroid = useCallback(() => {
     const blockExplorerText = lang.t('expanded_state.swap.view_on', {
-      blockExplorerName: startCase(ethereumUtils.getBlockExplorer(asset?.type)),
+      blockExplorerName: startCase(
+        ethereumUtils.getBlockExplorer(asset?.network)
+      ),
     });
     const androidContractActions = [
       lang.t('wallet.action.copy_contract_address'),
@@ -189,7 +191,7 @@ export default function SwapDetailsContractRow({
           handleCopyContractAddress(asset?.address);
         }
         if (idx === 1) {
-          ethereumUtils.openTokenEtherscanURL(asset?.address, asset?.type);
+          ethereumUtils.openTokenEtherscanURL(asset?.address, asset?.network);
         }
       }
     );

@@ -4,14 +4,16 @@ import { monotoneCubicInterpolation } from '@/react-native-animated-charts/src';
 import {
   useAccountSettings,
   useChartDataLabels,
-  useChartInfo,
   useColorForAsset,
 } from '@/hooks';
+import { useRoute } from '@react-navigation/native';
 
 import { useNavigation } from '@/navigation';
 import { ETH_ADDRESS } from '@/references';
 
 import { ModalContext } from '@/react-native-cool-modals/NativeStackView';
+import { DEFAULT_CHART_TYPE } from '@/redux/charts';
+import { usePriceChart } from './useChartInfo';
 
 export const UniBalanceHeightDifference = 100;
 
@@ -103,10 +105,21 @@ export default function useChartThrottledPoints({
 
   const [isFetchingInitially, setIsFetchingInitially] = useState(true);
 
-  const { chart, chartType, fetchingCharts, ...chartData } = useChartInfo(
-    asset
-  );
-
+  const { params } = useRoute<{
+    key: string;
+    name: string;
+    params: any;
+  }>();
+  const chartType = params?.chartType ?? DEFAULT_CHART_TYPE;
+  const {
+    data: chart = [],
+    isLoading: fetchingCharts,
+    updateChartType,
+  } = usePriceChart({
+    address: asset.address,
+    network: asset.network,
+    mainnetAddress: asset?.mainnet_address || asset?.mainnetAddress,
+  });
   const [throttledPoints, setThrottledPoints] = useState(() =>
     traverseData({ nativePoints: [], points: [] }, chart)
   );
@@ -176,8 +189,8 @@ export default function useChartThrottledPoints({
 
   return {
     chart,
-    chartData,
     chartType,
+    updateChartType,
     color,
     fetchingCharts,
     initialChartDataLabels,

@@ -12,7 +12,7 @@ import { position } from '@/styles';
 import { ethereumUtils } from '@/utils';
 import { CurrencySelectionTypes, ExchangeModalTypes, Network } from '@/helpers';
 import { useSwapCurrencyHandlers } from '@/hooks';
-import { AssetType, RainbowToken } from '@/entities';
+import { RainbowToken } from '@/entities';
 import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '../animations';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
@@ -170,7 +170,7 @@ const AvailableNetworksv2 = ({
                       >
                         {network !== Network.mainnet ? (
                           <ChainBadge
-                            assetType={network}
+                            network={network}
                             position="relative"
                             size="small"
                           />
@@ -179,7 +179,7 @@ const AvailableNetworksv2 = ({
                             address={ETH_ADDRESS}
                             size={20}
                             symbol={ETH_SYMBOL}
-                            type={AssetType.token}
+                            network={Network.mainnet}
                           />
                         )}
                       </Box>

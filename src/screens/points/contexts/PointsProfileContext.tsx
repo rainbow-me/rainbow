@@ -201,27 +201,31 @@ export const PointsProfileProvider = ({
         switch (errorType) {
           case PointsErrorType.ExistingUser:
             Alert.alert(i18n.t(i18n.l.points.console.existing_user_alert));
-            throw new RainbowError(
-              'Points: Error onboarding user: user already onboarded'
-            );
+            break;
           case PointsErrorType.InvalidReferralCode:
             Alert.alert(
               i18n.t(i18n.l.points.console.invalid_referral_code_alert)
             );
-            throw new RainbowError(
-              'Points: Error onboarding user: invalid referral code'
-            );
-          case 'NO_BALANCE': // replace w/ erro type when available
-            Alert.alert(i18n.t(i18n.l.points.console.no_balance_alert));
-            throw new RainbowError(
-              'Points: Error onboarding user: user has no balance'
-            );
+            break;
+          case PointsErrorType.NoBalance:
+            setAnimationKey(prevKey => prevKey + 1);
+            setStep(RainbowPointsFlowSteps.RequireWalletBalance);
+            break;
           default:
             Alert.alert(i18n.t(i18n.l.points.console.generic_alert));
-            throw new RainbowError(
-              'Points: Error onboarding user: unknown error type'
-            );
+            break;
         }
+        logger.info('Points: Failed to onboard user', { errorType });
+        analyticsV2.track(
+          analyticsV2.event.pointsOnboardingScreenFailedToSignIn,
+          {
+            deeplinked,
+            referralCode: !!referralCode,
+            hardwareWallet: isHardwareWallet,
+            errorType,
+          }
+        );
+        return;
       }
       analyticsV2.track(
         analyticsV2.event.pointsOnboardingScreenSuccessfullySignedIn,
@@ -242,13 +246,10 @@ export const PointsProfileProvider = ({
           deeplinked,
           referralCode: !!referralCode,
           hardwareWallet: isHardwareWallet,
+          errorType: undefined,
         }
       );
-      if (error instanceof RainbowError) {
-        logger.error(error);
-      } else {
-        logger.error(new RainbowError('Points: signIn error'), { error });
-      }
+      logger.error(new RainbowError('Points: signIn error'), { error });
     }
   }, [accountAddress, deeplinked, goBack, isHardwareWallet, referralCode]);
 
