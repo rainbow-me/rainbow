@@ -7,7 +7,7 @@ import {
 import ViewDimensions from './ViewDimensions';
 import { BaseCellType, CellType } from './ViewTypes';
 import { deviceUtils } from '@/utils';
-import { TrimmedCard } from '@/components/cards/remote-cards';
+import { TrimmedCard } from '@/resources/cards/cardCollectionQuery';
 
 const getStyleOverridesForIndex = (indices: number[]) => (index: number) => {
   if (indices.includes(index)) {
