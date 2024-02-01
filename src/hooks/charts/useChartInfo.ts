@@ -51,7 +51,7 @@ export const usePriceChart = ({
 }) => {
   const { setParams } = useNavigation();
   const updateChartType = useCallback(
-    (type: any) => {
+    (type: ChartTime) => {
       setParams({ chartType: type });
     },
     [setParams]
