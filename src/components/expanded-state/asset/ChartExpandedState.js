@@ -264,10 +264,10 @@ export default function ChartExpandedState({ asset }) {
   const scrollableContentHeight = true;
   const {
     chart,
-    chartData,
     chartType,
     color,
     fetchingCharts,
+    updateChartType,
     initialChartDataLabels,
     showChart,
     throttledData,
@@ -363,8 +363,8 @@ export default function ChartExpandedState({ asset }) {
     >
       <ChartPathProvider data={throttledData}>
         <Chart
-          {...chartData}
           {...initialChartDataLabels}
+          updateChartType={updateChartType}
           asset={assetWithPrice}
           chart={chart}
           chartType={chartType}

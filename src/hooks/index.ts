@@ -1,8 +1,4 @@
-export {
-  useChartDataLabels,
-  useChartInfo,
-  useChartThrottledPoints,
-} from './charts';
+export { useChartDataLabels, useChartThrottledPoints } from './charts';
 export { default as useDelayedValueWithLayoutAnimation } from './useDelayedValueWithLayoutAnimation';
 export { default as useAccountAsset } from './useAccountAsset';
 export { default as useFrameDelayedValue } from './useFrameDelayedValue';

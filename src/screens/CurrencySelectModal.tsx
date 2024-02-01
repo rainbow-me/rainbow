@@ -1,5 +1,4 @@
 import lang from 'i18n-js';
-import { ChainId } from '@rainbow-me/swaps';
 import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import { uniqBy } from 'lodash';
 import { matchSorter } from 'match-sorter';
@@ -48,7 +47,6 @@ import {
 } from '@/hooks';
 import { delayNext } from '@/hooks/useMagicAutofocus';
 import { getActiveRoute, useNavigation } from '@/navigation/Navigation';
-import { emitChartsRequest } from '@/redux/explorer';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils, filterList } from '@/utils';
 import NetworkSwitcherv2 from '@/components/exchange/NetworkSwitcherv2';
@@ -61,6 +59,7 @@ import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import DiscoverSearchInput from '@/components/discover/DiscoverSearchInput';
 import { prefetchExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
+import { getNetworkObj } from '@/networks';
 
 export interface EnrichedExchangeAsset extends SwappableAsset {
   ens: boolean;
@@ -395,7 +394,7 @@ export default function CurrencySelectModal() {
       if (
         type === CurrencySelectionTypes.output &&
         currentChainId &&
-        currentChainId !== ChainId.mainnet
+        currentChainId !== getNetworkObj(Network.mainnet).id
       ) {
         const currentL2Name = ethereumUtils.getNetworkNameFromChainId(
           currentChainId
@@ -441,7 +440,6 @@ export default function CurrencySelectModal() {
             currency: nativeCurrency,
           });
         }
-        dispatch(emitChartsRequest(item.mainnet_address || item.address));
         setIsTransitioning(true); // continue to display list during transition
         callback?.();
         onSelectCurrency(assetWithType, handleNavigate);
@@ -475,7 +473,7 @@ export default function CurrencySelectModal() {
   );
 
   const itemProps = useMemo(() => {
-    const isMainnet = currentChainId === ChainId.mainnet;
+    const isMainnet = currentChainId === getNetworkObj(Network.mainnet).id;
     return {
       onPress: handleSelectAsset,
       showBalance: type === CurrencySelectionTypes.input,
