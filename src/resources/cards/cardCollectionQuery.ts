@@ -8,7 +8,7 @@ import {
   QueryFunctionResult,
 } from '@/react-query';
 
-import { arcDevClient } from '@/graphql';
+import { arcClient } from '@/graphql';
 import { CardFilter, CardOrder } from '@/graphql/__generated__/arc';
 import { noop } from 'lodash';
 
@@ -35,7 +35,7 @@ type CardCollectionQueryKey = ReturnType<typeof cardCollectionQueryKey>;
 async function cardCollectionQueryFunction({
   queryKey: [props],
 }: QueryFunctionArgs<typeof cardCollectionQueryKey>) {
-  const data = await arcDevClient.getCardCollection(props);
+  const data = await arcClient.getCardCollection(props);
   return data;
 }
 

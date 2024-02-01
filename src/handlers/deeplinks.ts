@@ -217,8 +217,8 @@ export default async function handleDeeplink(
       }
 
       default: {
-        const addressOrENS = pathname?.split('/profile/')?.[1];
-
+        const addressOrENS =
+          pathname?.split('/profile/')?.[1] ?? pathname?.split('/')?.[1];
         /**
          * This handles ENS profile links on mobile i.e.
          * `https://rainbow.me/0x123...` which is why it's in the default case

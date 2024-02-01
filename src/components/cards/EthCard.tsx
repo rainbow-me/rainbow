@@ -173,7 +173,8 @@ export const EthCard = () => {
                     <CoinIcon
                       address={ETH_ADDRESS}
                       size={20}
-                      symbol={ethAsset?.symbol}
+                      symbol={ethAsset.symbol}
+                      network={Network.mainnet}
                     />
                     <Text
                       size="17pt"

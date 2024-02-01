@@ -21,6 +21,7 @@ import styled from '@/styled-thing';
 import { borders } from '@/styles';
 import { useTheme } from '@/theme';
 import { AccentColorProvider, Box, Space } from '@/design-system';
+import FastCoinIcon from '../asset-list/RecyclerAssetList2/FastComponents/FastCoinIcon';
 
 const ExchangeFieldHeight = android ? 64 : 38;
 const ExchangeFieldPadding: Space = android
@@ -65,7 +66,6 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
     disableCurrencySelection,
     editable,
     loading,
-    type,
     network,
     onBlur,
     onFocus,
@@ -81,7 +81,7 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
   ref
 ) => {
   const inputRef = ref as MutableRefObject<TextInput>;
-  const { colors } = useTheme();
+  const theme = useTheme();
   const [value, setValue] = useState(amount);
 
   const handleFocusField = useCallback(() => {
@@ -116,8 +116,8 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
   );
 
   const placeholderTextColor = symbol
-    ? colors.alpha(colors.blueGreyDark, 0.3)
-    : colors.alpha(colors.blueGreyDark, 0.1);
+    ? theme.colors.alpha(theme.colors.blueGreyDark, 0.3)
+    : theme.colors.alpha(theme.colors.blueGreyDark, 0.1);
 
   const placeholderText = symbol ? '0' : EnDash.unicode;
 
@@ -137,7 +137,7 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
       paddingRight={ExchangeFieldPadding}
       width="full"
       style={style}
-      testID={`${testID}-${symbol || 'empty'}-${type || 'empty'}`}
+      testID={`${testID}-${symbol || 'empty'}-${network || 'empty'}`}
     >
       <TouchableWithoutFeedback
         onPress={onTapWhileDisabled ?? handleFocusField}
@@ -154,23 +154,24 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
         >
           <Box paddingRight="10px">
             {symbol ? (
-              <CoinIcon
+              <FastCoinIcon
                 address={address}
-                mainnet_address={mainnetAddress}
+                mainnetAddress={mainnetAddress}
                 symbol={symbol}
-                type={type}
+                network={network}
+                theme={theme}
               />
             ) : (
               <Box>
                 <AccentColorProvider
-                  color={colors.alpha(colors.blueGreyDark, 0.1)}
+                  color={theme.colors.alpha(theme.colors.blueGreyDark, 0.1)}
                 >
                   <Box
                     background="accent"
                     style={{ ...borders.buildCircleAsObject(CoinIconSize) }}
                   />
                 </AccentColorProvider>
-                <ChainBadge assetType={network} />
+                <ChainBadge network={network} />
               </Box>
             )}
           </Box>
@@ -178,7 +179,7 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
           <Input
             {...(android &&
               color && {
-                selectionColor: colors.alpha(color, 0.4),
+                selectionColor: theme.colors.alpha(color, 0.4),
               })}
             color={color}
             editable={editable}

@@ -105,7 +105,7 @@ const CoinRowInfoButton = ({
 
   const onPressAndroid = useCallback(() => {
     const blockExplorerText = `View on ${startCase(
-      ethereumUtils.getBlockExplorer(item?.type)
+      ethereumUtils.getBlockExplorer(item?.network)
     )}`;
     const androidContractActions = [
       lang.t('wallet.action.copy_contract_address'),
@@ -125,14 +125,14 @@ const CoinRowInfoButton = ({
           handleCopyContractAddress(item?.address);
         }
         if (idx === 1) {
-          ethereumUtils.openTokenEtherscanURL(item?.address, item?.type);
+          ethereumUtils.openTokenEtherscanURL(item?.address, item?.network);
         }
       }
     );
   }, [item, handleCopyContractAddress]);
 
   const menuConfig = useMemo(() => {
-    const blockExplorerAction = buildBlockExplorerAction(item?.type);
+    const blockExplorerAction = buildBlockExplorerAction(item?.network);
     return {
       menuItems: [
         blockExplorerAction,
@@ -145,14 +145,14 @@ const CoinRowInfoButton = ({
       ],
       menuTitle: `${item?.name} (${item?.symbol})`,
     };
-  }, [item?.address, item?.name, item?.symbol, item?.type]);
+  }, [item?.address, item?.name, item?.network, item?.symbol]);
 
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === CoinRowActionsEnum.copyAddress) {
         handleCopyContractAddress(item?.address);
       } else if (actionKey === CoinRowActionsEnum.blockExplorer) {
-        ethereumUtils.openTokenEtherscanURL(item?.address, item?.type);
+        ethereumUtils.openTokenEtherscanURL(item?.address, item?.network);
       }
     },
     [item, handleCopyContractAddress]

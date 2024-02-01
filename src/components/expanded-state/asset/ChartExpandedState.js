@@ -209,8 +209,7 @@ export default function ChartExpandedState({ asset }) {
       ? asset?.networks
         ? {
             genericAsset,
-            type: asset.type,
-            colors: asset?.colors,
+            network: asset.network,
           }
         : genericAsset
       : { ...asset };
@@ -221,8 +220,8 @@ export default function ChartExpandedState({ asset }) {
     assetWithPrice.address = assetWithPrice.mainnet_address;
   }
 
-  const isL2 = useMemo(() => isL2Network(assetWithPrice.type), [
-    assetWithPrice.type,
+  const isL2 = useMemo(() => isL2Network(assetWithPrice.network), [
+    assetWithPrice.network,
   ]);
   const isTestnet = isTestnetNetwork(currentNetwork);
 
@@ -320,9 +319,9 @@ export default function ChartExpandedState({ asset }) {
 
   const handleL2DisclaimerPress = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
-      type: assetWithPrice.type,
+      type: assetWithPrice.network,
     });
-  }, [assetWithPrice.type, navigate]);
+  }, [assetWithPrice.network, navigate]);
 
   const { layout } = useContext(ModalContext) || {};
 
@@ -333,7 +332,7 @@ export default function ChartExpandedState({ asset }) {
     ? AvailableNetworksv1
     : AvailableNetworksv2;
 
-  const assetNetwork = ethereumUtils.getNetworkFromType(assetWithPrice.type);
+  const assetNetwork = assetWithPrice.network;
 
   const { swagg_enabled, f2c_enabled } = useRemoteConfig();
   const swapEnabled =
@@ -436,7 +435,7 @@ export default function ChartExpandedState({ asset }) {
       ) : null}
       {!data?.networks && isL2 && (
         <L2Disclaimer
-          assetType={assetWithPrice.type}
+          network={assetWithPrice.network}
           colors={colors}
           onPress={handleL2DisclaimerPress}
           symbol={assetWithPrice.symbol}
@@ -505,7 +504,7 @@ export default function ChartExpandedState({ asset }) {
           isNativeAsset={assetWithPrice?.isNativeAsset}
           links={data?.links}
           marginTop={!delayedDescriptions && 19}
-          type={asset?.type}
+          type={asset?.network}
         />
         <Spacer />
       </AdditionalContentWrapper>

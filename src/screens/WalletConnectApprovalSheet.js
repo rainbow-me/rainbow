@@ -46,7 +46,6 @@ import {
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import * as lang from '@/languages';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
-import { AssetType } from '@/entities';
 import { RainbowNetworks, getNetworkObj } from '@/networks';
 import { IS_IOS } from '@/env';
 import { useDappMetadata } from '@/resources/metadata/dapp';
@@ -170,7 +169,7 @@ const NetworkPill = ({ chainIds }) => {
                   >
                     {network !== Network.mainnet ? (
                       <ChainBadge
-                        assetType={network}
+                        network={network}
                         position="relative"
                         size="small"
                       />
@@ -179,7 +178,7 @@ const NetworkPill = ({ chainIds }) => {
                         address={ETH_ADDRESS}
                         size={20}
                         symbol={ETH_SYMBOL}
-                        type={AssetType.token}
+                        network={network}
                       />
                     )}
                   </Box>
@@ -190,7 +189,7 @@ const NetworkPill = ({ chainIds }) => {
             <Inline alignVertical="center" wrap={false}>
               {availableNetworks[0] !== Network.mainnet ? (
                 <ChainBadge
-                  assetType={availableNetworks[0]}
+                  network={availableNetworks[0]}
                   position="relative"
                   size="small"
                 />
@@ -199,7 +198,7 @@ const NetworkPill = ({ chainIds }) => {
                   address={ETH_ADDRESS}
                   size={20}
                   symbol={ETH_SYMBOL}
-                  type={AssetType.token}
+                  type={availableNetworks[0]}
                 />
               )}
 

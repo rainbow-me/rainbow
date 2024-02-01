@@ -1,6 +1,5 @@
 import isNil from 'lodash/isNil';
 import toUpper from 'lodash/toUpper';
-import { AssetTypes } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
 import networkTypes from '@/helpers/networkTypes';
 import * as i18n from '@/languages';
@@ -11,6 +10,7 @@ import {
 } from '@/helpers/utilities';
 import { getTokenMetadata, isLowerCaseMatch } from '@/utils';
 import { memoFn } from '@/utils/memoFn';
+import { getUniqueId } from '@/utils/ethereumUtils';
 
 // eslint-disable-next-line no-useless-escape
 const sanitize = memoFn(s => s.replace(/[^a-z0-9áéíóúñü \.,_@:-]/gim, ''));
@@ -34,17 +34,6 @@ export const parseAsset = ({ asset_code: address, ...asset } = {}) => {
   const metadata = getTokenMetadata(asset.mainnet_address || address);
   const name = parseAssetName(metadata, asset.name);
   const symbol = parseAssetSymbol(metadata, asset.symbol);
-  const type =
-    asset.type === AssetTypes.uniswap ||
-    asset.type === AssetTypes.uniswapV2 ||
-    asset.type === AssetTypes.arbitrum ||
-    asset.type === AssetTypes.optimism ||
-    asset.type === AssetTypes.polygon ||
-    asset.type === AssetTypes.bsc ||
-    asset.type == AssetTypes.zora ||
-    asset.type == AssetTypes.base
-      ? asset.type
-      : AssetTypes.token;
 
   const parsedAsset = {
     ...asset,
@@ -56,12 +45,7 @@ export const parseAsset = ({ asset_code: address, ...asset } = {}) => {
     ),
     name,
     symbol,
-    type,
-    uniqueId: address
-      ? asset.network && asset.network !== networkTypes.mainnet
-        ? `${address}_${asset.network}`
-        : address
-      : name,
+    uniqueId: getUniqueId(address, asset.network),
   };
 
   return parsedAsset;
