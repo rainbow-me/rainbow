@@ -2127,12 +2127,12 @@ const SimulatedEventRow = ({
       >
         <Inline alignVertical="center" space="12px" wrap={false}>
           <EventIcon eventType={eventType} />
-          <Text color="label" size="17pt" weight="bold">
-            {eventInfo.label}
-          </Text>
           <Inline alignVertical="bottom" space="6px" wrap={false}>
+            <Text color="label" size="17pt" weight="bold">
+              {eventInfo.label}
+            </Text>
             {showUSD && (
-              <Text color="labelQuaternary" size="12pt" weight="bold">
+              <Text color="labelQuaternary" size="13pt" weight="bold">
                 {formattedPrice}
               </Text>
             )}
