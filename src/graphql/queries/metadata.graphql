@@ -401,3 +401,33 @@ mutation redeemCodeForPoints($address: String!, $redemptionCode: String!) {
     }
   }
 }
+
+query priceChart(
+  $chainId: Int!
+  $address: String!
+  $day: Boolean!
+  $hour: Boolean!
+  $week: Boolean!
+  $month: Boolean!
+  $year: Boolean!
+) {
+  token(chainID: $chainId, address: $address) {
+    priceCharts {
+      day @include(if: $day) {
+        points
+      }
+      hour @include(if: $hour) {
+        points
+      }
+      week @include(if: $week) {
+        points
+      }
+      month @include(if: $month) {
+        points
+      }
+      year @include(if: $year) {
+        points
+      }
+    }
+  }
+}
