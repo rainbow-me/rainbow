@@ -12,7 +12,6 @@ import { useNavigation } from '@/navigation';
 import { ETH_ADDRESS } from '@/references';
 
 import { ModalContext } from '@/react-native-cool-modals/NativeStackView';
-import { Network } from '@/helpers';
 import { DEFAULT_CHART_TYPE } from '@/redux/charts';
 import { usePriceChart } from './useChartInfo';
 
@@ -119,6 +118,7 @@ export default function useChartThrottledPoints({
   } = usePriceChart({
     address: asset.address,
     network: asset.network,
+    mainnetAddress: asset?.mainnet_address || asset?.mainnetAddress,
   });
   const [throttledPoints, setThrottledPoints] = useState(() =>
     traverseData({ nativePoints: [], points: [] }, chart)
