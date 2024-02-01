@@ -2130,11 +2130,13 @@ const SimulatedEventRow = ({
           <Text color="label" size="17pt" weight="bold">
             {eventInfo.label}
           </Text>
-          {showUSD && (
-            <Text color="labelTertiary" size="12pt" weight="bold">
-              {formattedPrice}
-            </Text>
-          )}
+          <Inline alignVertical="bottom" space="6px" wrap={false}>
+            {showUSD && (
+              <Text color="labelQuaternary" size="12pt" weight="bold">
+                {formattedPrice}
+              </Text>
+            )}
+          </Inline>
         </Inline>
         <Inline alignVertical="center" space={{ custom: 7 }} wrap={false}>
           <Bleed vertical="6px">
