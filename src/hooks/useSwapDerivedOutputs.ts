@@ -20,7 +20,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { SwappableAsset } from '../entities/tokens';
 import useAccountSettings from './useAccountSettings';
 import { analytics } from '@/analytics';
-import { AssetType, EthereumAddress } from '@/entities';
+import { EthereumAddress } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
 import { AppState } from '@/redux/store';
 import { SwapModalField, updateSwapQuote } from '@/redux/swap';
@@ -68,13 +68,13 @@ const getInputAmount = async (
     return null;
 
   try {
-    const outputChainId = ethereumUtils.getChainIdFromType(
-      outputToken?.type || 'token'
+    const outputChainId = ethereumUtils.getChainIdFromNetwork(
+      outputToken?.network
     );
     const outputNetwork = ethereumUtils.getNetworkFromChainId(outputChainId);
 
-    const inputChainId = ethereumUtils.getChainIdFromType(
-      inputToken?.type || 'token'
+    const inputChainId = ethereumUtils.getChainIdFromNetwork(
+      inputToken?.network
     );
     const inputNetwork = ethereumUtils.getNetworkFromChainId(inputChainId);
 
@@ -187,17 +187,17 @@ const getOutputAmount = async (
   if (!inputAmount || isZero(inputAmount) || !outputToken) return null;
 
   try {
-    const outputChainId = ethereumUtils.getChainIdFromType(
-      outputToken?.type || AssetType.token
+    const outputChainId = ethereumUtils.getChainIdFromNetwork(
+      outputToken.network
     );
-    const outputNetwork = ethereumUtils.getNetworkFromChainId(outputChainId);
+    const outputNetwork = outputToken.network;
     const buyTokenAddress = isNativeAsset(outputToken?.address, outputNetwork)
       ? ETH_ADDRESS_AGGREGATORS
       : outputToken?.address;
-    const inputChainId = ethereumUtils.getChainIdFromType(
-      inputToken?.type || AssetType.token
+    const inputChainId = ethereumUtils.getChainIdFromNetwork(
+      inputToken.network
     );
-    const inputNetwork = ethereumUtils.getNetworkFromChainId(inputChainId);
+    const inputNetwork = inputToken.network;
 
     const sellTokenAddress = isNativeAsset(inputToken?.address, inputNetwork)
       ? ETH_ADDRESS_AGGREGATORS

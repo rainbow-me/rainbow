@@ -5,7 +5,6 @@ import chroma from 'chroma-js';
 
 import { IS_IOS } from '@/env';
 import { Box, Text, Inline, Bleed, useBackgroundColor } from '@/design-system';
-import { AssetType } from '@/entities';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { Network } from '@/helpers/networkTypes';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
@@ -104,17 +103,13 @@ function NetworkIcons({ networks }: { networks: Network[] }) {
             }}
           >
             {network !== Network.mainnet ? (
-              <ChainBadge
-                assetType={network}
-                position="relative"
-                size="small"
-              />
+              <ChainBadge network={network} position="relative" size="small" />
             ) : (
               <CoinIcon
                 address={ETH_ADDRESS}
                 size={20}
                 symbol={ETH_SYMBOL}
-                type={AssetType.token}
+                network={network}
               />
             )}
           </Box>

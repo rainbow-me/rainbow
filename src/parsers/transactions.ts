@@ -11,7 +11,6 @@ import {
 } from 'lodash';
 import { parseAllTxnsOnReceive } from '../config/debug';
 import {
-  AssetType,
   EthereumAddress,
   NativeCurrencyKey,
   ProtocolType,
@@ -192,7 +191,6 @@ const overrideFailedExecution = (txn: ZerionTransaction): ZerionTransaction => {
       decimals: 18,
       name: 'Ethereum',
       symbol: 'ETH',
-      type: AssetType.eth,
     },
     direction: TransactionDirection.out,
     value: 0,
@@ -241,7 +239,6 @@ const overrideSelfWalletConnect = (
       decimals: 18,
       name: 'Ethereum',
       symbol: 'ETH',
-      type: AssetType.eth,
     },
     direction: TransactionDirection.out,
     value: 0,

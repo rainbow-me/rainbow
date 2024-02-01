@@ -15,7 +15,7 @@ interface ExchangeOutputFieldProps {
   outputAmount: string | null;
   outputCurrencyAddress: string;
   outputCurrencyMainnetAddress?: string;
-  outputCurrencyAssetType?: string;
+  outputCurrencyNetwork?: string;
   outputCurrencySymbol?: string;
   outputFieldRef: MutableRefObject<TextInput | null>;
   setOutputAmount: (value: string | null) => void;
@@ -34,7 +34,6 @@ export default function ExchangeOutputField({
   outputAmount,
   outputCurrencyAddress,
   outputCurrencyMainnetAddress,
-  outputCurrencyAssetType,
   outputCurrencySymbol,
   outputFieldRef,
   setOutputAmount,
@@ -64,7 +63,6 @@ export default function ExchangeOutputField({
         setAmount={setOutputAmount}
         symbol={outputCurrencySymbol}
         testID={testID}
-        type={outputCurrencyAssetType}
         updateOnFocus={updateAmountOnFocus}
         useCustomAndroidMask={android}
       />

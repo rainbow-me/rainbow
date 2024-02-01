@@ -89,7 +89,7 @@ export default function RequestVendorLogoIcon({
           )}
         </Content>
       </ShadowStack>
-      <ChainBadge assetType={network} badgeYPosition={badgeYPosition} />
+      <ChainBadge network={network} badgeYPosition={badgeYPosition} />
     </View>
   );
 }
