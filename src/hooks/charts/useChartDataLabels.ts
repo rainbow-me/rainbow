@@ -13,13 +13,15 @@ export default function useChartDataLabels({ asset, chartType, points }: any) {
       const percent = ((endPrice - startPrice) / startPrice) * 100;
       return formatPercentChange(percent);
     },
-    [latestPrice, points]
+    [points]
   );
 
   const latestChange = useMemo(
     () =>
       !points || chartType === ChartTypes.day
-        ? formatPercentChange(asset?.price?.relative_change_24h)
+        ? formatPercentChange(
+            asset?.price?.relative_change_24h || asset?.price?.relativeChange24h
+          )
         : getPercentChangeForPrice(points[0]?.y ?? 0),
     [asset, chartType, getPercentChangeForPrice, points]
   );

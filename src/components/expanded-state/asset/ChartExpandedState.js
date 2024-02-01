@@ -189,7 +189,7 @@ export default function ChartExpandedState({ asset }) {
 
   const { data: genericAsset } = useExternalToken({
     address: asset?.address,
-    network: ethereumUtils.getNetworkFromType(asset.type),
+    network: asset?.network,
     currency: nativeCurrency,
   });
   const {
@@ -206,19 +206,13 @@ export default function ChartExpandedState({ asset }) {
     return hasBalance
       ? { ...asset }
       : genericAsset
-      ? asset?.networks
-        ? {
-            genericAsset,
-            network: asset.network,
-          }
-        : genericAsset
+      ? {
+          ...genericAsset,
+          network: asset.network,
+          address: asset.address,
+        }
       : { ...asset };
   }, [asset, genericAsset, hasBalance]);
-
-  if (assetWithPrice?.mainnet_address) {
-    assetWithPrice.l2Address = asset?.address;
-    assetWithPrice.address = assetWithPrice.mainnet_address;
-  }
 
   const isL2 = useMemo(() => isL2Network(assetWithPrice.network), [
     assetWithPrice.network,
@@ -230,7 +224,7 @@ export default function ChartExpandedState({ asset }) {
     isLoading: additionalAssetDataLoading,
   } = useAdditionalAssetData({
     address: asset?.address,
-    network: ethereumUtils.getNetworkFromType(assetWithPrice.type),
+    network: asset?.network,
     currency: nativeCurrency,
   });
 
