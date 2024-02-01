@@ -42,7 +42,6 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { Box, Row, Rows } from '@/design-system';
 import {
-  AssetType,
   GasFee,
   LegacyGasFee,
   LegacyGasFeeParams,
@@ -51,7 +50,7 @@ import {
 import { ExchangeModalTypes, isKeyboardOpen, Network } from '@/helpers';
 import { KeyboardType } from '@/helpers/keyboardTypes';
 import { getProviderForNetwork, getFlashbotsProvider } from '@/handlers/web3';
-import { delay, divide, greaterThan, multiply } from '@/helpers/utilities';
+import { delay, greaterThan } from '@/helpers/utilities';
 import {
   useAccountSettings,
   useColorForAsset,
@@ -82,10 +81,9 @@ import {
   updateSwapSlippage,
   updateSwapTypeDetails,
 } from '@/redux/swap';
-import { ETH_ADDRESS, ethUnits } from '@/references';
+import { ethUnits } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils, gasUtils } from '@/utils';
-import { useEthUSDPrice } from '@/utils/ethereumUtils';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import logger from '@/utils/logger';
 import {
@@ -105,6 +103,7 @@ import { getNetworkObj } from '@/networks';
 import Animated from 'react-native-reanimated';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
+import { SwapPriceImpactType } from '@/hooks/usePriceImpactDetails';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -172,11 +171,6 @@ export default function ExchangeModal({
 
   const title = lang.t('swap.modal_types.swap');
 
-  const priceOfEther = useEthUSDPrice();
-  const genericAssets = useSelector<
-    { data: { genericAssets: { [address: string]: SwappableAsset } } },
-    { [address: string]: SwappableAsset }
-  >(({ data: { genericAssets } }) => genericAssets);
   const {
     goBack,
     navigate,
@@ -247,18 +241,11 @@ export default function ExchangeModal({
     isCrosschainSwap,
     isBridgeSwap,
   } = useMemo(() => {
-    const inputNetwork = ethereumUtils.getNetworkFromType(inputCurrency?.type);
-    const outputNetwork = ethereumUtils.getNetworkFromType(
-      outputCurrency?.type
+    const inputNetwork = inputCurrency?.network || Network.mainnet;
+    const outputNetwork = outputCurrency?.network || Network.mainnet;
+    const chainId = ethereumUtils.getChainIdFromNetwork(
+      inputNetwork || outputNetwork
     );
-    const chainId =
-      network === Network.goerli
-        ? getNetworkObj(Network.goerli).id
-        : inputCurrency?.type || outputCurrency?.type
-        ? ethereumUtils.getChainIdFromType(
-            inputCurrency?.type ?? outputCurrency?.type
-          )
-        : 1;
 
     const currentNetwork = ethereumUtils.getNetworkFromChainId(chainId);
     const isCrosschainSwap =
@@ -275,51 +262,10 @@ export default function ExchangeModal({
   }, [
     crosschainSwapsEnabled,
     inputCurrency?.symbol,
-    inputCurrency?.type,
-    network,
+    inputCurrency?.network,
     outputCurrency?.symbol,
-    outputCurrency?.type,
+    outputCurrency?.network,
   ]);
-
-  // if the default input is on a different network than
-  // we want to update the output to be on the same, if its not available -> null
-  const defaultOutputAssetOverride = useMemo(() => {
-    const newOutput = defaultOutputAsset;
-
-    if (
-      defaultInputAsset &&
-      defaultOutputAsset &&
-      defaultInputAsset.type !== defaultOutputAsset.type
-    ) {
-      // find address for output asset on the input's network
-      // TODO: this value can be removed after the crosschain swaps flag is no longer necessary
-      const inputNetworkImplementationAddress =
-        defaultOutputAsset?.implementations?.[
-          defaultInputAsset?.type === AssetType.token
-            ? 'ethereum'
-            : defaultInputAsset?.type
-        ]?.address;
-      if (inputNetworkImplementationAddress || crosschainSwapsEnabled) {
-        if (!crosschainSwapsEnabled) {
-          newOutput.address =
-            inputNetworkImplementationAddress || defaultOutputAsset.address;
-          if (defaultInputAsset.type !== Network.mainnet) {
-            newOutput.mainnet_address = defaultOutputAsset.address;
-          }
-          newOutput.type = defaultInputAsset.type;
-        }
-        newOutput.uniqueId =
-          newOutput.type === Network.mainnet
-            ? defaultOutputAsset?.address
-            : `${defaultOutputAsset?.address}_${defaultOutputAsset?.type}`;
-        return newOutput;
-      } else {
-        return null;
-      }
-    } else {
-      return newOutput;
-    }
-  }, [defaultInputAsset, defaultOutputAsset, crosschainSwapsEnabled]);
 
   const {
     flipCurrencies,
@@ -331,7 +277,7 @@ export default function ExchangeModal({
     inputNetwork,
     outputNetwork,
     defaultInputAsset,
-    defaultOutputAsset: defaultOutputAssetOverride,
+    defaultOutputAsset,
     fromDiscover,
     ignoreInitialTypeCheck,
     inputFieldRef,
@@ -392,21 +338,16 @@ export default function ExchangeModal({
   const lastTradeDetails = usePrevious(tradeDetails);
   const isSufficientBalance = useSwapIsSufficientBalance(inputAmount);
 
-  const {
-    isHighPriceImpact,
-    outputPriceValue,
-    priceImpactColor,
-    priceImpactNativeAmount,
-    priceImpactPercentDisplay,
-  } = usePriceImpactDetails(
-    inputAmount,
-    outputAmount,
+  const { priceImpact, outputNativeAmount } = usePriceImpactDetails(
     inputCurrency,
     outputCurrency,
-    currentNetwork,
-    loading
+    tradeDetails,
+    currentNetwork
   );
-  const [debouncedIsHighPriceImpact] = useDebounce(isHighPriceImpact, 1000);
+  const [debouncedIsHighPriceImpact] = useDebounce(
+    priceImpact.type !== SwapPriceImpactType.none,
+    1000
+  );
   // For a limited period after the merge we need to block the use of flashbots.
   // This line should be removed after reenabling flashbots in remote config.
   const swapSupportsFlashbots = getNetworkObj(currentNetwork).features
@@ -672,8 +613,12 @@ export default function ExchangeModal({
           nonce,
           tradeDetails: {
             ...tradeDetails,
-            fromChainId: ethereumUtils.getChainIdFromType(inputCurrency?.type),
-            toChainId: ethereumUtils.getChainIdFromType(outputCurrency?.type),
+            fromChainId: ethereumUtils.getChainIdFromNetwork(
+              inputCurrency?.network
+            ),
+            toChainId: ethereumUtils.getChainIdFromNetwork(
+              outputCurrency?.network
+            ),
           } as Quote | CrosschainQuote,
           meta: {
             flashbots,
@@ -717,7 +662,7 @@ export default function ExchangeModal({
           outputTokenAddress: outputCurrency?.address || '',
           outputTokenName: outputCurrency?.name || '',
           outputTokenSymbol: outputCurrency?.symbol || '',
-          priceImpact: priceImpactPercentDisplay,
+          priceImpact: priceImpact.percentDisplay,
           slippage: isNaN(slippage) ? 'Error calculating slippage.' : slippage,
           type,
         });
@@ -762,7 +707,7 @@ export default function ExchangeModal({
       navigate,
       outputAmount,
       outputCurrency,
-      priceImpactPercentDisplay,
+      priceImpact.percentDisplay,
       selectedGasFee?.gasFee,
       selectedGasFee?.gasFeeParams,
       selectedGasFee?.option,
@@ -778,41 +723,12 @@ export default function ExchangeModal({
     try {
       // Tell iOS we're running a rap (for tracking purposes)
       NotificationManager?.postNotification('rapInProgress');
-      if (nativeCurrency.toLowerCase() === 'usd') {
-        amountInUSD = nativeAmount!;
-      } else {
-        const ethPriceInNativeCurrency =
-          genericAssets[ETH_ADDRESS]?.price?.value ?? 0;
-        const inputTokenPriceInNativeCurrency =
-          genericAssets[inputCurrency?.address]?.price?.value ?? 0;
-        const outputTokenPriceInNativeCurrency =
-          genericAssets[outputCurrency?.address]?.price?.value ?? 0;
-        const inputTokensPerEth = divide(
-          inputTokenPriceInNativeCurrency,
-          ethPriceInNativeCurrency
-        );
-        const outputTokensPerEth = divide(
-          outputTokenPriceInNativeCurrency,
-          ethPriceInNativeCurrency
-        );
-        const inputTokensInEth = multiply(inputTokensPerEth, inputAmount!);
-        const outputTokensInEth = multiply(outputTokensPerEth, outputAmount!);
-
-        const availableTokenPrice = inputTokensInEth ?? outputTokensInEth;
-        const maybeResultAmount = multiply(priceOfEther, availableTokenPrice);
-        // We have to use string matching here because the multiply helper will return the value as a string from the helpers
-        // If we pass a empty string value to segment it gets ignored
-        amountInUSD = ['NaN', '0'].includes(maybeResultAmount)
-          ? ''
-          : maybeResultAmount;
-      }
     } catch (e) {
       logger.log('error getting the swap amount in USD price', e);
     } finally {
       const slippage = slippageInBips / 100;
       analytics.track(`Submitted ${type}`, {
         aggregator: tradeDetails?.source || '',
-        amountInUSD,
         gasSetting: selectedGasFee?.option,
         inputTokenAddress: inputCurrency?.address || '',
         inputTokenName: inputCurrency?.name || '',
@@ -830,13 +746,13 @@ export default function ExchangeModal({
         outputTokenAddress: outputCurrency?.address || '',
         outputTokenName: outputCurrency?.name || '',
         outputTokenSymbol: outputCurrency?.symbol || '',
-        priceImpact: priceImpactPercentDisplay,
+        priceImpact: priceImpact.percentDisplay,
         slippage: isNaN(slippage) ? 'Error caclulating slippage.' : slippage,
         type,
       });
     }
 
-    const outputInUSD = multiply(outputPriceValue!, outputAmount!);
+    const outputInUSD = outputNativeAmount;
     const gasPrice =
       (selectedGasFee?.gasFee as GasFee)?.maxFee?.native?.value?.amount ||
       (selectedGasFee?.gasFee as LegacyGasFee)?.estimatedFee?.native?.value
@@ -852,28 +768,25 @@ export default function ExchangeModal({
       return false;
     }
   }, [
-    outputPriceValue,
-    outputAmount,
-    selectedGasFee,
-    submit,
-    nativeCurrency,
-    nativeAmount,
-    genericAssets,
+    outputNativeAmount,
+    selectedGasFee?.gasFee,
+    selectedGasFee?.option,
+    selectedGasFee?.gasFeeParams,
     inputCurrency?.address,
     inputCurrency?.name,
     inputCurrency?.symbol,
-    inputAmount,
-    priceOfEther,
+    outputCurrency?.address,
+    outputCurrency?.name,
+    outputCurrency?.symbol,
     slippageInBips,
     type,
     tradeDetails?.source,
     tradeDetails?.protocols,
+    isHardwareWallet,
     debouncedIsHighPriceImpact,
     currentNetwork,
-    outputCurrency?.address,
-    outputCurrency?.name,
-    outputCurrency?.symbol,
-    priceImpactPercentDisplay,
+    priceImpact.percentDisplay,
+    submit,
   ]);
 
   const confirmButtonProps = useMemoOne(
@@ -1077,7 +990,6 @@ export default function ExchangeModal({
                   editable={!!inputCurrency}
                   inputAmount={inputAmountDisplay}
                   inputCurrencyAddress={inputCurrency?.address}
-                  inputCurrencyAssetType={inputCurrency?.type}
                   inputCurrencyMainnetAddress={inputCurrency?.mainnet_address}
                   inputCurrencySymbol={inputCurrency?.symbol}
                   inputFieldRef={inputFieldRef}
@@ -1113,7 +1025,6 @@ export default function ExchangeModal({
                   loading={loading}
                   outputAmount={outputAmountDisplay}
                   outputCurrencyAddress={outputCurrency?.address}
-                  outputCurrencyAssetType={outputCurrency?.type}
                   outputCurrencyMainnetAddress={outputCurrency?.mainnet_address}
                   outputCurrencySymbol={outputCurrency?.symbol}
                   outputFieldRef={outputFieldRef}
@@ -1135,9 +1046,9 @@ export default function ExchangeModal({
                   onFlipCurrencies={loading ? NOOP : flipCurrencies}
                   onPressImpactWarning={navigateToSwapDetailsModal}
                   onPressSettings={navigateToSwapSettingsSheet}
-                  priceImpactColor={priceImpactColor}
-                  priceImpactNativeAmount={priceImpactNativeAmount}
-                  priceImpactPercentDisplay={priceImpactPercentDisplay}
+                  priceImpactColor={priceImpact.color}
+                  priceImpactNativeAmount={priceImpact.impactDisplay}
+                  priceImpactPercentDisplay={priceImpact.percentDisplay}
                   type={type}
                 />
               )}

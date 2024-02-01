@@ -57,7 +57,6 @@ import {
   useMaxInputBalance,
   usePrevious,
   useSendableUniqueTokens,
-  useSendSavingsAccount,
   useSendSheetInputRefs,
   useTransactionConfirmation,
   useUserAccounts,
@@ -151,7 +150,6 @@ export default function SendSheet(props) {
     step: 'TRANSFER',
   });
 
-  const savings = useSendSavingsAccount();
   const { hiddenCoinsObj, pinnedCoinsObj } = useCoinListEditOptions();
   const [toAddress, setToAddress] = useState();
   const [amountDetails, setAmountDetails] = useState({
@@ -311,7 +309,7 @@ export default function SendSheet(props) {
         startPollingGasFees(currentNetwork);
       });
     }
-  }, [prevNetwork, startPollingGasFees, selected.type, currentNetwork]);
+  }, [prevNetwork, startPollingGasFees, selected?.network, currentNetwork]);
 
   // Stop polling when the sheet is unmounted
   useEffect(() => {
@@ -324,9 +322,7 @@ export default function SendSheet(props) {
 
   useEffect(() => {
     const updateNetworkAndProvider = async () => {
-      const assetNetwork = isNft
-        ? selected.network
-        : ethereumUtils.getNetworkFromType(selected.type);
+      const assetNetwork = selected?.network;
       if (
         assetNetwork &&
         (assetNetwork !== currentNetwork ||
@@ -334,10 +330,7 @@ export default function SendSheet(props) {
           prevNetwork !== currentNetwork)
       ) {
         let provider = web3Provider;
-        const isNft = selected.type === AssetTypes.nft;
-        const selectedNetwork = isNft
-          ? selected.network
-          : ethereumUtils.getNetworkFromType(selected.type);
+        const selectedNetwork = selected?.network;
         if (network === Network.goerli) {
           setCurrentNetwork(Network.goerli);
           provider = await getProviderForNetwork(Network.goerli);
@@ -355,8 +348,7 @@ export default function SendSheet(props) {
     isNft,
     network,
     prevNetwork,
-    selected.network,
-    selected.type,
+    selected?.network,
     sendUpdateSelected,
   ]);
 
@@ -649,7 +641,7 @@ export default function SendSheet(props) {
       const submitSuccessful = await onSubmit(...args);
       analytics.track('Sent transaction', {
         assetName: selected?.name || '',
-        assetType: selected?.type || '',
+        network: selected?.network || '',
         isRecepientENS: recipient.slice(-4).toLowerCase() === '.eth',
         isHardwareWallet,
       });
@@ -670,7 +662,7 @@ export default function SendSheet(props) {
       onSubmit,
       recipient,
       selected?.name,
-      selected?.type,
+      selected?.network,
     ]
   );
 
@@ -866,9 +858,7 @@ export default function SendSheet(props) {
     const currentProviderNetwork = ethereumUtils.getNetworkFromChainId(
       Number(currentProvider._network.chainId)
     );
-    const assetNetwork = isNft
-      ? selected.network
-      : ethereumUtils.getNetworkFromType(selected.type);
+    const assetNetwork = selected?.network;
 
     if (
       assetNetwork === currentNetwork &&
@@ -968,7 +958,6 @@ export default function SendSheet(props) {
               network={network}
               onSelectAsset={sendUpdateSelected}
               pinnedCoins={pinnedCoinsObj}
-              savings={savings}
               sortedAssets={sortedAssets}
               theme={theme}
               uniqueTokens={sendableUniqueTokens}

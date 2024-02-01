@@ -38,7 +38,7 @@ export const useSwappableUserAssets = (params: {
     if (hiddenCoinsObj[asset.uniqueId]) return true;
 
     // filter out networks where swaps are not enabled
-    const assetNetwork = ethereumUtils.getNetworkFromType(asset.type);
+    const assetNetwork = asset.network;
     if (getNetworkObj(assetNetwork).features.swaps) return true;
 
     return false;
@@ -48,10 +48,7 @@ export const useSwappableUserAssets = (params: {
     async (addresses: EthereumAddress[], network: keyof SwappableAddresses) => {
       try {
         if (outputCurrency) {
-          const outputNetwork =
-            outputCurrency.type !== 'token'
-              ? outputCurrency.type
-              : Network.mainnet;
+          const outputNetwork = outputCurrency.network;
           if (outputNetwork !== network) {
             const swappableAddresses = (await walletFilter({
               addresses,

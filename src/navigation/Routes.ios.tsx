@@ -244,11 +244,6 @@ function NativeStackNavigator() {
         {...expandedAssetSheetConfigWithLimit}
       />
       <NativeStack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.TOKEN_INDEX_SHEET}
-        {...expandedAssetSheetConfigWithLimit}
-      />
-      <NativeStack.Screen
         component={RestoreCloudStep}
         name={Routes.RESTORE_CLOUD_SHEET}
         {...backupSheetConfig}

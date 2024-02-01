@@ -12,6 +12,24 @@ const ImageTile = styled(ImgixImage)({
   justifyContent: 'center',
 });
 
+const sanitizeSVG = svgContent => {
+  // Regular expression to find all event handler attributes
+  const eventHandlerRegex = /\son\w+="[^"]*"/gi;
+
+  // Regular expression to remove script tags
+  const scriptTagRegex = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
+
+  // Regular expression to sanitize href and xlink:href attributes
+  const hrefRegex = /(href|xlink:href)="javascript:[^"]*"/gi;
+
+  // Remove the event handlers, script tags, and sanitize hrefs
+  let sanitizedContent = svgContent.replace(eventHandlerRegex, '');
+  sanitizedContent = sanitizedContent.replace(scriptTagRegex, '');
+  sanitizedContent = sanitizedContent.replace(hrefRegex, '');
+
+  return sanitizedContent;
+};
+
 const getHTML = (svgContent, style) =>
   `
 <html data-key="key-${style.height}-${style.width}">
@@ -22,9 +40,12 @@ const getHTML = (svgContent, style) =>
       window.alert = () => false;
       window.prompt = () => false;
       window.confirm  = () => false;
+      window.open = () => {return null};
     }
     overLoadFunctions();
     window.onload = overLoadFunctions();
+  document.addEventListener('DOMContentLoaded', overLoadFunctions);
+
   </script>
   <style>
       html, body {
@@ -129,7 +150,9 @@ class SvgImage extends Component {
     if (svgContent) {
       const flattenedStyle = StyleSheet.flatten(props.style) || {};
       if (svgContent.includes('viewBox')) {
-        html = getHTML(svgContent, flattenedStyle);
+        // Sanitize SVG content
+        const sanitizedContent = sanitizeSVG(svgContent);
+        html = getHTML(sanitizedContent, flattenedStyle);
       } else {
         const svgRegex = RegExp('(<svg)([^<]*|[^>]*)');
         const svg = svgRegex.exec(svgContent)[0];

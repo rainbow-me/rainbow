@@ -8,10 +8,7 @@ import { useAccountSettings, useColorForAsset, useDimensions } from '@/hooks';
 import { SwapModalField } from '@/redux/swap';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import {
-  convertAmountAndPriceToNativeDisplay,
-  convertAmountToNativeDisplay,
-} from '@/helpers/utilities';
+import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 
 export const CurrencyTileHeight = android ? 153 : 143;
 
@@ -66,23 +63,14 @@ export default function CurrencyTile({
   const inputAsExact = useSelector(
     state => state.swap.independentField !== SwapModalField.output
   );
-  const {
-    displayValues: { nativeAmountDisplay },
-  } = useSelector(state => state.swap);
   const { nativeCurrency } = useAccountSettings();
   const colorForAsset = useColorForAsset(asset);
-  const { address, mainnet_address, symbol, type: assetType } = asset;
+  const { address, mainnet_address, symbol, network } = asset;
   const isOther =
     (inputAsExact && type === 'output') || (!inputAsExact && type === 'input');
 
   const priceDisplay = priceValue
-    ? type === 'input'
-      ? convertAmountToNativeDisplay(nativeAmountDisplay, nativeCurrency)
-      : convertAmountAndPriceToNativeDisplay(
-          amount,
-          priceValue ?? 0,
-          nativeCurrency
-        ).display
+    ? convertAmountToNativeDisplay(priceValue, nativeCurrency)
     : '-';
 
   return (
@@ -98,7 +86,7 @@ export default function CurrencyTile({
               mainnet_address={mainnet_address}
               size={50}
               symbol={symbol}
-              type={assetType}
+              network={network}
             />
           </Row>
           <Row height="content">

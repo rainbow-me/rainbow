@@ -159,7 +159,7 @@ describe('Hardhat Transaction Flow', () => {
       'send-asset-form-field',
       RAINBOW_WALLET_DOT_ETH
     );
-    await Helpers.waitAndTap('send-asset-BAT-token');
+    await Helpers.waitAndTap('send-asset-BAT-mainnet');
     await Helpers.typeText('selected-asset-field-input', '1.02', true);
     await Helpers.waitAndTap('send-sheet-confirm-action-button');
     await Helpers.tapAndLongPress('send-confirmation-button');
@@ -197,7 +197,7 @@ describe('Hardhat Transaction Flow', () => {
       RAINBOW_WALLET_DOT_ETH,
       ETH_ADDRESS
     );
-    await Helpers.waitAndTap('send-asset-ETH-token');
+    await Helpers.waitAndTap('send-asset-ETH-mainnet');
     await Helpers.typeText('selected-asset-field-input', '0.003', true);
     await Helpers.waitAndTap('send-sheet-confirm-action-button');
     await Helpers.tapAndLongPress('send-confirmation-button');

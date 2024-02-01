@@ -40,12 +40,12 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { PoapEvent } from '@/graphql/__generated__/arcDev';
 import { format } from 'date-fns';
-import { arcClient, arcDevClient } from '@/graphql';
+import { arcClient } from '@/graphql';
 import Spinner from '@/components/Spinner';
 import { delay } from '@/utils/delay';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { UniqueAsset } from '@/entities';
-import { IS_DEV, IS_IOS } from '@/env';
+import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';
 import { PoapMintError } from '@/utils/poaps';
 import { analyticsV2 } from '@/analytics';
@@ -129,9 +129,8 @@ const PoapSheet = () => {
       return;
     }
     setClaimStatus('claiming');
-    const client = IS_DEV ? arcDevClient : arcClient;
     if (!poapEvent.secret || !poapEvent.qrHash) return;
-    const response = await client.claimPoapByQrHash({
+    const response = await arcClient.claimPoapByQrHash({
       walletAddress: accountAddress,
       qrHash: poapEvent.qrHash,
       secret: poapEvent.secret,
@@ -172,9 +171,8 @@ const PoapSheet = () => {
     }
     if (!poapEvent.secretWord) return;
     setClaimStatus('claiming');
-    const client = IS_DEV ? arcDevClient : arcClient;
 
-    const response = await client.claimPoapBySecretWord({
+    const response = await arcClient.claimPoapBySecretWord({
       walletAddress: accountAddress,
       secretWord: poapEvent.secretWord,
     });

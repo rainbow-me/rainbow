@@ -242,6 +242,7 @@ export const OfferRow = ({ offer }: { offer: NftOffer }) => {
                 address={offer.paymentToken.address}
                 size={COIN_ICON_SIZE}
                 symbol={offer.paymentToken.symbol}
+                network={offer.network}
               />
             </View>
             <Text size="17pt" weight="bold" color="label">

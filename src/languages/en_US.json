@@ -316,11 +316,6 @@
       "hidden": "Hidden"
     },
     "cards": {
-      "dpi": {
-        "title": "DeFi Pulse Index",
-        "body": "All the top decentralized finance tokens in one. Track the industry.",
-        "view": "View"
-      },
       "ens_create_profile": {
         "title": "Create your ENS profile",
         "body": "Replace your wallet address with a profile owned entirely by you."
@@ -575,7 +570,7 @@
         "read_more_button": "Read more",
         "available_networks": "Available on %{availableNetworks} networks",
         "available_network": "Available on the %{availableNetwork} network",
-        "available_networkv2": "Also available on %{availableNetwork}",
+        "available_networkv2": "Only available on %{availableNetwork}",
         "l2_disclaimer": "This %{symbol} is on the %{network} network",
         "l2_disclaimer_send": "Sending on the %{network} network",
         "l2_disclaimer_dapp": "This app on the %{network} network",
@@ -1360,7 +1355,11 @@
         "view_weekly_earnings_activity": "Your Activity",
         "view_weekly_earnings_referral_activity": "Referral Activity",
         "view_weekly_earnings_total_earnings": "Total",
-        "view_weekly_earnings_new_referrals": "New Referrals"
+        "view_weekly_earnings_new_referrals": "New Referrals",
+        "wallet_balance_required": "Wallet balance required",
+        "require_balance_paragraph_one": "To continue, ensure you have an ETH balance on one of the following networks:",
+        "require_balance_paragraph_two": "Or alternatively, a MATIC balance on Polygon or a BNB balance on BSC",
+        "fund_my_wallet": "Fund My Wallet"
       }
     },
     "pools": {
