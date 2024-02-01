@@ -3,7 +3,7 @@ import isEqual from 'react-fast-compare';
 import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
 import { isNativeAsset } from '@/handlers/assets';
 import { Network } from '@/networks/types';
-import { useAccountAsset, useDimensions } from '@/hooks';
+import { useAsset, useDimensions } from '@/hooks';
 import { ethereumUtils } from '@/utils';
 import FastCoinIcon from '../asset-list/RecyclerAssetList2/FastComponents/FastCoinIcon';
 import { ButtonPressAnimation } from '../animations';
@@ -25,7 +25,6 @@ export default React.memo(function ExchangeTokenRow({
     showFavoriteButton,
     onPress,
     theme,
-    nativeCurrency,
     nativeCurrencySymbol,
     favorite,
     toggleFavorite,
@@ -35,18 +34,25 @@ export default React.memo(function ExchangeTokenRow({
     mainnet_address,
     name,
     testID,
-    type,
+    network,
     disabled,
+    decimals,
   },
 }: ExchangeTokenRowProps) {
   const { width: deviceWidth } = useDimensions();
+  const item = useAsset({
+    uniqueId,
+    mainnet_address,
+    symbol,
+    address,
+    name,
+    decimals,
+    network,
+  });
 
-  // TODO https://github.com/rainbow-me/rainbow/pull/3313/files#r876259954
-  const item = useAccountAsset(uniqueId, nativeCurrency);
-  const network = ethereumUtils.getNetworkFromType(type) ?? Network.mainnet;
   const rowTestID = `${testID}-exchange-coin-row-${
     symbol ?? item?.symbol ?? ''
-  }-${type || 'token'}`;
+  }-${network || Network.mainnet}`;
 
   const isInfoButtonVisible =
     !item?.isNativeAsset ||
@@ -69,7 +75,7 @@ export default React.memo(function ExchangeTokenRow({
               <Box
                 as={FastCoinIcon}
                 address={address || item?.address}
-                network={network}
+                network={network || Network.mainnet}
                 mainnetAddress={mainnet_address ?? item?.mainnet_address}
                 symbol={symbol ?? item?.symbol}
                 theme={theme}

@@ -429,6 +429,7 @@ export type EventProperties = {
     deeplinked: boolean;
     referralCode: boolean;
     hardwareWallet: boolean;
+    errorType: string | undefined;
   };
   [event.pointsOnboardingScreenPressedShareToXButton]: undefined;
   [event.pointsOnboardingScreenPressedSkipShareToXButton]: undefined;

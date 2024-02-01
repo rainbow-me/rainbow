@@ -78,12 +78,12 @@ export function Card({ collection }: { collection: MintableCollection }) {
               <Bleed vertical="3px">
                 {network !== Network.mainnet ? (
                   <ChainBadge
-                    assetType={network}
+                    network={network}
                     position="relative"
                     size="medium"
                   />
                 ) : (
-                  <CoinIcon size={20} />
+                  <CoinIcon size={20} network={network} />
                 )}
               </Bleed>
             </Cover>

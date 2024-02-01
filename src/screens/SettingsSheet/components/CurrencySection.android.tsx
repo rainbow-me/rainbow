@@ -12,6 +12,7 @@ import { BackgroundProvider, Box, Inline, Inset, Text } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import * as i18n from '@/languages';
+import { Network } from '@/networks/types';
 
 const emojiData = Object.entries(emojis).map(([emoji, { name }]) => [
   name,
@@ -75,6 +76,7 @@ const CurrencySection = () => {
                             size={23}
                             style={{ marginLeft: 7 }}
                             symbol={currency}
+                            network={Network.mainnet}
                           />
                         )
                       }

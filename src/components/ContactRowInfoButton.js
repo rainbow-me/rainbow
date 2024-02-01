@@ -101,7 +101,7 @@ const ContactRowInfoButton = ({ children, item, network, scaleTo }) => {
 
   const onPressAndroid = useCallback(() => {
     const blockExplorerText = `View on ${startCase(
-      ethereumUtils.getBlockExplorer(item?.type)
+      ethereumUtils.getBlockExplorer(item?.network)
     )}`;
     const androidContractActions = [
       lang.t('wallet.action.copy_contract_address'),
@@ -124,10 +124,10 @@ const ContactRowInfoButton = ({ children, item, network, scaleTo }) => {
         }
       }
     );
-  }, [item?.type, item?.name, item?.address, handleCopyAddress, network]);
+  }, [item?.network, item?.name, item?.address, handleCopyAddress, network]);
 
   const menuConfig = useMemo(() => {
-    const blockExplorerAction = buildBlockExplorerAction(item?.type);
+    const blockExplorerAction = buildBlockExplorerAction(item?.network);
     return {
       menuItems: [
         blockExplorerAction,

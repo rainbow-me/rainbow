@@ -8,7 +8,7 @@ import {
   walletConnectSetPendingRedirect,
 } from '@/redux/walletconnect';
 import { scheduleActionOnAssetReceived } from '@/redux/data';
-import { emitAssetRequest, emitChartsRequest } from '@/redux/explorer';
+import { emitAssetRequest } from '@/redux/explorer';
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
 import { defaultConfig } from '@/config/experimental';
 import { PROFILES } from '@/config/experimentalHooks';
@@ -130,7 +130,6 @@ export default async function handleDeeplink(
               _action(asset);
             } else {
               dispatch(emitAssetRequest(address));
-              dispatch(emitChartsRequest(address));
               scheduleActionOnAssetReceived(address, _action);
             }
           }, 50);
@@ -217,8 +216,8 @@ export default async function handleDeeplink(
       }
 
       default: {
-        const addressOrENS = pathname?.split('/profile/')?.[1];
-
+        const addressOrENS =
+          pathname?.split('/profile/')?.[1] ?? pathname?.split('/')?.[1];
         /**
          * This handles ENS profile links on mobile i.e.
          * `https://rainbow.me/0x123...` which is why it's in the default case

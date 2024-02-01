@@ -1,4 +1,3 @@
-import { savingsAssets } from './compound';
 import { Asset } from '@/entities';
 import { Network } from '@/helpers/networkTypes';
 
@@ -15,7 +14,6 @@ export { default as tokenGateCheckerAbi } from './token-gate-checker-abi.json';
 export { default as optimismGasOracleAbi } from './optimism-gas-oracle-abi.json';
 export { default as ethUnits } from './ethereum-units.json';
 export { default as timeUnits } from './time-units.json';
-export { DPI_ADDRESS } from './indexes';
 
 export { default as supportedNativeCurrencies } from './native-currencies.json';
 export { default as shitcoins } from './shitcoins';
@@ -86,8 +84,6 @@ export const DAI_POLYGON_ADDRESS = '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063';
 export const WMATIC_POLYGON_ADDRESS =
   '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270';
 export const WBNB_BSC_ADDRESS = '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c';
-export const CDAI_CONTRACT = '0x5d3a536e4d6dbd6114cc1ead35777bab948e3643';
-export const SAI_ADDRESS = '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359';
 export const DAI_ADDRESS = '0x6b175474e89094c44da98b954eedeac495271d0f';
 export const USDC_ADDRESS = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
 export const USDC_POLYGON_ADDRESS =
@@ -143,10 +139,5 @@ export const AddCashCurrencyInfo: {
     },
   },
 };
-
-export const savingsAssetsList: Record<
-  string,
-  Record<string, Asset>
-> = savingsAssets;
 
 export const REFERRER = 'native-app';

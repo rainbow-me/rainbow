@@ -20,14 +20,11 @@ import {
   TransactionsReceivedMessage,
 } from './data';
 import { AppGetState, AppState } from './store';
-import { disableCharts } from '@/config/debug';
 import { getProviderForNetwork, isHardHat } from '@/handlers/web3';
-import ChartTypes, { ChartType } from '@/helpers/chartTypes';
 import currencyTypes from '@/helpers/currencyTypes';
 import { Network } from '@/helpers/networkTypes';
 import {
   BNB_MAINNET_ADDRESS,
-  DPI_ADDRESS,
   ETH_ADDRESS,
   MATIC_MAINNET_ADDRESS,
   OP_ADDRESS,
@@ -231,7 +228,6 @@ const assetPricesSubscription = (
   const assetCodes = concat(
     tokenAddresses,
     ETH_ADDRESS,
-    DPI_ADDRESS,
     MATIC_MAINNET_ADDRESS,
     BNB_MAINNET_ADDRESS,
     OP_ADDRESS
@@ -288,32 +284,6 @@ const l2AddressTransactionHistoryRequest = (
       `${Network.zora}-transactions`,
       `${Network.base}-transactions`,
     ],
-  },
-];
-
-/**
- * Configures a chart retrieval request for assets.
- *
- * @param assetCodes The asset addresses.
- * @param currency The currency to use.
- * @param chartType The `ChartType` to use.
- * @param action The request action.
- * @returns Arguments for an `emit` function call.
- */
-const chartsRetrieval = (
-  assetCodes: string[],
-  currency: string,
-  chartType: ChartType,
-  action: SocketGetActionType = 'get'
-): SocketEmitArguments => [
-  action,
-  {
-    payload: {
-      asset_codes: assetCodes,
-      charts_type: chartType,
-      currency: toLower(currency),
-    },
-    scope: ['charts'],
   },
 ];
 
@@ -430,14 +400,6 @@ export const explorerInit = () => async (
 
     // we want to get ETH info ASAP
     dispatch(emitAssetRequest(ETH_ADDRESS));
-
-    if (!disableCharts) {
-      // We need this for Uniswap Pools profit calculation
-      dispatch(emitChartsRequest([ETH_ADDRESS, DPI_ADDRESS], ChartTypes.month));
-      dispatch(
-        emitChartsRequest([ETH_ADDRESS], ChartTypes.day, currencyTypes.usd)
-      );
-    }
   });
 };
 
@@ -498,32 +460,6 @@ export const emitAssetRequest = (assetAddress: string | string[]) => (
     setTimeout(() => emitAssetRequest(assetAddress), 100);
   }
   return false;
-};
-
-/**
- * Emits a chart information request for an asset or assets. The result
- * is handled by a listener in `listenOnAssetMessages`.
- *
- * @param assetAddress The asset address or addresses.
- * @param chartType The `ChartType` to request.
- * @param givenNativeCurrency The currency to use.
- */
-export const emitChartsRequest = (
-  assetAddress: string | string[],
-  chartType: ChartType = DEFAULT_CHART_TYPE,
-  givenNativeCurrency?: string | undefined
-) => (_: Dispatch, getState: AppGetState) => {
-  const nativeCurrency =
-    givenNativeCurrency || getState().settings.nativeCurrency;
-  const { assetsSocket } = getState().explorer;
-  const assetCodes = Array.isArray(assetAddress)
-    ? assetAddress
-    : [assetAddress];
-  if (!isEmpty(assetCodes)) {
-    assetsSocket?.emit(
-      ...chartsRetrieval(assetCodes, nativeCurrency, chartType)
-    );
-  }
 };
 
 /**
