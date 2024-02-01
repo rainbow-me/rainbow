@@ -32,8 +32,6 @@ import { AssetType } from '@/entities';
 import Labels from '../value-chart/ExtremeLabels';
 import showWalletErrorAlert from '@/helpers/support';
 import { IS_IOS } from '@/env';
-import { emitChartsRequest } from '@/redux/explorer';
-import chartTypes from '@/helpers/chartTypes';
 import Spinner from '../Spinner';
 import Skeleton, { FakeText } from '../skeleton/Skeleton';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
@@ -52,10 +50,6 @@ export const EthCard = () => {
   const { loaded: accentColorLoaded } = useAccountAccentColor();
   const { name: routeName } = useRoute();
   const cardType = 'stretch';
-
-  useEffect(() => {
-    emitChartsRequest([ETH_ADDRESS], chartTypes.day, nativeCurrency);
-  }, [nativeCurrency]);
 
   const handlePressBuy = useCallback(
     (e: ButtonPressAnimationTouchEvent) => {
