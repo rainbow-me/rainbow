@@ -29,7 +29,7 @@ import {
 import { Box, Inline } from '@/design-system';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
-import { AssetType } from '@/entities';
+
 import { Network } from '@/helpers';
 
 const CONTAINER_PADDING = 15;
@@ -294,7 +294,7 @@ export function WalletConnectV2ListItem({
                       >
                         {network !== Network.mainnet ? (
                           <ChainBadge
-                            assetType={network}
+                            network={network}
                             position="relative"
                             size="small"
                           />
@@ -303,7 +303,7 @@ export function WalletConnectV2ListItem({
                             address={ETH_ADDRESS}
                             size={20}
                             symbol={ETH_SYMBOL}
-                            type={AssetType.token}
+                            network={network}
                           />
                         )}
                       </Box>

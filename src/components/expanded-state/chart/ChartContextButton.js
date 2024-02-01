@@ -39,13 +39,13 @@ export default function ChartContextButton({ asset, color }) {
         setHiddenCoins();
       } else if (buttonIndex === 2 && !asset?.isNativeAsset) {
         // 🔍 View on Etherscan
-        ethereumUtils.openTokenEtherscanURL(asset?.address, asset?.type);
+        ethereumUtils.openTokenEtherscanURL(asset?.address, asset?.network);
       }
     },
     [
       asset?.address,
       asset?.isNativeAsset,
-      asset?.type,
+      asset?.network,
       setHiddenCoins,
       setPinnedCoins,
     ]
@@ -68,13 +68,13 @@ export default function ChartContextButton({ asset, color }) {
         : [
             `🔍 ${emojiSpacing}${lang.t('wallet.action.view_on', {
               blockExplorerName: startCase(
-                ethereumUtils.getBlockExplorer(asset?.type)
+                ethereumUtils.getBlockExplorer(asset?.network)
               ),
             })}`,
           ]),
       ...(ios ? [lang.t('wallet.action.cancel')] : []),
     ],
-    [asset?.isNativeAsset, asset?.type, currentAction]
+    [asset?.isNativeAsset, asset?.network, currentAction]
   );
 
   return (

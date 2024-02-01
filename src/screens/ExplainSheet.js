@@ -602,7 +602,7 @@ export const explainers = (params, colors) => ({
       <CoinIcon address={ETH_ADDRESS} size={40} symbol={ETH_SYMBOL} />
     ) : (
       <ChainBadge
-        assetType={params?.fromNetwork}
+        network={params?.fromNetwork}
         marginBottom={8}
         position="relative"
         size="large"
@@ -743,7 +743,7 @@ export const explainers = (params, colors) => ({
           onPress={() =>
             ethereumUtils.openTokenEtherscanURL(
               params?.asset.address,
-              ethereumUtils.getNetworkFromType(params?.asset?.type)
+              params?.asset?.network
             )
           }
           size="large"
@@ -761,7 +761,7 @@ export const explainers = (params, colors) => ({
     extraHeight: 150,
     logo: (
       <ChainBadge
-        assetType={networkTypes.optimism}
+        network={networkTypes.optimism}
         marginBottom={8}
         position="relative"
         size="large"
@@ -781,7 +781,7 @@ export const explainers = (params, colors) => ({
     extraHeight: 144,
     logo: (
       <ChainBadge
-        assetType={networkTypes.arbitrum}
+        network={networkTypes.arbitrum}
         marginBottom={8}
         position="relative"
         size="large"
@@ -801,7 +801,7 @@ export const explainers = (params, colors) => ({
     extraHeight: 120,
     logo: (
       <ChainBadge
-        assetType={networkTypes.polygon}
+        network={networkTypes.polygon}
         marginBottom={8}
         position="relative"
         size="large"
@@ -821,7 +821,7 @@ export const explainers = (params, colors) => ({
     extraHeight: IS_ANDROID ? 120 : 160,
     logo: (
       <ChainBadge
-        assetType={networkTypes.bsc}
+        network={networkTypes.bsc}
         marginBottom={8}
         position="relative"
         size="large"
@@ -841,7 +841,7 @@ export const explainers = (params, colors) => ({
     extraHeight: 144,
     logo: (
       <ChainBadge
-        assetType={networkTypes.zora}
+        network={networkTypes.zora}
         marginBottom={8}
         position="relative"
         size="large"
@@ -861,7 +861,7 @@ export const explainers = (params, colors) => ({
     extraHeight: 144,
     logo: (
       <ChainBadge
-        assetType={networkTypes.base}
+        network={networkTypes.base}
         marginBottom={8}
         position="relative"
         size="large"
@@ -931,7 +931,7 @@ export const explainers = (params, colors) => ({
     logo:
       params?.network !== 'mainnet' ? (
         <ChainBadge
-          assetType={networkTypes[params?.network]}
+          network={networkTypes[params?.network]}
           marginBottom={8}
           position="relative"
           size="large"
@@ -1090,7 +1090,7 @@ export const explainers = (params, colors) => ({
             >
               {network !== 'mainnet' ? (
                 <ChainBadge
-                  assetType={network}
+                  network={network}
                   position="relative"
                   size="large"
                 />
@@ -1152,7 +1152,7 @@ export const explainers = (params, colors) => ({
     ),
     logo: (
       <ChainBadge
-        assetType={params?.network}
+        network={params?.network}
         marginBottom={8}
         position="relative"
         size="large"
@@ -1264,7 +1264,7 @@ export const explainers = (params, colors) => ({
           mainnet_address={params?.nativeAsset?.mainnet_address}
           address={params?.nativeAsset?.address}
           symbol={params?.nativeAsset?.symbol}
-          type={params?.nativeAsset?.type}
+          type={params?.nativeAsset?.network}
           size={30}
           badgeSize="tiny"
           badgeXPosition={-4}
@@ -1312,7 +1312,7 @@ export const explainers = (params, colors) => ({
         <CoinIcon
           address={params?.nativeAsset?.mainnet_address}
           symbol={params?.nativeAsset?.symbol}
-          type={params?.nativeAsset?.type}
+          type={params?.nativeAsset?.network}
           size={30}
           badgeSize="tiny"
           badgeXPosition={-4}
@@ -1361,7 +1361,7 @@ export const explainers = (params, colors) => ({
         <CoinIcon
           address={params?.nativeAsset?.mainnet_address}
           symbol={params?.nativeAsset?.symbol}
-          type={params?.nativeAsset?.type}
+          type={params?.nativeAsset?.network}
           size={30}
           badgeSize="tiny"
           badgeXPosition={-4}

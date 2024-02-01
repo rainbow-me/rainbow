@@ -545,6 +545,7 @@ export function NFTSingleOfferSheet() {
                         address={offer.paymentToken.address}
                         size={16}
                         symbol={offer.paymentToken.symbol}
+                        network={offer.network}
                       />
 
                       <Text
@@ -603,6 +604,7 @@ export function NFTSingleOfferSheet() {
                         address={offer.floorPrice.paymentToken.address}
                         size={16}
                         symbol={offer.floorPrice.paymentToken.symbol}
+                        network={offer.network}
                       />
 
                       <Text
@@ -722,6 +724,7 @@ export function NFTSingleOfferSheet() {
                         address={offer.paymentToken.address}
                         size={16}
                         symbol={offer.paymentToken.symbol}
+                        network={offer.network}
                       />
 
                       <Text

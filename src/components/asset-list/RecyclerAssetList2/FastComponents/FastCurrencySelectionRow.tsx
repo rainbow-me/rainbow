@@ -17,7 +17,7 @@ import { isNativeAsset } from '@/handlers/assets';
 import { Network } from '@/networks/types';
 import { useAccountAsset } from '@/hooks';
 import { colors, fonts, fontWithWidth, getFontSize } from '@/styles';
-import { deviceUtils, ethereumUtils } from '@/utils';
+import { deviceUtils } from '@/utils';
 
 const SafeRadialGradient = (IS_TESTING === 'true'
   ? View
@@ -123,7 +123,7 @@ export default React.memo(function FastCurrencySelectionRow({
     mainnet_address,
     name,
     testID,
-    type,
+    network,
     disabled,
   },
 }: FastCurrencySelectionRowProps) {
@@ -131,10 +131,9 @@ export default React.memo(function FastCurrencySelectionRow({
 
   // TODO https://github.com/rainbow-me/rainbow/pull/3313/files#r876259954
   const item = useAccountAsset(uniqueId, nativeCurrency);
-  const network = ethereumUtils.getNetworkFromType(type) ?? Network.mainnet;
   const rowTestID = `${testID}-exchange-coin-row-${
     symbol ?? item?.symbol ?? ''
-  }-${type || 'token'}`;
+  }-${network || Network.mainnet}`;
   const isInfoButtonVisible =
     !item?.isNativeAsset ||
     (!isNativeAsset(address ?? item?.address, network) && !showBalance);
@@ -151,7 +150,7 @@ export default React.memo(function FastCurrencySelectionRow({
         <View style={sx.rootContainer}>
           <FastCoinIcon
             address={address || item?.address}
-            network={network}
+            network={favorite ? Network.mainnet : network}
             mainnetAddress={mainnet_address ?? item?.mainnet_address}
             symbol={symbol ?? item?.symbol}
             theme={theme}

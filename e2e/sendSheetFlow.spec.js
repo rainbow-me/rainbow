@@ -93,7 +93,7 @@ describe('Send Sheet Interaction Flow', () => {
 
   it('Should do nothing on typing jibberish send address', async () => {
     await Helpers.typeText('send-asset-form-field', 'gvuabefhiwdnomks', false);
-    await Helpers.checkIfNotVisible('send-asset-ETH-token');
+    await Helpers.checkIfNotVisible('send-asset-ETH-mainnet');
   });
 
   // FIXME: typing in address in sim has a glitch where the asset-list doesn't
@@ -140,13 +140,13 @@ describe('Send Sheet Interaction Flow', () => {
   });
 
   it('Should go back to Asset List after tapping on savings asset', async () => {
-    await Helpers.waitAndTap('send-asset-form-cDAI-token');
+    await Helpers.waitAndTap('send-asset-form-cDAI-mainnet');
     await Helpers.checkIfVisible('send-asset-list');
   });*/
 
   it.skip('Should display Asset Form after tapping on asset', async () => {
-    await Helpers.checkIfVisible('send-asset-DAI-token');
-    await Helpers.waitAndTap('send-asset-DAI-token');
+    await Helpers.checkIfVisible('send-asset-DAI-mainnet');
+    await Helpers.waitAndTap('send-asset-DAI-mainnet');
     await Helpers.checkIfVisible('selected-asset-field-input');
   });
 
@@ -170,8 +170,8 @@ describe('Send Sheet Interaction Flow', () => {
   });
 
   it.skip('Should prepend a 0 to quantity field on input of .', async () => {
-    await Helpers.waitAndTap('send-asset-form-DAI-token');
-    await Helpers.waitAndTap('send-asset-DAI-token');
+    await Helpers.waitAndTap('send-asset-form-DAI-mainnet');
+    await Helpers.waitAndTap('send-asset-DAI-mainnet');
     await Helpers.checkIfVisible('selected-asset-quantity-field-input');
     await Helpers.waitAndTap('selected-asset-quantity-field-input');
     await Helpers.typeText('selected-asset-quantity-field-input', '.', true);
@@ -179,8 +179,8 @@ describe('Send Sheet Interaction Flow', () => {
   });
 
   it.skip('Should only show a max of 2 decimals in quantity field', async () => {
-    await Helpers.waitAndTap('send-asset-form-DAI-token');
-    await Helpers.waitAndTap('send-asset-ETH-token');
+    await Helpers.waitAndTap('send-asset-form-DAI-mainnet');
+    await Helpers.waitAndTap('send-asset-ETH-mainnet');
     await Helpers.checkIfVisible('selected-asset-quantity-field-input');
     await Helpers.waitAndTap('selected-asset-quantity-field-input');
     await Helpers.typeText(
@@ -189,12 +189,12 @@ describe('Send Sheet Interaction Flow', () => {
       true
     );
     await Helpers.checkIfElementByTextIsVisible('8.12');
-    await Helpers.waitAndTap('send-asset-form-ETH-token');
+    await Helpers.waitAndTap('send-asset-form-ETH-mainnet');
   });
 
   it('Should display Asset Form after tapping on asset ETH', async () => {
-    await Helpers.checkIfVisible('send-asset-ETH-token');
-    await Helpers.waitAndTap('send-asset-ETH-token');
+    await Helpers.checkIfVisible('send-asset-ETH-mainnet');
+    await Helpers.waitAndTap('send-asset-ETH-mainnet');
     await Helpers.checkIfVisible('selected-asset-field-input');
   });
 
@@ -218,8 +218,8 @@ describe('Send Sheet Interaction Flow', () => {
   });
 
   it('Should prepend a 0 to quantity field on input of . ETH', async () => {
-    await Helpers.waitAndTap('send-asset-form-ETH-token');
-    await Helpers.waitAndTap('send-asset-ETH-token');
+    await Helpers.waitAndTap('send-asset-form-ETH-mainnet');
+    await Helpers.waitAndTap('send-asset-ETH-mainnet');
     await Helpers.checkIfVisible('selected-asset-quantity-field-input');
     await Helpers.waitAndTap('selected-asset-quantity-field-input');
     await Helpers.typeText('selected-asset-quantity-field-input', '.', true);
@@ -227,8 +227,8 @@ describe('Send Sheet Interaction Flow', () => {
   });
 
   it('Should only show a max of 2 decimals in quantity field ETH', async () => {
-    await Helpers.waitAndTap('send-asset-form-ETH-token');
-    await Helpers.waitAndTap('send-asset-ETH-token');
+    await Helpers.waitAndTap('send-asset-form-ETH-mainnet');
+    await Helpers.waitAndTap('send-asset-ETH-mainnet');
     await Helpers.checkIfVisible('selected-asset-quantity-field-input');
     await Helpers.waitAndTap('selected-asset-quantity-field-input');
     await Helpers.typeText(
@@ -237,7 +237,7 @@ describe('Send Sheet Interaction Flow', () => {
       true
     );
     await Helpers.checkIfElementByTextIsVisible('8.12');
-    await Helpers.waitAndTap('send-asset-form-ETH-token');
+    await Helpers.waitAndTap('send-asset-form-ETH-mainnet');
   });
   afterAll(async () => {
     // Reset the app state

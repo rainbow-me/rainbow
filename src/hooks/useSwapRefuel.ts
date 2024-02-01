@@ -52,19 +52,11 @@ export default function useSwapRefuel({
     toChainId,
     isCrosschainSwap,
   } = useMemo(() => {
-    const inputNetwork = ethereumUtils.getNetworkFromType(inputCurrency?.type);
-    const outputNetwork = ethereumUtils.getNetworkFromType(
-      outputCurrency?.type
-    );
-    const chainId =
-      inputCurrency?.type || outputCurrency?.type
-        ? ethereumUtils.getChainIdFromType(
-            inputCurrency?.type ?? outputCurrency?.type
-          )
-        : 1;
+    const inputNetwork = inputCurrency.network;
+    const outputNetwork = outputCurrency.network;
+    const chainId = ethereumUtils.getChainIdFromNetwork(inputNetwork);
 
-    const toChainId =
-      ethereumUtils.getChainIdFromType(outputCurrency?.type) ?? 1;
+    const toChainId = ethereumUtils.getChainIdFromNetwork(outputNetwork);
     const isCrosschainSwap =
       crosschainSwapsEnabled && inputNetwork !== outputNetwork;
 
@@ -75,7 +67,7 @@ export default function useSwapRefuel({
       toChainId,
       isCrosschainSwap,
     };
-  }, [crosschainSwapsEnabled, inputCurrency?.type, outputCurrency?.type]);
+  }, [crosschainSwapsEnabled, inputCurrency.network, outputCurrency.network]);
 
   const { data: minRefuelAmount } = useMinRefuelAmount(
     {
