@@ -7,6 +7,7 @@ import React, {
 import flattenChildren from 'react-flatten-children';
 import { Space } from '../../layout/space';
 import { Box } from '../Box/Box';
+import { Width } from '@/design-system/layout/size';
 
 const alignHorizontalToFlexAlign = {
   center: 'center',
@@ -21,6 +22,7 @@ export type StackProps = {
   alignHorizontal?: AlignHorizontal;
   space?: Space;
   separator?: ReactElement;
+  width?: Width;
 };
 
 /**
@@ -36,6 +38,7 @@ export function Stack({
   alignHorizontal,
   separator,
   space,
+  width,
 }: StackProps) {
   if (__DEV__ && separator && !isValidElement(separator)) {
     throw new Error(`Stack: The 'separator' prop must be a React element`);
@@ -47,7 +50,7 @@ export function Stack({
 
   return (
     <Box
-      width="full"
+      width={width}
       alignItems={
         alignHorizontal
           ? alignHorizontalToFlexAlign[alignHorizontal]

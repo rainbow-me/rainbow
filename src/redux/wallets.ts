@@ -730,8 +730,6 @@ export const checkKeychainIntegrity = () => async (
       let healthyWallet = true;
       const wallet = wallets![key];
 
-      console.log({ key });
-
       const seedKeyFound = await hasKey(`${key}_${seedPhraseKey}`);
       if (!seedKeyFound) {
         healthyWallet = false;

@@ -220,7 +220,7 @@ export const WalletsAndBackup = () => {
                     />
                     <MenuItem
                       key={key}
-                      size={numAccounts > 1 ? 52 * (numAccounts / 3) : 52}
+                      size={numAccounts > 3 ? 52 * (numAccounts / 3) : 52}
                       disabled
                       titleComponent={
                         <Inline wrap verticalSpace="4px" horizontalSpace="4px">
@@ -458,7 +458,7 @@ export const WalletsAndBackup = () => {
                       size={numAccounts > 3 ? 52 * (numAccounts / 3) : 52}
                       disabled
                       titleComponent={
-                        <Inline wrap verticalSpace="4px" horizontalSpace="4px">
+                        <Inline verticalSpace="4px" horizontalSpace="4px">
                           {accounts.map(({ address, label, color }) => {
                             return (
                               <Box
@@ -637,10 +637,10 @@ export const WalletsAndBackup = () => {
                   />
                   <MenuItem
                     key={key}
-                    size={numAccounts > 1 ? 52 * (numAccounts / 3) : 52}
+                    size={numAccounts > 3 ? 52 * (numAccounts / 3) : 52}
                     disabled
                     titleComponent={
-                      <Inline wrap verticalSpace="4px" horizontalSpace="4px">
+                      <Inline verticalSpace="4px" horizontalSpace="4px">
                         {accounts.map(({ address, label, color }) => {
                           return (
                             <Box

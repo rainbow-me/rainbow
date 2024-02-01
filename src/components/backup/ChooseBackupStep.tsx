@@ -101,7 +101,7 @@ export default function ChooseBackupStep() {
             </Stack>
           </Masthead>
 
-          <Stack space="44px">
+          <Stack width="full" space="44px">
             {mostRecentBackup && (
               <Menu
                 description={lang.t(lang.l.back_up.cloud.latest_backup, {
@@ -116,6 +116,7 @@ export default function ChooseBackupStep() {
                   leftComponent={<MenuItem.TextIcon icon="􀣔" isLink />}
                   onPress={() => onSelectCloudBackup(mostRecentBackup)}
                   size={52}
+                  width="full"
                   titleComponent={
                     <MenuItem.Title
                       isLink
@@ -134,6 +135,7 @@ export default function ChooseBackupStep() {
                       key={backup.name}
                       onPress={() => onSelectCloudBackup(backup)}
                       size={52}
+                      width="full"
                       titleComponent={
                         <MenuItem.Title
                           isLink

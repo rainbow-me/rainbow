@@ -5,10 +5,11 @@ import CheckmarkCircledIcon from '../../../components/icons/svg/CheckmarkCircled
 import WarningIcon from '../../../components/icons/svg/WarningIcon';
 import Chevron from '@/assets/chevronUpDown.png';
 import Caret from '@/assets/family-dropdown-arrow.png';
-import { Box, Inline, Stack, Text } from '@/design-system';
+import { Box, BoxProps, Inline, Stack, Text } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import { useTheme } from '@/theme';
 import { ImageSourcePropType } from 'react-native';
+import { Width } from '@/design-system/layout/size';
 
 interface ImageIconProps {
   size?: number;
@@ -168,6 +169,7 @@ interface MenuItemProps {
   size?: 52 | 60 | number;
   hasRightArrow?: boolean;
   onPress?: () => void;
+  width?: Width;
   titleComponent: React.ReactNode;
   labelComponent?: React.ReactNode;
   disabled?: boolean;
@@ -187,6 +189,7 @@ const MenuItem = ({
   disabled,
   hasChevron,
   hasSfSymbol,
+  width,
   testID,
 }: MenuItemProps) => {
   const { colors } = useTheme();
@@ -215,7 +218,7 @@ const MenuItem = ({
             )}
 
             <Box flexShrink={1}>
-              <Stack space="8px">
+              <Stack width={width} space="8px">
                 {titleComponent}
                 {labelComponent}
               </Stack>

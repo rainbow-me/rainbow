@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 
 import { useDimensions, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
@@ -30,35 +30,52 @@ type SecretWarningPageParams = {
   SecretWarningPage: {
     title: string;
     walletId: string;
+    privateKeyAddress?: string;
     isBackingUp?: boolean;
     backupType?: keyof typeof WalletBackupTypes;
   };
 };
 
 const SecretWarningPage = () => {
-  const { width: deviceWidth, height: deviceHeight } = useDimensions();
+  const { height: deviceHeight } = useDimensions();
   const { wallets } = useWallets();
   const { navigate } = useNavigation();
   const { params } = useRoute<
     RouteProp<SecretWarningPageParams, 'SecretWarningPage'>
   >();
 
-  const { walletId, isBackingUp, backupType, title } = params;
+  const {
+    walletId,
+    privateKeyAddress,
+    isBackingUp,
+    backupType,
+    title,
+  } = params;
 
   const isSecretPhrase = WalletTypes.mnemonic === wallets?.[walletId]?.type;
-  const secretText = isSecretPhrase
-    ? i18n.t(i18n.l.back_up.secret.secret_phrase_title)
-    : i18n.t(i18n.l.back_up.secret.private_key_title);
+  const secretText =
+    isSecretPhrase && !privateKeyAddress
+      ? i18n.t(i18n.l.back_up.secret.secret_phrase_title)
+      : i18n.t(i18n.l.back_up.secret.private_key_title);
 
   const handleViewSecretPhrase = useCallback(() => {
     navigate('ShowSecretView', {
       title,
+      privateKeyAddress,
       isBackingUp,
       backupType,
       walletId,
       secretText,
     });
-  }, [navigate, title, secretText, walletId, isBackingUp, backupType]);
+  }, [
+    navigate,
+    privateKeyAddress,
+    title,
+    secretText,
+    walletId,
+    isBackingUp,
+    backupType,
+  ]);
 
   // We are not using `isSmallPhone` from `useDimensions` here as we
   // want to explicitly set a min height.

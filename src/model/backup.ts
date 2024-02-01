@@ -228,7 +228,7 @@ async function decryptAllPinEncryptedSecretsIfNeeded(
 export function findLatestBackUp(
   wallets: AllRainbowWallets | null
 ): string | null {
-  let latestBackup: string | null = null;
+  let latestBackup: number | null = null;
   let filename: string | null = null;
 
   if (wallets) {
@@ -241,9 +241,9 @@ export function findLatestBackUp(
         wallet.backupType === WalletBackupTypes.cloud
       ) {
         // If there is one, let's grab the latest backup
-        if (!latestBackup || wallet.backupDate > latestBackup) {
+        if (!latestBackup || Number(wallet.backupDate) > latestBackup) {
           filename = wallet.backupFile;
-          latestBackup = wallet.backupDate;
+          latestBackup = Number(wallet.backupDate);
         }
       }
     });
@@ -303,17 +303,16 @@ export async function restoreCloudBackup({
       ...data.secrets,
     };
 
-    console.log(JSON.stringify(userData, null, 2));
-    console.log(JSON.stringify(data, null, 2));
-
-    const backupToRestoreTiemstamp = parseTimestampFromFilename(
-      Object.values(userData?.wallets)[0].backupFile
-    );
-    console.log(
-      backupToRestoreTiemstamp,
-      data.createdAt,
-      backupToRestoreTiemstamp === data.createdAt
-    );
+    let backupToRestoreTiemstamp;
+    if (userData?.wallets) {
+      const firstWalletBackupFile = Object.values(userData.wallets)[0]
+        ?.backupFile;
+      if (typeof firstWalletBackupFile === 'string') {
+        backupToRestoreTiemstamp = parseTimestampFromFilename(
+          firstWalletBackupFile
+        );
+      }
+    }
 
     let restoredSuccessfully = false;
     if (backupToRestoreTiemstamp === data.createdAt) {

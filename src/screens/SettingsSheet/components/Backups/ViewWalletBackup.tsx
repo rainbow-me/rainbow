@@ -2,6 +2,7 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import Clipboard from '@react-native-community/clipboard';
 import { cloudPlatform } from '@/utils/platform';
+import { address as formatAddress } from '@/utils/abbreviations';
 
 import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
@@ -27,7 +28,7 @@ import Routes from '@/navigation/routesNames';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 
 type ViewWalletBackupParams = {
-  ViewWalletBackup: { walletId: string };
+  ViewWalletBackup: { walletId: string; title: string; imported?: boolean };
 };
 
 const enum WalletMenuAction {
@@ -47,18 +48,16 @@ const ViewWalletBackup = () => {
     RouteProp<ViewWalletBackupParams, 'ViewWalletBackup'>
   >();
 
-  const { walletId } = params;
+  const { walletId, title: incomingTitle } = params;
   const { wallets } = useWallets();
   const wallet = wallets?.[walletId];
-
-  console.log(wallet);
 
   const isSecretPhrase = WalletTypes.mnemonic === wallet?.type;
 
   const title =
-    wallet?.imported && wallet.type === WalletTypes.privateKey
-      ? wallet.addresses[0].label
-      : wallet?.name;
+    wallet?.type === WalletTypes.privateKey
+      ? wallet?.addresses[0].label
+      : incomingTitle;
 
   const { navigate } = useNavigation();
 
@@ -137,7 +136,8 @@ const ViewWalletBackup = () => {
         navigate('SecretWarning', {
           walletId,
           isBackingUp: false,
-          title,
+          privateKeyAddress: address,
+          title: formatAddress(address, 4, 5),
         });
         break;
       }
@@ -283,11 +283,12 @@ const ViewWalletBackup = () => {
       )}
 
       <Stack space={'24px'}>
-        {wallet?.addresses
-          .filter(a => a.visible)
-          .map(({ address, label, image, color, avatar }) => (
-            <Menu key={`wallet-${address}`}>
+        <Menu>
+          {wallet?.addresses
+            .filter(a => a.visible)
+            .map(({ address, label, image, color, avatar }) => (
               <MenuItem
+                key={address}
                 size={60}
                 disabled
                 leftComponent={
@@ -328,8 +329,8 @@ const ViewWalletBackup = () => {
                   </ContextMenuButton>
                 }
               />
-            </Menu>
-          ))}
+            ))}
+        </Menu>
 
         {wallet?.type !== WalletTypes.privateKey && (
           <Menu

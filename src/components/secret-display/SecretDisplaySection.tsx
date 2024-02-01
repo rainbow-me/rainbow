@@ -3,6 +3,7 @@ import { captureException } from '@sentry/react-native';
 import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 import {
   createdWithBiometricError,
+  getKeyForWallet,
   identifyWalletType,
   loadSeedPhraseAndMigrateIfNeeded,
 } from '@/model/wallet';
@@ -60,9 +61,11 @@ type Props = {
 
 type SecretDisplaySectionParams = {
   SecretDisplaySection: {
-    walletId: string;
+    title: string;
+    privateKeyAddress?: string;
     isBackingUp?: boolean;
     backupType?: keyof typeof WalletBackupTypes;
+    walletId: string;
     secretText: string;
   };
 };
@@ -82,12 +85,13 @@ export function SecretDisplaySection({
   const { onManuallyBackupWalletId } = useWalletManualBackup();
   const { navigate } = useNavigation();
 
-  const { isBackingUp, backupType } = params;
+  const { isBackingUp, backupType, privateKeyAddress } = params;
 
   const walletId = params.walletId || selectedWallet.id;
   const currentWallet = wallets?.[walletId];
 
-  const isSecretPhrase = WalletTypes.mnemonic === currentWallet?.type;
+  const isSecretPhrase =
+    WalletTypes.mnemonic === currentWallet?.type && !privateKeyAddress;
   const btnText = isSecretPhrase
     ? i18n.t(i18n.l.back_up.manual.seed.confirm_save)
     : i18n.t(i18n.l.back_up.manual.pkey.confirm_save);
@@ -104,6 +108,17 @@ export function SecretDisplaySection({
 
   const loadSeed = useCallback(async () => {
     try {
+      if (privateKeyAddress) {
+        const privateKeyData = await getKeyForWallet(privateKeyAddress, false);
+        if (privateKeyData === -1 || !privateKeyData?.privateKey) {
+          setSectionState(SecretDisplayStates.noSeed);
+          return;
+        }
+        setSeed(privateKeyData?.privateKey);
+        setSectionState(SecretDisplayStates.revealed);
+        return;
+      }
+
       const seedPhrase = await loadSeedPhraseAndMigrateIfNeeded(walletId);
       if (seedPhrase) {
         const walletType = identifyWalletType(seedPhrase);
@@ -128,7 +143,7 @@ export function SecretDisplaySection({
       captureException(error);
       onSecretLoaded?.(false);
     }
-  }, [onSecretLoaded, onWalletTypeIdentified, walletId]);
+  }, [onSecretLoaded, privateKeyAddress, onWalletTypeIdentified, walletId]);
 
   useEffect(() => {
     // We need to run this after interactions since there were issues on Android
@@ -252,7 +267,12 @@ export function SecretDisplaySection({
                 </Stack>
 
                 <Stack alignHorizontal="center" space="19px (Deprecated)">
-                  <SecretDisplayCard seed={seed ?? ''} type={walletType} />
+                  <SecretDisplayCard
+                    seed={seed ?? ''}
+                    type={
+                      privateKeyAddress ? WalletTypes.privateKey : walletType
+                    }
+                  />
                 </Stack>
               </Stack>
             </Bleed>
