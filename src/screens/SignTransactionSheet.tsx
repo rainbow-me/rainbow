@@ -2112,7 +2112,9 @@ const SimulatedEventRow = ({
     assetCode = ETH_ADDRESS;
   }
   const showUSD = (eventType === 'send' || eventType === 'receive') && price;
-  const formattedPrice = `$${price?.toFixed?.(2)}`;
+  const formattedPrice = `$${price?.toLocaleString?.('en-US', {
+    maximumFractionDigits: 2,
+  })}`;
   return (
     <Box
       justifyContent="center"
