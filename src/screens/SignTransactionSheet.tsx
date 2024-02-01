@@ -1515,7 +1515,6 @@ const SimulationCard = ({
     },
     [isLoading, simulationUnavailable]
   );
-  console.log('simulation out', simulation?.out?.price);
   const renderSimulationEventRows = useMemo(() => {
     if (isBalanceEnough === false) return null;
 
@@ -2112,7 +2111,7 @@ const SimulatedEventRow = ({
   if (asset?.type === TransactionAssetType.Native) {
     assetCode = ETH_ADDRESS;
   }
-  const showUSD = eventType === 'send';
+  const showUSD = (eventType === 'send' || eventType === 'receive') && price;
   const formattedPrice = `$${price?.toFixed?.(2)}`;
   return (
     <Box
@@ -2132,7 +2131,7 @@ const SimulatedEventRow = ({
             {eventInfo.label}
           </Text>
           {showUSD && (
-            <Text color="labelTertiary" size="15pt" weight="bold">
+            <Text color="labelTertiary" size="12pt" weight="bold">
               {formattedPrice}
             </Text>
           )}
