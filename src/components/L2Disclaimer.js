@@ -13,9 +13,10 @@ import { darkModeThemeColors } from '@/styles/colors';
 import { ethereumUtils } from '@/utils';
 import { getNetworkObj } from '@/networks';
 import * as lang from '@/languages';
+import { isL2Network } from '@/handlers/web3';
 
 const L2Disclaimer = ({
-  assetType,
+  network,
   colors,
   hideDivider,
   isNft = false,
@@ -38,7 +39,7 @@ const L2Disclaimer = ({
     },
   };
 
-  const isL2 = isL2Asset(assetType);
+  const isL2 = isL2Network(network);
 
   return (
     <>
@@ -60,7 +61,7 @@ const L2Disclaimer = ({
           <Column justify="center">
             {isL2 ? (
               <ChainBadge
-                assetType={assetType}
+                network={network}
                 position="relative"
                 size="small"
                 forceDark={forceDarkMode}
@@ -84,9 +85,7 @@ const L2Disclaimer = ({
                 ? customText
                 : lang.t(lang.l.expanded_state.asset.l2_disclaimer, {
                     symbol,
-                    network: getNetworkObj(
-                      ethereumUtils.getNetworkFromType(assetType)
-                    ).name,
+                    network: getNetworkObj(network).name,
                   })}
             </Text>
           </Column>

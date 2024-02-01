@@ -61,7 +61,7 @@ export default function SwapDetailsRefuelRow({ tradeDetails, testID }) {
                   mainnet_address={fromNativeAsset?.mainnet_address}
                   symbol={fromAsset?.symbol}
                   size={20}
-                  type={ethereumUtils.getAssetTypeFromNetwork(fromNetwork)}
+                  network={fromNetwork}
                   badgeXPosition={-6}
                   badgeYPosition={0}
                   badgeSize="tiny"
@@ -84,7 +84,7 @@ export default function SwapDetailsRefuelRow({ tradeDetails, testID }) {
                   mainnet_address={toNativeAsset?.mainnet_address}
                   symbol={toAsset?.symbol}
                   size={20}
-                  type={ethereumUtils.getAssetTypeFromNetwork(toNetwork)}
+                  network={toNetwork}
                   badgeXPosition={-6}
                   badgeYPosition={0}
                   badgeSize="tiny"

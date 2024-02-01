@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import { InteractionManager, TextInput } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { delayNext } from './useMagicAutofocus';
-import { AssetType } from '@/entities';
 import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
 import { updatePrecisionToDisplay } from '@/helpers/utilities';
 import { useSwapDerivedValues, useSwapInputHandlers } from '@/hooks';
@@ -56,7 +55,6 @@ export default function useSwapCurrencyHandlers({
       const defaultInputItemInWallet = defaultInputAsset
         ? {
             ...defaultInputAsset,
-            type: defaultInputAsset?.type ?? AssetType.token,
           }
         : null;
 
@@ -175,7 +173,6 @@ export default function useSwapCurrencyHandlers({
       const newInputCurrency = inputCurrency
         ? {
             ...inputCurrency,
-            type: inputCurrency?.type ?? AssetType.token,
           }
         : null;
 
@@ -194,7 +191,6 @@ export default function useSwapCurrencyHandlers({
       const newOutputCurrency = outputCurrency
         ? {
             ...outputCurrency,
-            type: outputCurrency?.type ?? AssetType.token,
           }
         : null;
 

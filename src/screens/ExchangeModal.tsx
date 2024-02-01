@@ -42,7 +42,6 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { Box, Row, Rows } from '@/design-system';
 import {
-  AssetType,
   GasFee,
   LegacyGasFee,
   LegacyGasFeeParams,
@@ -51,7 +50,7 @@ import {
 import { ExchangeModalTypes, isKeyboardOpen, Network } from '@/helpers';
 import { KeyboardType } from '@/helpers/keyboardTypes';
 import { getProviderForNetwork, getFlashbotsProvider } from '@/handlers/web3';
-import { delay, divide, greaterThan, multiply } from '@/helpers/utilities';
+import { delay, greaterThan } from '@/helpers/utilities';
 import {
   useAccountSettings,
   useColorForAsset,
@@ -242,18 +241,11 @@ export default function ExchangeModal({
     isCrosschainSwap,
     isBridgeSwap,
   } = useMemo(() => {
-    const inputNetwork = ethereumUtils.getNetworkFromType(inputCurrency?.type);
-    const outputNetwork = ethereumUtils.getNetworkFromType(
-      outputCurrency?.type
+    const inputNetwork = inputCurrency?.network || Network.mainnet;
+    const outputNetwork = outputCurrency?.network || Network.mainnet;
+    const chainId = ethereumUtils.getChainIdFromNetwork(
+      inputNetwork || outputNetwork
     );
-    const chainId =
-      network === Network.goerli
-        ? getNetworkObj(Network.goerli).id
-        : inputCurrency?.type || outputCurrency?.type
-        ? ethereumUtils.getChainIdFromType(
-            inputCurrency?.type ?? outputCurrency?.type
-          )
-        : 1;
 
     const currentNetwork = ethereumUtils.getNetworkFromChainId(chainId);
     const isCrosschainSwap =
@@ -270,51 +262,10 @@ export default function ExchangeModal({
   }, [
     crosschainSwapsEnabled,
     inputCurrency?.symbol,
-    inputCurrency?.type,
-    network,
+    inputCurrency?.network,
     outputCurrency?.symbol,
-    outputCurrency?.type,
+    outputCurrency?.network,
   ]);
-
-  // if the default input is on a different network than
-  // we want to update the output to be on the same, if its not available -> null
-  const defaultOutputAssetOverride = useMemo(() => {
-    const newOutput = defaultOutputAsset;
-
-    if (
-      defaultInputAsset &&
-      defaultOutputAsset &&
-      defaultInputAsset.type !== defaultOutputAsset.type
-    ) {
-      // find address for output asset on the input's network
-      // TODO: this value can be removed after the crosschain swaps flag is no longer necessary
-      const inputNetworkImplementationAddress =
-        defaultOutputAsset?.implementations?.[
-          defaultInputAsset?.type === AssetType.token
-            ? 'ethereum'
-            : defaultInputAsset?.type
-        ]?.address;
-      if (inputNetworkImplementationAddress || crosschainSwapsEnabled) {
-        if (!crosschainSwapsEnabled) {
-          newOutput.address =
-            inputNetworkImplementationAddress || defaultOutputAsset.address;
-          if (defaultInputAsset.type !== Network.mainnet) {
-            newOutput.mainnet_address = defaultOutputAsset.address;
-          }
-          newOutput.type = defaultInputAsset.type;
-        }
-        newOutput.uniqueId =
-          newOutput.type === Network.mainnet
-            ? defaultOutputAsset?.address
-            : `${defaultOutputAsset?.address}_${defaultOutputAsset?.type}`;
-        return newOutput;
-      } else {
-        return null;
-      }
-    } else {
-      return newOutput;
-    }
-  }, [defaultInputAsset, defaultOutputAsset, crosschainSwapsEnabled]);
 
   const {
     flipCurrencies,
@@ -326,7 +277,7 @@ export default function ExchangeModal({
     inputNetwork,
     outputNetwork,
     defaultInputAsset,
-    defaultOutputAsset: defaultOutputAssetOverride,
+    defaultOutputAsset,
     fromDiscover,
     ignoreInitialTypeCheck,
     inputFieldRef,
@@ -662,8 +613,12 @@ export default function ExchangeModal({
           nonce,
           tradeDetails: {
             ...tradeDetails,
-            fromChainId: ethereumUtils.getChainIdFromType(inputCurrency?.type),
-            toChainId: ethereumUtils.getChainIdFromType(outputCurrency?.type),
+            fromChainId: ethereumUtils.getChainIdFromNetwork(
+              inputCurrency?.network
+            ),
+            toChainId: ethereumUtils.getChainIdFromNetwork(
+              outputCurrency?.network
+            ),
           } as Quote | CrosschainQuote,
           meta: {
             flashbots,
@@ -1035,7 +990,6 @@ export default function ExchangeModal({
                   editable={!!inputCurrency}
                   inputAmount={inputAmountDisplay}
                   inputCurrencyAddress={inputCurrency?.address}
-                  inputCurrencyAssetType={inputCurrency?.type}
                   inputCurrencyMainnetAddress={inputCurrency?.mainnet_address}
                   inputCurrencySymbol={inputCurrency?.symbol}
                   inputFieldRef={inputFieldRef}
@@ -1071,7 +1025,6 @@ export default function ExchangeModal({
                   loading={loading}
                   outputAmount={outputAmountDisplay}
                   outputCurrencyAddress={outputCurrency?.address}
-                  outputCurrencyAssetType={outputCurrency?.type}
                   outputCurrencyMainnetAddress={outputCurrency?.mainnet_address}
                   outputCurrencySymbol={outputCurrency?.symbol}
                   outputFieldRef={outputFieldRef}

@@ -2144,9 +2144,7 @@ const SimulatedEventRow = ({
                 address={assetCode}
                 symbol={asset?.symbol}
                 size={16}
-                type={ethereumUtils.getAssetTypeFromNetwork(
-                  asset?.network as Network
-                )}
+                network={asset?.network || Network.mainnet}
                 forcedShadowColor={colors.transparent}
                 ignoreBadge={true}
               />
