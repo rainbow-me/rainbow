@@ -6,7 +6,6 @@ import { Reward } from '@rainbow-me/swaps';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { ChainBadge } from '@/components/coin-icon';
-import { AssetTypes } from '@/entities';
 import { getNetworkObj } from '@/networks';
 import { Network } from '@/networks/types';
 import { useTheme } from '@/theme';
@@ -44,7 +43,7 @@ export function SwapDetailsRewardRow({ reward }: { reward: Reward }) {
             gap: 5,
           }}
         >
-          <ChainBadge assetType={AssetTypes.optimism} position="relative" />
+          <ChainBadge network={Network.optimism} position="relative" />
           <Text
             align="center"
             size="14px / 19px (Deprecated)"

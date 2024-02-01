@@ -1257,7 +1257,7 @@ export default function TransactionConfirmationScreen() {
                   <Column margin={android ? 24 : 0} width="100%">
                     <Row height={android ? 0 : 19} />
                     <L2Disclaimer
-                      assetType={currentNetwork}
+                      network={currentNetwork}
                       colors={colors}
                       hideDivider
                       onPress={handleL2DisclaimerPress}
@@ -1265,9 +1265,7 @@ export default function TransactionConfirmationScreen() {
                       customText={i18n.t(
                         i18n.l.expanded_state.asset.l2_disclaimer_dapp,
                         {
-                          network: getNetworkObj(
-                            ethereumUtils.getNetworkFromType(currentNetwork)
-                          ).name,
+                          network: getNetworkObj(currentNetwork).name,
                         }
                       )}
                     />

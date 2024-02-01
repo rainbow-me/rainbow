@@ -50,6 +50,7 @@ export const CoinIconFallback = fallbackProps => {
 
   const fallbackIconColor = useColorForAsset({
     address,
+    network,
   });
 
   // we store data inside the object outside the component

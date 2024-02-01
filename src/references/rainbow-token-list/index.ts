@@ -10,6 +10,7 @@ import RAINBOW_TOKEN_LIST_DATA from './rainbow-token-list.json';
 import { RainbowToken } from '@/entities';
 import { STORAGE_IDS } from '@/model/mmkv';
 import logger from '@/utils/logger';
+import { Network } from '@/networks/types';
 
 export const rainbowListStorage = new MMKV({
   id: STORAGE_IDS.RAINBOW_TOKEN_LIST,
@@ -28,7 +29,7 @@ const ethWithAddress: RainbowToken = {
   isVerified: true,
   name: 'Ethereum',
   symbol: 'ETH',
-  type: 'token',
+  network: Network.mainnet,
   uniqueId: 'eth',
 };
 
@@ -44,7 +45,7 @@ function generateDerivedData(tokenListData: TokenListData) {
       decimals,
       name,
       symbol,
-      type: 'token',
+      network: Network.mainnet,
       uniqueId: address,
       ...extensions,
     };

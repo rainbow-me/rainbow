@@ -707,7 +707,7 @@ export const SendConfirmationSheet = () => {
                   <Fragment>
                     {/* @ts-expect-error JavaScript component */}
                     <L2Disclaimer
-                      assetType={isNft ? asset.network : asset.type}
+                      network={asset.network}
                       colors={colors}
                       hideDivider
                       marginBottom={0}
@@ -717,11 +717,7 @@ export const SendConfirmationSheet = () => {
                       customText={i18n.t(
                         i18n.l.expanded_state.asset.l2_disclaimer_send,
                         {
-                          network: getNetworkObj(
-                            ethereumUtils.getNetworkFromType(
-                              isNft ? asset.network : asset.type
-                            )
-                          ).name,
+                          network: getNetworkObj(asset.network).name,
                         }
                       )}
                       symbol={asset.symbol}
