@@ -67,6 +67,7 @@ import {
   TransactionSimulationAsset,
   TransactionSimulationMeta,
   TransactionSimulationResult,
+  TransactionSimulationChange,
   TransactionScanResultType,
 } from '@/graphql/__generated__/metadataPOST';
 import { Network } from '@/networks/types';
@@ -1514,7 +1515,7 @@ const SimulationCard = ({
     },
     [isLoading, simulationUnavailable]
   );
-
+  console.log('simulation out', simulation?.out?.price);
   const renderSimulationEventRows = useMemo(() => {
     if (isBalanceEnough === false) return null;
 
@@ -1536,6 +1537,7 @@ const SimulationCard = ({
               key={`${change?.asset?.assetCode}-${change?.quantity}`}
               amount={change?.quantity || '10'}
               asset={change?.asset}
+              price={change?.price}
               eventType="send"
             />
           );
@@ -2057,10 +2059,12 @@ const SimulatedEventRow = ({
   amount,
   asset,
   eventType,
+  price,
 }: {
   amount: string | 'unlimited';
   asset: TransactionSimulationAsset | undefined;
   eventType: EventType;
+  price?: number | undefined;
 }) => {
   const { colors } = useTheme();
 
@@ -2108,7 +2112,8 @@ const SimulatedEventRow = ({
   if (asset?.type === TransactionAssetType.Native) {
     assetCode = ETH_ADDRESS;
   }
-
+  const showUSD = eventType === 'send';
+  const formattedPrice = `$${price?.toFixed?.(2)}`;
   return (
     <Box
       justifyContent="center"
@@ -2126,6 +2131,11 @@ const SimulatedEventRow = ({
           <Text color="label" size="17pt" weight="bold">
             {eventInfo.label}
           </Text>
+          {showUSD && (
+            <Text color="labelTertiary" size="15pt" weight="bold">
+              {formattedPrice}
+            </Text>
+          )}
         </Inline>
         <Inline alignVertical="center" space={{ custom: 7 }} wrap={false}>
           <Bleed vertical="6px">
