@@ -6,16 +6,16 @@ import { Column, ColumnWithMargins } from '../layout';
 import { SheetActionButton } from '../sheet';
 import { Text } from '../text';
 import { analytics } from '@/analytics';
-import BackupIcon from '@/assets/backupIcon.png';
-import BackupIconDark from '@/assets/backupIconDark.png';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
+import { Bleed, Separator } from '@/design-system';
+import RainbowButtonTypes from '../buttons/rainbow-button/RainbowButtonTypes';
 
 const Footer = styled(ColumnWithMargins).attrs({
   margin: 19,
 })({
-  ...padding.object(19, 15, 32),
+  ...padding.object(32, 15, 32),
   width: '100%',
 });
 
@@ -23,16 +23,9 @@ const Masthead = styled(Column).attrs({
   align: 'center',
   justify: 'start',
 })({
+  ...padding.object(32, 24, 40),
   flex: 1,
-  paddingTop: 8,
 });
-
-const MastheadDescription = styled(Text).attrs(({ theme: { colors } }) => ({
-  align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.5),
-  lineHeight: 'looser',
-  size: 'large',
-}))({ ...padding.object(12, 42, 30) });
 
 const MastheadIcon = styled(ImgixImage).attrs({
   resizeMode: ImgixImage.resizeMode.contain,
@@ -43,8 +36,20 @@ const MastheadIcon = styled(ImgixImage).attrs({
   size: 75,
 });
 
+type BackupSheetSectionProps = {
+  headerIcon: React.ReactNode;
+  onPrimaryAction: () => Promise<void>;
+  onSecondaryAction: () => void;
+  primaryButtonTestId: string;
+  primaryLabel: string;
+  secondaryButtonTestId: string;
+  secondaryLabel: string;
+  titleText: string;
+  type: string;
+};
+
 export default function BackupSheetSection({
-  descriptionText,
+  headerIcon,
   onPrimaryAction,
   onSecondaryAction,
   primaryButtonTestId,
@@ -53,8 +58,8 @@ export default function BackupSheetSection({
   secondaryLabel,
   titleText,
   type,
-}) {
-  const { colors, isDarkMode } = useTheme();
+}: BackupSheetSectionProps) {
+  const { colors } = useTheme();
   useEffect(() => {
     analytics.track('BackupSheet shown', {
       category: 'backup',
@@ -65,13 +70,14 @@ export default function BackupSheetSection({
   return (
     <Fragment>
       <Masthead>
-        <MastheadIcon source={isDarkMode ? BackupIconDark : BackupIcon} />
-        <Text align="center" color={colors.dark} size="big" weight="bold">
+        {headerIcon}
+        <Text align="center" color={colors.dark} size="bigger" weight="heavy">
           {titleText}
         </Text>
-        <MastheadDescription>{descriptionText}</MastheadDescription>
       </Masthead>
-      <Divider color={colors.rowDividerLight} inset={[0, 42]} />
+      <Bleed horizontal="24px">
+        <Separator thickness={1} color="separator" />
+      </Bleed>
       <Footer>
         <RainbowButton
           label={primaryLabel}

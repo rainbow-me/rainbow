@@ -32,6 +32,7 @@ import { IS_ANDROID } from '@/env';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import { RainbowButton } from '../buttons';
 import RainbowButtonTypes from '../buttons/rainbow-button/RainbowButtonTypes';
+import useCloudBackups from '@/hooks/useCloudBackups';
 
 const DescriptionText = styled(Text).attrs(
   ({ theme: { colors }, color }: any) => ({
@@ -95,6 +96,8 @@ export default function BackupCloudStep() {
   const [labelColor, setLabelColor] = useState(labelDefaultColor);
   const passwordRef = useRef();
   const confirmPasswordRef = useRef();
+
+  const { fetchBackups } = useCloudBackups();
 
   useEffect(() => {
     setTimeout(() => {
@@ -199,8 +202,9 @@ export default function BackupCloudStep() {
       category: 'backup',
       label: cloudPlatform,
     });
+    fetchBackups();
     goBack();
-  }, [goBack, isSettingsRoute, password]);
+  }, [fetchBackups, goBack, isSettingsRoute, password]);
 
   const onConfirmBackup = useCallback(async () => {
     analytics.track('Tapped "Confirm Backup"');

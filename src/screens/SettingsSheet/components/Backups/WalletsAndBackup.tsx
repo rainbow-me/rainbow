@@ -31,7 +31,7 @@ export const WalletsAndBackup = () => {
   const { navigate } = useNavigation();
   const { wallets } = useWallets();
 
-  const backups = useCloudBackups();
+  const { backups } = useCloudBackups();
 
   const { manageCloudBackups } = useManageCloudBackups();
 
@@ -455,7 +455,7 @@ export const WalletsAndBackup = () => {
                     />
                     <MenuItem
                       key={key}
-                      size={numAccounts > 3 ? 52 * (numAccounts / 3) : 52}
+                      size={numAccounts > 2 ? 52 * (numAccounts / 2) : 52}
                       disabled
                       titleComponent={
                         <Inline verticalSpace="4px" horizontalSpace="4px">
@@ -637,7 +637,7 @@ export const WalletsAndBackup = () => {
                   />
                   <MenuItem
                     key={key}
-                    size={numAccounts > 3 ? 52 * (numAccounts / 3) : 52}
+                    size={numAccounts > 2 ? 52 * (numAccounts / 2) : 52}
                     disabled
                     titleComponent={
                       <Inline verticalSpace="4px" horizontalSpace="4px">

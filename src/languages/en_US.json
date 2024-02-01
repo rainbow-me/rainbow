@@ -1120,7 +1120,7 @@
             "manual": "Back up manually"
           },
           "description": "Don't lose your wallet! Save an encrypted copy to %{cloudPlatformName}",
-          "title": "Back up your wallet"
+          "title": "How would you like to back up your wallet?"
         },
         "existing": {
           "button": {

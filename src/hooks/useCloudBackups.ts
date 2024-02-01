@@ -12,32 +12,35 @@ export default function useCloudBackups() {
     files: [],
   });
 
-  useEffect(() => {
-    const fetchBackups = async () => {
-      try {
-        const isAvailable = isCloudBackupAvailable();
-        if (!isAvailable) {
-          logger.debug('Cloud backup is not available');
-          return;
-        }
-
-        logger.debug('Syncing with cloud');
-        await syncCloud();
-
-        logger.debug('Fetching all backups');
-        const backups = await fetchAllBackups();
-
-        logger.debug(`Retrieved ${backups.files.length} backup files`);
-        setBackups(backups);
-      } catch (e) {
-        logger.error(new RainbowError('Failed to fetch all backups'), {
-          error: e,
-        });
+  const fetchBackups = async () => {
+    try {
+      const isAvailable = isCloudBackupAvailable();
+      if (!isAvailable) {
+        logger.debug('Cloud backup is not available');
+        return;
       }
-    };
 
+      logger.debug('Syncing with cloud');
+      await syncCloud();
+
+      logger.debug('Fetching all backups');
+      const backups = await fetchAllBackups();
+
+      logger.debug(`Retrieved ${backups.files.length} backup files`);
+      setBackups(backups);
+    } catch (e) {
+      logger.error(new RainbowError('Failed to fetch all backups'), {
+        error: e,
+      });
+    }
+  };
+
+  useEffect(() => {
     fetchBackups();
   }, []);
 
-  return backups;
+  return {
+    backups,
+    fetchBackups,
+  };
 }

@@ -1,6 +1,6 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { captureMessage } from '@sentry/react-native';
-import lang from 'i18n-js';
+import * as lang from '@/languages';
 import React, { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
@@ -192,21 +192,18 @@ export default function BackupSheet() {
       default:
         return (
           <BackupSheetSection
-            descriptionText={lang.t('modal.back_up.default.description', {
-              cloudPlatformName: cloudPlatform,
-            })}
             onPrimaryAction={onIcloudBackup}
             onSecondaryAction={onManualBackup}
             primaryLabel={`􀙶 ${lang.t(
-              'modal.back_up.default.button.cloud_platform',
+              lang.l.modal.back_up.default.button.cloud_platform,
               {
                 cloudPlatformName: cloudPlatform,
               }
             )}`}
             secondaryLabel={`🤓 ${lang.t(
-              'modal.back_up.default.button.manual'
+              lang.l.modal.back_up.default.button.manual
             )}`}
-            titleText={lang.t('modal.back_up.default.title')}
+            titleText={lang.t(lang.l.modal.back_up.default.title)}
             type="Default"
           />
         );

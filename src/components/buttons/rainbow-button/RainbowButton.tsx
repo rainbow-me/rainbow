@@ -25,7 +25,7 @@ const AddCashIcon = styled(ImgixImage).attrs({
 
 const ButtonContainer = styled(MaskedView).attrs({
   pointerEvents: 'none',
-})(({ width, height }) => ({
+})(({ width, height }: any) => ({
   height,
   width,
 }));
@@ -37,7 +37,8 @@ const ButtonContent = styled(RowWithMargins).attrs({
   alignSelf: 'center',
   bottom: 2,
   height: '100%',
-  marginRight: ({ type }) => (type === 'addCash' ? 9 : 0),
+  marginRight: ({ type }: { type: keyof typeof RainbowButtonTypes }) =>
+    type === RainbowButtonTypes.addCash ? 9 : 0,
 });
 
 const ButtonLabel = styled(Text).attrs(

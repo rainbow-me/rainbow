@@ -10,7 +10,7 @@ import Menu from '../Menu';
 import MenuContainer from '../MenuContainer';
 import MenuItem from '../MenuItem';
 import BackupWarningIcon from '@/assets/BackupWarning.png';
-import CloudBackupWarningIcon from '@/assets/CloudBackupWarning.png';
+import CloudBackedUpIcon from '@/assets/backedUp.png';
 import ManuallyBackedUpIcon from '@/assets/manuallyBackedUp.png';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { useWallets } from '@/hooks';
@@ -220,7 +220,7 @@ const ViewWalletBackup = () => {
                 <MenuHeader.ImageIcon
                   source={
                     wallet.backupType === walletBackupTypes.cloud
-                      ? CloudBackupWarningIcon
+                      ? CloudBackedUpIcon
                       : ManuallyBackedUpIcon
                   }
                   size={72}

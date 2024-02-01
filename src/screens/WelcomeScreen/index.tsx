@@ -84,7 +84,7 @@ export default function WelcomeScreen() {
   const { replace, navigate, getState: dangerouslyGetState } = useNavigation();
   const hideSplashScreen = useHideSplashScreen();
 
-  const backups = useCloudBackups();
+  const { backups } = useCloudBackups();
 
   const contentAnimation = useSharedValue(1);
   const colorAnimation = useSharedValue(0);
