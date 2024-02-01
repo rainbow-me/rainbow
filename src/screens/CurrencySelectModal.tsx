@@ -185,16 +185,14 @@ export default function CurrencySelectModal() {
       const hasShownWarning = getHasShownWarning();
       if (
         otherAsset &&
-        ethereumUtils.getChainIdFromType(newAsset?.type) !==
-          ethereumUtils.getChainIdFromType(otherAsset?.type) &&
+        ethereumUtils.getChainIdFromNetwork(newAsset?.network) !==
+          ethereumUtils.getChainIdFromNetwork(otherAsset?.network) &&
         !hasShownWarning
       ) {
         Keyboard.dismiss();
         InteractionManager.runAfterInteractions(() => {
           navigate(Routes.EXPLAIN_SHEET, {
-            network: newAsset?.type
-              ? ethereumUtils.getNetworkFromType(newAsset?.type)
-              : Network.mainnet,
+            network: newAsset?.network,
             onClose: () => {
               setHasShownWarning();
               selectAsset();
@@ -255,7 +253,7 @@ export default function CurrencySelectModal() {
             decimals: 18,
             name: 'Unswappable',
             symbol: 'UNSWAP',
-            type: 'token',
+            network: Network.mainnet,
             id: 'foobar',
             uniqueId: '0x123',
           });
@@ -356,14 +354,16 @@ export default function CurrencySelectModal() {
               screen: Routes.MAIN_EXCHANGE_SCREEN,
             });
             setSearchQuery('');
-            setCurrentChainId(ethereumUtils.getChainIdFromType(item.type));
+            setCurrentChainId(
+              ethereumUtils.getChainIdFromNetwork(item.network)
+            );
           },
           android ? 500 : 0
         );
       } else {
         navigate(Routes.MAIN_EXCHANGE_SCREEN);
         setSearchQuery('');
-        setCurrentChainId(ethereumUtils.getChainIdFromType(item.type));
+        setCurrentChainId(ethereumUtils.getChainIdFromNetwork(item.network));
       }
       if (searchQueryForSearch) {
         analytics.track('Selected a search result in Swap', {
@@ -424,15 +424,10 @@ export default function CurrencySelectModal() {
     (item: any) => {
       if (!crosschainSwapsEnabled && checkForRequiredAssets(item)) return;
 
-      const isMainnet = currentChainId === 1;
-      const assetWithType =
-        isMainnet && type === CurrencySelectionTypes.output
-          ? { ...item, type: 'token' }
-          : {
-              ...item,
-              decimals:
-                item?.networks?.[currentChainId]?.decimals || item.decimals,
-            };
+      const assetWithType = {
+        ...item,
+        decimals: item?.networks?.[currentChainId]?.decimals || item.decimals,
+      };
 
       const selectAsset = () => {
         dispatch(emitAssetRequest(item.mainnet_address || item.address));
@@ -506,13 +501,13 @@ export default function CurrencySelectModal() {
   const handleBackButton = useCallback(() => {
     setSearchQuery('');
     InteractionManager.runAfterInteractions(() => {
-      const inputChainId = ethereumUtils.getChainIdFromType(
-        inputCurrency?.type
+      const inputChainId = ethereumUtils.getChainIdFromNetwork(
+        inputCurrency?.network
       );
       setCurrentChainId(inputChainId);
     });
     setIsTransitioning(true); // continue to display list while transitiong back
-  }, [inputCurrency?.type]);
+  }, [inputCurrency?.network]);
 
   useEffect(() => {
     // check if list has items before attempting to scroll

@@ -65,7 +65,7 @@ export default function CurrencyTile({
   );
   const { nativeCurrency } = useAccountSettings();
   const colorForAsset = useColorForAsset(asset);
-  const { address, mainnet_address, symbol, type: assetType } = asset;
+  const { address, mainnet_address, symbol, network } = asset;
   const isOther =
     (inputAsExact && type === 'output') || (!inputAsExact && type === 'input');
 
@@ -86,7 +86,7 @@ export default function CurrencyTile({
               mainnet_address={mainnet_address}
               size={50}
               symbol={symbol}
-              type={assetType}
+              network={network}
             />
           </Row>
           <Row height="content">

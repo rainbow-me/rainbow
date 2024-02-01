@@ -173,6 +173,7 @@ export const EthCard = () => {
                       address={assetWithPrice.address}
                       size={20}
                       symbol={assetWithPrice.symbol}
+                      network={assetWithPrice.network}
                     />
                     <Text
                       size="17pt"

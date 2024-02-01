@@ -89,7 +89,7 @@ const AvailableNetworksv1 = ({
                 >
                   {network !== 'mainnet' ? (
                     <ChainBadge
-                      assetType={network}
+                      network={network}
                       position="relative"
                       size="small"
                     />

@@ -487,7 +487,7 @@ export function simpleHashNFTToInternalNFT(nft: ValidatedSimpleHashNFT): NFT {
     predominantColor: nft.previews?.predominant_color ?? undefined,
     tokenId: nft.token_id,
     traits,
-    type: AssetTypes.nft as AssetType,
+    type: AssetType.nft,
     uniqueId: `${nft.chain}_${nft.contract_address}_${nft.token_id}`,
     uniqueTokenType,
     video_url: maybeSignUri(

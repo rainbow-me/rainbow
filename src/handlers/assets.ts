@@ -1,14 +1,6 @@
 import { Contract } from '@ethersproject/contracts';
-import { AssetTypes } from '@/entities';
-import networkTypes from '@/helpers/networkTypes';
-import {
-  ARBITRUM_ETH_ADDRESS,
-  BNB_BSC_ADDRESS,
-  erc20ABI,
-  ETH_ADDRESS,
-  MATIC_POLYGON_ADDRESS,
-  OPTIMISM_ETH_ADDRESS,
-} from '@/references';
+
+import { erc20ABI } from '@/references';
 import {
   convertAmountToBalanceDisplay,
   convertRawAmountToDecimalFormat,
@@ -16,18 +8,8 @@ import {
 import { getNetworkObj } from '@/networks';
 import { Network } from '@/networks/types';
 
-export function isL2Asset(type: any) {
-  switch (type) {
-    case AssetTypes.arbitrum:
-    case AssetTypes.optimism:
-    case AssetTypes.polygon:
-    case AssetTypes.bsc:
-    case AssetTypes.zora:
-    case AssetTypes.base:
-      return true;
-    default:
-      return false;
-  }
+export function isL2Asset(network: Network) {
+  return getNetworkObj(network).networkType === 'layer2';
 }
 
 export function isNativeAsset(address: string, network: string) {

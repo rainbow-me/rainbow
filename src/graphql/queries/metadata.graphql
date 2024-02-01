@@ -148,6 +148,7 @@ fragment change on TransactionSimulationChange {
   asset {
     ...asset
   }
+  price
   quantity
 }
 fragment target on TransactionSimulationTarget {

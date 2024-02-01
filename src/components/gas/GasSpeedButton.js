@@ -615,10 +615,11 @@ const GasSpeedButton = ({
                         address={nativeFeeCurrency.address}
                         size={18}
                         symbol={nativeFeeCurrency.symbol}
+                        network={currentNetwork}
                       />
                     ) : (
                       <ChainBadge
-                        assetType={currentNetwork}
+                        network={currentNetwork}
                         size="gas"
                         position="relative"
                       />
@@ -681,7 +682,7 @@ const GasSpeedButton = ({
           <Centered>
             {isLegacyGasNetwork ? (
               <ChainBadgeContainer>
-                <ChainBadge assetType={currentNetwork} position="relative" />
+                <ChainBadge network={currentNetwork} position="relative" />
               </ChainBadgeContainer>
             ) : showGasOptions ? (
               <CustomGasButton

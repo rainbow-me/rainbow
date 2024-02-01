@@ -16,6 +16,8 @@ import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { useAccountSettings, useBooleanState } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
+import FastCoinIcon from '@/components/asset-list/RecyclerAssetList2/FastComponents/FastCoinIcon';
+import { Network } from '@/networks/types';
 
 const noPriceData = lang.t('expanded_state.chart.no_price_data');
 
@@ -54,8 +56,8 @@ export default function ChartExpandedStateHeader({
   testID,
   chartType,
 }) {
-  const { colors } = useTheme();
-  const color = givenColors || colors.dark;
+  const theme = useTheme();
+  const color = givenColors || theme.colors.dark;
   const tokens = useMemo(() => {
     return isPool ? asset.tokens : [asset];
   }, [asset, isPool]);
@@ -126,7 +128,15 @@ export default function ChartExpandedStateHeader({
         }
       >
         {tokens.length === 1 ? (
-          <CoinIcon badgeXPosition={-7} badgeYPosition={0} {...asset} />
+          <FastCoinIcon
+            badgeXPosition={-7}
+            badgeYPosition={0}
+            address={asset?.address}
+            mainnetAddress={asset?.mainnetAddress}
+            network={asset?.network || Network.mainnet}
+            symbol={asset?.symbol}
+            theme={theme}
+          />
         ) : (
           <CoinIconGroup tokens={tokens} />
         )}
@@ -163,7 +173,9 @@ export default function ChartExpandedStateHeader({
         >
           <ChartHeaderSubtitle
             color={
-              isNoPriceData ? colors.alpha(colors.blueGreyDark, 0.8) : color
+              isNoPriceData
+                ? theme.colors.alpha(theme.colors.blueGreyDark, 0.8)
+                : color
             }
             testID={`chart-header-${titleOrNoPriceData}`}
             weight={isNoPriceData ? 'semibold' : 'bold'}
