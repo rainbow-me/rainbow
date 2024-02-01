@@ -13,7 +13,7 @@ import { IS_TESTING } from 'react-native-dotenv';
 import { useDispatch } from 'react-redux';
 import { useDebounce } from 'use-debounce/lib';
 import CurrencySelectionTypes from '@/helpers/currencySelectionTypes';
-import { emitAssetRequest } from '@/redux/explorer';
+
 import deviceUtils from '@/utils/deviceUtils';
 import { CurrencySelectionList } from '@/components/exchange';
 import { Row } from '@/components/layout';
@@ -193,7 +193,6 @@ export default function DiscoverSearch() {
         });
       } else {
         const asset = ethereumUtils.getAccountAsset(item.uniqueId);
-        dispatch(emitAssetRequest(item.address));
         navigate(Routes.EXPANDED_ASSET_SHEET, {
           asset: asset || item,
           fromDiscover: true,

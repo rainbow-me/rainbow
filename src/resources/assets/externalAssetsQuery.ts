@@ -13,6 +13,12 @@ import { Network } from '@/networks/types';
 const EXTERNAL_TOKEN_CACHE_TIME = 1000 * 60 * 60 * 24; // 24 hours
 const EXTERNAL_TOKEN_STALE_TIME = 1000 * 60; // 1 minute
 
+// need to keep these queried tokens up to date
+//   ETH_ADDRESS,
+// MATIC_MAINNET_ADDRESS,
+// BNB_MAINNET_ADDRESS,
+// OP_ADDRESS
+
 // Types
 type ExternalToken = Pick<
   Token,
