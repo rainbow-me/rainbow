@@ -14,6 +14,7 @@ import { Calculate } from './content/console/calculate';
 import { Share } from './content/console/share';
 import { Review } from './content/console/review';
 import { ViewWeeklyEarnings } from './content/console/view-weekly-earnings';
+import { RequireWalletBalance } from './content/console/require-wallet-balance';
 
 type ConsoleSheetParams = {
   ConsoleSheet: {
@@ -128,6 +129,8 @@ const ClaimFlow = () => {
       return <Review />;
     case RainbowPointsFlowSteps.ViewWeeklyEarnings:
       return <ViewWeeklyEarnings />;
+    case RainbowPointsFlowSteps.RequireWalletBalance:
+      return <RequireWalletBalance />;
   }
 };
 
@@ -138,7 +141,7 @@ const styles = StyleSheet.create({
     borderCurve: 'continuous',
     borderRadius: 28,
     borderWidth: 1.5,
-    height: 504,
+    height: 525,
     gap: 45,
     paddingHorizontal: 30,
     paddingTop: 45,

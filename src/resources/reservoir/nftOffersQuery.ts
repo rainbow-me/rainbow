@@ -1,8 +1,7 @@
 import { analyticsV2 } from '@/analytics';
 import { nftOffersSortAtom } from '@/components/nft-offers/SortMenu';
 import { NFT_OFFERS, useExperimentalFlag } from '@/config';
-import { IS_PROD } from '@/env';
-import { arcClient, arcDevClient } from '@/graphql';
+import { arcClient } from '@/graphql';
 import {
   GetNftOffersQuery,
   NftOffer,
@@ -17,8 +16,6 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useRecoilValue } from 'recoil';
-
-const graphqlClient = IS_PROD ? arcClient : arcDevClient;
 
 export type NFTOffersArgs = {
   walletAddress: string;
@@ -66,7 +63,7 @@ type NFTOffersQueryKey = ReturnType<typeof nftOffersQueryKey>;
 async function nftOffersQueryFunction({
   queryKey: [{ walletAddress, sortBy }],
 }: QueryFunctionArgs<typeof nftOffersQueryKey>) {
-  const data = await graphqlClient.getNFTOffers({
+  const data = await arcClient.getNFTOffers({
     walletAddress,
     sortBy,
   });
@@ -81,7 +78,7 @@ export async function fetchNftOffers({
   walletAddress,
   sortBy = SortCriterion.TopBidValue,
 }: NFTOffersArgs) {
-  const data = await graphqlClient.getNFTOffers({
+  const data = await arcClient.getNFTOffers({
     walletAddress,
     // TODO: remove sortBy once the backend supports it
     sortBy: SortCriterion.TopBidValue,
@@ -111,7 +108,7 @@ export function useNFTOffers({ walletAddress }: { walletAddress: string }) {
   const query = useQuery<GetNftOffersQuery>(
     queryKey,
     async () =>
-      await graphqlClient.getNFTOffers({
+      await arcClient.getNFTOffers({
         walletAddress,
         // TODO: remove sortBy once the backend supports it
         sortBy: SortCriterion.TopBidValue,

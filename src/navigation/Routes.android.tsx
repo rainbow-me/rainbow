@@ -203,11 +203,6 @@ function MainOuterNavigator() {
         name={Routes.MAIN_NAVIGATOR}
       />
       <OuterStack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.TOKEN_INDEX_SCREEN}
-        options={expandedPresetWithSmallGestureResponseDistance}
-      />
-      <OuterStack.Screen
         component={BackupSheet}
         name={Routes.BACKUP_SCREEN}
         options={expandedPreset}
@@ -229,10 +224,6 @@ function BSNavigator() {
       <BSStack.Screen
         component={MainOuterNavigator}
         name={Routes.MAIN_NAVIGATOR_WRAPPER}
-      />
-      <BSStack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.TOKEN_INDEX_SHEET}
       />
       <BSStack.Screen
         component={ShowcaseSheet}

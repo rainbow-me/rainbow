@@ -82,10 +82,9 @@ import {
   updateSwapSlippage,
   updateSwapTypeDetails,
 } from '@/redux/swap';
-import { ETH_ADDRESS, ethUnits } from '@/references';
+import { ethUnits } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils, gasUtils } from '@/utils';
-import { useEthUSDPrice } from '@/utils/ethereumUtils';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import logger from '@/utils/logger';
 import {
@@ -173,11 +172,6 @@ export default function ExchangeModal({
 
   const title = lang.t('swap.modal_types.swap');
 
-  const priceOfEther = useEthUSDPrice();
-  const genericAssets = useSelector<
-    { data: { genericAssets: { [address: string]: SwappableAsset } } },
-    { [address: string]: SwappableAsset }
-  >(({ data: { genericAssets } }) => genericAssets);
   const {
     goBack,
     navigate,
@@ -774,41 +768,12 @@ export default function ExchangeModal({
     try {
       // Tell iOS we're running a rap (for tracking purposes)
       NotificationManager?.postNotification('rapInProgress');
-      if (nativeCurrency.toLowerCase() === 'usd') {
-        amountInUSD = nativeAmount!;
-      } else {
-        const ethPriceInNativeCurrency =
-          genericAssets[ETH_ADDRESS]?.price?.value ?? 0;
-        const inputTokenPriceInNativeCurrency =
-          genericAssets[inputCurrency?.address]?.price?.value ?? 0;
-        const outputTokenPriceInNativeCurrency =
-          genericAssets[outputCurrency?.address]?.price?.value ?? 0;
-        const inputTokensPerEth = divide(
-          inputTokenPriceInNativeCurrency,
-          ethPriceInNativeCurrency
-        );
-        const outputTokensPerEth = divide(
-          outputTokenPriceInNativeCurrency,
-          ethPriceInNativeCurrency
-        );
-        const inputTokensInEth = multiply(inputTokensPerEth, inputAmount!);
-        const outputTokensInEth = multiply(outputTokensPerEth, outputAmount!);
-
-        const availableTokenPrice = inputTokensInEth ?? outputTokensInEth;
-        const maybeResultAmount = multiply(priceOfEther, availableTokenPrice);
-        // We have to use string matching here because the multiply helper will return the value as a string from the helpers
-        // If we pass a empty string value to segment it gets ignored
-        amountInUSD = ['NaN', '0'].includes(maybeResultAmount)
-          ? ''
-          : maybeResultAmount;
-      }
     } catch (e) {
       logger.log('error getting the swap amount in USD price', e);
     } finally {
       const slippage = slippageInBips / 100;
       analytics.track(`Submitted ${type}`, {
         aggregator: tradeDetails?.source || '',
-        amountInUSD,
         gasSetting: selectedGasFee?.option,
         inputTokenAddress: inputCurrency?.address || '',
         inputTokenName: inputCurrency?.name || '',
@@ -852,18 +817,12 @@ export default function ExchangeModal({
     selectedGasFee?.gasFee,
     selectedGasFee?.option,
     selectedGasFee?.gasFeeParams,
-    nativeCurrency,
-    nativeAmount,
-    genericAssets,
     inputCurrency?.address,
     inputCurrency?.name,
     inputCurrency?.symbol,
     outputCurrency?.address,
     outputCurrency?.name,
     outputCurrency?.symbol,
-    inputAmount,
-    outputAmount,
-    priceOfEther,
     slippageInBips,
     type,
     tradeDetails?.source,

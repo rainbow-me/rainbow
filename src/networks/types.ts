@@ -45,7 +45,6 @@ export interface NetworkProperties extends Chain {
     walletconnect: boolean;
     swaps: boolean;
     nfts: boolean;
-    savings: boolean;
     pools: boolean;
     txs: boolean;
   };
