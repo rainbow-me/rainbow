@@ -39,6 +39,7 @@ import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPr
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import assetTypes from '@/entities/assetTypes';
 import { Network } from '@/networks/types';
+import { getUniqueId } from '@/utils/ethereumUtils';
 
 export const ETH_CARD_HEIGHT = 284.3;
 
@@ -47,11 +48,19 @@ export const EthCard = () => {
   const { colors, isDarkMode } = useTheme();
   const { navigate } = useNavigation();
   const { isDamaged } = useWallets();
-  const { data: ethAsset } = useExternalToken({
+  const { data: externalEthAsset } = useExternalToken({
     address: ETH_ADDRESS,
     network: Network.mainnet,
     currency: nativeCurrency,
   });
+
+  const ethAsset = {
+    ...externalEthAsset,
+    address: ETH_ADDRESS,
+    network: Network.mainnet,
+    uniqueId: getUniqueId(ETH_ADDRESS, Network.mainnet),
+  };
+
   const { loaded: accentColorLoaded } = useAccountAccentColor();
   const { name: routeName } = useRoute();
   const cardType = 'stretch';
@@ -110,16 +119,16 @@ export const EthCard = () => {
   const CHART_HEIGHT = 80;
 
   let isNegativePriceChange = false;
-  if (ethAsset?.native.change[0] === '-') {
+  if (ethAsset?.native?.change[0] === '-') {
     isNegativePriceChange = true;
   }
   const priceChangeDisplay = isNegativePriceChange
-    ? ethAsset?.native.change.substring(1)
-    : ethAsset?.native.change;
+    ? ethAsset?.native?.change.substring(1)
+    : ethAsset?.native?.change;
 
   const priceChangeColor = isNegativePriceChange ? colors.red : colors.green;
 
-  const loadedPrice = accentColorLoaded && ethAsset?.native.change;
+  const loadedPrice = accentColorLoaded && ethAsset?.native?.change;
   const loadedChart = throttledData?.points.length && loadedPrice;
 
   const [noChartData, setNoChartData] = useState(false);
@@ -223,7 +232,7 @@ export const EthCard = () => {
             </Box>
           ) : (
             <Text size="26pt" color={{ custom: colorForAsset }} weight="heavy">
-              {ethAsset?.native.price.display}
+              {ethAsset?.native?.price.display}
             </Text>
           )}
         </Stack>
