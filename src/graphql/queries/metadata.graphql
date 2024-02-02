@@ -402,6 +402,109 @@ mutation redeemCodeForPoints($address: String!, $redemptionCode: String!) {
   }
 }
 
+fragment TokenAllTimeFragment on TokenAllTime {
+  highDate
+  highValue
+  lowDate
+  lowValue
+}
+
+fragment TokenColorsFragment on TokenColors {
+  fallback
+  primary
+  shadow
+}
+
+fragment TokenLinkFragment on TokenLink {
+  url
+}
+
+fragment TokenLinksFragment on TokenLinks {
+  facebook {
+    ...TokenLinkFragment
+  }
+  homepage {
+    ...TokenLinkFragment
+  }
+  reddit {
+    ...TokenLinkFragment
+  }
+  telegram {
+    ...TokenLinkFragment
+  }
+  twitter {
+    ...TokenLinkFragment
+  }
+}
+
+fragment TokenPriceChartFragment on TokenPriceChart {
+  points
+  timeEnd
+  timeStart
+}
+
+fragment TokenPriceChartsFragment on TokenPriceCharts {
+  day {
+    ...TokenPriceChartFragment
+  }
+  hour {
+    ...TokenPriceChartFragment
+  }
+  max {
+    ...TokenPriceChartFragment
+  }
+  month {
+    ...TokenPriceChartFragment
+  }
+  week {
+    ...TokenPriceChartFragment
+  }
+  year {
+    ...TokenPriceChartFragment
+  }
+}
+
+query externalToken($address: String!, $chainId: Int!, $currency: String) {
+  token(address: $address, chainID: $chainId, currency: $currency) {
+    colors {
+      ...TokenColorsFragment
+    }
+    decimals
+    iconUrl
+    name
+    networks
+    price {
+      relativeChange24h
+      value
+    }
+    symbol
+  }
+}
+
+query tokenMetadata($address: String!, $chainId: Int!, $currency: String) {
+  token(address: $address, chainID: $chainId, currency: $currency) {
+    circulatingSupply
+    colors {
+      ...TokenColorsFragment
+    }
+    description
+    fullyDilutedValuation
+    iconUrl
+    links {
+      ...TokenLinksFragment
+    }
+    marketCap
+    name
+    networks
+    price {
+      relativeChange24h
+      value
+    }
+    totalSupply
+    volume1d
+  }
+}
+
 query priceChart(
   $chainId: Int!
   $address: String!

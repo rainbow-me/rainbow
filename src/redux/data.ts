@@ -5,10 +5,6 @@ import {
 import { isEmpty, isNil, mapValues, partition } from 'lodash';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
-import {
-  cancelDebouncedUpdateGenericAssets,
-  debouncedUpdateGenericAssets,
-} from './helpers/debouncedUpdateGenericAssets';
 import { decrementNonce, incrementNonce } from './nonceManager';
 import { AppGetState, AppState } from './store';
 import {
@@ -60,7 +56,6 @@ const TXN_WATCHER_POLL_INTERVAL = 5000; // 5 seconds
 
 // -- Constants --------------------------------------- //
 
-const DATA_UPDATE_GENERIC_ASSETS = 'data/DATA_UPDATE_GENERIC_ASSETS';
 const DATA_UPDATE_ETH_USD = 'data/DATA_UPDATE_ETH_USD';
 const DATA_UPDATE_PORTFOLIOS = 'data/DATA_UPDATE_PORTFOLIOS';
 
@@ -83,13 +78,6 @@ export interface DataState {
    * The ETH price in USD.
    */
   ethUSDPrice: number | undefined | null;
-
-  /**
-   * Parsed asset information for generic loaded assets.
-   */
-  genericAssets: {
-    [assetAddress: string]: ParsedAddressAsset;
-  };
 
   /**
    * Whether or not transactions are currently being loaded.
@@ -118,7 +106,6 @@ export interface DataState {
  * An action for the `data` reducer.
  */
 type DataAction =
-  | DataUpdateGenericAssetsAction
   | DataUpdatePortfoliosAction
   | DataUpdateEthUsdAction
   | DataLoadTransactionsRequestAction
@@ -126,14 +113,6 @@ type DataAction =
   | DataLoadTransactionsFailureAction
   | DataUpdatePendingTransactionSuccessAction
   | DataClearStateAction;
-
-/**
- * The action to update `genericAssets`.
- */
-export interface DataUpdateGenericAssetsAction {
-  type: typeof DATA_UPDATE_GENERIC_ASSETS;
-  payload: DataState['genericAssets'];
-}
 
 /**
  * The action to update `portfolios`.
@@ -184,7 +163,7 @@ interface DataUpdatePendingTransactionSuccessAction {
 }
 
 /**
- * The action used to clear the state while maintaining generic asset data.
+ * The action used to clear the state.
  */
 interface DataClearStateAction {
   type: typeof DATA_CLEAR_STATE;
@@ -346,17 +325,13 @@ export const dataLoadState = () => async (
 };
 
 /**
- * Resets state, with the exception of generic asset prices, and unsubscribes
+ * Resets state and unsubscribes
  * from listeners and timeouts.
  */
 export const dataResetState = () => (
   dispatch: Dispatch<DataClearStateAction>
 ) => {
-  // cancel any debounced updates so we won't override any new data with stale debounced ones
-  cancelDebouncedUpdateGenericAssets();
-
   pendingTransactionsHandle && clearTimeout(pendingTransactionsHandle);
-
   dispatch({ type: DATA_CLEAR_STATE });
 };
 
@@ -584,39 +559,10 @@ export function scheduleActionOnAssetReceived(
  */
 export const assetPricesReceived = (
   message: AssetPricesReceivedMessage | undefined
-) => (
-  dispatch: Dispatch<DataUpdateGenericAssetsAction | DataUpdateEthUsdAction>,
-  getState: AppGetState
-) => {
+) => (dispatch: Dispatch<DataUpdateEthUsdAction>, getState: AppGetState) => {
   const newAssetPrices = message?.payload?.prices ?? {};
   const { nativeCurrency } = getState().settings;
 
-  if (nativeCurrency.toLowerCase() === message?.meta?.currency) {
-    if (isEmpty(newAssetPrices)) return;
-    const parsedAssets = mapValues(newAssetPrices, asset =>
-      parseAsset(asset)
-    ) as {
-      [id: string]: ParsedAddressAsset;
-    };
-    const { genericAssets } = getState().data;
-
-    const updatedAssets = {
-      ...genericAssets,
-      ...parsedAssets,
-    };
-
-    const assetAddresses = Object.keys(parsedAssets);
-
-    for (const address of assetAddresses) {
-      callbacksOnAssetReceived[address.toLowerCase()]?.(parsedAssets[address]);
-      callbacksOnAssetReceived[address.toLowerCase()] = undefined;
-    }
-
-    dispatch({
-      payload: updatedAssets,
-      type: DATA_UPDATE_GENERIC_ASSETS,
-    });
-  }
   if (
     message?.meta?.currency?.toLowerCase() ===
       NativeCurrencyKeys.USD.toLowerCase() &&
@@ -637,37 +583,13 @@ export const assetPricesReceived = (
  */
 export const assetPricesChanged = (
   message: AssetPricesChangedMessage | undefined
-) => (
-  dispatch: Dispatch<DataUpdateGenericAssetsAction | DataUpdateEthUsdAction>,
-  getState: AppGetState
-) => {
+) => (dispatch: Dispatch<DataUpdateEthUsdAction>, getState: AppGetState) => {
   const { nativeCurrency } = getState().settings;
 
   const price = message?.payload?.prices?.[0]?.price;
   const assetAddress = message?.meta?.asset_code;
   if (isNil(price) || isNil(assetAddress)) return;
 
-  if (nativeCurrency?.toLowerCase() === message?.meta?.currency) {
-    const { genericAssets } = getState().data;
-    const genericAsset = {
-      ...genericAssets?.[assetAddress],
-      price,
-    };
-    const updatedAssets = {
-      ...genericAssets,
-      [assetAddress]: genericAsset,
-    } as {
-      [address: string]: ParsedAddressAsset;
-    };
-
-    debouncedUpdateGenericAssets(
-      {
-        payload: updatedAssets,
-        type: DATA_UPDATE_GENERIC_ASSETS,
-      },
-      dispatch
-    );
-  }
   if (
     message?.meta?.currency?.toLowerCase() ===
       NativeCurrencyKeys.USD.toLowerCase() &&
@@ -1092,7 +1014,6 @@ export const watchPendingTransactions = (
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE: DataState = {
   ethUSDPrice: null,
-  genericAssets: {},
   isLoadingTransactions: true,
   pendingTransactions: [],
   portfolios: {},
@@ -1101,8 +1022,6 @@ const INITIAL_STATE: DataState = {
 
 export default (state: DataState = INITIAL_STATE, action: DataAction) => {
   switch (action.type) {
-    case DATA_UPDATE_GENERIC_ASSETS:
-      return { ...state, genericAssets: action.payload };
     case DATA_UPDATE_PORTFOLIOS:
       return {
         ...state,
@@ -1138,7 +1057,6 @@ export default (state: DataState = INITIAL_STATE, action: DataAction) => {
       return {
         ...state,
         ...INITIAL_STATE,
-        genericAssets: state.genericAssets,
       };
     default:
       return state;

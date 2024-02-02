@@ -44,11 +44,10 @@ import {
   useChartThrottledPoints,
   useDelayedValueWithLayoutAnimation,
   useDimensions,
-  useGenericAsset,
 } from '@/hooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation';
-import { DOG_ADDRESS, ETH_ADDRESS } from '@/references';
+import { ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { ethereumUtils, safeAreaInsetValues } from '@/utils';
@@ -56,6 +55,10 @@ import AvailableNetworksv2 from '@/components/expanded-state/AvailableNetworksv2
 import AvailableNetworksv1 from '@/components/expanded-state/AvailableNetworks';
 import { Box } from '@/design-system';
 import { getNetworkObj } from '@/networks';
+import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
+import { bigNumberFormat } from '@/helpers/bigNumberFormat';
+import { greaterThanOrEqualTo } from '@/helpers/utilities';
+import { Network } from '@/networks/types';
 
 const defaultCarouselHeight = 60;
 const baseHeight =
@@ -183,13 +186,18 @@ function Description({ text = '' }) {
 }
 
 export default function ChartExpandedState({ asset }) {
-  const genericAsset = useGenericAsset(asset?.address);
+  const { nativeCurrency, network: currentNetwork } = useAccountSettings();
+
+  const { data: genericAsset } = useExternalToken({
+    address: asset?.address,
+    network: asset?.network,
+    currency: nativeCurrency,
+  });
   const {
     params: { fromDiscover = false },
   } = useRoute();
 
   const [carouselHeight, setCarouselHeight] = useState(defaultCarouselHeight);
-  const { nativeCurrency, network: currentNetwork } = useAccountSettings();
   const [additionalContentHeight, setAdditionalContentHeight] = useState(0);
 
   // If we don't have a balance for this asset
@@ -197,22 +205,17 @@ export default function ChartExpandedState({ asset }) {
   const hasBalance = asset?.balance;
   const assetWithPrice = useMemo(() => {
     return hasBalance
-      ? { ...asset }
+      ? asset
       : genericAsset
-      ? asset?.networks
-        ? {
-            ...ethereumUtils.formatGenericAsset(genericAsset, nativeCurrency),
-            network: asset.network,
-            colors: asset?.colors,
-          }
-        : ethereumUtils.formatGenericAsset(genericAsset, nativeCurrency)
-      : { ...asset };
-  }, [asset, genericAsset, hasBalance, nativeCurrency]);
-
-  if (assetWithPrice?.mainnet_address) {
-    assetWithPrice.l2Address = asset?.address;
-    assetWithPrice.address = assetWithPrice.mainnet_address;
-  }
+      ? {
+          ...genericAsset,
+          network: asset.network,
+          address: asset.address,
+          mainnetAddress:
+            asset?.networks?.[getNetworkObj(Network.mainnet)]?.address,
+        }
+      : asset;
+  }, [asset, genericAsset, hasBalance]);
 
   const isL2 = useMemo(() => isL2Network(assetWithPrice.network), [
     assetWithPrice.network,
@@ -220,28 +223,23 @@ export default function ChartExpandedState({ asset }) {
   const isTestnet = isTestnetNetwork(currentNetwork);
 
   const {
-    description,
-    marketCap,
-    totalLiquidity,
-    totalVolume,
-    loading: additionalAssetDataLoading,
-    links,
-    networks,
-  } = useAdditionalAssetData(
-    asset?.address,
-    assetWithPrice?.price?.value,
-    ethereumUtils.getChainIdFromNetwork(assetWithPrice?.network)
-  );
+    data,
+    isLoading: additionalAssetDataLoading,
+  } = useAdditionalAssetData({
+    address: asset?.address,
+    network: asset?.network,
+    currency: nativeCurrency,
+  });
 
   // This one includes the original l2 address if exists
   const ogAsset = useMemo(() => {
-    if (networks) {
+    if (data?.networks) {
       const mappedNetworks = {};
-      Object.keys(networks).forEach(
+      Object.keys(data?.networks).forEach(
         chainId =>
           (mappedNetworks[
             ethereumUtils.getNetworkFromChainId(Number(chainId))
-          ] = networks[chainId])
+          ] = data?.networks[chainId])
       );
       assetWithPrice.implementations = mappedNetworks;
     }
@@ -252,17 +250,15 @@ export default function ChartExpandedState({ asset }) {
         ? assetWithPrice.l2Address || asset?.address
         : assetWithPrice.address,
     };
-  }, [assetWithPrice, isL2, asset?.address, networks]);
+  }, [assetWithPrice, isL2, asset?.address, data?.networks]);
 
   const { height: screenHeight } = useDimensions();
 
   const delayedDescriptions = useDelayedValueWithLayoutAnimation(
-    description?.replace(/\s+/g, '')
+    data?.description?.replace(/\s+/g, '')
   );
 
-  const scrollableContentHeight =
-    !!totalVolume || !!marketCap || !!totalLiquidity ? 68 : 0;
-
+  const scrollableContentHeight = true;
   const {
     chart,
     chartType,
@@ -339,6 +335,19 @@ export default function ChartExpandedState({ asset }) {
   const swapEnabled =
     swagg_enabled && getNetworkObj(assetNetwork).features.swaps;
   const addCashEnabled = f2c_enabled;
+
+  const format = useCallback(
+    value => {
+      const test = bigNumberFormat(
+        value,
+        nativeCurrency,
+        greaterThanOrEqualTo(value, 10000)
+      );
+
+      return test;
+    },
+    [nativeCurrency]
+  );
 
   return (
     <SlackSheet
@@ -418,10 +427,10 @@ export default function ChartExpandedState({ asset }) {
         </SheetActionButtonRow>
       ) : addCashEnabled ? (
         <SheetActionButtonRow paddingBottom={isL2 ? 19 : undefined}>
-          <BuyActionButton color={color} />
+          <BuyActionButton color={color} asset={ogAsset} />
         </SheetActionButtonRow>
       ) : null}
-      {isL2 && (
+      {!data?.networks && isL2 && (
         <L2Disclaimer
           network={assetWithPrice.network}
           colors={colors}
@@ -429,14 +438,14 @@ export default function ChartExpandedState({ asset }) {
           symbol={assetWithPrice.symbol}
         />
       )}
-      {networks && !hasBalance && (
+      {data?.networks && !hasBalance && (
         <Box paddingBottom={{ custom: 27 }}>
-          <AvailableNetworks asset={assetWithPrice} networks={networks} />
+          <AvailableNetworks asset={assetWithPrice} networks={data?.networks} />
         </Box>
       )}
       <CarouselWrapper
         isAnyItemLoading={additionalAssetDataLoading}
-        isAnyItemVisible={!!(totalVolume || totalLiquidity || marketCap)}
+        isAnyItemVisible={!!(data?.volume1d || data?.marketCap)}
         setCarouselHeight={setCarouselHeight}
       >
         <Carousel>
@@ -446,7 +455,7 @@ export default function ChartExpandedState({ asset }) {
             title={lang.t('expanded_state.asset.volume_24_hours')}
             weight="bold"
           >
-            {totalVolume}
+            {format(data?.volume1d)}
           </CarouselItem>
           <CarouselItem
             loading={additionalAssetDataLoading}
@@ -454,14 +463,14 @@ export default function ChartExpandedState({ asset }) {
             title={lang.t('expanded_state.asset.uniswap_liquidity')}
             weight="bold"
           >
-            {totalLiquidity}
+            {data?.totalLiquidity}
           </CarouselItem>
           <CarouselItem
             loading={additionalAssetDataLoading}
             title={lang.t('expanded_state.asset.market_cap')}
             weight="bold"
           >
-            {marketCap}
+            {format(data?.marketCap)}
           </CarouselItem>
         </Carousel>
         <EdgeFade />
@@ -476,21 +485,21 @@ export default function ChartExpandedState({ asset }) {
           layout?.();
         }}
       >
-        {!!delayedDescriptions && (
+        {data?.description && (
           <ExpandedStateSection
             isL2
             title={lang.t('expanded_state.asset.about_asset', {
               assetName: asset?.name,
             })}
           >
-            <Description text={description || delayedDescriptions} />
+            <Description text={data?.description || delayedDescriptions} />
           </ExpandedStateSection>
         )}
         <SocialLinks
           address={ogAsset.address}
           color={color}
           isNativeAsset={assetWithPrice?.isNativeAsset}
-          links={links}
+          links={data?.links}
           marginTop={!delayedDescriptions && 19}
           type={asset?.network}
         />
