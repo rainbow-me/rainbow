@@ -14,8 +14,6 @@ import {
   AssetPricesChangedMessage,
   assetPricesReceived,
   AssetPricesReceivedMessage,
-  portfolioReceived,
-  PortfolioReceivedMessage,
   transactionsReceived,
   TransactionsReceivedMessage,
 } from './data';
@@ -42,9 +40,6 @@ const EXPLORER_CLEAR_STATE = 'explorer/EXPLORER_CLEAR_STATE';
 const TRANSACTIONS_LIMIT = 250;
 
 const messages = {
-  ADDRESS_PORTFOLIO: {
-    RECEIVED: 'received address portfolio',
-  },
   ADDRESS_TRANSACTIONS: {
     APPENDED: 'appended address transactions',
     RECEIVED: 'received address transactions',

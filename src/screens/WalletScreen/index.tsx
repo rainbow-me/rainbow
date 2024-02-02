@@ -50,7 +50,6 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
   } = navigation;
   const removeFirst = useRemoveFirst();
   const [initialized, setInitialized] = useState(!!params?.initialized);
-  const [portfoliosFetched, setPortfoliosFetched] = useState(false);
   const initializeWallet = useInitializeWallet();
   const { trackENSProfile } = useTrackENSProfile();
   const {
