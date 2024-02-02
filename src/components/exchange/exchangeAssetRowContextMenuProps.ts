@@ -52,7 +52,7 @@ export default function contextMenuProps(
 
   const onPressAndroid = () => {
     const blockExplorerText = `View on ${startCase(
-      ethereumUtils.getBlockExplorer(item?.type)
+      ethereumUtils.getBlockExplorer(item?.network)
     )}`;
     const androidContractActions = [
       lang.t('wallet.action.copy_contract_address'),
@@ -72,13 +72,13 @@ export default function contextMenuProps(
           handleCopyContractAddress(item?.address);
         }
         if (idx === 1) {
-          ethereumUtils.openTokenEtherscanURL(item?.address, item?.type);
+          ethereumUtils.openTokenEtherscanURL(item?.address, item?.network);
         }
       }
     );
   };
 
-  const blockExplorerAction = buildBlockExplorerAction(item?.type);
+  const blockExplorerAction = buildBlockExplorerAction(item?.network);
   const menuConfig = {
     menuItems: [
       blockExplorerAction,
@@ -98,7 +98,7 @@ export default function contextMenuProps(
     if (actionKey === CoinRowActionsEnum.copyAddress) {
       handleCopyContractAddress(item?.address);
     } else if (actionKey === CoinRowActionsEnum.blockExplorer) {
-      ethereumUtils.openTokenEtherscanURL(item?.address, item?.type);
+      ethereumUtils.openTokenEtherscanURL(item?.address, item?.network);
     }
   };
   return {

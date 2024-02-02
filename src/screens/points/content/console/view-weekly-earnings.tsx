@@ -6,7 +6,7 @@ import { AnimatedText } from '../../components/AnimatedText';
 import { textColors, rainbowColors } from '../../constants';
 import * as i18n from '@/languages';
 import { useAccountProfile } from '@/hooks';
-import { startOfWeek, endOfWeek, format, subWeeks } from 'date-fns';
+import { startOfWeek, addDays, format, subWeeks } from 'date-fns';
 import {
   abbreviateEnsForDisplay,
   address as formatAddress,
@@ -30,7 +30,7 @@ export const ViewWeeklyEarnings = () => {
 
   // NOTE: Tuesday is the first day of the week since points drop that day
   const weekBegins = startOfWeek(subWeeks(new Date(), 1), { weekStartsOn: 2 });
-  const weekEnds = endOfWeek(subWeeks(new Date(), 1), { weekStartsOn: 3 });
+  const weekEnds = addDays(weekBegins, 7);
 
   const accountName = (abbreviateEnsForDisplay(accountENS, 10) ||
     formatAddress(accountAddress, 4, 5)) as string;

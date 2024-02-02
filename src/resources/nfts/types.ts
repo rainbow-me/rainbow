@@ -65,7 +65,7 @@ export type NFT = {
   predominantColor: string | undefined;
   tokenId: string;
   traits: NFTTrait[];
-  type: AssetType;
+  type: AssetType.nft;
   uniqueId: string;
   uniqueTokenType: UniqueTokenType;
   video_url: string | undefined;

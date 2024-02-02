@@ -311,9 +311,7 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
       if (data?.route) {
         const parsedProps = JSON.parse(data?.routeProps || '{}');
         Navigation.handleAction((Routes as any)[data.route], {
-          params: {
-            ...(parsedProps || {}),
-          },
+          ...(parsedProps || {}),
         });
       }
     } else {

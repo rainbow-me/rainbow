@@ -45,7 +45,7 @@ export const SubPositionListItem: React.FC<Props> = ({
       <Column width={'content'}>
         <CoinIcon
           address={asset.asset_code}
-          type={ethereumUtils.getAssetTypeFromNetwork(asset.network)}
+          network={asset.network}
           symbol={asset.symbol}
         />
       </Column>

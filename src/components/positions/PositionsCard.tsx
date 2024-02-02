@@ -5,7 +5,7 @@ import { useTheme } from '@/theme';
 import { GenericCard } from '../cards/GenericCard';
 import startCase from 'lodash/startCase';
 import { CoinIcon, RequestVendorLogoIcon } from '../coin-icon';
-import { AssetType, EthereumAddress } from '@/entities';
+import { EthereumAddress } from '@/entities';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { analyticsV2 } from '@/analytics';
@@ -14,6 +14,7 @@ import { IS_ANDROID } from '@/env';
 import { capitalize, uniqBy } from 'lodash';
 import { RainbowDeposit, RainbowPosition } from '@/resources/defi/types';
 import { ethereumUtils } from '@/utils';
+import { Network } from '@/networks/types';
 
 type PositionCardProps = {
   position: RainbowPosition;
@@ -21,7 +22,7 @@ type PositionCardProps = {
 
 type CoinStackToken = {
   address: EthereumAddress;
-  type: AssetType;
+  network: Network;
   symbol: string;
 };
 
@@ -48,7 +49,7 @@ function CoinIconStack({ tokens }: { tokens: CoinStackToken[] }) {
               address={token.address}
               size={16}
               symbol={token.symbol}
-              type={token.type}
+              network={token.network}
               ignoreBadge
             />
           </Box>
@@ -77,7 +78,7 @@ export const PositionCard = ({ position }: PositionCardProps) => {
       deposit.underlying.forEach(({ asset }) => {
         tokens.push({
           address: asset.asset_code,
-          type: ethereumUtils.getAssetTypeFromNetwork(asset.network),
+          network: asset.network,
           symbol: asset.symbol,
         });
       });
@@ -86,7 +87,7 @@ export const PositionCard = ({ position }: PositionCardProps) => {
       deposit.underlying.forEach(({ asset }) => {
         tokens.push({
           address: asset.asset_code,
-          type: ethereumUtils.getAssetTypeFromNetwork(asset.network),
+          network: asset.network,
           symbol: asset.symbol,
         });
       });
@@ -95,7 +96,7 @@ export const PositionCard = ({ position }: PositionCardProps) => {
       deposit.underlying.forEach(({ asset }) => {
         tokens.push({
           address: asset.asset_code,
-          type: ethereumUtils.getAssetTypeFromNetwork(asset.network),
+          network: asset.network,
           symbol: asset.symbol,
         });
       });
@@ -104,7 +105,7 @@ export const PositionCard = ({ position }: PositionCardProps) => {
       deposit.underlying.forEach(({ asset }) => {
         tokens.push({
           address: asset.asset_code,
-          type: ethereumUtils.getAssetTypeFromNetwork(asset.network),
+          network: asset.network,
           symbol: asset.symbol,
         });
       });

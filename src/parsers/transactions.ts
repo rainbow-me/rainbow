@@ -12,7 +12,6 @@ import {
 } from 'lodash';
 import { parseAllTxnsOnReceive } from '../config/debug';
 import {
-  AssetType,
   EthereumAddress,
   NativeCurrencyKey,
   RainbowTransaction,

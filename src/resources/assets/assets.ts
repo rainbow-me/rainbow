@@ -1,8 +1,7 @@
 import lang from 'i18n-js';
-import isValidDomain from 'is-valid-domain';
 import isEmpty from 'lodash/isEmpty';
-import { MMKV, NativeMMKV } from 'react-native-mmkv';
-import { AssetType, NativeCurrencyKey, ParsedAddressAsset } from '@/entities';
+import { MMKV } from 'react-native-mmkv';
+import { NativeCurrencyKey, ParsedAddressAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
 import { Network } from '@/helpers/networkTypes';
 import { convertRawAmountToBalance } from '@/helpers/utilities';
@@ -19,6 +18,7 @@ import {
   ParsedAsset,
   RainbowAddressAssets,
 } from './types';
+import { getUniqueId } from '@/utils/ethereumUtils';
 
 const storage = new MMKV();
 
@@ -61,11 +61,7 @@ export function parseAsset({
   const network = chainName;
   const chainId = ethereumUtils.getChainIdFromNetwork(chainName);
   const mainnetAddress = asset?.networks?.[MAINNET_CHAIN_ID]?.address;
-  const uniqueId =
-    network && network !== Network.mainnet ? `${address}_${network}` : address;
-
-  const nonMainnetNetwork = network !== Network.mainnet ? network : undefined;
-  const assetType = asset?.type ?? nonMainnetNetwork ?? AssetType.token;
+  const uniqueId = getUniqueId(address, network);
 
   const parsedAsset = {
     address,
@@ -84,7 +80,7 @@ export function parseAsset({
     // networks: asset?.networks,
     price: asset?.price,
     symbol: asset?.symbol,
-    type: asset.type || 'token',
+    type: asset?.type,
     uniqueId,
   };
 
@@ -106,7 +102,6 @@ export function parseAddressAsset({
   return {
     ...parsedAsset,
     balance: convertRawAmountToBalance(quantity, asset),
-    type: asset.type,
   };
 }
 

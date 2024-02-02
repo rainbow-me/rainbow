@@ -18,7 +18,10 @@ import {
   convertAmountToBalanceDisplay,
   convertAmountToNativeDisplay,
 } from '@/helpers/utilities';
+s;
 import { useAccountSettings } from '@/hooks';
+import { useTheme } from '@/theme';
+import FastCoinIcon from '@/components/asset-list/RecyclerAssetList2/FastComponents/FastCoinIcon';
 
 type Props = {
   transaction: RainbowTransaction;
@@ -30,6 +33,7 @@ type Props = {
 export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({
   transaction,
 }) => {
+  const theme = useTheme();
   const { nativeCurrency } = useAccountSettings();
   const { network, symbol, type, fee } = transaction;
   const assetData = transaction?.asset;
@@ -43,8 +47,8 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({
 
   const value = change?.asset?.balance?.display || transaction.balance?.display;
   const nativeCurrencyValue = convertAmountAndPriceToNativeDisplay(
-    change?.asset?.balance?.amount,
-    change?.asset?.price?.value,
+    change?.asset?.balance?.amount || '',
+    change?.asset?.price?.value || '',
     nativeCurrency
   ).display;
   const feeValue = fee?.value.display ?? '';
@@ -57,15 +61,16 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({
           {true && (
             <DoubleLineTransactionDetailsRow
               leftComponent={
-                <CoinIcon
-                  mainnet_address={mainnetCoinAddress}
-                  address={coinAddress}
-                  symbol={coinSymbol}
-                  type={coinType}
+                <FastCoinIcon
+                  mainnetAddress={mainnetCoinAddress}
+                  address={coinAddress || ''}
+                  symbol={coinSymbol || ''}
+                  network={network || Network.mainnet}
+                  theme={theme}
                 />
               }
               title={i18n.t(i18n.l.transaction_details.value)}
-              value={value}
+              value={value || ''}
               secondaryValue={nativeCurrencyValue}
             />
           )}
