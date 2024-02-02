@@ -8,7 +8,7 @@ import { IS_IOS } from '@/env';
 function SendActionButton({ asset, color: givenColor, ...props }) {
   const { colors } = useTheme();
   const color = givenColor || colors.paleBlue;
-  const navigate = useExpandedStateNavigation();
+  const navigate = useExpandedStateNavigation(null, false, asset);
   const handlePress = useCallback(
     () =>
       navigate(Routes.SEND_FLOW, params => {

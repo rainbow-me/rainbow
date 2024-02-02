@@ -1,6 +1,5 @@
 import { InteractionManager, View } from 'react-native';
 import React, { useCallback, useEffect, useState } from 'react';
-import { isEmpty, keys } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import { AssetList } from '../../components/asset-list';
 import { Page } from '../../components/layout';
@@ -22,7 +21,6 @@ import {
   useLoadGlobalLateData,
   useResetAccountState,
   useTrackENSProfile,
-  useUserAccounts,
   useWalletSectionsData,
 } from '@/hooks';
 import Routes from '@rainbow-me/routes';
@@ -113,10 +111,9 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
     isLoadingUserAssets
   );
 
-  const { addressSocket, assetsSocket } = useSelector(
-    ({ explorer: { addressSocket, assetsSocket } }: AppState) => ({
+  const { addressSocket } = useSelector(
+    ({ explorer: { addressSocket } }: AppState) => ({
       addressSocket,
-      assetsSocket,
     })
   );
 
@@ -137,11 +134,11 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
   }, [initializeWallet, initialized, params, setParams]);
 
   useEffect(() => {
-    if (walletReady && assetsSocket) {
+    if (walletReady) {
       loadAccountLateData();
       loadGlobalLateData();
     }
-  }, [assetsSocket, loadAccountLateData, loadGlobalLateData, walletReady]);
+  }, [loadAccountLateData, loadGlobalLateData, walletReady]);
 
   useEffect(() => {
     if (walletReady && profilesEnabled) {

@@ -12,6 +12,7 @@ function SwapActionButton({
   color: givenColor,
   inputType,
   label,
+  fromDiscover,
   weight = 'heavy',
   ...props
 }) {
@@ -27,7 +28,7 @@ function SwapActionButton({
     }
   );
 
-  const navigate = useExpandedStateNavigation(inputType);
+  const navigate = useExpandedStateNavigation(inputType, fromDiscover, asset);
   const goToSwap = useCallback(() => {
     navigate(Routes.EXCHANGE_MODAL, params => {
       if (params.outputAsset) {
