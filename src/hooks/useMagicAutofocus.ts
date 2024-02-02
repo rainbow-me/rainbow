@@ -1,5 +1,5 @@
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { RefObject, useCallback, useEffect, useRef } from 'react';
 import { InteractionManager, TextInput } from 'react-native';
 import { setListener } from '@/navigation/nativeStackHelpers';
 import useInteraction from './useInteraction';
@@ -37,9 +37,11 @@ export function enable() {
   cancelAll = false;
 }
 
-export default function useMagicAutofocus(
-  defaultAutofocusInputRef: any,
-  customTriggerFocusCallback: any,
+export function useMagicAutofocus(
+  defaultAutofocusInputRef: RefObject<TextInput>,
+  customTriggerFocusCallback?: (
+    lastFocusedInputHandle: RefObject<TextInput>
+  ) => RefObject<TextInput> | void,
   shouldFocusOnNavigateOnAndroid = false,
   showAfterInteractions = false
 ) {
@@ -130,3 +132,5 @@ export default function useMagicAutofocus(
     triggerFocus,
   };
 }
+
+export default useMagicAutofocus;

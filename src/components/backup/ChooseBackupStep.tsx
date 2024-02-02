@@ -17,6 +17,7 @@ import MenuItem from '@/screens/SettingsSheet/components/MenuItem';
 import Routes from '@/navigation/routesNames';
 import { Backup, parseTimestampFromFilename } from '@/model/backup';
 import { RestoreSheetParams } from '@/screens/RestoreSheet';
+import { Source } from 'react-native-fast-image';
 
 const Title = styled(Text).attrs({
   align: 'left',
@@ -34,7 +35,7 @@ const Masthead = styled(Box).attrs({
   flexShrink: 0,
 });
 
-export default function ChooseBackupStep() {
+export function ChooseBackupStep() {
   const {
     params: { backups, userData, fromSettings },
   } = useRoute<RouteProp<RestoreSheetParams, 'RestoreSheet'>>();
@@ -92,7 +93,7 @@ export default function ChooseBackupStep() {
               marginRight={{ custom: -12 }}
               marginTop={{ custom: 8 }}
               marginBottom={{ custom: -24 }}
-              source={WalletAndBackup}
+              source={WalletAndBackup as Source}
               width={{ custom: 72 }}
               size={72}
             />
@@ -177,3 +178,5 @@ export default function ChooseBackupStep() {
     </Box>
   );
 }
+
+export default ChooseBackupStep;

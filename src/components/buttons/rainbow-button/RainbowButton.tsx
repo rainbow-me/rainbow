@@ -100,6 +100,20 @@ const Shadow = styled(ShadowView)(
   })
 );
 
+type VoidOrPromiseVoidFunction = () => void | Promise<void>;
+
+type RainbowButtonProps = {
+  disabled?: boolean;
+  height?: number;
+  label?: string;
+  onPress: VoidOrPromiseVoidFunction;
+  strokeWidth?: number;
+  type?: keyof typeof RainbowButtonTypes;
+  width?: number;
+  overflowMargin?: number;
+  skipTopMargin?: boolean;
+};
+
 const RainbowButton = ({
   disabled = false,
   height = 56,
@@ -111,7 +125,7 @@ const RainbowButton = ({
   overflowMargin = 35,
   skipTopMargin = true,
   ...props
-}) => {
+}: RainbowButtonProps) => {
   const { isDarkMode } = useTheme();
 
   const { width: deviceWidth } = useDimensions();

@@ -1,33 +1,12 @@
 import { Box, Stack, Text, useForegroundColor } from '@/design-system';
-import { IS_ANDROID, IS_TEST } from '@/env';
 import styled from '@/styled-thing';
-import { useTheme } from '@/theme';
 import React from 'react';
-import { GradientText, Text as RNText } from '../text';
 import { Icon } from '../icons';
-import ConditionalWrap from 'conditional-wrap';
 import { deviceUtils } from '@/utils';
 import { ButtonPressAnimation } from '../animations';
-import Pill from '../Pill';
 import { ImgixImage } from '../images';
 import { Source } from 'react-native-fast-image';
-
-const RainbowText = styled(GradientText).attrs(
-  ({ theme: { colors } }: any) => ({
-    angle: false,
-    colors: colors.gradients.rainbow,
-    end: { x: 0, y: 0.5 },
-    start: { x: 1, y: 0.5 },
-    steps: [0, 0.774321, 1],
-  })
-)({});
-
-const TextIcon = styled(RNText).attrs({
-  size: 28,
-  weight: 'medium',
-})({
-  marginVertical: IS_ANDROID ? -10 : 0,
-});
+import { TextColor } from '@/design-system/color/palettes';
 
 const CaretIcon = styled(Icon).attrs(({ color }: { color: string }) => ({
   name: 'caret',
@@ -39,7 +18,7 @@ const CaretIcon = styled(Icon).attrs(({ color }: { color: string }) => ({
 export type AddWalletItem = {
   title: string;
   description: string;
-  descriptionColor?: string;
+  descriptionColor?: TextColor;
   icon: string;
   iconColor?: string;
   testID?: string;
@@ -74,7 +53,6 @@ export const AddWalletRow = ({
   return (
     <Box
       as={ButtonPressAnimation}
-      // @ts-ignore js component
       scaleTo={0.9}
       flexDirection="row"
       alignItems="center"
