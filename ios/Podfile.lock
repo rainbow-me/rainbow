@@ -915,6 +915,7 @@ PODS:
   - SSZipArchive (2.2.3)
   - swift-vibrant (1.0.0)
   - TcpSockets (4.0.0):
+    - CocoaAsyncSocket
     - React
   - TOCropViewController (2.6.1)
   - ToolTipMenu (5.2.1):
@@ -1570,13 +1571,13 @@ SPEC CHECKSUMS:
   SRSRadialGradient: e5a34825dff88c9cf773b58bf39ed6a02e59a084
   SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
   swift-vibrant: 3def73c5c281db74f420ec386590d9c1c5b0995c
-  TcpSockets: 4ef55305239923b343ed0a378b1fac188b1373b0
+  TcpSockets: a8eb6b5867fe643e6cfed5db2e4de62f4d1e8fd0
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
   VisionCamera: db57ca079c4f933f1ddd07f2f8fb2d171a826b85
   Yoga: 8796b55dba14d7004f980b54bcc9833ee45b28ce
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 6ffd59123812e3a71ca0ffd3ecb555bb57c84fe3
+PODFILE CHECKSUM: f0ff16bab75b1fe64832d98be1ba2f8fcd4a766e
 
 COCOAPODS: 1.12.1

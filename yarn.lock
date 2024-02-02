@@ -9601,10 +9601,10 @@ detective-typescript@^7.0.0:
     node-source-walk "^4.2.0"
     typescript "^3.9.10"
 
-detox@20.15.0:
-  version "20.15.0"
-  resolved "https://registry.yarnpkg.com/detox/-/detox-20.15.0.tgz#b878a2a7b2845ab4b79a2ca3529f2d350c903013"
-  integrity sha512-kuZ/54Cw71bm0WsReMHA1jUF+D2PjcWhoSB6Ot9DPfiRV/ADuNzzVnqT8pmLKMWr7YEarPf1Vf6Kq/wbk1KdCA==
+detox@20.17.0:
+  version "20.17.0"
+  resolved "https://registry.yarnpkg.com/detox/-/detox-20.17.0.tgz#836d2ebb193572e1f4a97e44af343891a5658f7b"
+  integrity sha512-IasYgexfkrCoZuJTaqqKHQ2yflK+tnqifzdLwrp4hdTWlXUlG9j/YcM1Dn3ThSs3b6VNMtbSe6xoPkKD0oNiIQ==
   dependencies:
     ajv "^8.6.3"
     bunyan "^1.8.12"
