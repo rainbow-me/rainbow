@@ -217,7 +217,6 @@ export default function ChartExpandedState({ asset }) {
       : asset;
   }, [asset, genericAsset, hasBalance]);
 
-  console.log({ assetWithPrice });
   const isL2 = useMemo(() => isL2Network(assetWithPrice.network), [
     assetWithPrice.network,
   ]);
