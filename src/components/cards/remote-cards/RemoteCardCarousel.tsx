@@ -4,7 +4,6 @@ import { useRoute } from '@react-navigation/native';
 import { IS_TEST } from '@/env';
 
 import {
-  TrimmedCard,
   useRemoteCardContext,
   RemoteCard,
 } from '@/components/cards/remote-cards';
@@ -12,6 +11,7 @@ import { REMOTE_CARDS, getExperimetalFlag } from '@/config';
 import { useDimensions, useWallets } from '@/hooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { FlashList } from '@shopify/flash-list';
+import { TrimmedCard } from '@/resources/cards/cardCollectionQuery';
 
 type RenderItemProps = {
   item: TrimmedCard;
