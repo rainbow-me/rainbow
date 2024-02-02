@@ -48,7 +48,7 @@ import {
 } from '@/hooks';
 import { delayNext } from '@/hooks/useMagicAutofocus';
 import { getActiveRoute, useNavigation } from '@/navigation/Navigation';
-import { emitAssetRequest, emitChartsRequest } from '@/redux/explorer';
+import { emitAssetRequest } from '@/redux/explorer';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils, filterList } from '@/utils';
 import NetworkSwitcherv2 from '@/components/exchange/NetworkSwitcherv2';
@@ -430,7 +430,6 @@ export default function CurrencySelectModal() {
       };
 
       const selectAsset = () => {
-        dispatch(emitChartsRequest(item.mainnet_address || item.address));
         dispatch(emitAssetRequest(item.mainnet_address || item.address));
         setIsTransitioning(true); // continue to display list during transition
         callback?.();

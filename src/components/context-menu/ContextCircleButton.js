@@ -26,12 +26,16 @@ const ContextIcon = styled(Text).attrs(({ theme: { colors } }) => ({
   width: '100%',
 });
 
+const CircleBtn = props => (
+  <CircleButton {...props}>
+    <ContextIcon>􀍠</ContextIcon>
+  </CircleButton>
+);
+
 export default function ContextCircleButton(props) {
   return (
     <ContextMenu {...props} activeOpacity={1}>
-      <CircleButton {...props}>
-        <ContextIcon>􀍠</ContextIcon>
-      </CircleButton>
+      {props.children || <CircleBtn />}
     </ContextMenu>
   );
 }

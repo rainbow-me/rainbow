@@ -35,6 +35,9 @@ import { ethereumUtils, magicMemo, showActionSheetWithOptions } from '@/utils';
 import { getFullResUrl } from '@/utils/getFullResUrl';
 import isSVGImage from '@/utils/isSVG';
 import { refreshNFTContractMetadata } from '@/resources/nfts/simplehash';
+import { ContextCircleButton } from '@/components/context-menu';
+import { IS_ANDROID, IS_IOS } from '@/env';
+import { MenuActionConfig, MenuConfig } from 'react-native-ios-context-menu';
 
 const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',
@@ -274,7 +277,7 @@ const UniqueTokenExpandedStateHeader = ({
     ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
 
   const isPhotoDownloadAvailable = !isSVG && !isENS;
-  const assetMenuConfig = useMemo(() => {
+  const assetMenuConfig: MenuConfig = useMemo(() => {
     const AssetActions = getAssetActions(asset.network);
 
     return {
@@ -473,99 +476,16 @@ const UniqueTokenExpandedStateHeader = ({
     asset.marketplaceCollectionUrl,
   ]);
 
-  const onPressAndroidAsset = useCallback(() => {
-    const blockExplorerActionName = lang.t(
-      'expanded_state.unique_expanded.view_on_block_explorer',
-      {
-        blockExplorerName: startCase(
-          ethereumUtils.getBlockExplorer(asset.network)
-        ),
-      }
-    );
-
-    const androidContractActions = [
-      ...(isSupportedOnRainbowWeb
-        ? [lang.t('expanded_state.unique_expanded.view_on_web')]
-        : []),
-      blockExplorerActionName,
-      ...(isPhotoDownloadAvailable
-        ? ([lang.t('expanded_state.unique_expanded.save_to_photos')] as const)
-        : []),
-      lang.t('expanded_state.unique_expanded.copy_token_id'),
-      ...(isModificationActionsEnabled
-        ? [
-            isHiddenAsset
-              ? lang.t('expanded_state.unique_expanded.unhide')
-              : lang.t('expanded_state.unique_expanded.hide'),
-          ]
-        : []),
-      lang.t('expanded_state.unique_expanded.refresh'),
-    ] as const;
-
-    const rainbowWebIndex = isSupportedOnRainbowWeb ? 0 : -1;
-    const blockExplorerIndex = rainbowWebIndex + 1;
-    const photoDownloadIndex = isPhotoDownloadAvailable
-      ? blockExplorerIndex + 1
-      : blockExplorerIndex;
-    const copyTokenIndex = photoDownloadIndex + 1;
-    const hideTokenIndex = copyTokenIndex + 1;
-    const refreshIndex = hideTokenIndex + 1;
-
-    showActionSheetWithOptions(
-      {
-        options: androidContractActions,
-        showSeparators: true,
-        title: '',
-      },
-      (idx: number) => {
-        if (idx === rainbowWebIndex) {
-          Linking.openURL(rainbowWebUrl);
-        } else if (idx === blockExplorerIndex) {
-          ethereumUtils.openNftInBlockExplorer(
-            // @ts-expect-error address could be undefined?
-            asset.asset_contract.address,
-            asset.id,
-            asset.network
-          );
-        } else if (idx === photoDownloadIndex) {
-          saveToCameraRoll(getFullResUrl(asset.image_original_url));
-        } else if (idx === copyTokenIndex) {
-          setClipboard(asset.id);
-        } else if (idx === hideTokenIndex) {
-          if (isHiddenAsset) {
-            removeHiddenToken(asset);
-          } else {
-            addHiddenToken(asset);
-
-            if (isShowcaseAsset) {
-              removeShowcaseToken(asset.uniqueId);
-            }
-          }
-
-          goBack();
-        } else if (idx === refreshIndex) {
-          refreshNFTContractMetadata(asset).then(onRefresh);
-        }
-      }
-    );
-  }, [
-    asset,
-    isSupportedOnRainbowWeb,
-    isPhotoDownloadAvailable,
-    isModificationActionsEnabled,
-    isHiddenAsset,
-    rainbowWebUrl,
-    setClipboard,
-    goBack,
-    removeHiddenToken,
-    addHiddenToken,
-    isShowcaseAsset,
-    removeShowcaseToken,
-    onRefresh,
-  ]);
-
   const overflowMenuHitSlop: Space = '15px (Deprecated)';
   const familyNameHitSlop: Space = '19px (Deprecated)';
+
+  const assetMenuOptions = useMemo(() => {
+    return (
+      assetMenuConfig?.menuItems
+        ?.filter((item): item is MenuActionConfig => 'actionTitle' in item)
+        .map((item: MenuActionConfig) => item.actionTitle) ?? []
+    );
+  }, [assetMenuConfig]);
 
   return (
     <Stack space="15px (Deprecated)">
@@ -580,26 +500,55 @@ const UniqueTokenExpandedStateHeader = ({
         </Heading>
         <Column width="content">
           <Bleed space={overflowMenuHitSlop}>
-            <ContextMenuButton
-              menuConfig={assetMenuConfig}
-              {...(android ? { onPress: onPressAndroidAsset } : {})}
-              isMenuPrimaryAction
-              onPressMenuItem={handlePressAssetMenuItem}
-              testID="unique-token-expanded-state-context-menu-button"
-              useActionSheetFallback={false}
-            >
-              <ButtonPressAnimation scaleTo={0.75}>
-                <Inset space={overflowMenuHitSlop}>
-                  <Text
-                    color="accent"
-                    size="23px / 27px (Deprecated)"
-                    weight="heavy"
-                  >
-                    􀍡
-                  </Text>
-                </Inset>
-              </ButtonPressAnimation>
-            </ContextMenuButton>
+            {/* NOTE: Necessary since other context menu overflows off screen on android */}
+            {IS_ANDROID && (
+              <ContextCircleButton
+                options={assetMenuOptions}
+                onPressActionSheet={(index: number) => {
+                  const actionItems = (assetMenuConfig?.menuItems || []).filter(
+                    (item): item is MenuActionConfig => 'actionTitle' in item
+                  );
+                  const actionKey: MenuActionConfig = actionItems[index];
+                  if (!actionKey) return;
+                  handlePressAssetMenuItem({
+                    nativeEvent: { actionKey: actionKey.actionKey },
+                  });
+                }}
+              >
+                <ButtonPressAnimation scaleTo={0.75}>
+                  <Inset space={overflowMenuHitSlop}>
+                    <Text
+                      color="accent"
+                      size="23px / 27px (Deprecated)"
+                      weight="heavy"
+                    >
+                      􀍡
+                    </Text>
+                  </Inset>
+                </ButtonPressAnimation>
+              </ContextCircleButton>
+            )}
+            {IS_IOS && (
+              <ContextMenuButton
+                menuConfig={assetMenuConfig}
+                isMenuPrimaryAction
+                onPressMenuItem={handlePressAssetMenuItem}
+                testID="unique-token-expanded-state-context-menu-button"
+                useActionSheetFallback={false}
+              >
+                <ButtonPressAnimation scaleTo={0.75}>
+                  <Inset space={overflowMenuHitSlop}>
+                    <Text
+                      color="accent"
+                      size="23px / 27px (Deprecated)"
+                      weight="heavy"
+                    >
+                      􀍡
+                    </Text>
+                  </Inset>
+                </ButtonPressAnimation>
+              </ContextMenuButton>
+            )}
           </Bleed>
         </Column>
       </Columns>
@@ -607,7 +556,9 @@ const UniqueTokenExpandedStateHeader = ({
         <Bleed space={familyNameHitSlop}>
           <ContextMenuButton
             menuConfig={familyMenuConfig}
-            {...(android ? { onPress: onPressAndroidFamily } : {})}
+            {...(android
+              ? { onPress: onPressAndroidFamily, isAnchoredToRight: true }
+              : {})}
             isMenuPrimaryAction
             onPressMenuItem={handlePressFamilyMenuItem}
             useActionSheetFallback={false}
