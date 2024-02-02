@@ -5,7 +5,7 @@ import { toFixedDecimals } from '@/helpers/utilities';
 const formatPercentChange = (change = 0) => toFixedDecimals(change, 2);
 
 export default function useChartDataLabels({ asset, chartType, points }: any) {
-  const latestPrice = asset?.native?.price?.amount;
+  const latestPrice = asset?.price?.value;
 
   const getPercentChangeForPrice = useCallback(
     (startPrice: number) => {

@@ -58,6 +58,7 @@ import { getNetworkObj } from '@/networks';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { bigNumberFormat } from '@/helpers/bigNumberFormat';
 import { greaterThanOrEqualTo } from '@/helpers/utilities';
+import { Network } from '@/networks/types';
 
 const defaultCarouselHeight = 60;
 const baseHeight =
@@ -204,16 +205,19 @@ export default function ChartExpandedState({ asset }) {
   const hasBalance = asset?.balance;
   const assetWithPrice = useMemo(() => {
     return hasBalance
-      ? { ...asset }
+      ? asset
       : genericAsset
       ? {
           ...genericAsset,
           network: asset.network,
           address: asset.address,
+          mainnetAddress:
+            asset?.networks?.[getNetworkObj(Network.mainnet)]?.address,
         }
-      : { ...asset };
+      : asset;
   }, [asset, genericAsset, hasBalance]);
 
+  console.log({ assetWithPrice });
   const isL2 = useMemo(() => isL2Network(assetWithPrice.network), [
     assetWithPrice.network,
   ]);

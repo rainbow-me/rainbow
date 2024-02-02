@@ -193,6 +193,9 @@ export default function DiscoverSearch() {
         });
       } else {
         const asset = ethereumUtils.getAccountAsset(item.uniqueId);
+        if (item.favorite) {
+          item.network = Network.mainnet;
+        }
         navigate(Routes.EXPANDED_ASSET_SHEET, {
           asset: asset || item,
           fromDiscover: true,
