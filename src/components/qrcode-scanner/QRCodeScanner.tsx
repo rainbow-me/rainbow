@@ -1,6 +1,10 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
-import { Camera, CodeScanner, useCameraDevice } from 'react-native-vision-camera';
+import {
+  Camera,
+  CodeScanner,
+  useCameraDevice,
+} from 'react-native-vision-camera';
 import Animated from 'react-native-reanimated';
 import { ErrorText } from '../text';
 import QRCodeScannerNeedsAuthorization from './QRCodeScannerNeedsAuthorization';
