@@ -37,12 +37,6 @@ import { AppState } from '@/redux/store';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { usePositions } from '@/resources/defi/PositionsQuery';
 import styled from '@/styled-thing';
-import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
-import {
-  BNB_MAINNET_ADDRESS,
-  ETH_ADDRESS,
-  MATIC_MAINNET_ADDRESS,
-} from '@/references';
 
 const WalletPage = styled(Page)({
   ...position.sizeAsObject('100%'),
@@ -87,24 +81,6 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
       initializeAccountData();
     });
   }, [dispatch, initializeAccountData, loadAccountData, resetAccountState]);
-
-  // keep native assets up to date
-
-  useExternalToken({
-    address: BNB_MAINNET_ADDRESS,
-    network: Network.mainnet,
-    currency: nativeCurrency,
-  });
-  useExternalToken({
-    address: ETH_ADDRESS,
-    network: Network.mainnet,
-    currency: nativeCurrency,
-  });
-  useExternalToken({
-    address: MATIC_MAINNET_ADDRESS,
-    network: Network.mainnet,
-    currency: nativeCurrency,
-  });
 
   useEffect(() => {
     const supportedNetworks = [Network.mainnet];
