@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import useAccountSettings from './useAccountSettings';
-import { AssetType, SwappableAsset } from '@/entities';
+import { SwappableAsset } from '@/entities';
 import { Network } from '@/helpers';
 
 import { useTheme } from '@/theme';
@@ -40,9 +40,7 @@ export default function usePriceImpactDetails(
         (tradeDetails as CrosschainQuote)?.fromChainId
       )
     : currentNetwork;
-  const buyNetwork = ethereumUtils.getNetworkFromType(
-    outputCurrency?.type || AssetType.token
-  );
+  const buyNetwork = outputCurrency?.network || currentNetwork;
   const sellNativeAsset = useNativeAssetForNetwork(sellNetwork);
   const buyNativeAsset = useNativeAssetForNetwork(buyNetwork);
 
@@ -65,8 +63,9 @@ export default function usePriceImpactDetails(
 
   const inputNativeAmount = useMemo(() => {
     if (isWrapOrUnwrap) {
-      if (!tradeDetails?.sellAmount || !inputCurrency?.price?.value)
-        return null;
+      if (!tradeDetails?.sellAmount || !inputCurrency?.price?.value) {
+        return '';
+      }
 
       return convertRawAmountToNativeDisplay(
         tradeDetails?.sellAmount?.toString(),
@@ -95,7 +94,9 @@ export default function usePriceImpactDetails(
 
   const outputNativeAmount = useMemo(() => {
     if (isWrapOrUnwrap) {
-      if (!tradeDetails?.buyAmount || !inputCurrency?.price?.value) return null;
+      if (!tradeDetails?.buyAmount || !inputCurrency?.price?.value) {
+        return '';
+      }
       return convertRawAmountToNativeDisplay(
         tradeDetails?.buyAmount?.toString(),
         inputCurrency?.decimals || 18,
@@ -146,7 +147,6 @@ export default function usePriceImpactDetails(
       outputNativeAmount,
     };
   } else if (greaterThanOrEqualTo(priceImpact, PriceImpactWarningThreshold)) {
-    console.log({ inputNativeAmount, outputNativeAmount });
     return {
       priceImpact: {
         type: SwapPriceImpactType.high,

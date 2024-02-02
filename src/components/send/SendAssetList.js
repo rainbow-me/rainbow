@@ -43,7 +43,6 @@ export default class SendAssetList extends React.Component {
     const {
       hiddenCoins,
       nativeCurrency,
-      network,
       pinnedCoins,
       sortedAssets,
       uniqueTokens,
@@ -249,6 +248,7 @@ export default class SendAssetList extends React.Component {
   balancesRenderItem = item => (
     <SendCoinRow
       {...item}
+      item={item}
       key={item.uniqueId}
       onPress={() => this.props.onSelectAsset(item)}
       rowHeight={rowHeight}
@@ -264,6 +264,7 @@ export default class SendAssetList extends React.Component {
         rowHeight={rowHeight}
         testID="send-shitcoin"
         top={0}
+        item={token}
         {...token}
       />
     ));

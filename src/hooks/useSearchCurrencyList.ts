@@ -7,7 +7,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTheme } from '../theme/ThemeContext';
 import usePrevious from './usePrevious';
 import {
-  AssetType,
   RainbowToken,
   RainbowToken as RT,
   TokenSearchTokenListId,
@@ -30,6 +29,7 @@ import { Network } from '@/helpers';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { IS_TEST } from '@/env';
 import { useFavorites } from '@/resources/favorites';
+import { getUniqueId } from '@/utils/ethereumUtils';
 
 const MAINNET_CHAINID = 1;
 type swapCurrencyListType =
@@ -132,11 +132,12 @@ const useSearchCurrencyList = (
   });
 
   const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
+
   const { inputCurrency } = useSwapCurrencies();
-  const previousInputCurrencyType = usePrevious(inputCurrency?.type);
+  const previousInputCurrencyNetwork = usePrevious(inputCurrency?.network);
   const inputChainId = useMemo(
-    () => ethereumUtils.getChainIdFromType(inputCurrency?.type),
-    [inputCurrency?.type]
+    () => ethereumUtils.getChainIdFromNetwork(inputCurrency?.network),
+    [inputCurrency?.network]
   );
   const isCrosschainSearch = useMemo(() => {
     if (
@@ -163,7 +164,6 @@ const useSearchCurrencyList = (
         .map(token => {
           const t: RT = {
             ...token,
-            type: token?.type || AssetType.token,
             address: token?.address || token.uniqueId.toLowerCase(),
           } as RT;
 
@@ -235,10 +235,8 @@ const useSearchCurrencyList = (
               tokenContract.decimals(),
               getAddress(searchQuery),
             ]);
-            const uniqueId =
-              chainId === ChainId.mainnet ? address : `${address}_${network}`;
-            const type =
-              chainId === ChainId.mainnet ? AssetType.token : network;
+            const uniqueId = getUniqueId(address, network);
+
             return [
               {
                 decimals,
@@ -254,7 +252,7 @@ const useSearchCurrencyList = (
                   },
                 },
                 symbol,
-                type,
+                network,
                 uniqueId,
               } as RainbowToken,
             ];
@@ -421,7 +419,7 @@ const useSearchCurrencyList = (
         (searching && !wasSearching) ||
         (searching && previousSearchQuery !== searchQuery) ||
         searchChainId !== previousChainId ||
-        inputCurrency?.type !== previousInputCurrencyType
+        inputCurrency?.network !== previousInputCurrencyNetwork
       ) {
         if (searchChainId === MAINNET_CHAINID) {
           search();
@@ -443,7 +441,7 @@ const useSearchCurrencyList = (
     searchQuery,
     searchChainId,
     isCrosschainSearch,
-    inputCurrency?.type,
+    inputCurrency?.network,
   ]);
 
   const { colors } = useTheme();
@@ -455,7 +453,7 @@ const useSearchCurrencyList = (
       ? verifiedAssets.find(
           asset =>
             isLowerCaseMatch(asset?.name, inputCurrency?.name) &&
-            asset?.type !== inputCurrency?.type
+            asset?.network !== inputCurrency?.network
         )
       : null;
     if (searching) {
@@ -497,10 +495,7 @@ const useSearchCurrencyList = (
       if (inputCurrency?.name && verifiedAssets.length) {
         if (bridgeAsset) {
           list.push({
-            color:
-              colors.networkColors[
-                ethereumUtils.getNetworkFromType(bridgeAsset.type)
-              ],
+            color: colors.networkColors[bridgeAsset.network],
             data: [bridgeAsset],
             key: 'bridgeAsset',
             title: lang.t(
@@ -555,10 +550,7 @@ const useSearchCurrencyList = (
         );
         if (bridgeAsset) {
           list.push({
-            color:
-              colors.networkColors[
-                ethereumUtils.getNetworkFromType(bridgeAsset.type)
-              ],
+            color: colors.networkColors[bridgeAsset.network],
             data: [bridgeAsset],
             key: 'bridgeAsset',
             title: lang.t(
@@ -604,7 +596,7 @@ const useSearchCurrencyList = (
     inputCurrency?.name,
     colors.networkColors,
     isCrosschainSearch,
-    inputCurrency?.type,
+    inputCurrency?.network,
   ]);
 
   const crosschainExactMatches = useMemo(() => {

@@ -143,12 +143,7 @@ export default React.memo(function TransactionCoinRow({
                 />
               </View>
               {item.network !== Network.mainnet && (
-                <ChainBadge
-                  assetType={ethereumUtils.getAssetTypeFromNetwork(
-                    item.network
-                  )}
-                  badgeYPosition={10}
-                />
+                <ChainBadge network={item.network} badgeYPosition={10} />
               )}
             </View>
           ) : (

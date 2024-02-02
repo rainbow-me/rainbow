@@ -31,9 +31,7 @@ export default function useSwapInputHandlers() {
   const updateMaxInputAmount = useCallback(() => {
     const inputCurrencyAddress = inputCurrency?.address;
     const inputCurrencyUniqueId = inputCurrency?.uniqueId;
-    const inputCurrencyNetwork = ethereumUtils.getNetworkFromType(
-      inputCurrency?.type
-    );
+    const inputCurrencyNetwork = inputCurrency?.network;
 
     const accountAsset = ethereumUtils.getAccountAsset(inputCurrencyUniqueId);
     const oldAmount = accountAsset?.balance?.amount ?? '0';
@@ -76,10 +74,10 @@ export default function useSwapInputHandlers() {
   }, [
     dispatch,
     inputCurrency?.address,
-    inputCurrency?.type,
+    inputCurrency?.network,
     inputCurrency?.uniqueId,
+    l1GasFeeOptimism,
     selectedGasFee,
-    type,
   ]);
 
   const updateInputAmount = useCallback(

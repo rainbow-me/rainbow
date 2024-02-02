@@ -132,7 +132,7 @@ export const updateSwapInputCurrency = (
     dispatch({ payload: newInputCurrency, type: SWAP_UPDATE_INPUT_CURRENCY });
     if (
       type === ExchangeModalTypes.swap &&
-      newInputCurrency?.type !== outputCurrency?.type &&
+      newInputCurrency?.network !== outputCurrency?.network &&
       newInputCurrency &&
       !ignoreTypeCheck
     ) {
@@ -161,7 +161,7 @@ export const updateSwapOutputCurrency = (
   } else {
     if (
       type === ExchangeModalTypes.swap &&
-      newOutputCurrency?.type !== inputCurrency?.type &&
+      newOutputCurrency?.network !== inputCurrency?.network &&
       newOutputCurrency &&
       !ignoreTypeCheck
     ) {

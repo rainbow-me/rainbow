@@ -8,7 +8,7 @@ import {
   QueryFunctionResult,
 } from '@/react-query';
 
-import { arcDevClient } from '@/graphql';
+import { arcClient } from '@/graphql';
 
 // Set a default stale time of 60 seconds so we don't over-fetch
 const defaultStaleTime = 60_000;
@@ -31,7 +31,7 @@ type CardQueryKey = ReturnType<typeof cardQueryKey>;
 async function cardQueryFunction({
   queryKey: [{ id }],
 }: QueryFunctionArgs<typeof cardQueryKey>) {
-  const data = await arcDevClient.getCard({ id });
+  const data = await arcClient.getCard({ id });
   return data;
 }
 
