@@ -34,15 +34,19 @@ export interface RainbowTransaction {
       }
     | undefined
   >;
+  contract?: {
+    name: string;
+    iconUrl?: string;
+  };
   direction?: TransactionDirection;
-  description: string;
+  description?: string;
   data?: string; // for pending tx
   from: EthereumAddress | null;
   gasLimit?: BigNumberish;
   gasPrice?: BigNumberish;
   maxFeePerGas?: BigNumberish;
   maxPriorityFeePerGas?: BigNumberish;
-  hash?: string | null;
+  hash: string;
   minedAt?: number | null;
   name?: string | null;
   native?: {
@@ -87,6 +91,38 @@ export interface RainbowTransaction {
   }; // etc { name: FiatProviderName.Ramp, orderId: string }
 }
 
+export type MinedTransaction = RainbowTransaction & {
+  status: 'confirmed' | 'failed';
+  flashbotsStatus?: 'CANCELLED' | 'FAILED' | 'INCLUDED';
+  blockNumber: number;
+  minedAt: number;
+  confirmations: number;
+  gasUsed: string;
+};
+
+export type NewTransaction = Omit<RainbowTransaction, 'title' | 'changes'> & {
+  gasLimit?: BigNumberish;
+  changes?: Array<
+    | {
+        asset: ParsedAddressAsset;
+        direction: TransactionDirection;
+        address_from?: string;
+        address_to?: string;
+        value?: number | string;
+        price?: number | string;
+      }
+    | undefined
+  >;
+
+  swap?: {
+    type: SwapType;
+    fromChainId: ChainId;
+    toChainId: ChainId;
+    isBridge: boolean;
+  };
+  meta?: SwapMetadata;
+};
+
 export interface RainbowTransactionFee {
   value: {
     amount: string;
@@ -96,46 +132,6 @@ export interface RainbowTransactionFee {
     amount: string;
     display: string;
   };
-}
-
-export interface NewTransaction {
-  amount: string | null;
-  asset: ParsedAddressAsset | null;
-  dappName?: string; // for walletconnect
-  contract?: {
-    name: string;
-    iconUrl?: string;
-  };
-  data?: string;
-  from: EthereumAddress | null;
-  gasLimit?: BigNumberish;
-  gasPrice?: BigNumberish;
-  maxFeePerGas?: BigNumberish;
-  maxPriorityFeePerGas?: BigNumberish;
-  hash: string | null;
-  network?: Network;
-  nft?: UniqueAsset;
-  nonce: number | null;
-  protocol?: ProtocolType | null;
-  flashbots?: boolean;
-  ensCommitRegistrationName?: string;
-  ensRegistration?: boolean;
-  sourceAmount?: string; // for purchases
-  status?: 'pending';
-  timestamp?: number; // for purchases
-  to: EthereumAddress | null;
-  transferId?: string; // for purchases
-  type?: TransactionType;
-  value?: BigNumberish;
-  txTo?: EthereumAddress | null;
-  swap?: {
-    type: SwapType;
-    fromChainId: ChainId;
-    toChainId: ChainId;
-    isBridge: boolean;
-  };
-  meta?: SwapMetadata;
-  fiatProvider?: RainbowTransaction['fiatProvider'];
 }
 
 export interface NewTransactionOrAddCashTransaction

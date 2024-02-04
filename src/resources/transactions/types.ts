@@ -79,10 +79,10 @@ export type TxHash = `0x${string}`;
 type BaseTransaction = {
   hash: TxHash;
   nonce: number; // -2 when not from the wallet user
-  chainId: ChainId;
   from: string;
   to?: string; // it may not have a to if it's a contract deployment (covalent)
   data?: string;
+  network: Network;
 
   changes?: Array<
     | {
@@ -128,7 +128,7 @@ export type PendingTransaction = BaseTransaction & {
   status: 'pending';
 };
 
-export type MinedTransaction = BaseTransaction & {
+type MinedTransaction = BaseTransaction & {
   status: 'confirmed' | 'failed';
   flashbotsStatus?: 'CANCELLED' | 'FAILED' | 'INCLUDED';
   blockNumber: number;
@@ -137,7 +137,7 @@ export type MinedTransaction = BaseTransaction & {
   gasUsed: string;
 };
 
-export type NewTransaction = Omit<PendingTransaction, 'title' | 'changes'> & {
+type NewTransaction = Omit<PendingTransaction, 'title' | 'changes'> & {
   changes?: Array<
     | {
         direction: TransactionDirection;

@@ -1,55 +1,32 @@
-import {
-  compact,
-  isEmpty,
-  isObject,
-  orderBy,
-  partition,
-  reverse,
-  slice,
-  toUpper,
-  uniqBy,
-  upperFirst,
-} from 'lodash';
+import { slice } from 'lodash';
 import { parseAllTxnsOnReceive } from '../config/debug';
 import {
-  EthereumAddress,
   NativeCurrencyKey,
   RainbowTransaction,
-  TransactionDirection,
-  TransactionStatus,
-  ZerionAsset,
   ZerionTransaction,
-  ZerionTransactionChange,
 } from '@/entities';
-import { getTransactionMethodName } from '@/handlers/transactions';
-import { isL2Network } from '@/handlers/web3';
-import { Network } from '@/helpers/networkTypes';
-import { ETH_ADDRESS } from '@/references';
+
 import {
   convertAmountAndPriceToNativeDisplay,
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
   toFixedDecimals,
 } from '@/helpers/utilities';
-import { ethereumUtils, getTokenMetadata } from '@/utils';
+
 import {
-  RAINBOW_ROUTER_CONTRACT_ADDRESS,
-  SOCKET_REGISTRY_CONTRACT_ADDRESSESS,
-} from '@rainbow-me/swaps';
-import { RainbowTransactionFee } from '@/entities/transactions/transaction';
-import * as i18n from '@/languages';
+  NewTransaction,
+  RainbowTransactionFee,
+} from '@/entities/transactions/transaction';
 import { parseAddressAsset, parseAsset } from '@/resources/assets/assets';
-import { AddysAsset, ParsedAsset } from '@/resources/assets/types';
+import { ParsedAsset } from '@/resources/assets/types';
 import { transactionTypes } from '@/entities/transactions/transactionType';
 import {
   PaginatedTransactionsApiResponse,
   TransactionApiResponse,
-  TransactionChange,
   TransactionChanges,
   TransactionType,
   TransactionWithChangesType,
 } from '@/resources/transactions/types';
-import BigNumber from 'bignumber.js';
 
 const LAST_TXN_HASH_BUFFER = 20;
 
@@ -130,12 +107,6 @@ export const parseTransaction = async (
     ? meta.type
     : 'contract_interaction';
 
-  if (type === 'mint') {
-    console.log('MINT');
-    changes?.map(change => {
-      console.log(change?.asset);
-    });
-  }
   const asset: RainbowTransaction['asset'] = meta.asset?.asset_code
     ? parseAsset({ asset: meta.asset, address: meta.asset.asset_code })
     : getAssetFromChanges(changes, type);
@@ -191,6 +162,31 @@ export const parseTransaction = async (
   } as RainbowTransaction;
 };
 
+export const parseNewTransaction = (tx: NewTransaction): RainbowTransaction => {
+  const asset = tx?.changes?.[0]?.asset || tx.asset;
+  const methodName = 'Unknown method';
+
+  return {
+    ...tx,
+    status: 'pending',
+    pending: true,
+    data: tx.data,
+    title: `transactions.${tx.type}.${tx.status}`,
+    description: asset?.name || methodName,
+    from: tx.from,
+    changes: tx.changes,
+    hash: tx.hash,
+    nonce: tx.nonce,
+    protocol: tx.protocol,
+    to: tx.to,
+    type: tx.type,
+    flashbots: tx.flashbots,
+    gasPrice: tx.gasPrice,
+    maxFeePerGas: tx.maxFeePerGas,
+    maxPriorityFeePerGas: tx.maxPriorityFeePerGas,
+  };
+};
+
 /**
  * Helper for retrieving tx fee sent by zerion, works only for mainnet only
  */
@@ -228,7 +224,7 @@ export const getDescription = (
   meta: PaginatedTransactionsApiResponse['meta']
 ) => {
   if (asset?.type === 'nft') return asset.symbol || asset.name;
-  if (type === 'cancel') return i18n.t('transactions.cancelled');
+  if (type === 'cancel') return 'transactions.cancelled';
 
   return asset?.name || meta.action;
 };
