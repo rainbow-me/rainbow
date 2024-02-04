@@ -6,7 +6,11 @@ import {
 } from 'react-native-dotenv';
 import { Rap, RapActionTypes, RapENSActionParameters } from '../common';
 import { analytics } from '@/analytics';
-import { ENSRegistrationRecords, TransactionGasParamAmounts } from '@/entities';
+import {
+  ENSRegistrationRecords,
+  NewTransaction,
+  TransactionGasParamAmounts,
+} from '@/entities';
 import {
   estimateENSTransactionGasLimit,
   formatRecordsForTransaction,
@@ -18,7 +22,7 @@ import {
   getENSExecutionDetails,
   REGISTRATION_MODES,
 } from '@/helpers/ens';
-import { dataAddNewTransaction } from '@/redux/data';
+
 import {
   saveCommitRegistrationParameters,
   updateTransactionRegistrationParameters,
@@ -27,6 +31,8 @@ import store from '@/redux/store';
 import { ethereumUtils } from '@/utils';
 import logger from '@/utils/logger';
 import { parseGasParamAmounts } from '@/parsers';
+import { addNewTransaction } from '@/state/pendingTransactionsStore';
+import { Network } from '@/networks/types';
 
 const executeCommit = async (
   name?: string,
@@ -552,28 +558,35 @@ const ensAction = async (
   const nativeAsset = await ethereumUtils.getNetworkNativeAsset(
     NetworkTypes.mainnet
   );
-  const newTransaction = {
-    amount: 0,
+  const newTransaction: NewTransaction = {
     asset: nativeAsset,
     data: tx.data,
     ensCommitRegistrationName:
       type === ENSRegistrationTransactionType.COMMIT ? name : undefined,
     ensRegistration: true,
     from: ownerAddress,
-    gasLimit,
     hash: tx?.hash,
     maxFeePerGas,
     maxPriorityFeePerGas,
     nonce: tx?.nonce,
+    type: 'contract_interaction',
+    contract: {
+      name: 'ENS',
+      iconUrl: 'https://ens.domains/images/favicon-32x32.png',
+    },
     to: tx?.to,
     value: toHex(tx.value),
     network: NetworkTypes.mainnet,
+    status: 'pending',
+    pending: true,
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
-  // @ts-expect-error Since src/redux/data.js is not typed yet, `accountAddress`
-  // being a string conflicts with the inferred type of "null" for the second
-  // parameter.
-  await dispatch(dataAddNewTransaction(newTransaction, ownerAddress));
+
+  addNewTransaction({
+    address: ownerAddress,
+    transaction: newTransaction,
+    network: Network.mainnet,
+  });
   return tx?.nonce;
 };
 

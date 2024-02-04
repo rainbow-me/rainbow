@@ -14,16 +14,18 @@ import {
   RapExchangeActionParameters,
   UnlockActionParameters,
 } from '../common';
-import { Asset, TransactionStatus, TransactionType } from '@/entities';
+import { Asset, NewTransaction } from '@/entities';
 import { getProviderForNetwork, toHex } from '@/handlers/web3';
 import { parseGasParamAmounts } from '@/parsers';
-import { dataAddNewTransaction } from '@/redux/data';
+
 import store from '@/redux/store';
 import { erc20ABI, ETH_ADDRESS, ethUnits } from '@/references';
 import { convertAmountToRawAmount, greaterThan } from '@/helpers/utilities';
 import { AllowancesCache, ethereumUtils } from '@/utils';
 import { overrideWithFastSpeedIfNeeded } from '../utils';
 import logger from '@/utils/logger';
+import { ParsedAsset } from '@/resources/assets/types';
+import { addNewTransaction } from '@/state/pendingTransactionsStore';
 
 export const estimateApprove = async (
   owner: string,
@@ -196,26 +198,25 @@ const unlock = async (
 
   logger.log(`[${actionName}] response`, approval);
 
-  const newTransaction = {
-    amount: 0,
-    asset: assetToUnlock,
+  const newTransaction: NewTransaction = {
+    asset: assetToUnlock as ParsedAsset,
     data: approval.data,
     from: accountAddress,
     gasLimit,
     hash: approval?.hash,
+    type: 'approve',
     network: ethereumUtils.getNetworkFromChainId(Number(chainId)),
     nonce: approval?.nonce,
-    status: TransactionStatus.approving,
     to: approval?.to,
-    type: TransactionType.authorize,
     value: toHex(approval.value),
     ...gasParams,
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
-  // @ts-expect-error Since src/redux/data.js is not typed yet, `accountAddress`
-  // being a string conflicts with the inferred type of "null" for the second
-  // parameter.
-  await dispatch(dataAddNewTransaction(newTransaction, accountAddress));
+  addNewTransaction({
+    address: accountAddress,
+    transaction: newTransaction,
+    network: newTransaction.network,
+  });
   return approval?.nonce;
 };
 

@@ -53,7 +53,7 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
-import { ParsedAddressAsset } from '@/entities';
+import { NewTransaction, ParsedAddressAsset } from '@/entities';
 import { useNavigation } from '@/navigation';
 
 import { useTheme } from '@/theme';
@@ -129,7 +129,6 @@ import {
 } from '@/model/wallet';
 
 import { analytics } from '@/analytics';
-import { dataAddNewTransaction } from '@/redux/data';
 import { handleSessionRequestResponse } from '@/walletConnect';
 import {
   WalletconnectResultType,
@@ -143,6 +142,8 @@ import { isAddress } from '@ethersproject/address';
 import { methodRegistryLookupAndParse } from '@/utils/methodRegistry';
 import { sanitizeTypedData } from '@/utils/signingUtils';
 import { hexToNumber, isHex } from 'viem';
+import { addNewTransaction } from '@/state/pendingTransactionsStore';
+import { account } from '@/storage';
 
 const COLLAPSED_CARD_HEIGHT = 56;
 const MAX_CARD_HEIGHT = 176;
@@ -970,25 +971,33 @@ export const SignTransactionSheet = () => {
         callback({ result: sendInsteadOfSign ? sendResult.hash : signResult });
       }
       let txSavedInCurrentWallet = false;
-      let txDetails: any = null;
       const displayDetails = transactionDetails.displayDetails;
-      if (sendInsteadOfSign) {
-        txDetails = {
-          amount: displayDetails?.request?.value ?? 0,
+
+      if (sendInsteadOfSign && sendResult?.hash) {
+        const txDetails: NewTransaction = {
           asset: nativeAsset || displayDetails?.request?.asset,
-          dappName: displayDetails.dappName,
+          contract: {
+            name: displayDetails.dappName,
+            iconUrl: displayDetails.dappIcon,
+          },
           data: sendResult.data,
           from: displayDetails?.request?.from,
           gasLimit,
           hash: sendResult.hash,
-          network: currentNetwork,
+          network: currentNetwork || Network.mainnet,
           nonce: sendResult.nonce,
           to: displayDetails?.request?.to,
           value: sendResult.value.toString(),
+          pending: true,
+          type: 'contract_interaction',
           ...gasParams,
         };
         if (accountAddress?.toLowerCase() === txDetails.from?.toLowerCase()) {
-          dispatch(dataAddNewTransaction(txDetails, null, false, provider));
+          addNewTransaction({
+            transaction: txDetails,
+            network: currentNetwork || Network.mainnet,
+            address: accountAddress,
+          });
           txSavedInCurrentWallet = true;
         }
       }
@@ -1029,8 +1038,12 @@ export const SignTransactionSheet = () => {
       // we need to switch to that wallet before saving the tx
       if (!txSavedInCurrentWallet) {
         InteractionManager.runAfterInteractions(async () => {
-          await switchToWalletWithAddress(txDetails.from);
-          dispatch(dataAddNewTransaction(txDetails, null, false, provider));
+          await switchToWalletWithAddress(txDetails.from!);
+          addNewTransaction({
+            transaction: txDetails,
+            network: currentNetwork || Network.mainnet,
+            address: txDetails?.from!,
+          });
         });
       }
     } else {

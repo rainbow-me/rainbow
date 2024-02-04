@@ -89,6 +89,7 @@ import { NoResultsType } from '@/components/list/NoResults';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import { Wallet } from '@ethersproject/wallet';
 import { getNetworkObj } from '@/networks';
+import { addNewTransaction } from '@/state/pendingTransactionsStore';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = IS_IOS
@@ -123,7 +124,6 @@ const validateRecipient = toAddress => {
 export default function SendSheet(props) {
   const dispatch = useDispatch();
   const { goBack, navigate } = useNavigation();
-  const { dataAddNewTransaction } = useTransactionConfirmation();
   const { data: sortedAssets } = useSortedUserAssets();
   const {
     gasFeeParamsBySpeed,
@@ -581,9 +581,14 @@ export default function SendSheet(props) {
             txDetails.data = data;
             txDetails.value = value;
             txDetails.txTo = signableTransaction.to;
-            await dispatch(
-              dataAddNewTransaction(txDetails, null, false, currentProvider)
-            );
+            txDetails.pending = true;
+            txDetails.type = 'send';
+            txDetails.status = 'pending';
+            addNewTransaction({
+              address: accountAddress,
+              network: currentNetwork,
+              transaction: txDetails,
+            });
           }
         }
       } catch (error) {
@@ -607,8 +612,6 @@ export default function SendSheet(props) {
       amountDetails.isSufficientBalance,
       currentNetwork,
       currentProvider,
-      dataAddNewTransaction,
-      dispatch,
       ensName,
       ensProfile?.data?.coinAddresses,
       ensProfile?.data?.contenthash,

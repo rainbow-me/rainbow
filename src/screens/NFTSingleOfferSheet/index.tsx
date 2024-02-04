@@ -32,7 +32,7 @@ import ConditionalWrap from 'conditional-wrap';
 import Routes from '@/navigation/routesNames';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountSettings, useGas, useWallets } from '@/hooks';
-import { TransactionStatus, TransactionType } from '@/entities';
+import { NewTransaction } from '@/entities';
 import { analyticsV2 } from '@/analytics';
 import { BigNumber } from '@ethersproject/bignumber';
 import { HoldToAuthorizeButton } from '@/components/buttons';
@@ -42,7 +42,7 @@ import { Execute, getClient } from '@reservoir0x/reservoir-sdk';
 import { privateKeyToAccount } from 'viem/accounts';
 import { createWalletClient, http } from 'viem';
 import { useDispatch } from 'react-redux';
-import { dataAddNewTransaction } from '@/redux/data';
+
 import { RainbowError, logger } from '@/logger';
 import { estimateNFTOfferGas } from '@/handlers/nftOffers';
 import { useTheme } from '@/theme';
@@ -52,6 +52,8 @@ import { CardSize } from '@/components/unique-token/CardSize';
 import { queryClient } from '@/react-query';
 import { nftOffersQueryKey } from '@/resources/reservoir/nftOffersQuery';
 import { getRainbowFeeAddress } from '@/resources/reservoir/utils';
+import { addNewTransaction } from '@/state/pendingTransactionsStore';
+import { getUniqueId } from '@/utils/ethereumUtils';
 
 const NFT_IMAGE_HEIGHT = 160;
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
@@ -350,37 +352,65 @@ export function NFTSingleOfferSheet() {
               !txsRef.current.includes(item.txHashes?.[0]) &&
               item.status === 'incomplete'
             ) {
-              let tx;
+              let tx: NewTransaction | null = null;
+              const asset = {
+                ...nft,
+                address: nft.asset_contract.address || '',
+                symbol: 'NFT',
+                decimals: 18,
+              };
               if (step.id === 'sale') {
                 tx = {
                   to: item.data?.to,
                   from: item.data?.from,
                   hash: item.txHashes[0],
-                  network: offer.network,
-                  amount: offer.netAmount.decimal,
+                  network: offer.network as Network,
                   asset: {
-                    address: offer.paymentToken.address,
-                    symbol: offer.paymentToken.symbol,
+                    ...offer.paymentToken,
+                    network: offer.network as Network,
+                    uniqueId: getUniqueId(
+                      offer.paymentToken.address,
+                      offer.network as Network
+                    ),
                   },
-                  nft,
-                  type: TransactionType.sell,
-                  status: TransactionStatus.selling,
+                  changes: [
+                    {
+                      direction: 'out',
+                      asset,
+                      value: 1,
+                    },
+                    {
+                      direction: 'in',
+                      asset: {
+                        ...offer.paymentToken,
+                        network: offer.network as Network,
+                        uniqueId: getUniqueId(
+                          offer.paymentToken.address,
+                          offer.network as Network
+                        ),
+                      },
+                      value: offer.grossAmount.raw,
+                    },
+                  ],
+                  type: 'sale',
                 };
               } else if (step.id === 'nft-approval') {
                 tx = {
                   to: item.data?.to,
                   from: item.data?.from,
                   hash: item.txHashes[0],
-                  network: offer.network,
-                  nft,
-                  type: TransactionType.authorize,
-                  status: TransactionStatus.approving,
+                  network: offer.network as Network,
+                  asset,
+                  type: 'approve',
                 };
               }
               if (tx) {
+                addNewTransaction({
+                  transaction: tx,
+                  address: accountAddress,
+                  network: offer.network as Network,
+                });
                 txsRef.current.push(tx.hash);
-                // @ts-ignore TODO: fix when we overhaul tx list, types are not good
-                dispatch(dataAddNewTransaction(tx));
               }
             } else if (
               item.status === 'complete' &&

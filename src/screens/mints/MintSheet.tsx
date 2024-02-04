@@ -14,7 +14,6 @@ import { GasSpeedButton } from '@/components/gas';
 import { Execute, getClient } from '@reservoir0x/reservoir-sdk';
 import { privateKeyToAccount } from 'viem/accounts';
 import { createWalletClient, http } from 'viem';
-import { dataAddNewTransaction } from '@/redux/data';
 import { HoldToAuthorizeButton } from '@/components/buttons';
 import Routes from '@/navigation/routesNames';
 import ImgixImage from '../../components/images/ImgixImage';
@@ -51,7 +50,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { ReservoirCollection } from '@/graphql/__generated__/arcDev';
 import { format } from 'date-fns';
-import { TransactionStatus, TransactionType } from '@/entities';
+import { NewTransaction, RainbowTransaction } from '@/entities';
 import * as i18n from '@/languages';
 import { analyticsV2 } from '@/analytics';
 import { event } from '@/analytics/event';
@@ -78,6 +77,8 @@ import { QuantityButton } from './components/QuantityButton';
 import { estimateGas, getProviderForNetwork } from '@/handlers/web3';
 import { getRainbowFeeAddress } from '@/resources/reservoir/utils';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import { addNewTransaction } from '@/state/pendingTransactionsStore';
+import { getUniqueId } from '@/utils/ethereumUtils';
 
 const NFT_IMAGE_HEIGHT = 250;
 // inset * 2 -> 28 *2
@@ -353,7 +354,7 @@ const MintSheet = () => {
                 // add l1Fee for OP Chains
                 if (getNetworkObj(currentNetwork).gas.OptimismTxFee) {
                   l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
-                    tx,
+                    tx as RainbowTransaction,
                     provider
                   );
                 }
@@ -488,31 +489,60 @@ const MintSheet = () => {
                 txRef.current !== item.txHashes?.[0] &&
                 item.status === 'incomplete'
               ) {
-                const tx = {
+                const asset = {
+                  type: 'nft',
+                  icon_url: imageUrl,
+                  address: mintCollection.id || '',
+                  network: currentNetwork,
+                  name: mintCollection.name || '',
+                  decimals: 18,
+                  symbol: 'NFT',
+                  uniqueId: `${mintCollection.id}-${item.txHashes[0]}`,
+                };
+
+                const paymentAsset = {
+                  type: 'nft',
+                  address: ETH_ADDRESS,
+                  network: currentNetwork,
+                  name:
+                    mintCollection.publicMintInfo?.price?.currency?.name ||
+                    'Ethereum',
+                  decimals:
+                    mintCollection.publicMintInfo?.price?.currency?.decimals ||
+                    18,
+                  symbol: ETH_SYMBOL,
+                  uniqueId: getUniqueId(ETH_ADDRESS, currentNetwork),
+                };
+
+                const tx: NewTransaction = {
                   to: item.data?.to,
                   from: item.data?.from,
                   hash: item.txHashes[0],
                   network: currentNetwork,
-                  amount: mintPriceAmount,
-                  asset: {
-                    address: ETH_ADDRESS,
-                    symbol: ETH_SYMBOL,
-                  },
-                  nft: {
-                    predominantColor: imageColor,
-                    collection: {
-                      image: imageUrl,
+
+                  changes: [
+                    {
+                      direction: 'out',
+                      asset: paymentAsset,
+                      value: mintPriceAmount,
                     },
-                    lowResUrl: imageUrl,
-                    name: mintCollection.name,
-                  },
-                  type: TransactionType.mint,
-                  status: TransactionStatus.minting,
+                    ...Array(quantity).fill({
+                      direction: 'in',
+                      asset,
+                    }),
+                  ],
+                  description: asset.name,
+                  asset,
+                  type: 'mint',
                 };
 
                 txRef.current = tx.hash;
-                // @ts-expect-error TODO: fix when we overhaul tx list, types are not good
-                dispatch(dataAddNewTransaction(tx));
+
+                addNewTransaction({
+                  transaction: tx,
+                  address: accountAddress,
+                  network: currentNetwork,
+                });
                 analyticsV2.track(event.mintsMintedNFT, {
                   collectionName: mintCollection.name || '',
                   contract: mintCollection.id || '',
@@ -543,14 +573,14 @@ const MintSheet = () => {
   }, [
     accountAddress,
     currentNetwork,
-    dispatch,
-    imageColor,
     imageUrl,
     isMintingAvailable,
     isReadOnlyWallet,
     mintCollection.chainId,
     mintCollection.id,
     mintCollection.name,
+    mintCollection.publicMintInfo?.price?.currency?.decimals,
+    mintCollection.publicMintInfo?.price?.currency?.name,
     mintPriceAmount,
     navigate,
     quantity,
