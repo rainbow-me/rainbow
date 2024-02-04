@@ -121,7 +121,13 @@ type ConsolidatedTransactionsResult = {
   nextPage?: string;
   transactions: RainbowTransaction[];
 };
-
+/**
+ * 
+ * should we? 
+ *   queryClient.invalidateQueries({
+        queryKey: nftsQueryKey({ address: accountAddress }),
+      });
+ */
 async function parseConsolidatedTransactions(
   message: TransactionsReceivedMessage,
   currency: NativeCurrencyKey

@@ -78,6 +78,25 @@ export const fetchTransaction = async ({
   }
 };
 
+// ///////////////////////////////////////////////
+// Query Function
+
+export const transactionFetchQuery = async ({
+  address,
+  currency,
+  network,
+  hash,
+}: {
+  address: string;
+  currency: NativeCurrencyKey;
+  network: Network;
+  hash: string;
+}) =>
+  queryClient.fetchQuery(
+    transactionQueryKey({ address, currency, network, hash }),
+    fetchTransaction
+  );
+
 type PaginatedTransactions = { pages: ConsolidatedTransactionsResult[] };
 
 export function useBackendTransaction({
