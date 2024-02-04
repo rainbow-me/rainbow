@@ -12,13 +12,11 @@ import { getCachedProviderForNetwork, isHardHat } from '@/handlers/web3';
 import { useUserAssets } from '@/resources/assets/UserAssetsQuery';
 import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
 import { RainbowTransaction } from '@/entities';
+import { usePendingTransactionsStore } from '@/state/pendingTransactionsStore';
 
 export const NOE_PAGE = 30;
 
-export default function useAccountTransactions(
-  initialized: boolean,
-  isFocused: boolean
-) {
+export default function useAccountTransactions() {
   const {
     network: currentNetwork,
     accountAddress,
@@ -33,17 +31,15 @@ export default function useAccountTransactions(
     connectedToHardhat,
   });
 
-  const { isLoadingTransactions, network, pendingTransactions } = useSelector(
-    ({
-      data: { isLoadingTransactions, pendingTransactions, transactions },
-      settings: { network },
-    }: AppState) => ({
-      isLoadingTransactions,
-      network,
-      pendingTransactions,
-      transactions,
-    })
-  );
+  const {
+    pendingTransactions: storePendingTransactions,
+  } = usePendingTransactionsStore();
+
+  const pendingTransactions = useMemo(() => {
+    const txs = storePendingTransactions[accountAddress] || [];
+    console.log('PENDING: ', txs);
+    return txs;
+  }, [accountAddress, storePendingTransactions]);
 
   const { data, fetchNextPage } = useConsolidatedTransactions({
     address: accountAddress,
@@ -66,17 +62,20 @@ export default function useAccountTransactions(
   const mainnetAddresses = useMemo(
     () =>
       userAssets
-        ? slicedTransaction.reduce((acc: { [key: string]: string }, txn) => {
-            if (txn?.network && txn?.address) {
-              const asset =
-                userAssets[`${txn.address}_${txn.network}`]?.mainnet_address;
-              if (asset) {
-                acc[`${txn.address}_${txn.network}`] = asset;
+        ? slicedTransaction.reduce(
+            (acc: { [key: string]: string }, txn: RainbowTransaction) => {
+              if (txn?.network && txn?.address) {
+                const asset =
+                  userAssets[`${txn.address}_${txn.network}`]?.mainnet_address;
+                if (asset) {
+                  acc[`${txn.address}_${txn.network}`] = asset;
+                }
               }
-            }
 
-            return acc;
-          }, {})
+              return acc;
+            },
+            {}
+          )
         : {},
     [userAssets, slicedTransaction]
   );
@@ -89,8 +88,6 @@ export default function useAccountTransactions(
   const accountState = {
     accountAddress,
     contacts,
-    initialized,
-    isFocused,
     mainnetAddresses,
     navigate,
     requests,
@@ -112,8 +109,7 @@ export default function useAccountTransactions(
   }, [slicedTransaction.length, allTransactions.length]);
 
   return {
-    isLoadingTransactions:
-      network === NetworkTypes.mainnet ? isLoadingTransactions : false,
+    isLoadingTransactions: !!allTransactions,
     nextPage: fetchNextPage,
     remainingItemsLabel,
     sections,

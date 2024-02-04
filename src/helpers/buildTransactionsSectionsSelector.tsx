@@ -31,7 +31,9 @@ const groupTransactionByDate = ({
   pending: boolean;
   minedAt: string;
 }) => {
-  if (pending) return i18n.t(i18n.l.transactions.pending_title);
+  if (pending) {
+    return i18n.t(i18n.l.transactions.pending_title);
+  }
 
   const ts = parseInt(minedAt, 10) * 1000;
 
@@ -70,8 +72,6 @@ export const buildTransactionsSections = ({
   contacts,
   requests,
   theme,
-  isFocused,
-  initialized,
   transactions,
 }: {
   accountAddress: string;
@@ -84,7 +84,7 @@ export const buildTransactionsSections = ({
   navigate: (...args: any[]) => void;
   transactions: RainbowTransaction[];
 }) => {
-  if ((!isFocused && !initialized) || !transactions) {
+  if (!transactions) {
     return { sections: [] };
   }
 
