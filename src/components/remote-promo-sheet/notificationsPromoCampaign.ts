@@ -26,35 +26,36 @@ export const notificationsCampaignAction = async () => {
   }, 1000);
 };
 
-export const notificationsCampaignCheck = async (): Promise<GenericCampaignCheckResponse> => {
-  const hasShownCampaign = mmkv.getBoolean(CampaignKey.notificationsLaunch);
-  const isFirstLaunch = mmkv.getBoolean(STORAGE_IDS.FIRST_APP_LAUNCH);
+export const notificationsCampaignCheck =
+  async (): Promise<GenericCampaignCheckResponse> => {
+    const hasShownCampaign = mmkv.getBoolean(CampaignKey.notificationsLaunch);
+    const isFirstLaunch = mmkv.getBoolean(STORAGE_IDS.FIRST_APP_LAUNCH);
 
-  logger.debug(`Notifications promo`, { hasShownCampaign });
+    logger.debug(`Notifications promo`, { hasShownCampaign });
 
-  const {
-    selected: currentWallet,
-  }: {
-    selected: RainbowWallet | undefined;
-  } = store.getState().wallets;
+    const {
+      selected: currentWallet,
+    }: {
+      selected: RainbowWallet | undefined;
+    } = store.getState().wallets;
 
-  /**
-   * stop if:
-   * there's no wallet
-   * the campaign has already been activated
-   * the user is launching Rainbow for the first time
-   */
-  if (!currentWallet || hasShownCampaign || isFirstLaunch) {
-    logger.debug(`Notifications promo: not activating`);
-    return GenericCampaignCheckResponse.nonstarter;
-  }
+    /**
+     * stop if:
+     * there's no wallet
+     * the campaign has already been activated
+     * the user is launching Rainbow for the first time
+     */
+    if (!currentWallet || hasShownCampaign || isFirstLaunch) {
+      logger.debug(`Notifications promo: not activating`);
+      return GenericCampaignCheckResponse.nonstarter;
+    }
 
-  logger.debug(`Notifications promo: activating`);
+    logger.debug(`Notifications promo: activating`);
 
-  NotificationsPromoCampaign.action();
+    NotificationsPromoCampaign.action();
 
-  return GenericCampaignCheckResponse.activated;
-};
+    return GenericCampaignCheckResponse.activated;
+  };
 
 export const NotificationsPromoCampaign: Campaign = {
   action: async () => await notificationsCampaignAction(),

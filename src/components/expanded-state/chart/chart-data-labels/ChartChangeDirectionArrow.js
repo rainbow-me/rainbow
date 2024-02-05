@@ -31,8 +31,8 @@ export default function ChartChangeDirectionArrow({ ratio, sharedRatio }) {
         realRatio === 1
           ? colors.blueGreyDark
           : realRatio < 1
-          ? colors.red
-          : colors.green,
+            ? colors.red
+            : colors.green,
     };
   }, [ratio]);
 

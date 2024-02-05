@@ -274,7 +274,7 @@ export async function set(
  * JSON.
  */
 export async function getObject<
-  T extends Record<string, any> = Record<string, unknown>
+  T extends Record<string, any> = Record<string, unknown>,
 >(key: string, options: KeychainOptions = {}): Promise<Result<T>> {
   logger.debug(`keychain: getObject`, { key }, logger.DebugContext.keychain);
 

@@ -59,9 +59,8 @@ const ExchangeNativeField: ForwardRefRenderFunction<
 
   const [value, setValue] = useState(nativeAmount);
 
-  const { mask, placeholder, symbol } = supportedNativeCurrencies[
-    nativeCurrency as NativeCurrencyKey
-  ];
+  const { mask, placeholder, symbol } =
+    supportedNativeCurrencies[nativeCurrency as NativeCurrencyKey];
 
   const handleFocusNativeField = useCallback(
     () => nativeFieldRef?.current?.focus(),

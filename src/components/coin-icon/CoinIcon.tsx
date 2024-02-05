@@ -61,9 +61,10 @@ const CoinIcon: React.FC<Props> = ({
   });
   const { colors, isDarkMode } = useTheme();
   const forceFallback = !isETH(mainnet_address || address);
-  const isNotContractInteraction = useMemo(() => symbol !== 'contract', [
-    symbol,
-  ]);
+  const isNotContractInteraction = useMemo(
+    () => symbol !== 'contract',
+    [symbol]
+  );
 
   const theme = useTheme();
 

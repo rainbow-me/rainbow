@@ -48,13 +48,8 @@ const RegistrationAvatar = ({
   const {
     images: { avatarUrl: initialAvatarUrl },
   } = useENSModifiedRegistration();
-  const {
-    isLoading,
-    values,
-    onBlurField,
-    onRemoveField,
-    setDisabled,
-  } = useENSRegistrationForm();
+  const { isLoading, values, onBlurField, onRemoveField, setDisabled } =
+    useENSRegistrationForm();
   const { name } = useENSRegistration();
 
   const [avatarUpdateAllowed, setAvatarUpdateAllowed] = useState(true);
@@ -119,41 +114,38 @@ const RegistrationAvatar = ({
     [onBlurField, onChangeAvatarUrl, setAvatarMetadata]
   );
 
-  const {
-    ContextMenu,
-    handleSelectImage,
-    handleSelectNFT,
-  } = useSelectImageMenu({
-    imagePickerOptions: {
-      cropperCircleOverlay: true,
-      cropping: true,
-      height: 400,
-      width: 400,
-    },
-    menuItems: enableNFTs ? ['library', 'nft'] : ['library'],
-    onChangeImage,
-    onRemoveImage: () => {
-      onRemoveField({ key: ENS_RECORDS.avatar });
-      onChangeAvatarUrl('');
-      setAvatarMetadata(undefined);
-      setDisabled(false);
-      setTimeout(() => {
+  const { ContextMenu, handleSelectImage, handleSelectNFT } =
+    useSelectImageMenu({
+      imagePickerOptions: {
+        cropperCircleOverlay: true,
+        cropping: true,
+        height: 400,
+        width: 400,
+      },
+      menuItems: enableNFTs ? ['library', 'nft'] : ['library'],
+      onChangeImage,
+      onRemoveImage: () => {
+        onRemoveField({ key: ENS_RECORDS.avatar });
+        onChangeAvatarUrl('');
+        setAvatarMetadata(undefined);
+        setDisabled(false);
+        setTimeout(() => {
+          setAvatarUrl('');
+        }, 100);
+      },
+      onUploadError: () => {
+        onBlurField({ key: 'avatar', value: '' });
         setAvatarUrl('');
-      }, 100);
-    },
-    onUploadError: () => {
-      onBlurField({ key: 'avatar', value: '' });
-      setAvatarUrl('');
-    },
-    onUploading: () => setDisabled(true),
-    onUploadSuccess: ({ data }: { data: UploadImageReturnData }) => {
-      onBlurField({ key: 'avatar', value: data.url });
-      setDisabled(false);
-    },
-    showRemove: Boolean(avatarUrl),
-    testID: 'avatar',
-    uploadToIPFS: true,
-  });
+      },
+      onUploading: () => setDisabled(true),
+      onUploadSuccess: ({ data }: { data: UploadImageReturnData }) => {
+        onBlurField({ key: 'avatar', value: data.url });
+        setDisabled(false);
+      },
+      showRemove: Boolean(avatarUrl),
+      testID: 'avatar',
+      uploadToIPFS: true,
+    });
 
   return (
     <Box height={{ custom: size }} width={{ custom: size }}>
@@ -185,10 +177,10 @@ const RegistrationAvatar = ({
               !hasSeenExplainSheet
                 ? onShowExplainSheet
                 : isTesting
-                ? handleSelectNFT
-                : enableNFTs
-                ? undefined
-                : handleSelectImage
+                  ? handleSelectNFT
+                  : enableNFTs
+                    ? undefined
+                    : handleSelectImage
             }
             testID="use-select-image-avatar"
           >

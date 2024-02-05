@@ -129,10 +129,10 @@ const sizeConfigs = colors => ({
 
 const ContactAvatar = ({ color, size = 'medium', value, ...props }) => {
   const { colors } = useTheme();
-  const { dimensions, textSize } = useMemo(() => sizeConfigs(colors)[size], [
-    colors,
-    size,
-  ]);
+  const { dimensions, textSize } = useMemo(
+    () => sizeConfigs(colors)[size],
+    [colors, size]
+  );
   const { isDarkMode } = useTheme();
 
   const shadows = useMemo(

@@ -36,9 +36,8 @@ export async function setPreference(
   value?: any | undefined
 ): Promise<boolean> {
   try {
-    const signature = await getSignatureForSigningWalletAndCreateSignatureIfNeeded(
-      address
-    );
+    const signature =
+      await getSignatureForSigningWalletAndCreateSignatureIfNeeded(address);
     if (!signature) {
       return false;
     }
@@ -56,7 +55,8 @@ export async function setPreference(
       signature,
       signature2,
     });
-    const responseData: PreferencesResponse = response.data as PreferencesResponse;
+    const responseData: PreferencesResponse =
+      response.data as PreferencesResponse;
     logger.debug('☁️  RESPONSE', {
       reason: responseData?.reason,
       success: responseData?.success,
@@ -78,7 +78,8 @@ export async function getPreference(
     const response = await preferencesAPI.get(`${PREFS_ENDPOINT}/${key}`, {
       params: { address },
     });
-    const responseData: PreferencesResponse = response.data as PreferencesResponse;
+    const responseData: PreferencesResponse =
+      response.data as PreferencesResponse;
     logger.debug('☁️  RESPONSE', {
       reason: responseData?.reason,
       success: responseData?.success,

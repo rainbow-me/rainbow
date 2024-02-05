@@ -251,10 +251,8 @@ export const SendConfirmationSheet = () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } = useRoute<any>();
 
-  const [
-    alreadySentTransactionsTotal,
-    setAlreadySentTransactionsTotal,
-  ] = useState(0);
+  const [alreadySentTransactionsTotal, setAlreadySentTransactionsTotal] =
+    useState(0);
   const [
     alreadySentTransactionsCurrentNetwork,
     setAlreadySentTransactionsCurrentNetwork,

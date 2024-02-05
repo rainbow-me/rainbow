@@ -97,8 +97,8 @@ const ContactRow = (
     typeof ens === 'string'
       ? ens
       : nickname?.includes(ENS_DOMAIN)
-      ? nickname
-      : '';
+        ? nickname
+        : '';
 
   const [ensName, setENSName] = useState(initialENSName);
 
@@ -154,9 +154,10 @@ const ContactRow = (
 
   const imageAvatar = profilesEnabled ? ensAvatar?.imageUrl : image;
 
-  const emoji = useMemo(() => (address ? addressHashedEmoji(address) : ''), [
-    address,
-  ]);
+  const emoji = useMemo(
+    () => (address ? addressHashedEmoji(address) : ''),
+    [address]
+  );
   const emojiAvatar = avatar || emoji || nickname || label;
 
   const colorIndex = useMemo(

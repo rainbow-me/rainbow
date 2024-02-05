@@ -183,11 +183,8 @@ export default function SendSheet(props) {
   const theme = useTheme();
   const { colors, isDarkMode } = theme;
 
-  const {
-    nativeCurrencyInputRef,
-    setLastFocusedInputHandle,
-    assetInputRef,
-  } = useSendSheetInputRefs();
+  const { nativeCurrencyInputRef, setLastFocusedInputHandle, assetInputRef } =
+    useSendSheetInputRefs();
 
   const showEmptyState = !isValidAddress;
   const showAssetList = isValidAddress && isEmpty(selected);
@@ -221,13 +218,12 @@ export default function SendSheet(props) {
       let _nativeAmount = '';
       if (_assetAmount.length) {
         const priceUnit = selected?.price?.value ?? 0;
-        const {
-          amount: convertedNativeAmount,
-        } = convertAmountAndPriceToNativeDisplay(
-          _assetAmount,
-          priceUnit,
-          nativeCurrency
-        );
+        const { amount: convertedNativeAmount } =
+          convertAmountAndPriceToNativeDisplay(
+            _assetAmount,
+            priceUnit,
+            nativeCurrency
+          );
         _nativeAmount = formatInputDecimals(
           convertedNativeAmount,
           _assetAmount
@@ -413,9 +409,8 @@ export default function SendSheet(props) {
   useEffect(() => {
     const resolveAddressIfNeeded = async () => {
       let realAddress = debouncedRecipient;
-      const isValid = await checkIsValidAddressOrDomainFormat(
-        debouncedRecipient
-      );
+      const isValid =
+        await checkIsValidAddressOrDomainFormat(debouncedRecipient);
       if (isValid) {
         realAddress = await resolveNameOrAddress(debouncedRecipient);
         setToAddress(realAddress);

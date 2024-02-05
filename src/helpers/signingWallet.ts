@@ -65,7 +65,8 @@ export async function getSignatureForSigningWalletAndCreateSignatureIfNeeded(
     publicAccessControlOptions
   );
   if (alreadyExistingEncodedSignature) {
-    const publicKeyForTheSigningWallet = await getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded();
+    const publicKeyForTheSigningWallet =
+      await getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded();
     const encryptor = new AesEncryptor();
     const decryptedSignature = await encryptor.decrypt(
       RAINBOW_MASTER_KEY,
@@ -109,7 +110,8 @@ export async function createSignature(
   privateKey: string | null = null
 ) {
   logger.log('Creating a signature');
-  const publicKeyForTheSigningWallet = await getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded();
+  const publicKeyForTheSigningWallet =
+    await getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded();
 
   const mainWallet = privateKey
     ? new Wallet(privateKey)

@@ -32,12 +32,8 @@ import * as i18n from '@/languages';
 const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 
 export function MintsSheet() {
-  const {
-    accountAddress,
-    accountImage,
-    accountColor,
-    accountSymbol,
-  } = useAccountProfile();
+  const { accountAddress, accountImage, accountColor, accountSymbol } =
+    useAccountProfile();
   const {
     data: { mints },
     isFetching,

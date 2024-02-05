@@ -58,147 +58,141 @@ const SWAP_UPDATE_QUOTE = 'swap/SWAP_UPDATE_QUOTE';
 const SWAP_CLEAR_STATE = 'swap/SWAP_CLEAR_STATE';
 
 // -- Actions ---------------------------------------- //
-export const updateSwapTypeDetails = (
-  type: string,
-  typeSpecificParameters?: TypeSpecificParameters | null
-) => (dispatch: AppDispatch) => {
-  dispatch({
-    payload: {
-      type,
-      typeSpecificParameters,
-    },
-    type: SWAP_UPDATE_TYPE_DETAILS,
-  });
-};
+export const updateSwapTypeDetails =
+  (type: string, typeSpecificParameters?: TypeSpecificParameters | null) =>
+  (dispatch: AppDispatch) => {
+    dispatch({
+      payload: {
+        type,
+        typeSpecificParameters,
+      },
+      type: SWAP_UPDATE_TYPE_DETAILS,
+    });
+  };
 
-export const updateSwapSlippage = (slippage: number) => (
-  dispatch: AppDispatch
-) => {
-  dispatch({
-    payload: slippage,
-    type: SWAP_UPDATE_SLIPPAGE,
-  });
-};
+export const updateSwapSlippage =
+  (slippage: number) => (dispatch: AppDispatch) => {
+    dispatch({
+      payload: slippage,
+      type: SWAP_UPDATE_SLIPPAGE,
+    });
+  };
 
-export const updateSwapSource = (newSource: Source) => (
-  dispatch: AppDispatch
-) => {
-  dispatch({
-    payload: newSource,
-    type: SWAP_UPDATE_SOURCE,
-  });
-};
+export const updateSwapSource =
+  (newSource: Source) => (dispatch: AppDispatch) => {
+    dispatch({
+      payload: newSource,
+      type: SWAP_UPDATE_SOURCE,
+    });
+  };
 
-export const updateSwapInputAmount = (
-  value: string | null,
-  maxInputUpdate = false
-) => (dispatch: AppDispatch) => {
-  dispatch({
-    payload: { independentValue: value, maxInputUpdate },
-    type: SWAP_UPDATE_INPUT_AMOUNT,
-  });
-};
+export const updateSwapInputAmount =
+  (value: string | null, maxInputUpdate = false) =>
+  (dispatch: AppDispatch) => {
+    dispatch({
+      payload: { independentValue: value, maxInputUpdate },
+      type: SWAP_UPDATE_INPUT_AMOUNT,
+    });
+  };
 
-export const updateSwapNativeAmount = (value: string | null) => (
-  dispatch: AppDispatch
-) => {
-  dispatch({
-    payload: value,
-    type: SWAP_UPDATE_NATIVE_AMOUNT,
-  });
-};
+export const updateSwapNativeAmount =
+  (value: string | null) => (dispatch: AppDispatch) => {
+    dispatch({
+      payload: value,
+      type: SWAP_UPDATE_NATIVE_AMOUNT,
+    });
+  };
 
-export const updateSwapOutputAmount = (value: string | null) => (
-  dispatch: AppDispatch
-) => {
-  dispatch({
-    payload: value,
-    type: SWAP_UPDATE_OUTPUT_AMOUNT,
-  });
-};
+export const updateSwapOutputAmount =
+  (value: string | null) => (dispatch: AppDispatch) => {
+    dispatch({
+      payload: value,
+      type: SWAP_UPDATE_OUTPUT_AMOUNT,
+    });
+  };
 
-export const updateSwapInputCurrency = (
-  newInputCurrency: SwappableAsset | null,
-  ignoreTypeCheck = false
-) => (dispatch: AppDispatch, getState: AppGetState) => {
-  const { independentField, outputCurrency, type } = getState().swap;
-  if (
-    type === ExchangeModalTypes.swap &&
-    newInputCurrency?.uniqueId === outputCurrency?.uniqueId &&
-    newInputCurrency
-  ) {
-    dispatch(flipSwapCurrencies(false));
-  } else {
-    dispatch({ payload: newInputCurrency, type: SWAP_UPDATE_INPUT_CURRENCY });
+export const updateSwapInputCurrency =
+  (newInputCurrency: SwappableAsset | null, ignoreTypeCheck = false) =>
+  (dispatch: AppDispatch, getState: AppGetState) => {
+    const { independentField, outputCurrency, type } = getState().swap;
     if (
       type === ExchangeModalTypes.swap &&
-      newInputCurrency?.network !== outputCurrency?.network &&
-      newInputCurrency &&
-      !ignoreTypeCheck
+      newInputCurrency?.uniqueId === outputCurrency?.uniqueId &&
+      newInputCurrency
     ) {
-      dispatch(updateSwapOutputCurrency(null, true));
-    }
+      dispatch(flipSwapCurrencies(false));
+    } else {
+      dispatch({ payload: newInputCurrency, type: SWAP_UPDATE_INPUT_CURRENCY });
+      if (
+        type === ExchangeModalTypes.swap &&
+        newInputCurrency?.network !== outputCurrency?.network &&
+        newInputCurrency &&
+        !ignoreTypeCheck
+      ) {
+        dispatch(updateSwapOutputCurrency(null, true));
+      }
 
-    if (newInputCurrency) {
-      dispatch(fetchAssetPrices(newInputCurrency.address));
+      if (newInputCurrency) {
+        dispatch(fetchAssetPrices(newInputCurrency.address));
+      }
+      if (independentField === SwapModalField.input) {
+        dispatch(updateSwapInputAmount(null));
+      }
     }
-    if (independentField === SwapModalField.input) {
-      dispatch(updateSwapInputAmount(null));
-    }
-  }
-};
+  };
 
-export const updateSwapOutputCurrency = (
-  newOutputCurrency: SwappableAsset | null,
-  ignoreTypeCheck = false
-) => (dispatch: AppDispatch, getState: AppGetState) => {
-  const { independentField, inputCurrency, type } = getState().swap;
-  if (
-    newOutputCurrency?.uniqueId === inputCurrency?.uniqueId &&
-    newOutputCurrency
-  ) {
-    dispatch(flipSwapCurrencies(true));
-  } else {
+export const updateSwapOutputCurrency =
+  (newOutputCurrency: SwappableAsset | null, ignoreTypeCheck = false) =>
+  (dispatch: AppDispatch, getState: AppGetState) => {
+    const { independentField, inputCurrency, type } = getState().swap;
     if (
-      type === ExchangeModalTypes.swap &&
-      newOutputCurrency?.network !== inputCurrency?.network &&
-      newOutputCurrency &&
-      !ignoreTypeCheck
+      newOutputCurrency?.uniqueId === inputCurrency?.uniqueId &&
+      newOutputCurrency
     ) {
-      dispatch(updateSwapInputCurrency(null, true));
-    }
+      dispatch(flipSwapCurrencies(true));
+    } else {
+      if (
+        type === ExchangeModalTypes.swap &&
+        newOutputCurrency?.network !== inputCurrency?.network &&
+        newOutputCurrency &&
+        !ignoreTypeCheck
+      ) {
+        dispatch(updateSwapInputCurrency(null, true));
+      }
 
-    dispatch({ payload: newOutputCurrency, type: SWAP_UPDATE_OUTPUT_CURRENCY });
-    if (newOutputCurrency) {
-      dispatch(fetchAssetPrices(newOutputCurrency.address));
+      dispatch({
+        payload: newOutputCurrency,
+        type: SWAP_UPDATE_OUTPUT_CURRENCY,
+      });
+      if (newOutputCurrency) {
+        dispatch(fetchAssetPrices(newOutputCurrency.address));
+      }
+      if (
+        independentField === SwapModalField.output ||
+        newOutputCurrency === null
+      ) {
+        dispatch(updateSwapOutputAmount(null));
+      }
     }
-    if (
-      independentField === SwapModalField.output ||
-      newOutputCurrency === null
-    ) {
-      dispatch(updateSwapOutputAmount(null));
-    }
-  }
-};
+  };
 
-export const flipSwapCurrencies = (
-  outputIndependentField: boolean,
-  independentValue?: string | null
-) => (dispatch: AppDispatch, getState: AppGetState) => {
-  const { inputCurrency, outputCurrency } = getState().swap;
-  dispatch({
-    payload: {
-      flipCurrenciesUpdate: true,
-      independentField: outputIndependentField
-        ? SwapModalField.output
-        : SwapModalField.input,
-      independentValue,
-      newInputCurrency: outputCurrency,
-      newOutputCurrency: inputCurrency,
-    },
-    type: SWAP_FLIP_CURRENCIES,
-  });
-};
+export const flipSwapCurrencies =
+  (outputIndependentField: boolean, independentValue?: string | null) =>
+  (dispatch: AppDispatch, getState: AppGetState) => {
+    const { inputCurrency, outputCurrency } = getState().swap;
+    dispatch({
+      payload: {
+        flipCurrenciesUpdate: true,
+        independentField: outputIndependentField
+          ? SwapModalField.output
+          : SwapModalField.input,
+        independentValue,
+        newInputCurrency: outputCurrency,
+        newOutputCurrency: inputCurrency,
+      },
+      type: SWAP_FLIP_CURRENCIES,
+    });
+  };
 
 export const updateSwapQuote = (value: any) => (dispatch: AppDispatch) => {
   dispatch({

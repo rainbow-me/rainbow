@@ -50,9 +50,10 @@ const UniqueTokenCard = ({
 
   const { colors } = useTheme();
 
-  const defaultShadow = useMemo(() => UniqueTokenCardShadowFactory(colors), [
-    colors,
-  ]);
+  const defaultShadow = useMemo(
+    () => UniqueTokenCardShadowFactory(colors),
+    [colors]
+  );
 
   return (
     <Container

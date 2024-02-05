@@ -115,9 +115,8 @@ const Tag = ({
     typeof originalValue === 'string' &&
     originalValue.toLowerCase().startsWith('https://');
 
-  const viewTraitOnNftMarketplaceAction = getViewTraitOnNftMarketplaceAction(
-    marketplaceName
-  );
+  const viewTraitOnNftMarketplaceAction =
+    getViewTraitOnNftMarketplaceAction(marketplaceName);
 
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {

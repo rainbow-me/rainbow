@@ -24,21 +24,19 @@ import {
  Hook to constantly listen to notification settings.
  */
 export const useAllNotificationSettingsFromStorage = () => {
-  const walletNotificationSettingsData = getAllWalletNotificationSettingsFromStorage();
-  const globalNotificationSettingsData = getAllGlobalNotificationSettingsFromStorage();
+  const walletNotificationSettingsData =
+    getAllWalletNotificationSettingsFromStorage();
+  const globalNotificationSettingsData =
+    getAllGlobalNotificationSettingsFromStorage();
   const existingGroupSettingsData = getExistingGroupSettingsFromStorage();
 
   const [walletNotificationSettings, setWalletNotificationSettings] = useState<
     WalletNotificationSettings[]
   >(walletNotificationSettingsData);
-  const [
-    globalNotificationSettings,
-    setGlobalNotificationSettings,
-  ] = useState<GlobalNotificationTopics>(globalNotificationSettingsData);
-  const [
-    existingGroupSettings,
-    setExistingGroupSettings,
-  ] = useState<GroupSettings>(existingGroupSettingsData);
+  const [globalNotificationSettings, setGlobalNotificationSettings] =
+    useState<GlobalNotificationTopics>(globalNotificationSettingsData);
+  const [existingGroupSettings, setExistingGroupSettings] =
+    useState<GroupSettings>(existingGroupSettingsData);
   const listener = notificationSettingsStorage.addOnValueChangedListener(
     changedKey => {
       if (changedKey === WALLET_TOPICS_STORAGE_KEY) {
@@ -71,10 +69,8 @@ export const useAllNotificationSettingsFromStorage = () => {
  Provides a function for updating the group settings.
  */
 export const useWalletGroupNotificationSettings = () => {
-  const {
-    walletNotificationSettings,
-    existingGroupSettings,
-  } = useAllNotificationSettingsFromStorage();
+  const { walletNotificationSettings, existingGroupSettings } =
+    useAllNotificationSettingsFromStorage();
 
   const ownerEnabled =
     existingGroupSettings[WalletNotificationRelationship.OWNER];

@@ -34,11 +34,8 @@ import {
 import { useRoute } from '@react-navigation/native';
 
 export default function DiscoverHome() {
-  const {
-    profiles_enabled,
-    mints_enabled,
-    op_rewards_enabled,
-  } = useRemoteConfig();
+  const { profiles_enabled, mints_enabled, op_rewards_enabled } =
+    useRemoteConfig();
   const { accountAddress, network } = useAccountSettings();
   const { getCardsForPlacement } = useRemoteCardContext();
   const { name } = useRoute();
@@ -65,10 +62,10 @@ export default function DiscoverHome() {
       key => wallets[key].type === walletTypes.bluetooth
     ).length > 0;
 
-  const cards = useMemo(() => getCardsForPlacement(name), [
-    name,
-    getCardsForPlacement,
-  ]);
+  const cards = useMemo(
+    () => getCardsForPlacement(name),
+    [name, getCardsForPlacement]
+  );
 
   return (
     <Inset top="20px" bottom={{ custom: 200 }} horizontal="20px">

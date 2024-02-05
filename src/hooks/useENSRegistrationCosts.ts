@@ -124,8 +124,8 @@ export default function useENSRegistrationCosts({
   }, [accountAddress, duration, name, rentPriceInWei]);
 
   const getRegisterRapGasLimit = useCallback(async () => {
-    const newRegisterRapGasLimit = await estimateENSRegisterSetRecordsAndNameGasLimit(
-      {
+    const newRegisterRapGasLimit =
+      await estimateENSRegisterSetRecordsAndNameGasLimit({
         duration,
         name,
         ownerAddress: accountAddress,
@@ -133,8 +133,7 @@ export default function useENSRegistrationCosts({
         rentPrice: registrationParameters?.rentPrice,
         salt: registrationParameters?.salt,
         setReverseRecord: sendReverseRecord,
-      }
-    );
+      });
     return newRegisterRapGasLimit || '';
   }, [
     accountAddress,

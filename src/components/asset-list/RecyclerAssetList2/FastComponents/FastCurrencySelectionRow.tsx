@@ -19,9 +19,9 @@ import { useAccountAsset } from '@/hooks';
 import { colors, fonts, fontWithWidth, getFontSize } from '@/styles';
 import { deviceUtils } from '@/utils';
 
-const SafeRadialGradient = (IS_TESTING === 'true'
-  ? View
-  : RadialGradient) as typeof RadialGradient;
+const SafeRadialGradient = (
+  IS_TESTING === 'true' ? View : RadialGradient
+) as typeof RadialGradient;
 
 interface FastCurrencySelectionRowProps {
   item: any;
@@ -261,8 +261,7 @@ export default React.memo(function FastCurrencySelectionRow({
       )}
     </View>
   );
-},
-isEqual);
+}, isEqual);
 
 const sx = StyleSheet.create({
   addGradient: {

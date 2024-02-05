@@ -42,9 +42,8 @@ export default function SwapDetailsContent({
   ...props
 }) {
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
-  const { amountReceivedSold, receivedSoldLabel } = useSwapAdjustedAmounts(
-    tradeDetails
-  );
+  const { amountReceivedSold, receivedSoldLabel } =
+    useSwapAdjustedAmounts(tradeDetails);
   const { navigate } = useNavigation();
   const { flashbotsEnabled } = useAccountSettings();
   const inputAsExact = useSelector(

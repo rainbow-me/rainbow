@@ -104,22 +104,16 @@ export default function SwapDetailsState({
     tradeDetails,
   } = useSelector(state => state.swap);
 
-  const {
-    priceImpact,
-    inputNativeAmount,
-    outputNativeAmount,
-  } = usePriceImpactDetails(
-    inputCurrency,
-    outputCurrency,
-    tradeDetails,
-    currentNetwork
-  );
+  const { priceImpact, inputNativeAmount, outputNativeAmount } =
+    usePriceImpactDetails(
+      inputCurrency,
+      outputCurrency,
+      tradeDetails,
+      currentNetwork
+    );
 
-  const {
-    copiedText,
-    copyCount,
-    onCopySwapDetailsText,
-  } = useSwapDetailsClipboardState();
+  const { copiedText, copyCount, onCopySwapDetailsText } =
+    useSwapDetailsClipboardState();
 
   const [footerHeight, setFooterHeight] = useHeight(FOOTER_MIN_HEIGHT);
   const [slippageMessageHeight, setSlippageMessageHeight] = useHeight();
@@ -127,12 +121,8 @@ export default function SwapDetailsState({
     FOOTER_CONTENT_MIN_HEIGHT
   );
 
-  const {
-    onHeightChange,
-    wrapperStyle,
-    onPressMore,
-    onWrapperLayout,
-  } = useSwapDetailsButtonPosition({ contentHeight });
+  const { onHeightChange, wrapperStyle, onPressMore, onWrapperLayout } =
+    useSwapDetailsButtonPosition({ contentHeight });
 
   const onContentHeightChange = useCallback(
     event => {

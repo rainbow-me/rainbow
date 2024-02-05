@@ -34,7 +34,7 @@ export function AccentColorProvider({
         color,
         mode:
           chroma.contrast(color, '#fff') > 2.125 ? 'darkTinted' : 'lightTinted',
-      } as const),
+      }) as const,
     [color]
   );
 

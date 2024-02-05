@@ -28,10 +28,10 @@ const AddressInputContainer = styled(Row).attrs({ align: 'center' })(
     ...(android
       ? padding.object(0, 19)
       : isTinyPhone
-      ? padding.object(23, 15, 10)
-      : isSmallPhone
-      ? padding.object(11, 19, 15)
-      : padding.object(18, 19, 19)),
+        ? padding.object(23, 15, 10)
+        : isSmallPhone
+          ? padding.object(11, 19, 15)
+          : padding.object(18, 19, 19)),
     backgroundColor: colors.white,
     overflow: 'hidden',
     width: '100%',

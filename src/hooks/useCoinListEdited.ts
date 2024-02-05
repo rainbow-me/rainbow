@@ -6,9 +6,8 @@ const isCoinListEditedAtom = atom({
 });
 
 export default function useCoinListEdited() {
-  const [isCoinListEdited, setIsCoinListEdited] = useRecoilState(
-    isCoinListEditedAtom
-  );
+  const [isCoinListEdited, setIsCoinListEdited] =
+    useRecoilState(isCoinListEditedAtom);
 
   return {
     isCoinListEdited,

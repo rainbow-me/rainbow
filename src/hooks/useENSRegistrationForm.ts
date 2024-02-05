@@ -120,9 +120,8 @@ export default function useENSRegistrationForm({
     setDisabled(mode === REGISTRATION_MODES.EDIT && isEmpty(changedRecords));
   }, [changedRecords, mode, setDisabled]);
 
-  const [selectedFields, setSelectedFields] = useRecoilState(
-    selectedFieldsAtom
-  );
+  const [selectedFields, setSelectedFields] =
+    useRecoilState(selectedFieldsAtom);
   useEffect(() => {
     if (!initializeForm) return;
     // If there are existing records in the global state, then we

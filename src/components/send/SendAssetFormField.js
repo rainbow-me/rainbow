@@ -124,8 +124,8 @@ const SendAssetFormField = (
               ? isTinyPhone
                 ? 27
                 : android || isSmallPhone
-                ? 31
-                : 38
+                  ? 31
+                  : 38
               : null
           }
           size={isTinyPhone ? 'big' : android || isSmallPhone ? 'bigger' : 'h3'}

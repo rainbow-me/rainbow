@@ -77,55 +77,50 @@ export function WalletConnectV2ListItem({
     },
   };
 
-  const {
-    dappName,
-    dappUrl,
-    dappLogo,
-    address,
-    chainIds,
-  } = React.useMemo(() => {
-    const { namespaces, requiredNamespaces, peer } = session;
-    const { metadata } = peer;
-    const { chains } = requiredNamespaces.eip155;
-    const eip155Account = namespaces.eip155?.accounts?.[0] || undefined;
+  const { dappName, dappUrl, dappLogo, address, chainIds } =
+    React.useMemo(() => {
+      const { namespaces, requiredNamespaces, peer } = session;
+      const { metadata } = peer;
+      const { chains } = requiredNamespaces.eip155;
+      const eip155Account = namespaces.eip155?.accounts?.[0] || undefined;
 
-    if (!eip155Account || !chains || !chains.length) {
-      const e = new RainbowError(
-        `WalletConnectV2ListItem: unsupported namespace`
-      );
-      logger.error(e);
+      if (!eip155Account || !chains || !chains.length) {
+        const e = new RainbowError(
+          `WalletConnectV2ListItem: unsupported namespace`
+        );
+        logger.error(e);
 
-      // defensive, just for types, should never happen
-      throw e;
-    }
+        // defensive, just for types, should never happen
+        throw e;
+      }
 
-    const [ns, rawChainId, address] = eip155Account?.split(':') as [
-      string,
-      string,
-      string
-    ];
-    const chainIds = chains
-      .map(chain => parseInt(chain.split(':')[1]))
-      .filter(isSupportedChain);
+      const [ns, rawChainId, address] = eip155Account?.split(':') as [
+        string,
+        string,
+        string,
+      ];
+      const chainIds = chains
+        .map(chain => parseInt(chain.split(':')[1]))
+        .filter(isSupportedChain);
 
-    if (!address) {
-      const e = new RainbowError(
-        `WalletConnectV2ListItem: could not parse address`
-      );
-      logger.error(e);
+      if (!address) {
+        const e = new RainbowError(
+          `WalletConnectV2ListItem: could not parse address`
+        );
+        logger.error(e);
 
-      // defensive, just for types, should never happen
-      throw e;
-    }
+        // defensive, just for types, should never happen
+        throw e;
+      }
 
-    return {
-      dappName: metadata.name || 'Unknown Dapp',
-      dappUrl: metadata.url || 'Unknown URL',
-      dappLogo: metadata && metadata.icons ? metadata.icons[0] : undefined,
-      address,
-      chainIds,
-    };
-  }, [session]);
+      return {
+        dappName: metadata.name || 'Unknown Dapp',
+        dappUrl: metadata.url || 'Unknown URL',
+        dappLogo: metadata && metadata.icons ? metadata.icons[0] : undefined,
+        address,
+        chainIds,
+      };
+    }, [session]);
 
   const availableNetworks = useMemo(() => {
     return chainIds

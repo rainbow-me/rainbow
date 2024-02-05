@@ -111,12 +111,10 @@ const ExternalENSProfileScrollViewWithRefFactory = (type: string) =>
     );
   });
 
-const ExternalENSProfileScrollViewWithRef = ExternalENSProfileScrollViewWithRefFactory(
-  'ens-profile'
-);
-const ExternalSelectNFTScrollViewWithRef = ExternalENSProfileScrollViewWithRefFactory(
-  'select-nft'
-);
+const ExternalENSProfileScrollViewWithRef =
+  ExternalENSProfileScrollViewWithRefFactory('ens-profile');
+const ExternalSelectNFTScrollViewWithRef =
+  ExternalENSProfileScrollViewWithRefFactory('select-nft');
 export {
   ExternalSelectNFTScrollViewWithRef,
   ExternalENSProfileScrollViewWithRef,

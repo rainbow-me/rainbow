@@ -11,17 +11,15 @@ export type StoreWithPersist<TState> = Mutate<
   initializer: Initializer<TState>;
 };
 
-export function createStore<TState>(
-  initializer: Initializer<TState>
-) {
+export function createStore<TState>(initializer: Initializer<TState>) {
   const name = `rainbow.zustand`;
   return Object.assign(
     create(
       persist(initializer, {
         name,
-        getStorage: () => (persistStorage),
-      }),
+        getStorage: () => persistStorage,
+      })
     ),
-    { initializer },
+    { initializer }
   );
 }

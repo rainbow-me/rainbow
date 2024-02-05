@@ -20,13 +20,8 @@ export const unlockableAppIconCheck = async (
   appIconFeature: UnlockableAppIcon,
   walletsToCheck: EthereumAddress[]
 ) => {
-  const {
-    key,
-    explainSheetType,
-    network,
-    unlockKey,
-    unlockingNfts,
-  } = appIconFeature;
+  const { key, explainSheetType, network, unlockKey, unlockingNfts } =
+    appIconFeature;
 
   const handled = mmkv.getBoolean(unlockKey);
 

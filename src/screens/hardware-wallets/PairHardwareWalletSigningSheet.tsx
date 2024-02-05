@@ -93,17 +93,13 @@ type RouteParams = {
 };
 
 export function PairHardwareWalletSigningSheet() {
-  const route = useRoute<
-    RouteProp<RouteParams, 'PairHardwareWalletSigningSheetParams'>
-  >();
+  const route =
+    useRoute<RouteProp<RouteParams, 'PairHardwareWalletSigningSheetParams'>>();
   const { navigate, goBack } = useNavigation();
   const { isSmallPhone } = useDimensions();
   const deviceId = useRecoilValue(LedgerImportDeviceIdAtom);
-  const {
-    busy,
-    handleSetSeedPhrase,
-    handlePressImportButton,
-  } = useImportingWallet({ showImportModal: true });
+  const { busy, handleSetSeedPhrase, handlePressImportButton } =
+    useImportingWallet({ showImportModal: true });
 
   const items: ItemDetails[] = [
     {

@@ -6,7 +6,8 @@ export const NotificationTypes = {
   marketing: 'marketing',
 } as const;
 
-export type NotificationTypesType = typeof NotificationTypes[keyof typeof NotificationTypes];
+export type NotificationTypesType =
+  (typeof NotificationTypes)[keyof typeof NotificationTypes];
 
 // FCM sends a different kind than the typings cover
 export interface FixedRemoteMessage
@@ -44,7 +45,8 @@ export const NotificationTransactionTypes = {
   withdraw: 'withdraw',
 } as const;
 
-export type NotificationTransactionTypesType = typeof NotificationTransactionTypes[keyof typeof NotificationTransactionTypes];
+export type NotificationTransactionTypesType =
+  (typeof NotificationTransactionTypes)[keyof typeof NotificationTransactionTypes];
 
 export interface MarketingNotificationData {
   type: 'marketing';

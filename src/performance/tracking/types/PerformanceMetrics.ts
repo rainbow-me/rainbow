@@ -10,4 +10,5 @@ export const PerformanceMetrics = {
   useInitializeWallet: 'Performance Wallet Initialize Time',
 } as const;
 
-export type PerformanceMetricsType = typeof PerformanceMetrics[keyof typeof PerformanceMetrics];
+export type PerformanceMetricsType =
+  (typeof PerformanceMetrics)[keyof typeof PerformanceMetrics];

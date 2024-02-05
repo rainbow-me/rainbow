@@ -68,11 +68,8 @@ export default function RegisterENSNavigator() {
 
   const { clearValues } = useENSRegistrationForm();
 
-  const {
-    removeRecordByKey,
-    clearCurrentRegistrationName,
-    startRegistration,
-  } = useENSRegistration();
+  const { removeRecordByKey, clearCurrentRegistrationName, startRegistration } =
+    useENSRegistration();
 
   const initialRouteName = useMemo(() => {
     const { ensName, mode } = params || { mode: REGISTRATION_MODES.CREATE };
@@ -93,9 +90,10 @@ export default function RegisterENSNavigator() {
   const [currentRouteName, setCurrentRouteName] = useState(initialRouteName);
   const previousRouteName = usePrevious(currentRouteName);
 
-  const screenOptions = useMemo(() => defaultScreenOptions[currentRouteName], [
-    currentRouteName,
-  ]);
+  const screenOptions = useMemo(
+    () => defaultScreenOptions[currentRouteName],
+    [currentRouteName]
+  );
 
   useEffect(
     () => () => {

@@ -30,14 +30,11 @@ export const NotificationToggleContextMenu = () => {
   const separatorTertiary = useForegroundColor('separatorTertiary');
   const { colorMode } = useColorMode();
   const { isConnected } = useNetInfo();
-  const {
-    globalNotificationSettings,
-  } = useAllNotificationSettingsFromStorage();
+  const { globalNotificationSettings } =
+    useAllNotificationSettingsFromStorage();
 
-  const [
-    topicSubscriptionInProgress,
-    setTopicSubscriptionInProgress,
-  ] = useState<boolean>(false);
+  const [topicSubscriptionInProgress, setTopicSubscriptionInProgress] =
+    useState<boolean>(false);
 
   const toggleNotifications = useCallback(() => {
     if (!isConnected) {
@@ -52,9 +49,8 @@ export const NotificationToggleContextMenu = () => {
       .then(() => {
         setAllGlobalNotificationSettingsToStorage({
           ...globalNotificationSettings,
-          [GlobalNotificationTopic.POINTS]: !globalNotificationSettings[
-            GlobalNotificationTopic.POINTS
-          ],
+          [GlobalNotificationTopic.POINTS]:
+            !globalNotificationSettings[GlobalNotificationTopic.POINTS],
         });
       })
       .catch(() => {

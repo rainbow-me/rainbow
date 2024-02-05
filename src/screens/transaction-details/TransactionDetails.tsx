@@ -41,10 +41,10 @@ export const TransactionDetails = () => {
   const { height: deviceHeight } = useDimensions();
 
   // Dynamic sheet height based on content height
-  useEffect(() => setParams({ longFormHeight: sheetHeight }), [
-    setParams,
-    sheetHeight,
-  ]);
+  useEffect(
+    () => setParams({ longFormHeight: sheetHeight }),
+    [setParams, sheetHeight]
+  );
 
   const onSheetContentLayout = (event: LayoutChangeEvent) => {
     const contentHeight = event.nativeEvent.layout.height;

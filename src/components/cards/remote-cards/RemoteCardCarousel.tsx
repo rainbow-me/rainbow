@@ -37,10 +37,10 @@ export const RemoteCardCarousel = () => {
   const { getCardsForPlacement } = useRemoteCardContext();
   const { width } = useDimensions();
 
-  const data = useMemo(() => getCardsForPlacement(name as string), [
-    getCardsForPlacement,
-    name,
-  ]);
+  const data = useMemo(
+    () => getCardsForPlacement(name as string),
+    [getCardsForPlacement, name]
+  );
 
   const gutterSize = getGutterSizeForCardAmount(data.length);
 

@@ -41,7 +41,7 @@ export type BottomSheetNavigationHelpers = NavigationHelpers<
 
 export type BottomSheetNavigationProp<
   ParamList extends ParamListBase,
-  RouteName extends keyof ParamList = string
+  RouteName extends keyof ParamList = string,
 > = NavigationProp<
   ParamList,
   RouteName,
@@ -53,7 +53,7 @@ export type BottomSheetNavigationProp<
 
 export type BottomSheetScreenProps<
   ParamList extends ParamListBase,
-  RouteName extends keyof ParamList = string
+  RouteName extends keyof ParamList = string,
 > = {
   navigation: BottomSheetNavigationProp<ParamList, RouteName>;
   route: RouteProp<ParamList, RouteName>;

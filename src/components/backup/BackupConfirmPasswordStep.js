@@ -72,11 +72,8 @@ export default function BackupConfirmPasswordStep() {
   const walletCloudBackup = useWalletCloudBackup();
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const [validPassword, setValidPassword] = useState(false);
-  const [
-    passwordFocused,
-    setPasswordFocused,
-    setPasswordBlurred,
-  ] = useBooleanState(true);
+  const [passwordFocused, setPasswordFocused, setPasswordBlurred] =
+    useBooleanState(true);
   const [password, setPassword] = useState('');
   const [label, setLabel] = useState(
     `􀎽 ${lang.t('back_up.confirm_password.confirm_backup')}`

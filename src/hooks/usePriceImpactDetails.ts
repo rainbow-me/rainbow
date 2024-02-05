@@ -125,9 +125,8 @@ export default function usePriceImpactDetails(
   const { impactDisplay, priceImpact, percentDisplay } = useMemo(() => {
     const nativeAmountImpact = subtract(inputNativeAmount, outputNativeAmount);
     const priceImpact = divide(nativeAmountImpact, inputNativeAmount);
-    const percentDisplay = convertAmountToPercentageDisplayWithThreshold(
-      priceImpact
-    );
+    const percentDisplay =
+      convertAmountToPercentageDisplayWithThreshold(priceImpact);
     const impactDisplay = convertAmountToNativeDisplay(
       nativeAmountImpact,
       nativeCurrency

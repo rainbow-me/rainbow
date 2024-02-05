@@ -19,7 +19,11 @@ export const RewardsSheet: React.FC = () => {
     (state: AppState) => state.settings.accountAddress
   );
   const [isLoading, setIsLoading] = useState(true);
-  const { data, isLoading: queryIsLoading, isLoadingError } = useRewards({
+  const {
+    data,
+    isLoading: queryIsLoading,
+    isLoadingError,
+  } = useRewards({
     address: accountAddress,
   });
 

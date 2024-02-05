@@ -48,7 +48,7 @@ type ConsolidatedTransactionsQueryKey = ReturnType<
 // Query Fetcher
 
 export async function fetchConsolidatedTransactions<
-  ConsolidatedTransactionsResult
+  ConsolidatedTransactionsResult,
 >(
   { address, currency, chainIds }: ConsolidatedTransactionsArgs,
   config: QueryConfig<

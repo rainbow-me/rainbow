@@ -78,10 +78,8 @@ const withPositionsSection = (isLoadingUserAssets: boolean) => {
   const positionsEnabled = getExperimetalFlag(DEFI_POSITIONS);
   if (!positionsEnabled) return [];
 
-  const {
-    accountAddress: address,
-    nativeCurrency: currency,
-  } = store.getState().settings;
+  const { accountAddress: address, nativeCurrency: currency } =
+    store.getState().settings;
   const positionsObj: RainbowPositions | undefined = queryClient.getQueryData(
     positionsQueryKey({ address, currency })
   );

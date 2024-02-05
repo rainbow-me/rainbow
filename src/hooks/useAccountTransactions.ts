@@ -31,9 +31,8 @@ export default function useAccountTransactions() {
     connectedToHardhat,
   });
 
-  const {
-    pendingTransactions: storePendingTransactions,
-  } = usePendingTransactionsStore();
+  const { pendingTransactions: storePendingTransactions } =
+    usePendingTransactionsStore();
 
   const pendingTransactions = useMemo(() => {
     const txs = storePendingTransactions[accountAddress] || [];

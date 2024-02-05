@@ -131,11 +131,8 @@ const unlock = async (
   const { dispatch } = store;
   const { accountAddress } = store.getState().settings;
   const { gasFeeParamsBySpeed, selectedGasFee } = store.getState().gas;
-  const {
-    assetToUnlock,
-    contractAddress,
-    chainId,
-  } = parameters as UnlockActionParameters;
+  const { assetToUnlock, contractAddress, chainId } =
+    parameters as UnlockActionParameters;
   const { address: assetAddress } = assetToUnlock;
 
   logger.log(`[${actionName}] rap for`, assetToUnlock);
@@ -191,7 +188,8 @@ const unlock = async (
     throw e;
   }
   const walletAddress = await wallet.getAddress();
-  const cacheKey = `${walletAddress}|${assetAddress}|${contractAddress}`.toLowerCase();
+  const cacheKey =
+    `${walletAddress}|${assetAddress}|${contractAddress}`.toLowerCase();
 
   // Cache the approved value
   AllowancesCache.cache[cacheKey] = MaxUint256.toString();
@@ -232,7 +230,8 @@ export const assetNeedsUnlocking = async (
   if (address === ETH_ADDRESS) return false;
   if (alwaysRequireApprove) return true;
 
-  const cacheKey = `${accountAddress}|${address}|${contractAddress}`.toLowerCase();
+  const cacheKey =
+    `${accountAddress}|${address}|${contractAddress}`.toLowerCase();
 
   const allowance = await getRawAllowance(
     accountAddress,

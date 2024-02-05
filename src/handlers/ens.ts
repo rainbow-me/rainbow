@@ -940,12 +940,8 @@ export const formatRecordsForTransaction = (
 export const recordsForTransactionAreValid = (
   registrationRecords: ENSRegistrationRecords
 ) => {
-  const {
-    coinAddress,
-    contenthash,
-    ensAssociatedAddress,
-    text,
-  } = registrationRecords;
+  const { coinAddress, contenthash, ensAssociatedAddress, text } =
+    registrationRecords;
   if (
     !coinAddress?.length &&
     typeof contenthash !== 'string' &&
@@ -960,12 +956,8 @@ export const recordsForTransactionAreValid = (
 export const getTransactionTypeForRecords = (
   registrationRecords: ENSRegistrationRecords
 ) => {
-  const {
-    coinAddress,
-    contenthash,
-    ensAssociatedAddress,
-    text,
-  } = registrationRecords;
+  const { coinAddress, contenthash, ensAssociatedAddress, text } =
+    registrationRecords;
 
   if (
     ensAssociatedAddress ||

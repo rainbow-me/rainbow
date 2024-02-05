@@ -26,7 +26,7 @@ export const Themes = {
   SYSTEM: 'system',
 } as const;
 
-export type ThemesType = typeof Themes[keyof typeof Themes];
+export type ThemesType = (typeof Themes)[keyof typeof Themes];
 
 export interface ThemeContextProps {
   colors: Colors;

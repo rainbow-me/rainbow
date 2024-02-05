@@ -117,12 +117,12 @@ const BackupSection = () => {
                                   })
                                 : lang.t('wallet.back_ups.and_1_more_wallet')
                               : wallet.backedUp
-                              ? wallet.backupType === WalletBackupTypes.cloud
-                                ? lang.t('wallet.back_ups.backed_up')
-                                : lang.t('wallet.back_ups.backed_up_manually')
-                              : wallet.imported
-                              ? lang.t('wallet.back_ups.imported')
-                              : lang.t('back_up.needs_backup.not_backed_up')
+                                ? wallet.backupType === WalletBackupTypes.cloud
+                                  ? lang.t('wallet.back_ups.backed_up')
+                                  : lang.t('wallet.back_ups.backed_up_manually')
+                                : wallet.imported
+                                  ? lang.t('wallet.back_ups.imported')
+                                  : lang.t('back_up.needs_backup.not_backed_up')
                           }
                           warn={
                             numAccounts <= 1 &&
@@ -154,8 +154,8 @@ const BackupSection = () => {
                             wallet.backupType === WalletBackupTypes.cloud
                               ? 'complete'
                               : wallet.backedUp || wallet.imported
-                              ? 'incomplete'
-                              : 'warning'
+                                ? 'incomplete'
+                                : 'warning'
                           }
                         />
                       }

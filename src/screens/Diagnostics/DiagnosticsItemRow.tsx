@@ -13,11 +13,8 @@ import { DiagnosticsSecretInput } from '@/screens/Diagnostics/DiagnosticsSecretI
 
 export const DiagnosticsItemRow = ({ data }: any) => {
   const { colors } = useTheme();
-  const {
-    busy,
-    handleSetSeedPhrase,
-    handlePressImportButton,
-  } = useImportingWallet();
+  const { busy, handleSetSeedPhrase, handlePressImportButton } =
+    useImportingWallet();
 
   const handlePressRestore = useCallback(async () => {
     if (busy) return;

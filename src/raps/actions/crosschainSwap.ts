@@ -82,12 +82,8 @@ const crosschainSwap = async (
   baseNonce?: number
 ): Promise<number | undefined> => {
   logger.log(`[${actionName}] base nonce`, baseNonce, 'index:', index);
-  const {
-    inputAmount,
-    tradeDetails,
-    chainId,
-    requiresApprove,
-  } = parameters as CrosschainSwapActionParameters;
+  const { inputAmount, tradeDetails, chainId, requiresApprove } =
+    parameters as CrosschainSwapActionParameters;
   const { dispatch } = store;
   const { accountAddress } = store.getState().settings;
   const { inputCurrency, outputCurrency } = store.getState().swap;

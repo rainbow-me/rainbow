@@ -96,10 +96,10 @@ const SwipeableContactRow = (
     []
   );
 
-  const handlePressStart = useCallback(() => onTouch(address), [
-    address,
-    onTouch,
-  ]);
+  const handlePressStart = useCallback(
+    () => onTouch(address),
+    [address, onTouch]
+  );
 
   const renderRightActions = useCallback(
     progress => (

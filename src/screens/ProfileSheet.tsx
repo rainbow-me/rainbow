@@ -51,17 +51,14 @@ export default function ProfileSheet() {
   const isPreview = name === Routes.PROFILE_PREVIEW_SHEET;
 
   // Prefetch first transaction timestamp unless already fetched for intro marquee
-  const {
-    isSuccess: hasFirstTxTimestampFetched,
-  } = useFirstTransactionTimestamp({ addressOrName: ensName });
+  const { isSuccess: hasFirstTxTimestampFetched } =
+    useFirstTransactionTimestamp({ addressOrName: ensName });
 
   // Prefetch asset list
-  const {
-    isSuccess: hasListFetched,
-    briefSectionsData,
-  } = useExternalWalletSectionsData({
-    address: profileAddress || undefined,
-  });
+  const { isSuccess: hasListFetched, briefSectionsData } =
+    useExternalWalletSectionsData({
+      address: profileAddress || undefined,
+    });
 
   const colorIndex = useMemo(
     () => (profileAddress ? addressHashedColorIndex(profileAddress) : 0),
@@ -70,9 +67,10 @@ export default function ProfileSheet() {
 
   const dominantColor = usePersistentDominantColorFromImage(avatar?.imageUrl);
 
-  const wrapperStyle = useMemo(() => ({ height: contentHeight }), [
-    contentHeight,
-  ]);
+  const wrapperStyle = useMemo(
+    () => ({ height: contentHeight }),
+    [contentHeight]
+  );
 
   const accentColor =
     // Set accent color when ENS images have fetched & dominant

@@ -133,14 +133,10 @@ const resolveName = async ensName => {
 };
 
 const validatePrimaryName = async name => {
-  const {
-    address: rainbowAddress,
-    primaryName: rainbowPrimaryName,
-  } = await resolveName(RAINBOW_TEST_WALLET_NAME);
-  const {
-    address: randomAddress,
-    primaryName: randomPrimaryName,
-  } = await resolveName(RANDOM_NAME_ETH);
+  const { address: rainbowAddress, primaryName: rainbowPrimaryName } =
+    await resolveName(RAINBOW_TEST_WALLET_NAME);
+  const { address: randomAddress, primaryName: randomPrimaryName } =
+    await resolveName(RANDOM_NAME_ETH);
 
   if (
     rainbowAddress !== randomAddress ||

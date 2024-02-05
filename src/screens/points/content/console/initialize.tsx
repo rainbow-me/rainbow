@@ -20,12 +20,8 @@ import { Bleed, Box, Stack } from '@/design-system';
 
 export const Initialize = () => {
   const [showSignInButton, setShowSignInButton] = useState(false);
-  const {
-    profile,
-    setStep,
-    setAnimationKey,
-    signIn,
-  } = usePointsProfileContext();
+  const { profile, setStep, setAnimationKey, signIn } =
+    usePointsProfileContext();
   const { accountENS, accountAddress } = useAccountProfile();
 
   const accountName = (abbreviateEnsForDisplay(accountENS, 10) ||

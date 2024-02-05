@@ -98,8 +98,9 @@ const getWalletRowCount = (wallets: any) => {
   if (wallets) {
     Object.keys(wallets).forEach(key => {
       // Addresses
-      count += wallets[key].addresses.filter((account: any) => account.visible)
-        .length;
+      count += wallets[key].addresses.filter(
+        (account: any) => account.visible
+      ).length;
     });
   }
   return count;
@@ -129,9 +130,8 @@ export default function ChangeWalletSheet() {
   const [currentAddress, setCurrentAddress] = useState(
     currentAccountAddress || accountAddress
   );
-  const [currentSelectedWallet, setCurrentSelectedWallet] = useState(
-    selectedWallet
-  );
+  const [currentSelectedWallet, setCurrentSelectedWallet] =
+    useState(selectedWallet);
 
   const walletRowCount = useMemo(() => getWalletRowCount(wallets), [wallets]);
 
@@ -261,9 +261,8 @@ export default function ChangeWalletSheet() {
                     label: args.name,
                   };
                   const updatedWalletAddresses = [...walletAddresses];
-                  updatedWalletAddresses[
-                    walletAddressIndex
-                  ] = updatedWalletAddress;
+                  updatedWalletAddresses[walletAddressIndex] =
+                    updatedWalletAddress;
 
                   const updatedWallet = {
                     ...wallets[walletId],
@@ -323,9 +322,8 @@ export default function ChangeWalletSheet() {
   const onPressNotifications = useCallback(
     (walletName: string, address: string) => {
       analytics.track('Tapped "Notification Settings"');
-      const walletNotificationSettings = getNotificationSettingsForWalletWithAddress(
-        address
-      );
+      const walletNotificationSettings =
+        getNotificationSettingsForWalletWithAddress(address);
       if (walletNotificationSettings) {
         navigate(Routes.SETTINGS_SHEET, {
           params: {

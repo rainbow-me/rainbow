@@ -387,9 +387,9 @@ export default async function runMigrations() {
           color: isNumber(contact.color)
             ? newColorIndexes[contact.color]
             : typeof contact.color === 'string' &&
-              colors.avatarBackgrounds.includes(contact.color)
-            ? colors.avatarBackgrounds.indexOf(contact.color)
-            : getRandomColor(),
+                colors.avatarBackgrounds.includes(contact.color)
+              ? colors.avatarBackgrounds.indexOf(contact.color)
+              : getRandomColor(),
         };
       }
       logger.log('update contacts to index new colors');
@@ -688,10 +688,8 @@ export default async function runMigrations() {
     );
 
     if (favoritesMetadata) {
-      const lowercasedFavoritesMetadata: Record<
-        EthereumAddress,
-        RainbowToken
-      > = {};
+      const lowercasedFavoritesMetadata: Record<EthereumAddress, RainbowToken> =
+        {};
       Object.keys(favoritesMetadata).forEach((address: string) => {
         lowercasedFavoritesMetadata[address.toLowerCase()] =
           favoritesMetadata[address];

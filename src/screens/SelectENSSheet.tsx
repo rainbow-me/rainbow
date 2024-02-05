@@ -38,11 +38,8 @@ const rowPadding = 19;
 const maxListHeight = deviceHeight - 220;
 
 export default function SelectENSSheet() {
-  const {
-    isSuccess,
-    nonPrimaryDomains,
-    primaryDomain,
-  } = useAccountENSDomains();
+  const { isSuccess, nonPrimaryDomains, primaryDomain } =
+    useAccountENSDomains();
 
   const secondary06 = useForegroundColor('secondary06 (Deprecated)');
 

@@ -70,9 +70,12 @@ export async function prefetchAccountENSDomains({
 export default function useAccountENSDomains() {
   const { accountAddress, accountENS } = useAccountProfile();
 
-  const { data: domains, isLoading, isFetched, isSuccess } = useQuery<
-    BaseEnsDomainFragment[]
-  >(
+  const {
+    data: domains,
+    isLoading,
+    isFetched,
+    isSuccess,
+  } = useQuery<BaseEnsDomainFragment[]>(
     queryKey({ accountAddress }),
     async () => fetchENSDomainsWithCache({ accountAddress }),
     {
@@ -80,28 +83,28 @@ export default function useAccountENSDomains() {
     }
   );
 
-  const {
-    controlledDomains,
-    primaryDomain,
-    nonPrimaryDomains,
-  } = useMemo(() => {
-    const controlledDomains = domains?.filter(
-      ({ owner }) => owner?.id?.toLowerCase() === accountAddress?.toLowerCase()
-    );
-    return {
-      controlledDomains,
-      nonPrimaryDomains:
-        controlledDomains?.filter(({ name }) => accountENS !== name) || [],
-      primaryDomain: controlledDomains?.find(({ name }) => accountENS === name),
-    };
-  }, [accountAddress, accountENS, domains]);
+  const { controlledDomains, primaryDomain, nonPrimaryDomains } =
+    useMemo(() => {
+      const controlledDomains = domains?.filter(
+        ({ owner }) =>
+          owner?.id?.toLowerCase() === accountAddress?.toLowerCase()
+      );
+      return {
+        controlledDomains,
+        nonPrimaryDomains:
+          controlledDomains?.filter(({ name }) => accountENS !== name) || [],
+        primaryDomain: controlledDomains?.find(
+          ({ name }) => accountENS === name
+        ),
+      };
+    }, [accountAddress, accountENS, domains]);
 
   const uniqueDomain = useMemo(() => {
     return primaryDomain
       ? primaryDomain
       : nonPrimaryDomains?.length === 1
-      ? nonPrimaryDomains?.[0]
-      : null;
+        ? nonPrimaryDomains?.[0]
+        : null;
   }, [nonPrimaryDomains, primaryDomain]);
 
   return {

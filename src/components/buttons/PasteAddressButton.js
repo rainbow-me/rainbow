@@ -10,12 +10,8 @@ export default function PasteAddressButton({ onPress }) {
   const [isValid, setIsValid] = useState(false);
   const { colors } = useTheme();
   const { onInvalidPaste } = useInvalidPaste();
-  const {
-    clipboard,
-    enablePaste,
-    getClipboard,
-    hasClipboardData,
-  } = useClipboard();
+  const { clipboard, enablePaste, getClipboard, hasClipboardData } =
+    useClipboard();
 
   useEffect(() => {
     async function validate() {

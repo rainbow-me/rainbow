@@ -30,9 +30,10 @@ export default function usePortfolios() {
     keys(portfolios).forEach(address => {
       keys(portfolios[address]).forEach(key => {
         if (!isNil(total[key as keyof typeof total])) {
-          total[key as keyof typeof total] += portfolios[address][
-            key as keyof typeof portfolios[typeof address]
-          ]!;
+          total[key as keyof typeof total] +=
+            portfolios[address][
+              key as keyof (typeof portfolios)[typeof address]
+            ]!;
         }
       });
     });

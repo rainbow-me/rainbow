@@ -44,9 +44,8 @@ const LoadingWrapper = styled.View({
 });
 
 export default function ShowcaseScreen() {
-  const {
-    params: { address: addressOrDomain, setIsSearchModeEnabled } = {},
-  } = useRoute();
+  const { params: { address: addressOrDomain, setIsSearchModeEnabled } = {} } =
+    useRoute();
 
   const theme = useTheme();
 

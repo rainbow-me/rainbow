@@ -58,9 +58,8 @@ const getKeyForLanguage = (
 export function RemotePromoSheet() {
   const { colors } = useTheme();
   const { goBack, navigate } = useNavigation();
-  const { params } = useRoute<
-    RouteProp<RootStackParamList, 'RemotePromoSheet'>
-  >();
+  const { params } =
+    useRoute<RouteProp<RootStackParamList, 'RemotePromoSheet'>>();
   const { campaignId, campaignKey } = params;
   const { language } = useAccountSettings();
 

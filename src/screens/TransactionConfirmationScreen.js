@@ -211,11 +211,8 @@ export default function TransactionConfirmationScreen() {
     ({ walletconnect }) => walletconnect.walletConnectors
   );
 
-  const {
-    dataAddNewTransaction,
-    removeRequest,
-    walletConnectSendStatus,
-  } = useTransactionConfirmation();
+  const { dataAddNewTransaction, removeRequest, walletConnectSendStatus } =
+    useTransactionConfirmation();
 
   const {
     callback,
@@ -1130,8 +1127,8 @@ export default function TransactionConfirmationScreen() {
     (isMessageRequest
       ? MessageSheetHeight
       : (amount && amount !== '0.00') || !isBalanceEnough
-      ? TallSheetHeight
-      : ShortSheetHeight) * (android ? 1.5 : 1);
+        ? TallSheetHeight
+        : ShortSheetHeight) * (android ? 1.5 : 1);
 
   let marginTop = android ? deviceHeight - sheetHeight + 275 : null;
 

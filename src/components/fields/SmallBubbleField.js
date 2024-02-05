@@ -21,8 +21,8 @@ const BubbleInput = styled(ExchangeInput).attrs(
       ? isTinyPhone
         ? 27
         : android || isSmallPhone
-        ? 31
-        : 38
+          ? 31
+          : 38
       : undefined,
     size: isTinyPhone ? 'big' : isSmallPhone ? 'bigger' : 'h3',
     weight: 'semibold',
@@ -65,10 +65,10 @@ const BubbleField = (
   const ref = useRef();
   useImperativeHandle(forwardedRef, () => ref.current);
 
-  const formattedValue = useMemo(() => format(String(value || '')), [
-    format,
-    value,
-  ]);
+  const formattedValue = useMemo(
+    () => format(String(value || '')),
+    [format, value]
+  );
 
   const handleBlur = useCallback(
     event => {

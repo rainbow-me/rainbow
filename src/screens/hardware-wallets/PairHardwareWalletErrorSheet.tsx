@@ -27,9 +27,8 @@ type RouteParams = {
 };
 
 export const PairHardwareWalletErrorSheet = () => {
-  const route = useRoute<
-    RouteProp<RouteParams, 'PairHardwareWalletErrorSheetParams'>
-  >();
+  const route =
+    useRoute<RouteProp<RouteParams, 'PairHardwareWalletErrorSheetParams'>>();
   const { width: deviceWidth } = useDimensions();
   const { goBack, navigate } = useNavigation();
 

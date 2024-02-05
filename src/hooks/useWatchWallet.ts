@@ -57,13 +57,10 @@ export default function useWatchWallet({
   );
 
   const { accountAddress } = useAccountProfile();
-  const {
-    isImporting,
-    handleSetSeedPhrase,
-    handlePressImportButton,
-  } = useImportingWallet({
-    showImportModal,
-  });
+  const { isImporting, handleSetSeedPhrase, handlePressImportButton } =
+    useImportingWallet({
+      showImportModal,
+    });
   const watchWallet = useCallback(async () => {
     if (!isWatching) {
       handleSetSeedPhrase(ensName ?? '');

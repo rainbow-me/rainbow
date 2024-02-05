@@ -89,10 +89,8 @@ async function userAssetsQueryFunction({
       network => network.enabled && network.networkType !== 'testnet'
     ).map(network => network.id);
 
-    const {
-      erroredChainIds,
-      results,
-    } = await fetchAndParseUserAssetsForChainIds(address, currency, chainIds);
+    const { erroredChainIds, results } =
+      await fetchAndParseUserAssetsForChainIds(address, currency, chainIds);
     let parsedSuccessResults = results;
 
     // grab cached data for chain IDs with errors

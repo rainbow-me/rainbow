@@ -90,9 +90,10 @@ const ProfileModal = ({
   const { colors, isDarkMode } = useTheme();
   const inputRef = useRef<any>(null);
 
-  const handleTriggerFocusInput = useCallback(() => inputRef.current?.focus(), [
-    inputRef,
-  ]);
+  const handleTriggerFocusInput = useCallback(
+    () => inputRef.current?.focus(),
+    [inputRef]
+  );
 
   return (
     <Container>

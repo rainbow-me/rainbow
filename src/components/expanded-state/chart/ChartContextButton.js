@@ -14,11 +14,8 @@ const emojiSpacing = ios ? '' : '  ';
 export default function ChartContextButton({ asset, color }) {
   const { clearSelectedCoins, pushSelectedCoin } = useCoinListEditOptions();
 
-  const {
-    currentAction,
-    setHiddenCoins,
-    setPinnedCoins,
-  } = useCoinListFinishEditingOptions();
+  const { currentAction, setHiddenCoins, setPinnedCoins } =
+    useCoinListFinishEditingOptions();
 
   useEffect(() => {
     // Ensure this expanded state's asset is always actively inside

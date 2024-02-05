@@ -581,9 +581,8 @@ const getENSExecutionDetails = async ({
   switch (type) {
     case ENSRegistrationTransactionType.COMMIT: {
       if (!name || !ownerAddress) throw new Error('Bad arguments for commit');
-      const registrarController = await getENSRegistrarControllerContract(
-        wallet
-      );
+      const registrarController =
+        await getENSRegistrarControllerContract(wallet);
       const commitment = await registrarController.makeCommitmentWithConfig(
         name.replace(ENS_DOMAIN, ''),
         ownerAddress,
@@ -771,16 +770,14 @@ const formatRentPrice = (
     undefined,
     true
   );
-  const {
-    display: displayPerYear,
-    amount: amountPerYear,
-  } = convertAmountAndPriceToNativeDisplay(
-    rentPricePerYear,
-    nativeAssetPrice,
-    nativeCurrency,
-    undefined,
-    true
-  );
+  const { display: displayPerYear, amount: amountPerYear } =
+    convertAmountAndPriceToNativeDisplay(
+      rentPricePerYear,
+      nativeAssetPrice,
+      nativeCurrency,
+      undefined,
+      true
+    );
 
   return {
     perYear: {

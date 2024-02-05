@@ -178,10 +178,8 @@ export default function useENSRegistrationActionHandler(
 
   const registerAction = useCallback(
     async (callback: () => void = NOOP) => {
-      const {
-        name,
-        duration,
-      } = registrationParameters as RegistrationParameters;
+      const { name, duration } =
+        registrationParameters as RegistrationParameters;
 
       const provider = await getProviderForNetwork();
       const wallet = await loadWallet(undefined, false, provider);

@@ -70,7 +70,8 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
   const dispatch: ThunkDispatch<AppState, unknown, AnyAction> = useDispatch();
   const walletsRef = useRef(wallets);
   const prevWalletReady = usePrevious(walletReady);
-  const subscriptionChangesListener = useRef<NotificationSubscriptionChangesListener>();
+  const subscriptionChangesListener =
+    useRef<NotificationSubscriptionChangesListener>();
   const onTokenRefreshListener = useRef<Callback>();
   const foregroundNotificationListener = useRef<Callback>();
   const notificationOpenedListener = useRef<Callback>();
@@ -179,7 +180,7 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
       }
 
       // casting data payload to type that was agreed on with backend
-      const data = (notification.data as unknown) as TransactionNotificationData;
+      const data = notification.data as unknown as TransactionNotificationData;
 
       const wallets = walletsRef.current;
       const { accountAddress, nativeCurrency } = store.getState().settings;
@@ -307,7 +308,7 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
       logger.info(`NotificationsHandler: handling marketing notification`, {
         notification,
       });
-      const data = (notification.data as unknown) as MarketingNotificationData;
+      const data = notification.data as unknown as MarketingNotificationData;
       if (data?.route) {
         const parsedProps = JSON.parse(data?.routeProps || '{}');
         Navigation.handleAction((Routes as any)[data.route], {
@@ -325,7 +326,8 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
     setupAndroidChannels();
     saveFCMToken();
     trackWalletsSubscribedForNotifications();
-    subscriptionChangesListener.current = registerNotificationSubscriptionChangesListener();
+    subscriptionChangesListener.current =
+      registerNotificationSubscriptionChangesListener();
     onTokenRefreshListener.current = registerTokenRefreshListener();
     foregroundNotificationListener.current = messaging().onMessage(
       onForegroundRemoteNotification

@@ -553,9 +553,9 @@ const calculateL1FeeOptimism = async (
         newTx.data === '0x' ? ethUnits.basic_tx : ethUnits.basic_transfer
       );
     }
-    // @ts-expect-error ts-migrate(2551) FIXME: Property 'selectedGasPrice' does not exist on type... Remove this comment to see the full error message
-    const currentGasPrice = store.getState().gas.selectedGasPrice?.value
-      ?.amount;
+    const currentGasPrice =
+      // @ts-expect-error ts-migrate(2551) FIXME: Property 'selectedGasPrice' does not exist on type... Remove this comment to see the full error message
+      store.getState().gas.selectedGasPrice?.value?.amount;
     if (currentGasPrice) newTx.gasPrice = toHex(currentGasPrice);
     // @ts-expect-error ts-migrate(100005) FIXME: Remove this comment to see the full error message
     const serializedTx = serialize(newTx);

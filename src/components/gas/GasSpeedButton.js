@@ -365,9 +365,8 @@ const GasSpeedButton = ({
         type: 'crossChainGas',
       });
     } else {
-      const nativeAsset = await ethereumUtils.getNativeAssetForNetwork(
-        networkName
-      );
+      const nativeAsset =
+        await ethereumUtils.getNativeAssetForNetwork(networkName);
       navigate(Routes.EXPLAIN_SHEET, {
         network: networkName,
         type: 'gas',
@@ -445,13 +444,13 @@ const GasSpeedButton = ({
       const gweiDisplay = !shouldRoundGwei
         ? gasFeeParamsBySpeed[gasOption]?.gasPrice?.display
         : gasOption === 'custom' && selectedGasFeeOption !== 'custom'
-        ? ''
-        : greaterThan(estimatedGwei, totalGwei)
-        ? `${toFixedDecimals(totalGwei, isL2 ? 4 : 0)} Gwei`
-        : `${toFixedDecimals(estimatedGwei, isL2 ? 4 : 0)}–${toFixedDecimals(
-            totalGwei,
-            isL2 ? 4 : 0
-          )} Gwei`;
+          ? ''
+          : greaterThan(estimatedGwei, totalGwei)
+            ? `${toFixedDecimals(totalGwei, isL2 ? 4 : 0)} Gwei`
+            : `${toFixedDecimals(estimatedGwei, isL2 ? 4 : 0)}–${toFixedDecimals(
+                totalGwei,
+                isL2 ? 4 : 0
+              )} Gwei`;
       return {
         actionKey: gasOption,
         actionTitle:
@@ -477,9 +476,10 @@ const GasSpeedButton = ({
     isL2,
   ]);
 
-  const gasOptionsAvailable = useMemo(() => speedOptions.length > 1, [
-    speedOptions.length,
-  ]);
+  const gasOptionsAvailable = useMemo(
+    () => speedOptions.length > 1,
+    [speedOptions.length]
+  );
 
   const onDonePress = useCallback(() => {
     if (canGoBack) {

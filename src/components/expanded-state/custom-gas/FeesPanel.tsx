@@ -120,12 +120,10 @@ export default function FeesPanel({
 
   const isL2 = getNetworkObj(txNetwork)?.networkType === 'layer2';
 
-  const [maxPriorityFeeWarning, setMaxPriorityFeeWarning] = useState<AlertInfo>(
-    null
-  );
-  const [maxPriorityFeeError, setMaxPriorityFeeError] = useState<AlertInfo>(
-    null
-  );
+  const [maxPriorityFeeWarning, setMaxPriorityFeeWarning] =
+    useState<AlertInfo>(null);
+  const [maxPriorityFeeError, setMaxPriorityFeeError] =
+    useState<AlertInfo>(null);
 
   const [maxBaseFeeWarning, setMaxBaseFeeWarning] = useState<AlertInfo>(null);
   const [maxBaseFeeError, setMaxBaseFeeError] = useState<AlertInfo>(null);

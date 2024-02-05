@@ -32,11 +32,8 @@ export default function ({
   }>();
   const dispatch = useDispatch();
 
-  const {
-    updateInputAmount,
-    updateNativeAmount,
-    updateOutputAmount,
-  } = useSwapInputHandlers();
+  const { updateInputAmount, updateNativeAmount, updateOutputAmount } =
+    useSwapInputHandlers();
 
   const [isFillingParams, setIsFillingParams] = useState(false);
 

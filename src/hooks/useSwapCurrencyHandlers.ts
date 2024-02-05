@@ -44,11 +44,8 @@ export default function useSwapCurrencyHandlers({
 
   const { derivedValues } = useSwapDerivedValues();
 
-  const {
-    updateInputAmount,
-    updateNativeAmount,
-    updateOutputAmount,
-  } = useSwapInputHandlers();
+  const { updateInputAmount, updateNativeAmount, updateOutputAmount } =
+    useSwapInputHandlers();
 
   const { defaultInputItemInWallet, defaultOutputItem } = useMemo(() => {
     if (type === ExchangeModalTypes.swap) {

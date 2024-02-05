@@ -62,14 +62,19 @@ export default function PointsContent() {
   const { setClipboard } = useClipboard();
   const { isReadOnlyWallet } = useWallets();
 
-  const { data: points, isFetching, dataUpdatedAt, refetch } = usePoints({
+  const {
+    data: points,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = usePoints({
     walletAddress: accountAddress,
   });
 
-  const cards = useMemo(() => getCardsForPlacement(name as string), [
-    getCardsForPlacement,
-    name,
-  ]);
+  const cards = useMemo(
+    () => getCardsForPlacement(name as string),
+    [getCardsForPlacement, name]
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -121,9 +126,8 @@ export default function PointsContent() {
   }, [dataUpdatedAt, refetch]);
 
   const nextDistributionSeconds = points?.points?.meta?.distribution?.next;
-  const totalPointsString = points?.points?.user?.earnings?.total.toLocaleString(
-    'en-US'
-  );
+  const totalPointsString =
+    points?.points?.user?.earnings?.total.toLocaleString('en-US');
   const totalPointsMaskSize = 60 * Math.max(totalPointsString?.length ?? 0, 4);
 
   const totalUsers = points?.points?.leaderboard.stats.total_users;

@@ -19,10 +19,11 @@ type RainbowTransactionWithContact = RainbowTransaction & {
   contact: Contact | null;
 };
 
-type RainbowTransactionWithContactAndMainnetAddress = RainbowTransactionWithContact & {
-  mainnetAddress: string;
-  accountAddress: string;
-};
+type RainbowTransactionWithContactAndMainnetAddress =
+  RainbowTransactionWithContact & {
+    mainnetAddress: string;
+    accountAddress: string;
+  };
 // bad news
 const groupTransactionByDate = ({
   pending,
@@ -51,20 +52,22 @@ const groupTransactionByDate = ({
   }
 };
 
-const addContactInfo = (contacts: { [address: string]: Contact }) => (
-  txn: RainbowTransaction
-): RainbowTransaction & {
-  contact: Contact | null;
-} => {
-  const { from, to, status } = txn;
-  const isSent = status === TransactionStatusTypes.sent;
-  const contactAddress = (isSent ? to : from) || '';
-  const contact = contacts?.[contactAddress?.toLowerCase()] ?? null;
-  return {
-    ...txn,
-    contact,
+const addContactInfo =
+  (contacts: { [address: string]: Contact }) =>
+  (
+    txn: RainbowTransaction
+  ): RainbowTransaction & {
+    contact: Contact | null;
+  } => {
+    const { from, to, status } = txn;
+    const isSent = status === TransactionStatusTypes.sent;
+    const contactAddress = (isSent ? to : from) || '';
+    const contact = contacts?.[contactAddress?.toLowerCase()] ?? null;
+    return {
+      ...txn,
+      contact,
+    };
   };
-};
 
 export const buildTransactionsSections = ({
   accountAddress,
@@ -117,21 +120,20 @@ export const buildTransactionsSections = ({
         item: RainbowTransactionWithContactAndMainnetAddress;
       }) => JSX.Element;
     }[] = filter.map((section: string) => {
-      const sectionData: RainbowTransactionWithContactAndMainnetAddress[] = transactionsByDate[
-        section
-      ].map(txn => {
-        const typeTxn = txn as RainbowTransactionWithContact;
-        const res = {
-          ...typeTxn,
-          to: typeTxn.to || '',
-          from: typeTxn.from || '',
-          accountAddress,
-          mainnetAddress:
-            mainnetAddresses[`${typeTxn.address}_${typeTxn.network}`],
-        };
+      const sectionData: RainbowTransactionWithContactAndMainnetAddress[] =
+        transactionsByDate[section].map(txn => {
+          const typeTxn = txn as RainbowTransactionWithContact;
+          const res = {
+            ...typeTxn,
+            to: typeTxn.to || '',
+            from: typeTxn.from || '',
+            accountAddress,
+            mainnetAddress:
+              mainnetAddresses[`${typeTxn.address}_${typeTxn.network}`],
+          };
 
-        return res;
-      });
+          return res;
+        });
 
       return {
         data: sectionData,

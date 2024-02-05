@@ -29,7 +29,7 @@ export type RPCPayload =
         | RPCMethod.SignTypedDataV4;
       params: [
         string, // address
-        string // stringify typed object
+        string, // stringify typed object
       ];
     }
   | {
@@ -42,7 +42,7 @@ export type RPCPayload =
           gasPrice: string;
           gasLimit: string;
           value: string;
-        }
+        },
       ];
     }
   | {

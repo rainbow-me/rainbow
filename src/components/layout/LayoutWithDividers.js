@@ -6,9 +6,10 @@ const LayoutWithDividers = (
   { children, dividerHorizontal, dividerRenderer = Divider, ...props },
   ref
 ) => {
-  const dividerProps = useMemo(() => ({ horizontal: dividerHorizontal }), [
-    dividerHorizontal,
-  ]);
+  const dividerProps = useMemo(
+    () => ({ horizontal: dividerHorizontal }),
+    [dividerHorizontal]
+  );
 
   return (
     <Flex {...props} ref={ref}>

@@ -130,7 +130,7 @@ function SendFlowNavigator() {
 }
 
 function MainNavigator() {
-  const initialRoute = (useContext(InitialRouteContext) as unknown) as string;
+  const initialRoute = useContext(InitialRouteContext) as unknown as string;
 
   return (
     <Stack.Navigator

@@ -118,8 +118,8 @@ export default function MiniButton({
             android
               ? 'none'
               : disabled
-              ? colors.lightGrey
-              : backgroundColor || colors.appleBlue
+                ? colors.lightGrey
+                : backgroundColor || colors.appleBlue
           }
           borderRadius={borderRadius}
           height={height}
@@ -127,8 +127,8 @@ export default function MiniButton({
             hideShadow
               ? shadows.none
               : disabled
-              ? shadows.disabled
-              : shadows.default
+                ? shadows.disabled
+                : shadows.default
           }
           width={width}
         />

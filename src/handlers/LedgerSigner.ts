@@ -129,9 +129,8 @@ export class LedgerSigner extends Signer {
   async signTypedDataMessage(data: any, legacy: boolean): Promise<string> {
     const version =
       legacy === false ? SignTypedDataVersion.V4 : SignTypedDataVersion.V3;
-    const { domain, types, primaryType, message } = TypedDataUtils.sanitizeData(
-      data
-    );
+    const { domain, types, primaryType, message } =
+      TypedDataUtils.sanitizeData(data);
 
     const domainSeparatorHex = TypedDataUtils.hashStruct(
       'EIP712Domain',

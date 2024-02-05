@@ -676,7 +676,7 @@ export const palettes: Record<ColorMode, Palette> = {
 };
 
 function selectForegroundColors<
-  SelectedColors extends readonly (ForegroundColor | 'accent')[]
+  SelectedColors extends readonly (ForegroundColor | 'accent')[],
 >(...colors: SelectedColors): SelectedColors {
   return colors;
 }
@@ -707,7 +707,7 @@ export const textColors = selectForegroundColors(
   'secondary70 (Deprecated)',
   'secondary80 (Deprecated)'
 );
-export type TextColor = typeof textColors[number];
+export type TextColor = (typeof textColors)[number];
 
 export const shadowColors = selectForegroundColors(
   'accent',
@@ -719,7 +719,7 @@ export const shadowColors = selectForegroundColors(
   'orange',
   'yellow'
 );
-export type ShadowColor = typeof shadowColors[number];
+export type ShadowColor = (typeof shadowColors)[number];
 
 export const separatorColors = selectForegroundColors(
   'separator',
@@ -731,4 +731,4 @@ export const separatorColors = selectForegroundColors(
   'divider80 (Deprecated)',
   'divider100 (Deprecated)'
 );
-export type SeparatorColor = typeof separatorColors[number];
+export type SeparatorColor = (typeof separatorColors)[number];

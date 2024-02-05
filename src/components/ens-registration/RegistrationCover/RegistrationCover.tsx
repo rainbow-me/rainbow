@@ -37,13 +37,8 @@ const RegistrationCover = ({
   const {
     images: { coverUrl: initialCoverUrl },
   } = useENSModifiedRegistration();
-  const {
-    isLoading,
-    onBlurField,
-    onRemoveField,
-    setDisabled,
-    values,
-  } = useENSRegistrationForm();
+  const { isLoading, onBlurField, onRemoveField, setDisabled, values } =
+    useENSRegistrationForm();
   const { name } = useENSRegistration();
   const [coverUpdateAllowed, setCoverUpdateAllowed] = useState(true);
   const [coverUrl, setCoverUrl] = useState(initialCoverUrl || values?.header);
@@ -161,8 +156,8 @@ const RegistrationCover = ({
           !hasSeenExplainSheet
             ? onShowExplainSheet
             : enableNFTs
-            ? undefined
-            : handleSelectImage
+              ? undefined
+              : handleSelectImage
         }
         scaleTo={1}
       >

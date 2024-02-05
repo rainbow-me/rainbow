@@ -63,11 +63,8 @@ export const AnimatedText = ({
   weight = 'bold',
 }: AnimatedTextProps) => {
   const { colors } = useTheme();
-  const {
-    currentSequenceIndex,
-    getNextAnimationIndex,
-    incrementSequence,
-  } = useAnimationContext();
+  const { currentSequenceIndex, getNextAnimationIndex, incrementSequence } =
+    useAnimationContext();
   const index = useRef(getNextAnimationIndex()).current;
   const displayedCharacters = useSharedValue(
     skipAnimation ? textContent.length : 0
@@ -89,8 +86,8 @@ export const AnimatedText = ({
       textShadowColor: disableShadow
         ? 'transparent'
         : shadowOpacity && rainbowTextColors?.[i]?.shadow
-        ? colors.alpha(rainbowTextColors?.[i]?.shadow, shadowOpacity)
-        : rainbowTextColors?.[i]?.shadow,
+          ? colors.alpha(rainbowTextColors?.[i]?.shadow, shadowOpacity)
+          : rainbowTextColors?.[i]?.shadow,
     }),
     [
       colors,
@@ -111,10 +108,10 @@ export const AnimatedText = ({
       textShadowColor: disableShadow
         ? 'transparent'
         : rainbowText
-        ? undefined
-        : shadowOpacity && color?.shadow
-        ? colors.alpha(color?.shadow, shadowOpacity)
-        : color?.shadow,
+          ? undefined
+          : shadowOpacity && color?.shadow
+            ? colors.alpha(color?.shadow, shadowOpacity)
+            : color?.shadow,
     }),
     [
       color,

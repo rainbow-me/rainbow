@@ -37,9 +37,8 @@ export const Calculate = () => {
   const { accountENS, accountAddress } = useAccountProfile();
 
   const [isCalculationComplete, setIsCalculationComplete] = useState(false);
-  const [shouldShowContinueButton, setShouldShowContinueButton] = useState(
-    false
-  );
+  const [shouldShowContinueButton, setShouldShowContinueButton] =
+    useState(false);
 
   const accountName = (abbreviateEnsForDisplay(accountENS, 10) ||
     formatAddress(accountAddress, 4, 5)) as string;

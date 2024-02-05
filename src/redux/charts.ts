@@ -71,39 +71,38 @@ export interface ChartsReceivedMessage {
  *
  * @param message The `ChartsReceivedMessage`.
  */
-export const assetChartsReceived = (message: ChartsReceivedMessage) => (
-  dispatch: Dispatch<ChartsUpdateAction>,
-  getState: AppGetState
-) => {
-  const chartType = message?.meta?.charts_type;
-  const { charts: existingCharts } = getState().charts;
-  const assetCharts = message?.payload?.charts ?? {};
-  const { nativeCurrency } = getState().settings;
+export const assetChartsReceived =
+  (message: ChartsReceivedMessage) =>
+  (dispatch: Dispatch<ChartsUpdateAction>, getState: AppGetState) => {
+    const chartType = message?.meta?.charts_type;
+    const { charts: existingCharts } = getState().charts;
+    const assetCharts = message?.payload?.charts ?? {};
+    const { nativeCurrency } = getState().settings;
 
-  if (nativeCurrency.toLowerCase() === message?.meta?.currency) {
-    const newChartData = mapValues(assetCharts, (chartData, address) => {
-      if (chartType) {
+    if (nativeCurrency.toLowerCase() === message?.meta?.currency) {
+      const newChartData = mapValues(assetCharts, (chartData, address) => {
+        if (chartType) {
+          return {
+            ...existingCharts[address],
+            // .slice to prevent mutation
+            [chartType]: reverse(chartData?.slice()),
+          };
+        }
         return {
           ...existingCharts[address],
-          // .slice to prevent mutation
-          [chartType]: reverse(chartData?.slice()),
         };
-      }
-      return {
-        ...existingCharts[address],
-      };
-    });
+      });
 
-    const updatedCharts = {
-      ...existingCharts,
-      ...newChartData,
-    };
-    dispatch({
-      payload: updatedCharts,
-      type: CHARTS_UPDATE,
-    });
-  }
-};
+      const updatedCharts = {
+        ...existingCharts,
+        ...newChartData,
+      };
+      dispatch({
+        payload: updatedCharts,
+        type: CHARTS_UPDATE,
+      });
+    }
+  };
 
 // -- Reducer ----------------------------------------- //
 

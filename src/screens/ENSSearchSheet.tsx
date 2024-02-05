@@ -144,8 +144,8 @@ export default function ENSSearchSheet() {
                 isAvailable
                   ? colors.green
                   : isRegistered
-                  ? colors.yellowOrange
-                  : colors.appleBlue
+                    ? colors.yellowOrange
+                    : colors.appleBlue
               }
               state={state}
               testID="ens-search-input"

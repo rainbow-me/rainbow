@@ -74,8 +74,9 @@ export function CollectionCell({
 
   const [mediaRendered, setMediaRendered] = useState(false);
 
-  const currency = getNetworkObj(getNetworkFromChainId(collection.chainId))
-    .nativeCurrency;
+  const currency = getNetworkObj(
+    getNetworkFromChainId(collection.chainId)
+  ).nativeCurrency;
 
   const amount = convertRawAmountToRoundedDecimal(
     collection.mintStatus.price,

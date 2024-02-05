@@ -227,8 +227,8 @@ const PinAuthenticationScreen = () => {
             {actionType === 'authentication'
               ? lang.t('wallet.pin_authentication.type_your_pin')
               : actionType === 'creation'
-              ? lang.t('wallet.pin_authentication.choose_your_pin')
-              : lang.t('wallet.pin_authentication.confirm_your_pin')}
+                ? lang.t('wallet.pin_authentication.choose_your_pin')
+                : lang.t('wallet.pin_authentication.confirm_your_pin')}
           </SheetTitle>
           <PinValue translateX={errorAnimation} value={value} />
         </ColumnWithMargins>

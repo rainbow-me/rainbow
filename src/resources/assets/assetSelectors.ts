@@ -27,10 +27,8 @@ const sortAssetsByNativeAmount = (
   if (!isEmpty(assetsNativePrices)) {
     assetsNativePrices = parseAssetsNative(assetsNativePrices, nativeCurrency);
   }
-  const {
-    hasValue = EMPTY_ARRAY,
-    noValue = EMPTY_ARRAY,
-  } = groupAssetsByMarketValue(assetsNativePrices);
+  const { hasValue = EMPTY_ARRAY, noValue = EMPTY_ARRAY } =
+    groupAssetsByMarketValue(assetsNativePrices);
 
   const sortedAssetsNoShitcoins = hasValue.sort((a: any, b: any) => {
     const itemA = Number(a.native?.balance?.amount) ?? 0;

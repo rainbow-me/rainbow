@@ -1695,8 +1695,8 @@ const SimulationCard = ({
                   simulationScanResult !== TransactionScanResultType.Ok
                     ? simulationScanResult
                     : simulationError
-                    ? 'failed'
-                    : 'insufficientBalance'
+                      ? 'failed'
+                      : 'insufficientBalance'
                 }
               />
             ) : (
@@ -1719,8 +1719,8 @@ const SimulationCard = ({
                         isLoading
                           ? 'label'
                           : simulationUnavailable
-                          ? 'labelQuaternary'
-                          : 'label'
+                            ? 'labelQuaternary'
+                            : 'label'
                       }
                       size="icon 15px"
                       weight="bold"
@@ -2210,8 +2210,8 @@ const DetailRow = ({
                 value === 'VERIFIED'
                   ? 'verified'
                   : value === 'UNVERIFIED'
-                  ? 'unverified'
-                  : 'unknown'
+                    ? 'unverified'
+                    : 'unknown'
               }
               value={value}
             />

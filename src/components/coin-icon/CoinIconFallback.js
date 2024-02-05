@@ -29,16 +29,8 @@ const fallbackIconStyle = size => {
 };
 
 export const CoinIconFallback = fallbackProps => {
-  const {
-    address,
-    height,
-    network,
-    symbol,
-    shadowColor,
-    theme,
-    size,
-    width,
-  } = fallbackProps;
+  const { address, height, network, symbol, shadowColor, theme, size, width } =
+    fallbackProps;
 
   const { colors } = theme;
   const imageUrl = getUrlForTrustIconFallback(address, network);

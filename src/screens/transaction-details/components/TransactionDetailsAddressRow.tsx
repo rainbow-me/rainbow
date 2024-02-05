@@ -217,9 +217,10 @@ export const TransactionDetailsAddressRow: React.FC<Props> = ({
     easing: Easing.linear,
   });
 
-  const accountEmoji = useMemo(() => returnStringFirstEmoji(account?.label), [
-    account,
-  ]);
+  const accountEmoji = useMemo(
+    () => returnStringFirstEmoji(account?.label),
+    [account]
+  );
   const accountName = useMemo(
     () => removeFirstEmojiFromString(account?.label),
     []
