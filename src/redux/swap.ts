@@ -1,6 +1,5 @@
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { AnyAction } from 'redux';
-import { fetchAssetPrices } from './explorer';
 import { SwappableAsset } from '@/entities';
 import { ExchangeModalTypes } from '@/helpers';
 import { AppDispatch, AppGetState } from '@/redux/store';
@@ -139,9 +138,6 @@ export const updateSwapInputCurrency = (
       dispatch(updateSwapOutputCurrency(null, true));
     }
 
-    if (newInputCurrency) {
-      dispatch(fetchAssetPrices(newInputCurrency.address));
-    }
     if (independentField === SwapModalField.input) {
       dispatch(updateSwapInputAmount(null));
     }
@@ -169,9 +165,6 @@ export const updateSwapOutputCurrency = (
     }
 
     dispatch({ payload: newOutputCurrency, type: SWAP_UPDATE_OUTPUT_CURRENCY });
-    if (newOutputCurrency) {
-      dispatch(fetchAssetPrices(newOutputCurrency.address));
-    }
     if (
       independentField === SwapModalField.output ||
       newOutputCurrency === null

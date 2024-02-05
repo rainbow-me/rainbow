@@ -253,62 +253,72 @@ export default function PointsContent() {
                   </Cover>
                 </Box>
               </Bleed>
-              {!!cards.length && !isReadOnlyWallet && (
-                <>
-                  <RemoteCardCarousel key="remote-cards" />
+              <Stack
+                space="24px"
+                separator={
                   <Separator color="separatorTertiary" thickness={1} />
-                </>
-              )}
-              <Columns space="12px">
-                <Column width="1/2">
-                  {canDisplayNextRewardCard ? (
-                    <InfoCard
-                      // onPress={() => {}}
-                      title={i18n.t(i18n.l.points.points.next_drop)}
-                      mainText={
-                        Date.now() >= nextDistributionSeconds * 1000
-                          ? i18n.t(i18n.l.points.points.now)
-                          : getFormattedTimeQuantity(
-                              nextDistributionSeconds * 1000 - Date.now(),
-                              2
-                            )
-                      }
-                      icon="􀉉"
-                      subtitle={displayNextDistribution(
-                        nextDistributionSeconds
-                      )}
-                      accentColor={labelSecondary}
-                    />
-                  ) : (
-                    <Skeleton height={98} width={(deviceWidth - 40 - 12) / 2} />
-                  )}
-                </Column>
-                <Column width="1/2">
-                  {canDisplayRankCard ? (
-                    <InfoCard
-                      // onPress={() => {}}
-                      title={i18n.t(i18n.l.points.points.your_rank)}
-                      mainText={
-                        isUnranked
-                          ? i18n.t(i18n.l.points.points.unranked)
-                          : `#${rank.toLocaleString('en-US')}`
-                      }
-                      icon={getRankChangeIcon()}
-                      subtitle={
-                        isUnranked
-                          ? i18n.t(i18n.l.points.points.points_to_rank)
-                          : getRankChangeText()
-                      }
-                      mainTextColor={isUnranked ? 'secondary' : 'primary'}
-                      accentColor={
-                        isUnranked ? green : getRankChangeIconColor()
-                      }
-                    />
-                  ) : (
-                    <Skeleton height={98} width={(deviceWidth - 40 - 12) / 2} />
-                  )}
-                </Column>
-              </Columns>
+                }
+              >
+                {!!cards.length && !isReadOnlyWallet && (
+                  <RemoteCardCarousel key="remote-cards" />
+                )}
+                <Columns space="12px">
+                  <Column width="1/2">
+                    {canDisplayNextRewardCard ? (
+                      <InfoCard
+                        // onPress={() => {}}
+                        title={i18n.t(i18n.l.points.points.next_drop)}
+                        mainText={
+                          Date.now() >= nextDistributionSeconds * 1000
+                            ? i18n.t(i18n.l.points.points.now)
+                            : getFormattedTimeQuantity(
+                                nextDistributionSeconds * 1000 - Date.now(),
+                                2
+                              )
+                        }
+                        icon="􀉉"
+                        subtitle={displayNextDistribution(
+                          nextDistributionSeconds
+                        )}
+                        accentColor={labelSecondary}
+                      />
+                    ) : (
+                      <Skeleton
+                        height={98}
+                        width={(deviceWidth - 40 - 12) / 2}
+                      />
+                    )}
+                  </Column>
+                  <Column width="1/2">
+                    {canDisplayRankCard ? (
+                      <InfoCard
+                        // onPress={() => {}}
+                        title={i18n.t(i18n.l.points.points.your_rank)}
+                        mainText={
+                          isUnranked
+                            ? i18n.t(i18n.l.points.points.unranked)
+                            : `#${rank.toLocaleString('en-US')}`
+                        }
+                        icon={getRankChangeIcon()}
+                        subtitle={
+                          isUnranked
+                            ? i18n.t(i18n.l.points.points.points_to_rank)
+                            : getRankChangeText()
+                        }
+                        mainTextColor={isUnranked ? 'secondary' : 'primary'}
+                        accentColor={
+                          isUnranked ? green : getRankChangeIconColor()
+                        }
+                      />
+                    ) : (
+                      <Skeleton
+                        height={98}
+                        width={(deviceWidth - 40 - 12) / 2}
+                      />
+                    )}
+                  </Column>
+                </Columns>
+              </Stack>
               {!isReadOnlyWallet && (
                 <>
                   <Stack space="16px">

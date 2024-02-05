@@ -17,6 +17,7 @@ import {
 import { usePointsProfileContext } from '../../contexts/PointsProfileContext';
 import { NeonButton } from '../../components/NeonButton';
 import { Bleed, Box, Stack } from '@/design-system';
+import LineBreak from '../../components/LineBreak';
 
 export const Initialize = () => {
   const [showSignInButton, setShowSignInButton] = useState(false);
@@ -33,7 +34,7 @@ export const Initialize = () => {
 
   return (
     <Box height="full" justifyContent="space-between">
-      <Stack space="44px">
+      <Stack separator={<LineBreak lines={3} />}>
         <Paragraph>
           <Line>
             <AnimatedText

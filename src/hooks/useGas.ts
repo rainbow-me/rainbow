@@ -29,6 +29,13 @@ import {
 } from '@/redux/gas';
 import { ethereumUtils } from '@/utils';
 import { getNetworkObj } from '@/networks';
+import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
+import {
+  BNB_MAINNET_ADDRESS,
+  ETH_ADDRESS,
+  MATIC_MAINNET_ADDRESS,
+} from '@/references';
+import useAccountSettings from './useAccountSettings';
 
 const checkSufficientGas = (
   txFee: LegacyGasFee | GasFee,
@@ -79,6 +86,24 @@ export default function useGas({
   nativeAsset,
 }: { nativeAsset?: ParsedAddressAsset } = {}) {
   const dispatch = useDispatch();
+  const { nativeCurrency } = useAccountSettings();
+
+  // keep native assets up to date
+  useExternalToken({
+    address: BNB_MAINNET_ADDRESS,
+    network: Network.mainnet,
+    currency: nativeCurrency,
+  });
+  useExternalToken({
+    address: ETH_ADDRESS,
+    network: Network.mainnet,
+    currency: nativeCurrency,
+  });
+  useExternalToken({
+    address: MATIC_MAINNET_ADDRESS,
+    network: Network.mainnet,
+    currency: nativeCurrency,
+  });
 
   const gasData: {
     currentBlockParams: CurrentBlockParams;

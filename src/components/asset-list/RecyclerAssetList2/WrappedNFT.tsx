@@ -21,7 +21,7 @@ export default React.memo(function WrappedNFT({
   placement: 'left' | 'right';
   externalAddress?: string;
 }) {
-  const assetCollectible = useCollectible({ uniqueId }, externalAddress);
+  const assetCollectible = useCollectible(uniqueId, externalAddress);
 
   const asset = useMemo(
     () => ({

@@ -5,7 +5,7 @@ import ConditionalWrap from 'conditional-wrap';
 
 import { Box, Cover, Stack, Text, useForegroundColor } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
-import { TrimmedCard, useRemoteCardContext } from './RemoteCardProvider';
+import { useRemoteCardContext } from './RemoteCardProvider';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { useNavigation } from '@/navigation';
 import { Language } from '@/languages';
@@ -23,6 +23,7 @@ import { ImgixImage } from '@/components/images';
 import { analyticsV2 } from '@/analytics';
 import { FlashList } from '@shopify/flash-list';
 import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
+import { TrimmedCard } from '@/resources/cards/cardCollectionQuery';
 
 const ICON_SIZE = 40;
 
@@ -184,6 +185,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
         testID={`remote-card-${cardKey}`}
         width={{ custom: width - gutterSize }}
         overflow="visible"
+        justifyContent="center"
         height={'full'}
         borderRadius={18}
         padding={{ custom: 16 }}

@@ -132,7 +132,7 @@ export default function ChartExpandedStateHeader({
             badgeXPosition={-7}
             badgeYPosition={0}
             address={asset?.address}
-            mainnetAddress={asset?.mainnetAddress}
+            mainnetAddress={asset?.mainnet_address || asset?.mainnetAddress}
             network={asset?.network || Network.mainnet}
             symbol={asset?.symbol}
             theme={theme}
