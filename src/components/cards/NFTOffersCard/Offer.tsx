@@ -287,6 +287,7 @@ export const Offer = ({ offer }: { offer: NftOffer }) => {
           symbol={offer.paymentToken.symbol}
           style={{ marginRight: 4 }}
           network={offer.network}
+          ignoreBadge
         />
         <Text color="label" size="13pt" weight="heavy">
           {cryptoAmount}
