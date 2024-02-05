@@ -24,7 +24,6 @@ export const SimpleSheet = ({
   const fullSheetHeight = deviceHeight - safeAreaInsetValues.top;
 
   return (
-    // @ts-expect-error JavaScript component
     <SlackSheet
       additionalTopPadding={
         IS_ANDROID && !customHeight ? StatusBar.currentHeight : false

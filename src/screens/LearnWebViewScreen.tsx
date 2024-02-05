@@ -124,8 +124,6 @@ export default function LearnWebViewScreen() {
   `;
 
   return (
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore - JS component
     <SlackSheet
       renderHeader={renderHeader}
       backgroundColor={surfacePrimaryElevated}

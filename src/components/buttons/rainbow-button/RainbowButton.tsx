@@ -13,6 +13,7 @@ import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { position, shadow } from '@/styles';
 import ShadowView from '@/react-native-shadow-stack/ShadowView';
+import { View } from 'react-native';
 
 const AddCashIcon = styled(ImgixImage).attrs({
   resizeMode: ImgixImage.resizeMode.contain,
@@ -37,12 +38,12 @@ const ButtonContent = styled(RowWithMargins).attrs({
   alignSelf: 'center',
   bottom: 2,
   height: '100%',
-  marginRight: ({ type }: { type: keyof typeof RainbowButtonTypes }) =>
+  marginRight: ({ type }: { type: RainbowButtonTypes }) =>
     type === RainbowButtonTypes.addCash ? 9 : 0,
 });
 
 const ButtonLabel = styled(Text).attrs(
-  ({ disabled, type, theme: { colors, isDarkMode } }) => ({
+  ({ disabled, type, theme: { colors, isDarkMode } }: any) => ({
     align: type === RainbowButtonTypes.addCash ? 'left' : 'center',
     color: isDarkMode && disabled ? colors.white : colors.whiteLabel,
     letterSpacing:
@@ -53,15 +54,7 @@ const ButtonLabel = styled(Text).attrs(
   })
 )({});
 
-const OuterButton = styled.View<{
-  height: number;
-  width: number;
-  isDarkMode: boolean;
-  disabled: boolean;
-  strokeWidth: number;
-  type: keyof typeof RainbowButtonTypes;
-  theme: { colors: any };
-}>(
+const OuterButton = styled(View)(
   ({
     height,
     width,
@@ -70,6 +63,14 @@ const OuterButton = styled.View<{
     strokeWidth,
     type,
     theme: { colors },
+  }: {
+    height: number;
+    width: number;
+    isDarkMode: boolean;
+    disabled: boolean;
+    strokeWidth: number;
+    type: RainbowButtonTypes;
+    theme: { colors: any };
   }) => ({
     ...shadow.buildAsObject(0, 5, 15, colors.shadow),
     backgroundColor:
@@ -89,7 +90,7 @@ const Shadow = styled(ShadowView)(
     disabled,
     width,
     theme: { colors },
-  }) => ({
+  }: any) => ({
     ...shadow.buildAsObject(0, 10, 30, colors.shadow, 1),
     backgroundColor: colors.white,
     borderRadius: height / 2 + strokeWidth,
@@ -100,18 +101,19 @@ const Shadow = styled(ShadowView)(
   })
 );
 
-type VoidOrPromiseVoidFunction = () => void | Promise<void>;
+type MaybePromise<T> = T | Promise<T>;
 
 type RainbowButtonProps = {
   disabled?: boolean;
   height?: number;
   label?: string;
-  onPress: VoidOrPromiseVoidFunction;
+  onPress: () => MaybePromise<void>;
   strokeWidth?: number;
-  type?: keyof typeof RainbowButtonTypes;
+  type?: RainbowButtonTypes;
   width?: number;
   overflowMargin?: number;
   skipTopMargin?: boolean;
+  testID?: string;
 };
 
 const RainbowButton = ({

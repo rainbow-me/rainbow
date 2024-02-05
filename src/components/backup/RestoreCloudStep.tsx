@@ -1,13 +1,12 @@
 import * as lang from '@/languages';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { InteractionManager, StyleSheet } from 'react-native';
+import { InteractionManager, TextInput } from 'react-native';
 import { useDispatch } from 'react-redux';
 import WalletAndBackup from '@/assets/walletsAndBackup.png';
 import { KeyboardArea } from 'react-native-keyboard-area';
 
 import {
   Backup,
-  BackupUserData,
   fetchBackupPassword,
   restoreCloudBackup,
   RestoreCloudBackupResultStates,
@@ -24,12 +23,7 @@ import {
 } from '@/handlers/cloudBackup';
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
-import {
-  useDimensions,
-  useInitializeWallet,
-  useKeyboardHeight,
-  useUserAccounts,
-} from '@/hooks';
+import { useDimensions, useInitializeWallet, useUserAccounts } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import {
   addressSetSelected,
@@ -49,6 +43,7 @@ import { RainbowButton } from '../buttons';
 import RainbowButtonTypes from '../buttons/rainbow-button/RainbowButtonTypes';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RestoreSheetParams } from '@/screens/RestoreSheet';
+import { Source } from 'react-native-fast-image';
 
 const Title = styled(Text).attrs({
   size: 'big',
@@ -100,7 +95,7 @@ export default function RestoreCloudStep() {
   const [validPassword, setValidPassword] = useState(false);
   const [incorrectPassword, setIncorrectPassword] = useState(false);
   const [password, setPassword] = useState('');
-  const passwordRef = useRef();
+  const passwordRef = useRef<TextInput | null>(null);
   const { userAccounts } = useUserAccounts();
   const initializeWallet = useInitializeWallet();
 
@@ -251,13 +246,12 @@ export default function RestoreCloudStep() {
   const isPasswordValid =
     (password !== '' &&
       password.length < cloudBackupPasswordMinLength &&
-      // @ts-expect-error the ref is untyped and the component that receives is in JS
-      !passwordRef?.current?.isFocused?.()) ||
+      !passwordRef?.current?.isFocused()) ||
     incorrectPassword;
 
   return (
     <Box height={{ custom: deviceHeight - sharedCoolModalTopOffset - 48 }}>
-      <Inset height="full" horizontal={'24px'}>
+      <Inset horizontal={'24px'}>
         <Stack alignHorizontal="left" space="8px">
           <Masthead>
             <Box
@@ -268,7 +262,7 @@ export default function RestoreCloudStep() {
               marginRight={{ custom: -12 }}
               marginTop={{ custom: 8 }}
               marginBottom={{ custom: -24 }}
-              source={WalletAndBackup}
+              source={WalletAndBackup as Source}
               width={{ custom: 72 }}
               size={72}
             />

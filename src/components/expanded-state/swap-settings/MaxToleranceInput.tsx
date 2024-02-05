@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Keyboard } from 'react-native';
+import { Keyboard, TextInput } from 'react-native';
 import { getDefaultSlippageFromConfig } from '../../../screens/ExchangeModal';
 import { ButtonPressAnimation } from '../../animations';
 import { Icon } from '../../icons';
@@ -49,7 +49,7 @@ export const MaxToleranceInput = forwardRef(
       convertBipsToPercent(slippageInBips)
     );
 
-    const slippageRef = useRef<{ blur: () => void; focus: () => void }>(null);
+    const slippageRef = useRef<TextInput | null>(null);
 
     const { handleFocus } = useMagicAutofocus(slippageRef, undefined, true);
 

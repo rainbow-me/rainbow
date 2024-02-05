@@ -4,17 +4,17 @@ import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '@/components/animations';
 import { RowWithMargins } from '@/components/layout';
 import { Text } from '@/components/text';
-import RainbowButtonBackground from '@/components/buttons/rainbow-button/RainbowButtonBackground';
 import RainbowButtonTypes from '@/components/buttons/rainbow-button/RainbowButtonTypes';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { shadow } from '@/styles';
 import ShadowView from '@/react-native-shadow-stack/ShadowView';
 import BackupRainbowButtonBackground from './BackupRainbowButtonBackground';
+import { View } from 'react-native';
 
 const ButtonContainer = styled(MaskedView).attrs({
   pointerEvents: 'none',
-})(({ width, height }) => ({
+})(({ width, height }: any) => ({
   height,
   width,
 }));
@@ -29,7 +29,7 @@ const ButtonContent = styled(RowWithMargins).attrs({
 });
 
 const ButtonLabel = styled(Text).attrs(
-  ({ disabled, type, theme: { colors, isDarkMode } }) => ({
+  ({ disabled, type, theme: { colors, isDarkMode } }: any) => ({
     align: type === RainbowButtonTypes.addCash ? 'left' : 'center',
     color: isDarkMode && disabled ? colors.white : colors.whiteLabel,
     letterSpacing:
@@ -40,7 +40,7 @@ const ButtonLabel = styled(Text).attrs(
   })
 )({});
 
-const OuterButton = styled.View(
+const OuterButton = styled(View)(
   ({
     height,
     width,
@@ -48,7 +48,7 @@ const OuterButton = styled.View(
     disabled,
     strokeWidth,
     theme: { colors },
-  }) => ({
+  }: any) => ({
     ...shadow.buildAsObject(0, 5, 15, colors.shadow),
     backgroundColor: colors.dark,
     borderRadius: height / 2 + strokeWidth,
@@ -66,7 +66,7 @@ const Shadow = styled(ShadowView)(
     disabled,
     width,
     theme: { colors },
-  }) => ({
+  }: any) => ({
     ...shadow.buildAsObject(0, 10, 30, colors.shadow, 1),
     backgroundColor: colors.white,
     borderRadius: height / 2 + strokeWidth,
@@ -89,7 +89,7 @@ type BackupRainbowButtonProps = {
 };
 
 const BackupRainbowButton = ({
-  disabled,
+  disabled = false,
   height = 56,
   label = 'Press me',
   onPress,
@@ -144,6 +144,7 @@ const BackupRainbowButton = ({
           height={height}
           strokeWidth={btnStrokeWidth}
           width={btnWidth}
+          type={RainbowButtonTypes.backup}
         />
         <ButtonContent>
           <ButtonLabel disabled={disabled} isDarkMode={isDarkMode}>

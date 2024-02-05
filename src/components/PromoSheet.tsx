@@ -105,7 +105,6 @@ export function PromoSheet({
     deviceHeight - (!isSmallPhone ? sharedCoolModalTopOffset : 0);
 
   return (
-    // @ts-ignore
     <SlackSheet
       additionalTopPadding={IS_ANDROID ? StatusBar.currentHeight : false}
       contentHeight={contentHeight}

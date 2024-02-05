@@ -25,13 +25,14 @@ import {
   SecretDisplayStatesType,
 } from '@/components/secret-display/states';
 import { SecretDisplayError } from '@/components/secret-display/SecretDisplayError';
-import { InteractionManager, StyleSheet } from 'react-native';
+import { InteractionManager } from 'react-native';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { SheetActionButton } from '../sheet';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { useNavigation } from '@/navigation';
 import { ImgixImage } from '../images';
 import RoutesWithPlatformDifferences from '@/navigation/routesNames';
+import { Source } from 'react-native-fast-image';
 
 const MIN_HEIGHT = 740;
 
@@ -69,8 +70,6 @@ type SecretDisplaySectionParams = {
     secretText: string;
   };
 };
-
-const SIZE = 40;
 
 export function SecretDisplaySection({
   onSecretLoaded,
@@ -224,7 +223,7 @@ export function SecretDisplaySection({
                     marginRight={{ custom: -12 }}
                     marginTop={{ custom: 0 }}
                     marginBottom={{ custom: -12 }}
-                    source={ManuallyBackedUpIcon}
+                    source={ManuallyBackedUpIcon as Source}
                     width={{ custom: 72 }}
                     size={72}
                   />
@@ -304,13 +303,3 @@ export function SecretDisplaySection({
       return null;
   }
 }
-
-const styles = StyleSheet.create({
-  gradient: {
-    width: SIZE,
-    height: SIZE,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  overflowHidden: { overflow: 'hidden' },
-});

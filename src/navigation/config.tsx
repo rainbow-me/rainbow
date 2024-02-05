@@ -1,5 +1,5 @@
 import React from 'react';
-import { Keyboard, RegisteredStyle, TextStyle } from 'react-native';
+import { Keyboard } from 'react-native';
 
 import { useTheme } from '@/theme/ThemeContext';
 import colors from '@/theme/currentColors';
@@ -550,11 +550,25 @@ const BackArrow = styled(Icon).attrs({
 
 const BackImage = () => <BackArrow />;
 
+type FontWeight =
+  | '100'
+  | '200'
+  | '300'
+  | '400'
+  | '500'
+  | '600'
+  | '700'
+  | '800'
+  | '900'
+  | 'bold'
+  | 'normal'
+  | undefined;
+
 const headerConfigOptions = {
   headerBackTitleStyle: {
     fontFamily: fonts.family.SFProRounded,
     fontSize: Number(fonts.size.large),
-    fontWeight: fonts.weight.medium,
+    fontWeight: fonts.weight.medium as any,
     letterSpacing: fonts.letterSpacing.roundedMedium,
   },
   headerLeftContainerStyle: {
@@ -570,10 +584,10 @@ const headerConfigOptions = {
     headerTitleAlign: 'center',
   }),
   headerTitleStyle: {
-    color: colors.themedColors?.dark,
+    color: colors.themedColors?.dark ?? 'black',
     fontFamily: fonts.family.SFProRounded,
     fontSize: Number(fonts.size.large),
-    fontWeight: fonts.weight.heavy,
+    fontWeight: fonts.weight.heavy as any,
     letterSpacing: fonts.letterSpacing.roundedMedium,
   },
 };
@@ -598,6 +612,7 @@ const SettingsTitle = ({ children }: React.PropsWithChildren) => {
 
 export const settingsOptions = (colors: any): StackNavigationOptions => ({
   ...headerConfigOptions,
+  headerTitleAlign: 'center',
   cardShadowEnabled: false,
   cardStyle: {
     backgroundColor: colors.cardBackdrop,
@@ -612,10 +627,6 @@ export const settingsOptions = (colors: any): StackNavigationOptions => ({
     elevation: 0,
     height: 60,
     shadowColor: 'transparent',
-  },
-  headerTitleStyle: {
-    ...headerConfigOptions.headerTitleStyle,
-    color: colors.dark,
   },
   ...(android && {
     headerTitle: (props: any) => <SettingsTitle {...props} />,

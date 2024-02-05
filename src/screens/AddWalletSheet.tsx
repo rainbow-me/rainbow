@@ -238,6 +238,7 @@ export const AddWalletSheet = () => {
 
     try {
       const userData = await fetchUserDataFromCloud();
+      console.log({ userData });
       if (!userData) {
         Alert.alert(
           i18n.t(TRANSLATIONS.options.cloud.no_backups),
@@ -250,6 +251,7 @@ export const AddWalletSheet = () => {
       navigate(Routes.RESTORE_SHEET, { userData, backups });
       logger.info(`Downloaded ${cloudPlatform} backup info`);
     } catch (e) {
+      console.log(e);
       logger.error(e as RainbowError);
     }
   };

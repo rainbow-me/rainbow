@@ -1,6 +1,8 @@
+import React from 'react';
+import { ImageSourcePropType } from 'react-native';
+
 import { Box, Stack, Text, useForegroundColor } from '@/design-system';
 import styled from '@/styled-thing';
-import React from 'react';
 import { Icon } from '../icons';
 import { deviceUtils } from '@/utils';
 import { ButtonPressAnimation } from '../animations';
@@ -19,7 +21,7 @@ export type AddWalletItem = {
   title: string;
   description: string;
   descriptionColor?: TextColor;
-  icon: string;
+  icon: string | ImageSourcePropType;
   iconColor?: string;
   testID?: string;
   onPress: () => void;

@@ -72,6 +72,7 @@ import { useTheme } from '@/theme';
 import { ethereumUtils, getUniqueTokenType, promiseUtils } from '@/utils';
 import logger from '@/utils/logger';
 import { getNetworkObj } from '@/networks';
+import { IS_ANDROID } from '@/env';
 
 const Container = styled(Centered).attrs({
   direction: 'column',
@@ -558,9 +559,8 @@ export const SendConfirmationSheet = () => {
     >
       {ios && <TouchableBackdrop onPress={goBack} />}
 
-      {/* @ts-expect-error JavaScript component */}
       <SlackSheet
-        additionalTopPadding={android}
+        additionalTopPadding={IS_ANDROID}
         contentHeight={contentHeight}
         scrollEnabled={false}
       >

@@ -472,7 +472,6 @@ const UniqueTokenExpandedState = ({
           </BackgroundImage>
         </BlurWrapper>
       )}
-      {/* @ts-expect-error JavaScript component */}
       <SlackSheet
         backgroundColor={
           isDarkMode

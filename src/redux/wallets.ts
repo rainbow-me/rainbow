@@ -291,7 +291,6 @@ export const setAllWalletsWithIdsAsBackedUp = (
     newWallets[walletId] = {
       ...newWallets[walletId],
       backedUp: true,
-      // @ts-expect-error "Date" is not "string."
       backupDate: Date.now(),
       backupFile,
       backupType: method,
@@ -341,7 +340,6 @@ export const setWalletBackedUp = (
   newWallets[walletId] = {
     ...newWallets[walletId],
     backedUp: true,
-    // @ts-expect-error "Date" is not "string."
     backupDate: Date.now(),
     backupFile,
     backupType: method,

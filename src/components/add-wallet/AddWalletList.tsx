@@ -16,9 +16,9 @@ export const AddWalletList = ({
       space="24px"
       separator={<Separator color="divider60 (Deprecated)" />}
     >
-      {items.map((item: AddWalletItem) => (
+      {items.map((item: AddWalletItem, index: number) => (
         <AddWalletRow
-          key={item.icon}
+          key={typeof item.icon === 'string' ? item.icon : index}
           content={item}
           totalHorizontalInset={totalHorizontalInset}
         />

@@ -3,11 +3,11 @@ import { KeyboardArea } from 'react-native-keyboard-area';
 import { RainbowButton } from '../buttons';
 import { Column } from '../layout';
 import styled from '@/styled-thing';
-import { colors, padding } from '@/styles';
-import { Box, useForegroundColor } from '@/design-system';
-import { SheetActionButton } from '../sheet';
+import { padding } from '@/styles';
+import { Box } from '@/design-system';
 import { useDimensions } from '@/hooks';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
+import RainbowButtonTypes from '../buttons/rainbow-button/RainbowButtonTypes';
 
 const Footer = styled(Column)({
   ...padding.object(0, 24, 0),
@@ -58,7 +58,7 @@ export default function BackupSheetKeyboardLayout({
         <RainbowButton
           disabled={footerButtonDisabled}
           label={footerButtonLabel}
-          type="backup"
+          type={RainbowButtonTypes.backup}
           onPress={onSubmit}
         />
       </Footer>

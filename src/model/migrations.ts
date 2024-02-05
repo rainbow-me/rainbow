@@ -714,7 +714,7 @@ export default async function runMigrations() {
   for (let i = currentVersion; i < migrations.length; i++) {
     logger.sentry(`Migrations: Running migration v${i}`);
     // @ts-expect-error
-    // await migrations[i].apply(null);
+    await migrations[i].apply(null);
     logger.sentry(`Migrations: Migration ${i} completed succesfully`);
     await setMigrationVersion(i + 1);
   }

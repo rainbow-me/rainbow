@@ -20,9 +20,9 @@ const getHeightForType = (type: EthereumWalletType) => {
   return 240;
 };
 
-export default function SecretDisplayCard({
+export function SecretDisplayCard({
   seed,
-  type,
+  type = EthereumWalletType.seed,
 }: SecretDisplayCardProps) {
   return (
     <Centered>
@@ -60,3 +60,5 @@ export default function SecretDisplayCard({
     </Centered>
   );
 }
+
+export default SecretDisplayCard;

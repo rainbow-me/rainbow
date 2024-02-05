@@ -5,12 +5,7 @@ import React, { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { DelayedAlert } from '../components/alerts';
-import {
-  BackupCloudStep,
-  BackupConfirmPasswordStep,
-  BackupManualStep,
-  BackupSheetSection,
-} from '../components/backup';
+import { BackupCloudStep, BackupSheetSection } from '../components/backup';
 import { Column } from '../components/layout';
 import { SlackSheet } from '../components/sheet';
 import { cloudPlatform } from '../utils/platform';
@@ -48,7 +43,6 @@ export default function BackupSheet() {
   const {
     params: {
       longFormHeight = 0,
-      missingPassword = null,
       step = WalletBackupStepTypes.first,
       walletId = selectedWallet.id,
       nativeScreen = false,
@@ -154,9 +148,10 @@ export default function BackupSheet() {
       case WalletBackupStepTypes.existing_user:
         return (
           <BackupSheetSection
-            descriptionText={lang.t('modal.back_up.existing.description')}
             onPrimaryAction={onBackupNow}
             onSecondaryAction={goBack}
+            primaryButtonTestId="backup-sheet-existing-back-up-button"
+            secondaryButtonTestId="backup-sheet-existing-cancel-button"
             primaryLabel={lang.t('modal.back_up.existing.button.now')}
             secondaryLabel={lang.t('modal.back_up.existing.button.later')}
             titleText={lang.t('modal.back_up.existing.title')}
@@ -166,9 +161,6 @@ export default function BackupSheet() {
       case WalletBackupStepTypes.imported:
         return (
           <BackupSheetSection
-            descriptionText={lang.t('modal.back_up.imported.description', {
-              cloudPlatformName: cloudPlatform,
-            })}
             onPrimaryAction={onIcloudBackup}
             onSecondaryAction={goBack}
             primaryButtonTestId="backup-sheet-imported-back-up-button"
@@ -182,18 +174,14 @@ export default function BackupSheet() {
           />
         );
       case WalletBackupStepTypes.cloud:
-        return missingPassword ? (
-          <BackupConfirmPasswordStep />
-        ) : (
-          <BackupCloudStep />
-        );
-      case WalletBackupStepTypes.manual:
-        return <BackupManualStep />;
+        return <BackupCloudStep />;
       default:
         return (
           <BackupSheetSection
             onPrimaryAction={onIcloudBackup}
             onSecondaryAction={onManualBackup}
+            primaryButtonTestId="backup-sheet-default-back-up-button"
+            secondaryButtonTestId="backup-sheet-default-manual-back-up-button"
             primaryLabel={`􀙶 ${lang.t(
               lang.l.modal.back_up.default.button.cloud_platform,
               {
@@ -208,14 +196,7 @@ export default function BackupSheet() {
           />
         );
     }
-  }, [
-    goBack,
-    missingPassword,
-    onBackupNow,
-    onIcloudBackup,
-    onManualBackup,
-    step,
-  ]);
+  }, [goBack, onBackupNow, onIcloudBackup, onManualBackup, step]);
 
   let sheetHeight =
     android && !nativeScreen

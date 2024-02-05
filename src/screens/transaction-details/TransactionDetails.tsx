@@ -8,7 +8,6 @@ import { BackgroundProvider, Box } from '@/design-system';
 import { TransactionDetailsValueAndFeeSection } from '@/screens/transaction-details/components/TransactionDetailsValueAndFeeSection';
 import { TransactionDetailsHashAndActionsSection } from '@/screens/transaction-details/components/TransactionDetailsHashAndActionsSection';
 import { TransactionDetailsFromToSection } from '@/screens/transaction-details/components/TransactionDetailsFromToSection';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import * as i18n from '@/languages';
 import { TransactionDetailsStatusActionsAndTimestampSection } from '@/screens/transaction-details/components/TransactionDetailsStatusActionsAndTimestampSection';
@@ -58,7 +57,6 @@ export const TransactionDetails = () => {
   return (
     <BackgroundProvider color="surfacePrimaryElevated">
       {({ backgroundColor }) => (
-        // @ts-ignore
         <SlackSheet
           contentHeight={sheetHeight}
           backgroundColor={backgroundColor}

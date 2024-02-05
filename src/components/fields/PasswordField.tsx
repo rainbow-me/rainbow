@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { forwardRef, useCallback, Ref } from 'react';
 import { useTheme } from '../../theme/ThemeContext';
 import { Input } from '../inputs';
 import { cloudBackupPasswordMinLength } from '@/handlers/cloudBackup';
@@ -7,12 +7,13 @@ import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
 import { Box } from '@/design-system';
+import { TextInput, TextInputProps } from 'react-native';
 
 const Container = styled(Box)({
   width: '100%',
 });
 
-const PasswordInput = styled(Input).attrs(({ theme: { colors } }) => ({
+const PasswordInput = styled(Input).attrs(({ theme: { colors } }: any) => ({
   autoCompleteType: 'password',
   blurOnSubmit: false,
   passwordRules: `minlength: ${cloudBackupPasswordMinLength};`,
@@ -29,7 +30,7 @@ const PasswordInput = styled(Input).attrs(({ theme: { colors } }) => ({
 });
 
 const ShadowContainer = styled(ShadowStack).attrs(
-  ({ theme: { colors, isDarkMode } }) => ({
+  ({ theme: { colors, isDarkMode } }: any) => ({
     backgroundColor: isDarkMode ? colors.offWhite : colors.white,
     borderRadius: 16,
     height: 46,
@@ -43,37 +44,48 @@ const ShadowContainer = styled(ShadowStack).attrs(
   elevation: 15,
 });
 
-const PasswordField = (
-  {
-    password,
-    returnKeyType = 'done',
-    style,
-    textContentType = 'password',
-    ...props
-  },
-  ref
-) => {
-  const { width: deviceWidth } = useDimensions();
-  const { isDarkMode } = useTheme();
-  const handleFocus = useCallback(() => ref?.current?.focus(), [ref]);
+interface PasswordFieldProps extends TextInputProps {
+  password: string;
+  returnKeyType?: 'done' | 'next';
+  isInvalid?: boolean;
+  isValid?: boolean;
+}
 
-  return (
-    <Container onPress={ios ? handleFocus : undefined}>
-      <ShadowContainer
-        deviceWidth={deviceWidth}
-        isDarkMode={isDarkMode}
-        style={style}
-      >
-        <PasswordInput
-          ref={ref}
-          returnKeyType={returnKeyType}
-          textContentType={textContentType}
-          value={password}
-          {...props}
-        />
-      </ShadowContainer>
-    </Container>
-  );
-};
+const PasswordField = forwardRef<TextInput, PasswordFieldProps>(
+  (
+    { password, returnKeyType = 'done', style, textContentType, ...props },
+    ref: Ref<TextInput>
+  ) => {
+    const { width: deviceWidth } = useDimensions();
+    const { isDarkMode } = useTheme();
+    const handleFocus = useCallback(() => {
+      if (typeof ref === 'function') {
+        ref(null);
+      } else if (ref) {
+        ref.current?.focus();
+      }
+    }, [ref]);
 
-export default React.memo(React.forwardRef(PasswordField));
+    return (
+      <Container onPress={ios ? handleFocus : undefined}>
+        <ShadowContainer
+          deviceWidth={deviceWidth}
+          isDarkMode={isDarkMode}
+          style={style}
+        >
+          <PasswordInput
+            ref={ref}
+            returnKeyType={returnKeyType}
+            textContentType={textContentType}
+            value={password}
+            {...props}
+          />
+        </ShadowContainer>
+      </Container>
+    );
+  }
+);
+
+PasswordField.displayName = 'PasswordField';
+
+export default React.memo(PasswordField);

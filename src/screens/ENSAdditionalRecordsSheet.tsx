@@ -8,6 +8,7 @@ import { AccentColorProvider, Box, Inline } from '@/design-system';
 import { accentColorAtom, textRecordFields } from '@/helpers/ens';
 import { useENSRegistrationForm } from '@/hooks';
 import { deviceUtils } from '@/utils';
+import { IS_ANDROID } from '@/env';
 
 export const ENSAdditionalRecordsSheetHeight = 262;
 const recordLineHeight = 30;
@@ -40,12 +41,11 @@ export default function ENSAdditionalRecordsSheet() {
   const androidTop = deviceHeight - boxStyle.height - recordLineHeight;
 
   return (
-    // @ts-expect-error JavaScript component
     <SlackSheet
       additionalTopPadding
       height="100%"
       scrollEnabled={false}
-      style={android ? { top: androidTop } : {}}
+      style={IS_ANDROID ? { top: androidTop } : {}}
     >
       <AccentColorProvider color={accentColor}>
         <Box

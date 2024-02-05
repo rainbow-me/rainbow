@@ -157,7 +157,10 @@ export function syncCloud() {
   return true;
 }
 
-export async function getDataFromCloud(backupPassword: any, filename = null) {
+export async function getDataFromCloud(
+  backupPassword: any,
+  filename: string | null = null
+) {
   if (IS_ANDROID) {
     await RNCloudFs.loginIfNeeded();
   }

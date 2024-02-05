@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { Source } from 'react-native-fast-image';
 import { KeyboardArea } from 'react-native-keyboard-area';
 
@@ -30,10 +30,25 @@ import { RainbowButton } from '../buttons';
 import RainbowButtonTypes from '../buttons/rainbow-button/RainbowButtonTypes';
 import { usePasswordValidation } from './usePasswordValidation';
 import { useCreateBackup } from './useCreateBackup';
+import { TextInput } from 'react-native';
+
+type BackupCloudStepParams = {
+  BackupCloudStep: {
+    walletId?: string;
+  };
+};
+
+type NativeEvent = {
+  nativeEvent: {
+    text: string;
+  };
+};
 
 export function BackupCloudStep() {
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
-  const { params } = useRoute();
+  const { params } = useRoute<
+    RouteProp<BackupCloudStepParams, 'BackupCloudStep'>
+  >();
   const { selectedWallet } = useWallets();
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -55,9 +70,9 @@ export function BackupCloudStep() {
     isSettingsRoute,
   });
 
-  const currentlyFocusedInput = useRef<HTMLInputElement | null>(null);
-  const passwordRef = useRef<HTMLInputElement | null>(null);
-  const confirmPasswordRef = useRef<HTMLInputElement | null>(null);
+  const currentlyFocusedInput = useRef<TextInput | null>(null);
+  const passwordRef = useRef<TextInput | null>(null);
+  const confirmPasswordRef = useRef<TextInput | null>(null);
 
   useEffect(() => {
     setTimeout(() => {
@@ -71,18 +86,11 @@ export function BackupCloudStep() {
 
   const { handleFocus } = useMagicAutofocus(passwordRef);
 
-  const onPasswordFocus = useCallback(
-    (target: HTMLInputElement) => {
+  const onTextInputFocus = useCallback(
+    (target: any, isConfirm = false) => {
+      const ref = isConfirm ? confirmPasswordRef.current : passwordRef.current;
       handleFocus(target);
-      currentlyFocusedInput.current = passwordRef.current;
-    },
-    [handleFocus]
-  );
-
-  const onConfirmPasswordFocus = useCallback(
-    (target: HTMLInputElement) => {
-      handleFocus(target);
-      currentlyFocusedInput.current = confirmPasswordRef.current;
+      currentlyFocusedInput.current = ref;
     },
     [handleFocus]
   );
@@ -92,7 +100,7 @@ export function BackupCloudStep() {
   }, []);
 
   const onPasswordChange = useCallback(
-    ({ nativeEvent: { text: inputText } }) => {
+    ({ nativeEvent: { text: inputText } }: NativeEvent) => {
       setPassword(inputText);
       setConfirmPassword('');
     },
@@ -100,7 +108,7 @@ export function BackupCloudStep() {
   );
 
   const onConfirmPasswordChange = useCallback(
-    ({ nativeEvent: { text: inputText } }) => {
+    ({ nativeEvent: { text: inputText } }: NativeEvent) => {
       setConfirmPassword(inputText);
     },
     []
@@ -150,11 +158,11 @@ export function BackupCloudStep() {
               isInvalid={
                 password !== '' &&
                 password.length < cloudBackupPasswordMinLength &&
-                !passwordRef.current.isFocused()
+                !passwordRef.current?.isFocused()
               }
               isValid={isCloudBackupPasswordValid(password)}
               onChange={onPasswordChange}
-              onFocus={onPasswordFocus}
+              onFocus={(target: any) => onTextInputFocus(target)}
               onSubmitEditing={onPasswordSubmit}
               password={password}
               placeholder={lang.t(
@@ -175,7 +183,7 @@ export function BackupCloudStep() {
                 }
                 isValid={validPassword}
                 onChange={onConfirmPasswordChange}
-                onFocus={onConfirmPasswordFocus}
+                onFocus={(target: any) => onTextInputFocus(target, true)}
                 onSubmitEditing={onSubmit}
                 password={confirmPassword}
                 placeholder={lang.t(

@@ -12,6 +12,7 @@ import { useDimensions } from '@/hooks';
 import { fonts, fontWithWidth, position } from '@/styles';
 import { useTheme } from '@/theme';
 import { formatURLForDisplay } from '@/utils';
+import { IS_ANDROID } from '@/env';
 
 export const ExternalLinkWarningSheetHeight = 380 + (android ? 20 : 0);
 
@@ -47,9 +48,8 @@ const ExternalLinkWarningSheet = () => {
       height={ExternalLinkWarningSheetHeight}
       insets={insets}
     >
-      {/* @ts-expect-error JavaScript component */}
       <SlackSheet
-        additionalTopPadding={android}
+        additionalTopPadding={IS_ANDROID}
         contentHeight={ExternalLinkWarningSheetHeight}
         scrollEnabled={false}
       >

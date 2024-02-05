@@ -46,8 +46,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const {
     getParent: dangerouslyGetParent,
     navigate,
-    goBack,
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'replace' does not exist on type '{ dispa... Remove this comment to see the full error message
     replace,
     setParams,
   } = useNavigation();
@@ -67,7 +65,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
 
   const inputRef = useRef<TextInput>(null);
 
-  // @ts-expect-error ts-migrate(2554) FIXME: Expected 2-4 arguments, but got 1.
   const { handleFocus } = useMagicAutofocus(inputRef);
 
   const isSecretValid = useMemo(() => {

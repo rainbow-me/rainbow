@@ -109,15 +109,10 @@ const StatusIcon = ({ status, text }: StatusIconProps) => {
   return (
     <Box
       backgroundColor={statusColors[status].backgroundColor}
-      colors={colors}
       borderRadius={23}
       shadowColor={
         isDarkMode ? colors.shadow : statusColors[status].backgroundColor
       }
-      shadowOffset={{
-        height: 4,
-        width: 0,
-      }}
       elevation={12}
       shadowOpacity={ios ? 0.4 : 1}
       shadowRadius={6}

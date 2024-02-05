@@ -1,16 +1,13 @@
 import React, { Fragment, useEffect } from 'react';
 import { useTheme } from '../../theme/ThemeContext';
-import Divider from '../Divider';
 import { RainbowButton } from '../buttons';
 import { Column, ColumnWithMargins } from '../layout';
 import { SheetActionButton } from '../sheet';
 import { Text } from '../text';
 import { analytics } from '@/analytics';
-import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { Bleed, Separator } from '@/design-system';
-import RainbowButtonTypes from '../buttons/rainbow-button/RainbowButtonTypes';
 
 const Footer = styled(ColumnWithMargins).attrs({
   margin: 19,
@@ -27,18 +24,11 @@ const Masthead = styled(Column).attrs({
   flex: 1,
 });
 
-const MastheadIcon = styled(ImgixImage).attrs({
-  resizeMode: ImgixImage.resizeMode.contain,
-})({
-  height: 74,
-  marginBottom: -1,
-  width: 75,
-  size: 75,
-});
+type MaybePromise<T> = T | Promise<T>;
 
 type BackupSheetSectionProps = {
-  headerIcon: React.ReactNode;
-  onPrimaryAction: () => Promise<void>;
+  headerIcon?: React.ReactNode;
+  onPrimaryAction: () => MaybePromise<void>;
   onSecondaryAction: () => void;
   primaryButtonTestId: string;
   primaryLabel: string;
