@@ -2420,7 +2420,8 @@
         "request_invalid": "The request contained invalid parameters. Please try again or contact Rainbow and/or dapp support teams.",
         "eth_sign": "Rainbow does not support legacy eth_sign due to security concerns.  \n Please contact Rainbow and/or dapp support teams if you have any questions.",
         "request_unsupported_network": "The network specified in this request is not supported by Rainbow.",
-        "request_unsupported_methods": "The RPC method(s) specified in this request are not supported by Rainbow."
+        "request_unsupported_methods": "The RPC method(s) specified in this request are not supported by Rainbow.",
+        "no_accounts_found": "No accounts found in approved namespaces."
       },
       "dapp_warnings": {
         "info_alert": {

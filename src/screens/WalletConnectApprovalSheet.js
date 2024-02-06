@@ -368,13 +368,8 @@ export default function WalletConnectApprovalSheet() {
   const handleConnect = useCallback(() => {
     handled.current = true;
     goBack();
-    if (IS_IOS) {
-      navigate(Routes.WALLET_CONNECT_REDIRECT_SHEET, {
-        type: 'connect',
-      });
-    }
     handleSuccess(true);
-  }, [handleSuccess, goBack, navigate]);
+  }, [handleSuccess, goBack]);
 
   const handleCancel = useCallback(() => {
     handled.current = true;
