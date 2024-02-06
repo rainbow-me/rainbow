@@ -348,6 +348,8 @@ export default function CurrencySelectModal() {
       const assetWithType = {
         ...item,
         decimals: item?.networks?.[currentChainId]?.decimals || item.decimals,
+        address: item?.networks?.[currentChainId]?.address,
+        network: getNetworkFromChainId(currentChainId),
       };
 
       const selectAsset = () => {
