@@ -1,13 +1,7 @@
 import React from 'react';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
-export default function JellySelectorColorIndicator({
-  backgroundColor,
-  height,
-  translateX,
-  width,
-  ...props
-}) {
+export default function JellySelectorColorIndicator({ backgroundColor, height, translateX, width, ...props }) {
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],
     width: width.value,

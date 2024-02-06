@@ -2,9 +2,7 @@ import React from 'react';
 import { FlatList } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FlexItem } from '../layout';
-import WalletConnectListItem, {
-  WalletConnectListItemHeight,
-} from './WalletConnectListItem';
+import WalletConnectListItem, { WalletConnectListItemHeight } from './WalletConnectListItem';
 import { useWalletConnectConnections } from '@/hooks';
 
 const scrollIndicatorInset = 22;

@@ -9,13 +9,7 @@ function CoinIconIndicator({ theme, style, isPinned }) {
   const { colors, isDarkMode } = theme ?? useTheme();
 
   const dynamicStyles = {
-    ...shadow.buildAsObject(
-      0,
-      4,
-      12,
-      isDarkMode ? colors.shadow : colors.blueGreyDark,
-      0.4
-    ),
+    ...shadow.buildAsObject(0, 4, 12, isDarkMode ? colors.shadow : colors.blueGreyDark, 0.4),
     backgroundColor: colors.blueGreyDark50,
   };
 
@@ -28,11 +22,7 @@ function CoinIconIndicator({ theme, style, isPinned }) {
 
   return (
     <View style={[cx.container, dynamicStyles, style]}>
-      <Icon
-        color={colors.whiteLabel}
-        name={isPinned ? 'pin' : 'hidden'}
-        style={iconStyle}
-      />
+      <Icon color={colors.whiteLabel} name={isPinned ? 'pin' : 'hidden'} style={iconStyle} />
     </View>
   );
 }

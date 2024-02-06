@@ -1,12 +1,6 @@
 import React, { PropsWithChildren, useLayoutEffect } from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 
 type Props = PropsWithChildren<{
   duration?: number;
@@ -32,7 +26,5 @@ export const SpinAnimation = ({ children, style, duration = 2000 }: Props) => {
     return { transform: [{ rotate: `${rotation}deg` }] };
   });
 
-  return (
-    <Animated.View style={[style, animatedStyles]}>{children}</Animated.View>
-  );
+  return <Animated.View style={[style, animatedStyles]}>{children}</Animated.View>;
 };

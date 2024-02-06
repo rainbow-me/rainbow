@@ -25,9 +25,7 @@ import {
 
 export const removeGlobalNotificationSettings = (): Promise<void> => {
   return unsubscribeFromAllGlobalNotificationTopics().then(() =>
-    setAllGlobalNotificationSettingsToStorage(
-      DEFAULT_ENABLED_GLOBAL_TOPIC_SETTINGS
-    )
+    setAllGlobalNotificationSettingsToStorage(DEFAULT_ENABLED_GLOBAL_TOPIC_SETTINGS)
   );
 };
 
@@ -37,31 +35,18 @@ export const removeGlobalNotificationSettings = (): Promise<void> => {
  3. Excludes that wallet from the array and saves the new array.
  4. Unsubscribes the wallet from all notification topics on Firebase.
  */
-export const removeNotificationSettingsForWallet = (
-  address: string
-): Promise<void> => {
+export const removeNotificationSettingsForWallet = (address: string): Promise<void> => {
   const allSettings = getAllWalletNotificationSettingsFromStorage();
-  const settingsForWallet = allSettings.find(
-    (wallet: WalletNotificationSettings) => wallet.address === address
-  );
+  const settingsForWallet = allSettings.find((wallet: WalletNotificationSettings) => wallet.address === address);
 
   if (!settingsForWallet) {
     return Promise.resolve();
   }
 
-  const newSettings = allSettings.filter(
-    (wallet: WalletNotificationSettings) => wallet.address !== address
-  );
+  const newSettings = allSettings.filter((wallet: WalletNotificationSettings) => wallet.address !== address);
 
-  return unsubscribeWalletFromAllNotificationTopics(
-    settingsForWallet.type,
-    NOTIFICATIONS_DEFAULT_CHAIN_ID,
-    address
-  ).then(() => {
-    notificationSettingsStorage.set(
-      WALLET_TOPICS_STORAGE_KEY,
-      JSON.stringify(newSettings)
-    );
+  return unsubscribeWalletFromAllNotificationTopics(settingsForWallet.type, NOTIFICATIONS_DEFAULT_CHAIN_ID, address).then(() => {
+    notificationSettingsStorage.set(WALLET_TOPICS_STORAGE_KEY, JSON.stringify(newSettings));
   });
 };
 
@@ -84,12 +69,7 @@ export function toggleGroupNotifications(
         // are specifically enabled for this wallet
         return Object.keys(topics).map((topic: WalletNotificationTopicType) => {
           if (topics[topic]) {
-            return subscribeWalletToNotificationTopic(
-              relationship,
-              NOTIFICATIONS_DEFAULT_CHAIN_ID,
-              address,
-              topic
-            );
+            return subscribeWalletToNotificationTopic(relationship, NOTIFICATIONS_DEFAULT_CHAIN_ID, address, topic);
           } else {
             return Promise.resolve();
           }
@@ -100,11 +80,7 @@ export function toggleGroupNotifications(
     // loop through all owned wallets, unsubscribe from all topics
     return Promise.all(
       wallets.map((wallet: WalletNotificationSettings) => {
-        return unsubscribeWalletFromAllNotificationTopics(
-          relationship,
-          NOTIFICATIONS_DEFAULT_CHAIN_ID,
-          wallet.address
-        );
+        return unsubscribeWalletFromAllNotificationTopics(relationship, NOTIFICATIONS_DEFAULT_CHAIN_ID, wallet.address);
       })
     );
   }
@@ -120,29 +96,16 @@ export function toggleTopicForWallet(
   enableTopic: boolean
 ): Promise<void> {
   if (enableTopic) {
-    return subscribeWalletToNotificationTopic(
-      relationship,
-      NOTIFICATIONS_DEFAULT_CHAIN_ID,
-      address,
-      topic
-    );
+    return subscribeWalletToNotificationTopic(relationship, NOTIFICATIONS_DEFAULT_CHAIN_ID, address, topic);
   } else {
-    return unsubscribeWalletFromNotificationTopic(
-      relationship,
-      NOTIFICATIONS_DEFAULT_CHAIN_ID,
-      address,
-      topic
-    );
+    return unsubscribeWalletFromNotificationTopic(relationship, NOTIFICATIONS_DEFAULT_CHAIN_ID, address, topic);
   }
 }
 
 /**
  Function for subscribing/unsubscribing the app to/from a single notification topic.
  */
-export function toggleGlobalNotificationTopic(
-  topic: GlobalNotificationTopicType,
-  enableTopic: boolean
-): Promise<void> {
+export function toggleGlobalNotificationTopic(topic: GlobalNotificationTopicType, enableTopic: boolean): Promise<void> {
   if (enableTopic) {
     return subscribeToGlobalNotificationTopic(topic);
   } else {

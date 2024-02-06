@@ -9,15 +9,13 @@ import ConditionalWrap from 'conditional-wrap';
 import { deviceUtils } from '@/utils';
 import { ButtonPressAnimation } from '../animations';
 
-const RainbowText = styled(GradientText).attrs(
-  ({ theme: { colors } }: any) => ({
-    angle: false,
-    colors: colors.gradients.rainbow,
-    end: { x: 0, y: 0.5 },
-    start: { x: 1, y: 0.5 },
-    steps: [0, 0.774321, 1],
-  })
-)({});
+const RainbowText = styled(GradientText).attrs(({ theme: { colors } }: any) => ({
+  angle: false,
+  colors: colors.gradients.rainbow,
+  end: { x: 0, y: 0.5 },
+  start: { x: 1, y: 0.5 },
+  steps: [0, 0.774321, 1],
+}))({});
 
 const TextIcon = styled(RNText).attrs({
   size: 29,
@@ -47,17 +45,13 @@ type AddWalletRowProps = {
   totalHorizontalInset: number;
 };
 
-export const AddWalletRow = ({
-  content,
-  totalHorizontalInset,
-}: AddWalletRowProps) => {
+export const AddWalletRow = ({ content, totalHorizontalInset }: AddWalletRowProps) => {
   const { colors } = useTheme();
   const labelQuaternary = useForegroundColor('labelQuaternary');
   const { title, description, icon, iconColor, testID, onPress } = content;
 
   // device width - 2 * total horizontal inset from device boundaries - caret column width (30)
-  const contentWidth =
-    deviceUtils.dimensions.width - 2 * totalHorizontalInset - 30;
+  const contentWidth = deviceUtils.dimensions.width - 2 * totalHorizontalInset - 30;
 
   const shouldUseRainbowText = !iconColor && !(IS_ANDROID && IS_TEST);
 
@@ -76,9 +70,7 @@ export const AddWalletRow = ({
         <Stack space="12px" alignHorizontal="left">
           <ConditionalWrap
             condition={shouldUseRainbowText}
-            wrap={(children: React.ReactNode) => (
-              <RainbowText colors={colors}>{children}</RainbowText>
-            )}
+            wrap={(children: React.ReactNode) => <RainbowText colors={colors}>{children}</RainbowText>}
           >
             <TextIcon color={iconColor}>{icon}</TextIcon>
           </ConditionalWrap>

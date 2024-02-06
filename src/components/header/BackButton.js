@@ -17,15 +17,7 @@ const IconText = styled(Text).attrs(({ theme: { colors } }) => ({
   size: 'big',
 }))(fontWithWidth(fonts.weight.bold));
 
-export default function BackButton({
-  color,
-  direction = 'left',
-  onPress,
-  throttle,
-  testID,
-  textChevron,
-  ...props
-}) {
+export default function BackButton({ color, direction = 'left', onPress, throttle, testID, textChevron, ...props }) {
   const navigation = useNavigation();
 
   const handlePress = useCallback(
@@ -57,11 +49,7 @@ export default function BackButton({
       transformOrigin={direction}
     >
       <Container {...props} textChevron={textChevron}>
-        {textChevron ? (
-          <IconText color={color}>←</IconText>
-        ) : (
-          <Icon color={color} direction={direction} name="caret" {...props} />
-        )}
+        {textChevron ? <IconText color={color}>←</IconText> : <Icon color={color} direction={direction} name="caret" {...props} />}
       </Container>
     </HeaderButton>
   );

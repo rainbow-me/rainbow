@@ -2,12 +2,7 @@ import { NFT_API_KEY, NFT_API_URL } from 'react-native-dotenv';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { Network } from '@/helpers';
 import { getSimpleHashChainFromNetwork } from '@/resources/nfts/simplehash/utils';
-import {
-  SimpleHashChain,
-  SimpleHashListing,
-  SimpleHashNFT,
-  SimpleHashMarketplaceId,
-} from '@/resources/nfts/simplehash/types';
+import { SimpleHashChain, SimpleHashListing, SimpleHashNFT, SimpleHashMarketplaceId } from '@/resources/nfts/simplehash/types';
 import { RainbowNetworks } from '@/networks';
 import { UniqueAsset } from '@/entities';
 import { RainbowError, logger } from '@/logger';
@@ -18,8 +13,7 @@ const nftApi = new RainbowFetchClient({
   baseURL: `https://${NFT_API_URL}/api/v0`,
 });
 
-const createCursorSuffix = (cursor: string) =>
-  cursor === START_CURSOR ? '' : `&cursor=${cursor}`;
+const createCursorSuffix = (cursor: string) => (cursor === START_CURSOR ? '' : `&cursor=${cursor}`);
 
 export async function fetchSimpleHashNFT(
   contractAddress: string,
@@ -29,21 +23,16 @@ export async function fetchSimpleHashNFT(
   const chain = getSimpleHashChainFromNetwork(network);
 
   if (!chain) {
-    throw new Error(
-      `fetchSimpleHashNFT: no SimpleHash chain for network: ${network}`
-    );
+    throw new Error(`fetchSimpleHashNFT: no SimpleHash chain for network: ${network}`);
   }
 
-  const response = await nftApi.get(
-    `/nfts/${chain}/${contractAddress}/${tokenId}`,
-    {
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'x-api-key': NFT_API_KEY,
-      },
-    }
-  );
+  const response = await nftApi.get(`/nfts/${chain}/${contractAddress}/${tokenId}`, {
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'x-api-key': NFT_API_KEY,
+    },
+  });
   return response?.data;
 }
 
@@ -55,16 +44,13 @@ export async function fetchSimpleHashNFTs(
     .map(network => network.nfts?.simplehashNetwork || network.value)
     .join(',');
   const cursorSuffix = createCursorSuffix(cursor);
-  const response = await nftApi.get(
-    `/nfts/owners?chains=${chainsParam}&wallet_addresses=${walletAddress}${cursorSuffix}`,
-    {
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'x-api-key': NFT_API_KEY,
-      },
-    }
-  );
+  const response = await nftApi.get(`/nfts/owners?chains=${chainsParam}&wallet_addresses=${walletAddress}${cursorSuffix}`, {
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'x-api-key': NFT_API_KEY,
+    },
+  });
   return {
     data: response?.data?.nfts ?? [],
     nextCursor: response?.data?.next_cursor,
@@ -99,16 +85,11 @@ export async function fetchSimpleHashNFTListing(
     // aggregate array of eth listings on OpenSea
     listings = [
       ...listings,
-      response?.data?.listings?.find(
-        (listing: SimpleHashListing) =>
-          listing?.payment_token?.payment_token_id === 'ethereum.native'
-      ),
+      response?.data?.listings?.find((listing: SimpleHashListing) => listing?.payment_token?.payment_token_id === 'ethereum.native'),
     ];
   }
   // cheapest eth listing
-  const cheapestListing = listings.reduce((prev, curr) =>
-    curr.price < prev.price ? curr : prev
-  );
+  const cheapestListing = listings.reduce((prev, curr) => (curr.price < prev.price ? curr : prev));
   return cheapestListing;
 }
 
@@ -118,16 +99,10 @@ export async function fetchSimpleHashNFTListing(
  * @param nft
  */
 export async function refreshNFTContractMetadata(nft: UniqueAsset) {
-  const chain = nft.isPoap
-    ? SimpleHashChain.Gnosis
-    : getSimpleHashChainFromNetwork(nft.network);
+  const chain = nft.isPoap ? SimpleHashChain.Gnosis : getSimpleHashChainFromNetwork(nft.network);
 
   if (!chain) {
-    logger.error(
-      new RainbowError(
-        `refreshNFTContractMetadata: no SimpleHash chain for network: ${nft.network}`
-      )
-    );
+    logger.error(new RainbowError(`refreshNFTContractMetadata: no SimpleHash chain for network: ${nft.network}`));
   }
 
   try {

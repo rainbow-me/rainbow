@@ -36,9 +36,7 @@ export default function usePriceImpactDetails(
   const { colors } = useTheme();
 
   const sellNetwork = (tradeDetails as CrosschainQuote)?.fromChainId
-    ? ethereumUtils.getNetworkFromChainId(
-        (tradeDetails as CrosschainQuote)?.fromChainId
-      )
+    ? ethereumUtils.getNetworkFromChainId((tradeDetails as CrosschainQuote)?.fromChainId)
     : currentNetwork;
   const buyNetwork = outputCurrency?.network || currentNetwork;
   const sellNativeAsset = useNativeAssetForNetwork(sellNetwork);
@@ -125,13 +123,8 @@ export default function usePriceImpactDetails(
   const { impactDisplay, priceImpact, percentDisplay } = useMemo(() => {
     const nativeAmountImpact = subtract(inputNativeAmount, outputNativeAmount);
     const priceImpact = divide(nativeAmountImpact, inputNativeAmount);
-    const percentDisplay = convertAmountToPercentageDisplayWithThreshold(
-      priceImpact
-    );
-    const impactDisplay = convertAmountToNativeDisplay(
-      nativeAmountImpact,
-      nativeCurrency
-    );
+    const percentDisplay = convertAmountToPercentageDisplayWithThreshold(priceImpact);
+    const impactDisplay = convertAmountToNativeDisplay(nativeAmountImpact, nativeCurrency);
     return { impactDisplay, priceImpact, percentDisplay };
   }, [outputNativeAmount, nativeCurrency, inputNativeAmount]);
 

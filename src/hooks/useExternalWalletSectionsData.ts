@@ -5,13 +5,7 @@ import useFetchShowcaseTokens from './useFetchShowcaseTokens';
 import { buildBriefUniqueTokenList } from '@/helpers/assets';
 import { useLegacyNFTs } from '@/resources/nfts';
 
-export default function useExternalWalletSectionsData({
-  address,
-  type,
-}: {
-  address?: string;
-  type?: AssetListType;
-}) {
+export default function useExternalWalletSectionsData({ address, type }: { address?: string; type?: AssetListType }) {
   const {
     data: { nfts: uniqueTokens },
     isInitialLoading,
@@ -21,22 +15,10 @@ export default function useExternalWalletSectionsData({
   const { data: hiddenTokens } = useFetchHiddenTokens({ address });
   const { data: showcaseTokens } = useFetchShowcaseTokens({ address });
 
-  const sellingTokens = useMemo(
-    () => uniqueTokens?.filter(token => token.currentPrice) || [],
-    [uniqueTokens]
-  );
+  const sellingTokens = useMemo(() => uniqueTokens?.filter(token => token.currentPrice) || [], [uniqueTokens]);
 
   const briefSectionsData = useMemo(
-    () =>
-      uniqueTokens
-        ? buildBriefUniqueTokenList(
-            uniqueTokens,
-            showcaseTokens,
-            sellingTokens,
-            hiddenTokens,
-            type
-          )
-        : [],
+    () => (uniqueTokens ? buildBriefUniqueTokenList(uniqueTokens, showcaseTokens, sellingTokens, hiddenTokens, type) : []),
     [uniqueTokens, showcaseTokens, sellingTokens, hiddenTokens, type]
   );
 

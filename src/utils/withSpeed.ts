@@ -20,15 +20,9 @@ export default function withSpeed(userConfig: any) {
       const deltaTime = Math.min(now - lastTimestamp, 64);
       animation.lastTimestamp = now;
       if (config.targetSpeed > 0) {
-        animation.speed = Math.min(
-          config.targetSpeed,
-          animation.speed + config.acceleration
-        );
+        animation.speed = Math.min(config.targetSpeed, animation.speed + config.acceleration);
       } else {
-        animation.speed = Math.max(
-          config.targetSpeed,
-          animation.speed - config.acceleration
-        );
+        animation.speed = Math.max(config.targetSpeed, animation.speed - config.acceleration);
       }
 
       animation.current = current + (deltaTime / 1000) * animation.speed;

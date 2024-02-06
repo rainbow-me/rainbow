@@ -10,9 +10,7 @@ function contextValueForColorMode(colorMode: ColorMode): ColorModeContextValue {
   };
 }
 
-export const ColorModeContext = createContext<ColorModeContextValue>(
-  contextValueForColorMode('light')
-);
+export const ColorModeContext = createContext<ColorModeContextValue>(contextValueForColorMode('light'));
 
 interface ColorModeContextValue extends Palette {
   colorMode: ColorMode;
@@ -25,17 +23,9 @@ interface ColorModeContextValue extends Palette {
  * `"darkTinted"` and `"lightTinted"` color modes are designed for tinted
  * backgrounds where foreground elements need to be desaturated.
  */
-export function ColorModeProvider({
-  value: colorMode,
-  children,
-}: {
-  value: ColorMode;
-  children: ReactNode;
-}) {
+export function ColorModeProvider({ value: colorMode, children }: { value: ColorMode; children: ReactNode }) {
   return (
-    <ColorModeContext.Provider
-      value={useMemo(() => contextValueForColorMode(colorMode), [colorMode])}
-    >
+    <ColorModeContext.Provider value={useMemo(() => contextValueForColorMode(colorMode), [colorMode])}>
       {children}
     </ColorModeContext.Provider>
   );

@@ -12,10 +12,7 @@ type Props = {
   presentToast?: () => void;
 };
 
-export const TransactionDetailsFromToSection: React.FC<Props> = ({
-  transaction,
-  presentToast,
-}) => {
+export const TransactionDetailsFromToSection: React.FC<Props> = ({ transaction, presentToast }) => {
   const from = transaction.from ?? undefined;
   const to = transaction.to ?? undefined;
   const { contacts } = useContacts();

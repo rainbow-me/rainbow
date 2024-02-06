@@ -1,27 +1,11 @@
 import { isValidAddress } from 'ethereumjs-util';
 import { memoFn } from '../utils/memoFn';
 import { Network } from './networkTypes';
-import {
-  getProviderForNetwork,
-  isHexStringIgnorePrefix,
-  isValidMnemonic,
-  resolveUnstoppableDomain,
-} from '@/handlers/web3';
+import { getProviderForNetwork, isHexStringIgnorePrefix, isValidMnemonic, resolveUnstoppableDomain } from '@/handlers/web3';
 import { sanitizeSeedPhrase } from '@/utils/formatters';
 
 // Currently supported Top Level Domains from Unstoppable Domains
-const supportedUnstoppableDomains = [
-  '888',
-  'bitcoin',
-  'blockchain',
-  'coin',
-  'crypto',
-  'dao',
-  'nft',
-  'wallet',
-  'x',
-  'zil',
-];
+const supportedUnstoppableDomains = ['888', 'bitcoin', 'blockchain', 'coin', 'crypto', 'dao', 'nft', 'wallet', 'x', 'zil'];
 
 /**
  * @desc validate email
@@ -115,10 +99,7 @@ export const isValidDomainFormat = memoFn(domain => {
  */
 const isValidSeedPhrase = (seedPhrase: any) => {
   const sanitizedSeedPhrase = sanitizeSeedPhrase(seedPhrase);
-  return (
-    sanitizedSeedPhrase.split(' ').length >= 12 &&
-    isValidMnemonic(sanitizedSeedPhrase)
-  );
+  return sanitizedSeedPhrase.split(' ').length >= 12 && isValidMnemonic(sanitizedSeedPhrase);
 };
 
 /**
@@ -135,8 +116,7 @@ const isValidPrivateKey = (key: any) => {
  * @param  {String} seed phrase mnemonic or private key
  * @return {Boolean}
  */
-export const isValidSeed = (seed: any) =>
-  seed && (isValidPrivateKey(seed) || isValidSeedPhrase(seed));
+export const isValidSeed = (seed: any) => seed && (isValidPrivateKey(seed) || isValidSeedPhrase(seed));
 
 /**
  * @desc validates the input required to create a new wallet

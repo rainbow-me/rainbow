@@ -3,11 +3,7 @@ import toUpper from 'lodash/toUpper';
 import { isNativeAsset } from '@/handlers/assets';
 import networkTypes from '@/helpers/networkTypes';
 import * as i18n from '@/languages';
-import {
-  convertAmountAndPriceToNativeDisplay,
-  convertAmountToNativeDisplay,
-  convertAmountToPercentageDisplay,
-} from '@/helpers/utilities';
+import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplay, convertAmountToPercentageDisplay } from '@/helpers/utilities';
 import { getTokenMetadata, isLowerCaseMatch } from '@/utils';
 import { memoFn } from '@/utils/memoFn';
 import { getUniqueId } from '@/utils/ethereumUtils';
@@ -39,10 +35,7 @@ export const parseAsset = ({ asset_code: address, ...asset } = {}) => {
     ...asset,
     ...metadata,
     address,
-    isNativeAsset: isNativeAsset(
-      address,
-      asset.network || networkTypes.mainnet
-    ),
+    isNativeAsset: isNativeAsset(address, asset.network || networkTypes.mainnet),
     name,
     symbol,
     uniqueId: getUniqueId(address, asset.network),
@@ -51,8 +44,7 @@ export const parseAsset = ({ asset_code: address, ...asset } = {}) => {
   return parsedAsset;
 };
 
-export const parseAssetsNative = (assets, nativeCurrency) =>
-  assets.map(asset => parseAssetNative(asset, nativeCurrency));
+export const parseAssetsNative = (assets, nativeCurrency) => assets.map(asset => parseAssetNative(asset, nativeCurrency));
 
 export const parseAssetNative = (asset, nativeCurrency) => {
   const assetNativePrice = asset?.price;
@@ -61,11 +53,7 @@ export const parseAssetNative = (asset, nativeCurrency) => {
   }
 
   const priceUnit = assetNativePrice?.value ?? 0;
-  const nativeDisplay = convertAmountAndPriceToNativeDisplay(
-    asset?.balance?.amount ?? 0,
-    priceUnit,
-    nativeCurrency
-  );
+  const nativeDisplay = convertAmountAndPriceToNativeDisplay(asset?.balance?.amount ?? 0, priceUnit, nativeCurrency);
   return {
     ...asset,
     native: {
@@ -73,8 +61,8 @@ export const parseAssetNative = (asset, nativeCurrency) => {
       change: isLowerCaseMatch(asset.symbol, nativeCurrency)
         ? null
         : assetNativePrice.relative_change_24h
-        ? convertAmountToPercentageDisplay(assetNativePrice.relative_change_24h)
-        : '',
+          ? convertAmountToPercentageDisplay(assetNativePrice.relative_change_24h)
+          : '',
       price: {
         amount: priceUnit,
         display: convertAmountToNativeDisplay(priceUnit, nativeCurrency),

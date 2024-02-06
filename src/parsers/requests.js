@@ -2,34 +2,16 @@ import BigNumber from 'bignumber.js';
 import { isNil } from 'lodash';
 import { isHexString } from '@/handlers/web3';
 import { ethUnits, smartContractMethods } from '@/references';
-import {
-  convertAmountAndPriceToNativeDisplay,
-  convertHexToString,
-  convertRawAmountToDecimalFormat,
-  fromWei,
-} from '@/helpers/utilities';
+import { convertAmountAndPriceToNativeDisplay, convertHexToString, convertRawAmountToDecimalFormat, fromWei } from '@/helpers/utilities';
 import { logger } from '@/logger';
 import { ethereumUtils } from '@/utils';
-import {
-  isSignTypedData,
-  SIGN,
-  PERSONAL_SIGN,
-  SEND_TRANSACTION,
-  SIGN_TRANSACTION,
-} from '@/utils/signingMethods';
+import { isSignTypedData, SIGN, PERSONAL_SIGN, SEND_TRANSACTION, SIGN_TRANSACTION } from '@/utils/signingMethods';
 import { isAddress } from '@ethersproject/address';
 import { toUtf8String } from '@ethersproject/strings';
 
-export const getRequestDisplayDetails = (
-  payload,
-  nativeCurrency,
-  dappNetwork
-) => {
+export const getRequestDisplayDetails = (payload, nativeCurrency, dappNetwork) => {
   const timestampInMs = Date.now();
-  if (
-    payload.method === SEND_TRANSACTION ||
-    payload.method === SIGN_TRANSACTION
-  ) {
+  if (payload.method === SEND_TRANSACTION || payload.method === SIGN_TRANSACTION) {
     const transaction = Object.assign(payload?.params?.[0] ?? null);
 
     // Backwards compatibility with param name change
@@ -47,12 +29,7 @@ export const getRequestDisplayDetails = (
       transaction.data = '0x';
     }
 
-    return getTransactionDisplayDetails(
-      transaction,
-      nativeCurrency,
-      timestampInMs,
-      dappNetwork
-    );
+    return getTransactionDisplayDetails(transaction, nativeCurrency, timestampInMs, dappNetwork);
   }
   if (payload.method === SIGN) {
     const message = payload?.params?.find(p => !isAddress(p));
@@ -66,11 +43,7 @@ export const getRequestDisplayDetails = (
         message = toUtf8String(message);
       }
     } catch (error) {
-      logger.debug(
-        'WC v2: getting display details, unable to decode hex message to UTF8 string',
-        {},
-        logger.DebugContext.walletconnect
-      );
+      logger.debug('WC v2: getting display details, unable to decode hex message to UTF8 string', {}, logger.DebugContext.walletconnect);
     }
     return getMessageDisplayDetails(message, timestampInMs);
   }
@@ -98,22 +71,13 @@ const getMessageDisplayDetails = (message, timestampInMs) => ({
   timestampInMs,
 });
 
-const getTransactionDisplayDetails = (
-  transaction,
-  nativeCurrency,
-  timestampInMs,
-  dappNetwork
-) => {
+const getTransactionDisplayDetails = (transaction, nativeCurrency, timestampInMs, dappNetwork) => {
   const tokenTransferHash = smartContractMethods.token_transfer.hash;
   const nativeAsset = ethereumUtils.getNativeAssetForNetwork(dappNetwork);
   if (transaction.data === '0x') {
     const value = fromWei(convertHexToString(transaction.value));
     const priceUnit = nativeAsset?.price?.value ?? 0;
-    const { amount, display } = convertAmountAndPriceToNativeDisplay(
-      value,
-      priceUnit,
-      nativeCurrency
-    );
+    const { amount, display } = convertAmountAndPriceToNativeDisplay(value, priceUnit, nativeCurrency);
     return {
       request: {
         asset: nativeAsset,
@@ -124,33 +88,21 @@ const getTransactionDisplayDetails = (
         nativeAmountDisplay: display,
         to: transaction.to,
         value,
-        ...(!isNil(transaction.nonce)
-          ? { nonce: Number(convertHexToString(transaction.nonce)) }
-          : {}),
+        ...(!isNil(transaction.nonce) ? { nonce: Number(convertHexToString(transaction.nonce)) } : {}),
       },
       timestampInMs,
     };
   }
   if (transaction.data.startsWith(tokenTransferHash)) {
     const contractAddress = transaction.to;
-    const accountAssetUniqueId = ethereumUtils.getUniqueId(
-      contractAddress,
-      dappNetwork
-    );
+    const accountAssetUniqueId = ethereumUtils.getUniqueId(contractAddress, dappNetwork);
     const asset = ethereumUtils.getAccountAsset(accountAssetUniqueId);
     const dataPayload = transaction.data.replace(tokenTransferHash, '');
     const toAddress = `0x${dataPayload.slice(0, 64).replace(/^0+/, '')}`;
     const amount = `0x${dataPayload.slice(64, 128).replace(/^0+/, '')}`;
-    const value = convertRawAmountToDecimalFormat(
-      convertHexToString(amount),
-      asset.decimals
-    );
+    const value = convertRawAmountToDecimalFormat(convertHexToString(amount), asset.decimals);
     const priceUnit = asset?.price?.value ?? 0;
-    const native = convertAmountAndPriceToNativeDisplay(
-      value,
-      priceUnit,
-      nativeCurrency
-    );
+    const native = convertAmountAndPriceToNativeDisplay(value, priceUnit, nativeCurrency);
     return {
       request: {
         asset,
@@ -159,9 +111,7 @@ const getTransactionDisplayDetails = (
         gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
         nativeAmount: native.amount,
         nativeAmountDisplay: native.display,
-        ...(!isNil(transaction.nonce)
-          ? { nonce: Number(convertHexToString(transaction.nonce)) }
-          : {}),
+        ...(!isNil(transaction.nonce) ? { nonce: Number(convertHexToString(transaction.nonce)) } : {}),
         to: toAddress,
         value,
       },
@@ -171,9 +121,7 @@ const getTransactionDisplayDetails = (
   if (transaction.data) {
     // If it's not a token transfer, let's assume it's an ETH transaction
     // Once it confirmed, zerion will show the correct data
-    const value = transaction.value
-      ? fromWei(convertHexToString(transaction.value))
-      : 0;
+    const value = transaction.value ? fromWei(convertHexToString(transaction.value)) : 0;
     return {
       request: {
         asset: nativeAsset,
@@ -181,9 +129,7 @@ const getTransactionDisplayDetails = (
         from: transaction.from,
         gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),
         gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
-        ...(!isNil(transaction.nonce)
-          ? { nonce: Number(convertHexToString(transaction.nonce)) }
-          : {}),
+        ...(!isNil(transaction.nonce) ? { nonce: Number(convertHexToString(transaction.nonce)) } : {}),
         to: transaction.to,
         value,
       },

@@ -25,11 +25,7 @@ the return type.
 ```typescript
 import * as keychain from '@/keychain';
 
-await keychain.set(
-  'my-keychain-key',
-  'value',
-  await keychain.getPrivateAccessControlOptions()
-);
+await keychain.set('my-keychain-key', 'value', await keychain.getPrivateAccessControlOptions());
 const bool = await keychain.has('my-keychain-key');
 const result = await keychain.get('my-keychain-key');
 

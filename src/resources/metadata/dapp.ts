@@ -3,12 +3,7 @@ import { metadataClient } from '@/graphql';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { QueryFunctionArgs, createQueryKey, queryClient } from '@/react-query';
 
-import {
-  getDappHost,
-  getDappHostname,
-  getHardcodedDappInformation,
-  isValidUrl,
-} from '@/utils/connectedApps';
+import { getDappHost, getDappHostname, getHardcodedDappInformation, isValidUrl } from '@/utils/connectedApps';
 import { capitalize } from 'lodash';
 
 export interface DappMetadata {
@@ -32,26 +27,16 @@ type DappMetadataArgs = {
 // ///////////////////////////////////////////////
 // Query Key
 
-const DappMetadataQueryKey = ({ url }: DappMetadataArgs) =>
-  createQueryKey('dappMetadata', { url }, { persisterVersion: 1 });
+const DappMetadataQueryKey = ({ url }: DappMetadataArgs) => createQueryKey('dappMetadata', { url }, { persisterVersion: 1 });
 
 type DappMetadataQueryKey = ReturnType<typeof DappMetadataQueryKey>;
 
 // ///////////////////////////////////////////////
 // Query Function
 
-export async function fetchDappMetadata({
-  url,
-  status,
-}: {
-  url: string;
-  status: boolean;
-}) {
+export async function fetchDappMetadata({ url, status }: { url: string; status: boolean }) {
   const appHostName = url && isValidUrl(url) ? getDappHostname(url) : '';
-  const hardcodedAppName =
-    url && isValidUrl(url)
-      ? getHardcodedDappInformation(appHostName)?.name || ''
-      : '';
+  const hardcodedAppName = url && isValidUrl(url) ? getHardcodedDappInformation(appHostName)?.name || '' : '';
 
   const response = await metadataClient.getdApp({
     shortName: hardcodedAppName,
@@ -60,12 +45,8 @@ export async function fetchDappMetadata({
   });
 
   const appHost = url && isValidUrl(url) ? getDappHost(url) : '';
-  const appName = response?.dApp?.name
-    ? capitalize(response?.dApp?.name)
-    : hardcodedAppName || appHost;
-  const appShortName = response?.dApp?.shortName
-    ? capitalize(response?.dApp?.shortName)
-    : appName;
+  const appName = response?.dApp?.name ? capitalize(response?.dApp?.name) : hardcodedAppName || appHost;
+  const appShortName = response?.dApp?.shortName ? capitalize(response?.dApp?.shortName) : appName;
   const dappMetadata = {
     url,
     appHost,
@@ -80,22 +61,16 @@ export async function fetchDappMetadata({
 
 export async function dappMetadataQueryFunction({
   queryKey: [{ url }],
-}: QueryFunctionArgs<
-  typeof DappMetadataQueryKey
->): Promise<DappMetadata | null> {
+}: QueryFunctionArgs<typeof DappMetadataQueryKey>): Promise<DappMetadata | null> {
   if (!url) return null;
   const dappMetadata = await fetchDappMetadata({ url, status: true });
   return dappMetadata;
 }
 
 export async function prefetchDappMetadata({ url }: { url: string }) {
-  queryClient.prefetchQuery(
-    DappMetadataQueryKey({ url }),
-    async () => fetchDappMetadata({ url, status: false }),
-    {
-      staleTime: 60000,
-    }
-  );
+  queryClient.prefetchQuery(DappMetadataQueryKey({ url }), async () => fetchDappMetadata({ url, status: false }), {
+    staleTime: 60000,
+  });
 }
 
 // ///////////////////////////////////////////////

@@ -6,18 +6,9 @@ import { magicMemo } from '../../utils';
 import useSafeImageUri from '@/hooks/useSafeImageUri';
 
 const generateMatrix = (value, errorCorrectionLevel) => {
-  const arr = Array.prototype.slice.call(
-    QRCodeUtil.create(value, { errorCorrectionLevel }).modules.data,
-    0
-  );
+  const arr = Array.prototype.slice.call(QRCodeUtil.create(value, { errorCorrectionLevel }).modules.data, 0);
   const sqrt = Math.sqrt(arr.length);
-  return arr.reduce(
-    (rows, key, index) =>
-      (index % sqrt === 0
-        ? rows.push([key])
-        : rows[rows.length - 1].push(key)) && rows,
-    []
-  );
+  return arr.reduce((rows, key, index) => (index % sqrt === 0 ? rows.push([key]) : rows[rows.length - 1].push(key)) && rows, []);
 };
 
 const QRCode = ({
@@ -67,13 +58,7 @@ const QRCode = ({
     matrix.forEach((row, i) => {
       row.forEach((column, j) => {
         if (matrix[i][j]) {
-          if (
-            !(
-              (i < 7 && j < 7) ||
-              (i > matrix.length - 8 && j < 7) ||
-              (i < 7 && j > matrix.length - 8)
-            )
-          ) {
+          if (!((i < 7 && j < 7) || (i > matrix.length - 8 && j < 7) || (i < 7 && j > matrix.length - 8))) {
             if (
               !(
                 i > matrixMiddleStart &&
@@ -118,20 +103,9 @@ const QRCode = ({
       {dots}
       {logo && (
         <G x={logoPosition} y={logoPosition}>
-          <Rect
-            clipPath="url(#clip-wrapper)"
-            fill={logoBackgroundColor}
-            height={logoWrapperSize}
-            width={logoWrapperSize}
-          />
+          <Rect clipPath="url(#clip-wrapper)" fill={logoBackgroundColor} height={logoWrapperSize} width={logoWrapperSize} />
           <G x={logoMargin} y={logoMargin}>
-            <Image
-              clipPath="url(#clip-logo)"
-              height={logoSize}
-              href={href}
-              preserveAspectRatio="xMidYMid slice"
-              width={logoSize}
-            />
+            <Image clipPath="url(#clip-logo)" height={logoSize} href={href} preserveAspectRatio="xMidYMid slice" width={logoSize} />
           </G>
         </G>
       )}

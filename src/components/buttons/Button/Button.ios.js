@@ -24,36 +24,23 @@ const ButtonShapeTypes = {
 };
 
 const shadowStyles = (colors, disabled, isDarkMode) => ({
-  shadowColor: colors.alpha(
-    isDarkMode ? colors.shadow : colors.blueGreyDark,
-    isDarkMode && disabled ? 0.2 : 0.5
-  ),
+  shadowColor: colors.alpha(isDarkMode ? colors.shadow : colors.blueGreyDark, isDarkMode && disabled ? 0.2 : 0.5),
   shadowOffset: { height: 4, width: 0 },
   shadowOpacity: 0.2,
   shadowRadius: 6,
 });
 
-const Container = styled(Centered)(
-  ({
-    disabled,
-    backgroundColor,
-    size,
-    showShadow,
-    borderRadius,
-    theme: { colors, isDarkMode },
-  }) => ({
-    ...(showShadow ? shadowStyles(colors, disabled, isDarkMode) : {}),
+const Container = styled(Centered)(({ disabled, backgroundColor, size, showShadow, borderRadius, theme: { colors, isDarkMode } }) => ({
+  ...(showShadow ? shadowStyles(colors, disabled, isDarkMode) : {}),
 
-    ...padding.object(...ButtonSizeTypes[size].padding),
-    backgroundColor: backgroundColor,
+  ...padding.object(...ButtonSizeTypes[size].padding),
+  backgroundColor: backgroundColor,
 
-    borderRadius: borderRadius,
-    flexGrow: 0,
-  })
-);
+  borderRadius: borderRadius,
+  flexGrow: 0,
+}));
 
-const shouldRenderChildrenAsText = children =>
-  isArray(children) ? isString(children[0]) : isString(children);
+const shouldRenderChildrenAsText = children => (isArray(children) ? isString(children[0]) : isString(children));
 
 export default function Button({
   backgroundColor,
@@ -77,17 +64,10 @@ export default function Button({
   const { colors, isDarkMode } = useTheme();
 
   return (
-    <ButtonPressAnimation
-      {...props}
-      disabled={disabled}
-      onPress={onPress}
-      testID={testID}
-    >
+    <ButtonPressAnimation {...props} disabled={disabled} onPress={onPress} testID={testID}>
       <Container
         {...props}
-        backgroundColor={
-          backgroundColor || (isDarkMode ? colors.offWhite : colors.grey)
-        }
+        backgroundColor={backgroundColor || (isDarkMode ? colors.offWhite : colors.grey)}
         borderRadius={borderRadius}
         disabled={disabled}
         showShadow={showShadow}
@@ -95,25 +75,13 @@ export default function Button({
         style={[containerStyles, style]}
       >
         {shouldRenderChildrenAsText(children) ? (
-          <Text
-            color={color || colors.whiteLabel}
-            size={ButtonSizeTypes[size].fontSize}
-            weight="semibold"
-            {...textProps}
-          >
+          <Text color={color || colors.whiteLabel} size={ButtonSizeTypes[size].fontSize} weight="semibold" {...textProps}>
             {children}
           </Text>
         ) : (
           children
         )}
-        {(!onPress || !disabled) && (
-          <InnerBorder
-            color={borderColor}
-            opacity={borderOpacity}
-            radius={borderRadius}
-            width={borderWidth}
-          />
-        )}
+        {(!onPress || !disabled) && <InnerBorder color={borderColor} opacity={borderOpacity} radius={borderRadius} width={borderWidth} />}
       </Container>
     </ButtonPressAnimation>
   );

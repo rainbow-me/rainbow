@@ -2,11 +2,7 @@
 const { merge } = require('lodash');
 const { transform } = require('metro-plugin-anisotropic-transform');
 
-module.exports.transform = function applyRainbowTransform({
-  src,
-  filename,
-  options,
-}) {
+module.exports.transform = function applyRainbowTransform({ src, filename, options }) {
   const opts = merge(options, {
     customTransformOptions: {
       'metro-plugin-anisotropic-transform': {

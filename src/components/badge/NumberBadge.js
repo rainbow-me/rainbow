@@ -1,11 +1,5 @@
 import React, { useLayoutEffect, useState } from 'react';
-import Animated, {
-  interpolate,
-  SpringUtils,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
+import Animated, { interpolate, SpringUtils, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { magicMemo } from '../../utils';
 import { Centered } from '../layout';
 import { Text } from '../text';
@@ -22,24 +16,22 @@ const Container = styled(Animated.View)({
   zIndex: 1,
 });
 
-const Circle = styled(Centered)(
-  ({ offset, size, valueLength, theme: { colors } }) => ({
-    backgroundColor: colors.appleBlue,
-    borderRadius: 15,
-    paddingBottom: 3,
-    paddingTop: 2,
-    ...(valueLength === 1
-      ? {
-          ...borders.buildCircleAsObject(size),
-          paddingLeft: 1,
-        }
-      : {
-          paddingLeft: 5.5,
-          paddingRight: 5.5,
-          transform: [{ translateX: Math.floor(offset / 2) }],
-        }),
-  })
-);
+const Circle = styled(Centered)(({ offset, size, valueLength, theme: { colors } }) => ({
+  backgroundColor: colors.appleBlue,
+  borderRadius: 15,
+  paddingBottom: 3,
+  paddingTop: 2,
+  ...(valueLength === 1
+    ? {
+        ...borders.buildCircleAsObject(size),
+        paddingLeft: 1,
+      }
+    : {
+        paddingLeft: 5.5,
+        paddingRight: 5.5,
+        transform: [{ translateX: Math.floor(offset / 2) }],
+      }),
+}));
 
 const NumberText = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.whiteLabel,
@@ -53,15 +45,7 @@ const BadgeSpringConfig = SpringUtils.makeConfigFromOrigamiTensionAndFriction({
   tension: 145,
 });
 
-const Badge = ({
-  delay = 1500,
-  isVisible,
-  maxLength = 2,
-  offset = 7,
-  size = 19,
-  value,
-  ...props
-}) => {
+const Badge = ({ delay = 1500, isVisible, maxLength = 2, offset = 7, size = 19, value, ...props }) => {
   const [delayedIsVisible, setDelayedIsVisible] = useState(isVisible);
   const [startDelayTimeout] = useTimeout();
 
@@ -86,9 +70,7 @@ const Badge = ({
   return (
     <Container {...props} offset={offset} size={size} style={animatedStyle}>
       <Circle offset={offset} size={size} valueLength={valueLength}>
-        <NumberText>
-          {valueLength > maxLength ? `${'9'.repeat(maxLength)}+` : value}
-        </NumberText>
+        <NumberText>{valueLength > maxLength ? `${'9'.repeat(maxLength)}+` : value}</NumberText>
       </Circle>
     </Container>
   );

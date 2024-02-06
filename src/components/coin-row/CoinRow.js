@@ -7,8 +7,7 @@ import { padding } from '@/styles';
 
 const CoinRowPaddingTop = 9;
 const CoinRowPaddingBottom = 10;
-export const CoinRowHeight =
-  CoinIconSize + CoinRowPaddingTop + CoinRowPaddingBottom;
+export const CoinRowHeight = CoinIconSize + CoinRowPaddingTop + CoinRowPaddingBottom;
 
 const Container = styled(Row).attrs({
   align: 'center',
@@ -84,9 +83,7 @@ export default function CoinRow({
           })}
         </Row>
       </Content>
-      {typeof children === 'function'
-        ? children({ symbol, ...props })
-        : children}
+      {typeof children === 'function' ? children({ symbol, ...props }) : children}
     </Container>
   );
 }

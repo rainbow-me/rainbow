@@ -12,12 +12,7 @@ const buildInsetFromProps = inset => {
 
   const rightInset = !isNil(inset[1]) ? inset[1] : inset[0];
 
-  return [
-    inset[0],
-    rightInset,
-    inset[2] || inset[0],
-    !isNil(inset[3]) ? inset[3] : rightInset,
-  ];
+  return [inset[0], rightInset, inset[2] || inset[0], !isNil(inset[3]) ? inset[3] : rightInset];
 };
 
 const horizontalBorderLineStyles = inset => `
@@ -53,42 +48,22 @@ const BorderLine = styled.View(({ color, horizontal, inset }) => {
   return {
     ...position.coverAsObject,
     backgroundColor: color,
-    ...(horizontal
-      ? horizontalBorderLineStyles.object(insetFromProps)
-      : verticalBorderLineStyles.object(insetFromProps)),
+    ...(horizontal ? horizontalBorderLineStyles.object(insetFromProps) : verticalBorderLineStyles.object(insetFromProps)),
   };
 });
 
 const Container = styled.View({
-  backgroundColor: ({ backgroundColor, theme: { colors } }) =>
-    backgroundColor || colors.white,
+  backgroundColor: ({ backgroundColor, theme: { colors } }) => backgroundColor || colors.white,
   flexShrink: 0,
   height: ({ horizontal, size }) => (horizontal ? size : '100%'),
   width: ({ horizontal, size }) => (horizontal ? '100%' : size),
 });
 
-const Divider = ({
-  backgroundColor,
-  color,
-  horizontal = true,
-  inset = [0, 0, 0, 19],
-  size = DividerSize,
-  ...props
-}) => {
+const Divider = ({ backgroundColor, color, horizontal = true, inset = [0, 0, 0, 19], size = DividerSize, ...props }) => {
   const { colors } = useTheme();
   return (
-    <Container
-      {...props}
-      backgroundColor={backgroundColor}
-      horizontal={horizontal}
-      size={size}
-    >
-      <BorderLine
-        {...props}
-        color={color || colors.rowDivider}
-        horizontal={horizontal}
-        inset={inset}
-      />
+    <Container {...props} backgroundColor={backgroundColor} horizontal={horizontal} size={size}>
+      <BorderLine {...props} color={color || colors.rowDivider} horizontal={horizontal} inset={inset} />
     </Container>
   );
 };

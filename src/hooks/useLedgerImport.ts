@@ -4,11 +4,7 @@ import { DebugContext } from '@/logger/debugContext';
 import { logger, RainbowError } from '@/logger';
 import { Subscription } from '@ledgerhq/hw-transport';
 import { Alert } from 'react-native';
-import {
-  checkAndRequestAndroidBluetooth,
-  showBluetoothPermissionsAlert,
-  showBluetoothPoweredOffAlert,
-} from '@/utils/bluetoothPermissions';
+import { checkAndRequestAndroidBluetooth, showBluetoothPermissionsAlert, showBluetoothPoweredOffAlert } from '@/utils/bluetoothPermissions';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { ledgerErrorHandler, LEDGER_ERROR_CODES } from '@/utils/ledger';
 
@@ -63,27 +59,15 @@ export function useLedgerImport({
     const newObserver = TransportBLE.observeState({
       // havnt seen complete or error fire yet but its in the docs so keeping for reporting purposes
       complete: (e: any) => {
-        logger.debug(
-          '[LedgerImport] Observer complete',
-          { e },
-          DebugContext.ledger
-        );
+        logger.debug('[LedgerImport] Observer complete', { e }, DebugContext.ledger);
       },
       error: (e: any) => {
-        logger.debug(
-          '[LedgerImport] Observer error ',
-          { e },
-          DebugContext.ledger
-        );
+        logger.debug('[LedgerImport] Observer error ', { e }, DebugContext.ledger);
       },
       next: async (e: any) => {
         // App is not authorized to use Bluetooth
         if (e.type === 'Unauthorized') {
-          logger.debug(
-            '[LedgerImport] - Bluetooth Unauthorized',
-            {},
-            DebugContext.ledger
-          );
+          logger.debug('[LedgerImport] - Bluetooth Unauthorized', {}, DebugContext.ledger);
           if (IS_IOS) {
             await showBluetoothPermissionsAlert();
           } else {
@@ -92,21 +76,14 @@ export function useLedgerImport({
         }
         // Bluetooth is turned off
         if (e.type === 'PoweredOff') {
-          logger.debug(
-            '[LedgerImport] - Bluetooth Powered Off',
-            {},
-            DebugContext.ledger
-          );
+          logger.debug('[LedgerImport] - Bluetooth Powered Off', {}, DebugContext.ledger);
           await showBluetoothPoweredOffAlert();
         }
         if (e.available) {
           const newListener = TransportBLE.listen({
             complete: () => {},
             error: error => {
-              logger.error(
-                new RainbowError('[Ledger Import] - Error Pairing'),
-                { errorMessage: (error as Error).message }
-              );
+              logger.error(new RainbowError('[Ledger Import] - Error Pairing'), { errorMessage: (error as Error).message });
             },
             next: async e => {
               if (e.type === 'add') {
@@ -142,20 +119,10 @@ export function useLedgerImport({
 
   useEffect(() => {
     const asyncFn = async () => {
-      logger.debug(
-        '[LedgerImport] - init device polling',
-        {},
-        DebugContext.ledger
-      );
+      logger.debug('[LedgerImport] - init device polling', {}, DebugContext.ledger);
 
-      const isBluetoothEnabled = IS_ANDROID
-        ? await checkAndRequestAndroidBluetooth()
-        : true;
-      logger.debug(
-        '[LedgerImport] - bluetooth enabled? ',
-        { isBluetoothEnabled },
-        DebugContext.ledger
-      );
+      const isBluetoothEnabled = IS_ANDROID ? await checkAndRequestAndroidBluetooth() : true;
+      logger.debug('[LedgerImport] - bluetooth enabled? ', { isBluetoothEnabled }, DebugContext.ledger);
 
       if (isBluetoothEnabled) {
         searchAndPair();

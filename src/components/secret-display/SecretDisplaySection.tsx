@@ -2,11 +2,7 @@ import { useRoute } from '@react-navigation/native';
 import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
 import React, { ReactNode, useCallback, useEffect, useState } from 'react';
-import {
-  createdWithBiometricError,
-  identifyWalletType,
-  loadSeedPhraseAndMigrateIfNeeded,
-} from '@/model/wallet';
+import { createdWithBiometricError, identifyWalletType, loadSeedPhraseAndMigrateIfNeeded } from '@/model/wallet';
 import ActivityIndicator from '../ActivityIndicator';
 import Spinner from '../Spinner';
 import { CopyFloatingEmojis } from '../floating-emojis';
@@ -19,10 +15,7 @@ import { position } from '@/styles';
 import { useTheme } from '@/theme';
 import { logger, RainbowError } from '@/logger';
 import { IS_ANDROID } from '@/env';
-import {
-  SecretDisplayStates,
-  SecretDisplayStatesType,
-} from '@/components/secret-display/states';
+import { SecretDisplayStates, SecretDisplayStatesType } from '@/components/secret-display/states';
 import { SecretDisplayError } from '@/components/secret-display/SecretDisplayError';
 import { InteractionManager, StyleSheet } from 'react-native';
 
@@ -34,12 +27,7 @@ type WrapperProps = {
 
 function Wrapper({ children }: WrapperProps) {
   return (
-    <Box
-      alignItems="center"
-      justifyContent="center"
-      paddingBottom="30px (Deprecated)"
-      paddingHorizontal={{ custom: 46 }}
-    >
+    <Box alignItems="center" justifyContent="center" paddingBottom="30px (Deprecated)" paddingHorizontal={{ custom: 46 }}>
       {children}
     </Box>
   );
@@ -50,18 +38,13 @@ type Props = {
   onWalletTypeIdentified?: (walletType: EthereumWalletType) => void;
 };
 
-export function SecretDisplaySection({
-  onSecretLoaded,
-  onWalletTypeIdentified,
-}: Props) {
+export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }: Props) {
   const { colors } = useTheme();
   const { params } = useRoute();
   const { selectedWallet, wallets } = useWallets();
   const walletId = (params as any)?.walletId || selectedWallet.id;
   const currentWallet = wallets?.[walletId];
-  const [sectionState, setSectionState] = useState<SecretDisplayStatesType>(
-    SecretDisplayStates.loading
-  );
+  const [sectionState, setSectionState] = useState<SecretDisplayStatesType>(SecretDisplayStates.loading);
   const [seed, setSeed] = useState<string | null>(null);
   const [walletType, setWalletType] = useState(currentWallet?.type);
 
@@ -83,11 +66,7 @@ export function SecretDisplaySection({
       logger.error(new RainbowError('Error while trying to reveal secret'), {
         error: message,
       });
-      setSectionState(
-        message === createdWithBiometricError
-          ? SecretDisplayStates.securedWithBiometrics
-          : SecretDisplayStates.noSeed
-      );
+      setSectionState(message === createdWithBiometricError ? SecretDisplayStates.securedWithBiometrics : SecretDisplayStates.noSeed);
       captureException(error);
       onSecretLoaded?.(false);
     }
@@ -108,15 +87,9 @@ export function SecretDisplaySection({
         </Wrapper>
       );
     case SecretDisplayStates.noSeed:
-      return (
-        <SecretDisplayError message={lang.t('back_up.secret.no_seed_phrase')} />
-      );
+      return <SecretDisplayError message={lang.t('back_up.secret.no_seed_phrase')} />;
     case SecretDisplayStates.securedWithBiometrics:
-      return (
-        <SecretDisplayError
-          message={lang.t('back_up.secret.biometrically_secured')}
-        />
-      );
+      return <SecretDisplayError message={lang.t('back_up.secret.biometrically_secured')} />;
     case SecretDisplayStates.revealed:
       return (
         <Wrapper>
@@ -124,16 +97,8 @@ export function SecretDisplaySection({
             {/* @ts-expect-error JS component*/}
             <CopyFloatingEmojis textToCopy={seed}>
               <Inline alignVertical="center" space="6px">
-                <Icon
-                  name="copy"
-                  color={colors.appleBlue}
-                  style={styles.copyIcon}
-                />
-                <Text
-                  color="action (Deprecated)"
-                  size="16px / 22px (Deprecated)"
-                  weight="bold"
-                >
+                <Icon name="copy" color={colors.appleBlue} style={styles.copyIcon} />
+                <Text color="action (Deprecated)" size="16px / 22px (Deprecated)" weight="bold">
                   {lang.t('back_up.secret.copy_to_clipboard')}
                 </Text>
               </Inline>
@@ -141,31 +106,17 @@ export function SecretDisplaySection({
           </Box>
           <Stack alignHorizontal="center" space="19px (Deprecated)">
             <SecretDisplayCard seed={seed ?? ''} type={walletType} />
-            <Text
-              containsEmoji
-              color="primary (Deprecated)"
-              size="16px / 22px (Deprecated)"
-              weight="bold"
-            >
+            <Text containsEmoji color="primary (Deprecated)" size="16px / 22px (Deprecated)" weight="bold">
               👆{lang.t('back_up.secret.for_your_eyes_only')} 👆
             </Text>
-            <Text
-              align="center"
-              color="secondary60 (Deprecated)"
-              size="16px / 22px (Deprecated)"
-              weight="semibold"
-            >
+            <Text align="center" color="secondary60 (Deprecated)" size="16px / 22px (Deprecated)" weight="semibold">
               {lang.t('back_up.secret.anyone_who_has_these')}
             </Text>
           </Stack>
         </Wrapper>
       );
     default:
-      logger.error(
-        new RainbowError(
-          'Secret display section tries to present an unknown state'
-        )
-      );
+      logger.error(new RainbowError('Secret display section tries to present an unknown state'));
       return null;
   }
 }

@@ -2,11 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import useAccountSettings from './useAccountSettings';
 import { fetchOwner } from '@/handlers/ens';
 import { getENSData, saveENSData } from '@/handlers/localstorage/ens';
-import {
-  queryClient,
-  QueryConfigDeprecated,
-  UseQueryData,
-} from '@/react-query';
+import { queryClient, QueryConfigDeprecated, UseQueryData } from '@/react-query';
 
 export const ensOwnerQueryKey = (name: string) => ['ens-owner', name];
 
@@ -23,31 +19,19 @@ export async function fetchENSOwner(name: string) {
 }
 
 export async function prefetchENSOwner(name: string) {
-  queryClient.prefetchQuery(
-    ensOwnerQueryKey(name),
-    async () => fetchENSOwner(name),
-    { staleTime: STALE_TIME }
-  );
+  queryClient.prefetchQuery(ensOwnerQueryKey(name), async () => fetchENSOwner(name), { staleTime: STALE_TIME });
 }
 
-export default function useENSOwner(
-  name: string,
-  config?: QueryConfigDeprecated<typeof fetchENSOwner>
-) {
+export default function useENSOwner(name: string, config?: QueryConfigDeprecated<typeof fetchENSOwner>) {
   const { accountAddress } = useAccountSettings();
 
-  const { data, ...query } = useQuery<UseQueryData<typeof fetchENSOwner>>(
-    ensOwnerQueryKey(name),
-    async () => fetchENSOwner(name),
-    {
-      ...config,
-      // Data will be stale for 10s to avoid dupe queries
-      staleTime: STALE_TIME,
-    }
-  );
+  const { data, ...query } = useQuery<UseQueryData<typeof fetchENSOwner>>(ensOwnerQueryKey(name), async () => fetchENSOwner(name), {
+    ...config,
+    // Data will be stale for 10s to avoid dupe queries
+    staleTime: STALE_TIME,
+  });
 
-  const isOwner =
-    data?.address?.toLowerCase() === accountAddress?.toLowerCase();
+  const isOwner = data?.address?.toLowerCase() === accountAddress?.toLowerCase();
 
   return {
     data,

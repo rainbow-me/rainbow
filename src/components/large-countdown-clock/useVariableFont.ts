@@ -9,10 +9,7 @@ type VariableFontReturnOptions = {
   fontSize: number;
 };
 
-export function useVariableFont(
-  min: number,
-  sec: number
-): VariableFontReturnOptions {
+export function useVariableFont(min: number, sec: number): VariableFontReturnOptions {
   const [fontSize, setFontSize] = useState<number>(50);
   const [lineHeight, setLineHeight] = useState<number>(108);
   const [separatorSize, setSeparatorSize] = useState<number>(7);

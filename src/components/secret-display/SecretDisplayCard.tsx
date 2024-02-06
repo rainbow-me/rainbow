@@ -12,10 +12,7 @@ interface SecretDisplayCardProps {
   type?: EthereumWalletType;
 }
 
-export default function SecretDisplayCard({
-  seed,
-  type,
-}: SecretDisplayCardProps) {
+export default function SecretDisplayCard({ seed, type }: SecretDisplayCardProps) {
   return (
     <Centered>
       <Inset vertical="10px">
@@ -27,21 +24,11 @@ export default function SecretDisplayCard({
           paddingVertical="19px (Deprecated)"
           shadow="21px light (Deprecated)"
         >
-          <CopyTooltip
-            textToCopy={seed}
-            tooltipText={lang.t('back_up.secret.copy_to_clipboard')}
-          >
+          <CopyTooltip textToCopy={seed} tooltipText={lang.t('back_up.secret.copy_to_clipboard')}>
             <Box alignItems="center" height="full" justifyContent="center">
-              {seed && type === WalletTypes.mnemonic && (
-                <SeedWordGrid seed={seed} />
-              )}
+              {seed && type === WalletTypes.mnemonic && <SeedWordGrid seed={seed} />}
               {seed && type === WalletTypes.privateKey && (
-                <Text
-                  align="center"
-                  weight="semibold"
-                  lineHeight="looser"
-                  size="lmedium"
-                >
+                <Text align="center" weight="semibold" lineHeight="looser" size="lmedium">
                   {seed}
                 </Text>
               )}

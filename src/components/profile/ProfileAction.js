@@ -24,21 +24,10 @@ const ProfileActionIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
 }));
 
 const ProfileAction = ({ icon, iconSize = 16, onPress, text, ...props }) => (
-  <ButtonPressAnimation
-    onPress={onPress}
-    overflowMargin={5}
-    radiusAndroid={24}
-    {...props}
-  >
+  <ButtonPressAnimation onPress={onPress} overflowMargin={5} radiusAndroid={24} {...props}>
     <Container>
       <ProfileActionIcon iconSize={iconSize} name={icon} />
-      <Text
-        color="appleBlue"
-        letterSpacing="roundedMedium"
-        lineHeight={19}
-        size="lmedium"
-        weight="semibold"
-      >
+      <Text color="appleBlue" letterSpacing="roundedMedium" lineHeight={19} size="lmedium" weight="semibold">
         {text}
       </Text>
     </Container>

@@ -1,17 +1,5 @@
-import React, {
-  FocusEvent,
-  ForwardRefRenderFunction,
-  MutableRefObject,
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
-import {
-  StyleProp,
-  TextInput,
-  TouchableWithoutFeedback,
-  ViewStyle,
-} from 'react-native';
+import React, { FocusEvent, ForwardRefRenderFunction, MutableRefObject, useCallback, useEffect, useState } from 'react';
+import { StyleProp, TextInput, TouchableWithoutFeedback, ViewStyle } from 'react-native';
 import { TokenSelectionButton } from '../buttons';
 import { ChainBadge, CoinIcon, CoinIconSize } from '../coin-icon';
 import { EnDash } from '../text';
@@ -24,9 +12,7 @@ import { AccentColorProvider, Box, Space } from '@/design-system';
 import FastCoinIcon from '../asset-list/RecyclerAssetList2/FastComponents/FastCoinIcon';
 
 const ExchangeFieldHeight = android ? 64 : 38;
-const ExchangeFieldPadding: Space = android
-  ? '15px (Deprecated)'
-  : '19px (Deprecated)';
+const ExchangeFieldPadding: Space = android ? '15px (Deprecated)' : '19px (Deprecated)';
 
 const Input = styled(ExchangeInput).attrs({
   letterSpacing: 'roundedTightest',
@@ -139,9 +125,7 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
       style={style}
       testID={`${testID}-${symbol || 'empty'}-${network || 'empty'}`}
     >
-      <TouchableWithoutFeedback
-        onPress={onTapWhileDisabled ?? handleFocusField}
-      >
+      <TouchableWithoutFeedback onPress={onTapWhileDisabled ?? handleFocusField}>
         <Box
           flexDirection="row"
           flexGrow={1}
@@ -154,22 +138,11 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
         >
           <Box paddingRight="10px">
             {symbol ? (
-              <FastCoinIcon
-                address={address}
-                mainnetAddress={mainnetAddress}
-                symbol={symbol}
-                network={network}
-                theme={theme}
-              />
+              <FastCoinIcon address={address} mainnetAddress={mainnetAddress} symbol={symbol} network={network} theme={theme} />
             ) : (
               <Box>
-                <AccentColorProvider
-                  color={theme.colors.alpha(theme.colors.blueGreyDark, 0.1)}
-                >
-                  <Box
-                    background="accent"
-                    style={{ ...borders.buildCircleAsObject(CoinIconSize) }}
-                  />
+                <AccentColorProvider color={theme.colors.alpha(theme.colors.blueGreyDark, 0.1)}>
+                  <Box background="accent" style={{ ...borders.buildCircleAsObject(CoinIconSize) }} />
                 </AccentColorProvider>
                 <ChainBadge network={network} />
               </Box>
@@ -197,12 +170,7 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
         </Box>
       </TouchableWithoutFeedback>
       {!disableCurrencySelection && (
-        <TokenSelectionButton
-          color={color}
-          onPress={onPressSelectCurrency}
-          symbol={symbol}
-          testID={testID + '-selection-button'}
-        />
+        <TokenSelectionButton color={color} onPress={onPressSelectCurrency} symbol={symbol} testID={testID + '-selection-button'} />
       )}
     </Box>
   );

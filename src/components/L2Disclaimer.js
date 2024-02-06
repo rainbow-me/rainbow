@@ -43,40 +43,19 @@ const L2Disclaimer = ({
 
   return (
     <>
-      <ButtonPressAnimation
-        marginBottom={marginBottom}
-        onPress={onPress}
-        scaleTo={0.95}
-      >
-        <Row
-          borderRadius={16}
-          marginHorizontal={marginHorizontal}
-          style={padding.object(android ? 6 : 10, 10, android ? 6 : 10, 10)}
-        >
-          <RadialGradient
-            {...radialGradientProps}
-            borderRadius={16}
-            radius={600}
-          />
+      <ButtonPressAnimation marginBottom={marginBottom} onPress={onPress} scaleTo={0.95}>
+        <Row borderRadius={16} marginHorizontal={marginHorizontal} style={padding.object(android ? 6 : 10, 10, android ? 6 : 10, 10)}>
+          <RadialGradient {...radialGradientProps} borderRadius={16} radius={600} />
           <Column justify="center">
             {isL2 ? (
-              <ChainBadge
-                network={network}
-                position="relative"
-                size="small"
-                forceDark={forceDarkMode}
-              />
+              <ChainBadge network={network} position="relative" size="small" forceDark={forceDarkMode} />
             ) : (
               <CoinIcon address={ETH_ADDRESS} size={20} symbol={ETH_SYMBOL} />
             )}
           </Column>
           <Column flex={1} justify="center" marginHorizontal={8}>
             <Text
-              color={
-                prominent
-                  ? colors.alpha(localColors.blueGreyDark, 0.8)
-                  : colors.alpha(localColors.blueGreyDark, 0.6)
-              }
+              color={prominent ? colors.alpha(localColors.blueGreyDark, 0.8) : colors.alpha(localColors.blueGreyDark, 0.6)}
               numberOfLines={2}
               size="smedium"
               weight={prominent ? 'heavy' : 'bold'}
@@ -90,20 +69,13 @@ const L2Disclaimer = ({
             </Text>
           </Column>
           <Column align="end" justify="center">
-            <Text
-              align="center"
-              color={colors.alpha(localColors.blueGreyDark, 0.3)}
-              size="smedium"
-              weight="heavy"
-            >
+            <Text align="center" color={colors.alpha(localColors.blueGreyDark, 0.3)} size="smedium" weight="heavy">
               􀅵
             </Text>
           </Column>
         </Row>
       </ButtonPressAnimation>
-      {hideDivider ? null : (
-        <Divider color={localColors.rowDividerExtraLight} />
-      )}
+      {hideDivider ? null : <Divider color={localColors.rowDividerExtraLight} />}
     </>
   );
 };

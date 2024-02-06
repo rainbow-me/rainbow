@@ -29,35 +29,19 @@ const Content = styled(Column).attrs({ shrink: 0 })({
   width: '100%',
 });
 
-export default function Modal({
-  containerPadding = 15,
-  fixedToTop,
-  height,
-  onCloseModal,
-  radius = 12,
-  fullScreenOnAndroid,
-  ...props
-}) {
+export default function Modal({ containerPadding = 15, fixedToTop, height, onCloseModal, radius = 12, fullScreenOnAndroid, ...props }) {
   const { height: deviceHeight } = useDimensions();
   const { top: insetTop } = useSafeAreaInsets();
   const { colors } = useTheme();
 
   return (
-    <Container
-      containerPadding={containerPadding}
-      fixedToTop={fixedToTop}
-      insetTop={insetTop}
-      shadowColor={colors.shadowBlack}
-    >
+    <Container containerPadding={containerPadding} fixedToTop={fixedToTop} insetTop={insetTop} shadowColor={colors.shadowBlack}>
       {ios && <TouchableBackdrop onPress={onCloseModal} />}
       <Content
         {...props}
         backgroundColor={colors.white}
         fixedToTop={fixedToTop}
-        height={
-          (fullScreenOnAndroid && android ? '100%' : height) ||
-          deviceHeight - 220
-        }
+        height={(fullScreenOnAndroid && android ? '100%' : height) || deviceHeight - 220}
         radius={radius}
       />
     </Container>

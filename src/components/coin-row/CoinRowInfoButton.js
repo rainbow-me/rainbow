@@ -12,12 +12,7 @@ import { CoinRowHeight } from './CoinRow';
 import { useClipboard } from '@/hooks';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding } from '@/styles';
-import {
-  abbreviations,
-  ethereumUtils,
-  haptics,
-  showActionSheetWithOptions,
-} from '@/utils';
+import { abbreviations, ethereumUtils, haptics, showActionSheetWithOptions } from '@/utils';
 
 const InfoButton = styled(Centered)({
   ...padding.object(8, 0),
@@ -32,12 +27,10 @@ const InfoButton = styled(Centered)({
   width: 68,
 });
 
-const Circle = styled(IS_TESTING === 'true' ? View : RadialGradient).attrs(
-  ({ theme: { colors } }) => ({
-    center: [0, 15],
-    colors: colors.gradients.lightestGrey,
-  })
-)({
+const Circle = styled(IS_TESTING === 'true' ? View : RadialGradient).attrs(({ theme: { colors } }) => ({
+  center: [0, 15],
+  colors: colors.gradients.lightestGrey,
+}))({
   borderRadius: 15,
   height: 30,
   margin: 10,
@@ -88,11 +81,7 @@ const buildBlockExplorerAction = type => {
   };
 };
 
-const CoinRowInfoButton = ({
-  item,
-  onCopySwapDetailsText,
-  showFavoriteButton,
-}) => {
+const CoinRowInfoButton = ({ item, onCopySwapDetailsText, showFavoriteButton }) => {
   const { setClipboard } = useClipboard();
   const handleCopyContractAddress = useCallback(
     address => {
@@ -104,14 +93,8 @@ const CoinRowInfoButton = ({
   );
 
   const onPressAndroid = useCallback(() => {
-    const blockExplorerText = `View on ${startCase(
-      ethereumUtils.getBlockExplorer(item?.network)
-    )}`;
-    const androidContractActions = [
-      lang.t('wallet.action.copy_contract_address'),
-      blockExplorerText,
-      lang.t('button.cancel'),
-    ];
+    const blockExplorerText = `View on ${startCase(ethereumUtils.getBlockExplorer(item?.network))}`;
+    const androidContractActions = [lang.t('wallet.action.copy_contract_address'), blockExplorerText, lang.t('button.cancel')];
 
     showActionSheetWithOptions(
       {
@@ -138,9 +121,7 @@ const CoinRowInfoButton = ({
         blockExplorerAction,
         {
           ...CoinRowActions[CoinRowActionsEnum.copyAddress],
-          discoverabilityTitle: abbreviations.formatAddressForDisplay(
-            item?.address
-          ),
+          discoverabilityTitle: abbreviations.formatAddressForDisplay(item?.address),
         },
       ],
       menuTitle: `${item?.name} (${item?.symbol})`,

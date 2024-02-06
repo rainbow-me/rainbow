@@ -7,15 +7,7 @@ import { omitFlatten, pickShallow } from '@/helpers/utilities';
 import { padding } from '@/styles';
 const style = padding.object(12, 8);
 
-const ActionSheetProps = [
-  'cancelButtonIndex',
-  'destructiveButtonIndex',
-  'message',
-  'onPress',
-  'options',
-  'tintColor',
-  'title',
-];
+const ActionSheetProps = ['cancelButtonIndex', 'destructiveButtonIndex', 'message', 'onPress', 'options', 'tintColor', 'title'];
 
 const ContextButton = props => (
   <Centered style={style} {...props}>
@@ -57,22 +49,13 @@ export default function ContextMenu({
   return (
     <Fragment>
       {onPressActionSheet && (
-        <ButtonPressAnimation
-          activeOpacity={activeOpacity}
-          onPress={handleShowActionSheet}
-        >
-          {children || (
-            <ContextButton {...omitFlatten(props, ActionSheetProps)} />
-          )}
+        <ButtonPressAnimation activeOpacity={activeOpacity} onPress={handleShowActionSheet}>
+          {children || <ContextButton {...omitFlatten(props, ActionSheetProps)} />}
         </ButtonPressAnimation>
       )}
       <ActionSheet
         {...pickShallow(props, ActionSheetProps)}
-        cancelButtonIndex={
-          Number.isInteger(cancelButtonIndex)
-            ? cancelButtonIndex
-            : options.length - 1
-        }
+        cancelButtonIndex={Number.isInteger(cancelButtonIndex) ? cancelButtonIndex : options.length - 1}
         onPress={handlePressActionSheet}
         options={dynamicOptions ? dynamicOptions() : options}
         ref={actionsheetRef}

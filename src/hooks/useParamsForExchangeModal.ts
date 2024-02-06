@@ -1,8 +1,4 @@
-import {
-  SwapModalField,
-  updateSwapSlippage,
-  updateSwapSource,
-} from '@/redux/swap';
+import { SwapModalField, updateSwapSlippage, updateSwapSource } from '@/redux/swap';
 import { MutableRefObject, useEffect, useState } from 'react';
 import { useSwapInputHandlers } from '@/hooks/index';
 import { SwapMetadata } from '@/raps/common';
@@ -32,11 +28,7 @@ export default function ({
   }>();
   const dispatch = useDispatch();
 
-  const {
-    updateInputAmount,
-    updateNativeAmount,
-    updateOutputAmount,
-  } = useSwapInputHandlers();
+  const { updateInputAmount, updateNativeAmount, updateOutputAmount } = useSwapInputHandlers();
 
   const [isFillingParams, setIsFillingParams] = useState(false);
 
@@ -82,15 +74,6 @@ export default function ({
           }
         }, 1000);
     }
-  }, [
-    dispatch,
-    inputFieldRef,
-    meta,
-    nativeFieldRef,
-    outputFieldRef,
-    updateInputAmount,
-    updateNativeAmount,
-    updateOutputAmount,
-  ]);
+  }, [dispatch, inputFieldRef, meta, nativeFieldRef, outputFieldRef, updateInputAmount, updateNativeAmount, updateOutputAmount]);
   return isFillingParams;
 }

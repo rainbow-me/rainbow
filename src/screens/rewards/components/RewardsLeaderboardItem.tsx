@@ -1,19 +1,8 @@
 import React from 'react';
-import {
-  Bleed,
-  Box,
-  Column,
-  Columns,
-  Inline,
-  Stack,
-  Text,
-} from '@/design-system';
+import { Bleed, Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { TOP_RANK_SYMBOLS } from '@/screens/rewards/constants';
-import {
-  addressHashedColorIndex,
-  addressHashedEmoji,
-} from '@/utils/profileUtils';
+import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import { ContactAvatar } from '@/components/contacts';
 import MaskedView from '@react-native-masked-view/masked-view';
 import LinearGradient from 'react-native-linear-gradient';
@@ -34,23 +23,14 @@ const MaskedGradientText: React.FC<{
     <Box>
       <MaskedView
         maskElement={
-          <Box
-            paddingVertical="4px"
-            alignItems="center"
-            justifyContent="center"
-          >
+          <Box paddingVertical="4px" alignItems="center" justifyContent="center">
             <Text size="13pt" color="label" weight="bold">
               {text}
             </Text>
           </Box>
         }
       >
-        <Box
-          paddingVertical="4px"
-          alignItems="center"
-          justifyContent="center"
-          style={{ opacity: 0 }}
-        >
+        <Box paddingVertical="4px" alignItems="center" justifyContent="center" style={{ opacity: 0 }}>
           <Text size="13pt" color="label" weight="bold">
             {text}
           </Text>
@@ -88,17 +68,11 @@ export const RewardsLeaderboardItem: React.FC<Props> = ({
 }) => {
   const { navigate } = useNavigation();
   const { isDarkMode } = useTheme();
-  const formattedAmountEarned = formatTokenDisplayValue(
-    amountEarnedInToken,
-    tokenSymbol
-  );
+  const formattedAmountEarned = formatTokenDisplayValue(amountEarnedInToken, tokenSymbol);
   const color = !avatarUrl ? addressHashedColorIndex(address) : undefined;
   const emoji = !avatarUrl ? addressHashedEmoji(address) : undefined;
 
-  const formattedBonusEarned = formatTokenDisplayValue(
-    bonusEarnedInToken,
-    tokenSymbol
-  );
+  const formattedBonusEarned = formatTokenDisplayValue(bonusEarnedInToken, tokenSymbol);
   const additionalRewardText = `+${formattedBonusEarned}`;
 
   const navigateToProfile = () => {
@@ -113,31 +87,16 @@ export const RewardsLeaderboardItem: React.FC<Props> = ({
   };
 
   return (
-    <ButtonPressAnimation
-      onPress={navigateToProfile}
-      scaleTo={0.96}
-      overflowMargin={10}
-    >
+    <ButtonPressAnimation onPress={navigateToProfile} scaleTo={0.96} overflowMargin={10}>
       <Stack>
         <Columns space="10px" alignVertical="center">
           <Column width="content">
             <Box>
-              {avatarUrl ? (
-                <ImageAvatar image={avatarUrl} size="rewards" />
-              ) : (
-                <ContactAvatar color={color} size="rewards" value={emoji} />
-              )}
+              {avatarUrl ? <ImageAvatar image={avatarUrl} size="rewards" /> : <ContactAvatar color={color} size="rewards" value={emoji} />}
             </Box>
           </Column>
           <Stack space="8px">
-            <Text
-              color="label"
-              ellipsizeMode="middle"
-              numberOfLines={1}
-              size="15pt"
-              weight="semibold"
-              containsEmoji
-            >
+            <Text color="label" ellipsizeMode="middle" numberOfLines={1} size="15pt" weight="semibold" containsEmoji>
               {ens ?? `${address.slice(0, 6)}...${address.slice(-4)}`}
             </Text>
             <Text size="13pt" color="labelTertiary" weight="semibold">
@@ -146,12 +105,7 @@ export const RewardsLeaderboardItem: React.FC<Props> = ({
           </Stack>
           <Column width="content">
             <Inline alignHorizontal="right" alignVertical="center">
-              {rank < 4 && (
-                <MaskedGradientText
-                  text={additionalRewardText}
-                  gradientColors={getGradientColorsForRank(rank, isDarkMode)}
-                />
-              )}
+              {rank < 4 && <MaskedGradientText text={additionalRewardText} gradientColors={getGradientColorsForRank(rank, isDarkMode)} />}
               {rank >= 4 && (
                 <Text size="13pt" color="labelTertiary" weight="bold">
                   {additionalRewardText}
@@ -162,20 +116,11 @@ export const RewardsLeaderboardItem: React.FC<Props> = ({
           <Column width={{ custom: 42 }}>
             <Inline alignHorizontal="center" alignVertical="center">
               {rank < 4 && rank > 0 ? (
-                <Text
-                  color="labelTertiary"
-                  size="20pt"
-                  weight={rank < 4 ? 'heavy' : 'semibold'}
-                  containsEmoji={rank < 4}
-                >
+                <Text color="labelTertiary" size="20pt" weight={rank < 4 ? 'heavy' : 'semibold'} containsEmoji={rank < 4}>
                   {TOP_RANK_SYMBOLS[rank.toString()]}
                 </Text>
               ) : (
-                <Text
-                  size={rank >= 100 ? '11pt' : '13pt'}
-                  color="labelTertiary"
-                  weight="heavy"
-                >
+                <Text size={rank >= 100 ? '11pt' : '13pt'} color="labelTertiary" weight="heavy">
                   {`#${rank}`}
                 </Text>
               )}

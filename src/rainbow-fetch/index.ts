@@ -26,8 +26,7 @@ export async function rainbowFetch<T = any>(
 
   const { body, params, headers, ...otherOpts } = opts;
 
-  const requestBody =
-    body && typeof body === 'object' ? JSON.stringify(opts.body) : opts.body;
+  const requestBody = body && typeof body === 'object' ? JSON.stringify(opts.body) : opts.body;
 
   const response = await fetch(`${url}${createParams(params)}`, {
     ...otherOpts,
@@ -48,8 +47,7 @@ export async function rainbowFetch<T = any>(
     const { headers, status } = response;
     return { data: responseBody, headers, status };
   } else {
-    const errorResponseBody =
-      typeof responseBody === 'string' ? { error: responseBody } : responseBody;
+    const errorResponseBody = typeof responseBody === 'string' ? { error: responseBody } : responseBody;
 
     const error = generateError({
       requestBody: body,
@@ -89,10 +87,7 @@ function generateError({
   response: Response;
   responseBody: any;
 }) {
-  const message =
-    responseBody?.error ||
-    response?.statusText ||
-    'There was an error with the request.';
+  const message = responseBody?.error || response?.statusText || 'There was an error with the request.';
 
   const error: RainbowFetchError = new Error(message);
 
@@ -182,11 +177,7 @@ export class RainbowFetchClient {
   /**
    * Perform a PATCH request with the RainbowFetchClient.
    */
-  patch<T = any>(
-    url?: RequestInfo,
-    body?: any,
-    opts?: RainbowFetchRequestOpts
-  ) {
+  patch<T = any>(url?: RequestInfo, body?: any, opts?: RainbowFetchRequestOpts) {
     return rainbowFetch<T>(`${this.baseURL}${url}`, {
       ...opts,
       body,

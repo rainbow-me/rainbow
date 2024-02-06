@@ -14,10 +14,7 @@ import { Centered, Column, ColumnWithMargins, Row } from '../layout';
 import { Text, TruncatedText } from '../text';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import useExperimentalFlag, { NOTIFICATIONS } from '@/config/experimentalHooks';
-import {
-  removeFirstEmojiFromString,
-  returnStringFirstEmoji,
-} from '@/helpers/emojiHandler';
+import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, getFontSize } from '@/styles';
 import { abbreviations, deviceUtils, profileUtils } from '@/utils';
@@ -100,11 +97,7 @@ const OptionsIcon = ({ onPress }: { onPress: () => void }) => {
   return (
     <ButtonPressAnimation onPress={onPress} scaleTo={0.9}>
       <Centered height={40} width={60}>
-        {IS_ANDROID ? (
-          <Icon circle color={colors.appleBlue} name="threeDots" tightDots />
-        ) : (
-          <Text style={sx.editIcon}>􀍡</Text>
-        )}
+        {IS_ANDROID ? <Icon circle color={colors.appleBlue} name="threeDots" tightDots /> : <Text style={sx.editIcon}>􀍡</Text>}
       </Centered>
     </ButtonPressAnimation>
   );
@@ -123,26 +116,10 @@ interface AddressRowProps {
   onPress: () => void;
 }
 
-export default function AddressRow({
-  contextMenuActions,
-  data,
-  editMode,
-  onPress,
-}: AddressRowProps) {
+export default function AddressRow({ contextMenuActions, data, editMode, onPress }: AddressRowProps) {
   const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
-  const {
-    address,
-    balance,
-    color: accountColor,
-    ens,
-    image: accountImage,
-    isSelected,
-    isReadOnly,
-    isLedger,
-    label,
-    walletId,
-  } = data;
+  const { address, balance, color: accountColor, ens, image: accountImage, isSelected, isReadOnly, isLedger, label, walletId } = data;
 
   const { colors, isDarkMode } = useTheme();
 
@@ -151,30 +128,18 @@ export default function AddressRow({
     cleanedUpBalance = '0';
   }
 
-  const cleanedUpLabel = useMemo(() => removeFirstEmojiFromString(label), [
-    label,
-  ]);
+  const cleanedUpLabel = useMemo(() => removeFirstEmojiFromString(label), [label]);
 
-  const emoji = useMemo(
-    () =>
-      returnStringFirstEmoji(label) || profileUtils.addressHashedEmoji(address),
-    [address, label]
-  );
+  const emoji = useMemo(() => returnStringFirstEmoji(label) || profileUtils.addressHashedEmoji(address), [address, label]);
 
-  const displayAddress = useMemo(
-    () => abbreviations.address(toChecksumAddress(address) || address, 4, 6),
-    [address]
-  );
+  const displayAddress = useMemo(() => abbreviations.address(toChecksumAddress(address) || address, 4, 6), [address]);
 
   const walletName = cleanedUpLabel || ens || displayAddress;
 
   const linearGradientProps = useMemo(
     () => ({
       ...gradientProps,
-      colors: [
-        colors.alpha(colors.blueGreyDark, 0.03),
-        colors.alpha(colors.blueGreyDark, isDarkMode ? 0.02 : 0.06),
-      ],
+      colors: [colors.alpha(colors.blueGreyDark, 0.03), colors.alpha(colors.blueGreyDark, isDarkMode ? 0.02 : 0.06)],
       end: { x: 1, y: 1 },
       start: { x: 0, y: 0 },
     }),
@@ -271,31 +236,15 @@ export default function AddressRow({
         <Row align="center">
           <Row align="center" flex={1} height={59}>
             {accountImage ? (
-              <ImageAvatar
-                image={accountImage}
-                marginRight={10}
-                size="medium"
-              />
+              <ImageAvatar image={accountImage} marginRight={10} size="medium" />
             ) : (
-              <ContactAvatar
-                color={accountColor}
-                marginRight={10}
-                size="medium"
-                value={emoji}
-              />
+              <ContactAvatar color={accountColor} marginRight={10} size="medium" value={emoji} />
             )}
             <ColumnWithMargins margin={IS_ANDROID ? -6 : 3}>
-              <StyledTruncatedText
-                color={colors.dark}
-                testID={`change-wallet-address-row-label-${walletName}`}
-              >
+              <StyledTruncatedText color={colors.dark} testID={`change-wallet-address-row-label-${walletName}`}>
                 {walletName}
               </StyledTruncatedText>
-              <StyledBottomRowText
-                color={colors.alpha(colors.blueGreyDark, 0.5)}
-              >
-                {cleanedUpBalance || 0} ETH
-              </StyledBottomRowText>
+              <StyledBottomRowText color={colors.alpha(colors.blueGreyDark, 0.5)}>{cleanedUpBalance || 0} ETH</StyledBottomRowText>
             </ColumnWithMargins>
           </Row>
           <Column style={sx.rightContent}>
@@ -305,9 +254,7 @@ export default function AddressRow({
                 // @ts-expect-error JavaScript component
                 marginRight={editMode || isSelected ? -9 : 19}
               >
-                <ReadOnlyText color={colors.alpha(colors.blueGreyDark, 0.5)}>
-                  {lang.t('wallet.change_wallet.watching')}
-                </ReadOnlyText>
+                <ReadOnlyText color={colors.alpha(colors.blueGreyDark, 0.5)}>{lang.t('wallet.change_wallet.watching')}</ReadOnlyText>
               </LinearGradient>
             )}
             {isLedger && (
@@ -316,9 +263,7 @@ export default function AddressRow({
                 // @ts-expect-error JavaScript component
                 marginRight={editMode || isSelected ? -9 : 19}
               >
-                <ReadOnlyText color={colors.alpha(colors.blueGreyDark, 0.5)}>
-                  {lang.t('wallet.change_wallet.ledger')}
-                </ReadOnlyText>
+                <ReadOnlyText color={colors.alpha(colors.blueGreyDark, 0.5)}>{lang.t('wallet.change_wallet.ledger')}</ReadOnlyText>
               </LinearGradient>
             )}
             {!editMode && isSelected && (
@@ -327,11 +272,7 @@ export default function AddressRow({
             )}
             {editMode &&
               (IS_IOS ? (
-                <ContextMenuButton
-                  isMenuPrimaryAction
-                  menuConfig={menuConfig}
-                  onPressMenuItem={handleSelectMenuItem}
-                >
+                <ContextMenuButton isMenuPrimaryAction menuConfig={menuConfig} onPressMenuItem={handleSelectMenuItem}>
                   <OptionsIcon onPress={NOOP} />
                 </ContextMenuButton>
               ) : (

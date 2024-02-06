@@ -26,10 +26,7 @@ describe('Send Sheet Interaction Flow Contacts', () => {
   it('Should show the "Add wallet modal" after tapping import with a valid seed"', async () => {
     await Helpers.clearField('import-sheet-input');
     await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
-    await Helpers.checkIfElementHasString(
-      'import-sheet-button-label',
-      'Continue'
-    );
+    await Helpers.checkIfElementHasString('import-sheet-button-label', 'Continue');
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.checkIfVisible('wallet-info-modal');
   });
@@ -94,19 +91,11 @@ describe('Send Sheet Interaction Flow Contacts', () => {
   it('Should show show Contact Button & Asset List on valid ENS & Unstoppable addresses', async () => {
     await Helpers.clearField('send-asset-form-field');
     await Helpers.checkIfVisible('send-asset-form-field');
-    await Helpers.typeText(
-      'send-asset-form-field',
-      'neverselling.wallet\n',
-      false
-    );
+    await Helpers.typeText('send-asset-form-field', 'neverselling.wallet\n', false);
     await Helpers.checkIfVisible('send-asset-list');
     await Helpers.clearField('send-asset-form-field');
     await device.disableSynchronization();
-    await Helpers.typeText(
-      'send-asset-form-field',
-      'rainbowwallet.eth\n',
-      false
-    );
+    await Helpers.typeText('send-asset-form-field', 'rainbowwallet.eth\n', false);
     await device.enableSynchronization();
     // await Helpers.checkIfVisible('add-contact-button')
     await Helpers.checkIfVisible('send-asset-list');

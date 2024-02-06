@@ -1,8 +1,5 @@
 import { createClient, SegmentClient } from '@segment/analytics-react-native';
-import {
-  REACT_APP_SEGMENT_API_WRITE_KEY,
-  LOG_DEBUG,
-} from 'react-native-dotenv';
+import { REACT_APP_SEGMENT_API_WRITE_KEY, LOG_DEBUG } from 'react-native-dotenv';
 
 import { EventProperties, event } from '@/analytics/event';
 import { UserProperties } from '@/analytics/userProperties';
@@ -55,10 +52,7 @@ export class Analytics {
    * `@/analytics/event`, and if properties are associated with it, they must
    * be defined as part of `EventProperties` in the same file
    */
-  track<T extends keyof EventProperties>(
-    event: T,
-    params?: EventProperties[T]
-  ) {
+  track<T extends keyof EventProperties>(event: T, params?: EventProperties[T]) {
     if (this.disabled) return;
     const metadata = this.getDefaultMetadata();
     this.client.track(event, { ...params, ...metadata });

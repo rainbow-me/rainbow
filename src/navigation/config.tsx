@@ -65,13 +65,11 @@ const buildCoolModalConfig = (params: any): CoolModalConfigOptions => ({
         ? 30
         : 0.666 // 0.666 gets the screen corner radius internally
       : params.cornerRadius === 0
-      ? 0
-      : params.cornerRadius || 39,
+        ? 0
+        : params.cornerRadius || 39,
   customStack: true,
   disableShortFormAfterTransitionToLongForm:
-    params.disableShortFormAfterTransitionToLongForm ||
-    params?.type === 'token' ||
-    params?.type === 'uniswap',
+    params.disableShortFormAfterTransitionToLongForm || params?.type === 'token' || params?.type === 'uniswap',
   gestureEnabled: true,
   headerHeight: params.headerHeight || 25,
   ignoreBottomOffset: true,
@@ -81,19 +79,13 @@ const buildCoolModalConfig = (params: any): CoolModalConfigOptions => ({
   scrollEnabled: params.scrollEnabled,
   single: params.single,
   springDamping: params.springDamping || 0.8,
-  startFromShortForm:
-    params.startFromShortForm || params?.type === 'token' || false,
-  topOffset:
-    params.topOffset === 0 ? 0 : params.topOffset || sharedCoolModalTopOffset,
+  startFromShortForm: params.startFromShortForm || params?.type === 'token' || false,
+  topOffset: params.topOffset === 0 ? 0 : params.topOffset || sharedCoolModalTopOffset,
   transitionDuration: params.transitionDuration || 0.35,
 });
 
 const backupSheetSizes = {
-  long:
-    deviceUtils.dimensions.height +
-    safeAreaInsetValues.bottom +
-    sharedCoolModalTopOffset +
-    SheetHandleFixedToTopHeight,
+  long: deviceUtils.dimensions.height + safeAreaInsetValues.bottom + sharedCoolModalTopOffset + SheetHandleFixedToTopHeight,
   short: 394,
 };
 
@@ -104,10 +96,7 @@ export const backupSheetConfig: PartialNavigatorConfigOptions = {
     };
 
     let heightForStep = backupSheetSizes.short;
-    if (
-      step === WalletBackupStepTypes.cloud ||
-      step === WalletBackupStepTypes.manual
-    ) {
+    if (step === WalletBackupStepTypes.cloud || step === WalletBackupStepTypes.manual) {
       heightForStep = backupSheetSizes.long;
     } else if (
       // on the "existing_user" step, our "description" text is 1 extra line of text
@@ -416,16 +405,12 @@ export const ensAdditionalRecordsSheetConfig: PartialNavigatorConfigOptions = {
 };
 
 export const explainSheetConfig: PartialNavigatorConfigOptions = {
-  options: ({
-    route: { params = { network: getNetworkObj(networkTypes.mainnet).name } },
-  }) => {
+  options: ({ route: { params = { network: getNetworkObj(networkTypes.mainnet).name } } }) => {
     // @ts-ignore
     const explainerConfig = explainers(params.network)[params?.type];
     return buildCoolModalConfig({
       ...params,
-      longFormHeight:
-        ExplainSheetHeight +
-        (explainerConfig?.extraHeight ? explainerConfig?.extraHeight : 0),
+      longFormHeight: ExplainSheetHeight + (explainerConfig?.extraHeight ? explainerConfig?.extraHeight : 0),
     });
   },
 };
@@ -589,13 +574,7 @@ const SettingsTitle = ({ children }: React.PropsWithChildren) => {
   const { colors } = useTheme();
 
   return (
-    <Text
-      align="center"
-      color={colors.dark}
-      letterSpacing="roundedMedium"
-      size="large"
-      weight="bold"
-    >
+    <Text align="center" color={colors.dark} letterSpacing="roundedMedium" size="large" weight="bold">
       {children}
     </Text>
   );

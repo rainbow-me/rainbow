@@ -8,9 +8,7 @@ import { Inset } from '../Inset/Inset';
 import { Text } from '../Text/Text';
 import { Stack } from './Stack';
 
-const MockDivider = () => (
-  <View style={{ backgroundColor: '#999', height: 1, width: '50%' }} />
-);
+const MockDivider = () => <View style={{ backgroundColor: '#999', height: 1, width: '50%' }} />;
 
 export const basicUsage = {
   name: 'Basic usage',

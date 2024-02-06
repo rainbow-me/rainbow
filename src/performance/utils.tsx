@@ -39,9 +39,7 @@ function createDebounceAverage(title: string, phase: string, delay = 100) {
       const count = String(values.length);
       const average = String((total / values.length).toFixed(2));
 
-      global.console.log(
-        `${phase}: ${title} (${count}) - ${average}ms (max: ${max}ms; min: ${min}ms)`
-      );
+      global.console.log(`${phase}: ${title} (${count}) - ${average}ms (max: ${max}ms; min: ${min}ms)`);
 
       values = [];
     }, delay);

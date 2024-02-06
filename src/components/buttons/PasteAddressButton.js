@@ -10,12 +10,7 @@ export default function PasteAddressButton({ onPress }) {
   const [isValid, setIsValid] = useState(false);
   const { colors } = useTheme();
   const { onInvalidPaste } = useInvalidPaste();
-  const {
-    clipboard,
-    enablePaste,
-    getClipboard,
-    hasClipboardData,
-  } = useClipboard();
+  const { clipboard, enablePaste, getClipboard, hasClipboardData } = useClipboard();
 
   useEffect(() => {
     async function validate() {
@@ -42,16 +37,12 @@ export default function PasteAddressButton({ onPress }) {
     });
   }, [enablePaste, getClipboard, onInvalidPaste, onPress]);
 
-  return (
-    deviceUtils.isIOS14 ? !hasClipboardData : clipboard && !isValid
-  ) ? null : (
+  return (deviceUtils.isIOS14 ? !hasClipboardData : clipboard && !isValid) ? null : (
     <ButtonPressAnimation onPress={handlePress} testID="paste-address-button">
       <Text
         align="right"
         color={
-          (deviceUtils.isIOS14 ? !hasClipboardData : clipboard && !isValid)
-            ? colors.alpha(colors.blueGreyDark, 0.3)
-            : colors.appleBlue
+          (deviceUtils.isIOS14 ? !hasClipboardData : clipboard && !isValid) ? colors.alpha(colors.blueGreyDark, 0.3) : colors.appleBlue
         }
         size="large"
         weight="heavy"

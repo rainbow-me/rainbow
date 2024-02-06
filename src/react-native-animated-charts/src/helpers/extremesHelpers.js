@@ -16,12 +16,7 @@ export function findYExtremes(data) {
   };
 }
 
-export function addExtremesIfNeeded(
-  res,
-  data,
-  includeExtremes,
-  removePointsSurroundingExtremes
-) {
+export function addExtremesIfNeeded(res, data, includeExtremes, removePointsSurroundingExtremes) {
   if (includeExtremes) {
     const { greatestY, smallestY } = findYExtremes(data);
 
@@ -34,11 +29,7 @@ export function addExtremesIfNeeded(
       const d = res[i];
       let justAdded1 = false;
       let justAdded2 = false;
-      if (
-        !added1 &&
-        (newRes.length === 0 || newRes[newRes.length - 1].x <= ex1.x) &&
-        ex1.x <= d.x
-      ) {
+      if (!added1 && (newRes.length === 0 || newRes[newRes.length - 1].x <= ex1.x) && ex1.x <= d.x) {
         justAdded1 = true;
         added1 = true;
         if (ex1.x !== d.x) {
@@ -48,11 +39,7 @@ export function addExtremesIfNeeded(
           newRes.push(ex1);
         }
       }
-      if (
-        !added2 &&
-        (newRes.length === 0 || newRes[newRes.length - 1].x <= ex2.x) &&
-        ex2.x <= d.x
-      ) {
+      if (!added2 && (newRes.length === 0 || newRes[newRes.length - 1].x <= ex2.x) && ex2.x <= d.x) {
         justAdded2 = true;
         added2 = true;
         if (ex2.x !== d.x) {
@@ -63,11 +50,7 @@ export function addExtremesIfNeeded(
           newRes.push(ex2);
         }
       }
-      if (
-        (!justAdded1 && !justAdded2) ||
-        !removePointsSurroundingExtremes ||
-        i === res.length - 1
-      ) {
+      if ((!justAdded1 && !justAdded2) || !removePointsSurroundingExtremes || i === res.length - 1) {
         newRes.push(d);
       }
     }

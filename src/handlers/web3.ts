@@ -3,13 +3,7 @@ import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { isHexString as isEthersHexString } from '@ethersproject/bytes';
 import { Contract } from '@ethersproject/contracts';
 import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode';
-import {
-  Block,
-  Network as EthersNetwork,
-  StaticJsonRpcProvider,
-  TransactionRequest,
-  TransactionResponse,
-} from '@ethersproject/providers';
+import { Block, Network as EthersNetwork, StaticJsonRpcProvider, TransactionRequest, TransactionResponse } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
 import Resolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
@@ -102,9 +96,7 @@ export const proxyRpcEndpoint = (chainId: number, customEndpoint?: string) => {
 /**
  * Gas parameter types returned by `getTransactionGasParams`.
  */
-type GasParamsReturned =
-  | { gasPrice: string }
-  | { maxFeePerGas: string; maxPriorityFeePerGas: string };
+type GasParamsReturned = { gasPrice: string } | { maxFeePerGas: string; maxPriorityFeePerGas: string };
 
 /**
  * Gas parameter types taken as input by `getTransactionGasParams`.
@@ -117,10 +109,7 @@ type GasParamsInput = { gasPrice: BigNumberish } & {
 /**
  * The input data provied to `getTxDetails`.
  */
-type TransactionDetailsInput = Pick<
-  NewTransactionNonNullable,
-  'from' | 'to' | 'data' | 'gasLimit' | 'network' | 'nonce'
-> &
+type TransactionDetailsInput = Pick<NewTransactionNonNullable, 'from' | 'to' | 'data' | 'gasLimit' | 'network' | 'nonce'> &
   Pick<NewTransaction, 'amount'> &
   GasParamsInput;
 
@@ -149,7 +138,7 @@ type NewTransactionNonNullable = {
 /**
  * @desc web3 http instance
  */
-export let web3Provider: StaticJsonRpcProvider = (null as unknown) as StaticJsonRpcProvider;
+export let web3Provider: StaticJsonRpcProvider = null as unknown as StaticJsonRpcProvider;
 
 /**
  * @desc Checks whether or not a `Network | string` union type should be
@@ -166,9 +155,7 @@ const isNetworkEnum = (network: Network | string): network is Network => {
  * @param network The network to set.
  * @return A promise that resolves with an Ethers Network when the provider is ready.
  */
-export const web3SetHttpProvider = async (
-  network: Network | string
-): Promise<EthersNetwork> => {
+export const web3SetHttpProvider = async (network: Network | string): Promise<EthersNetwork> => {
   web3Provider = await getProviderForNetwork(network);
   return web3Provider.ready;
 };
@@ -211,9 +198,7 @@ export const getFlashbotsProvider = async () => {
   );
 };
 
-export const getCachedProviderForNetwork = (
-  network: Network = Network.mainnet
-) => {
+export const getCachedProviderForNetwork = (network: Network = Network.mainnet) => {
   return networkProviders[network]!;
 };
 
@@ -222,9 +207,7 @@ export const getCachedProviderForNetwork = (
  * @param network The network as a `Network` or string.
  * @return The provider for the network.
  */
-export const getProviderForNetwork = async (
-  network: Network | string = Network.mainnet
-): Promise<StaticJsonRpcProvider> => {
+export const getProviderForNetwork = async (network: Network | string = Network.mainnet): Promise<StaticJsonRpcProvider> => {
   if (isNetworkEnum(network) && networkProviders[network]) {
     return networkProviders[network]!;
   }
@@ -235,10 +218,7 @@ export const getProviderForNetwork = async (
     return provider;
   } else {
     const chainId = getNetworkObj(network).id;
-    const provider = new StaticJsonRpcProvider(
-      getNetworkObj(network).rpc,
-      chainId
-    );
+    const provider = new StaticJsonRpcProvider(getNetworkObj(network).rpc, chainId);
     if (!networkProviders[network]) {
       networkProviders[network] = provider;
     }
@@ -262,8 +242,7 @@ export const sendRpcCall = async (
     params: any[];
   },
   provider: StaticJsonRpcProvider | null = null
-): Promise<any> =>
-  (provider || web3Provider)?.send(payload.method, payload.params);
+): Promise<any> => (provider || web3Provider)?.send(payload.method, payload.params);
 
 /**
  * @desc check if hex string
@@ -277,16 +256,14 @@ export const isHexString = (value: string): boolean => isEthersHexString(value);
  * @param value The number.
  * @return The hex string.
  */
-export const toHex = (value: BigNumberish): string =>
-  BigNumber.from(value).toHexString();
+export const toHex = (value: BigNumberish): string => BigNumber.from(value).toHexString();
 
 /**
  * Converts a number to a hex string without leading zeros.
  * @param value The number.
  * @return The hex string.
  */
-export const toHexNoLeadingZeros = (value: BigNumberish): string =>
-  toHex(value).replace(/^0x0*/, '0x');
+export const toHexNoLeadingZeros = (value: BigNumberish): string => toHex(value).replace(/^0x0*/, '0x');
 
 /**
  * @desc Checks if a hex string, ignoring prefixes and suffixes.
@@ -305,16 +282,14 @@ export const isHexStringIgnorePrefix = (value: string): boolean => {
  * @param value The starting string.
  * @return The prefixed string.
  */
-export const addHexPrefix = (value: string): string =>
-  startsWith(value, '0x') ? value : `0x${value}`;
+export const addHexPrefix = (value: string): string => (startsWith(value, '0x') ? value : `0x${value}`);
 
 /**
  * @desc is valid mnemonic
  * @param value The string to check.
  * @return Whether or not the string was a valid mnemonic.
  */
-export const isValidMnemonic = (value: string): boolean =>
-  ethersIsValidMnemonic(value);
+export const isValidMnemonic = (value: string): boolean => ethersIsValidMnemonic(value);
 
 /**
  * @desc is valid bluetooth device id
@@ -398,10 +373,7 @@ export async function estimateGasWithPadding(
     // 1 - Check if the receiver is a contract
     const code = to ? await p.getCode(to) : undefined;
     // 2 - if it's not a contract AND it doesn't have any data use the default gas limit
-    if (
-      (!contractCallEstimateGas && !to) ||
-      (to && !data && (!code || code === '0x'))
-    ) {
+    if ((!contractCallEstimateGas && !to) || (to && !data && (!code || code === '0x'))) {
       logger.info('⛽ Skipping estimates, using default', {
         ethUnits: ethUnits.basic_tx.toString(),
       });
@@ -413,27 +385,16 @@ export async function estimateGasWithPadding(
     const saferGasLimit = fraction(gasLimit.toString(), 19, 20);
     logger.info('⛽ safer gas limit for last block is', { saferGasLimit });
 
-    txPayloadToEstimate[contractCallEstimateGas ? 'gasLimit' : 'gas'] = toHex(
-      saferGasLimit
-    );
+    txPayloadToEstimate[contractCallEstimateGas ? 'gasLimit' : 'gas'] = toHex(saferGasLimit);
 
     // safety precaution: we want to ensure these properties are not used for gas estimation
-    const cleanTxPayload = omitFlatten(txPayloadToEstimate, [
-      'gas',
-      'gasLimit',
-      'gasPrice',
-      'maxFeePerGas',
-      'maxPriorityFeePerGas',
-    ]);
+    const cleanTxPayload = omitFlatten(txPayloadToEstimate, ['gas', 'gasLimit', 'gasPrice', 'maxFeePerGas', 'maxPriorityFeePerGas']);
     const estimatedGas = await (contractCallEstimateGas
       ? contractCallEstimateGas(...(callArguments ?? []), txPayloadToEstimate)
       : p.estimateGas(cleanTxPayload));
 
     const lastBlockGasLimit = addBuffer(gasLimit.toString(), 0.9);
-    const paddedGas = addBuffer(
-      estimatedGas.toString(),
-      paddingFactor.toString()
-    );
+    const paddedGas = addBuffer(estimatedGas.toString(), paddingFactor.toString());
     logger.info('⛽ GAS CALCULATIONS!', {
       estimatedGas: estimatedGas.toString(),
       gasLimit: gasLimit.toString(),
@@ -483,28 +444,21 @@ export const toWei = (ether: string): string => {
  * @return The corresponding `TransactionResponse`, or `null` if one could not
  * be found.
  */
-export const getTransaction = async (
-  hash: string
-): Promise<TransactionResponse | null> =>
-  web3Provider?.getTransaction(hash) ?? null;
+export const getTransaction = async (hash: string): Promise<TransactionResponse | null> => web3Provider?.getTransaction(hash) ?? null;
 
 /**
  * @desc get address transaction count
  * @param address The address to check.
  * @return The transaction count, or `null` if it could not be found.
  */
-export const getTransactionCount = async (
-  address: string
-): Promise<number | null> =>
+export const getTransactionCount = async (address: string): Promise<number | null> =>
   web3Provider?.getTransactionCount(address, 'pending') ?? null;
 
 /**
  * get transaction gas params depending on network
  * @returns - object with `gasPrice` or `maxFeePerGas` and `maxPriorityFeePerGas`
  */
-export const getTransactionGasParams = (
-  transaction: Pick<NewTransactionNonNullable, 'network'> & GasParamsInput
-): GasParamsReturned => {
+export const getTransactionGasParams = (transaction: Pick<NewTransactionNonNullable, 'network'> & GasParamsInput): GasParamsReturned => {
   return getNetworkObj(transaction.network).gas.gasType === 'legacy'
     ? {
         gasPrice: toHex(transaction.gasPrice),
@@ -522,15 +476,11 @@ export const getTransactionGasParams = (
  * as well as an optional `data` field similar to a `TransactionRequest`.
  * @return The transaction details.
  */
-export const getTxDetails = async (
-  transaction: TransactionDetailsInput
-): Promise<TransactionDetailsReturned> => {
+export const getTxDetails = async (transaction: TransactionDetailsInput): Promise<TransactionDetailsReturned> => {
   const { nonce, to } = transaction;
   const data = transaction?.data ?? '0x';
   const value = transaction.amount ? toHex(toWei(transaction.amount)) : '0x0';
-  const gasLimit = transaction.gasLimit
-    ? toHex(transaction.gasLimit)
-    : undefined;
+  const gasLimit = transaction.gasLimit ? toHex(transaction.gasLimit) : undefined;
   const baseTx = {
     data,
     gasLimit,
@@ -553,9 +503,7 @@ export const getTxDetails = async (
  * @param domain The domain as a string.
  * @return The resolved address, or undefined if none could be found.
  */
-export const resolveUnstoppableDomain = async (
-  domain: string
-): Promise<string | void> => {
+export const resolveUnstoppableDomain = async (domain: string): Promise<string | void> => {
   // This parameter doesn't line up with the `Resolution` type declaration,
   // but it can be casted to `any` as it does match the documentation here:
   // https://unstoppabledomains.github.io/resolution/v2.2.0/classes/resolution.html.
@@ -580,9 +528,7 @@ export const resolveUnstoppableDomain = async (
  * `web3Provider`.
  * @return The address, or undefined if one could not be resolved.
  */
-export const resolveNameOrAddress = async (
-  nameOrAddress: string
-): Promise<string | void | null> => {
+export const resolveNameOrAddress = async (nameOrAddress: string): Promise<string | void | null> => {
   if (!isHexString(nameOrAddress)) {
     if (isUnstoppableAddressFormat(nameOrAddress)) {
       return resolveUnstoppableDomain(nameOrAddress);
@@ -603,15 +549,7 @@ export const resolveNameOrAddress = async (
 export const getTransferNftTransaction = async (
   transaction: Pick<
     NewTransactionNonNullable,
-    | 'asset'
-    | 'from'
-    | 'to'
-    | 'gasPrice'
-    | 'gasLimit'
-    | 'network'
-    | 'nonce'
-    | 'maxFeePerGas'
-    | 'maxPriorityFeePerGas'
+    'asset' | 'from' | 'to' | 'gasPrice' | 'gasLimit' | 'network' | 'nonce' | 'maxFeePerGas' | 'maxPriorityFeePerGas'
   >
 ): Promise<TransactionDetailsReturned> => {
   const recipient = await resolveNameOrAddress(transaction.to);
@@ -644,21 +582,10 @@ export const getTransferNftTransaction = async (
 export const getTransferTokenTransaction = async (
   transaction: Pick<
     NewTransactionNonNullable,
-    | 'asset'
-    | 'from'
-    | 'to'
-    | 'amount'
-    | 'gasPrice'
-    | 'gasLimit'
-    | 'network'
-    | 'maxFeePerGas'
-    | 'maxPriorityFeePerGas'
+    'asset' | 'from' | 'to' | 'amount' | 'gasPrice' | 'gasLimit' | 'network' | 'maxFeePerGas' | 'maxPriorityFeePerGas'
   >
 ): Promise<TransactionDetailsReturned> => {
-  const value = convertAmountToRawAmount(
-    transaction.amount,
-    transaction.asset.decimals
-  );
+  const value = convertAmountToRawAmount(transaction.amount, transaction.asset.decimals);
   const recipient = (await resolveNameOrAddress(transaction.to)) as string;
   const data = getDataForTokenTransfer(value, recipient);
   const gasParams = getTransactionGasParams(transaction);
@@ -677,9 +604,7 @@ export const getTransferTokenTransaction = async (
  * @param transaction The new transaction.
  * @return The transaction details.
  */
-export const createSignableTransaction = async (
-  transaction: NewTransactionNonNullable
-): Promise<TransactionDetailsReturned> => {
+export const createSignableTransaction = async (transaction: NewTransactionNonNullable): Promise<TransactionDetailsReturned> => {
   // handle native assets seperately
   if (
     transaction.asset.address === ETH_ADDRESS ||
@@ -691,9 +616,7 @@ export const createSignableTransaction = async (
     return getTxDetails(transaction);
   }
   const isNft = transaction.asset.type === AssetType.nft;
-  const result = isNft
-    ? await getTransferNftTransaction(transaction)
-    : await getTransferTokenTransaction(transaction);
+  const result = isNft ? await getTransferNftTransaction(transaction) : await getTransferTokenTransaction(transaction);
 
   // `result` will conform to `TransactionDetailsInput`, except it will have
   // either { gasPrice: string } | { maxFeePerGas: string; maxPriorityFeePerGas: string }
@@ -727,10 +650,7 @@ const estimateAssetBalancePortion = (asset: ParsedAddressAsset): string => {
  */
 export const getDataForTokenTransfer = (value: string, to: string): string => {
   const transferMethodHash = smartContractMethods.token_transfer.hash;
-  const data = ethereumUtils.getDataString(transferMethodHash, [
-    ethereumUtils.removeHexPrefix(to),
-    convertStringToHex(value),
-  ]);
+  const data = ethereumUtils.getDataString(transferMethodHash, [ethereumUtils.removeHexPrefix(to), convertStringToHex(value)]);
   return data;
 };
 
@@ -741,33 +661,17 @@ export const getDataForTokenTransfer = (value: string, to: string): string => {
  * @param asset The asset to transfer.
  * @return The data string if the transfer can be attempted, otherwise undefined.
  */
-export const getDataForNftTransfer = (
-  from: string,
-  to: string,
-  asset: ParsedAddressAsset
-): string | undefined => {
+export const getDataForNftTransfer = (from: string, to: string, asset: ParsedAddressAsset): string | undefined => {
   if (!asset.id || !asset.asset_contract?.address) return;
   const lowercasedContractAddress = asset.asset_contract.address.toLowerCase();
   const standard = asset.asset_contract?.schema_name;
   let data: string | undefined;
-  if (
-    lowercasedContractAddress === CRYPTO_KITTIES_NFT_ADDRESS &&
-    asset.network === Network.mainnet
-  ) {
+  if (lowercasedContractAddress === CRYPTO_KITTIES_NFT_ADDRESS && asset.network === Network.mainnet) {
     const transferMethod = smartContractMethods.token_transfer;
-    data = ethereumUtils.getDataString(transferMethod.hash, [
-      ethereumUtils.removeHexPrefix(to),
-      convertStringToHex(asset.id),
-    ]);
-  } else if (
-    lowercasedContractAddress === CRYPTO_PUNKS_NFT_ADDRESS &&
-    asset.network === Network.mainnet
-  ) {
+    data = ethereumUtils.getDataString(transferMethod.hash, [ethereumUtils.removeHexPrefix(to), convertStringToHex(asset.id)]);
+  } else if (lowercasedContractAddress === CRYPTO_PUNKS_NFT_ADDRESS && asset.network === Network.mainnet) {
     const transferMethod = smartContractMethods.punk_transfer;
-    data = ethereumUtils.getDataString(transferMethod.hash, [
-      ethereumUtils.removeHexPrefix(to),
-      convertStringToHex(asset.id),
-    ]);
+    data = ethereumUtils.getDataString(transferMethod.hash, [ethereumUtils.removeHexPrefix(to), convertStringToHex(asset.id)]);
   } else if (standard === TokenStandard.ERC1155) {
     const transferMethodHash = smartContractMethods.erc1155_transfer.hash;
     data = ethereumUtils.getDataString(transferMethodHash, [
@@ -814,10 +718,7 @@ export const buildTransaction = async (
   provider: StaticJsonRpcProvider | null,
   network: Network
 ): Promise<TransactionRequest> => {
-  const _amount =
-    amount && Number(amount)
-      ? convertAmountToRawAmount(amount, asset.decimals)
-      : estimateAssetBalancePortion(asset);
+  const _amount = amount && Number(amount) ? convertAmountToRawAmount(amount, asset.decimals) : estimateAssetBalancePortion(asset);
   const value = _amount.toString();
   const _recipient = (await resolveNameOrAddress(recipient)) as string;
   let txData: TransactionRequest = {
@@ -873,11 +774,7 @@ export const estimateGasLimit = async (
   provider: StaticJsonRpcProvider | null = null,
   network: Network = Network.mainnet
 ): Promise<string | null> => {
-  const estimateGasData = await buildTransaction(
-    { address, amount, asset, recipient },
-    provider,
-    network
-  );
+  const estimateGasData = await buildTransaction({ address, amount, asset, recipient }, provider, network);
 
   if (addPadding) {
     return estimateGasWithPadding(estimateGasData, null, null, provider);

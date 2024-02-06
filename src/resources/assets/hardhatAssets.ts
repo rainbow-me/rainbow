@@ -4,28 +4,19 @@ import { keyBy, mapValues } from 'lodash';
 import { Network } from '@/helpers/networkTypes';
 import { web3Provider } from '@/handlers/web3'; // TODO JIN
 import { getNetworkObj } from '@/networks';
-import {
-  balanceCheckerContractAbi,
-  chainAssets,
-  ETH_ADDRESS,
-} from '@/references';
+import { balanceCheckerContractAbi, chainAssets, ETH_ADDRESS } from '@/references';
 import { parseAddressAsset } from './assets';
 import { RainbowAddressAssets } from './types';
 import logger from '@/utils/logger';
 
-const ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT =
-  '0x0000000000000000000000000000000000000000';
+const ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT = '0x0000000000000000000000000000000000000000';
 
 const fetchHardhatBalancesWithBalanceChecker = async (
   tokens: string[],
   address: string,
   network: Network = Network.mainnet
 ): Promise<{ [tokenAddress: string]: string } | null> => {
-  const balanceCheckerContract = new Contract(
-    getNetworkObj(network).balanceCheckerAddress,
-    balanceCheckerContractAbi,
-    web3Provider
-  );
+  const balanceCheckerContract = new Contract(getNetworkObj(network).balanceCheckerAddress, balanceCheckerContractAbi, web3Provider);
   try {
     const values = await balanceCheckerContract.balances([address], tokens);
     const balances: {
@@ -33,45 +24,24 @@ const fetchHardhatBalancesWithBalanceChecker = async (
     } = {};
     tokens.forEach((tokenAddr, tokenIdx) => {
       const balance = values[tokenIdx];
-      const assetCode =
-        tokenAddr === ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
-          ? ETH_ADDRESS
-          : tokenAddr;
+      const assetCode = tokenAddr === ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT ? ETH_ADDRESS : tokenAddr;
       balances[assetCode] = balance.toString();
     });
     return balances;
   } catch (e) {
-    logger.sentry(
-      'Error fetching balances from balanceCheckerContract',
-      network,
-      e
-    );
+    logger.sentry('Error fetching balances from balanceCheckerContract', network, e);
     captureException(new Error('fallbackExplorer::balanceChecker failure'));
     return null;
   }
 };
 
-export const fetchHardhatBalances = async (
-  accountAddress: string,
-  network: Network = Network.mainnet
-): Promise<RainbowAddressAssets> => {
-  const chainAssetsMap = keyBy(
-    chainAssets[network as keyof typeof chainAssets],
-    ({ asset }) => `${asset.asset_code}_${asset.network}`
-  );
+export const fetchHardhatBalances = async (accountAddress: string, network: Network = Network.mainnet): Promise<RainbowAddressAssets> => {
+  const chainAssetsMap = keyBy(chainAssets[network as keyof typeof chainAssets], ({ asset }) => `${asset.asset_code}_${asset.network}`);
 
-  const tokenAddresses = Object.values(
-    chainAssetsMap
-  ).map(({ asset: { asset_code } }) =>
-    asset_code === ETH_ADDRESS
-      ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
-      : asset_code.toLowerCase()
+  const tokenAddresses = Object.values(chainAssetsMap).map(({ asset: { asset_code } }) =>
+    asset_code === ETH_ADDRESS ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT : asset_code.toLowerCase()
   );
-  const balances = await fetchHardhatBalancesWithBalanceChecker(
-    tokenAddresses,
-    accountAddress,
-    network
-  );
+  const balances = await fetchHardhatBalancesWithBalanceChecker(tokenAddresses, accountAddress, network);
   if (!balances) return {};
 
   const updatedAssets = mapValues(chainAssetsMap, chainAsset => {

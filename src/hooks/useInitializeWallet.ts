@@ -8,10 +8,7 @@ import { walletInit } from '../model/wallet';
 import { PerformanceTracking } from '../performance/tracking';
 import { PerformanceMetrics } from '../performance/tracking/types/PerformanceMetrics';
 import { appStateUpdate } from '../redux/appState';
-import {
-  settingsLoadNetwork,
-  settingsUpdateAccountAddress,
-} from '../redux/settings';
+import { settingsLoadNetwork, settingsUpdateAccountAddress } from '../redux/settings';
 import { walletsLoadState } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
 import useHideSplashScreen from './useHideSplashScreen';
@@ -37,10 +34,7 @@ export default function useInitializeWallet() {
   const { setIsSmallBalancesOpen } = useOpenSmallBalances();
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
-  const getWalletStatusForPerformanceMetrics = (
-    isNew: boolean,
-    isImporting: boolean
-  ): string => {
+  const getWalletStatusForPerformanceMetrics = (isNew: boolean, isImporting: boolean): string => {
     if (isNew) {
       return 'new';
     } else if (isImporting) {
@@ -66,9 +60,7 @@ export default function useInitializeWallet() {
       silent = false
     ) => {
       try {
-        PerformanceTracking.startMeasuring(
-          PerformanceMetrics.useInitializeWallet
-        );
+        PerformanceTracking.startMeasuring(PerformanceMetrics.useInitializeWallet);
         logger.debug('Start wallet setup');
         await resetAccountState();
         logger.debug('resetAccountState ran ok');
@@ -89,16 +81,7 @@ export default function useInitializeWallet() {
         // Load the network first
         await dispatch(settingsLoadNetwork());
 
-        const { isNew, walletAddress } = await walletInit(
-          seedPhrase,
-          color,
-          name,
-          overwrite,
-          checkedWallet,
-          network,
-          image,
-          silent
-        );
+        const { isNew, walletAddress } = await walletInit(seedPhrase, color, name, overwrite, checkedWallet, network, image, silent);
 
         logger.debug('walletInit returned', {
           isNew,
@@ -156,22 +139,14 @@ export default function useInitializeWallet() {
         dispatch(appStateUpdate({ walletReady: true }));
         logger.debug('💰 Wallet initialized');
 
-        PerformanceTracking.finishMeasuring(
-          PerformanceMetrics.useInitializeWallet,
-          {
-            walletStatus: getWalletStatusForPerformanceMetrics(
-              isNew,
-              isImporting
-            ),
-          }
-        );
+        PerformanceTracking.finishMeasuring(PerformanceMetrics.useInitializeWallet, {
+          walletStatus: getWalletStatusForPerformanceMetrics(isNew, isImporting),
+        });
 
         dispatch(checkPendingTransactionsOnInitialize(walletAddress));
         return walletAddress;
       } catch (error) {
-        PerformanceTracking.clearMeasure(
-          PerformanceMetrics.useInitializeWallet
-        );
+        PerformanceTracking.clearMeasure(PerformanceMetrics.useInitializeWallet);
         logger.error(new RainbowError('Error while initializing wallet'), {
           error,
         });

@@ -1,12 +1,5 @@
 import React from 'react';
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useDerivedValue,
-  withRepeat,
-  withSequence,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { Easing, useAnimatedStyle, useDerivedValue, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
 import { Path, Svg } from 'react-native-svg';
 import { BackgroundProvider, Box, useForegroundColor } from '@/design-system';
 
@@ -30,25 +23,11 @@ const AnimatedPath = Animated.createAnimatedComponent(Path);
 export default function HourglassAnimation() {
   const accentColor = useForegroundColor('accent');
   const rotateHourglass = useDerivedValue(() =>
-    withRepeat(
-      withSequence(
-        withTiming(180, rotationConfig),
-        withTiming(0, rotationConfig),
-        withTiming(-180, rotationConfig)
-      ),
-      -1
-    )
+    withRepeat(withSequence(withTiming(180, rotationConfig), withTiming(0, rotationConfig), withTiming(-180, rotationConfig)), -1)
   );
 
   const offsetSandMask = useDerivedValue(() =>
-    withRepeat(
-      withSequence(
-        withTiming(0, sandConfig),
-        withTiming(34, sandConfig),
-        withTiming(0, sandConfig)
-      ),
-      -1
-    )
+    withRepeat(withSequence(withTiming(0, sandConfig), withTiming(34, sandConfig), withTiming(0, sandConfig)), -1)
   );
 
   const animatedRotationStyles = useAnimatedStyle(() => ({
@@ -67,12 +46,7 @@ export default function HourglassAnimation() {
     <BackgroundProvider color="body (Deprecated)">
       {({ backgroundColor }) => (
         <Box alignItems="center" justifyContent="center" width="full">
-          <Box
-            alignItems="center"
-            as={Animated.View}
-            justifyContent="center"
-            style={[animatedRotationStyles]}
-          >
+          <Box alignItems="center" as={Animated.View} justifyContent="center" style={[animatedRotationStyles]}>
             <Svg height="120" viewBox="0 0 120 120" width="120">
               <Path
                 d="M50.200197,83.363281 L70.707967,83.363281 C73.906267,83.363281 75.908167,81.410181 75.908167,78.114281 L75.908167,77.723681 C75.908167,71.253881 69.340867,64.857381 66.826167,62.342781 C65.190467,60.707081 65.214867,58.558581 66.826167,56.947281 C69.340867,54.432581 75.908167,48.060581 75.908167,41.566401 L75.908167,41.224611 C75.908167,37.953121 73.906267,36 70.707967,36 L50.200197,36 C46.977537,36 45,37.953121 45,41.224611 L45,41.566401 C45,48.060581 51.567387,54.432581 54.082027,56.947281 C55.693367,58.558581 55.717767,60.707081 54.082027,62.342781 C51.567387,64.857381 45,71.253881 45,77.723681 L45,78.114281 C45,81.410181 46.977537,83.363281 50.200197,83.363281 Z"

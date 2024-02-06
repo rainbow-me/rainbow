@@ -5,11 +5,7 @@ type CreateHandleType = (callback?: () => void) => void;
 type RemoveHandleType = () => void;
 type HandleType = Handle | null;
 
-export default function useInteraction(): [
-  CreateHandleType,
-  RemoveHandleType,
-  MutableRefObject<HandleType>
-] {
+export default function useInteraction(): [CreateHandleType, RemoveHandleType, MutableRefObject<HandleType>] {
   const interactionHandle = useRef<HandleType>(null);
 
   const createInteractionHandle = useCallback<CreateHandleType>(callback => {

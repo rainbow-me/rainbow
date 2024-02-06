@@ -30,14 +30,7 @@ const ListHeaderEmoji = styled(Emoji).attrs({ size: 'medium' })({
   marginBottom: 3.5,
 });
 
-const SavingsListHeader = ({
-  emoji,
-  isOpen,
-  onPress,
-  savingsSumValue,
-  showSumValue,
-  title,
-}) => {
+const SavingsListHeader = ({ emoji, isOpen, onPress, savingsSumValue, showSumValue, title }) => {
   const { nativeCurrency } = useAccountSettings();
   const { colors } = useTheme();
 
@@ -90,22 +83,10 @@ const SavingsListHeader = ({
       scaleTo={1.05}
       testID={`${title}-list-header`}
     >
-      <Row
-        align="center"
-        height={TokenFamilyHeaderHeight}
-        justify="space-between"
-        paddingHorizontal={19}
-        width="100%"
-      >
+      <Row align="center" height={TokenFamilyHeaderHeight} justify="space-between" paddingHorizontal={19} width="100%">
         <RowWithMargins align="center" margin={emoji ? 5 : 9}>
           <ListHeaderEmoji name={emoji} />
-          <TruncatedText
-            color={colors.dark}
-            letterSpacing="roundedMedium"
-            lineHeight="normal"
-            size="large"
-            weight="heavy"
-          >
+          <TruncatedText color={colors.dark} letterSpacing="roundedMedium" lineHeight="normal" size="large" weight="heavy">
             {title}
           </TruncatedText>
         </RowWithMargins>
@@ -114,10 +95,7 @@ const SavingsListHeader = ({
             <Animated.View style={sumNumberAnimatedStyles}>
               <SumValueText>
                 {Number(savingsSumValue) || Number(savingsSumValue) === 0
-                  ? convertAmountToNativeDisplay(
-                      savingsSumValue,
-                      nativeCurrency
-                    )
+                  ? convertAmountToNativeDisplay(savingsSumValue, nativeCurrency)
                   : savingsSumValue}
               </SumValueText>
             </Animated.View>
