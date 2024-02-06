@@ -19,12 +19,7 @@ type ListHeaderMenuProps = {
   text: string;
 };
 
-export function ListHeaderMenu({
-  menuItems,
-  selectItem,
-  icon,
-  text,
-}: ListHeaderMenuProps) {
+export function ListHeaderMenu({ menuItems, selectItem, icon, text }: ListHeaderMenuProps) {
   const separatorTertiary = useForegroundColor('separatorTertiary');
 
   const menuConfig = {
@@ -32,21 +27,14 @@ export function ListHeaderMenu({
     menuItems: menuItems,
   };
 
-  const onPressMenuItem = ({
-    nativeEvent: { actionKey: item },
-  }: {
-    nativeEvent: { actionKey: string };
-  }) => {
+  const onPressMenuItem = ({ nativeEvent: { actionKey: item } }: { nativeEvent: { actionKey: string } }) => {
     haptics.selection();
     selectItem(item);
   };
 
   return (
     <Bleed space="10px">
-      <ContextMenuButton
-        menuConfig={menuConfig}
-        onPressMenuItem={onPressMenuItem}
-      >
+      <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={onPressMenuItem}>
         <ButtonPressAnimation style={{ padding: 10 }}>
           <Bleed bottom="2px">
             <Box
@@ -58,28 +46,13 @@ export function ListHeaderMenu({
               style={{ borderColor: separatorTertiary, borderWidth: 1.5 }}
             >
               <Inline alignVertical="center" space={{ custom: 5 }} wrap={false}>
-                <Text
-                  align="center"
-                  color="labelQuaternary"
-                  size="icon 13px"
-                  weight="bold"
-                >
+                <Text align="center" color="labelQuaternary" size="icon 13px" weight="bold">
                   {icon}
                 </Text>
-                <Text
-                  align="center"
-                  color="labelTertiary"
-                  size="15pt"
-                  weight="bold"
-                >
+                <Text align="center" color="labelTertiary" size="15pt" weight="bold">
                   {text}
                 </Text>
-                <Text
-                  align="center"
-                  color="labelQuaternary"
-                  size="icon 13px"
-                  weight="bold"
-                >
+                <Text align="center" color="labelQuaternary" size="icon 13px" weight="bold">
                   􀆏
                 </Text>
               </Inline>

@@ -17,16 +17,8 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { fetchReverseRecord } from '@/handlers/ens';
-import {
-  getProviderForNetwork,
-  isValidBluetoothDeviceId,
-  resolveUnstoppableDomain,
-} from '@/handlers/web3';
-import {
-  isENSAddressFormat,
-  isUnstoppableAddressFormat,
-  isValidWallet,
-} from '@/helpers/validators';
+import { getProviderForNetwork, isValidBluetoothDeviceId, resolveUnstoppableDomain } from '@/handlers/web3';
+import { isENSAddressFormat, isUnstoppableAddressFormat, isValidWallet } from '@/helpers/validators';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { walletInit } from '@/model/wallet';
 import { Navigation, useNavigation } from '@/navigation';
@@ -109,15 +101,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           asset: [],
           forceColor,
           isNewProfile: true,
-          onCloseModal: ({
-            color,
-            name,
-            image,
-          }: {
-            color: string;
-            name: string;
-            image: string;
-          }) => {
+          onCloseModal: ({ color, name, image }: { color: string; name: string; image: string }) => {
             importWallet(color, name, image);
           },
           profile: { image: avatarUrl, name },
@@ -132,20 +116,12 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   );
 
   const handlePressImportButton = useCallback(
-    async (
-      forceColor: any,
-      forceAddress: any,
-      forceEmoji: any = null,
-      avatarUrl: any
-    ) => {
+    async (forceColor: any, forceAddress: any, forceEmoji: any = null, avatarUrl: any) => {
       setBusy(true);
       analytics.track('Tapped "Import" button');
       // guard against pressEvent coming in as forceColor if
       // handlePressImportButton is used as onClick handler
-      const guardedForceColor =
-        typeof forceColor === 'string' || typeof forceColor === 'number'
-          ? forceColor
-          : null;
+      const guardedForceColor = typeof forceColor === 'string' || typeof forceColor === 'number' ? forceColor : null;
       if ((!isSecretValid || !seedPhrase) && !forceAddress) return null;
       setBusy(true);
       const input = sanitizeSeedPhrase(seedPhrase || forceAddress);
@@ -156,9 +132,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           const web3Provider = await getProviderForNetwork();
           const [address, avatar] = await Promise.all([
             web3Provider.resolveName(input),
-            !avatarUrl &&
-              profilesEnabled &&
-              fetchENSAvatar(input, { swallowError: true }),
+            !avatarUrl && profilesEnabled && fetchENSAvatar(input, { swallowError: true }),
           ]);
           if (!address) {
             setBusy(false);
@@ -231,11 +205,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ address: string; isHDWallet: b... Remove this comment to see the full error message
             setCheckedWallet(walletResult);
             if (!walletResult.address) {
-              Logger.error(
-                new RainbowError(
-                  'useImportingWallet - walletResult address is undefined'
-                )
-              );
+              Logger.error(new RainbowError('useImportingWallet - walletResult address is undefined'));
               return null;
             }
             const ens = await fetchReverseRecord(walletResult.address);
@@ -249,12 +219,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
               }
             }
             setBusy(false);
-            startImportProfile(
-              name,
-              guardedForceColor,
-              walletResult.address,
-              avatarUrl
-            );
+            startImportProfile(name, guardedForceColor, walletResult.address, avatarUrl);
             analytics.track('Show wallet profile modal for imported wallet', {
               address: walletResult.address,
               type: walletResult.type,
@@ -274,9 +239,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   useEffect(() => {
     if (!wasImporting && isImporting) {
       const asyncFn = async () => {
-        const input = resolvedAddress
-          ? resolvedAddress
-          : sanitizeSeedPhrase(seedPhrase);
+        const input = resolvedAddress ? resolvedAddress : sanitizeSeedPhrase(seedPhrase);
 
         if (!showImportModal) {
           await walletInit(

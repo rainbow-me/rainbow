@@ -5,13 +5,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 
 /** @description Returns a press handler to open an ENS NFT in an expanded state sheet. */
-export default function useOpenENSNFTHandler({
-  uniqueTokens,
-  value,
-}: {
-  uniqueTokens?: UniqueAsset[];
-  value?: string;
-}) {
+export default function useOpenENSNFTHandler({ uniqueTokens, value }: { uniqueTokens?: UniqueAsset[]; value?: string }) {
   const { name } = useRoute();
   const { goBack, navigate } = useNavigation();
   const uniqueToken = useENSUniqueToken({

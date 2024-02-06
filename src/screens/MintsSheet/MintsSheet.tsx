@@ -32,12 +32,7 @@ import * as i18n from '@/languages';
 const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 
 export function MintsSheet() {
-  const {
-    accountAddress,
-    accountImage,
-    accountColor,
-    accountSymbol,
-  } = useAccountProfile();
+  const { accountAddress, accountImage, accountColor, accountSymbol } = useAccountProfile();
   const {
     data: { mints },
     isFetching,
@@ -63,13 +58,8 @@ export function MintsSheet() {
                 <Stack space="10px">
                   <Columns alignVertical="center">
                     <Column width="content">
-                      <AccentColorProvider
-                        color={accountColor ?? globalColors.grey100}
-                      >
-                        <ButtonPressAnimation
-                          onPress={() => navigate(Routes.CHANGE_WALLET_SHEET)}
-                          disabled={IS_ANDROID}
-                        >
+                      <AccentColorProvider color={accountColor ?? globalColors.grey100}>
+                        <ButtonPressAnimation onPress={() => navigate(Routes.CHANGE_WALLET_SHEET)} disabled={IS_ANDROID}>
                           {accountImage ? (
                             <Box
                               as={ImgixImage}
@@ -96,12 +86,7 @@ export function MintsSheet() {
                       </AccentColorProvider>
                     </Column>
                     <Column>
-                      <Text
-                        color="label"
-                        size="20pt"
-                        align="center"
-                        weight="heavy"
-                      >
+                      <Text color="label" size="20pt" align="center" weight="heavy">
                         {i18n.t(i18n.l.mints.mints_sheet.mints)}
                       </Text>
                     </Column>
@@ -121,9 +106,7 @@ export function MintsSheet() {
                     width: deviceWidth,
                   }}
                   renderItem={({ item }) => <Card collection={item} />}
-                  ItemSeparatorComponent={() => (
-                    <Separator thickness={1} color="separatorTertiary" />
-                  )}
+                  ItemSeparatorComponent={() => <Separator thickness={1} color="separatorTertiary" />}
                   keyExtractor={item => item.contractAddress + item.chainId}
                 />
               )}
@@ -132,21 +115,10 @@ export function MintsSheet() {
         )}
       </BackgroundProvider>
       {!data.length && (
-        <Box
-          alignItems="center"
-          justifyContent="center"
-          height="full"
-          position="absolute"
-          width="full"
-        >
+        <Box alignItems="center" justifyContent="center" height="full" position="absolute" width="full">
           {!isFetching ? (
             <Stack space="20px">
-              <Text
-                size="17pt"
-                weight="bold"
-                align="center"
-                color="labelSecondary"
-              >
+              <Text size="17pt" weight="bold" align="center" color="labelSecondary">
                 {i18n.t(i18n.l.mints.mints_sheet.no_data_found)}
               </Text>
               <ButtonPressAnimation
@@ -161,21 +133,13 @@ export function MintsSheet() {
                   }
                 }}
               >
-                <Text
-                  align="center"
-                  color="labelSecondary"
-                  size="34pt"
-                  weight="bold"
-                >
+                <Text align="center" color="labelSecondary" size="34pt" weight="bold">
                   􀅈
                 </Text>
               </ButtonPressAnimation>
             </Stack>
           ) : (
-            <LoadingSpinner
-              color={colorMode === 'light' ? 'black' : 'white'}
-              size={36}
-            />
+            <LoadingSpinner color={colorMode === 'light' ? 'black' : 'white'} size={36} />
           )}
         </Box>
       )}

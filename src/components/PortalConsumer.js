@@ -9,13 +9,7 @@ export default function PortalConsumer() {
   const { setComponent, hide } = usePortal();
   useEffect(() => {
     if (isWalletLoading) {
-      setComponent(
-        <LoadingOverlay
-          paddingTop={sheetVerticalOffset}
-          title={isWalletLoading}
-        />,
-        true
-      );
+      setComponent(<LoadingOverlay paddingTop={sheetVerticalOffset} title={isWalletLoading} />, true);
     }
     return hide;
   }, [hide, isWalletLoading, setComponent]);

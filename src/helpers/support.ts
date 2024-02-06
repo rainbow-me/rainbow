@@ -10,8 +10,7 @@ const SupportEmailAddress = 'support@rainbow.me';
 
 // this whole file
 
-const setClipboardToSupportEmail = () =>
-  Clipboard.setString(SupportEmailAddress);
+const setClipboardToSupportEmail = () => Clipboard.setString(SupportEmailAddress);
 
 const SupportErrorAlert = () =>
   Alert({
@@ -29,15 +28,9 @@ const SupportErrorAlert = () =>
     title: i18n.t(i18n.l.support.error_alert.title),
   });
 
-const handleMailError = debounce(
-  error => (error ? SupportErrorAlert() : null),
-  250
-);
+const handleMailError = debounce(error => (error ? SupportErrorAlert() : null), 250);
 
-const openLearnMorePage = () =>
-  Linking.openURL(
-    'https://support.rainbow.me/en/articles/7975958-an-error-occurred'
-  );
+const openLearnMorePage = () => Linking.openURL('https://support.rainbow.me/en/articles/7975958-an-error-occurred');
 
 const messageSupport = () => Mailer.mail(supportEmailOptions, handleMailError);
 

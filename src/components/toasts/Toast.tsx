@@ -1,12 +1,6 @@
 import React, { Fragment, PropsWithChildren, useLayoutEffect } from 'react';
 import { Insets, ViewProps } from 'react-native';
-import Animated, {
-  interpolate,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  WithSpringConfig,
-} from 'react-native-reanimated';
+import Animated, { interpolate, useAnimatedStyle, useSharedValue, withSpring, WithSpringConfig } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ThemeContextProps, useTheme } from '../../theme/ThemeContext';
 import { Icon } from '../icons';
@@ -59,17 +53,7 @@ type Props = PropsWithChildren<{
 }> &
   Pick<ViewProps, 'testID'>;
 
-export default function Toast({
-  children,
-  color,
-  distance = 90,
-  targetTranslate = 0,
-  icon,
-  isVisible,
-  testID,
-  text,
-  textColor,
-}: Props) {
+export default function Toast({ children, color, distance = 90, targetTranslate = 0, icon, isVisible, testID, text, textColor }: Props) {
   const { colors, isDarkMode } = useTheme();
   const { width: deviceWidth } = useDimensions();
   const insets = useSafeAreaInsets();
@@ -80,12 +64,7 @@ export default function Toast({
   }, [isVisible, animation]);
 
   const animatedStyle = useAnimatedStyle(() => {
-    const translateY = interpolate(
-      animation.value,
-      [0, 1],
-      [distance, targetTranslate],
-      'extend'
-    );
+    const translateY = interpolate(animation.value, [0, 1], [distance, targetTranslate], 'extend');
 
     return {
       opacity: animation.value,
@@ -97,26 +76,11 @@ export default function Toast({
 
   return (
     <Animated.View pointerEvents="none" style={animatedStyle}>
-      <Container
-        color={currentColor}
-        deviceWidth={deviceWidth}
-        insets={insets}
-        testID={testID}
-      >
+      <Container color={currentColor} deviceWidth={deviceWidth} insets={insets} testID={testID}>
         {children ?? (
           <Fragment>
-            {icon && (
-              <Icon
-                color={textColor ?? colors.whiteLabel}
-                marginTop={3}
-                name={icon}
-              />
-            )}
-            <TruncatedText
-              color={textColor ?? colors.whiteLabel}
-              size="smedium"
-              weight="bold"
-            >
+            {icon && <Icon color={textColor ?? colors.whiteLabel} marginTop={3} name={icon} />}
+            <TruncatedText color={textColor ?? colors.whiteLabel} size="smedium" weight="bold">
               {text}
             </TruncatedText>
           </Fragment>

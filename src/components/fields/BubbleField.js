@@ -6,15 +6,13 @@ import { Column, Row } from '../layout';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 
-const BubbleInput = styled(ExchangeInput).attrs(
-  ({ isSmallPhone, isTinyPhone, theme: { isDarkMode } }) => ({
-    disableTabularNums: true,
-    keyboardAppearance: isDarkMode ? 'dark' : 'light',
-    letterSpacing: 'roundedTightest',
-    size: isTinyPhone ? 'big' : isSmallPhone ? 'bigger' : 'h3',
-    weight: 'semibold',
-  })
-)(({ isTinyPhone }) => ({
+const BubbleInput = styled(ExchangeInput).attrs(({ isSmallPhone, isTinyPhone, theme: { isDarkMode } }) => ({
+  disableTabularNums: true,
+  keyboardAppearance: isDarkMode ? 'dark' : 'light',
+  letterSpacing: 'roundedTightest',
+  size: isTinyPhone ? 'big' : isSmallPhone ? 'bigger' : 'h3',
+  weight: 'semibold',
+}))(({ isTinyPhone }) => ({
   ...(android ? (isTinyPhone ? { height: 40 } : { height: 46 }) : {}),
   ...(android ? { paddingBottom: 0, paddingTop: 0 } : {}),
   marginRight: 10,
@@ -49,10 +47,7 @@ const BubbleField = (
   const [value, setValue] = useState(valueProp);
   const [wasButtonPressed, setWasButtonPressed] = useState(false);
 
-  const formattedValue = useMemo(() => format(String(value || '')), [
-    format,
-    value,
-  ]);
+  const formattedValue = useMemo(() => format(String(value || '')), [format, value]);
 
   const handleBlur = useCallback(
     event => {
@@ -93,10 +88,7 @@ const BubbleField = (
   );
 
   useEffect(() => {
-    if (
-      valueProp !== value &&
-      (!ref.current?.isFocused?.() || wasButtonPressed)
-    ) {
+    if (valueProp !== value && (!ref.current?.isFocused?.() || wasButtonPressed)) {
       setValue(valueProp);
       setWasButtonPressed(false);
     }
@@ -120,22 +112,14 @@ const BubbleField = (
           onChangeText={handleChangeText}
           onFocus={handleFocus}
           placeholder={placeholder}
-          placeholderTextColor={
-            maxLabelColor
-              ? colors.alpha(colors.blueGreyDark, 0.32)
-              : colors.alpha(colorForAsset, 0.4)
-          }
+          placeholderTextColor={maxLabelColor ? colors.alpha(colors.blueGreyDark, 0.32) : colors.alpha(colorForAsset, 0.4)}
           ref={ref}
           testID={testID + '-input'}
           value={formattedValue}
         />
         {buttonText && isFocused && (
           <MiniButton
-            backgroundColor={
-              maxLabelColor
-                ? colors.alpha(colorForAsset, 0.048)
-                : colors.alpha(colorForAsset, 0.06)
-            }
+            backgroundColor={maxLabelColor ? colors.alpha(colorForAsset, 0.048) : colors.alpha(colorForAsset, 0.06)}
             color={colorForAsset}
             letterSpacing="roundedMedium"
             onPress={handleButtonPress}

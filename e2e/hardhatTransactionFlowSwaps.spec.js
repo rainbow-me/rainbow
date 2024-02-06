@@ -52,10 +52,7 @@ describe.skip('Hardhat Transaction Flow', () => {
   it('Should show the "Add wallet modal" after tapping import with a valid seed"', async () => {
     await Helpers.clearField('import-sheet-input');
     await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
-    await Helpers.checkIfElementHasString(
-      'import-sheet-button-label',
-      'Continue'
-    );
+    await Helpers.checkIfElementHasString('import-sheet-button-label', 'Continue');
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.checkIfVisible('wallet-info-modal');
   });
@@ -103,15 +100,11 @@ describe.skip('Hardhat Transaction Flow', () => {
     await Helpers.waitAndTap('swap-button');
     await Helpers.tap('exchange-modal-input-selection-button');
     await Helpers.typeText('currency-select-search-input', 'DAI', true);
-    await Helpers.waitAndTap(
-      'currency-select-list-exchange-coin-row-DAI-mainnet'
-    );
+    await Helpers.waitAndTap('currency-select-list-exchange-coin-row-DAI-mainnet');
     await Helpers.waitAndTap('exchange-modal-output-selection-button');
     await Helpers.waitAndTap('network-switcher-item-optimism');
     await Helpers.typeText('currency-select-search-input', 'USDC', true);
-    await Helpers.waitAndTap(
-      'currency-select-list-exchange-coin-row-USDC-optimism'
-    );
+    await Helpers.waitAndTap('currency-select-list-exchange-coin-row-USDC-optimism');
     await Helpers.typeText('exchange-modal-input', '0.001', true);
     if (ios) {
       await Helpers.tapAndLongPress('exchange-modal-confirm-button');
@@ -132,15 +125,11 @@ describe.skip('Hardhat Transaction Flow', () => {
     await Helpers.waitAndTap('swap-button');
     await Helpers.tap('exchange-modal-input-selection-button');
     await Helpers.typeText('currency-select-search-input', 'USDC', true);
-    await Helpers.waitAndTap(
-      'currency-select-list-exchange-coin-row-USDC-mainnet'
-    );
+    await Helpers.waitAndTap('currency-select-list-exchange-coin-row-USDC-mainnet');
     await Helpers.waitAndTap('exchange-modal-output-selection-button');
     await Helpers.waitAndTap('network-switcher-item-optimism');
     await Helpers.typeText('currency-select-search-input', 'USDC', true);
-    await Helpers.waitAndTap(
-      'currency-select-list-exchange-coin-row-USDC-optimism'
-    );
+    await Helpers.waitAndTap('currency-select-list-exchange-coin-row-USDC-optimism');
     await Helpers.typeText('exchange-modal-input', '0.01', true);
     await Helpers.tapAndLongPress('exchange-modal-confirm-button');
     await Helpers.tapAndLongPress('swap-details-confirm-button');
@@ -167,23 +156,15 @@ describe.skip('Hardhat Transaction Flow', () => {
     await Helpers.waitAndTap('swap-button');
     await Helpers.tap('exchange-modal-input-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
-    await Helpers.waitAndTap(
-      'currency-select-list-exchange-coin-row-ETH-mainnet'
-    );
+    await Helpers.waitAndTap('currency-select-list-exchange-coin-row-ETH-mainnet');
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.waitAndTap('exchange-modal-output-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
-    await Helpers.typeText(
-      'currency-select-search-input',
-      '0xefa6903aa49cd539c079ac4b0a090db432615822',
-      true
-    );
+    await Helpers.typeText('currency-select-search-input', '0xefa6903aa49cd539c079ac4b0a090db432615822', true);
   });
 
   it('Should be able to search random tokens (like SWYF) via address and swap them 2', async () => {
-    await Helpers.waitAndTap(
-      'currency-select-list-exchange-coin-row-SWYF-mainnet'
-    );
+    await Helpers.waitAndTap('currency-select-list-exchange-coin-row-SWYF-mainnet');
     await Helpers.tapByText('Continue');
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.typeText('exchange-modal-input', '0.001', true, true);

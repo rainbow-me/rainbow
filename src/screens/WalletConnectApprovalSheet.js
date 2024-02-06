@@ -1,11 +1,5 @@
 import { useRoute } from '@react-navigation/native';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, InteractionManager } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import ChainLogo from '../components/ChainLogo';
@@ -16,33 +10,19 @@ import { RequestVendorLogoIcon, CoinIcon } from '../components/coin-icon';
 import { ContactAvatar } from '../components/contacts';
 import ImageAvatar from '../components/contacts/ImageAvatar';
 import { Centered, Column, Flex, Row } from '../components/layout';
-import {
-  Sheet,
-  SheetActionButton,
-  SheetActionButtonRow,
-} from '../components/sheet';
+import { Sheet, SheetActionButton, SheetActionButtonRow } from '../components/sheet';
 import { analytics } from '@/analytics';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
 import { getDappHostname } from '@/helpers/dappNameHandler';
 import WalletConnectApprovalSheetType from '@/helpers/walletConnectApprovalSheetTypes';
-import {
-  androidShowNetworksActionSheet,
-  NETWORK_MENU_ACTION_KEY_FILTER,
-  networksMenuItems,
-} from '@/helpers/walletConnectNetworks';
+import { androidShowNetworksActionSheet, NETWORK_MENU_ACTION_KEY_FILTER, networksMenuItems } from '@/helpers/walletConnectNetworks';
 import { useAccountSettings, useWallets } from '@/hooks';
 import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { ethereumUtils } from '@/utils';
 import { Network } from '@/helpers';
-import {
-  Box,
-  Columns,
-  Column as RDSColumn,
-  Inline,
-  Text,
-} from '@/design-system';
+import { Box, Columns, Column as RDSColumn, Inline, Text } from '@/design-system';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import * as lang from '@/languages';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
@@ -52,33 +32,23 @@ import { useDappMetadata } from '@/resources/metadata/dapp';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { InfoAlert } from '@/components/info-alert/info-alert';
 
-const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
-  ({ theme: { colors } }) => ({
-    color: colors.alpha(colors.blueGreyDark, 0.3),
-    size: android ? 40 : 'large',
-  })
-)({});
+const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(({ theme: { colors } }) => ({
+  color: colors.alpha(colors.blueGreyDark, 0.3),
+  size: android ? 40 : 'large',
+}))({});
 
-const DappLogo = styled(RequestVendorLogoIcon).attrs(
-  ({ theme: { colors } }) => ({
-    backgroundColor: colors.transparent,
-    borderRadius: 18,
-    showLargeShadow: true,
-    size: 60,
-  })
-)({
+const DappLogo = styled(RequestVendorLogoIcon).attrs(({ theme: { colors } }) => ({
+  backgroundColor: colors.transparent,
+  borderRadius: 18,
+  showLargeShadow: true,
+  size: 60,
+}))({
   marginBottom: 24,
 });
 
 const LabelText = ({ children, ...props }) => {
   return (
-    <Text
-      color="primary (Deprecated)"
-      numberOfLines={1}
-      size="18px / 27px (Deprecated)"
-      weight="bold"
-      {...props}
-    >
+    <Text color="primary (Deprecated)" numberOfLines={1} size="18px / 27px (Deprecated)" weight="bold" {...props}>
       {children}
     </Text>
   );
@@ -86,12 +56,7 @@ const LabelText = ({ children, ...props }) => {
 
 const SwitchText = ({ children, ...props }) => {
   return (
-    <Text
-      color="secondary40 (Deprecated)"
-      size="14px / 19px (Deprecated)"
-      weight="semibold"
-      {...props}
-    >
+    <Text color="secondary40 (Deprecated)" size="14px / 19px (Deprecated)" weight="semibold" {...props}>
       {children}
     </Text>
   );
@@ -108,18 +73,12 @@ const NetworkPill = ({ chainIds }) => {
   }, [chainIds]);
 
   const networkMenuItems = useMemo(() => {
-    RainbowNetworks.filter(
-      ({ features, id }) => features.walletconnect && chainIds.includes(id)
-    ).map(network => ({
+    RainbowNetworks.filter(({ features, id }) => features.walletconnect && chainIds.includes(id)).map(network => ({
       actionKey: network.value,
       actionTitle: network.name,
       icon: {
         iconType: 'ASSET',
-        iconValue: `${
-          network.networkType === 'layer2'
-            ? `${network.value}BadgeNoShadow`
-            : 'ethereumBadge'
-        }`,
+        iconValue: `${network.networkType === 'layer2' ? `${network.value}BadgeNoShadow` : 'ethereumBadge'}`,
       },
     }));
   }, [chainIds]);
@@ -144,12 +103,7 @@ const NetworkPill = ({ chainIds }) => {
         paddingTop="8px"
         marginRight={{ custom: -2 }}
       >
-        <Box
-          flexDirection="row"
-          justifyContent="flex-end"
-          alignItems="center"
-          width="100%"
-        >
+        <Box flexDirection="row" justifyContent="flex-end" alignItems="center" width="100%">
           {availableNetworks.length > 1 ? (
             <>
               {availableNetworks.map((network, index) => {
@@ -168,18 +122,9 @@ const NetworkPill = ({ chainIds }) => {
                     }}
                   >
                     {network !== Network.mainnet ? (
-                      <ChainBadge
-                        network={network}
-                        position="relative"
-                        size="small"
-                      />
+                      <ChainBadge network={network} position="relative" size="small" />
                     ) : (
-                      <CoinIcon
-                        address={ETH_ADDRESS}
-                        size={20}
-                        symbol={ETH_SYMBOL}
-                        network={network}
-                      />
+                      <CoinIcon address={ETH_ADDRESS} size={20} symbol={ETH_SYMBOL} network={network} />
                     )}
                   </Box>
                 );
@@ -188,27 +133,13 @@ const NetworkPill = ({ chainIds }) => {
           ) : (
             <Inline alignVertical="center" wrap={false}>
               {availableNetworks[0] !== Network.mainnet ? (
-                <ChainBadge
-                  network={availableNetworks[0]}
-                  position="relative"
-                  size="small"
-                />
+                <ChainBadge network={availableNetworks[0]} position="relative" size="small" />
               ) : (
-                <CoinIcon
-                  address={ETH_ADDRESS}
-                  size={20}
-                  symbol={ETH_SYMBOL}
-                  type={availableNetworks[0]}
-                />
+                <CoinIcon address={ETH_ADDRESS} size={20} symbol={ETH_SYMBOL} type={availableNetworks[0]} />
               )}
 
               <Box paddingLeft="6px">
-                <Text
-                  color="primary (Deprecated)"
-                  numberOfLines={1}
-                  size="18px / 27px (Deprecated)"
-                  weight="bold"
-                >
+                <Text color="primary (Deprecated)" numberOfLines={1} size="18px / 27px (Deprecated)" weight="bold">
                   {getNetworkObj(availableNetworks[0]).name}
                 </Text>
               </Box>
@@ -248,9 +179,7 @@ export default function WalletConnectApprovalSheet() {
   const chainIds = meta?.chainIds; // WC v2 supports multi-chain
   const chainId = chainIds?.[0] || 1; // WC v1 only supports 1
   const currentNetwork = params?.currentNetwork;
-  const [approvalNetwork, setApprovalNetwork] = useState(
-    currentNetwork || network
-  );
+  const [approvalNetwork, setApprovalNetwork] = useState(currentNetwork || network);
   const isWalletConnectV2 = meta.isWalletConnectV2;
 
   const { dappName, dappUrl, dappScheme, imageUrl, peerId } = meta;
@@ -278,17 +207,10 @@ export default function WalletConnectApprovalSheet() {
   }, [dappUrl]);
 
   const approvalAccountInfo = useMemo(() => {
-    const approvalAccountInfo = getAccountProfileInfo(
-      approvalAccount.wallet,
-      walletNames,
-      approvalAccount.address
-    );
+    const approvalAccountInfo = getAccountProfileInfo(approvalAccount.wallet, walletNames, approvalAccount.address);
     return {
       ...approvalAccountInfo,
-      accountLabel:
-        approvalAccountInfo.accountENS ||
-        approvalAccountInfo.accountName ||
-        approvalAccount.address,
+      accountLabel: approvalAccountInfo.accountENS || approvalAccountInfo.accountName || approvalAccount.address,
     };
   }, [walletNames, approvalAccount.wallet, approvalAccount.address]);
 
@@ -309,10 +231,7 @@ export default function WalletConnectApprovalSheet() {
   }, [approvalNetwork, isDarkMode]);
 
   const handleOnPressNetworksMenuItem = useCallback(
-    ({ nativeEvent }) =>
-      setApprovalNetwork(
-        nativeEvent.actionKey?.replace(NETWORK_MENU_ACTION_KEY_FILTER, '')
-      ),
+    ({ nativeEvent }) => setApprovalNetwork(nativeEvent.actionKey?.replace(NETWORK_MENU_ACTION_KEY_FILTER, '')),
     [setApprovalNetwork]
   );
 
@@ -320,29 +239,12 @@ export default function WalletConnectApprovalSheet() {
     (success = false) => {
       if (callback) {
         setTimeout(
-          () =>
-            callback(
-              success,
-              approvalNetworkInfo.chainId,
-              approvalAccount.address,
-              peerId,
-              dappScheme,
-              dappName,
-              dappUrl
-            ),
+          () => callback(success, approvalNetworkInfo.chainId, approvalAccount.address, peerId, dappScheme, dappName, dappUrl),
           300
         );
       }
     },
-    [
-      approvalAccount.address,
-      callback,
-      approvalNetworkInfo,
-      peerId,
-      dappScheme,
-      dappName,
-      dappUrl,
-    ]
+    [approvalAccount.address, callback, approvalNetworkInfo, peerId, dappScheme, dappName, dappUrl]
   );
 
   useEffect(() => {
@@ -378,9 +280,7 @@ export default function WalletConnectApprovalSheet() {
   }, [handleSuccess, goBack]);
 
   const onPressAndroid = useCallback(() => {
-    androidShowNetworksActionSheet(({ network }) =>
-      setApprovalNetwork(network)
-    );
+    androidShowNetworksActionSheet(({ network }) => setApprovalNetwork(network));
   }, []);
 
   const handlePressChangeWallet = useCallback(() => {
@@ -401,9 +301,7 @@ export default function WalletConnectApprovalSheet() {
       analytics.track('Received wc connection', {
         dappName,
         dappUrl,
-        waitingTime: isNaN(waitingTime)
-          ? 'Error calculating waiting time.'
-          : waitingTime,
+        waitingTime: isNaN(waitingTime) ? 'Error calculating waiting time.' : waitingTime,
       });
     });
   }, [dappName, dappUrl, receivedTimestamp]);
@@ -419,12 +317,9 @@ export default function WalletConnectApprovalSheet() {
 
   const menuItems = useMemo(() => networksMenuItems(), []);
   const NetworkSwitcherParent =
-    type === WalletConnectApprovalSheetType.connect && menuItems.length > 1
-      ? ContextMenuButton
-      : React.Fragment;
+    type === WalletConnectApprovalSheetType.connect && menuItems.length > 1 ? ContextMenuButton : React.Fragment;
 
-  const sheetHeight =
-    type === WalletConnectApprovalSheetType.connect ? 408 : 438;
+  const sheetHeight = type === WalletConnectApprovalSheetType.connect ? 408 : 438;
 
   const renderNetworks = useCallback(() => {
     if (isWalletConnectV2) {
@@ -472,12 +367,7 @@ export default function WalletConnectApprovalSheet() {
                 type === WalletConnectApprovalSheetType.connect
                   ? approvalNetworkInfo.name
                   : ethereumUtils.getNetworkNameFromChainId(Number(chainId))
-              } ${
-                type === WalletConnectApprovalSheetType.connect &&
-                menuItems.length > 1
-                  ? '􀁰'
-                  : ''
-              }`}
+              } ${type === WalletConnectApprovalSheetType.connect && menuItems.length > 1 ? '􀁰' : ''}`}
             </LabelText>
           </ButtonPressAnimation>
         </NetworkSwitcherParent>
@@ -504,49 +394,26 @@ export default function WalletConnectApprovalSheet() {
         </Centered>
       ) : (
         <Flex direction="column">
-          <Centered
-            direction="column"
-            paddingBottom={5}
-            paddingHorizontal={19}
-            paddingTop={17}
-            testID="wc-approval-sheet"
-          >
+          <Centered direction="column" paddingBottom={5} paddingHorizontal={19} paddingTop={17} testID="wc-approval-sheet">
             <DappLogo dappName={dappName || ''} imageUrl={imageUrl} />
             <Centered paddingHorizontal={24}>
               <Column>
                 <Row justify="center" marginBottom={12}>
-                  <Text
-                    align="center"
-                    color="primary (Deprecated)"
-                    numberOfLines={1}
-                    size="23px / 27px (Deprecated)"
-                    weight="heavy"
-                  >
+                  <Text align="center" color="primary (Deprecated)" numberOfLines={1} size="23px / 27px (Deprecated)" weight="heavy">
                     {dappName}
                   </Text>
                 </Row>
-                <Text
-                  align="center"
-                  color="secondary60 (Deprecated)"
-                  size="23px / 27px (Deprecated)"
-                  weight="semibold"
-                >
+                <Text align="center" color="secondary60 (Deprecated)" size="23px / 27px (Deprecated)" weight="semibold">
                   {type === WalletConnectApprovalSheetType.connect
                     ? lang.t(lang.l.walletconnect.wants_to_connect)
                     : lang.t(lang.l.walletconnect.wants_to_connect_to_network, {
-                        network: ethereumUtils.getNetworkNameFromChainId(
-                          Number(chainId)
-                        ),
+                        network: ethereumUtils.getNetworkNameFromChainId(Number(chainId)),
                       })}
                 </Text>
               </Column>
             </Centered>
             <Row marginBottom={30} marginTop={30}>
-              <Text
-                color={{ custom: accentColor }}
-                size="18px / 27px (Deprecated)"
-                weight="heavy"
-              >
+              <Text color={{ custom: accentColor }} size="18px / 27px (Deprecated)" weight="heavy">
                 {isScam && '􁅏 '}
                 {isVerified && '􀇻 '}
                 {formattedDappUrl}
@@ -562,12 +429,8 @@ export default function WalletConnectApprovalSheet() {
                     􀘰
                   </Text>
                 }
-                title={lang.t(
-                  lang.l.walletconnect.dapp_warnings.info_alert.title
-                )}
-                description={lang.t(
-                  lang.l.walletconnect.dapp_warnings.info_alert.description
-                )}
+                title={lang.t(lang.l.walletconnect.dapp_warnings.info_alert.title)}
+                description={lang.t(lang.l.walletconnect.dapp_warnings.info_alert.description)}
               />
             </Box>
           )}
@@ -589,10 +452,7 @@ export default function WalletConnectApprovalSheet() {
               weight="heavy"
             />
           </SheetActionButtonRow>
-          <Box
-            paddingBottom={{ custom: 21 }}
-            paddingHorizontal={{ custom: 24 }}
-          >
+          <Box paddingBottom={{ custom: 21 }} paddingHorizontal={{ custom: 24 }}>
             <Columns>
               <RDSColumn>
                 <SwitchText>{lang.t('wallet.wallet_title')}</SwitchText>
@@ -606,17 +466,10 @@ export default function WalletConnectApprovalSheet() {
                   }}
                 >
                   {approvalAccountInfo.accountImage ? (
-                    <ImageAvatar
-                      image={approvalAccountInfo.accountImage}
-                      size="smaller"
-                    />
+                    <ImageAvatar image={approvalAccountInfo.accountImage} size="smaller" />
                   ) : (
                     <ContactAvatar
-                      color={
-                        isNaN(approvalAccountInfo.accountColor)
-                          ? colors.skeleton
-                          : approvalAccountInfo.accountColor
-                      }
+                      color={isNaN(approvalAccountInfo.accountColor) ? colors.skeleton : approvalAccountInfo.accountColor}
                       size="smaller"
                       value={approvalAccountInfo.accountSymbol}
                     />
@@ -627,14 +480,8 @@ export default function WalletConnectApprovalSheet() {
                     width="full"
                     flexDirection="row"
                   >
-                    <LabelText style={{ maxWidth: '80%' }}>
-                      {`${approvalAccountInfo.accountLabel}`}
-                    </LabelText>
-                    <LabelText>
-                      {type === WalletConnectApprovalSheetType.connect
-                        ? '􀁰'
-                        : ''}
-                    </LabelText>
+                    <LabelText style={{ maxWidth: '80%' }}>{`${approvalAccountInfo.accountLabel}`}</LabelText>
+                    <LabelText>{type === WalletConnectApprovalSheetType.connect ? '􀁰' : ''}</LabelText>
                   </Box>
                 </ButtonPressAnimation>
               </RDSColumn>

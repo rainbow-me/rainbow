@@ -17,15 +17,12 @@ export type ENSAddressArgs = {
 // ///////////////////////////////////////////////
 // Query Key
 
-const ensAddressQueryKey = ({ name }: ENSAddressArgs) =>
-  createQueryKey('ensAddress', { name }, { persisterVersion: 1 });
+const ensAddressQueryKey = ({ name }: ENSAddressArgs) => createQueryKey('ensAddress', { name }, { persisterVersion: 1 });
 
 // ///////////////////////////////////////////////
 // Query Function
 
-async function ensAddressQueryFunction({
-  queryKey: [{ name }],
-}: QueryFunctionArgs<typeof ensAddressQueryKey>) {
+async function ensAddressQueryFunction({ queryKey: [{ name }] }: QueryFunctionArgs<typeof ensAddressQueryKey>) {
   const provider = await getProviderForNetwork();
   const address = await provider.resolveName(name);
   return address;
@@ -34,35 +31,21 @@ async function ensAddressQueryFunction({
 // ///////////////////////////////////////////////
 // Query Prefetcher
 
-export async function prefetchENSAddress(
-  { name }: ENSAddressArgs,
-  { staleTime = defaultStaleTime }: { staleTime?: number } = {}
-) {
-  return await queryClient.prefetchQuery(
-    ensAddressQueryKey({ name }),
-    ensAddressQueryFunction,
-    { staleTime }
-  );
+export async function prefetchENSAddress({ name }: ENSAddressArgs, { staleTime = defaultStaleTime }: { staleTime?: number } = {}) {
+  return await queryClient.prefetchQuery(ensAddressQueryKey({ name }), ensAddressQueryFunction, { staleTime });
 }
 
 // ///////////////////////////////////////////////
 // Query Fetcher
 
 export async function fetchENSAddress({ name }: ENSAddressArgs) {
-  return await queryClient.fetchQuery(
-    ensAddressQueryKey({ name }),
-    ensAddressQueryFunction,
-    { staleTime: defaultStaleTime }
-  );
+  return await queryClient.fetchQuery(ensAddressQueryKey({ name }), ensAddressQueryFunction, { staleTime: defaultStaleTime });
 }
 
 // ///////////////////////////////////////////////
 // Query Hook
 
-export function useENSAddress(
-  { name }: ENSAddressArgs,
-  { enabled }: { enabled?: boolean } = {}
-) {
+export function useENSAddress({ name }: ENSAddressArgs, { enabled }: { enabled?: boolean } = {}) {
   return useQuery(ensAddressQueryKey({ name }), ensAddressQueryFunction, {
     enabled,
     staleTime: defaultStaleTime,

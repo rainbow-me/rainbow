@@ -12,9 +12,7 @@ const fallbackResult: useUniqueTokenResult = {
   supportsVideo: false,
 };
 
-export default function useUniqueToken(
-  maybeUniqueToken: Record<string, any>
-): useUniqueTokenResult {
+export default function useUniqueToken(maybeUniqueToken: Record<string, any>): useUniqueTokenResult {
   return React.useMemo((): useUniqueTokenResult => {
     if (typeof maybeUniqueToken === 'object' && !!maybeUniqueToken) {
       const supports3d = !!maybeUniqueToken?.model_properties;

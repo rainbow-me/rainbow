@@ -5,14 +5,7 @@ import meta from './Bleed.meta';
 
 const playground: Playground = {
   meta,
-  examples: [
-    examples.basicUsage,
-    examples.customSpace,
-    examples.left,
-    examples.right,
-    examples.top,
-    examples.bottom,
-  ],
+  examples: [examples.basicUsage, examples.customSpace, examples.left, examples.right, examples.top, examples.bottom],
 };
 
 export default playground;

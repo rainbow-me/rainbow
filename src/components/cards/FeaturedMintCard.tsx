@@ -19,10 +19,7 @@ import { useMints } from '@/resources/mints';
 import { useAccountProfile, useDimensions } from '@/hooks';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { ImgixImage } from '../images';
-import {
-  abbreviateNumber,
-  convertRawAmountToRoundedDecimal,
-} from '@/helpers/utilities';
+import { abbreviateNumber, convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import { BlurView } from '@react-native-community/blur';
 import { View } from 'react-native';
 import { IS_IOS } from '@/env';
@@ -59,13 +56,9 @@ export function FeaturedMintCard() {
   const { colorMode } = useColorMode();
   const isDarkMode = colorMode === 'dark';
 
-  const imageUrl =
-    featuredMint?.imageURL ||
-    featuredMint?.recentMints?.find(m => m.imageURI)?.imageURI;
+  const imageUrl = featuredMint?.imageURL || featuredMint?.recentMints?.find(m => m.imageURI)?.imageURI;
 
-  const mimeType = featuredMint?.imageURL
-    ? featuredMint?.imageMimeType
-    : featuredMint?.recentMints?.find(m => m.imageURI)?.mimeType;
+  const mimeType = featuredMint?.imageURL ? featuredMint?.imageMimeType : featuredMint?.recentMints?.find(m => m.imageURI)?.mimeType;
 
   const labelSecondary = useForegroundColor('labelSecondary');
   const accentColor = usePersistentDominantColorFromImage(imageUrl);
@@ -80,11 +73,7 @@ export function FeaturedMintCard() {
         chainId: featuredMint.chainId,
         totalMints: featuredMint.totalMints,
         mintsLastHour: featuredMint.totalMints,
-        priceInEth: convertRawAmountToRoundedDecimal(
-          featuredMint.mintStatus.price,
-          18,
-          6
-        ),
+        priceInEth: convertRawAmountToRoundedDecimal(featuredMint.mintStatus.price, 18, 6),
       });
       const network = ethereumUtils.getNetworkFromChainId(featuredMint.chainId);
       navigateToMintCollection(featuredMint.contract, network);
@@ -171,83 +160,42 @@ export function FeaturedMintCard() {
               </Cover>
               <Columns>
                 <Column>
-                  <Box
-                    alignItems="flex-start"
-                    justifyContent="space-between"
-                    flexGrow={1}
-                    flexBasis={0}
-                    padding="8px"
-                  >
+                  <Box alignItems="flex-start" justifyContent="space-between" flexGrow={1} flexBasis={0} padding="8px">
                     <Stack space="10px">
                       <Inline space="6px" alignVertical="center">
-                        <Text
-                          size="11pt"
-                          align="center"
-                          weight="heavy"
-                          color={secondaryTextColor}
-                        >
+                        <Text size="11pt" align="center" weight="heavy" color={secondaryTextColor}>
                           􀫸
                         </Text>
-                        <Text
-                          size="13pt"
-                          weight="heavy"
-                          color={secondaryTextColor}
-                        >
-                          {i18n.t(
-                            i18n.l.mints.featured_mint_card.featured_mint
-                          )}
+                        <Text size="13pt" weight="heavy" color={secondaryTextColor}>
+                          {i18n.t(i18n.l.mints.featured_mint_card.featured_mint)}
                         </Text>
                       </Inline>
-                      <Box
-                        height={{ custom: 36 }}
-                        justifyContent="center"
-                        alignItems="flex-start"
-                      >
-                        <Text
-                          size="20pt"
-                          weight="heavy"
-                          color="label"
-                          numberOfLines={1}
-                          style={{ lineHeight: 36 }}
-                        >
+                      <Box height={{ custom: 36 }} justifyContent="center" alignItems="flex-start">
+                        <Text size="20pt" weight="heavy" color="label" numberOfLines={1} style={{ lineHeight: 36 }}>
                           {featuredMint.name}
                         </Text>
                       </Box>
                     </Stack>
                     <Stack space={{ custom: 14 }}>
                       <Inline space="6px" alignVertical="center">
-                        <Text
-                          size="11pt"
-                          align="center"
-                          weight="heavy"
-                          color={secondaryTextColor}
-                        >
+                        <Text size="11pt" align="center" weight="heavy" color={secondaryTextColor}>
                           􀋥
                         </Text>
                         <Text size="13pt" weight="heavy" color="label">
                           {featuredMint.totalMints === 1
                             ? i18n.t(i18n.l.mints.featured_mint_card.one_mint)
                             : i18n.t(i18n.l.mints.featured_mint_card.x_mints, {
-                                numMints: abbreviateNumber(
-                                  featuredMint.totalMints
-                                ),
+                                numMints: abbreviateNumber(featuredMint.totalMints),
                               })}
                         </Text>
                       </Inline>
                       <Inline space="6px" alignVertical="center">
-                        <Text
-                          size="11pt"
-                          align="center"
-                          weight="heavy"
-                          color={secondaryTextColor}
-                        >
+                        <Text size="11pt" align="center" weight="heavy" color={secondaryTextColor}>
                           􀐫
                         </Text>
                         <Text size="13pt" weight="heavy" color="label">
                           {i18n.t(i18n.l.mints.featured_mint_card.x_past_hour, {
-                            numMints: abbreviateNumber(
-                              featuredMint.mintsLastHour
-                            ),
+                            numMints: abbreviateNumber(featuredMint.mintsLastHour),
                           })}
                         </Text>
                       </Inline>
@@ -264,20 +212,12 @@ export function FeaturedMintCard() {
                       justifyContent="center"
                       alignItems="center"
                     >
-                      <Text
-                        size="20pt"
-                        weight="semibold"
-                        color="labelQuaternary"
-                        align="center"
-                      >
+                      <Text size="20pt" weight="semibold" color="labelQuaternary" align="center">
                         􀣵
                       </Text>
                     </Box>
                   ) : (
-                    <Box
-                      width={{ custom: IMAGE_SIZE }}
-                      height={{ custom: IMAGE_SIZE }}
-                    />
+                    <Box width={{ custom: IMAGE_SIZE }} height={{ custom: IMAGE_SIZE }} />
                   )}
                   <Cover>
                     {!!imageUrl && (
@@ -297,19 +237,13 @@ export function FeaturedMintCard() {
                           style={
                             IS_IOS
                               ? {
-                                  shadowColor:
-                                    isDarkMode || !accentColor
-                                      ? globalColors.grey100
-                                      : accentColor,
+                                  shadowColor: isDarkMode || !accentColor ? globalColors.grey100 : accentColor,
                                   shadowOffset: { width: 0, height: 4 },
                                   shadowOpacity: 0.16,
                                   shadowRadius: 6,
                                 }
                               : {
-                                  shadowColor:
-                                    isDarkMode || !accentColor
-                                      ? globalColors.grey100
-                                      : accentColor,
+                                  shadowColor: isDarkMode || !accentColor ? globalColors.grey100 : accentColor,
                                   elevation: 8,
                                   opacity: 1,
                                 }

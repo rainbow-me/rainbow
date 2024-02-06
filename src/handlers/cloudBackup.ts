@@ -37,9 +37,7 @@ export type GoogleDriveUserData = {
   avatarUrl?: string;
 };
 
-export async function getGoogleAccountUserData(): Promise<
-  GoogleDriveUserData | undefined
-> {
+export async function getGoogleAccountUserData(): Promise<GoogleDriveUserData | undefined> {
   if (!IS_ANDROID) {
     return;
   }
@@ -72,26 +70,17 @@ export async function fetchAllBackups() {
   });
 }
 
-export async function encryptAndSaveDataToCloud(
-  data: any,
-  password: any,
-  filename: any
-) {
+export async function encryptAndSaveDataToCloud(data: any, password: any, filename: any) {
   // Encrypt the data
   try {
-    const encryptedData = await encryptor.encrypt(
-      password,
-      JSON.stringify(data)
-    );
+    const encryptedData = await encryptor.encrypt(password, JSON.stringify(data));
 
     /**
      * We need to normalize the filename on Android, because sometimes
      * the filename is returned with the path used for Google Drive storage.
      * That is with REMOTE_BACKUP_WALLET_DIR included.
      */
-    const backupFilename = IS_ANDROID
-      ? normalizeAndroidBackupFilename(filename)
-      : filename;
+    const backupFilename = IS_ANDROID ? normalizeAndroidBackupFilename(filename) : filename;
 
     // Store it on the FS first
     const path = `${RNFS.DocumentDirectoryPath}/${backupFilename}`;
@@ -175,16 +164,10 @@ export async function getDataFromCloud(backupPassword: any, filename = null) {
   if (filename) {
     if (IS_IOS) {
       // .icloud are files that were not yet synced
-      document = backups.files.find(
-        (file: any) =>
-          file.name === filename || file.name === `.${filename}.icloud`
-      );
+      document = backups.files.find((file: any) => file.name === filename || file.name === `.${filename}.icloud`);
     } else {
       document = backups.files.find((file: any) => {
-        return (
-          file.name === `${REMOTE_BACKUP_WALLET_DIR}/${filename}` ||
-          file.name === filename
-        );
+        return file.name === `${REMOTE_BACKUP_WALLET_DIR}/${filename}` || file.name === filename;
       });
     }
 
@@ -199,16 +182,11 @@ export async function getDataFromCloud(backupPassword: any, filename = null) {
     const sortedBackups = sortBy(backups.files, 'lastModified').reverse();
     document = sortedBackups[0];
   }
-  const encryptedData = ios
-    ? await getICloudDocument(filename)
-    : await getGoogleDriveDocument(document.id);
+  const encryptedData = ios ? await getICloudDocument(filename) : await getGoogleDriveDocument(document.id);
 
   if (encryptedData) {
     logger.info('Got cloud document ', { filename });
-    const backedUpDataStringified = await encryptor.decrypt(
-      backupPassword,
-      encryptedData
-    );
+    const backedUpDataStringified = await encryptor.decrypt(backupPassword, encryptedData);
     if (backedUpDataStringified) {
       const backedUpData = JSON.parse(backedUpDataStringified);
       return backedUpData;
@@ -240,11 +218,7 @@ export async function fetchUserDataFromCloud() {
 export const cloudBackupPasswordMinLength = 8;
 
 export function isCloudBackupPasswordValid(password: any) {
-  return !!(
-    password &&
-    password !== '' &&
-    password.length >= cloudBackupPasswordMinLength
-  );
+  return !!(password && password !== '' && password.length >= cloudBackupPasswordMinLength);
 }
 
 export function isCloudBackupAvailable() {

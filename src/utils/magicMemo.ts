@@ -1,9 +1,5 @@
 import { pick } from 'lodash';
-import React, {
-  ComponentProps,
-  ComponentType,
-  MemoExoticComponent,
-} from 'react';
+import React, { ComponentProps, ComponentType, MemoExoticComponent } from 'react';
 import isEqual from 'react-fast-compare';
 
 type DeepPartial<T> = {
@@ -21,9 +17,7 @@ export default function magicMemo<C extends ComponentType<any>>(
     const magicNext = pick(next, magicDeps) as DeepPartial<ComponentProps<C>>;
 
     if (customComparisonFunc) {
-      return (
-        customComparisonFunc(magicPrev) === customComparisonFunc(magicNext)
-      );
+      return customComparisonFunc(magicPrev) === customComparisonFunc(magicNext);
     }
 
     return isEqual(magicPrev, magicNext);

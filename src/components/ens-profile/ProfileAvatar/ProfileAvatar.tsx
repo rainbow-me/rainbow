@@ -37,9 +37,7 @@ export default function ProfileAvatar({
     <Box height={{ custom: size }} width={{ custom: size }}>
       <Cover alignHorizontal="center">
         <BackgroundProvider color="body (Deprecated)">
-          {({ backgroundColor }) => (
-            <AvatarCoverPhotoMaskSvg backgroundColor={backgroundColor as any} />
-          )}
+          {({ backgroundColor }) => <AvatarCoverPhotoMaskSvg backgroundColor={backgroundColor as any} />}
         </BackgroundProvider>
       </Cover>
       <Box
@@ -68,12 +66,7 @@ export default function ProfileAvatar({
               <Cover alignHorizontal="center">
                 <Box height={{ custom: size }} width="full">
                   <Skeleton animated>
-                    <Box
-                      background="body (Deprecated)"
-                      borderRadius={size / 2}
-                      height={{ custom: size }}
-                      width={{ custom: size }}
-                    />
+                    <Box background="body (Deprecated)" borderRadius={size / 2} height={{ custom: size }} width={{ custom: size }} />
                   </Skeleton>
                 </Box>
               </Cover>
@@ -89,17 +82,10 @@ export default function ProfileAvatar({
                   size={100}
                 />
               ) : (
-                <Box
-                  background="accent"
-                  borderRadius={size / 2}
-                  height={{ custom: size }}
-                  width={{ custom: size }}
-                >
+                <Box background="accent" borderRadius={size / 2} height={{ custom: size }} width={{ custom: size }}>
                   <Cover alignHorizontal="center" alignVertical="center">
                     <Box>
-                      <NativeText style={{ fontSize: 38 }}>
-                        {accountSymbol || ''}
-                      </NativeText>
+                      <NativeText style={{ fontSize: 38 }}>{accountSymbol || ''}</NativeText>
                     </Box>
                   </Cover>
                 </Box>

@@ -12,10 +12,7 @@ const styles = StyleSheet.create({
 });
 
 const AnimatedPagerItem = ({ children, translateX, ...props }) => (
-  <Animated.View
-    {...props}
-    style={[styles.item, { transform: [{ translateX }] }]}
-  >
+  <Animated.View {...props} style={[styles.item, { transform: [{ translateX }] }]}>
     <FlexItem style={position.sizeAsObject('100%')}>{children}</FlexItem>
   </Animated.View>
 );

@@ -14,30 +14,22 @@ type ScrollToTopProviderProps = {
   children: React.ReactNode;
 };
 
-const RecyclerListViewScrollToTopProvider: React.FC<ScrollToTopProviderProps> = ({
-  children,
-}) => {
+const RecyclerListViewScrollToTopProvider: React.FC<ScrollToTopProviderProps> = ({ children }) => {
   const insets = useSafeAreaInsets();
 
-  const [
-    scrollToTopRef,
-    setScrollToTopRef,
-  ] = useState<RecyclerListViewRef | null>(null);
+  const [scrollToTopRef, setScrollToTopRef] = useState<RecyclerListViewRef | null>(null);
 
   const scrollToTop = () => {
     scrollToTopRef?.scrollToOffset(0, -insets.top, true);
   };
 
   return (
-    <RecyclerListViewScrollToTopContext.Provider
-      value={{ scrollToTop, setScrollToTopRef }}
-    >
+    <RecyclerListViewScrollToTopContext.Provider value={{ scrollToTop, setScrollToTopRef }}>
       {children}
     </RecyclerListViewScrollToTopContext.Provider>
   );
 };
 
-export const useRecyclerListViewScrollToTopContext = () =>
-  React.useContext(RecyclerListViewScrollToTopContext);
+export const useRecyclerListViewScrollToTopContext = () => React.useContext(RecyclerListViewScrollToTopContext);
 
 export default RecyclerListViewScrollToTopProvider;

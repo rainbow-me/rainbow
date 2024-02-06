@@ -40,54 +40,33 @@ const ButtonContent = styled(RowWithMargins).attrs({
   marginRight: ({ type }) => (type === 'addCash' ? 9 : 0),
 });
 
-const ButtonLabel = styled(Text).attrs(
-  ({ disabled, type, theme: { colors, isDarkMode } }) => ({
-    align: type === RainbowButtonTypes.addCash ? 'left' : 'center',
-    color: isDarkMode && disabled ? colors.white : colors.whiteLabel,
-    letterSpacing:
-      type === RainbowButtonTypes.addCash ? 'roundedTight' : 'rounded',
-    size: type === RainbowButtonTypes.small ? 'large' : 'larger',
-    weight: type === RainbowButtonTypes.small ? 'bold' : 'heavy',
-    numberOfLines: 1,
-  })
-)({});
+const ButtonLabel = styled(Text).attrs(({ disabled, type, theme: { colors, isDarkMode } }) => ({
+  align: type === RainbowButtonTypes.addCash ? 'left' : 'center',
+  color: isDarkMode && disabled ? colors.white : colors.whiteLabel,
+  letterSpacing: type === RainbowButtonTypes.addCash ? 'roundedTight' : 'rounded',
+  size: type === RainbowButtonTypes.small ? 'large' : 'larger',
+  weight: type === RainbowButtonTypes.small ? 'bold' : 'heavy',
+  numberOfLines: 1,
+}))({});
 
-const OuterButton = styled.View(
-  ({
-    height,
-    width,
-    isDarkMode,
-    disabled,
-    strokeWidth,
-    theme: { colors },
-  }) => ({
-    ...shadow.buildAsObject(0, 5, 15, colors.shadow),
-    backgroundColor: colors.dark,
-    borderRadius: height / 2 + strokeWidth,
-    height,
-    shadowOpacity: isDarkMode && disabled ? 0 : isDarkMode ? 0.1 : 0.4,
-    width,
-  })
-);
+const OuterButton = styled.View(({ height, width, isDarkMode, disabled, strokeWidth, theme: { colors } }) => ({
+  ...shadow.buildAsObject(0, 5, 15, colors.shadow),
+  backgroundColor: colors.dark,
+  borderRadius: height / 2 + strokeWidth,
+  height,
+  shadowOpacity: isDarkMode && disabled ? 0 : isDarkMode ? 0.1 : 0.4,
+  width,
+}));
 
-const Shadow = styled(ShadowView)(
-  ({
-    height,
-    strokeWidth,
-    isDarkMode,
-    disabled,
-    width,
-    theme: { colors },
-  }) => ({
-    ...shadow.buildAsObject(0, 10, 30, colors.shadow, 1),
-    backgroundColor: colors.white,
-    borderRadius: height / 2 + strokeWidth,
-    height,
-    opacity: isDarkMode && disabled ? 0 : android ? 1 : 0.2,
-    position: 'absolute',
-    width,
-  })
-);
+const Shadow = styled(ShadowView)(({ height, strokeWidth, isDarkMode, disabled, width, theme: { colors } }) => ({
+  ...shadow.buildAsObject(0, 10, 30, colors.shadow, 1),
+  backgroundColor: colors.white,
+  borderRadius: height / 2 + strokeWidth,
+  height,
+  opacity: isDarkMode && disabled ? 0 : android ? 1 : 0.2,
+  position: 'absolute',
+  width,
+}));
 
 const RainbowButton = ({
   disabled,
@@ -111,13 +90,7 @@ const RainbowButton = ({
   width = type === RainbowButtonTypes.addCash ? 155 : width || maxButtonWidth;
 
   const outerButtonMask = (
-    <OuterButton
-      disabled={disabled}
-      height={height}
-      isDarkMode={isDarkMode}
-      strokeWidth={strokeWidth}
-      width={width}
-    />
+    <OuterButton disabled={disabled} height={height} isDarkMode={isDarkMode} strokeWidth={strokeWidth} width={width} />
   );
 
   return (
@@ -129,32 +102,13 @@ const RainbowButton = ({
       scaleTo={0.9}
       skipTopMargin={skipTopMargin}
     >
-      <Shadow
-        disabled={disabled}
-        height={height}
-        isDarkMode={isDarkMode}
-        strokeWidth={strokeWidth}
-        width={width}
-      />
-      <ButtonContainer
-        elevation={5}
-        height={height}
-        maskElement={outerButtonMask}
-        width={width}
-      >
-        <RainbowButtonBackground
-          disabled={disabled}
-          height={height}
-          strokeWidth={strokeWidth}
-          type={type}
-          width={width}
-        />
+      <Shadow disabled={disabled} height={height} isDarkMode={isDarkMode} strokeWidth={strokeWidth} width={width} />
+      <ButtonContainer elevation={5} height={height} maskElement={outerButtonMask} width={width}>
+        <RainbowButtonBackground disabled={disabled} height={height} strokeWidth={strokeWidth} type={type} width={width} />
         <ButtonContent type={type}>
           {type === RainbowButtonTypes.addCash && <AddCashIcon />}
           <ButtonLabel disabled={disabled} isDarkMode={isDarkMode} type={type}>
-            {type === RainbowButtonTypes.addCash
-              ? lang.t('button.add_cash')
-              : label}
+            {type === RainbowButtonTypes.addCash ? lang.t('button.add_cash') : label}
           </ButtonLabel>
         </ButtonContent>
       </ButtonContainer>

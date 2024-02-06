@@ -19,13 +19,11 @@ const AssetRowShadow = colors => [
   [0, 5, 15, colors.shadow, 0.06],
 ];
 
-const AssetRowGradient = styled(LinearGradient).attrs(
-  ({ theme: { colors } }) => ({
-    colors: colors.gradients.offWhite,
-    end: { x: 0.5, y: 1 },
-    start: { x: 0.5, y: 0 },
-  })
-)(position.coverAsObject);
+const AssetRowGradient = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
+  colors: colors.gradients.offWhite,
+  end: { x: 0.5, y: 1 },
+  start: { x: 0.5, y: 0 },
+}))(position.coverAsObject);
 
 const Container = styled(Column)({
   ...position.sizeAsObject('100%'),
@@ -87,11 +85,7 @@ export default function SendAssetForm({
 
   return (
     <Container>
-      <ButtonPressAnimation
-        onPress={onResetAssetSelection}
-        overflowMargin={30}
-        scaleTo={0.925}
-      >
+      <ButtonPressAnimation onPress={onResetAssetSelection} overflowMargin={30} scaleTo={0.925}>
         <ShadowStack
           alignSelf="center"
           backgroundColor={colors.white}
@@ -110,12 +104,7 @@ export default function SendAssetForm({
             showNativeValue={showNativeValue}
             testID="send-asset-form"
           >
-            <Text
-              align="center"
-              color={colorForAsset || colors.dark}
-              size="large"
-              weight="heavy"
-            >
+            <Text align="center" color={colorForAsset || colors.dark} size="large" weight="heavy">
               􀁴
             </Text>
           </AssetRowElement>
@@ -123,11 +112,7 @@ export default function SendAssetForm({
       </ButtonPressAnimation>
       <FormContainer isNft={isNft}>
         {isNft ? (
-          <SendAssetFormCollectible
-            asset={selected}
-            buttonRenderer={buttonRenderer}
-            txSpeedRenderer={txSpeedRenderer}
-          />
+          <SendAssetFormCollectible asset={selected} buttonRenderer={buttonRenderer} txSpeedRenderer={txSpeedRenderer} />
         ) : (
           <Fragment>
             <SendAssetFormToken

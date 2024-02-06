@@ -1,21 +1,10 @@
 import React, { useCallback, useState } from 'react';
 import { haptics } from '@/utils';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import {
-  AccentColorProvider,
-  Box,
-  ColorModeProvider,
-  Text,
-  globalColors,
-  useColorMode,
-  useForegroundColor,
-} from '@/design-system';
+import { AccentColorProvider, Box, ColorModeProvider, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { GlobalNotificationTopic } from '@/notifications/settings/constants';
 import { useNetInfo } from '@react-native-community/netinfo';
-import {
-  showNotificationSubscriptionErrorAlert,
-  showOfflineAlert,
-} from '@/screens/SettingsSheet/components/notificationAlerts';
+import { showNotificationSubscriptionErrorAlert, showOfflineAlert } from '@/screens/SettingsSheet/components/notificationAlerts';
 import { useAllNotificationSettingsFromStorage } from '@/notifications/settings';
 import { toggleGlobalNotificationTopic } from '@/notifications/settings/settings';
 import { setAllGlobalNotificationSettingsToStorage } from '@/notifications/settings/storage';
@@ -30,14 +19,9 @@ export const NotificationToggleContextMenu = () => {
   const separatorTertiary = useForegroundColor('separatorTertiary');
   const { colorMode } = useColorMode();
   const { isConnected } = useNetInfo();
-  const {
-    globalNotificationSettings,
-  } = useAllNotificationSettingsFromStorage();
+  const { globalNotificationSettings } = useAllNotificationSettingsFromStorage();
 
-  const [
-    topicSubscriptionInProgress,
-    setTopicSubscriptionInProgress,
-  ] = useState<boolean>(false);
+  const [topicSubscriptionInProgress, setTopicSubscriptionInProgress] = useState<boolean>(false);
 
   const toggleNotifications = useCallback(() => {
     if (!isConnected) {
@@ -45,16 +29,11 @@ export const NotificationToggleContextMenu = () => {
       return;
     }
     setTopicSubscriptionInProgress(true);
-    toggleGlobalNotificationTopic(
-      GlobalNotificationTopic.POINTS,
-      !globalNotificationSettings[GlobalNotificationTopic.POINTS]
-    )
+    toggleGlobalNotificationTopic(GlobalNotificationTopic.POINTS, !globalNotificationSettings[GlobalNotificationTopic.POINTS])
       .then(() => {
         setAllGlobalNotificationSettingsToStorage({
           ...globalNotificationSettings,
-          [GlobalNotificationTopic.POINTS]: !globalNotificationSettings[
-            GlobalNotificationTopic.POINTS
-          ],
+          [GlobalNotificationTopic.POINTS]: !globalNotificationSettings[GlobalNotificationTopic.POINTS],
         });
       })
       .catch(() => {
@@ -84,10 +63,7 @@ export const NotificationToggleContextMenu = () => {
 
   return (
     <AccentColorProvider color={separatorTertiary}>
-      <ContextMenuButton
-        menuConfig={menuConfig}
-        onPressMenuItem={onPressMenuItem}
-      >
+      <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={onPressMenuItem}>
         <Box
           background="accent"
           style={{
@@ -103,19 +79,10 @@ export const NotificationToggleContextMenu = () => {
           <ColorModeProvider value={colorMode}>
             {!topicSubscriptionInProgress ? (
               <Text size="17pt" weight="heavy" color="label" align="center">
-                {globalNotificationSettings[GlobalNotificationTopic.POINTS]
-                  ? '􀋚'
-                  : '􀋞'}
+                {globalNotificationSettings[GlobalNotificationTopic.POINTS] ? '􀋚' : '􀋞'}
               </Text>
             ) : (
-              <LoadingSpinner
-                color={
-                  colorMode === 'dark'
-                    ? globalColors.white100
-                    : globalColors.grey100
-                }
-                size={20}
-              />
+              <LoadingSpinner color={colorMode === 'dark' ? globalColors.white100 : globalColors.grey100} size={20} />
             )}
           </ColorModeProvider>
         </Box>

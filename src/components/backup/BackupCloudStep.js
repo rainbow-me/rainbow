@@ -13,48 +13,31 @@ import { Centered, ColumnWithMargins } from '../layout';
 import { GradientText, Text } from '../text';
 import BackupSheetKeyboardLayout from './BackupSheetKeyboardLayout';
 import { analytics } from '@/analytics';
-import {
-  cloudBackupPasswordMinLength,
-  isCloudBackupPasswordValid,
-} from '@/handlers/cloudBackup';
+import { cloudBackupPasswordMinLength, isCloudBackupPasswordValid } from '@/handlers/cloudBackup';
 import showWalletErrorAlert from '@/helpers/support';
-import {
-  useDimensions,
-  useMagicAutofocus,
-  useRouteExistsInNavigationState,
-  useWalletCloudBackup,
-  useWallets,
-} from '@/hooks';
+import { useDimensions, useMagicAutofocus, useRouteExistsInNavigationState, useWalletCloudBackup, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import logger from '@/utils/logger';
 
-const DescriptionText = styled(Text).attrs(
-  ({ isTinyPhone, theme: { colors } }) => ({
-    align: 'center',
-    color: colors.alpha(colors.blueGreyDark, 0.5),
-    lineHeight: 'looser',
-    size: isTinyPhone ? 'lmedium' : 'large',
-  })
-)({});
+const DescriptionText = styled(Text).attrs(({ isTinyPhone, theme: { colors } }) => ({
+  align: 'center',
+  color: colors.alpha(colors.blueGreyDark, 0.5),
+  lineHeight: 'looser',
+  size: isTinyPhone ? 'lmedium' : 'large',
+}))({});
 
-const ImportantText = styled(DescriptionText).attrs(
-  ({ theme: { colors } }) => ({
-    color: colors.alpha(colors.blueGreyDark, 0.6),
-    weight: 'medium',
-  })
-)({});
+const ImportantText = styled(DescriptionText).attrs(({ theme: { colors } }) => ({
+  color: colors.alpha(colors.blueGreyDark, 0.6),
+  weight: 'medium',
+}))({});
 
 const Masthead = styled(Centered).attrs({
   direction: 'column',
 })(({ isTallPhone, isTinyPhone }) => ({
-  ...padding.object(
-    isTinyPhone ? 0 : 9,
-    isTinyPhone ? 10 : 50,
-    isTallPhone ? 39 : 19
-  ),
+  ...padding.object(isTinyPhone ? 0 : 9, isTinyPhone ? 10 : 50, isTallPhone ? 39 : 19),
   flexShrink: 0,
 }));
 
@@ -102,14 +85,8 @@ export default function BackupCloudStep() {
     const keyboardDidHide = () => {
       setIsKeyboardOpen(false);
     };
-    keyboardShowListener.current = Keyboard.addListener(
-      'keyboardDidShow',
-      keyboardDidShow
-    );
-    keyboardHideListener.current = Keyboard.addListener(
-      'keyboardDidHide',
-      keyboardDidHide
-    );
+    keyboardShowListener.current = Keyboard.addListener('keyboardDidShow', keyboardDidShow);
+    keyboardHideListener.current = Keyboard.addListener('keyboardDidHide', keyboardDidHide);
     if (isDamaged) {
       showWalletErrorAlert();
       captureMessage('Damaged wallet preventing cloud backup');
@@ -121,9 +98,7 @@ export default function BackupCloudStep() {
     };
   }, [goBack, isDamaged]);
 
-  const isSettingsRoute = useRouteExistsInNavigationState(
-    Routes.SETTINGS_SHEET
-  );
+  const isSettingsRoute = useRouteExistsInNavigationState(Routes.SETTINGS_SHEET);
 
   const walletId = params?.walletId || selectedWallet.id;
 
@@ -202,37 +177,23 @@ export default function BackupCloudStep() {
       password !== confirmPassword
     ) {
       newLabel = lang.t(lang.l.back_up.cloud.password.passwords_dont_match);
-    } else if (
-      password.length >= cloudBackupPasswordMinLength &&
-      !passwordFocused
-    ) {
+    } else if (password.length >= cloudBackupPasswordMinLength && !passwordFocused) {
       newLabel = lang.t(lang.l.back_up.cloud.password.confirm_password);
-    } else if (
-      password.length >= cloudBackupPasswordMinLength &&
-      passwordFocused
-    ) {
+    } else if (password.length >= cloudBackupPasswordMinLength && passwordFocused) {
       const passInfo = passwordStrength(password);
       switch (passInfo.id) {
         case 0:
         case 1:
-          newLabel = `💩 ${lang.t(
-            lang.l.back_up.cloud.password.strength.level1
-          )}`;
+          newLabel = `💩 ${lang.t(lang.l.back_up.cloud.password.strength.level1)}`;
           break;
         case 2:
-          newLabel = `👌 ${lang.t(
-            lang.l.back_up.cloud.password.strength.level2
-          )}`;
+          newLabel = `👌 ${lang.t(lang.l.back_up.cloud.password.strength.level2)}`;
           break;
         case 3:
-          newLabel = `💪 ${lang.t(
-            lang.l.back_up.cloud.password.strength.level3
-          )}`;
+          newLabel = `💪 ${lang.t(lang.l.back_up.cloud.password.strength.level3)}`;
           break;
         case 4:
-          newLabel = `🏰️ ${lang.t(
-            lang.l.back_up.cloud.password.strength.level4
-          )}`;
+          newLabel = `🏰️ ${lang.t(lang.l.back_up.cloud.password.strength.level4)}`;
           break;
         default:
       }
@@ -242,19 +203,13 @@ export default function BackupCloudStep() {
     setLabel(newLabel);
   }, [confirmPassword, password, passwordFocused]);
 
-  const onPasswordChange = useCallback(
-    ({ nativeEvent: { text: inputText } }) => {
-      setPassword(inputText);
-    },
-    []
-  );
+  const onPasswordChange = useCallback(({ nativeEvent: { text: inputText } }) => {
+    setPassword(inputText);
+  }, []);
 
-  const onConfirmPasswordChange = useCallback(
-    ({ nativeEvent: { text: inputText } }) => {
-      setConfirmPassword(inputText);
-    },
-    []
-  );
+  const onConfirmPasswordChange = useCallback(({ nativeEvent: { text: inputText } }) => {
+    setConfirmPassword(inputText);
+  }, []);
 
   const onError = useCallback(
     msg => {
@@ -309,33 +264,19 @@ export default function BackupCloudStep() {
   }, [showExplainerConfirmation, validPassword]);
 
   return (
-    <BackupSheetKeyboardLayout
-      footerButtonDisabled={!validPassword}
-      footerButtonLabel={label}
-      onSubmit={showExplainerConfirmation}
-    >
+    <BackupSheetKeyboardLayout footerButtonDisabled={!validPassword} footerButtonLabel={label} onSubmit={showExplainerConfirmation}>
       <Masthead isTallPhone={isTallPhone} isTinyPhone={isTinyPhone}>
-        {(isTinyPhone || samsungGalaxy) && isKeyboardOpen ? null : (
-          <MastheadIcon>􀌍</MastheadIcon>
-        )}
-        <Title isTinyPhone={isTinyPhone}>
-          {lang.t(lang.l.back_up.cloud.password.choose_a_password)}
-        </Title>
+        {(isTinyPhone || samsungGalaxy) && isKeyboardOpen ? null : <MastheadIcon>􀌍</MastheadIcon>}
+        <Title isTinyPhone={isTinyPhone}>{lang.t(lang.l.back_up.cloud.password.choose_a_password)}</Title>
         <DescriptionText isTinyPhone={isTinyPhone}>
           {lang.t(lang.l.back_up.cloud.password.a_password_youll_remember)}
           &nbsp;
-          <ImportantText isTinyPhone={isTinyPhone}>
-            {lang.t(lang.l.back_up.cloud.password.it_cant_be_recovered)}
-          </ImportantText>
+          <ImportantText isTinyPhone={isTinyPhone}>{lang.t(lang.l.back_up.cloud.password.it_cant_be_recovered)}</ImportantText>
         </DescriptionText>
       </Masthead>
       <ColumnWithMargins align="center" flex={1} margin={android ? 0 : 19}>
         <PasswordField
-          isInvalid={
-            password !== '' &&
-            password.length < cloudBackupPasswordMinLength &&
-            !passwordRef.current.isFocused()
-          }
+          isInvalid={password !== '' && password.length < cloudBackupPasswordMinLength && !passwordRef.current.isFocused()}
           isValid={isCloudBackupPasswordValid(password)}
           onBlur={onPasswordBlur}
           onChange={onPasswordChange}
@@ -350,18 +291,14 @@ export default function BackupCloudStep() {
         <PasswordField
           editable={isCloudBackupPasswordValid(password)}
           isInvalid={
-            isCloudBackupPasswordValid(confirmPassword) &&
-            confirmPassword.length >= password.length &&
-            confirmPassword !== password
+            isCloudBackupPasswordValid(confirmPassword) && confirmPassword.length >= password.length && confirmPassword !== password
           }
           isValid={validPassword}
           onChange={onConfirmPasswordChange}
           onFocus={onConfirmPasswordFocus}
           onSubmitEditing={onConfirmPasswordSubmit}
           password={confirmPassword}
-          placeholder={lang.t(
-            lang.l.back_up.cloud.password.confirm_placeholder
-          )}
+          placeholder={lang.t(lang.l.back_up.cloud.password.confirm_placeholder)}
           ref={confirmPasswordRef}
         />
       </ColumnWithMargins>

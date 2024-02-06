@@ -27,9 +27,7 @@ export function fixHiddenUSDC(): Migration {
         const list = Object.keys(JSON.parse(hiddenTokensEntry));
 
         // filter out USDC tokens
-        const newHiddenCoins = [
-          ...list.filter((i: string) => !keysToRemove.includes(i)),
-        ].reduce((acc, curr) => {
+        const newHiddenCoins = [...list.filter((i: string) => !keysToRemove.includes(i))].reduce((acc, curr) => {
           acc[curr] = true;
           return acc;
         }, {} as BooleanMap);

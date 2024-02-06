@@ -16,11 +16,7 @@ const ChartLabelFactory = (fieldName: 'originalX' | 'originalY') => {
 
     // we need to recreate defaultValue on data change
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    const defaultValue = useMemo(() => format?.(val.value) ?? val.value, [
-      format,
-      val,
-      data,
-    ]);
+    const defaultValue = useMemo(() => format?.(val.value) ?? val.value, [format, val, data]);
 
     const textProps = useAnimatedProps(
       () => ({
@@ -30,14 +26,7 @@ const ChartLabelFactory = (fieldName: 'originalX' | 'originalY') => {
       [data, defaultValue, isActive]
     );
 
-    return (
-      <AnimatedTextInput
-        {...props}
-        animatedProps={textProps}
-        defaultValue={defaultValue}
-        editable={false}
-      />
-    );
+    return <AnimatedTextInput {...props} animatedProps={textProps} defaultValue={defaultValue} editable={false} />;
   });
 
   ChartLabel.displayName = 'ChartLabel';

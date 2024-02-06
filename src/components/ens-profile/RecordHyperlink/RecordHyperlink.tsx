@@ -24,11 +24,7 @@ export default function RecordHyperlink({ value }: { value: string }) {
 
   return (
     <ButtonPressAnimation onPress={navigateToProfile}>
-      <Text
-        color="action (Deprecated)"
-        size="16px / 22px (Deprecated)"
-        weight="regular"
-      >
+      <Text color="action (Deprecated)" size="16px / 22px (Deprecated)" weight="regular">
         {value}
       </Text>
     </ButtonPressAnimation>

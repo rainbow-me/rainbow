@@ -23,11 +23,7 @@ export const DiscoverMoreButton = () => {
 
   return (
     <AccentColorProvider color={accentColor}>
-      <TintButton
-        height={DISCOVER_MORE_BUTTON_HEIGHT}
-        onPress={handlePressDiscover}
-        width={163}
-      >
+      <TintButton height={DISCOVER_MORE_BUTTON_HEIGHT} onPress={handlePressDiscover} width={163}>
         {`􀎬 ${lang.t('homepage.discover_web3')}`}
       </TintButton>
     </AccentColorProvider>

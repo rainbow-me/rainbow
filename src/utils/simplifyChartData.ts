@@ -1,9 +1,6 @@
 import { maxBy, minBy } from 'lodash';
 
-export default function simplifyChartData(
-  data: any,
-  destinatedNumberOfPoints: number
-) {
+export default function simplifyChartData(data: any, destinatedNumberOfPoints: number) {
   if (!data) return null;
 
   let allSegmentDividers: any = [];
@@ -32,9 +29,7 @@ export default function simplifyChartData(
     const maxValue = maxBy(allSegmentsPoints, 'y');
     const minValue = minBy(allSegmentsPoints, 'y');
 
-    const dataDiff =
-      allSegmentsPoints[allSegmentsPoints.length - 1].x -
-      allSegmentsPoints[0].x;
+    const dataDiff = allSegmentsPoints[allSegmentsPoints.length - 1].x - allSegmentsPoints[0].x;
     const xMul = Math.floor(dataDiff / allSegmentsPoints.length);
     let newData = [];
     newData.push({
@@ -64,10 +59,7 @@ export default function simplifyChartData(
         createdLastPoints.push(newData.length);
       }
       newData.push({
-        isImportant:
-          (allSegmentsPoints[f].isImportant ||
-            allSegmentsPoints[f + 1].isImportant) &&
-          !newData[newData.length - 1].isImportant,
+        isImportant: (allSegmentsPoints[f].isImportant || allSegmentsPoints[f + 1].isImportant) && !newData[newData.length - 1].isImportant,
         x: allSegmentsPoints[0].x + i * xMul,
         y: finalValue,
       });

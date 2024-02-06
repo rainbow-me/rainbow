@@ -3,11 +3,7 @@ import { image as cloudinaryImage } from 'cloudinary/lib/cloudinary';
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'clou... Remove this comment to see the full error message
 import cloudinaryConfig from 'cloudinary/lib/config';
 import { PixelRatio } from 'react-native';
-import {
-  CLOUDINARY_API_KEY as apiKey,
-  CLOUDINARY_API_SECRET as apiSecret,
-  CLOUDINARY_CLOUD_NAME as cloudName,
-} from 'react-native-dotenv';
+import { CLOUDINARY_API_KEY as apiKey, CLOUDINARY_API_SECRET as apiSecret, CLOUDINARY_CLOUD_NAME as cloudName } from 'react-native-dotenv';
 import { deviceUtils } from '@/utils';
 import isSVGImage from '@/utils/isSVG';
 
@@ -28,23 +24,14 @@ function svgToPng(url: string, big = false) {
     transformation: [{ fetch_format: 'png' }],
     type: 'fetch',
     width:
-      Math.round(
-        Math.min(
-          2000,
-          big
-            ? deviceUtils.dimensions.width * pixelRatio
-            : (deviceUtils.dimensions.width / 2) * pixelRatio
-        ) / 50
-      ) * 50,
+      Math.round(Math.min(2000, big ? deviceUtils.dimensions.width * pixelRatio : (deviceUtils.dimensions.width / 2) * pixelRatio) / 50) *
+      50,
   });
   const cloudinaryUrl = cloudinaryImg.split("'")[1];
   return cloudinaryUrl;
 }
 
-export default function svgToPngIfNeeded(
-  url: string | null | undefined,
-  big?: boolean
-) {
+export default function svgToPngIfNeeded(url: string | null | undefined, big?: boolean) {
   if (!url) return undefined;
   const isSVG = isSVGImage(url);
   return isSVG ? svgToPng(url, big) : url;

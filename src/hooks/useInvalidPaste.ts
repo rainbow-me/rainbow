@@ -21,9 +21,7 @@ export default function useInvalidPaste() {
   }, [isInvalidPaste, setGlobalState, startTimeout, stopTimeout]);
 
   // 🚪️ Reset isInvalidPaste when we leave the screen
-  useEffect(() => () => setGlobalState({ isInvalidPaste: false }), [
-    setGlobalState,
-  ]);
+  useEffect(() => () => setGlobalState({ isInvalidPaste: false }), [setGlobalState]);
 
   return {
     isInvalidPaste,

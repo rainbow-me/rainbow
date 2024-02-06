@@ -1,11 +1,6 @@
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  EmitterSubscription,
-  InteractionManager,
-  Keyboard,
-  StyleSheet,
-} from 'react-native';
+import { EmitterSubscription, InteractionManager, Keyboard, StyleSheet } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { isSamsungGalaxy } from '@/helpers/samsung';
 import {
@@ -21,26 +16,12 @@ import { Centered, Column } from '../layout';
 import { GradientText, Text } from '../text';
 import BackupSheetKeyboardLayout from './BackupSheetKeyboardLayout';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import {
-  cloudBackupPasswordMinLength,
-  isCloudBackupPasswordValid,
-  normalizeAndroidBackupFilename,
-} from '@/handlers/cloudBackup';
+import { cloudBackupPasswordMinLength, isCloudBackupPasswordValid, normalizeAndroidBackupFilename } from '@/handlers/cloudBackup';
 import { removeWalletData } from '@/handlers/localstorage/removeWallet';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
-import {
-  useDimensions,
-  useInitializeWallet,
-  useKeyboardHeight,
-  useUserAccounts,
-} from '@/hooks';
+import { useDimensions, useInitializeWallet, useKeyboardHeight, useUserAccounts } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import {
-  addressSetSelected,
-  setAllWalletsWithIdsAsBackedUp,
-  walletsLoadState,
-  walletsSetSelected,
-} from '@/redux/wallets';
+import { addressSetSelected, setAllWalletsWithIdsAsBackedUp, walletsLoadState, walletsSetSelected } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { margin, padding } from '@/styles';
@@ -71,11 +52,7 @@ type Props = {
   fromSettings: boolean;
 };
 
-export default function RestoreCloudStep({
-  userData,
-  backupSelected,
-  fromSettings,
-}: Props) {
+export default function RestoreCloudStep({ userData, backupSelected, fromSettings }: Props) {
   const dispatch = useDispatch();
   const { colors } = useTheme();
   const { isTinyPhone, scale } = useDimensions();
@@ -85,9 +62,7 @@ export default function RestoreCloudStep({
   const [incorrectPassword, setIncorrectPassword] = useState(false);
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const [password, setPassword] = useState('');
-  const [label, setLabel] = useState(
-    `􀎽 ${lang.t('back_up.restore_cloud.confirm_backup')}`
-  );
+  const [label, setLabel] = useState(`􀎽 ${lang.t('back_up.restore_cloud.confirm_backup')}`);
   const passwordRef = useRef();
   const { userAccounts } = useUserAccounts();
   const initializeWallet = useInitializeWallet();
@@ -104,14 +79,8 @@ export default function RestoreCloudStep({
     const keyboardDidHide = () => {
       setIsKeyboardOpen(false);
     };
-    keyboardShowListener.current = Keyboard.addListener(
-      'keyboardDidShow',
-      keyboardDidShow
-    );
-    keyboardHideListener.current = Keyboard.addListener(
-      'keyboardDidHide',
-      keyboardDidHide
-    );
+    keyboardShowListener.current = Keyboard.addListener('keyboardDidShow', keyboardDidShow);
+    keyboardHideListener.current = Keyboard.addListener('keyboardDidHide', keyboardDidHide);
     return () => {
       keyboardShowListener.current?.remove();
       keyboardHideListener.current?.remove();
@@ -139,29 +108,19 @@ export default function RestoreCloudStep({
         passwordIsValid = true;
       }
 
-      newLabel = `􀑙 ${lang.t(
-        'back_up.restore_cloud.restore_from_cloud_platform',
-        {
-          cloudPlatformName: cloudPlatform,
-        }
-      )}`;
+      newLabel = `􀑙 ${lang.t('back_up.restore_cloud.restore_from_cloud_platform', {
+        cloudPlatformName: cloudPlatform,
+      })}`;
     }
 
     setValidPassword(passwordIsValid);
     setLabel(newLabel);
   }, [incorrectPassword, password]);
 
-  const onPasswordChange = useCallback(
-    ({
-      nativeEvent: { text: inputText },
-    }: {
-      nativeEvent: { text: string };
-    }) => {
-      setPassword(inputText);
-      setIncorrectPassword(false);
-    },
-    []
-  );
+  const onPasswordChange = useCallback(({ nativeEvent: { text: inputText } }: { nativeEvent: { text: string } }) => {
+    setPassword(inputText);
+    setIncorrectPassword(false);
+  }, []);
 
   const onSubmit = useCallback(async () => {
     try {
@@ -203,36 +162,18 @@ export default function RestoreCloudStep({
             logger.log('backupSelected?.name', {
               fileName: backupSelected?.name,
             });
-            await dispatch(
-              setAllWalletsWithIdsAsBackedUp(
-                walletIdsToUpdate,
-                walletBackupTypes.cloud,
-                filename,
-                false
-              )
-            );
+            await dispatch(setAllWalletsWithIdsAsBackedUp(walletIdsToUpdate, walletBackupTypes.cloud, filename, false));
             logger.info('Done updating backup state');
           }
           const walletKeys = Object.keys(wallets || {});
           const firstWallet =
             // @ts-expect-error TypeScript doesn't play nicely with Redux types here
             walletKeys.length > 0 ? (wallets || {})[walletKeys[0]] : undefined;
-          const firstAddress = firstWallet
-            ? firstWallet.addresses[0].address
-            : undefined;
+          const firstAddress = firstWallet ? firstWallet.addresses[0].address : undefined;
           const p1 = dispatch(walletsSetSelected(firstWallet));
           const p2 = dispatch(addressSetSelected(firstAddress));
           await Promise.all([p1, p2]);
-          await initializeWallet(
-            null,
-            null,
-            null,
-            false,
-            false,
-            null,
-            true,
-            null
-          );
+          await initializeWallet(null, null, null, false, false, null, true, null);
           if (fromSettings) {
             logger.info('Navigating to wallet');
             navigate(Routes.WALLET_SCREEN);
@@ -257,18 +198,7 @@ export default function RestoreCloudStep({
     } catch (e) {
       Alert.alert(lang.t('back_up.restore_cloud.error_while_restoring'));
     }
-  }, [
-    backupSelected?.name,
-    dispatch,
-    fromSettings,
-    goBack,
-    initializeWallet,
-    navigate,
-    password,
-    replace,
-    userAccounts,
-    userData,
-  ]);
+  }, [backupSelected?.name, dispatch, fromSettings, goBack, initializeWallet, navigate, password, replace, userAccounts, userData]);
 
   const onPasswordSubmit = useCallback(() => {
     validPassword && onSubmit();
@@ -286,19 +216,12 @@ export default function RestoreCloudStep({
   return (
     <Box
       height={{
-        custom:
-          deviceUtils.dimensions.height - (IS_ANDROID ? keyboardHeight : 0),
+        custom: deviceUtils.dimensions.height - (IS_ANDROID ? keyboardHeight : 0),
       }}
     >
-      <BackupSheetKeyboardLayout
-        footerButtonDisabled={!validPassword}
-        footerButtonLabel={label}
-        onSubmit={onSubmit}
-        type="restore"
-      >
+      <BackupSheetKeyboardLayout footerButtonDisabled={!validPassword} footerButtonLabel={label} onSubmit={onSubmit} type="restore">
         <Centered direction="column" style={styles.masthead}>
-          {(isTinyPhone || samsungGalaxy || isScaleMoreThanDefault) &&
-          isKeyboardOpen ? null : (
+          {(isTinyPhone || samsungGalaxy || isScaleMoreThanDefault) && isKeyboardOpen ? null : (
             // @ts-expect-error JS component
             <GradientText
               align="center"
@@ -314,12 +237,7 @@ export default function RestoreCloudStep({
             </GradientText>
           )}
           <Title>{lang.t('back_up.restore_cloud.enter_backup_password')}</Title>
-          <Text
-            align="center"
-            color={colors.blueGreyDark50}
-            lineHeight="looser"
-            size="large"
-          >
+          <Text align="center" color={colors.blueGreyDark50} lineHeight="looser" size="large">
             {lang.t('back_up.restore_cloud.enter_backup_password_description')}
           </Text>
         </Centered>
@@ -330,9 +248,7 @@ export default function RestoreCloudStep({
             onChange={onPasswordChange}
             onSubmitEditing={onPasswordSubmit}
             password={password}
-            placeholder={lang.t(
-              'back_up.restore_cloud.backup_password_placeholder'
-            )}
+            placeholder={lang.t('back_up.restore_cloud.backup_password_placeholder')}
             ref={passwordRef}
             returnKeyType="next"
           />

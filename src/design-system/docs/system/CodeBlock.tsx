@@ -20,10 +20,7 @@ export const CodeBlock = ({ code }: { code: string }) => {
     <div className={colorMode === 'light' ? dark : ''}>
       <div
         className={sprinkles({
-          backgroundColor:
-            colorMode === 'light'
-              ? 'body (Deprecated)'
-              : 'bodyTint (Deprecated)',
+          backgroundColor: colorMode === 'light' ? 'body (Deprecated)' : 'bodyTint (Deprecated)',
           borderRadius: '16px',
           padding: '24px',
           position: 'relative',
@@ -42,11 +39,7 @@ export const CodeBlock = ({ code }: { code: string }) => {
               : {}),
           })}
         >
-          <Button
-            iconBefore={isCopied ? <CheckIcon /> : <CopyIcon />}
-            onClick={setCopied}
-            size="small"
-          >
+          <Button iconBefore={isCopied ? <CheckIcon /> : <CopyIcon />} onClick={setCopied} size="small">
             {isCopied ? 'Copied!' : 'Copy'}
           </Button>
         </div>

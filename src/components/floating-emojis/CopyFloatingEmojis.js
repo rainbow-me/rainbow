@@ -4,25 +4,11 @@ import FloatingEmojis from './FloatingEmojis';
 import { useClipboard } from '@/hooks';
 import { magicMemo } from '@/utils';
 
-const CopyFloatingEmojis = ({
-  children,
-  disabled,
-  onPress,
-  textToCopy,
-  ...props
-}) => {
+const CopyFloatingEmojis = ({ children, disabled, onPress, textToCopy, ...props }) => {
   const { setClipboard } = useClipboard();
 
   return (
-    <FloatingEmojis
-      distance={250}
-      duration={500}
-      fadeOut={false}
-      scaleTo={0}
-      size={50}
-      wiggleFactor={0}
-      {...props}
-    >
+    <FloatingEmojis distance={250} duration={500} fadeOut={false} scaleTo={0} size={50} wiggleFactor={0} {...props}>
       {({ onNewEmoji }) => (
         <ButtonPressAnimation
           hapticType="impactLight"
@@ -49,8 +35,4 @@ const CopyFloatingEmojis = ({
   );
 };
 
-export default magicMemo(CopyFloatingEmojis, [
-  'disabled',
-  'onPress',
-  'textToCopy',
-]);
+export default magicMemo(CopyFloatingEmojis, ['disabled', 'onPress', 'textToCopy']);

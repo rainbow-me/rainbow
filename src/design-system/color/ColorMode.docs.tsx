@@ -16,13 +16,12 @@ const docs: DocsType = {
   description: (
     <>
       <Docs.Text>
-        If you&apos;re rendering a custom background color, you can take control
-        of the color mode by manually rendering a ColorModeProvider.
+        If you&apos;re rendering a custom background color, you can take control of the color mode by manually rendering a
+        ColorModeProvider.
       </Docs.Text>
       <Docs.Text>
-        Beyond the usual light and dark modes, there are also lightTinted and
-        darkTinted modes which are designed for non-neutral background colors
-        where foreground colors should be desaturated.
+        Beyond the usual light and dark modes, there are also lightTinted and darkTinted modes which are designed for non-neutral background
+        colors where foreground colors should be desaturated.
       </Docs.Text>
       <Docs.CodePreview
         Example={() =>

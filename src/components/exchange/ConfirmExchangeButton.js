@@ -7,12 +7,7 @@ import { darkModeThemeColors } from '../../styles/colors';
 import { HoldToAuthorizeButton } from '../buttons';
 import { Box, Row, Rows } from '@/design-system';
 import { ExchangeModalTypes } from '@/helpers';
-import {
-  useColorForAsset,
-  useGas,
-  useSwapCurrencies,
-  useWallets,
-} from '@/hooks';
+import { useColorForAsset, useGas, useSwapCurrencies, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
@@ -56,13 +51,7 @@ export default function ConfirmExchangeButton({
       default: [[0, 10, 30, darkModeThemeColors.shadow, 0.4]],
       disabled: [
         [0, 10, 30, colors.shadow, isDarkMode ? 0 : 0.2],
-        [
-          0,
-          5,
-          15,
-          isDarkMode ? colors.shadow : lightModeThemeColors.blueGreyDark50,
-          0.4,
-        ],
+        [0, 5, 15, isDarkMode ? colors.shadow : lightModeThemeColors.blueGreyDark50, 0.4],
       ],
     }),
     [colors, isDarkMode]
@@ -80,13 +69,10 @@ export default function ConfirmExchangeButton({
     const color = quoteError
       ? disabledButtonColor
       : asset.address === ETH_ADDRESS
-      ? colors.appleBlue
-      : isSwapDetailsRoute
-      ? colorForAsset
-      : makeColorMoreChill(
-          colorForAsset,
-          (isSwapDetailsRoute ? colors : darkModeThemeColors).light
-        );
+        ? colors.appleBlue
+        : isSwapDetailsRoute
+          ? colorForAsset
+          : makeColorMoreChill(colorForAsset, (isSwapDetailsRoute ? colors : darkModeThemeColors).light);
 
     return {
       buttonColor: color,
@@ -95,15 +81,7 @@ export default function ConfirmExchangeButton({
         [0, 5, 15, isDarkMode ? colors.trueBlack : color, 0.4],
       ],
     };
-  }, [
-    asset.address,
-    colorForAsset,
-    colors,
-    disabledButtonColor,
-    quoteError,
-    isDarkMode,
-    isSwapDetailsRoute,
-  ]);
+  }, [asset.address, colorForAsset, colors, disabledButtonColor, quoteError, isDarkMode, isSwapDetailsRoute]);
 
   let label = '';
   let explainerType = null;
@@ -127,9 +105,7 @@ export default function ConfirmExchangeButton({
     } else if (isBridgeSwap) {
       label = `${lang.t('button.confirm_exchange.bridge')}`;
     } else {
-      label = isHighPriceImpact
-        ? lang.t('button.confirm_exchange.swap_anyway')
-        : `${lang.t('button.confirm_exchange.swap')}`;
+      label = isHighPriceImpact ? lang.t('button.confirm_exchange.swap_anyway') : `${lang.t('button.confirm_exchange.swap')}`;
     }
   } else if (disabled) {
     label = lang.t('button.confirm_exchange.enter_amount');
@@ -150,12 +126,7 @@ export default function ConfirmExchangeButton({
     });
   }, [explainerType, inputCurrency, navigate, outputCurrency]);
 
-  const isDisabled =
-    disabled ||
-    !isSufficientBalance ||
-    !isSufficientGas ||
-    !isValidGas ||
-    !isSufficientGas;
+  const isDisabled = disabled || !isSufficientBalance || !isSufficientGas || !isValidGas || !isSufficientGas;
 
   const onSwap = useCallback(async () => {
     setIsSwapSubmitting(true);
@@ -169,42 +140,19 @@ export default function ConfirmExchangeButton({
         <Row height="content">
           <HoldToAuthorizeButton
             backgroundColor={buttonColor}
-            disableLongPress={
-              (shouldOpenSwapDetails && !quoteError) ||
-              loading ||
-              isSwapSubmitting
-            }
+            disableLongPress={(shouldOpenSwapDetails && !quoteError) || loading || isSwapSubmitting}
             disableShimmerAnimation={quoteError}
             disabled={isDisabled && !quoteError}
-            disabledBackgroundColor={
-              isSwapSubmitting ? buttonColor : disabledButtonColor
-            }
+            disabledBackgroundColor={isSwapSubmitting ? buttonColor : disabledButtonColor}
             hideInnerBorder
             isAuthorizing={isSwapSubmitting}
             label={label}
             loading={loading || isSwapSubmitting}
-            ignoreHardwareWallet={
-              loading ||
-              isSwapSubmitting ||
-              shouldOpenSwapDetails ||
-              !!explainerType
-            }
+            ignoreHardwareWallet={loading || isSwapSubmitting || shouldOpenSwapDetails || !!explainerType}
             onLongPress={
-              loading || isSwapSubmitting
-                ? NOOP
-                : explainerType
-                ? handleExplainer
-                : shouldOpenSwapDetails
-                ? onPressViewDetails
-                : onSwap
+              loading || isSwapSubmitting ? NOOP : explainerType ? handleExplainer : shouldOpenSwapDetails ? onPressViewDetails : onSwap
             }
-            shadows={
-              isSwapDetailsRoute
-                ? isDisabled || quoteError
-                  ? shadows.disabled
-                  : shadowsForAsset
-                : shadows.default
-            }
+            shadows={isSwapDetailsRoute ? (isDisabled || quoteError ? shadows.disabled : shadowsForAsset) : shadows.default}
             showBiometryIcon={isSwapDetailsRoute && !isSwapSubmitting}
             testID={testID}
             {...props}

@@ -8,22 +8,15 @@ import { Network } from '@/networks/types';
 import { useColorForAsset } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
-import {
-  ethereumUtils,
-  isETH,
-  magicMemo,
-  CoinIcon as ReactCoinIcon,
-} from '@/utils';
+import { ethereumUtils, isETH, magicMemo, CoinIcon as ReactCoinIcon } from '@/utils';
 import { ChainBadgeType } from '@/components/coin-icon/ChainBadgeSizeConfigs';
 
 export const CoinIconSize = 40;
 
-const ContractInteractionIcon = styled(ImgixImage)(
-  ({ size }: { size: number }) => ({
-    height: size,
-    width: size,
-  })
-);
+const ContractInteractionIcon = styled(ImgixImage)(({ size }: { size: number }) => ({
+  height: size,
+  width: size,
+}));
 
 const StyledCoinIcon = styled(ReactCoinIcon)({
   opacity: ({ isHidden }: { isHidden?: boolean }) => (isHidden ? 0.4 : 1),
@@ -61,9 +54,7 @@ const CoinIcon: React.FC<Props> = ({
   });
   const { colors, isDarkMode } = useTheme();
   const forceFallback = !isETH(mainnet_address || address);
-  const isNotContractInteraction = useMemo(() => symbol !== 'contract', [
-    symbol,
-  ]);
+  const isNotContractInteraction = useMemo(() => symbol !== 'contract', [symbol]);
 
   const theme = useTheme();
 
@@ -78,9 +69,7 @@ const CoinIcon: React.FC<Props> = ({
           forceFallback={true}
           // force update on change symbol due to ImageCache strategy
           key={symbol}
-          shadowColor={
-            forcedShadowColor || (isDarkMode ? colors.shadow : color)
-          }
+          shadowColor={forcedShadowColor || (isDarkMode ? colors.shadow : color)}
           size={size}
           symbol={symbol}
           network={mainnet_address ? Network.mainnet : network}
@@ -89,24 +78,9 @@ const CoinIcon: React.FC<Props> = ({
       ) : (
         <ContractInteractionIcon size={size} source={ContractInteraction} />
       )}
-      {!ignoreBadge && (
-        <ChainBadge
-          network={network}
-          badgeXPosition={badgeXPosition}
-          badgeYPosition={badgeYPosition}
-          size={badgeSize}
-        />
-      )}
+      {!ignoreBadge && <ChainBadge network={network} badgeXPosition={badgeXPosition} badgeYPosition={badgeYPosition} size={badgeSize} />}
     </View>
   );
 };
 
-export default magicMemo(CoinIcon, [
-  'address',
-  'isHidden',
-  'isPinned',
-  'size',
-  'network',
-  'symbol',
-  'shadowColor',
-]);
+export default magicMemo(CoinIcon, ['address', 'isHidden', 'isPinned', 'size', 'network', 'symbol', 'shadowColor']);

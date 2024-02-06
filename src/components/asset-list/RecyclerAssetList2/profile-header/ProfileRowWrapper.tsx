@@ -4,11 +4,7 @@ import { ProfileStickyHeaderHeight } from './ProfileStickyHeader';
 
 export function ProfileRowWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <Box
-      alignItems="center"
-      width="full"
-      marginTop={{ custom: -ProfileStickyHeaderHeight }}
-    >
+    <Box alignItems="center" width="full" marginTop={{ custom: -ProfileStickyHeaderHeight }}>
       {children}
     </Box>
   );

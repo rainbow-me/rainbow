@@ -1,31 +1,16 @@
-import {
-  Box,
-  Inline,
-  Stack,
-  Text,
-  AccentColorProvider,
-  Bleed,
-} from '@/design-system';
+import { Box, Inline, Stack, Text, AccentColorProvider, Bleed } from '@/design-system';
 import { useTheme } from '@/theme';
 import React, { useCallback, useEffect, useState } from 'react';
 import { GenericCard } from './GenericCard';
 import { ButtonPressAnimation } from '../animations';
-import {
-  useAccountSettings,
-  useChartThrottledPoints,
-  useColorForAsset,
-  useWallets,
-} from '@/hooks';
+import { useAccountSettings, useChartThrottledPoints, useColorForAsset, useWallets } from '@/hooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { deviceUtils } from '@/utils';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { analyticsV2 } from '@/analytics';
 import { ETH_ADDRESS } from '@/references';
-import {
-  ChartPath,
-  ChartPathProvider,
-} from '@/react-native-animated-charts/src';
+import { ChartPath, ChartPathProvider } from '@/react-native-animated-charts/src';
 import { CoinIcon } from '../coin-icon';
 import Labels from '../value-chart/ExtremeLabels';
 import showWalletErrorAlert from '@/helpers/support';
@@ -122,9 +107,7 @@ export const EthCard = () => {
   if (ethAsset?.native?.change[0] === '-') {
     isNegativePriceChange = true;
   }
-  const priceChangeDisplay = isNegativePriceChange
-    ? ethAsset?.native?.change.substring(1)
-    : ethAsset?.native?.change;
+  const priceChangeDisplay = isNegativePriceChange ? ethAsset?.native?.change.substring(1) : ethAsset?.native?.change;
 
   const priceChangeColor = isNegativePriceChange ? colors.red : colors.green;
 
@@ -173,17 +156,8 @@ export const EthCard = () => {
                   </>
                 ) : (
                   <>
-                    <CoinIcon
-                      address={ETH_ADDRESS}
-                      size={20}
-                      symbol={ethAsset.symbol}
-                      network={Network.mainnet}
-                    />
-                    <Text
-                      size="17pt"
-                      color={{ custom: colorForAsset }}
-                      weight="heavy"
-                    >
+                    <CoinIcon address={ETH_ADDRESS} size={20} symbol={ethAsset.symbol} network={Network.mainnet} />
+                    <Text size="17pt" color={{ custom: colorForAsset }} weight="heavy">
                       {ethAsset?.name}
                     </Text>
                   </>
@@ -198,26 +172,14 @@ export const EthCard = () => {
               ) : (
                 <Inline alignVertical="bottom">
                   <Inline alignVertical="center">
-                    <Text
-                      size="13pt"
-                      color={{ custom: priceChangeColor }}
-                      weight="heavy"
-                    >
+                    <Text size="13pt" color={{ custom: priceChangeColor }} weight="heavy">
                       {isNegativePriceChange ? '􀄩' : '􀄨'}
                     </Text>
-                    <Text
-                      size="17pt"
-                      color={{ custom: priceChangeColor }}
-                      weight="bold"
-                    >
+                    <Text size="17pt" color={{ custom: priceChangeColor }} weight="bold">
                       {`${priceChangeDisplay} `}
                     </Text>
                   </Inline>
-                  <Text
-                    size="13pt"
-                    color={{ custom: priceChangeColor }}
-                    weight="bold"
-                  >
+                  <Text size="13pt" color={{ custom: priceChangeColor }} weight="bold">
                     {i18n.t(i18n.l.cards.eth.today)}
                   </Text>
                 </Inline>
@@ -238,12 +200,7 @@ export const EthCard = () => {
         </Stack>
         <Box height={{ custom: CHART_HEIGHT }} width={{ custom: CHART_WIDTH }}>
           {!loadedChart ? (
-            <Box
-              height="full"
-              width="full"
-              alignItems="center"
-              justifyContent="center"
-            >
+            <Box height="full" width="full" alignItems="center" justifyContent="center">
               {noChartData ? (
                 <Text color="label" size="20pt" weight="semibold">
                   {!loadedPrice ? 'No Price Data' : 'No Chart Data'}
@@ -253,11 +210,7 @@ export const EthCard = () => {
               )}
             </Box>
           ) : (
-            <ChartPathProvider
-              data={throttledData}
-              width={CHART_WIDTH}
-              height={CHART_HEIGHT}
-            >
+            <ChartPathProvider data={throttledData} width={CHART_WIDTH} height={CHART_HEIGHT}>
               <ChartPath
                 fill="none"
                 gestureEnabled={false}
@@ -290,26 +243,10 @@ export const EthCard = () => {
             </Skeleton>
           </Box>
         ) : addCashEnabled ? (
-          <ButtonPressAnimation
-            onPress={handlePressBuy}
-            testID="buy-eth-button"
-            scaleTo={0.92}
-          >
+          <ButtonPressAnimation onPress={handlePressBuy} testID="buy-eth-button" scaleTo={0.92}>
             <AccentColorProvider color={colors.alpha(colorForAsset, 0.1)}>
-              <Box
-                width="full"
-                height={{ custom: 36 }}
-                borderRadius={99}
-                alignItems="center"
-                justifyContent="center"
-                background="accent"
-              >
-                <Text
-                  color={{ custom: colorForAsset }}
-                  containsEmoji
-                  size="15pt"
-                  weight="bold"
-                >
+              <Box width="full" height={{ custom: 36 }} borderRadius={99} alignItems="center" justifyContent="center" background="accent">
+                <Text color={{ custom: colorForAsset }} containsEmoji size="15pt" weight="bold">
                   {`􀍯 ${i18n.t(i18n.l.button.buy_eth)}`}
                 </Text>
               </Box>

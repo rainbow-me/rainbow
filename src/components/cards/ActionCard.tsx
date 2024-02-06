@@ -13,20 +13,10 @@ interface ActionCardProps {
   title: string;
 }
 
-export const ActionCard = ({
-  colorway,
-  sfSymbolIcon,
-  onPress,
-  title,
-}: ActionCardProps) => {
+export const ActionCard = ({ colorway, sfSymbolIcon, onPress, title }: ActionCardProps) => {
   const { isDarkMode } = useTheme();
   const cardColorways = getCardColorways(isDarkMode);
-  const {
-    gradient,
-    shadowColor,
-    orbColorDark,
-    primaryTextColor,
-  } = cardColorways[colorway];
+  const { gradient, shadowColor, orbColorDark, primaryTextColor } = cardColorways[colorway];
 
   return (
     <GenericCard
@@ -40,11 +30,7 @@ export const ActionCard = ({
       color={shadowColor}
     >
       <Box height="full" justifyContent="space-between" alignItems="flex-start">
-        <IconOrb
-          color={orbColorDark}
-          icon={sfSymbolIcon}
-          shadowColor="accent"
-        />
+        <IconOrb color={orbColorDark} icon={sfSymbolIcon} shadowColor="accent" />
         <Stack space="10px">
           <Text color={{ custom: primaryTextColor }} size="20pt" weight="heavy">
             {title}

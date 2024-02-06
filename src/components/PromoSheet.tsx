@@ -1,27 +1,11 @@
 import React, { useCallback, useEffect, useReducer } from 'react';
-import {
-  ImageSourcePropType,
-  Dimensions,
-  StatusBar,
-  ImageBackground,
-} from 'react-native';
+import { ImageSourcePropType, Dimensions, StatusBar, ImageBackground } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { SheetActionButton, SheetHandle, SlackSheet } from '@/components/sheet';
 import { CampaignKey } from '@/components/remote-promo-sheet/localCampaignChecks';
 import { analyticsV2 } from '@/analytics';
-import {
-  AccentColorProvider,
-  Box,
-  Inset,
-  Row,
-  Rows,
-  Stack,
-  Text,
-  Bleed,
-  Column,
-  Columns,
-} from '@/design-system';
+import { AccentColorProvider, Box, Inset, Row, Rows, Stack, Text, Bleed, Column, Columns } from '@/design-system';
 import { useDimensions } from '@/hooks';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { useTheme } from '@/theme';
@@ -101,8 +85,7 @@ export function PromoSheet({
   // We are not using `isSmallPhone` from `useDimensions` here as we
   // want to explicitly set a min height.
   const isSmallPhone = deviceHeight < MIN_HEIGHT;
-  const contentHeight =
-    deviceHeight - (!isSmallPhone ? sharedCoolModalTopOffset : 0);
+  const contentHeight = deviceHeight - (!isSmallPhone ? sharedCoolModalTopOffset : 0);
 
   return (
     // @ts-ignore
@@ -116,21 +99,14 @@ export function PromoSheet({
     >
       <StatusBar barStyle="light-content" />
       <AccentColorProvider color={backgroundColor}>
-        <Box
-          background="accent"
-          style={{ height: contentHeight }}
-          testID={campaignKey}
-        >
+        <Box background="accent" style={{ height: contentHeight }} testID={campaignKey}>
           {/* @ts-ignore */}
           <Box as={ImageBackground} height="full" source={backgroundImage}>
             <Rows>
               <Row>
                 <Stack space={{ custom: isSmallPhone ? 46 : 54 }}>
                   <Box>
-                    <Box
-                      height={{ custom: isSmallPhone ? 195 : 265 }}
-                      width="full"
-                    >
+                    <Box height={{ custom: isSmallPhone ? 195 : 265 }} width="full">
                       {/* @ts-ignore */}
                       <Box
                         as={ImageBackground}
@@ -142,11 +118,7 @@ export function PromoSheet({
                         width="full"
                       >
                         {/* @ts-ignore */}
-                        <SheetHandle
-                          alignSelf="center"
-                          color={sheetHandleColor}
-                          style={{ marginTop: isSmallPhone ? 75 : 5 }}
-                        />
+                        <SheetHandle alignSelf="center" color={sheetHandleColor} style={{ marginTop: isSmallPhone ? 75 : 5 }} />
                       </Box>
                     </Box>
                     <Stack alignHorizontal="center" space={{ custom: 13 }}>
@@ -165,15 +137,8 @@ export function PromoSheet({
                           <Column width="content">
                             <MaskedView
                               maskElement={
-                                <Box
-                                  paddingTop={IS_ANDROID ? '6px' : undefined}
-                                >
-                                  <Text
-                                    align="center"
-                                    color="accent"
-                                    size="30pt"
-                                    weight="bold"
-                                  >
+                                <Box paddingTop={IS_ANDROID ? '6px' : undefined}>
+                                  <Text align="center" color="accent" size="30pt" weight="bold">
                                     {item.icon}
                                   </Text>
                                 </Box>
@@ -196,11 +161,7 @@ export function PromoSheet({
                               <Text color="label" size="17pt" weight="bold">
                                 {item.title}
                               </Text>
-                              <Text
-                                color="labelSecondary"
-                                size="15pt"
-                                weight="medium"
-                              >
+                              <Text color="labelSecondary" size="15pt" weight="medium">
                                 {item.description}
                               </Text>
                             </Stack>
@@ -212,19 +173,14 @@ export function PromoSheet({
                 </Stack>
               </Row>
               <Row height="content">
-                <Inset
-                  bottom={isSmallPhone && IS_IOS ? '24px' : '42px (Deprecated)'}
-                  horizontal="19px (Deprecated)"
-                >
+                <Inset bottom={isSmallPhone && IS_IOS ? '24px' : '42px (Deprecated)'} horizontal="19px (Deprecated)">
                   <Stack space="12px">
                     <SheetActionButton
                       color={primaryButtonProps.color || accentColor}
                       label={primaryButtonProps.label}
                       lightShadows
                       onPress={primaryButtonOnPress}
-                      textColor={
-                        primaryButtonProps.textColor || backgroundColor
-                      }
+                      textColor={primaryButtonProps.textColor || backgroundColor}
                       textSize="large"
                       weight="heavy"
                     />

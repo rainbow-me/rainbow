@@ -1,9 +1,6 @@
 import React from 'react';
 import { Text } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  SharedValue,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 import { avatarBuilderStyles } from './avatarBuilderStyles';
 import { useTheme } from '@/theme';
 import { magicMemo } from '@/utils';
@@ -14,11 +11,7 @@ interface Props {
   nextCategoryOffset: SharedValue<number>;
 }
 
-const EmojisListHeader = ({
-  title,
-  showSectionTitles,
-  nextCategoryOffset,
-}: Props) => {
+const EmojisListHeader = ({ title, showSectionTitles, nextCategoryOffset }: Props) => {
   const { colors } = useTheme();
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -27,13 +20,7 @@ const EmojisListHeader = ({
 
   if (showSectionTitles) {
     return (
-      <Animated.View
-        style={[
-          avatarBuilderStyles.sectionHeaderWrap,
-          { backgroundColor: colors.white },
-          animatedStyle,
-        ]}
-      >
+      <Animated.View style={[avatarBuilderStyles.sectionHeaderWrap, { backgroundColor: colors.white }, animatedStyle]}>
         <Text
           style={[
             // @ts-expect-error Font weight type (string) is too broad to be used in styles when using TypeScript. Type Script complains that it should be a union of ... "900" | "800" ...
@@ -49,8 +36,4 @@ const EmojisListHeader = ({
   return null;
 };
 
-export default magicMemo(EmojisListHeader, [
-  'title',
-  'showSectionTitles',
-  'nextCategoryOffset',
-]);
+export default magicMemo(EmojisListHeader, ['title', 'showSectionTitles', 'nextCategoryOffset']);

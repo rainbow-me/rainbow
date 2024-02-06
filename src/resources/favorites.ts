@@ -2,22 +2,12 @@ import { EthereumAddress, RainbowToken } from '@/entities';
 import { getUniswapV2Tokens } from '@/handlers/dispersion';
 import { Network } from '@/networks/types';
 import { createQueryKey, queryClient } from '@/react-query';
-import {
-  DAI_ADDRESS,
-  ETH_ADDRESS,
-  SOCKS_ADDRESS,
-  WBTC_ADDRESS,
-  WETH_ADDRESS,
-} from '@/references';
+import { DAI_ADDRESS, ETH_ADDRESS, SOCKS_ADDRESS, WBTC_ADDRESS, WETH_ADDRESS } from '@/references';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { useQuery } from '@tanstack/react-query';
 import { without } from 'lodash';
 
-export const favoritesQueryKey = createQueryKey(
-  'favorites',
-  {},
-  { persisterVersion: 1 }
-);
+export const favoritesQueryKey = createQueryKey('favorites', {}, { persisterVersion: 1 });
 
 const DEFAULT: Record<EthereumAddress, RainbowToken> = {
   [DAI_ADDRESS]: {
@@ -109,9 +99,7 @@ async function fetchMetadata(addresses: string[]) {
  * Refreshes the metadata associated with all favorites.
  */
 export async function refreshFavorites() {
-  const favorites = Object.keys(
-    queryClient.getQueryData(favoritesQueryKey) ?? DEFAULT
-  );
+  const favorites = Object.keys(queryClient.getQueryData(favoritesQueryKey) ?? DEFAULT);
   const updatedMetadata = await fetchMetadata(favorites);
   return updatedMetadata;
 }
@@ -120,9 +108,7 @@ export async function refreshFavorites() {
  * Toggles the favorited status of the given `address`.
  */
 export async function toggleFavorite(address: string) {
-  const favorites = Object.keys(
-    queryClient.getQueryData(favoritesQueryKey) ?? []
-  );
+  const favorites = Object.keys(queryClient.getQueryData(favoritesQueryKey) ?? []);
   const lowercasedAddress = address.toLowerCase();
   let updatedFavorites;
   if (favorites.includes(lowercasedAddress)) {
@@ -143,14 +129,10 @@ export function useFavorites(): {
   favorites: string[];
   favoritesMetadata: Record<EthereumAddress, RainbowToken>;
 } {
-  const query = useQuery<Record<EthereumAddress, RainbowToken>>(
-    favoritesQueryKey,
-    refreshFavorites,
-    {
-      staleTime: Infinity,
-      cacheTime: Infinity,
-    }
-  );
+  const query = useQuery<Record<EthereumAddress, RainbowToken>>(favoritesQueryKey, refreshFavorites, {
+    staleTime: Infinity,
+    cacheTime: Infinity,
+  });
 
   const favoritesMetadata = query.data ?? {};
   const favorites = Object.keys(favoritesMetadata);

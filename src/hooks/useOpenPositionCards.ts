@@ -4,14 +4,9 @@ import useAccountSettings from './useAccountSettings';
 
 export default function useOpenPositionCards() {
   const { accountAddress } = useAccountSettings();
-  const [isPositionCardsOpen, setIsPositionCardsOpen] = useMMKVBoolean(
-    'positions-open-' + accountAddress
-  );
+  const [isPositionCardsOpen, setIsPositionCardsOpen] = useMMKVBoolean('positions-open-' + accountAddress);
 
-  const toggleOpenPositionCards = useCallback(
-    () => setIsPositionCardsOpen(prev => !prev),
-    [setIsPositionCardsOpen]
-  );
+  const toggleOpenPositionCards = useCallback(() => setIsPositionCardsOpen(prev => !prev), [setIsPositionCardsOpen]);
 
   return {
     isPositionCardsOpen,

@@ -7,26 +7,16 @@ import { useExpandedStateNavigation, useSwapCurrencyHandlers } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@/utils';
 
-function SwapActionButton({
-  asset,
-  color: givenColor,
-  inputType,
-  label,
-  fromDiscover,
-  weight = 'heavy',
-  ...props
-}) {
+function SwapActionButton({ asset, color: givenColor, inputType, label, fromDiscover, weight = 'heavy', ...props }) {
   const { colors } = useTheme();
   const color = givenColor || colors.swapPurple;
 
-  const { updateInputCurrency, updateOutputCurrency } = useSwapCurrencyHandlers(
-    {
-      defaultInputAsset: inputType === AssetInputTypes.in ? asset : null,
-      defaultOutputAsset: inputType === AssetInputTypes.out ? asset : null,
-      shouldUpdate: true,
-      type: ExchangeModalTypes.swap,
-    }
-  );
+  const { updateInputCurrency, updateOutputCurrency } = useSwapCurrencyHandlers({
+    defaultInputAsset: inputType === AssetInputTypes.in ? asset : null,
+    defaultOutputAsset: inputType === AssetInputTypes.out ? asset : null,
+    shouldUpdate: true,
+    type: ExchangeModalTypes.swap,
+  });
 
   const navigate = useExpandedStateNavigation(inputType, fromDiscover, asset);
   const goToSwap = useCallback(() => {
