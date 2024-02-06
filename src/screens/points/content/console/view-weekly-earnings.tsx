@@ -21,6 +21,7 @@ import { abbreviateNumber } from '@/helpers/utilities';
 
 export const ViewWeeklyEarnings = () => {
   const [showCloseButton, setShowCloseButton] = useState(false);
+  const [isCalculationComplete, setIsCalculationComplete] = useState(false);
 
   const { goBack } = useNavigation();
   const { accountENS, accountAddress } = useAccountProfile();
@@ -72,21 +73,26 @@ export const ViewWeeklyEarnings = () => {
 
   return (
     <Box height="full" justifyContent="space-between">
-      <Stack separator={<LineBreak lines={2} />}>
+      <Stack separator={<LineBreak lines={3} />}>
         <Paragraph>
           <Line>
             <AnimatedText
               delayStart={500}
               color={textColors.gray}
               textContent={`${i18n.t(i18n.l.points.console.account)}:`}
+              weight="normal"
             />
             <AnimatedText
+              enableHapticTyping
+              delayStart={300}
               color={textColors.account}
               textContent={accountName}
             />
           </Line>
           <AnimatedText
             color={textColors.gray}
+            delayStart={500}
+            weight="normal"
             textContent={`> ${i18n.t(
               i18n.l.points.console.view_weekly_earnings_week_of,
               {
@@ -98,15 +104,19 @@ export const ViewWeeklyEarnings = () => {
           <Line gap={0}>
             <AnimatedText
               color={textColors.gray}
-              delayStart={1000}
+              delayStart={500}
+              weight="normal"
               textContent={`> ${i18n.t(
                 i18n.l.points.console.view_weekly_earnings_title
               )}`}
             />
             <AnimatedText
+              delayStart={500}
               color={textColors.gray}
+              repeat={!isCalculationComplete}
               textContent="..."
               typingSpeed={500}
+              weight="normal"
             />
           </Line>
         </Paragraph>
@@ -181,12 +191,11 @@ export const ViewWeeklyEarnings = () => {
               typingSpeed={100}
             />
           </Line> */}
-        </Stack>
-        <Paragraph gap={45}>
           <Line alignHorizontal="justify">
             <AnimatedText
               color={textColors.gray}
               delayStart={1000}
+              weight="normal"
               enableHapticTyping
               textContent={`${i18n.t(
                 i18n.l.points.console.view_weekly_earnings_total_earnings
@@ -197,21 +206,28 @@ export const ViewWeeklyEarnings = () => {
               delayStart={1000}
               enableHapticTyping
               textAlign="right"
+              onComplete={() => {
+                const complete = setTimeout(() => {
+                  setIsCalculationComplete(true);
+                }, 500);
+                return () => clearTimeout(complete);
+              }}
               textContent={`+ ${abbreviateNumber(
                 totalWeeklyEarnings ?? 0
-              )} Points`}
+              )} ${i18n.t(i18n.l.points.console.points)}`}
               typingSpeed={100}
             />
           </Line>
+        </Stack>
+        <Stack separator={<LineBreak lines={2} />}>
           <AnimatedText
             color={textColors.gray}
             delayStart={1000}
+            weight="normal"
             textContent={`> ${i18n.t(
               i18n.l.points.console.view_weekly_earnings_counted
             )}`}
           />
-        </Paragraph>
-        <Paragraph gap={30}>
           <Line alignHorizontal="justify">
             <AnimatedText
               color={textColors.white}
@@ -227,7 +243,7 @@ export const ViewWeeklyEarnings = () => {
               textAlign="right"
               textContent={`${(newTotalEarnings ?? 0).toLocaleString(
                 'en-US'
-              )} Points`}
+              )} ${i18n.t(i18n.l.points.console.points)}`}
               onComplete={() => {
                 const complete = setTimeout(() => {
                   setShowCloseButton(true);
@@ -237,7 +253,7 @@ export const ViewWeeklyEarnings = () => {
               typingSpeed={100}
             />
           </Line>
-        </Paragraph>
+        </Stack>
       </Stack>
       <AnimatePresence condition={showCloseButton} duration={300}>
         <Bleed horizontal={{ custom: 14 }}>

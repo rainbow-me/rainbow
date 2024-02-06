@@ -7,28 +7,26 @@ import {
   Bleed,
 } from '@/design-system';
 import { useTheme } from '@/theme';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { GenericCard } from './GenericCard';
 import { ButtonPressAnimation } from '../animations';
 import {
   useAccountSettings,
   useChartThrottledPoints,
   useColorForAsset,
-  useGenericAsset,
   useWallets,
 } from '@/hooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { deviceUtils, ethereumUtils } from '@/utils';
+import { deviceUtils } from '@/utils';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { analyticsV2 } from '@/analytics';
-import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
+import { ETH_ADDRESS } from '@/references';
 import {
   ChartPath,
   ChartPathProvider,
 } from '@/react-native-animated-charts/src';
 import { CoinIcon } from '../coin-icon';
-import { AssetType } from '@/entities';
 import Labels from '../value-chart/ExtremeLabels';
 import showWalletErrorAlert from '@/helpers/support';
 import { IS_IOS } from '@/env';
@@ -38,15 +36,31 @@ import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { useRoute } from '@react-navigation/native';
 import * as i18n from '@/languages';
 import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
+import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
+import assetTypes from '@/entities/assetTypes';
+import { Network } from '@/networks/types';
+import { getUniqueId } from '@/utils/ethereumUtils';
 
 export const ETH_CARD_HEIGHT = 284.3;
 
 export const EthCard = () => {
-  const { accountAddress, nativeCurrency } = useAccountSettings();
+  const { nativeCurrency } = useAccountSettings();
   const { colors, isDarkMode } = useTheme();
   const { navigate } = useNavigation();
   const { isDamaged } = useWallets();
-  const genericAsset = useGenericAsset(ETH_ADDRESS);
+  const { data: externalEthAsset } = useExternalToken({
+    address: ETH_ADDRESS,
+    network: Network.mainnet,
+    currency: nativeCurrency,
+  });
+
+  const ethAsset = {
+    ...externalEthAsset,
+    address: ETH_ADDRESS,
+    network: Network.mainnet,
+    uniqueId: getUniqueId(ETH_ADDRESS, Network.mainnet),
+  };
+
   const { loaded: accentColorLoaded } = useAccountAccentColor();
   const { name: routeName } = useRoute();
   const cardType = 'stretch';
@@ -69,20 +83,12 @@ export const EthCard = () => {
         routeName,
       });
     },
-    [accountAddress, isDamaged, navigate, routeName]
+    [isDamaged, navigate, routeName]
   );
-
-  const assetWithPrice = useMemo(() => {
-    return {
-      ...ethereumUtils.formatGenericAsset(genericAsset, nativeCurrency),
-      address: ETH_ADDRESS,
-      symbol: ETH_SYMBOL,
-    };
-  }, [genericAsset, nativeCurrency]);
 
   const handleAssetPress = useCallback(() => {
     navigate(Routes.EXPANDED_ASSET_SHEET, {
-      asset: assetWithPrice,
+      asset: ethAsset,
       type: 'token',
     });
     analyticsV2.track(analyticsV2.event.cardPressed, {
@@ -90,41 +96,39 @@ export const EthCard = () => {
       routeName,
       cardType,
     });
-  }, [assetWithPrice, navigate, routeName]);
+  }, [ethAsset, navigate, routeName]);
 
   let colorForAsset = useColorForAsset(
     {
-      address: assetWithPrice.address,
-      mainnet_address: assetWithPrice?.mainnet_address,
-      type: assetWithPrice?.mainnet_address
-        ? AssetType.token
-        : assetWithPrice.type,
+      address: ETH_ADDRESS,
+      mainnet_address: ETH_ADDRESS,
+      type: assetTypes.token,
     },
-    assetWithPrice?.address ? undefined : colors.appleBlue
+    colors.appleBlue
   );
 
-  if (isDarkMode && assetWithPrice?.address === ETH_ADDRESS) {
+  if (isDarkMode) {
     colorForAsset = colors.whiteLabel;
   }
 
   const { throttledData } = useChartThrottledPoints({
-    asset: assetWithPrice,
+    asset: ethAsset,
   });
 
   const CHART_WIDTH = deviceUtils.dimensions.width - 80;
   const CHART_HEIGHT = 80;
 
   let isNegativePriceChange = false;
-  if (assetWithPrice.native.change[0] === '-') {
+  if (ethAsset?.native?.change[0] === '-') {
     isNegativePriceChange = true;
   }
   const priceChangeDisplay = isNegativePriceChange
-    ? assetWithPrice.native.change.substring(1)
-    : assetWithPrice.native.change;
+    ? ethAsset?.native?.change.substring(1)
+    : ethAsset?.native?.change;
 
   const priceChangeColor = isNegativePriceChange ? colors.red : colors.green;
 
-  const loadedPrice = accentColorLoaded && assetWithPrice.native.change;
+  const loadedPrice = accentColorLoaded && ethAsset?.native?.change;
   const loadedChart = throttledData?.points.length && loadedPrice;
 
   const [noChartData, setNoChartData] = useState(false);
@@ -170,17 +174,17 @@ export const EthCard = () => {
                 ) : (
                   <>
                     <CoinIcon
-                      address={assetWithPrice.address}
+                      address={ETH_ADDRESS}
                       size={20}
-                      symbol={assetWithPrice.symbol}
-                      network={assetWithPrice.network}
+                      symbol={ethAsset.symbol}
+                      network={Network.mainnet}
                     />
                     <Text
                       size="17pt"
                       color={{ custom: colorForAsset }}
                       weight="heavy"
                     >
-                      {assetWithPrice.name}
+                      {ethAsset?.name}
                     </Text>
                   </>
                 )}
@@ -228,7 +232,7 @@ export const EthCard = () => {
             </Box>
           ) : (
             <Text size="26pt" color={{ custom: colorForAsset }} weight="heavy">
-              {assetWithPrice.native.price.display}
+              {ethAsset?.native?.price.display}
             </Text>
           )}
         </Stack>

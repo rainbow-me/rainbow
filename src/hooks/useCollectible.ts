@@ -4,7 +4,7 @@ import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountSettings } from '.';
 
 export default function useCollectible(
-  initialAsset: Partial<ParsedAddressAsset>,
+  uniqueId: string,
   externalAddress?: string
 ) {
   const { accountAddress } = useAccountSettings();
@@ -24,9 +24,7 @@ export default function useCollectible(
     [externalNFTsMap, isExternal, selfNFTsMap]
   );
 
-  const asset = initialAsset?.uniqueId
-    ? uniqueTokensMap[initialAsset.uniqueId] || initialAsset
-    : initialAsset;
+  const asset = uniqueTokensMap?.[uniqueId];
 
   return { ...asset, isExternal };
 }

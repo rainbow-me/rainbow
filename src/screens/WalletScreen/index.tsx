@@ -118,10 +118,9 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
     isLoadingUserAssets
   );
 
-  const { addressSocket, assetsSocket } = useSelector(
-    ({ explorer: { addressSocket, assetsSocket } }: AppState) => ({
+  const { addressSocket } = useSelector(
+    ({ explorer: { addressSocket } }: AppState) => ({
       addressSocket,
-      assetsSocket,
     })
   );
 
@@ -173,11 +172,11 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
   }, [portfolios, portfoliosFetched, trackPortfolios, userAccounts.length]);
 
   useEffect(() => {
-    if (walletReady && assetsSocket) {
+    if (walletReady) {
       loadAccountLateData();
       loadGlobalLateData();
     }
-  }, [assetsSocket, loadAccountLateData, loadGlobalLateData, walletReady]);
+  }, [loadAccountLateData, loadGlobalLateData, walletReady]);
 
   useEffect(() => {
     if (walletReady && profilesEnabled) {

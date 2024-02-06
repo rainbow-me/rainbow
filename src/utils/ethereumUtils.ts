@@ -69,6 +69,12 @@ import Routes from '@/navigation/routesNames';
 import { logger, RainbowError } from '@/logger';
 import { IS_IOS } from '@/env';
 import { RainbowNetworks, getNetworkObj } from '@/networks';
+import {
+  externalTokenQueryKey,
+  FormattedExternalAsset,
+  fetchExternalToken,
+  useExternalToken,
+} from '@/resources/assets/externalAssetsQuery';
 
 // TODO: https://linear.app/rainbow/issue/APP-631/remove-networks-from-assettype
 const getNetworkNativeAsset = (
@@ -85,7 +91,7 @@ export const getNativeAssetForNetwork = async (
   address: EthereumAddress
 ): Promise<ParsedAddressAsset | undefined> => {
   const networkNativeAsset = getNetworkNativeAsset(network);
-  const { accountAddress } = store.getState().settings;
+  const { accountAddress, nativeCurrency } = store.getState().settings;
   const differentWallet =
     address?.toLowerCase() !== accountAddress?.toLowerCase();
   let nativeAsset = differentWallet ? undefined : networkNativeAsset;
@@ -95,7 +101,27 @@ export const getNativeAssetForNetwork = async (
     const mainnetAddress =
       getNetworkObj(network)?.nativeCurrency?.mainnetAddress || ETH_ADDRESS;
 
-    nativeAsset = store.getState().data?.genericAssets?.[mainnetAddress];
+    const externalAsset = await queryClient.fetchQuery(
+      externalTokenQueryKey({ address, network, currency: nativeCurrency }),
+      async () =>
+        fetchExternalToken({ address, network, currency: nativeCurrency }),
+      {
+        staleTime: 60000,
+      }
+    );
+
+    if (externalAsset) {
+      // @ts-ignore
+      nativeAsset = {
+        ...externalAsset,
+        network,
+        uniqueId: getUniqueId(
+          getNetworkObj(network).nativeCurrency.address,
+          network
+        ),
+        address: getNetworkObj(network).nativeCurrency.address,
+      };
+    }
 
     const provider = await getProviderForNetwork(network);
     if (nativeAsset) {
@@ -146,11 +172,30 @@ const getUserAssetFromCache = (uniqueId: string) => {
   return cachedAddressAssets?.[uniqueId];
 };
 
+const getExternalAssetFromCache = (uniqueId: string) => {
+  const { nativeCurrency } = store.getState().settings;
+  const { network, address } = getAddressAndNetworkFromUniqueId(uniqueId);
+
+  try {
+    const cachedExternalAsset = queryClient.getQueryData<FormattedExternalAsset>(
+      externalTokenQueryKey({
+        address,
+        currency: nativeCurrency,
+        network,
+      })
+    );
+
+    return cachedExternalAsset;
+  } catch (e) {
+    console.log(e);
+  }
+};
+
 const getAssetFromAllAssets = (uniqueId: EthereumAddress | undefined) => {
   const loweredUniqueId = uniqueId?.toLowerCase() ?? '';
   const accountAsset = getUserAssetFromCache(loweredUniqueId);
-  const genericAsset = store.getState().data?.genericAssets?.[loweredUniqueId];
-  return accountAsset ?? genericAsset;
+  const externalAsset = getExternalAssetFromCache(loweredUniqueId);
+  return accountAsset ?? externalAsset;
 };
 
 const getAccountAsset = (
@@ -162,41 +207,23 @@ const getAccountAsset = (
 };
 
 const getAssetPrice = (address: EthereumAddress = ETH_ADDRESS): number => {
-  const genericAsset = store.getState().data?.genericAssets?.[address];
-  const genericPrice = genericAsset?.price?.value;
+  const externalAsset = getExternalAssetFromCache(address);
+  const genericPrice = externalAsset?.price?.value;
   return genericPrice || getAccountAsset(address)?.price?.value || 0;
 };
 
-export const useEth = (): ParsedAddressAsset => {
-  return useSelector(
-    ({
-      // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
-      data: {
-        genericAssets: { [ETH_ADDRESS]: asset },
-      },
-    }) => asset
-  );
-};
-
-export const useNativeAssetForNetwork = (
-  network: Network
-): ParsedAddressAsset => {
+export const useNativeAssetForNetwork = (network: Network) => {
   const address =
     getNetworkObj(network).nativeCurrency?.mainnetAddress || ETH_ADDRESS;
+  const { nativeCurrency } = store.getState().settings;
 
-  return useSelector(
-    ({
-      // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
-      data: {
-        genericAssets: { [address]: asset },
-      },
-    }) => asset
-  );
-};
+  const { data: nativeAsset } = useExternalToken({
+    address,
+    network: Network.mainnet,
+    currency: nativeCurrency,
+  });
 
-export const useEthUSDPrice = (): number => {
-  // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
-  return useSelector(({ data: { ethUSDPrice } }) => ethUSDPrice);
+  return nativeAsset;
 };
 
 // anotha 1
@@ -241,27 +268,6 @@ const getBalanceAmount = (
 
 const getHash = (txn: RainbowTransaction | NewTransaction) =>
   txn.hash?.split('-').shift();
-
-const formatGenericAsset = (
-  asset: ParsedAddressAsset,
-  nativeCurrency: NativeCurrencyKey
-) => {
-  return {
-    ...asset,
-    native: {
-      change: asset?.price?.relative_change_24h
-        ? convertAmountToPercentageDisplay(
-            `${asset?.price?.relative_change_24h}`
-          )
-        : '',
-      price: convertAmountAndPriceToNativeDisplay(
-        1,
-        asset?.price?.value || 0,
-        nativeCurrency
-      ),
-    },
-  };
-};
 
 export const checkWalletEthZero = () => {
   const ethAsset = getAccountAsset(ETH_ADDRESS);
@@ -523,6 +529,23 @@ async function parseEthereumUrl(data: string) {
 export const getUniqueId = (address: EthereumAddress, network: Network) =>
   `${address}_${network}`;
 
+export const getAddressAndNetworkFromUniqueId = (
+  uniqueId: string
+): { address: EthereumAddress; network: Network } => {
+  const parts = uniqueId.split('_');
+
+  // If the unique ID does not contain '_', it's a mainnet address
+  if (parts.length === 1) {
+    return { address: parts[0], network: Network.mainnet };
+  }
+
+  // If the unique ID contains '_', the last part is the network and the rest is the address
+  const network = parts[1] as Network; // Assuming the last part is a valid Network enum value
+  const address = parts[0];
+
+  return { address, network };
+};
+
 const calculateL1FeeOptimism = async (
   tx: RainbowTransaction,
   provider: Provider
@@ -628,7 +651,6 @@ const getBasicSwapGasLimit = (chainId: number) => {
 
 export default {
   calculateL1FeeOptimism,
-  formatGenericAsset,
   getAssetFromAllAssets,
   getAccountAsset,
   getAsset,

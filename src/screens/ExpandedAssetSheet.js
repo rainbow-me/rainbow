@@ -11,7 +11,7 @@ import {
   UniqueTokenExpandedState,
 } from '../components/expanded-state';
 import { Centered } from '../components/layout';
-import { useAsset, useDimensions } from '@/hooks';
+import { useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
@@ -44,10 +44,6 @@ export default function ExpandedAssetSheet(props) {
   const { goBack } = useNavigation();
   const { params } = useRoute();
 
-  // We want to revalidate (ie. refresh OpenSea metadata) collectibles
-  // to ensure the user can get the latest metadata of their collectible.
-  const selectedAsset = useAsset(params.asset);
-
   return (
     <Container
       deviceHeight={deviceHeight}
@@ -60,8 +56,7 @@ export default function ExpandedAssetSheet(props) {
         ...params,
         ...props,
         asset: {
-          ...params.asset,
-          ...selectedAsset,
+          ...params?.asset,
         },
       })}
     </Container>
