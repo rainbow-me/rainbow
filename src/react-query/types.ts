@@ -1,6 +1,7 @@
 import {
   QueryFunctionContext,
   QueryKey,
+  UseInfiniteQueryOptions,
   UseMutationOptions,
   UseQueryOptions,
 } from '@tanstack/react-query';
@@ -84,4 +85,23 @@ export type QueryConfigDeprecated<
 > = Omit<
   UseQueryOptions<ExtractFnReturnType<QueryFnType>>,
   'queryKey' | 'queryFn'
+>;
+
+export type InfiniteQueryConfig<TQueryFnData, TError, TData> = Pick<
+  UseInfiniteQueryOptions<
+    TQueryFnData,
+    TError,
+    TData,
+    TQueryFnData,
+    Array<string | { [key: string]: any }>
+  >,
+  | 'cacheTime'
+  | 'enabled'
+  | 'refetchInterval'
+  | 'retry'
+  | 'staleTime'
+  | 'select'
+  | 'onError'
+  | 'onSettled'
+  | 'onSuccess'
 >;
