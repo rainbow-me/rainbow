@@ -426,6 +426,76 @@ export default function WalletConnectApprovalSheet() {
   const sheetHeight =
     type === WalletConnectApprovalSheetType.connect ? 408 : 438;
 
+  const renderNetworks = useCallback(() => {
+    if (isWalletConnectV2) {
+      if (!chainIds?.length) {
+        return (
+          <Box height={{ custom: 38 }} justifyContent="center" width="full">
+            <LabelText>None</LabelText>
+          </Box>
+        );
+      } else {
+        return <NetworkPill chainIds={chainIds} />;
+      }
+    } else {
+      return (
+        <NetworkSwitcherParent
+          activeOpacity={0}
+          isMenuPrimaryAction
+          {...(android ? { onPress: onPressAndroid } : {})}
+          menuConfig={{
+            menuItems,
+            menuTitle: lang.t('walletconnect.available_networks'),
+          }}
+          onPressMenuItem={handleOnPressNetworksMenuItem}
+          useActionSheetFallback={false}
+          wrapNativeComponent={false}
+        >
+          <ButtonPressAnimation
+            style={{
+              alignItems: 'center',
+              flexDirection: 'row',
+              height: 38,
+            }}
+          >
+            <Centered marginRight={5}>
+              <ChainLogo
+                network={
+                  type === WalletConnectApprovalSheetType.connect
+                    ? approvalNetworkInfo.value
+                    : ethereumUtils.getNetworkFromChainId(Number(chainId))
+                }
+              />
+            </Centered>
+            <LabelText align="right" numberOfLines={1}>
+              {`${
+                type === WalletConnectApprovalSheetType.connect
+                  ? approvalNetworkInfo.name
+                  : ethereumUtils.getNetworkNameFromChainId(Number(chainId))
+              } ${
+                type === WalletConnectApprovalSheetType.connect &&
+                menuItems.length > 1
+                  ? '􀁰'
+                  : ''
+              }`}
+            </LabelText>
+          </ButtonPressAnimation>
+        </NetworkSwitcherParent>
+      );
+    }
+  }, [
+    NetworkSwitcherParent,
+    approvalNetworkInfo.name,
+    approvalNetworkInfo.value,
+    chainId,
+    chainIds,
+    handleOnPressNetworksMenuItem,
+    isWalletConnectV2,
+    menuItems,
+    onPressAndroid,
+    type,
+  ]);
+
   return (
     <Sheet>
       {!Object.keys(meta).length ? (
@@ -580,56 +650,7 @@ export default function WalletConnectApprovalSheet() {
                       : lang.t(lang.l.walletconnect.approval_sheet_network)}
                   </SwitchText>
                 </Flex>
-                {isWalletConnectV2 ? (
-                  <NetworkPill chainIds={chainIds} />
-                ) : (
-                  <NetworkSwitcherParent
-                    activeOpacity={0}
-                    isMenuPrimaryAction
-                    {...(android ? { onPress: onPressAndroid } : {})}
-                    menuConfig={{
-                      menuItems,
-                      menuTitle: lang.t('walletconnect.available_networks'),
-                    }}
-                    onPressMenuItem={handleOnPressNetworksMenuItem}
-                    useActionSheetFallback={false}
-                    wrapNativeComponent={false}
-                  >
-                    <ButtonPressAnimation
-                      style={{
-                        alignItems: 'center',
-                        flexDirection: 'row',
-                        height: 38,
-                      }}
-                    >
-                      <Centered marginRight={5}>
-                        <ChainLogo
-                          network={
-                            type === WalletConnectApprovalSheetType.connect
-                              ? approvalNetworkInfo.value
-                              : ethereumUtils.getNetworkFromChainId(
-                                  Number(chainId)
-                                )
-                          }
-                        />
-                      </Centered>
-                      <LabelText align="right" numberOfLines={1}>
-                        {`${
-                          type === WalletConnectApprovalSheetType.connect
-                            ? approvalNetworkInfo.name
-                            : ethereumUtils.getNetworkNameFromChainId(
-                                Number(chainId)
-                              )
-                        } ${
-                          type === WalletConnectApprovalSheetType.connect &&
-                          menuItems.length > 1
-                            ? '􀁰'
-                            : ''
-                        }`}
-                      </LabelText>
-                    </ButtonPressAnimation>
-                  </NetworkSwitcherParent>
-                )}
+                {renderNetworks()}
               </RDSColumn>
             </Columns>
           </Box>

@@ -89,7 +89,7 @@ export function WalletConnectV2ListItem({
     const { chains } = requiredNamespaces.eip155;
     const eip155Account = namespaces.eip155?.accounts?.[0] || undefined;
 
-    if (!eip155Account || !chains || !chains.length) {
+    if (!eip155Account) {
       const e = new RainbowError(
         `WalletConnectV2ListItem: unsupported namespace`
       );
@@ -99,14 +99,11 @@ export function WalletConnectV2ListItem({
       throw e;
     }
 
-    const [ns, rawChainId, address] = eip155Account?.split(':') as [
-      string,
-      string,
-      string
-    ];
-    const chainIds = chains
-      .map(chain => parseInt(chain.split(':')[1]))
-      .filter(isSupportedChain);
+    const address = eip155Account?.split(':')?.[2];
+    const chainIds =
+      chains
+        ?.map(chain => parseInt(chain.split(':')[1]))
+        ?.filter(isSupportedChain) ?? [];
 
     if (!address) {
       const e = new RainbowError(
@@ -122,8 +119,8 @@ export function WalletConnectV2ListItem({
       dappName: metadata.name || 'Unknown Dapp',
       dappUrl: metadata.url || 'Unknown URL',
       dappLogo: metadata && metadata.icons ? metadata.icons[0] : undefined,
-      address,
-      chainIds,
+      address: address,
+      chainIds: chainIds,
     };
   }, [session]);
 
@@ -264,55 +261,56 @@ export function WalletConnectV2ListItem({
               </Centered>
             </SessionRow>
           </ColumnWithMargins>
-
-          <Box
-            borderRadius={99}
-            paddingVertical="8px"
-            paddingHorizontal="12px"
-            justifyContent="center"
-          >
-            <RadialGradient
-              {...radialGradientProps}
-              // @ts-expect-error overloaded props RadialGradient
+          {!!availableNetworks?.length && (
+            <Box
               borderRadius={99}
-              radius={600}
-            />
-            <Inline alignVertical="center" alignHorizontal="justify">
-              <Inline alignVertical="center">
-                <Box style={{ flexDirection: 'row' }}>
-                  {availableNetworks?.map((network, index) => {
-                    return (
-                      <Box
-                        background="body (Deprecated)"
-                        key={`availableNetwork-${network}`}
-                        marginLeft={{ custom: index > 0 ? -4 : 0 }}
-                        style={{
-                          backgroundColor: colors.transparent,
-                          zIndex: availableNetworks?.length - index,
-                          borderRadius: 30,
-                        }}
-                      >
-                        {network !== Network.mainnet ? (
-                          <ChainBadge
-                            network={network}
-                            position="relative"
-                            size="small"
-                          />
-                        ) : (
-                          <CoinIcon
-                            address={ETH_ADDRESS}
-                            size={20}
-                            symbol={ETH_SYMBOL}
-                            network={network}
-                          />
-                        )}
-                      </Box>
-                    );
-                  })}
-                </Box>
+              paddingVertical="8px"
+              paddingHorizontal="12px"
+              justifyContent="center"
+            >
+              <RadialGradient
+                {...radialGradientProps}
+                // @ts-expect-error overloaded props RadialGradient
+                borderRadius={99}
+                radius={600}
+              />
+              <Inline alignVertical="center" alignHorizontal="justify">
+                <Inline alignVertical="center">
+                  <Box style={{ flexDirection: 'row' }}>
+                    {availableNetworks?.map((network, index) => {
+                      return (
+                        <Box
+                          background="body (Deprecated)"
+                          key={`availableNetwork-${network}`}
+                          marginLeft={{ custom: index > 0 ? -4 : 0 }}
+                          style={{
+                            backgroundColor: colors.transparent,
+                            zIndex: availableNetworks?.length - index,
+                            borderRadius: 30,
+                          }}
+                        >
+                          {network !== Network.mainnet ? (
+                            <ChainBadge
+                              network={network}
+                              position="relative"
+                              size="small"
+                            />
+                          ) : (
+                            <CoinIcon
+                              address={ETH_ADDRESS}
+                              size={20}
+                              symbol={ETH_SYMBOL}
+                              network={network}
+                            />
+                          )}
+                        </Box>
+                      );
+                    })}
+                  </Box>
+                </Inline>
               </Inline>
-            </Inline>
-          </Box>
+            </Box>
+          )}
         </Row>
       </Row>
     </ContextMenuButton>
