@@ -247,6 +247,8 @@ export const AddWalletSheet = () => {
         return;
       }
 
+      console.log(JSON.stringify(backups, null, 2));
+
       // merging UserData.json with eventual selected backup file
       navigate(Routes.RESTORE_SHEET, { userData, backups });
       logger.info(`Downloaded ${cloudPlatform} backup info`);

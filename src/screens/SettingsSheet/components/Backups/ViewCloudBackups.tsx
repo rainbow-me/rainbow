@@ -11,6 +11,7 @@ import { Stack } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { fetchUserDataFromCloud } from '@/handlers/cloudBackup';
+import { IS_ANDROID } from '@/env';
 
 type ViewCloudBackupsParams = {
   ViewCloudBackups: { backups: { files: Backup[] } };
@@ -25,11 +26,14 @@ const ViewCloudBackups = () => {
   const { navigate } = useNavigation();
 
   const cloudBackups = backups.files.filter(backup => {
+    if (IS_ANDROID) {
+      return !backup.name.includes('UserData.json');
+    }
+
     return (
       backup.isFile && backup.size > 0 && !backup.name.includes('UserData.json')
     );
   });
-
   const mostRecentBackup = cloudBackups.reduce((prev, current) => {
     if (!current) {
       return prev;

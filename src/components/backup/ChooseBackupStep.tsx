@@ -18,6 +18,8 @@ import Routes from '@/navigation/routesNames';
 import { Backup, parseTimestampFromFilename } from '@/model/backup';
 import { RestoreSheetParams } from '@/screens/RestoreSheet';
 import { Source } from 'react-native-fast-image';
+import { IS_ANDROID } from '@/env';
+import { StatusBar } from 'react-native';
 
 const Title = styled(Text).attrs({
   align: 'left',
@@ -44,6 +46,10 @@ export function ChooseBackupStep() {
   const { navigate } = useNavigation();
 
   const cloudBackups = backups.files.filter(backup => {
+    if (IS_ANDROID) {
+      return !backup.name.includes('UserData.json');
+    }
+
     return (
       backup.isFile && backup.size > 0 && !backup.name.includes('UserData.json')
     );
@@ -80,8 +86,15 @@ export function ChooseBackupStep() {
     [navigate, userData, backups, fromSettings]
   );
 
+  const height = IS_ANDROID
+    ? deviceHeight -
+      sharedCoolModalTopOffset -
+      48 -
+      (StatusBar?.currentHeight ?? 0)
+    : deviceHeight - sharedCoolModalTopOffset - 48;
+
   return (
-    <Box height={{ custom: deviceHeight - sharedCoolModalTopOffset - 48 }}>
+    <Box height={{ custom: height }}>
       <MenuContainer>
         <Stack alignHorizontal="left" space="8px">
           <Masthead>
