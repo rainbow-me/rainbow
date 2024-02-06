@@ -18,7 +18,7 @@ import { useDimensions, useWalletManualBackup, useWallets } from '@/hooks';
 import { useTheme } from '@/theme';
 import { logger, RainbowError } from '@/logger';
 import { IS_ANDROID } from '@/env';
-import ManuallyBackedUpIcon from '@/assets/manuallyBackedUp.png';
+import ManuallyBackedUpIcon from '@/assets/ManuallyBackedUp.png';
 
 import {
   SecretDisplayStates,
