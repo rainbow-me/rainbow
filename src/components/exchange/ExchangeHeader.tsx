@@ -15,12 +15,7 @@ export default function ExchangeHeader({ testID, title }: ExchangeHeaderProps) {
           {/* @ts-expect-error - Javascript Component */}
           <SheetHandle />
           {title && (
-            <Text
-              color="primary (Deprecated)"
-              align="center"
-              size="20pt"
-              weight="heavy"
-            >
+            <Text color="primary (Deprecated)" align="center" size="20pt" weight="heavy">
               {title}
             </Text>
           )}

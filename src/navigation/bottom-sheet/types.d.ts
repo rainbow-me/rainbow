@@ -34,15 +34,9 @@ export type BottomSheetNavigationEventMap = {
   gestureCancel: { data: undefined };
 };
 
-export type BottomSheetNavigationHelpers = NavigationHelpers<
-  ParamListBase,
-  BottomSheetNavigationEventMap
->;
+export type BottomSheetNavigationHelpers = NavigationHelpers<ParamListBase, BottomSheetNavigationEventMap>;
 
-export type BottomSheetNavigationProp<
-  ParamList extends ParamListBase,
-  RouteName extends keyof ParamList = string
-> = NavigationProp<
+export type BottomSheetNavigationProp<ParamList extends ParamListBase, RouteName extends keyof ParamList = string> = NavigationProp<
   ParamList,
   RouteName,
   StackNavigationState,
@@ -51,21 +45,14 @@ export type BottomSheetNavigationProp<
 > &
   StackActionHelpers<ParamList>;
 
-export type BottomSheetScreenProps<
-  ParamList extends ParamListBase,
-  RouteName extends keyof ParamList = string
-> = {
+export type BottomSheetScreenProps<ParamList extends ParamListBase, RouteName extends keyof ParamList = string> = {
   navigation: BottomSheetNavigationProp<ParamList, RouteName>;
   route: RouteProp<ParamList, RouteName>;
 };
 
 export type Layout = { width: number; height: number };
 
-export type GestureDirection =
-  | 'horizontal'
-  | 'horizontal-inverted'
-  | 'vertical'
-  | 'vertical-inverted';
+export type GestureDirection = 'horizontal' | 'horizontal-inverted' | 'vertical' | 'vertical-inverted';
 
 export type Scene<T> = {
   /**
@@ -97,12 +84,7 @@ export type Scene<T> = {
   };
 };
 
-export type BottomSheetDescriptor = Descriptor<
-  ParamListBase,
-  string,
-  StackNavigationState,
-  BottomSheetNavigationOptions
-> & {
+export type BottomSheetDescriptor = Descriptor<ParamListBase, string, StackNavigationState, BottomSheetNavigationOptions> & {
   removing?: boolean;
 };
 
@@ -113,12 +95,7 @@ export type BottomSheetDescriptorMap = {
 export type BottomSheetNavigationOptions = Partial<
   Pick<
     BottomSheetProps,
-    | 'index'
-    | 'snapPoints'
-    | 'animationDuration'
-    | 'animationEasing'
-    | 'enableContentPanningGesture'
-    | 'enableHandlePanningGesture'
+    'index' | 'snapPoints' | 'animationDuration' | 'animationEasing' | 'enableContentPanningGesture' | 'enableHandlePanningGesture'
   >
 > & {
   backdropOpacity?: number;
@@ -133,17 +110,11 @@ export type BottomSheetNavigationConfig = Record<string, unknown>;
 export type TransitionSpec =
   | {
       animation: 'spring';
-      config: Omit<
-        Animated.SpringAnimationConfig,
-        'toValue' | keyof Animated.AnimationConfig
-      >;
+      config: Omit<Animated.SpringAnimationConfig, 'toValue' | keyof Animated.AnimationConfig>;
     }
   | {
       animation: 'timing';
-      config: Omit<
-        Animated.TimingAnimationConfig,
-        'toValue' | keyof Animated.AnimationConfig
-      >;
+      config: Omit<Animated.TimingAnimationConfig, 'toValue' | keyof Animated.AnimationConfig>;
     };
 
 export type BottomSheetCardInterpolationProps = {
@@ -221,9 +192,7 @@ export type BottomSheetCardInterpolatedStyle = {
   shadowStyle?: any;
 };
 
-export type BottomSheetCardStyleInterpolator = (
-  props: BottomSheetCardInterpolationProps
-) => BottomSheetCardInterpolatedStyle;
+export type BottomSheetCardStyleInterpolator = (props: BottomSheetCardInterpolationProps) => BottomSheetCardInterpolatedStyle;
 
 export type TransitionPreset = {
   /**

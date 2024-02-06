@@ -41,25 +41,9 @@ const PlaceholderText = styled(Label).attrs({
   opacity: 1,
 });
 
-const formatValue = value =>
-  isHexString(value) && value.length === addressUtils.maxLength
-    ? abbreviations.address(value, 4, 4)
-    : value;
+const formatValue = value => (isHexString(value) && value.length === addressUtils.maxLength ? abbreviations.address(value, 4, 4) : value);
 
-const AddressField = (
-  {
-    address,
-    autoFocus,
-    editable,
-    name,
-    isValid,
-    onChangeText,
-    onFocus,
-    testID,
-    ...props
-  },
-  ref
-) => {
+const AddressField = ({ address, autoFocus, editable, name, isValid, onChangeText, onFocus, testID, ...props }, ref) => {
   const { isTinyPhone } = useDimensions();
   const { colors } = useTheme();
   const { clipboard, setClipboard } = useClipboard();
@@ -105,9 +89,7 @@ const AddressField = (
         <Placeholder>
           <TouchableWithoutFeedback onPress={ref?.current?.focus}>
             <PlaceholderText>
-              {android || isTinyPhone
-                ? lang.t('fields.address.short_placeholder')
-                : lang.t('fields.address.long_placeholder')}
+              {android || isTinyPhone ? lang.t('fields.address.short_placeholder') : lang.t('fields.address.long_placeholder')}
             </PlaceholderText>
           </TouchableWithoutFeedback>
         </Placeholder>

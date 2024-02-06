@@ -1,13 +1,6 @@
 import { createElement } from 'react';
 
-export default function JellySelectorIndicator({
-  backgroundColor,
-  height,
-  renderIndicator,
-  translateX,
-  width,
-  ...props
-}) {
+export default function JellySelectorIndicator({ backgroundColor, height, renderIndicator, translateX, width, ...props }) {
   return createElement(renderIndicator, {
     ...props,
     backgroundColor,

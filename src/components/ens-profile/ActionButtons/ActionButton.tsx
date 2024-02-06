@@ -2,14 +2,7 @@ import React from 'react';
 import { ButtonProps } from 'react-native';
 import { BackgroundColor } from '../../../design-system/color/palettes';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
-import {
-  AccentColorProvider,
-  Box,
-  Inset,
-  Space,
-  Text,
-  useForegroundColor,
-} from '@/design-system';
+import { AccentColorProvider, Box, Inset, Space, Text, useForegroundColor } from '@/design-system';
 
 type ActionButtonProps = {
   children?: string;
@@ -71,11 +64,7 @@ export default function ActionButton({
             {(typeof icon === 'string' || children) && (
               <Text
                 align="center"
-                color={
-                  variant === 'outlined'
-                    ? 'secondary80 (Deprecated)'
-                    : 'primary (Deprecated)'
-                }
+                color={variant === 'outlined' ? 'secondary80 (Deprecated)' : 'primary (Deprecated)'}
                 size="15px / 21px (Deprecated)"
                 weight="heavy"
               >

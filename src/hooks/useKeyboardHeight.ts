@@ -1,17 +1,12 @@
 import { useIsFocused } from '@react-navigation/native';
 import { useCallback, useEffect, useRef } from 'react';
-import {
-  EmitterSubscription,
-  Keyboard,
-  KeyboardEventListener,
-} from 'react-native';
+import { EmitterSubscription, Keyboard, KeyboardEventListener } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import KeyboardTypes from '@/helpers/keyboardTypes';
 import { setKeyboardHeight } from '@/redux/keyboardHeight';
 import { AppState } from '@/redux/store';
 
-const keyboardHeightsSelector = (state: AppState) =>
-  state.keyboardHeight.keyboardHeight;
+const keyboardHeightsSelector = (state: AppState) => state.keyboardHeight.keyboardHeight;
 
 export default function useKeyboardHeight(options = {}) {
   // keyboards can different heights depending on whether
@@ -23,8 +18,7 @@ export default function useKeyboardHeight(options = {}) {
   const dispatch = useDispatch();
 
   const cachedKeyboardHeights = useSelector(keyboardHeightsSelector);
-  const heightForKeyboardType =
-    cachedKeyboardHeights?.[keyboardType as keyof typeof cachedKeyboardHeights];
+  const heightForKeyboardType = cachedKeyboardHeights?.[keyboardType as keyof typeof cachedKeyboardHeights];
 
   const isFocused = useIsFocused();
 
@@ -51,10 +45,7 @@ export default function useKeyboardHeight(options = {}) {
   );
 
   useEffect(() => {
-    listenerRef.current = Keyboard.addListener(
-      'keyboardDidShow',
-      handleKeyboardDidShow
-    );
+    listenerRef.current = Keyboard.addListener('keyboardDidShow', handleKeyboardDidShow);
     return () => {
       listenerRef.current?.remove();
     };

@@ -7,14 +7,8 @@ import { analyticsV2 } from '@/analytics';
 import * as ls from '@/storage';
 import { logger, RainbowError } from '@/logger';
 
-export const branchListener = async (
-  handleOpenLinkingURL: (url: any) => void
-) => {
-  logger.debug(
-    `Branch: setting up listener`,
-    {},
-    logger.DebugContext.deeplinks
-  );
+export const branchListener = async (handleOpenLinkingURL: (url: any) => void) => {
+  logger.debug(`Branch: setting up listener`, {}, logger.DebugContext.deeplinks);
 
   /*
    * This is run every time the app is opened, whether from a cold start of from the background.
@@ -31,18 +25,10 @@ export const branchListener = async (
       }
     }
 
-    logger.debug(
-      `Branch: handling event`,
-      { params, uri },
-      logger.DebugContext.deeplinks
-    );
+    logger.debug(`Branch: handling event`, { params, uri }, logger.DebugContext.deeplinks);
 
     if (!params && uri) {
-      logger.debug(
-        `Branch: no params but we have a URI`,
-        {},
-        logger.DebugContext.deeplinks
-      );
+      logger.debug(`Branch: no params but we have a URI`, {}, logger.DebugContext.deeplinks);
       handleOpenLinkingURL(uri);
     } else if (!params) {
       // We got absolutely nothing to work with.
@@ -53,21 +39,10 @@ export const branchListener = async (
     } else if (params['+non_branch_link']) {
       const nonBranchUrl = params['+non_branch_link'];
 
-      logger.debug(
-        `Branch: handling non-Branch link`,
-        {},
-        logger.DebugContext.deeplinks
-      );
+      logger.debug(`Branch: handling non-Branch link`, {}, logger.DebugContext.deeplinks);
 
-      if (
-        typeof nonBranchUrl === 'string' &&
-        nonBranchUrl?.startsWith('rainbow://open')
-      ) {
-        logger.debug(
-          `Branch: aggressive Safari redirect mode`,
-          {},
-          logger.DebugContext.deeplinks
-        );
+      if (typeof nonBranchUrl === 'string' && nonBranchUrl?.startsWith('rainbow://open')) {
+        logger.debug(`Branch: aggressive Safari redirect mode`, {}, logger.DebugContext.deeplinks);
 
         /**
          * This happens when the user hits the Branch-hosted fallback page in
@@ -89,11 +64,7 @@ export const branchListener = async (
           handleOpenLinkingURL(url);
         }
       } else {
-        logger.debug(
-          `Branch: non-Branch link handled directly`,
-          {},
-          logger.DebugContext.deeplinks
-        );
+        logger.debug(`Branch: non-Branch link handled directly`, {}, logger.DebugContext.deeplinks);
 
         /**
          * This can happen when the user clicks on a deeplink and we pass its handling on to Branch.
@@ -109,11 +80,7 @@ export const branchListener = async (
        *
        * No link was opened, so we don't typically need to do anything.
        */
-      logger.debug(
-        `Branch: handling event where no link was opened`,
-        {},
-        logger.DebugContext.deeplinks
-      );
+      logger.debug(`Branch: handling event where no link was opened`, {}, logger.DebugContext.deeplinks);
 
       if (IS_TESTING === 'true' && !!uri) {
         handleOpenLinkingURL(uri);
@@ -131,30 +98,21 @@ export const branchListener = async (
 
       handleOpenLinkingURL(params.uri);
     } else if (uri) {
-      logger.debug(
-        `Branch: handling event default case`,
-        {},
-        logger.DebugContext.deeplinks
-      );
+      logger.debug(`Branch: handling event default case`, {}, logger.DebugContext.deeplinks);
 
       handleOpenLinkingURL(uri);
     }
   });
 
   // getFirstReferringParams must be called after branch.subscribe()
-  const branchFirstReferringParamsSet = ls.device.get([
-    'branchFirstReferringParamsSet',
-  ]);
+  const branchFirstReferringParamsSet = ls.device.get(['branchFirstReferringParamsSet']);
 
   if (!branchFirstReferringParamsSet) {
     const branchParams = await branch
       .getFirstReferringParams()
       .then(branchParams => branchParams)
       .catch(e => {
-        logger.error(
-          new RainbowError('error calling branch.getFirstReferringParams()'),
-          e
-        );
+        logger.error(new RainbowError('error calling branch.getFirstReferringParams()'), e);
         return null;
       });
 

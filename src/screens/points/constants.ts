@@ -1,10 +1,7 @@
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { HapticFeedbackType } from '@/utils/haptics';
 import { safeAreaInsetValues } from '@/utils';
-import {
-  OnboardPointsMutation,
-  PointsOnboardingCategory,
-} from '@/graphql/__generated__/metadata';
+import { OnboardPointsMutation, PointsOnboardingCategory } from '@/graphql/__generated__/metadata';
 import * as i18n from '@/languages';
 import { IS_IOS } from '@/env';
 
@@ -53,9 +50,7 @@ export const rainbowText = {
   row9: ' WELCOME TO POINTS ',
 };
 
-export const generateRainbowColors = (
-  text: string
-): Array<{ text: string; shadow: string }> | undefined => {
+export const generateRainbowColors = (text: string): Array<{ text: string; shadow: string }> | undefined => {
   let colorIndex = 0;
   let repeatCount = 0;
   const colorKeys: string[] = Object.keys(rainbowColors);
@@ -67,17 +62,14 @@ export const generateRainbowColors = (
       repeatCount = 0;
       colorIndex = (colorIndex + 1) % colorKeys.length;
     }
-    colors.push(
-      rainbowColors[colorKeys[colorIndex] as keyof typeof rainbowColors]
-    );
+    colors.push(rainbowColors[colorKeys[colorIndex] as keyof typeof rainbowColors]);
     repeatCount += 1;
   });
 
   return colors;
 };
 
-export const triggerHapticFeedback = (hapticType: HapticFeedbackType) =>
-  ReactNativeHapticFeedback?.trigger(hapticType);
+export const triggerHapticFeedback = (hapticType: HapticFeedbackType) => ReactNativeHapticFeedback?.trigger(hapticType);
 
 const BASE_URL = `https://twitter.com/intent/tweet?text=`;
 const NEWLINE_OR_SPACE = IS_IOS ? '\n\n' : ' ';
@@ -87,8 +79,7 @@ export const buildTwitterIntentMessage = (
 ) => {
   if (!profile?.onboardPoints) return;
 
-  const ONBOARDING_TOTAL_POINTS =
-    profile.onboardPoints.user.onboarding.earnings.total;
+  const ONBOARDING_TOTAL_POINTS = profile.onboardPoints.user.onboarding.earnings.total;
   const referralCode = profile.onboardPoints.user.referralCode;
 
   let text = `I just had ${ONBOARDING_TOTAL_POINTS.toLocaleString(
@@ -97,9 +88,7 @@ export const buildTwitterIntentMessage = (
 
   if (metamaskSwaps && metamaskSwaps?.earnings?.total > 0) {
     const METAMASK_POINTS = metamaskSwaps.earnings.total;
-    text = `I just had ${(
-      ONBOARDING_TOTAL_POINTS - METAMASK_POINTS
-    ).toLocaleString(
+    text = `I just had ${(ONBOARDING_TOTAL_POINTS - METAMASK_POINTS).toLocaleString(
       'en-US'
     )} Rainbow Points dropped into my wallet — plus an extra ${METAMASK_POINTS.toLocaleString(
       'en-US'

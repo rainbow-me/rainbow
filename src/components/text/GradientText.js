@@ -5,17 +5,7 @@ import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Text from './Text';
 
-const GradientText = ({
-  angle,
-  angleCenter,
-  children,
-  colors,
-  end,
-  renderer,
-  start,
-  steps,
-  ...props
-}) => {
+const GradientText = ({ angle, angleCenter, children, colors, end, renderer, start, steps, ...props }) => {
   const textElement =
     Array.isArray(children) || typeof children === 'string'
       ? // eslint-disable-next-line react/no-children-prop

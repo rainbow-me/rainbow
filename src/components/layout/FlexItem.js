@@ -3,8 +3,7 @@ import styled from '@/styled-thing';
 
 const FlexItem = styled.View(({ flex, grow, shrink }) => {
   const props = {
-    flex:
-      isUndefined(flex) && isUndefined(grow) && isUndefined(shrink) ? 1 : flex,
+    flex: isUndefined(flex) && isUndefined(grow) && isUndefined(shrink) ? 1 : flex,
   };
 
   if (grow !== undefined) {

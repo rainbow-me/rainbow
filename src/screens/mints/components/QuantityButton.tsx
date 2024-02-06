@@ -67,12 +67,7 @@ const StepButton = ({
           borderRadius: 18,
         }}
       >
-        <Text
-          align="center"
-          size="17pt"
-          weight="bold"
-          color={{ custom: colors.alpha(color, 0.25) }}
-        >
+        <Text align="center" size="17pt" weight="bold" color={{ custom: colors.alpha(color, 0.25) }}>
           {type === 'plus' ? '􀅼' : '􀅽'}
         </Text>
       </Box>
@@ -88,14 +83,7 @@ type StepButtonInputProps = {
   disabled?: boolean;
   maxValue: number;
 };
-export function QuantityButton({
-  value,
-  plusAction,
-  minusAction,
-  buttonColor,
-  disabled = false,
-  maxValue,
-}: StepButtonInputProps) {
+export function QuantityButton({ value, plusAction, minusAction, buttonColor, disabled = false, maxValue }: StepButtonInputProps) {
   const longPressHandle = useRef<boolean | null>(null);
   const [trigger, setTrigger] = useState(false);
   const [actionType, setActionType] = useState<'plus' | 'minus' | null>(null);
@@ -156,11 +144,7 @@ export function QuantityButton({
 
   return (
     <Wrapper>
-      <Inline
-        alignHorizontal="center"
-        alignVertical="center"
-        horizontalSpace={'6px'}
-      >
+      <Inline alignHorizontal="center" alignVertical="center" horizontalSpace={'6px'}>
         <StepButton
           buttonColor={buttonColor}
           onLongPress={onMinusLongPress}
@@ -171,13 +155,7 @@ export function QuantityButton({
           disabled={disabled}
           value={value}
         />
-        <Text
-          color="label"
-          align="center"
-          size="22pt"
-          weight="bold"
-          tabularNumbers={true}
-        >
+        <Text color="label" align="center" size="22pt" weight="bold" tabularNumbers={true}>
           {value}
         </Text>
         <StepButton

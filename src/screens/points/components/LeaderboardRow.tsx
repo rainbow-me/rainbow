@@ -10,16 +10,10 @@ import Routes from '@/navigation/routesNames';
 import { ethereumUtils, isENSNFTRecord } from '@/utils';
 import { address as formatAddress } from '@/utils/abbreviations';
 import { Network } from '@/networks/types';
-import {
-  ContactAvatar,
-  showDeleteContactActionSheet,
-} from '@/components/contacts';
+import { ContactAvatar, showDeleteContactActionSheet } from '@/components/contacts';
 import { Bleed, Box, Inline, Stack, Text } from '@/design-system';
 import MaskedView from '@react-native-masked-view/masked-view';
-import {
-  addressHashedColorIndex,
-  addressHashedEmoji,
-} from '@/utils/profileUtils';
+import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { useTheme } from '@/theme';
@@ -56,18 +50,14 @@ export const LeaderboardRow = ({
   const { setClipboard } = useClipboard();
   const { contacts, onRemoveContact } = useContacts();
   const isSelectedWallet = useMemo(() => {
-    const visibleWallet = selectedWallet.addresses.find(
-      (wallet: { visible: boolean }) => wallet.visible
-    );
+    const visibleWallet = selectedWallet.addresses.find((wallet: { visible: boolean }) => wallet.visible);
     ``;
     return visibleWallet.address.toLowerCase() === address?.toLowerCase();
   }, [selectedWallet.addresses, address]);
 
   const contact = address ? contacts[address.toLowerCase()] : undefined;
 
-  const formattedAddress = useMemo(() => formatAddress(address, 4, 5), [
-    address,
-  ]);
+  const formattedAddress = useMemo(() => formatAddress(address, 4, 5), [address]);
 
   const menuItems = useMemo(() => {
     return [
@@ -162,22 +152,10 @@ export const LeaderboardRow = ({
         Share.share(IS_ANDROID ? { message: shareLink } : { url: shareLink });
       }
     },
-    [
-      address,
-      contact,
-      ens,
-      isSelectedWallet,
-      navigate,
-      onRemoveContact,
-      setClipboard,
-      switchToWalletWithAddress,
-    ]
+    [address, contact, ens, isSelectedWallet, navigate, onRemoveContact, setClipboard, switchToWalletWithAddress]
   );
 
-  const menuConfig = useMemo(
-    () => ({ menuItems, ...(IS_IOS && { menuTitle: '' }) }),
-    [menuItems]
-  );
+  const menuConfig = useMemo(() => ({ menuItems, ...(IS_IOS && { menuTitle: '' }) }), [menuItems]);
 
   let gradient;
   let icon;
@@ -225,23 +203,14 @@ export const LeaderboardRow = ({
             <ImageAvatar image={avatarURL} size="rewards" />
           ) : (
             <ContactAvatar
-              color={
-                colors.avatarBackgrounds[addressHashedColorIndex(address) ?? 0]
-              }
+              color={colors.avatarBackgrounds[addressHashedColorIndex(address) ?? 0]}
               size="rewards"
               value={addressHashedEmoji(address)}
             />
           )}
           <Stack space="8px">
             <Box style={{ maxWidth: rank <= 3 ? 120 : 140 }}>
-              <Text
-                color="label"
-                weight="bold"
-                size="15pt"
-                ellipsizeMode="middle"
-                numberOfLines={1}
-                containsEmoji
-              >
+              <Text color="label" weight="bold" size="15pt" ellipsizeMode="middle" numberOfLines={1} containsEmoji>
                 {ens || formattedAddress || ''}
               </Text>
             </Box>
@@ -260,12 +229,7 @@ export const LeaderboardRow = ({
                   </Box>
                 }
               >
-                <LinearGradient
-                  style={{ width: 100, height: '100%' }}
-                  colors={gradient}
-                  start={{ x: 0, y: 0.5 }}
-                  end={{ x: 1, y: 0.5 }}
-                />
+                <LinearGradient style={{ width: 100, height: '100%' }} colors={gradient} start={{ x: 0, y: 0.5 }} end={{ x: 1, y: 0.5 }} />
               </MaskedView>
             </Bleed>
           ) : (

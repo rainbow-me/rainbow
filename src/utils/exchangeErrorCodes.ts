@@ -6,9 +6,7 @@ export interface ExchangeQuoteError extends QuoteError {
   explainerType: string;
 }
 
-export default function handleSwapErrorCodes(
-  quoteError: QuoteError
-): ExchangeQuoteError {
+export default function handleSwapErrorCodes(quoteError: QuoteError): ExchangeQuoteError {
   const { error_code: errorCode } = quoteError;
   switch (errorCode) {
     case 501:

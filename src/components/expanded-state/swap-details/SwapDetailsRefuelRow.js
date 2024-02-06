@@ -44,18 +44,12 @@ export default function SwapDetailsRefuelRow({ tradeDetails, testID }) {
     <Rows testID={testID}>
       <Columns alignVertical="center" space="4px">
         <Column>
-          <SwapDetailsLabel>
-            {lang.t('expanded_state.swap_details.refuel')}
-          </SwapDetailsLabel>
+          <SwapDetailsLabel>{lang.t('expanded_state.swap_details.refuel')}</SwapDetailsLabel>
         </Column>
         {tradeDetails.refuel ? (
           <>
             <Column width="content">
-              <Box
-                paddingRight="2px"
-                marginTop={ICON_ALIGN_MARGIN}
-                marginBottom={ICON_ALIGN_MARGIN}
-              >
+              <Box paddingRight="2px" marginTop={ICON_ALIGN_MARGIN} marginBottom={ICON_ALIGN_MARGIN}>
                 <CoinIcon
                   address={fromNativeAsset?.address}
                   mainnet_address={fromNativeAsset?.mainnet_address}
@@ -74,11 +68,7 @@ export default function SwapDetailsRefuelRow({ tradeDetails, testID }) {
               </Box>
             </Column>
             <Column width="content">
-              <Box
-                paddingLeft="4px"
-                marginTop={ICON_ALIGN_MARGIN}
-                marginBottom={ICON_ALIGN_MARGIN}
-              >
+              <Box paddingLeft="4px" marginTop={ICON_ALIGN_MARGIN} marginBottom={ICON_ALIGN_MARGIN}>
                 <CoinIcon
                   address={toNativeAsset?.address}
                   mainnet_address={toNativeAsset?.mainnet_address}

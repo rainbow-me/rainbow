@@ -1,16 +1,5 @@
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-} from 'react';
-import {
-  Platform,
-  requireNativeComponent,
-  StyleSheet,
-  View,
-} from 'react-native';
+import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { Platform, requireNativeComponent, StyleSheet, View } from 'react-native';
 
 const NativePortalContext = createContext();
 
@@ -18,8 +7,7 @@ export function usePortal() {
   return useContext(NativePortalContext);
 }
 
-const NativePortal =
-  Platform.OS === 'ios' ? requireNativeComponent('WindowPortal') : View;
+const NativePortal = Platform.OS === 'ios' ? requireNativeComponent('WindowPortal') : View;
 
 const Wrapper = Platform.OS === 'ios' ? ({ children }) => children : View;
 
@@ -47,16 +35,11 @@ export function Portal({ children }) {
 
   return (
     <NativePortalContext.Provider value={contextValue}>
-      <Wrapper
-        pointerEvents={blockTouches ? 'none' : 'auto'}
-        style={[StyleSheet.absoluteFillObject]}
-      >
+      <Wrapper pointerEvents={blockTouches ? 'none' : 'auto'} style={[StyleSheet.absoluteFillObject]}>
         {children}
         <NativePortal
           blockTouches={blockTouches}
-          pointerEvents={
-            Platform.OS === 'ios' || !blockTouches ? 'none' : 'auto'
-          }
+          pointerEvents={Platform.OS === 'ios' || !blockTouches ? 'none' : 'auto'}
           style={StyleSheet.absoluteFillObject}
         >
           {Component}

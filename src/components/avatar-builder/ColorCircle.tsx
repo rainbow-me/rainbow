@@ -13,19 +13,8 @@ const ColorCircle = ({ backgroundColor = 'blue', onPressColor }: Props) => {
 
   return (
     <View style={sx.container}>
-      <ButtonPressAnimation
-        duration={100}
-        enableHapticFeedback
-        onPress={onPressColor}
-        scaleTo={0.7}
-        style={sx.button}
-      >
-        <View
-          style={[
-            sx.circle,
-            { backgroundColor, shadowColor: colors.shadowBlack },
-          ]}
-        />
+      <ButtonPressAnimation duration={100} enableHapticFeedback onPress={onPressColor} scaleTo={0.7} style={sx.button}>
+        <View style={[sx.circle, { backgroundColor, shadowColor: colors.shadowBlack }]} />
       </ButtonPressAnimation>
     </View>
   );

@@ -25,24 +25,11 @@ import {
 import { ExchangeModalTypes } from '@/helpers';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import logger from '@/utils/logger';
-import {
-  createUnlockAndCrosschainSwapRap,
-  estimateUnlockAndCrosschainSwap,
-} from './unlockAndCrosschainSwap';
+import { createUnlockAndCrosschainSwapRap, estimateUnlockAndCrosschainSwap } from './unlockAndCrosschainSwap';
 import { Source, SwapModalField } from '@/redux/swap';
 import * as i18n from '@/languages';
 
-const {
-  commitENS,
-  registerWithConfig,
-  multicallENS,
-  setAddrENS,
-  reclaimENS,
-  setContenthashENS,
-  setTextENS,
-  setNameENS,
-  renewENS,
-} = ens;
+const { commitENS, registerWithConfig, multicallENS, setAddrENS, reclaimENS, setContenthashENS, setTextENS, setNameENS, renewENS } = ens;
 
 export enum RapActionType {
   swap = 'swap',
@@ -118,8 +105,7 @@ export interface SwapActionParameters extends BaseSwapActionParameters {
   tradeDetails: Quote;
 }
 
-export interface CrosschainSwapActionParameters
-  extends BaseSwapActionParameters {
+export interface CrosschainSwapActionParameters extends BaseSwapActionParameters {
   tradeDetails: CrosschainQuote;
 }
 
@@ -207,24 +193,16 @@ export const getSwapRapTypeByExchangeType = (isCrosschainSwap: boolean) => {
   return RapActionTypes.swap;
 };
 
-const createSwapRapByType = (
-  type: keyof typeof RapActionTypes,
-  swapParameters: SwapActionParameters | CrosschainSwapActionParameters
-) => {
+const createSwapRapByType = (type: keyof typeof RapActionTypes, swapParameters: SwapActionParameters | CrosschainSwapActionParameters) => {
   switch (type) {
     case RapActionTypes.crosschainSwap:
-      return createUnlockAndCrosschainSwapRap(
-        swapParameters as CrosschainSwapActionParameters
-      );
+      return createUnlockAndCrosschainSwapRap(swapParameters as CrosschainSwapActionParameters);
     default:
       return createUnlockAndSwapRap(swapParameters);
   }
 };
 
-const createENSRapByType = (
-  type: string,
-  ensRegistrationParameters: ENSActionParameters
-) => {
+const createENSRapByType = (type: string, ensRegistrationParameters: ENSActionParameters) => {
   switch (type) {
     case RapActionTypes.registerENS:
       return createRegisterENSRap(ensRegistrationParameters);
@@ -250,25 +228,18 @@ export const getSwapRapEstimationByType = (
     case RapActionTypes.swap:
       return estimateUnlockAndSwap(swapParameters);
     case RapActionTypes.crosschainSwap:
-      return estimateUnlockAndCrosschainSwap(
-        swapParameters as CrosschainSwapActionParameters
-      );
+      return estimateUnlockAndCrosschainSwap(swapParameters as CrosschainSwapActionParameters);
     default:
       return null;
   }
 };
 
-export const getENSRapEstimationByType = (
-  type: string,
-  ensRegistrationParameters: ENSActionParameters
-) => {
+export const getENSRapEstimationByType = (type: string, ensRegistrationParameters: ENSActionParameters) => {
   switch (type) {
     case RapActionTypes.commitENS:
       return estimateENSCommitGasLimit(ensRegistrationParameters);
     case RapActionTypes.registerENS:
-      return estimateENSRegisterSetRecordsAndNameGasLimit(
-        ensRegistrationParameters
-      );
+      return estimateENSRegisterSetRecordsAndNameGasLimit(ensRegistrationParameters);
     case RapActionTypes.renewENS:
       return estimateENSRenewGasLimit(ensRegistrationParameters);
     case RapActionTypes.setNameENS:
@@ -352,23 +323,11 @@ const executeAction = async (
     const rapType = getRapTypeFromActionType(type);
     if (rapType === RAP_TYPE.ENS) {
       const actionPromise = findENSActionByType(type);
-      nonce = await actionPromise(
-        wallet,
-        rap,
-        index,
-        parameters as RapENSActionParameters,
-        baseNonce
-      );
+      nonce = await actionPromise(wallet, rap, index, parameters as RapENSActionParameters, baseNonce);
       return { baseNonce: nonce, errorMessage: null };
     } else {
       const actionPromise = findSwapActionByType(type);
-      nonce = await actionPromise(
-        wallet,
-        rap,
-        index,
-        parameters as RapExchangeActionParameters,
-        baseNonce
-      );
+      nonce = await actionPromise(wallet, rap, index, parameters as RapExchangeActionParameters, baseNonce);
       return { baseNonce: nonce, errorMessage: null };
     }
   } catch (error: any) {
@@ -441,14 +400,7 @@ export const executeRap = async (
   logger.log('[common - executing rap]: actions', actions);
   if (actions.length) {
     const firstAction = actions[0];
-    const { baseNonce, errorMessage } = await executeAction(
-      firstAction,
-      wallet,
-      rap,
-      0,
-      rapName,
-      nonce
-    );
+    const { baseNonce, errorMessage } = await executeAction(firstAction, wallet, rap, 0, rapName, nonce);
 
     if (typeof baseNonce === 'number') {
       for (let index = 1; index < actions.length; index++) {
@@ -478,10 +430,7 @@ export const createNewRap = (actions: RapAction[]) => {
   };
 };
 
-export const createNewAction = (
-  type: RapActionType,
-  parameters: RapExchangeActionParameters
-): RapSwapAction => {
+export const createNewAction = (type: RapActionType, parameters: RapExchangeActionParameters): RapSwapAction => {
   const newAction = {
     parameters,
     rapType: RAP_TYPE.EXCHANGE,
@@ -493,10 +442,7 @@ export const createNewAction = (
   return newAction;
 };
 
-export const createNewENSAction = (
-  type: RapActionType,
-  parameters: ENSActionParameters
-): RapENSAction => {
+export const createNewENSAction = (type: RapActionType, parameters: ENSActionParameters): RapENSAction => {
   const newAction = {
     parameters,
     transaction: { confirmed: null, hash: null },

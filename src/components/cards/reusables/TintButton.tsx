@@ -1,9 +1,4 @@
-import {
-  AccentColorProvider,
-  Box,
-  Text,
-  useAccentColor,
-} from '@/design-system';
+import { AccentColorProvider, Box, Text, useAccentColor } from '@/design-system';
 import React from 'react';
 import { ButtonPressAnimation } from '../../animations';
 import ConditionalWrap from 'conditional-wrap';
@@ -19,14 +14,7 @@ interface TintButtonProps {
   testID?: string;
 }
 
-export const TintButton = ({
-  children,
-  height,
-  loaded = true,
-  onPress,
-  width,
-  testID,
-}: TintButtonProps) => {
+export const TintButton = ({ children, height, loaded = true, onPress, width, testID }: TintButtonProps) => {
   const { color, mode } = useAccentColor();
   const isDarkMode = mode === 'darkTinted' || mode === 'dark';
 
@@ -34,11 +22,7 @@ export const TintButton = ({
     return (
       <ConditionalWrap
         condition={isDarkMode}
-        wrap={(children: React.ReactNode) => (
-          <AccentColorProvider color={colors.alpha(color, 0.1)}>
-            {children}
-          </AccentColorProvider>
-        )}
+        wrap={(children: React.ReactNode) => <AccentColorProvider color={colors.alpha(color, 0.1)}>{children}</AccentColorProvider>}
       >
         <ButtonPressAnimation onPress={onPress} scaleTo={0.92} testID={testID}>
           <Box
@@ -49,12 +33,7 @@ export const TintButton = ({
             alignItems="center"
             justifyContent="center"
           >
-            <Text
-              color={isDarkMode ? { custom: color } : 'label'}
-              containsEmoji
-              size="15pt"
-              weight="bold"
-            >
+            <Text color={isDarkMode ? { custom: color } : 'label'} containsEmoji size="15pt" weight="bold">
               {children}
             </Text>
           </Box>

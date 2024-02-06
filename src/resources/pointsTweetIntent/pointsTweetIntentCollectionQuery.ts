@@ -1,12 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import {
-  createQueryKey,
-  queryClient,
-  QueryConfig,
-  QueryFunctionArgs,
-  QueryFunctionResult,
-} from '@/react-query';
+import { createQueryKey, queryClient, QueryConfig, QueryFunctionArgs, QueryFunctionResult } from '@/react-query';
 
 import { PointsTweetIntentOrder } from '@/graphql/__generated__/arc';
 import { arcClient } from '@/graphql';
@@ -22,18 +16,10 @@ export type PointsTweetIntentCollectionArgs = {
 // ///////////////////////////////////////////////
 // Query Key
 
-const pointsTweetIntentCollectionQueryKey = ({
-  order,
-}: PointsTweetIntentCollectionArgs) =>
-  createQueryKey(
-    'pointsTweetIntentCollection',
-    { order },
-    { persisterVersion: 1 }
-  );
+const pointsTweetIntentCollectionQueryKey = ({ order }: PointsTweetIntentCollectionArgs) =>
+  createQueryKey('pointsTweetIntentCollection', { order }, { persisterVersion: 1 });
 
-type PointsTweetIntentCollectionQueryKey = ReturnType<
-  typeof pointsTweetIntentCollectionQueryKey
->;
+type PointsTweetIntentCollectionQueryKey = ReturnType<typeof pointsTweetIntentCollectionQueryKey>;
 
 // ///////////////////////////////////////////////
 // Query Function
@@ -45,39 +31,25 @@ async function pointsTweetIntentCollectionQueryFunction({
   return data;
 }
 
-export type PointsTweetIntentCollectionResult = QueryFunctionResult<
-  typeof pointsTweetIntentCollectionQueryFunction
->;
+export type PointsTweetIntentCollectionResult = QueryFunctionResult<typeof pointsTweetIntentCollectionQueryFunction>;
 
 // ///////////////////////////////////////////////
 // Query Prefetcher
 
 export async function prefetchPointsTweetIntentCollection(
   { order }: PointsTweetIntentCollectionArgs,
-  config: QueryConfig<
-    PointsTweetIntentCollectionResult,
-    Error,
-    PointsTweetIntentCollectionQueryKey
-  > = {}
+  config: QueryConfig<PointsTweetIntentCollectionResult, Error, PointsTweetIntentCollectionQueryKey> = {}
 ) {
-  return await queryClient.prefetchQuery(
-    pointsTweetIntentCollectionQueryKey({ order }),
-    pointsTweetIntentCollectionQueryFunction,
-    config
-  );
+  return await queryClient.prefetchQuery(pointsTweetIntentCollectionQueryKey({ order }), pointsTweetIntentCollectionQueryFunction, config);
 }
 
 // ///////////////////////////////////////////////
 // Query Fetcher
 
-export async function fetchPointsTweetIntentCollection({
-  order,
-}: PointsTweetIntentCollectionArgs) {
-  return await queryClient.fetchQuery(
-    pointsTweetIntentCollectionQueryKey({ order }),
-    pointsTweetIntentCollectionQueryFunction,
-    { staleTime: defaultStaleTime }
-  );
+export async function fetchPointsTweetIntentCollection({ order }: PointsTweetIntentCollectionArgs) {
+  return await queryClient.fetchQuery(pointsTweetIntentCollectionQueryKey({ order }), pointsTweetIntentCollectionQueryFunction, {
+    staleTime: defaultStaleTime,
+  });
 }
 
 // ///////////////////////////////////////////////
@@ -85,18 +57,11 @@ export async function fetchPointsTweetIntentCollection({
 
 export function usePointsTweetIntentCollectionQuery(
   { order }: PointsTweetIntentCollectionArgs = {},
-  {
-    enabled,
-    refetchInterval = 30_000,
-  }: { enabled?: boolean; refetchInterval?: number } = {}
+  { enabled, refetchInterval = 30_000 }: { enabled?: boolean; refetchInterval?: number } = {}
 ) {
-  return useQuery(
-    pointsTweetIntentCollectionQueryKey({ order }),
-    pointsTweetIntentCollectionQueryFunction,
-    {
-      enabled,
-      staleTime: defaultStaleTime,
-      refetchInterval,
-    }
-  );
+  return useQuery(pointsTweetIntentCollectionQueryKey({ order }), pointsTweetIntentCollectionQueryFunction, {
+    enabled,
+    staleTime: defaultStaleTime,
+    refetchInterval,
+  });
 }

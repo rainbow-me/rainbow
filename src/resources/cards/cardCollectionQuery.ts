@@ -1,11 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import {
-  createQueryKey,
-  queryClient,
-  QueryConfig,
-  QueryFunctionResult,
-} from '@/react-query';
+import { createQueryKey, queryClient, QueryConfig, QueryFunctionResult } from '@/react-query';
 
 import { arcClient } from '@/graphql';
 import { Card, GetCardCollectionQuery } from '@/graphql/__generated__/arc';
@@ -32,7 +27,7 @@ export const TRIMMED_CARD_KEYS = [
   'primaryButton',
 ] as const;
 
-export type TrimmedCard = Pick<Card, typeof TRIMMED_CARD_KEYS[number]> & {
+export type TrimmedCard = Pick<Card, (typeof TRIMMED_CARD_KEYS)[number]> & {
   sys: Pick<Card['sys'], 'id'>;
   imageCollection: {
     items: {
@@ -50,11 +45,7 @@ const defaultStaleTime = 60_000;
 // ///////////////////////////////////////////////
 // Query Key
 
-export const cardCollectionQueryKey = createQueryKey(
-  'cardCollection',
-  {},
-  { persisterVersion: 1 }
-);
+export const cardCollectionQueryKey = createQueryKey('cardCollection', {}, { persisterVersion: 1 });
 
 // ///////////////////////////////////////////////
 // Query Function
@@ -91,36 +82,20 @@ async function cardCollectionQueryFunction() {
   return parseCardCollectionResponse(data);
 }
 
-export type CardCollectionResult = QueryFunctionResult<
-  typeof cardCollectionQueryFunction
->;
+export type CardCollectionResult = QueryFunctionResult<typeof cardCollectionQueryFunction>;
 
 // ///////////////////////////////////////////////
 // Query Prefetcher
 
-export async function prefetchCardCollection(
-  config: QueryConfig<
-    CardCollectionResult,
-    Error,
-    typeof cardCollectionQueryKey
-  > = {}
-) {
-  return await queryClient.prefetchQuery(
-    cardCollectionQueryKey,
-    cardCollectionQueryFunction,
-    config
-  );
+export async function prefetchCardCollection(config: QueryConfig<CardCollectionResult, Error, typeof cardCollectionQueryKey> = {}) {
+  return await queryClient.prefetchQuery(cardCollectionQueryKey, cardCollectionQueryFunction, config);
 }
 
 // ///////////////////////////////////////////////
 // Query Fetcher
 
 export async function fetchCardCollection() {
-  return await queryClient.fetchQuery(
-    cardCollectionQueryKey,
-    cardCollectionQueryFunction,
-    { staleTime: defaultStaleTime }
-  );
+  return await queryClient.fetchQuery(cardCollectionQueryKey, cardCollectionQueryFunction, { staleTime: defaultStaleTime });
 }
 
 // ///////////////////////////////////////////////

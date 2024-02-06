@@ -1,18 +1,8 @@
 import React, { useEffect } from 'react';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useNavigation } from '../../navigation/Navigation';
 import { enableActionsOnReadOnlyWallet } from '@/config';
-import {
-  Box,
-  ColorModeProvider,
-  globalColors,
-  Stack,
-  Text,
-} from '@/design-system';
+import { Box, ColorModeProvider, globalColors, Stack, Text } from '@/design-system';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import { useENSPendingRegistrations, useWallets } from '@/hooks';
 import Routes from '@/navigation/routesNames';
@@ -95,19 +85,9 @@ export const ENSSearchCard = () => {
   }, [pendingRegistrations]);
 
   return (
-    <GenericCard
-      color={globalColors.blue60}
-      gradient={GRADIENT}
-      onPress={handlePress}
-      testID="ens-register-name-banner"
-      type={cardType}
-    >
+    <GenericCard color={globalColors.blue60} gradient={GRADIENT} onPress={handlePress} testID="ens-register-name-banner" type={cardType}>
       <ColorModeProvider value="darkTinted">
-        <Box
-          height="full"
-          justifyContent="space-between"
-          alignItems="flex-start"
-        >
+        <Box height="full" justifyContent="space-between" alignItems="flex-start">
           <Box as={Animated.View} style={pendingBadgeStyle}>
             <IconOrb
               borderColor={globalColors.blue10}
@@ -120,18 +100,10 @@ export const ENSSearchCard = () => {
             />
           </Box>
           <Box as={Animated.View} position="absolute" style={searchIconStyle}>
-            <IconOrb
-              color={globalColors.blue70}
-              icon="􀊫"
-              shadowColor="shadow"
-            />
+            <IconOrb color={globalColors.blue70} icon="􀊫" shadowColor="shadow" />
           </Box>
           <Stack space="10px">
-            <Text
-              color={{ custom: globalColors.blue20 }}
-              size="13pt"
-              weight="bold"
-            >
+            <Text color={{ custom: globalColors.blue20 }} size="13pt" weight="bold">
               {i18n.t(TRANSLATIONS.mini_title)}
             </Text>
             <Text color="label" size="20pt" weight="heavy">

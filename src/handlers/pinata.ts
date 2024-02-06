@@ -1,9 +1,4 @@
-import {
-  PINATA_API_KEY,
-  PINATA_API_SECRET,
-  PINATA_API_URL,
-  PINATA_GATEWAY_URL,
-} from 'react-native-dotenv';
+import { PINATA_API_KEY, PINATA_API_SECRET, PINATA_API_URL, PINATA_GATEWAY_URL } from 'react-native-dotenv';
 import RNFS from 'react-native-fs';
 
 type UploadFilesResponse = {

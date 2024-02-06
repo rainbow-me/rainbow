@@ -46,41 +46,30 @@ export default function ConfigurationSection({
         </>
       ) : (
         <>
-          {isProfilesEnabled &&
-            !isReadOnlyWallet &&
-            !isExternal &&
-            isSetNameEnabled && (
-              <InfoRow
-                explainSheetType="ens_primary_name"
-                label={lang.t(
-                  'expanded_state.unique_expanded.set_primary_name'
-                )}
-                onSwitchChange={() => {
-                  startRegistration(name, REGISTRATION_MODES.SET_NAME);
-                  navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
-                    externalAvatarUrl,
-                    longFormHeight:
-                      ENSConfirmUpdateSheetHeight +
-                      (externalAvatarUrl ? 70 : 0),
-                    mode: REGISTRATION_MODES.SET_NAME,
-                    name,
-                  });
-                }}
-                switchDisabled={!isOwner}
-                switchValue={isPrimary}
-                useAccentColor
-              />
-            )}
+          {isProfilesEnabled && !isReadOnlyWallet && !isExternal && isSetNameEnabled && (
+            <InfoRow
+              explainSheetType="ens_primary_name"
+              label={lang.t('expanded_state.unique_expanded.set_primary_name')}
+              onSwitchChange={() => {
+                startRegistration(name, REGISTRATION_MODES.SET_NAME);
+                navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
+                  externalAvatarUrl,
+                  longFormHeight: ENSConfirmUpdateSheetHeight + (externalAvatarUrl ? 70 : 0),
+                  mode: REGISTRATION_MODES.SET_NAME,
+                  name,
+                });
+              }}
+              switchDisabled={!isOwner}
+              switchValue={isPrimary}
+              useAccentColor
+            />
+          )}
           {registrant && (
             <InfoRow
               explainSheetType="ens_owner"
               label={lang.t('expanded_state.unique_expanded.owner')}
               useAccentColor
-              value={
-                registrant.name ||
-                formatAddressForDisplay(registrant.address || '', 4, 4) ||
-                ''
-              }
+              value={registrant.name || formatAddressForDisplay(registrant.address || '', 4, 4) || ''}
             />
           )}
           {owner && (
@@ -88,11 +77,7 @@ export default function ConfigurationSection({
               explainSheetType="ens_manager"
               label={lang.t('expanded_state.unique_expanded.manager')}
               useAccentColor
-              value={
-                owner.name ||
-                formatAddressForDisplay(owner.address || '', 4, 4) ||
-                ''
-              }
+              value={owner.name || formatAddressForDisplay(owner.address || '', 4, 4) || ''}
             />
           )}
         </>

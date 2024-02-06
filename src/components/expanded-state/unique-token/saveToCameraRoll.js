@@ -6,17 +6,12 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 
 const getPermissionAndroid = async () => {
   try {
-    const granted = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-      {
-        buttonNegative: lang.t('button.cancel'),
-        buttonPositive: lang.t('button.ok'),
-        message: lang.t(
-          'expanded_state.unique.save.your_permission_is_required'
-        ),
-        title: lang.t('expanded_state.unique.save.image_download_permission'),
-      }
-    );
+    const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE, {
+      buttonNegative: lang.t('button.cancel'),
+      buttonPositive: lang.t('button.ok'),
+      message: lang.t('expanded_state.unique.save.your_permission_is_required'),
+      title: lang.t('expanded_state.unique.save.image_download_permission'),
+    });
     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
       return true;
     }
@@ -48,9 +43,7 @@ async function downloadImageAndroid(url) {
   const granted = await getPermissionAndroid();
   if (!granted) {
     alertError({
-      message: lang.t(
-        'expanded_state.unique.save.access_to_photo_library_was_denied'
-      ),
+      message: lang.t('expanded_state.unique.save.access_to_photo_library_was_denied'),
     });
     return;
   }
@@ -71,8 +64,7 @@ async function downloadImageAndroid(url) {
   }
   const { config, fs } = RNFetchBlob;
   const { PictureDir } = fs.dirs;
-  const path =
-    PictureDir + '/nft_' + filename + Date.now().toString() + '.' + ext;
+  const path = PictureDir + '/nft_' + filename + Date.now().toString() + '.' + ext;
   const options = {
     addAndroidDownloads: {
       description: lang.t('expanded_state.unique.save.nft_image'),

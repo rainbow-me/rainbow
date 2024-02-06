@@ -1,5 +1,4 @@
-const fraction = (numerator: number, denominator: number) =>
-  `${(numerator * 100) / denominator}%`;
+const fraction = (numerator: number, denominator: number) => `${(numerator * 100) / denominator}%`;
 
 export const widths = {
   '1/2': fraction(1, 2),

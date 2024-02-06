@@ -22,27 +22,27 @@ const PrivacySection = () => {
   const { navigate } = useNavigation();
   const { accountENS } = useAccountProfile();
 
-  const [publicShowCase, togglePublicShowcase] = useReducer(
-    publicShowCase => !publicShowCase,
-    webDataEnabled
+  const [publicShowCase, togglePublicShowcase] = useReducer(publicShowCase => !publicShowCase, webDataEnabled);
+  const [analyticsEnabled, toggleAnalytics] = useReducer(
+    analyticsEnabled => {
+      if (analyticsEnabled) {
+        device.set(['doNotTrack'], true);
+        logger.debug(`Analytics tracking disabled`);
+        analyticsV2.track(analyticsV2.event.analyticsTrackingDisabled);
+        logger.disable();
+        analyticsV2.disable();
+        return false;
+      } else {
+        device.set(['doNotTrack'], false);
+        logger.enable();
+        analyticsV2.enable();
+        logger.debug(`Analytics tracking enabled`);
+        analyticsV2.track(analyticsV2.event.analyticsTrackingEnabled);
+        return true;
+      }
+    },
+    !device.get(['doNotTrack'])
   );
-  const [analyticsEnabled, toggleAnalytics] = useReducer(analyticsEnabled => {
-    if (analyticsEnabled) {
-      device.set(['doNotTrack'], true);
-      logger.debug(`Analytics tracking disabled`);
-      analyticsV2.track(analyticsV2.event.analyticsTrackingDisabled);
-      logger.disable();
-      analyticsV2.disable();
-      return false;
-    } else {
-      device.set(['doNotTrack'], false);
-      logger.enable();
-      analyticsV2.enable();
-      logger.debug(`Analytics tracking enabled`);
-      analyticsV2.track(analyticsV2.event.analyticsTrackingEnabled);
-      return true;
-    }
-  }, !device.get(['doNotTrack']));
 
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
@@ -75,25 +75,14 @@ const PrivacySection = () => {
               </Box>
             </Inline>
             <MenuContainer>
-              <Menu
-                description={i18n.t(TRANSLATIONS.analytics_toggle_description)}
-              >
+              <Menu description={i18n.t(TRANSLATIONS.analytics_toggle_description)}>
                 <MenuItem
                   disabled
                   hasSfSymbol
                   leftComponent={<MenuItem.TextIcon icon="􀣉" isLink />}
-                  rightComponent={
-                    <Switch
-                      onValueChange={toggleAnalytics}
-                      value={analyticsEnabled}
-                    />
-                  }
+                  rightComponent={<Switch onValueChange={toggleAnalytics} value={analyticsEnabled} />}
                   size={52}
-                  titleComponent={
-                    <MenuItem.Title
-                      text={i18n.t(TRANSLATIONS.analytics_toggle)}
-                    />
-                  }
+                  titleComponent={<MenuItem.Title text={i18n.t(TRANSLATIONS.analytics_toggle)} />}
                 />
               </Menu>
               <Menu description={i18n.t(TRANSLATIONS.when_public)}>
@@ -101,19 +90,10 @@ const PrivacySection = () => {
                   disabled
                   hasSfSymbol
                   leftComponent={<MenuItem.TextIcon icon="􀏅" isLink />}
-                  rightComponent={
-                    <Switch
-                      onValueChange={toggleWebData}
-                      value={publicShowCase}
-                    />
-                  }
+                  rightComponent={<Switch onValueChange={toggleWebData} value={publicShowCase} />}
                   size={52}
                   testID="public-showcase"
-                  titleComponent={
-                    <MenuItem.Title
-                      text={i18n.t(TRANSLATIONS.public_showcase)}
-                    />
-                  }
+                  titleComponent={<MenuItem.Title text={i18n.t(TRANSLATIONS.public_showcase)} />}
                 />
               </Menu>
               {profilesEnabled && accountENS && (
@@ -123,12 +103,7 @@ const PrivacySection = () => {
                     leftComponent={<MenuItem.TextIcon icon="􀉭" isLink />}
                     onPress={viewProfile}
                     size={52}
-                    titleComponent={
-                      <MenuItem.Title
-                        isLink
-                        text={i18n.t(TRANSLATIONS.view_profile)}
-                      />
-                    }
+                    titleComponent={<MenuItem.Title isLink text={i18n.t(TRANSLATIONS.view_profile)} />}
                   />
                 </Menu>
               )}

@@ -13,34 +13,17 @@ import { colors } from '@/styles';
 import { profileUtils } from '@/utils';
 import { delay } from '@rainbow-me/helpers/utilities';
 
-export default function WalletProfileState({
-  actionType,
-  address,
-  isNewProfile,
-  onCancel,
-  onCloseModal,
-  profile,
-  forceColor,
-}) {
+export default function WalletProfileState({ actionType, address, isNewProfile, onCancel, onCloseModal, profile, forceColor }) {
   const [webProfile, setWebProfile] = useState(null);
   const { goBack, navigate } = useNavigation();
   const { getWebProfile } = useUpdateEmoji();
 
   const { color: nameColor, emoji: nameEmoji } = useMemo(
-    () =>
-      getWalletProfileMeta(
-        address,
-        profile,
-        webProfile,
-        isNewProfile,
-        forceColor
-      ),
+    () => getWalletProfileMeta(address, profile, webProfile, isNewProfile, forceColor),
     [address, forceColor, isNewProfile, profile, webProfile]
   );
 
-  const [value, setValue] = useState(
-    profile?.name ? removeFirstEmojiFromString(profile.name) : ''
-  );
+  const [value, setValue] = useState(profile?.name ? removeFirstEmojiFromString(profile.name) : '');
 
   const accentColor = colors.avatarBackgrounds[nameColor];
   const profileImage = profile.image;
@@ -57,10 +40,7 @@ export default function WalletProfileState({
   const handleSubmit = useCallback(async () => {
     analytics.track('Tapped "Submit" on Wallet Profile modal');
     onCloseModal({
-      color:
-        typeof nameColor === 'string'
-          ? profileUtils.colorHexToIndex(nameColor)
-          : nameColor,
+      color: typeof nameColor === 'string' ? profileUtils.colorHexToIndex(nameColor) : nameColor,
       image: profileImage,
       name: nameEmoji ? `${nameEmoji} ${value}` : value,
     });
@@ -76,17 +56,7 @@ export default function WalletProfileState({
     } else {
       setCallbackAfterObtainingSeedsFromKeychainOrError(callback);
     }
-  }, [
-    actionType,
-    nameColor,
-    goBack,
-    isNewProfile,
-    nameEmoji,
-    navigate,
-    onCloseModal,
-    profileImage,
-    value,
-  ]);
+  }, [actionType, nameColor, goBack, isNewProfile, nameEmoji, navigate, onCloseModal, profileImage, value]);
 
   useEffect(() => {
     const getProfile = async () => {

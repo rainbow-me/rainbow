@@ -9,9 +9,7 @@ export const getDappHostname = memoFn(url => {
   if (subdomains.length === 2) {
     hostname = urlObject.hostname;
   } else {
-    hostname = `${subdomains[subdomains.length - 2]}.${
-      subdomains[subdomains.length - 1]
-    }`;
+    hostname = `${subdomains[subdomains.length - 2]}.${subdomains[subdomains.length - 1]}`;
   }
   return hostname;
 });

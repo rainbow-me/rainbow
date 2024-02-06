@@ -19,8 +19,7 @@ type MarqueeItemType = {
   testID?: string;
 };
 
-export const ensAvatarUrl = (ensName: string) =>
-  `https://metadata.ens.domains/mainnet/avatar/${ensName}?v=1.0`;
+export const ensAvatarUrl = (ensName: string) => `https://metadata.ens.domains/mainnet/avatar/${ensName}?v=1.0`;
 
 export const getEnsMarqueeFallback = (): EnsMarqueeAccount[] => {
   return ensIntroMarqueeNames.map(name => ({
@@ -35,26 +34,18 @@ const estimateDescriptionProfilePreviewHeight = (description?: string) => {
   return description ? Math.ceil(description.length / 50) * lineHeight : 0;
 };
 
-export default function IntroMarquee({
-  isSmallPhone,
-}: {
-  isSmallPhone: boolean;
-}) {
+export default function IntroMarquee({ isSmallPhone }: { isSmallPhone: boolean }) {
   const { navigate } = useNavigation();
 
   const { data, isLoading } = useEnsMarquee();
 
   const handlePressENS = useCallback(
     (ensName: string) => {
-      const data = queryClient.getQueryData<
-        ReturnType<typeof useENSRecords>['data']
-      >(ensRecordsQueryKey({ name: ensName }));
+      const data = queryClient.getQueryData<ReturnType<typeof useENSRecords>['data']>(ensRecordsQueryKey({ name: ensName }));
       const description = data?.records?.description || '';
       navigate(Routes.PROFILE_PREVIEW_SHEET, {
         address: ensName,
-        descriptionProfilePreviewHeight: estimateDescriptionProfilePreviewHeight(
-          description
-        ),
+        descriptionProfilePreviewHeight: estimateDescriptionProfilePreviewHeight(description),
         fromDiscover: true,
       });
     },
@@ -99,13 +90,7 @@ export default function IntroMarquee({
 
   return (
     <Box height={{ custom: isSmallPhone ? 90 : 100 }}>
-      <MarqueeList
-        height={isSmallPhone ? 90 : 100}
-        items={items}
-        renderItem={renderItem}
-        speed={-15}
-        testID="ens-names-marquee"
-      />
+      <MarqueeList height={isSmallPhone ? 90 : 100} items={items} renderItem={renderItem} speed={-15} testID="ens-names-marquee" />
     </Box>
   );
 }
@@ -151,12 +136,7 @@ function ENSAvatarPlaceholder({
             width={{ custom: 80 }}
             size={100}
           />
-          <Text
-            align="center"
-            color="secondary50 (Deprecated)"
-            size="12px / 14px (Deprecated)"
-            weight="semibold"
-          >
+          <Text align="center" color="secondary50 (Deprecated)" size="12px / 14px (Deprecated)" weight="semibold">
             {account.name}
           </Text>
         </Stack>

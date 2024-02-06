@@ -14,11 +14,7 @@ function prettify(code: string) {
     .replace(/\n$/, '');
 }
 
-export const getSourceFromExample = ({
-  Example,
-}: {
-  Example: Example['Example'];
-}) => {
+export const getSourceFromExample = ({ Example }: { Example: Example['Example'] }) => {
   let isIffe = false;
   let jsxString = '';
   let element;

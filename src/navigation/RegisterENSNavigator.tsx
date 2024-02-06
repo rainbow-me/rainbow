@@ -4,21 +4,14 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { StatusBar } from 'react-native';
 import { useSetRecoilState } from 'recoil';
 import { SheetHandleFixedToTopHeight, SlackSheet } from '../components/sheet';
-import ENSAssignRecordsSheet, {
-  ENSAssignRecordsBottomActions,
-} from '../screens/ENSAssignRecordsSheet';
+import ENSAssignRecordsSheet, { ENSAssignRecordsBottomActions } from '../screens/ENSAssignRecordsSheet';
 import ENSIntroSheet from '../screens/ENSIntroSheet';
 import ENSSearchSheet from '../screens/ENSSearchSheet';
 import { sharedCoolModalTopOffset } from './config';
 import { avatarMetadataAtom } from '@/components/ens-registration/RegistrationAvatar/RegistrationAvatar';
 import { Box } from '@/design-system';
 import { accentColorAtom, REGISTRATION_MODES } from '@/helpers/ens';
-import {
-  useDimensions,
-  useENSRegistration,
-  useENSRegistrationForm,
-  usePrevious,
-} from '@/hooks';
+import { useDimensions, useENSRegistration, useENSRegistrationForm, usePrevious } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import { deviceUtils } from '@/utils';
@@ -59,20 +52,13 @@ export default function RegisterENSNavigator() {
 
   const { colors } = useTheme();
 
-  const contentHeight =
-    deviceHeight -
-    SheetHandleFixedToTopHeight -
-    (!isSmallPhone ? sharedCoolModalTopOffset : 0);
+  const contentHeight = deviceHeight - SheetHandleFixedToTopHeight - (!isSmallPhone ? sharedCoolModalTopOffset : 0);
 
   const [isSearchEnabled, setIsSearchEnabled] = useState(true);
 
   const { clearValues } = useENSRegistrationForm();
 
-  const {
-    removeRecordByKey,
-    clearCurrentRegistrationName,
-    startRegistration,
-  } = useENSRegistration();
+  const { removeRecordByKey, clearCurrentRegistrationName, startRegistration } = useENSRegistration();
 
   const initialRouteName = useMemo(() => {
     const { ensName, mode } = params || { mode: REGISTRATION_MODES.CREATE };
@@ -93,9 +79,7 @@ export default function RegisterENSNavigator() {
   const [currentRouteName, setCurrentRouteName] = useState(initialRouteName);
   const previousRouteName = usePrevious(currentRouteName);
 
-  const screenOptions = useMemo(() => defaultScreenOptions[currentRouteName], [
-    currentRouteName,
-  ]);
+  const screenOptions = useMemo(() => defaultScreenOptions[currentRouteName], [currentRouteName]);
 
   useEffect(
     () => () => {
@@ -112,20 +96,11 @@ export default function RegisterENSNavigator() {
       clearValues();
       clearCurrentRegistrationName();
     },
-    [
-      clearCurrentRegistrationName,
-      clearValues,
-      colors.purple,
-      removeRecordByKey,
-      setAccentColor,
-      setAvatarMetadata,
-    ]
+    [clearCurrentRegistrationName, clearValues, colors.purple, removeRecordByKey, setAccentColor, setAvatarMetadata]
   );
 
-  const enableAssignRecordsBottomActions =
-    currentRouteName !== Routes.ENS_INTRO_SHEET;
-  const isBottomActionsVisible =
-    currentRouteName === Routes.ENS_ASSIGN_RECORDS_SHEET;
+  const enableAssignRecordsBottomActions = currentRouteName !== Routes.ENS_INTRO_SHEET;
+  const isBottomActionsVisible = currentRouteName === Routes.ENS_ASSIGN_RECORDS_SHEET;
 
   useEffect(() => {
     if (!screenOptions.scrollEnabled) {

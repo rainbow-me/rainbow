@@ -14,21 +14,7 @@ import tr_TR from './tr_TR.json';
 import zh_CN from './zh_CN.json';
 
 import { simpleObjectProxy } from '@/languages/utils';
-import {
-  enUS,
-  es,
-  fr,
-  hi,
-  id,
-  ja,
-  ptBR,
-  ru,
-  tr,
-  zhCN,
-  ar,
-  th,
-  ko,
-} from 'date-fns/locale';
+import { enUS, es, fr, hi, id, ja, ptBR, ru, tr, zhCN, ar, th, ko } from 'date-fns/locale';
 
 /**
  * Use English as our "template" for translations. All other translations
@@ -188,6 +174,4 @@ export function t(keypath: string, args?: { [key: string]: string | number }) {
  * Alternative standard usage:
  *   `i18n.t('account.hide')`
  */
-export const l = simpleObjectProxy<Translation['translation']>(
-  en_US['translation']
-);
+export const l = simpleObjectProxy<Translation['translation']>(en_US['translation']);

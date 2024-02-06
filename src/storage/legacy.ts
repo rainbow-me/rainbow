@@ -1,8 +1,5 @@
 import { Storage } from '@/storage';
-import {
-  deprecatedGetLocal,
-  deprecatedRemoveLocal,
-} from '@/handlers/localstorage/common';
+import { deprecatedGetLocal, deprecatedRemoveLocal } from '@/handlers/localstorage/common';
 
 import { Legacy } from '@/storage/schema';
 import { logger, RainbowError } from '@/logger';
@@ -12,10 +9,7 @@ import { logger, RainbowError } from '@/logger';
  * difference is that `get()` is `async`, because it first checks for data in
  * AsyncStorage before returning it.
  */
-class LegacyStorage<Scopes extends unknown[], Schema> extends Storage<
-  Scopes,
-  Schema
-> {
+class LegacyStorage<Scopes extends unknown[], Schema> extends Storage<Scopes, Schema> {
   /**
    * IMPORTANT: This method is async, different from our other MMKV storage
    * classes. It migrates data from AsyncStorage to MMKV, and then removes it,
@@ -27,9 +21,7 @@ class LegacyStorage<Scopes extends unknown[], Schema> extends Storage<
    *   `await get([scope, key])`
    */
   // @ts-ignore Not the same signature as the parent class
-  async get<Key extends keyof Schema>(
-    scopes: [...Scopes, Key]
-  ): Promise<Schema[Key] | undefined> {
+  async get<Key extends keyof Schema>(scopes: [...Scopes, Key]): Promise<Schema[Key] | undefined> {
     const key = scopes.join(this.sep);
     const res = this.store.getString(key);
 

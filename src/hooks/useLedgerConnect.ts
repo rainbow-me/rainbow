@@ -3,11 +3,7 @@ import { logger, RainbowError } from '@/logger';
 import { checkLedgerConnection, LEDGER_ERROR_CODES } from '@/utils/ledger';
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import {
-  LedgerIsReadyAtom,
-  readyForPollingAtom,
-  triggerPollerCleanupAtom,
-} from '@/navigation/HardwareWalletTxNavigator';
+import { LedgerIsReadyAtom, readyForPollingAtom, triggerPollerCleanupAtom } from '@/navigation/HardwareWalletTxNavigator';
 
 /**
  * React hook used for checking ledger connections and handling connnection error states
@@ -26,9 +22,7 @@ export function useLedgerConnect({
   const transport = useRef<TransportBLE | undefined>();
   const timer = useRef<NodeJS.Timeout | undefined>(undefined);
   const isReady = useRecoilValue(LedgerIsReadyAtom);
-  const [triggerPollerCleanup, setTriggerPollerCleanup] = useRecoilState(
-    triggerPollerCleanupAtom
-  );
+  const [triggerPollerCleanup, setTriggerPollerCleanup] = useRecoilState(triggerPollerCleanupAtom);
   const setReadyForPolling = useSetRecoilState(readyForPollingAtom);
 
   /**
@@ -39,10 +33,7 @@ export function useLedgerConnect({
       if (isReady) return;
       if (errorType === LEDGER_ERROR_CODES.DISCONNECTED) {
         setReadyForPolling(false);
-        logger.info(
-          '[LedgerConnect] - Device Disconnected - Attempting Reconnect',
-          {}
-        );
+        logger.info('[LedgerConnect] - Device Disconnected - Attempting Reconnect', {});
         transport.current = undefined;
         try {
           transport.current = await TransportBLE.open(deviceId);
@@ -105,14 +96,7 @@ export function useLedgerConnect({
         }
       }, 3000);
     }
-  }, [
-    deviceId,
-    handleLedgerError,
-    handleLedgerSuccess,
-    readyForPolling,
-    setTriggerPollerCleanup,
-    triggerPollerCleanup,
-  ]);
+  }, [deviceId, handleLedgerError, handleLedgerSuccess, readyForPolling, setTriggerPollerCleanup, triggerPollerCleanup]);
 
   useEffect(() => {
     return () => {

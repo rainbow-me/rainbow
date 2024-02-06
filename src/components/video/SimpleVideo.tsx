@@ -1,11 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import {
-  Animated,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { Animated, StyleSheet, TouchableWithoutFeedback, View, ViewStyle } from 'react-native';
 // @ts-ignore
 import Video from 'react-native-video';
 import { ImgixImage } from '@/components/images';
@@ -42,18 +36,10 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
 });
 
-export default function SimpleVideo({
-  style,
-  uri,
-  posterUri,
-  loading,
-  setLoading,
-}: SimpleVideoProps): JSX.Element {
+export default function SimpleVideo({ style, uri, posterUri, loading, setLoading }: SimpleVideoProps): JSX.Element {
   const ref = useRef<Video>();
   const [controlsEnabled, setControlsEnabled] = useState(false);
-  const [opacity] = useState<Animated.Value>(
-    () => new Animated.Value(loading ? 1 : 0)
-  );
+  const [opacity] = useState<Animated.Value>(() => new Animated.Value(loading ? 1 : 0));
 
   useEffect(() => {
     Animated.timing(opacity, {
@@ -75,9 +61,7 @@ export default function SimpleVideo({
     };
   }, [ref]);
   return (
-    <TouchableWithoutFeedback
-      onPress={() => !controlsEnabled && setControlsEnabled(true)}
-    >
+    <TouchableWithoutFeedback onPress={() => !controlsEnabled && setControlsEnabled(true)}>
       <View style={[styles.flex, StyleSheet.flatten(style)]}>
         <StyledBackground />
         <StyledVideo
@@ -89,10 +73,7 @@ export default function SimpleVideo({
           resizeMode="cover"
           source={{ uri }}
         />
-        <StyledPosterContainer
-          pointerEvents={loading ? 'auto' : 'none'}
-          style={{ opacity }}
-        >
+        <StyledPosterContainer pointerEvents={loading ? 'auto' : 'none'} style={{ opacity }}>
           <StyledImgixImage source={{ uri: posterUri }} />
         </StyledPosterContainer>
       </View>

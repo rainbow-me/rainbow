@@ -30,13 +30,7 @@ export const InfoCard = ({
 
   return (
     // <ButtonPressAnimation onPress={onPress} overflowMargin={50}>
-    <Box
-      padding="20px"
-      background="surfaceSecondaryElevated"
-      shadow="12px"
-      height={{ custom: 98 }}
-      borderRadius={18}
-    >
+    <Box padding="20px" background="surfaceSecondaryElevated" shadow="12px" height={{ custom: 98 }} borderRadius={18}>
       <Stack space="12px">
         {/* <Inline space="4px" alignVertical="center"> */}
         <Text color="labelSecondary" weight="bold" size="15pt">
@@ -47,22 +41,13 @@ export const InfoCard = ({
           </Text>
         </Inline> */}
         <Box height={{ custom: 15 }} justifyContent="flex-end">
-          <Text
-            color={mainTextColor === 'primary' ? 'label' : 'labelTertiary'}
-            weight="heavy"
-            size={mainTextFontSize}
-          >
+          <Text color={mainTextColor === 'primary' ? 'label' : 'labelTertiary'} weight="heavy" size={mainTextFontSize}>
             {mainText}
           </Text>
         </Box>
         <Inline space="4px">
           {icon && (
-            <Text
-              align="center"
-              weight="heavy"
-              size="12pt"
-              color={{ custom: accentColor }}
-            >
+            <Text align="center" weight="heavy" size="12pt" color={{ custom: accentColor }}>
               {icon}
             </Text>
           )}

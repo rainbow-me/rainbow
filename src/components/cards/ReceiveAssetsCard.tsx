@@ -23,9 +23,7 @@ export const ReceiveAssetsCard = () => {
   const { accountAddress } = useAccountProfile();
   const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();
-  const [isToastActive, setToastActive] = useRecoilState(
-    addressCopiedToastAtom
-  );
+  const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
 
   const onPressCopy = useCallback(
     (onNewEmoji: () => void) => {
@@ -52,11 +50,7 @@ export const ReceiveAssetsCard = () => {
   const { accentColor, loaded: accentColorLoaded } = useAccountAccentColor();
 
   return (
-    <GenericCard
-      type="stretch"
-      disabled={!accentColorLoaded}
-      testID="receive-card"
-    >
+    <GenericCard type="stretch" disabled={!accentColorLoaded} testID="receive-card">
       <Stack space="36px">
         <Inline alignHorizontal="justify">
           <Stack space="16px">
@@ -73,12 +67,7 @@ export const ReceiveAssetsCard = () => {
             )}
             {accentColorLoaded ? (
               <Box style={{ maxWidth: 210 }}>
-                <Text
-                  size="15pt"
-                  weight="semibold"
-                  color="labelSecondary"
-                  numberOfLines={2}
-                >
+                <Text size="15pt" weight="semibold" color="labelSecondary" numberOfLines={2}>
                   {i18n.t(TRANSLATIONS.description)}
                 </Text>
               </Box>
@@ -93,37 +82,16 @@ export const ReceiveAssetsCard = () => {
               </Box>
             )}
           </Stack>
-          <ButtonPressAnimation
-            onPress={onPressQRCode}
-            scaleTo={0.8}
-            overflowMargin={50}
-          >
-            <IconOrb
-              color={accentColor}
-              icon="􀖂"
-              shadowColor="accent"
-              loaded={accentColorLoaded}
-            />
+          <ButtonPressAnimation onPress={onPressQRCode} scaleTo={0.8} overflowMargin={50}>
+            <IconOrb color={accentColor} icon="􀖂" shadowColor="accent" loaded={accentColorLoaded} />
           </ButtonPressAnimation>
         </Inline>
         {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
         /* @ts-ignore - JS component */}
-        <FloatingEmojis
-          distance={250}
-          duration={500}
-          fadeOut={false}
-          scaleTo={0}
-          size={50}
-          wiggleFactor={0}
-        >
+        <FloatingEmojis distance={250} duration={500} fadeOut={false} scaleTo={0} size={50} wiggleFactor={0}>
           {({ onNewEmoji }: { onNewEmoji: () => void }) => (
             <AccentColorProvider color={accentColor}>
-              <TintButton
-                onPress={() => onPressCopy(onNewEmoji)}
-                height={36}
-                loaded={accentColorLoaded}
-                testID="copy-address-button"
-              >
+              <TintButton onPress={() => onPressCopy(onNewEmoji)} height={36} loaded={accentColorLoaded} testID="copy-address-button">
                 {`􀐅 ${i18n.t(TRANSLATIONS.copy_address)}`}
               </TintButton>
             </AccentColorProvider>

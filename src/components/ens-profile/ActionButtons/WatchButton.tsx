@@ -5,15 +5,7 @@ import { ContextMenuButton, MenuConfig } from 'react-native-ios-context-menu';
 import ActionButton from './ActionButton';
 import { useWatchWallet } from '@/hooks';
 
-export default function WatchButton({
-  address,
-  ensName,
-  avatarUrl,
-}: {
-  address?: string;
-  ensName?: string;
-  avatarUrl?: string | null;
-}) {
+export default function WatchButton({ address, ensName, avatarUrl }: { address?: string; ensName?: string; avatarUrl?: string | null }) {
   const { isImporting, isWatching, watchWallet } = useWatchWallet({
     address,
     avatarUrl,
@@ -68,10 +60,7 @@ export default function WatchButton({
         testID="profile-sheet-watch-button"
         variant={!optimisticIsWatching ? 'solid' : 'outlined'}
       >
-        {(optimisticIsWatching ? '' : '􀨭 ') +
-          lang.t(
-            `profiles.actions.${optimisticIsWatching ? 'watching' : 'watch'}`
-          )}
+        {(optimisticIsWatching ? '' : '􀨭 ') + lang.t(`profiles.actions.${optimisticIsWatching ? 'watching' : 'watch'}`)}
       </ActionButton>
     </ConditionalWrap>
   );

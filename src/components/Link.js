@@ -30,12 +30,7 @@ const Link = ({
   const { colors } = useTheme();
 
   return (
-    <ButtonPressAnimation
-      compensateForTransformOrigin
-      onPress={handlePress}
-      scaleTo={scaleTo}
-      transformOrigin={transformOrigin}
-    >
+    <ButtonPressAnimation compensateForTransformOrigin onPress={handlePress} scaleTo={scaleTo} transformOrigin={transformOrigin}>
       <Container {...props}>
         {!emoji && <Icon color={color || colors.appleBlue} name={emojiName} />}
         <Text color={color || colors.appleBlue} size="lmedium" weight={weight}>

@@ -8,27 +8,14 @@ import { useTheme } from '@/theme';
 const SendEmptyState = () => {
   const { colors } = useTheme();
 
-  const icon = (
-    <Icon
-      color={colors.alpha(colors.blueGreyDark, 0.06)}
-      height={88}
-      name="send"
-      style={sx.icon}
-      width={91}
-    />
-  );
+  const icon = <Icon color={colors.alpha(colors.blueGreyDark, 0.06)} height={88} name="send" style={sx.icon} width={91} />;
 
   if (android) {
     return <View style={sx.androidContainer}>{icon}</View>;
   }
 
   return (
-    <Centered
-      backgroundColor={colors.white}
-      flex={1}
-      justify="space-between"
-      paddingBottom={sheetVerticalOffset + 19}
-    >
+    <Centered backgroundColor={colors.white} flex={1} justify="space-between" paddingBottom={sheetVerticalOffset + 19}>
       {icon}
     </Centered>
   );

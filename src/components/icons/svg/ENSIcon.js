@@ -4,34 +4,13 @@ import Svg, { Defs, G, LinearGradient, Path, Stop } from 'react-native-svg';
 const ENSIcon = props => (
   <Svg height="80" viewBox="0 0 70 80" width="70" {...props}>
     <Defs>
-      <LinearGradient
-        gradientUnits="userSpaceOnUse"
-        id="linear-gradient"
-        x1={41.95}
-        x2={12.57}
-        y1={2.57}
-        y2={34.42}
-      >
+      <LinearGradient gradientUnits="userSpaceOnUse" id="linear-gradient" x1={41.95} x2={12.57} y1={2.57} y2={34.42}>
         <Stop offset={0.58} stopColor="#a0a8d4" />
         <Stop offset={0.73} stopColor="#8791c7" />
         <Stop offset={0.91} stopColor="#6470b4" />
       </LinearGradient>
-      <LinearGradient
-        id="linear-gradient-2"
-        x1={42.57}
-        x2={71.96}
-        xlinkHref="#linear-gradient"
-        y1={81.66}
-        y2={49.81}
-      />
-      <LinearGradient
-        gradientUnits="userSpaceOnUse"
-        id="linear-gradient-3"
-        x1={42.26}
-        x2={42.26}
-        y1={1.24}
-        y2={82.84}
-      >
+      <LinearGradient id="linear-gradient-2" x1={42.57} x2={71.96} xlinkHref="#linear-gradient" y1={81.66} y2={49.81} />
+      <LinearGradient gradientUnits="userSpaceOnUse" id="linear-gradient-3" x1={42.26} x2={42.26} y1={1.24} y2={82.84}>
         <Stop offset={0} stopColor="#9994fc" />
         <Stop offset={0.18} stopColor="#93a6ff" />
         <Stop offset={0.57} stopColor="#5298ff" />

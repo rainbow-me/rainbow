@@ -27,11 +27,7 @@ export const getTheme = () => getGlobal(THEME, 'light');
  */
 export const saveTheme = (theme: string) => {
   if (IS_ANDROID) {
-    NavigationBar.changeNavigationBarColor(
-      getColorForThemeAndNavigationStyle(theme),
-      theme === 'light',
-      true
-    );
+    NavigationBar.changeNavigationBarColor(getColorForThemeAndNavigationStyle(theme), theme === 'light', true);
   }
 
   return saveGlobal(THEME, theme);

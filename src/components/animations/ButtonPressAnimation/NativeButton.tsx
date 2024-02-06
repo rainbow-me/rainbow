@@ -21,35 +21,29 @@ interface SpecificRawNativeButtonProps extends Props {
   transformOrigin?: TransformOrigin;
 }
 
-const RawNativeButton = requireNativeComponent<SpecificRawNativeButtonProps>(
-  'Button'
-);
+const RawNativeButton = requireNativeComponent<SpecificRawNativeButtonProps>('Button');
 
-const ButtonWithTransformOrigin = styled(RawNativeButton)(
-  ({ transformOrigin }: { transformOrigin: TransformOrigin }) => {
-    if (!transformOrigin) return {};
-    const [x, y] = transformOrigin;
-    // 👇️ Here we want to set the button's top / left
-    // properties (relative to the parent wrapper view) to
-    // values opposite of the provided transformOrigin.
-    // This is necessary to do in order for the `transformOrigin` prop to
-    // work with NativeButton without effecting NativeButton's layout.
-    const styles: ViewStyle = {};
+const ButtonWithTransformOrigin = styled(RawNativeButton)(({ transformOrigin }: { transformOrigin: TransformOrigin }) => {
+  if (!transformOrigin) return {};
+  const [x, y] = transformOrigin;
+  // 👇️ Here we want to set the button's top / left
+  // properties (relative to the parent wrapper view) to
+  // values opposite of the provided transformOrigin.
+  // This is necessary to do in order for the `transformOrigin` prop to
+  // work with NativeButton without effecting NativeButton's layout.
+  const styles: ViewStyle = {};
 
-    if (x !== 0.5) {
-      styles.left = `${x + 0.5 * (x > 0.5 ? 100 : -100)}%`;
-    }
-    if (y !== 0.5) {
-      styles.top = `${y + 0.5 * (y > 0.5 ? 100 : -100)}%`;
-    }
-
-    return styles;
+  if (x !== 0.5) {
+    styles.left = `${x + 0.5 * (x > 0.5 ? 100 : -100)}%`;
   }
-);
+  if (y !== 0.5) {
+    styles.top = `${y + 0.5 * (y > 0.5 ? 100 : -100)}%`;
+  }
 
-export function normalizeTransformOrigin(
-  transformOrigin: TransformOrigin | string | undefined
-): TransformOrigin | undefined {
+  return styles;
+});
+
+export function normalizeTransformOrigin(transformOrigin: TransformOrigin | string | undefined): TransformOrigin | undefined {
   if (Array.isArray(transformOrigin) && transformOrigin.length === 2) {
     return transformOrigin;
   }
@@ -84,10 +78,7 @@ const NativeButton = React.forwardRef(
     }: Props,
     ref
   ) => {
-    const normalizedTransformOrigin = useMemo(
-      () => normalizeTransformOrigin(transformOrigin),
-      [transformOrigin]
-    );
+    const normalizedTransformOrigin = useMemo(() => normalizeTransformOrigin(transformOrigin), [transformOrigin]);
 
     return compensateForTransformOrigin ? (
       <View>

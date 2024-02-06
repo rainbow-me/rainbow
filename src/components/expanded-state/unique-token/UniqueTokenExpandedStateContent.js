@@ -40,8 +40,7 @@ const UniqueTokenExpandedStateContent = ({
   const supportsAnythingExceptImageAnd3d = supportsVideo || supportsAudio;
 
   const aspectRatio = usePersistentAspectRatio(asset.lowResUrl);
-  const aspectRatioWithFallback =
-    supports3d || supportsAudio ? 0.88 : aspectRatio.result || 1;
+  const aspectRatioWithFallback = supports3d || supportsAudio ? 0.88 : aspectRatio.result || 1;
 
   // default to showing a loading spinner for 3D/video assets
   const [loading, setLoading] = React.useState(supports3d || supportsVideo);
@@ -51,10 +50,7 @@ const UniqueTokenExpandedStateContent = ({
       animationProgress={animationProgress}
       aspectRatio={aspectRatioWithFallback}
       borderRadius={borderRadius}
-      disableAnimations={
-        disablePreview ||
-        (ios ? supportsVideo : supportsAnythingExceptImageAnd3d)
-      }
+      disableAnimations={disablePreview || (ios ? supportsVideo : supportsAnythingExceptImageAnd3d)}
       horizontalPadding={horizontalPadding}
       onZoomIn={onContentFocus}
       onZoomOut={onContentBlur}
@@ -71,18 +67,9 @@ const UniqueTokenExpandedStateContent = ({
             uri={asset.animation_url || asset.image_url}
           />
         ) : supports3d ? (
-          <ModelView
-            fallbackUri={asset.image_url}
-            loading={loading}
-            setLoading={setLoading}
-            uri={asset.animation_url || asset.image_url}
-          />
+          <ModelView fallbackUri={asset.image_url} loading={loading} setLoading={setLoading} uri={asset.animation_url || asset.image_url} />
         ) : supportsAudio ? (
-          <AudioPlayer
-            fontColor={textColor}
-            imageColor={imageColor}
-            uri={asset.animation_url || asset.image_url}
-          />
+          <AudioPlayer fontColor={textColor} imageColor={imageColor} uri={asset.animation_url || asset.image_url} />
         ) : (
           <UniqueTokenImage
             backgroundColor={asset.background}

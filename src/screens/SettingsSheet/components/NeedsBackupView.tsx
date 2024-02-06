@@ -94,36 +94,18 @@ export default function NeedsBackupView() {
   return (
     <Box alignItems="center" height="full" width="full">
       <Box marginTop="-10px">
-        <Text
-          color={{ custom: colors.orangeLight }}
-          size="14px / 19px (Deprecated)"
-          weight="medium"
-        >
+        <Text color={{ custom: colors.orangeLight }} size="14px / 19px (Deprecated)" weight="medium">
           {lang.t('back_up.needs_backup.not_backed_up')}
         </Text>
       </Box>
-      <Box
-        alignItems="center"
-        height="full"
-        justifyContent="center"
-        marginTop="-36px"
-        width="full"
-      >
+      <Box alignItems="center" height="full" justifyContent="center" marginTop="-36px" width="full">
         <TopIcon source={isDarkMode ? BackupIconDark : BackupIcon} />
         <Stack alignHorizontal="center" space="19px (Deprecated)">
-          <Text
-            color="primary (Deprecated)"
-            size="20px / 24px (Deprecated)"
-            weight="bold"
-          >
+          <Text color="primary (Deprecated)" size="20px / 24px (Deprecated)" weight="bold">
             {lang.t('back_up.needs_backup.back_up_your_wallet')}{' '}
           </Text>
           <Box paddingBottom="24px" paddingHorizontal="42px (Deprecated)">
-            <Text
-              align="center"
-              color="secondary50 (Deprecated)"
-              size="18px / 27px (Deprecated)"
-            >
+            <Text align="center" color="secondary50 (Deprecated)" size="18px / 27px (Deprecated)">
               {lang.t('back_up.needs_backup.dont_risk')}
             </Text>
           </Box>

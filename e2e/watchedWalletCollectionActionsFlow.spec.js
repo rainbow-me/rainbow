@@ -9,11 +9,7 @@ describe.skip('Watched showcase and hidden actions flow', () => {
     await Helpers.waitAndTap('already-have-wallet-button');
     await Helpers.waitAndTap('watch-address-button');
     await Helpers.clearField('import-sheet-input');
-    await Helpers.typeText(
-      'import-sheet-input',
-      'rainbowtestwallet.eth',
-      false
-    );
+    await Helpers.typeText('import-sheet-input', 'rainbowtestwallet.eth', false);
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.waitAndTap('wallet-info-submit-button');
     await Helpers.checkIfVisible('wallet-screen', 80000);

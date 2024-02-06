@@ -7,11 +7,7 @@ type InfoAlertProps = {
   rightIcon: React.ReactNode;
 };
 
-export const InfoAlert: React.FC<InfoAlertProps> = ({
-  rightIcon,
-  title,
-  description,
-}) => {
+export const InfoAlert: React.FC<InfoAlertProps> = ({ rightIcon, title, description }) => {
   return (
     <Box
       style={{
