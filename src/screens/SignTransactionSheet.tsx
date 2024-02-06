@@ -1854,7 +1854,6 @@ const DetailsCard = ({
   if (!isLoading && isBalanceEnough === false) {
     return <></>;
   }
-  const;
   return (
     <FadedScrollCard
       cardHeight={cardHeight}
