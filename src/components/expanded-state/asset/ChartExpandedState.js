@@ -161,13 +161,13 @@ export default function ChartExpandedState({ asset }) {
     return hasBalance
       ? asset
       : genericAsset
-        ? {
-            ...genericAsset,
-            network: asset.network,
-            address: asset.address,
-            mainnetAddress: asset?.networks?.[getNetworkObj(Network.mainnet)]?.address,
-          }
-        : asset;
+      ? {
+          ...genericAsset,
+          network: asset.network,
+          address: asset.address,
+          mainnetAddress: asset?.networks?.[getNetworkObj(Network.mainnet)]?.address,
+        }
+      : asset;
   }, [asset, genericAsset, hasBalance]);
 
   const isL2 = useMemo(() => isL2Network(assetWithPrice.network), [assetWithPrice.network]);
@@ -200,28 +200,36 @@ export default function ChartExpandedState({ asset }) {
   const delayedDescriptions = useDelayedValueWithLayoutAnimation(data?.description?.replace(/\s+/g, ''));
 
   const scrollableContentHeight = true;
-  const { chart, chartType, color, fetchingCharts, updateChartType, initialChartDataLabels, showChart, throttledData } =
-    useChartThrottledPoints({
-      asset: assetWithPrice,
-      heightWithChart: Math.min(
-        carouselHeight +
-          heightWithChart -
-          (!hasBalance && 68) +
-          additionalContentHeight +
-          (additionalContentHeight === 0 ? 0 : scrollableContentHeight),
-        screenHeight
-      ),
-      heightWithoutChart: Math.min(
-        carouselHeight +
-          heightWithoutChart -
-          (!hasBalance && 68) +
-          additionalContentHeight +
-          (additionalContentHeight === 0 ? 0 : scrollableContentHeight),
-        screenHeight
-      ),
-      shortHeightWithChart: Math.min(carouselHeight + heightWithChart - (!hasBalance && 68), screenHeight),
-      shortHeightWithoutChart: Math.min(carouselHeight + heightWithoutChart - (!hasBalance && 68), screenHeight),
-    });
+  const {
+    chart,
+    chartType,
+    color,
+    fetchingCharts,
+    updateChartType,
+    initialChartDataLabels,
+    showChart,
+    throttledData,
+  } = useChartThrottledPoints({
+    asset: assetWithPrice,
+    heightWithChart: Math.min(
+      carouselHeight +
+        heightWithChart -
+        (!hasBalance && 68) +
+        additionalContentHeight +
+        (additionalContentHeight === 0 ? 0 : scrollableContentHeight),
+      screenHeight
+    ),
+    heightWithoutChart: Math.min(
+      carouselHeight +
+        heightWithoutChart -
+        (!hasBalance && 68) +
+        additionalContentHeight +
+        (additionalContentHeight === 0 ? 0 : scrollableContentHeight),
+      screenHeight
+    ),
+    shortHeightWithChart: Math.min(carouselHeight + heightWithChart - (!hasBalance && 68), screenHeight),
+    shortHeightWithoutChart: Math.min(carouselHeight + heightWithoutChart - (!hasBalance && 68), screenHeight),
+  });
 
   const needsEth = asset?.address === ETH_ADDRESS && asset?.balance?.amount === '0';
 

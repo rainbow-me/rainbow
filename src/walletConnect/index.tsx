@@ -90,7 +90,7 @@ export function maybeGoBackAndClearHasPendingRedirect({ delay = 0 }: { delay?: n
 /**
  * MAY BE UNDEFINED if WC v2 hasn't been instantiated yet
  */
-let syncWeb3WalletClient: Awaited<ReturnType<(typeof Web3Wallet)['init']>> | undefined;
+let syncWeb3WalletClient: Awaited<ReturnType<typeof Web3Wallet['init']>> | undefined;
 
 const walletConnectCore = new Core({ projectId: WC_PROJECT_ID });
 
@@ -113,7 +113,10 @@ export const web3WalletClient = Web3Wallet.init({
  * return { address, message } and JSON.parse the value if it's from a typed
  * data request
  */
-export function parseRPCParams({ method, params }: RPCPayload): {
+export function parseRPCParams({
+  method,
+  params,
+}: RPCPayload): {
   address?: string;
   message?: string;
 } {
@@ -167,7 +170,9 @@ export function parseRPCParams({ method, params }: RPCPayload): {
  *
  * @see https://docs.walletconnect.com/2.0/web/web3wallet/wallet-usage#-namespaces-builder-util
  */
-export function getApprovedNamespaces(props: Parameters<typeof buildApprovedNamespaces>[0]):
+export function getApprovedNamespaces(
+  props: Parameters<typeof buildApprovedNamespaces>[0]
+):
   | {
       success: true;
       result: ReturnType<typeof buildApprovedNamespaces>;

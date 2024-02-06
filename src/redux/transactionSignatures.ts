@@ -17,24 +17,26 @@ export const transactionSignaturesLoadState = () => async (dispatch: AppDispatch
   } catch (error) {}
 };
 
-export const transactionSignaturesDataAddNewSignature =
-  (parsedSignature: string, bytes: string) => async (dispatch: AppDispatch, getState: AppGetState) => {
-    const { signatures } = getState().transactionSignatures;
-    if (parsedSignature) {
-      const newTransactionSignatures = {
-        ...signatures,
-        [bytes]: parsedSignature,
-      };
-      try {
-        dispatch({
-          payload: newTransactionSignatures,
-          type: TRANSACTION_SIGNATURES_ADD_NEW_TRANSACTION_SIGNATURE_SUCCESS,
-        });
-        saveTransactionSignatures(newTransactionSignatures);
-        // eslint-disable-next-line no-empty
-      } catch (e) {}
-    }
-  };
+export const transactionSignaturesDataAddNewSignature = (parsedSignature: string, bytes: string) => async (
+  dispatch: AppDispatch,
+  getState: AppGetState
+) => {
+  const { signatures } = getState().transactionSignatures;
+  if (parsedSignature) {
+    const newTransactionSignatures = {
+      ...signatures,
+      [bytes]: parsedSignature,
+    };
+    try {
+      dispatch({
+        payload: newTransactionSignatures,
+        type: TRANSACTION_SIGNATURES_ADD_NEW_TRANSACTION_SIGNATURE_SUCCESS,
+      });
+      saveTransactionSignatures(newTransactionSignatures);
+      // eslint-disable-next-line no-empty
+    } catch (e) {}
+  }
+};
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE: { signatures: { [key: string]: string } } = {

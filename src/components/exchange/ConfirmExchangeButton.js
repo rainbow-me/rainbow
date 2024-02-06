@@ -69,10 +69,10 @@ export default function ConfirmExchangeButton({
     const color = quoteError
       ? disabledButtonColor
       : asset.address === ETH_ADDRESS
-        ? colors.appleBlue
-        : isSwapDetailsRoute
-          ? colorForAsset
-          : makeColorMoreChill(colorForAsset, (isSwapDetailsRoute ? colors : darkModeThemeColors).light);
+      ? colors.appleBlue
+      : isSwapDetailsRoute
+      ? colorForAsset
+      : makeColorMoreChill(colorForAsset, (isSwapDetailsRoute ? colors : darkModeThemeColors).light);
 
     return {
       buttonColor: color,

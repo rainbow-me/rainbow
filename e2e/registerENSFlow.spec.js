@@ -59,22 +59,35 @@ const getRecords = async ensName => {
   const publicResolver = new Contract(ensPublicResolverAddress, publicResolverABI, provider);
   const resolver = await provider.getResolver(ensName);
   const hashName = hash(ensName);
-  const [avatar, contenthash, description, name, url, twitter, email, instagram, discord, github, snapchat, telegram, reddit] =
-    await Promise.all([
-      publicResolver.text(hashName, 'avatar'),
-      resolver.getContentHash(ensName),
-      publicResolver.text(hashName, 'description'),
-      publicResolver.text(hashName, 'name'),
-      publicResolver.text(hashName, 'url'),
-      publicResolver.text(hashName, 'com.twitter'),
-      publicResolver.text(hashName, 'email'),
-      publicResolver.text(hashName, 'com.instagram'),
-      publicResolver.text(hashName, 'com.discord'),
-      publicResolver.text(hashName, 'com.github'),
-      publicResolver.text(hashName, 'com.snapchat'),
-      publicResolver.text(hashName, 'org.telegram'),
-      publicResolver.text(hashName, 'com.reddit'),
-    ]);
+  const [
+    avatar,
+    contenthash,
+    description,
+    name,
+    url,
+    twitter,
+    email,
+    instagram,
+    discord,
+    github,
+    snapchat,
+    telegram,
+    reddit,
+  ] = await Promise.all([
+    publicResolver.text(hashName, 'avatar'),
+    resolver.getContentHash(ensName),
+    publicResolver.text(hashName, 'description'),
+    publicResolver.text(hashName, 'name'),
+    publicResolver.text(hashName, 'url'),
+    publicResolver.text(hashName, 'com.twitter'),
+    publicResolver.text(hashName, 'email'),
+    publicResolver.text(hashName, 'com.instagram'),
+    publicResolver.text(hashName, 'com.discord'),
+    publicResolver.text(hashName, 'com.github'),
+    publicResolver.text(hashName, 'com.snapchat'),
+    publicResolver.text(hashName, 'org.telegram'),
+    publicResolver.text(hashName, 'com.reddit'),
+  ]);
   return {
     avatar,
     contenthash,
@@ -539,8 +552,9 @@ describe.skip('Register ENS Flow', () => {
   if (ios) {
     // TODO
     it('Should confirm the update was successful', async () => {
-      const { contenthash, description, discord, email, github, instagram, reddit, snapchat, telegram, twitter, url } =
-        await getRecords(RAINBOW_TEST_WALLET_NAME);
+      const { contenthash, description, discord, email, github, instagram, reddit, snapchat, telegram, twitter, url } = await getRecords(
+        RAINBOW_TEST_WALLET_NAME
+      );
       if (description) throw new Error('description should be empty');
       if (discord !== RECORD_DISCORD) throw new Error('discord is incorrect.', discord);
       if (email !== RECORD_EMAIL) throw new Error('email is incorrect.', email);

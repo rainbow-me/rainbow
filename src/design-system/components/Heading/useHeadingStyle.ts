@@ -25,7 +25,7 @@ export function useHeadingStyle({ align: textAlign, color, size, weight }: Pick<
         textAlign,
         ...sizeStyles,
         ...weightStyles,
-      }) as const,
+      } as const),
     [colorValue, textAlign, sizeStyles, weightStyles]
   );
 

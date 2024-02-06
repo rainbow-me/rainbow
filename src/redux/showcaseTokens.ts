@@ -102,55 +102,59 @@ interface ShowcaseTokensUpdateAction {
  * Loads showcased token IDs and web-data settings from local storage and
  * updates state.
  */
-export const showcaseTokensLoadState =
-  () => async (dispatch: Dispatch<ShowcaseTokensLoadSuccessAction | ShowcaseTokensLoadFailureAction>, getState: AppGetState) => {
-    try {
-      const { accountAddress, network } = getState().settings;
+export const showcaseTokensLoadState = () => async (
+  dispatch: Dispatch<ShowcaseTokensLoadSuccessAction | ShowcaseTokensLoadFailureAction>,
+  getState: AppGetState
+) => {
+  try {
+    const { accountAddress, network } = getState().settings;
 
-      const showcaseTokens = await getShowcaseTokens(accountAddress, network);
-      const pref = await getWebDataEnabled(accountAddress, network);
+    const showcaseTokens = await getShowcaseTokens(accountAddress, network);
+    const pref = await getWebDataEnabled(accountAddress, network);
 
-      dispatch({
-        payload: {
-          showcaseTokens,
-          webDataEnabled: !!pref,
-        },
-        type: SHOWCASE_TOKENS_LOAD_SUCCESS,
-      });
-    } catch (error) {
-      dispatch({ type: SHOWCASE_TOKENS_LOAD_FAILURE });
-    }
-  };
+    dispatch({
+      payload: {
+        showcaseTokens,
+        webDataEnabled: !!pref,
+      },
+      type: SHOWCASE_TOKENS_LOAD_SUCCESS,
+    });
+  } catch (error) {
+    dispatch({ type: SHOWCASE_TOKENS_LOAD_FAILURE });
+  }
+};
 
 /**
  * Loads showcased token IDs and web-data settings from firebase and
  * updates state.
  */
-export const showcaseTokensUpdateStateFromWeb =
-  () => async (dispatch: Dispatch<ShowcaseTokensFetchSuccessAction | ShowcaseTokensFetchFailureAction>, getState: AppGetState) => {
-    try {
-      const isReadOnlyWallet = getState().wallets.selected?.type === WalletTypes.readOnly;
-      const { accountAddress, network } = getState().settings;
+export const showcaseTokensUpdateStateFromWeb = () => async (
+  dispatch: Dispatch<ShowcaseTokensFetchSuccessAction | ShowcaseTokensFetchFailureAction>,
+  getState: AppGetState
+) => {
+  try {
+    const isReadOnlyWallet = getState().wallets.selected?.type === WalletTypes.readOnly;
+    const { accountAddress, network } = getState().settings;
 
-      // if web data is enabled, fetch values from cloud
-      const pref = await getWebDataEnabled(accountAddress, network);
+    // if web data is enabled, fetch values from cloud
+    const pref = await getWebDataEnabled(accountAddress, network);
 
-      if ((!isReadOnlyWallet && pref) || isReadOnlyWallet) {
-        const showcaseTokensFromCloud = (await getPreference('showcase', accountAddress)) as any | undefined;
-        if (showcaseTokensFromCloud?.showcase?.ids && showcaseTokensFromCloud?.showcase?.ids.length > 0) {
-          dispatch({
-            payload: {
-              showcaseTokens: showcaseTokensFromCloud.showcase.ids,
-              webDataEnabled: !!pref,
-            },
-            type: SHOWCASE_TOKENS_FETCH_SUCCESS,
-          });
-        }
+    if ((!isReadOnlyWallet && pref) || isReadOnlyWallet) {
+      const showcaseTokensFromCloud = (await getPreference('showcase', accountAddress)) as any | undefined;
+      if (showcaseTokensFromCloud?.showcase?.ids && showcaseTokensFromCloud?.showcase?.ids.length > 0) {
+        dispatch({
+          payload: {
+            showcaseTokens: showcaseTokensFromCloud.showcase.ids,
+            webDataEnabled: !!pref,
+          },
+          type: SHOWCASE_TOKENS_FETCH_SUCCESS,
+        });
       }
-    } catch (error) {
-      dispatch({ type: SHOWCASE_TOKENS_FETCH_FAILURE });
     }
-  };
+  } catch (error) {
+    dispatch({ type: SHOWCASE_TOKENS_FETCH_FAILURE });
+  }
+};
 
 /**
  * Adds a token ID to the showcase in state and updates local storage.
@@ -203,15 +207,15 @@ export const removeShowcaseToken = (tokenId: string) => (dispatch: Dispatch<Show
  * @param address The current user's address.
  * @param network The current network.
  */
-export const updateWebDataEnabled =
-  (enabled: boolean, address: string, network = networkTypes.mainnet) =>
-  async (dispatch: Dispatch<ShowcaseTokensUpdateWebDataEnabledAction>) => {
-    dispatch({
-      payload: enabled,
-      type: UPDATE_WEB_DATA_ENABLED,
-    });
-    await saveWebDataEnabled(enabled, address.toLowerCase(), network);
-  };
+export const updateWebDataEnabled = (enabled: boolean, address: string, network = networkTypes.mainnet) => async (
+  dispatch: Dispatch<ShowcaseTokensUpdateWebDataEnabledAction>
+) => {
+  dispatch({
+    payload: enabled,
+    type: UPDATE_WEB_DATA_ENABLED,
+  });
+  await saveWebDataEnabled(enabled, address.toLowerCase(), network);
+};
 
 // -- Reducer ----------------------------------------- //
 

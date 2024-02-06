@@ -65,8 +65,8 @@ const buildCoolModalConfig = (params: any): CoolModalConfigOptions => ({
         ? 30
         : 0.666 // 0.666 gets the screen corner radius internally
       : params.cornerRadius === 0
-        ? 0
-        : params.cornerRadius || 39,
+      ? 0
+      : params.cornerRadius || 39,
   customStack: true,
   disableShortFormAfterTransitionToLongForm:
     params.disableShortFormAfterTransitionToLongForm || params?.type === 'token' || params?.type === 'uniswap',

@@ -43,12 +43,7 @@ export default function PointsContent() {
   const { setClipboard } = useClipboard();
   const { isReadOnlyWallet } = useWallets();
 
-  const {
-    data: points,
-    isFetching,
-    dataUpdatedAt,
-    refetch,
-  } = usePoints({
+  const { data: points, isFetching, dataUpdatedAt, refetch } = usePoints({
     walletAddress: accountAddress,
   });
 
@@ -413,18 +408,16 @@ export default function PointsContent() {
                 {canDisplayLeaderboard ? (
                   <Box background="surfaceSecondaryElevated" borderRadius={18} shadow="12px">
                     <Stack separator={<Separator color="separatorTertiary" thickness={1} />}>
-                      {points?.points?.leaderboard?.accounts
-                        ?.slice(0, 100)
-                        ?.map((account, index) => (
-                          <LeaderboardRow
-                            address={account.address}
-                            ens={account.ens}
-                            avatarURL={account.avatarURL}
-                            points={account.earnings.total}
-                            rank={index + 1}
-                            key={account.address}
-                          />
-                        ))}
+                      {points?.points?.leaderboard?.accounts?.slice(0, 100)?.map((account, index) => (
+                        <LeaderboardRow
+                          address={account.address}
+                          ens={account.ens}
+                          avatarURL={account.avatarURL}
+                          points={account.earnings.total}
+                          rank={index + 1}
+                          key={account.address}
+                        />
+                      ))}
                     </Stack>
                   </Box>
                 ) : (

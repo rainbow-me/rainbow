@@ -185,7 +185,7 @@ export const RestoreCloudBackupResultStates = {
   incorrectPinCode: 'incorrectPinCode',
 } as const;
 
-type RestoreCloudBackupResultStatesType = (typeof RestoreCloudBackupResultStates)[keyof typeof RestoreCloudBackupResultStates];
+type RestoreCloudBackupResultStatesType = typeof RestoreCloudBackupResultStates[keyof typeof RestoreCloudBackupResultStates];
 
 /**
  * Restores a cloud backup.

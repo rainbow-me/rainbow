@@ -67,16 +67,17 @@ export const imageMetadataCacheLoadState = () => async (dispatch: Dispatch<Image
   });
 };
 
-export const updateImageMetadataCache =
-  ({ id, metadata }: UpdateImageMetadataFunctionParameter) =>
-  (dispatch: Dispatch<ImageMetadataMergeAction>, getState: AppGetState) => {
-    const { imageMetadata } = getState().imageMetadata;
-    dispatch({ id, metadata, type: MERGE });
-    saveImageMetadata({
-      ...imageMetadata,
-      [id]: metadata,
-    });
-  };
+export const updateImageMetadataCache = ({ id, metadata }: UpdateImageMetadataFunctionParameter) => (
+  dispatch: Dispatch<ImageMetadataMergeAction>,
+  getState: AppGetState
+) => {
+  const { imageMetadata } = getState().imageMetadata;
+  dispatch({ id, metadata, type: MERGE });
+  saveImageMetadata({
+    ...imageMetadata,
+    [id]: metadata,
+  });
+};
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE: ImageMetadataState = {

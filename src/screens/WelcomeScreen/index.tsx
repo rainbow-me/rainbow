@@ -81,10 +81,9 @@ export default function WelcomeScreen() {
   const contentAnimation = useSharedValue(1);
   const colorAnimation = useSharedValue(0);
   const shouldAnimateRainbows = useSharedValue(false);
-  const calculatedColor = useDerivedValue(
-    () => interpolateColor(colorAnimation.value, [0, 1, 2, 3, 4, 5], animationColors),
-    [colorAnimation]
-  );
+  const calculatedColor = useDerivedValue(() => interpolateColor(colorAnimation.value, [0, 1, 2, 3, 4, 5], animationColors), [
+    colorAnimation,
+  ]);
   const createWalletButtonAnimation = useSharedValue(1);
 
   useEffect(() => {

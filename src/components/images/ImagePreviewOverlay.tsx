@@ -414,10 +414,10 @@ export function ImagePreviewOverlayTarget({
   // calculate it from the uri.
   const calculatedAspectRatio = usePersistentAspectRatio(uri || '');
 
-  const aspectRatio = useMemo(
-    () => (aspectRatioType ? ASPECT_RATIOS[aspectRatioType] : calculatedAspectRatio.result),
-    [aspectRatioType, calculatedAspectRatio]
-  );
+  const aspectRatio = useMemo(() => (aspectRatioType ? ASPECT_RATIOS[aspectRatioType] : calculatedAspectRatio.result), [
+    aspectRatioType,
+    calculatedAspectRatio,
+  ]);
   useEffect(() => {
     if (aspectRatio) {
       setAspectRatio(aspectRatio);

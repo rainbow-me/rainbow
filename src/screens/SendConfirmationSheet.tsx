@@ -345,10 +345,10 @@ export const SendConfirmationSheet = () => {
     });
   }, [asset.network, asset.type, isNft, navigate]);
 
-  const nativeDisplayAmount = useMemo(
-    () => convertAmountToNativeDisplay(amountDetails.nativeAmount, nativeCurrency),
-    [amountDetails.nativeAmount, nativeCurrency]
-  );
+  const nativeDisplayAmount = useMemo(() => convertAmountToNativeDisplay(amountDetails.nativeAmount, nativeCurrency), [
+    amountDetails.nativeAmount,
+    nativeCurrency,
+  ]);
 
   let color = useColorForAsset(asset);
 

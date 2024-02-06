@@ -147,12 +147,20 @@ export function DiagnosticsContent({
       )}
       {pkeys?.length !== undefined && pkeys.length > 0 && (
         <Fragment>
-          <Column>{pkeys?.map(key => <DiagnosticsItemRow data={key} key={`row_${key.username}`} />)}</Column>
+          <Column>
+            {pkeys?.map(key => (
+              <DiagnosticsItemRow data={key} key={`row_${key.username}`} />
+            ))}
+          </Column>
         </Fragment>
       )}
       {keys?.length !== undefined && keys.length > 0 && (
         <Fragment>
-          <Column>{oldSeed?.map(key => <DiagnosticsItemRow data={key} key={`row_${key.username}`} />)}</Column>
+          <Column>
+            {oldSeed?.map(key => (
+              <DiagnosticsItemRow data={key} key={`row_${key.username}`} />
+            ))}
+          </Column>
         </Fragment>
       )}
       {keys && (

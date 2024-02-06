@@ -27,8 +27,8 @@ const Container = styled(Centered).attrs({ direction: 'column' })(
             typeof additionalTopPadding === 'number'
               ? additionalTopPadding
               : contentHeight && additionalTopPadding
-                ? deviceHeight - contentHeight
-                : 0,
+              ? deviceHeight - contentHeight
+              : 0,
         }),
     ...(IS_ANDROID ? { borderTopLeftRadius: 30, borderTopRightRadius: 30 } : {}),
     backgroundColor: backgroundColor,

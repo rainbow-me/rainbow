@@ -136,8 +136,16 @@ const MemoizedBalanceCoinRow = React.memo(
 MemoizedBalanceCoinRow.displayName = 'MemoizedBalanceCoinRow';
 
 export default React.memo(function BalanceCoinRow({ uniqueId, extendedState }: { uniqueId: string; extendedState: ExtendedState }) {
-  const { theme, nativeCurrencySymbol, navigate, nativeCurrency, hiddenCoins, pinnedCoins, toggleSelectedCoin, isCoinListEdited } =
-    extendedState;
+  const {
+    theme,
+    nativeCurrencySymbol,
+    navigate,
+    nativeCurrency,
+    hiddenCoins,
+    pinnedCoins,
+    toggleSelectedCoin,
+    isCoinListEdited,
+  } = extendedState;
 
   const onPress = useCallback(() => {
     toggleSelectedCoin(uniqueId);

@@ -44,10 +44,10 @@ const TextIcon = ({ colorOverride, icon, disabled, isLink, isEmoji = false }: Te
         colorOverride
           ? { custom: colorOverride }
           : disabled
-            ? 'secondary60 (Deprecated)'
-            : isLink
-              ? 'action (Deprecated)'
-              : 'primary (Deprecated)'
+          ? 'secondary60 (Deprecated)'
+          : isLink
+          ? 'action (Deprecated)'
+          : 'primary (Deprecated)'
       }
       containsEmoji
       size="18px / 27px (Deprecated)"

@@ -30,8 +30,8 @@ export const sizes = {
   text: mapValues(typeHierarchy.text, createTextSize),
 };
 
-export type HeadingSizes = keyof (typeof sizes)['heading'];
-export type TextSizes = keyof (typeof sizes)['text'];
+export type HeadingSizes = keyof typeof sizes['heading'];
+export type TextSizes = keyof typeof sizes['text'];
 
 export const letterSpacings = {
   heading: mapValues(typeHierarchy.heading, ({ letterSpacing }) => letterSpacing),

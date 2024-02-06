@@ -53,10 +53,11 @@ export const GasCard = () => {
 
   const { NORMAL } = gasUtils;
 
-  const currentGwei = useMemo(
-    () => add(currentBlockParams?.baseFeePerGas?.gwei, gasFeeParamsBySpeed[NORMAL]?.maxPriorityFeePerGas?.gwei),
-    [NORMAL, currentBlockParams?.baseFeePerGas?.gwei, gasFeeParamsBySpeed]
-  );
+  const currentGwei = useMemo(() => add(currentBlockParams?.baseFeePerGas?.gwei, gasFeeParamsBySpeed[NORMAL]?.maxPriorityFeePerGas?.gwei), [
+    NORMAL,
+    currentBlockParams?.baseFeePerGas?.gwei,
+    gasFeeParamsBySpeed,
+  ]);
   const isCurrentGweiLoaded = currentGwei && Number(currentGwei) > 0;
 
   const renderGweiText = useCallback(

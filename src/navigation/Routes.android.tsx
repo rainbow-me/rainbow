@@ -93,7 +93,7 @@ const AuthStack = createStackNavigator();
 const BSStack = createBottomSheetNavigator();
 
 function MainNavigator() {
-  const initialRoute = useContext(InitialRouteContext) as unknown as string;
+  const initialRoute = (useContext(InitialRouteContext) as unknown) as string;
   return (
     <Stack.Navigator initialRouteName={initialRoute} {...stackNavigationConfig} screenOptions={defaultScreenStackOptions}>
       <Stack.Screen component={SwipeNavigator} name={Routes.SWIPE_LAYOUT} options={expandedPreset} />
@@ -246,25 +246,18 @@ function AuthNavigator() {
   );
 }
 
-const AppContainerWithAnalytics = React.forwardRef(
-  (
-    props: {
-      onReady: () => void;
-    },
-    ref
-  ) => (
-    <NavigationContainer
-      onReady={props.onReady}
-      onStateChange={onNavigationStateChange}
-      // @ts-ignore
-      ref={ref}
-    >
-      <PointsProfileProvider>
-        <AuthNavigator />
-      </PointsProfileProvider>
-    </NavigationContainer>
-  )
-);
+const AppContainerWithAnalytics = React.forwardRef((props: { onReady: () => void }, ref) => (
+  <NavigationContainer
+    onReady={props.onReady}
+    onStateChange={onNavigationStateChange}
+    // @ts-ignore
+    ref={ref}
+  >
+    <PointsProfileProvider>
+      <AuthNavigator />
+    </PointsProfileProvider>
+  </NavigationContainer>
+));
 
 AppContainerWithAnalytics.displayName = 'AppContainerWithAnalytics';
 

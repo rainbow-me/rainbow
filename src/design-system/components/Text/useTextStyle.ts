@@ -41,7 +41,7 @@ export function useTextStyle({
         ...weightStyles,
         ...(uppercase ? { textTransform: 'uppercase' as const } : null),
         ...(tabularNumbers ? { fontVariant: ['tabular-nums' as const] } : null),
-      }) as const,
+      } as const),
     [sizeStyles, weightStyles, textAlign, colorValue, tabularNumbers, uppercase]
   );
 

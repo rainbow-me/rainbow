@@ -203,7 +203,8 @@ export default React.memo(function FastCurrencySelectionRow({
       )}
     </View>
   );
-}, isEqual);
+},
+isEqual);
 
 const sx = StyleSheet.create({
   addGradient: {

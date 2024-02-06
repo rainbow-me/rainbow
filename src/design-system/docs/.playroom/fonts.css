@@ -3,8 +3,7 @@
 @font-face {
   font-family: 'SFRounded';
   src: url('../public/fonts/subset-SFRounded-Regular.eot');
-  src:
-    url('../public/fonts/subset-SFRounded-Regular.eot?#iefix') format('embedded-opentype'),
+  src: url('../public/fonts/subset-SFRounded-Regular.eot?#iefix') format('embedded-opentype'),
     url('../public/fonts/subset-SFRounded-Regular.woff2') format('woff2'),
     url('../public/fonts/subset-SFRounded-Regular.woff') format('woff'),
     url('../public/fonts/subset-SFRounded-Regular.svg#SFRounded-Regular') format('svg');
@@ -16,10 +15,8 @@
 @font-face {
   font-family: 'SFRounded';
   src: url('../public/fonts/subset-SFRounded-Medium.eot');
-  src:
-    url('../public/fonts/subset-SFRounded-Medium.eot?#iefix') format('embedded-opentype'),
-    url('../public/fonts/subset-SFRounded-Medium.woff2') format('woff2'),
-    url('../public/fonts/subset-SFRounded-Medium.woff') format('woff'),
+  src: url('../public/fonts/subset-SFRounded-Medium.eot?#iefix') format('embedded-opentype'),
+    url('../public/fonts/subset-SFRounded-Medium.woff2') format('woff2'), url('../public/fonts/subset-SFRounded-Medium.woff') format('woff'),
     url('../public/fonts/subset-SFRounded-Medium.svg#SFRounded-Medium') format('svg');
   font-weight: 500;
   font-style: normal;
@@ -29,8 +26,7 @@
 @font-face {
   font-family: 'SFRounded';
   src: url('../public/fonts/subset-SFRounded-Semibold.eot');
-  src:
-    url('../public/fonts/subset-SFRounded-Semibold.eot?#iefix') format('embedded-opentype'),
+  src: url('../public/fonts/subset-SFRounded-Semibold.eot?#iefix') format('embedded-opentype'),
     url('../public/fonts/subset-SFRounded-Semibold.woff2') format('woff2'),
     url('../public/fonts/subset-SFRounded-Semibold.woff') format('woff'),
     url('../public/fonts/subset-SFRounded-Semibold.svg#SFRounded-Semibold') format('svg');
@@ -42,10 +38,8 @@
 @font-face {
   font-family: 'SFRounded';
   src: url('../public/fonts/subset-SFRounded-Bold.eot');
-  src:
-    url('../public/fonts/subset-SFRounded-Bold.eot?#iefix') format('embedded-opentype'),
-    url('../public/fonts/subset-SFRounded-Bold.woff2') format('woff2'),
-    url('../public/fonts/subset-SFRounded-Bold.woff') format('woff'),
+  src: url('../public/fonts/subset-SFRounded-Bold.eot?#iefix') format('embedded-opentype'),
+    url('../public/fonts/subset-SFRounded-Bold.woff2') format('woff2'), url('../public/fonts/subset-SFRounded-Bold.woff') format('woff'),
     url('../public/fonts/subset-SFRounded-Bold.svg#SFRounded-Bold') format('svg');
   font-weight: 700;
   font-style: normal;
@@ -55,10 +49,8 @@
 @font-face {
   font-family: 'SFRounded';
   src: url('../public/fonts/subset-SFRounded-Heavy.eot');
-  src:
-    url('../public/fonts/subset-SFRounded-Heavy.eot?#iefix') format('embedded-opentype'),
-    url('../public/fonts/subset-SFRounded-Heavy.woff2') format('woff2'),
-    url('../public/fonts/subset-SFRounded-Heavy.woff') format('woff'),
+  src: url('../public/fonts/subset-SFRounded-Heavy.eot?#iefix') format('embedded-opentype'),
+    url('../public/fonts/subset-SFRounded-Heavy.woff2') format('woff2'), url('../public/fonts/subset-SFRounded-Heavy.woff') format('woff'),
     url('../public/fonts/subset-SFRounded-Heavy.svg#SFRounded-Heavy') format('svg');
   font-weight: 800;
   font-style: normal;
@@ -68,8 +60,7 @@
 @font-face {
   font-family: 'SF-Pro-Rounded-Regular';
   src: url('../public/fonts/subset-SFRounded-Regular.eot');
-  src:
-    url('../public/fonts/subset-SFRounded-Regular.eot?#iefix') format('embedded-opentype'),
+  src: url('../public/fonts/subset-SFRounded-Regular.eot?#iefix') format('embedded-opentype'),
     url('../public/fonts/subset-SFRounded-Regular.woff2') format('woff2'),
     url('../public/fonts/subset-SFRounded-Regular.woff') format('woff'),
     url('../public/fonts/subset-SFRounded-Regular.svg#SFRounded-Regular') format('svg');
@@ -81,10 +72,8 @@
 @font-face {
   font-family: 'SF-Pro-Rounded-Bold';
   src: url('../public/fonts/subset-SFRounded-Bold.eot');
-  src:
-    url('../public/fonts/subset-SFRounded-Bold.eot?#iefix') format('embedded-opentype'),
-    url('../public/fonts/subset-SFRounded-Bold.woff2') format('woff2'),
-    url('../public/fonts/subset-SFRounded-Bold.woff') format('woff'),
+  src: url('../public/fonts/subset-SFRounded-Bold.eot?#iefix') format('embedded-opentype'),
+    url('../public/fonts/subset-SFRounded-Bold.woff2') format('woff2'), url('../public/fonts/subset-SFRounded-Bold.woff') format('woff'),
     url('../public/fonts/subset-SFRounded-Bold.svg#SFRounded-Bold') format('svg');
   font-weight: normal;
   font-style: normal;
@@ -94,10 +83,8 @@
 @font-face {
   font-family: 'SF-Pro-Rounded-Medium';
   src: url('../public/fonts/subset-SFRounded-Medium.eot');
-  src:
-    url('../public/fonts/subset-SFRounded-Medium.eot?#iefix') format('embedded-opentype'),
-    url('../public/fonts/subset-SFRounded-Medium.woff2') format('woff2'),
-    url('../public/fonts/subset-SFRounded-Medium.woff') format('woff'),
+  src: url('../public/fonts/subset-SFRounded-Medium.eot?#iefix') format('embedded-opentype'),
+    url('../public/fonts/subset-SFRounded-Medium.woff2') format('woff2'), url('../public/fonts/subset-SFRounded-Medium.woff') format('woff'),
     url('../public/fonts/subset-SFRounded-Medium.svg#SFRounded-Medium') format('svg');
   font-weight: normal;
   font-style: normal;
@@ -107,8 +94,7 @@
 @font-face {
   font-family: 'SF-Pro-Rounded-Semibold';
   src: url('../public/fonts/subset-SFRounded-Semibold.eot');
-  src:
-    url('../public/fonts/subset-SFRounded-Semibold.eot?#iefix') format('embedded-opentype'),
+  src: url('../public/fonts/subset-SFRounded-Semibold.eot?#iefix') format('embedded-opentype'),
     url('../public/fonts/subset-SFRounded-Semibold.woff2') format('woff2'),
     url('../public/fonts/subset-SFRounded-Semibold.woff') format('woff'),
     url('../public/fonts/subset-SFRounded-Semibold.svg#SFRounded-Semibold') format('svg');
@@ -120,10 +106,8 @@
 @font-face {
   font-family: 'SF-Pro-Rounded-Heavy';
   src: url('../public/fonts/subset-SFRounded-Heavy.eot');
-  src:
-    url('../public/fonts/subset-SFRounded-Heavy.eot?#iefix') format('embedded-opentype'),
-    url('../public/fonts/subset-SFRounded-Heavy.woff2') format('woff2'),
-    url('../public/fonts/subset-SFRounded-Heavy.woff') format('woff'),
+  src: url('../public/fonts/subset-SFRounded-Heavy.eot?#iefix') format('embedded-opentype'),
+    url('../public/fonts/subset-SFRounded-Heavy.woff2') format('woff2'), url('../public/fonts/subset-SFRounded-Heavy.woff') format('woff'),
     url('../public/fonts/subset-SFRounded-Heavy.svg#SFRounded-Heavy') format('svg');
   font-weight: normal;
   font-style: normal;

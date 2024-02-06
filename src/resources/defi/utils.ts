@@ -21,12 +21,9 @@ import { Network } from '@/networks/types';
 
 export const parsePosition = (position: Position, currency: NativeCurrencyKey): RainbowPosition => {
   let totalDeposits = '0';
-  const parsedDeposits = position.deposits?.map((deposit: Deposit): RainbowDeposit => {
-    deposit.underlying = deposit.underlying?.map(
-      (underlying: {
-        asset: PositionAsset;
-        quantity: string;
-      }): {
+  const parsedDeposits = position.deposits?.map(
+    (deposit: Deposit): RainbowDeposit => {
+      deposit.underlying = deposit.underlying?.map((underlying: { asset: PositionAsset; quantity: string }): {
         asset: PositionAsset;
         quantity: string;
         native: NativeDisplay;
@@ -43,19 +40,16 @@ export const parsePosition = (position: Position, currency: NativeCurrencyKey): 
           ...underlying,
           native: nativeDisplay,
         };
-      }
-    );
-    return deposit as RainbowDeposit;
-  });
+      });
+      return deposit as RainbowDeposit;
+    }
+  );
 
   let totalBorrows = '0';
 
-  const parsedBorrows = position.borrows?.map((borrow: Borrow): RainbowBorrow => {
-    borrow.underlying = borrow.underlying.map(
-      (underlying: {
-        asset: PositionAsset;
-        quantity: string;
-      }): {
+  const parsedBorrows = position.borrows?.map(
+    (borrow: Borrow): RainbowBorrow => {
+      borrow.underlying = borrow.underlying.map((underlying: { asset: PositionAsset; quantity: string }): {
         asset: PositionAsset;
         quantity: string;
         native: NativeDisplay;
@@ -72,21 +66,23 @@ export const parsePosition = (position: Position, currency: NativeCurrencyKey): 
           ...underlying,
           native: nativeDisplay,
         };
-      }
-    );
-    return borrow as RainbowBorrow;
-  });
+      });
+      return borrow as RainbowBorrow;
+    }
+  );
 
   let totalClaimables = '0';
-  const parsedClaimables = position.claimables?.map((claim: Claimable): RainbowClaimable => {
-    const nativeDisplay = convertRawAmountToNativeDisplay(claim.quantity, claim.asset.decimals, claim.asset.price?.value!, currency);
-    totalClaimables = add(totalClaimables, nativeDisplay.amount);
-    return {
-      asset: claim.asset,
-      quantity: claim.quantity,
-      native: nativeDisplay,
-    };
-  });
+  const parsedClaimables = position.claimables?.map(
+    (claim: Claimable): RainbowClaimable => {
+      const nativeDisplay = convertRawAmountToNativeDisplay(claim.quantity, claim.asset.decimals, claim.asset.price?.value!, currency);
+      totalClaimables = add(totalClaimables, nativeDisplay.amount);
+      return {
+        asset: claim.asset,
+        quantity: claim.quantity,
+        native: nativeDisplay,
+      };
+    }
+  );
 
   const positionTotals: PositionsTotals = {
     totals: {

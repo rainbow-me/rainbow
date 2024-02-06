@@ -113,7 +113,7 @@ function SendFlowNavigator() {
 }
 
 function MainNavigator() {
-  const initialRoute = useContext(InitialRouteContext) as unknown as string;
+  const initialRoute = (useContext(InitialRouteContext) as unknown) as string;
 
   return (
     <Stack.Navigator initialRouteName={initialRoute} {...stackNavigationConfig} screenOptions={defaultScreenStackOptions}>
@@ -287,25 +287,18 @@ function NativeStackNavigator() {
   );
 }
 
-const AppContainerWithAnalytics = React.forwardRef(
-  (
-    props: {
-      onReady: () => void;
-    },
-    ref
-  ) => (
-    <NavigationContainer
-      onReady={props.onReady}
-      onStateChange={onNavigationStateChange}
-      // @ts-ignore
-      ref={ref}
-    >
-      <PointsProfileProvider>
-        <NativeStackNavigator />
-      </PointsProfileProvider>
-    </NavigationContainer>
-  )
-);
+const AppContainerWithAnalytics = React.forwardRef((props: { onReady: () => void }, ref) => (
+  <NavigationContainer
+    onReady={props.onReady}
+    onStateChange={onNavigationStateChange}
+    // @ts-ignore
+    ref={ref}
+  >
+    <PointsProfileProvider>
+      <NativeStackNavigator />
+    </PointsProfileProvider>
+  </NavigationContainer>
+));
 
 AppContainerWithAnalytics.displayName = 'AppContainerWithAnalytics';
 

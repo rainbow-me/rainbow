@@ -45,11 +45,7 @@ export function AddCashSheet() {
   const skeletonColor = useBackgroundColor('surfaceSecondaryElevated');
   const sheetHeight = IS_IOS ? deviceHeight - insets.top : deviceHeight + statusBarHeight;
 
-  const {
-    isLoading,
-    data: providers,
-    error,
-  } = useQuery(
+  const { isLoading, data: providers, error } = useQuery(
     ['f2c', 'providers'],
     async () => {
       const [{ data, error }] = await wait(1000, [await getProviders()]);

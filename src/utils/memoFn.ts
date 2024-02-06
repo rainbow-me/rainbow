@@ -41,9 +41,9 @@ export function memoFn<TArgs extends unknown[], TReturn>(
         if (typeof arg !== 'number' && typeof arg !== 'boolean' && typeof arg !== 'string') {
           if (IS_DEV) {
             logger.warn(
-              `memoized function ${fn.name} was called with non-supported arguments: ${JSON.stringify(
-                args
-              )}. Typeof of ${i + 1} argument is ${typeof arg}`
+              `memoized function ${fn.name} was called with non-supported arguments: ${JSON.stringify(args)}. Typeof of ${
+                i + 1
+              } argument is ${typeof arg}`
             );
           }
 

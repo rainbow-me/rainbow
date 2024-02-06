@@ -381,8 +381,18 @@ export const ChartPath = React.memo(
     isCard = false,
     ...props
   }: ChartPathProps) => {
-    const { positionX, positionY, originalX, originalY, state, isActive, progress, pathOpacity, currentPath, previousPath } =
-      useChartData();
+    const {
+      positionX,
+      positionY,
+      originalX,
+      originalY,
+      state,
+      isActive,
+      progress,
+      pathOpacity,
+      currentPath,
+      previousPath,
+    } = useChartData();
 
     let renderPath = null;
 

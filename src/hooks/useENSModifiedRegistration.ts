@@ -105,7 +105,7 @@ export default function useENSModifiedRegistration({
 
     const entriesToChange = differenceWith(Object.entries(records), Object.entries(initialRecordsWithDeprecated), isEqual) as [
       keyof Records,
-      string,
+      string
     ][];
 
     const changedRecords = entriesToChange.reduce(

@@ -81,14 +81,12 @@ export const updateSwapSource = (newSource: Source) => (dispatch: AppDispatch) =
   });
 };
 
-export const updateSwapInputAmount =
-  (value: string | null, maxInputUpdate = false) =>
-  (dispatch: AppDispatch) => {
-    dispatch({
-      payload: { independentValue: value, maxInputUpdate },
-      type: SWAP_UPDATE_INPUT_AMOUNT,
-    });
-  };
+export const updateSwapInputAmount = (value: string | null, maxInputUpdate = false) => (dispatch: AppDispatch) => {
+  dispatch({
+    payload: { independentValue: value, maxInputUpdate },
+    type: SWAP_UPDATE_INPUT_AMOUNT,
+  });
+};
 
 export const updateSwapNativeAmount = (value: string | null) => (dispatch: AppDispatch) => {
   dispatch({
@@ -104,66 +102,65 @@ export const updateSwapOutputAmount = (value: string | null) => (dispatch: AppDi
   });
 };
 
-export const updateSwapInputCurrency =
-  (newInputCurrency: SwappableAsset | null, ignoreTypeCheck = false) =>
-  (dispatch: AppDispatch, getState: AppGetState) => {
-    const { independentField, outputCurrency, type } = getState().swap;
-    if (type === ExchangeModalTypes.swap && newInputCurrency?.uniqueId === outputCurrency?.uniqueId && newInputCurrency) {
-      dispatch(flipSwapCurrencies(false));
-    } else {
-      dispatch({ payload: newInputCurrency, type: SWAP_UPDATE_INPUT_CURRENCY });
-      if (
-        type === ExchangeModalTypes.swap &&
-        newInputCurrency?.network !== outputCurrency?.network &&
-        newInputCurrency &&
-        !ignoreTypeCheck
-      ) {
-        dispatch(updateSwapOutputCurrency(null, true));
-      }
-
-      if (independentField === SwapModalField.input) {
-        dispatch(updateSwapInputAmount(null));
-      }
+export const updateSwapInputCurrency = (newInputCurrency: SwappableAsset | null, ignoreTypeCheck = false) => (
+  dispatch: AppDispatch,
+  getState: AppGetState
+) => {
+  const { independentField, outputCurrency, type } = getState().swap;
+  if (type === ExchangeModalTypes.swap && newInputCurrency?.uniqueId === outputCurrency?.uniqueId && newInputCurrency) {
+    dispatch(flipSwapCurrencies(false));
+  } else {
+    dispatch({ payload: newInputCurrency, type: SWAP_UPDATE_INPUT_CURRENCY });
+    if (type === ExchangeModalTypes.swap && newInputCurrency?.network !== outputCurrency?.network && newInputCurrency && !ignoreTypeCheck) {
+      dispatch(updateSwapOutputCurrency(null, true));
     }
-  };
 
-export const updateSwapOutputCurrency =
-  (newOutputCurrency: SwappableAsset | null, ignoreTypeCheck = false) =>
-  (dispatch: AppDispatch, getState: AppGetState) => {
-    const { independentField, inputCurrency, type } = getState().swap;
-    if (newOutputCurrency?.uniqueId === inputCurrency?.uniqueId && newOutputCurrency) {
-      dispatch(flipSwapCurrencies(true));
-    } else {
-      if (
-        type === ExchangeModalTypes.swap &&
-        newOutputCurrency?.network !== inputCurrency?.network &&
-        newOutputCurrency &&
-        !ignoreTypeCheck
-      ) {
-        dispatch(updateSwapInputCurrency(null, true));
-      }
-
-      dispatch({ payload: newOutputCurrency, type: SWAP_UPDATE_OUTPUT_CURRENCY });
-      if (independentField === SwapModalField.output || newOutputCurrency === null) {
-        dispatch(updateSwapOutputAmount(null));
-      }
+    if (independentField === SwapModalField.input) {
+      dispatch(updateSwapInputAmount(null));
     }
-  };
+  }
+};
 
-export const flipSwapCurrencies =
-  (outputIndependentField: boolean, independentValue?: string | null) => (dispatch: AppDispatch, getState: AppGetState) => {
-    const { inputCurrency, outputCurrency } = getState().swap;
-    dispatch({
-      payload: {
-        flipCurrenciesUpdate: true,
-        independentField: outputIndependentField ? SwapModalField.output : SwapModalField.input,
-        independentValue,
-        newInputCurrency: outputCurrency,
-        newOutputCurrency: inputCurrency,
-      },
-      type: SWAP_FLIP_CURRENCIES,
-    });
-  };
+export const updateSwapOutputCurrency = (newOutputCurrency: SwappableAsset | null, ignoreTypeCheck = false) => (
+  dispatch: AppDispatch,
+  getState: AppGetState
+) => {
+  const { independentField, inputCurrency, type } = getState().swap;
+  if (newOutputCurrency?.uniqueId === inputCurrency?.uniqueId && newOutputCurrency) {
+    dispatch(flipSwapCurrencies(true));
+  } else {
+    if (
+      type === ExchangeModalTypes.swap &&
+      newOutputCurrency?.network !== inputCurrency?.network &&
+      newOutputCurrency &&
+      !ignoreTypeCheck
+    ) {
+      dispatch(updateSwapInputCurrency(null, true));
+    }
+
+    dispatch({ payload: newOutputCurrency, type: SWAP_UPDATE_OUTPUT_CURRENCY });
+    if (independentField === SwapModalField.output || newOutputCurrency === null) {
+      dispatch(updateSwapOutputAmount(null));
+    }
+  }
+};
+
+export const flipSwapCurrencies = (outputIndependentField: boolean, independentValue?: string | null) => (
+  dispatch: AppDispatch,
+  getState: AppGetState
+) => {
+  const { inputCurrency, outputCurrency } = getState().swap;
+  dispatch({
+    payload: {
+      flipCurrenciesUpdate: true,
+      independentField: outputIndependentField ? SwapModalField.output : SwapModalField.input,
+      independentValue,
+      newInputCurrency: outputCurrency,
+      newOutputCurrency: inputCurrency,
+    },
+    type: SWAP_FLIP_CURRENCIES,
+  });
+};
 
 export const updateSwapQuote = (value: any) => (dispatch: AppDispatch) => {
   dispatch({

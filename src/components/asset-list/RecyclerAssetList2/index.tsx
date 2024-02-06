@@ -49,10 +49,11 @@ function RecyclerAssetList({
 
   const position = useMemoOne(() => new RNAnimated.Value(type === 'wallet' ? -insets.top : 0), []);
 
-  const extendedState = useMemo(
-    () => ({ additionalData, externalAddress, onPressUniqueToken }),
-    [additionalData, externalAddress, onPressUniqueToken]
-  );
+  const extendedState = useMemo(() => ({ additionalData, externalAddress, onPressUniqueToken }), [
+    additionalData,
+    externalAddress,
+    onPressUniqueToken,
+  ]);
 
   return (
     <RecyclerAssetListScrollPositionContext.Provider value={position}>

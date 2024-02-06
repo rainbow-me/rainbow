@@ -23,10 +23,11 @@ const CenteredLabel = ({ position, fontSize = '14px / 19px (Deprecated)', style,
     [setWidth]
   );
 
-  const left = useMemo(
-    () => Math.max(Math.floor(Math.min(width * position - componentWidth / 2, width - componentWidth - 10)), 10),
-    [componentWidth, position, width]
-  );
+  const left = useMemo(() => Math.max(Math.floor(Math.min(width * position - componentWidth / 2, width - componentWidth - 10)), 10), [
+    componentWidth,
+    position,
+    width,
+  ]);
   return (
     <View
       onLayout={onLayout}

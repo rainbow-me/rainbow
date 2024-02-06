@@ -98,7 +98,9 @@ function writeJson<T>(key: string, data: T) {
   }
 }
 
-async function getTokenListUpdate(currentTokenListData: TokenListData): Promise<{
+async function getTokenListUpdate(
+  currentTokenListData: TokenListData
+): Promise<{
   newTokenList?: TokenListData;
   status?: Response['status'];
 }> {
@@ -196,10 +198,10 @@ class RainbowTokenList extends EventEmitter {
       newTokenList
         ? logger.debug(`Token list update: new update loaded, generated on ${newTokenList?.timestamp}`)
         : status === 304
-          ? logger.debug(`Token list update: no change since last update, skipping update.`)
-          : logger.debug(
-              `Token list update: Token list did not update. (Status: ${status}, CurrentListDate: ${this._tokenListData?.timestamp})`
-            );
+        ? logger.debug(`Token list update: no change since last update, skipping update.`)
+        : logger.debug(
+            `Token list update: Token list did not update. (Status: ${status}, CurrentListDate: ${this._tokenListData?.timestamp})`
+          );
 
       if (newTokenList) {
         this._tokenListData = newTokenList;

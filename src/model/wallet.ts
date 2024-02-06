@@ -593,14 +593,8 @@ export const createWallet = async ({
   try {
     const { dispatch } = store;
 
-    const {
-      isHDWallet,
-      type,
-      root,
-      wallet: walletResult,
-      address,
-      walletType,
-    } = checkedWallet || (await deriveAccountFromWalletInput(walletSeed));
+    const { isHDWallet, type, root, wallet: walletResult, address, walletType } =
+      checkedWallet || (await deriveAccountFromWalletInput(walletSeed));
     const isReadOnlyType = type === EthereumWalletType.readOnly;
     const isHardwareWallet = type === EthereumWalletType.bluetooth;
     let pkey = walletSeed;

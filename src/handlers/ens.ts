@@ -389,15 +389,12 @@ export const fetchCoinAddresses = async (
       })
       .filter(Boolean)
   );
-  const coinAddresses: { [key in ENS_RECORDS]: string } = coinTypes.reduce(
-    (coinAddresses, coinType, i) => {
-      return {
-        ...coinAddresses,
-        ...(coinAddressValues[i] ? { [formatsByCoinType[coinType].name]: coinAddressValues[i] } : {}),
-      };
-    },
-    {} as { [key in ENS_RECORDS]: string }
-  );
+  const coinAddresses: { [key in ENS_RECORDS]: string } = coinTypes.reduce((coinAddresses, coinType, i) => {
+    return {
+      ...coinAddresses,
+      ...(coinAddressValues[i] ? { [formatsByCoinType[coinType].name]: coinAddressValues[i] } : {}),
+    };
+  }, {} as { [key in ENS_RECORDS]: string });
   return coinAddresses;
 };
 

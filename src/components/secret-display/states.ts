@@ -5,4 +5,4 @@ export const SecretDisplayStates = {
   securedWithBiometrics: 'securedWithBiometrics',
 } as const;
 
-export type SecretDisplayStatesType = (typeof SecretDisplayStates)[keyof typeof SecretDisplayStates];
+export type SecretDisplayStatesType = typeof SecretDisplayStates[keyof typeof SecretDisplayStates];

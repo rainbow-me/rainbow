@@ -54,8 +54,8 @@ const BottomRow = ({ balance, native, nativeCurrencySymbol, selected, showNative
       {showNativeValue
         ? `${fiatValue} available`
         : balance?.display
-          ? `${balance?.display}${selected ? ' available' : ''}`
-          : 'Fetching balances...'}
+        ? `${balance?.display}${selected ? ' available' : ''}`
+        : 'Fetching balances...'}
     </Text>
   );
 };
@@ -114,8 +114,8 @@ const SendCoinRow = ({
     ...(isTinyPhone
       ? padding.object(10, 0, 0)
       : isSmallPhone
-        ? padding.object(12, 12, 12, isL2 ? 17 : 12)
-        : padding.object(15, 15, 15, isL2 ? 19 : 15)),
+      ? padding.object(12, 12, 12, isL2 ? 17 : 12)
+      : padding.object(15, 15, 15, isL2 ? 19 : 15)),
   };
 
   return (

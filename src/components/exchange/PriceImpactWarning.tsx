@@ -36,11 +36,9 @@ export default function PriceImpactWarning({
                 <Text weight="bold" size="17pt" color="primary (Deprecated)">
                   {lang.t('exchange.price_impact.small_market')}
                 </Text>
-                <Text
-                  weight="bold"
-                  size="17pt"
-                  color={{ custom: priceImpactColor }}
-                >{` • ${lang.t('exchange.price_impact.losing_prefix')} `}</Text>
+                <Text weight="bold" size="17pt" color={{ custom: priceImpactColor }}>{` • ${lang.t(
+                  'exchange.price_impact.losing_prefix'
+                )} `}</Text>
                 <Text weight="bold" size="17pt" color={{ custom: priceImpactColor }}>
                   {headingValue}
                 </Text>

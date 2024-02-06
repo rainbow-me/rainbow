@@ -8,4 +8,4 @@ const chartTypes = {
 } as const;
 
 export default chartTypes;
-export type ChartType = (typeof chartTypes)[keyof typeof chartTypes];
+export type ChartType = typeof chartTypes[keyof typeof chartTypes];

@@ -184,15 +184,15 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
     return `${toFixedDecimals(currentBaseFee, 0)} Gwei`;
   }, [currentBaseFee]);
 
-  const handleMaxBaseInputGweiPress = useCallback(
-    () => setLastFocusedInputHandle(maxBaseFieldRef),
-    [maxBaseFieldRef, setLastFocusedInputHandle]
-  );
+  const handleMaxBaseInputGweiPress = useCallback(() => setLastFocusedInputHandle(maxBaseFieldRef), [
+    maxBaseFieldRef,
+    setLastFocusedInputHandle,
+  ]);
 
-  const handleMinerTipInputGweiPress = useCallback(
-    () => setLastFocusedInputHandle(minerTipFieldRef),
-    [minerTipFieldRef, setLastFocusedInputHandle]
-  );
+  const handleMinerTipInputGweiPress = useCallback(() => setLastFocusedInputHandle(minerTipFieldRef), [
+    minerTipFieldRef,
+    setLastFocusedInputHandle,
+  ]);
 
   const updatePriorityFeePerGas = useCallback(
     (priorityFeePerGas: number) => {

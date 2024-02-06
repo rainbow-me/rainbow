@@ -101,7 +101,7 @@ export function validateENS(
 ): {
   valid: boolean;
   hint?: string;
-  code?: (typeof ERROR_CODES)[keyof typeof ERROR_CODES];
+  code?: typeof ERROR_CODES[keyof typeof ERROR_CODES];
 } {
   const splitDomain = domain.split('.');
 

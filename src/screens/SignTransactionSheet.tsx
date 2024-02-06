@@ -1267,8 +1267,8 @@ const SimulationCard = ({
                   simulationScanResult && simulationScanResult !== TransactionScanResultType.Ok
                     ? simulationScanResult
                     : simulationError
-                      ? 'failed'
-                      : 'insufficientBalance'
+                    ? 'failed'
+                    : 'insufficientBalance'
                 }
               />
             ) : (

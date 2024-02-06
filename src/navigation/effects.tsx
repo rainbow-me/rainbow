@@ -110,33 +110,31 @@ const exchangeStyleInterpolator = ({ current: { progress: current }, layouts: { 
   };
 };
 
-export const expandStyleInterpolator =
-  (targetOpacity: number) =>
-  ({ current: { progress: current }, layouts: { screen } }: any) => {
-    const backgroundOpacity = current.interpolate({
-      inputRange: [-1, 0, 0.975, 2],
-      outputRange: [0, 0, targetOpacity, targetOpacity],
-    });
+export const expandStyleInterpolator = (targetOpacity: number) => ({ current: { progress: current }, layouts: { screen } }: any) => {
+  const backgroundOpacity = current.interpolate({
+    inputRange: [-1, 0, 0.975, 2],
+    outputRange: [0, 0, targetOpacity, targetOpacity],
+  });
 
-    const translateY = current.interpolate({
-      inputRange: [0, 1, 2],
-      outputRange: [screen.height, 0, -screen.height / 3],
-    });
+  const translateY = current.interpolate({
+    inputRange: [0, 1, 2],
+    outputRange: [screen.height, 0, -screen.height / 3],
+  });
 
-    return {
-      cardStyle: {
-        shadowColor: colors.themedColors?.shadow,
-        shadowOffset: { height: 10, width: 0 },
-        shadowOpacity: 0.5,
-        shadowRadius: 25,
-        transform: [{ translateY }],
-      },
-      overlayStyle: {
-        backgroundColor: lightModeThemeColors.blueGreyDarker,
-        opacity: backgroundOpacity,
-      },
-    };
+  return {
+    cardStyle: {
+      shadowColor: colors.themedColors?.shadow,
+      shadowOffset: { height: 10, width: 0 },
+      shadowOpacity: 0.5,
+      shadowRadius: 25,
+      transform: [{ translateY }],
+    },
+    overlayStyle: {
+      backgroundColor: lightModeThemeColors.blueGreyDarker,
+      opacity: backgroundOpacity,
+    },
   };
+};
 
 const savingsStyleInterpolator = ({ current: { progress: current }, layouts: { screen } }: any) => {
   const backgroundOpacity = current.interpolate({
@@ -165,34 +163,32 @@ const savingsStyleInterpolator = ({ current: { progress: current }, layouts: { s
   };
 };
 
-const sheetStyleInterpolator =
-  (targetOpacity = 1) =>
-  ({ current: { progress: current }, layouts: { screen } }: any) => {
-    const backgroundOpacity = current.interpolate({
-      inputRange: [-1, 0, 0.975, 2],
-      outputRange: [0, 0, targetOpacity, targetOpacity],
-    });
+const sheetStyleInterpolator = (targetOpacity = 1) => ({ current: { progress: current }, layouts: { screen } }: any) => {
+  const backgroundOpacity = current.interpolate({
+    inputRange: [-1, 0, 0.975, 2],
+    outputRange: [0, 0, targetOpacity, targetOpacity],
+  });
 
-    const translateY = current.interpolate({
-      extrapolate: 'clamp',
-      inputRange: [0, 1],
-      outputRange: [screen.height, 0],
-    });
+  const translateY = current.interpolate({
+    extrapolate: 'clamp',
+    inputRange: [0, 1],
+    outputRange: [screen.height, 0],
+  });
 
-    return {
-      cardStyle: {
-        shadowColor: colors.themedColors?.shadowBlack,
-        shadowOffset: { height: 10, width: 0 },
-        shadowOpacity: 0.6,
-        shadowRadius: 25,
-        transform: [{ translateY }],
-      },
-      overlayStyle: {
-        backgroundColor: lightModeThemeColors.shadowBlack,
-        opacity: backgroundOpacity,
-      },
-    };
+  return {
+    cardStyle: {
+      shadowColor: colors.themedColors?.shadowBlack,
+      shadowOffset: { height: 10, width: 0 },
+      shadowOpacity: 0.6,
+      shadowRadius: 25,
+      transform: [{ translateY }],
+    },
+    overlayStyle: {
+      backgroundColor: lightModeThemeColors.shadowBlack,
+      opacity: backgroundOpacity,
+    },
   };
+};
 
 const swapDetailInterpolator = ({ current: { progress: current }, layouts: { screen } }: any) => {
   const backgroundOpacity = current.interpolate({
