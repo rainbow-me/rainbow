@@ -26,8 +26,7 @@ type ErrorResponse = {
   }[];
 };
 
-type SuccessResponse =
-  paths['/collections/v6']['get']['responses']['200']['schema'];
+type SuccessResponse = paths['/collections/v6']['get']['responses']['200']['schema'];
 
 export async function fetchReservoirNFTFloorPrice(
   nft: UniqueAsset

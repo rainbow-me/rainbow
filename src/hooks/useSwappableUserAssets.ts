@@ -105,8 +105,9 @@ export const useSwappableUserAssets = (params: {
             ? ETH_ADDRESS_AGGREGATORS
             : asset?.address;
 
-        const isSwappable =
-          swappableAssetsRef.current[assetNetwork]?.includes(assetAddress);
+        const isSwappable = swappableAssetsRef.current[assetNetwork]?.includes(
+          assetAddress
+        );
         return isSwappable;
       }),
     [filteredAssetsInWallet]
@@ -122,8 +123,9 @@ export const useSwappableUserAssets = (params: {
             : asset?.address;
         // we place our testnets (goerli) in the Network type which creates this type issue
         // @ts-ignore
-        const isNotSwappable =
-          !swappableAssetsRef.current[assetNetwork]?.includes(assetAddress);
+        const isNotSwappable = !swappableAssetsRef.current[
+          assetNetwork
+        ]?.includes(assetAddress);
         return isNotSwappable;
       }),
     [filteredAssetsInWallet]

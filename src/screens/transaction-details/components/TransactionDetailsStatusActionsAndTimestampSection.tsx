@@ -24,9 +24,10 @@ type Props = {
   hideIcon?: boolean;
 };
 
-export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<
-  Props
-> = ({ transaction, hideIcon }) => {
+export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props> = ({
+  transaction,
+  hideIcon,
+}) => {
   const { minedAt, status, pending, from } = transaction;
   const dispatch = useDispatch();
   const { navigate, goBack } = useNavigation();

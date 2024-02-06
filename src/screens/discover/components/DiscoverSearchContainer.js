@@ -60,8 +60,9 @@ export default forwardRef(function DiscoverSearchContainer(
   const [isFetchingEns, setIsFetchingEns] = useState(false);
   const delayedShowSearch = useDelayedValueWithLayoutAnimation(showSearch);
 
-  const { setIsSearchModeEnabled, isSearchModeEnabled } =
-    useContext(DiscoverSheetContext);
+  const { setIsSearchModeEnabled, isSearchModeEnabled } = useContext(
+    DiscoverSheetContext
+  );
 
   const setIsInputFocused = useCallback(
     value => {

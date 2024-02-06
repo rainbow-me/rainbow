@@ -333,8 +333,15 @@ const ensAction = async (
   const { accountAddress: ownerAddress } = store.getState().settings;
   const { selectedGasFee } = store.getState().gas;
 
-  const { name, duration, rentPrice, records, salt, toAddress, mode } =
-    parameters;
+  const {
+    name,
+    duration,
+    rentPrice,
+    records,
+    salt,
+    toAddress,
+    mode,
+  } = parameters;
 
   logger.log(`[${actionName}] rap for`, name);
 

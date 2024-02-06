@@ -6,7 +6,9 @@ import {
   LearnCategory,
 } from './types';
 
-export const getCardColorways: (isDarkMode: boolean) => {
+export const getCardColorways: (
+  isDarkMode: boolean
+) => {
   [key in CardColor]: CardColorway;
 } = (isDarkMode: boolean) => {
   return {

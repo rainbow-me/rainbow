@@ -233,8 +233,7 @@ export const RestoreCloudBackupResultStates = {
   incorrectPinCode: 'incorrectPinCode',
 } as const;
 
-type RestoreCloudBackupResultStatesType =
-  (typeof RestoreCloudBackupResultStates)[keyof typeof RestoreCloudBackupResultStates];
+type RestoreCloudBackupResultStatesType = typeof RestoreCloudBackupResultStates[keyof typeof RestoreCloudBackupResultStates];
 
 /**
  * Restores a cloud backup.
@@ -369,8 +368,7 @@ async function restoreCurrentBackupIntoKeychain(
 ): Promise<boolean> {
   try {
     // Access control config per each type of key
-    const privateAccessControlOptions =
-      await keychain.getPrivateAccessControlOptions();
+    const privateAccessControlOptions = await keychain.getPrivateAccessControlOptions();
     const encryptedBackupPinData = backedUpData[pinKey];
     const backupPIN = await decryptPIN(encryptedBackupPinData);
 

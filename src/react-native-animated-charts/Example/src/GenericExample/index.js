@@ -57,8 +57,9 @@ function GenericExample() {
   const [pickRange, setPickRange] = useState(10);
   const [includeExtremes, setIncludeExtremes] = useState(true);
   const [interpolationStrategy, setInterpolationStrategy] = useState('b');
-  const [numberOfPointsInterpolated, setNumberOfPointsInterpolated] =
-    useState(80);
+  const [numberOfPointsInterpolated, setNumberOfPointsInterpolated] = useState(
+    80,
+  );
   const [bSplineDegree, setBSplineDegree] = useState(3);
   const [smoothingStrategy, setSmoothingStrategy] = useState('none');
   const [smoothingFactor, setSmoothingFactor] = useState(0.05);
@@ -109,8 +110,7 @@ function GenericExample() {
     <View
       style={{
         backgroundColor: 'black',
-      }}
-    >
+      }}>
       <ScrollView style={{backgroundColor: 'black'}}>
         {/*<Text style={{color: 'white', fontWeight: 'bold'}}>*/}
         {/*  Generic Example (swipe right for a real-life example)*/}
@@ -148,8 +148,7 @@ function GenericExample() {
             <Text
               style={{
                 color: hapticsEnabled ? 'lightgreen' : 'white',
-              }}
-            >
+              }}>
               Yes
             </Text>
           </TouchableOpacity>
@@ -157,8 +156,7 @@ function GenericExample() {
             <Text
               style={{
                 color: !hapticsEnabled ? 'lightgreen' : 'white',
-              }}
-            >
+              }}>
               No
             </Text>
           </TouchableOpacity>
@@ -168,28 +166,24 @@ function GenericExample() {
         </Text>
         <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
           <TouchableOpacity
-            onPress={() => setSmoothingWhileTransitioningEnabled(true)}
-          >
+            onPress={() => setSmoothingWhileTransitioningEnabled(true)}>
             <Text
               style={{
                 color: smoothingWhileTransitioningEnabled
                   ? 'lightgreen'
                   : 'white',
-              }}
-            >
+              }}>
               Yes
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => setSmoothingWhileTransitioningEnabled(false)}
-          >
+            onPress={() => setSmoothingWhileTransitioningEnabled(false)}>
             <Text
               style={{
                 color: !smoothingWhileTransitioningEnabled
                   ? 'lightgreen'
                   : 'white',
-              }}
-            >
+              }}>
               No
             </Text>
           </TouchableOpacity>
@@ -200,8 +194,7 @@ function GenericExample() {
             <Text
               style={{
                 color: hitSlop === 0 ? 'lightgreen' : 'white',
-              }}
-            >
+              }}>
               0
             </Text>
           </TouchableOpacity>
@@ -209,8 +202,7 @@ function GenericExample() {
             <Text
               style={{
                 color: hitSlop === 30 ? 'lightgreen' : 'white',
-              }}
-            >
+              }}>
               30
             </Text>
           </TouchableOpacity>
@@ -218,8 +210,7 @@ function GenericExample() {
             <Text
               style={{
                 color: hitSlop === 50 ? 'lightgreen' : 'white',
-              }}
-            >
+              }}>
               50
             </Text>
           </TouchableOpacity>
@@ -256,8 +247,7 @@ function GenericExample() {
               Pick range:
             </Text>
             <View
-              style={{flexDirection: 'row', justifyContent: 'space-around'}}
-            >
+              style={{flexDirection: 'row', justifyContent: 'space-around'}}>
               <TouchableOpacity onPress={() => setPickRange(2)}>
                 <Text style={{color: pickRange === 2 ? 'lightgreen' : 'white'}}>
                   2
@@ -270,15 +260,13 @@ function GenericExample() {
               </TouchableOpacity>
               <TouchableOpacity onPress={() => setPickRange(10)}>
                 <Text
-                  style={{color: pickRange === 10 ? 'lightgreen' : 'white'}}
-                >
+                  style={{color: pickRange === 10 ? 'lightgreen' : 'white'}}>
                   10
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => setPickRange(25)}>
                 <Text
-                  style={{color: pickRange === 25 ? 'lightgreen' : 'white'}}
-                >
+                  style={{color: pickRange === 25 ? 'lightgreen' : 'white'}}>
                   25
                 </Text>
               </TouchableOpacity>
@@ -287,8 +275,7 @@ function GenericExample() {
               Include extremes:
             </Text>
             <View
-              style={{flexDirection: 'row', justifyContent: 'space-around'}}
-            >
+              style={{flexDirection: 'row', justifyContent: 'space-around'}}>
               <TouchableOpacity onPress={() => setIncludeExtremes(true)}>
                 <Text style={{color: includeExtremes ? 'lightgreen' : 'white'}}>
                   Yes
@@ -296,8 +283,7 @@ function GenericExample() {
               </TouchableOpacity>
               <TouchableOpacity onPress={() => setIncludeExtremes(false)}>
                 <Text
-                  style={{color: !includeExtremes ? 'lightgreen' : 'white'}}
-                >
+                  style={{color: !includeExtremes ? 'lightgreen' : 'white'}}>
                   No
                 </Text>
               </TouchableOpacity>
@@ -313,8 +299,7 @@ function GenericExample() {
               style={{
                 color:
                   interpolationStrategy === 'none' ? 'lightgreen' : 'white',
-              }}
-            >
+              }}>
               None
             </Text>
           </TouchableOpacity>
@@ -322,8 +307,7 @@ function GenericExample() {
             <Text
               style={{
                 color: interpolationStrategy === 'b' ? 'lightgreen' : 'white',
-              }}
-            >
+              }}>
               B Spline
             </Text>
           </TouchableOpacity>
@@ -332,8 +316,7 @@ function GenericExample() {
               style={{
                 color:
                   interpolationStrategy === 'mono' ? 'lightgreen' : 'white',
-              }}
-            >
+              }}>
               Monotone Qubic Spline
             </Text>
           </TouchableOpacity>
@@ -344,14 +327,12 @@ function GenericExample() {
               BSpline degree:
             </Text>
             <View
-              style={{flexDirection: 'row', justifyContent: 'space-around'}}
-            >
+              style={{flexDirection: 'row', justifyContent: 'space-around'}}>
               <TouchableOpacity onPress={() => setBSplineDegree(2)}>
                 <Text
                   style={{
                     color: bSplineDegree === 2 ? 'lightgreen' : 'white',
-                  }}
-                >
+                  }}>
                   2
                 </Text>
               </TouchableOpacity>
@@ -359,8 +340,7 @@ function GenericExample() {
                 <Text
                   style={{
                     color: bSplineDegree === 3 ? 'lightgreen' : 'white',
-                  }}
-                >
+                  }}>
                   3
                 </Text>
               </TouchableOpacity>
@@ -368,8 +348,7 @@ function GenericExample() {
                 <Text
                   style={{
                     color: bSplineDegree === 4 ? 'lightgreen' : 'white',
-                  }}
-                >
+                  }}>
                   4
                 </Text>
               </TouchableOpacity>
@@ -377,8 +356,7 @@ function GenericExample() {
                 <Text
                   style={{
                     color: bSplineDegree === 5 ? 'lightgreen' : 'white',
-                  }}
-                >
+                  }}>
                   5
                 </Text>
               </TouchableOpacity>
@@ -391,61 +369,52 @@ function GenericExample() {
               Number of points Interpolated:
             </Text>
             <View
-              style={{flexDirection: 'row', justifyContent: 'space-around'}}
-            >
+              style={{flexDirection: 'row', justifyContent: 'space-around'}}>
               <TouchableOpacity
-                onPress={() => setNumberOfPointsInterpolated(30)}
-              >
+                onPress={() => setNumberOfPointsInterpolated(30)}>
                 <Text
                   style={{
                     color:
                       numberOfPointsInterpolated === 30
                         ? 'lightgreen'
                         : 'white',
-                  }}
-                >
+                  }}>
                   30
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => setNumberOfPointsInterpolated(80)}
-              >
+                onPress={() => setNumberOfPointsInterpolated(80)}>
                 <Text
                   style={{
                     color:
                       numberOfPointsInterpolated === 80
                         ? 'lightgreen'
                         : 'white',
-                  }}
-                >
+                  }}>
                   80
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => setNumberOfPointsInterpolated(120)}
-              >
+                onPress={() => setNumberOfPointsInterpolated(120)}>
                 <Text
                   style={{
                     color:
                       numberOfPointsInterpolated === 120
                         ? 'lightgreen'
                         : 'white',
-                  }}
-                >
+                  }}>
                   120
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => setNumberOfPointsInterpolated(200)}
-              >
+                onPress={() => setNumberOfPointsInterpolated(200)}>
                 <Text
                   style={{
                     color:
                       numberOfPointsInterpolated === 200
                         ? 'lightgreen'
                         : 'white',
-                  }}
-                >
+                  }}>
                   200
                 </Text>
               </TouchableOpacity>
@@ -460,8 +429,7 @@ function GenericExample() {
             <Text
               style={{
                 color: smoothingStrategy === 'none' ? 'lightgreen' : 'white',
-              }}
-            >
+              }}>
               None
             </Text>
           </TouchableOpacity>
@@ -469,8 +437,7 @@ function GenericExample() {
             <Text
               style={{
                 color: smoothingStrategy === 'simple' ? 'lightgreen' : 'white',
-              }}
-            >
+              }}>
               Simple (Quadratic bezier with fixed points)
             </Text>
           </TouchableOpacity>
@@ -480,8 +447,7 @@ function GenericExample() {
             <Text
               style={{
                 color: smoothingStrategy === 'complex' ? 'lightgreen' : 'white',
-              }}
-            >
+              }}>
               Complex (Cubic bezier)
             </Text>
           </TouchableOpacity>
@@ -489,8 +455,7 @@ function GenericExample() {
             <Text
               style={{
                 color: smoothingStrategy === 'bezier' ? 'lightgreen' : 'white',
-              }}
-            >
+              }}>
               Bezier
             </Text>
           </TouchableOpacity>
@@ -501,14 +466,12 @@ function GenericExample() {
               Smoothing factor:
             </Text>
             <View
-              style={{flexDirection: 'row', justifyContent: 'space-around'}}
-            >
+              style={{flexDirection: 'row', justifyContent: 'space-around'}}>
               <TouchableOpacity onPress={() => setSmoothingFactor(0.05)}>
                 <Text
                   style={{
                     color: smoothingFactor === 0.05 ? 'lightgreen' : 'white',
-                  }}
-                >
+                  }}>
                   0.05
                 </Text>
               </TouchableOpacity>
@@ -516,8 +479,7 @@ function GenericExample() {
                 <Text
                   style={{
                     color: smoothingFactor === 0.1 ? 'lightgreen' : 'white',
-                  }}
-                >
+                  }}>
                   0.1
                 </Text>
               </TouchableOpacity>
@@ -525,8 +487,7 @@ function GenericExample() {
                 <Text
                   style={{
                     color: smoothingFactor === 0.2 ? 'lightgreen' : 'white',
-                  }}
-                >
+                  }}>
                   0.2
                 </Text>
               </TouchableOpacity>
@@ -534,8 +495,7 @@ function GenericExample() {
                 <Text
                   style={{
                     color: smoothingFactor === 0.3 ? 'lightgreen' : 'white',
-                  }}
-                >
+                  }}>
                   0.3
                 </Text>
               </TouchableOpacity>
@@ -543,8 +503,7 @@ function GenericExample() {
                 <Text
                   style={{
                     color: smoothingFactor === 0.5 ? 'lightgreen' : 'white',
-                  }}
-                >
+                  }}>
                   0.5
                 </Text>
               </TouchableOpacity>
@@ -552,8 +511,7 @@ function GenericExample() {
                 <Text
                   style={{
                     color: smoothingFactor === 0.7 ? 'lightgreen' : 'white',
-                  }}
-                >
+                  }}>
                   0.7
                 </Text>
               </TouchableOpacity>
@@ -561,8 +519,7 @@ function GenericExample() {
                 <Text
                   style={{
                     color: smoothingFactor === 0.9 ? 'lightgreen' : 'white',
-                  }}
-                >
+                  }}>
                   0.9
                 </Text>
               </TouchableOpacity>

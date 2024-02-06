@@ -115,15 +115,12 @@ export function useLegacyNFTs({ address }: { address: string }) {
 
   const nftsMap = useMemo(
     () =>
-      nfts.reduce(
-        (acc, nft) => {
-          // index by both uniqueId and fullUniqueId bc why not
-          acc[nft.uniqueId] = nft;
-          acc[nft.fullUniqueId] = nft;
-          return acc;
-        },
-        {} as { [key: string]: UniqueAsset }
-      ),
+      nfts.reduce((acc, nft) => {
+        // index by both uniqueId and fullUniqueId bc why not
+        acc[nft.uniqueId] = nft;
+        acc[nft.fullUniqueId] = nft;
+        return acc;
+      }, {} as { [key: string]: UniqueAsset }),
     [nfts]
   );
 

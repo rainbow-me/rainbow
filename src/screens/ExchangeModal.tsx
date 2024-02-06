@@ -118,7 +118,8 @@ export const DEFAULT_SLIPPAGE_BIPS = {
 };
 
 export const getDefaultSlippageFromConfig = (network: Network) => {
-  const configSlippage = getRemoteConfig().default_slippage_bips as unknown as {
+  const configSlippage = (getRemoteConfig()
+    .default_slippage_bips as unknown) as {
     [network: string]: number;
   };
   const slippage =
@@ -148,8 +149,11 @@ export default function ExchangeModal({
 }: ExchangeModalProps) {
   const { isHardwareWallet } = useWallets();
   const dispatch = useDispatch();
-  const { slippageInBips, maxInputUpdate, flipCurrenciesUpdate } =
-    useSwapSettings();
+  const {
+    slippageInBips,
+    maxInputUpdate,
+    flipCurrenciesUpdate,
+  } = useSwapSettings();
   const {
     params: { inputAsset: defaultInputAsset, outputAsset: defaultOutputAsset },
   } = useRoute<{
@@ -186,8 +190,12 @@ export default function ExchangeModal({
     txNetwork,
     isGasReady,
   } = useGas();
-  const { accountAddress, flashbotsEnabled, nativeCurrency, network } =
-    useAccountSettings();
+  const {
+    accountAddress,
+    flashbotsEnabled,
+    nativeCurrency,
+    network,
+  } = useAccountSettings();
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const prevGasFeesParamsBySpeed = usePrevious(gasFeeParamsBySpeed);
@@ -342,8 +350,8 @@ export default function ExchangeModal({
   );
   // For a limited period after the merge we need to block the use of flashbots.
   // This line should be removed after reenabling flashbots in remote config.
-  const swapSupportsFlashbots =
-    getNetworkObj(currentNetwork).features.flashbots;
+  const swapSupportsFlashbots = getNetworkObj(currentNetwork).features
+    .flashbots;
   const flashbots = swapSupportsFlashbots && flashbotsEnabled;
 
   const isDismissing = useRef(false);
@@ -351,7 +359,7 @@ export default function ExchangeModal({
     if (ios) {
       return;
     }
-    (dismissingScreenListener.current as unknown as () => void) = () => {
+    ((dismissingScreenListener.current as unknown) as () => void) = () => {
       Keyboard.dismiss();
       isDismissing.current = true;
     };
@@ -364,9 +372,7 @@ export default function ExchangeModal({
       ({ data: { closing } }) => {
         if (!closing && isDismissing.current) {
           isDismissing.current = false;
-          (
-            lastFocusedInputHandle as unknown as MutableRefObject<TextInput>
-          )?.current?.focus();
+          ((lastFocusedInputHandle as unknown) as MutableRefObject<TextInput>)?.current?.focus();
         }
       }
     );
@@ -378,7 +384,7 @@ export default function ExchangeModal({
 
   useEffect(() => {
     let slippage = DEFAULT_SLIPPAGE_BIPS?.[currentNetwork];
-    const configSlippage = default_slippage_bips as unknown as {
+    const configSlippage = (default_slippage_bips as unknown) as {
       [network: string]: number;
     };
     if (configSlippage?.[currentNetwork]) {
@@ -398,14 +404,15 @@ export default function ExchangeModal({
   const updateGasLimit = useCallback(async () => {
     try {
       const provider = await getProviderForNetwork(currentNetwork);
-      const swapParams: SwapActionParameters | CrosschainSwapActionParameters =
-        {
-          chainId,
-          inputAmount: inputAmount!,
-          outputAmount: outputAmount!,
-          provider,
-          tradeDetails: tradeDetails!,
-        };
+      const swapParams:
+        | SwapActionParameters
+        | CrosschainSwapActionParameters = {
+        chainId,
+        inputAmount: inputAmount!,
+        outputAmount: outputAmount!,
+        provider,
+        tradeDetails: tradeDetails!,
+      };
 
       const rapType = getSwapRapTypeByExchangeType(isCrosschainSwap);
       const gasLimit = await getSwapRapEstimationByType(rapType, swapParams);
@@ -592,8 +599,12 @@ export default function ExchangeModal({
         };
         logger.log('[exchange - handle submit] rap');
         const nonce = await getNextNonce();
-        const { independentField, independentValue, slippageInBips, source } =
-          store.getState().swap;
+        const {
+          independentField,
+          independentValue,
+          slippageInBips,
+          source,
+        } = store.getState().swap;
         const swapParameters = {
           chainId,
           flashbots,
@@ -641,7 +652,7 @@ export default function ExchangeModal({
           isHardwareWallet,
           isHighPriceImpact: debouncedIsHighPriceImpact,
           legacyGasPrice:
-            (selectedGasFee?.gasFeeParams as unknown as LegacyGasFeeParams)
+            ((selectedGasFee?.gasFeeParams as unknown) as LegacyGasFeeParams)
               ?.gasPrice?.amount || '',
           liquiditySources: JSON.stringify(tradeDetails?.protocols || []),
           maxNetworkFee:
@@ -725,7 +736,7 @@ export default function ExchangeModal({
         isHardwareWallet,
         isHighPriceImpact: debouncedIsHighPriceImpact,
         legacyGasPrice:
-          (selectedGasFee?.gasFeeParams as unknown as LegacyGasFeeParams)
+          ((selectedGasFee?.gasFeeParams as unknown) as LegacyGasFeeParams)
             ?.gasPrice?.amount || '',
         liquiditySources: JSON.stringify(tradeDetails?.protocols || []),
         maxNetworkFee:
@@ -872,8 +883,7 @@ export default function ExchangeModal({
           isRefuelTx,
           restoreFocusOnSwapModal: () => {
             android &&
-              (lastFocusedInputHandle.current =
-                lastFocusedInputHandleTemporary);
+              (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
             setParams({ focused: true });
           },
           type: 'swap_details',
@@ -918,8 +928,7 @@ export default function ExchangeModal({
   );
 
   const handleTapWhileDisabled = useCallback(() => {
-    const lastFocusedInput =
-      lastFocusedInputHandle?.current as unknown as TextInput;
+    const lastFocusedInput = (lastFocusedInputHandle?.current as unknown) as TextInput;
     lastFocusedInput?.blur();
     navigate(Routes.EXPLAIN_SHEET, {
       inputToken: inputCurrency?.symbol,

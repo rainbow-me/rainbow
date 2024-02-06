@@ -36,8 +36,12 @@ export const POINTS_ROUTES = {
 const Swipe = createMaterialTopTabNavigator();
 
 export default function PointsScreen() {
-  const { accountAddress, accountImage, accountColor, accountSymbol } =
-    useAccountProfile();
+  const {
+    accountAddress,
+    accountImage,
+    accountColor,
+    accountSymbol,
+  } = useAccountProfile();
   const { points_enabled, points_notifications_toggle } = useRemoteConfig();
   const pointsEnabled =
     useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
@@ -48,8 +52,10 @@ export default function PointsScreen() {
   const { data } = usePoints({
     walletAddress: accountAddress,
   });
-  const { data: referralCode, refetch: resetReferralCode } =
-    usePointsReferralCode();
+  const {
+    data: referralCode,
+    refetch: resetReferralCode,
+  } = usePointsReferralCode();
 
   const isOnboarded =
     data?.points?.error?.type !== PointsErrorType.NonExistingUser;

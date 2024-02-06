@@ -58,8 +58,10 @@ export function ProfileActionButtonsRow() {
     ],
   }));
 
-  const { f2c_enabled: addCashEnabled, swagg_enabled: swapEnabled } =
-    useRemoteConfig();
+  const {
+    f2c_enabled: addCashEnabled,
+    swagg_enabled: swapEnabled,
+  } = useRemoteConfig();
 
   if (!accentColorLoaded) return null;
 

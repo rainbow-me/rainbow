@@ -64,10 +64,14 @@ const DevSection = () => {
   const { navigate } = useNavigation();
   const { config, setConfig } = useContext(RainbowContext) as any;
   const { wallets } = useWallets();
-  const { accountAddress, testnetsEnabled, settingsChangeTestnetsEnabled } =
-    useAccountSettings();
-  const { walletNotificationSettings } =
-    useAllNotificationSettingsFromStorage();
+  const {
+    accountAddress,
+    testnetsEnabled,
+    settingsChangeTestnetsEnabled,
+  } = useAccountSettings();
+  const {
+    walletNotificationSettings,
+  } = useAllNotificationSettingsFromStorage();
   const dispatch = useDispatch();
   const resetAccountState = useResetAccountState();
   const loadAccountData = useLoadAccountData();
@@ -490,8 +494,7 @@ const DevSection = () => {
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="🤖" isEmoji />}
               onPress={async () => {
-                const publicKey =
-                  await getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded();
+                const publicKey = await getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded();
 
                 if (publicKey) {
                   Clipboard.setString(publicKey);

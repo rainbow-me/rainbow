@@ -64,8 +64,9 @@ export class AvatarResolver implements IAvatarResolver {
     }
 
     // parse retrieved avatar uri
-    const { chainID, namespace, contractAddress, tokenID } =
-      parseNFT(avatarURI);
+    const { chainID, namespace, contractAddress, tokenID } = parseNFT(
+      avatarURI
+    );
     // detect avatar spec by namespace
     const spec = new specs[namespace]();
     if (!spec) return null;

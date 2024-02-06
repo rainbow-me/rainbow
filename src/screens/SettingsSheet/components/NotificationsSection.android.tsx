@@ -78,7 +78,7 @@ const WalletRowLabel = ({ notifications, groupOff }: WalletRowLabelProps) => {
     const allTopicsDisabled =
       groupOff || Object.values(notifications.topics).every(topic => !topic);
     const enabledTopics = Object.keys(notifications.topics).filter(
-      topic => notifications.topics[topic as unknown as number]
+      topic => notifications.topics[(topic as unknown) as number]
     );
 
     if (allTopicsDisabled) {
@@ -140,8 +140,9 @@ const WalletRow = ({
 
   const navigateToWalletSettings = useCallback(
     (name: string, address: string) => {
-      const settingsForWallet =
-        getNotificationSettingsForWalletWithAddress(address);
+      const settingsForWallet = getNotificationSettingsForWalletWithAddress(
+        address
+      );
 
       if (settingsForWallet) {
         navigate(Routes.WALLET_NOTIFICATIONS_SETTINGS, {
@@ -233,8 +234,10 @@ const NotificationsSection = () => {
     updateGroupSettingsAndSubscriptions,
     watcherEnabled: storedWatcherEnabled,
   } = useWalletGroupNotificationSettings();
-  const { globalNotificationSettings, walletNotificationSettings } =
-    useAllNotificationSettingsFromStorage();
+  const {
+    globalNotificationSettings,
+    walletNotificationSettings,
+  } = useAllNotificationSettingsFromStorage();
 
   const [topicState, setTopicState] = useState<GlobalNotificationTopics>(
     globalNotificationSettings
@@ -254,8 +257,10 @@ const NotificationsSection = () => {
 
   // We allow only one subscription in progress
   // this states controls which we are currently updating
-  const [topicSubscriptionInProgress, setTopicSubscriptionInProgress] =
-    useState<GlobalNotificationTopicType | null>(null);
+  const [
+    topicSubscriptionInProgress,
+    setTopicSubscriptionInProgress,
+  ] = useState<GlobalNotificationTopicType | null>(null);
 
   const { ownedWallets, watchedWallets } = useMemo(() => {
     const ownedWallets: RainbowAccount[] = [];

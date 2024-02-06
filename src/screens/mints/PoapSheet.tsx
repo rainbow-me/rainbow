@@ -344,10 +344,10 @@ const PoapSheet = () => {
                       {claimStatus === 'claimed'
                         ? i18n.t(i18n.l.poaps.minted)
                         : claimStatus === 'claiming'
-                          ? i18n.t(i18n.l.poaps.minting)
-                          : claimStatus === 'none'
-                            ? i18n.t(i18n.l.poaps.mint_poap)
-                            : i18n.t(i18n.l.poaps.error)}
+                        ? i18n.t(i18n.l.poaps.minting)
+                        : claimStatus === 'none'
+                        ? i18n.t(i18n.l.poaps.mint_poap)
+                        : i18n.t(i18n.l.poaps.error)}
                     </Text>
                   </SheetActionButton>
                 </SheetActionButtonRow>

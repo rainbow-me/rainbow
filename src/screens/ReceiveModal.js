@@ -78,10 +78,9 @@ export default function ReceiveModal() {
     setCopyCount(count => count + 1);
   }, []);
 
-  const checksummedAddress = useMemo(
-    () => toChecksumAddress(accountAddress),
-    [accountAddress]
-  );
+  const checksummedAddress = useMemo(() => toChecksumAddress(accountAddress), [
+    accountAddress,
+  ]);
 
   return (
     <Container backgroundColor="rgba(0,0,0,0.85)" testID="receive-modal">

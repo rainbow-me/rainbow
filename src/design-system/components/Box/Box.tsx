@@ -23,7 +23,7 @@ import { ApplyShadow } from '../private/ApplyShadow/ApplyShadow';
 import type * as Polymorphic from './polymorphic';
 
 const positions = ['absolute'] as const;
-type Position = (typeof positions)[number];
+type Position = typeof positions[number];
 
 export function resolveToken<TokenName extends string, TokenValue, CustomValue>(
   scale: Record<TokenName, TokenValue>,

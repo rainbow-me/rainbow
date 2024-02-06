@@ -62,10 +62,11 @@ function MarkdownStack({
 
   return (
     <MarkdownStackContext.Provider
-      value={useMemo(
-        () => ({ depth, listSpace, paragraphSpace }),
-        [depth, paragraphSpace, listSpace]
-      )}
+      value={useMemo(() => ({ depth, listSpace, paragraphSpace }), [
+        depth,
+        paragraphSpace,
+        listSpace,
+      ])}
     >
       <Box marginBottom={negateSpace(depth === 1 ? paragraphSpace : listSpace)}>
         {children}
@@ -142,10 +143,10 @@ export const MarkdownText = memo(function MarkdownText({
   const heading1Color = heading1ColorProp ?? color;
   const heading2Color = heading2ColorProp ?? heading1ColorProp ?? color;
 
-  const spaceProps = useMemo(
-    () => ({ listSpace, paragraphSpace }),
-    [paragraphSpace, listSpace]
-  );
+  const spaceProps = useMemo(() => ({ listSpace, paragraphSpace }), [
+    paragraphSpace,
+    listSpace,
+  ]);
 
   const rules: RenderRules = useMemo(() => {
     return {

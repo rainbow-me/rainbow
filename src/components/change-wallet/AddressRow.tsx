@@ -151,10 +151,9 @@ export default function AddressRow({
     cleanedUpBalance = '0';
   }
 
-  const cleanedUpLabel = useMemo(
-    () => removeFirstEmojiFromString(label),
-    [label]
-  );
+  const cleanedUpLabel = useMemo(() => removeFirstEmojiFromString(label), [
+    label,
+  ]);
 
   const emoji = useMemo(
     () =>

@@ -158,8 +158,8 @@ function HoldToAuthorizeButtonContent2({
   const height = tinyButton
     ? TINY_BUTTON_HEIGHT
     : smallButton
-      ? SMALL_BUTTON_HEIGHT
-      : BUTTON_HEIGHT;
+    ? SMALL_BUTTON_HEIGHT
+    : BUTTON_HEIGHT;
 
   const width = deviceDimensions.width - parentHorizontalPadding * 2;
 

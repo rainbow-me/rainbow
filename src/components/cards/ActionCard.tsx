@@ -21,8 +21,12 @@ export const ActionCard = ({
 }: ActionCardProps) => {
   const { isDarkMode } = useTheme();
   const cardColorways = getCardColorways(isDarkMode);
-  const { gradient, shadowColor, orbColorDark, primaryTextColor } =
-    cardColorways[colorway];
+  const {
+    gradient,
+    shadowColor,
+    orbColorDark,
+    primaryTextColor,
+  } = cardColorways[colorway];
 
   return (
     <GenericCard

@@ -57,10 +57,9 @@ export default function ProfileInfoSection({
       .filter(Boolean) as [ENS_RECORDS, string][];
     return [orderedTopRecords, otherRecords as [ENS_RECORDS, string][]];
   }, [recordsArray]);
-  const coinAddresses = useMemo(
-    () => Object.entries(coinAddressMap || {}),
-    [coinAddressMap]
-  );
+  const coinAddresses = useMemo(() => Object.entries(coinAddressMap || {}), [
+    coinAddressMap,
+  ]);
 
   return (
     <Stack space={{ custom: 16 }}>
@@ -131,15 +130,21 @@ function ProfileInfoRow({
   recordValue: string;
   type: 'address' | 'record';
 }) {
-  const { ContextMenuButton, icon, isImageValue, label, url, value } =
-    useENSRecordDisplayProperties({
-      allowEdit,
-      ensName,
-      images,
-      key: recordKey,
-      type,
-      value: recordValue,
-    });
+  const {
+    ContextMenuButton,
+    icon,
+    isImageValue,
+    label,
+    url,
+    value,
+  } = useENSRecordDisplayProperties({
+    allowEdit,
+    ensName,
+    images,
+    key: recordKey,
+    type,
+    value: recordValue,
+  });
 
   return (
     <InfoRow

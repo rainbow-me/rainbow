@@ -141,9 +141,9 @@ export const getStateDiff = async (
   const fromAddr = tradeDetails.from;
   const toAddr = RAINBOW_ROUTER_CONTRACT_ADDRESS;
   const tokenContract = new Contract(tokenAddress, erc20ABI, provider);
-  const { number: blockNumber } = await (
-    provider.getBlock as () => Promise<Block>
-  )();
+  const {
+    number: blockNumber,
+  } = await (provider.getBlock as () => Promise<Block>)();
 
   // Get data
   const { data } = await tokenContract.populateTransaction.approve(
@@ -337,12 +337,11 @@ export const estimateSwapGasLimit = async ({
           IS_TESTING !== 'true'
         ) {
           try {
-            const gasLimitWithFakeApproval =
-              await getSwapGasLimitWithFakeApproval(
-                chainId,
-                provider,
-                tradeDetails
-              );
+            const gasLimitWithFakeApproval = await getSwapGasLimitWithFakeApproval(
+              chainId,
+              provider,
+              tradeDetails
+            );
             logger.debug(
               ' ✅ Got gasLimitWithFakeApproval!',
               gasLimitWithFakeApproval
@@ -391,12 +390,11 @@ export const estimateCrosschainSwapGasLimit = async ({
         IS_TESTING !== 'true'
       ) {
         try {
-          const gasLimitWithFakeApproval =
-            await getSwapGasLimitWithFakeApproval(
-              chainId,
-              provider,
-              tradeDetails
-            );
+          const gasLimitWithFakeApproval = await getSwapGasLimitWithFakeApproval(
+            chainId,
+            provider,
+            tradeDetails
+          );
           logger.debug(
             ' ✅ Got gasLimitWithFakeApproval!',
             gasLimitWithFakeApproval
@@ -408,8 +406,9 @@ export const estimateCrosschainSwapGasLimit = async ({
       }
 
       const routeGasLimit = getCrosschainSwapDefaultGasLimit(tradeDetails);
-      const rainbowDefaultGasLimit =
-        getCrosschainSwapRainbowDefaultGasLimit(chainId);
+      const rainbowDefaultGasLimit = getCrosschainSwapRainbowDefaultGasLimit(
+        chainId
+      );
       if (routeGasLimit && lessThan(rainbowDefaultGasLimit, routeGasLimit)) {
         return routeGasLimit;
       }
@@ -429,8 +428,9 @@ export const estimateCrosschainSwapGasLimit = async ({
       SWAP_GAS_PADDING
     );
     const routeGasLimit = getCrosschainSwapDefaultGasLimit(tradeDetails);
-    const rainbowDefaultGasLimit =
-      getCrosschainSwapRainbowDefaultGasLimit(chainId);
+    const rainbowDefaultGasLimit = getCrosschainSwapRainbowDefaultGasLimit(
+      chainId
+    );
 
     let fallbackGasLimit: BigNumberish = rainbowDefaultGasLimit;
     if (routeGasLimit && lessThan(rainbowDefaultGasLimit, routeGasLimit)) {
@@ -439,8 +439,9 @@ export const estimateCrosschainSwapGasLimit = async ({
     return gasLimit || fallbackGasLimit;
   } catch (error) {
     const routeGasLimit = getCrosschainSwapDefaultGasLimit(tradeDetails);
-    const rainbowDefaultGasLimit =
-      getCrosschainSwapRainbowDefaultGasLimit(chainId);
+    const rainbowDefaultGasLimit = getCrosschainSwapRainbowDefaultGasLimit(
+      chainId
+    );
 
     let fallbackGasLimit: BigNumberish = rainbowDefaultGasLimit;
     if (routeGasLimit && lessThan(rainbowDefaultGasLimit, routeGasLimit)) {

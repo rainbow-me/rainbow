@@ -32,7 +32,7 @@ export function useHeadingStyle({
         textAlign,
         ...sizeStyles,
         ...weightStyles,
-      }) as const,
+      } as const),
     [colorValue, textAlign, sizeStyles, weightStyles]
   );
 

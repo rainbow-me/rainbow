@@ -591,8 +591,8 @@ export function ImagePreviewOverlayTarget({
           givenHeight
             ? givenHeight
             : height
-              ? { custom: height }
-              : { custom: 0 }
+            ? { custom: height }
+            : { custom: 0 }
         }
         onLayout={handleLayout}
         ref={zoomableWrapperRef}

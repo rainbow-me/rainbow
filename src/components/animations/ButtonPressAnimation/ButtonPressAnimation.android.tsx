@@ -126,8 +126,8 @@ const ScaleButton = ({
     onPress,
   });
 
-  const gestureHandler =
-    useAnimatedGestureHandler<NativeViewGestureHandlerGestureEvent>({
+  const gestureHandler = useAnimatedGestureHandler<NativeViewGestureHandlerGestureEvent>(
+    {
       onActive: () => {
         runOnJS(handleStartPress)();
         if (hasScaledDown.value === 0) {
@@ -148,7 +148,8 @@ const ScaleButton = ({
       onFail: () => {
         runOnJS(handleCancel)();
       },
-    });
+    }
+  );
   return (
     <View style={[sx.overflow, wrapperStyle]} testID={testID}>
       <View style={{ margin: -overflowMargin }}>

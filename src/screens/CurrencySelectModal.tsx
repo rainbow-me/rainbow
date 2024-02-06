@@ -168,12 +168,16 @@ export default function CurrencySelectModal() {
 
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
-  const { crosschainExactMatches, swapCurrencyList, swapCurrencyListLoading } =
-    useSwapCurrencyList(searchQueryForSearch, currentChainId, false);
+  const {
+    crosschainExactMatches,
+    swapCurrencyList,
+    swapCurrencyListLoading,
+  } = useSwapCurrencyList(searchQueryForSearch, currentChainId, false);
 
-  const { swappableUserAssets, unswappableUserAssets } = useSwappableUserAssets(
-    { outputCurrency }
-  );
+  const {
+    swappableUserAssets,
+    unswappableUserAssets,
+  } = useSwappableUserAssets({ outputCurrency });
 
   const checkForSameNetwork = useCallback(
     (newAsset: any, selectAsset: any, type: any) => {
@@ -285,11 +289,9 @@ export default function CurrencySelectModal() {
   }, [crosschainExactMatches, swapCurrencyList]);
 
   const currencyList = useMemo(() => {
-    let list = (
-      type === CurrencySelectionTypes.input
-        ? getWalletCurrencyList()
-        : activeSwapCurrencyList
-    ) as {
+    let list = (type === CurrencySelectionTypes.input
+      ? getWalletCurrencyList()
+      : activeSwapCurrencyList) as {
       data: EnrichedExchangeAsset[];
       title: string;
     }[];
@@ -392,8 +394,9 @@ export default function CurrencySelectModal() {
         currentChainId &&
         currentChainId !== ChainId.mainnet
       ) {
-        const currentL2Name =
-          ethereumUtils.getNetworkNameFromChainId(currentChainId);
+        const currentL2Name = ethereumUtils.getNetworkNameFromChainId(
+          currentChainId
+        );
         const currentL2WalletAssets = assetsInWallet.filter(
           ({ network }) =>
             network && network?.toLowerCase() === currentL2Name?.toLowerCase()

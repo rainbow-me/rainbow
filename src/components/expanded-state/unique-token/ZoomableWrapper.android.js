@@ -98,28 +98,30 @@ export const ZoomableWrapper = ({
 
   const maxImageWidth = width || deviceWidth - horizontalPadding * 2;
   const maxImageHeight = height || deviceHeight / 2;
-  const [containerWidth = maxImageWidth, containerHeight = maxImageWidth] =
-    useMemo(() => {
-      const isSquare = aspectRatio === 1;
-      const isLandscape = aspectRatio > 1;
-      const isPortrait = aspectRatio < 1;
+  const [
+    containerWidth = maxImageWidth,
+    containerHeight = maxImageWidth,
+  ] = useMemo(() => {
+    const isSquare = aspectRatio === 1;
+    const isLandscape = aspectRatio > 1;
+    const isPortrait = aspectRatio < 1;
 
-      if (isSquare) {
-        return [maxImageWidth, maxImageWidth];
-      }
+    if (isSquare) {
+      return [maxImageWidth, maxImageWidth];
+    }
 
-      if (isLandscape) {
+    if (isLandscape) {
+      return [maxImageWidth, maxImageWidth / aspectRatio];
+    }
+
+    if (isPortrait) {
+      if (maxImageWidth / aspectRatio > maxImageHeight) {
+        return [aspectRatio * maxImageHeight, maxImageHeight];
+      } else {
         return [maxImageWidth, maxImageWidth / aspectRatio];
       }
-
-      if (isPortrait) {
-        if (maxImageWidth / aspectRatio > maxImageHeight) {
-          return [aspectRatio * maxImageHeight, maxImageHeight];
-        } else {
-          return [maxImageWidth, maxImageWidth / aspectRatio];
-        }
-      }
-    }, [aspectRatio, maxImageHeight, maxImageWidth]);
+    }
+  }, [aspectRatio, maxImageHeight, maxImageWidth]);
 
   const containerWidthValue = useReactiveSharedValue(
     containerWidth || maxImageWidth

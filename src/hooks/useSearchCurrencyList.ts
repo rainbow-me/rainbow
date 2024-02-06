@@ -103,8 +103,10 @@ const useSearchCurrencyList = (
     [searchChainId, searchQuery]
   );
 
-  const { favorites: favoriteAddresses, favoritesMetadata: favoriteMap } =
-    useFavorites();
+  const {
+    favorites: favoriteAddresses,
+    favoritesMetadata: favoriteMap,
+  } = useFavorites();
 
   const curatedMap = rainbowTokenList.CURATED_TOKENS;
   const unfilteredFavorites = Object.values(favoriteMap);
@@ -115,16 +117,19 @@ const useSearchCurrencyList = (
   const [highLiquidityAssets, setHighLiquidityAssets] = useState<RT[]>([]);
   const [lowLiquidityAssets, setLowLiquidityAssets] = useState<RT[]>([]);
   const [verifiedAssets, setVerifiedAssets] = useState<RT[]>([]);
-  const [fetchingCrosschainAssets, setFetchingCrosschainAssets] =
-    useState(false);
-  const [crosschainVerifiedAssets, setCrosschainVerifiedAssets] =
-    useState<CrosschainVerifiedAssets>({
-      [Network.mainnet]: [],
-      [Network.optimism]: [],
-      [Network.polygon]: [],
-      [Network.bsc]: [],
-      [Network.arbitrum]: [],
-    });
+  const [fetchingCrosschainAssets, setFetchingCrosschainAssets] = useState(
+    false
+  );
+  const [
+    crosschainVerifiedAssets,
+    setCrosschainVerifiedAssets,
+  ] = useState<CrosschainVerifiedAssets>({
+    [Network.mainnet]: [],
+    [Network.optimism]: [],
+    [Network.polygon]: [],
+    [Network.bsc]: [],
+    [Network.arbitrum]: [],
+  });
 
   const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
 

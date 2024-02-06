@@ -8,8 +8,9 @@ import { IS_ANDROID } from '@/env';
 import { useDimensions } from '@/hooks';
 
 export function RestoreSheet() {
-  const { params: { userData, backupSelected, fromSettings } = {} } =
-    useRoute();
+  const {
+    params: { userData, backupSelected, fromSettings } = {},
+  } = useRoute();
   const { height: deviceHeight } = useDimensions();
 
   return (

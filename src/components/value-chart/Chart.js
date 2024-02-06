@@ -133,10 +133,9 @@ export default function ChartWrapper({
   throttledData,
   ...props
 }) {
-  const timespanIndex = useMemo(
-    () => ChartTimespans.indexOf(chartType),
-    [chartType]
-  );
+  const timespanIndex = useMemo(() => ChartTimespans.indexOf(chartType), [
+    chartType,
+  ]);
 
   const { progress } = useChartData();
   const spinnerRotation = useSharedValue(0);

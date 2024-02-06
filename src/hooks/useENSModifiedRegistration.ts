@@ -153,9 +153,9 @@ export default function useENSModifiedRegistration({
       {}
     );
 
-    const recordKeysWithValue = (
-      Object.keys(records) as (keyof Records)[]
-    ).filter((key: keyof Records) => {
+    const recordKeysWithValue = (Object.keys(
+      records
+    ) as (keyof Records)[]).filter((key: keyof Records) => {
       return Boolean(records[key]);
     });
 

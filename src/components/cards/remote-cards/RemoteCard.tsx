@@ -80,8 +80,13 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
   const { width } = useDimensions();
   const { dismissCard } = useRemoteCardContext();
 
-  const { cardKey, accentColor, backgroundColor, primaryButton, imageIcon } =
-    card;
+  const {
+    cardKey,
+    accentColor,
+    backgroundColor,
+    primaryButton,
+    imageIcon,
+  } = card;
 
   const accent = useForegroundColor(getColorFromString(accentColor));
   const border = useForegroundColor('separatorSecondary');

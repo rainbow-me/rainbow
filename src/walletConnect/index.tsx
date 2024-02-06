@@ -108,7 +108,7 @@ export function maybeGoBackAndClearHasPendingRedirect({
  * MAY BE UNDEFINED if WC v2 hasn't been instantiated yet
  */
 let syncWeb3WalletClient:
-  | Awaited<ReturnType<(typeof Web3Wallet)['init']>>
+  | Awaited<ReturnType<typeof Web3Wallet['init']>>
   | undefined;
 
 const walletConnectCore = new Core({ projectId: WC_PROJECT_ID });
@@ -132,7 +132,10 @@ export const web3WalletClient = Web3Wallet.init({
  * return { address, message } and JSON.parse the value if it's from a typed
  * data request
  */
-export function parseRPCParams({ method, params }: RPCPayload): {
+export function parseRPCParams({
+  method,
+  params,
+}: RPCPayload): {
   address?: string;
   message?: string;
 } {
@@ -460,8 +463,11 @@ export async function onSessionProposal(
 
     const verifiedData = proposal.verifyContext.verified;
     const receivedTimestamp = Date.now();
-    const { proposer, requiredNamespaces, optionalNamespaces } =
-      proposal.params;
+    const {
+      proposer,
+      requiredNamespaces,
+      optionalNamespaces,
+    } = proposal.params;
 
     const requiredChains = requiredNamespaces?.eip155?.chains || [];
     const optionalChains = optionalNamespaces?.eip155?.chains || [];
@@ -1063,8 +1069,9 @@ export async function addAccountToSession(
   try {
     const client = await web3WalletClient;
 
-    const namespaces: Parameters<typeof client.updateSession>[0]['namespaces'] =
-      {};
+    const namespaces: Parameters<
+      typeof client.updateSession
+    >[0]['namespaces'] = {};
 
     for (const [key, value] of Object.entries(session.requiredNamespaces)) {
       /**

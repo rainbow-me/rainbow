@@ -31,8 +31,9 @@ export const SwapDetailsValue = styled(SwapDetailsText).attrs(
   })
 )(fontWithWidth(fonts.weight.bold));
 
-const AnimatedTruncatedAddress =
-  Animated.createAnimatedComponent(TruncatedAddress);
+const AnimatedTruncatedAddress = Animated.createAnimatedComponent(
+  TruncatedAddress
+);
 const AnimatedText = Animated.createAnimatedComponent(Text);
 
 const ContractActionsEnum = {
@@ -74,10 +75,9 @@ function SwapDetailsContractRowContent({
   const { colors } = useTheme();
   const colorForAsset = useColorForAsset(asset);
   const animation = useSharedValue(menuVisible ? 1 : 0);
-  const startingColor = useMemo(
-    () => colors.alpha(colors.blueGreyDark, 0.8),
-    [colors]
-  );
+  const startingColor = useMemo(() => colors.alpha(colors.blueGreyDark, 0.8), [
+    colors,
+  ]);
 
   useLayoutEffect(() => {
     animation.value = withTiming(menuVisible ? 1 : 0, { duration: 150 });

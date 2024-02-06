@@ -52,8 +52,10 @@ export default function SendAssetFormToken({
   const { isSmallPhone, isTinyPhone } = useDimensions();
   const { colors } = useTheme();
 
-  const { mask: nativeMask, placeholder: nativePlaceholder } =
-    supportedNativeCurrencies[nativeCurrency];
+  const {
+    mask: nativeMask,
+    placeholder: nativePlaceholder,
+  } = supportedNativeCurrencies[nativeCurrency];
 
   return (
     <Fragment>

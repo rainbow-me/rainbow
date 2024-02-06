@@ -95,12 +95,14 @@ export const useWatchPendingTransactions = ({
       let updatedTransaction: RainbowTransaction = { ...tx };
       try {
         if (tx.network && tx.hash && address) {
-          updatedTransaction =
-            await processSupportedNetworkTransaction(updatedTransaction);
+          updatedTransaction = await processSupportedNetworkTransaction(
+            updatedTransaction
+          );
           // if flashbots tx and no blockNumber, check if it failed
           if (!(tx as any).blockNumber && tx.flashbots) {
-            updatedTransaction =
-              await processFlashbotsTransaction(updatedTransaction);
+            updatedTransaction = await processFlashbotsTransaction(
+              updatedTransaction
+            );
           }
         } else {
           throw new Error('Pending transaction missing chain id');
@@ -209,21 +211,23 @@ export const useWatchPendingTransactions = ({
 
     processNonces(updatedPendingTransactions);
 
-    const { newPendingTransactions, minedTransactions } =
-      updatedPendingTransactions.reduce(
-        (acc, tx) => {
-          if (tx?.status === 'pending') {
-            acc.newPendingTransactions.push(tx);
-          } else {
-            acc.minedTransactions.push(tx as MinedTransaction);
-          }
-          return acc;
-        },
-        {
-          newPendingTransactions: [] as RainbowTransaction[],
-          minedTransactions: [] as MinedTransaction[],
+    const {
+      newPendingTransactions,
+      minedTransactions,
+    } = updatedPendingTransactions.reduce(
+      (acc, tx) => {
+        if (tx?.status === 'pending') {
+          acc.newPendingTransactions.push(tx);
+        } else {
+          acc.minedTransactions.push(tx as MinedTransaction);
         }
-      );
+        return acc;
+      },
+      {
+        newPendingTransactions: [] as RainbowTransaction[],
+        minedTransactions: [] as MinedTransaction[],
+      }
+    );
 
     if (minedTransactions.length) {
       console.log('we mined a transaction');

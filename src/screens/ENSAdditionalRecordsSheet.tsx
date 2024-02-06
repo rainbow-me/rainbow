@@ -23,8 +23,11 @@ export const getENSAdditionalRecordsSheetHeight = () => {
 export default function ENSAdditionalRecordsSheet() {
   const { params } = useRoute<any>();
   const [accentColor] = useRecoilState(accentColorAtom);
-  const { selectedFields, onAddField, onRemoveField } =
-    useENSRegistrationForm();
+  const {
+    selectedFields,
+    onAddField,
+    onRemoveField,
+  } = useENSRegistrationForm();
   const { height: deviceHeight } = useWindowDimensions();
 
   const boxStyle = useMemo(

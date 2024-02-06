@@ -64,9 +64,9 @@ export const MaxToleranceInput = forwardRef(
         slippageRef?.current?.blur();
       },
       reset: () => {
-        const slippage = getDefaultSlippageFromConfig(
+        const slippage = (getDefaultSlippageFromConfig(
           currentNetwork
-        ) as unknown as number;
+        ) as unknown) as number;
         onSlippageChange(convertBipsToPercent(slippage));
       },
     }));

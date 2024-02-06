@@ -71,8 +71,9 @@ export const WalletDiagnosticsSheet = () => {
                   if (userPin) {
                     secret = await encryptor.decrypt(userPin, secret);
                   }
-                  const { address, type } =
-                    await deriveAccountFromWalletInput(secret);
+                  const { address, type } = await deriveAccountFromWalletInput(
+                    secret
+                  );
                   let createdAt = null;
                   let label = null;
                   Object.keys(walletsWithBalancesAndNames).some(k => {

@@ -60,7 +60,7 @@ export function getFetchRequester(config: Config) {
 
   return async function requester<
     TResponse = unknown,
-    TVariables = Record<string, unknown>,
+    TVariables = Record<string, unknown>
   >(
     node: DocumentNode,
     variables?: TVariables,

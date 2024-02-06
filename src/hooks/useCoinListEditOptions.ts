@@ -52,10 +52,9 @@ export default function useCoinListEditOptions() {
     [setSelectedItems]
   );
 
-  const clearSelectedCoins = useCallback(
-    () => setSelectedItems([]),
-    [setSelectedItems]
-  );
+  const clearSelectedCoins = useCallback(() => setSelectedItems([]), [
+    setSelectedItems,
+  ]);
 
   return {
     clearSelectedCoins,

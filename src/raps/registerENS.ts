@@ -131,8 +131,13 @@ export const createTransferENSRap = async (
 ) => {
   let actions: RapENSAction[] = [];
 
-  const { clearRecords, records, setAddress, transferControl, toAddress } =
-    ensActionParameters;
+  const {
+    clearRecords,
+    records,
+    setAddress,
+    transferControl,
+    toAddress,
+  } = ensActionParameters;
 
   if (clearRecords) {
     const emptyRecords = Object.keys(records ?? {}).reduce(

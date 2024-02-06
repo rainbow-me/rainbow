@@ -119,26 +119,21 @@ export const PointsProfileProvider = ({
   const [animationKey, setAnimationKey] = useState(0);
   const [shareBonusPoints, setShareBonusPoints] = useState(0);
 
-  const rainbowSwaps =
-    profile?.onboardPoints?.user?.onboarding?.categories?.find(
-      ({ type }) => type === PointsOnboardingCategoryType.RainbowSwaps
-    );
-  const metamaskSwaps =
-    profile?.onboardPoints?.user?.onboarding?.categories?.find(
-      ({ type }) => type === PointsOnboardingCategoryType.MetamaskSwaps
-    );
-  const rainbowBridges =
-    profile?.onboardPoints?.user?.onboarding?.categories?.find(
-      ({ type }) => type === PointsOnboardingCategoryType.RainbowBridges
-    );
-  const nftCollections =
-    profile?.onboardPoints?.user?.onboarding?.categories?.find(
-      ({ type }) => type === PointsOnboardingCategoryType.NFTCollections
-    );
-  const historicBalance =
-    profile?.onboardPoints?.user?.onboarding?.categories?.find(
-      ({ type }) => type === PointsOnboardingCategoryType.HistoricBalance
-    );
+  const rainbowSwaps = profile?.onboardPoints?.user?.onboarding?.categories?.find(
+    ({ type }) => type === PointsOnboardingCategoryType.RainbowSwaps
+  );
+  const metamaskSwaps = profile?.onboardPoints?.user?.onboarding?.categories?.find(
+    ({ type }) => type === PointsOnboardingCategoryType.MetamaskSwaps
+  );
+  const rainbowBridges = profile?.onboardPoints?.user?.onboarding?.categories?.find(
+    ({ type }) => type === PointsOnboardingCategoryType.RainbowBridges
+  );
+  const nftCollections = profile?.onboardPoints?.user?.onboarding?.categories?.find(
+    ({ type }) => type === PointsOnboardingCategoryType.NFTCollections
+  );
+  const historicBalance = profile?.onboardPoints?.user?.onboarding?.categories?.find(
+    ({ type }) => type === PointsOnboardingCategoryType.HistoricBalance
+  );
   const bonus = profile?.onboardPoints?.user?.onboarding?.categories?.find(
     ({ type }) => type === PointsOnboardingCategoryType.Bonus
   );
@@ -161,11 +156,12 @@ export const PointsProfileProvider = ({
     );
 
     try {
-      const challengeResponse =
-        await metadataPOSTClient.getPointsOnboardChallenge({
+      const challengeResponse = await metadataPOSTClient.getPointsOnboardChallenge(
+        {
           address: accountAddress,
           referral: referralCode,
-        });
+        }
+      );
       const challenge = challengeResponse?.pointsOnboardChallenge;
       if (!challenge) {
         Alert.alert(i18n.t(i18n.l.points.console.generic_alert));

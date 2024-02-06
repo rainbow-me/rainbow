@@ -63,10 +63,11 @@ export default function ChartPercentChangeLabel({ ratio, latestChange }) {
   const { colors } = useTheme();
 
   // we don't need to format on latestChange changes
-  const defaultValue = useMemo(
-    () => format(originalY, data, latestChange),
-    [originalY, data, latestChange]
-  );
+  const defaultValue = useMemo(() => format(originalY, data, latestChange), [
+    originalY,
+    data,
+    latestChange,
+  ]);
 
   const textProps = useAnimatedStyle(
     () => ({
@@ -86,8 +87,8 @@ export default function ChartPercentChangeLabel({ ratio, latestChange }) {
         realRatio === 1
           ? colors.blueGreyDark
           : realRatio < 1
-            ? colors.red
-            : colors.green,
+          ? colors.red
+          : colors.green,
     };
   }, [ratio]);
 

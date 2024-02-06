@@ -225,8 +225,9 @@ function RecyclerAssetList({
   const { openFamilies: openFamilyTabs } = useOpenFamilies();
   const { ref, handleRef } = useRecyclerListViewRef();
   const stickyCoinDividerRef = React.useRef<View>() as React.RefObject<View>;
-  const [globalDeviceDimensions, setGlobalDeviceDimensions] =
-    useState<number>(0);
+  const [globalDeviceDimensions, setGlobalDeviceDimensions] = useState<number>(
+    0
+  );
   const {
     areSmallCollectibles,
     items,
@@ -352,8 +353,9 @@ function RecyclerAssetList({
       }
 
       if (type.index === ViewTypes.HEADER.index) {
-        return (
-          showcase ? ViewTypes.SHOWCASE_HEADER : ViewTypes.HEADER
+        return (showcase
+          ? ViewTypes.SHOWCASE_HEADER
+          : ViewTypes.HEADER
         ).renderComponent({
           data,
           isCoinListEdited,
@@ -522,7 +524,7 @@ function RecyclerAssetList({
         };
       },
       (type, dim) => {
-        const element = type as unknown as {
+        const element = (type as unknown) as {
           readonly height: number;
           readonly visibleDuringCoinEdit: boolean;
         };
@@ -581,8 +583,7 @@ function RecyclerAssetList({
 
   useEffect(() => {
     let collectibles: RecyclerAssetListSection = {} as RecyclerAssetListSection;
-    let prevCollectibles: RecyclerAssetListSection =
-      {} as RecyclerAssetListSection;
+    let prevCollectibles: RecyclerAssetListSection = {} as RecyclerAssetListSection;
     let balances: RecyclerAssetListSection = {} as RecyclerAssetListSection;
     let smallBalances: any = {};
 
@@ -686,8 +687,8 @@ function RecyclerAssetList({
           disableStickyHeaders
             ? []
             : isCoinListEdited
-              ? defaultIndices
-              : stickyComponentsIndices
+            ? defaultIndices
+            : stickyComponentsIndices
         }
       >
         {/* @ts-ignore */}

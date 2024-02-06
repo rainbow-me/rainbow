@@ -63,15 +63,17 @@ export default function useENSRegistrationStepHandler(observer = true) {
 
   const timeout = useRef<NodeJS.Timeout>();
 
-  const [secondsSinceCommitConfirmed, setSecondsSinceCommitConfirmed] =
-    useState(
-      (registrationParameters?.commitTransactionConfirmedAt &&
-        differenceInSeconds(
-          Date.now(),
-          registrationParameters?.commitTransactionConfirmedAt
-        )) ||
-        -1
-    );
+  const [
+    secondsSinceCommitConfirmed,
+    setSecondsSinceCommitConfirmed,
+  ] = useState(
+    (registrationParameters?.commitTransactionConfirmedAt &&
+      differenceInSeconds(
+        Date.now(),
+        registrationParameters?.commitTransactionConfirmedAt
+      )) ||
+      -1
+  );
 
   const isTestingHardhat = useMemo(
     () => isHardHat(web3Provider.connection.url),

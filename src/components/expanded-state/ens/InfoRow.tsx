@@ -148,15 +148,15 @@ export default function InfoRow({
               isSwitch
                 ? undefined
                 : isMultiline
-                  ? ('15px (Deprecated)' as const)
-                  : ('10px' as const)
+                ? ('15px (Deprecated)' as const)
+                : ('10px' as const)
             }
             style={{
               backgroundColor: isSwitch
                 ? 'transparent'
                 : useAccentColor
-                  ? accentColor + '10'
-                  : 'rgba(255, 255, 255, 0.08)',
+                ? accentColor + '10'
+                : 'rgba(255, 255, 255, 0.08)',
               maxWidth: android ? 250 : undefined,
               opacity: show ? 1 : 0,
             }}

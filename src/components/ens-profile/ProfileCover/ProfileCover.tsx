@@ -58,12 +58,12 @@ export default function ProfileCover({
                 ...(showSkeleton
                   ? {}
                   : coverUrl
-                    ? {
-                        background: 'body (Deprecated)',
-                      }
-                    : {
-                        style: { backgroundColor: accentColor },
-                      }),
+                  ? {
+                      background: 'body (Deprecated)',
+                    }
+                  : {
+                      style: { backgroundColor: accentColor },
+                    }),
               })}
         >
           <ImagePreviewOverlayTarget

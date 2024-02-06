@@ -6,5 +6,6 @@ interface BottomSheetNavigatorContextType {
   setEnableContentPanningGesture: (value: boolean) => void;
 }
 
-export const BottomSheetNavigatorContext =
-  createContext<BottomSheetNavigatorContextType | null>(null);
+export const BottomSheetNavigatorContext = createContext<BottomSheetNavigatorContextType | null>(
+  null
+);

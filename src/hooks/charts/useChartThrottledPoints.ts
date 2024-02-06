@@ -174,9 +174,8 @@ export default function useChartThrottledPoints({
     smoothingStrategy: 'bezier',
   });
 
-  const debouncedSetThrottledData = useRef(
-    debounce(setThrottledData, 30)
-  ).current;
+  const debouncedSetThrottledData = useRef(debounce(setThrottledData, 30))
+    .current;
 
   useEffect(() => {
     if (throttledPoints.points && !fetchingCharts) {

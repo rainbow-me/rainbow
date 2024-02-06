@@ -958,7 +958,8 @@ export const explainers = (params, colors) => ({
           onPress={() =>
             Linking.openURL(
               buildRainbowLearnUrl({
-                url: 'https://learn.rainbow.me/a-beginners-guide-to-liquidity-providing',
+                url:
+                  'https://learn.rainbow.me/a-beginners-guide-to-liquidity-providing',
                 query: {
                   campaign: 'explain',
                 },
@@ -993,7 +994,8 @@ export const explainers = (params, colors) => ({
           onPress={() =>
             Linking.openURL(
               buildRainbowLearnUrl({
-                url: 'https://support.rainbow.me/en/articles/8324868-fee-on-transfer-tokens',
+                url:
+                  'https://support.rainbow.me/en/articles/8324868-fee-on-transfer-tokens',
                 query: {
                   campaign: 'explain',
                 },
@@ -1074,8 +1076,8 @@ export const explainers = (params, colors) => ({
                   index > 0
                     ? -12
                     : params?.networks?.length % 2 === 0
-                      ? -2
-                      : -30,
+                    ? -2
+                    : -30,
               }}
               style={{
                 borderColor: colors.transparent,
@@ -1129,7 +1131,8 @@ export const explainers = (params, colors) => ({
           onPress={() =>
             Linking.openURL(
               buildRainbowLearnUrl({
-                url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+                url:
+                  'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
                 query: {
                   campaign: 'explain',
                 },
@@ -1170,7 +1173,8 @@ export const explainers = (params, colors) => ({
           onPress={() =>
             Linking.openURL(
               buildRainbowLearnUrl({
-                url: 'https://learn.rainbow.me/protecting-transactions-with-flashbots',
+                url:
+                  'https://learn.rainbow.me/protecting-transactions-with-flashbots',
                 query: {
                   campaign: 'explain',
                 },
@@ -1200,7 +1204,8 @@ export const explainers = (params, colors) => ({
           onPress={() =>
             Linking.openURL(
               buildRainbowLearnUrl({
-                url: 'https://learn.rainbow.me/swap-with-confidence-with-rainbow',
+                url:
+                  'https://learn.rainbow.me/swap-with-confidence-with-rainbow',
                 query: {
                   campaign: 'explain',
                 },

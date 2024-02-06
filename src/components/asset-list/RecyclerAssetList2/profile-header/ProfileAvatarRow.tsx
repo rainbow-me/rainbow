@@ -39,8 +39,11 @@ export function ProfileAvatarRow({
 
   const { accountSymbol, accountColor, accountImage } = useAccountProfile();
 
-  const { avatarContextMenuConfig, onAvatarPressProfile, onSelectionCallback } =
-    useOnAvatarPress({ screenType: 'wallet' });
+  const {
+    avatarContextMenuConfig,
+    onAvatarPressProfile,
+    onSelectionCallback,
+  } = useOnAvatarPress({ screenType: 'wallet' });
 
   const dominantColor = usePersistentDominantColorFromImage(accountImage);
 

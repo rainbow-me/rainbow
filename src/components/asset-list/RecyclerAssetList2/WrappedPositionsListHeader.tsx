@@ -14,8 +14,10 @@ const TokenFamilyHeaderHeight = 48;
 
 const PositionListHeader = ({ total, ...props }: { total: string }) => {
   const { colors } = useTheme();
-  const { isPositionCardsOpen, toggleOpenPositionCards } =
-    useOpenPositionCards();
+  const {
+    isPositionCardsOpen,
+    toggleOpenPositionCards,
+  } = useOpenPositionCards();
 
   const toValue = Number(!!isPositionCardsOpen);
 

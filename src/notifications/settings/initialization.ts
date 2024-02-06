@@ -69,34 +69,35 @@ export const initializeGlobalNotificationSettings = () => {
  * schedules subscribing to owned wallets that haven't been initialized yet
  * schedules removing settings for wallets that are no longer prersent but removal failed previously
  */
-export const initializeNotificationSettingsForAllAddressesAndCleanupSettingsForRemovedWallets =
-  (addresses: AddressWithRelationship[]) => {
-    const initializationState = _prepareInitializationState();
-    // Set of wallet addresses we have in app (unrelated to notification settings entries)
-    const walletAddresses = new Set(
-      addresses.map(addressWithRelationship => addressWithRelationship.address)
-    );
-    const removedWalletsThatWereNotUnsubscribedProperly: string[] = [
-      ...initializationState.alreadySaved.keys(),
-    ].filter(address => !walletAddresses.has(address));
+export const initializeNotificationSettingsForAllAddressesAndCleanupSettingsForRemovedWallets = (
+  addresses: AddressWithRelationship[]
+) => {
+  const initializationState = _prepareInitializationState();
+  // Set of wallet addresses we have in app (unrelated to notification settings entries)
+  const walletAddresses = new Set(
+    addresses.map(addressWithRelationship => addressWithRelationship.address)
+  );
+  const removedWalletsThatWereNotUnsubscribedProperly: string[] = [
+    ...initializationState.alreadySaved.keys(),
+  ].filter(address => !walletAddresses.has(address));
 
-    const queue = _prepareSubscriptionQueueAndCreateInitialSettings(
-      addresses,
-      initializationState
-    );
+  const queue = _prepareSubscriptionQueueAndCreateInitialSettings(
+    addresses,
+    initializationState
+  );
 
+  InteractionManager.runAfterInteractions(() => {
+    _processSubscriptionQueue(queue);
+  });
+
+  if (removedWalletsThatWereNotUnsubscribedProperly.length) {
     InteractionManager.runAfterInteractions(() => {
-      _processSubscriptionQueue(queue);
-    });
-
-    if (removedWalletsThatWereNotUnsubscribedProperly.length) {
-      InteractionManager.runAfterInteractions(() => {
-        removedWalletsThatWereNotUnsubscribedProperly.forEach(address => {
-          removeNotificationSettingsForWallet(address);
-        });
+      removedWalletsThatWereNotUnsubscribedProperly.forEach(address => {
+        removeNotificationSettingsForWallet(address);
       });
-    }
-  };
+    });
+  }
+};
 
 /**
  * Adds fresh disabled settings for all wallets that didn't have settings

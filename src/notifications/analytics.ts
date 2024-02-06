@@ -89,24 +89,23 @@ export type NotificationSubscriptionChangesListener = {
   remove: () => void;
 };
 
-export const registerNotificationSubscriptionChangesListener =
-  (): NotificationSubscriptionChangesListener => {
-    return notificationSettingsStorage.addOnValueChangedListener(key => {
-      if (key === WALLET_GROUPS_STORAGE_KEY) {
-        const stringValue = notificationSettingsStorage.getString(key);
-        if (stringValue) {
-          const value = JSON.parse(stringValue) as GroupSettings;
-          onGroupStateChange(value);
-        }
-      } else if (key === WALLET_TOPICS_STORAGE_KEY) {
-        const stringValue = notificationSettingsStorage.getString(key);
-        if (stringValue) {
-          const value = JSON.parse(stringValue);
-          onTopicsStateChange(value);
-        }
+export const registerNotificationSubscriptionChangesListener = (): NotificationSubscriptionChangesListener => {
+  return notificationSettingsStorage.addOnValueChangedListener(key => {
+    if (key === WALLET_GROUPS_STORAGE_KEY) {
+      const stringValue = notificationSettingsStorage.getString(key);
+      if (stringValue) {
+        const value = JSON.parse(stringValue) as GroupSettings;
+        onGroupStateChange(value);
       }
-    });
-  };
+    } else if (key === WALLET_TOPICS_STORAGE_KEY) {
+      const stringValue = notificationSettingsStorage.getString(key);
+      if (stringValue) {
+        const value = JSON.parse(stringValue);
+        onTopicsStateChange(value);
+      }
+    }
+  });
+};
 
 const onGroupStateChange = (state: GroupSettings) => {
   const stringValue = notificationSettingsStorage.getString(

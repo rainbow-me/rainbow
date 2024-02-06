@@ -181,10 +181,8 @@ const transactionTypes = {
   ],
 } as const;
 
-export type TransactionWithChangesType =
-  (typeof transactionTypes.withChanges)[number];
-export type TransactionWithoutChangesType =
-  (typeof transactionTypes.withoutChanges)[number];
+export type TransactionWithChangesType = typeof transactionTypes.withChanges[number];
+export type TransactionWithoutChangesType = typeof transactionTypes.withoutChanges[number];
 
 export type TransactionType =
   | TransactionWithChangesType

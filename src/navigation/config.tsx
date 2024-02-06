@@ -65,8 +65,8 @@ const buildCoolModalConfig = (params: any): CoolModalConfigOptions => ({
         ? 30
         : 0.666 // 0.666 gets the screen corner radius internally
       : params.cornerRadius === 0
-        ? 0
-        : params.cornerRadius || 39,
+      ? 0
+      : params.cornerRadius || 39,
   customStack: true,
   disableShortFormAfterTransitionToLongForm:
     params.disableShortFormAfterTransitionToLongForm ||
@@ -294,18 +294,17 @@ export const qrScannerConfig: PartialNavigatorConfigOptions = {
   }),
 };
 
-export const pairHardwareWalletNavigatorConfig: PartialNavigatorConfigOptions =
-  {
-    options: ({ route: { params = {} } }) => ({
-      ...buildCoolModalConfig({
-        ...params,
-        backgroundOpacity: 1,
-        scrollEnabled: true,
-        springDamping: 1,
-        transitionDuration: 0.2,
-      }),
+export const pairHardwareWalletNavigatorConfig: PartialNavigatorConfigOptions = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      scrollEnabled: true,
+      springDamping: 1,
+      transitionDuration: 0.2,
     }),
-  };
+  }),
+};
 
 export const hardwareWalletTxNavigatorConfig: PartialNavigatorConfigOptions = {
   options: ({ route: { params = {} } }) => ({
@@ -449,16 +448,15 @@ export const expandedAssetSheetConfig: PartialNavigatorConfigOptions = {
   }),
 };
 
-export const expandedAssetSheetConfigWithLimit: PartialNavigatorConfigOptions =
-  {
-    options: ({ route: { params = {} } }) => ({
-      ...buildCoolModalConfig({
-        ...params,
-        scrollEnabled: true,
-      }),
-      limitActiveModals: true,
+export const expandedAssetSheetConfigWithLimit: PartialNavigatorConfigOptions = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      scrollEnabled: true,
     }),
-  };
+    limitActiveModals: true,
+  }),
+};
 
 export const restoreSheetConfig: PartialNavigatorConfigOptions = {
   // @ts-ignore
@@ -523,13 +521,12 @@ export const nativeStackDefaultConfig: CoolModalConfigOptions = {
   transitionDuration: 0.3,
 };
 
-export const nativeStackDefaultConfigWithoutStatusBar: CoolModalConfigOptions =
-  {
-    ...nativeStackDefaultConfig,
-    onWillDismiss: () => {
-      onWillPop();
-    },
-  };
+export const nativeStackDefaultConfigWithoutStatusBar: CoolModalConfigOptions = {
+  ...nativeStackDefaultConfig,
+  onWillDismiss: () => {
+    onWillPop();
+  },
+};
 
 export const exchangeTabNavigatorConfig = {
   initialLayout: deviceUtils.dimensions,

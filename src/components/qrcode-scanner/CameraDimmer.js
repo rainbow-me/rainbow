@@ -10,8 +10,9 @@ const Dim = styled(Animated.View)({
 });
 
 export default function CameraDimmer({ children, cameraVisible }) {
-  const delayedCameraVisible =
-    useDelayedValueWithLayoutAnimation(cameraVisible);
+  const delayedCameraVisible = useDelayedValueWithLayoutAnimation(
+    cameraVisible
+  );
 
   return (
     <Dim>

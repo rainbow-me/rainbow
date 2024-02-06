@@ -151,8 +151,9 @@ export default function ENSConfirmRegisterSheet() {
     accountProfile.accountENS !== ensName &&
       (!isEmpty(changedRecords) || mode === REGISTRATION_MODES.EDIT)
   );
-  const { step, secondsSinceCommitConfirmed } =
-    useENSRegistrationStepHandler(false);
+  const { step, secondsSinceCommitConfirmed } = useENSRegistrationStepHandler(
+    false
+  );
   const { action } = useENSRegistrationActionHandler({
     sendReverseRecord,
     step,

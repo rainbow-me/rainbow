@@ -123,197 +123,196 @@ interface SettingsStateUpdateLanguageSuccessAction {
   payload: SettingsState['language'];
 }
 
-export const settingsLoadState =
-  () =>
-  async (
-    dispatch: ThunkDispatch<
-      AppState,
-      unknown,
-      | SettingsStateUpdateNativeCurrencyAndTestnetsSuccessAction
-      | SettingsStateUpdateAppIconSuccessAction
-    >
-  ) => {
+export const settingsLoadState = () => async (
+  dispatch: ThunkDispatch<
+    AppState,
+    unknown,
+    | SettingsStateUpdateNativeCurrencyAndTestnetsSuccessAction
+    | SettingsStateUpdateAppIconSuccessAction
+  >
+) => {
+  try {
+    const nativeCurrency = await getNativeCurrency();
+    const testnetsEnabled = await getTestnetsEnabled();
+    const appIcon = (await getAppIcon()) as string;
+    dispatch({
+      payload: appIcon,
+      type: SETTINGS_UPDATE_APP_ICON_SUCCESS,
+    });
+
+    const flashbotsEnabled = await getFlashbotsEnabled();
+
+    analytics.identify({
+      currency: nativeCurrency,
+      enabledFlashbots: flashbotsEnabled,
+      enabledTestnets: testnetsEnabled,
+    });
+
+    dispatch({
+      payload: { flashbotsEnabled, nativeCurrency, testnetsEnabled },
+      type: SETTINGS_UPDATE_ACCOUNT_SETTINGS_SUCCESS,
+    });
+  } catch (error) {
+    logger.log('Error loading native currency and testnets pref', error);
+  }
+};
+
+export const settingsLoadNetwork = () => async (
+  dispatch: Dispatch<SettingsStateUpdateNetworkSuccessAction>
+) => {
+  try {
+    const network = await getNetwork();
+    const chainId = ethereumUtils.getChainIdFromNetwork(network);
+    await web3SetHttpProvider(network);
+    dispatch({
+      payload: { chainId, network },
+      type: SETTINGS_UPDATE_NETWORK_SUCCESS,
+    });
+  } catch (error) {
+    logger.log('Error loading network settings', error);
+  }
+};
+
+export const settingsLoadLanguage = () => async (
+  dispatch: Dispatch<SettingsStateUpdateLanguageSuccessAction>
+) => {
+  try {
+    const language = await getLanguage();
+    updateLanguageLocale(language as Language);
+    dispatch({
+      payload: language,
+      type: SETTINGS_UPDATE_LANGUAGE_SUCCESS,
+    });
+    analytics.identify({
+      language,
+    });
+  } catch (error) {
+    logger.log('Error loading language settings', error);
+  }
+};
+
+export const settingsChangeTestnetsEnabled = (
+  testnetsEnabled: boolean
+) => async (dispatch: Dispatch<SettingsStateUpdateTestnetPrefAction>) => {
+  dispatch({
+    payload: testnetsEnabled,
+    type: SETTINGS_UPDATE_TESTNET_PREF_SUCCESS,
+  });
+  saveTestnetsEnabled(testnetsEnabled);
+};
+
+export const settingsChangeAppIcon = (appIcon: string) => (
+  dispatch: Dispatch<SettingsStateUpdateAppIconSuccessAction>
+) => {
+  const callback = async () => {
+    logger.log('changing app icon to', appIcon);
     try {
-      const nativeCurrency = await getNativeCurrency();
-      const testnetsEnabled = await getTestnetsEnabled();
-      const appIcon = (await getAppIcon()) as string;
+      await changeIcon(appIcon);
+      logger.log('icon changed to ', appIcon);
+      saveAppIcon(appIcon);
       dispatch({
         payload: appIcon,
         type: SETTINGS_UPDATE_APP_ICON_SUCCESS,
       });
-
-      const flashbotsEnabled = await getFlashbotsEnabled();
-
-      analytics.identify({
-        currency: nativeCurrency,
-        enabledFlashbots: flashbotsEnabled,
-        enabledTestnets: testnetsEnabled,
-      });
-
-      dispatch({
-        payload: { flashbotsEnabled, nativeCurrency, testnetsEnabled },
-        type: SETTINGS_UPDATE_ACCOUNT_SETTINGS_SUCCESS,
-      });
     } catch (error) {
-      logger.log('Error loading native currency and testnets pref', error);
+      logger.log('Error changing app icon', error);
     }
   };
 
-export const settingsLoadNetwork =
-  () => async (dispatch: Dispatch<SettingsStateUpdateNetworkSuccessAction>) => {
-    try {
-      const network = await getNetwork();
-      const chainId = ethereumUtils.getChainIdFromNetwork(network);
-      await web3SetHttpProvider(network);
-      dispatch({
-        payload: { chainId, network },
-        type: SETTINGS_UPDATE_NETWORK_SUCCESS,
-      });
-    } catch (error) {
-      logger.log('Error loading network settings', error);
-    }
-  };
+  if (android) {
+    Alert.alert(
+      lang.t('settings.icon_change.title'),
+      lang.t('settings.icon_change.warning'),
+      [
+        {
+          onPress: () => {},
+          text: lang.t('settings.icon_change.cancel'),
+        },
+        {
+          onPress: callback,
+          text: lang.t('settings.icon_change.confirm'),
+        },
+      ]
+    );
+  } else {
+    callback();
+  }
+};
 
-export const settingsLoadLanguage =
-  () =>
-  async (dispatch: Dispatch<SettingsStateUpdateLanguageSuccessAction>) => {
-    try {
-      const language = await getLanguage();
-      updateLanguageLocale(language as Language);
-      dispatch({
-        payload: language,
-        type: SETTINGS_UPDATE_LANGUAGE_SUCCESS,
-      });
-      analytics.identify({
-        language,
-      });
-    } catch (error) {
-      logger.log('Error loading language settings', error);
-    }
-  };
+export const settingsChangeFlashbotsEnabled = (
+  flashbotsEnabled: boolean
+) => async (dispatch: Dispatch<SettingsStateUpdateFlashbotsPrefAction>) => {
+  dispatch({
+    payload: flashbotsEnabled,
+    type: SETTINGS_UPDATE_FLASHBOTS_PREF_SUCCESS,
+  });
+  saveFlashbotsEnabled(flashbotsEnabled);
+};
 
-export const settingsChangeTestnetsEnabled =
-  (testnetsEnabled: boolean) =>
-  async (dispatch: Dispatch<SettingsStateUpdateTestnetPrefAction>) => {
+export const settingsUpdateAccountAddress = (accountAddress: string) => async (
+  dispatch: Dispatch<SettingsStateUpdateSettingsAddressAction>
+) => {
+  dispatch({
+    payload: accountAddress,
+    type: SETTINGS_UPDATE_SETTINGS_ADDRESS,
+  });
+};
+
+export const settingsUpdateNetwork = (network: Network) => async (
+  dispatch: Dispatch<SettingsStateUpdateNetworkSuccessAction>
+) => {
+  const chainId = ethereumUtils.getChainIdFromNetwork(network);
+  await web3SetHttpProvider(network);
+  try {
     dispatch({
-      payload: testnetsEnabled,
-      type: SETTINGS_UPDATE_TESTNET_PREF_SUCCESS,
+      payload: { chainId, network },
+      type: SETTINGS_UPDATE_NETWORK_SUCCESS,
     });
-    saveTestnetsEnabled(testnetsEnabled);
-  };
+    saveNetwork(network);
+  } catch (error) {
+    logger.log('Error updating network settings', error);
+  }
+};
 
-export const settingsChangeAppIcon =
-  (appIcon: string) =>
-  (dispatch: Dispatch<SettingsStateUpdateAppIconSuccessAction>) => {
-    const callback = async () => {
-      logger.log('changing app icon to', appIcon);
-      try {
-        await changeIcon(appIcon);
-        logger.log('icon changed to ', appIcon);
-        saveAppIcon(appIcon);
-        dispatch({
-          payload: appIcon,
-          type: SETTINGS_UPDATE_APP_ICON_SUCCESS,
-        });
-      } catch (error) {
-        logger.log('Error changing app icon', error);
-      }
-    };
-
-    if (android) {
-      Alert.alert(
-        lang.t('settings.icon_change.title'),
-        lang.t('settings.icon_change.warning'),
-        [
-          {
-            onPress: () => {},
-            text: lang.t('settings.icon_change.cancel'),
-          },
-          {
-            onPress: callback,
-            text: lang.t('settings.icon_change.confirm'),
-          },
-        ]
-      );
-    } else {
-      callback();
-    }
-  };
-
-export const settingsChangeFlashbotsEnabled =
-  (flashbotsEnabled: boolean) =>
-  async (dispatch: Dispatch<SettingsStateUpdateFlashbotsPrefAction>) => {
+export const settingsChangeLanguage = (language: Language) => async (
+  dispatch: Dispatch<SettingsStateUpdateLanguageSuccessAction>
+) => {
+  updateLanguageLocale(language);
+  try {
     dispatch({
-      payload: flashbotsEnabled,
-      type: SETTINGS_UPDATE_FLASHBOTS_PREF_SUCCESS,
+      payload: language,
+      type: SETTINGS_UPDATE_LANGUAGE_SUCCESS,
     });
-    saveFlashbotsEnabled(flashbotsEnabled);
-  };
+    saveLanguage(language);
+    analytics.identify({ language });
+  } catch (error) {
+    logger.log('Error changing language', error);
+  }
+};
 
-export const settingsUpdateAccountAddress =
-  (accountAddress: string) =>
-  async (dispatch: Dispatch<SettingsStateUpdateSettingsAddressAction>) => {
+export const settingsChangeNativeCurrency = (
+  nativeCurrency: NativeCurrencyKey
+) => async (
+  dispatch: ThunkDispatch<
+    AppState,
+    unknown,
+    SettingsStateUpdateNativeCurrencySuccessAction
+  >
+) => {
+  dispatch(dataResetState());
+  dispatch(explorerClearState());
+  try {
     dispatch({
-      payload: accountAddress,
-      type: SETTINGS_UPDATE_SETTINGS_ADDRESS,
+      payload: nativeCurrency,
+      type: SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS,
     });
-  };
-
-export const settingsUpdateNetwork =
-  (network: Network) =>
-  async (dispatch: Dispatch<SettingsStateUpdateNetworkSuccessAction>) => {
-    const chainId = ethereumUtils.getChainIdFromNetwork(network);
-    await web3SetHttpProvider(network);
-    try {
-      dispatch({
-        payload: { chainId, network },
-        type: SETTINGS_UPDATE_NETWORK_SUCCESS,
-      });
-      saveNetwork(network);
-    } catch (error) {
-      logger.log('Error updating network settings', error);
-    }
-  };
-
-export const settingsChangeLanguage =
-  (language: Language) =>
-  async (dispatch: Dispatch<SettingsStateUpdateLanguageSuccessAction>) => {
-    updateLanguageLocale(language);
-    try {
-      dispatch({
-        payload: language,
-        type: SETTINGS_UPDATE_LANGUAGE_SUCCESS,
-      });
-      saveLanguage(language);
-      analytics.identify({ language });
-    } catch (error) {
-      logger.log('Error changing language', error);
-    }
-  };
-
-export const settingsChangeNativeCurrency =
-  (nativeCurrency: NativeCurrencyKey) =>
-  async (
-    dispatch: ThunkDispatch<
-      AppState,
-      unknown,
-      SettingsStateUpdateNativeCurrencySuccessAction
-    >
-  ) => {
-    dispatch(dataResetState());
-    dispatch(explorerClearState());
-    try {
-      dispatch({
-        payload: nativeCurrency,
-        type: SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS,
-      });
-      dispatch(explorerInit());
-      saveNativeCurrency(nativeCurrency);
-      analytics.identify({ currency: nativeCurrency });
-    } catch (error) {
-      logger.log('Error changing native currency', error);
-    }
-  };
+    dispatch(explorerInit());
+    saveNativeCurrency(nativeCurrency);
+    analytics.identify({ currency: nativeCurrency });
+  } catch (error) {
+    logger.log('Error changing native currency', error);
+  }
+};
 
 // -- Reducer --------------------------------------------------------------- //
 export const INITIAL_STATE: SettingsState = {

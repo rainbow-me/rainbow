@@ -8,7 +8,7 @@ type HandleType = Handle | null;
 export default function useInteraction(): [
   CreateHandleType,
   RemoveHandleType,
-  MutableRefObject<HandleType>,
+  MutableRefObject<HandleType>
 ] {
   const interactionHandle = useRef<HandleType>(null);
 

@@ -115,8 +115,12 @@ const SettingsSection = ({
   onPressNotifications,
 }: SettingsSectionProps) => {
   const { wallets, isReadOnlyWallet } = useWallets();
-  const { language, nativeCurrency, network, testnetsEnabled } =
-    useAccountSettings();
+  const {
+    language,
+    nativeCurrency,
+    network,
+    testnetsEnabled,
+  } = useAccountSettings();
   const isLanguageSelectionEnabled = useExperimentalFlag(LANGUAGE_SETTINGS);
   const isNotificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
@@ -246,8 +250,8 @@ const SettingsSection = ({
                   allBackedUp
                     ? 'complete'
                     : areBackedUp
-                      ? 'incomplete'
-                      : 'warning'
+                    ? 'incomplete'
+                    : 'warning'
                 }
               />
             }

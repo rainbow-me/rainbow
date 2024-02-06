@@ -44,10 +44,9 @@ export function Inline({
   const verticalSpace = verticalSpaceProp ?? space;
   const horizontalSpace = horizontalSpaceProp ?? space;
 
-  const flattenedChildren = useMemo(
-    () => flattenChildren(children),
-    [children]
-  );
+  const flattenedChildren = useMemo(() => flattenChildren(children), [
+    children,
+  ]);
 
   return (
     <Box

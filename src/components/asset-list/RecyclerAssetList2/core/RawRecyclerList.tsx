@@ -79,10 +79,10 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   const { getCardsForPlacement } = useRemoteCardContext();
   const { isReadOnlyWallet } = useWallets();
 
-  const cards = useMemo(
-    () => getCardsForPlacement(name as string),
-    [getCardsForPlacement, name]
-  );
+  const cards = useMemo(() => getCardsForPlacement(name as string), [
+    getCardsForPlacement,
+    name,
+  ]);
 
   const layoutProvider = useMemo(
     () =>
@@ -134,10 +134,9 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   }, [ref, setScrollToTopRef]);
 
   const onLayout = useCallback(
-    () =>
-      ({ nativeEvent }: LayoutChangeEvent) => {
-        topMarginRef.current = nativeEvent.layout.y;
-      },
+    () => ({ nativeEvent }: LayoutChangeEvent) => {
+      topMarginRef.current = nativeEvent.layout.y;
+    },
     []
   );
 
@@ -189,8 +188,8 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
         type === 'ens-profile'
           ? ExternalENSProfileScrollViewWithRef
           : type === 'select-nft'
-            ? ExternalSelectNFTScrollViewWithRef
-            : ExternalScrollViewWithRef
+          ? ExternalSelectNFTScrollViewWithRef
+          : ExternalScrollViewWithRef
       }
       itemAnimator={layoutItemAnimator}
       layoutProvider={layoutProvider}

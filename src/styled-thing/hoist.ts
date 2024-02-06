@@ -74,7 +74,7 @@ function getStatics(component: OmniComponent) {
 
   // React v16.12 and above
   return '$$typeof' in component
-    ? TYPE_STATICS[component['$$typeof'] as unknown as string]
+    ? TYPE_STATICS[(component['$$typeof'] as unknown) as string]
     : REACT_STATICS;
 }
 
@@ -91,22 +91,22 @@ type ExcludeList = {
 
 type NonReactStatics<
   S extends OmniComponent,
-  C extends ExcludeList = Record<string, never>,
+  C extends ExcludeList = Record<string, never>
 > = {
   [key in Exclude<
     keyof S,
     S extends React.MemoExoticComponent<any>
       ? keyof typeof MEMO_STATICS | keyof C
       : S extends React.ForwardRefExoticComponent<any>
-        ? keyof typeof FORWARD_REF_STATICS | keyof C
-        : keyof typeof REACT_STATICS | keyof typeof KNOWN_STATICS | keyof C
+      ? keyof typeof FORWARD_REF_STATICS | keyof C
+      : keyof typeof REACT_STATICS | keyof typeof KNOWN_STATICS | keyof C
   >]: S[key];
 };
 
 export default function hoistNonReactStatics<
   T extends OmniComponent,
   S extends OmniComponent,
-  C extends ExcludeList = Record<string, never>,
+  C extends ExcludeList = Record<string, never>
 >(targetComponent: T, sourceComponent: S, excludelist?: C) {
   if (typeof sourceComponent !== 'string') {
     // don't hoist over string (html) components
@@ -128,7 +128,7 @@ export default function hoistNonReactStatics<
     const sourceStatics = getStatics(sourceComponent);
 
     for (const item of keys) {
-      const key = item as unknown as string;
+      const key = (item as unknown) as string;
       if (
         !(key in KNOWN_STATICS) &&
         !excludelist?.[key] &&

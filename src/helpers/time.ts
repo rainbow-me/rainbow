@@ -40,8 +40,10 @@ export const getMinimalTimeUnitStringForMs = (
   const { days, hours, minutes, seconds } = parseMilliseconds(Number(ms));
   const parsedMs = omitBy({ days, hours, minutes, seconds }, isZero);
 
-  const { unit: highestResolutionUnit, value: highestResolutionValue } =
-    getHighestResolutionUnit(parsedMs);
+  const {
+    unit: highestResolutionUnit,
+    value: highestResolutionValue,
+  } = getHighestResolutionUnit(parsedMs);
 
   const label = buildLocalizedTimeUnitString({
     plural,

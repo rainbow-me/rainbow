@@ -60,11 +60,12 @@ export const fetchHardhatBalances = async (
     ({ asset }) => `${asset.asset_code}_${asset.network}`
   );
 
-  const tokenAddresses = Object.values(chainAssetsMap).map(
-    ({ asset: { asset_code } }) =>
-      asset_code === ETH_ADDRESS
-        ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
-        : asset_code.toLowerCase()
+  const tokenAddresses = Object.values(
+    chainAssetsMap
+  ).map(({ asset: { asset_code } }) =>
+    asset_code === ETH_ADDRESS
+      ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
+      : asset_code.toLowerCase()
   );
   const balances = await fetchHardhatBalancesWithBalanceChecker(
     tokenAddresses,

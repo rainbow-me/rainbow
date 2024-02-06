@@ -731,8 +731,8 @@ const MintSheet = () => {
                               {isZero(mintPriceAmount)
                                 ? i18n.t(i18n.l.minting.free)
                                 : showNativePrice
-                                  ? nativeMintPriceDisplay
-                                  : mintPriceDisplay}
+                                ? nativeMintPriceDisplay
+                                : mintPriceDisplay}
                             </Text>
                           </Inline>
                         </ButtonPressAnimation>

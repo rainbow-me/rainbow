@@ -17,12 +17,18 @@ export default function useWalletSectionsData({
 }: {
   type?: string;
 } = {}) {
-  const { isLoading: isLoadingUserAssets, data: sortedAssets = [] } =
-    useSortedUserAssets();
+  const {
+    isLoading: isLoadingUserAssets,
+    data: sortedAssets = [],
+  } = useSortedUserAssets();
   const isWalletEthZero = useIsWalletEthZero();
 
-  const { accountAddress, language, network, nativeCurrency } =
-    useAccountSettings();
+  const {
+    accountAddress,
+    language,
+    network,
+    nativeCurrency,
+  } = useAccountSettings();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const {
     data: { nfts: allUniqueTokens },
@@ -33,8 +39,10 @@ export default function useWalletSectionsData({
   const { hiddenTokens } = useHiddenTokens();
   const { isReadOnlyWallet } = useWallets();
 
-  const { hiddenCoinsObj: hiddenCoins, pinnedCoinsObj: pinnedCoins } =
-    useCoinListEditOptions();
+  const {
+    hiddenCoinsObj: hiddenCoins,
+    pinnedCoinsObj: pinnedCoins,
+  } = useCoinListEditOptions();
 
   const { isCoinListEdited } = useCoinListEdited();
 

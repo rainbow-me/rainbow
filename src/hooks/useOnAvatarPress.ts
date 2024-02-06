@@ -77,11 +77,12 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
       ...wallets,
       [selectedWallet.id]: {
         ...wallets![selectedWallet.id],
-        addresses: wallets![selectedWallet.id].addresses.map(
-          (account: RainbowAccount) =>
-            account.address.toLowerCase() === accountAddress?.toLowerCase()
-              ? { ...account, image: null }
-              : account
+        addresses: wallets![
+          selectedWallet.id
+        ].addresses.map((account: RainbowAccount) =>
+          account.address.toLowerCase() === accountAddress?.toLowerCase()
+            ? { ...account, image: null }
+            : account
         ),
       },
     };
@@ -100,11 +101,12 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
         ...wallets,
         [selectedWallet.id]: {
           ...wallets![selectedWallet.id],
-          addresses: wallets![selectedWallet.id].addresses.map(
-            (account: RainbowAccount) =>
-              account.address.toLowerCase() === accountAddress?.toLowerCase()
-                ? { ...account, image: imagePath }
-                : account
+          addresses: wallets![
+            selectedWallet.id
+          ].addresses.map((account: RainbowAccount) =>
+            account.address.toLowerCase() === accountAddress?.toLowerCase()
+              ? { ...account, image: imagePath }
+              : account
           ),
         },
       };

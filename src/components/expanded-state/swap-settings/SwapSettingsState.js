@@ -44,8 +44,10 @@ function useAndroidDisableGesturesOnFocus() {
 }
 
 export default function SwapSettingsState({ asset }) {
-  const { flashbotsEnabled, settingsChangeFlashbotsEnabled } =
-    useAccountSettings();
+  const {
+    flashbotsEnabled,
+    settingsChangeFlashbotsEnabled,
+  } = useAccountSettings();
   const {
     params: { swapSupportsFlashbots = false, network },
   } = useRoute();

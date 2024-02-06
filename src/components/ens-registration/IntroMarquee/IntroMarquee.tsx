@@ -52,8 +52,9 @@ export default function IntroMarquee({
       const description = data?.records?.description || '';
       navigate(Routes.PROFILE_PREVIEW_SHEET, {
         address: ensName,
-        descriptionProfilePreviewHeight:
-          estimateDescriptionProfilePreviewHeight(description),
+        descriptionProfilePreviewHeight: estimateDescriptionProfilePreviewHeight(
+          description
+        ),
         fromDiscover: true,
       });
     },

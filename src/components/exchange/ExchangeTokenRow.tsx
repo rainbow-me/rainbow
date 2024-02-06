@@ -174,4 +174,5 @@ export default React.memo(function ExchangeTokenRow({
       </Column>
     </Columns>
   );
-}, isEqual);
+},
+isEqual);

@@ -13,9 +13,9 @@ import { Heading } from './Heading';
 const loremIpsum =
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
 
-export const sizes: Example[] = (
-  Object.keys(typeHierarchy.heading) as HeadingSize[]
-).map(size => ({
+export const sizes: Example[] = (Object.keys(
+  typeHierarchy.heading
+) as HeadingSize[]).map(size => ({
   name: size,
   Example: () =>
     source(

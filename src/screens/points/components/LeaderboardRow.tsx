@@ -65,10 +65,9 @@ export const LeaderboardRow = ({
 
   const contact = address ? contacts[address.toLowerCase()] : undefined;
 
-  const formattedAddress = useMemo(
-    () => formatAddress(address, 4, 5),
-    [address]
-  );
+  const formattedAddress = useMemo(() => formatAddress(address, 4, 5), [
+    address,
+  ]);
 
   const menuItems = useMemo(() => {
     return [

@@ -39,12 +39,14 @@ function RecyclerAssetList({
   type?: AssetListType;
   walletBriefSectionsData: any[];
 }) {
-  const { memoizedResult: briefSectionsData, additionalData } =
-    useMemoBriefSectionData({
-      briefSectionsData: walletBriefSectionsData,
-      externalAddress,
-      type,
-    });
+  const {
+    memoizedResult: briefSectionsData,
+    additionalData,
+  } = useMemoBriefSectionData({
+    briefSectionsData: walletBriefSectionsData,
+    externalAddress,
+    type,
+  });
 
   const insets = useSafeAreaInsets();
 

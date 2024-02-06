@@ -31,8 +31,9 @@ type RouteParams = {
 };
 
 export const ImportOrWatchWalletSheet = () => {
-  const { params: { type = 'watch' } = {} } =
-    useRoute<RouteProp<RouteParams, 'ImportOrWatchWalletSheetParams'>>();
+  const { params: { type = 'watch' } = {} } = useRoute<
+    RouteProp<RouteParams, 'ImportOrWatchWalletSheetParams'>
+  >();
 
   const {
     busy,
@@ -160,8 +161,8 @@ export const ImportOrWatchWalletSheet = () => {
                       buttonDisabled
                         ? 'labelSecondary'
                         : seedPhrase
-                          ? 'label'
-                          : { custom: globalColors.purple60 }
+                        ? 'label'
+                        : { custom: globalColors.purple60 }
                     }
                     size="15pt"
                     testID="import-sheet-button-label"

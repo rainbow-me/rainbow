@@ -40,7 +40,8 @@ export const SocketBridges = {
     displayName: 'Across',
   },
   'optimism-bridge': {
-    icon: 'https://raw.githubusercontent.com/ethereum-optimism/brand-kit/main/assets/images/Profile-Logo.png',
+    icon:
+      'https://raw.githubusercontent.com/ethereum-optimism/brand-kit/main/assets/images/Profile-Logo.png',
     serviceTime: 1200,
     displayName: 'Optimism',
   },

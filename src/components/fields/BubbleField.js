@@ -49,10 +49,10 @@ const BubbleField = (
   const [value, setValue] = useState(valueProp);
   const [wasButtonPressed, setWasButtonPressed] = useState(false);
 
-  const formattedValue = useMemo(
-    () => format(String(value || '')),
-    [format, value]
-  );
+  const formattedValue = useMemo(() => format(String(value || '')), [
+    format,
+    value,
+  ]);
 
   const handleBlur = useCallback(
     event => {

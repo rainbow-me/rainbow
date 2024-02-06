@@ -161,8 +161,10 @@ export function NotificationsPromoSheetInner({
 
 export default function NotificationsPromoSheet() {
   const { justBecameActive } = useAppState();
-  const [permissionsCheckResult, setPermissionsCheckResult] =
-    React.useState<perms.NotificationsResponse>();
+  const [
+    permissionsCheckResult,
+    setPermissionsCheckResult,
+  ] = React.useState<perms.NotificationsResponse>();
 
   const checkPermissions = React.useCallback(async () => {
     const result = await perms.checkNotifications();

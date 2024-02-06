@@ -91,13 +91,16 @@ type RouteParams = {
 const WalletNotificationsSettings = () => {
   const { colors } = useTheme();
   const topicRowsData = useMemo(() => makeTopicRowsData(colors), [colors]);
-  const route =
-    useRoute<RouteProp<RouteParams, 'WalletNotificationsSettings'>>();
+  const route = useRoute<
+    RouteProp<RouteParams, 'WalletNotificationsSettings'>
+  >();
   const { isConnected } = useNetInfo();
   const { address, notificationSettings } = route.params;
 
-  const [notifications, setNotificationSettings] =
-    useState<WalletNotificationSettings>(notificationSettings);
+  const [
+    notifications,
+    setNotificationSettings,
+  ] = useState<WalletNotificationSettings>(notificationSettings);
   const updateSettings = useCallback(
     (options: Partial<WalletNotificationSettings>) => {
       const newSettingsForWallet = updateSettingsForWalletWithAddress(
@@ -159,8 +162,10 @@ const WalletNotificationsSettings = () => {
 
   // We allow only one subscription in progress
   // this states controls which we are currently updating
-  const [topicSubscriptionInProgress, setTopicSubscriptionInProgress] =
-    useState<WalletNotificationTopicType | null>(null);
+  const [
+    topicSubscriptionInProgress,
+    setTopicSubscriptionInProgress,
+  ] = useState<WalletNotificationTopicType | null>(null);
 
   const toggleAllowNotifications = useCallback(() => {
     if (!isConnected) {

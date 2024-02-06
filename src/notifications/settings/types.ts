@@ -4,14 +4,11 @@ import {
   WalletNotificationTopic,
 } from '@/notifications/settings/constants';
 
-export type WalletNotificationTopicType =
-  (typeof WalletNotificationTopic)[keyof typeof WalletNotificationTopic];
+export type WalletNotificationTopicType = typeof WalletNotificationTopic[keyof typeof WalletNotificationTopic];
 
-export type GlobalNotificationTopicType =
-  (typeof GlobalNotificationTopic)[keyof typeof GlobalNotificationTopic];
+export type GlobalNotificationTopicType = typeof GlobalNotificationTopic[keyof typeof GlobalNotificationTopic];
 
-export type WalletNotificationRelationshipType =
-  (typeof WalletNotificationRelationship)[keyof typeof WalletNotificationRelationship];
+export type WalletNotificationRelationshipType = typeof WalletNotificationRelationship[keyof typeof WalletNotificationRelationship];
 
 export type WalletNotificationTopics = {
   [key: WalletNotificationTopicType]: boolean;

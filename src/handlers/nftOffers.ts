@@ -22,9 +22,9 @@ const getStateDiff = async (
   provider: StaticJsonRpcProvider,
   approval: TxData
 ): Promise<any> => {
-  const { number: blockNumber } = await (
-    provider.getBlock as () => Promise<Block>
-  )();
+  const {
+    number: blockNumber,
+  } = await (provider.getBlock as () => Promise<Block>)();
   const { trace_call_block_number_offset } = getRemoteConfig();
 
   // trace_call default params

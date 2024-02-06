@@ -19,8 +19,12 @@ import { metadataPOSTClient } from '@/graphql';
 import { analyticsV2 } from '@/analytics';
 
 export const Share = () => {
-  const { intent, setAnimationKey, setShareBonusPoints, setStep } =
-    usePointsProfileContext();
+  const {
+    intent,
+    setAnimationKey,
+    setShareBonusPoints,
+    setStep,
+  } = usePointsProfileContext();
   const { accountENS, accountAddress } = useAccountProfile();
   const { width: deviceWidth } = useDimensions();
 
@@ -109,11 +113,12 @@ export const Share = () => {
                 const beginNextPhase = setTimeout(async () => {
                   if (intent) {
                     Linking.openURL(intent);
-                    const shareBonusPointsResponse =
-                      await metadataPOSTClient.redeemCodeForPoints({
+                    const shareBonusPointsResponse = await metadataPOSTClient.redeemCodeForPoints(
+                      {
                         address: accountAddress,
                         redemptionCode: 'TWITTERSHARED',
-                      });
+                      }
+                    );
                     if (shareBonusPointsResponse?.redeemCode?.earnings?.total) {
                       setShareBonusPoints(
                         shareBonusPointsResponse?.redeemCode?.earnings?.total

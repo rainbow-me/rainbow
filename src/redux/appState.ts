@@ -32,14 +32,14 @@ interface AppStateUpdateAction {
  *
  * @param stateToUpdate The updates to apply to the state.
  */
-export const appStateUpdate =
-  (stateToUpdate: Partial<AppStateState>) =>
-  (dispatch: Dispatch<AppStateUpdateAction>) => {
-    dispatch({
-      payload: stateToUpdate,
-      type: APP_STATE_UPDATE,
-    });
-  };
+export const appStateUpdate = (stateToUpdate: Partial<AppStateState>) => (
+  dispatch: Dispatch<AppStateUpdateAction>
+) => {
+  dispatch({
+    payload: stateToUpdate,
+    type: APP_STATE_UPDATE,
+  });
+};
 
 // -- Reducer ----------------------------------------- //
 

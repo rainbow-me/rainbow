@@ -106,11 +106,16 @@ export default function CoinDivider({
 
   const { clearSelectedCoins } = useCoinListEditOptions();
 
-  const { currentAction, setHiddenCoins, setPinnedCoins } =
-    useCoinListFinishEditingOptions();
+  const {
+    currentAction,
+    setHiddenCoins,
+    setPinnedCoins,
+  } = useCoinListFinishEditingOptions();
 
-  const { isSmallBalancesOpen, toggleOpenSmallBalances } =
-    useOpenSmallBalances();
+  const {
+    isSmallBalancesOpen,
+    toggleOpenSmallBalances,
+  } = useOpenSmallBalances();
 
   const handlePressEdit = useCallback(() => {
     setIsCoinListEdited(prev => !prev);

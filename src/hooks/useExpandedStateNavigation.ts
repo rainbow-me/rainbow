@@ -9,7 +9,7 @@ import { useNavigation } from '@/navigation';
 import { watchingAlert } from '@/utils';
 
 export default function useExpandedStateNavigation(
-  inputType: (typeof AssetInputTypes)[keyof typeof AssetInputTypes],
+  inputType: typeof AssetInputTypes[keyof typeof AssetInputTypes],
   fromDiscover = false
 ) {
   const { goBack, navigate } = useNavigation();

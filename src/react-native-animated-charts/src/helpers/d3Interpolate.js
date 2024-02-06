@@ -610,7 +610,8 @@ export function d3Interpolate() {
       return extended.concat(
         splitSegment(commandsToExtend[i], commandsToExtend[i + 1], segmentCount)
       );
-    }, []); // add in the very first point since splitSegment only adds in the ones after it
+    },
+    []); // add in the very first point since splitSegment only adds in the ones after it
 
     extended.unshift(commandsToExtend[0]);
     return extended;

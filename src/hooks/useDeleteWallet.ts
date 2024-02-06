@@ -16,11 +16,12 @@ export default function useDeleteWallet({
 
   const [watchingWalletId] = useMemo(() => {
     return (
-      Object.entries<RainbowWallet>(wallets || {}).find(
-        ([_, wallet]: [string, RainbowWallet]) =>
-          wallet.addresses.some(
-            ({ address }: RainbowAccount) => address === primaryAddress
-          )
+      Object.entries<RainbowWallet>(
+        wallets || {}
+      ).find(([_, wallet]: [string, RainbowWallet]) =>
+        wallet.addresses.some(
+          ({ address }: RainbowAccount) => address === primaryAddress
+        )
       ) || ['', '']
     );
   }, [primaryAddress, wallets]);
@@ -30,11 +31,12 @@ export default function useDeleteWallet({
       ...wallets,
       [watchingWalletId]: {
         ...wallets![watchingWalletId],
-        addresses: wallets![watchingWalletId].addresses.map(
-          (account: { address: string }) =>
-            account.address.toLowerCase() === primaryAddress?.toLowerCase()
-              ? { ...(account as RainbowAccount), visible: false }
-              : (account as RainbowAccount)
+        addresses: wallets![
+          watchingWalletId
+        ].addresses.map((account: { address: string }) =>
+          account.address.toLowerCase() === primaryAddress?.toLowerCase()
+            ? { ...(account as RainbowAccount), visible: false }
+            : (account as RainbowAccount)
         ),
       },
     };

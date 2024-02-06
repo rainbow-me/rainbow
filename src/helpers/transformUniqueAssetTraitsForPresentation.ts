@@ -12,8 +12,7 @@ type MappedTrait = UniqueAssetTrait & {
   disableMenu?: boolean;
 } & AdditionalProperties;
 
-const poapDateRegex =
-  /\d\d-(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-\d\d\d\d/;
+const poapDateRegex = /\d\d-(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-\d\d\d\d/;
 const poapDateFormatString = 'dd-MMM-y';
 const targetDateFormatString = 'MMM do, y';
 

@@ -24,8 +24,8 @@ const selectedStyles = {
   ...(isTinyPhone
     ? padding.object(10, 0, 0)
     : isSmallPhone
-      ? padding.object(12)
-      : padding.object(15)),
+    ? padding.object(12)
+    : padding.object(15)),
 };
 
 const BottomRow = ({

@@ -34,8 +34,8 @@ export function onHandleStatusBar(currentState, prevState) {
     StatusBarHelper.setLightContent();
     return;
   }
-  const isFromWalletScreen =
-    Navigation.getActiveRoute()?.params?.isFromWalletScreen;
+  const isFromWalletScreen = Navigation.getActiveRoute()?.params
+    ?.isFromWalletScreen;
 
   const isRoutesLengthDecrease =
     prevState?.routes.length > currentState?.routes.length;

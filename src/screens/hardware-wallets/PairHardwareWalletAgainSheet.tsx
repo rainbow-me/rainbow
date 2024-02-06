@@ -186,16 +186,16 @@ export const PairHardwareWalletAgainSheet = () => {
                         hardwareTXError
                           ? 'red'
                           : isReady
-                            ? 'green'
-                            : 'surfaceSecondary'
+                          ? 'green'
+                          : 'surfaceSecondary'
                       }
                       shadow={
                         IS_IOS
                           ? hardwareTXError
                             ? '30px red'
                             : isReady
-                              ? '30px green'
-                              : undefined
+                            ? '30px green'
+                            : undefined
                           : undefined
                       }
                       borderRadius={INDICATOR_SIZE / 2}

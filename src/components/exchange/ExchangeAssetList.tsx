@@ -144,8 +144,11 @@ const ExchangeAssetList: ForwardRefRenderFunction<
   useImperativeHandle(ref, () => sectionListRef.current as SectionList);
   const prevQuery = usePrevious(query);
   const { getParent: dangerouslyGetParent, navigate } = useNavigation();
-  const { copiedText, copyCount, onCopySwapDetailsText } =
-    useSwapDetailsClipboardState();
+  const {
+    copiedText,
+    copyCount,
+    onCopySwapDetailsText,
+  } = useSwapDetailsClipboardState();
 
   // Scroll to top once the query is cleared
   if (prevQuery && prevQuery.length && !query.length) {

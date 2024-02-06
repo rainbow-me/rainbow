@@ -253,8 +253,10 @@ const UniqueTokenExpandedState = ({
   const { colors, isDarkMode } = useTheme();
   const { isReadOnlyWallet } = useWallets();
 
-  const [isRefreshMetadataToastActive, setIsRefreshMetadataToastActive] =
-    useState(false);
+  const [
+    isRefreshMetadataToastActive,
+    setIsRefreshMetadataToastActive,
+  ] = useState(false);
 
   const activateRefreshMetadataToast = useCallback(() => {
     if (!isRefreshMetadataToastActive) {
@@ -323,12 +325,18 @@ const UniqueTokenExpandedState = ({
     return available;
   }, [ensData?.records]);
 
-  const { addShowcaseToken, removeShowcaseToken, showcaseTokens } =
-    useShowcaseTokens();
+  const {
+    addShowcaseToken,
+    removeShowcaseToken,
+    showcaseTokens,
+  } = useShowcaseTokens();
   const { hiddenTokens, removeHiddenToken } = useHiddenTokens();
 
-  const [contentFocused, handleContentFocus, handleContentBlur] =
-    useBooleanState();
+  const [
+    contentFocused,
+    handleContentFocus,
+    handleContentBlur,
+  ] = useBooleanState();
   const animationProgress = useSharedValue(0);
   const ensCoverAnimationProgress = useSharedValue(0);
   // TODO(jxom): This is temporary until `ZoomableWrapper` refactor

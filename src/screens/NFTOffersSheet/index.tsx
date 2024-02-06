@@ -33,8 +33,12 @@ const PROFILE_AVATAR_SIZE = 36;
 
 export const NFTOffersSheet = () => {
   const separatorSecondary = useForegroundColor('separatorSecondary');
-  const { accountColor, accountImage, accountSymbol, accountAddress } =
-    useAccountProfile();
+  const {
+    accountColor,
+    accountImage,
+    accountSymbol,
+    accountAddress,
+  } = useAccountProfile();
   const { isDarkMode } = useTheme();
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
 

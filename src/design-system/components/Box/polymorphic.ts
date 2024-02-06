@@ -44,8 +44,9 @@ type OwnProps<E> = E extends ForwardRefComponent<any, infer P> ? P : {};
 /**
  * Infers the JSX.IntrinsicElement if E is a ForwardRefExoticComponentWithAs
  */
-type IntrinsicElement<E> =
-  E extends ForwardRefComponent<infer I, any> ? I : never;
+type IntrinsicElement<E> = E extends ForwardRefComponent<infer I, any>
+  ? I
+  : never;
 
 type ForwardRefExoticComponent<E, OwnProps> = React.ForwardRefExoticComponent<
   Merge<
@@ -60,7 +61,7 @@ type ForwardRefExoticComponent<E, OwnProps> = React.ForwardRefExoticComponent<
 
 interface ForwardRefComponent<
   DefaultComponentType,
-  OwnProps = {},
+  OwnProps = {}
   /**
    * Extends original type to ensure built in React types play nice
    * with polymorphic components still e.g. `React.ElementRef` etc.

@@ -149,8 +149,7 @@ type NewTransactionNonNullable = {
 /**
  * @desc web3 http instance
  */
-export let web3Provider: StaticJsonRpcProvider =
-  null as unknown as StaticJsonRpcProvider;
+export let web3Provider: StaticJsonRpcProvider = (null as unknown) as StaticJsonRpcProvider;
 
 /**
  * @desc Checks whether or not a `Network | string` union type should be
@@ -414,8 +413,9 @@ export async function estimateGasWithPadding(
     const saferGasLimit = fraction(gasLimit.toString(), 19, 20);
     logger.info('⛽ safer gas limit for last block is', { saferGasLimit });
 
-    txPayloadToEstimate[contractCallEstimateGas ? 'gasLimit' : 'gas'] =
-      toHex(saferGasLimit);
+    txPayloadToEstimate[contractCallEstimateGas ? 'gasLimit' : 'gas'] = toHex(
+      saferGasLimit
+    );
 
     // safety precaution: we want to ensure these properties are not used for gas estimation
     const cleanTxPayload = omitFlatten(txPayloadToEstimate, [

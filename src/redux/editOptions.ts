@@ -37,14 +37,14 @@ type EditOptionsAction = EditOptionsSetHiddenCoinsAction;
  *
  * @param coins The `uniqueId`s of the new hidden coins.
  */
-export const setHiddenCoins =
-  (coins: EditOptionsState['hiddenCoins']) =>
-  (dispatch: Dispatch<EditOptionsSetHiddenCoinsAction>) => {
-    dispatch({
-      payload: coins,
-      type: SET_HIDDEN_COINS,
-    });
-  };
+export const setHiddenCoins = (coins: EditOptionsState['hiddenCoins']) => (
+  dispatch: Dispatch<EditOptionsSetHiddenCoinsAction>
+) => {
+  dispatch({
+    payload: coins,
+    type: SET_HIDDEN_COINS,
+  });
+};
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE: EditOptionsState = {

@@ -50,10 +50,10 @@ const TextIcon = ({
         colorOverride
           ? { custom: colorOverride }
           : disabled
-            ? 'secondary60 (Deprecated)'
-            : isLink
-              ? 'action (Deprecated)'
-              : 'primary (Deprecated)'
+          ? 'secondary60 (Deprecated)'
+          : isLink
+          ? 'action (Deprecated)'
+          : 'primary (Deprecated)'
       }
       containsEmoji
       size="18px / 27px (Deprecated)"
@@ -125,8 +125,8 @@ const Title = ({ text, weight = 'semibold', disabled, isLink }: TitleProps) => (
       disabled
         ? 'secondary60 (Deprecated)'
         : isLink
-          ? 'action (Deprecated)'
-          : 'primary (Deprecated)'
+        ? 'action (Deprecated)'
+        : 'primary (Deprecated)'
     }
     containsEmoji
     size="18px / 27px (Deprecated)"
