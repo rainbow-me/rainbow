@@ -306,7 +306,8 @@
     "util": "0.10.4",
     "viem": "1.6.0",
     "vm-browserify": "0.0.4",
-    "w2t": "3.0.2"
+    "w2t": "3.0.2",
+    "zustand": "4.5.0"
   },
   "devDependencies": {
     "@babel/core": "7.22.0",
