@@ -2,7 +2,7 @@ import {
   StaticJsonRpcProvider,
   TransactionResponse,
 } from '@ethersproject/providers';
-import { isEmpty, isNil, mapValues, partition } from 'lodash';
+import { isEmpty, isNil, mapValues } from 'lodash';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import {
@@ -94,7 +94,6 @@ export interface DataState {
   /**
    * Whether or not transactions are currently being loaded.
    */
-  isLoadingTransactions: boolean;
 
   /**
    * Pending transactions for this account.
@@ -149,13 +148,6 @@ interface DataUpdatePortfoliosAction {
 interface DataUpdateEthUsdAction {
   type: typeof DATA_UPDATE_ETH_USD;
   payload: number | undefined;
-}
-
-/**
- * The action to set `isLoadingTransactions` to `true`.
- */
-interface DataLoadTransactionsRequestAction {
-  type: typeof DATA_LOAD_TRANSACTIONS_REQUEST;
 }
 
 /**
@@ -517,11 +509,7 @@ export const transactionsReceived = (
   }
 
   if (appended && potentialNftTransaction) {
-    setTimeout(() => {
-      queryClient.invalidateQueries({
-        queryKey: nftsQueryKey({ address: accountAddress }),
-      });
-    }, 60000);
+    setTimeout(() => {}, 60000);
   }
 
   const txHashes = parsedTransactions.map(tx => ethereumUtils.getHash(tx));
@@ -1062,7 +1050,6 @@ export const watchPendingTransactions = (
 const INITIAL_STATE: DataState = {
   ethUSDPrice: null,
   genericAssets: {},
-  isLoadingTransactions: true,
   pendingTransactions: [],
   portfolios: {},
   transactions: [],
@@ -1082,21 +1069,14 @@ export default (state: DataState = INITIAL_STATE, action: DataAction) => {
         ...state,
         ethUSDPrice: action.payload,
       };
-    case DATA_LOAD_TRANSACTIONS_REQUEST:
-      return {
-        ...state,
-        isLoadingTransactions: true,
-      };
     case DATA_LOAD_TRANSACTIONS_SUCCESS:
       return {
         ...state,
-        isLoadingTransactions: false,
         transactions: action.payload,
       };
     case DATA_LOAD_TRANSACTIONS_FAILURE:
       return {
         ...state,
-        isLoadingTransactions: false,
       };
     case DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS:
       return {

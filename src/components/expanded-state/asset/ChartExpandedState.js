@@ -209,11 +209,6 @@ export default function ChartExpandedState({ asset }) {
       : { ...asset };
   }, [asset, genericAsset, hasBalance, nativeCurrency]);
 
-  if (assetWithPrice?.mainnet_address) {
-    assetWithPrice.l2Address = asset?.address;
-    assetWithPrice.address = assetWithPrice.mainnet_address;
-  }
-
   const isL2 = useMemo(() => isL2Network(assetWithPrice.network), [
     assetWithPrice.network,
   ]);

@@ -57,12 +57,14 @@ export default React.memo(function FastCoinIcon({
   network,
   symbol,
   theme,
+  ignoreBadge = false,
 }: {
   address: string;
   mainnetAddress?: string;
   network: Network;
   symbol: string;
   theme: ThemeContextProps;
+  ignoreBadge?: boolean;
 }) {
   const { colors } = theme;
 
@@ -117,7 +119,9 @@ export default React.memo(function FastCoinIcon({
         </FastFallbackCoinIconImage>
       )}
 
-      {network && <FastChainBadge network={network} theme={theme} />}
+      {!ignoreBadge && network && (
+        <FastChainBadge network={network} theme={theme} />
+      )}
     </View>
   );
 });

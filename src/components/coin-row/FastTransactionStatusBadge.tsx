@@ -3,12 +3,17 @@ import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import Spinner from '../Spinner';
 import { Icon } from '../icons';
 import { Text } from '@/design-system';
-import { TransactionStatus, TransactionStatusTypes } from '@/entities';
+import {
+  RainbowTransaction,
+  TransactionStatus,
+  TransactionStatusTypes,
+} from '@/entities';
 import { position } from '@/styles';
 import { ThemeContextProps } from '@/theme';
 import * as lang from '@/languages';
 import { TransactionType } from '@/resources/transactions/types';
 import { transactionTypes } from '@/entities/transactions/transactionType';
+import { ActivityTypeIcon } from './FastTransactionCoinRow';
 
 const StatusProps = {
   [TransactionStatusTypes.approved]: {
@@ -162,43 +167,35 @@ const sx = StyleSheet.create({
 });
 
 export default React.memo(function FastTransactionStatusBadge({
-  pending,
-  type,
+  transaction,
   style,
-  title,
   colors,
 }: {
+  transaction: RainbowTransaction;
   colors: ThemeContextProps['colors'];
-  pending: boolean;
-  type: TransactionType;
-  title: string;
   style?: StyleProp<ViewStyle>;
 }) {
   let statusColor = colors.alpha(colors.blueGreyDark, 0.7);
-  if (pending) {
+  if (transaction?.pending) {
     statusColor = colors.appleBlue;
   }
 
-  const showIcon = !!StatusProps[type];
-
   return (
     <View style={[sx.row, style]}>
-      {pending && (
+      {transaction?.pending && (
         <Spinner
           color={statusColor}
           size={12}
           style={{ marginTop: ios ? 0 : -2 }}
         />
       )}
-      {showIcon && (
-        <Icon color={statusColor} style={sx.icon} {...StatusProps[type]} />
-      )}
+      <ActivityTypeIcon transaction={transaction} />
       <Text
         color={{ custom: statusColor }}
         size="14px / 19px (Deprecated)"
         weight="semibold"
       >
-        {title}
+        {transaction?.title}
       </Text>
     </View>
   );

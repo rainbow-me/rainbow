@@ -5,23 +5,21 @@ import {
   RainbowTransaction,
   RainbowTransactionFee,
 } from '@/entities/transactions/transaction';
-import { CoinIcon } from '@/components/coin-icon';
-import { Box, Stack } from '@/design-system';
+import { Box, Stack, globalColors } from '@/design-system';
 import { TransactionDetailsDivider } from '@/screens/transaction-details/components/TransactionDetailsDivider';
 import * as i18n from '@/languages';
 import { AssetTypes } from '@/entities';
-import { ethereumUtils } from '@/utils';
 import { Network } from '@/networks/types';
-import { useUserAsset } from '@/resources/assets/useUserAsset';
-import {
-  convertAmountAndPriceToNativeDisplay,
-  convertAmountToBalanceDisplay,
-  convertAmountToNativeDisplay,
-} from '@/helpers/utilities';
-s;
+import { convertAmountAndPriceToNativeDisplay } from '@/helpers/utilities';
 import { useAccountSettings } from '@/hooks';
 import { useTheme } from '@/theme';
 import FastCoinIcon from '@/components/asset-list/RecyclerAssetList2/FastComponents/FastCoinIcon';
+import { View } from 'react-native';
+import { ImgixImage } from '@/components/images';
+import { CardSize } from '@/components/unique-token/CardSize';
+import ChainBadge from '@/components/coin-icon/ChainBadge';
+import { ETH_ADDRESS } from '@rainbow-me/swaps';
+import { ETH_SYMBOL } from '@/references';
 
 type Props = {
   transaction: RainbowTransaction;
@@ -35,17 +33,12 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({
 }) => {
   const theme = useTheme();
   const { nativeCurrency } = useAccountSettings();
-  const { network, symbol, type, fee } = transaction;
+  const { fee } = transaction;
   const assetData = transaction?.asset;
   const change = transaction?.changes?.[0];
 
-  const coinAddress = assetData?.address;
-  const mainnetCoinAddress = assetData?.mainnet_address;
-  const coinSymbol = assetData?.symbol ?? symbol ?? undefined;
-  const coinType =
-    assetData?.type ?? network !== Network.mainnet ? network : AssetTypes.token;
-
-  const value = change?.asset?.balance?.display || transaction.balance?.display;
+  const value = change?.value || transaction.balance?.display;
+  console.log(' VAL: ', change?.value);
   const nativeCurrencyValue = convertAmountAndPriceToNativeDisplay(
     change?.asset?.balance?.amount || '',
     change?.asset?.price?.value || '',
@@ -61,13 +54,57 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({
           {true && (
             <DoubleLineTransactionDetailsRow
               leftComponent={
-                <FastCoinIcon
-                  mainnetAddress={mainnetCoinAddress}
-                  address={coinAddress || ''}
-                  symbol={coinSymbol || ''}
-                  network={network || Network.mainnet}
-                  theme={theme}
-                />
+                assetData?.type === 'nft' ? (
+                  <View
+                    style={{
+                      shadowColor: globalColors.grey100,
+                      shadowOffset: { width: 0, height: 2 },
+                      shadowOpacity: 0.02,
+                      shadowRadius: 3,
+                      paddingTop: 9,
+                      paddingBottom: 10,
+                      overflow: 'visible',
+                    }}
+                  >
+                    <View
+                      style={{
+                        shadowColor:
+                          theme.colorScheme === 'dark' || !assetData.color
+                            ? globalColors.grey100
+                            : assetData.color,
+                        shadowOffset: { width: 0, height: 6 },
+                        shadowOpacity: 0.24,
+                        shadowRadius: 9,
+                      }}
+                    >
+                      <ImgixImage
+                        size={CardSize}
+                        style={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: 10,
+                        }}
+                        source={{
+                          uri: assetData.icon_url,
+                        }}
+                      />
+                    </View>
+                    {transaction.network !== Network.mainnet && (
+                      <ChainBadge
+                        network={transaction.network}
+                        badgeYPosition={10}
+                      />
+                    )}
+                  </View>
+                ) : (
+                  <FastCoinIcon
+                    address={assetData?.address || ETH_ADDRESS}
+                    network={transaction.network}
+                    mainnetAddress={assetData?.mainnet_address}
+                    symbol={assetData?.symbol || ETH_SYMBOL}
+                    theme={theme}
+                  />
+                )
               }
               title={i18n.t(i18n.l.transaction_details.value)}
               value={value || ''}

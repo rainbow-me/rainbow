@@ -7,8 +7,8 @@ export function address(
   currentAddress: EthereumAddress,
   truncationLength = defaultNumCharsPerSection,
   firstSectionLength: number
-): string | undefined {
-  if (!currentAddress) return;
+): string {
+  if (!currentAddress) return '';
 
   return [
     currentAddress.substring(0, firstSectionLength || truncationLength),
@@ -20,7 +20,7 @@ export function formatAddressForDisplay(
   text: string,
   truncationLength = 4,
   firstSectionLength = 10
-): string | undefined {
+): string {
   return isValidDomainFormat(text)
     ? text
     : address(text, truncationLength, firstSectionLength);
