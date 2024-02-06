@@ -16,10 +16,7 @@ import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { address } from '@/utils/abbreviations';
 import { Colors } from '@/styles';
 import { TransactionType } from '@/resources/transactions/types';
-import {
-  convertAmountAndPriceToNativeDisplay,
-  convertAmountToBalanceDisplay,
-} from '@/helpers/utilities';
+import { convertAmountToBalanceDisplay } from '@/helpers/utilities';
 
 export const getApprovalLabel = ({
   approvalAmount,
@@ -165,35 +162,7 @@ const BottomRow = React.memo(function BottomRow({
   transaction: RainbowTransaction;
   theme: ThemeContextProps;
 }) {
-  const { status, type, native, to, asset } = transaction;
-  const { colors } = theme;
-  const isFailed = status === TransactionStatusTypes.failed;
-  const isReceived =
-    status === TransactionStatusTypes.received ||
-    status === TransactionStatusTypes.purchased;
-  const isSent = status === TransactionStatusTypes.sent;
-  const isSold = status === TransactionStatusTypes.sold;
-
-  const isOutgoingSwap = status === TransactionStatusTypes.swapped;
-  const isIncomingSwap =
-    status === TransactionStatusTypes.received &&
-    type === TransactionTypes.trade;
-
-  let coinNameColor = colors.dark;
-  if (isOutgoingSwap) coinNameColor = colors.blueGreyDark50;
-
-  let balanceTextColor = colors.blueGreyDark50;
-  if (isReceived) balanceTextColor = colors.green;
-  if (isSent) balanceTextColor = colors.dark;
-  if (isIncomingSwap) balanceTextColor = colors.swapPurple;
-  if (isOutgoingSwap) balanceTextColor = colors.dark;
-  if (isSold) balanceTextColor = colors.green;
-
-  const balanceText = native?.display
-    ? [isFailed || isSent ? '-' : null, native.display]
-        .filter(Boolean)
-        .join(' ')
-    : '';
+  const { type, to, asset } = transaction;
 
   let description = transaction.description;
   let tag: string | undefined;
@@ -215,7 +184,7 @@ const BottomRow = React.memo(function BottomRow({
       <View style={sx.description}>
         <Inline>
           <Text
-            color={{ custom: coinNameColor || colors.dark }}
+            color={{ custom: theme.colors.dark }}
             numberOfLines={1}
             size="16px / 22px (Deprecated)"
           >
@@ -228,15 +197,15 @@ const BottomRow = React.memo(function BottomRow({
                 borderRadius: 5,
                 width: 20,
                 height: 20,
-                borderColor: colors.dark,
+                borderColor: theme.colors.dark,
                 alignItems: 'center',
               }}
             >
               <Text
                 align="right"
-                color={{ custom: balanceTextColor ?? colors.dark }}
+                color={{ custom: theme.colors.dark }}
                 size="16px / 22px (Deprecated)"
-                weight={isReceived ? 'medium' : undefined}
+                weight={'medium'}
               >
                 {tag}
               </Text>
@@ -249,7 +218,7 @@ const BottomRow = React.memo(function BottomRow({
           align="right"
           color={bottomValue?.includes('+') ? 'green' : 'labelSecondary'}
           size="16px / 22px (Deprecated)"
-          weight={isReceived ? 'medium' : undefined}
+          weight={'medium'}
         >
           {bottomValue}
         </Text>

@@ -34,7 +34,7 @@ export const TransactionDetails = () => {
     hash: tx.hash || '',
     network: tx.network || Network.mainnet,
   });
-  const transaction = data;
+  const transaction = data!;
   const [sheetHeight, setSheetHeight] = useState(0);
   const [statusIconHidden, setStatusIconHidden] = useState(false);
   const { presentedToast, presentToastFor } = useTransactionDetailsToasts();

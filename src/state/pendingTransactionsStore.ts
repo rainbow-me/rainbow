@@ -1,6 +1,6 @@
 import { RainbowTransaction, NewTransaction } from '@/entities/transactions';
 import { createStore } from './internal/createStore';
-import { create } from 'zustand';
+import create from 'zustand';
 import { parseNewTransaction } from '@/parsers/transactions';
 import { Network } from '@/networks/types';
 

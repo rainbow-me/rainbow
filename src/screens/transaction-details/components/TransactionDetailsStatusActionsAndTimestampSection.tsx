@@ -38,8 +38,7 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
   const { colors } = useTheme();
   const { icon, color, gradient } = getIconColorAndGradientForTransactionStatus(
     colors,
-    status,
-    pending
+    status
   );
 
   const isOutgoing = from?.toLowerCase() === accountAddress?.toLowerCase();

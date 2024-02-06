@@ -145,6 +145,7 @@ const crosschainSwap = async (
   logger.log(`[${actionName}] response`, swap);
 
   const isBridge = inputCurrency.symbol === outputCurrency.symbol;
+  if (!swap?.hash) return;
 
   const newTransaction: NewTransaction = {
     data: swap?.data,
@@ -164,7 +165,7 @@ const crosschainSwap = async (
         value: tradeDetails.buyAmount.toString(),
       },
     ],
-    hash: swap?.hash,
+    hash: swap.hash,
     network: inputCurrency.network,
     nonce: swap?.nonce,
     status: 'pending',

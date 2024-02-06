@@ -973,8 +973,9 @@ export const SignTransactionSheet = () => {
       let txSavedInCurrentWallet = false;
       const displayDetails = transactionDetails.displayDetails;
 
+      let txDetails: NewTransaction | null = null;
       if (sendInsteadOfSign && sendResult?.hash) {
-        const txDetails: NewTransaction = {
+        txDetails = {
           asset: nativeAsset || displayDetails?.request?.asset,
           contract: {
             name: displayDetails.dappName,
@@ -1036,13 +1037,14 @@ export const SignTransactionSheet = () => {
       closeScreen(false);
       // When the tx is sent from a different wallet,
       // we need to switch to that wallet before saving the tx
-      if (!txSavedInCurrentWallet) {
+
+      if (!txSavedInCurrentWallet && !isNil(txDetails)) {
         InteractionManager.runAfterInteractions(async () => {
-          await switchToWalletWithAddress(txDetails.from!);
+          await switchToWalletWithAddress(txDetails?.from as string);
           addNewTransaction({
-            transaction: txDetails,
+            transaction: txDetails as NewTransaction,
             network: currentNetwork || Network.mainnet,
-            address: txDetails?.from!,
+            address: txDetails?.from as string,
           });
         });
       }

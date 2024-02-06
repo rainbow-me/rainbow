@@ -39,9 +39,7 @@ import { ethereumUtils, isLowerCaseMatch } from '@/utils';
 import logger from '@/utils/logger';
 import {
   fetchWalletENSDataAfterRegistration,
-  getPendingTransactionData,
   getTransactionFlashbotStatus,
-  getTransactionReceiptStatus,
   getTransactionSocketStatus,
 } from '@/handlers/transactions';
 import { SwapType } from '@rainbow-me/swaps';
@@ -91,6 +89,7 @@ export interface DataState {
     [assetAddress: string]: ParsedAddressAsset;
   };
 
+  isLoadingTransactions: boolean;
   /**
    * Whether or not transactions are currently being loaded.
    */
@@ -148,6 +147,13 @@ interface DataUpdatePortfoliosAction {
 interface DataUpdateEthUsdAction {
   type: typeof DATA_UPDATE_ETH_USD;
   payload: number | undefined;
+}
+
+/**
+ * The action to set `isLoadingTransactions` to `true`.
+ */
+interface DataLoadTransactionsRequestAction {
+  type: typeof DATA_LOAD_TRANSACTIONS_REQUEST;
 }
 
 /**
@@ -445,7 +451,6 @@ export const transactionsReceived = (
   >,
   getState: AppGetState
 ) => {
-  return;
   loggr.debug('transactionsReceived', {
     message: {
       ...message,
@@ -481,20 +486,6 @@ export const transactionsReceived = (
 
   loggr.debug('transactionsReceived: attempting to parse transactions');
 
-  const {
-    parsedTransactions,
-    potentialNftTransaction,
-  } = await parseTransactions(
-    transactionData,
-    accountAddress,
-    nativeCurrency,
-    transactions,
-    pendingTransactions,
-    undefined,
-    currentNetwork,
-    appended
-  );
-
   const isCurrentAccountAddress =
     accountAddress === getState().settings.accountAddress;
   if (!isCurrentAccountAddress) {
@@ -506,46 +497,6 @@ export const transactionsReceived = (
       }
     );
     return;
-  }
-
-  if (appended && potentialNftTransaction) {
-    setTimeout(() => {}, 60000);
-  }
-
-  const txHashes = parsedTransactions.map(tx => ethereumUtils.getHash(tx));
-  const updatedPendingTransactions = pendingTransactions.filter(
-    tx => !txHashes.includes(ethereumUtils.getHash(tx))
-  );
-
-  dispatch({
-    payload: updatedPendingTransactions,
-    type: DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS,
-  });
-  dispatch({
-    payload: parsedTransactions,
-    type: DATA_LOAD_TRANSACTIONS_SUCCESS,
-  });
-  saveLocalTransactions(parsedTransactions, accountAddress, network);
-  saveLocalPendingTransactions(
-    updatedPendingTransactions,
-    accountAddress,
-    network
-  );
-
-  if (appended && parsedTransactions.length) {
-    if (
-      selected &&
-      !selected.backedUp &&
-      !selected.imported &&
-      selected.type !== WalletTypes.readOnly &&
-      selected.type !== WalletTypes.bluetooth
-    ) {
-      setTimeout(() => {
-        triggerOnSwipeLayout(() =>
-          Navigation.handleAction(Routes.BACKUP_SHEET, { single: true })
-        );
-      }, BACKUP_SHEET_DELAY_MS);
-    }
   }
 };
 
@@ -693,7 +644,6 @@ export const dataAddNewTransaction = (
   >,
   getState: AppGetState
 ) => {
-  return;
   loggr.debug('dataAddNewTransaction', {}, loggr.DebugContext.f2c);
 
   const { pendingTransactions } = getState().data;
@@ -828,92 +778,6 @@ export const dataWatchPendingTransactions = (
   if (isEmpty(pending)) {
     return true;
   }
-  let txStatusesDidChange = false;
-  const updatedPendingTransactions = await Promise.all(
-    pending.map(async tx => {
-      const updatedPendingTransaction: RainbowTransaction = { ...tx };
-      const txHash = ethereumUtils.getHash(tx) || '';
-      let pendingTransactionData: {
-        title: string;
-        minedAt: number | null;
-        pending: boolean;
-        status: TransactionStatus;
-      } | null = {
-        status: TransactionStatus.sending,
-        title: tx?.title || TransactionStatus.sending,
-        minedAt: null,
-        pending: true,
-      };
-      return;
-      try {
-        logger.log('Checking pending tx with hash', txHash);
-        const p =
-          (await getProviderForNetwork(updatedPendingTransaction.network)) ||
-          provider;
-        const txObj: TransactionResponse | undefined = await p.getTransaction(
-          txHash
-        );
-        // if the nonce of last confirmed tx is higher than this pending tx then it got dropped
-        const nonceAlreadyIncluded = currentNonce > (tx?.nonce ?? txObj.nonce);
-        if (
-          (txObj && txObj?.blockNumber && txObj?.blockHash) ||
-          nonceAlreadyIncluded
-        ) {
-          // When speeding up a non "normal tx" we need to resubscribe
-          // because zerion "append" event isn't reliable
-          logger.log('TX CONFIRMED!', txObj);
-          if (!nonceAlreadyIncluded) {
-            appEvents.emit('transactionConfirmed', {
-              ...txObj,
-              internalType: tx.type,
-            });
-          }
-          if (tx?.ensRegistration) {
-            fetchWalletENSDataAfterRegistration();
-          }
-
-          if (updatedPendingTransaction?.swap?.type === SwapType.crossChain) {
-            pendingTransactionData = await getTransactionSocketStatus(
-              updatedPendingTransaction
-            );
-            if (!pendingTransactionData.pending) {
-              appEvents.emit('transactionConfirmed', {
-                ...txObj,
-                internalType: tx.type,
-              });
-              txStatusesDidChange = true;
-            }
-          } else {
-            pendingTransactionData = getPendingTransactionData(
-              updatedPendingTransaction,
-              transactionStatus
-            );
-            txStatusesDidChange = true;
-          }
-        } else if (tx.flashbots) {
-          pendingTransactionData = await getTransactionFlashbotStatus(
-            updatedPendingTransaction,
-            txHash
-          );
-          if (pendingTransactionData && !pendingTransactionData.pending) {
-            txStatusesDidChange = true;
-            // decrement the nonce since it was dropped
-            // @ts-ignore-next-line
-            dispatch(decrementNonce(tx.from!, tx.nonce!, Network.mainnet));
-          }
-        }
-        if (pendingTransactionData) {
-          updatedPendingTransaction.title = pendingTransactionData.title;
-          updatedPendingTransaction.status = pendingTransactionData.status;
-          updatedPendingTransaction.pending = pendingTransactionData.pending;
-          updatedPendingTransaction.minedAt = pendingTransactionData.minedAt;
-        }
-      } catch (error) {
-        logger.log('Error watching pending txn', error);
-      }
-      return updatedPendingTransaction;
-    })
-  );
 
   return false;
 };
@@ -1024,7 +888,6 @@ export const watchPendingTransactions = (
   dispatch: ThunkDispatch<AppState, unknown, never>,
   getState: AppGetState
 ) => {
-  return;
   pendingTransactionsHandle && clearTimeout(pendingTransactionsHandle);
   if (remainingTries === 0) return;
 
@@ -1052,6 +915,7 @@ const INITIAL_STATE: DataState = {
   genericAssets: {},
   pendingTransactions: [],
   portfolios: {},
+  isLoadingTransactions: false,
   transactions: [],
 };
 

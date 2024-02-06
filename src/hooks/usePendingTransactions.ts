@@ -1,13 +1,19 @@
-import { useCallback } from 'react';
-import { useSelector } from 'react-redux';
-import { AppState } from '@/redux/store';
+import { useCallback, useMemo } from 'react';
 import { ethereumUtils, isLowerCaseMatch } from '@/utils';
+import { usePendingTransactionsStore } from '@/state/pendingTransactionsStore';
+
+import useAccountSettings from './useAccountSettings';
 
 export default function usePendingTransactions() {
-  const pendingTransactions = useSelector(
-    ({ data }: AppState) => data.pendingTransactions
-  );
+  const { accountAddress } = useAccountSettings();
+  const {
+    pendingTransactions: storePendingTransactions,
+  } = usePendingTransactionsStore();
 
+  const pendingTransactions = useMemo(
+    () => storePendingTransactions[accountAddress] || [],
+    [accountAddress, storePendingTransactions]
+  );
   const getPendingTransactionByHash = useCallback(
     (transactionHash: string) =>
       pendingTransactions.find(pendingTransaction =>

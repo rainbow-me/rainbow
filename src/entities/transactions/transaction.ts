@@ -18,7 +18,13 @@ export type TransactionDirection = 'in' | 'out' | 'self';
 
 export interface RainbowTransaction {
   address?: string;
-  asset?: ParsedAsset | null;
+  asset?:
+    | (ParsedAsset & {
+        asset_contract?: {
+          address?: string;
+        };
+      })
+    | null;
   balance?: {
     amount: string;
     display: string;
@@ -79,16 +85,6 @@ export interface RainbowTransaction {
   type: TransactionType;
   value?: BigNumberish; // for pending tx
   fee?: RainbowTransactionFee;
-  fiatProvider?: {
-    name: FiatProviderName.Ratio;
-    orderId: string;
-    userId: string;
-    /**
-     * Required for all providers, used to associate requests with transaction
-     * data once we receive it.
-     */
-    analyticsSessionId: string;
-  }; // etc { name: FiatProviderName.Ramp, orderId: string }
 }
 
 export type MinedTransaction = RainbowTransaction & {
@@ -101,6 +97,7 @@ export type MinedTransaction = RainbowTransaction & {
 };
 
 export type NewTransaction = Omit<RainbowTransaction, 'title' | 'changes'> & {
+  amount?: string;
   gasLimit?: BigNumberish;
   changes?: Array<
     | {

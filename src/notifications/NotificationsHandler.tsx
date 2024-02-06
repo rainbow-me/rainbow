@@ -38,9 +38,8 @@ import { getProviderForNetwork } from '@/handlers/web3';
 import { ethereumUtils, isLowerCaseMatch } from '@/utils';
 import { NewTransactionOrAddCashTransaction } from '@/entities/transactions/transaction';
 import { TransactionDirection, TransactionStatus } from '@/entities';
-import { getTitle, getTransactionLabel, parseNewTransaction } from '@/parsers';
+import { parseNewTransaction } from '@/parsers';
 import { isZero } from '@/helpers/utilities';
-import { getConfirmedState } from '@/helpers/transactions';
 import { mapNotificationTransactionType } from '@/notifications/mapTransactionsType';
 import walletTypes from '@/helpers/walletTypes';
 import {
@@ -229,7 +228,7 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
           gasPrice: rpcTransaction.gasPrice,
           data: rpcTransaction.data,
         };
-        return;
+
         const parsedTransaction = await parseNewTransaction(
           newTransactionDetails,
           nativeCurrency
@@ -249,7 +248,8 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
             resultTransaction.status = TransactionStatus.failed;
           } else {
             // cancelled or replaced
-            resultTransaction.status = TransactionStatus.cancelled;
+            resultTransaction.type = 'cancel';
+            resultTransaction.status = TransactionStatus.failed;
           }
         }
         const status = receipt?.status || 0;
@@ -269,26 +269,9 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
           ) {
             direction = TransactionDirection.in;
           }
-
-          const newStatus = getTransactionLabel({
-            direction,
-            pending: false,
-            protocol: parsedTransaction?.protocol,
-            status:
-              parsedTransaction.status === TransactionStatus.cancelling
-                ? TransactionStatus.cancelled
-                : getConfirmedState(parsedTransaction.type),
-            type: parsedTransaction?.type,
-          });
-          resultTransaction.status = newStatus;
         } else {
           resultTransaction.status = TransactionStatus.failed;
         }
-        resultTransaction.title = getTitle({
-          protocol: parsedTransaction.protocol,
-          status: resultTransaction.status,
-          type: parsedTransaction.type,
-        });
         resultTransaction.pending = false;
         resultTransaction.minedAt = minedAt;
 

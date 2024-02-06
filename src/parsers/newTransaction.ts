@@ -1,10 +1,7 @@
-import { getDescription, getTitle } from './transactions';
 import {
   NativeCurrencyKey,
   NewTransactionOrAddCashTransaction,
   RainbowTransaction,
-  TransactionStatus,
-  TransactionType,
 } from '@/entities';
 import { isL2Network } from '@/handlers/web3';
 import { ETH_ADDRESS } from '@/references';
@@ -28,7 +25,6 @@ export const parseNewTransaction = async (
   const {
     amount,
     asset,
-    dappName,
     data,
     from,
     flashbots,
@@ -41,17 +37,16 @@ export const parseNewTransaction = async (
     network,
     nft,
     nonce,
-    hash: txHash,
+    hash,
     protocol,
     sourceAmount,
-    status: txStatus,
+    status,
     to,
     transferId,
-    type: txType,
+    type,
     txTo,
     value,
     swap,
-    fiatProvider,
   } = txDetails;
 
   if (amount && asset) {
@@ -72,21 +67,6 @@ export const parseNewTransaction = async (
           assetPrice,
           nativeCurrency
         );
-  const hash = txHash ? `${txHash}-0` : null;
-
-  const status = txStatus ?? TransactionStatus.sending;
-  const type = txType ?? TransactionType.send;
-
-  const title = getTitle({
-    protocol: protocol ?? null,
-    status,
-    type,
-  });
-
-  const nftName =
-    type === TransactionType.authorize ? nft?.collection.name : nft?.name;
-
-  const description = 'yo it me';
 
   return {
     address: asset?.address ?? ETH_ADDRESS,
@@ -112,13 +92,12 @@ export const parseNewTransaction = async (
     sourceAmount,
     status,
     symbol: asset?.symbol ?? null,
-    title,
+    title: 'oops',
     to,
     transferId,
     txTo: txTo || to,
     type,
     value,
     swap,
-    fiatProvider,
   };
 };

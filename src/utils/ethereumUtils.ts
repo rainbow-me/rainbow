@@ -25,6 +25,7 @@ import {
   GasFee,
   LegacySelectedGasFee,
   NativeCurrencyKey,
+  NewTransaction,
   ParsedAddressAsset,
   RainbowToken,
   RainbowTransaction,
@@ -238,7 +239,8 @@ const getBalanceAmount = (
   return amount;
 };
 
-const getHash = (txn: RainbowTransaction) => txn.hash?.split('-').shift();
+const getHash = (txn: RainbowTransaction | NewTransaction) =>
+  txn.hash?.split('-').shift();
 
 const formatGenericAsset = (
   asset: ParsedAddressAsset,

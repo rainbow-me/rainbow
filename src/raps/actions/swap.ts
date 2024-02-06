@@ -208,7 +208,7 @@ const swap = async (
 
   logger.log(`[${actionName}] response`, swap);
 
-  if (!swap) throw Error;
+  if (!swap || !swap?.hash) throw Error;
 
   const newTransaction: NewTransaction = {
     data: swap?.data,

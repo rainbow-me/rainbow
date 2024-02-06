@@ -79,9 +79,6 @@ export const buildTransactionsSections = ({
   contacts: { [address: string]: Contact };
   requests: RequestData[];
   theme: ThemeContextProps;
-  isFocused: boolean;
-  initialized: boolean;
-  navigate: (...args: any[]) => void;
   transactions: RainbowTransaction[];
 }) => {
   if (!transactions) {

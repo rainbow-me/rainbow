@@ -8,7 +8,6 @@ import {
 import { Box, Stack, globalColors } from '@/design-system';
 import { TransactionDetailsDivider } from '@/screens/transaction-details/components/TransactionDetailsDivider';
 import * as i18n from '@/languages';
-import { AssetTypes } from '@/entities';
 import { Network } from '@/networks/types';
 import { convertAmountAndPriceToNativeDisplay } from '@/helpers/utilities';
 import { useAccountSettings } from '@/hooks';
