@@ -4,12 +4,8 @@ import notifee, { AndroidStyle, Notification } from '@notifee/react-native';
 import { FixedRemoteMessage } from '@/notifications/types';
 import { logger, RainbowError } from '@/logger';
 
-export function handleShowingForegroundNotification(
-  remoteMessage: FixedRemoteMessage
-) {
-  const image = ios
-    ? remoteMessage.data?.fcm_options?.image
-    : remoteMessage.notification?.android?.imageUrl;
+export function handleShowingForegroundNotification(remoteMessage: FixedRemoteMessage) {
+  const image = ios ? remoteMessage.data?.fcm_options?.image : remoteMessage.notification?.android?.imageUrl;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { fcm_options, ...data } = remoteMessage.data;
   const notification: Notification = {
@@ -33,11 +29,6 @@ export function handleShowingForegroundNotification(
   }
 
   notifee.displayNotification(notification).catch(error => {
-    logger.error(
-      new RainbowError(
-        'Error while displaying notification with notifee library'
-      ),
-      { error }
-    );
+    logger.error(new RainbowError('Error while displaying notification with notifee library'), { error });
   });
 }

@@ -1,10 +1,5 @@
 import { MMKV } from 'react-native-mmkv';
-import {
-  Campaign,
-  CampaignCheckType,
-  CampaignKey,
-  GenericCampaignCheckResponse,
-} from './localCampaignChecks';
+import { Campaign, CampaignCheckType, CampaignKey, GenericCampaignCheckResponse } from './localCampaignChecks';
 import { RainbowWallet } from '@/model/wallet';
 import { Navigation } from '@/navigation';
 import { logger } from '@/logger';

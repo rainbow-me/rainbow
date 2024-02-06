@@ -5,9 +5,7 @@ import FloatingPanel from './FloatingPanel';
 export default function AssetPanel({ children, dividerRenderer, ...props }) {
   return (
     <FloatingPanel {...props}>
-      <ColumnWithDividers dividerRenderer={dividerRenderer}>
-        {children}
-      </ColumnWithDividers>
+      <ColumnWithDividers dividerRenderer={dividerRenderer}>{children}</ColumnWithDividers>
     </FloatingPanel>
   );
 }

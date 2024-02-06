@@ -10,5 +10,4 @@ const rainbowMeteorologyApi = new RainbowFetchClient({
   timeout: 30000, // 30 secs
 });
 
-export const rainbowMeteorologyGetData = (network: Network) =>
-  rainbowMeteorologyApi.get(`/meteorology/v1/gas/${network}`, {});
+export const rainbowMeteorologyGetData = (network: Network) => rainbowMeteorologyApi.get(`/meteorology/v1/gas/${network}`, {});

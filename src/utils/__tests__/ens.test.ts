@@ -56,8 +56,7 @@ describe('invalid names', () => {
   });
 
   it('domain with subdomain fails when `includeSubdomains` is falsy', () => {
-    expect(validateENS('wat.lol.eth', { includeSubdomains: false }))
-      .toMatchInlineSnapshot(`
+    expect(validateENS('wat.lol.eth', { includeSubdomains: false })).toMatchInlineSnapshot(`
       {
         "code": "subdomains-not-supported",
         "hint": "Subdomains are not supported",
@@ -67,8 +66,7 @@ describe('invalid names', () => {
   });
 
   it('domain with empty subdomain fails when `includeSubdomains` is falsy', () => {
-    expect(validateENS('.lol.eth', { includeSubdomains: false }))
-      .toMatchInlineSnapshot(`
+    expect(validateENS('.lol.eth', { includeSubdomains: false })).toMatchInlineSnapshot(`
       {
         "code": "subdomains-not-supported",
         "hint": "Subdomains are not supported",

@@ -35,10 +35,7 @@ const NetworkSwitcherv2 = ({
   const radialGradientProps = (network: Network) => {
     return {
       center: [0, 1],
-      colors: [
-        colors.alpha(colors.networkColors[network], 0.1),
-        colors.alpha(colors.networkColors[network], 0.02),
-      ],
+      colors: [colors.alpha(colors.networkColors[network], 0.1), colors.alpha(colors.networkColors[network], 0.02)],
       pointerEvents: 'none',
       style: {
         ...position.coverAsObject,
@@ -49,12 +46,7 @@ const NetworkSwitcherv2 = ({
 
   return (
     <>
-      <Box
-        width="full"
-        testID={`network-switcher-${currentChainId}`}
-        paddingTop="8px"
-        paddingBottom="16px"
-      >
+      <Box width="full" testID={`network-switcher-${currentChainId}`} paddingTop="8px" paddingBottom="16px">
         <ScrollView
           keyboardShouldPersistTaps="always"
           contentContainerStyle={{ paddingHorizontal: 20 }}
@@ -85,33 +77,15 @@ const NetworkSwitcherv2 = ({
                       borderRadius={30}
                     />
                   )}
-                  <Inline
-                    alignHorizontal="center"
-                    alignVertical="center"
-                    horizontalSpace="4px"
-                    wrap={false}
-                  >
+                  <Inline alignHorizontal="center" alignVertical="center" horizontalSpace="4px" wrap={false}>
                     {network === Network.mainnet ? (
-                      <CoinIcon
-                        address={ETH_ADDRESS}
-                        size={20}
-                        symbol={ETH_SYMBOL}
-                        network={network}
-                      />
+                      <CoinIcon address={ETH_ADDRESS} size={20} symbol={ETH_SYMBOL} network={network} />
                     ) : (
-                      <ChainBadge
-                        network={network}
-                        position="relative"
-                        size="small"
-                      />
+                      <ChainBadge network={network} position="relative" size="small" />
                     )}
                     <Bleed top={{ custom: android ? 2 : 0 }}>
                       <Text
-                        color={
-                          isSelected
-                            ? { custom: colors.networkColors[network] }
-                            : 'secondary50 (Deprecated)'
-                        }
+                        color={isSelected ? { custom: colors.networkColors[network] } : 'secondary50 (Deprecated)'}
                         size="16px / 22px (Deprecated)"
                         weight="bold"
                         testID={`network-switcher-item-${network}`}

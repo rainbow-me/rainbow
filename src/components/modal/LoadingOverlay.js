@@ -21,8 +21,7 @@ const Container = styled(Centered).attrs({
 
 const Overlay = styled(Centered)({
   ...padding.object(19, 19, 22),
-  backgroundColor: ({ theme: { colors } }) =>
-    colors.alpha(colors.blueGreyDark, 0.15),
+  backgroundColor: ({ theme: { colors } }) => colors.alpha(colors.blueGreyDark, 0.15),
   borderRadius: 20,
   overflow: 'hidden',
 });
@@ -51,11 +50,7 @@ const LoadingOverlay = ({ title, ...props }) => {
     <Container {...props} as={android ? Column : TouchableBackdrop} disabled>
       <Overlay>
         <Centered zIndex={2}>
-          {android ? (
-            <Spinner color={colors.blueGreyDark} />
-          ) : (
-            <ActivityIndicator />
-          )}
+          {android ? <Spinner color={colors.blueGreyDark} /> : <ActivityIndicator />}
           {title ? <Title>{title}</Title> : null}
         </Centered>
         <OverlayBlur isDarkMode={isDarkMode} />

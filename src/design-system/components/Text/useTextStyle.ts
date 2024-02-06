@@ -11,26 +11,17 @@ export function useTextStyle({
   weight = 'regular',
   tabularNumbers = false,
   uppercase = false,
-}: Pick<
-  TextProps,
-  'align' | 'color' | 'size' | 'weight' | 'tabularNumbers' | 'uppercase'
->) {
+}: Pick<TextProps, 'align' | 'color' | 'size' | 'weight' | 'tabularNumbers' | 'uppercase'>) {
   if (__DEV__) {
     if (color && typeof color === 'string' && !textColors.includes(color)) {
-      throw new Error(
-        `Text: Invalid color "${color}". Valid colors are: ${textColors
-          .map(x => `"${x}"`)
-          .join(', ')}`
-      );
+      throw new Error(`Text: Invalid color "${color}". Valid colors are: ${textColors.map(x => `"${x}"`).join(', ')}`);
     }
   }
 
   if (__DEV__) {
     if (!textSizes[size]) {
       throw new Error(
-        `Text: ${
-          size ? `Invalid size "${size}"` : 'Missing size prop'
-        }. Valid sizes are: ${Object.keys(textSizes)
+        `Text: ${size ? `Invalid size "${size}"` : 'Missing size prop'}. Valid sizes are: ${Object.keys(textSizes)
           .map(x => `"${x}"`)
           .join(', ')}`
       );
@@ -50,7 +41,7 @@ export function useTextStyle({
         ...weightStyles,
         ...(uppercase ? { textTransform: 'uppercase' as const } : null),
         ...(tabularNumbers ? { fontVariant: ['tabular-nums' as const] } : null),
-      } as const),
+      }) as const,
     [sizeStyles, weightStyles, textAlign, colorValue, tabularNumbers, uppercase]
   );
 

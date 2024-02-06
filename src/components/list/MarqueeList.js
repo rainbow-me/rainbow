@@ -1,10 +1,6 @@
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useRef } from 'react';
-import {
-  LongPressGestureHandler,
-  PanGestureHandler,
-  TapGestureHandler,
-} from 'react-native-gesture-handler';
+import { LongPressGestureHandler, PanGestureHandler, TapGestureHandler } from 'react-native-gesture-handler';
 
 import Animated, {
   cancelAnimation,
@@ -21,17 +17,9 @@ const DECCELERATION = 0.998;
 
 const SAFETY_MARGIN = 100;
 // beginning of the component should be within -100 and inf
-const SingleElement = ({
-  transX,
-  offset = { value: 0 },
-  sumWidth,
-  children,
-  onLayout,
-}) => {
+const SingleElement = ({ transX, offset = { value: 0 }, sumWidth, children, onLayout }) => {
   const style = useAnimatedStyle(() => {
-    const transWithinRange =
-      (((transX.value + SAFETY_MARGIN) % sumWidth.value) - sumWidth.value) %
-      sumWidth.value;
+    const transWithinRange = (((transX.value + SAFETY_MARGIN) % sumWidth.value) - sumWidth.value) % sumWidth.value;
     return {
       transform: [
         {
@@ -201,11 +189,7 @@ const SwipeableList = ({ components, height, speed, testID }) => {
                           })
                     )}
                   </SingleElement>
-                  <SingleElement
-                    offset={offset}
-                    sumWidth={offset}
-                    transX={translate}
-                  >
+                  <SingleElement offset={offset} sumWidth={offset} transX={translate}>
                     {components.map(({ view }) =>
                       ios
                         ? view({

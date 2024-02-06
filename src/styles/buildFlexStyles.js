@@ -2,16 +2,14 @@ import { StyleSheet } from 'react-native';
 import position from './position';
 import { css } from '@/styled-thing';
 
-export const getFlexStylesFromShorthand = style =>
-  style === 'end' || style === 'start' ? `flex-${style}` : style;
+export const getFlexStylesFromShorthand = style => (style === 'end' || style === 'start' ? `flex-${style}` : style);
 
 const buildFlexStyles = css`
   /* Align Items */
   align-items: ${({ align = 'stretch' }) => getFlexStylesFromShorthand(align)};
 
   /* Align Self */
-  ${({ self }) =>
-    self ? `align-self: ${getFlexStylesFromShorthand(self)};` : ''}
+  ${({ self }) => (self ? `align-self: ${getFlexStylesFromShorthand(self)};` : '')}
 
   /* Flex */
   ${({ flex }) => (flex !== undefined ? `flex: ${flex};` : '')}
@@ -29,26 +27,14 @@ const buildFlexStyles = css`
   flex-wrap: ${({ wrap }) => (wrap ? 'wrap' : 'nowrap')};
 
   /* Justify Content */
-  justify-content: ${({ justify = 'start' }) =>
-    getFlexStylesFromShorthand(justify)};
+  justify-content: ${({ justify = 'start' }) => getFlexStylesFromShorthand(justify)};
 
   /* Shorthand Shortcuts 💇‍♂️️ */
   ${({ centered }) => (centered ? position.centered : '')}
   ${({ cover }) => (cover ? position.cover : '')}
 `;
 
-buildFlexStyles.object = ({
-  align = 'stretch',
-  self,
-  flex,
-  direction = 'row',
-  justify = 'start',
-  wrap,
-  grow,
-  shrink,
-  centered,
-  cover,
-}) => {
+buildFlexStyles.object = ({ align = 'stretch', self, flex, direction = 'row', justify = 'start', wrap, grow, shrink, centered, cover }) => {
   const props = {
     alignItems: getFlexStylesFromShorthand(align),
     flexDirection: direction,

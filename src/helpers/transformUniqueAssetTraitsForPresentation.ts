@@ -35,10 +35,7 @@ export default function transformUniqueAssetTraitsForPresentation(
   if (display_type === 'date') {
     // the value is in seconds with milliseconds in the decimal part
     // formatted like Jan 29th, 2022
-    mappedTrait.value =
-      typeof value === 'number'
-        ? format(value * 1000, targetDateFormatString)
-        : value;
+    mappedTrait.value = typeof value === 'number' ? format(value * 1000, targetDateFormatString) : value;
     mappedTrait.disableMenu = true;
     // Checking whether the string value is a POAP date format to convert to our date format
   } else if (typeof value === 'string' && poapDateRegex.test(value)) {
@@ -49,10 +46,7 @@ export default function transformUniqueAssetTraitsForPresentation(
     mappedTrait.value = `+${value}%`;
   } else if (display_type === 'boost_number') {
     mappedTrait.value = `+${value}`;
-  } else if (
-    typeof value === 'string' &&
-    value.toLowerCase().startsWith('https://')
-  ) {
+  } else if (typeof value === 'string' && value.toLowerCase().startsWith('https://')) {
     mappedTrait.value = value.toLowerCase().replace('https://', '');
     mappedTrait.lowercase = true;
   }

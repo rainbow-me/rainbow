@@ -17,17 +17,12 @@ export async function getExistingPIN(): Promise<string | undefined> {
       return userPIN as string;
     }
   } catch (error) {
-    logger.error(
-      new RainbowError('Error while trying to get existing PIN code.'),
-      { message: (error as Error).message }
-    );
+    logger.error(new RainbowError('Error while trying to get existing PIN code.'), { message: (error as Error).message });
   }
   return;
 }
 
-export async function decryptPIN(
-  encryptedPin: string
-): Promise<string | undefined> {
+export async function decryptPIN(encryptedPin: string): Promise<string | undefined> {
   try {
     const userPIN = await encryptor.decrypt(RAINBOW_MASTER_KEY, encryptedPin);
     return userPIN as string | undefined;
@@ -50,9 +45,7 @@ export async function savePIN(pin: string | undefined) {
   }
 }
 
-export async function authenticateWithPINAndCreateIfNeeded(): Promise<
-  string | undefined
-> {
+export async function authenticateWithPINAndCreateIfNeeded(): Promise<string | undefined> {
   let validPin: string | undefined;
   try {
     validPin = await getExistingPIN();

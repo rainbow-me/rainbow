@@ -360,7 +360,7 @@
     "metro-plugin-anisotropic-transform": "https://github.com/rainbow-me/metro-plugin-anisotropic-transform#eaf2a2db95eeedd2f63ce8032c102a12c5a88802",
     "metro-react-native-babel-preset": "0.76.7",
     "node-vibrant": "3.2.1-alpha.1",
-    "prettier": "2.2.1",
+    "prettier": "3.2.5",
     "react-test-renderer": "18.1.0",
     "resolve": "1.22.8",
     "rn-nodeify": "10.2.0",

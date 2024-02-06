@@ -1,17 +1,6 @@
-import React, {
-  Children,
-  createContext,
-  Fragment,
-  memo,
-  ReactNode,
-  useContext,
-  useMemo,
-} from 'react';
+import React, { Children, createContext, Fragment, memo, ReactNode, useContext, useMemo } from 'react';
 import { Text as NativeText, Platform, StyleSheet, View } from 'react-native';
-import MarkdownDisplay, {
-  ASTNode,
-  RenderRules,
-} from 'react-native-markdown-display';
+import MarkdownDisplay, { ASTNode, RenderRules } from 'react-native-markdown-display';
 import { negateSpace, Space } from '../../layout/space';
 import { renderStringWithEmoji } from '../../typography/renderStringWithEmoji';
 import { fonts } from '../../typography/typography';
@@ -53,24 +42,12 @@ interface MarkdownStackProps {
   children: ReactNode;
 }
 
-function MarkdownStack({
-  paragraphSpace = defaultProps.paragraphSpace,
-  listSpace = defaultProps.listSpace,
-  children,
-}: MarkdownStackProps) {
+function MarkdownStack({ paragraphSpace = defaultProps.paragraphSpace, listSpace = defaultProps.listSpace, children }: MarkdownStackProps) {
   const depth = useContext(MarkdownStackContext).depth + 1;
 
   return (
-    <MarkdownStackContext.Provider
-      value={useMemo(() => ({ depth, listSpace, paragraphSpace }), [
-        depth,
-        paragraphSpace,
-        listSpace,
-      ])}
-    >
-      <Box marginBottom={negateSpace(depth === 1 ? paragraphSpace : listSpace)}>
-        {children}
-      </Box>
+    <MarkdownStackContext.Provider value={useMemo(() => ({ depth, listSpace, paragraphSpace }), [depth, paragraphSpace, listSpace])}>
+      <Box marginBottom={negateSpace(depth === 1 ? paragraphSpace : listSpace)}>{children}</Box>
     </MarkdownStackContext.Provider>
   );
 }
@@ -82,11 +59,7 @@ interface MarkdownStackItemProps {
 function MarkdownStackItem({ children }: MarkdownStackItemProps) {
   const { depth, paragraphSpace, listSpace } = useContext(MarkdownStackContext);
 
-  return (
-    <Box paddingBottom={depth === 1 ? paragraphSpace : listSpace}>
-      {children}
-    </Box>
-  );
+  return <Box paddingBottom={depth === 1 ? paragraphSpace : listSpace}>{children}</Box>;
 }
 
 function renderBullet(parents: ASTNode[], index: number): ReactNode {
@@ -94,25 +67,16 @@ function renderBullet(parents: ASTNode[], index: number): ReactNode {
 
   if (orderedListIndex > -1) {
     const orderedList = parents[orderedListIndex];
-    const listItemNumber = orderedList.attributes?.start
-      ? orderedList.attributes.start + index
-      : index + 1;
+    const listItemNumber = orderedList.attributes?.start ? orderedList.attributes.start + index : index + 1;
 
-    return (
-      <NativeText style={styles.tabularNumbers}>{listItemNumber}.</NativeText>
-    );
+    return <NativeText style={styles.tabularNumbers}>{listItemNumber}.</NativeText>;
   }
 
   return `${Platform.OS === 'ios' ? '\u00B7' : '\u2022'}`;
 }
 
 function isNativeText(child: ReactNode) {
-  return (
-    typeof child === 'object' &&
-    child !== null &&
-    'type' in child &&
-    child.type === NativeText
-  );
+  return typeof child === 'object' && child !== null && 'type' in child && child.type === NativeText;
 }
 
 export type MarkdownTextProps = {
@@ -143,16 +107,11 @@ export const MarkdownText = memo(function MarkdownText({
   const heading1Color = heading1ColorProp ?? color;
   const heading2Color = heading2ColorProp ?? heading1ColorProp ?? color;
 
-  const spaceProps = useMemo(() => ({ listSpace, paragraphSpace }), [
-    paragraphSpace,
-    listSpace,
-  ]);
+  const spaceProps = useMemo(() => ({ listSpace, paragraphSpace }), [paragraphSpace, listSpace]);
 
   const rules: RenderRules = useMemo(() => {
     return {
-      blockquote: ({ key }, children) => (
-        <Fragment key={key}>{children}</Fragment>
-      ),
+      blockquote: ({ key }, children) => <Fragment key={key}>{children}</Fragment>,
       bullet_list: ({ key }, children) => (
         <MarkdownStackItem key={key}>
           <MarkdownStack {...spaceProps}>{children}</MarkdownStack>
@@ -161,10 +120,7 @@ export const MarkdownText = memo(function MarkdownText({
       code_block: ({ key, content }) => {
         // Trim trailing newlines
         const trimmedContent =
-          typeof content === 'string' &&
-          content.charAt(content.length - 1) === '\n'
-            ? content.substring(0, content.length - 1)
-            : content;
+          typeof content === 'string' && content.charAt(content.length - 1) === '\n' ? content.substring(0, content.length - 1) : content;
 
         return (
           <MarkdownStackItem key={key}>
@@ -187,10 +143,7 @@ export const MarkdownText = memo(function MarkdownText({
       fence: ({ key, content }) => {
         // Trim trailing newlines
         const trimmedContent =
-          typeof content === 'string' &&
-          content.charAt(content.length - 1) === '\n'
-            ? content.substring(0, content.length - 1)
-            : content;
+          typeof content === 'string' && content.charAt(content.length - 1) === '\n' ? content.substring(0, content.length - 1) : content;
 
         return (
           <MarkdownStackItem key={key}>
@@ -244,11 +197,7 @@ export const MarkdownText = memo(function MarkdownText({
       ),
       hr: () => null, // Not currently supported
       link: ({ key, attributes }, children) => (
-        <TextLink
-          handleLinkPress={handleLinkPress}
-          key={key}
-          url={attributes.href}
-        >
+        <TextLink handleLinkPress={handleLinkPress} key={key} url={attributes.href}>
           {children}
         </TextLink>
       ),
@@ -256,9 +205,7 @@ export const MarkdownText = memo(function MarkdownText({
         <MarkdownStackItem key={key}>
           <Box flexDirection="row">
             <Text color={color} size={size}>
-              <NativeText accessible={false}>
-                {renderBullet(parents, index)}{' '}
-              </NativeText>
+              <NativeText accessible={false}>{renderBullet(parents, index)} </NativeText>
             </Text>
             <MarkdownStack {...spaceProps}>
               {Children.map(children, child =>
@@ -305,9 +252,7 @@ export const MarkdownText = memo(function MarkdownText({
           </Text>
         </View>
       ),
-      text: ({ key, content }) => (
-        <NativeText key={key}>{renderStringWithEmoji(content)}</NativeText>
-      ),
+      text: ({ key, content }) => <NativeText key={key}>{renderStringWithEmoji(content)}</NativeText>,
       th: ({ key }, children) => (
         <View key={key} style={styles.tableCell}>
           <Text color={color} size={size} weight="medium">

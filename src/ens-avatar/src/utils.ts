@@ -70,10 +70,7 @@ export function parseNFT(uri: string, seperator: string = '/') {
   }
 }
 
-export function resolveURI(
-  uri: string,
-  customGateway?: string
-): { uri: string; isOnChain: boolean; isEncoded: boolean } {
+export function resolveURI(uri: string, customGateway?: string): { uri: string; isOnChain: boolean; isEncoded: boolean } {
   // resolves uri based on its' protocol
   const isEncoded = base64Regex.test(uri);
   if (isEncoded || uri.startsWith('http')) {

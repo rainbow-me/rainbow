@@ -12,11 +12,7 @@ export interface SeparatorProps {
 /**
  * @description Renders a separator, either horizontal or vertical.
  */
-export function Separator({
-  color,
-  direction = 'horizontal',
-  thickness = 2,
-}: SeparatorProps) {
+export function Separator({ color, direction = 'horizontal', thickness = 2 }: SeparatorProps) {
   const foregroundColor = useForegroundColor(color ?? 'separator'); // Fallback for JS consumers
   const style = useMemo(
     () => ({

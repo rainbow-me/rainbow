@@ -2,11 +2,7 @@ import { concat, without } from 'lodash';
 import { Dispatch } from 'redux';
 import { getPreference } from '../model/preferences';
 import { AppGetState } from './store';
-import {
-  getHiddenTokens,
-  getWebDataEnabled,
-  saveHiddenTokens,
-} from '@/handlers/localstorage/accountLocal';
+import { getHiddenTokens, getWebDataEnabled, saveHiddenTokens } from '@/handlers/localstorage/accountLocal';
 import WalletTypes from '@/helpers/walletTypes';
 
 const HIDDEN_TOKENS_LOAD_SUCCESS = 'hiddenTokens/HIDDEN_TOKENS_LOAD_SUCCESS';
@@ -85,77 +81,59 @@ interface HiddenTokensUpdateAction {
  * Loads hidden token IDs and web-data settings from local storage and
  * updates state.
  */
-export const hiddenTokensLoadState = () => async (
-  dispatch: Dispatch<
-    HiddenTokensLoadSuccessAction | HiddenTokensLoadFailureAction
-  >,
-  getState: AppGetState
-) => {
-  try {
-    const { accountAddress, network } = getState().settings;
+export const hiddenTokensLoadState =
+  () => async (dispatch: Dispatch<HiddenTokensLoadSuccessAction | HiddenTokensLoadFailureAction>, getState: AppGetState) => {
+    try {
+      const { accountAddress, network } = getState().settings;
 
-    const hiddenTokens = await getHiddenTokens(accountAddress, network);
+      const hiddenTokens = await getHiddenTokens(accountAddress, network);
 
-    dispatch({
-      payload: {
-        hiddenTokens,
-      },
-      type: HIDDEN_TOKENS_LOAD_SUCCESS,
-    });
-  } catch (error) {
-    dispatch({ type: HIDDEN_TOKENS_LOAD_FAILURE });
-  }
-};
+      dispatch({
+        payload: {
+          hiddenTokens,
+        },
+        type: HIDDEN_TOKENS_LOAD_SUCCESS,
+      });
+    } catch (error) {
+      dispatch({ type: HIDDEN_TOKENS_LOAD_FAILURE });
+    }
+  };
 
 /**
  * Loads hidden token IDs and web-data settings from firebase and
  * updates state.
  */
-export const hiddenTokensUpdateStateFromWeb = () => async (
-  dispatch: Dispatch<
-    HiddenTokensFetchSuccessAction | HiddenTokensFetchFailureAction
-  >,
-  getState: AppGetState
-) => {
-  try {
-    const isReadOnlyWallet =
-      getState().wallets.selected?.type === WalletTypes.readOnly;
-    const { accountAddress, network } = getState().settings;
+export const hiddenTokensUpdateStateFromWeb =
+  () => async (dispatch: Dispatch<HiddenTokensFetchSuccessAction | HiddenTokensFetchFailureAction>, getState: AppGetState) => {
+    try {
+      const isReadOnlyWallet = getState().wallets.selected?.type === WalletTypes.readOnly;
+      const { accountAddress, network } = getState().settings;
 
-    // if web data is enabled, fetch values from cloud
-    const pref = await getWebDataEnabled(accountAddress, network);
+      // if web data is enabled, fetch values from cloud
+      const pref = await getWebDataEnabled(accountAddress, network);
 
-    if ((!isReadOnlyWallet && pref) || isReadOnlyWallet) {
-      const hiddenTokensFromCloud = (await getPreference(
-        'hidden',
-        accountAddress
-      )) as any | undefined;
-      if (
-        hiddenTokensFromCloud?.hidden?.ids &&
-        hiddenTokensFromCloud?.hidden?.ids.length > 0
-      ) {
-        dispatch({
-          payload: {
-            hiddenTokens: hiddenTokensFromCloud?.hidden?.ids,
-          },
-          type: HIDDEN_TOKENS_FETCH_SUCCESS,
-        });
+      if ((!isReadOnlyWallet && pref) || isReadOnlyWallet) {
+        const hiddenTokensFromCloud = (await getPreference('hidden', accountAddress)) as any | undefined;
+        if (hiddenTokensFromCloud?.hidden?.ids && hiddenTokensFromCloud?.hidden?.ids.length > 0) {
+          dispatch({
+            payload: {
+              hiddenTokens: hiddenTokensFromCloud?.hidden?.ids,
+            },
+            type: HIDDEN_TOKENS_FETCH_SUCCESS,
+          });
+        }
       }
+    } catch (e) {
+      dispatch({ type: HIDDEN_TOKENS_FETCH_FAILURE });
     }
-  } catch (e) {
-    dispatch({ type: HIDDEN_TOKENS_FETCH_FAILURE });
-  }
-};
+  };
 
 /**
  * Adds a token ID to the hidden in state and updates local storage.
  *
  * @param tokenId The new token ID.
  */
-export const addHiddenToken = (tokenId: string) => (
-  dispatch: Dispatch<HiddenTokensUpdateAction>,
-  getState: AppGetState
-) => {
+export const addHiddenToken = (tokenId: string) => (dispatch: Dispatch<HiddenTokensUpdateAction>, getState: AppGetState) => {
   const account = getState().wallets.selected!;
 
   if (account.type === WalletTypes.readOnly) return;
@@ -177,10 +155,7 @@ export const addHiddenToken = (tokenId: string) => (
  *
  * @param tokenId The token ID to remove.
  */
-export const removeHiddenToken = (tokenId: string) => (
-  dispatch: Dispatch<HiddenTokensUpdateAction>,
-  getState: AppGetState
-) => {
+export const removeHiddenToken = (tokenId: string) => (dispatch: Dispatch<HiddenTokensUpdateAction>, getState: AppGetState) => {
   const account = getState().wallets.selected!;
 
   if (account.type === WalletTypes.readOnly) return;
@@ -202,10 +177,7 @@ const INITIAL_STATE: HiddenTokensState = {
   hiddenTokens: [],
 };
 
-export default (
-  state: HiddenTokensState = INITIAL_STATE,
-  action: HiddenTokensAction
-): HiddenTokensState => {
+export default (state: HiddenTokensState = INITIAL_STATE, action: HiddenTokensAction): HiddenTokensState => {
   switch (action.type) {
     case HIDDEN_TOKENS_LOAD_SUCCESS:
       return {

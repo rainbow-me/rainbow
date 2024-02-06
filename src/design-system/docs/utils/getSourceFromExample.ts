@@ -1,10 +1,6 @@
 import { Example } from '../types';
 
-export const getSourceFromExample = ({
-  Example,
-}: {
-  Example: Example['Example'];
-}) => {
+export const getSourceFromExample = ({ Example }: { Example: Example['Example'] }) => {
   let element;
 
   if (Example) {

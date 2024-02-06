@@ -1,11 +1,7 @@
 import { useCallback, useRef } from 'react';
 import useTimeout from './useTimeout';
 
-export default function useLongPressEvents({
-  minLongPressDuration = 500,
-  onLongPress,
-  onPress,
-}: any) {
+export default function useLongPressEvents({ minLongPressDuration = 500, onLongPress, onPress }: any) {
   const isPressEventLegal = useRef(false);
   const [startTimeout, stopTimeout, timeoutRef] = useTimeout();
 

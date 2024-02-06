@@ -28,31 +28,17 @@ export const PairHardwareWalletSearchSheet = () => {
       <Inset horizontal="36px">
         <Stack alignHorizontal="center" space="20px">
           <Text align="center" color="label" weight="bold" size="26pt">
-            {isConnected
-              ? i18n.t(TRANSLATIONS.device_connected)
-              : i18n.t(TRANSLATIONS.looking_for_devices)}
+            {isConnected ? i18n.t(TRANSLATIONS.device_connected) : i18n.t(TRANSLATIONS.looking_for_devices)}
           </Text>
-          <Text
-            align="center"
-            color="labelTertiary"
-            weight="semibold"
-            size="15pt / 135%"
-          >
-            {isConnected
-              ? i18n.t(TRANSLATIONS.almost_done)
-              : i18n.t(TRANSLATIONS.make_sure_bluetooth_enabled)}
+          <Text align="center" color="labelTertiary" weight="semibold" size="15pt / 135%">
+            {isConnected ? i18n.t(TRANSLATIONS.almost_done) : i18n.t(TRANSLATIONS.make_sure_bluetooth_enabled)}
           </Text>
         </Stack>
       </Inset>
       <Box width="full">
         <Stack space="16px">
           {isConnected && (
-            <ActionButton
-              label={i18n.t(i18n.l.button.next)}
-              onPress={() =>
-                navigate(Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET)
-              }
-            />
+            <ActionButton label={i18n.t(i18n.l.button.next)} onPress={() => navigate(Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET)} />
           )}
           <CancelButton onPress={goBack} />
         </Stack>

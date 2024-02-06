@@ -13,5 +13,4 @@ export const getContacts = () => getGlobal(LOCAL_CONTACTS, [], contactsVersion);
 /**
  * @desc save contacts
  */
-export const saveContacts = (contacts: any) =>
-  saveGlobal(LOCAL_CONTACTS, contacts, contactsVersion);
+export const saveContacts = (contacts: any) => saveGlobal(LOCAL_CONTACTS, contacts, contactsVersion);

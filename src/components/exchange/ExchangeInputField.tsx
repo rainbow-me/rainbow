@@ -103,12 +103,7 @@ export default function ExchangeInputField({
           testID={testID + '-native'}
           updateOnFocus={updateAmountOnFocus}
         />
-        <ExchangeMaxButton
-          color={color}
-          disabled={!inputCurrencySymbol}
-          onPress={onPressMaxBalance}
-          testID={testID + '-max'}
-        />
+        <ExchangeMaxButton color={color} disabled={!inputCurrencySymbol} onPress={onPressMaxBalance} testID={testID + '-max'} />
       </NativeFieldRow>
     </Container>
   );

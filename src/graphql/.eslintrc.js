@@ -19,10 +19,7 @@ module.exports = {
         '@graphql-eslint/no-hashtag-description': 'error',
         '@graphql-eslint/no-typename-prefix': 'error',
         '@graphql-eslint/require-deprecation-reason': 'error',
-        '@graphql-eslint/require-description': [
-          'error',
-          { types: true, DirectiveDefinition: true },
-        ],
+        '@graphql-eslint/require-description': ['error', { types: true, DirectiveDefinition: true }],
       },
     },
   ],

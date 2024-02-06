@@ -3,10 +3,7 @@ import { View } from 'react-native';
 import { useSharedValue, withSpring } from 'react-native-reanimated';
 import JellySelectorItem from './JellySelectorItem';
 import JellySelectorRow from './JellySelectorRow';
-import {
-  JellySelectorColorIndicator,
-  JellySelectorIndicator,
-} from './jelly-selector-indicator';
+import { JellySelectorColorIndicator, JellySelectorIndicator } from './jelly-selector-indicator';
 import { magicMemo } from '@/utils';
 
 const springConfig = {
@@ -132,9 +129,4 @@ const JellySelector = ({
   );
 };
 
-export default magicMemo(JellySelector, [
-  'backgroundColor',
-  'defaultIndex',
-  'height',
-  'items',
-]);
+export default magicMemo(JellySelector, ['backgroundColor', 'defaultIndex', 'height', 'items']);

@@ -52,9 +52,7 @@ function generateDerivedData(tokenListData: TokenListData) {
   });
 
   const tokenListWithEth = [ethWithAddress, ...tokenList];
-  const curatedRainbowTokenList = tokenListWithEth.filter(
-    t => t.isRainbowCurated
-  );
+  const curatedRainbowTokenList = tokenListWithEth.filter(t => t.isRainbowCurated);
 
   const derivedData: {
     RAINBOW_TOKEN_LIST: Record<string, RainbowToken>;
@@ -100,9 +98,7 @@ function writeJson<T>(key: string, data: T) {
   }
 }
 
-async function getTokenListUpdate(
-  currentTokenListData: TokenListData
-): Promise<{
+async function getTokenListUpdate(currentTokenListData: TokenListData): Promise<{
   newTokenList?: TokenListData;
   status?: Response['status'];
 }> {
@@ -113,15 +109,10 @@ async function getTokenListUpdate(
   };
 
   try {
-    const { data, status, headers } = await rainbowFetch(
-      RAINBOW_LEAN_TOKEN_LIST_URL,
-      {
-        headers: etag
-          ? { ...commonHeaders, 'If-None-Match': etag }
-          : { ...commonHeaders },
-        method: 'get',
-      }
-    );
+    const { data, status, headers } = await rainbowFetch(RAINBOW_LEAN_TOKEN_LIST_URL, {
+      headers: etag ? { ...commonHeaders, 'If-None-Match': etag } : { ...commonHeaders },
+      method: 'get',
+    });
     const currentDate = new Date(currentTokenListData?.timestamp);
     const freshDate = new Date((data as TokenListData)?.timestamp);
 
@@ -200,21 +191,15 @@ class RainbowTokenList extends EventEmitter {
   async _updateJob(): Promise<void> {
     try {
       logger.debug('Token list checking for update');
-      const { newTokenList, status } = await getTokenListUpdate(
-        this._tokenListData
-      );
+      const { newTokenList, status } = await getTokenListUpdate(this._tokenListData);
 
       newTokenList
-        ? logger.debug(
-            `Token list update: new update loaded, generated on ${newTokenList?.timestamp}`
-          )
+        ? logger.debug(`Token list update: new update loaded, generated on ${newTokenList?.timestamp}`)
         : status === 304
-        ? logger.debug(
-            `Token list update: no change since last update, skipping update.`
-          )
-        : logger.debug(
-            `Token list update: Token list did not update. (Status: ${status}, CurrentListDate: ${this._tokenListData?.timestamp})`
-          );
+          ? logger.debug(`Token list update: no change since last update, skipping update.`)
+          : logger.debug(
+              `Token list update: Token list did not update. (Status: ${status}, CurrentListDate: ${this._tokenListData?.timestamp})`
+            );
 
       if (newTokenList) {
         this._tokenListData = newTokenList;

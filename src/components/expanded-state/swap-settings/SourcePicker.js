@@ -26,10 +26,7 @@ const sourceMenuItems = () => {
 };
 
 const androidSourceMenuItems = () => {
-  return Object.values(Source).reduce(
-    (obj, key) => ((obj[key] = lang.t(`exchange.source.${key}`)), obj),
-    {}
-  );
+  return Object.values(Source).reduce((obj, key) => ((obj[key] = lang.t(`exchange.source.${key}`)), obj), {});
 };
 
 export default function SourcePicker({ onSelect, currentSource }) {
@@ -92,17 +89,9 @@ export default function SourcePicker({ onSelect, currentSource }) {
           testID="swap-settings-routes-label"
           style={{ maxWidth: 200 }}
         >
-          <Text
-            color="primary (Deprecated)"
-            size="16px / 22px (Deprecated)"
-            weight="bold"
-          >
+          <Text color="primary (Deprecated)" size="16px / 22px (Deprecated)" weight="bold">
             {lang.t('exchange.source_picker')}
-            <Text
-              color="secondary30 (Deprecated)"
-              size="16px / 22px (Deprecated)"
-              weight="bold"
-            >
+            <Text color="secondary30 (Deprecated)" size="16px / 22px (Deprecated)" weight="bold">
               {' 􀅵'}
             </Text>
           </Text>

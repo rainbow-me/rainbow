@@ -20,15 +20,8 @@ export default class ERC721 {
     opts?: AvatarRequestOpts
   ) {
     const contract = new Contract(contractAddress, abi, provider);
-    const [tokenURI, owner] = await Promise.all([
-      contract.tokenURI(tokenID),
-      ownerAddress && contract.ownerOf(tokenID),
-    ]);
-    if (
-      !opts?.allowNonOwnerNFTs &&
-      ownerAddress &&
-      owner.toLowerCase() !== ownerAddress.toLowerCase()
-    ) {
+    const [tokenURI, owner] = await Promise.all([contract.tokenURI(tokenID), ownerAddress && contract.ownerOf(tokenID)]);
+    if (!opts?.allowNonOwnerNFTs && ownerAddress && owner.toLowerCase() !== ownerAddress.toLowerCase()) {
       return null;
     }
 
@@ -38,10 +31,7 @@ export default class ERC721 {
     let _resolvedUri = resolvedURI;
     if (isOnChain) {
       if (isEncoded) {
-        _resolvedUri = Buffer.from(
-          resolvedURI.replace('data:application/json;base64,', ''),
-          'base64'
-        ).toString();
+        _resolvedUri = Buffer.from(resolvedURI.replace('data:application/json;base64,', ''), 'base64').toString();
       }
       const data = JSON.parse(_resolvedUri);
       image = svgToPngIfNeeded(data?.image, false);

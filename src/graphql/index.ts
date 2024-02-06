@@ -7,12 +7,6 @@ import { getSdk as getArcDevSdk } from './__generated__/arcDev';
 import { IS_PROD } from '@/env';
 
 export const ensClient = getEnsSdk(getFetchRequester(config.ens));
-export const metadataClient = getMetadataSdk(
-  getFetchRequester(config.metadata)
-);
-export const metadataPOSTClient = getMetadataSdk(
-  getFetchRequester(config.metadataPOST)
-);
-export const arcClient = IS_PROD
-  ? getArcSdk(getFetchRequester(config.arc))
-  : getArcDevSdk(getFetchRequester(config.arcDev));
+export const metadataClient = getMetadataSdk(getFetchRequester(config.metadata));
+export const metadataPOSTClient = getMetadataSdk(getFetchRequester(config.metadataPOST));
+export const arcClient = IS_PROD ? getArcSdk(getFetchRequester(config.arc)) : getArcDevSdk(getFetchRequester(config.arcDev));

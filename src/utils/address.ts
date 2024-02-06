@@ -6,17 +6,12 @@ import { EthereumAddress } from '@/entities';
  * @param  {String}  data - qr code data
  * @return {String}  address - ethereum address
  */
-export const getEthereumAddressFromQRCodeData = async (
-  data: string
-): Promise<EthereumAddress | null> => {
+export const getEthereumAddressFromQRCodeData = async (data: string): Promise<EthereumAddress | null> => {
   if (!data) return null;
 
   const parts = data.split(':');
 
-  if (
-    parts[0] === 'ethereum' &&
-    (await checkIsValidAddressOrDomain(parts[1]))
-  ) {
+  if (parts[0] === 'ethereum' && (await checkIsValidAddressOrDomain(parts[1]))) {
     return parts[1];
   }
   if (await checkIsValidAddressOrDomain(parts[0])) {

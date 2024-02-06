@@ -1,8 +1,4 @@
-import {
-  TransactionStatus,
-  TransactionType,
-  TransactionTypes,
-} from '@/entities';
+import { TransactionStatus, TransactionType, TransactionTypes } from '@/entities';
 
 export const calculateTimestampOfToday = () => {
   const d = new Date();
@@ -44,9 +40,7 @@ export const thisYearTimestamp = calculateTimestampOfThisYear();
  * @param type The transaction type.
  * @returns The confirmed status.
  */
-export const getConfirmedState = (
-  type?: TransactionType
-): TransactionStatus => {
+export const getConfirmedState = (type?: TransactionType): TransactionStatus => {
   switch (type) {
     case TransactionTypes.authorize:
       return TransactionStatus.approved;

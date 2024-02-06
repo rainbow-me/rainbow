@@ -9,9 +9,7 @@ export default function useRequests() {
   }));
 
   const { pendingRequestCount, sortedRequests } = useMemo(() => {
-    const sortedRequests = reverse(
-      sortBy(values(requests), 'displayDetails.timestampInMs')
-    );
+    const sortedRequests = reverse(sortBy(values(requests), 'displayDetails.timestampInMs'));
 
     return {
       pendingRequestCount: sortedRequests.length,

@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { HapticFeedbackType } from '@/utils/haptics';
 import { Bleed } from '@/design-system';
 import { Text as RNText, StyleSheet } from 'react-native';
@@ -63,24 +57,13 @@ export const AnimatedText = ({
   weight = 'bold',
 }: AnimatedTextProps) => {
   const { colors } = useTheme();
-  const {
-    currentSequenceIndex,
-    getNextAnimationIndex,
-    incrementSequence,
-  } = useAnimationContext();
+  const { currentSequenceIndex, getNextAnimationIndex, incrementSequence } = useAnimationContext();
   const index = useRef(getNextAnimationIndex()).current;
 
-  const displayedCharacters = useSharedValue(
-    skipAnimation ? textContent.length : 0
-  );
-  const [displayedText, setDisplayedText] = useState(
-    skipAnimation ? textContent : ''
-  );
+  const displayedCharacters = useSharedValue(skipAnimation ? textContent.length : 0);
+  const [displayedText, setDisplayedText] = useState(skipAnimation ? textContent : '');
 
-  const rainbowTextColors = useMemo(
-    () => (rainbowText ? generateRainbowColors(textContent) : undefined),
-    [rainbowText, textContent]
-  );
+  const rainbowTextColors = useMemo(() => (rainbowText ? generateRainbowColors(textContent) : undefined), [rainbowText, textContent]);
 
   const getRainbowTextStyle = useCallback(
     (i: number) => ({
@@ -90,17 +73,10 @@ export const AnimatedText = ({
       textShadowColor: disableShadow
         ? 'transparent'
         : shadowOpacity && rainbowTextColors?.[i]?.shadow
-        ? colors.alpha(rainbowTextColors?.[i]?.shadow, shadowOpacity)
-        : rainbowTextColors?.[i]?.shadow,
+          ? colors.alpha(rainbowTextColors?.[i]?.shadow, shadowOpacity)
+          : rainbowTextColors?.[i]?.shadow,
     }),
-    [
-      colors,
-      disableShadow,
-      opacity,
-      rainbowTextColors,
-      shadowOpacity,
-      textAlign,
-    ]
+    [colors, disableShadow, opacity, rainbowTextColors, shadowOpacity, textAlign]
   );
 
   const textStyle = useMemo(
@@ -112,21 +88,12 @@ export const AnimatedText = ({
       textShadowColor: disableShadow
         ? 'transparent'
         : rainbowText
-        ? undefined
-        : shadowOpacity && color?.shadow
-        ? colors.alpha(color?.shadow, shadowOpacity)
-        : color?.shadow,
+          ? undefined
+          : shadowOpacity && color?.shadow
+            ? colors.alpha(color?.shadow, shadowOpacity)
+            : color?.shadow,
     }),
-    [
-      color,
-      colors,
-      disableShadow,
-      opacity,
-      rainbowText,
-      shadowOpacity,
-      textAlign,
-      weight,
-    ]
+    [color, colors, disableShadow, opacity, rainbowText, shadowOpacity, textAlign, weight]
   );
 
   const animationConfig = useMemo(
@@ -160,27 +127,14 @@ export const AnimatedText = ({
         }
       }
     },
-    [
-      animationConfig,
-      displayedCharacters,
-      incrementSequence,
-      onComplete,
-      repeat,
-      textContent.length,
-      typingSpeed,
-    ]
+    [animationConfig, displayedCharacters, incrementSequence, onComplete, repeat, textContent.length, typingSpeed]
   );
 
   useAnimatedReaction(
     () => ({ displayedValue: displayedCharacters.value, repeat }),
     (current, previous) => {
-      if (
-        !previous?.displayedValue ||
-        Math.round(current.displayedValue) !==
-          Math.round(previous?.displayedValue)
-      ) {
-        const newText =
-          textContent.slice(0, Math.round(current.displayedValue)) || ' ';
+      if (!previous?.displayedValue || Math.round(current.displayedValue) !== Math.round(previous?.displayedValue)) {
+        const newText = textContent.slice(0, Math.round(current.displayedValue)) || ' ';
 
         if (current.repeat === false && newText === textContent) {
           runOnJS(setDisplayedText)(newText);
@@ -190,11 +144,7 @@ export const AnimatedText = ({
         }
 
         runOnJS(setDisplayedText)(newText);
-        if (
-          enableHapticTyping &&
-          Math.round(current.displayedValue) &&
-          newText[newText.length - 1] !== ' '
-        ) {
+        if (enableHapticTyping && Math.round(current.displayedValue) && newText[newText.length - 1] !== ' ') {
           runOnJS(triggerHapticFeedback)(hapticType);
         }
       }
@@ -202,19 +152,11 @@ export const AnimatedText = ({
   );
 
   useEffect(() => {
-    if (
-      index !== undefined &&
-      currentSequenceIndex === index &&
-      (startWhenTrue === undefined || startWhenTrue)
-    ) {
+    if (index !== undefined && currentSequenceIndex === index && (startWhenTrue === undefined || startWhenTrue)) {
       if (!skipAnimation) {
         const timer = setTimeout(() => {
           displayedCharacters.value = 0;
-          displayedCharacters.value = withTiming(
-            textContent.length,
-            animationConfig,
-            onAnimationComplete
-          );
+          displayedCharacters.value = withTiming(textContent.length, animationConfig, onAnimationComplete);
         }, delayStart || 0);
 
         return () => {
@@ -230,15 +172,10 @@ export const AnimatedText = ({
 
   return (
     <Bleed space="16px">
-      <RNText
-        style={[styles.text, textStyle, multiline ? { lineHeight: 20.25 } : {}]}
-      >
+      <RNText style={[styles.text, textStyle, multiline ? { lineHeight: 20.25 } : {}]}>
         {rainbowText
           ? displayedText.split('').map((char, i) => (
-              <RNText
-                key={i}
-                style={[!ios && styles.android, getRainbowTextStyle(i)]}
-              >
+              <RNText key={i} style={[!ios && styles.android, getRainbowTextStyle(i)]}>
                 {char}
               </RNText>
             ))

@@ -43,14 +43,12 @@ const Handle = styled(SheetHandle).attrs(({ theme: { colors } }) => ({
   marginBottom: 19,
 });
 
-const QRWrapper = styled(Column).attrs({ align: 'center' })(
-  ({ theme: { colors } }) => ({
-    ...shadow.buildAsObject(0, 10, 50, colors.shadowBlack, 0.6),
-    ...padding.object(24),
-    backgroundColor: colors.whiteLabel,
-    borderRadius: 39,
-  })
-);
+const QRWrapper = styled(Column).attrs({ align: 'center' })(({ theme: { colors } }) => ({
+  ...shadow.buildAsObject(0, 10, 50, colors.shadowBlack, 0.6),
+  ...padding.object(24),
+  backgroundColor: colors.whiteLabel,
+  borderRadius: 39,
+}));
 
 const NameText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
@@ -61,10 +59,7 @@ const NameText = styled(Text).attrs(({ theme: { colors } }) => ({
 }))({});
 
 const accountAddressSelector = state => state.settings.accountAddress;
-const lowercaseAccountAddressSelector = createSelector(
-  accountAddressSelector,
-  toLower
-);
+const lowercaseAccountAddressSelector = createSelector(accountAddressSelector, toLower);
 
 export default function ReceiveModal() {
   const { goBack } = useNavigation();
@@ -78,9 +73,7 @@ export default function ReceiveModal() {
     setCopyCount(count => count + 1);
   }, []);
 
-  const checksummedAddress = useMemo(() => toChecksumAddress(accountAddress), [
-    accountAddress,
-  ]);
+  const checksummedAddress = useMemo(() => toChecksumAddress(accountAddress), [accountAddress]);
 
   return (
     <Container backgroundColor="rgba(0,0,0,0.85)" testID="receive-modal">
@@ -90,10 +83,7 @@ export default function ReceiveModal() {
         <QRWrapper>
           <QRCode size={QRCodeSize} value={checksummedAddress} />
         </QRWrapper>
-        <CopyFloatingEmojis
-          onPress={handleCopiedText}
-          textToCopy={checksummedAddress}
-        >
+        <CopyFloatingEmojis onPress={handleCopiedText} textToCopy={checksummedAddress}>
           <ColumnWithMargins margin={2}>
             <NameText>{accountName}</NameText>
             <AddressText address={checksummedAddress} />

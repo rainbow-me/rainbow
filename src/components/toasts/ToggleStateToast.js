@@ -15,7 +15,5 @@ export default function ToggleStateToast({ isAdded, addCopy, removeCopy }) {
     }
   }, [isVisible, wasAdded, startTimeout, stopTimeout, isAdded]);
 
-  return (
-    <Toast isVisible={isVisible} text={`􀁣 ${isAdded ? addCopy : removeCopy}`} />
-  );
+  return <Toast isVisible={isVisible} text={`􀁣 ${isAdded ? addCopy : removeCopy}`} />;
 }

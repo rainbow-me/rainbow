@@ -12,10 +12,7 @@ module.exports = createMacro(({ babel: { types: t }, references }) => {
     const code = t.stringLiteral(generate(value).code);
 
     return parentPath.replaceWith(
-      t.objectExpression([
-        t.objectProperty(t.identifier('code'), code),
-        t.objectProperty(t.identifier('value'), value),
-      ])
+      t.objectExpression([t.objectProperty(t.identifier('code'), code), t.objectProperty(t.identifier('value'), value)])
     );
   });
 });

@@ -70,10 +70,7 @@ const getHTML = (svgContent, style) =>
   <body>
     ${svgContent}
   </body>
-</html>`.replace(
-    '<svg',
-    `<svg onload="window.ReactNativeWebView.postMessage('loaded');"`
-  );
+</html>`.replace('<svg', `<svg onload="window.ReactNativeWebView.postMessage('loaded');"`);
 
 const styles = {
   backgroundColor: 'transparent',
@@ -105,8 +102,7 @@ class SvgImage extends Component {
       props.onLoadStart && props.onLoadStart();
       if (uri.match(/^data:image\/svg/)) {
         const index = uri.indexOf('<svg');
-        this.mounted &&
-          this.setState({ fetchingUrl: uri, svgContent: uri.slice(index) });
+        this.mounted && this.setState({ fetchingUrl: uri, svgContent: uri.slice(index) });
       } else {
         try {
           const res = await fetch(uri);
@@ -118,17 +114,14 @@ class SvgImage extends Component {
               // return w/o error so we can fallback to png
               return;
             }
-            this.mounted &&
-              this.setState({ fetchingUrl: uri, svgContent: text });
+            this.mounted && this.setState({ fetchingUrl: uri, svgContent: text });
           } else {
             logger.log('invalid svg', { text, uri });
             this.mounted && props.onError && props.onError('invalid svg');
           }
         } catch (err) {
           logger.log('error loading remote svg image', err);
-          this.mounted &&
-            props.onError &&
-            props.onError('error loading remote svg image');
+          this.mounted && props.onError && props.onError('error loading remote svg image');
         }
       }
       this.mounted && props.onLoadEnd && props.onLoadEnd();
@@ -156,19 +149,14 @@ class SvgImage extends Component {
       } else {
         const svgRegex = RegExp('(<svg)([^<]*|[^>]*)');
         const svg = svgRegex.exec(svgContent)[0];
-        const regex = new RegExp(
-          '[\\s\\r\\t\\n]*([a-z0-9\\-_]+)[\\s\\r\\t\\n]*=[\\s\\r\\t\\n]*([\'"])((?:\\\\\\2|(?!\\2).)*)\\2',
-          'ig'
-        );
+        const regex = new RegExp('[\\s\\r\\t\\n]*([a-z0-9\\-_]+)[\\s\\r\\t\\n]*=[\\s\\r\\t\\n]*([\'"])((?:\\\\\\2|(?!\\2).)*)\\2', 'ig');
         const attributes = {};
         let match;
         while ((match = regex.exec(svg))) {
           attributes[match[1]] = match[3];
         }
         const patchedSvgContent = `${
-          svgContent.substr(0, 5) +
-          `viewBox="0 0 ${attributes.width} ${attributes.height}"` +
-          svgContent.substr(5)
+          svgContent.substr(0, 5) + `viewBox="0 0 ${attributes.width} ${attributes.height}"` + svgContent.substr(5)
         }`;
         html = getHTML(patchedSvgContent, flattenedStyle);
       }

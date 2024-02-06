@@ -10,11 +10,7 @@ import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import SwapModalScreen from '../screens/SwapModal';
 import { getActiveRoute, useNavigation } from './Navigation';
 import { exchangeTabNavigatorConfig, stackNavigationConfig } from './config';
-import {
-  exchangeModalPreset,
-  expandedPreset,
-  swapSettingsPreset,
-} from './effects';
+import { exchangeModalPreset, expandedPreset, swapSettingsPreset } from './effects';
 import Routes from './routesNames';
 import { useSwapCurrencies } from '@/hooks';
 import styled from '@/styled-thing';
@@ -36,29 +32,12 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
     const { params } = useRoute();
 
     return (
-      <Stack.Navigator
-        {...stackNavigationConfig}
-        initialRouteName={Routes.MAIN_EXCHANGE_SCREEN}
-        screenOptions={exchangeModalPreset}
-      >
-        <Stack.Screen
-          component={SwapModal}
-          initialParams={params}
-          name={Routes.MAIN_EXCHANGE_SCREEN}
-        />
+      <Stack.Navigator {...stackNavigationConfig} initialRouteName={Routes.MAIN_EXCHANGE_SCREEN} screenOptions={exchangeModalPreset}>
+        <Stack.Screen component={SwapModal} initialParams={params} name={Routes.MAIN_EXCHANGE_SCREEN} />
         {android && (
           <>
-            <Stack.Screen
-              component={ExpandedAssetSheet}
-              initialParams={params}
-              name={Routes.SWAP_DETAILS_SHEET}
-              options={expandedPreset}
-            />
-            <Stack.Screen
-              component={ExpandedAssetSheet}
-              name={Routes.SWAP_SETTINGS_SHEET}
-              options={swapSettingsPreset}
-            />
+            <Stack.Screen component={ExpandedAssetSheet} initialParams={params} name={Routes.SWAP_DETAILS_SHEET} options={expandedPreset} />
+            <Stack.Screen component={ExpandedAssetSheet} name={Routes.SWAP_SETTINGS_SHEET} options={swapSettingsPreset} />
           </>
         )}
       </Stack.Navigator>
@@ -103,26 +82,13 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
 
     const routeName = getActiveRoute()?.name;
 
-    const enableSwipe =
-      routeName === Routes.CURRENCY_SELECT_SCREEN &&
-      (!!inputCurrency || !!outputCurrency);
+    const enableSwipe = routeName === Routes.CURRENCY_SELECT_SCREEN && (!!inputCurrency || !!outputCurrency);
 
     return (
       <FlexItem>
-        <Tabs.Navigator
-          screenOptions={{ swipeEnabled: enableSwipe }}
-          {...exchangeTabNavigatorConfig}
-        >
-          <Tabs.Screen
-            component={MainExchangeNavigator}
-            initialParams={initialParams}
-            name={Routes.MAIN_EXCHANGE_NAVIGATOR}
-          />
-          <Tabs.Screen
-            component={CurrencySelectModal}
-            initialParams={initialParams}
-            name={Routes.CURRENCY_SELECT_SCREEN}
-          />
+        <Tabs.Navigator screenOptions={{ swipeEnabled: enableSwipe }} {...exchangeTabNavigatorConfig}>
+          <Tabs.Screen component={MainExchangeNavigator} initialParams={initialParams} name={Routes.MAIN_EXCHANGE_NAVIGATOR} />
+          <Tabs.Screen component={CurrencySelectModal} initialParams={initialParams} name={Routes.CURRENCY_SELECT_SCREEN} />
         </Tabs.Navigator>
         {ios && <GestureBlocker ref={ref} />}
       </FlexItem>

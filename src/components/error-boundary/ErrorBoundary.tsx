@@ -14,11 +14,7 @@ class ErrorBoundary extends React.Component<PropsWithChildren> {
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     // log captured error to Sentry
-    logger.sentry(
-      `Unhandled JS error caught by Error Boundary: ${JSON.stringify(
-        errorInfo
-      )}`
-    );
+    logger.sentry(`Unhandled JS error caught by Error Boundary: ${JSON.stringify(errorInfo)}`);
     logger.sentry('Error is', error);
     const customError = new Error('React Crash');
     captureException(customError);
@@ -32,8 +28,7 @@ class ErrorBoundary extends React.Component<PropsWithChildren> {
   }
 }
 
-const NoErrorBoundary = ({ children }: { children: React.ReactChild }) =>
-  children;
+const NoErrorBoundary = ({ children }: { children: React.ReactChild }) => children;
 
 const DefaultBoundary = IS_TESTING ? NoErrorBoundary : ErrorBoundary;
 

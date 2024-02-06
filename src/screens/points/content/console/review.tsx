@@ -6,10 +6,7 @@ import { AnimatedText } from '../../components/AnimatedText';
 import { textColors } from '../../constants';
 import * as i18n from '@/languages';
 import { useAccountProfile } from '@/hooks';
-import {
-  abbreviateEnsForDisplay,
-  address as formatAddress,
-} from '@/utils/abbreviations';
+import { abbreviateEnsForDisplay, address as formatAddress } from '@/utils/abbreviations';
 import { NeonButton } from '../../components/NeonButton';
 import LineBreak from '../../components/LineBreak';
 import { Bleed, Box, Stack } from '@/design-system';
@@ -22,32 +19,20 @@ export const Review = () => {
 
   const [showDoneButton, setShowDoneButton] = useState(false);
 
-  const accountName = (abbreviateEnsForDisplay(accountENS, 10) ||
-    formatAddress(accountAddress, 4, 5)) as string;
+  const accountName = (abbreviateEnsForDisplay(accountENS, 10) || formatAddress(accountAddress, 4, 5)) as string;
 
   return (
     <Box height="full" justifyContent="space-between">
       <Stack separator={<LineBreak lines={3} />}>
         <Paragraph>
           <Line>
-            <AnimatedText
-              color={textColors.gray}
-              skipAnimation
-              textContent={`${i18n.t(i18n.l.points.console.account)}:`}
-              weight="normal"
-            />
-            <AnimatedText
-              color={textColors.account}
-              skipAnimation
-              textContent={accountName}
-            />
+            <AnimatedText color={textColors.gray} skipAnimation textContent={`${i18n.t(i18n.l.points.console.account)}:`} weight="normal" />
+            <AnimatedText color={textColors.account} skipAnimation textContent={accountName} />
           </Line>
           <AnimatedText
             color={textColors.green}
             delayStart={500}
-            textContent={`> ${i18n.t(
-              i18n.l.points.console.registration_complete
-            )}`}
+            textContent={`> ${i18n.t(i18n.l.points.console.registration_complete)}`}
           />
         </Paragraph>
         <Stack separator={<LineBreak lines={2} />}>
@@ -55,18 +40,14 @@ export const Review = () => {
             <AnimatedText
               delayStart={500}
               color={textColors.gray}
-              textContent={i18n.t(
-                i18n.l.points.console.share_bonus_paragraph_one
-              )}
+              textContent={i18n.t(i18n.l.points.console.share_bonus_paragraph_one)}
               multiline
               weight="normal"
             />
             <AnimatedText
               color={textColors.gray}
               delayStart={500}
-              textContent={i18n.t(
-                i18n.l.points.console.share_bonus_paragraph_two
-              )}
+              textContent={i18n.t(i18n.l.points.console.share_bonus_paragraph_two)}
               multiline
               weight="normal"
             />
@@ -78,9 +59,7 @@ export const Review = () => {
                 }, 500);
                 return () => clearTimeout(complete);
               }}
-              textContent={i18n.t(
-                i18n.l.points.console.share_bonus_paragraph_three
-              )}
+              textContent={i18n.t(i18n.l.points.console.share_bonus_paragraph_three)}
               multiline
               weight="normal"
             />
@@ -93,9 +72,7 @@ export const Review = () => {
             color="#FEC101"
             label={i18n.t(i18n.l.points.console.complete_onboarding)}
             onPress={() => {
-              analyticsV2.track(
-                analyticsV2.event.pointsOnboardingScreenPressedDoneButton
-              );
+              analyticsV2.track(analyticsV2.event.pointsOnboardingScreenPressedDoneButton);
               goBack();
             }}
           />

@@ -1,10 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 
-const OpacityToggler = (
-  { endingOpacity = 0, isVisible, style, ...props },
-  ref
-) => {
+const OpacityToggler = ({ endingOpacity = 0, isVisible, style, ...props }, ref) => {
   const startingOpacity = 1;
 
   const opacity = isVisible ? endingOpacity : startingOpacity;

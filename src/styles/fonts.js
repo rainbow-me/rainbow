@@ -70,5 +70,4 @@ font.weight = {
 
 export default font;
 
-export const getFontSize = key =>
-  Number.isInteger(key) ? key : Number(key.replace('px', ''));
+export const getFontSize = key => (Number.isInteger(key) ? key : Number(key.replace('px', '')));

@@ -1,11 +1,5 @@
 import React, { useLayoutEffect } from 'react';
-import Animated, {
-  Easing,
-  interpolate,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { Emoji } from '../text';
 
 interface GravityEmojiProps {
@@ -16,17 +10,10 @@ interface GravityEmojiProps {
   top: number;
 }
 
-const GravityEmoji = ({
-  distance,
-  emoji,
-  left,
-  size,
-  top,
-}: GravityEmojiProps) => {
+const GravityEmoji = ({ distance, emoji, left, size, top }: GravityEmojiProps) => {
   const animation = useSharedValue(0);
 
-  const getRandomNumber = (spread = 180) =>
-    Math.random() * (spread - -spread) + -spread;
+  const getRandomNumber = (spread = 180) => Math.random() * (spread - -spread) + -spread;
 
   const randomSpin = getRandomNumber(1080);
   const randomDistance = Math.random() * 200 + 300;
@@ -54,11 +41,7 @@ const GravityEmoji = ({
   const xBoost = 3;
   const yBoost = 9;
   const v0x = xBoost * randomDistance * Math.cos(theta) * timeDilation;
-  const v0y =
-    (verticalBias < 0.9 ? yBoost : 0.1) *
-    randomDistance *
-    Math.sin(theta) *
-    timeDilation;
+  const v0y = (verticalBias < 0.9 ? yBoost : 0.1) * randomDistance * Math.sin(theta) * timeDilation;
 
   useLayoutEffect(() => {
     animation.value = withTiming(2, {
@@ -72,8 +55,7 @@ const GravityEmoji = ({
     const progress = interpolate(animation.value, [0, 1], [0, distance]);
 
     const scale = 0.5;
-    const rotate =
-      interpolate(progress, [0, distance], [0, randomSpin]) + 'deg';
+    const rotate = interpolate(progress, [0, distance], [0, randomSpin]) + 'deg';
 
     const t = animation.value;
     const translateX = (v0x * t) / timeDilation;

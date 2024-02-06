@@ -29,23 +29,8 @@ interface CurrencySelectionListProps {
   isExchangeList?: boolean;
 }
 
-const CurrencySelectionList: ForwardRefRenderFunction<
-  SectionList,
-  CurrencySelectionListProps
-> = (
-  {
-    keyboardDismissMode,
-    footerSpacer,
-    fromDiscover,
-    itemProps,
-    listItems,
-    loading,
-    onL2,
-    query,
-    showList,
-    testID,
-    isExchangeList = false,
-  },
+const CurrencySelectionList: ForwardRefRenderFunction<SectionList, CurrencySelectionListProps> = (
+  { keyboardDismissMode, footerSpacer, fromDiscover, itemProps, listItems, loading, onL2, query, showList, testID, isExchangeList = false },
   ref
 ) => {
   const noResults = !listItems?.[0]?.data?.length;
@@ -62,10 +47,7 @@ const CurrencySelectionList: ForwardRefRenderFunction<
             custom: CurrencySelectModalHeaderHeight + ExchangeSearchHeight / 2,
           }}
         >
-          <NoResults
-            onL2={onL2}
-            type={fromDiscover ? NoResultsType.Discover : NoResultsType.Swap}
-          />
+          <NoResults onL2={onL2} type={fromDiscover ? NoResultsType.Discover : NoResultsType.Swap} />
         </Box>
       ) : (
         <Centered flex={1}>
@@ -81,22 +63,9 @@ const CurrencySelectionList: ForwardRefRenderFunction<
           />
         </Centered>
       )}
-      {(showSkeleton || !showList) && (
-        <Box
-          as={EmptyAssetList}
-          width="full"
-          height="full"
-          style={{ pointerEvents: 'none' }}
-        />
-      )}
+      {(showSkeleton || !showList) && <Box as={EmptyAssetList} width="full" height="full" style={{ pointerEvents: 'none' }} />}
     </Box>
   );
 };
 
-export default magicMemo(forwardRef(CurrencySelectionList), [
-  'listItems',
-  'loading',
-  'showList',
-  'query',
-  'itemProps',
-]);
+export default magicMemo(forwardRef(CurrencySelectionList), ['listItems', 'loading', 'showList', 'query', 'itemProps']);

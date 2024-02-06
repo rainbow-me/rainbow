@@ -116,8 +116,7 @@ export interface NewTransaction {
   fiatProvider?: RainbowTransaction['fiatProvider'];
 }
 
-export interface NewTransactionOrAddCashTransaction
-  extends Omit<NewTransaction, 'asset'> {
+export interface NewTransactionOrAddCashTransaction extends Omit<NewTransaction, 'asset'> {
   // Although the type of `asset` really represents
   // `ParsedAddressAsset | AddCashCurrencyAsset | null`, it is more
   // convenient for typing purposes to use
@@ -126,10 +125,7 @@ export interface NewTransactionOrAddCashTransaction
   // Statements such as `transaction?.asset?.price?.value` would fail to
   // compile without the partial since `AddCashCurrencyAsset` does not have the
   // key `price`, even though the statement is safe.
-  asset:
-    | ParsedAddressAsset
-    | (Partial<ParsedAddressAsset> & AddCashCurrencyAsset)
-    | null;
+  asset: ParsedAddressAsset | (Partial<ParsedAddressAsset> & AddCashCurrencyAsset) | null;
 }
 
 export type MinimalTransactionDetails = Pick<
