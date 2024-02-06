@@ -16,6 +16,8 @@ const SMOL_BRAINS_PETS_NFT_ADDRESS: EthereumAddress =
   '0xf6cc57c45ce730496b4d3df36b9a4e4c3a1b9754';
 const SMOL_BODIES_PETS_NFT_ADDRESS: EthereumAddress =
   '0xae0d0c4cc3335fd49402781e406adf3f02d41bca';
+const RAINBOW_SMOL_NFT_ADDRESS: EthereumAddress =
+  '0xa1e417c09211b9ec12ea25f97429d0772749bbf2';
 
 // zora app icon unlocking NFTs
 const ZORA_NFT_ADDRESS: EthereumAddress =
@@ -81,6 +83,7 @@ export const SmolIcon: UnlockableAppIcon = {
     SMOL_BODIES_NFT_ADDRESS,
     SMOL_BRAINS_PETS_NFT_ADDRESS,
     SMOL_BODIES_PETS_NFT_ADDRESS,
+    RAINBOW_SMOL_NFT_ADDRESS,
   ],
   unlockKey: 'smol_nft_app_icon',
 };
