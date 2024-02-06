@@ -200,6 +200,9 @@ query simulateTransactions(
         quantityAtRisk
       }
       meta {
+        transferTo {
+          ...target
+        }
         to {
           ...target
         }

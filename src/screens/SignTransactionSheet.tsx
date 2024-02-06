@@ -1849,12 +1849,12 @@ const DetailsCard = ({
     meta?.to?.function || (methodName && methodName.substring(0, 2) !== '0x');
   const isContract =
     showFunctionRow || meta?.to?.created || meta?.to?.sourceCodeStatus;
-
+  const showTransferToRow = meta?.transferTo;
   // Hide DetailsCard if balance is insufficient once loaded
   if (!isLoading && isBalanceEnough === false) {
     return <></>;
   }
-
+  const;
   return (
     <FadedScrollCard
       cardHeight={cardHeight}
@@ -1899,12 +1899,12 @@ const DetailsCard = ({
                 value={getNetworkObj(currentNetwork).name}
               />
             }
-            {!!(meta?.to?.address || toAddress) && (
+            {!!(meta?.to?.address || toAddress || showTransferToRow) && (
               <DetailRow
                 detailType={isContract ? 'contract' : 'to'}
                 onPress={() =>
                   ethereumUtils.openAddressInBlockExplorer(
-                    meta?.to?.address! || toAddress,
+                    meta?.to?.address! || toAddress || meta?.transferTo,
                     currentNetwork
                   )
                 }
@@ -1912,7 +1912,8 @@ const DetailsCard = ({
                   meta?.to?.name ||
                   abbreviations.address(meta?.to?.address || toAddress, 4, 6) ||
                   meta?.to?.address ||
-                  toAddress
+                  toAddress ||
+                  meta?.transferTo
                 }
               />
             )}
