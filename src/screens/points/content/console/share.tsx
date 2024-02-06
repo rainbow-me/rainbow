@@ -19,12 +19,7 @@ import { metadataPOSTClient } from '@/graphql';
 import { analyticsV2 } from '@/analytics';
 
 export const Share = () => {
-  const {
-    intent,
-    setAnimationKey,
-    setShareBonusPoints,
-    setStep,
-  } = usePointsProfileContext();
+  const { intent, setAnimationKey, setStep } = usePointsProfileContext();
   const { accountENS, accountAddress } = useAccountProfile();
   const { width: deviceWidth } = useDimensions();
 
@@ -35,11 +30,10 @@ export const Share = () => {
 
   return (
     <Box height="full" justifyContent="space-between">
-      <Stack separator={<LineBreak lines={2} />}>
+      <Stack separator={<LineBreak lines={3} />}>
         <Paragraph>
           <Line>
             <AnimatedText
-              delayStart={500}
               color={textColors.gray}
               skipAnimation
               textContent={`${i18n.t(i18n.l.points.console.account)}:`}
@@ -53,6 +47,8 @@ export const Share = () => {
           </Line>
           <AnimatedText
             color={textColors.gray}
+            delayStart={500}
+            weight="normal"
             textContent={`> ${i18n.t(
               i18n.l.points.console.referral_link_is_ready
             )}`}
@@ -61,7 +57,6 @@ export const Share = () => {
         <AnimatedText
           color={textColors.account}
           delayStart={1000}
-          weight="normal"
           multiline
           textContent={i18n.t(i18n.l.points.console.referral_link_bonus_text)}
         />
@@ -74,7 +69,6 @@ export const Share = () => {
             }, 500);
             return () => clearTimeout(complete);
           }}
-          weight="normal"
           multiline
           textContent={i18n.t(
             i18n.l.points.console.referral_link_bonus_text_extended
@@ -113,17 +107,10 @@ export const Share = () => {
                 const beginNextPhase = setTimeout(async () => {
                   if (intent) {
                     Linking.openURL(intent);
-                    const shareBonusPointsResponse = await metadataPOSTClient.redeemCodeForPoints(
-                      {
-                        address: accountAddress,
-                        redemptionCode: 'TWITTERSHARED',
-                      }
-                    );
-                    if (shareBonusPointsResponse?.redeemCode?.earnings?.total) {
-                      setShareBonusPoints(
-                        shareBonusPointsResponse?.redeemCode?.earnings?.total
-                      );
-                    }
+                    await metadataPOSTClient.redeemCodeForPoints({
+                      address: accountAddress,
+                      redemptionCode: 'TWITTERSHARED',
+                    });
                   }
                   setAnimationKey(prevKey => prevKey + 1);
                   setStep(RainbowPointsFlowSteps.Review);

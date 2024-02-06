@@ -185,6 +185,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
         testID={`remote-card-${cardKey}`}
         width={{ custom: width - gutterSize }}
         overflow="visible"
+        justifyContent="center"
         height={'full'}
         borderRadius={18}
         padding={{ custom: 16 }}

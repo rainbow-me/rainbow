@@ -69,6 +69,7 @@ export const AnimatedText = ({
     incrementSequence,
   } = useAnimationContext();
   const index = useRef(getNextAnimationIndex()).current;
+
   const displayedCharacters = useSharedValue(
     skipAnimation ? textContent.length : 0
   );

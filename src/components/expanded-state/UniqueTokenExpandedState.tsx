@@ -66,6 +66,7 @@ import { ENS_RECORDS, REGISTRATION_MODES } from '@/helpers/ens';
 import {
   useAccountProfile,
   useBooleanState,
+  useCollectible,
   useDimensions,
   useENSProfile,
   useENSRegistration,
@@ -242,16 +243,18 @@ const getIsSupportedOnRainbowWeb = (network: Network) => {
 };
 
 const UniqueTokenExpandedState = ({
-  asset,
+  asset: passedAsset,
   external,
 }: UniqueTokenExpandedStateProps) => {
-  const isSupportedOnRainbowWeb = getIsSupportedOnRainbowWeb(asset.network);
-
   const { accountAddress } = useAccountProfile();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate, setOptions } = useNavigation();
   const { colors, isDarkMode } = useTheme();
   const { isReadOnlyWallet } = useWallets();
+  const collecible = useCollectible(passedAsset?.uniqueId);
+  const asset = external ? passedAsset : collecible;
+
+  const isSupportedOnRainbowWeb = getIsSupportedOnRainbowWeb(asset.network);
 
   const [
     isRefreshMetadataToastActive,

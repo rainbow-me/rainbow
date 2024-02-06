@@ -83,7 +83,7 @@ const CoinIcon: React.FC<Props> = ({
           }
           size={size}
           symbol={symbol}
-          network={network}
+          network={mainnet_address ? Network.mainnet : network}
           theme={theme}
         />
       ) : (

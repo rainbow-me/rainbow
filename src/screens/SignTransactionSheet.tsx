@@ -67,6 +67,7 @@ import {
   TransactionSimulationAsset,
   TransactionSimulationMeta,
   TransactionSimulationResult,
+  TransactionSimulationChange,
   TransactionScanResultType,
 } from '@/graphql/__generated__/metadataPOST';
 import { Network } from '@/networks/types';
@@ -1514,7 +1515,6 @@ const SimulationCard = ({
     },
     [isLoading, simulationUnavailable]
   );
-
   const renderSimulationEventRows = useMemo(() => {
     if (isBalanceEnough === false) return null;
 
@@ -1536,6 +1536,7 @@ const SimulationCard = ({
               key={`${change?.asset?.assetCode}-${change?.quantity}`}
               amount={change?.quantity || '10'}
               asset={change?.asset}
+              price={change?.price}
               eventType="send"
             />
           );
@@ -2057,10 +2058,12 @@ const SimulatedEventRow = ({
   amount,
   asset,
   eventType,
+  price,
 }: {
   amount: string | 'unlimited';
   asset: TransactionSimulationAsset | undefined;
   eventType: EventType;
+  price?: number | undefined;
 }) => {
   const { colors } = useTheme();
 
@@ -2108,7 +2111,10 @@ const SimulatedEventRow = ({
   if (asset?.type === TransactionAssetType.Native) {
     assetCode = ETH_ADDRESS;
   }
-
+  const showUSD = (eventType === 'send' || eventType === 'receive') && price;
+  const formattedPrice = `$${price?.toLocaleString?.('en-US', {
+    maximumFractionDigits: 2,
+  })}`;
   return (
     <Box
       justifyContent="center"
@@ -2123,9 +2129,16 @@ const SimulatedEventRow = ({
       >
         <Inline alignVertical="center" space="12px" wrap={false}>
           <EventIcon eventType={eventType} />
-          <Text color="label" size="17pt" weight="bold">
-            {eventInfo.label}
-          </Text>
+          <Inline alignVertical="bottom" space="6px" wrap={false}>
+            <Text color="label" size="17pt" weight="bold">
+              {eventInfo.label}
+            </Text>
+            {showUSD && (
+              <Text color="labelQuaternary" size="13pt" weight="bold">
+                {formattedPrice}
+              </Text>
+            )}
+          </Inline>
         </Inline>
         <Inline alignVertical="center" space={{ custom: 7 }} wrap={false}>
           <Bleed vertical="6px">
