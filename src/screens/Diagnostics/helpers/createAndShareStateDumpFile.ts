@@ -4,9 +4,9 @@ import { APP_STATE_DUMP_FILE_NAME } from '@/screens/Diagnostics/constants';
 import RNShare from 'react-native-share';
 import { IS_ANDROID } from '@/env';
 import { logger, RainbowError } from '@/logger';
-import { stringify } from 'flatted';
 import { getAllActiveSessions } from '@/walletConnect';
 
+// function partially developed by ChatGPT that helps remove and trace cyclic references in javascript objects
 function cyclicReplacer() {
   const seenObjects = new Map<object, string[]>(); // Tracks objects and their paths
 
@@ -21,10 +21,18 @@ function cyclicReplacer() {
 
       if (seenObjects.has(value)) {
         // Construct a string representation of the path to the cyclic reference
-        return `Cyclic reference to ${seenObjects
-          .get(value)
-          ?.filter(key => !!key)
-          ?.join('.')}`;
+        const keys = seenObjects.get(value)?.filter(key => !!key);
+        let path = keys?.shift();
+        keys?.forEach(key => {
+          if (key) {
+            if (!isNaN(Number(key))) {
+              path += `[${key}]`;
+            } else {
+              path += `.${key}`;
+            }
+          }
+        });
+        return `Cyclic reference to ${path}`;
       }
 
       seenObjects.set(value, newPath);
@@ -45,11 +53,11 @@ function cyclicReplacer() {
 export async function createAndShareStateDumpFile() {
   const reduxState = store.getState();
   const walletConnectV2Sessions = await getAllActiveSessions();
-  const appState = {
-    ...reduxState,
+  const state = {
+    reduxState,
     walletConnectV2: { sessions: walletConnectV2Sessions },
   };
-  const stringifiedState = JSON.stringify(appState, cyclicReplacer());
+  const stringifiedState = JSON.stringify(state, cyclicReplacer());
 
   const documentsFilePath = `${RNFS.DocumentDirectoryPath}/${APP_STATE_DUMP_FILE_NAME}`;
   try {

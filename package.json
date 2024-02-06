@@ -170,7 +170,6 @@
     "ethereumjs-wallet": "1.0.1",
     "events": "3.3.0",
     "fast-text-encoding": "1.0.4",
-    "flatted": "3.2.7",
     "global": "4.4.0",
     "grapheme-splitter": "1.0.4",
     "graphql-request": "5.0.0",
