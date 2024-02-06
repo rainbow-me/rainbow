@@ -4,27 +4,9 @@ import create from 'zustand';
 
 export interface PendingTransactionsState {
   pendingTransactions: Record<string, RainbowTransaction[]>;
-  addPendingTransaction: ({
-    address,
-    pendingTransaction,
-  }: {
-    address: string;
-    pendingTransaction: RainbowTransaction;
-  }) => void;
-  updatePendingTransaction: ({
-    address,
-    pendingTransaction,
-  }: {
-    address: string;
-    pendingTransaction: RainbowTransaction;
-  }) => void;
-  setPendingTransactions: ({
-    address,
-    pendingTransactions,
-  }: {
-    address: string;
-    pendingTransactions: RainbowTransaction[];
-  }) => void;
+  addPendingTransaction: ({ address, pendingTransaction }: { address: string; pendingTransaction: RainbowTransaction }) => void;
+  updatePendingTransaction: ({ address, pendingTransaction }: { address: string; pendingTransaction: RainbowTransaction }) => void;
+  setPendingTransactions: ({ address, pendingTransactions }: { address: string; pendingTransactions: RainbowTransaction[] }) => void;
   clearPendingTransactions: () => void;
 }
 
@@ -33,8 +15,7 @@ export const pendingTransactionsStore = createStore<PendingTransactionsState>(
     pendingTransactions: {},
     addPendingTransaction: ({ address, pendingTransaction }) => {
       const { pendingTransactions: currentPendingTransactions } = get();
-      const addressPendingTransactions =
-        currentPendingTransactions[address] || [];
+      const addressPendingTransactions = currentPendingTransactions[address] || [];
       set({
         pendingTransactions: {
           ...currentPendingTransactions,
@@ -44,8 +25,7 @@ export const pendingTransactionsStore = createStore<PendingTransactionsState>(
     },
     updatePendingTransaction: ({ address, pendingTransaction }) => {
       const { pendingTransactions: currentPendingTransactions } = get();
-      const addressPendingTransactions =
-        currentPendingTransactions[address] || [];
+      const addressPendingTransactions = currentPendingTransactions[address] || [];
 
       set({
         pendingTransactions: {
