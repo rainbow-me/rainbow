@@ -1,7 +1,7 @@
 import * as lang from '@/languages';
 import React, { useCallback } from 'react';
 import { Text } from '../text';
-import WalletAndBackup from '@/assets/walletsAndBackup.png';
+import WalletAndBackup from '@/assets/WalletsAndBackup.png';
 import { useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';

@@ -8,7 +8,7 @@ import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { cloudPlatform } from '@/utils/platform';
 import { PasswordField } from '@/components/fields';
 import { Text } from '@/components/text';
-import WalletAndBackup from '@/assets/walletsAndBackup.png';
+import WalletAndBackup from '@/assets/WalletsAndBackup.png';
 import { analytics } from '@/analytics';
 import {
   cloudBackupPasswordMinLength,

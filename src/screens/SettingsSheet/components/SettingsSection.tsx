@@ -12,7 +12,7 @@ import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
 import AppIconIcon from '@/assets/settingsAppIcon.png';
 import AppIconIconDark from '@/assets/settingsAppIconDark.png';
-import WalletsAndBackupIcon from '@/assets/walletsAndBackup.png';
+import WalletsAndBackupIcon from '@/assets/WalletsAndBackup.png';
 import CurrencyIcon from '@/assets/settingsCurrency.png';
 import CurrencyIconDark from '@/assets/settingsCurrencyDark.png';
 import DarkModeIcon from '@/assets/settingsDarkMode.png';

@@ -3,7 +3,7 @@ import { cloudPlatform } from '@/utils/platform';
 import Menu from '../Menu';
 import MenuContainer from '../MenuContainer';
 import MenuItem from '../MenuItem';
-import WalletsAndBackupIcon from '@/assets/walletsAndBackup.png';
+import WalletsAndBackupIcon from '@/assets/WalletsAndBackup.png';
 import CloudBackupWarningIcon from '@/assets/CloudBackupWarning.png';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';

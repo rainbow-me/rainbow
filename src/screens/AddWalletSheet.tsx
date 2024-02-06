@@ -13,9 +13,9 @@ import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { createWallet } from '@/model/wallet';
 import WalletTypes from '@/helpers/walletTypes';
 import { logger, RainbowError } from '@/logger';
-import walletsAndBackup from '@/assets/walletsAndBackup.png';
-import importSecretPhraseOrPrivateKey from '@/assets/importSecretPhraseOrPrivateKey.png';
-import watchWalletIcon from '@/assets/watchWallet.png';
+import WalletsAndBackup from '@/assets/WalletsAndBackup.png';
+import ImportSecretPhraseOrPrivateKey from '@/assets/ImportSecretPhraseOrPrivateKey.png';
+import WatchWalletIcon from '@/assets/watchWallet.png';
 import { captureException } from '@sentry/react-native';
 import { useDispatch } from 'react-redux';
 import {
@@ -318,14 +318,14 @@ export const AddWalletSheet = () => {
     }),
     description: restoreFromCloudDescription,
     descriptionColor: 'blue',
-    icon: walletsAndBackup,
+    icon: WalletsAndBackup,
     onPress: onPressRestoreFromCloud,
   };
 
   const restoreFromSeed: AddWalletItem = {
     title: i18n.t(TRANSLATIONS.options.seed.title),
     description: i18n.t(TRANSLATIONS.options.seed.description),
-    icon: importSecretPhraseOrPrivateKey,
+    icon: ImportSecretPhraseOrPrivateKey,
     testID: 'restore-with-key-button',
     onPress: onPressRestoreFromSeed,
   };
@@ -333,7 +333,7 @@ export const AddWalletSheet = () => {
   const watch: AddWalletItem = {
     title: i18n.t(TRANSLATIONS.options.watch.title),
     description: i18n.t(TRANSLATIONS.options.watch.description),
-    icon: watchWalletIcon,
+    icon: WatchWalletIcon,
     testID: 'watch-address-button',
     onPress: onPressWatch,
   };

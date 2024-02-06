@@ -2,7 +2,7 @@ import * as lang from '@/languages';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { InteractionManager, TextInput } from 'react-native';
 import { useDispatch } from 'react-redux';
-import WalletAndBackup from '@/assets/walletsAndBackup.png';
+import WalletAndBackup from '@/assets/WalletsAndBackup.png';
 import { KeyboardArea } from 'react-native-keyboard-area';
 
 import {
