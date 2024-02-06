@@ -1,11 +1,5 @@
 import React, { useMemo } from 'react';
-import useExperimentalFlag, {
-  OP_REWARDS,
-  PROFILES,
-  HARDWARE_WALLETS,
-  MINTS,
-  NFT_OFFERS,
-} from '@rainbow-me/config/experimentalHooks';
+import useExperimentalFlag, { OP_REWARDS, PROFILES, HARDWARE_WALLETS, MINTS, NFT_OFFERS } from '@rainbow-me/config/experimentalHooks';
 import { isTestnetNetwork } from '@/handlers/web3';
 import { Inline, Inset, Stack } from '@/design-system';
 import { useAccountSettings, useWallets } from '@/hooks';
@@ -13,11 +7,7 @@ import { ENSCreateProfileCard } from '@/components/cards/ENSCreateProfileCard';
 import { ENSSearchCard } from '@/components/cards/ENSSearchCard';
 import { GasCard } from '@/components/cards/GasCard';
 import { LearnCard } from '@/components/cards/LearnCard';
-import {
-  avoidScamsCard,
-  backupsCard,
-  cryptoAndWalletsCard,
-} from '@/components/cards/utils/constants';
+import { avoidScamsCard, backupsCard, cryptoAndWalletsCard } from '@/components/cards/utils/constants';
 import { OpRewardsCard } from '@/components/cards/OpRewardsCard';
 import { LedgerCard } from '@/components/cards/LedgerCard';
 import { useRemoteConfig } from '@/model/remoteConfig';
@@ -27,18 +17,11 @@ import { MintsCard } from '@/components/cards/MintsCard/MintsCard';
 import { FeaturedMintCard } from '@/components/cards/FeaturedMintCard';
 import { useMints } from '@/resources/mints';
 import { IS_TEST } from '@/env';
-import {
-  RemoteCardCarousel,
-  useRemoteCardContext,
-} from '@/components/cards/remote-cards';
+import { RemoteCardCarousel, useRemoteCardContext } from '@/components/cards/remote-cards';
 import { useRoute } from '@react-navigation/native';
 
 export default function DiscoverHome() {
-  const {
-    profiles_enabled,
-    mints_enabled,
-    op_rewards_enabled,
-  } = useRemoteConfig();
+  const { profiles_enabled, mints_enabled, op_rewards_enabled } = useRemoteConfig();
   const { accountAddress, network } = useAccountSettings();
   const { getCardsForPlacement } = useRemoteCardContext();
   const { name } = useRoute();
@@ -46,13 +29,11 @@ export default function DiscoverHome() {
   const profilesEnabledRemoteFlag = profiles_enabled;
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
   const nftOffersEnabled = useExperimentalFlag(NFT_OFFERS);
-  const mintsEnabled =
-    (useExperimentalFlag(MINTS) || mints_enabled) && !IS_TEST;
+  const mintsEnabled = (useExperimentalFlag(MINTS) || mints_enabled) && !IS_TEST;
   const opRewardsLocalFlag = useExperimentalFlag(OP_REWARDS);
   const opRewardsRemoteFlag = op_rewards_enabled;
   const testNetwork = isTestnetNetwork(network);
-  const isProfilesEnabled =
-    profilesEnabledLocalFlag && profilesEnabledRemoteFlag;
+  const isProfilesEnabled = profilesEnabledLocalFlag && profilesEnabledRemoteFlag;
 
   const { wallets } = useWallets();
   const {
@@ -60,15 +41,9 @@ export default function DiscoverHome() {
     isFetching,
   } = useMints({ walletAddress: accountAddress });
 
-  const hasHardwareWallets =
-    Object.keys(wallets || {}).filter(
-      key => wallets[key].type === walletTypes.bluetooth
-    ).length > 0;
+  const hasHardwareWallets = Object.keys(wallets || {}).filter(key => wallets[key].type === walletTypes.bluetooth).length > 0;
 
-  const cards = useMemo(() => getCardsForPlacement(name), [
-    name,
-    getCardsForPlacement,
-  ]);
+  const cards = useMemo(() => getCardsForPlacement(name), [name, getCardsForPlacement]);
 
   return (
     <Inset top="20px" bottom={{ custom: 200 }} horizontal="20px">

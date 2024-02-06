@@ -9,11 +9,7 @@ const AnimatedContainer = styled(Animated.View)({
 
 const easing = Easing.bezier(0.4, 0, 0.22, 1);
 
-export default function FlyInAnimation({
-  distance = 16,
-  duration = 100,
-  ...props
-}) {
+export default function FlyInAnimation({ distance = 16, duration = 100, ...props }) {
   const exitDuration = duration / 3;
   return (
     <AnimatedContainer

@@ -13,12 +13,7 @@ import { useClipboard } from '@/hooks';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding } from '@/styles';
 
-import {
-  abbreviations,
-  ethereumUtils,
-  haptics,
-  showActionSheetWithOptions,
-} from '@/utils';
+import { abbreviations, ethereumUtils, haptics, showActionSheetWithOptions } from '@/utils';
 
 const InfoButton = styled(Centered)({
   alignItems: 'center',
@@ -32,12 +27,10 @@ const InfoButton = styled(Centered)({
   ...padding.object(0, 0),
 });
 
-const Circle = styled(IS_TESTING === 'true' ? View : RadialGradient).attrs(
-  ({ theme: { colors } }) => ({
-    center: [0, 15],
-    colors: colors.gradients.lightestGrey,
-  })
-)({
+const Circle = styled(IS_TESTING === 'true' ? View : RadialGradient).attrs(({ theme: { colors } }) => ({
+  center: [0, 15],
+  colors: colors.gradients.lightestGrey,
+}))({
   borderRadius: 15,
   height: 30,
   margin: 10,
@@ -100,14 +93,8 @@ const ContactRowInfoButton = ({ children, item, network, scaleTo }) => {
   );
 
   const onPressAndroid = useCallback(() => {
-    const blockExplorerText = `View on ${startCase(
-      ethereumUtils.getBlockExplorer(item?.network)
-    )}`;
-    const androidContractActions = [
-      lang.t('wallet.action.copy_contract_address'),
-      blockExplorerText,
-      lang.t('button.cancel'),
-    ];
+    const blockExplorerText = `View on ${startCase(ethereumUtils.getBlockExplorer(item?.network))}`;
+    const androidContractActions = [lang.t('wallet.action.copy_contract_address'), blockExplorerText, lang.t('button.cancel')];
     showActionSheetWithOptions(
       {
         cancelButtonIndex: 2,
@@ -133,9 +120,7 @@ const ContactRowInfoButton = ({ children, item, network, scaleTo }) => {
         blockExplorerAction,
         {
           ...ContactRowActions[ContactRowActionsEnum.copyAddress],
-          discoverabilityTitle: abbreviations.formatAddressForDisplay(
-            item?.address
-          ),
+          discoverabilityTitle: abbreviations.formatAddressForDisplay(item?.address),
         },
       ],
       menuTitle: `${item?.name}`,

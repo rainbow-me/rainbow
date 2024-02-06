@@ -20,12 +20,9 @@ describe('@/analytics', () => {
     analytics.setCurrentWalletAddressHash('hash');
     analytics.track(analytics.event.pressedButton);
 
-    expect(analytics.client.track).toHaveBeenCalledWith(
-      analytics.event.pressedButton,
-      {
-        walletAddressHash: 'hash',
-      }
-    );
+    expect(analytics.client.track).toHaveBeenCalledWith(analytics.event.pressedButton, {
+      walletAddressHash: 'hash',
+    });
   });
 
   test('identify', () => {

@@ -23,9 +23,6 @@ export default function useAppState() {
 
   return {
     appState,
-    justBecameActive:
-      appState === AppStateTypes.active &&
-      prevAppState &&
-      prevAppState !== AppStateTypes.active,
+    justBecameActive: appState === AppStateTypes.active && prevAppState && prevAppState !== AppStateTypes.active,
   };
 }

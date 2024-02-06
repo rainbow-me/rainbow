@@ -27,14 +27,7 @@ const StepButtonText = styled(Text).attrs(({ theme: { colors }, color }) => ({
   weight: 'heavy',
 }))({});
 
-const StepButton = ({
-  type,
-  onLongPress,
-  onLongPressEnded,
-  onPress,
-  shouldLongPressHoldPress,
-  buttonColor,
-}) => {
+const StepButton = ({ type, onLongPress, onLongPressEnded, onPress, shouldLongPressHoldPress, buttonColor }) => {
   return (
     <StepButtonWrapper
       minLongPressDuration={MIN_LONG_PRESS_DELAY_THRESHOLD}
@@ -44,9 +37,7 @@ const StepButton = ({
       shouldLongPressHoldPress={shouldLongPressHoldPress}
       useLateHaptic={false}
     >
-      <StepButtonText color={buttonColor}>
-        {type === 'plus' ? '􀁍' : '􀁏'}
-      </StepButtonText>
+      <StepButtonText color={buttonColor}>{type === 'plus' ? '􀁍' : '􀁏'}</StepButtonText>
     </StepButtonWrapper>
   );
 };

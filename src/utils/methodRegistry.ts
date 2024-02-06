@@ -7,10 +7,7 @@ import { CONTRACT_FUNCTION } from '@/apollo/queries';
 
 const METHOD_REGISTRY_ADDRESS = '0x44691B39d1a75dC4E0A0346CBB15E310e6ED1E86';
 
-export const methodRegistryLookupAndParse = async (
-  methodSignatureBytes: any,
-  chainId: number
-) => {
+export const methodRegistryLookupAndParse = async (methodSignatureBytes: any, chainId: number) => {
   let signature = '';
 
   const response = await metadataClient.queryWithTimeout(
@@ -27,11 +24,7 @@ export const methodRegistryLookupAndParse = async (
   if (response?.data?.contractFunction?.text) {
     signature = response.data.contractFunction.text;
   } else {
-    const registry = new Contract(
-      METHOD_REGISTRY_ADDRESS,
-      methodRegistryABI,
-      web3Provider
-    );
+    const registry = new Contract(METHOD_REGISTRY_ADDRESS, methodRegistryABI, web3Provider);
 
     signature = await registry.entries(methodSignatureBytes);
   }
@@ -59,9 +52,7 @@ export const methodRegistryLookupAndParse = async (
   let args: { type: any }[] = [];
 
   if (rawName) {
-    const match = signature.match(
-      new RegExp(rawName[1] + '\\(+([a-z1-9,()]+)\\)')
-    );
+    const match = signature.match(new RegExp(rawName[1] + '\\(+([a-z1-9,()]+)\\)'));
 
     if (match?.[1]) {
       const argsMatch = match[1].match(/[A-z1-9]+/g);

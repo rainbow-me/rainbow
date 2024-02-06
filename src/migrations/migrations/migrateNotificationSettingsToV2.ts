@@ -1,8 +1,5 @@
 import { Migration, MigrationName } from '@/migrations/types';
-import {
-  getAllWalletNotificationSettingsFromStorage,
-  setAllWalletNotificationSettingsToStorage,
-} from '@/notifications/settings/storage';
+import { getAllWalletNotificationSettingsFromStorage, setAllWalletNotificationSettingsToStorage } from '@/notifications/settings/storage';
 
 export function migrateNotificationSettingsToV2(): Migration {
   return {
@@ -11,10 +8,7 @@ export function migrateNotificationSettingsToV2(): Migration {
       const walletSettings = getAllWalletNotificationSettingsFromStorage();
       let settingsVersion = 1;
 
-      if (
-        walletSettings.length > 0 &&
-        walletSettings[0].successfullyFinishedInitialSubscription !== undefined
-      ) {
+      if (walletSettings.length > 0 && walletSettings[0].successfullyFinishedInitialSubscription !== undefined) {
         settingsVersion = 2;
       }
 

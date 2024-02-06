@@ -3,15 +3,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { Box, Inline, Inset, Text } from '@/design-system';
 import { useTheme } from '@/theme';
 
-export default function Callout({
-  after,
-  before,
-  children,
-}: {
-  after?: React.ReactNode;
-  before?: React.ReactNode;
-  children: string;
-}) {
+export default function Callout({ after, before, children }: { after?: React.ReactNode; before?: React.ReactNode; children: string }) {
   const { colors } = useTheme();
   return (
     <Box
@@ -27,11 +19,7 @@ export default function Callout({
         <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
           <Inline alignVertical="center" space="8px" wrap={false}>
             {before}
-            <Text
-              color="secondary80 (Deprecated)"
-              size="14px / 19px (Deprecated)"
-              weight="heavy"
-            >
+            <Text color="secondary80 (Deprecated)" size="14px / 19px (Deprecated)" weight="heavy">
               {children}
             </Text>
           </Inline>

@@ -12,10 +12,7 @@ export const registerTokenRefreshListener = () =>
 export const saveFCMToken = async () => {
   try {
     const permissionStatus = await getPermissionStatus();
-    if (
-      permissionStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-      permissionStatus === messaging.AuthorizationStatus.PROVISIONAL
-    ) {
+    if (permissionStatus === messaging.AuthorizationStatus.AUTHORIZED || permissionStatus === messaging.AuthorizationStatus.PROVISIONAL) {
       const fcmToken = await messaging().getToken();
       if (fcmToken) {
         saveLocal('rainbowFcmToken', { data: fcmToken });

@@ -1,12 +1,7 @@
 /* eslint-disable no-multi-assign */
 import { addExtremesIfNeeded } from '../helpers/extremesHelpers';
 
-export default function monotoneCubicInterpolation({
-  data,
-  range,
-  includeExtremes = false,
-  removePointsSurroundingExtremes = true,
-}) {
+export default function monotoneCubicInterpolation({ data, range, includeExtremes = false, removePointsSurroundingExtremes = true }) {
   if (!data || data.length === 0) {
     return () => [];
   }
@@ -21,23 +16,7 @@ export default function monotoneCubicInterpolation({
       y: [],
     }
   );
-  let alpha,
-    beta,
-    delta,
-    dist,
-    i,
-    m,
-    n,
-    tau,
-    toFix,
-    idx,
-    jdx,
-    len,
-    len2,
-    ref,
-    ref2,
-    ref3,
-    ref4;
+  let alpha, beta, delta, dist, i, m, n, tau, toFix, idx, jdx, len, len2, ref, ref2, ref3, ref4;
 
   n = x.length;
   delta = [];
@@ -47,11 +26,7 @@ export default function monotoneCubicInterpolation({
   dist = [];
   tau = [];
 
-  for (
-    i = 0, ref = n - 1;
-    ref >= 0 ? i < ref : i > ref;
-    ref >= 0 ? (i += 1) : (i -= 1)
-  ) {
+  for (i = 0, ref = n - 1; ref >= 0 ? i < ref : i > ref; ref >= 0 ? (i += 1) : (i -= 1)) {
     delta[i] = (y[i + 1] - y[i]) / (x[i + 1] - x[i]);
     if (i > 0) {
       m[i] = (delta[i - 1] + delta[i]) / 2;
@@ -62,11 +37,7 @@ export default function monotoneCubicInterpolation({
   m[n - 1] = delta[n - 2];
   toFix = [];
 
-  for (
-    i = 0, ref2 = n - 1;
-    ref2 >= 0 ? i < ref2 : i > ref2;
-    ref2 >= 0 ? (i += 1) : (i -= 1)
-  ) {
+  for (i = 0, ref2 = n - 1; ref2 >= 0 ? i < ref2 : i > ref2; ref2 >= 0 ? (i += 1) : (i -= 1)) {
     if (delta[i] === 0) {
       toFix.push(i);
     }
@@ -77,11 +48,7 @@ export default function monotoneCubicInterpolation({
     m[i] = m[i + 1] = 0;
   }
 
-  for (
-    i = 0, ref3 = n - 1;
-    ref3 >= 0 ? i < ref3 : i > ref3;
-    ref3 >= 0 ? (i += 1) : (i -= 1)
-  ) {
+  for (i = 0, ref3 = n - 1; ref3 >= 0 ? i < ref3 : i > ref3; ref3 >= 0 ? (i += 1) : (i -= 1)) {
     alpha[i] = m[i] / delta[i];
     beta[i] = m[i + 1] / delta[i];
     dist[i] = Math.pow(alpha[i], 2) + Math.pow(beta[i], 2);
@@ -90,11 +57,7 @@ export default function monotoneCubicInterpolation({
 
   toFix = [];
 
-  for (
-    i = 0, ref4 = n - 1;
-    ref4 >= 0 ? i < ref4 : i > ref4;
-    ref4 >= 0 ? (i += 1) : (i -= 1)
-  ) {
+  for (i = 0, ref4 = n - 1; ref4 >= 0 ? i < ref4 : i > ref4; ref4 >= 0 ? (i += 1) : (i -= 1)) {
     if (dist[i] > 9) {
       toFix.push(i);
     }
@@ -114,16 +77,11 @@ export default function monotoneCubicInterpolation({
   const lastValue = _x[_x.length - 1];
   const res = [];
   for (let j = 0; j < range; j++) {
-    const interpolatedValue =
-      firstValue + (lastValue - firstValue) * (j / (range - 1));
+    const interpolatedValue = firstValue + (lastValue - firstValue) * (j / (range - 1));
 
     let h, h00, h01, h10, h11, i, t, t2, t3, y, _ref;
 
-    for (
-      i = _ref = _x.length - 2;
-      _ref <= 0 ? i <= 0 : i >= 0;
-      _ref <= 0 ? (i += 1) : (i -= 1)
-    ) {
+    for (i = _ref = _x.length - 2; _ref <= 0 ? i <= 0 : i >= 0; _ref <= 0 ? (i += 1) : (i -= 1)) {
       if (_x[i] <= interpolatedValue) {
         break;
       }
@@ -142,10 +100,5 @@ export default function monotoneCubicInterpolation({
     res.push({ x: interpolatedValue, y });
   }
 
-  return addExtremesIfNeeded(
-    res,
-    data,
-    includeExtremes,
-    removePointsSurroundingExtremes
-  );
+  return addExtremesIfNeeded(res, data, includeExtremes, removePointsSurroundingExtremes);
 }

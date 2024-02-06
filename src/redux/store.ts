@@ -2,12 +2,7 @@ import { AnyAction, applyMiddleware, createStore } from 'redux';
 import thunk, { ThunkMiddleware } from 'redux-thunk';
 import reducers from './reducers';
 
-const store = createStore(
-  reducers,
-  applyMiddleware(
-    thunk as ThunkMiddleware<ReturnType<typeof reducers>, AnyAction, undefined>
-  )
-);
+const store = createStore(reducers, applyMiddleware(thunk as ThunkMiddleware<ReturnType<typeof reducers>, AnyAction, undefined>));
 
 export default store;
 

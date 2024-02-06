@@ -9,8 +9,7 @@ export const hasOnboardedPoints = async (): Promise<boolean> => {
     address: accountAddress,
   });
 
-  const isOnboarded =
-    data?.points?.error?.type !== PointsErrorType.NonExistingUser;
+  const isOnboarded = data?.points?.error?.type !== PointsErrorType.NonExistingUser;
 
   return isOnboarded;
 };

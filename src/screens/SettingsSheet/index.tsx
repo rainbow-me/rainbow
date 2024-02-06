@@ -37,14 +37,7 @@ export function SettingsSheet() {
   };
 
   const renderHeaderRight = useCallback(
-    () =>
-      ios ? (
-        <ModalHeaderButton
-          label={lang.t('settings.done')}
-          onPress={goBack}
-          side="right"
-        />
-      ) : null,
+    () => (ios ? <ModalHeaderButton label={lang.t('settings.done')} onPress={goBack} side="right" /> : null),
     [goBack]
   );
 
@@ -93,9 +86,7 @@ export function SettingsSheet() {
                 onPressDev={sectionOnPressFactory(SettingsPages.dev)}
                 onPressLanguage={sectionOnPressFactory(SettingsPages.language)}
                 onPressNetwork={sectionOnPressFactory(SettingsPages.network)}
-                onPressNotifications={sectionOnPressFactory(
-                  SettingsPages.notifications
-                )}
+                onPressNotifications={sectionOnPressFactory(SettingsPages.notifications)}
                 onPressPrivacy={sectionOnPressFactory(SettingsPages.privacy)}
               />
             )}
@@ -148,10 +139,7 @@ export function SettingsSheet() {
     return (
       <BackgroundProvider color="surfaceSecondary">
         {({ backgroundColor }) => (
-          <SimpleSheet
-            backgroundColor={backgroundColor as string}
-            customHeight={deviceHeight}
-          >
+          <SimpleSheet backgroundColor={backgroundColor as string} customHeight={deviceHeight}>
             <Inline alignHorizontal="center" alignVertical="center">
               <Box paddingTop="19px (Deprecated)" paddingBottom="12px">
                 <Text size="22pt" weight="heavy" color="label">
@@ -171,26 +159,14 @@ export function SettingsSheet() {
                 {() => (
                   <SettingsSection
                     onCloseModal={goBack}
-                    onPressAppIcon={sectionOnPressFactory(
-                      SettingsPages.appIcon
-                    )}
+                    onPressAppIcon={sectionOnPressFactory(SettingsPages.appIcon)}
                     onPressBackup={sectionOnPressFactory(SettingsPages.backup)}
-                    onPressCurrency={sectionOnPressFactory(
-                      SettingsPages.currency
-                    )}
+                    onPressCurrency={sectionOnPressFactory(SettingsPages.currency)}
                     onPressDev={sectionOnPressFactory(SettingsPages.dev)}
-                    onPressLanguage={sectionOnPressFactory(
-                      SettingsPages.language
-                    )}
-                    onPressNetwork={sectionOnPressFactory(
-                      SettingsPages.network
-                    )}
-                    onPressNotifications={sectionOnPressFactory(
-                      SettingsPages.notifications
-                    )}
-                    onPressPrivacy={sectionOnPressFactory(
-                      SettingsPages.privacy
-                    )}
+                    onPressLanguage={sectionOnPressFactory(SettingsPages.language)}
+                    onPressNetwork={sectionOnPressFactory(SettingsPages.network)}
+                    onPressNotifications={sectionOnPressFactory(SettingsPages.notifications)}
+                    onPressPrivacy={sectionOnPressFactory(SettingsPages.privacy)}
                   />
                 )}
               </BStack.Screen>

@@ -1,20 +1,8 @@
 import { Signer } from '@ethersproject/abstract-signer';
-import {
-  ChainId,
-  ETH_ADDRESS,
-  fillQuote,
-  Quote,
-  unwrapNativeAsset,
-  wrapNativeAsset,
-  WRAPPED_ASSET,
-} from '@rainbow-me/swaps';
+import { ChainId, ETH_ADDRESS, fillQuote, Quote, unwrapNativeAsset, wrapNativeAsset, WRAPPED_ASSET } from '@rainbow-me/swaps';
 import { captureException } from '@sentry/react-native';
 import { toLower } from 'lodash';
-import {
-  Rap,
-  RapExchangeActionParameters,
-  SwapActionParameters,
-} from '../common';
+import { Rap, RapExchangeActionParameters, SwapActionParameters } from '../common';
 import { ProtocolType, TransactionStatus, TransactionType } from '@/entities';
 
 import { toHex } from '@/handlers/web3';
@@ -72,57 +60,17 @@ export const executeSwap = async ({
   };
 
   // Wrap Eth
-  if (
-    sellTokenAddress === ETH_ADDRESS &&
-    buyTokenAddress === WRAPPED_ASSET[chainId]
-  ) {
-    logger.debug(
-      'wrapping native asset',
-      tradeDetails.buyAmount,
-      walletAddress,
-      chainId
-    );
-    return wrapNativeAsset(
-      tradeDetails.buyAmount,
-      wallet,
-      chainId,
-      transactionParams
-    );
+  if (sellTokenAddress === ETH_ADDRESS && buyTokenAddress === WRAPPED_ASSET[chainId]) {
+    logger.debug('wrapping native asset', tradeDetails.buyAmount, walletAddress, chainId);
+    return wrapNativeAsset(tradeDetails.buyAmount, wallet, chainId, transactionParams);
     // Unwrap Weth
-  } else if (
-    sellTokenAddress === WRAPPED_ASSET[chainId] &&
-    buyTokenAddress === ETH_ADDRESS
-  ) {
-    logger.debug(
-      'unwrapping native asset',
-      tradeDetails.sellAmount,
-      walletAddress,
-      chainId
-    );
-    return unwrapNativeAsset(
-      tradeDetails.sellAmount,
-      wallet,
-      chainId,
-      transactionParams
-    );
+  } else if (sellTokenAddress === WRAPPED_ASSET[chainId] && buyTokenAddress === ETH_ADDRESS) {
+    logger.debug('unwrapping native asset', tradeDetails.sellAmount, walletAddress, chainId);
+    return unwrapNativeAsset(tradeDetails.sellAmount, wallet, chainId, transactionParams);
     // Swap
   } else {
-    logger.debug(
-      'FILLQUOTE',
-      tradeDetails,
-      transactionParams,
-      walletAddress,
-      permit,
-      chainId
-    );
-    return fillQuote(
-      tradeDetails,
-      transactionParams,
-      wallet,
-      permit,
-      chainId,
-      REFERRER
-    );
+    logger.debug('FILLQUOTE', tradeDetails, transactionParams, walletAddress, permit, chainId);
+    return fillQuote(tradeDetails, transactionParams, wallet, permit, chainId, REFERRER);
   }
 };
 
@@ -134,13 +82,7 @@ const swap = async (
   baseNonce?: number
 ): Promise<number | undefined> => {
   logger.log(`[${actionName}] base nonce`, baseNonce, 'index:', index);
-  const {
-    inputAmount,
-    tradeDetails,
-    permit,
-    chainId,
-    requiresApprove,
-  } = parameters as SwapActionParameters;
+  const { inputAmount, tradeDetails, permit, chainId, requiresApprove } = parameters as SwapActionParameters;
   const { dispatch } = store;
   const { accountAddress } = store.getState().settings;
   const { inputCurrency } = store.getState().swap;
@@ -193,9 +135,7 @@ const swap = async (
     if (permit) {
       const walletAddress = await wallet.getAddress();
       // Clear the allowance
-      const cacheKey = toLower(
-        `${walletAddress}|${tradeDetails.sellTokenAddress}|${tradeDetails.to}`
-      );
+      const cacheKey = toLower(`${walletAddress}|${tradeDetails.sellTokenAddress}|${tradeDetails.to}`);
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete AllowancesCache.cache[cacheKey];
     }
@@ -228,10 +168,7 @@ const swap = async (
   logger.log(`[${actionName}] adding new txn`, newTransaction);
 
   if (parameters.meta && swap?.hash) {
-    swapMetadataStorage.set(
-      swap.hash.toLowerCase(),
-      JSON.stringify({ type: 'swap', data: parameters.meta })
-    );
+    swapMetadataStorage.set(swap.hash.toLowerCase(), JSON.stringify({ type: 'swap', data: parameters.meta }));
   }
 
   dispatch(

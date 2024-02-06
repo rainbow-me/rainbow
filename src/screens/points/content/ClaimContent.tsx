@@ -19,8 +19,7 @@ export default function ClaimContent() {
   const { height: deviceHeight } = useDimensions();
   const { isReadOnlyWallet } = useWallets();
 
-  const contentBottom =
-    getHeaderHeight() + (deviceHeight - navbarHeight - 218) / 2;
+  const contentBottom = getHeaderHeight() + (deviceHeight - navbarHeight - 218) / 2;
 
   useFocusEffect(
     useCallback(() => {
@@ -46,34 +45,21 @@ export default function ClaimContent() {
                 {i18n.t(i18n.l.points.claim.title)}
               </Text>
             </Stack>
-            <Text
-              size="15pt"
-              weight="semibold"
-              align="center"
-              color="labelTertiary"
-            >
+            <Text size="15pt" weight="semibold" align="center" color="labelTertiary">
               {i18n.t(i18n.l.points.claim.subtitle)}
             </Text>
           </Stack>
           <ActionButton
             color={accentColor}
             label={i18n.t(i18n.l.points.claim.get_started)}
-            onPress={() =>
-              isReadOnlyWallet
-                ? watchingAlert()
-                : navigate(Routes.CONSOLE_SHEET)
-            }
+            onPress={() => (isReadOnlyWallet ? watchingAlert() : navigate(Routes.CONSOLE_SHEET))}
           />
         </Stack>
       </Box>
       <ActionButton
         color={accentColor}
         label={i18n.t(i18n.l.points.claim.use_referral_code)}
-        onPress={() =>
-          isReadOnlyWallet
-            ? watchingAlert()
-            : navigate(POINTS_ROUTES.REFERRAL_CONTENT)
-        }
+        onPress={() => (isReadOnlyWallet ? watchingAlert() : navigate(POINTS_ROUTES.REFERRAL_CONTENT))}
         outline
         small
       />

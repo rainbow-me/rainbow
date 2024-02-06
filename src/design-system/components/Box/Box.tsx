@@ -1,39 +1,22 @@
 import React, { forwardRef, ReactNode, useMemo } from 'react';
 import { View } from 'react-native';
-import {
-  useForegroundColor,
-  useForegroundColors,
-} from '../../color/useForegroundColor';
+import { useForegroundColor, useForegroundColors } from '../../color/useForegroundColor';
 import { useColorMode } from '../../color/ColorMode';
 import { Shadow, shadows } from '../../layout/shadow';
 import { Height, heights, Width, widths } from '../../layout/size';
-import {
-  NegativeSpace,
-  negativeSpace,
-  positionSpace,
-  PositionSpace,
-  Space,
-  space,
-} from '../../layout/space';
-import {
-  BackgroundProvider,
-  BackgroundProviderProps,
-} from '../BackgroundProvider/BackgroundProvider';
+import { NegativeSpace, negativeSpace, positionSpace, PositionSpace, Space, space } from '../../layout/space';
+import { BackgroundProvider, BackgroundProviderProps } from '../BackgroundProvider/BackgroundProvider';
 import { ApplyShadow } from '../private/ApplyShadow/ApplyShadow';
 import type * as Polymorphic from './polymorphic';
 
 const positions = ['absolute'] as const;
-type Position = typeof positions[number];
+type Position = (typeof positions)[number];
 
 export function resolveToken<TokenName extends string, TokenValue, CustomValue>(
   scale: Record<TokenName, TokenValue>,
   value: TokenName | { custom: CustomValue } | undefined
 ) {
-  return value
-    ? typeof value === 'object'
-      ? value.custom
-      : scale[value]
-    : undefined;
+  return value ? (typeof value === 'object' ? value.custom : scale[value]) : undefined;
 }
 
 export type BoxProps = {
@@ -54,12 +37,7 @@ export type BoxProps = {
   left?: PositionSpace;
   gap?: number;
   zIndex?: number;
-  justifyContent?:
-    | 'flex-start'
-    | 'flex-end'
-    | 'center'
-    | 'space-between'
-    | 'space-around';
+  justifyContent?: 'flex-start' | 'flex-end' | 'center' | 'space-between' | 'space-around';
   margin?: NegativeSpace;
   marginBottom?: NegativeSpace;
   marginHorizontal?: NegativeSpace;
@@ -190,26 +168,10 @@ export const Box = forwardRef(function Box(
   const styles = useMemo(() => {
     return {
       alignItems,
-      borderBottomLeftRadius:
-        borderBottomLeftRadius ??
-        borderBottomRadius ??
-        borderLeftRadius ??
-        borderRadius,
-      borderBottomRightRadius:
-        borderBottomRightRadius ??
-        borderBottomRadius ??
-        borderRightRadius ??
-        borderRadius,
-      borderTopLeftRadius:
-        borderTopLeftRadius ??
-        borderTopRadius ??
-        borderLeftRadius ??
-        borderRadius,
-      borderTopRightRadius:
-        borderTopRightRadius ??
-        borderTopRadius ??
-        borderRightRadius ??
-        borderRadius,
+      borderBottomLeftRadius: borderBottomLeftRadius ?? borderBottomRadius ?? borderLeftRadius ?? borderRadius,
+      borderBottomRightRadius: borderBottomRightRadius ?? borderBottomRadius ?? borderRightRadius ?? borderRadius,
+      borderTopLeftRadius: borderTopLeftRadius ?? borderTopRadius ?? borderLeftRadius ?? borderRadius,
+      borderTopRightRadius: borderTopRightRadius ?? borderTopRadius ?? borderRightRadius ?? borderRadius,
       bottom,
       flexBasis,
       flexDirection,
@@ -322,10 +284,7 @@ function useShadowColorMode() {
 function useShadow(shadowProp: BoxProps['shadow']) {
   const shadowColorMode = useShadowColorMode();
   const shadowToken = resolveToken(shadows, shadowProp);
-  const shadow =
-    shadowToken && 'light' in shadowToken
-      ? shadowToken[shadowColorMode]
-      : shadowToken;
+  const shadow = shadowToken && 'light' in shadowToken ? shadowToken[shadowColorMode] : shadowToken;
 
   const iosColors = useMemo(() => {
     return shadow ? shadow.ios.map(({ color }) => color) : [];

@@ -40,11 +40,7 @@ export default function SwapDetailsSlippageMessage({
           <Heading color={priceImpactColor} weight="heavy">
             {lang.t('expanded_state.swap.losing')}{' '}
           </Heading>
-          <Heading
-            color={priceImpactColor}
-            letterSpacing="roundedTight"
-            weight="heavy"
-          >
+          <Heading color={priceImpactColor} letterSpacing="roundedTight" weight="heavy">
             {headingValue}
           </Heading>
           <Emoji size="larger"> 🥵</Emoji>

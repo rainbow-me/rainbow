@@ -73,11 +73,7 @@ export default function BackupSheetSection({
       </Masthead>
       <Divider color={colors.rowDividerLight} inset={[0, 42]} />
       <Footer>
-        <RainbowButton
-          label={primaryLabel}
-          onPress={onPrimaryAction}
-          testID={primaryButtonTestId}
-        />
+        <RainbowButton label={primaryLabel} onPress={onPrimaryAction} testID={primaryButtonTestId} />
         <SheetActionButton
           color={colors.white}
           label={secondaryLabel}

@@ -1,8 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
-import TokenFamilyHeader, {
-  TokenFamilyHeaderAnimationDuration,
-} from './TokenFamilyHeader';
+import TokenFamilyHeader, { TokenFamilyHeaderAnimationDuration } from './TokenFamilyHeader';
 import { times } from '@/helpers/utilities';
 import { useTimeout } from '@/hooks';
 import { ThemeContextProps } from '@/theme';

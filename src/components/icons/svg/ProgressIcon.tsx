@@ -1,8 +1,5 @@
 import React, { PropsWithChildren } from 'react';
-import Animated, {
-  useAnimatedProps,
-  SharedValue,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedProps, SharedValue } from 'react-native-reanimated';
 import { G, Path } from 'react-native-svg';
 import { Centered } from '../../layout';
 import Svg from '../Svg';
@@ -18,11 +15,7 @@ const convertProgress = (progress: number) => {
   return (Math.PI * 2 * normalizedProgress) / 100;
 };
 
-const polarToCartesian = (
-  center: number,
-  radius: number,
-  angleInRadians: number
-) => {
+const polarToCartesian = (center: number, radius: number, angleInRadians: number) => {
   'worklet';
 
   return {
@@ -31,30 +24,13 @@ const polarToCartesian = (
   };
 };
 
-const circlePath = (
-  center: number,
-  radius: number,
-  startAngle: number,
-  endAngle: number
-) => {
+const circlePath = (center: number, radius: number, startAngle: number, endAngle: number) => {
   'worklet';
   const start = polarToCartesian(center, radius, endAngle * 0.9999);
   const end = polarToCartesian(center, radius, startAngle);
   const largeArcFlag = endAngle - startAngle <= Math.PI ? 0 : 1;
 
-  const path = [
-    'M',
-    start.x,
-    start.y,
-    'A',
-    radius,
-    radius,
-    0,
-    largeArcFlag,
-    0,
-    end.x,
-    end.y,
-  ];
+  const path = ['M', start.x, start.y, 'A', radius, radius, 0, largeArcFlag, 0, end.x, end.y];
 
   return path.join(' ');
 };
@@ -67,14 +43,7 @@ interface Props {
   strokeWidth?: number;
 }
 
-const ProgressIcon = ({
-  progress,
-  color: givenColor,
-  progressColor: givenProgressColor,
-  size = 29,
-  strokeWidth = 2,
-  ...props
-}: Props) => {
+const ProgressIcon = ({ progress, color: givenColor, progressColor: givenProgressColor, size = 29, strokeWidth = 2, ...props }: Props) => {
   const { colors } = useTheme();
   const progressColor = givenProgressColor ?? colors.whiteLabel;
   const color = givenColor ?? colors.alpha(colors.sendScreen.grey, 0.3);
@@ -101,13 +70,7 @@ const ProgressIcon = ({
         viewBox={`0 0 ${viewBoxSize} ${viewBoxSize}`}
       >
         <G originX={center} originY={center}>
-          <AnimatedPath
-            animatedProps={outerPathProps}
-            fill="transparent"
-            stroke={color}
-            strokeLinecap="round"
-            strokeWidth={strokeWidth}
-          />
+          <AnimatedPath animatedProps={outerPathProps} fill="transparent" stroke={color} strokeLinecap="round" strokeWidth={strokeWidth} />
           <AnimatedPath
             animatedProps={innerPathProps}
             fill="transparent"

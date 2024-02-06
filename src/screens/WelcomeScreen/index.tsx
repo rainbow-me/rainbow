@@ -19,11 +19,7 @@ import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import RainbowText from '../../components/icons/svg/RainbowText';
 import { RainbowsBackground } from '../../components/rainbows-background/RainbowsBackground';
 import { Text } from '../../components/text';
-import {
-  fetchUserDataFromCloud,
-  isCloudBackupAvailable,
-  syncCloud,
-} from '@rainbow-me/handlers/cloudBackup';
+import { fetchUserDataFromCloud, isCloudBackupAvailable, syncCloud } from '@rainbow-me/handlers/cloudBackup';
 import { cloudPlatform } from '@rainbow-me/utils/platform';
 import { analytics } from '@/analytics';
 
@@ -41,8 +37,7 @@ import { WelcomeScreenRainbowButton } from '@/screens/WelcomeScreen/WelcomeScree
 const Container = styled.View({
   ...position.coverAsObject,
   alignItems: 'center',
-  backgroundColor: ({ theme: { colors } }: { theme: ThemeContextProps }) =>
-    colors.white,
+  backgroundColor: ({ theme: { colors } }: { theme: ThemeContextProps }) => colors.white,
   justifyContent: 'center',
 });
 
@@ -73,14 +68,7 @@ const RainbowTextMask = styled(Reanimated.View)({
   width: RAINBOW_TEXT_WIDTH,
 });
 
-const animationColors = [
-  'rgb(255,73,74)',
-  'rgb(255,170,0)',
-  'rgb(0,163,217)',
-  'rgb(0,163,217)',
-  'rgb(115,92,255)',
-  'rgb(255,73,74)',
-];
+const animationColors = ['rgb(255,73,74)', 'rgb(255,170,0)', 'rgb(0,163,217)', 'rgb(0,163,217)', 'rgb(115,92,255)', 'rgb(255,73,74)'];
 
 export default function WelcomeScreen() {
   const insets = useSafeAreaInsets();
@@ -94,12 +82,7 @@ export default function WelcomeScreen() {
   const colorAnimation = useSharedValue(0);
   const shouldAnimateRainbows = useSharedValue(false);
   const calculatedColor = useDerivedValue(
-    () =>
-      interpolateColor(
-        colorAnimation.value,
-        [0, 1, 2, 3, 4, 5],
-        animationColors
-      ),
+    () => interpolateColor(colorAnimation.value, [0, 1, 2, 3, 4, 5], animationColors),
     [colorAnimation]
   );
   const createWalletButtonAnimation = useSharedValue(1);
@@ -163,9 +146,7 @@ export default function WelcomeScreen() {
         }
 
         if (IS_TEST) {
-          logger.log(
-            'Disabled loop animations in WelcomeScreen due to .env var IS_TESTING === "true"'
-          );
+          logger.log('Disabled loop animations in WelcomeScreen due to .env var IS_TESTING === "true"');
         }
       }
     };
@@ -176,13 +157,7 @@ export default function WelcomeScreen() {
       createWalletButtonAnimation.value = 1;
       contentAnimation.value = 1;
     };
-  }, [
-    colorAnimation,
-    contentAnimation,
-    createWalletButtonAnimation,
-    hideSplashScreen,
-    shouldAnimateRainbows,
-  ]);
+  }, [colorAnimation, contentAnimation, createWalletButtonAnimation, hideSplashScreen, shouldAnimateRainbows]);
 
   const buttonStyle = useAnimatedStyle(() => ({
     transform: [{ scale: createWalletButtonAnimation.value }],
@@ -271,10 +246,7 @@ export default function WelcomeScreen() {
             height={56}
             onPress={showRestoreSheet}
             shadowStyle={sx.existingWalletShadow}
-            style={[
-              sx.existingWallet,
-              { backgroundColor: colors.blueGreyDarkLight },
-            ]}
+            style={[sx.existingWallet, { backgroundColor: colors.blueGreyDarkLight }]}
             testID="already-have-wallet-button"
             text={lang.t('wallet.new.already_have_wallet')}
             textColor={colors.alpha(colors.blueGreyDark, 0.8)}
@@ -282,22 +254,9 @@ export default function WelcomeScreen() {
         </ButtonWrapper>
       </ContentWrapper>
       <TermsOfUse bottomInset={insets.bottom}>
-        <Text
-          align="center"
-          color={colors.alpha(colors.blueGreyDark, 0.5)}
-          lineHeight="loose"
-          size="smedium"
-          weight="semibold"
-        >
+        <Text align="center" color={colors.alpha(colors.blueGreyDark, 0.5)} lineHeight="loose" size="smedium" weight="semibold">
           {lang.t('wallet.new.terms')}
-          <Text
-            color={colors.paleBlue}
-            lineHeight="loose"
-            onPress={handlePressTerms}
-            size="smedium"
-            suppressHighlighting
-            weight="semibold"
-          >
+          <Text color={colors.paleBlue} lineHeight="loose" onPress={handlePressTerms} size="smedium" suppressHighlighting weight="semibold">
             {lang.t('wallet.new.terms_link')}
           </Text>
         </Text>

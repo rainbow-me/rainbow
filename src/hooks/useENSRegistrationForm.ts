@@ -3,13 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { atom, useRecoilState } from 'recoil';
 import { useENSModifiedRegistration, useENSRegistration } from '.';
 import { Records } from '@/entities';
-import {
-  deprecatedTextRecordFields,
-  ENS_RECORDS,
-  REGISTRATION_MODES,
-  TextRecordField,
-  textRecordFields,
-} from '@/helpers/ens';
+import { deprecatedTextRecordFields, ENS_RECORDS, REGISTRATION_MODES, TextRecordField, textRecordFields } from '@/helpers/ens';
 
 const disabledAtom = atom({
   default: false,
@@ -58,18 +52,13 @@ const prepareFormRecords = (initialRecords: Records) => {
     return {
       ...initialRecords,
       // migrate any deprecated field keys to their new keys
-      ...Object.entries(deprecatedTextRecordFields).reduce(
-        (fields, [deprecatedFieldKey, fieldKey]) => {
-          return {
-            ...fields,
-            [deprecatedFieldKey]: '',
-            [fieldKey]:
-              initialRecords[fieldKey] ||
-              initialRecords[deprecatedFieldKey as ENS_RECORDS],
-          };
-        },
-        {}
-      ),
+      ...Object.entries(deprecatedTextRecordFields).reduce((fields, [deprecatedFieldKey, fieldKey]) => {
+        return {
+          ...fields,
+          [deprecatedFieldKey]: '',
+          [fieldKey]: initialRecords[fieldKey] || initialRecords[deprecatedFieldKey as ENS_RECORDS],
+        };
+      }, {}),
     };
   }
 
@@ -87,23 +76,13 @@ export default function useENSRegistrationForm({
   /** A flag that indicates if a new form should be initialised */
   initializeForm?: boolean;
 } = {}) {
-  const {
-    name,
-    mode,
-    initialRecords,
-    records: allRecords,
-    removeRecordByKey,
-    updateRecordByKey,
-    updateRecords,
-  } = useENSRegistration();
+  const { name, mode, initialRecords, records: allRecords, removeRecordByKey, updateRecordByKey, updateRecords } = useENSRegistration();
   const { changedRecords, isSuccess } = useENSModifiedRegistration();
 
   // The initial records will be the existing records belonging to the profile in "edit mode",
   // but will be all of the records in "create mode".
   const defaultRecords = useMemo(() => {
-    return mode === REGISTRATION_MODES.EDIT
-      ? prepareFormRecords(initialRecords)
-      : allRecords;
+    return mode === REGISTRATION_MODES.EDIT ? prepareFormRecords(initialRecords) : allRecords;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialRecords, mode]);
 
@@ -120,9 +99,7 @@ export default function useENSRegistrationForm({
     setDisabled(mode === REGISTRATION_MODES.EDIT && isEmpty(changedRecords));
   }, [changedRecords, mode, setDisabled]);
 
-  const [selectedFields, setSelectedFields] = useRecoilState(
-    selectedFieldsAtom
-  );
+  const [selectedFields, setSelectedFields] = useRecoilState(selectedFieldsAtom);
   useEffect(() => {
     if (!initializeForm) return;
     // If there are existing records in the global state, then we
@@ -130,9 +107,7 @@ export default function useENSRegistrationForm({
     if (!isEmpty(defaultRecords)) {
       setSelectedFields(
         Object.values(textRecordFields)
-          .map(field =>
-            defaultRecords[field.key] !== undefined ? field : undefined
-          )
+          .map(field => (defaultRecords[field.key] !== undefined ? field : undefined))
           .filter(Boolean) as TextRecordField[]
       );
     } else {
@@ -188,10 +163,7 @@ export default function useENSRegistrationForm({
   );
 
   const onRemoveField = useCallback(
-    (
-      fieldToRemove: Pick<TextRecordField, 'key'>,
-      selectedFields: TextRecordField[] | undefined = undefined
-    ) => {
+    (fieldToRemove: Pick<TextRecordField, 'key'>, selectedFields: TextRecordField[] | undefined = undefined) => {
       if (!isEmpty(errors)) {
         setErrors(errors => {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -207,22 +179,14 @@ export default function useENSRegistrationForm({
 
       setValuesMap(values => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { [fieldToRemove.key as ENS_RECORDS]: _, ...restRecords } =
-          values?.[name] || {};
+        const { [fieldToRemove.key as ENS_RECORDS]: _, ...restRecords } = values?.[name] || {};
         return {
           ...values,
           [name]: restRecords as Records,
         };
       });
     },
-    [
-      errors,
-      name,
-      removeRecordByKey,
-      setErrors,
-      setSelectedFields,
-      setValuesMap,
-    ]
+    [errors, name, removeRecordByKey, setErrors, setSelectedFields, setValuesMap]
   );
 
   const onBlurField = useCallback(
@@ -269,9 +233,7 @@ export default function useENSRegistrationForm({
 
   const isEmptyValues = Object.values(values).filter(x => x).length === 0;
 
-  const [isLoading, setIsLoading] = useState(
-    mode === REGISTRATION_MODES.EDIT && (!isSuccess || isEmptyValues)
-  );
+  const [isLoading, setIsLoading] = useState(mode === REGISTRATION_MODES.EDIT && (!isSuccess || isEmptyValues));
 
   useEffect(() => {
     if (mode === REGISTRATION_MODES.EDIT) {

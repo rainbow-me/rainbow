@@ -30,12 +30,7 @@ export default function useUntrustedUrlOpener(): (url: string) => void {
     (url: string) => {
       const { hostname } = new URL(url);
 
-      if (
-        trustedDomains.some(
-          trustedDomain =>
-            hostname === trustedDomain || hostname.endsWith(`.${trustedDomain}`)
-        )
-      ) {
+      if (trustedDomains.some(trustedDomain => hostname === trustedDomain || hostname.endsWith(`.${trustedDomain}`))) {
         Linking.openURL(url);
       } else {
         navigate(Routes.EXTERNAL_LINK_WARNING_SHEET, { url });

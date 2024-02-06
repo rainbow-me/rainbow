@@ -1,9 +1,4 @@
-import {
-  CommonActions,
-  useNavigation as oldUseNavigation,
-  StackActions,
-  useIsFocused,
-} from '@react-navigation/native';
+import { CommonActions, useNavigation as oldUseNavigation, StackActions, useIsFocused } from '@react-navigation/native';
 import React from 'react';
 import { useCallbackOne } from 'use-memo-one';
 import { NATIVE_ROUTES } from '@/navigation/routesNames';
@@ -37,10 +32,7 @@ export function onDidPop() {
 export function useNavigation() {
   const { navigate: oldNavigate, ...rest } = oldUseNavigation();
 
-  const handleNavigate = useCallbackOne(
-    (...args) => navigate(oldNavigate, ...args),
-    [oldNavigate]
-  );
+  const handleNavigate = useCallbackOne((...args) => navigate(oldNavigate, ...args), [oldNavigate]);
 
   return {
     navigate: handleNavigate,
@@ -116,10 +108,7 @@ function getActiveRouteName(navigationState) {
  */
 function handleAction(name, params, replace = false) {
   if (!TopLevelNavigationRef) return;
-  const action = (replace ? StackActions.replace : CommonActions.navigate)(
-    name,
-    params
-  );
+  const action = (replace ? StackActions.replace : CommonActions.navigate)(name, params);
   TopLevelNavigationRef?.dispatch(action);
 }
 

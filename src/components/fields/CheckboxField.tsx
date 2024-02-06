@@ -1,13 +1,6 @@
 import React from 'react';
 import { ButtonPressAnimation } from '../animations';
-import {
-  AccentColorProvider,
-  Box,
-  Inline,
-  Inset,
-  Text,
-  useForegroundColor,
-} from '@/design-system';
+import { AccentColorProvider, Box, Inline, Inset, Text, useForegroundColor } from '@/design-system';
 
 export default function CheckboxField({
   color: customColor,
@@ -40,19 +33,13 @@ export default function CheckboxField({
           }}
           width={{ custom: 20 }}
           {...(!customColor && {
-            background: !isChecked
-              ? 'action (Deprecated)'
-              : 'body (Deprecated)',
+            background: !isChecked ? 'action (Deprecated)' : 'body (Deprecated)',
           })}
         >
           {isChecked && (
             <Inset left="1px (Deprecated)">
               <AccentColorProvider color="white">
-                <Text
-                  color="accent"
-                  size="12px / 14px (Deprecated)"
-                  weight="bold"
-                >
+                <Text color="accent" size="12px / 14px (Deprecated)" weight="bold">
                   􀆅
                 </Text>
               </AccentColorProvider>
@@ -61,11 +48,7 @@ export default function CheckboxField({
         </Box>
         <Box flexShrink={1}>
           <AccentColorProvider color={customColor || action}>
-            <Text
-              color={isChecked ? 'accent' : 'secondary80 (Deprecated)'}
-              size="16px / 22px (Deprecated)"
-              weight="bold"
-            >
+            <Text color={isChecked ? 'accent' : 'secondary80 (Deprecated)'} size="16px / 22px (Deprecated)" weight="bold">
               {label}
             </Text>
           </AccentColorProvider>

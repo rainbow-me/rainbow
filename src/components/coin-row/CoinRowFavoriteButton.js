@@ -24,17 +24,12 @@ const FavoriteButton = styled(Centered)({
   width: 68,
 });
 
-const Circle = styled(IS_TESTING === 'true' ? View : RadialGradient).attrs(
-  ({ isFavorited, theme: { colors, isDarkMode } }) => ({
-    center: [0, 15],
-    colors: isFavorited
-      ? [
-          colors.alpha('#FFB200', isDarkMode ? 0.15 : 0),
-          colors.alpha('#FFB200', isDarkMode ? 0.05 : 0.2),
-        ]
-      : colors.gradients.lightestGrey,
-  })
-)({
+const Circle = styled(IS_TESTING === 'true' ? View : RadialGradient).attrs(({ isFavorited, theme: { colors, isDarkMode } }) => ({
+  center: [0, 15],
+  colors: isFavorited
+    ? [colors.alpha('#FFB200', isDarkMode ? 0.15 : 0), colors.alpha('#FFB200', isDarkMode ? 0.05 : 0.2)]
+    : colors.gradients.lightestGrey,
+}))({
   borderRadius: 15,
   height: 30,
   overflow: 'hidden',
@@ -43,9 +38,7 @@ const Circle = styled(IS_TESTING === 'true' ? View : RadialGradient).attrs(
 
 const StarIcon = styled(Text).attrs(({ isFavorited, theme: { colors } }) => ({
   align: 'center',
-  color: isFavorited
-    ? colors.yellowFavorite
-    : colors.alpha(colors.blueGreyDark, 0.2),
+  color: isFavorited ? colors.yellowFavorite : colors.alpha(colors.blueGreyDark, 0.2),
   letterSpacing: 'zero',
   size: 'smaller',
   weight: 'heavy',

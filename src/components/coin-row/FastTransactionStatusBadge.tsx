@@ -182,10 +182,7 @@ export default React.memo(function FastTransactionStatusBadge({
     } else {
       statusColor = colors.appleBlue;
     }
-  } else if (
-    status === TransactionStatusTypes.swapped ||
-    status === TransactionStatusTypes.bridged
-  ) {
+  } else if (status === TransactionStatusTypes.swapped || status === TransactionStatusTypes.bridged) {
     statusColor = colors.swapPurple;
   }
 
@@ -193,21 +190,9 @@ export default React.memo(function FastTransactionStatusBadge({
 
   return (
     <View style={[sx.row, style]}>
-      {pending && (
-        <Spinner
-          color={statusColor}
-          size={12}
-          style={{ marginTop: ios ? 0 : -2 }}
-        />
-      )}
-      {showIcon && (
-        <Icon color={statusColor} style={sx.icon} {...StatusProps[status]} />
-      )}
-      <Text
-        color={{ custom: statusColor }}
-        size="14px / 19px (Deprecated)"
-        weight="semibold"
-      >
+      {pending && <Spinner color={statusColor} size={12} style={{ marginTop: ios ? 0 : -2 }} />}
+      {showIcon && <Icon color={statusColor} style={sx.icon} {...StatusProps[status]} />}
+      <Text color={{ custom: statusColor }} size="14px / 19px (Deprecated)" weight="semibold">
         {/* @ts-expect-error cant get keys*/}
         {lang.t(lang.l.transactions.type[status])}
       </Text>

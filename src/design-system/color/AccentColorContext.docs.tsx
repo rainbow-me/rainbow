@@ -16,9 +16,8 @@ const docs: DocsType = {
   description: (
     <>
       <Docs.Text>
-        The <Docs.Code>&quot;accent&quot;</Docs.Code> color can be configured
-        for entire subtrees of the app. By default, it will resolve to a pale
-        blue color.
+        The <Docs.Code>&quot;accent&quot;</Docs.Code> color can be configured for entire subtrees of the app. By default, it will resolve to
+        a pale blue color.
       </Docs.Text>
       <Docs.CodePreview
         Example={() =>
@@ -34,9 +33,8 @@ const docs: DocsType = {
         showCode
       />
       <Docs.Text>
-        <Docs.Code>AccentColorProvider</Docs.Code> also detects whether the
-        specified accent color is light or dark and sets the appropriate color
-        mode for you.
+        <Docs.Code>AccentColorProvider</Docs.Code> also detects whether the specified accent color is light or dark and sets the appropriate
+        color mode for you.
       </Docs.Text>
       <Docs.CodePreview
         Example={() =>

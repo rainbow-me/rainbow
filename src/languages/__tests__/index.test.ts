@@ -14,8 +14,6 @@ describe('@/languages', () => {
   test('falls back with undefined values', () => {
     // @ts-ignore We know it's undefined
     const translations = i18n.l.promos.foo.bar.baz;
-    expect(i18n.t(translations.header)).toEqual(
-      `[missing "en_US.promos.foo.bar.baz.header" translation]`
-    );
+    expect(i18n.t(translations.header)).toEqual(`[missing "en_US.promos.foo.bar.baz.header" translation]`);
   });
 });

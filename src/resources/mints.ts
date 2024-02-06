@@ -22,9 +22,7 @@ export enum MintsFilter {
 }
 
 const mintsFilterAtom = atom<MintsFilter>({
-  default:
-    (mmkv.getString(MINTS_FILTER_MMKV_KEY) as MintsFilter | undefined) ??
-    MintsFilter.All,
+  default: (mmkv.getString(MINTS_FILTER_MMKV_KEY) as MintsFilter | undefined) ?? MintsFilter.All,
   key: MINTS_FILTER_MMKV_KEY,
 });
 
@@ -69,8 +67,7 @@ export function useMintsFilter() {
  */
 export function useMints({ walletAddress }: { walletAddress: string }) {
   const { mints_enabled } = useRemoteConfig();
-  const mintsEnabled =
-    (useExperimentalFlag(MINTS) || mints_enabled) && !IS_TEST;
+  const mintsEnabled = (useExperimentalFlag(MINTS) || mints_enabled) && !IS_TEST;
   const { filter } = useMintsFilter();
   const queryKey = mintsQueryKey({
     address: walletAddress,
@@ -90,30 +87,19 @@ export function useMints({ walletAddress }: { walletAddress: string }) {
     }
   );
 
-  const featuredMint = query.data?.getMintableCollections?.collections?.find(
-    c => c.imageURL
-  );
+  const featuredMint = query.data?.getMintableCollections?.collections?.find(c => c.imageURL);
 
   const freeMints = useMemo(
-    () =>
-      query.data?.getMintableCollections?.collections.filter(
-        collection => collection.mintStatus.price === '0'
-      ),
+    () => query.data?.getMintableCollections?.collections.filter(collection => collection.mintStatus.price === '0'),
     [query.data?.getMintableCollections?.collections]
   );
 
   const paidMints = useMemo(
-    () =>
-      query.data?.getMintableCollections?.collections.filter(
-        collection => collection.mintStatus.price !== '0'
-      ),
+    () => query.data?.getMintableCollections?.collections.filter(collection => collection.mintStatus.price !== '0'),
     [query.data?.getMintableCollections?.collections]
   );
 
-  const allMints = useMemo(
-    () => query.data?.getMintableCollections?.collections,
-    [query.data?.getMintableCollections?.collections]
-  );
+  const allMints = useMemo(() => query.data?.getMintableCollections?.collections, [query.data?.getMintableCollections?.collections]);
 
   let filteredMints;
   switch (filter) {

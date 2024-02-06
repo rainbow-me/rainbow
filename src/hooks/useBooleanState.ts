@@ -1,10 +1,7 @@
 import { useCallback, useState } from 'react';
 import useTimeout from './useTimeout';
 
-export default function useBooleanState(
-  initialStateBoolean = false,
-  duration?: number
-) {
+export default function useBooleanState(initialStateBoolean = false, duration?: number) {
   const [bool, setBool] = useState(initialStateBoolean);
 
   const [startTimeout, stopTimeout] = useTimeout();

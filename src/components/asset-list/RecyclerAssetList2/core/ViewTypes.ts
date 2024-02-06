@@ -39,10 +39,7 @@ export enum CellType {
 
   REMOTE_CARD_CAROUSEL = 'REMOTE_CARD_CAROUSEL',
 }
-export type RecyclerListViewRef = RecyclerListView<
-  RecyclerListViewProps,
-  RecyclerListViewState
->;
+export type RecyclerListViewRef = RecyclerListView<RecyclerListViewProps, RecyclerListViewState>;
 
 export type BaseCellType = { type: CellType; uid: string; hidden?: boolean };
 

@@ -9,8 +9,7 @@ import { deviceUtils } from '@/utils';
 import { NUM_NFTS } from './Card';
 import { ImgixImage } from '@/components/images';
 
-const NFT_IMAGE_SIZE =
-  (deviceUtils.dimensions.width - 40 - (NUM_NFTS - 1) * 10) / NUM_NFTS;
+const NFT_IMAGE_SIZE = (deviceUtils.dimensions.width - 40 - (NUM_NFTS - 1) * 10) / NUM_NFTS;
 
 export const Placeholder = () => {
   return (
@@ -24,12 +23,7 @@ export const Placeholder = () => {
       borderRadius={16}
       background="fillSecondary"
     >
-      <Text
-        align="center"
-        color="labelQuaternary"
-        size="20pt"
-        weight="semibold"
-      >
+      <Text align="center" color="labelQuaternary" size="20pt" weight="semibold">
         􀣵
       </Text>
     </Box>

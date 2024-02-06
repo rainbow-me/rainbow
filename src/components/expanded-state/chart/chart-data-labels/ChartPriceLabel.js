@@ -51,22 +51,14 @@ export function formatNative(value, defaultPriceValue, nativeSelected) {
     return defaultPriceValue || '';
   }
   if (value === 'undefined') {
-    return nativeSelected?.alignment === 'left'
-      ? `${nativeSelected?.symbol}0.00`
-      : `0.00 ${nativeSelected?.symbol}`;
+    return nativeSelected?.alignment === 'left' ? `${nativeSelected?.symbol}0.00` : `0.00 ${nativeSelected?.symbol}`;
   }
-  const decimals =
-    Number(value) < 1
-      ? Math.min(8, value.toString().slice(2).slice('').search(/[^0]/g) + 3)
-      : 2;
+  const decimals = Number(value) < 1 ? Math.min(8, value.toString().slice(2).slice('').search(/[^0]/g) + 3) : 2;
 
   let res = `${Number(value).toFixed(decimals).toLocaleString('en-US', {
     currency: NativeCurrencyKeys.USD,
   })}`;
-  res =
-    nativeSelected?.alignment === 'left'
-      ? `${nativeSelected?.symbol}${res}`
-      : `${res} ${nativeSelected?.symbol}`;
+  res = nativeSelected?.alignment === 'left' ? `${nativeSelected?.symbol}${res}` : `${res} ${nativeSelected?.symbol}`;
   const vals = res.split('.');
   if (vals.length === 2) {
     return vals[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '.' + vals[1];
@@ -74,12 +66,7 @@ export function formatNative(value, defaultPriceValue, nativeSelected) {
   return res;
 }
 
-export default function ChartPriceLabel({
-  defaultValue,
-  isNoPriceData,
-  priceValue,
-  tabularNums,
-}) {
+export default function ChartPriceLabel({ defaultValue, isNoPriceData, priceValue, tabularNums }) {
   const { nativeCurrency } = useAccountSettings();
   const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
 
@@ -100,11 +87,7 @@ export default function ChartPriceLabel({
   ) : (
     <ChartPriceRow>
       {android && (
-        <AndroidCurrencySymbolLabel
-          as={Text}
-          defaultValue={nativeSelected?.symbol}
-          editable={false}
-        >
+        <AndroidCurrencySymbolLabel as={Text} defaultValue={nativeSelected?.symbol} editable={false}>
           {nativeSelected?.symbol}
         </AndroidCurrencySymbolLabel>
       )}

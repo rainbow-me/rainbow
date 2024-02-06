@@ -2,9 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 import { darkModeThemeColors } from '../../styles/colors';
 import { useTheme } from '../../theme/ThemeContext';
 import { magicMemo } from '../../utils';
-import ButtonPressAnimation, {
-  ScaleButtonZoomableAndroid,
-} from '../animations/ButtonPressAnimation';
+import ButtonPressAnimation, { ScaleButtonZoomableAndroid } from '../animations/ButtonPressAnimation';
 import { Centered, InnerBorder } from '../layout';
 import styled from '@/styled-thing';
 import { borders, position } from '@/styles';
@@ -40,10 +38,7 @@ const FloatingActionButton = ({
   ...props
 }) => {
   const { isDarkMode, colors } = useTheme();
-  const shadows = useMemo(
-    () => givenShadows || FloatingActionButtonShadow(colors),
-    [givenShadows, colors]
-  );
+  const shadows = useMemo(() => givenShadows || FloatingActionButtonShadow(colors), [givenShadows, colors]);
 
   const handlePress = useCallback(
     event => {
@@ -95,10 +90,4 @@ const FloatingActionButton = ({
   );
 };
 
-export default magicMemo(FloatingActionButton, [
-  'disabled',
-  'onPress',
-  'scaleTo',
-  'shadows',
-  'backgroundColor',
-]);
+export default magicMemo(FloatingActionButton, ['disabled', 'onPress', 'scaleTo', 'shadows', 'backgroundColor']);

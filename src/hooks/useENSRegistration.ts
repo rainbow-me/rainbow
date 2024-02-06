@@ -9,16 +9,12 @@ import { AppState } from '@/redux/store';
 export default function useENSRegistration() {
   const { accountAddress } = useAccountSettings();
 
-  const registrationParameters = useSelector(
-    ({ ensRegistration }: AppState) => {
-      return {
-        ...ensRegistration.registrations?.[accountAddress?.toLowerCase()]?.[
-          ensRegistration.currentRegistrationName
-        ],
-        currentRegistrationName: ensRegistration.currentRegistrationName,
-      };
-    }
-  );
+  const registrationParameters = useSelector(({ ensRegistration }: AppState) => {
+    return {
+      ...ensRegistration.registrations?.[accountAddress?.toLowerCase()]?.[ensRegistration.currentRegistrationName],
+      currentRegistrationName: ensRegistration.currentRegistrationName,
+    };
+  });
 
   const { mode, name, initialRecords, records } = useMemo(
     () => ({
@@ -36,33 +32,16 @@ export default function useENSRegistration() {
   );
 
   const dispatch = useDispatch();
-  const removeRecordByKey = useCallback(
-    (key: string) => dispatch(ensRedux.removeRecordByKey(key)),
-    [dispatch]
-  );
+  const removeRecordByKey = useCallback((key: string) => dispatch(ensRedux.removeRecordByKey(key)), [dispatch]);
   const startRegistration = useCallback(
-    (name: string, mode: keyof typeof REGISTRATION_MODES) =>
-      dispatch(ensRedux.startRegistration(name, mode)),
+    (name: string, mode: keyof typeof REGISTRATION_MODES) => dispatch(ensRedux.startRegistration(name, mode)),
     [dispatch]
   );
-  const updateRecordByKey = useCallback(
-    (key: string, value: string) =>
-      dispatch(ensRedux.updateRecordByKey(key, value)),
-    [dispatch]
-  );
-  const updateRecords = useCallback(
-    (records: Records) => dispatch(ensRedux.updateRecords(records)),
-    [dispatch]
-  );
-  const clearCurrentRegistrationName = useCallback(
-    () => dispatch(ensRedux.clearCurrentRegistrationName()),
-    [dispatch]
-  );
+  const updateRecordByKey = useCallback((key: string, value: string) => dispatch(ensRedux.updateRecordByKey(key, value)), [dispatch]);
+  const updateRecords = useCallback((records: Records) => dispatch(ensRedux.updateRecords(records)), [dispatch]);
+  const clearCurrentRegistrationName = useCallback(() => dispatch(ensRedux.clearCurrentRegistrationName()), [dispatch]);
 
-  const removeRegistrationByName = useCallback(
-    (name: string) => dispatch(ensRedux.removeRegistrationByName(name)),
-    [dispatch]
-  );
+  const removeRegistrationByName = useCallback((name: string) => dispatch(ensRedux.removeRegistrationByName(name)), [dispatch]);
 
   return {
     clearCurrentRegistrationName,

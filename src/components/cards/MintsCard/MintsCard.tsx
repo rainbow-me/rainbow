@@ -8,10 +8,7 @@ import { mintsQueryKey, useMints } from '@/resources/mints';
 import { useAccountSettings, useDimensions } from '@/hooks';
 import { MintableCollection } from '@/graphql/__generated__/arc';
 import { queryClient } from '@/react-query';
-import {
-  ButtonPressAnimation,
-  ShimmerAnimation,
-} from '@/components/animations';
+import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
 import { Box, Text, useForegroundColor } from '@/design-system';
 import { analyticsV2 } from '@/analytics';
 import * as i18n from '@/languages';
@@ -43,13 +40,10 @@ export function MintsCard() {
   return (
     <CarouselCard
       title={i18n.t(i18n.l.mints.mints_card.mints)}
-      data={mints?.filter(
-        c => c.contractAddress !== featuredMint?.contractAddress
-      )}
+      data={mints?.filter(c => c.contractAddress !== featuredMint?.contractAddress)}
       carouselItem={{
         renderItem: ({ item }) => <CollectionCell collection={item} />,
-        keyExtractor: (item: MintableCollection) =>
-          item.contractAddress + item.chainId,
+        keyExtractor: (item: MintableCollection) => item.contractAddress + item.chainId,
         placeholder: <Placeholder />,
         width: NFT_IMAGE_SIZE,
         height: 147,

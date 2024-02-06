@@ -12,13 +12,7 @@ export enum NoResultsType {
   Swap = 'swap',
 }
 
-export const NoResults = ({
-  onL2,
-  type,
-}: {
-  onL2?: boolean;
-  type: NoResultsType;
-}) => {
+export const NoResults = ({ onL2, type }: { onL2?: boolean; type: NoResultsType }) => {
   const { colors } = useTheme();
   const { data: assetCount } = useUserAssetCount();
 
@@ -32,9 +26,7 @@ export const NoResults = ({
     case NoResultsType.Swap:
       title = lang.t('exchange.no_results.nothing_found');
       if (assetCount) {
-        description = onL2
-          ? lang.t('exchange.no_results.description_l2')
-          : lang.t('exchange.no_results.description');
+        description = onL2 ? lang.t('exchange.no_results.description_l2') : lang.t('exchange.no_results.description');
       } else {
         description = lang.t('exchange.no_results.description_no_assets', {
           action: type,
@@ -67,12 +59,7 @@ export const NoResults = ({
             </Text>
           )}
           {description && (
-            <Text
-              align="center"
-              size="15pt"
-              weight="semibold"
-              color="labelSecondary"
-            >
+            <Text align="center" size="15pt" weight="semibold" color="labelSecondary">
               {description}
             </Text>
           )}

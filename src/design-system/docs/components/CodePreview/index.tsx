@@ -67,9 +67,7 @@ export const CodePreview = ({
               {enableCodeSnippet && (
                 <Button
                   color="action (Deprecated)"
-                  iconBefore={
-                    showCode ? <ChevronUpIcon /> : <ChevronDownIcon />
-                  }
+                  iconBefore={showCode ? <ChevronUpIcon /> : <ChevronDownIcon />}
                   onClick={() => setShowCode(showCode => !showCode)}
                 >
                   {showCode ? 'Hide' : 'Show'} code
@@ -83,9 +81,7 @@ export const CodePreview = ({
                       ? // @ts-ignore
                         `${window.location.href}playroom`
                       : 'http://localhost:9000/'
-                  }?code=${lzString.compressToEncodedURIComponent(
-                    JSON.stringify({ code: playroomCode })
-                  )}`}
+                  }?code=${lzString.compressToEncodedURIComponent(JSON.stringify({ code: playroomCode }))}`}
                   iconBefore={<PlayIcon />}
                 >
                   Playroom

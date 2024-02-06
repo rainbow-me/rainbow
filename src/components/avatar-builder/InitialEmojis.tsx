@@ -1,9 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import {
-  EMOJIS_CONTAINER_HORIZONTAL_MARGIN,
-  EMOJIS_TOP_OFFSET,
-} from './constants';
+import { EMOJIS_CONTAINER_HORIZONTAL_MARGIN, EMOJIS_TOP_OFFSET } from './constants';
 import { useTheme } from '@/theme';
 import { magicMemo } from '@/utils';
 
@@ -19,10 +16,7 @@ const InitialEmojis = ({ emojisRows, cellSize, fontSize }: Props) => {
   return (
     <View style={cx.container}>
       {emojisRows.map(emojis => (
-        <View
-          key={`previewEmojiRow${emojis[0]}`}
-          style={[cx.rowContainer, { height: cellSize }]}
-        >
+        <View key={`previewEmojiRow${emojis[0]}`} style={[cx.rowContainer, { height: cellSize }]}>
           {emojis.map(emoji => (
             <Text
               key={`previewEmoji${emoji}`}
@@ -53,8 +47,4 @@ const cx = StyleSheet.create({
   },
 });
 
-export default magicMemo(InitialEmojis, [
-  'columnSize',
-  'emojisRows',
-  'columns',
-]);
+export default magicMemo(InitialEmojis, ['columnSize', 'emojisRows', 'columns']);

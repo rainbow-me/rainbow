@@ -1,20 +1,8 @@
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-} from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import Spinner from '../../assets/chartSpinner.png';
 import { ClearInputDecorator, Input } from '../inputs';
 import { Row } from '../layout';
@@ -39,14 +27,10 @@ const Container = styled(Row)(({ isSearchModeEnabled, theme: { colors } }) => ({
   overflow: 'hidden',
 }));
 
-const BackgroundGradient = styled(RadialGradient).attrs(
-  ({ isDiscover, theme: { colors } }) => ({
-    center: [ExchangeSearchWidth, ExchangeSearchWidth / 2],
-    colors: isDiscover
-      ? colors.gradients.searchBar
-      : colors.gradients.lightGreyTransparent,
-  })
-)({
+const BackgroundGradient = styled(RadialGradient).attrs(({ isDiscover, theme: { colors } }) => ({
+  center: [ExchangeSearchWidth, ExchangeSearchWidth / 2],
+  colors: isDiscover ? colors.gradients.searchBar : colors.gradients.lightGreyTransparent,
+}))({
   height: ExchangeSearchWidth,
   position: 'absolute',
   top: -(ExchangeSearchWidth - ExchangeSearchHeight) / 2,
@@ -64,30 +48,27 @@ const SearchIconWrapper = styled(Animated.View)({
   marginTop: android ? 4 : 9,
 });
 
-const SearchInput = styled(Input).attrs(
-  ({ theme: { colors }, isSearchModeEnabled, clearTextOnFocus }) => ({
-    blurOnSubmit: false,
-    clearTextOnFocus,
-    color: colors.alpha(colors.blueGreyDark, 0.8),
-    enablesReturnKeyAutomatically: true,
-    keyboardAppearance: 'dark',
-    keyboardType: 'ascii-capable',
-    lineHeight: 'looserLoose',
-    placeholderTextColor: colors.alpha(colors.blueGreyDark, 0.6),
-    returnKeyType: 'search',
-    selectionColor: isSearchModeEnabled ? colors.appleBlue : colors.transparent,
-    size: 'large',
-    spellCheck: false,
-    weight: 'semibold',
-  })
-)({
+const SearchInput = styled(Input).attrs(({ theme: { colors }, isSearchModeEnabled, clearTextOnFocus }) => ({
+  blurOnSubmit: false,
+  clearTextOnFocus,
+  color: colors.alpha(colors.blueGreyDark, 0.8),
+  enablesReturnKeyAutomatically: true,
+  keyboardAppearance: 'dark',
+  keyboardType: 'ascii-capable',
+  lineHeight: 'looserLoose',
+  placeholderTextColor: colors.alpha(colors.blueGreyDark, 0.6),
+  returnKeyType: 'search',
+  selectionColor: isSearchModeEnabled ? colors.appleBlue : colors.transparent,
+  size: 'large',
+  spellCheck: false,
+  weight: 'semibold',
+}))({
   ...(android ? { marginBottom: -10, marginTop: -6 } : {}),
   flex: 1,
   height: ios ? 39 : 56,
   marginBottom: 1,
   marginLeft: ({ isSearchModeEnabled }) => (isSearchModeEnabled ? 4 : 0),
-  textAlign: ({ isSearchModeEnabled }) =>
-    isSearchModeEnabled ? 'left' : 'center',
+  textAlign: ({ isSearchModeEnabled }) => (isSearchModeEnabled ? 'left' : 'center'),
 });
 
 const SearchSpinner = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
@@ -150,9 +131,7 @@ const ExchangeSearch = (
 
   const placeholder = useMemo(() => {
     if (!currentChainId) return placeholderText;
-    const network = getNetworkObj(
-      ethereumUtils.getNetworkFromChainId(currentChainId)
-    );
+    const network = getNetworkObj(ethereumUtils.getNetworkFromChainId(currentChainId));
     return lang.t('button.exchange_search_placeholder_network', {
       network: network.name,
     });
@@ -163,18 +142,11 @@ const ExchangeSearch = (
     if ((isFetching || isSearching) && !isEmpty(searchQuery)) {
       clearTimeout(spinnerTimeout.current);
       spinnerRotation.value = 0;
-      spinnerRotation.value = withRepeat(
-        withTiming(360, rotationConfig),
-        -1,
-        false
-      );
+      spinnerRotation.value = withRepeat(withTiming(360, rotationConfig), -1, false);
       spinnerScale.value = withTiming(1, timingConfig);
     } else {
       spinnerScale.value = withTiming(0, timingConfig);
-      spinnerTimeout.current = setTimeout(
-        () => (spinnerRotation.value = 0),
-        timingConfig.duration
-      );
+      spinnerTimeout.current = setTimeout(() => (spinnerRotation.value = 0), timingConfig.duration);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFetching, isSearching, searchQuery]);
@@ -189,10 +161,7 @@ const ExchangeSearch = (
   const spinnerStyle = useAnimatedStyle(() => {
     return {
       opacity: spinnerScale.value,
-      transform: [
-        { rotate: `${spinnerRotation.value}deg` },
-        { scale: spinnerScale.value },
-      ],
+      transform: [{ rotate: `${spinnerRotation.value}deg` }, { scale: spinnerScale.value }],
     };
   });
 

@@ -23,11 +23,7 @@ const BAT_TOKEN_ADDRESS = '0x0d8775f648430679a709e98d2b0cb6250d2887ef';
 
 const isNFTOwner = async address => {
   const provider = Helpers.getProvider();
-  const kittiesContract = new Contract(
-    CRYPTOKITTIES_ADDRESS,
-    kittiesABI,
-    provider
-  );
+  const kittiesContract = new Contract(CRYPTOKITTIES_ADDRESS, kittiesABI, provider);
   const ownerAddress = await kittiesContract.ownerOf('1368227');
   return ownerAddress?.toLowerCase() === address?.toLowerCase();
 };
@@ -38,11 +34,7 @@ const getOnchainBalance = async (address, tokenContractAddress) => {
     const balance = await provider.getBalance(RAINBOW_WALLET_DOT_ETH);
     return balance;
   } else {
-    const tokenContract = new Contract(
-      tokenContractAddress,
-      erc20ABI,
-      provider
-    );
+    const tokenContract = new Contract(tokenContractAddress, erc20ABI, provider);
     const balance = await tokenContract.balanceOf(address);
     return balance;
   }
@@ -71,10 +63,7 @@ describe('Hardhat Transaction Flow', () => {
   it('Should show the "Add wallet modal" after tapping import with a valid seed"', async () => {
     await Helpers.clearField('import-sheet-input');
     await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
-    await Helpers.checkIfElementHasString(
-      'import-sheet-button-label',
-      'Continue'
-    );
+    await Helpers.checkIfElementHasString('import-sheet-button-label', 'Continue');
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.checkIfVisible('wallet-info-modal');
   });
@@ -111,10 +100,7 @@ describe('Hardhat Transaction Flow', () => {
   // registering the action and timing out and leaving the state of the app in
   // a place where all following tests are failing.
   it.skip('Should send (Cryptokitties)', async () => {
-    await Helpers.typeTextAndHideKeyboard(
-      'send-asset-form-field',
-      RAINBOW_WALLET_DOT_ETH
-    );
+    await Helpers.typeTextAndHideKeyboard('send-asset-form-field', RAINBOW_WALLET_DOT_ETH);
     await Helpers.waitAndTap('CryptoKitties-family-header');
     await Helpers.tapByText('Arun Cattybinky');
     await Helpers.waitAndTap('gas-speed-custom');
@@ -141,24 +127,16 @@ describe('Hardhat Transaction Flow', () => {
     try {
       await Helpers.checkIfVisible('Sent-Arun Cattybinky-1.00 CryptoKitties');
     } catch (e) {
-      await Helpers.checkIfVisible(
-        'Sending-Arun Cattybinky-1.00 CryptoKitties'
-      );
+      await Helpers.checkIfVisible('Sending-Arun Cattybinky-1.00 CryptoKitties');
     }
 
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
   it.skip('Should send ERC20 (BAT)', async () => {
-    const preSendBalance = await getOnchainBalance(
-      RAINBOW_WALLET_DOT_ETH,
-      BAT_TOKEN_ADDRESS
-    );
+    const preSendBalance = await getOnchainBalance(RAINBOW_WALLET_DOT_ETH, BAT_TOKEN_ADDRESS);
     await Helpers.waitAndTap('send-button');
-    await Helpers.typeTextAndHideKeyboard(
-      'send-asset-form-field',
-      RAINBOW_WALLET_DOT_ETH
-    );
+    await Helpers.typeTextAndHideKeyboard('send-asset-form-field', RAINBOW_WALLET_DOT_ETH);
     await Helpers.waitAndTap('send-asset-BAT-mainnet');
     await Helpers.typeText('selected-asset-field-input', '1.02', true);
     await Helpers.waitAndTap('send-sheet-confirm-action-button');
@@ -169,10 +147,7 @@ describe('Hardhat Transaction Flow', () => {
       await Helpers.authenticatePin('1234');
     }
     await Helpers.checkIfVisible('profile-screen');
-    const postSendBalance = await getOnchainBalance(
-      RAINBOW_WALLET_DOT_ETH,
-      BAT_TOKEN_ADDRESS
-    );
+    const postSendBalance = await getOnchainBalance(RAINBOW_WALLET_DOT_ETH, BAT_TOKEN_ADDRESS);
     if (!postSendBalance.gt(preSendBalance)) {
       throw new Error('Recepient did not recieve BAT');
     }
@@ -189,14 +164,8 @@ describe('Hardhat Transaction Flow', () => {
 
   it.skip('Should send ETH', async () => {
     await Helpers.waitAndTap('send-button');
-    await Helpers.typeTextAndHideKeyboard(
-      'send-asset-form-field',
-      RAINBOW_WALLET_DOT_ETH
-    );
-    const preSendBalance = await getOnchainBalance(
-      RAINBOW_WALLET_DOT_ETH,
-      ETH_ADDRESS
-    );
+    await Helpers.typeTextAndHideKeyboard('send-asset-form-field', RAINBOW_WALLET_DOT_ETH);
+    const preSendBalance = await getOnchainBalance(RAINBOW_WALLET_DOT_ETH, ETH_ADDRESS);
     await Helpers.waitAndTap('send-asset-ETH-mainnet');
     await Helpers.typeText('selected-asset-field-input', '0.003', true);
     await Helpers.waitAndTap('send-sheet-confirm-action-button');
@@ -207,10 +176,7 @@ describe('Hardhat Transaction Flow', () => {
       await Helpers.authenticatePin('1234');
     }
     await Helpers.checkIfVisible('profile-screen');
-    const postSendBalance = await getOnchainBalance(
-      RAINBOW_WALLET_DOT_ETH,
-      ETH_ADDRESS
-    );
+    const postSendBalance = await getOnchainBalance(RAINBOW_WALLET_DOT_ETH, ETH_ADDRESS);
     if (!postSendBalance.gt(preSendBalance)) {
       throw new Error('Recepient did not recieve ETH');
     }

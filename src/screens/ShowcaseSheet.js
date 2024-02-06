@@ -14,9 +14,7 @@ import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
 import { useLegacyNFTs } from '@/resources/nfts';
 
-const tokenFamilyItem = item => (
-  <CollectibleTokenFamily {...item} uniqueId={item.uniqueId} />
-);
+const tokenFamilyItem = item => <CollectibleTokenFamily {...item} uniqueId={item.uniqueId} />;
 
 async function fetchShowcaseForAddress(address) {
   const response = await rainbowFetch(`${PREFS_ENDPOINT}/address`, {
@@ -44,9 +42,7 @@ const LoadingWrapper = styled.View({
 });
 
 export default function ShowcaseScreen() {
-  const {
-    params: { address: addressOrDomain, setIsSearchModeEnabled } = {},
-  } = useRoute();
+  const { params: { address: addressOrDomain, setIsSearchModeEnabled } = {} } = useRoute();
 
   const theme = useTheme();
 
@@ -85,18 +81,14 @@ export default function ShowcaseScreen() {
     () => [
       {
         collectibles: true,
-        data: buildUniqueTokenList(
-          uniqueTokens,
-          userData?.data?.showcase?.ids ?? []
-        ),
+        data: buildUniqueTokenList(uniqueTokens, userData?.data?.showcase?.ids ?? []),
         header: {
           title: '',
           totalItems: uniqueTokens?.length,
           totalValue: '',
         },
         name: 'collectibles',
-        renderItem: item =>
-          tokenFamilyItem({ ...item, external: true, showcase: true, theme }),
+        renderItem: item => tokenFamilyItem({ ...item, external: true, showcase: true, theme }),
         type: 'big',
       },
     ],

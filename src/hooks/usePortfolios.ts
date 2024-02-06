@@ -6,9 +6,7 @@ import { AppState } from '@/redux/store';
 import logger from '@/utils/logger';
 
 export default function usePortfolios() {
-  const portfolios = useSelector(
-    ({ data: { portfolios } }: AppState) => portfolios
-  );
+  const portfolios = useSelector(({ data: { portfolios } }: AppState) => portfolios);
 
   const trackPortfolios = useCallback(() => {
     const total = {
@@ -30,9 +28,7 @@ export default function usePortfolios() {
     keys(portfolios).forEach(address => {
       keys(portfolios[address]).forEach(key => {
         if (!isNil(total[key as keyof typeof total])) {
-          total[key as keyof typeof total] += portfolios[address][
-            key as keyof typeof portfolios[typeof address]
-          ]!;
+          total[key as keyof typeof total] += portfolios[address][key as keyof (typeof portfolios)[typeof address]]!;
         }
       });
     });

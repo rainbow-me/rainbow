@@ -1,9 +1,5 @@
 import React from 'react';
-import {
-  RatioComponent,
-  RatioOrderStatus,
-  OrderStatus,
-} from '@ratio.me/ratio-react-native-library';
+import { RatioComponent, RatioOrderStatus, OrderStatus } from '@ratio.me/ratio-react-native-library';
 import { nanoid } from 'nanoid/non-secure';
 import { useDispatch } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
@@ -22,27 +18,15 @@ import { emailRainbow } from '@/utils/emailRainbow';
 import Routes from '@/navigation/routesNames';
 import { ProviderCard } from '@/screens/AddCash/components/ProviderCard';
 import { ProviderConfig } from '@/screens/AddCash/types';
-import {
-  getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded,
-  signWithSigningWallet,
-} from '@/helpers/signingWallet';
-import {
-  ratioOrderToNewTransaction,
-  parseRatioNetworkToInternalNetwork,
-} from './utils';
+import { getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded, signWithSigningWallet } from '@/helpers/signingWallet';
+import { ratioOrderToNewTransaction, parseRatioNetworkToInternalNetwork } from './utils';
 import { isAuthenticated } from '@/utils/authentication';
 import { ratioGetClientSession } from '@/resources/f2c';
 
 const ERROR_USER_FAILED_AUTH = 'user_failed_auth';
 const RATIO_SUPPORT_EMAIL = 'support@ratio.me';
 
-export function Ratio({
-  accountAddress,
-  config,
-}: {
-  accountAddress: string;
-  config: ProviderConfig;
-}) {
+export function Ratio({ accountAddress, config }: { accountAddress: string; config: ProviderConfig }) {
   const [userId, setUserId] = React.useState('');
   const analyticsSessionId = React.useMemo(() => nanoid(), []);
   const dispatch = useDispatch();
@@ -53,11 +37,7 @@ export function Ratio({
     async (order: RatioOrderStatus) => {
       const success = order.status === OrderStatus.SUCCESS;
 
-      logger.debug(
-        `Ratio: transaction complete`,
-        { success, order },
-        logger.DebugContext.f2c
-      );
+      logger.debug(`Ratio: transaction complete`, { success, order }, logger.DebugContext.f2c);
 
       if (success) {
         try {
@@ -76,18 +56,11 @@ export function Ratio({
           });
         } catch (e) {
           // Just in case data changes during early stages of launch
-          logger.error(
-            new RainbowError(
-              `Ratio: error tracking f2cProviderFlowCompleted event`
-            ),
-            { message: (e as Error).message }
-          );
+          logger.error(new RainbowError(`Ratio: error tracking f2cProviderFlowCompleted event`), { message: (e as Error).message });
         }
 
         try {
-          const networkName = parseRatioNetworkToInternalNetwork(
-            order.data.activity.crypto.wallet.network
-          );
+          const networkName = parseRatioNetworkToInternalNetwork(order.data.activity.crypto.wallet.network);
           const isMainnet = networkName === InternalNetwork.mainnet;
 
           /**
@@ -96,16 +69,12 @@ export function Ratio({
            * closed the modal before that async function has returned.
            */
           if (!isMainnet) {
-            logger.log(
-              `Ratio: transaction is not on mainnet, will not add to transaction list data`,
-              {
-                network: order.data.activity.crypto.wallet.network,
-              }
-            );
+            logger.log(`Ratio: transaction is not on mainnet, will not add to transaction list data`, {
+              network: order.data.activity.crypto.wallet.network,
+            });
 
             // set this to show the explainer sheet onClose of the modal
-            pendingTransactionSheetExplainerType.current =
-              'f2cSemiSupportedAssetPurchased';
+            pendingTransactionSheetExplainerType.current = 'f2cSemiSupportedAssetPurchased';
           }
 
           // OK now we can run this async function
@@ -115,38 +84,19 @@ export function Ratio({
             analyticsSessionId,
           });
 
-          logger.debug(
-            `Ratio: transaction parsed`,
-            { transaction },
-            logger.DebugContext.f2c
-          );
+          logger.debug(`Ratio: transaction parsed`, { transaction }, logger.DebugContext.f2c);
 
           // for now we only support L1 transaction data from our backend
           if (isMainnet) {
-            logger.debug(
-              `Ratio: transaction is on mainnet, adding to transaction list data`,
-              {},
-              logger.DebugContext.f2c
-            );
+            logger.debug(`Ratio: transaction is on mainnet, adding to transaction list data`, {}, logger.DebugContext.f2c);
 
-            dispatch(
-              dataAddNewTransaction(
-                transaction,
-                order.data.activity.crypto.wallet.address,
-                true
-              )
-            );
+            dispatch(dataAddNewTransaction(transaction, order.data.activity.crypto.wallet.address, true));
           }
         } catch (e) {
           if (e instanceof RainbowError) {
             logger.error(e);
           } else {
-            logger.error(
-              new RainbowError(
-                `Ratio: failed to parse an order into a transaction`
-              ),
-              { error: e }
-            );
+            logger.error(new RainbowError(`Ratio: failed to parse an order into a transaction`), { error: e });
           }
         }
       } else {
@@ -162,8 +112,7 @@ export function Ratio({
 
         WrappedAlert.alert(
           lang.t(lang.l.wallet.add_cash_v2.generic_error.title),
-          order.error.message ||
-            lang.t(lang.l.wallet.add_cash_v2.generic_error.message),
+          order.error.message || lang.t(lang.l.wallet.add_cash_v2.generic_error.message),
           [
             {
               text: lang.t(lang.l.wallet.add_cash_v2.generic_error.button),
@@ -233,17 +182,10 @@ export function Ratio({
          * throw to fail authentication.
          */
         if (error.includes(ERROR_USER_FAILED_AUTH)) {
-          title = lang.t(
-            lang.l.wallet.add_cash_v2.unauthenticated_ratio_error.title
-          );
-          message = lang.t(
-            lang.l.wallet.add_cash_v2.unauthenticated_ratio_error.message
-          );
+          title = lang.t(lang.l.wallet.add_cash_v2.unauthenticated_ratio_error.title);
+          message = lang.t(lang.l.wallet.add_cash_v2.unauthenticated_ratio_error.message);
         } else {
-          logger.error(
-            new RainbowError(`Ratio component threw an error: ${error}`),
-            { error }
-          );
+          logger.error(new RainbowError(`Ratio component threw an error: ${error}`), { error });
 
           analyticsV2.track(analyticsV2.event.f2cProviderFlowErrored, {
             provider: FiatProviderName.Ratio,
@@ -268,26 +210,18 @@ export function Ratio({
         });
       }}
       onAccountRecovery={() => {
-        logger.debug(
-          `Ratio: account recovery clicked`,
-          {},
-          logger.DebugContext.f2c
-        );
+        logger.debug(`Ratio: account recovery clicked`, {}, logger.DebugContext.f2c);
         emailRainbow({
           email: RATIO_SUPPORT_EMAIL,
           hideRainbowBranding: true,
-          subject: lang.t(
-            lang.l.wallet.add_cash_v2.support_emails.account_recovery
-          ),
+          subject: lang.t(lang.l.wallet.add_cash_v2.support_emails.account_recovery),
         });
       }}
       onClose={() => {
         logger.debug(
           `Ratio: closed`,
           {
-            showingL2Explainer: Boolean(
-              pendingTransactionSheetExplainerType.current
-            ),
+            showingL2Explainer: Boolean(pendingTransactionSheetExplainerType.current),
           },
           logger.DebugContext.f2c
         );

@@ -17,13 +17,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import {
-  createQueryKey,
-  queryClient,
-  QueryConfig,
-  QueryFunctionArgs,
-  QueryFunctionResult,
-} from '@/react-query';
+import { createQueryKey, queryClient, QueryConfig, QueryFunctionArgs, QueryFunctionResult } from '@/react-query';
 
 // ///////////////////////////////////////////////
 // Query Types
@@ -38,45 +32,29 @@ export type TemplateResourceArgs = {
 // Query Key
 
 const templateResourceQueryKey = ({ foo, bar, baz }: TemplateResourceArgs) =>
-  createQueryKey(
-    'templateResource',
-    { foo, bar, baz },
-    { persisterVersion: 1 }
-  );
+  createQueryKey('templateResource', { foo, bar, baz }, { persisterVersion: 1 });
 
 type TemplateResourceQueryKey = ReturnType<typeof templateResourceQueryKey>;
 
 // ///////////////////////////////////////////////
 // Query Function
 
-async function templateResourceQueryFunction({
-  queryKey: [{ foo, bar, baz }],
-}: QueryFunctionArgs<typeof templateResourceQueryKey>) {
+async function templateResourceQueryFunction({ queryKey: [{ foo, bar, baz }] }: QueryFunctionArgs<typeof templateResourceQueryKey>) {
   // ...your async stuff here...
   // const result = await doSomething({ foo, bar, baz })
   // return result
 }
 
-type TemplateResourceResult = QueryFunctionResult<
-  typeof templateResourceQueryFunction
->;
+type TemplateResourceResult = QueryFunctionResult<typeof templateResourceQueryFunction>;
 
 // ///////////////////////////////////////////////
 // Query Prefetcher (Optional)
 
 export async function prefetchTemplateResource(
   { foo, bar, baz }: TemplateResourceArgs,
-  config: QueryConfig<
-    TemplateResourceResult,
-    Error,
-    TemplateResourceQueryKey
-  > = {}
+  config: QueryConfig<TemplateResourceResult, Error, TemplateResourceQueryKey> = {}
 ) {
-  return await queryClient.prefetchQuery(
-    templateResourceQueryKey({ foo, bar, baz }),
-    templateResourceQueryFunction,
-    config
-  );
+  return await queryClient.prefetchQuery(templateResourceQueryKey({ foo, bar, baz }), templateResourceQueryFunction, config);
 }
 
 // ///////////////////////////////////////////////
@@ -84,17 +62,9 @@ export async function prefetchTemplateResource(
 
 export async function fetchTemplateResource(
   { foo, bar, baz }: TemplateResourceArgs,
-  config: QueryConfig<
-    TemplateResourceResult,
-    Error,
-    TemplateResourceQueryKey
-  > = {}
+  config: QueryConfig<TemplateResourceResult, Error, TemplateResourceQueryKey> = {}
 ) {
-  return await queryClient.fetchQuery(
-    templateResourceQueryKey({ foo, bar, baz }),
-    templateResourceQueryFunction,
-    config
-  );
+  return await queryClient.fetchQuery(templateResourceQueryKey({ foo, bar, baz }), templateResourceQueryFunction, config);
 }
 
 // ///////////////////////////////////////////////
@@ -102,15 +72,7 @@ export async function fetchTemplateResource(
 
 export function useTemplateResource(
   { foo, bar, baz }: TemplateResourceArgs,
-  config: QueryConfig<
-    TemplateResourceResult,
-    Error,
-    TemplateResourceQueryKey
-  > = {}
+  config: QueryConfig<TemplateResourceResult, Error, TemplateResourceQueryKey> = {}
 ) {
-  return useQuery(
-    templateResourceQueryKey({ foo, bar, baz }),
-    templateResourceQueryFunction,
-    config
-  );
+  return useQuery(templateResourceQueryKey({ foo, bar, baz }), templateResourceQueryFunction, config);
 }

@@ -20,13 +20,7 @@ const TokenInfoBalanceValue = ({ align, asset, ...props }) => {
       margin={5}
       marginKey={align === 'left' ? 'marginRight' : 'marginLeft'}
     >
-      <CoinIcon
-        address={address}
-        ignoreBadge
-        size={20}
-        symbol={symbol}
-        type={type}
-      />
+      <CoinIcon address={address} ignoreBadge size={20} symbol={symbol} type={type} />
       <InfoValue color={color}>{balance?.display || value}</InfoValue>
     </RowWithMargins>
   );

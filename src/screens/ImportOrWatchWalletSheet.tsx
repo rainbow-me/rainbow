@@ -1,15 +1,6 @@
 import { Input } from '@/components/inputs';
 import { SheetHandleFixedToTopHeight } from '@/components/sheet';
-import {
-  AccentColorProvider,
-  Box,
-  globalColors,
-  Inset,
-  Stack,
-  Text,
-  useForegroundColor,
-  useTextStyle,
-} from '@/design-system';
+import { AccentColorProvider, Box, globalColors, Inset, Stack, Text, useForegroundColor, useTextStyle } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { useImportingWallet, useKeyboardHeight } from '@/hooks';
 import { colors } from '@/styles';
@@ -31,19 +22,9 @@ type RouteParams = {
 };
 
 export const ImportOrWatchWalletSheet = () => {
-  const { params: { type = 'watch' } = {} } = useRoute<
-    RouteProp<RouteParams, 'ImportOrWatchWalletSheetParams'>
-  >();
+  const { params: { type = 'watch' } = {} } = useRoute<RouteProp<RouteParams, 'ImportOrWatchWalletSheetParams'>>();
 
-  const {
-    busy,
-    handleFocus,
-    handlePressImportButton,
-    handleSetSeedPhrase,
-    inputRef,
-    isSecretValid,
-    seedPhrase,
-  } = useImportingWallet();
+  const { busy, handleFocus, handlePressImportButton, handleSetSeedPhrase, inputRef, isSecretValid, seedPhrase } = useImportingWallet();
   const keyboardHeight = useKeyboardHeight();
 
   const textStyle = useTextStyle({
@@ -61,24 +42,13 @@ export const ImportOrWatchWalletSheet = () => {
   return (
     <>
       <Box height="full" background="surfaceSecondary">
-        <Box
-          alignItems="center"
-          justifyContent="space-between"
-          paddingTop={{ custom: 38 }}
-          paddingHorizontal="20px"
-          testID="import-sheet"
-        >
+        <Box alignItems="center" justifyContent="space-between" paddingTop={{ custom: 38 }} paddingHorizontal="20px" testID="import-sheet">
           <Stack space="20px">
             <Text align="center" color="label" size="26pt" weight="bold">
               {i18n.t(TRANSLATIONS[type].title)}
             </Text>
             {type === 'import' && (
-              <Text
-                align="center"
-                color="labelTertiary"
-                size="15pt / 135%"
-                weight="semibold"
-              >
+              <Text align="center" color="labelTertiary" size="15pt / 135%" weight="semibold">
                 {i18n.t(TRANSLATIONS.import.description)}
               </Text>
             )}
@@ -121,24 +91,13 @@ export const ImportOrWatchWalletSheet = () => {
             value={seedPhrase}
           />
         </Box>
-        <Box
-          position="absolute"
-          right="0px"
-          bottom={{ custom: keyboardHeight }}
-        >
+        <Box position="absolute" right="0px" bottom={{ custom: keyboardHeight }}>
           <Inset bottom="20px" right="20px">
-            <AccentColorProvider
-              color={colors.alpha(globalColors.purple60, seedPhrase ? 1 : 0.1)}
-            >
+            <AccentColorProvider color={colors.alpha(globalColors.purple60, seedPhrase ? 1 : 0.1)}>
               <ButtonPressAnimation
                 disabled={buttonDisabled}
                 onPress={
-                  seedPhrase
-                    ? handlePressImportButton
-                    : () =>
-                        Clipboard.getString().then((text: string) =>
-                          handleSetSeedPhrase(text)
-                        )
+                  seedPhrase ? handlePressImportButton : () => Clipboard.getString().then((text: string) => handleSetSeedPhrase(text))
                 }
                 overflowMargin={50}
                 testID="import-sheet-button"
@@ -149,28 +108,20 @@ export const ImportOrWatchWalletSheet = () => {
                   borderRadius={99}
                   height="36px"
                   justifyContent="center"
-                  shadow={
-                    seedPhrase && !buttonDisabled ? '12px accent' : undefined
-                  }
+                  shadow={seedPhrase && !buttonDisabled ? '12px accent' : undefined}
                   width={{ custom: 88 }}
                 >
                   <Text
                     align="center"
                     color={
                       // eslint-disable-next-line no-nested-ternary
-                      buttonDisabled
-                        ? 'labelSecondary'
-                        : seedPhrase
-                        ? 'label'
-                        : { custom: globalColors.purple60 }
+                      buttonDisabled ? 'labelSecondary' : seedPhrase ? 'label' : { custom: globalColors.purple60 }
                     }
                     size="15pt"
                     testID="import-sheet-button-label"
                     weight="bold"
                   >
-                    {seedPhrase
-                      ? i18n.t(TRANSLATIONS.continue)
-                      : `􀉃 ${i18n.t(TRANSLATIONS.paste)}`}
+                    {seedPhrase ? i18n.t(TRANSLATIONS.continue) : `􀉃 ${i18n.t(TRANSLATIONS.paste)}`}
                   </Text>
                 </Box>
               </ButtonPressAnimation>

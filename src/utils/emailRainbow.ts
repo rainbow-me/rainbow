@@ -12,11 +12,7 @@ type Options = {
   hideRainbowBranding?: boolean;
 };
 
-export function emailRainbow({
-  subject,
-  email = 'support@rainbow.me',
-  hideRainbowBranding = false,
-}: Options) {
+export function emailRainbow({ subject, email = 'support@rainbow.me', hideRainbowBranding = false }: Options) {
   const config = {
     recipients: [email],
     subject: hideRainbowBranding ? subject : `🌈️ Rainbow: ${subject}`,

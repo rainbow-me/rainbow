@@ -1,19 +1,11 @@
 import { MaxUint256 } from '@ethersproject/constants';
 import { Contract } from '@ethersproject/contracts';
 import { Signer } from '@ethersproject/abstract-signer';
-import {
-  ALLOWS_PERMIT,
-  PermitSupportedTokenList,
-  RAINBOW_ROUTER_CONTRACT_ADDRESS,
-} from '@rainbow-me/swaps';
+import { ALLOWS_PERMIT, PermitSupportedTokenList, RAINBOW_ROUTER_CONTRACT_ADDRESS } from '@rainbow-me/swaps';
 import { captureException } from '@sentry/react-native';
 import { isNull } from 'lodash';
 import { alwaysRequireApprove } from '../../config/debug';
-import {
-  Rap,
-  RapExchangeActionParameters,
-  UnlockActionParameters,
-} from '../common';
+import { Rap, RapExchangeActionParameters, UnlockActionParameters } from '../common';
 import { Asset, TransactionStatus, TransactionType } from '@/entities';
 import { getProviderForNetwork, toHex } from '@/handlers/web3';
 import { parseGasParamAmounts } from '@/parsers';
@@ -33,12 +25,7 @@ export const estimateApprove = async (
   allowsPermit = true
 ): Promise<number | string> => {
   try {
-    if (
-      allowsPermit &&
-      ALLOWS_PERMIT[
-        tokenAddress?.toLowerCase() as keyof PermitSupportedTokenList
-      ]
-    ) {
+    if (allowsPermit && ALLOWS_PERMIT[tokenAddress?.toLowerCase() as keyof PermitSupportedTokenList]) {
       return '0';
     }
 
@@ -50,13 +37,9 @@ export const estimateApprove = async (
       tokenAddress,
     });
     const tokenContract = new Contract(tokenAddress, erc20ABI, provider);
-    const gasLimit = await tokenContract.estimateGas.approve(
-      spender,
-      MaxUint256,
-      {
-        from: owner,
-      }
-    );
+    const gasLimit = await tokenContract.estimateGas.approve(spender, MaxUint256, {
+      from: owner,
+    });
     return gasLimit ? gasLimit.toString() : ethUnits.basic_approval;
   } catch (error) {
     logger.sentry('error estimateApproveWithExchange');
@@ -65,12 +48,7 @@ export const estimateApprove = async (
   }
 };
 
-const getRawAllowance = async (
-  owner: string,
-  token: Asset,
-  spender: string,
-  chainId = 1
-) => {
+const getRawAllowance = async (owner: string, token: Asset, spender: string, chainId = 1) => {
   try {
     const network = ethereumUtils.getNetworkFromChainId(chainId);
     const provider = await getProviderForNetwork(network);
@@ -129,11 +107,7 @@ const unlock = async (
   const { dispatch } = store;
   const { accountAddress } = store.getState().settings;
   const { gasFeeParamsBySpeed, selectedGasFee } = store.getState().gas;
-  const {
-    assetToUnlock,
-    contractAddress,
-    chainId,
-  } = parameters as UnlockActionParameters;
+  const { assetToUnlock, contractAddress, chainId } = parameters as UnlockActionParameters;
   const { address: assetAddress } = assetToUnlock;
 
   logger.log(`[${actionName}] rap for`, assetToUnlock);
@@ -144,15 +118,8 @@ const unlock = async (
       assetAddress,
       contractAddress,
     });
-    const contractAllowsPermit =
-      contractAddress === RAINBOW_ROUTER_CONTRACT_ADDRESS;
-    gasLimit = await estimateApprove(
-      accountAddress,
-      assetAddress,
-      contractAddress,
-      chainId,
-      contractAllowsPermit
-    );
+    const contractAllowsPermit = contractAddress === RAINBOW_ROUTER_CONTRACT_ADDRESS;
+    gasLimit = await estimateApprove(accountAddress, assetAddress, contractAddress, chainId, contractAllowsPermit);
   } catch (e) {
     logger.sentry(`[${actionName}] Error estimating gas`);
     captureException(e);
@@ -174,15 +141,7 @@ const unlock = async (
       gasLimit,
     });
     const nonce = baseNonce ? baseNonce + index : null;
-    approval = await executeApprove(
-      assetAddress,
-      contractAddress,
-      gasLimit,
-      gasParams,
-      wallet,
-      nonce,
-      chainId
-    );
+    approval = await executeApprove(assetAddress, contractAddress, gasLimit, gasParams, wallet, nonce, chainId);
   } catch (e) {
     logger.sentry(`[${actionName}] Error approving`);
     captureException(e);
@@ -233,12 +192,7 @@ export const assetNeedsUnlocking = async (
 
   const cacheKey = `${accountAddress}|${address}|${contractAddress}`.toLowerCase();
 
-  const allowance = await getRawAllowance(
-    accountAddress,
-    assetToUnlock,
-    contractAddress,
-    chainId
-  );
+  const allowance = await getRawAllowance(accountAddress, assetToUnlock, contractAddress, chainId);
 
   logger.log('raw allowance', allowance.toString());
   // Cache that value

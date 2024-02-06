@@ -43,12 +43,7 @@ export const getMainnetNetworkObject = (): NetworkProperties => {
     },
 
     gas: {
-      speeds: [
-        gasUtils.NORMAL,
-        gasUtils.FAST,
-        gasUtils.URGENT,
-        gasUtils.CUSTOM,
-      ],
+      speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT, gasUtils.CUSTOM],
       gasType: 'eip1559',
       roundGasDisplay: true,
 

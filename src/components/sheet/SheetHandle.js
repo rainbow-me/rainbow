@@ -12,8 +12,7 @@ const defaultColor = (colors, showBlur) =>
     : colors.alpha(colors.blueGreyDark30, showBlur ? 0.7 : 1.0);
 
 const Handle = styled.View({
-  backgroundColor: ({ color, theme: { colors }, showBlur }) =>
-    color || defaultColor(colors, showBlur),
+  backgroundColor: ({ color, theme: { colors }, showBlur }) => color || defaultColor(colors, showBlur),
   borderRadius: 3,
   height: HandleHeight,
   overflow: 'hidden',

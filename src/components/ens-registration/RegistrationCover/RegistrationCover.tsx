@@ -10,12 +10,7 @@ import Skeleton from '../../skeleton/Skeleton';
 import { Box, Cover, Text, useForegroundColor } from '@/design-system';
 import { UniqueAsset } from '@/entities';
 import { UploadImageReturnData } from '@/handlers/pinata';
-import {
-  useENSModifiedRegistration,
-  useENSRegistration,
-  useENSRegistrationForm,
-  useSelectImageMenu,
-} from '@/hooks';
+import { useENSModifiedRegistration, useENSRegistration, useENSRegistrationForm, useSelectImageMenu } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { magicMemo, stringifyENSNFTRecord } from '@/utils';
 import { ENS_RECORDS } from '@/helpers/ens';
@@ -37,22 +32,14 @@ const RegistrationCover = ({
   const {
     images: { coverUrl: initialCoverUrl },
   } = useENSModifiedRegistration();
-  const {
-    isLoading,
-    onBlurField,
-    onRemoveField,
-    setDisabled,
-    values,
-  } = useENSRegistrationForm();
+  const { isLoading, onBlurField, onRemoveField, setDisabled, values } = useENSRegistrationForm();
   const { name } = useENSRegistration();
   const [coverUpdateAllowed, setCoverUpdateAllowed] = useState(true);
   const [coverUrl, setCoverUrl] = useState(initialCoverUrl || values?.header);
 
   useEffect(() => {
     if (coverUpdateAllowed) {
-      setCoverUrl(
-        typeof initialCoverUrl === 'string' ? initialCoverUrl : values?.header
-      );
+      setCoverUrl(typeof initialCoverUrl === 'string' ? initialCoverUrl : values?.header);
     }
   }, [initialCoverUrl, coverUpdateAllowed]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -63,21 +50,9 @@ const RegistrationCover = ({
 
   const setCoverMetadata = useSetRecoilState(coverMetadataAtom);
   const onChangeImage = useCallback(
-    ({
-      asset,
-      image,
-    }: {
-      asset?: UniqueAsset;
-      image?: Image & { tmpPath?: string };
-    }) => {
+    ({ asset, image }: { asset?: UniqueAsset; image?: Image & { tmpPath?: string } }) => {
       setCoverMetadata(image);
-      setCoverUrl(
-        image?.tmpPath ||
-          asset?.image_url ||
-          asset?.lowResUrl ||
-          asset?.image_thumbnail_url ||
-          ''
-      );
+      setCoverUrl(image?.tmpPath || asset?.image_url || asset?.lowResUrl || asset?.image_thumbnail_url || '');
 
       if (asset) {
         const standard = asset.asset_contract?.schema_name || '';
@@ -152,20 +127,8 @@ const RegistrationCover = ({
     );
   }
   return (
-    <ConditionalWrap
-      condition={hasSeenExplainSheet && (enableNFTs || !!coverUrl)}
-      wrap={children => <ContextMenu>{children}</ContextMenu>}
-    >
-      <ButtonPressAnimation
-        onPress={
-          !hasSeenExplainSheet
-            ? onShowExplainSheet
-            : enableNFTs
-            ? undefined
-            : handleSelectImage
-        }
-        scaleTo={1}
-      >
+    <ConditionalWrap condition={hasSeenExplainSheet && (enableNFTs || !!coverUrl)} wrap={children => <ContextMenu>{children}</ContextMenu>}>
+      <ButtonPressAnimation onPress={!hasSeenExplainSheet ? onShowExplainSheet : enableNFTs ? undefined : handleSelectImage} scaleTo={1}>
         <Box
           alignItems="center"
           as={ios ? RadialGradient : View}
@@ -181,16 +144,8 @@ const RegistrationCover = ({
               })}
         >
           {(!coverUrl || isUploading || isLoadingImage) && (
-            <Text
-              align="center"
-              color="accent"
-              size="18px / 27px (Deprecated)"
-              weight="heavy"
-            >
-              􀣵{' '}
-              {isUploading || isLoadingImage
-                ? lang.t('profiles.create.uploading')
-                : lang.t('profiles.create.add_cover')}
+            <Text align="center" color="accent" size="18px / 27px (Deprecated)" weight="heavy">
+              􀣵 {isUploading || isLoadingImage ? lang.t('profiles.create.uploading') : lang.t('profiles.create.add_cover')}
             </Text>
           )}
         </Box>
@@ -211,7 +166,4 @@ const RegistrationCover = ({
   );
 };
 
-export default magicMemo(RegistrationCover, [
-  'hasSeenExplainSheet',
-  'onShowExplainSheet',
-]);
+export default magicMemo(RegistrationCover, ['hasSeenExplainSheet', 'onShowExplainSheet']);

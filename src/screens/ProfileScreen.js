@@ -4,12 +4,7 @@ import { ActivityList } from '../components/activity-list';
 import { Page } from '../components/layout';
 import { useNavigation } from '../navigation/Navigation';
 import { ButtonPressAnimation } from '@/components/animations';
-import {
-  useAccountProfile,
-  useAccountSettings,
-  useAccountTransactions,
-  useRequests,
-} from '@/hooks';
+import { useAccountProfile, useAccountSettings, useAccountTransactions, useRequests } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
@@ -29,16 +24,9 @@ export default function ProfileScreen() {
   const isFocused = useIsFocused();
   const { navigate } = useNavigation();
 
-  const accountTransactions = useAccountTransactions(
-    activityListInitialized,
-    isFocused
-  );
+  const accountTransactions = useAccountTransactions(activityListInitialized, isFocused);
 
-  const {
-    isLoadingTransactions: isLoading,
-    sections,
-    transactionsCount,
-  } = accountTransactions;
+  const { isLoadingTransactions: isLoading, sections, transactionsCount } = accountTransactions;
   const { pendingRequestCount } = useRequests();
   const { network } = useAccountSettings();
   const { accountSymbol, accountColor, accountImage } = useAccountProfile();
@@ -63,30 +51,15 @@ export default function ProfileScreen() {
         leftComponent={
           <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.8}>
             {accountImage ? (
-              <ImageAvatar
-                image={accountImage}
-                marginRight={10}
-                size="header"
-              />
+              <ImageAvatar image={accountImage} marginRight={10} size="header" />
             ) : (
-              <ContactAvatar
-                color={accountColor}
-                marginRight={10}
-                size="small"
-                value={accountSymbol}
-              />
+              <ContactAvatar color={accountColor} marginRight={10} size="small" value={accountSymbol} />
             )}
           </ButtonPressAnimation>
         }
       />
 
-      <ActivityList
-        isEmpty={isEmpty}
-        isLoading={isLoading}
-        network={network}
-        sections={sections}
-        {...accountTransactions}
-      />
+      <ActivityList isEmpty={isEmpty} isLoading={isLoading} network={network} sections={sections} {...accountTransactions} />
     </ProfileScreenPage>
   );
 }

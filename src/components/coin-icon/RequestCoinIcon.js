@@ -15,34 +15,16 @@ const ProgressBorder = styled(CircularProgress).attrs({
   width: 2,
 })({});
 
-const RequestCoinIcon = ({
-  dappName,
-  expirationColor,
-  imageUrl,
-  percentElapsed,
-  size = RequestCoinIconSize,
-}) => {
+const RequestCoinIcon = ({ dappName, expirationColor, imageUrl, percentElapsed, size = RequestCoinIconSize }) => {
   const { colors } = useTheme();
   const renderIcon = useCallback(
     // react-native-circular-progress expects a single function child.
-    () => (
-      <RequestVendorLogoIcon
-        backgroundColor={colors.white}
-        borderRadius={size}
-        dappName={dappName}
-        imageUrl={imageUrl}
-      />
-    ),
+    () => <RequestVendorLogoIcon backgroundColor={colors.white} borderRadius={size} dappName={dappName} imageUrl={imageUrl} />,
     [colors.white, dappName, imageUrl, size]
   );
 
   return (
-    <ProgressBorder
-      fill={percentElapsed}
-      prefill={percentElapsed}
-      size={size}
-      tintColor={expirationColor}
-    >
+    <ProgressBorder fill={percentElapsed} prefill={percentElapsed} size={size} tintColor={expirationColor}>
       {renderIcon}
     </ProgressBorder>
   );

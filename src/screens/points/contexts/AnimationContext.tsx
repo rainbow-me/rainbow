@@ -1,11 +1,4 @@
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 const AnimationContext = createContext({
   currentSequenceIndex: 0,
@@ -19,11 +12,7 @@ const AnimationContext = createContext({
 
 export const useAnimationContext = () => useContext(AnimationContext);
 
-export const TypingAnimation = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+export const TypingAnimation = ({ children }: { children: React.ReactNode }) => {
   const [currentSequenceIndex, setCurrentSequenceIndex] = useState(0);
   const animationIndexRef = useRef(0);
 
@@ -43,9 +32,7 @@ export const TypingAnimation = ({
   }, []);
 
   return (
-    <AnimationContext.Provider
-      value={{ currentSequenceIndex, getNextAnimationIndex, incrementSequence }}
-    >
+    <AnimationContext.Provider value={{ currentSequenceIndex, getNextAnimationIndex, incrementSequence }}>
       {children}
     </AnimationContext.Provider>
   );
