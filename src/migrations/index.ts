@@ -15,6 +15,7 @@ import { migrateNotificationSettingsToV2 } from '@/migrations/migrations/migrate
 import { prepareDefaultNotificationGroupSettingsState } from '@/migrations/migrations/prepareDefaultNotificationGroupSettingsState';
 import { changeLanguageKeys } from './migrations/changeLanguageKeys';
 import { fixHiddenUSDC } from './migrations/fixHiddenUSDC';
+import { purgeWcConnectionsWithoutAccounts } from './migrations/purgeWcConnectionsWithoutAccounts';
 
 /**
  * Local storage for migrations only. Should not be exported.
@@ -36,6 +37,7 @@ const migrations: Migration[] = [
   migrateNotificationSettingsToV2(),
   changeLanguageKeys(),
   fixHiddenUSDC(),
+  purgeWcConnectionsWithoutAccounts(),
 ];
 
 /**

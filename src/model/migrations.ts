@@ -64,7 +64,6 @@ import { queryClient } from '@/react-query';
 import { favoritesQueryKey } from '@/resources/favorites';
 import { EthereumAddress, RainbowToken } from '@/entities';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { disconnectSession, getAllActiveSessions } from '@/walletConnect';
 
 export default async function runMigrations() {
   // get current version
@@ -702,24 +701,6 @@ export default async function runMigrations() {
   };
 
   migrations.push(v18);
-
-  /**
-   *************** Migration v19 ******************
-   Purge walletconnect v2 sessions with no accounts
-   */
-  const v19 = async () => {
-    const walletConnectV2Sessions = await getAllActiveSessions();
-    await Promise.all(
-      walletConnectV2Sessions.map(session => {
-        if (!session.namespaces.eip155.accounts.length) {
-          disconnectSession(session);
-        }
-        return Promise.resolve();
-      })
-    );
-  };
-
-  migrations.push(v19);
 
   logger.sentry(
     `Migrations: ready to run migrations starting on number ${currentVersion}`
