@@ -10,4 +10,3 @@ rainbow-scripts
 .vscode
 __generated__
 coverage
-src/state/internal/createStore.ts
