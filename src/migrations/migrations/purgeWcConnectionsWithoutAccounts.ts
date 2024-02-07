@@ -3,7 +3,6 @@ import { Migration, MigrationName } from '../types';
 
 export function purgeWcConnectionsWithoutAccounts(): Migration {
   return {
-    debug: true,
     name: MigrationName.purgeWcConnectionsWithoutAccounts,
     async defer() {
       const walletConnectV2Sessions = await getAllActiveSessions();
