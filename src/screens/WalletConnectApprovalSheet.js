@@ -326,7 +326,7 @@ export default function WalletConnectApprovalSheet() {
       if (!chainIds?.length) {
         return (
           <Box height={{ custom: 38 }} justifyContent="center" width="full">
-            <LabelText>None</LabelText>
+            <LabelText align="right">{lang.t('walletconnect.none')}</LabelText>
           </Box>
         );
       } else {

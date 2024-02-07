@@ -2373,6 +2373,7 @@
         "message": "Paste WalletConnect URI below",
         "title": "New WalletConnect Session"
       },
+      "none": "None",
       "switch_network": "Switch Network",
       "switch_wallet": "Switch Wallet",
       "titles": {
