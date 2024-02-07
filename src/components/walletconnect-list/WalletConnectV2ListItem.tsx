@@ -87,8 +87,8 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
       dappName: metadata.name || 'Unknown Dapp',
       dappUrl: metadata.url || 'Unknown URL',
       dappLogo: metadata && metadata.icons ? metadata.icons[0] : undefined,
-      address: address,
-      chainIds: chainIds,
+      address,
+      chainIds,
     };
   }, [session]);
 
