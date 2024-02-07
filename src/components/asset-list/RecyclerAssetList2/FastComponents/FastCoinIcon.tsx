@@ -116,9 +116,7 @@ const sx = StyleSheet.create({
   },
   container: {
     elevation: 6,
-    height: 59,
     overflow: 'visible',
-    paddingTop: 9,
   },
   contract: {
     height: 40,
