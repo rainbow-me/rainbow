@@ -1,9 +1,5 @@
 import { useCallback } from 'react';
-import {
-  useSharedValue,
-  withSpring,
-  WithSpringConfig,
-} from 'react-native-reanimated';
+import { useSharedValue, withSpring, WithSpringConfig } from 'react-native-reanimated';
 
 const springConfig: WithSpringConfig = {
   damping: 35,

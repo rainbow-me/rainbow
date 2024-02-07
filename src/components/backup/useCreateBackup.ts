@@ -18,12 +18,7 @@ type UseCreateBackupProps = {
   isSettingsRoute: boolean;
 };
 
-export const useCreateBackup = ({
-  password,
-  validPassword,
-  walletId,
-  isSettingsRoute,
-}: UseCreateBackupProps) => {
+export const useCreateBackup = ({ password, validPassword, walletId, isSettingsRoute }: UseCreateBackupProps) => {
   const { goBack, navigate } = useNavigation();
   const { fetchBackups } = useCloudBackups();
   const walletCloudBackup = useWalletCloudBackup();

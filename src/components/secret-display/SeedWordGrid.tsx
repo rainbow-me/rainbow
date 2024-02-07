@@ -1,10 +1,9 @@
 import React, { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import { useTheme } from '@/theme';
 import { ColumnWithMargins, Row, RowWithMargins } from '@/components/layout';
 import { times } from '@/helpers/utilities';
 import { fonts } from '@/styles';
-import { Box, Text, Row as DSRow, Separator, Inset } from '@/design-system';
+import { Box, Text, Separator } from '@/design-system';
 
 interface Props {
   seed: string;
@@ -20,21 +19,12 @@ export function SeedWordGrid({ seed }: Props) {
     <Row>
       {columns.map((wordColumn, colIndex) => (
         <>
-          <RowWithMargins
-            key={wordColumn.join('')}
-            margin={6}
-            paddingRight={26}
-          >
+          <RowWithMargins key={wordColumn.join('')} margin={6} paddingRight={26}>
             <ColumnWithMargins margin={9} style={{ paddingTop: 1 }}>
               {times(wordColumn.length, index => {
                 const number = Number(index + 1 + colIndex * wordColumn.length);
                 return (
-                  <Row
-                    style={styles.gridItem}
-                    align="center"
-                    justify="end"
-                    key={`grid_number_${number}`}
-                  >
+                  <Row style={styles.gridItem} align="center" justify="end" key={`grid_number_${number}`}>
                     <Text color={'labelTertiary'} size="12pt" weight="medium">
                       {number < 10 ? `0${number}` : number}
                     </Text>
@@ -44,11 +34,7 @@ export function SeedWordGrid({ seed }: Props) {
             </ColumnWithMargins>
             <ColumnWithMargins margin={9}>
               {wordColumn.map((word, index) => (
-                <Row
-                  style={styles.gridItem}
-                  align="center"
-                  key={`${word}${index}`}
-                >
+                <Row style={styles.gridItem} align="center" key={`${word}${index}`}>
                   <Text color={'label'} size="15pt" weight="medium">
                     {word}
                   </Text>
@@ -58,11 +44,7 @@ export function SeedWordGrid({ seed }: Props) {
           </RowWithMargins>
           {colIndex === 0 && (
             <Box style={{ width: 20 }}>
-              <Separator
-                direction="vertical"
-                color="separatorTertiary"
-                thickness={1}
-              />
+              <Separator direction="vertical" color="separatorTertiary" thickness={1} />
             </Box>
           )}
         </>

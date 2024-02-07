@@ -12,25 +12,19 @@ export default class AesEncryptor {
   }
 
   generateKey = (password: any, salt: any) =>
-    android
-      ? AesEncryption.pbkdf2(password, salt, 5000, 256)
-      : AesEncryption.pbkdf2(password, salt);
+    android ? AesEncryption.pbkdf2(password, salt, 5000, 256) : AesEncryption.pbkdf2(password, salt);
 
-  keyFromPassword = (password: any, salt: any) =>
-    this.generateKey(password, salt);
+  keyFromPassword = (password: any, salt: any) => this.generateKey(password, salt);
 
   encryptWithKey = (text: any, keyBase64: any) => {
     const ivBase64 = this.generateSalt(32);
-    return AesEncryption.encrypt(text, keyBase64, ivBase64).then(
-      (cipher: any) => ({
-        cipher,
-        iv: ivBase64,
-      })
-    );
+    return AesEncryption.encrypt(text, keyBase64, ivBase64).then((cipher: any) => ({
+      cipher,
+      iv: ivBase64,
+    }));
   };
 
-  decryptWithKey = (encryptedData: any, key: any) =>
-    AesEncryption.decrypt(encryptedData.cipher, key, encryptedData.iv);
+  decryptWithKey = (encryptedData: any, key: any) => AesEncryption.decrypt(encryptedData.cipher, key, encryptedData.iv);
 
   encrypt = async (password: any, string: any) => {
     try {

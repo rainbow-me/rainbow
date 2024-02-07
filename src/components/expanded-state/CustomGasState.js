@@ -9,12 +9,7 @@ import { Column } from '../layout';
 import { SlackSheet } from '../sheet';
 import { FeesPanel, FeesPanelTabs } from './custom-gas';
 import { getTrendKey } from '@/helpers/gas';
-import {
-  useColorForAsset,
-  useDimensions,
-  useGas,
-  useKeyboardHeight,
-} from '@/hooks';
+import { useColorForAsset, useDimensions, useGas, useKeyboardHeight } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { margin } from '@/styles';
@@ -40,18 +35,11 @@ const FeesPanelTabswrapper = styled(Column)(margin.object(19, 0, 24, 0));
 
 export default function CustomGasState({ asset }) {
   const { setParams } = useNavigation();
-  const {
-    params: { longFormHeight, speeds, openCustomOptions, fallbackColor } = {},
-  } = useRoute();
+  const { params: { longFormHeight, speeds, openCustomOptions, fallbackColor } = {} } = useRoute();
   const { colors } = useTheme();
   const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
-  const colorForAsset = useColorForAsset(
-    asset || {},
-    fallbackColor,
-    false,
-    true
-  );
+  const colorForAsset = useColorForAsset(asset || {}, fallbackColor, false, true);
   const { selectedGasFee, currentBlockParams, txNetwork } = useGas();
   const [canGoBack, setCanGoBack] = useState(true);
   const { tradeDetails } = useSelector(state => state.swap);
@@ -59,20 +47,11 @@ export default function CustomGasState({ asset }) {
   const validateGasParams = useRef(null);
   useAndroidDisableGesturesOnFocus();
 
-  const sheetHeightWithoutKeyboard =
-    CONTENT_HEIGHT +
-    FOOTER_HEIGHT +
-    (IS_ANDROID ? 20 + getSoftMenuBarHeight() : 0);
+  const sheetHeightWithoutKeyboard = CONTENT_HEIGHT + FOOTER_HEIGHT + (IS_ANDROID ? 20 + getSoftMenuBarHeight() : 0);
 
-  const sheetHeightWithKeyboard =
-    sheetHeightWithoutKeyboard +
-    keyboardHeight +
-    (deviceUtils.isSmallPhone ? 30 : 0);
+  const sheetHeightWithKeyboard = sheetHeightWithoutKeyboard + keyboardHeight + (deviceUtils.isSmallPhone ? 30 : 0);
 
-  const currentGasTrend = useMemo(
-    () => getTrendKey(currentBlockParams?.trend),
-    [currentBlockParams?.trend]
-  );
+  const currentGasTrend = useMemo(() => getTrendKey(currentBlockParams?.trend), [currentBlockParams?.trend]);
 
   useEffect(() => {
     setParams({ longFormHeight: sheetHeightWithKeyboard });

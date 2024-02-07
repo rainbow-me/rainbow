@@ -41,8 +41,8 @@ export default function SendButton({
         disabled && requiresChecks
           ? `􀄨 ${lang.t('wallet.transaction.complete_checks')}`
           : insufficientEth
-          ? lang.t('button.confirm_exchange.insufficient_funds')
-          : lang.t('button.hold_to_send')
+            ? lang.t('button.confirm_exchange.insufficient_funds')
+            : lang.t('button.hold_to_send')
       }
       onLongPress={onLongPress}
       parentHorizontalPadding={19}

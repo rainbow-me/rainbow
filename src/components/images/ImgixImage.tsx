@@ -20,10 +20,7 @@ type HiddenImgixImageProps = {
 type MergedImgixImageProps = ImgixImageProps & HiddenImgixImageProps;
 
 // ImgixImage must be a class Component to support Animated.createAnimatedComponent.
-class ImgixImage extends React.PureComponent<
-  MergedImgixImageProps,
-  ImgixImageProps & { retryCount: number }
-> {
+class ImgixImage extends React.PureComponent<MergedImgixImageProps, ImgixImageProps & { retryCount: number }> {
   static getDerivedStateFromProps(props: MergedImgixImageProps) {
     const { source, size, fm } = props;
     const options = {
@@ -36,10 +33,7 @@ class ImgixImage extends React.PureComponent<
 
     return {
       retryCount: 0,
-      source:
-        !!source && typeof source === 'object'
-          ? maybeSignSource(source, options)
-          : source,
+      source: !!source && typeof source === 'object' ? maybeSignSource(source, options) : source,
     };
   }
 
@@ -47,9 +41,7 @@ class ImgixImage extends React.PureComponent<
     const { onError, retryOnError, maxRetries = 5 } = this.props;
     const { retryCount } = this.state;
     // We don't want to retry if there is a 404.
-    const isNotFound =
-      err?.nativeEvent?.statusCode === 404 ||
-      err?.nativeEvent?.message?.includes('404');
+    const isNotFound = err?.nativeEvent?.statusCode === 404 || err?.nativeEvent?.message?.includes('404');
     const shouldRetry = retryOnError && !isNotFound;
 
     if (shouldRetry && retryCount < maxRetries) {
@@ -66,14 +58,7 @@ class ImgixImage extends React.PureComponent<
     // (The source prop may point to an untrusted URL.)
     const { retryCount, source } = this.state;
     const Component = maybeComponent || Image;
-    return (
-      <Component
-        {...props}
-        key={`${JSON.stringify(source)}-${retryCount}`}
-        onError={this.handleError}
-        source={source}
-      />
-    );
+    return <Component {...props} key={`${JSON.stringify(source)}-${retryCount}`} onError={this.handleError} source={source} />;
   }
 }
 
@@ -90,14 +75,7 @@ const preload = (sources: Source[], size?: number, fm?: string): void => {
   return;
 };
 
-const {
-  cacheControl,
-  clearDiskCache,
-  clearMemoryCache,
-  contextTypes,
-  priority,
-  resizeMode,
-} = FastImage;
+const { cacheControl, clearDiskCache, clearMemoryCache, contextTypes, priority, resizeMode } = FastImage;
 
 export default Object.assign(ImgixImage, {
   cacheControl,

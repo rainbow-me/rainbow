@@ -40,12 +40,7 @@ const Text = styled(UnstyledText).attrs(({ theme: { colors } }) => ({
 });
 
 const ModalHeaderButton = ({ label, onPress, side }) => (
-  <Container
-    {...(IS_ANDROID ? { borderColor: 'transparent' } : {})}
-    as={ios ? BorderlessButton : Button}
-    onPress={onPress}
-    side={side}
-  >
+  <Container {...(IS_ANDROID ? { borderColor: 'transparent' } : {})} as={ios ? BorderlessButton : Button} onPress={onPress} side={side}>
     <Row>
       {side === 'left' && <BackArrow />}
       <Text side={side}>{label}</Text>

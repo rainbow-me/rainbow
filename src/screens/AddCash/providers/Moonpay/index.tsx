@@ -12,13 +12,7 @@ import { moonpayGetWidgetURL } from '@/resources/f2c';
 import { WrappedAlert } from '@/helpers/alert';
 import * as lang from '@/languages';
 
-export function Moonpay({
-  accountAddress,
-  config,
-}: {
-  accountAddress: string;
-  config: ProviderConfig;
-}) {
+export function Moonpay({ accountAddress, config }: { accountAddress: string; config: ProviderConfig }) {
   return (
     <ButtonPressAnimation
       onPress={async () => {

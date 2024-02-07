@@ -44,11 +44,7 @@ const LocalSheetSubtitleCyclerItem = ({ error, selected, subtitle }: Props) => {
   const { colors } = useTheme();
 
   const colorProps = useAnimatedProps(() => {
-    const colorValue = interpolateColor(
-      colorProgress.value,
-      [0, 1],
-      [colors.blueGreyDark50, colors.brightRed]
-    );
+    const colorValue = interpolateColor(colorProgress.value, [0, 1], [colors.blueGreyDark50, colors.brightRed]);
 
     return {
       color: colorValue,

@@ -1,13 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import PQueue from 'p-queue/dist';
 
-import {
-  createQueryKey,
-  queryClient,
-  QueryConfig,
-  QueryFunctionArgs,
-  QueryFunctionResult,
-} from '@/react-query';
+import { createQueryKey, queryClient, QueryConfig, QueryFunctionArgs, QueryFunctionResult } from '@/react-query';
 import { getFirstTransactionTimestamp } from '@/utils/ethereumUtils';
 import { fetchENSAddress } from '../ens/ensAddressQuery';
 
@@ -21,18 +15,10 @@ export type FirstTransactionTimestampArgs = {
 // ///////////////////////////////////////////////
 // Query Key
 
-export const firstTransactionTimestampQueryKey = ({
-  addressOrName,
-}: FirstTransactionTimestampArgs) =>
-  createQueryKey(
-    'firstTransactionTimestamp',
-    { addressOrName },
-    { persisterVersion: 1 }
-  );
+export const firstTransactionTimestampQueryKey = ({ addressOrName }: FirstTransactionTimestampArgs) =>
+  createQueryKey('firstTransactionTimestamp', { addressOrName }, { persisterVersion: 1 });
 
-export type FirstTransactionTimestampQueryKey = ReturnType<
-  typeof firstTransactionTimestampQueryKey
->;
+export type FirstTransactionTimestampQueryKey = ReturnType<typeof firstTransactionTimestampQueryKey>;
 
 // ///////////////////////////////////////////////
 // Query Function
@@ -49,15 +35,11 @@ export async function firstTransactionTimestampQueryFunction({
     address = (await fetchENSAddress({ name: addressOrName })) ?? '';
   }
 
-  const timestamp = address
-    ? await queue.add(async () => getFirstTransactionTimestamp(address))
-    : null;
+  const timestamp = address ? await queue.add(async () => getFirstTransactionTimestamp(address)) : null;
   return timestamp ?? null;
 }
 
-export type FirstTransactionTimestampResult = QueryFunctionResult<
-  typeof firstTransactionTimestampQueryFunction
->;
+export type FirstTransactionTimestampResult = QueryFunctionResult<typeof firstTransactionTimestampQueryFunction>;
 
 // ///////////////////////////////////////////////
 // Query Prefetcher
@@ -67,17 +49,12 @@ export async function prefetchFirstTransactionTimestamp(
   {
     cacheTime = Infinity,
     staleTime = Infinity,
-  }: QueryConfig<
-    FirstTransactionTimestampResult,
-    Error,
-    FirstTransactionTimestampQueryKey
-  > = {}
+  }: QueryConfig<FirstTransactionTimestampResult, Error, FirstTransactionTimestampQueryKey> = {}
 ) {
-  return await queryClient.prefetchQuery(
-    firstTransactionTimestampQueryKey({ addressOrName }),
-    firstTransactionTimestampQueryFunction,
-    { cacheTime, staleTime }
-  );
+  return await queryClient.prefetchQuery(firstTransactionTimestampQueryKey({ addressOrName }), firstTransactionTimestampQueryFunction, {
+    cacheTime,
+    staleTime,
+  });
 }
 
 // ///////////////////////////////////////////////
@@ -85,20 +62,10 @@ export async function prefetchFirstTransactionTimestamp(
 
 export function useFirstTransactionTimestamp(
   { addressOrName }: FirstTransactionTimestampArgs,
-  {
-    enabled = true,
-  }: QueryConfig<
-    FirstTransactionTimestampResult,
-    Error,
-    FirstTransactionTimestampQueryKey
-  > = {}
+  { enabled = true }: QueryConfig<FirstTransactionTimestampResult, Error, FirstTransactionTimestampQueryKey> = {}
 ) {
-  return useQuery(
-    firstTransactionTimestampQueryKey({ addressOrName }),
-    firstTransactionTimestampQueryFunction,
-    {
-      enabled: enabled && Boolean(addressOrName),
-      staleTime: Infinity,
-    }
-  );
+  return useQuery(firstTransactionTimestampQueryKey({ addressOrName }), firstTransactionTimestampQueryFunction, {
+    enabled: enabled && Boolean(addressOrName),
+    staleTime: Infinity,
+  });
 }

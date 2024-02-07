@@ -24,9 +24,7 @@ export type RestoreSheetParams = {
 };
 
 export function RestoreSheet() {
-  const { params: { backups, userData, fromSettings } = {} } = useRoute<
-    RouteProp<RestoreSheetParams, 'RestoreSheet'>
-  >();
+  const { params: { backups, userData, fromSettings } = {} } = useRoute<RouteProp<RestoreSheetParams, 'RestoreSheet'>>();
 
   const { colors } = useTheme();
   const memoSettingsOptions = useMemo(() => settingsOptions(colors), [colors]);
@@ -34,14 +32,8 @@ export function RestoreSheet() {
   return (
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (
-        <SimpleSheet
-          backgroundColor={backgroundColor as string}
-          scrollEnabled={false}
-        >
-          <NativeStack.Navigator
-            initialRouteName={Routes.CHOOSE_BACKUP_SHEET}
-            screenOptions={{ ...memoSettingsOptions, title: '' }}
-          >
+        <SimpleSheet backgroundColor={backgroundColor as string} scrollEnabled={false}>
+          <NativeStack.Navigator initialRouteName={Routes.CHOOSE_BACKUP_SHEET} screenOptions={{ ...memoSettingsOptions, title: '' }}>
             <NativeStack.Screen
               component={ChooseBackupStep}
               initialParams={{ backups, userData, fromSettings }}

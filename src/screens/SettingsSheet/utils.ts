@@ -17,9 +17,7 @@ export const capitalizeFirstLetter = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
-export const checkWalletsForBackupStatus = (
-  wallets: WalletsByKey | null
-): WalletBackupStatus => {
+export const checkWalletsForBackupStatus = (wallets: WalletsByKey | null): WalletBackupStatus => {
   if (!wallets)
     return {
       allBackedUp: false,
@@ -37,19 +35,12 @@ export const checkWalletsForBackupStatus = (
     if (wallets[key].backedUp && wallets[key].type !== WalletTypes.readOnly) {
       if (wallets[key].backupType === WalletBackupTypes.cloud) {
         backupProvider = WalletBackupTypes.cloud;
-      } else if (
-        backupProvider !== WalletBackupTypes.cloud &&
-        wallets[key].backupType === WalletBackupTypes.manual
-      ) {
+      } else if (backupProvider !== WalletBackupTypes.cloud && wallets[key].backupType === WalletBackupTypes.manual) {
         backupProvider = WalletBackupTypes.manual;
       }
     }
 
-    if (
-      !wallets[key].backedUp &&
-      wallets[key].type !== WalletTypes.readOnly &&
-      wallets[key].type !== WalletTypes.bluetooth
-    ) {
+    if (!wallets[key].backedUp && wallets[key].type !== WalletTypes.readOnly && wallets[key].type !== WalletTypes.bluetooth) {
       allBackedUp = false;
     }
 
@@ -61,10 +52,7 @@ export const checkWalletsForBackupStatus = (
     ) {
       areBackedUp = false;
     }
-    if (
-      wallets[key].type !== WalletTypes.readOnly &&
-      wallets[key].type !== WalletTypes.readOnly
-    ) {
+    if (wallets[key].type !== WalletTypes.readOnly && wallets[key].type !== WalletTypes.readOnly) {
       canBeBackedUp = true;
     }
   });
@@ -76,9 +64,7 @@ export const checkWalletsForBackupStatus = (
   };
 };
 
-export const getWalletsThatNeedBackedUp = (
-  wallets: { [key: string]: RainbowWallet } | null
-): RainbowWallet[] => {
+export const getWalletsThatNeedBackedUp = (wallets: { [key: string]: RainbowWallet } | null): RainbowWallet[] => {
   if (!wallets) return [];
   const walletsToBackup: RainbowWallet[] = [];
   Object.keys(wallets).forEach(key => {

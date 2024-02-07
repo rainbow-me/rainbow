@@ -8,9 +8,7 @@ export default function useSendableUniqueTokens() {
     data: { nfts: uniqueTokens },
   } = useLegacyNFTs({ address: accountAddress });
 
-  const sendableUniqueTokens = uniqueTokens?.filter(
-    (uniqueToken: any) => uniqueToken.isSendable
-  );
+  const sendableUniqueTokens = uniqueTokens?.filter((uniqueToken: any) => uniqueToken.isSendable);
   const grouped = groupBy(sendableUniqueTokens, token => token.familyName);
   const families = Object.keys(grouped).sort();
   let sendableTokens = [];

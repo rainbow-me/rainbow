@@ -8,11 +8,7 @@ type NavbarIconProps = {
   color: string;
 };
 
-export function NavbarTextIcon({
-  backgroundOpacity,
-  icon,
-  color,
-}: NavbarIconProps) {
+export function NavbarTextIcon({ backgroundOpacity, icon, color }: NavbarIconProps) {
   const { colors, isDarkMode } = useTheme();
   const accentColor = color ?? colors.appleBlue;
 
@@ -21,10 +17,7 @@ export function NavbarTextIcon({
       borderRadius={18}
       height={{ custom: 36 }}
       style={{
-        backgroundColor: colors.alpha(
-          accentColor,
-          backgroundOpacity ?? (isDarkMode ? 0.2 : 0.1)
-        ),
+        backgroundColor: colors.alpha(accentColor, backgroundOpacity ?? (isDarkMode ? 0.2 : 0.1)),
       }}
       width={{ custom: 36 }}
     >
@@ -39,12 +32,7 @@ export function NavbarTextIcon({
         width="full"
       >
         <Cover alignHorizontal="center" alignVertical="center">
-          <Text
-            align="center"
-            color={{ custom: accentColor }}
-            size="icon 17px"
-            weight="bold"
-          >
+          <Text align="center" color={{ custom: accentColor }} size="icon 17px" weight="bold">
             {icon}
           </Text>
         </Cover>

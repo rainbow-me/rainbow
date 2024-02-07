@@ -45,11 +45,7 @@ export default function ExpandedAssetSheet(props) {
   const { params } = useRoute();
 
   return (
-    <Container
-      deviceHeight={deviceHeight}
-      height={params.longFormHeight}
-      insets={insets}
-    >
+    <Container deviceHeight={deviceHeight} height={params.longFormHeight} insets={insets}>
       {ios && <TouchableBackdrop onPress={goBack} />}
 
       {createElement(ScreenTypes[params.type], {

@@ -18,9 +18,7 @@ type ViewCloudBackupsParams = {
 };
 
 const ViewCloudBackups = () => {
-  const { params } = useRoute<
-    RouteProp<ViewCloudBackupsParams, 'ViewCloudBackups'>
-  >();
+  const { params } = useRoute<RouteProp<ViewCloudBackupsParams, 'ViewCloudBackups'>>();
 
   const { backups } = params;
   const { navigate } = useNavigation();
@@ -30,28 +28,29 @@ const ViewCloudBackups = () => {
       return !backup.name.includes('UserData.json');
     }
 
-    return (
-      backup.isFile && backup.size > 0 && !backup.name.includes('UserData.json')
-    );
+    return backup.isFile && backup.size > 0 && !backup.name.includes('UserData.json');
   });
-  const mostRecentBackup = cloudBackups.reduce((prev, current) => {
-    if (!current) {
+  const mostRecentBackup = cloudBackups.reduce(
+    (prev, current) => {
+      if (!current) {
+        return prev;
+      }
+
+      if (!prev) {
+        return current;
+      }
+
+      const prevTimestamp = parseTimestampFromFilename(prev.name);
+      const currentTimestamp = parseTimestampFromFilename(current.name);
+
+      if (currentTimestamp > prevTimestamp) {
+        return current;
+      }
+
       return prev;
-    }
-
-    if (!prev) {
-      return current;
-    }
-
-    const prevTimestamp = parseTimestampFromFilename(prev.name);
-    const currentTimestamp = parseTimestampFromFilename(current.name);
-
-    if (currentTimestamp > prevTimestamp) {
-      return current;
-    }
-
-    return prev;
-  }, undefined as Backup | undefined);
+    },
+    undefined as Backup | undefined
+  );
 
   const onSelectCloudBackup = useCallback(
     async (selectedBackup: Backup) => {
@@ -73,10 +72,7 @@ const ViewCloudBackups = () => {
         {mostRecentBackup && (
           <Menu
             description={i18n.t(i18n.l.back_up.cloud.latest_backup, {
-              date: format(
-                parseTimestampFromFilename(mostRecentBackup.name),
-                "M/d/yy 'at' h:mm a"
-              ),
+              date: format(parseTimestampFromFilename(mostRecentBackup.name), "M/d/yy 'at' h:mm a"),
             })}
           >
             <MenuItem
@@ -84,12 +80,7 @@ const ViewCloudBackups = () => {
               leftComponent={<MenuItem.TextIcon icon="􀣔" isLink />}
               size={52}
               onPress={() => onSelectCloudBackup(mostRecentBackup)}
-              titleComponent={
-                <MenuItem.Title
-                  isLink
-                  text={i18n.t(i18n.l.back_up.cloud.most_recent_backup)}
-                />
-              }
+              titleComponent={<MenuItem.Title isLink text={i18n.t(i18n.l.back_up.cloud.most_recent_backup)} />}
             />
           </Menu>
         )}
@@ -106,14 +97,8 @@ const ViewCloudBackups = () => {
                     <MenuItem.Title
                       isLink
                       text={i18n.t(i18n.l.back_up.cloud.older_backups_title, {
-                        date: format(
-                          parseTimestampFromFilename(backup.name),
-                          'M/d/yy'
-                        ),
-                        time: format(
-                          parseTimestampFromFilename(backup.name),
-                          'p'
-                        ),
+                        date: format(parseTimestampFromFilename(backup.name), 'M/d/yy'),
+                        time: format(parseTimestampFromFilename(backup.name), 'p'),
                       })}
                     />
                   }
@@ -125,12 +110,7 @@ const ViewCloudBackups = () => {
             <MenuItem
               disabled
               size={52}
-              titleComponent={
-                <MenuItem.Title
-                  disabled
-                  text={i18n.t(i18n.l.back_up.cloud.no_older_backups)}
-                />
-              }
+              titleComponent={<MenuItem.Title disabled text={i18n.t(i18n.l.back_up.cloud.no_older_backups)} />}
             />
           )}
         </Menu>

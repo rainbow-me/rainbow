@@ -36,18 +36,16 @@ const ChainIcon = styled(FastImage)({
   width: ({ containerSize }) => containerSize,
 });
 
-const IndicatorIconContainer = styled(Centered)(
-  ({ marginBottom, iconSize, badgeXPosition, badgeYPosition, position }) => ({
-    bottom: position === 'relative' ? 0 : badgeYPosition,
-    left: position === 'relative' ? 0 : badgeXPosition,
-    ...positions.sizeAsObject(iconSize),
-    elevation: 10,
-    marginBottom,
-    overflow: 'visible',
-    position: position || 'absolute',
-    zIndex: 10,
-  })
-);
+const IndicatorIconContainer = styled(Centered)(({ marginBottom, iconSize, badgeXPosition, badgeYPosition, position }) => ({
+  bottom: position === 'relative' ? 0 : badgeYPosition,
+  left: position === 'relative' ? 0 : badgeXPosition,
+  ...positions.sizeAsObject(iconSize),
+  elevation: 10,
+  marginBottom,
+  overflow: 'visible',
+  position: position || 'absolute',
+  zIndex: 10,
+}));
 
 export default function ChainBadge({
   network,
@@ -107,11 +105,7 @@ export default function ChainBadge({
       marginBottom={marginBottom}
       position={position}
     >
-      <ChainIcon
-        containerSize={containerSize}
-        iconSize={iconSize}
-        source={source}
-      />
+      <ChainIcon containerSize={containerSize} iconSize={iconSize} source={source} />
     </IndicatorIconContainer>
   );
 }

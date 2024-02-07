@@ -21,34 +21,27 @@ const PillGradient = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
   ...(android ? { marginHorizontal: 5 } : {}),
 });
 
-const NumberInput = styled(TextInputMask).attrs(
-  ({ theme: { colors }, value }) => ({
-    color: !value && colors.alpha(colors.blueGreyDark, 0.4),
-    interval: 1,
-    keyboardAppearance: 'dark',
-    keyboardType: 'decimal-pad',
-    letterSpacing: 'rounded',
-    size: 'lmedium',
-    textAlign: 'left',
-    timing: 'linear',
-    weight: 'heavy',
-    ...(ios && {
-      height: '100%',
-      left: 22,
-      paddingLeft: 28,
-      paddingRight: 72,
-      paddingVertical: 10.5,
-    }),
-  })
-)(props => ({
+const NumberInput = styled(TextInputMask).attrs(({ theme: { colors }, value }) => ({
+  color: !value && colors.alpha(colors.blueGreyDark, 0.4),
+  interval: 1,
+  keyboardAppearance: 'dark',
+  keyboardType: 'decimal-pad',
+  letterSpacing: 'rounded',
+  size: 'lmedium',
+  textAlign: 'left',
+  timing: 'linear',
+  weight: 'heavy',
+  ...(ios && {
+    height: '100%',
+    left: 22,
+    paddingLeft: 28,
+    paddingRight: 72,
+    paddingVertical: 10.5,
+  }),
+}))(props => ({
   ...buildTextStyles.object(props),
   ...(android ? padding.object(0, 0, 0, 0) : {}),
-  ...margin.object(
-    android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
-    0,
-    android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
-    0
-  ),
+  ...margin.object(android ? -ANDROID_EXTRA_LINE_HEIGHT : 0, 0, android ? -ANDROID_EXTRA_LINE_HEIGHT : 0, 0),
 }));
 
 const Label = styled(Text).attrs(() => ({
@@ -57,20 +50,12 @@ const Label = styled(Text).attrs(() => ({
   size: 'large',
   weight: 'heavy',
 }))({
-  ...margin.object(
-    android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
-    0,
-    android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
-    0
-  ),
+  ...margin.object(android ? -ANDROID_EXTRA_LINE_HEIGHT : 0, 0, android ? -ANDROID_EXTRA_LINE_HEIGHT : 0, 0),
   ...(ios ? { right: 40 } : {}),
   top: android ? -0.5 : 8.5,
 });
 
-function InputPill(
-  { color, label, onChange: onChangeCallback, onFocus, onBlur, testID, value },
-  ref
-) {
+function InputPill({ color, label, onChange: onChangeCallback, onFocus, onBlur, testID, value }, ref) {
   const { colors } = useTheme();
 
   const onChangeText = useCallback(

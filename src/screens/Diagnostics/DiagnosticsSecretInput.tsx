@@ -9,13 +9,7 @@ import { TextInput } from 'react-native';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Text } from '@/components/text';
 
-export const DiagnosticsSecretInput = ({
-  value,
-  color,
-}: {
-  value: string;
-  color: string;
-}) => {
+export const DiagnosticsSecretInput = ({ value, color }: { value: string; color: string }) => {
   const { colors } = useTheme();
   const handleCopy = useCallback(() => {
     Alert.alert(

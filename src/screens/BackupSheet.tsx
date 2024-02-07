@@ -12,12 +12,7 @@ import { cloudPlatform } from '../utils/platform';
 import { analytics } from '@/analytics';
 import showWalletErrorAlert from '@/helpers/support';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import {
-  useDimensions,
-  useRouteExistsInNavigationState,
-  useWalletCloudBackup,
-  useWallets,
-} from '@/hooks';
+import { useDimensions, useRouteExistsInNavigationState, useWalletCloudBackup, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 
@@ -40,18 +35,10 @@ export default function BackupSheet() {
   const { height: deviceHeight } = useDimensions();
   const { goBack, navigate, setParams } = useNavigation();
   const walletCloudBackup = useWalletCloudBackup();
-  const {
-    params: {
-      longFormHeight = 0,
-      step = WalletBackupStepTypes.first,
-      walletId = selectedWallet.id,
-      nativeScreen = false,
-    } = {},
-  } = useRoute<RouteProp<BackupSheetParams, 'BackupSheet'>>();
+  const { params: { longFormHeight = 0, step = WalletBackupStepTypes.first, walletId = selectedWallet.id, nativeScreen = false } = {} } =
+    useRoute<RouteProp<BackupSheetParams, 'BackupSheet'>>();
 
-  const isSettingsRoute = useRouteExistsInNavigationState(
-    Routes.SETTINGS_SHEET
-  );
+  const isSettingsRoute = useRouteExistsInNavigationState(Routes.SETTINGS_SHEET);
 
   const handleNoLatestBackup = useCallback(() => {
     if (android) {
@@ -111,15 +98,7 @@ export default function BackupSheet() {
       onSuccess,
       walletId,
     });
-  }, [
-    isDamaged,
-    walletCloudBackup,
-    handleNoLatestBackup,
-    handlePasswordNotFound,
-    onSuccess,
-    walletId,
-    goBack,
-  ]);
+  }, [isDamaged, walletCloudBackup, handleNoLatestBackup, handlePasswordNotFound, onSuccess, walletId, goBack]);
 
   const onManualBackup = useCallback(() => {
     analytics.track('Tapped "Back up manually"');
@@ -182,15 +161,10 @@ export default function BackupSheet() {
             onSecondaryAction={onManualBackup}
             primaryButtonTestId="backup-sheet-default-back-up-button"
             secondaryButtonTestId="backup-sheet-default-manual-back-up-button"
-            primaryLabel={`􀙶 ${lang.t(
-              lang.l.modal.back_up.default.button.cloud_platform,
-              {
-                cloudPlatformName: cloudPlatform,
-              }
-            )}`}
-            secondaryLabel={`🤓 ${lang.t(
-              lang.l.modal.back_up.default.button.manual
-            )}`}
+            primaryLabel={`􀙶 ${lang.t(lang.l.modal.back_up.default.button.cloud_platform, {
+              cloudPlatformName: cloudPlatform,
+            })}`}
+            secondaryLabel={`🤓 ${lang.t(lang.l.modal.back_up.default.button.manual)}`}
             titleText={lang.t(lang.l.modal.back_up.default.title)}
             type="Default"
           />
@@ -198,22 +172,12 @@ export default function BackupSheet() {
     }
   }, [goBack, onBackupNow, onIcloudBackup, onManualBackup, step]);
 
-  let sheetHeight =
-    android && !nativeScreen
-      ? AndroidHeight
-      : longFormHeight + getSoftMenuBarHeight();
-  const wrapperHeight =
-    deviceHeight +
-    (android && !nativeScreen ? AndroidHeight : longFormHeight) +
-    getSoftMenuBarHeight();
+  let sheetHeight = android && !nativeScreen ? AndroidHeight : longFormHeight + getSoftMenuBarHeight();
+  const wrapperHeight = deviceHeight + (android && !nativeScreen ? AndroidHeight : longFormHeight) + getSoftMenuBarHeight();
   let additionalTopPadding = android && !nativeScreen;
 
   // If the sheet is full screen we should handle the sheet heights and padding differently
-  if (
-    android &&
-    (step === WalletBackupStepTypes.cloud ||
-      step === WalletBackupStepTypes.manual)
-  ) {
+  if (android && (step === WalletBackupStepTypes.cloud || step === WalletBackupStepTypes.manual)) {
     sheetHeight = deviceHeight - 40;
     additionalTopPadding = true;
   }
@@ -225,10 +189,7 @@ export default function BackupSheet() {
 
   return (
     <Column height={wrapperHeight} testID="backup-sheet">
-      <SlackSheet
-        additionalTopPadding={additionalTopPadding}
-        contentHeight={sheetHeight}
-      >
+      <SlackSheet additionalTopPadding={additionalTopPadding} contentHeight={sheetHeight}>
         {renderStep()}
       </SlackSheet>
     </Column>

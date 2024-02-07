@@ -20,10 +20,7 @@ const getHeightForType = (type: EthereumWalletType) => {
   return 240;
 };
 
-export function SecretDisplayCard({
-  seed,
-  type = EthereumWalletType.seed,
-}: SecretDisplayCardProps) {
+export function SecretDisplayCard({ seed, type = EthereumWalletType.seed }: SecretDisplayCardProps) {
   return (
     <Centered>
       <Inset vertical="10px">
@@ -35,21 +32,11 @@ export function SecretDisplayCard({
           paddingVertical="19px (Deprecated)"
           shadow="21px light (Deprecated)"
         >
-          <CopyTooltip
-            textToCopy={seed}
-            tooltipText={i18n.t(i18n.l.back_up.secret.copy_to_clipboard)}
-          >
+          <CopyTooltip textToCopy={seed} tooltipText={i18n.t(i18n.l.back_up.secret.copy_to_clipboard)}>
             <Box alignItems="center" height="full" justifyContent="center">
-              {seed && type === WalletTypes.mnemonic && (
-                <SeedWordGrid seed={seed} />
-              )}
+              {seed && type === WalletTypes.mnemonic && <SeedWordGrid seed={seed} />}
               {seed && type === WalletTypes.privateKey && (
-                <Text
-                  align="center"
-                  weight="semibold"
-                  lineHeight="looser"
-                  size={IS_ANDROID ? 'smedium' : 'lmedium'}
-                >
+                <Text align="center" weight="semibold" lineHeight="looser" size={IS_ANDROID ? 'smedium' : 'lmedium'}>
                   {seed}
                 </Text>
               )}

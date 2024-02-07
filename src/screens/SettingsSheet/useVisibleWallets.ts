@@ -25,14 +25,10 @@ type UseVisibleWalletReturnType = {
   lastBackupDate: number | undefined;
 };
 
-export const useVisibleWallets = ({
-  wallets,
-}: UseVisibleWalletProps): UseVisibleWalletReturnType => {
+export const useVisibleWallets = ({ wallets }: UseVisibleWalletProps): UseVisibleWalletReturnType => {
   const [sumPrivateKeyWallets, setSumPrivateKeyWallets] = useState(0);
   const [sumSecretPhraseWallets, setSumSecretPhraseWallets] = useState(0);
-  const [lastBackupDate, setLastBackupDate] = useState<number | undefined>(
-    undefined
-  );
+  const [lastBackupDate, setLastBackupDate] = useState<number | undefined>(undefined);
 
   if (!wallets) {
     return {
@@ -43,21 +39,13 @@ export const useVisibleWallets = ({
 
   return {
     visibleWallets: Object.keys(wallets)
-      .filter(
-        key =>
-          wallets[key].type !== WalletTypes.readOnly &&
-          wallets[key].type !== WalletTypes.bluetooth
-      )
+      .filter(key => wallets[key].type !== WalletTypes.readOnly && wallets[key].type !== WalletTypes.bluetooth)
       .map(key => {
         const wallet = wallets[key];
         const visibleAccounts = wallet.addresses.filter(a => a.visible);
         const totalAccounts = visibleAccounts.length;
 
-        if (
-          wallet.backedUp &&
-          wallet.backupDate &&
-          (!lastBackupDate || wallet.backupDate > lastBackupDate)
-        ) {
+        if (wallet.backedUp && wallet.backupDate && (!lastBackupDate || wallet.backupDate > lastBackupDate)) {
           setLastBackupDate(wallet.backupDate);
         }
 
@@ -73,10 +61,7 @@ export const useVisibleWallets = ({
           }
         }
 
-        if (
-          wallet.type === WalletTypes.mnemonic ||
-          wallet.type === WalletTypes.seed
-        ) {
+        if (wallet.type === WalletTypes.mnemonic || wallet.type === WalletTypes.seed) {
           if (sumSecretPhraseWallets > 1) {
             setSumSecretPhraseWallets(prev => {
               name = `Secret Phrease ${prev}`;

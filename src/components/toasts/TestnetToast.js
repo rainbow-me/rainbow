@@ -32,12 +32,7 @@ const TestnetToast = ({ network, web3Provider }) => {
 
   return (
     <Toast isVisible={visible} testID={`testnet-toast-${networkName}`}>
-      <Icon
-        color={isDarkMode ? networkColors.dark : networkColors.light}
-        marginHorizontal={5}
-        marginTop={1}
-        name="dot"
-      />
+      <Icon color={isDarkMode ? networkColors.dark : networkColors.light} marginHorizontal={5} marginTop={1} name="dot" />
       <Text color={colors.white} size="smedium" weight="semibold">
         <Nbsp /> {networkName} <Nbsp />
       </Text>

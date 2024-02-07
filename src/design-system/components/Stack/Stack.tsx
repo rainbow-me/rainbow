@@ -1,9 +1,4 @@
-import React, {
-  Children,
-  isValidElement,
-  ReactElement,
-  ReactNode,
-} from 'react';
+import React, { Children, isValidElement, ReactElement, ReactNode } from 'react';
 import flattenChildren from 'react-flatten-children';
 import { Space } from '../../layout/space';
 import { Box } from '../Box/Box';
@@ -33,47 +28,24 @@ export type StackProps = {
  * within each other for layouts with differing amounts of space between groups
  * of content.
  */
-export function Stack({
-  children: childrenProp,
-  alignHorizontal,
-  separator,
-  space,
-  width,
-}: StackProps) {
+export function Stack({ children: childrenProp, alignHorizontal, separator, space, width }: StackProps) {
   if (__DEV__ && separator && !isValidElement(separator)) {
     throw new Error(`Stack: The 'separator' prop must be a React element`);
   }
 
-  const children = flattenChildren(childrenProp).filter(child =>
-    isValidElement(child)
-  );
+  const children = flattenChildren(childrenProp).filter(child => isValidElement(child));
 
   return (
-    <Box
-      width={width}
-      alignItems={
-        alignHorizontal
-          ? alignHorizontalToFlexAlign[alignHorizontal]
-          : undefined
-      }
-    >
+    <Box width={width} alignItems={alignHorizontal ? alignHorizontalToFlexAlign[alignHorizontal] : undefined}>
       {Children.map(children, (child, index) => {
         const isLastChild = index === children.length - 1;
 
         return (
           <>
-            {space && !isLastChild ? (
-              <Box paddingBottom={space}>{child}</Box>
-            ) : (
-              child
-            )}
+            {space && !isLastChild ? <Box paddingBottom={space}>{child}</Box> : child}
             {separator && !isLastChild ? (
               <Box
-                alignItems={
-                  alignHorizontal
-                    ? alignHorizontalToFlexAlign[alignHorizontal]
-                    : undefined
-                }
+                alignItems={alignHorizontal ? alignHorizontalToFlexAlign[alignHorizontal] : undefined}
                 paddingBottom={space}
                 width="full"
               >

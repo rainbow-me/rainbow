@@ -3,9 +3,7 @@ import { ViewPropTypes } from 'deprecated-react-native-prop-types';
 import styled from '@/styled-thing';
 import { buildTextStyles } from '@/styles';
 
-const Text = styled.Text.attrs({ allowFontScaling: false })(
-  buildTextStyles.object
-);
+const Text = styled.Text.attrs({ allowFontScaling: false })(buildTextStyles.object);
 
 Text.propTypes = {
   align: PropTypes.oneOf(['auto', 'center', 'left', 'justify', 'right']),

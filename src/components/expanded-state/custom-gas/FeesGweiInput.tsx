@@ -36,14 +36,7 @@ type FeesGweiInputProps = {
   testID: string;
 };
 
-const GweiStepButton = ({
-  buttonColor,
-  onLongPress,
-  onLongPressEnded,
-  onPress,
-  type,
-  shouldLongPressHoldPress,
-}: GweiStepButtonProps) => {
+const GweiStepButton = ({ buttonColor, onLongPress, onLongPressEnded, onPress, type, shouldLongPressHoldPress }: GweiStepButtonProps) => {
   return (
     <Box
       as={ButtonPressAnimation}
@@ -60,11 +53,7 @@ const GweiStepButton = ({
       margin="-4px"
       marginTop={IS_ANDROID ? '-2px' : undefined}
     >
-      <Text
-        size="icon 16px"
-        color={{ custom: buttonColor || colors.appleBlue }}
-        weight="heavy"
-      >
+      <Text size="icon 16px" color={{ custom: buttonColor || colors.appleBlue }} weight="heavy">
         {type === 'plus' ? '􀁍' : '􀁏'}
       </Text>
     </Box>

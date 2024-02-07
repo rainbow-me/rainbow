@@ -44,9 +44,7 @@ type MenuEvent = {
 };
 
 const ViewWalletBackup = () => {
-  const { params } = useRoute<
-    RouteProp<ViewWalletBackupParams, 'ViewWalletBackup'>
-  >();
+  const { params } = useRoute<RouteProp<ViewWalletBackupParams, 'ViewWalletBackup'>>();
 
   const { walletId, title: incomingTitle } = params;
   const { wallets } = useWallets();
@@ -54,16 +52,11 @@ const ViewWalletBackup = () => {
 
   const isSecretPhrase = WalletTypes.mnemonic === wallet?.type;
 
-  const title =
-    wallet?.type === WalletTypes.privateKey
-      ? wallet?.addresses[0].label
-      : incomingTitle;
+  const title = wallet?.type === WalletTypes.privateKey ? wallet?.addresses[0].label : incomingTitle;
 
   const { navigate } = useNavigation();
 
-  const [isToastActive, setToastActive] = useRecoilState(
-    addressCopiedToastAtom
-  );
+  const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
 
   const enableCloudBackups = useCallback(() => {
     navigate(Routes.BACKUP_SHEET, {
@@ -126,10 +119,7 @@ const ViewWalletBackup = () => {
     ],
   };
 
-  const onPressMenuItem = ({
-    nativeEvent: { actionKey: menuAction },
-    address,
-  }: MenuEvent) => {
+  const onPressMenuItem = ({ nativeEvent: { actionKey: menuAction }, address }: MenuEvent) => {
     switch (menuAction) {
       case WalletMenuAction.ViewPrivateKey: {
         // TODO: How do we get the private key from an individual account inside of a wallet?
@@ -158,22 +148,13 @@ const ViewWalletBackup = () => {
             <MenuHeader
               paddingTop={{ custom: 8 }}
               paddingBottom={{ custom: 24 }}
-              iconComponent={
-                <MenuHeader.ImageIcon source={BackupWarningIcon} size={72} />
-              }
-              titleComponent={
-                <MenuHeader.Title
-                  text={i18n.t(i18n.l.wallet.back_ups.not_backed_up)}
-                  weight="heavy"
-                />
-              }
+              iconComponent={<MenuHeader.ImageIcon source={BackupWarningIcon} size={72} />}
+              titleComponent={<MenuHeader.Title text={i18n.t(i18n.l.wallet.back_ups.not_backed_up)} weight="heavy" />}
               labelComponent={
                 <Box marginTop={{ custom: 16 }}>
                   <MenuHeader.Label
                     text={i18n.t(i18n.l.wallet.back_ups.not_backed_up_message, {
-                      backupType: isSecretPhrase
-                        ? 'Secret Phrase'
-                        : 'Private Key',
+                      backupType: isSecretPhrase ? 'Secret Phrase' : 'Private Key',
                     })}
                   />
                 </Box>
@@ -187,24 +168,14 @@ const ViewWalletBackup = () => {
               leftComponent={<MenuItem.TextIcon icon="􀊯" isLink />}
               onPress={enableCloudBackups}
               size={52}
-              titleComponent={
-                <MenuItem.Title
-                  isLink
-                  text={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)}
-                />
-              }
+              titleComponent={<MenuItem.Title isLink text={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)} />}
             />
             <MenuItem
               hasSfSymbol
               leftComponent={<MenuItem.TextIcon icon="􀈊" isLink />}
               onPress={onManualBackup}
               size={52}
-              titleComponent={
-                <MenuItem.Title
-                  isLink
-                  text={i18n.t(i18n.l.back_up.manual.backup_manually)}
-                />
-              }
+              titleComponent={<MenuItem.Title isLink text={i18n.t(i18n.l.back_up.manual.backup_manually)} />}
             />
           </Menu>
         </>
@@ -218,11 +189,7 @@ const ViewWalletBackup = () => {
               paddingBottom={{ custom: 24 }}
               iconComponent={
                 <MenuHeader.ImageIcon
-                  source={
-                    wallet.backupType === walletBackupTypes.cloud
-                      ? CloudBackedUpIcon
-                      : ManuallyBackedUpIcon
-                  }
+                  source={wallet.backupType === walletBackupTypes.cloud ? CloudBackedUpIcon : ManuallyBackedUpIcon}
                   size={72}
                 />
               }
@@ -241,16 +208,11 @@ const ViewWalletBackup = () => {
                   <MenuHeader.Label
                     text={
                       wallet.backupType === walletBackupTypes.cloud
-                        ? i18n.t(
-                            i18n.l.wallet.back_ups.backed_up_to_cloud_message,
-                            {
-                              cloudPlatform,
-                            }
-                          )
+                        ? i18n.t(i18n.l.wallet.back_ups.backed_up_to_cloud_message, {
+                            cloudPlatform,
+                          })
                         : i18n.t(i18n.l.wallet.back_ups.backed_up_message, {
-                            backupType: isSecretPhrase
-                              ? 'Secret Phrase'
-                              : 'Private Key',
+                            backupType: isSecretPhrase ? 'Secret Phrase' : 'Private Key',
                           })
                     }
                   />
@@ -262,18 +224,14 @@ const ViewWalletBackup = () => {
           <Menu>
             <MenuItem
               hasSfSymbol
-              leftComponent={
-                <MenuItem.TextIcon icon={isSecretPhrase ? '􀉆' : '􀟖'} isLink />
-              }
+              leftComponent={<MenuItem.TextIcon icon={isSecretPhrase ? '􀉆' : '􀟖'} isLink />}
               onPress={onNavigateToSecretWarning}
               size={52}
               titleComponent={
                 <MenuItem.Title
                   isLink
                   text={
-                    isSecretPhrase
-                      ? i18n.t(i18n.l.wallet.back_ups.view_secret_phrase)
-                      : i18n.t(i18n.l.wallet.back_ups.view_private_key)
+                    isSecretPhrase ? i18n.t(i18n.l.wallet.back_ups.view_secret_phrase) : i18n.t(i18n.l.wallet.back_ups.view_private_key)
                   }
                 />
               }
@@ -301,30 +259,15 @@ const ViewWalletBackup = () => {
                     value={addressHashedEmoji(address)}
                   />
                 }
-                labelComponent={
-                  label.endsWith('.eth') ? (
-                    <MenuItem.Label
-                      text={abbreviations.address(address, 3, 5) || ''}
-                    />
-                  ) : null
-                }
+                labelComponent={label.endsWith('.eth') ? <MenuItem.Label text={abbreviations.address(address, 3, 5) || ''} /> : null}
                 titleComponent={
                   <MenuItem.Title
-                    text={
-                      label.endsWith('.eth')
-                        ? removeFirstEmojiFromString(label)
-                        : abbreviations.address(address, 3, 5) || ''
-                    }
+                    text={label.endsWith('.eth') ? removeFirstEmojiFromString(label) : abbreviations.address(address, 3, 5) || ''}
                     weight="semibold"
                   />
                 }
                 rightComponent={
-                  <ContextMenuButton
-                    menuConfig={menuConfig}
-                    onPressMenuItem={(e: MenuEvent) =>
-                      onPressMenuItem({ ...e, address })
-                    }
-                  >
+                  <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={(e: MenuEvent) => onPressMenuItem({ ...e, address })}>
                     <MenuItem.TextIcon icon="􀍡" />
                   </ContextMenuButton>
                 }
@@ -333,22 +276,13 @@ const ViewWalletBackup = () => {
         </Menu>
 
         {wallet?.type !== WalletTypes.privateKey && (
-          <Menu
-            description={i18n.t(
-              i18n.l.wallet.back_ups.create_new_wallet_description
-            )}
-          >
+          <Menu description={i18n.t(i18n.l.wallet.back_ups.create_new_wallet_description)}>
             <MenuItem
               hasSfSymbol
               leftComponent={<MenuItem.TextIcon icon="􀁍" isLink />}
               onPress={onCreateNewWallet}
               size={52}
-              titleComponent={
-                <MenuItem.Title
-                  isLink
-                  text={i18n.t(i18n.l.wallet.back_ups.create_new_wallet)}
-                />
-              }
+              titleComponent={<MenuItem.Title isLink text={i18n.t(i18n.l.wallet.back_ups.create_new_wallet)} />}
             />
           </Menu>
         )}

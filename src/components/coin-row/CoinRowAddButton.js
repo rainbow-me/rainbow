@@ -23,12 +23,10 @@ const AddButton = styled(Centered)({
   width: 68,
 });
 
-const Circle = styled(IS_TESTING === 'true' ? View : RadialGradient).attrs(
-  ({ theme: { colors } }) => ({
-    center: [0, 15],
-    colors: colors.gradients.lightestGrey,
-  })
-)({
+const Circle = styled(IS_TESTING === 'true' ? View : RadialGradient).attrs(({ theme: { colors } }) => ({
+  center: [0, 15],
+  colors: colors.gradients.lightestGrey,
+}))({
   borderRadius: 15,
   height: 30,
   overflow: 'hidden',

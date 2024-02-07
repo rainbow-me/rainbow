@@ -6,15 +6,7 @@ import { Signer } from '@ethersproject/abstract-signer';
 import lang from 'i18n-js';
 import { atom } from 'recoil';
 import { InlineFieldProps } from '../components/inputs/InlineField';
-import {
-  add,
-  addBuffer,
-  convertAmountAndPriceToNativeDisplay,
-  divide,
-  fromWei,
-  handleSignificantDecimals,
-  multiply,
-} from './utilities';
+import { add, addBuffer, convertAmountAndPriceToNativeDisplay, divide, fromWei, handleSignificantDecimals, multiply } from './utilities';
 import { ENSRegistrationRecords, EthereumAddress } from '@/entities';
 import { getProviderForNetwork, toHex } from '@/handlers/web3';
 import { gweiToWei } from '@/parsers';
@@ -36,10 +28,8 @@ import { encodeContenthash, isValidContenthash } from '@/utils/contenthash';
 
 export const ENS_SECONDS_WAIT = 60;
 export const ENS_SECONDS_PADDING = 5;
-export const ENS_SECONDS_WAIT_WITH_PADDING =
-  ENS_SECONDS_WAIT + ENS_SECONDS_PADDING;
-export const ENS_SECONDS_WAIT_PROVIDER_PADDING =
-  ENS_SECONDS_WAIT + 4 * ENS_SECONDS_PADDING;
+export const ENS_SECONDS_WAIT_WITH_PADDING = ENS_SECONDS_WAIT + ENS_SECONDS_PADDING;
+export const ENS_SECONDS_WAIT_PROVIDER_PADDING = ENS_SECONDS_WAIT + 4 * ENS_SECONDS_PADDING;
 
 export enum ENSRegistrationTransactionType {
   COMMIT = 'commit',
@@ -144,10 +134,7 @@ export const textRecordFields = {
     placeholder: lang.t('profiles.create.website_placeholder'),
     validation: {
       message: lang.t('profiles.create.invalid_website'),
-      validator: value =>
-        /[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/.test(
-          value
-        ),
+      validator: value => /[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/.test(value),
     },
   },
   [ENS_RECORDS.twitter]: {
@@ -379,61 +366,32 @@ export const deprecatedTextRecordFields = {
 
 export const ENS_DOMAIN = '.eth';
 
-const getENSRegistrarControllerContract = async (
-  wallet?: Signer,
-  registrarAddress?: string
-) => {
+const getENSRegistrarControllerContract = async (wallet?: Signer, registrarAddress?: string) => {
   const signerOrProvider = wallet || (await getProviderForNetwork());
-  return new Contract(
-    registrarAddress || ensETHRegistrarControllerAddress,
-    ENSETHRegistrarControllerABI,
-    signerOrProvider
-  );
+  return new Contract(registrarAddress || ensETHRegistrarControllerAddress, ENSETHRegistrarControllerABI, signerOrProvider);
 };
 
-const getENSPublicResolverContract = async (
-  wallet?: Signer,
-  resolverAddress?: EthereumAddress
-) => {
+const getENSPublicResolverContract = async (wallet?: Signer, resolverAddress?: EthereumAddress) => {
   const signerOrProvider = wallet || (await getProviderForNetwork());
-  return new Contract(
-    resolverAddress || ensPublicResolverAddress,
-    ENSPublicResolverABI,
-    signerOrProvider
-  );
+  return new Contract(resolverAddress || ensPublicResolverAddress, ENSPublicResolverABI, signerOrProvider);
 };
 
 const getENSReverseRegistrarContract = async (wallet?: Signer) => {
   const signerOrProvider = wallet || (await getProviderForNetwork());
-  return new Contract(
-    ensReverseRegistrarAddress,
-    ENSReverseRegistrarABI,
-    signerOrProvider
-  );
+  return new Contract(ensReverseRegistrarAddress, ENSReverseRegistrarABI, signerOrProvider);
 };
 
 const getENSBaseRegistrarImplementationContract = async (wallet?: Signer) => {
   const signerOrProvider = wallet || (await getProviderForNetwork());
-  return new Contract(
-    ensBaseRegistrarImplementationAddress,
-    ENSBaseRegistrarImplementationABI,
-    signerOrProvider
-  );
+  return new Contract(ensBaseRegistrarImplementationAddress, ENSBaseRegistrarImplementationABI, signerOrProvider);
 };
 
 const getENSRegistryContract = async (wallet?: Signer) => {
   const signerOrProvider = wallet ?? (await getProviderForNetwork());
-  return new Contract(
-    ensRegistryAddress,
-    ENSRegistryWithFallbackABI,
-    signerOrProvider
-  );
+  return new Contract(ensRegistryAddress, ENSRegistryWithFallbackABI, signerOrProvider);
 };
 
-const getAvailable = async (
-  name: string,
-  contract?: Contract
-): Promise<boolean> => {
+const getAvailable = async (name: string, contract?: Contract): Promise<boolean> => {
   const ensContract = contract ?? (await getENSRegistrarControllerContract());
   return ensContract.available(name);
 };
@@ -448,20 +406,12 @@ const getNameOwner = async (name: string): Promise<string> => {
   return contract.owner(hash(name));
 };
 
-const getRentPrice = async (
-  name: string,
-  duration: number,
-  contract?: Contract
-): Promise<any> => {
+const getRentPrice = async (name: string, duration: number, contract?: Contract): Promise<any> => {
   const ensContract = contract ?? (await getENSRegistrarControllerContract());
   return ensContract.rentPrice(name, duration);
 };
 
-const setupMulticallRecords = (
-  name: string,
-  records: ENSRegistrationRecords,
-  resolverInstance: Contract
-): string[] => {
+const setupMulticallRecords = (name: string, records: ENSRegistrationRecords, resolverInstance: Contract): string[] => {
   const resolver = resolverInstance.interface;
   const namehash = hash(name);
 
@@ -469,31 +419,14 @@ const setupMulticallRecords = (
   // ens associated address
   const ensAssociatedRecord = records.ensAssociatedAddress;
 
-  if (
-    Boolean(ensAssociatedRecord) &&
-    typeof ensAssociatedRecord === 'string' &&
-    parseInt(ensAssociatedRecord, 16) !== 0
-  ) {
-    data.push(
-      resolver.encodeFunctionData('setAddr(bytes32,address)', [
-        namehash,
-        ensAssociatedRecord,
-      ])
-    );
+  if (Boolean(ensAssociatedRecord) && typeof ensAssociatedRecord === 'string' && parseInt(ensAssociatedRecord, 16) !== 0) {
+    data.push(resolver.encodeFunctionData('setAddr(bytes32,address)', [namehash, ensAssociatedRecord]));
   }
   if (typeof records.contenthash === 'string') {
     // content hash address
-    const { encoded: encodedContentHash } = encodeContenthash(
-      records.contenthash || ''
-    );
-    const contentHashAssociatedRecord =
-      records.contenthash === '' ? Buffer.from('') : encodedContentHash;
-    data.push(
-      resolver.encodeFunctionData('setContenthash', [
-        namehash,
-        contentHashAssociatedRecord,
-      ])
-    );
+    const { encoded: encodedContentHash } = encodeContenthash(records.contenthash || '');
+    const contentHashAssociatedRecord = records.contenthash === '' ? Buffer.from('') : encodedContentHash;
+    data.push(resolver.encodeFunctionData('setContenthash', [namehash, contentHashAssociatedRecord]));
   }
   // coin addresses
   const coinAddressesAssociatedRecord = records.coinAddress;
@@ -507,11 +440,7 @@ const setupMulticallRecords = (
         } else {
           addressAsBytes = decoder(coinRecord.address);
         }
-        return resolver.encodeFunctionData('setAddr(bytes32,uint256,bytes)', [
-          namehash,
-          coinType,
-          addressAsBytes,
-        ]);
+        return resolver.encodeFunctionData('setAddr(bytes32,uint256,bytes)', [namehash, coinType, addressAsBytes]);
       })
     );
   }
@@ -520,15 +449,9 @@ const setupMulticallRecords = (
   if (textAssociatedRecord) {
     data.push(
       textAssociatedRecord
-        .filter(
-          textRecord => Boolean(textRecord.value) || textRecord.value === ''
-        )
+        .filter(textRecord => Boolean(textRecord.value) || textRecord.value === '')
         .map(textRecord => {
-          return resolver.encodeFunctionData('setText', [
-            namehash,
-            textRecord.key,
-            textRecord.value,
-          ]);
+          return resolver.encodeFunctionData('setText', [namehash, textRecord.key, textRecord.value]);
         })
     );
   }
@@ -581,9 +504,7 @@ const getENSExecutionDetails = async ({
   switch (type) {
     case ENSRegistrationTransactionType.COMMIT: {
       if (!name || !ownerAddress) throw new Error('Bad arguments for commit');
-      const registrarController = await getENSRegistrarControllerContract(
-        wallet
-      );
+      const registrarController = await getENSRegistrarControllerContract(wallet);
       const commitment = await registrarController.makeCommitmentWithConfig(
         name.replace(ENS_DOMAIN, ''),
         ownerAddress,
@@ -603,23 +524,14 @@ const getENSExecutionDetails = async ({
       break;
     }
     case ENSRegistrationTransactionType.REGISTER_WITH_CONFIG: {
-      if (!name || !ownerAddress || !duration || !rentPrice)
-        throw new Error('Bad arguments for registerWithConfig');
+      if (!name || !ownerAddress || !duration || !rentPrice) throw new Error('Bad arguments for registerWithConfig');
       value = toHex(addBuffer(rentPrice, 1.1));
-      args = [
-        name.replace(ENS_DOMAIN, ''),
-        ownerAddress,
-        duration,
-        salt,
-        ensPublicResolverAddress,
-        ownerAddress,
-      ];
+      args = [name.replace(ENS_DOMAIN, ''), ownerAddress, duration, salt, ensPublicResolverAddress, ownerAddress];
       contract = await getENSRegistrarControllerContract(wallet);
       break;
     }
     case ENSRegistrationTransactionType.RENEW: {
-      if (!name || !duration || !rentPrice)
-        throw new Error('Bad arguments for renew');
+      if (!name || !duration || !rentPrice) throw new Error('Bad arguments for renew');
       value = toHex(addBuffer(rentPrice, 1.1));
       args = [name.replace(ENS_DOMAIN, ''), duration];
       contract = await getENSRegistrarControllerContract(wallet);
@@ -631,8 +543,7 @@ const getENSExecutionDetails = async ({
       contract = await getENSReverseRegistrarContract(wallet);
       break;
     case ENSRegistrationTransactionType.SET_ADDR: {
-      if (!name || !records || !records?.coinAddress?.[0])
-        throw new Error('Bad arguments for setAddr');
+      if (!name || !records || !records?.coinAddress?.[0]) throw new Error('Bad arguments for setAddr');
       const record = records?.coinAddress[0];
       const namehash = hash(name);
       const coinType = formatsByName[record.key].coinType;
@@ -642,16 +553,13 @@ const getENSExecutionDetails = async ({
     }
     case ENSRegistrationTransactionType.RECLAIM: {
       if (!name || !toAddress) throw new Error('Bad arguments for reclaim');
-      const id = BigNumber.from(
-        labelhash(name.replace(ENS_DOMAIN, ''))
-      ).toString();
+      const id = BigNumber.from(labelhash(name.replace(ENS_DOMAIN, ''))).toString();
       args = [id, toAddress];
       contract = await getENSBaseRegistrarImplementationContract(wallet);
       break;
     }
     case ENSRegistrationTransactionType.SET_TEXT: {
-      if (!name || !records || !records?.text?.[0])
-        throw new Error('Bad arguments for setText');
+      if (!name || !records || !records?.text?.[0]) throw new Error('Bad arguments for setText');
       const record = records?.text[0];
       const namehash = hash(name);
       args = [namehash, record.key, record.value];
@@ -659,14 +567,10 @@ const getENSExecutionDetails = async ({
       break;
     }
     case ENSRegistrationTransactionType.SET_CONTENTHASH: {
-      if (!name || !records || typeof records?.contenthash !== 'string')
-        throw new Error('Bad arguments for contenthash');
+      if (!name || !records || typeof records?.contenthash !== 'string') throw new Error('Bad arguments for contenthash');
       const namehash = hash(name);
-      const { encoded: encodedContentHash } = encodeContenthash(
-        records?.contenthash || ''
-      );
-      const contentHash =
-        records.contenthash === '' ? Buffer.from('') : encodedContentHash;
+      const { encoded: encodedContentHash } = encodeContenthash(records?.contenthash || '');
+      const contentHash = records.contenthash === '' ? Buffer.from('') : encodedContentHash;
       args = [namehash, contentHash];
       contract = await getENSPublicResolverContract(wallet, resolverAddress);
       break;
@@ -689,17 +593,10 @@ const formatEstimatedNetworkFee = (
   nativeCurrency: any,
   nativeAssetPrice: any
 ) => {
-  const networkFeeInWei = multiply(
-    gweiToWei(add(maxBaseFee, maxPriorityFee)),
-    gasLimit
-  );
+  const networkFeeInWei = multiply(gweiToWei(add(maxBaseFee, maxPriorityFee)), gasLimit);
   const networkFeeInEth = fromWei(networkFeeInWei);
 
-  const { amount, display } = convertAmountAndPriceToNativeDisplay(
-    networkFeeInEth,
-    nativeAssetPrice,
-    nativeCurrency
-  );
+  const { amount, display } = convertAmountAndPriceToNativeDisplay(networkFeeInEth, nativeAssetPrice, nativeCurrency);
 
   return {
     amount,
@@ -708,12 +605,7 @@ const formatEstimatedNetworkFee = (
   };
 };
 
-const formatTotalRegistrationCost = (
-  wei: string,
-  nativeCurrency: any,
-  nativeAssetPrice: any,
-  skipDecimals = false
-) => {
+const formatTotalRegistrationCost = (wei: string, nativeCurrency: any, nativeAssetPrice: any, skipDecimals = false) => {
   const networkFeeInEth = fromWei(wei);
   const eth = handleSignificantDecimals(networkFeeInEth, 3);
 
@@ -751,30 +643,15 @@ const validateContentHashRecordValue = (value: string) => {
   }
 };
 
-const getRentPricePerYear = (rentPrice: string, duration: number) =>
-  divide(rentPrice, duration);
+const getRentPricePerYear = (rentPrice: string, duration: number) => divide(rentPrice, duration);
 
-const formatRentPrice = (
-  rentPrice: BigNumberish,
-  duration: number,
-  nativeCurrency: any,
-  nativeAssetPrice: any
-) => {
+const formatRentPrice = (rentPrice: BigNumberish, duration: number, nativeCurrency: any, nativeAssetPrice: any) => {
   const rentPriceInETH = fromWei(rentPrice.toString());
   const rentPricePerYear = getRentPricePerYear(rentPriceInETH, duration);
   const rentPricePerYearInWei = divide(rentPrice.toString(), duration);
 
-  const { amount, display } = convertAmountAndPriceToNativeDisplay(
-    rentPriceInETH,
-    nativeAssetPrice,
-    nativeCurrency,
-    undefined,
-    true
-  );
-  const {
-    display: displayPerYear,
-    amount: amountPerYear,
-  } = convertAmountAndPriceToNativeDisplay(
+  const { amount, display } = convertAmountAndPriceToNativeDisplay(rentPriceInETH, nativeAssetPrice, nativeCurrency, undefined, true);
+  const { display: displayPerYear, amount: amountPerYear } = convertAmountAndPriceToNativeDisplay(
     rentPricePerYear,
     nativeAssetPrice,
     nativeCurrency,

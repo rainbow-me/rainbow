@@ -29,18 +29,16 @@ const PasswordInput = styled(Input).attrs(({ theme: { colors } }: any) => ({
   width: '100%',
 });
 
-const ShadowContainer = styled(ShadowStack).attrs(
-  ({ theme: { colors, isDarkMode } }: any) => ({
-    backgroundColor: isDarkMode ? colors.offWhite : colors.white,
-    borderRadius: 16,
-    height: 46,
-    shadows: [
-      [0, 5, 15, colors.shadow, 0.06],
-      [0, 10, 30, colors.shadow, 0.12],
-    ],
-    width: '100%',
-  })
-)({
+const ShadowContainer = styled(ShadowStack).attrs(({ theme: { colors, isDarkMode } }: any) => ({
+  backgroundColor: isDarkMode ? colors.offWhite : colors.white,
+  borderRadius: 16,
+  height: 46,
+  shadows: [
+    [0, 5, 15, colors.shadow, 0.06],
+    [0, 10, 30, colors.shadow, 0.12],
+  ],
+  width: '100%',
+}))({
   elevation: 15,
 });
 
@@ -52,10 +50,7 @@ interface PasswordFieldProps extends TextInputProps {
 }
 
 const PasswordField = forwardRef<TextInput, PasswordFieldProps>(
-  (
-    { password, returnKeyType = 'done', style, textContentType, ...props },
-    ref: Ref<TextInput>
-  ) => {
+  ({ password, returnKeyType = 'done', style, textContentType, ...props }, ref: Ref<TextInput>) => {
     const { width: deviceWidth } = useDimensions();
     const { isDarkMode } = useTheme();
     const handleFocus = useCallback(() => {
@@ -68,18 +63,8 @@ const PasswordField = forwardRef<TextInput, PasswordFieldProps>(
 
     return (
       <Container onPress={ios ? handleFocus : undefined}>
-        <ShadowContainer
-          deviceWidth={deviceWidth}
-          isDarkMode={isDarkMode}
-          style={style}
-        >
-          <PasswordInput
-            ref={ref}
-            returnKeyType={returnKeyType}
-            textContentType={textContentType}
-            value={password}
-            {...props}
-          />
+        <ShadowContainer deviceWidth={deviceWidth} isDarkMode={isDarkMode} style={style}>
+          <PasswordInput ref={ref} returnKeyType={returnKeyType} textContentType={textContentType} value={password} {...props} />
         </ShadowContainer>
       </Container>
     );

@@ -34,9 +34,7 @@ export const svgBezierPath = (points, smoothing, strategy) => {
       const cpeX = cpe[0];
       const cpeY = cpe[1];
       if (strategy === 'simple') {
-        return `${acc} Q ${(cpsX + cpeX) / 2},${(cpsY + cpeY) / 2} ${
-          point[0]
-        },${point[1]}`;
+        return `${acc} Q ${(cpsX + cpeX) / 2},${(cpsY + cpeY) / 2} ${point[0]},${point[1]}`;
       } else if (strategy === 'complex') {
         return `${acc} C ${cpsX},${cpsY} ${cpeX},${cpeY} ${point[0]},${point[1]}`;
       } else if (strategy === 'bezier') {

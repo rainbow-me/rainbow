@@ -8,15 +8,7 @@ import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes from '@/helpers/walletTypes';
 
 import { SheetActionButton } from '@/components/sheet';
-import {
-  Box,
-  Inset,
-  Stack,
-  Text,
-  Bleed,
-  Column,
-  Columns,
-} from '@/design-system';
+import { Box, Inset, Stack, Text, Bleed, Column, Columns } from '@/design-system';
 
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 
@@ -40,17 +32,9 @@ const SecretWarningPage = () => {
   const { height: deviceHeight } = useDimensions();
   const { wallets } = useWallets();
   const { navigate } = useNavigation();
-  const { params } = useRoute<
-    RouteProp<SecretWarningPageParams, 'SecretWarningPage'>
-  >();
+  const { params } = useRoute<RouteProp<SecretWarningPageParams, 'SecretWarningPage'>>();
 
-  const {
-    walletId,
-    privateKeyAddress,
-    isBackingUp,
-    backupType,
-    title,
-  } = params;
+  const { walletId, privateKeyAddress, isBackingUp, backupType, title } = params;
 
   const isSecretPhrase = WalletTypes.mnemonic === wallets?.[walletId]?.type;
   const secretText =
@@ -67,21 +51,12 @@ const SecretWarningPage = () => {
       walletId,
       secretText,
     });
-  }, [
-    navigate,
-    privateKeyAddress,
-    title,
-    secretText,
-    walletId,
-    isBackingUp,
-    backupType,
-  ]);
+  }, [navigate, privateKeyAddress, title, secretText, walletId, isBackingUp, backupType]);
 
   // We are not using `isSmallPhone` from `useDimensions` here as we
   // want to explicitly set a min height.
   const isSmallPhone = deviceHeight < MIN_HEIGHT;
-  const contentHeight =
-    deviceHeight - (!isSmallPhone ? sharedCoolModalTopOffset : 0) - 100;
+  const contentHeight = deviceHeight - (!isSmallPhone ? sharedCoolModalTopOffset : 0) - 100;
 
   const items: {
     icon: string;
@@ -139,12 +114,7 @@ const SecretWarningPage = () => {
               <Columns key={item.icon} space={{ custom: 13 }}>
                 <Column width={{ custom: 50 }}>
                   <Box paddingTop={IS_ANDROID ? '6px' : undefined}>
-                    <Text
-                      align="center"
-                      color={item.color}
-                      size="20pt"
-                      weight="bold"
-                    >
+                    <Text align="center" color={item.color} size="20pt" weight="bold">
                       {item.icon}
                     </Text>
                   </Box>
@@ -162,12 +132,7 @@ const SecretWarningPage = () => {
         </Stack>
       </Inset>
 
-      <Box
-        position="absolute"
-        bottom={{ custom: IS_ANDROID ? 40 : 20 }}
-        alignItems="center"
-        style={{ paddingHorizontal: 24 }}
-      >
+      <Box position="absolute" bottom={{ custom: IS_ANDROID ? 40 : 20 }} alignItems="center" style={{ paddingHorizontal: 24 }}>
         <SheetActionButton
           label={i18n.t(i18n.l.back_up.warning.button, {
             typeName: secretText,

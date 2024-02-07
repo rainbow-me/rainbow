@@ -16,19 +16,14 @@ const recordLineHeight = 30;
 export const getENSAdditionalRecordsSheetHeight = () => {
   const deviceWidth = deviceUtils.dimensions.width;
   if (deviceWidth > 400) return ENSAdditionalRecordsSheetHeight;
-  if (deviceWidth > 380)
-    return ENSAdditionalRecordsSheetHeight + recordLineHeight;
+  if (deviceWidth > 380) return ENSAdditionalRecordsSheetHeight + recordLineHeight;
   return ENSAdditionalRecordsSheetHeight + 2 * recordLineHeight;
 };
 
 export default function ENSAdditionalRecordsSheet() {
   const { params } = useRoute<any>();
   const [accentColor] = useRecoilState(accentColorAtom);
-  const {
-    selectedFields,
-    onAddField,
-    onRemoveField,
-  } = useENSRegistrationForm();
+  const { selectedFields, onAddField, onRemoveField } = useENSRegistrationForm();
   const { height: deviceHeight } = useWindowDimensions();
 
   const boxStyle = useMemo(
@@ -41,12 +36,7 @@ export default function ENSAdditionalRecordsSheet() {
   const androidTop = deviceHeight - boxStyle.height - recordLineHeight;
 
   return (
-    <SlackSheet
-      additionalTopPadding
-      height="100%"
-      scrollEnabled={false}
-      style={IS_ANDROID ? { top: androidTop } : {}}
-    >
+    <SlackSheet additionalTopPadding height="100%" scrollEnabled={false} style={IS_ANDROID ? { top: androidTop } : {}}>
       <AccentColorProvider color={accentColor}>
         <Box
           background="body (Deprecated)"
@@ -57,18 +47,14 @@ export default function ENSAdditionalRecordsSheet() {
         >
           <Inline space="10px">
             {Object.values(textRecordFields).map((textRecordField, i) => {
-              const isSelected = selectedFields.some(
-                field => field.id === textRecordField.id
-              );
+              const isSelected = selectedFields.some(field => field.id === textRecordField.id);
               return (
                 <SelectableButton
                   isSelected={isSelected}
                   key={i}
                   onSelect={() => {
                     if (isSelected) {
-                      const index = selectedFields.findIndex(
-                        ({ id }) => textRecordField.id === id
-                      );
+                      const index = selectedFields.findIndex(({ id }) => textRecordField.id === id);
                       const fieldToRemove = selectedFields[index];
                       const newFields = [...selectedFields];
                       newFields.splice(index, 1);

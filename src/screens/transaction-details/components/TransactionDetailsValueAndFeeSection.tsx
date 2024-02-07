@@ -1,10 +1,7 @@
 import React from 'react';
 import { DoubleLineTransactionDetailsRow } from '@/screens/transaction-details/components/DoubleLineTransactionDetailsRow';
 import { TransactionDetailsSymbol } from '@/screens/transaction-details/components/TransactionDetailsSymbol';
-import {
-  RainbowTransaction,
-  RainbowTransactionFee,
-} from '@/entities/transactions/transaction';
+import { RainbowTransaction, RainbowTransactionFee } from '@/entities/transactions/transaction';
 import { CoinIcon } from '@/components/coin-icon';
 import { Box, Stack } from '@/design-system';
 import { TransactionDetailsDivider } from '@/screens/transaction-details/components/TransactionDetailsDivider';
@@ -24,15 +21,10 @@ type Props = {
   value?: string;
 };
 
-export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({
-  transaction,
-}) => {
+export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({ transaction }) => {
   const theme = useTheme();
   const { network, symbol, type, fee } = transaction;
-  const assetUniqueId = getUniqueId(
-    transaction?.address || '',
-    transaction?.network || Network.mainnet
-  );
+  const assetUniqueId = getUniqueId(transaction?.address || '', transaction?.network || Network.mainnet);
   const { data: assetData } = useUserAsset(assetUniqueId);
 
   const coinAddress = assetData?.address || transaction?.address || '';
@@ -75,9 +67,7 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({
           )}
           {fee && (
             <DoubleLineTransactionDetailsRow
-              leftComponent={
-                <TransactionDetailsSymbol icon="􀵟" withBackground />
-              }
+              leftComponent={<TransactionDetailsSymbol icon="􀵟" withBackground />}
               title={i18n.t(i18n.l.transaction_details.network_fee)}
               value={feeValue}
               secondaryValue={feeNativeCurrencyValue}

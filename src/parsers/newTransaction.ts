@@ -1,17 +1,8 @@
 import { getDescription, getTitle } from './transactions';
-import {
-  NativeCurrencyKey,
-  NewTransactionOrAddCashTransaction,
-  RainbowTransaction,
-  TransactionStatus,
-  TransactionType,
-} from '@/entities';
+import { NativeCurrencyKey, NewTransactionOrAddCashTransaction, RainbowTransaction, TransactionStatus, TransactionType } from '@/entities';
 import { isL2Network } from '@/handlers/web3';
 import { ETH_ADDRESS } from '@/references';
-import {
-  convertAmountAndPriceToNativeDisplay,
-  convertAmountToBalanceDisplay,
-} from '@/helpers/utilities';
+import { convertAmountAndPriceToNativeDisplay, convertAmountToBalanceDisplay } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
 
 /**
@@ -61,17 +52,12 @@ export const parseNewTransaction = async (
     };
   }
 
-  const assetPrice =
-    asset?.price?.value ?? ethereumUtils.getAssetPrice(asset?.address);
+  const assetPrice = asset?.price?.value ?? ethereumUtils.getAssetPrice(asset?.address);
 
   const native =
     network && isL2Network(network)
       ? { amount: '', display: '' }
-      : convertAmountAndPriceToNativeDisplay(
-          amount ?? 0,
-          assetPrice,
-          nativeCurrency
-        );
+      : convertAmountAndPriceToNativeDisplay(amount ?? 0, assetPrice, nativeCurrency);
   const hash = txHash ? `${txHash}-0` : null;
 
   const status = txStatus ?? TransactionStatus.sending;
@@ -83,8 +69,7 @@ export const parseNewTransaction = async (
     type,
   });
 
-  const nftName =
-    type === TransactionType.authorize ? nft?.collection.name : nft?.name;
+  const nftName = type === TransactionType.authorize ? nft?.collection.name : nft?.name;
 
   const description = getDescription({
     name: nftName ?? asset?.name ?? null,

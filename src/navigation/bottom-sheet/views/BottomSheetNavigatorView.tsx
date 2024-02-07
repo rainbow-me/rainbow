@@ -1,14 +1,6 @@
-import {
-  NavigationHelpersContext,
-  StackActions,
-  StackNavigationState,
-} from '@react-navigation/native';
+import { NavigationHelpersContext, StackActions, StackNavigationState } from '@react-navigation/native';
 import React, { useCallback, useMemo, useRef } from 'react';
-import type {
-  BottomSheetDescriptorMap,
-  BottomSheetNavigationConfig,
-  BottomSheetNavigationHelpers,
-} from '../types';
+import type { BottomSheetDescriptorMap, BottomSheetNavigationConfig, BottomSheetNavigationHelpers } from '../types';
 import BottomSheetRoute from './BottomSheetRoute';
 import { useForceUpdate } from '@/hooks';
 import { RootStackParamList } from '@/navigation/types';
@@ -19,11 +11,7 @@ type Props = BottomSheetNavigationConfig & {
   descriptors: BottomSheetDescriptorMap;
 };
 
-const BottomSheetNavigatorView = ({
-  descriptors,
-  state,
-  navigation,
-}: Props) => {
+const BottomSheetNavigatorView = ({ descriptors, state, navigation }: Props) => {
   //#region hooks
   const forceUpdate = useForceUpdate();
   //#endregion

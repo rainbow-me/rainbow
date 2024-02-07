@@ -17,17 +17,11 @@ import isSVGImage from '@/utils/isSVG';
 import { CardSize } from './CardSize';
 
 const FallbackTextColorVariants = (darkMode, colors) => ({
-  dark: darkMode
-    ? colors.alpha(colors.white, 0.25)
-    : colors.alpha(colors.blueGreyDark, 0.5),
+  dark: darkMode ? colors.alpha(colors.white, 0.25) : colors.alpha(colors.blueGreyDark, 0.5),
   light: darkMode ? colors.alpha(colors.blueGreyDark, 0.25) : colors.white,
 });
 
-const getFallbackTextColor = (bg, darkMode, colors) =>
-  colors.getTextColorForBackground(
-    bg,
-    FallbackTextColorVariants(darkMode, colors)
-  );
+const getFallbackTextColor = (bg, darkMode, colors) => colors.getTextColorForBackground(bg, FallbackTextColorVariants(darkMode, colors));
 
 const ImageTile = styled(ImgixImage)({
   alignItems: 'center',
@@ -51,9 +45,7 @@ const UniqueTokenImage = ({
   size,
   transformSvgs = true,
 }) => {
-  const isENS =
-    item.asset_contract?.address?.toLowerCase() ===
-    ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
+  const isENS = item.asset_contract?.address?.toLowerCase() === ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
   const isSVG = isSVGImage(imageUrl);
   const [error, setError] = useState(null);
   const handleError = useCallback(error => setError(error), [setError]);
@@ -102,12 +94,7 @@ const UniqueTokenImage = ({
           )}
         </Fragment>
       ) : (
-        <LegacyText
-          align="center"
-          color={getFallbackTextColor(backgroundColor, isDarkMode, colors)}
-          lineHeight="looser"
-          size="smedium"
-        >
+        <LegacyText align="center" color={getFallbackTextColor(backgroundColor, isDarkMode, colors)} lineHeight="looser" size="smedium">
           {buildUniqueTokenName(item)}
         </LegacyText>
       )}
@@ -116,13 +103,7 @@ const UniqueTokenImage = ({
         <>
           <OverlayBlur isDarkMode={isDarkMode} />
           <View style={{ paddingHorizontal: 10 }} zIndex={2}>
-            <Text
-              align="center"
-              color="secondary60 (Deprecated)"
-              lineHeight="looser"
-              size="14px / 19px (Deprecated)"
-              weight="semibold"
-            >
+            <Text align="center" color="secondary60 (Deprecated)" lineHeight="looser" size="14px / 19px (Deprecated)" weight="semibold">
               {`${item.familyName} #${item.id}`}
             </Text>
           </View>

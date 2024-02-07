@@ -51,9 +51,7 @@ const timeoutPromise = new Promise((_, reject) => {
   setTimeout(reject, 800);
 });
 
-export const getTransactionMethodName = async (
-  transaction: ZerionTransaction
-) => {
+export const getTransactionMethodName = async (transaction: ZerionTransaction) => {
   try {
     const { signatures } = store.getState().transactionSignatures;
     // only being used on mainnet transactions, so we can use the default web3 provider
@@ -79,22 +77,13 @@ export const getTransactionMethodName = async (
     } catch (e) {}
     if (!signature) {
       try {
-        const contract = new Contract(
-          SIGNATURE_REGISTRY_ADDRESS,
-          signatureRegistryABI,
-          web3Provider!
-        );
-        signature = await Promise.race([
-          contract.entries(bytes),
-          timeoutPromise,
-        ]);
+        const contract = new Contract(SIGNATURE_REGISTRY_ADDRESS, signatureRegistryABI, web3Provider!);
+        signature = await Promise.race([contract.entries(bytes), timeoutPromise]);
         // eslint-disable-next-line no-empty
       } catch (e) {}
     }
     const parsedSignature = parseSignatureToTitle(signature);
-    store.dispatch(
-      transactionSignaturesDataAddNewSignature(parsedSignature, bytes)
-    );
+    store.dispatch(transactionSignaturesDataAddNewSignature(parsedSignature, bytes));
     return parsedSignature;
   } catch (e) {
     return '';
@@ -153,17 +142,10 @@ export const getTransactionReceiptStatus = async (
   status = receipt?.status || 0;
 
   if (!isZero(status)) {
-    const isSelf = isLowerCaseMatch(
-      transaction?.from || '',
-      transaction?.to || ''
-    );
-    const transactionDirection = isSelf
-      ? TransactionDirection.self
-      : TransactionDirection.out;
+    const isSelf = isLowerCaseMatch(transaction?.from || '', transaction?.to || '');
+    const transactionDirection = isSelf ? TransactionDirection.self : TransactionDirection.out;
     const transactionStatus =
-      transaction.status === TransactionStatus.cancelling
-        ? TransactionStatus.cancelled
-        : getConfirmedState(transaction?.type);
+      transaction.status === TransactionStatus.cancelling ? TransactionStatus.cancelled : getConfirmedState(transaction?.type);
     status = getTransactionLabel({
       direction: transactionDirection,
       pending: false,
@@ -179,10 +161,7 @@ export const getTransactionReceiptStatus = async (
   return status;
 };
 
-export const getTransactionFlashbotStatus = async (
-  transaction: RainbowTransaction,
-  txHash: string
-) => {
+export const getTransactionFlashbotStatus = async (transaction: RainbowTransaction, txHash: string) => {
   try {
     const fbStatus = await flashbotsApi.get(`/tx/${txHash}`);
     const flashbotStatus = fbStatus.data.status;
@@ -203,16 +182,12 @@ export const getTransactionFlashbotStatus = async (
   return null;
 };
 
-export const getTransactionSocketStatus = async (
-  pendingTransaction: RainbowTransaction
-) => {
+export const getTransactionSocketStatus = async (pendingTransaction: RainbowTransaction) => {
   const { swap } = pendingTransaction;
   const txHash = ethereumUtils.getHash(pendingTransaction);
   let pending = true;
   const minedAt: number | null = Math.floor(Date.now() / 1000);
-  let status = swap?.isBridge
-    ? TransactionStatus.bridging
-    : TransactionStatus.swapping;
+  let status = swap?.isBridge ? TransactionStatus.bridging : TransactionStatus.swapping;
   try {
     const socketStatus = await rainbowSwapsApi.get('/v1/bridge-status', {
       params: {
@@ -224,39 +199,25 @@ export const getTransactionSocketStatus = async (
     const socketResponse = socketStatus.data;
     if (socketResponse.success) {
       if (socketResponse?.result?.sourceTxStatus === 'COMPLETED') {
-        status = swap?.isBridge
-          ? TransactionStatus.bridging
-          : TransactionStatus.swapping;
+        status = swap?.isBridge ? TransactionStatus.bridging : TransactionStatus.swapping;
       }
       if (socketResponse?.result?.DestinationTxStatus === 'COMPLETED') {
-        status = swap?.isBridge
-          ? TransactionStatus.bridged
-          : TransactionStatus.swapped;
+        status = swap?.isBridge ? TransactionStatus.bridged : TransactionStatus.swapped;
         pending = false;
       }
-      if (
-        socketResponse?.result?.DestinationTxStatus === 'FAILED' ||
-        socketResponse?.result?.sourceTxStatus === 'FAILED'
-      ) {
+      if (socketResponse?.result?.DestinationTxStatus === 'FAILED' || socketResponse?.result?.sourceTxStatus === 'FAILED') {
         status = TransactionStatus.failed;
         pending = false;
       }
     } else if (socketResponse.error) {
-      logger.warn(
-        'getTransactionSocketStatus transaction check failed',
-        socketResponse.error
-      );
+      logger.warn('getTransactionSocketStatus transaction check failed', socketResponse.error);
       status = TransactionStatus.failed;
       pending = false;
     }
   } catch (e) {
-    logger.error(
-      new RainbowError('getTransactionSocketStatus transaction check caught')
-    );
+    logger.error(new RainbowError('getTransactionSocketStatus transaction check caught'));
     if (IS_TEST) {
-      status = swap?.isBridge
-        ? TransactionStatus.bridged
-        : TransactionStatus.swapped;
+      status = swap?.isBridge ? TransactionStatus.bridged : TransactionStatus.swapped;
       pending = false;
     }
   }
@@ -270,10 +231,7 @@ export const getTransactionSocketStatus = async (
   return { status, minedAt, pending, title };
 };
 
-export const getPendingTransactionData = (
-  transaction: RainbowTransaction,
-  transactionStatus: TransactionStatus
-) => {
+export const getPendingTransactionData = (transaction: RainbowTransaction, transactionStatus: TransactionStatus) => {
   const minedAt = Math.floor(Date.now() / 1000);
   const title = getTitle({
     protocol: transaction.protocol,

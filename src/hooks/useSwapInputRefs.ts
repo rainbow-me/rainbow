@@ -16,11 +16,9 @@ export default function useSwapInputRefs() {
       const outputRefHandle = outputFieldRef.current;
 
       const lastFocusedIsInputType =
-        currentFocusedInputHandle?.current === inputRefHandle ||
-        currentFocusedInputHandle?.current === nativeInputRefHandle;
+        currentFocusedInputHandle?.current === inputRefHandle || currentFocusedInputHandle?.current === nativeInputRefHandle;
 
-      const lastFocusedIsOutputType =
-        currentFocusedInputHandle?.current === outputRefHandle;
+      const lastFocusedIsOutputType = currentFocusedInputHandle?.current === outputRefHandle;
 
       if (lastFocusedIsInputType && !inputCurrency) {
         return outputRefHandle;
@@ -35,11 +33,7 @@ export default function useSwapInputRefs() {
     [inputCurrency, outputCurrency]
   );
 
-  const {
-    handleFocus,
-    lastFocusedInputHandle,
-    setLastFocusedInputHandle,
-  } = useMagicAutofocus(inputFieldRef, findNextInput, true);
+  const { handleFocus, lastFocusedInputHandle, setLastFocusedInputHandle } = useMagicAutofocus(inputFieldRef, findNextInput, true);
 
   return {
     handleFocus,

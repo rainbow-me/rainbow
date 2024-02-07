@@ -8,11 +8,7 @@ const withVanillaExtract = createVanillaExtractPlugin();
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   babelConfigFile: path.resolve('./babel.config.js'),
-  transpilePackages: [
-    'react-native-reanimated',
-    'react-native-markdown-display',
-    'react-native-drop-shadow',
-  ],
+  transpilePackages: ['react-native-reanimated', 'react-native-markdown-display', 'react-native-drop-shadow'],
   experimental: {
     externalDir: true, // https://github.com/vercel/next.js/pull/22867
   },
@@ -21,10 +17,7 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   webpack: config => {
-    config.resolve.modules = [
-      path.join(__dirname, './node_modules'),
-      'node_modules',
-    ];
+    config.resolve.modules = [path.join(__dirname, './node_modules'), 'node_modules'];
     config.plugins.push(
       new webpack.DefinePlugin({
         __DEV__: true,
@@ -37,10 +30,7 @@ const nextConfig = {
   },
 };
 
-module.exports = withPlugins(
-  [withVanillaExtract, withReactNativeWeb],
-  nextConfig
-);
+module.exports = withPlugins([withVanillaExtract, withReactNativeWeb], nextConfig);
 
 // /////////////////////////////////////////////////////////////////////////
 
@@ -53,12 +43,7 @@ function withReactNativeWeb(nextConfig) {
         // Transform all direct `react-native` imports to `react-native-web`
         'react-native$': 'react-native-web',
       };
-      config.resolve.extensions = [
-        '.web.js',
-        '.web.ts',
-        '.web.tsx',
-        ...config.resolve.extensions,
-      ];
+      config.resolve.extensions = ['.web.js', '.web.ts', '.web.tsx', ...config.resolve.extensions];
 
       if (typeof nextConfig.webpack === 'function') {
         return nextConfig.webpack(config, options);

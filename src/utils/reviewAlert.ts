@@ -9,8 +9,7 @@ import { IS_TESTING } from 'react-native-dotenv';
 
 const { RainbowRequestReview, RNReview } = NativeModules;
 
-export const AppleReviewAddress =
-  'itms-apps://itunes.apple.com/us/app/appName/id1457119021?mt=8&action=write-review';
+export const AppleReviewAddress = 'itms-apps://itunes.apple.com/us/app/appName/id1457119021?mt=8&action=write-review';
 
 const TWO_MONTHS = 1000 * 60 * 60 * 24 * 60;
 
@@ -61,11 +60,7 @@ export const handleReviewPromptAction = async (action: ReviewPromptAction) => {
 
   ls.review.set(['actions'], actions);
 
-  if (
-    actionToDispatch.numOfTimesDispatched >=
-      numberOfTimesBeforePrompt[action] &&
-    timeOfLastPrompt + TWO_MONTHS <= Date.now()
-  ) {
+  if (actionToDispatch.numOfTimesDispatched >= numberOfTimesBeforePrompt[action] && timeOfLastPrompt + TWO_MONTHS <= Date.now()) {
     logger.info(`Prompting for review`);
 
     actionToDispatch.numOfTimesDispatched = 0;
@@ -76,29 +71,25 @@ export const handleReviewPromptAction = async (action: ReviewPromptAction) => {
 };
 
 export const promptForReview = async () => {
-  Alert.alert(
-    lang.t('review.alert.are_you_enjoying_rainbow'),
-    lang.t('review.alert.leave_a_review'),
-    [
-      {
-        onPress: () => {
-          ls.review.set(['hasReviewed'], true);
+  Alert.alert(lang.t('review.alert.are_you_enjoying_rainbow'), lang.t('review.alert.leave_a_review'), [
+    {
+      onPress: () => {
+        ls.review.set(['hasReviewed'], true);
 
-          if (IS_IOS) {
-            RainbowRequestReview?.requestReview((handled: boolean) => {
-              if (!handled) {
-                Linking.openURL(AppleReviewAddress);
-              }
-            });
-          } else {
-            RNReview.show();
-          }
-        },
-        text: lang.t('review.alert.yes'),
+        if (IS_IOS) {
+          RainbowRequestReview?.requestReview((handled: boolean) => {
+            if (!handled) {
+              Linking.openURL(AppleReviewAddress);
+            }
+          });
+        } else {
+          RNReview.show();
+        }
       },
-      {
-        text: lang.t('review.alert.no'),
-      },
-    ]
-  );
+      text: lang.t('review.alert.yes'),
+    },
+    {
+      text: lang.t('review.alert.no'),
+    },
+  ]);
 };

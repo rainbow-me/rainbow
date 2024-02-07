@@ -7,14 +7,7 @@ import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Icon } from '../../icons';
 import { ImagePreviewOverlayTarget } from '../../images/ImagePreviewOverlay';
 import { useAccountSettings, useOpenENSNFTHandler } from '@/hooks';
-import {
-  Bleed,
-  Box,
-  Inline,
-  Inset,
-  Text,
-  useForegroundColor,
-} from '@/design-system';
+import { Bleed, Box, Inline, Inset, Text, useForegroundColor } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import Routes from '@/navigation/routesNames';
 import { useENSAddress } from '@/resources/ens/ensAddressQuery';
@@ -102,11 +95,7 @@ export default function InfoRow({
 
   const explainer = explainSheetType ? (
     <ButtonPressAnimation onPress={handlePressExplain}>
-      <Text
-        color="secondary25 (Deprecated)"
-        size="16px / 22px (Deprecated)"
-        weight="bold"
-      >
+      <Text color="secondary25 (Deprecated)" size="16px / 22px (Deprecated)" weight="bold">
         􀅵
       </Text>
     </ButtonPressAnimation>
@@ -117,11 +106,7 @@ export default function InfoRow({
       <Box style={{ minWidth: 60, opacity: show ? 1 : 0 }}>
         <Inset top={isMultiline ? '15px (Deprecated)' : '10px'}>
           <Inline space="4px">
-            <Text
-              color="secondary60 (Deprecated)"
-              size="16px / 22px (Deprecated)"
-              weight="bold"
-            >
+            <Text color="secondary60 (Deprecated)" size="16px / 22px (Deprecated)" weight="bold">
               {label}
               {android && <Fragment> {explainer}</Fragment>}
             </Text>
@@ -144,19 +129,9 @@ export default function InfoRow({
               setIsMultiline(height > 40);
               setShow(true);
             }}
-            padding={
-              isSwitch
-                ? undefined
-                : isMultiline
-                ? ('15px (Deprecated)' as const)
-                : ('10px' as const)
-            }
+            padding={isSwitch ? undefined : isMultiline ? ('15px (Deprecated)' as const) : ('10px' as const)}
             style={{
-              backgroundColor: isSwitch
-                ? 'transparent'
-                : useAccentColor
-                ? accentColor + '10'
-                : 'rgba(255, 255, 255, 0.08)',
+              backgroundColor: isSwitch ? 'transparent' : useAccentColor ? accentColor + '10' : 'rgba(255, 255, 255, 0.08)',
               maxWidth: android ? 250 : undefined,
               opacity: show ? 1 : 0,
             }}
@@ -164,12 +139,7 @@ export default function InfoRow({
             <Inline alignVertical="center" space="6px">
               {icon ? (
                 <Bleed vertical="6px">
-                  <Icon
-                    color={colors.whiteLabel}
-                    height="18"
-                    name={icon}
-                    width="18"
-                  />
+                  <Icon color={colors.whiteLabel} height="18" name={icon} width="18" />
                 </Bleed>
               ) : null}
               {value ? (
@@ -203,15 +173,7 @@ export default function InfoRow({
   );
 }
 
-function ImageValue({
-  ensName,
-  url,
-  value,
-}: {
-  ensName?: string;
-  url?: string;
-  value?: string;
-}) {
+function ImageValue({ ensName, url, value }: { ensName?: string; url?: string; value?: string }) {
   const { accountAddress } = useAccountSettings();
 
   const { data: address } = useENSAddress({ name: ensName || '' });
@@ -234,18 +196,8 @@ function ImageValue({
 
   if (!url) return null;
   return (
-    <ImagePreviewOverlayTarget
-      aspectRatioType="cover"
-      enableZoomOnPress={ios && enableZoomOnPress}
-      imageUrl={url}
-      onPress={onPress}
-    >
-      <Box
-        as={ImgixImage}
-        height="full"
-        source={{ uri: url }}
-        size={CardSize}
-      />
+    <ImagePreviewOverlayTarget aspectRatioType="cover" enableZoomOnPress={ios && enableZoomOnPress} imageUrl={url} onPress={onPress}>
+      <Box as={ImgixImage} height="full" source={{ uri: url }} size={CardSize} />
     </ImagePreviewOverlayTarget>
   );
 }

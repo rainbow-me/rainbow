@@ -20,8 +20,7 @@ type FakeItemProps = {
 // @ts-expect-error Property 'View' does not exist on type...
 export const FakeAvatar = styled.View({
   ...position.sizeAsObject(40),
-  backgroundColor: ({ theme: { colors }, color }: FakeItemProps) =>
-    color ?? colors.skeleton,
+  backgroundColor: ({ theme: { colors }, color }: FakeItemProps) => color ?? colors.skeleton,
   borderRadius: 20,
 });
 
@@ -34,14 +33,11 @@ export const FakeRow = styled(Row).attrs({
   paddingTop: 5,
 })({});
 
-export const FakeText = styled(View).attrs(
-  ({ height = 10, width }: { height: number; width: number }) => ({
-    height,
-    width,
-  })
-)({
-  backgroundColor: ({ theme: { colors }, color }: FakeItemProps) =>
-    color ?? colors.skeleton,
+export const FakeText = styled(View).attrs(({ height = 10, width }: { height: number; width: number }) => ({
+  height,
+  width,
+}))({
+  backgroundColor: ({ theme: { colors }, color }: FakeItemProps) => color ?? colors.skeleton,
   borderRadius: ({ height }: { height: number }) => height / 2,
   height: ({ height }: { height: number }) => height,
   width: ({ width }: { width: number }) => width,
@@ -52,8 +48,7 @@ const Wrapper = styled(View)({
 });
 
 const ShimmerWrapper = styled(Wrapper)({
-  backgroundColor: ({ theme: { colors }, color }: FakeItemProps) =>
-    color ?? colors.skeleton,
+  backgroundColor: ({ theme: { colors }, color }: FakeItemProps) => color ?? colors.skeleton,
 });
 
 function Skeleton({
@@ -75,10 +70,7 @@ function Skeleton({
 }) {
   if (animated && IS_TESTING !== 'true') {
     return (
-      <MaskedView
-        maskElement={<Wrapper style={style}>{children}</Wrapper>}
-        style={{ flex: 1 }}
-      >
+      <MaskedView maskElement={<Wrapper style={style}>{children}</Wrapper>} style={{ flex: 1 }}>
         <ShimmerWrapper color={skeletonColor}>
           <ShimmerAnimation
             color={shimmerColor ?? colors.shimmer}

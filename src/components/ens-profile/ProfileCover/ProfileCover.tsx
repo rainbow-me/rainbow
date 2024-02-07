@@ -58,12 +58,12 @@ export default function ProfileCover({
                 ...(showSkeleton
                   ? {}
                   : coverUrl
-                  ? {
-                      background: 'body (Deprecated)',
-                    }
-                  : {
-                      style: { backgroundColor: accentColor },
-                    }),
+                    ? {
+                        background: 'body (Deprecated)',
+                      }
+                    : {
+                        style: { backgroundColor: accentColor },
+                      }),
               })}
         >
           <ImagePreviewOverlayTarget
@@ -80,13 +80,7 @@ export default function ProfileCover({
             topOffset={imagePreviewOverlayTopOffset}
             zIndex={1}
           >
-            <Box
-              as={ImgixImage}
-              height="126px"
-              onLoadEnd={onLoadEnd}
-              source={{ uri: coverUrl || '' }}
-              size={200}
-            />
+            <Box as={ImgixImage} height="126px" onLoadEnd={onLoadEnd} source={{ uri: coverUrl || '' }} size={200} />
           </ImagePreviewOverlayTarget>
         </Box>
       </Animated.View>

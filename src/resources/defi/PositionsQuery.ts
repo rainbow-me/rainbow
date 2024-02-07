@@ -1,12 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import {
-  createQueryKey,
-  queryClient,
-  QueryConfig,
-  QueryFunctionArgs,
-  QueryFunctionResult,
-} from '@/react-query';
+import { createQueryKey, queryClient, QueryConfig, QueryFunctionArgs, QueryFunctionResult } from '@/react-query';
 
 import { NativeCurrencyKey } from '@/entities';
 import { rainbowFetch } from '@/rainbow-fetch';
@@ -22,10 +16,7 @@ export const buildPositionsUrl = (address: string) => {
   return `https://addys.p.rainbow.me/v3/${networkString}/${address}/positions`;
 };
 
-const getPositions = async (
-  address: string,
-  currency: NativeCurrencyKey
-): Promise<AddysPositionsResponse> => {
+const getPositions = async (address: string, currency: NativeCurrencyKey): Promise<AddysPositionsResponse> => {
   const response = await rainbowFetch(buildPositionsUrl(address), {
     method: 'get',
     params: {
@@ -50,20 +41,14 @@ const getPositions = async (
 export const POSITIONS_QUERY_KEY = 'positions';
 
 export const positionsQueryKey = ({ address, currency }: PositionsArgs) =>
-  createQueryKey(
-    POSITIONS_QUERY_KEY,
-    { address, currency },
-    { persisterVersion: 1 }
-  );
+  createQueryKey(POSITIONS_QUERY_KEY, { address, currency }, { persisterVersion: 1 });
 
 type PositionsQueryKey = ReturnType<typeof positionsQueryKey>;
 
 // ///////////////////////////////////////////////
 // Query Function
 
-async function positionsQueryFunction({
-  queryKey: [{ address, currency }],
-}: QueryFunctionArgs<typeof positionsQueryKey>) {
+async function positionsQueryFunction({ queryKey: [{ address, currency }] }: QueryFunctionArgs<typeof positionsQueryKey>) {
   const data = await getPositions(address, currency);
   return parsePositions(data, currency);
 }
@@ -77,11 +62,7 @@ export async function prefetchPositions(
   { address, currency }: PositionsArgs,
   config: QueryConfig<PositionsResult, Error, PositionsQueryKey> = {}
 ) {
-  return await queryClient.prefetchQuery(
-    positionsQueryKey({ address, currency }),
-    positionsQueryFunction,
-    config
-  );
+  return await queryClient.prefetchQuery(positionsQueryKey({ address, currency }), positionsQueryFunction, config);
 }
 
 // ///////////////////////////////////////////////
@@ -91,23 +72,12 @@ export async function fetchPositions(
   { address, currency }: PositionsArgs,
   config: QueryConfig<PositionsResult, Error, PositionsQueryKey> = {}
 ) {
-  return await queryClient.fetchQuery(
-    positionsQueryKey({ address, currency }),
-    positionsQueryFunction,
-    config
-  );
+  return await queryClient.fetchQuery(positionsQueryKey({ address, currency }), positionsQueryFunction, config);
 }
 
 // ///////////////////////////////////////////////
 // Query Hook
 
-export function usePositions(
-  { address, currency }: PositionsArgs,
-  config: QueryConfig<PositionsResult, Error, PositionsQueryKey> = {}
-) {
-  return useQuery(
-    positionsQueryKey({ address, currency }),
-    positionsQueryFunction,
-    config
-  );
+export function usePositions({ address, currency }: PositionsArgs, config: QueryConfig<PositionsResult, Error, PositionsQueryKey> = {}) {
+  return useQuery(positionsQueryKey({ address, currency }), positionsQueryFunction, config);
 }

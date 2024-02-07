@@ -8,11 +8,7 @@ import * as kc from '@/keychain';
  *    import { set } from '@/keychain'
  *    await set(key, value, options)
  */
-export async function saveString(
-  key: string,
-  value: string,
-  accessControlOptions: Options
-): Promise<void> {
+export async function saveString(key: string, value: string, accessControlOptions: Options): Promise<void> {
   return kc.set(key, value, accessControlOptions);
 }
 
@@ -23,10 +19,7 @@ export async function saveString(
  *    import { get } from '@/keychain'
  *    await get(key, options)
  */
-export async function loadString(
-  key: string,
-  options?: Options
-): Promise<null | string | -1 | -2 | 0 | -3> {
+export async function loadString(key: string, options?: Options): Promise<null | string | -1 | -2 | 0 | -3> {
   const { value, error } = await kc.get(key, options);
 
   if (value) {
@@ -48,11 +41,7 @@ export async function loadString(
  *    import { setObject } from '@/keychain'
  *    await setObject(key, {}, options)
  */
-export async function saveObject(
-  key: string,
-  value: Record<string, unknown>,
-  accessControlOptions: Options
-): Promise<void> {
+export async function saveObject(key: string, value: Record<string, unknown>, accessControlOptions: Options): Promise<void> {
   return kc.setObject(key, value, accessControlOptions);
 }
 
@@ -63,10 +52,7 @@ export async function saveObject(
  *    import { getObject } from '@/keychain'
  *    await getObject(key, options)
  */
-export async function loadObject(
-  key: string,
-  options?: Options
-): Promise<null | Record<string, any> | -1 | -2 | 0 | -3> {
+export async function loadObject(key: string, options?: Options): Promise<null | Record<string, any> | -1 | -2 | 0 | -3> {
   const { value, error } = await kc.getObject(key, options);
 
   if (value) {

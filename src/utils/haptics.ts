@@ -12,14 +12,12 @@ export const HapticFeedback = {
   selection: 'selection',
 } as const;
 
-export type HapticFeedbackType = typeof HapticFeedback[keyof typeof HapticFeedback];
+export type HapticFeedbackType = (typeof HapticFeedback)[keyof typeof HapticFeedback];
 
 const hapticToTrigger = (haptic: HapticFeedbackType) => ({
   [haptic]: () => ReactNativeHapticFeedback.trigger(haptic),
 });
 
-const haptics = reduceArrayToObject(
-  Object.values(HapticFeedback).map(hapticToTrigger)
-);
+const haptics = reduceArrayToObject(Object.values(HapticFeedback).map(hapticToTrigger));
 
 export default haptics;

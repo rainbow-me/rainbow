@@ -1,11 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  Animated,
-  PanResponder,
-  StyleSheet,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { Animated, PanResponder, StyleSheet, View, ViewStyle } from 'react-native';
 import { WebView, WebViewMessageEvent } from 'react-native-webview';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
@@ -75,14 +69,7 @@ const getSource = ({ alt, uri }: { alt?: string; uri: string }) =>
 </html>
 `.trim();
 
-export default function ModelViewer({
-  loading,
-  setLoading,
-  style,
-  uri,
-  alt,
-  fallbackUri,
-}: ModelViewerProps): JSX.Element {
+export default function ModelViewer({ loading, setLoading, style, uri, alt, fallbackUri }: ModelViewerProps): JSX.Element {
   const opacity = useMemo(() => new Animated.Value(1), []);
   const [visibility, setVisibility] = useState<boolean>(false);
   const [progress, setProgress] = useState<number>(0);
@@ -124,21 +111,9 @@ export default function ModelViewer({
   );
   return (
     <View style={style} {...panHandlers}>
-      <StyledWebView
-        cacheEnabled
-        onMessage={onMessage}
-        originWhitelist={originWhiteList}
-        source={source}
-      />
-      <ProgressIndicatorContainer
-        pointerEvents={loading ? 'auto' : 'none'}
-        style={{ opacity }}
-      >
-        <ImgixImage
-          source={{ uri: fallbackUri }}
-          style={StyleSheet.absoluteFill}
-          size={FULL_NFT_IMAGE_SIZE}
-        />
+      <StyledWebView cacheEnabled onMessage={onMessage} originWhitelist={originWhiteList} source={source} />
+      <ProgressIndicatorContainer pointerEvents={loading ? 'auto' : 'none'} style={{ opacity }}>
+        <ImgixImage source={{ uri: fallbackUri }} style={StyleSheet.absoluteFill} size={FULL_NFT_IMAGE_SIZE} />
       </ProgressIndicatorContainer>
     </View>
   );

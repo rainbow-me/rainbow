@@ -48,19 +48,13 @@ export default function BackupSheetKeyboardLayout({
   const { height: deviceHeight } = useDimensions();
 
   const isSmallPhone = deviceHeight < MIN_HEIGHT;
-  const contentHeight =
-    deviceHeight - (!isSmallPhone ? sharedCoolModalTopOffset : 0) - 100;
+  const contentHeight = deviceHeight - (!isSmallPhone ? sharedCoolModalTopOffset : 0) - 100;
 
   return (
     <Box height={{ custom: contentHeight }}>
       {children}
       <Footer>
-        <RainbowButton
-          disabled={footerButtonDisabled}
-          label={footerButtonLabel}
-          type={RainbowButtonTypes.backup}
-          onPress={onSubmit}
-        />
+        <RainbowButton disabled={footerButtonDisabled} label={footerButtonLabel} type={RainbowButtonTypes.backup} onPress={onSubmit} />
       </Footer>
       {android ? <KeyboardSizeView /> : null}
     </Box>

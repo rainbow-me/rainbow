@@ -29,15 +29,7 @@ const fallbackIconStyle = {
  * @param param0 - optional mainnetAddress, address and network
  * @returns a proper type and address to use for the url
  */
-function resolveNetworkAndAddress({
-  address,
-  mainnetAddress,
-  network,
-}: {
-  mainnetAddress?: string;
-  address: string;
-  network: Network;
-}) {
+function resolveNetworkAndAddress({ address, mainnetAddress, network }: { mainnetAddress?: string; address: string; network: Network }) {
   if (mainnetAddress) {
     return {
       resolvedAddress: mainnetAddress,
@@ -84,14 +76,7 @@ export default React.memo(function FastCoinIcon({
   return (
     <View style={sx.container}>
       {eth ? (
-        <View
-          style={[
-            sx.coinIconFallback,
-            sx.reactCoinIconContainer,
-            sx.withShadow,
-            { shadowColor },
-          ]}
-        >
+        <View style={[sx.coinIconFallback, sx.reactCoinIconContainer, sx.withShadow, { shadowColor }]}>
           <Image source={EthIcon} style={sx.coinIconFallback} />
         </View>
       ) : shouldRenderContract ? (

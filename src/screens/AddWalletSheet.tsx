@@ -18,11 +18,7 @@ import ImportSecretPhraseOrPrivateKey from '@/assets/ImportSecretPhraseOrPrivate
 import WatchWalletIcon from '@/assets/watchWallet.png';
 import { captureException } from '@sentry/react-native';
 import { useDispatch } from 'react-redux';
-import {
-  backupUserDataIntoCloud,
-  fetchUserDataFromCloud,
-  logoutFromGoogleDrive,
-} from '@/handlers/cloudBackup';
+import { backupUserDataIntoCloud, fetchUserDataFromCloud, logoutFromGoogleDrive } from '@/handlers/cloudBackup';
 import showWalletErrorAlert from '@/helpers/support';
 import { cloudPlatform } from '@/utils/platform';
 import { IS_ANDROID, IS_IOS } from '@/env';
@@ -101,18 +97,13 @@ export const AddWalletSheet = () => {
                 const name = args?.name ?? '';
                 const color = args?.color ?? null;
                 // Check if the selected wallet is the primary
-                let primaryWalletKey = selectedWallet.primary
-                  ? selectedWallet.id
-                  : null;
+                let primaryWalletKey = selectedWallet.primary ? selectedWallet.id : null;
 
                 // If it's not, then find it
                 !primaryWalletKey &&
                   Object.keys(wallets as any).some(key => {
                     const wallet = wallets?.[key];
-                    if (
-                      wallet?.type === WalletTypes.mnemonic &&
-                      wallet.primary
-                    ) {
+                    if (wallet?.type === WalletTypes.mnemonic && wallet.primary) {
                       primaryWalletKey = key;
                       return true;
                     }
@@ -124,10 +115,7 @@ export const AddWalletSheet = () => {
                 !primaryWalletKey &&
                   Object.keys(wallets as any).some(key => {
                     const wallet = wallets?.[key];
-                    if (
-                      wallet?.type === WalletTypes.mnemonic &&
-                      wallet.imported
-                    ) {
+                    if (wallet?.type === WalletTypes.mnemonic && wallet.imported) {
                       primaryWalletKey = key;
                       return true;
                     }
@@ -135,28 +123,18 @@ export const AddWalletSheet = () => {
                   });
                 try {
                   // If we found it and it's not damaged use it to create the new account
-                  if (
-                    primaryWalletKey &&
-                    !wallets?.[primaryWalletKey].damaged
-                  ) {
-                    const newWallets = await dispatch(
-                      createAccountForWallet(primaryWalletKey, color, name)
-                    );
+                  if (primaryWalletKey && !wallets?.[primaryWalletKey].damaged) {
+                    const newWallets = await dispatch(createAccountForWallet(primaryWalletKey, color, name));
                     // @ts-ignore
                     await initializeWallet();
                     // If this wallet was previously backed up to the cloud
                     // We need to update userData backup so it can be restored too
-                    if (
-                      wallets?.[primaryWalletKey].backedUp &&
-                      wallets[primaryWalletKey].backupType ===
-                        WalletBackupTypes.cloud
-                    ) {
+                    if (wallets?.[primaryWalletKey].backedUp && wallets[primaryWalletKey].backupType === WalletBackupTypes.cloud) {
                       try {
                         await backupUserDataIntoCloud({ wallets: newWallets });
                       } catch (e) {
                         logger.error(e as RainbowError, {
-                          description:
-                            'Updating wallet userdata failed after new account creation',
+                          description: 'Updating wallet userdata failed after new account creation',
                         });
                         captureException(e);
                         throw e;
@@ -240,10 +218,7 @@ export const AddWalletSheet = () => {
       const userData = await fetchUserDataFromCloud();
       console.log({ userData });
       if (!userData) {
-        Alert.alert(
-          i18n.t(TRANSLATIONS.options.cloud.no_backups),
-          i18n.t(TRANSLATIONS.options.cloud.no_google_backups)
-        );
+        Alert.alert(i18n.t(TRANSLATIONS.options.cloud.no_backups), i18n.t(TRANSLATIONS.options.cloud.no_google_backups));
         return;
       }
 
@@ -258,8 +233,7 @@ export const AddWalletSheet = () => {
     }
   };
 
-  const cloudRestoreEnabled =
-    isFirstWallet && (IS_ANDROID || !!latestWalletBackedUpDate);
+  const cloudRestoreEnabled = isFirstWallet && (IS_ANDROID || !!latestWalletBackedUpDate);
 
   let restoreFromCloudDescription;
   if (IS_IOS) {
@@ -267,28 +241,17 @@ export const AddWalletSheet = () => {
     // no backups at this point, since `cloudRestoreEnabled`
     // would be false in that case.
     if (latestWalletBackedUpDate) {
-      restoreFromCloudDescription = i18n.t(
-        TRANSLATIONS.options.cloud.description_with_latest_backup_date,
-        {
-          fromNow: formatDistance(
-            new Date(latestWalletBackedUpDate),
-            Date.now(),
-            {
-              addSuffix: true,
-            }
-          ),
-          time: format(new Date(latestWalletBackedUpDate), 'p'),
-        }
-      );
+      restoreFromCloudDescription = i18n.t(TRANSLATIONS.options.cloud.description_with_latest_backup_date, {
+        fromNow: formatDistance(new Date(latestWalletBackedUpDate), Date.now(), {
+          addSuffix: true,
+        }),
+        time: format(new Date(latestWalletBackedUpDate), 'p'),
+      });
     } else {
-      restoreFromCloudDescription = i18n.t(
-        TRANSLATIONS.options.cloud.description_ios_one_wallet
-      );
+      restoreFromCloudDescription = i18n.t(TRANSLATIONS.options.cloud.description_ios_one_wallet);
     }
   } else {
-    restoreFromCloudDescription = i18n.t(
-      TRANSLATIONS.options.cloud.description_android
-    );
+    restoreFromCloudDescription = i18n.t(TRANSLATIONS.options.cloud.description_android);
   }
 
   const onPressConnectHardwareWallet = () => {
@@ -350,12 +313,7 @@ export const AddWalletSheet = () => {
   };
 
   return (
-    <Box
-      height="full"
-      width="full"
-      background="surfaceSecondary"
-      testID="add-wallet-sheet"
-    >
+    <Box height="full" width="full" background="surfaceSecondary" testID="add-wallet-sheet">
       <Inset horizontal="28px" top="36px">
         <AddWalletList
           totalHorizontalInset={24}

@@ -21,14 +21,12 @@ const FormContainer = styled(Column).attrs({
   justify: 'center',
 })({
   flex: 1,
-  minHeight: ({ isSmallPhone, isTinyPhone }) =>
-    isTinyPhone ? 104 : android || isSmallPhone ? 134 : 167,
+  minHeight: ({ isSmallPhone, isTinyPhone }) => (isTinyPhone ? 104 : android || isSmallPhone ? 134 : 167),
   width: '100%',
 });
 
 const Spacer = styled.View({
-  height: ({ isSmallPhone, isTinyPhone }) =>
-    isTinyPhone ? 8 : isSmallPhone ? 12 : 15,
+  height: ({ isSmallPhone, isTinyPhone }) => (isTinyPhone ? 8 : isSmallPhone ? 12 : 15),
   width: '100%',
 });
 
@@ -52,18 +50,11 @@ export default function SendAssetFormToken({
   const { isSmallPhone, isTinyPhone } = useDimensions();
   const { colors } = useTheme();
 
-  const {
-    mask: nativeMask,
-    placeholder: nativePlaceholder,
-  } = supportedNativeCurrencies[nativeCurrency];
+  const { mask: nativeMask, placeholder: nativePlaceholder } = supportedNativeCurrencies[nativeCurrency];
 
   return (
     <Fragment>
-      <FormContainer
-        isSmallPhone={isSmallPhone}
-        isTinyPhone={isTinyPhone}
-        {...props}
-      >
+      <FormContainer isSmallPhone={isSmallPhone} isTinyPhone={isTinyPhone} {...props}>
         <SendAssetFormField
           colorForAsset={colorForAsset}
           format={removeLeadingZeros}

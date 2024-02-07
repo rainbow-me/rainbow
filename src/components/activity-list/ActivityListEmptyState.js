@@ -23,9 +23,7 @@ const ActivityListEmptyState = ({ children, emoji, label }) => {
   return (
     <View>
       {children}
-      <Container
-        height={deviceUtils.dimensions.height - (navbarHeight + topInset) * 2}
-      >
+      <Container height={deviceUtils.dimensions.height - (navbarHeight + topInset) * 2}>
         <Centered>
           <Text align="center" letterSpacing="zero" size="h2">
             {emoji}

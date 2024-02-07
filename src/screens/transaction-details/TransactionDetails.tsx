@@ -33,10 +33,7 @@ export const TransactionDetails = () => {
   const { height: deviceHeight } = useDimensions();
 
   // Dynamic sheet height based on content height
-  useEffect(() => setParams({ longFormHeight: sheetHeight }), [
-    setParams,
-    sheetHeight,
-  ]);
+  useEffect(() => setParams({ longFormHeight: sheetHeight }), [setParams, sheetHeight]);
 
   const onSheetContentLayout = (event: LayoutChangeEvent) => {
     const contentHeight = event.nativeEvent.layout.height;
@@ -64,24 +61,11 @@ export const TransactionDetails = () => {
           deferredHeight={IS_ANDROID}
           showsVerticalScrollIndicator={false}
         >
-          <Box
-            paddingHorizontal="20px"
-            paddingBottom="20px"
-            onLayout={onSheetContentLayout}
-          >
-            <TransactionDetailsStatusActionsAndTimestampSection
-              hideIcon={statusIconHidden}
-              transaction={transaction}
-            />
-            <TransactionDetailsFromToSection
-              transaction={transaction}
-              presentToast={presentAddressToast}
-            />
+          <Box paddingHorizontal="20px" paddingBottom="20px" onLayout={onSheetContentLayout}>
+            <TransactionDetailsStatusActionsAndTimestampSection hideIcon={statusIconHidden} transaction={transaction} />
+            <TransactionDetailsFromToSection transaction={transaction} presentToast={presentAddressToast} />
             <TransactionDetailsValueAndFeeSection transaction={transaction} />
-            <TransactionDetailsHashAndActionsSection
-              transaction={transaction}
-              presentToast={presentHashToast}
-            />
+            <TransactionDetailsHashAndActionsSection transaction={transaction} presentToast={presentHashToast} />
           </Box>
           <ToastPositionContainer>
             <Toast
@@ -89,11 +73,7 @@ export const TransactionDetails = () => {
               text={i18n.t(i18n.l.transaction_details.address_copied)}
               testID="address-copied-toast"
             />
-            <Toast
-              isVisible={presentedToast === 'hash'}
-              text={i18n.t(i18n.l.transaction_details.hash_copied)}
-              testID="hash-copied-toast"
-            />
+            <Toast isVisible={presentedToast === 'hash'} text={i18n.t(i18n.l.transaction_details.hash_copied)} testID="hash-copied-toast" />
           </ToastPositionContainer>
         </SlackSheet>
       )}

@@ -214,13 +214,7 @@ export const fixedHeightSeparators: Example = {
   name: 'With fixed-height separators',
   Example: () =>
     source(
-      <Inline
-        separator={
-          <View style={{ backgroundColor: '#999', height: 20, width: 1 }} />
-        }
-        space="20px"
-        wrap={false}
-      >
+      <Inline separator={<View style={{ backgroundColor: '#999', height: 20, width: 1 }} />} space="20px" wrap={false}>
         <Placeholder width={40} />
         <Placeholder width={40} />
         <Placeholder width={40} />
@@ -234,9 +228,7 @@ export const fixedHeightSeparatorsVerticalAlignment: Example = {
     source(
       <Inline
         alignVertical="center"
-        separator={
-          <View style={{ backgroundColor: '#999', height: 20, width: 1 }} />
-        }
+        separator={<View style={{ backgroundColor: '#999', height: 20, width: 1 }} />}
         space="20px"
         wrap={false}
       >
@@ -253,9 +245,7 @@ export const fixedHeightSeparatorsHorizontalAlignment: Example = {
     source(
       <Inline
         alignHorizontal="center"
-        separator={
-          <View style={{ backgroundColor: '#999', height: 20, width: 1 }} />
-        }
+        separator={<View style={{ backgroundColor: '#999', height: 20, width: 1 }} />}
         space="20px"
         wrap={false}
       >
@@ -272,9 +262,7 @@ export const fullHeightSeparators: Example = {
     source(
       <Inline
         alignVertical="center"
-        separator={
-          <View style={{ backgroundColor: '#999', flexGrow: 1, width: 1 }} />
-        }
+        separator={<View style={{ backgroundColor: '#999', flexGrow: 1, width: 1 }} />}
         space="20px"
         wrap={false}
       >
@@ -289,13 +277,7 @@ export const noSpaceAndSeparators: Example = {
   name: 'With no space and separators',
   Example: () =>
     source(
-      <Inline
-        alignVertical="center"
-        separator={
-          <View style={{ backgroundColor: '#999', height: 20, width: 1 }} />
-        }
-        wrap={false}
-      >
+      <Inline alignVertical="center" separator={<View style={{ backgroundColor: '#999', height: 20, width: 1 }} />} wrap={false}>
         <Placeholder width={40} />
         <Placeholder width={40} />
         <Placeholder width={40} />

@@ -5,7 +5,7 @@ import CheckmarkCircledIcon from '../../../components/icons/svg/CheckmarkCircled
 import WarningIcon from '../../../components/icons/svg/WarningIcon';
 import Chevron from '@/assets/chevronUpDown.png';
 import Caret from '@/assets/family-dropdown-arrow.png';
-import { Box, BoxProps, Inline, Stack, Text } from '@/design-system';
+import { Box, Inline, Stack, Text } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import { useTheme } from '@/theme';
 import { ImageSourcePropType } from 'react-native';
@@ -38,23 +38,17 @@ interface TextIconProps {
   isEmoji?: boolean;
 }
 
-const TextIcon = ({
-  colorOverride,
-  icon,
-  disabled,
-  isLink,
-  isEmoji = false,
-}: TextIconProps) => (
+const TextIcon = ({ colorOverride, icon, disabled, isLink, isEmoji = false }: TextIconProps) => (
   <Box paddingLeft={{ custom: isEmoji ? 7 : 0 }}>
     <Text
       color={
         colorOverride
           ? { custom: colorOverride }
           : disabled
-          ? 'secondary60 (Deprecated)'
-          : isLink
-          ? 'action (Deprecated)'
-          : 'primary (Deprecated)'
+            ? 'secondary60 (Deprecated)'
+            : isLink
+              ? 'action (Deprecated)'
+              : 'primary (Deprecated)'
       }
       containsEmoji
       size="18px / 27px (Deprecated)"
@@ -70,11 +64,7 @@ interface SelectionProps {
 }
 
 const Selection = ({ children }: SelectionProps) => (
-  <Text
-    color="secondary60 (Deprecated)"
-    size="18px / 27px (Deprecated)"
-    weight="semibold"
-  >
+  <Text color="secondary60 (Deprecated)" size="18px / 27px (Deprecated)" weight="semibold">
     {children}
   </Text>
 );
@@ -122,13 +112,7 @@ interface TitleProps {
 
 const Title = ({ text, weight = 'semibold', disabled, isLink }: TitleProps) => (
   <Text
-    color={
-      disabled
-        ? 'secondary60 (Deprecated)'
-        : isLink
-        ? 'action (Deprecated)'
-        : 'primary (Deprecated)'
-    }
+    color={disabled ? 'secondary60 (Deprecated)' : isLink ? 'action (Deprecated)' : 'primary (Deprecated)'}
     containsEmoji
     size="18px / 27px (Deprecated)"
     weight={weight}
@@ -148,13 +132,7 @@ const Label = ({ text, warn, color }: LabelProps) => {
   const { colors } = useTheme();
   return (
     <Text
-      color={
-        color
-          ? { custom: color }
-          : warn
-          ? { custom: colors.orangeLight }
-          : 'secondary60 (Deprecated)'
-      }
+      color={color ? { custom: color } : warn ? { custom: colors.orangeLight } : 'secondary60 (Deprecated)'}
       size="14px / 19px (Deprecated)"
       weight="medium"
     >

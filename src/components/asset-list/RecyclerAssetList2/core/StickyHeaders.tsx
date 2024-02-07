@@ -1,15 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { sortBy } from 'lodash';
-import React, {
-  MutableRefObject,
-  ReactElement,
-  useCallback,
-  useContext,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { MutableRefObject, ReactElement, useCallback, useContext, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Animated as RNAnimated } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { BaseScrollView } from 'recyclerlistview';
@@ -20,11 +11,7 @@ const Context = React.createContext<
   | {
       scrollViewRef: MutableRefObject<BaseScrollView | undefined>;
       interpolationsRanges: Record<string, { range: number[]; last: boolean }>;
-      setMeasures: (
-        position: number | undefined,
-        height: number | undefined,
-        name: string
-      ) => void;
+      setMeasures: (position: number | undefined, height: number | undefined, name: string) => void;
       yOffset: number;
     }
   | undefined
@@ -109,20 +96,9 @@ function StickyHeaderInternal({
   );
 }
 
-export function StickyHeaderManager({
-  children,
-  yOffset = 0,
-}: {
-  children: ReactElement;
-  yOffset?: number;
-}) {
-  const [positions, setPositions] = useState<
-    Record<string, { height: number; position: number; name: string }>
-  >({});
-  const interpolationsRanges: Record<
-    string,
-    { range: number[]; last: boolean }
-  > = useMemo(() => {
+export function StickyHeaderManager({ children, yOffset = 0 }: { children: ReactElement; yOffset?: number }) {
+  const [positions, setPositions] = useState<Record<string, { height: number; position: number; name: string }>>({});
+  const interpolationsRanges: Record<string, { range: number[]; last: boolean }> = useMemo(() => {
     const sorted = sortBy(Object.values(positions), 'position');
     const ranges: number[][] = [];
     const rangesKeyed: Record<string, { range: number[]; last: boolean }> = {};
@@ -146,23 +122,16 @@ export function StickyHeaderManager({
     return rangesKeyed;
   }, [positions]);
   const scrollViewRef = useRef<BaseScrollView>();
-  const setMeasures = useCallback(
-    (
-      position: number | undefined,
-      height: number | undefined,
-      name: string
-    ) => {
-      setPositions(prev => {
-        if (position === undefined || height === undefined) {
-          // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-          delete prev[name];
-          return { ...prev };
-        }
-        return { ...prev, [name]: { height, name, position } };
-      });
-    },
-    []
-  );
+  const setMeasures = useCallback((position: number | undefined, height: number | undefined, name: string) => {
+    setPositions(prev => {
+      if (position === undefined || height === undefined) {
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+        delete prev[name];
+        return { ...prev };
+      }
+      return { ...prev, [name]: { height, name, position } };
+    });
+  }, []);
   const value = useMemo(
     () => ({
       yOffset,

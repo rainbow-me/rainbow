@@ -1,10 +1,6 @@
 import { ActivityItem } from '@ratio.me/ratio-react-native-library';
 
-import {
-  NewTransactionOrAddCashTransaction,
-  TransactionStatus,
-  TransactionType,
-} from '@/entities';
+import { NewTransactionOrAddCashTransaction, TransactionStatus, TransactionType } from '@/entities';
 import { AddCashCurrencies } from '@/references';
 import { ethereumUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
@@ -37,9 +33,7 @@ export async function ratioOrderToNewTransaction({
   analyticsSessionId: string;
 }): Promise<NewTransactionOrAddCashTransaction> {
   const parsedCurrency = parseRatioCurrency(activity.crypto.currency);
-  const parsedNetwork = parseRatioNetworkToInternalNetwork(
-    activity.crypto.wallet.network
-  );
+  const parsedNetwork = parseRatioNetworkToInternalNetwork(activity.crypto.wallet.network);
 
   if (!parsedNetwork) {
     logger.debug(`Ratio: could not determine network`, {
@@ -50,9 +44,7 @@ export async function ratioOrderToNewTransaction({
     throw new RainbowError(`Ratio: could not determine network`);
   }
 
-  const destAssetAddress = AddCashCurrencies[parsedNetwork]?.[
-    parsedCurrency
-  ]?.toLowerCase();
+  const destAssetAddress = AddCashCurrencies[parsedNetwork]?.[parsedCurrency]?.toLowerCase();
 
   if (!destAssetAddress) {
     logger.debug(`Ratio: could not determine asset address`, {
@@ -65,10 +57,7 @@ export async function ratioOrderToNewTransaction({
     throw new RainbowError(`Ratio: could not determine asset address`);
   }
 
-  const asset = await ethereumUtils.getNativeAssetForNetwork(
-    parsedNetwork,
-    destAssetAddress
-  );
+  const asset = await ethereumUtils.getNativeAssetForNetwork(parsedNetwork, destAssetAddress);
 
   if (!asset) {
     logger.debug(`Ratio: could not get account asset`, {

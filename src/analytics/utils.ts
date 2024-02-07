@@ -40,9 +40,7 @@ export async function getOrCreateDeviceId(): Promise<[string, boolean]> {
     return [deviceIdFromStorage, false];
   } else {
     // load old ID if exists
-    const deviceIdFromKeychain = await keychain.loadString(
-      analyticsUserIdentifier
-    );
+    const deviceIdFromKeychain = await keychain.loadString(analyticsUserIdentifier);
     const hasExistingDeviceId = typeof deviceIdFromKeychain === 'string';
     // prefer old ID, otherwise create a new one
     const deviceId = hasExistingDeviceId ? deviceIdFromKeychain : nanoid();
@@ -51,9 +49,7 @@ export async function getOrCreateDeviceId(): Promise<[string, boolean]> {
 
     // log to Sentry
     if (hasExistingDeviceId) {
-      logger.info(
-        `getOrCreateDeviceId migrating device ID from keychain to local storage`
-      );
+      logger.info(`getOrCreateDeviceId migrating device ID from keychain to local storage`);
     }
 
     logger.debug(`getOrCreateDeviceId returned new deviceId`);
@@ -63,15 +59,9 @@ export async function getOrCreateDeviceId(): Promise<[string, boolean]> {
   }
 }
 
-export function securelyHashWalletAddress(
-  walletAddress: `0x${string}`
-): string | undefined {
+export function securelyHashWalletAddress(walletAddress: `0x${string}`): string | undefined {
   if (!SECURE_WALLET_HASH_KEY) {
-    logger.error(
-      new RainbowError(
-        `Required .env variable SECURE_WALLET_HASH_KEY does not exist`
-      )
-    );
+    logger.error(new RainbowError(`Required .env variable SECURE_WALLET_HASH_KEY does not exist`));
   }
 
   try {

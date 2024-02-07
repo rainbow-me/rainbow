@@ -17,8 +17,8 @@ const docs: DocsType = {
     <>
       <Docs.Text>
         Low-level access to the foreground color palette is available via the
-        <Docs.Code>useForegroundColor</Docs.Code> Hook. This ensures that you
-        get the correct color palette based on the contextual color mode.
+        <Docs.Code>useForegroundColor</Docs.Code> Hook. This ensures that you get the correct color palette based on the contextual color
+        mode.
       </Docs.Text>
       <Docs.CodePreview
         Example={() =>
@@ -37,9 +37,7 @@ const docs: DocsType = {
           )
         }
       />
-      <Docs.Text>
-        Custom colors can also be passed to this Hook in an object format.
-      </Docs.Text>
+      <Docs.Text>Custom colors can also be passed to this Hook in an object format.</Docs.Text>
       <Docs.CodePreview
         Example={() =>
           source(

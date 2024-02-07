@@ -40,23 +40,19 @@ type Props = PropsWithChildren<{
   style?: StyleProp<ViewStyle>;
 }>;
 
-const addChartsStyling = (isCharts: boolean) =>
-  isCharts ? { position: 'absolute', width: '100%' } : {};
+const addChartsStyling = (isCharts: boolean) => (isCharts ? { position: 'absolute', width: '100%' } : {});
 
-const Button = styled(Centered)(
-  ({ isCharts, size }: { isCharts?: boolean; size?: string }) => ({
-    ...addChartsStyling(!!isCharts),
-    height: size === 'big' ? 52 : 46,
-  })
-);
+const Button = styled(Centered)(({ isCharts, size }: { isCharts?: boolean; size?: string }) => ({
+  ...addChartsStyling(!!isCharts),
+  height: size === 'big' ? 52 : 46,
+}));
 
 const Content = styled(RowWithMargins).attrs({
   align: 'center',
   margin: 4,
 })({
   height: ({ size }: Pick<Props, 'size'>) => (size === 'big' ? 52 : 46),
-  paddingBottom: ({ label }: Pick<Props, 'label'>) =>
-    label && containsEmoji(label) ? 2.5 : 1,
+  paddingBottom: ({ label }: Pick<Props, 'label'>) => (label && containsEmoji(label) ? 2.5 : 1),
   paddingHorizontal: 19,
   zIndex: 1,
 });
@@ -119,26 +115,9 @@ const SheetActionButton: React.FC<Props> = ({
     } else
       return [
         [0, 10, 30, colors.shadow, isWhite ? 0.12 : lightShadows ? 0.15 : 0.2],
-        [
-          0,
-          5,
-          15,
-          isDarkMode || isWhite ? colors.shadow : color,
-          isWhite ? 0.08 : lightShadows ? 0.3 : 0.4,
-        ],
+        [0, 5, 15, isDarkMode || isWhite ? colors.shadow : color, isWhite ? 0.08 : lightShadows ? 0.3 : 0.4],
       ];
-  }, [
-    color,
-    colors,
-    disabled,
-    forceShadows,
-    isTransparent,
-    isDarkMode,
-    lightShadows,
-    newShadows,
-    nftShadows,
-    isWhite,
-  ]);
+  }, [color, colors, disabled, forceShadows, isTransparent, isDarkMode, lightShadows, newShadows, nftShadows, isWhite]);
 
   return (
     <Button

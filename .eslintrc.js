@@ -1,10 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { parse: babelParse } = require('@babel/parser');
-const data = fs.readFileSync(
-  path.resolve(__dirname, './globalVariables.js'),
-  'utf8'
-);
+const data = fs.readFileSync(path.resolve(__dirname, './globalVariables.js'), 'utf8');
 const { parse } = require('ast-parser');
 
 // syntax in globalVariables.js's imports is not supported here
@@ -35,8 +32,7 @@ module.exports = {
         patterns: [
           {
             group: ['@react-navigation/core'],
-            message:
-              'You probably want to use @/navigation instead, to ensure that all of our customizations are applied.',
+            message: 'You probably want to use @/navigation instead, to ensure that all of our customizations are applied.',
           },
         ],
       },

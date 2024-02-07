@@ -9,12 +9,7 @@ interface MenuContainerProps {
   space?: Space;
 }
 
-const MenuContainer = ({
-  children,
-  testID,
-  Footer,
-  space = '36px',
-}: MenuContainerProps) => {
+const MenuContainer = ({ children, testID, Footer, space = '36px' }: MenuContainerProps) => {
   return (
     // ios scroll fix
     <Inset

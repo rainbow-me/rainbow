@@ -32,13 +32,7 @@ export function SettingsSheet() {
   };
 
   const renderHeaderRight = useCallback(
-    () => (
-      <ModalHeaderButton
-        label={lang.t('settings.done')}
-        onPress={goBack}
-        side="right"
-      />
-    ),
+    () => <ModalHeaderButton label={lang.t('settings.done')} onPress={goBack} side="right" />,
     [goBack]
   );
 
@@ -55,12 +49,7 @@ export function SettingsSheet() {
   return (
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (
-        <SimpleSheet
-          testID="settings-sheet"
-          backgroundColor={backgroundColor as string}
-          customHeight={deviceHeight}
-          scrollEnabled={false}
-        >
+        <SimpleSheet testID="settings-sheet" backgroundColor={backgroundColor as string} customHeight={deviceHeight} scrollEnabled={false}>
           <Stack.Navigator
             screenOptions={{
               ...memoSettingsOptions,
@@ -79,17 +68,11 @@ export function SettingsSheet() {
                   onCloseModal={goBack}
                   onPressAppIcon={sectionOnPressFactory(SettingsPages.appIcon)}
                   onPressBackup={sectionOnPressFactory(SettingsPages.backup)}
-                  onPressCurrency={sectionOnPressFactory(
-                    SettingsPages.currency
-                  )}
+                  onPressCurrency={sectionOnPressFactory(SettingsPages.currency)}
                   onPressDev={sectionOnPressFactory(SettingsPages.dev)}
-                  onPressLanguage={sectionOnPressFactory(
-                    SettingsPages.language
-                  )}
+                  onPressLanguage={sectionOnPressFactory(SettingsPages.language)}
                   onPressNetwork={sectionOnPressFactory(SettingsPages.network)}
-                  onPressNotifications={sectionOnPressFactory(
-                    SettingsPages.notifications
-                  )}
+                  onPressNotifications={sectionOnPressFactory(SettingsPages.notifications)}
                   onPressPrivacy={sectionOnPressFactory(SettingsPages.privacy)}
                 />
               )}

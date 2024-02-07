@@ -1,36 +1,18 @@
 import { captureException } from '@sentry/react-native';
 import { endsWith } from 'lodash';
-import {
-  CLOUD_BACKUP_ERRORS,
-  encryptAndSaveDataToCloud,
-  getDataFromCloud,
-} from '@/handlers/cloudBackup';
+import { CLOUD_BACKUP_ERRORS, encryptAndSaveDataToCloud, getDataFromCloud } from '@/handlers/cloudBackup';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import WalletTypes from '../helpers/walletTypes';
-import {
-  allWalletsKey,
-  pinKey,
-  privateKeyKey,
-  seedPhraseKey,
-  selectedWalletKey,
-} from '@/utils/keychainConstants';
+import { allWalletsKey, pinKey, privateKeyKey, seedPhraseKey, selectedWalletKey } from '@/utils/keychainConstants';
 import * as keychain from '@/model/keychain';
 import * as kc from '@/keychain';
-import {
-  AllRainbowWallets,
-  allWalletsVersion,
-  createWallet,
-  RainbowWallet,
-} from './wallet';
+import { AllRainbowWallets, allWalletsVersion, createWallet, RainbowWallet } from './wallet';
 import { analytics } from '@/analytics';
 import oldLogger from '@/utils/logger';
 import { logger, RainbowError } from '@/logger';
 import { IS_ANDROID } from '@/env';
 import AesEncryptor from '../handlers/aesEncryption';
-import {
-  authenticateWithPINAndCreateIfNeeded,
-  decryptPIN,
-} from '@/handlers/authentication';
+import { authenticateWithPINAndCreateIfNeeded, decryptPIN } from '@/handlers/authentication';
 
 const encryptor = new AesEncryptor();
 const PIN_REGEX = /^\d{4}$/;
@@ -75,9 +57,7 @@ async function extractSecretsForWallet(wallet: RainbowWallet) {
   if (!allKeys) throw new Error(CLOUD_BACKUP_ERRORS.KEYCHAIN_ACCESS_ERROR);
   const secrets = {} as { [key: string]: string };
 
-  const allowedPkeysKeys = wallet?.addresses?.map(
-    account => `${account.address}_${privateKeyKey}`
-  );
+  const allowedPkeysKeys = wallet?.addresses?.map(account => `${account.address}_${privateKeyKey}`);
 
   allKeys.forEach(item => {
     // Ignore allWalletsKey
@@ -91,18 +71,12 @@ async function extractSecretsForWallet(wallet: RainbowWallet) {
     }
 
     // Ignore another wallets seeds
-    if (
-      item.username.indexOf(`_${seedPhraseKey}`) !== -1 &&
-      item.username !== `${wallet.id}_${seedPhraseKey}`
-    ) {
+    if (item.username.indexOf(`_${seedPhraseKey}`) !== -1 && item.username !== `${wallet.id}_${seedPhraseKey}`) {
       return;
     }
 
     // Ignore other wallets PKeys
-    if (
-      item.username.indexOf(`_${privateKeyKey}`) !== -1 &&
-      !(allowedPkeysKeys?.indexOf(item.username) > -1)
-    ) {
+    if (item.username.indexOf(`_${privateKeyKey}`) !== -1 && !(allowedPkeysKeys?.indexOf(item.username) > -1)) {
       return;
     }
 
@@ -122,10 +96,7 @@ export async function backupWalletToCloud({
 }) {
   const now = Date.now();
   const secrets = await extractSecretsForWallet(wallet);
-  const processedSecrets = await decryptAllPinEncryptedSecretsIfNeeded(
-    secrets,
-    userPIN
-  );
+  const processedSecrets = await decryptAllPinEncryptedSecretsIfNeeded(secrets, userPIN);
   const data = {
     createdAt: now,
     secrets: processedSecrets,
@@ -148,10 +119,7 @@ export async function addWalletToCloudBackup({
   const backup = await getDataFromCloud(password, filename);
   const now = Date.now();
   const newSecretsToBeAddedToBackup = await extractSecretsForWallet(wallet);
-  const processedNewSecrets = await decryptAllPinEncryptedSecretsIfNeeded(
-    newSecretsToBeAddedToBackup,
-    userPIN
-  );
+  const processedNewSecrets = await decryptAllPinEncryptedSecretsIfNeeded(newSecretsToBeAddedToBackup, userPIN);
   backup.updatedAt = now;
   // Merge existing secrets with the ones from this wallet
   backup.secrets = {
@@ -162,10 +130,7 @@ export async function addWalletToCloudBackup({
 }
 
 // we decrypt seedphrase and private key before backing up
-async function decryptAllPinEncryptedSecretsIfNeeded(
-  secrets: Record<string, string>,
-  userPIN?: string
-) {
+async function decryptAllPinEncryptedSecretsIfNeeded(secrets: Record<string, string>, userPIN?: string) {
   const processedSecrets = { ...secrets };
   // We need to decrypt PIN code encrypted secrets before backup
   const hasBiometricsEnabled = await kc.getSupportedBiometryType();
@@ -192,10 +157,7 @@ async function decryptAllPinEncryptedSecretsIfNeeded(
           const seedphrase = parsedSecret.seedphrase;
 
           if (userPIN && seedphrase && seedphrase?.includes('cipher')) {
-            const decryptedSeedPhrase = await encryptor.decrypt(
-              userPIN,
-              seedphrase
-            );
+            const decryptedSeedPhrase = await encryptor.decrypt(userPIN, seedphrase);
             processedSecrets[key] = JSON.stringify({
               ...parsedSecret,
               seedphrase: decryptedSeedPhrase,
@@ -206,10 +168,7 @@ async function decryptAllPinEncryptedSecretsIfNeeded(
           const privateKey = parsedSecret.privateKey;
 
           if (userPIN && privateKey && privateKey.includes('cipher')) {
-            const decryptedPrivateKey = await encryptor.decrypt(
-              userPIN,
-              privateKey
-            );
+            const decryptedPrivateKey = await encryptor.decrypt(userPIN, privateKey);
             processedSecrets[key] = JSON.stringify({
               ...parsedSecret,
               privateKey: decryptedPrivateKey,
@@ -225,21 +184,14 @@ async function decryptAllPinEncryptedSecretsIfNeeded(
   }
 }
 
-export function findLatestBackUp(
-  wallets: AllRainbowWallets | null
-): string | null {
+export function findLatestBackUp(wallets: AllRainbowWallets | null): string | null {
   let latestBackup: number | null = null;
   let filename: string | null = null;
 
   if (wallets) {
     Object.values(wallets).forEach(wallet => {
       // Check if there's a wallet backed up
-      if (
-        wallet.backedUp &&
-        wallet.backupDate &&
-        wallet.backupFile &&
-        wallet.backupType === WalletBackupTypes.cloud
-      ) {
+      if (wallet.backedUp && wallet.backupDate && wallet.backupFile && wallet.backupType === WalletBackupTypes.cloud) {
         // If there is one, let's grab the latest backup
         if (!latestBackup || Number(wallet.backupDate) > latestBackup) {
           filename = wallet.backupFile;
@@ -258,7 +210,7 @@ export const RestoreCloudBackupResultStates = {
   incorrectPinCode: 'incorrectPinCode',
 } as const;
 
-type RestoreCloudBackupResultStatesType = typeof RestoreCloudBackupResultStates[keyof typeof RestoreCloudBackupResultStates];
+type RestoreCloudBackupResultStatesType = (typeof RestoreCloudBackupResultStates)[keyof typeof RestoreCloudBackupResultStates];
 
 /**
  * Restores a cloud backup.
@@ -277,8 +229,7 @@ export async function restoreCloudBackup({
   // Restoring a specific backup from settings => Backup, which uses only the keys stored.
 
   try {
-    const filename =
-      backupSelected || (userData && findLatestBackUp(userData?.wallets));
+    const filename = backupSelected || (userData && findLatestBackUp(userData?.wallets));
     if (!filename) {
       return RestoreCloudBackupResultStates.failedWhenRestoring;
     }
@@ -305,12 +256,9 @@ export async function restoreCloudBackup({
 
     let backupToRestoreTiemstamp;
     if (userData?.wallets) {
-      const firstWalletBackupFile = Object.values(userData.wallets)[0]
-        ?.backupFile;
+      const firstWalletBackupFile = Object.values(userData.wallets)[0]?.backupFile;
       if (typeof firstWalletBackupFile === 'string') {
-        backupToRestoreTiemstamp = parseTimestampFromFilename(
-          firstWalletBackupFile
-        );
+        backupToRestoreTiemstamp = parseTimestampFromFilename(firstWalletBackupFile);
       }
     }
 
@@ -321,10 +269,7 @@ export async function restoreCloudBackup({
       const walletsToRestore: AllRainbowWallets = {};
       Object.values(userData?.wallets ?? {}).forEach(wallet => {
         if (
-          (wallet.backedUp &&
-            wallet.backupDate &&
-            wallet.backupFile &&
-            wallet.backupType === WalletBackupTypes.cloud) ||
+          (wallet.backedUp && wallet.backupDate && wallet.backupFile && wallet.backupType === WalletBackupTypes.cloud) ||
           wallet.type === WalletTypes.readOnly
         ) {
           walletsToRestore[wallet.id] = wallet;
@@ -336,20 +281,12 @@ export async function restoreCloudBackup({
         version: allWalletsVersion,
         wallets: walletsToRestore,
       };
-      restoredSuccessfully = await restoreCurrentBackupIntoKeychain(
-        dataToRestore,
-        userPIN
-      );
+      restoredSuccessfully = await restoreCurrentBackupIntoKeychain(dataToRestore, userPIN);
     } else {
-      restoredSuccessfully = await restoreSpecificBackupIntoKeychain(
-        dataToRestore,
-        userPIN
-      );
+      restoredSuccessfully = await restoreSpecificBackupIntoKeychain(dataToRestore, userPIN);
     }
 
-    return restoredSuccessfully
-      ? RestoreCloudBackupResultStates.success
-      : RestoreCloudBackupResultStates.failedWhenRestoring;
+    return restoredSuccessfully ? RestoreCloudBackupResultStates.success : RestoreCloudBackupResultStates.failedWhenRestoring;
   } catch (error) {
     const message = (error as Error).message;
     if (message === CLOUD_BACKUP_ERRORS.ERROR_DECRYPTING_DATA) {
@@ -362,10 +299,7 @@ export async function restoreCloudBackup({
   }
 }
 
-async function restoreSpecificBackupIntoKeychain(
-  backedUpData: BackedUpData,
-  userPin?: string
-): Promise<boolean> {
+async function restoreSpecificBackupIntoKeychain(backedUpData: BackedUpData, userPin?: string): Promise<boolean> {
   const encryptedBackupPinData = backedUpData[pinKey];
 
   try {
@@ -398,10 +332,7 @@ async function restoreSpecificBackupIntoKeychain(
   }
 }
 
-async function restoreCurrentBackupIntoKeychain(
-  backedUpData: BackedUpData,
-  newPIN?: string
-): Promise<boolean> {
+async function restoreCurrentBackupIntoKeychain(backedUpData: BackedUpData, newPIN?: string): Promise<boolean> {
   try {
     // Access control config per each type of key
     const privateAccessControlOptions = await keychain.getPrivateAccessControlOptions();
@@ -414,9 +345,7 @@ async function restoreCurrentBackupIntoKeychain(
         const theKeyIsASeedPhrase = endsWith(key, seedPhraseKey);
         const theKeyIsAPrivateKey = endsWith(key, privateKeyKey);
         const accessControl: typeof kc.publicAccessControlOptions =
-          theKeyIsASeedPhrase || theKeyIsAPrivateKey
-            ? privateAccessControlOptions
-            : kc.publicAccessControlOptions;
+          theKeyIsASeedPhrase || theKeyIsAPrivateKey ? privateAccessControlOptions : kc.publicAccessControlOptions;
 
         /*
          * Backups that were saved encrypted with PIN to the cloud need to be
@@ -472,13 +401,7 @@ async function restoreCurrentBackupIntoKeychain(
   }
 }
 
-async function decryptSecretFromBackupPin({
-  secret,
-  backupPIN,
-}: {
-  secret?: string;
-  backupPIN?: string;
-}) {
+async function decryptSecretFromBackupPin({ secret, backupPIN }: { secret?: string; backupPIN?: string }) {
   let processedSecret = secret;
 
   if (!processedSecret) {
@@ -490,21 +413,13 @@ async function decryptSecretFromBackupPin({
    * It is required for old backups created before we started storing
    * secrets in backups without PIN encryption
    */
-  if (
-    backupPIN &&
-    processedSecret.includes('cipher') &&
-    PIN_REGEX.test(backupPIN)
-  ) {
+  if (backupPIN && processedSecret.includes('cipher') && PIN_REGEX.test(backupPIN)) {
     const decryptedSecret = await encryptor.decrypt(backupPIN, processedSecret);
 
     if (decryptedSecret) {
       processedSecret = decryptedSecret;
     } else {
-      logger.error(
-        new RainbowError(
-          'Failed to decrypt backed up seed phrase using backup PIN.'
-        )
-      );
+      logger.error(new RainbowError('Failed to decrypt backed up seed phrase using backup PIN.'));
       return processedSecret;
     }
   }
@@ -513,9 +428,7 @@ async function decryptSecretFromBackupPin({
 }
 
 // Attempts to save the password to decrypt the backup from the iCloud keychain
-export async function saveBackupPassword(
-  password: BackupPassword
-): Promise<void> {
+export async function saveBackupPassword(password: BackupPassword): Promise<void> {
   try {
     if (ios) {
       await kc.setSharedWebCredentials('Backup Password', password);

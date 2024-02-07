@@ -69,18 +69,11 @@ export default function TokenInfoItem({
         margin={android ? (isNft ? -3 : -6) : isNft ? 6 : 3}
         {...props}
       >
-        <ButtonPressAnimation
-          disabled={!showInfoButton}
-          onPress={showInfoButton && onInfoPress}
-          scaleTo={0.88}
-        >
+        <ButtonPressAnimation disabled={!showInfoButton} onPress={showInfoButton && onInfoPress} scaleTo={0.88}>
           <TokenInfoHeading align={align} isNft={isNft}>
             {title}
             {showInfoButton ? (
-              <TokenInfoHeading
-                color={colors.alpha(colors.whiteLabel, 0.25)}
-                isNft
-              >
+              <TokenInfoHeading color={colors.alpha(colors.whiteLabel, 0.25)} isNft>
                 {' '}
                 􀅵
               </TokenInfoHeading>
@@ -99,11 +92,7 @@ export default function TokenInfoItem({
               </Columns>
             )}
           >
-            <ButtonPressAnimation
-              enableHapticFeedback={!!onPress && enableHapticFeedback}
-              onPress={onPress}
-              scaleTo={1}
-            >
+            <ButtonPressAnimation enableHapticFeedback={!!onPress && enableHapticFeedback} onPress={onPress} scaleTo={1}>
               <TokenInfoValue
                 activeOpacity={0}
                 align={align}
@@ -121,26 +110,14 @@ export default function TokenInfoItem({
         {loading && (
           <WrapperView
             align={align}
-            backgroundColor={
-              isNft
-                ? colors.alpha(colors.whiteLabel, 0.04)
-                : colors.alpha(colors.blueGreyDark, 0.04)
-            }
+            backgroundColor={isNft ? colors.alpha(colors.whiteLabel, 0.04) : colors.alpha(colors.blueGreyDark, 0.04)}
             isENS={isENS}
             isNft={isNft}
           >
             <ShimmerAnimation
-              color={
-                isNft
-                  ? colors.alpha(colors.whiteLabel, 0.04)
-                  : colors.alpha(colors.blueGreyDark, 0.06)
-              }
+              color={isNft ? colors.alpha(colors.whiteLabel, 0.04) : colors.alpha(colors.blueGreyDark, 0.06)}
               enabled
-              gradientColor={
-                isNft
-                  ? colors.alpha(colors.whiteLabel, 0.04)
-                  : colors.alpha(colors.blueGreyDark, 0.06)
-              }
+              gradientColor={isNft ? colors.alpha(colors.whiteLabel, 0.04) : colors.alpha(colors.blueGreyDark, 0.06)}
               width={50}
             />
           </WrapperView>

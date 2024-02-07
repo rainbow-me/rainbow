@@ -43,36 +43,25 @@ export default function useHideSplashScreen() {
 
     if (!alreadyLoggedPerformance.current) {
       const initialRoute = PerformanceContextMap.get('initialRoute');
-      const additionalParams =
-        initialRoute !== undefined ? { initialRoute } : undefined;
-      PerformanceTracking.finishMeasuring(
-        PerformanceMetrics.timeToInteractive,
-        additionalParams
-      );
-      PerformanceTracking.logDirectly(
-        PerformanceMetrics.completeStartupTime,
-        Date.now() - StartTime.START_TIME,
-        additionalParams
-      );
+      const additionalParams = initialRoute !== undefined ? { initialRoute } : undefined;
+      PerformanceTracking.finishMeasuring(PerformanceMetrics.timeToInteractive, additionalParams);
+      PerformanceTracking.logDirectly(PerformanceMetrics.completeStartupTime, Date.now() - StartTime.START_TIME, additionalParams);
       analytics.track('Application became interactive');
       alreadyLoggedPerformance.current = true;
 
       // need to load setting straight from storage, redux isnt ready yet
       const appIcon = (await getAppIcon()) as string;
       if (appIcon === PoolboyIcon.key) {
-        const sound = new Sound(
-          require('../assets/sounds/RainbowSega.mp3'),
-          (error: any) => {
-            if (error) {
-              logger.error(new RainbowError('Error playing poolboy sound'));
-              return;
-            }
-
-            sound.play((success: any) => {
-              logger.debug('playing poolboy sound');
-            });
+        const sound = new Sound(require('../assets/sounds/RainbowSega.mp3'), (error: any) => {
+          if (error) {
+            logger.error(new RainbowError('Error playing poolboy sound'));
+            return;
           }
-        );
+
+          sound.play((success: any) => {
+            logger.debug('playing poolboy sound');
+          });
+        });
       }
     }
   }, []);

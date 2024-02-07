@@ -1,13 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { noop } from 'lodash';
 
-import {
-  createQueryKey,
-  queryClient,
-  QueryConfig,
-  QueryFunctionArgs,
-  QueryFunctionResult,
-} from '@/react-query';
+import { createQueryKey, queryClient, QueryConfig, QueryFunctionArgs, QueryFunctionResult } from '@/react-query';
 
 import { arcClient } from '@/graphql';
 
@@ -22,52 +16,35 @@ export type PointsTweetIntentArgs = {
 // ///////////////////////////////////////////////
 // Query Key
 
-const pointsTweetIntentQueryKey = ({ id }: PointsTweetIntentArgs) =>
-  createQueryKey('pointsTweetIntent', { id }, { persisterVersion: 1 });
+const pointsTweetIntentQueryKey = ({ id }: PointsTweetIntentArgs) => createQueryKey('pointsTweetIntent', { id }, { persisterVersion: 1 });
 
 type PointsTweetIntentQueryKey = ReturnType<typeof pointsTweetIntentQueryKey>;
 
 // ///////////////////////////////////////////////
 // Query Function
 
-async function pointsTweetIntentQueryFunction({
-  queryKey: [{ id }],
-}: QueryFunctionArgs<typeof pointsTweetIntentQueryKey>) {
+async function pointsTweetIntentQueryFunction({ queryKey: [{ id }] }: QueryFunctionArgs<typeof pointsTweetIntentQueryKey>) {
   const data = await arcClient.getPointsTweetIntent({ id });
   return data;
 }
 
-export type PointsTweetIntentResult = QueryFunctionResult<
-  typeof pointsTweetIntentQueryFunction
->;
+export type PointsTweetIntentResult = QueryFunctionResult<typeof pointsTweetIntentQueryFunction>;
 
 // ///////////////////////////////////////////////
 // Query Prefetcher
 
 export async function prefetchPointsTweetIntent(
   { id }: PointsTweetIntentArgs,
-  config: QueryConfig<
-    PointsTweetIntentResult,
-    Error,
-    PointsTweetIntentQueryKey
-  > = {}
+  config: QueryConfig<PointsTweetIntentResult, Error, PointsTweetIntentQueryKey> = {}
 ) {
-  return await queryClient.prefetchQuery(
-    pointsTweetIntentQueryKey({ id }),
-    pointsTweetIntentQueryFunction,
-    config
-  );
+  return await queryClient.prefetchQuery(pointsTweetIntentQueryKey({ id }), pointsTweetIntentQueryFunction, config);
 }
 
 // ///////////////////////////////////////////////
 // Query Fetcher
 
 export async function fetchPointsTweetIntent({ id }: PointsTweetIntentArgs) {
-  return await queryClient.fetchQuery(
-    pointsTweetIntentQueryKey({ id }),
-    pointsTweetIntentQueryFunction,
-    { staleTime: defaultStaleTime }
-  );
+  return await queryClient.fetchQuery(pointsTweetIntentQueryKey({ id }), pointsTweetIntentQueryFunction, { staleTime: defaultStaleTime });
 }
 
 // ///////////////////////////////////////////////
@@ -86,13 +63,9 @@ export function usePointsTweetIntentQuery(
     onSuccess: noop,
   }
 ) {
-  return useQuery(
-    pointsTweetIntentQueryKey({ id }),
-    pointsTweetIntentQueryFunction,
-    {
-      enabled,
-      staleTime: defaultStaleTime,
-      onSuccess,
-    }
-  );
+  return useQuery(pointsTweetIntentQueryKey({ id }), pointsTweetIntentQueryFunction, {
+    enabled,
+    staleTime: defaultStaleTime,
+    onSuccess,
+  });
 }

@@ -30,29 +30,23 @@ toLocaleStringPolyfill();
 // https://github.com/facebook/react-native/commit/1049835b504cece42ee43ac5b554687891da1349
 // https://github.com/facebook/react-native/commit/035718ba97bb44c68f2a4ccdd95e537e3d28690
 if (ReactNative.Keyboard.removeEventListener) {
-  ReactNative.Keyboard.removeListener =
-    ReactNative.Keyboard.removeEventListener;
+  ReactNative.Keyboard.removeListener = ReactNative.Keyboard.removeEventListener;
 }
 
-ReactNative.Platform.OS === 'ios' &&
-  Animated.addWhitelistedNativeProps({ d: true });
+ReactNative.Platform.OS === 'ios' && Animated.addWhitelistedNativeProps({ d: true });
 
 const storage = new Storage({
   defaultExpires: null,
   size: 10000,
   // TODO (RNBW-3969): Migrate to mmkv on iOS too
-  storageBackend:
-    ReactNative.Platform.OS === 'ios' ? AsyncStorage : mmkvStorageBackend,
+  storageBackend: ReactNative.Platform.OS === 'ios' ? AsyncStorage : mmkvStorageBackend,
 });
 
 if (ReactNative.Platform.OS === 'android') {
   ReactNative.UIManager.setLayoutAnimationEnabledExperimental?.(true);
 }
 
-if (
-  !global.__reanimatedModuleProxy &&
-  !ReactNative.TurboModuleRegistry.get('NativeReanimated')
-) {
+if (!global.__reanimatedModuleProxy && !ReactNative.TurboModuleRegistry.get('NativeReanimated')) {
   global.__reanimatedModuleProxy = {
     __shimmed: true,
     installCoreFunctions() {},
@@ -89,10 +83,7 @@ if (SHORTEN_PROP_TYPES_ERROR) {
   const oldConsoleError = console.error; // eslint-disable-line no-console
   // eslint-disable-next-line no-console
   console.error = function () {
-    if (
-      typeof arguments[0] === 'string' &&
-      arguments[0].startsWith('Warning: Failed prop type')
-    ) {
+    if (typeof arguments[0] === 'string' && arguments[0].startsWith('Warning: Failed prop type')) {
       // eslint-disable-next-line no-console
       console.log(
         `PropTypes error in: ${arguments[0]
@@ -102,12 +93,7 @@ if (SHORTEN_PROP_TYPES_ERROR) {
       );
       return;
     }
-    if (
-      typeof arguments[0] === 'string' &&
-      arguments[0].startsWith(
-        'VirtualizedLists should never be nested inside plain ScrollViews'
-      )
-    ) {
+    if (typeof arguments[0] === 'string' && arguments[0].startsWith('VirtualizedLists should never be nested inside plain ScrollViews')) {
       return;
     }
     oldConsoleError?.apply(this, arguments);
@@ -154,12 +140,9 @@ ReactNative.LayoutAnimation.configureNext = () => null;
 // }
 
 if (!ReactNative.InteractionManager._shimmed) {
-  const oldCreateInteractionHandle =
-    ReactNative.InteractionManager.createInteractionHandle;
+  const oldCreateInteractionHandle = ReactNative.InteractionManager.createInteractionHandle;
 
-  ReactNative.InteractionManager.createInteractionHandle = function (
-    finishAutomatically = true
-  ) {
+  ReactNative.InteractionManager.createInteractionHandle = function (finishAutomatically = true) {
     const handle = oldCreateInteractionHandle();
     if (finishAutomatically) {
       setTimeout(() => {
@@ -178,10 +161,7 @@ if (!ReactNative.InteractionManager._shimmed) {
 // eslint-disable-next-line import/no-commonjs
 require('crypto');
 
-const description = Object.getOwnPropertyDescriptor(
-  ReactNative,
-  'requireNativeComponent'
-);
+const description = Object.getOwnPropertyDescriptor(ReactNative, 'requireNativeComponent');
 
 if (!description.writable) {
   Object.defineProperty(ReactNative, 'requireNativeComponent', {

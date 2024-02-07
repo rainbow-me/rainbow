@@ -13,20 +13,9 @@ const ExchangeDetailsButtonLabel = styled(Text).attrs({
   ...padding.object(9),
 });
 
-export default function ExchangeDetailsButton({
-  children,
-  disabled,
-  onPress,
-  ...props
-}) {
+export default function ExchangeDetailsButton({ children, disabled, onPress, ...props }) {
   return (
-    <ButtonPressAnimation
-      {...props}
-      disabled={disabled}
-      onPress={onPress}
-      scaleTo={1.0666}
-      style={{ opacity: disabled ? 0.4 : 1 }}
-    >
+    <ButtonPressAnimation {...props} disabled={disabled} onPress={onPress} scaleTo={1.0666} style={{ opacity: disabled ? 0.4 : 1 }}>
       <ExchangeDetailsButtonLabel>{children}</ExchangeDetailsButtonLabel>
     </ButtonPressAnimation>
   );

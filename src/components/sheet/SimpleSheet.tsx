@@ -14,22 +14,13 @@ type SimpleSheetProps = {
   testID?: string;
 };
 
-export const SimpleSheet = ({
-  children,
-  backgroundColor,
-  customHeight,
-  onDismiss,
-  scrollEnabled = true,
-  testID,
-}: SimpleSheetProps) => {
+export const SimpleSheet = ({ children, backgroundColor, customHeight, onDismiss, scrollEnabled = true, testID }: SimpleSheetProps) => {
   const { height: deviceHeight } = useDimensions();
   const fullSheetHeight = deviceHeight - safeAreaInsetValues.top;
 
   return (
     <SlackSheet
-      additionalTopPadding={
-        IS_ANDROID && !customHeight ? StatusBar.currentHeight : false
-      }
+      additionalTopPadding={IS_ANDROID && !customHeight ? StatusBar.currentHeight : false}
       contentHeight={customHeight ?? deviceHeight}
       height="100%"
       removeTopPadding

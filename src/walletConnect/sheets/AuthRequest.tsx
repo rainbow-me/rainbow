@@ -2,22 +2,13 @@ import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { Web3WalletTypes } from '@walletconnect/web3wallet';
 
-import {
-  Box,
-  Text,
-  Separator,
-  BackgroundProvider,
-  AccentColorProvider,
-} from '@/design-system';
+import { Box, Text, Separator, BackgroundProvider, AccentColorProvider } from '@/design-system';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { ImgixImage } from '@/components/images';
 import { initials } from '@/utils/formatters';
 import { useTheme } from '@/theme';
 import Routes from '@/navigation/routesNames';
-import {
-  AuthRequestAuthenticateSignature,
-  AuthRequestResponseErrorReason,
-} from '@/walletConnect/types';
+import { AuthRequestAuthenticateSignature, AuthRequestResponseErrorReason } from '@/walletConnect/types';
 import { Alert } from '@/components/alerts';
 import * as lang from '@/languages';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
@@ -51,19 +42,9 @@ export function AuthRequest({
   const [loadError, setLoadError] = React.useState(false);
   const [address, setAddress] = React.useState(accountAddress);
 
-  const {
-    accountSymbol,
-    accountColor,
-    accountImage,
-    accountName,
-    isHardwareWallet,
-  } = React.useMemo(() => {
+  const { accountSymbol, accountColor, accountImage, accountName, isHardwareWallet } = React.useMemo(() => {
     const selectedWallet = findWalletWithAccount(wallets!, address);
-    const profileInfo = getAccountProfileInfo(
-      selectedWallet,
-      walletNames,
-      address
-    );
+    const profileInfo = getAccountProfileInfo(selectedWallet, walletNames, address);
     return {
       ...profileInfo,
       isHardwareWallet: !!selectedWallet?.deviceId,
@@ -141,12 +122,7 @@ export function AuthRequest({
                       borderRadius={14}
                     />
                   ) : (
-                    <Text
-                      align="center"
-                      color="label"
-                      size="20pt"
-                      weight="semibold"
-                    >
+                    <Text align="center" color="label" size="20pt" weight="semibold">
                       {initials(name)}
                     </Text>
                   )}
@@ -157,23 +133,13 @@ export function AuthRequest({
         </AccentColorProvider>
 
         <Box paddingBottom="16px" width={{ custom: 281 }}>
-          <Text
-            color={'label'}
-            weight={'semibold'}
-            size={'17pt'}
-            align="center"
-          >
+          <Text color={'label'} weight={'semibold'} size={'17pt'} align="center">
             {lang.t(lang.l.walletconnect.auth.signin_prompt, { name })}
           </Text>
         </Box>
 
         <Box paddingBottom="36px">
-          <Text
-            color={isScam ? { custom: accentColor } : 'accent'}
-            weight={'bold'}
-            size={'17pt'}
-            align="center"
-          >
+          <Text color={isScam ? { custom: accentColor } : 'accent'} weight={'bold'} size={'17pt'} align="center">
             {url}
           </Text>
         </Box>
@@ -190,17 +156,8 @@ export function AuthRequest({
               });
             }}
           >
-            <Box
-              padding="10px"
-              paddingRight="16px"
-              background="fillSecondary"
-              borderRadius={18}
-              flexDirection="row"
-              alignItems="center"
-            >
-              <AccentColorProvider
-                color={colors.avatarBackgrounds[accountColor] || 'fill'}
-              >
+            <Box padding="10px" paddingRight="16px" background="fillSecondary" borderRadius={18} flexDirection="row" alignItems="center">
+              <AccentColorProvider color={colors.avatarBackgrounds[accountColor] || 'fill'}>
                 <Box
                   background="accent"
                   borderRadius={100}
@@ -220,13 +177,7 @@ export function AuthRequest({
                       width={{ custom: 36 }}
                     />
                   ) : (
-                    <Text
-                      color="label"
-                      size="20pt"
-                      weight="semibold"
-                      align="center"
-                      containsEmoji={true}
-                    >
+                    <Text color="label" size="20pt" weight="semibold" align="center" containsEmoji={true}>
                       {accountSymbol as string}
                     </Text>
                   )}
@@ -241,13 +192,7 @@ export function AuthRequest({
                 </Box>
 
                 <Box style={{ maxWidth: 200 }}>
-                  <Text
-                    color="label"
-                    size="15pt"
-                    weight="bold"
-                    ellipsizeMode="middle"
-                    numberOfLines={1}
-                  >
+                  <Text color="label" size="15pt" weight="bold" ellipsizeMode="middle" numberOfLines={1}>
                     {accountName}
                   </Text>
                 </Box>
@@ -273,12 +218,8 @@ export function AuthRequest({
                   􀘰
                 </Text>
               }
-              title={lang.t(
-                lang.l.walletconnect.dapp_warnings.info_alert.title
-              )}
-              description={lang.t(
-                lang.l.walletconnect.dapp_warnings.info_alert.description
-              )}
+              title={lang.t(lang.l.walletconnect.dapp_warnings.info_alert.title)}
+              description={lang.t(lang.l.walletconnect.dapp_warnings.info_alert.description)}
             />
           </Box>
         )}
@@ -304,12 +245,7 @@ export function AuthRequest({
         </ButtonPressAnimation>
 
         <Box paddingTop="24px" width={{ custom: 245 }}>
-          <Text
-            color={'labelQuaternary'}
-            weight={'semibold'}
-            size={'13pt'}
-            align="center"
-          >
+          <Text color={'labelQuaternary'} weight={'semibold'} size={'13pt'} align="center">
             {lang.t(lang.l.walletconnect.auth.signin_notice)}
           </Text>
         </Box>

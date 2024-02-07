@@ -38,33 +38,19 @@ export const DocsAccordion = ({ meta, description, examples }: Docs) => {
         <div className={sprinkles({ paddingBottom: '24px' })}>
           <Stack space="48px">
             {description && <Stack space="32px">{description}</Stack>}
-            {examples?.map(
-              (
-                {
-                  name,
-                  description,
-                  enablePlayroom,
-                  enableCodeSnippet,
-                  wrapper,
-                  showFrame,
-                  examples,
-                  Example,
-                },
-                index
-              ) => (
-                <ExamplePreview
-                  Example={Example}
-                  description={description}
-                  enableCodeSnippet={enableCodeSnippet}
-                  enablePlayroom={enablePlayroom}
-                  examples={examples}
-                  key={index}
-                  name={name}
-                  showFrame={showFrame}
-                  wrapper={wrapper}
-                />
-              )
-            )}
+            {examples?.map(({ name, description, enablePlayroom, enableCodeSnippet, wrapper, showFrame, examples, Example }, index) => (
+              <ExamplePreview
+                Example={Example}
+                description={description}
+                enableCodeSnippet={enableCodeSnippet}
+                enablePlayroom={enablePlayroom}
+                examples={examples}
+                key={index}
+                name={name}
+                showFrame={showFrame}
+                wrapper={wrapper}
+              />
+            ))}
           </Stack>
         </div>
       )}
@@ -88,11 +74,7 @@ const ExamplePreview = ({
   return (
     <Stack space="24px">
       {subTitle ? (
-        <Heading
-          color="secondary60 (Deprecated)"
-          size="20px / 22px (Deprecated)"
-          weight="semibold"
-        >
+        <Heading color="secondary60 (Deprecated)" size="20px / 22px (Deprecated)" weight="semibold">
           {subTitle}
         </Heading>
       ) : (

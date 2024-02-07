@@ -23,10 +23,7 @@ const properties = defineProperties({
     flexDirection: ['row', 'column'],
     flexGrow: [1] as const,
     flexShrink: [1] as const,
-    fontSize: [
-      ...Object.keys(typeHierarchy.heading),
-      ...Object.keys(typeHierarchy.text),
-    ] as (
+    fontSize: [...Object.keys(typeHierarchy.heading), ...Object.keys(typeHierarchy.text)] as (
       | keyof typeof typeHierarchy.heading
       | keyof typeof typeHierarchy.text
     )[],
@@ -56,12 +53,7 @@ const properties = defineProperties({
   },
   shorthands: {
     borderBottomRadius: ['borderBottomLeftRadius', 'borderBottomRightRadius'],
-    borderRadius: [
-      'borderTopLeftRadius',
-      'borderBottomLeftRadius',
-      'borderTopRightRadius',
-      'borderBottomRightRadius',
-    ],
+    borderRadius: ['borderTopLeftRadius', 'borderBottomLeftRadius', 'borderTopRightRadius', 'borderBottomRightRadius'],
     borderTopRadius: ['borderTopLeftRadius', 'borderTopRightRadius'],
     padding: ['paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft'],
     paddingHorizontal: ['paddingLeft', 'paddingRight'],
@@ -104,9 +96,4 @@ const responsiveProperties = defineProperties({
   },
 });
 
-export const sprinkles = createSprinkles(
-  properties,
-  colorModeProperties,
-  pseudoProperties,
-  responsiveProperties
-);
+export const sprinkles = createSprinkles(properties, colorModeProperties, pseudoProperties, responsiveProperties);

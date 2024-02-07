@@ -28,54 +28,33 @@ const ButtonContent = styled(RowWithMargins).attrs({
   height: '100%',
 });
 
-const ButtonLabel = styled(Text).attrs(
-  ({ disabled, type, theme: { colors, isDarkMode } }: any) => ({
-    align: type === RainbowButtonTypes.addCash ? 'left' : 'center',
-    color: isDarkMode && disabled ? colors.white : colors.whiteLabel,
-    letterSpacing:
-      type === RainbowButtonTypes.addCash ? 'roundedTight' : 'rounded',
-    size: type === RainbowButtonTypes.small ? 'large' : 'larger',
-    weight: type === RainbowButtonTypes.small ? 'bold' : 'heavy',
-    numberOfLines: 1,
-  })
-)({});
+const ButtonLabel = styled(Text).attrs(({ disabled, type, theme: { colors, isDarkMode } }: any) => ({
+  align: type === RainbowButtonTypes.addCash ? 'left' : 'center',
+  color: isDarkMode && disabled ? colors.white : colors.whiteLabel,
+  letterSpacing: type === RainbowButtonTypes.addCash ? 'roundedTight' : 'rounded',
+  size: type === RainbowButtonTypes.small ? 'large' : 'larger',
+  weight: type === RainbowButtonTypes.small ? 'bold' : 'heavy',
+  numberOfLines: 1,
+}))({});
 
-const OuterButton = styled(View)(
-  ({
-    height,
-    width,
-    isDarkMode,
-    disabled,
-    strokeWidth,
-    theme: { colors },
-  }: any) => ({
-    ...shadow.buildAsObject(0, 5, 15, colors.shadow),
-    backgroundColor: colors.dark,
-    borderRadius: height / 2 + strokeWidth,
-    height,
-    shadowOpacity: isDarkMode && disabled ? 0 : isDarkMode ? 0.1 : 0.4,
-    width,
-  })
-);
+const OuterButton = styled(View)(({ height, width, isDarkMode, disabled, strokeWidth, theme: { colors } }: any) => ({
+  ...shadow.buildAsObject(0, 5, 15, colors.shadow),
+  backgroundColor: colors.dark,
+  borderRadius: height / 2 + strokeWidth,
+  height,
+  shadowOpacity: isDarkMode && disabled ? 0 : isDarkMode ? 0.1 : 0.4,
+  width,
+}));
 
-const Shadow = styled(ShadowView)(
-  ({
-    height,
-    strokeWidth,
-    isDarkMode,
-    disabled,
-    width,
-    theme: { colors },
-  }: any) => ({
-    ...shadow.buildAsObject(0, 10, 30, colors.shadow, 1),
-    backgroundColor: colors.white,
-    borderRadius: height / 2 + strokeWidth,
-    height,
-    opacity: isDarkMode && disabled ? 0 : android ? 1 : 0.2,
-    position: 'absolute',
-    width,
-  })
-);
+const Shadow = styled(ShadowView)(({ height, strokeWidth, isDarkMode, disabled, width, theme: { colors } }: any) => ({
+  ...shadow.buildAsObject(0, 10, 30, colors.shadow, 1),
+  backgroundColor: colors.white,
+  borderRadius: height / 2 + strokeWidth,
+  height,
+  opacity: isDarkMode && disabled ? 0 : android ? 1 : 0.2,
+  position: 'absolute',
+  width,
+}));
 
 type BackupRainbowButtonProps = {
   disabled?: boolean;
@@ -108,13 +87,7 @@ const BackupRainbowButton = ({
   const btnWidth = width || maxButtonWidth;
 
   const outerButtonMask = (
-    <OuterButton
-      disabled={disabled}
-      height={height}
-      isDarkMode={isDarkMode}
-      strokeWidth={strokeWidth}
-      width={width}
-    />
+    <OuterButton disabled={disabled} height={height} isDarkMode={isDarkMode} strokeWidth={strokeWidth} width={width} />
   );
 
   return (
@@ -126,19 +99,8 @@ const BackupRainbowButton = ({
       scaleTo={0.9}
       skipTopMargin={skipTopMargin}
     >
-      <Shadow
-        disabled={disabled}
-        height={height}
-        isDarkMode={isDarkMode}
-        strokeWidth={btnStrokeWidth}
-        width={btnWidth}
-      />
-      <ButtonContainer
-        elevation={5}
-        height={height}
-        maskElement={outerButtonMask}
-        width={btnWidth}
-      >
+      <Shadow disabled={disabled} height={height} isDarkMode={isDarkMode} strokeWidth={btnStrokeWidth} width={btnWidth} />
+      <ButtonContainer elevation={5} height={height} maskElement={outerButtonMask} width={btnWidth}>
         <BackupRainbowButtonBackground
           disabled={disabled}
           height={height}

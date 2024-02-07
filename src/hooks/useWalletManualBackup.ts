@@ -13,9 +13,7 @@ export default function useWalletManualBackup() {
       try {
         await dispatch(setWalletBackedUp(walletId, WalletBackupTypes.manual));
       } catch (e) {
-        logger.sentry(
-          `error while trying to set walletId ${walletId} as manually backed up`
-        );
+        logger.sentry(`error while trying to set walletId ${walletId} as manually backed up`);
         captureException(e);
       }
     },

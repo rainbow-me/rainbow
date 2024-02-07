@@ -50,29 +50,30 @@ export function ChooseBackupStep() {
       return !backup.name.includes('UserData.json');
     }
 
-    return (
-      backup.isFile && backup.size > 0 && !backup.name.includes('UserData.json')
-    );
+    return backup.isFile && backup.size > 0 && !backup.name.includes('UserData.json');
   });
 
-  const mostRecentBackup = cloudBackups.reduce((prev, current) => {
-    if (!current) {
+  const mostRecentBackup = cloudBackups.reduce(
+    (prev, current) => {
+      if (!current) {
+        return prev;
+      }
+
+      if (!prev) {
+        return current;
+      }
+
+      const prevTimestamp = parseTimestampFromFilename(prev.name);
+      const currentTimestamp = parseTimestampFromFilename(current.name);
+
+      if (currentTimestamp > prevTimestamp) {
+        return current;
+      }
+
       return prev;
-    }
-
-    if (!prev) {
-      return current;
-    }
-
-    const prevTimestamp = parseTimestampFromFilename(prev.name);
-    const currentTimestamp = parseTimestampFromFilename(current.name);
-
-    if (currentTimestamp > prevTimestamp) {
-      return current;
-    }
-
-    return prev;
-  }, undefined as Backup | undefined);
+    },
+    undefined as Backup | undefined
+  );
 
   const onSelectCloudBackup = useCallback(
     (selectedBackup: Backup) => {
@@ -87,10 +88,7 @@ export function ChooseBackupStep() {
   );
 
   const height = IS_ANDROID
-    ? deviceHeight -
-      sharedCoolModalTopOffset -
-      48 -
-      (StatusBar?.currentHeight ?? 0)
+    ? deviceHeight - sharedCoolModalTopOffset - 48 - (StatusBar?.currentHeight ?? 0)
     : deviceHeight - sharedCoolModalTopOffset - 48;
 
   return (
@@ -119,10 +117,7 @@ export function ChooseBackupStep() {
             {mostRecentBackup && (
               <Menu
                 description={lang.t(lang.l.back_up.cloud.latest_backup, {
-                  date: format(
-                    parseTimestampFromFilename(mostRecentBackup.name),
-                    "M/d/yy 'at' h:mm a"
-                  ),
+                  date: format(parseTimestampFromFilename(mostRecentBackup.name), "M/d/yy 'at' h:mm a"),
                 })}
               >
                 <MenuItem
@@ -131,12 +126,7 @@ export function ChooseBackupStep() {
                   onPress={() => onSelectCloudBackup(mostRecentBackup)}
                   size={52}
                   width="full"
-                  titleComponent={
-                    <MenuItem.Title
-                      isLink
-                      text={lang.t(lang.l.back_up.cloud.most_recent_backup)}
-                    />
-                  }
+                  titleComponent={<MenuItem.Title isLink text={lang.t(lang.l.back_up.cloud.most_recent_backup)} />}
                 />
               </Menu>
             )}
@@ -153,19 +143,10 @@ export function ChooseBackupStep() {
                       titleComponent={
                         <MenuItem.Title
                           isLink
-                          text={lang.t(
-                            lang.l.back_up.cloud.older_backups_title,
-                            {
-                              date: format(
-                                parseTimestampFromFilename(backup.name),
-                                'M/d/yy'
-                              ),
-                              time: format(
-                                parseTimestampFromFilename(backup.name),
-                                'p'
-                              ),
-                            }
-                          )}
+                          text={lang.t(lang.l.back_up.cloud.older_backups_title, {
+                            date: format(parseTimestampFromFilename(backup.name), 'M/d/yy'),
+                            time: format(parseTimestampFromFilename(backup.name), 'p'),
+                          })}
                         />
                       }
                     />
@@ -176,12 +157,7 @@ export function ChooseBackupStep() {
                 <MenuItem
                   disabled
                   size={52}
-                  titleComponent={
-                    <MenuItem.Title
-                      disabled
-                      text={lang.t(lang.l.back_up.cloud.no_older_backups)}
-                    />
-                  }
+                  titleComponent={<MenuItem.Title disabled text={lang.t(lang.l.back_up.cloud.no_older_backups)} />}
                 />
               )}
             </Menu>

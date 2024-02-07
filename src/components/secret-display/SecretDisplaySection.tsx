@@ -1,12 +1,7 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { captureException } from '@sentry/react-native';
 import React, { ReactNode, useCallback, useEffect, useState } from 'react';
-import {
-  createdWithBiometricError,
-  getKeyForWallet,
-  identifyWalletType,
-  loadSeedPhraseAndMigrateIfNeeded,
-} from '@/model/wallet';
+import { createdWithBiometricError, getKeyForWallet, identifyWalletType, loadSeedPhraseAndMigrateIfNeeded } from '@/model/wallet';
 import ActivityIndicator from '../ActivityIndicator';
 import Spinner from '../Spinner';
 import { CopyFloatingEmojis } from '../floating-emojis';
@@ -20,10 +15,7 @@ import { logger, RainbowError } from '@/logger';
 import { IS_ANDROID } from '@/env';
 import ManuallyBackedUpIcon from '@/assets/ManuallyBackedUp.png';
 
-import {
-  SecretDisplayStates,
-  SecretDisplayStatesType,
-} from '@/components/secret-display/states';
+import { SecretDisplayStates, SecretDisplayStatesType } from '@/components/secret-display/states';
 import { SecretDisplayError } from '@/components/secret-display/SecretDisplayError';
 import { InteractionManager } from 'react-native';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
@@ -44,12 +36,7 @@ type WrapperProps = {
 
 function Wrapper({ children }: WrapperProps) {
   return (
-    <Box
-      alignItems="center"
-      justifyContent="center"
-      paddingBottom="30px (Deprecated)"
-      paddingHorizontal={{ custom: 46 }}
-    >
+    <Box alignItems="center" justifyContent="center" paddingBottom="30px (Deprecated)" paddingHorizontal={{ custom: 46 }}>
       {children}
     </Box>
   );
@@ -71,15 +58,10 @@ type SecretDisplaySectionParams = {
   };
 };
 
-export function SecretDisplaySection({
-  onSecretLoaded,
-  onWalletTypeIdentified,
-}: Props) {
+export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }: Props) {
   const { height: deviceHeight } = useDimensions();
   const { colors } = useTheme();
-  const { params } = useRoute<
-    RouteProp<SecretDisplaySectionParams, 'SecretDisplaySection'>
-  >();
+  const { params } = useRoute<RouteProp<SecretDisplaySectionParams, 'SecretDisplaySection'>>();
   const { selectedWallet, wallets } = useWallets();
   const { onManuallyBackupWalletId } = useWalletManualBackup();
   const { navigate } = useNavigation();
@@ -89,19 +71,12 @@ export function SecretDisplaySection({
   const walletId = params.walletId || selectedWallet.id;
   const currentWallet = wallets?.[walletId];
 
-  const isSecretPhrase =
-    WalletTypes.mnemonic === currentWallet?.type && !privateKeyAddress;
-  const btnText = isSecretPhrase
-    ? i18n.t(i18n.l.back_up.manual.seed.confirm_save)
-    : i18n.t(i18n.l.back_up.manual.pkey.confirm_save);
+  const isSecretPhrase = WalletTypes.mnemonic === currentWallet?.type && !privateKeyAddress;
+  const btnText = isSecretPhrase ? i18n.t(i18n.l.back_up.manual.seed.confirm_save) : i18n.t(i18n.l.back_up.manual.pkey.confirm_save);
 
-  const description = isSecretPhrase
-    ? i18n.t(i18n.l.back_up.manual.seed.description)
-    : i18n.t(i18n.l.back_up.manual.pkey.description);
+  const description = isSecretPhrase ? i18n.t(i18n.l.back_up.manual.seed.description) : i18n.t(i18n.l.back_up.manual.pkey.description);
 
-  const [sectionState, setSectionState] = useState<SecretDisplayStatesType>(
-    SecretDisplayStates.loading
-  );
+  const [sectionState, setSectionState] = useState<SecretDisplayStatesType>(SecretDisplayStates.loading);
   const [seed, setSeed] = useState<string | null>(null);
   const [walletType, setWalletType] = useState(currentWallet?.type);
 
@@ -134,11 +109,7 @@ export function SecretDisplaySection({
       logger.error(new RainbowError('Error while trying to reveal secret'), {
         error: message,
       });
-      setSectionState(
-        message === createdWithBiometricError
-          ? SecretDisplayStates.securedWithBiometrics
-          : SecretDisplayStates.noSeed
-      );
+      setSectionState(message === createdWithBiometricError ? SecretDisplayStates.securedWithBiometrics : SecretDisplayStates.noSeed);
       captureException(error);
       onSecretLoaded?.(false);
     }
@@ -186,8 +157,7 @@ export function SecretDisplaySection({
   }, [isBackingUp, isSecretPhrase]);
 
   const isSmallPhone = deviceHeight < MIN_HEIGHT;
-  const contentHeight =
-    deviceHeight - (!isSmallPhone ? sharedCoolModalTopOffset : 0) - 100;
+  const contentHeight = deviceHeight - (!isSmallPhone ? sharedCoolModalTopOffset : 0) - 100;
 
   switch (sectionState) {
     case SecretDisplayStates.loading:
@@ -197,17 +167,9 @@ export function SecretDisplaySection({
         </Wrapper>
       );
     case SecretDisplayStates.noSeed:
-      return (
-        <SecretDisplayError
-          message={i18n.t(i18n.l.back_up.secret.no_seed_phrase)}
-        />
-      );
+      return <SecretDisplayError message={i18n.t(i18n.l.back_up.secret.no_seed_phrase)} />;
     case SecretDisplayStates.securedWithBiometrics:
-      return (
-        <SecretDisplayError
-          message={i18n.t(i18n.l.back_up.secret.biometrically_secured)}
-        />
-      );
+      return <SecretDisplayError message={i18n.t(i18n.l.back_up.secret.biometrically_secured)} />;
     case SecretDisplayStates.revealed:
       return (
         <Box style={{ height: contentHeight }}>
@@ -237,28 +199,14 @@ export function SecretDisplaySection({
                   {getTitleForBackupType()}
                 </Text>
                 <Stack space="36px">
-                  <Text
-                    align="center"
-                    color="labelTertiary"
-                    size="15pt"
-                    weight="semibold"
-                  >
+                  <Text align="center" color="labelTertiary" size="15pt" weight="semibold">
                     {description}
                   </Text>
 
                   {/* @ts-expect-error JS component*/}
                   <CopyFloatingEmojis textToCopy={seed}>
-                    <Inline
-                      alignHorizontal="center"
-                      alignVertical="center"
-                      space="6px"
-                    >
-                      <Text
-                        color="action (Deprecated)"
-                        size="16px / 22px (Deprecated)"
-                        weight="bold"
-                        align="center"
-                      >
+                    <Inline alignHorizontal="center" alignVertical="center" space="6px">
+                      <Text color="action (Deprecated)" size="16px / 22px (Deprecated)" weight="bold" align="center">
                         􀐅 {i18n.t(i18n.l.back_up.secret.copy_to_clipboard)}
                       </Text>
                     </Inline>
@@ -266,40 +214,21 @@ export function SecretDisplaySection({
                 </Stack>
 
                 <Stack alignHorizontal="center" space="19px (Deprecated)">
-                  <SecretDisplayCard
-                    seed={seed ?? ''}
-                    type={
-                      privateKeyAddress ? WalletTypes.privateKey : walletType
-                    }
-                  />
+                  <SecretDisplayCard seed={seed ?? ''} type={privateKeyAddress ? WalletTypes.privateKey : walletType} />
                 </Stack>
               </Stack>
             </Bleed>
           </Inset>
 
           {isBackingUp && (
-            <Box
-              position="absolute"
-              bottom={{ custom: 20 }}
-              alignItems="center"
-              style={{ paddingHorizontal: 24 }}
-            >
-              <SheetActionButton
-                label={btnText}
-                color="blue"
-                weight="bold"
-                onPress={handleConfirmSaved}
-              />
+            <Box position="absolute" bottom={{ custom: 20 }} alignItems="center" style={{ paddingHorizontal: 24 }}>
+              <SheetActionButton label={btnText} color="blue" weight="bold" onPress={handleConfirmSaved} />
             </Box>
           )}
         </Box>
       );
     default:
-      logger.error(
-        new RainbowError(
-          'Secret display section tries to present an unknown state'
-        )
-      );
+      logger.error(new RainbowError('Secret display section tries to present an unknown state'));
       return null;
   }
 }

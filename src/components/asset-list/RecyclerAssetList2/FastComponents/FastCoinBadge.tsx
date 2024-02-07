@@ -51,10 +51,7 @@ const AssetIconsByTheme: {
   },
 };
 
-export const FastChainBadge = React.memo(function FastChainBadge({
-  network,
-  theme,
-}: FastChainBadgeProps) {
+export const FastChainBadge = React.memo(function FastChainBadge({ network, theme }: FastChainBadgeProps) {
   const { isDarkMode } = theme;
 
   const source = AssetIconsByTheme[network]?.[isDarkMode ? 'dark' : 'light'];

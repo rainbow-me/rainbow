@@ -10,13 +10,7 @@ import CoinDividerEditButton from './CoinDividerEditButton';
 import CoinDividerOpenButton from './CoinDividerOpenButton';
 import EditAction from '@/helpers/EditAction';
 import { navbarHeight } from '@/components/navbar/Navbar';
-import {
-  useAccountSettings,
-  useCoinListEditOptions,
-  useCoinListFinishEditingOptions,
-  useDimensions,
-  useOpenSmallBalances,
-} from '@/hooks';
+import { useAccountSettings, useCoinListEditOptions, useCoinListFinishEditingOptions, useDimensions, useOpenSmallBalances } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -29,20 +23,17 @@ const Container = styled(Row).attrs({
   justify: 'space-between',
 })({
   ...padding.object(4, 19, 5, 0),
-  backgroundColor: ({ isCoinListEdited, theme: { colors } }) =>
-    isCoinListEdited ? colors.white : colors.transparent,
+  backgroundColor: ({ isCoinListEdited, theme: { colors } }) => (isCoinListEdited ? colors.white : colors.transparent),
   height: CoinDividerContainerHeight,
   width: ({ deviceWidth }) => deviceWidth,
 });
 
-const CoinDividerButtonRow = styled(RowWithMargins).attrs(
-  ({ isCoinListEdited }) => ({
-    margin: 10,
-    paddingHorizontal: 19,
-    paddingVertical: 5,
-    pointerEvents: isCoinListEdited ? 'auto' : 'none',
-  })
-)({
+const CoinDividerButtonRow = styled(RowWithMargins).attrs(({ isCoinListEdited }) => ({
+  margin: 10,
+  paddingHorizontal: 19,
+  paddingVertical: 5,
+  pointerEvents: isCoinListEdited ? 'auto' : 'none',
+}))({
   position: 'absolute',
 });
 
@@ -93,11 +84,7 @@ const useInterpolationRange = isCoinListEdited => {
   };
 };
 
-export default function CoinDivider({
-  balancesSum,
-  defaultToEditButton,
-  extendedState,
-}) {
+export default function CoinDivider({ balancesSum, defaultToEditButton, extendedState }) {
   const { isCoinListEdited, setIsCoinListEdited } = extendedState;
   const interpolation = useInterpolationRange(isCoinListEdited);
   const { nativeCurrency } = useAccountSettings();
@@ -106,23 +93,14 @@ export default function CoinDivider({
 
   const { clearSelectedCoins } = useCoinListEditOptions();
 
-  const {
-    currentAction,
-    setHiddenCoins,
-    setPinnedCoins,
-  } = useCoinListFinishEditingOptions();
+  const { currentAction, setHiddenCoins, setPinnedCoins } = useCoinListFinishEditingOptions();
 
-  const {
-    isSmallBalancesOpen,
-    toggleOpenSmallBalances,
-  } = useOpenSmallBalances();
+  const { isSmallBalancesOpen, toggleOpenSmallBalances } = useOpenSmallBalances();
 
   const handlePressEdit = useCallback(() => {
     setIsCoinListEdited(prev => !prev);
     clearSelectedCoins();
-    LayoutAnimation.configureNext(
-      LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
-    );
+    LayoutAnimation.configureNext(LayoutAnimation.create(200, 'easeInEaseOut', 'opacity'));
   }, [clearSelectedCoins, setIsCoinListEdited]);
 
   return (
@@ -131,14 +109,9 @@ export default function CoinDivider({
         <Row>
           <View
             opacity={defaultToEditButton || isCoinListEdited ? 0 : 1}
-            pointerEvents={
-              defaultToEditButton || isCoinListEdited ? 'none' : 'auto'
-            }
+            pointerEvents={defaultToEditButton || isCoinListEdited ? 'none' : 'auto'}
           >
-            <CoinDividerOpenButton
-              isSmallBalancesOpen={isSmallBalancesOpen}
-              onPress={toggleOpenSmallBalances}
-            />
+            <CoinDividerOpenButton isSmallBalancesOpen={isSmallBalancesOpen} onPress={toggleOpenSmallBalances} />
           </View>
           <CoinDividerButtonRow isCoinListEdited={isCoinListEdited}>
             <CoinDividerEditButton
@@ -146,22 +119,14 @@ export default function CoinDivider({
               isVisible={isCoinListEdited}
               onPress={setPinnedCoins}
               shouldReloadList
-              text={
-                currentAction === EditAction.unpin
-                  ? lang.t('button.unpin')
-                  : lang.t('button.pin')
-              }
+              text={currentAction === EditAction.unpin ? lang.t('button.unpin') : lang.t('button.pin')}
             />
             <CoinDividerEditButton
               isActive={currentAction !== EditAction.none}
               isVisible={isCoinListEdited}
               onPress={setHiddenCoins}
               shouldReloadList
-              text={
-                currentAction === EditAction.unhide
-                  ? lang.t('button.unhide')
-                  : lang.t('button.hide')
-              }
+              text={currentAction === EditAction.unhide ? lang.t('button.unhide') : lang.t('button.hide')}
             />
           </CoinDividerButtonRow>
         </Row>
@@ -171,22 +136,12 @@ export default function CoinDivider({
             nativeCurrency={nativeCurrency}
             openSmallBalances={defaultToEditButton || isSmallBalancesOpen}
           />
-          <EditButtonWrapper
-            pointerEvents={
-              defaultToEditButton || isCoinListEdited || isSmallBalancesOpen
-                ? 'auto'
-                : 'none'
-            }
-          >
+          <EditButtonWrapper pointerEvents={defaultToEditButton || isCoinListEdited || isSmallBalancesOpen ? 'auto' : 'none'}>
             <CoinDividerEditButton
               isActive={isCoinListEdited}
-              isVisible={
-                defaultToEditButton || isCoinListEdited || isSmallBalancesOpen
-              }
+              isVisible={defaultToEditButton || isCoinListEdited || isSmallBalancesOpen}
               onPress={handlePressEdit}
-              text={
-                isCoinListEdited ? lang.t('button.done') : lang.t('button.edit')
-              }
+              text={isCoinListEdited ? lang.t('button.done') : lang.t('button.edit')}
               textOpacityAlwaysOn
             />
           </EditButtonWrapper>

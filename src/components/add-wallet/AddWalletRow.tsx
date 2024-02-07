@@ -32,23 +32,12 @@ type AddWalletRowProps = {
   totalHorizontalInset: number;
 };
 
-export const AddWalletRow = ({
-  content,
-  totalHorizontalInset,
-}: AddWalletRowProps) => {
+export const AddWalletRow = ({ content, totalHorizontalInset }: AddWalletRowProps) => {
   const labelQuaternary = useForegroundColor('labelQuaternary');
-  const {
-    title,
-    description,
-    icon,
-    descriptionColor,
-    testID,
-    onPress,
-  } = content;
+  const { title, description, icon, descriptionColor, testID, onPress } = content;
 
   // device width - 2 * total horizontal inset from device boundaries - caret column width (30)
-  const contentWidth =
-    deviceUtils.dimensions.width - 2 * totalHorizontalInset - 30;
+  const contentWidth = deviceUtils.dimensions.width - 2 * totalHorizontalInset - 30;
 
   const size = 64;
 
@@ -79,11 +68,7 @@ export const AddWalletRow = ({
           <Text size="20pt" weight="heavy" color="label">
             {title}
           </Text>
-          <Text
-            size="15pt"
-            weight="semibold"
-            color={descriptionColor || 'labelTertiary'}
-          >
+          <Text size="15pt" weight="semibold" color={descriptionColor || 'labelTertiary'}>
             {description}
           </Text>
         </Stack>

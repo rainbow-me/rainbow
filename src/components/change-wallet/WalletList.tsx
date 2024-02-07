@@ -1,20 +1,9 @@
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
-import React, {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import networkTypes from '../../helpers/networkTypes';
 import WalletTypes from '../../helpers/walletTypes';
 import { address } from '../../utils/abbreviations';
@@ -70,27 +59,23 @@ const EmptyWalletList = styled(EmptyAssetList).attrs({
   paddingTop: listTopPadding,
 });
 
-const WalletFlatList = styled(FlatList).attrs(
-  ({ showDividers }: { showDividers: boolean }) => ({
-    contentContainerStyle: {
-      paddingBottom: showDividers ? 9.5 : 0,
-      paddingTop: listTopPadding,
-    },
-    getItemLayout,
-    keyExtractor,
-    removeClippedSubviews: true,
-  })
-)({
+const WalletFlatList = styled(FlatList).attrs(({ showDividers }: { showDividers: boolean }) => ({
+  contentContainerStyle: {
+    paddingBottom: showDividers ? 9.5 : 0,
+    paddingTop: listTopPadding,
+  },
+  getItemLayout,
+  keyExtractor,
+  removeClippedSubviews: true,
+}))({
   flex: 1,
   minHeight: 1,
 });
 
-const WalletListDivider = styled(Divider).attrs(
-  ({ theme: { colors } }: any) => ({
-    color: colors.rowDividerExtraLight,
-    inset: [0, 15],
-  })
-)({
+const WalletListDivider = styled(Divider).attrs(({ theme: { colors } }: any) => ({
+  color: colors.rowDividerExtraLight,
+  inset: [0, 15],
+}))({
   marginBottom: 1,
   marginTop: -1,
 });
@@ -142,9 +127,7 @@ export default function WalletList({
     const sortedKeys = Object.keys(allWallets).sort();
     sortedKeys.forEach(key => {
       const wallet = allWallets[key];
-      const filteredAccounts = wallet.addresses.filter(
-        (account: any) => account.visible
-      );
+      const filteredAccounts = wallet.addresses.filter((account: any) => account.visible);
       filteredAccounts.forEach((account: any) => {
         const row = {
           ...account,
@@ -154,13 +137,8 @@ export default function WalletList({
           isOnlyAddress: filteredAccounts.length === 1,
           isReadOnly: wallet.type === WalletTypes.readOnly,
           isLedger: wallet.type === WalletTypes.bluetooth,
-          isSelected:
-            accountAddress === account.address &&
-            (watchOnly || wallet?.id === currentWallet?.id),
-          label:
-            network !== networkTypes.mainnet && account.ens === account.label
-              ? address(account.address, 6, 4)
-              : account.label,
+          isSelected: accountAddress === account.address && (watchOnly || wallet?.id === currentWallet?.id),
+          label: network !== networkTypes.mainnet && account.ens === account.label ? address(account.address, 6, 4) : account.label,
           onPress: () => onChangeAccount(wallet?.id, account.address),
           rowType: RowTypes.ADDRESS,
           walletId: wallet?.id,
@@ -185,15 +163,7 @@ export default function WalletList({
 
     const newRows = [...seedRows, ...privateKeyRows, ...readOnlyRows];
     setRows(newRows);
-  }, [
-    accountAddress,
-    allWallets,
-    currentWallet?.id,
-    editMode,
-    network,
-    onChangeAccount,
-    watchOnly,
-  ]);
+  }, [accountAddress, allWallets, currentWallet?.id, editMode, network, onChangeAccount, watchOnly]);
 
   // Update the data provider when rows change
   useEffect(() => {
@@ -233,12 +203,7 @@ export default function WalletList({
         case RowTypes.ADDRESS:
           return (
             <Column height={item.height}>
-              <AddressRow
-                contextMenuActions={contextMenuActions}
-                data={item}
-                editMode={editMode}
-                onPress={item.onPress}
-              />
+              <AddressRow contextMenuActions={contextMenuActions} data={item} editMode={editMode} onPress={item.onPress} />
             </Column>
           );
         default:

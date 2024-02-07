@@ -10,16 +10,8 @@ import { PasswordField } from '@/components/fields';
 import { Text } from '@/components/text';
 import WalletAndBackup from '@/assets/WalletsAndBackup.png';
 import { analytics } from '@/analytics';
-import {
-  cloudBackupPasswordMinLength,
-  isCloudBackupPasswordValid,
-} from '@/handlers/cloudBackup';
-import {
-  useDimensions,
-  useMagicAutofocus,
-  useRouteExistsInNavigationState,
-  useWallets,
-} from '@/hooks';
+import { cloudBackupPasswordMinLength, isCloudBackupPasswordValid } from '@/handlers/cloudBackup';
+import { useDimensions, useMagicAutofocus, useRouteExistsInNavigationState, useWallets } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
@@ -46,23 +38,16 @@ type NativeEvent = {
 
 export function BackupCloudStep() {
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
-  const { params } = useRoute<
-    RouteProp<BackupCloudStepParams, 'BackupCloudStep'>
-  >();
+  const { params } = useRoute<RouteProp<BackupCloudStepParams, 'BackupCloudStep'>>();
   const { selectedWallet } = useWallets();
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const isSettingsRoute = !!useRouteExistsInNavigationState(
-    Routes.SETTINGS_SHEET
-  );
+  const isSettingsRoute = !!useRouteExistsInNavigationState(Routes.SETTINGS_SHEET);
 
   const walletId = params?.walletId || selectedWallet.id;
 
-  const { validPassword, label, labelColor } = usePasswordValidation(
-    password,
-    confirmPassword
-  );
+  const { validPassword, label, labelColor } = usePasswordValidation(password, confirmPassword);
   const { onSubmit } = useCreateBackup({
     walletId,
     password,
@@ -99,20 +84,14 @@ export function BackupCloudStep() {
     confirmPasswordRef.current?.focus();
   }, []);
 
-  const onPasswordChange = useCallback(
-    ({ nativeEvent: { text: inputText } }: NativeEvent) => {
-      setPassword(inputText);
-      setConfirmPassword('');
-    },
-    []
-  );
+  const onPasswordChange = useCallback(({ nativeEvent: { text: inputText } }: NativeEvent) => {
+    setPassword(inputText);
+    setConfirmPassword('');
+  }, []);
 
-  const onConfirmPasswordChange = useCallback(
-    ({ nativeEvent: { text: inputText } }: NativeEvent) => {
-      setConfirmPassword(inputText);
-    },
-    []
-  );
+  const onConfirmPasswordChange = useCallback(({ nativeEvent: { text: inputText } }: NativeEvent) => {
+    setConfirmPassword(inputText);
+  }, []);
 
   return (
     <Box height={{ custom: deviceHeight - sharedCoolModalTopOffset - 48 }}>
@@ -132,42 +111,26 @@ export function BackupCloudStep() {
               size={72}
             />
             <Stack space="12px">
-              <Title>
-                {lang.t(lang.l.back_up.cloud.password.choose_a_password)}
-              </Title>
+              <Title>{lang.t(lang.l.back_up.cloud.password.choose_a_password)}</Title>
               <DescriptionText>
-                {lang.t(
-                  lang.l.back_up.cloud.password
-                    .a_password_youll_remember_part_one
-                )}
+                {lang.t(lang.l.back_up.cloud.password.a_password_youll_remember_part_one)}
                 &nbsp;
-                <ImportantText>
-                  {lang.t(lang.l.back_up.cloud.password.not)}
-                </ImportantText>
+                <ImportantText>{lang.t(lang.l.back_up.cloud.password.not)}</ImportantText>
                 &nbsp;
-                {lang.t(
-                  lang.l.back_up.cloud.password
-                    .a_password_youll_remember_part_two
-                )}
+                {lang.t(lang.l.back_up.cloud.password.a_password_youll_remember_part_two)}
               </DescriptionText>
             </Stack>
           </Masthead>
           <Box gap={12}>
             <PasswordField
               key="password"
-              isInvalid={
-                password !== '' &&
-                password.length < cloudBackupPasswordMinLength &&
-                !passwordRef.current?.isFocused()
-              }
+              isInvalid={password !== '' && password.length < cloudBackupPasswordMinLength && !passwordRef.current?.isFocused()}
               isValid={isCloudBackupPasswordValid(password)}
               onChange={onPasswordChange}
               onFocus={(target: any) => onTextInputFocus(target)}
               onSubmitEditing={onPasswordSubmit}
               password={password}
-              placeholder={lang.t(
-                lang.l.back_up.cloud.password.backup_password
-              )}
+              placeholder={lang.t(lang.l.back_up.cloud.password.backup_password)}
               ref={passwordRef}
               returnKeyType="next"
               textContentType="newPassword"
@@ -177,18 +140,14 @@ export function BackupCloudStep() {
                 key="confirm-password"
                 editable={isCloudBackupPasswordValid(password)}
                 isInvalid={
-                  isCloudBackupPasswordValid(confirmPassword) &&
-                  confirmPassword.length >= password.length &&
-                  confirmPassword !== password
+                  isCloudBackupPasswordValid(confirmPassword) && confirmPassword.length >= password.length && confirmPassword !== password
                 }
                 isValid={validPassword}
                 onChange={onConfirmPasswordChange}
                 onFocus={(target: any) => onTextInputFocus(target, true)}
                 onSubmitEditing={onSubmit}
                 password={confirmPassword}
-                placeholder={lang.t(
-                  lang.l.back_up.cloud.password.confirm_placeholder
-                )}
+                placeholder={lang.t(lang.l.back_up.cloud.password.confirm_placeholder)}
                 ref={confirmPasswordRef}
               />
             )}
@@ -217,26 +176,22 @@ export function BackupCloudStep() {
 
 export default BackupCloudStep;
 
-const DescriptionText = styled(Text).attrs(
-  ({ theme: { colors }, color }: any) => ({
-    align: 'left',
-    color: color || colors.alpha(colors.blueGreyDark, 0.5),
-    lineHeight: 'looser',
-    size: 'lmedium',
-    weight: 'medium',
-  })
-)({});
+const DescriptionText = styled(Text).attrs(({ theme: { colors }, color }: any) => ({
+  align: 'left',
+  color: color || colors.alpha(colors.blueGreyDark, 0.5),
+  lineHeight: 'looser',
+  size: 'lmedium',
+  weight: 'medium',
+}))({});
 
 const KeyboardSizeView = styled(KeyboardArea)({
   backgroundColor: ({ theme: { colors } }: any) => colors.transparent,
 });
 
-const ImportantText = styled(DescriptionText).attrs(
-  ({ theme: { colors } }: any) => ({
-    color: colors.red,
-    weight: 'bold',
-  })
-)({});
+const ImportantText = styled(DescriptionText).attrs(({ theme: { colors } }: any) => ({
+  color: colors.red,
+  weight: 'bold',
+}))({});
 
 const Masthead = styled(Box).attrs({
   direction: 'column',

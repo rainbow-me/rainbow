@@ -27,27 +27,14 @@ export default function ChartChangeDirectionArrow({ ratio, sharedRatio }) {
   const arrowStyle = useAnimatedStyle(() => {
     const realRatio = isActive.value ? sharedRatio.value : ratio;
     return {
-      backgroundColor:
-        realRatio === 1
-          ? colors.blueGreyDark
-          : realRatio < 1
-          ? colors.red
-          : colors.green,
+      backgroundColor: realRatio === 1 ? colors.blueGreyDark : realRatio < 1 ? colors.red : colors.green,
     };
   }, [ratio]);
 
   return (
     <Animated.View style={arrowWrapperStyle}>
-      <AnimatedMaskedView
-        maskElement={<ArrowIcon />}
-        style={{ height: 18, width: 15 }}
-      >
-        <Animated.View
-          style={[
-            { backgroundColor: '#324376', flex: 1, height: '100%' },
-            arrowStyle,
-          ]}
-        />
+      <AnimatedMaskedView maskElement={<ArrowIcon />} style={{ height: 18, width: 15 }}>
+        <Animated.View style={[{ backgroundColor: '#324376', flex: 1, height: '100%' }, arrowStyle]} />
       </AnimatedMaskedView>
     </Animated.View>
   );

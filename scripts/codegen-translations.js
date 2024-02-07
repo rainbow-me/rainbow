@@ -114,11 +114,7 @@ function pushNestedKeysAsArrays(keysArray, object, prefixArray) {
  * @returns {Object} The parsed language object.
  */
 function loadLanguageJson() {
-  const languageFilePath = path.resolve(
-    __dirname,
-    '../src/languages/',
-    languageFilename
-  );
+  const languageFilePath = path.resolve(__dirname, '../src/languages/', languageFilename);
 
   const languageContents = fs.readFileSync(languageFilePath, 'utf-8');
   return JSON.parse(languageContents)['translation'];
@@ -131,10 +127,7 @@ function loadLanguageJson() {
  * @param {string} contents The contents of the declaration file.
  */
 function writeTypeDeclarationFile(contents) {
-  const declarationFilePath = path.resolve(
-    __dirname,
-    '../src/languages/types-generated.d.ts'
-  );
+  const declarationFilePath = path.resolve(__dirname, '../src/languages/types-generated.d.ts');
 
   fs.writeFileSync(declarationFilePath, contents, 'utf-8');
 }

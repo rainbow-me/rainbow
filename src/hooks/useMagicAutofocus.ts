@@ -113,12 +113,7 @@ export default function useMagicAutofocus(
           triggerFocus();
         }
       }
-    }, [
-      fallbackRefocusLastInput,
-      shouldFocusOnNavigateOnAndroid,
-      showAfterInteractions,
-      triggerFocus,
-    ])
+    }, [fallbackRefocusLastInput, shouldFocusOnNavigateOnAndroid, showAfterInteractions, triggerFocus])
   );
 
   useEffect(() => () => setListener(null), []);

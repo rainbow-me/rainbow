@@ -1,10 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { CloudBackups } from '../model/backup';
-import {
-  fetchAllBackups,
-  isCloudBackupAvailable,
-  syncCloud,
-} from '@/handlers/cloudBackup';
+import { fetchAllBackups, isCloudBackupAvailable, syncCloud } from '@/handlers/cloudBackup';
 import { RainbowError, logger } from '@/logger';
 
 export default function useCloudBackups() {

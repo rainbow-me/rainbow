@@ -10,11 +10,7 @@ import { AccentColorProvider, Box, Text } from '@/design-system';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes from '@/helpers/walletTypes';
-import {
-  useManageCloudBackups,
-  useWalletCloudBackup,
-  useWallets,
-} from '@/hooks';
+import { useManageCloudBackups, useWalletCloudBackup, useWallets } from '@/hooks';
 import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
@@ -29,24 +25,18 @@ export const WalletBackupStatus = {
   MANUAL_BACKUP: 2,
 };
 
-const CheckmarkIconContainer = styled(View)(
-  ({ color, isDarkMode, theme: { colors } }: any) => ({
-    ...shadow.buildAsObject(0, 4, 6, isDarkMode ? colors.shadow : color, 0.4),
-    ...position.sizeAsObject(50),
-    backgroundColor: color,
-    borderRadius: 25,
-    marginBottom: 19,
-  })
-);
+const CheckmarkIconContainer = styled(View)(({ color, isDarkMode, theme: { colors } }: any) => ({
+  ...shadow.buildAsObject(0, 4, 6, isDarkMode ? colors.shadow : color, 0.4),
+  ...position.sizeAsObject(50),
+  backgroundColor: color,
+  borderRadius: 25,
+  marginBottom: 19,
+}));
 
 const CheckmarkIcon = ({ color, isDarkMode }: any) => (
   <CheckmarkIconContainer color={color} isDarkMode={isDarkMode}>
     <Box alignItems="center" height="full" justifyContent="center" width="full">
-      <Text
-        color={{ custom: colors.whiteLabel }}
-        size="20px / 24px (Deprecated)"
-        weight="bold"
-      >
+      <Text color={{ custom: colors.whiteLabel }} size="20px / 24px (Deprecated)" weight="bold">
         􀆅
       </Text>
     </Box>
@@ -84,34 +74,24 @@ export default function AlreadyBackedUpView() {
   }, [walletId, wallets]);
 
   const handleNoLatestBackup = useCallback(() => {
-    Navigation.handleAction(
-      android ? Routes.BACKUP_SCREEN : Routes.BACKUP_SHEET,
-      {
-        nativeScreen: android,
-        step: WalletBackupStepTypes.cloud,
-        walletId,
-      }
-    );
+    Navigation.handleAction(android ? Routes.BACKUP_SCREEN : Routes.BACKUP_SHEET, {
+      nativeScreen: android,
+      step: WalletBackupStepTypes.cloud,
+      walletId,
+    });
   }, [walletId]);
 
   const handlePasswordNotFound = useCallback(() => {
-    Navigation.handleAction(
-      android ? Routes.BACKUP_SCREEN : Routes.BACKUP_SHEET,
-      {
-        missingPassword: true,
-        nativeScreen: android,
-        step: WalletBackupStepTypes.cloud,
-        walletId,
-      }
-    );
+    Navigation.handleAction(android ? Routes.BACKUP_SCREEN : Routes.BACKUP_SHEET, {
+      missingPassword: true,
+      nativeScreen: android,
+      step: WalletBackupStepTypes.cloud,
+      walletId,
+    });
   }, [walletId]);
 
   const handleIcloudBackup = useCallback(() => {
-    if (
-      ![WalletBackupStatus.MANUAL_BACKUP, WalletBackupStatus.IMPORTED].includes(
-        walletStatus
-      )
-    ) {
+    if (![WalletBackupStatus.MANUAL_BACKUP, WalletBackupStatus.IMPORTED].includes(walletStatus)) {
       return;
     }
 
@@ -125,13 +105,7 @@ export default function AlreadyBackedUpView() {
       onError,
       walletId,
     });
-  }, [
-    handleNoLatestBackup,
-    handlePasswordNotFound,
-    walletCloudBackup,
-    walletId,
-    walletStatus,
-  ]);
+  }, [handleNoLatestBackup, handlePasswordNotFound, walletCloudBackup, walletId, walletStatus]);
 
   const { colors, isDarkMode } = useTheme();
 
@@ -139,74 +113,43 @@ export default function AlreadyBackedUpView() {
 
   const handleViewRecoveryPhrase = useCallback(() => {
     navigate('ShowSecretView', {
-      title: `${
-        isSecretPhrase
-          ? lang.t('back_up.secret.secret_phrase_title')
-          : lang.t('back_up.secret.private_key_title')
-      }`,
+      title: `${isSecretPhrase ? lang.t('back_up.secret.secret_phrase_title') : lang.t('back_up.secret.private_key_title')}`,
       walletId,
     });
   }, [isSecretPhrase, navigate, walletId]);
 
-  const checkmarkColor =
-    walletStatus === WalletBackupStatus.CLOUD_BACKUP
-      ? colors.green
-      : colors.alpha(colors.blueGreyDark, 0.5);
+  const checkmarkColor = walletStatus === WalletBackupStatus.CLOUD_BACKUP ? colors.green : colors.alpha(colors.blueGreyDark, 0.5);
 
-  const hasMultipleWallets = wallets
-    ? Object.keys(wallets).filter(
-        key => wallets?.[key].type !== WalletTypes.readOnly
-      ).length > 1
-    : false;
+  const hasMultipleWallets = wallets ? Object.keys(wallets).filter(key => wallets?.[key].type !== WalletTypes.readOnly).length > 1 : false;
 
   return (
     <Box
       alignItems="center"
-      height={
-        IS_ANDROID ? { custom: deviceUtils.dimensions.height - 100 } : 'full'
-      }
+      height={IS_ANDROID ? { custom: deviceUtils.dimensions.height - 100 } : 'full'}
       justifyContent="space-between"
       width="full"
     >
       <Box marginTop="-10px">
-        <Text
-          color="secondary50 (Deprecated)"
-          size="14px / 19px (Deprecated)"
-          weight="medium"
-        >
-          {(walletStatus === WalletBackupStatus.CLOUD_BACKUP &&
-            lang.t('back_up.already_backed_up.backed_up')) ||
-            (walletStatus === WalletBackupStatus.MANUAL_BACKUP &&
-              lang.t('back_up.already_backed_up.backed_up_manually')) ||
-            (walletStatus === WalletBackupStatus.IMPORTED &&
-              lang.t('back_up.already_backed_up.imported'))}
+        <Text color="secondary50 (Deprecated)" size="14px / 19px (Deprecated)" weight="medium">
+          {(walletStatus === WalletBackupStatus.CLOUD_BACKUP && lang.t('back_up.already_backed_up.backed_up')) ||
+            (walletStatus === WalletBackupStatus.MANUAL_BACKUP && lang.t('back_up.already_backed_up.backed_up_manually')) ||
+            (walletStatus === WalletBackupStatus.IMPORTED && lang.t('back_up.already_backed_up.imported'))}
         </Text>
       </Box>
       <Box alignItems="center" marginTop="-42px (Deprecated)">
         <CheckmarkIcon color={checkmarkColor} isDarkMode={isDarkMode} />
-        <Text
-          color="primary (Deprecated)"
-          size="20px / 24px (Deprecated)"
-          weight="bold"
-        >
-          {(walletStatus === WalletBackupStatus.IMPORTED &&
-            lang.t('back_up.already_backed_up.imported_message')) ||
+        <Text color="primary (Deprecated)" size="20px / 24px (Deprecated)" weight="bold">
+          {(walletStatus === WalletBackupStatus.IMPORTED && lang.t('back_up.already_backed_up.imported_message')) ||
             lang.t('back_up.already_backed_up.backed_up_message')}
         </Text>
         <Box paddingHorizontal="60px" paddingTop="24px">
-          <Text
-            align="center"
-            color="secondary50 (Deprecated)"
-            size="18px / 27px (Deprecated)"
-          >
+          <Text align="center" color="secondary50 (Deprecated)" size="18px / 27px (Deprecated)">
             {(walletStatus === WalletBackupStatus.CLOUD_BACKUP &&
               lang.t('back_up.explainers.if_lose_cloud', {
                 cloudPlatformName: cloudPlatform,
               })) ||
-              (walletStatus === WalletBackupStatus.MANUAL_BACKUP &&
-                lang.t('back_up.explainers.if_lose_manual')) ||
-              (walletStatus === WalletBackupStatus.IMPORTED &&
-                lang.t('back_up.explainers.if_lose_imported'))}
+              (walletStatus === WalletBackupStatus.MANUAL_BACKUP && lang.t('back_up.explainers.if_lose_manual')) ||
+              (walletStatus === WalletBackupStatus.IMPORTED && lang.t('back_up.explainers.if_lose_imported'))}
           </Text>
         </Box>
         <Box paddingTop="42px (Deprecated)">
@@ -228,17 +171,8 @@ export default function AlreadyBackedUpView() {
                 paddingHorizontal="19px (Deprecated)"
                 shadow="15px light (Deprecated)"
               >
-                <Text
-                  color="secondary (Deprecated)"
-                  containsEmoji
-                  size="18px / 27px (Deprecated)"
-                  weight="semibold"
-                >
-                  {`🗝 ${
-                    isSecretPhrase
-                      ? lang.t('back_up.secret.view_secret_phrase')
-                      : lang.t('back_up.secret.view_private_key')
-                  }`}
+                <Text color="secondary (Deprecated)" containsEmoji size="18px / 27px (Deprecated)" weight="semibold">
+                  {`🗝 ${isSecretPhrase ? lang.t('back_up.secret.view_secret_phrase') : lang.t('back_up.secret.view_private_key')}`}
                 </Text>
               </Box>
             </ButtonPressAnimation>
@@ -248,11 +182,7 @@ export default function AlreadyBackedUpView() {
       <Box paddingBottom="42px (Deprecated)">
         {walletStatus !== WalletBackupStatus.CLOUD_BACKUP ? (
           <ButtonPressAnimation onPress={handleIcloudBackup}>
-            <Text
-              color="action (Deprecated)"
-              size="18px / 27px (Deprecated)"
-              weight="semibold"
-            >
+            <Text color="action (Deprecated)" size="18px / 27px (Deprecated)" weight="semibold">
               {`􀙶 ${lang.t('back_up.cloud.back_up_to_platform', {
                 cloudPlatformName: cloudPlatform,
               })}`}
@@ -260,11 +190,7 @@ export default function AlreadyBackedUpView() {
           </ButtonPressAnimation>
         ) : !hasMultipleWallets ? (
           <ButtonPressAnimation onPress={manageCloudBackups}>
-            <Text
-              color="secondary60 (Deprecated)"
-              size="18px / 27px (Deprecated)"
-              weight="semibold"
-            >
+            <Text color="secondary60 (Deprecated)" size="18px / 27px (Deprecated)" weight="semibold">
               {`􀍢 ${lang.t('back_up.cloud.manage_platform_backups', {
                 cloudPlatformName: cloudPlatform,
               })}`}

@@ -10,15 +10,9 @@ export default function toLocaleStringPolyfill() {
     sNum = '' + roundOff(sNum, 2);
     var sNumParts = sNum.split('.');
     if (!!separators && separators.thousands) {
-      sNumParts[0] = sNumParts[0].replace(
-        /(\d)(?=(\d\d\d)+(?!\d))/g,
-        '$1' + separators.thousands
-      );
+      sNumParts[0] = sNumParts[0].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1' + separators.thousands);
     } else if (!!separators && separators.hundreds) {
-      sNumParts[0] = sNumParts[0].replace(
-        /(\d)(?=(\d\d)+(?!\d))/g,
-        '$1' + separators.hundreds
-      );
+      sNumParts[0] = sNumParts[0].replace(/(\d)(?=(\d\d)+(?!\d))/g, '$1' + separators.hundreds);
     }
     sNum = sNumParts.join(separators.decimal);
     return sNum;
@@ -91,11 +85,7 @@ export default function toLocaleStringPolyfill() {
       };
     sNum = +sNum;
     if (sNum >= 1000) {
-      return (
-        replaceSeparators(Math.floor(sNum / 1000) + '', hundredSeperators) +
-        ',' +
-        getLast3Digits((sNum % 1000) + '')
-      );
+      return replaceSeparators(Math.floor(sNum / 1000) + '', hundredSeperators) + ',' + getLast3Digits((sNum % 1000) + '');
     } else {
       return replaceSeparators(sNum + '', thoudandSeperators);
     }
@@ -269,8 +259,7 @@ export default function toLocaleStringPolyfill() {
   };
 
   Number.prototype.toLocaleString = function (locale: any, options: any) {
-    if (locale && locale.length < 2)
-      throw new RangeError('Invalid language tag: ' + locale);
+    if (locale && locale.length < 2) throw new RangeError('Invalid language tag: ' + locale);
     var sNum;
     if (!!options && options.minimumFractionDigits !== undefined) {
       sNum = this.toFixed(options.minimumFractionDigits);

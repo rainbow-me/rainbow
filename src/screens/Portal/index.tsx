@@ -29,12 +29,7 @@ export function Portal() {
 
   return (
     <SimpleSheet backgroundColor="white" scrollEnabled={false}>
-      <Box
-        paddingVertical="44px"
-        paddingHorizontal="32px"
-        height="full"
-        background="surfaceSecondary"
-      >
+      <Box paddingVertical="44px" paddingHorizontal="32px" height="full" background="surfaceSecondary">
         {params.children({})}
       </Box>
     </SimpleSheet>
@@ -54,15 +49,12 @@ export function Portal() {
 export function useOpen() {
   const { navigate } = useNavigation();
 
-  const open = React.useCallback(
-    (children: React.FC, options: Omit<PortalSheetProps, 'children'> = {}) => {
-      navigate(Routes.PORTAL, {
-        children,
-        ...options,
-      });
-    },
-    []
-  );
+  const open = React.useCallback((children: React.FC, options: Omit<PortalSheetProps, 'children'> = {}) => {
+    navigate(Routes.PORTAL, {
+      children,
+      ...options,
+    });
+  }, []);
 
   return {
     open,
@@ -73,10 +65,7 @@ export function useOpen() {
  * Use `useOpen` where possible. This util exists for limited use
  * outside a React component.
  */
-export function open(
-  children: React.FC,
-  options: Omit<PortalSheetProps, 'children'> = {}
-) {
+export function open(children: React.FC, options: Omit<PortalSheetProps, 'children'> = {}) {
   Navigation.handleAction(Routes.PORTAL, {
     children,
     ...options,

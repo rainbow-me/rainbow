@@ -25,9 +25,7 @@ const Input = (
 ) => {
   const { isDarkMode, colors } = useTheme();
 
-  const defaultSelectionColor = ios
-    ? colors.appleBlue
-    : colors.appleBlueTransparent;
+  const defaultSelectionColor = ios ? colors.appleBlue : colors.appleBlueTransparent;
 
   const defaultPlaceholderTextColor = colors.placeholder;
 

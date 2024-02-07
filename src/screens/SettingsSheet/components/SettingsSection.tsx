@@ -1,10 +1,7 @@
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { Linking, Share } from 'react-native';
-import {
-  ContextMenuButton,
-  MenuActionConfig,
-} from 'react-native-ios-context-menu';
+import { ContextMenuButton, MenuActionConfig } from 'react-native-ios-context-menu';
 import { supportedLanguages } from '../../../languages';
 import { AppVersionStamp } from '@/components/AppVersionStamp';
 import Menu from './Menu';
@@ -25,10 +22,7 @@ import PrivacyIcon from '@/assets/settingsPrivacy.png';
 import PrivacyIconDark from '@/assets/settingsPrivacyDark.png';
 import BackupWarningIcon from '@/assets/BackupWarning.png';
 import CloudBackupWarningIcon from '@/assets/CloudBackupWarning.png';
-import useExperimentalFlag, {
-  LANGUAGE_SETTINGS,
-  NOTIFICATIONS,
-} from '@/config/experimentalHooks';
+import useExperimentalFlag, { LANGUAGE_SETTINGS, NOTIFICATIONS } from '@/config/experimentalHooks';
 import { useAccountSettings, useSendFeedback, useWallets } from '@/hooks';
 import { Themes, useTheme } from '@/theme';
 import { showActionSheetWithOptions } from '@/utils';
@@ -68,10 +62,7 @@ const SettingsSection = ({
   const { isDarkMode, setTheme, colorScheme } = useTheme();
 
   const onSendFeedback = useSendFeedback();
-  const { backupProvider } = useMemo(
-    () => checkWalletsForBackupStatus(wallets),
-    [wallets]
-  );
+  const { backupProvider } = useMemo(() => checkWalletsForBackupStatus(wallets), [wallets]);
 
   const onPressReview = useCallback(async () => {
     if (ios) {
@@ -82,29 +73,19 @@ const SettingsSection = ({
 
   const onPressShare = useCallback(() => {
     Share.share({
-      message: `${lang.t('settings.hey_friend_message')} ${
-        SettingsExternalURLs.rainbowHomepage
-      }`,
+      message: `${lang.t('settings.hey_friend_message')} ${SettingsExternalURLs.rainbowHomepage}`,
     });
   }, []);
 
   const onPressTwitter = useCallback(async () => {
     Linking.canOpenURL(SettingsExternalURLs.twitterDeepLink).then(supported =>
-      supported
-        ? Linking.openURL(SettingsExternalURLs.twitterDeepLink)
-        : Linking.openURL(SettingsExternalURLs.twitterWebUrl)
+      supported ? Linking.openURL(SettingsExternalURLs.twitterDeepLink) : Linking.openURL(SettingsExternalURLs.twitterWebUrl)
     );
   }, []);
 
-  const onPressLearn = useCallback(
-    () => Linking.openURL(SettingsExternalURLs.rainbowLearn),
-    []
-  );
+  const onPressLearn = useCallback(() => Linking.openURL(SettingsExternalURLs.rainbowLearn), []);
 
-  const { allBackedUp, areBackedUp, canBeBackedUp } = useMemo(
-    () => checkWalletsForBackupStatus(wallets),
-    [wallets]
-  );
+  const { allBackedUp, areBackedUp, canBeBackedUp } = useMemo(() => checkWalletsForBackupStatus(wallets), [wallets]);
 
   const themeMenuConfig = useMemo(() => {
     return {
@@ -187,22 +168,14 @@ const SettingsSection = ({
   }, [allBackedUp, areBackedUp, backupProvider]);
 
   return (
-    <MenuContainer
-      testID="settings-menu-container"
-      Footer={<AppVersionStamp />}
-    >
+    <MenuContainer testID="settings-menu-container" Footer={<AppVersionStamp />}>
       <Menu>
         {canBeBackedUp && (
           <MenuItem
             hasRightArrow
             leftComponent={<MenuItem.ImageIcon source={WalletsAndBackupIcon} />}
             onPress={onPressBackup}
-            rightComponent={
-              <MenuItem.ImageIcon
-                size={44}
-                source={getWalletsAndBackupAlertIcon()}
-              />
-            }
+            rightComponent={<MenuItem.ImageIcon size={44} source={getWalletsAndBackupAlertIcon()} />}
             size={60}
             testID="backup-section"
             titleComponent={<MenuItem.Title text={lang.t('settings.backup')} />}
@@ -211,29 +184,17 @@ const SettingsSection = ({
         {isNotificationsEnabled && (
           <MenuItem
             hasRightArrow
-            leftComponent={
-              <MenuItem.ImageIcon
-                source={isDarkMode ? NotificationsIconDark : NotificationsIcon}
-              />
-            }
+            leftComponent={<MenuItem.ImageIcon source={isDarkMode ? NotificationsIconDark : NotificationsIcon} />}
             onPress={onPressNotifications}
             size={60}
-            titleComponent={
-              <MenuItem.Title text={lang.t('settings.notifications')} />
-            }
+            titleComponent={<MenuItem.Title text={lang.t('settings.notifications')} />}
           />
         )}
         <MenuItem
           hasRightArrow
-          leftComponent={
-            <MenuItem.ImageIcon
-              source={isDarkMode ? CurrencyIconDark : CurrencyIcon}
-            />
-          }
+          leftComponent={<MenuItem.ImageIcon source={isDarkMode ? CurrencyIconDark : CurrencyIcon} />}
           onPress={onPressCurrency}
-          rightComponent={
-            <MenuItem.Selection>{nativeCurrency || ''}</MenuItem.Selection>
-          }
+          rightComponent={<MenuItem.Selection>{nativeCurrency || ''}</MenuItem.Selection>}
           size={60}
           testID="currency-section"
           titleComponent={<MenuItem.Title text={lang.t('settings.currency')} />}
@@ -270,16 +231,8 @@ const SettingsSection = ({
         >
           <MenuItem
             hasChevron
-            leftComponent={
-              <MenuItem.ImageIcon
-                source={isDarkMode ? DarkModeIconDark : DarkModeIcon}
-              />
-            }
-            rightComponent={
-              <MenuItem.Selection>
-                {colorScheme ? capitalizeFirstLetter(colorScheme) : ''}
-              </MenuItem.Selection>
-            }
+            leftComponent={<MenuItem.ImageIcon source={isDarkMode ? DarkModeIconDark : DarkModeIcon} />}
+            rightComponent={<MenuItem.Selection>{colorScheme ? capitalizeFirstLetter(colorScheme) : ''}</MenuItem.Selection>}
             size={60}
             testID={`theme-section-${isDarkMode ? 'dark' : 'light'}`}
             titleComponent={<MenuItem.Title text={lang.t('settings.theme')} />}
@@ -289,46 +242,26 @@ const SettingsSection = ({
         {!isReadOnlyWallet && (
           <MenuItem
             hasRightArrow
-            leftComponent={
-              <MenuItem.ImageIcon
-                source={isDarkMode ? PrivacyIconDark : PrivacyIcon}
-              />
-            }
+            leftComponent={<MenuItem.ImageIcon source={isDarkMode ? PrivacyIconDark : PrivacyIcon} />}
             onPress={onPressPrivacy}
             size={60}
             testID="privacy"
-            titleComponent={
-              <MenuItem.Title text={lang.t('settings.privacy')} />
-            }
+            titleComponent={<MenuItem.Title text={lang.t('settings.privacy')} />}
           />
         )}
         {isLanguageSelectionEnabled && (
           <MenuItem
             hasRightArrow
-            leftComponent={
-              <MenuItem.ImageIcon
-                source={isDarkMode ? LanguageIconDark : LanguageIcon}
-              />
-            }
+            leftComponent={<MenuItem.ImageIcon source={isDarkMode ? LanguageIconDark : LanguageIcon} />}
             onPress={onPressLanguage}
-            rightComponent={
-              <MenuItem.Selection>
-                {(supportedLanguages as any)[language].label || ''}
-              </MenuItem.Selection>
-            }
+            rightComponent={<MenuItem.Selection>{(supportedLanguages as any)[language].label || ''}</MenuItem.Selection>}
             size={60}
-            titleComponent={
-              <MenuItem.Title text={lang.t('settings.language')} />
-            }
+            titleComponent={<MenuItem.Title text={lang.t('settings.language')} />}
           />
         )}
         <MenuItem
           hasRightArrow
-          leftComponent={
-            <MenuItem.ImageIcon
-              source={isDarkMode ? AppIconIconDark : AppIconIcon}
-            />
-          }
+          leftComponent={<MenuItem.ImageIcon source={isDarkMode ? AppIconIconDark : AppIconIcon} />}
           onPress={onPressAppIcon}
           size={60}
           testID="app-icon-section"
@@ -341,9 +274,7 @@ const SettingsSection = ({
           onPress={onPressShare}
           size={52}
           testID="share-section"
-          titleComponent={
-            <MenuItem.Title text={lang.t('settings.share_rainbow')} />
-          }
+          titleComponent={<MenuItem.Title text={lang.t('settings.share_rainbow')} />}
         />
         <MenuItem
           leftComponent={<MenuItem.TextIcon icon="🧠" isEmoji />}
@@ -357,24 +288,14 @@ const SettingsSection = ({
           onPress={onPressTwitter}
           size={52}
           testID="twitter-section"
-          titleComponent={
-            <MenuItem.Title text={lang.t('settings.follow_us_on_twitter')} />
-          }
+          titleComponent={<MenuItem.Title text={lang.t('settings.follow_us_on_twitter')} />}
         />
         <MenuItem
           leftComponent={<MenuItem.TextIcon icon="💬" isEmoji />}
           onPress={onSendFeedback}
           size={52}
           testID="feedback-section"
-          titleComponent={
-            <MenuItem.Title
-              text={lang.t(
-                ios
-                  ? 'settings.feedback_and_support'
-                  : 'settings.feedback_and_reports'
-              )}
-            />
-          }
+          titleComponent={<MenuItem.Title text={lang.t(ios ? 'settings.feedback_and_support' : 'settings.feedback_and_reports')} />}
         />
         <MenuItem
           leftComponent={<MenuItem.TextIcon icon="❤️" isEmoji />}
@@ -388,9 +309,7 @@ const SettingsSection = ({
           onPress={onPressDev}
           size={52}
           testID="developer-section"
-          titleComponent={
-            <MenuItem.Title text={lang.t('settings.developer')} />
-          }
+          titleComponent={<MenuItem.Title text={lang.t('settings.developer')} />}
         />
       </Menu>
     </MenuContainer>

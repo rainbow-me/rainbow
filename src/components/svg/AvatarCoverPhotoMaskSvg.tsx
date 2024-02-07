@@ -1,11 +1,7 @@
 import React from 'react';
 import Svg, { Path } from 'react-native-svg';
 
-export default function AvatarCoverPhotoMaskSvg({
-  backgroundColor,
-}: {
-  backgroundColor?: string;
-}) {
+export default function AvatarCoverPhotoMaskSvg({ backgroundColor }: { backgroundColor?: string }) {
   return (
     <Svg height="32" style={{ top: -6 }} viewBox="0 0 96 29" width="96">
       <Path

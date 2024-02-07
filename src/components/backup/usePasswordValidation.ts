@@ -1,17 +1,11 @@
 import { useState, useEffect } from 'react';
 import * as lang from '@/languages';
-import {
-  isCloudBackupPasswordValid,
-  cloudBackupPasswordMinLength,
-} from '@/handlers/cloudBackup';
+import { isCloudBackupPasswordValid, cloudBackupPasswordMinLength } from '@/handlers/cloudBackup';
 import { useForegroundColor } from '@/design-system';
 import { cloudPlatform } from '@/utils/platform';
 import { useTheme } from '@/theme';
 
-export const usePasswordValidation = (
-  password: string,
-  confirmPassword: string
-) => {
+export const usePasswordValidation = (password: string, confirmPassword: string) => {
   const { colors } = useTheme();
   const [validPassword, setValidPassword] = useState(false);
   const [label, setLabel] = useState('');

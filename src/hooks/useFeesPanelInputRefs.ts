@@ -10,11 +10,9 @@ export default function useFeesPanelInputRefs() {
     const maxBaseInputRefHandle = maxBaseFieldRef.current;
     const minerTipInputRefHandle = minerTipFieldRef.current;
 
-    const lastFocusedIsMaxBaseType =
-      currentFocusedInputHandle?.current === maxBaseInputRefHandle;
+    const lastFocusedIsMaxBaseType = currentFocusedInputHandle?.current === maxBaseInputRefHandle;
 
-    const lastFocusedIsMinerTipType =
-      currentFocusedInputHandle?.current === minerTipInputRefHandle;
+    const lastFocusedIsMinerTipType = currentFocusedInputHandle?.current === minerTipInputRefHandle;
 
     if (lastFocusedIsMaxBaseType) {
       return maxBaseInputRefHandle;
@@ -27,12 +25,11 @@ export default function useFeesPanelInputRefs() {
     return currentFocusedInputHandle.current;
   }, []);
 
-  const {
-    handleFocus,
-    lastFocusedInputHandle,
-    setLastFocusedInputHandle,
-    triggerFocus,
-  } = useMagicAutofocus(maxBaseFieldRef, findNextInput, false);
+  const { handleFocus, lastFocusedInputHandle, setLastFocusedInputHandle, triggerFocus } = useMagicAutofocus(
+    maxBaseFieldRef,
+    findNextInput,
+    false
+  );
 
   return {
     handleFocus,
