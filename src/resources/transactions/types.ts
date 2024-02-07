@@ -1,10 +1,7 @@
 import { TransactionResponse } from '@ethersproject/providers';
 
 import { ZerionAsset } from '@/entities/tokens';
-import {
-  LegacyTransactionGasParams,
-  TransactionGasParams,
-} from '@/entities/gas';
+import { LegacyTransactionGasParams, TransactionGasParams } from '@/entities/gas';
 import { Network } from '@/networks/types';
 import { AddysAsset, ParsedAsset } from '../assets/types';
 
@@ -150,14 +147,7 @@ type NewTransaction = Omit<PendingTransaction, 'title' | 'changes'> & {
 };
 
 const transactionTypes = {
-  withoutChanges: [
-    'cancel',
-    'contract_interaction',
-    'deployment',
-    'approve',
-    'revoke',
-    'speed_up',
-  ],
+  withoutChanges: ['cancel', 'contract_interaction', 'deployment', 'approve', 'revoke', 'speed_up'],
   withChanges: [
     'sale',
     'bridge',
@@ -181,12 +171,10 @@ const transactionTypes = {
   ],
 } as const;
 
-export type TransactionWithChangesType = typeof transactionTypes.withChanges[number];
-export type TransactionWithoutChangesType = typeof transactionTypes.withoutChanges[number];
+export type TransactionWithChangesType = (typeof transactionTypes.withChanges)[number];
+export type TransactionWithoutChangesType = (typeof transactionTypes.withoutChanges)[number];
 
-export type TransactionType =
-  | TransactionWithChangesType
-  | TransactionWithoutChangesType;
+export type TransactionType = TransactionWithChangesType | TransactionWithoutChangesType;
 
 export type TransactionDirection = 'in' | 'out' | 'self';
 
@@ -254,7 +242,6 @@ export type TransactionApiResponse = {
   mined_at?: number;
 };
 
-export type PaginatedTransactionsApiResponse = Omit<
-  TransactionApiResponse,
-  'fee'
-> & { fee: Omit<TransactionApiResponse['fee'], 'details'> };
+export type PaginatedTransactionsApiResponse = Omit<TransactionApiResponse, 'fee'> & {
+  fee: Omit<TransactionApiResponse['fee'], 'details'>;
+};
