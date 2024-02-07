@@ -22,11 +22,7 @@ export type RPCPayload =
       params: [string, string];
     }
   | {
-      method:
-        | RPCMethod.SignTypedData
-        | RPCMethod.SignTypedDataV1
-        | RPCMethod.SignTypedDataV3
-        | RPCMethod.SignTypedDataV4;
+      method: RPCMethod.SignTypedData | RPCMethod.SignTypedDataV1 | RPCMethod.SignTypedDataV3 | RPCMethod.SignTypedDataV4;
       params: [
         string, // address
         string // stringify typed object
@@ -65,6 +61,4 @@ export type AuthRequestAuthenticateResult =
       reason: AuthRequestResponseErrorReason;
     };
 
-export type AuthRequestAuthenticateSignature = (props: {
-  address: string;
-}) => Promise<AuthRequestAuthenticateResult>;
+export type AuthRequestAuthenticateSignature = (props: { address: string }) => Promise<AuthRequestAuthenticateResult>;

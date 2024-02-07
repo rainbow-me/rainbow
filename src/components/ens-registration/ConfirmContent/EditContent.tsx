@@ -38,31 +38,18 @@ const EditContent = ({
         <Inset top="19px (Deprecated)">
           <Inline alignHorizontal="justify" alignVertical="center">
             <Inline>
-              <Text
-                color="secondary80 (Deprecated)"
-                size="16px / 22px (Deprecated)"
-                weight="bold"
-              >
+              <Text color="secondary80 (Deprecated)" size="16px / 22px (Deprecated)" weight="bold">
                 {`${lang.t('profiles.confirm.set_ens_name')} `}
               </Text>
-              <ButtonPressAnimation
-                onPress={openPrimaryENSNameHelper}
-                scaleTo={0.9}
-              >
-                <Text
-                  color="secondary30 (Deprecated)"
-                  size="16px / 22px (Deprecated)"
-                  weight="bold"
-                >
+              <ButtonPressAnimation onPress={openPrimaryENSNameHelper} scaleTo={0.9}>
+                <Text color="secondary30 (Deprecated)" size="16px / 22px (Deprecated)" weight="bold">
                   􀅵
                 </Text>
               </ButtonPressAnimation>
             </Inline>
             <Switch
               disabled={!setSendReverseRecord}
-              onValueChange={() =>
-                setSendReverseRecord?.(sendReverseRecord => !sendReverseRecord)
-              }
+              onValueChange={() => setSendReverseRecord?.(sendReverseRecord => !sendReverseRecord)}
               testID="ens-reverse-record-switch"
               thumbColor={colors.white}
               trackColor={{

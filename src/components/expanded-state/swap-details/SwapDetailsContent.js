@@ -11,84 +11,47 @@ import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
 import { AccentColorProvider, Box, Rows, Separator } from '@/design-system';
 import { isNativeAsset } from '@/handlers/assets';
 import Routes from '@/navigation/routesNames';
-import {
-  useAccountSettings,
-  useColorForAsset,
-  useSwapAdjustedAmounts,
-  useSwapCurrencies,
-} from '@/hooks';
+import { useAccountSettings, useColorForAsset, useSwapAdjustedAmounts, useSwapCurrencies } from '@/hooks';
 import { SwapModalField } from '@/redux/swap';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { ethereumUtils } from '@/utils';
+
 import { useNavigation } from '@/navigation';
 import { Network } from '@/helpers';
 import { SwapDetailsRewardRow } from './SwapDetailsRewardRow';
-import useExperimentalFlag, {
-  OP_REWARDS,
-} from '@rainbow-me/config/experimentalHooks';
+import useExperimentalFlag, { OP_REWARDS } from '@rainbow-me/config/experimentalHooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
 
 const Container = styled(Box).attrs({
   flex: 1,
 })(({ hasWarning }) => padding.object(hasWarning ? 24 : 30, 19, 30));
 
-export default function SwapDetailsContent({
-  isHighPriceImpact,
-  isRefuelTx,
-  onCopySwapDetailsText,
-  tradeDetails,
-  onPressMore,
-  ...props
-}) {
+export default function SwapDetailsContent({ isHighPriceImpact, isRefuelTx, onCopySwapDetailsText, tradeDetails, onPressMore, ...props }) {
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
-  const { amountReceivedSold, receivedSoldLabel } = useSwapAdjustedAmounts(
-    tradeDetails
-  );
+  const { amountReceivedSold, receivedSoldLabel } = useSwapAdjustedAmounts(tradeDetails);
   const { navigate } = useNavigation();
   const { flashbotsEnabled } = useAccountSettings();
-  const inputAsExact = useSelector(
-    state => state.swap.independentField !== SwapModalField.output
-  );
+  const inputAsExact = useSelector(state => state.swap.independentField !== SwapModalField.output);
 
   const [detailsExpanded, setDetailsExpanded] = useState(false);
 
   const colorForAsset = useColorForAsset(outputCurrency, undefined, true, true);
-  const inputCurrencyNetwork = ethereumUtils.getNetworkFromType(
-    inputCurrency?.type
-  );
-  const outputCurrencyNetwork = ethereumUtils.getNetworkFromType(
-    outputCurrency?.type
-  );
+  const inputCurrencyNetwork = inputCurrency.network;
+  const outputCurrencyNetwork = outputCurrency.network;
   const { op_rewards_enabled } = useRemoteConfig();
-  const hasReward =
-    (useExperimentalFlag(OP_REWARDS) || op_rewards_enabled) &&
-    !!tradeDetails.reward?.[0];
+  const hasReward = (useExperimentalFlag(OP_REWARDS) || op_rewards_enabled) && !!tradeDetails.reward?.[0];
 
   return (
     <AccentColorProvider color={colorForAsset}>
-      <Container
-        hasWarning={isHighPriceImpact}
-        testID="swap-details-state"
-        {...props}
-      >
+      <Container hasWarning={isHighPriceImpact} testID="swap-details-state" {...props}>
         <Rows space="24px">
-          <SwapDetailsRow
-            label={receivedSoldLabel}
-            testID="swaps-details-value-row"
-          >
+          <SwapDetailsRow label={receivedSoldLabel} testID="swaps-details-value-row">
             <SwapDetailsValue letterSpacing="roundedTight">
-              {amountReceivedSold}{' '}
-              {inputAsExact ? outputCurrency.symbol : inputCurrency.symbol}
+              {amountReceivedSold} {inputAsExact ? outputCurrency.symbol : inputCurrency.symbol}
             </SwapDetailsValue>
           </SwapDetailsRow>
 
-          {(isRefuelTx || tradeDetails?.refuel) && (
-            <SwapDetailsRefuelRow
-              testID="swaps-details-refuel-row"
-              tradeDetails={tradeDetails}
-            />
-          )}
+          {(isRefuelTx || tradeDetails?.refuel) && <SwapDetailsRefuelRow testID="swaps-details-refuel-row" tradeDetails={tradeDetails} />}
 
           {tradeDetails?.protocols && (
             <SwapDetailsExchangeRow
@@ -98,15 +61,9 @@ export default function SwapDetailsContent({
             />
           )}
           {tradeDetails.feePercentageBasisPoints !== 0 && (
-            <SwapDetailsFeeRow
-              network={outputCurrencyNetwork}
-              testID="swaps-details-fee-row"
-              tradeDetails={tradeDetails}
-            />
+            <SwapDetailsFeeRow network={outputCurrencyNetwork} testID="swaps-details-fee-row" tradeDetails={tradeDetails} />
           )}
-          {hasReward && (
-            <SwapDetailsRewardRow reward={tradeDetails.reward?.[0]} />
-          )}
+          {hasReward && <SwapDetailsRewardRow reward={tradeDetails.reward?.[0]} />}
           {flashbotsEnabled && inputCurrencyNetwork === Network.mainnet && (
             <SwapDetailsRow
               labelPress={() =>
@@ -117,9 +74,7 @@ export default function SwapDetailsContent({
               label={`${lang.t('expanded_state.swap.flashbots_protect')} 􀅵`}
               testID="swaps-details-flashbots-row"
             >
-              <SwapDetailsValue letterSpacing="roundedTight">
-                {`${lang.t('expanded_state.swap.on')} 􀞜`}
-              </SwapDetailsValue>
+              <SwapDetailsValue letterSpacing="roundedTight">{`${lang.t('expanded_state.swap.on')} 􀞜`}</SwapDetailsValue>
             </SwapDetailsRow>
           )}
           {!detailsExpanded && (
@@ -148,9 +103,7 @@ export default function SwapDetailsContent({
                       : lang.t('expanded_state.swap_details.show_details')
                   }
                 >
-                  <SwapDetailsValue>
-                    {detailsExpanded ? '􀁮' : '􀁰'}
-                  </SwapDetailsValue>
+                  <SwapDetailsValue>{detailsExpanded ? '􀁮' : '􀁰'}</SwapDetailsValue>
                 </SwapDetailsRow>
               </ButtonPressAnimation>
             </Box>
@@ -158,24 +111,12 @@ export default function SwapDetailsContent({
           {detailsExpanded && (
             <Rows space="24px">
               <Separator color="divider80 (Deprecated)" />
-              <SwapDetailsPriceRow
-                testID="swaps-details-price-row"
-                tradeDetails={tradeDetails}
-              />
+              <SwapDetailsPriceRow testID="swaps-details-price-row" tradeDetails={tradeDetails} />
               {!isNativeAsset(inputCurrency?.address, inputCurrencyNetwork) && (
-                <SwapDetailsContractRow
-                  asset={inputCurrency}
-                  onCopySwapDetailsText={onCopySwapDetailsText}
-                />
+                <SwapDetailsContractRow asset={inputCurrency} onCopySwapDetailsText={onCopySwapDetailsText} />
               )}
-              {!isNativeAsset(
-                outputCurrency?.address,
-                inputCurrencyNetwork
-              ) && (
-                <SwapDetailsContractRow
-                  asset={outputCurrency}
-                  onCopySwapDetailsText={onCopySwapDetailsText}
-                />
+              {!isNativeAsset(outputCurrency?.address, inputCurrencyNetwork) && (
+                <SwapDetailsContractRow asset={outputCurrency} onCopySwapDetailsText={onCopySwapDetailsText} />
               )}
             </Rows>
           )}

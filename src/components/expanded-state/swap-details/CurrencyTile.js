@@ -60,18 +60,13 @@ export default function CurrencyTile({
   ...props
 }) {
   const { width } = useDimensions();
-  const inputAsExact = useSelector(
-    state => state.swap.independentField !== SwapModalField.output
-  );
+  const inputAsExact = useSelector(state => state.swap.independentField !== SwapModalField.output);
   const { nativeCurrency } = useAccountSettings();
   const colorForAsset = useColorForAsset(asset);
-  const { address, mainnet_address, symbol, type: assetType } = asset;
-  const isOther =
-    (inputAsExact && type === 'output') || (!inputAsExact && type === 'input');
+  const { address, mainnet_address, symbol, network } = asset;
+  const isOther = (inputAsExact && type === 'output') || (!inputAsExact && type === 'input');
 
-  const priceDisplay = priceValue
-    ? convertAmountToNativeDisplay(priceValue, nativeCurrency)
-    : '-';
+  const priceDisplay = priceValue ? convertAmountToNativeDisplay(priceValue, nativeCurrency) : '-';
 
   return (
     <Container {...props}>
@@ -86,7 +81,7 @@ export default function CurrencyTile({
               mainnet_address={mainnet_address}
               size={50}
               symbol={symbol}
-              type={assetType}
+              network={network}
             />
           </Row>
           <Row height="content">
@@ -106,19 +101,10 @@ export default function CurrencyTile({
                   </Columns>
                 </Row>
                 <Row height="content">
-                  <Box
-                    alignItems="center"
-                    justifyContent="center"
-                    marginTop={android && '-6px'}
-                    width="full"
-                  >
+                  <Box alignItems="center" justifyContent="center" marginTop={android && '-6px'} width="full">
                     <TruncatedAmountText as={TruncatedText}>
                       {priceDisplay}
-                      {isHighPriceImpact && (
-                        <NativePriceText
-                          color={priceImpactColor}
-                        >{` 􀇿`}</NativePriceText>
-                      )}
+                      {isHighPriceImpact && <NativePriceText color={priceImpactColor}>{` 􀇿`}</NativePriceText>}
                     </TruncatedAmountText>
                   </Box>
                 </Row>

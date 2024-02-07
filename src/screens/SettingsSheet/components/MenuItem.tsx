@@ -37,13 +37,7 @@ interface TextIconProps {
   isEmoji?: boolean;
 }
 
-const TextIcon = ({
-  colorOverride,
-  icon,
-  disabled,
-  isLink,
-  isEmoji = false,
-}: TextIconProps) => (
+const TextIcon = ({ colorOverride, icon, disabled, isLink, isEmoji = false }: TextIconProps) => (
   <Box paddingLeft={{ custom: isEmoji ? 7 : 0 }}>
     <Text
       color={
@@ -69,11 +63,7 @@ interface SelectionProps {
 }
 
 const Selection = ({ children }: SelectionProps) => (
-  <Text
-    color="secondary60 (Deprecated)"
-    size="18px / 27px (Deprecated)"
-    weight="semibold"
-  >
+  <Text color="secondary60 (Deprecated)" size="18px / 27px (Deprecated)" weight="semibold">
     {children}
   </Text>
 );
@@ -121,13 +111,7 @@ interface TitleProps {
 
 const Title = ({ text, weight = 'semibold', disabled, isLink }: TitleProps) => (
   <Text
-    color={
-      disabled
-        ? 'secondary60 (Deprecated)'
-        : isLink
-        ? 'action (Deprecated)'
-        : 'primary (Deprecated)'
-    }
+    color={disabled ? 'secondary60 (Deprecated)' : isLink ? 'action (Deprecated)' : 'primary (Deprecated)'}
     containsEmoji
     size="18px / 27px (Deprecated)"
     weight={weight}
@@ -145,11 +129,7 @@ interface LabelProps {
 const Label = ({ text, warn }: LabelProps) => {
   const { colors } = useTheme();
   return (
-    <Text
-      color={warn ? { custom: colors.orangeLight } : 'secondary60 (Deprecated)'}
-      size="14px / 19px (Deprecated)"
-      weight="medium"
-    >
+    <Text color={warn ? { custom: colors.orangeLight } : 'secondary60 (Deprecated)'} size="14px / 19px (Deprecated)" weight="medium">
       {text}
     </Text>
   );

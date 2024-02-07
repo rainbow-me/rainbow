@@ -8,17 +8,10 @@ import styled from '@/styled-thing';
 // through the "as" prop
 const Container = styled(Animated.View)({});
 
-export default function SheetKeyboardAnimation({
-  isKeyboardVisible,
-  translateY,
-  ...props
-}) {
+export default function SheetKeyboardAnimation({ isKeyboardVisible, translateY, ...props }) {
   const keyboardHeight = useKeyboardHeight();
 
-  const animatedStyles = useAnimatedStyle(
-    () => ({ transform: [{ translateY: translateY.value }] }),
-    [translateY]
-  );
+  const animatedStyles = useAnimatedStyle(() => ({ transform: [{ translateY: translateY.value }] }), [translateY]);
 
   const fallbackStyles = useMemo(
     () => ({
@@ -27,10 +20,5 @@ export default function SheetKeyboardAnimation({
     [isKeyboardVisible, keyboardHeight]
   );
 
-  return (
-    <Container
-      {...props}
-      style={isReanimatedAvailable ? animatedStyles : fallbackStyles}
-    />
-  );
+  return <Container {...props} style={isReanimatedAvailable ? animatedStyles : fallbackStyles} />;
 }

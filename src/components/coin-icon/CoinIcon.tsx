@@ -8,22 +8,15 @@ import { Network } from '@/networks/types';
 import { useColorForAsset } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
-import {
-  ethereumUtils,
-  isETH,
-  magicMemo,
-  CoinIcon as ReactCoinIcon,
-} from '@/utils';
+import { ethereumUtils, isETH, magicMemo, CoinIcon as ReactCoinIcon } from '@/utils';
 import { ChainBadgeType } from '@/components/coin-icon/ChainBadgeSizeConfigs';
 
 export const CoinIconSize = 40;
 
-const ContractInteractionIcon = styled(ImgixImage)(
-  ({ size }: { size: number }) => ({
-    height: size,
-    width: size,
-  })
-);
+const ContractInteractionIcon = styled(ImgixImage)(({ size }: { size: number }) => ({
+  height: size,
+  width: size,
+}));
 
 const StyledCoinIcon = styled(ReactCoinIcon)({
   opacity: ({ isHidden }: { isHidden?: boolean }) => (isHidden ? 0.4 : 1),
@@ -38,7 +31,7 @@ type Props = {
   forcedShadowColor?: string;
   size?: number;
   symbol?: string;
-  type?: string;
+  network: string;
   mainnet_address?: string;
   shadowOpacity?: number;
 } & Pick<ViewProps, 'testID' | 'style'>;
@@ -52,7 +45,7 @@ const CoinIcon: React.FC<Props> = ({
   forcedShadowColor,
   size = CoinIconSize,
   symbol = '',
-  type,
+  network,
   mainnet_address,
   ...props
 }) => {
@@ -61,17 +54,9 @@ const CoinIcon: React.FC<Props> = ({
   });
   const { colors, isDarkMode } = useTheme();
   const forceFallback = !isETH(mainnet_address || address);
-  const isNotContractInteraction = useMemo(() => symbol !== 'contract', [
-    symbol,
-  ]);
+  const isNotContractInteraction = useMemo(() => symbol !== 'contract', [symbol]);
 
   const theme = useTheme();
-
-  const network = mainnet_address
-    ? Network.mainnet
-    : type
-    ? ethereumUtils.getNetworkFromType(type)
-    : Network.mainnet;
 
   return (
     <View>
@@ -81,38 +66,21 @@ const CoinIcon: React.FC<Props> = ({
           address={mainnet_address || address}
           color={color}
           fallbackRenderer={CoinIconFallback}
-          forceFallback={forceFallback}
+          forceFallback={true}
           // force update on change symbol due to ImageCache strategy
           key={symbol}
-          shadowColor={
-            forcedShadowColor || (isDarkMode ? colors.shadow : color)
-          }
+          shadowColor={forcedShadowColor || (isDarkMode ? colors.shadow : color)}
           size={size}
           symbol={symbol}
-          network={network}
+          network={mainnet_address ? Network.mainnet : network}
           theme={theme}
         />
       ) : (
         <ContractInteractionIcon size={size} source={ContractInteraction} />
       )}
-      {!ignoreBadge && (
-        <ChainBadge
-          assetType={type}
-          badgeXPosition={badgeXPosition}
-          badgeYPosition={badgeYPosition}
-          size={badgeSize}
-        />
-      )}
+      {!ignoreBadge && <ChainBadge network={network} badgeXPosition={badgeXPosition} badgeYPosition={badgeYPosition} size={badgeSize} />}
     </View>
   );
 };
 
-export default magicMemo(CoinIcon, [
-  'address',
-  'isHidden',
-  'isPinned',
-  'size',
-  'type',
-  'symbol',
-  'shadowColor',
-]);
+export default magicMemo(CoinIcon, ['address', 'isHidden', 'isPinned', 'size', 'network', 'symbol', 'shadowColor']);

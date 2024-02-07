@@ -4,23 +4,14 @@ import { findKey, isNumber, keys } from 'lodash';
 import uniq from 'lodash/uniq';
 import RNFS from 'react-native-fs';
 import { MMKV } from 'react-native-mmkv';
-import {
-  deprecatedRemoveLocal,
-  getGlobal,
-} from '../handlers/localstorage/common';
+import { deprecatedRemoveLocal, getGlobal } from '../handlers/localstorage/common';
 import { IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
-import {
-  getMigrationVersion,
-  setMigrationVersion,
-} from '../handlers/localstorage/migrations';
+import { getMigrationVersion, setMigrationVersion } from '../handlers/localstorage/migrations';
 import WalletTypes from '../helpers/walletTypes';
 import { BooleanMap } from '../hooks/useCoinListEditOptions';
 import store from '../redux/store';
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
-import {
-  RB_TOKEN_LIST_CACHE,
-  RB_TOKEN_LIST_ETAG,
-} from '../references/rainbow-token-list';
+import { RB_TOKEN_LIST_CACHE, RB_TOKEN_LIST_ETAG } from '../references/rainbow-token-list';
 import colors, { getRandomColor } from '../styles/colors';
 import {
   addressKey,
@@ -32,27 +23,10 @@ import {
   signingWallet,
   signingWalletAddress,
 } from '../utils/keychainConstants';
-import {
-  hasKey,
-  loadString,
-  publicAccessControlOptions,
-  saveString,
-} from './keychain';
-import {
-  DEFAULT_WALLET_NAME,
-  loadAddress,
-  RainbowAccount,
-  RainbowWallet,
-  saveAddress,
-} from './wallet';
+import { hasKey, loadString, publicAccessControlOptions, saveString } from './keychain';
+import { DEFAULT_WALLET_NAME, loadAddress, RainbowAccount, RainbowWallet, saveAddress } from './wallet';
 import { isL2Asset } from '@/handlers/assets';
-import {
-  getAssets,
-  getHiddenCoins,
-  getPinnedCoins,
-  saveHiddenCoins,
-  savePinnedCoins,
-} from '@/handlers/localstorage/accountLocal';
+import { getAssets, getHiddenCoins, getPinnedCoins, saveHiddenCoins, savePinnedCoins } from '@/handlers/localstorage/accountLocal';
 import { getContacts, saveContacts } from '@/handlers/localstorage/contacts';
 import { resolveNameOrAddress } from '@/handlers/web3';
 import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
@@ -63,6 +37,7 @@ import logger from '@/utils/logger';
 import { queryClient } from '@/react-query';
 import { favoritesQueryKey } from '@/resources/favorites';
 import { EthereumAddress, RainbowToken } from '@/entities';
+import { getUniqueId } from '@/utils/ethereumUtils';
 
 export default async function runMigrations() {
   // get current version
@@ -247,10 +222,7 @@ export default async function runMigrations() {
         let incorrectDamagedWalletId = null;
         const updatedWallets = { ...wallets };
         keys(updatedWallets).forEach(walletId => {
-          if (
-            updatedWallets[walletId].damaged &&
-            !updatedWallets[walletId].imported
-          ) {
+          if (updatedWallets[walletId].damaged && !updatedWallets[walletId].imported) {
             logger.sentry('found incorrect damaged wallet', walletId);
             delete updatedWallets[walletId].damaged;
             incorrectDamagedWalletId = walletId;
@@ -263,8 +235,7 @@ export default async function runMigrations() {
         // and if that's the case, update it too
         if (selected!.id === incorrectDamagedWalletId) {
           logger.sentry('need to update the selected wallet');
-          const updatedSelectedWallet =
-            updatedWallets[incorrectDamagedWalletId];
+          const updatedSelectedWallet = updatedWallets[incorrectDamagedWalletId];
           await store.dispatch(walletsSetSelected(updatedSelectedWallet));
           logger.sentry('selected wallet updated');
         }
@@ -349,14 +320,9 @@ export default async function runMigrations() {
           return {
             ...account,
             ...(!accountEmoji && {
-              label: `${profileUtils.addressHashedEmoji(account.address)} ${
-                account.label
-              }`,
+              label: `${profileUtils.addressHashedEmoji(account.address)} ${account.label}`,
             }),
-            color:
-              (accountEmoji
-                ? newColorIndexes[account.color]
-                : profileUtils.addressHashedColorIndex(account.address)) || 0,
+            color: (accountEmoji ? newColorIndexes[account.color] : profileUtils.addressHashedColorIndex(account.address)) || 0,
           };
         });
         const newWallet = { ...wallet, addresses: newAddresses };
@@ -368,9 +334,7 @@ export default async function runMigrations() {
       const selectedWalletId = selected?.id;
       if (selectedWalletId) {
         logger.log('update selected wallet to index new color');
-        await store.dispatch(
-          walletsSetSelected(updatedWallets[selectedWalletId])
-        );
+        await store.dispatch(walletsSetSelected(updatedWallets[selectedWalletId]));
       }
 
       // migrate contacts to new color index
@@ -385,8 +349,7 @@ export default async function runMigrations() {
           ...contact,
           color: isNumber(contact.color)
             ? newColorIndexes[contact.color]
-            : typeof contact.color === 'string' &&
-              colors.avatarBackgrounds.includes(contact.color)
+            : typeof contact.color === 'string' && colors.avatarBackgrounds.includes(contact.color)
             ? colors.avatarBackgrounds.indexOf(contact.color)
             : getRandomColor(),
         };
@@ -433,9 +396,7 @@ export default async function runMigrations() {
               };
             }
           } catch (error) {
-            const migrationError = new Error(
-              `Error during v10 migration contact address resolution for ${contact.address}`
-            );
+            const migrationError = new Error(`Error during v10 migration contact address resolution for ${contact.address}`);
             captureException(migrationError);
             continue;
           }
@@ -500,23 +461,13 @@ export default async function runMigrations() {
         logger.log(JSON.stringify({ hiddenCoins }, null, 2));
 
         const pinnedCoinsMigrated = pinnedCoins.map((address: string) => {
-          const asset = assets?.find(
-            (asset: any) => asset.address === address.toLowerCase()
-          );
-          if (asset?.type && isL2Asset(asset.type)) {
-            return `${asset.address}_${asset.network}`;
-          } else {
-            return address;
-          }
+          const asset = assets?.find((asset: any) => asset.address === address.toLowerCase());
+          return getUniqueId(asset?.address, network);
         });
 
         const hiddenCoinsMigrated = hiddenCoins.map((address: string) => {
           const asset = ethereumUtils.getAsset(assets, address);
-          if (asset?.type && isL2Asset(asset.type)) {
-            return `${asset.address}_${asset.network}`;
-          } else {
-            return address;
-          }
+          return getUniqueId(asset?.address, network);
         });
 
         logger.log(JSON.stringify({ pinnedCoinsMigrated }, null, 2));
@@ -592,14 +543,8 @@ export default async function runMigrations() {
         const hiddenCoins = await getHiddenCoins(account.address, network);
         const pinnedCoins = await getPinnedCoins(account.address, network);
 
-        mmkv.set(
-          'pinned-coins-' + account.address,
-          JSON.stringify(pinnedCoins)
-        );
-        mmkv.set(
-          'hidden-coins-' + account.address,
-          JSON.stringify(hiddenCoins)
-        );
+        mmkv.set('pinned-coins-' + account.address, JSON.stringify(pinnedCoins));
+        mmkv.set('hidden-coins-' + account.address, JSON.stringify(hiddenCoins));
       }
     }
   };
@@ -623,15 +568,11 @@ export default async function runMigrations() {
    */
   const v16 = async () => {
     try {
-      RNFS.unlink(
-        path.join(RNFS.CachesDirectoryPath, `${RB_TOKEN_LIST_CACHE}.json`)
-      ).catch(() => {
+      RNFS.unlink(path.join(RNFS.CachesDirectoryPath, `${RB_TOKEN_LIST_CACHE}.json`)).catch(() => {
         // we don't care if it fails
       });
 
-      RNFS.unlink(
-        path.join(RNFS.CachesDirectoryPath, `${RB_TOKEN_LIST_ETAG}.json`)
-      ).catch(() => {
+      RNFS.unlink(path.join(RNFS.CachesDirectoryPath, `${RB_TOKEN_LIST_ETAG}.json`)).catch(() => {
         // we don't care if it fails
       });
     } catch (error: any) {
@@ -652,12 +593,8 @@ export default async function runMigrations() {
     if (!wallets) return;
     for (const wallet of Object.values(wallets)) {
       for (const account of (wallet as RainbowWallet).addresses) {
-        const pinnedCoins = JSON.parse(
-          mmkv.getString('pinned-coins-' + account.address) ?? '[]'
-        );
-        const hiddenCoins = JSON.parse(
-          mmkv.getString('hidden-coins-' + account.address) ?? '[]'
-        );
+        const pinnedCoins = JSON.parse(mmkv.getString('pinned-coins-' + account.address) ?? '[]');
+        const hiddenCoins = JSON.parse(mmkv.getString('hidden-coins-' + account.address) ?? '[]');
         mmkv.set(
           'hidden-coins-obj-' + account.address,
           JSON.stringify(
@@ -688,20 +625,12 @@ export default async function runMigrations() {
    Move favorites from local storage to react query persistent cache (AsyncStorage)
    */
   const v18 = async () => {
-    const favoritesMetadata = await getGlobal(
-      'uniswapFavoritesMetadata',
-      undefined,
-      '0.1.0'
-    );
+    const favoritesMetadata = await getGlobal('uniswapFavoritesMetadata', undefined, '0.1.0');
 
     if (favoritesMetadata) {
-      const lowercasedFavoritesMetadata: Record<
-        EthereumAddress,
-        RainbowToken
-      > = {};
+      const lowercasedFavoritesMetadata: Record<EthereumAddress, RainbowToken> = {};
       Object.keys(favoritesMetadata).forEach((address: string) => {
-        lowercasedFavoritesMetadata[address.toLowerCase()] =
-          favoritesMetadata[address];
+        lowercasedFavoritesMetadata[address.toLowerCase()] = favoritesMetadata[address];
       });
       queryClient.setQueryData(favoritesQueryKey, lowercasedFavoritesMetadata);
     }
@@ -709,9 +638,7 @@ export default async function runMigrations() {
 
   migrations.push(v18);
 
-  logger.sentry(
-    `Migrations: ready to run migrations starting on number ${currentVersion}`
-  );
+  logger.sentry(`Migrations: ready to run migrations starting on number ${currentVersion}`);
   // await setMigrationVersion(17);
   if (migrations.length === currentVersion) {
     logger.sentry(`Migrations: Nothing to run`);

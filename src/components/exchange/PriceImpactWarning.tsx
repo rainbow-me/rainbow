@@ -30,29 +30,16 @@ export default function PriceImpactWarning({
       <Animated.View {...props} style={[style, position.coverAsObject]}>
         {isHighPriceImpact && headingValue && (
           <ButtonPressAnimation onPress={onPress} scaleTo={0.94}>
-            <Box
-              paddingHorizontal="19px (Deprecated)"
-              paddingTop="19px (Deprecated)"
-            >
+            <Box paddingHorizontal="19px (Deprecated)" paddingTop="19px (Deprecated)">
               <Inline alignHorizontal="center">
-                <Text
-                  weight="bold"
-                  size="17pt"
-                  color={{ custom: priceImpactColor }}
-                >{`􀇿 `}</Text>
+                <Text weight="bold" size="17pt" color={{ custom: priceImpactColor }}>{`􀇿 `}</Text>
                 <Text weight="bold" size="17pt" color="primary (Deprecated)">
                   {lang.t('exchange.price_impact.small_market')}
                 </Text>
-                <Text
-                  weight="bold"
-                  size="17pt"
-                  color={{ custom: priceImpactColor }}
-                >{` • ${lang.t('exchange.price_impact.losing_prefix')} `}</Text>
-                <Text
-                  weight="bold"
-                  size="17pt"
-                  color={{ custom: priceImpactColor }}
-                >
+                <Text weight="bold" size="17pt" color={{ custom: priceImpactColor }}>{` • ${lang.t(
+                  'exchange.price_impact.losing_prefix'
+                )} `}</Text>
+                <Text weight="bold" size="17pt" color={{ custom: priceImpactColor }}>
                   {headingValue}
                 </Text>
               </Inline>

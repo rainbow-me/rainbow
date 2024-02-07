@@ -2,13 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useCallback, useMemo } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useDispatch } from 'react-redux';
-import {
-  useAccountProfile,
-  useDeleteWallet,
-  useImportingWallet,
-  useInitializeWallet,
-  useWallets,
-} from '@/hooks';
+import { useAccountProfile, useDeleteWallet, useImportingWallet, useInitializeWallet, useWallets } from '@/hooks';
 import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
 import { addressSetSelected, walletsSetSelected } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
@@ -30,9 +24,7 @@ export default function useWatchWallet({
   const { wallets } = useWallets();
 
   const watchingWallet = useMemo(() => {
-    return Object.values<RainbowWallet>(wallets || {}).find(wallet =>
-      wallet.addresses.some(({ address }) => address === primaryAddress)
-    );
+    return Object.values<RainbowWallet>(wallets || {}).find(wallet => wallet.addresses.some(({ address }) => address === primaryAddress));
   }, [primaryAddress, wallets]);
   const isWatching = useMemo(() => Boolean(watchingWallet), [watchingWallet]);
 
@@ -57,11 +49,7 @@ export default function useWatchWallet({
   );
 
   const { accountAddress } = useAccountProfile();
-  const {
-    isImporting,
-    handleSetSeedPhrase,
-    handlePressImportButton,
-  } = useImportingWallet({
+  const { isImporting, handleSetSeedPhrase, handlePressImportButton } = useImportingWallet({
     showImportModal,
   });
   const watchWallet = useCallback(async () => {
@@ -73,10 +61,7 @@ export default function useWatchWallet({
       // it's deletable
       const isLastAvailableWallet = Object.keys(wallets!).find(key => {
         const someWallet = wallets![key];
-        const otherAccount = someWallet.addresses.find(
-          (account: any) =>
-            account.visible && account.address !== accountAddress
-        );
+        const otherAccount = someWallet.addresses.find((account: any) => account.visible && account.address !== accountAddress);
         if (otherAccount) {
           return true;
         }

@@ -2,10 +2,7 @@ import React, { useContext, useMemo } from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 import { AccentColorContext } from '../../color/AccentColorContext';
 import { ColorModeContext, ColorModeProvider } from '../../color/ColorMode';
-import {
-  BackgroundColor,
-  getDefaultAccentColorForColorMode,
-} from '../../color/palettes';
+import { BackgroundColor, getDefaultAccentColorForColorMode } from '../../color/palettes';
 
 export type BackgroundProviderProps = {
   color: BackgroundColor | 'accent';
@@ -26,23 +23,15 @@ export type BackgroundProviderProps = {
  * they are in a dark or light context. The `style` object containing the
  * `backgroundColor` value is memoized and passed to the render function.
  */
-export function BackgroundProvider({
-  color,
-  children,
-  style: styleProp,
-}: BackgroundProviderProps) {
+export function BackgroundProvider({ color, children, style: styleProp }: BackgroundProviderProps) {
   const { backgroundColors, colorMode } = useContext(ColorModeContext);
   const accentColorContextValue = useContext(AccentColorContext);
-  const accentColor =
-    accentColorContextValue ?? getDefaultAccentColorForColorMode(colorMode);
+  const accentColor = accentColorContextValue ?? getDefaultAccentColorForColorMode(colorMode);
   const background = color === 'accent' ? accentColor : backgroundColors[color];
-  const style = useMemo(
-    () => [
-      { backgroundColor: background.color },
-      ...(Array.isArray(styleProp) ? styleProp : [styleProp]),
-    ],
-    [background, styleProp]
-  );
+  const style = useMemo(() => [{ backgroundColor: background.color }, ...(Array.isArray(styleProp) ? styleProp : [styleProp])], [
+    background,
+    styleProp,
+  ]);
 
   const child = children({
     backgroundColor: background.color,

@@ -1,10 +1,7 @@
 import { isNil } from 'lodash';
 import { AppDispatch, AppGetState } from './store';
 import { EthereumAddress, NonceManager } from '@/entities';
-import {
-  getNonceManager,
-  saveNonceManager,
-} from '@/handlers/localstorage/nonceManager';
+import { getNonceManager, saveNonceManager } from '@/handlers/localstorage/nonceManager';
 import { Network } from '@/helpers/networkTypes';
 import logger from '@/utils/logger';
 
@@ -18,9 +15,7 @@ interface NonceManagerUpdateNonceAction {
   payload: NonceManager;
 }
 
-type NonceManagerActionType =
-  | NonceManagerLoadSuccessAction
-  | NonceManagerUpdateNonceAction;
+type NonceManagerActionType = NonceManagerLoadSuccessAction | NonceManagerUpdateNonceAction;
 
 // -- Constants --------------------------------------- //
 const NONCE_MANAGER_LOAD_SUCCESS = 'NONCE_MANAGER_LOAD_SUCCESS';
@@ -42,32 +37,19 @@ export const nonceManagerLoadState = () => async (dispatch: AppDispatch) => {
   }
 };
 
-export const incrementNonce = (
-  accountAddress: EthereumAddress,
-  nonce: number,
-  network = Network.mainnet
-) => (dispatch: AppDispatch) =>
+export const incrementNonce = (accountAddress: EthereumAddress, nonce: number, network = Network.mainnet) => (dispatch: AppDispatch) =>
   dispatch(updateNonce(accountAddress, nonce, network));
 
-export const decrementNonce = (
-  accountAddress: EthereumAddress,
-  nonce: number,
-  network = Network.mainnet
-) => (dispatch: AppDispatch) =>
+export const decrementNonce = (accountAddress: EthereumAddress, nonce: number, network = Network.mainnet) => (dispatch: AppDispatch) =>
   dispatch(updateNonce(accountAddress, nonce, network, false));
 
-export const updateNonce = (
-  accountAddress: EthereumAddress,
-  nonce: number,
-  network = Network.mainnet,
-  increment: boolean = true
-) => (dispatch: AppDispatch, getState: AppGetState) => {
+export const updateNonce = (accountAddress: EthereumAddress, nonce: number, network = Network.mainnet, increment: boolean = true) => (
+  dispatch: AppDispatch,
+  getState: AppGetState
+) => {
   const { nonceManager: currentNonceData } = getState();
-  const currentNonce =
-    currentNonceData[accountAddress.toLowerCase()]?.[network]?.nonce;
-  const counterShouldBeUpdated =
-    isNil(currentNonce) ||
-    (increment ? currentNonce < nonce : currentNonce >= nonce);
+  const currentNonce = currentNonceData[accountAddress.toLowerCase()]?.[network]?.nonce;
+  const counterShouldBeUpdated = isNil(currentNonce) || (increment ? currentNonce < nonce : currentNonce >= nonce);
 
   if (counterShouldBeUpdated) {
     const newNonce = increment ? nonce : nonce - 1;
@@ -88,10 +70,7 @@ export const updateNonce = (
     saveNonceManager(updatedNonceManager);
   }
 };
-export const resetNonces = (accountAddress: EthereumAddress) => async (
-  dispatch: AppDispatch,
-  getState: AppGetState
-) => {
+export const resetNonces = (accountAddress: EthereumAddress) => async (dispatch: AppDispatch, getState: AppGetState) => {
   const { nonceManager: currentNonceData } = getState();
 
   const currentAccountAddress = accountAddress.toLowerCase();

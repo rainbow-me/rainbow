@@ -5,11 +5,9 @@ import { ButtonPressAnimation } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import ChainBadge from '../coin-icon/ChainBadge';
 import { Bleed, Box, Columns, Inline, Text } from '@/design-system';
-import { AssetType } from '@/entities';
 import { Network } from '@/helpers';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@rainbow-me/references';
 import { position } from '@rainbow-me/styles';
-import { ethereumUtils } from '@rainbow-me/utils';
 import { useTheme } from '@/theme';
 import { sortNetworks } from '@/networks';
 
@@ -31,18 +29,13 @@ const NetworkSwitcherv2 = ({
         chainId: network.id,
         network: network.value,
         title: network.name,
-        type:
-          network.value !== Network.mainnet ? network.value : AssetType.token,
       }));
   }, []);
 
   const radialGradientProps = (network: Network) => {
     return {
       center: [0, 1],
-      colors: [
-        colors.alpha(colors.networkColors[network], 0.1),
-        colors.alpha(colors.networkColors[network], 0.02),
-      ],
+      colors: [colors.alpha(colors.networkColors[network], 0.1), colors.alpha(colors.networkColors[network], 0.02)],
       pointerEvents: 'none',
       style: {
         ...position.coverAsObject,
@@ -53,12 +46,7 @@ const NetworkSwitcherv2 = ({
 
   return (
     <>
-      <Box
-        width="full"
-        testID={`network-switcher-${currentChainId}`}
-        paddingTop="8px"
-        paddingBottom="16px"
-      >
+      <Box width="full" testID={`network-switcher-${currentChainId}`} paddingTop="8px" paddingBottom="16px">
         <ScrollView
           keyboardShouldPersistTaps="always"
           contentContainerStyle={{ paddingHorizontal: 20 }}
@@ -68,7 +56,7 @@ const NetworkSwitcherv2 = ({
           testID={'network-switcher-scroll-view'}
         >
           <Columns space="8px">
-            {networkMenuItems.map(({ chainId, title, type, network }) => {
+            {networkMenuItems.map(({ chainId, title, network }) => {
               const isSelected = currentChainId === chainId;
               return (
                 <Box
@@ -89,32 +77,15 @@ const NetworkSwitcherv2 = ({
                       borderRadius={30}
                     />
                   )}
-                  <Inline
-                    alignHorizontal="center"
-                    alignVertical="center"
-                    horizontalSpace="4px"
-                    wrap={false}
-                  >
-                    {type === AssetType.token ? (
-                      <CoinIcon
-                        address={ETH_ADDRESS}
-                        size={20}
-                        symbol={ETH_SYMBOL}
-                      />
+                  <Inline alignHorizontal="center" alignVertical="center" horizontalSpace="4px" wrap={false}>
+                    {network === Network.mainnet ? (
+                      <CoinIcon address={ETH_ADDRESS} size={20} symbol={ETH_SYMBOL} network={network} />
                     ) : (
-                      <ChainBadge
-                        assetType={type}
-                        position="relative"
-                        size="small"
-                      />
+                      <ChainBadge network={network} position="relative" size="small" />
                     )}
                     <Bleed top={{ custom: android ? 2 : 0 }}>
                       <Text
-                        color={
-                          isSelected
-                            ? { custom: colors.networkColors[network] }
-                            : 'secondary50 (Deprecated)'
-                        }
+                        color={isSelected ? { custom: colors.networkColors[network] } : 'secondary50 (Deprecated)'}
                         size="16px / 22px (Deprecated)"
                         weight="bold"
                         testID={`network-switcher-item-${network}`}

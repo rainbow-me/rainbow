@@ -16,10 +16,7 @@ const showAlert = () => {
     { cancelable: false }
   );
 };
-export const navigateToMintCollection = async (
-  contractAddress: EthereumAddress,
-  network: Network
-) => {
+export const navigateToMintCollection = async (contractAddress: EthereumAddress, network: Network) => {
   logger.debug('Mints: Navigating to Mint Collection', {
     contractAddress,
     network,

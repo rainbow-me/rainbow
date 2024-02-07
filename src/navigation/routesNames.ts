@@ -108,9 +108,7 @@ export const NATIVE_ROUTES = [
   Routes.EXPANDED_ASSET_SHEET,
   Routes.CHANGE_WALLET_SHEET,
   Routes.MODAL_SCREEN,
-  ...(IS_IOS
-    ? [Routes.SEND_SHEET_NAVIGATOR, Routes.ADD_CASH_SCREEN_NAVIGATOR]
-    : []),
+  ...(IS_IOS ? [Routes.SEND_SHEET_NAVIGATOR, Routes.ADD_CASH_SCREEN_NAVIGATOR] : []),
 ];
 
 const RoutesWithPlatformDifferences = {

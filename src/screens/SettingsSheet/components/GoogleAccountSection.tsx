@@ -1,16 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import {
-  getGoogleAccountUserData,
-  GoogleDriveUserData,
-  logoutFromGoogleDrive,
-} from '@/handlers/cloudBackup';
+import { getGoogleAccountUserData, GoogleDriveUserData, logoutFromGoogleDrive } from '@/handlers/cloudBackup';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { showActionSheetWithOptions } from '@/utils';
 import * as i18n from '@/languages';
-import {
-  clearAllWalletsBackupStatus,
-  updateWalletBackupStatusesBasedOnCloudUserData,
-} from '@/redux/wallets';
+import { clearAllWalletsBackupStatus, updateWalletBackupStatusesBasedOnCloudUserData } from '@/redux/wallets';
 import { useDispatch } from 'react-redux';
 import Menu from './Menu';
 import MenuItem from './MenuItem';
@@ -18,9 +11,7 @@ import { logger, RainbowError } from '@/logger';
 
 export const GoogleAccountSection: React.FC = () => {
   const dispatch = useDispatch();
-  const [accountDetails, setAccountDetails] = useState<
-    GoogleDriveUserData | undefined
-  >(undefined);
+  const [accountDetails, setAccountDetails] = useState<GoogleDriveUserData | undefined>(undefined);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -29,12 +20,9 @@ export const GoogleAccountSection: React.FC = () => {
         setAccountDetails(accountDetails ?? undefined);
       })
       .catch(error => {
-        logger.error(
-          new RainbowError(
-            `Fetching google account data to display in Backups Section failed`
-          ),
-          { error: (error as Error).message }
-        );
+        logger.error(new RainbowError(`Fetching google account data to display in Backups Section failed`), {
+          error: (error as Error).message,
+        });
       })
       .finally(() => {
         setLoading(false);
@@ -104,37 +92,17 @@ export const GoogleAccountSection: React.FC = () => {
           hasSfSymbol
           size={52}
           leftComponent={<MenuItem.TextIcon icon="􀉭" isLink />}
-          titleComponent={
-            <MenuItem.Title
-              text={i18n.t(i18n.l.settings.backup_loading)}
-              isLink
-            />
-          }
+          titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.backup_loading)} isLink />}
         />
       )}
       {!loading && accountDetails && (
         <MenuItem
           size={60}
-          leftComponent={
-            accountDetails.avatarUrl ? (
-              <ImageAvatar image={accountDetails.avatarUrl} size="smedium" />
-            ) : undefined
-          }
+          leftComponent={accountDetails.avatarUrl ? <ImageAvatar image={accountDetails.avatarUrl} size="smedium" /> : undefined}
           titleComponent={
-            <MenuItem.Title
-              text={
-                accountDetails.name ??
-                accountDetails.email ??
-                i18n.t(i18n.l.settings.backup_google_account)
-              }
-            />
+            <MenuItem.Title text={accountDetails.name ?? accountDetails.email ?? i18n.t(i18n.l.settings.backup_google_account)} />
           }
-          labelComponent={
-            accountDetails.name &&
-            accountDetails.email && (
-              <MenuItem.Label text={accountDetails.email ?? ''} />
-            )
-          }
+          labelComponent={accountDetails.name && accountDetails.email && <MenuItem.Label text={accountDetails.email ?? ''} />}
           rightComponent={<MenuItem.TextIcon icon="􀍡" isLink />}
           onPress={onGoogleAccountPress}
         />
@@ -143,12 +111,7 @@ export const GoogleAccountSection: React.FC = () => {
         <MenuItem
           hasSfSymbol
           size={52}
-          titleComponent={
-            <MenuItem.Title
-              text={i18n.t(i18n.l.settings.backup_sign_in)}
-              isLink
-            />
-          }
+          titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.backup_sign_in)} isLink />}
           leftComponent={<MenuItem.TextIcon icon="􀉭" isLink />}
           onPress={onSignInPress}
         />

@@ -20,14 +20,7 @@ export type LearnCardKey =
   | 'supported_networks'
   | 'collect_nfts';
 
-export type CardColor =
-  | 'pink'
-  | 'yellow'
-  | 'green'
-  | 'blue'
-  | 'purple'
-  | 'darkGreen'
-  | 'darkBlue';
+export type CardColor = 'pink' | 'yellow' | 'green' | 'blue' | 'purple' | 'darkGreen' | 'darkBlue';
 
 export type LearnCardDetails = {
   url: string;

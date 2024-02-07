@@ -77,11 +77,7 @@ export const customAccentColorLight: Example = {
                   <Text color="primary (Deprecated)" size="17pt" weight="bold">
                     {lightAccentColor}
                   </Text>
-                  <Text
-                    color="secondary50 (Deprecated)"
-                    size="17pt"
-                    weight="bold"
-                  >
+                  <Text color="secondary50 (Deprecated)" size="17pt" weight="bold">
                     {lightAccentColor}
                   </Text>
                 </Stack>

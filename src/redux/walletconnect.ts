@@ -123,14 +123,7 @@ interface WalletconnectAddUriAction {
 /**
  * Represents a WalletConnect result passed to a callback function.
  */
-export type WalletconnectResultType =
-  | 'timedOut'
-  | 'sign'
-  | 'transaction'
-  | 'sign-canceled'
-  | 'transaction-canceled'
-  | 'connect'
-  | 'reject';
+export type WalletconnectResultType = 'timedOut' | 'sign' | 'transaction' | 'sign-canceled' | 'transaction-canceled' | 'connect' | 'reject';
 
 /**
  * Route parameters sent to a WalletConnect approval sheet.
@@ -155,10 +148,7 @@ export interface WalletconnectApprovalSheetRouteParams {
      */
     chainIds: number[];
     isWalletConnectV2?: boolean;
-  } & Pick<
-    RequestData,
-    'dappName' | 'dappScheme' | 'dappUrl' | 'imageUrl' | 'peerId'
-  >;
+  } & Pick<RequestData, 'dappName' | 'dappScheme' | 'dappUrl' | 'imageUrl' | 'peerId'>;
   timeout?: ReturnType<typeof setTimeout> | null;
   timedOut?: boolean;
   failureExplainSheetVariant?: string;
@@ -168,26 +158,19 @@ export interface WalletconnectApprovalSheetRouteParams {
 /**
  * A callback for a WalletConnect request.
  */
-export type WalletconnectRequestCallback = (
-  type: WalletconnectResultType,
-  scheme?: string | null
-) => unknown;
+export type WalletconnectRequestCallback = (type: WalletconnectResultType, scheme?: string | null) => unknown;
 
 // -- Constants --------------------------------------- //
 const BIOMETRICS_ANIMATION_DELAY = 569;
 
-const WALLETCONNECT_UPDATE_REQUESTS =
-  'walletconnect/WALLETCONNECT_UPDATE_REQUESTS';
+const WALLETCONNECT_UPDATE_REQUESTS = 'walletconnect/WALLETCONNECT_UPDATE_REQUESTS';
 
-const WALLETCONNECT_UPDATE_CONNECTORS =
-  'walletconnect/WALLETCONNECT_UPDATE_CONNECTORS';
+const WALLETCONNECT_UPDATE_CONNECTORS = 'walletconnect/WALLETCONNECT_UPDATE_CONNECTORS';
 
 const WALLETCONNECT_CLEAR_STATE = 'walletconnect/WALLETCONNECT_CLEAR_STATE';
 
-const WALLETCONNECT_SET_PENDING_REDIRECT =
-  'walletconnect/WALLETCONNECT_SET_PENDING_REDIRECT';
-const WALLETCONNECT_REMOVE_PENDING_REDIRECT =
-  'walletconnect/WALLETCONNECT_REMOVE_PENDING_REDIRECT';
+const WALLETCONNECT_SET_PENDING_REDIRECT = 'walletconnect/WALLETCONNECT_SET_PENDING_REDIRECT';
+const WALLETCONNECT_REMOVE_PENDING_REDIRECT = 'walletconnect/WALLETCONNECT_REMOVE_PENDING_REDIRECT';
 const WALLETCONNECT_ADD_URI = 'walletconnect/WALLETCONNECT_ADD_URI';
 
 // -- Actions ---------------------------------------- //
@@ -202,11 +185,7 @@ const getNativeOptions = async () => {
   const token = await getFCMToken();
 
   if (!token && !IS_DEV) {
-    logger.error(
-      new RainbowError(
-        `WC: FCM token not found, push notifications will not be received`
-      )
-    );
+    logger.error(new RainbowError(`WC: FCM token not found, push notifications will not be received`));
   }
 
   const nativeOptions = {
@@ -234,9 +213,7 @@ const getNativeOptions = async () => {
 /**
  * Updates the state to mark as pending redirection.
  */
-export const walletConnectSetPendingRedirect = () => (
-  dispatch: Dispatch<WalletconnectSetPendingRedirectAction>
-) => {
+export const walletConnectSetPendingRedirect = () => (dispatch: Dispatch<WalletconnectSetPendingRedirectAction>) => {
   dispatch({
     type: WALLETCONNECT_SET_PENDING_REDIRECT,
   });
@@ -250,10 +227,9 @@ export const walletConnectSetPendingRedirect = () => (
  * a scheme is not specified.
  * @param scheme The scheme to open, if specified.
  */
-export const walletConnectRemovePendingRedirect = (
-  type: WalletconnectResultType,
-  scheme?: string | null
-) => (dispatch: Dispatch<WalletconnectRemovePendingRedirectAction>) => {
+export const walletConnectRemovePendingRedirect = (type: WalletconnectResultType, scheme?: string | null) => (
+  dispatch: Dispatch<WalletconnectRemovePendingRedirectAction>
+) => {
   dispatch({
     type: WALLETCONNECT_REMOVE_PENDING_REDIRECT,
   });
@@ -300,11 +276,7 @@ export const walletConnectRemovePendingRedirect = (
  * @param uri The WalletConnect URI.
  * @param callback The callback function to use.
  */
-export const walletConnectOnSessionRequest = (
-  uri: string,
-  connector?: string,
-  callback?: WalletconnectRequestCallback
-) => async (
+export const walletConnectOnSessionRequest = (uri: string, connector?: string, callback?: WalletconnectRequestCallback) => async (
   dispatch: ThunkDispatch<StoreAppState, unknown, never>,
   getState: AppGetState
 ) => {
@@ -326,10 +298,7 @@ export const walletConnectOnSessionRequest = (
       const wcUri = parseWalletConnectUri(uri);
 
       const alreadyConnected = Object.values(allSessions).some(session => {
-        return (
-          session.handshakeTopic === wcUri.handshakeTopic &&
-          session.key === wcUri.key
-        );
+        return session.handshakeTopic === wcUri.handshakeTopic && session.key === wcUri.key;
       });
 
       if (alreadyConnected) {
@@ -341,35 +310,17 @@ export const walletConnectOnSessionRequest = (
       let navigated = false;
       let timedOut = false;
       let routeParams: WalletconnectApprovalSheetRouteParams = {
-        callback: async (
-          approved,
-          chainId,
-          accountAddress,
-          peerId,
-          dappScheme,
-          dappName,
-          dappUrl
-        ) => {
+        callback: async (approved, chainId, accountAddress, peerId, dappScheme, dappName, dappUrl) => {
           if (approved) {
             dispatch(setPendingRequest(peerId, walletConnector!));
-            dispatch(
-              walletConnectApproveSession(
-                peerId,
-                callback,
-                dappScheme,
-                chainId,
-                accountAddress
-              )
-            );
+            dispatch(walletConnectApproveSession(peerId, callback, dappScheme, chainId, accountAddress));
             analytics.track('Approved new WalletConnect session', {
               dappName,
               dappUrl,
               connector,
             });
           } else if (!timedOut) {
-            await dispatch(
-              walletConnectRejectSession(peerId, walletConnector!)
-            );
+            await dispatch(walletConnectRejectSession(peerId, walletConnector!));
             callback?.('reject', dappScheme);
             analytics.track('Rejected new WalletConnect session', {
               dappName,
@@ -433,15 +384,11 @@ export const walletConnectOnSessionRequest = (
         // which now includes the meta
         if (navigated && !timedOut) {
           routeParams = { ...routeParams, meta, timeout };
-          Navigation.handleAction(
-            Routes.WALLET_CONNECT_APPROVAL_SHEET,
-            routeParams
-          );
+          Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, routeParams);
         }
       });
 
-      let waitingFn: (callback: () => unknown, timeout: number) => unknown =
-        InteractionManager.runAfterInteractions;
+      let waitingFn: (callback: () => unknown, timeout: number) => unknown = InteractionManager.runAfterInteractions;
       if (IS_TEST) {
         waitingFn = setTimeout;
       }
@@ -462,10 +409,7 @@ export const walletConnectOnSessionRequest = (
           if (meta) return;
           timedOut = true;
           routeParams = { ...routeParams, timedOut };
-          Navigation.handleAction(
-            Routes.WALLET_CONNECT_APPROVAL_SHEET,
-            routeParams
-          );
+          Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, routeParams);
         }, 20000);
 
         // If we have the meta, send it
@@ -474,17 +418,11 @@ export const walletConnectOnSessionRequest = (
           routeParams = { ...routeParams, meta };
         }
         navigated = true;
-        Navigation.handleAction(
-          Routes.WALLET_CONNECT_APPROVAL_SHEET,
-          routeParams
-        );
+        Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, routeParams);
       }, 2000);
     } catch (error: any) {
       clearTimeout(timeout!);
-      logger.error(
-        new RainbowError('WC: Exception during wc session_request'),
-        { error }
-      );
+      logger.error(new RainbowError('WC: Exception during wc session_request'), { error });
       analytics.track('Exception on wc session_request', {
         error,
       });
@@ -492,10 +430,7 @@ export const walletConnectOnSessionRequest = (
     }
   } catch (error: any) {
     clearTimeout(timeout!);
-    logger.error(
-      new RainbowError('WC: FCM exception during wc session_request'),
-      { error }
-    );
+    logger.error(new RainbowError('WC: FCM exception during wc session_request'), { error });
     analytics.track('FCM exception on wc session_request', {
       error,
     });
@@ -514,11 +449,7 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
   getState: AppGetState
 ) => {
   walletConnector.on('call_request', async (error, payload) => {
-    logger.debug(
-      'WC: Request!',
-      { error, payload },
-      logger.DebugContext.walletconnect
-    );
+    logger.debug('WC: Request!', { error, payload }, logger.DebugContext.walletconnect);
 
     if (error) {
       analytics.track('Error on wc call_request', {
@@ -537,18 +468,13 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
     const dappName = peerMeta?.name;
     const dappUrl = peerMeta?.url;
     const requestId = payload.id;
-    if (
-      payload.method === 'wallet_addEthereumChain' ||
-      payload.method === `wallet_switchEthereumChain`
-    ) {
+    if (payload.method === 'wallet_addEthereumChain' || payload.method === `wallet_switchEthereumChain`) {
       const { chainId } = payload.params[0];
       const currentNetwork = ethereumUtils.getNetworkFromChainId(
         // @ts-expect-error "_chainId" is private.
         Number(walletConnector._chainId)
       );
-      const supportedChains = RainbowNetworks.filter(
-        network => network.features.walletconnect
-      ).map(network => network.id.toString());
+      const supportedChains = RainbowNetworks.filter(network => network.features.walletconnect).map(network => network.id.toString());
       const numericChainId = convertHexToString(chainId);
       if (supportedChains.includes(numericChainId)) {
         dispatch(walletConnectSetPendingRedirect());
@@ -560,21 +486,14 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
                 result: null,
               });
               const { accountAddress } = getState().settings;
-              logger.debug(
-                'WC: Updating session for chainID',
-                { numericChainId },
-                logger.DebugContext.walletconnect
-              );
+              logger.debug('WC: Updating session for chainID', { numericChainId }, logger.DebugContext.walletconnect);
               await walletConnector.updateSession({
                 accounts: [accountAddress],
                 // @ts-expect-error "numericChainId" is a string, not a number.
                 chainId: numericChainId,
               });
               dispatch(setWalletConnector(walletConnector));
-              saveWalletConnectSession(
-                walletConnector.peerId,
-                walletConnector.session
-              );
+              saveWalletConnectSession(walletConnector.peerId, walletConnector.session);
               analytics.track('Approved WalletConnect network switch', {
                 chainId,
                 dappName,
@@ -640,11 +559,7 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
         return;
       }
       const { requests: pendingRequests } = getState().requests;
-      const request = !pendingRequests[requestId]
-        ? dispatch(
-            addRequestToApprove(clientId, peerId, requestId, payload, peerMeta)
-          )
-        : null;
+      const request = !pendingRequests[requestId] ? dispatch(addRequestToApprove(clientId, peerId, requestId, payload, peerMeta)) : null;
       if (request) {
         Navigation.handleAction(Routes.CONFIRM_REQUEST, {
           openAutomatically: true,
@@ -669,9 +584,7 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
       return;
     }
 
-    dispatch(
-      walletConnectDisconnectAllByDappUrl(walletConnector.peerMeta!.url, false)
-    );
+    dispatch(walletConnectDisconnectAllByDappUrl(walletConnector.peerMeta!.url, false));
   });
   return walletConnector;
 };
@@ -680,11 +593,7 @@ const listenOnNewMessages = (walletConnector: WalletConnect) => (
  * Begins listening to WalletConnect events on existing connections.
  */
 export const walletConnectLoadState = () => async (
-  dispatch: ThunkDispatch<
-    StoreAppState,
-    unknown,
-    WalletconnectUpdateConnectorsAction
-  >,
+  dispatch: ThunkDispatch<StoreAppState, unknown, WalletconnectUpdateConnectorsAction>,
   getState: AppGetState
 ) => {
   while (!getState().walletconnect.walletConnectors) {
@@ -706,10 +615,7 @@ export const walletConnectLoadState = () => async (
           // @ts-expect-error "_eventManager" is private.
           connector._eventManager = null;
         }
-        const walletConnector = new WalletConnect(
-          { clientMeta, session },
-          push
-        );
+        const walletConnector = new WalletConnect({ clientMeta, session }, push);
         return dispatch(listenOnNewMessages(walletConnector));
       }
       return connector;
@@ -738,10 +644,7 @@ export const walletConnectLoadState = () => async (
  * @param peerId The peer ID for the pending request.
  * @param walletConnector The `WalletConnect` instance for the pending request.
  */
-export const setPendingRequest = (
-  peerId: string,
-  walletConnector: WalletConnect
-) => (
+export const setPendingRequest = (peerId: string, walletConnector: WalletConnect) => (
   dispatch: Dispatch<WalletconnectUpdateRequestsAction>,
   getState: AppGetState
 ) => {
@@ -763,10 +666,7 @@ export const setPendingRequest = (
  * @returns Within a dispatch, returns the pending request's `WalletConnector`,
  * or undefined.
  */
-export const getPendingRequest = (peerId: string) => (
-  _: Dispatch,
-  getState: AppGetState
-) => {
+export const getPendingRequest = (peerId: string) => (_: Dispatch, getState: AppGetState) => {
   const { pendingRequests } = getState().walletconnect;
   return pendingRequests[peerId];
 };
@@ -775,10 +675,7 @@ export const getPendingRequest = (peerId: string) => (
  * Removes a pending request from state given a peer ID.
  * @param peerId The peer ID for the pending request to remove.
  */
-export const removePendingRequest = (peerId: string) => (
-  dispatch: Dispatch<WalletconnectUpdateRequestsAction>,
-  getState: AppGetState
-) => {
+export const removePendingRequest = (peerId: string) => (dispatch: Dispatch<WalletconnectUpdateRequestsAction>, getState: AppGetState) => {
   const { pendingRequests } = getState().walletconnect;
   const updatedPendingRequests = pendingRequests;
   if (updatedPendingRequests[peerId]) {
@@ -819,10 +716,7 @@ export const setWalletConnector = (walletConnector: WalletConnect) => (
  * @param peerId The peer ID for the `WalletConnect` instance.
  * @returns Within a dispatch, the `WalletConnect` instance.
  */
-export const getWalletConnector = (peerId: string) => (
-  _: Dispatch,
-  getState: AppGetState
-) => {
+export const getWalletConnector = (peerId: string) => (_: Dispatch, getState: AppGetState) => {
   const { walletConnectors } = getState().walletconnect;
   const walletConnector = walletConnectors[peerId];
   return walletConnector;
@@ -858,11 +752,7 @@ export const removeWalletConnector = (peerId: string) => (
  * @param accountAddress The account address to use.
  * @param chainId The chain ID to use.
  */
-export const walletConnectUpdateSessionConnectorByDappUrl = (
-  dappUrl: RequestData['dappUrl'],
-  accountAddress: string,
-  chainId: number
-) => (
+export const walletConnectUpdateSessionConnectorByDappUrl = (dappUrl: RequestData['dappUrl'], accountAddress: string, chainId: number) => (
   dispatch: Dispatch<WalletconnectUpdateConnectorsAction>,
   getState: AppGetState
 ) => {
@@ -909,9 +799,7 @@ export const walletConnectApproveSession = (
   dispatch(removePendingRequest(peerId));
   saveWalletConnectSession(walletConnector.peerId, walletConnector.session);
 
-  const listeningWalletConnector = dispatch(
-    listenOnNewMessages(walletConnector)
-  );
+  const listeningWalletConnector = dispatch(listenOnNewMessages(walletConnector));
 
   dispatch(setWalletConnector(listeningWalletConnector));
   if (callback) {
@@ -925,10 +813,9 @@ export const walletConnectApproveSession = (
  * @param peerId The peer ID for the request to reject.
  * @param walletConnector The `WalletConnect` instance to reject.
  */
-export const walletConnectRejectSession = (
-  peerId: string,
-  walletConnector: WalletConnect
-) => (dispatch: ThunkDispatch<StoreAppState, unknown, never>) => {
+export const walletConnectRejectSession = (peerId: string, walletConnector: WalletConnect) => (
+  dispatch: ThunkDispatch<StoreAppState, unknown, never>
+) => {
   walletConnector.rejectSession();
   dispatch(removePendingRequest(peerId));
 };
@@ -941,27 +828,16 @@ export const walletConnectRejectSession = (
  * @param killSession Whether or not to kill the corresponding WalletConnect
  * session.
  */
-export const walletConnectDisconnectAllByDappUrl = (
-  dappUrl: string,
-  killSession = true
-) => async (
+export const walletConnectDisconnectAllByDappUrl = (dappUrl: string, killSession = true) => async (
   dispatch: Dispatch<WalletconnectUpdateConnectorsAction>,
   getState: AppGetState
 ) => {
   const { walletConnectors } = getState().walletconnect;
   const matchingWalletConnectors = values(
-    pickBy(
-      walletConnectors,
-      connector => connector?.peerMeta?.url === dappUrl || !connector?.peerMeta
-    )
+    pickBy(walletConnectors, connector => connector?.peerMeta?.url === dappUrl || !connector?.peerMeta)
   );
   try {
-    const peerIds = values(
-      mapValues(
-        matchingWalletConnectors,
-        (walletConnector: WalletConnect) => walletConnector.peerId
-      )
-    );
+    const peerIds = values(mapValues(matchingWalletConnectors, (walletConnector: WalletConnect) => walletConnector.peerId));
     await removeWalletConnectSessions(peerIds);
 
     if (killSession) {
@@ -969,10 +845,7 @@ export const walletConnectDisconnectAllByDappUrl = (
     }
 
     dispatch({
-      payload: omitBy(
-        walletConnectors,
-        connector => connector?.peerMeta?.url === dappUrl
-      ),
+      payload: omitBy(walletConnectors, connector => connector?.peerMeta?.url === dappUrl),
       type: WALLETCONNECT_UPDATE_CONNECTORS,
     });
   } catch (error) {
@@ -987,11 +860,10 @@ export const walletConnectDisconnectAllByDappUrl = (
  * @param requestId The request ID to respond to.
  * @param response The response to send.
  */
-export const walletConnectSendStatus = (
-  peerId: string,
-  requestId: number,
-  response: { result?: any; error?: any }
-) => async (_: Dispatch, getState: AppGetState) => {
+export const walletConnectSendStatus = (peerId: string, requestId: number, response: { result?: any; error?: any }) => async (
+  _: Dispatch,
+  getState: AppGetState
+) => {
   const walletConnector = getState().walletconnect.walletConnectors[peerId];
   if (walletConnector) {
     const { result, error } = response;
@@ -1005,16 +877,10 @@ export const walletConnectSendStatus = (
         });
       }
     } catch (error) {
-      Alert.alert(
-        lang.t('wallet.wallet_connect.failed_to_send_request_status')
-      );
+      Alert.alert(lang.t('wallet.wallet_connect.failed_to_send_request_status'));
     }
   } else {
-    Alert.alert(
-      lang.t(
-        'wallet.wallet_connect.walletconnect_session_has_expired_while_trying_to_send'
-      )
-    );
+    Alert.alert(lang.t('wallet.wallet_connect.walletconnect_session_has_expired_while_trying_to_send'));
   }
 };
 
@@ -1023,10 +889,7 @@ export const walletConnectSendStatus = (
  *
  * @param uri The new URI.
  */
-export const saveWalletConnectUri = (uri: string) => async (
-  dispatch: Dispatch<WalletconnectAddUriAction>,
-  getState: AppGetState
-) => {
+export const saveWalletConnectUri = (uri: string) => async (dispatch: Dispatch<WalletconnectAddUriAction>, getState: AppGetState) => {
   const { walletConnectUris } = getState().walletconnect;
   const newWalletConnectUris = [...walletConnectUris, uri];
   dispatch({
@@ -1043,10 +906,7 @@ const INITIAL_STATE: WalletconnectState = {
   walletConnectUris: [],
 };
 
-export default (
-  state = INITIAL_STATE,
-  action: WalletconnectAction
-): WalletconnectState => {
+export default (state = INITIAL_STATE, action: WalletconnectAction): WalletconnectState => {
   switch (action.type) {
     case WALLETCONNECT_UPDATE_REQUESTS:
       return { ...state, pendingRequests: action.payload };

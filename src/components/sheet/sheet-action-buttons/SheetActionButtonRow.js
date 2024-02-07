@@ -5,25 +5,14 @@ import { padding } from '@/styles';
 
 const Container = styled(Row).attrs({
   justify: 'space-around',
-})(
-  ({
-    ignorePaddingBottom,
-    paddingBottom,
-    ignorePaddingTop,
-    paddingHorizontal,
-  }) => ({
-    ...padding.object(
-      ignorePaddingTop ? 0 : 19,
-      paddingHorizontal || 11.5,
-      ignorePaddingBottom ? 0 : 24
-    ),
+})(({ ignorePaddingBottom, paddingBottom, ignorePaddingTop, paddingHorizontal }) => ({
+  ...padding.object(ignorePaddingTop ? 0 : 19, paddingHorizontal || 11.5, ignorePaddingBottom ? 0 : 24),
 
-    ...(paddingBottom && { paddingBottom }),
-    elevation: -1,
-    width: '100%',
-    zIndex: 2,
-  })
-);
+  ...(paddingBottom && { paddingBottom }),
+  elevation: -1,
+  width: '100%',
+  zIndex: 2,
+}));
 
 function renderButton(child) {
   if (!child) return null;

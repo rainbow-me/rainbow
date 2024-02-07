@@ -16,7 +16,5 @@
     "GHSA-g644-9gfx-q4q4", // https://github.com/advisories/GHSA-g644-9gfx-q4q4
     "GHSA-m95q-7qp3-xv42", // https://github.com/advisories/GHSA-m95q-7qp3-xv42
     "GHSA-gxpj-cx7g-858c", // https://github.com/advisories/GHSA-gxpj-cx7g-858c
-    "GHSA-wf5p-g6vw-rhxx", // https://github.com/advisories/GHSA-wf5p-g6vw-rhxx
-    "GHSA-rxrc-rgv4-jpvx" // https://github.com/advisories/GHSA-rxrc-rgv4-jpvx
-  ]
+  ],
 }

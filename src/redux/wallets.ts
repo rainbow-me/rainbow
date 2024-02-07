@@ -3,15 +3,9 @@ import { toChecksumAddress } from 'ethereumjs-util';
 import { isEmpty, keys } from 'lodash';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
-import {
-  backupUserDataIntoCloud,
-  fetchUserDataFromCloud,
-} from '../handlers/cloudBackup';
+import { backupUserDataIntoCloud, fetchUserDataFromCloud } from '../handlers/cloudBackup';
 import { saveKeychainIntegrityState } from '../handlers/localstorage/globalSettings';
-import {
-  getWalletNames,
-  saveWalletNames,
-} from '../handlers/localstorage/walletNames';
+import { getWalletNames, saveWalletNames } from '../handlers/localstorage/walletNames';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import WalletTypes from '../helpers/walletTypes';
 import { fetchENSAvatar } from '../hooks/useENSAvatar';
@@ -28,17 +22,8 @@ import {
   saveAllWallets,
   setSelectedWallet,
 } from '../model/wallet';
-import {
-  addressKey,
-  oldSeedPhraseMigratedKey,
-  privateKeyKey,
-  seedPhraseKey,
-} from '../utils/keychainConstants';
-import {
-  addressHashedColorIndex,
-  addressHashedEmoji,
-  fetchReverseRecordWithRetry,
-} from '../utils/profileUtils';
+import { addressKey, oldSeedPhraseMigratedKey, privateKeyKey, seedPhraseKey } from '../utils/keychainConstants';
+import { addressHashedColorIndex, addressHashedEmoji, fetchReverseRecordWithRetry } from '../utils/profileUtils';
 import { settingsUpdateAccountAddress } from './settings';
 import { updateWebDataEnabled } from './showcaseTokens';
 import { AppGetState, AppState } from './store';
@@ -171,9 +156,7 @@ export const walletsLoadState = (profilesEnabled = false) => async (
       keys(wallets).some(key => {
         const someWallet = wallets[key];
         const found = someWallet.addresses.some(account => {
-          return (
-            toChecksumAddress(account.address) === toChecksumAddress(address!)
-          );
+          return toChecksumAddress(account.address) === toChecksumAddress(address!);
         });
         if (found) {
           selectedWallet = someWallet;
@@ -186,9 +169,7 @@ export const walletsLoadState = (profilesEnabled = false) => async (
     // Recover from broken state (account address not in selected wallet)
     if (!addressFromKeychain) {
       addressFromKeychain = await loadAddress();
-      logger.info(
-        "addressFromKeychain wasn't set on settings so it is being loaded from loadAddress"
-      );
+      logger.info("addressFromKeychain wasn't set on settings so it is being loaded from loadAddress");
     }
 
     const selectedAddress = selectedWallet?.addresses.find(a => {
@@ -210,9 +191,7 @@ export const walletsLoadState = (profilesEnabled = false) => async (
       if (!account) return;
       await dispatch(settingsUpdateAccountAddress(account.address));
       await saveAddress(account.address);
-      logger.info(
-        'Selected the first visible address because there was not selected one'
-      );
+      logger.info('Selected the first visible address because there was not selected one');
     }
 
     const walletNames = await getWalletNames();
@@ -240,9 +219,7 @@ export const walletsLoadState = (profilesEnabled = false) => async (
  *
  * @param wallets The new wallets.
  */
-export const walletsUpdate = (wallets: {
-  [key: string]: RainbowWallet;
-}) => async (dispatch: Dispatch<WalletsUpdateAction>) => {
+export const walletsUpdate = (wallets: { [key: string]: RainbowWallet }) => async (dispatch: Dispatch<WalletsUpdateAction>) => {
   await saveAllWallets(wallets);
   dispatch({
     payload: wallets,
@@ -255,9 +232,7 @@ export const walletsUpdate = (wallets: {
  *
  * @param wallet The wallet to mark as selected.
  */
-export const walletsSetSelected = (wallet: RainbowWallet) => async (
-  dispatch: Dispatch<WalletsSetSelectedAction>
-) => {
+export const walletsSetSelected = (wallet: RainbowWallet) => async (dispatch: Dispatch<WalletsSetSelectedAction>) => {
   await setSelectedWallet(wallet);
   dispatch({
     payload: wallet,
@@ -280,10 +255,7 @@ export const setAllWalletsWithIdsAsBackedUp = (
   method: RainbowWallet['backupType'],
   backupFile: RainbowWallet['backupFile'] = null,
   updateUserMetadata = true
-) => async (
-  dispatch: ThunkDispatch<AppState, unknown, never>,
-  getState: AppGetState
-) => {
+) => async (dispatch: ThunkDispatch<AppState, unknown, never>, getState: AppGetState) => {
   const { wallets, selected } = getState().wallets;
   const newWallets = { ...wallets };
 
@@ -307,12 +279,9 @@ export const setAllWalletsWithIdsAsBackedUp = (
     try {
       await backupUserDataIntoCloud({ wallets: newWallets });
     } catch (e) {
-      logger.error(
-        new RainbowError('Saving multiple wallets UserData to cloud failed.'),
-        {
-          message: (e as Error)?.message,
-        }
-      );
+      logger.error(new RainbowError('Saving multiple wallets UserData to cloud failed.'), {
+        message: (e as Error)?.message,
+      });
       throw e;
     }
   }
@@ -332,10 +301,7 @@ export const setWalletBackedUp = (
   method: RainbowWallet['backupType'],
   backupFile: RainbowWallet['backupFile'] = null,
   updateUserMetadata = true
-) => async (
-  dispatch: ThunkDispatch<AppState, unknown, never>,
-  getState: AppGetState
-) => {
+) => async (dispatch: ThunkDispatch<AppState, unknown, never>, getState: AppGetState) => {
   const { wallets, selected } = getState().wallets;
   const newWallets = { ...wallets };
   newWallets[walletId] = {
@@ -356,12 +322,9 @@ export const setWalletBackedUp = (
     try {
       await backupUserDataIntoCloud({ wallets: newWallets });
     } catch (e) {
-      logger.error(
-        new RainbowError('Saving wallet UserData to cloud failed.'),
-        {
-          message: (e as Error)?.message,
-        }
-      );
+      logger.error(new RainbowError('Saving wallet UserData to cloud failed.'), {
+        message: (e as Error)?.message,
+      });
       throw e;
     }
   }
@@ -382,12 +345,9 @@ export const updateWalletBackupStatusesBasedOnCloudUserData = () => async (
   try {
     currentUserData = await fetchUserDataFromCloud();
   } catch (error) {
-    logger.error(
-      new RainbowError(
-        'There was an error when trying to update wallet backup statuses'
-      ),
-      { error: (error as Error).message }
-    );
+    logger.error(new RainbowError('There was an error when trying to update wallet backup statuses'), {
+      error: (error as Error).message,
+    });
     return;
   }
   if (currentUserData === undefined) {
@@ -416,9 +376,7 @@ export const updateWalletBackupStatusesBasedOnCloudUserData = () => async (
 
     let relatedCloudWalletId: string | null = null;
     for (const account of wallet.addresses) {
-      const walletDataForCurrentAddress = addressToWalletLookup.get(
-        account.address
-      );
+      const walletDataForCurrentAddress = addressToWalletLookup.get(account.address);
       if (!walletDataForCurrentAddress) {
         return;
       }
@@ -458,10 +416,7 @@ export const updateWalletBackupStatusesBasedOnCloudUserData = () => async (
 /**
  * Clears backup status for all users' wallets
  */
-export const clearAllWalletsBackupStatus = () => async (
-  dispatch: ThunkDispatch<AppState, unknown, never>,
-  getState: AppGetState
-) => {
+export const clearAllWalletsBackupStatus = () => async (dispatch: ThunkDispatch<AppState, unknown, never>, getState: AppGetState) => {
   const { wallets } = getState().wallets;
   const newWallets = { ...wallets };
   Object.keys(newWallets).forEach(key => {
@@ -478,8 +433,7 @@ export const clearAllWalletsBackupStatus = () => async (
  * Updates the selected address in state.
  * @param address The new selected address.
  */
-export const addressSetSelected = (address: string) => () =>
-  saveAddress(address);
+export const addressSetSelected = (address: string) => () => saveAddress(address);
 
 /**
  * Adds a new address to an existing wallet in storage and state.
@@ -489,24 +443,17 @@ export const addressSetSelected = (address: string) => () =>
  * @param name The name for the new address.
  * @returns Within a dispatch, a new mapping from wallet IDs to wallet objects.
  */
-export const createAccountForWallet = (
-  id: RainbowWallet['id'],
-  color: RainbowWallet['color'],
-  name: RainbowWallet['name']
-) => async (
+export const createAccountForWallet = (id: RainbowWallet['id'], color: RainbowWallet['color'], name: RainbowWallet['name']) => async (
   dispatch: ThunkDispatch<AppState, unknown, WalletsAddedAccountAction>,
   getState: AppGetState
 ) => {
   const { wallets } = getState().wallets;
   const newWallets = { ...wallets };
   let index = 0;
-  newWallets[id].addresses.forEach(
-    account => (index = Math.max(index, account.index))
-  );
+  newWallets[id].addresses.forEach(account => (index = Math.max(index, account.index)));
   const newIndex = index + 1;
   const account = (await generateAccount(id, newIndex))!;
-  const walletColorIndex =
-    color !== null ? color : addressHashedColorIndex(account!.address)!;
+  const walletColorIndex = color !== null ? color : addressHashedColorIndex(account!.address)!;
   newWallets[id].addresses.push({
     address: account.address,
     avatar: null,
@@ -584,11 +531,7 @@ export const getWalletENSAvatars = async (
         return {
           account: {
             ...account,
-            image:
-              account.image?.startsWith('~') ||
-              account.image?.startsWith('file')
-                ? account.image
-                : null, // if the user had an ens but the image it was a local image
+            image: account.image?.startsWith('~') || account.image?.startsWith('file') ? account.image : null, // if the user had an ens but the image it was a local image
             label: '',
           },
           ensChanged: true,
@@ -609,9 +552,7 @@ export const getWalletENSAvatars = async (
   newAccounts.forEach(({ account, key, ensChanged }) => {
     if (!ensChanged) return;
     const addresses = wallets?.[key]?.addresses;
-    const index = addresses?.findIndex(
-      ({ address }) => address === account.address
-    );
+    const index = addresses?.findIndex(({ address }) => address === account.address);
     addresses!.splice(index!, 1, account);
     updatedWallets = {
       ...(updatedWallets ?? wallets),
@@ -630,27 +571,20 @@ export const getWalletENSAvatars = async (
  * Fetches wallet ENS avatars using `getWalletENSAvatars` with the current
  * wallets in state.
  */
-export const fetchWalletENSAvatars = () => async (
-  dispatch: ThunkDispatch<AppState, unknown, never>,
-  getState: AppGetState
-) => getWalletENSAvatars(getState().wallets, dispatch);
+export const fetchWalletENSAvatars = () => async (dispatch: ThunkDispatch<AppState, unknown, never>, getState: AppGetState) =>
+  getWalletENSAvatars(getState().wallets, dispatch);
 
 /**
  * Fetches wallet names and updates storage and state.
  */
-export const fetchWalletNames = () => async (
-  dispatch: Dispatch<WalletsUpdateNamesAction>,
-  getState: AppGetState
-) => {
+export const fetchWalletNames = () => async (dispatch: Dispatch<WalletsUpdateNamesAction>, getState: AppGetState) => {
   const { wallets } = getState().wallets;
   const updatedWalletNames: { [address: string]: string } = {};
 
   // Fetch ENS names
   await Promise.all(
     Object.values(wallets ?? {}).flatMap(wallet => {
-      const visibleAccounts = wallet.addresses?.filter(
-        address => address.visible
-      );
+      const visibleAccounts = wallet.addresses?.filter(address => address.visible);
       return visibleAccounts.map(async account => {
         try {
           const ens = await fetchReverseRecordWithRetry(account.address);
@@ -675,10 +609,7 @@ export const fetchWalletNames = () => async (
  * Checks the validity of the keychain and updates storage and state
  * accordingly if the keychain is unhealthy.
  */
-export const checkKeychainIntegrity = () => async (
-  dispatch: ThunkDispatch<AppState, unknown, never>,
-  getState: AppGetState
-) => {
+export const checkKeychainIntegrity = () => async (dispatch: ThunkDispatch<AppState, unknown, never>, getState: AppGetState) => {
   try {
     let healthyKeychain = true;
     logger.info('[KeychainIntegrityCheck]: starting checks');
@@ -688,27 +619,21 @@ export const checkKeychainIntegrity = () => async (
       logger.info('[KeychainIntegrityCheck]: address is ok');
     } else {
       healthyKeychain = false;
-      logger.info(
-        `[KeychainIntegrityCheck]: address is missing: ${hasAddress}`
-      );
+      logger.info(`[KeychainIntegrityCheck]: address is missing: ${hasAddress}`);
     }
 
     const hasOldSeedPhraseMigratedFlag = await hasKey(oldSeedPhraseMigratedKey);
     if (hasOldSeedPhraseMigratedFlag) {
       logger.info('[KeychainIntegrityCheck]: migrated flag is OK');
     } else {
-      logger.info(
-        `[KeychainIntegrityCheck]: migrated flag is present: ${hasOldSeedPhraseMigratedFlag}`
-      );
+      logger.info(`[KeychainIntegrityCheck]: migrated flag is present: ${hasOldSeedPhraseMigratedFlag}`);
     }
 
     const hasOldSeedphrase = await hasKey(seedPhraseKey);
     if (hasOldSeedphrase) {
       logger.info('[KeychainIntegrityCheck]: old seed is still present!');
     } else {
-      logger.info(
-        `[KeychainIntegrityCheck]: old seed is present: ${hasOldSeedphrase}`
-      );
+      logger.info(`[KeychainIntegrityCheck]: old seed is present: ${hasOldSeedphrase}`);
     }
 
     const { wallets, selected } = getState().wallets;
@@ -717,14 +642,10 @@ export const checkKeychainIntegrity = () => async (
     }
 
     if (!selected) {
-      logger.warn(
-        '[KeychainIntegrityCheck]: selectedWallet is missing from redux'
-      );
+      logger.warn('[KeychainIntegrityCheck]: selectedWallet is missing from redux');
     }
 
-    const nonReadOnlyWalletKeys = keys(wallets).filter(
-      key => wallets![key].type !== WalletTypes.readOnly
-    );
+    const nonReadOnlyWalletKeys = keys(wallets).filter(key => wallets![key].type !== WalletTypes.readOnly);
 
     for (const key of nonReadOnlyWalletKeys) {
       let healthyWallet = true;
@@ -752,11 +673,7 @@ export const checkKeychainIntegrity = () => async (
       // - it's not imported
       // - and hasn't been migrated yet
       // - and the old seedphrase is still there
-      if (
-        !wallet.imported &&
-        !hasOldSeedPhraseMigratedFlag &&
-        hasOldSeedphrase
-      ) {
+      if (!wallet.imported && !hasOldSeedPhraseMigratedFlag && hasOldSeedphrase) {
         healthyWallet = true;
       }
 
@@ -767,9 +684,7 @@ export const checkKeychainIntegrity = () => async (
         await dispatch(walletsUpdate(wallets!));
         // Update selected wallet if needed
         if (wallet.id === selected!.id) {
-          logger.warn(
-            '[KeychainIntegrityCheck]: declaring selected wallet unhealthy...'
-          );
+          logger.warn('[KeychainIntegrityCheck]: declaring selected wallet unhealthy...');
           await dispatch(walletsSetSelected(wallets![wallet.id]));
         }
         logger.info('[KeychainIntegrityCheck]: done updating wallets');

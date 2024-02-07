@@ -1,10 +1,4 @@
-import React, {
-  Fragment,
-  PropsWithChildren,
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
+import React, { Fragment, PropsWithChildren, useCallback, useEffect, useState } from 'react';
 import { Keyboard } from 'react-native';
 import {
   State as GestureHandlerState,
@@ -12,12 +6,7 @@ import {
   LongPressGestureHandler,
   TapGestureHandler,
 } from 'react-native-gesture-handler';
-import Animated, {
-  runOnJS,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import Spinner from '../../Spinner';
 import { ShimmerAnimation } from '../../animations';
 import { Centered, InnerBorder } from '../../layout';
@@ -30,10 +19,7 @@ import {
   SMALL_BUTTON_HEIGHT,
   TINY_BUTTON_HEIGHT,
 } from './constants';
-import {
-  getButtonDisabledBgColor,
-  getButtonShadows,
-} from './helpers/buttonStyleValues';
+import { getButtonDisabledBgColor, getButtonShadows } from './helpers/buttonStyleValues';
 import { HoldToAuthorizeBaseProps } from './types/HoldToAuthorizeBaseProps';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
@@ -73,25 +59,20 @@ interface LoadingSpinnerProps {
   theme: ThemeContextProps;
 }
 
-const Label = styled(BiometricButtonContent).attrs(
-  ({ smallButton, theme: { colors }, tinyButton }: LabelProps) => ({
-    color: colors.whiteLabel,
-    size: smallButton || tinyButton ? 'large' : 'larger',
-    weight: 'heavy',
-  })
-)({});
+const Label = styled(BiometricButtonContent).attrs(({ smallButton, theme: { colors }, tinyButton }: LabelProps) => ({
+  color: colors.whiteLabel,
+  size: smallButton || tinyButton ? 'large' : 'larger',
+  weight: 'heavy',
+}))({});
 
-const LoadingSpinner = styled(Spinner).attrs(
-  ({ theme: { colors } }: LoadingSpinnerProps) => ({
-    color: colors.whiteLabel,
-    size: 24,
-  })
-)({
+const LoadingSpinner = styled(Spinner).attrs(({ theme: { colors } }: LoadingSpinnerProps) => ({
+  color: colors.whiteLabel,
+  size: 24,
+}))({
   marginRight: 15,
 });
 
-const calculateReverseDuration = (longPressProgress: number) =>
-  (longPressProgress / 100) * LONG_PRESS_DURATION_IN_MS;
+const calculateReverseDuration = (longPressProgress: number) => (longPressProgress / 100) * LONG_PRESS_DURATION_IN_MS;
 
 type Props = PropsWithChildren<HoldToAuthorizeBaseProps>;
 
@@ -151,15 +132,9 @@ function HoldToAuthorizeButtonContent2({
 
   const isAuthorizing = isAuthorizingProp || isAuthorizingState;
 
-  const bgColor = disabled
-    ? disabledBackgroundColor ?? getButtonDisabledBgColor(colors)[theme]
-    : backgroundColor ?? colors.appleBlue;
+  const bgColor = disabled ? disabledBackgroundColor ?? getButtonDisabledBgColor(colors)[theme] : backgroundColor ?? colors.appleBlue;
 
-  const height = tinyButton
-    ? TINY_BUTTON_HEIGHT
-    : smallButton
-    ? SMALL_BUTTON_HEIGHT
-    : BUTTON_HEIGHT;
+  const height = tinyButton ? TINY_BUTTON_HEIGHT : smallButton ? SMALL_BUTTON_HEIGHT : BUTTON_HEIGHT;
 
   const width = deviceDimensions.width - parentHorizontalPadding * 2;
 
@@ -173,18 +148,12 @@ function HoldToAuthorizeButtonContent2({
     }
   };
 
-  const onLongPressChange = ({
-    nativeEvent: { state },
-  }: HandlerStateChangeEvent) => {
+  const onLongPressChange = ({ nativeEvent: { state } }: HandlerStateChangeEvent) => {
     if (state === ACTIVE && !disabled) {
       haptics.notificationSuccess();
       Keyboard.dismiss();
 
-      buttonScale.value = withTiming(
-        1,
-        { duration: BUTTON_SCALE_DURATION_IN_MS },
-        () => runOnJS(setIsAuthorizing)(true)
-      );
+      buttonScale.value = withTiming(1, { duration: BUTTON_SCALE_DURATION_IN_MS }, () => runOnJS(setIsAuthorizing)(true));
 
       handlePress();
     }
@@ -237,9 +206,7 @@ function HoldToAuthorizeButtonContent2({
   let buttonLabel = label;
   if (isAuthorizing) {
     if (isHardwareWallet) {
-      buttonLabel = lang.t(
-        lang.l.button.hold_to_authorize.confirming_on_ledger
-      );
+      buttonLabel = lang.t(lang.l.button.hold_to_authorize.confirming_on_ledger);
     } else {
       buttonLabel = lang.t(lang.l.button.hold_to_authorize.authorizing);
     }
@@ -248,11 +215,7 @@ function HoldToAuthorizeButtonContent2({
     // @ts-expect-error RNGH props are not compatible with React 18
     <TapGestureHandler enabled={!disabled} onHandlerStateChange={onTapChange}>
       {/* @ts-expect-error RNGH props are not compatible with React 18 */}
-      <LongPressGestureHandler
-        enabled={enableLongPress}
-        minDurationMs={LONG_PRESS_DURATION_IN_MS}
-        onHandlerStateChange={onLongPressChange}
-      >
+      <LongPressGestureHandler enabled={enableLongPress} minDurationMs={LONG_PRESS_DURATION_IN_MS} onHandlerStateChange={onLongPressChange}>
         <Animated.View {...props} style={[style, scaleStyle]}>
           {/* Ignoring due to obscure JS error from ShadowStack */}
           {/* @ts-ignore */}
@@ -260,28 +223,14 @@ function HoldToAuthorizeButtonContent2({
             backgroundColor={bgColor}
             borderRadius={height}
             height={height}
-            shadows={
-              shadows ??
-              getButtonShadows(colors)[disabled ? 'disabled' : 'default']
-            }
+            shadows={shadows ?? getButtonShadows(colors)[disabled ? 'disabled' : 'default']}
             width={width}
           >
-            <Content
-              backgroundColor={bgColor}
-              height={height}
-              smallButton={smallButton}
-              tinyButton={tinyButton}
-            >
+            <Content backgroundColor={bgColor} height={height} smallButton={smallButton} tinyButton={tinyButton}>
               {children ?? (
                 <Fragment>
-                  {!android && !disabled && (
-                    <HoldToAuthorizeButtonIcon
-                      sharedValue={longPressProgress}
-                    />
-                  )}
-                  {(loading || (android && isAuthorizing)) && (
-                    <LoadingSpinner />
-                  )}
+                  {!android && !disabled && <HoldToAuthorizeButtonIcon sharedValue={longPressProgress} />}
+                  {(loading || (android && isAuthorizing)) && <LoadingSpinner />}
                   <Label
                     label={buttonLabel}
                     showIcon={showBiometryIcon && !isAuthorizing}
@@ -291,11 +240,7 @@ function HoldToAuthorizeButtonContent2({
                   />
                 </Fragment>
               )}
-              <ShimmerAnimation
-                color={colors.whiteLabel}
-                enabled={!disableShimmerAnimation && !disabled}
-                width={width}
-              />
+              <ShimmerAnimation color={colors.whiteLabel} enabled={!disableShimmerAnimation && !disabled} width={width} />
               {!hideInnerBorder && <InnerBorder radius={height} />}
             </Content>
           </ShadowStack>

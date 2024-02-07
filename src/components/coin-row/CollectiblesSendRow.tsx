@@ -21,29 +21,15 @@ const selectedHeight = isTinyPhone ? 50 : android || isSmallPhone ? 64 : 70;
 
 const selectedStyles = {
   height: selectedHeight,
-  ...(isTinyPhone
-    ? padding.object(10, 0, 0)
-    : isSmallPhone
-    ? padding.object(12)
-    : padding.object(15)),
+  ...(isTinyPhone ? padding.object(10, 0, 0) : isSmallPhone ? padding.object(12) : padding.object(15)),
 };
 
-const BottomRow = ({
-  selected,
-  subtitle,
-}: {
-  selected: boolean;
-  subtitle: string;
-}) => {
+const BottomRow = ({ selected, subtitle }: { selected: boolean; subtitle: string }) => {
   const { colors } = useTheme();
 
   return (
     <TruncatedText
-      color={
-        selected
-          ? colors.alpha(colors.blueGreyDark, 0.6)
-          : colors.alpha(colors.blueGreyDark, 0.5)
-      }
+      color={selected ? colors.alpha(colors.blueGreyDark, 0.6) : colors.alpha(colors.blueGreyDark, 0.5)}
       letterSpacing="roundedMedium"
       size="smedium"
       weight={selected ? 'bold' : 'regular'}
@@ -53,23 +39,11 @@ const BottomRow = ({
   );
 };
 
-const TopRow = ({
-  id,
-  name,
-  selected,
-}: {
-  id: number;
-  name: string;
-  selected: boolean;
-}) => {
+const TopRow = ({ id, name, selected }: { id: number; name: string; selected: boolean }) => {
   const { colors } = useTheme();
 
   return (
-    <CoinName
-      color={colors.dark}
-      size={selected ? 'large' : 'lmedium'}
-      weight={selected ? 'bold' : 'regular'}
-    >
+    <CoinName color={colors.dark} size={selected ? 'large' : 'lmedium'} weight={selected ? 'bold' : 'regular'}>
       {name || `#${id}`}
     </CoinName>
   );
@@ -129,17 +103,12 @@ const CollectiblesSendRow = React.memo(
     const isENS = uniqueTokenType === 'ENS';
 
     const subtitle = useMemo(
-      () =>
-        item.name && !isENS
-          ? `${item.collection.name} #${item.id}`
-          : item.collection.name,
+      () => (item.name && !isENS ? `${item.collection.name} #${item.id}` : item.collection.name),
 
       [isENS, item.collection.name, item.id, item.name]
     );
 
-    const Wrapper = disablePressAnimation
-      ? TouchableWithoutFeedback
-      : ButtonPressAnimation;
+    const Wrapper = disablePressAnimation ? TouchableWithoutFeedback : ButtonPressAnimation;
 
     return (
       <Fragment>
@@ -166,9 +135,7 @@ const CollectiblesSendRow = React.memo(
       </Fragment>
     );
   },
-  (props, nextProps) =>
-    buildAssetUniqueIdentifier(props.item) !==
-    buildAssetUniqueIdentifier(nextProps.item)
+  (props, nextProps) => buildAssetUniqueIdentifier(props.item) !== buildAssetUniqueIdentifier(nextProps.item)
 );
 
 CollectiblesSendRow.displayName = 'CollectiblesSendRow';

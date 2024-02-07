@@ -1,18 +1,12 @@
 import { AppDispatch, AppGetState } from './store';
-import {
-  getTransactionSignatures,
-  saveTransactionSignatures,
-} from '@/handlers/localstorage/globalSettings';
+import { getTransactionSignatures, saveTransactionSignatures } from '@/handlers/localstorage/globalSettings';
 
 export const TRANSACTION_SIGNATURES_ADD_NEW_TRANSACTION_SIGNATURE_SUCCESS =
   'transactionSignatures/DATA_ADD_NEW_TRANSACTION_SIGNATURE_SUCCESS';
-const TRANSACTION_SIGNATURES_LOAD_TRANSACTION_SIGNATURES_SUCCESS =
-  'transactionSignatures/DATA_LOAD_TRANSACTION_SIGNATURES_SUCCESS';
+const TRANSACTION_SIGNATURES_LOAD_TRANSACTION_SIGNATURES_SUCCESS = 'transactionSignatures/DATA_LOAD_TRANSACTION_SIGNATURES_SUCCESS';
 
 // -- Actions ---------------------------------------- //
-export const transactionSignaturesLoadState = () => async (
-  dispatch: AppDispatch
-) => {
+export const transactionSignaturesLoadState = () => async (dispatch: AppDispatch) => {
   try {
     const signatures = await getTransactionSignatures();
     dispatch({
@@ -23,10 +17,10 @@ export const transactionSignaturesLoadState = () => async (
   } catch (error) {}
 };
 
-export const transactionSignaturesDataAddNewSignature = (
-  parsedSignature: string,
-  bytes: string
-) => async (dispatch: AppDispatch, getState: AppGetState) => {
+export const transactionSignaturesDataAddNewSignature = (parsedSignature: string, bytes: string) => async (
+  dispatch: AppDispatch,
+  getState: AppGetState
+) => {
   const { signatures } = getState().transactionSignatures;
   if (parsedSignature) {
     const newTransactionSignatures = {
@@ -49,10 +43,7 @@ const INITIAL_STATE: { signatures: { [key: string]: string } } = {
   signatures: {},
 };
 
-export default (
-  state = INITIAL_STATE,
-  action: { type: string; payload: { [key: string]: string } }
-) => {
+export default (state = INITIAL_STATE, action: { type: string; payload: { [key: string]: string } }) => {
   switch (action.type) {
     case TRANSACTION_SIGNATURES_LOAD_TRANSACTION_SIGNATURES_SUCCESS:
       return {

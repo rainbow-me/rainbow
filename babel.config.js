@@ -50,13 +50,7 @@ module.exports = function (api) {
   return {
     env: {
       development: {
-        plugins: [
-          ...plugins,
-          [
-            'transform-remove-console',
-            { exclude: ['disableYellowBox', 'error', 'info', 'log'] },
-          ],
-        ],
+        plugins: [...plugins, ['transform-remove-console', { exclude: ['disableYellowBox', 'error', 'info', 'log'] }]],
         presets: presets,
       },
       production: {

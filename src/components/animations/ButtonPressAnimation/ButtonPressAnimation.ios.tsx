@@ -10,11 +10,7 @@ interface Props extends BaseButtonAnimationProps {
   onPressStart: () => void;
 }
 
-const ButtonPressAnimation = React.forwardRef(
-  (props: PropsWithChildren<Props>, ref) => (
-    <NativeButton {...props} ref={ref} />
-  )
-);
+const ButtonPressAnimation = React.forwardRef((props: PropsWithChildren<Props>, ref) => <NativeButton {...props} ref={ref} />);
 
 ButtonPressAnimation.displayName = 'ButtonPressAnimation';
 

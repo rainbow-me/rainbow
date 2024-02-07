@@ -20,40 +20,22 @@ const KeyboardSizeView = styled(KeyboardArea)({
   backgroundColor: ({ theme: { colors } }) => colors.transparent,
 });
 
-export default function BackupSheetKeyboardLayout({
-  children,
-  footerButtonDisabled,
-  footerButtonLabel,
-  onSubmit,
-  type,
-}) {
+export default function BackupSheetKeyboardLayout({ children, footerButtonDisabled, footerButtonLabel, onSubmit, type }) {
   const { params: { nativeScreen } = {} } = useRoute();
   const { height: deviceHeight, isTallPhone } = useDimensions();
   const keyboardHeight = useKeyboardHeight({
     keyboardType: KeyboardTypes.password,
   });
 
-  const platformKeyboardHeight = android
-    ? type === 'restore'
-      ? -10
-      : -30
-    : keyboardHeight;
+  const platformKeyboardHeight = android ? (type === 'restore' ? -10 : -30) : keyboardHeight;
 
-  const sheetRegionAboveKeyboardHeight =
-    deviceHeight -
-    platformKeyboardHeight -
-    sharedCoolModalTopOffset -
-    SheetHandleFixedToTopHeight;
+  const sheetRegionAboveKeyboardHeight = deviceHeight - platformKeyboardHeight - sharedCoolModalTopOffset - SheetHandleFixedToTopHeight;
 
   return (
     <Column height={nativeScreen ? undefined : sheetRegionAboveKeyboardHeight}>
       {children}
       <Footer isTallPhone={isTallPhone}>
-        <RainbowButton
-          disabled={footerButtonDisabled}
-          label={footerButtonLabel}
-          onPress={onSubmit}
-        />
+        <RainbowButton disabled={footerButtonDisabled} label={footerButtonLabel} onPress={onSubmit} />
       </Footer>
       {android ? <KeyboardSizeView /> : null}
     </Column>

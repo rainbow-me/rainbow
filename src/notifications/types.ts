@@ -9,8 +9,7 @@ export const NotificationTypes = {
 export type NotificationTypesType = typeof NotificationTypes[keyof typeof NotificationTypes];
 
 // FCM sends a different kind than the typings cover
-export interface FixedRemoteMessage
-  extends FirebaseMessagingTypes.RemoteMessage {
+export interface FixedRemoteMessage extends FirebaseMessagingTypes.RemoteMessage {
   data: { [key: string]: string } & { fcm_options: { image: string } };
 }
 

@@ -46,10 +46,7 @@ export class AvatarResolver implements IAvatarResolver {
 
   async getMetadata(ens: string, opts?: AvatarRequestOpts) {
     // retrieve registrar address and resolver object from ens name
-    const [resolvedAddress, resolver] = await Promise.all([
-      this.provider.resolveName(ens),
-      this.provider.getResolver(ens),
-    ]);
+    const [resolvedAddress, resolver] = await Promise.all([this.provider.resolveName(ens), this.provider.getResolver(ens)]);
     if (!resolvedAddress || !resolver) return null;
 
     // retrieve 'avatar' text recored from resolver
@@ -64,9 +61,7 @@ export class AvatarResolver implements IAvatarResolver {
     }
 
     // parse retrieved avatar uri
-    const { chainID, namespace, contractAddress, tokenID } = parseNFT(
-      avatarURI
-    );
+    const { chainID, namespace, contractAddress, tokenID } = parseNFT(avatarURI);
     // detect avatar spec by namespace
     const spec = new specs[namespace]();
     if (!spec) return null;
@@ -81,20 +76,11 @@ export class AvatarResolver implements IAvatarResolver {
     };
 
     // retrieve metadata
-    const metadata = await spec.getMetadata(
-      this.provider,
-      resolvedAddress,
-      contractAddress,
-      tokenID,
-      opts
-    );
+    const metadata = await spec.getMetadata(this.provider, resolvedAddress, contractAddress, tokenID, opts);
     return { host_meta, uri: ens, ...metadata };
   }
 
-  async getImage(
-    ens: string,
-    opts?: AvatarRequestOpts
-  ): Promise<string | null> {
+  async getImage(ens: string, opts?: AvatarRequestOpts): Promise<string | null> {
     const metadata = await this.getMetadata(ens, opts);
     if (!metadata) return null;
     return getImageURI({

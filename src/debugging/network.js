@@ -9,10 +9,7 @@ const EXCLUDED_URLS = [
   'https://clients3.google.com/generate_204', // Offline connection detection
 ];
 
-export default function monitorNetwork(
-  showNetworkRequests,
-  showNetworkResponses
-) {
+export default function monitorNetwork(showNetworkRequests, showNetworkResponses) {
   const requestCache = {};
 
   const getEmojiForStatusCode = status => {
@@ -38,9 +35,7 @@ export default function monitorNetwork(
 
         separator();
         emptyLine();
-        logger.log(
-          `${PREFIX} ➡️  REQUEST #${xhr._trackingName} -  ${xhr._method} ${xhr._url}`
-        );
+        logger.log(`${PREFIX} ➡️  REQUEST #${xhr._trackingName} -  ${xhr._method} ${xhr._url}`);
         emptyLine();
         if (data) {
           emptyLine();
@@ -67,56 +62,48 @@ export default function monitorNetwork(
   }
 
   if (showNetworkResponses) {
-    XHRInterceptor.setResponseCallback(
-      (status, timeout, response, url, type, xhr) => {
-        if (EXCLUDED_URLS.indexOf(url) === -1) {
-          // fetch and clear the request data from the cache
-          const rid = xhr._trackingName;
-          const cachedRequest = requestCache[rid] || {};
-          requestCache[rid] = null;
-          const time =
-            (cachedRequest.startTime && Date.now() - cachedRequest.startTime) ||
-            null;
+    XHRInterceptor.setResponseCallback((status, timeout, response, url, type, xhr) => {
+      if (EXCLUDED_URLS.indexOf(url) === -1) {
+        // fetch and clear the request data from the cache
+        const rid = xhr._trackingName;
+        const cachedRequest = requestCache[rid] || {};
+        requestCache[rid] = null;
+        const time = (cachedRequest.startTime && Date.now() - cachedRequest.startTime) || null;
 
-          separator();
-          emptyLine();
-          logger.log(
-            `${PREFIX} ${getEmojiForStatusCode(status)}  RESPONSE #${rid} -  ${
-              xhr._method
-            } ${url}`
-          );
-          emptyLine();
-          if (timeout && status > 400) {
-            logger.log(` ⚠️ ⚠️  TIMEOUT!  ⚠️ ⚠️ `);
-          }
-
-          if (status) {
-            logger.log(` Status:  ${status}`);
-          }
-
-          if (time) {
-            logger.log(` Completed in:  ${time / 1000} s`);
-          }
-
-          if (response) {
-            emptyLine();
-            logger.log(' RESPONSE: ');
-            emptyLine();
-            try {
-              const responseObj = JSON.parse(response);
-              logger.log(' {');
-              Object.keys(responseObj).forEach(key => {
-                logger.log(`   ${key} : `, responseObj[key]);
-              });
-              logger.log(' }');
-            } catch (e) {
-              logger.log(response);
-            }
-          }
-          emptyLine();
+        separator();
+        emptyLine();
+        logger.log(`${PREFIX} ${getEmojiForStatusCode(status)}  RESPONSE #${rid} -  ${xhr._method} ${url}`);
+        emptyLine();
+        if (timeout && status > 400) {
+          logger.log(` ⚠️ ⚠️  TIMEOUT!  ⚠️ ⚠️ `);
         }
+
+        if (status) {
+          logger.log(` Status:  ${status}`);
+        }
+
+        if (time) {
+          logger.log(` Completed in:  ${time / 1000} s`);
+        }
+
+        if (response) {
+          emptyLine();
+          logger.log(' RESPONSE: ');
+          emptyLine();
+          try {
+            const responseObj = JSON.parse(response);
+            logger.log(' {');
+            Object.keys(responseObj).forEach(key => {
+              logger.log(`   ${key} : `, responseObj[key]);
+            });
+            logger.log(' }');
+          } catch (e) {
+            logger.log(response);
+          }
+        }
+        emptyLine();
       }
-    );
+    });
   }
   XHRInterceptor.enableInterception();
 }

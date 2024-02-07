@@ -1,9 +1,6 @@
 import produce from 'immer';
 import { Dispatch } from 'redux';
-import {
-  getImageMetadata,
-  saveImageMetadata,
-} from '@/handlers/localstorage/globalSettings';
+import { getImageMetadata, saveImageMetadata } from '@/handlers/localstorage/globalSettings';
 import { AppGetState } from '@/redux/store';
 
 // -- Constants --------------------------------------- //
@@ -37,10 +34,7 @@ interface ImageMetadataState {
 /**
  * An `imageMetadata` Redux action.
  */
-type ImageMetadataAction =
-  | ImageMetadataLoadAction
-  | ImageMetadataMergeAction
-  | ImageMetadataClearAction;
+type ImageMetadataAction = ImageMetadataLoadAction | ImageMetadataMergeAction | ImageMetadataClearAction;
 
 interface ImageMetadataLoadAction {
   type: typeof LOAD;
@@ -63,13 +57,9 @@ interface UpdateImageMetadataFunctionParameter {
 }
 
 // -- Actions ---------------------------------------- //
-export const clearImageMetadataCache = () => (
-  dispatch: Dispatch<ImageMetadataClearAction>
-) => dispatch({ type: CLEAR });
+export const clearImageMetadataCache = () => (dispatch: Dispatch<ImageMetadataClearAction>) => dispatch({ type: CLEAR });
 
-export const imageMetadataCacheLoadState = () => async (
-  dispatch: Dispatch<ImageMetadataLoadAction>
-) => {
+export const imageMetadataCacheLoadState = () => async (dispatch: Dispatch<ImageMetadataLoadAction>) => {
   const metadataCache = await getImageMetadata();
   dispatch({
     payload: metadataCache,
@@ -77,10 +67,7 @@ export const imageMetadataCacheLoadState = () => async (
   });
 };
 
-export const updateImageMetadataCache = ({
-  id,
-  metadata,
-}: UpdateImageMetadataFunctionParameter) => (
+export const updateImageMetadataCache = ({ id, metadata }: UpdateImageMetadataFunctionParameter) => (
   dispatch: Dispatch<ImageMetadataMergeAction>,
   getState: AppGetState
 ) => {
@@ -97,10 +84,7 @@ const INITIAL_STATE: ImageMetadataState = {
   imageMetadata: {},
 };
 
-export default (
-  state: ImageMetadataState = INITIAL_STATE,
-  action: ImageMetadataAction
-) =>
+export default (state: ImageMetadataState = INITIAL_STATE, action: ImageMetadataAction) =>
   produce(state, draft => {
     if (action.type === LOAD) {
       draft.imageMetadata = action.payload;

@@ -18,8 +18,6 @@ const hapticToTrigger = (haptic: HapticFeedbackType) => ({
   [haptic]: () => ReactNativeHapticFeedback.trigger(haptic),
 });
 
-const haptics = reduceArrayToObject(
-  Object.values(HapticFeedback).map(hapticToTrigger)
-);
+const haptics = reduceArrayToObject(Object.values(HapticFeedback).map(hapticToTrigger));
 
 export default haptics;

@@ -47,16 +47,10 @@ const BackupSection = () => {
 
   const backups = wallets
     ? Object.keys(wallets)
-        .filter(
-          key =>
-            wallets[key].type !== WalletTypes.readOnly &&
-            wallets[key].type !== WalletTypes.bluetooth
-        )
+        .filter(key => wallets[key].type !== WalletTypes.readOnly && wallets[key].type !== WalletTypes.bluetooth)
         .map(key => {
           const wallet = wallets[key];
-          const visibleAccounts = wallet.addresses.filter(
-            (a: any) => a.visible
-          );
+          const visibleAccounts = wallet.addresses.filter((a: any) => a.visible);
           const account = visibleAccounts[0];
           const totalAccounts = visibleAccounts.length;
           const { color, label, address } = account;
@@ -95,83 +89,51 @@ const BackupSection = () => {
             <MenuContainer>
               {IS_ANDROID && <GoogleAccountSection />}
               <Menu>
-                {backups.map(
-                  ({
-                    address,
-                    color,
-                    key,
-                    label: labelOrName,
-                    numAccounts,
-                    wallet,
-                  }) => (
-                    <MenuItem
-                      hasRightArrow
-                      key={key}
-                      labelComponent={
-                        <MenuItem.Label
-                          text={
-                            numAccounts > 1
-                              ? numAccounts > 2
-                                ? lang.t('wallet.back_ups.and_more_wallets', {
-                                    moreWalletCount: numAccounts - 1,
-                                  })
-                                : lang.t('wallet.back_ups.and_1_more_wallet')
-                              : wallet.backedUp
-                              ? wallet.backupType === WalletBackupTypes.cloud
-                                ? lang.t('wallet.back_ups.backed_up')
-                                : lang.t('wallet.back_ups.backed_up_manually')
-                              : wallet.imported
-                              ? lang.t('wallet.back_ups.imported')
-                              : lang.t('back_up.needs_backup.not_backed_up')
-                          }
-                          warn={
-                            numAccounts <= 1 &&
-                            !wallet.backedUp &&
-                            !wallet.imported
-                          }
-                        />
-                      }
-                      leftComponent={
-                        <ContactAvatar
-                          alignSelf="center"
-                          color={color}
-                          marginRight={10}
-                          size="small"
-                          value={addressHashedEmoji(address)}
-                        />
-                      }
-                      onPress={() =>
-                        onPress(
-                          key,
-                          removeFirstEmojiFromString(labelOrName) ||
-                            abbreviations.address(address, 4, 6) ||
-                            ''
-                        )
-                      }
-                      rightComponent={
-                        <MenuItem.StatusIcon
-                          status={
-                            wallet.backupType === WalletBackupTypes.cloud
-                              ? 'complete'
-                              : wallet.backedUp || wallet.imported
-                              ? 'incomplete'
-                              : 'warning'
-                          }
-                        />
-                      }
-                      size={60}
-                      titleComponent={
-                        <MenuItem.Title
-                          text={
-                            removeFirstEmojiFromString(labelOrName) ||
-                            abbreviations.address(address, 4, 6) ||
-                            ''
-                          }
-                        />
-                      }
-                    />
-                  )
-                )}
+                {backups.map(({ address, color, key, label: labelOrName, numAccounts, wallet }) => (
+                  <MenuItem
+                    hasRightArrow
+                    key={key}
+                    labelComponent={
+                      <MenuItem.Label
+                        text={
+                          numAccounts > 1
+                            ? numAccounts > 2
+                              ? lang.t('wallet.back_ups.and_more_wallets', {
+                                  moreWalletCount: numAccounts - 1,
+                                })
+                              : lang.t('wallet.back_ups.and_1_more_wallet')
+                            : wallet.backedUp
+                            ? wallet.backupType === WalletBackupTypes.cloud
+                              ? lang.t('wallet.back_ups.backed_up')
+                              : lang.t('wallet.back_ups.backed_up_manually')
+                            : wallet.imported
+                            ? lang.t('wallet.back_ups.imported')
+                            : lang.t('back_up.needs_backup.not_backed_up')
+                        }
+                        warn={numAccounts <= 1 && !wallet.backedUp && !wallet.imported}
+                      />
+                    }
+                    leftComponent={
+                      <ContactAvatar alignSelf="center" color={color} marginRight={10} size="small" value={addressHashedEmoji(address)} />
+                    }
+                    onPress={() => onPress(key, removeFirstEmojiFromString(labelOrName) || abbreviations.address(address, 4, 6) || '')}
+                    rightComponent={
+                      <MenuItem.StatusIcon
+                        status={
+                          wallet.backupType === WalletBackupTypes.cloud
+                            ? 'complete'
+                            : wallet.backedUp || wallet.imported
+                            ? 'incomplete'
+                            : 'warning'
+                        }
+                      />
+                    }
+                    size={60}
+                    titleComponent={
+                      <MenuItem.Title text={removeFirstEmojiFromString(labelOrName) || abbreviations.address(address, 4, 6) || ''} />
+                    }
+                  />
+                ))}
               </Menu>
               {cloudBackedUpWallets > 0 && (
                 <Menu>

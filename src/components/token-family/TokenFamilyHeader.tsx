@@ -52,16 +52,7 @@ type Props = {
   theme: ThemeContextProps;
 };
 
-const TokenFamilyHeader = ({
-  childrenAmount,
-  emoji,
-  familyImage,
-  isOpen,
-  onPress,
-  testID,
-  title,
-  theme,
-}: Props) => {
+const TokenFamilyHeader = ({ childrenAmount, emoji, familyImage, isOpen, onPress, testID, title, theme }: Props) => {
   const { colors } = theme;
 
   const toValue = Number(!!isOpen);
@@ -77,10 +68,7 @@ const TokenFamilyHeader = ({
   // only happens when previous and next row are both open or closed
   // but also we don't want the animated value to change
   // during the animation too
-  if (
-    aRef.current === null ||
-    (aRef.current.toValue !== toValue && !aRef.current.isRunning)
-  ) {
+  if (aRef.current === null || (aRef.current.toValue !== toValue && !aRef.current.isRunning)) {
     aRef.current = {
       animation: new Animated.Value(toValue),
       isRunning: false,
@@ -145,28 +133,16 @@ const TokenFamilyHeader = ({
       >
         <View style={[sx.center, { marginRight: emoji ? 5 : 0 }]}>
           {emoji ? (
-            <Text
-              containsEmoji
-              color="primary (Deprecated)"
-              size="16px / 22px (Deprecated)"
-            >
+            <Text containsEmoji color="primary (Deprecated)" size="16px / 22px (Deprecated)">
               {emoji}
             </Text>
           ) : (
-            <TokenFamilyHeaderIcon
-              familyImage={familyImage}
-              familyName={title}
-              theme={theme}
-            />
+            <TokenFamilyHeaderIcon familyImage={familyImage} familyName={title} theme={theme} />
           )}
         </View>
         <View style={[sx.title, { paddingLeft: 10 }]}>
           <Text
-            color={
-              title === lang.t('button.hidden')
-                ? 'secondary60 (Deprecated)'
-                : 'primary (Deprecated)'
-            }
+            color={title === lang.t('button.hidden') ? 'secondary60 (Deprecated)' : 'primary (Deprecated)'}
             numberOfLines={1}
             size="18px / 27px (Deprecated)"
             weight="heavy"
@@ -178,11 +154,7 @@ const TokenFamilyHeader = ({
           <Animated.View style={amountAnimatedStyles}>
             <Text
               align="right"
-              color={
-                title === lang.t('button.hidden')
-                  ? 'secondary60 (Deprecated)'
-                  : 'primary (Deprecated)'
-              }
+              color={title === lang.t('button.hidden') ? 'secondary60 (Deprecated)' : 'primary (Deprecated)'}
               size="18px / 27px (Deprecated)"
             >
               {childrenAmount}
@@ -194,11 +166,7 @@ const TokenFamilyHeader = ({
               // @ts-expect-error static image source
               source={CaretImageSource}
               style={sx.chevron}
-              tintColor={
-                title === lang.t('button.hidden')
-                  ? colors.blueGreyDark60
-                  : colors.dark
-              }
+              tintColor={title === lang.t('button.hidden') ? colors.blueGreyDark60 : colors.dark}
             />
           </Animated.View>
         </View>

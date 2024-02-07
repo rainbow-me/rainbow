@@ -1,17 +1,15 @@
 import { debounce } from 'lodash';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { monotoneCubicInterpolation } from '@/react-native-animated-charts/src';
-import {
-  useAccountSettings,
-  useChartDataLabels,
-  useChartInfo,
-  useColorForAsset,
-} from '@/hooks';
+import { useAccountSettings, useChartDataLabels, useColorForAsset } from '@/hooks';
+import { useRoute } from '@react-navigation/native';
 
 import { useNavigation } from '@/navigation';
 import { ETH_ADDRESS } from '@/references';
 
 import { ModalContext } from '@/react-native-cool-modals/NativeStackView';
+import { DEFAULT_CHART_TYPE } from '@/redux/charts';
+import { usePriceChart } from './useChartInfo';
 
 export const UniBalanceHeightDifference = 100;
 
@@ -20,10 +18,7 @@ const traverseData = (prev: any, data: any) => {
     return prev;
   }
   const filtered = data.filter(({ y }: any) => y);
-  if (
-    filtered[0]?.y === prev?.nativePoints[0]?.y &&
-    filtered[0]?.x === prev?.nativePoints[0]?.x
-  ) {
+  if (filtered[0]?.y === prev?.nativePoints[0]?.y && filtered[0]?.x === prev?.nativePoints[0]?.x) {
     return prev;
   }
   const points = monotoneCubicInterpolation({
@@ -50,10 +45,7 @@ function useJumpingForm(
 
   useEffect(() => {
     if (!isLong) {
-      if (
-        typeof heightWithoutChart === 'number' &&
-        !isNaN(heightWithoutChart)
-      ) {
+      if (typeof heightWithoutChart === 'number' && !isNaN(heightWithoutChart)) {
         setOptions({
           longFormHeight: heightWithoutChart,
           ...(shortHeightWithoutChart && {
@@ -71,16 +63,7 @@ function useJumpingForm(
         });
       }
     }
-  }, [
-    heightWithChart,
-    heightWithoutChart,
-    isLong,
-    setOptions,
-    jumpToShort,
-    jumpToLong,
-    shortHeightWithoutChart,
-    shortHeightWithChart,
-  ]);
+  }, [heightWithChart, heightWithoutChart, isLong, setOptions, jumpToShort, jumpToLong, shortHeightWithoutChart, shortHeightWithChart]);
 }
 
 export default function useChartThrottledPoints({
@@ -103,13 +86,18 @@ export default function useChartThrottledPoints({
 
   const [isFetchingInitially, setIsFetchingInitially] = useState(true);
 
-  const { chart, chartType, fetchingCharts, ...chartData } = useChartInfo(
-    asset
-  );
-
-  const [throttledPoints, setThrottledPoints] = useState(() =>
-    traverseData({ nativePoints: [], points: [] }, chart)
-  );
+  const { params } = useRoute<{
+    key: string;
+    name: string;
+    params: any;
+  }>();
+  const chartType = params?.chartType ?? DEFAULT_CHART_TYPE;
+  const { data: chart = [], isLoading: fetchingCharts, updateChartType } = usePriceChart({
+    address: asset.address,
+    network: asset.network,
+    mainnetAddress: asset?.mainnet_address || asset?.mainnetAddress,
+  });
+  const [throttledPoints, setThrottledPoints] = useState(() => traverseData({ nativePoints: [], points: [] }, chart));
 
   useEffect(() => {
     setThrottledPoints((prev: any) => traverseData(prev, chart));
@@ -131,20 +119,9 @@ export default function useChartThrottledPoints({
   // Only show the chart if we have chart data, or if chart data is still loading
   const showChart = useMemo(
     () =>
-      (nativeCurrency !== 'ETH' ||
-        (asset?.mainnet_address !== ETH_ADDRESS &&
-          asset?.address !== ETH_ADDRESS)) &&
-      (throttledPoints?.points.length > 5 ||
-        throttledPoints?.points.length > 5 ||
-        (fetchingCharts && !isFetchingInitially)),
-    [
-      asset?.address,
-      asset?.mainnet_address,
-      fetchingCharts,
-      isFetchingInitially,
-      nativeCurrency,
-      throttledPoints?.points.length,
-    ]
+      (nativeCurrency !== 'ETH' || (asset?.mainnet_address !== ETH_ADDRESS && asset?.address !== ETH_ADDRESS)) &&
+      (throttledPoints?.points.length > 5 || throttledPoints?.points.length > 5 || (fetchingCharts && !isFetchingInitially)),
+    [asset?.address, asset?.mainnet_address, fetchingCharts, isFetchingInitially, nativeCurrency, throttledPoints?.points.length]
   );
 
   useJumpingForm(
@@ -161,8 +138,7 @@ export default function useChartThrottledPoints({
     smoothingStrategy: 'bezier',
   });
 
-  const debouncedSetThrottledData = useRef(debounce(setThrottledData, 30))
-    .current;
+  const debouncedSetThrottledData = useRef(debounce(setThrottledData, 30)).current;
 
   useEffect(() => {
     if (throttledPoints.points && !fetchingCharts) {
@@ -176,8 +152,8 @@ export default function useChartThrottledPoints({
 
   return {
     chart,
-    chartData,
     chartType,
+    updateChartType,
     color,
     fetchingCharts,
     initialChartDataLabels,

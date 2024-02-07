@@ -30,14 +30,10 @@ export const LedgerImportDeviceIdAtom = atom({
 });
 
 export function PairHardwareWalletNavigator() {
-  const { params } = useRoute<
-    RouteProp<RouteParams, 'PairHardwareWalletNavigatorParams'>
-  >();
+  const { params } = useRoute<RouteProp<RouteParams, 'PairHardwareWalletNavigatorParams'>>();
   const { height, width } = useDimensions();
 
-  const [currentRouteName, setCurrentRouteName] = useState<string>(
-    Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET
-  );
+  const [currentRouteName, setCurrentRouteName] = useState<string>(Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET);
 
   const [deviceId, setDeviceId] = useRecoilState(LedgerImportDeviceIdAtom);
 
@@ -49,10 +45,7 @@ export function PairHardwareWalletNavigator() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(
-    () => analyticsV2.track(analyticsV2.event.pairHwWalletNavEntered, params),
-    []
-  );
+  useEffect(() => analyticsV2.track(analyticsV2.event.pairHwWalletNavEntered, params), []);
 
   const onDismiss = () =>
     analyticsV2.track(analyticsV2.event.pairHwWalletNavExited, {
@@ -63,11 +56,7 @@ export function PairHardwareWalletNavigator() {
   return (
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (
-        <SimpleSheet
-          backgroundColor={backgroundColor as string}
-          onDismiss={onDismiss}
-          scrollEnabled={false}
-        >
+        <SimpleSheet backgroundColor={backgroundColor as string} onDismiss={onDismiss} scrollEnabled={false}>
           <Swipe.Navigator
             initialLayout={{ height, width }}
             initialRouteName={currentRouteName}
@@ -98,9 +87,7 @@ export function PairHardwareWalletNavigator() {
               name={Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET}
               listeners={{
                 focus: () => {
-                  setCurrentRouteName(
-                    Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET
-                  );
+                  setCurrentRouteName(Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET);
                 },
               }}
             />
@@ -108,11 +95,7 @@ export function PairHardwareWalletNavigator() {
           {(currentRouteName === Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET ||
             currentRouteName === Routes.PAIR_HARDWARE_WALLET_SEARCH_SHEET) && (
             <NanoXDeviceAnimation
-              state={
-                currentRouteName === Routes.PAIR_HARDWARE_WALLET_SEARCH_SHEET
-                  ? 'loading'
-                  : 'idle'
-              }
+              state={currentRouteName === Routes.PAIR_HARDWARE_WALLET_SEARCH_SHEET ? 'loading' : 'idle'}
               isConnected={deviceId !== ''}
             />
           )}

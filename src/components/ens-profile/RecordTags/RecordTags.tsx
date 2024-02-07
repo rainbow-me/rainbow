@@ -6,15 +6,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
 import { Icon } from '../../icons';
 import Skeleton from '../../skeleton/Skeleton';
-import {
-  Bleed,
-  Box,
-  Inline,
-  Inset,
-  selectTextSizes,
-  Text,
-  useForegroundColor,
-} from '@/design-system';
+import { Bleed, Box, Inline, Inset, selectTextSizes, Text, useForegroundColor } from '@/design-system';
 import { Records } from '@/entities';
 import { deprecatedTextRecordFields, ENS_RECORDS } from '@/helpers/ens';
 import { useENSRecordDisplayProperties } from '@/hooks';
@@ -47,11 +39,7 @@ export default function RecordTags({
           // If a deprecated record exists with it's updated counterpart
           // (e.g. `me.rainbow.displayName` & `name` exists) then omit
           // the deprecated record.
-          if (
-            deprecatedTextRecordFields[key] &&
-            records[deprecatedTextRecordFields[key]]
-          )
-            return null;
+          if (deprecatedTextRecordFields[key] && records[deprecatedTextRecordFields[key]]) return null;
           return {
             key,
             type: getRecordType(key),
@@ -71,21 +59,11 @@ export default function RecordTags({
       <Inset horizontal="19px (Deprecated)">
         <Inline space="10px">
           {recordsToShow?.map(({ key: recordKey, value: recordValue, type }) =>
-            recordValue ? (
-              <RecordTag
-                key={recordKey}
-                recordKey={recordKey}
-                recordValue={recordValue}
-                type={type}
-              />
-            ) : null
+            recordValue ? <RecordTag key={recordKey} recordKey={recordKey} recordValue={recordValue} type={type} /> : null
           )}
           {firstTransactionTimestamp && (
             <Tag color="grey" symbol="􀉉">
-              {`${lang.t(`profiles.records.since`)} ${format(
-                firstTransactionTimestamp,
-                'MMM yyyy'
-              )}`}
+              {`${lang.t(`profiles.records.since`)} ${format(firstTransactionTimestamp, 'MMM yyyy')}`}
             </Tag>
           )}
         </Inline>
@@ -94,10 +72,7 @@ export default function RecordTags({
   );
 }
 
-const tagSizes = selectTextSizes(
-  '14px / 19px (Deprecated)',
-  '16px / 22px (Deprecated)'
-);
+const tagSizes = selectTextSizes('14px / 19px (Deprecated)', '16px / 22px (Deprecated)');
 
 type TagSize = typeof tagSizes[number];
 
@@ -148,21 +123,10 @@ function Tag({
         <Inline alignVertical="center" space="6px">
           {icon && (
             <Bleed vertical="2px">
-              <Icon
-                color={iconColors[color]}
-                height="17"
-                name={icon}
-                width="17"
-              />
+              <Icon color={iconColors[color]} height="17" name={icon} width="17" />
             </Bleed>
           )}
-          <Text
-            align="center"
-            color={textColors[color]}
-            containsEmoji
-            size={size}
-            weight="bold"
-          >
+          <Text align="center" color={textColors[color]} containsEmoji size={size} weight="bold">
             {symbol ? `${symbol} ` : ''}
             {children as string}
           </Text>
@@ -172,15 +136,7 @@ function Tag({
   );
 }
 
-function RecordTag({
-  recordKey,
-  recordValue,
-  type,
-}: {
-  recordKey: string;
-  recordValue: string;
-  type: 'address' | 'record';
-}) {
+function RecordTag({ recordKey, recordValue, type }: { recordKey: string; recordValue: string; type: 'address' | 'record' }) {
   const { ContextMenuButton, icon, value } = useENSRecordDisplayProperties({
     key: recordKey,
     type,
@@ -215,12 +171,5 @@ export function Placeholder() {
 }
 
 export function PlaceholderItem() {
-  return (
-    <Box
-      background="body (Deprecated)"
-      borderRadius={30}
-      height={{ custom: 30 }}
-      width={{ custom: 140 }}
-    />
-  );
+  return <Box background="body (Deprecated)" borderRadius={30} height={{ custom: 30 }} width={{ custom: 140 }} />;
 }

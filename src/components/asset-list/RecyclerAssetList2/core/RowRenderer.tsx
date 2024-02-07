@@ -33,12 +33,7 @@ import * as lang from '@/languages';
 import { RemoteCardCarousel } from '@/components/cards/remote-cards';
 import WrappedCollectiblesHeader from '../WrappedCollectiblesHeader';
 
-function rowRenderer(
-  type: CellType,
-  { uid }: { uid: string },
-  _: unknown,
-  extendedState: ExtendedState
-) {
+function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, extendedState: ExtendedState) {
   const data = extendedState.additionalData[uid];
   switch (type) {
     case CellType.ASSETS_HEADER_SPACE_AFTER:
@@ -60,9 +55,7 @@ function rowRenderer(
       return (
         <CoinDivider
           balancesSum={(data as CoinDividerExtraData).value}
-          defaultToEditButton={
-            (data as CoinDividerExtraData).defaultToEditButton
-          }
+          defaultToEditButton={(data as CoinDividerExtraData).defaultToEditButton}
           extendedState={extendedState}
         />
       );
@@ -100,12 +93,7 @@ function rowRenderer(
         </CardRowWrapper>
       );
     case CellType.COIN:
-      return (
-        <FastBalanceCoinRow
-          extendedState={extendedState}
-          uniqueId={(data as CoinExtraData).uniqueId}
-        />
-      );
+      return <FastBalanceCoinRow extendedState={extendedState} uniqueId={(data as CoinExtraData).uniqueId} />;
     case CellType.PROFILE_ACTION_BUTTONS_ROW:
       return (
         <ProfileRowWrapper>
@@ -123,9 +111,7 @@ function rowRenderer(
         <ProfileRowWrapper>
           <ProfileBalanceRow
             totalValue={(data as AssetsHeaderExtraData).value}
-            isLoadingUserAssets={
-              (data as AssetsHeaderExtraData).isLoadingUserAssets
-            }
+            isLoadingUserAssets={(data as AssetsHeaderExtraData).isLoadingUserAssets}
           />
         </ProfileRowWrapper>
       );
@@ -168,12 +154,7 @@ function rowRenderer(
     case CellType.POSITION: {
       const { uniqueId, index } = data as PositionExtraData;
 
-      return (
-        <WrappedPosition
-          placement={index % 2 === 0 ? 'left' : 'right'}
-          uniqueId={uniqueId}
-        />
-      );
+      return <WrappedPosition placement={index % 2 === 0 ? 'left' : 'right'} uniqueId={uniqueId} />;
     }
 
     case CellType.LOADING_ASSETS:
@@ -183,7 +164,4 @@ function rowRenderer(
   }
 }
 
-export default rowRenderer as (
-  type: string | number,
-  data: any
-) => React.ReactElement;
+export default rowRenderer as (type: string | number, data: any) => React.ReactElement;

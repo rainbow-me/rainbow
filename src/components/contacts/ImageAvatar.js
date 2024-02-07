@@ -41,13 +41,7 @@ const sizeConfigs = (accentColor, colors, isDarkMode) => ({
   signing: {
     dimensions: 44,
     shadow: [
-      [
-        0,
-        4,
-        12,
-        !isDarkMode && accentColor ? accentColor : colors.shadow,
-        isDarkMode ? 0.16 : 0.2,
-      ],
+      [0, 4, 12, !isDarkMode && accentColor ? accentColor : colors.shadow, isDarkMode ? 0.16 : 0.2],
       [0, 2, 6, colors.trueBlack, 0.02],
     ],
     textSize: 25,
@@ -88,34 +82,19 @@ const Avatar = styled(ImgixImage)(({ dimensions }) => ({
   width: dimensions,
 }));
 
-const ImageAvatar = ({
-  image,
-  size = 'medium',
-  onLoad = undefined,
-  ...props
-}) => {
+const ImageAvatar = ({ image, size = 'medium', onLoad = undefined, ...props }) => {
   const { accentColor } = useAccountAccentColor();
   const { colors, isDarkMode } = useTheme();
-  const { dimensions, shadow } = useMemo(
-    () => sizeConfigs(accentColor, colors, isDarkMode)[size],
-    [accentColor, colors, isDarkMode, size]
-  );
+  const { dimensions, shadow } = useMemo(() => sizeConfigs(accentColor, colors, isDarkMode)[size], [accentColor, colors, isDarkMode, size]);
 
-  const shadows = useMemo(
-    () =>
-      size === 'header' || size === 'smaller'
-        ? buildSmallShadows(colors.shadow, colors)
-        : shadow,
-    [shadow, size, colors]
-  );
+  const shadows = useMemo(() => (size === 'header' || size === 'smaller' ? buildSmallShadows(colors.shadow, colors) : shadow), [
+    shadow,
+    size,
+    colors,
+  ]);
 
   return (
-    <ShadowStack
-      {...props}
-      {...borders.buildCircleAsObject(dimensions)}
-      backgroundColor={colors.white}
-      shadows={shadows}
-    >
+    <ShadowStack {...props} {...borders.buildCircleAsObject(dimensions)} backgroundColor={colors.white} shadows={shadows}>
       <Centered flex={1}>
         <Avatar
           onLoad={onLoad}

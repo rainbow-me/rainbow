@@ -8,20 +8,16 @@ import MenuItem from './MenuItem';
 import { analytics } from '@/analytics';
 import { useAccountSettings } from '@/hooks';
 import { emojis, supportedNativeCurrencies } from '@/references';
+import { Network } from '@/networks/types';
 
-const emojiData = Object.entries(emojis).map(([emoji, { name }]) => [
-  name,
-  emoji,
-]);
+const emojiData = Object.entries(emojis).map(([emoji, { name }]) => [name, emoji]);
 
 const emoji = new Map(emojiData as any);
 
-const currencyListItems = Object.values(supportedNativeCurrencies).map(
-  ({ currency, ...item }) => ({
-    ...item,
-    currency,
-  })
-);
+const currencyListItems = Object.values(supportedNativeCurrencies).map(({ currency, ...item }) => ({
+  ...item,
+  currency,
+}));
 
 const CurrencySection = () => {
   const { nativeCurrency, settingsChangeNativeCurrency } = useAccountSettings();
@@ -46,25 +42,13 @@ const CurrencySection = () => {
             key={currency}
             leftComponent={
               emojiName ? (
-                <MenuItem.TextIcon
-                  icon={(emoji.get('flag_' + emojiName) as string) || ''}
-                  isEmoji
-                />
+                <MenuItem.TextIcon icon={(emoji.get('flag_' + emojiName) as string) || ''} isEmoji />
               ) : (
-                <CoinIcon
-                  address={currency}
-                  size={23}
-                  style={{ marginLeft: 7 }}
-                  symbol={currency}
-                />
+                <CoinIcon address={currency} size={23} style={{ marginLeft: 7 }} symbol={currency} network={Network.mainnet} />
               )
             }
             onPress={() => onSelectCurrency(currency)}
-            rightComponent={
-              currency === nativeCurrency && (
-                <MenuItem.StatusIcon status="selected" />
-              )
-            }
+            rightComponent={currency === nativeCurrency && <MenuItem.StatusIcon status="selected" />}
             size={52}
             titleComponent={<MenuItem.Title text={label} />}
           />

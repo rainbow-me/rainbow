@@ -1,11 +1,7 @@
 import React from 'react';
 import { Box } from '@/design-system';
 import { useTheme } from '@/theme';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { LayoutChangeEvent } from 'react-native';
 
 type Props = {
@@ -26,13 +22,9 @@ export const RewardsProgressBar: React.FC<Props> = ({ progress, color }) => {
   }));
 
   const onLayout = (event: LayoutChangeEvent) => {
-    const maxWidth =
-      event.nativeEvent.layout.width - COMBINED_HORIZONTAL_PADDING;
+    const maxWidth = event.nativeEvent.layout.width - COMBINED_HORIZONTAL_PADDING;
     const destinationWidth = Math.min(
-      Math.max(
-        event.nativeEvent.layout.width * progress - COMBINED_HORIZONTAL_PADDING,
-        MIN_PROGRESS_WIDTH
-      ),
+      Math.max(event.nativeEvent.layout.width * progress - COMBINED_HORIZONTAL_PADDING, MIN_PROGRESS_WIDTH),
       maxWidth
     );
 

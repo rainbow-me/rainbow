@@ -2,20 +2,15 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import { InteractionManager, TextInput } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { delayNext } from './useMagicAutofocus';
-import { AssetType } from '@/entities';
 import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
 import { updatePrecisionToDisplay } from '@/helpers/utilities';
-import { useSwapDerivedValues, useSwapInputHandlers } from '@/hooks';
+import { useAccountSettings, useSwapDerivedValues, useSwapInputHandlers } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import { emitAssetRequest } from '@/redux/explorer';
-import {
-  flipSwapCurrencies,
-  updateSwapInputAmount,
-  updateSwapInputCurrency,
-  updateSwapOutputCurrency,
-} from '@/redux/swap';
+import { flipSwapCurrencies, updateSwapInputAmount, updateSwapInputCurrency, updateSwapOutputCurrency } from '@/redux/swap';
 import Routes from '@/navigation/routesNames';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
+import { queryClient } from '@/react-query';
+import { prefetchExternalToken } from '@/resources/assets/externalAssetsQuery';
 
 const { currentlyFocusedInput, focusTextInput } = TextInput.State;
 
@@ -35,28 +30,20 @@ export default function useSwapCurrencyHandlers({
   title,
   type,
 }: any = {}) {
+  const { nativeCurrency } = useAccountSettings();
   const dispatch = useDispatch();
   const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
-  const {
-    navigate,
-    setParams,
-    getParent: dangerouslyGetParent,
-  } = useNavigation();
+  const { navigate, setParams, getParent: dangerouslyGetParent } = useNavigation();
 
   const { derivedValues } = useSwapDerivedValues();
 
-  const {
-    updateInputAmount,
-    updateNativeAmount,
-    updateOutputAmount,
-  } = useSwapInputHandlers();
+  const { updateInputAmount, updateNativeAmount, updateOutputAmount } = useSwapInputHandlers();
 
   const { defaultInputItemInWallet, defaultOutputItem } = useMemo(() => {
     if (type === ExchangeModalTypes.swap) {
       const defaultInputItemInWallet = defaultInputAsset
         ? {
             ...defaultInputAsset,
-            type: defaultInputAsset?.type ?? AssetType.token,
           }
         : null;
 
@@ -74,45 +61,18 @@ export default function useSwapCurrencyHandlers({
   useEffect(() => {
     if (shouldUpdate) {
       if (defaultInputItemInWallet) {
-        dispatch(
-          updateSwapInputCurrency(
-            defaultInputItemInWallet,
-            ignoreInitialTypeCheck || crosschainSwapsEnabled
-          )
-        );
+        dispatch(updateSwapInputCurrency(defaultInputItemInWallet, ignoreInitialTypeCheck || crosschainSwapsEnabled));
       }
       if (defaultOutputItem) {
-        dispatch(
-          updateSwapOutputCurrency(
-            defaultOutputItem,
-            ignoreInitialTypeCheck || crosschainSwapsEnabled
-          )
-        );
+        dispatch(updateSwapOutputCurrency(defaultOutputItem, ignoreInitialTypeCheck || crosschainSwapsEnabled));
       }
     }
-  }, [
-    defaultInputItemInWallet,
-    dispatch,
-    defaultOutputItem,
-    shouldUpdate,
-    fromDiscover,
-    ignoreInitialTypeCheck,
-    crosschainSwapsEnabled,
-  ]);
+  }, [defaultInputItemInWallet, dispatch, defaultOutputItem, shouldUpdate, fromDiscover, ignoreInitialTypeCheck, crosschainSwapsEnabled]);
 
   const flipSwapCurrenciesWithTimeout = useCallback(
-    (
-      focusToRef: React.RefObject<any>,
-      outputIndependentField = false,
-      independentValue: string | null = null
-    ) => {
+    (focusToRef: React.RefObject<any>, outputIndependentField = false, independentValue: string | null = null) => {
       InteractionManager.runAfterInteractions(() => {
-        dispatch(
-          flipSwapCurrencies(
-            outputIndependentField,
-            independentValue ? updatePrecisionToDisplay(independentValue) : null
-          )
-        );
+        dispatch(flipSwapCurrencies(outputIndependentField, independentValue ? updatePrecisionToDisplay(independentValue) : null));
         setTimeout(() => {
           focusTextInput(focusToRef.current);
         }, 50);
@@ -125,35 +85,21 @@ export default function useSwapCurrencyHandlers({
     if (inputNetwork !== outputNetwork) {
       updateOutputAmount(null);
       flipSwapCurrenciesWithTimeout(
-        nativeFieldRef.current === currentlyFocusedInput()
-          ? nativeFieldRef
-          : inputFieldRef,
+        nativeFieldRef.current === currentlyFocusedInput() ? nativeFieldRef : inputFieldRef,
         false,
         derivedValues?.outputAmount
       );
     } else if (nativeFieldRef.current === currentlyFocusedInput()) {
       updateNativeAmount(null);
       updateInputAmount(null);
-      flipSwapCurrenciesWithTimeout(
-        outputFieldRef,
-        true,
-        derivedValues?.inputAmount
-      );
+      flipSwapCurrenciesWithTimeout(outputFieldRef, true, derivedValues?.inputAmount);
     } else if (inputFieldRef.current === currentlyFocusedInput()) {
       updateNativeAmount(null);
       updateInputAmount(null);
-      flipSwapCurrenciesWithTimeout(
-        outputFieldRef,
-        true,
-        derivedValues?.inputAmount
-      );
+      flipSwapCurrenciesWithTimeout(outputFieldRef, true, derivedValues?.inputAmount);
     } else if (outputFieldRef.current === currentlyFocusedInput()) {
       updateOutputAmount(null);
-      flipSwapCurrenciesWithTimeout(
-        inputFieldRef,
-        false,
-        derivedValues?.outputAmount
-      );
+      flipSwapCurrenciesWithTimeout(inputFieldRef, false, derivedValues?.outputAmount);
     }
   }, [
     currentNetwork,
@@ -175,18 +121,16 @@ export default function useSwapCurrencyHandlers({
       const newInputCurrency = inputCurrency
         ? {
             ...inputCurrency,
-            type: inputCurrency?.type ?? AssetType.token,
           }
         : null;
 
-      dispatch(emitAssetRequest(newInputCurrency.mainnet_address));
-      dispatch(
-        updateSwapInputCurrency(newInputCurrency, crosschainSwapsEnabled)
-      );
+      // prefetchExternalToken({address: newInputCurrency.address, network: newInputCurrency.network, currency: nativeCurrency})
+
+      dispatch(updateSwapInputCurrency(newInputCurrency, crosschainSwapsEnabled));
       setLastFocusedInputHandle?.(inputFieldRef);
       handleNavigate?.(newInputCurrency);
     },
-    [crosschainSwapsEnabled, dispatch, inputFieldRef, setLastFocusedInputHandle]
+    [crosschainSwapsEnabled, dispatch, inputFieldRef, nativeCurrency, setLastFocusedInputHandle]
   );
 
   const updateOutputCurrency = useCallback(
@@ -194,18 +138,15 @@ export default function useSwapCurrencyHandlers({
       const newOutputCurrency = outputCurrency
         ? {
             ...outputCurrency,
-            type: outputCurrency?.type ?? AssetType.token,
           }
         : null;
 
-      dispatch(emitAssetRequest(newOutputCurrency.mainnet_address));
-      dispatch(
-        updateSwapOutputCurrency(newOutputCurrency, crosschainSwapsEnabled)
-      );
+      // prefetchExternalToken({address: newOutputCurrency.address, network: newOutputCurrency.network, currency: nativeCurrency})
+      dispatch(updateSwapOutputCurrency(newOutputCurrency, crosschainSwapsEnabled));
       setLastFocusedInputHandle?.(inputFieldRef);
       handleNavigate?.(newOutputCurrency);
     },
-    [crosschainSwapsEnabled, dispatch, inputFieldRef, setLastFocusedInputHandle]
+    [crosschainSwapsEnabled, dispatch, inputFieldRef, nativeCurrency, setLastFocusedInputHandle]
   );
 
   const navigateToSelectInputCurrency = useCallback(
@@ -225,14 +166,7 @@ export default function useSwapCurrencyHandlers({
         });
       });
     },
-    [
-      dangerouslyGetParent,
-      inputFieldRef,
-      navigate,
-      setParams,
-      title,
-      updateInputCurrency,
-    ]
+    [dangerouslyGetParent, inputFieldRef, navigate, setParams, title, updateInputCurrency]
   );
 
   const navigateToSelectOutputCurrency = useCallback(

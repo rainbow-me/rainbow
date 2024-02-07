@@ -1,8 +1,4 @@
-import {
-  GlobalNotificationTopic,
-  WalletNotificationRelationship,
-  WalletNotificationTopic,
-} from '@/notifications/settings/constants';
+import { GlobalNotificationTopic, WalletNotificationRelationship, WalletNotificationTopic } from '@/notifications/settings/constants';
 
 export type WalletNotificationTopicType = typeof WalletNotificationTopic[keyof typeof WalletNotificationTopic];
 

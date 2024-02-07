@@ -4,21 +4,8 @@ import { useIsFocused } from '@react-navigation/native';
 import * as i18n from '@/languages';
 import { isNaN } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withSequence,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated';
-import {
-  AccentColorProvider,
-  Box,
-  globalColors,
-  Stack,
-  Text,
-} from '@/design-system';
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from 'react-native-reanimated';
+import { AccentColorProvider, Box, globalColors, Stack, Text } from '@/design-system';
 import { add } from '@/helpers/utilities';
 import { useGas } from '@/hooks';
 import { gasUtils } from '@/utils';
@@ -47,12 +34,7 @@ const fadeOutConfig: AnimationConfigOptions = {
 };
 
 export const GasCard = () => {
-  const {
-    currentBlockParams,
-    gasFeeParamsBySpeed,
-    startPollingGasFees,
-    stopPollingGasFees,
-  } = useGas();
+  const { currentBlockParams, gasFeeParamsBySpeed, startPollingGasFees, stopPollingGasFees } = useGas();
   const isFocused = useIsFocused();
   const [lastKnownGwei, setLastKnownGwei] = useState('');
 
@@ -71,14 +53,11 @@ export const GasCard = () => {
 
   const { NORMAL } = gasUtils;
 
-  const currentGwei = useMemo(
-    () =>
-      add(
-        currentBlockParams?.baseFeePerGas?.gwei,
-        gasFeeParamsBySpeed[NORMAL]?.maxPriorityFeePerGas?.gwei
-      ),
-    [NORMAL, currentBlockParams?.baseFeePerGas?.gwei, gasFeeParamsBySpeed]
-  );
+  const currentGwei = useMemo(() => add(currentBlockParams?.baseFeePerGas?.gwei, gasFeeParamsBySpeed[NORMAL]?.maxPriorityFeePerGas?.gwei), [
+    NORMAL,
+    currentBlockParams?.baseFeePerGas?.gwei,
+    gasFeeParamsBySpeed,
+  ]);
   const isCurrentGweiLoaded = currentGwei && Number(currentGwei) > 0;
 
   const renderGweiText = useCallback(
@@ -111,26 +90,14 @@ export const GasCard = () => {
   const handlePress = useCallback(() => {
     opacity.value = 0;
     scale.value = 0;
-    container.value = withSequence(
-      withSpring(1.04, containerConfig),
-      withSpring(1, pulseConfig)
-    );
-    opacity.value = withSequence(
-      withSpring(1, pulseConfig),
-      withTiming(0, fadeOutConfig),
-      withTiming(0, { duration: 0 })
-    );
-    scale.value = withSequence(
-      withSpring(1, pulseConfig),
-      withTiming(1, fadeOutConfig),
-      withTiming(0, { duration: 0 })
-    );
+    container.value = withSequence(withSpring(1.04, containerConfig), withSpring(1, pulseConfig));
+    opacity.value = withSequence(withSpring(1, pulseConfig), withTiming(0, fadeOutConfig), withTiming(0, { duration: 0 }));
+    scale.value = withSequence(withSpring(1, pulseConfig), withTiming(1, fadeOutConfig), withTiming(0, { duration: 0 }));
   }, [container, opacity, scale]);
 
   const getColorForGwei = (currentGwei: string, lastKnownGwei: string) => {
     'worklet';
-    const gwei =
-      Math.round(Number(currentGwei)) || Math.round(Number(lastKnownGwei));
+    const gwei = Math.round(Number(currentGwei)) || Math.round(Number(lastKnownGwei));
 
     if (!gwei) {
       return globalColors.grey60;
@@ -145,12 +112,8 @@ export const GasCard = () => {
     }
   };
 
-  const getCurrentPriceComparison = (
-    currentGwei: string,
-    lastKnownGwei: string
-  ) => {
-    const gwei =
-      Math.round(Number(currentGwei)) || Math.round(Number(lastKnownGwei));
+  const getCurrentPriceComparison = (currentGwei: string, lastKnownGwei: string) => {
+    const gwei = Math.round(Number(currentGwei)) || Math.round(Number(lastKnownGwei));
 
     if (!gwei) {
       return i18n.t(TRANSLATIONS.loading);
@@ -168,36 +131,15 @@ export const GasCard = () => {
   };
 
   useEffect(() => {
-    if (
-      isCurrentGweiLoaded &&
-      Math.round(Number(currentGwei)) !== Math.round(Number(lastKnownGwei))
-    ) {
+    if (isCurrentGweiLoaded && Math.round(Number(currentGwei)) !== Math.round(Number(lastKnownGwei))) {
       setLastKnownGwei(currentGwei);
       opacity.value = 0;
       scale.value = 0;
-      container.value = withSequence(
-        withSpring(1.04, containerConfig),
-        withSpring(1, pulseConfig)
-      );
-      opacity.value = withSequence(
-        withSpring(1, pulseConfig),
-        withTiming(0, fadeOutConfig),
-        withTiming(0, { duration: 0 })
-      );
-      scale.value = withSequence(
-        withSpring(1, pulseConfig),
-        withTiming(1, fadeOutConfig),
-        withTiming(0, { duration: 0 })
-      );
+      container.value = withSequence(withSpring(1.04, containerConfig), withSpring(1, pulseConfig));
+      opacity.value = withSequence(withSpring(1, pulseConfig), withTiming(0, fadeOutConfig), withTiming(0, { duration: 0 }));
+      scale.value = withSequence(withSpring(1, pulseConfig), withTiming(1, fadeOutConfig), withTiming(0, { duration: 0 }));
     }
-  }, [
-    container,
-    currentGwei,
-    isCurrentGweiLoaded,
-    lastKnownGwei,
-    opacity,
-    scale,
-  ]);
+  }, [container, currentGwei, isCurrentGweiLoaded, lastKnownGwei, opacity, scale]);
 
   const containerStyle = useAnimatedStyle(() => {
     return {
@@ -229,16 +171,9 @@ export const GasCard = () => {
   return (
     <Animated.View style={containerStyle}>
       <GenericCard onPress={handlePress} testID="gas-button" type="square">
-        <AccentColorProvider
-          color={getColorForGwei(currentGwei, lastKnownGwei)}
-        >
+        <AccentColorProvider color={getColorForGwei(currentGwei, lastKnownGwei)}>
           <Box as={Animated.View} position="absolute" style={pulseStyle} />
-          <Box
-            height="full"
-            width="full"
-            justifyContent="space-between"
-            alignItems="flex-start"
-          >
+          <Box height="full" width="full" justifyContent="space-between" alignItems="flex-start">
             <Stack space={{ custom: 14 }}>
               <AnimateNumber
                 formatter={formatGasPrice}
@@ -248,24 +183,14 @@ export const GasCard = () => {
                 value={currentGwei || lastKnownGwei}
               />
               <Text color="accent" size="17pt" weight="bold">
-                {!isCurrentGweiLoaded && !lastKnownGwei
-                  ? ''
-                  : i18n.t(TRANSLATIONS.gwei)}
+                {!isCurrentGweiLoaded && !lastKnownGwei ? '' : i18n.t(TRANSLATIONS.gwei)}
               </Text>
             </Stack>
             <Stack space="10px">
               <Text color="labelTertiary" size="13pt" weight="bold">
                 {i18n.t(TRANSLATIONS.network_fees)}
               </Text>
-              <Text
-                color={
-                  !isCurrentGweiLoaded && !lastKnownGwei
-                    ? 'labelTertiary'
-                    : 'labelSecondary'
-                }
-                size="20pt"
-                weight="bold"
-              >
+              <Text color={!isCurrentGweiLoaded && !lastKnownGwei ? 'labelTertiary' : 'labelSecondary'} size="20pt" weight="bold">
                 {getCurrentPriceComparison(currentGwei, lastKnownGwei)}
               </Text>
             </Stack>

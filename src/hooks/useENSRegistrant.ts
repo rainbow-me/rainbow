@@ -1,11 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchRegistration } from '@/handlers/ens';
 import { getENSData, saveENSData } from '@/handlers/localstorage/ens';
-import {
-  queryClient,
-  QueryConfigDeprecated,
-  UseQueryData,
-} from '@/react-query';
+import { queryClient, QueryConfigDeprecated, UseQueryData } from '@/react-query';
 
 export const ensRegistrantQueryKey = (name: string) => ['ens-registrant', name];
 
@@ -22,24 +18,13 @@ export async function fetchENSRegistrant(name: string) {
 }
 
 export async function prefetchENSRegistrant(name: string) {
-  queryClient.prefetchQuery(
-    ensRegistrantQueryKey(name),
-    async () => fetchENSRegistrant(name),
-    { staleTime: STALE_TIME }
-  );
+  queryClient.prefetchQuery(ensRegistrantQueryKey(name), async () => fetchENSRegistrant(name), { staleTime: STALE_TIME });
 }
 
-export default function useENSRegistrant(
-  name: string,
-  config?: QueryConfigDeprecated<typeof fetchENSRegistrant>
-) {
-  return useQuery<UseQueryData<typeof fetchENSRegistrant>>(
-    ensRegistrantQueryKey(name),
-    async () => fetchENSRegistrant(name),
-    {
-      ...config,
-      // Data will be stale for 10s to avoid dupe queries
-      staleTime: STALE_TIME,
-    }
-  );
+export default function useENSRegistrant(name: string, config?: QueryConfigDeprecated<typeof fetchENSRegistrant>) {
+  return useQuery<UseQueryData<typeof fetchENSRegistrant>>(ensRegistrantQueryKey(name), async () => fetchENSRegistrant(name), {
+    ...config,
+    // Data will be stale for 10s to avoid dupe queries
+    staleTime: STALE_TIME,
+  });
 }

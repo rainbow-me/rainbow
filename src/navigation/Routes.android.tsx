@@ -95,41 +95,13 @@ const BSStack = createBottomSheetNavigator();
 function MainNavigator() {
   const initialRoute = (useContext(InitialRouteContext) as unknown) as string;
   return (
-    <Stack.Navigator
-      initialRouteName={initialRoute}
-      {...stackNavigationConfig}
-      screenOptions={defaultScreenStackOptions}
-    >
-      <Stack.Screen
-        component={SwipeNavigator}
-        name={Routes.SWIPE_LAYOUT}
-        options={expandedPreset}
-      />
-      <Stack.Screen
-        component={AvatarBuilder}
-        name={Routes.AVATAR_BUILDER}
-        options={emojiPreset}
-      />
-      <Stack.Screen
-        component={ChangeWalletSheet}
-        name={Routes.CHANGE_WALLET_SHEET}
-        options={expandedPreset}
-      />
-      <Stack.Screen
-        component={ConnectedDappsSheet}
-        name={Routes.CONNECTED_DAPPS}
-        options={expandedPreset}
-      />
-      <Stack.Screen
-        component={Portal}
-        name={Routes.PORTAL}
-        options={expandedPreset}
-      />
-      <Stack.Screen
-        component={PositionSheet}
-        name={Routes.POSITION_SHEET}
-        options={expandedPreset}
-      />
+    <Stack.Navigator initialRouteName={initialRoute} {...stackNavigationConfig} screenOptions={defaultScreenStackOptions}>
+      <Stack.Screen component={SwipeNavigator} name={Routes.SWIPE_LAYOUT} options={expandedPreset} />
+      <Stack.Screen component={AvatarBuilder} name={Routes.AVATAR_BUILDER} options={emojiPreset} />
+      <Stack.Screen component={ChangeWalletSheet} name={Routes.CHANGE_WALLET_SHEET} options={expandedPreset} />
+      <Stack.Screen component={ConnectedDappsSheet} name={Routes.CONNECTED_DAPPS} options={expandedPreset} />
+      <Stack.Screen component={Portal} name={Routes.PORTAL} options={expandedPreset} />
+      <Stack.Screen component={PositionSheet} name={Routes.POSITION_SHEET} options={expandedPreset} />
       <Stack.Screen
         component={SpeedUpAndCancelSheet}
         name={Routes.SPEED_UP_AND_CANCEL_SHEET}
@@ -138,54 +110,21 @@ function MainNavigator() {
           cardStyleInterpolator: speedUpAndCancelStyleInterpolator,
         }}
       />
-      <Stack.Screen
-        component={ExchangeModalNavigator}
-        name={Routes.EXCHANGE_MODAL}
-        options={exchangePreset}
-      />
-      <Stack.Screen
-        component={ReceiveModal}
-        name={Routes.RECEIVE_MODAL}
-        options={androidRecievePreset}
-      />
+      <Stack.Screen component={ExchangeModalNavigator} name={Routes.EXCHANGE_MODAL} options={exchangePreset} />
+      <Stack.Screen component={ReceiveModal} name={Routes.RECEIVE_MODAL} options={androidRecievePreset} />
 
-      <Stack.Screen
-        component={WalletConnectRedirectSheet}
-        name={Routes.WALLET_CONNECT_REDIRECT_SHEET}
-        options={wcPromptPreset}
-      />
-      <Stack.Screen
-        component={AddCashSheet}
-        name={Routes.ADD_CASH_SHEET}
-        options={addCashSheet}
-      />
-      <Stack.Screen
-        component={BackupSheet}
-        name={Routes.BACKUP_SHEET}
-        options={expandedPreset}
-      />
-      <Stack.Screen
-        component={RestoreSheet}
-        name={Routes.RESTORE_SHEET}
-        {...restoreSheetConfig}
-        options={bottomSheetPreset}
-      />
-      <Stack.Screen
-        component={WelcomeScreen}
-        name={Routes.WELCOME_SCREEN}
-        options={{ animationEnabled: false, gestureEnabled: false }}
-      />
+      <Stack.Screen component={WalletConnectRedirectSheet} name={Routes.WALLET_CONNECT_REDIRECT_SHEET} options={wcPromptPreset} />
+      <Stack.Screen component={AddCashSheet} name={Routes.ADD_CASH_SHEET} options={addCashSheet} />
+      <Stack.Screen component={BackupSheet} name={Routes.BACKUP_SHEET} options={expandedPreset} />
+      <Stack.Screen component={RestoreSheet} name={Routes.RESTORE_SHEET} {...restoreSheetConfig} options={bottomSheetPreset} />
+      <Stack.Screen component={WelcomeScreen} name={Routes.WELCOME_SCREEN} options={{ animationEnabled: false, gestureEnabled: false }} />
       <Stack.Screen
         component={ShowSecretView}
         name="ShowSecretView"
         // @ts-ignore
         options={bottomSheetPreset}
       />
-      <Stack.Screen
-        component={WalletConnectApprovalSheet}
-        name={Routes.WALLET_CONNECT_APPROVAL_SHEET}
-        options={bottomSheetPreset}
-      />
+      <Stack.Screen component={WalletConnectApprovalSheet} name={Routes.WALLET_CONNECT_APPROVAL_SHEET} options={bottomSheetPreset} />
     </Stack.Navigator>
   );
 }
@@ -193,20 +132,9 @@ function MainNavigator() {
 // FIXME do it in one navigator
 function MainOuterNavigator() {
   return (
-    <OuterStack.Navigator
-      initialRouteName={Routes.MAIN_NAVIGATOR}
-      {...stackNavigationConfig}
-      screenOptions={defaultScreenStackOptions}
-    >
-      <OuterStack.Screen
-        component={MainNavigator}
-        name={Routes.MAIN_NAVIGATOR}
-      />
-      <OuterStack.Screen
-        component={BackupSheet}
-        name={Routes.BACKUP_SCREEN}
-        options={expandedPreset}
-      />
+    <OuterStack.Navigator initialRouteName={Routes.MAIN_NAVIGATOR} {...stackNavigationConfig} screenOptions={defaultScreenStackOptions}>
+      <OuterStack.Screen component={MainNavigator} name={Routes.MAIN_NAVIGATOR} />
+      <OuterStack.Screen component={BackupSheet} name={Routes.BACKUP_SCREEN} options={expandedPreset} />
       <OuterStack.Screen
         component={SendSheet}
         name={Routes.SEND_SHEET_NAVIGATOR}
@@ -221,10 +149,7 @@ function BSNavigator() {
 
   return (
     <BSStack.Navigator>
-      <BSStack.Screen
-        component={MainOuterNavigator}
-        name={Routes.MAIN_NAVIGATOR_WRAPPER}
-      />
+      <BSStack.Screen component={MainOuterNavigator} name={Routes.MAIN_NAVIGATOR_WRAPPER} />
       <BSStack.Screen
         component={ShowcaseSheet}
         name={Routes.SHOWCASE_SHEET}
@@ -232,26 +157,12 @@ function BSNavigator() {
           height: '95%',
         }}
       />
-      <BSStack.Screen
-        component={LearnWebViewScreen}
-        name={Routes.LEARN_WEB_VIEW_SCREEN}
-        {...learnWebViewScreenConfig}
-      />
-      <BSStack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.EXPANDED_ASSET_SHEET}
-      />
+      <BSStack.Screen component={LearnWebViewScreen} name={Routes.LEARN_WEB_VIEW_SCREEN} {...learnWebViewScreenConfig} />
+      <BSStack.Screen component={ExpandedAssetSheet} name={Routes.EXPANDED_ASSET_SHEET} />
       <BSStack.Screen component={PoapSheet} name={Routes.POAP_SHEET} />
       <BSStack.Screen component={MintSheet} name={Routes.MINT_SHEET} />
-      <BSStack.Screen
-        component={QRScannerScreen}
-        name={Routes.QR_SCANNER_SCREEN}
-      />
-      <BSStack.Screen
-        component={AddWalletNavigator}
-        name={Routes.ADD_WALLET_NAVIGATOR}
-        options={addWalletNavigatorPreset}
-      />
+      <BSStack.Screen component={QRScannerScreen} name={Routes.QR_SCANNER_SCREEN} />
+      <BSStack.Screen component={AddWalletNavigator} name={Routes.ADD_WALLET_NAVIGATOR} options={addWalletNavigatorPreset} />
       <BSStack.Screen
         component={PairHardwareWalletNavigator}
         name={Routes.PAIR_HARDWARE_WALLET_NAVIGATOR}
@@ -266,71 +177,26 @@ function BSNavigator() {
       />
       {profilesEnabled && (
         <>
-          <BSStack.Screen
-            component={ENSConfirmRegisterSheet}
-            name={Routes.ENS_CONFIRM_REGISTER_SHEET}
-          />
-          <BSStack.Screen
-            component={ProfileSheet}
-            name={Routes.PROFILE_SHEET}
-          />
-          <BSStack.Screen
-            component={RegisterENSNavigator}
-            name={Routes.REGISTER_ENS_NAVIGATOR}
-          />
-          <BSStack.Screen
-            component={ENSAdditionalRecordsSheet}
-            name={Routes.ENS_ADDITIONAL_RECORDS_SHEET}
-          />
-          <BSStack.Screen
-            component={SelectENSSheet}
-            name={Routes.SELECT_ENS_SHEET}
-          />
-          <BSStack.Screen
-            component={ProfileSheet}
-            name={Routes.PROFILE_PREVIEW_SHEET}
-          />
+          <BSStack.Screen component={ENSConfirmRegisterSheet} name={Routes.ENS_CONFIRM_REGISTER_SHEET} />
+          <BSStack.Screen component={ProfileSheet} name={Routes.PROFILE_SHEET} />
+          <BSStack.Screen component={RegisterENSNavigator} name={Routes.REGISTER_ENS_NAVIGATOR} />
+          <BSStack.Screen component={ENSAdditionalRecordsSheet} name={Routes.ENS_ADDITIONAL_RECORDS_SHEET} />
+          <BSStack.Screen component={SelectENSSheet} name={Routes.SELECT_ENS_SHEET} />
+          <BSStack.Screen component={ProfileSheet} name={Routes.PROFILE_PREVIEW_SHEET} />
           <BSStack.Screen
             component={SelectUniqueTokenSheet}
             name={Routes.SELECT_UNIQUE_TOKEN_SHEET}
             options={{ ...bottomSheetPreset, height: '95%' }}
           />
-          <BSStack.Screen
-            component={SpeedUpAndCancelSheet}
-            name={Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET}
-          />
+          <BSStack.Screen component={SpeedUpAndCancelSheet} name={Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET} />
         </>
       )}
-      <BSStack.Screen
-        component={RemotePromoSheet}
-        name={Routes.REMOTE_PROMO_SHEET}
-        options={bottomSheetPreset}
-      />
-      <BSStack.Screen
-        component={NotificationsPromoSheet}
-        name={Routes.NOTIFICATIONS_PROMO_SHEET}
-        options={bottomSheetPreset}
-      />
-      <BSStack.Screen
-        component={ExplainSheet}
-        name={Routes.EXPLAIN_SHEET}
-        options={bottomSheetPreset}
-      />
-      <BSStack.Screen
-        component={ExternalLinkWarningSheet}
-        name={Routes.EXTERNAL_LINK_WARNING_SHEET}
-        options={bottomSheetPreset}
-      />
-      <BSStack.Screen
-        component={ModalScreen}
-        {...closeKeyboardOnClose}
-        name={Routes.MODAL_SCREEN}
-      />
-      <BSStack.Screen
-        component={SendConfirmationSheet}
-        name={Routes.SEND_CONFIRMATION_SHEET}
-        options={sheetPreset}
-      />
+      <BSStack.Screen component={RemotePromoSheet} name={Routes.REMOTE_PROMO_SHEET} options={bottomSheetPreset} />
+      <BSStack.Screen component={NotificationsPromoSheet} name={Routes.NOTIFICATIONS_PROMO_SHEET} options={bottomSheetPreset} />
+      <BSStack.Screen component={ExplainSheet} name={Routes.EXPLAIN_SHEET} options={bottomSheetPreset} />
+      <BSStack.Screen component={ExternalLinkWarningSheet} name={Routes.EXTERNAL_LINK_WARNING_SHEET} options={bottomSheetPreset} />
+      <BSStack.Screen component={ModalScreen} {...closeKeyboardOnClose} name={Routes.MODAL_SCREEN} />
+      <BSStack.Screen component={SendConfirmationSheet} name={Routes.SEND_CONFIRMATION_SHEET} options={sheetPreset} />
       <BSStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.CUSTOM_GAS_SHEET}
@@ -338,20 +204,13 @@ function BSNavigator() {
           backdropOpacity: 1,
         }}
       />
-      <BSStack.Screen
-        component={WalletDiagnosticsSheet}
-        name={Routes.DIAGNOSTICS_SHEET}
-        options={{ ...bottomSheetPreset }}
-      />
+      <BSStack.Screen component={WalletDiagnosticsSheet} name={Routes.DIAGNOSTICS_SHEET} options={{ ...bottomSheetPreset }} />
       <BSStack.Screen
         component={SettingsSheet}
         name={Routes.SETTINGS_SHEET}
         options={{
           ...bottomSheetPreset,
-          height:
-            deviceUtils.dimensions.height +
-            CUSTOM_MARGIN_TOP_ANDROID -
-            (StatusBar?.currentHeight || 0),
+          height: deviceUtils.dimensions.height + CUSTOM_MARGIN_TOP_ANDROID - (StatusBar?.currentHeight || 0),
         }}
       />
       <BSStack.Screen
@@ -360,32 +219,12 @@ function BSNavigator() {
         // @ts-ignore
         options={{ ...bottomSheetPreset, scrollEnabled: false }}
       />
-      <BSStack.Screen
-        name={Routes.OP_REWARDS_SHEET}
-        component={RewardsSheet}
-        options={{ ...bottomSheetPreset }}
-      />
-      <BSStack.Screen
-        name={Routes.NFT_OFFERS_SHEET}
-        component={NFTOffersSheet}
-        options={{ ...bottomSheetPreset }}
-      />
-      <BSStack.Screen
-        name={Routes.NFT_SINGLE_OFFER_SHEET}
-        component={NFTSingleOfferSheet}
-        options={nftSingleOfferSheetPreset}
-      />
+      <BSStack.Screen name={Routes.OP_REWARDS_SHEET} component={RewardsSheet} options={{ ...bottomSheetPreset }} />
+      <BSStack.Screen name={Routes.NFT_OFFERS_SHEET} component={NFTOffersSheet} options={{ ...bottomSheetPreset }} />
+      <BSStack.Screen name={Routes.NFT_SINGLE_OFFER_SHEET} component={NFTSingleOfferSheet} options={nftSingleOfferSheetPreset} />
       <BSStack.Screen name={Routes.MINTS_SHEET} component={MintsSheet} />
-      <BSStack.Screen
-        component={SignTransactionSheet}
-        name={Routes.CONFIRM_REQUEST}
-        options={walletconnectBottomSheetPreset}
-      />
-      <BSStack.Screen
-        component={ConsoleSheet}
-        name={Routes.CONSOLE_SHEET}
-        options={consoleSheetPreset}
-      />
+      <BSStack.Screen component={SignTransactionSheet} name={Routes.CONFIRM_REQUEST} options={walletconnectBottomSheetPreset} />
+      <BSStack.Screen component={ConsoleSheet} name={Routes.CONSOLE_SHEET} options={consoleSheetPreset} />
     </BSStack.Navigator>
   );
 }
@@ -397,10 +236,7 @@ function AuthNavigator() {
       initialRouteName={Routes.MAIN_NATIVE_BOTTOM_SHEET_NAVIGATOR}
       screenOptions={defaultScreenStackOptions}
     >
-      <AuthStack.Screen
-        component={BSNavigator}
-        name={Routes.MAIN_NATIVE_BOTTOM_SHEET_NAVIGATOR}
-      />
+      <AuthStack.Screen component={BSNavigator} name={Routes.MAIN_NATIVE_BOTTOM_SHEET_NAVIGATOR} />
       <AuthStack.Screen
         component={PinAuthenticationScreen}
         name={Routes.PIN_AUTHENTICATION_SCREEN}
@@ -410,25 +246,18 @@ function AuthNavigator() {
   );
 }
 
-const AppContainerWithAnalytics = React.forwardRef(
-  (
-    props: {
-      onReady: () => void;
-    },
-    ref
-  ) => (
-    <NavigationContainer
-      onReady={props.onReady}
-      onStateChange={onNavigationStateChange}
-      // @ts-ignore
-      ref={ref}
-    >
-      <PointsProfileProvider>
-        <AuthNavigator />
-      </PointsProfileProvider>
-    </NavigationContainer>
-  )
-);
+const AppContainerWithAnalytics = React.forwardRef((props: { onReady: () => void }, ref) => (
+  <NavigationContainer
+    onReady={props.onReady}
+    onStateChange={onNavigationStateChange}
+    // @ts-ignore
+    ref={ref}
+  >
+    <PointsProfileProvider>
+      <AuthNavigator />
+    </PointsProfileProvider>
+  </NavigationContainer>
+));
 
 AppContainerWithAnalytics.displayName = 'AppContainerWithAnalytics';
 

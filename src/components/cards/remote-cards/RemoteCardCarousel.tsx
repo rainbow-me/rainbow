@@ -3,15 +3,12 @@ import { CarouselCard } from '../CarouselCard';
 import { useRoute } from '@react-navigation/native';
 import { IS_TEST } from '@/env';
 
-import {
-  TrimmedCard,
-  useRemoteCardContext,
-  RemoteCard,
-} from '@/components/cards/remote-cards';
+import { useRemoteCardContext, RemoteCard } from '@/components/cards/remote-cards';
 import { REMOTE_CARDS, getExperimetalFlag } from '@/config';
 import { useDimensions, useWallets } from '@/hooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { FlashList } from '@shopify/flash-list';
+import { TrimmedCard } from '@/resources/cards/cardCollectionQuery';
 
 type RenderItemProps = {
   item: TrimmedCard;
@@ -32,27 +29,16 @@ export const RemoteCardCarousel = () => {
   const config = useRemoteConfig();
   const { isReadOnlyWallet } = useWallets();
 
-  const remoteCardsEnabled =
-    getExperimetalFlag(REMOTE_CARDS) || config.remote_cards_enabled;
+  const remoteCardsEnabled = getExperimetalFlag(REMOTE_CARDS) || config.remote_cards_enabled;
   const { getCardsForPlacement } = useRemoteCardContext();
   const { width } = useDimensions();
 
-  const data = useMemo(() => getCardsForPlacement(name as string), [
-    getCardsForPlacement,
-    name,
-  ]);
+  const data = useMemo(() => getCardsForPlacement(name as string), [getCardsForPlacement, name]);
 
   const gutterSize = getGutterSizeForCardAmount(data.length);
 
   const _renderItem = ({ item }: RenderItemProps) => {
-    return (
-      <RemoteCard
-        card={item}
-        cards={data}
-        gutterSize={gutterSize}
-        carouselRef={carouselRef}
-      />
-    );
+    return <RemoteCard card={item} cards={data} gutterSize={gutterSize} carouselRef={carouselRef} />;
   };
 
   if (isReadOnlyWallet || IS_TEST || !remoteCardsEnabled || !data.length) {

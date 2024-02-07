@@ -17,10 +17,7 @@ import { FakeOfferRow, OfferRow } from './OfferRow';
 import { useAccountProfile, useDimensions } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { ContactAvatar } from '@/components/contacts';
-import {
-  nftOffersQueryKey,
-  useNFTOffers,
-} from '@/resources/reservoir/nftOffersQuery';
+import { nftOffersQueryKey, useNFTOffers } from '@/resources/reservoir/nftOffersQuery';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { SortMenu } from '@/components/nft-offers/SortMenu';
 import * as i18n from '@/languages';
@@ -33,12 +30,7 @@ const PROFILE_AVATAR_SIZE = 36;
 
 export const NFTOffersSheet = () => {
   const separatorSecondary = useForegroundColor('separatorSecondary');
-  const {
-    accountColor,
-    accountImage,
-    accountSymbol,
-    accountAddress,
-  } = useAccountProfile();
+  const { accountColor, accountImage, accountSymbol, accountAddress } = useAccountProfile();
   const { isDarkMode } = useTheme();
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
 
@@ -52,10 +44,7 @@ export const NFTOffersSheet = () => {
 
   const offers = nftOffers ?? [];
 
-  const totalUSDValue = offers.reduce(
-    (acc: number, offer: NftOffer) => acc + offer.grossAmount.usd,
-    0
-  );
+  const totalUSDValue = offers.reduce((acc: number, offer: NftOffer) => acc + offer.grossAmount.usd, 0);
 
   const totalValue = convertAmountToNativeDisplay(totalUSDValue, 'USD');
 
@@ -108,22 +97,13 @@ export const NFTOffersSheet = () => {
                   >
                     {isLoading ? (
                       <Box
-                        background={
-                          isDarkMode
-                            ? 'surfaceSecondaryElevated'
-                            : 'fillSecondary'
-                        }
+                        background={isDarkMode ? 'surfaceSecondaryElevated' : 'fillSecondary'}
                         width={{ custom: 20 }}
                         height={{ custom: 15 }}
                         borderRadius={15 / 2}
                       />
                     ) : (
-                      <Text
-                        color="labelTertiary"
-                        align="center"
-                        size="15pt"
-                        weight="bold"
-                      >
+                      <Text color="labelTertiary" align="center" size="15pt" weight="bold">
                         {offers.length}
                       </Text>
                     )}
@@ -136,11 +116,7 @@ export const NFTOffersSheet = () => {
                     </Text>
                     {isLoading ? (
                       <Box
-                        background={
-                          isDarkMode
-                            ? 'surfaceSecondaryElevated'
-                            : 'fillSecondary'
-                        }
+                        background={isDarkMode ? 'surfaceSecondaryElevated' : 'fillSecondary'}
                         width={{ custom: 100 }}
                         height={{ custom: 15 }}
                         borderRadius={15 / 2}
@@ -187,27 +163,15 @@ export const NFTOffersSheet = () => {
                 </Bleed>
               </Inset>
             ) : (
-              <Box
-                paddingTop={{ custom: 180 }}
-                width="full"
-                alignItems="center"
-              >
+              <Box paddingTop={{ custom: 180 }} width="full" alignItems="center">
                 <Stack space="36px">
-                  <Text
-                    align="center"
-                    color="labelSecondary"
-                    weight="bold"
-                    size="20pt"
-                  >
+                  <Text align="center" color="labelSecondary" weight="bold" size="20pt">
                     {i18n.t(i18n.l.nft_offers.sheet.no_offers_found)}
                   </Text>
                   <ButtonPressAnimation
                     onPress={() => {
                       // only allow refresh if data is at least 30 seconds old
-                      if (
-                        !dataUpdatedAt ||
-                        Date.now() - dataUpdatedAt > 30_000
-                      ) {
+                      if (!dataUpdatedAt || Date.now() - dataUpdatedAt > 30_000) {
                         queryClient.invalidateQueries({
                           queryKey: nftOffersQueryKey({
                             walletAddress: accountAddress,
@@ -216,12 +180,7 @@ export const NFTOffersSheet = () => {
                       }
                     }}
                   >
-                    <Text
-                      align="center"
-                      color="labelSecondary"
-                      size="34pt"
-                      weight="semibold"
-                    >
+                    <Text align="center" color="labelSecondary" size="34pt" weight="semibold">
                       􀅈
                     </Text>
                   </ButtonPressAnimation>

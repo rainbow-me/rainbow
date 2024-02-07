@@ -70,10 +70,7 @@ export const checkForCampaign = async () => {
   }
 };
 
-export const triggerCampaign = async ({
-  campaignKey,
-  sys: { id: campaignId },
-}: PromoSheet) => {
+export const triggerCampaign = async ({ campaignKey, sys: { id: campaignId } }: PromoSheet) => {
   logger.info(`Campaigns: Showing ${campaignKey} Promo`);
 
   setTimeout(() => {
@@ -89,9 +86,7 @@ export const triggerCampaign = async ({
   }, 1000);
 };
 
-export const shouldPromptCampaign = async (
-  campaign: PromoSheet
-): Promise<boolean> => {
+export const shouldPromptCampaign = async (campaign: PromoSheet): Promise<boolean> => {
   const {
     campaignKey,
     sys: { id },
@@ -104,13 +99,9 @@ export const shouldPromptCampaign = async (
   // sanity check to prevent showing a campaign twice to a user or potentially showing a campaign to a fresh user
   const hasShown = campaigns.get([campaignKey]);
 
-  logger.info(
-    `Campaigns: Checking if we should prompt campaign ${campaignKey}`
-  );
+  logger.info(`Campaigns: Checking if we should prompt campaign ${campaignKey}`);
 
-  const isPreviewing = actions.some(
-    (action: ActionObj) => action.fn === 'isPreviewing'
-  );
+  const isPreviewing = actions.some((action: ActionObj) => action.fn === 'isPreviewing');
 
   // If the campaign has been viewed already or it's the first app launch, exit early
   if (hasShown && !isPreviewing) {
@@ -130,9 +121,7 @@ export const shouldPromptCampaign = async (
 
     logger.info(`Campaigns: Checking action ${fn}`);
     const result = await action({ ...props, ...campaign });
-    logger.info(
-      `Campaigns: [${fn}] matches desired outcome: => ${result === outcome}`
-    );
+    logger.info(`Campaigns: [${fn}] matches desired outcome: => ${result === outcome}`);
 
     if (result !== outcome) {
       shouldPrompt = false;

@@ -13,47 +13,15 @@ const buildShadows = (color, size, darkMode, colors) => {
   if (size === 'small') {
     return [
       [0, 3, 5, colors.shadow, 0.14],
-      [
-        0,
-        6,
-        10,
-        darkMode
-          ? darkModeThemeColors.shadow
-          : darkModeThemeColors.avatarBackgrounds[color] || color,
-        0.2,
-      ],
+      [0, 6, 10, darkMode ? darkModeThemeColors.shadow : darkModeThemeColors.avatarBackgrounds[color] || color, 0.2],
     ];
   } else if (size === 'smaller') {
-    return [
-      [
-        0,
-        4,
-        12,
-        darkMode
-          ? darkModeThemeColors.shadow
-          : darkModeThemeColors.avatarBackgrounds[color] || color,
-        0.3,
-      ],
-    ];
+    return [[0, 4, 12, darkMode ? darkModeThemeColors.shadow : darkModeThemeColors.avatarBackgrounds[color] || color, 0.3]];
   } else if (size === 'lmedium' || size === 'medium' || size === 'smedium') {
-    return [
-      [
-        0,
-        4,
-        IS_ANDROID ? 5 : 12,
-        darkMode ? colors.shadow : colors.avatarBackgrounds[color] || color,
-        0.4,
-      ],
-    ];
+    return [[0, 4, IS_ANDROID ? 5 : 12, darkMode ? colors.shadow : colors.avatarBackgrounds[color] || color, 0.4]];
   } else if (size === 'signing') {
     return [
-      [
-        0,
-        4,
-        12,
-        darkMode ? colors.shadow : colors.avatarBackgrounds[color] || color,
-        darkMode ? 0.16 : 0.2,
-      ],
+      [0, 4, 12, darkMode ? colors.shadow : colors.avatarBackgrounds[color] || color, darkMode ? 0.16 : 0.2],
       [0, 2, 6, colors.trueBlack, 0.02],
     ];
   } else {
@@ -129,16 +97,16 @@ const sizeConfigs = colors => ({
 
 const ContactAvatar = ({ color, size = 'medium', value, ...props }) => {
   const { colors } = useTheme();
-  const { dimensions, textSize } = useMemo(() => sizeConfigs(colors)[size], [
-    colors,
-    size,
-  ]);
+  const { dimensions, textSize } = useMemo(() => sizeConfigs(colors)[size], [colors, size]);
   const { isDarkMode } = useTheme();
 
-  const shadows = useMemo(
-    () => buildShadows(color, size, props?.forceDarkMode || isDarkMode, colors),
-    [color, size, props?.forceDarkMode, isDarkMode, colors]
-  );
+  const shadows = useMemo(() => buildShadows(color, size, props?.forceDarkMode || isDarkMode, colors), [
+    color,
+    size,
+    props?.forceDarkMode,
+    isDarkMode,
+    colors,
+  ]);
 
   const backgroundColor =
     typeof color === 'number'
@@ -148,20 +116,9 @@ const ContactAvatar = ({ color, size = 'medium', value, ...props }) => {
       : color;
 
   return (
-    <ShadowStack
-      {...props}
-      {...borders.buildCircleAsObject(dimensions)}
-      backgroundColor={backgroundColor}
-      shadows={shadows}
-    >
+    <ShadowStack {...props} {...borders.buildCircleAsObject(dimensions)} backgroundColor={backgroundColor} shadows={shadows}>
       <Centered flex={1}>
-        <Text
-          align="center"
-          color={colors.whiteLabel}
-          letterSpacing="zero"
-          size={textSize}
-          weight="bold"
-        >
+        <Text align="center" color={colors.whiteLabel} letterSpacing="zero" size={textSize} weight="bold">
           {value && getFirstGrapheme(toUpper(value))}
         </Text>
       </Centered>

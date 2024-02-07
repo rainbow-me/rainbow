@@ -23,18 +23,10 @@ type FeesPanelTabsProps = {
   speeds: typeof GasSpeedOrder;
 };
 
-const TabPill = ({
-  speed,
-  isSelected,
-  handleOnPressTabPill,
-  color,
-  testID,
-}: TabPillProps) => {
+const TabPill = ({ speed, isSelected, handleOnPressTabPill, color, testID }: TabPillProps) => {
   const { isDarkMode } = useTheme();
   const handleOnPress = () => handleOnPressTabPill(speed);
-  const shadowColor = isDarkMode
-    ? colors.shadowBlack
-    : color || colors.appleBlue;
+  const shadowColor = isDarkMode ? colors.shadowBlack : color || colors.appleBlue;
 
   const label = gasUtils.getGasLabel(speed);
 
@@ -47,13 +39,7 @@ const TabPill = ({
       testID={testID}
       paddingHorizontal="5px (Deprecated)"
     >
-      <AccentColorProvider
-        color={
-          isSelected
-            ? color || colors.appleBlue
-            : colors.alpha(color || colors.appleBlue, 0.06)
-        }
-      >
+      <AccentColorProvider color={isSelected ? color || colors.appleBlue : colors.alpha(color || colors.appleBlue, 0.06)}>
         <Box
           background="accent"
           height="30px"
@@ -72,9 +58,7 @@ const TabPill = ({
             <Text
               size="16px / 22px (Deprecated)"
               color={{
-                custom: isSelected
-                  ? colors.whiteLabel
-                  : colors.alpha(color || colors.appleBlue, 0.9),
+                custom: isSelected ? colors.whiteLabel : colors.alpha(color || colors.appleBlue, 0.9),
               }}
               align="center"
               weight="heavy"
@@ -88,16 +72,8 @@ const TabPill = ({
   );
 };
 
-export default function FeesPanelTabs({
-  colorForAsset,
-  speeds = GasSpeedOrder,
-}: FeesPanelTabsProps) {
-  const {
-    updateGasFeeOption,
-    selectedGasFeeOption,
-    gasFeeParamsBySpeed,
-    updateToCustomGasFee,
-  } = useGas();
+export default function FeesPanelTabs({ colorForAsset, speeds = GasSpeedOrder }: FeesPanelTabsProps) {
+  const { updateGasFeeOption, selectedGasFeeOption, gasFeeParamsBySpeed, updateToCustomGasFee } = useGas();
 
   const handleOnPressTabPill = (speed: string) => {
     if (speed === CUSTOM && isEmpty(gasFeeParamsBySpeed[CUSTOM])) {

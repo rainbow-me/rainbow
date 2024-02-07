@@ -28,23 +28,11 @@ async function templateMutationMutationFunction({ foo }: TemplateMutationArgs) {
   // const result = await doSomething({ foo })
   // return result
 }
-type TemplateMutationResult = MutationFunctionResult<
-  typeof templateMutationMutationFunction
->;
+type TemplateMutationResult = MutationFunctionResult<typeof templateMutationMutationFunction>;
 
 // ///////////////////////////////////////////////
 // Mutation Hook
 
-export function useTemplateMutation(
-  mutationConfig: MutationConfig<
-    TemplateMutationResult,
-    Error,
-    TemplateMutationArgs
-  > = {}
-) {
-  return useMutation(
-    ['templateMutation'],
-    templateMutationMutationFunction,
-    mutationConfig
-  );
+export function useTemplateMutation(mutationConfig: MutationConfig<TemplateMutationResult, Error, TemplateMutationArgs> = {}) {
+  return useMutation(['templateMutation'], templateMutationMutationFunction, mutationConfig);
 }

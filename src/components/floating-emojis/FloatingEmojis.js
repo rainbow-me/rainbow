@@ -31,10 +31,7 @@ const FloatingEmojis = ({
   wiggleFactor,
   ...props
 }) => {
-  const emojisArray = useMemo(
-    () => (Array.isArray(emojis) ? emojis : [emojis]),
-    [emojis]
-  );
+  const emojisArray = useMemo(() => (Array.isArray(emojis) ? emojis : [emojis]), [emojis]);
   const [floatingEmojis, setEmojis] = useState(EMPTY_ARRAY);
   const [startTimeout, stopTimeout] = useTimeout();
   const clearEmojis = useCallback(() => setEmojis(EMPTY_ARRAY), []);
@@ -64,15 +61,7 @@ const FloatingEmojis = ({
         return [...existingEmojis, newEmoji];
       });
     },
-    [
-      clearEmojis,
-      disableRainbow,
-      duration,
-      emojisArray,
-      range,
-      startTimeout,
-      stopTimeout,
-    ]
+    [clearEmojis, disableRainbow, duration, emojisArray, range, startTimeout, stopTimeout]
   );
 
   useEffect(() => {

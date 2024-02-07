@@ -47,26 +47,12 @@ const GweiNumberInput = styled(TextInputMask).attrs(
     // @ts-expect-error
     ...buildTextStyles.object(props),
     ...(android ? padding.object(0, 0, 0, 0) : {}),
-    ...margin.object(
-      android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
-      0,
-      android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
-      0
-    ),
+    ...margin.object(android ? -ANDROID_EXTRA_LINE_HEIGHT : 0, 0, android ? -ANDROID_EXTRA_LINE_HEIGHT : 0, 0),
   })
 );
 
 function GweiInputPill(
-  {
-    color,
-    editable = true,
-    value,
-    onPress,
-    onChange: onChangeCallback,
-    onFocus,
-    onBlur,
-    testID,
-  }: GweiInputPillProps,
+  { color, editable = true, value, onPress, onChange: onChangeCallback, onFocus, onBlur, testID }: GweiInputPillProps,
   ref: React.Ref<TextInput | undefined>
 ) {
   const { colors, isDarkMode } = useTheme();
@@ -113,12 +99,7 @@ function GweiInputPill(
               value={value}
             />
             {IS_TESTING !== 'true' && (
-              <Text
-                align="center"
-                color="primary (Deprecated)"
-                size="16px / 22px (Deprecated)"
-                weight="heavy"
-              >
+              <Text align="center" color="primary (Deprecated)" size="16px / 22px (Deprecated)" weight="heavy">
                 Gwei
               </Text>
             )}

@@ -23,20 +23,18 @@ import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { profileUtils, showActionSheetWithOptions } from '@/utils';
 
-const AddressInputContainer = styled(Row).attrs({ align: 'center' })(
-  ({ isSmallPhone, theme: { colors }, isTinyPhone }) => ({
-    ...(android
-      ? padding.object(0, 19)
-      : isTinyPhone
-      ? padding.object(23, 15, 10)
-      : isSmallPhone
-      ? padding.object(11, 19, 15)
-      : padding.object(18, 19, 19)),
-    backgroundColor: colors.white,
-    overflow: 'hidden',
-    width: '100%',
-  })
-);
+const AddressInputContainer = styled(Row).attrs({ align: 'center' })(({ isSmallPhone, theme: { colors }, isTinyPhone }) => ({
+  ...(android
+    ? padding.object(0, 19)
+    : isTinyPhone
+    ? padding.object(23, 15, 10)
+    : isSmallPhone
+    ? padding.object(11, 19, 15)
+    : padding.object(18, 19, 19)),
+  backgroundColor: colors.white,
+  overflow: 'hidden',
+  width: '100%',
+}));
 
 const AddressFieldLabel = styled(Label).attrs({
   size: 'large',
@@ -47,11 +45,9 @@ const AddressFieldLabel = styled(Label).attrs({
   opacity: 1,
 });
 
-const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
-  ({ theme: { colors } }) => ({
-    color: colors.alpha(colors.blueGreyDark, 0.3),
-  })
-)({
+const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(({ theme: { colors } }) => ({
+  color: colors.alpha(colors.blueGreyDark, 0.3),
+}))({
   marginRight: 2,
 });
 
@@ -114,28 +110,17 @@ export default function SendHeader({
 
   const userWallet = useMemo(() => {
     return [...userAccounts, ...watchedAccounts].find(
-      account =>
-        account.address.toLowerCase() ===
-        (hexAddress || recipient)?.toLowerCase()
+      account => account.address.toLowerCase() === (hexAddress || recipient)?.toLowerCase()
     );
   }, [recipient, userAccounts, watchedAccounts, hexAddress]);
 
   const isPreExistingContact = (contact?.nickname?.length || 0) > 0;
 
   const name =
-    removeFirstEmojiFromString(
-      userWallet?.label || contact?.nickname || nickname
-    ) ||
-    userWallet?.ens ||
-    contact?.ens ||
-    recipient;
+    removeFirstEmojiFromString(userWallet?.label || contact?.nickname || nickname) || userWallet?.ens || contact?.ens || recipient;
 
   const handleNavigateToContact = useCallback(() => {
-    let nickname = profilesEnabled
-      ? !isHexString(recipient)
-        ? recipient
-        : null
-      : recipient;
+    let nickname = profilesEnabled ? (!isHexString(recipient) ? recipient : null) : recipient;
     let color = '';
     if (!profilesEnabled) {
       color = contact?.color;
@@ -157,14 +142,7 @@ export default function SendHeader({
       onRefocusInput,
       type: 'contact_profile',
     });
-  }, [
-    contact,
-    hexAddress,
-    navigate,
-    onRefocusInput,
-    profilesEnabled,
-    recipient,
-  ]);
+  }, [contact, hexAddress, navigate, onRefocusInput, profilesEnabled, recipient]);
 
   const handleOpenContactActionSheet = useCallback(async () => {
     return showActionSheetWithOptions(
@@ -197,16 +175,7 @@ export default function SendHeader({
         }
       }
     );
-  }, [
-    contact?.ens,
-    handleNavigateToContact,
-    hexAddress,
-    onRefocusInput,
-    removeContact,
-    setClipboard,
-    name,
-    onChangeAddressInput,
-  ]);
+  }, [contact?.ens, handleNavigateToContact, hexAddress, onRefocusInput, removeContact, setClipboard, name, onChangeAddressInput]);
 
   const onChange = useCallback(
     text => {
@@ -219,13 +188,8 @@ export default function SendHeader({
   return (
     <Fragment>
       <SheetHandleFixedToTop />
-      {isTinyPhone ? null : (
-        <SendSheetTitle>{lang.t('contacts.send_header')}</SendSheetTitle>
-      )}
-      <AddressInputContainer
-        isSmallPhone={isSmallPhone}
-        isTinyPhone={isTinyPhone}
-      >
+      {isTinyPhone ? null : <SendSheetTitle>{lang.t('contacts.send_header')}</SendSheetTitle>}
+      <AddressInputContainer isSmallPhone={isSmallPhone} isTinyPhone={isTinyPhone}>
         <AddressFieldLabel>{lang.t('contacts.to_header')}:</AddressFieldLabel>
         <AddressField
           address={recipient}
@@ -239,37 +203,23 @@ export default function SendHeader({
           testID="send-asset-form-field"
         />
         {isValidAddress && Boolean(hexAddress) && (
-          <ButtonPressAnimation
-            onPress={
-              isPreExistingContact
-                ? handleOpenContactActionSheet
-                : handleNavigateToContact
-            }
-          >
+          <ButtonPressAnimation onPress={isPreExistingContact ? handleOpenContactActionSheet : handleNavigateToContact}>
             <Text
               align="right"
               color="appleBlue"
               size="large"
               style={{ paddingLeft: 4 }}
-              testID={
-                isPreExistingContact
-                  ? 'edit-contact-button'
-                  : 'add-contact-button'
-              }
+              testID={isPreExistingContact ? 'edit-contact-button' : 'add-contact-button'}
               weight="heavy"
             >
               {isPreExistingContact ? '􀍡' : ` 􀉯 ${lang.t('button.save')}`}
             </Text>
           </ButtonPressAnimation>
         )}
-        {isValidAddress && !hexAddress && isEmpty(contact?.address) && (
-          <LoadingSpinner />
-        )}
+        {isValidAddress && !hexAddress && isEmpty(contact?.address) && <LoadingSpinner />}
         {!isValidAddress && <PasteAddressButton onPress={onPressPaste} />}
       </AddressInputContainer>
-      {hideDivider && !isTinyPhone ? null : (
-        <Divider color={colors.rowDividerExtraLight} flex={0} inset={[0, 19]} />
-      )}
+      {hideDivider && !isTinyPhone ? null : <Divider color={colors.rowDividerExtraLight} flex={0} inset={[0, 19]} />}
     </Fragment>
   );
 }

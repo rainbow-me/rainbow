@@ -5,13 +5,7 @@ import merge from 'lodash/merge';
 import { typeHierarchy as appTypeHierarchy } from '../../typography/typeHierarchy';
 import { fontMetrics } from '../../typography/typography';
 
-function createTextSize({
-  fontSize,
-  lineHeight,
-}: {
-  fontSize: number;
-  lineHeight: number;
-}) {
+function createTextSize({ fontSize, lineHeight }: { fontSize: number; lineHeight: number }) {
   return createTextStyle({
     fontMetrics,
     fontSize,
@@ -40,9 +34,6 @@ export type HeadingSizes = keyof typeof sizes['heading'];
 export type TextSizes = keyof typeof sizes['text'];
 
 export const letterSpacings = {
-  heading: mapValues(
-    typeHierarchy.heading,
-    ({ letterSpacing }) => letterSpacing
-  ),
+  heading: mapValues(typeHierarchy.heading, ({ letterSpacing }) => letterSpacing),
   text: mapValues(typeHierarchy.text, ({ letterSpacing }) => letterSpacing),
 };

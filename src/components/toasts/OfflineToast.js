@@ -9,15 +9,8 @@ const OfflineToast = () => {
   const isConnected = useInternetStatus();
   const { network } = useAccountSettings();
   const providerUrl = web3Provider?.connection?.url;
-  const isMainnet =
-    network === networkTypes.mainnet && !providerUrl?.startsWith('http://');
-  return (
-    <Toast
-      icon="offline"
-      isVisible={!isConnected && isMainnet}
-      text={lang.t('button.offline')}
-    />
-  );
+  const isMainnet = network === networkTypes.mainnet && !providerUrl?.startsWith('http://');
+  return <Toast icon="offline" isVisible={!isConnected && isMainnet} text={lang.t('button.offline')} />;
 };
 
 const neverRerender = () => true;

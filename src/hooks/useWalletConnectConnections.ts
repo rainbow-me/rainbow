@@ -42,37 +42,23 @@ const walletConnectSelector = createSelector(
 
 export default function useWalletConnectConnections() {
   const dispatch = useDispatch();
-  const {
-    sortedWalletConnectors,
-    mostRecentWalletConnectors,
-    walletConnectorsByDappName,
-    walletConnectorsCount,
-  } = useSelector(walletConnectSelector);
-
-  const walletConnectDisconnectAllByDappUrl = useCallback(
-    (dappUrl: string) =>
-      dispatch(rawWalletConnectDisconnectAllByDappUrl(dappUrl)),
-    [dispatch]
+  const { sortedWalletConnectors, mostRecentWalletConnectors, walletConnectorsByDappName, walletConnectorsCount } = useSelector(
+    walletConnectSelector
   );
 
+  const walletConnectDisconnectAllByDappUrl = useCallback((dappUrl: string) => dispatch(rawWalletConnectDisconnectAllByDappUrl(dappUrl)), [
+    dispatch,
+  ]);
+
   const walletConnectOnSessionRequest = useCallback(
-    (
-      uri: string,
-      connector?: string,
-      callback?: WalletconnectRequestCallback
-    ) => dispatch(rawWalletConnectOnSessionRequest(uri, connector, callback)),
+    (uri: string, connector?: string, callback?: WalletconnectRequestCallback) =>
+      dispatch(rawWalletConnectOnSessionRequest(uri, connector, callback)),
     [dispatch]
   );
 
   const walletConnectUpdateSessionConnectorByDappUrl = useCallback(
     (dappUrl: string, accountAddress: string, chainId: number) =>
-      dispatch(
-        rawWalletConnectUpdateSessionConnectorByDappUrl(
-          dappUrl,
-          accountAddress,
-          chainId
-        )
-      ),
+      dispatch(rawWalletConnectUpdateSessionConnectorByDappUrl(dappUrl, accountAddress, chainId)),
     [dispatch]
   );
 

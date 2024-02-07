@@ -67,29 +67,14 @@ export default function DiscoverScreen() {
           leftComponent={
             <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.8}>
               {accountImage ? (
-                <ImageAvatar
-                  image={accountImage}
-                  marginRight={10}
-                  size="header"
-                />
+                <ImageAvatar image={accountImage} marginRight={10} size="header" />
               ) : (
-                <ContactAvatar
-                  color={accountColor}
-                  marginRight={10}
-                  size="small"
-                  value={accountSymbol}
-                />
+                <ContactAvatar color={accountColor} marginRight={10} size="small" value={accountSymbol} />
               )}
             </ButtonPressAnimation>
           }
-          testID={
-            isSearchModeEnabled ? 'discover-header-search' : 'discover-header'
-          }
-          title={
-            isSearchModeEnabled
-              ? i18n.t(i18n.l.discover.search.search)
-              : i18n.t(i18n.l.discover.search.discover)
-          }
+          testID={isSearchModeEnabled ? 'discover-header-search' : 'discover-header'}
+          title={isSearchModeEnabled ? i18n.t(i18n.l.discover.search.search) : i18n.t(i18n.l.discover.search.discover)}
         />
         <Box
           // @ts-expect-error

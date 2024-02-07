@@ -29,16 +29,12 @@ const BottomRow = React.memo(function BottomRow({
 }) {
   const { colors } = theme;
   const isFailed = status === TransactionStatusTypes.failed;
-  const isReceived =
-    status === TransactionStatusTypes.received ||
-    status === TransactionStatusTypes.purchased;
+  const isReceived = status === TransactionStatusTypes.received || status === TransactionStatusTypes.purchased;
   const isSent = status === TransactionStatusTypes.sent;
   const isSold = status === TransactionStatusTypes.sold;
 
   const isOutgoingSwap = status === TransactionStatusTypes.swapped;
-  const isIncomingSwap =
-    status === TransactionStatusTypes.received &&
-    type === TransactionTypes.trade;
+  const isIncomingSwap = status === TransactionStatusTypes.received && type === TransactionTypes.trade;
 
   let coinNameColor = colors.dark;
   if (isOutgoingSwap) coinNameColor = colors.blueGreyDark50;
@@ -50,18 +46,12 @@ const BottomRow = React.memo(function BottomRow({
   if (isOutgoingSwap) balanceTextColor = colors.dark;
   if (isSold) balanceTextColor = colors.green;
 
-  const balanceText = nativeDisplay
-    ? [isFailed || isSent ? '-' : null, nativeDisplay].filter(Boolean).join(' ')
-    : '';
+  const balanceText = nativeDisplay ? [isFailed || isSent ? '-' : null, nativeDisplay].filter(Boolean).join(' ') : '';
 
   return (
     <View style={sx.bottomRow}>
       <View style={sx.description}>
-        <Text
-          color={{ custom: coinNameColor || colors.dark }}
-          numberOfLines={1}
-          size="16px / 22px (Deprecated)"
-        >
+        <Text color={{ custom: coinNameColor || colors.dark }} numberOfLines={1} size="16px / 22px (Deprecated)">
           {description}
         </Text>
       </View>
@@ -79,13 +69,7 @@ const BottomRow = React.memo(function BottomRow({
   );
 });
 
-export default React.memo(function TransactionCoinRow({
-  item,
-  theme,
-}: {
-  item: any;
-  theme: ThemeContextProps;
-}) {
+export default React.memo(function TransactionCoinRow({ item, theme }: { item: any; theme: ThemeContextProps }) {
   const { colorMode } = useColorMode();
   const { mainnetAddress } = item;
   const { colors } = theme;
@@ -99,10 +83,7 @@ export default React.memo(function TransactionCoinRow({
 
   return (
     <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
-      <View
-        style={sx.wholeRow}
-        testID={`${item.title}-${item.description}-${item.balance?.display}`}
-      >
+      <View style={sx.wholeRow} testID={`${item.title}-${item.description}-${item.balance?.display}`}>
         <View style={sx.icon}>
           {item.nft ? (
             <View
@@ -118,10 +99,7 @@ export default React.memo(function TransactionCoinRow({
             >
               <View
                 style={{
-                  shadowColor:
-                    colorMode === 'dark' || !item.nft.predominantColor
-                      ? globalColors.grey100
-                      : item.nft.predominantColor,
+                  shadowColor: colorMode === 'dark' || !item.nft.predominantColor ? globalColors.grey100 : item.nft.predominantColor,
                   shadowOffset: { width: 0, height: 6 },
                   shadowOpacity: 0.24,
                   shadowRadius: 9,
@@ -135,21 +113,11 @@ export default React.memo(function TransactionCoinRow({
                     borderRadius: 20,
                   }}
                   source={{
-                    uri:
-                      item.type === TransactionTypes.authorize
-                        ? item.nft.collection.image_url
-                        : item.nft.lowResUrl,
+                    uri: item.type === TransactionTypes.authorize ? item.nft.collection.image_url : item.nft.lowResUrl,
                   }}
                 />
               </View>
-              {item.network !== Network.mainnet && (
-                <ChainBadge
-                  assetType={ethereumUtils.getAssetTypeFromNetwork(
-                    item.network
-                  )}
-                  badgeYPosition={10}
-                />
-              )}
+              {item.network !== Network.mainnet && <ChainBadge network={item.network} badgeYPosition={10} />}
             </View>
           ) : (
             <FastCoinIcon
@@ -163,18 +131,9 @@ export default React.memo(function TransactionCoinRow({
         </View>
         <View style={sx.column}>
           <View style={sx.topRow}>
-            <FastTransactionStatusBadge
-              colors={colors}
-              pending={item.pending}
-              status={item.status}
-              title={item.title}
-            />
+            <FastTransactionStatusBadge colors={colors} pending={item.pending} status={item.status} title={item.title} />
             <View style={sx.balance}>
-              <Text
-                color={{ custom: colors.alpha(colors.blueGreyDark, 0.5) }}
-                numberOfLines={1}
-                size="14px / 19px (Deprecated)"
-              >
+              <Text color={{ custom: colors.alpha(colors.blueGreyDark, 0.5) }} numberOfLines={1} size="14px / 19px (Deprecated)">
                 {item.balance?.display ?? ''}
               </Text>
             </View>

@@ -54,13 +54,7 @@ const TotalAmountSkeleton = styled(Skeleton)({
   justifyContent: 'center',
 });
 
-const WalletSelectButton = ({
-  accountName,
-  onChangeWallet,
-  deviceWidth,
-  textWidth,
-  maxWidth,
-}) => {
+const WalletSelectButton = ({ accountName, onChangeWallet, deviceWidth, textWidth, maxWidth }) => {
   const { colors } = useTheme();
 
   const truncated = textWidth > maxWidth - 6;
@@ -106,14 +100,7 @@ const WalletSelectButton = ({
   );
 };
 
-const AssetListHeader = ({
-  contextMenuOptions,
-  isCoinListEdited,
-  title,
-  totalValue,
-  isSticky = true,
-  ...props
-}) => {
+const AssetListHeader = ({ contextMenuOptions, isCoinListEdited, title, totalValue, isSticky = true, ...props }) => {
   const { width: deviceWidth } = useDimensions();
   const { accountName } = useAccountProfile();
   const { navigate } = useNavigation();
@@ -125,9 +112,7 @@ const AssetListHeader = ({
 
   const [textWidth, setTextWidth] = useState(0);
 
-  const amountWidth = isLoadingUserAssets
-    ? placeholderWidth + 16
-    : totalValue?.length * 15;
+  const amountWidth = isLoadingUserAssets ? placeholderWidth + 16 : totalValue?.length * 15;
   const maxWidth = deviceWidth - dropdownArrowWidth - amountWidth - 32;
 
   useEffect(() => {
@@ -162,8 +147,7 @@ const AssetListHeader = ({
             />
           </WalletSelectButtonWrapper>
         )}
-        {isLoadingUserAssets &&
-        title !== lang.t(lang.l.account.tab_collectibles) ? (
+        {isLoadingUserAssets && title !== lang.t(lang.l.account.tab_collectibles) ? (
           <TotalAmountSkeleton>
             <FakeText height={16} width={placeholderWidth} />
           </TotalAmountSkeleton>
@@ -195,9 +179,4 @@ const AssetListHeader = ({
   return children;
 };
 
-export default magicMemo(AssetListHeader, [
-  'contextMenuOptions',
-  'isCoinListEdited',
-  'title',
-  'totalValue',
-]);
+export default magicMemo(AssetListHeader, ['contextMenuOptions', 'isCoinListEdited', 'title', 'totalValue']);

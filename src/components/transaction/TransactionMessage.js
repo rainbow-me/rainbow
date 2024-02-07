@@ -48,11 +48,7 @@ const TransactionMessage = ({ maxHeight = 150, message, method }) => {
 
   return (
     <Container maxHeight={maximumHeight} minHeight={minimumHeight}>
-      <Text
-        color={colors.alpha(colors.blueGreyDark, 0.6)}
-        size="lmedium"
-        style={{ ...padding.object(12, 15) }}
-      >
+      <Text color={colors.alpha(colors.blueGreyDark, 0.6)} size="lmedium" style={{ ...padding.object(12, 15) }}>
         {msg}
       </Text>
     </Container>

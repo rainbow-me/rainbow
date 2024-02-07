@@ -7,10 +7,7 @@ interface MinRefuelAmountParams {
   toChainId: ChainId;
 }
 
-export const minRefuelAmountKey = ({
-  chainId,
-  toChainId,
-}: MinRefuelAmountParams) => ['min-refuel-amount', chainId, toChainId];
+export const minRefuelAmountKey = ({ chainId, toChainId }: MinRefuelAmountParams) => ['min-refuel-amount', chainId, toChainId];
 
 const STALE_TIME = 10000;
 

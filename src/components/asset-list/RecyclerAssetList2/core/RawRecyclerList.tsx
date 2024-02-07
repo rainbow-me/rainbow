@@ -1,10 +1,4 @@
-import React, {
-  LegacyRef,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-} from 'react';
+import React, { LegacyRef, useCallback, useEffect, useMemo, useRef } from 'react';
 import { LayoutChangeEvent } from 'react-native';
 import { SetterOrUpdater } from 'recoil';
 import { DataProvider, RecyclerListView } from 'recyclerlistview';
@@ -12,10 +6,7 @@ import { useMemoOne } from 'use-memo-one';
 import { BooleanMap } from '../../../../hooks/useCoinListEditOptions';
 import { AssetListType } from '..';
 import { useRecyclerAssetListPosition } from './Contexts';
-import {
-  ExternalENSProfileScrollViewWithRef,
-  ExternalSelectNFTScrollViewWithRef,
-} from './ExternalENSProfileScrollView';
+import { ExternalENSProfileScrollViewWithRef, ExternalSelectNFTScrollViewWithRef } from './ExternalENSProfileScrollView';
 import ExternalScrollViewWithRef from './ExternalScrollView';
 import RefreshControl from './RefreshControl';
 import rowRenderer from './RowRenderer';
@@ -24,13 +15,7 @@ import getLayoutProvider from './getLayoutProvider';
 import useLayoutItemAnimator from './useLayoutItemAnimator';
 import { UniqueAsset } from '@/entities';
 import { useRecyclerListViewScrollToTopContext } from '@/navigation/RecyclerListViewScrollToTopContext';
-import {
-  useAccountProfile,
-  useAccountSettings,
-  useCoinListEdited,
-  useCoinListEditOptions,
-  useWallets,
-} from '@/hooks';
+import { useAccountProfile, useAccountSettings, useCoinListEdited, useCoinListEditOptions, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { useTheme } from '@/theme';
 import { useRemoteCardContext } from '@/components/cards/remote-cards';
@@ -68,10 +53,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   scrollIndicatorInsets?: object;
   type?: AssetListType;
 }) {
-  const currentDataProvider = useMemoOne(
-    () => dataProvider.cloneWithRows(briefSectionsData),
-    [briefSectionsData]
-  );
+  const currentDataProvider = useMemoOne(() => dataProvider.cloneWithRows(briefSectionsData), [briefSectionsData]);
   const { isCoinListEdited, setIsCoinListEdited } = useCoinListEdited();
   const y = useRecyclerAssetListPosition()!;
 
@@ -79,21 +61,14 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   const { getCardsForPlacement } = useRemoteCardContext();
   const { isReadOnlyWallet } = useWallets();
 
-  const cards = useMemo(() => getCardsForPlacement(name as string), [
-    getCardsForPlacement,
-    name,
-  ]);
+  const cards = useMemo(() => getCardsForPlacement(name as string), [getCardsForPlacement, name]);
 
-  const layoutProvider = useMemo(
-    () =>
-      getLayoutProvider(
-        briefSectionsData,
-        isCoinListEdited,
-        cards,
-        isReadOnlyWallet
-      ),
-    [briefSectionsData, isCoinListEdited, cards, isReadOnlyWallet]
-  );
+  const layoutProvider = useMemo(() => getLayoutProvider(briefSectionsData, isCoinListEdited, cards, isReadOnlyWallet), [
+    briefSectionsData,
+    isCoinListEdited,
+    cards,
+    isReadOnlyWallet,
+  ]);
 
   const { accountAddress } = useAccountSettings();
   const { setScrollToTopRef } = useRecyclerListViewScrollToTopContext();
@@ -118,9 +93,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
     // Then, in case the event was not emitted, we want to emit this anyway (`scrollToOffset`)
     // to make headers located in `0` position.
     // @ts-ignore
-    ref.current?._virtualRenderer
-      ?.getViewabilityTracker?.()
-      ?.updateOffset?.(0, true, 0);
+    ref.current?._virtualRenderer?.getViewabilityTracker?.()?.updateOffset?.(0, true, 0);
     // @ts-ignore
     clearTimeout(ref.current?._processInitialOffsetTimeout);
     ref.current?.scrollToOffset(0, 0);
@@ -144,11 +117,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
 
   const theme = useTheme();
   const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
-  const {
-    hiddenCoinsObj: hiddenCoins,
-    pinnedCoinsObj: pinnedCoins,
-    toggleSelectedCoin,
-  } = useCoinListEditOptions();
+  const { hiddenCoinsObj: hiddenCoins, pinnedCoinsObj: pinnedCoins, toggleSelectedCoin } = useCoinListEditOptions();
 
   const { navigate } = useNavigation();
 

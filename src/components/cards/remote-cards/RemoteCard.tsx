@@ -5,16 +5,12 @@ import ConditionalWrap from 'conditional-wrap';
 
 import { Box, Cover, Stack, Text, useForegroundColor } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
-import { TrimmedCard, useRemoteCardContext } from './RemoteCardProvider';
+import { useRemoteCardContext } from './RemoteCardProvider';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { useNavigation } from '@/navigation';
 import { Language } from '@/languages';
 import { useAccountSettings, useDimensions } from '@/hooks';
-import {
-  BackgroundColor,
-  ForegroundColor,
-  TextColor,
-} from '@/design-system/color/palettes';
+import { BackgroundColor, ForegroundColor, TextColor } from '@/design-system/color/palettes';
 import { maybeSignUri } from '@/handlers/imgix';
 import { colors } from '@/styles';
 import { useTheme } from '@/theme';
@@ -23,6 +19,7 @@ import { ImgixImage } from '@/components/images';
 import { analyticsV2 } from '@/analytics';
 import { FlashList } from '@shopify/flash-list';
 import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
+import { TrimmedCard } from '@/resources/cards/cardCollectionQuery';
 
 const ICON_SIZE = 40;
 
@@ -67,25 +64,14 @@ type RemoteCardProps = {
   carouselRef: React.RefObject<FlashList<TrimmedCard>> | null;
 };
 
-export const RemoteCard: React.FC<RemoteCardProps> = ({
-  card = {} as TrimmedCard,
-  cards,
-  gutterSize,
-  carouselRef,
-}) => {
+export const RemoteCard: React.FC<RemoteCardProps> = ({ card = {} as TrimmedCard, cards, gutterSize, carouselRef }) => {
   const { isDarkMode } = useTheme();
   const { navigate } = useNavigation();
   const { language } = useAccountSettings();
   const { width } = useDimensions();
   const { dismissCard } = useRemoteCardContext();
 
-  const {
-    cardKey,
-    accentColor,
-    backgroundColor,
-    primaryButton,
-    imageIcon,
-  } = card;
+  const { cardKey, accentColor, backgroundColor, primaryButton, imageIcon } = card;
 
   const accent = useForegroundColor(getColorFromString(accentColor));
   const border = useForegroundColor('separatorSecondary');
@@ -135,18 +121,14 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
     }
 
     if (IS_IOS) {
-      const image = card?.imageCollection?.items?.find(({ url }) =>
-        /ios/i.test(url)
-      );
+      const image = card?.imageCollection?.items?.find(({ url }) => /ios/i.test(url));
       if (image) {
         return image.url;
       }
 
       return card?.imageCollection?.items[0].url;
     } else {
-      const image = card?.imageCollection?.items?.find(({ url }) =>
-        /android/i.test(url)
-      );
+      const image = card?.imageCollection?.items?.find(({ url }) => /android/i.test(url));
       if (image) {
         return image.url;
       }
@@ -159,9 +141,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
     return null;
   }
 
-  const imageUri = imageForPlatform()
-    ? maybeSignUri(imageForPlatform(), { w: 40, h: 40 })
-    : undefined;
+  const imageUri = imageForPlatform() ? maybeSignUri(imageForPlatform(), { w: 40, h: 40 }) : undefined;
 
   // device width - gutter - icon size
   const contentWidth = width - gutterSize - 16 * 2 - ICON_SIZE;
@@ -169,13 +149,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
     <ConditionalWrap
       condition={primaryButton.route || primaryButton.url}
       wrap={children => (
-        <ButtonPressAnimation
-          hapticType="impactHeavy"
-          onPress={onPress}
-          disabled={IS_ANDROID}
-          scaleTo={0.94}
-          disallowInterruption
-        >
+        <ButtonPressAnimation hapticType="impactHeavy" onPress={onPress} disabled={IS_ANDROID} scaleTo={0.94} disallowInterruption>
           {children}
         </ButtonPressAnimation>
       )}
@@ -184,6 +158,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
         testID={`remote-card-${cardKey}`}
         width={{ custom: width - gutterSize }}
         overflow="visible"
+        justifyContent="center"
         height={'full'}
         borderRadius={18}
         padding={{ custom: 16 }}
@@ -192,15 +167,9 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
           borderColor: border,
           borderWidth: 1,
         }}
-        background={
-          (backgroundColor as BackgroundColor) ?? 'surfaceSecondaryElevated'
-        }
+        background={(backgroundColor as BackgroundColor) ?? 'surfaceSecondaryElevated'}
       >
-        <Box
-          flexDirection="row"
-          width={{ custom: width - gutterSize - 16 * 2 }}
-          gap={12}
-        >
+        <Box flexDirection="row" width={{ custom: width - gutterSize - 16 * 2 }} gap={12}>
           <Box
             as={LinearGradient}
             style={{
@@ -209,12 +178,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
               marginTop: 'auto',
               marginBottom: 'auto',
             }}
-            colors={[
-              colors.alpha(accent, 0.1),
-              colors.alpha(accent, 0.1),
-              colors.alpha(accent, 0.12),
-              colors.alpha(accent, 0.12),
-            ]}
+            colors={[colors.alpha(accent, 0.1), colors.alpha(accent, 0.1), colors.alpha(accent, 0.12), colors.alpha(accent, 0.12)]}
             start={{ x: -0.69, y: 0 }}
             end={{ x: 0.99, y: 1 }}
             borderRadius={card.imageRadius ?? 10}
@@ -233,12 +197,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
             >
               <Cover alignHorizontal="center" alignVertical="center">
                 {imageIcon && (
-                  <Text
-                    align="center"
-                    color={{ custom: accent }}
-                    size="icon 17px"
-                    weight="bold"
-                  >
+                  <Text align="center" color={{ custom: accent }} size="icon 17px" weight="bold">
                     {imageIcon}
                   </Text>
                 )}
@@ -266,13 +225,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
               right={{ custom: 4 }}
               hitSlop={{ top: 8, right: 8, bottom: 8, left: 8 }}
             >
-              <ButtonPressAnimation
-                scaleTo={0.8}
-                overflowMargin={50}
-                skipTopMargin
-                disallowInterruption
-                onPress={onDismiss}
-              >
+              <ButtonPressAnimation scaleTo={0.8} overflowMargin={50} skipTopMargin disallowInterruption onPress={onDismiss}>
                 <Text color={'labelTertiary'} size="13pt" weight="bold">
                   􀆄
                 </Text>
@@ -281,21 +234,11 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
           )}
           <Box width={{ custom: contentWidth }}>
             <Stack space="10px">
-              <Text
-                color={(card.titleColor as TextColor) ?? 'label'}
-                size="17pt"
-                weight="heavy"
-                numberOfLines={1}
-              >
+              <Text color={(card.titleColor as TextColor) ?? 'label'} size="17pt" weight="heavy" numberOfLines={1}>
                 {getKeyForLanguage('subtitle', card, language as Language)}
               </Text>
 
-              <Text
-                color={(card.subtitleColor as TextColor) ?? 'labelQuaternary'}
-                size="13pt"
-                weight="bold"
-                numberOfLines={1}
-              >
+              <Text color={(card.subtitleColor as TextColor) ?? 'labelQuaternary'} size="13pt" weight="bold" numberOfLines={1}>
                 {getKeyForLanguage('title', card, language as Language)}
               </Text>
 
@@ -315,16 +258,10 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({
                   style={{
                     textShadowOffset: { width: 0, height: 0 },
                     textShadowRadius: 4,
-                    textShadowColor: isDarkMode
-                      ? colors.alpha(accent, 0.6)
-                      : colors.alpha(accent, 0.2),
+                    textShadowColor: isDarkMode ? colors.alpha(accent, 0.6) : colors.alpha(accent, 0.2),
                   }}
                 >
-                  {getKeyForLanguage(
-                    'primaryButton.text',
-                    card,
-                    language as Language
-                  )}
+                  {getKeyForLanguage('primaryButton.text', card, language as Language)}
                 </Text>
               </ButtonPressAnimation>
             </Stack>

@@ -1,18 +1,7 @@
 import { ButtonPressAnimation } from '@/components/animations';
-import {
-  AccentColorProvider,
-  Box,
-  Cover,
-  Inline,
-  globalColors,
-  Text,
-} from '@/design-system';
+import { AccentColorProvider, Box, Cover, Inline, globalColors, Text } from '@/design-system';
 import { IS_IOS } from '@/env';
-import {
-  MintsFilter,
-  getMintsFilterLabel,
-  useMintsFilter,
-} from '@/resources/mints';
+import { MintsFilter, getMintsFilterLabel, useMintsFilter } from '@/resources/mints';
 import { useTheme } from '@/theme';
 import { BlurView } from '@react-native-community/blur';
 import React from 'react';
@@ -23,12 +12,8 @@ function FilterButton({ filter }: { filter: MintsFilter }) {
   const { filter: currentFilter, setFilter } = useMintsFilter();
   const { isDarkMode } = useTheme();
 
-  const highlightedBackgroundColor = isDarkMode
-    ? 'rgba(255, 218, 36, 0.2)'
-    : 'rgba(255, 203, 15, 0.6)';
-  const highlightedTextColor = isDarkMode
-    ? 'yellow'
-    : { custom: globalColors.yellow100 };
+  const highlightedBackgroundColor = isDarkMode ? 'rgba(255, 218, 36, 0.2)' : 'rgba(255, 203, 15, 0.6)';
+  const highlightedTextColor = isDarkMode ? 'yellow' : { custom: globalColors.yellow100 };
 
   return (
     <AccentColorProvider color={highlightedBackgroundColor}>
@@ -56,9 +41,7 @@ function FilterButton({ filter }: { filter: MintsFilter }) {
                   elevation: 8,
                   shadowOpacity: 1,
                 }),
-            shadowColor: isDarkMode
-              ? globalColors.grey100
-              : highlightedBackgroundColor,
+            shadowColor: isDarkMode ? globalColors.grey100 : highlightedBackgroundColor,
           }}
         >
           <Box
@@ -73,16 +56,7 @@ function FilterButton({ filter }: { filter: MintsFilter }) {
               setFilter(filter);
             }}
           >
-            <Text
-              size="17pt"
-              weight="heavy"
-              align="center"
-              color={
-                currentFilter === filter
-                  ? highlightedTextColor
-                  : 'labelSecondary'
-              }
-            >
+            <Text size="17pt" weight="heavy" align="center" color={currentFilter === filter ? highlightedTextColor : 'labelSecondary'}>
               {getMintsFilterLabel(filter)}
             </Text>
           </Box>
@@ -134,9 +108,7 @@ export function TabBar() {
           borderRadius: 23,
         }}
         colors={
-          isDarkMode
-            ? ['rgba(45, 46, 51, 0.70)', 'rgba(45, 46, 51, 0.90)']
-            : ['rgba(250, 250, 250, 0.63)', 'rgba(240, 240, 240, 0.72)']
+          isDarkMode ? ['rgba(45, 46, 51, 0.70)', 'rgba(45, 46, 51, 0.90)'] : ['rgba(250, 250, 250, 0.63)', 'rgba(240, 240, 240, 0.72)']
         }
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}

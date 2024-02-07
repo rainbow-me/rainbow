@@ -4,19 +4,7 @@ import ShadowItem from './ShadowItem';
 
 const ShadowStack = React.forwardRef(
   (
-    {
-      backgroundColor,
-      borderRadius,
-      children,
-      elevation = 0,
-      height,
-      hideShadow,
-      overflow = 'hidden',
-      shadows,
-      style,
-      width,
-      ...props
-    },
+    { backgroundColor, borderRadius, children, elevation = 0, height, hideShadow, overflow = 'hidden', shadows, style, width, ...props },
     ref
   ) => {
     const renderItem = useCallback(
@@ -51,10 +39,7 @@ const ShadowStack = React.forwardRef(
         <View
           {...props}
           borderRadius={borderRadius}
-          elevation={shadows.reduce(
-            (acc, curr) => acc + Math.min(6, curr[2]),
-            0
-          )}
+          elevation={shadows.reduce((acc, curr) => acc + Math.min(6, curr[2]), 0)}
           height={height}
           overflow={overflow}
           style={[StyleSheet.absoluteFill, { backgroundColor }]}

@@ -2,11 +2,7 @@ import React from 'react';
 import { Path } from 'react-native-svg';
 import Svg from '../Svg';
 
-const TabPointsInner = ({
-  colors = undefined,
-  color = colors.white,
-  size = 28,
-}) => {
+const TabPointsInner = ({ colors = undefined, color = colors.white, size = 28 }) => {
   return (
     <Svg height={size} viewBox="0 0 28 28" width={size}>
       <Path

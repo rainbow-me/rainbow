@@ -2,13 +2,7 @@ import React, { ReactNode } from 'react';
 import { ButtonProps } from 'react-native';
 import { TextColor } from '../../design-system/color/palettes';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
-import {
-  AccentColorProvider,
-  Box,
-  Cover,
-  Text,
-  useForegroundColor,
-} from '@/design-system';
+import { AccentColorProvider, Box, Cover, Text, useForegroundColor } from '@/design-system';
 
 const TintButton = ({
   children,
@@ -44,14 +38,7 @@ const TintButton = ({
     >
       <Cover>
         <AccentColorProvider color={secondary06}>
-          <Box
-            alignItems="center"
-            background="accent"
-            borderRadius={46}
-            height={`${height}px`}
-            justifyContent="center"
-            width="full"
-          />
+          <Box alignItems="center" background="accent" borderRadius={46} height={`${height}px`} justifyContent="center" width="full" />
         </AccentColorProvider>
       </Cover>
       <Text color={color} size="20px / 24px (Deprecated)" weight="heavy">

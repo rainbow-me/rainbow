@@ -1,21 +1,13 @@
 import { EthereumAddress, RainbowToken } from '@/entities';
 import { getUniswapV2Tokens } from '@/handlers/dispersion';
+import { Network } from '@/networks/types';
 import { createQueryKey, queryClient } from '@/react-query';
-import {
-  DAI_ADDRESS,
-  ETH_ADDRESS,
-  SOCKS_ADDRESS,
-  WBTC_ADDRESS,
-  WETH_ADDRESS,
-} from '@/references';
+import { DAI_ADDRESS, ETH_ADDRESS, SOCKS_ADDRESS, WBTC_ADDRESS, WETH_ADDRESS } from '@/references';
+import { getUniqueId } from '@/utils/ethereumUtils';
 import { useQuery } from '@tanstack/react-query';
 import { without } from 'lodash';
 
-export const favoritesQueryKey = createQueryKey(
-  'favorites',
-  {},
-  { persisterVersion: 1 }
-);
+export const favoritesQueryKey = createQueryKey('favorites', {}, { persisterVersion: 1 });
 
 const DEFAULT: Record<EthereumAddress, RainbowToken> = {
   [DAI_ADDRESS]: {
@@ -28,7 +20,7 @@ const DEFAULT: Record<EthereumAddress, RainbowToken> = {
     isVerified: true,
     name: 'Dai',
     symbol: 'DAI',
-    type: 'token',
+    network: Network.mainnet,
     uniqueId: DAI_ADDRESS,
   },
   [ETH_ADDRESS]: {
@@ -40,7 +32,7 @@ const DEFAULT: Record<EthereumAddress, RainbowToken> = {
     isVerified: true,
     name: 'Ethereum',
     symbol: 'ETH',
-    type: 'token',
+    network: Network.mainnet,
     uniqueId: ETH_ADDRESS,
   },
   [SOCKS_ADDRESS]: {
@@ -53,7 +45,7 @@ const DEFAULT: Record<EthereumAddress, RainbowToken> = {
     isVerified: true,
     name: 'Unisocks',
     symbol: 'SOCKS',
-    type: 'token',
+    network: Network.mainnet,
     uniqueId: SOCKS_ADDRESS,
   },
   [WBTC_ADDRESS]: {
@@ -66,7 +58,7 @@ const DEFAULT: Record<EthereumAddress, RainbowToken> = {
     isVerified: true,
     name: 'Wrapped Bitcoin',
     symbol: 'WBTC',
-    type: 'token',
+    network: Network.mainnet,
     uniqueId: WBTC_ADDRESS,
   },
 };
@@ -91,7 +83,7 @@ async function fetchMetadata(addresses: string[]) {
         address: ETH_ADDRESS,
         name: 'Ethereum',
         symbol: 'ETH',
-        uniqueId: ETH_ADDRESS,
+        uniqueId: getUniqueId(ETH_ADDRESS, Network.mainnet),
       };
     }
     Object.entries(newFavoritesMeta).forEach(([address, favorite]) => {
@@ -107,9 +99,7 @@ async function fetchMetadata(addresses: string[]) {
  * Refreshes the metadata associated with all favorites.
  */
 export async function refreshFavorites() {
-  const favorites = Object.keys(
-    queryClient.getQueryData(favoritesQueryKey) ?? DEFAULT
-  );
+  const favorites = Object.keys(queryClient.getQueryData(favoritesQueryKey) ?? DEFAULT);
   const updatedMetadata = await fetchMetadata(favorites);
   return updatedMetadata;
 }
@@ -118,9 +108,7 @@ export async function refreshFavorites() {
  * Toggles the favorited status of the given `address`.
  */
 export async function toggleFavorite(address: string) {
-  const favorites = Object.keys(
-    queryClient.getQueryData(favoritesQueryKey) ?? []
-  );
+  const favorites = Object.keys(queryClient.getQueryData(favoritesQueryKey) ?? []);
   const lowercasedAddress = address.toLowerCase();
   let updatedFavorites;
   if (favorites.includes(lowercasedAddress)) {
@@ -141,14 +129,10 @@ export function useFavorites(): {
   favorites: string[];
   favoritesMetadata: Record<EthereumAddress, RainbowToken>;
 } {
-  const query = useQuery<Record<EthereumAddress, RainbowToken>>(
-    favoritesQueryKey,
-    refreshFavorites,
-    {
-      staleTime: Infinity,
-      cacheTime: Infinity,
-    }
-  );
+  const query = useQuery<Record<EthereumAddress, RainbowToken>>(favoritesQueryKey, refreshFavorites, {
+    staleTime: Infinity,
+    cacheTime: Infinity,
+  });
 
   const favoritesMetadata = query.data ?? {};
   const favorites = Object.keys(favoritesMetadata);

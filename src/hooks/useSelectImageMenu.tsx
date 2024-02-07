@@ -62,22 +62,10 @@ export default function useSelectImageMenu({
 }: {
   imagePickerOptions?: Options;
   menuItems?: Action[];
-  onChangeImage?: ({
-    asset,
-    image,
-  }: {
-    asset?: UniqueAsset;
-    image?: Image & { tmpPath?: string };
-  }) => void;
+  onChangeImage?: ({ asset, image }: { asset?: UniqueAsset; image?: Image & { tmpPath?: string } }) => void;
   onRemoveImage?: () => void;
   onUploading?: ({ image }: { image: Image }) => void;
-  onUploadSuccess?: ({
-    data,
-    image,
-  }: {
-    data: UploadImageReturnData;
-    image: Image;
-  }) => void;
+  onUploadSuccess?: ({ data, image }: { data: UploadImageReturnData; image: Image }) => void;
   onUploadError?: ({ error, image }: { error: unknown; image: Image }) => void;
   showRemove?: boolean;
   uploadToIPFS?: boolean;
@@ -85,10 +73,7 @@ export default function useSelectImageMenu({
 } = {}) {
   const { navigate, getParent: dangerouslyGetParent } = useNavigation();
   const { openPicker } = useImagePicker();
-  const { isLoading: isUploading, mutateAsync: upload } = useMutation(
-    ['ensImageUpload'],
-    uploadImage
-  );
+  const { isLoading: isUploading, mutateAsync: upload } = useMutation(['ensImageUpload'], uploadImage);
 
   // If the image is removed while uploading, we don't want to
   // call `onUploadSuccess` when the upload has finished.
@@ -112,13 +97,10 @@ export default function useSelectImageMenu({
     }, [dangerouslyGetParent])
   );
 
-  const menuItems = useMemo(
-    () =>
-      [...initialMenuItems, showRemove ? 'remove' : undefined].filter(
-        Boolean
-      ) as (Action | 'remove')[],
-    [initialMenuItems, showRemove]
-  );
+  const menuItems = useMemo(() => [...initialMenuItems, showRemove ? 'remove' : undefined].filter(Boolean) as (Action | 'remove')[], [
+    initialMenuItems,
+    showRemove,
+  ]);
 
   const handleSelectImage = useCallback(async () => {
     const image = await openPicker({
@@ -134,8 +116,7 @@ export default function useSelectImageMenu({
       onUploading?.({ image });
       try {
         const splitPath = image.path.split('/');
-        const filename =
-          image.filename || splitPath[splitPath.length - 1] || '';
+        const filename = image.filename || splitPath[splitPath.length - 1] || '';
         const data = await upload({
           filename,
           mime: image.mime,
@@ -150,17 +131,7 @@ export default function useSelectImageMenu({
     } else {
       onChangeImage?.({ image: { ...image, tmpPath } });
     }
-  }, [
-    imagePickerOptions,
-    isRemoved,
-    onChangeImage,
-    onUploadError,
-    onUploadSuccess,
-    onUploading,
-    openPicker,
-    upload,
-    uploadToIPFS,
-  ]);
+  }, [imagePickerOptions, isRemoved, onChangeImage, onUploadError, onUploadSuccess, onUploading, openPicker, upload, uploadToIPFS]);
 
   const handleSelectNFT = useCallback(() => {
     navigate(Routes.SELECT_UNIQUE_TOKEN_SHEET, {
@@ -189,9 +160,7 @@ export default function useSelectImageMenu({
   );
 
   const handleAndroidPress = useCallback(() => {
-    const actionSheetOptions = menuItems
-      .map(item => items[item]?.actionTitle)
-      .filter(Boolean);
+    const actionSheetOptions = menuItems.map(item => items[item]?.actionTitle).filter(Boolean);
 
     showActionSheetWithOptions(
       {

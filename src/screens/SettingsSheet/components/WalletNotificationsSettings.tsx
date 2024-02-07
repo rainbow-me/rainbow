@@ -1,11 +1,7 @@
 import lang from 'i18n-js';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Switch } from 'react-native';
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { Easing, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
@@ -22,10 +18,7 @@ import {
   WalletNotificationSettings,
 } from '@/notifications/settings';
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
-import {
-  showNotificationSubscriptionErrorAlert,
-  showOfflineAlert,
-} from '@/screens/SettingsSheet/components/notificationAlerts';
+import { showNotificationSubscriptionErrorAlert, showOfflineAlert } from '@/screens/SettingsSheet/components/notificationAlerts';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { updateSettingsForWalletWithAddress } from '@/notifications/settings/storage';
 
@@ -91,22 +84,14 @@ type RouteParams = {
 const WalletNotificationsSettings = () => {
   const { colors } = useTheme();
   const topicRowsData = useMemo(() => makeTopicRowsData(colors), [colors]);
-  const route = useRoute<
-    RouteProp<RouteParams, 'WalletNotificationsSettings'>
-  >();
+  const route = useRoute<RouteProp<RouteParams, 'WalletNotificationsSettings'>>();
   const { isConnected } = useNetInfo();
   const { address, notificationSettings } = route.params;
 
-  const [
-    notifications,
-    setNotificationSettings,
-  ] = useState<WalletNotificationSettings>(notificationSettings);
+  const [notifications, setNotificationSettings] = useState<WalletNotificationSettings>(notificationSettings);
   const updateSettings = useCallback(
     (options: Partial<WalletNotificationSettings>) => {
-      const newSettingsForWallet = updateSettingsForWalletWithAddress(
-        address,
-        options
-      );
+      const newSettingsForWallet = updateSettingsForWalletWithAddress(address, options);
 
       if (newSettingsForWallet) {
         setNotificationSettings(newSettingsForWallet);
@@ -115,39 +100,18 @@ const WalletNotificationsSettings = () => {
     [address]
   );
 
-  const {
-    lastOwnedWalletEnabled,
-    lastWatchedWalletEnabled,
-    ownerEnabled,
-    watcherEnabled,
-  } = useWalletGroupNotificationSettings();
+  const { lastOwnedWalletEnabled, lastWatchedWalletEnabled, ownerEnabled, watcherEnabled } = useWalletGroupNotificationSettings();
 
-  const {
-    notificationsEnabled,
-    notificationsSectionEnabled,
-    lastWalletEnabled,
-  } = useMemo(() => {
-    const ownedWallet =
-      notifications.type === WalletNotificationRelationship.OWNER;
-    const notificationsSectionEnabled = ownedWallet
-      ? ownerEnabled
-      : watcherEnabled;
-    const lastWalletEnabled = ownedWallet
-      ? lastOwnedWalletEnabled
-      : lastWatchedWalletEnabled;
+  const { notificationsEnabled, notificationsSectionEnabled, lastWalletEnabled } = useMemo(() => {
+    const ownedWallet = notifications.type === WalletNotificationRelationship.OWNER;
+    const notificationsSectionEnabled = ownedWallet ? ownerEnabled : watcherEnabled;
+    const lastWalletEnabled = ownedWallet ? lastOwnedWalletEnabled : lastWatchedWalletEnabled;
     return {
-      notificationsEnabled:
-        notificationsSectionEnabled && notifications.enabled,
+      notificationsEnabled: notificationsSectionEnabled && notifications.enabled,
       notificationsSectionEnabled,
       lastWalletEnabled,
     };
-  }, [
-    notifications,
-    ownerEnabled,
-    watcherEnabled,
-    lastOwnedWalletEnabled,
-    lastWatchedWalletEnabled,
-  ]);
+  }, [notifications, ownerEnabled, watcherEnabled, lastOwnedWalletEnabled, lastWatchedWalletEnabled]);
 
   const [allState, setAllState] = useState({
     loading: false,
@@ -157,15 +121,11 @@ const WalletNotificationsSettings = () => {
   const [topicState, setTopicState] = useState({
     ...(notifications?.topics ?? {}),
   });
-  const toggleStateForTopic = (topic: WalletNotificationTopicType) =>
-    setTopicState(prev => ({ ...prev, [topic]: !prev[topic] }));
+  const toggleStateForTopic = (topic: WalletNotificationTopicType) => setTopicState(prev => ({ ...prev, [topic]: !prev[topic] }));
 
   // We allow only one subscription in progress
   // this states controls which we are currently updating
-  const [
-    topicSubscriptionInProgress,
-    setTopicSubscriptionInProgress,
-  ] = useState<WalletNotificationTopicType | null>(null);
+  const [topicSubscriptionInProgress, setTopicSubscriptionInProgress] = useState<WalletNotificationTopicType | null>(null);
 
   const toggleAllowNotifications = useCallback(() => {
     if (!isConnected) {
@@ -173,16 +133,9 @@ const WalletNotificationsSettings = () => {
       return;
     }
     setAllState(prev => ({ status: !prev.status, loading: true }));
-    toggleGroupNotifications(
-      [notifications],
-      notifications.type,
-      !notificationsEnabled
-    )
+    toggleGroupNotifications([notifications], notifications.type, !notificationsEnabled)
       .then(() => {
-        if (
-          !notificationsSectionEnabled ||
-          (notificationsSectionEnabled && lastWalletEnabled)
-        ) {
+        if (!notificationsSectionEnabled || (notificationsSectionEnabled && lastWalletEnabled)) {
           updateGroupSettings({
             [notifications.type]: !notificationsEnabled,
           });
@@ -196,14 +149,7 @@ const WalletNotificationsSettings = () => {
         showNotificationSubscriptionErrorAlert();
         setAllState(prev => ({ status: !prev.status, loading: false }));
       });
-  }, [
-    notificationsSectionEnabled,
-    lastWalletEnabled,
-    updateSettings,
-    notificationsEnabled,
-    notifications,
-    isConnected,
-  ]);
+  }, [notificationsSectionEnabled, lastWalletEnabled, updateSettings, notificationsEnabled, notifications, isConnected]);
 
   const toggleTopic = useCallback(
     (topic: WalletNotificationTopicType) => {
@@ -213,12 +159,7 @@ const WalletNotificationsSettings = () => {
       }
       toggleStateForTopic(topic);
       setTopicSubscriptionInProgress(topic);
-      toggleTopicForWallet(
-        notifications.type,
-        notifications.address,
-        topic,
-        !notifications?.topics[topic]
-      )
+      toggleTopicForWallet(notifications.type, notifications.address, topic, !notifications?.topics[topic])
         .then(() => {
           updateSettings({
             topics: {
@@ -269,14 +210,10 @@ const WalletNotificationsSettings = () => {
     <MenuItem
       disabled
       hasSfSymbol
-      leftComponent={
-        <MenuItem.TextIcon colorOverride={iconColor} icon={icon} />
-      }
+      leftComponent={<MenuItem.TextIcon colorOverride={iconColor} icon={icon} />}
       rightComponent={
         <>
-          {topicSubscriptionInProgress === topic && (
-            <SettingsLoadingIndicator />
-          )}
+          {topicSubscriptionInProgress === topic && <SettingsLoadingIndicator />}
           <Switch
             disabled={allState.loading || topicSubscriptionInProgress !== null}
             value={topicState[topic]}
@@ -298,35 +235,20 @@ const WalletNotificationsSettings = () => {
             <>
               {allState.loading && <SettingsLoadingIndicator />}
               <Switch
-                disabled={
-                  allState.loading || topicSubscriptionInProgress !== null
-                }
+                disabled={allState.loading || topicSubscriptionInProgress !== null}
                 onValueChange={toggleAllowNotifications}
                 value={allState.status}
               />
             </>
           }
           size={52}
-          titleComponent={
-            <MenuItem.Title
-              text={lang.t(
-                'settings.notifications_section.allow_notifications'
-              )}
-              weight="bold"
-            />
-          }
+          titleComponent={<MenuItem.Title text={lang.t('settings.notifications_section.allow_notifications')} weight="bold" />}
         />
       </Menu>
       <Animated.View style={animatedStyle}>
         <Menu>
           {topicRowsData.map(({ topic, icon, iconColor, text }) => (
-            <IndividualTopicItemRow
-              key={topic}
-              topic={topic}
-              icon={icon}
-              iconColor={iconColor}
-              text={text}
-            />
+            <IndividualTopicItemRow key={topic} topic={topic} icon={icon} iconColor={iconColor} text={text} />
           ))}
         </Menu>
       </Animated.View>

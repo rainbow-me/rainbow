@@ -1,47 +1,13 @@
 import { BlurView } from '@react-native-community/blur';
 import { uniqueId } from 'lodash';
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import {
-  InteractionManager,
-  LayoutChangeEvent,
-  Pressable,
-  PressableProps,
-  StyleSheet,
-  View,
-} from 'react-native';
-import Animated, {
-  SharedValue,
-  useAnimatedStyle,
-  useDerivedValue,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
-import {
-  atom,
-  atomFamily,
-  RecoilRoot,
-  useRecoilState,
-  useRecoilValue,
-  useSetRecoilState,
-} from 'recoil';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { InteractionManager, LayoutChangeEvent, Pressable, PressableProps, StyleSheet, View } from 'react-native';
+import Animated, { SharedValue, useAnimatedStyle, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
+import { atom, atomFamily, RecoilRoot, useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { ZoomableWrapper } from '../expanded-state/unique-token/ZoomableWrapper';
 import { SheetHandleFixedToTopHeight } from '../sheet';
 import AvatarCoverPhotoMaskSvg from '../svg/AvatarCoverPhotoMaskSvg';
-import {
-  BackgroundProvider,
-  Box,
-  BoxProps,
-  Cover,
-  useColorMode,
-} from '@/design-system';
+import { BackgroundProvider, Box, BoxProps, Cover, useColorMode } from '@/design-system';
 import { useDimensions, usePersistentAspectRatio } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { colors, position } from '@/styles';
@@ -151,17 +117,9 @@ export default function ImagePreviewOverlay({
 
   return (
     <RecoilRoot>
-      <ImageOverlayConfigContext.Provider
-        value={{ enableZoom, useBackgroundOverlay, yPosition }}
-      >
+      <ImageOverlayConfigContext.Provider value={{ enableZoom, useBackgroundOverlay, yPosition }}>
         {children}
-        {enableZoom && (
-          <ImagePreviews
-            backgroundOverlay={backgroundOverlay}
-            opacity={opacity}
-            yPosition={yPosition}
-          />
-        )}
+        {enableZoom && <ImagePreviews backgroundOverlay={backgroundOverlay} opacity={opacity} yPosition={yPosition} />}
       </ImageOverlayConfigContext.Provider>
     </RecoilRoot>
   );
@@ -173,23 +131,12 @@ type ImagePreviewsProps = {
   yPosition: SharedValue<number>;
 };
 
-function ImagePreviews({
-  backgroundOverlay,
-  opacity,
-  yPosition,
-}: ImagePreviewsProps) {
+function ImagePreviews({ backgroundOverlay, opacity, yPosition }: ImagePreviewsProps) {
   const ids = useRecoilValue(idsAtom);
   return (
     <>
       {ids.map((id, index) => (
-        <ImagePreview
-          backgroundOverlay={backgroundOverlay}
-          id={id}
-          index={index}
-          key={index}
-          opacity={opacity}
-          yPosition={yPosition}
-        />
+        <ImagePreview backgroundOverlay={backgroundOverlay} id={id} index={index} key={index} opacity={opacity} yPosition={yPosition} />
       ))}
     </>
   );
@@ -203,13 +150,7 @@ type ImagePreviewProps = {
   yPosition: SharedValue<number>;
 };
 
-function ImagePreview({
-  backgroundOverlay,
-  index,
-  id,
-  opacity: givenOpacity,
-  yPosition,
-}: ImagePreviewProps) {
+function ImagePreview({ backgroundOverlay, index, id, opacity: givenOpacity, yPosition }: ImagePreviewProps) {
   const { useBackgroundOverlay } = useContext(ImageOverlayConfigContext);
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
 
@@ -217,9 +158,7 @@ function ImagePreview({
   const backgroundMask = useRecoilValue(backgroundMaskAtom(id));
   const borderRadius = useRecoilValue(borderRadiusAtom(id));
   const disableAnimations = useRecoilValue(disableAnimationsAtom(id));
-  const disableEnteringWithPinch = useRecoilValue(
-    disableEnteringWithPinchAtom(id)
-  );
+  const disableEnteringWithPinch = useRecoilValue(disableEnteringWithPinchAtom(id));
   const hasShadow = useRecoilValue(hasShadowAtom(id));
   const height = useRecoilValue(heightAtom(id));
   const hideStatusBar = useRecoilValue(hideStatusBarAtom(id));
@@ -258,8 +197,7 @@ function ImagePreview({
     opacity: 1 * progress.value,
     transform: [
       {
-        translateY:
-          yPosition.value - (hideStatusBar ? SheetHandleFixedToTopHeight : 0),
+        translateY: yPosition.value - (hideStatusBar ? SheetHandleFixedToTopHeight : 0),
       },
     ],
     zIndex: progress.value > 0 ? zIndex + 2 : -2,
@@ -268,8 +206,7 @@ function ImagePreview({
     zIndex: progress.value > 0 ? zIndex + 10 : zIndex,
   }));
 
-  const ready =
-    id && imageUrl && height > 0 && width > 0 && xOffset >= 0 && aspectRatio;
+  const ready = id && imageUrl && height > 0 && width > 0 && xOffset >= 0 && aspectRatio;
 
   if (!ready) return null;
   return (
@@ -288,11 +225,7 @@ function ImagePreview({
         >
           <Cover alignHorizontal="center">
             <BackgroundProvider color="body (Deprecated)">
-              {({ backgroundColor }) => (
-                <AvatarCoverPhotoMaskSvg
-                  backgroundColor={backgroundColor as any}
-                />
-              )}
+              {({ backgroundColor }) => <AvatarCoverPhotoMaskSvg backgroundColor={backgroundColor as any} />}
             </BackgroundProvider>
           </Cover>
         </Box>
@@ -300,24 +233,16 @@ function ImagePreview({
       {useBackgroundOverlay && (
         <>
           {backgroundOverlay ? (
-            <Box
-              as={Animated.View}
-              style={[overlayStyle, StyleSheet.absoluteFillObject]}
-            >
+            <Box as={Animated.View} style={[overlayStyle, StyleSheet.absoluteFillObject]}>
               {backgroundOverlay}
             </Box>
           ) : (
-            <Box
-              as={Animated.View}
-              style={[overlayStyle, StyleSheet.absoluteFillObject]}
-            >
+            <Box as={Animated.View} style={[overlayStyle, StyleSheet.absoluteFillObject]}>
               {ios && (
                 <Box
                   as={View}
                   height={{
-                    custom: hideStatusBar
-                      ? deviceHeight
-                      : deviceHeight - safeAreaInsetValues.top,
+                    custom: hideStatusBar ? deviceHeight : deviceHeight - safeAreaInsetValues.top,
                   }}
                   left="0px"
                   position="absolute"
@@ -329,33 +254,17 @@ function ImagePreview({
                   width={{ custom: deviceWidth }}
                 >
                   <Box style={position.coverAsObject}>
-                    <Box
-                      as={ImgixImage}
-                      height="full"
-                      source={{ uri: imageUrl }}
-                      width="full"
-                      size={FULL_NFT_IMAGE_SIZE}
-                    />
-                    <Box
-                      as={BlurView}
-                      blurAmount={100}
-                      blurType="light"
-                      style={position.coverAsObject}
-                    />
+                    <Box as={ImgixImage} height="full" source={{ uri: imageUrl }} width="full" size={FULL_NFT_IMAGE_SIZE} />
+                    <Box as={BlurView} blurAmount={100} blurType="light" style={position.coverAsObject} />
                   </Box>
                 </Box>
               )}
               <Box
                 height={{
-                  custom: hideStatusBar
-                    ? deviceHeight
-                    : deviceHeight - safeAreaInsetValues.top,
+                  custom: hideStatusBar ? deviceHeight : deviceHeight - safeAreaInsetValues.top,
                 }}
                 style={{
-                  backgroundColor:
-                    colorMode === 'dark'
-                      ? `rgba(22, 22, 22, ${ios ? 0.8 : 1})`
-                      : `rgba(26, 26, 26, ${ios ? 0.8 : 1})`,
+                  backgroundColor: colorMode === 'dark' ? `rgba(22, 22, 22, ${ios ? 0.8 : 1})` : `rgba(26, 26, 26, ${ios ? 0.8 : 1})`,
                 }}
                 width="full"
               />
@@ -445,9 +354,7 @@ export function ImagePreviewOverlayTarget({
       uri?: never;
     }
 )) {
-  const { enableZoom: enableZoom_, yPosition } = useContext(
-    ImageOverlayConfigContext
-  );
+  const { enableZoom: enableZoom_, yPosition } = useContext(ImageOverlayConfigContext);
   const enableZoom = enableZoom_ && imageUrl;
 
   const id = useMemo(() => uniqueId(), []);
@@ -462,9 +369,7 @@ export function ImagePreviewOverlayTarget({
   const setBackgroundMask = useSetRecoilState(backgroundMaskAtom(id));
   const setBorderRadius = useSetRecoilState(borderRadiusAtom(id));
   const setDisableAnimations = useSetRecoilState(disableAnimationsAtom(id));
-  const setDisableEnteringWithPinch = useSetRecoilState(
-    disableEnteringWithPinchAtom(id)
-  );
+  const setDisableEnteringWithPinch = useSetRecoilState(disableEnteringWithPinchAtom(id));
   const setHasShadow = useSetRecoilState(hasShadowAtom(id));
   const setHideStatusBar = useSetRecoilState(hideStatusBarAtom(id));
   const setImageUrl = useSetRecoilState(imageUrlAtom(id));
@@ -509,13 +414,10 @@ export function ImagePreviewOverlayTarget({
   // calculate it from the uri.
   const calculatedAspectRatio = usePersistentAspectRatio(uri || '');
 
-  const aspectRatio = useMemo(
-    () =>
-      aspectRatioType
-        ? ASPECT_RATIOS[aspectRatioType]
-        : calculatedAspectRatio.result,
-    [aspectRatioType, calculatedAspectRatio]
-  );
+  const aspectRatio = useMemo(() => (aspectRatioType ? ASPECT_RATIOS[aspectRatioType] : calculatedAspectRatio.result), [
+    aspectRatioType,
+    calculatedAspectRatio,
+  ]);
   useEffect(() => {
     if (aspectRatio) {
       setAspectRatio(aspectRatio);
@@ -543,8 +445,7 @@ export function ImagePreviewOverlayTarget({
               const xOffset = args[4];
               const yOffset = args[5];
               typeof xOffset === 'number' && setXOffset(xOffset);
-              typeof yOffset === 'number' &&
-                setYOffset(yOffset - topOffset + (yPosition?.value ?? 0));
+              typeof yOffset === 'number' && setYOffset(yOffset - topOffset + (yPosition?.value ?? 0));
               hasMounted.current = true;
             });
           }
@@ -575,10 +476,7 @@ export function ImagePreviewOverlayTarget({
     if (!enableZoom) return;
     if (width) {
       InteractionManager.runAfterInteractions(() => {
-        setTimeout(
-          () => setRenderPlaceholder(false),
-          500 + deferOverlayTimeout
-        );
+        setTimeout(() => setRenderPlaceholder(false), 500 + deferOverlayTimeout);
       });
     }
   }, [enableZoom, deferOverlayTimeout, width]);
@@ -587,13 +485,7 @@ export function ImagePreviewOverlayTarget({
     <Box flexShrink={1} width="full">
       <Box
         borderRadius={borderRadius}
-        height={
-          givenHeight
-            ? givenHeight
-            : height
-            ? { custom: height }
-            : { custom: 0 }
-        }
+        height={givenHeight ? givenHeight : height ? { custom: height } : { custom: 0 }}
         onLayout={handleLayout}
         ref={zoomableWrapperRef}
         style={{ opacity: renderPlaceholder ? 1 : 0, overflow: 'hidden' }}

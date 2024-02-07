@@ -21,9 +21,7 @@ export const Line = ({
         flexDirection: 'row',
         flexWrap: 'wrap',
         gap,
-        justifyContent: alignHorizontal
-          ? alignHorizontalToFlexAlign[alignHorizontal]
-          : undefined,
+        justifyContent: alignHorizontal ? alignHorizontalToFlexAlign[alignHorizontal] : undefined,
         paddingLeft: leftIndent * CHARACTER_WIDTH,
       }}
     >

@@ -15,12 +15,7 @@ type SpinnerProps = {
   style?: StyleProp<ViewStyle>;
 };
 
-const Spinner = ({
-  color = '',
-  duration = 1500,
-  size = 20,
-  ...props
-}: SpinnerProps) => {
+const Spinner = ({ color = '', duration = 1500, size = 20, ...props }: SpinnerProps) => {
   const { colors } = useTheme();
 
   let style;
@@ -39,12 +34,7 @@ const Spinner = ({
     <Centered {...props}>
       {IS_TESTING !== 'true' && (
         <SpinAnimation duration={duration}>
-          <ImgixImage
-            source={SpinnerImageSource as any}
-            style={style}
-            tintColor={color || colors.whiteLabel}
-            size={30}
-          />
+          <ImgixImage source={SpinnerImageSource as any} style={style} tintColor={color || colors.whiteLabel} size={30} />
         </SpinAnimation>
       )}
     </Centered>

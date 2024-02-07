@@ -1,8 +1,4 @@
-import {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
+import { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { LayoutChangeEvent } from 'react-native';
 
@@ -14,15 +10,12 @@ export default ({ contentHeight }: { contentHeight: number }) => {
   const onHeightChange = useCallback(
     (event: LayoutChangeEvent) => {
       if (justOpenedSheet.current) {
-        offsetButtonAnimation.value = withSpring(
-          event?.nativeEvent?.layout?.height - contentHeight,
-          {
-            damping: 10,
-            mass: 0.08,
-            stiffness: 100,
-            overshootClamping: true,
-          }
-        );
+        offsetButtonAnimation.value = withSpring(event?.nativeEvent?.layout?.height - contentHeight, {
+          damping: 10,
+          mass: 0.08,
+          stiffness: 100,
+          overshootClamping: true,
+        });
       }
     },
     [contentHeight, offsetButtonAnimation]
@@ -50,8 +43,7 @@ export default ({ contentHeight }: { contentHeight: number }) => {
   }, []);
 
   const onWrapperLayout = useCallback(
-    (e: LayoutChangeEvent) =>
-      !justOpenedSheet.current && setButtonPosition(e.nativeEvent.layout.y),
+    (e: LayoutChangeEvent) => !justOpenedSheet.current && setButtonPosition(e.nativeEvent.layout.y),
 
     []
   );

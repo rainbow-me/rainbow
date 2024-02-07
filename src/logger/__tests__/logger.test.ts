@@ -2,13 +2,7 @@ import { nanoid } from 'nanoid';
 import { expect, test } from '@jest/globals';
 import * as Sentry from '@sentry/react-native';
 
-import {
-  Logger,
-  LogLevel,
-  RainbowError,
-  SentrySeverityLevel,
-  sentryTransport,
-} from '@/logger';
+import { Logger, LogLevel, RainbowError, SentrySeverityLevel, sentryTransport } from '@/logger';
 
 jest.mock('@sentry/react-native', () => ({
   addBreadcrumb: jest.fn(),
@@ -124,11 +118,7 @@ describe('general functionality', () => {
 
     logger.error(new Error());
 
-    expect(mockTransport).toHaveBeenCalledWith(
-      LogLevel.Error,
-      new RainbowError(`logger.error was not provided a RainbowError`),
-      {}
-    );
+    expect(mockTransport).toHaveBeenCalledWith(LogLevel.Error, new RainbowError(`logger.error was not provided a RainbowError`), {});
   });
 
   test('sentryTransport', () => {

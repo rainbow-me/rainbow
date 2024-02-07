@@ -16,14 +16,7 @@ import { ChainBadge, CoinIcon } from '../coin-icon';
 import Divider from '../Divider';
 import { Text } from '../text';
 
-const AvailableNetworksv1 = ({
-  asset,
-  networks,
-  hideDivider,
-  marginBottom = 24,
-  marginHorizontal = 19,
-  prominent,
-}) => {
+const AvailableNetworksv1 = ({ asset, networks, hideDivider, marginBottom = 24, marginHorizontal = 19, prominent }) => {
   const { colors } = useTheme();
   const { navigate } = useNavigation();
 
@@ -56,20 +49,9 @@ const AvailableNetworksv1 = ({
 
   return (
     <>
-      <ButtonPressAnimation
-        onPress={handleAvailableNetworksPress}
-        scaleTo={0.95}
-      >
-        <Row
-          borderRadius={16}
-          marginHorizontal={marginHorizontal}
-          style={padding.object(android ? 6 : 10, 10, android ? 6 : 10, 10)}
-        >
-          <RadialGradient
-            {...radialGradientProps}
-            borderRadius={16}
-            radius={600}
-          />
+      <ButtonPressAnimation onPress={handleAvailableNetworksPress} scaleTo={0.95}>
+        <Row borderRadius={16} marginHorizontal={marginHorizontal} style={padding.object(android ? 6 : 10, 10, android ? 6 : 10, 10)}>
+          <RadialGradient {...radialGradientProps} borderRadius={16} radius={600} />
           <Row justify="center">
             {availableNetworks?.map((network, index) => {
               return (
@@ -88,17 +70,9 @@ const AvailableNetworksv1 = ({
                   zIndex={availableNetworks?.length - index}
                 >
                   {network !== 'mainnet' ? (
-                    <ChainBadge
-                      assetType={network}
-                      position="relative"
-                      size="small"
-                    />
+                    <ChainBadge network={network} position="relative" size="small" />
                   ) : (
-                    <CoinIcon
-                      address={ETH_ADDRESS}
-                      size={20}
-                      symbol={ETH_SYMBOL}
-                    />
+                    <CoinIcon address={ETH_ADDRESS} size={20} symbol={ETH_SYMBOL} />
                   )}
                 </Box>
               );
@@ -106,11 +80,7 @@ const AvailableNetworksv1 = ({
           </Row>
           <Column flex={1} justify="center" marginHorizontal={8}>
             <Text
-              color={
-                prominent
-                  ? colors.alpha(colors.blueGreyDark, 0.8)
-                  : colors.alpha(colors.blueGreyDark, 0.6)
-              }
+              color={prominent ? colors.alpha(colors.blueGreyDark, 0.8) : colors.alpha(colors.blueGreyDark, 0.6)}
               numberOfLines={2}
               size="smedium"
               weight={prominent ? 'heavy' : 'bold'}
@@ -125,12 +95,7 @@ const AvailableNetworksv1 = ({
             </Text>
           </Column>
           <Column align="end" justify="center">
-            <Text
-              align="center"
-              color={colors.alpha(colors.blueGreyDark, 0.3)}
-              size="smedium"
-              weight="heavy"
-            >
+            <Text align="center" color={colors.alpha(colors.blueGreyDark, 0.3)} size="smedium" weight="heavy">
               􀅵
             </Text>
           </Column>

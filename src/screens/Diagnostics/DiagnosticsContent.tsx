@@ -80,9 +80,7 @@ export function DiagnosticsContent({
             {i18n.t(i18n.l.wallet.diagnostics.app_state_diagnostics_title)}
           </Text>
           <Text size="13pt" weight="semibold" color="labelQuaternary">
-            {i18n.t(
-              i18n.l.wallet.diagnostics.app_state_diagnostics_description
-            )}
+            {i18n.t(i18n.l.wallet.diagnostics.app_state_diagnostics_description)}
           </Text>
         </Stack>
       </Box>
@@ -105,10 +103,7 @@ export function DiagnosticsContent({
                 {i18n.t(i18n.l.wallet.diagnostics.pin_auth_title)}
               </Text>
               <Text size="13pt" weight="semibold" color="labelQuaternary">
-                {i18n.t(
-                  i18n.l.wallet.diagnostics
-                    .you_need_to_authenticate_with_your_pin
-                )}
+                {i18n.t(i18n.l.wallet.diagnostics.you_need_to_authenticate_with_your_pin)}
               </Text>
             </Stack>
           </Box>
@@ -132,12 +127,7 @@ export function DiagnosticsContent({
         </Text>
       </Box>
       {!keys && (
-        <Box
-          alignItems="center"
-          justifyContent="center"
-          width="full"
-          height={{ custom: 300 }}
-        >
+        <Box alignItems="center" justifyContent="center" width="full" height={{ custom: 300 }}>
           <Stack space="16px" alignHorizontal="center">
             <LoadingSpinner color="black" />
             <Text size="17pt" color="label" weight="semibold">

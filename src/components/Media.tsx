@@ -63,26 +63,13 @@ export function Media({
     case MimeType.SVG:
       return (
         <View style={{ ...style, overflow: 'hidden' }}>
-          <SvgImage
-            fallbackUri={signedFallbackUrl}
-            onLayout={onLayout}
-            onError={onError}
-            style={style}
-            source={{ uri: signedUrl }}
-          />
+          <SvgImage fallbackUri={signedFallbackUrl} onLayout={onLayout} onError={onError} style={style} source={{ uri: signedUrl }} />
         </View>
       );
     case MimeType.GIF:
     case MimeType.PNG:
     case MimeType.JPG:
     default:
-      return (
-        <Image
-          onLayout={onLayout}
-          onError={onError}
-          source={{ uri: signedUrl }}
-          style={style}
-        />
-      );
+      return <Image onLayout={onLayout} onError={onError} source={{ uri: signedUrl }} style={style} />;
   }
 }
