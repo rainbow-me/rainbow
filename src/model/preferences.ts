@@ -1,9 +1,6 @@
 import { RainbowFetchClient } from '../rainbow-fetch';
 import { EthereumAddress } from '@/entities';
-import {
-  getSignatureForSigningWalletAndCreateSignatureIfNeeded,
-  signWithSigningWallet,
-} from '@/helpers/signingWallet';
+import { getSignatureForSigningWalletAndCreateSignatureIfNeeded, signWithSigningWallet } from '@/helpers/signingWallet';
 import { logger } from '@/logger';
 
 export enum PreferenceActionType {
@@ -36,9 +33,7 @@ export async function setPreference(
   value?: any | undefined
 ): Promise<boolean> {
   try {
-    const signature = await getSignatureForSigningWalletAndCreateSignatureIfNeeded(
-      address
-    );
+    const signature = await getSignatureForSigningWalletAndCreateSignatureIfNeeded(address);
     if (!signature) {
       return false;
     }
@@ -70,10 +65,7 @@ export async function setPreference(
   }
 }
 
-export async function getPreference(
-  key: string,
-  address: EthereumAddress
-): Promise<any | null> {
+export async function getPreference(key: string, address: EthereumAddress): Promise<any | null> {
   try {
     const response = await preferencesAPI.get(`${PREFS_ENDPOINT}/${key}`, {
       params: { address },

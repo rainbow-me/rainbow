@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  AccentColorProvider,
-  Box,
-  ColorModeProvider,
-  Text,
-} from '@/design-system';
+import { AccentColorProvider, Box, ColorModeProvider, Text } from '@/design-system';
 import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
 import { TextSize, TextWeight } from '@/design-system/components/Text/Text';
 import { useTheme } from '@/theme';
@@ -51,13 +46,7 @@ export const IconOrb = ({
               justifyContent="center"
               shadow={shadowColor === 'accent' ? '18px accent' : '18px'}
             >
-              <Text
-                containsEmoji
-                size={textSize}
-                weight={textWeight}
-                align="center"
-                color="label"
-              >
+              <Text containsEmoji size={textSize} weight={textWeight} align="center" color="label">
                 {icon}
               </Text>
             </Box>
@@ -71,13 +60,7 @@ export const IconOrb = ({
               alignItems="center"
               justifyContent="center"
             >
-              <Text
-                containsEmoji
-                size={textSize}
-                weight={textWeight}
-                align="center"
-                color="label"
-              >
+              <Text containsEmoji size={textSize} weight={textWeight} align="center" color="label">
                 {icon}
               </Text>
             </Box>

@@ -22,12 +22,7 @@ const RenewContent = ({
   const { data: { registration } = {} } = useENSRegistrant(name + ENS_DOMAIN);
   const expiryDate = registration?.expiryDate || 0;
 
-  const newExpiryDateFormatted = format(
-    new Date(
-      Number(expiryDate * 1000) + yearsDuration * timeUnits.secs.year * 1000
-    ),
-    'MMM d, yyyy'
-  );
+  const newExpiryDateFormatted = format(new Date(Number(expiryDate * 1000) + yearsDuration * timeUnits.secs.year * 1000), 'MMM d, yyyy');
 
   return (
     <Inset vertical={isSmallPhone ? '12px' : '30px (Deprecated)'}>
@@ -35,20 +30,14 @@ const RenewContent = ({
         <Separator color="divider60 (Deprecated)" />
         <RegistrationReviewRows
           duration={yearsDuration}
-          estimatedCostETH={
-            registrationCostsData?.estimatedTotalRegistrationCost?.eth
-          }
+          estimatedCostETH={registrationCostsData?.estimatedTotalRegistrationCost?.eth}
           maxDuration={99}
           mode={REGISTRATION_MODES.RENEW}
           networkFee={registrationCostsData?.estimatedNetworkFee?.display}
           newExpiryDate={newExpiryDateFormatted}
           onChangeDuration={setDuration}
-          registrationFee={
-            registrationCostsData?.estimatedRentPrice?.total?.display
-          }
-          totalCost={
-            registrationCostsData?.estimatedTotalRegistrationCost?.display
-          }
+          registrationFee={registrationCostsData?.estimatedRentPrice?.total?.display}
+          totalCost={registrationCostsData?.estimatedTotalRegistrationCost?.display}
         />
         <Separator color="divider60 (Deprecated)" />
       </Stack>

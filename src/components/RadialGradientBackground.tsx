@@ -1,7 +1,5 @@
 import React, { useMemo } from 'react';
-import RadialGradient, {
-  RadialGradientProps,
-} from 'react-native-radial-gradient';
+import RadialGradient, { RadialGradientProps } from 'react-native-radial-gradient';
 import Animated from 'react-native-reanimated';
 
 const AnimatedRadialGradient = Animated.createAnimatedComponent(RadialGradient);
@@ -11,12 +9,7 @@ export type RadialGradientBackgroundProps = RadialGradientProps & {
   height: number;
 };
 
-const RadialGradientBackground = ({
-  height,
-  width,
-  style,
-  ...props
-}: RadialGradientBackgroundProps) => {
+const RadialGradientBackground = ({ height, width, style, ...props }: RadialGradientBackgroundProps) => {
   const center = useMemo(() => [width, width / 2], [width]);
 
   return (

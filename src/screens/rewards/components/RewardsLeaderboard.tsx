@@ -4,15 +4,9 @@ import * as i18n from '@/languages';
 import { RewardsSectionCard } from '@/screens/rewards/components/RewardsSectionCard';
 import { RewardsLeaderboardItem } from '@/screens/rewards/components/RewardsLeaderboardItem';
 import { differenceInDays, fromUnixTime } from 'date-fns';
-import {
-  RewardsLeaderboardAccount,
-  RewardsMetaStatus,
-} from '@/graphql/__generated__/metadata';
+import { RewardsLeaderboardAccount, RewardsMetaStatus } from '@/graphql/__generated__/metadata';
 
-const getRHSValueBasedOnStatus = (
-  status: RewardsMetaStatus,
-  daysLeftValue: number
-) => {
+const getRHSValueBasedOnStatus = (status: RewardsMetaStatus, daysLeftValue: number) => {
   switch (status) {
     case RewardsMetaStatus.Paused:
       return i18n.t(i18n.l.rewards.program_paused);
@@ -43,16 +37,8 @@ type Props = {
   tokenSymbol: string;
 };
 
-export const RewardsLeaderboard: React.FC<Props> = ({
-  status,
-  leaderboard,
-  programEndTimestamp,
-  tokenSymbol,
-}) => {
-  const daysLeft = differenceInDays(
-    fromUnixTime(programEndTimestamp),
-    new Date()
-  );
+export const RewardsLeaderboard: React.FC<Props> = ({ status, leaderboard, programEndTimestamp, tokenSymbol }) => {
+  const daysLeft = differenceInDays(fromUnixTime(programEndTimestamp), new Date());
 
   return (
     <Box paddingBottom="28px">
@@ -61,12 +47,7 @@ export const RewardsLeaderboard: React.FC<Props> = ({
           <Text size="20pt" weight="heavy" color="label">
             {i18n.t(i18n.l.rewards.leaderboard)}
           </Text>
-          <Text
-            align="right"
-            size="20pt"
-            weight="semibold"
-            color="labelTertiary"
-          >
+          <Text align="right" size="20pt" weight="semibold" color="labelTertiary">
             {getRHSValueBasedOnStatus(status, daysLeft)}
           </Text>
         </Columns>
@@ -76,10 +57,7 @@ export const RewardsLeaderboard: React.FC<Props> = ({
       </Stack>
       <Box paddingTop={status !== RewardsMetaStatus.Ongoing ? '12px' : '16px'}>
         <RewardsSectionCard paddingVertical="10px" paddingHorizontal="16px">
-          <Stack
-            space="10px"
-            separator={<Separator color="separatorTertiary" />}
-          >
+          <Stack space="10px" separator={<Separator color="separatorTertiary" />}>
             {leaderboard.map((entry, index) => (
               <RewardsLeaderboardItem
                 key={entry.address}

@@ -22,15 +22,12 @@ export const getDappHostname = (url: string) => {
   if (subdomains.length === 2) {
     hostname = urlObject.hostname;
   } else {
-    hostname = `${subdomains[subdomains.length - 2]}.${
-      subdomains[subdomains.length - 1]
-    }`;
+    hostname = `${subdomains[subdomains.length - 2]}.${subdomains[subdomains.length - 1]}`;
   }
   return hostname;
 };
 
-export const getPublicAppIcon = (host: string) =>
-  `https://icons.duckduckgo.com/ip3/${host}.ico`;
+export const getPublicAppIcon = (host: string) => `https://icons.duckduckgo.com/ip3/${host}.ico`;
 
 const displayDappNames: {
   [name: string]: { name: string };
@@ -211,5 +208,4 @@ const displayDappNames: {
   },
 };
 
-export const getHardcodedDappInformation = (hostName: string) =>
-  displayDappNames?.[hostName];
+export const getHardcodedDappInformation = (hostName: string) => displayDappNames?.[hostName];

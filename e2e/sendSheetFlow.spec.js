@@ -26,10 +26,7 @@ describe('Send Sheet Interaction Flow', () => {
   it('Should show the "Add wallet modal" after tapping import with a valid seed"', async () => {
     await Helpers.clearField('import-sheet-input');
     await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
-    await Helpers.checkIfElementHasString(
-      'import-sheet-button-label',
-      'Continue'
-    );
+    await Helpers.checkIfElementHasString('import-sheet-button-label', 'Continue');
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.checkIfVisible('wallet-info-modal');
   });
@@ -103,10 +100,7 @@ describe('Send Sheet Interaction Flow', () => {
   it('Should show show Contact Button & Asset List on valid public address', async () => {
     await Helpers.clearField('send-asset-form-field');
     await Helpers.checkIfVisible('send-asset-form-field');
-    await Helpers.replaceTextInField(
-      'send-asset-form-field',
-      '0xF0f21ab2012731542731df194cfF6c77d29cB31A'
-    );
+    await Helpers.replaceTextInField('send-asset-form-field', '0xF0f21ab2012731542731df194cfF6c77d29cB31A');
     // await Helpers.checkIfVisible('add-contact-button');
     await Helpers.checkIfVisible('send-asset-list', 20000);
   });
@@ -114,19 +108,11 @@ describe('Send Sheet Interaction Flow', () => {
   it('Should show show Contact Button & Asset List on valid ENS & Unstoppable addresses', async () => {
     await Helpers.clearField('send-asset-form-field');
     await Helpers.checkIfVisible('send-asset-form-field');
-    await Helpers.typeText(
-      'send-asset-form-field',
-      'neverselling.wallet\n',
-      false
-    );
+    await Helpers.typeText('send-asset-form-field', 'neverselling.wallet\n', false);
     await Helpers.checkIfVisible('send-asset-list');
     await Helpers.clearField('send-asset-form-field');
     await device.disableSynchronization();
-    await Helpers.typeText(
-      'send-asset-form-field',
-      'rainbowwallet.eth\n',
-      false
-    );
+    await Helpers.typeText('send-asset-form-field', 'rainbowwallet.eth\n', false);
     await device.enableSynchronization();
     // await Helpers.checkIfVisible('add-contact-button')
     await Helpers.checkIfVisible('send-asset-list');
@@ -183,11 +169,7 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.waitAndTap('send-asset-ETH-mainnet');
     await Helpers.checkIfVisible('selected-asset-quantity-field-input');
     await Helpers.waitAndTap('selected-asset-quantity-field-input');
-    await Helpers.typeText(
-      'selected-asset-quantity-field-input',
-      '8.1219',
-      true
-    );
+    await Helpers.typeText('selected-asset-quantity-field-input', '8.1219', true);
     await Helpers.checkIfElementByTextIsVisible('8.12');
     await Helpers.waitAndTap('send-asset-form-ETH-mainnet');
   });
@@ -231,11 +213,7 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.waitAndTap('send-asset-ETH-mainnet');
     await Helpers.checkIfVisible('selected-asset-quantity-field-input');
     await Helpers.waitAndTap('selected-asset-quantity-field-input');
-    await Helpers.typeText(
-      'selected-asset-quantity-field-input',
-      '8.1219',
-      true
-    );
+    await Helpers.typeText('selected-asset-quantity-field-input', '8.1219', true);
     await Helpers.checkIfElementByTextIsVisible('8.12');
     await Helpers.waitAndTap('send-asset-form-ETH-mainnet');
   });

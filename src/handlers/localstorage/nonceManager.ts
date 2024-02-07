@@ -10,5 +10,4 @@ export const getNonceManager = async (): Promise<NonceManager> => {
   return nonceManager;
 };
 
-export const saveNonceManager = (nonceManager: NonceManager) =>
-  saveGlobal(NONCE_MANAGER, nonceManager, noncesVersion);
+export const saveNonceManager = (nonceManager: NonceManager) => saveGlobal(NONCE_MANAGER, nonceManager, noncesVersion);

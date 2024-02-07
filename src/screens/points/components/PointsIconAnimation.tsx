@@ -36,34 +36,13 @@ export const PointsIconAnimation = () => {
   const progress = useSharedValue(0);
 
   const animatedStyle = useAnimatedStyle(() => {
-    const scale = interpolate(
-      progress.value,
-      [0, 1, 2, 3, 4, 5, 6, 7, 8],
-      [0.75, 0.7, 0.65, 0.55, 0.75, 0.7, 0.65, 0.55, 0.75]
-    );
-    const rotate = interpolate(
-      progress.value,
-      [0, 1, 2, 3, 4, 5, 6, 7, 8],
-      [-12, -4, -12, -12, -372, -380, -372, -372, -12]
-    );
-    const translateX = interpolate(
-      progress.value,
-      [0, 1, 2, 3, 4, 5, 6, 7, 8],
-      [0, 4, 0, 0, 0, -4, 0, 0, 0]
-    );
-    const translateY = interpolate(
-      progress.value,
-      [0, 1, 2, 3, 4, 5, 6, 7, 8],
-      [-20, -5, 10, 14, -20, -5, 10, 14, -20]
-    );
+    const scale = interpolate(progress.value, [0, 1, 2, 3, 4, 5, 6, 7, 8], [0.75, 0.7, 0.65, 0.55, 0.75, 0.7, 0.65, 0.55, 0.75]);
+    const rotate = interpolate(progress.value, [0, 1, 2, 3, 4, 5, 6, 7, 8], [-12, -4, -12, -12, -372, -380, -372, -372, -12]);
+    const translateX = interpolate(progress.value, [0, 1, 2, 3, 4, 5, 6, 7, 8], [0, 4, 0, 0, 0, -4, 0, 0, 0]);
+    const translateY = interpolate(progress.value, [0, 1, 2, 3, 4, 5, 6, 7, 8], [-20, -5, 10, 14, -20, -5, 10, 14, -20]);
 
     return {
-      transform: [
-        { translateX },
-        { translateY },
-        { rotate: `${rotate}deg` },
-        { scale },
-      ],
+      transform: [{ translateX }, { translateY }, { rotate: `${rotate}deg` }, { scale }],
     };
   });
 
@@ -91,12 +70,7 @@ export const PointsIconAnimation = () => {
   }, [progress]);
 
   return (
-    <Box
-      alignItems="center"
-      as={Animated.View}
-      justifyContent="center"
-      style={[{ height: 28, width: 28 }, animatedStyle]}
-    >
+    <Box alignItems="center" as={Animated.View} justifyContent="center" style={[{ height: 28, width: 28 }, animatedStyle]}>
       <TabBarIcon
         accentColor={accentColor}
         hideShadow

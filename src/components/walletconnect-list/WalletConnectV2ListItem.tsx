@@ -21,11 +21,7 @@ import { ethereumUtils, showActionSheetWithOptions } from '@/utils';
 import * as lang from '@/languages';
 import { useTheme } from '@/theme';
 import { logger, RainbowError } from '@/logger';
-import {
-  changeAccount,
-  disconnectSession,
-  isSupportedChain,
-} from '@/walletConnect';
+import { changeAccount, disconnectSession, isSupportedChain } from '@/walletConnect';
 import { Box, Inline } from '@/design-system';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
@@ -34,35 +30,20 @@ import { Network } from '@/helpers';
 
 const CONTAINER_PADDING = 15;
 const VENDOR_LOGO_ICON_SIZE = 50;
-export const WALLET_CONNECT_LIST_ITEM_HEIGHT =
-  VENDOR_LOGO_ICON_SIZE + CONTAINER_PADDING * 2;
+export const WALLET_CONNECT_LIST_ITEM_HEIGHT = VENDOR_LOGO_ICON_SIZE + CONTAINER_PADDING * 2;
 
-const androidContextMenuActions = [
-  lang.t('walletconnect.switch_wallet'),
-  lang.t('walletconnect.disconnect'),
-];
+const androidContextMenuActions = [lang.t('walletconnect.switch_wallet'), lang.t('walletconnect.disconnect')];
 
 const SessionRow = styled(Row)({
   alignItems: 'center',
   justifyContent: 'flex-start',
 });
 
-const rowStyle = padding.object(
-  CONTAINER_PADDING,
-  CONTAINER_PADDING,
-  CONTAINER_PADDING + 10,
-  CONTAINER_PADDING
-);
+const rowStyle = padding.object(CONTAINER_PADDING, CONTAINER_PADDING, CONTAINER_PADDING + 10, CONTAINER_PADDING);
 
 const columnStyle = padding.object(0, 10, 0, 12);
 
-export function WalletConnectV2ListItem({
-  session,
-  reload,
-}: {
-  session: SessionTypes.Struct;
-  reload(): void;
-}) {
+export function WalletConnectV2ListItem({ session, reload }: { session: SessionTypes.Struct; reload(): void }) {
   const { goBack } = useNavigation();
   const { colors } = useTheme();
   const { wallets, walletNames } = useWallets();
@@ -77,41 +58,25 @@ export function WalletConnectV2ListItem({
     },
   };
 
-  const {
-    dappName,
-    dappUrl,
-    dappLogo,
-    address,
-    chainIds,
-  } = React.useMemo(() => {
+  const { dappName, dappUrl, dappLogo, address, chainIds } = React.useMemo(() => {
     const { namespaces, requiredNamespaces, peer } = session;
     const { metadata } = peer;
     const { chains } = requiredNamespaces.eip155;
     const eip155Account = namespaces.eip155?.accounts?.[0] || undefined;
 
     if (!eip155Account || !chains || !chains.length) {
-      const e = new RainbowError(
-        `WalletConnectV2ListItem: unsupported namespace`
-      );
+      const e = new RainbowError(`WalletConnectV2ListItem: unsupported namespace`);
       logger.error(e);
 
       // defensive, just for types, should never happen
       throw e;
     }
 
-    const [ns, rawChainId, address] = eip155Account?.split(':') as [
-      string,
-      string,
-      string
-    ];
-    const chainIds = chains
-      .map(chain => parseInt(chain.split(':')[1]))
-      .filter(isSupportedChain);
+    const [ns, rawChainId, address] = eip155Account?.split(':') as [string, string, string];
+    const chainIds = chains.map(chain => parseInt(chain.split(':')[1])).filter(isSupportedChain);
 
     if (!address) {
-      const e = new RainbowError(
-        `WalletConnectV2ListItem: could not parse address`
-      );
+      const e = new RainbowError(`WalletConnectV2ListItem: could not parse address`);
       logger.error(e);
 
       // defensive, just for types, should never happen
@@ -135,11 +100,7 @@ export function WalletConnectV2ListItem({
 
   const approvalAccountInfo = useMemo(() => {
     const selectedWallet = findWalletWithAccount(wallets!, address);
-    const approvalAccountInfo = getAccountProfileInfo(
-      selectedWallet,
-      walletNames,
-      address
-    );
+    const approvalAccountInfo = getAccountProfileInfo(selectedWallet, walletNames, address);
     return {
       ...approvalAccountInfo,
     };
@@ -170,13 +131,10 @@ export function WalletConnectV2ListItem({
         } else if (index === 1) {
           await disconnectSession(session);
           reload();
-          analytics.track(
-            'Manually disconnected from WalletConnect connection',
-            {
-              dappName,
-              dappUrl,
-            }
-          );
+          analytics.track('Manually disconnected from WalletConnect connection', {
+            dappName,
+            dappUrl,
+          });
         }
       }
     );
@@ -210,17 +168,8 @@ export function WalletConnectV2ListItem({
       <Row align="center" height={WALLET_CONNECT_LIST_ITEM_HEIGHT}>
         <Row align="center" flex={1} style={rowStyle}>
           {/* @ts-expect-error */}
-          <RequestVendorLogoIcon
-            backgroundColor={colors.white}
-            dappName={dappName}
-            imageUrl={dappLogo}
-            size={VENDOR_LOGO_ICON_SIZE}
-          />
-          <ColumnWithMargins
-            flex={1}
-            margin={android ? -4 : 5}
-            style={columnStyle}
-          >
+          <RequestVendorLogoIcon backgroundColor={colors.white} dappName={dappName} imageUrl={dappLogo} size={VENDOR_LOGO_ICON_SIZE} />
+          <ColumnWithMargins flex={1} margin={android ? -4 : 5} style={columnStyle}>
             <Row width="95%">
               <TruncatedText size="lmedium" weight="heavy">
                 {dappName || lang.t('walletconnect.unknown_application')}
@@ -234,17 +183,10 @@ export function WalletConnectV2ListItem({
                 }}
               >
                 {approvalAccountInfo.accountImage ? (
-                  <ImageAvatar
-                    image={approvalAccountInfo.accountImage}
-                    size="smaller"
-                  />
+                  <ImageAvatar image={approvalAccountInfo.accountImage} size="smaller" />
                 ) : (
                   <ContactAvatar
-                    color={
-                      isNaN(approvalAccountInfo.accountColor)
-                        ? colors.skeleton
-                        : approvalAccountInfo.accountColor
-                    }
+                    color={isNaN(approvalAccountInfo.accountColor) ? colors.skeleton : approvalAccountInfo.accountColor}
                     size="smaller"
                     value={approvalAccountInfo.accountSymbol}
                   />
@@ -265,12 +207,7 @@ export function WalletConnectV2ListItem({
             </SessionRow>
           </ColumnWithMargins>
 
-          <Box
-            borderRadius={99}
-            paddingVertical="8px"
-            paddingHorizontal="12px"
-            justifyContent="center"
-          >
+          <Box borderRadius={99} paddingVertical="8px" paddingHorizontal="12px" justifyContent="center">
             <RadialGradient
               {...radialGradientProps}
               // @ts-expect-error overloaded props RadialGradient
@@ -293,18 +230,9 @@ export function WalletConnectV2ListItem({
                         }}
                       >
                         {network !== Network.mainnet ? (
-                          <ChainBadge
-                            network={network}
-                            position="relative"
-                            size="small"
-                          />
+                          <ChainBadge network={network} position="relative" size="small" />
                         ) : (
-                          <CoinIcon
-                            address={ETH_ADDRESS}
-                            size={20}
-                            symbol={ETH_SYMBOL}
-                            network={network}
-                          />
+                          <CoinIcon address={ETH_ADDRESS} size={20} symbol={ETH_SYMBOL} network={network} />
                         )}
                       </Box>
                     );

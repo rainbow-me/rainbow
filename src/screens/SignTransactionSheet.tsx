@@ -1,23 +1,9 @@
 /* eslint-disable no-nested-ternary */
 import BigNumber from 'bignumber.js';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, MotiView } from 'moti';
 import * as i18n from '@/languages';
-import {
-  Image,
-  InteractionManager,
-  PixelRatio,
-  ScrollView,
-  StyleProp,
-  TouchableWithoutFeedback,
-  ViewStyle,
-} from 'react-native';
+import { Image, InteractionManager, PixelRatio, ScrollView, StyleProp, TouchableWithoutFeedback, ViewStyle } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
   Easing,
@@ -40,18 +26,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { CoinIcon } from '@/components/coin-icon';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { SheetActionButton } from '@/components/sheet';
-import {
-  Bleed,
-  Box,
-  Columns,
-  Inline,
-  Inset,
-  Stack,
-  Text,
-  globalColors,
-  useBackgroundColor,
-  useForegroundColor,
-} from '@/design-system';
+import { Bleed, Box, Columns, Inline, Inset, Stack, Text, globalColors, useBackgroundColor, useForegroundColor } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
 import { ParsedAddressAsset } from '@/entities';
 import { useNavigation } from '@/navigation';
@@ -85,25 +60,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../redux/store';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
-import {
-  useAccountSettings,
-  useClipboard,
-  useCurrentNonce,
-  useDimensions,
-  useGas,
-  useWallets,
-} from '@/hooks';
+import { useAccountSettings, useClipboard, useCurrentNonce, useDimensions, useGas, useWallets } from '@/hooks';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ContactAvatar } from '@/components/contacts';
 import { IS_IOS } from '@/env';
-import {
-  estimateGas,
-  estimateGasWithPadding,
-  getFlashbotsProvider,
-  getProviderForNetwork,
-  isHexString,
-  toHex,
-} from '@/handlers/web3';
+import { estimateGas, estimateGasWithPadding, getFlashbotsProvider, getProviderForNetwork, isHexString, toHex } from '@/handlers/web3';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { GasSpeedButton } from '@/components/gas';
 import { getNetworkObj } from '@/networks';
@@ -121,22 +82,12 @@ import { isEmpty, isNil } from 'lodash';
 import Routes from '@/navigation/routesNames';
 
 import { parseGasParamsForTransaction } from '@/parsers/gas';
-import {
-  loadWallet,
-  sendTransaction,
-  signPersonalMessage,
-  signTransaction,
-  signTypedDataMessage,
-} from '@/model/wallet';
+import { loadWallet, sendTransaction, signPersonalMessage, signTransaction, signTypedDataMessage } from '@/model/wallet';
 
 import { analytics } from '@/analytics';
 import { dataAddNewTransaction } from '@/redux/data';
 import { handleSessionRequestResponse } from '@/walletConnect';
-import {
-  WalletconnectResultType,
-  walletConnectRemovePendingRedirect,
-  walletConnectSendStatus,
-} from '@/redux/walletconnect';
+import { WalletconnectResultType, walletConnectRemovePendingRedirect, walletConnectSendStatus } from '@/redux/walletconnect';
 import { removeRequest } from '@/redux/requests';
 import { maybeSignUri } from '@/handlers/imgix';
 import { RPCMethod } from '@/walletConnect/types';
@@ -181,34 +132,22 @@ export const SignTransactionSheet = () => {
   const { goBack, navigate } = useNavigation();
   const { colors, isDarkMode } = useTheme();
   const { accountAddress } = useAccountSettings();
-  const [simulationData, setSimulationData] = useState<
-    TransactionSimulationResult | undefined
-  >();
-  const [simulationError, setSimulationError] = useState<
-    TransactionErrorType | undefined
-  >(undefined);
-  const [simulationScanResult, setSimulationScanResult] = useState<
-    TransactionScanResultType | undefined
-  >(undefined);
+  const [simulationData, setSimulationData] = useState<TransactionSimulationResult | undefined>();
+  const [simulationError, setSimulationError] = useState<TransactionErrorType | undefined>(undefined);
+  const [simulationScanResult, setSimulationScanResult] = useState<TransactionScanResultType | undefined>(undefined);
   const { params: routeParams } = useRoute<any>();
   const { wallets, walletNames, switchToWalletWithAddress } = useWallets();
   const { callback, transactionDetails } = routeParams;
 
-  const isMessageRequest = isMessageDisplayType(
-    transactionDetails.payload.method
-  );
+  const isMessageRequest = isMessageDisplayType(transactionDetails.payload.method);
 
   const isPersonalSign = checkIsPersonalSign(transactionDetails.payload.method);
 
   const label = useForegroundColor('label');
   const surfacePrimary = useBackgroundColor('surfacePrimary');
 
-  const pendingRedirect = useSelector(
-    ({ walletconnect }: AppState) => walletconnect.pendingRedirect
-  );
-  const walletConnectors = useSelector(
-    ({ walletconnect }: AppState) => walletconnect.walletConnectors
-  );
+  const pendingRedirect = useSelector(({ walletconnect }: AppState) => walletconnect.pendingRedirect);
+  const walletConnectors = useSelector(({ walletconnect }: AppState) => walletconnect.walletConnectors);
   const walletConnector = walletConnectors[transactionDetails?.peerId];
 
   const [provider, setProvider] = useState<StaticJsonRpcProvider | null>(null);
@@ -223,9 +162,7 @@ export const SignTransactionSheet = () => {
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
 
-  const [nativeAsset, setNativeAsset] = useState<ParsedAddressAsset | null>(
-    null
-  );
+  const [nativeAsset, setNativeAsset] = useState<ParsedAddressAsset | null>(null);
   const formattedDappUrl = useMemo(() => {
     try {
       const { hostname } = new URL(transactionDetails?.dappUrl);
@@ -248,14 +185,9 @@ export const SignTransactionSheet = () => {
 
   const simulationUnavailable = isPersonalSign;
 
-  const itemCount =
-    (simulationData?.in?.length || 0) +
-    (simulationData?.out?.length || 0) +
-    (simulationData?.approvals?.length || 0);
+  const itemCount = (simulationData?.in?.length || 0) + (simulationData?.out?.length || 0) + (simulationData?.approvals?.length || 0);
 
-  const noChanges =
-    !!(simulationData && itemCount === 0) &&
-    simulationScanResult === TransactionScanResultType.Ok;
+  const noChanges = !!(simulationData && itemCount === 0) && simulationScanResult === TransactionScanResultType.Ok;
 
   const req = transactionDetails?.payload?.params?.[0];
   const request = useMemo(() => {
@@ -265,11 +197,7 @@ export const SignTransactionSheet = () => {
           ...transactionDetails?.displayDetails.request,
           nativeAsset: nativeAsset,
         };
-  }, [
-    isMessageRequest,
-    transactionDetails?.displayDetails.request,
-    nativeAsset,
-  ]);
+  }, [isMessageRequest, transactionDetails?.displayDetails.request, nativeAsset]);
 
   const calculateGasLimit = useCallback(async () => {
     calculatingGasLimit.current = true;
@@ -291,42 +219,21 @@ export const SignTransactionSheet = () => {
     const provider = await getProviderForNetwork(localCurrentNetwork);
     try {
       // attempt to re-run estimation
-      logger.debug(
-        'WC: Estimating gas limit',
-        { gas },
-        logger.DebugContext.walletconnect
-      );
+      logger.debug('WC: Estimating gas limit', { gas }, logger.DebugContext.walletconnect);
       // safety precaution: we want to ensure these properties are not used for gas estimation
-      const cleanTxPayload = omitFlatten(txPayload, [
-        'gas',
-        'gasLimit',
-        'gasPrice',
-        'maxFeePerGas',
-        'maxPriorityFeePerGas',
-      ]);
+      const cleanTxPayload = omitFlatten(txPayload, ['gas', 'gasLimit', 'gasPrice', 'maxFeePerGas', 'maxPriorityFeePerGas']);
       const rawGasLimit = await estimateGas(cleanTxPayload, provider);
-      logger.debug(
-        'WC: Estimated gas limit',
-        { rawGasLimit },
-        logger.DebugContext.walletconnect
-      );
+      logger.debug('WC: Estimated gas limit', { rawGasLimit }, logger.DebugContext.walletconnect);
       if (rawGasLimit) {
         gas = toHex(rawGasLimit);
       }
     } catch (error) {
       logger.error(new RainbowError('WC: error estimating gas'), { error });
     } finally {
-      logger.debug(
-        'WC: Setting gas limit to',
-        { gas: convertHexToString(gas) },
-        logger.DebugContext.walletconnect
-      );
+      logger.debug('WC: Setting gas limit to', { gas: convertHexToString(gas) }, logger.DebugContext.walletconnect);
 
       if (currentNetwork && getNetworkObj(currentNetwork).gas.OptimismTxFee) {
-        const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
-          txPayload,
-          provider
-        );
+        const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(txPayload, provider);
         updateTxFee(gas, null, l1GasFeeOptimism);
       } else {
         updateTxFee(gas, null);
@@ -345,10 +252,7 @@ export const SignTransactionSheet = () => {
     async (data: string) => {
       const methodSignaturePrefix = data.substr(0, 10);
       try {
-        const { name } = await methodRegistryLookupAndParse(
-          methodSignaturePrefix,
-          getNetworkObj(currentNetwork!).id
-        );
+        const { name } = await methodRegistryLookupAndParse(methodSignaturePrefix, getNetworkObj(currentNetwork!).id);
         if (name) {
           setMethodName(name);
         }
@@ -372,34 +276,16 @@ export const SignTransactionSheet = () => {
         analytics.track('Shown Walletconnect signing request');
       }
     });
-  }, [
-    isMessageRequest,
-    currentNetwork,
-    startPollingGasFees,
-    fetchMethodName,
-    transactionDetails?.payload?.params,
-  ]);
+  }, [isMessageRequest, currentNetwork, startPollingGasFees, fetchMethodName, transactionDetails?.payload?.params]);
 
   // get gas limit
   useEffect(() => {
-    if (
-      !isEmpty(gasFeeParamsBySpeed) &&
-      !calculatingGasLimit.current &&
-      !isMessageRequest &&
-      provider
-    ) {
+    if (!isEmpty(gasFeeParamsBySpeed) && !calculatingGasLimit.current && !isMessageRequest && provider) {
       InteractionManager.runAfterInteractions(() => {
         calculateGasLimit();
       });
     }
-  }, [
-    calculateGasLimit,
-    gasLimit,
-    gasFeeParamsBySpeed,
-    isMessageRequest,
-    provider,
-    updateTxFee,
-  ]);
+  }, [calculateGasLimit, gasLimit, gasFeeParamsBySpeed, isMessageRequest, provider, updateTxFee]);
 
   const walletBalance = useMemo(() => {
     return {
@@ -408,11 +294,7 @@ export const SignTransactionSheet = () => {
       isLoaded: nativeAsset?.balance?.display !== undefined,
       symbol: nativeAsset?.symbol || 'ETH',
     };
-  }, [
-    nativeAsset?.balance?.amount,
-    nativeAsset?.balance?.display,
-    nativeAsset?.symbol,
-  ]);
+  }, [nativeAsset?.balance?.amount, nativeAsset?.balance?.display, nativeAsset?.symbol]);
 
   // check native balance is sufficient
   useEffect(() => {
@@ -441,14 +323,7 @@ export const SignTransactionSheet = () => {
     const isEnough = greaterThanOrEqualTo(balanceAmount, totalAmount);
 
     setIsBalanceEnough(isEnough);
-  }, [
-    isMessageRequest,
-    isSufficientGas,
-    currentNetwork,
-    selectedGasFee,
-    walletBalance,
-    req,
-  ]);
+  }, [isMessageRequest, isSufficientGas, currentNetwork, selectedGasFee, walletBalance, req]);
 
   const accountInfo = useMemo(() => {
     // TODO where do we get address for sign/send transaction?
@@ -457,11 +332,7 @@ export const SignTransactionSheet = () => {
       // @ts-expect-error Property '_accounts' is private and only accessible within class 'Connector'.ts(2341)
       walletConnector?._accounts?.[0];
     const selectedWallet = findWalletWithAccount(wallets!, address);
-    const profileInfo = getAccountProfileInfo(
-      selectedWallet,
-      walletNames,
-      address
-    );
+    const profileInfo = getAccountProfileInfo(selectedWallet, walletNames, address);
     return {
       ...profileInfo,
       address,
@@ -510,10 +381,7 @@ export const SignTransactionSheet = () => {
   useEffect(() => {
     (async () => {
       if (currentNetwork) {
-        const asset = await ethereumUtils.getNativeAssetForNetwork(
-          currentNetwork!,
-          accountInfo.address
-        );
+        const asset = await ethereumUtils.getNativeAssetForNetwork(currentNetwork!, accountInfo.address);
         if (asset) {
           provider && setNativeAsset(asset);
         }
@@ -523,12 +391,7 @@ export const SignTransactionSheet = () => {
 
   useEffect(() => {
     (async () => {
-      if (
-        accountInfo.address &&
-        currentNetwork &&
-        !isMessageRequest &&
-        !nonceForDisplay
-      ) {
+      if (accountInfo.address && currentNetwork && !isMessageRequest && !nonceForDisplay) {
         try {
           const nonce = await getNextNonce();
           if (nonce || nonce === 0) {
@@ -564,31 +427,16 @@ export const SignTransactionSheet = () => {
             domain: transactionDetails?.dappUrl,
           });
           // Handle message simulation response
-          if (
-            isNil(simulationData?.simulateMessage?.simulation) &&
-            isNil(simulationData?.simulateMessage?.error)
-          ) {
+          if (isNil(simulationData?.simulateMessage?.simulation) && isNil(simulationData?.simulateMessage?.error)) {
             setSimulationData({ in: [], out: [], approvals: [] });
-            setSimulationScanResult(
-              simulationData?.simulateMessage?.scanning?.result
-            );
-          } else if (
-            simulationData?.simulateMessage?.error &&
-            !simulationUnavailable
-          ) {
+            setSimulationScanResult(simulationData?.simulateMessage?.scanning?.result);
+          } else if (simulationData?.simulateMessage?.error && !simulationUnavailable) {
             setSimulationError(simulationData?.simulateMessage?.error?.type);
-            setSimulationScanResult(
-              simulationData?.simulateMessage?.scanning?.result
-            );
+            setSimulationScanResult(simulationData?.simulateMessage?.scanning?.result);
             setSimulationData(undefined);
-          } else if (
-            simulationData.simulateMessage?.simulation &&
-            !simulationUnavailable
-          ) {
+          } else if (simulationData.simulateMessage?.simulation && !simulationUnavailable) {
             setSimulationData(simulationData.simulateMessage?.simulation);
-            setSimulationScanResult(
-              simulationData?.simulateMessage?.scanning?.result
-            );
+            setSimulationScanResult(simulationData?.simulateMessage?.scanning?.result);
           }
         } else {
           // TX Signing
@@ -605,29 +453,16 @@ export const SignTransactionSheet = () => {
             domain: transactionDetails?.dappUrl,
           });
           // Handle TX simulation response
-          if (
-            isNil(simulationData?.simulateTransactions?.[0]?.simulation) &&
-            isNil(simulationData?.simulateTransactions?.[0]?.error)
-          ) {
+          if (isNil(simulationData?.simulateTransactions?.[0]?.simulation) && isNil(simulationData?.simulateTransactions?.[0]?.error)) {
             setSimulationData({ in: [], out: [], approvals: [] });
-            setSimulationScanResult(
-              simulationData?.simulateTransactions?.[0]?.scanning?.result
-            );
+            setSimulationScanResult(simulationData?.simulateTransactions?.[0]?.scanning?.result);
           } else if (simulationData?.simulateTransactions?.[0]?.error) {
-            setSimulationError(
-              simulationData?.simulateTransactions?.[0]?.error?.type
-            );
+            setSimulationError(simulationData?.simulateTransactions?.[0]?.error?.type);
             setSimulationData(undefined);
-            setSimulationScanResult(
-              simulationData?.simulateTransactions[0]?.scanning?.result
-            );
+            setSimulationScanResult(simulationData?.simulateTransactions[0]?.scanning?.result);
           } else if (simulationData.simulateTransactions?.[0]?.simulation) {
-            setSimulationData(
-              simulationData.simulateTransactions[0]?.simulation
-            );
-            setSimulationScanResult(
-              simulationData?.simulateTransactions[0]?.scanning?.result
-            );
+            setSimulationData(simulationData.simulateTransactions[0]?.simulation);
+            setSimulationScanResult(simulationData?.simulateTransactions[0]?.scanning?.result);
           }
         }
       } catch (error) {
@@ -665,22 +500,14 @@ export const SignTransactionSheet = () => {
         stopPollingGasFees();
       }
 
-      let type: WalletconnectResultType =
-        transactionDetails?.method === SEND_TRANSACTION
-          ? 'transaction'
-          : 'sign';
+      let type: WalletconnectResultType = transactionDetails?.method === SEND_TRANSACTION ? 'transaction' : 'sign';
       if (canceled) {
         type = `${type}-canceled`;
       }
 
       if (pendingRedirect) {
         InteractionManager.runAfterInteractions(() => {
-          dispatch(
-            walletConnectRemovePendingRedirect(
-              type,
-              transactionDetails?.dappScheme
-            )
-          );
+          dispatch(walletConnectRemovePendingRedirect(type, transactionDetails?.dappScheme));
         });
       }
 
@@ -712,30 +539,20 @@ export const SignTransactionSheet = () => {
         setTimeout(async () => {
           if (transactionDetails?.requestId) {
             if (transactionDetails?.walletConnectV2RequestValues) {
-              await handleSessionRequestResponse(
-                transactionDetails?.walletConnectV2RequestValues,
-                {
-                  result: 'null',
-                  error: error || 'User cancelled the request',
-                }
-              );
+              await handleSessionRequestResponse(transactionDetails?.walletConnectV2RequestValues, {
+                result: 'null',
+                error: error || 'User cancelled the request',
+              });
             } else {
               await dispatch(
-                walletConnectSendStatus(
-                  transactionDetails?.peerId,
-                  transactionDetails?.requestId,
-                  {
-                    error: error || 'User cancelled the request',
-                  }
-                )
+                walletConnectSendStatus(transactionDetails?.peerId, transactionDetails?.requestId, {
+                  error: error || 'User cancelled the request',
+                })
               );
             }
             dispatch(removeRequest(transactionDetails?.requestId));
           }
-          const rejectionType =
-            transactionDetails?.payload?.method === SEND_TRANSACTION
-              ? 'transaction'
-              : 'signature';
+          const rejectionType = transactionDetails?.payload?.method === SEND_TRANSACTION ? 'transaction' : 'signature';
           analytics.track(`Rejected WalletConnect ${rejectionType} request`, {
             isHardwareWallet: accountInfo.isHardwareWallet,
           });
@@ -743,10 +560,7 @@ export const SignTransactionSheet = () => {
           closeScreen(true);
         }, 300);
       } catch (error) {
-        logger.error(
-          new RainbowError('WC: error while handling cancel request'),
-          { error }
-        );
+        logger.error(new RainbowError('WC: error while handling cancel request'), { error });
         closeScreen(true);
       }
     },
@@ -763,9 +577,7 @@ export const SignTransactionSheet = () => {
   );
 
   const handleSignMessage = useCallback(async () => {
-    const message = transactionDetails?.payload?.params.find(
-      (p: string) => !isAddress(p)
-    );
+    const message = transactionDetails?.payload?.params.find((p: string) => !isAddress(p));
     let response = null;
 
     if (!currentNetwork) {
@@ -776,11 +588,7 @@ export const SignTransactionSheet = () => {
       return;
     }
 
-    const existingWallet = await loadWallet(
-      accountInfo.address,
-      true,
-      provider
-    );
+    const existingWallet = await loadWallet(accountInfo.address, true, provider);
     if (!existingWallet) {
       return;
     }
@@ -804,25 +612,13 @@ export const SignTransactionSheet = () => {
         network: currentNetwork,
       });
       if (transactionDetails?.requestId) {
-        if (
-          transactionDetails?.walletConnectV2RequestValues &&
-          response?.result
-        ) {
-          await handleSessionRequestResponse(
-            transactionDetails?.walletConnectV2RequestValues,
-            {
-              result: response.result,
-              error: null,
-            }
-          );
+        if (transactionDetails?.walletConnectV2RequestValues && response?.result) {
+          await handleSessionRequestResponse(transactionDetails?.walletConnectV2RequestValues, {
+            result: response.result,
+            error: null,
+          });
         } else {
-          await dispatch(
-            walletConnectSendStatus(
-              transactionDetails?.peerId,
-              transactionDetails?.requestId,
-              response
-            )
-          );
+          await dispatch(walletConnectSendStatus(transactionDetails?.peerId, transactionDetails?.requestId, response));
         }
         dispatch(removeRequest(transactionDetails?.requestId));
       }
@@ -851,8 +647,7 @@ export const SignTransactionSheet = () => {
   ]);
 
   const handleConfirmTransaction = useCallback(async () => {
-    const sendInsteadOfSign =
-      transactionDetails.payload.method === SEND_TRANSACTION;
+    const sendInsteadOfSign = transactionDetails.payload.method === SEND_TRANSACTION;
     const txPayload = req;
     let { gas, gasLimit: gasLimitFromPayload } = txPayload;
 
@@ -867,12 +662,7 @@ export const SignTransactionSheet = () => {
       );
 
       // Estimate the tx with gas limit padding before sending
-      const rawGasLimit = await estimateGasWithPadding(
-        txPayload,
-        null,
-        null,
-        provider
-      );
+      const rawGasLimit = await estimateGasWithPadding(txPayload, null, null, provider);
       if (!rawGasLimit) {
         return;
       }
@@ -882,25 +672,16 @@ export const SignTransactionSheet = () => {
       if (
         (isNil(gas) && isNil(gasLimitFromPayload)) ||
         (!isNil(gas) && greaterThan(rawGasLimit, convertHexToString(gas))) ||
-        (!isNil(gasLimitFromPayload) &&
-          greaterThan(rawGasLimit, convertHexToString(gasLimitFromPayload)))
+        (!isNil(gasLimitFromPayload) && greaterThan(rawGasLimit, convertHexToString(gasLimitFromPayload)))
       ) {
-        logger.debug(
-          'WC: using padded estimation!',
-          { gas: rawGasLimit.toString() },
-          logger.DebugContext.walletconnect
-        );
+        logger.debug('WC: using padded estimation!', { gas: rawGasLimit.toString() }, logger.DebugContext.walletconnect);
         gas = toHex(rawGasLimit);
       }
     } catch (error) {
       logger.error(new RainbowError('WC: error estimating gas'), { error });
     }
     // clean gas prices / fees sent from the dapp
-    const cleanTxPayload = omitFlatten(txPayload, [
-      'gasPrice',
-      'maxFeePerGas',
-      'maxPriorityFeePerGas',
-    ]);
+    const cleanTxPayload = omitFlatten(txPayload, ['gasPrice', 'maxFeePerGas', 'maxPriorityFeePerGas']);
     const gasParams = parseGasParamsForTransaction(selectedGasFee);
     const calculatedGasLimit = gas || gasLimitFromPayload || gasLimit;
     const nonce = await getNextNonce();
@@ -910,11 +691,7 @@ export const SignTransactionSheet = () => {
       nonce,
       ...(calculatedGasLimit && { gasLimit: calculatedGasLimit }),
     };
-    txPayloadUpdated = omitFlatten(txPayloadUpdated, [
-      'from',
-      'gas',
-      'chainId',
-    ]);
+    txPayloadUpdated = omitFlatten(txPayloadUpdated, ['from', 'gas', 'chainId']);
 
     logger.debug(`WC: ${transactionDetails.payload.method} payload`, {
       txPayload,
@@ -930,11 +707,7 @@ export const SignTransactionSheet = () => {
       if (!provider) {
         return;
       }
-      const existingWallet = await loadWallet(
-        accountInfo.address,
-        true,
-        provider
-      );
+      const existingWallet = await loadWallet(accountInfo.address, true, provider);
       if (!existingWallet) {
         return;
       }
@@ -955,13 +728,7 @@ export const SignTransactionSheet = () => {
         });
       }
     } catch (e) {
-      logger.error(
-        new RainbowError(
-          `WC: Error while ${
-            sendInsteadOfSign ? 'sending' : 'signing'
-          } transaction`
-        )
-      );
+      logger.error(new RainbowError(`WC: Error while ${sendInsteadOfSign ? 'sending' : 'signing'} transaction`));
     }
 
     if (response?.result) {
@@ -1000,26 +767,14 @@ export const SignTransactionSheet = () => {
         network: currentNetwork,
       });
       if (isFocused && transactionDetails?.requestId) {
-        if (
-          transactionDetails?.walletConnectV2RequestValues &&
-          sendResult.hash
-        ) {
-          await handleSessionRequestResponse(
-            transactionDetails?.walletConnectV2RequestValues,
-            {
-              result: sendResult.hash,
-              error: null,
-            }
-          );
+        if (transactionDetails?.walletConnectV2RequestValues && sendResult.hash) {
+          await handleSessionRequestResponse(transactionDetails?.walletConnectV2RequestValues, {
+            result: sendResult.hash,
+            error: null,
+          });
         } else {
           if (sendResult.hash) {
-            await dispatch(
-              walletConnectSendStatus(
-                transactionDetails?.peerId,
-                transactionDetails?.requestId,
-                { result: sendResult.hash }
-              )
-            );
+            await dispatch(walletConnectSendStatus(transactionDetails?.peerId, transactionDetails?.requestId, { result: sendResult.hash }));
           }
         }
         dispatch(removeRequest(transactionDetails?.requestId));
@@ -1082,13 +837,7 @@ export const SignTransactionSheet = () => {
     }
     if (!isBalanceEnough || !isValidGas) return;
     return handleConfirmTransaction();
-  }, [
-    handleConfirmTransaction,
-    handleSignMessage,
-    isBalanceEnough,
-    isMessageRequest,
-    isValidGas,
-  ]);
+  }, [handleConfirmTransaction, handleSignMessage, isBalanceEnough, isMessageRequest, isValidGas]);
 
   const onPressSend = useCallback(async () => {
     if (isAuthorizing) return;
@@ -1115,8 +864,7 @@ export const SignTransactionSheet = () => {
 
   const onPressCancel = useCallback(() => onCancel(), [onCancel]);
 
-  const expandedCardBottomInset =
-    EXPANDED_CARD_BOTTOM_INSET + (isMessageRequest ? 0 : GAS_BUTTON_SPACE);
+  const expandedCardBottomInset = EXPANDED_CARD_BOTTOM_INSET + (isMessageRequest ? 0 : GAS_BUTTON_SPACE);
 
   return (
     // This PanGestureHandler blocks sheet dismiss gestures on iOS
@@ -1124,12 +872,7 @@ export const SignTransactionSheet = () => {
     <PanGestureHandler enabled={IS_IOS}>
       <Animated.View>
         <Inset bottom={{ custom: SCREEN_BOTTOM_INSET }}>
-          <Box
-            height="full"
-            justifyContent="flex-end"
-            style={{ gap: 24 }}
-            width="full"
-          >
+          <Box height="full" justifyContent="flex-end" style={{ gap: 24 }} width="full">
             <Box
               as={Animated.View}
               borderRadius={39}
@@ -1147,13 +890,9 @@ export const SignTransactionSheet = () => {
                     <Box
                       height={{ custom: 44 }}
                       style={{
-                        backgroundColor: isDarkMode
-                          ? globalColors.white10
-                          : '#FBFCFD',
+                        backgroundColor: isDarkMode ? globalColors.white10 : '#FBFCFD',
                         borderRadius: 12,
-                        shadowColor: isDarkMode
-                          ? colors.trueBlack
-                          : colors.dark,
+                        shadowColor: isDarkMode ? colors.trueBlack : colors.dark,
                         shadowOffset: {
                           width: 0,
                           height: 18,
@@ -1173,16 +912,10 @@ export const SignTransactionSheet = () => {
                       />
                     </Box>
                     <Stack space="12px">
-                      <Inline
-                        alignVertical="center"
-                        space={{ custom: 5 }}
-                        wrap={false}
-                      >
+                      <Inline alignVertical="center" space={{ custom: 5 }} wrap={false}>
                         <Text
                           color={
-                            simulationScanResult &&
-                            simulationScanResult !==
-                              TransactionScanResultType.Ok
+                            simulationScanResult && simulationScanResult !== TransactionScanResultType.Ok
                               ? infoForEventType[simulationScanResult].textColor
                               : 'label'
                           }
@@ -1196,14 +929,8 @@ export const SignTransactionSheet = () => {
                       </Inline>
                       <Text color="labelTertiary" size="15pt" weight="bold">
                         {isMessageRequest
-                          ? i18n.t(
-                              i18n.l.walletconnect.simulation.titles
-                                .message_request
-                            )
-                          : i18n.t(
-                              i18n.l.walletconnect.simulation.titles
-                                .transaction_request
-                            )}
+                          ? i18n.t(i18n.l.walletconnect.simulation.titles.message_request)
+                          : i18n.t(i18n.l.walletconnect.simulation.titles.transaction_request)}
                       </Text>
                     </Stack>
                   </Inline>
@@ -1236,11 +963,7 @@ export const SignTransactionSheet = () => {
                       isLoading={isLoading}
                       meta={simulationData?.meta || {}}
                       methodName={
-                        methodName ||
-                        simulationData?.meta?.to?.function ||
-                        i18n.t(
-                          i18n.l.walletconnect.simulation.details_card.unknown
-                        )
+                        methodName || simulationData?.meta?.to?.function || i18n.t(i18n.l.walletconnect.simulation.details_card.unknown)
                       }
                       noChanges={noChanges}
                       nonce={nonceForDisplay}
@@ -1253,52 +976,26 @@ export const SignTransactionSheet = () => {
                   <Inset horizontal="12px">
                     <Inline alignVertical="center" space="12px" wrap={false}>
                       {accountInfo.accountImage ? (
-                        <ImageAvatar
-                          image={accountInfo.accountImage}
-                          size="signing"
-                        />
+                        <ImageAvatar image={accountInfo.accountImage} size="signing" />
                       ) : (
                         <ContactAvatar
-                          color={
-                            isNaN(accountInfo.accountColor)
-                              ? colors.skeleton
-                              : accountInfo.accountColor
-                          }
+                          color={isNaN(accountInfo.accountColor) ? colors.skeleton : accountInfo.accountColor}
                           size="signing"
                           value={accountInfo.accountSymbol}
                         />
                       )}
                       <Stack space="10px">
                         <Inline space="3px" wrap={false}>
-                          <Text
-                            color="labelTertiary"
-                            size="15pt"
-                            weight="semibold"
-                          >
-                            {i18n.t(
-                              i18n.l.walletconnect.simulation.profile_section
-                                .signing_with
-                            )}
+                          <Text color="labelTertiary" size="15pt" weight="semibold">
+                            {i18n.t(i18n.l.walletconnect.simulation.profile_section.signing_with)}
                           </Text>
-                          <Text
-                            color="label"
-                            size="15pt"
-                            weight="bold"
-                            numberOfLines={1}
-                          >
+                          <Text color="label" size="15pt" weight="bold" numberOfLines={1}>
                             {accountInfo.accountName}
                           </Text>
                         </Inline>
                         {isMessageRequest ? (
-                          <Text
-                            color="labelQuaternary"
-                            size="13pt"
-                            weight="semibold"
-                          >
-                            {i18n.t(
-                              i18n.l.walletconnect.simulation.profile_section
-                                .free_to_sign
-                            )}
+                          <Text color="labelQuaternary" size="13pt" weight="semibold">
+                            {i18n.t(i18n.l.walletconnect.simulation.profile_section.free_to_sign)}
                           </Text>
                         ) : (
                           <Box style={{ height: 9 }}>
@@ -1313,31 +1010,14 @@ export const SignTransactionSheet = () => {
                                     type: 'timing',
                                   }}
                                 >
-                                  <Inline
-                                    alignVertical="center"
-                                    space={{ custom: 5 }}
-                                    wrap={false}
-                                  >
+                                  <Inline alignVertical="center" space={{ custom: 5 }} wrap={false}>
                                     <Bleed vertical="4px">
-                                      <ChainImage
-                                        chain={currentNetwork}
-                                        size={12}
-                                      />
+                                      <ChainImage chain={currentNetwork} size={12} />
                                     </Bleed>
-                                    <Text
-                                      color="labelQuaternary"
-                                      size="13pt"
-                                      weight="semibold"
-                                    >
-                                      {`${walletBalance?.display} ${i18n.t(
-                                        i18n.l.walletconnect.simulation
-                                          .profile_section.on_network,
-                                        {
-                                          network: getNetworkObj(
-                                            currentNetwork!
-                                          )?.name,
-                                        }
-                                      )}`}
+                                    <Text color="labelQuaternary" size="13pt" weight="semibold">
+                                      {`${walletBalance?.display} ${i18n.t(i18n.l.walletconnect.simulation.profile_section.on_network, {
+                                        network: getNetworkObj(currentNetwork!)?.name,
+                                      })}`}
                                     </Text>
                                   </Inline>
                                 </MotiView>
@@ -1354,9 +1034,7 @@ export const SignTransactionSheet = () => {
                   <SheetActionButton
                     color={isDarkMode ? globalColors.blueGrey100 : '#F5F5F7'}
                     isTransparent
-                    label={i18n.t(
-                      i18n.l.walletconnect.simulation.buttons.cancel
-                    )}
+                    label={i18n.t(i18n.l.walletconnect.simulation.buttons.cancel)}
                     textColor={label}
                     onPress={onPressCancel}
                     size="big"
@@ -1365,28 +1043,15 @@ export const SignTransactionSheet = () => {
                   <SheetActionButton
                     label={
                       !isLoading && isBalanceEnough === false
-                        ? i18n.t(
-                            i18n.l.walletconnect.simulation.buttons
-                              .buy_native_token,
-                            { symbol: walletBalance?.symbol }
-                          )
-                        : i18n.t(
-                            i18n.l.walletconnect.simulation.buttons.confirm
-                          )
+                        ? i18n.t(i18n.l.walletconnect.simulation.buttons.buy_native_token, { symbol: walletBalance?.symbol })
+                        : i18n.t(i18n.l.walletconnect.simulation.buttons.confirm)
                     }
                     newShadows
                     onPress={submitFn}
                     size="big"
                     weight="heavy"
-                    {...((simulationError ||
-                      (simulationScanResult &&
-                        simulationScanResult !==
-                          TransactionScanResultType.Ok)) && {
-                      color:
-                        simulationScanResult ===
-                        TransactionScanResultType.Warning
-                          ? 'orange'
-                          : colors.red,
+                    {...((simulationError || (simulationScanResult && simulationScanResult !== TransactionScanResultType.Ok)) && {
+                      color: simulationScanResult === TransactionScanResultType.Warning ? 'orange' : colors.red,
                     })}
                   />
                 </Columns>
@@ -1394,23 +1059,14 @@ export const SignTransactionSheet = () => {
 
               {/* Extra ScrollView to prevent the sheet from hijacking the real ScrollViews */}
               {IS_IOS && (
-                <Box
-                  height={{ custom: 0 }}
-                  pointerEvents="none"
-                  position="absolute"
-                  style={{ opacity: 0 }}
-                >
+                <Box height={{ custom: 0 }} pointerEvents="none" position="absolute" style={{ opacity: 0 }}>
                   <ScrollView scrollEnabled={false} />
                 </Box>
               )}
             </Box>
 
             {!isMessageRequest && (
-              <Box
-                alignItems="center"
-                justifyContent="center"
-                style={{ height: 30, zIndex: -1 }}
-              >
+              <Box alignItems="center" justifyContent="center" style={{ height: 30, zIndex: -1 }}>
                 <GasSpeedButton
                   marginTop={0}
                   horizontalPadding={20}
@@ -1464,9 +1120,7 @@ const SimulationCard = ({
   walletBalance,
 }: SimulationCardProps) => {
   const cardHeight = useSharedValue(COLLAPSED_CARD_HEIGHT);
-  const contentHeight = useSharedValue(
-    COLLAPSED_CARD_HEIGHT - CARD_BORDER_WIDTH * 2
-  );
+  const contentHeight = useSharedValue(COLLAPSED_CARD_HEIGHT - CARD_BORDER_WIDTH * 2);
   const spinnerRotation = useSharedValue(0);
 
   const simulationUnavailable = isPersonalSign;
@@ -1478,9 +1132,7 @@ const SimulationCard = ({
           cardHeight.value,
           [
             COLLAPSED_CARD_HEIGHT,
-            contentHeight.value + CARD_BORDER_WIDTH * 2 > MAX_CARD_HEIGHT
-              ? MAX_CARD_HEIGHT
-              : contentHeight.value + CARD_BORDER_WIDTH * 2,
+            contentHeight.value + CARD_BORDER_WIDTH * 2 > MAX_CARD_HEIGHT ? MAX_CARD_HEIGHT : contentHeight.value + CARD_BORDER_WIDTH * 2,
           ],
           [0, 1]
         ),
@@ -1494,21 +1146,12 @@ const SimulationCard = ({
 
   useAnimatedReaction(
     () => ({ isLoading, simulationUnavailable }),
-    (
-      { isLoading, simulationUnavailable },
-      previous = { isLoading: false, simulationUnavailable: false }
-    ) => {
+    ({ isLoading, simulationUnavailable }, previous = { isLoading: false, simulationUnavailable: false }) => {
       if (isLoading && !previous?.isLoading) {
-        spinnerRotation.value = withRepeat(
-          withTiming(360, rotationConfig),
-          -1,
-          false
-        );
+        spinnerRotation.value = withRepeat(withTiming(360, rotationConfig), -1, false);
       } else if (
         (!isLoading && previous?.isLoading) ||
-        (simulationUnavailable &&
-          !previous?.simulationUnavailable &&
-          previous?.isLoading)
+        (simulationUnavailable && !previous?.simulationUnavailable && previous?.isLoading)
       ) {
         spinnerRotation.value = withTiming(360, timingConfig);
       }
@@ -1568,92 +1211,44 @@ const SimulationCard = ({
     if (simulationScanResult === TransactionScanResultType.Warning) {
       return 'orange';
     }
-    if (
-      simulationError ||
-      simulationScanResult === TransactionScanResultType.Malicious
-    ) {
+    if (simulationError || simulationScanResult === TransactionScanResultType.Malicious) {
       return 'red';
     }
     return 'label';
-  }, [
-    isBalanceEnough,
-    isLoading,
-    noChanges,
-    simulationError,
-    simulationScanResult,
-    simulationUnavailable,
-  ]);
+  }, [isBalanceEnough, isLoading, noChanges, simulationError, simulationScanResult, simulationUnavailable]);
 
   const titleText = useMemo(() => {
     if (isLoading) {
-      return i18n.t(
-        i18n.l.walletconnect.simulation.simulation_card.titles.simulating
-      );
+      return i18n.t(i18n.l.walletconnect.simulation.simulation_card.titles.simulating);
     }
     if (isBalanceEnough === false) {
-      return i18n.t(
-        i18n.l.walletconnect.simulation.simulation_card.titles
-          .not_enough_native_balance,
-        { symbol: walletBalance?.symbol }
-      );
+      return i18n.t(i18n.l.walletconnect.simulation.simulation_card.titles.not_enough_native_balance, { symbol: walletBalance?.symbol });
     }
     if (simulationUnavailable) {
-      return i18n.t(
-        i18n.l.walletconnect.simulation.simulation_card.titles
-          .simulation_unavailable
-      );
+      return i18n.t(i18n.l.walletconnect.simulation.simulation_card.titles.simulation_unavailable);
     }
     if (simulationScanResult === TransactionScanResultType.Warning) {
-      return i18n.t(
-        i18n.l.walletconnect.simulation.simulation_card.titles.proceed_carefully
-      );
+      return i18n.t(i18n.l.walletconnect.simulation.simulation_card.titles.proceed_carefully);
     }
     if (simulationScanResult === TransactionScanResultType.Malicious) {
-      return i18n.t(
-        i18n.l.walletconnect.simulation.simulation_card.titles
-          .suspicious_transaction
-      );
+      return i18n.t(i18n.l.walletconnect.simulation.simulation_card.titles.suspicious_transaction);
     }
     if (noChanges) {
-      return i18n.t(
-        i18n.l.walletconnect.simulation.simulation_card.messages.no_changes
-      );
+      return i18n.t(i18n.l.walletconnect.simulation.simulation_card.messages.no_changes);
     }
     if (simulationError) {
-      return i18n.t(
-        i18n.l.walletconnect.simulation.simulation_card.titles.likely_to_fail
-      );
+      return i18n.t(i18n.l.walletconnect.simulation.simulation_card.titles.likely_to_fail);
     }
-    return i18n.t(
-      i18n.l.walletconnect.simulation.simulation_card.titles.simulation_result
-    );
-  }, [
-    isBalanceEnough,
-    isLoading,
-    noChanges,
-    simulationError,
-    simulationScanResult,
-    simulationUnavailable,
-    walletBalance?.symbol,
-  ]);
+    return i18n.t(i18n.l.walletconnect.simulation.simulation_card.titles.simulation_result);
+  }, [isBalanceEnough, isLoading, noChanges, simulationError, simulationScanResult, simulationUnavailable, walletBalance?.symbol]);
 
   const isExpanded = useMemo(() => {
     if (isLoading || isPersonalSign) {
       return false;
     }
-    const shouldExpandOnLoad =
-      isBalanceEnough === false ||
-      (!isEmpty(simulation) && !noChanges) ||
-      !!simulationError;
+    const shouldExpandOnLoad = isBalanceEnough === false || (!isEmpty(simulation) && !noChanges) || !!simulationError;
     return shouldExpandOnLoad;
-  }, [
-    isBalanceEnough,
-    isLoading,
-    isPersonalSign,
-    noChanges,
-    simulation,
-    simulationError,
-  ]);
+  }, [isBalanceEnough, isLoading, isPersonalSign, noChanges, simulation, simulationError]);
 
   return (
     <FadedScrollCard
@@ -1663,39 +1258,23 @@ const SimulationCard = ({
       expandedCardTopInset={EXPANDED_CARD_TOP_INSET}
       isExpanded={isExpanded}
     >
-      <Stack
-        space={simulationError || isBalanceEnough === false ? '16px' : '24px'}
-      >
-        <Box
-          alignItems="center"
-          flexDirection="row"
-          justifyContent="space-between"
-          height={{ custom: CARD_ROW_HEIGHT }}
-        >
+      <Stack space={simulationError || isBalanceEnough === false ? '16px' : '24px'}>
+        <Box alignItems="center" flexDirection="row" justifyContent="space-between" height={{ custom: CARD_ROW_HEIGHT }}>
           <Inline alignVertical="center" space="12px">
-            {!isLoading &&
-            (simulationError ||
-              isBalanceEnough === false ||
-              simulationScanResult !== TransactionScanResultType.Ok) ? (
+            {!isLoading && (simulationError || isBalanceEnough === false || simulationScanResult !== TransactionScanResultType.Ok) ? (
               <EventIcon
                 eventType={
-                  simulationScanResult &&
-                  simulationScanResult !== TransactionScanResultType.Ok
+                  simulationScanResult && simulationScanResult !== TransactionScanResultType.Ok
                     ? simulationScanResult
                     : simulationError
-                    ? 'failed'
-                    : 'insufficientBalance'
+                      ? 'failed'
+                      : 'insufficientBalance'
                 }
               />
             ) : (
               <IconContainer>
                 {!isLoading && noChanges && !simulationUnavailable ? (
-                  <Text
-                    align="center"
-                    color="labelQuaternary"
-                    size="icon 17px"
-                    weight="bold"
-                  >
+                  <Text align="center" color="labelQuaternary" size="icon 17px" weight="bold">
                     {/* The extra space avoids icon clipping */}
                     {'􀻾 '}
                   </Text>
@@ -1703,13 +1282,7 @@ const SimulationCard = ({
                   <Animated.View style={spinnerStyle}>
                     <Text
                       align="center"
-                      color={
-                        isLoading
-                          ? 'label'
-                          : simulationUnavailable
-                          ? 'labelQuaternary'
-                          : 'label'
-                      }
+                      color={isLoading ? 'label' : simulationUnavailable ? 'labelQuaternary' : 'label'}
                       size="icon 15px"
                       weight="bold"
                     >
@@ -1745,50 +1318,33 @@ const SimulationCard = ({
           <Stack space="20px">
             {isBalanceEnough === false ? (
               <Text color="labelQuaternary" size="13pt" weight="semibold">
-                {i18n.t(
-                  i18n.l.walletconnect.simulation.simulation_card.messages
-                    .need_more_native,
-                  {
-                    symbol: walletBalance?.symbol,
-                    network: getNetworkObj(currentNetwork!).name,
-                  }
-                )}
+                {i18n.t(i18n.l.walletconnect.simulation.simulation_card.messages.need_more_native, {
+                  symbol: walletBalance?.symbol,
+                  network: getNetworkObj(currentNetwork!).name,
+                })}
               </Text>
             ) : (
               <>
                 {simulationUnavailable && isPersonalSign && (
                   <Box style={{ opacity: 0.6 }}>
                     <Text color="labelQuaternary" size="13pt" weight="semibold">
-                      {i18n.t(
-                        i18n.l.walletconnect.simulation.simulation_card.messages
-                          .unavailable_personal_sign
-                      )}
+                      {i18n.t(i18n.l.walletconnect.simulation.simulation_card.messages.unavailable_personal_sign)}
                     </Text>
                   </Box>
                 )}
                 {simulationError && (
                   <Text color="labelQuaternary" size="13pt" weight="semibold">
-                    {i18n.t(
-                      i18n.l.walletconnect.simulation.simulation_card.messages
-                        .failed_to_simulate
-                    )}
+                    {i18n.t(i18n.l.walletconnect.simulation.simulation_card.messages.failed_to_simulate)}
                   </Text>
                 )}
                 {simulationScanResult === TransactionScanResultType.Warning && (
                   <Text color="labelQuaternary" size="13pt" weight="semibold">
-                    {i18n.t(
-                      i18n.l.walletconnect.simulation.simulation_card.messages
-                        .warning
-                    )}{' '}
+                    {i18n.t(i18n.l.walletconnect.simulation.simulation_card.messages.warning)}{' '}
                   </Text>
                 )}
-                {simulationScanResult ===
-                  TransactionScanResultType.Malicious && (
+                {simulationScanResult === TransactionScanResultType.Malicious && (
                   <Text color="labelQuaternary" size="13pt" weight="semibold">
-                    {i18n.t(
-                      i18n.l.walletconnect.simulation.simulation_card.messages
-                        .malicious
-                    )}
+                    {i18n.t(i18n.l.walletconnect.simulation.simulation_card.messages.malicious)}
                   </Text>
                 )}
               </>
@@ -1825,9 +1381,7 @@ const DetailsCard = ({
   toAddress,
 }: DetailsCardProps) => {
   const cardHeight = useSharedValue(COLLAPSED_CARD_HEIGHT);
-  const contentHeight = useSharedValue(
-    COLLAPSED_CARD_HEIGHT - CARD_BORDER_WIDTH * 2
-  );
+  const contentHeight = useSharedValue(COLLAPSED_CARD_HEIGHT - CARD_BORDER_WIDTH * 2);
   const [isExpanded, setIsExpanded] = useState(false);
 
   const listStyle = useAnimatedStyle(() => ({
@@ -1835,9 +1389,7 @@ const DetailsCard = ({
       cardHeight.value,
       [
         COLLAPSED_CARD_HEIGHT,
-        contentHeight.value + CARD_BORDER_WIDTH * 2 > MAX_CARD_HEIGHT
-          ? MAX_CARD_HEIGHT
-          : contentHeight.value + CARD_BORDER_WIDTH * 2,
+        contentHeight.value + CARD_BORDER_WIDTH * 2 > MAX_CARD_HEIGHT ? MAX_CARD_HEIGHT : contentHeight.value + CARD_BORDER_WIDTH * 2,
       ],
       [0, 1]
     ),
@@ -1845,10 +1397,8 @@ const DetailsCard = ({
 
   const collapsedTextColor: TextColor = isLoading ? 'labelQuaternary' : 'blue';
 
-  const showFunctionRow =
-    meta?.to?.function || (methodName && methodName.substring(0, 2) !== '0x');
-  const isContract =
-    showFunctionRow || meta?.to?.created || meta?.to?.sourceCodeStatus;
+  const showFunctionRow = meta?.to?.function || (methodName && methodName.substring(0, 2) !== '0x');
+  const isContract = showFunctionRow || meta?.to?.created || meta?.to?.sourceCodeStatus;
   const showTransferToRow = meta?.transferTo;
   // Hide DetailsCard if balance is insufficient once loaded
   if (!isLoading && isBalanceEnough === false) {
@@ -1864,48 +1414,26 @@ const DetailsCard = ({
       onPressCollapsedCard={isLoading ? undefined : () => setIsExpanded(true)}
     >
       <Stack space="24px">
-        <Box
-          justifyContent="center"
-          height={{ custom: CARD_ROW_HEIGHT }}
-          width="full"
-        >
+        <Box justifyContent="center" height={{ custom: CARD_ROW_HEIGHT }} width="full">
           <Inline alignVertical="center" space="12px">
             <IconContainer>
-              <Text
-                align="center"
-                color={isExpanded || noChanges ? 'label' : collapsedTextColor}
-                size="icon 15px"
-                weight="bold"
-              >
+              <Text align="center" color={isExpanded || noChanges ? 'label' : collapsedTextColor} size="icon 15px" weight="bold">
                 􁙠
               </Text>
             </IconContainer>
-            <Text
-              color={isExpanded || noChanges ? 'label' : collapsedTextColor}
-              size="17pt"
-              weight="bold"
-            >
+            <Text color={isExpanded || noChanges ? 'label' : collapsedTextColor} size="17pt" weight="bold">
               {i18n.t(i18n.l.walletconnect.simulation.details_card.title)}
             </Text>
           </Inline>
         </Box>
         <Animated.View style={listStyle}>
           <Stack space="24px">
-            {
-              <DetailRow
-                currentNetwork={currentNetwork}
-                detailType="chain"
-                value={getNetworkObj(currentNetwork).name}
-              />
-            }
+            {<DetailRow currentNetwork={currentNetwork} detailType="chain" value={getNetworkObj(currentNetwork).name} />}
             {!!(meta?.to?.address || toAddress || showTransferToRow) && (
               <DetailRow
                 detailType={isContract ? 'contract' : 'to'}
                 onPress={() =>
-                  ethereumUtils.openAddressInBlockExplorer(
-                    meta?.to?.address! || toAddress || meta?.transferTo,
-                    currentNetwork
-                  )
+                  ethereumUtils.openAddressInBlockExplorer(meta?.to?.address! || toAddress || meta?.transferTo, currentNetwork)
                 }
                 value={
                   meta?.to?.name ||
@@ -1916,21 +1444,12 @@ const DetailsCard = ({
                 }
               />
             )}
-            {showFunctionRow && (
-              <DetailRow detailType="function" value={methodName} />
-            )}
-            {!!meta?.to?.sourceCodeStatus && (
-              <DetailRow
-                detailType="sourceCodeVerification"
-                value={meta.to.sourceCodeStatus}
-              />
-            )}
-            {!!meta?.to?.created && (
-              <DetailRow
-                detailType="dateCreated"
-                value={formatDate(meta?.to?.created)}
-              />
-            )}
+            {showFunctionRow && <DetailRow detailType="function" value={methodName} />}
+            {!!meta?.to?.sourceCodeStatus && <DetailRow detailType="sourceCodeVerification" value={meta.to.sourceCodeStatus} />}
+            {!!meta?.to?.created && <DetailRow detailType="dateCreated" value={formatDate(meta?.to?.created)} />}
+            {showFunctionRow && <DetailRow detailType="function" value={methodName} />}
+            {!!meta?.to?.sourceCodeStatus && <DetailRow detailType="sourceCodeVerification" value={meta.to.sourceCodeStatus} />}
+            {!!meta?.to?.created && <DetailRow detailType="dateCreated" value={formatDate(meta?.to?.created)} />}
             {nonce && <DetailRow detailType="nonce" value={nonce} />}
           </Stack>
         </Animated.View>
@@ -1965,15 +1484,10 @@ const MessageCard = ({
     displayMessage = JSON.stringify(displayMessage, null, 4);
   }
 
-  const estimatedMessageHeight = useMemo(
-    () => estimateMessageHeight(displayMessage),
-    [displayMessage]
-  );
+  const estimatedMessageHeight = useMemo(() => estimateMessageHeight(displayMessage), [displayMessage]);
 
   const cardHeight = useSharedValue(
-    estimatedMessageHeight > MAX_CARD_HEIGHT
-      ? MAX_CARD_HEIGHT
-      : estimatedMessageHeight + CARD_BORDER_WIDTH * 2
+    estimatedMessageHeight > MAX_CARD_HEIGHT ? MAX_CARD_HEIGHT : estimatedMessageHeight + CARD_BORDER_WIDTH * 2
   );
   const contentHeight = useSharedValue(estimatedMessageHeight);
 
@@ -2001,12 +1515,7 @@ const MessageCard = ({
       skipCollapsedState
     >
       <Stack space="24px">
-        <Box
-          alignItems="flex-end"
-          flexDirection="row"
-          justifyContent="space-between"
-          height={{ custom: CARD_ROW_HEIGHT }}
-        >
+        <Box alignItems="flex-end" flexDirection="row" justifyContent="space-between" height={{ custom: CARD_ROW_HEIGHT }}>
           <Inline alignVertical="center" space="12px">
             <IconContainer>
               <Text align="center" color="label" size="icon 15px" weight="bold">
@@ -2018,27 +1527,13 @@ const MessageCard = ({
             </Text>
           </Inline>
           <TouchableWithoutFeedback>
-            <ButtonPressAnimation
-              disabled={didCopy}
-              onPress={() => handleCopyPress(message)}
-            >
+            <ButtonPressAnimation disabled={didCopy} onPress={() => handleCopyPress(message)}>
               <Bleed space="24px">
                 <Box style={{ padding: 24 }}>
-                  <Inline
-                    alignHorizontal="right"
-                    alignVertical="center"
-                    space={{ custom: 4 }}
-                  >
+                  <Inline alignHorizontal="right" alignVertical="center" space={{ custom: 4 }}>
                     <AnimatedCheckmark visible={didCopy} />
-                    <Text
-                      align="right"
-                      color={didCopy ? 'labelQuaternary' : 'blue'}
-                      size="15pt"
-                      weight="bold"
-                    >
-                      {i18n.t(
-                        i18n.l.walletconnect.simulation.message_card.copy
-                      )}
+                    <Text align="right" color={didCopy ? 'labelQuaternary' : 'blue'} size="15pt" weight="bold">
+                      {i18n.t(i18n.l.walletconnect.simulation.message_card.copy)}
                     </Text>
                   </Inline>
                 </Box>
@@ -2074,31 +1569,17 @@ const SimulatedEventRow = ({
 
     const nftFallbackSymbol = parseFloat(amount) > 1 ? 'NFTs' : 'NFT';
     const assetDisplayName =
-      asset?.type === TransactionAssetType.Nft
-        ? asset?.name || asset?.symbol || nftFallbackSymbol
-        : asset?.symbol || asset?.name;
-    const shortenedDisplayName =
-      assetDisplayName.length > 12
-        ? `${assetDisplayName.slice(0, 12).trim()}…`
-        : assetDisplayName;
+      asset?.type === TransactionAssetType.Nft ? asset?.name || asset?.symbol || nftFallbackSymbol : asset?.symbol || asset?.name;
+    const shortenedDisplayName = assetDisplayName.length > 12 ? `${assetDisplayName.slice(0, 12).trim()}…` : assetDisplayName;
 
     const displayAmount =
       asset?.decimals === 0
         ? `${amount}${shortenedDisplayName ? ' ' + shortenedDisplayName : ''}`
-        : convertRawAmountToBalance(
-            amount,
-            { decimals: asset?.decimals || 18, symbol: shortenedDisplayName },
-            3,
-            true
-          ).display;
+        : convertRawAmountToBalance(amount, { decimals: asset?.decimals || 18, symbol: shortenedDisplayName }, 3, true).display;
 
-    const unlimitedApproval = `${i18n.t(
-      i18n.l.walletconnect.simulation.simulation_card.event_row.unlimited
-    )} ${asset?.symbol}`;
+    const unlimitedApproval = `${i18n.t(i18n.l.walletconnect.simulation.simulation_card.event_row.unlimited)} ${asset?.symbol}`;
 
-    return `${eventInfo.amountPrefix}${
-      amount === 'UNLIMITED' ? unlimitedApproval : displayAmount
-    }`;
+    return `${eventInfo.amountPrefix}${amount === 'UNLIMITED' ? unlimitedApproval : displayAmount}`;
   }, [amount, asset, eventInfo?.amountPrefix]);
 
   const url = maybeSignUri(asset?.iconURL, {
@@ -2116,17 +1597,8 @@ const SimulatedEventRow = ({
     maximumFractionDigits: 2,
   })}`;
   return (
-    <Box
-      justifyContent="center"
-      height={{ custom: CARD_ROW_HEIGHT }}
-      width="full"
-    >
-      <Inline
-        alignHorizontal="justify"
-        alignVertical="center"
-        space="20px"
-        wrap={false}
-      >
+    <Box justifyContent="center" height={{ custom: CARD_ROW_HEIGHT }} width="full">
+      <Inline alignHorizontal="justify" alignVertical="center" space="20px" wrap={false}>
         <Inline alignVertical="center" space="12px" wrap={false}>
           <EventIcon eventType={eventType} />
           <Inline alignVertical="bottom" space="6px" wrap={false}>
@@ -2152,19 +1624,10 @@ const SimulatedEventRow = ({
                 ignoreBadge={true}
               />
             ) : (
-              <Image
-                source={{ uri: url }}
-                style={{ borderRadius: 4.5, height: 16, width: 16 }}
-              />
+              <Image source={{ uri: url }} style={{ borderRadius: 4.5, height: 16, width: 16 }} />
             )}
           </Bleed>
-          <Text
-            align="right"
-            color={eventInfo.textColor}
-            numberOfLines={1}
-            size="17pt"
-            weight="bold"
-          >
+          <Text align="right" color={eventInfo.textColor} numberOfLines={1} size="17pt" weight="bold">
             {formattedAmount}
           </Text>
         </Inline>
@@ -2188,12 +1651,7 @@ const DetailRow = ({
 
   return (
     <Box justifyContent="center" height={{ custom: SMALL_CARD_ROW_HEIGHT }}>
-      <Inline
-        alignHorizontal="justify"
-        alignVertical="center"
-        space="12px"
-        wrap={false}
-      >
+      <Inline alignHorizontal="justify" alignVertical="center" space="12px" wrap={false}>
         <Inline alignVertical="center" space="12px" wrap={false}>
           <DetailIcon detailInfo={detailInfo} />
           <Text color="labelTertiary" size="15pt" weight="semibold">
@@ -2201,46 +1659,21 @@ const DetailRow = ({
           </Text>
         </Inline>
         <Inline alignVertical="center" space="6px" wrap={false}>
-          {detailType === 'function' && (
-            <DetailBadge type="function" value={value} />
-          )}
+          {detailType === 'function' && <DetailBadge type="function" value={value} />}
           {detailType === 'sourceCodeVerification' && (
-            <DetailBadge
-              type={
-                value === 'VERIFIED'
-                  ? 'verified'
-                  : value === 'UNVERIFIED'
-                  ? 'unverified'
-                  : 'unknown'
-              }
-              value={value}
-            />
+            <DetailBadge type={value === 'VERIFIED' ? 'verified' : value === 'UNVERIFIED' ? 'unverified' : 'unknown'} value={value} />
           )}
-          {detailType === 'chain' && currentNetwork && (
-            <ChainImage size={12} chain={currentNetwork} />
+          {detailType === 'chain' && currentNetwork && <ChainImage size={12} chain={currentNetwork} />}
+          {detailType !== 'function' && detailType !== 'sourceCodeVerification' && (
+            <Text align="right" color="labelTertiary" numberOfLines={1} size="15pt" weight="semibold">
+              {value}
+            </Text>
           )}
-          {detailType !== 'function' &&
-            detailType !== 'sourceCodeVerification' && (
-              <Text
-                align="right"
-                color="labelTertiary"
-                numberOfLines={1}
-                size="15pt"
-                weight="semibold"
-              >
-                {value}
-              </Text>
-            )}
           {(detailType === 'contract' || detailType === 'to') && (
             <TouchableWithoutFeedback>
               <ButtonPressAnimation onPress={onPress}>
                 <IconContainer hitSlop={14} size={16}>
-                  <Text
-                    align="center"
-                    color="labelQuaternary"
-                    size="icon 15px"
-                    weight="semibold"
-                  >
+                  <Text align="center" color="labelQuaternary" size="icon 15px" weight="semibold">
                     􀂄
                   </Text>
                 </IconContainer>
@@ -2258,10 +1691,7 @@ const EventIcon = ({ eventType }: { eventType: EventType }) => {
 
   const hideInnerFill = eventType === 'approve' || eventType === 'revoke';
   const isWarningIcon =
-    eventType === 'failed' ||
-    eventType === 'insufficientBalance' ||
-    eventType === 'MALICIOUS' ||
-    eventType === 'WARNING';
+    eventType === 'failed' || eventType === 'insufficientBalance' || eventType === 'MALICIOUS' || eventType === 'WARNING';
 
   return (
     <IconContainer>
@@ -2275,12 +1705,7 @@ const EventIcon = ({ eventType }: { eventType: EventType }) => {
           width={{ custom: isWarningIcon ? 5.5 : 12 }}
         />
       )}
-      <Text
-        align="center"
-        color={eventInfo.iconColor}
-        size="icon 17px"
-        weight="bold"
-      >
+      <Text align="center" color={eventInfo.iconColor} size="icon 17px" weight="bold">
         {eventInfo.icon}
       </Text>
     </IconContainer>
@@ -2290,25 +1715,14 @@ const EventIcon = ({ eventType }: { eventType: EventType }) => {
 const DetailIcon = ({ detailInfo }: { detailInfo: DetailInfo }) => {
   return (
     <IconContainer>
-      <Text
-        align="center"
-        color="labelTertiary"
-        size="icon 13px"
-        weight="semibold"
-      >
+      <Text align="center" color="labelTertiary" size="icon 13px" weight="semibold">
         {detailInfo.icon}
       </Text>
     </IconContainer>
   );
 };
 
-const DetailBadge = ({
-  type,
-  value,
-}: {
-  type: 'function' | 'unknown' | 'unverified' | 'verified';
-  value: string;
-}) => {
+const DetailBadge = ({ type, value }: { type: 'function' | 'unknown' | 'unverified' | 'verified'; value: string }) => {
   const { colors, isDarkMode } = useTheme();
   const separatorTertiary = useForegroundColor('separatorTertiary');
 
@@ -2323,32 +1737,24 @@ const DetailBadge = ({
   } = {
     function: {
       backgroundColor: 'transparent',
-      borderColor: isDarkMode
-        ? separatorTertiary
-        : colors.alpha(separatorTertiary, 0.025),
+      borderColor: isDarkMode ? separatorTertiary : colors.alpha(separatorTertiary, 0.025),
       text: 'labelQuaternary',
     },
     unknown: {
       backgroundColor: 'transparent',
-      borderColor: isDarkMode
-        ? separatorTertiary
-        : colors.alpha(separatorTertiary, 0.025),
+      borderColor: isDarkMode ? separatorTertiary : colors.alpha(separatorTertiary, 0.025),
       label: 'Unknown',
       text: 'labelQuaternary',
     },
     unverified: {
-      backgroundColor: isDarkMode
-        ? colors.alpha(colors.red, 0.05)
-        : globalColors.red10,
+      backgroundColor: isDarkMode ? colors.alpha(colors.red, 0.05) : globalColors.red10,
       borderColor: colors.alpha(colors.red, 0.02),
       label: 'Unverified',
       text: 'red',
       textOpacity: 0.76,
     },
     verified: {
-      backgroundColor: isDarkMode
-        ? colors.alpha(colors.green, 0.05)
-        : globalColors.green10,
+      backgroundColor: isDarkMode ? colors.alpha(colors.green, 0.05) : globalColors.green10,
       borderColor: colors.alpha(colors.green, 0.02),
       label: 'Verified',
       text: 'green',
@@ -2371,18 +1777,8 @@ const DetailBadge = ({
         borderWidth: 1.25,
       }}
     >
-      <Box
-        height={{ custom: 24 }}
-        justifyContent="center"
-        style={{ opacity: infoForBadgeType[type].textOpacity || undefined }}
-      >
-        <Text
-          align="center"
-          color={infoForBadgeType[type].text}
-          numberOfLines={1}
-          size="15pt"
-          weight="semibold"
-        >
+      <Box height={{ custom: 24 }} justifyContent="center" style={{ opacity: infoForBadgeType[type].textOpacity || undefined }}>
+        <Text align="center" color={infoForBadgeType[type].text} numberOfLines={1} size="15pt" weight="semibold">
           {infoForBadgeType[type].label || value}
         </Text>
       </Box>
@@ -2401,12 +1797,7 @@ const VerifiedBadge = () => {
           style={{ backgroundColor: globalColors.white100 }}
           width={{ custom: 11 }}
         />
-        <Text
-          align="center"
-          color={{ custom: globalColors.blue40 }}
-          size="icon 15px"
-          weight="heavy"
-        >
+        <Text align="center" color={{ custom: globalColors.blue40 }} size="icon 15px" weight="heavy">
           􀇻
         </Text>
       </Box>
@@ -2479,8 +1870,7 @@ const FadedScrollCard = ({
 
   const yPosition = useSharedValue(0);
 
-  const maxExpandedHeight =
-    deviceHeight - (expandedCardBottomInset + expandedCardTopInset);
+  const maxExpandedHeight = deviceHeight - (expandedCardBottomInset + expandedCardTopInset);
 
   const containerStyle = useAnimatedStyle(() => {
     return {
@@ -2493,40 +1883,25 @@ const FadedScrollCard = ({
               'clamp'
             )
           : undefined,
-      zIndex: interpolate(
-        cardHeight.value,
-        [0, MAX_CARD_HEIGHT, MAX_CARD_HEIGHT + 1],
-        [1, 1, 2],
-        'clamp'
-      ),
+      zIndex: interpolate(cardHeight.value, [0, MAX_CARD_HEIGHT, MAX_CARD_HEIGHT + 1], [1, 1, 2], 'clamp'),
     };
   });
 
   const backdropStyle = useAnimatedStyle(() => {
-    const canExpandFully =
-      contentHeight.value + CARD_BORDER_WIDTH * 2 > MAX_CARD_HEIGHT;
+    const canExpandFully = contentHeight.value + CARD_BORDER_WIDTH * 2 > MAX_CARD_HEIGHT;
     return {
-      opacity:
-        canExpandFully && isFullyExpanded
-          ? withTiming(1, timingConfig)
-          : withTiming(0, timingConfig),
+      opacity: canExpandFully && isFullyExpanded ? withTiming(1, timingConfig) : withTiming(0, timingConfig),
     };
   });
 
   const cardStyle = useAnimatedStyle(() => {
-    const canExpandFully =
-      contentHeight.value + CARD_BORDER_WIDTH * 2 > MAX_CARD_HEIGHT;
-    const expandedCardHeight = Math.min(
-      contentHeight.value + CARD_BORDER_WIDTH * 2,
-      maxExpandedHeight
-    );
+    const canExpandFully = contentHeight.value + CARD_BORDER_WIDTH * 2 > MAX_CARD_HEIGHT;
+    const expandedCardHeight = Math.min(contentHeight.value + CARD_BORDER_WIDTH * 2, maxExpandedHeight);
     return {
       borderColor: interpolateColor(
         cardHeight.value,
         [0, MAX_CARD_HEIGHT, expandedCardHeight],
-        isDarkMode
-          ? ['#1F2023', '#1F2023', '#242527']
-          : ['#F5F7F8', '#F5F7F8', '#FBFCFD']
+        isDarkMode ? ['#1F2023', '#1F2023', '#242527'] : ['#F5F7F8', '#F5F7F8', '#FBFCFD']
       ),
       height: cardHeight.value > MAX_CARD_HEIGHT ? cardHeight.value : undefined,
       position: canExpandFully && isFullyExpanded ? 'absolute' : 'relative',
@@ -2540,16 +1915,10 @@ const FadedScrollCard = ({
               0,
               -yPosition.value +
                 expandedCardTopInset +
-                (deviceHeight -
-                  (expandedCardBottomInset + expandedCardTopInset) -
-                  expandedCardHeight) -
-                (yPosition.value + expandedCardHeight >=
-                deviceHeight - expandedCardBottomInset
+                (deviceHeight - (expandedCardBottomInset + expandedCardTopInset) - expandedCardHeight) -
+                (yPosition.value + expandedCardHeight >= deviceHeight - expandedCardBottomInset
                   ? 0
-                  : deviceHeight -
-                    expandedCardBottomInset -
-                    yPosition.value -
-                    expandedCardHeight),
+                  : deviceHeight - expandedCardBottomInset - yPosition.value - expandedCardHeight),
             ]
           ),
         },
@@ -2581,13 +1950,9 @@ const FadedScrollCard = ({
   });
 
   const shadowStyle = useAnimatedStyle(() => {
-    const canExpandFully =
-      contentHeight.value + CARD_BORDER_WIDTH * 2 > MAX_CARD_HEIGHT;
+    const canExpandFully = contentHeight.value + CARD_BORDER_WIDTH * 2 > MAX_CARD_HEIGHT;
     return {
-      shadowOpacity:
-        canExpandFully && isFullyExpanded
-          ? withTiming(isDarkMode ? 0.9 : 0.16, timingConfig)
-          : withTiming(0, timingConfig),
+      shadowOpacity: canExpandFully && isFullyExpanded ? withTiming(isDarkMode ? 0.9 : 0.16, timingConfig) : withTiming(0, timingConfig),
     };
   });
 
@@ -2622,32 +1987,22 @@ const FadedScrollCard = ({
       ) {
         if (isFullyExpanded) {
           const expandedCardHeight =
-            contentHeight + CARD_BORDER_WIDTH * 2 > maxExpandedHeight
-              ? maxExpandedHeight
-              : contentHeight + CARD_BORDER_WIDTH * 2;
-          if (
-            contentHeight + CARD_BORDER_WIDTH * 2 > MAX_CARD_HEIGHT &&
-            cardHeight.value >= MAX_CARD_HEIGHT
-          ) {
+            contentHeight + CARD_BORDER_WIDTH * 2 > maxExpandedHeight ? maxExpandedHeight : contentHeight + CARD_BORDER_WIDTH * 2;
+          if (contentHeight + CARD_BORDER_WIDTH * 2 > MAX_CARD_HEIGHT && cardHeight.value >= MAX_CARD_HEIGHT) {
             cardHeight.value = withTiming(expandedCardHeight, timingConfig);
           } else {
             runOnJS(setIsFullyExpanded)(false);
           }
         } else if (isExpanded) {
           cardHeight.value = withTiming(
-            contentHeight + CARD_BORDER_WIDTH * 2 > MAX_CARD_HEIGHT
-              ? MAX_CARD_HEIGHT
-              : contentHeight + CARD_BORDER_WIDTH * 2,
+            contentHeight + CARD_BORDER_WIDTH * 2 > MAX_CARD_HEIGHT ? MAX_CARD_HEIGHT : contentHeight + CARD_BORDER_WIDTH * 2,
             timingConfig
           );
         } else {
           cardHeight.value = withTiming(COLLAPSED_CARD_HEIGHT, timingConfig);
         }
 
-        const enableScroll =
-          isExpanded &&
-          contentHeight + CARD_BORDER_WIDTH * 2 >
-            (isFullyExpanded ? maxExpandedHeight : MAX_CARD_HEIGHT);
+        const enableScroll = isExpanded && contentHeight + CARD_BORDER_WIDTH * 2 > (isFullyExpanded ? maxExpandedHeight : MAX_CARD_HEIGHT);
         runOnJS(setScrollEnabled)(enableScroll);
       }
     }
@@ -2719,14 +2074,7 @@ const FadedScrollCard = ({
                     }
               }
             >
-              <Animated.View
-                style={[
-                  centerVerticallyWhenCollapsedStyle,
-                  { padding: 24 - CARD_BORDER_WIDTH },
-                ]}
-              >
-                {children}
-              </Animated.View>
+              <Animated.View style={[centerVerticallyWhenCollapsedStyle, { padding: 24 - CARD_BORDER_WIDTH }]}>{children}</Animated.View>
             </TouchableWithoutFeedback>
           </Animated.ScrollView>
           <FadeGradient side="top" />
@@ -2737,13 +2085,7 @@ const FadedScrollCard = ({
   );
 };
 
-const FadeGradient = ({
-  side,
-  style,
-}: {
-  side: 'top' | 'bottom';
-  style?: StyleProp<Animated.AnimateStyle<StyleProp<ViewStyle>>>;
-}) => {
+const FadeGradient = ({ side, style }: { side: 'top' | 'bottom'; style?: StyleProp<Animated.AnimateStyle<StyleProp<ViewStyle>>> }) => {
   const { colors, isDarkMode } = useTheme();
 
   const isTop = side === 'top';
@@ -2814,15 +2156,7 @@ const IconContainer = ({
   );
 };
 
-type EventType =
-  | 'send'
-  | 'receive'
-  | 'approve'
-  | 'revoke'
-  | 'failed'
-  | 'insufficientBalance'
-  | 'MALICIOUS'
-  | 'WARNING';
+type EventType = 'send' | 'receive' | 'approve' | 'revoke' | 'failed' | 'insufficientBalance' | 'MALICIOUS' | 'WARNING';
 
 type EventInfo = {
   amountPrefix: string;
@@ -2837,45 +2171,35 @@ const infoForEventType: { [key: string]: EventInfo } = {
     amountPrefix: '- ',
     icon: '􀁷',
     iconColor: 'red',
-    label: i18n.t(
-      i18n.l.walletconnect.simulation.simulation_card.event_row.types.send
-    ),
+    label: i18n.t(i18n.l.walletconnect.simulation.simulation_card.event_row.types.send),
     textColor: 'red',
   },
   receive: {
     amountPrefix: '+ ',
     icon: '􀁹',
     iconColor: 'green',
-    label: i18n.t(
-      i18n.l.walletconnect.simulation.simulation_card.event_row.types.receive
-    ),
+    label: i18n.t(i18n.l.walletconnect.simulation.simulation_card.event_row.types.receive),
     textColor: 'green',
   },
   approve: {
     amountPrefix: '',
     icon: '􀎤',
     iconColor: 'green',
-    label: i18n.t(
-      i18n.l.walletconnect.simulation.simulation_card.event_row.types.approve
-    ),
+    label: i18n.t(i18n.l.walletconnect.simulation.simulation_card.event_row.types.approve),
     textColor: 'label',
   },
   revoke: {
     amountPrefix: '',
     icon: '􀎠',
     iconColor: 'red',
-    label: i18n.t(
-      i18n.l.walletconnect.simulation.simulation_card.event_row.types.revoke
-    ),
+    label: i18n.t(i18n.l.walletconnect.simulation.simulation_card.event_row.types.revoke),
     textColor: 'label',
   },
   failed: {
     amountPrefix: '',
     icon: '􀇿',
     iconColor: 'red',
-    label: i18n.t(
-      i18n.l.walletconnect.simulation.simulation_card.titles.likely_to_fail
-    ),
+    label: i18n.t(i18n.l.walletconnect.simulation.simulation_card.titles.likely_to_fail),
     textColor: 'red',
   },
   insufficientBalance: {
@@ -2901,14 +2225,7 @@ const infoForEventType: { [key: string]: EventInfo } = {
   },
 };
 
-type DetailType =
-  | 'chain'
-  | 'contract'
-  | 'to'
-  | 'function'
-  | 'sourceCodeVerification'
-  | 'dateCreated'
-  | 'nonce';
+type DetailType = 'chain' | 'contract' | 'to' | 'function' | 'sourceCodeVerification' | 'dateCreated' | 'nonce';
 
 type DetailInfo = {
   icon: string;
@@ -2934,15 +2251,11 @@ const infoForDetailType: { [key: string]: DetailInfo } = {
   },
   sourceCodeVerification: {
     icon: '􀕹',
-    label: i18n.t(
-      i18n.l.walletconnect.simulation.details_card.types.source_code
-    ),
+    label: i18n.t(i18n.l.walletconnect.simulation.details_card.types.source_code),
   },
   dateCreated: {
     icon: '􀉉',
-    label: i18n.t(
-      i18n.l.walletconnect.simulation.details_card.types.contract_created
-    ),
+    label: i18n.t(i18n.l.walletconnect.simulation.details_card.types.contract_created),
   },
   nonce: {
     icon: '􀆃',
@@ -2956,12 +2269,7 @@ const LINE_GAP = 9;
 
 const estimateMessageHeight = (message: string) => {
   const estimatedLines = Math.ceil(message.length / CHARACTERS_PER_LINE);
-  const messageHeight =
-    estimatedLines * LINE_HEIGHT +
-    (estimatedLines - 1) * LINE_GAP +
-    CARD_ROW_HEIGHT +
-    24 * 3 -
-    CARD_BORDER_WIDTH * 2;
+  const messageHeight = estimatedLines * LINE_HEIGHT + (estimatedLines - 1) * LINE_GAP + CARD_ROW_HEIGHT + 24 * 3 - CARD_BORDER_WIDTH * 2;
 
   return messageHeight;
 };
@@ -2977,29 +2285,17 @@ const formatDate = (dateString: string) => {
   if (diffDays === 0) {
     return i18n.t(i18n.l.walletconnect.simulation.formatted_dates.today);
   } else if (diffDays === 1) {
-    return `${diffDays} ${i18n.t(
-      i18n.l.walletconnect.simulation.formatted_dates.day_ago
-    )}`;
+    return `${diffDays} ${i18n.t(i18n.l.walletconnect.simulation.formatted_dates.day_ago)}`;
   } else if (diffDays < 7) {
-    return `${diffDays} ${i18n.t(
-      i18n.l.walletconnect.simulation.formatted_dates.days_ago
-    )}`;
+    return `${diffDays} ${i18n.t(i18n.l.walletconnect.simulation.formatted_dates.days_ago)}`;
   } else if (diffWeeks === 1) {
-    return `${diffWeeks} ${i18n.t(
-      i18n.l.walletconnect.simulation.formatted_dates.week_ago
-    )}`;
+    return `${diffWeeks} ${i18n.t(i18n.l.walletconnect.simulation.formatted_dates.week_ago)}`;
   } else if (diffDays < 30.44) {
-    return `${diffWeeks} ${i18n.t(
-      i18n.l.walletconnect.simulation.formatted_dates.weeks_ago
-    )}`;
+    return `${diffWeeks} ${i18n.t(i18n.l.walletconnect.simulation.formatted_dates.weeks_ago)}`;
   } else if (diffMonths === 1) {
-    return `${diffMonths} ${i18n.t(
-      i18n.l.walletconnect.simulation.formatted_dates.month_ago
-    )}`;
+    return `${diffMonths} ${i18n.t(i18n.l.walletconnect.simulation.formatted_dates.month_ago)}`;
   } else if (diffDays < 365.25) {
-    return `${diffMonths} ${i18n.t(
-      i18n.l.walletconnect.simulation.formatted_dates.months_ago
-    )}`;
+    return `${diffMonths} ${i18n.t(i18n.l.walletconnect.simulation.formatted_dates.months_ago)}`;
   } else {
     return date.toLocaleString('default', { month: 'short', year: 'numeric' });
   }

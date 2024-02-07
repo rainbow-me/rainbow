@@ -3,15 +3,7 @@ import React, { useCallback } from 'react';
 import { Switch } from 'react-native-gesture-handler';
 import StepIndicator from '../../../components/step-indicator/StepIndicator';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
-import {
-  Box,
-  Inline,
-  Row,
-  Rows,
-  Separator,
-  Stack,
-  Text,
-} from '@/design-system';
+import { Box, Inline, Row, Rows, Separator, Stack, Text } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
@@ -39,21 +31,10 @@ const RegisterContent = ({
         <Row>
           <Box flexGrow={1} justifyContent="center" paddingHorizontal="24px">
             <Stack space="24px">
-              <Text
-                align="center"
-                color="primary (Deprecated)"
-                containsEmoji
-                size="23px / 27px (Deprecated)"
-                weight="heavy"
-              >
+              <Text align="center" color="primary (Deprecated)" containsEmoji size="23px / 27px (Deprecated)" weight="heavy">
                 {lang.t('profiles.confirm.last_step')} 💈
               </Text>
-              <Text
-                align="center"
-                color="secondary60 (Deprecated)"
-                size="16px / 22px (Deprecated)"
-                weight="semibold"
-              >
+              <Text align="center" color="secondary60 (Deprecated)" size="16px / 22px (Deprecated)" weight="semibold">
                 {lang.t('profiles.confirm.last_step_description')}
               </Text>
             </Stack>
@@ -64,33 +45,18 @@ const RegisterContent = ({
             <Separator color="divider80 (Deprecated)" />
             <Inline alignHorizontal="justify" alignVertical="center">
               <Inline>
-                <Text
-                  color="secondary80 (Deprecated)"
-                  size="16px / 22px (Deprecated)"
-                  weight="bold"
-                >
+                <Text color="secondary80 (Deprecated)" size="16px / 22px (Deprecated)" weight="bold">
                   {`${lang.t('profiles.confirm.set_ens_name')} `}
                 </Text>
-                <ButtonPressAnimation
-                  onPress={openPrimaryENSNameHelper}
-                  scaleTo={0.9}
-                >
-                  <Text
-                    color="secondary30 (Deprecated)"
-                    size="16px / 22px (Deprecated)"
-                    weight="bold"
-                  >
+                <ButtonPressAnimation onPress={openPrimaryENSNameHelper} scaleTo={0.9}>
+                  <Text color="secondary30 (Deprecated)" size="16px / 22px (Deprecated)" weight="bold">
                     􀅵
                   </Text>
                 </ButtonPressAnimation>
               </Inline>
               <Switch
                 disabled={!setSendReverseRecord}
-                onValueChange={() =>
-                  setSendReverseRecord?.(
-                    sendReverseRecord => !sendReverseRecord
-                  )
-                }
+                onValueChange={() => setSendReverseRecord?.(sendReverseRecord => !sendReverseRecord)}
                 testID="ens-reverse-record-switch"
                 thumbColor={colors.white}
                 trackColor={{

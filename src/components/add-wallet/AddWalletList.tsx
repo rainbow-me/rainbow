@@ -7,21 +7,11 @@ type AddWalletListProps = {
   totalHorizontalInset: number;
 };
 
-export const AddWalletList = ({
-  items,
-  totalHorizontalInset,
-}: AddWalletListProps) => {
+export const AddWalletList = ({ items, totalHorizontalInset }: AddWalletListProps) => {
   return (
-    <Stack
-      space="24px"
-      separator={<Separator color="divider60 (Deprecated)" />}
-    >
+    <Stack space="24px" separator={<Separator color="divider60 (Deprecated)" />}>
       {items.map((item: AddWalletItem) => (
-        <AddWalletRow
-          key={item.icon}
-          content={item}
-          totalHorizontalInset={totalHorizontalInset}
-        />
+        <AddWalletRow key={item.icon} content={item} totalHorizontalInset={totalHorizontalInset} />
       ))}
     </Stack>
   );

@@ -11,14 +11,10 @@ const Container = styled(Centered)({
   paddingRight: 10,
 });
 
-const Gradient = styled(RadialGradient).attrs(
-  ({ theme: { colors, isDarkMode } }) => ({
-    center: [0, 15],
-    colors: isDarkMode
-      ? colors.gradients.lightestGreyReverse
-      : colors.gradients.lightestGrey,
-  })
-)({
+const Gradient = styled(RadialGradient).attrs(({ theme: { colors, isDarkMode } }) => ({
+  center: [0, 15],
+  colors: isDarkMode ? colors.gradients.lightestGreyReverse : colors.gradients.lightestGrey,
+}))({
   ...position.coverAsObject,
   borderRadius: 15,
   flexDirection: 'row',

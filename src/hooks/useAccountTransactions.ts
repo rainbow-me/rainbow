@@ -13,15 +13,8 @@ import { useUserAssets } from '@/resources/assets/UserAssetsQuery';
 
 export const NOE_PAGE = 30;
 
-export default function useAccountTransactions(
-  initialized: boolean,
-  isFocused: boolean
-) {
-  const {
-    network: currentNetwork,
-    accountAddress,
-    nativeCurrency,
-  } = useAccountSettings();
+export default function useAccountTransactions(initialized: boolean, isFocused: boolean) {
+  const { network: currentNetwork, accountAddress, nativeCurrency } = useAccountSettings();
   const provider = getCachedProviderForNetwork(currentNetwork);
   const providerUrl = provider?.connection?.url;
   const connectedToHardhat = isHardHat(providerUrl);
@@ -31,16 +24,8 @@ export default function useAccountTransactions(
     connectedToHardhat,
   });
 
-  const {
-    isLoadingTransactions,
-    network,
-    pendingTransactions,
-    transactions,
-  } = useSelector(
-    ({
-      data: { isLoadingTransactions, pendingTransactions, transactions },
-      settings: { network },
-    }: AppState) => ({
+  const { isLoadingTransactions, network, pendingTransactions, transactions } = useSelector(
+    ({ data: { isLoadingTransactions, pendingTransactions, transactions }, settings: { network } }: AppState) => ({
       isLoadingTransactions,
       network,
       pendingTransactions,
@@ -48,25 +33,18 @@ export default function useAccountTransactions(
     })
   );
 
-  const allTransactions = useMemo(
-    () => pendingTransactions.concat(transactions),
-    [pendingTransactions, transactions]
-  );
+  const allTransactions = useMemo(() => pendingTransactions.concat(transactions), [pendingTransactions, transactions]);
 
   const [page, setPage] = useState(1);
   const nextPage = useCallback(() => setPage(page => page + 1), []);
 
-  const slicedTransaction: any[] = useMemo(
-    () => allTransactions.slice(0, page * NOE_PAGE),
-    [allTransactions, page]
-  );
+  const slicedTransaction: any[] = useMemo(() => allTransactions.slice(0, page * NOE_PAGE), [allTransactions, page]);
 
   const mainnetAddresses = useMemo(
     () =>
       userAssets
         ? slicedTransaction.reduce((acc, txn) => {
-            acc[`${txn.address}_${txn.network}`] =
-              userAssets[`${txn.address}_${txn.network}`]?.mainnet_address;
+            acc[`${txn.address}_${txn.network}`] = userAssets[`${txn.address}_${txn.network}`]?.mainnet_address;
 
             return acc;
           }, {})
@@ -105,8 +83,7 @@ export default function useAccountTransactions(
   }, [slicedTransaction.length, allTransactions.length]);
 
   return {
-    isLoadingTransactions:
-      network === NetworkTypes.mainnet ? isLoadingTransactions : false,
+    isLoadingTransactions: network === NetworkTypes.mainnet ? isLoadingTransactions : false,
     nextPage,
     remainingItemsLabel,
     sections,

@@ -51,21 +51,12 @@ const hiddenTokensSelector = (state: any) => state.hiddenTokens;
 const uniqueTokensSelector = (state: any) => state.uniqueTokens;
 const listTypeSelector = (state: any) => state.listType;
 
-const buildBriefWalletSections = (
-  balanceSectionData: any,
-  uniqueTokenFamiliesSection: any
-) => {
+const buildBriefWalletSections = (balanceSectionData: any, uniqueTokenFamiliesSection: any) => {
   const { balanceSection, isEmpty, isLoadingUserAssets } = balanceSectionData;
   const positionSection = withPositionsSection(isLoadingUserAssets);
-  const sections = [
-    balanceSection,
-    positionSection,
-    uniqueTokenFamiliesSection,
-  ];
+  const sections = [balanceSection, positionSection, uniqueTokenFamiliesSection];
 
-  const filteredSections = sections
-    .filter(section => section.length !== 0)
-    .flat(1);
+  const filteredSections = sections.filter(section => section.length !== 0).flat(1);
 
   return {
     briefSectionsData: filteredSections,
@@ -78,18 +69,11 @@ const withPositionsSection = (isLoadingUserAssets: boolean) => {
   const positionsEnabled = getExperimetalFlag(DEFI_POSITIONS);
   if (!positionsEnabled) return [];
 
-  const {
-    accountAddress: address,
-    nativeCurrency: currency,
-  } = store.getState().settings;
-  const positionsObj: RainbowPositions | undefined = queryClient.getQueryData(
-    positionsQueryKey({ address, currency })
-  );
+  const { accountAddress: address, nativeCurrency: currency } = store.getState().settings;
+  const positionsObj: RainbowPositions | undefined = queryClient.getQueryData(positionsQueryKey({ address, currency }));
 
   const result: PositionExtraData[] = [];
-  const sortedPositions = positionsObj?.positions?.sort((a, b) =>
-    a.totals.totals.amount > b.totals.totals.amount ? -1 : 1
-  );
+  const sortedPositions = positionsObj?.positions?.sort((a, b) => (a.totals.totals.amount > b.totals.totals.amount ? -1 : 1));
   sortedPositions?.forEach((position, index) => {
     const listData = {
       type: 'POSITION',
@@ -128,30 +112,16 @@ const withBriefBalanceSection = (
   collectibles: any,
   nftSort: string
 ) => {
-  const { briefAssets, totalBalancesValue } = buildBriefCoinsList(
-    sortedAssets,
-    nativeCurrency,
-    isCoinListEdited,
-    pinnedCoins,
-    hiddenCoins
-  );
+  const { briefAssets, totalBalancesValue } = buildBriefCoinsList(sortedAssets, nativeCurrency, isCoinListEdited, pinnedCoins, hiddenCoins);
 
   const { accountAddress: address } = store.getState().settings;
-  const positionsObj: RainbowPositions | undefined = queryClient.getQueryData(
-    positionsQueryKey({ address, currency: nativeCurrency })
-  );
+  const positionsObj: RainbowPositions | undefined = queryClient.getQueryData(positionsQueryKey({ address, currency: nativeCurrency }));
 
   const positionsTotal = positionsObj?.totals?.total?.amount || '0';
 
-  const totalBalanceWithPositionsValue = add(
-    totalBalancesValue,
-    positionsTotal
-  );
+  const totalBalanceWithPositionsValue = add(totalBalancesValue, positionsTotal);
 
-  const totalValue = convertAmountToNativeDisplay(
-    totalBalanceWithPositionsValue,
-    nativeCurrency
-  );
+  const totalValue = convertAmountToNativeDisplay(totalBalanceWithPositionsValue, nativeCurrency);
 
   const hasTokens = briefAssets?.length;
   const hasNFTs = collectibles?.length;
@@ -266,10 +236,6 @@ const briefBalanceSectionSelector = createSelector(
 );
 
 export const buildBriefWalletSectionsSelector = createSelector(
-  [
-    briefBalanceSectionSelector,
-    (state: any, nftSort: string) =>
-      briefUniqueTokenDataSelector(state, nftSort),
-  ],
+  [briefBalanceSectionSelector, (state: any, nftSort: string) => briefUniqueTokenDataSelector(state, nftSort)],
   buildBriefWalletSections
 );

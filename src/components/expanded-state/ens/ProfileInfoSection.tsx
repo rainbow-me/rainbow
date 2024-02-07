@@ -8,11 +8,7 @@ import { deprecatedTextRecordFields, ENS_RECORDS } from '@/helpers/ens';
 import { useENSRecordDisplayProperties } from '@/hooks';
 
 const omitRecordKeys = [ENS_RECORDS.avatar, ENS_RECORDS.displayName];
-const topRecordKeys = [
-  ENS_RECORDS.header,
-  ENS_RECORDS.name,
-  ENS_RECORDS.description,
-];
+const topRecordKeys = [ENS_RECORDS.header, ENS_RECORDS.name, ENS_RECORDS.description];
 
 type ImageSource = { imageUrl?: string | null };
 type ENSImages = {
@@ -39,8 +35,7 @@ export default function ProfileInfoSection({
     () =>
       Object.entries(records || {})
         .map(([key, value]) => {
-          if (deprecatedTextRecordFields[key as ENS_RECORDS])
-            return [deprecatedTextRecordFields[key as ENS_RECORDS], value];
+          if (deprecatedTextRecordFields[key as ENS_RECORDS]) return [deprecatedTextRecordFields[key as ENS_RECORDS], value];
           return [key, value];
         })
         .filter(([key]) => !omitRecordKeys.includes(key as ENS_RECORDS)),
@@ -48,18 +43,11 @@ export default function ProfileInfoSection({
   );
 
   const [topRecords, otherRecords] = useMemo(() => {
-    const [topRecords, otherRecords] = partition(
-      recordsArray,
-      ([key]: [ENS_RECORDS]) => topRecordKeys.includes(key)
-    );
-    const orderedTopRecords = topRecordKeys
-      .map(key => topRecords.find(([k]: any) => k === key))
-      .filter(Boolean) as [ENS_RECORDS, string][];
+    const [topRecords, otherRecords] = partition(recordsArray, ([key]: [ENS_RECORDS]) => topRecordKeys.includes(key));
+    const orderedTopRecords = topRecordKeys.map(key => topRecords.find(([k]: any) => k === key)).filter(Boolean) as [ENS_RECORDS, string][];
     return [orderedTopRecords, otherRecords as [ENS_RECORDS, string][]];
   }, [recordsArray]);
-  const coinAddresses = useMemo(() => Object.entries(coinAddressMap || {}), [
-    coinAddressMap,
-  ]);
+  const coinAddresses = useMemo(() => Object.entries(coinAddressMap || {}), [coinAddressMap]);
 
   return (
     <Stack space={{ custom: 16 }}>
@@ -130,14 +118,7 @@ function ProfileInfoRow({
   recordValue: string;
   type: 'address' | 'record';
 }) {
-  const {
-    ContextMenuButton,
-    icon,
-    isImageValue,
-    label,
-    url,
-    value,
-  } = useENSRecordDisplayProperties({
+  const { ContextMenuButton, icon, isImageValue, label, url, value } = useENSRecordDisplayProperties({
     allowEdit,
     ensName,
     images,
@@ -157,9 +138,7 @@ function ProfileInfoRow({
       wrapValue={children =>
         !isImageValue ? (
           <ContextMenuButton>
-            <ButtonPressAnimation scaleTo={0.9}>
-              {children}
-            </ButtonPressAnimation>
+            <ButtonPressAnimation scaleTo={0.9}>{children}</ButtonPressAnimation>
           </ContextMenuButton>
         ) : (
           children

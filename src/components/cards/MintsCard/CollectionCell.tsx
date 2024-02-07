@@ -2,15 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { globalColors } from '@/design-system/color/palettes';
 import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import { CoinIcon } from '@/components/coin-icon';
-import {
-  AccentColorProvider,
-  Bleed,
-  Box,
-  Cover,
-  Inline,
-  Inset,
-  Text,
-} from '@/design-system';
+import { AccentColorProvider, Bleed, Box, Cover, Inline, Inset, Text } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useTheme } from '@/theme';
 import { Linking, View } from 'react-native';
@@ -30,64 +22,33 @@ export function Placeholder() {
   return (
     <AccentColorProvider color={colors.skeleton}>
       <Inset vertical="10px">
-        <Box
-          background="accent"
-          width={{ custom: NFT_IMAGE_SIZE }}
-          height={{ custom: NFT_IMAGE_SIZE }}
-          borderRadius={12}
-        />
+        <Box background="accent" width={{ custom: NFT_IMAGE_SIZE }} height={{ custom: NFT_IMAGE_SIZE }} borderRadius={12} />
         <Box paddingBottom="10px" paddingTop="12px">
           <Inline space="4px" alignVertical="center">
             <Bleed vertical="4px">
-              <Box
-                background="accent"
-                width={{ custom: 12 }}
-                height={{ custom: 12 }}
-                borderRadius={6}
-              />
+              <Box background="accent" width={{ custom: 12 }} height={{ custom: 12 }} borderRadius={6} />
             </Bleed>
-            <Box
-              background="accent"
-              width={{ custom: 50 }}
-              height={{ custom: 8 }}
-              borderRadius={4}
-            />
+            <Box background="accent" width={{ custom: 50 }} height={{ custom: 8 }} borderRadius={4} />
           </Inline>
         </Box>
-        <Box
-          background="accent"
-          width={{ custom: 50 }}
-          height={{ custom: 8 }}
-          borderRadius={4}
-        />
+        <Box background="accent" width={{ custom: 50 }} height={{ custom: 8 }} borderRadius={4} />
       </Inset>
     </AccentColorProvider>
   );
 }
 
-export function CollectionCell({
-  collection,
-}: {
-  collection: MintableCollection;
-}) {
+export function CollectionCell({ collection }: { collection: MintableCollection }) {
   const { isDarkMode } = useTheme();
 
   const [mediaRendered, setMediaRendered] = useState(false);
 
-  const currency = getNetworkObj(getNetworkFromChainId(collection.chainId))
-    .nativeCurrency;
+  const currency = getNetworkObj(getNetworkFromChainId(collection.chainId)).nativeCurrency;
 
-  const amount = convertRawAmountToRoundedDecimal(
-    collection.mintStatus.price,
-    18,
-    6
-  );
+  const amount = convertRawAmountToRoundedDecimal(collection.mintStatus.price, 18, 6);
 
   const isFree = !amount;
 
-  const imageUrl =
-    collection.imageURL ||
-    collection?.recentMints?.find(m => m.imageURI)?.imageURI;
+  const imageUrl = collection.imageURL || collection?.recentMints?.find(m => m.imageURI)?.imageURI;
 
   useEffect(() => setMediaRendered(false), [imageUrl]);
 
@@ -100,18 +61,10 @@ export function CollectionCell({
 
     const network = ethereumUtils.getNetworkFromChainId(collection.chainId);
     navigateToMintCollection(collection.contract, network);
-  }, [
-    amount,
-    collection.chainId,
-    collection.contract,
-    collection.contractAddress,
-  ]);
+  }, [amount, collection.chainId, collection.contract, collection.contractAddress]);
 
   return (
-    <ButtonPressAnimation
-      onPress={handlePress}
-      style={{ width: NFT_IMAGE_SIZE }}
-    >
+    <ButtonPressAnimation onPress={handlePress} style={{ width: NFT_IMAGE_SIZE }}>
       <View
         style={{
           width: NFT_IMAGE_SIZE,
@@ -119,20 +72,8 @@ export function CollectionCell({
         }}
       >
         {!mediaRendered && (
-          <Box
-            width="full"
-            height="full"
-            alignItems="center"
-            justifyContent="center"
-            borderRadius={12}
-            background="fillSecondary"
-          >
-            <Text
-              align="center"
-              color="labelQuaternary"
-              size="20pt"
-              weight="semibold"
-            >
+          <Box width="full" height="full" alignItems="center" justifyContent="center" borderRadius={12} background="fillSecondary">
+            <Text align="center" color="labelQuaternary" size="20pt" weight="semibold">
               􀣵
             </Text>
           </Box>
@@ -199,18 +140,11 @@ export function CollectionCell({
         )}
         <View style={{ width: NFT_IMAGE_SIZE - 16 }}>
           <Text color="label" size="11pt" weight="bold" numberOfLines={1}>
-            {isFree
-              ? i18n.t(i18n.l.mints.mints_card.collection_cell.free)
-              : amount}
+            {isFree ? i18n.t(i18n.l.mints.mints_card.collection_cell.free) : amount}
           </Text>
         </View>
       </View>
-      <Text
-        color="labelTertiary"
-        size="11pt"
-        weight="semibold"
-        numberOfLines={1}
-      >
+      <Text color="labelTertiary" size="11pt" weight="semibold" numberOfLines={1}>
         {collection.name}
       </Text>
     </ButtonPressAnimation>

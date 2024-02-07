@@ -1,9 +1,6 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  getWalletBalances,
-  WALLET_BALANCES_FROM_STORAGE,
-} from '@/handlers/localstorage/walletBalances';
+import { getWalletBalances, WALLET_BALANCES_FROM_STORAGE } from '@/handlers/localstorage/walletBalances';
 import { queryClient } from '@/react-query';
 import { nonceManagerLoadState } from '@/redux/nonceManager';
 import { AppState } from '@/redux/store';
@@ -15,15 +12,12 @@ import { transactionSignaturesLoadState } from '@/redux/transactionSignatures';
 import { contactsLoadState } from '@/redux/contacts';
 import { favoritesQueryKey, refreshFavorites } from '@/resources/favorites';
 
-const loadWalletBalanceNamesToCache = () =>
-  queryClient.prefetchQuery([WALLET_BALANCES_FROM_STORAGE], getWalletBalances);
+const loadWalletBalanceNamesToCache = () => queryClient.prefetchQuery([WALLET_BALANCES_FROM_STORAGE], getWalletBalances);
 
 export default function useLoadGlobalLateData() {
   const dispatch = useDispatch();
 
-  const walletReady = useSelector(
-    ({ appState: { walletReady } }: AppState) => walletReady
-  );
+  const walletReady = useSelector(({ appState: { walletReady } }: AppState) => walletReady);
 
   const loadGlobalLateData = useCallback(async () => {
     if (!walletReady) {

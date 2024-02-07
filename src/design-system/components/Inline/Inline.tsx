@@ -1,11 +1,6 @@
 import React, { Children, ReactElement, ReactNode, useMemo } from 'react';
 import flattenChildren from 'react-flatten-children';
-import {
-  AlignHorizontal,
-  alignHorizontalToFlexAlign,
-  AlignVertical,
-  alignVerticalToFlexAlign,
-} from '../../layout/alignment';
+import { AlignHorizontal, alignHorizontalToFlexAlign, AlignVertical, alignVerticalToFlexAlign } from '../../layout/alignment';
 import { negateSpace, Space } from '../../layout/space';
 import { Box } from '../Box/Box';
 
@@ -44,25 +39,15 @@ export function Inline({
   const verticalSpace = verticalSpaceProp ?? space;
   const horizontalSpace = horizontalSpaceProp ?? space;
 
-  const flattenedChildren = useMemo(() => flattenChildren(children), [
-    children,
-  ]);
+  const flattenedChildren = useMemo(() => flattenChildren(children), [children]);
 
   return (
     <Box
-      alignItems={
-        alignVertical ? alignVerticalToFlexAlign[alignVertical] : undefined
-      }
+      alignItems={alignVertical ? alignVerticalToFlexAlign[alignVertical] : undefined}
       flexDirection="row"
       flexWrap={wrap ? 'wrap' : undefined}
-      justifyContent={
-        alignHorizontal
-          ? alignHorizontalToFlexAlign[alignHorizontal]
-          : undefined
-      }
-      marginRight={
-        wrap && horizontalSpace ? negateSpace(horizontalSpace) : undefined
-      }
+      justifyContent={alignHorizontal ? alignHorizontalToFlexAlign[alignHorizontal] : undefined}
+      marginRight={wrap && horizontalSpace ? negateSpace(horizontalSpace) : undefined}
       marginTop={wrap && verticalSpace ? negateSpace(verticalSpace) : undefined}
     >
       {Children.map(flattenedChildren, (child, index) => {
@@ -77,14 +62,8 @@ export function Inline({
         const isLastChild = index === flattenedChildren.length - 1;
         return (
           <>
-            {horizontalSpace && !isLastChild ? (
-              <Box paddingRight={horizontalSpace}>{child}</Box>
-            ) : (
-              child
-            )}
-            {separator && !isLastChild ? (
-              <Box paddingRight={horizontalSpace}>{separator}</Box>
-            ) : null}
+            {horizontalSpace && !isLastChild ? <Box paddingRight={horizontalSpace}>{child}</Box> : child}
+            {separator && !isLastChild ? <Box paddingRight={horizontalSpace}>{separator}</Box> : null}
           </>
         );
       })}

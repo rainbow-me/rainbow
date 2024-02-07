@@ -25,33 +25,20 @@ export const checkPushNotificationPermissions = async () => {
     try {
       permissionStatus = await getPermissionStatus();
     } catch (error) {
-      logger.error(
-        new RainbowError(
-          'Error checking if a user has push notifications permission'
-        ),
-        { error }
-      );
+      logger.error(new RainbowError('Error checking if a user has push notifications permission'), { error });
     }
 
-    if (
-      permissionStatus !== messaging.AuthorizationStatus.AUTHORIZED &&
-      permissionStatus !== messaging.AuthorizationStatus.PROVISIONAL
-    ) {
+    if (permissionStatus !== messaging.AuthorizationStatus.AUTHORIZED && permissionStatus !== messaging.AuthorizationStatus.PROVISIONAL) {
       Alert({
         buttons: [
           {
             onPress: async () => {
               try {
                 const status = await requestPermission();
-                trackPushNotificationPermissionStatus(
-                  status ? 'enabled' : 'disabled'
-                );
+                trackPushNotificationPermissionStatus(status ? 'enabled' : 'disabled');
                 await saveFCMToken();
               } catch (error) {
-                logger.error(
-                  new RainbowError('Error while getting permissions'),
-                  { error }
-                );
+                logger.error(new RainbowError('Error while getting permissions'), { error });
               } finally {
                 resolve(true);
               }

@@ -5,11 +5,7 @@ import meta from './BackgroundProvider.meta';
 
 const docs: Docs = {
   meta,
-  examples: [
-    examples.standardBackgrounds,
-    examples.customAccentColorDark,
-    examples.customAccentColorLight,
-  ],
+  examples: [examples.standardBackgrounds, examples.customAccentColorDark, examples.customAccentColorLight],
 };
 
 export default docs;

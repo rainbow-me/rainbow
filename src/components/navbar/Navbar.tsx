@@ -32,18 +32,8 @@ export function Navbar({
 
   return (
     <Box testID={testID} style={{ backgroundColor: 'transparent' }}>
-      {hasStatusBarInset && (
-        <Box
-          style={{ backgroundColor: 'transparent' }}
-          height={{ custom: topInset }}
-        />
-      )}
-      <Box
-        alignItems="center"
-        height={{ custom: navbarHeight }}
-        justifyContent="center"
-        style={{ backgroundColor: 'transparent' }}
-      >
+      {hasStatusBarInset && <Box style={{ backgroundColor: 'transparent' }} height={{ custom: topInset }} />}
+      <Box alignItems="center" height={{ custom: navbarHeight }} justifyContent="center" style={{ backgroundColor: 'transparent' }}>
         <Cover alignVertical="center" alignHorizontal="justify">
           <Box style={{ backgroundColor: 'transparent' }} width="full">
             <Inset horizontal="20px">

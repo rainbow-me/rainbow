@@ -61,17 +61,10 @@ export function d3Interpolate() {
           _defineProperty(target, key, source[key]);
         });
       } else if (Object.getOwnPropertyDescriptors) {
-        Object.defineProperties(
-          target,
-          Object.getOwnPropertyDescriptors(source)
-        );
+        Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
       } else {
         ownKeys(Object(source)).forEach(function (key) {
-          Object.defineProperty(
-            target,
-            key,
-            Object.getOwnPropertyDescriptor(source, key)
-          );
+          Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
         });
       }
     }
@@ -128,10 +121,7 @@ export function d3Interpolate() {
     if (n === 'Map' || n === 'Set') {
       return Array.from(o);
     }
-    if (
-      n === 'Arguments' ||
-      /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)
-    ) {
+    if (n === 'Arguments' || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) {
       return _arrayLikeToArray(o, minLen);
     }
   }
@@ -149,15 +139,10 @@ export function d3Interpolate() {
   }
 
   function _createForOfIteratorHelper(o, allowArrayLike) {
-    var it =
-      (typeof Symbol !== 'undefined' && o[Symbol.iterator]) || o['@@iterator'];
+    var it = (typeof Symbol !== 'undefined' && o[Symbol.iterator]) || o['@@iterator'];
 
     if (!it) {
-      if (
-        Array.isArray(o) ||
-        (it = _unsupportedIterableToArray(o)) ||
-        (allowArrayLike && o && typeof o.length === 'number')
-      ) {
+      if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || (allowArrayLike && o && typeof o.length === 'number')) {
         if (it) {
           o = it;
         }
@@ -250,10 +235,7 @@ export function d3Interpolate() {
             right.push(points[i + 1]);
           }
 
-          newPoints[i] = [
-            (1 - t) * points[i][0] + t * points[i + 1][0],
-            (1 - t) * points[i][1] + t * points[i + 1][1],
-          ];
+          newPoints[i] = [(1 - t) * points[i][0] + t * points[i + 1][0], (1 - t) * points[i][1] + t * points[i + 1][1]];
         }
 
         decasteljauRecurse(newPoints, t);
@@ -444,10 +426,7 @@ export function d3Interpolate() {
     };
     var readFromBKeys = ['xAxisRotation', 'largeArcFlag', 'sweepFlag']; // convert (but ignore M types)
 
-    if (
-      aCommand.type !== bCommand.type &&
-      bCommand.type.toUpperCase() !== 'M'
-    ) {
+    if (aCommand.type !== bCommand.type && bCommand.type.toUpperCase() !== 'M') {
       var aConverted = {};
       Object.keys(bCommand).forEach(function (bKey) {
         var bValue = bCommand[bKey]; // first read from the A command
@@ -494,14 +473,8 @@ export function d3Interpolate() {
   function splitSegment(commandStart, commandEnd, segmentCount) {
     var segments = []; // line, quadratic bezier, or cubic bezier
 
-    if (
-      commandEnd.type === 'L' ||
-      commandEnd.type === 'Q' ||
-      commandEnd.type === 'C'
-    ) {
-      segments = segments.concat(
-        splitCurve(commandStart, commandEnd, segmentCount)
-      ); // general case - just copy the same point
+    if (commandEnd.type === 'L' || commandEnd.type === 'Q' || commandEnd.type === 'C') {
+      segments = segments.concat(splitCurve(commandStart, commandEnd, segmentCount)); // general case - just copy the same point
     } else {
       var copyCommand = _extends({}, commandStart); // convert M to L
 
@@ -543,60 +516,47 @@ export function d3Interpolate() {
     // point itself).
     // 0 = segment 0-1, 1 = segment 1-2, n-1 = last vertex
 
-    var countPointsPerSegment = arrayOfLength(numReferenceSegments).reduce(
-      function (accum, d, i) {
-        var insertIndex = Math.floor(segmentRatio * i); // handle excluding segments
+    var countPointsPerSegment = arrayOfLength(numReferenceSegments).reduce(function (accum, d, i) {
+      var insertIndex = Math.floor(segmentRatio * i); // handle excluding segments
 
-        if (
-          excludeSegment &&
-          insertIndex < commandsToExtend.length - 1 &&
-          excludeSegment(
-            commandsToExtend[insertIndex],
-            commandsToExtend[insertIndex + 1]
-          )
-        ) {
-          // set the insertIndex to the segment that this point should be added to:
-          // round the insertIndex essentially so we split half and half on
-          // neighbouring segments. hence the segmentRatio * i < 0.5
-          var addToPriorSegment = (segmentRatio * i) % 1 < 0.5; // only skip segment if we already have 1 point in it (can't entirely remove a segment)
+      if (
+        excludeSegment &&
+        insertIndex < commandsToExtend.length - 1 &&
+        excludeSegment(commandsToExtend[insertIndex], commandsToExtend[insertIndex + 1])
+      ) {
+        // set the insertIndex to the segment that this point should be added to:
+        // round the insertIndex essentially so we split half and half on
+        // neighbouring segments. hence the segmentRatio * i < 0.5
+        var addToPriorSegment = (segmentRatio * i) % 1 < 0.5; // only skip segment if we already have 1 point in it (can't entirely remove a segment)
 
-          if (accum[insertIndex]) {
-            // TODO - Note this is a naive algorithm that should work for most d3-area use cases
-            // but if two adjacent segments are supposed to be skipped, this will not perform as
-            // expected. Could be updated to search for nearest segment to place the point in, but
-            // will only do that if necessary.
-            // add to the prior segment
-            if (addToPriorSegment) {
-              if (insertIndex > 0) {
-                insertIndex -= 1; // not possible to add to previous so adding to next
-              } else if (insertIndex < commandsToExtend.length - 1) {
-                insertIndex += 1;
-              } // add to next segment
+        if (accum[insertIndex]) {
+          // TODO - Note this is a naive algorithm that should work for most d3-area use cases
+          // but if two adjacent segments are supposed to be skipped, this will not perform as
+          // expected. Could be updated to search for nearest segment to place the point in, but
+          // will only do that if necessary.
+          // add to the prior segment
+          if (addToPriorSegment) {
+            if (insertIndex > 0) {
+              insertIndex -= 1; // not possible to add to previous so adding to next
             } else if (insertIndex < commandsToExtend.length - 1) {
-              insertIndex += 1; // not possible to add to next so adding to previous
-            } else if (insertIndex > 0) {
-              insertIndex -= 1;
-            }
+              insertIndex += 1;
+            } // add to next segment
+          } else if (insertIndex < commandsToExtend.length - 1) {
+            insertIndex += 1; // not possible to add to next so adding to previous
+          } else if (insertIndex > 0) {
+            insertIndex -= 1;
           }
         }
+      }
 
-        accum[insertIndex] = (accum[insertIndex] || 0) + 1;
-        return accum;
-      },
-      []
-    ); // extend each segment to have the correct number of points for a smooth interpolation
+      accum[insertIndex] = (accum[insertIndex] || 0) + 1;
+      return accum;
+    }, []); // extend each segment to have the correct number of points for a smooth interpolation
 
-    var extended = countPointsPerSegment.reduce(function (
-      extended,
-      segmentCount,
-      i
-    ) {
+    var extended = countPointsPerSegment.reduce(function (extended, segmentCount, i) {
       // if last command, just add `segmentCount` number of times
       if (i === commandsToExtend.length - 1) {
-        var lastCommandCopies = arrayOfLength(
-          segmentCount,
-          _extends({}, commandsToExtend[commandsToExtend.length - 1])
-        ); // convert M to L
+        var lastCommandCopies = arrayOfLength(segmentCount, _extends({}, commandsToExtend[commandsToExtend.length - 1])); // convert M to L
 
         if (lastCommandCopies[0].type === 'M') {
           lastCommandCopies.forEach(function (d) {
@@ -607,11 +567,8 @@ export function d3Interpolate() {
         return extended.concat(lastCommandCopies);
       } // otherwise, split the segment segmentCount times.
 
-      return extended.concat(
-        splitSegment(commandsToExtend[i], commandsToExtend[i + 1], segmentCount)
-      );
-    },
-    []); // add in the very first point since splitSegment only adds in the ones after it
+      return extended.concat(splitSegment(commandsToExtend[i], commandsToExtend[i + 1], segmentCount));
+    }, []); // add in the very first point since splitSegment only adds in the ones after it
 
     extended.unshift(commandsToExtend[0]);
     return extended;
@@ -668,11 +625,7 @@ export function d3Interpolate() {
    * @returns {Function} Interpolation function that maps t ([0, 1]) to an array of path commands.
    */
 
-  function interpolatePathCommands(
-    aCommandsInput,
-    bCommandsInput,
-    excludeSegment
-  ) {
+  function interpolatePathCommands(aCommandsInput, bCommandsInput, excludeSegment) {
     // make a copy so we don't mess with the input arrays
     var aCommands = aCommandsInput == null ? [] : aCommandsInput.slice();
     var bCommands = bCommandsInput == null ? [] : bCommandsInput.slice(); // both input sets are empty, so we don't interpolate
@@ -684,8 +637,7 @@ export function d3Interpolate() {
     } // do we add Z during interpolation? yes if both have it. (we'd expect both to have it or not)
 
     var addZ =
-      (aCommands.length === 0 ||
-        aCommands[aCommands.length - 1].type === 'Z') &&
+      (aCommands.length === 0 || aCommands[aCommands.length - 1].type === 'Z') &&
       (bCommands.length === 0 || bCommands[bCommands.length - 1].type === 'Z'); // we temporarily remove Z
 
     if (aCommands.length > 0 && aCommands[aCommands.length - 1].type === 'Z') {
@@ -749,16 +701,13 @@ export function d3Interpolate() {
         var bCommand = bCommands[i];
         var interpolatedCommand = interpolatedCommands[i];
 
-        var _iterator = _createForOfIteratorHelper(
-            typeMap[interpolatedCommand.type]
-          ),
+        var _iterator = _createForOfIteratorHelper(typeMap[interpolatedCommand.type]),
           _step;
 
         try {
           for (_iterator.s(); !(_step = _iterator.n()).done; ) {
             var arg = _step.value;
-            interpolatedCommand[arg] =
-              (1 - t) * aCommand[arg] + t * bCommand[arg]; // do not use floats for flags (#27), round to integer
+            interpolatedCommand[arg] = (1 - t) * aCommand[arg] + t * bCommand[arg]; // do not use floats for flags (#27), round to integer
 
             if (arg === 'largeArcFlag' || arg === 'sweepFlag') {
               interpolatedCommand[arg] = Math.round(interpolatedCommand[arg]);
@@ -798,11 +747,7 @@ export function d3Interpolate() {
       };
     }
 
-    var commandInterpolator = interpolatePathCommands(
-      aCommands,
-      bCommands,
-      excludeSegment
-    );
+    var commandInterpolator = interpolatePathCommands(aCommands, bCommands, excludeSegment);
     return function pathStringInterpolator(t) {
       // at 1 return the final value without the extensions used during interpolation
       if (t === 1) {

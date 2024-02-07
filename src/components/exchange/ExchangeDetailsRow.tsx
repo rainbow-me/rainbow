@@ -1,11 +1,6 @@
 import lang from 'i18n-js';
 import React, { useEffect } from 'react';
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import ExchangeDetailsButton from './ExchangeDetailsButton';
 import PriceImpactWarning from './PriceImpactWarning';
 import { analytics } from '@/analytics';
@@ -65,13 +60,7 @@ export default function ExchangeDetailsRow({
         type,
       });
     }
-  }, [
-    isHighPriceImpact,
-    outputCurrency,
-    prevIsHighPriceImpact,
-    priceImpactPercentDisplay,
-    type,
-  ]);
+  }, [isHighPriceImpact, outputCurrency, prevIsHighPriceImpact, priceImpactPercentDisplay, type]);
 
   useEffect(() => {
     if (isHighPriceImpact) {
@@ -81,25 +70,12 @@ export default function ExchangeDetailsRow({
     } else {
       detailsRowOpacity.value = withTiming(1, timingConfig);
       priceImpactOpacity.value = withTiming(0, timingConfig);
-      priceImpactScale.value = withTiming(
-        defaultPriceImpactScale,
-        timingConfig
-      );
+      priceImpactScale.value = withTiming(defaultPriceImpactScale, timingConfig);
     }
-  }, [
-    detailsRowOpacity,
-    isHighPriceImpact,
-    priceImpactOpacity,
-    priceImpactScale,
-  ]);
+  }, [detailsRowOpacity, isHighPriceImpact, priceImpactOpacity, priceImpactScale]);
 
   return (
-    <Box
-      alignItems="center"
-      height={{ custom: 60 }}
-      justifyContent="center"
-      width="full"
-    >
+    <Box alignItems="center" height={{ custom: 60 }} justifyContent="center" width="full">
       <PriceImpactWarning
         isHighPriceImpact={isHighPriceImpact}
         onPress={onPressImpactWarning}
@@ -120,17 +96,11 @@ export default function ExchangeDetailsRow({
         width="full"
       >
         {/* @ts-expect-error - Javascript Component */}
-        <ExchangeDetailsButton
-          onPress={onFlipCurrencies}
-          testID="exchange-flip-button"
-        >
+        <ExchangeDetailsButton onPress={onFlipCurrencies} testID="exchange-flip-button">
           􀄬 {lang.t('exchange.flip')}
         </ExchangeDetailsButton>
         {/* @ts-expect-error - Javascript Component */}
-        <ExchangeDetailsButton
-          onPress={onPressSettings}
-          testID="exchange-settings-button"
-        >
+        <ExchangeDetailsButton onPress={onPressSettings} testID="exchange-settings-button">
           􀣋 {lang.t('exchange.settings')}
         </ExchangeDetailsButton>
       </Box>

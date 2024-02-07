@@ -3,8 +3,8 @@
 @font-face {
   font-family: 'SFRounded';
   src: url('/fonts/subset-SFRounded-Regular.eot');
-  src: url('/fonts/subset-SFRounded-Regular.eot?#iefix')
-      format('embedded-opentype'),
+  src:
+    url('/fonts/subset-SFRounded-Regular.eot?#iefix') format('embedded-opentype'),
     url('/fonts/subset-SFRounded-Regular.woff2') format('woff2'),
     url('/fonts/subset-SFRounded-Regular.woff') format('woff'),
     url('/fonts/subset-SFRounded-Regular.svg#SFRounded-Regular') format('svg');
@@ -16,8 +16,8 @@
 @font-face {
   font-family: 'SFRounded';
   src: url('/fonts/subset-SFRounded-Medium.eot');
-  src: url('/fonts/subset-SFRounded-Medium.eot?#iefix')
-      format('embedded-opentype'),
+  src:
+    url('/fonts/subset-SFRounded-Medium.eot?#iefix') format('embedded-opentype'),
     url('/fonts/subset-SFRounded-Medium.woff2') format('woff2'),
     url('/fonts/subset-SFRounded-Medium.woff') format('woff'),
     url('/fonts/subset-SFRounded-Medium.svg#SFRounded-Medium') format('svg');
@@ -29,8 +29,8 @@
 @font-face {
   font-family: 'SFRounded';
   src: url('/fonts/subset-SFRounded-Semibold.eot');
-  src: url('/fonts/subset-SFRounded-Semibold.eot?#iefix')
-      format('embedded-opentype'),
+  src:
+    url('/fonts/subset-SFRounded-Semibold.eot?#iefix') format('embedded-opentype'),
     url('/fonts/subset-SFRounded-Semibold.woff2') format('woff2'),
     url('/fonts/subset-SFRounded-Semibold.woff') format('woff'),
     url('/fonts/subset-SFRounded-Semibold.svg#SFRounded-Semibold') format('svg');
@@ -42,8 +42,8 @@
 @font-face {
   font-family: 'SFRounded';
   src: url('/fonts/subset-SFRounded-Bold.eot');
-  src: url('/fonts/subset-SFRounded-Bold.eot?#iefix')
-      format('embedded-opentype'),
+  src:
+    url('/fonts/subset-SFRounded-Bold.eot?#iefix') format('embedded-opentype'),
     url('/fonts/subset-SFRounded-Bold.woff2') format('woff2'),
     url('/fonts/subset-SFRounded-Bold.woff') format('woff'),
     url('/fonts/subset-SFRounded-Bold.svg#SFRounded-Bold') format('svg');
@@ -55,8 +55,8 @@
 @font-face {
   font-family: 'SFRounded';
   src: url('/fonts/subset-SFRounded-Heavy.eot');
-  src: url('/fonts/subset-SFRounded-Heavy.eot?#iefix')
-      format('embedded-opentype'),
+  src:
+    url('/fonts/subset-SFRounded-Heavy.eot?#iefix') format('embedded-opentype'),
     url('/fonts/subset-SFRounded-Heavy.woff2') format('woff2'),
     url('/fonts/subset-SFRounded-Heavy.woff') format('woff'),
     url('/fonts/subset-SFRounded-Heavy.svg#SFRounded-Heavy') format('svg');
@@ -68,8 +68,8 @@
 @font-face {
   font-family: 'SF-Pro-Rounded-Regular';
   src: url('/fonts/subset-SFRounded-Regular.eot');
-  src: url('/fonts/subset-SFRounded-Regular.eot?#iefix')
-      format('embedded-opentype'),
+  src:
+    url('/fonts/subset-SFRounded-Regular.eot?#iefix') format('embedded-opentype'),
     url('/fonts/subset-SFRounded-Regular.woff2') format('woff2'),
     url('/fonts/subset-SFRounded-Regular.woff') format('woff'),
     url('/fonts/subset-SFRounded-Regular.svg#SFRounded-Regular') format('svg');
@@ -81,8 +81,8 @@
 @font-face {
   font-family: 'SF-Pro-Rounded-Bold';
   src: url('/fonts/subset-SFRounded-Bold.eot');
-  src: url('/fonts/subset-SFRounded-Bold.eot?#iefix')
-      format('embedded-opentype'),
+  src:
+    url('/fonts/subset-SFRounded-Bold.eot?#iefix') format('embedded-opentype'),
     url('/fonts/subset-SFRounded-Bold.woff2') format('woff2'),
     url('/fonts/subset-SFRounded-Bold.woff') format('woff'),
     url('/fonts/subset-SFRounded-Bold.svg#SFRounded-Bold') format('svg');
@@ -94,8 +94,8 @@
 @font-face {
   font-family: 'SF-Pro-Rounded-Medium';
   src: url('/fonts/subset-SFRounded-Medium.eot');
-  src: url('/fonts/subset-SFRounded-Medium.eot?#iefix')
-      format('embedded-opentype'),
+  src:
+    url('/fonts/subset-SFRounded-Medium.eot?#iefix') format('embedded-opentype'),
     url('/fonts/subset-SFRounded-Medium.woff2') format('woff2'),
     url('/fonts/subset-SFRounded-Medium.woff') format('woff'),
     url('/fonts/subset-SFRounded-Medium.svg#SFRounded-Medium') format('svg');
@@ -107,8 +107,8 @@
 @font-face {
   font-family: 'SF-Pro-Rounded-Semibold';
   src: url('/fonts/subset-SFRounded-Semibold.eot');
-  src: url('/fonts/subset-SFRounded-Semibold.eot?#iefix')
-      format('embedded-opentype'),
+  src:
+    url('/fonts/subset-SFRounded-Semibold.eot?#iefix') format('embedded-opentype'),
     url('/fonts/subset-SFRounded-Semibold.woff2') format('woff2'),
     url('/fonts/subset-SFRounded-Semibold.woff') format('woff'),
     url('/fonts/subset-SFRounded-Semibold.svg#SFRounded-Semibold') format('svg');
@@ -120,8 +120,8 @@
 @font-face {
   font-family: 'SF-Pro-Rounded-Heavy';
   src: url('/fonts/subset-SFRounded-Heavy.eot');
-  src: url('/fonts/subset-SFRounded-Heavy.eot?#iefix')
-      format('embedded-opentype'),
+  src:
+    url('/fonts/subset-SFRounded-Heavy.eot?#iefix') format('embedded-opentype'),
     url('/fonts/subset-SFRounded-Heavy.woff2') format('woff2'),
     url('/fonts/subset-SFRounded-Heavy.woff') format('woff'),
     url('/fonts/subset-SFRounded-Heavy.svg#SFRounded-Heavy') format('svg');

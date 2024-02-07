@@ -42,15 +42,11 @@ export default function RequestVendorLogoIcon({
   // When dapps have no icon the bgColor provided to us is transparent.
   // Having a transparent background breaks our UI, so we instead show a background
   // color of white.
-  const bgColor =
-    backgroundColor === 'transparent'
-      ? colors.white
-      : backgroundColor || colors.dark;
+  const bgColor = backgroundColor === 'transparent' ? colors.white : backgroundColor || colors.dark;
 
   const imageSource = useMemo(
     () => ({
-      priority:
-        ImgixImage.priority[shouldPrioritizeImageLoading ? 'high' : 'low'],
+      priority: ImgixImage.priority[shouldPrioritizeImageLoading ? 'high' : 'low'],
       uri: imageUrl,
     }),
     [imageUrl, shouldPrioritizeImageLoading]
@@ -63,27 +59,13 @@ export default function RequestVendorLogoIcon({
         {...position.sizeAsObject(size)}
         backgroundColor={colors.white}
         borderRadius={borderRadius}
-        shadows={
-          RVLIShadows(colors)[
-            noShadow ? 'none' : showLargeShadow ? 'large' : 'default'
-          ]
-        }
+        shadows={RVLIShadows(colors)[noShadow ? 'none' : showLargeShadow ? 'large' : 'default']}
       >
         <Content color={bgColor} size={size}>
           {imageUrl && !error ? (
-            <ImgixImage
-              onError={setError}
-              source={imageSource}
-              style={position.sizeAsObject('100%')}
-              size={200}
-            />
+            <ImgixImage onError={setError} source={imageSource} style={position.sizeAsObject('100%')} size={200} />
           ) : (
-            <Text
-              align="center"
-              color={colors.getFallbackTextColor(bgColor)}
-              size="smedium"
-              weight="semibold"
-            >
+            <Text align="center" color={colors.getFallbackTextColor(bgColor)} size="smedium" weight="semibold">
               {initials(dappName)}
             </Text>
           )}

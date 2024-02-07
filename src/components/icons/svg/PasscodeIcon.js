@@ -6,12 +6,7 @@ import Svg from '../Svg';
 const PasscodeIcon = ({ color: givenColor, colors, size, ...props }) => {
   const color = givenColor || colors.white;
   return (
-    <Svg
-      height={size || 24}
-      viewBox="0 0 18 24"
-      width={size ? (size * 18) / 24 : '18'}
-      {...props}
-    >
+    <Svg height={size || 24} viewBox="0 0 18 24" width={size ? (size * 18) / 24 : '18'} {...props}>
       <Defs>
         <LinearGradient id="gradient" x1="50%" x2="50%" y1="0%" y2="100%">
           <Stop offset="0%" stopColor={color} />

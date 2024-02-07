@@ -1,26 +1,11 @@
 import lang from 'i18n-js';
-import React, {
-  forwardRef,
-  useCallback,
-  useImperativeHandle,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { getDefaultSlippageFromConfig } from '../../../screens/ExchangeModal';
 import { ButtonPressAnimation } from '../../animations';
 import { Icon } from '../../icons';
 import StepButtonInput from './StepButtonInput';
-import {
-  AccentColorProvider,
-  Box,
-  Column,
-  Columns,
-  Inline,
-  Stack,
-  Text,
-} from '@/design-system';
+import { AccentColorProvider, Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
 import { Network } from '@/helpers';
 import { add, convertNumberToString, greaterThan } from '@/helpers/utilities';
 import { useMagicAutofocus, useSwapSettings } from '@/hooks';
@@ -35,19 +20,11 @@ const SLIPPAGE_INCREMENT = 0.1;
 
 // eslint-disable-next-line react/display-name
 export const MaxToleranceInput = forwardRef(
-  (
-    {
-      colorForAsset,
-      currentNetwork,
-    }: { colorForAsset: string; currentNetwork: Network },
-    ref
-  ) => {
+  ({ colorForAsset, currentNetwork }: { colorForAsset: string; currentNetwork: Network }, ref) => {
     const { slippageInBips, updateSwapSlippage } = useSwapSettings();
     const { navigate } = useNavigation();
 
-    const [slippageValue, setSlippageValue] = useState(
-      convertBipsToPercent(slippageInBips)
-    );
+    const [slippageValue, setSlippageValue] = useState(convertBipsToPercent(slippageInBips));
 
     const slippageRef = useRef<{ blur: () => void; focus: () => void }>(null);
 
@@ -64,9 +41,7 @@ export const MaxToleranceInput = forwardRef(
         slippageRef?.current?.blur();
       },
       reset: () => {
-        const slippage = (getDefaultSlippageFromConfig(
-          currentNetwork
-        ) as unknown) as number;
+        const slippage = getDefaultSlippageFromConfig(currentNetwork) as unknown as number;
         onSlippageChange(convertBipsToPercent(slippage));
       },
     }));
@@ -123,19 +98,10 @@ export const MaxToleranceInput = forwardRef(
               style={{ maxWidth: 200 }}
             >
               <Inline alignVertical="center">
-                <Text
-                  color="primary (Deprecated)"
-                  size="16px / 22px (Deprecated)"
-                  weight="bold"
-                  numberOfLines={2}
-                >
+                <Text color="primary (Deprecated)" size="16px / 22px (Deprecated)" weight="bold" numberOfLines={2}>
                   {`${lang.t('exchange.slippage_tolerance')} `}
                   {!hasPriceImpact && (
-                    <Text
-                      color="secondary30 (Deprecated)"
-                      size="16px / 22px (Deprecated)"
-                      weight="bold"
-                    >
+                    <Text color="secondary30 (Deprecated)" size="16px / 22px (Deprecated)" weight="bold">
                       {' 􀅵'}
                     </Text>
                   )}
@@ -149,34 +115,15 @@ export const MaxToleranceInput = forwardRef(
             </Box>
             {hasPriceImpact && (
               <Box>
-                <Text
-                  color="primary (Deprecated)"
-                  size={
-                    android
-                      ? '12px / 14px (Deprecated)'
-                      : '14px / 19px (Deprecated)'
-                  }
-                >
+                <Text color="primary (Deprecated)" size={android ? '12px / 14px (Deprecated)' : '14px / 19px (Deprecated)'}>
                   <AccentColorProvider color={priceImpactColor!}>
-                    <Text
-                      color="accent"
-                      size={
-                        android
-                          ? '12px / 14px (Deprecated)'
-                          : '14px / 19px (Deprecated)'
-                      }
-                      weight="bold"
-                    >
+                    <Text color="accent" size={android ? '12px / 14px (Deprecated)' : '14px / 19px (Deprecated)'} weight="bold">
                       {lang.t('exchange.high')}
                     </Text>
                   </AccentColorProvider>
                   <Text
                     color="secondary50 (Deprecated)"
-                    size={
-                      android
-                        ? '12px / 14px (Deprecated)'
-                        : '14px / 19px (Deprecated)'
-                    }
+                    size={android ? '12px / 14px (Deprecated)' : '14px / 19px (Deprecated)'}
                     weight="bold"
                   >{` · ${lang.t('exchange.price_impact.label')}`}</Text>
                 </Text>

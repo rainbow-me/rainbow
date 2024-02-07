@@ -225,189 +225,69 @@ export const shadows: Example = {
             <Inset space="32px">
               <Stack space="32px">
                 <Columns space="20px">
-                  <Box
-                    borderRadius={18}
-                    background="surfacePrimaryElevated"
-                    padding="12px"
-                    shadow="12px"
-                  >
-                    <Text
-                      size="15pt"
-                      color="label"
-                      weight="bold"
-                      align="center"
-                    >
+                  <Box borderRadius={18} background="surfacePrimaryElevated" padding="12px" shadow="12px">
+                    <Text size="15pt" color="label" weight="bold" align="center">
                       12px
                     </Text>
                   </Box>
-                  <Box
-                    borderRadius={18}
-                    background="accent"
-                    padding="12px"
-                    shadow="12px accent"
-                  >
-                    <Text
-                      size="15pt"
-                      color="label"
-                      weight="bold"
-                      align="center"
-                    >
+                  <Box borderRadius={18} background="accent" padding="12px" shadow="12px accent">
+                    <Text size="15pt" color="label" weight="bold" align="center">
                       Accent
                     </Text>
                   </Box>
-                  <Box
-                    borderRadius={18}
-                    background="purple"
-                    padding="12px"
-                    shadow="12px purple"
-                  >
-                    <Text
-                      size="15pt"
-                      color="label"
-                      weight="bold"
-                      align="center"
-                    >
+                  <Box borderRadius={18} background="purple" padding="12px" shadow="12px purple">
+                    <Text size="15pt" color="label" weight="bold" align="center">
                       Purple
                     </Text>
                   </Box>
                 </Columns>
                 <Columns space="20px">
-                  <Box
-                    borderRadius={18}
-                    background="surfacePrimaryElevated"
-                    padding="12px"
-                    shadow="18px"
-                  >
-                    <Text
-                      size="15pt"
-                      color="label"
-                      weight="bold"
-                      align="center"
-                    >
+                  <Box borderRadius={18} background="surfacePrimaryElevated" padding="12px" shadow="18px">
+                    <Text size="15pt" color="label" weight="bold" align="center">
                       18px
                     </Text>
                   </Box>
-                  <Box
-                    borderRadius={18}
-                    background="accent"
-                    padding="12px"
-                    shadow="18px accent"
-                  >
-                    <Text
-                      size="15pt"
-                      color="label"
-                      weight="bold"
-                      align="center"
-                    >
+                  <Box borderRadius={18} background="accent" padding="12px" shadow="18px accent">
+                    <Text size="15pt" color="label" weight="bold" align="center">
                       Accent
                     </Text>
                   </Box>
-                  <Box
-                    borderRadius={18}
-                    background="purple"
-                    padding="12px"
-                    shadow="18px purple"
-                  >
-                    <Text
-                      size="15pt"
-                      color="label"
-                      weight="bold"
-                      align="center"
-                    >
+                  <Box borderRadius={18} background="purple" padding="12px" shadow="18px purple">
+                    <Text size="15pt" color="label" weight="bold" align="center">
                       Purple
                     </Text>
                   </Box>
                 </Columns>
                 <Columns space="20px">
-                  <Box
-                    borderRadius={18}
-                    background="surfacePrimaryElevated"
-                    padding="12px"
-                    shadow="24px"
-                  >
-                    <Text
-                      size="15pt"
-                      color="label"
-                      weight="bold"
-                      align="center"
-                    >
+                  <Box borderRadius={18} background="surfacePrimaryElevated" padding="12px" shadow="24px">
+                    <Text size="15pt" color="label" weight="bold" align="center">
                       24px
                     </Text>
                   </Box>
-                  <Box
-                    borderRadius={18}
-                    background="accent"
-                    padding="12px"
-                    shadow="24px accent"
-                  >
-                    <Text
-                      size="15pt"
-                      color="label"
-                      weight="bold"
-                      align="center"
-                    >
+                  <Box borderRadius={18} background="accent" padding="12px" shadow="24px accent">
+                    <Text size="15pt" color="label" weight="bold" align="center">
                       Accent
                     </Text>
                   </Box>
-                  <Box
-                    borderRadius={18}
-                    background="purple"
-                    padding="12px"
-                    shadow="24px purple"
-                  >
-                    <Text
-                      size="15pt"
-                      color="label"
-                      weight="bold"
-                      align="center"
-                    >
+                  <Box borderRadius={18} background="purple" padding="12px" shadow="24px purple">
+                    <Text size="15pt" color="label" weight="bold" align="center">
                       Purple
                     </Text>
                   </Box>
                 </Columns>
                 <Columns space="20px">
-                  <Box
-                    borderRadius={18}
-                    background="surfacePrimaryElevated"
-                    padding="12px"
-                    shadow="30px"
-                  >
-                    <Text
-                      size="15pt"
-                      color="label"
-                      weight="bold"
-                      align="center"
-                    >
+                  <Box borderRadius={18} background="surfacePrimaryElevated" padding="12px" shadow="30px">
+                    <Text size="15pt" color="label" weight="bold" align="center">
                       30px
                     </Text>
                   </Box>
-                  <Box
-                    borderRadius={18}
-                    background="accent"
-                    padding="12px"
-                    shadow="30px accent"
-                  >
-                    <Text
-                      size="15pt"
-                      color="label"
-                      weight="bold"
-                      align="center"
-                    >
+                  <Box borderRadius={18} background="accent" padding="12px" shadow="30px accent">
+                    <Text size="15pt" color="label" weight="bold" align="center">
                       Accent
                     </Text>
                   </Box>
-                  <Box
-                    borderRadius={18}
-                    background="purple"
-                    padding="12px"
-                    shadow="30px purple"
-                  >
-                    <Text
-                      size="15pt"
-                      color="label"
-                      weight="bold"
-                      align="center"
-                    >
+                  <Box borderRadius={18} background="purple" padding="12px" shadow="30px purple">
+                    <Text size="15pt" color="label" weight="bold" align="center">
                       Purple
                     </Text>
                   </Box>
@@ -421,189 +301,69 @@ export const shadows: Example = {
             <Inset space="32px">
               <Stack space="32px">
                 <Columns space="20px">
-                  <Box
-                    borderRadius={18}
-                    background="surfacePrimaryElevated"
-                    padding="12px"
-                    shadow="12px"
-                  >
-                    <Text
-                      size="15pt"
-                      color="label"
-                      weight="bold"
-                      align="center"
-                    >
+                  <Box borderRadius={18} background="surfacePrimaryElevated" padding="12px" shadow="12px">
+                    <Text size="15pt" color="label" weight="bold" align="center">
                       12px
                     </Text>
                   </Box>
-                  <Box
-                    borderRadius={18}
-                    background="accent"
-                    padding="12px"
-                    shadow="12px accent"
-                  >
-                    <Text
-                      size="15pt"
-                      color="label"
-                      weight="bold"
-                      align="center"
-                    >
+                  <Box borderRadius={18} background="accent" padding="12px" shadow="12px accent">
+                    <Text size="15pt" color="label" weight="bold" align="center">
                       Accent
                     </Text>
                   </Box>
-                  <Box
-                    borderRadius={18}
-                    background="purple"
-                    padding="12px"
-                    shadow="12px purple"
-                  >
-                    <Text
-                      size="15pt"
-                      color="label"
-                      weight="bold"
-                      align="center"
-                    >
+                  <Box borderRadius={18} background="purple" padding="12px" shadow="12px purple">
+                    <Text size="15pt" color="label" weight="bold" align="center">
                       Purple
                     </Text>
                   </Box>
                 </Columns>
                 <Columns space="20px">
-                  <Box
-                    borderRadius={18}
-                    background="surfacePrimaryElevated"
-                    padding="12px"
-                    shadow="18px"
-                  >
-                    <Text
-                      size="15pt"
-                      color="label"
-                      weight="bold"
-                      align="center"
-                    >
+                  <Box borderRadius={18} background="surfacePrimaryElevated" padding="12px" shadow="18px">
+                    <Text size="15pt" color="label" weight="bold" align="center">
                       18px
                     </Text>
                   </Box>
-                  <Box
-                    borderRadius={18}
-                    background="accent"
-                    padding="12px"
-                    shadow="18px accent"
-                  >
-                    <Text
-                      size="15pt"
-                      color="label"
-                      weight="bold"
-                      align="center"
-                    >
+                  <Box borderRadius={18} background="accent" padding="12px" shadow="18px accent">
+                    <Text size="15pt" color="label" weight="bold" align="center">
                       Accent
                     </Text>
                   </Box>
-                  <Box
-                    borderRadius={18}
-                    background="purple"
-                    padding="12px"
-                    shadow="18px purple"
-                  >
-                    <Text
-                      size="15pt"
-                      color="label"
-                      weight="bold"
-                      align="center"
-                    >
+                  <Box borderRadius={18} background="purple" padding="12px" shadow="18px purple">
+                    <Text size="15pt" color="label" weight="bold" align="center">
                       Purple
                     </Text>
                   </Box>
                 </Columns>
                 <Columns space="20px">
-                  <Box
-                    borderRadius={18}
-                    background="surfacePrimaryElevated"
-                    padding="12px"
-                    shadow="24px"
-                  >
-                    <Text
-                      size="15pt"
-                      color="label"
-                      weight="bold"
-                      align="center"
-                    >
+                  <Box borderRadius={18} background="surfacePrimaryElevated" padding="12px" shadow="24px">
+                    <Text size="15pt" color="label" weight="bold" align="center">
                       24px
                     </Text>
                   </Box>
-                  <Box
-                    borderRadius={18}
-                    background="accent"
-                    padding="12px"
-                    shadow="24px accent"
-                  >
-                    <Text
-                      size="15pt"
-                      color="label"
-                      weight="bold"
-                      align="center"
-                    >
+                  <Box borderRadius={18} background="accent" padding="12px" shadow="24px accent">
+                    <Text size="15pt" color="label" weight="bold" align="center">
                       Accent
                     </Text>
                   </Box>
-                  <Box
-                    borderRadius={18}
-                    background="purple"
-                    padding="12px"
-                    shadow="24px purple"
-                  >
-                    <Text
-                      size="15pt"
-                      color="label"
-                      weight="bold"
-                      align="center"
-                    >
+                  <Box borderRadius={18} background="purple" padding="12px" shadow="24px purple">
+                    <Text size="15pt" color="label" weight="bold" align="center">
                       Purple
                     </Text>
                   </Box>
                 </Columns>
                 <Columns space="20px">
-                  <Box
-                    borderRadius={18}
-                    background="surfacePrimaryElevated"
-                    padding="12px"
-                    shadow="30px"
-                  >
-                    <Text
-                      size="15pt"
-                      color="label"
-                      weight="bold"
-                      align="center"
-                    >
+                  <Box borderRadius={18} background="surfacePrimaryElevated" padding="12px" shadow="30px">
+                    <Text size="15pt" color="label" weight="bold" align="center">
                       30px
                     </Text>
                   </Box>
-                  <Box
-                    borderRadius={18}
-                    background="accent"
-                    padding="12px"
-                    shadow="30px accent"
-                  >
-                    <Text
-                      size="15pt"
-                      color="label"
-                      weight="bold"
-                      align="center"
-                    >
+                  <Box borderRadius={18} background="accent" padding="12px" shadow="30px accent">
+                    <Text size="15pt" color="label" weight="bold" align="center">
                       Accent
                     </Text>
                   </Box>
-                  <Box
-                    borderRadius={18}
-                    background="purple"
-                    padding="12px"
-                    shadow="30px purple"
-                  >
-                    <Text
-                      size="15pt"
-                      color="label"
-                      weight="bold"
-                      align="center"
-                    >
+                  <Box borderRadius={18} background="purple" padding="12px" shadow="30px purple">
+                    <Text size="15pt" color="label" weight="bold" align="center">
                       Purple
                     </Text>
                   </Box>

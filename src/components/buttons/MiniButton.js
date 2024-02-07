@@ -10,24 +10,8 @@ import { padding, position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
 
 const shadowsFactory = darkMode => ({
-  default: [
-    [
-      0,
-      4,
-      12,
-      darkMode ? darkModeThemeColors.shadow : lightModeThemeColors.appleBlue,
-      0.4,
-    ],
-  ],
-  disabled: [
-    [
-      0,
-      4,
-      12,
-      darkMode ? darkModeThemeColors.lightGrey : lightModeThemeColors.lightGrey,
-      darkMode ? 0 : 0.4,
-    ],
-  ],
+  default: [[0, 4, 12, darkMode ? darkModeThemeColors.shadow : lightModeThemeColors.appleBlue, 0.4]],
+  disabled: [[0, 4, 12, darkMode ? darkModeThemeColors.lightGrey : lightModeThemeColors.lightGrey, darkMode ? 0 : 0.4]],
   none: [[0, 0, 0, lightModeThemeColors.transparent, 0]],
 });
 
@@ -38,12 +22,7 @@ const Content = styled(RowWithMargins).attrs({
   align: 'center',
   margin: 5,
 })(({ hasLeadingIcon, height, small, disablePadding }) => ({
-  ...padding.object(
-    0,
-    disablePadding ? 0 : small ? 8 : 10,
-    0,
-    disablePadding ? 0 : hasLeadingIcon ? 6 : small ? 8 : 10
-  ),
+  ...padding.object(0, disablePadding ? 0 : small ? 8 : 10, 0, disablePadding ? 0 : hasLeadingIcon ? 6 : small ? 8 : 10),
   alignItems: 'center',
   borderRadius: 15,
   height,
@@ -75,13 +54,7 @@ export default function MiniButton({
 
   const content = (
     <Content
-      backgroundColor={
-        android
-          ? disabled
-            ? colors.lightGrey
-            : backgroundColor || colors.appleBlue
-          : 'none'
-      }
+      backgroundColor={android ? (disabled ? colors.lightGrey : backgroundColor || colors.appleBlue) : 'none'}
       disablePadding={disablePadding}
       hasLeadingIcon={hasLeadingIcon}
       height={height ? height : small ? 27 : 30}
@@ -114,22 +87,10 @@ export default function MiniButton({
       <View style={{ borderRadius }}>
         <ShadowStack
           {...position.coverAsObject}
-          backgroundColor={
-            android
-              ? 'none'
-              : disabled
-              ? colors.lightGrey
-              : backgroundColor || colors.appleBlue
-          }
+          backgroundColor={android ? 'none' : disabled ? colors.lightGrey : backgroundColor || colors.appleBlue}
           borderRadius={borderRadius}
           height={height}
-          shadows={
-            hideShadow
-              ? shadows.none
-              : disabled
-              ? shadows.disabled
-              : shadows.default
-          }
+          shadows={hideShadow ? shadows.none : disabled ? shadows.disabled : shadows.default}
           width={width}
         />
         {content}

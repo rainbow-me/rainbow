@@ -1,34 +1,21 @@
 import { useQuery } from '@tanstack/react-query';
 import { Records } from '@/entities';
-import {
-  fetchCoinAddresses,
-  fetchContenthash,
-  fetchRecords,
-} from '@/handlers/ens';
+import { fetchCoinAddresses, fetchContenthash, fetchRecords } from '@/handlers/ens';
 import { getENSData, saveENSData } from '@/handlers/localstorage/ens';
 import { ENS_RECORDS } from '@/helpers/ens';
-import {
-  queryClient,
-  QueryConfigDeprecated,
-  UseQueryData,
-} from '@/react-query';
+import { queryClient, QueryConfigDeprecated, UseQueryData } from '@/react-query';
 
-export const ensRecordsQueryKey = ({
+export const ensRecordsQueryKey = ({ name, supportedOnly }: { name: string; supportedOnly?: boolean }) => [
+  'ens-records',
   name,
   supportedOnly,
-}: {
-  name: string;
-  supportedOnly?: boolean;
-}) => ['ens-records', name, supportedOnly];
+];
 
 const STALE_TIME = 10000;
 
 export async function fetchENSRecords(
   name: string,
-  {
-    cacheFirst,
-    supportedOnly = true,
-  }: { cacheFirst?: boolean; supportedOnly?: boolean } = {}
+  { cacheFirst, supportedOnly = true }: { cacheFirst?: boolean; supportedOnly?: boolean } = {}
 ) {
   const cachedRecords: {
     coinAddresses: { [key in ENS_RECORDS]: string };
@@ -37,10 +24,7 @@ export async function fetchENSRecords(
   } | null = await getENSData('records', name);
 
   if (cachedRecords) {
-    queryClient.setQueryData(
-      ensRecordsQueryKey({ name, supportedOnly }),
-      cachedRecords
-    );
+    queryClient.setQueryData(ensRecordsQueryKey({ name, supportedOnly }), cachedRecords);
     if (cacheFirst) return cachedRecords;
   }
   const [records, coinAddresses, contenthash] = await Promise.all([
@@ -55,16 +39,11 @@ export async function fetchENSRecords(
 
 export async function prefetchENSRecords(
   name: string,
-  {
-    cacheFirst,
-    supportedOnly = true,
-  }: { cacheFirst?: boolean; supportedOnly?: boolean } = {}
+  { cacheFirst, supportedOnly = true }: { cacheFirst?: boolean; supportedOnly?: boolean } = {}
 ) {
-  queryClient.prefetchQuery(
-    ensRecordsQueryKey({ name, supportedOnly }),
-    async () => fetchENSRecords(name, { cacheFirst, supportedOnly }),
-    { staleTime: STALE_TIME }
-  );
+  queryClient.prefetchQuery(ensRecordsQueryKey({ name, supportedOnly }), async () => fetchENSRecords(name, { cacheFirst, supportedOnly }), {
+    staleTime: STALE_TIME,
+  });
 }
 
 export default function useENSRecords(

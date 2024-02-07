@@ -17,9 +17,7 @@ const sx = StyleSheet.create({
 });
 
 function formatSymbol(symbol) {
-  return symbol
-    ? symbol.charAt(0).toUpperCase() + symbol.slice(1).toLowerCase()
-    : '';
+  return symbol ? symbol.charAt(0).toUpperCase() + symbol.slice(1).toLowerCase() : '';
 }
 
 const CoinIcon = ({
@@ -61,33 +59,19 @@ const CoinIcon = ({
   if (!forceFallback && CoinIconsImages[formattedSymbol]) {
     return (
       <View {...circleProps} {...shadowProps} style={[sx.container, style]}>
-        <Image
-          resizeMode="contain"
-          source={CoinIconsImages[formattedSymbol]}
-          style={sx.image}
-        />
+        <Image resizeMode="contain" source={CoinIconsImages[formattedSymbol]} style={sx.image} />
       </View>
     );
   }
 
   return (
     <View {...circleProps} style={[sx.container, style]}>
-      <Fallback
-        {...circleProps}
-        {...shadowProps}
-        color={color}
-        symbol={formattedSymbol}
-        size={size}
-        {...props}
-      />
+      <Fallback {...circleProps} {...shadowProps} color={color} symbol={formattedSymbol} size={size} {...props} />
     </View>
   );
 };
 
 const arePropsEqual = (prev, next) =>
-  prev.color === next.color &&
-  prev.shadowColor === next.shadowColor &&
-  prev.size === next.size &&
-  prev.symbol === next.symbol;
+  prev.color === next.color && prev.shadowColor === next.shadowColor && prev.size === next.size && prev.symbol === next.symbol;
 
 export default React.memo(CoinIcon, arePropsEqual);

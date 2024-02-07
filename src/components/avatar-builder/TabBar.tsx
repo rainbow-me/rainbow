@@ -41,14 +41,7 @@ const TabBar = ({ categoryKeys, activeCategory, onPress }: Props) => {
                   style={[sx.gradient]}
                 />
               )}
-              <Icon
-                color={
-                  category === activeCategory
-                    ? null
-                    : colors.alpha(colors.blueGreyDark, 0.4)
-                }
-                name={category.icon}
-              />
+              <Icon color={category === activeCategory ? null : colors.alpha(colors.blueGreyDark, 0.4)} name={category.icon} />
             </ButtonPressAnimation>
           );
         })}

@@ -16,17 +16,8 @@ const mmkv = new MMKV();
  * @param appIconFeature the custom app icon to try and unlock
  * @returns true if appIconFeature unlocked state changes to true, otherwise false
  */
-export const unlockableAppIconCheck = async (
-  appIconFeature: UnlockableAppIcon,
-  walletsToCheck: EthereumAddress[]
-) => {
-  const {
-    key,
-    explainSheetType,
-    network,
-    unlockKey,
-    unlockingNfts,
-  } = appIconFeature;
+export const unlockableAppIconCheck = async (appIconFeature: UnlockableAppIcon, walletsToCheck: EthereumAddress[]) => {
+  const { key, explainSheetType, network, unlockKey, unlockingNfts } = appIconFeature;
 
   const handled = mmkv.getBoolean(unlockKey);
 
@@ -36,11 +27,7 @@ export const unlockableAppIconCheck = async (
 
   logger.log(`Checking ${unlockKey} on network ${network}`);
   try {
-    const found = await checkIfWalletsOwnNft(
-      unlockingNfts,
-      network,
-      walletsToCheck
-    );
+    const found = await checkIfWalletsOwnNft(unlockingNfts, network, walletsToCheck);
 
     logger.log(`${unlockKey} check result: ${found}`);
 
@@ -50,11 +37,7 @@ export const unlockableAppIconCheck = async (
     setTimeout(() => {
       if (found) {
         mmkv.set(unlockKey, true);
-        logger.log(
-          'Feature check',
-          unlockKey,
-          'set to true. Wont show up anymore!'
-        );
+        logger.log('Feature check', unlockKey, 'set to true. Wont show up anymore!');
         analytics.track('Viewed App Icon Unlock', { campaign: key });
         Navigation.handleAction(Routes.EXPLAIN_SHEET, {
           type: explainSheetType,

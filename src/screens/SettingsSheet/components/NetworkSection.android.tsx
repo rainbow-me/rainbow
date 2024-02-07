@@ -7,21 +7,8 @@ import Menu from './Menu';
 import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
 import { analytics } from '@/analytics';
-import {
-  BackgroundProvider,
-  Box,
-  Inline,
-  Inset,
-  Separator,
-  Stack,
-  Text,
-} from '@/design-system';
-import {
-  useAccountSettings,
-  useInitializeAccountData,
-  useLoadAccountData,
-  useResetAccountState,
-} from '@/hooks';
+import { BackgroundProvider, Box, Inline, Inset, Separator, Stack, Text } from '@/design-system';
+import { useAccountSettings, useInitializeAccountData, useLoadAccountData, useResetAccountState } from '@/hooks';
 import { settingsUpdateNetwork } from '@/redux/settings';
 import networkInfo from '@/helpers/networkInfo';
 import { Network } from '@/helpers';
@@ -59,26 +46,18 @@ const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
         disabled={(!testnetsEnabled && testnet) || disabled}
         key={value}
         onPress={() => onNetworkChange(value)}
-        rightComponent={
-          value === network && <MenuItem.StatusIcon status="selected" />
-        }
+        rightComponent={value === network && <MenuItem.StatusIcon status="selected" />}
         size={52}
         testID={`${value}-network`}
         titleComponent={
-          <MenuItem.Title
-            disabled={(!testnetsEnabled && testnet) || disabled}
-            text={name}
-            weight={inDevSection ? 'medium' : 'semibold'}
-          />
+          <MenuItem.Title disabled={(!testnetsEnabled && testnet) || disabled} text={name} weight={inDevSection ? 'medium' : 'semibold'} />
         }
       />
     ));
   }, [inDevSection, network, onNetworkChange, testnetsEnabled]);
 
   return inDevSection ? (
-    <Stack separator={<Separator color="divider60 (Deprecated)" />}>
-      {renderNetworkList()}
-    </Stack>
+    <Stack separator={<Separator color="divider60 (Deprecated)" />}>{renderNetworkList()}</Stack>
   ) : (
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (

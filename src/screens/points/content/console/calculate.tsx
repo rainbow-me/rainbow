@@ -3,17 +3,10 @@ import { AnimatePresence } from '@/components/animations/AnimatePresence';
 import Paragraph from '../../components/Paragraph';
 import Line from '../../components/Line';
 import { AnimatedText } from '../../components/AnimatedText';
-import {
-  RainbowPointsFlowSteps,
-  rainbowColors,
-  textColors,
-} from '../../constants';
+import { RainbowPointsFlowSteps, rainbowColors, textColors } from '../../constants';
 import * as i18n from '@/languages';
 import { useAccountProfile } from '@/hooks';
-import {
-  abbreviateEnsForDisplay,
-  address as formatAddress,
-} from '@/utils/abbreviations';
+import { abbreviateEnsForDisplay, address as formatAddress } from '@/utils/abbreviations';
 import { usePointsProfileContext } from '../../contexts/PointsProfileContext';
 import { NeonButton } from '../../components/NeonButton';
 import LineBreak from '../../components/LineBreak';
@@ -37,46 +30,26 @@ export const Calculate = () => {
   const { accountENS, accountAddress } = useAccountProfile();
 
   const [isCalculationComplete, setIsCalculationComplete] = useState(false);
-  const [shouldShowContinueButton, setShouldShowContinueButton] = useState(
-    false
-  );
+  const [shouldShowContinueButton, setShouldShowContinueButton] = useState(false);
 
-  const accountName = (abbreviateEnsForDisplay(accountENS, 10) ||
-    formatAddress(accountAddress, 4, 5)) as string;
+  const accountName = (abbreviateEnsForDisplay(accountENS, 10) || formatAddress(accountAddress, 4, 5)) as string;
 
   return (
     <Box height="full" justifyContent="space-between">
       <Stack separator={<LineBreak lines={3} />}>
         <Paragraph>
           <Line>
-            <AnimatedText
-              color={textColors.gray}
-              skipAnimation
-              textContent={`${i18n.t(i18n.l.points.console.account)}:`}
-              weight="normal"
-            />
-            <AnimatedText
-              color={textColors.account}
-              skipAnimation
-              textContent={accountName}
-            />
+            <AnimatedText color={textColors.gray} skipAnimation textContent={`${i18n.t(i18n.l.points.console.account)}:`} weight="normal" />
+            <AnimatedText color={textColors.account} skipAnimation textContent={accountName} />
           </Line>
           <Line gap={0}>
             <AnimatedText
               color={textColors.gray}
               delayStart={500}
               weight="normal"
-              textContent={`> ${i18n.t(
-                i18n.l.points.console.calculating_points
-              )}`}
+              textContent={`> ${i18n.t(i18n.l.points.console.calculating_points)}`}
             />
-            <AnimatedText
-              color={textColors.gray}
-              repeat={!isCalculationComplete}
-              textContent="..."
-              typingSpeed={500}
-              weight="normal"
-            />
+            <AnimatedText color={textColors.gray} repeat={!isCalculationComplete} textContent="..." typingSpeed={500} weight="normal" />
           </Line>
         </Paragraph>
         {hasRetroActivePoints ? (
@@ -86,19 +59,14 @@ export const Calculate = () => {
                 <AnimatedText
                   color={rainbowColors.blue}
                   enableHapticTyping
-                  textContent={`${i18n.t(
-                    i18n.l.points.console.rainbow_swaps
-                  )}:`}
+                  textContent={`${i18n.t(i18n.l.points.console.rainbow_swaps)}:`}
                 />
                 <AnimatedText
                   color={rainbowColors.blue}
                   delayStart={1000}
                   enableHapticTyping
                   textAlign="right"
-                  textContent={`$${abbreviateNumber(
-                    (rainbowSwaps?.data?.usd_amount ?? 0) +
-                      (rainbowBridges?.data?.usd_amount ?? 0)
-                  )}`}
+                  textContent={`$${abbreviateNumber((rainbowSwaps?.data?.usd_amount ?? 0) + (rainbowBridges?.data?.usd_amount ?? 0))}`}
                   typingSpeed={100}
                 />
               </Line>
@@ -107,9 +75,7 @@ export const Calculate = () => {
                   color={rainbowColors.green}
                   delayStart={1000}
                   enableHapticTyping
-                  textContent={`${i18n.t(
-                    i18n.l.points.console.rainbow_nfts_owned
-                  )}:`}
+                  textContent={`${i18n.t(i18n.l.points.console.rainbow_nfts_owned)}:`}
                 />
                 <AnimatedText
                   color={rainbowColors.green}
@@ -125,18 +91,14 @@ export const Calculate = () => {
                   color={rainbowColors.yellow}
                   delayStart={1000}
                   enableHapticTyping
-                  textContent={`${i18n.t(
-                    i18n.l.points.console.wallet_balance
-                  )}:`}
+                  textContent={`${i18n.t(i18n.l.points.console.wallet_balance)}:`}
                 />
                 <AnimatedText
                   color={rainbowColors.yellow}
                   delayStart={1000}
                   enableHapticTyping
                   textAlign="right"
-                  textContent={`$${abbreviateNumber(
-                    historicBalance?.data?.usd_amount ?? 0
-                  )}`}
+                  textContent={`$${abbreviateNumber(historicBalance?.data?.usd_amount ?? 0)}`}
                   typingSpeed={100}
                 />
               </Line>
@@ -146,18 +108,14 @@ export const Calculate = () => {
                     color={rainbowColors.red}
                     delayStart={1000}
                     enableHapticTyping
-                    textContent={`${i18n.t(
-                      i18n.l.points.console.metamask_swaps
-                    )}:`}
+                    textContent={`${i18n.t(i18n.l.points.console.metamask_swaps)}:`}
                   />
                   <AnimatedText
                     color={rainbowColors.red}
                     delayStart={1000}
                     enableHapticTyping
                     textAlign="right"
-                    textContent={`$${abbreviateNumber(
-                      metamaskSwaps?.data?.usd_amount ?? 0
-                    )}`}
+                    textContent={`$${abbreviateNumber(metamaskSwaps?.data?.usd_amount ?? 0)}`}
                     typingSpeed={100}
                   />
                 </Line>
@@ -169,9 +127,7 @@ export const Calculate = () => {
                   color={rainbowColors.purple}
                   delayStart={1000}
                   enableHapticTyping
-                  textContent={`${i18n.t(
-                    i18n.l.points.console.true_believer
-                  )}:`}
+                  textContent={`${i18n.t(i18n.l.points.console.true_believer)}:`}
                 />
                 <AnimatedText
                   color={rainbowColors.purple}
@@ -193,9 +149,7 @@ export const Calculate = () => {
               <AnimatedText
                 color={textColors.gray}
                 delayStart={1000}
-                textContent={`> ${i18n.t(
-                  i18n.l.points.console.calculation_complete
-                )}`}
+                textContent={`> ${i18n.t(i18n.l.points.console.calculation_complete)}`}
                 weight="normal"
               />
               <Line alignHorizontal="justify">
@@ -203,9 +157,7 @@ export const Calculate = () => {
                   color={textColors.white}
                   delayStart={1000}
                   enableHapticTyping
-                  textContent={`${i18n.t(
-                    i18n.l.points.console.points_earned
-                  )}:`}
+                  textContent={`${i18n.t(i18n.l.points.console.points_earned)}:`}
                 />
                 <AnimatedText
                   color={textColors.white}
@@ -213,10 +165,7 @@ export const Calculate = () => {
                   enableHapticTyping
                   hapticType="impactHeavy"
                   textAlign="right"
-                  textContent={(
-                    profile?.onboardPoints?.user.onboarding?.earnings?.total ??
-                    0
-                  ).toLocaleString('en-US')}
+                  textContent={(profile?.onboardPoints?.user.onboarding?.earnings?.total ?? 0).toLocaleString('en-US')}
                   onComplete={() => {
                     setShouldShowContinueButton(true);
                   }}
@@ -260,18 +209,13 @@ export const Calculate = () => {
           </>
         )}
       </Stack>
-      <AnimatePresence
-        condition={shouldShowContinueButton && !!profile}
-        duration={300}
-      >
+      <AnimatePresence condition={shouldShowContinueButton && !!profile} duration={300}>
         <Bleed horizontal={{ custom: 14 }}>
           <NeonButton
             color="#FEC101"
             label={i18n.t(i18n.l.points.console.proceed_to_share)}
             onPress={() => {
-              analyticsV2.track(
-                analyticsV2.event.pointsOnboardingScreenPressedContinueButton
-              );
+              analyticsV2.track(analyticsV2.event.pointsOnboardingScreenPressedContinueButton);
               const beginNextPhase = setTimeout(() => {
                 setAnimationKey(prevKey => prevKey + 1);
                 setStep(RainbowPointsFlowSteps.Share);

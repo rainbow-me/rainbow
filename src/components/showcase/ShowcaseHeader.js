@@ -3,10 +3,7 @@ import React, { createContext, useCallback, useContext, useMemo } from 'react';
 import { ColumnWithMargins } from '../layout';
 import AvatarCircle from '../profile/AvatarCircle';
 import SheetHandle from '../sheet/SheetHandle';
-import {
-  SheetActionButton,
-  SheetActionButtonRow,
-} from '../sheet/sheet-action-buttons';
+import { SheetActionButton, SheetActionButtonRow } from '../sheet/sheet-action-buttons';
 import { Text, TruncatedAddress } from '../text';
 import { getContacts } from '@/handlers/localstorage/contacts';
 import { isHexString } from '@/handlers/web3';
@@ -64,9 +61,7 @@ const ENSAddress = styled(Text).attrs(({ theme: { colors } }) => ({
   width: '100%',
 });
 
-const avatarColor = profileUtils.emojiColorIndexes.map(
-  idx => colors.avatarBackgrounds[idx]
-);
+const avatarColor = profileUtils.emojiColorIndexes.map(idx => colors.avatarBackgrounds[idx]);
 
 function hashCode(text) {
   let hash = 0,
@@ -125,14 +120,7 @@ export function Header() {
       },
       type: 'contact_profile',
     });
-  }, [
-    color,
-    contextValue?.address,
-    contextValue?.addressOrDomain,
-    contextValue?.data?.reverseEns,
-    emoji,
-    navigate,
-  ]);
+  }, [color, contextValue?.address, contextValue?.addressOrDomain, contextValue?.data?.reverseEns, emoji, navigate]);
 
   const onSend = useCallback(async () => {
     goBack();
@@ -151,36 +139,19 @@ export function Header() {
       contextValue.setIsSearchModeEnabled(false);
     }
     handleSetSeedPhrase(contextValue.address);
-    handlePressImportButton(
-      color,
-      contextValue.address,
-      contextValue?.data?.profile?.accountSymbol
-    );
+    handlePressImportButton(color, contextValue.address, contextValue?.data?.profile?.accountSymbol);
   }, [contextValue, handleSetSeedPhrase, handlePressImportButton, color]);
 
-  const mainText =
-    contextValue?.data?.reverseEns ||
-    contextValue?.addressOrDomain?.toLowerCase();
+  const mainText = contextValue?.data?.reverseEns || contextValue?.addressOrDomain?.toLowerCase();
 
-  const secondaryText =
-    contextValue?.address?.toLowerCase() === mainText
-      ? null
-      : contextValue?.address?.toLowerCase();
+  const secondaryText = contextValue?.address?.toLowerCase() === mainText ? null : contextValue?.address?.toLowerCase();
 
   return (
     <HeaderWrapper height={350} testID="showcase-header-wrapper">
       <SheetHandle />
       <Spacer />
-      <AvatarCircle
-        image={null}
-        onPress={() => {}}
-        showcaseAccountColor={color}
-        showcaseAccountSymbol={emoji}
-      />
-      <ENSAddress
-        address={mainText}
-        as={isHexString(mainText) && TruncatedAddress}
-      >
+      <AvatarCircle image={null} onPress={() => {}} showcaseAccountColor={color} showcaseAccountSymbol={emoji} />
+      <ENSAddress address={mainText} as={isHexString(mainText) && TruncatedAddress}>
         {mainText}
       </ENSAddress>
       {secondaryText && <AddressText address={secondaryText} />}

@@ -71,10 +71,7 @@ export interface ChartsReceivedMessage {
  *
  * @param message The `ChartsReceivedMessage`.
  */
-export const assetChartsReceived = (message: ChartsReceivedMessage) => (
-  dispatch: Dispatch<ChartsUpdateAction>,
-  getState: AppGetState
-) => {
+export const assetChartsReceived = (message: ChartsReceivedMessage) => (dispatch: Dispatch<ChartsUpdateAction>, getState: AppGetState) => {
   const chartType = message?.meta?.charts_type;
   const { charts: existingCharts } = getState().charts;
   const assetCharts = message?.payload?.charts ?? {};
@@ -112,10 +109,7 @@ const INITIAL_STATE: ChartsState = {
   fetchingCharts: false,
 };
 
-export default (
-  state: ChartsState = INITIAL_STATE,
-  action: ChartsAction
-): ChartsState => {
+export default (state: ChartsState = INITIAL_STATE, action: ChartsAction): ChartsState => {
   switch (action.type) {
     case CHARTS_UPDATE:
       return {

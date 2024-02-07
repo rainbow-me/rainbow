@@ -43,11 +43,7 @@ export function AppVersionStamp() {
       onPress={handleVersionPress}
       onPressOut={() => setTimeout(() => setShowCodePushVersion(false), 500)}
     >
-      <Text
-        color="secondary30 (Deprecated)"
-        size="14px / 19px (Deprecated)"
-        weight="bold"
-      >
+      <Text color="secondary30 (Deprecated)" size="14px / 19px (Deprecated)" weight="bold">
         {showCodePushVersion ? `Update: ${codePushVersion}` : appVersion}
       </Text>
     </StyledButton>

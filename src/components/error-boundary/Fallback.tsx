@@ -41,25 +41,13 @@ export default function Fallback() {
         </Centered>
         <Spacer height={15} />
         <Centered>
-          <Text
-            align="center"
-            color={colors.alpha(colors.blueGreyDark, 0.7)}
-            lineHeight="loose"
-            size="large"
-            weight="bold"
-          >
+          <Text align="center" color={colors.alpha(colors.blueGreyDark, 0.7)} lineHeight="loose" size="large" weight="bold">
             {lang.t('error_boundary.something_went_wrong')}
           </Text>
         </Centered>
         <Spacer height={21} />
         <Centered>
-          <Text
-            align="center"
-            color={colors.alpha(colors.blueGreyDark, 0.7)}
-            lineHeight="loose"
-            size="large"
-            weight="bold"
-          >
+          <Text align="center" color={colors.alpha(colors.blueGreyDark, 0.7)} lineHeight="loose" size="large" weight="bold">
             {lang.t('error_boundary.wallets_are_safe')}
           </Text>
         </Centered>

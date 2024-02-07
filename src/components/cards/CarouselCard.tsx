@@ -1,14 +1,4 @@
-import {
-  Bleed,
-  Box,
-  Column,
-  Columns,
-  Inline,
-  Stack,
-  Text,
-  useColorMode,
-  useForegroundColor,
-} from '@/design-system';
+import { Bleed, Box, Column, Columns, Inline, Stack, Text, useColorMode, useForegroundColor } from '@/design-system';
 import React from 'react';
 import { FlashList, ListRenderItem } from '@shopify/flash-list';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -56,17 +46,12 @@ export function CarouselCard<T>({
   const { width: deviceWidth } = useDimensions();
   const { colorMode } = useColorMode();
 
-  const actualItemHeight =
-    carouselItem.height + (carouselItem.verticalOverflow ?? 0) * 2;
+  const actualItemHeight = carouselItem.height + (carouselItem.verticalOverflow ?? 0) * 2;
 
   return (
     <Stack space="20px">
       {!!title && (
-        <Box
-          flexDirection="row"
-          alignItems="center"
-          justifyContent="space-between"
-        >
+        <Box flexDirection="row" alignItems="center" justifyContent="space-between">
           {typeof title === 'string' ? (
             <Text color="label" weight="heavy" size="20pt">
               {title}
@@ -81,10 +66,7 @@ export function CarouselCard<T>({
       so we need to manually add vertical padding to the recycled component.
       The vertical bleed here is to accommodate the vertical padding w/o affecting the layout. 
       See https://github.com/Shopify/flash-list/issues/723*/}
-      <Bleed
-        horizontal="20px"
-        vertical={{ custom: carouselItem.verticalOverflow ?? 0 }}
-      >
+      <Bleed horizontal="20px" vertical={{ custom: carouselItem.verticalOverflow ?? 0 }}>
         <Box height={{ custom: actualItemHeight }}>
           {data?.length ? (
             <FlashList
@@ -112,9 +94,7 @@ export function CarouselCard<T>({
                   {carouselItem.renderItem(info)}
                 </View>
               )}
-              ItemSeparatorComponent={() => (
-                <View style={{ width: carouselItem.padding }} />
-              )}
+              ItemSeparatorComponent={() => <View style={{ width: carouselItem.padding }} />}
               keyExtractor={carouselItem.keyExtractor}
             />
           ) : (
@@ -158,10 +138,7 @@ export function CarouselCard<T>({
                 }}
               >
                 {isRefreshing ? (
-                  <LoadingSpinner
-                    color={colorMode === 'light' ? 'black' : 'white'}
-                    size={20}
-                  />
+                  <LoadingSpinner color={colorMode === 'light' ? 'black' : 'white'} size={20} />
                 ) : (
                   <Text align="center" color="label" size="17pt" weight="bold">
                     􀅈

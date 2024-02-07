@@ -10,22 +10,20 @@ export function BackgroundDemo() {
 
   return (
     <Box background="surfacePrimary">
-      {(Object.keys(backgroundColors) as (keyof typeof backgroundColors)[]).map(
-        color => (
-          <Box background={color} key={color}>
-            <Inset space="20px">
-              <Stack space="10px">
-                <Text color="label" size="17pt" weight="bold">
-                  {color}
-                </Text>
-                <Text color="labelSecondary" size="17pt" weight="bold">
-                  {color}
-                </Text>
-              </Stack>
-            </Inset>
-          </Box>
-        )
-      )}
+      {(Object.keys(backgroundColors) as (keyof typeof backgroundColors)[]).map(color => (
+        <Box background={color} key={color}>
+          <Inset space="20px">
+            <Stack space="10px">
+              <Text color="label" size="17pt" weight="bold">
+                {color}
+              </Text>
+              <Text color="labelSecondary" size="17pt" weight="bold">
+                {color}
+              </Text>
+            </Stack>
+          </Inset>
+        </Box>
+      ))}
     </Box>
   );
 }

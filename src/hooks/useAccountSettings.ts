@@ -29,56 +29,32 @@ export default function useAccountSettings() {
   const { language } = useSelector(createLanguageSelector);
   const dispatch = useDispatch();
   const settingsData = useSelector(
-    ({
-      settings: {
-        accountAddress,
-        appIcon,
-        chainId,
-        flashbotsEnabled,
-        nativeCurrency,
-        network,
-        testnetsEnabled,
-      },
-    }: AppState) => ({
+    ({ settings: { accountAddress, appIcon, chainId, flashbotsEnabled, nativeCurrency, network, testnetsEnabled } }: AppState) => ({
       accountAddress,
       appIcon,
       chainId,
       flashbotsEnabled,
       language,
       nativeCurrency,
-      nativeCurrencySymbol:
-        supportedNativeCurrencies[
-          nativeCurrency as keyof typeof supportedNativeCurrencies
-        ].symbol,
+      nativeCurrencySymbol: supportedNativeCurrencies[nativeCurrency as keyof typeof supportedNativeCurrencies].symbol,
       network,
       testnetsEnabled,
     })
   );
 
-  const settingsChangeLanguage = useCallback(
-    (language: string) => dispatch(changeLanguage(language as Language)),
-    [dispatch]
-  );
+  const settingsChangeLanguage = useCallback((language: string) => dispatch(changeLanguage(language as Language)), [dispatch]);
 
-  const settingsChangeAppIcon = useCallback(
-    (appIcon: string) => dispatch(changeAppIcon(appIcon)),
-    [dispatch]
-  );
+  const settingsChangeAppIcon = useCallback((appIcon: string) => dispatch(changeAppIcon(appIcon)), [dispatch]);
 
-  const settingsChangeNativeCurrency = useCallback(
-    (currency: NativeCurrencyKey) => dispatch(changeNativeCurrency(currency)),
-    [dispatch]
-  );
+  const settingsChangeNativeCurrency = useCallback((currency: NativeCurrencyKey) => dispatch(changeNativeCurrency(currency)), [dispatch]);
 
   const settingsChangeTestnetsEnabled = useCallback(
-    (testnetsEnabled: boolean) =>
-      dispatch(changeTestnetsEnabled(testnetsEnabled)),
+    (testnetsEnabled: boolean) => dispatch(changeTestnetsEnabled(testnetsEnabled)),
     [dispatch]
   );
 
   const settingsChangeFlashbotsEnabled = useCallback(
-    (flashbotsEnabled: boolean) =>
-      dispatch(changeFlashbotsEnabled(flashbotsEnabled)),
+    (flashbotsEnabled: boolean) => dispatch(changeFlashbotsEnabled(flashbotsEnabled)),
     [dispatch]
   );
 

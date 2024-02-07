@@ -23,39 +23,22 @@ const Content = styled(Row).attrs({
 
 const CircleOutline = styled.View({
   ...borders.buildCircleAsObject(22),
-  borderColor: ({ theme: { colors } }) =>
-    colors.alpha(colors.blueGreyDark, 0.12),
+  borderColor: ({ theme: { colors } }) => colors.alpha(colors.blueGreyDark, 0.12),
   borderWidth: 1.5,
   left: 19,
   position: 'absolute',
 });
 
-const CheckmarkBackground = styled.View(
-  ({ theme: { colors, isDarkMode }, left }) => ({
-    ...borders.buildCircleAsObject(22),
-    ...padding.object(4.5),
-    backgroundColor: colors.appleBlue,
-    left: left || 0,
+const CheckmarkBackground = styled.View(({ theme: { colors, isDarkMode }, left }) => ({
+  ...borders.buildCircleAsObject(22),
+  ...padding.object(4.5),
+  backgroundColor: colors.appleBlue,
+  left: left || 0,
 
-    ...shadow.buildAsObject(
-      0,
-      4,
-      12,
-      isDarkMode ? colors.shadow : colors.appleBlue,
-      0.4
-    ),
-  })
-);
+  ...shadow.buildAsObject(0, 4, 12, isDarkMode ? colors.shadow : colors.appleBlue, 0.4),
+}));
 
-const CoinCheckButton = ({
-  isHidden,
-  isPinned,
-  onPress,
-  toggle: givenToggle,
-  uniqueId,
-  left,
-  ...props
-}) => {
+const CoinCheckButton = ({ isHidden, isPinned, onPress, toggle: givenToggle, uniqueId, left, ...props }) => {
   const { selectedItems } = useCoinListFinishEditingOptions();
   const toggle = givenToggle || selectedItems.includes(uniqueId);
 
@@ -63,9 +46,7 @@ const CoinCheckButton = ({
     <Container {...props}>
       <Content as={ButtonPressAnimation} onPress={onPress} opacityTouchable>
         {isHidden || isPinned ? null : <CircleOutline />}
-        {!toggle && (isHidden || isPinned) ? (
-          <CoinIconIndicator isPinned={isPinned} />
-        ) : null}
+        {!toggle && (isHidden || isPinned) ? <CoinIconIndicator isPinned={isPinned} /> : null}
         <OpacityToggler friction={20} isVisible={!toggle} tension={1000}>
           <CheckmarkBackground left={left}>
             <Icon color="white" name="checkmark" />
@@ -76,9 +57,4 @@ const CoinCheckButton = ({
   );
 };
 
-export default magicMemo(CoinCheckButton, [
-  'toggle',
-  'uniqueId',
-  'isHidden',
-  'isPinned',
-]);
+export default magicMemo(CoinCheckButton, ['toggle', 'uniqueId', 'isHidden', 'isPinned']);

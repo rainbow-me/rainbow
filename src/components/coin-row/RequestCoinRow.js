@@ -1,12 +1,6 @@
 import { addHours, differenceInMinutes, isPast } from 'date-fns';
 import lang from 'i18n-js';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useTheme } from '../../theme/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
@@ -66,15 +60,10 @@ const RequestCoinRow = ({ item, ...props }) => {
     if (item?.displayDetails?.timestampInMs) {
       const _createdAt = new Date(item.displayDetails.timestampInMs);
       const _expiresAt = addHours(_createdAt, 1);
-      const _percentElapsed = getPercentageOfTimeElapsed(
-        _createdAt,
-        _expiresAt
-      );
+      const _percentElapsed = getPercentageOfTimeElapsed(_createdAt, _expiresAt);
       setExpiresAt(_expiresAt);
       setPercentElapsed(_percentElapsed);
-      setExpirationColor(
-        _percentElapsed > 25 ? colors.appleBlue : colors.orange
-      );
+      setExpirationColor(_percentElapsed > 25 ? colors.appleBlue : colors.orange);
     }
   }, [colors, item]);
 
@@ -105,11 +94,7 @@ const RequestCoinRow = ({ item, ...props }) => {
   );
 
   return (
-    <ButtonPressAnimation
-      onPress={handlePressOpen}
-      scaleTo={0.98}
-      waitFor={buttonRef}
-    >
+    <ButtonPressAnimation onPress={handlePressOpen} scaleTo={0.98} waitFor={buttonRef}>
       <CoinRow
         {...props}
         {...overridenItem}
