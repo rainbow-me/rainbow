@@ -37,7 +37,6 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({
   const change = transaction?.changes?.[0];
 
   const value = change?.value || transaction.balance?.display;
-  console.log(' VAL: ', change?.value);
   const nativeCurrencyValue = convertAmountAndPriceToNativeDisplay(
     change?.asset?.balance?.amount || '',
     change?.asset?.price?.value || '',

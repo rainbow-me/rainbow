@@ -62,14 +62,13 @@ export interface RainbowTransaction {
   network: Network;
   nft?: UniqueAsset;
   nonce?: number | null;
-  pending?: boolean;
   protocol?: ProtocolType | null;
   flashbots?: boolean;
   approvalAmount?: 'UNLIMITED' | (string & object);
   ensCommitRegistrationName?: string;
   ensRegistration?: boolean;
   sourceAmount?: string; // for purchases
-  status?: TransactionStatus;
+  status: TransactionStatus;
   swap?: {
     type: SwapType;
     toChainId: ChainId;
@@ -149,5 +148,5 @@ export interface NewTransactionOrAddCashTransaction
 
 export type MinimalTransactionDetails = Pick<
   RainbowTransaction,
-  'minedAt' | 'hash' | 'type' | 'network' | 'from' | 'pending' | 'to' | 'status'
+  'minedAt' | 'hash' | 'type' | 'network' | 'from' | 'to' | 'status'
 >;

@@ -169,9 +169,8 @@ export const parseNewTransaction = (tx: NewTransaction): RainbowTransaction => {
   return {
     ...tx,
     status: 'pending',
-    pending: true,
     data: tx.data,
-    title: `transactions.${tx.type}.${tx.status}`,
+    title: `${tx.type}.${tx.status}`,
     description: asset?.name || methodName,
     from: tx.from,
     changes: tx.changes,

@@ -59,6 +59,10 @@ import { saveLocalPendingTransactions } from '@/handlers/localstorage/accountLoc
 import { getFCMToken } from '@/notifications/tokens';
 import { resetNonces } from '@/redux/nonceManager';
 import { removeGlobalNotificationSettings } from '@/notifications/settings/settings';
+import {
+  pendingTransactionsStore,
+  usePendingTransactionsStore,
+} from '@/state/pendingTransactionsStore';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
@@ -76,6 +80,7 @@ const DevSection = () => {
   const resetAccountState = useResetAccountState();
   const loadAccountData = useLoadAccountData();
   const initializeAccountData = useInitializeAccountData();
+  const { clearPendingTransactions } = usePendingTransactionsStore();
   const [loadingStates, setLoadingStates] = useState({
     clearLocalStorage: false,
     clearAsyncStorage: false,
@@ -214,19 +219,6 @@ const DevSection = () => {
     }
     return Promise.resolve();
   }, [walletNotificationSettings]);
-
-  const clearPendingTransactions = async () => {
-    // clear local storage
-    saveLocalPendingTransactions([], accountAddress, Network.mainnet);
-    // clear redux
-    dispatch({
-      payload: [],
-      type: DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS,
-    });
-
-    // reset nonces
-    resetNonces(accountAddress);
-  };
 
   const clearLocalStorage = async () => {
     setLoadingStates(prev => ({ ...prev, clearLocalStorage: true }));

@@ -206,7 +206,6 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
         );
         const provider = await getProviderForNetwork(network);
         const rpcTransaction = await provider.getTransaction(data.hash);
-
         const transactionConfirmed =
           rpcTransaction?.blockNumber && rpcTransaction?.blockHash;
         if (!transactionConfirmed) {
@@ -227,6 +226,7 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
           maxPriorityFeePerGas: rpcTransaction.maxPriorityFeePerGas,
           gasPrice: rpcTransaction.gasPrice,
           data: rpcTransaction.data,
+          status: rpcTransaction.blockNumber ? 'confirmed' : 'pending',
         };
 
         const parsedTransaction = await parseNewTransaction(
@@ -272,7 +272,7 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
         } else {
           resultTransaction.status = TransactionStatus.failed;
         }
-        resultTransaction.pending = false;
+        resultTransaction.status = 'confirmed';
         resultTransaction.minedAt = minedAt;
 
         if (resultTransaction) {

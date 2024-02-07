@@ -16,6 +16,7 @@ import { position } from '@/styles';
 import { Navbar } from '@/components/navbar/Navbar';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ContactAvatar } from '@/components/contacts';
+import { usePendingTransactionWatcher } from '@/hooks/usePendingTransactionWatcher';
 
 const ACTIVITY_LIST_INITIALIZATION_DELAY = 5000;
 
@@ -40,8 +41,9 @@ export default function ProfileScreen() {
     transactionsCount,
   } = accountTransactions;
   const { pendingRequestCount } = useRequests();
-  const { network } = useAccountSettings();
+  const { network, accountAddress } = useAccountSettings();
   const { accountSymbol, accountColor, accountImage } = useAccountProfile();
+  usePendingTransactionWatcher({ address: accountAddress });
 
   const isEmpty = !transactionsCount && !pendingRequestCount;
 

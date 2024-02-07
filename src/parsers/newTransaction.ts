@@ -87,7 +87,6 @@ export const parseNewTransaction = async (
     network,
     nft,
     nonce,
-    pending: true,
     protocol,
     sourceAmount,
     status,

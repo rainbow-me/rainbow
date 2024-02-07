@@ -990,7 +990,6 @@ export const SignTransactionSheet = () => {
           nonce: sendResult.nonce,
           to: displayDetails?.request?.to,
           value: sendResult.value.toString(),
-          pending: true,
           type: 'contract_interaction',
           ...gasParams,
         };

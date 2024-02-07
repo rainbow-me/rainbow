@@ -9,11 +9,16 @@ import {
   todayTimestamp,
   yesterdayTimestamp,
 } from './transactions';
-import { RainbowTransaction, TransactionStatusTypes } from '@/entities';
+import {
+  NativeCurrencyKey,
+  RainbowTransaction,
+  TransactionStatusTypes,
+} from '@/entities';
 import * as i18n from '@/languages';
 import { RequestData } from '@/redux/requests';
 import { ThemeContextProps } from '@/theme';
 import { Contact } from '@/redux/contacts';
+import { TransactionStatus } from '@/resources/transactions/types';
 
 type RainbowTransactionWithContact = RainbowTransaction & {
   contact: Contact | null;
@@ -25,13 +30,13 @@ type RainbowTransactionWithContactAndMainnetAddress = RainbowTransactionWithCont
 };
 // bad news
 const groupTransactionByDate = ({
-  pending,
+  status,
   minedAt,
 }: {
-  pending: boolean;
+  status: TransactionStatus;
   minedAt: string;
 }) => {
-  if (pending) {
+  if (status === 'pending') {
     return i18n.t(i18n.l.transactions.pending_title);
   }
 
@@ -73,6 +78,7 @@ export const buildTransactionsSections = ({
   requests,
   theme,
   transactions,
+  nativeCurrency,
 }: {
   accountAddress: string;
   mainnetAddresses: { [uniqueId: string]: string };
@@ -80,6 +86,7 @@ export const buildTransactionsSections = ({
   requests: RequestData[];
   theme: ThemeContextProps;
   transactions: RainbowTransaction[];
+  nativeCurrency: NativeCurrencyKey;
 }) => {
   if (!transactions) {
     return { sections: [] };
@@ -136,7 +143,13 @@ export const buildTransactionsSections = ({
           item,
         }: {
           item: RainbowTransactionWithContactAndMainnetAddress;
-        }) => <FastTransactionCoinRow item={item} theme={theme} />,
+        }) => (
+          <FastTransactionCoinRow
+            item={item}
+            theme={theme}
+            nativeCurrency={nativeCurrency}
+          />
+        ),
         title: section,
       };
     });

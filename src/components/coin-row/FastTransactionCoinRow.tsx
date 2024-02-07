@@ -3,8 +3,15 @@ import { StyleSheet, View } from 'react-native';
 import { ButtonPressAnimation } from '../animations';
 import FastCoinIcon from '../asset-list/RecyclerAssetList2/FastComponents/FastCoinIcon';
 import FastTransactionStatusBadge from './FastTransactionStatusBadge';
-import { Box, Inline, Text, globalColors, useColorMode } from '@/design-system';
-import { RainbowTransaction, TransactionStatusTypes } from '@/entities';
+import {
+  Bleed,
+  Box,
+  Inline,
+  Text,
+  globalColors,
+  useColorMode,
+} from '@/design-system';
+import { NativeCurrencyKey, RainbowTransaction } from '@/entities';
 import { ThemeContextProps } from '@/theme';
 import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
@@ -16,7 +23,13 @@ import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { address } from '@/utils/abbreviations';
 import { Colors } from '@/styles';
 import { TransactionType } from '@/resources/transactions/types';
-import { convertAmountToBalanceDisplay } from '@/helpers/utilities';
+import {
+  convertAmountAndPriceToNativeDisplay,
+  convertAmountToBalanceDisplay,
+  greaterThan,
+} from '@/helpers/utilities';
+import { TwoCoinsIcon } from '../coin-icon/TwoIconsIcon';
+import Spinner from '../Spinner';
 
 export const getApprovalLabel = ({
   approvalAmount,
@@ -78,7 +91,10 @@ const swapTypeValues = (changes: RainbowTransaction['changes']) => {
   return [valueOut, valueIn];
 };
 
-const activityValues = (transaction: RainbowTransaction) => {
+const activityValues = (
+  transaction: RainbowTransaction,
+  nativeCurrency: NativeCurrencyKey
+) => {
   const { changes, direction, type } = transaction;
   if (['swap', 'wrap', 'unwrap'].includes(type)) return swapTypeValues(changes);
   if (['approve', 'revoke'].includes(type))
@@ -94,13 +110,21 @@ const activityValues = (transaction: RainbowTransaction) => {
   const { balance } = asset;
   if (balance?.amount === '0') return;
 
-  const assetValue = `${balance?.amount} ${asset.symbol}`;
+  const assetValue = convertAmountToBalanceDisplay(
+    balance?.amount || '0',
+    asset
+  );
 
-  const nativeBalance = '0';
-  const assetNativeValue =
-    +nativeBalance > 0 ? `${valueSymbol}${nativeBalance}` : 'no value';
+  const nativeBalance = convertAmountAndPriceToNativeDisplay(
+    balance?.amount || '0',
+    asset?.price?.value || '0',
+    nativeCurrency
+  );
+  const assetNativeValue = greaterThan(nativeBalance.amount, '0')
+    ? nativeBalance?.display
+    : 'no value';
 
-  return +nativeBalance > 0
+  return greaterThan(nativeBalance.amount, '0')
     ? [assetValue, assetNativeValue]
     : [assetNativeValue, `${valueSymbol}${assetValue}`];
 };
@@ -135,21 +159,33 @@ const activityTypeIcon: Record<TransactionType, string> = {
 
 export const ActivityTypeIcon = ({
   transaction: { status, type },
+  color,
 }: {
   transaction: Pick<RainbowTransaction, 'status' | 'type'>;
+  color: string;
 }) => {
   // if (status === 'pending') return null;
+  if (status === 'pending') {
+    return (
+      <Spinner
+        color={color}
+        size={11}
+        style={{ marginTop: -1, paddingRight: 2 }}
+      />
+    );
+  }
+
   if (status === 'failed')
     return (
-      <Text color="labelTertiary" weight="semibold" size="11pt">
-        {'X'}
+      <Text color={{ custom: color }} weight="semibold" size="11pt">
+        {'􀀲'}
       </Text>
     );
 
   const symbol = activityTypeIcon[type];
   if (!symbol) return null;
   return (
-    <Text color="labelTertiary" weight="semibold" size="11pt">
+    <Text color={{ custom: color }} weight="semibold" size="11pt">
       {symbol}
     </Text>
   );
@@ -157,9 +193,11 @@ export const ActivityTypeIcon = ({
 
 const BottomRow = React.memo(function BottomRow({
   transaction,
+  nativeCurrency,
   theme,
 }: {
   transaction: RainbowTransaction;
+  nativeCurrency: NativeCurrencyKey;
   theme: ThemeContextProps;
 }) {
   const { type, to, asset } = transaction;
@@ -178,38 +216,42 @@ const BottomRow = React.memo(function BottomRow({
     .filter(Boolean).length;
   if (nftChangesAmount) tag = nftChangesAmount.toString();
 
-  const [topValue, bottomValue] = activityValues(transaction) ?? [];
+  const [topValue, bottomValue] =
+    activityValues(transaction, nativeCurrency) ?? [];
   return (
     <View style={sx.bottomRow}>
       <View style={sx.description}>
-        <Inline>
+        <Inline wrap={false} horizontalSpace={'6px'}>
           <Text
-            color={{ custom: theme.colors.dark }}
+            color={'label'}
             numberOfLines={1}
             size="16px / 22px (Deprecated)"
+            weight="regular"
           >
             {description}
           </Text>
           {tag && (
-            <Box
-              style={{
-                borderWidth: 2,
-                borderRadius: 5,
-                width: 20,
-                height: 20,
-                borderColor: theme.colors.dark,
-                alignItems: 'center',
-              }}
-            >
-              <Text
-                align="right"
-                color={{ custom: theme.colors.dark }}
-                size="16px / 22px (Deprecated)"
-                weight={'medium'}
+            <Bleed vertical="4px">
+              <Box
+                style={{
+                  borderWidth: 1.5,
+                  borderColor: `#09111F0D`,
+                  borderRadius: 7,
+                }}
+                justifyContent="center"
+                alignItems="center"
+                padding={{ custom: 5 }}
               >
-                {tag}
-              </Text>
-            </Box>
+                <Text
+                  align="center"
+                  color="labelTertiary"
+                  size="13pt"
+                  weight="regular"
+                >
+                  {tag}
+                </Text>
+              </Box>
+            </Bleed>
           )}
         </Inline>
       </View>
@@ -218,7 +260,8 @@ const BottomRow = React.memo(function BottomRow({
           align="right"
           color={bottomValue?.includes('+') ? 'green' : 'labelSecondary'}
           size="16px / 22px (Deprecated)"
-          weight={'medium'}
+          weight={'regular'}
+          numberOfLines={1}
         >
           {bottomValue}
         </Text>
@@ -229,40 +272,23 @@ const BottomRow = React.memo(function BottomRow({
 
 export const ActivityIcon = ({
   transaction,
-  size = 36,
+  size = 40,
   badge = true,
   theme,
 }: {
   transaction: RainbowTransaction;
   badge?: boolean;
-  size?: 36 | 20 | 14 | 16;
+  size?: 40 | 20 | 14 | 16;
   theme: ThemeContextProps;
 }) => {
-  if (['wrap', 'undwrap', 'swap'].includes(transaction?.type)) {
+  if (['wrap', 'unwrap', 'swap'].includes(transaction?.type)) {
     const inAsset = transaction?.changes?.find(a => a?.direction === 'in')
       ?.asset;
     const outAsset = transaction?.changes?.find(a => a?.direction === 'out')
       ?.asset;
 
     if (!!inAsset && !!outAsset)
-      return (
-        <Inline>
-          <FastCoinIcon
-            address={inAsset?.address || ETH_ADDRESS}
-            network={transaction.network}
-            mainnetAddress={inAsset?.mainnet_address}
-            symbol={inAsset?.symbol || ETH_SYMBOL}
-            theme={theme}
-          />
-          <FastCoinIcon
-            address={outAsset?.address || ETH_ADDRESS}
-            network={transaction.network}
-            mainnetAddress={outAsset?.mainnet_address}
-            symbol={outAsset?.symbol || ETH_SYMBOL}
-            theme={theme}
-          />
-        </Inline>
-      );
+      return <TwoCoinsIcon over={inAsset} under={outAsset} badge={badge} />;
   }
   if (transaction?.contract?.iconUrl) {
     return (
@@ -272,8 +298,6 @@ export const ActivityIcon = ({
           shadowOffset: { width: 0, height: 2 },
           shadowOpacity: 0.02,
           shadowRadius: 3,
-          paddingTop: 9,
-          paddingBottom: 10,
           overflow: 'visible',
         }}
       >
@@ -290,8 +314,8 @@ export const ActivityIcon = ({
           <ImgixImage
             size={CardSize}
             style={{
-              width: 40,
-              height: 40,
+              width: size,
+              height: size,
               borderRadius: 10,
             }}
             source={{
@@ -300,7 +324,7 @@ export const ActivityIcon = ({
           />
         </View>
         {transaction.network !== Network.mainnet && (
-          <ChainBadge network={transaction.network} badgeYPosition={10} />
+          <ChainBadge network={transaction.network} badgeYPosition={0} />
         )}
       </View>
     );
@@ -314,8 +338,6 @@ export const ActivityIcon = ({
           shadowOffset: { width: 0, height: 2 },
           shadowOpacity: 0.02,
           shadowRadius: 3,
-          paddingTop: 9,
-          paddingBottom: 10,
           overflow: 'visible',
         }}
       >
@@ -332,8 +354,8 @@ export const ActivityIcon = ({
           <ImgixImage
             size={CardSize}
             style={{
-              width: 40,
-              height: 40,
+              width: size,
+              height: size,
               borderRadius: 10,
             }}
             source={{
@@ -342,7 +364,7 @@ export const ActivityIcon = ({
           />
         </View>
         {transaction.network !== Network.mainnet && (
-          <ChainBadge network={transaction.network} badgeYPosition={10} />
+          <ChainBadge network={transaction.network} badgeYPosition={0} />
         )}
       </View>
     );
@@ -385,7 +407,7 @@ const ActivityDescription = ({
     <Inline space="4px" alignVertical="center" wrap={false}>
       <Text
         size="16px / 22px (Deprecated)"
-        weight="semibold"
+        weight="regular"
         color={{ custom: colors.dark }}
       >
         {description}
@@ -393,7 +415,7 @@ const ActivityDescription = ({
       {tag && (
         <Text
           size="16px / 22px (Deprecated)"
-          weight="semibold"
+          weight="regular"
           color={{ custom: colors.dark }}
         >
           {tag}
@@ -405,40 +427,44 @@ const ActivityDescription = ({
 
 export default React.memo(function TransactionCoinRow({
   item,
+  nativeCurrency,
   theme,
 }: {
   item: RainbowTransaction;
+  nativeCurrency: NativeCurrencyKey;
   theme: ThemeContextProps;
 }) {
-  const { colorMode } = useColorMode();
   const { colors } = theme;
   const navigation = useNavigation();
 
   const onPress = useCallback(() => {
-    console.log('changes: ', item?.changes?.[0]?.asset);
-    console.log('asset: ', item?.asset);
     navigation.navigate(Routes.TRANSACTION_DETAILS, {
       transaction: item,
     });
   }, [item, navigation]);
 
-  const [topValue, bottomValue] = activityValues(item) ?? [];
+  const [topValue, bottomValue] = activityValues(item, nativeCurrency) ?? [];
 
   return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
+    <ButtonPressAnimation
+      onPress={onPress}
+      scaleTo={0.96}
+      uniqueId={`${item.hash}-${item.network}`}
+    >
       <View
         style={sx.wholeRow}
         testID={`${item.title}-${item.description}-${item.balance?.display}`}
       >
         <View style={sx.icon}>
-          <ActivityIcon size={36} transaction={item} theme={theme} />
+          <ActivityIcon size={40} transaction={item} theme={theme} />
         </View>
+
         <View style={sx.column}>
           <View style={sx.topRow}>
             <FastTransactionStatusBadge colors={colors} transaction={item} />
             <View style={sx.balance}>
               <Text
-                color={{ custom: colors.alpha(colors.blueGreyDark, 0.5) }}
+                color={'labelTertiary'}
                 numberOfLines={1}
                 size="14px / 19px (Deprecated)"
               >
@@ -446,7 +472,11 @@ export default React.memo(function TransactionCoinRow({
               </Text>
             </View>
           </View>
-          <BottomRow transaction={item} theme={theme} />
+          <BottomRow
+            transaction={item}
+            theme={theme}
+            nativeCurrency={nativeCurrency}
+          />
         </View>
       </View>
     </ButtonPressAnimation>
@@ -473,6 +503,7 @@ const sx = StyleSheet.create({
   },
   description: {
     flex: 1,
+    maxWidth: '50%',
   },
   icon: {
     justifyContent: 'center',
@@ -489,5 +520,6 @@ const sx = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 19,
     overflow: 'visible',
+    height: 59,
   },
 });

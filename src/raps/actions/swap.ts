@@ -232,7 +232,6 @@ const swap = async (
     network: inputCurrency.network,
     nonce: swap.nonce,
     status: 'pending',
-    pending: true,
     type: 'swap',
     flashbots: parameters.flashbots,
     ...gasParams,

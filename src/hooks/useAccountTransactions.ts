@@ -93,6 +93,7 @@ export default function useAccountTransactions() {
     requests,
     theme,
     transactions: slicedTransaction,
+    nativeCurrency,
   };
 
   const { sections } = buildTransactionsSections(accountState);

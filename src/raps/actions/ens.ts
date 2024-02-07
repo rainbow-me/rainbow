@@ -578,7 +578,6 @@ const ensAction = async (
     value: toHex(tx.value),
     network: NetworkTypes.mainnet,
     status: 'pending',
-    pending: true,
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
 

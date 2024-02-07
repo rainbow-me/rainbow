@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import Spinner from '../Spinner';
 import { Icon } from '../icons';
-import { Text } from '@/design-system';
+import { Text, useForegroundColor } from '@/design-system';
 import {
   RainbowTransaction,
   TransactionStatus,
@@ -175,27 +175,23 @@ export default React.memo(function FastTransactionStatusBadge({
   colors: ThemeContextProps['colors'];
   style?: StyleProp<ViewStyle>;
 }) {
-  let statusColor = colors.alpha(colors.blueGreyDark, 0.7);
-  if (transaction?.pending) {
+  let statusColor = useForegroundColor('labelTertiary');
+  if (transaction?.status === 'pending') {
     statusColor = colors.appleBlue;
+  } else if (transaction?.status === 'failed') {
+    statusColor = colors.red;
   }
 
   return (
     <View style={[sx.row, style]}>
-      {transaction?.pending && (
-        <Spinner
-          color={statusColor}
-          size={12}
-          style={{ marginTop: ios ? 0 : -2 }}
-        />
-      )}
-      <ActivityTypeIcon transaction={transaction} />
+      <ActivityTypeIcon transaction={transaction} color={statusColor} />
       <Text
         color={{ custom: statusColor }}
         size="14px / 19px (Deprecated)"
         weight="semibold"
       >
-        {transaction?.title}
+        {/* @ts-ignore */}
+        {lang.t(lang.l.transactions.type[transaction?.title])}
       </Text>
     </View>
   );

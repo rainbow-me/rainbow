@@ -169,7 +169,6 @@ const crosschainSwap = async (
     network: inputCurrency.network,
     nonce: swap?.nonce,
     status: 'pending',
-    pending: true,
     type: 'swap',
     flashbots: parameters.flashbots,
     swap: {

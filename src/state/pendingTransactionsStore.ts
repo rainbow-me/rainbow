@@ -13,6 +13,7 @@ export const addNewTransaction = ({
   network: Network;
   transaction: NewTransaction;
 }) => {
+  console.log('adding new transaction');
   const parsedTransaction = parseNewTransaction(transaction);
   pendingTransactionsStore
     .getState()
