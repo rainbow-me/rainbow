@@ -18,13 +18,11 @@ import lang from 'i18n-js';
 import { cloneDeep, isEmpty, isString, replace } from 'lodash';
 import { InteractionManager, Linking } from 'react-native';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
-import { useSelector } from 'react-redux';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import {
   EthereumAddress,
   GasFee,
   LegacySelectedGasFee,
-  NativeCurrencyKey,
   ParsedAddressAsset,
   RainbowToken,
   RainbowTransaction,
@@ -40,8 +38,6 @@ import {
 } from '@/handlers/web3';
 import { Network } from '@/helpers/networkTypes';
 import {
-  convertAmountAndPriceToNativeDisplay,
-  convertAmountToPercentageDisplay,
   convertRawAmountToDecimalFormat,
   fromWei,
   greaterThan,
@@ -75,7 +71,6 @@ import {
   useExternalToken,
 } from '@/resources/assets/externalAssetsQuery';
 
-// TODO: https://linear.app/rainbow/issue/APP-631/remove-networks-from-assettype
 const getNetworkNativeAsset = (
   network: Network
 ): ParsedAddressAsset | undefined => {
@@ -108,7 +103,6 @@ export const getNativeAssetForNetwork = async (
         staleTime: 60000,
       }
     );
-
     if (externalAsset) {
       // @ts-ignore
       nativeAsset = {
@@ -119,6 +113,8 @@ export const getNativeAssetForNetwork = async (
           network
         ),
         address: getNetworkObj(network).nativeCurrency.address,
+        decimals: getNetworkObj(network).nativeCurrency.decimals,
+        symbol: getNetworkObj(network).nativeCurrency.symbol,
       };
     }
 
@@ -176,13 +172,14 @@ const getExternalAssetFromCache = (uniqueId: string) => {
   const { network, address } = getAddressAndNetworkFromUniqueId(uniqueId);
 
   try {
-    const cachedExternalAsset = queryClient.getQueryData<FormattedExternalAsset>(
-      externalTokenQueryKey({
-        address,
-        currency: nativeCurrency,
-        network,
-      })
-    );
+    const cachedExternalAsset =
+      queryClient.getQueryData<FormattedExternalAsset>(
+        externalTokenQueryKey({
+          address,
+          currency: nativeCurrency,
+          network,
+        })
+      );
 
     return cachedExternalAsset;
   } catch (e) {
@@ -577,8 +574,8 @@ const calculateL1FeeOptimism = async (
       );
     }
     // @ts-expect-error ts-migrate(2551) FIXME: Property 'selectedGasPrice' does not exist on type... Remove this comment to see the full error message
-    const currentGasPrice = store.getState().gas.selectedGasPrice?.value
-      ?.amount;
+    const currentGasPrice =
+      store.getState().gas.selectedGasPrice?.value?.amount;
     if (currentGasPrice) newTx.gasPrice = toHex(currentGasPrice);
     // @ts-expect-error ts-migrate(100005) FIXME: Remove this comment to see the full error message
     const serializedTx = serialize(newTx);
