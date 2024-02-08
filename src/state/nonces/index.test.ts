@@ -5,7 +5,20 @@ const TEST_ADDRESS_2 = '0x70997970c51812dc3a010c7d01b50e0d17dc79c8';
 const TEST_ADDRESS_3 = '0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc';
 
 import { nonceStore } from '.';
-import { Network } from '@/networks/types';
+
+// from networks/types to get around mocking a bunch of imports
+
+enum Network {
+  arbitrum = 'arbitrum',
+  goerli = 'goerli',
+  mainnet = 'mainnet',
+  optimism = 'optimism',
+  polygon = 'polygon',
+  base = 'base',
+  bsc = 'bsc',
+  zora = 'zora',
+  gnosis = 'gnosis',
+}
 
 test('should be able to set nonce for one wallet in one network', async () => {
   const { nonces, setNonce } = nonceStore.getState();
