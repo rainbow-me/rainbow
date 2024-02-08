@@ -101,10 +101,8 @@ const useSwapCurrencyList = (
     [searchChainId, searchQuery]
   );
 
-  const {
-    favorites: favoriteAddresses,
-    favoritesMetadata: favoriteMap,
-  } = useFavorites();
+  const { favorites: favoriteAddresses, favoritesMetadata: favoriteMap } =
+    useFavorites();
 
   const curatedMap = rainbowTokenList.CURATED_TOKENS;
   const unfilteredFavorites = Object.values(favoriteMap);
@@ -115,19 +113,16 @@ const useSwapCurrencyList = (
   const [highLiquidityAssets, setHighLiquidityAssets] = useState<RT[]>([]);
   const [lowLiquidityAssets, setLowLiquidityAssets] = useState<RT[]>([]);
   const [verifiedAssets, setVerifiedAssets] = useState<RT[]>([]);
-  const [fetchingCrosschainAssets, setFetchingCrosschainAssets] = useState(
-    false
-  );
-  const [
-    crosschainVerifiedAssets,
-    setCrosschainVerifiedAssets,
-  ] = useState<CrosschainVerifiedAssets>({
-    [Network.mainnet]: [],
-    [Network.optimism]: [],
-    [Network.polygon]: [],
-    [Network.bsc]: [],
-    [Network.arbitrum]: [],
-  });
+  const [fetchingCrosschainAssets, setFetchingCrosschainAssets] =
+    useState(false);
+  const [crosschainVerifiedAssets, setCrosschainVerifiedAssets] =
+    useState<CrosschainVerifiedAssets>({
+      [Network.mainnet]: [],
+      [Network.optimism]: [],
+      [Network.polygon]: [],
+      [Network.bsc]: [],
+      [Network.arbitrum]: [],
+    });
 
   const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
   const { inputCurrency } = useSwapCurrencies();
@@ -164,16 +159,16 @@ const useSwapCurrencyList = (
         .map(token => {
           token.address =
             token.networks?.[activeChainId]?.address || token.address;
-          if (activeChainId !== MAINNET_CHAINID) {
-            const network =
-              crosschainNetwork ||
-              ethereumUtils.getNetworkFromChainId(searchChainId);
-            token.network = network;
-            if (token.networks[MAINNET_CHAINID]) {
-              token.mainnet_address = token.networks[MAINNET_CHAINID].address;
-            }
-            token.uniqueId = getUniqueId(token.address, network);
+
+          const network =
+            crosschainNetwork ||
+            ethereumUtils.getNetworkFromChainId(searchChainId);
+          token.network = network;
+          if (token.networks[MAINNET_CHAINID]) {
+            token.mainnet_address = token.networks[MAINNET_CHAINID].address;
           }
+          token.uniqueId = getUniqueId(token.address, network);
+
           return token;
         })
         .filter(({ address }) => !isFavorite(address));
@@ -210,6 +205,13 @@ const useSwapCurrencyList = (
           return -1;
         }
         return bIsRanked ? 1 : name1?.localeCompare(name2);
+      })
+      .map(token => {
+        return {
+          ...token,
+          network: Network.mainnet,
+          uniqueId: getUniqueId(token.address, Network.mainnet),
+        };
       });
   }, [curatedMap, favoriteAddresses]);
 

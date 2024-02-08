@@ -438,7 +438,7 @@ export default function CurrencySelectModal() {
             ...newAsset,
             decimals:
               item?.networks?.[currentChainId]?.decimals || item.decimals,
-            address: item?.networks?.[currentChainId]?.address,
+            address: item?.address || item?.networks?.[currentChainId]?.address,
             network: getNetworkFromChainId(currentChainId),
           };
         }
