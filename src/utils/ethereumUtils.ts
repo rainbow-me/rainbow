@@ -14,13 +14,11 @@ import lang from 'i18n-js';
 import { cloneDeep, isEmpty, isString, replace } from 'lodash';
 import { InteractionManager, Linking } from 'react-native';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
-import { useSelector } from 'react-redux';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import {
   EthereumAddress,
   GasFee,
   LegacySelectedGasFee,
-  NativeCurrencyKey,
   ParsedAddressAsset,
   RainbowToken,
   RainbowTransaction,
@@ -29,16 +27,7 @@ import {
 import { getOnchainAssetBalance } from '@/handlers/assets';
 import { getCachedProviderForNetwork, getProviderForNetwork, isHardHat, isTestnetNetwork, toHex } from '@/handlers/web3';
 import { Network } from '@/helpers/networkTypes';
-import {
-  convertAmountAndPriceToNativeDisplay,
-  convertAmountToPercentageDisplay,
-  convertRawAmountToDecimalFormat,
-  fromWei,
-  greaterThan,
-  isZero,
-  subtract,
-  add,
-} from '@/helpers/utilities';
+import { convertRawAmountToDecimalFormat, fromWei, greaterThan, isZero, subtract, add } from '@/helpers/utilities';
 import { Navigation } from '@/navigation';
 import { parseAssetNative } from '@/parsers';
 import store from '@/redux/store';
@@ -65,7 +54,6 @@ import {
   useExternalToken,
 } from '@/resources/assets/externalAssetsQuery';
 
-// TODO: https://linear.app/rainbow/issue/APP-631/remove-networks-from-assettype
 const getNetworkNativeAsset = (network: Network): ParsedAddressAsset | undefined => {
   const nativeAssetAddress = getNetworkObj(network).nativeCurrency.address;
   const nativeAssetUniqueId = getUniqueId(nativeAssetAddress, network);
@@ -90,7 +78,6 @@ export const getNativeAssetForNetwork = async (network: Network, address: Ethere
         staleTime: 60000,
       }
     );
-
     if (externalAsset) {
       // @ts-ignore
       nativeAsset = {
@@ -98,6 +85,8 @@ export const getNativeAssetForNetwork = async (network: Network, address: Ethere
         network,
         uniqueId: getUniqueId(getNetworkObj(network).nativeCurrency.address, network),
         address: getNetworkObj(network).nativeCurrency.address,
+        decimals: getNetworkObj(network).nativeCurrency.decimals,
+        symbol: getNetworkObj(network).nativeCurrency.symbol,
       };
     }
 
