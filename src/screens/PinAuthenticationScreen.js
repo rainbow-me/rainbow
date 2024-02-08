@@ -137,9 +137,6 @@ const PinAuthenticationScreen = () => {
             setActionType('creation');
             setInitialPin('');
             setValue('');
-          } else if (prevValue === '') {
-            // otherwise we want to navigate them back
-            goBack();
           } else {
             nextValue = prevValue.slice(0, -1);
           }

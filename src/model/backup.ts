@@ -213,6 +213,20 @@ export const RestoreCloudBackupResultStates = {
 type RestoreCloudBackupResultStatesType = (typeof RestoreCloudBackupResultStates)[keyof typeof RestoreCloudBackupResultStates];
 
 /**
+ * Helper function to sanitize the filename when we receive it in .icloud format
+ * @param filename sometimes input looks like: .backup_<timestamp>.json.icloud
+ * @returns backup_<timestamp>.json
+ */
+const sanitizeFilename = (filename: string) => {
+  let sanitizedFilename = filename.replace('.icloud', '');
+  if (sanitizedFilename.startsWith('.')) {
+    sanitizedFilename = sanitizedFilename.substring(1);
+  }
+
+  return sanitizedFilename;
+};
+
+/**
  * Restores a cloud backup.
  */
 export async function restoreCloudBackup({
@@ -235,7 +249,7 @@ export async function restoreCloudBackup({
     }
     // 2- download that backup
     // @ts-ignore
-    const data = await getDataFromCloud(password, filename);
+    const data = await getDataFromCloud(password, sanitizeFilename(filename));
     if (!data) {
       return RestoreCloudBackupResultStates.incorrectPassword;
     }
