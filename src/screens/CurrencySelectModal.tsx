@@ -170,16 +170,12 @@ export default function CurrencySelectModal() {
 
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
-  const {
-    crosschainExactMatches,
-    swapCurrencyList,
-    swapCurrencyListLoading,
-  } = useSwapCurrencyList(searchQueryForSearch, currentChainId, false);
+  const { crosschainExactMatches, swapCurrencyList, swapCurrencyListLoading } =
+    useSwapCurrencyList(searchQueryForSearch, currentChainId, false);
 
-  const {
-    swappableUserAssets,
-    unswappableUserAssets,
-  } = useSwappableUserAssets({ outputCurrency });
+  const { swappableUserAssets, unswappableUserAssets } = useSwappableUserAssets(
+    { outputCurrency }
+  );
 
   const checkForSameNetwork = useCallback(
     (newAsset: any, selectAsset: any, type: any) => {
@@ -291,9 +287,11 @@ export default function CurrencySelectModal() {
   }, [crosschainExactMatches, swapCurrencyList]);
 
   const currencyList = useMemo(() => {
-    let list = (type === CurrencySelectionTypes.input
-      ? getWalletCurrencyList()
-      : activeSwapCurrencyList) as {
+    let list = (
+      type === CurrencySelectionTypes.input
+        ? getWalletCurrencyList()
+        : activeSwapCurrencyList
+    ) as {
       data: EnrichedExchangeAsset[];
       title: string;
     }[];
@@ -396,9 +394,8 @@ export default function CurrencySelectModal() {
         currentChainId &&
         currentChainId !== getNetworkObj(Network.mainnet).id
       ) {
-        const currentL2Name = ethereumUtils.getNetworkNameFromChainId(
-          currentChainId
-        );
+        const currentL2Name =
+          ethereumUtils.getNetworkNameFromChainId(currentChainId);
         const currentL2WalletAssets = assetsInWallet.filter(
           ({ network }) =>
             network && network?.toLowerCase() === currentL2Name?.toLowerCase()
@@ -426,10 +423,7 @@ export default function CurrencySelectModal() {
     (item: any) => {
       if (!crosschainSwapsEnabled && checkForRequiredAssets(item)) return;
 
-      const assetWithType = {
-        ...item,
-        decimals: item?.networks?.[currentChainId]?.decimals || item.decimals,
-      };
+      let newAsset = item;
 
       const selectAsset = () => {
         if (!item?.balance) {
@@ -439,15 +433,23 @@ export default function CurrencySelectModal() {
             network,
             currency: nativeCurrency,
           });
+          // if the asset is external we need to add the network specific information
+          newAsset = {
+            ...newAsset,
+            decimals:
+              item?.networks?.[currentChainId]?.decimals || item.decimals,
+            address: item?.networks?.[currentChainId]?.address,
+            network: getNetworkFromChainId(currentChainId),
+          };
         }
         setIsTransitioning(true); // continue to display list during transition
         callback?.();
-        onSelectCurrency(assetWithType, handleNavigate);
+        onSelectCurrency(newAsset, handleNavigate);
       };
       if (
         !crosschainSwapsEnabled &&
         checkForSameNetwork(
-          assetWithType,
+          newAsset,
           selectAsset,
           type === CurrencySelectionTypes.output
             ? CurrencySelectionTypes.output
@@ -465,7 +467,6 @@ export default function CurrencySelectModal() {
       type,
       checkForSameNetwork,
       nativeCurrency,
-      dispatch,
       callback,
       onSelectCurrency,
       handleNavigate,
