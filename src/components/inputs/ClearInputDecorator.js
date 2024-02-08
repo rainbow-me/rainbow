@@ -1,12 +1,5 @@
 import React, { useLayoutEffect, useState } from 'react';
-import Animated, {
-  Easing,
-  interpolate,
-  runOnJS,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { Easing, interpolate, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';
@@ -51,15 +44,11 @@ const ClearInputDecorator = ({ inputHeight, isVisible, onPress, testID }) => {
     if (isVisible) {
       setIsVisibleInternal(true);
     } else if (!isVisible) {
-      animation.value = withTiming(
-        0,
-        { duration, easing: easingOut },
-        finished => {
-          if (finished) {
-            runOnJS(setIsVisibleInternal)(false);
-          }
+      animation.value = withTiming(0, { duration, easing: easingOut }, finished => {
+        if (finished) {
+          runOnJS(setIsVisibleInternal)(false);
         }
-      );
+      });
     }
   }, [isVisible, animation]);
 
@@ -70,12 +59,7 @@ const ClearInputDecorator = ({ inputHeight, isVisible, onPress, testID }) => {
   }, [isVisible, isVisibleInternal, animation]);
 
   const animatedStyle = useAnimatedStyle(() => {
-    const scale = interpolate(
-      animation.value,
-      [0, 1],
-      [START_SCALE, FINISH_SCALE],
-      'extend'
-    );
+    const scale = interpolate(animation.value, [0, 1], [START_SCALE, FINISH_SCALE], 'extend');
     return {
       opacity: animation.value,
       transform: [{ scale }],
@@ -86,12 +70,7 @@ const ClearInputDecorator = ({ inputHeight, isVisible, onPress, testID }) => {
     <Container>
       {isVisibleInternal && (
         <Animated.View style={animatedStyle}>
-          <Button
-            as={ButtonPressAnimation}
-            onPress={onPress}
-            size={inputHeight}
-            testID={testID}
-          >
+          <Button as={ButtonPressAnimation} onPress={onPress} size={inputHeight} testID={testID}>
             <TextIcon>􀁡</TextIcon>
           </Button>
         </Animated.View>

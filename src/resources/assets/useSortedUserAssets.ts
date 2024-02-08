@@ -4,11 +4,7 @@ import { selectSortedUserAssets } from '@/resources/assets/assetSelectors';
 import { useUserAssets } from '@/resources/assets/UserAssetsQuery';
 
 export function useSortedUserAssets() {
-  const {
-    accountAddress,
-    nativeCurrency,
-    network: currentNetwork,
-  } = useAccountSettings();
+  const { accountAddress, nativeCurrency, network: currentNetwork } = useAccountSettings();
   const provider = getCachedProviderForNetwork(currentNetwork);
   const providerUrl = provider?.connection?.url;
   const connectedToHardhat = isHardHat(providerUrl);

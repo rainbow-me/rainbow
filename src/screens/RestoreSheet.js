@@ -8,9 +8,7 @@ import { IS_ANDROID } from '@/env';
 import { useDimensions } from '@/hooks';
 
 export function RestoreSheet() {
-  const {
-    params: { userData, backupSelected, fromSettings } = {},
-  } = useRoute();
+  const { params: { userData, backupSelected, fromSettings } = {} } = useRoute();
   const { height: deviceHeight } = useDimensions();
 
   return (
@@ -23,11 +21,7 @@ export function RestoreSheet() {
           height="100%"
           testID="restore-sheet"
         >
-          <RestoreCloudStep
-            backupSelected={backupSelected}
-            fromSettings={fromSettings}
-            userData={userData}
-          />
+          <RestoreCloudStep backupSelected={backupSelected} fromSettings={fromSettings} userData={userData} />
         </SlackSheet>
       )}
     </BackgroundProvider>

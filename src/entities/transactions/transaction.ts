@@ -6,13 +6,9 @@ import { Network } from '@/helpers/networkTypes';
 import { AddCashCurrencyAsset } from '@/references';
 import { ChainId, SwapType } from '@rainbow-me/swaps';
 import { SwapMetadata } from '@/raps/common';
-import { FiatProviderName } from '@/entities/f2c';
 import { UniqueAsset } from '../uniqueAssets';
 import { ParsedAsset } from '@/resources/assets/types';
-import {
-  TransactionStatus,
-  TransactionType,
-} from '@/resources/transactions/types';
+import { TransactionStatus, TransactionType } from '@/resources/transactions/types';
 
 export type TransactionDirection = 'in' | 'out' | 'self';
 
@@ -130,8 +126,7 @@ export interface RainbowTransactionFee {
   };
 }
 
-export interface NewTransactionOrAddCashTransaction
-  extends Omit<NewTransaction, 'asset'> {
+export interface NewTransactionOrAddCashTransaction extends Omit<NewTransaction, 'asset'> {
   // Although the type of `asset` really represents
   // `ParsedAddressAsset | AddCashCurrencyAsset | null`, it is more
   // convenient for typing purposes to use
@@ -140,13 +135,7 @@ export interface NewTransactionOrAddCashTransaction
   // Statements such as `transaction?.asset?.price?.value` would fail to
   // compile without the partial since `AddCashCurrencyAsset` does not have the
   // key `price`, even though the statement is safe.
-  asset:
-    | ParsedAddressAsset
-    | (Partial<ParsedAddressAsset> & AddCashCurrencyAsset)
-    | null;
+  asset: ParsedAddressAsset | (Partial<ParsedAddressAsset> & AddCashCurrencyAsset) | null;
 }
 
-export type MinimalTransactionDetails = Pick<
-  RainbowTransaction,
-  'minedAt' | 'hash' | 'type' | 'network' | 'from' | 'to' | 'status'
->;
+export type MinimalTransactionDetails = Pick<RainbowTransaction, 'minedAt' | 'hash' | 'type' | 'network' | 'from' | 'to' | 'status'>;

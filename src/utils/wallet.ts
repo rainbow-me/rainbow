@@ -3,24 +3,14 @@ import { hdkey } from 'ethereumjs-wallet';
 import { Wallet } from '@ethersproject/wallet';
 import { addHexPrefix, toChecksumAddress } from '@/handlers/web3';
 import WalletTypes from '@/helpers/walletTypes';
-import {
-  DEFAULT_HD_PATH,
-  identifyWalletType,
-  WalletLibraryType,
-  EthereumPrivateKey,
-  EthereumWalletSeed,
-  getHdPath,
-} from '@/model/wallet';
+import { DEFAULT_HD_PATH, identifyWalletType, WalletLibraryType, EthereumPrivateKey, EthereumWalletSeed, getHdPath } from '@/model/wallet';
 import { mnemonicToSeed } from 'bip39';
 import { IS_IOS } from '@/env';
 import { getEthApp } from './ledger';
 
 const { RNBip39 } = NativeModules;
 
-export const deriveAccountFromBluetoothHardwareWallet = async (
-  deviceId: string,
-  index = 0
-) => {
+export const deriveAccountFromBluetoothHardwareWallet = async (deviceId: string, index = 0) => {
   const eth = await getEthApp(deviceId);
   const path = getHdPath({
     type: WalletLibraryType.ledger,
@@ -42,10 +32,7 @@ export const deriveAccountFromBluetoothHardwareWallet = async (
   };
 };
 
-export const deriveAccountFromMnemonic = async (
-  mnemonic: string,
-  index = 0
-) => {
+export const deriveAccountFromMnemonic = async (mnemonic: string, index = 0) => {
   let seed;
   if (IS_IOS) {
     seed = await mnemonicToSeed(mnemonic);

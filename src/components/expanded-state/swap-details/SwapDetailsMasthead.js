@@ -5,25 +5,16 @@ import { Bleed, Box, Columns, Cover, Text } from '@/design-system';
 import { useSwapCurrencies } from '@/hooks';
 
 const containerPaddingTop = 34;
-export const SwapDetailsMastheadHeight =
-  CurrencyTileHeight + containerPaddingTop;
+export const SwapDetailsMastheadHeight = CurrencyTileHeight + containerPaddingTop;
 
 const DoubleChevron = () => (
   <Cover alignHorizontal="center" alignVertical="center">
     <RowWithMargins margin={0}>
-      <Text
-        color="secondary60 (Deprecated)"
-        size="16px / 22px (Deprecated)"
-        weight="semibold"
-      >
+      <Text color="secondary60 (Deprecated)" size="16px / 22px (Deprecated)" weight="semibold">
         􀯻
       </Text>
       <Bleed left="6px">
-        <Text
-          color="secondary40 (Deprecated)"
-          size="16px / 22px (Deprecated)"
-          weight="semibold"
-        >
+        <Text color="secondary40 (Deprecated)" size="16px / 22px (Deprecated)" weight="semibold">
           􀯻
         </Text>
       </Bleed>
@@ -45,12 +36,7 @@ export default function SwapDetailsMasthead({
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
   return (
-    <Box
-      {...props}
-      alignItems="center"
-      paddingHorizontal="19px (Deprecated)"
-      paddingTop="42px (Deprecated)"
-    >
+    <Box {...props} alignItems="center" paddingHorizontal="19px (Deprecated)" paddingTop="42px (Deprecated)">
       <Columns space={{ custom: 9 }}>
         <CurrencyTile
           amount={inputAmount}

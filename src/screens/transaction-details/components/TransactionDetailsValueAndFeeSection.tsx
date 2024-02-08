@@ -1,10 +1,7 @@
 import React from 'react';
 import { DoubleLineTransactionDetailsRow } from '@/screens/transaction-details/components/DoubleLineTransactionDetailsRow';
 import { TransactionDetailsSymbol } from '@/screens/transaction-details/components/TransactionDetailsSymbol';
-import {
-  RainbowTransaction,
-  RainbowTransactionFee,
-} from '@/entities/transactions/transaction';
+import { RainbowTransaction, RainbowTransactionFee } from '@/entities/transactions/transaction';
 import { Box, Stack, globalColors } from '@/design-system';
 import { TransactionDetailsDivider } from '@/screens/transaction-details/components/TransactionDetailsDivider';
 import * as i18n from '@/languages';
@@ -27,9 +24,7 @@ type Props = {
   value?: string;
 };
 
-export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({
-  transaction,
-}) => {
+export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({ transaction }) => {
   const theme = useTheme();
   const { nativeCurrency } = useAccountSettings();
   const { fee } = transaction;
@@ -66,10 +61,7 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({
                   >
                     <View
                       style={{
-                        shadowColor:
-                          theme.colorScheme === 'dark' || !assetData.color
-                            ? globalColors.grey100
-                            : assetData.color,
+                        shadowColor: theme.colorScheme === 'dark' || !assetData.color ? globalColors.grey100 : assetData.color,
                         shadowOffset: { width: 0, height: 6 },
                         shadowOpacity: 0.24,
                         shadowRadius: 9,
@@ -87,12 +79,7 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({
                         }}
                       />
                     </View>
-                    {transaction.network !== Network.mainnet && (
-                      <ChainBadge
-                        network={transaction.network}
-                        badgeYPosition={10}
-                      />
-                    )}
+                    {transaction.network !== Network.mainnet && <ChainBadge network={transaction.network} badgeYPosition={10} />}
                   </View>
                 ) : (
                   <FastCoinIcon
@@ -111,9 +98,7 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({
           )}
           {fee && (
             <DoubleLineTransactionDetailsRow
-              leftComponent={
-                <TransactionDetailsSymbol icon="􀵟" withBackground />
-              }
+              leftComponent={<TransactionDetailsSymbol icon="􀵟" withBackground />}
               title={i18n.t(i18n.l.transaction_details.network_fee)}
               value={feeValue}
               secondaryValue={feeNativeCurrencyValue}

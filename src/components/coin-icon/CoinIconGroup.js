@@ -22,27 +22,17 @@ const TokenRowsComponent = ({ tokenRows, iconSize, width }) =>
     <Row key={`coinLine_${lineIndex}`}>
       {setOfTokens.map((token, index) => (
         <View key={`coin_${index}_${lineIndex}`} width={width} zIndex={-index}>
-          <CoinIcon
-            address={token?.address}
-            size={iconSize}
-            symbol={token?.symbol}
-          />
+          <CoinIcon address={token?.address} size={iconSize} symbol={token?.symbol} />
         </View>
       ))}
     </Row>
   ));
 
 function CoinIconGroup({ tokens }) {
-  const { breakIndex, iconSize, width } = useMemo(
-    () => sizesTable[tokens.length - 1],
-    [tokens]
-  );
+  const { breakIndex, iconSize, width } = useMemo(() => sizesTable[tokens.length - 1], [tokens]);
 
   const tokenRows = useMemo(() => {
-    return [
-      tokens.slice(0, breakIndex),
-      tokens.slice(breakIndex, tokens.length),
-    ];
+    return [tokens.slice(0, breakIndex), tokens.slice(breakIndex, tokens.length)];
   }, [breakIndex, tokens]);
 
   return (
@@ -53,11 +43,7 @@ function CoinIconGroup({ tokens }) {
       shouldRasterizeIOS
       width={70}
     >
-      <TokenRowsComponent
-        iconSize={iconSize}
-        tokenRows={tokenRows}
-        width={width}
-      />
+      <TokenRowsComponent iconSize={iconSize} tokenRows={tokenRows} width={width} />
     </Column>
   );
 }

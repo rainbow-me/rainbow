@@ -6,12 +6,10 @@ import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { Box, Text } from '@/design-system';
 
-const Gradient = styled(RadialGradient).attrs(
-  ({ theme: { colors }, borderRadius = 10.5 }) => ({
-    center: [0, borderRadius],
-    colors: colors.gradients.lightGrey,
-  })
-)(({ borderRadius, paddingHorizontal, paddingVertical }) => ({
+const Gradient = styled(RadialGradient).attrs(({ theme: { colors }, borderRadius = 10.5 }) => ({
+  center: [0, borderRadius],
+  colors: colors.gradients.lightGrey,
+}))(({ borderRadius, paddingHorizontal, paddingVertical }) => ({
   ...padding.object(paddingVertical || 2, paddingHorizontal || 6),
   borderRadius: borderRadius || 10.5,
   overflow: 'hidden',

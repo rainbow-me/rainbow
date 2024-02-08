@@ -24,27 +24,18 @@ type Props = {
   hideIcon?: boolean;
 };
 
-export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props> = ({
-  transaction,
-  hideIcon,
-}) => {
-  const { minedAt, status, pending, from } = transaction;
+export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props> = ({ transaction, hideIcon }) => {
+  const { minedAt, status, from } = transaction;
   const dispatch = useDispatch();
   const { navigate, goBack } = useNavigation();
-  const accountAddress = useSelector(
-    (state: AppState) => state.settings.accountAddress
-  );
+  const accountAddress = useSelector((state: AppState) => state.settings.accountAddress);
   const date = formatTransactionDetailsDate(minedAt ?? undefined);
   const { colors } = useTheme();
-  const { icon, color, gradient } = getIconColorAndGradientForTransactionStatus(
-    colors,
-    status
-  );
+  const { icon, color, gradient } = getIconColorAndGradientForTransactionStatus(colors, status);
 
   const isOutgoing = from?.toLowerCase() === accountAddress?.toLowerCase();
   const canBeResubmitted = isOutgoing && !minedAt;
-  const canBeCancelled =
-    canBeResubmitted && status !== TransactionStatusTypes.cancelling;
+  const canBeCancelled = canBeResubmitted && status !== TransactionStatusTypes.cancelling;
 
   const menuConfig = useMemo(
     () => ({
@@ -54,9 +45,7 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
           ? [
               {
                 actionKey: 'speedUp',
-                actionTitle: i18n.t(
-                  i18n.l.transaction_details.actions_menu.speed_up
-                ),
+                actionTitle: i18n.t(i18n.l.transaction_details.actions_menu.speed_up),
                 icon: {
                   iconType: 'SYSTEM',
                   iconValue: 'speedometer',
@@ -68,9 +57,7 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
           ? [
               {
                 actionKey: 'cancel',
-                actionTitle: i18n.t(
-                  i18n.l.transaction_details.actions_menu.cancel
-                ),
+                actionTitle: i18n.t(i18n.l.transaction_details.actions_menu.cancel),
                 menuAttributes: ['destructive'],
                 icon: {
                   iconType: 'SYSTEM',
@@ -114,12 +101,7 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
         case 'remove':
           if (transaction.hash && transaction.network) {
             // remove tx
-            dispatch(
-              dataRemovePendingTransaction(
-                transaction.hash,
-                transaction.network
-              )
-            );
+            dispatch(dataRemovePendingTransaction(transaction.hash, transaction.network));
             // close tx details sheet
             goBack();
           }
@@ -133,23 +115,10 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
     <Stack>
       <Box alignItems="flex-end" height="40px">
         {(canBeResubmitted || canBeCancelled) && (
-          <ContextMenuButton
-            menuConfig={menuConfig}
-            onPressMenuItem={onMenuItemPress}
-          >
+          <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={onMenuItemPress}>
             <ButtonPressAnimation>
-              <Box
-                style={styles.overflowHidden}
-                height={{ custom: SIZE }}
-                width={{ custom: SIZE }}
-                borderRadius={SIZE / 2}
-              >
-                <RadialGradient
-                  style={styles.gradient}
-                  colors={colors.gradients.lightestGrey}
-                  center={[0, SIZE / 2]}
-                  radius={SIZE}
-                >
+              <Box style={styles.overflowHidden} height={{ custom: SIZE }} width={{ custom: SIZE }} borderRadius={SIZE / 2}>
+                <RadialGradient style={styles.gradient} colors={colors.gradients.lightestGrey} center={[0, SIZE / 2]} radius={SIZE}>
                   <Text size="20pt" weight="bold" color="labelTertiary">
                     􀍠
                   </Text>

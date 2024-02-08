@@ -19,26 +19,18 @@ export default function useENSLocalTransactions({ name }: { name: string }) {
 
   const pages = data?.pages;
 
-  const transactions: RainbowTransaction[] = useMemo(
-    () => pages?.flatMap(p => p.transactions) || [],
-    [pages]
-  );
+  const transactions: RainbowTransaction[] = useMemo(() => pages?.flatMap(p => p.transactions) || [], [pages]);
   const registration = useSelector(({ ensRegistration }: AppState) => {
     const { registrations } = ensRegistration as ENSRegistrationState;
-    const accountRegistrations =
-      registrations?.[accountAddress.toLowerCase()] || {};
+    const accountRegistrations = registrations?.[accountAddress.toLowerCase()] || {};
     const registration = accountRegistrations[name];
     return registration;
   });
 
   const commitTransactionHash = registration?.commitTransactionHash?.toString();
-  const pendingRegistrationTransaction = getPendingTransactionByHash(
-    registration?.registerTransactionHash?.toString() || ''
-  );
+  const pendingRegistrationTransaction = getPendingTransactionByHash(registration?.registerTransactionHash?.toString() || '');
   const confirmedRegistrationTransaction = transactions?.find(
-    (txn: any) =>
-      ethereumUtils.getHash(txn) === registration?.registerTransactionHash &&
-      !txn.pending
+    (txn: any) => ethereumUtils.getHash(txn) === registration?.registerTransactionHash && !txn.pending
   );
 
   return {

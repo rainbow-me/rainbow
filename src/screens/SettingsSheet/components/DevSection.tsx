@@ -24,13 +24,7 @@ import { web3SetHttpProvider } from '@/handlers/web3';
 import { RainbowContext } from '@/helpers/RainbowContext';
 import isTestFlight from '@/helpers/isTestFlight';
 import networkTypes, { Network } from '@/helpers/networkTypes';
-import {
-  useAccountSettings,
-  useInitializeAccountData,
-  useLoadAccountData,
-  useResetAccountState,
-  useWallets,
-} from '@/hooks';
+import { useAccountSettings, useInitializeAccountData, useLoadAccountData, useResetAccountState, useWallets } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { wipeKeychain } from '@/model/keychain';
 import { clearAllStorages } from '@/model/mmkv';
@@ -59,23 +53,14 @@ import { saveLocalPendingTransactions } from '@/handlers/localstorage/accountLoc
 import { getFCMToken } from '@/notifications/tokens';
 import { resetNonces } from '@/redux/nonceManager';
 import { removeGlobalNotificationSettings } from '@/notifications/settings/settings';
-import {
-  pendingTransactionsStore,
-  usePendingTransactionsStore,
-} from '@/state/pendingTransactionsStore';
+import { pendingTransactionsStore, usePendingTransactionsStore } from '@/state/pendingTransactionsStore';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
   const { config, setConfig } = useContext(RainbowContext) as any;
   const { wallets } = useWallets();
-  const {
-    accountAddress,
-    testnetsEnabled,
-    settingsChangeTestnetsEnabled,
-  } = useAccountSettings();
-  const {
-    walletNotificationSettings,
-  } = useAllNotificationSettingsFromStorage();
+  const { accountAddress, testnetsEnabled, settingsChangeTestnetsEnabled } = useAccountSettings();
+  const { walletNotificationSettings } = useAllNotificationSettingsFromStorage();
   const dispatch = useDispatch();
   const resetAccountState = useResetAccountState();
   const loadAccountData = useLoadAccountData();
@@ -100,11 +85,7 @@ const DevSection = () => {
 
   const connectToHardhat = useCallback(async () => {
     try {
-      const ready = await web3SetHttpProvider(
-        (ios && HARDHAT_URL_IOS) ||
-          (android && HARDHAT_URL_ANDROID) ||
-          'http://127.0.0.1:8545'
-      );
+      const ready = await web3SetHttpProvider((ios && HARDHAT_URL_IOS) || (android && HARDHAT_URL_ANDROID) || 'http://127.0.0.1:8545');
       logger.log('connected to hardhat', ready);
     } catch (e) {
       await web3SetHttpProvider(networkTypes.mainnet);
@@ -127,29 +108,19 @@ const DevSection = () => {
         installMode: codePush.InstallMode.IMMEDIATE,
       });
 
-      const resultString = Object.entries(codePush.SyncStatus).find(
-        e => e[1] === result
-      )?.[0];
+      const resultString = Object.entries(codePush.SyncStatus).find(e => e[1] === result)?.[0];
       if (resultString) Alert.alert(resultString);
     }
   }, [navigate]);
 
   const checkAlert = useCallback(async () => {
     try {
-      const request = await fetch(
-        'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
-      );
+      const request = await fetch('https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest');
       if (android && request.status === 500) throw new Error('failed');
       await request.json();
-      Alert.alert(
-        lang.t('developer_settings.status'),
-        lang.t('developer_settings.not_applied')
-      );
+      Alert.alert(lang.t('developer_settings.status'), lang.t('developer_settings.not_applied'));
     } catch (e) {
-      Alert.alert(
-        lang.t('developer_settings.status'),
-        lang.t('developer_settings.applied')
-      );
+      Alert.alert(lang.t('developer_settings.status'), lang.t('developer_settings.applied'));
     }
   }, []);
 
@@ -198,12 +169,7 @@ const DevSection = () => {
   const toggleTestnetsEnabled = useCallback(async () => {
     testnetsEnabled && revertToMainnet();
     await dispatch(settingsChangeTestnetsEnabled(!testnetsEnabled));
-  }, [
-    dispatch,
-    revertToMainnet,
-    settingsChangeTestnetsEnabled,
-    testnetsEnabled,
-  ]);
+  }, [dispatch, revertToMainnet, settingsChangeTestnetsEnabled, testnetsEnabled]);
 
   const clearAllNotificationSettings = useCallback(async () => {
     // loop through notification settings and unsubscribe all wallets
@@ -211,11 +177,7 @@ const DevSection = () => {
     // clearing storage and before changing settings
     removeGlobalNotificationSettings();
     if (walletNotificationSettings.length > 0) {
-      return Promise.all(
-        walletNotificationSettings.map(wallet =>
-          removeNotificationSettingsForWallet(wallet.address)
-        )
-      );
+      return Promise.all(walletNotificationSettings.map(wallet => removeNotificationSettingsForWallet(wallet.address)));
     }
     return Promise.resolve();
   }, [walletNotificationSettings]);
@@ -250,25 +212,21 @@ const DevSection = () => {
   const wipeKeychainWithAlert = async () => {
     const confirmKeychainAlert = () =>
       new Promise<boolean>(resolve => {
-        Alert.alert(
-          lang.t('developer_settings.keychain.alert_title'),
-          lang.t('developer_settings.keychain.alert_body'),
-          [
-            {
-              onPress: () => {
-                resolve(true);
-              },
-              text: lang.t('developer_settings.keychain.delete_wallets'),
+        Alert.alert(lang.t('developer_settings.keychain.alert_title'), lang.t('developer_settings.keychain.alert_body'), [
+          {
+            onPress: () => {
+              resolve(true);
             },
-            {
-              onPress: () => {
-                resolve(false);
-              },
-              style: 'cancel',
-              text: lang.t('button.cancel'),
+            text: lang.t('developer_settings.keychain.delete_wallets'),
+          },
+          {
+            onPress: () => {
+              resolve(false);
             },
-          ]
-        );
+            style: 'cancel',
+            text: lang.t('button.cancel'),
+          },
+        ]);
       });
 
     const isAuth = await isAuthenticated();
@@ -317,36 +275,22 @@ const DevSection = () => {
           leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
           onPress={clearLocalStorage}
           size={52}
-          titleComponent={
-            <MenuItem.Title
-              text={lang.t('developer_settings.clear_local_storage')}
-            />
-          }
-          rightComponent={
-            loadingStates.clearLocalStorage && <SettingsLoadingIndicator />
-          }
+          titleComponent={<MenuItem.Title text={lang.t('developer_settings.clear_local_storage')} />}
+          rightComponent={loadingStates.clearLocalStorage && <SettingsLoadingIndicator />}
         />
         <MenuItem
           leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
           onPress={clearPendingTransactions}
           size={52}
           testID="clear-pending-transactions-section"
-          titleComponent={
-            <MenuItem.Title
-              text={lang.t('developer_settings.clear_pending_txs')}
-            />
-          }
+          titleComponent={<MenuItem.Title text={lang.t('developer_settings.clear_pending_txs')} />}
         />
         <MenuItem
           leftComponent={<MenuItem.TextIcon icon="🚨" isEmoji />}
           onPress={wipeKeychainWithAlert}
           size={52}
           testID="reset-keychain-section"
-          titleComponent={
-            <MenuItem.Title
-              text={lang.t('developer_settings.keychain.menu_title')}
-            />
-          }
+          titleComponent={<MenuItem.Title text={lang.t('developer_settings.keychain.menu_title')} />}
         />
       </Menu>
       {(IS_DEV || isTestFlight) && (
@@ -356,132 +300,80 @@ const DevSection = () => {
               leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
               onPress={clearAsyncStorage}
               size={52}
-              titleComponent={
-                <MenuItem.Title
-                  text={lang.t('developer_settings.clear_async_storage')}
-                />
-              }
-              rightComponent={
-                loadingStates.clearAsyncStorage && <SettingsLoadingIndicator />
-              }
+              titleComponent={<MenuItem.Title text={lang.t('developer_settings.clear_async_storage')} />}
+              rightComponent={loadingStates.clearAsyncStorage && <SettingsLoadingIndicator />}
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
               onPress={clearMMKVStorage}
               size={52}
-              titleComponent={
-                <MenuItem.Title
-                  text={lang.t('developer_settings.clear_mmkv_storage')}
-                />
-              }
-              rightComponent={
-                loadingStates.clearMmkvStorage && <SettingsLoadingIndicator />
-              }
+              titleComponent={<MenuItem.Title text={lang.t('developer_settings.clear_mmkv_storage')} />}
+              rightComponent={loadingStates.clearMmkvStorage && <SettingsLoadingIndicator />}
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="📷️" isEmoji />}
               onPress={clearImageMetadataCache}
               size={52}
-              titleComponent={
-                <MenuItem.Title
-                  text={lang.t('developer_settings.clear_image_metadata_cache')}
-                />
-              }
+              titleComponent={<MenuItem.Title text={lang.t('developer_settings.clear_image_metadata_cache')} />}
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="📷️" isEmoji />}
               onPress={clearImageCache}
               size={52}
-              titleComponent={
-                <MenuItem.Title
-                  text={lang.t('developer_settings.clear_image_cache')}
-                />
-              }
+              titleComponent={<MenuItem.Title text={lang.t('developer_settings.clear_image_cache')} />}
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="🔄" isEmoji />}
               onPress={() => Restart.Restart()}
               size={52}
-              titleComponent={
-                <MenuItem.Title
-                  text={lang.t('developer_settings.restart_app')}
-                />
-              }
+              titleComponent={<MenuItem.Title text={lang.t('developer_settings.restart_app')} />}
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="💥" isEmoji />}
               onPress={throwRenderError}
               size={52}
               testID="crash-app-section"
-              titleComponent={
-                <MenuItem.Title
-                  text={lang.t('developer_settings.crash_app_render_error')}
-                />
-              }
+              titleComponent={<MenuItem.Title text={lang.t('developer_settings.crash_app_render_error')} />}
             />
             {errorObj}
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="🗑️" isEmoji />}
               onPress={removeBackups}
               size={52}
-              titleComponent={
-                <MenuItem.Title
-                  text={lang.t('developer_settings.remove_all_backups')}
-                />
-              }
+              titleComponent={<MenuItem.Title text={lang.t('developer_settings.remove_all_backups')} />}
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="🤷" isEmoji />}
               onPress={() => AsyncStorage.removeItem('experimentalConfig')}
               size={52}
-              titleComponent={
-                <MenuItem.Title
-                  text={lang.t('developer_settings.reset_experimental_config')}
-                />
-              }
+              titleComponent={<MenuItem.Title text={lang.t('developer_settings.reset_experimental_config')} />}
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="👷" isEmoji />}
               onPress={connectToHardhat}
               size={52}
               testID="hardhat-section"
-              titleComponent={
-                <MenuItem.Title
-                  text={lang.t('developer_settings.connect_to_hardhat')}
-                />
-              }
+              titleComponent={<MenuItem.Title text={lang.t('developer_settings.connect_to_hardhat')} />}
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="🏖️" isEmoji />}
               onPress={checkAlert}
               size={52}
               testID="alert-section"
-              titleComponent={
-                <MenuItem.Title text={lang.t('developer_settings.alert')} />
-              }
+              titleComponent={<MenuItem.Title text={lang.t('developer_settings.alert')} />}
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="⏩" isEmoji />}
               onPress={syncCodepush}
-              rightComponent={
-                <MenuItem.Selection>{codePushVersion}</MenuItem.Selection>
-              }
+              rightComponent={<MenuItem.Selection>{codePushVersion}</MenuItem.Selection>}
               size={52}
-              titleComponent={
-                <MenuItem.Title
-                  text={lang.t('developer_settings.sync_codepush')}
-                />
-              }
+              titleComponent={<MenuItem.Title text={lang.t('developer_settings.sync_codepush')} />}
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="🗺️" isEmoji />}
               onPress={onPressNavigationEntryPoint}
               size={52}
-              titleComponent={
-                <MenuItem.Title
-                  text={lang.t('developer_settings.navigation_entry_point')}
-                />
-              }
+              titleComponent={<MenuItem.Title text={lang.t('developer_settings.navigation_entry_point')} />}
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="🤖" isEmoji />}
@@ -495,9 +387,7 @@ const DevSection = () => {
                 Alert.alert(publicKey ? `Copied` : `Couldn't get public key`);
               }}
               size={52}
-              titleComponent={
-                <MenuItem.Title text={'Copy signing wallet address'} />
-              }
+              titleComponent={<MenuItem.Title text={'Copy signing wallet address'} />}
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="🌎" isEmoji />}
@@ -534,9 +424,7 @@ const DevSection = () => {
                 <MenuItem
                   key={key}
                   onPress={() => onExperimentalKeyChange(key)}
-                  rightComponent={
-                    !!config[key] && <MenuItem.StatusIcon status="selected" />
-                  }
+                  rightComponent={!!config[key] && <MenuItem.StatusIcon status="selected" />}
                   size={52}
                   titleComponent={<MenuItem.Title text={key} />}
                 />

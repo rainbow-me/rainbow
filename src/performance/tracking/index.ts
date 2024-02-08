@@ -9,27 +9,16 @@ If we make breaking changes we will be able to take it into consideration when d
  */
 const performanceTrackingVersion = 2;
 const shouldLogToConsole = __DEV__ || SENTRY_ENVIRONMENT === 'LocalRelease';
-const shouldReportMeasurement =
-  IS_TESTING === 'false' && !__DEV__ && SENTRY_ENVIRONMENT !== 'LocalRelease';
+const shouldReportMeasurement = IS_TESTING === 'false' && !__DEV__ && SENTRY_ENVIRONMENT !== 'LocalRelease';
 const logTag = '[PERFORMANCE]: ';
 
-function logDurationIfAppropriate(
-  metric: PerformanceMetricsType,
-  durationInMs: number,
-  ...additionalArgs: any[]
-) {
+function logDurationIfAppropriate(metric: PerformanceMetricsType, durationInMs: number, ...additionalArgs: any[]) {
   if (shouldLogToConsole) {
-    global.console.log(
-      `${logTag}${metric}, duration: ${durationInMs.toFixed(2)}ms`,
-      ...additionalArgs
-    );
+    global.console.log(`${logTag}${metric}, duration: ${durationInMs.toFixed(2)}ms`, ...additionalArgs);
   }
 }
 
-const currentlyTrackedMetrics = new Map<
-  PerformanceMetricsType,
-  PerformanceMetricData
->();
+const currentlyTrackedMetrics = new Map<PerformanceMetricsType, PerformanceMetricData>();
 
 interface AdditionalParams extends Record<string, any> {
   tag?: PerformanceTagsType;
@@ -43,11 +32,7 @@ interface AdditionalParams extends Record<string, any> {
  * @param durationInMs How long did it take
  * @param additionalParams Any additional context you want to add to your log
  */
-function logDirectly(
-  metric: PerformanceMetricsType,
-  durationInMs: number,
-  additionalParams?: AdditionalParams
-) {
+function logDirectly(metric: PerformanceMetricsType, durationInMs: number, additionalParams?: AdditionalParams) {
   logDurationIfAppropriate(metric, durationInMs);
   if (shouldReportMeasurement) {
     analytics.track(metric, {
@@ -65,10 +50,7 @@ function logDirectly(
  * @param metric What you're measuring
  * @param additionalParams Any additional context you want to add to your log
  */
-function startMeasuring(
-  metric: PerformanceMetricsType,
-  additionalParams?: AdditionalParams
-) {
+function startMeasuring(metric: PerformanceMetricsType, additionalParams?: AdditionalParams) {
   const startTime = performance.now();
 
   currentlyTrackedMetrics.set(metric, {
@@ -88,10 +70,7 @@ function startMeasuring(
  * @param additionalParams Any additional context you want to add to your log
  * @returns True if the measurement was collected and commited properly, false otherwise
  */
-function finishMeasuring(
-  metric: PerformanceMetricsType,
-  additionalParams?: AdditionalParams
-): boolean {
+function finishMeasuring(metric: PerformanceMetricsType, additionalParams?: AdditionalParams): boolean {
   const savedEntry = currentlyTrackedMetrics.get(metric);
   if (savedEntry === undefined || savedEntry.startTimestamp === undefined) {
     return false;

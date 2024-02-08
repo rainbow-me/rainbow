@@ -1,18 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
-import {
-  addressHashedColorIndex,
-  addressHashedEmoji,
-} from '@/utils/profileUtils';
+import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import { fetchReverseRecord } from '@/handlers/ens';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ContactAvatar } from '@/components/contacts';
 import { Box, Column, Columns, Cover, Stack, Text } from '@/design-system';
-import Animated, {
-  Easing,
-  interpolate,
-  useAnimatedStyle,
-} from 'react-native-reanimated';
+import Animated, { Easing, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { useTiming } from 'react-native-redash';
 import { ButtonPressAnimation } from '@/components/animations';
 import Clipboard from '@react-native-community/clipboard';
@@ -21,10 +14,7 @@ import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { Contact } from '@/redux/contacts';
 import { RainbowAccount } from '@/model/wallet';
 import { fetchENSAvatar } from '@/hooks/useENSAvatar';
-import {
-  removeFirstEmojiFromString,
-  returnStringFirstEmoji,
-} from '@/helpers/emojiHandler';
+import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Navigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
@@ -73,18 +63,14 @@ const ContextMenuRenderer = ({
                   : i18n.t(i18n.l.transaction_details.context_menu.add_contact),
                 icon: {
                   iconType: 'SYSTEM',
-                  iconValue: contact
-                    ? 'person.crop.circle'
-                    : 'person.crop.circle.badge.plus',
+                  iconValue: contact ? 'person.crop.circle' : 'person.crop.circle.badge.plus',
                 },
               },
             ]
           : []),
         {
           actionKey: 'copy',
-          actionTitle: i18n.t(
-            i18n.l.transaction_details.context_menu.copy_address
-          ),
+          actionTitle: i18n.t(i18n.l.transaction_details.context_menu.copy_address),
           actionSubtitle: isENSAddressFormat(name) ? name : formattedAddress,
           icon: {
             iconType: 'SYSTEM',
@@ -183,11 +169,7 @@ const ContextMenuRenderer = ({
   }
 
   return (
-    <ContextMenuButton
-      menuConfig={menuConfig}
-      onPressMenuItem={onPressMenuItem}
-      menuAlignmentOverride="left"
-    >
+    <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={onPressMenuItem} menuAlignmentOverride="left">
       {children}
     </ContextMenuButton>
   );
@@ -201,13 +183,7 @@ type Props = {
   account?: RainbowAccount;
 };
 
-export const TransactionDetailsAddressRow: React.FC<Props> = ({
-  address,
-  title,
-  onAddressCopied,
-  contact,
-  account,
-}) => {
+export const TransactionDetailsAddressRow: React.FC<Props> = ({ address, title, onAddressCopied, contact, account }) => {
   const formattedAddress = formatAddressForDisplay(address);
   const [fetchedEnsName, setFetchedEnsName] = useState<string | undefined>();
   const [fetchedEnsImage, setFetchedEnsImage] = useState<string | undefined>();
@@ -217,18 +193,11 @@ export const TransactionDetailsAddressRow: React.FC<Props> = ({
     easing: Easing.linear,
   });
 
-  const accountEmoji = useMemo(() => returnStringFirstEmoji(account?.label), [
-    account,
-  ]);
-  const accountName = useMemo(
-    () => removeFirstEmojiFromString(account?.label),
-    []
-  );
-  const color =
-    account?.color ?? contact?.color ?? addressHashedColorIndex(address);
+  const accountEmoji = useMemo(() => returnStringFirstEmoji(account?.label), [account]);
+  const accountName = useMemo(() => removeFirstEmojiFromString(account?.label), []);
+  const color = account?.color ?? contact?.color ?? addressHashedColorIndex(address);
   const emoji = accountEmoji || addressHashedEmoji(address);
-  const name =
-    accountName || contact?.nickname || contact?.ens || formattedAddress;
+  const name = accountName || contact?.nickname || contact?.ens || formattedAddress;
 
   const imageUrl = fetchedEnsImage ?? account?.image;
   const ensAvatarSharedValue = useTiming(!!imageUrl && imageLoaded, {
@@ -308,33 +277,18 @@ export const TransactionDetailsAddressRow: React.FC<Props> = ({
               </Box>
             </Column>
             <Stack space="10px">
-              <Text
-                color="labelTertiary"
-                size="13pt"
-                numberOfLines={1}
-                weight="semibold"
-              >
+              <Text color="labelTertiary" size="13pt" numberOfLines={1} weight="semibold">
                 {title}
               </Text>
               <Box>
                 <Animated.View style={addressAnimatedStyle}>
-                  <Text
-                    color="label"
-                    size="17pt"
-                    weight="semibold"
-                    numberOfLines={1}
-                  >
+                  <Text color="label" size="17pt" weight="semibold" numberOfLines={1}>
                     {name}
                   </Text>
                 </Animated.View>
                 <Cover>
                   <Animated.View style={ensNameAnimatedStyle}>
-                    <Text
-                      color="label"
-                      size="17pt"
-                      weight="semibold"
-                      numberOfLines={1}
-                    >
+                    <Text color="label" size="17pt" weight="semibold" numberOfLines={1}>
                       {fetchedEnsName}
                     </Text>
                   </Animated.View>

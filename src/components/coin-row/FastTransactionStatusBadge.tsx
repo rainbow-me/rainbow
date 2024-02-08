@@ -3,11 +3,7 @@ import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import Spinner from '../Spinner';
 import { Icon } from '../icons';
 import { Text, useForegroundColor } from '@/design-system';
-import {
-  RainbowTransaction,
-  TransactionStatus,
-  TransactionStatusTypes,
-} from '@/entities';
+import { RainbowTransaction, TransactionStatus, TransactionStatusTypes } from '@/entities';
 import { position } from '@/styles';
 import { ThemeContextProps } from '@/theme';
 import * as lang from '@/languages';
@@ -185,11 +181,7 @@ export default React.memo(function FastTransactionStatusBadge({
   return (
     <View style={[sx.row, style]}>
       <ActivityTypeIcon transaction={transaction} color={statusColor} />
-      <Text
-        color={{ custom: statusColor }}
-        size="14px / 19px (Deprecated)"
-        weight="semibold"
-      >
+      <Text color={{ custom: statusColor }} size="14px / 19px (Deprecated)" weight="semibold">
         {/* @ts-ignore */}
         {lang.t(lang.l.transactions.type[transaction?.title])}
       </Text>

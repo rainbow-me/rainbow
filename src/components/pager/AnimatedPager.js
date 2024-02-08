@@ -61,12 +61,8 @@ export default class AnimatedPager extends Component {
 
     return (
       <Container {...props}>
-        <AnimatedPagerItem translateX={this.translateValues.page1}>
-          {pages[0]}
-        </AnimatedPagerItem>
-        <AnimatedPagerItem translateX={this.translateValues.page2}>
-          {pages[1]}
-        </AnimatedPagerItem>
+        <AnimatedPagerItem translateX={this.translateValues.page1}>{pages[0]}</AnimatedPagerItem>
+        <AnimatedPagerItem translateX={this.translateValues.page2}>{pages[1]}</AnimatedPagerItem>
       </Container>
     );
   }

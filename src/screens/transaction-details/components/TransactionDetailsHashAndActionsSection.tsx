@@ -24,17 +24,11 @@ type Props = {
   presentToast?: () => void;
 };
 
-export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({
-  transaction,
-  presentToast,
-}) => {
+export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ transaction, presentToast }) => {
   const { colors } = useTheme();
   const hash = useMemo(() => ethereumUtils.getHash(transaction), [transaction]);
   const { network, status } = transaction;
-  const isReadOnly = useSelector(
-    (state: AppState) =>
-      state.wallets.selected?.type === WalletTypes.readOnly ?? true
-  );
+  const isReadOnly = useSelector((state: AppState) => state.wallets.selected?.type === WalletTypes.readOnly ?? true);
   // Retry swap related data
   const retrySwapMetadata = useMemo(() => {
     const data = swapMetadataStorage.getString(hash ?? '');
@@ -45,8 +39,7 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({
     return undefined;
   }, [hash]);
 
-  const isRetrySwapButtonVisible =
-    !isReadOnly && status === TransactionStatus.failed && !!retrySwapMetadata;
+  const isRetrySwapButtonVisible = !isReadOnly && status === TransactionStatus.failed && !!retrySwapMetadata;
 
   const onRetrySwap = useCallback(() => {
     Navigation.handleAction(Routes.WALLET_SCREEN, {});
@@ -83,11 +76,7 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({
           {formattedHash && (
             <ButtonPressAnimation onPress={onHashPress} scaleTo={0.96}>
               <Box paddingVertical="12px">
-                <SingleLineTransactionDetailsRow
-                  icon="􀆃"
-                  title={i18n.t(i18n.l.transaction_details.hash)}
-                  value={formattedHash}
-                />
+                <SingleLineTransactionDetailsRow icon="􀆃" title={i18n.t(i18n.l.transaction_details.hash)} value={formattedHash} />
               </Box>
             </ButtonPressAnimation>
           )}
@@ -106,9 +95,7 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({
             weight="heavy"
             onPress={onViewOnBlockExplorerPress}
             label={i18n.t(i18n.l.wallet.action.view_on, {
-              blockExplorerName: startCase(
-                ethereumUtils.getBlockExplorer(network)
-              ),
+              blockExplorerName: startCase(ethereumUtils.getBlockExplorer(network)),
             })}
             lightShadows
           />

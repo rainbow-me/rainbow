@@ -18,15 +18,7 @@ const Container = styled(Column)({
   paddingTop: navbarHeight,
 });
 
-const EmptyAssetList = ({
-  descendingOpacity,
-  isLoading,
-  isWalletEthZero,
-  network,
-  skeletonCount = 5,
-  title,
-  ...props
-}) => {
+const EmptyAssetList = ({ descendingOpacity, isLoading, isWalletEthZero, network, skeletonCount = 5, title, ...props }) => {
   const { bottom: bottomInset } = useSafeAreaInsets();
 
   const interstitialOffset = useMemo(() => {
@@ -47,13 +39,7 @@ const EmptyAssetList = ({
       wrap={children => (
         <ScrollView
           contentContainerStyle={{ height: '100%' }}
-          refreshControl={
-            <RefreshControl
-              onRefresh={refresh}
-              progressViewOffset={navbarHeight + 16}
-              refreshing={isRefreshing}
-            />
-          }
+          refreshControl={<RefreshControl onRefresh={refresh} progressViewOffset={navbarHeight + 16} refreshing={isRefreshing} />}
         >
           {children}
         </ScrollView>
@@ -62,10 +48,7 @@ const EmptyAssetList = ({
       <Container {...props}>
         <Centered flex={1}>
           {showAddFunds ? (
-            <AddFundsInterstitial
-              network={network}
-              offsetY={interstitialOffset}
-            />
+            <AddFundsInterstitial network={network} offsetY={interstitialOffset} />
           ) : (
             <React.Fragment>
               {title && <AssetListHeader title={title} />}

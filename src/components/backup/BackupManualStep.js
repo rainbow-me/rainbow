@@ -20,8 +20,7 @@ const Content = styled(Column).attrs({
 })({
   flexGrow: 1,
   flexShrink: 0,
-  paddingTop: ({ isTallPhone, isSmallPhone }) =>
-    android ? 30 : isTallPhone ? 45 : isSmallPhone ? 10 : 25,
+  paddingTop: ({ isTallPhone, isSmallPhone }) => (android ? 30 : isTallPhone ? 45 : isSmallPhone ? 10 : 25),
 });
 
 const Footer = styled(Column).attrs({
@@ -109,25 +108,14 @@ export default function BackupManualStep() {
         </MastheadTitleRow>
         <MastheadDescription>
           <MastheadDescription weight="semibold">
-            {type === WalletTypes.privateKey
-              ? lang.t('back_up.manual.pkey.these_keys')
-              : lang.t('back_up.manual.seed.these_keys')}
+            {type === WalletTypes.privateKey ? lang.t('back_up.manual.pkey.these_keys') : lang.t('back_up.manual.seed.these_keys')}
           </MastheadDescription>
           <Nbsp />
-          {type === WalletTypes.privateKey
-            ? lang.t('back_up.manual.pkey.save_them')
-            : lang.t('back_up.manual.seed.save_them')}
+          {type === WalletTypes.privateKey ? lang.t('back_up.manual.pkey.save_them') : lang.t('back_up.manual.seed.save_them')}
         </MastheadDescription>
       </Masthead>
-      <Content
-        isSmallPhone={isSmallPhone}
-        isTallPhone={isTallPhone}
-        paddingHorizontal={30}
-      >
-        <SecretDisplaySection
-          onSecretLoaded={setSecretLoaded}
-          onWalletTypeIdentified={setType}
-        />
+      <Content isSmallPhone={isSmallPhone} isTallPhone={isTallPhone} paddingHorizontal={30}>
+        <SecretDisplaySection onSecretLoaded={setSecretLoaded} onWalletTypeIdentified={setType} />
       </Content>
       <Footer>
         {secretLoaded && (
@@ -135,9 +123,7 @@ export default function BackupManualStep() {
             <SheetActionButton
               color={colors.appleBlue}
               label={`􀁣  ${
-                type === WalletTypes.privateKey
-                  ? lang.t('back_up.manual.pkey.confirm_save')
-                  : lang.t('back_up.manual.seed.confirm_save')
+                type === WalletTypes.privateKey ? lang.t('back_up.manual.pkey.confirm_save') : lang.t('back_up.manual.seed.confirm_save')
               }`}
               onPress={onComplete}
               size="big"

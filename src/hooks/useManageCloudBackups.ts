@@ -3,11 +3,7 @@ import lang from 'i18n-js';
 import { useDispatch } from 'react-redux';
 import { cloudPlatform } from '../utils/platform';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import {
-  deleteAllBackups,
-  fetchAllBackups,
-  fetchUserDataFromCloud,
-} from '@/handlers/cloudBackup';
+import { deleteAllBackups, fetchAllBackups, fetchUserDataFromCloud } from '@/handlers/cloudBackup';
 import { useNavigation } from '@/navigation/Navigation';
 import { clearAllWalletsBackupStatus } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
@@ -18,11 +14,7 @@ export default function useManageCloudBackups() {
   const { navigate } = useNavigation();
 
   const manageCloudBackups = useCallback(() => {
-    const buttons = [
-      `Restore from ${cloudPlatform} Backups`,
-      `Delete All ${cloudPlatform} Backups`,
-      'Cancel',
-    ];
+    const buttons = [`Restore from ${cloudPlatform} Backups`, `Delete All ${cloudPlatform} Backups`, 'Cancel'];
 
     showActionSheetWithOptions(
       {
@@ -34,9 +26,7 @@ export default function useManageCloudBackups() {
       async (buttonIndex: number) => {
         if (buttonIndex === 0) {
           const { files } = await fetchAllBackups();
-          const filteredFiles = files.filter(
-            (file: any) => file.name.indexOf('backup_') !== -1
-          );
+          const filteredFiles = files.filter((file: any) => file.name.indexOf('backup_') !== -1);
           const backupFiles = filteredFiles.map((file: any, i: number) => {
             const ts = Number(
               file.name
@@ -74,10 +64,7 @@ export default function useManageCloudBackups() {
                       let userData = null;
                       // If the backup is the latest, we use the normal restore flow
                       // To preserve account names, colors, etc
-                      const isUserdataAvailableForThisBackup =
-                        potentialUserData
-                          .toString()
-                          .indexOf(filteredFiles[buttonIndex].name) !== -1;
+                      const isUserdataAvailableForThisBackup = potentialUserData.toString().indexOf(filteredFiles[buttonIndex].name) !== -1;
                       if (isUserdataAvailableForThisBackup) {
                         userData = potentialUserData;
                       } else {

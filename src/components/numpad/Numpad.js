@@ -25,16 +25,8 @@ const KeyboardButton = ({ children, ...props }) => {
   const keyHeight = isTinyPhone ? 60 : 64;
 
   return (
-    <ButtonPressAnimation
-      {...props}
-      duration={35}
-      pressOutDuration={75}
-      scaleTo={1.6}
-      transformOrigin={[0.5, 0.5 + 8 / keyHeight]}
-    >
-      <KeyboardButtonContent height={keyHeight}>
-        {children}
-      </KeyboardButtonContent>
+    <ButtonPressAnimation {...props} duration={35} pressOutDuration={75} scaleTo={1.6} transformOrigin={[0.5, 0.5 + 8 / keyHeight]}>
+      <KeyboardButtonContent height={keyHeight}>{children}</KeyboardButtonContent>
     </ButtonPressAnimation>
   );
 };
@@ -45,11 +37,7 @@ export default function Numpad({ decimal = true, onPress, width }) {
 
   const renderCell = useCallback(
     symbol => (
-      <KeyboardButton
-        key={symbol}
-        onPress={() => onPress(symbol.toString())}
-        testID={`numpad-button-${symbol}`}
-      >
+      <KeyboardButton key={symbol} onPress={() => onPress(symbol.toString())} testID={`numpad-button-${symbol}`}>
         <Text align="center" color={keyColor} size={44} weight="bold">
           {symbol}
         </Text>
@@ -58,10 +46,7 @@ export default function Numpad({ decimal = true, onPress, width }) {
     [keyColor, onPress]
   );
 
-  const renderRow = useCallback(
-    cells => <KeyboardRow>{cells.map(renderCell)}</KeyboardRow>,
-    [renderCell]
-  );
+  const renderRow = useCallback(cells => <KeyboardRow>{cells.map(renderCell)}</KeyboardRow>, [renderCell]);
 
   return (
     <Centered direction="column" width={width}>

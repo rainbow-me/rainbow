@@ -21,10 +21,7 @@ describe('Import from private key flow', () => {
 
   it('with 0x - Should show the "Add wallet modal" after tapping import with a valid private key"', async () => {
     await Helpers.typeText('import-sheet-input', process.env.DEV_PKEY, false);
-    await Helpers.checkIfElementHasString(
-      'import-sheet-button-label',
-      'Continue'
-    );
+    await Helpers.checkIfElementHasString('import-sheet-button-label', 'Continue');
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.checkIfVisible('wallet-info-modal');
   });

@@ -44,16 +44,9 @@ const format = (originalY, data, latestChange) => {
   return firstValue === Number(firstValue) && firstValue
     ? (() => {
         const value =
-          originalY?.value === lastValue || !originalY?.value
-            ? latestChange
-            : ((originalY.value || lastValue) / firstValue) * 100 - 100;
+          originalY?.value === lastValue || !originalY?.value ? latestChange : ((originalY.value || lastValue) / firstValue) * 100 - 100;
 
-        return (
-          (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') +
-          ' ' +
-          formatNumber(Math.abs(value).toFixed(2)) +
-          '%'
-        );
+        return (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') + ' ' + formatNumber(Math.abs(value).toFixed(2)) + '%';
       })()
     : '';
 };
@@ -63,17 +56,11 @@ export default function ChartPercentChangeLabel({ ratio, latestChange }) {
   const { colors } = useTheme();
 
   // we don't need to format on latestChange changes
-  const defaultValue = useMemo(() => format(originalY, data, latestChange), [
-    originalY,
-    data,
-    latestChange,
-  ]);
+  const defaultValue = useMemo(() => format(originalY, data, latestChange), [originalY, data, latestChange]);
 
   const textProps = useAnimatedStyle(
     () => ({
-      text: isActive.value
-        ? format(originalY, data, latestChange)
-        : defaultValue,
+      text: isActive.value ? format(originalY, data, latestChange) : defaultValue,
     }),
     [originalY, data, latestChange, isActive]
   );
@@ -83,27 +70,14 @@ export default function ChartPercentChangeLabel({ ratio, latestChange }) {
   const textStyle = useAnimatedStyle(() => {
     const realRatio = isActive.value ? sharedRatio.value : ratio;
     return {
-      color:
-        realRatio === 1
-          ? colors.blueGreyDark
-          : realRatio < 1
-          ? colors.red
-          : colors.green,
+      color: realRatio === 1 ? colors.blueGreyDark : realRatio < 1 ? colors.red : colors.green,
     };
   }, [ratio]);
 
   return (
     <RowWithMargins align="center" margin={4}>
-      {android ? (
-        <ChartChangeDirectionArrow ratio={ratio} sharedRatio={sharedRatio} />
-      ) : null}
-      <PercentLabel
-        alignSelf="flex-end"
-        animatedProps={textProps}
-        defaultValue={defaultValue}
-        editable={false}
-        style={textStyle}
-      />
+      {android ? <ChartChangeDirectionArrow ratio={ratio} sharedRatio={sharedRatio} /> : null}
+      <PercentLabel alignSelf="flex-end" animatedProps={textProps} defaultValue={defaultValue} editable={false} style={textStyle} />
     </RowWithMargins>
   );
 }

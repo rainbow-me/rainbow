@@ -49,19 +49,9 @@ export type {
   ZerionTransaction,
   ZerionTransactionChange,
 } from './transactions';
-export {
-  GasFeeTypes,
-  TransactionDirection,
-  TransactionDirections,
-  TransactionStatus,
-  TransactionStatusTypes,
-} from './transactions';
+export { GasFeeTypes, TransactionDirection, TransactionDirections, TransactionStatus, TransactionStatusTypes } from './transactions';
 export type { EthereumAddress } from './wallet';
-export type {
-  TokenSearchThreshold,
-  TokenSearchTokenListId,
-  TokenSearchUniswapAssetKey,
-} from './tokenSearch';
+export type { TokenSearchThreshold, TokenSearchTokenListId, TokenSearchUniswapAssetKey } from './tokenSearch';
 export type {
   ENSRegistrationRecords,
   ENSRegistrations,

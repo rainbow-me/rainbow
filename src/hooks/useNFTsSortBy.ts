@@ -31,8 +31,6 @@ export default function useNftSort(): {
 
   return {
     updateNFTSort,
-    nftSort:
-      (nftSort as CollectibleSortByOptions) ||
-      CollectibleSortByOptions.MOST_RECENT,
+    nftSort: (nftSort as CollectibleSortByOptions) || CollectibleSortByOptions.MOST_RECENT,
   };
 }

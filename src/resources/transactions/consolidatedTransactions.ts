@@ -1,11 +1,5 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import {
-  InfiniteQueryConfig,
-  QueryConfig,
-  QueryFunctionArgs,
-  createQueryKey,
-  queryClient,
-} from '@/react-query';
+import { InfiniteQueryConfig, QueryConfig, QueryFunctionArgs, createQueryKey, queryClient } from '@/react-query';
 import { NativeCurrencyKey, RainbowTransaction } from '@/entities';
 import { TransactionApiResponse, TransactionsReceivedMessage } from './types';
 import { RainbowError, logger } from '@/logger';
@@ -29,33 +23,17 @@ export type ConsolidatedTransactionsArgs = {
 // ///////////////////////////////////////////////
 // Query Key
 
-export const consolidatedTransactionsQueryKey = ({
-  address,
-  currency,
-  chainIds,
-}: ConsolidatedTransactionsArgs) =>
-  createQueryKey(
-    'consolidatedTransactionss',
-    { address, currency, chainIds },
-    { persisterVersion: 1 }
-  );
+export const consolidatedTransactionsQueryKey = ({ address, currency, chainIds }: ConsolidatedTransactionsArgs) =>
+  createQueryKey('consolidatedTransactionss', { address, currency, chainIds }, { persisterVersion: 1 });
 
-type ConsolidatedTransactionsQueryKey = ReturnType<
-  typeof consolidatedTransactionsQueryKey
->;
+type ConsolidatedTransactionsQueryKey = ReturnType<typeof consolidatedTransactionsQueryKey>;
 
 // ///////////////////////////////////////////////
 // Query Fetcher
 
-export async function fetchConsolidatedTransactions<
-  ConsolidatedTransactionsResult
->(
+export async function fetchConsolidatedTransactions<ConsolidatedTransactionsResult>(
   { address, currency, chainIds }: ConsolidatedTransactionsArgs,
-  config: QueryConfig<
-    ConsolidatedTransactionsResult,
-    Error,
-    ConsolidatedTransactionsQueryKey
-  >
+  config: QueryConfig<ConsolidatedTransactionsResult, Error, ConsolidatedTransactionsQueryKey>
 ) {
   return await queryClient.fetchQuery(
     consolidatedTransactionsQueryKey({
@@ -80,9 +58,7 @@ type _QueryResult = {
 export async function consolidatedTransactionsQueryFunction({
   queryKey: [{ address, currency, chainIds }],
   pageParam,
-}: QueryFunctionArgs<
-  typeof consolidatedTransactionsQueryKey
->): Promise<_QueryResult> {
+}: QueryFunctionArgs<typeof consolidatedTransactionsQueryKey>): Promise<_QueryResult> {
   try {
     const chainIdsString = chainIds.join(',');
     const url = `https://addys.p.rainbow.me/v3/${chainIdsString}/${address}/transactions`;
@@ -98,10 +74,7 @@ export async function consolidatedTransactionsQueryFunction({
       },
     });
 
-    const consolidatedTransactions = await parseConsolidatedTransactions(
-      response?.data,
-      currency
-    );
+    const consolidatedTransactions = await parseConsolidatedTransactions(response?.data, currency);
 
     return {
       cutoff: response?.data?.meta?.cut_off,
@@ -134,14 +107,10 @@ async function parseConsolidatedTransactions(
 ): Promise<RainbowTransaction[]> {
   const data = message?.payload?.transactions || [];
 
-  const parsedTransactionPromises = data.map((tx: TransactionApiResponse) =>
-    parseTransaction(tx, currency)
-  );
+  const parsedTransactionPromises = data.map((tx: TransactionApiResponse) => parseTransaction(tx, currency));
   // Filter out undefined values immediately
 
-  const parsedConsolidatedTransactions = (
-    await Promise.all(parsedTransactionPromises)
-  ).flat(); // Filter out any remaining undefined values
+  const parsedConsolidatedTransactions = (await Promise.all(parsedTransactionPromises)).flat(); // Filter out any remaining undefined values
 
   return parsedConsolidatedTransactions;
 }
@@ -150,19 +119,10 @@ async function parseConsolidatedTransactions(
 // Query Hook
 
 export function useConsolidatedTransactions(
-  {
-    address,
-    currency,
-  }: Pick<ConsolidatedTransactionsArgs, 'address' | 'currency'>,
-  config: InfiniteQueryConfig<
-    ConsolidatedTransactionsResult,
-    Error,
-    ConsolidatedTransactionsResult
-  > = {}
+  { address, currency }: Pick<ConsolidatedTransactionsArgs, 'address' | 'currency'>,
+  config: InfiniteQueryConfig<ConsolidatedTransactionsResult, Error, ConsolidatedTransactionsResult> = {}
 ) {
-  const chainIds = RainbowNetworks.filter(
-    network => network.enabled && network.networkType !== 'testnet'
-  ).map(network => network.id);
+  const chainIds = RainbowNetworks.filter(network => network.enabled && network.networkType !== 'testnet').map(network => network.id);
 
   return useInfiniteQuery(
     consolidatedTransactionsQueryKey({

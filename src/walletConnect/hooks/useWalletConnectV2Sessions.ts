@@ -8,9 +8,7 @@ import { events } from '@/handlers/appEvents';
  * method to refresh the list on demand.
  */
 export function useWalletConnectV2Sessions() {
-  const [sessions, setSessions] = React.useState<
-    ReturnType<typeof getAllActiveSessionsSync>
-  >(getAllActiveSessionsSync());
+  const [sessions, setSessions] = React.useState<ReturnType<typeof getAllActiveSessionsSync>>(getAllActiveSessionsSync());
 
   /**
    * Synchronously refreshes the list of active sessions, pulled directly from

@@ -44,9 +44,7 @@ const PinAuthenticationScreen = () => {
   const [value, setValue] = useState('');
   const [isLoading, setLoading] = useState(false);
   const [initialPin, setInitialPin] = useState('');
-  const [actionType, setActionType] = useState(
-    params.validPin ? 'authentication' : 'creation'
-  );
+  const [actionType, setActionType] = useState(params.validPin ? 'authentication' : 'creation');
 
   const finished = useRef(false);
 
@@ -85,14 +83,8 @@ const PinAuthenticationScreen = () => {
         if (stillBanned) {
           const timeLeftMS = timelock - now;
           const timeAmountSeconds = timeLeftMS / 1000;
-          const unit =
-            timeAmountSeconds > 60
-              ? lang.t('time.minutes.long.plural')
-              : lang.t('time.seconds.long.plural');
-          const timeAmount =
-            timeAmountSeconds > 60
-              ? Math.ceil(timeAmountSeconds / 60)
-              : Math.ceil(timeAmountSeconds);
+          const unit = timeAmountSeconds > 60 ? lang.t('time.minutes.long.plural') : lang.t('time.seconds.long.plural');
+          const timeAmount = timeAmountSeconds > 60 ? Math.ceil(timeAmountSeconds / 60) : Math.ceil(timeAmountSeconds);
 
           Alert.alert(
             lang.t('wallet.pin_authentication.still_blocked'),
@@ -209,11 +201,7 @@ const PinAuthenticationScreen = () => {
   const { colors } = useTheme();
 
   return (
-    <Column
-      backgroundColor={colors.white}
-      flex={1}
-      testID="pin-authentication-screen"
-    >
+    <Column backgroundColor={colors.white} flex={1} testID="pin-authentication-screen">
       <Centered flex={1}>
         <ColumnWithMargins
           align="center"
@@ -227,19 +215,15 @@ const PinAuthenticationScreen = () => {
             {actionType === 'authentication'
               ? lang.t('wallet.pin_authentication.type_your_pin')
               : actionType === 'creation'
-              ? lang.t('wallet.pin_authentication.choose_your_pin')
-              : lang.t('wallet.pin_authentication.confirm_your_pin')}
+                ? lang.t('wallet.pin_authentication.choose_your_pin')
+                : lang.t('wallet.pin_authentication.confirm_your_pin')}
           </SheetTitle>
           <PinValue translateX={errorAnimation} value={value} />
         </ColumnWithMargins>
       </Centered>
       <ColumnWithMargins align="center" margin={isTallPhone ? 27 : 12}>
         <Centered maxWidth={313}>
-          <Numpad
-            decimal={false}
-            onPress={handleNumpadPress}
-            width={isNarrowPhone ? 275 : '100%'}
-          />
+          <Numpad decimal={false} onPress={handleNumpadPress} width={isNarrowPhone ? 275 : '100%'} />
         </Centered>
       </ColumnWithMargins>
     </Column>

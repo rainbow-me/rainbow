@@ -23,25 +23,21 @@ import { useRoute } from '@react-navigation/native';
 
 const ContainerWidth = 261;
 
-const Container = styled(Centered).attrs({ direction: 'column' })(
-  ({ isSmallPhone }) => ({
-    ...(isSmallPhone && { bottom: 80 }),
-    position: 'absolute',
-    top: 60,
-    width: ContainerWidth,
-  })
-);
+const Container = styled(Centered).attrs({ direction: 'column' })(({ isSmallPhone }) => ({
+  ...(isSmallPhone && { bottom: 80 }),
+  position: 'absolute',
+  top: 60,
+  width: ContainerWidth,
+}));
 
 const InterstitialButton = styled(ButtonPressAnimation).attrs({
   borderRadius: 23,
 })();
 
-const InterstitialButtonContent = styled(View).attrs(
-  ({ theme: { colors } }) => ({
-    backgroundColor: colors.alpha(colors.blueGreyDark, 0.06),
-    borderRadius: 23,
-  })
-)({
+const InterstitialButtonContent = styled(View).attrs(({ theme: { colors } }) => ({
+  backgroundColor: colors.alpha(colors.blueGreyDark, 0.06),
+  borderRadius: 23,
+}))({
   ...padding.object(11, 15, 14),
 });
 
@@ -60,13 +56,11 @@ const CopyAddressButton = styled(ButtonPressAnimation).attrs({
   borderRadius: 23,
 })();
 
-const CopyAddressButtonContent = styled(RowWithMargins).attrs(
-  ({ theme: { colors } }) => ({
-    backgroundColor: colors.alpha(colors.appleBlue, 0.06),
-    borderRadius: 23,
-    margin: 6,
-  })
-)({
+const CopyAddressButtonContent = styled(RowWithMargins).attrs(({ theme: { colors } }) => ({
+  backgroundColor: colors.alpha(colors.appleBlue, 0.06),
+  borderRadius: 23,
+  margin: 6,
+}))({
   ...padding.object(10.5, 15, 14.5),
 });
 
@@ -128,8 +122,7 @@ const AmountButtonWrapper = styled(Row).attrs({
   ...(android && { width: isVeryNarrowPhone ? 95 : 100 }),
 });
 
-const onAddFromFaucet = accountAddress =>
-  Linking.openURL(`https://faucet.paradigm.xyz/?addr=${accountAddress}`);
+const onAddFromFaucet = accountAddress => Linking.openURL(`https://faucet.paradigm.xyz/?addr=${accountAddress}`);
 
 const InnerBPA = android ? ButtonPressAnimation : ({ children }) => children;
 
@@ -208,10 +201,7 @@ const AddFundsInterstitial = ({ network }) => {
     [isDamaged, navigate, routeName, accountAddress]
   );
 
-  const addFundsToAccountAddress = useCallback(
-    () => onAddFromFaucet(accountAddress),
-    [accountAddress]
-  );
+  const addFundsToAccountAddress = useCallback(() => onAddFromFaucet(accountAddress), [accountAddress]);
 
   const handlePressCopyAddress = useCallback(() => {
     if (isDamaged) {
@@ -225,54 +215,25 @@ const AddFundsInterstitial = ({ network }) => {
     <Container isSmallPhone={isSmallPhone}>
       {network === networkTypes.mainnet ? (
         <Fragment>
-          <Title>
-            {ios
-              ? lang.t('add_funds.to_get_started_ios')
-              : lang.t('add_funds.to_get_started_android')}
-          </Title>
+          <Title>{ios ? lang.t('add_funds.to_get_started_ios') : lang.t('add_funds.to_get_started_android')}</Title>
           <Row justify="space-between" marginVertical={30}>
-            <AmountButton
-              amount={100}
-              backgroundColor={colors.swapPurple}
-              color={colors.neonSkyblue}
-              onPress={handlePressAmount}
-            />
-            <AmountButton
-              amount={200}
-              backgroundColor={colors.swapPurple}
-              color={colors.neonSkyblue}
-              onPress={handlePressAmount}
-            />
-            <AmountButton
-              amount={300}
-              backgroundColor={colors.purpleDark}
-              color={colors.pinkLight}
-              onPress={handlePressAmount}
-            />
+            <AmountButton amount={100} backgroundColor={colors.swapPurple} color={colors.neonSkyblue} onPress={handlePressAmount} />
+            <AmountButton amount={200} backgroundColor={colors.swapPurple} color={colors.neonSkyblue} onPress={handlePressAmount} />
+            <AmountButton amount={300} backgroundColor={colors.purpleDark} color={colors.pinkLight} onPress={handlePressAmount} />
           </Row>
           <InterstitialButtonRow>
             <InterstitialButton onPress={handlePressAmount} radiusAndroid={23}>
               <InterstitialButtonContent>
-                <Text
-                  align="center"
-                  color={colors.alpha(colors.blueGreyDark, 0.6)}
-                  lineHeight="loose"
-                  size="large"
-                  weight="bold"
-                >
+                <Text align="center" color={colors.alpha(colors.blueGreyDark, 0.6)} lineHeight="loose" size="large" weight="bold">
                   {`􀍡 ${lang.t('wallet.add_cash.interstitial.other_amount')}`}
                 </Text>
               </InterstitialButtonContent>
             </InterstitialButton>
           </InterstitialButtonRow>
           {!isSmallPhone && <InterstitialDivider />}
-          <Subtitle isSmallPhone={isSmallPhone}>
-            {lang.t('add_funds.eth.or_send_eth')}
-          </Subtitle>
+          <Subtitle isSmallPhone={isSmallPhone}>{lang.t('add_funds.eth.or_send_eth')}</Subtitle>
 
-          <Paragraph>
-            {lang.t('add_funds.eth.send_from_another_source')}
-          </Paragraph>
+          <Paragraph>{lang.t('add_funds.eth.send_from_another_source')}</Paragraph>
         </Fragment>
       ) : (
         <Fragment>
@@ -283,21 +244,13 @@ const AddFundsInterstitial = ({ network }) => {
           </Title>
           <Row marginTop={30}>
             <InterstitialButton onPress={addFundsToAccountAddress}>
-              <Text
-                align="center"
-                color={colors.alpha(colors.blueGreyDark, 0.6)}
-                lineHeight="loose"
-                size="large"
-                weight="bold"
-              >
+              <Text align="center" color={colors.alpha(colors.blueGreyDark, 0.6)} lineHeight="loose" size="large" weight="bold">
                 􀎬 {lang.t('add_funds.test_eth.add_from_faucet')}
               </Text>
             </InterstitialButton>
           </Row>
           {!isSmallPhone && <InterstitialDivider />}
-          <Subtitle isSmallPhone={isSmallPhone}>
-            {lang.t('add_funds.test_eth.or_send_test_eth')}
-          </Subtitle>
+          <Subtitle isSmallPhone={isSmallPhone}>{lang.t('add_funds.test_eth.or_send_test_eth')}</Subtitle>
           <Paragraph>
             {lang.t('add_funds.test_eth.send_test_eth_from_another_source', {
               testnetName: networkInfo[network]?.name,
@@ -305,25 +258,10 @@ const AddFundsInterstitial = ({ network }) => {
           </Paragraph>
         </Fragment>
       )}
-      <CopyAddressButton
-        onPress={handlePressCopyAddress}
-        radiusAndroid={23}
-        testID="copy-address-button"
-      >
+      <CopyAddressButton onPress={handlePressCopyAddress} radiusAndroid={23} testID="copy-address-button">
         <CopyAddressButtonContent>
-          <Icon
-            color={colors.appleBlue}
-            marginTop={0.5}
-            name="copy"
-            size={19}
-          />
-          <Text
-            align="center"
-            color={colors.appleBlue}
-            lineHeight="loose"
-            size="large"
-            weight="bold"
-          >
+          <Icon color={colors.appleBlue} marginTop={0.5} name="copy" size={19} />
+          <Text align="center" color={colors.appleBlue} lineHeight="loose" size="large" weight="bold">
             {lang.t('wallet.settings.copy_address')}
           </Text>
         </CopyAddressButtonContent>

@@ -6,10 +6,7 @@ import { Network } from '@/helpers/networkTypes';
 import { AppState } from '@/redux/store';
 import logger from '@/utils/logger';
 
-export default function useCurrentNonce(
-  accountAddress: EthereumAddress,
-  network?: Network
-) {
+export default function useCurrentNonce(accountAddress: EthereumAddress, network?: Network) {
   const nonceInState = useSelector((state: AppState) => {
     if (!network || !accountAddress) return undefined;
     return state.nonceManager[accountAddress.toLowerCase()]?.[network]?.nonce;
@@ -18,15 +15,9 @@ export default function useCurrentNonce(
     try {
       if (!network || !accountAddress) return undefined;
       const provider = await getProviderForNetwork(network);
-      const transactionCount = await provider.getTransactionCount(
-        accountAddress,
-        'pending'
-      );
+      const transactionCount = await provider.getTransactionCount(accountAddress, 'pending');
       const transactionIndex = transactionCount - 1;
-      const nextNonceBase =
-        !nonceInState || transactionIndex > nonceInState
-          ? transactionIndex
-          : nonceInState;
+      const nextNonceBase = !nonceInState || transactionIndex > nonceInState ? transactionIndex : nonceInState;
       const nextNonce = nextNonceBase + 1;
 
       logger.log('Use current nonce: ', {

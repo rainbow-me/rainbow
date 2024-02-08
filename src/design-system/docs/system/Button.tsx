@@ -19,12 +19,7 @@ const fontSizes = {
   small: '14px / 19px (Deprecated)',
 } as { [key: string]: TextSizes };
 
-export const ButtonOverlay = ({
-  children,
-  color,
-  iconBefore,
-  size = 'default',
-}: ButtonOverlayProps) => (
+export const ButtonOverlay = ({ children, color, iconBefore, size = 'default' }: ButtonOverlayProps) => (
   <div
     className={sprinkles({
       color,

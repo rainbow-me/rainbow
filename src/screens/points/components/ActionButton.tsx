@@ -38,12 +38,7 @@ export const ActionButton = ({
   }, [color]);
 
   return (
-    <ButtonPressAnimation
-      onPress={onPress}
-      scaleTo={0.88}
-      style={styles.actionButtonWrapper}
-      transformOrigin="top"
-    >
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.88} style={styles.actionButtonWrapper} transformOrigin="top">
       <Box
         paddingHorizontal={small ? '20px' : '24px'}
         style={[
@@ -58,12 +53,7 @@ export const ActionButton = ({
           },
         ]}
       >
-        <Text
-          align="center"
-          color={{ custom: outline ? color || fallbackColor : textColor }}
-          size={small ? '17pt' : '20pt'}
-          weight="heavy"
-        >
+        <Text align="center" color={{ custom: outline ? color || fallbackColor : textColor }} size={small ? '17pt' : '20pt'} weight="heavy">
           {label}
         </Text>
       </Box>

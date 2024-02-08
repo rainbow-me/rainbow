@@ -9,8 +9,6 @@
  *  const mockedFunction = mocked(myFunction)
  *  expect(mockedFunction.mock.calls[0][0]).toBe(42);
  */
-export function mocked<T extends (...args: any[]) => any>(
-  mockedFunction: T
-): jest.MockedFunction<T> {
+export function mocked<T extends (...args: any[]) => any>(mockedFunction: T): jest.MockedFunction<T> {
   return mockedFunction as jest.MockedFunction<T>;
 }

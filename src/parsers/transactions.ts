@@ -1,10 +1,6 @@
 import { slice } from 'lodash';
 import { parseAllTxnsOnReceive } from '../config/debug';
-import {
-  NativeCurrencyKey,
-  RainbowTransaction,
-  ZerionTransaction,
-} from '@/entities';
+import { NativeCurrencyKey, RainbowTransaction, ZerionTransaction } from '@/entities';
 
 import {
   convertAmountAndPriceToNativeDisplay,
@@ -13,10 +9,7 @@ import {
   toFixedDecimals,
 } from '@/helpers/utilities';
 
-import {
-  NewTransaction,
-  RainbowTransactionFee,
-} from '@/entities/transactions/transaction';
+import { NewTransaction, RainbowTransactionFee } from '@/entities/transactions/transaction';
 import { parseAddressAsset, parseAsset } from '@/resources/assets/assets';
 import { ParsedAsset } from '@/resources/assets/types';
 import { transactionTypes } from '@/entities/transactions/transactionType';
@@ -51,19 +44,12 @@ export const getDirection = (type: TransactionType) => {
   return 'in';
 };
 
-const dataFromLastTxHash = (
-  transactionData: ZerionTransaction[],
-  transactions: RainbowTransaction[]
-): ZerionTransaction[] => {
+const dataFromLastTxHash = (transactionData: ZerionTransaction[], transactions: RainbowTransaction[]): ZerionTransaction[] => {
   if (__DEV__ && parseAllTxnsOnReceive) return transactionData;
-  const lastSuccessfulTxn = transactions.find(
-    txn => !!txn.hash && !txn.pending
-  );
+  const lastSuccessfulTxn = transactions.find(txn => !!txn.hash && txn.status !== 'pending');
   const lastTxHash = lastSuccessfulTxn?.hash;
   if (lastTxHash) {
-    const lastTxnHashIndex = transactionData.findIndex(txn =>
-      lastTxHash.startsWith(txn.hash)
-    );
+    const lastTxnHashIndex = transactionData.findIndex(txn => lastTxHash.startsWith(txn.hash));
     if (lastTxnHashIndex > -1) {
       return slice(transactionData, 0, lastTxnHashIndex + LAST_TXN_HASH_BUFFER);
     }
@@ -71,10 +57,7 @@ const dataFromLastTxHash = (
   return transactionData;
 };
 
-export const getAssetFromChanges = (
-  changes: TransactionChanges,
-  type: TransactionType
-) => {
+export const getAssetFromChanges = (changes: TransactionChanges, type: TransactionType) => {
   if (type === 'sale') return changes?.find(c => c?.direction === 'out')?.asset;
   return changes?.[0]?.asset;
 };
@@ -103,9 +86,7 @@ export const parseTransaction = async (
     }
   });
 
-  const type = isValidTransactionType(meta.type)
-    ? meta.type
-    : 'contract_interaction';
+  const type = isValidTransactionType(meta.type) ? meta.type : 'contract_interaction';
 
   const asset: RainbowTransaction['asset'] = meta.asset?.asset_code
     ? parseAsset({ asset: meta.asset, address: meta.asset.asset_code })
@@ -118,17 +99,10 @@ export const parseTransaction = async (
   const nativeAsset = changes.find(change => change?.asset.isNativeAsset);
   const nativeAssetPrice = nativeAsset?.price?.toString() || '0';
 
-  const value = toFixedDecimals(
-    nativeAsset?.value || '',
-    nativeAsset?.asset?.decimals || 18
-  );
+  const value = toFixedDecimals(nativeAsset?.value || '', nativeAsset?.asset?.decimals || 18);
 
   // this is probably wrong, need to revisit
-  const native = convertAmountAndPriceToNativeDisplay(
-    value,
-    nativeAssetPrice,
-    nativeCurrency
-  );
+  const native = convertAmountAndPriceToNativeDisplay(value, nativeAssetPrice, nativeCurrency);
 
   const fee = getTransactionFee(txn, nativeCurrency);
 
@@ -189,10 +163,7 @@ export const parseNewTransaction = (tx: NewTransaction): RainbowTransaction => {
 /**
  * Helper for retrieving tx fee sent by zerion, works only for mainnet only
  */
-const getTransactionFee = (
-  txn: TransactionApiResponse,
-  nativeCurrency: NativeCurrencyKey
-): RainbowTransactionFee | undefined => {
+const getTransactionFee = (txn: TransactionApiResponse, nativeCurrency: NativeCurrencyKey): RainbowTransactionFee | undefined => {
   if (txn.fee === null || txn.fee === undefined) {
     return undefined;
   }
@@ -217,20 +188,14 @@ const getTransactionFee = (
   };
 };
 
-export const getDescription = (
-  asset: ParsedAsset | undefined,
-  type: TransactionType,
-  meta: PaginatedTransactionsApiResponse['meta']
-) => {
+export const getDescription = (asset: ParsedAsset | undefined, type: TransactionType, meta: PaginatedTransactionsApiResponse['meta']) => {
   if (asset?.type === 'nft') return asset.symbol || asset.name;
   if (type === 'cancel') return 'transactions.cancelled';
 
   return asset?.name || meta.action;
 };
 
-export const isValidTransactionType = (
-  type: string | undefined
-): type is TransactionType =>
+export const isValidTransactionType = (type: string | undefined): type is TransactionType =>
   !!type &&
   //@ts-expect-error - Ts doesnt like the weird type structure here
   (transactionTypes.withChanges.includes(type as TransactionType) ||
@@ -238,8 +203,6 @@ export const isValidTransactionType = (
     transactionTypes.withoutChanges.includes(type as TransactionType) ||
     type === ('sale' as TransactionType));
 
-export const transactionTypeShouldHaveChanges = (
-  type: TransactionType
-): type is TransactionWithChangesType =>
+export const transactionTypeShouldHaveChanges = (type: TransactionType): type is TransactionWithChangesType =>
   //@ts-expect-error - Ts doesnt like the weird type structure here
   transactionTypes.withChanges.includes(type);

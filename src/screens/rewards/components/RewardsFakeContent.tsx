@@ -33,31 +33,15 @@ export const RewardsFakeContent: React.FC = () => {
     <Box width="full" height={{ custom: height }}>
       <Skeleton shimmerColor={shimmerColor} skeletonColor={shimmerColor}>
         <>
-          <FakeElement
-            width="4/5"
-            height={{ custom: SHEET_TITLE_HEIGHT }}
-            marginBottom={{ custom: SHEET_TITLE_BOTTOM_MARGIN }}
-          />
-          <FakeElement
-            width="full"
-            height={{ custom: TOTAL_EARNINGS_HEIGHT }}
-            marginBottom={{ custom: TOTAL_EARNINGS_BOTTOM_MARGIN }}
-          />
+          <FakeElement width="4/5" height={{ custom: SHEET_TITLE_HEIGHT }} marginBottom={{ custom: SHEET_TITLE_BOTTOM_MARGIN }} />
+          <FakeElement width="full" height={{ custom: TOTAL_EARNINGS_HEIGHT }} marginBottom={{ custom: TOTAL_EARNINGS_BOTTOM_MARGIN }} />
           <FakeElement
             width="full"
             height={{ custom: PENDING_EARNINGS_HEIGHT }}
             marginBottom={{ custom: PENDING_EARNINGS_BOTTOM_MARGIN }}
           />
-          <FakeElement
-            width="1/5"
-            height={{ custom: MY_STATS_TITLE_HEIGHT }}
-            marginBottom={{ custom: MY_STATS_TITLE_BOTTOM_MARGIN }}
-          />
-          <FakeElement
-            width="full"
-            height={{ custom: MY_STATS_HEIGHT }}
-            marginBottom={{ custom: MY_STATS_BOTTOM_MARGIN }}
-          />
+          <FakeElement width="1/5" height={{ custom: MY_STATS_TITLE_HEIGHT }} marginBottom={{ custom: MY_STATS_TITLE_BOTTOM_MARGIN }} />
+          <FakeElement width="full" height={{ custom: MY_STATS_HEIGHT }} marginBottom={{ custom: MY_STATS_BOTTOM_MARGIN }} />
           <FakeElement
             width="2/5"
             height={{ custom: LEADERBOARD_TITLE_HEIGHT }}

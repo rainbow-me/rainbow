@@ -6,10 +6,7 @@ import { AnimatedText } from '../../components/AnimatedText';
 import { textColors } from '../../constants';
 import * as i18n from '@/languages';
 import { useAccountProfile } from '@/hooks';
-import {
-  abbreviateEnsForDisplay,
-  address as formatAddress,
-} from '@/utils/abbreviations';
+import { abbreviateEnsForDisplay, address as formatAddress } from '@/utils/abbreviations';
 import { NeonButton } from '../../components/NeonButton';
 import LineBreak from '../../components/LineBreak';
 import { Bleed, Box, Stack } from '@/design-system';
@@ -21,31 +18,19 @@ export const RequireWalletBalance = () => {
   const { accountENS, accountAddress } = useAccountProfile();
   const { navigate } = useNavigation();
 
-  const accountName = (abbreviateEnsForDisplay(accountENS, 10) ||
-    formatAddress(accountAddress, 4, 5)) as string;
+  const accountName = (abbreviateEnsForDisplay(accountENS, 10) || formatAddress(accountAddress, 4, 5)) as string;
   return (
     <Box height="full" justifyContent="space-between">
       <Stack separator={<LineBreak lines={3} />}>
         <Paragraph>
           <Line>
-            <AnimatedText
-              color={textColors.gray}
-              textContent={`${i18n.t(i18n.l.points.console.account)}:`}
-              skipAnimation
-              weight="normal"
-            />
-            <AnimatedText
-              color={textColors.account}
-              skipAnimation
-              textContent={accountName}
-            />
+            <AnimatedText color={textColors.gray} textContent={`${i18n.t(i18n.l.points.console.account)}:`} skipAnimation weight="normal" />
+            <AnimatedText color={textColors.account} skipAnimation textContent={accountName} />
           </Line>
           <AnimatedText
             color={textColors.red}
             delayStart={500}
-            textContent={`> ${i18n.t(
-              i18n.l.points.console.wallet_balance_required
-            )}`}
+            textContent={`> ${i18n.t(i18n.l.points.console.wallet_balance_required)}`}
             weight="normal"
           />
         </Paragraph>
@@ -55,41 +40,14 @@ export const RequireWalletBalance = () => {
             delayStart={1000}
             weight="normal"
             multiline
-            textContent={i18n.t(
-              i18n.l.points.console.require_balance_paragraph_one
-            )}
+            textContent={i18n.t(i18n.l.points.console.require_balance_paragraph_one)}
           />
           <Paragraph gap={10}>
-            <AnimatedText
-              color={textColors.gray}
-              delayStart={500}
-              weight="normal"
-              textContent={' - Ethereum'}
-            />
-            <AnimatedText
-              color={textColors.gray}
-              delayStart={500}
-              weight="normal"
-              textContent={' - Arbitrum'}
-            />
-            <AnimatedText
-              color={textColors.gray}
-              delayStart={500}
-              weight="normal"
-              textContent={' - Optimism'}
-            />
-            <AnimatedText
-              color={textColors.gray}
-              delayStart={500}
-              weight="normal"
-              textContent={' - Base'}
-            />
-            <AnimatedText
-              color={textColors.gray}
-              delayStart={500}
-              weight="normal"
-              textContent={' - Zora'}
-            />
+            <AnimatedText color={textColors.gray} delayStart={500} weight="normal" textContent={' - Ethereum'} />
+            <AnimatedText color={textColors.gray} delayStart={500} weight="normal" textContent={' - Arbitrum'} />
+            <AnimatedText color={textColors.gray} delayStart={500} weight="normal" textContent={' - Optimism'} />
+            <AnimatedText color={textColors.gray} delayStart={500} weight="normal" textContent={' - Base'} />
+            <AnimatedText color={textColors.gray} delayStart={500} weight="normal" textContent={' - Zora'} />
           </Paragraph>
           <AnimatedText
             color={textColors.gray}
@@ -102,9 +60,7 @@ export const RequireWalletBalance = () => {
             }}
             weight="normal"
             multiline
-            textContent={i18n.t(
-              i18n.l.points.console.require_balance_paragraph_two
-            )}
+            textContent={i18n.t(i18n.l.points.console.require_balance_paragraph_two)}
           />
         </Stack>
       </Stack>

@@ -27,14 +27,7 @@ const CommunityLink = styled(Link).attrs({
   paddingTop: ios ? 9.5 : 5,
 });
 
-export default function SocialLinks({
-  address,
-  color,
-  isNativeAsset,
-  links,
-  marginTop,
-  type,
-}) {
+export default function SocialLinks({ address, color, isNativeAsset, links, marginTop, type }) {
   const etherscanURL = ethereumUtils.getEtherscanHostForNetwork(type);
   const blockExplorerName = ethereumUtils.getBlockExplorer(type);
   return (

@@ -6,11 +6,7 @@ import { EthereumAddress } from '@/entities';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import WalletTypes from '@/helpers/walletTypes';
 import { featureUnlockChecks } from '@/featuresToUnlock';
-import {
-  AllRainbowWallets,
-  RainbowAccount,
-  RainbowWallet,
-} from '@/model/wallet';
+import { AllRainbowWallets, RainbowAccount, RainbowWallet } from '@/model/wallet';
 import { Navigation } from '@/navigation';
 
 import store from '@/redux/store';
@@ -39,9 +35,7 @@ export const runWalletBackupStatusChecks = () => {
   // count how many visible, non-imported and non-readonly wallets are not backed up
   if (!wallets) return;
   const rainbowWalletsNotBackedUp = Object.values(wallets).filter(wallet => {
-    const hasVisibleAccount = wallet.addresses?.find(
-      (account: RainbowAccount) => account.visible
-    );
+    const hasVisibleAccount = wallet.addresses?.find((account: RainbowAccount) => account.visible);
     return (
       !wallet.imported &&
       !!hasVisibleAccount &&
@@ -55,9 +49,7 @@ export const runWalletBackupStatusChecks = () => {
 
   logger.debug('there is a rainbow wallet not backed up');
 
-  const hasSelectedWallet = rainbowWalletsNotBackedUp.find(
-    notBackedUpWallet => notBackedUpWallet.id === selected!.id
-  );
+  const hasSelectedWallet = rainbowWalletsNotBackedUp.find(notBackedUpWallet => notBackedUpWallet.id === selected!.id);
 
   logger.debug('rainbow wallet not backed up that is selected?', {
     hasSelectedWallet,
@@ -67,9 +59,7 @@ export const runWalletBackupStatusChecks = () => {
   if (selected && hasSelectedWallet && IS_TESTING !== 'true') {
     logger.debug('showing default BackupSheet');
     setTimeout(() => {
-      triggerOnSwipeLayout(() =>
-        Navigation.handleAction(Routes.BACKUP_SHEET, { single: true })
-      );
+      triggerOnSwipeLayout(() => Navigation.handleAction(Routes.BACKUP_SHEET, { single: true }));
     }, BACKUP_SHEET_DELAY_MS);
     return;
   }
@@ -101,10 +91,7 @@ export const runFeatureUnlockChecks = async (): Promise<boolean> => {
 
   Object.values(wallets).forEach(wallet => {
     if (wallet.type !== WalletTypes.readOnly) {
-      wallet.addresses?.forEach(
-        (account: RainbowAccount) =>
-          account.visible && walletsToCheck.push(account.address)
-      );
+      wallet.addresses?.forEach((account: RainbowAccount) => account.visible && walletsToCheck.push(account.address));
     }
   });
 

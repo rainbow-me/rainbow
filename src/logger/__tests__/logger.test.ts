@@ -118,11 +118,7 @@ describe('general functionality', () => {
 
     logger.error(new Error());
 
-    expect(mockTransport).toHaveBeenCalledWith(
-      LogLevel.Error,
-      new RainbowError(`logger.error was not provided a RainbowError`),
-      {}
-    );
+    expect(mockTransport).toHaveBeenCalledWith(LogLevel.Error, new RainbowError(`logger.error was not provided a RainbowError`), {});
   });
 
   test('sentryTransport', () => {

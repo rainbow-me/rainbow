@@ -3,14 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { ButtonPressAnimation } from '../animations';
 import FastCoinIcon from '../asset-list/RecyclerAssetList2/FastComponents/FastCoinIcon';
 import FastTransactionStatusBadge from './FastTransactionStatusBadge';
-import {
-  Bleed,
-  Box,
-  Inline,
-  Text,
-  globalColors,
-  useColorMode,
-} from '@/design-system';
+import { Bleed, Box, Inline, Text, globalColors, useColorMode } from '@/design-system';
 import { NativeCurrencyKey, RainbowTransaction } from '@/entities';
 import { ThemeContextProps } from '@/theme';
 import { useNavigation } from '@/navigation';
@@ -23,19 +16,11 @@ import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { address } from '@/utils/abbreviations';
 import { Colors } from '@/styles';
 import { TransactionType } from '@/resources/transactions/types';
-import {
-  convertAmountAndPriceToNativeDisplay,
-  convertAmountToBalanceDisplay,
-  greaterThan,
-} from '@/helpers/utilities';
+import { convertAmountAndPriceToNativeDisplay, convertAmountToBalanceDisplay, greaterThan } from '@/helpers/utilities';
 import { TwoCoinsIcon } from '../coin-icon/TwoIconsIcon';
 import Spinner from '../Spinner';
 
-export const getApprovalLabel = ({
-  approvalAmount,
-  asset,
-  type,
-}: Pick<RainbowTransaction, 'type' | 'asset' | 'approvalAmount'>) => {
+export const getApprovalLabel = ({ approvalAmount, asset, type }: Pick<RainbowTransaction, 'type' | 'asset' | 'approvalAmount'>) => {
   if (!approvalAmount || !asset) return;
   if (approvalAmount === 'UNLIMITED') return 'approvals.unlimited';
   if (type === 'revoke') return 'approvals.no_allowance';
@@ -76,33 +61,20 @@ const swapTypeValues = (changes: RainbowTransaction['changes']) => {
   const tokenIn = changes?.filter(c => c?.direction === 'in')[0];
   const tokenOut = changes?.filter(c => c?.direction === 'out')[0];
 
-  if (!tokenIn?.asset.balance?.amount || !tokenOut?.asset.balance?.amount)
-    return;
+  if (!tokenIn?.asset.balance?.amount || !tokenOut?.asset.balance?.amount) return;
 
-  const valueOut = `-${convertAmountToBalanceDisplay(
-    tokenOut?.asset.balance?.amount,
-    { ...tokenOut?.asset }
-  )}`;
-  const valueIn = `+${convertAmountToBalanceDisplay(
-    tokenIn?.asset.balance?.amount,
-    { ...tokenIn?.asset }
-  )}`;
+  const valueOut = `-${convertAmountToBalanceDisplay(tokenOut?.asset.balance?.amount, { ...tokenOut?.asset })}`;
+  const valueIn = `+${convertAmountToBalanceDisplay(tokenIn?.asset.balance?.amount, { ...tokenIn?.asset })}`;
 
   return [valueOut, valueIn];
 };
 
-const activityValues = (
-  transaction: RainbowTransaction,
-  nativeCurrency: NativeCurrencyKey
-) => {
+const activityValues = (transaction: RainbowTransaction, nativeCurrency: NativeCurrencyKey) => {
   const { changes, direction, type } = transaction;
   if (['swap', 'wrap', 'unwrap'].includes(type)) return swapTypeValues(changes);
-  if (['approve', 'revoke'].includes(type))
-    return approvalTypeValues(transaction);
+  if (['approve', 'revoke'].includes(type)) return approvalTypeValues(transaction);
 
-  const asset = changes?.filter(
-    c => c?.direction === direction && c?.asset.type !== 'nft'
-  )[0]?.asset;
+  const asset = changes?.filter(c => c?.direction === direction && c?.asset.type !== 'nft')[0]?.asset;
   const valueSymbol = direction === 'out' ? '-' : '+';
 
   if (!asset) return;
@@ -110,23 +82,12 @@ const activityValues = (
   const { balance } = asset;
   if (balance?.amount === '0') return;
 
-  const assetValue = convertAmountToBalanceDisplay(
-    balance?.amount || '0',
-    asset
-  );
+  const assetValue = convertAmountToBalanceDisplay(balance?.amount || '0', asset);
 
-  const nativeBalance = convertAmountAndPriceToNativeDisplay(
-    balance?.amount || '0',
-    asset?.price?.value || '0',
-    nativeCurrency
-  );
-  const assetNativeValue = greaterThan(nativeBalance.amount, '0')
-    ? nativeBalance?.display
-    : 'no value';
+  const nativeBalance = convertAmountAndPriceToNativeDisplay(balance?.amount || '0', asset?.price?.value || '0', nativeCurrency);
+  const assetNativeValue = greaterThan(nativeBalance.amount, '0') ? nativeBalance?.display : 'no value';
 
-  return greaterThan(nativeBalance.amount, '0')
-    ? [assetValue, assetNativeValue]
-    : [assetNativeValue, `${valueSymbol}${assetValue}`];
+  return greaterThan(nativeBalance.amount, '0') ? [assetValue, assetNativeValue] : [assetNativeValue, `${valueSymbol}${assetValue}`];
 };
 
 const activityTypeIcon: Record<TransactionType, string> = {
@@ -166,13 +127,7 @@ export const ActivityTypeIcon = ({
 }) => {
   // if (status === 'pending') return null;
   if (status === 'pending') {
-    return (
-      <Spinner
-        color={color}
-        size={11}
-        style={{ marginTop: -1, paddingRight: 2 }}
-      />
-    );
+    return <Spinner color={color} size={11} style={{ marginTop: -1, paddingRight: 2 }} />;
   }
 
   if (status === 'failed')
@@ -210,34 +165,23 @@ const BottomRow = React.memo(function BottomRow({
   }
 
   if (['wrap', 'unwrap', 'swap'].includes(transaction?.type)) {
-    const inAsset = transaction?.changes?.find(a => a?.direction === 'in')
-      ?.asset;
-    const outAsset = transaction?.changes?.find(a => a?.direction === 'out')
-      ?.asset;
+    const inAsset = transaction?.changes?.find(a => a?.direction === 'in')?.asset;
+    const outAsset = transaction?.changes?.find(a => a?.direction === 'out')?.asset;
 
-    if (!!inAsset && !!outAsset)
-      description = `${inAsset?.symbol} 􀄫 ${outAsset?.symbol}`;
+    if (!!inAsset && !!outAsset) description = `${inAsset?.symbol} 􀄫 ${outAsset?.symbol}`;
   }
 
   const nftChangesAmount = transaction.changes
-    ?.filter(
-      c => asset?.address === c?.asset.address && c?.asset.type === 'nft'
-    )
+    ?.filter(c => asset?.address === c?.asset.address && c?.asset.type === 'nft')
     .filter(Boolean).length;
   if (nftChangesAmount) tag = nftChangesAmount.toString();
 
-  const [topValue, bottomValue] =
-    activityValues(transaction, nativeCurrency) ?? [];
+  const [topValue, bottomValue] = activityValues(transaction, nativeCurrency) ?? [];
   return (
     <View style={sx.bottomRow}>
       <View style={sx.description}>
         <Inline wrap={false} horizontalSpace={'6px'}>
-          <Text
-            color={'label'}
-            numberOfLines={1}
-            size="16px / 22px (Deprecated)"
-            weight="regular"
-          >
+          <Text color={'label'} numberOfLines={1} size="16px / 22px (Deprecated)" weight="regular">
             {description}
           </Text>
           {tag && (
@@ -252,12 +196,7 @@ const BottomRow = React.memo(function BottomRow({
                 alignItems="center"
                 padding={{ custom: 5 }}
               >
-                <Text
-                  align="center"
-                  color="labelTertiary"
-                  size="13pt"
-                  weight="regular"
-                >
+                <Text align="center" color="labelTertiary" size="13pt" weight="regular">
                   {tag}
                 </Text>
               </Box>
@@ -292,13 +231,10 @@ export const ActivityIcon = ({
   theme: ThemeContextProps;
 }) => {
   if (['wrap', 'unwrap', 'swap'].includes(transaction?.type)) {
-    const inAsset = transaction?.changes?.find(a => a?.direction === 'in')
-      ?.asset;
-    const outAsset = transaction?.changes?.find(a => a?.direction === 'out')
-      ?.asset;
+    const inAsset = transaction?.changes?.find(a => a?.direction === 'in')?.asset;
+    const outAsset = transaction?.changes?.find(a => a?.direction === 'out')?.asset;
 
-    if (!!inAsset && !!outAsset)
-      return <TwoCoinsIcon over={inAsset} under={outAsset} badge={badge} />;
+    if (!!inAsset && !!outAsset) return <TwoCoinsIcon over={inAsset} under={outAsset} badge={badge} />;
   }
   if (transaction?.contract?.iconUrl) {
     return (
@@ -313,9 +249,7 @@ export const ActivityIcon = ({
       >
         <View
           style={{
-            shadowColor: !transaction?.asset?.color
-              ? globalColors.grey100
-              : transaction.asset.color,
+            shadowColor: !transaction?.asset?.color ? globalColors.grey100 : transaction.asset.color,
             shadowOffset: { width: 0, height: 6 },
             shadowOpacity: 0.24,
             shadowRadius: 9,
@@ -333,9 +267,7 @@ export const ActivityIcon = ({
             }}
           />
         </View>
-        {transaction.network !== Network.mainnet && (
-          <ChainBadge network={transaction.network} badgeYPosition={0} />
-        )}
+        {transaction.network !== Network.mainnet && <ChainBadge network={transaction.network} badgeYPosition={0} />}
       </View>
     );
   }
@@ -353,9 +285,7 @@ export const ActivityIcon = ({
       >
         <View
           style={{
-            shadowColor: !transaction?.asset?.color
-              ? globalColors.grey100
-              : transaction.asset.color,
+            shadowColor: !transaction?.asset?.color ? globalColors.grey100 : transaction.asset.color,
             shadowOffset: { width: 0, height: 6 },
             shadowOpacity: 0.24,
             shadowRadius: 9,
@@ -373,9 +303,7 @@ export const ActivityIcon = ({
             }}
           />
         </View>
-        {transaction.network !== Network.mainnet && (
-          <ChainBadge network={transaction.network} badgeYPosition={0} />
-        )}
+        {transaction.network !== Network.mainnet && <ChainBadge network={transaction.network} badgeYPosition={0} />}
       </View>
     );
   }
@@ -391,13 +319,7 @@ export const ActivityIcon = ({
   );
 };
 
-const ActivityDescription = ({
-  transaction,
-  colors,
-}: {
-  transaction: RainbowTransaction;
-  colors: Colors;
-}) => {
+const ActivityDescription = ({ transaction, colors }: { transaction: RainbowTransaction; colors: Colors }) => {
   const { type, to, asset } = transaction;
   let description = transaction.description;
   let tag: string | undefined;
@@ -407,27 +329,17 @@ const ActivityDescription = ({
   }
 
   const nftChangesAmount = transaction.changes
-    ?.filter(
-      c => asset?.address === c?.asset.address && c?.asset.type === 'nft'
-    )
+    ?.filter(c => asset?.address === c?.asset.address && c?.asset.type === 'nft')
     .filter(Boolean).length;
   if (nftChangesAmount) tag = nftChangesAmount.toString();
 
   return (
     <Inline space="4px" alignVertical="center" wrap={false}>
-      <Text
-        size="16px / 22px (Deprecated)"
-        weight="regular"
-        color={{ custom: colors.dark }}
-      >
+      <Text size="16px / 22px (Deprecated)" weight="regular" color={{ custom: colors.dark }}>
         {description}
       </Text>
       {tag && (
-        <Text
-          size="16px / 22px (Deprecated)"
-          weight="regular"
-          color={{ custom: colors.dark }}
-        >
+        <Text size="16px / 22px (Deprecated)" weight="regular" color={{ custom: colors.dark }}>
           {tag}
         </Text>
       )}
@@ -456,15 +368,8 @@ export default React.memo(function TransactionCoinRow({
   const [topValue, bottomValue] = activityValues(item, nativeCurrency) ?? [];
 
   return (
-    <ButtonPressAnimation
-      onPress={onPress}
-      scaleTo={0.96}
-      uniqueId={`${item.hash}-${item.network}`}
-    >
-      <View
-        style={sx.wholeRow}
-        testID={`${item.title}-${item.description}-${item.balance?.display}`}
-      >
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.96} uniqueId={`${item.hash}-${item.network}`}>
+      <View style={sx.wholeRow} testID={`${item.title}-${item.description}-${item.balance?.display}`}>
         <View style={sx.icon}>
           <ActivityIcon size={40} transaction={item} theme={theme} />
         </View>
@@ -473,20 +378,12 @@ export default React.memo(function TransactionCoinRow({
           <View style={sx.topRow}>
             <FastTransactionStatusBadge colors={colors} transaction={item} />
             <View style={sx.balance}>
-              <Text
-                color={'labelTertiary'}
-                numberOfLines={1}
-                size="14px / 19px (Deprecated)"
-              >
+              <Text color={'labelTertiary'} numberOfLines={1} size="14px / 19px (Deprecated)">
                 {topValue}
               </Text>
             </View>
           </View>
-          <BottomRow
-            transaction={item}
-            theme={theme}
-            nativeCurrency={nativeCurrency}
-          />
+          <BottomRow transaction={item} theme={theme} nativeCurrency={nativeCurrency} />
         </View>
       </View>
     </ButtonPressAnimation>

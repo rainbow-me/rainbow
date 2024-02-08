@@ -15,33 +15,13 @@ export const addNewTransaction = ({
 }) => {
   console.log('adding new transaction');
   const parsedTransaction = parseNewTransaction(transaction);
-  pendingTransactionsStore
-    .getState()
-    .addPendingTransaction({ address, pendingTransaction: parsedTransaction });
+  pendingTransactionsStore.getState().addPendingTransaction({ address, pendingTransaction: parsedTransaction });
 };
 export interface PendingTransactionsState {
   pendingTransactions: Record<string, RainbowTransaction[]>;
-  addPendingTransaction: ({
-    address,
-    pendingTransaction,
-  }: {
-    address: string;
-    pendingTransaction: RainbowTransaction;
-  }) => void;
-  updatePendingTransaction: ({
-    address,
-    pendingTransaction,
-  }: {
-    address: string;
-    pendingTransaction: RainbowTransaction;
-  }) => void;
-  setPendingTransactions: ({
-    address,
-    pendingTransactions,
-  }: {
-    address: string;
-    pendingTransactions: RainbowTransaction[];
-  }) => void;
+  addPendingTransaction: ({ address, pendingTransaction }: { address: string; pendingTransaction: RainbowTransaction }) => void;
+  updatePendingTransaction: ({ address, pendingTransaction }: { address: string; pendingTransaction: RainbowTransaction }) => void;
+  setPendingTransactions: ({ address, pendingTransactions }: { address: string; pendingTransactions: RainbowTransaction[] }) => void;
   clearPendingTransactions: () => void;
 }
 
@@ -51,8 +31,7 @@ export const pendingTransactionsStore = createStore<PendingTransactionsState>(
     addPendingTransaction: ({ address, pendingTransaction }) => {
       console.log('adding pending transaction');
       const { pendingTransactions: currentPendingTransactions } = get();
-      const addressPendingTransactions =
-        currentPendingTransactions[address] || [];
+      const addressPendingTransactions = currentPendingTransactions[address] || [];
       set({
         pendingTransactions: {
           ...currentPendingTransactions,
@@ -62,8 +41,7 @@ export const pendingTransactionsStore = createStore<PendingTransactionsState>(
     },
     updatePendingTransaction: ({ address, pendingTransaction }) => {
       const { pendingTransactions: currentPendingTransactions } = get();
-      const addressPendingTransactions =
-        currentPendingTransactions[address] || [];
+      const addressPendingTransactions = currentPendingTransactions[address] || [];
 
       set({
         pendingTransactions: {

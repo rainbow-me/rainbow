@@ -10,6 +10,4 @@ import { Text as NativeText } from 'react-native';
 // To remove this additional space we've dropped the line height offset to an
 // arbitrarily small number that's close to zero.
 export const createLineHeightFixNode = (lineHeight: number | undefined) =>
-  android && lineHeight !== undefined ? (
-    <NativeText style={{ lineHeight: lineHeight - 0.001 }} />
-  ) : null;
+  android && lineHeight !== undefined ? <NativeText style={{ lineHeight: lineHeight - 0.001 }} /> : null;

@@ -3,11 +3,7 @@ import { isEmpty } from 'lodash';
 import { web3Provider } from './web3';
 import { metadataClient } from '@/apollo/client';
 import { CONTRACT_FUNCTION } from '@/apollo/queries';
-import {
-  RainbowTransaction,
-  TransactionStatus,
-  ZerionTransaction,
-} from '@/entities';
+import { RainbowTransaction, TransactionStatus, ZerionTransaction } from '@/entities';
 import store from '@/redux/store';
 import { transactionSignaturesDataAddNewSignature } from '@/redux/transactionSignatures';
 import { SIGNATURE_REGISTRY_ADDRESS, signatureRegistryABI } from '@/references';
@@ -45,9 +41,7 @@ const timeoutPromise = new Promise((_, reject) => {
   setTimeout(reject, 800);
 });
 
-export const getTransactionMethodName = async (
-  transaction: ZerionTransaction
-) => {
+export const getTransactionMethodName = async (transaction: ZerionTransaction) => {
   try {
     const { signatures } = store.getState().transactionSignatures;
     // only being used on mainnet transactions, so we can use the default web3 provider
@@ -73,34 +67,20 @@ export const getTransactionMethodName = async (
     } catch (e) {}
     if (!signature) {
       try {
-        const contract = new Contract(
-          SIGNATURE_REGISTRY_ADDRESS,
-          signatureRegistryABI,
-          web3Provider!
-        );
-        signature = await Promise.race([
-          contract.entries(bytes),
-          timeoutPromise,
-        ]);
+        const contract = new Contract(SIGNATURE_REGISTRY_ADDRESS, signatureRegistryABI, web3Provider!);
+        signature = await Promise.race([contract.entries(bytes), timeoutPromise]);
         // eslint-disable-next-line no-empty
       } catch (e) {}
     }
     const parsedSignature = parseSignatureToTitle(signature);
-    store.dispatch(
-      transactionSignaturesDataAddNewSignature(parsedSignature, bytes)
-    );
+    store.dispatch(transactionSignaturesDataAddNewSignature(parsedSignature, bytes));
     return parsedSignature;
   } catch (e) {
     return '';
   }
 };
 
-type FlashbotsStatus =
-  | 'PENDING'
-  | 'INCLUDED'
-  | 'FAILED'
-  | 'CANCELLED'
-  | 'UNKNOWN';
+type FlashbotsStatus = 'PENDING' | 'INCLUDED' | 'FAILED' | 'CANCELLED' | 'UNKNOWN';
 
 export const getTransactionFlashbotStatus = async (
   transaction: RainbowTransaction,
@@ -112,9 +92,7 @@ export const getTransactionFlashbotStatus = async (
   title: string;
 } | null> => {
   try {
-    const fbStatus = await flashbotsApi.get<{ status: FlashbotsStatus }>(
-      `/tx/${txHash}`
-    );
+    const fbStatus = await flashbotsApi.get<{ status: FlashbotsStatus }>(`/tx/${txHash}`);
     const flashbotsStatus = fbStatus.data.status;
     // Make sure it wasn't dropped after 25 blocks or never made it
     if (flashbotsStatus === 'FAILED' || flashbotsStatus === 'CANCELLED') {
@@ -128,16 +106,12 @@ export const getTransactionFlashbotStatus = async (
   }
   return null;
 };
-export const getTransactionSocketStatus = async (
-  pendingTransaction: RainbowTransaction
-) => {
+export const getTransactionSocketStatus = async (pendingTransaction: RainbowTransaction) => {
   const { swap } = pendingTransaction;
   const txHash = ethereumUtils.getHash(pendingTransaction);
   let pending = true;
   const minedAt: number | null = Math.floor(Date.now() / 1000);
-  let status = swap?.isBridge
-    ? TransactionStatus.bridging
-    : TransactionStatus.swapping;
+  let status = swap?.isBridge ? TransactionStatus.bridging : TransactionStatus.swapping;
   try {
     const socketStatus = await rainbowSwapsApi.get('/v1/bridge-status', {
       params: {
@@ -149,39 +123,25 @@ export const getTransactionSocketStatus = async (
     const socketResponse = socketStatus.data;
     if (socketResponse.success) {
       if (socketResponse?.result?.sourceTxStatus === 'COMPLETED') {
-        status = swap?.isBridge
-          ? TransactionStatus.bridging
-          : TransactionStatus.swapping;
+        status = swap?.isBridge ? TransactionStatus.bridging : TransactionStatus.swapping;
       }
       if (socketResponse?.result?.DestinationTxStatus === 'COMPLETED') {
-        status = swap?.isBridge
-          ? TransactionStatus.bridged
-          : TransactionStatus.swapped;
+        status = swap?.isBridge ? TransactionStatus.bridged : TransactionStatus.swapped;
         pending = false;
       }
-      if (
-        socketResponse?.result?.DestinationTxStatus === 'FAILED' ||
-        socketResponse?.result?.sourceTxStatus === 'FAILED'
-      ) {
+      if (socketResponse?.result?.DestinationTxStatus === 'FAILED' || socketResponse?.result?.sourceTxStatus === 'FAILED') {
         status = TransactionStatus.failed;
         pending = false;
       }
     } else if (socketResponse.error) {
-      logger.warn(
-        'getTransactionSocketStatus transaction check failed',
-        socketResponse.error
-      );
+      logger.warn('getTransactionSocketStatus transaction check failed', socketResponse.error);
       status = TransactionStatus.failed;
       pending = false;
     }
   } catch (e) {
-    logger.error(
-      new RainbowError('getTransactionSocketStatus transaction check caught')
-    );
+    logger.error(new RainbowError('getTransactionSocketStatus transaction check caught'));
     if (IS_TEST) {
-      status = swap?.isBridge
-        ? TransactionStatus.bridged
-        : TransactionStatus.swapped;
+      status = swap?.isBridge ? TransactionStatus.bridged : TransactionStatus.swapped;
       pending = false;
     }
   }

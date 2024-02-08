@@ -1,11 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import Animated, {
-  Easing,
-  EasingFunctionFactory,
-  FadeIn,
-  useAnimatedStyle,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { Easing, EasingFunctionFactory, FadeIn, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 
 interface AnimatePresenceProps {
   children: React.ReactNode;

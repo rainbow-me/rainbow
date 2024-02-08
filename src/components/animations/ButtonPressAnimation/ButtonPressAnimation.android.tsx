@@ -1,25 +1,8 @@
 /* eslint-disable react/no-unused-prop-types */
 /* 👆 Had to disable this ESLint rule it was false positive on shared Props interface */
-import React, {
-  useState,
-  PropsWithChildren,
-  useCallback,
-  useContext,
-  useMemo,
-} from 'react';
-import {
-  processColor,
-  requireNativeComponent,
-  StyleProp,
-  StyleSheet,
-  View,
-  ViewStyle,
-} from 'react-native';
-import {
-  createNativeWrapper,
-  NativeViewGestureHandlerGestureEvent,
-  RawButtonProps,
-} from 'react-native-gesture-handler';
+import React, { useState, PropsWithChildren, useCallback, useContext, useMemo } from 'react';
+import { processColor, requireNativeComponent, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { createNativeWrapper, NativeViewGestureHandlerGestureEvent, RawButtonProps } from 'react-native-gesture-handler';
 import { PureNativeButton } from 'react-native-gesture-handler/src/components/GestureButtons';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, {
@@ -59,25 +42,20 @@ type Props = PropsWithChildren<BaseProps>;
 const ZoomableRawButton = requireNativeComponent<
   Omit<
     Props,
-    | 'contentContainerStyle'
-    | 'overflowMargin'
-    | 'backgroundColor'
-    | 'borderRadius'
-    | 'onLongPressEnded'
-    | 'wrapperStyle'
-    | 'onLongPress'
+    'contentContainerStyle' | 'overflowMargin' | 'backgroundColor' | 'borderRadius' | 'onLongPressEnded' | 'wrapperStyle' | 'onLongPress'
   > &
     Pick<RawButtonProps, 'rippleColor'>
 >('RNZoomableButton');
 
 const ZoomableButton = createNativeWrapper(ZoomableRawButton);
 
-const AnimatedRawButton = createNativeWrapper<
-  AnimateProps<PropsWithChildren<RawButtonProps>>
->(Animated.createAnimatedComponent(PureNativeButton), {
-  shouldActivateOnStart: true,
-  shouldCancelWhenOutside: true,
-});
+const AnimatedRawButton = createNativeWrapper<AnimateProps<PropsWithChildren<RawButtonProps>>>(
+  Animated.createAnimatedComponent(PureNativeButton),
+  {
+    shouldActivateOnStart: true,
+    shouldCancelWhenOutside: true,
+  }
+);
 
 const OVERFLOW_MARGIN = 5;
 
@@ -126,44 +104,35 @@ const ScaleButton = ({
     onPress,
   });
 
-  const gestureHandler = useAnimatedGestureHandler<NativeViewGestureHandlerGestureEvent>(
-    {
-      onActive: () => {
-        runOnJS(handleStartPress)();
-        if (hasScaledDown.value === 0) {
-          scale.value = scaleTo;
-        }
-        hasScaledDown.value = 1;
-      },
-      onCancel: () => {
-        scale.value = 1;
-        hasScaledDown.value = 0;
-        runOnJS(handleCancel)();
-      },
-      onEnd: () => {
-        hasScaledDown.value = 0;
-        scale.value = 1;
-        runOnJS(handlePress)();
-      },
-      onFail: () => {
-        runOnJS(handleCancel)();
-      },
-    }
-  );
+  const gestureHandler = useAnimatedGestureHandler<NativeViewGestureHandlerGestureEvent>({
+    onActive: () => {
+      runOnJS(handleStartPress)();
+      if (hasScaledDown.value === 0) {
+        scale.value = scaleTo;
+      }
+      hasScaledDown.value = 1;
+    },
+    onCancel: () => {
+      scale.value = 1;
+      hasScaledDown.value = 0;
+      runOnJS(handleCancel)();
+    },
+    onEnd: () => {
+      hasScaledDown.value = 0;
+      scale.value = 1;
+      runOnJS(handlePress)();
+    },
+    onFail: () => {
+      runOnJS(handleCancel)();
+    },
+  });
   return (
     <View style={[sx.overflow, wrapperStyle]} testID={testID}>
       <View style={{ margin: -overflowMargin }}>
-        <AnimatedRawButton
-          hitSlop={-overflowMargin}
-          onGestureEvent={gestureHandler}
-          rippleColor={transparentColor}
-          style={sx.overflow}
-        >
+        <AnimatedRawButton hitSlop={-overflowMargin} onGestureEvent={gestureHandler} rippleColor={transparentColor} style={sx.overflow}>
           <View style={sx.transparentBackground}>
             <View style={{ padding: overflowMargin }}>
-              <Animated.View style={[sz, contentContainerStyle]}>
-                {children}
-              </Animated.View>
+              <Animated.View style={[sz, contentContainerStyle]}>{children}</Animated.View>
             </View>
           </View>
         </AnimatedRawButton>
@@ -206,14 +175,7 @@ const SimpleScaleButton = ({
         onPress?.();
       }
     },
-    [
-      enableHapticFeedback,
-      hapticType,
-      onLongPress,
-      onLongPressEnded,
-      onPress,
-      shouldLongPressHoldPress,
-    ]
+    [enableHapticFeedback, hapticType, onLongPress, onLongPressEnded, onPress, shouldLongPressHoldPress]
   );
 
   // we won't guess if there are any animated styles in there but we can
@@ -296,10 +258,7 @@ export default function ButtonPressAnimation({
   enableHapticFeedback = true,
   disallowInterruption = false,
 }: Props) {
-  const normalizedTransformOrigin = useMemo(
-    () => normalizeTransformOrigin(transformOrigin),
-    [transformOrigin]
-  );
+  const normalizedTransformOrigin = useMemo(() => normalizeTransformOrigin(transformOrigin), [transformOrigin]);
 
   const ButtonElement = reanimatedButton ? ScaleButton : SimpleScaleButton;
   return disabled ? (

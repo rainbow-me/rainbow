@@ -189,10 +189,7 @@ export type SimpleHashNFT = {
   };
 };
 
-export type ValidatedSimpleHashNFT = Omit<
-  SimpleHashNFT,
-  'name' | 'chain' | 'collection' | 'contract_address' | 'token_id'
-> & {
+export type ValidatedSimpleHashNFT = Omit<SimpleHashNFT, 'name' | 'chain' | 'collection' | 'contract_address' | 'token_id'> & {
   name: string;
   chain: Network;
   collection: Omit<SimpleHashCollection, 'name'> & { name: string };

@@ -7,28 +7,12 @@ import ActionButtons from './ActionButtons/ActionButtons';
 import ProfileAvatar from './ProfileAvatar/ProfileAvatar';
 import ProfileCover from './ProfileCover/ProfileCover';
 import ProfileDescription from './ProfileDescription/ProfileDescription';
-import RecordTags, {
-  Placeholder as RecordTagsPlaceholder,
-} from './RecordTags/RecordTags';
+import RecordTags, { Placeholder as RecordTagsPlaceholder } from './RecordTags/RecordTags';
 import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
 import { PROFILES, useExperimentalFlag } from '@/config';
-import {
-  Bleed,
-  Box,
-  Column,
-  Columns,
-  Heading,
-  Inset,
-  Separator,
-  Stack,
-} from '@/design-system';
+import { Bleed, Box, Column, Columns, Heading, Inset, Separator, Stack } from '@/design-system';
 import { ENS_RECORDS } from '@/helpers/ens';
-import {
-  useENSAvatar,
-  useENSCover,
-  useENSRecords,
-  useOpenENSNFTHandler,
-} from '@/hooks';
+import { useENSAvatar, useENSCover, useENSRecords, useOpenENSNFTHandler } from '@/hooks';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
 import { useENSAddress } from '@/resources/ens/ensAddressQuery';
@@ -55,12 +39,9 @@ export default function ProfileSheetHeader({
       enabled: profilesEnabled,
     }
   );
-  const { data: { coinAddresses, contenthash, records } = {} } = useENSRecords(
-    ensName,
-    {
-      enabled: profilesEnabled,
-    }
-  );
+  const { data: { coinAddresses, contenthash, records } = {} } = useENSRecords(ensName, {
+    enabled: profilesEnabled,
+  });
   const { data: avatar, isFetched: isAvatarFetched } = useENSAvatar(ensName, {
     enabled: profilesEnabled,
   });
@@ -92,16 +73,10 @@ export default function ProfileSheetHeader({
     addressOrName: profileAddress ?? '',
   });
 
-  const emoji = useMemo(
-    () => (profileAddress ? addressHashedEmoji(profileAddress) : ''),
-    [profileAddress]
-  );
+  const emoji = useMemo(() => (profileAddress ? addressHashedEmoji(profileAddress) : ''), [profileAddress]);
 
   return (
-    <Box
-      background="body (Deprecated)"
-      {...(ios && { onLayout: (e: any) => setTimeout(() => layout(e), 500) })}
-    >
+    <Box background="body (Deprecated)" {...(ios && { onLayout: (e: any) => setTimeout(() => layout(e), 500) })}>
       <Stack space={{ custom: 18 }}>
         <ProfileCover
           coverUrl={cover?.imageUrl}
@@ -110,11 +85,7 @@ export default function ProfileSheetHeader({
           isFetched={isImagesFetched}
         />
         <Bleed top={{ custom: 38 }}>
-          <Inset
-            left="19px (Deprecated)"
-            right="15px (Deprecated)"
-            top={{ custom: 1 }}
-          >
+          <Inset left="19px (Deprecated)" right="15px (Deprecated)" top={{ custom: 1 }}>
             <Columns>
               <Column width="content">
                 <ProfileAvatar
@@ -127,11 +98,7 @@ export default function ProfileSheetHeader({
               </Column>
               {!isLoading && (
                 <Inset top="34px (Deprecated)">
-                  <ActionButtons
-                    address={profileAddress ?? ''}
-                    avatarUrl={avatarUrl}
-                    ensName={ensName}
-                  />
+                  <ActionButtons address={profileAddress ?? ''} avatarUrl={avatarUrl} ensName={ensName} />
                 </Inset>
               )}
             </Columns>
@@ -139,11 +106,7 @@ export default function ProfileSheetHeader({
         </Bleed>
         <Inset horizontal="19px (Deprecated)">
           <Stack space="19px (Deprecated)">
-            <Heading
-              color="primary (Deprecated)"
-              size="23px / 27px (Deprecated)"
-              weight="heavy"
-            >
+            <Heading color="primary (Deprecated)" size="23px / 27px (Deprecated)" weight="heavy">
               {abbreviateEnsForDisplay(ensName)}
             </Heading>
             <>
@@ -207,18 +170,8 @@ function DescriptionPlaceholder() {
     <Box height={{ custom: 40 }}>
       <Skeleton animated>
         <Stack space="8px">
-          <Box
-            background="body (Deprecated)"
-            borderRadius={10}
-            height={{ custom: 14 }}
-            width="full"
-          />
-          <Box
-            background="body (Deprecated)"
-            borderRadius={10}
-            height={{ custom: 14 }}
-            width="1/3"
-          />
+          <Box background="body (Deprecated)" borderRadius={10} height={{ custom: 14 }} width="full" />
+          <Box background="body (Deprecated)" borderRadius={10} height={{ custom: 14 }} width="1/3" />
         </Stack>
       </Skeleton>
     </Box>

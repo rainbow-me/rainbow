@@ -18,19 +18,13 @@ export function selectSortedUserAssets(nativeCurrency: string) {
   };
 }
 
-const sortAssetsByNativeAmount = (
-  accountAssets: RainbowAddressAssets,
-  nativeCurrency: string
-): ParsedAddressAsset[] => {
+const sortAssetsByNativeAmount = (accountAssets: RainbowAddressAssets, nativeCurrency: string): ParsedAddressAsset[] => {
   let assetsNativePrices = Object.values(accountAssets);
 
   if (!isEmpty(assetsNativePrices)) {
     assetsNativePrices = parseAssetsNative(assetsNativePrices, nativeCurrency);
   }
-  const {
-    hasValue = EMPTY_ARRAY,
-    noValue = EMPTY_ARRAY,
-  } = groupAssetsByMarketValue(assetsNativePrices);
+  const { hasValue = EMPTY_ARRAY, noValue = EMPTY_ARRAY } = groupAssetsByMarketValue(assetsNativePrices);
 
   const sortedAssetsNoShitcoins = hasValue.sort((a: any, b: any) => {
     const itemA = Number(a.native?.balance?.amount) ?? 0;

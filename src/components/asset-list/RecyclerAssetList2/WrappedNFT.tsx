@@ -26,9 +26,7 @@ export default React.memo(function WrappedNFT({
   const asset = useMemo(
     () => ({
       ...assetCollectible,
-      ...(IS_TESTING === 'true'
-        ? { image_original_url: null, image_preview_url: null, image_url: null }
-        : {}),
+      ...(IS_TESTING === 'true' ? { image_original_url: null, image_preview_url: null, image_url: null } : {}),
     }),
     [assetCollectible]
   );
@@ -62,12 +60,7 @@ export default React.memo(function WrappedNFT({
           paddingRight: '19px (Deprecated)',
         };
   return (
-    <Box
-      flexGrow={1}
-      justifyContent="center"
-      testID={`wrapped-nft-${asset.name}`}
-      {...placementProps}
-    >
+    <Box flexGrow={1} justifyContent="center" testID={`wrapped-nft-${asset.name}`} {...placementProps}>
       <UniqueTokenCard item={asset} onPress={onPress || handleItemPress} />
     </Box>
   );

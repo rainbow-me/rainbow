@@ -4,13 +4,7 @@ import React, { useCallback, useMemo } from 'react';
 import { Linking } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChainBadge, CoinIcon, DashedWrapper } from '../components/coin-icon';
-import {
-  Centered,
-  Column,
-  ColumnWithMargins,
-  Row,
-  RowWithMargins,
-} from '../components/layout';
+import { Centered, Column, ColumnWithMargins, Row, RowWithMargins } from '../components/layout';
 import Routes from '@/navigation/routesNames';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, GradientText, Text } from '../components/text';
@@ -72,20 +66,17 @@ const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }) => ({
   weight: 'heavy',
 }))({
   ...padding.object(IS_ANDROID ? 5 : 8, 12),
-  borderColor: ({ theme: { colors }, color }) =>
-    colors.alpha(color ?? colors.appleBlue, 0.06),
+  borderColor: ({ theme: { colors }, color }) => colors.alpha(color ?? colors.appleBlue, 0.06),
   borderRadius: 20,
   borderWidth: 2,
   height: 40,
   marginBottom: 4,
 });
 
-const Container = styled(Centered).attrs({ direction: 'column' })(
-  ({ deviceHeight, height }) => ({
-    ...position.coverAsObject,
-    ...(height ? { height: height + deviceHeight } : {}),
-  })
-);
+const Container = styled(Centered).attrs({ direction: 'column' })(({ deviceHeight, height }) => ({
+  ...position.coverAsObject,
+  ...(height ? { height: height + deviceHeight } : {}),
+}));
 
 const Gradient = styled(GradientText).attrs({
   colors: ['#6AA2E3', '#FF54BB', '#FFA230'],
@@ -280,13 +271,10 @@ const SENDING_FUNDS_TO_CONTRACT = lang.t('explain.sending_to_contract.text');
 
 const FLOOR_PRICE_EXPLAINER = lang.t('explain.floor_price.text');
 
-const gasExplainer = network =>
-  lang.t('explain.gas.text', { networkName: network });
+const gasExplainer = network => lang.t('explain.gas.text', { networkName: network });
 
 const availableNetworksExplainer = (tokenSymbol, networks) => {
-  const readableNetworks = networks
-    ?.map(network => getNetworkObj(network).name)
-    ?.join(', ');
+  const readableNetworks = networks?.map(network => getNetworkObj(network).name)?.join(', ');
 
   return lang.t('explain.available_networks.text', {
     tokenSymbol: tokenSymbol,
@@ -298,21 +286,13 @@ const CURRENT_BASE_FEE_TITLE = lang.t('explain.base_fee.title');
 
 const BASE_CURRENT_BASE_FEE_EXPLAINER = lang.t('explain.base_fee.text_prefix');
 
-const CURRENT_BASE_FEE_EXPLAINER_STABLE = lang.t(
-  'explain.base_fee.text_stable'
-);
+const CURRENT_BASE_FEE_EXPLAINER_STABLE = lang.t('explain.base_fee.text_stable');
 
-const CURRENT_BASE_FEE_EXPLAINER_FALLING = lang.t(
-  'explain.base_fee.text_falling'
-);
+const CURRENT_BASE_FEE_EXPLAINER_FALLING = lang.t('explain.base_fee.text_falling');
 
-const CURRENT_BASE_FEE_EXPLAINER_RISING = lang.t(
-  'explain.base_fee.text_rising'
-);
+const CURRENT_BASE_FEE_EXPLAINER_RISING = lang.t('explain.base_fee.text_rising');
 
-const CURRENT_BASE_FEE_EXPLAINER_SURGING = lang.t(
-  'explain.base_fee.text_surging'
-);
+const CURRENT_BASE_FEE_EXPLAINER_SURGING = lang.t('explain.base_fee.text_surging');
 
 const MAX_BASE_FEE_EXPLAINER = lang.t('explain.max_base_fee.text');
 
@@ -570,29 +550,19 @@ export const explainers = (params, colors) => ({
   output_disabled: {
     extraHeight: -30,
     title: params?.inputToken
-      ? lang.t(
-          `explain.output_disabled.${
-            params?.isCrosschainSwap ? 'title_crosschain' : 'title'
-          }`,
-          {
-            inputToken: params?.inputToken,
-            fromNetwork: getNetworkObj(params?.fromNetwork).name,
-          }
-        )
+      ? lang.t(`explain.output_disabled.${params?.isCrosschainSwap ? 'title_crosschain' : 'title'}`, {
+          inputToken: params?.inputToken,
+          fromNetwork: getNetworkObj(params?.fromNetwork).name,
+        })
       : lang.t('explain.output_disabled.title_empty'),
 
     text: params?.isCrosschainSwap
-      ? lang.t(
-          `explain.output_disabled.${
-            params?.isBridgeSwap ? 'text_bridge' : 'text_crosschain'
-          }`,
-          {
-            inputToken: params?.inputToken,
-            outputToken: params?.outputToken,
-            fromNetwork: getNetworkObj(params?.fromNetwork).name,
-            toNetwork: getNetworkObj(params?.toNetwork).name,
-          }
-        )
+      ? lang.t(`explain.output_disabled.${params?.isBridgeSwap ? 'text_bridge' : 'text_crosschain'}`, {
+          inputToken: params?.inputToken,
+          outputToken: params?.outputToken,
+          fromNetwork: getNetworkObj(params?.fromNetwork).name,
+          toNetwork: getNetworkObj(params?.toNetwork).name,
+        })
       : lang.t('explain.output_disabled.text', {
           fromNetwork: getNetworkObj(params?.fromNetwork)?.name,
           inputToken: params?.inputToken,
@@ -601,12 +571,7 @@ export const explainers = (params, colors) => ({
     logo: !isL2Network(params?.fromNetwork) ? (
       <CoinIcon address={ETH_ADDRESS} size={40} symbol={ETH_SYMBOL} />
     ) : (
-      <ChainBadge
-        network={params?.fromNetwork}
-        marginBottom={8}
-        position="relative"
-        size="large"
-      />
+      <ChainBadge network={params?.fromNetwork} marginBottom={8} position="relative" size="large" />
     ),
   },
   floor_price: {
@@ -740,12 +705,7 @@ export const explainers = (params, colors) => ({
         {lang.t('explain.unverified.fragment1')}
         <Text
           color={colors?.appleBlue}
-          onPress={() =>
-            ethereumUtils.openTokenEtherscanURL(
-              params?.asset.address,
-              params?.asset?.network
-            )
-          }
+          onPress={() => ethereumUtils.openTokenEtherscanURL(params?.asset.address, params?.asset?.network)}
           size="large"
           suppressHighlighting
           weight="semibold"
@@ -759,14 +719,7 @@ export const explainers = (params, colors) => ({
   optimism: {
     emoji: '⛽️',
     extraHeight: 150,
-    logo: (
-      <ChainBadge
-        network={networkTypes.optimism}
-        marginBottom={8}
-        position="relative"
-        size="large"
-      />
-    ),
+    logo: <ChainBadge network={networkTypes.optimism} marginBottom={8} position="relative" size="large" />,
     readMoreLink: buildRainbowLearnUrl({
       url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
       query: {
@@ -779,14 +732,7 @@ export const explainers = (params, colors) => ({
   arbitrum: {
     emoji: '⛽️',
     extraHeight: 144,
-    logo: (
-      <ChainBadge
-        network={networkTypes.arbitrum}
-        marginBottom={8}
-        position="relative"
-        size="large"
-      />
-    ),
+    logo: <ChainBadge network={networkTypes.arbitrum} marginBottom={8} position="relative" size="large" />,
     readMoreLink: buildRainbowLearnUrl({
       url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
       query: {
@@ -799,14 +745,7 @@ export const explainers = (params, colors) => ({
   polygon: {
     emoji: '⛽️',
     extraHeight: 120,
-    logo: (
-      <ChainBadge
-        network={networkTypes.polygon}
-        marginBottom={8}
-        position="relative"
-        size="large"
-      />
-    ),
+    logo: <ChainBadge network={networkTypes.polygon} marginBottom={8} position="relative" size="large" />,
     readMoreLink: buildRainbowLearnUrl({
       url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
       query: {
@@ -819,14 +758,7 @@ export const explainers = (params, colors) => ({
   bsc: {
     emoji: '⛽️',
     extraHeight: IS_ANDROID ? 120 : 160,
-    logo: (
-      <ChainBadge
-        network={networkTypes.bsc}
-        marginBottom={8}
-        position="relative"
-        size="large"
-      />
-    ),
+    logo: <ChainBadge network={networkTypes.bsc} marginBottom={8} position="relative" size="large" />,
     readMoreLink: buildRainbowLearnUrl({
       url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
       query: {
@@ -839,14 +771,7 @@ export const explainers = (params, colors) => ({
   zora: {
     emoji: '⛽️',
     extraHeight: 144,
-    logo: (
-      <ChainBadge
-        network={networkTypes.zora}
-        marginBottom={8}
-        position="relative"
-        size="large"
-      />
-    ),
+    logo: <ChainBadge network={networkTypes.zora} marginBottom={8} position="relative" size="large" />,
     readMoreLink: buildRainbowLearnUrl({
       url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
       query: {
@@ -859,14 +784,7 @@ export const explainers = (params, colors) => ({
   base: {
     emoji: '⛽️',
     extraHeight: 144,
-    logo: (
-      <ChainBadge
-        network={networkTypes.base}
-        marginBottom={8}
-        position="relative"
-        size="large"
-      />
-    ),
+    logo: <ChainBadge network={networkTypes.base} marginBottom={8} position="relative" size="large" />,
     readMoreLink: buildRainbowLearnUrl({
       url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
       query: {
@@ -917,12 +835,8 @@ export const explainers = (params, colors) => ({
   swapResetInputs: {
     button: {
       label: `Continue with ${getNetworkObj(params?.network)?.name}`,
-      bgColor:
-        colors?.networkColors[params?.network] &&
-        colors?.alpha(colors?.networkColors[params?.network], 0.06),
-      textColor:
-        colors?.networkColors[params?.network] &&
-        colors?.networkColors?.[params?.network],
+      bgColor: colors?.networkColors[params?.network] && colors?.alpha(colors?.networkColors[params?.network], 0.06),
+      textColor: colors?.networkColors[params?.network] && colors?.networkColors?.[params?.network],
     },
     emoji: '🔐',
     extraHeight: -90,
@@ -930,12 +844,7 @@ export const explainers = (params, colors) => ({
     title: `Switching to ${getNetworkObj(params?.network)?.name}`,
     logo:
       params?.network !== 'mainnet' ? (
-        <ChainBadge
-          network={networkTypes[params?.network]}
-          marginBottom={8}
-          position="relative"
-          size="large"
-        />
+        <ChainBadge network={networkTypes[params?.network]} marginBottom={8} position="relative" size="large" />
       ) : (
         <CoinIcon address={ETH_ADDRESS} size={40} symbol={ETH_ADDRESS} />
       ),
@@ -958,8 +867,7 @@ export const explainers = (params, colors) => ({
           onPress={() =>
             Linking.openURL(
               buildRainbowLearnUrl({
-                url:
-                  'https://learn.rainbow.me/a-beginners-guide-to-liquidity-providing',
+                url: 'https://learn.rainbow.me/a-beginners-guide-to-liquidity-providing',
                 query: {
                   campaign: 'explain',
                 },
@@ -994,8 +902,7 @@ export const explainers = (params, colors) => ({
           onPress={() =>
             Linking.openURL(
               buildRainbowLearnUrl({
-                url:
-                  'https://support.rainbow.me/en/articles/8324868-fee-on-transfer-tokens',
+                url: 'https://support.rainbow.me/en/articles/8324868-fee-on-transfer-tokens',
                 query: {
                   campaign: 'explain',
                 },
@@ -1018,12 +925,8 @@ export const explainers = (params, colors) => ({
     title: lang.t('explain.no_route_found.title'),
     stillCurious: (
       <>
-        <Text {...getBodyTextPropsWithColor(colors)}>
-          {lang.t('explain.no_route_found.fragment1')}
-        </Text>
-        <Text {...getBodyTextPropsWithColor(colors)}>
-          {lang.t('explain.no_route_found.fragment2')}
-        </Text>
+        <Text {...getBodyTextPropsWithColor(colors)}>{lang.t('explain.no_route_found.fragment1')}</Text>
+        <Text {...getBodyTextPropsWithColor(colors)}>{lang.t('explain.no_route_found.fragment2')}</Text>
       </>
     ),
   },
@@ -1072,12 +975,7 @@ export const explainers = (params, colors) => ({
               height={{ custom: 40 }}
               key={`networks-${network}`}
               marginLeft={{
-                custom:
-                  index > 0
-                    ? -12
-                    : params?.networks?.length % 2 === 0
-                    ? -2
-                    : -30,
+                custom: index > 0 ? -12 : params?.networks?.length % 2 === 0 ? -2 : -30,
               }}
               style={{
                 borderColor: colors.transparent,
@@ -1089,18 +987,9 @@ export const explainers = (params, colors) => ({
               zIndex={params?.networks?.length - index}
             >
               {network !== 'mainnet' ? (
-                <ChainBadge
-                  network={network}
-                  position="relative"
-                  size="large"
-                />
+                <ChainBadge network={network} position="relative" size="large" />
               ) : (
-                <CoinIcon
-                  address={ETH_ADDRESS}
-                  size={40}
-                  style={{ marginTop: 4 }}
-                  symbol={ETH_SYMBOL}
-                />
+                <CoinIcon address={ETH_ADDRESS} size={40} style={{ marginTop: 4 }} symbol={ETH_SYMBOL} />
               )}
             </Box>
           );
@@ -1131,8 +1020,7 @@ export const explainers = (params, colors) => ({
           onPress={() =>
             Linking.openURL(
               buildRainbowLearnUrl({
-                url:
-                  'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+                url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
                 query: {
                   campaign: 'explain',
                 },
@@ -1150,14 +1038,7 @@ export const explainers = (params, colors) => ({
         {lang.t('explain.obtain_l2_asset.fragment3')}
       </Text>
     ),
-    logo: (
-      <ChainBadge
-        network={params?.network}
-        marginBottom={8}
-        position="relative"
-        size="large"
-      />
-    ),
+    logo: <ChainBadge network={params?.network} marginBottom={8} position="relative" size="large" />,
     title: lang.t('explain.obtain_l2_asset.title', {
       networkName: params?.networkName,
     }),
@@ -1173,8 +1054,7 @@ export const explainers = (params, colors) => ({
           onPress={() =>
             Linking.openURL(
               buildRainbowLearnUrl({
-                url:
-                  'https://learn.rainbow.me/protecting-transactions-with-flashbots',
+                url: 'https://learn.rainbow.me/protecting-transactions-with-flashbots',
                 query: {
                   campaign: 'explain',
                 },
@@ -1204,8 +1084,7 @@ export const explainers = (params, colors) => ({
           onPress={() =>
             Linking.openURL(
               buildRainbowLearnUrl({
-                url:
-                  'https://learn.rainbow.me/swap-with-confidence-with-rainbow',
+                url: 'https://learn.rainbow.me/swap-with-confidence-with-rainbow',
                 query: {
                   campaign: 'explain',
                 },
@@ -1232,11 +1111,7 @@ export const explainers = (params, colors) => ({
         {lang.t('explain.slippage.still_curious.fragment1')}
         <Text
           color={colors?.appleBlue}
-          onPress={() =>
-            Linking.openURL(
-              'https://academy.shrimpy.io/post/what-is-slippage-how-to-avoid-slippage-on-defi-exchanges'
-            )
-          }
+          onPress={() => Linking.openURL('https://academy.shrimpy.io/post/what-is-slippage-how-to-avoid-slippage-on-defi-exchanges')}
           size="large"
           suppressHighlighting
           weight="semibold"
@@ -1256,8 +1131,7 @@ export const explainers = (params, colors) => ({
         childXPosition={10}
         colors={[
           colors?.networkColors[params?.network],
-          getTokenMetadata(params?.nativeAsset?.mainnet_address)?.color ??
-            colors?.appleBlue,
+          getTokenMetadata(params?.nativeAsset?.mainnet_address)?.color ?? colors?.appleBlue,
         ]}
       >
         <CoinIcon
@@ -1292,9 +1166,7 @@ export const explainers = (params, colors) => ({
         gasToken: params?.gasToken,
       }),
       textColor: colors?.networkColors[params?.network],
-      bgColor:
-        colors?.networkColors[params?.network] &&
-        colors?.alpha(colors?.networkColors[params?.network], 0.05),
+      bgColor: colors?.networkColors[params?.network] && colors?.alpha(colors?.networkColors[params?.network], 0.05),
       onPress: params?.onRefuel,
     },
   },
@@ -1305,8 +1177,7 @@ export const explainers = (params, colors) => ({
         childXPosition={10}
         colors={[
           colors?.networkColors[params?.network],
-          getTokenMetadata(params?.nativeAsset?.mainnet_address)?.color ??
-            colors?.appleBlue,
+          getTokenMetadata(params?.nativeAsset?.mainnet_address)?.color ?? colors?.appleBlue,
         ]}
       >
         <CoinIcon
@@ -1340,9 +1211,7 @@ export const explainers = (params, colors) => ({
         gasToken: params?.gasToken,
       }),
       textColor: colors?.networkColors[params?.network],
-      bgColor:
-        colors?.networkColors[params?.network] &&
-        colors?.alpha(colors?.networkColors[params?.network], 0.05),
+      bgColor: colors?.networkColors[params?.network] && colors?.alpha(colors?.networkColors[params?.network], 0.05),
       onPress: params?.onRefuel,
     },
   },
@@ -1354,8 +1223,7 @@ export const explainers = (params, colors) => ({
         childXPosition={10}
         colors={[
           colors?.networkColors[params?.network],
-          getTokenMetadata(params?.nativeAsset?.mainnet_address)?.color ??
-            colors?.appleBlue,
+          getTokenMetadata(params?.nativeAsset?.mainnet_address)?.color ?? colors?.appleBlue,
         ]}
       >
         <CoinIcon
@@ -1407,9 +1275,7 @@ const ExplainSheet = () => {
     const baseFeeLabel = label ? `${label} ·` : '';
     return (
       <Centered>
-        <GasTrendHeader color={color}>
-          {`${baseFeeLabel} ${toFixedDecimals(currentBaseFee, 0)} Gwei`}
-        </GasTrendHeader>
+        <GasTrendHeader color={color}>{`${baseFeeLabel} ${toFixedDecimals(currentBaseFee, 0)} Gwei`}</GasTrendHeader>
       </Centered>
     );
   }, [params, type]);
@@ -1429,8 +1295,7 @@ const ExplainSheet = () => {
   const EmojiText = type === 'verified' ? Gradient : Emoji;
   const Title = type === 'verified' ? Gradient : SheetTitle;
 
-  const sheetHeight =
-    ExplainSheetHeight + (explainSheetConfig?.extraHeight || 0);
+  const sheetHeight = ExplainSheetHeight + (explainSheetConfig?.extraHeight || 0);
 
   const buttons = useMemo(() => {
     const reverseButtons = type === 'obtainL2Assets' || type === 'unverified';
@@ -1439,11 +1304,7 @@ const ExplainSheet = () => {
         return handleReadMore(e);
       }
       if (explainSheetConfig.secondaryButton?.onPress) {
-        return explainSheetConfig.secondaryButton.onPress(
-          navigate,
-          goBack,
-          handleClose
-        );
+        return explainSheetConfig.secondaryButton.onPress(navigate, goBack, handleClose);
       }
 
       return goBack(e);
@@ -1457,38 +1318,22 @@ const ExplainSheet = () => {
       handleClose(e);
     };
 
-    const secondaryButton = (explainSheetConfig?.readMoreLink ||
-      explainSheetConfig?.secondaryButton?.label) && (
-      <Column
-        height={60}
-        style={android && reverseButtons && { marginTop: 16 }}
-      >
+    const secondaryButton = (explainSheetConfig?.readMoreLink || explainSheetConfig?.secondaryButton?.label) && (
+      <Column height={60} style={android && reverseButtons && { marginTop: 16 }}>
         <SheetActionButton
-          color={
-            explainSheetConfig?.secondaryButton?.bgColor ??
-            colors.blueGreyDarkLight
-          }
+          color={explainSheetConfig?.secondaryButton?.bgColor ?? colors.blueGreyDarkLight}
           isTransparent
-          label={
-            explainSheetConfig.secondaryButton?.label ||
-            lang.t('explain.read_more')
-          }
+          label={explainSheetConfig.secondaryButton?.label || lang.t('explain.read_more')}
           onPress={onSecondaryPress}
           size="big"
-          textColor={
-            explainSheetConfig.secondaryButton?.textColor ??
-            colors.blueGreyDark80
-          }
+          textColor={explainSheetConfig.secondaryButton?.textColor ?? colors.blueGreyDark80}
           weight="heavy"
         />
       </Column>
     );
     const accentCta = (
       <SheetActionButton
-        color={
-          explainSheetConfig.button?.bgColor ||
-          colors.alpha(colors.appleBlue, 0.04)
-        }
+        color={explainSheetConfig.button?.bgColor || colors.alpha(colors.appleBlue, 0.04)}
         isTransparent
         label={explainSheetConfig.button?.label || lang.t('button.got_it')}
         onPress={onPrimaryPress}
@@ -1517,17 +1362,8 @@ const ExplainSheet = () => {
 
   return (
     <Container deviceHeight={deviceHeight} height={sheetHeight} insets={insets}>
-      <SlackSheet
-        additionalTopPadding={android}
-        contentHeight={sheetHeight}
-        scrollEnabled={false}
-      >
-        <Centered
-          direction="column"
-          height={sheetHeight}
-          testID={`explain-sheet-${type}`}
-          width="100%"
-        >
+      <SlackSheet additionalTopPadding={android} contentHeight={sheetHeight} scrollEnabled={false}>
+        <Centered direction="column" height={sheetHeight} testID={`explain-sheet-${type}`} width="100%">
           <ColumnWithMargins
             margin={15}
             style={{
@@ -1557,14 +1393,9 @@ const ExplainSheet = () => {
             {/** base fee explainer */}
             {renderBaseFeeIndicator}
 
-            {explainSheetConfig.text && (
-              <Text {...getBodyTextPropsWithColor(colors)}>
-                {explainSheetConfig.text}
-              </Text>
-            )}
+            {explainSheetConfig.text && <Text {...getBodyTextPropsWithColor(colors)}>{explainSheetConfig.text}</Text>}
 
-            {explainSheetConfig?.stillCurious &&
-              explainSheetConfig.stillCurious}
+            {explainSheetConfig?.stillCurious && explainSheetConfig.stillCurious}
             {buttons}
           </ColumnWithMargins>
         </Centered>

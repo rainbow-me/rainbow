@@ -6,22 +6,12 @@ import useAccountSettings from './useAccountSettings';
 
 export default function usePendingTransactions() {
   const { accountAddress } = useAccountSettings();
-  const {
-    pendingTransactions: storePendingTransactions,
-  } = usePendingTransactionsStore();
+  const { pendingTransactions: storePendingTransactions } = usePendingTransactionsStore();
 
-  const pendingTransactions = useMemo(
-    () => storePendingTransactions[accountAddress] || [],
-    [accountAddress, storePendingTransactions]
-  );
+  const pendingTransactions = useMemo(() => storePendingTransactions[accountAddress] || [], [accountAddress, storePendingTransactions]);
   const getPendingTransactionByHash = useCallback(
     (transactionHash: string) =>
-      pendingTransactions.find(pendingTransaction =>
-        isLowerCaseMatch(
-          ethereumUtils.getHash(pendingTransaction) || '',
-          transactionHash
-        )
-      ),
+      pendingTransactions.find(pendingTransaction => isLowerCaseMatch(ethereumUtils.getHash(pendingTransaction) || '', transactionHash)),
     [pendingTransactions]
   );
 

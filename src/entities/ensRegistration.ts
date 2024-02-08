@@ -16,8 +16,7 @@ export interface TransactionRegistrationParameters {
   registerTransactionHash?: number;
 }
 
-export interface RegistrationParameters
-  extends TransactionRegistrationParameters {
+export interface RegistrationParameters extends TransactionRegistrationParameters {
   duration: number;
   mode?: keyof typeof REGISTRATION_MODES;
   name: string;

@@ -1,10 +1,4 @@
-export {
-  parseAssetName,
-  parseAssetSymbol,
-  parseAsset,
-  parseAssetNative,
-  parseAssetsNative,
-} from './accounts';
+export { parseAssetName, parseAssetSymbol, parseAsset, parseAssetNative, parseAssetsNative } from './accounts';
 export {
   parseL2GasPrices,
   parseGasFeesBySpeed,

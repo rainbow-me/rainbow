@@ -90,12 +90,7 @@ export default function ChartDateLabel({ chartTimeDefaultValue, ratio }) {
   const textStyle = useAnimatedStyle(() => {
     const realRatio = isActive.value ? sharedRatio.value : ratio;
     return {
-      color:
-        realRatio === 1
-          ? colors.blueGreyDark
-          : realRatio < 1
-          ? colors.red
-          : colors.green,
+      color: realRatio === 1 ? colors.blueGreyDark : realRatio < 1 ? colors.red : colors.green,
     };
   }, [ratio]);
 

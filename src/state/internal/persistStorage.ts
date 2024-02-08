@@ -1,5 +1,3 @@
-// persistStorage.ts
-
 import { zustandStorage } from '@/storage/legacy';
 import { StateStorage } from 'zustand/middleware';
 

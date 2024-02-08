@@ -17,11 +17,7 @@ import { Moonpay as MoonpayLogo } from '@/components/icons/svg/Moonpay';
 
 import { FiatProviderName } from '@/entities/f2c';
 import { convertAPINetworkToInternalNetwork } from '@/screens/AddCash/utils';
-import {
-  ProviderConfig,
-  CalloutType,
-  PaymentMethod,
-} from '@/screens/AddCash/types';
+import { ProviderConfig, CalloutType, PaymentMethod } from '@/screens/AddCash/types';
 import * as i18n from '@/languages';
 
 type PaymentMethodConfig = {
@@ -70,8 +66,7 @@ function getPaymentMethodConfigs(paymentMethods: { type: PaymentMethod }[]) {
   const google = types.includes(PaymentMethod.GooglePay);
 
   // card first
-  if (debit || credit)
-    methods.push(paymentMethodConfig[PaymentMethod.DebitCard]);
+  if (debit || credit) methods.push(paymentMethodConfig[PaymentMethod.DebitCard]);
 
   // then bank
   if (bank) methods.push(paymentMethodConfig[PaymentMethod.Bank]);
@@ -104,12 +99,7 @@ function NetworkIcons({ networks }: { networks: Network[] }) {
             {network !== Network.mainnet ? (
               <ChainBadge network={network} position="relative" size="small" />
             ) : (
-              <CoinIcon
-                address={ETH_ADDRESS}
-                size={20}
-                symbol={ETH_SYMBOL}
-                network={network}
-              />
+              <CoinIcon address={ETH_ADDRESS} size={20} symbol={ETH_SYMBOL} network={network} />
             )}
           </Box>
         );
@@ -143,11 +133,7 @@ export function ProviderCard({ config }: { config: ProviderConfig }) {
           alignItems="center"
           justifyContent="center"
         >
-          <Logo
-            width={14}
-            height={14}
-            color={config.metadata.accentForegroundColor || 'white'}
-          />
+          <Logo width={14} height={14} color={config.metadata.accentForegroundColor || 'white'} />
         </Box>
         <Box paddingLeft="8px">
           <Text size="20pt" weight="heavy" color="label">
@@ -178,11 +164,7 @@ export function ProviderCard({ config }: { config: ProviderConfig }) {
         />
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <Box
-            flexDirection="row"
-            paddingHorizontal="20px"
-            paddingBottom="20px"
-          >
+          <Box flexDirection="row" paddingHorizontal="20px" paddingBottom="20px">
             {config.content.callouts.map(callout => {
               let title = '';
               let content = null;
@@ -191,11 +173,7 @@ export function ProviderCard({ config }: { config: ProviderConfig }) {
                 case CalloutType.Rate: {
                   title = i18n.t(i18n.l.wallet.add_cash_v2.fees_title);
                   content = (
-                    <Box
-                      flexDirection="row"
-                      alignItems="center"
-                      paddingTop="12px"
-                    >
+                    <Box flexDirection="row" alignItems="center" paddingTop="12px">
                       <Text size="15pt" weight="bold" color="label">
                         {callout.value}
                       </Text>
@@ -206,16 +184,8 @@ export function ProviderCard({ config }: { config: ProviderConfig }) {
                 case CalloutType.InstantAvailable: {
                   title = i18n.t(i18n.l.wallet.add_cash_v2.instant_title);
                   content = (
-                    <Box
-                      flexDirection="row"
-                      alignItems="center"
-                      paddingTop="12px"
-                    >
-                      <Text
-                        size="12pt"
-                        weight="bold"
-                        color={{ custom: config.metadata.accentColor }}
-                      >
+                    <Box flexDirection="row" alignItems="center" paddingTop="12px">
+                      <Text size="12pt" weight="bold" color={{ custom: config.metadata.accentColor }}>
                         􀋦
                       </Text>
                       <Box paddingLeft="2px">
@@ -230,25 +200,13 @@ export function ProviderCard({ config }: { config: ProviderConfig }) {
                 case CalloutType.PaymentMethods: {
                   const methods = getPaymentMethodConfigs(callout.methods);
                   const multi = methods.length > 1;
-                  title = multi
-                    ? i18n.t(i18n.l.wallet.add_cash_v2.methods_title)
-                    : i18n.t(i18n.l.wallet.add_cash_v2.method_title);
+                  title = multi ? i18n.t(i18n.l.wallet.add_cash_v2.methods_title) : i18n.t(i18n.l.wallet.add_cash_v2.method_title);
                   content = (
                     <Box flexDirection="row">
                       {methods.map(m => {
                         return (
-                          <Box
-                            key={m.name}
-                            flexDirection="row"
-                            alignItems="center"
-                            paddingTop="12px"
-                            paddingRight="4px"
-                          >
-                            <Text
-                              size="13pt"
-                              weight="bold"
-                              color={{ custom: config.metadata.accentColor }}
-                            >
+                          <Box key={m.name} flexDirection="row" alignItems="center" paddingTop="12px" paddingRight="4px">
+                            <Text size="13pt" weight="bold" color={{ custom: config.metadata.accentColor }}>
                               {m.icon}
                             </Text>
 
@@ -272,16 +230,10 @@ export function ProviderCard({ config }: { config: ProviderConfig }) {
                       ? i18n.t(i18n.l.wallet.add_cash_v2.networks_title)
                       : i18n.t(i18n.l.wallet.add_cash_v2.network_title);
                   content = (
-                    <Box
-                      flexDirection="row"
-                      alignItems="center"
-                      paddingTop="8px"
-                    >
+                    <Box flexDirection="row" alignItems="center" paddingTop="8px">
                       <NetworkIcons
                         /* @ts-ignore */
-                        networks={callout.networks
-                          .map(convertAPINetworkToInternalNetwork)
-                          .filter(Boolean)}
+                        networks={callout.networks.map(convertAPINetworkToInternalNetwork).filter(Boolean)}
                       />
                     </Box>
                   );

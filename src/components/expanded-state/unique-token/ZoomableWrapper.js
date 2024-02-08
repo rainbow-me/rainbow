@@ -1,10 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import {
-  PanGestureHandler,
-  PinchGestureHandler,
-  TapGestureHandler,
-} from 'react-native-gesture-handler';
+import { PanGestureHandler, PinchGestureHandler, TapGestureHandler } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
   runOnJS,
@@ -40,8 +36,7 @@ const exitConfig = {
 };
 const GestureBlocker = styled(View)({
   height: ({ height }) => height * 3,
-  left: ({ containerWidth, width, xOffset }) =>
-    -(xOffset || (width - containerWidth) / 2),
+  left: ({ containerWidth, width, xOffset }) => -(xOffset || (width - containerWidth) / 2),
   position: 'absolute',
   top: ({ height }) => -height,
   width: ({ width }) => width,
@@ -110,16 +105,12 @@ export const ZoomableWrapper = ({
 
   let deviceHeightWithMaybeHiddenStatusBar = deviceHeight;
   if (!hideStatusBar) {
-    deviceHeightWithMaybeHiddenStatusBar =
-      deviceHeight - safeAreaInsetValues.top;
+    deviceHeightWithMaybeHiddenStatusBar = deviceHeight - safeAreaInsetValues.top;
   }
 
   const maxImageWidth = width || deviceWidth - horizontalPadding * 2;
   const maxImageHeight = height || deviceHeightWithMaybeHiddenStatusBar / 2;
-  const [
-    containerWidth = maxImageWidth,
-    containerHeight = maxImageWidth,
-  ] = useMemo(() => {
+  const [containerWidth = maxImageWidth, containerHeight = maxImageWidth] = useMemo(() => {
     const isSquare = aspectRatio === 1;
     const isLandscape = aspectRatio > 1;
     const isPortrait = aspectRatio < 1;
@@ -141,12 +132,8 @@ export const ZoomableWrapper = ({
     }
   }, [aspectRatio, maxImageHeight, maxImageWidth]);
 
-  const containerWidthValue = useReactiveSharedValue(
-    containerWidth || maxImageWidth
-  );
-  const containerHeightValue = useReactiveSharedValue(
-    containerHeight || maxImageWidth
-  );
+  const containerWidthValue = useReactiveSharedValue(containerWidth || maxImageWidth);
+  const containerHeightValue = useReactiveSharedValue(containerHeight || maxImageWidth);
   const [isZoomed, setIsZoomed] = useState(false);
   const isZoomedValue = useSharedValue(false);
 
@@ -169,23 +156,14 @@ export const ZoomableWrapper = ({
     }
   }, [isZoomed, onZoomIn, onZoomOut]);
 
-  const fullSizeHeight = Math.min(
-    deviceHeightWithMaybeHiddenStatusBar,
-    deviceWidth / aspectRatio
-  );
-  const fullSizeWidth = Math.min(
-    deviceWidth,
-    deviceHeightWithMaybeHiddenStatusBar * aspectRatio
-  );
+  const fullSizeHeight = Math.min(deviceHeightWithMaybeHiddenStatusBar, deviceWidth / aspectRatio);
+  const fullSizeWidth = Math.min(deviceWidth, deviceHeightWithMaybeHiddenStatusBar * aspectRatio);
   const zooming = fullSizeHeight / containerHeightValue.value;
 
   const xOffset = givenXOffset || (width - containerWidth) / 2 || 0;
 
   const containerStyle = useAnimatedStyle(() => {
-    const scale =
-      1 +
-      animationProgress.value *
-        (fullSizeHeight / (containerHeightValue.value ?? 1) - 1);
+    const scale = 1 + animationProgress.value * (fullSizeHeight / (containerHeightValue.value ?? 1) - 1);
 
     const maxWidth = (deviceWidth - containerWidth) / 2;
     return {
@@ -194,21 +172,15 @@ export const ZoomableWrapper = ({
         {
           translateY:
             animationProgress.value *
-            (yDisplacement.value +
-              (deviceHeightWithMaybeHiddenStatusBar - fullSizeHeight) / 2 -
-              (hideStatusBar ? 85 : 68)),
+            (yDisplacement.value + (deviceHeightWithMaybeHiddenStatusBar - fullSizeHeight) / 2 - (hideStatusBar ? 85 : 68)),
         },
         {
-          translateY:
-            (animationProgress.value *
-              (fullSizeHeight - containerHeightValue.value)) /
-            2,
+          translateY: (animationProgress.value * (fullSizeHeight - containerHeightValue.value)) / 2,
         },
         ...(givenXOffset
           ? [
               {
-                translateX:
-                  -animationProgress.value * (-maxWidth + givenXOffset),
+                translateX: -animationProgress.value * (-maxWidth + givenXOffset),
               },
             ]
           : []),
@@ -236,10 +208,7 @@ export const ZoomableWrapper = ({
     // if zoom state was entered by pinching, adjust targetScale to account for new image dimensions
     let targetScale = isZoomedValue.value
       ? Math.min(scale.value, MAX_IMAGE_SCALE)
-      : Math.min(
-          scale.value * (containerWidth / fullSizeWidth),
-          MAX_IMAGE_SCALE
-        );
+      : Math.min(scale.value * (containerWidth / fullSizeWidth), MAX_IMAGE_SCALE);
 
     // determine whether to snap to screen edges
     let breakingScaleX = deviceWidth / fullSizeWidth;
@@ -250,15 +219,8 @@ export const ZoomableWrapper = ({
     }
     const zooming = fullSizeHeight / containerHeightValue.value;
 
-    const maxDisplacementX =
-      (deviceWidth * (Math.max(1, targetScale / breakingScaleX) - 1)) /
-      2 /
-      zooming;
-    const maxDisplacementY =
-      (deviceHeightWithMaybeHiddenStatusBar *
-        (Math.max(1, targetScale / breakingScaleY) - 1)) /
-      2 /
-      zooming;
+    const maxDisplacementX = (deviceWidth * (Math.max(1, targetScale / breakingScaleX) - 1)) / 2 / zooming;
+    const maxDisplacementY = (deviceHeightWithMaybeHiddenStatusBar * (Math.max(1, targetScale / breakingScaleY) - 1)) / 2 / zooming;
 
     let targetTranslateX = translateX.value;
     let targetTranslateY = translateY.value;
@@ -267,17 +229,13 @@ export const ZoomableWrapper = ({
       scale.value = withTiming(MAX_IMAGE_SCALE, adjustConfig);
       targetScale = MAX_IMAGE_SCALE;
       if (ctx.prevScale) {
-        const lastFocalDisplacementX =
-          (ctx.focalDisplacementX * event.scale) / ctx.initEventScale;
-        const readjustX =
-          ctx.maxAllowedFocalDisplacementX - lastFocalDisplacementX;
+        const lastFocalDisplacementX = (ctx.focalDisplacementX * event.scale) / ctx.initEventScale;
+        const readjustX = ctx.maxAllowedFocalDisplacementX - lastFocalDisplacementX;
         targetTranslateX = translateX.value + readjustX;
         translateX.value = withTiming(targetTranslateX, adjustConfig);
 
-        const lastFocalDisplacementY =
-          (ctx.focalDisplacementY * event.scale) / ctx.initEventScale;
-        const readjustY =
-          ctx.maxAllowedFocalDisplacementY - lastFocalDisplacementY;
+        const lastFocalDisplacementY = (ctx.focalDisplacementY * event.scale) / ctx.initEventScale;
+        const readjustY = ctx.maxAllowedFocalDisplacementY - lastFocalDisplacementY;
         targetTranslateY = translateY.value + readjustY;
         translateY.value = withTiming(targetTranslateY, adjustConfig);
       } else {
@@ -346,10 +304,7 @@ export const ZoomableWrapper = ({
 
       // handle dismiss gesture
       if (
-        Math.abs(translateY.value) +
-          (Math.abs(event?.velocityY) ?? 0) -
-          (Math.abs(event?.velocityX / 2) ?? 0) >
-          THRESHOLD * targetScale &&
+        Math.abs(translateY.value) + (Math.abs(event?.velocityY) ?? 0) - (Math.abs(event?.velocityX / 2) ?? 0) > THRESHOLD * targetScale &&
         fullSizeHeight * scale.value <= deviceHeightWithMaybeHiddenStatusBar
       ) {
         isZoomedValue.value = false;
@@ -362,31 +317,19 @@ export const ZoomableWrapper = ({
       }
     }
 
-    if (
-      event.velocityY &&
-      isZoomedValue.value &&
-      targetScale > breakingScaleX
-    ) {
-      const projectedYCoordinate =
-        targetTranslateY +
-        event.velocityY /
-          8 /
-          (fullSizeHeight / (containerHeightValue.value ?? 1));
+    if (event.velocityY && isZoomedValue.value && targetScale > breakingScaleX) {
+      const projectedYCoordinate = targetTranslateY + event.velocityY / 8 / (fullSizeHeight / (containerHeightValue.value ?? 1));
       const edgeBounceConfig = {
         damping: 60,
         mass: 2,
         stiffness: 600,
-        velocity:
-          event.velocityY /
-          (fullSizeHeight / (containerHeightValue.value ?? 1)),
+        velocity: event.velocityY / (fullSizeHeight / (containerHeightValue.value ?? 1)),
       };
       const flingConfig = {
         damping: 120,
         mass: 2,
         stiffness: 600,
-        velocity:
-          event.velocityY /
-          (fullSizeHeight / (containerHeightValue.value ?? 1)),
+        velocity: event.velocityY / (fullSizeHeight / (containerHeightValue.value ?? 1)),
       };
       if (projectedYCoordinate > maxDisplacementY) {
         translateY.value = withSpring(maxDisplacementY, edgeBounceConfig);
@@ -397,31 +340,19 @@ export const ZoomableWrapper = ({
       }
     }
 
-    if (
-      event.velocityX &&
-      isZoomedValue.value &&
-      targetScale > breakingScaleX
-    ) {
-      const projectedXCoordinate =
-        targetTranslateX +
-        event.velocityX /
-          8 /
-          (fullSizeHeight / (containerHeightValue.value ?? 1));
+    if (event.velocityX && isZoomedValue.value && targetScale > breakingScaleX) {
+      const projectedXCoordinate = targetTranslateX + event.velocityX / 8 / (fullSizeHeight / (containerHeightValue.value ?? 1));
       const edgeBounceConfig = {
         damping: 60,
         mass: 2,
         stiffness: 600,
-        velocity:
-          event.velocityX /
-          (fullSizeHeight / (containerHeightValue.value ?? 1)),
+        velocity: event.velocityX / (fullSizeHeight / (containerHeightValue.value ?? 1)),
       };
       const flingConfig = {
         damping: 120,
         mass: 2,
         stiffness: 600,
-        velocity:
-          event.velocityX /
-          (fullSizeHeight / (containerHeightValue.value ?? 1)),
+        velocity: event.velocityX / (fullSizeHeight / (containerHeightValue.value ?? 1)),
       };
       if (projectedXCoordinate > maxDisplacementX) {
         translateX.value = withSpring(maxDisplacementX, edgeBounceConfig);
@@ -435,37 +366,24 @@ export const ZoomableWrapper = ({
 
   const panGestureHandler = useAnimatedGestureHandler({
     onActive: (event, ctx) => {
-      if (
-        isZoomedValue.value &&
-        ctx.startScale <= MIN_IMAGE_SCALE &&
-        event.numberOfPointers === 1
-      ) {
+      if (isZoomedValue.value && ctx.startScale <= MIN_IMAGE_SCALE && event.numberOfPointers === 1) {
         scale.value =
-          ctx.startScale -
-          ((ctx.startY + Math.abs(event.translationY)) /
-            deviceHeightWithMaybeHiddenStatusBar /
-            2) *
-            ctx.startScale;
+          ctx.startScale - ((ctx.startY + Math.abs(event.translationY)) / deviceHeightWithMaybeHiddenStatusBar / 2) * ctx.startScale;
       }
       if (event.numberOfPointers === 2) {
         ctx.numberOfPointers = 2;
       }
-      translateX.value +=
-        (event.translationX - (ctx.prevTranslateX ?? 0)) /
-        (isZoomedValue.value ? zooming : 1);
+      translateX.value += (event.translationX - (ctx.prevTranslateX ?? 0)) / (isZoomedValue.value ? zooming : 1);
 
       // lock y translation on horizontal swipe
       if (
         ctx.startScale <= MIN_IMAGE_SCALE ||
-        ctx.startScale * fullSizeHeight >=
-          deviceHeightWithMaybeHiddenStatusBar ||
+        ctx.startScale * fullSizeHeight >= deviceHeightWithMaybeHiddenStatusBar ||
         ctx.numberOfPointers === 2 ||
         event.numberOfPointers === 2 ||
         !(Math.abs(ctx.startVelocityX) / Math.abs(ctx.startVelocityY) > 1)
       ) {
-        translateY.value +=
-          (event.translationY - (ctx.prevTranslateY ?? 0)) /
-          (isZoomedValue.value ? zooming : 1);
+        translateY.value += (event.translationY - (ctx.prevTranslateY ?? 0)) / (isZoomedValue.value ? zooming : 1);
       }
 
       ctx.prevTranslateX = event.translationX;
@@ -488,29 +406,18 @@ export const ZoomableWrapper = ({
       if (!ctx.initEventScale) {
         ctx.initEventScale = event.scale;
 
-        const maxAllowedEventScale =
-          (ctx.initEventScale * MAX_IMAGE_SCALE) / scale.value;
-        ctx.maxAllowedFocalDisplacementX =
-          (ctx.focalDisplacementX * maxAllowedEventScale) / ctx.initEventScale;
-        ctx.maxAllowedFocalDisplacementY =
-          (ctx.focalDisplacementY * maxAllowedEventScale) / ctx.initEventScale;
+        const maxAllowedEventScale = (ctx.initEventScale * MAX_IMAGE_SCALE) / scale.value;
+        ctx.maxAllowedFocalDisplacementX = (ctx.focalDisplacementX * maxAllowedEventScale) / ctx.initEventScale;
+        ctx.maxAllowedFocalDisplacementY = (ctx.focalDisplacementY * maxAllowedEventScale) / ctx.initEventScale;
       }
       if (event.numberOfPointers === 1 || event.numberOfPointers === 2) {
-        if (
-          isZoomedValue.value &&
-          ctx.startScale <= MIN_IMAGE_SCALE &&
-          event.scale > MIN_IMAGE_SCALE
-        ) {
+        if (isZoomedValue.value && ctx.startScale <= MIN_IMAGE_SCALE && event.scale > MIN_IMAGE_SCALE) {
           ctx.blockExitZoom = true;
         }
         scale.value = ctx.startScale * (event.scale / ctx.initEventScale);
         if (ctx.prevScale) {
-          translateX.value +=
-            (ctx.focalDisplacementX * (event.scale - ctx.prevScale)) /
-            ctx.initEventScale;
-          translateY.value +=
-            (ctx.focalDisplacementY * (event.scale - ctx.prevScale)) /
-            ctx.initEventScale;
+          translateX.value += (ctx.focalDisplacementX * (event.scale - ctx.prevScale)) / ctx.initEventScale;
+          translateY.value += (ctx.focalDisplacementY * (event.scale - ctx.prevScale)) / ctx.initEventScale;
         } else {
           ctx.startScale2 = scale.value;
         }
@@ -528,11 +435,9 @@ export const ZoomableWrapper = ({
       ctx.startScale = scale.value;
       ctx.blockExitZoom = false;
 
-      ctx.focalDisplacementX =
-        (containerWidthValue.value / 2 - event.focalX) * scale.value;
+      ctx.focalDisplacementX = (containerWidthValue.value / 2 - event.focalX) * scale.value;
 
-      ctx.focalDisplacementY =
-        (containerHeightValue.value / 2 - event.focalY) * scale.value;
+      ctx.focalDisplacementY = (containerHeightValue.value / 2 - event.focalY) * scale.value;
     },
   });
 
@@ -545,13 +450,9 @@ export const ZoomableWrapper = ({
         animationProgress.value = withSpring(1, enterConfig);
       } else if (
         scale.value === MIN_IMAGE_SCALE &&
-        ((event.absoluteY > 0 &&
-          event.absoluteY <
-            (deviceHeightWithMaybeHiddenStatusBar - fullSizeHeight) / 2) ||
+        ((event.absoluteY > 0 && event.absoluteY < (deviceHeightWithMaybeHiddenStatusBar - fullSizeHeight) / 2) ||
           (event.absoluteY <= deviceHeightWithMaybeHiddenStatusBar &&
-            event.absoluteY >
-              deviceHeightWithMaybeHiddenStatusBar -
-                (deviceHeightWithMaybeHiddenStatusBar - fullSizeHeight) / 2))
+            event.absoluteY > deviceHeightWithMaybeHiddenStatusBar - (deviceHeightWithMaybeHiddenStatusBar - fullSizeHeight) / 2))
       ) {
         // dismiss if tap was outside image bounds
         isZoomedValue.value = false;
@@ -573,28 +474,14 @@ export const ZoomableWrapper = ({
           // zoom to tapped coordinates and prevent detachment from screen edges
           const centerX = deviceWidth / 2;
           const centerY = deviceHeightWithMaybeHiddenStatusBar / 2;
-          const scaleTo = Math.min(
-            Math.max(
-              deviceHeightWithMaybeHiddenStatusBar / fullSizeHeight,
-              2.5
-            ),
-            MAX_IMAGE_SCALE
-          );
+          const scaleTo = Math.min(Math.max(deviceHeightWithMaybeHiddenStatusBar / fullSizeHeight, 2.5), MAX_IMAGE_SCALE);
           const zoomToX = ((centerX - event.absoluteX) * scaleTo) / zooming;
           const zoomToY = ((centerY - event.absoluteY) * scaleTo) / zooming;
 
           const breakingScaleX = deviceWidth / fullSizeWidth;
-          const breakingScaleY =
-            deviceHeightWithMaybeHiddenStatusBar / fullSizeHeight;
-          const maxDisplacementX =
-            (deviceWidth * (Math.max(1, scaleTo / breakingScaleX) - 1)) /
-            2 /
-            zooming;
-          const maxDisplacementY =
-            (deviceHeightWithMaybeHiddenStatusBar *
-              (Math.max(1, scaleTo / breakingScaleY) - 1)) /
-            2 /
-            zooming;
+          const breakingScaleY = deviceHeightWithMaybeHiddenStatusBar / fullSizeHeight;
+          const maxDisplacementX = (deviceWidth * (Math.max(1, scaleTo / breakingScaleX) - 1)) / 2 / zooming;
+          const maxDisplacementY = (deviceHeightWithMaybeHiddenStatusBar * (Math.max(1, scaleTo / breakingScaleY) - 1)) / 2 / zooming;
 
           if (scaleTo > breakingScaleX) {
             if (zoomToX > maxDisplacementX) {
@@ -647,12 +534,7 @@ export const ZoomableWrapper = ({
   const singleTap = useRef();
 
   return (
-    <ButtonPressAnimation
-      enableHapticFeedback={false}
-      onPress={() => {}}
-      scaleTo={1}
-      style={{ alignItems: 'center', zIndex: 1 }}
-    >
+    <ButtonPressAnimation enableHapticFeedback={false} onPress={() => {}} scaleTo={1} style={{ alignItems: 'center', zIndex: 1 }}>
       <PanGestureHandler
         enabled={!disableAnimations && (!disableEnteringWithPinch || isZoomed)}
         maxPointers={2}
@@ -691,28 +573,14 @@ export const ZoomableWrapper = ({
                     ref={doubleTap}
                     waitFor={pinch}
                   >
-                    <Container
-                      hasShadow={hasShadow}
-                      style={[containerStyle, StyleSheet.absoluteFillObject]}
-                    >
+                    <Container hasShadow={hasShadow} style={[containerStyle, StyleSheet.absoluteFillObject]}>
                       <PinchGestureHandler
-                        enabled={
-                          !disableAnimations &&
-                          (!disableEnteringWithPinch || isZoomed)
-                        }
+                        enabled={!disableAnimations && (!disableEnteringWithPinch || isZoomed)}
                         onGestureEvent={pinchGestureHandler}
                         ref={pinch}
                         simultaneousHandlers={[pan]}
                       >
-                        <ImageWrapper
-                          style={[
-                            animatedStyle,
-                            cornerStyle,
-                            StyleSheet.absoluteFillObject,
-                          ]}
-                        >
-                          {children}
-                        </ImageWrapper>
+                        <ImageWrapper style={[animatedStyle, cornerStyle, StyleSheet.absoluteFillObject]}>{children}</ImageWrapper>
                       </PinchGestureHandler>
                     </Container>
                   </TapGestureHandler>

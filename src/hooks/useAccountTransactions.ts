@@ -1,12 +1,9 @@
 import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
 import { buildTransactionsSections } from '../helpers/buildTransactionsSectionsSelector';
-import NetworkTypes from '../helpers/networkTypes';
 import useAccountSettings from './useAccountSettings';
 import useContacts from './useContacts';
 import useRequests from './useRequests';
 import { useNavigation } from '@/navigation';
-import { AppState } from '@/redux/store';
 import { useTheme } from '@/theme';
 import { getCachedProviderForNetwork, isHardHat } from '@/handlers/web3';
 import { useUserAssets } from '@/resources/assets/UserAssetsQuery';
@@ -17,11 +14,7 @@ import { usePendingTransactionsStore } from '@/state/pendingTransactionsStore';
 export const NOE_PAGE = 30;
 
 export default function useAccountTransactions() {
-  const {
-    network: currentNetwork,
-    accountAddress,
-    nativeCurrency,
-  } = useAccountSettings();
+  const { network: currentNetwork, accountAddress, nativeCurrency } = useAccountSettings();
   const provider = getCachedProviderForNetwork(currentNetwork);
   const providerUrl = provider?.connection?.url;
   const connectedToHardhat = isHardHat(providerUrl);
@@ -31,9 +24,7 @@ export default function useAccountTransactions() {
     connectedToHardhat,
   });
 
-  const {
-    pendingTransactions: storePendingTransactions,
-  } = usePendingTransactionsStore();
+  const { pendingTransactions: storePendingTransactions } = usePendingTransactionsStore();
 
   const pendingTransactions = useMemo(() => {
     const txs = storePendingTransactions[accountAddress] || [];
@@ -47,35 +38,25 @@ export default function useAccountTransactions() {
   });
   const pages = data?.pages;
 
-  const transactions: RainbowTransaction[] = useMemo(
-    () => pages?.flatMap(p => p.transactions) || [],
-    [pages]
-  );
+  const transactions: RainbowTransaction[] = useMemo(() => pages?.flatMap(p => p.transactions) || [], [pages]);
 
-  const allTransactions = useMemo(
-    () => pendingTransactions.concat(transactions),
-    [pendingTransactions, transactions]
-  );
+  const allTransactions = useMemo(() => pendingTransactions.concat(transactions), [pendingTransactions, transactions]);
 
   const slicedTransaction = useMemo(() => allTransactions, [allTransactions]);
 
   const mainnetAddresses = useMemo(
     () =>
       userAssets
-        ? slicedTransaction.reduce(
-            (acc: { [key: string]: string }, txn: RainbowTransaction) => {
-              if (txn?.network && txn?.address) {
-                const asset =
-                  userAssets[`${txn.address}_${txn.network}`]?.mainnet_address;
-                if (asset) {
-                  acc[`${txn.address}_${txn.network}`] = asset;
-                }
+        ? slicedTransaction.reduce((acc: { [key: string]: string }, txn: RainbowTransaction) => {
+            if (txn?.network && txn?.address) {
+              const asset = userAssets[`${txn.address}_${txn.network}`]?.mainnet_address;
+              if (asset) {
+                acc[`${txn.address}_${txn.network}`] = asset;
               }
+            }
 
-              return acc;
-            },
-            {}
-          )
+            return acc;
+          }, {})
         : {},
     [userAssets, slicedTransaction]
   );

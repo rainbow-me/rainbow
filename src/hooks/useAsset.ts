@@ -8,16 +8,8 @@ import { AppState } from '@/redux/store';
 
 // To fetch an asset from account assets,
 // generic assets, and uniqueTokens
-export default function useAsset({
-  address,
-  network,
-}: {
-  address: string;
-  network: Network;
-}) {
-  const nativeCurrency = useSelector(
-    (state: AppState) => state.settings.nativeCurrency
-  );
+export default function useAsset({ address, network }: { address: string; network: Network }) {
+  const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
   const uniqueId = getUniqueId(address, network);
   const accountAsset = useAccountAsset(uniqueId);
   const { data: externalAsset } = useExternalToken({

@@ -15,9 +15,7 @@ function useTheme() {
 }
 
 export function StyleThingThemeProvider({ value, children }: any) {
-  return (
-    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 
 function filterProps(props: any, shouldForwardProp: any) {
@@ -122,23 +120,11 @@ export default function styled(Component: any) {
     function StyledComponent({ style, ...props }: any, ref: any) {
       const theme = useTheme() ?? {};
 
-      const [context, attributes] = useResolvedAttrs(
-        theme,
-        props,
-        WrappedStyledComponent.attrs
-      );
+      const [context, attributes] = useResolvedAttrs(theme, props, WrappedStyledComponent.attrs);
 
-      const elementToBeCreated =
-        attributes?.$as ||
-        props.$as ||
-        attributes?.as ||
-        props.as ||
-        WrappedStyledComponent.target;
+      const elementToBeCreated = attributes?.$as || props.$as || attributes?.as || props.as || WrappedStyledComponent.target;
 
-      const generatedStyles = processStyles(
-        WrappedStyledComponent.styles,
-        context
-      );
+      const generatedStyles = processStyles(WrappedStyledComponent.styles, context);
 
       const computedProps = { ...props, ...attributes };
       // we don't need to pass it since we used it as elementToBeCreated
@@ -148,10 +134,7 @@ export default function styled(Component: any) {
       delete computedProps.as;
       delete computedProps.$as;
 
-      const forwardedProps = filterProps(
-        computedProps,
-        WrappedStyledComponent.shouldForwardProp
-      );
+      const forwardedProps = filterProps(computedProps, WrappedStyledComponent.shouldForwardProp);
 
       forwardedProps.ref = ref;
 
@@ -180,18 +163,13 @@ export default function styled(Component: any) {
       return React.createElement(elementToBeCreated, forwardedProps);
     }
 
-    WrappedStyledComponent = React.memo(
-      React.forwardRef(StyledComponent),
-      isEqual
-    );
+    WrappedStyledComponent = React.memo(React.forwardRef(StyledComponent), isEqual);
 
     WrappedStyledComponent.displayName = `StyledThing${Component.name}`;
 
     WrappedStyledComponent.isStyledComponent = true;
 
-    WrappedStyledComponent.target = Component.isStyledComponent
-      ? Component.target
-      : Component;
+    WrappedStyledComponent.target = Component.isStyledComponent ? Component.target : Component;
 
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'addedAttrs' does not exist on type '{ (s... Remove this comment to see the full error message
     if (StyledComponentFactory.addedAttrs) {
@@ -204,9 +182,7 @@ export default function styled(Component: any) {
       WrappedStyledComponent.attrs = Component.attrs;
     }
 
-    WrappedStyledComponent.styles = Array.isArray(Component.styles)
-      ? Component.styles.concat(styles)
-      : [styles];
+    WrappedStyledComponent.styles = Array.isArray(Component.styles) ? Component.styles.concat(styles) : [styles];
 
     if (Component.isStyledComponent && Component.shouldForwardProp) {
       const shouldForwardPropFn = Component.shouldForwardProp;
@@ -218,9 +194,7 @@ export default function styled(Component: any) {
           StyledComponentFactory.shouldForwardProp;
 
         // compose nested shouldForwardProp calls
-        shouldForwardProp = (prop: any, filterFn: any) =>
-          shouldForwardPropFn(prop, filterFn) &&
-          passedShouldForwardPropFn(prop, filterFn);
+        shouldForwardProp = (prop: any, filterFn: any) => shouldForwardPropFn(prop, filterFn) && passedShouldForwardPropFn(prop, filterFn);
       } else {
         shouldForwardProp = shouldForwardPropFn;
       }

@@ -19,9 +19,7 @@ export default function ActionButtons({
 
   const isOwner = useMemo(() => {
     return Object.values(wallets || {}).some(
-      (wallet: any) =>
-        wallet.type !== 'readOnly' &&
-        wallet.addresses.some(({ address }: any) => address === primaryAddress)
+      (wallet: any) => wallet.type !== 'readOnly' && wallet.addresses.some(({ address }: any) => address === primaryAddress)
     );
   }, [primaryAddress, wallets]);
 
@@ -32,11 +30,7 @@ export default function ActionButtons({
         <EditButton ensName={ensName} />
       ) : (
         <>
-          <WatchButton
-            address={primaryAddress}
-            avatarUrl={avatarUrl}
-            ensName={ensName}
-          />
+          <WatchButton address={primaryAddress} avatarUrl={avatarUrl} ensName={ensName} />
           {!isReadOnlyWallet && <SendButton ensName={ensName} />}
         </>
       )}

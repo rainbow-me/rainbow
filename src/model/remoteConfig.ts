@@ -18,10 +18,7 @@ import {
   ZORA_MAINNET_RPC,
 } from 'react-native-dotenv';
 import { RainbowError, logger } from '@/logger';
-import {
-  getNetwork,
-  saveNetwork,
-} from '@/handlers/localstorage/globalSettings';
+import { getNetwork, saveNetwork } from '@/handlers/localstorage/globalSettings';
 import { web3SetHttpProvider } from '@/handlers/web3';
 import { delay } from '@/utils/delay';
 
@@ -91,9 +88,7 @@ const DEFAULT_CONFIG: RainbowConfig = {
     zora: 200,
   }),
   ethereum_goerli_rpc: __DEV__ ? ETHEREUM_GOERLI_RPC_DEV : ETHEREUM_GOERLI_RPC,
-  ethereum_mainnet_rpc: __DEV__
-    ? ETHEREUM_MAINNET_RPC_DEV
-    : ETHEREUM_MAINNET_RPC,
+  ethereum_mainnet_rpc: __DEV__ ? ETHEREUM_MAINNET_RPC_DEV : ETHEREUM_MAINNET_RPC,
   f2c_enabled: true,
   flashbots_enabled: true,
   op_nft_network: 'op-mainnet',
@@ -211,8 +206,7 @@ const QUERY_PARAMS = {
   staleTime: 600_000, // 10 minutes,
   placeholderData: DEFAULT_CONFIG,
   retry: 3,
-  retryDelay: (attempt: number) =>
-    Math.min(attempt > 1 ? 2 ** attempt * 1000 : 1000, 30 * 1000),
+  retryDelay: (attempt: number) => Math.min(attempt > 1 ? 2 ** attempt * 1000 : 1000, 30 * 1000),
 };
 
 export async function initializeRemoteConfig(): Promise<void> {

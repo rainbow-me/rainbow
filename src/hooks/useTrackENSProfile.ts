@@ -18,11 +18,7 @@ export default function useTrackENSProfile() {
         .filter(wallet => wallet?.type !== walletTypes.readOnly)
         .reduce(
           (addresses: EthereumAddress[], wallet: RainbowWallet | undefined) =>
-            addresses.concat(
-              wallet?.addresses.map(
-                ({ address }: { address: EthereumAddress }) => address
-              )!
-            ),
+            addresses.concat(wallet?.addresses.map(({ address }: { address: EthereumAddress }) => address)!),
           []
         ),
     [wallets]
@@ -41,8 +37,7 @@ export default function useTrackENSProfile() {
         const { records } = await fetchENSRecords(ens);
         const domains = await fetchAccountDomains(addresses[i]);
         data.numberOfENSOwned += domains?.account?.registrations?.length || 0;
-        data.numberOfENSWithAvatarOrCoverSet +=
-          records?.avatar || records?.header ? 1 : 0;
+        data.numberOfENSWithAvatarOrCoverSet += records?.avatar || records?.header ? 1 : 0;
 
         data.numberOfENSWithOtherMetadataSet = Object.keys(records ?? {}).some(
           key => key !== ENS_RECORDS.header && key !== ENS_RECORDS.avatar
@@ -55,11 +50,10 @@ export default function useTrackENSProfile() {
     return data;
   }, [addresses, walletNames]);
 
-  const { data, isSuccess } = useQuery(
-    ['getTrackProfilesData', [addresses]],
-    getTrackProfilesData,
-    { enabled: Boolean(addresses.length), retry: 0 }
-  );
+  const { data, isSuccess } = useQuery(['getTrackProfilesData', [addresses]], getTrackProfilesData, {
+    enabled: Boolean(addresses.length),
+    retry: 0,
+  });
 
   const trackENSProfile = useCallback(() => {
     isSuccess && analytics.identify(undefined, data);

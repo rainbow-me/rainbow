@@ -1,19 +1,9 @@
 import { format } from 'date-fns';
 import { capitalize, groupBy, isEmpty } from 'lodash';
 import React from 'react';
-import { createSelector } from 'reselect';
 import { FastTransactionCoinRow, RequestCoinRow } from '../components/coin-row';
-import {
-  thisMonthTimestamp,
-  thisYearTimestamp,
-  todayTimestamp,
-  yesterdayTimestamp,
-} from './transactions';
-import {
-  NativeCurrencyKey,
-  RainbowTransaction,
-  TransactionStatusTypes,
-} from '@/entities';
+import { thisMonthTimestamp, thisYearTimestamp, todayTimestamp, yesterdayTimestamp } from './transactions';
+import { NativeCurrencyKey, RainbowTransaction, TransactionStatusTypes } from '@/entities';
 import * as i18n from '@/languages';
 import { RequestData } from '@/redux/requests';
 import { ThemeContextProps } from '@/theme';
@@ -29,13 +19,7 @@ type RainbowTransactionWithContactAndMainnetAddress = RainbowTransactionWithCont
   accountAddress: string;
 };
 // bad news
-const groupTransactionByDate = ({
-  status,
-  minedAt,
-}: {
-  status: TransactionStatus;
-  minedAt: string;
-}) => {
+const groupTransactionByDate = ({ status, minedAt }: { status: TransactionStatus; minedAt: string }) => {
   if (status === 'pending') {
     return i18n.t(i18n.l.transactions.pending_title);
   }
@@ -56,20 +40,22 @@ const groupTransactionByDate = ({
   }
 };
 
-const addContactInfo = (contacts: { [address: string]: Contact }) => (
-  txn: RainbowTransaction
-): RainbowTransaction & {
-  contact: Contact | null;
-} => {
-  const { from, to, status } = txn;
-  const isSent = status === TransactionStatusTypes.sent;
-  const contactAddress = (isSent ? to : from) || '';
-  const contact = contacts?.[contactAddress?.toLowerCase()] ?? null;
-  return {
-    ...txn,
-    contact,
+const addContactInfo =
+  (contacts: { [address: string]: Contact }) =>
+  (
+    txn: RainbowTransaction
+  ): RainbowTransaction & {
+    contact: Contact | null;
+  } => {
+    const { from, to, status } = txn;
+    const isSent = status === TransactionStatusTypes.sent;
+    const contactAddress = (isSent ? to : from) || '';
+    const contact = contacts?.[contactAddress?.toLowerCase()] ?? null;
+    return {
+      ...txn,
+      contact,
+    };
   };
-};
 
 export const buildTransactionsSections = ({
   accountAddress,
@@ -95,43 +81,29 @@ export const buildTransactionsSections = ({
   let sectionedTransactions: {
     title: string;
     data: RainbowTransactionWithContactAndMainnetAddress[];
-    renderItem: ({
-      item,
-    }: {
-      item: RainbowTransactionWithContactAndMainnetAddress;
-    }) => JSX.Element;
+    renderItem: ({ item }: { item: RainbowTransactionWithContactAndMainnetAddress }) => JSX.Element;
   }[] = [];
 
   const transactionsWithContacts = transactions?.map(addContactInfo(contacts));
 
   if (!isEmpty(transactionsWithContacts)) {
-    const transactionsByDate = groupBy(
-      transactionsWithContacts,
-      groupTransactionByDate
-    );
+    const transactionsByDate = groupBy(transactionsWithContacts, groupTransactionByDate);
 
     const test = Object.keys(transactionsByDate);
     const filter = test.filter(key => key !== 'Dropped');
     const sectioned: {
       title: string;
       data: RainbowTransactionWithContactAndMainnetAddress[];
-      renderItem: ({
-        item,
-      }: {
-        item: RainbowTransactionWithContactAndMainnetAddress;
-      }) => JSX.Element;
+      renderItem: ({ item }: { item: RainbowTransactionWithContactAndMainnetAddress }) => JSX.Element;
     }[] = filter.map((section: string) => {
-      const sectionData: RainbowTransactionWithContactAndMainnetAddress[] = transactionsByDate[
-        section
-      ].map(txn => {
+      const sectionData: RainbowTransactionWithContactAndMainnetAddress[] = transactionsByDate[section].map(txn => {
         const typeTxn = txn as RainbowTransactionWithContact;
         const res = {
           ...typeTxn,
           to: typeTxn.to || '',
           from: typeTxn.from || '',
           accountAddress,
-          mainnetAddress:
-            mainnetAddresses[`${typeTxn.address}_${typeTxn.network}`],
+          mainnetAddress: mainnetAddresses[`${typeTxn.address}_${typeTxn.network}`],
         };
 
         return res;
@@ -139,30 +111,17 @@ export const buildTransactionsSections = ({
 
       return {
         data: sectionData,
-        renderItem: ({
-          item,
-        }: {
-          item: RainbowTransactionWithContactAndMainnetAddress;
-        }) => (
-          <FastTransactionCoinRow
-            item={item}
-            theme={theme}
-            nativeCurrency={nativeCurrency}
-          />
+        renderItem: ({ item }: { item: RainbowTransactionWithContactAndMainnetAddress }) => (
+          <FastTransactionCoinRow item={item} theme={theme} nativeCurrency={nativeCurrency} />
         ),
         title: section,
       };
     });
     sectionedTransactions = sectioned;
 
-    const pendingSectionIndex = sectionedTransactions.findIndex(
-      ({ title }) => title === 'Pending'
-    );
+    const pendingSectionIndex = sectionedTransactions.findIndex(({ title }) => title === 'Pending');
     if (pendingSectionIndex > 0) {
-      const pendingSection = sectionedTransactions.splice(
-        pendingSectionIndex,
-        1
-      );
+      const pendingSection = sectionedTransactions.splice(pendingSectionIndex, 1);
       sectionedTransactions.unshift(pendingSection[0]);
     }
   }
@@ -173,9 +132,7 @@ export const buildTransactionsSections = ({
     requestsToApprove = [
       {
         data: requests,
-        renderItem: ({ item }: any) => (
-          <RequestCoinRow item={item} theme={theme} />
-        ),
+        renderItem: ({ item }: any) => <RequestCoinRow item={item} theme={theme} />,
         title: 'Requests',
       },
     ];

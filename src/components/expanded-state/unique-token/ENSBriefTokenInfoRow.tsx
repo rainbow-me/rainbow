@@ -45,34 +45,17 @@ export default function ENSBriefTokenInfoRow({
       navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
         ensName: cleanENSName,
         externalAvatarUrl,
-        longFormHeight:
-          ENSConfirmRenewSheetHeight + (avatar?.imageUrl ? 70 : 0),
+        longFormHeight: ENSConfirmRenewSheetHeight + (avatar?.imageUrl ? 70 : 0),
         mode: REGISTRATION_MODES.RENEW,
       });
     });
-  }, [
-    ensName,
-    startRegistration,
-    navigate,
-    externalAvatarUrl,
-    avatar?.imageUrl,
-  ]);
+  }, [ensName, startRegistration, navigate, externalAvatarUrl, avatar?.imageUrl]);
 
   return (
     <Columns space="10px">
       {/* @ts-expect-error JavaScript component */}
-      <TokenInfoItem
-        color={colors.whiteLabel}
-        isENS
-        isNft
-        loading={!registrationDate}
-        size="larger"
-        title="Registered on"
-        weight="heavy"
-      >
-        {registrationDate
-          ? format(new Date(registrationDate * 1000), 'MMM d, yyyy')
-          : ''}
+      <TokenInfoItem color={colors.whiteLabel} isENS isNft loading={!registrationDate} size="larger" title="Registered on" weight="heavy">
+        {registrationDate ? format(new Date(registrationDate * 1000), 'MMM d, yyyy') : ''}
       </TokenInfoItem>
       {/* @ts-expect-error JavaScript component */}
       <TokenInfoItem
@@ -110,11 +93,7 @@ export default function ENSBriefTokenInfoRow({
         loading={!expiryDate}
         onPress={handlePressExpiryDate}
         size="larger"
-        title={lang.t(
-          `expanded_state.unique_expanded.${
-            showExpiryDistance ? 'expires_in' : 'expires_on'
-          }`
-        )}
+        title={lang.t(`expanded_state.unique_expanded.${showExpiryDistance ? 'expires_in' : 'expires_on'}`)}
         weight="heavy"
       >
         {expiryDate

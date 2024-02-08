@@ -16,28 +16,17 @@ export default function useENSPendingRegistrations() {
   const { navigate } = useNavigation();
   const dispatch = useDispatch();
 
-  const { pendingRegistrations, accountRegistrations } = useSelector(
-    ({ ensRegistration }: AppState) => {
-      const { registrations } = ensRegistration as ENSRegistrationState;
-      const accountRegistrations =
-        registrations?.[accountAddress.toLowerCase()] || [];
-      const registrationsArray = Object.values(accountRegistrations);
+  const { pendingRegistrations, accountRegistrations } = useSelector(({ ensRegistration }: AppState) => {
+    const { registrations } = ensRegistration as ENSRegistrationState;
+    const accountRegistrations = registrations?.[accountAddress.toLowerCase()] || [];
+    const registrationsArray = Object.values(accountRegistrations);
 
-      const pendingRegistrations = registrationsArray
-        .filter(
-          registration =>
-            !registration?.registerTransactionHash &&
-            registration?.commitTransactionHash
-        )
-        .sort(
-          (a, b) =>
-            (a?.commitTransactionConfirmedAt || 0) -
-            (b?.commitTransactionConfirmedAt || 0)
-        );
+    const pendingRegistrations = registrationsArray
+      .filter(registration => !registration?.registerTransactionHash && registration?.commitTransactionHash)
+      .sort((a, b) => (a?.commitTransactionConfirmedAt || 0) - (b?.commitTransactionConfirmedAt || 0));
 
-      return { accountRegistrations, pendingRegistrations };
-    }
-  );
+    return { accountRegistrations, pendingRegistrations };
+  });
 
   const {
     data: { nfts: uniqueTokens },
@@ -45,26 +34,19 @@ export default function useENSPendingRegistrations() {
     address: accountAddress,
   });
   const registrationImages = useMemo(() => {
-    const registrationImagesArray = pendingRegistrations?.map(
-      ({ name, records }) => {
-        const avatarUrl = getENSNFTAvatarUrl(uniqueTokens, records?.avatar);
-        return {
-          avatarUrl,
-          name,
-        };
-      }
-    );
+    const registrationImagesArray = pendingRegistrations?.map(({ name, records }) => {
+      const avatarUrl = getENSNFTAvatarUrl(uniqueTokens, records?.avatar);
+      return {
+        avatarUrl,
+        name,
+      };
+    });
     const registrationImages: { [name: string]: string | undefined } = {};
-    registrationImagesArray.forEach(
-      ({ name, avatarUrl }) => (registrationImages[name] = avatarUrl)
-    );
+    registrationImagesArray.forEach(({ name, avatarUrl }) => (registrationImages[name] = avatarUrl));
     return registrationImages;
   }, [pendingRegistrations, uniqueTokens]);
 
-  const removeRegistration = useCallback(
-    (name: string) => removeRegistrationByName(name),
-    [removeRegistrationByName]
-  );
+  const removeRegistration = useCallback((name: string) => removeRegistrationByName(name), [removeRegistrationByName]);
 
   const refreshRegistrations = useCallback(() => {
     dispatch(removeExpiredRegistrations());

@@ -13,8 +13,7 @@ const docs: DocsType = {
   },
   description: (
     <Docs.Text>
-      To adjust the thickness of typography components, the{' '}
-      <Docs.Code>weight</Docs.Code> prop is made available.
+      To adjust the thickness of typography components, the <Docs.Code>weight</Docs.Code> prop is made available.
     </Docs.Text>
   ),
   examples: [

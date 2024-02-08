@@ -14,12 +14,7 @@ export const RewardsDuneLogo: React.FC = () => {
         <Text size="13pt" color="labelQuaternary" weight="semibold">
           {i18n.t(i18n.l.rewards.data_powered_by)}
         </Text>
-        <Box
-          as={Image}
-          source={isDarkMode ? duneLogoDark : duneLogo}
-          width={{ custom: 63 }}
-          height={{ custom: 22 }}
-        />
+        <Box as={Image} source={isDarkMode ? duneLogoDark : duneLogo} width={{ custom: 63 }} height={{ custom: 22 }} />
       </Inline>
     </Box>
   );
