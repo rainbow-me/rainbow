@@ -69,7 +69,7 @@ export const FastChainBadge = React.memo(function FastChainBadge({
 
   const containerStyle: ViewStyle = {
     alignItems: 'center',
-    bottom: 14.5,
+    bottom: 5.5,
     elevation: 10,
     height: 28,
     left: -11.5,

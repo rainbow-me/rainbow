@@ -19,9 +19,9 @@ import { useAccountAsset } from '@/hooks';
 import { colors, fonts, fontWithWidth, getFontSize } from '@/styles';
 import { deviceUtils } from '@/utils';
 
-const SafeRadialGradient = (IS_TESTING === 'true'
-  ? View
-  : RadialGradient) as typeof RadialGradient;
+const SafeRadialGradient = (
+  IS_TESTING === 'true' ? View : RadialGradient
+) as typeof RadialGradient;
 
 interface FastCurrencySelectionRowProps {
   item: any;
@@ -148,13 +148,15 @@ export default React.memo(function FastCurrencySelectionRow({
         disabled={disabled}
       >
         <View style={sx.rootContainer}>
-          <FastCoinIcon
-            address={address || item?.address}
-            network={favorite ? Network.mainnet : network}
-            mainnetAddress={mainnet_address ?? item?.mainnet_address}
-            symbol={symbol ?? item?.symbol}
-            theme={theme}
-          />
+          <View style={sx.iconContainer}>
+            <FastCoinIcon
+              address={address || item?.address}
+              network={favorite ? Network.mainnet : network}
+              mainnetAddress={mainnet_address ?? item?.mainnet_address}
+              symbol={symbol ?? item?.symbol}
+              theme={theme}
+            />
+          </View>
           <View style={sx.innerContainer}>
             <View
               style={[
@@ -261,13 +263,18 @@ export default React.memo(function FastCurrencySelectionRow({
       )}
     </View>
   );
-},
-isEqual);
+}, isEqual);
 
 const sx = StyleSheet.create({
   addGradient: {
     paddingBottom: 3,
     paddingLeft: 1,
+  },
+  iconContainer: {
+    elevation: 6,
+    height: 59,
+    overflow: 'visible',
+    paddingTop: 9,
   },
   addText: {
     fontSize: 26,

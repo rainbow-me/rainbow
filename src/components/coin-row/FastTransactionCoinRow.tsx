@@ -147,13 +147,15 @@ export default React.memo(function TransactionCoinRow({
               )}
             </View>
           ) : (
-            <FastCoinIcon
-              address={mainnetAddress || item.address}
-              network={item.network}
-              mainnetAddress={mainnetAddress}
-              symbol={item.symbol}
-              theme={theme}
-            />
+            <View style={sx.iconContainer}>
+              <FastCoinIcon
+                address={mainnetAddress || item.address}
+                network={item.network}
+                mainnetAddress={mainnetAddress}
+                symbol={item.symbol}
+                theme={theme}
+              />
+            </View>
           )}
         </View>
         <View style={sx.column}>
@@ -193,6 +195,12 @@ const sx = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     paddingLeft: 8,
+  },
+  iconContainer: {
+    elevation: 6,
+    height: 59,
+    overflow: 'visible',
+    paddingTop: 9,
   },
   bottomRow: {
     alignItems: 'flex-end',

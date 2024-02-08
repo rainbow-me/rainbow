@@ -138,13 +138,15 @@ const MemoizedBalanceCoinRow = React.memo(
           testID={`balance-coin-row-${item?.name}`}
         >
           <View style={[sx.container]}>
-            <FastCoinIcon
-              address={item?.address}
-              network={item?.network}
-              mainnetAddress={item?.mainnet_address}
-              symbol={item?.symbol}
-              theme={theme}
-            />
+            <View style={sx.iconContainer}>
+              <FastCoinIcon
+                address={item?.address}
+                network={item?.network}
+                mainnetAddress={item?.mainnet_address}
+                symbol={item?.symbol}
+                theme={theme}
+              />
+            </View>
 
             <View style={[sx.innerContainer, isHidden && sx.hiddenRow]}>
               <View style={sx.row}>
@@ -259,6 +261,12 @@ export default React.memo(function BalanceCoinRow({
 const sx = StyleSheet.create({
   bottom: {
     marginTop: 10,
+  },
+  iconContainer: {
+    elevation: 6,
+    height: 59,
+    overflow: 'visible',
+    paddingTop: 9,
   },
   checkboxContainer: {
     alignSelf: 'center',

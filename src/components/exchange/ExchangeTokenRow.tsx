@@ -13,6 +13,7 @@ import {
   FavStar,
   Info,
 } from '../asset-list/RecyclerAssetList2/FastComponents/FastCurrencySelectionRow';
+import { View } from 'react-native';
 
 interface ExchangeTokenRowProps {
   item: any;
@@ -65,14 +66,16 @@ export default React.memo(function ExchangeTokenRow({
         >
           <Columns alignVertical="center" space="10px">
             <Column width="content">
-              <Box
-                as={FastCoinIcon}
-                address={address || item?.address}
-                network={network || Network.mainnet}
-                mainnetAddress={mainnet_address ?? item?.mainnet_address}
-                symbol={symbol ?? item?.symbol}
-                theme={theme}
-              />
+              <View style={{ height: 59, paddingTop: 9 }}>
+                <Box
+                  as={FastCoinIcon}
+                  address={address || item?.address}
+                  network={network || Network.mainnet}
+                  mainnetAddress={mainnet_address ?? item?.mainnet_address}
+                  symbol={symbol ?? item?.symbol}
+                  theme={theme}
+                />
+              </View>
             </Column>
             <Column>
               <Stack space="8px">
@@ -167,5 +170,4 @@ export default React.memo(function ExchangeTokenRow({
       </Column>
     </Columns>
   );
-},
-isEqual);
+}, isEqual);
