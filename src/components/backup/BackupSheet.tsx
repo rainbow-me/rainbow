@@ -43,7 +43,6 @@ export default function BackupSheet() {
       {({ backgroundColor }) => (
         <SimpleSheet
           testID="backup-sheet"
-          useAdditionalTopPadding
           backgroundColor={backgroundColor as string}
           customHeight={getHeightForStep(step)}
           scrollEnabled={false}

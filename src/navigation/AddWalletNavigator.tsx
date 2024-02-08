@@ -24,7 +24,7 @@ export const AddWalletNavigator = () => {
   return (
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (
-        <SimpleSheet backgroundColor={backgroundColor as string} scrollEnabled={scrollEnabled}>
+        <SimpleSheet backgroundColor={backgroundColor as string} useAdditionalTopPadding scrollEnabled={scrollEnabled}>
           <Swipe.Navigator
             initialLayout={deviceUtils.dimensions}
             initialRouteName={Routes.ADD_WALLET_SHEET}

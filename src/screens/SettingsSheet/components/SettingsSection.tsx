@@ -31,6 +31,7 @@ import { ReviewPromptAction } from '@/storage/schema';
 import { SettingsExternalURLs } from '../constants';
 import { capitalizeFirstLetter, checkWalletsForBackupStatus } from '../utils';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
+import { Box } from '@/design-system';
 
 interface SettingsSectionProps {
   onCloseModal: () => void;
@@ -175,7 +176,11 @@ const SettingsSection = ({
             hasRightArrow
             leftComponent={<MenuItem.ImageIcon source={WalletsAndBackupIcon} />}
             onPress={onPressBackup}
-            rightComponent={<MenuItem.ImageIcon size={44} source={getWalletsAndBackupAlertIcon()} />}
+            rightComponent={
+              <Box paddingBottom="2px" paddingRight="4px">
+                <MenuItem.ImageIcon size={44} source={getWalletsAndBackupAlertIcon()} />
+              </Box>
+            }
             size={60}
             testID="backup-section"
             titleComponent={<MenuItem.Title text={lang.t('settings.backup')} />}

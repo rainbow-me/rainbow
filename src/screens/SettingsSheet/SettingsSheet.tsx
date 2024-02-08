@@ -20,12 +20,14 @@ import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { useDimensions } from '@/hooks';
 import { SETTINGS_BACKUP_ROUTES } from './components/Backups/routes';
 import { IS_ANDROID } from '@/env';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Stack = createStackNavigator();
 
 export function SettingsSheet() {
   const { height: deviceHeight } = useDimensions();
   const { goBack, navigate } = useNavigation();
+  const { top } = useSafeAreaInsets();
   const { params } = useRoute<any>();
   const { colors } = useTheme();
 
@@ -54,7 +56,7 @@ export function SettingsSheet() {
         <SimpleSheet
           testID="settings-sheet"
           backgroundColor={backgroundColor as string}
-          customHeight={IS_ANDROID ? deviceHeight - sharedCoolModalTopOffset - 48 : deviceHeight - sharedCoolModalTopOffset}
+          customHeight={IS_ANDROID ? deviceHeight - top : deviceHeight - sharedCoolModalTopOffset}
           scrollEnabled={false}
         >
           <Stack.Navigator

@@ -19,7 +19,7 @@ import { Backup, parseTimestampFromFilename } from '@/model/backup';
 import { RestoreSheetParams } from '@/screens/RestoreSheet';
 import { Source } from 'react-native-fast-image';
 import { IS_ANDROID } from '@/env';
-import { StatusBar } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Title = styled(Text).attrs({
   align: 'left',
@@ -41,6 +41,8 @@ export function ChooseBackupStep() {
   const {
     params: { backups, userData, fromSettings },
   } = useRoute<RouteProp<RestoreSheetParams, 'RestoreSheet'>>();
+
+  const { top } = useSafeAreaInsets();
 
   const { height: deviceHeight } = useDimensions();
   const { navigate } = useNavigation();
@@ -87,10 +89,9 @@ export function ChooseBackupStep() {
     [navigate, userData, backups, fromSettings]
   );
 
-  const height = IS_ANDROID
-    ? deviceHeight - sharedCoolModalTopOffset - 48 - (StatusBar?.currentHeight ?? 0)
-    : deviceHeight - sharedCoolModalTopOffset - 48;
+  const height = IS_ANDROID ? deviceHeight - top : deviceHeight - sharedCoolModalTopOffset - 48;
 
+  console.log(height);
   return (
     <Box height={{ custom: height }}>
       <MenuContainer>

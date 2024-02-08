@@ -457,7 +457,7 @@ export const restoreSheetConfig: PartialNavigatorConfigOptions = {
   options: ({ route: { params: { longFormHeight, ...params } = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
-      longFormHeight,
+      height: backupSheetSizes.long,
     }),
   }),
 };
@@ -593,7 +593,6 @@ export const settingsOptions = (colors: any, isSettingsRoute = true): StackNavig
     overflow: 'visible',
   },
   gestureEnabled: true,
-  headerBackImage: BackImage,
   headerBackTitle: ' ',
   headerStatusBarHeight: 0,
   ...(isSettingsRoute
@@ -604,12 +603,14 @@ export const settingsOptions = (colors: any, isSettingsRoute = true): StackNavig
           height: 60,
           shadowColor: 'transparent',
         },
+        headerBackImage: BackImage,
       }
     : {
         headerStyle: {
           backgroundColor: colors.transparent,
           height: 0,
         },
+        headerBackImage: () => <></>,
       }),
   headerTitle: (props: any) => <SettingsTitle {...props} />,
 });

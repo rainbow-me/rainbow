@@ -33,7 +33,6 @@ import { createBottomSheetNavigator } from './bottom-sheet';
 import {
   closeKeyboardOnClose,
   defaultScreenStackOptions,
-  restoreSheetConfig,
   stackNavigationConfig,
   learnWebViewScreenConfig,
   backupSheetSizes,
@@ -73,9 +72,6 @@ import { CUSTOM_MARGIN_TOP_ANDROID } from '@/screens/SettingsSheet/constants';
 import { Portal } from '@/screens/Portal';
 import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
 import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
-// eslint-disable-next-line eslint-comments/disable-enable-pair
-/* eslint-disable import/no-unresolved */
-// @ts-ignore .android and .ios exports cause errors
 import ShowSecretView from '@/screens/SettingsSheet/components/Backups/ShowSecretView';
 import PoapSheet from '@/screens/mints/PoapSheet';
 import { PositionSheet } from '@/screens/positions/PositionSheet';
@@ -115,36 +111,9 @@ function MainNavigator() {
 
       <Stack.Screen component={WalletConnectRedirectSheet} name={Routes.WALLET_CONNECT_REDIRECT_SHEET} options={wcPromptPreset} />
       <Stack.Screen component={AddCashSheet} name={Routes.ADD_CASH_SHEET} options={addCashSheet} />
-      <Stack.Screen
-        component={BackupSheet}
-        name={Routes.BACKUP_SHEET}
-        options={route => {
-          const { params: { step } = {} as any } = route.route;
-
-          let heightForStep = backupSheetSizes.short;
-          if (
-            step === walletBackupStepTypes.backup_cloud ||
-            step === walletBackupStepTypes.backup_manual ||
-            step === walletBackupStepTypes.restore_from_backup
-          ) {
-            heightForStep = backupSheetSizes.long;
-          } else if (step === walletBackupStepTypes.no_provider) {
-            heightForStep = backupSheetSizes.medium;
-          }
-
-          console.log({ step, heightForStep });
-
-          return { ...bottomSheetPreset, height: heightForStep };
-        }}
-      />
-      <Stack.Screen component={RestoreSheet} name={Routes.RESTORE_SHEET} {...restoreSheetConfig} />
+      <Stack.Screen component={RestoreSheet} name={Routes.RESTORE_SHEET} options={bottomSheetPreset} />
       <Stack.Screen component={WelcomeScreen} name={Routes.WELCOME_SCREEN} options={{ animationEnabled: false, gestureEnabled: false }} />
-      <Stack.Screen
-        component={ShowSecretView}
-        name="ShowSecretView"
-        // @ts-ignore
-        options={bottomSheetPreset}
-      />
+      <Stack.Screen component={ShowSecretView} name="ShowSecretView" options={bottomSheetPreset} />
       <Stack.Screen component={WalletConnectApprovalSheet} name={Routes.WALLET_CONNECT_APPROVAL_SHEET} options={bottomSheetPreset} />
     </Stack.Navigator>
   );
@@ -155,28 +124,6 @@ function MainOuterNavigator() {
   return (
     <OuterStack.Navigator initialRouteName={Routes.MAIN_NAVIGATOR} {...stackNavigationConfig} screenOptions={defaultScreenStackOptions}>
       <OuterStack.Screen component={MainNavigator} name={Routes.MAIN_NAVIGATOR} />
-      <OuterStack.Screen
-        component={BackupSheet}
-        name={Routes.BACKUP_SCREEN}
-        options={route => {
-          const { params: { step } = {} as any } = route.route;
-
-          let heightForStep = backupSheetSizes.short;
-          if (
-            step === walletBackupStepTypes.backup_cloud ||
-            step === walletBackupStepTypes.backup_manual ||
-            step === walletBackupStepTypes.restore_from_backup
-          ) {
-            heightForStep = backupSheetSizes.long;
-          } else if (step === walletBackupStepTypes.no_provider) {
-            heightForStep = backupSheetSizes.medium;
-          }
-
-          console.log({ step, heightForStep });
-
-          return { ...bottomSheetPreset, height: heightForStep };
-        }}
-      />
       <OuterStack.Screen
         component={SendSheet}
         name={Routes.SEND_SHEET_NAVIGATOR}
@@ -244,6 +191,26 @@ function BSNavigator() {
         name={Routes.CUSTOM_GAS_SHEET}
         options={{
           backdropOpacity: 1,
+        }}
+      />
+      <BSStack.Screen
+        component={BackupSheet}
+        name={Routes.BACKUP_SHEET}
+        options={route => {
+          const { params: { step } = {} as any } = route.route;
+
+          let heightForStep = backupSheetSizes.short;
+          if (
+            step === walletBackupStepTypes.backup_cloud ||
+            step === walletBackupStepTypes.backup_manual ||
+            step === walletBackupStepTypes.restore_from_backup
+          ) {
+            heightForStep = backupSheetSizes.long;
+          } else if (step === walletBackupStepTypes.no_provider) {
+            heightForStep = backupSheetSizes.medium;
+          }
+
+          return { ...bottomSheetPreset, height: heightForStep };
         }}
       />
       <BSStack.Screen component={WalletDiagnosticsSheet} name={Routes.DIAGNOSTICS_SHEET} options={{ ...bottomSheetPreset }} />

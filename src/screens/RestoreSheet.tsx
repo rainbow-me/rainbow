@@ -12,6 +12,7 @@ import { BackgroundProvider } from '@/design-system';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { useDimensions } from '@/hooks';
 import { IS_ANDROID } from '@/env';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const NativeStack = createStackNavigator();
 
@@ -26,6 +27,7 @@ export type RestoreSheetParams = {
 };
 
 export function RestoreSheet() {
+  const { top } = useSafeAreaInsets();
   const { height: deviceHeight } = useDimensions();
   const { params: { backups, userData, fromSettings = false } = {} } = useRoute<RouteProp<RestoreSheetParams, 'RestoreSheet'>>();
 
@@ -37,7 +39,8 @@ export function RestoreSheet() {
       {({ backgroundColor }) => (
         <SimpleSheet
           backgroundColor={backgroundColor as string}
-          customHeight={IS_ANDROID ? deviceHeight + sharedCoolModalTopOffset : deviceHeight - sharedCoolModalTopOffset}
+          useAdditionalTopPadding
+          customHeight={IS_ANDROID ? deviceHeight - top : deviceHeight - sharedCoolModalTopOffset}
           scrollEnabled={false}
         >
           <NativeStack.Navigator initialRouteName={Routes.CHOOSE_BACKUP_SHEET} screenOptions={{ ...memoSettingsOptions, title: '' }}>
