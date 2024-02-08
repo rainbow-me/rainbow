@@ -33,7 +33,6 @@ const groupTransactionByDate = ({ pending, minedAt }: any) => {
       })
     );
   } catch (e) {
-    console.log(e);
     return i18n.t(i18n.l.transactions.dropped_title);
   }
 };

@@ -178,7 +178,6 @@ const ViewWalletBackup = () => {
                     await initializeWallet();
                   }
                 } catch (e) {
-                  console.log(e);
                   logger.error(e as RainbowError, {
                     description: 'Error while trying to add account',
                   });

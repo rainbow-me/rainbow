@@ -132,12 +132,9 @@ function MainNavigator() {
             heightForStep = backupSheetSizes.medium;
           }
 
-          console.log(heightForStep);
-          return {
-            ...bottomSheetPreset,
-            height: deviceUtils.dimensions.height - CUSTOM_MARGIN_TOP_ANDROID,
-          };
-          // return { ...bottomSheetPreset, height: heightForStep };
+          console.log({ step, heightForStep });
+
+          return { ...bottomSheetPreset, height: heightForStep };
         }}
       />
       <Stack.Screen component={RestoreSheet} name={Routes.RESTORE_SHEET} {...restoreSheetConfig} />
@@ -175,11 +172,9 @@ function MainOuterNavigator() {
             heightForStep = backupSheetSizes.medium;
           }
 
-          return {
-            ...bottomSheetPreset,
-            height: deviceUtils.dimensions.height - CUSTOM_MARGIN_TOP_ANDROID,
-          };
-          // return { ...bottomSheetPreset, height: heightForStep };
+          console.log({ step, heightForStep });
+
+          return { ...bottomSheetPreset, height: heightForStep };
         }}
       />
       <OuterStack.Screen

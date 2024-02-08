@@ -5,11 +5,13 @@ import ChooseBackupStep from '@/components/backup/ChooseBackupStep';
 import Routes from '@/navigation/routesNames';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import { settingsOptions } from '@/navigation/config';
+import { settingsOptions, sharedCoolModalTopOffset } from '@/navigation/config';
 import { useTheme } from '@/theme';
 import { Backup, BackupUserData } from '@/model/backup';
 import { BackgroundProvider } from '@/design-system';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
+import { useDimensions } from '@/hooks';
+import { IS_ANDROID } from '@/env';
 
 const NativeStack = createStackNavigator();
 
@@ -24,15 +26,20 @@ export type RestoreSheetParams = {
 };
 
 export function RestoreSheet() {
+  const { height: deviceHeight } = useDimensions();
   const { params: { backups, userData, fromSettings = false } = {} } = useRoute<RouteProp<RestoreSheetParams, 'RestoreSheet'>>();
 
   const { colors } = useTheme();
-  const memoSettingsOptions = useMemo(() => settingsOptions(colors, fromSettings), [colors]);
+  const memoSettingsOptions = useMemo(() => settingsOptions(colors, fromSettings), [colors, fromSettings]);
 
   return (
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (
-        <SimpleSheet backgroundColor={backgroundColor as string} scrollEnabled={false}>
+        <SimpleSheet
+          backgroundColor={backgroundColor as string}
+          customHeight={IS_ANDROID ? deviceHeight + sharedCoolModalTopOffset : deviceHeight - sharedCoolModalTopOffset}
+          scrollEnabled={false}
+        >
           <NativeStack.Navigator initialRouteName={Routes.CHOOSE_BACKUP_SHEET} screenOptions={{ ...memoSettingsOptions, title: '' }}>
             <NativeStack.Screen
               component={ChooseBackupStep}

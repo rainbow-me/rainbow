@@ -1,5 +1,5 @@
 import React from 'react';
-import { Keyboard } from 'react-native';
+import { Keyboard, StatusBar } from 'react-native';
 
 import { useTheme } from '@/theme/ThemeContext';
 import colors from '@/theme/currentColors';
@@ -86,7 +86,9 @@ const buildCoolModalConfig = (params: any): CoolModalConfigOptions => ({
 });
 
 export const backupSheetSizes = {
-  long: deviceUtils.dimensions.height + safeAreaInsetValues.bottom + sharedCoolModalTopOffset + SheetHandleFixedToTopHeight,
+  long: IS_ANDROID
+    ? deviceUtils.dimensions.height - safeAreaInsetValues.top
+    : deviceUtils.dimensions.height + safeAreaInsetValues.bottom + sharedCoolModalTopOffset + SheetHandleFixedToTopHeight,
   medium: 550,
   short: 424,
   shorter: 364,
