@@ -23,6 +23,7 @@ import RainbowButtonTypes from '../buttons/rainbow-button/RainbowButtonTypes';
 import { usePasswordValidation } from './usePasswordValidation';
 import { useCreateBackup } from './useCreateBackup';
 import { TextInput } from 'react-native';
+import { useTheme } from '@/theme';
 
 type BackupCloudStepParams = {
   BackupCloudStep: {
@@ -37,6 +38,7 @@ type NativeEvent = {
 };
 
 export function BackupCloudStep() {
+  const { isDarkMode } = useTheme();
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
   const { params } = useRoute<RouteProp<BackupCloudStepParams, 'BackupCloudStep'>>();
   const { selectedWallet } = useWallets();
@@ -157,16 +159,36 @@ export function BackupCloudStep() {
         </Stack>
 
         <Box paddingTop="16px" justifyContent="flex-end">
-          <RainbowButton
-            height={46}
-            width={deviceWidth - 48}
-            disabled={!validPassword}
-            type={RainbowButtonTypes.backup}
-            label={`􀎽 ${lang.t(lang.l.back_up.cloud.back_up_to_platform, {
-              cloudPlatformName: cloudPlatform,
-            })}`}
-            onPress={onSubmit}
-          />
+          {validPassword && (
+            <RainbowButton
+              height={46}
+              width={deviceWidth - 48}
+              disabled={!validPassword}
+              type={RainbowButtonTypes.backup}
+              label={`􀎽 ${lang.t(lang.l.back_up.cloud.back_up_to_platform, {
+                cloudPlatformName: cloudPlatform,
+              })}`}
+              onPress={onSubmit}
+            />
+          )}
+
+          {!validPassword && (
+            <Box
+              borderRadius={99}
+              alignItems="center"
+              justifyContent="center"
+              style={{ borderWidth: 1, borderColor: isDarkMode ? 'rgba(245, 248, 255, 0.04)' : 'rgba(9, 17, 31, 0.04)' }}
+              height={{ custom: 46 }}
+              width="full"
+            >
+              <ButtonText>
+                {`􀎽 ${lang.t(lang.l.back_up.cloud.back_up_to_platform, {
+                  cloudPlatformName: cloudPlatform,
+                })}`}
+              </ButtonText>
+            </Box>
+          )}
+
           {IS_ANDROID ? <KeyboardSizeView /> : null}
         </Box>
       </Inset>
@@ -207,3 +229,12 @@ const Title = styled(Text).attrs({
 })({
   ...padding.object(12, 0, 0),
 });
+
+const ButtonText = styled(Text).attrs(({ theme: { colors }, color }: any) => ({
+  align: 'center',
+  letterSpacing: 'rounded',
+  color: color || colors.alpha(colors.blueGreyDark, 0.5),
+  size: 'larger',
+  weight: 'heavy',
+  numberOfLines: 1,
+}))({});

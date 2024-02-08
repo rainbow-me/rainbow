@@ -29,6 +29,7 @@ import RainbowButtonTypes from '../buttons/rainbow-button/RainbowButtonTypes';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RestoreSheetParams } from '@/screens/RestoreSheet';
 import { Source } from 'react-native-fast-image';
+import { useTheme } from '@/theme';
 
 const Title = styled(Text).attrs({
   size: 'big',
@@ -43,6 +44,15 @@ const DescriptionText = styled(Text).attrs(({ theme: { colors }, color }: any) =
   lineHeight: 'looser',
   size: 'lmedium',
   weight: 'medium',
+}))({});
+
+const ButtonText = styled(Text).attrs(({ theme: { colors }, color }: any) => ({
+  align: 'center',
+  letterSpacing: 'rounded',
+  color: color || colors.alpha(colors.blueGreyDark, 0.5),
+  size: 'larger',
+  weight: 'heavy',
+  numberOfLines: 1,
 }))({});
 
 const Masthead = styled(Box).attrs({
@@ -67,6 +77,8 @@ export default function RestoreCloudStep() {
   const { params } = useRoute<RouteProp<RestoreCloudStepParams & RestoreSheetParams, 'RestoreSheet'>>();
 
   const { userData, selectedBackup } = params;
+
+  const { isDarkMode } = useTheme();
 
   const [loading, setLoading] = useState(false);
 
@@ -230,17 +242,37 @@ export default function RestoreCloudStep() {
           </Box>
         </Stack>
 
-        <Box paddingTop="16px" justifyContent="flex-end">
-          <RainbowButton
-            height={46}
-            width={deviceWidth - 48}
-            disabled={!validPassword || loading}
-            type={RainbowButtonTypes.backup}
-            label={`􀎽 ${lang.t(lang.l.back_up.cloud.restore_from_platform, {
-              cloudPlatformName: cloudPlatform,
-            })}`}
-            onPress={onSubmit}
-          />
+        <Box paddingTop="16px" justifyContent="flex-start">
+          {validPassword && (
+            <RainbowButton
+              height={46}
+              width={deviceWidth - 48}
+              disabled={!validPassword || loading}
+              type={RainbowButtonTypes.backup}
+              label={`􀎽 ${lang.t(lang.l.back_up.cloud.restore_from_platform, {
+                cloudPlatformName: cloudPlatform,
+              })}`}
+              onPress={onSubmit}
+            />
+          )}
+
+          {!validPassword && (
+            <Box
+              borderRadius={99}
+              alignItems="center"
+              justifyContent="center"
+              style={{ borderWidth: 1, borderColor: isDarkMode ? 'rgba(245, 248, 255, 0.04)' : 'rgba(9, 17, 31, 0.04)' }}
+              height={{ custom: 46 }}
+              width="full"
+            >
+              <ButtonText>
+                {`􀎽 ${lang.t(lang.l.back_up.cloud.restore_from_platform, {
+                  cloudPlatformName: cloudPlatform,
+                })}`}
+              </ButtonText>
+            </Box>
+          )}
+
           {IS_ANDROID ? <KeyboardSizeView /> : null}
         </Box>
       </Inset>
