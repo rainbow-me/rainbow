@@ -1,4 +1,4 @@
-import { Linking, Text as RNText, StyleSheet } from 'react-native';
+import { Linking,  StyleSheet } from 'react-native';
 import React, { useCallback } from 'react';
 import { get } from 'lodash';
 import ConditionalWrap from 'conditional-wrap';
@@ -15,11 +15,11 @@ import { maybeSignUri } from '@/handlers/imgix';
 import { colors } from '@/styles';
 import { useTheme } from '@/theme';
 import LinearGradient from 'react-native-linear-gradient';
-import { ImgixImage } from '@/components/images';
 import { analyticsV2 } from '@/analytics';
 import { FlashList } from '@shopify/flash-list';
 import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
 import { TrimmedCard } from '@/resources/cards/cardCollectionQuery';
+import RemoteSvg from '@/components/svg/RemoteSvg';
 
 const ICON_SIZE = 40;
 
@@ -204,12 +204,10 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ card = {} as TrimmedCard
 
                 {!imageIcon && imageUri && (
                   <Box
-                    as={ImgixImage}
-                    tintColor={accent}
+                    as={RemoteSvg}
                     source={{ uri: imageUri }}
-                    resizeMode="cover"
+                    uri={imageForPlatform()}
                     borderRadius={card.imageRadius ?? 10}
-                    size={ICON_SIZE}
                     style={styles.image}
                   />
                 )}
