@@ -209,6 +209,16 @@ const BottomRow = React.memo(function BottomRow({
     tag = transaction.description;
   }
 
+  if (['wrap', 'unwrap', 'swap'].includes(transaction?.type)) {
+    const inAsset = transaction?.changes?.find(a => a?.direction === 'in')
+      ?.asset;
+    const outAsset = transaction?.changes?.find(a => a?.direction === 'out')
+      ?.asset;
+
+    if (!!inAsset && !!outAsset)
+      description = `${inAsset?.symbol} 􀄫 ${outAsset?.symbol}`;
+  }
+
   const nftChangesAmount = transaction.changes
     ?.filter(
       c => asset?.address === c?.asset.address && c?.asset.type === 'nft'

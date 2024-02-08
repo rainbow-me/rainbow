@@ -66,7 +66,7 @@ export function TwoCoinsIcon({
         {badge && (
           <ChainBadge
             network={over.network}
-            badgeYPosition={7}
+            badgeYPosition={9}
             badgeXPosition={-7.5}
           />
         )}
