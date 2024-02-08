@@ -15,6 +15,7 @@ import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { IS_ANDROID } from '@/env';
 import { TextColor } from '@/design-system/color/palettes';
 import { RouteProp, useRoute } from '@react-navigation/native';
+import { SETTINGS_BACKUP_ROUTES } from './routes';
 
 const MIN_HEIGHT = 740;
 
@@ -43,7 +44,7 @@ const SecretWarningPage = () => {
       : i18n.t(i18n.l.back_up.secret.private_key_title);
 
   const handleViewSecretPhrase = useCallback(() => {
-    navigate('ShowSecretView', {
+    navigate(SETTINGS_BACKUP_ROUTES.SHOW_SECRET, {
       title,
       privateKeyAddress,
       isBackingUp,

@@ -13,7 +13,16 @@ import { colors } from '@/styles';
 import { profileUtils } from '@/utils';
 import { delay } from '@rainbow-me/helpers/utilities';
 
-export default function WalletProfileState({ actionType, address, isNewProfile, onCancel, onCloseModal, profile, forceColor }) {
+export default function WalletProfileState({
+  actionType,
+  address,
+  isNewProfile,
+  onCancel,
+  onCloseModal,
+  profile,
+  forceColor,
+  isFromSettings = true,
+}) {
   const [webProfile, setWebProfile] = useState(null);
   const { goBack, navigate } = useNavigation();
   const { getWebProfile } = useUpdateEmoji();
@@ -46,7 +55,7 @@ export default function WalletProfileState({ actionType, address, isNewProfile, 
     });
     const callback = async () => {
       goBack();
-      if (actionType === 'Create' && isNewProfile) {
+      if (actionType === 'Create' && isNewProfile && !isFromSettings) {
         navigate(Routes.CHANGE_WALLET_SHEET);
       }
     };

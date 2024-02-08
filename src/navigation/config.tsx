@@ -27,6 +27,7 @@ import { StackNavigationOptions } from '@react-navigation/stack';
 import { PartialNavigatorConfigOptions } from '@/navigation/types';
 import { BottomSheetNavigationOptions } from '@/navigation/bottom-sheet/types';
 import { Box } from '@/design-system';
+import { IS_ANDROID } from '@/env';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 
@@ -84,9 +85,26 @@ const buildCoolModalConfig = (params: any): CoolModalConfigOptions => ({
   transitionDuration: params.transitionDuration || 0.35,
 });
 
-const backupSheetSizes = {
+export const backupSheetSizes = {
   long: deviceUtils.dimensions.height + safeAreaInsetValues.bottom + sharedCoolModalTopOffset + SheetHandleFixedToTopHeight,
-  short: 394,
+  medium: 550,
+  short: 424,
+  shorter: 364,
+};
+
+export const getHeightForStep = (step: string) => {
+  switch (step) {
+    case WalletBackupStepTypes.backup_cloud:
+    case WalletBackupStepTypes.backup_manual:
+    case WalletBackupStepTypes.restore_from_backup:
+      return backupSheetSizes.long;
+    case WalletBackupStepTypes.no_provider:
+      return backupSheetSizes.medium;
+    case WalletBackupStepTypes.backup_now_manually:
+      return backupSheetSizes.shorter;
+    default:
+      return backupSheetSizes.short;
+  }
 };
 
 export const backupSheetConfig: PartialNavigatorConfigOptions = {
@@ -95,18 +113,7 @@ export const backupSheetConfig: PartialNavigatorConfigOptions = {
       params: any;
     };
 
-    let heightForStep = backupSheetSizes.short;
-    if (step === WalletBackupStepTypes.cloud || step === WalletBackupStepTypes.manual) {
-      heightForStep = backupSheetSizes.long;
-    } else if (
-      // on the "existing_user" step, our "description" text is 1 extra line of text
-      // vertically, so we want to increase the sheet height by 1 lineHeight here
-      step === WalletBackupStepTypes.existing_user
-    ) {
-      // TODO: measure this text programatically
-      heightForStep = backupSheetSizes.short + fonts.lineHeight.looser;
-    }
-
+    const heightForStep = getHeightForStep(step);
     if (longFormHeight !== heightForStep) {
       navigation.setParams({
         longFormHeight: heightForStep,
@@ -535,8 +542,6 @@ const BackArrow = styled(Icon).attrs({
 
 const BackImage = () => <BackArrow />;
 
-type FontWeight = '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900' | 'bold' | 'normal' | undefined;
-
 const headerConfigOptions = {
   headerBackTitleStyle: {
     fontFamily: fonts.family.SFProRounded,
@@ -569,15 +574,15 @@ const SettingsTitle = ({ children }: React.PropsWithChildren) => {
   const { colors } = useTheme();
 
   return (
-    <Box paddingTop="8px">
-      <Text align="center" color={colors.dark} letterSpacing="roundedMedium" size="large" weight="bold">
+    <Box paddingTop={IS_ANDROID ? '8px' : undefined}>
+      <Text align="center" color={colors.dark} letterSpacing="roundedMedium" size="large" weight="heavy">
         {children}
       </Text>
     </Box>
   );
 };
 
-export const settingsOptions = (colors: any): StackNavigationOptions => ({
+export const settingsOptions = (colors: any, isSettingsRoute = true): StackNavigationOptions => ({
   ...headerConfigOptions,
   headerTitleAlign: 'center',
   cardShadowEnabled: false,
@@ -589,13 +594,20 @@ export const settingsOptions = (colors: any): StackNavigationOptions => ({
   headerBackImage: BackImage,
   headerBackTitle: ' ',
   headerStatusBarHeight: 0,
-  headerStyle: {
-    backgroundColor: colors.cardBackdrop,
-    elevation: 0,
-    height: 60,
-    shadowColor: 'transparent',
-  },
-  ...(android && {
-    headerTitle: (props: any) => <SettingsTitle {...props} />,
-  }),
+  ...(isSettingsRoute
+    ? {
+        headerStyle: {
+          backgroundColor: colors.cardBackdrop,
+          elevation: 0,
+          height: 60,
+          shadowColor: 'transparent',
+        },
+      }
+    : {
+        headerStyle: {
+          backgroundColor: colors.transparent,
+          height: 0,
+        },
+      }),
+  headerTitle: (props: any) => <SettingsTitle {...props} />,
 });

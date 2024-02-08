@@ -216,13 +216,10 @@ export const AddWalletSheet = () => {
 
     try {
       const userData = await fetchUserDataFromCloud();
-      console.log({ userData });
       if (!userData) {
         Alert.alert(i18n.t(TRANSLATIONS.options.cloud.no_backups), i18n.t(TRANSLATIONS.options.cloud.no_google_backups));
         return;
       }
-
-      console.log(JSON.stringify(backups, null, 2));
 
       // merging UserData.json with eventual selected backup file
       navigate(Routes.RESTORE_SHEET, { userData, backups });

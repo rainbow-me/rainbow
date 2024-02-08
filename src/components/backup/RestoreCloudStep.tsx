@@ -72,7 +72,7 @@ export default function RestoreCloudStep() {
 
   const dispatch = useDispatch();
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
-  const { goBack, replace } = useNavigation();
+  const { replace, navigate, getState: dangerouslyGetState, goBack } = useNavigation();
   const [validPassword, setValidPassword] = useState(false);
   const [incorrectPassword, setIncorrectPassword] = useState(false);
   const [password, setPassword] = useState('');
@@ -118,8 +118,6 @@ export default function RestoreCloudStep() {
       });
 
       if (status === RestoreCloudBackupResultStates.success) {
-        goBack();
-
         // Store it in the keychain in case it was missing
         await saveBackupPassword(password);
 
@@ -163,7 +161,10 @@ export default function RestoreCloudStep() {
           await Promise.all([p1, p2]);
           await initializeWallet(null, null, null, false, false, null, true, null);
 
-          replace(Routes.SWIPE_LAYOUT);
+          const operation = dangerouslyGetState().index === 1 ? navigate : replace;
+          operation(Routes.SWIPE_LAYOUT, {
+            screen: Routes.WALLET_SCREEN,
+          });
           setLoading(false);
         });
       } else {
@@ -235,7 +236,7 @@ export default function RestoreCloudStep() {
             width={deviceWidth - 48}
             disabled={!validPassword || loading}
             type={RainbowButtonTypes.backup}
-            label={`􀎽 ${lang.t(lang.l.back_up.cloud.back_up_to_platform, {
+            label={`􀎽 ${lang.t(lang.l.back_up.cloud.restore_from_platform, {
               cloudPlatformName: cloudPlatform,
             })}`}
             onPress={onSubmit}

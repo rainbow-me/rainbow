@@ -1,7 +1,7 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect } from 'react';
-import { Linking, StyleSheet } from 'react-native';
+import { Linking, StyleSheet, View } from 'react-native';
 import Reanimated, {
   Easing,
   interpolateColor,
@@ -52,8 +52,7 @@ const ButtonWrapper = styled(Reanimated.View)({
   width: '100%',
 });
 
-// @ts-expect-error
-const TermsOfUse = styled.View(({ bottomInset }) => ({
+const TermsOfUse = styled(View)(({ bottomInset }: any) => ({
   bottom: bottomInset / 2 + 32,
   position: 'absolute',
   width: 200,

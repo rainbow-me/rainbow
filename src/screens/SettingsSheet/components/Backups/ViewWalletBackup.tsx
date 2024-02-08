@@ -1,11 +1,12 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import { ContextCircleButton } from '@/components/context-menu';
 import Clipboard from '@react-native-community/clipboard';
 import { cloudPlatform } from '@/utils/platform';
 import { address as formatAddress } from '@/utils/abbreviations';
 
 import * as i18n from '@/languages';
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 import Menu from '../Menu';
 import MenuContainer from '../MenuContainer';
 import MenuItem from '../MenuItem';
@@ -13,7 +14,7 @@ import BackupWarningIcon from '@/assets/BackupWarning.png';
 import CloudBackedUpIcon from '@/assets/BackedUpCloud.png';
 import ManuallyBackedUpIcon from '@/assets/ManuallyBackedUp.png';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
-import { useWallets } from '@/hooks';
+import { useInitializeWallet, useWallets } from '@/hooks';
 import { abbreviations } from '@/utils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import MenuHeader from '../MenuHeader';
@@ -26,6 +27,18 @@ import { useNavigation } from '@/navigation/Navigation';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import Routes from '@/navigation/routesNames';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
+import { SETTINGS_BACKUP_ROUTES } from './routes';
+import { analyticsV2 } from '@/analytics';
+import { InteractionManager } from 'react-native';
+import { useDispatch } from 'react-redux';
+import { createAccountForWallet, walletsLoadState } from '@/redux/wallets';
+import { backupUserDataIntoCloud } from '@/handlers/cloudBackup';
+import { logger, RainbowError } from '@/logger';
+import { captureException } from '@sentry/react-native';
+import { createWallet } from '@/model/wallet';
+import { PROFILES, useExperimentalFlag } from '@/config';
+import showWalletErrorAlert from '@/helpers/support';
+import { IS_IOS } from '@/env';
 
 type ViewWalletBackupParams = {
   ViewWalletBackup: { walletId: string; title: string; imported?: boolean };
@@ -47,42 +60,152 @@ const ViewWalletBackup = () => {
   const { params } = useRoute<RouteProp<ViewWalletBackupParams, 'ViewWalletBackup'>>();
 
   const { walletId, title: incomingTitle } = params;
-  const { wallets } = useWallets();
+  const creatingWallet = useRef<boolean>();
+  const { isDamaged, wallets } = useWallets();
   const wallet = wallets?.[walletId];
+  const dispatch = useDispatch();
+  const initializeWallet = useInitializeWallet();
+  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const isSecretPhrase = WalletTypes.mnemonic === wallet?.type;
 
   const title = wallet?.type === WalletTypes.privateKey ? wallet?.addresses[0].label : incomingTitle;
 
   const { navigate } = useNavigation();
-
   const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
 
   const enableCloudBackups = useCallback(() => {
     navigate(Routes.BACKUP_SHEET, {
       nativeScreen: true,
-      step: walletBackupStepTypes.cloud,
+      step: walletBackupStepTypes.backup_cloud,
       walletId,
     });
   }, [navigate, walletId]);
 
   const onNavigateToSecretWarning = useCallback(() => {
-    navigate('SecretWarning', {
+    navigate(SETTINGS_BACKUP_ROUTES.SECRET_WARNING, {
       walletId,
       title,
     });
   }, [walletId, title, navigate]);
 
   const onManualBackup = useCallback(() => {
-    navigate('SecretWarning', {
+    navigate(SETTINGS_BACKUP_ROUTES.SECRET_WARNING, {
       walletId,
       isBackingUp: true,
       title,
-      backupType: walletBackupStepTypes.manual,
+      backupType: walletBackupStepTypes.backup_manual,
     });
   }, [navigate, walletId, title]);
 
-  const onCreateNewWallet = useCallback(() => {}, []);
+  const onCreateNewWallet = useCallback(async () => {
+    try {
+      analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
+        isFirstWallet: false,
+        type: 'new',
+      });
+      if (creatingWallet.current) return;
+      creatingWallet.current = true;
+
+      InteractionManager.runAfterInteractions(() => {
+        setTimeout(() => {
+          navigate(Routes.MODAL_SCREEN, {
+            actionType: 'Create',
+            asset: [],
+            isNewProfile: true,
+            isFromSettings: true,
+            onCancel: () => {
+              creatingWallet.current = false;
+            },
+            onCloseModal: async (args: any) => {
+              if (args) {
+                const name = args?.name ?? '';
+                const color = args?.color ?? null;
+                // Check if the selected wallet is the primary
+                let primaryWalletKey = wallet?.primary ? wallet.id : null;
+
+                // If it's not, then find it
+                !primaryWalletKey &&
+                  Object.keys(wallets || {}).some(key => {
+                    const wallet = wallets?.[key];
+                    if (wallet?.type === WalletTypes.mnemonic && wallet.primary) {
+                      primaryWalletKey = key;
+                      return true;
+                    }
+                    return false;
+                  });
+
+                // If there's no primary wallet at all,
+                // we fallback to an imported one with a seed phrase
+                !primaryWalletKey &&
+                  Object.keys(wallets as any).some(key => {
+                    const wallet = wallets?.[key];
+                    if (wallet?.type === WalletTypes.mnemonic && wallet.imported) {
+                      primaryWalletKey = key;
+                      return true;
+                    }
+                    return false;
+                  });
+                try {
+                  // If we found it and it's not damaged use it to create the new account
+                  if (primaryWalletKey && !wallets?.[primaryWalletKey].damaged) {
+                    const newWallets = await dispatch(createAccountForWallet(primaryWalletKey, color, name));
+                    // @ts-ignore
+                    await initializeWallet();
+                    // If this wallet was previously backed up to the cloud
+                    // We need to update userData backup so it can be restored too
+                    if (wallets?.[primaryWalletKey].backedUp && wallets[primaryWalletKey].backupType === walletBackupTypes.cloud) {
+                      try {
+                        await backupUserDataIntoCloud({ wallets: newWallets });
+                      } catch (e) {
+                        logger.error(e as RainbowError, {
+                          description: 'Updating wallet userdata failed after new account creation',
+                        });
+                        captureException(e);
+                        throw e;
+                      }
+                    }
+
+                    // If doesn't exist, we need to create a new wallet
+                  } else {
+                    await createWallet({
+                      color,
+                      name,
+                      clearCallbackOnStartCreation: true,
+                    });
+                    await dispatch(walletsLoadState(profilesEnabled));
+                    // @ts-ignore
+                    await initializeWallet();
+                  }
+                } catch (e) {
+                  console.log(e);
+                  logger.error(e as RainbowError, {
+                    description: 'Error while trying to add account',
+                  });
+                  captureException(e);
+                  if (isDamaged) {
+                    setTimeout(() => {
+                      showWalletErrorAlert();
+                    }, 1000);
+                  }
+                }
+              }
+              creatingWallet.current = false;
+            },
+            profile: {
+              color: null,
+              name: ``,
+            },
+            type: 'wallet_profile',
+          });
+        }, 50);
+      });
+    } catch (e) {
+      logger.error(e as RainbowError, {
+        description: 'Error while trying to add account',
+      });
+    }
+  }, [creatingWallet, dispatch, isDamaged, navigate, initializeWallet, profilesEnabled, wallets, wallet]);
 
   const handleCopyAddress = React.useCallback(
     (address: string) => {
@@ -267,9 +390,21 @@ const ViewWalletBackup = () => {
                   />
                 }
                 rightComponent={
-                  <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={(e: MenuEvent) => onPressMenuItem({ ...e, address })}>
-                    <MenuItem.TextIcon icon="􀍡" />
-                  </ContextMenuButton>
+                  IS_IOS ? (
+                    <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={(e: MenuEvent) => onPressMenuItem({ ...e, address })}>
+                      <MenuItem.TextIcon icon="􀍡" />
+                    </ContextMenuButton>
+                  ) : (
+                    <ContextCircleButton
+                      options={menuConfig.menuItems.map(item => item.actionTitle)}
+                      onPressActionSheet={(buttonIndex: number) => {
+                        const actionKey = menuConfig.menuItems[buttonIndex].actionKey;
+                        onPressMenuItem({ nativeEvent: { actionKey }, address });
+                      }}
+                    >
+                      <MenuItem.TextIcon icon="􀍡" />
+                    </ContextCircleButton>
+                  )
                 }
               />
             ))}

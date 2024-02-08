@@ -193,23 +193,6 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
     [handlePressConnectedApps, handlePressQRCode, handlePressSettings]
   );
 
-  const handlePressMenuItemAndroid = React.useCallback(
-    (buttonIndex: number) => {
-      switch (buttonIndex) {
-        case 0:
-          handlePressSettings();
-          break;
-        case 1:
-          handlePressQRCode();
-          break;
-        case 2:
-          handlePressConnectedApps();
-          break;
-      }
-    },
-    [handlePressConnectedApps, handlePressQRCode, handlePressSettings]
-  );
-
   return (
     <Box
       as={RNAnimated.View}
@@ -266,7 +249,9 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
                 dynamicOptions={undefined}
                 options={menuConfig.menuItems.map(item => item?.actionTitle)}
                 cancelButtonIndex={menuConfig.menuItems.length - 1}
-                onPressActionSheet={handlePressMenuItemAndroid}
+                onPressActionSheet={(buttonIndex: number) => {
+                  handlePressMenuItem({ nativeEvent: { actionKey: menuConfig.menuItems[buttonIndex]?.actionKey } });
+                }}
               >
                 <View>
                   <Navbar.Item>

@@ -24,10 +24,10 @@ export type RestoreSheetParams = {
 };
 
 export function RestoreSheet() {
-  const { params: { backups, userData, fromSettings } = {} } = useRoute<RouteProp<RestoreSheetParams, 'RestoreSheet'>>();
+  const { params: { backups, userData, fromSettings = false } = {} } = useRoute<RouteProp<RestoreSheetParams, 'RestoreSheet'>>();
 
   const { colors } = useTheme();
-  const memoSettingsOptions = useMemo(() => settingsOptions(colors), [colors]);
+  const memoSettingsOptions = useMemo(() => settingsOptions(colors, fromSettings), [colors]);
 
   return (
     <BackgroundProvider color="surfaceSecondary">

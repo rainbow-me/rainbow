@@ -12,6 +12,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { fetchUserDataFromCloud } from '@/handlers/cloudBackup';
 import { IS_ANDROID } from '@/env';
+import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 
 type ViewCloudBackupsParams = {
   ViewCloudBackups: { backups: { files: Backup[] } };
@@ -23,13 +24,17 @@ const ViewCloudBackups = () => {
   const { backups } = params;
   const { navigate } = useNavigation();
 
-  const cloudBackups = backups.files.filter(backup => {
-    if (IS_ANDROID) {
-      return !backup.name.includes('UserData.json');
-    }
+  const cloudBackups = backups.files
+    .filter(backup => {
+      if (IS_ANDROID) {
+        return !backup.name.includes('UserData.json');
+      }
 
-    return backup.isFile && backup.size > 0 && !backup.name.includes('UserData.json');
-  });
+      return backup.isFile && backup.size > 0 && !backup.name.includes('UserData.json');
+    })
+    .sort((a, b) => {
+      return parseTimestampFromFilename(b.name) - parseTimestampFromFilename(a.name);
+    });
   const mostRecentBackup = cloudBackups.reduce(
     (prev, current) => {
       if (!current) {
@@ -54,16 +59,12 @@ const ViewCloudBackups = () => {
 
   const onSelectCloudBackup = useCallback(
     async (selectedBackup: Backup) => {
-      const userData = await fetchUserDataFromCloud();
-
-      navigate(Routes.RESTORE_CLOUD_SHEET, {
-        backups,
-        userData,
+      navigate(Routes.BACKUP_SHEET, {
+        step: walletBackupStepTypes.restore_from_backup,
         selectedBackup,
-        fromSettings: true,
       });
     },
-    [navigate, backups]
+    [navigate]
   );
 
   return (

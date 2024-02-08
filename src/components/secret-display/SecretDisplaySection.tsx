@@ -123,6 +123,7 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
   }, [loadSeed]);
 
   const handleConfirmSaved = useCallback(() => {
+    console.log('confirming', backupType);
     if (backupType === WalletBackupTypes.manual) {
       onManuallyBackupWalletId(walletId);
       navigate(RoutesWithPlatformDifferences.SETTINGS_SECTION_BACKUP);

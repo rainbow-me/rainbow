@@ -5,7 +5,7 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import { InteractionManager } from 'react-native';
 import ModalHeaderButton from '../../components/modal/ModalHeaderButton';
 import { useTheme } from '@/theme';
-import { BackgroundProvider, Box } from '@/design-system';
+import { BackgroundProvider } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import { SettingsPages } from './SettingsPages';
 import { settingsCardStyleInterpolator } from './settingsCardStyleInterpolator';
@@ -14,10 +14,12 @@ import ShowSecretView from './components/Backups/ShowSecretView';
 import SecretWarning from './components/Backups/SecretWarning';
 import SettingsSection from './components/SettingsSection';
 import WalletNotificationsSettings from './components/WalletNotificationsSettings';
-import { settingsOptions } from '@/navigation/config';
+import { settingsOptions, sharedCoolModalTopOffset } from '@/navigation/config';
 import ViewCloudBackups from './components/Backups/ViewCloudBackups';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { useDimensions } from '@/hooks';
+import { SETTINGS_BACKUP_ROUTES } from './components/Backups/routes';
+import { IS_ANDROID } from '@/env';
 
 const Stack = createStackNavigator();
 
@@ -49,7 +51,12 @@ export function SettingsSheet() {
   return (
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (
-        <SimpleSheet testID="settings-sheet" backgroundColor={backgroundColor as string} customHeight={deviceHeight} scrollEnabled={false}>
+        <SimpleSheet
+          testID="settings-sheet"
+          backgroundColor={backgroundColor as string}
+          customHeight={IS_ANDROID ? deviceHeight - sharedCoolModalTopOffset - 48 : deviceHeight - sharedCoolModalTopOffset}
+          scrollEnabled={false}
+        >
           <Stack.Navigator
             screenOptions={{
               ...memoSettingsOptions,
@@ -103,7 +110,7 @@ export function SettingsSheet() {
             />
             <Stack.Screen
               component={WiewWalletBackup}
-              name="WiewWalletBackup"
+              name={SETTINGS_BACKUP_ROUTES.VIEW_WALLET_BACKUP}
               options={({ route }: any) => ({
                 cardStyleInterpolator: settingsCardStyleInterpolator,
                 title: route.params?.title,
@@ -111,7 +118,7 @@ export function SettingsSheet() {
             />
             <Stack.Screen
               component={ViewCloudBackups}
-              name="ViewCloudBackups"
+              name={SETTINGS_BACKUP_ROUTES.VIEW_CLOUD_BACKUPS}
               options={({ route }: any) => ({
                 cardStyleInterpolator: settingsCardStyleInterpolator,
                 title: route.params?.title,
@@ -119,7 +126,7 @@ export function SettingsSheet() {
             />
             <Stack.Screen
               component={SecretWarning}
-              name="SecretWarning"
+              name={SETTINGS_BACKUP_ROUTES.SECRET_WARNING}
               options={({ route }: any) => ({
                 cardStyleInterpolator: settingsCardStyleInterpolator,
                 title: route.params?.title,
@@ -127,7 +134,7 @@ export function SettingsSheet() {
             />
             <Stack.Screen
               component={ShowSecretView}
-              name="ShowSecretView"
+              name={SETTINGS_BACKUP_ROUTES.SHOW_SECRET}
               options={({ route }: any) => ({
                 cardStyleInterpolator: settingsCardStyleInterpolator,
                 title: route.params?.title,

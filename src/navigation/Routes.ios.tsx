@@ -3,7 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import React, { useContext } from 'react';
 import { AddCashSheet } from '../screens/AddCash';
 import AvatarBuilder from '../screens/AvatarBuilder';
-import BackupSheet from '../screens/BackupSheet';
+import BackupSheet from '../components/backup/BackupSheet';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
 import ConnectedDappsSheet from '../screens/ConnectedDappsSheet';
 import ENSAdditionalRecordsSheet from '../screens/ENSAdditionalRecordsSheet';
@@ -24,7 +24,6 @@ import ShowcaseScreen from '../screens/ShowcaseSheet';
 import { SignTransactionSheet } from '../screens/SignTransactionSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import NotificationsPromoSheet from '../screens/NotificationsPromoSheet';
-import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
 import { WalletDiagnosticsSheet } from '../screens/Diagnostics';
@@ -46,7 +45,6 @@ import {
   externalLinkWarningSheetConfig,
   mintsSheetConfig,
   nativeStackDefaultConfig,
-  nativeStackDefaultConfigWithoutStatusBar,
   nftOffersSheetConfig,
   nftSingleOfferSheetConfig,
   pairHardwareWalletNavigatorConfig,
@@ -94,8 +92,6 @@ import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
 import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoSheet';
 import { ConsoleSheet } from '@/screens/points/ConsoleSheet';
 import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileContext';
-import ChooseBackupStep from '@/components/backup/ChooseBackupStep';
-import { RestoreCloudStep } from '@/components/backup';
 
 type StackNavigatorParams = {
   [Routes.SEND_SHEET]: unknown;
@@ -175,7 +171,6 @@ function NativeStackNavigator() {
         name={Routes.SELECT_UNIQUE_TOKEN_SHEET}
         {...expandedAssetSheetConfigWithLimit}
       />
-      <NativeStack.Screen component={RestoreCloudStep} name={Routes.RESTORE_CLOUD_SHEET} {...backupSheetConfig} />
       <NativeStack.Screen
         component={SpeedUpAndCancelSheet}
         name={Routes.SPEED_UP_AND_CANCEL_SHEET}

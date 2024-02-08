@@ -19,9 +19,6 @@ export const usePasswordValidation = (password: string, confirmPassword: string)
 
     if (password === confirmPassword && isCloudBackupPasswordValid(password)) {
       passwordIsValid = true;
-      newLabel = lang.t(lang.l.back_up.cloud.back_up_to_platform, {
-        platform: cloudPlatform,
-      });
     } else if (password.length < cloudBackupPasswordMinLength) {
       newLabel = lang.t('back_up.cloud.password.minimum_characters', {
         minimumLength: cloudBackupPasswordMinLength,

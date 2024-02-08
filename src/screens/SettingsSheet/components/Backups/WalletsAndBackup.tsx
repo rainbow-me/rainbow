@@ -8,7 +8,7 @@ import CloudBackupWarningIcon from '@/assets/CloudBackupWarning.png';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import WalletTypes from '@/helpers/walletTypes';
-import { useManageCloudBackups, useWallets } from '@/hooks';
+import { useInitializeWallet, useManageCloudBackups, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { abbreviations } from '@/utils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
@@ -24,32 +24,61 @@ import { backupsCard } from '@/components/cards/utils/constants';
 import { useVisibleWallets } from '../../useVisibleWallets';
 import { format } from 'date-fns';
 import useCloudBackups from '@/hooks/useCloudBackups';
+import { SETTINGS_BACKUP_ROUTES } from './routes';
+import { createWallet } from '@/model/wallet';
+import { PROFILES, useExperimentalFlag } from '@/config';
+import { useDispatch } from 'react-redux';
+import { walletsLoadState } from '@/redux/wallets';
+import { RainbowError, logger } from '@/logger';
 
 export const WalletsAndBackup = () => {
   const { colors, isDarkMode } = useTheme();
 
   const { navigate } = useNavigation();
   const { wallets } = useWallets();
+  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const { backups } = useCloudBackups();
+  const dispatch = useDispatch();
+
+  const initializeWallet = useInitializeWallet();
 
   const { manageCloudBackups } = useManageCloudBackups();
 
   const enabledCloudBackups = useCallback(() => {
     navigate(Routes.BACKUP_SHEET, {
       nativeScreen: true,
-      step: WalletBackupStepTypes.cloud,
+      step: WalletBackupStepTypes.backup_cloud,
     });
   }, [navigate]);
 
   const onViewCloudBackups = useCallback(async () => {
-    navigate('ViewCloudBackups', {
+    navigate(SETTINGS_BACKUP_ROUTES.VIEW_CLOUD_BACKUPS, {
       backups,
       title: 'My Cloud Backups',
     });
   }, [backups, navigate]);
 
-  const onCreateNewSecretPhrase = useCallback(() => {}, []);
+  const onCreateNewSecretPhrase = useCallback(async () => {
+    try {
+      await createWallet({
+        color: null,
+        name: '',
+        clearCallbackOnStartCreation: true,
+      });
+
+      await dispatch(walletsLoadState(profilesEnabled));
+
+      // @ts-ignore
+      await initializeWallet();
+    } catch (err) {
+      logger.error(new RainbowError('Failed to create new secret phrase'), {
+        extra: {
+          error: err,
+        },
+      });
+    }
+  }, []);
 
   const onPressLearnMoreAboutCloudBackups = useCallback(() => {
     navigate(Routes.LEARN_WEB_VIEW_SCREEN, {
@@ -63,7 +92,7 @@ export const WalletsAndBackup = () => {
       const wallet = wallets?.[walletId];
 
       const title = wallet?.imported && wallet.type === WalletTypes.privateKey ? wallet.addresses[0].label : name;
-      navigate(Routes.SETTINGS_BACKUP_VIEW, {
+      navigate(SETTINGS_BACKUP_ROUTES.VIEW_WALLET_BACKUP, {
         imported: wallet?.imported,
         title,
         walletId,
@@ -314,7 +343,7 @@ export const WalletsAndBackup = () => {
                   />
                   <MenuItem
                     key={key}
-                    size={numAccounts > 2 ? 52 * (numAccounts / 2) : 52}
+                    size={numAccounts > 3 ? 52 * (numAccounts / 3) : 52}
                     disabled
                     titleComponent={
                       <Inline verticalSpace="4px" horizontalSpace="4px">
