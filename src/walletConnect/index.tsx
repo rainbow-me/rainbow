@@ -87,26 +87,41 @@ export function maybeGoBackAndClearHasPendingRedirect({ delay = 0 }: { delay?: n
   }
 }
 
-/**
- * MAY BE UNDEFINED if WC v2 hasn't been instantiated yet
- */
+let syncWeb3WalletClientPromise: Promise<Awaited<ReturnType<(typeof Web3Wallet)['init']>>> | undefined;
 let syncWeb3WalletClient: Awaited<ReturnType<(typeof Web3Wallet)['init']>> | undefined;
 
 const walletConnectCore = new Core({ projectId: WC_PROJECT_ID });
 
-export const web3WalletClient = Web3Wallet.init({
-  core: walletConnectCore,
-  metadata: {
-    name: '🌈 Rainbow',
-    description: 'Rainbow makes exploring Ethereum fun and accessible 🌈',
-    url: 'https://rainbow.me',
-    icons: ['https://avatars2.githubusercontent.com/u/48327834?s=200&v=4'],
-    redirect: {
-      native: 'rainbow://wc',
-      universal: 'https://rnbwapp.com/wc',
+const getWeb3WalletClient = async () => {
+  if (syncWeb3WalletClientPromise) {
+    console.log('Returning existing promise...');
+    return syncWeb3WalletClientPromise;
+  }
+
+  if (syncWeb3WalletClient) {
+    console.log('Returning existing client...');
+    return syncWeb3WalletClient;
+  }
+
+  console.log('Creating new client...');
+  syncWeb3WalletClientPromise = Web3Wallet.init({
+    core: walletConnectCore,
+    metadata: {
+      name: '🌈 Rainbow',
+      description: 'Rainbow makes exploring Ethereum fun and accessible 🌈',
+      url: 'https://rainbow.me',
+      icons: ['https://avatars2.githubusercontent.com/u/48327834?s=200&v=4'],
+      redirect: {
+        native: 'rainbow://wc',
+        universal: 'https://rnbwapp.com/wc',
+      },
     },
-  },
-});
+  });
+
+  syncWeb3WalletClient = await syncWeb3WalletClientPromise;
+  syncWeb3WalletClientPromise = undefined; // Reset the promise once resolved
+  return syncWeb3WalletClient;
+};
 
 /**
  * For RPC requests that have [address, message] tuples (order may change),
@@ -284,7 +299,7 @@ async function rejectProposal({
     proposal,
   });
 
-  const client = await web3WalletClient;
+  const client = await getWeb3WalletClient();
   const { id, proposer } = proposal.params;
 
   await client.rejectSession({ id, reason: getSdkError(reason) });
@@ -303,7 +318,7 @@ export async function pair({ uri, connector }: { uri: string; connector?: string
    */
 
   const { topic, ...rest } = parseUri(uri);
-  const client = await web3WalletClient;
+  const client = await getWeb3WalletClient();
 
   logger.debug(`WC v2: pair: parsed uri`, { topic, rest });
 
@@ -329,7 +344,8 @@ export async function pair({ uri, connector }: { uri: string; connector?: string
 }
 
 export async function initListeners() {
-  const client = await web3WalletClient;
+  const client = await getWeb3WalletClient();
+  console.log('!!!!!!!!!!! init client');
 
   syncWeb3WalletClient = client;
 
@@ -348,12 +364,15 @@ export async function initListeners() {
 
   try {
     const token = await getFCMToken();
+    console.log('!!!!!!!!!!!!! got token');
 
     if (token) {
+      console.log('!!!!!!!!! HAS TOKEN');
       const client_id = await client.core.crypto.getClientId();
 
       // initial subscription
       await subscribeToEchoServer({ token, client_id });
+      console.log('!!!!!!!!!!!!!!!! INIT TO TO EXHO SERVER');
 
       /**
        * Ensure that if the FCM token changes we update the echo server
@@ -433,7 +452,7 @@ export async function onSessionProposal(proposal: Web3WalletTypes.SessionProposa
       verifiedData,
       timedOut: false,
       callback: async (approved, approvedChainId, accountAddress) => {
-        const client = await web3WalletClient;
+        const client = await getWeb3WalletClient();
         const { id, proposer, requiredNamespaces } = proposal.params;
 
         if (approved) {
@@ -556,8 +575,9 @@ export async function onSessionProposal(proposal: Web3WalletTypes.SessionProposa
 
 // For WC v2
 export async function onSessionRequest(event: SignClientTypes.EventArguments['session_request']) {
+  console.log('!!!!!!!!!!!!!! OMG WE JUST GOT A REQUEST');
   setHasPendingDeeplinkPendingRedirect(true);
-  const client = await web3WalletClient;
+  const client = await getWeb3WalletClient();
 
   logger.debug(`WC v2: session_request`, {}, logger.DebugContext.walletconnect);
 
@@ -762,7 +782,7 @@ export async function handleSessionRequestResponse(
     success: Boolean(result),
   });
 
-  const client = await web3WalletClient;
+  const client = await getWeb3WalletClient();
   const { topic, id } = sessionRequestEvent;
 
   if (result) {
@@ -785,7 +805,7 @@ export async function handleSessionRequestResponse(
 }
 
 export async function onAuthRequest(event: Web3WalletTypes.AuthRequest) {
-  const client = await web3WalletClient;
+  const client = await getWeb3WalletClient();
 
   logger.debug(`WC v2: auth_request`, { event }, logger.DebugContext.walletconnect);
 
@@ -903,7 +923,7 @@ export async function onAuthRequest(event: Web3WalletTypes.AuthRequest) {
  * Returns all active settings in a type-safe manner.
  */
 export async function getAllActiveSessions() {
-  const client = await web3WalletClient;
+  const client = await getWeb3WalletClient();
   return Object.values(client?.getActiveSessions() || {}) || [];
 }
 
@@ -920,7 +940,7 @@ export function getAllActiveSessionsSync() {
  */
 export async function addAccountToSession(session: SessionTypes.Struct, { address }: { address?: string }) {
   try {
-    const client = await web3WalletClient;
+    const client = await getWeb3WalletClient();
 
     const namespaces: Parameters<typeof client.updateSession>[0]['namespaces'] = {};
 
@@ -981,7 +1001,7 @@ export async function addAccountToSession(session: SessionTypes.Struct, { addres
 
 export async function changeAccount(session: SessionTypes.Struct, { address }: { address?: string }) {
   try {
-    const client = await web3WalletClient;
+    const client = await getWeb3WalletClient();
 
     /*
      * Before we can effectively switch accounts, we need to add the account to
@@ -1029,7 +1049,7 @@ export async function changeAccount(session: SessionTypes.Struct, { address }: {
  * within a dapp is handled internally by WC v2.
  */
 export async function disconnectSession(session: SessionTypes.Struct) {
-  const client = await web3WalletClient;
+  const client = await getWeb3WalletClient();
 
   await client.disconnectSession({
     topic: session.topic,
