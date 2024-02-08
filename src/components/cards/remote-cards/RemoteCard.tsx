@@ -205,7 +205,6 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ card = {} as TrimmedCard
                 {!imageIcon && imageUri && (
                   <Box
                     as={RemoteSvg}
-                    source={{ uri: imageUri }}
                     uri={imageForPlatform()}
                     borderRadius={card.imageRadius ?? 10}
                     style={styles.image}
