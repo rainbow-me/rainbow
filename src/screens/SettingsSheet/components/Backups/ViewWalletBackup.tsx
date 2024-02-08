@@ -94,7 +94,7 @@ const ViewWalletBackup = () => {
       walletId,
       isBackingUp: true,
       title,
-      backupType: walletBackupStepTypes.backup_manual,
+      backupType: walletBackupTypes.manual,
     });
   }, [navigate, walletId, title]);
 
