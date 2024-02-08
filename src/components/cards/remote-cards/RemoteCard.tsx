@@ -1,4 +1,4 @@
-import { Linking,  StyleSheet } from 'react-native';
+import { Linking, StyleSheet } from 'react-native';
 import React, { useCallback } from 'react';
 import { get } from 'lodash';
 import ConditionalWrap from 'conditional-wrap';
@@ -203,12 +203,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ card = {} as TrimmedCard
                 )}
 
                 {!imageIcon && imageUri && (
-                  <Box
-                    as={RemoteSvg}
-                    uri={imageForPlatform()}
-                    borderRadius={card.imageRadius ?? 10}
-                    style={styles.image}
-                  />
+                  <Box as={RemoteSvg} uri={imageForPlatform()} borderRadius={card.imageRadius ?? 10} style={styles.image} />
                 )}
               </Cover>
             </Box>
