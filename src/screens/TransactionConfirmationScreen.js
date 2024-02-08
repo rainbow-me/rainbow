@@ -86,6 +86,7 @@ import { isAddress } from '@ethersproject/address';
 import { logger, RainbowError } from '@/logger';
 import { getNetworkObj } from '@/networks';
 import { IS_IOS } from '@/env';
+import { getNextNonce } from '@/state/nonces';
 
 const springConfig = {
   damping: 500,
@@ -199,8 +200,6 @@ export default function TransactionConfirmationScreen() {
       isHardwareWallet: !!selectedWallet?.deviceId,
     };
   }, [walletConnector?._accounts, walletNames, wallets, walletConnectV2RequestValues]);
-
-  const getNextNonce = useCurrentNonce(accountInfo.address, currentNetwork);
 
   const isTestnet = isTestnetNetwork(currentNetwork);
   const isL2 = isL2Network(currentNetwork);
@@ -548,7 +547,7 @@ export default function TransactionConfirmationScreen() {
     const cleanTxPayload = omitFlatten(txPayload, ['gasPrice', 'maxFeePerGas', 'maxPriorityFeePerGas']);
     const gasParams = parseGasParamsForTransaction(selectedGasFee);
     const calculatedGasLimit = gas || gasLimitFromPayload || gasLimit;
-    const nonce = await getNextNonce();
+    const nonce = await getNextNonce({ address: accountInfo.address, network: currentNetwork });
     let txPayloadUpdated = {
       ...cleanTxPayload,
       ...gasParams,
@@ -655,13 +654,13 @@ export default function TransactionConfirmationScreen() {
     selectedGasFee,
     gasLimit,
     getNextNonce,
-    currentNetwork,
     provider,
     accountInfo.address,
     accountInfo.isHardwareWallet,
     callback,
     dappName,
     dappUrl,
+    currentNetwork,
     isFocused,
     requestId,
     closeScreen,

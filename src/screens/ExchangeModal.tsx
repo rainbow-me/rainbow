@@ -34,7 +34,6 @@ import { delay, greaterThan } from '@/helpers/utilities';
 import {
   useAccountSettings,
   useColorForAsset,
-  useCurrentNonce,
   useGas,
   usePrevious,
   usePriceImpactDetails,
@@ -71,6 +70,7 @@ import Animated from 'react-native-reanimated';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
 import { SwapPriceImpactType } from '@/hooks/usePriceImpactDetails';
+import { getNextNonce } from '@/state/nonces';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -217,8 +217,6 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
   const defaultGasLimit = useMemo(() => {
     return ethereumUtils.getBasicSwapGasLimit(Number(chainId));
   }, [chainId]);
-
-  const getNextNonce = useCurrentNonce(accountAddress, currentNetwork);
 
   const {
     result: {
@@ -430,7 +428,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
           }
         };
         logger.log('[exchange - handle submit] rap');
-        const nonce = await getNextNonce();
+        const nonce = await getNextNonce({ address: accountAddress, network: currentNetwork });
         const { independentField, independentValue, slippageInBips, source } = store.getState().swap;
         const swapParameters = {
           chainId,
@@ -517,7 +515,6 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
       currentNetwork,
       debouncedIsHighPriceImpact,
       flashbots,
-      getNextNonce,
       goBack,
       inputAmount,
       inputCurrency,
