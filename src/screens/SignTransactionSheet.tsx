@@ -94,7 +94,7 @@ import { isAddress } from '@ethersproject/address';
 import { methodRegistryLookupAndParse } from '@/utils/methodRegistry';
 import { sanitizeTypedData } from '@/utils/signingUtils';
 import { hexToNumber, isHex } from 'viem';
-import { addNewTransaction } from '@/state/pendingTransactionsStore';
+import { addNewTransaction } from '@/state/pendingTransactions';
 import { account } from '@/storage';
 
 const COLLAPSED_CARD_HEIGHT = 56;

@@ -53,7 +53,7 @@ import { saveLocalPendingTransactions } from '@/handlers/localstorage/accountLoc
 import { getFCMToken } from '@/notifications/tokens';
 import { resetNonces } from '@/redux/nonceManager';
 import { removeGlobalNotificationSettings } from '@/notifications/settings/settings';
-import { pendingTransactionsStore, usePendingTransactionsStore } from '@/state/pendingTransactionsStore';
+import { pendingTransactionsStore, usePendingTransactionsStore } from '@/state/pendingTransactions';
 
 const DevSection = () => {
   const { navigate } = useNavigation();

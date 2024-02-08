@@ -15,7 +15,7 @@ import { MMKV } from 'react-native-mmkv';
 import { STORAGE_IDS } from '@/model/mmkv';
 import { REFERRER } from '@/references';
 import { overrideWithFastSpeedIfNeeded } from '../utils';
-import { addNewTransaction } from '@/state/pendingTransactionsStore';
+import { addNewTransaction } from '@/state/pendingTransactions';
 
 export const swapMetadataStorage = new MMKV({
   id: STORAGE_IDS.SWAPS_METADATA_STORAGE,

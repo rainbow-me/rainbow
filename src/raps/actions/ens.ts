@@ -17,7 +17,7 @@ import store from '@/redux/store';
 import { ethereumUtils } from '@/utils';
 import logger from '@/utils/logger';
 import { parseGasParamAmounts } from '@/parsers';
-import { addNewTransaction } from '@/state/pendingTransactionsStore';
+import { addNewTransaction } from '@/state/pendingTransactions';
 import { Network } from '@/networks/types';
 
 const executeCommit = async (

@@ -10,7 +10,7 @@ import { consolidatedTransactionsQueryKey } from '@/resources/transactions/conso
 import { RainbowNetworks } from '@/networks';
 import { queryClient } from '@/react-query/queryClient';
 import { getTransactionFlashbotStatus } from '@/handlers/transactions';
-import { usePendingTransactionsStore } from '@/state/pendingTransactionsStore';
+import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 
 export const useWatchPendingTransactions = ({ address }: { address: string }) => {
   //const { swapRefreshAssets } = useSwapRefreshAssets();

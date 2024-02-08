@@ -48,7 +48,7 @@ import { CardSize } from '@/components/unique-token/CardSize';
 import { queryClient } from '@/react-query';
 import { nftOffersQueryKey } from '@/resources/reservoir/nftOffersQuery';
 import { getRainbowFeeAddress } from '@/resources/reservoir/utils';
-import { addNewTransaction } from '@/state/pendingTransactionsStore';
+import { addNewTransaction } from '@/state/pendingTransactions';
 import { getUniqueId } from '@/utils/ethereumUtils';
 
 const NFT_IMAGE_HEIGHT = 160;

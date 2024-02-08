@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { ethereumUtils, isLowerCaseMatch } from '@/utils';
-import { usePendingTransactionsStore } from '@/state/pendingTransactionsStore';
+import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 
 import useAccountSettings from './useAccountSettings';
 

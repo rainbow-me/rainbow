@@ -9,7 +9,7 @@ import { getCachedProviderForNetwork, isHardHat } from '@/handlers/web3';
 import { useUserAssets } from '@/resources/assets/UserAssetsQuery';
 import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
 import { RainbowTransaction } from '@/entities';
-import { usePendingTransactionsStore } from '@/state/pendingTransactionsStore';
+import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 
 export const NOE_PAGE = 30;
 

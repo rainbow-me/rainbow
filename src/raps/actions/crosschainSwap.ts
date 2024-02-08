@@ -14,7 +14,7 @@ import { estimateCrosschainSwapGasLimit } from '@/handlers/swap';
 import { swapMetadataStorage } from './swap';
 import { REFERRER } from '@/references';
 import { overrideWithFastSpeedIfNeeded } from '../utils';
-import { addNewTransaction } from '@/state/pendingTransactionsStore';
+import { addNewTransaction } from '@/state/pendingTransactions';
 
 const actionName = 'crosschainSwap';
 

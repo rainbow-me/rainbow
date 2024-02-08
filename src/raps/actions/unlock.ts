@@ -17,7 +17,7 @@ import { AllowancesCache, ethereumUtils } from '@/utils';
 import { overrideWithFastSpeedIfNeeded } from '../utils';
 import logger from '@/utils/logger';
 import { ParsedAsset } from '@/resources/assets/types';
-import { addNewTransaction } from '@/state/pendingTransactionsStore';
+import { addNewTransaction } from '@/state/pendingTransactions';
 
 export const estimateApprove = async (
   owner: string,
