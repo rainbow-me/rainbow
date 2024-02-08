@@ -179,22 +179,6 @@ export default function ChartExpandedState({ asset }) {
     currency: nativeCurrency,
   });
 
-  // This one includes the original l2 address if exists
-  const ogAsset = useMemo(() => {
-    if (data?.networks) {
-      const mappedNetworks = {};
-      Object.keys(data?.networks).forEach(
-        chainId => (mappedNetworks[ethereumUtils.getNetworkFromChainId(Number(chainId))] = data?.networks[chainId])
-      );
-      assetWithPrice.implementations = mappedNetworks;
-    }
-
-    return {
-      ...assetWithPrice,
-      address: isL2 ? assetWithPrice.l2Address || asset?.address : assetWithPrice.address,
-    };
-  }, [assetWithPrice, isL2, asset?.address, data?.networks]);
-
   const { height: screenHeight } = useDimensions();
 
   const delayedDescriptions = useDelayedValueWithLayoutAnimation(data?.description?.replace(/\s+/g, ''));
@@ -303,12 +287,14 @@ export default function ChartExpandedState({ asset }) {
       )}
       {!needsEth ? (
         <SheetActionButtonRow paddingBottom={isL2 ? 19 : undefined}>
-          {hasBalance && !isTestnet && swapEnabled && <SwapActionButton asset={ogAsset} color={color} inputType={AssetInputTypes.in} />}
+          {hasBalance && !isTestnet && swapEnabled && (
+            <SwapActionButton asset={assetWithPrice} color={color} inputType={AssetInputTypes.in} />
+          )}
           {hasBalance ? (
-            <SendActionButton asset={ogAsset} color={color} fromDiscover={fromDiscover} />
+            <SendActionButton asset={assetWithPrice} color={color} fromDiscover={fromDiscover} />
           ) : swapEnabled ? (
             <SwapActionButton
-              asset={ogAsset}
+              asset={assetWithPrice}
               color={color}
               fromDiscover={fromDiscover}
               inputType={AssetInputTypes.out}
@@ -323,7 +309,7 @@ export default function ChartExpandedState({ asset }) {
         </SheetActionButtonRow>
       ) : addCashEnabled ? (
         <SheetActionButtonRow paddingBottom={isL2 ? 19 : undefined}>
-          <BuyActionButton color={color} asset={ogAsset} />
+          <BuyActionButton color={color} asset={assetWithPrice} />
         </SheetActionButtonRow>
       ) : null}
       {!data?.networks && isL2 && (
@@ -383,7 +369,7 @@ export default function ChartExpandedState({ asset }) {
           </ExpandedStateSection>
         )}
         <SocialLinks
-          address={ogAsset.address}
+          address={assetWithPrice.address}
           color={color}
           isNativeAsset={assetWithPrice?.isNativeAsset}
           links={data?.links}
