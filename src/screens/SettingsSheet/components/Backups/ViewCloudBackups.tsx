@@ -10,27 +10,21 @@ import { format } from 'date-fns';
 import { Stack } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { fetchUserDataFromCloud } from '@/handlers/cloudBackup';
 import { IS_ANDROID } from '@/env';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-
-type ViewCloudBackupsParams = {
-  ViewCloudBackups: { backups: { files: Backup[] } };
-};
+import useCloudBackups from '@/hooks/useCloudBackups';
 
 const ViewCloudBackups = () => {
-  const { params } = useRoute<RouteProp<ViewCloudBackupsParams, 'ViewCloudBackups'>>();
-
-  const { backups } = params;
+  const { backups } = useCloudBackups();
   const { navigate } = useNavigation();
 
   const cloudBackups = backups.files
     .filter(backup => {
       if (IS_ANDROID) {
-        return !backup.name.includes('UserData.json');
+        return !backup.name.match(/UserData/i);
       }
 
-      return backup.isFile && backup.size > 0 && !backup.name.includes('UserData.json');
+      return backup.isFile && backup.size > 0 && !backup.name.match(/UserData/i);
     })
     .sort((a, b) => {
       return parseTimestampFromFilename(b.name) - parseTimestampFromFilename(a.name);

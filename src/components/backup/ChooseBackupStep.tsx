@@ -49,10 +49,10 @@ export function ChooseBackupStep() {
 
   const cloudBackups = backups.files.filter(backup => {
     if (IS_ANDROID) {
-      return !backup.name.includes('UserData.json');
+      return !backup.name.match(/UserData/i);
     }
 
-    return backup.isFile && backup.size > 0 && !backup.name.includes('UserData.json');
+    return backup.isFile && backup.size > 0 && !backup.name.match(/UserData/i);
   });
 
   const mostRecentBackup = cloudBackups.reduce(
@@ -90,8 +90,6 @@ export function ChooseBackupStep() {
   );
 
   const height = IS_ANDROID ? deviceHeight - top : deviceHeight - sharedCoolModalTopOffset - 48;
-
-  console.log(height);
   return (
     <Box height={{ custom: height }}>
       <MenuContainer>

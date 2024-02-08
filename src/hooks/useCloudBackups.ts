@@ -12,17 +12,17 @@ export default function useCloudBackups() {
     try {
       const isAvailable = isCloudBackupAvailable();
       if (!isAvailable) {
-        logger.debug('Cloud backup is not available');
+        logger.log('Cloud backup is not available');
         return;
       }
 
-      logger.debug('Syncing with cloud');
+      logger.log('Syncing with cloud');
       await syncCloud();
 
-      logger.debug('Fetching all backups');
+      logger.log('Fetching all backups');
       const backups = await fetchAllBackups();
 
-      logger.debug(`Retrieved ${backups.files.length} backup files`);
+      logger.log(`Retrieved ${backups.files.length} backup files`);
       setBackups(backups);
     } catch (e) {
       logger.error(new RainbowError('Failed to fetch all backups'), {
