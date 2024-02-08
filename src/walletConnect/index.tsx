@@ -181,6 +181,14 @@ export function getApprovedNamespaces(props: Parameters<typeof buildApprovedName
   try {
     const namespaces = buildApprovedNamespaces(props);
 
+    if (!namespaces.eip155.accounts.length) {
+      return {
+        success: false,
+        result: undefined,
+        error: new Error(lang.t(T.errors.no_accounts_found)),
+      };
+    }
+
     return {
       success: true,
       result: namespaces,
@@ -484,6 +492,11 @@ export async function onSessionProposal(proposal: Web3WalletTypes.SessionProposa
               });
 
               maybeGoBackAndClearHasPendingRedirect();
+              if (IS_IOS) {
+                Navigation.handleAction(Routes.WALLET_CONNECT_REDIRECT_SHEET, {
+                  type: 'connect',
+                });
+              }
             } else {
               await rejectProposal({
                 proposal,
