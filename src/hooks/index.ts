@@ -114,7 +114,6 @@ export { default as useForceUpdate } from './useForceUpdate';
 export { default as useOnAvatarPress } from './useOnAvatarPress';
 export { default as useAdditionalAssetData } from './useAdditionalAssetData';
 export { default as useImportingWallet } from './useImportingWallet';
-export { default as useCurrentNonce } from './useCurrentNonce';
 export { default as usePersistentAspectRatio } from './usePersistentAspectRatio';
 export { default as useFeesPanelInputRefs } from './useFeesPanelInputRefs';
 export { default as useHardwareBack, useHardwareBackOnFocus } from './useHardwareBack';

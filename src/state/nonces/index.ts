@@ -1,6 +1,7 @@
 import create from 'zustand';
 import { createStore } from '../internal/createStore';
 import { Network } from '@/networks/types';
+import { getProviderForNetwork } from '@/handlers/web3';
 
 type NonceData = {
   currentNonce?: number;
@@ -13,6 +14,17 @@ type GetNonceArgs = {
 };
 
 type UpdateNonceArgs = NonceData & GetNonceArgs;
+
+export async function getNextNonce({ address, network }: { address: string; network: Network }) {
+  const { getNonce } = nonceStore.getState();
+  const localNonceData = getNonce({ address, network });
+  const localNonce = localNonceData?.currentNonce || 0;
+  const provider = await getProviderForNetwork(network);
+  const txCountIncludingPending = await provider.getTransactionCount(address, 'pending');
+  if (!localNonce && !txCountIncludingPending) return 0;
+  const ret = Math.max(localNonce + 1, txCountIncludingPending);
+  return ret;
+}
 
 export interface CurrentNonceState {
   nonces: Record<string, Record<Network, NonceData>>;

@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { ButtonPressAnimation } from '../animations';
 import FastCoinIcon from '../asset-list/RecyclerAssetList2/FastComponents/FastCoinIcon';
 import FastTransactionStatusBadge from './FastTransactionStatusBadge';
-import { Bleed, Box, Inline, Text, globalColors, useColorMode } from '@/design-system';
+import { Bleed, Box, Inline, Text, globalColors } from '@/design-system';
 import { NativeCurrencyKey, RainbowTransaction } from '@/entities';
 import { ThemeContextProps } from '@/theme';
 import { useNavigation } from '@/navigation';
@@ -419,6 +419,12 @@ const sx = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     paddingLeft: 8,
+  },
+  iconContainer: {
+    elevation: 6,
+    height: 59,
+    overflow: 'visible',
+    paddingTop: 9,
   },
   bottomRow: {
     alignItems: 'flex-end',

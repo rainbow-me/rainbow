@@ -48,12 +48,10 @@ import { defaultConfig, getExperimetalFlag, LOG_PUSH } from '@/config';
 import { settingsUpdateNetwork } from '@/redux/settings';
 import { serialize } from '@/logger/logDump';
 import { isAuthenticated } from '@/utils/authentication';
-import { DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS } from '@/redux/data';
-import { saveLocalPendingTransactions } from '@/handlers/localstorage/accountLocal';
+
 import { getFCMToken } from '@/notifications/tokens';
-import { resetNonces } from '@/redux/nonceManager';
 import { removeGlobalNotificationSettings } from '@/notifications/settings/settings';
-import { pendingTransactionsStore, usePendingTransactionsStore } from '@/state/pendingTransactions';
+import { nonceStore } from '@/state/nonces';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
@@ -65,7 +63,6 @@ const DevSection = () => {
   const resetAccountState = useResetAccountState();
   const loadAccountData = useLoadAccountData();
   const initializeAccountData = useInitializeAccountData();
-  const { clearPendingTransactions } = usePendingTransactionsStore();
   const [loadingStates, setLoadingStates] = useState({
     clearLocalStorage: false,
     clearAsyncStorage: false,
@@ -181,6 +178,17 @@ const DevSection = () => {
     }
     return Promise.resolve();
   }, [walletNotificationSettings]);
+
+  const clearPendingTransactions = async () => {
+    // clear pending txs
+
+    //  TODO clear pending transactions
+
+    // reset nonces
+    const { clearNonces } = nonceStore.getState();
+
+    clearNonces();
+  };
 
   const clearLocalStorage = async () => {
     setLoadingStates(prev => ({ ...prev, clearLocalStorage: true }));

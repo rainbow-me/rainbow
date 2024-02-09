@@ -42,7 +42,6 @@ import {
   TransactionSimulationAsset,
   TransactionSimulationMeta,
   TransactionSimulationResult,
-  TransactionSimulationChange,
   TransactionScanResultType,
 } from '@/graphql/__generated__/metadataPOST';
 import { Network } from '@/networks/types';
@@ -60,7 +59,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../redux/store';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
-import { useAccountSettings, useClipboard, useCurrentNonce, useDimensions, useGas, useWallets } from '@/hooks';
+import { useAccountSettings, useClipboard, useDimensions, useGas, useWallets } from '@/hooks';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ContactAvatar } from '@/components/contacts';
 import { IS_IOS } from '@/env';
@@ -95,7 +94,7 @@ import { methodRegistryLookupAndParse } from '@/utils/methodRegistry';
 import { sanitizeTypedData } from '@/utils/signingUtils';
 import { hexToNumber, isHex } from 'viem';
 import { addNewTransaction } from '@/state/pendingTransactions';
-import { account } from '@/storage';
+import { getNextNonce } from '@/state/nonces';
 
 const COLLAPSED_CARD_HEIGHT = 56;
 const MAX_CARD_HEIGHT = 176;
@@ -347,8 +346,6 @@ export const SignTransactionSheet = () => {
     walletNames,
   ]);
 
-  const getNextNonce = useCurrentNonce(accountInfo.address, currentNetwork!);
-
   useEffect(() => {
     setCurrentNetwork(
       ethereumUtils.getNetworkFromChainId(
@@ -394,7 +391,7 @@ export const SignTransactionSheet = () => {
     (async () => {
       if (accountInfo.address && currentNetwork && !isMessageRequest && !nonceForDisplay) {
         try {
-          const nonce = await getNextNonce();
+          const nonce = await getNextNonce({ address: accountInfo.address, network: currentNetwork });
           if (nonce || nonce === 0) {
             const nonceAsString = nonce.toString();
             setNonceForDisplay(nonceAsString);
@@ -651,7 +648,7 @@ export const SignTransactionSheet = () => {
     const sendInsteadOfSign = transactionDetails.payload.method === SEND_TRANSACTION;
     const txPayload = req;
     let { gas, gasLimit: gasLimitFromPayload } = txPayload;
-
+    if (!currentNetwork) return;
     try {
       logger.debug(
         'WC: gas suggested by dapp',
@@ -685,7 +682,8 @@ export const SignTransactionSheet = () => {
     const cleanTxPayload = omitFlatten(txPayload, ['gasPrice', 'maxFeePerGas', 'maxPriorityFeePerGas']);
     const gasParams = parseGasParamsForTransaction(selectedGasFee);
     const calculatedGasLimit = gas || gasLimitFromPayload || gasLimit;
-    const nonce = await getNextNonce();
+
+    const nonce = await getNextNonce({ address: accountInfo.address, network: currentNetwork });
     let txPayloadUpdated = {
       ...cleanTxPayload,
       ...gasParams,
@@ -830,7 +828,6 @@ export const SignTransactionSheet = () => {
     req,
     selectedGasFee,
     gasLimit,
-    getNextNonce,
     provider,
     currentNetwork,
     accountInfo.address,
