@@ -86,6 +86,7 @@ export default React.memo(function FastCoinIcon({
         <Image source={ContractInteraction} style={sx.contract} />
       ) : (
         <FastFallbackCoinIconImage
+          icon={icon}
           address={resolvedAddress}
           network={resolvedNetwork}
           shadowColor={shadowColor}
