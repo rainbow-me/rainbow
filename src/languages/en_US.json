@@ -1952,7 +1952,7 @@
         }
       },
       "approvals": {
-        "no_allowance":  "No Allowance",
+        "no_allowance": "No Allowance",
         "unlimited": "Unlimited"
       },
       "no_value": "No value",
