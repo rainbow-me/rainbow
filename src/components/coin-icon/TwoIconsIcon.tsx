@@ -21,7 +21,7 @@ export function TwoCoinsIcon({
   const underSize = size * 0.75;
 
   return (
-    <Box style={{ minWidth: size, height: size }}>
+    <Box style={{ minWidth: size, height: size, marginRight: -5 }}>
       <Box
         style={{
           position: 'absolute',

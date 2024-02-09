@@ -19,11 +19,12 @@ import { TransactionType } from '@/resources/transactions/types';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToBalanceDisplay, greaterThan } from '@/helpers/utilities';
 import { TwoCoinsIcon } from '../coin-icon/TwoIconsIcon';
 import Spinner from '../Spinner';
+import * as lang from '@/languages';
 
 export const getApprovalLabel = ({ approvalAmount, asset, type }: Pick<RainbowTransaction, 'type' | 'asset' | 'approvalAmount'>) => {
   if (!approvalAmount || !asset) return;
-  if (approvalAmount === 'UNLIMITED') return 'approvals.unlimited';
-  if (type === 'revoke') return 'approvals.no_allowance';
+  if (approvalAmount === 'UNLIMITED') return lang.t(lang.l.transactions.approvals.unlimited);
+  if (type === 'revoke') return lang.t(lang.l.transactions.approvals.no_allowance);
   return `${approvalAmount} ${asset.symbol}`;
 };
 
@@ -31,7 +32,8 @@ const approvalTypeValues = (transaction: RainbowTransaction) => {
   const { asset, approvalAmount, hash, contract } = transaction;
 
   if (!asset || !approvalAmount) return;
-  return getApprovalLabel(transaction);
+  transaction.protocol;
+  return [transaction.protocol || '', getApprovalLabel(transaction)];
 
   // return [
   //   contract?.name ? (
@@ -63,7 +65,7 @@ const swapTypeValues = (changes: RainbowTransaction['changes']) => {
 
   if (!tokenIn?.asset.balance?.amount || !tokenOut?.asset.balance?.amount) return;
 
-  const valueOut = `-${convertAmountToBalanceDisplay(tokenOut?.asset.balance?.amount, { ...tokenOut?.asset })}`;
+  const valueOut = `${convertAmountToBalanceDisplay(tokenOut?.asset.balance?.amount, { ...tokenOut?.asset })}`;
   const valueIn = `+${convertAmountToBalanceDisplay(tokenIn?.asset.balance?.amount, { ...tokenIn?.asset })}`;
 
   return [valueOut, valueIn];
@@ -75,7 +77,14 @@ const activityValues = (transaction: RainbowTransaction, nativeCurrency: NativeC
   if (['approve', 'revoke'].includes(type)) return approvalTypeValues(transaction);
 
   const asset = changes?.filter(c => c?.direction === direction && c?.asset.type !== 'nft')[0]?.asset;
-  const valueSymbol = direction === 'out' ? '-' : '+';
+  let valueSymbol = direction === 'out' ? '-' : '+';
+
+  if (type === 'send') {
+    valueSymbol = '-';
+  }
+  if (type === 'receive') {
+    valueSymbol = '+';
+  }
 
   if (!asset) return;
 
@@ -85,17 +94,29 @@ const activityValues = (transaction: RainbowTransaction, nativeCurrency: NativeC
   const assetValue = convertAmountToBalanceDisplay(balance?.amount || '0', asset);
 
   const nativeBalance = convertAmountAndPriceToNativeDisplay(balance?.amount || '0', asset?.price?.value || '0', nativeCurrency);
-  const assetNativeValue = greaterThan(nativeBalance.amount, '0') ? nativeBalance?.display : 'no value';
+  const assetNativeValue = greaterThan(nativeBalance.amount, '0')
+    ? `${valueSymbol}${nativeBalance?.display}`
+    : lang.t(lang.l.transactions.no_value);
 
-  return greaterThan(nativeBalance.amount, '0') ? [assetValue, assetNativeValue] : [assetNativeValue, `${valueSymbol}${assetValue}`];
+  return greaterThan(nativeBalance.amount, '0') ? [`${assetValue}`, assetNativeValue] : [assetNativeValue, `${valueSymbol}${assetValue}`];
 };
+const getIconTopMargin = (type: TransactionType) => {
+  switch (type) {
+    case 'swap':
+      return 1;
+    case 'mint':
+      return -1;
 
+    default:
+      return 0;
+  }
+};
 const activityTypeIcon: Record<TransactionType, string> = {
   airdrop: '􀐚',
   approve: '􀁢',
   contract_interaction: '􀉆',
   receive: '􀄩',
-  send: '􀈠',
+  send: '􀈟',
   swap: '􀖅',
   bid: '􀑍',
   burn: '􀙬',
@@ -132,7 +153,7 @@ export const ActivityTypeIcon = ({
 
   if (status === 'failed')
     return (
-      <Text color={{ custom: color }} weight="semibold" size="11pt">
+      <Text color={{ custom: color }} weight="semibold" size="12pt" align="center">
         {'􀀲'}
       </Text>
     );
@@ -140,9 +161,11 @@ export const ActivityTypeIcon = ({
   const symbol = activityTypeIcon[type];
   if (!symbol) return null;
   return (
-    <Text color={{ custom: color }} weight="semibold" size="11pt">
-      {symbol}
-    </Text>
+    <View style={{ marginTop: getIconTopMargin(type) }}>
+      <Text color={{ custom: color }} weight="semibold" size="12pt">
+        {symbol}
+      </Text>
+    </View>
   );
 };
 

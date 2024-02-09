@@ -1951,6 +1951,11 @@
           "failed": "Bid Failed"
         }
       },
+      "approvals": {
+        "no_allowance":  "No Allowance",
+        "unlimited": "Unlimited"
+      },
+      "no_value": "No value",
       "savings": "Savings",
       "signed": "Signed",
       "contract_interaction": "Contract Interaction",
