@@ -11,11 +11,13 @@ import { RainbowNetworks } from '@/networks';
 import { queryClient } from '@/react-query/queryClient';
 import { getTransactionFlashbotStatus } from '@/handlers/transactions';
 import { usePendingTransactionsStore } from '@/state/pendingTransactions';
+import { useNonceStore } from '@/state/nonces';
 
 export const useWatchPendingTransactions = ({ address }: { address: string }) => {
   //const { swapRefreshAssets } = useSwapRefreshAssets();
 
   const { pendingTransactions: storePendingTransactions, setPendingTransactions } = usePendingTransactionsStore();
+  const { setNonce } = useNonceStore();
 
   const pendingTransactions = useMemo(() => storePendingTransactions[address] || [], [address, storePendingTransactions]);
 
@@ -138,20 +140,16 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
         const providerTransactionCount = await provider.getTransactionCount(address, 'latest');
         const currentProviderNonce = providerTransactionCount - 1;
         const currentNonceForChainId = highestNoncePerChainId.get(network) - 1;
+
+        setNonce({
+          address,
+          network: network,
+          currentNonce: currentProviderNonce > currentNonceForChainId ? currentProviderNonce : currentNonceForChainId,
+          latestConfirmedNonce: currentProviderNonce,
+        });
       });
-      // need to set nonce
-      //     setNonce({
-      //       address,
-      //       chainId,
-      //       currentNonce:
-      //         currentProviderNonce > currentNonceForChainId
-      //           ? currentProviderNonce
-      //           : currentNonceForChainId,
-      //       latestConfirmedNonce: currentProviderNonce,
-      //     });
-      //   });
     },
-    [address]
+    [address, setNonce]
   );
 
   const watchPendingTransactions = useCallback(async () => {

@@ -113,6 +113,7 @@ export type NewTransaction = Omit<RainbowTransaction, 'title' | 'changes'> & {
     isBridge: boolean;
   };
   meta?: SwapMetadata;
+  nonce: number;
 };
 
 export interface RainbowTransactionFee {
