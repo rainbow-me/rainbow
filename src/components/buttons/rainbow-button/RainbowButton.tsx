@@ -43,7 +43,7 @@ const ButtonContent = styled(RowWithMargins).attrs({
 
 const ButtonLabel = styled(Text).attrs(({ disabled, type, theme: { colors, isDarkMode } }: any) => ({
   align: type === RainbowButtonTypes.addCash ? 'left' : 'center',
-  color: isDarkMode && disabled ? colors.white : colors.whiteLabel,
+  color: isDarkMode && disabled ? colors.white : !isDarkMode && disabled ? colors.grey : colors.whiteLabel,
   letterSpacing: type === RainbowButtonTypes.addCash ? 'roundedTight' : 'rounded',
   size: type === RainbowButtonTypes.small ? 'large' : 'larger',
   weight: type === RainbowButtonTypes.small ? 'bold' : 'heavy',
