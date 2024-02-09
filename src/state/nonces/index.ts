@@ -2,7 +2,6 @@ import create from 'zustand';
 import { createStore } from '../internal/createStore';
 import { Network } from '@/networks/types';
 import { getProviderForNetwork } from '@/handlers/web3';
-import store from '@/redux/store';
 
 type NonceData = {
   currentNonce?: number;
