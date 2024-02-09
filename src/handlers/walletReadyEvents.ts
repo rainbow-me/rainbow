@@ -61,8 +61,6 @@ export const runWalletBackupStatusChecks = () => {
 
   // if one of them is selected, show the default BackupSheet
   if (selected && hasSelectedWallet && IS_TESTING !== 'true') {
-    logger.debug('showing default BackupSheet');
-
     let stepType: string = WalletBackupStepTypes.no_provider;
     if (backupProvider === walletBackupTypes.cloud) {
       stepType = WalletBackupStepTypes.backup_now_to_cloud;
@@ -71,6 +69,7 @@ export const runWalletBackupStatusChecks = () => {
     }
 
     setTimeout(() => {
+      logger.debug(`showing ${stepType} backup sheet for selected wallet`);
       triggerOnSwipeLayout(() =>
         Navigation.handleAction(Routes.BACKUP_SHEET, {
           step: stepType,
