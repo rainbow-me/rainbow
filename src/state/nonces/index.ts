@@ -16,16 +16,12 @@ type GetNonceArgs = {
 
 type UpdateNonceArgs = NonceData & GetNonceArgs;
 
-export async function getNextNonce({ address, network }: { address?: string; network: Network }) {
-  const { accountAddress } = store.getState().settings;
-
-  const addressToUse = address || accountAddress;
-
+export async function getNextNonce({ address, network }: { address: string; network: Network }) {
   const { getNonce } = nonceStore.getState();
-  const localNonceData = getNonce({ address: addressToUse, network });
+  const localNonceData = getNonce({ address, network });
   const localNonce = localNonceData?.currentNonce || 0;
   const provider = await getProviderForNetwork(network);
-  const txCountIncludingPending = await provider.getTransactionCount(addressToUse, 'pending');
+  const txCountIncludingPending = await provider.getTransactionCount(address, 'pending');
   if (!localNonce && !txCountIncludingPending) return 0;
   const ret = Math.max(localNonce + 1, txCountIncludingPending);
   return ret;

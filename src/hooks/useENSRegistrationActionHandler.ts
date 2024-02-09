@@ -93,7 +93,7 @@ export default function useENSRegistrationActionHandler(
       const salt = generateSalt();
 
       const [nonce, rentPrice] = await Promise.all([
-        getNextNonce({ network: Network.mainnet }),
+        getNextNonce({ network: Network.mainnet, address: accountAddress }),
         getRentPrice(registrationParameters.name.replace(ENS_DOMAIN, ''), duration),
       ]);
 
@@ -148,7 +148,7 @@ export default function useENSRegistrationActionHandler(
       }
 
       const [nonce, rentPrice, changedRecords] = await Promise.all([
-        getNextNonce({ network: Network.mainnet }),
+        getNextNonce({ network: Network.mainnet, address: accountAddress }),
         getRentPrice(name.replace(ENS_DOMAIN, ''), duration),
         uploadRecordImages(registrationParameters.changedRecords, {
           avatar: avatarMetadata,
@@ -183,7 +183,7 @@ export default function useENSRegistrationActionHandler(
         return;
       }
 
-      const nonce = await getNextNonce({ network: Network.mainnet });
+      const nonce = await getNextNonce({ network: Network.mainnet, address: accountAddress });
       const rentPrice = await getRentPrice(name.replace(ENS_DOMAIN, ''), duration);
 
       const registerEnsRegistrationParameters: ENSActionParameters = {
@@ -195,7 +195,7 @@ export default function useENSRegistrationActionHandler(
 
       await executeRap(wallet, RapActionTypes.renewENS, registerEnsRegistrationParameters, callback);
     },
-    [duration, registrationParameters]
+    [accountAddress, duration, registrationParameters]
   );
 
   const setNameAction = useCallback(
@@ -208,7 +208,7 @@ export default function useENSRegistrationActionHandler(
         return;
       }
 
-      const nonce = await getNextNonce({ network: Network.mainnet });
+      const nonce = await getNextNonce({ network: Network.mainnet, address: accountAddress });
 
       const registerEnsRegistrationParameters: ENSActionParameters = {
         ...formatENSActionParams(registrationParameters),
@@ -231,7 +231,7 @@ export default function useENSRegistrationActionHandler(
       }
 
       const [nonce, changedRecords, resolver] = await Promise.all([
-        getNextNonce({ network: Network.mainnet }),
+        getNextNonce({ network: Network.mainnet, address: accountAddress }),
         uploadRecordImages(registrationParameters.changedRecords, {
           avatar: avatarMetadata,
           header: coverMetadata,
@@ -269,7 +269,7 @@ export default function useENSRegistrationActionHandler(
         return;
       }
 
-      const nonce = await getNextNonce({ network: Network.mainnet });
+      const nonce = await getNextNonce({ network: Network.mainnet, address: accountAddress });
 
       const transferEnsParameters: ENSActionParameters = {
         ...formatENSActionParams({

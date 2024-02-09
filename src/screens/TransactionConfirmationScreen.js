@@ -85,7 +85,6 @@ import { handleSessionRequestResponse } from '@/walletConnect';
 import { isAddress } from '@ethersproject/address';
 import { logger, RainbowError } from '@/logger';
 import { getNetworkObj } from '@/networks';
-import { IS_IOS } from '@/env';
 import { getNextNonce } from '@/state/nonces';
 
 const springConfig = {
@@ -653,7 +652,6 @@ export default function TransactionConfirmationScreen() {
     params,
     selectedGasFee,
     gasLimit,
-    getNextNonce,
     provider,
     accountInfo.address,
     accountInfo.isHardwareWallet,
