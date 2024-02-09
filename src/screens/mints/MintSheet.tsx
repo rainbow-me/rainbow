@@ -55,6 +55,7 @@ import { getRainbowFeeAddress } from '@/resources/reservoir/utils';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { getUniqueId } from '@/utils/ethereumUtils';
+import { getNextNonce } from '@/state/nonces';
 
 const NFT_IMAGE_HEIGHT = 250;
 // inset * 2 -> 28 *2
@@ -360,6 +361,7 @@ const MintSheet = () => {
     });
 
     const feeAddress = getRainbowFeeAddress(currentNetwork);
+    const nonce = await getNextNonce({ address: accountAddress, network: currentNetwork });
     try {
       await getClient()?.actions.buyToken({
         items: [
@@ -408,7 +410,7 @@ const MintSheet = () => {
                   from: item.data?.from,
                   hash: item.txHashes[0],
                   network: currentNetwork,
-
+                  nonce,
                   changes: [
                     {
                       direction: 'out',

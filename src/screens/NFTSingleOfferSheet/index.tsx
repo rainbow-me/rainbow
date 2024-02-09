@@ -50,6 +50,7 @@ import { nftOffersQueryKey } from '@/resources/reservoir/nftOffersQuery';
 import { getRainbowFeeAddress } from '@/resources/reservoir/utils';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { getUniqueId } from '@/utils/ethereumUtils';
+import { getNextNonce } from '@/state/nonces';
 
 const NFT_IMAGE_HEIGHT = 160;
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
@@ -265,6 +266,8 @@ export function NFTSingleOfferSheet() {
       chain: networkObj,
       transport: http(networkObj.rpc),
     });
+    const nonce = await getNextNonce({ address: accountAddress, network });
+
     getClient()?.actions.acceptOffer({
       items: [
         {
@@ -323,6 +326,7 @@ export function NFTSingleOfferSheet() {
                   from: item.data?.from,
                   hash: item.txHashes[0],
                   network: offer.network as Network,
+                  nonce,
                   asset: {
                     ...offer.paymentToken,
                     network: offer.network as Network,
@@ -347,12 +351,14 @@ export function NFTSingleOfferSheet() {
                   type: 'sale',
                 };
               } else if (step.id === 'nft-approval') {
+                // may need to check if we need another nonce increment here. i think so
                 tx = {
                   status: 'pending',
                   to: item.data?.to,
                   from: item.data?.from,
                   hash: item.txHashes[0],
                   network: offer.network as Network,
+                  nonce,
                   asset,
                   type: 'approve',
                 };
@@ -389,7 +395,7 @@ export function NFTSingleOfferSheet() {
       },
     });
     navigate(Routes.PROFILE_SCREEN);
-  }, [accountAddress, dispatch, feeParam, navigate, network, nft, offer, rainbowFeeDecimal]);
+  }, [accountAddress, feeParam, navigate, network, nft, offer, rainbowFeeDecimal]);
 
   return (
     <BackgroundProvider color="surfaceSecondary">
