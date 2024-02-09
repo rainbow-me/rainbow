@@ -30,6 +30,8 @@ import { deriveAccountFromWalletInput } from '@/utils/wallet';
 import { logger as Logger, RainbowError } from '@/logger';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
+import { checkWalletsForBackupStatus } from '@/screens/SettingsSheet/utils';
+import walletBackupTypes from '@/helpers/walletBackupTypes';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();
@@ -300,10 +302,18 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                         isValidBluetoothDeviceId(input)
                       )
                     ) {
+                      const { backupProvider } = checkWalletsForBackupStatus(wallets);
+
+                      let stepType: string = WalletBackupStepTypes.no_provider;
+                      if (backupProvider === walletBackupTypes.cloud) {
+                        stepType = WalletBackupStepTypes.backup_now_to_cloud;
+                      } else if (backupProvider === walletBackupTypes.manual) {
+                        stepType = WalletBackupStepTypes.backup_now_manually;
+                      }
+
                       IS_TESTING !== 'true' &&
                         Navigation.handleAction(Routes.BACKUP_SHEET, {
-                          single: true,
-                          step: WalletBackupStepTypes.imported,
+                          step: stepType,
                         });
                     }
                   }, 1000);
