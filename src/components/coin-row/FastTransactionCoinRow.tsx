@@ -17,7 +17,7 @@ import { address } from '@/utils/abbreviations';
 import { Colors } from '@/styles';
 import { TransactionType } from '@/resources/transactions/types';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToBalanceDisplay, greaterThan } from '@/helpers/utilities';
-import { TwoCoinsIcon } from '../coin-icon/TwoIconsIcon';
+import { TwoCoinsIcon } from '../coin-icon/TwoCoinsIcon';
 import Spinner from '../Spinner';
 import * as lang from '@/languages';
 
@@ -257,7 +257,7 @@ export const ActivityIcon = ({
     const inAsset = transaction?.changes?.find(a => a?.direction === 'in')?.asset;
     const outAsset = transaction?.changes?.find(a => a?.direction === 'out')?.asset;
 
-    if (!!inAsset && !!outAsset) return <TwoCoinsIcon over={inAsset} under={outAsset} badge={badge} />;
+    if (!!inAsset?.icon_url && !!outAsset?.icon_url) return <TwoCoinsIcon over={inAsset} under={outAsset} badge={badge} />;
   }
   if (transaction?.contract?.iconUrl) {
     return (
