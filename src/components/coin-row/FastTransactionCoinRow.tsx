@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { ButtonPressAnimation } from '../animations';
 import FastCoinIcon from '../asset-list/RecyclerAssetList2/FastComponents/FastCoinIcon';
 import FastTransactionStatusBadge from './FastTransactionStatusBadge';
-import { Bleed, Box, Inline, Text, globalColors } from '@/design-system';
+import { Bleed, Box, Inline, Text, globalColors, useForegroundColor } from '@/design-system';
 import { NativeCurrencyKey, RainbowTransaction } from '@/entities';
 import { ThemeContextProps } from '@/theme';
 import { useNavigation } from '@/navigation';
@@ -179,6 +179,7 @@ const BottomRow = React.memo(function BottomRow({
   theme: ThemeContextProps;
 }) {
   const { type, to, asset } = transaction;
+  const separatorSecondary = useForegroundColor('separatorSecondary');
 
   let description = transaction.description;
   let tag: string | undefined;
@@ -208,12 +209,12 @@ const BottomRow = React.memo(function BottomRow({
             {description}
           </Text>
           {tag && (
-            <Bleed vertical="4px">
+            <Bleed vertical={{ custom: 5 }}>
               <Box
                 style={{
                   borderWidth: 1.5,
-                  borderColor: `#09111F0D`,
-                  borderRadius: 7,
+                  borderColor: theme.colors.alpha(separatorSecondary, 0.2),
+                  borderRadius: 8,
                 }}
                 justifyContent="center"
                 alignItems="center"
