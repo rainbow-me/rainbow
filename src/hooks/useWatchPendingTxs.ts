@@ -154,7 +154,6 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
 
   const watchPendingTransactions = useCallback(async () => {
     if (!pendingTransactions?.length) return;
-    console.log('watching pending txs');
     const updatedPendingTransactions = await Promise.all(
       pendingTransactions.map((tx: RainbowTransaction) => processPendingTransaction(tx))
     );
@@ -177,7 +176,6 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
     );
 
     if (minedTransactions.length) {
-      console.log('we mined a transaction');
       const chainIds = RainbowNetworks.filter(network => network.enabled && network.networkType !== 'testnet').map(network => network.id);
       await queryClient.refetchQueries({
         queryKey: consolidatedTransactionsQueryKey({
