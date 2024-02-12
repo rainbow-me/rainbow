@@ -122,39 +122,15 @@ const ViewWalletBackup = () => {
                 const name = args?.name ?? '';
                 const color = args?.color ?? null;
                 // Check if the selected wallet is the primary
-                let primaryWalletKey = wallet?.primary ? wallet.id : null;
-
-                // If it's not, then find it
-                !primaryWalletKey &&
-                  Object.keys(wallets || {}).some(key => {
-                    const wallet = wallets?.[key];
-                    if (wallet?.type === WalletTypes.mnemonic && wallet.primary) {
-                      primaryWalletKey = key;
-                      return true;
-                    }
-                    return false;
-                  });
-
-                // If there's no primary wallet at all,
-                // we fallback to an imported one with a seed phrase
-                !primaryWalletKey &&
-                  Object.keys(wallets as any).some(key => {
-                    const wallet = wallets?.[key];
-                    if (wallet?.type === WalletTypes.mnemonic && wallet.imported) {
-                      primaryWalletKey = key;
-                      return true;
-                    }
-                    return false;
-                  });
                 try {
                   // If we found it and it's not damaged use it to create the new account
-                  if (primaryWalletKey && !wallets?.[primaryWalletKey].damaged) {
-                    const newWallets = await dispatch(createAccountForWallet(primaryWalletKey, color, name));
+                  if (wallet && !wallet.damaged) {
+                    const newWallets = await dispatch(createAccountForWallet(wallet.id, color, name));
                     // @ts-ignore
                     await initializeWallet();
                     // If this wallet was previously backed up to the cloud
                     // We need to update userData backup so it can be restored too
-                    if (wallets?.[primaryWalletKey].backedUp && wallets[primaryWalletKey].backupType === walletBackupTypes.cloud) {
+                    if (wallet.backedUp && wallet.backupType === walletBackupTypes.cloud) {
                       try {
                         await backupUserDataIntoCloud({ wallets: newWallets });
                       } catch (e) {
@@ -204,7 +180,7 @@ const ViewWalletBackup = () => {
         description: 'Error while trying to add account',
       });
     }
-  }, [creatingWallet, dispatch, isDamaged, navigate, initializeWallet, profilesEnabled, wallets, wallet]);
+  }, [creatingWallet, dispatch, isDamaged, navigate, initializeWallet, profilesEnabled, wallet]);
 
   const handleCopyAddress = React.useCallback(
     (address: string) => {
