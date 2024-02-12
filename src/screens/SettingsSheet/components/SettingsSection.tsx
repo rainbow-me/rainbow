@@ -161,12 +161,12 @@ const SettingsSection = ({
       return undefined;
     }
 
-    if (areBackedUp && backupProvider === walletBackupTypes.cloud) {
+    if (backupProvider === walletBackupTypes.cloud) {
       return CloudBackupWarningIcon;
     }
 
     return BackupWarningIcon;
-  }, [allBackedUp, areBackedUp, backupProvider]);
+  }, [allBackedUp, backupProvider]);
 
   return (
     <MenuContainer testID="settings-menu-container" Footer={<AppVersionStamp />}>

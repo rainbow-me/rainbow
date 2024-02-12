@@ -225,7 +225,7 @@ export const WalletsAndBackup = () => {
                   />
                   <MenuItem
                     key={key}
-                    size={numAccounts > 3 ? 52 * (numAccounts / 3) : 52}
+                    size={numAccounts > 3 ? (IS_IOS ? 52 : 64) * (numAccounts / 3) : 52}
                     disabled
                     titleComponent={
                       <Inline wrap verticalSpace="4px" horizontalSpace="4px">
@@ -385,7 +385,7 @@ export const WalletsAndBackup = () => {
                   />
                   <MenuItem
                     key={key}
-                    size={numAccounts > 3 ? 52 * (numAccounts / 3) : 52}
+                    size={numAccounts > 3 ? (IS_IOS ? 52 : 64) * (numAccounts / 3) : 52}
                     disabled
                     width="full"
                     titleComponent={
@@ -485,7 +485,7 @@ export const WalletsAndBackup = () => {
                 />
                 <MenuItem
                   key={key}
-                  size={numAccounts > 3 ? 52 * (numAccounts / 3) : 52}
+                  size={numAccounts > 3 ? (IS_IOS ? 52 : 64) * (numAccounts / 3) : 52}
                   disabled
                   titleComponent={
                     <Inline verticalSpace="4px" horizontalSpace="4px">
