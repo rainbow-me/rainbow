@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import WalletTypes from '@/helpers/walletTypes';
-import { RainbowWallet } from '@/model/wallet';
+import { RainbowAccount, RainbowWallet } from '@/model/wallet';
 
 type WalletByKey = {
   [key: string]: RainbowWallet;
@@ -14,7 +14,7 @@ type UseVisibleWalletProps = {
 type AmendedRainbowWallet = RainbowWallet & {
   name: string;
   isBackedUp: boolean | undefined;
-  accounts: any[];
+  accounts: RainbowAccount[];
   key: string;
   label: string;
   numAccounts: number;

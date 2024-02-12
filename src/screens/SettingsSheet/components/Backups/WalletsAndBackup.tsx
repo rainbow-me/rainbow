@@ -8,14 +8,15 @@ import CloudBackupWarningIcon from '@/assets/CloudBackupWarning.png';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import WalletTypes from '@/helpers/walletTypes';
-import { useInitializeWallet, useManageCloudBackups, useWallets } from '@/hooks';
+import ImageAvatar from '@/components/contacts/ImageAvatar';
+import { useENSAvatar, useInitializeWallet, useManageCloudBackups, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { abbreviations } from '@/utils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import * as i18n from '@/languages';
 import MenuHeader from '../MenuHeader';
 import { checkWalletsForBackupStatus } from '../../utils';
-import { Inline, Text, Box, Stack } from '@/design-system';
+import { Inline, Text, Box, Stack, Bleed } from '@/design-system';
 import { ContactAvatar } from '@/components/contacts';
 import { useTheme } from '@/theme';
 import Routes from '@/navigation/routesNames';
@@ -25,11 +26,51 @@ import { useVisibleWallets } from '../../useVisibleWallets';
 import { format } from 'date-fns';
 import useCloudBackups from '@/hooks/useCloudBackups';
 import { SETTINGS_BACKUP_ROUTES } from './routes';
-import { createWallet } from '@/model/wallet';
+import { RainbowAccount, createWallet } from '@/model/wallet';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { useDispatch } from 'react-redux';
 import { walletsLoadState } from '@/redux/wallets';
 import { RainbowError, logger } from '@/logger';
+import { IS_IOS } from '@/env';
+
+type WalletPillProps = {
+  account: RainbowAccount;
+};
+
+const WalletPill = ({ account }: WalletPillProps) => {
+  const { data: ENSAvatar } = useENSAvatar(account.label);
+  const { colors, isDarkMode } = useTheme();
+
+  const accountImage = addressHashedEmoji(account.address);
+
+  return (
+    <Box
+      key={account.address}
+      flexDirection="row"
+      alignItems="center"
+      backgroundColor={colors.alpha(colors.grey, 0.4)}
+      borderRadius={23}
+      shadowColor={isDarkMode ? colors.shadow : colors.alpha(colors.blueGreyDark, 0.1)}
+      elevation={12}
+      shadowOpacity={IS_IOS ? 0.4 : 1}
+      shadowRadius={6}
+      paddingLeft={{ custom: 4 }}
+      paddingRight={{ custom: 8 }}
+      padding={{ custom: 4 }}
+    >
+      {ENSAvatar?.imageUrl ? (
+        <ImageAvatar image={ENSAvatar.imageUrl} marginRight={4} size="smaller_shadowless" />
+      ) : (
+        <ContactAvatar alignSelf="center" color={account.color} marginRight={4} size="smaller" value={accountImage} />
+      )}
+      <Text color={'secondary (Deprecated)'} size="11pt" weight="semibold">
+        {account.label.endsWith('.eth')
+          ? abbreviations.abbreviateEnsForDisplay(account.label, 0, 8) ?? ''
+          : abbreviations.address(account.address, 3, 5) ?? ''}
+      </Text>
+    </Box>
+  );
+};
 
 export const WalletsAndBackup = () => {
   const { colors, isDarkMode } = useTheme();
@@ -311,6 +352,7 @@ export const WalletsAndBackup = () => {
                     hasRightArrow
                     key={key}
                     hasSfSymbol
+                    width="full"
                     labelComponent={
                       <Inline
                         space="4px"
@@ -343,39 +385,14 @@ export const WalletsAndBackup = () => {
                   />
                   <MenuItem
                     key={key}
-                    size={numAccounts > 3 ? 64 * (numAccounts / 3) : 52}
+                    size={numAccounts > 3 ? 52 * (numAccounts / 3) : 52}
                     disabled
+                    width="full"
                     titleComponent={
-                      <Inline verticalSpace="4px" horizontalSpace="4px">
-                        {accounts.map(({ address, label, color }) => {
-                          return (
-                            <Box
-                              key={address}
-                              flexDirection="row"
-                              alignItems="center"
-                              backgroundColor={colors.alpha(colors.grey, 0.4)}
-                              borderRadius={23}
-                              shadowColor={isDarkMode ? colors.shadow : colors.alpha(colors.blueGreyDark, 0.1)}
-                              elevation={12}
-                              shadowOpacity={ios ? 0.4 : 1}
-                              shadowRadius={6}
-                              paddingLeft={{ custom: 4 }}
-                              paddingRight={{ custom: 8 }}
-                              padding={{ custom: 4 }}
-                            >
-                              <ContactAvatar
-                                alignSelf="center"
-                                color={color}
-                                marginRight={4}
-                                size="smaller"
-                                value={addressHashedEmoji(address)}
-                              />
-                              <Text color={'secondary (Deprecated)'} size="11pt" weight="semibold">
-                                {label.endsWith('.eth') ? removeFirstEmojiFromString(label) : abbreviations.address(address, 3, 5) || ''}
-                              </Text>
-                            </Box>
-                          );
-                        })}
+                      <Inline wrap verticalSpace="4px" horizontalSpace="4px">
+                        {accounts.map(account => (
+                          <WalletPill key={account.address} account={account} />
+                        ))}
                       </Inline>
                     }
                   />

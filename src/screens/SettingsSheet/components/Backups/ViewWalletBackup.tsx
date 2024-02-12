@@ -13,8 +13,7 @@ import MenuItem from '../MenuItem';
 import BackupWarningIcon from '@/assets/BackupWarning.png';
 import CloudBackedUpIcon from '@/assets/BackedUpCloud.png';
 import ManuallyBackedUpIcon from '@/assets/ManuallyBackedUp.png';
-import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
-import { useInitializeWallet, useWallets } from '@/hooks';
+import { useENSAvatar, useInitializeWallet, useWallets } from '@/hooks';
 import { abbreviations } from '@/utils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import MenuHeader from '../MenuHeader';
@@ -35,10 +34,11 @@ import { createAccountForWallet, walletsLoadState } from '@/redux/wallets';
 import { backupUserDataIntoCloud } from '@/handlers/cloudBackup';
 import { logger, RainbowError } from '@/logger';
 import { captureException } from '@sentry/react-native';
-import { createWallet } from '@/model/wallet';
+import { RainbowAccount, createWallet } from '@/model/wallet';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import showWalletErrorAlert from '@/helpers/support';
 import { IS_IOS } from '@/env';
+import ImageAvatar from '@/components/contacts/ImageAvatar';
 
 type ViewWalletBackupParams = {
   ViewWalletBackup: { walletId: string; title: string; imported?: boolean };
@@ -54,6 +54,21 @@ type MenuEvent = {
     actionKey: WalletMenuAction;
   };
   address: string;
+};
+
+type WalletAvatarProps = {
+  account: RainbowAccount;
+};
+
+const WalletAvatar = ({ account }: WalletAvatarProps) => {
+  const { data: ENSAvatar } = useENSAvatar(account.label);
+  const accountImage = addressHashedEmoji(account.address);
+
+  return ENSAvatar?.imageUrl ? (
+    <ImageAvatar image={ENSAvatar.imageUrl} marginRight={12} size="rewards" />
+  ) : (
+    <ContactAvatar alignSelf="center" color={account.color} marginRight={8} size="small" value={accountImage} />
+  );
 };
 
 const ViewWalletBackup = () => {
@@ -342,31 +357,31 @@ const ViewWalletBackup = () => {
         <Menu>
           {wallet?.addresses
             .filter(a => a.visible)
-            .map(({ address, label, image, color, avatar }) => (
+            .map((account: RainbowAccount) => (
               <MenuItem
-                key={address}
+                key={account.address}
                 size={60}
                 disabled
-                leftComponent={
-                  <ContactAvatar
-                    address={address}
-                    avatar={avatar}
-                    color={color}
-                    image={image}
-                    size="small"
-                    value={addressHashedEmoji(address)}
-                  />
+                leftComponent={<WalletAvatar account={account} />}
+                labelComponent={
+                  account.label.endsWith('.eth') ? <MenuItem.Label text={abbreviations.address(account.address, 3, 5) || ''} /> : null
                 }
-                labelComponent={label.endsWith('.eth') ? <MenuItem.Label text={abbreviations.address(address, 3, 5) || ''} /> : null}
                 titleComponent={
                   <MenuItem.Title
-                    text={label.endsWith('.eth') ? removeFirstEmojiFromString(label) : abbreviations.address(address, 3, 5) || ''}
+                    text={
+                      account.label.endsWith('.eth')
+                        ? abbreviations.abbreviateEnsForDisplay(account.label, 0, 8) ?? ''
+                        : abbreviations.address(account.address, 3, 5) ?? ''
+                    }
                     weight="semibold"
                   />
                 }
                 rightComponent={
                   IS_IOS ? (
-                    <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={(e: MenuEvent) => onPressMenuItem({ ...e, address })}>
+                    <ContextMenuButton
+                      menuConfig={menuConfig}
+                      onPressMenuItem={(e: MenuEvent) => onPressMenuItem({ ...e, address: account.address })}
+                    >
                       <MenuItem.TextIcon icon="􀍡" />
                     </ContextMenuButton>
                   ) : (
@@ -374,7 +389,7 @@ const ViewWalletBackup = () => {
                       options={menuConfig.menuItems.map(item => item.actionTitle)}
                       onPressActionSheet={(buttonIndex: number) => {
                         const actionKey = menuConfig.menuItems[buttonIndex].actionKey;
-                        onPressMenuItem({ nativeEvent: { actionKey }, address });
+                        onPressMenuItem({ nativeEvent: { actionKey }, address: account.address });
                       }}
                     >
                       <MenuItem.TextIcon icon="􀍡" />

@@ -180,7 +180,7 @@ const MenuItem = ({
       testID={disabled ? testID : undefined}
       width="full"
     >
-      <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
+      <Inline alignHorizontal="justify" alignVertical="center">
         <Box flexShrink={1}>
           <Inline alignVertical="center" wrap={false}>
             {leftComponent && (

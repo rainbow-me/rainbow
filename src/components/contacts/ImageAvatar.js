@@ -55,6 +55,11 @@ const sizeConfigs = (accentColor, colors, isDarkMode) => ({
     dimensions: 20,
     textSize: 'small',
   },
+  smaller_shadowless: {
+    dimensions: 20,
+    textSize: 'small',
+    shadow: [[0, 0, 0, colors.shadow, 0]],
+  },
   smedium: {
     dimensions: 36,
     shadow: [[0, 4, IS_ANDROID ? 5 : 12, colors.shadow, 0.4]],
