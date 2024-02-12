@@ -17,7 +17,6 @@ export const pendingTransactionsStore = createStore<PendingTransactionsState>(
   (set, get) => ({
     pendingTransactions: {},
     addPendingTransaction: ({ address, pendingTransaction }) => {
-      console.log('adding pending transaction');
       const { pendingTransactions: currentPendingTransactions } = get();
       const addressPendingTransactions = currentPendingTransactions[address] || [];
       set({
@@ -78,7 +77,6 @@ export const addNewTransaction = ({
   network: Network;
   transaction: NewTransaction;
 }) => {
-  console.log('adding new transaction');
   const { addPendingTransaction } = pendingTransactionsStore.getState();
   const { setNonce } = nonceStore.getState();
   const parsedTransaction = parseNewTransaction(transaction);

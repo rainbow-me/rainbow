@@ -46,11 +46,7 @@ export function TwoCoinsIcon({
             size={underSize}
           />
         </Box>
-        <Box
-          //   borderColor="surfaceSecondary"
-          borderRadius={100}
-          style={{ zIndex: 10, position: 'absolute', top: 0, right: 0 }}
-        >
+        <Box borderRadius={100} style={{ zIndex: 10, position: 'absolute', top: 0, right: 0 }}>
           <ImgixImage
             source={{ uri: over?.icon_url }}
             style={{

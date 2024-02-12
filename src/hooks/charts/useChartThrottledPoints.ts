@@ -99,6 +99,7 @@ export default function useChartThrottledPoints({
   } = usePriceChart({
     address: asset.address,
     network: asset.network,
+    mainnetAddress: asset?.mainnet_address || asset?.mainnetAddress,
   });
   const [throttledPoints, setThrottledPoints] = useState(() => traverseData({ nativePoints: [], points: [] }, chart));
 

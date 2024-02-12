@@ -44,7 +44,7 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({ transact
       <TransactionDetailsDivider />
       <Box paddingVertical="20px">
         <Stack space="20px">
-          {true && (
+          {value && (
             <DoubleLineTransactionDetailsRow
               leftComponent={
                 assetData?.type === 'nft' ? (

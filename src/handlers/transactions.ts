@@ -98,7 +98,7 @@ export const getTransactionFlashbotStatus = async (
     if (flashbotsStatus === 'FAILED' || flashbotsStatus === 'CANCELLED') {
       const status = 'failed';
       const minedAt = Math.floor(Date.now() / 1000);
-      const title = `transactions.${transaction.type}.failed`;
+      const title = `${transaction.type}.failed`;
       return { flashbotsStatus, status, minedAt, title };
     }
   } catch (e) {

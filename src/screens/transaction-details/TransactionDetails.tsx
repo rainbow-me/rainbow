@@ -8,15 +8,12 @@ import { BackgroundProvider, Box } from '@/design-system';
 import { TransactionDetailsValueAndFeeSection } from '@/screens/transaction-details/components/TransactionDetailsValueAndFeeSection';
 import { TransactionDetailsHashAndActionsSection } from '@/screens/transaction-details/components/TransactionDetailsHashAndActionsSection';
 import { TransactionDetailsFromToSection } from '@/screens/transaction-details/components/TransactionDetailsFromToSection';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import * as i18n from '@/languages';
 import { TransactionDetailsStatusActionsAndTimestampSection } from '@/screens/transaction-details/components/TransactionDetailsStatusActionsAndTimestampSection';
 import { useTransactionDetailsToasts } from '@/screens/transaction-details/hooks/useTransactionDetailsToasts';
 import { LayoutChangeEvent } from 'react-native';
 import { useDimensions } from '@/hooks';
-import { useTransaction } from '@/resources/transactions/transaction';
-import { Network } from '@/networks/types';
 
 type RouteParams = {
   TransactionDetails: {
@@ -30,11 +27,8 @@ export const TransactionDetails = () => {
   const route = useRoute<RouteProp<RouteParams, 'TransactionDetails'>>();
   const { setParams } = navigation;
   const { transaction: tx } = route.params;
-  const { data } = useTransaction({
-    hash: tx.hash || '',
-    network: tx.network || Network.mainnet,
-  });
-  const transaction = data!;
+
+  const transaction = tx;
   const [sheetHeight, setSheetHeight] = useState(0);
   const [statusIconHidden, setStatusIconHidden] = useState(false);
   const { presentedToast, presentToastFor } = useTransactionDetailsToasts();

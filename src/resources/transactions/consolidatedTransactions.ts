@@ -24,7 +24,7 @@ export type ConsolidatedTransactionsArgs = {
 // Query Key
 
 export const consolidatedTransactionsQueryKey = ({ address, currency, chainIds }: ConsolidatedTransactionsArgs) =>
-  createQueryKey('consolidatedTransactionss', { address, currency, chainIds }, { persisterVersion: 1 });
+  createQueryKey('consolidatedTransactions', { address, currency, chainIds }, { persisterVersion: 1 });
 
 type ConsolidatedTransactionsQueryKey = ReturnType<typeof consolidatedTransactionsQueryKey>;
 

@@ -201,6 +201,7 @@ const BottomRow = React.memo(function BottomRow({
   if (nftChangesAmount) tag = nftChangesAmount.toString();
 
   const [topValue, bottomValue] = activityValues(transaction, nativeCurrency) ?? [];
+
   return (
     <View style={sx.bottomRow}>
       <View style={sx.description}>

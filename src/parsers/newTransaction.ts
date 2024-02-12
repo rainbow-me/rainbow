@@ -79,7 +79,7 @@ export const parseNewTransaction = async (
     sourceAmount,
     status,
     symbol: asset?.symbol ?? null,
-    title: 'oops',
+    title: `${type}.${status}`,
     to,
     transferId,
     txTo: txTo || to,

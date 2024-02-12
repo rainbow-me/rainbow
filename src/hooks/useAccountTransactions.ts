@@ -28,14 +28,14 @@ export default function useAccountTransactions() {
 
   const pendingTransactions = useMemo(() => {
     const txs = storePendingTransactions[accountAddress] || [];
-    console.log('PENDING: ', txs);
     return txs;
   }, [accountAddress, storePendingTransactions]);
 
-  const { data, fetchNextPage } = useConsolidatedTransactions({
+  const { data, fetchNextPage, hasNextPage } = useConsolidatedTransactions({
     address: accountAddress,
     currency: nativeCurrency,
   });
+
   const pages = data?.pages;
 
   const transactions: RainbowTransaction[] = useMemo(() => pages?.flatMap(p => p.transactions) || [], [pages]);
@@ -43,23 +43,6 @@ export default function useAccountTransactions() {
   const allTransactions = useMemo(() => pendingTransactions.concat(transactions), [pendingTransactions, transactions]);
 
   const slicedTransaction = useMemo(() => allTransactions, [allTransactions]);
-
-  const mainnetAddresses = useMemo(
-    () =>
-      userAssets
-        ? slicedTransaction.reduce((acc: { [key: string]: string }, txn: RainbowTransaction) => {
-            if (txn?.network && txn?.address) {
-              const asset = userAssets[`${txn.address}_${txn.network}`]?.mainnet_address;
-              if (asset) {
-                acc[`${txn.address}_${txn.network}`] = asset;
-              }
-            }
-
-            return acc;
-          }, {})
-        : {},
-    [userAssets, slicedTransaction]
-  );
 
   const { contacts } = useContacts();
   const { requests } = useRequests();
@@ -69,7 +52,6 @@ export default function useAccountTransactions() {
   const accountState = {
     accountAddress,
     contacts,
-    mainnetAddresses,
     navigate,
     requests,
     theme,
@@ -80,15 +62,12 @@ export default function useAccountTransactions() {
   const { sections } = buildTransactionsSections(accountState);
 
   const remainingItemsLabel = useMemo(() => {
-    const remainingLength = allTransactions.length - slicedTransaction.length;
-    if (remainingLength === 0) {
+    console.log({ hasNextPage });
+    if (!hasNextPage) {
       return null;
     }
-    if (remainingLength <= NOE_PAGE) {
-      return `Show last ${remainingLength} transactions.`;
-    }
     return `Show ${NOE_PAGE} more transactions...`;
-  }, [slicedTransaction.length, allTransactions.length]);
+  }, [hasNextPage]);
 
   return {
     isLoadingTransactions: !!allTransactions,

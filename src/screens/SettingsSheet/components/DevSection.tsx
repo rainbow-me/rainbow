@@ -52,6 +52,7 @@ import { isAuthenticated } from '@/utils/authentication';
 import { getFCMToken } from '@/notifications/tokens';
 import { removeGlobalNotificationSettings } from '@/notifications/settings/settings';
 import { nonceStore } from '@/state/nonces';
+import { pendingTransactionsStore } from '@/state/pendingTransactions';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
@@ -180,13 +181,10 @@ const DevSection = () => {
   }, [walletNotificationSettings]);
 
   const clearPendingTransactions = async () => {
-    // clear pending txs
-
-    //  TODO clear pending transactions
-
-    // reset nonces
+    const { clearPendingTransactions: clearPendingTxs } = pendingTransactionsStore.getState();
     const { clearNonces } = nonceStore.getState();
 
+    clearPendingTxs();
     clearNonces();
   };
 
