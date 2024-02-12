@@ -2,6 +2,7 @@ import { QueryClient } from '@tanstack/react-query';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
 import { PersistQueryClientOptions } from '@tanstack/react-query-persist-client';
+import { MMKV } from 'react-native-mmkv';
 
 const SEVEN_DAYS = 1000 * 60 * 60 * 24 * 7;
 
@@ -13,8 +14,25 @@ export const queryClient = new QueryClient({
   },
 });
 
+
+const storage = new MMKV();
+
+const clientStorage = {
+  setItem: (key, value) => {
+    storage.set(key, value);
+  },
+  getItem: (key) => {
+    const value = storage.getString(key);
+    return value === undefined ? '' : value;
+  },
+  removeItem: (key) => {
+    storage.delete(key);
+  },
+};
+
 const asyncStoragePersister = createAsyncStoragePersister({
-  key: 'rainbow.react-query',
+  key: 'rainbow.react-query.mmkv',
+  // storage: clientStorage,
   storage: AsyncStorage,
   throttleTime: 2000,
 });
