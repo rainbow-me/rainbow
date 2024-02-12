@@ -16,7 +16,7 @@ import { addressHashedEmoji } from '@/utils/profileUtils';
 import * as i18n from '@/languages';
 import MenuHeader from '../MenuHeader';
 import { checkWalletsForBackupStatus } from '../../utils';
-import { Inline, Text, Box, Stack, Bleed } from '@/design-system';
+import { Inline, Text, Box, Stack } from '@/design-system';
 import { ContactAvatar } from '@/components/contacts';
 import { useTheme } from '@/theme';
 import Routes from '@/navigation/routesNames';
@@ -225,7 +225,7 @@ export const WalletsAndBackup = () => {
                   />
                   <MenuItem
                     key={key}
-                    size={numAccounts > 3 ? 64 * (numAccounts / 3) : 52}
+                    size={numAccounts > 3 ? 52 * (numAccounts / 3) : 52}
                     disabled
                     titleComponent={
                       <Inline wrap verticalSpace="4px" horizontalSpace="4px">
@@ -485,7 +485,7 @@ export const WalletsAndBackup = () => {
                 />
                 <MenuItem
                   key={key}
-                  size={numAccounts > 3 ? 64 * (numAccounts / 3) : 52}
+                  size={numAccounts > 3 ? 52 * (numAccounts / 3) : 52}
                   disabled
                   titleComponent={
                     <Inline verticalSpace="4px" horizontalSpace="4px">
