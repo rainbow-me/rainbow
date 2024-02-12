@@ -6,7 +6,7 @@ import { Box, Stack, globalColors } from '@/design-system';
 import { TransactionDetailsDivider } from '@/screens/transaction-details/components/TransactionDetailsDivider';
 import * as i18n from '@/languages';
 import { Network } from '@/networks/types';
-import { convertAmountAndPriceToNativeDisplay } from '@/helpers/utilities';
+import { convertAmountAndPriceToNativeDisplay, convertRawAmountToBalance } from '@/helpers/utilities';
 import { useAccountSettings } from '@/hooks';
 import { useTheme } from '@/theme';
 import FastCoinIcon from '@/components/asset-list/RecyclerAssetList2/FastComponents/FastCoinIcon';
@@ -32,6 +32,7 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({ transact
   const change = transaction?.changes?.[0];
 
   const value = change?.value || transaction.balance?.display;
+  const valueDisplay = convertRawAmountToBalance(value || '', assetData!).display || '';
   const nativeCurrencyValue = convertAmountAndPriceToNativeDisplay(
     change?.asset?.balance?.amount || '',
     change?.asset?.price?.value || '',
@@ -92,7 +93,7 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({ transact
                 )
               }
               title={i18n.t(i18n.l.transaction_details.value)}
-              value={value || ''}
+              value={valueDisplay || ''}
               secondaryValue={nativeCurrencyValue}
             />
           )}
