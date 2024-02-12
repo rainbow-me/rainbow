@@ -72,6 +72,15 @@ const WalletPill = ({ account }: WalletPillProps) => {
   );
 };
 
+const getAccountSectionHeight = (numAccounts: number) => {
+  const basePadding = 16;
+  const rowHeight = 36;
+  const rows = Math.ceil(Math.max(1, numAccounts) / 3);
+  const paddingBetween = (rows - 1) * 4;
+
+  return basePadding + rows * rowHeight - paddingBetween;
+};
+
 export const WalletsAndBackup = () => {
   const { colors, isDarkMode } = useTheme();
 
@@ -225,7 +234,7 @@ export const WalletsAndBackup = () => {
                   />
                   <MenuItem
                     key={key}
-                    size={numAccounts > 3 ? (IS_IOS ? 52 : 64) * (numAccounts / 3) : 52}
+                    size={getAccountSectionHeight(numAccounts)}
                     disabled
                     titleComponent={
                       <Inline wrap verticalSpace="4px" horizontalSpace="4px">
@@ -385,7 +394,7 @@ export const WalletsAndBackup = () => {
                   />
                   <MenuItem
                     key={key}
-                    size={numAccounts > 3 ? (IS_IOS ? 52 : 64) * (numAccounts / 3) : 52}
+                    size={getAccountSectionHeight(numAccounts)}
                     disabled
                     width="full"
                     titleComponent={
@@ -485,7 +494,7 @@ export const WalletsAndBackup = () => {
                 />
                 <MenuItem
                   key={key}
-                  size={numAccounts > 3 ? (IS_IOS ? 52 : 64) * (numAccounts / 3) : 52}
+                  size={getAccountSectionHeight(numAccounts)}
                   disabled
                   titleComponent={
                     <Inline verticalSpace="4px" horizontalSpace="4px">
