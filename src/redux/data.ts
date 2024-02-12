@@ -2,7 +2,6 @@ import { StaticJsonRpcProvider, TransactionResponse } from '@ethersproject/provi
 import { isEmpty, isNil, mapValues, partition } from 'lodash';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
-import { decrementNonce, incrementNonce } from './nonceManager';
 import { AppGetState, AppState } from './store';
 import {
   NativeCurrencyKeys,
@@ -43,6 +42,7 @@ import { queryClient } from '@/react-query';
 import { RainbowAddressAssets } from '@/resources/assets/types';
 import { nftsQueryKey } from '@/resources/nfts';
 import { getProvider } from 'e2e/helpers';
+import { nonceStore } from '@/state/nonces';
 
 const BACKUP_SHEET_DELAY_MS = android ? 10000 : 3000;
 
@@ -358,9 +358,9 @@ const checkForUpdatedNonce =
       const [latestTx] = txSortedByDescendingNonce;
       const addressFrom = latestTx?.address_from;
       const nonce = latestTx?.nonce;
-      if (addressFrom && nonce) {
-        // @ts-ignore-next-line
-        dispatch(incrementNonce(addressFrom!, nonce, network));
+      if (!isNil(addressFrom) && nonce) {
+        const { setNonce } = nonceStore.getState();
+        setNonce({ address: addressFrom, currentNonce: nonce, network });
       }
     }
   };
@@ -587,11 +587,9 @@ export const dataAddNewTransaction =
 
       loggr.debug('dataAddNewTransaction: adding pending transactions', {}, loggr.DebugContext.f2c);
 
-      if (parsedTransaction.from && parsedTransaction.nonce) {
-        dispatch(
-          // @ts-ignore-next-line
-          incrementNonce(parsedTransaction.from, parsedTransaction.nonce, parsedTransaction.network)
-        );
+      if (parsedTransaction.from && parsedTransaction.nonce && parsedTransaction.network) {
+        const { setNonce } = nonceStore.getState();
+        setNonce({ address: parsedTransaction.from, currentNonce: parsedTransaction.nonce, network: parsedTransaction.network });
       }
       if (!disableTxnWatcher || network !== Network.mainnet || parsedTransaction?.network) {
         loggr.debug('dataAddNewTransaction: watching new pending transactions', {}, loggr.DebugContext.f2c);
@@ -714,9 +712,13 @@ export const dataWatchPendingTransactions =
             pendingTransactionData = await getTransactionFlashbotStatus(updatedPendingTransaction, txHash);
             if (pendingTransactionData && !pendingTransactionData.pending) {
               txStatusesDidChange = true;
-              // decrement the nonce since it was dropped
-              // @ts-ignore-next-line
-              dispatch(decrementNonce(tx.from!, tx.nonce!, Network.mainnet));
+              if (tx.from && tx.network) {
+                const { setNonce, nonces } = nonceStore.getState();
+                const currentNonce = nonces[tx.from!][tx.network].currentNonce;
+                if (currentNonce) {
+                  setNonce({ address: tx.from, currentNonce: currentNonce - 1, network: tx.network });
+                }
+              }
             }
           }
           if (pendingTransactionData) {
