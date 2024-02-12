@@ -94,7 +94,7 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({ transact
               }
               title={i18n.t(i18n.l.transaction_details.value)}
               value={valueDisplay || ''}
-              secondaryValue={nativeCurrencyValue}
+              secondaryValue={change?.asset?.price?.value ? nativeCurrencyValue : ''}
             />
           )}
           {fee && (
