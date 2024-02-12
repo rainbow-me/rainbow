@@ -326,7 +326,7 @@ export function NFTSingleOfferSheet() {
                   from: item.data?.from,
                   hash: item.txHashes[0],
                   network: offer.network as Network,
-                  nonce,
+                  nonce: item?.txHashes?.length > 1 ? nonce + 1 : nonce,
                   asset: {
                     ...offer.paymentToken,
                     network: offer.network as Network,
