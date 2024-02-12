@@ -351,7 +351,6 @@ export function NFTSingleOfferSheet() {
                   type: 'sale',
                 };
               } else if (step.id === 'nft-approval') {
-                // may need to check if we need another nonce increment here. i think so
                 tx = {
                   status: 'pending',
                   to: item.data?.to,
