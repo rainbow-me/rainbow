@@ -177,7 +177,7 @@ const SettingsSection = ({
             leftComponent={<MenuItem.ImageIcon source={WalletsAndBackupIcon} />}
             onPress={onPressBackup}
             rightComponent={
-              <Box paddingBottom="2px" paddingRight="4px">
+              <Box paddingBottom="2px" paddingRight="8px">
                 <MenuItem.ImageIcon size={44} source={getWalletsAndBackupAlertIcon()} />
               </Box>
             }
