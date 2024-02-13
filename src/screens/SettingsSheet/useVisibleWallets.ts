@@ -60,8 +60,8 @@ export const useVisibleWallets = ({ wallets, walletTypeCount }: UseVisibleWallet
         const visibleAccounts = wallet.addresses.filter(a => a.visible);
         const totalAccounts = visibleAccounts.length;
 
-        if (wallet.backedUp && wallet.backupDate && (!lastBackupDate || wallet.backupDate > lastBackupDate)) {
-          setLastBackupDate(wallet.backupDate);
+        if (wallet.backedUp && wallet.backupDate && (!lastBackupDate || Number(wallet.backupDate) > lastBackupDate)) {
+          setLastBackupDate(Number(wallet.backupDate));
         }
 
         if (wallet.type === WalletTypes.mnemonic) {

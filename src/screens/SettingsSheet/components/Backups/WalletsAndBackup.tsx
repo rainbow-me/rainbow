@@ -133,7 +133,7 @@ export const WalletsAndBackup = () => {
         },
       });
     }
-  }, []);
+  }, [dispatch, initializeWallet, profilesEnabled]);
 
   const onPressLearnMoreAboutCloudBackups = useCallback(() => {
     navigate(Routes.LEARN_WEB_VIEW_SCREEN, {
@@ -262,42 +262,15 @@ export const WalletsAndBackup = () => {
                       disabled
                       titleComponent={
                         <Inline wrap verticalSpace="4px" horizontalSpace="4px">
-                          {accounts.map(({ address, label, color }) => {
-                            return (
-                              <Box
-                                key={address}
-                                flexDirection="row"
-                                alignItems="center"
-                                backgroundColor={colors.alpha(colors.grey, 0.4)}
-                                borderRadius={23}
-                                shadowColor={isDarkMode ? colors.shadow : colors.alpha(colors.blueGreyDark, 0.1)}
-                                elevation={12}
-                                shadowOpacity={ios ? 0.4 : 1}
-                                shadowRadius={6}
-                                paddingLeft={{ custom: 4 }}
-                                paddingRight={{ custom: 8 }}
-                                padding={{ custom: 4 }}
-                              >
-                                <ContactAvatar
-                                  alignSelf="center"
-                                  color={color}
-                                  marginRight={4}
-                                  size="smaller"
-                                  value={addressHashedEmoji(address)}
-                                />
-                                <Text color={'secondary (Deprecated)'} size="11pt" weight="semibold">
-                                  {label.endsWith('.eth') ? removeFirstEmojiFromString(label) : abbreviations.address(address, 3, 5) || ''}
-                                </Text>
-                              </Box>
-                            );
-                          })}
-                        </Inline>
+                        {accounts.map(account => (
+                          <WalletPill key={account.address} account={account} />
+                        ))}
+                      </Inline>
                       }
                     />
                   </Menu>
                 );
               })}
-
               <Menu>
                 <MenuItem
                   hasSfSymbol
@@ -526,35 +499,9 @@ export const WalletsAndBackup = () => {
                     disabled
                     titleComponent={
                       <Inline verticalSpace="4px" horizontalSpace="4px">
-                        {accounts.map(({ address, label, color }) => {
-                          return (
-                            <Box
-                              key={address}
-                              flexDirection="row"
-                              alignItems="center"
-                              backgroundColor={colors.alpha(colors.grey, 0.4)}
-                              borderRadius={23}
-                              shadowColor={isDarkMode ? colors.shadow : colors.alpha(colors.blueGreyDark, 0.1)}
-                              elevation={12}
-                              shadowOpacity={ios ? 0.4 : 1}
-                              shadowRadius={6}
-                              paddingLeft={{ custom: 4 }}
-                              paddingRight={{ custom: 8 }}
-                              padding={{ custom: 4 }}
-                            >
-                              <ContactAvatar
-                                alignSelf="center"
-                                color={color}
-                                marginRight={4}
-                                size="smaller"
-                                value={addressHashedEmoji(address)}
-                              />
-                              <Text color={'secondary (Deprecated)'} size="11pt" weight="semibold">
-                                {label.endsWith('.eth') ? removeFirstEmojiFromString(label) : abbreviations.address(address, 3, 5) || ''}
-                              </Text>
-                            </Box>
-                          );
-                        })}
+                        {accounts.map(account => (
+                          <WalletPill key={account.address} account={account} />
+                        ))}
                       </Inline>
                     }
                   />
