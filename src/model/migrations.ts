@@ -38,6 +38,7 @@ import { queryClient } from '@/react-query';
 import { favoritesQueryKey } from '@/resources/favorites';
 import { EthereumAddress, RainbowToken } from '@/entities';
 import { getUniqueId } from '@/utils/ethereumUtils';
+import { legacyStorage } from '@/storage/legacy';
 
 export default async function runMigrations() {
   // get current version
@@ -637,6 +638,30 @@ export default async function runMigrations() {
   };
 
   migrations.push(v18);
+
+  logger.sentry(`Migrations: ready to run migrations starting on number ${currentVersion}`);
+  // await setMigrationVersion(17);
+  if (migrations.length === currentVersion) {
+    logger.sentry(`Migrations: Nothing to run`);
+    return;
+  }
+  /*
+   *************** Migration v19 ******************
+    Move 
+   */
+  const v19 = async () => {
+    const favoritesMetadata = await legacyStorage.get(['favorites']);
+
+    if (favoritesMetadata) {
+      const lowercasedFavoritesMetadata: Record<EthereumAddress, RainbowToken> = {};
+      Object.keys(favoritesMetadata).forEach((address: string) => {
+        lowercasedFavoritesMetadata[address.toLowerCase()] = favoritesMetadata[address];
+      });
+      queryClient.setQueryData(favoritesQueryKey, lowercasedFavoritesMetadata);
+    }
+  };
+
+  migrations.push(v19);
 
   logger.sentry(`Migrations: ready to run migrations starting on number ${currentVersion}`);
   // await setMigrationVersion(17);
