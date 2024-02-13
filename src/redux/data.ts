@@ -1,5 +1,5 @@
 import { StaticJsonRpcProvider, TransactionResponse } from '@ethersproject/providers';
-import { isEmpty, isNil, mapValues } from 'lodash';
+import { isEmpty, isNil } from 'lodash';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { AppGetState, AppState } from './store';
@@ -33,9 +33,7 @@ import { fetchWalletENSDataAfterRegistration, getTransactionFlashbotStatus, getT
 import { SwapType } from '@rainbow-me/swaps';
 import { logger as loggr } from '@/logger';
 import { queryClient } from '@/react-query';
-import { RainbowAddressAssets } from '@/resources/assets/types';
 import { nftsQueryKey } from '@/resources/nfts';
-import { getProvider } from 'e2e/helpers';
 import { nonceStore } from '@/state/nonces';
 
 const BACKUP_SHEET_DELAY_MS = android ? 10000 : 3000;
@@ -48,7 +46,6 @@ const TXN_WATCHER_POLL_INTERVAL = 5000; // 5 seconds
 // -- Constants --------------------------------------- //
 
 const DATA_UPDATE_ETH_USD = 'data/DATA_UPDATE_ETH_USD';
-const DATA_UPDATE_PORTFOLIOS = 'data/DATA_UPDATE_PORTFOLIOS';
 
 const DATA_LOAD_TRANSACTIONS_REQUEST = 'data/DATA_LOAD_TRANSACTIONS_REQUEST';
 const DATA_LOAD_TRANSACTIONS_SUCCESS = 'data/DATA_LOAD_TRANSACTIONS_SUCCESS';
@@ -80,13 +77,6 @@ export interface DataState {
   pendingTransactions: RainbowTransaction[];
 
   /**
-   * Zerion portfolio information keyed by account address.
-   */
-  portfolios: {
-    [accountAddress: string]: ZerionPortfolio;
-  };
-
-  /**
    * Transactions for this account.
    */
   transactions: RainbowTransaction[];
@@ -96,21 +86,12 @@ export interface DataState {
  * An action for the `data` reducer.
  */
 type DataAction =
-  | DataUpdatePortfoliosAction
   | DataUpdateEthUsdAction
   | DataLoadTransactionsRequestAction
   | DataLoadTransactionSuccessAction
   | DataLoadTransactionsFailureAction
   | DataUpdatePendingTransactionSuccessAction
   | DataClearStateAction;
-
-/**
- * The action to update `portfolios`.
- */
-interface DataUpdatePortfoliosAction {
-  type: typeof DATA_UPDATE_PORTFOLIOS;
-  payload: DataState['portfolios'];
-}
 
 /**
  * The action to update `ethUSDPrice`.
@@ -162,34 +143,6 @@ interface DataClearStateAction {
 // Zerion types:
 
 /**
- * Data loaded from the Zerion API for a portfolio. See
- * https://docs.zerion.io/websockets/models#portfolio for details.
- */
-interface ZerionPortfolio {
-  arbitrum_assets_value: number;
-  aurora_assets_value: number;
-  avalanche_assets_value: number;
-  ethereum_assets_value: number;
-  fantom_assets_value: number;
-  loopring_assets_value: number;
-  nft_floor_price_value: number;
-  nft_last_price_value: number;
-  optimism_assets_value: number;
-  solana_assets_value: number;
-  xdai_assets_value: number;
-  assets_value: number;
-  deposited_value: number;
-  borrowed_value: number;
-  locked_value: number;
-  staked_value: number;
-  bsc_assets_value: number;
-  polygon_assets_value: number;
-  total_value: number;
-  absolute_change_24h: number;
-  relative_change_24h?: number;
-}
-
-/**
  * A message from the Zerion API indicating that assets were received.
  */
 export interface AddressAssetsReceivedMessage {
@@ -199,16 +152,6 @@ export interface AddressAssetsReceivedMessage {
         asset: ZerionAsset;
       };
     };
-  };
-  meta?: MessageMeta;
-}
-
-/**
- * A message from the Zerion API indicating that portfolio data was received.
- */
-export interface PortfolioReceivedMessage {
-  payload?: {
-    portfolio?: ZerionPortfolio;
   };
   meta?: MessageMeta;
 }
@@ -262,12 +205,7 @@ export interface MessageMeta {
 /**
  * A message from the Zerion API.
  */
-type DataMessage =
-  | AddressAssetsReceivedMessage
-  | PortfolioReceivedMessage
-  | TransactionsReceivedMessage
-  | AssetPricesReceivedMessage
-  | AssetPricesChangedMessage;
+type DataMessage = AddressAssetsReceivedMessage | TransactionsReceivedMessage | AssetPricesReceivedMessage | AssetPricesChangedMessage;
 
 // The success code used to determine if an incoming message is successful.
 export const DISPERSION_SUCCESS_CODE = 'ok';
@@ -357,28 +295,6 @@ const checkForUpdatedNonce =
         setNonce({ address: addressFrom, currentNonce: nonce, network });
       }
     }
-  };
-
-/**
- * Handles an incoming portfolio data message from Zerion and updates state
- * accordidngly.
- *
- * @param message The `PortfolioReceivedMessage`, or undefined.
- */
-export const portfolioReceived =
-  (message: PortfolioReceivedMessage | undefined) => async (dispatch: Dispatch<DataUpdatePortfoliosAction>, getState: AppGetState) => {
-    if (message?.meta?.status !== DISPERSION_SUCCESS_CODE) return;
-    if (!message?.payload?.portfolio) return;
-
-    const { portfolios } = getState().data;
-
-    const newPortfolios = { ...portfolios };
-    newPortfolios[message.meta.address!] = message.payload.portfolio;
-
-    dispatch({
-      payload: newPortfolios,
-      type: DATA_UPDATE_PORTFOLIOS,
-    });
   };
 
 /**
@@ -695,17 +611,11 @@ const INITIAL_STATE: DataState = {
   ethUSDPrice: null,
   isLoadingTransactions: true,
   pendingTransactions: [],
-  portfolios: {},
   transactions: [],
 };
 
 export default (state: DataState = INITIAL_STATE, action: DataAction) => {
   switch (action.type) {
-    case DATA_UPDATE_PORTFOLIOS:
-      return {
-        ...state,
-        portfolios: action.payload,
-      };
     case DATA_UPDATE_ETH_USD:
       return {
         ...state,
