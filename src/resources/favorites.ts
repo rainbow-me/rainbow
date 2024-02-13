@@ -123,21 +123,9 @@ async function fetchMetadata(addresses: string[]) {
  * Refreshes the metadata associated with all favorites.
  */
 export async function refreshFavorites() {
-  migrateFavorites()
   const favorites = Object.keys(queryClient.getQueryData(favoritesQueryKey) ?? DEFAULT);
   const updatedMetadata = await fetchMetadata(favorites);
   return updatedMetadata;
-}
-
-/**
- * Toggles the favorited status of the given `address`.
- */
-
-export async function migrateFavorites(){ 
-  const queries = await AsyncStorage.getItem('rainbow.react-query')
-  const { clientState } = JSON.parse(queries)
-  console.log('clientstate', clientState.queries.favorites)
-  console.log('thefavs', Object.keys(clientState.queries.favorites))
 }
 
 export async function toggleFavorite(address: string) {
