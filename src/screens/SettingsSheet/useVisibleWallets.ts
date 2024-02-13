@@ -45,8 +45,8 @@ export const useVisibleWallets = ({ wallets }: UseVisibleWalletProps): UseVisibl
         const visibleAccounts = wallet.addresses.filter(a => a.visible);
         const totalAccounts = visibleAccounts.length;
 
-        if (wallet.backedUp && wallet.backupDate && (!lastBackupDate || wallet.backupDate > lastBackupDate)) {
-          setLastBackupDate(wallet.backupDate);
+        if (wallet.backedUp && wallet.backupDate && (!lastBackupDate || Number(wallet.backupDate) > lastBackupDate)) {
+          setLastBackupDate(Number(wallet.backupDate));
         }
 
         let name = '';
@@ -62,7 +62,7 @@ export const useVisibleWallets = ({ wallets }: UseVisibleWalletProps): UseVisibl
         }
 
         if (wallet.type === WalletTypes.mnemonic || wallet.type === WalletTypes.seed) {
-          if (sumSecretPhraseWallets > 1) {
+          if (sumSecretPhraseWallets > 0) {
             setSumSecretPhraseWallets(prev => {
               name = `Secret Phrease ${prev}`;
               return prev + 1;
