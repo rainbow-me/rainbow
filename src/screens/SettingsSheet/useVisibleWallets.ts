@@ -26,8 +26,6 @@ type UseVisibleWalletReturnType = {
 };
 
 export const useVisibleWallets = ({ wallets }: UseVisibleWalletProps): UseVisibleWalletReturnType => {
-  const [sumPrivateKeyWallets, setSumPrivateKeyWallets] = useState(0);
-  const [sumSecretPhraseWallets, setSumSecretPhraseWallets] = useState(0);
   const [lastBackupDate, setLastBackupDate] = useState<number | undefined>(undefined);
 
   if (!wallets) {
@@ -49,32 +47,8 @@ export const useVisibleWallets = ({ wallets }: UseVisibleWalletProps): UseVisibl
           setLastBackupDate(wallet.backupDate);
         }
 
-        let name = '';
-        if (wallet.type === WalletTypes.privateKey) {
-          if (sumPrivateKeyWallets > 0) {
-            setSumPrivateKeyWallets(prev => {
-              name = `Private Key ${prev}`;
-              return prev + 1;
-            });
-          } else {
-            name = 'Private Key';
-          }
-        }
-
-        if (wallet.type === WalletTypes.mnemonic || wallet.type === WalletTypes.seed) {
-          if (sumSecretPhraseWallets > 1) {
-            setSumSecretPhraseWallets(prev => {
-              name = `Secret Phrease ${prev}`;
-              return prev + 1;
-            });
-          } else {
-            name = 'Secret Phrase';
-          }
-        }
-
         return {
           ...wallet,
-          name,
           isBackedUp: wallet.backedUp,
           accounts: visibleAccounts,
           key,

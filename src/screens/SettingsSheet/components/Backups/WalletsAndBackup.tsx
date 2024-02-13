@@ -7,7 +7,7 @@ import WalletsAndBackupIcon from '@/assets/WalletsAndBackup.png';
 import CloudBackupWarningIcon from '@/assets/CloudBackupWarning.png';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
-import WalletTypes from '@/helpers/walletTypes';
+import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { useENSAvatar, useInitializeWallet, useManageCloudBackups, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
@@ -79,6 +79,17 @@ const getAccountSectionHeight = (numAccounts: number) => {
   const paddingBetween = (rows - 1) * 4;
 
   return basePadding + rows * rowHeight - paddingBetween;
+};
+
+const getTitleForWalletType = (type: EthereumWalletType) => {
+  switch (type) {
+    case EthereumWalletType.mnemonic:
+      return 'Wallet Group';
+    case EthereumWalletType.privateKey:
+      return 'Private Key';
+    default:
+      return '';
+  }
 };
 
 export const WalletsAndBackup = () => {
@@ -155,6 +166,24 @@ export const WalletsAndBackup = () => {
 
   const { visibleWallets, lastBackupDate } = useVisibleWallets({ wallets });
 
+  const sortedWallets = useMemo(() => {
+    const notBackedUpSecretPhraseWallets = visibleWallets.filter(
+      wallet => !wallet.isBackedUp && wallet.type === EthereumWalletType.mnemonic
+    );
+    const notBackedUpPrivateKeyWallets = visibleWallets.filter(
+      wallet => !wallet.isBackedUp && wallet.type === EthereumWalletType.privateKey
+    );
+    const backedUpSecretPhraseWallets = visibleWallets.filter(wallet => wallet.isBackedUp && wallet.type === EthereumWalletType.mnemonic);
+    const backedUpPrivateKeyWallets = visibleWallets.filter(wallet => wallet.isBackedUp && wallet.type === EthereumWalletType.privateKey);
+
+    return [
+      ...notBackedUpSecretPhraseWallets,
+      ...notBackedUpPrivateKeyWallets,
+      ...backedUpSecretPhraseWallets,
+      ...backedUpPrivateKeyWallets,
+    ];
+  }, [visibleWallets]);
+
   const renderView = useCallback(() => {
     switch (backupProvider) {
       default:
@@ -196,7 +225,7 @@ export const WalletsAndBackup = () => {
             </Menu>
 
             <Stack space={'24px'}>
-              {visibleWallets.map(({ name, isBackedUp, accounts, key, numAccounts, backedUp, imported }) => (
+              {sortedWallets.map(({ type, isBackedUp, accounts, key, numAccounts, backedUp, imported }, index) => (
                 <Menu key={`wallet-${key}`}>
                   <MenuItem
                     hasRightArrow
@@ -228,9 +257,9 @@ export const WalletsAndBackup = () => {
                       </Inline>
                     }
                     leftComponent={<MenuItem.TextIcon colorOverride={!isBackedUp ? '#FF584D' : ''} icon={isBackedUp ? '􀢶' : '􀡝'} />}
-                    onPress={() => onNavigateToWalletView(key, name)}
+                    onPress={() => onNavigateToWalletView(key, getTitleForWalletType(type))}
                     size={60}
-                    titleComponent={<MenuItem.Title text={name ?? ''} />}
+                    titleComponent={<MenuItem.Title text={getTitleForWalletType(type)} />}
                   />
                   <MenuItem
                     key={key}
@@ -355,7 +384,7 @@ export const WalletsAndBackup = () => {
             </Stack>
 
             <Stack space={'24px'}>
-              {visibleWallets.map(({ name, isBackedUp, accounts, key, numAccounts, backedUp, imported }) => (
+              {sortedWallets.map(({ type, isBackedUp, accounts, key, numAccounts, backedUp, imported }) => (
                 <Menu key={`wallet-${key}`}>
                   <MenuItem
                     hasRightArrow
@@ -388,9 +417,9 @@ export const WalletsAndBackup = () => {
                       </Inline>
                     }
                     leftComponent={<MenuItem.TextIcon colorOverride={!isBackedUp ? '#FF584D' : ''} icon={isBackedUp ? '􀢶' : '􀡝'} />}
-                    onPress={() => onNavigateToWalletView(key, name)}
+                    onPress={() => onNavigateToWalletView(key, getTitleForWalletType(type))}
                     size={60}
-                    titleComponent={<MenuItem.Title text={name ?? ''} />}
+                    titleComponent={<MenuItem.Title text={getTitleForWalletType(type)} />}
                   />
                   <MenuItem
                     key={key}
@@ -456,7 +485,7 @@ export const WalletsAndBackup = () => {
       case WalletBackupTypes.manual: {
         return (
           <Stack space={'24px'}>
-            {visibleWallets.map(({ name, isBackedUp, accounts, key, numAccounts, backedUp, imported }) => (
+            {sortedWallets.map(({ type, isBackedUp, accounts, key, numAccounts, backedUp, imported }, index) => (
               <Menu key={`wallet-${key}`}>
                 <MenuItem
                   hasRightArrow
@@ -488,9 +517,9 @@ export const WalletsAndBackup = () => {
                     </Inline>
                   }
                   leftComponent={<MenuItem.TextIcon colorOverride={!isBackedUp ? '#FF584D' : ''} icon={isBackedUp ? '􀢶' : '􀡝'} />}
-                  onPress={() => onNavigateToWalletView(key, name)}
+                  onPress={() => onNavigateToWalletView(key, getTitleForWalletType(type))}
                   size={60}
-                  titleComponent={<MenuItem.Title text={name ?? ''} />}
+                  titleComponent={<MenuItem.Title text={getTitleForWalletType(type)} />}
                 />
                 <MenuItem
                   key={key}
@@ -579,7 +608,7 @@ export const WalletsAndBackup = () => {
     onCreateNewSecretPhrase,
     onNavigateToWalletView,
     onPressLearnMoreAboutCloudBackups,
-    visibleWallets,
+    sortedWallets,
     allBackedUp,
     isDarkMode,
     colors,
