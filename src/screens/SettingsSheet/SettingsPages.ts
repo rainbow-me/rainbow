@@ -34,7 +34,7 @@ export const SettingsPages = {
   },
   dev: {
     component: DevSection,
-    getTitle: () => lang.t('settings.dev'),
+    getTitle: () => lang.t('settings.developer'),
     key: Routes.SETTINGS_SECTION_DEV,
   },
   language: {
