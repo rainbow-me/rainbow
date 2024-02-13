@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import type { CloudBackups } from '../model/backup';
-import { fetchAllBackups, isCloudBackupAvailable, syncCloud } from '@/handlers/cloudBackup';
+import type { BackupUserData } from '../model/backup';
+import { fetchUserDataFromCloud, isCloudBackupAvailable, syncCloud } from '@/handlers/cloudBackup';
 import { RainbowError, logger } from '@/logger';
 
 export default function useCloudBackups() {
-  const [backups, setBackups] = useState<CloudBackups>({
-    files: [],
+  const [backups, setBackups] = useState<BackupUserData>({
+    wallets: {},
   });
 
   const fetchBackups = async () => {
@@ -20,9 +20,9 @@ export default function useCloudBackups() {
       await syncCloud();
 
       logger.log('Fetching all backups');
-      const backups = await fetchAllBackups();
+      const backups: BackupUserData = await fetchUserDataFromCloud();
 
-      logger.log(`Retrieved ${backups.files.length} backup files`);
+      logger.log(`Retrieved ${Object.values(backups.wallets || {}).length} backup files`);
       setBackups(backups);
     } catch (e) {
       logger.error(new RainbowError('Failed to fetch all backups'), {

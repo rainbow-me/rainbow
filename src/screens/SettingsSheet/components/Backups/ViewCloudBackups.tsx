@@ -1,58 +1,46 @@
-import { RouteProp, useRoute } from '@react-navigation/native';
-
 import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
 import Menu from '../Menu';
 import MenuContainer from '../MenuContainer';
 import MenuItem from '../MenuItem';
-import { Backup, parseTimestampFromFilename } from '@/model/backup';
+import { parseTimestampFromFilename } from '@/model/backup';
 import { format } from 'date-fns';
 import { Stack } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { IS_ANDROID } from '@/env';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import useCloudBackups from '@/hooks/useCloudBackups';
+import walletBackupTypes from '@/helpers/walletBackupTypes';
+import { RainbowWallet } from '@/model/wallet';
 
 const ViewCloudBackups = () => {
   const { backups } = useCloudBackups();
   const { navigate } = useNavigation();
 
-  const cloudBackups = backups.files
-    .filter(backup => {
-      if (IS_ANDROID) {
-        return !backup.name.match(/UserData/i);
-      }
+  const cloudBackups = Object.values(backups.wallets || {})
+    .filter(backup => backup.backedUp && backup.backupType === walletBackupTypes.cloud)
+    .sort((a, b) => Number(a.backupDate) - Number(b.backupDate));
 
-      return backup.isFile && backup.size > 0 && !backup.name.match(/UserData/i);
-    })
-    .sort((a, b) => {
-      return parseTimestampFromFilename(b.name) - parseTimestampFromFilename(a.name);
-    });
-  const mostRecentBackup = cloudBackups.reduce(
-    (prev, current) => {
-      if (!current) {
-        return prev;
-      }
-
-      if (!prev) {
-        return current;
-      }
-
-      const prevTimestamp = parseTimestampFromFilename(prev.name);
-      const currentTimestamp = parseTimestampFromFilename(current.name);
-
-      if (currentTimestamp > prevTimestamp) {
-        return current;
-      }
-
+  const mostRecentBackup = cloudBackups.reduce((prev, current) => {
+    if (!current.backedUp) {
       return prev;
-    },
-    undefined as Backup | undefined
-  );
+    }
+
+    if (!prev.backedUp && current.backedUp) {
+      return current;
+    }
+
+    const currentTimestamp = Number(current.backupDate);
+    const prevTimestamp = Number(prev.backupDate);
+    if (currentTimestamp > prevTimestamp) {
+      return current;
+    }
+
+    return prev;
+  }, {} as RainbowWallet);
 
   const onSelectCloudBackup = useCallback(
-    async (selectedBackup: Backup) => {
+    async (selectedBackup: RainbowWallet) => {
       navigate(Routes.BACKUP_SHEET, {
         step: walletBackupStepTypes.restore_from_backup,
         selectedBackup,

@@ -26,13 +26,13 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useInitializeWallet, useWallets } from '@/hooks';
 import { format, formatDistance } from 'date-fns';
-import { Backup, parseTimestampFromFilename } from '@/model/backup';
+import { BackupUserData } from '@/model/backup';
 
 const TRANSLATIONS = i18n.l.wallet.new.add_wallet_sheet;
 
 export type AddWalletSheetParams = {
   isFirstWallet: boolean;
-  backups: { files: Backup[] };
+  backups: BackupUserData;
 };
 
 type RouteParams = {
@@ -55,11 +55,10 @@ export const AddWalletSheet = () => {
 
   const latestWalletBackedUpDate = useMemo(() => {
     let lastBackupDate: number | undefined = undefined;
-    if (backups?.files.length) {
-      backups.files.forEach(backup => {
-        if (backup.isFile && backup.name) {
-          const ts = parseTimestampFromFilename(backup.name);
-
+    if (Object.values(backups.wallets).length) {
+      Object.values(backups.wallets).forEach(group => {
+        if (group.backedUp && group.backupType === WalletBackupTypes.cloud) {
+          const ts = Number(group.backupDate);
           if (ts > (lastBackupDate || 0)) {
             lastBackupDate = ts;
           }
@@ -215,14 +214,8 @@ export const AddWalletSheet = () => {
     }
 
     try {
-      const userData = await fetchUserDataFromCloud();
-      if (!userData) {
-        Alert.alert(i18n.t(TRANSLATIONS.options.cloud.no_backups), i18n.t(TRANSLATIONS.options.cloud.no_google_backups));
-        return;
-      }
-
       // merging UserData.json with eventual selected backup file
-      navigate(Routes.RESTORE_SHEET, { userData, backups });
+      navigate(Routes.RESTORE_SHEET, { backups });
       logger.info(`Downloaded ${cloudPlatform} backup info`);
     } catch (e) {
       logger.error(e as RainbowError);
