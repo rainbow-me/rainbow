@@ -1433,14 +1433,18 @@ const DetailsCard = ({
               <DetailRow
                 detailType={isContract ? 'contract' : 'to'}
                 onPress={() =>
-                  ethereumUtils.openAddressInBlockExplorer(meta?.to?.address! || toAddress || meta?.transferTo, currentNetwork)
+                  ethereumUtils.openAddressInBlockExplorer(
+                    meta?.to?.address! || toAddress || meta?.transferTo?.address || '',
+                    currentNetwork
+                  )
                 }
                 value={
                   meta?.to?.name ||
                   abbreviations.address(meta?.to?.address || toAddress, 4, 6) ||
                   meta?.to?.address ||
                   toAddress ||
-                  meta?.transferTo
+                  meta?.transferTo?.address ||
+                  ''
                 }
               />
             )}
