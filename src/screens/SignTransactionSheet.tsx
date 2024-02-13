@@ -1399,7 +1399,7 @@ const DetailsCard = ({
 
   const showFunctionRow = meta?.to?.function || (methodName && methodName.substring(0, 2) !== '0x');
   const isContract = showFunctionRow || meta?.to?.created || meta?.to?.sourceCodeStatus;
-  const showTransferToRow = meta?.transferTo;
+  const showTransferToRow = !!meta?.transferTo;
   // Hide DetailsCard if balance is insufficient once loaded
   if (!isLoading && isBalanceEnough === false) {
     return <></>;
