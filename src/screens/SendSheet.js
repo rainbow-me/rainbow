@@ -64,6 +64,7 @@ import { NoResultsType } from '@/components/list/NoResults';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import { Wallet } from '@ethersproject/wallet';
 import { getNetworkObj } from '@/networks';
+import { getNextNonce } from '@/state/nonces';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight;
@@ -133,8 +134,6 @@ export default function SendSheet(props) {
   const [currentNetwork, setCurrentNetwork] = useState();
   const prevNetwork = usePrevious(currentNetwork);
   const [currentInput, setCurrentInput] = useState('');
-
-  const getNextNonce = useCurrentNonce(accountAddress, currentNetwork);
 
   const { params } = useRoute();
   const assetOverride = params?.asset;
@@ -451,7 +450,7 @@ export default function SendSheet(props) {
         from: accountAddress,
         gasLimit: gasLimitToUse,
         network: currentNetwork,
-        nonce: nextNonce ?? (await getNextNonce()),
+        nonce: nextNonce ?? (await getNextNonce({ address: accountAddress, network: currentNetwork })),
         to: toAddress,
         ...gasParams,
       };
@@ -518,7 +517,6 @@ export default function SendSheet(props) {
       ensProfile?.data?.contenthash,
       ensProfile?.data?.records,
       gasLimit,
-      getNextNonce,
       isENS,
       isSufficientGas,
       isValidAddress,

@@ -51,8 +51,8 @@ import { isAuthenticated } from '@/utils/authentication';
 import { DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS } from '@/redux/data';
 import { saveLocalPendingTransactions } from '@/handlers/localstorage/accountLocal';
 import { getFCMToken } from '@/notifications/tokens';
-import { resetNonces } from '@/redux/nonceManager';
 import { removeGlobalNotificationSettings } from '@/notifications/settings/settings';
+import { nonceStore } from '@/state/nonces';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
@@ -190,7 +190,9 @@ const DevSection = () => {
     });
 
     // reset nonces
-    resetNonces(accountAddress);
+    const { clearNonces } = nonceStore.getState();
+
+    clearNonces();
   };
 
   const clearLocalStorage = async () => {

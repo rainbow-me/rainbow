@@ -1,4 +1,4 @@
-import { QueryFunctionContext, QueryKey, UseMutationOptions, UseQueryOptions } from '@tanstack/react-query';
+import { QueryFunctionContext, QueryKey, UseInfiniteQueryOptions, UseMutationOptions, UseQueryOptions } from '@tanstack/react-query';
 
 // Used to obtain argument types for query functions.
 export type QueryFunctionArgs<T extends (...args: any) => any> = QueryFunctionContext<ReturnType<T>>;
@@ -44,4 +44,9 @@ export type UseQueryData<QueryFnType extends (...args: any) => any> = ExtractFnR
 export type QueryConfigDeprecated<QueryFnType extends (...args: any) => any> = Omit<
   UseQueryOptions<ExtractFnReturnType<QueryFnType>>,
   'queryKey' | 'queryFn'
+>;
+
+export type InfiniteQueryConfig<TQueryFnData, TError, TData> = Pick<
+  UseInfiniteQueryOptions<TQueryFnData, TError, TData, TQueryFnData, Array<string | { [key: string]: any }>>,
+  'cacheTime' | 'enabled' | 'refetchInterval' | 'retry' | 'staleTime' | 'select' | 'onError' | 'onSettled' | 'onSuccess'
 >;

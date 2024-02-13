@@ -118,14 +118,14 @@ const useSwapCurrencyList = (searchQuery: string, searchChainId = MAINNET_CHAINI
       return (tokens || [])
         .map(token => {
           token.address = token.networks?.[activeChainId]?.address || token.address;
-          if (activeChainId !== MAINNET_CHAINID) {
-            const network = crosschainNetwork || ethereumUtils.getNetworkFromChainId(searchChainId);
-            token.network = network;
-            if (token.networks[MAINNET_CHAINID]) {
-              token.mainnet_address = token.networks[MAINNET_CHAINID].address;
-            }
-            token.uniqueId = getUniqueId(token.address, network);
+
+          const network = crosschainNetwork || ethereumUtils.getNetworkFromChainId(searchChainId);
+          token.network = network;
+          if (token.networks[MAINNET_CHAINID]) {
+            token.mainnet_address = token.networks[MAINNET_CHAINID].address;
           }
+          token.uniqueId = getUniqueId(token.address, network);
+
           return token;
         })
         .filter(({ address }) => !isFavorite(address));
@@ -152,6 +152,13 @@ const useSwapCurrencyList = (searchQuery: string, searchChainId = MAINNET_CHAINI
           return -1;
         }
         return bIsRanked ? 1 : name1?.localeCompare(name2);
+      })
+      .map(token => {
+        return {
+          ...token,
+          network: Network.mainnet,
+          uniqueId: getUniqueId(token.address, Network.mainnet),
+        };
       });
   }, [curatedMap, favoriteAddresses]);
 
