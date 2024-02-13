@@ -18,13 +18,11 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { removeRegistrationByName, saveCommitRegistrationParameters } from '@/redux/ensRegistration';
 import { GasFeeTypes, TransactionStatusTypes } from '@/entities';
 import { getFlashbotsProvider, getProviderForNetwork, isL2Network, toHex } from '@/handlers/web3';
-import { Network } from '@/helpers';
 import { greaterThan } from '@/helpers/utilities';
 import { useAccountSettings, useDimensions, useGas, useWallets } from '@/hooks';
 import { sendTransaction } from '@/model/wallet';
 import { useNavigation } from '@/navigation';
-import { getTitle, parseGasParamsForTransaction } from '@/parsers';
-import { dataUpdateTransaction } from '@/redux/data';
+import { parseGasParamsForTransaction } from '@/parsers';
 import { updateGasFeeForSpeed } from '@/redux/gas';
 import { ethUnits } from '@/references';
 import styled from '@/styled-thing';
@@ -33,6 +31,7 @@ import { gasUtils, safeAreaInsetValues } from '@/utils';
 import logger from '@/utils/logger';
 import { getNetworkObj } from '@/networks';
 import * as i18n from '@/languages';
+import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 
 const { CUSTOM, URGENT } = gasUtils;
 
@@ -113,6 +112,7 @@ export default function SpeedUpAndCancelSheet() {
     params: { type, tx, accentColor },
   } = useRoute();
 
+  const { updatePendingTransaction } = usePendingTransactionsStore();
   const [ready, setReady] = useState(false);
   const [txType, setTxType] = useState();
   const [minGasPrice, setMinGasPrice] = useState(calcGasParamRetryValue(tx.gasPrice));
@@ -126,7 +126,7 @@ export default function SpeedUpAndCancelSheet() {
   const [nonce, setNonce] = useState(null);
   const [to, setTo] = useState(tx.to);
   const [value, setValue] = useState(null);
-  const isL2 = isL2Network(tx.network);
+  const isL2 = isL2Network(tx?.network || null);
 
   const getNewTransactionGasParams = useCallback(() => {
     const gasParams = parseGasParamsForTransaction(selectedGasFee);
@@ -160,10 +160,7 @@ export default function SpeedUpAndCancelSheet() {
         to: accountAddress,
         ...newGasParams,
       };
-      const originalHash = tx.hash;
-      const {
-        result: { hash },
-      } = await sendTransaction({
+      const res = await sendTransaction({
         provider: currentProvider,
         transaction: cancelTxPayload,
       });
@@ -173,13 +170,10 @@ export default function SpeedUpAndCancelSheet() {
       }
       const updatedTx = { ...tx };
       // Update the hash on the copy of the original tx
-      updatedTx.hash = hash;
-      if (originalHash.split('-').length > 1) {
-        updatedTx.hash += `-${originalHash.split('-')[1]}`;
-      }
+      updatedTx.hash = res.result?.hash;
       updatedTx.status = TransactionStatusTypes.cancelling;
-      updatedTx.title = getTitle(updatedTx);
-      dispatch(dataUpdateTransaction(originalHash, updatedTx, true, currentProvider));
+      updatedTx.title = `${updatedTx.type}.${updatedTx.status}`;
+      updatePendingTransaction({ address: accountAddress, transaction: updatedTx, network: currentNetwork });
     } catch (e) {
       logger.log('Error submitting cancel tx', e);
     } finally {
@@ -192,13 +186,14 @@ export default function SpeedUpAndCancelSheet() {
   }, [
     accountAddress,
     cancelCommitTransactionHash,
+    currentNetwork,
     currentProvider,
-    dispatch,
     getNewTransactionGasParams,
     goBack,
     isHardwareWallet,
     nonce,
     tx,
+    updatePendingTransaction,
   ]);
 
   const handleCancellationWrapperFn = useCallback(async () => {
@@ -234,25 +229,21 @@ export default function SpeedUpAndCancelSheet() {
         value,
         ...newGasParams,
       };
-      const originalHash = tx.hash;
-      const {
-        result: { hash },
-      } = await sendTransaction({
+
+      const res = await sendTransaction({
         provider: currentProvider,
         transaction: fasterTxPayload,
       });
-      if (tx?.ensCommitRegistrationName) {
-        saveCommitTransactionHash(hash);
+
+      if (tx?.ensCommitRegistrationName && res.result?.hash) {
+        saveCommitTransactionHash(res?.result?.hash);
       }
       const updatedTx = { ...tx };
       // Update the hash on the copy of the original tx
-      updatedTx.hash = hash;
-      if (originalHash.split('-').length > 1) {
-        updatedTx.hash += `-${originalHash.split('-')[1]}`;
-      }
+      updatedTx.hash = res?.result?.hash;
       updatedTx.status = TransactionStatusTypes.speeding_up;
-      updatedTx.title = getTitle(updatedTx);
-      dispatch(dataUpdateTransaction(originalHash, updatedTx, true, currentProvider));
+      updatedTx.title = `${updatedTx.type}.${updatedTx.status}`;
+      updatePendingTransaction({ address: accountAddress, transaction: updatedTx, network: currentNetwork });
     } catch (e) {
       logger.log('Error submitting speed up tx', e);
     } finally {
@@ -263,9 +254,10 @@ export default function SpeedUpAndCancelSheet() {
       goBack();
     }
   }, [
+    accountAddress,
+    currentNetwork,
     currentProvider,
     data,
-    dispatch,
     gasLimit,
     getNewTransactionGasParams,
     goBack,
@@ -274,6 +266,7 @@ export default function SpeedUpAndCancelSheet() {
     saveCommitTransactionHash,
     to,
     tx,
+    updatePendingTransaction,
     value,
   ]);
 
@@ -287,7 +280,7 @@ export default function SpeedUpAndCancelSheet() {
 
   // Set the network
   useEffect(() => {
-    setCurrentNetwork(tx.network || network);
+    setCurrentNetwork(tx?.network || network);
   }, [network, tx.network]);
 
   // Set the provider
@@ -296,7 +289,7 @@ export default function SpeedUpAndCancelSheet() {
       startPollingGasFees(currentNetwork, tx.flashbots);
       const updateProvider = async () => {
         let provider;
-        if (getNetworkObj(tx.network).features.flashbots && tx.flashbots) {
+        if (getNetworkObj(tx?.network).features.flashbots && tx.flashbots) {
           logger.debug('using flashbots provider');
           provider = await getFlashbotsProvider();
         } else {
@@ -312,7 +305,7 @@ export default function SpeedUpAndCancelSheet() {
         stopPollingGasFees();
       };
     }
-  }, [currentNetwork, startPollingGasFees, stopPollingGasFees, tx.flashbots, tx.network]);
+  }, [currentNetwork, startPollingGasFees, stopPollingGasFees, tx.flashbots, tx?.network]);
 
   // Update gas limit
   useEffect(() => {
@@ -329,9 +322,9 @@ export default function SpeedUpAndCancelSheet() {
       if (currentNetwork && currentProvider && !fetchedTx.current) {
         try {
           fetchedTx.current = true;
-          const hexGasLimit = toHex(tx.gasLimit.toString());
-          const hexValue = toHex(tx.value.toString());
-          const hexData = tx.data;
+          const hexGasLimit = toHex(tx?.gasLimit?.toString() || '0x');
+          const hexValue = toHex(tx?.value?.toString() || '0x');
+          const hexData = tx?.data;
 
           setReady(true);
           setNonce(tx.nonce);

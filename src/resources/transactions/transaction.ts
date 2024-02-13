@@ -1,4 +1,4 @@
-import { NativeCurrencyKey } from '@/entities';
+import { NativeCurrencyKey, RainbowTransaction } from '@/entities';
 import { createQueryKey, queryClient, QueryFunctionArgs, QueryFunctionResult } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { consolidatedTransactionsQueryFunction, consolidatedTransactionsQueryKey } from './consolidatedTransactions';
@@ -32,7 +32,7 @@ export const transactionQueryKey = ({ hash, address, currency, network }: Transa
 
 export const fetchTransaction = async ({
   queryKey: [{ address, currency, network, hash }],
-}: QueryFunctionArgs<typeof transactionQueryKey>) => {
+}: QueryFunctionArgs<typeof transactionQueryKey>): Promise<RainbowTransaction | null> => {
   try {
     const chainId = getNetworkObj(network).id;
     const url = `https://addys.p.rainbow.me/v3/${chainId}/${address}/transactions/${hash}`;
@@ -46,8 +46,10 @@ export const fetchTransaction = async ({
         Authorization: `Bearer ${ADDYS_API_KEY}`,
       },
     });
-    const tx = response?.data?.payload?.transaction || [];
-
+    const tx = response?.data?.payload?.transaction || {};
+    if (!tx) {
+      return null;
+    }
     const parsedTx = await parseTransaction(tx, currency);
     if (!parsedTx) throw new Error('Failed to parse transaction');
     return parsedTx;
@@ -55,6 +57,7 @@ export const fetchTransaction = async ({
     logger.error(new RainbowError('fetchTransaction: '), {
       message: (e as Error)?.message,
     });
+    return null;
   }
 };
 
@@ -103,6 +106,8 @@ export function useBackendTransaction({ hash, network }: BackendTransactionArgs)
         if (tx) {
           return tx;
         }
+        console.log('fuck');
+        return {};
       }
     },
     initialDataUpdatedAt: () => queryClient.getQueryState(paginatedTransactionsKey)?.dataUpdatedAt,
