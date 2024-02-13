@@ -639,15 +639,9 @@ export default async function runMigrations() {
 
   migrations.push(v18);
 
-  logger.sentry(`Migrations: ready to run migrations starting on number ${currentVersion}`);
-  // await setMigrationVersion(17);
-  if (migrations.length === currentVersion) {
-    logger.sentry(`Migrations: Nothing to run`);
-    return;
-  }
   /*
    *************** Migration v19 ******************
-    Move 
+    Move favorites from local storage to react query mmkv
    */
   const v19 = async () => {
     const favoritesMetadata = await legacyStorage.get(['favorites']);
