@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import WalletTypes from '@/helpers/walletTypes';
+import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
 import { RainbowAccount, RainbowWallet } from '@/model/wallet';
 
 type WalletByKey = {
@@ -9,6 +9,12 @@ type WalletByKey = {
 
 type UseVisibleWalletProps = {
   wallets: WalletByKey | null;
+  walletTypeCount: WalletCountPerType;
+};
+
+export type WalletCountPerType = {
+  phrase: number;
+  privateKey: number;
 };
 
 type AmendedRainbowWallet = RainbowWallet & {
@@ -25,7 +31,18 @@ type UseVisibleWalletReturnType = {
   lastBackupDate: number | undefined;
 };
 
-export const useVisibleWallets = ({ wallets }: UseVisibleWalletProps): UseVisibleWalletReturnType => {
+export const getTitleForWalletType = (type: EthereumWalletType, walletTypeCount: WalletCountPerType) => {
+  switch (type) {
+    case EthereumWalletType.mnemonic:
+      return walletTypeCount.phrase > 0 ? `Wallet Group ${walletTypeCount.phrase}` : 'Wallet Group';
+    case EthereumWalletType.privateKey:
+      return walletTypeCount.privateKey > 0 ? `Private Key ${walletTypeCount.privateKey}` : 'Private Key';
+    default:
+      return '';
+  }
+};
+
+export const useVisibleWallets = ({ wallets, walletTypeCount }: UseVisibleWalletProps): UseVisibleWalletReturnType => {
   const [lastBackupDate, setLastBackupDate] = useState<number | undefined>(undefined);
 
   if (!wallets) {
@@ -47,8 +64,15 @@ export const useVisibleWallets = ({ wallets }: UseVisibleWalletProps): UseVisibl
           setLastBackupDate(wallet.backupDate);
         }
 
+        if (wallet.type === WalletTypes.mnemonic) {
+          walletTypeCount.phrase += 1;
+        } else if (wallet.type === WalletTypes.privateKey) {
+          walletTypeCount.privateKey += 1;
+        }
+
         return {
           ...wallet,
+          name: getTitleForWalletType(wallet.type, walletTypeCount),
           isBackedUp: wallet.backedUp,
           accounts: visibleAccounts,
           key,
