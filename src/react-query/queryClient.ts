@@ -14,25 +14,23 @@ export const queryClient = new QueryClient({
   },
 });
 
-
 const storage = new MMKV();
 
 const clientStorage = {
   setItem: (key, value) => {
     storage.set(key, value);
   },
-  getItem: (key) => {
+  getItem: key => {
     const value = storage.getString(key);
     return value === undefined ? '' : value;
   },
-  removeItem: (key) => {
+  removeItem: key => {
     storage.delete(key);
   },
 };
 
 const asyncStoragePersister = createAsyncStoragePersister({
   key: 'rainbow.react-query.mmkv',
-  // storage: clientStorage,
   storage: AsyncStorage,
   throttleTime: 2000,
 });
