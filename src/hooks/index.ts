@@ -72,7 +72,6 @@ export { default as useOpenENSNFTHandler } from './useOpenENSNFTHandler';
 export { default as useOpenSmallBalances } from './useOpenSmallBalances';
 export { default as useOpenFamilies } from './useOpenFamilies';
 export { default as usePrevious } from './usePrevious';
-export { default as usePortfolios } from './usePortfolios';
 export { default as useRefreshAccountData } from './useRefreshAccountData';
 export { default as useRequests } from './useRequests';
 export { default as useResetAccountState } from './useResetAccountState';
