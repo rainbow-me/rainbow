@@ -190,8 +190,6 @@ const getTransactionFee = (txn: TransactionApiResponse, nativeCurrency: NativeCu
 
 export const getDescription = (asset: ParsedAsset | undefined, type: TransactionType, meta: PaginatedTransactionsApiResponse['meta']) => {
   if (asset?.type === 'nft') return asset.symbol || asset.name;
-  if (type === 'cancel') return 'transactions.cancelled';
-
   return asset?.name || meta.action;
 };
 
