@@ -71,6 +71,41 @@ const WalletAvatar = ({ account }: WalletAvatarProps) => {
   );
 };
 
+type ContextMenuWrapperProps = {
+  children: React.ReactNode;
+  account: RainbowAccount;
+  menuConfig: {
+    menuTitle: string;
+    menuItems: {
+      actionKey: WalletMenuAction;
+      actionTitle: string;
+      icon: {
+        iconType: string;
+        iconValue: string;
+      };
+    }[];
+  };
+  onPressMenuItem: (e: MenuEvent) => void;
+};
+
+const ContextMenuWrapper = ({ children, account, menuConfig, onPressMenuItem }: ContextMenuWrapperProps) => {
+  return IS_IOS ? (
+    <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={(e: MenuEvent) => onPressMenuItem({ ...e, address: account.address })}>
+      {children}
+    </ContextMenuButton>
+  ) : (
+    <ContextCircleButton
+      options={menuConfig.menuItems.map(item => item.actionTitle)}
+      onPressActionSheet={(buttonIndex: number) => {
+        const actionKey = menuConfig.menuItems[buttonIndex].actionKey;
+        onPressMenuItem({ nativeEvent: { actionKey }, address: account.address });
+      }}
+    >
+      {children}
+    </ContextCircleButton>
+  );
+};
+
 const ViewWalletBackup = () => {
   const { params } = useRoute<RouteProp<ViewWalletBackupParams, 'ViewWalletBackup'>>();
 
@@ -358,45 +393,27 @@ const ViewWalletBackup = () => {
           {wallet?.addresses
             .filter(a => a.visible)
             .map((account: RainbowAccount) => (
-              <MenuItem
-                key={account.address}
-                size={60}
-                disabled
-                leftComponent={<WalletAvatar account={account} />}
-                labelComponent={
-                  account.label.endsWith('.eth') ? <MenuItem.Label text={abbreviations.address(account.address, 3, 5) || ''} /> : null
-                }
-                titleComponent={
-                  <MenuItem.Title
-                    text={
-                      account.label.endsWith('.eth')
-                        ? abbreviations.abbreviateEnsForDisplay(account.label, 0, 8) ?? ''
-                        : abbreviations.address(account.address, 3, 5) ?? ''
-                    }
-                    weight="semibold"
-                  />
-                }
-                rightComponent={
-                  IS_IOS ? (
-                    <ContextMenuButton
-                      menuConfig={menuConfig}
-                      onPressMenuItem={(e: MenuEvent) => onPressMenuItem({ ...e, address: account.address })}
-                    >
-                      <MenuItem.TextIcon icon="􀍡" />
-                    </ContextMenuButton>
-                  ) : (
-                    <ContextCircleButton
-                      options={menuConfig.menuItems.map(item => item.actionTitle)}
-                      onPressActionSheet={(buttonIndex: number) => {
-                        const actionKey = menuConfig.menuItems[buttonIndex].actionKey;
-                        onPressMenuItem({ nativeEvent: { actionKey }, address: account.address });
-                      }}
-                    >
-                      <MenuItem.TextIcon icon="􀍡" />
-                    </ContextCircleButton>
-                  )
-                }
-              />
+              <ContextMenuWrapper account={account} menuConfig={menuConfig} onPressMenuItem={onPressMenuItem} key={account.address}>
+                <MenuItem
+                  size={60}
+                  disabled
+                  leftComponent={<WalletAvatar account={account} />}
+                  labelComponent={
+                    account.label.endsWith('.eth') ? <MenuItem.Label text={abbreviations.address(account.address, 3, 5) || ''} /> : null
+                  }
+                  titleComponent={
+                    <MenuItem.Title
+                      text={
+                        account.label.endsWith('.eth')
+                          ? abbreviations.abbreviateEnsForDisplay(account.label, 0, 8) ?? ''
+                          : abbreviations.address(account.address, 3, 5) ?? ''
+                      }
+                      weight="semibold"
+                    />
+                  }
+                  rightComponent={<MenuItem.TextIcon icon="􀍡" />}
+                />
+              </ContextMenuWrapper>
             ))}
         </Menu>
 
