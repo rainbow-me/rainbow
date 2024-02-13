@@ -3,20 +3,24 @@ import lang from 'i18n-js';
 import { useDispatch } from 'react-redux';
 import { cloudPlatform } from '../utils/platform';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { deleteAllBackups } from '@/handlers/cloudBackup';
+import { deleteAllBackups, fetchUserDataFromCloud, logoutFromGoogleDrive } from '@/handlers/cloudBackup';
 import { clearAllWalletsBackupStatus } from '@/redux/wallets';
 import { showActionSheetWithOptions } from '@/utils';
+import { IS_ANDROID } from '@/env';
+import { RainbowError, logger } from '@/logger';
 
 export default function useManageCloudBackups() {
   const dispatch = useDispatch();
 
   const manageCloudBackups = useCallback(() => {
-    const buttons = [`Delete All ${cloudPlatform} Backups`, 'Cancel'];
+    const buttons = [`Delete All ${cloudPlatform} Backups`, IS_ANDROID ? 'Change Google Drive Account' : undefined, 'Cancel'].filter(
+      Boolean
+    );
 
     showActionSheetWithOptions(
       {
-        cancelButtonIndex: 1,
-        destructiveButtonIndex: 1,
+        cancelButtonIndex: IS_ANDROID ? 2 : 1,
+        destructiveButtonIndex: IS_ANDROID ? 0 : 1,
         options: buttons,
         title: `Manage ${cloudPlatform} Backups`,
       },
@@ -39,6 +43,20 @@ export default function useManageCloudBackups() {
               }
             }
           );
+        }
+
+        if (_buttonIndex === 1 && IS_ANDROID) {
+          await logoutFromGoogleDrive();
+          await dispatch(clearAllWalletsBackupStatus());
+
+          try {
+            await fetchUserDataFromCloud();
+            logger.info(`Downloaded ${cloudPlatform} backup info`);
+          } catch (e) {
+            logger.error(new RainbowError('Error fetching user data from cloud'), {
+              extra: { error: e },
+            });
+          }
         }
       }
     );
