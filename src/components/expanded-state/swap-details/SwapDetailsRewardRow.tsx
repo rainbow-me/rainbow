@@ -18,16 +18,12 @@ export function SwapDetailsRewardRow({ reward }: { reward: Reward }) {
   const roundedAmount = Math.round(reward.amount * 1000) / 1000;
 
   const opNetwork = getNetworkObj(Network.optimism);
-  const accentColor = isDarkMode
-    ? opNetwork.colors.dark
-    : opNetwork.colors.light;
+  const accentColor = isDarkMode ? opNetwork.colors.dark : opNetwork.colors.light;
 
   return (
     <Box flexDirection="row" alignItems="center" justifyContent="space-between">
       <ButtonPressAnimation onPress={() => navigate(Routes.OP_REWARDS_SHEET)}>
-        <SwapDetailsLabel>
-          {i18n.t(i18n.l.expanded_state.swap_details.reward)} 􀅵
-        </SwapDetailsLabel>
+        <SwapDetailsLabel>{i18n.t(i18n.l.expanded_state.swap_details.reward)} 􀅵</SwapDetailsLabel>
       </ButtonPressAnimation>
       <Bleed vertical="10px">
         <Box
@@ -44,12 +40,7 @@ export function SwapDetailsRewardRow({ reward }: { reward: Reward }) {
           }}
         >
           <ChainBadge network={Network.optimism} position="relative" />
-          <Text
-            align="center"
-            size="14px / 19px (Deprecated)"
-            weight="bold"
-            color={{ custom: accentColor }}
-          >
+          <Text align="center" size="14px / 19px (Deprecated)" weight="bold" color={{ custom: accentColor }}>
             {roundedAmount || '<0.001'} {reward.token.symbol}
           </Text>
         </Box>

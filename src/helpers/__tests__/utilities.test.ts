@@ -72,28 +72,17 @@ it('updatePrecisionToDisplay1', () => {
 });
 
 it('updatePrecisionToDisplay1RoundUp', () => {
-  const result = updatePrecisionToDisplay(
-    '0.00000000123',
-    '0.1234987234',
-    true
-  );
+  const result = updatePrecisionToDisplay('0.00000000123', '0.1234987234', true);
   expect(result).toBe('0.000000002');
 });
 
 it('updatePrecisionToDisplay2', () => {
-  const result = updatePrecisionToDisplay(
-    '0.17987196800000002',
-    '0.1234987234'
-  );
+  const result = updatePrecisionToDisplay('0.17987196800000002', '0.1234987234');
   expect(result).toBe('0.179');
 });
 
 it('updatePrecisionToDisplay2RoundUp', () => {
-  const result = updatePrecisionToDisplay(
-    '0.17987196800000002',
-    '0.1234987234',
-    true
-  );
+  const result = updatePrecisionToDisplay('0.17987196800000002', '0.1234987234', true);
   expect(result).toBe('0.18');
 });
 

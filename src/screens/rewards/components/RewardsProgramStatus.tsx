@@ -7,19 +7,9 @@ type Props = {
   text: string;
 };
 
-export const RewardsProgramStatus: React.FC<Props> = ({
-  emoji,
-  text,
-  title,
-}) => {
+export const RewardsProgramStatus: React.FC<Props> = ({ emoji, text, title }) => {
   return (
-    <Box
-      style={{ display: 'flex' }}
-      width="full"
-      height="full"
-      justifyContent="center"
-      alignItems="center"
-    >
+    <Box style={{ display: 'flex' }} width="full" height="full" justifyContent="center" alignItems="center">
       <Stack space="24px" alignHorizontal="center">
         <Text size="44pt" color="label" weight="heavy" containsEmoji>
           {emoji}

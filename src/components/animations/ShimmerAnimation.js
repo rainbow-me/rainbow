@@ -1,12 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { IS_TESTING } from 'react-native-dotenv';
@@ -22,22 +16,13 @@ const ColorGradient = styled(AnimatedLinearGradient).attrs({
   start: { x: 1, y: 0.5 },
 })(position.coverAsObject);
 
-export default function ShimmerAnimation({
-  color,
-  enabled = true,
-  gradientColor = undefined,
-  width = 0,
-}) {
+export default function ShimmerAnimation({ color, enabled = true, gradientColor = undefined, width = 0 }) {
   const opacity = useSharedValue(1);
   const positionX = useSharedValue(-width * 1.5);
   const { colors } = useTheme();
 
   const gradientColors = useMemo(
-    () => [
-      colors.alpha(color, 0),
-      gradientColor ?? colors.alpha(colors.whiteLabel, 0.2),
-      colors.alpha(color, 0),
-    ],
+    () => [colors.alpha(color, 0), gradientColor ?? colors.alpha(colors.whiteLabel, 0.2), colors.alpha(color, 0)],
     [gradientColor, color, colors]
   );
 

@@ -1,7 +1,4 @@
-export {
-  default as ButtonPressAnimation,
-  ScaleButtonZoomableAndroid,
-} from './ButtonPressAnimation';
+export { default as ButtonPressAnimation, ScaleButtonZoomableAndroid } from './ButtonPressAnimation';
 export { default as FlyInAnimation } from './FlyInAnimation';
 export { default as OpacityToggler } from './OpacityToggler';
 export { default as ShimmerAnimation } from './ShimmerAnimation';

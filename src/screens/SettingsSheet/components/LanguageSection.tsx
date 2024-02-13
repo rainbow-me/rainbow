@@ -49,11 +49,7 @@ const LanguageSection = () => {
                     <MenuItem
                       key={code}
                       onPress={() => onSelectLanguage(code)}
-                      rightComponent={
-                        code === language && (
-                          <MenuItem.StatusIcon status="selected" />
-                        )
-                      }
+                      rightComponent={code === language && <MenuItem.StatusIcon status="selected" />}
                       size={52}
                       titleComponent={<MenuItem.Title text={name} />}
                     />

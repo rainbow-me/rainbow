@@ -2,13 +2,7 @@ import React from 'react';
 import { useWindowDimensions } from 'react-native';
 
 import { PanGestureHandler } from 'react-native-gesture-handler';
-import Animated, {
-  useAnimatedGestureHandler,
-  useAnimatedStyle,
-  useSharedValue,
-  withDecay,
-  withSpring,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withDecay, withSpring } from 'react-native-reanimated';
 import RNRestart from 'react-native-restart';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
@@ -52,12 +46,7 @@ export default function DevButton({
       y.value = ctx.startY + event.translationY;
     },
     onEnd: event => {
-      x.value = withSpring(
-        x.value + event.velocityX > (width - size / 2) / 2
-          ? width - size / 2
-          : 2,
-        { velocity: event.velocityX }
-      );
+      x.value = withSpring(x.value + event.velocityX > (width - size / 2) / 2 ? width - size / 2 : 2, { velocity: event.velocityX });
       y.value = withDecay({ deceleration: 0.99, velocity: event.velocityY });
     },
     onStart: (event, ctx) => {
@@ -71,10 +60,7 @@ export default function DevButton({
   }));
 
   return (
-    <PanGestureHandler
-      onGestureEvent={gestureHandler}
-      onHandlerStateChange={gestureHandler}
-    >
+    <PanGestureHandler onGestureEvent={gestureHandler} onHandlerStateChange={gestureHandler}>
       <Wrapper style={style} size={size}>
         <Button color={color} onPress={onPress} testID={testID} size={size}>
           {children}

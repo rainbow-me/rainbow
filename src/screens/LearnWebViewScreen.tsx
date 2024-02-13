@@ -1,11 +1,5 @@
 import { useRoute } from '@react-navigation/native';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Share, StatusBar, View } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { useDimensions } from '@/hooks';
@@ -20,10 +14,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { IS_ANDROID } from '@/env';
 import { analyticsV2 } from '@/analytics';
 import * as i18n from '@/languages';
-import {
-  buildRainbowLearnUrl,
-  LearnUTMCampaign,
-} from '@/utils/buildRainbowUrl';
+import { buildRainbowLearnUrl, LearnUTMCampaign } from '@/utils/buildRainbowUrl';
 
 const HEADER_HEIGHT = 60;
 
@@ -86,10 +77,7 @@ export default function LearnWebViewScreen() {
     </Box>
   );
 
-  const contentHeight =
-    deviceHeight -
-    HEADER_HEIGHT -
-    (!isSmallPhone ? sharedCoolModalTopOffset : 0);
+  const contentHeight = deviceHeight - HEADER_HEIGHT - (!isSmallPhone ? sharedCoolModalTopOffset : 0);
 
   const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 

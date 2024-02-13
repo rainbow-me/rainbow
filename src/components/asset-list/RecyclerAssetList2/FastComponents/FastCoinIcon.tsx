@@ -9,6 +9,7 @@ import { Network } from '@/networks/types';
 import { borders, fonts } from '@/styles';
 import { ThemeContextProps } from '@/theme';
 import { FallbackIcon as CoinIconTextFallback, isETH } from '@/utils';
+import { getUniqueId } from '@/utils/ethereumUtils';
 
 const fallbackTextStyles = {
   fontFamily: fonts.family.SFProRounded,
@@ -29,15 +30,7 @@ const fallbackIconStyle = {
  * @param param0 - optional mainnetAddress, address and network
  * @returns a proper type and address to use for the url
  */
-function resolveNetworkAndAddress({
-  address,
-  mainnetAddress,
-  network,
-}: {
-  mainnetAddress?: string;
-  address: string;
-  network: Network;
-}) {
+function resolveNetworkAndAddress({ address, mainnetAddress, network }: { mainnetAddress?: string; address: string; network: Network }) {
   if (mainnetAddress) {
     return {
       resolvedAddress: mainnetAddress,
@@ -74,24 +67,19 @@ export default React.memo(function FastCoinIcon({
 
   const fallbackIconColor = useColorForAsset({
     address: resolvedAddress,
+    network: resolvedNetwork,
+    uniqueId: getUniqueId(resolvedAddress, resolvedNetwork),
   });
 
   const shadowColor = theme.isDarkMode ? colors.shadow : fallbackIconColor;
 
-  const eth = isETH(resolvedAddress) || symbol === 'WETH';
+  const eth = isETH(resolvedAddress);
   const shouldRenderContract = symbol === 'contract';
 
   return (
     <View style={sx.container}>
       {eth ? (
-        <View
-          style={[
-            sx.coinIconFallback,
-            sx.reactCoinIconContainer,
-            sx.withShadow,
-            { shadowColor },
-          ]}
-        >
+        <View style={[sx.coinIconFallback, sx.reactCoinIconContainer, sx.withShadow, { shadowColor }]}>
           <Image source={EthIcon} style={sx.coinIconFallback} />
         </View>
       ) : shouldRenderContract ? (
@@ -131,9 +119,7 @@ const sx = StyleSheet.create({
   },
   container: {
     elevation: 6,
-    height: 59,
     overflow: 'visible',
-    paddingTop: 9,
   },
   contract: {
     height: 40,

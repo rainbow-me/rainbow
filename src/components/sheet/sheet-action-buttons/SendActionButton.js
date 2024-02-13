@@ -24,14 +24,7 @@ function SendActionButton({ asset, color: givenColor, ...props }) {
   );
 
   return (
-    <SheetActionButton
-      {...props}
-      color={color}
-      label={`􀈠 ${lang.t('button.send')}`}
-      onPress={handlePress}
-      testID="send"
-      weight="heavy"
-    />
+    <SheetActionButton {...props} color={color} label={`􀈠 ${lang.t('button.send')}`} onPress={handlePress} testID="send" weight="heavy" />
   );
 }
 

@@ -94,7 +94,7 @@
     "@lavamoat/preinstall-always-fail": "1.0.0",
     "@ledgerhq/hw-app-eth": "6.29.9",
     "@ledgerhq/react-native-hw-transport-ble": "6.27.7",
-    "@metamask/eth-sig-util": "4.0.0",
+    "@metamask/eth-sig-util": "7.0.1",
     "@notifee/react-native": "5.6.0",
     "@rainbow-me/react-native-animated-number": "0.0.2",
     "@rainbow-me/swaps": "0.6.0",
@@ -306,7 +306,8 @@
     "util": "0.10.4",
     "viem": "1.6.0",
     "vm-browserify": "0.0.4",
-    "w2t": "3.0.2"
+    "w2t": "3.0.2",
+    "zustand": "4.5.0"
   },
   "devDependencies": {
     "@babel/core": "7.22.0",
@@ -360,7 +361,7 @@
     "metro-plugin-anisotropic-transform": "https://github.com/rainbow-me/metro-plugin-anisotropic-transform#eaf2a2db95eeedd2f63ce8032c102a12c5a88802",
     "metro-react-native-babel-preset": "0.76.7",
     "node-vibrant": "3.2.1-alpha.1",
-    "prettier": "2.2.1",
+    "prettier": "3.2.5",
     "react-test-renderer": "18.1.0",
     "resolve": "1.22.8",
     "rn-nodeify": "10.2.0",

@@ -3,10 +3,7 @@ export { default as useDelayedValueWithLayoutAnimation } from './useDelayedValue
 export { default as useAccountAsset } from './useAccountAsset';
 export { default as useFrameDelayedValue } from './useFrameDelayedValue';
 export { default as useAccountEmptyState } from './useAccountEmptyState';
-export {
-  default as useAccountENSDomains,
-  prefetchAccountENSDomains,
-} from './useAccountENSDomains';
+export { default as useAccountENSDomains, prefetchAccountENSDomains } from './useAccountENSDomains';
 export { default as useAndroidScrollViewGestureHandler } from './useAndroidScrollViewGestureHandler';
 export { default as useAccountProfile } from './useAccountProfile';
 export { default as useAccountSettings } from './useAccountSettings';
@@ -18,10 +15,7 @@ export { default as useBiometryType } from './useBiometryType';
 export { default as useBooleanState } from './useBooleanState';
 export { default as useClipboard } from './useClipboard';
 export { default as useCoinListEdited } from './useCoinListEdited';
-export {
-  default as useCoinListEditOptions,
-  useCoinListFinishEditingOptions,
-} from './useCoinListEditOptions';
+export { default as useCoinListEditOptions, useCoinListFinishEditingOptions } from './useCoinListEditOptions';
 export { default as useCollectible } from './useCollectible';
 export { default as useColorForAsset } from './useColorForAsset';
 export { default as useContacts } from './useContacts';
@@ -35,19 +29,9 @@ export { default as useENSAvatar, prefetchENSAvatar } from './useENSAvatar';
 export { default as useENSCover, prefetchENSCover } from './useENSCover';
 export { default as useENSProfile, prefetchENSProfile } from './useENSProfile';
 export { default as useENSOwner, prefetchENSOwner } from './useENSOwner';
-export {
-  default as useENSResolver,
-  prefetchENSResolver,
-} from './useENSResolver';
-export {
-  default as useENSRegistrant,
-  prefetchENSRegistrant,
-} from './useENSRegistrant';
-export {
-  default as useENSRecords,
-  prefetchENSRecords,
-  ensRecordsQueryKey,
-} from './useENSRecords';
+export { default as useENSResolver, prefetchENSResolver } from './useENSResolver';
+export { default as useENSRegistrant, prefetchENSRegistrant } from './useENSRegistrant';
+export { default as useENSRecords, prefetchENSRecords, ensRecordsQueryKey } from './useENSRecords';
 export { default as useFadeImage } from './useFadeImage';
 export { default as useTrackENSProfile } from './useTrackENSProfile';
 export { default as useENSRecordDisplayProperties } from './useENSRecordDisplayProperties';
@@ -129,13 +113,9 @@ export { default as useForceUpdate } from './useForceUpdate';
 export { default as useOnAvatarPress } from './useOnAvatarPress';
 export { default as useAdditionalAssetData } from './useAdditionalAssetData';
 export { default as useImportingWallet } from './useImportingWallet';
-export { default as useCurrentNonce } from './useCurrentNonce';
 export { default as usePersistentAspectRatio } from './usePersistentAspectRatio';
 export { default as useFeesPanelInputRefs } from './useFeesPanelInputRefs';
-export {
-  default as useHardwareBack,
-  useHardwareBackOnFocus,
-} from './useHardwareBack';
+export { default as useHardwareBack, useHardwareBackOnFocus } from './useHardwareBack';
 export { default as useSwapCurrencyList } from './useSwapCurrencyList';
 export { default as useSearchCurrencyList } from './useSearchCurrencyList';
 export { default as useWalletENSAvatar } from './useWalletENSAvatar';

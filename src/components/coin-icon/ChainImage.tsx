@@ -13,13 +13,7 @@ import PolygonBadge from '../../assets/badges/polygon.png';
 import ZoraBadge from '../../assets/badges/zora.png';
 import { ImgixImage } from '../images';
 
-export function ChainImage({
-  chain,
-  size = 20,
-}: {
-  chain: Network | null | undefined;
-  size?: number;
-}) {
+export function ChainImage({ chain, size = 20 }: { chain: Network | null | undefined; size?: number }) {
   const source = useMemo(() => {
     let val = null;
     if (chain === Network.arbitrum) {
@@ -42,11 +36,5 @@ export function ChainImage({
 
   if (!chain) return null;
 
-  return (
-    <ImgixImage
-      size={size}
-      source={source}
-      style={{ borderRadius: size / 2, height: size, width: size }}
-    />
-  );
+  return <ImgixImage size={size} source={source} style={{ borderRadius: size / 2, height: size, width: size }} />;
 }

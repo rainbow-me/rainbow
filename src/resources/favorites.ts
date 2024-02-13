@@ -1,23 +1,13 @@
-import { EthereumAddress, RainbowToken } from '@/entities';
-import { getUniswapV2Tokens } from '@/handlers/dispersion';
+import { EthereumAddress, NativeCurrencyKeys, RainbowToken } from '@/entities';
 import { Network } from '@/networks/types';
 import { createQueryKey, queryClient } from '@/react-query';
-import {
-  DAI_ADDRESS,
-  ETH_ADDRESS,
-  SOCKS_ADDRESS,
-  WBTC_ADDRESS,
-  WETH_ADDRESS,
-} from '@/references';
+import { DAI_ADDRESS, ETH_ADDRESS, SOCKS_ADDRESS, WBTC_ADDRESS, WETH_ADDRESS } from '@/references';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { useQuery } from '@tanstack/react-query';
 import { without } from 'lodash';
+import { externalTokenQueryKey, fetchExternalToken } from './assets/externalAssetsQuery';
 
-export const favoritesQueryKey = createQueryKey(
-  'favorites',
-  {},
-  { persisterVersion: 1 }
-);
+export const favoritesQueryKey = createQueryKey('favorites', {}, { persisterVersion: 1 });
 
 const DEFAULT: Record<EthereumAddress, RainbowToken> = {
   [DAI_ADDRESS]: {
@@ -78,11 +68,34 @@ const DEFAULT: Record<EthereumAddress, RainbowToken> = {
  */
 async function fetchMetadata(addresses: string[]) {
   const favoritesMetadata: Record<EthereumAddress, RainbowToken> = {};
-  const newFavoritesMeta = await getUniswapV2Tokens(
-    addresses.map(address => {
-      return address === ETH_ADDRESS ? WETH_ADDRESS : address.toLowerCase();
-    })
-  );
+  const newFavoritesMeta: Record<EthereumAddress, RainbowToken> = {};
+
+  // Map addresses to an array of promises returned by fetchExternalToken
+  const fetchPromises = addresses.map(async address => {
+    const externalAsset = await fetchExternalToken({ address, network: Network.mainnet, currency: NativeCurrencyKeys.USD });
+    await queryClient.fetchQuery(
+      externalTokenQueryKey({ address, network: Network.mainnet, currency: NativeCurrencyKeys.USD }),
+      async () => fetchExternalToken({ address, network: Network.mainnet, currency: NativeCurrencyKeys.USD }),
+      {
+        staleTime: Infinity,
+      }
+    );
+
+    // we only support mainnet favorites atm
+    if (externalAsset) {
+      newFavoritesMeta[address] = {
+        ...externalAsset,
+        network: Network.mainnet,
+        address: externalAsset?.networks['1'].address,
+        uniqueId: getUniqueId(externalAsset?.networks['1'].address, Network.mainnet),
+        isVerified: true,
+      };
+    }
+  });
+
+  // Wait for all promises to resolve
+  await Promise.all(fetchPromises);
+
   const ethIsFavorited = addresses.includes(ETH_ADDRESS);
   const wethIsFavorited = addresses.includes(WETH_ADDRESS);
   if (newFavoritesMeta) {
@@ -109,9 +122,7 @@ async function fetchMetadata(addresses: string[]) {
  * Refreshes the metadata associated with all favorites.
  */
 export async function refreshFavorites() {
-  const favorites = Object.keys(
-    queryClient.getQueryData(favoritesQueryKey) ?? DEFAULT
-  );
+  const favorites = Object.keys(queryClient.getQueryData(favoritesQueryKey) ?? DEFAULT);
   const updatedMetadata = await fetchMetadata(favorites);
   return updatedMetadata;
 }
@@ -120,9 +131,7 @@ export async function refreshFavorites() {
  * Toggles the favorited status of the given `address`.
  */
 export async function toggleFavorite(address: string) {
-  const favorites = Object.keys(
-    queryClient.getQueryData(favoritesQueryKey) ?? []
-  );
+  const favorites = Object.keys(queryClient.getQueryData(favoritesQueryKey) ?? []);
   const lowercasedAddress = address.toLowerCase();
   let updatedFavorites;
   if (favorites.includes(lowercasedAddress)) {
@@ -143,14 +152,10 @@ export function useFavorites(): {
   favorites: string[];
   favoritesMetadata: Record<EthereumAddress, RainbowToken>;
 } {
-  const query = useQuery<Record<EthereumAddress, RainbowToken>>(
-    favoritesQueryKey,
-    refreshFavorites,
-    {
-      staleTime: Infinity,
-      cacheTime: Infinity,
-    }
-  );
+  const query = useQuery<Record<EthereumAddress, RainbowToken>>(favoritesQueryKey, refreshFavorites, {
+    staleTime: Infinity,
+    cacheTime: Infinity,
+  });
 
   const favoritesMetadata = query.data ?? {};
   const favorites = Object.keys(favoritesMetadata);

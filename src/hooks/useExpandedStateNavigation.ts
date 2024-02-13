@@ -10,7 +10,7 @@ import { watchingAlert } from '@/utils';
 import { RainbowToken } from '@/entities';
 
 export default function useExpandedStateNavigation(
-  inputType: typeof AssetInputTypes[keyof typeof AssetInputTypes] | null,
+  inputType: (typeof AssetInputTypes)[keyof typeof AssetInputTypes] | null,
   fromDiscover = false,
   asset: RainbowToken
 ) {
@@ -43,10 +43,7 @@ export default function useExpandedStateNavigation(
 
       InteractionManager.runAfterInteractions(goBack);
       InteractionManager.runAfterInteractions(() => {
-        setTimeout(
-          () => navigate(routeName, traverseParams(navigationPayload)),
-          50
-        );
+        setTimeout(() => navigate(routeName, traverseParams(navigationPayload)), 50);
       });
     },
     [goBack, isReadOnlyWallet, navigate, navigationPayload]

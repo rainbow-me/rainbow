@@ -6,11 +6,7 @@ export default function useSendSheetInputRefs() {
   const assetInputRef = useRef<TextInput>();
   const nativeCurrencyInputRef = useRef<TextInput>();
 
-  const {
-    handleFocus,
-    lastFocusedInputHandle,
-    setLastFocusedInputHandle,
-  } = useMagicAutofocus(nativeCurrencyInputRef, null, true);
+  const { handleFocus, lastFocusedInputHandle, setLastFocusedInputHandle } = useMagicAutofocus(nativeCurrencyInputRef, null, true);
 
   return {
     assetInputRef,

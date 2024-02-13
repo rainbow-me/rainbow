@@ -2,12 +2,7 @@ import React from 'react';
 import { Circle, Path } from 'react-native-svg';
 import Svg from '../Svg';
 
-const FacebookIcon = ({
-  colors,
-  color = colors.black,
-  secondaryColor = colors.white,
-  ...props
-}) => {
+const FacebookIcon = ({ colors, color = colors.black, secondaryColor = colors.white, ...props }) => {
   return (
     <Svg height="21" viewBox="0 0 30 30" width="21" {...props}>
       <Circle cx="15" cy="15" fill={color} r="15" />

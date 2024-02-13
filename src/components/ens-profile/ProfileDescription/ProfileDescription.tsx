@@ -14,13 +14,7 @@ const ProfileDescription = ({ description }: { description?: string }) => {
     <Inline alignVertical="center" verticalSpace="10px">
       {text?.map((t, i) => (
         <>
-          <Text
-            color="secondary80 (Deprecated)"
-            containsEmoji
-            key={i}
-            size="15px / 21px (Deprecated)"
-            weight="medium"
-          >
+          <Text color="secondary80 (Deprecated)" containsEmoji key={i} size="15px / 21px (Deprecated)" weight="medium">
             {t}
           </Text>
           {hyperlinks?.[i] && <RecordHyperlink value={hyperlinks?.[i]} />}

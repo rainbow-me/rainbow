@@ -27,23 +27,13 @@ const isZero = (number: any) => number === 0;
  * @param {Boolean} [plural=false]
  * @return {String}
  */
-export const getMinimalTimeUnitStringForMs = (
-  value: string | number = 0,
-  short = true,
-  plural?: any
-) => {
-  const ms =
-    isObjectLike(value) || isString(value)
-      ? convertStringToNumber(value)
-      : value;
+export const getMinimalTimeUnitStringForMs = (value: string | number = 0, short = true, plural?: any) => {
+  const ms = isObjectLike(value) || isString(value) ? convertStringToNumber(value) : value;
 
   const { days, hours, minutes, seconds } = parseMilliseconds(Number(ms));
   const parsedMs = omitBy({ days, hours, minutes, seconds }, isZero);
 
-  const {
-    unit: highestResolutionUnit,
-    value: highestResolutionValue,
-  } = getHighestResolutionUnit(parsedMs);
+  const { unit: highestResolutionUnit, value: highestResolutionValue } = getHighestResolutionUnit(parsedMs);
 
   const label = buildLocalizedTimeUnitString({
     plural,

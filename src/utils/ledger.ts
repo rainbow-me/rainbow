@@ -21,11 +21,7 @@ export const ledgerErrorHandler = (error: Error) => {
   if (error.message.includes('0x6511')) {
     return LEDGER_ERROR_CODES.NO_ETH_APP;
   }
-  if (
-    error.name.includes('BleError') ||
-    error.message.includes('0x6b0c') ||
-    error.message.includes('busy')
-  ) {
+  if (error.name.includes('BleError') || error.message.includes('0x6b0c') || error.message.includes('busy')) {
     return LEDGER_ERROR_CODES.OFF_OR_LOCKED;
   }
   if (error.name.includes('Disconnected')) {

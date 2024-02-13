@@ -27,9 +27,7 @@ type RouteParams = {
 };
 
 export const PairHardwareWalletErrorSheet = () => {
-  const route = useRoute<
-    RouteProp<RouteParams, 'PairHardwareWalletErrorSheetParams'>
-  >();
+  const route = useRoute<RouteProp<RouteParams, 'PairHardwareWalletErrorSheetParams'>>();
   const { width: deviceWidth } = useDimensions();
   const { goBack, navigate } = useNavigation();
 
@@ -40,10 +38,7 @@ export const PairHardwareWalletErrorSheet = () => {
 
   const errorCallback = useCallback(
     (errorType: LEDGER_ERROR_CODES) => {
-      if (
-        errorType === LEDGER_ERROR_CODES.NO_ETH_APP ||
-        errorType === LEDGER_ERROR_CODES.OFF_OR_LOCKED
-      ) {
+      if (errorType === LEDGER_ERROR_CODES.NO_ETH_APP || errorType === LEDGER_ERROR_CODES.OFF_OR_LOCKED) {
         navigate(Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET, {
           errorType,
           deviceId: route?.params?.deviceId,
@@ -69,19 +64,10 @@ export const PairHardwareWalletErrorSheet = () => {
       <Inset horizontal="36px">
         <Stack alignHorizontal="center" space="20px">
           <Text align="center" color="label" weight="bold" size="26pt">
-            {i18n.t(
-              TRANSLATIONS[
-                errorType === 'no_eth_app' ? 'open_eth_app' : 'unlock_ledger'
-              ]
-            )}
+            {i18n.t(TRANSLATIONS[errorType === 'no_eth_app' ? 'open_eth_app' : 'unlock_ledger'])}
           </Text>
           <Stack space="10px">
-            <Text
-              align="center"
-              color="labelTertiary"
-              weight="semibold"
-              size="15pt / 135%"
-            >
+            <Text align="center" color="labelTertiary" weight="semibold" size="15pt / 135%">
               {i18n.t(TRANSLATIONS.open_eth_app_description)}
             </Text>
           </Stack>
@@ -89,11 +75,7 @@ export const PairHardwareWalletErrorSheet = () => {
       </Inset>
       <Box position="absolute" top={{ custom: 148 }}>
         <ImgixImage
-          source={
-            (errorType === LEDGER_ERROR_CODES.NO_ETH_APP
-              ? ledgerNanoEthApp
-              : ledgerNanoUnlock) as Source
-          }
+          source={(errorType === LEDGER_ERROR_CODES.NO_ETH_APP ? ledgerNanoEthApp : ledgerNanoUnlock) as Source}
           style={{
             width: imageWidth,
             height: imageHeight,
@@ -102,12 +84,7 @@ export const PairHardwareWalletErrorSheet = () => {
           size={imageHeight}
         />
         <Box paddingHorizontal="36px" top={{ custom: -35 }}>
-          <Text
-            align="center"
-            color="labelTertiary"
-            weight="semibold"
-            size="15pt / 135%"
-          >
+          <Text align="center" color="labelTertiary" weight="semibold" size="15pt / 135%">
             {i18n.t(TRANSLATIONS.enter_passcode)}
           </Text>
         </Box>

@@ -15,22 +15,15 @@ import { NetworkProperties } from '@/networks/types';
 import { Network } from '@/helpers';
 
 const chartTimes = ['hour', 'day', 'week', 'month', 'year'] as const;
-type ChartTime = typeof chartTimes[number];
+type ChartTime = (typeof chartTimes)[number];
 type PriceChartTimeData = { points?: [x: number, y: number][] };
 
 const getChartTimeArg = (selected: ChartTime) =>
-  chartTimes.reduce(
-    (args, time) => ({ ...args, [time]: time === selected }),
-    {} as Record<ChartTime, boolean>
-  );
+  chartTimes.reduce((args, time) => ({ ...args, [time]: time === selected }), {} as Record<ChartTime, boolean>);
 
 export type ChartData = { x: number; y: number };
 
-const fetchPriceChart = async (
-  time: ChartTime,
-  chainId: NetworkProperties['id'],
-  address: string
-) => {
+const fetchPriceChart = async (time: ChartTime, chainId: NetworkProperties['id'], address: string) => {
   const priceChart = await metadataClient
     .priceChart({ address, chainId, ...getChartTimeArg(time) })
     .then(d => d.token?.priceCharts[time] as PriceChartTimeData);
@@ -40,15 +33,7 @@ const fetchPriceChart = async (
   }, [] as ChartData[]);
 };
 
-export const usePriceChart = ({
-  mainnetAddress,
-  address,
-  network,
-}: {
-  mainnetAddress?: string;
-  address: string;
-  network: Network;
-}) => {
+export const usePriceChart = ({ mainnetAddress, address, network }: { mainnetAddress?: string; address: string; network: Network }) => {
   const { setParams } = useNavigation();
   const updateChartType = useCallback(
     (type: ChartTime) => {
@@ -67,8 +52,7 @@ export const usePriceChart = ({
   const query = useQuery({
     queryFn: async () => {
       const chart = await fetchPriceChart(chartType, chainId, address);
-      if (!chart && mainnetAddress)
-        return fetchPriceChart(chartType, mainnetChainId, mainnetAddress);
+      if (!chart && mainnetAddress) return fetchPriceChart(chartType, mainnetChainId, mainnetAddress);
       return chart || null;
     },
     queryKey: createQueryKey('price chart', { address, chainId, chartType }),

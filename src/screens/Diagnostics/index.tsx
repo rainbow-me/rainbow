@@ -1,11 +1,5 @@
 import { useRoute } from '@react-navigation/native';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { loadAllKeys } from '@/model/keychain';
 import { useNavigation } from '@/navigation';
 import { privateKeyKey, seedPhraseKey } from '@/utils/keychainConstants';
@@ -54,48 +48,31 @@ export const WalletDiagnosticsSheet = () => {
           const processedKeys = await Promise.all(
             allKeys
               .filter(key => {
-                return (
-                  key?.username?.indexOf(seedPhraseKey) !== -1 ||
-                  key?.username?.indexOf(privateKeyKey) !== -1
-                );
+                return key?.username?.indexOf(seedPhraseKey) !== -1 || key?.username?.indexOf(privateKeyKey) !== -1;
               })
               .map(async key => {
                 const secretObj = JSON.parse(key.password);
                 let secret = secretObj.seedphrase || secretObj.privateKey;
-                if (
-                  (secret &&
-                    secret.indexOf('cipher') === -1 &&
-                    secret.indexOf('salt') === -1) ||
-                  userPin
-                ) {
+                if ((secret && secret.indexOf('cipher') === -1 && secret.indexOf('salt') === -1) || userPin) {
                   if (userPin) {
                     secret = await encryptor.decrypt(userPin, secret);
                   }
-                  const { address, type } = await deriveAccountFromWalletInput(
-                    secret
-                  );
+                  const { address, type } = await deriveAccountFromWalletInput(secret);
                   let createdAt = null;
                   let label = null;
                   Object.keys(walletsWithBalancesAndNames).some(k => {
-                    const found = walletsWithBalancesAndNames[k].addresses.some(
-                      account => {
-                        if (
-                          account?.address?.toLowerCase() ===
-                          address?.toLowerCase()
-                        ) {
-                          label = account.label || account.ens;
-                          return true;
-                        }
-                        return false;
+                    const found = walletsWithBalancesAndNames[k].addresses.some(account => {
+                      if (account?.address?.toLowerCase() === address?.toLowerCase()) {
+                        label = account.label || account.ens;
+                        return true;
                       }
-                    );
+                      return false;
+                    });
                     return found;
                   });
 
                   if (key?.username?.indexOf(`_${seedPhraseKey}`) !== -1) {
-                    const tsString = key.username
-                      .replace('wallet_', '')
-                      .replace(`_${seedPhraseKey}`, '');
+                    const tsString = key.username.replace('wallet_', '').replace(`_${seedPhraseKey}`, '');
                     const ts = new Date(Number(tsString));
                     createdAt = ts.toString();
                   }
@@ -125,10 +102,10 @@ export const WalletDiagnosticsSheet = () => {
           setKeys(processedKeys);
         }
       } catch (error) {
-        logger.error(
-          new RainbowError('Error processing keys for wallet diagnostics'),
-          { message: (error as Error).message, context: 'init' }
-        );
+        logger.error(new RainbowError('Error processing keys for wallet diagnostics'), {
+          message: (error as Error).message,
+          context: 'init',
+        });
       }
     };
     setTimeout(() => {
@@ -137,20 +114,11 @@ export const WalletDiagnosticsSheet = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userPin]);
 
-  const seeds = useMemo(
-    () => keys?.filter(key => key.username.indexOf(`_${seedPhraseKey}`) !== -1),
-    [keys]
-  );
+  const seeds = useMemo(() => keys?.filter(key => key.username.indexOf(`_${seedPhraseKey}`) !== -1), [keys]);
 
-  const pkeys = useMemo(
-    () => keys?.filter(key => key.username.indexOf(`_${privateKeyKey}`) !== -1),
-    [keys]
-  );
+  const pkeys = useMemo(() => keys?.filter(key => key.username.indexOf(`_${privateKeyKey}`) !== -1), [keys]);
 
-  const oldSeed = useMemo(
-    () => keys?.filter(key => key.username === seedPhraseKey) || [],
-    [keys]
-  );
+  const oldSeed = useMemo(() => keys?.filter(key => key.username === seedPhraseKey) || [], [keys]);
 
   const handleClose = useCallback(() => {
     goBack();
@@ -217,11 +185,7 @@ export const WalletDiagnosticsSheet = () => {
         )}
       </BackgroundProvider>
       <ToastPositionContainer>
-        <Toast
-          isVisible={toastVisible}
-          text={i18n.t(i18n.l.wallet.diagnostics.uuid_copied)}
-          testID="uuid-copied-toast"
-        />
+        <Toast isVisible={toastVisible} text={i18n.t(i18n.l.wallet.diagnostics.uuid_copied)} testID="uuid-copied-toast" />
       </ToastPositionContainer>
     </>
   );

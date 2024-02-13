@@ -8,12 +8,7 @@ import { Docs as DocsType } from '../docs/types';
 import source from '../docs/utils/source.macro';
 import { ColorModeProvider } from './ColorMode';
 
-import {
-  BackgroundColor,
-  backgroundColors,
-  ColorMode,
-  textColors,
-} from './palettes';
+import { BackgroundColor, backgroundColors, ColorMode, textColors } from './palettes';
 
 const BackgroundColors = ({ mode }: { mode: ColorMode }) => (
   <Stack space="24px">
@@ -22,17 +17,13 @@ const BackgroundColors = ({ mode }: { mode: ColorMode }) => (
     </Text>
     <ColorModeProvider value={mode}>
       <Box background="surfacePrimary">
-        {(Object.keys(
-          backgroundColors
-        ) as (keyof typeof backgroundColors)[]).map(
-          (color: BackgroundColor) => (
-            <Box background={color} key={color} padding="24px">
-              <Text color="label" size="17pt" weight="bold">
-                {color}
-              </Text>
-            </Box>
-          )
-        )}
+        {(Object.keys(backgroundColors) as (keyof typeof backgroundColors)[]).map((color: BackgroundColor) => (
+          <Box background={color} key={color} padding="24px">
+            <Text color="label" size="17pt" weight="bold">
+              {color}
+            </Text>
+          </Box>
+        ))}
       </Box>
     </ColorModeProvider>
   </Stack>

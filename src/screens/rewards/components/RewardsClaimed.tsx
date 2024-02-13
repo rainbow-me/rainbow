@@ -4,19 +4,11 @@ import { Box, Column, Columns, Stack, Text } from '@/design-system';
 import * as i18n from '@/languages';
 import { useInfoIconColor } from '@/screens/rewards/hooks/useInfoIconColor';
 import { RewardsProgressBar } from '@/screens/rewards/components/RewardsProgressBar';
-import {
-  addDays,
-  differenceInDays,
-  differenceInHours,
-  fromUnixTime,
-} from 'date-fns';
+import { addDays, differenceInDays, differenceInHours, fromUnixTime } from 'date-fns';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import {
-  convertAmountAndPriceToNativeDisplay,
-  convertAmountToNativeDisplay,
-} from '@/helpers/utilities';
+import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import { analyticsV2 } from '@/analytics';
@@ -40,18 +32,12 @@ export const RewardsClaimed: React.FC<Props> = ({
   totalAvailableRewardsInToken,
 }) => {
   const infoIconColor = useInfoIconColor();
-  const nativeCurrency = useSelector(
-    (state: AppState) => state.settings.nativeCurrency
-  );
+  const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
   const { navigate } = useNavigation();
 
   if (remainingRewards <= 0) {
     const formattedTotalAvailableRewards = assetPrice
-      ? convertAmountAndPriceToNativeDisplay(
-          totalAvailableRewardsInToken,
-          assetPrice,
-          nativeCurrency
-        ).display
+      ? convertAmountAndPriceToNativeDisplay(totalAvailableRewardsInToken, assetPrice, nativeCurrency).display
       : convertAmountToNativeDisplay(totalAvailableRewardsInToken, 'USD');
 
     const now = new Date();
@@ -101,11 +87,7 @@ export const RewardsClaimed: React.FC<Props> = ({
 
     return (
       <Box paddingBottom="36px">
-        <ButtonPressAnimation
-          onPress={navigateToAmountsExplainer}
-          scaleTo={0.96}
-          overflowMargin={50}
-        >
+        <ButtonPressAnimation onPress={navigateToAmountsExplainer} scaleTo={0.96} overflowMargin={50}>
           <RewardsSectionCard>
             <Stack space="16px">
               <Stack space="12px">
@@ -114,11 +96,7 @@ export const RewardsClaimed: React.FC<Props> = ({
                     {i18n.t(i18n.l.rewards.rewards_claimed)}
                   </Text>
                   <Column width="content">
-                    <Text
-                      size="15pt"
-                      weight="semibold"
-                      color={{ custom: infoIconColor }}
-                    >
+                    <Text size="15pt" weight="semibold" color={{ custom: infoIconColor }}>
                       􀅵
                     </Text>
                   </Column>
@@ -127,10 +105,7 @@ export const RewardsClaimed: React.FC<Props> = ({
               </Stack>
               <Columns alignVertical="center">
                 <Text size="13pt" weight="semibold" color={{ custom: color }}>
-                  {`${claimedTokenFormatted} / ${formatTokenDisplayValue(
-                    totalAvailableRewardsInToken,
-                    tokenSymbol
-                  )}`}
+                  {`${claimedTokenFormatted} / ${formatTokenDisplayValue(totalAvailableRewardsInToken, tokenSymbol)}`}
                 </Text>
                 <Column width="content">
                   <Text size="13pt" weight="semibold" color="labelTertiary">

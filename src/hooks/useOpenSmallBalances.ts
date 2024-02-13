@@ -7,9 +7,7 @@ const areOpenSmallBalancesAtom = atom({
 });
 
 export default function useOpenSmallBalances() {
-  const [isSmallBalancesOpen, setIsSmallBalancesOpen] = useRecoilState(
-    areOpenSmallBalancesAtom
-  );
+  const [isSmallBalancesOpen, setIsSmallBalancesOpen] = useRecoilState(areOpenSmallBalancesAtom);
 
   const toggleOpenSmallBalances = useCallback(() => {
     setIsSmallBalancesOpen(prev => {

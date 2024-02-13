@@ -1,25 +1,10 @@
-import React, {
-  Dispatch,
-  SetStateAction,
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import React, { Dispatch, SetStateAction, createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { noop } from 'lodash';
 import Routes from '@/navigation/routesNames';
 import { pointsQueryKey } from '@/resources/points';
 import * as i18n from '@/languages';
-import {
-  RainbowPointsFlowSteps,
-  buildTwitterIntentMessage,
-} from '../constants';
-import {
-  OnboardPointsMutation,
-  PointsOnboardingCategory,
-  PointsErrorType,
-} from '@/graphql/__generated__/metadataPOST';
+import { RainbowPointsFlowSteps, buildTwitterIntentMessage } from '../constants';
+import { OnboardPointsMutation, PointsOnboardingCategory, PointsErrorType } from '@/graphql/__generated__/metadataPOST';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 
 import { metadataPOSTClient } from '@/graphql';
@@ -46,8 +31,6 @@ type PointsProfileContext = {
   setIntent: Dispatch<SetStateAction<string | undefined>>;
   animationKey: number;
   setAnimationKey: Dispatch<SetStateAction<number>>;
-  shareBonusPoints: number;
-  setShareBonusPoints: Dispatch<SetStateAction<number>>;
 
   signIn: () => Promise<void>;
 
@@ -83,8 +66,6 @@ const PointsProfileContext = createContext<PointsProfileContext>({
   setIntent: noop,
   animationKey: 0,
   setAnimationKey: noop,
-  shareBonusPoints: 0,
-  setShareBonusPoints: noop,
 
   signIn: async () => void 0,
 
@@ -100,24 +81,17 @@ const PointsProfileContext = createContext<PointsProfileContext>({
 
 export const usePointsProfileContext = () => useContext(PointsProfileContext);
 
-export const PointsProfileProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+export const PointsProfileProvider = ({ children }: { children: React.ReactNode }) => {
   const { accountAddress } = useAccountProfile();
   const { isHardwareWallet } = useWallets();
   const { navigate, goBack } = useNavigation();
 
-  const [step, setStep] = useState<RainbowPointsFlowSteps>(
-    RainbowPointsFlowSteps.Initialize
-  );
+  const [step, setStep] = useState<RainbowPointsFlowSteps>(RainbowPointsFlowSteps.Initialize);
   const [profile, setProfile] = useState<OnboardPointsMutation | undefined>();
   const [referralCode, setReferralCode] = useState<string>();
   const [deeplinked, setDeeplinked] = useState<boolean>(false);
   const [intent, setIntent] = useState<string>();
   const [animationKey, setAnimationKey] = useState(0);
-  const [shareBonusPoints, setShareBonusPoints] = useState(0);
 
   const rainbowSwaps = profile?.onboardPoints?.user?.onboarding?.categories?.find(
     ({ type }) => type === PointsOnboardingCategoryType.RainbowSwaps
@@ -134,9 +108,7 @@ export const PointsProfileProvider = ({
   const historicBalance = profile?.onboardPoints?.user?.onboarding?.categories?.find(
     ({ type }) => type === PointsOnboardingCategoryType.HistoricBalance
   );
-  const bonus = profile?.onboardPoints?.user?.onboarding?.categories?.find(
-    ({ type }) => type === PointsOnboardingCategoryType.Bonus
-  );
+  const bonus = profile?.onboardPoints?.user?.onboarding?.categories?.find(({ type }) => type === PointsOnboardingCategoryType.Bonus);
 
   const hasRetroActivePoints =
     rainbowSwaps?.earnings?.total ||
@@ -146,22 +118,17 @@ export const PointsProfileProvider = ({
     historicBalance?.earnings?.total;
 
   const signIn = useCallback(async () => {
-    analyticsV2.track(
-      analyticsV2.event.pointsOnboardingScreenPressedSignInButton,
-      {
-        deeplinked,
-        referralCode: !!referralCode,
-        hardwareWallet: isHardwareWallet,
-      }
-    );
+    analyticsV2.track(analyticsV2.event.pointsOnboardingScreenPressedSignInButton, {
+      deeplinked,
+      referralCode: !!referralCode,
+      hardwareWallet: isHardwareWallet,
+    });
 
     try {
-      const challengeResponse = await metadataPOSTClient.getPointsOnboardChallenge(
-        {
-          address: accountAddress,
-          referral: referralCode,
-        }
-      );
+      const challengeResponse = await metadataPOSTClient.getPointsOnboardChallenge({
+        address: accountAddress,
+        referral: referralCode,
+      });
       const challenge = challengeResponse?.pointsOnboardChallenge;
       if (!challenge) {
         Alert.alert(i18n.t(i18n.l.points.console.generic_alert));
@@ -173,11 +140,7 @@ export const PointsProfileProvider = ({
         Alert.alert(i18n.t(i18n.l.points.console.generic_alert));
         throw new RainbowError('Points: Error loading wallet');
       }
-      const signatureResponse = await signPersonalMessage(
-        challenge,
-        wallet,
-        provider
-      );
+      const signatureResponse = await signPersonalMessage(challenge, wallet, provider);
       if (signatureResponse && isHardwareWallet) {
         goBack();
       }
@@ -203,9 +166,7 @@ export const PointsProfileProvider = ({
             Alert.alert(i18n.t(i18n.l.points.console.existing_user_alert));
             break;
           case PointsErrorType.InvalidReferralCode:
-            Alert.alert(
-              i18n.t(i18n.l.points.console.invalid_referral_code_alert)
-            );
+            Alert.alert(i18n.t(i18n.l.points.console.invalid_referral_code_alert));
             break;
           case PointsErrorType.NoBalance:
             setAnimationKey(prevKey => prevKey + 1);
@@ -216,39 +177,30 @@ export const PointsProfileProvider = ({
             break;
         }
         logger.info('Points: Failed to onboard user', { errorType });
-        analyticsV2.track(
-          analyticsV2.event.pointsOnboardingScreenFailedToSignIn,
-          {
-            deeplinked,
-            referralCode: !!referralCode,
-            hardwareWallet: isHardwareWallet,
-            errorType,
-          }
-        );
-        return;
-      }
-      analyticsV2.track(
-        analyticsV2.event.pointsOnboardingScreenSuccessfullySignedIn,
-        {
+        analyticsV2.track(analyticsV2.event.pointsOnboardingScreenFailedToSignIn, {
           deeplinked,
           referralCode: !!referralCode,
           hardwareWallet: isHardwareWallet,
-        }
-      );
+          errorType,
+        });
+        return;
+      }
+      analyticsV2.track(analyticsV2.event.pointsOnboardingScreenSuccessfullySignedIn, {
+        deeplinked,
+        referralCode: !!referralCode,
+        hardwareWallet: isHardwareWallet,
+      });
       setProfile(points);
       const queryKey = pointsQueryKey({ address: accountAddress });
       queryClient.setQueryData(queryKey, points);
       delay(5000).then(() => queryClient.refetchQueries(queryKey));
     } catch (error) {
-      analyticsV2.track(
-        analyticsV2.event.pointsOnboardingScreenFailedToSignIn,
-        {
-          deeplinked,
-          referralCode: !!referralCode,
-          hardwareWallet: isHardwareWallet,
-          errorType: undefined,
-        }
-      );
+      analyticsV2.track(analyticsV2.event.pointsOnboardingScreenFailedToSignIn, {
+        deeplinked,
+        referralCode: !!referralCode,
+        hardwareWallet: isHardwareWallet,
+        errorType: undefined,
+      });
       logger.error(new RainbowError('Points: signIn error'), { error });
     }
   }, [accountAddress, deeplinked, goBack, isHardwareWallet, referralCode]);
@@ -282,8 +234,6 @@ export const PointsProfileProvider = ({
         setIntent,
         animationKey,
         setAnimationKey,
-        shareBonusPoints,
-        setShareBonusPoints,
 
         // functions
         signIn: signInHandler,

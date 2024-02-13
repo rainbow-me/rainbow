@@ -8,9 +8,7 @@ const RAINBOW_WALLET_ADDRESS = '0x7a3d05c70581bD345fe117c06e45f9669205384f';
 const android = device.getPlatform() === 'android';
 
 const testEthereumDeeplink = async (url, coldStart = true) => {
-  coldStart
-    ? await Helpers.openDeeplinkColdStart(url)
-    : await Helpers.openDeeplinkFromBackground(url);
+  coldStart ? await Helpers.openDeeplinkColdStart(url) : await Helpers.openDeeplinkFromBackground(url);
   await Helpers.checkIfVisible('send-sheet-confirm-action-button', 30000);
   // Because we don't have ETH in this wallet
   try {
@@ -60,10 +58,7 @@ describe.skip('Deeplinks spec', () => {
 
   it('Should show the "Add wallet modal" after tapping import with a valid private key"', async () => {
     await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
-    await Helpers.checkIfElementHasString(
-      'import-sheet-button-label',
-      'Continue'
-    );
+    await Helpers.checkIfElementHasString('import-sheet-button-label', 'Continue');
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.checkIfVisible('wallet-info-modal');
   });
@@ -90,46 +85,33 @@ describe.skip('Deeplinks spec', () => {
   });
 
   it('should show the Profile Sheet for rainbow.me universal links with ENS names', async () => {
-    await Helpers.openDeeplinkFromBackground(
-      'https://rainbow.me/profile/rainbowwallet.eth'
-    );
+    await Helpers.openDeeplinkFromBackground('https://rainbow.me/profile/rainbowwallet.eth');
     await Helpers.checkIfVisible('profile-sheet', 30000);
     await Helpers.checkIfElementByTextIsVisible('rainbowwallet.eth', 30000);
     await Helpers.swipe('profile-sheet', 'down');
   });
 
   it('should show the Profile Sheet for rainbow.me universal links with 0x addresses', async () => {
-    await Helpers.openDeeplinkFromBackground(
-      'https://rainbow.me/profile/0xE46aBAf75cFbFF815c0b7FfeD6F02B0760eA27f1'
-    );
+    await Helpers.openDeeplinkFromBackground('https://rainbow.me/profile/0xE46aBAf75cFbFF815c0b7FfeD6F02B0760eA27f1');
     await Helpers.checkIfVisible('profile-sheet', 30000);
-    await Helpers.checkIfElementByTextIsVisible(
-      '0xE46aBAf75cFbFF815c0b7FfeD6F02B0760eA27f1',
-      30000
-    );
+    await Helpers.checkIfElementByTextIsVisible('0xE46aBAf75cFbFF815c0b7FfeD6F02B0760eA27f1', 30000);
     await Helpers.swipe('profile-sheet', 'down');
   });
 
   it.skip('should be able to handle ethereum payments urls for ETH (mainnet)', async () => {
-    const url = escapeUrl(
-      `ethereum:payment-${RAINBOW_WALLET_ADDRESS}@1?value=1e2`
-    );
+    const url = escapeUrl(`ethereum:payment-${RAINBOW_WALLET_ADDRESS}@1?value=1e2`);
     await testEthereumDeeplink(url, false);
   });
 
   it.skip('should be able to handle ethereum payments urls for ETH (optimism)', async () => {
-    const url = escapeUrl(
-      `ethereum:payment-${RAINBOW_WALLET_ADDRESS}@10?value=1e15`
-    );
+    const url = escapeUrl(`ethereum:payment-${RAINBOW_WALLET_ADDRESS}@10?value=1e15`);
     await testEthereumDeeplink(url, false);
   });
 
   // FIXME: when doing open deeplinks with cold start, the account assets state
   // comes back empty, find a fix and then change these tests to cold-start again
   it('should be able to handle ethereum payments urls for DAI (mainnet)', async () => {
-    const url = escapeUrl(
-      `ethereum:0x6b175474e89094c44da98b954eedeac495271d0f@1/transfer?address=${RAINBOW_WALLET_ADDRESS}&uint256=1e18`
-    );
+    const url = escapeUrl(`ethereum:0x6b175474e89094c44da98b954eedeac495271d0f@1/transfer?address=${RAINBOW_WALLET_ADDRESS}&uint256=1e18`);
     await testEthereumDeeplink(url, false);
   });
 
@@ -143,18 +125,14 @@ describe.skip('Deeplinks spec', () => {
   // FIXME: when doing open deeplinks with cold start, the account assets state
   // comes back empty, find a fix and then change these tests to cold-start again
   it.skip('should be able to handle ethereum payments urls for DAI (optimism)', async () => {
-    const url = escapeUrl(
-      `ethereum:0xda10009cbd5d07dd0cecc66161fc93d7c9000da1@10/transfer?address=${RAINBOW_WALLET_ADDRESS}&uint256=1e15`
-    );
+    const url = escapeUrl(`ethereum:0xda10009cbd5d07dd0cecc66161fc93d7c9000da1@10/transfer?address=${RAINBOW_WALLET_ADDRESS}&uint256=1e15`);
     await testEthereumDeeplink(url, false);
   });
 
   // FIXME: when doing open deeplinks with cold start, the account assets state
   // comes back empty, find a fix and then change these tests to cold-start again
   it.skip('should be able to handle ethereum payments urls for MATIC (polygon)', async () => {
-    const url = escapeUrl(
-      `ethereum:payment-${RAINBOW_WALLET_ADDRESS}@137?value=1e15`
-    );
+    const url = escapeUrl(`ethereum:payment-${RAINBOW_WALLET_ADDRESS}@137?value=1e15`);
     await testEthereumDeeplink(url, false);
   });
 

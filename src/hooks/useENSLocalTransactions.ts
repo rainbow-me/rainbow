@@ -1,9 +1,5 @@
 import { useSelector } from 'react-redux';
-import {
-  useAccountSettings,
-  useAccountTransactions,
-  usePendingTransactions,
-} from '.';
+import { useAccountSettings, useAccountTransactions, usePendingTransactions } from '.';
 import { ENSRegistrationState } from '@/entities';
 import { AppState } from '@/redux/store';
 import { ethereumUtils } from '@/utils';
@@ -18,20 +14,15 @@ export default function useENSLocalTransactions({ name }: { name: string }) {
 
   const registration = useSelector(({ ensRegistration }: AppState) => {
     const { registrations } = ensRegistration as ENSRegistrationState;
-    const accountRegistrations =
-      registrations?.[accountAddress.toLowerCase()] || {};
+    const accountRegistrations = registrations?.[accountAddress.toLowerCase()] || {};
     const registration = accountRegistrations[name];
     return registration;
   });
 
   const commitTransactionHash = registration?.commitTransactionHash?.toString();
-  const pendingRegistrationTransaction = getPendingTransactionByHash(
-    registration?.registerTransactionHash?.toString() || ''
-  );
+  const pendingRegistrationTransaction = getPendingTransactionByHash(registration?.registerTransactionHash?.toString() || '');
   const confirmedRegistrationTransaction = transactions.find(
-    (txn: any) =>
-      ethereumUtils.getHash(txn) === registration?.registerTransactionHash &&
-      !txn.pending
+    (txn: any) => ethereumUtils.getHash(txn) === registration?.registerTransactionHash && !txn.pending
   );
 
   return {

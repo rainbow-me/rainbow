@@ -6,8 +6,7 @@ import { NativeScrollEvent, Platform } from 'react-native';
 // ts wants to lint reanimated codebase but it doesn't quite work
 // so let's just assume it's any for now
 /* eslint-disable import/no-commonjs */
-const WorkletEventHandlerClass = require('react-native-reanimated/src/reanimated2/WorkletEventHandler')
-  .default;
+const WorkletEventHandlerClass = require('react-native-reanimated/src/reanimated2/WorkletEventHandler').default;
 const { makeRemote } = require('react-native-reanimated/src/reanimated2/core');
 /* eslint-enable import/no-commonjs */
 
@@ -69,22 +68,15 @@ function isWeb(): boolean {
 }
 
 // this is supposed to work as useEffect comparison
-export function areDependenciesEqual(
-  nextDeps: DependencyList,
-  prevDeps: DependencyList
-): boolean {
+export function areDependenciesEqual(nextDeps: DependencyList, prevDeps: DependencyList): boolean {
   function is(x: number, y: number) {
     /* eslint-disable no-self-compare */
     return (x === y && (x !== 0 || 1 / x === 1 / y)) || (x !== x && y !== y);
     /* eslint-enable no-self-compare */
   }
-  const objectIs: (nextDeps: unknown, prevDeps: unknown) => boolean =
-    typeof Object.is === 'function' ? Object.is : is;
+  const objectIs: (nextDeps: unknown, prevDeps: unknown) => boolean = typeof Object.is === 'function' ? Object.is : is;
 
-  function areHookInputsEqual(
-    nextDeps: DependencyList,
-    prevDeps: DependencyList
-  ): boolean {
+  function areHookInputsEqual(nextDeps: DependencyList, prevDeps: DependencyList): boolean {
     if (!nextDeps || !prevDeps || prevDeps.length !== nextDeps.length) {
       return false;
     }
@@ -121,18 +113,14 @@ export function useHandler<T, TContext extends Context>(
 
   dependencies = buildDependencies(dependencies, handlers);
 
-  const doDependenciesDiffer = !areDependenciesEqual(
-    dependencies,
-    savedDependencies
-  );
+  const doDependenciesDiffer = !areDependenciesEqual(dependencies, savedDependencies);
   initRef.current.savedDependencies = dependencies;
   const useWeb = isWeb();
 
   return { context, doDependenciesDiffer, useWeb };
 }
 
-export interface ScrollHandler<TContext extends Context>
-  extends WorkletFunction {
+export interface ScrollHandler<TContext extends Context> extends WorkletFunction {
   (event: NativeScrollEvent, context?: TContext): void;
 }
 
@@ -152,10 +140,7 @@ export function useAnimatedPageScrollHandler<TContext extends Context>(
   const scrollHandlers: Record<string, Handler<ScrollEvent, TContext>> = {
     onPageScroll: handlers,
   };
-  const { context, doDependenciesDiffer } = useHandler<ScrollEvent, TContext>(
-    scrollHandlers,
-    dependencies
-  );
+  const { context, doDependenciesDiffer } = useHandler<ScrollEvent, TContext>(scrollHandlers, dependencies);
 
   // build event subscription array
 
@@ -173,24 +158,13 @@ export function useAnimatedPageScrollHandler<TContext extends Context>(
 }
 
 // builds one big hash from multiple worklets' hashes
-function buildWorkletsHash(
-  handlers: Record<string, WorkletFunction> | WorkletFunction[]
-): string {
-  return Object.values(handlers).reduce(
-    (acc: string, worklet: WorkletFunction) =>
-      acc + worklet.__workletHash!.toString(),
-    ''
-  );
+function buildWorkletsHash(handlers: Record<string, WorkletFunction> | WorkletFunction[]): string {
+  return Object.values(handlers).reduce((acc: string, worklet: WorkletFunction) => acc + worklet.__workletHash!.toString(), '');
 }
 
 // builds dependencies array for gesture handlers
-function buildDependencies(
-  dependencies: DependencyList,
-  handlers: Record<string, WorkletFunction | undefined>
-): unknown[] {
-  const handlersList: WorkletFunction[] = Object.values(handlers).filter(
-    handler => handler !== undefined
-  ) as WorkletFunction[];
+function buildDependencies(dependencies: DependencyList, handlers: Record<string, WorkletFunction | undefined>): unknown[] {
+  const handlersList: WorkletFunction[] = Object.values(handlers).filter(handler => handler !== undefined) as WorkletFunction[];
   if (!dependencies) {
     dependencies = handlersList.map(handler => {
       return {

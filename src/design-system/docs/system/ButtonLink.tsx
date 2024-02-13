@@ -6,13 +6,7 @@ type ButtonLinkProps = ButtonOverlayProps & {
   href: string;
 };
 
-export const ButtonLink = ({
-  children,
-  color,
-  iconBefore,
-  href,
-  size,
-}: ButtonLinkProps) => (
+export const ButtonLink = ({ children, color, iconBefore, href, size }: ButtonLinkProps) => (
   <a href={href} rel="noreferrer" target="_blank">
     <ButtonOverlay color={color} iconBefore={iconBefore} size={size}>
       {children}

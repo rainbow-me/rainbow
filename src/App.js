@@ -1,15 +1,7 @@
 import './languages';
 import * as Sentry from '@sentry/react-native';
 import React, { Component } from 'react';
-import {
-  AppRegistry,
-  AppState,
-  Dimensions,
-  InteractionManager,
-  Linking,
-  LogBox,
-  View,
-} from 'react-native';
+import { AppRegistry, AppState, Dimensions, InteractionManager, Linking, LogBox, View } from 'react-native';
 
 // eslint-disable-next-line import/default
 import codePush from 'react-native-code-push';
@@ -20,23 +12,14 @@ import { RecoilRoot } from 'recoil';
 import PortalConsumer from './components/PortalConsumer';
 import ErrorBoundary from './components/error-boundary/ErrorBoundary';
 import { OfflineToast } from './components/toasts';
-import {
-  designSystemPlaygroundEnabled,
-  reactNativeDisableYellowBox,
-  showNetworkRequests,
-  showNetworkResponses,
-} from './config/debug';
+import { designSystemPlaygroundEnabled, reactNativeDisableYellowBox, showNetworkRequests, showNetworkResponses } from './config/debug';
 import monitorNetwork from './debugging/network';
 import { Playground } from './design-system/playground/Playground';
 import { TransactionType } from './entities';
 import appEvents from './handlers/appEvents';
 import handleDeeplink from './handlers/deeplinks';
 import { runWalletBackupStatusChecks } from './handlers/walletReadyEvents';
-import {
-  getCachedProviderForNetwork,
-  isHardHat,
-  isL2Network,
-} from './handlers/web3';
+import { getCachedProviderForNetwork, isHardHat, isL2Network } from './handlers/web3';
 import RainbowContextWrapper from './helpers/RainbowContext';
 import isTestFlight from './helpers/isTestFlight';
 import networkTypes from './helpers/networkTypes';
@@ -48,11 +31,7 @@ import RoutesComponent from './navigation/Routes';
 import { PerformanceContextMap } from './performance/PerformanceContextMap';
 import { PerformanceTracking } from './performance/tracking';
 import { PerformanceMetrics } from './performance/tracking/types/PerformanceMetrics';
-import {
-  PersistQueryClientProvider,
-  persistOptions,
-  queryClient,
-} from './react-query';
+import { PersistQueryClientProvider, persistOptions, queryClient } from './react-query';
 import store from './redux/store';
 import { walletConnectLoadState } from './redux/walletconnect';
 import { rainbowTokenList } from './references';
@@ -68,10 +47,7 @@ import { Portal } from '@/react-native-cool-modals/Portal';
 import { NotificationsHandler } from '@/notifications/NotificationsHandler';
 import { initSentry, sentryRoutingInstrumentation } from '@/logger/sentry';
 import { analyticsV2 } from '@/analytics';
-import {
-  getOrCreateDeviceId,
-  securelyHashWalletAddress,
-} from '@/analytics/utils';
+import { getOrCreateDeviceId, securelyHashWalletAddress } from '@/analytics/utils';
 import { logger, RainbowError } from '@/logger';
 import * as ls from '@/storage';
 import { migrate } from '@/migrations';
@@ -87,8 +63,7 @@ import { initializeRemoteConfig } from '@/model/remoteConfig';
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
-  (showNetworkRequests || showNetworkResponses) &&
-    monitorNetwork(showNetworkRequests, showNetworkResponses);
+  (showNetworkRequests || showNetworkResponses) && monitorNetwork(showNetworkRequests, showNetworkResponses);
 }
 
 enableScreens();
@@ -114,11 +89,7 @@ class OldApp extends Component {
 
     // main Branch handler
     this.branchListener = await branchListener(url => {
-      logger.debug(
-        `Branch: listener called`,
-        {},
-        logger.DebugContext.deeplinks
-      );
+      logger.debug(`Branch: listener called`, {}, logger.DebugContext.deeplinks);
 
       try {
         handleDeeplink(url, this.state.initialRoute);
@@ -145,18 +116,13 @@ class OldApp extends Component {
     InteractionManager.runAfterInteractions(() => {
       rainbowTokenList.update();
     });
-    const eventSub = AppState?.addEventListener(
-      'change',
-      this?.handleAppStateChange
-    );
+    const eventSub = AppState?.addEventListener('change', this?.handleAppStateChange);
     this.setState({ eventSubscription: eventSub });
     appEvents.on('transactionConfirmed', this.handleTransactionConfirmed);
 
     await this.setupDeeplinking();
 
-    PerformanceTracking.finishMeasuring(
-      PerformanceMetrics.loadRootAppComponent
-    );
+    PerformanceTracking.finishMeasuring(PerformanceMetrics.loadRootAppComponent);
     analyticsV2.track(analyticsV2.event.applicationDidMount);
 
     /**
@@ -223,9 +189,7 @@ class OldApp extends Component {
   };
 
   handleTransactionConfirmed = tx => {
-    const network = tx.chainId
-      ? ethereumUtils.getNetworkFromChainId(tx.chainId)
-      : tx.network || networkTypes.mainnet;
+    const network = tx.chainId ? ethereumUtils.getNetworkFromChainId(tx.chainId) : tx.network || networkTypes.mainnet;
     const isL2 = isL2Network(network);
 
     const provider = getCachedProviderForNetwork(network);
@@ -264,9 +228,7 @@ class OldApp extends Component {
   };
 
   handleSentryNavigationIntegration = () => {
-    sentryRoutingInstrumentation?.registerNavigationContainer(
-      this.navigatorRef
-    );
+    sentryRoutingInstrumentation?.registerNavigationContainer(this.navigatorRef);
   };
 
   render() {
@@ -277,10 +239,7 @@ class OldApp extends Component {
             <RemotePromoSheetProvider isWalletReady={this.props.walletReady}>
               <RemoteCardProvider>
                 <InitialRouteContext.Provider value={this.state.initialRoute}>
-                  <RoutesComponent
-                    onReady={this.handleSentryNavigationIntegration}
-                    ref={this.handleNavigatorRef}
-                  />
+                  <RoutesComponent onReady={this.handleSentryNavigationIntegration} ref={this.handleNavigatorRef} />
                   <PortalConsumer />
                 </InitialRouteContext.Provider>
               </RemoteCardProvider>
@@ -316,9 +275,7 @@ function Root() {
       const [deviceId, deviceIdWasJustCreated] = await getOrCreateDeviceId();
       const currentWalletAddress = await keychain.loadString(addressKey);
       const currentWalletAddressHash =
-        typeof currentWalletAddress === 'string'
-          ? securelyHashWalletAddress(currentWalletAddress)
-          : undefined;
+        typeof currentWalletAddress === 'string' ? securelyHashWalletAddress(currentWalletAddress) : undefined;
 
       Sentry.setUser({
         id: deviceId,
@@ -366,11 +323,7 @@ function Root() {
         // on very first open, set some default data and fire event
         logger.info(`User opened application for the first time`);
 
-        const {
-          width: screenWidth,
-          height: screenHeight,
-          scale: screenScale,
-        } = Dimensions.get('screen');
+        const { width: screenWidth, height: screenHeight, scale: screenScale } = Dimensions.get('screen');
 
         analyticsV2.identify({ screenHeight, screenWidth, screenScale });
         analyticsV2.track(analyticsV2.event.firstAppOpen);
@@ -407,10 +360,7 @@ function Root() {
   return initializing ? null : (
     <ReduxProvider store={store}>
       <RecoilRoot>
-        <PersistQueryClientProvider
-          client={queryClient}
-          persistOptions={persistOptions}
-        >
+        <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
           <SafeAreaProvider>
             <MainThemeProvider>
               <RainbowContextWrapper>
@@ -437,6 +387,4 @@ const PlaygroundWithReduxStore = () => (
   </ReduxProvider>
 );
 
-AppRegistry.registerComponent('Rainbow', () =>
-  designSystemPlaygroundEnabled ? PlaygroundWithReduxStore : RootWithCodePush
-);
+AppRegistry.registerComponent('Rainbow', () => (designSystemPlaygroundEnabled ? PlaygroundWithReduxStore : RootWithCodePush));

@@ -1,33 +1,18 @@
-import React, {
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { useTheme } from '../../theme/ThemeContext';
 import { ExchangeInput } from '../exchange';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
-const BubbleInput = styled(ExchangeInput).attrs(
-  ({ isSmallPhone, isTinyPhone, theme: { isDarkMode } }) => ({
-    disableTabularNums: true,
-    keyboardAppearance: isDarkMode ? 'dark' : 'light',
-    letterSpacing: 'roundedTightest',
-    lineHeight: android
-      ? isTinyPhone
-        ? 27
-        : android || isSmallPhone
-        ? 31
-        : 38
-      : undefined,
-    size: isTinyPhone ? 'big' : isSmallPhone ? 'bigger' : 'h3',
-    weight: 'semibold',
-  })
-)(({ isTinyPhone }) => ({
+const BubbleInput = styled(ExchangeInput).attrs(({ isSmallPhone, isTinyPhone, theme: { isDarkMode } }) => ({
+  disableTabularNums: true,
+  keyboardAppearance: isDarkMode ? 'dark' : 'light',
+  letterSpacing: 'roundedTightest',
+  lineHeight: android ? (isTinyPhone ? 27 : android || isSmallPhone ? 31 : 38) : undefined,
+  size: isTinyPhone ? 'big' : isSmallPhone ? 'bigger' : 'h3',
+  weight: 'semibold',
+}))(({ isTinyPhone }) => ({
   ...(android ? (isTinyPhone ? { height: 40 } : { height: 46 }) : {}),
   ...(android ? { paddingBottom: 0, paddingTop: 0 } : {}),
 
@@ -65,10 +50,7 @@ const BubbleField = (
   const ref = useRef();
   useImperativeHandle(forwardedRef, () => ref.current);
 
-  const formattedValue = useMemo(() => format(String(value || '')), [
-    format,
-    value,
-  ]);
+  const formattedValue = useMemo(() => format(String(value || '')), [format, value]);
 
   const handleBlur = useCallback(
     event => {
@@ -99,10 +81,7 @@ const BubbleField = (
   );
 
   useEffect(() => {
-    if (
-      valueProp !== value &&
-      (!ref.current?.isFocused?.() || wasButtonPressed)
-    ) {
+    if (valueProp !== value && (!ref.current?.isFocused?.() || wasButtonPressed)) {
       setValue(valueProp);
       setWasButtonPressed(false);
     }
@@ -111,11 +90,7 @@ const BubbleField = (
   const { colors, isDarkMode } = useTheme();
 
   return (
-    <Column
-      flex={1}
-      pointerEvents={android || isFocused ? 'auto' : 'none'}
-      {...props}
-    >
+    <Column flex={1} pointerEvents={android || isFocused ? 'auto' : 'none'} {...props}>
       <Row align="center" justify="space-between">
         <BubbleInput
           autoFocus={autoFocus}
@@ -130,11 +105,7 @@ const BubbleField = (
           onChangeText={handleChangeText}
           onFocus={handleFocus}
           placeholder={placeholder}
-          placeholderTextColor={
-            maxLabelColor
-              ? colors.alpha(colors.blueGreyDark, 0.32)
-              : colors.alpha(colorForAsset, 0.4)
-          }
+          placeholderTextColor={maxLabelColor ? colors.alpha(colors.blueGreyDark, 0.32) : colors.alpha(colorForAsset, 0.4)}
           ref={ref}
           testID={testID + '-input'}
           value={formattedValue}

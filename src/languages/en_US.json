@@ -1289,7 +1289,6 @@
         "account": "Account",
         "points_you_have": "You Have",
         "points_earned": "Points Earned",
-        "share_bonus": "Share Bonus",
         "share_bonus_paragraph_one": "You're all set!",
         "share_bonus_paragraph_two": "Keep earning points by swapping, bridging, minting, referring friends, and more",
         "share_bonus_paragraph_three": "The more you use Rainbow, the more you'll be rewarded",
@@ -1329,7 +1328,8 @@
         "wallet_balance_required": "Wallet balance required",
         "require_balance_paragraph_one": "To continue, ensure you have an ETH balance on one of the following networks:",
         "require_balance_paragraph_two": "Or alternatively, a MATIC balance on Polygon or a BNB balance on BSC",
-        "fund_my_wallet": "Fund My Wallet"
+        "fund_my_wallet": "Fund My Wallet",
+        "points": "Points"
       }
     },
     "pools": {
@@ -2373,6 +2373,7 @@
         "message": "Paste WalletConnect URI below",
         "title": "New WalletConnect Session"
       },
+      "none": "None",
       "switch_network": "Switch Network",
       "switch_wallet": "Switch Wallet",
       "titles": {
@@ -2420,7 +2421,8 @@
         "request_invalid": "The request contained invalid parameters. Please try again or contact Rainbow and/or dapp support teams.",
         "eth_sign": "Rainbow does not support legacy eth_sign due to security concerns.  \n Please contact Rainbow and/or dapp support teams if you have any questions.",
         "request_unsupported_network": "The network specified in this request is not supported by Rainbow.",
-        "request_unsupported_methods": "The RPC method(s) specified in this request are not supported by Rainbow."
+        "request_unsupported_methods": "The RPC method(s) specified in this request are not supported by Rainbow.",
+        "no_accounts_found": "No accounts found in approved namespaces."
       },
       "dapp_warnings": {
         "info_alert": {

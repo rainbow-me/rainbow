@@ -1,11 +1,6 @@
 import React, { ReactNode } from 'react';
 import ButtonPressAnimation from '../../animations/ButtonPressAnimation';
-import {
-  AccentColorProvider,
-  Box,
-  Text,
-  useForegroundColor,
-} from '@/design-system';
+import { AccentColorProvider, Box, Text, useForegroundColor } from '@/design-system';
 
 type SelectableButtonProps = {
   children: ReactNode;
@@ -14,12 +9,7 @@ type SelectableButtonProps = {
   testID?: string;
 };
 
-export default function SelectableButton({
-  children,
-  onSelect,
-  isSelected,
-  testID,
-}: SelectableButtonProps) {
+export default function SelectableButton({ children, onSelect, isSelected, testID }: SelectableButtonProps) {
   const secondary06 = useForegroundColor('secondary06 (Deprecated)');
   const secondary30 = useForegroundColor('secondary30 (Deprecated)');
   const accent = useForegroundColor('accent');
@@ -48,12 +38,7 @@ export default function SelectableButton({
             paddingBottom: android ? 2 : 0,
           }}
         >
-          <Text
-            align="center"
-            color="accent"
-            size="16px / 22px (Deprecated)"
-            weight="heavy"
-          >
+          <Text align="center" color="accent" size="16px / 22px (Deprecated)" weight="heavy">
             {children}
           </Text>
         </Box>

@@ -17,29 +17,15 @@ module.exports = {
     module: {
       rules: [
         {
-          include: [
-            path.join(__dirname, '..'),
-            /react-native-markdown-display/,
-            /react-native-reanimated/,
-            /react-native-drop-shadow/,
-          ],
+          include: [path.join(__dirname, '..'), /react-native-markdown-display/, /react-native-reanimated/, /react-native-drop-shadow/],
           test: /\.(js|ts|tsx)$/,
           use: {
             loader: 'babel-loader',
             options: {
               cwd: path.join(__dirname, '..'),
-              extends: path.resolve(
-                __dirname,
-                './node_modules/playroom/.babelrc'
-              ),
+              extends: path.resolve(__dirname, './node_modules/playroom/.babelrc'),
               plugins: [
-                [
-                  path.resolve(
-                    __dirname,
-                    './node_modules/babel-plugin-react-native-web'
-                  ),
-                  { commonjs: true },
-                ],
+                [path.resolve(__dirname, './node_modules/babel-plugin-react-native-web'), { commonjs: true }],
                 'react-native-reanimated/plugin',
               ],
             },
@@ -67,10 +53,7 @@ module.exports = {
     resolve: {
       alias: {
         'react-native$': 'react-native-web',
-        'react-native-drop-shadow': path.join(
-          __dirname,
-          './react-native-drop-shadow.tsx'
-        ),
+        'react-native-drop-shadow': path.join(__dirname, './react-native-drop-shadow.tsx'),
       },
       extensions: ['.web.js', '.web.ts', '.web.tsx', '.js', '.ts', '.tsx'],
       modules: [path.join(__dirname, './node_modules'), 'node_modules'],

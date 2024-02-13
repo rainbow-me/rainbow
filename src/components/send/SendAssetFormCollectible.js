@@ -31,14 +31,12 @@ const NFTWrapper = styled(Column).attrs({
   width: '100%',
 });
 
-const Gradient = styled(LinearGradient).attrs(
-  ({ isTallPhone, theme: { colors } }) => ({
-    colors: colors.gradients.sendBackground,
-    end: { x: 0.5, y: isTallPhone ? 0.2 : 0.4 },
-    pointerEvents: 'none',
-    start: { x: 0.5, y: 0 },
-  })
-)({
+const Gradient = styled(LinearGradient).attrs(({ isTallPhone, theme: { colors } }) => ({
+  colors: colors.gradients.sendBackground,
+  end: { x: 0.5, y: isTallPhone ? 0.2 : 0.4 },
+  pointerEvents: 'none',
+  start: { x: 0.5, y: 0 },
+}))({
   ...position.coverAsObject,
   overflow: 'hidden',
 });
@@ -47,26 +45,14 @@ const GradientToggler = styled(OpacityToggler).attrs({
   tension: 500,
 })(position.coverAsObject);
 
-export default function SendAssetFormCollectible({
-  asset,
-  buttonRenderer,
-  txSpeedRenderer,
-  ...props
-}) {
-  const {
-    height: deviceHeight,
-    isTallPhone,
-    isTinyPhone,
-    width: deviceWidth,
-  } = useDimensions();
+export default function SendAssetFormCollectible({ asset, buttonRenderer, txSpeedRenderer, ...props }) {
+  const { height: deviceHeight, isTallPhone, isTinyPhone, width: deviceWidth } = useDimensions();
 
   const [containerHeight, setContainerHeight] = useState();
   const [containerWidth, setContainerWidth] = useState();
   const [isGradientVisible, setIsGradientVisible] = useState(false);
 
-  const { dimensions: cachedImageDimensions } = useImageMetadata(
-    asset.image_preview_url
-  );
+  const { dimensions: cachedImageDimensions } = useImageMetadata(asset.image_preview_url);
 
   const { height: imageHeight, width: imageWidth } = useMemo(() => {
     const imgDims = cachedImageDimensions || defaultImageDimensions;
@@ -76,8 +62,7 @@ export default function SendAssetFormCollectible({
     let width = defaultWidth;
     let height = defaultHeight;
 
-    const calculatedHeight =
-      deviceHeight - (isTallPhone ? 440 : isTinyPhone ? 360 : 420);
+    const calculatedHeight = deviceHeight - (isTallPhone ? 440 : isTinyPhone ? 360 : 420);
 
     if (height > calculatedHeight) {
       height = calculatedHeight;
@@ -89,13 +74,7 @@ export default function SendAssetFormCollectible({
     }
 
     return { height, width };
-  }, [
-    cachedImageDimensions,
-    deviceHeight,
-    deviceWidth,
-    isTallPhone,
-    isTinyPhone,
-  ]);
+  }, [cachedImageDimensions, deviceHeight, deviceWidth, isTallPhone, isTinyPhone]);
 
   const handleLayout = useCallback(
     ({ nativeEvent: { layout } }) => {

@@ -11,12 +11,9 @@ const docs: DocsType = {
   description: (
     <>
       <Docs.Text>
-        Renders children <Docs.Strong>vertically</Docs.Strong> in equal-height
-        rows by default, with consistent spacing between them.
+        Renders children <Docs.Strong>vertically</Docs.Strong> in equal-height rows by default, with consistent spacing between them.
       </Docs.Text>
-      <Docs.Text>
-        If there is only a single row, no space will be rendered.
-      </Docs.Text>
+      <Docs.Text>If there is only a single row, no space will be rendered.</Docs.Text>
     </>
   ),
   examples: [
@@ -27,17 +24,13 @@ const docs: DocsType = {
       description: (
         <>
           <Docs.Text>
-            You can optionally control row heights by manually rendering a{' '}
-            <Docs.Code>Row</Docs.Code> as a direct child of{' '}
-            <Docs.Code>Rows</Docs.Code>, which allows you to set an explicit{' '}
-            <Docs.Code>height</Docs.Code> prop.
+            You can optionally control row heights by manually rendering a <Docs.Code>Row</Docs.Code> as a direct child of{' '}
+            <Docs.Code>Rows</Docs.Code>, which allows you to set an explicit <Docs.Code>height</Docs.Code> prop.
           </Docs.Text>
           <Docs.Text>
-            A common usage of this is to make a row shrink to the height of its
-            content. This can be achieved by setting the row{' '}
-            <Docs.Code>height</Docs.Code> prop to{' '}
-            <Docs.Code>&quot;content&quot;</Docs.Code>. Any rows without an
-            explicit height will share the remaining space equally.
+            A common usage of this is to make a row shrink to the height of its content. This can be achieved by setting the row{' '}
+            <Docs.Code>height</Docs.Code> prop to <Docs.Code>&quot;content&quot;</Docs.Code>. Any rows without an explicit height will share
+            the remaining space equally.
           </Docs.Text>
         </>
       ),

@@ -8,13 +8,7 @@ import { Token } from '@/graphql/__generated__/metadata';
 // Types
 type TokenMetadata = Pick<
   Token,
-  | 'description'
-  | 'volume1d'
-  | 'marketCap'
-  | 'totalSupply'
-  | 'circulatingSupply'
-  | 'fullyDilutedValuation'
-  | 'links'
+  'description' | 'volume1d' | 'marketCap' | 'totalSupply' | 'circulatingSupply' | 'fullyDilutedValuation' | 'links'
 >;
 
 // Types for the query arguments
@@ -25,11 +19,7 @@ type AdditionalAssetDataArgs = {
 };
 
 // Query Key function
-const createAdditionalAssetDataQueryKey = ({
-  address,
-  network,
-  currency,
-}: AdditionalAssetDataArgs) => [
+const createAdditionalAssetDataQueryKey = ({ address, network, currency }: AdditionalAssetDataArgs) => [
   'additionalAssetData',
   address,
   network,
@@ -37,11 +27,7 @@ const createAdditionalAssetDataQueryKey = ({
 ];
 
 // Refactor the getAdditionalAssetData function to accept the new parameters
-async function getAdditionalAssetData({
-  address,
-  network,
-  currency,
-}: AdditionalAssetDataArgs): Promise<TokenMetadata | null> {
+async function getAdditionalAssetData({ address, network, currency }: AdditionalAssetDataArgs): Promise<TokenMetadata | null> {
   const chainId = ethereumUtils.getChainIdFromNetwork(network);
   const data = await metadataClient.tokenMetadata({
     address,
@@ -56,11 +42,7 @@ async function getAdditionalAssetData({
 }
 
 // Usage of the useQuery hook
-export default function useAdditionalAssetData({
-  address,
-  network,
-  currency,
-}: AdditionalAssetDataArgs) {
+export default function useAdditionalAssetData({ address, network, currency }: AdditionalAssetDataArgs) {
   return useQuery<TokenMetadata | null>(
     createAdditionalAssetDataQueryKey({ address, network, currency }),
     () => getAdditionalAssetData({ address, network, currency }),

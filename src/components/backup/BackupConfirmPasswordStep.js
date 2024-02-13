@@ -11,17 +11,8 @@ import { Centered, Column } from '../layout';
 import { GradientText, Text } from '../text';
 import BackupSheetKeyboardLayout from './BackupSheetKeyboardLayout';
 import { analytics } from '@/analytics';
-import {
-  cloudBackupPasswordMinLength,
-  isCloudBackupPasswordValid,
-} from '@/handlers/cloudBackup';
-import {
-  useBooleanState,
-  useDimensions,
-  useRouteExistsInNavigationState,
-  useWalletCloudBackup,
-  useWallets,
-} from '@/hooks';
+import { cloudBackupPasswordMinLength, isCloudBackupPasswordValid } from '@/handlers/cloudBackup';
+import { useBooleanState, useDimensions, useRouteExistsInNavigationState, useWalletCloudBackup, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
@@ -72,24 +63,16 @@ export default function BackupConfirmPasswordStep() {
   const walletCloudBackup = useWalletCloudBackup();
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const [validPassword, setValidPassword] = useState(false);
-  const [
-    passwordFocused,
-    setPasswordFocused,
-    setPasswordBlurred,
-  ] = useBooleanState(true);
+  const [passwordFocused, setPasswordFocused, setPasswordBlurred] = useBooleanState(true);
   const [password, setPassword] = useState('');
-  const [label, setLabel] = useState(
-    `􀎽 ${lang.t('back_up.confirm_password.confirm_backup')}`
-  );
+  const [label, setLabel] = useState(`􀎽 ${lang.t('back_up.confirm_password.confirm_backup')}`);
   const passwordRef = useRef();
   const keyboardShowListener = useRef(null);
   const keyboardHideListener = useRef(null);
   const { selectedWallet } = useWallets();
   const walletId = params?.walletId || selectedWallet.id;
 
-  const isSettingsRoute = useRouteExistsInNavigationState(
-    Routes.SETTINGS_SHEET
-  );
+  const isSettingsRoute = useRouteExistsInNavigationState(Routes.SETTINGS_SHEET);
 
   useEffect(() => {
     const keyboardDidShow = () => {
@@ -99,14 +82,8 @@ export default function BackupConfirmPasswordStep() {
     const keyboardDidHide = () => {
       setIsKeyboardOpen(false);
     };
-    keyboardShowListener.current = Keyboard.addListener(
-      'keyboardDidShow',
-      keyboardDidShow
-    );
-    keyboardHideListener.current = Keyboard.addListener(
-      'keyboardDidHide',
-      keyboardDidHide
-    );
+    keyboardShowListener.current = Keyboard.addListener('keyboardDidShow', keyboardDidShow);
+    keyboardHideListener.current = Keyboard.addListener('keyboardDidHide', keyboardDidHide);
     return () => {
       keyboardShowListener.current?.remove();
       keyboardHideListener.current?.remove();
@@ -134,12 +111,9 @@ export default function BackupConfirmPasswordStep() {
     setValidPassword(passwordIsValid);
   }, [password, passwordFocused]);
 
-  const onPasswordChange = useCallback(
-    ({ nativeEvent: { text: inputText } }) => {
-      setPassword(inputText);
-    },
-    []
-  );
+  const onPasswordChange = useCallback(({ nativeEvent: { text: inputText } }) => {
+    setPassword(inputText);
+  }, []);
 
   const onError = useCallback(msg => {
     passwordRef.current?.focus();
@@ -170,28 +144,13 @@ export default function BackupConfirmPasswordStep() {
       password,
       walletId,
     });
-  }, [
-    onError,
-    onSuccess,
-    password,
-    validPassword,
-    walletCloudBackup,
-    walletId,
-  ]);
+  }, [onError, onSuccess, password, validPassword, walletCloudBackup, walletId]);
 
   return (
-    <BackupSheetKeyboardLayout
-      footerButtonDisabled={!validPassword}
-      footerButtonLabel={label}
-      onSubmit={onSubmit}
-    >
+    <BackupSheetKeyboardLayout footerButtonDisabled={!validPassword} footerButtonLabel={label} onSubmit={onSubmit}>
       <Masthead>
-        {(isTinyPhone || samsungGalaxy) && isKeyboardOpen ? null : (
-          <MastheadIcon>􀙶</MastheadIcon>
-        )}
-        <Title>
-          {lang.t('back_up.confirm_password.enter_backup_password')}
-        </Title>
+        {(isTinyPhone || samsungGalaxy) && isKeyboardOpen ? null : <MastheadIcon>􀙶</MastheadIcon>}
+        <Title>{lang.t('back_up.confirm_password.enter_backup_password')}</Title>
         <DescriptionText>
           {lang.t('back_up.confirm_password.enter_backup_description', {
             cloudPlatformName: cloudPlatform,
@@ -201,19 +160,13 @@ export default function BackupConfirmPasswordStep() {
       <Column align="center" flex={1}>
         <PasswordField
           autoFocus
-          isInvalid={
-            password !== '' &&
-            password.length < cloudBackupPasswordMinLength &&
-            !passwordRef?.current?.isFocused?.()
-          }
+          isInvalid={password !== '' && password.length < cloudBackupPasswordMinLength && !passwordRef?.current?.isFocused?.()}
           onBlur={setPasswordBlurred}
           onChange={onPasswordChange}
           onFocus={setPasswordFocused}
           onSubmitEditing={onSubmit}
           password={password}
-          placeholder={lang.t(
-            'back_up.confirm_password.backup_password_placeholder'
-          )}
+          placeholder={lang.t('back_up.confirm_password.backup_password_placeholder')}
           ref={passwordRef}
         />
       </Column>

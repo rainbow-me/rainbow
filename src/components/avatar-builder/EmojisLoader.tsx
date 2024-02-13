@@ -11,12 +11,7 @@ const EmojisLoader = () => {
 
   return (
     <View style={sx.loader}>
-      <View
-        style={[
-          avatarBuilderStyles.sectionHeaderWrap,
-          { backgroundColor: colors.white },
-        ]}
-      >
+      <View style={[avatarBuilderStyles.sectionHeaderWrap, { backgroundColor: colors.white }]}>
         <Text
           style={[
             // @ts-expect-error Font weight type (string) is too broad to be used in styles when using TypeScript. Type Script complains that it should be a union of ... "900" | "800" ...

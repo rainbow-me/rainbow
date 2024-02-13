@@ -4,11 +4,7 @@ import meta from './BackgroundProvider.meta';
 
 const playground: Playground = {
   meta,
-  examples: [
-    examples.standardBackgrounds,
-    examples.customAccentColorDark,
-    examples.customAccentColorLight,
-  ],
+  examples: [examples.standardBackgrounds, examples.customAccentColorDark, examples.customAccentColorLight],
 };
 
 export default playground;

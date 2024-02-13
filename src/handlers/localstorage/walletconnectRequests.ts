@@ -33,11 +33,8 @@ export const getLocalRequests = async (accountAddress: any, network: any) => {
  * @param  {String}   [network]
  * @return {Void}
  */
-export const saveLocalRequests = async (
-  requests: any,
-  accountAddress: any,
-  network: any
-) => saveAccountLocal(REQUESTS, requests, accountAddress, network);
+export const saveLocalRequests = async (requests: any, accountAddress: any, network: any) =>
+  saveAccountLocal(REQUESTS, requests, accountAddress, network);
 
 /**
  * @desc remove request
@@ -46,11 +43,7 @@ export const saveLocalRequests = async (
  * @param  {String}   [requestId]
  * @return {Void}
  */
-export const removeLocalRequest = async (
-  address: any,
-  network: any,
-  requestId: any
-) => {
+export const removeLocalRequest = async (address: any, network: any, requestId: any) => {
   const requests = await getLocalRequests(address, network);
   const updatedRequests = { ...requests };
   // eslint-disable-next-line @typescript-eslint/no-dynamic-delete

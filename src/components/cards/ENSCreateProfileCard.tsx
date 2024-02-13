@@ -4,22 +4,8 @@ import ENSIcon from '../../assets/ensIcon.png';
 import { useNavigation } from '../../navigation/Navigation';
 import ImgixImage from '../images/ImgixImage';
 import { enableActionsOnReadOnlyWallet } from '@/config';
-import {
-  Bleed,
-  Box,
-  ColorModeProvider,
-  Column,
-  Columns,
-  Stack,
-  Text,
-} from '@/design-system';
-import {
-  prefetchENSAvatar,
-  prefetchENSRecords,
-  useAccountENSDomains,
-  useDimensions,
-  useWallets,
-} from '@/hooks';
+import { Bleed, Box, ColorModeProvider, Column, Columns, Stack, Text } from '@/design-system';
+import { prefetchENSAvatar, prefetchENSRecords, useAccountENSDomains, useDimensions, useWallets } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { watchingAlert } from '@/utils';
 import { GenericCard, Gradient } from './GenericCard';
@@ -73,12 +59,7 @@ export const ENSCreateProfileCard = () => {
 
   return (
     <ColorModeProvider value="lightTinted">
-      <GenericCard
-        gradient={GRADIENT}
-        onPress={handlePress}
-        testID="ens-create-profile-card"
-        type={cardType}
-      >
+      <GenericCard gradient={GRADIENT} onPress={handlePress} testID="ens-create-profile-card" type={cardType}>
         <Stack space="28px">
           <Columns>
             <Column>
@@ -92,11 +73,7 @@ export const ENSCreateProfileCard = () => {
               </Stack>
             </Column>
             <Column width="content">
-              <Box
-                alignItems="center"
-                width={{ custom: ORB_SIZE }}
-                height={{ custom: ORB_SIZE }}
-              >
+              <Box alignItems="center" width={{ custom: ORB_SIZE }} height={{ custom: ORB_SIZE }}>
                 {/* @ts-expect-error JavaScript component */}
                 <Box
                   as={ImgixImage}

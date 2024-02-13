@@ -1,12 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useLayoutEffect } from 'react';
-import Animated, {
-  Easing,
-  interpolate,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { Emoji } from '../text';
 
 const FloatingEmoji = ({
@@ -45,26 +39,13 @@ const FloatingEmoji = ({
       [1, fadeOut ? 0.89 : 1, fadeOut ? 0 : 1]
     );
 
-    const rotate =
-      interpolate(
-        progress,
-        [0, distance / 4, distance / 3, distance / 2, distance],
-        [0, -2, 0, 2, 0]
-      ) + 'deg';
+    const rotate = interpolate(progress, [0, distance / 4, distance / 3, distance / 2, distance], [0, -2, 0, 2, 0]) + 'deg';
 
-    const scale = interpolate(
-      progress,
-      [0, 15, 30, 50, distance],
-      [0, 1.2, 1.1, 1, scaleTo]
-    );
+    const scale = interpolate(progress, [0, 15, 30, 50, distance], [0, 1.2, 1.1, 1, scaleTo]);
 
     const everyThirdEmojiMultiplier = index % 3 === 0 ? 3 : 2;
     const everySecondEmojiMultiplier = index % 2 === 0 ? -1 : 1;
-    const translateXComponentA =
-      animation.value *
-      size *
-      everySecondEmojiMultiplier *
-      everyThirdEmojiMultiplier;
+    const translateXComponentA = animation.value * size * everySecondEmojiMultiplier * everyThirdEmojiMultiplier;
 
     /*
     We don't really know why these concrete numbers are used there.
@@ -78,9 +59,7 @@ const FloatingEmoji = ({
     );
     const translateXComponentB = wiggleMultiplierA * wiggleMultiplierB;
 
-    const translateX = disableHorizontalMovement
-      ? 0
-      : translateXComponentA + translateXComponentB;
+    const translateX = disableHorizontalMovement ? 0 : translateXComponentA + translateXComponentB;
 
     const translateY = disableVerticalMovement ? 0 : -progress;
 

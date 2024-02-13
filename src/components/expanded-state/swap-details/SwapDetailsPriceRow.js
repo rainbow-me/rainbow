@@ -2,42 +2,23 @@ import lang from 'i18n-js';
 import React, { useMemo } from 'react';
 import { ButtonPressAnimation } from '../../animations';
 import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
-import {
-  convertRawAmountToDecimalFormat,
-  divide,
-  handleSignificantDecimals,
-} from '@/helpers/utilities';
+import { convertRawAmountToDecimalFormat, divide, handleSignificantDecimals } from '@/helpers/utilities';
 import { useStepper, useSwapCurrencies } from '@/hooks';
 
 export default function SwapDetailsPriceRow({ tradeDetails, ...props }) {
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
-  const convertedSellAmount = convertRawAmountToDecimalFormat(
-    tradeDetails?.sellAmount,
-    inputCurrency.decimals
-  );
+  const convertedSellAmount = convertRawAmountToDecimalFormat(tradeDetails?.sellAmount, inputCurrency.decimals);
 
-  const convertedBuyAmount = convertRawAmountToDecimalFormat(
-    tradeDetails?.buyAmount,
-    outputCurrency.decimals
-  );
+  const convertedBuyAmount = convertRawAmountToDecimalFormat(tradeDetails?.buyAmount, outputCurrency.decimals);
 
-  const outputExecutionRateRaw = divide(
-    convertedSellAmount,
-    convertedBuyAmount
-  );
+  const outputExecutionRateRaw = divide(convertedSellAmount, convertedBuyAmount);
 
   const inputExecutionRateRaw = divide(convertedBuyAmount, convertedSellAmount);
 
-  const inputExecutionRate = handleSignificantDecimals(
-    inputExecutionRateRaw,
-    2
-  );
+  const inputExecutionRate = handleSignificantDecimals(inputExecutionRateRaw, 2);
 
-  const outputExecutionRate = handleSignificantDecimals(
-    outputExecutionRateRaw,
-    2
-  );
+  const outputExecutionRate = handleSignificantDecimals(outputExecutionRateRaw, 2);
 
   const steps = useMemo(
     () => [
@@ -59,12 +40,8 @@ export default function SwapDetailsPriceRow({ tradeDetails, ...props }) {
 
   return (
     <ButtonPressAnimation {...props} onPress={nextStep} scaleTo={1.06}>
-      <SwapDetailsRow
-        label={lang.t('expanded_state.swap_details.exchange_rate')}
-      >
-        <SwapDetailsValue letterSpacing="roundedTight">
-          {steps[step]}
-        </SwapDetailsValue>
+      <SwapDetailsRow label={lang.t('expanded_state.swap_details.exchange_rate')}>
+        <SwapDetailsValue letterSpacing="roundedTight">{steps[step]}</SwapDetailsValue>
         <SwapDetailsValue>{` 􀅌`}</SwapDetailsValue>
       </SwapDetailsRow>
     </ButtonPressAnimation>

@@ -31,13 +31,8 @@ export const getAllGlobalNotificationSettingsFromStorage = () => {
 /**
  * Writes an updated settings object to storage
  */
-export const setAllGlobalNotificationSettingsToStorage = (
-  settings: GlobalNotificationTopics
-) => {
-  notificationSettingsStorage.set(
-    GLOBAL_TOPICS_STORAGE_KEY,
-    JSON.stringify(settings)
-  );
+export const setAllGlobalNotificationSettingsToStorage = (settings: GlobalNotificationTopics) => {
+  notificationSettingsStorage.set(GLOBAL_TOPICS_STORAGE_KEY, JSON.stringify(settings));
 };
 
 /**
@@ -54,25 +49,16 @@ export const getAllWalletNotificationSettingsFromStorage = () => {
 /**
  * Grabs notification settings for wallet with a given address if it exists
  */
-export const getNotificationSettingsForWalletWithAddress = (
-  address: string
-) => {
+export const getNotificationSettingsForWalletWithAddress = (address: string) => {
   const allSettings = getAllWalletNotificationSettingsFromStorage();
-  return allSettings.find(
-    (wallet: WalletNotificationSettings) => wallet.address === address
-  );
+  return allSettings.find((wallet: WalletNotificationSettings) => wallet.address === address);
 };
 
 /**
  * Writes an updated settings object to storage
  */
-export const setAllWalletNotificationSettingsToStorage = (
-  settings: WalletNotificationSettings[]
-) => {
-  notificationSettingsStorage.set(
-    WALLET_TOPICS_STORAGE_KEY,
-    JSON.stringify(settings)
-  );
+export const setAllWalletNotificationSettingsToStorage = (settings: WalletNotificationSettings[]) => {
+  notificationSettingsStorage.set(WALLET_TOPICS_STORAGE_KEY, JSON.stringify(settings));
 };
 
 export const getExistingGroupSettingsFromStorage = () => {
@@ -97,10 +83,7 @@ export const updateSettingsForWalletsWithRelationshipType = (
     }
     return wallet;
   });
-  notificationSettingsStorage.set(
-    WALLET_TOPICS_STORAGE_KEY,
-    JSON.stringify(newSettings)
-  );
+  notificationSettingsStorage.set(WALLET_TOPICS_STORAGE_KEY, JSON.stringify(newSettings));
 
   return newSettings;
 };
@@ -122,10 +105,7 @@ export const updateSettingsForWalletWithAddress = (
     }
     return wallet;
   });
-  notificationSettingsStorage.set(
-    WALLET_TOPICS_STORAGE_KEY,
-    JSON.stringify(newSettings)
-  );
+  notificationSettingsStorage.set(WALLET_TOPICS_STORAGE_KEY, JSON.stringify(newSettings));
 
   return updatedSettings;
 };
@@ -141,10 +121,7 @@ export const updateGroupSettings = (options: GroupSettings): GroupSettings => {
     ...options,
   };
 
-  notificationSettingsStorage.set(
-    WALLET_GROUPS_STORAGE_KEY,
-    JSON.stringify(newSettings)
-  );
+  notificationSettingsStorage.set(WALLET_GROUPS_STORAGE_KEY, JSON.stringify(newSettings));
 
   return newSettings;
 };

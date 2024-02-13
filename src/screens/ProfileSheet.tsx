@@ -5,21 +5,8 @@ import RecyclerAssetList2 from '../components/asset-list/RecyclerAssetList2';
 import ProfileSheetHeader from '../components/ens-profile/ProfileSheetHeader';
 import Skeleton from '../components/skeleton/Skeleton';
 import { analytics } from '@/analytics';
-import {
-  AccentColorProvider,
-  Box,
-  Column,
-  Columns,
-  Inline,
-  Inset,
-  Stack,
-} from '@/design-system';
-import {
-  useAccountSettings,
-  useDimensions,
-  useENSAvatar,
-  useExternalWalletSectionsData,
-} from '@/hooks';
+import { AccentColorProvider, Box, Column, Columns, Inline, Inset, Stack } from '@/design-system';
+import { useAccountSettings, useDimensions, useENSAvatar, useExternalWalletSectionsData } from '@/hooks';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
@@ -51,36 +38,24 @@ export default function ProfileSheet() {
   const isPreview = name === Routes.PROFILE_PREVIEW_SHEET;
 
   // Prefetch first transaction timestamp unless already fetched for intro marquee
-  const {
-    isSuccess: hasFirstTxTimestampFetched,
-  } = useFirstTransactionTimestamp({ addressOrName: ensName });
+  const { isSuccess: hasFirstTxTimestampFetched } = useFirstTransactionTimestamp({ addressOrName: ensName });
 
   // Prefetch asset list
-  const {
-    isSuccess: hasListFetched,
-    briefSectionsData,
-  } = useExternalWalletSectionsData({
+  const { isSuccess: hasListFetched, briefSectionsData } = useExternalWalletSectionsData({
     address: profileAddress || undefined,
   });
 
-  const colorIndex = useMemo(
-    () => (profileAddress ? addressHashedColorIndex(profileAddress) : 0),
-    [profileAddress]
-  );
+  const colorIndex = useMemo(() => (profileAddress ? addressHashedColorIndex(profileAddress) : 0), [profileAddress]);
 
   const dominantColor = usePersistentDominantColorFromImage(avatar?.imageUrl);
 
-  const wrapperStyle = useMemo(() => ({ height: contentHeight }), [
-    contentHeight,
-  ]);
+  const wrapperStyle = useMemo(() => ({ height: contentHeight }), [contentHeight]);
 
   const accentColor =
     // Set accent color when ENS images have fetched & dominant
     // color is not loading.
     isAvatarFetched && typeof colorIndex === 'number'
-      ? dominantColor ||
-        colors.avatarBackgrounds[colorIndex] ||
-        colors.appleBlue
+      ? dominantColor || colors.avatarBackgrounds[colorIndex] || colors.appleBlue
       : colors.skeleton;
 
   const enableZoomableImages = !isPreview;
@@ -101,20 +76,13 @@ export default function ProfileSheet() {
         <AccentColorProvider color={accentColor}>
           <Box background="body (Deprecated)" testID="profile-sheet">
             <Box style={wrapperStyle}>
-              {!isPreview &&
-              (!isAddressSuccess ||
-                !hasListFetched ||
-                !hasFirstTxTimestampFetched) ? (
+              {!isPreview && (!isAddressSuccess || !hasListFetched || !hasFirstTxTimestampFetched) ? (
                 <Stack space="19px (Deprecated)">
                   <ProfileSheetHeader isLoading />
                   <PlaceholderList />
                 </Stack>
               ) : (
-                <RecyclerAssetList2
-                  externalAddress={profileAddress || ''}
-                  type="ens-profile"
-                  walletBriefSectionsData={briefSectionsData}
-                />
+                <RecyclerAssetList2 externalAddress={profileAddress || ''} type="ens-profile" walletBriefSectionsData={briefSectionsData} />
               )}
             </Box>
           </Box>
@@ -130,11 +98,7 @@ function AndroidWrapper({ children }: { children: React.ReactElement }) {
   const navbarHeight = screenHeight - windowHeight;
 
   return android ? (
-    <Box
-      borderTopRadius={30}
-      style={{ overflow: 'hidden' }}
-      top={{ custom: navbarHeight }}
-    >
+    <Box borderTopRadius={30} style={{ overflow: 'hidden' }} top={{ custom: navbarHeight }}>
       {children}
     </Box>
   ) : (
@@ -165,18 +129,8 @@ function PlaceholderRow() {
     <Columns>
       <Column width="content">
         <Inline alignVertical="center" space="10px" wrap={false}>
-          <Box
-            background="body (Deprecated)"
-            borderRadius={15}
-            height={{ custom: 30 }}
-            width={{ custom: 30 }}
-          />
-          <Box
-            background="body (Deprecated)"
-            borderRadius={15}
-            height={{ custom: 20 }}
-            width={{ custom: 200 }}
-          />
+          <Box background="body (Deprecated)" borderRadius={15} height={{ custom: 30 }} width={{ custom: 30 }} />
+          <Box background="body (Deprecated)" borderRadius={15} height={{ custom: 20 }} width={{ custom: 200 }} />
         </Inline>
       </Column>
     </Columns>

@@ -9,11 +9,7 @@ type Props = {
   paddingHorizontal?: Space;
 };
 
-export function RewardsSectionCard({
-  children,
-  paddingVertical = '20px',
-  paddingHorizontal = '20px',
-}: PropsWithChildren<Props>) {
+export function RewardsSectionCard({ children, paddingVertical = '20px', paddingHorizontal = '20px' }: PropsWithChildren<Props>) {
   const { isDarkMode } = useTheme();
 
   const bg = useBackgroundColor('surfaceSecondaryElevated');

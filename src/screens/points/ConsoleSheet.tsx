@@ -30,29 +30,14 @@ export const ConsoleSheet = () => {
   const deeplinked = params?.deeplinked;
   const viewWeeklyEarnings = params?.viewWeeklyEarnings;
 
-  const {
-    animationKey,
-    setReferralCode,
-    setProfile,
-    setAnimationKey,
-    setStep,
-    setShareBonusPoints,
-    setIntent,
-    setDeeplinked,
-  } = usePointsProfileContext();
+  const { animationKey, setReferralCode, setProfile, setAnimationKey, setStep, setIntent, setDeeplinked } = usePointsProfileContext();
 
   useEffect(() => {
     if (viewWeeklyEarnings) return;
 
     setReferralCode(referralCode);
     setDeeplinked(deeplinked);
-  }, [
-    setReferralCode,
-    referralCode,
-    setDeeplinked,
-    deeplinked,
-    viewWeeklyEarnings,
-  ]);
+  }, [setReferralCode, referralCode, setDeeplinked, deeplinked, viewWeeklyEarnings]);
 
   useEffect(() => {
     if (viewWeeklyEarnings) {
@@ -63,16 +48,8 @@ export const ConsoleSheet = () => {
     setProfile(undefined);
     setAnimationKey(0);
     setStep(RainbowPointsFlowSteps.Initialize);
-    setShareBonusPoints(0);
     setIntent(undefined);
-  }, [
-    viewWeeklyEarnings,
-    setProfile,
-    setAnimationKey,
-    setStep,
-    setShareBonusPoints,
-    setIntent,
-  ]);
+  }, [viewWeeklyEarnings, setProfile, setAnimationKey, setStep, setIntent]);
 
   useFocusEffect(
     useCallback(() => {
@@ -87,13 +64,7 @@ export const ConsoleSheet = () => {
 
   return (
     <Inset bottom={{ custom: SCREEN_BOTTOM_INSET }}>
-      <Box
-        height="full"
-        justifyContent="flex-end"
-        paddingHorizontal="16px"
-        style={{ gap: 24 }}
-        width="full"
-      >
+      <Box height="full" justifyContent="flex-end" paddingHorizontal="16px" style={{ gap: 24 }} width="full">
         <Animated.View style={styles.sheet}>
           <Box
             borderRadius={5}

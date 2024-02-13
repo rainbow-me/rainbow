@@ -22,13 +22,7 @@ export const LearnCard = ({ cardDetails, rotate, type }: LearnCardProps) => {
   const { isDarkMode } = useTheme();
   const { category, emoji, url, key } = cardDetails;
   const { name: routeName } = useRoute();
-  const {
-    gradient,
-    shadowColor,
-    orbColorLight,
-    primaryTextColor,
-    secondaryTextColor,
-  } = getLearnCardColorway(category, isDarkMode);
+  const { gradient, shadowColor, orbColorLight, primaryTextColor, secondaryTextColor } = getLearnCardColorway(category, isDarkMode);
 
   const onPress = () => {
     analyticsV2.track(analyticsV2.event.cardPressed, {
@@ -63,31 +57,17 @@ export const LearnCard = ({ cardDetails, rotate, type }: LearnCardProps) => {
         <Box height="full" justifyContent="space-between">
           <Inline alignHorizontal="justify">
             <Box style={{ maxWidth: 80 }}>
-              <Text
-                size="13pt"
-                weight="heavy"
-                color={{ custom: primaryTextColor }}
-                numberOfLines={1}
-              >
+              <Text size="13pt" weight="heavy" color={{ custom: primaryTextColor }} numberOfLines={1}>
                 {`􀫸 ${i18n.t(translations.learn).toUpperCase()}`}
               </Text>
             </Box>
             <IconOrb color={orbColorLight} icon={emoji} />
           </Inline>
           <Stack space="10px">
-            <Text
-              color={{ custom: secondaryTextColor }}
-              size="13pt"
-              weight="bold"
-            >
+            <Text color={{ custom: secondaryTextColor }} size="13pt" weight="bold">
               {i18n.t(translations.categories[category])}
             </Text>
-            <Text
-              color={{ custom: primaryTextColor }}
-              size="17pt"
-              weight="heavy"
-              numberOfLines={2}
-            >
+            <Text color={{ custom: primaryTextColor }} size="17pt" weight="heavy" numberOfLines={2}>
               {i18n.t(translations.cards[key].title)}
             </Text>
           </Stack>
@@ -98,18 +78,10 @@ export const LearnCard = ({ cardDetails, rotate, type }: LearnCardProps) => {
             <Columns space="20px">
               <Column>
                 <Stack space="12px">
-                  <Text
-                    size="13pt"
-                    weight="bold"
-                    color={{ custom: secondaryTextColor }}
-                  >
+                  <Text size="13pt" weight="bold" color={{ custom: secondaryTextColor }}>
                     {i18n.t(translations.categories[category])}
                   </Text>
-                  <Text
-                    size="22pt"
-                    weight="heavy"
-                    color={{ custom: primaryTextColor }}
-                  >
+                  <Text size="22pt" weight="heavy" color={{ custom: primaryTextColor }}>
                     {i18n.t(translations.cards[key].title)}
                   </Text>
                 </Stack>
@@ -119,12 +91,7 @@ export const LearnCard = ({ cardDetails, rotate, type }: LearnCardProps) => {
               </Column>
             </Columns>
           </Box>
-          <Text
-            color={{ custom: primaryTextColor }}
-            size="13pt"
-            weight="semibold"
-            numberOfLines={3}
-          >
+          <Text color={{ custom: primaryTextColor }} size="13pt" weight="semibold" numberOfLines={3}>
             {i18n.t(translations.cards[key].description)}
           </Text>
         </Stack>

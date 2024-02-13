@@ -51,8 +51,7 @@ const ExchangeInput = (
 ) => {
   const { colors } = useTheme();
   const color = givenColor || colors.dark;
-  const placeholderTextColor =
-    givenPlaceholderTextColor || colors.alpha(colors.blueGreyDark, 0.3);
+  const placeholderTextColor = givenPlaceholderTextColor || colors.alpha(colors.blueGreyDark, 0.3);
   const selectionColor = givenSelectionColor || color;
   const [isFocused, setIsFocused] = useState(false);
   const [isTouched, setIsTouched] = useState(false);
@@ -135,14 +134,7 @@ const ExchangeInput = (
       />
       {useCustomAndroidMask && value > 0 && !ref.current?.isFocused() && (
         <AndroidMaskWrapper>
-          <Text
-            color={color}
-            letterSpacing={letterSpacing}
-            size={size}
-            testID={testID}
-            weight={weight}
-            {...props}
-          >
+          <Text color={color} letterSpacing={letterSpacing} size={size} testID={testID} weight={weight} {...props}>
             {valueToRender}
           </Text>
         </AndroidMaskWrapper>

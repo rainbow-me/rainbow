@@ -4,13 +4,7 @@ import meta from './Text.meta';
 
 const playground: Playground = {
   meta,
-  examples: [
-    ...examples.sizes,
-    examples.withColor,
-    examples.withEmoji,
-    examples.withTruncation,
-    examples.withWeight,
-  ],
+  examples: [...examples.sizes, examples.withColor, examples.withEmoji, examples.withTruncation, examples.withWeight],
 };
 
 export default playground;

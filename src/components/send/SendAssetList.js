@@ -1,11 +1,7 @@
 import React, { Fragment } from 'react';
 import { LayoutAnimation } from 'react-native';
 import { View } from 'react-primitives';
-import {
-  DataProvider,
-  LayoutProvider,
-  RecyclerListView,
-} from 'recyclerlistview';
+import { DataProvider, LayoutProvider, RecyclerListView } from 'recyclerlistview';
 import { buildCoinsList } from '../../helpers/assets';
 import { deviceUtils } from '../../utils';
 import Divider, { DividerSize } from '../Divider';
@@ -40,21 +36,9 @@ export default class SendAssetList extends React.Component {
   constructor(props) {
     super(props);
 
-    const {
-      hiddenCoins,
-      nativeCurrency,
-      pinnedCoins,
-      sortedAssets,
-      uniqueTokens,
-    } = props;
+    const { hiddenCoins, nativeCurrency, pinnedCoins, sortedAssets, uniqueTokens } = props;
 
-    const { assets } = buildCoinsList(
-      sortedAssets,
-      nativeCurrency,
-      false,
-      pinnedCoins,
-      hiddenCoins
-    );
+    const { assets } = buildCoinsList(sortedAssets, nativeCurrency, false, pinnedCoins, hiddenCoins);
 
     let smallBalances = [];
     let shitcoins = [];
@@ -105,35 +89,16 @@ export default class SendAssetList extends React.Component {
         if (i < visibleAssetsLength - 1) {
           return 'COIN_ROW';
         } else if (i === visibleAssetsLength - 1) {
-          return shitcoins && shitcoins.length !== 0
-            ? 'COIN_ROW'
-            : 'COIN_ROW_LAST';
-        } else if (
-          i === visibleAssetsLength &&
-          shitcoins &&
-          shitcoins.length > 0
-        ) {
+          return shitcoins && shitcoins.length !== 0 ? 'COIN_ROW' : 'COIN_ROW_LAST';
+        } else if (i === visibleAssetsLength && shitcoins && shitcoins.length > 0) {
           return {
             size: this.state.openShitcoins ? rowHeight * shitcoins.length : 0,
             type: 'SHITCOINS_ROW',
           };
         } else {
-          if (
-            this.state.openCards[
-              uniqueTokens[
-                i -
-                  visibleAssetsLength -
-                  (shitcoins && shitcoins.length > 0 ? 1 : 0)
-              ]?.familyId
-            ]
-          ) {
+          if (this.state.openCards[uniqueTokens[i - visibleAssetsLength - (shitcoins && shitcoins.length > 0 ? 1 : 0)]?.familyId]) {
             return {
-              size:
-                uniqueTokens[
-                  i -
-                    visibleAssetsLength -
-                    (shitcoins && shitcoins.length > 0 ? 1 : 0)
-                ].data.length + 1,
+              size: uniqueTokens[i - visibleAssetsLength - (shitcoins && shitcoins.length > 0 ? 1 : 0)].data.length + 1,
               type: 'COLLECTIBLE_ROW',
             };
           } else {
@@ -175,16 +140,13 @@ export default class SendAssetList extends React.Component {
     const { sortedAssets, uniqueTokens } = this.props;
     const { openCards, openShitcoins, visibleAssetsLength } = this.state;
 
-    LayoutAnimation.configureNext(
-      LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
-    );
+    LayoutAnimation.configureNext(LayoutAnimation.create(200, 'easeInEaseOut', 'opacity'));
     this.setState({ openCards: { ...openCards, [index]: !openCards[index] } });
     let familiesHeight = 0;
     if (openCards[index]) {
       for (let i = 0; i < index; i++) {
         if (openCards[i]) {
-          familiesHeight +=
-            familyHeaderHeight + uniqueTokens[i].data.length * familyRowHeight;
+          familiesHeight += familyHeaderHeight + uniqueTokens[i].data.length * familyRowHeight;
         } else {
           familiesHeight += familyHeaderHeight;
         }
@@ -192,36 +154,19 @@ export default class SendAssetList extends React.Component {
       const smallBalancesheight =
         sortedAssets.length === visibleAssetsLength
           ? 0
-          : smallBalancesHeader +
-            (openShitcoins
-              ? (sortedAssets.length - visibleAssetsLength) * rowHeight
-              : 0);
+          : smallBalancesHeader + (openShitcoins ? (sortedAssets.length - visibleAssetsLength) * rowHeight : 0);
 
-      const heightBelow =
-        visibleAssetsLength * rowHeight +
-        smallBalancesheight +
-        familiesHeight +
-        dividerHeight;
-      const renderSize =
-        familyHeaderHeight + uniqueTokens[index].data.length * familyRowHeight;
+      const heightBelow = visibleAssetsLength * rowHeight + smallBalancesheight + familiesHeight + dividerHeight;
+      const renderSize = familyHeaderHeight + uniqueTokens[index].data.length * familyRowHeight;
       const screenHeight = this.position + this.componentHeight;
       if (heightBelow + renderSize + rowHeight > screenHeight) {
         if (renderSize < this.componentHeight) {
           setTimeout(() => {
-            this.rlv.scrollToOffset(
-              0,
-              this.position +
-                (heightBelow + renderSize - screenHeight + familyHeaderHeight),
-              true
-            );
+            this.rlv.scrollToOffset(0, this.position + (heightBelow + renderSize - screenHeight + familyHeaderHeight), true);
           }, 10);
         } else {
           setTimeout(() => {
-            this.rlv.scrollToOffset(
-              0,
-              this.position - (this.position - heightBelow),
-              true
-            );
+            this.rlv.scrollToOffset(0, this.position - (this.position - heightBelow), true);
           }, 10);
         }
       }
@@ -229,9 +174,7 @@ export default class SendAssetList extends React.Component {
   };
 
   changeOpenShitcoins = () => {
-    LayoutAnimation.configureNext(
-      LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
-    );
+    LayoutAnimation.configureNext(LayoutAnimation.create(200, 'easeInEaseOut', 'opacity'));
     this.setState(prevState => ({ openShitcoins: !prevState.openShitcoins }));
   };
 
@@ -271,12 +214,7 @@ export default class SendAssetList extends React.Component {
 
   balancesRenderLastItem = item => (
     <Fragment>
-      <SendCoinRow
-        {...item}
-        onPress={() => this.props.onSelectAsset(item)}
-        rowHeight={rowHeight}
-        testID="send-asset"
-      />
+      <SendCoinRow {...item} onPress={() => this.props.onSelectAsset(item)} rowHeight={rowHeight} testID="send-asset" />
       <SendAssetListDivider />
     </Fragment>
   );
@@ -305,16 +243,9 @@ export default class SendAssetList extends React.Component {
     return (
       <View>
         <View marginTop={android ? 0 : 5}>
-          <CoinDividerOpenButton
-            isSmallBalancesOpen={openShitcoins}
-            onPress={this.changeOpenShitcoins}
-          />
+          <CoinDividerOpenButton isSmallBalancesOpen={openShitcoins} onPress={this.changeOpenShitcoins} />
         </View>
-        {openShitcoins && (
-          <View marginTop={android ? 1 : -4}>
-            {this.mapShitcoins(item.assets)}
-          </View>
-        )}
+        {openShitcoins && <View marginTop={android ? 1 : -4}>{this.mapShitcoins(item.assets)}</View>}
       </View>
     );
   };

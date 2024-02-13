@@ -1,10 +1,4 @@
-import {
-  ApolloClient,
-  ApolloQueryResult,
-  HttpLink,
-  InMemoryCache,
-  QueryOptions,
-} from '@apollo/client';
+import { ApolloClient, ApolloQueryResult, HttpLink, InMemoryCache, QueryOptions } from '@apollo/client';
 import { OperationVariables } from '@apollo/client/core/types';
 
 const defaultOptions = {

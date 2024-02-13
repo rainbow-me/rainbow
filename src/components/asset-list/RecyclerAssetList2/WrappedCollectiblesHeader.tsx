@@ -48,17 +48,13 @@ const CollectiblesHeader = () => {
 
         <ListHeaderMenu
           selected={nftSort}
-          menuItems={Object.entries(CollectibleSortByOptions).map(
-            ([key, value]) => ({
-              actionKey: value,
-              actionTitle: i18n.t(i18n.l.nfts.sort[value]),
-              icon: { iconType: 'SYSTEM', iconValue: getMenuItemIcon(value) },
-              menuState: nftSort === key ? 'on' : 'off',
-            })
-          )}
-          selectItem={string =>
-            updateNFTSort(string as CollectibleSortByOptions)
-          }
+          menuItems={Object.entries(CollectibleSortByOptions).map(([key, value]) => ({
+            actionKey: value,
+            actionTitle: i18n.t(i18n.l.nfts.sort[value]),
+            icon: { iconType: 'SYSTEM', iconValue: getMenuItemIcon(value) },
+            menuState: nftSort === key ? 'on' : 'off',
+          }))}
+          selectItem={string => updateNFTSort(string as CollectibleSortByOptions)}
           icon={getIconForSortType(nftSort)}
           text={i18n.t(i18n.l.nfts.sort[nftSort])}
         />

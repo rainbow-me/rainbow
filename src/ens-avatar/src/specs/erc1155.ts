@@ -20,10 +20,7 @@ export default class ERC1155 {
     opts?: AvatarRequestOpts
   ) {
     const contract = new Contract(contractAddress, abi, provider);
-    const [tokenURI, balance] = await Promise.all([
-      contract.uri(tokenID),
-      ownerAddress && contract.balanceOf(ownerAddress, tokenID),
-    ]);
+    const [tokenURI, balance] = await Promise.all([contract.uri(tokenID), ownerAddress && contract.balanceOf(ownerAddress, tokenID)]);
     if (!opts?.allowNonOwnerNFTs && ownerAddress && balance.eq(0)) return null;
 
     let image;
@@ -32,10 +29,7 @@ export default class ERC1155 {
     let _resolvedUri = resolvedURI;
     if (isOnChain) {
       if (isEncoded) {
-        _resolvedUri = Buffer.from(
-          resolvedURI.replace('data:application/json;base64,', ''),
-          'base64'
-        ).toString();
+        _resolvedUri = Buffer.from(resolvedURI.replace('data:application/json;base64,', ''), 'base64').toString();
       }
       const data = JSON.parse(_resolvedUri);
       image = svgToPngIfNeeded(data?.image, false);

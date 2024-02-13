@@ -2,11 +2,7 @@ import React from 'react';
 import { Path } from 'react-native-svg';
 import Svg from '../Svg';
 
-const SnapchatIcon = ({
-  colors = undefined,
-  color = colors.black,
-  ...props
-}) => {
+const SnapchatIcon = ({ colors = undefined, color = colors.black, ...props }) => {
   return (
     <Svg height="24" viewBox="0 0 24 24" width="24" {...props}>
       <Path

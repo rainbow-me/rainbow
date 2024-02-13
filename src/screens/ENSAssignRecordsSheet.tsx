@@ -3,68 +3,23 @@ import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import {
-  EmitterSubscription,
-  Keyboard,
-  LayoutChangeEvent,
-  ScrollView,
-} from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { EmitterSubscription, Keyboard, LayoutChangeEvent, ScrollView } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { useRecoilState } from 'recoil';
 import { ButtonPressAnimation } from '../components/animations/';
 import TintButton from '../components/buttons/TintButton';
-import {
-  RegistrationAvatar,
-  RegistrationCover,
-  TextRecordsForm,
-} from '../components/ens-registration';
+import { RegistrationAvatar, RegistrationCover, TextRecordsForm } from '../components/ens-registration';
 import SelectableButton from '../components/ens-registration/TextRecordsForm/SelectableButton';
 import { SheetActionButton, SheetActionButtonRow } from '../components/sheet';
 import { delayNext } from '../hooks/useMagicAutofocus';
 import { useNavigation } from '../navigation/Navigation';
 import { useTheme } from '../theme/ThemeContext';
-import {
-  ENSConfirmRegisterSheetHeight,
-  ENSConfirmUpdateSheetHeight,
-} from './ENSConfirmRegisterSheet';
+import { ENSConfirmRegisterSheetHeight, ENSConfirmUpdateSheetHeight } from './ENSConfirmRegisterSheet';
 import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
-import {
-  AccentColorProvider,
-  Bleed,
-  Box,
-  Cover,
-  Heading,
-  Inline,
-  Inset,
-  Row,
-  Rows,
-  Stack,
-  Text,
-} from '@/design-system';
-import {
-  getSeenOnchainDataDisclaimer,
-  saveSeenOnchainDataDisclaimer,
-} from '@/handlers/localstorage/ens';
-import {
-  accentColorAtom,
-  ENS_RECORDS,
-  REGISTRATION_MODES,
-  TextRecordField,
-  textRecordFields,
-} from '@/helpers/ens';
+import { AccentColorProvider, Bleed, Box, Cover, Heading, Inline, Inset, Row, Rows, Stack, Text } from '@/design-system';
+import { getSeenOnchainDataDisclaimer, saveSeenOnchainDataDisclaimer } from '@/handlers/localstorage/ens';
+import { accentColorAtom, ENS_RECORDS, REGISTRATION_MODES, TextRecordField, textRecordFields } from '@/helpers/ens';
 import {
   useAccountProfile,
   useDimensions,
@@ -107,12 +62,9 @@ export default function ENSAssignRecordsSheet() {
 
   const defaultFields = useMemo(
     () =>
-      [
-        ENS_RECORDS.name,
-        ENS_RECORDS.description,
-        ENS_RECORDS.url,
-        ENS_RECORDS.twitter,
-      ].map(fieldName => textRecordFields[fieldName] as TextRecordField),
+      [ENS_RECORDS.name, ENS_RECORDS.description, ENS_RECORDS.url, ENS_RECORDS.twitter].map(
+        fieldName => textRecordFields[fieldName] as TextRecordField
+      ),
     []
   );
 
@@ -124,8 +76,7 @@ export default function ENSAssignRecordsSheet() {
   const { data: { records } = {} } = useENSRecords(name);
   const isEmptyProfile = isEmpty(records);
 
-  const displayTitleLabel =
-    params.mode !== REGISTRATION_MODES.EDIT || !isLoading;
+  const displayTitleLabel = params.mode !== REGISTRATION_MODES.EDIT || !isLoading;
 
   useENSRegistrationCosts({
     name,
@@ -137,13 +88,10 @@ export default function ENSAssignRecordsSheet() {
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
   const [accentColor, setAccentColor] = useRecoilState(accentColorAtom);
 
-  const avatarImage =
-    avatarUrl || initialAvatarUrl || params?.externalAvatarUrl || '';
+  const avatarImage = avatarUrl || initialAvatarUrl || params?.externalAvatarUrl || '';
   const dominantColor = usePersistentDominantColorFromImage(avatarImage);
 
-  const bottomActionHeight = isSmallPhone
-    ? BottomActionHeightSmall
-    : BottomActionHeight;
+  const bottomActionHeight = isSmallPhone ? BottomActionHeightSmall : BottomActionHeight;
 
   useFocusEffect(() => {
     if (dominantColor || (!dominantColor && !avatarImage)) {
@@ -193,11 +141,7 @@ export default function ENSAssignRecordsSheet() {
   return (
     <AccentColorProvider color={accentColor}>
       <Box
-        as={
-          (isInsideBottomSheet
-            ? BottomSheetScrollView
-            : ScrollView) as typeof ScrollView
-        }
+        as={(isInsideBottomSheet ? BottomSheetScrollView : ScrollView) as typeof ScrollView}
         background="body (Deprecated)"
         contentContainerStyle={{
           paddingBottom: bottomActionHeight + ExtraBottomPadding,
@@ -207,11 +151,7 @@ export default function ENSAssignRecordsSheet() {
         testID={`ens-${REGISTRATION_MODES.EDIT.toLowerCase()}-records-sheet`}
       >
         <Stack space="19px (Deprecated)">
-          <RegistrationCover
-            enableNFTs={hasNFTs}
-            hasSeenExplainSheet={hasSeenExplainSheet}
-            onShowExplainSheet={handleFocus}
-          />
+          <RegistrationCover enableNFTs={hasNFTs} hasSeenExplainSheet={hasSeenExplainSheet} onShowExplainSheet={handleFocus} />
           <Bleed top={{ custom: 38 }}>
             <Box alignItems="center">
               <RegistrationAvatar
@@ -225,30 +165,12 @@ export default function ENSAssignRecordsSheet() {
           <Inset horizontal="19px (Deprecated)">
             <Stack space="30px (Deprecated)">
               <Stack alignHorizontal="center" space="15px (Deprecated)">
-                <Heading
-                  align="center"
-                  numberOfLines={1}
-                  color="primary (Deprecated)"
-                  size="26px / 30px (Deprecated)"
-                  weight="heavy"
-                >
+                <Heading align="center" numberOfLines={1} color="primary (Deprecated)" size="26px / 30px (Deprecated)" weight="heavy">
                   {abbreviateEnsForDisplay(name, 15)}
                 </Heading>
-                <Text
-                  align="center"
-                  color="accent"
-                  size="16px / 22px (Deprecated)"
-                  weight="heavy"
-                >
+                <Text align="center" color="accent" size="16px / 22px (Deprecated)" weight="heavy">
                   {displayTitleLabel
-                    ? lang.t(
-                        `profiles.${
-                          isEmptyProfile &&
-                          params.mode !== REGISTRATION_MODES.EDIT
-                            ? 'create'
-                            : 'edit'
-                        }.label`
-                      )
+                    ? lang.t(`profiles.${isEmptyProfile && params.mode !== REGISTRATION_MODES.EDIT ? 'create' : 'edit'}.label`)
                     : ''}
                 </Text>
               </Stack>
@@ -306,10 +228,7 @@ export function ENSAssignRecordsBottomActions({
   }, [colors.purple, fromRoute, navigate, setAccentColor]);
 
   const hasBackButton = useMemo(
-    () =>
-      fromRoute === Routes.ENS_SEARCH_SHEET ||
-      fromRoute === Routes.ENS_INTRO_SHEET ||
-      fromRoute === Routes.ENS_ASSIGN_RECORDS_SHEET,
+    () => fromRoute === Routes.ENS_SEARCH_SHEET || fromRoute === Routes.ENS_INTRO_SHEET || fromRoute === Routes.ENS_ASSIGN_RECORDS_SHEET,
     [fromRoute]
   );
 
@@ -324,9 +243,7 @@ export function ENSAssignRecordsBottomActions({
       navigate(Routes.ENS_CONFIRM_REGISTER_SHEET, {
         longFormHeight:
           mode === REGISTRATION_MODES.EDIT
-            ? ENSConfirmUpdateSheetHeight +
-              (accountENS !== name ? 50 : 0) +
-              (values.avatar ? 70 : 0)
+            ? ENSConfirmUpdateSheetHeight + (accountENS !== name ? 50 : 0) + (values.avatar ? 70 : 0)
             : ENSConfirmRegisterSheetHeight + (values.avatar ? 70 : 0),
       });
     });
@@ -346,9 +263,7 @@ export function ENSAssignRecordsBottomActions({
     }
   }, [defaultVisible, mode, isSuccess]);
 
-  const bottomActionHeight = isSmallPhone
-    ? BottomActionHeightSmall
-    : BottomActionHeight;
+  const bottomActionHeight = isSmallPhone ? BottomActionHeightSmall : BottomActionHeight;
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -360,10 +275,7 @@ export function ENSAssignRecordsBottomActions({
     };
   });
 
-  const keyboardButtonWrapperStyle = useMemo(
-    () => ({ bottom: keyboardHeight }),
-    [keyboardHeight]
-  );
+  const keyboardButtonWrapperStyle = useMemo(() => ({ bottom: keyboardHeight }), [keyboardHeight]);
 
   return (
     <>
@@ -381,17 +293,11 @@ export function ENSAssignRecordsBottomActions({
         testID="ens-assign-records-sheet"
       >
         <AccentColorProvider color={accentColor}>
-          <Box
-            paddingBottom="19px (Deprecated)"
-            style={{ height: bottomActionHeight }}
-          >
+          <Box paddingBottom="19px (Deprecated)" style={{ height: bottomActionHeight }}>
             {ios ? <Shadow /> : null}
             <Rows>
               <Row>
-                <Inset
-                  horizontal="19px (Deprecated)"
-                  top={isSmallPhone ? '19px (Deprecated)' : '30px (Deprecated)'}
-                >
+                <Inset horizontal="19px (Deprecated)" top={isSmallPhone ? '19px (Deprecated)' : '30px (Deprecated)'}>
                   <SelectableAttributesButtons
                     navigateToAdditionalRecords={navigateToAdditionalRecords}
                     onAddField={onAddField}
@@ -413,17 +319,9 @@ export function ENSAssignRecordsBottomActions({
                         paddingBottom: isSmallPhone ? 0 : 36,
                       })}
                 >
-                  {hasBackButton && (
-                    <TintButton onPress={handlePressBack}>
-                      {lang.t('profiles.create.back')}
-                    </TintButton>
-                  )}
+                  {hasBackButton && <TintButton onPress={handlePressBack}>{lang.t('profiles.create.back')}</TintButton>}
                   {isEmptyForm && mode === REGISTRATION_MODES.CREATE ? (
-                    <TintButton
-                      disabled={disabled}
-                      onPress={handlePressContinue}
-                      testID="ens-assign-records-skip"
-                    >
+                    <TintButton disabled={disabled} onPress={handlePressContinue} testID="ens-assign-records-skip">
                       {lang.t('profiles.create.skip')}
                     </TintButton>
                   ) : (
@@ -439,10 +337,7 @@ export function ENSAssignRecordsBottomActions({
                           weight="heavy"
                         />
                       ) : (
-                        <TintButton
-                          onPress={() => goBack()}
-                          testID="ens-assign-records-cancel"
-                        >
+                        <TintButton onPress={() => goBack()} testID="ens-assign-records-cancel">
                           {lang.t('profiles.create.cancel')}
                         </TintButton>
                       )}
@@ -470,14 +365,8 @@ function HideKeyboardButton({ color }: { color: string }) {
     const showListener = android ? 'keyboardDidShow' : 'keyboardWillShow';
     const hideListener = android ? 'keyboardDidHide' : 'keyboardWillHide';
 
-    keyboardShowListener.current = Keyboard.addListener(
-      showListener,
-      handleShowKeyboard
-    );
-    keyboardHideListener.current = Keyboard.addListener(
-      hideListener,
-      handleHideKeyboard
-    );
+    keyboardShowListener.current = Keyboard.addListener(showListener, handleShowKeyboard);
+    keyboardHideListener.current = Keyboard.addListener(hideListener, handleHideKeyboard);
     return () => {
       keyboardHideListener.current?.remove();
       keyboardShowListener.current?.remove();
@@ -492,27 +381,12 @@ function HideKeyboardButton({ color }: { color: string }) {
 
   return (
     <Box as={Animated.View} style={style}>
-      <ButtonPressAnimation
-        onPress={() => Keyboard.dismiss()}
-        scaleTo={0.8}
-        testID="hide-keyboard-button"
-      >
+      <ButtonPressAnimation onPress={() => Keyboard.dismiss()} scaleTo={0.8} testID="hide-keyboard-button">
         <AccentColorProvider color={color}>
-          <Box
-            background="accent"
-            borderRadius={15}
-            height={{ custom: 30 }}
-            shadow="15px light (Deprecated)"
-            width={{ custom: 30 }}
-          >
+          <Box background="accent" borderRadius={15} height={{ custom: 30 }} shadow="15px light (Deprecated)" width={{ custom: 30 }}>
             <Cover alignHorizontal="center" alignVertical="center">
               <Box paddingTop={android ? '4px' : '2px'}>
-                <Text
-                  align="center"
-                  color="primary (Deprecated)"
-                  size="14px / 19px (Deprecated)"
-                  weight="heavy"
-                >
+                <Text align="center" color="primary (Deprecated)" size="14px / 19px (Deprecated)" weight="heavy">
                   􀆈
                 </Text>
               </Box>
@@ -568,23 +442,15 @@ function SelectableAttributesButtons({
   navigateToAdditionalRecords,
 }: {
   selectedFields: TextRecordField[];
-  onAddField: (
-    fieldsToAdd: TextRecordField,
-    selectedFields: TextRecordField[]
-  ) => void;
-  onRemoveField: (
-    fieldsToRemove: TextRecordField,
-    selectedFields: TextRecordField[]
-  ) => void;
+  onAddField: (fieldsToAdd: TextRecordField, selectedFields: TextRecordField[]) => void;
+  onRemoveField: (fieldsToRemove: TextRecordField, selectedFields: TextRecordField[]) => void;
   navigateToAdditionalRecords: () => void;
 }) {
   const dotsButtonIsSelected = useMemo(() => {
     const nonPrimaryRecordsIds = Object.values(textRecordFields)
       .slice(MAX_DISPLAY_BUTTONS)
       .map(({ id }) => id);
-    const dotsSelected = selectedFields.some(field =>
-      nonPrimaryRecordsIds.includes(field.id)
-    );
+    const dotsSelected = selectedFields.some(field => nonPrimaryRecordsIds.includes(field.id));
     return dotsSelected;
   }, [selectedFields]);
 
@@ -593,18 +459,14 @@ function SelectableAttributesButtons({
       {Object.values(textRecordFields)
         .slice(0, MAX_DISPLAY_BUTTONS)
         .map((textRecordField, i) => {
-          const isSelected = selectedFields.some(
-            field => field.id === textRecordField.id
-          );
+          const isSelected = selectedFields.some(field => field.id === textRecordField.id);
           return (
             <SelectableButton
               isSelected={isSelected}
               key={i}
               onSelect={() => {
                 if (isSelected) {
-                  const index = selectedFields.findIndex(
-                    ({ id }) => textRecordField.id === id
-                  );
+                  const index = selectedFields.findIndex(({ id }) => textRecordField.id === id);
                   const fieldToRemove = selectedFields[index];
                   const newFields = [...selectedFields];
                   newFields.splice(index, 1);
@@ -622,11 +484,7 @@ function SelectableAttributesButtons({
             </SelectableButton>
           );
         })}
-      <SelectableButton
-        isSelected={dotsButtonIsSelected}
-        onSelect={navigateToAdditionalRecords}
-        testID="ens-selectable-attribute-dots"
-      >
+      <SelectableButton isSelected={dotsButtonIsSelected} onSelect={navigateToAdditionalRecords} testID="ens-selectable-attribute-dots">
         􀍠
       </SelectableButton>
     </Inline>

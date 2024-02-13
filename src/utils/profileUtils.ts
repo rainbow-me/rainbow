@@ -76,9 +76,7 @@ export function hashCode(text: string) {
   return hash;
 }
 
-export function getNextEmojiWithColor(
-  prevEmoji: string
-): { emoji: string; colorIndex: number } {
+export function getNextEmojiWithColor(prevEmoji: string): { emoji: string; colorIndex: number } {
   const prevIndex = avatars.findIndex(({ emoji }) => emoji === prevEmoji); // if not matched, we get -1, what's fine
   return avatars[(prevIndex + 1) % avatars.length];
 }
@@ -90,9 +88,7 @@ export function addressHashedIndex(address: string) {
 
 export function addressHashedColorIndex(address: string) {
   if (address == null) return null;
-  return emojiColorIndexes[
-    Math.abs(hashCode(address.toLowerCase()) % emojiCount)
-  ];
+  return emojiColorIndexes[Math.abs(hashCode(address.toLowerCase()) % emojiCount)];
 }
 
 export function addressHashedEmoji(address: string) {

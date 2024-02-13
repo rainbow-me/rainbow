@@ -15,11 +15,7 @@ import useImagePicker from './useImagePicker';
 import useUpdateEmoji from './useUpdateEmoji';
 import useWallets from './useWallets';
 import { analytics } from '@/analytics';
-import {
-  enableActionsOnReadOnlyWallet,
-  PROFILES,
-  useExperimentalFlag,
-} from '@/config';
+import { enableActionsOnReadOnlyWallet, PROFILES, useExperimentalFlag } from '@/config';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import { walletsSetSelected, walletsUpdate } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
@@ -39,13 +35,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   const { wallets, selectedWallet, isReadOnlyWallet } = useWallets();
   const dispatch = useDispatch();
   const { navigate } = useNavigation();
-  const {
-    accountAddress,
-    accountColor,
-    accountName,
-    accountImage,
-    accountENS,
-  } = useAccountProfile();
+  const { accountAddress, accountColor, accountName, accountImage, accountENS } = useAccountProfile();
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const accountAsset = useAccountAsset(ETH_ADDRESS);
 
@@ -77,12 +67,8 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
       ...wallets,
       [selectedWallet.id]: {
         ...wallets![selectedWallet.id],
-        addresses: wallets![
-          selectedWallet.id
-        ].addresses.map((account: RainbowAccount) =>
-          account.address.toLowerCase() === accountAddress?.toLowerCase()
-            ? { ...account, image: null }
-            : account
+        addresses: wallets![selectedWallet.id].addresses.map((account: RainbowAccount) =>
+          account.address.toLowerCase() === accountAddress?.toLowerCase() ? { ...account, image: null } : account
         ),
       },
     };
@@ -94,19 +80,13 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   const processPhoto = useCallback(
     (image: ImageOrVideo | null) => {
       const stringIndex = image?.path.indexOf('/tmp');
-      const imagePath = ios
-        ? `~${image?.path.slice(stringIndex)}`
-        : image?.path;
+      const imagePath = ios ? `~${image?.path.slice(stringIndex)}` : image?.path;
       const newWallets: typeof wallets = {
         ...wallets,
         [selectedWallet.id]: {
           ...wallets![selectedWallet.id],
-          addresses: wallets![
-            selectedWallet.id
-          ].addresses.map((account: RainbowAccount) =>
-            account.address.toLowerCase() === accountAddress?.toLowerCase()
-              ? { ...account, image: imagePath }
-              : account
+          addresses: wallets![selectedWallet.id].addresses.map((account: RainbowAccount) =>
+            account.address.toLowerCase() === accountAddress?.toLowerCase() ? { ...account, image: imagePath } : account
           ),
         },
       };
@@ -118,15 +98,10 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   );
 
   const onAvatarPickEmoji = useCallback(() => {
-    navigate(
-      screenType === 'wallet'
-        ? Routes.AVATAR_BUILDER_WALLET
-        : Routes.AVATAR_BUILDER,
-      {
-        initialAccountColor: accountColor,
-        initialAccountName: accountName,
-      }
-    );
+    navigate(screenType === 'wallet' ? Routes.AVATAR_BUILDER_WALLET : Routes.AVATAR_BUILDER, {
+      initialAccountColor: accountColor,
+      initialAccountName: accountName,
+    });
   }, [accountColor, accountName, navigate, screenType]);
 
   const onAvatarChooseImage = useCallback(async () => {
@@ -271,9 +246,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
     ].filter(x => x),
   };
 
-  const avatarActionSheetOptions = avatarContextMenuConfig.menuItems
-    .map(item => item.actionTitle)
-    .concat(ios ? ['Cancel'] : []);
+  const avatarActionSheetOptions = avatarContextMenuConfig.menuItems.map(item => item.actionTitle).concat(ios ? ['Cancel'] : []);
 
   const onAvatarPressProfile = useCallback(() => {
     navigate(Routes.PROFILE_SHEET, {
@@ -289,23 +262,13 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
       showActionSheetWithOptions(
         {
           cancelButtonIndex: avatarActionSheetOptions.length - 1,
-          destructiveButtonIndex:
-            !hasENSAvatar && accountImage
-              ? avatarActionSheetOptions.length - 2
-              : undefined,
+          destructiveButtonIndex: !hasENSAvatar && accountImage ? avatarActionSheetOptions.length - 2 : undefined,
           options: avatarActionSheetOptions,
         },
         (buttonIndex: number) => callback(buttonIndex)
       );
     }
-  }, [
-    hasENSAvatar,
-    accountENS,
-    onAvatarPressProfile,
-    avatarActionSheetOptions,
-    accountImage,
-    callback,
-  ]);
+  }, [hasENSAvatar, accountENS, onAvatarPressProfile, avatarActionSheetOptions, accountImage, callback]);
 
   return {
     avatarContextMenuConfig,
@@ -315,8 +278,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
     onAvatarCreateProfile,
     onAvatarPickEmoji,
     onAvatarPress,
-    onAvatarPressProfile:
-      hasENSAvatar && accountENS ? onAvatarPressProfile : undefined,
+    onAvatarPressProfile: hasENSAvatar && accountENS ? onAvatarPressProfile : undefined,
     onAvatarRemovePhoto,
     onAvatarWebProfile,
     onSelectionCallback: callback,

@@ -1,22 +1,9 @@
 import { ButtonPressAnimation } from '@/components/animations';
 import { navbarHeight } from '@/components/navbar/Navbar';
-import {
-  Bleed,
-  Box,
-  Inline,
-  Stack,
-  Text,
-  useForegroundColor,
-  useTextStyle,
-} from '@/design-system';
+import { Bleed, Box, Inline, Stack, Text, useForegroundColor, useTextStyle } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { metadataPOSTClient } from '@/graphql';
-import {
-  useAccountAccentColor,
-  useDimensions,
-  useKeyboardHeight,
-  useWallets,
-} from '@/hooks';
+import { useAccountAccentColor, useDimensions, useKeyboardHeight, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { getHeaderHeight } from '@/navigation/SwipeNavigator';
 import { haptics, watchingAlert } from '@/utils';
@@ -24,11 +11,7 @@ import { delay } from '@/utils/delay';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Keyboard, TextInput } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
@@ -41,10 +24,7 @@ import { analyticsV2 } from '@/analytics';
 import Clipboard from '@react-native-community/clipboard';
 
 const parseReferralCodeFromLink = (code: string) => {
-  if (
-    code.startsWith('https://rainbow.me/points?ref=') ||
-    code.startsWith('https://www.rainbow.me/points?ref=')
-  ) {
+  if (code.startsWith('https://rainbow.me/points?ref=') || code.startsWith('https://www.rainbow.me/points?ref=')) {
     const [, refCode] = code.split('=');
     if (!refCode) return;
 
@@ -71,9 +51,7 @@ export default function ReferralContent() {
   const [referralCodeDisplay, setReferralCodeDisplay] = useState('');
   const [referralCode, setReferralCode] = useState('');
   const [deeplinked, setDeeplinked] = useState(false);
-  const [status, setStatus] = useState<'incomplete' | 'valid' | 'invalid'>(
-    'incomplete'
-  );
+  const [status, setStatus] = useState<'incomplete' | 'valid' | 'invalid'>('incomplete');
   const [goingBack, setGoingBack] = useState(false);
 
   const textInputRef = React.useRef<TextInput>(null);
@@ -85,10 +63,7 @@ export default function ReferralContent() {
         code,
       });
       if (!res?.validateReferral?.valid) {
-        if (
-          res.validateReferral?.error?.type ===
-          PointsErrorType.InvalidReferralCode
-        ) {
+        if (res.validateReferral?.error?.type === PointsErrorType.InvalidReferralCode) {
           setStatus('invalid');
           haptics.notificationError();
         } else {
@@ -99,10 +74,7 @@ export default function ReferralContent() {
         }
       } else {
         setStatus('valid');
-        analyticsV2.track(
-          analyticsV2.event.pointsReferralScreenValidatedReferralCode,
-          { deeplinked }
-        );
+        analyticsV2.track(analyticsV2.event.pointsReferralScreenValidatedReferralCode, { deeplinked });
         setReferralCode(code);
         textInputRef.current?.blur();
         haptics.notificationSuccess();
@@ -120,9 +92,7 @@ export default function ReferralContent() {
   const hasKeyboard = IS_IOS ? isKeyboardOpening : isKeyboardVisible;
 
   const contentBottom =
-    (hasKeyboard ? keyboardHeight : getHeaderHeight()) +
-    (deviceHeight - (hasKeyboard ? keyboardHeight : 0) - navbarHeight - 270) /
-      2;
+    (hasKeyboard ? keyboardHeight : getHeaderHeight()) + (deviceHeight - (hasKeyboard ? keyboardHeight : 0) - navbarHeight - 270) / 2;
 
   const contentBottomSharedValue = useSharedValue(contentBottom);
 
@@ -144,37 +114,23 @@ export default function ReferralContent() {
     if (externalReferralCode) {
       setDeeplinked(true);
       setReferralCodeDisplay(externalReferralCode);
-      validateReferralCode(
-        externalReferralCode.replace(/-/g, '').slice(0, 6).toLocaleUpperCase()
-      );
+      validateReferralCode(externalReferralCode.replace(/-/g, '').slice(0, 6).toLocaleUpperCase());
     }
   }, [externalReferralCode, validateReferralCode]);
 
   useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      'keyboardDidShow',
-      () => {
-        setIsKeyboardVisible(true);
-      }
-    );
-    const keyboardDidHideListener = Keyboard.addListener(
-      'keyboardDidHide',
-      () => {
-        setIsKeyboardVisible(false);
-      }
-    );
-    const keyboardWillShowListener = Keyboard.addListener(
-      'keyboardWillShow',
-      () => {
-        setIsKeyboardOpening(true);
-      }
-    );
-    const keyboardWillHideListener = Keyboard.addListener(
-      'keyboardWillHide',
-      () => {
-        setIsKeyboardOpening(false);
-      }
-    );
+    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
+      setIsKeyboardVisible(true);
+    });
+    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+      setIsKeyboardVisible(false);
+    });
+    const keyboardWillShowListener = Keyboard.addListener('keyboardWillShow', () => {
+      setIsKeyboardOpening(true);
+    });
+    const keyboardWillHideListener = Keyboard.addListener('keyboardWillHide', () => {
+      setIsKeyboardOpening(false);
+    });
 
     return () => {
       keyboardDidHideListener.remove();
@@ -206,8 +162,7 @@ export default function ReferralContent() {
         const url = await Clipboard.getString();
         const codeFromUrl = parseReferralCodeFromLink(url);
         if (codeFromUrl) {
-          const formattedCode =
-            codeFromUrl.slice(0, 3) + '-' + codeFromUrl.slice(3, 7);
+          const formattedCode = codeFromUrl.slice(0, 3) + '-' + codeFromUrl.slice(3, 7);
           setReferralCodeDisplay(formattedCode);
           if (formattedCode.length !== 7) {
             setStatus('incomplete');
@@ -228,8 +183,7 @@ export default function ReferralContent() {
 
       // Insert "-" after the 3rd character if the length is 4 or more
       if (formattedCode.length >= 3) {
-        formattedCode =
-          formattedCode.slice(0, 3) + '-' + formattedCode.slice(3, 7);
+        formattedCode = formattedCode.slice(0, 3) + '-' + formattedCode.slice(3, 7);
       }
 
       // Update the state and the input
@@ -245,19 +199,8 @@ export default function ReferralContent() {
   );
 
   return (
-    <Box
-      background="surfacePrimary"
-      height="full"
-      justifyContent="flex-end"
-      alignItems="center"
-      paddingBottom={{ custom: 134 }}
-    >
-      <Box
-        as={Animated.View}
-        position="absolute"
-        paddingHorizontal="60px"
-        style={animatedStyle}
-      >
+    <Box background="surfacePrimary" height="full" justifyContent="flex-end" alignItems="center" paddingBottom={{ custom: 134 }}>
+      <Box as={Animated.View} position="absolute" paddingHorizontal="60px" style={animatedStyle}>
         <Stack space={{ custom: 16.5 }}>
           <Stack space="32px" alignHorizontal="center">
             <Stack space="20px" alignHorizontal="center">
@@ -267,12 +210,7 @@ export default function ReferralContent() {
                   {i18n.t(i18n.l.points.referral.title)}
                 </Text>
               </Stack>
-              <Text
-                size="15pt"
-                weight="semibold"
-                align="center"
-                color="labelTertiary"
-              >
+              <Text size="15pt" weight="semibold" align="center" color="labelTertiary">
                 {i18n.t(i18n.l.points.referral.subtitle)}
               </Text>
             </Stack>
@@ -321,12 +259,7 @@ export default function ReferralContent() {
                 />
                 {status === 'valid' && (
                   <Bleed horizontal="2px">
-                    <Text
-                      weight="heavy"
-                      size="17pt"
-                      align="center"
-                      color={{ custom: accentColor }}
-                    >
+                    <Text weight="heavy" size="17pt" align="center" color={{ custom: accentColor }}>
                       􀁣
                     </Text>
                   </Bleed>
@@ -334,12 +267,7 @@ export default function ReferralContent() {
               </Inline>
             </Box>
           </Stack>
-          <Text
-            size="13pt"
-            weight="heavy"
-            align="center"
-            color={{ custom: status === 'invalid' ? red : 'transparent' }}
-          >
+          <Text size="13pt" weight="heavy" align="center" color={{ custom: status === 'invalid' ? red : 'transparent' }}>
             {i18n.t(i18n.l.points.referral.invalid_code)}
           </Text>
         </Stack>
@@ -347,9 +275,7 @@ export default function ReferralContent() {
       <Box
         position="absolute"
         bottom={{
-          custom: hasKeyboard
-            ? keyboardHeight + (IS_IOS ? 28 : 42)
-            : getHeaderHeight() + 28,
+          custom: hasKeyboard ? keyboardHeight + (IS_IOS ? 28 : 42) : getHeaderHeight() + 28,
         }}
         left={{ custom: 20 }}
       >
@@ -371,11 +297,7 @@ export default function ReferralContent() {
         <ActionButton
           color={accentColor}
           label={i18n.t(i18n.l.points.referral.get_started)}
-          onPress={() =>
-            isReadOnlyWallet
-              ? watchingAlert()
-              : navigate(Routes.CONSOLE_SHEET, { referralCode, deeplinked })
-          }
+          onPress={() => (isReadOnlyWallet ? watchingAlert() : navigate(Routes.CONSOLE_SHEET, { referralCode, deeplinked }))}
         />
       )}
     </Box>

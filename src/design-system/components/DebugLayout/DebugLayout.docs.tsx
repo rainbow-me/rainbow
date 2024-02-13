@@ -8,8 +8,7 @@ const docs: DocsType = {
   meta,
   description: (
     <Docs.Text>
-      Renders a bright red container around a child element to help debug its
-      position within a layout during development.
+      Renders a bright red container around a child element to help debug its position within a layout during development.
     </Docs.Text>
   ),
   examples: [examples.basicUsage],

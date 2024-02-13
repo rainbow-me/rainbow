@@ -1,10 +1,7 @@
 import { EthereumAddress } from '@/entities';
 import { Network } from '@/networks/types';
 
-export default function getUrlForTrustIconFallback(
-  address: EthereumAddress,
-  network: Network
-): string | null {
+export default function getUrlForTrustIconFallback(address: EthereumAddress, network: Network): string | null {
   if (!address) return null;
   let networkPath = 'ethereum';
   switch (network) {

@@ -41,21 +41,12 @@ const WalletPage = styled(Page)({
 
 const WalletScreen: React.FC<any> = ({ navigation, route }) => {
   const { params } = route;
-  const {
-    setParams,
-    getState: dangerouslyGetState,
-    getParent: dangerouslyGetParent,
-  } = navigation;
+  const { setParams, getState: dangerouslyGetState, getParent: dangerouslyGetParent } = navigation;
   const removeFirst = useRemoveFirst();
   const [initialized, setInitialized] = useState(!!params?.initialized);
   const initializeWallet = useInitializeWallet();
   const { trackENSProfile } = useTrackENSProfile();
-  const {
-    network: currentNetwork,
-    accountAddress,
-    appIcon,
-    nativeCurrency,
-  } = useAccountSettings();
+  const { network: currentNetwork, accountAddress, appIcon, nativeCurrency } = useAccountSettings();
   usePositions({ address: accountAddress, currency: nativeCurrency });
 
   const loadAccountLateData = useLoadAccountLateData();
@@ -82,9 +73,7 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
     }
   }, [currentNetwork, revertToMainnet]);
 
-  const walletReady = useSelector(
-    ({ appState: { walletReady } }: AppState) => walletReady
-  );
+  const walletReady = useSelector(({ appState: { walletReady } }: AppState) => walletReady);
   const {
     isWalletEthZero,
     isEmpty: isSectionsEmpty,
@@ -98,24 +87,17 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
     if (ios) {
       return;
     }
-    const isWelcomeScreen =
-      dangerouslyGetParent()?.getState().routes[0].name ===
-      Routes.WELCOME_SCREEN;
+    const isWelcomeScreen = dangerouslyGetParent()?.getState().routes[0].name === Routes.WELCOME_SCREEN;
     if (isWelcomeScreen) {
       removeFirst();
     }
   }, [dangerouslyGetState, removeFirst]);
 
-  const { isEmpty: isAccountEmpty } = useAccountEmptyState(
-    isSectionsEmpty,
-    isLoadingUserAssets
-  );
+  const { isEmpty: isAccountEmpty } = useAccountEmptyState(isSectionsEmpty, isLoadingUserAssets);
 
-  const { addressSocket } = useSelector(
-    ({ explorer: { addressSocket } }: AppState) => ({
-      addressSocket,
-    })
-  );
+  const { addressSocket } = useSelector(({ explorer: { addressSocket } }: AppState) => ({
+    addressSocket,
+  }));
 
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
@@ -185,11 +167,7 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
           />
         </Box>
         <ToastPositionContainer>
-          <Toast
-            isVisible={isAddressCopiedToastActive}
-            text="􀁣 Address Copied"
-            testID="address-copied-toast"
-          />
+          <Toast isVisible={isAddressCopiedToastActive} text="􀁣 Address Copied" testID="address-copied-toast" />
         </ToastPositionContainer>
       </WalletPage>
     </View>

@@ -3,20 +3,9 @@ import React, { useCallback } from 'react';
 import { Box, Inline, Inset, Stack, Text } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import ledgerNano from '@/assets/ledger-nano.png';
-import {
-  LEDGER_NANO_HEIGHT,
-  LEDGER_NANO_WIDTH,
-  GRID_DOTS_SIZE,
-} from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
+import { LEDGER_NANO_HEIGHT, LEDGER_NANO_WIDTH, GRID_DOTS_SIZE } from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
 import { Source } from 'react-native-fast-image';
-import Animated, {
-  useAnimatedStyle,
-  useDerivedValue,
-  withDelay,
-  withRepeat,
-  withSequence,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useDerivedValue, withDelay, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
 import gridDotsLight from '@/assets/dot-grid-light.png';
 import gridDotsDark from '@/assets/dot-grid-dark.png';
 import { useTheme } from '@/theme';
@@ -44,31 +33,17 @@ export const PairHardwareWalletAgainSheet = () => {
   const setReadyForPolling = useSetRecoilState(readyForPollingAtom);
   const setTriggerPollerCleanup = useSetRecoilState(triggerPollerCleanupAtom);
 
-  const [hardwareTXError, setHardwareTXError] = useMMKVBoolean(
-    HARDWARE_TX_ERROR_KEY,
-    ledgerStorage
-  );
+  const [hardwareTXError, setHardwareTXError] = useMMKVBoolean(HARDWARE_TX_ERROR_KEY, ledgerStorage);
 
   const onPressTryAgain = useCallback(() => {
     setTriggerPollerCleanup(true);
     setHardwareTXError(false);
     setReadyForPolling(true);
     setIsReady(false);
-  }, [
-    setTriggerPollerCleanup,
-    setHardwareTXError,
-    setReadyForPolling,
-    setIsReady,
-  ]);
+  }, [setTriggerPollerCleanup, setHardwareTXError, setReadyForPolling, setIsReady]);
 
   const indicatorOpacity = useDerivedValue(() =>
-    withRepeat(
-      withSequence(
-        withDelay(1000, withTiming(0)),
-        withDelay(1000, withTiming(1))
-      ),
-      -1
-    )
+    withRepeat(withSequence(withDelay(1000, withTiming(0)), withDelay(1000, withTiming(1))), -1)
   );
 
   const indicatorAnimation = useAnimatedStyle(() => ({
@@ -112,12 +87,7 @@ export const PairHardwareWalletAgainSheet = () => {
                 {getSheetTitle()}
               </Text>
               <Stack space="10px">
-                <Text
-                  align="center"
-                  color="labelTertiary"
-                  weight="semibold"
-                  size="15pt / 135%"
-                >
+                <Text align="center" color="labelTertiary" weight="semibold" size="15pt / 135%">
                   {getSheetSubtitle()}
                 </Text>
               </Stack>
@@ -182,22 +152,8 @@ export const PairHardwareWalletAgainSheet = () => {
                       width={{ custom: INDICATOR_SIZE }}
                       height={{ custom: INDICATOR_SIZE }}
                       style={{ zIndex: -1 }}
-                      background={
-                        hardwareTXError
-                          ? 'red'
-                          : isReady
-                          ? 'green'
-                          : 'surfaceSecondary'
-                      }
-                      shadow={
-                        IS_IOS
-                          ? hardwareTXError
-                            ? '30px red'
-                            : isReady
-                            ? '30px green'
-                            : undefined
-                          : undefined
-                      }
+                      background={hardwareTXError ? 'red' : isReady ? 'green' : 'surfaceSecondary'}
+                      shadow={IS_IOS ? (hardwareTXError ? '30px red' : isReady ? '30px green' : undefined) : undefined}
                       borderRadius={INDICATOR_SIZE / 2}
                     />
                   </Box>

@@ -1,11 +1,5 @@
-export {
-  AccentColorProvider,
-  useAccentColor,
-} from './color/AccentColorContext';
-export {
-  BackgroundProvider,
-  useBackgroundColor,
-} from './components/BackgroundProvider/BackgroundProvider';
+export { AccentColorProvider, useAccentColor } from './color/AccentColorContext';
+export { BackgroundProvider, useBackgroundColor } from './components/BackgroundProvider/BackgroundProvider';
 export { Bleed } from './components/Bleed/Bleed';
 export { Box } from './components/Box/Box';
 export { ColorModeProvider } from './color/ColorMode';
