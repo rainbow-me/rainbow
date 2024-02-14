@@ -25,6 +25,8 @@ const ViewCloudBackups = () => {
 
   const { backups } = params;
 
+  console.log(JSON.stringify(backups, null, 2));
+
   const cloudBackups = Object.values(backups.wallets || {})
     .filter(backup => backup.backedUp && backup.backupType === walletBackupTypes.cloud)
     .sort((a, b) => Number(a.backupDate) - Number(b.backupDate));
