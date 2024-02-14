@@ -4,14 +4,13 @@ import { values } from 'lodash';
 import { useCallback } from 'react';
 import { Linking } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { addWalletToCloudBackup, backupWalletToCloud, fetchBackupPassword } from '../model/backup';
+import { addWalletToCloudBackup, backupWalletToCloud } from '../model/backup';
 import { setWalletBackedUp } from '../redux/wallets';
 import { cloudPlatform } from '../utils/platform';
 import useWallets from './useWallets';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { CLOUD_BACKUP_ERRORS, isCloudBackupAvailable } from '@/handlers/cloudBackup';
-import { delay } from '@/helpers/utilities';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import logger from '@/utils/logger';
 import { getSupportedBiometryType } from '@/keychain';
@@ -45,8 +44,6 @@ export default function useWalletCloudBackup() {
 
   const walletCloudBackup = useCallback(
     async ({
-      handleNoLatestBackup,
-      handlePasswordNotFound,
       onError,
       onSuccess,
       password,
@@ -56,7 +53,7 @@ export default function useWalletCloudBackup() {
       handlePasswordNotFound?: () => void;
       onError?: (error: string) => void;
       onSuccess?: () => void;
-      password?: string;
+      password: string;
       walletId: string;
     }) => {
       const isAvailable = await isCloudBackupAvailable();
@@ -87,31 +84,6 @@ export default function useWalletCloudBackup() {
         return;
       }
 
-      if (!password && !latestBackup) {
-        // No password, No latest backup meaning
-        // it's a first time backup so we need to show the password sheet
-        !!handleNoLatestBackup && handleNoLatestBackup();
-        return;
-      }
-
-      let fetchedPassword: string | undefined = password;
-      let wasPasswordFetched = false;
-      if (latestBackup && !password) {
-        // We have a backup but don't have the password, try fetching password
-        // We want to make it clear why are we requesting faceID twice
-        // So we delayed it to make sure the user can read before seeing the auth prompt
-        await delay(1500);
-        fetchedPassword = (await fetchBackupPassword()) ?? undefined;
-        await delay(300);
-        wasPasswordFetched = true;
-      }
-
-      // If we still can't get the password, handle password not found
-      if (!fetchedPassword) {
-        !!handlePasswordNotFound && handlePasswordNotFound();
-        return;
-      }
-
       // For Android devices without biometrics enabled, we need to ask for PIN
       let userPIN: string | undefined;
       const hasBiometricsEnabled = await getSupportedBiometryType();
@@ -124,12 +96,6 @@ export default function useWalletCloudBackup() {
         }
       }
 
-      // We want to make it clear why are we requesting faceID twice
-      // So we delayed it to make sure the user can read before seeing the auth prompt
-      if (wasPasswordFetched) {
-        await delay(1500);
-      }
-
       // We have the password and we need to add it to an existing backup
       logger.log('password fetched correctly');
 
@@ -138,14 +104,14 @@ export default function useWalletCloudBackup() {
         if (!latestBackup) {
           logger.log(`backing up to ${cloudPlatform}`, wallets![walletId]);
           updatedBackupFile = await backupWalletToCloud({
-            password: fetchedPassword,
+            password,
             wallet: wallets![walletId],
             userPIN,
           });
         } else {
           logger.log(`adding wallet to ${cloudPlatform} backup`, wallets![walletId]);
           updatedBackupFile = await addWalletToCloudBackup({
-            password: fetchedPassword,
+            password,
             wallet: wallets![walletId],
             filename: latestBackup,
             userPIN,

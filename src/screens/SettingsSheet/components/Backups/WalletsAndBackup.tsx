@@ -19,10 +19,8 @@ import { Inline, Text, Box, Stack } from '@/design-system';
 import { ContactAvatar } from '@/components/contacts';
 import { useTheme } from '@/theme';
 import Routes from '@/navigation/routesNames';
-import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { backupsCard } from '@/components/cards/utils/constants';
 import { useVisibleWallets } from '../../useVisibleWallets';
-import { format } from 'date-fns';
 import useCloudBackups from '@/hooks/useCloudBackups';
 import { SETTINGS_BACKUP_ROUTES } from './routes';
 import { RainbowAccount, createWallet } from '@/model/wallet';
@@ -81,8 +79,6 @@ const getAccountSectionHeight = (numAccounts: number) => {
 };
 
 export const WalletsAndBackup = () => {
-  const { colors, isDarkMode } = useTheme();
-
   const { navigate } = useNavigation();
   const { wallets } = useWallets();
   const profilesEnabled = useExperimentalFlag(PROFILES);
@@ -93,13 +89,6 @@ export const WalletsAndBackup = () => {
   const initializeWallet = useInitializeWallet();
 
   const { manageCloudBackups } = useManageCloudBackups();
-
-  const enabledCloudBackups = useCallback(() => {
-    navigate(Routes.BACKUP_SHEET, {
-      nativeScreen: true,
-      step: WalletBackupStepTypes.backup_cloud,
-    });
-  }, [navigate]);
 
   const onViewCloudBackups = useCallback(async () => {
     navigate(SETTINGS_BACKUP_ROUTES.VIEW_CLOUD_BACKUPS, {
@@ -129,13 +118,6 @@ export const WalletsAndBackup = () => {
     }
   }, [dispatch, initializeWallet, profilesEnabled]);
 
-  const onPressLearnMoreAboutCloudBackups = useCallback(() => {
-    navigate(Routes.LEARN_WEB_VIEW_SCREEN, {
-      ...backupsCard,
-      type: 'square',
-    });
-  }, [navigate]);
-
   const onNavigateToWalletView = useCallback(
     (walletId: string, name: string) => {
       const wallet = wallets?.[walletId];
@@ -152,7 +134,7 @@ export const WalletsAndBackup = () => {
 
   const { backupProvider, allBackedUp } = useMemo(() => checkWalletsForBackupStatus(wallets), [wallets]);
 
-  const { visibleWallets, lastBackupDate } = useVisibleWallets({ wallets });
+  const { visibleWallets } = useVisibleWallets({ wallets });
 
   const renderView = useCallback(() => {
     switch (backupProvider) {
@@ -184,7 +166,8 @@ export const WalletsAndBackup = () => {
               />
             </Menu>
 
-            <Menu description={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups_description)}>
+            {/* TODO: This is fucked */}
+            {/* <Menu description={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups_description)}>
               <MenuItem
                 hasSfSymbol
                 leftComponent={<MenuItem.TextIcon icon="􀊯" isLink />}
@@ -192,7 +175,7 @@ export const WalletsAndBackup = () => {
                 size={52}
                 titleComponent={<MenuItem.Title isLink text={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)} />}
               />
-            </Menu>
+            </Menu> */}
 
             <Stack space={'24px'}>
               {visibleWallets.map(({ name, isBackedUp, accounts, key, numAccounts, backedUp, imported }) => (
@@ -301,7 +284,8 @@ export const WalletsAndBackup = () => {
                 />
               </Menu>
 
-              <Menu
+              {/* TODO: This is fucked */}
+              {/* <Menu
                 description={
                   lastBackupDate
                     ? i18n.t(i18n.l.back_up.cloud.latest_backup, {
@@ -324,7 +308,7 @@ export const WalletsAndBackup = () => {
                     />
                   }
                 />
-              </Menu>
+              </Menu> */}
             </Stack>
 
             <Stack space={'24px'}>
@@ -491,7 +475,8 @@ export const WalletsAndBackup = () => {
                 />
               </Menu>
 
-              <Menu
+              {/* TODO: This is fucked */}
+              {/* <Menu
                 description={
                   <Text color="secondary60 (Deprecated)" size="14px / 19px (Deprecated)" weight="regular">
                     {i18n.t(i18n.l.wallet.back_ups.cloud_backup_description)}
@@ -510,7 +495,7 @@ export const WalletsAndBackup = () => {
                   size={52}
                   titleComponent={<MenuItem.Title isLink text={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)} />}
                 />
-              </Menu>
+              </Menu> */}
             </Stack>
           </Stack>
         );
@@ -518,18 +503,13 @@ export const WalletsAndBackup = () => {
     }
   }, [
     backupProvider,
-    enabledCloudBackups,
     onViewCloudBackups,
-    lastBackupDate,
     manageCloudBackups,
     navigate,
     onCreateNewSecretPhrase,
     onNavigateToWalletView,
-    onPressLearnMoreAboutCloudBackups,
     visibleWallets,
     allBackedUp,
-    isDarkMode,
-    colors,
   ]);
 
   return <MenuContainer>{renderView()}</MenuContainer>;

@@ -453,6 +453,26 @@ export async function saveBackupPassword(password: BackupPassword): Promise<void
   }
 }
 
+export async function getLocalBackupPassword(): Promise<string | null> {
+  const rainbowBackupPassword = await keychain.loadString('RainbowBackupPassword');
+  if (typeof rainbowBackupPassword === 'number') {
+    return null;
+  }
+
+  if (rainbowBackupPassword) {
+    return rainbowBackupPassword;
+  }
+
+  return await fetchBackupPassword();
+}
+
+export async function saveLocalBackupPassword(password: string) {
+  const privateAccessControlOptions = await keychain.getPrivateAccessControlOptions();
+
+  await keychain.saveString('RainbowBackupPassword', password, privateAccessControlOptions);
+  saveBackupPassword(password);
+}
+
 // Attempts to fetch the password to decrypt the backup from the iCloud keychain
 export async function fetchBackupPassword(): Promise<null | BackupPassword> {
   if (android) {

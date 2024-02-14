@@ -1,6 +1,10 @@
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes from '@/helpers/walletTypes';
 import { RainbowWallet } from '@/model/wallet';
+import { Navigation } from '@/navigation';
+import { getLocalBackupPassword } from '@/model/backup';
+import Routes from '@/navigation/routesNames';
+import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 
 type WalletsByKey = {
   [key: string]: RainbowWallet;
@@ -78,4 +82,23 @@ export const getWalletsThatNeedBackedUp = (wallets: { [key: string]: RainbowWall
     }
   });
   return walletsToBackup;
+};
+
+export const fetchBackupPasswordAndNavigate = async navigate => {
+  const password = await getLocalBackupPassword();
+
+  return new Promise((resolve, reject) => {
+    return Navigation.handleAction(Routes.BACKUP_SHEET, {
+      step: WalletBackupStepTypes.backup_cloud,
+      password,
+      onSuccess: async (password: string) => {
+        resolve(password);
+      },
+    });
+  });
+
+  navigate(Routes.BACKUP_SHEET, {
+    nativeScreen: true,
+    step: WalletBackupStepTypes.backup_cloud,
+  });
 };

@@ -12,20 +12,19 @@ import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { useWallets } from '@/hooks';
 import { useVisibleWallets } from '@/screens/SettingsSheet/useVisibleWallets';
 import { format } from 'date-fns';
+import { useCreateBackup } from './useCreateBackup';
 
 const imageSize = 72;
 
 export default function AddWalletToCloudBackupStep() {
-  const { navigate, goBack } = useNavigation();
-  const { wallets } = useWallets();
+  const { goBack } = useNavigation();
+  const { wallets, selectedWallet } = useWallets();
 
   const { lastBackupDate } = useVisibleWallets({ wallets });
 
-  const onCloudBackup = async () => {
-    navigate(Routes.BACKUP_SHEET, {
-      step: walletBackupStepTypes.backup_cloud,
-    });
-  };
+  const { onSubmit } = useCreateBackup({
+    walletId: selectedWallet.id,
+  });
 
   const onMaybeLater = useCallback(() => goBack(), [goBack]);
 
@@ -55,7 +54,7 @@ export default function AddWalletToCloudBackupStep() {
         <Separator color="separatorSecondary" thickness={1} />
       </Bleed>
 
-      <ButtonPressAnimation scaleTo={0.95} onPress={onCloudBackup}>
+      <ButtonPressAnimation scaleTo={0.95} onPress={onSubmit}>
         <Box alignItems="center" justifyContent="center" paddingTop={'24px'} paddingBottom={'24px'}>
           <Box alignItems="center" justifyContent="center" width="full">
             <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
