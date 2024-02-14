@@ -53,7 +53,7 @@ type MenuEvent = {
   nativeEvent: {
     actionKey: WalletMenuAction;
   };
-  address: string;
+  account: RainbowAccount;
 };
 
 type WalletAvatarProps = {
@@ -90,7 +90,7 @@ type ContextMenuWrapperProps = {
 
 const ContextMenuWrapper = ({ children, account, menuConfig, onPressMenuItem }: ContextMenuWrapperProps) => {
   return IS_IOS ? (
-    <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={(e: MenuEvent) => onPressMenuItem({ ...e, address: account.address })}>
+    <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={(e: MenuEvent) => onPressMenuItem({ ...e, account })}>
       {children}
     </ContextMenuButton>
   ) : (
@@ -98,7 +98,7 @@ const ContextMenuWrapper = ({ children, account, menuConfig, onPressMenuItem }: 
       options={menuConfig.menuItems.map(item => item.actionTitle)}
       onPressActionSheet={(buttonIndex: number) => {
         const actionKey = menuConfig.menuItems[buttonIndex].actionKey;
-        onPressMenuItem({ nativeEvent: { actionKey }, address: account.address });
+        onPressMenuItem({ nativeEvent: { actionKey }, account });
       }}
     >
       {children}
@@ -267,20 +267,22 @@ const ViewWalletBackup = () => {
     ],
   };
 
-  const onPressMenuItem = ({ nativeEvent: { actionKey: menuAction }, address }: MenuEvent) => {
+  const onPressMenuItem = ({ nativeEvent: { actionKey: menuAction }, account }: MenuEvent) => {
     switch (menuAction) {
       case WalletMenuAction.ViewPrivateKey: {
-        // TODO: How do we get the private key from an individual account inside of a wallet?
-        navigate('SecretWarning', {
+        const title = account.label.endsWith('.eth')
+          ? abbreviations.abbreviateEnsForDisplay(account.label, 0, 8)
+          : formatAddress(account.address, 4, 5);
+        navigate(SETTINGS_BACKUP_ROUTES.SECRET_WARNING, {
           walletId,
           isBackingUp: false,
-          privateKeyAddress: address,
-          title: formatAddress(address, 4, 5),
+          privateKeyAddress: account.address,
+          title,
         });
         break;
       }
       case WalletMenuAction.CopyWalletAddress: {
-        handleCopyAddress(address);
+        handleCopyAddress(account.address);
         break;
       }
       default:
