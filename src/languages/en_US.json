@@ -101,6 +101,10 @@
         "imported": "Imported",
         "imported_message": "Your wallet was imported"
       },
+      "wallet_group_title_plural": "Wallet Group %{walletGroupNumber}",
+      "wallet_group_title_singular": "Wallet Group",
+      "private_key_plural": "Private Key %{privateKeyNumber}",
+      "private_key_singluar": "Private Key",
       "backup_deleted_successfully": "Backups Deleted Successfully",
       "cloud": {
         "back_up_to_platform": "Back up to %{cloudPlatformName}",

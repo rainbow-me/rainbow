@@ -262,10 +262,10 @@ export const WalletsAndBackup = () => {
                       disabled
                       titleComponent={
                         <Inline wrap verticalSpace="4px" horizontalSpace="4px">
-                        {accounts.map(account => (
-                          <WalletPill key={account.address} account={account} />
-                        ))}
-                      </Inline>
+                          {accounts.map(account => (
+                            <WalletPill key={account.address} account={account} />
+                          ))}
+                        </Inline>
                       }
                     />
                   </Menu>

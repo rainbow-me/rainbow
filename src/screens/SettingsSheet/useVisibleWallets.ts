@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import * as i18n from '@/languages';
 
 import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
 import { RainbowAccount, RainbowWallet } from '@/model/wallet';
@@ -34,9 +35,13 @@ type UseVisibleWalletReturnType = {
 export const getTitleForWalletType = (type: EthereumWalletType, walletTypeCount: WalletCountPerType) => {
   switch (type) {
     case EthereumWalletType.mnemonic:
-      return walletTypeCount.phrase > 0 ? `Wallet Group ${walletTypeCount.phrase}` : 'Wallet Group';
+      return walletTypeCount.phrase > 0
+        ? i18n.t(i18n.l.back_up.wallet_group_title_plural, { walletGroupNumber: walletTypeCount.phrase })
+        : i18n.t(i18n.l.back_up.wallet_group_title_singular);
     case EthereumWalletType.privateKey:
-      return walletTypeCount.privateKey > 0 ? `Private Key ${walletTypeCount.privateKey}` : 'Private Key';
+      return walletTypeCount.privateKey > 0
+        ? i18n.t(i18n.l.back_up.private_key_plural, { privateKeyNumber: walletTypeCount.privateKey })
+        : i18n.t(i18n.l.back_up.private_key_singluar);
     default:
       return '';
   }
