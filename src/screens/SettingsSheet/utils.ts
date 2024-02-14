@@ -2,7 +2,7 @@ import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import WalletTypes from '@/helpers/walletTypes';
 import { RainbowWallet } from '@/model/wallet';
 import { Navigation } from '@/navigation';
-import { getLocalBackupPassword } from '@/model/backup';
+import { BackupUserData, getLocalBackupPassword } from '@/model/backup';
 import Routes from '@/navigation/routesNames';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 
@@ -19,6 +19,24 @@ type WalletBackupStatus = {
 
 export const capitalizeFirstLetter = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+export const checkUserDataForBackupProvider = (userData?: BackupUserData): { backupProvider: string | undefined } => {
+  let backupProvider: string | undefined = undefined;
+
+  if (!userData?.wallets) return { backupProvider };
+
+  Object.values(userData.wallets).forEach(wallet => {
+    if (wallet.backedUp && wallet.type !== WalletTypes.readOnly) {
+      if (wallet.backupType === WalletBackupTypes.cloud) {
+        backupProvider = WalletBackupTypes.cloud;
+      } else if (backupProvider !== WalletBackupTypes.cloud && wallet.backupType === WalletBackupTypes.manual) {
+        backupProvider = WalletBackupTypes.manual;
+      }
+    }
+  });
+
+  return { backupProvider };
 };
 
 export const checkWalletsForBackupStatus = (wallets: WalletsByKey | null): WalletBackupStatus => {

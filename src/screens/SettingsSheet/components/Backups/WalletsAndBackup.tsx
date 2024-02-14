@@ -14,7 +14,7 @@ import { abbreviations } from '@/utils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import * as i18n from '@/languages';
 import MenuHeader from '../MenuHeader';
-import { checkWalletsForBackupStatus } from '../../utils';
+import { checkWalletsForBackupStatus, checkUserDataForBackupProvider } from '../../utils';
 import { Inline, Text, Box, Stack } from '@/design-system';
 import { ContactAvatar } from '@/components/contacts';
 import { useTheme } from '@/theme';
@@ -83,7 +83,7 @@ export const WalletsAndBackup = () => {
   const { wallets } = useWallets();
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
-  const { backups } = useCloudBackups();
+  const { backups, userData } = useCloudBackups();
   const dispatch = useDispatch();
 
   const initializeWallet = useInitializeWallet();
@@ -132,7 +132,9 @@ export const WalletsAndBackup = () => {
     [navigate, wallets]
   );
 
-  const { backupProvider, allBackedUp } = useMemo(() => checkWalletsForBackupStatus(wallets), [wallets]);
+  const { backupProvider } = useMemo(() => checkUserDataForBackupProvider(userData), [userData]);
+
+  const { allBackedUp } = useMemo(() => checkWalletsForBackupStatus(wallets), [wallets]);
 
   const { visibleWallets } = useVisibleWallets({ wallets });
 
