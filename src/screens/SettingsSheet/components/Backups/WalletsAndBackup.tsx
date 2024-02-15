@@ -132,11 +132,15 @@ export const WalletsAndBackup = () => {
     [navigate, wallets]
   );
 
-  const { backupProvider } = useMemo(() => checkUserDataForBackupProvider(userData), [userData]);
+  const { backupProvider: remoteBackupProvider } = useMemo(() => checkUserDataForBackupProvider(userData), [userData]);
 
-  const { allBackedUp } = useMemo(() => checkWalletsForBackupStatus(wallets), [wallets]);
+  const { allBackedUp, backupProvider: localBackupProvider } = useMemo(() => checkWalletsForBackupStatus(wallets), [wallets]);
 
   const { visibleWallets } = useVisibleWallets({ wallets });
+
+  const backupProvider = useMemo(() => {
+    return remoteBackupProvider ?? localBackupProvider;
+  }, [localBackupProvider, remoteBackupProvider]);
 
   const renderView = useCallback(() => {
     switch (backupProvider) {
