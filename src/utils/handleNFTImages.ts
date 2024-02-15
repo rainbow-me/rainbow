@@ -49,13 +49,14 @@ export function handleNFTImages({
             w: isGIF ? cardSize : FULL_NFT_IMAGE_SIZE,
           })) ?? null;
 
-  const lowResUrl = url?.startsWith?.(GOOGLE_USER_CONTENT_URL)
-    ? url.replace(/=s\d+$/, `?s=${cardSize}`)
-    : maybeSignUri(url, {
-        w: cardSize,
-        // reformat to png in the case that the image may be an SVG
-        fm: !previewUrl && (!mimeType || isSVG) ? 'png' : undefined,
-      }) ?? null;
+  const lowResUrl =
+    url?.startsWith?.(GOOGLE_USER_CONTENT_URL) && !isGIF
+      ? url.replace(/=s\d+$/, `?s=${cardSize}`)
+      : maybeSignUri(url, {
+          w: cardSize,
+          // reformat to png in the case that the image may be an SVG or is a GIF
+          fm: (!previewUrl && (!mimeType || isSVG)) || isGIF ? 'png' : undefined,
+        }) ?? null;
 
   return { highResUrl, lowResUrl };
 }
