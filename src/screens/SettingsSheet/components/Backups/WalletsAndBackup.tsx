@@ -6,7 +6,6 @@ import MenuItem from '../MenuItem';
 import WalletsAndBackupIcon from '@/assets/WalletsAndBackup.png';
 import CloudBackupWarningIcon from '@/assets/CloudBackupWarning.png';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
-import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { useENSAvatar, useInitializeWallet, useManageCloudBackups, useWallets } from '@/hooks';
@@ -22,7 +21,6 @@ import { useTheme } from '@/theme';
 import Routes from '@/navigation/routesNames';
 import { backupsCard } from '@/components/cards/utils/constants';
 import { WalletCountPerType, useVisibleWallets } from '../../useVisibleWallets';
-import { format } from 'date-fns';
 import useCloudBackups from '@/hooks/useCloudBackups';
 import { SETTINGS_BACKUP_ROUTES } from './routes';
 import { RainbowAccount, createWallet } from '@/model/wallet';
@@ -97,13 +95,6 @@ export const WalletsAndBackup = () => {
     privateKey: 0,
   };
 
-  const enabledCloudBackups = useCallback(() => {
-    navigate(Routes.BACKUP_SHEET, {
-      nativeScreen: true,
-      step: WalletBackupStepTypes.backup_cloud,
-    });
-  }, [navigate]);
-
   const onViewCloudBackups = useCallback(async () => {
     navigate(SETTINGS_BACKUP_ROUTES.VIEW_CLOUD_BACKUPS, {
       backups,
@@ -148,8 +139,6 @@ export const WalletsAndBackup = () => {
 
   const { backupProvider: remoteBackupProvider } = useMemo(() => checkUserDataForBackupProvider(userData), [userData]);
   const { allBackedUp, backupProvider: localBackupProvider } = useMemo(() => checkWalletsForBackupStatus(wallets), [wallets]);
-
-  const { visibleWallets } = useVisibleWallets({ wallets });
 
   const backupProvider = useMemo(() => {
     return remoteBackupProvider ?? localBackupProvider;
@@ -552,7 +541,6 @@ export const WalletsAndBackup = () => {
     navigate,
     onCreateNewSecretPhrase,
     onNavigateToWalletView,
-    onPressLearnMoreAboutCloudBackups,
     sortedWallets,
     allBackedUp,
   ]);
