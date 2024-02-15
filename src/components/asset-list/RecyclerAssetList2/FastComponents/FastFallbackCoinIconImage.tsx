@@ -14,24 +14,25 @@ const ImageState = {
 const imagesCache: { [imageUrl: string]: keyof typeof ImageState } = {};
 
 export const FastFallbackCoinIconImage = React.memo(function FastFallbackCoinIconImage({
-  address,
+  size = 40,
+  icon,
   network,
   symbol,
   shadowColor,
   theme,
   children,
 }: {
+  size?: number;
+  icon?: string;
   theme: ThemeContextProps;
-  address: string;
   network: Network;
   symbol: string;
   shadowColor: string;
   children: () => React.ReactNode;
 }) {
   const { colors } = theme;
-  const imageUrl = getUrlForTrustIconFallback(address, network)!;
 
-  const key = `${symbol}-${imageUrl}`;
+  const key = `${icon}`;
 
   const [cacheStatus, setCacheStatus] = useState(imagesCache[key]);
 
@@ -66,7 +67,7 @@ export const FastFallbackCoinIconImage = React.memo(function FastFallbackCoinIco
       {shouldShowImage && (
         <ImageWithCachedMetadata
           cache={ImgixImage.cacheControl.immutable}
-          imageUrl={imageUrl}
+          imageUrl={icon}
           onError={onError}
           onLoad={onLoad}
           size={40}

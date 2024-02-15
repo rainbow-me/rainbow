@@ -773,6 +773,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
     return navigateToSwapDetailsModal();
   }, [loading, navigateToSwapDetailsModal]);
 
+  console.log({ outputCurrency });
   return (
     <Wrapper keyboardType={KeyboardType.numpad}>
       <Box height="full" width="full">
@@ -801,6 +802,8 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
                   inputCurrencyMainnetAddress={inputCurrency?.mainnet_address}
                   inputCurrencySymbol={inputCurrency?.symbol}
                   inputFieldRef={inputFieldRef}
+                  inputCurrencyIcon={inputCurrency?.icon_url || inputCurrency?.iconUrl}
+                  inputCurrencyColors={inputCurrency?.colors}
                   loading={loading}
                   nativeAmount={nativeAmountDisplay}
                   nativeCurrency={nativeCurrency}
@@ -831,6 +834,8 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
                   loading={loading}
                   outputAmount={outputAmountDisplay}
                   outputCurrencyAddress={outputCurrency?.address}
+                  outputCurrencyIcon={outputCurrency?.icon_url || outputCurrency?.iconUrl}
+                  outputCurrencyColors={outputCurrency?.colors}
                   outputCurrencyMainnetAddress={outputCurrency?.mainnet_address}
                   outputCurrencySymbol={outputCurrency?.symbol}
                   outputFieldRef={outputFieldRef}

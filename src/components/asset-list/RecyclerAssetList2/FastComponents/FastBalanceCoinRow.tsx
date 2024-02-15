@@ -96,7 +96,14 @@ const MemoizedBalanceCoinRow = React.memo(
         <ButtonPressAnimation onPress={handlePress} scaleTo={0.96} testID={`balance-coin-row-${item?.name}`}>
           <View style={[sx.container]}>
             <View style={sx.iconContainer}>
-              <RainbowCoinIcon size={40} icon={item?.icon_url} network={item?.network} symbol={item?.symbol} theme={theme} />
+              <RainbowCoinIcon
+                size={40}
+                icon={item?.icon_url}
+                network={item?.network}
+                symbol={item?.symbol}
+                theme={theme}
+                colors={item?.colors}
+              />
             </View>
 
             <View style={[sx.innerContainer, isHidden && sx.hiddenRow]}>

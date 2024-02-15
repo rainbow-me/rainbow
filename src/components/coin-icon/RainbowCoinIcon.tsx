@@ -7,6 +7,7 @@ import { FallbackIcon as CoinIconTextFallback } from '@/utils';
 
 import { FastFallbackCoinIconImage } from '../asset-list/RecyclerAssetList2/FastComponents/FastFallbackCoinIconImage';
 import { FastChainBadge } from '../asset-list/RecyclerAssetList2/FastComponents/FastCoinBadge';
+import { TokenColors } from '@/graphql/__generated__/metadata';
 
 const fallbackTextStyles = {
   fontFamily: fonts.family.SFProRounded,
@@ -33,14 +34,11 @@ export default React.memo(function FastCoinIcon({
   badgeYPosition,
 }: {
   size?: number;
-  icon: string;
+  icon?: string;
   network: Network;
   symbol: string;
   theme: ThemeContextProps;
-  colors?: {
-    primary?: string;
-    fallback?: string;
-  };
+  colors?: TokenColors;
   ignoreBadge?: boolean;
   badgeXPosition?: number;
   badgeYPosition?: number;
@@ -51,7 +49,7 @@ export default React.memo(function FastCoinIcon({
 
   return (
     <View style={sx.container}>
-      <FastFallbackCoinIconImage icon={icon} shadowColor={shadowColor} symbol={symbol} theme={theme} size={size}>
+      <FastFallbackCoinIconImage network={network} icon={icon} shadowColor={shadowColor} symbol={symbol} theme={theme} size={size}>
         {() => (
           <CoinIconTextFallback
             color={fallbackIconColor}

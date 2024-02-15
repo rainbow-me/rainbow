@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ButtonPressAnimation } from '../animations';
-import FastCoinIcon from '../asset-list/RecyclerAssetList2/FastComponents/FastCoinIcon';
 import FastTransactionStatusBadge from './FastTransactionStatusBadge';
 import { Text, globalColors, useColorMode } from '@/design-system';
 import { TransactionStatusTypes, TransactionTypes } from '@/entities';
@@ -13,6 +12,7 @@ import { CardSize } from '../unique-token/CardSize';
 import { ChainBadge } from '../coin-icon';
 import { Network } from '@/networks/types';
 import { ethereumUtils } from '@/utils';
+import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
 
 const BottomRow = React.memo(function BottomRow({
   description,
@@ -71,7 +71,6 @@ const BottomRow = React.memo(function BottomRow({
 
 export default React.memo(function TransactionCoinRow({ item, theme }: { item: any; theme: ThemeContextProps }) {
   const { colorMode } = useColorMode();
-  const { mainnetAddress } = item;
   const { colors } = theme;
   const navigation = useNavigation();
 
@@ -121,12 +120,13 @@ export default React.memo(function TransactionCoinRow({ item, theme }: { item: a
             </View>
           ) : (
             <View style={sx.iconContainer}>
-              <FastCoinIcon
-                address={mainnetAddress || item.address}
-                network={item.network}
-                mainnetAddress={mainnetAddress}
-                symbol={item.symbol}
+              <RainbowCoinIcon
+                size={40}
+                icon={item?.icon_url}
+                network={item?.network}
+                symbol={item?.symbol}
                 theme={theme}
+                colors={item?.colors}
               />
             </View>
           )}
