@@ -384,13 +384,7 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
       {ios && (
         <BlurWrapper height={deviceHeight} width={deviceWidth}>
           <BackgroundImage>
-            <UniqueTokenImage
-              backgroundColor={asset.background || imageColor}
-              imageUrl={asset.lowResUrl}
-              item={asset}
-              resizeMode="cover"
-              size={CardSize}
-            />
+            <UniqueTokenImage backgroundColor={asset.background || imageColor} imageUrl={asset.lowResUrl} item={asset} size={CardSize} />
             <BackgroundBlur />
           </BackgroundImage>
         </BlurWrapper>
