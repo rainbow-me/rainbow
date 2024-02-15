@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import * as i18n from '@/languages';
 
-import WalletTypes from '@/helpers/walletTypes';
+import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
 import { RainbowAccount, RainbowWallet } from '@/model/wallet';
 
 type WalletByKey = {
@@ -9,6 +10,12 @@ type WalletByKey = {
 
 type UseVisibleWalletProps = {
   wallets: WalletByKey | null;
+  walletTypeCount: WalletCountPerType;
+};
+
+export type WalletCountPerType = {
+  phrase: number;
+  privateKey: number;
 };
 
 type AmendedRainbowWallet = RainbowWallet & {
@@ -25,9 +32,22 @@ type UseVisibleWalletReturnType = {
   lastBackupDate: number | undefined;
 };
 
-export const useVisibleWallets = ({ wallets }: UseVisibleWalletProps): UseVisibleWalletReturnType => {
-  const [sumPrivateKeyWallets, setSumPrivateKeyWallets] = useState(0);
-  const [sumSecretPhraseWallets, setSumSecretPhraseWallets] = useState(0);
+export const getTitleForWalletType = (type: EthereumWalletType, walletTypeCount: WalletCountPerType) => {
+  switch (type) {
+    case EthereumWalletType.mnemonic:
+      return walletTypeCount.phrase > 0
+        ? i18n.t(i18n.l.back_up.wallet_group_title_plural, { walletGroupNumber: walletTypeCount.phrase })
+        : i18n.t(i18n.l.back_up.wallet_group_title_singular);
+    case EthereumWalletType.privateKey:
+      return walletTypeCount.privateKey > 0
+        ? i18n.t(i18n.l.back_up.private_key_plural, { privateKeyNumber: walletTypeCount.privateKey })
+        : i18n.t(i18n.l.back_up.private_key_singluar);
+    default:
+      return '';
+  }
+};
+
+export const useVisibleWallets = ({ wallets, walletTypeCount }: UseVisibleWalletProps): UseVisibleWalletReturnType => {
   const [lastBackupDate, setLastBackupDate] = useState<number | undefined>(undefined);
 
   if (!wallets) {
@@ -49,32 +69,15 @@ export const useVisibleWallets = ({ wallets }: UseVisibleWalletProps): UseVisibl
           setLastBackupDate(Number(wallet.backupDate));
         }
 
-        let name = '';
-        if (wallet.type === WalletTypes.privateKey) {
-          if (sumPrivateKeyWallets > 0) {
-            setSumPrivateKeyWallets(prev => {
-              name = `Private Key ${prev}`;
-              return prev + 1;
-            });
-          } else {
-            name = 'Private Key';
-          }
-        }
-
-        if (wallet.type === WalletTypes.mnemonic || wallet.type === WalletTypes.seed) {
-          if (sumSecretPhraseWallets > 0) {
-            setSumSecretPhraseWallets(prev => {
-              name = `Secret Phrease ${prev}`;
-              return prev + 1;
-            });
-          } else {
-            name = 'Secret Phrase';
-          }
+        if (wallet.type === WalletTypes.mnemonic) {
+          walletTypeCount.phrase += 1;
+        } else if (wallet.type === WalletTypes.privateKey) {
+          walletTypeCount.privateKey += 1;
         }
 
         return {
           ...wallet,
-          name,
+          name: getTitleForWalletType(wallet.type, walletTypeCount),
           isBackedUp: wallet.backedUp,
           accounts: visibleAccounts,
           key,
