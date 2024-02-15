@@ -6,7 +6,7 @@ import { cloudPlatform } from '@/utils/platform';
 import { address as formatAddress } from '@/utils/abbreviations';
 
 import * as i18n from '@/languages';
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import Menu from '../Menu';
 import MenuContainer from '../MenuContainer';
 import MenuItem from '../MenuItem';
@@ -40,6 +40,8 @@ import showWalletErrorAlert from '@/helpers/support';
 import { IS_IOS } from '@/env';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { useCreateBackup } from '@/components/backup/useCreateBackup';
+import { EmojiEffect } from './WalletsAndBackup';
+import { colors } from '@/styles';
 
 type ViewWalletBackupParams = {
   ViewWalletBackup: { walletId: string; title: string; imported?: boolean };
@@ -124,8 +126,8 @@ const ViewWalletBackup = () => {
 
   const { navigate } = useNavigation();
   const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
-
-  const { onSubmit } = useCreateBackup({
+  const [emojiTrigger, setEmojiTrigger] = React.useState<null | (() => void)>(null);
+  const { onSubmit, loading } = useCreateBackup({
     walletId,
   });
 
@@ -137,6 +139,16 @@ const ViewWalletBackup = () => {
   //   });
   // }, [navigate, walletId]);
 
+  useEffect(() => {
+    console.log({ loading });
+    if (loading === 'success') {
+      for (let i = 0; i < 20; i++) {
+        setTimeout(() => {
+          emojiTrigger?.();
+        }, 100 * i);
+      }
+    }
+  }, [emojiTrigger, loading]);
   const onNavigateToSecretWarning = useCallback(() => {
     navigate(SETTINGS_BACKUP_ROUTES.SECRET_WARNING, {
       walletId,
@@ -318,13 +330,32 @@ const ViewWalletBackup = () => {
           </Menu>
 
           <Menu>
-            <MenuItem
-              hasSfSymbol
-              leftComponent={<MenuItem.TextIcon icon="􀊯" isLink />}
-              onPress={onSubmit}
-              size={52}
-              titleComponent={<MenuItem.Title isLink text={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)} />}
-            />
+            <EmojiEffect deviceWidth={400}>
+              {({ onNewEmoji }) => (
+                <MenuItem
+                  hasSfSymbol
+                  leftComponent={
+                    <MenuItem.TextIcon
+                      icon={loading === 'success' ? '􀁢' : '􀊯'}
+                      isLink
+                      colorOverride={loading === 'success' ? colors.green : undefined}
+                    />
+                  }
+                  onPress={() => {
+                    setEmojiTrigger(() => onNewEmoji);
+                    onSubmit();
+                  }}
+                  size={52}
+                  titleComponent={
+                    <MenuItem.Title
+                      isLink
+                      customColor={loading === 'success' ? colors.green : undefined}
+                      text={loading === 'success' ? 'Back up Sucessful' : i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)}
+                    />
+                  }
+                />
+              )}
+            </EmojiEffect>
             <MenuItem
               hasSfSymbol
               leftComponent={<MenuItem.TextIcon icon="􀈊" isLink />}

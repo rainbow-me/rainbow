@@ -110,6 +110,8 @@ export default function useWalletCloudBackup() {
           });
         } else {
           logger.log(`adding wallet to ${cloudPlatform} backup`, wallets![walletId]);
+          onSuccess?.();
+          return;
           updatedBackupFile = await addWalletToCloudBackup({
             password,
             wallet: wallets![walletId],

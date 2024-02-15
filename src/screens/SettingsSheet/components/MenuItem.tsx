@@ -10,6 +10,7 @@ import { ImgixImage } from '@/components/images';
 import { useTheme } from '@/theme';
 import { ImageSourcePropType } from 'react-native';
 import { Width } from '@/design-system/layout/size';
+import { colors } from '@/styles';
 
 interface ImageIconProps {
   size?: number;
@@ -108,11 +109,20 @@ interface TitleProps {
   weight?: 'regular' | 'medium' | 'semibold' | 'bold' | 'heavy';
   disabled?: boolean;
   isLink?: boolean;
+  customColor?: string;
 }
 
-const Title = ({ text, weight = 'semibold', disabled, isLink }: TitleProps) => (
+const Title = ({ text, weight = 'semibold', disabled, isLink, customColor }: TitleProps) => (
   <Text
-    color={disabled ? 'secondary60 (Deprecated)' : isLink ? 'action (Deprecated)' : 'primary (Deprecated)'}
+    color={
+      disabled
+        ? 'secondary60 (Deprecated)'
+        : customColor
+          ? { custom: customColor }
+          : isLink
+            ? 'action (Deprecated)'
+            : 'primary (Deprecated)'
+    }
     containsEmoji
     size="18px / 27px (Deprecated)"
     weight={weight}

@@ -470,7 +470,7 @@ export async function saveLocalBackupPassword(password: string) {
   const privateAccessControlOptions = await keychain.getPrivateAccessControlOptions();
 
   await keychain.saveString('RainbowBackupPassword', password, privateAccessControlOptions);
-  saveBackupPassword(password);
+  //saveBackupPassword(password);
 }
 
 // Attempts to fetch the password to decrypt the backup from the iCloud keychain

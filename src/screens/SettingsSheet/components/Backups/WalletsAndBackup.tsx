@@ -29,11 +29,37 @@ import { useDispatch } from 'react-redux';
 import { walletsLoadState } from '@/redux/wallets';
 import { RainbowError, logger } from '@/logger';
 import { IS_IOS } from '@/env';
+import FloatingEmojis from '@/components/floating-emojis/FloatingEmojis';
 
 type WalletPillProps = {
   account: RainbowAccount;
 };
 
+export const EmojiEffect = ({
+  children,
+  deviceWidth,
+}: {
+  children: (props: { onNewEmoji: () => void }) => React.ReactNode;
+  deviceWidth: number;
+}) => {
+  return (
+    <FloatingEmojis
+      centerVertically
+      distance={600}
+      duration={1000}
+      emojis={['check_mark_button']}
+      marginTop={-10}
+      fadeOut={true}
+      range={[deviceWidth / 2 - 100, deviceWidth / 2 + 100]}
+      gravityEnabled
+      scaleTo={0}
+      size={100}
+      wiggleFactor={0}
+    >
+      {children}
+    </FloatingEmojis>
+  );
+};
 const WalletPill = ({ account }: WalletPillProps) => {
   const { data: ENSAvatar } = useENSAvatar(account.label);
   const { colors, isDarkMode } = useTheme();

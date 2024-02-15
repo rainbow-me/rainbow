@@ -116,6 +116,7 @@ function handleAction(name, params, replace = false) {
 }
 
 function goBack() {
+  console.log('goBack from ', getActiveRouteName());
   if (!TopLevelNavigationRef) return;
   TopLevelNavigationRef.goBack();
 }
