@@ -2,7 +2,6 @@ import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getWalletBalances, WALLET_BALANCES_FROM_STORAGE } from '@/handlers/localstorage/walletBalances';
 import { queryClient } from '@/react-query';
-import { nonceManagerLoadState } from '@/redux/nonceManager';
 import { AppState } from '@/redux/store';
 import { promiseUtils } from '@/utils';
 import logger from '@/utils/logger';
@@ -26,9 +25,6 @@ export default function useLoadGlobalLateData() {
     logger.sentry('Load wallet global late data');
     const promises = [];
 
-    // wallet nonces
-    const p1 = dispatch(nonceManagerLoadState());
-
     // mainnet eth balances for all wallets
     const p2 = loadWalletBalanceNamesToCache();
 
@@ -50,7 +46,7 @@ export default function useLoadGlobalLateData() {
     // tx method names
     const p7 = dispatch(transactionSignaturesLoadState());
 
-    promises.push(p1, p2, p3, p4, p5, p6, p7);
+    promises.push(p2, p3, p4, p5, p6, p7);
 
     // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '(Promise<void> | ((dispatch: Dis... Remove this comment to see the full error message
     return promiseUtils.PromiseAllWithFails(promises);

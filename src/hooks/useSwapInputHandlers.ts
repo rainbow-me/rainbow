@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Alert } from '../components/alerts';
 import { isNativeAsset } from '@/handlers/assets';
-import { greaterThan, multiply, subtract, toFixedDecimals } from '@/helpers/utilities';
+import { greaterThan, toFixedDecimals } from '@/helpers/utilities';
 import { useGas } from '@/hooks';
 import { AppState } from '@/redux/store';
 import { updateSwapInputAmount, updateSwapNativeAmount, updateSwapOutputAmount } from '@/redux/swap';
@@ -11,7 +11,6 @@ import { ethereumUtils } from '@/utils';
 
 export default function useSwapInputHandlers() {
   const dispatch = useDispatch();
-  const type = useSelector((state: AppState) => state.swap.type);
 
   const { selectedGasFee, l1GasFeeOptimism } = useGas();
 
@@ -26,12 +25,11 @@ export default function useSwapInputHandlers() {
     const oldAmount = accountAsset?.balance?.amount ?? '0';
     let newAmount = oldAmount;
     if (isNativeAsset(inputCurrencyAddress, inputCurrencyNetwork) && accountAsset) {
+      // this subtracts gas from the balance of the asset
       newAmount = toFixedDecimals(ethereumUtils.getBalanceAmount(selectedGasFee, accountAsset, l1GasFeeOptimism), 6);
-      const transactionFee = subtract(oldAmount, newAmount);
-      const newAmountMinusFee = toFixedDecimals(subtract(newAmount, multiply(transactionFee, 1.5)), 6);
 
-      if (greaterThan(newAmountMinusFee, 0)) {
-        dispatch(updateSwapInputAmount(newAmountMinusFee));
+      if (greaterThan(newAmount, 0)) {
+        dispatch(updateSwapInputAmount(newAmount));
       } else {
         Alert({
           message: lang.t('expanded_state.swap.swap_max_insufficient_alert.message', { symbol: accountAsset.symbol }),

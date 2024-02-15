@@ -7,7 +7,7 @@ import { avatarMetadataAtom } from '../components/ens-registration/RegistrationA
 import { coverMetadataAtom } from '../components/ens-registration/RegistrationCover/RegistrationCover';
 import { ENSActionParameters, RapActionTypes } from '../raps/common';
 import usePendingTransactions from './usePendingTransactions';
-import { useAccountSettings, useCurrentNonce, useENSRegistration, useWalletENSAvatar, useWallets } from '.';
+import { useAccountSettings, useENSRegistration, useWalletENSAvatar, useWallets } from '.';
 import { Records, RegistrationParameters } from '@/entities';
 import { fetchResolver } from '@/handlers/ens';
 import { saveNameFromLabelhash } from '@/handlers/localstorage/ens';
@@ -19,6 +19,8 @@ import { executeRap } from '@/raps';
 import { timeUnits } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { labelhash, logger } from '@/utils';
+import { getNextNonce } from '@/state/nonces';
+import { Network } from '@/networks/types';
 
 const NOOP = () => null;
 
@@ -46,8 +48,7 @@ export default function useENSRegistrationActionHandler(
     step: keyof typeof REGISTRATION_STEPS;
   } = {} as any
 ) {
-  const { accountAddress, network } = useAccountSettings();
-  const getNextNonce = useCurrentNonce(accountAddress, network);
+  const { accountAddress } = useAccountSettings();
   const { registrationParameters } = useENSRegistration();
   const { navigate, goBack } = useNavigation();
   const { getPendingTransactionByHash } = usePendingTransactions();
@@ -92,7 +93,7 @@ export default function useENSRegistrationActionHandler(
       const salt = generateSalt();
 
       const [nonce, rentPrice] = await Promise.all([
-        getNextNonce(),
+        getNextNonce({ network: Network.mainnet, address: accountAddress }),
         getRentPrice(registrationParameters.name.replace(ENS_DOMAIN, ''), duration),
       ]);
 
@@ -116,7 +117,7 @@ export default function useENSRegistrationActionHandler(
         callback;
       });
     },
-    [getNextNonce, registrationParameters, duration, accountAddress, isHardwareWallet, goBack]
+    [registrationParameters, duration, accountAddress, isHardwareWallet, goBack]
   );
 
   const speedUpCommitAction = useCallback(
@@ -147,7 +148,7 @@ export default function useENSRegistrationActionHandler(
       }
 
       const [nonce, rentPrice, changedRecords] = await Promise.all([
-        getNextNonce(),
+        getNextNonce({ network: Network.mainnet, address: accountAddress }),
         getRentPrice(name.replace(ENS_DOMAIN, ''), duration),
         uploadRecordImages(registrationParameters.changedRecords, {
           avatar: avatarMetadata,
@@ -169,7 +170,7 @@ export default function useENSRegistrationActionHandler(
 
       updateAvatarsOnNextBlock.current = true;
     },
-    [accountAddress, avatarMetadata, coverMetadata, getNextNonce, registrationParameters, sendReverseRecord]
+    [accountAddress, avatarMetadata, coverMetadata, registrationParameters, sendReverseRecord]
   );
 
   const renewAction = useCallback(
@@ -182,7 +183,7 @@ export default function useENSRegistrationActionHandler(
         return;
       }
 
-      const nonce = await getNextNonce();
+      const nonce = await getNextNonce({ network: Network.mainnet, address: accountAddress });
       const rentPrice = await getRentPrice(name.replace(ENS_DOMAIN, ''), duration);
 
       const registerEnsRegistrationParameters: ENSActionParameters = {
@@ -194,7 +195,7 @@ export default function useENSRegistrationActionHandler(
 
       await executeRap(wallet, RapActionTypes.renewENS, registerEnsRegistrationParameters, callback);
     },
-    [duration, getNextNonce, registrationParameters]
+    [accountAddress, duration, registrationParameters]
   );
 
   const setNameAction = useCallback(
@@ -207,7 +208,7 @@ export default function useENSRegistrationActionHandler(
         return;
       }
 
-      const nonce = await getNextNonce();
+      const nonce = await getNextNonce({ network: Network.mainnet, address: accountAddress });
 
       const registerEnsRegistrationParameters: ENSActionParameters = {
         ...formatENSActionParams(registrationParameters),
@@ -218,7 +219,7 @@ export default function useENSRegistrationActionHandler(
 
       await executeRap(wallet, RapActionTypes.setNameENS, registerEnsRegistrationParameters, callback);
     },
-    [accountAddress, getNextNonce, registrationParameters]
+    [accountAddress, registrationParameters]
   );
 
   const setRecordsAction = useCallback(
@@ -230,7 +231,7 @@ export default function useENSRegistrationActionHandler(
       }
 
       const [nonce, changedRecords, resolver] = await Promise.all([
-        getNextNonce(),
+        getNextNonce({ network: Network.mainnet, address: accountAddress }),
         uploadRecordImages(registrationParameters.changedRecords, {
           avatar: avatarMetadata,
           header: coverMetadata,
@@ -251,7 +252,7 @@ export default function useENSRegistrationActionHandler(
 
       updateAvatarsOnNextBlock.current = true;
     },
-    [accountAddress, avatarMetadata, coverMetadata, getNextNonce, registrationParameters, sendReverseRecord]
+    [accountAddress, avatarMetadata, coverMetadata, registrationParameters, sendReverseRecord]
   );
 
   const transferAction = useCallback(
@@ -268,7 +269,7 @@ export default function useENSRegistrationActionHandler(
         return;
       }
 
-      const nonce = await getNextNonce();
+      const nonce = await getNextNonce({ network: Network.mainnet, address: accountAddress });
 
       const transferEnsParameters: ENSActionParameters = {
         ...formatENSActionParams({
@@ -288,7 +289,7 @@ export default function useENSRegistrationActionHandler(
 
       return { nonce: newNonce };
     },
-    [accountAddress, getNextNonce, registrationParameters]
+    [accountAddress, registrationParameters]
   );
 
   const actions = useMemo(
