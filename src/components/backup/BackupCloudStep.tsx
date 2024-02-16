@@ -11,8 +11,7 @@ import { Text } from '@/components/text';
 import WalletAndBackup from '@/assets/WalletsAndBackup.png';
 import { analytics } from '@/analytics';
 import { cloudBackupPasswordMinLength, isCloudBackupPasswordValid } from '@/handlers/cloudBackup';
-import { useDimensions, useMagicAutofocus, useRouteExistsInNavigationState, useWallets } from '@/hooks';
-import Routes from '@/navigation/routesNames';
+import { useDimensions, useMagicAutofocus } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { Box, Inset, Stack } from '@/design-system';
@@ -21,13 +20,14 @@ import { IS_ANDROID } from '@/env';
 import { RainbowButton } from '../buttons';
 import RainbowButtonTypes from '../buttons/rainbow-button/RainbowButtonTypes';
 import { usePasswordValidation } from './usePasswordValidation';
-import { useCreateBackup } from './useCreateBackup';
 import { TextInput } from 'react-native';
 import { useTheme } from '@/theme';
 
 type BackupCloudStepParams = {
   BackupCloudStep: {
     walletId?: string;
+    onSuccess: (password: string) => Promise<void>;
+    onCancel: () => Promise<void>;
   };
 };
 
@@ -41,21 +41,12 @@ export function BackupCloudStep() {
   const { isDarkMode } = useTheme();
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
   const { params } = useRoute<RouteProp<BackupCloudStepParams, 'BackupCloudStep'>>();
-  const { selectedWallet } = useWallets();
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const isSettingsRoute = !!useRouteExistsInNavigationState(Routes.SETTINGS_SHEET);
-
-  const walletId = params?.walletId || selectedWallet.id;
+  const { onSuccess, onCancel } = params;
 
   const { validPassword, label, labelColor } = usePasswordValidation(password, confirmPassword);
-  const { onSubmit } = useCreateBackup({
-    walletId,
-    password,
-    validPassword,
-    isSettingsRoute,
-  });
 
   const currentlyFocusedInput = useRef<TextInput | null>(null);
   const passwordRef = useRef<TextInput | null>(null);
@@ -93,6 +84,21 @@ export function BackupCloudStep() {
 
   const onConfirmPasswordChange = useCallback(({ nativeEvent: { text: inputText } }: NativeEvent) => {
     setConfirmPassword(inputText);
+  }, []);
+
+  const onSuccessAndNavigateBack = useCallback(
+    async (password: string) => {
+      onSuccess(password);
+    },
+    [onSuccess]
+  );
+
+  useEffect(() => {
+    return () => {
+      if (!password) {
+        onCancel();
+      }
+    };
   }, []);
 
   return (
@@ -147,7 +153,7 @@ export function BackupCloudStep() {
                 isValid={validPassword}
                 onChange={onConfirmPasswordChange}
                 onFocus={(target: any) => onTextInputFocus(target, true)}
-                onSubmitEditing={onSubmit}
+                onSubmitEditing={() => onSuccessAndNavigateBack(password)}
                 password={confirmPassword}
                 placeholder={lang.t(lang.l.back_up.cloud.password.confirm_placeholder)}
                 ref={confirmPasswordRef}
@@ -168,7 +174,7 @@ export function BackupCloudStep() {
               label={`􀎽 ${lang.t(lang.l.back_up.cloud.back_up_to_platform, {
                 cloudPlatformName: cloudPlatform,
               })}`}
-              onPress={onSubmit}
+              onPress={() => onSuccessAndNavigateBack(password)}
             />
           )}
 

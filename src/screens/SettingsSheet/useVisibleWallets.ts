@@ -18,7 +18,7 @@ export type WalletCountPerType = {
   privateKey: number;
 };
 
-type AmendedRainbowWallet = RainbowWallet & {
+export type AmendedRainbowWallet = RainbowWallet & {
   name: string;
   isBackedUp: boolean | undefined;
   accounts: RainbowAccount[];

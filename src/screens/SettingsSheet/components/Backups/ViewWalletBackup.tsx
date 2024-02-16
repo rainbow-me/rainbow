@@ -39,6 +39,7 @@ import { PROFILES, useExperimentalFlag } from '@/config';
 import showWalletErrorAlert from '@/helpers/support';
 import { IS_IOS } from '@/env';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
+import { useCreateBackup } from '@/components/backup/useCreateBackup';
 
 type ViewWalletBackupParams = {
   ViewWalletBackup: { walletId: string; title: string; imported?: boolean };
@@ -124,13 +125,17 @@ const ViewWalletBackup = () => {
   const { navigate } = useNavigation();
   const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
 
-  const enableCloudBackups = useCallback(() => {
-    navigate(Routes.BACKUP_SHEET, {
-      nativeScreen: true,
-      step: walletBackupStepTypes.backup_cloud,
-      walletId,
-    });
-  }, [navigate, walletId]);
+  const { onSubmit } = useCreateBackup({
+    walletId,
+  });
+
+  // const enableCloudBackups = useCallback(() => {
+  //   navigate(Routes.BACKUP_SHEET, {
+  //     nativeScreen: true,
+  //     step: walletBackupStepTypes.backup_cloud,
+  //     walletId,
+  //   });
+  // }, [navigate, walletId]);
 
   const onNavigateToSecretWarning = useCallback(() => {
     navigate(SETTINGS_BACKUP_ROUTES.SECRET_WARNING, {
@@ -316,7 +321,7 @@ const ViewWalletBackup = () => {
             <MenuItem
               hasSfSymbol
               leftComponent={<MenuItem.TextIcon icon="􀊯" isLink />}
-              onPress={enableCloudBackups}
+              onPress={onSubmit}
               size={52}
               titleComponent={<MenuItem.Title isLink text={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)} />}
             />

@@ -5,18 +5,25 @@ import React, { useCallback } from 'react';
 import Menu from '../Menu';
 import MenuContainer from '../MenuContainer';
 import MenuItem from '../MenuItem';
-import { Backup, parseTimestampFromFilename } from '@/model/backup';
+import { Backup, CloudBackups, parseTimestampFromFilename } from '@/model/backup';
 import { format } from 'date-fns';
 import { Stack } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { IS_ANDROID } from '@/env';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import useCloudBackups from '@/hooks/useCloudBackups';
+
+type ViewCloudBackupsParams = {
+  ViewCloudBackups: {
+    backups: CloudBackups;
+  };
+};
 
 const ViewCloudBackups = () => {
-  const { backups } = useCloudBackups();
   const { navigate } = useNavigation();
+  const { params } = useRoute<RouteProp<ViewCloudBackupsParams, 'ViewCloudBackups'>>();
+
+  const { backups } = params;
 
   const cloudBackups = backups.files
     .filter(backup => {

@@ -93,7 +93,7 @@ type RainbowButtonProps = {
   disabled?: boolean;
   height?: number;
   label?: string;
-  onPress: () => MaybePromise<void>;
+  onPress: (...args: unknown[]) => MaybePromise<void>;
   strokeWidth?: number;
   type?: RainbowButtonTypes;
   width?: number;
