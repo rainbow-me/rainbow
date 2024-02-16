@@ -21,6 +21,7 @@ export const useCreateBackup = ({ walletId }: UseCreateBackupProps) => {
   const { fetchBackups } = useCloudBackups();
   const walletCloudBackup = useWalletCloudBackup();
   const [loading, setLoading] = useState<useCreateBackupStateType>('none');
+  const [alreadyHasLocalPassword, setAlreadyHasLocalPassword] = useState(false);
 
   const [password, setPassword] = useState('');
 
@@ -34,14 +35,16 @@ export const useCreateBackup = ({ walletId }: UseCreateBackupProps) => {
     [setLoading]
   );
   const onSuccess = useCallback(async () => {
-    await saveLocalBackupPassword(password);
+    if (!alreadyHasLocalPassword) {
+      await saveLocalBackupPassword(password);
+    }
     analytics.track('Backup Complete', {
       category: 'backup',
       label: cloudPlatform,
     });
     setLoadingStateWithTimeout('success');
     fetchBackups();
-  }, [setLoadingStateWithTimeout, password, fetchBackups]);
+  }, [alreadyHasLocalPassword, setLoadingStateWithTimeout, fetchBackups, password]);
 
   const onError = useCallback(
     (msg: string) => {
@@ -70,6 +73,7 @@ export const useCreateBackup = ({ walletId }: UseCreateBackupProps) => {
   const getPassword = useCallback(async (): Promise<string | null> => {
     const password = await getLocalBackupPassword();
     if (password) {
+      setAlreadyHasLocalPassword(true);
       setPassword(password);
       return password;
     }
