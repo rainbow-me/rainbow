@@ -17,12 +17,12 @@ const fallbackTextStyles = {
   textAlign: 'center',
 };
 
-const fallbackIconStyle = {
-  ...borders.buildCircleAsObject(40),
+const fallbackIconStyle = (size: number) => ({
+  ...borders.buildCircleAsObject(size),
   position: 'absolute',
-};
+});
 
-export default React.memo(function FastCoinIcon({
+export default React.memo(function RainbowCoinIcon({
   size = 40,
   icon,
   network,
@@ -54,7 +54,7 @@ export default React.memo(function FastCoinIcon({
           <CoinIconTextFallback
             color={fallbackIconColor}
             height={size}
-            style={fallbackIconStyle}
+            style={fallbackIconStyle(size)}
             symbol={symbol}
             textStyles={fallbackTextStyles}
             width={size}

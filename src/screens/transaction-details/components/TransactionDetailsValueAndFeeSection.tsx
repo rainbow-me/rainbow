@@ -2,17 +2,15 @@ import React from 'react';
 import { DoubleLineTransactionDetailsRow } from '@/screens/transaction-details/components/DoubleLineTransactionDetailsRow';
 import { TransactionDetailsSymbol } from '@/screens/transaction-details/components/TransactionDetailsSymbol';
 import { RainbowTransaction, RainbowTransactionFee } from '@/entities/transactions/transaction';
-import { CoinIcon } from '@/components/coin-icon';
 import { Box, Stack } from '@/design-system';
 import { TransactionDetailsDivider } from '@/screens/transaction-details/components/TransactionDetailsDivider';
 import * as i18n from '@/languages';
-import { TransactionType } from '@/entities';
-import { ethereumUtils } from '@/utils';
+
 import { Network } from '@/networks/types';
 import { useUserAsset } from '@/resources/assets/useUserAsset';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import FastCoinIcon from '@/components/asset-list/RecyclerAssetList2/FastComponents/FastCoinIcon';
 import { useTheme } from '@/theme';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 
 type Props = {
   transaction: RainbowTransaction;
@@ -23,16 +21,9 @@ type Props = {
 
 export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({ transaction }) => {
   const theme = useTheme();
-  const { network, symbol, type, fee } = transaction;
+  const { network, fee } = transaction;
   const assetUniqueId = getUniqueId(transaction?.address || '', transaction?.network || Network.mainnet);
   const { data: assetData } = useUserAsset(assetUniqueId);
-
-  const coinAddress = assetData?.address || transaction?.address || '';
-  const mainnetCoinAddress = assetData?.mainnet_address;
-  const coinSymbol =
-    type === TransactionType.contract_interaction
-      ? ethereumUtils.getNetworkNativeAsset(network ?? Network.mainnet)?.symbol
-      : assetData?.symbol ?? symbol ?? undefined;
 
   const value = transaction.balance?.display;
   const nativeCurrencyValue = transaction.native?.display;
@@ -52,12 +43,13 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({ transact
           {value && (
             <DoubleLineTransactionDetailsRow
               leftComponent={
-                <FastCoinIcon
-                  mainnetAddress={mainnetCoinAddress}
-                  address={coinAddress}
-                  symbol={coinSymbol || ''}
-                  network={network || Network.mainnet}
+                <RainbowCoinIcon
+                  size={40}
+                  icon={assetData?.icon_url}
+                  network={network || assetData?.network || Network.mainnet}
+                  symbol={assetData?.symbol || ''}
                   theme={theme}
+                  colors={assetData?.colors}
                 />
               }
               title={i18n.t(i18n.l.transaction_details.value)}

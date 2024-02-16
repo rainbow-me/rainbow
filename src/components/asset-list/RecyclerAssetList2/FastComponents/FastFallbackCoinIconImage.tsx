@@ -3,7 +3,6 @@ import { StyleSheet, View } from 'react-native';
 import { Network } from '@/networks/types';
 import { ImageWithCachedMetadata, ImgixImage } from '@/components/images';
 import { ThemeContextProps } from '@/theme';
-import { getUrlForTrustIconFallback } from '@/utils';
 
 const ImageState = {
   ERROR: 'ERROR',
@@ -16,8 +15,6 @@ const imagesCache: { [imageUrl: string]: keyof typeof ImageState } = {};
 export const FastFallbackCoinIconImage = React.memo(function FastFallbackCoinIconImage({
   size = 40,
   icon,
-  network,
-  symbol,
   shadowColor,
   theme,
   children,
@@ -63,15 +60,15 @@ export const FastFallbackCoinIconImage = React.memo(function FastFallbackCoinIco
   );
 
   return (
-    <View style={[sx.coinIconContainer, sx.withShadow, { shadowColor }]}>
+    <View style={[sx.coinIconContainer, sx.withShadow, { shadowColor, height: size, width: size }]}>
       {shouldShowImage && (
         <ImageWithCachedMetadata
           cache={ImgixImage.cacheControl.immutable}
           imageUrl={icon}
           onError={onError}
           onLoad={onLoad}
-          size={40}
-          style={[sx.coinIconFallback, isLoaded && { backgroundColor: colors.white }]}
+          size={size}
+          style={[sx.coinIconFallback, isLoaded && { backgroundColor: colors.white }, { height: size, width: size }]}
         />
       )}
 
@@ -84,26 +81,12 @@ const sx = StyleSheet.create({
   coinIconContainer: {
     alignItems: 'center',
     borderRadius: 20,
-    height: 40,
     justifyContent: 'center',
     overflow: 'visible',
-    width: 40,
   },
   coinIconFallback: {
     borderRadius: 20,
-    height: 40,
     overflow: 'hidden',
-    width: 40,
-  },
-  container: {
-    elevation: 6,
-    height: 59,
-    overflow: 'visible',
-    paddingTop: 9,
-  },
-  contract: {
-    height: 40,
-    width: 40,
   },
   fallbackWrapper: {
     left: 0,

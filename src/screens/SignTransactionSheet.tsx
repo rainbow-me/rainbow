@@ -23,7 +23,6 @@ import Animated, {
 import { Transaction } from '@ethersproject/transactions';
 
 import { ButtonPressAnimation } from '@/components/animations';
-import { CoinIcon } from '@/components/coin-icon';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { SheetActionButton } from '@/components/sheet';
 import { Bleed, Box, Columns, Inline, Inset, Stack, Text, globalColors, useBackgroundColor, useForegroundColor } from '@/design-system';
@@ -95,6 +94,8 @@ import { methodRegistryLookupAndParse } from '@/utils/methodRegistry';
 import { sanitizeTypedData } from '@/utils/signingUtils';
 import { hexToNumber, isHex } from 'viem';
 import { getNextNonce } from '@/state/nonces';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 
 const COLLAPSED_CARD_HEIGHT = 56;
 const MAX_CARD_HEIGHT = 176;
@@ -1549,7 +1550,13 @@ const SimulatedEventRow = ({
   eventType: EventType;
   price?: number | undefined;
 }) => {
-  const { colors } = useTheme();
+  const theme = useTheme();
+  const { nativeCurrency } = useAccountSettings();
+  const { data: externalAsset } = useExternalToken({
+    address: asset?.assetCode || '',
+    network: (asset?.network as Network) || Network.mainnet,
+    currency: nativeCurrency,
+  });
 
   const eventInfo: EventInfo = infoForEventType[eventType];
 
@@ -1604,13 +1611,14 @@ const SimulatedEventRow = ({
         <Inline alignVertical="center" space={{ custom: 7 }} wrap={false}>
           <Bleed vertical="6px">
             {asset?.type !== TransactionAssetType.Nft ? (
-              <CoinIcon
-                address={assetCode}
-                symbol={asset?.symbol}
+              <RainbowCoinIcon
                 size={16}
-                network={asset?.network || Network.mainnet}
-                forcedShadowColor={colors.transparent}
-                ignoreBadge={true}
+                icon={externalAsset?.icon_url}
+                network={(asset?.network as Network) || Network.mainnet}
+                symbol={externalAsset?.symbol || ''}
+                theme={theme}
+                colors={externalAsset?.colors}
+                ignoreBadge
               />
             ) : (
               <Image source={{ uri: url }} style={{ borderRadius: 4.5, height: 16, width: 16 }} />

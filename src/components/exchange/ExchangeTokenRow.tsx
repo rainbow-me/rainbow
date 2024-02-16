@@ -4,8 +4,6 @@ import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
 import { isNativeAsset } from '@/handlers/assets';
 import { Network } from '@/networks/types';
 import { useAsset, useDimensions } from '@/hooks';
-
-import FastCoinIcon from '../asset-list/RecyclerAssetList2/FastComponents/FastCoinIcon';
 import { ButtonPressAnimation } from '../animations';
 import { FloatingEmojis } from '../floating-emojis';
 import { IS_IOS } from '@/env';
@@ -44,7 +42,6 @@ export default React.memo(function ExchangeTokenRow({
   const rowTestID = `${testID}-exchange-coin-row-${symbol ?? item?.symbol ?? ''}-${network || Network.mainnet}`;
 
   const isInfoButtonVisible = !item?.isNativeAsset || (!isNativeAsset(address ?? item?.address, network) && !showBalance);
-  console.log({ item });
   return (
     <Columns alignVertical="center" space="10px">
       <Column>

@@ -1,5 +1,5 @@
 import React, { createElement } from 'react';
-import { CoinIcon, CoinIconGroup, CoinIconSize } from '../coin-icon';
+import { CoinIcon, CoinIconSize } from '../coin-icon';
 import { Column, Row } from '../layout';
 import { useAccountSettings } from '@/hooks';
 import styled from '@/styled-thing';
@@ -49,21 +49,17 @@ export default function CoinRow({
   const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
   return (
     <Container style={containerStyles}>
-      {isPool ? (
-        <CoinIconGroup tokens={tokens} />
-      ) : (
-        createElement(coinIconRender, {
-          address,
-          badgeXPosition,
-          badgeYPosition,
-          isFirstCoinRow,
-          isHidden,
-          isPinned,
-          symbol,
-          network,
-          ...props,
-        })
-      )}
+      {createElement(coinIconRender, {
+        address,
+        badgeXPosition,
+        badgeYPosition,
+        isFirstCoinRow,
+        isHidden,
+        isPinned,
+        symbol,
+        network,
+        ...props,
+      })}
       <Content isHidden={isHidden} justify="center" style={contentStyles}>
         <Row align="center" testID={`${testID}-${symbol || ''}-${network}`}>
           {topRowRender({

@@ -29,6 +29,7 @@ import { ethereumUtils, gasUtils } from '@/utils';
 import { getNetworkObj } from '@/networks';
 import { IS_ANDROID } from '@/env';
 import { ContextMenu } from '../context-menu';
+import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 
 const { GAS_EMOJIS, GAS_ICONS, GasSpeedOrder, CUSTOM, URGENT, NORMAL, FAST, getGasLabel } = gasUtils;
 
@@ -501,7 +502,7 @@ const GasSpeedButton = ({
                     }}
                   >
                     {currentNetwork === Network.mainnet ? (
-                      <CoinIcon address={nativeFeeCurrency.address} size={18} symbol={nativeFeeCurrency.symbol} network={currentNetwork} />
+                      <EthCoinIcon size={18} />
                     ) : (
                       <ChainBadge network={currentNetwork} size="gas" position="relative" />
                     )}

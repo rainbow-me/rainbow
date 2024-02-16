@@ -87,7 +87,8 @@ const deviceWidth = deviceUtils.dimensions.width;
 
 export default React.memo(function FastCurrencySelectionRow({
   item: {
-    uniqueId,
+    native,
+    balance,
     showBalance,
     showFavoriteButton,
     onPress,
@@ -162,10 +163,10 @@ export default React.memo(function FastCurrencySelectionRow({
             {showBalance && (
               <View style={[sx.column, sx.balanceColumn]}>
                 <Text align="right" color="primary (Deprecated)" size="16px / 22px (Deprecated)" weight="medium">
-                  {item?.native?.balance?.display ?? `${nativeCurrencySymbol}0.00`}
+                  {native?.balance?.display ?? `${nativeCurrencySymbol}0.00`}
                 </Text>
                 <Text align="right" color={{ custom: theme.colors.blueGreyDark50 }} size="14px / 19px (Deprecated)" weight="medium">
-                  {item?.balance?.display ?? ''}
+                  {balance?.display ?? ''}
                 </Text>
               </View>
             )}

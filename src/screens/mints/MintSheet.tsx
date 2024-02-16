@@ -54,6 +54,7 @@ import { QuantityButton } from './components/QuantityButton';
 import { estimateGas, getProviderForNetwork } from '@/handlers/web3';
 import { getRainbowFeeAddress } from '@/resources/reservoir/utils';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 
 const NFT_IMAGE_HEIGHT = 250;
 // inset * 2 -> 28 *2
@@ -665,14 +666,7 @@ const MintSheet = () => {
                     <Inset vertical={{ custom: -4 }}>
                       <Inline space="4px" alignVertical="center" alignHorizontal="right">
                         {currentNetwork === Network.mainnet ? (
-                          <CoinIcon
-                            address={ETH_ADDRESS}
-                            size={16}
-                            symbol={ETH_SYMBOL}
-                            forceFallback={undefined}
-                            shadowColor={undefined}
-                            style={undefined}
-                          />
+                          <EthCoinIcon size={16} />
                         ) : (
                           <ChainBadge network={currentNetwork} position="relative" size="small" forceDark={true} />
                         )}

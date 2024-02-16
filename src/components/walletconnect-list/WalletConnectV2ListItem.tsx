@@ -27,6 +27,7 @@ import ChainBadge from '@/components/coin-icon/ChainBadge';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 
 import { Network } from '@/helpers';
+import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 
 const CONTAINER_PADDING = 15;
 const VENDOR_LOGO_ICON_SIZE = 50;
@@ -232,7 +233,7 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
                           {network !== Network.mainnet ? (
                             <ChainBadge network={network} position="relative" size="small" />
                           ) : (
-                            <CoinIcon address={ETH_ADDRESS} size={20} symbol={ETH_SYMBOL} network={network} />
+                            <EthCoinIcon size={20} />
                           )}
                         </Box>
                       );
