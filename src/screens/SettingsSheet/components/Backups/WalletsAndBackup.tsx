@@ -137,7 +137,6 @@ export const WalletsAndBackup = () => {
     if (numberOfWalletsThatNeedBackedUp === 0 || !firstWalletThatNeedsBackedUp) {
       return;
     }
-    console.log({ firstWalletThatNeedsBackedUp, numberOfWalletsThatNeedBackedUp });
     setWalletIdToBackup(firstWalletThatNeedsBackedUp?.id);
     return {
       firstWalletThatNeedsBackedUp,

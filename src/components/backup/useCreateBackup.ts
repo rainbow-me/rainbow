@@ -58,8 +58,6 @@ export const useCreateBackup = ({ walletId }: UseCreateBackupProps) => {
       return password;
     }
 
-    console.log({ walletId });
-
     return new Promise((resolve, reject) => {
       return Navigation.handleAction(Routes.BACKUP_SHEET, {
         nativeScreen: true,
