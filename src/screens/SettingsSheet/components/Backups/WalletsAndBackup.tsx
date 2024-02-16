@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { cloudPlatform } from '@/utils/platform';
 import Menu from '../Menu';
 import MenuContainer from '../MenuContainer';
@@ -29,39 +29,15 @@ import { useDispatch } from 'react-redux';
 import { walletsLoadState } from '@/redux/wallets';
 import { RainbowError, logger } from '@/logger';
 import { IS_IOS } from '@/env';
-import FloatingEmojis from '@/components/floating-emojis/FloatingEmojis';
 import { useCreateBackup } from '@/components/backup/useCreateBackup';
 import { InteractionManager } from 'react-native';
+import { BackUpMenuItem } from './BackUpMenuButton';
+import { format } from 'date-fns';
 
 type WalletPillProps = {
   account: RainbowAccount;
 };
 
-export const EmojiEffect = ({
-  children,
-  deviceWidth,
-}: {
-  children: (props: { onNewEmoji: () => void }) => React.ReactNode;
-  deviceWidth: number;
-}) => {
-  return (
-    <FloatingEmojis
-      centerVertically
-      distance={600}
-      duration={1000}
-      emojis={['check_mark_button']}
-      marginTop={-10}
-      fadeOut={true}
-      range={[deviceWidth / 2 - 100, deviceWidth / 2 + 100]}
-      gravityEnabled
-      scaleTo={0}
-      size={100}
-      wiggleFactor={0}
-    >
-      {children}
-    </FloatingEmojis>
-  );
-};
 const WalletPill = ({ account }: WalletPillProps) => {
   const { data: ENSAvatar } = useENSAvatar(account.label);
   const { colors, isDarkMode } = useTheme();
@@ -118,7 +94,7 @@ export const WalletsAndBackup = () => {
 
   const initializeWallet = useInitializeWallet();
 
-  const { onSubmit } = useCreateBackup({
+  const { onSubmit, loading } = useCreateBackup({
     walletId: walletIdToBackup,
   });
 
@@ -230,6 +206,13 @@ export const WalletsAndBackup = () => {
     }
   }, [dispatch, initializeWallet, profilesEnabled]);
 
+  const onPressLearnMoreAboutCloudBackups = useCallback(() => {
+    navigate(Routes.LEARN_WEB_VIEW_SCREEN, {
+      ...backupsCard,
+      type: 'square',
+    });
+  }, [navigate]);
+
   const onNavigateToWalletView = useCallback(
     (walletId: string, name: string) => {
       const wallet = wallets?.[walletId];
@@ -274,16 +257,9 @@ export const WalletsAndBackup = () => {
               />
             </Menu>
 
-            {/* TODO: This is fucked */}
-            {/* <Menu description={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups_description)}>
-              <MenuItem
-                hasSfSymbol
-                leftComponent={<MenuItem.TextIcon icon="􀊯" isLink />}
-                onPress={enableCloudBackups}
-                size={52}
-                titleComponent={<MenuItem.Title isLink text={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)} />}
-              />
-            </Menu> */}
+            <Menu description={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups_description)}>
+              <BackUpMenuItem title={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)} loading={loading} onPress={enableCloudBackups} />
+            </Menu>
 
             <Stack space={'24px'}>
               {sortedWallets.map(({ name, isBackedUp, accounts, key, numAccounts, backedUp, imported }) => {
@@ -393,8 +369,7 @@ export const WalletsAndBackup = () => {
                 />
               </Menu>
 
-              {/* TODO: This is fucked */}
-              {/* <Menu
+              <Menu
                 description={
                   lastBackupDate
                     ? i18n.t(i18n.l.back_up.cloud.latest_backup, {
@@ -403,21 +378,15 @@ export const WalletsAndBackup = () => {
                     : undefined
                 }
               >
-                <MenuItem
-                  hasSfSymbol
-                  leftComponent={<MenuItem.TextIcon icon="􀎽" isLink />}
+                <BackUpMenuItem
+                  title={i18n.t(i18n.l.back_up.cloud.backup_to_cloud_now, {
+                    cloudPlatformName: cloudPlatform,
+                  })}
+                  icon="􀎽"
+                  loading={loading}
                   onPress={enableCloudBackups}
-                  size={52}
-                  titleComponent={
-                    <MenuItem.Title
-                      isLink
-                      text={i18n.t(i18n.l.back_up.cloud.backup_to_cloud_now, {
-                        cloudPlatformName: cloudPlatform,
-                      })}
-                    />
-                  }
                 />
-              </Menu> */}
+              </Menu>
             </Stack>
 
             <Stack space={'24px'}>
@@ -588,8 +557,7 @@ export const WalletsAndBackup = () => {
                 />
               </Menu>
 
-              {/* TODO: This is fucked */}
-              {/* <Menu
+              <Menu
                 description={
                   <Text color="secondary60 (Deprecated)" size="14px / 19px (Deprecated)" weight="regular">
                     {i18n.t(i18n.l.wallet.back_ups.cloud_backup_description)}
@@ -601,14 +569,8 @@ export const WalletsAndBackup = () => {
                   </Text>
                 }
               >
-                <MenuItem
-                  hasSfSymbol
-                  leftComponent={<MenuItem.TextIcon icon="􀊯" isLink />}
-                  onPress={enableCloudBackups}
-                  size={52}
-                  titleComponent={<MenuItem.Title isLink text={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)} />}
-                />
-              </Menu> */}
+                <BackUpMenuItem title={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)} loading={loading} onPress={enableCloudBackups} />
+              </Menu>
             </Stack>
           </Stack>
         );
@@ -616,13 +578,17 @@ export const WalletsAndBackup = () => {
     }
   }, [
     backupProvider,
+    loading,
+    enableCloudBackups,
     sortedWallets,
     onCreateNewSecretPhrase,
     navigate,
     onNavigateToWalletView,
     allBackedUp,
+    lastBackupDate,
     onViewCloudBackups,
     manageCloudBackups,
+    onPressLearnMoreAboutCloudBackups,
   ]);
 
   return <MenuContainer>{renderView()}</MenuContainer>;

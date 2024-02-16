@@ -23,7 +23,6 @@ import WalletTypes from '@/helpers/walletTypes';
 import { useRecoilState } from 'recoil';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { useNavigation } from '@/navigation/Navigation';
-import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import Routes from '@/navigation/routesNames';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { SETTINGS_BACKUP_ROUTES } from './routes';
@@ -40,8 +39,7 @@ import showWalletErrorAlert from '@/helpers/support';
 import { IS_IOS } from '@/env';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { useCreateBackup } from '@/components/backup/useCreateBackup';
-import { EmojiEffect } from './WalletsAndBackup';
-import { colors } from '@/styles';
+import { BackUpMenuItem } from './BackUpMenuButton';
 
 type ViewWalletBackupParams = {
   ViewWalletBackup: { walletId: string; title: string; imported?: boolean };
@@ -322,32 +320,7 @@ const ViewWalletBackup = () => {
           </Menu>
 
           <Menu>
-            <EmojiEffect deviceWidth={400}>
-              {({ onNewEmoji }) => (
-                <MenuItem
-                  hasSfSymbol
-                  leftComponent={
-                    <MenuItem.TextIcon
-                      icon={loading === 'success' ? '􀁢' : '􀊯'}
-                      isLink
-                      colorOverride={loading === 'success' ? colors.green : undefined}
-                    />
-                  }
-                  onPress={() => {
-                    setEmojiTrigger(() => onNewEmoji);
-                    onSubmit();
-                  }}
-                  size={52}
-                  titleComponent={
-                    <MenuItem.Title
-                      isLink
-                      customColor={loading === 'success' ? colors.green : undefined}
-                      text={loading === 'success' ? 'Back up Sucessful' : i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)}
-                    />
-                  }
-                />
-              )}
-            </EmojiEffect>
+            <BackUpMenuItem title={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)} loading={loading} onPress={onSubmit} />
             <MenuItem
               hasSfSymbol
               leftComponent={<MenuItem.TextIcon icon="􀈊" isLink />}
