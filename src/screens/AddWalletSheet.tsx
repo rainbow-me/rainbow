@@ -14,6 +14,8 @@ import { createWallet } from '@/model/wallet';
 import WalletTypes from '@/helpers/walletTypes';
 import { logger, RainbowError } from '@/logger';
 import WalletsAndBackup from '@/assets/WalletsAndBackup.png';
+import CreateNewWallet from '@/assets/CreateNewWallet.png';
+import PairHairwareWallet from '@/assets/PairHardwareWallet.png';
 import ImportSecretPhraseOrPrivateKey from '@/assets/ImportSecretPhraseOrPrivateKey.png';
 import WatchWalletIcon from '@/assets/watchWallet.png';
 import { captureException } from '@sentry/react-native';
@@ -267,7 +269,7 @@ export const AddWalletSheet = () => {
   const create: AddWalletItem = {
     title: i18n.t(TRANSLATIONS.options.create_new.title),
     description: i18n.t(TRANSLATIONS.options.create_new.description),
-    icon: '􀁌',
+    icon: CreateNewWallet,
     iconColor: globalColors.pink60,
     testID: 'create-new-button',
     onPress: onPressCreate,
@@ -302,7 +304,7 @@ export const AddWalletSheet = () => {
   const connectHardwareWallet: AddWalletItem = {
     title: i18n.t(TRANSLATIONS.options.hardware_wallet.title),
     description: i18n.t(TRANSLATIONS.options.hardware_wallet.description),
-    icon: '􀕹',
+    icon: PairHairwareWallet,
     iconColor: globalColors.blue60,
     testID: 'connect-hardware-wallet-button',
     onPress: onPressConnectHardwareWallet,
