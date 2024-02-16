@@ -18,7 +18,7 @@ type UseCreateBackupProps = {
 };
 
 export const useCreateBackup = ({ walletId }: UseCreateBackupProps) => {
-  const { goBack, navigate } = useNavigation();
+  const { goBack } = useNavigation();
   const { fetchBackups } = useCloudBackups();
   const walletCloudBackup = useWalletCloudBackup();
 
@@ -41,8 +41,6 @@ export const useCreateBackup = ({ walletId }: UseCreateBackupProps) => {
     async (password: string) => {
       analytics.track('Tapped "Confirm Backup"');
 
-      console.log('called onconfirm');
-
       await walletCloudBackup({
         onError,
         onSuccess,
@@ -52,20 +50,6 @@ export const useCreateBackup = ({ walletId }: UseCreateBackupProps) => {
     },
     [onError, onSuccess, walletCloudBackup, walletId]
   );
-
-  // const showExplainerConfirmation = useCallback(async () => {
-  //   android && Keyboard.dismiss();
-  //   navigate(Routes.EXPLAIN_SHEET, {
-  //     onClose: () => {
-  //       InteractionManager.runAfterInteractions(() => {
-  //         setTimeout(() => {
-  //           onConfirmBackup();
-  //         }, 300);
-  //       });
-  //     },
-  //     type: 'backup',
-  //   });
-  // }, [navigate, onConfirmBackup]);
 
   const getPassword = useCallback(async (): Promise<string> => {
     const password = await getLocalBackupPassword();

@@ -21,7 +21,6 @@ import AppIconZora from '@/assets/appIconZora.png';
 import AppIconZorb from '@/assets/appIconZorb.png';
 import AppIconPoolboy from '@/assets/appIconPoolboy.png';
 import AppIconAdworld from '@/assets/appIconAdworld.png';
-import TheMergePng from '@/assets/theMerge.png';
 import networkTypes from '@/helpers/networkTypes';
 import { delay, toFixedDecimals } from '@/helpers/utilities';
 import { useDimensions } from '@/hooks';
@@ -248,25 +247,6 @@ const AdworldAppIcon = () => {
   );
 };
 
-const TheMergeIcon = () => {
-  return (
-    <Box
-      style={{
-        marginVertical: 10,
-      }}
-    >
-      <ImgixImage
-        size={50}
-        source={TheMergePng}
-        style={{
-          width: 53,
-          height: 50,
-        }}
-      />
-    </Box>
-  );
-};
-
 const SENDING_FUNDS_TO_CONTRACT = lang.t('explain.sending_to_contract.text');
 
 const FLOOR_PRICE_EXPLAINER = lang.t('explain.floor_price.text');
@@ -317,6 +297,12 @@ const SWAP_RESET_EXPLAINER = `Rainbow doesn’t have the ability to swap across 
 const BACKUP_EXPLAINER = lang.t('back_up.explainers.backup', {
   cloudPlatformName: cloudPlatformAccountName,
 });
+
+const ENABLING_BACKUPS_EXPLAINER = walletName =>
+  lang.t('back_up.explainers.add_to_backups', {
+    cloudPlatformName: cloudPlatformAccountName,
+    walletName,
+  });
 
 const ENS_PRIMARY_NAME_EXPLAINER =
   'People will be able to type your .eth name into dApps instead of your full Ethereum address when they want to send something to you, and dApps will be able to use your .eth name and profile to display information about you. This is also known as setting your ENS name to “primary.”';
@@ -823,6 +809,14 @@ export const explainers = (params, colors) => ({
     extraHeight: 20,
     text: BACKUP_EXPLAINER,
     title: lang.t('explain.backup.title'),
+  },
+  add_to_backups: {
+    emoji: '⚠️',
+    extraHeight: -64,
+    text: ENABLING_BACKUPS_EXPLAINER(params?.walletName),
+    title: lang.t('explain.add_to_backups.title', {
+      walletName: params?.walletName,
+    }),
   },
   rainbow_fee: {
     emoji: '🌈',

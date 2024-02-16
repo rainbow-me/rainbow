@@ -131,14 +131,6 @@ const ViewWalletBackup = () => {
     walletId,
   });
 
-  // const enableCloudBackups = useCallback(() => {
-  //   navigate(Routes.BACKUP_SHEET, {
-  //     nativeScreen: true,
-  //     step: walletBackupStepTypes.backup_cloud,
-  //     walletId,
-  //   });
-  // }, [navigate, walletId]);
-
   useEffect(() => {
     console.log({ loading });
     if (loading === 'success') {
@@ -443,13 +435,13 @@ const ViewWalletBackup = () => {
                     <MenuItem.Title
                       text={
                         account.label.endsWith('.eth')
-                          ? abbreviations.abbreviateEnsForDisplay(account.label, 0, 8) ?? ''
+                          ? abbreviations.abbreviateEnsForDisplay(account.label, 20) ?? ''
                           : abbreviations.address(account.address, 3, 5) ?? ''
                       }
                       weight="semibold"
                     />
                   }
-                  rightComponent={<MenuItem.TextIcon icon="􀍡" />}
+                  rightComponent={<MenuItem.TextIcon disabled icon="􀍡" />}
                 />
               </ContextMenuWrapper>
             ))}
