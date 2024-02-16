@@ -1188,6 +1188,7 @@ const SimulationCard = ({
               key={`${change?.asset?.assetCode}-${change?.quantity}`}
               amount={change?.quantity || '10'}
               asset={change?.asset}
+              price={change?.price}
               eventType="receive"
             />
           );
@@ -1580,7 +1581,7 @@ const SimulatedEventRow = ({
   if (asset?.type === TransactionAssetType.Native) {
     assetCode = ETH_ADDRESS;
   }
-  const showUSD = (eventType === 'send' || eventType === 'receive') && price;
+  const showUSD = (eventType === 'send' || eventType === 'receive') && !!price;
   const formattedPrice = `$${price?.toLocaleString?.('en-US', {
     maximumFractionDigits: 2,
   })}`;
