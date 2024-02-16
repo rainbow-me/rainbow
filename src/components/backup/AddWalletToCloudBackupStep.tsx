@@ -7,10 +7,8 @@ import { Source } from 'react-native-fast-image';
 import { cloudPlatform } from '@/utils/platform';
 import { ButtonPressAnimation } from '../animations';
 import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
-import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { useWallets } from '@/hooks';
-import { useVisibleWallets } from '@/screens/SettingsSheet/useVisibleWallets';
+import { WalletCountPerType, useVisibleWallets } from '@/screens/SettingsSheet/useVisibleWallets';
 import { format } from 'date-fns';
 import { useCreateBackup } from './useCreateBackup';
 
@@ -20,7 +18,12 @@ export default function AddWalletToCloudBackupStep() {
   const { goBack } = useNavigation();
   const { wallets, selectedWallet } = useWallets();
 
-  const { lastBackupDate } = useVisibleWallets({ wallets });
+  const walletTypeCount: WalletCountPerType = {
+    phrase: 0,
+    privateKey: 0,
+  };
+
+  const { lastBackupDate } = useVisibleWallets({ wallets, walletTypeCount });
 
   const { onSubmit } = useCreateBackup({
     walletId: selectedWallet.id,

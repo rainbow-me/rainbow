@@ -163,6 +163,7 @@
       },
       "explainers": {
         "backup": "Don't forget this password! It is separate from your %{cloudPlatformName} password, and you should save it in a secure location.\n\nYou will need it in order to restore your wallet from the backup in the future.",
+        "add_to_backups": "You have more than one wallet that needs backed up. Due to security reason, we are only able to back up one wallet at a time.",
         "if_lose_cloud": "If you lose this device, you can recover your encrypted wallet backup from %{cloudPlatformName}.",
         "if_lose_imported": "If you lose this device, you can restore your wallet with the key you originally imported.",
         "if_lose_manual": "If you lose this device, you can restore your wallet with the secret phrase you saved."
@@ -778,6 +779,9 @@
       "arbitrum": {
         "text": "Arbitrum is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
         "title": "What's Arbitrum?"
+      },
+      "add_to_backups": {
+        "title": "Backing up %{walletName}"
       },
       "backup": {
         "title": "Important"

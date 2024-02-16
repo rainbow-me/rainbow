@@ -18,7 +18,7 @@ type UseCreateBackupProps = {
 };
 
 export const useCreateBackup = ({ walletId }: UseCreateBackupProps) => {
-  const { goBack, navigate } = useNavigation();
+  const { goBack } = useNavigation();
   const { fetchBackups } = useCloudBackups();
   const walletCloudBackup = useWalletCloudBackup();
 
@@ -41,8 +41,6 @@ export const useCreateBackup = ({ walletId }: UseCreateBackupProps) => {
     async (password: string) => {
       analytics.track('Tapped "Confirm Backup"');
 
-      console.log('called onconfirm');
-
       await walletCloudBackup({
         onError,
         onSuccess,
@@ -53,20 +51,6 @@ export const useCreateBackup = ({ walletId }: UseCreateBackupProps) => {
     [onError, onSuccess, walletCloudBackup, walletId]
   );
 
-  // const showExplainerConfirmation = useCallback(async () => {
-  //   android && Keyboard.dismiss();
-  //   navigate(Routes.EXPLAIN_SHEET, {
-  //     onClose: () => {
-  //       InteractionManager.runAfterInteractions(() => {
-  //         setTimeout(() => {
-  //           onConfirmBackup();
-  //         }, 300);
-  //       });
-  //     },
-  //     type: 'backup',
-  //   });
-  // }, [navigate, onConfirmBackup]);
-
   const getPassword = useCallback(async (): Promise<string> => {
     const password = await getLocalBackupPassword();
     if (password) {
@@ -74,18 +58,18 @@ export const useCreateBackup = ({ walletId }: UseCreateBackupProps) => {
       return password;
     }
 
+    console.log({ walletId });
+
     return new Promise((resolve, reject) => {
       return Navigation.handleAction(Routes.BACKUP_SHEET, {
         nativeScreen: true,
         step: walletBackupStepTypes.backup_cloud,
         onSuccess: async (password: string) => {
-          console.log('on success backup password step');
           setPassword(password);
-          resolve(password);
           goBack();
+          resolve(password);
         },
         onCancel: async () => {
-          console.log('canceled backup password step');
           reject();
         },
         walletId,

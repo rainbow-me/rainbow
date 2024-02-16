@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { cloudPlatform } from '@/utils/platform';
 import Menu from '../Menu';
 import MenuContainer from '../MenuContainer';
@@ -20,7 +20,7 @@ import { ContactAvatar } from '@/components/contacts';
 import { useTheme } from '@/theme';
 import Routes from '@/navigation/routesNames';
 import { backupsCard } from '@/components/cards/utils/constants';
-import { WalletCountPerType, useVisibleWallets } from '../../useVisibleWallets';
+import { AmendedRainbowWallet, WalletCountPerType, useVisibleWallets } from '../../useVisibleWallets';
 import useCloudBackups from '@/hooks/useCloudBackups';
 import { SETTINGS_BACKUP_ROUTES } from './routes';
 import { RainbowAccount, createWallet } from '@/model/wallet';
@@ -29,6 +29,9 @@ import { useDispatch } from 'react-redux';
 import { walletsLoadState } from '@/redux/wallets';
 import { RainbowError, logger } from '@/logger';
 import { IS_IOS } from '@/env';
+import { format } from 'date-fns';
+import { InteractionManager } from 'react-native';
+import { useCreateBackup } from '@/components/backup/useCreateBackup';
 
 type WalletPillProps = {
   account: RainbowAccount;
@@ -86,7 +89,13 @@ export const WalletsAndBackup = () => {
   const { backups, userData } = useCloudBackups();
   const dispatch = useDispatch();
 
+  const [walletIdToBackup, setWalletIdToBackup] = useState<string>('');
+
   const initializeWallet = useInitializeWallet();
+
+  const { onSubmit } = useCreateBackup({
+    walletId: walletIdToBackup,
+  });
 
   const { manageCloudBackups } = useManageCloudBackups();
 
@@ -94,6 +103,80 @@ export const WalletsAndBackup = () => {
     phrase: 0,
     privateKey: 0,
   };
+
+  const { backupProvider: remoteBackupProvider } = useMemo(() => checkUserDataForBackupProvider(userData), [userData]);
+  const { allBackedUp, backupProvider: localBackupProvider } = useMemo(() => checkWalletsForBackupStatus(wallets), [wallets]);
+
+  const backupProvider = useMemo(() => {
+    return remoteBackupProvider ?? localBackupProvider;
+  }, [localBackupProvider, remoteBackupProvider]);
+
+  const { visibleWallets, lastBackupDate } = useVisibleWallets({ wallets, walletTypeCount });
+
+  const sortedWallets = useMemo(() => {
+    const notBackedUpSecretPhraseWallets = visibleWallets.filter(
+      wallet => !wallet.isBackedUp && wallet.type === EthereumWalletType.mnemonic
+    );
+    const notBackedUpPrivateKeyWallets = visibleWallets.filter(
+      wallet => !wallet.isBackedUp && wallet.type === EthereumWalletType.privateKey
+    );
+    const backedUpSecretPhraseWallets = visibleWallets.filter(wallet => wallet.isBackedUp && wallet.type === EthereumWalletType.mnemonic);
+    const backedUpPrivateKeyWallets = visibleWallets.filter(wallet => wallet.isBackedUp && wallet.type === EthereumWalletType.privateKey);
+
+    return [
+      ...notBackedUpSecretPhraseWallets,
+      ...notBackedUpPrivateKeyWallets,
+      ...backedUpSecretPhraseWallets,
+      ...backedUpPrivateKeyWallets,
+    ];
+  }, [visibleWallets]);
+
+  const getAndSetWalletIdToBackup = useCallback(() => {
+    const firstWalletThatNeedsBackedUp = sortedWallets.find(wallet => !wallet.isBackedUp);
+    const numberOfWalletsThatNeedBackedUp = sortedWallets.filter(wallet => !wallet.isBackedUp).length;
+    if (numberOfWalletsThatNeedBackedUp === 0 || !firstWalletThatNeedsBackedUp) {
+      return;
+    }
+    console.log({ firstWalletThatNeedsBackedUp, numberOfWalletsThatNeedBackedUp });
+    setWalletIdToBackup(firstWalletThatNeedsBackedUp?.id);
+    return {
+      firstWalletThatNeedsBackedUp,
+      numberOfWalletsThatNeedBackedUp,
+    };
+  }, [sortedWallets]);
+
+  const showExplainerSheet = useCallback(
+    async (wallet: AmendedRainbowWallet) => {
+      navigate(Routes.EXPLAIN_SHEET, {
+        onClose: () => {
+          InteractionManager.runAfterInteractions(() => {
+            setTimeout(() => {
+              // NOTE: We lose the useState value when we navigate and come back to this screen, so let's set it again
+              getAndSetWalletIdToBackup();
+              onSubmit();
+            }, 300);
+          });
+        },
+        type: 'add_to_backups',
+        walletName: wallet.name,
+      });
+    },
+    [navigate, onSubmit, getAndSetWalletIdToBackup]
+  );
+
+  const enableCloudBackups = useCallback(() => {
+    const data = getAndSetWalletIdToBackup();
+    if (!data) {
+      return;
+    }
+
+    const { firstWalletThatNeedsBackedUp, numberOfWalletsThatNeedBackedUp } = data;
+    if (numberOfWalletsThatNeedBackedUp === 1) {
+      onSubmit();
+    } else {
+      showExplainerSheet(firstWalletThatNeedsBackedUp);
+    }
+  }, [onSubmit, showExplainerSheet, getAndSetWalletIdToBackup]);
 
   const onViewCloudBackups = useCallback(async () => {
     navigate(SETTINGS_BACKUP_ROUTES.VIEW_CLOUD_BACKUPS, {
@@ -123,6 +206,13 @@ export const WalletsAndBackup = () => {
     }
   }, [dispatch, initializeWallet, profilesEnabled]);
 
+  const onPressLearnMoreAboutCloudBackups = useCallback(() => {
+    navigate(Routes.LEARN_WEB_VIEW_SCREEN, {
+      ...backupsCard,
+      type: 'square',
+    });
+  }, [navigate]);
+
   const onNavigateToWalletView = useCallback(
     (walletId: string, name: string) => {
       const wallet = wallets?.[walletId];
@@ -136,33 +226,6 @@ export const WalletsAndBackup = () => {
     },
     [navigate, wallets]
   );
-
-  const { backupProvider: remoteBackupProvider } = useMemo(() => checkUserDataForBackupProvider(userData), [userData]);
-  const { allBackedUp, backupProvider: localBackupProvider } = useMemo(() => checkWalletsForBackupStatus(wallets), [wallets]);
-
-  const backupProvider = useMemo(() => {
-    return remoteBackupProvider ?? localBackupProvider;
-  }, [localBackupProvider, remoteBackupProvider]);
-
-  const { visibleWallets, lastBackupDate } = useVisibleWallets({ wallets, walletTypeCount });
-
-  const sortedWallets = useMemo(() => {
-    const notBackedUpSecretPhraseWallets = visibleWallets.filter(
-      wallet => !wallet.isBackedUp && wallet.type === EthereumWalletType.mnemonic
-    );
-    const notBackedUpPrivateKeyWallets = visibleWallets.filter(
-      wallet => !wallet.isBackedUp && wallet.type === EthereumWalletType.privateKey
-    );
-    const backedUpSecretPhraseWallets = visibleWallets.filter(wallet => wallet.isBackedUp && wallet.type === EthereumWalletType.mnemonic);
-    const backedUpPrivateKeyWallets = visibleWallets.filter(wallet => wallet.isBackedUp && wallet.type === EthereumWalletType.privateKey);
-
-    return [
-      ...notBackedUpSecretPhraseWallets,
-      ...notBackedUpPrivateKeyWallets,
-      ...backedUpSecretPhraseWallets,
-      ...backedUpPrivateKeyWallets,
-    ];
-  }, [visibleWallets]);
 
   const renderView = useCallback(() => {
     switch (backupProvider) {
@@ -194,16 +257,15 @@ export const WalletsAndBackup = () => {
               />
             </Menu>
 
-            {/* TODO: This is fucked */}
-            {/* <Menu description={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups_description)}>
+            <Menu description={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups_description)}>
               <MenuItem
                 hasSfSymbol
                 leftComponent={<MenuItem.TextIcon icon="􀊯" isLink />}
-                onPress={enabledCloudBackups}
+                onPress={enableCloudBackups}
                 size={52}
                 titleComponent={<MenuItem.Title isLink text={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)} />}
               />
-            </Menu> */}
+            </Menu>
 
             <Stack space={'24px'}>
               {sortedWallets.map(({ name, isBackedUp, accounts, key, numAccounts, backedUp, imported }) => {
@@ -313,8 +375,7 @@ export const WalletsAndBackup = () => {
                 />
               </Menu>
 
-              {/* TODO: This is fucked */}
-              {/* <Menu
+              <Menu
                 description={
                   lastBackupDate
                     ? i18n.t(i18n.l.back_up.cloud.latest_backup, {
@@ -326,7 +387,7 @@ export const WalletsAndBackup = () => {
                 <MenuItem
                   hasSfSymbol
                   leftComponent={<MenuItem.TextIcon icon="􀎽" isLink />}
-                  onPress={enabledCloudBackups}
+                  onPress={enableCloudBackups}
                   size={52}
                   titleComponent={
                     <MenuItem.Title
@@ -337,7 +398,7 @@ export const WalletsAndBackup = () => {
                     />
                   }
                 />
-              </Menu> */}
+              </Menu>
             </Stack>
 
             <Stack space={'24px'}>
@@ -508,8 +569,7 @@ export const WalletsAndBackup = () => {
                 />
               </Menu>
 
-              {/* TODO: This is fucked */}
-              {/* <Menu
+              <Menu
                 description={
                   <Text color="secondary60 (Deprecated)" size="14px / 19px (Deprecated)" weight="regular">
                     {i18n.t(i18n.l.wallet.back_ups.cloud_backup_description)}
@@ -524,11 +584,11 @@ export const WalletsAndBackup = () => {
                 <MenuItem
                   hasSfSymbol
                   leftComponent={<MenuItem.TextIcon icon="􀊯" isLink />}
-                  onPress={enabledCloudBackups}
+                  onPress={enableCloudBackups}
                   size={52}
                   titleComponent={<MenuItem.Title isLink text={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)} />}
                 />
-              </Menu> */}
+              </Menu>
             </Stack>
           </Stack>
         );
@@ -536,13 +596,16 @@ export const WalletsAndBackup = () => {
     }
   }, [
     backupProvider,
+    enableCloudBackups,
+    sortedWallets,
+    onCreateNewSecretPhrase,
+    navigate,
+    onNavigateToWalletView,
+    allBackedUp,
+    lastBackupDate,
     onViewCloudBackups,
     manageCloudBackups,
-    navigate,
-    onCreateNewSecretPhrase,
-    onNavigateToWalletView,
-    sortedWallets,
-    allBackedUp,
+    onPressLearnMoreAboutCloudBackups,
   ]);
 
   return <MenuContainer>{renderView()}</MenuContainer>;
