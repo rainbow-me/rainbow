@@ -124,21 +124,10 @@ const ViewWalletBackup = () => {
 
   const { navigate } = useNavigation();
   const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
-  const [emojiTrigger, setEmojiTrigger] = React.useState<null | (() => void)>(null);
   const { onSubmit, loading } = useCreateBackup({
     walletId,
   });
 
-  useEffect(() => {
-    console.log({ loading });
-    if (loading === 'success') {
-      for (let i = 0; i < 20; i++) {
-        setTimeout(() => {
-          emojiTrigger?.();
-        }, 100 * i);
-      }
-    }
-  }, [emojiTrigger, loading]);
   const onNavigateToSecretWarning = useCallback(() => {
     navigate(SETTINGS_BACKUP_ROUTES.SECRET_WARNING, {
       walletId,
