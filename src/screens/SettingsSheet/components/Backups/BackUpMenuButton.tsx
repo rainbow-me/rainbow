@@ -11,6 +11,7 @@ export const BackUpMenuItem = ({
   icon = '􀊯',
   loading,
   onPress,
+  title,
 }: {
   icon?: string;
   loading: useCreateBackupStateType;
@@ -52,9 +53,9 @@ export const BackUpMenuItem = ({
       case 'error':
         return i18n.t(i18n.l.back_up.cloud.backup_failed);
       default:
-        return i18n.t(i18n.l.back_up.cloud.enable_cloud_backups);
+        return title;
     }
-  }, [loading]);
+  }, [loading, title]);
   const localIcon = useMemo(() => {
     switch (loading) {
       case 'success':
