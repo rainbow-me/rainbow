@@ -30,9 +30,10 @@ import { useDispatch } from 'react-redux';
 import { walletsLoadState } from '@/redux/wallets';
 import { RainbowError, logger } from '@/logger';
 import { IS_IOS } from '@/env';
-import { format } from 'date-fns';
-import { InteractionManager } from 'react-native';
 import { useCreateBackup } from '@/components/backup/useCreateBackup';
+import { InteractionManager } from 'react-native';
+import { BackUpMenuItem } from './BackUpMenuButton';
+import { format } from 'date-fns';
 
 type WalletPillProps = {
   account: RainbowAccount;
@@ -93,7 +94,7 @@ export const WalletsAndBackup = () => {
 
   const initializeWallet = useInitializeWallet();
 
-  const { onSubmit } = useCreateBackup({
+  const { onSubmit, loading } = useCreateBackup({
     walletId: walletIdToBackup.current,
   });
 
@@ -259,13 +260,7 @@ export const WalletsAndBackup = () => {
             </Menu>
 
             <Menu description={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups_description)}>
-              <MenuItem
-                hasSfSymbol
-                leftComponent={<MenuItem.TextIcon icon="􀊯" isLink />}
-                onPress={enableCloudBackups}
-                size={52}
-                titleComponent={<MenuItem.Title isLink text={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)} />}
-              />
+              <BackUpMenuItem title={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)} loading={loading} onPress={enableCloudBackups} />
             </Menu>
 
             <Stack space={'24px'}>
@@ -384,19 +379,13 @@ export const WalletsAndBackup = () => {
                     : undefined
                 }
               >
-                <MenuItem
-                  hasSfSymbol
-                  leftComponent={<MenuItem.TextIcon icon="􀎽" isLink />}
+                <BackUpMenuItem
+                  title={i18n.t(i18n.l.back_up.cloud.backup_to_cloud_now, {
+                    cloudPlatformName: cloudPlatform,
+                  })}
+                  icon="􀎽"
+                  loading={loading}
                   onPress={enableCloudBackups}
-                  size={52}
-                  titleComponent={
-                    <MenuItem.Title
-                      isLink
-                      text={i18n.t(i18n.l.back_up.cloud.backup_to_cloud_now, {
-                        cloudPlatformName: cloudPlatform,
-                      })}
-                    />
-                  }
                 />
               </Menu>
             </Stack>
@@ -581,13 +570,7 @@ export const WalletsAndBackup = () => {
                   </Text>
                 }
               >
-                <MenuItem
-                  hasSfSymbol
-                  leftComponent={<MenuItem.TextIcon icon="􀊯" isLink />}
-                  onPress={enableCloudBackups}
-                  size={52}
-                  titleComponent={<MenuItem.Title isLink text={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)} />}
-                />
+                <BackUpMenuItem title={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)} loading={loading} onPress={enableCloudBackups} />
               </Menu>
             </Stack>
           </Stack>
@@ -596,6 +579,7 @@ export const WalletsAndBackup = () => {
     }
   }, [
     backupProvider,
+    loading,
     enableCloudBackups,
     sortedWallets,
     onCreateNewSecretPhrase,

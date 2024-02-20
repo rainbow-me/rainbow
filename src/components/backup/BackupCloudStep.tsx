@@ -22,6 +22,7 @@ import RainbowButtonTypes from '../buttons/rainbow-button/RainbowButtonTypes';
 import { usePasswordValidation } from './usePasswordValidation';
 import { TextInput } from 'react-native';
 import { useTheme } from '@/theme';
+import { useNavigation } from '@/navigation';
 
 type BackupCloudStepParams = {
   BackupCloudStep: {
@@ -39,6 +40,7 @@ type NativeEvent = {
 
 export function BackupCloudStep() {
   const { isDarkMode } = useTheme();
+  const { goBack } = useNavigation();
   const { width: deviceWidth, height: deviceHeight } = useDimensions();
   const { params } = useRoute<RouteProp<BackupCloudStepParams, 'BackupCloudStep'>>();
   const [password, setPassword] = useState('');
@@ -88,9 +90,10 @@ export function BackupCloudStep() {
 
   const onSuccessAndNavigateBack = useCallback(
     async (password: string) => {
+      goBack();
       onSuccess(password);
     },
-    [onSuccess]
+    [goBack, onSuccess]
   );
 
   useEffect(() => {

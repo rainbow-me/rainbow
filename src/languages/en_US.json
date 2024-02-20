@@ -113,6 +113,9 @@
         "manage_platform_backups": "View %{cloudPlatformName} Backups",
         "cloud_platform_backup_settings": "%{cloudPlatformName} Backup Settings",
         "cloud_backup": "Cloud Backup",
+        "backing_up": "Backing up...",
+        "backup_success": "Back up Successful",
+        "backup_failed": "Backup Failed",
         "manual_backup": "Manual backup",
         "back_to_cloud_platform_now": "Back Up to %{cloudPlatform} Now",
         "add_wallet_to_cloud_backups": "Add this wallet to your cloud backup?",
@@ -164,7 +167,7 @@
       },
       "explainers": {
         "backup": "Don't forget this password! It is separate from your %{cloudPlatformName} password, and you should save it in a secure location.\n\nYou will need it in order to restore your wallet from the backup in the future.",
-        "add_to_backups": "You have more than one wallet that needs backed up. Due to security reason, we are only able to back up one wallet at a time.",
+        "add_to_backups": "You have more than one wallet that needs backed up. Due to security reasons, we are currently only able to back up one wallet at a time.",
         "if_lose_cloud": "If you lose this device, you can recover your encrypted wallet backup from %{cloudPlatformName}.",
         "if_lose_imported": "If you lose this device, you can restore your wallet with the key you originally imported.",
         "if_lose_manual": "If you lose this device, you can restore your wallet with the secret phrase you saved."

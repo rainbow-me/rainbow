@@ -40,6 +40,7 @@ import showWalletErrorAlert from '@/helpers/support';
 import { IS_IOS } from '@/env';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { useCreateBackup } from '@/components/backup/useCreateBackup';
+import { BackUpMenuItem } from './BackUpMenuButton';
 import { checkUserDataForBackupProvider, checkWalletsForBackupStatus } from '../../utils';
 import useCloudBackups from '@/hooks/useCloudBackups';
 import { WalletCountPerType, useVisibleWallets } from '../../useVisibleWallets';
@@ -143,8 +144,7 @@ const ViewWalletBackup = () => {
 
   const { navigate } = useNavigation();
   const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
-
-  const { onSubmit } = useCreateBackup({
+  const { onSubmit, loading } = useCreateBackup({
     walletId,
   });
 
@@ -353,19 +353,13 @@ const ViewWalletBackup = () => {
                   : undefined
               }
             >
-              <MenuItem
-                hasSfSymbol
-                leftComponent={<MenuItem.TextIcon icon="􀎽" isLink />}
+              <BackUpMenuItem
+                icon="􀎽"
+                title={i18n.t(i18n.l.back_up.cloud.back_up_all_wallets_to_cloud, {
+                  cloudPlatformName: cloudPlatform,
+                })}
+                loading={loading}
                 onPress={onSubmit}
-                size={52}
-                titleComponent={
-                  <MenuItem.Title
-                    isLink
-                    text={i18n.t(i18n.l.back_up.cloud.back_up_all_wallets_to_cloud, {
-                      cloudPlatformName: cloudPlatform,
-                    })}
-                  />
-                }
               />
             </Menu>
           )}
@@ -374,17 +368,18 @@ const ViewWalletBackup = () => {
             <Menu>
               <MenuItem
                 hasSfSymbol
-                leftComponent={<MenuItem.TextIcon icon="􀊯" isLink />}
-                onPress={onSubmit}
-                size={52}
-                titleComponent={<MenuItem.Title isLink text={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)} />}
-              />
-              <MenuItem
-                hasSfSymbol
                 leftComponent={<MenuItem.TextIcon icon="􀈊" isLink />}
                 onPress={onManualBackup}
                 size={52}
                 titleComponent={<MenuItem.Title isLink text={i18n.t(i18n.l.back_up.manual.backup_manually)} />}
+              />
+              <BackUpMenuItem
+                icon="􀊯"
+                title={i18n.t(i18n.l.back_up.cloud.back_up_all_wallets_to_cloud, {
+                  cloudPlatformName: cloudPlatform,
+                })}
+                loading={loading}
+                onPress={onSubmit}
               />
             </Menu>
           )}
