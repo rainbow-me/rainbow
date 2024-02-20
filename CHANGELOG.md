@@ -15,6 +15,26 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.16] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.16)
+
+### Added
+
+- Added zustand and core pendingTx state (#5383)
+
+### Changed
+
+- Bump prettier from 2.2.1 to 3.2.5 (#5386)
+- updated transaction queries (#5385)
+- migrated nonce management to zustand (#5395)
+- took portfolio off of websocket (#5371)
+- migrate pinned and hidden tokens (#5410)
+
+### Fixed
+
+- bumped eth-sig-util to fix signing issues (#5376)
+- fixed wallet connect issue with incompatible namespaces (#5387)
+- fixed white screen on Zora mints (#5411)
+
 ## [1.9.15] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.15)
 
 ### Added
