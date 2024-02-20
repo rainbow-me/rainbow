@@ -1,8 +1,9 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { cloudPlatform } from '@/utils/platform';
 import Menu from '../Menu';
 import MenuContainer from '../MenuContainer';
 import MenuItem from '../MenuItem';
+import CloudBackedUpIcon from '@/assets/BackedUpCloud.png';
 import WalletsAndBackupIcon from '@/assets/WalletsAndBackup.png';
 import CloudBackupWarningIcon from '@/assets/CloudBackupWarning.png';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
@@ -342,7 +343,7 @@ export const WalletsAndBackup = () => {
                 <MenuHeader
                   paddingBottom={{ custom: 24 }}
                   paddingTop={{ custom: 8 }}
-                  iconComponent={<MenuHeader.ImageIcon source={allBackedUp ? WalletsAndBackupIcon : CloudBackupWarningIcon} size={72} />}
+                  iconComponent={<MenuHeader.ImageIcon source={allBackedUp ? CloudBackedUpIcon : CloudBackupWarningIcon} size={72} />}
                   titleComponent={<MenuHeader.Title text={i18n.t(i18n.l.wallet.back_ups.cloud_backup_title)} weight="heavy" />}
                   statusComponent={
                     <MenuHeader.StatusIcon
@@ -353,15 +354,14 @@ export const WalletsAndBackup = () => {
                   labelComponent={
                     allBackedUp ? (
                       <MenuHeader.Label
-                        text={i18n.t(i18n.l.wallet.back_ups.cloud_backup_description, {
-                          link: i18n.t(i18n.l.wallet.back_ups.cloud_backup_link),
-                        })}
-                        linkText={i18n.t(i18n.l.wallet.back_ups.cloud_backup_link)}
-                        onPress={() =>
-                          navigate(Routes.LEARN_WEB_VIEW_SCREEN, {
-                            ...backupsCard,
-                            type: 'square',
-                          })
+                        text={
+                          allBackedUp
+                            ? i18n.t(i18n.l.wallet.back_ups.backed_up_to_cloud_message, {
+                                cloudPlatform,
+                              })
+                            : i18n.t(i18n.l.wallet.back_ups.cloud_backup_description, {
+                                link: i18n.t(i18n.l.wallet.back_ups.cloud_backup_link),
+                              })
                         }
                       />
                     ) : (
