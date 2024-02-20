@@ -6,10 +6,11 @@ import { cloudPlatform } from '@/utils/platform';
 import { address as formatAddress } from '@/utils/abbreviations';
 
 import * as i18n from '@/languages';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import Menu from '../Menu';
 import MenuContainer from '../MenuContainer';
 import MenuItem from '../MenuItem';
+import CloudBackupWarningIcon from '@/assets/CloudBackupWarning.png';
 import BackupWarningIcon from '@/assets/BackupWarning.png';
 import CloudBackedUpIcon from '@/assets/BackedUpCloud.png';
 import ManuallyBackedUpIcon from '@/assets/ManuallyBackedUp.png';
@@ -40,6 +41,10 @@ import { IS_IOS } from '@/env';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { useCreateBackup } from '@/components/backup/useCreateBackup';
 import { BackUpMenuItem } from './BackUpMenuButton';
+import { checkUserDataForBackupProvider, checkWalletsForBackupStatus } from '../../utils';
+import useCloudBackups from '@/hooks/useCloudBackups';
+import { WalletCountPerType, useVisibleWallets } from '../../useVisibleWallets';
+import { format } from 'date-fns';
 
 type ViewWalletBackupParams = {
   ViewWalletBackup: { walletId: string; title: string; imported?: boolean };
@@ -109,6 +114,7 @@ const ContextMenuWrapper = ({ children, account, menuConfig, onPressMenuItem }: 
 
 const ViewWalletBackup = () => {
   const { params } = useRoute<RouteProp<ViewWalletBackupParams, 'ViewWalletBackup'>>();
+  const { userData } = useCloudBackups();
 
   const { walletId, title: incomingTitle } = params;
   const creatingWallet = useRef<boolean>();
@@ -117,6 +123,20 @@ const ViewWalletBackup = () => {
   const dispatch = useDispatch();
   const initializeWallet = useInitializeWallet();
   const profilesEnabled = useExperimentalFlag(PROFILES);
+
+  const walletTypeCount: WalletCountPerType = {
+    phrase: 0,
+    privateKey: 0,
+  };
+
+  const { lastBackupDate } = useVisibleWallets({ wallets, walletTypeCount });
+
+  const { backupProvider: remoteBackupProvider } = useMemo(() => checkUserDataForBackupProvider(userData), [userData]);
+  const { backupProvider: localBackupProvider } = useMemo(() => checkWalletsForBackupStatus(wallets), [wallets]);
+
+  const backupProvider = useMemo(() => {
+    return remoteBackupProvider ?? localBackupProvider;
+  }, [localBackupProvider, remoteBackupProvider]);
 
   const isSecretPhrase = WalletTypes.mnemonic === wallet?.type;
 
@@ -294,30 +314,75 @@ const ViewWalletBackup = () => {
             <MenuHeader
               paddingTop={{ custom: 8 }}
               paddingBottom={{ custom: 24 }}
-              iconComponent={<MenuHeader.ImageIcon source={BackupWarningIcon} size={72} />}
+              iconComponent={
+                <MenuHeader.ImageIcon
+                  source={backupProvider === walletBackupTypes.cloud ? CloudBackupWarningIcon : BackupWarningIcon}
+                  size={72}
+                />
+              }
               titleComponent={<MenuHeader.Title text={i18n.t(i18n.l.wallet.back_ups.not_backed_up)} weight="heavy" />}
               labelComponent={
                 <Box marginTop={{ custom: 16 }}>
-                  <MenuHeader.Label
-                    text={i18n.t(i18n.l.wallet.back_ups.not_backed_up_message, {
-                      backupType: isSecretPhrase ? 'Secret Phrase' : 'Private Key',
-                    })}
-                  />
+                  {backupProvider === walletBackupTypes.cloud && (
+                    <MenuHeader.Label
+                      text={i18n.t(i18n.l.wallet.back_ups.not_backed_up_to_cloud_message, {
+                        backupType: isSecretPhrase ? 'Secret Phrase' : 'Private Key',
+                        cloudPlatform,
+                      })}
+                    />
+                  )}
+                  {backupProvider !== walletBackupTypes.cloud && (
+                    <MenuHeader.Label
+                      text={i18n.t(i18n.l.wallet.back_ups.not_backed_up_message, {
+                        backupType: isSecretPhrase ? 'Secret Phrase' : 'Private Key',
+                      })}
+                    />
+                  )}
                 </Box>
               }
             />
           </Menu>
 
-          <Menu>
-            <BackUpMenuItem title={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)} loading={loading} onPress={onSubmit} />
-            <MenuItem
-              hasSfSymbol
-              leftComponent={<MenuItem.TextIcon icon="􀈊" isLink />}
-              onPress={onManualBackup}
-              size={52}
-              titleComponent={<MenuItem.Title isLink text={i18n.t(i18n.l.back_up.manual.backup_manually)} />}
-            />
-          </Menu>
+          {backupProvider === walletBackupTypes.cloud && (
+            <Menu
+              description={
+                lastBackupDate
+                  ? i18n.t(i18n.l.back_up.cloud.latest_backup, {
+                      date: format(lastBackupDate, "M/d/yy 'at' h:mm a"),
+                    })
+                  : undefined
+              }
+            >
+              <BackUpMenuItem
+                icon="􀎽"
+                title={i18n.t(i18n.l.back_up.cloud.back_up_all_wallets_to_cloud, {
+                  cloudPlatformName: cloudPlatform,
+                })}
+                loading={loading}
+                onPress={onSubmit}
+              />
+            </Menu>
+          )}
+
+          {backupProvider !== walletBackupTypes.cloud && (
+            <Menu>
+              <MenuItem
+                hasSfSymbol
+                leftComponent={<MenuItem.TextIcon icon="􀈊" isLink />}
+                onPress={onManualBackup}
+                size={52}
+                titleComponent={<MenuItem.Title isLink text={i18n.t(i18n.l.back_up.manual.backup_manually)} />}
+              />
+              <BackUpMenuItem
+                icon="􀊯"
+                title={i18n.t(i18n.l.back_up.cloud.back_up_all_wallets_to_cloud, {
+                  cloudPlatformName: cloudPlatform,
+                })}
+                loading={loading}
+                onPress={onSubmit}
+              />
+            </Menu>
+          )}
         </>
       )}
 
@@ -360,25 +425,23 @@ const ViewWalletBackup = () => {
               }
             />
           </Menu>
-
-          <Menu>
-            <MenuItem
-              hasSfSymbol
-              leftComponent={<MenuItem.TextIcon icon={isSecretPhrase ? '􀉆' : '􀟖'} isLink />}
-              onPress={onNavigateToSecretWarning}
-              size={52}
-              titleComponent={
-                <MenuItem.Title
-                  isLink
-                  text={
-                    isSecretPhrase ? i18n.t(i18n.l.wallet.back_ups.view_secret_phrase) : i18n.t(i18n.l.wallet.back_ups.view_private_key)
-                  }
-                />
-              }
-            />
-          </Menu>
         </>
       )}
+
+      <Menu>
+        <MenuItem
+          hasSfSymbol
+          leftComponent={<MenuItem.TextIcon icon={isSecretPhrase ? '􀉆' : '􀟖'} isLink />}
+          onPress={onNavigateToSecretWarning}
+          size={52}
+          titleComponent={
+            <MenuItem.Title
+              isLink
+              text={isSecretPhrase ? i18n.t(i18n.l.wallet.back_ups.view_secret_phrase) : i18n.t(i18n.l.wallet.back_ups.view_private_key)}
+            />
+          }
+        />
+      </Menu>
 
       <Stack space={'24px'}>
         <Menu>

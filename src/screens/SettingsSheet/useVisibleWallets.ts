@@ -3,6 +3,7 @@ import * as i18n from '@/languages';
 
 import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
 import { RainbowAccount, RainbowWallet } from '@/model/wallet';
+import walletBackupTypes from '@/helpers/walletBackupTypes';
 
 type WalletByKey = {
   [key: string]: RainbowWallet;
@@ -65,7 +66,12 @@ export const useVisibleWallets = ({ wallets, walletTypeCount }: UseVisibleWallet
         const visibleAccounts = wallet.addresses.filter(a => a.visible);
         const totalAccounts = visibleAccounts.length;
 
-        if (wallet.backedUp && wallet.backupDate && (!lastBackupDate || Number(wallet.backupDate) > lastBackupDate)) {
+        if (
+          wallet.backedUp &&
+          wallet.backupDate &&
+          wallet.backupType === walletBackupTypes.cloud &&
+          (!lastBackupDate || Number(wallet.backupDate) > lastBackupDate)
+        ) {
           setLastBackupDate(Number(wallet.backupDate));
         }
 
