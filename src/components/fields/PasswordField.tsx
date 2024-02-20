@@ -62,7 +62,7 @@ const PasswordField = forwardRef<TextInput, PasswordFieldProps>(
     }, [ref]);
 
     return (
-      <Container onPress={ios ? handleFocus : undefined}>
+      <Container onPress={handleFocus}>
         <ShadowContainer deviceWidth={deviceWidth} isDarkMode={isDarkMode} style={style}>
           <PasswordInput ref={ref} returnKeyType={returnKeyType} textContentType={textContentType} value={password} {...props} />
         </ShadowContainer>

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { cloudPlatform } from '@/utils/platform';
 import Menu from '../Menu';
 import MenuContainer from '../MenuContainer';
@@ -86,16 +86,15 @@ export const WalletsAndBackup = () => {
   const { navigate } = useNavigation();
   const { wallets } = useWallets();
   const profilesEnabled = useExperimentalFlag(PROFILES);
+  const walletIdToBackup = useRef<string>('');
 
   const { backups, userData } = useCloudBackups();
   const dispatch = useDispatch();
 
-  const [walletIdToBackup, setWalletIdToBackup] = useState<string>('');
-
   const initializeWallet = useInitializeWallet();
 
   const { onSubmit, loading } = useCreateBackup({
-    walletId: walletIdToBackup,
+    walletId: walletIdToBackup.current,
   });
 
   const { manageCloudBackups } = useManageCloudBackups();
@@ -138,7 +137,7 @@ export const WalletsAndBackup = () => {
     if (numberOfWalletsThatNeedBackedUp === 0 || !firstWalletThatNeedsBackedUp) {
       return;
     }
-    setWalletIdToBackup(firstWalletThatNeedsBackedUp?.id);
+    walletIdToBackup.current = firstWalletThatNeedsBackedUp.id;
     return {
       firstWalletThatNeedsBackedUp,
       numberOfWalletsThatNeedBackedUp,
@@ -151,9 +150,11 @@ export const WalletsAndBackup = () => {
         onClose: () => {
           InteractionManager.runAfterInteractions(() => {
             setTimeout(() => {
-              // NOTE: We lose the useState value when we navigate and come back to this screen, so let's set it again
+              // NOTE: We lose the ref value when we navigate and come back to this screen, so let's set it again
               getAndSetWalletIdToBackup();
-              onSubmit();
+              if (walletIdToBackup.current) {
+                onSubmit();
+              }
             }, 300);
           });
         },
