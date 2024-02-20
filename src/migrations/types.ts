@@ -14,6 +14,7 @@ export enum MigrationName {
   changeLanguageKeys = 'migration_changeLanguageKeys',
   fixHiddenUSDC = 'migration_fixHiddenUSDC',
   purgeWcConnectionsWithoutAccounts = 'migration_purgeWcConnectionsWithoutAccounts',
+  migratePinnedAndHiddenTokenUniqueIds = 'migration_migratePinnedAndHiddenTokenUniqueIds',
 }
 
 export type Migration = {
