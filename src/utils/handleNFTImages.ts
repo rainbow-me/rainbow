@@ -43,7 +43,7 @@ export function handleNFTImages({
       ? // don't sign if SVG, will be handled by UniqueTokenImage component
         originalUrl
       : url?.startsWith?.(GOOGLE_USER_CONTENT_URL)
-        ? url.replace(/=s\d+$/, `?s=${FULL_NFT_IMAGE_SIZE}`)
+        ? url.replace(/=s\d+$/, `=s${FULL_NFT_IMAGE_SIZE}`)
         : maybeSignUri(url, {
             // decrease size for GIFs to avoid hitting imgix's 10MB limit
             w: isGIF ? cardSize : FULL_NFT_IMAGE_SIZE,
@@ -51,7 +51,7 @@ export function handleNFTImages({
 
   const lowResUrl =
     url?.startsWith?.(GOOGLE_USER_CONTENT_URL) && !isGIF
-      ? url.replace(/=s\d+$/, `?s=${cardSize}`)
+      ? url.replace(/=s\d+$/, `=s${cardSize}`)
       : maybeSignUri(url, {
           w: cardSize,
           // reformat to png in the case that the image may be an SVG or is a GIF
