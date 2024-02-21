@@ -348,6 +348,7 @@ const GasSpeedButton = ({
       case networkTypes.arbitrum:
       case networkTypes.zora:
       case networkTypes.base:
+      case networkTypes.avalanche:
       default:
         return { mainnet_address: ETH_ADDRESS, symbol: 'ETH' };
     }
