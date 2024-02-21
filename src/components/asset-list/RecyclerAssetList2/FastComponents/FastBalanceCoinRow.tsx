@@ -93,13 +93,15 @@ const MemoizedBalanceCoinRow = React.memo(
       <View style={sx.flex}>
         <ButtonPressAnimation onPress={handlePress} scaleTo={0.96} testID={`balance-coin-row-${item?.name}`}>
           <View style={[sx.container]}>
-            <FastCoinIcon
-              address={item?.address}
-              network={item?.network}
-              mainnetAddress={item?.mainnet_address}
-              symbol={item?.symbol}
-              theme={theme}
-            />
+            <View style={sx.iconContainer}>
+              <FastCoinIcon
+                address={item?.address}
+                network={item?.network}
+                mainnetAddress={item?.mainnet_address}
+                symbol={item?.symbol}
+                theme={theme}
+              />
+            </View>
 
             <View style={[sx.innerContainer, isHidden && sx.hiddenRow]}>
               <View style={sx.row}>
@@ -136,16 +138,8 @@ const MemoizedBalanceCoinRow = React.memo(
 MemoizedBalanceCoinRow.displayName = 'MemoizedBalanceCoinRow';
 
 export default React.memo(function BalanceCoinRow({ uniqueId, extendedState }: { uniqueId: string; extendedState: ExtendedState }) {
-  const {
-    theme,
-    nativeCurrencySymbol,
-    navigate,
-    nativeCurrency,
-    hiddenCoins,
-    pinnedCoins,
-    toggleSelectedCoin,
-    isCoinListEdited,
-  } = extendedState;
+  const { theme, nativeCurrencySymbol, navigate, nativeCurrency, hiddenCoins, pinnedCoins, toggleSelectedCoin, isCoinListEdited } =
+    extendedState;
 
   const onPress = useCallback(() => {
     toggleSelectedCoin(uniqueId);
@@ -179,6 +173,12 @@ export default React.memo(function BalanceCoinRow({ uniqueId, extendedState }: {
 const sx = StyleSheet.create({
   bottom: {
     marginTop: 10,
+  },
+  iconContainer: {
+    elevation: 6,
+    height: 59,
+    overflow: 'visible',
+    paddingTop: 9,
   },
   checkboxContainer: {
     alignSelf: 'center',

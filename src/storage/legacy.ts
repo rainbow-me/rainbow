@@ -50,3 +50,4 @@ class LegacyStorage<Scopes extends unknown[], Schema> extends Storage<Scopes, Sc
  * instance instead of this one.
  */
 export const legacy = new LegacyStorage<[], Legacy>({ id: 'global' });
+export const zustandStorage = new LegacyStorage<[], Legacy>({ id: 'zustand' });

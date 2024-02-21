@@ -34,7 +34,6 @@ import { delay, greaterThan } from '@/helpers/utilities';
 import {
   useAccountSettings,
   useColorForAsset,
-  useCurrentNonce,
   useGas,
   usePrevious,
   usePriceImpactDetails,
@@ -71,6 +70,7 @@ import Animated from 'react-native-reanimated';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
 import { SwapPriceImpactType } from '@/hooks/usePriceImpactDetails';
+import { getNextNonce } from '@/state/nonces';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -85,7 +85,7 @@ export const DEFAULT_SLIPPAGE_BIPS = {
 };
 
 export const getDefaultSlippageFromConfig = (network: Network) => {
-  const configSlippage = (getRemoteConfig().default_slippage_bips as unknown) as {
+  const configSlippage = getRemoteConfig().default_slippage_bips as unknown as {
     [network: string]: number;
   };
   const slippage = configSlippage?.[network] ?? DEFAULT_SLIPPAGE_BIPS[network] ?? 100;
@@ -158,14 +158,8 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
   const inputCurrencyColor = useColorForAsset(inputCurrency, colors.appleBlue);
   const outputCurrencyColor = useColorForAsset(outputCurrency, colors.appleBlue);
 
-  const {
-    handleFocus,
-    inputFieldRef,
-    lastFocusedInputHandle,
-    setLastFocusedInputHandle,
-    nativeFieldRef,
-    outputFieldRef,
-  } = useSwapInputRefs();
+  const { handleFocus, inputFieldRef, lastFocusedInputHandle, setLastFocusedInputHandle, nativeFieldRef, outputFieldRef } =
+    useSwapInputRefs();
 
   const { updateInputAmount, updateMaxInputAmount, updateNativeAmount, updateOutputAmount } = useSwapInputHandlers();
 
@@ -187,27 +181,23 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
     };
   }, [crosschainSwapsEnabled, inputCurrency?.symbol, inputCurrency?.network, outputCurrency?.symbol, outputCurrency?.network]);
 
-  const {
-    flipCurrencies,
-    navigateToSelectInputCurrency,
-    navigateToSelectOutputCurrency,
-    updateAndFocusInputAmount,
-  } = useSwapCurrencyHandlers({
-    currentNetwork,
-    inputNetwork,
-    outputNetwork,
-    defaultInputAsset,
-    defaultOutputAsset,
-    fromDiscover,
-    ignoreInitialTypeCheck,
-    inputFieldRef,
-    lastFocusedInputHandle,
-    nativeFieldRef,
-    outputFieldRef,
-    setLastFocusedInputHandle,
-    title,
-    type,
-  });
+  const { flipCurrencies, navigateToSelectInputCurrency, navigateToSelectOutputCurrency, updateAndFocusInputAmount } =
+    useSwapCurrencyHandlers({
+      currentNetwork,
+      inputNetwork,
+      outputNetwork,
+      defaultInputAsset,
+      defaultOutputAsset,
+      fromDiscover,
+      ignoreInitialTypeCheck,
+      inputFieldRef,
+      lastFocusedInputHandle,
+      nativeFieldRef,
+      outputFieldRef,
+      setLastFocusedInputHandle,
+      title,
+      type,
+    });
   const speedUrgentSelected = useRef(false);
 
   useEffect(() => {
@@ -227,8 +217,6 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
   const defaultGasLimit = useMemo(() => {
     return ethereumUtils.getBasicSwapGasLimit(Number(chainId));
   }, [chainId]);
-
-  const getNextNonce = useCurrentNonce(accountAddress, currentNetwork);
 
   const {
     result: {
@@ -256,7 +244,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
     if (ios) {
       return;
     }
-    ((dismissingScreenListener.current as unknown) as () => void) = () => {
+    (dismissingScreenListener.current as unknown as () => void) = () => {
       Keyboard.dismiss();
       isDismissing.current = true;
     };
@@ -267,7 +255,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
       ({ data: { closing } }) => {
         if (!closing && isDismissing.current) {
           isDismissing.current = false;
-          ((lastFocusedInputHandle as unknown) as MutableRefObject<TextInput>)?.current?.focus();
+          (lastFocusedInputHandle as unknown as MutableRefObject<TextInput>)?.current?.focus();
         }
       }
     );
@@ -279,7 +267,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
 
   useEffect(() => {
     let slippage = DEFAULT_SLIPPAGE_BIPS?.[currentNetwork];
-    const configSlippage = (default_slippage_bips as unknown) as {
+    const configSlippage = default_slippage_bips as unknown as {
       [network: string]: number;
     };
     if (configSlippage?.[currentNetwork]) {
@@ -440,7 +428,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
           }
         };
         logger.log('[exchange - handle submit] rap');
-        const nonce = await getNextNonce();
+        const nonce = await getNextNonce({ address: accountAddress, network: currentNetwork });
         const { independentField, independentValue, slippageInBips, source } = store.getState().swap;
         const swapParameters = {
           chainId,
@@ -484,7 +472,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
           inputTokenSymbol: inputCurrency?.symbol || '',
           isHardwareWallet,
           isHighPriceImpact: debouncedIsHighPriceImpact,
-          legacyGasPrice: ((selectedGasFee?.gasFeeParams as unknown) as LegacyGasFeeParams)?.gasPrice?.amount || '',
+          legacyGasPrice: (selectedGasFee?.gasFeeParams as unknown as LegacyGasFeeParams)?.gasPrice?.amount || '',
           liquiditySources: JSON.stringify(tradeDetails?.protocols || []),
           maxNetworkFee: (selectedGasFee?.gasFee as GasFee)?.maxFee?.value?.amount || '',
           network: currentNetwork,
@@ -527,7 +515,6 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
       currentNetwork,
       debouncedIsHighPriceImpact,
       flashbots,
-      getNextNonce,
       goBack,
       inputAmount,
       inputCurrency,
@@ -565,7 +552,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
         inputTokenSymbol: inputCurrency?.symbol || '',
         isHardwareWallet,
         isHighPriceImpact: debouncedIsHighPriceImpact,
-        legacyGasPrice: ((selectedGasFee?.gasFeeParams as unknown) as LegacyGasFeeParams)?.gasPrice?.amount || '',
+        legacyGasPrice: (selectedGasFee?.gasFeeParams as unknown as LegacyGasFeeParams)?.gasPrice?.amount || '',
         liquiditySources: JSON.stringify(tradeDetails?.protocols || []),
         maxNetworkFee: (selectedGasFee?.gasFee as GasFee)?.maxFee?.value?.amount || '',
         network: currentNetwork,
@@ -746,7 +733,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
   );
 
   const handleTapWhileDisabled = useCallback(() => {
-    const lastFocusedInput = (lastFocusedInputHandle?.current as unknown) as TextInput;
+    const lastFocusedInput = lastFocusedInputHandle?.current as unknown as TextInput;
     lastFocusedInput?.blur();
     navigate(Routes.EXPLAIN_SHEET, {
       inputToken: inputCurrency?.symbol,

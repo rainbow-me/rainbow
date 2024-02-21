@@ -30,7 +30,6 @@ src/model/wallet.ts  @skylarbarrera @jinchung
 
 # redux
 src/redux/gas.ts @skylarbarrera @benisgold @jinchung
-src/redux/nonceManager.ts @derHowie @skylarbarrera @benisgold @jinchung
 
 # navigation
 src/navigation @skylarbarrera @benisgold

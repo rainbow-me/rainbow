@@ -345,10 +345,7 @@ export default function CurrencySelectModal() {
     (item: any) => {
       if (!crosschainSwapsEnabled && checkForRequiredAssets(item)) return;
 
-      const assetWithType = {
-        ...item,
-        decimals: item?.networks?.[currentChainId]?.decimals || item.decimals,
-      };
+      let newAsset = item;
 
       const selectAsset = () => {
         if (!item?.balance) {
@@ -358,15 +355,22 @@ export default function CurrencySelectModal() {
             network,
             currency: nativeCurrency,
           });
+          // if the asset is external we need to add the network specific information
+          newAsset = {
+            ...newAsset,
+            decimals: item?.networks?.[currentChainId]?.decimals || item.decimals,
+            address: item?.address || item?.networks?.[currentChainId]?.address,
+            network: getNetworkFromChainId(currentChainId),
+          };
         }
         setIsTransitioning(true); // continue to display list during transition
         callback?.();
-        onSelectCurrency(assetWithType, handleNavigate);
+        onSelectCurrency(newAsset, handleNavigate);
       };
       if (
         !crosschainSwapsEnabled &&
         checkForSameNetwork(
-          assetWithType,
+          newAsset,
           selectAsset,
           type === CurrencySelectionTypes.output ? CurrencySelectionTypes.output : CurrencySelectionTypes.input
         )
@@ -382,7 +386,6 @@ export default function CurrencySelectModal() {
       type,
       checkForSameNetwork,
       nativeCurrency,
-      dispatch,
       callback,
       onSelectCurrency,
       handleNavigate,
