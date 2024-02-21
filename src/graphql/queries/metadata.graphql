@@ -184,6 +184,9 @@ query simulateTransactions($chainId: Int!, $transactions: [Transaction!], $domai
         quantityAtRisk
       }
       meta {
+        transferTo {
+          ...target
+        }
         to {
           ...target
         }

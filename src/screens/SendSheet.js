@@ -64,6 +64,8 @@ import { NoResultsType } from '@/components/list/NoResults';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import { Wallet } from '@ethersproject/wallet';
 import { getNetworkObj } from '@/networks';
+import { getNextNonce } from '@/state/nonces';
+import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight;
@@ -134,8 +136,6 @@ export default function SendSheet(props) {
   const prevNetwork = usePrevious(currentNetwork);
   const [currentInput, setCurrentInput] = useState('');
 
-  const getNextNonce = useCurrentNonce(accountAddress, currentNetwork);
-
   const { params } = useRoute();
   const assetOverride = params?.asset;
   const prevAssetOverride = usePrevious(assetOverride);
@@ -165,8 +165,10 @@ export default function SendSheet(props) {
   const isNft = selected?.type === AssetTypes.nft;
 
   let colorForAsset = useColorForAsset(selected, null, false, true);
+  const nftColor = usePersistentDominantColorFromImage(selected?.lowResUrl) ?? colors.appleBlue;
+
   if (isNft) {
-    colorForAsset = colors.appleBlue;
+    colorForAsset = nftColor;
   }
 
   const uniqueTokenType = isNft ? getUniqueTokenType(selected) : undefined;
@@ -451,7 +453,7 @@ export default function SendSheet(props) {
         from: accountAddress,
         gasLimit: gasLimitToUse,
         network: currentNetwork,
-        nonce: nextNonce ?? (await getNextNonce()),
+        nonce: nextNonce ?? (await getNextNonce({ address: accountAddress, network: currentNetwork })),
         to: toAddress,
         ...gasParams,
       };
@@ -518,7 +520,6 @@ export default function SendSheet(props) {
       ensProfile?.data?.contenthash,
       ensProfile?.data?.records,
       gasLimit,
-      getNextNonce,
       isENS,
       isSufficientGas,
       isValidAddress,
@@ -870,6 +871,7 @@ export default function SendSheet(props) {
             txSpeedRenderer={
               <GasSpeedButton
                 asset={selected}
+                fallbackColor={colorForAsset}
                 currentNetwork={currentNetwork}
                 horizontalPadding={0}
                 marginBottom={17}
