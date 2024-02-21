@@ -406,13 +406,16 @@ export const omitFlatten = <T extends object, K extends keyof T>(obj: T | null |
  * @param paths The property paths to pick
  */
 export const pickShallow = <T extends object, K extends keyof T>(obj: T, paths: K[]): Pick<T, K> => {
-  return paths.reduce((acc, key) => {
-    if (obj.hasOwnProperty(key)) {
-      acc[key] = obj[key];
+  return paths.reduce(
+    (acc, key) => {
+      if (obj.hasOwnProperty(key)) {
+        acc[key] = obj[key];
+        return acc;
+      }
       return acc;
-    }
-    return acc;
-  }, {} as Pick<T, K>);
+    },
+    {} as Pick<T, K>
+  );
 };
 
 /**

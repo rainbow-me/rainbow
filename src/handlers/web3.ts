@@ -138,7 +138,7 @@ type NewTransactionNonNullable = {
 /**
  * @desc web3 http instance
  */
-export let web3Provider: StaticJsonRpcProvider = (null as unknown) as StaticJsonRpcProvider;
+export let web3Provider: StaticJsonRpcProvider = null as unknown as StaticJsonRpcProvider;
 
 /**
  * @desc Checks whether or not a `Network | string` union type should be

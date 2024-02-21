@@ -9,9 +9,9 @@ const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? React.useLayou
 export default function useLatestCallback<T extends Function>(callback: T): T {
   const ref = React.useRef<T>(callback);
 
-  const latestCallback = React.useRef((function latestCallback(this: unknown, ...args: unknown[]) {
+  const latestCallback = React.useRef(function latestCallback(this: unknown, ...args: unknown[]) {
     return ref.current.apply(this, args);
-  } as unknown) as T).current;
+  } as unknown as T).current;
 
   useIsomorphicLayoutEffect(() => {
     ref.current = callback;

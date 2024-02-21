@@ -61,8 +61,8 @@ export const parseAssetNative = (asset, nativeCurrency) => {
       change: isLowerCaseMatch(asset.symbol, nativeCurrency)
         ? null
         : assetNativePrice.relative_change_24h
-        ? convertAmountToPercentageDisplay(assetNativePrice.relative_change_24h)
-        : '',
+          ? convertAmountToPercentageDisplay(assetNativePrice.relative_change_24h)
+          : '',
       price: {
         amount: priceUnit,
         display: convertAmountToNativeDisplay(priceUnit, nativeCurrency),

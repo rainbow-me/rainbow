@@ -49,8 +49,8 @@ const InnerGradient = styled(RainbowButtonGradient).attrs(({ disabled, type, gra
   colors: disabled
     ? gradientColors.inner.disabled
     : type === RainbowButtonTypes.addCash
-    ? gradientColors.inner.addCash
-    : gradientColors.inner.default,
+      ? gradientColors.inner.addCash
+      : gradientColors.inner.default,
 }))(({ width, height }) => ({
   height: width,
   top: -(width - height) / 2,
@@ -61,8 +61,8 @@ const OuterGradient = styled(RainbowButtonGradient).attrs(({ disabled, type, gra
   colors: disabled
     ? gradientColors.outer.disabled
     : type === RainbowButtonTypes.addCash
-    ? gradientColors.outer.addCash
-    : gradientColors.outer.default,
+      ? gradientColors.outer.addCash
+      : gradientColors.outer.default,
 }))(({ width, height }) => ({
   height: width * 2,
   left: -width / 2,

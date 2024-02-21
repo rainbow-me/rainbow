@@ -35,7 +35,15 @@ export default function ENSSearchSheet() {
   const [inputValue, setInputValue] = useState(name?.replace(ENS_DOMAIN, ''));
   const [debouncedSearchQuery] = useDebounce(searchQuery, 200);
 
-  const { data: registrationData, isIdle, isRegistered, isPending, isLoading, isInvalid, isAvailable } = useENSSearch({
+  const {
+    data: registrationData,
+    isIdle,
+    isRegistered,
+    isPending,
+    isLoading,
+    isInvalid,
+    isAvailable,
+  } = useENSSearch({
     name: debouncedSearchQuery,
   });
 

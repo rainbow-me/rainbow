@@ -28,10 +28,10 @@ export function BackgroundProvider({ color, children, style: styleProp }: Backgr
   const accentColorContextValue = useContext(AccentColorContext);
   const accentColor = accentColorContextValue ?? getDefaultAccentColorForColorMode(colorMode);
   const background = color === 'accent' ? accentColor : backgroundColors[color];
-  const style = useMemo(() => [{ backgroundColor: background.color }, ...(Array.isArray(styleProp) ? styleProp : [styleProp])], [
-    background,
-    styleProp,
-  ]);
+  const style = useMemo(
+    () => [{ backgroundColor: background.color }, ...(Array.isArray(styleProp) ? styleProp : [styleProp])],
+    [background, styleProp]
+  );
 
   const child = children({
     backgroundColor: background.color,

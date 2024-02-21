@@ -38,9 +38,9 @@ function feedbackEmailOptions(appVersion: string, codePushVersion: string) {
 
 export default function useSendFeedback() {
   const [appVersion, codePushVersion] = useAppVersion();
-  const onSendFeedback = useCallback(() => Mailer.mail(feedbackEmailOptions(appVersion, codePushVersion), handleMailError), [
-    appVersion,
-    codePushVersion,
-  ]);
+  const onSendFeedback = useCallback(
+    () => Mailer.mail(feedbackEmailOptions(appVersion, codePushVersion), handleMailError),
+    [appVersion, codePushVersion]
+  );
   return onSendFeedback;
 }

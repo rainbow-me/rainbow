@@ -149,63 +149,65 @@ export const requestsLoadState = () => async (dispatch: Dispatch<RequestsUpdateR
  * @param payload The request payload.
  * @param peerMeta The WalletConnect peer metadata.
  */
-export const addRequestToApprove = (
-  clientId: string,
-  peerId: string,
-  requestId: number,
-  payload: any,
-  peerMeta:
-    | undefined
-    | null
-    | {
-        name?: string;
-        url?: string;
-        scheme?: string;
-        icons?: string[];
-      }
-) => (dispatch: Dispatch<RequestsUpdateRequestsToApproveAction>, getState: AppGetState) => {
-  const { requests } = getState().requests;
-  const { walletConnectors } = getState().walletconnect;
-  const { accountAddress, network, nativeCurrency } = getState().settings;
-  const walletConnector = walletConnectors[peerId];
-  // @ts-expect-error "_chainId" is private.
-  const chainId = walletConnector._chainId;
-  const dappNetwork = ethereumUtils.getNetworkFromChainId(Number(chainId));
-  const displayDetails = getRequestDisplayDetails(payload, nativeCurrency, dappNetwork);
-  const oneHourAgoTs = Date.now() - EXPIRATION_THRESHOLD_IN_MS;
-  // @ts-expect-error This fails to compile as `displayDetails` does not
-  // always return an object with `timestampInMs`. Still, the error thrown
-  // by an invalid access might be caught or expected elsewhere, so for now
-  // `ts-expect-error` is used.
-  if (displayDetails.timestampInMs < oneHourAgoTs) {
-    logger.log('request expired!');
-    return;
-  }
-  const unsafeImageUrl = peerMeta?.icons?.[0];
-  const imageUrl = maybeSignUri(unsafeImageUrl, { w: 200 });
-  const dappName = peerMeta?.name || 'Unknown Dapp';
-  const dappUrl = peerMeta?.url || 'Unknown Url';
-  const dappScheme = peerMeta?.scheme || null;
+export const addRequestToApprove =
+  (
+    clientId: string,
+    peerId: string,
+    requestId: number,
+    payload: any,
+    peerMeta:
+      | undefined
+      | null
+      | {
+          name?: string;
+          url?: string;
+          scheme?: string;
+          icons?: string[];
+        }
+  ) =>
+  (dispatch: Dispatch<RequestsUpdateRequestsToApproveAction>, getState: AppGetState) => {
+    const { requests } = getState().requests;
+    const { walletConnectors } = getState().walletconnect;
+    const { accountAddress, network, nativeCurrency } = getState().settings;
+    const walletConnector = walletConnectors[peerId];
+    // @ts-expect-error "_chainId" is private.
+    const chainId = walletConnector._chainId;
+    const dappNetwork = ethereumUtils.getNetworkFromChainId(Number(chainId));
+    const displayDetails = getRequestDisplayDetails(payload, nativeCurrency, dappNetwork);
+    const oneHourAgoTs = Date.now() - EXPIRATION_THRESHOLD_IN_MS;
+    // @ts-expect-error This fails to compile as `displayDetails` does not
+    // always return an object with `timestampInMs`. Still, the error thrown
+    // by an invalid access might be caught or expected elsewhere, so for now
+    // `ts-expect-error` is used.
+    if (displayDetails.timestampInMs < oneHourAgoTs) {
+      logger.log('request expired!');
+      return;
+    }
+    const unsafeImageUrl = peerMeta?.icons?.[0];
+    const imageUrl = maybeSignUri(unsafeImageUrl, { w: 200 });
+    const dappName = peerMeta?.name || 'Unknown Dapp';
+    const dappUrl = peerMeta?.url || 'Unknown Url';
+    const dappScheme = peerMeta?.scheme || null;
 
-  const request: RequestData = {
-    clientId,
-    dappName,
-    dappScheme,
-    dappUrl,
-    displayDetails,
-    imageUrl,
-    payload,
-    peerId,
-    requestId,
+    const request: RequestData = {
+      clientId,
+      dappName,
+      dappScheme,
+      dappUrl,
+      displayDetails,
+      imageUrl,
+      payload,
+      peerId,
+      requestId,
+    };
+    const updatedRequests = { ...requests, [requestId]: request };
+    dispatch({
+      payload: updatedRequests,
+      type: REQUESTS_UPDATE_REQUESTS_TO_APPROVE,
+    });
+    saveLocalRequests(updatedRequests, accountAddress, network);
+    return request;
   };
-  const updatedRequests = { ...requests, [requestId]: request };
-  dispatch({
-    payload: updatedRequests,
-    type: REQUESTS_UPDATE_REQUESTS_TO_APPROVE,
-  });
-  saveLocalRequests(updatedRequests, accountAddress, network);
-  return request;
-};
 
 /**
  * Filters requests that match a given client ID.
@@ -213,10 +215,12 @@ export const addRequestToApprove = (
  * @param topic The client ID to filter for.
  * @returns The matching requests.
  */
-export const requestsForTopic = (topic: string | undefined) => (dispatch: unknown, getState: AppGetState): RequestData[] => {
-  const { requests } = getState().requests;
-  return Object.values(requests).filter(({ clientId }) => clientId === topic);
-};
+export const requestsForTopic =
+  (topic: string | undefined) =>
+  (dispatch: unknown, getState: AppGetState): RequestData[] => {
+    const { requests } = getState().requests;
+    return Object.values(requests).filter(({ clientId }) => clientId === topic);
+  };
 
 /**
  * Resets the state.

@@ -170,11 +170,10 @@ const GasSpeedButton = ({
   const isL2 = useMemo(() => isL2Network(currentNetwork), [currentNetwork]);
   const isLegacyGasNetwork = getNetworkObj(currentNetwork).gas.gasType === 'legacy';
 
-  const gasIsNotReady = useMemo(() => isNil(price) || isEmpty(gasFeeParamsBySpeed) || isEmpty(selectedGasFee?.gasFee), [
-    gasFeeParamsBySpeed,
-    price,
-    selectedGasFee,
-  ]);
+  const gasIsNotReady = useMemo(
+    () => isNil(price) || isEmpty(gasFeeParamsBySpeed) || isEmpty(selectedGasFee?.gasFee),
+    [gasFeeParamsBySpeed, price, selectedGasFee]
+  );
 
   const formatGasPrice = useCallback(
     animatedValue => {
@@ -370,10 +369,10 @@ const GasSpeedButton = ({
       const gweiDisplay = !shouldRoundGwei
         ? gasFeeParamsBySpeed[gasOption]?.gasPrice?.display
         : gasOption === 'custom' && selectedGasFeeOption !== 'custom'
-        ? ''
-        : greaterThan(estimatedGwei, totalGwei)
-        ? `${toFixedDecimals(totalGwei, isL2 ? 4 : 0)} Gwei`
-        : `${toFixedDecimals(estimatedGwei, isL2 ? 4 : 0)}–${toFixedDecimals(totalGwei, isL2 ? 4 : 0)} Gwei`;
+          ? ''
+          : greaterThan(estimatedGwei, totalGwei)
+            ? `${toFixedDecimals(totalGwei, isL2 ? 4 : 0)} Gwei`
+            : `${toFixedDecimals(estimatedGwei, isL2 ? 4 : 0)}–${toFixedDecimals(totalGwei, isL2 ? 4 : 0)} Gwei`;
       return {
         actionKey: gasOption,
         actionTitle: (android ? `${GAS_EMOJIS[gasOption]}  ` : '') + getGasLabel(gasOption),

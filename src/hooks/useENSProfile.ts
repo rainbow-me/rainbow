@@ -25,23 +25,16 @@ async function fetchENSProfile(name: string, { supportedRecordsOnly = true }: { 
     queryClient.setQueryData(queryKey(name, { supportedRecordsOnly }), cachedProfile);
   }
 
-  const [
-    address,
-    avatar,
-    header,
-    owner,
-    { coinAddresses, contenthash, records },
-    { registration, registrant },
-    resolver,
-  ] = await Promise.all([
-    fetchENSAddress({ name }),
-    queryClient.fetchQuery(ensAvatarQueryKey(name), () => fetchENSAvatar(name)),
-    queryClient.fetchQuery(ensCoverQueryKey(name), () => fetchENSCover(name)),
-    queryClient.fetchQuery(ensOwnerQueryKey(name), () => fetchENSOwner(name)),
-    queryClient.fetchQuery(ensRecordsQueryKey({ name }), () => fetchENSRecords(name, { supportedOnly: supportedRecordsOnly })),
-    queryClient.fetchQuery(ensRegistrantQueryKey(name), () => fetchENSRegistrant(name)),
-    queryClient.fetchQuery(ensResolverQueryKey(name), () => fetchENSResolver(name)),
-  ]);
+  const [address, avatar, header, owner, { coinAddresses, contenthash, records }, { registration, registrant }, resolver] =
+    await Promise.all([
+      fetchENSAddress({ name }),
+      queryClient.fetchQuery(ensAvatarQueryKey(name), () => fetchENSAvatar(name)),
+      queryClient.fetchQuery(ensCoverQueryKey(name), () => fetchENSCover(name)),
+      queryClient.fetchQuery(ensOwnerQueryKey(name), () => fetchENSOwner(name)),
+      queryClient.fetchQuery(ensRecordsQueryKey({ name }), () => fetchENSRecords(name, { supportedOnly: supportedRecordsOnly })),
+      queryClient.fetchQuery(ensRegistrantQueryKey(name), () => fetchENSRegistrant(name)),
+      queryClient.fetchQuery(ensResolverQueryKey(name), () => fetchENSResolver(name)),
+    ]);
 
   const profile = {
     address,

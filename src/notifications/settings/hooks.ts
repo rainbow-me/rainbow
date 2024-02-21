@@ -28,9 +28,8 @@ export const useAllNotificationSettingsFromStorage = () => {
   const globalNotificationSettingsData = getAllGlobalNotificationSettingsFromStorage();
   const existingGroupSettingsData = getExistingGroupSettingsFromStorage();
 
-  const [walletNotificationSettings, setWalletNotificationSettings] = useState<WalletNotificationSettings[]>(
-    walletNotificationSettingsData
-  );
+  const [walletNotificationSettings, setWalletNotificationSettings] =
+    useState<WalletNotificationSettings[]>(walletNotificationSettingsData);
   const [globalNotificationSettings, setGlobalNotificationSettings] = useState<GlobalNotificationTopics>(globalNotificationSettingsData);
   const [existingGroupSettings, setExistingGroupSettings] = useState<GroupSettings>(existingGroupSettingsData);
   const listener = notificationSettingsStorage.addOnValueChangedListener(changedKey => {

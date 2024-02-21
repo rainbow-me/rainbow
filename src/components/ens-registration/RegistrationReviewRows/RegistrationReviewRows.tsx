@@ -73,18 +73,19 @@ export default function RegistrationReviewRows({
 }) {
   const [startLongPress, endLongPress] = useInterval();
 
-  const handlePressDecrement = useCallback(() => onChangeDuration(duration => (duration > 1 ? duration - 1 : duration)), [
-    onChangeDuration,
-  ]);
+  const handlePressDecrement = useCallback(
+    () => onChangeDuration(duration => (duration > 1 ? duration - 1 : duration)),
+    [onChangeDuration]
+  );
 
   const handleLongPressDecrement = useCallback(() => {
     startLongPress(handlePressDecrement, LONG_PRESS_INTERVAL);
   }, [handlePressDecrement, startLongPress]);
 
-  const handlePressIncrement = useCallback(() => onChangeDuration(duration => (duration < maxDuration ? duration + 1 : duration)), [
-    maxDuration,
-    onChangeDuration,
-  ]);
+  const handlePressIncrement = useCallback(
+    () => onChangeDuration(duration => (duration < maxDuration ? duration + 1 : duration)),
+    [maxDuration, onChangeDuration]
+  );
 
   const handleLongPressIncrement = useCallback(() => {
     startLongPress(() => handlePressIncrement(), LONG_PRESS_INTERVAL);

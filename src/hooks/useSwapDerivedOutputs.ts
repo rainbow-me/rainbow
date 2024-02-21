@@ -115,7 +115,7 @@ const getInputAmount = async (
     // if no quote, if quote is error or there's no sell amount
     if (!quote || (quote as QuoteError).error || !(quote as Quote).sellAmount) {
       if ((quote as QuoteError).error) {
-        const quoteError = (quote as unknown) as QuoteError;
+        const quoteError = quote as unknown as QuoteError;
         logger.error(new RainbowError('[getInputAmount]: Quote error'), {
           code: quoteError.error_code,
           msg: quoteError.message,

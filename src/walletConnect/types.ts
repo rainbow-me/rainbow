@@ -25,7 +25,7 @@ export type RPCPayload =
       method: RPCMethod.SignTypedData | RPCMethod.SignTypedDataV1 | RPCMethod.SignTypedDataV3 | RPCMethod.SignTypedDataV4;
       params: [
         string, // address
-        string // stringify typed object
+        string, // stringify typed object
       ];
     }
   | {
@@ -38,7 +38,7 @@ export type RPCPayload =
           gasPrice: string;
           gasLimit: string;
           value: string;
-        }
+        },
       ];
     }
   | {

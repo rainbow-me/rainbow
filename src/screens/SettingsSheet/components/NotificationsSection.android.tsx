@@ -61,7 +61,7 @@ const WalletRowLabel = ({ notifications, groupOff }: WalletRowLabelProps) => {
     if (!notifications) return lang.t('settings.notifications_section.off');
     const allTopicsEnabled = Object.values(notifications.topics).every(topic => topic);
     const allTopicsDisabled = groupOff || Object.values(notifications.topics).every(topic => !topic);
-    const enabledTopics = Object.keys(notifications.topics).filter(topic => notifications.topics[(topic as unknown) as number]);
+    const enabledTopics = Object.keys(notifications.topics).filter(topic => notifications.topics[topic as unknown as number]);
 
     if (allTopicsDisabled) {
       return lang.t('settings.notifications_section.off');

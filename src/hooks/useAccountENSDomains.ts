@@ -46,13 +46,14 @@ export async function prefetchAccountENSDomains({ accountAddress }: { accountAdd
 export default function useAccountENSDomains() {
   const { accountAddress, accountENS } = useAccountProfile();
 
-  const { data: domains, isLoading, isFetched, isSuccess } = useQuery<BaseEnsDomainFragment[]>(
-    queryKey({ accountAddress }),
-    async () => fetchENSDomainsWithCache({ accountAddress }),
-    {
-      enabled: Boolean(accountAddress),
-    }
-  );
+  const {
+    data: domains,
+    isLoading,
+    isFetched,
+    isSuccess,
+  } = useQuery<BaseEnsDomainFragment[]>(queryKey({ accountAddress }), async () => fetchENSDomainsWithCache({ accountAddress }), {
+    enabled: Boolean(accountAddress),
+  });
 
   const { controlledDomains, primaryDomain, nonPrimaryDomains } = useMemo(() => {
     const controlledDomains = domains?.filter(({ owner }) => owner?.id?.toLowerCase() === accountAddress?.toLowerCase());

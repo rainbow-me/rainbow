@@ -317,11 +317,10 @@ function RecyclerAssetList({
     [isCoinListEdited, sections, showcase]
   );
 
-  const animator = useMemo(() => new LayoutItemAnimator(paddingBottom, globalDeviceDimensions, ref), [
-    globalDeviceDimensions,
-    paddingBottom,
-    ref,
-  ]);
+  const animator = useMemo(
+    () => new LayoutItemAnimator(paddingBottom, globalDeviceDimensions, ref),
+    [globalDeviceDimensions, paddingBottom, ref]
+  );
 
   const layoutProvider = useMemo(() => {
     return new LayoutProvider(
@@ -427,7 +426,7 @@ function RecyclerAssetList({
         };
       },
       (type, dim) => {
-        const element = (type as unknown) as {
+        const element = type as unknown as {
           readonly height: number;
           readonly visibleDuringCoinEdit: boolean;
         };

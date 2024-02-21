@@ -73,8 +73,8 @@ export const AnimatedText = ({
       textShadowColor: disableShadow
         ? 'transparent'
         : shadowOpacity && rainbowTextColors?.[i]?.shadow
-        ? colors.alpha(rainbowTextColors?.[i]?.shadow, shadowOpacity)
-        : rainbowTextColors?.[i]?.shadow,
+          ? colors.alpha(rainbowTextColors?.[i]?.shadow, shadowOpacity)
+          : rainbowTextColors?.[i]?.shadow,
     }),
     [colors, disableShadow, opacity, rainbowTextColors, shadowOpacity, textAlign]
   );
@@ -88,10 +88,10 @@ export const AnimatedText = ({
       textShadowColor: disableShadow
         ? 'transparent'
         : rainbowText
-        ? undefined
-        : shadowOpacity && color?.shadow
-        ? colors.alpha(color?.shadow, shadowOpacity)
-        : color?.shadow,
+          ? undefined
+          : shadowOpacity && color?.shadow
+            ? colors.alpha(color?.shadow, shadowOpacity)
+            : color?.shadow,
     }),
     [color, colors, disableShadow, opacity, rainbowText, shadowOpacity, textAlign, weight]
   );

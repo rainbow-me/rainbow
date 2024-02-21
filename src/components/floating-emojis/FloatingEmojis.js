@@ -53,8 +53,8 @@ const FloatingEmojis = ({
             (existingEmojis.length + 1) % 7 === 0 && !disableRainbow
               ? 'rainbow'
               : emojisArray.length === 1
-              ? emojisArray[0]
-              : emojisArray[getEmoji(emojisArray)],
+                ? emojisArray[0]
+                : emojisArray[getEmoji(emojisArray)],
           x: x ? x - getRandomNumber(-20, 20) : getRandomNumber(...range) + '%',
           y: y || 0,
         };

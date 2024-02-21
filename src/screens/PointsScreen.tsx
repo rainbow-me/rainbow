@@ -41,34 +41,13 @@ export default function PointsScreen() {
   const progress = useSharedValue(0);
 
   const animatedStyle = useAnimatedStyle(() => {
-    const scale = interpolate(
-      progress.value,
-      [0, 1, 2, 3, 4, 5, 6, 7, 8],
-      [0.75, 0.7, 0.65, 0.55, 0.75, 0.7, 0.65, 0.55, 0.75]
-    );
-    const rotate = interpolate(
-      progress.value,
-      [0, 1, 2, 3, 4, 5, 6, 7, 8],
-      [-12, -4, -12, -12, -372, -380, -372, -372, -12]
-    );
-    const translateX = interpolate(
-      progress.value,
-      [0, 1, 2, 3, 4, 5, 6, 7, 8],
-      [0, 4, 0, 0, 0, -4, 0, 0, 0]
-    );
-    const translateY = interpolate(
-      progress.value,
-      [0, 1, 2, 3, 4, 5, 6, 7, 8],
-      [-20, -5, 10, 14, -20, -5, 10, 14, -20]
-    );
+    const scale = interpolate(progress.value, [0, 1, 2, 3, 4, 5, 6, 7, 8], [0.75, 0.7, 0.65, 0.55, 0.75, 0.7, 0.65, 0.55, 0.75]);
+    const rotate = interpolate(progress.value, [0, 1, 2, 3, 4, 5, 6, 7, 8], [-12, -4, -12, -12, -372, -380, -372, -372, -12]);
+    const translateX = interpolate(progress.value, [0, 1, 2, 3, 4, 5, 6, 7, 8], [0, 4, 0, 0, 0, -4, 0, 0, 0]);
+    const translateY = interpolate(progress.value, [0, 1, 2, 3, 4, 5, 6, 7, 8], [-20, -5, 10, 14, -20, -5, 10, 14, -20]);
 
     return {
-      transform: [
-        { translateX },
-        { translateY },
-        { rotate: `${rotate}deg` },
-        { scale },
-      ],
+      transform: [{ translateX }, { translateY }, { rotate: `${rotate}deg` }, { scale }],
     };
   });
 
@@ -98,21 +77,10 @@ export default function PointsScreen() {
   return (
     <Box as={Page} flex={1} testID="points-screen" width="full">
       <Navbar hasStatusBarInset title={lang.t('account.tab_points')} />
-      <Box
-        alignItems="center"
-        as={Page}
-        flex={1}
-        height="full"
-        justifyContent="center"
-      >
+      <Box alignItems="center" as={Page} flex={1} height="full" justifyContent="center">
         <Box paddingBottom="104px" width="full">
           <Stack alignHorizontal="center" space="28px">
-            <Box
-              alignItems="center"
-              as={Animated.View}
-              justifyContent="center"
-              style={[{ height: 28, width: 28 }, animatedStyle]}
-            >
+            <Box alignItems="center" as={Animated.View} justifyContent="center" style={[{ height: 28, width: 28 }, animatedStyle]}>
               <TabBarIcon
                 accentColor={accentColor}
                 hideShadow
@@ -125,20 +93,10 @@ export default function PointsScreen() {
               />
             </Box>
             <Stack alignHorizontal="center" space="20px">
-              <Text
-                align="center"
-                color="labelTertiary"
-                size="26pt"
-                weight="semibold"
-              >
+              <Text align="center" color="labelTertiary" size="26pt" weight="semibold">
                 {lang.t('points.coming_soon_title')}
               </Text>
-              <Text
-                align="center"
-                color="labelQuaternary"
-                size="15pt"
-                weight="medium"
-              >
+              <Text align="center" color="labelQuaternary" size="15pt" weight="medium">
                 {lang.t('points.coming_soon_description')}
               </Text>
             </Stack>
@@ -149,13 +107,7 @@ export default function PointsScreen() {
         as={FloatingEmojisTapper}
         distance={500}
         duration={4000}
-        emojis={[
-          'rainbow',
-          'rainbow',
-          'rainbow',
-          'slot_machine',
-          'slot_machine',
-        ]}
+        emojis={['rainbow', 'rainbow', 'rainbow', 'slot_machine', 'slot_machine']}
         gravityEnabled
         position="absolute"
         range={[0, 0]}

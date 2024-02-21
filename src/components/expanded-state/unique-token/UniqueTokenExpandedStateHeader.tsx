@@ -103,7 +103,7 @@ const getAssetActions = (network: Network) =>
         iconValue: 'looksrare',
       },
     },
-  } as const);
+  }) as const;
 
 const FamilyActionsEnum = {
   collectionWebsite: 'collectionWebsite',

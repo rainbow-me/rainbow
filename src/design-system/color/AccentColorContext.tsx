@@ -26,7 +26,7 @@ export function AccentColorProvider({ color, children }: AccentColorProviderProp
       ({
         color,
         mode: chroma.contrast(color, '#fff') > 2.125 ? 'darkTinted' : 'lightTinted',
-      } as const),
+      }) as const,
     [color]
   );
 

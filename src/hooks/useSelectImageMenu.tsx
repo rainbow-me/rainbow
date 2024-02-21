@@ -97,10 +97,10 @@ export default function useSelectImageMenu({
     }, [dangerouslyGetParent])
   );
 
-  const menuItems = useMemo(() => [...initialMenuItems, showRemove ? 'remove' : undefined].filter(Boolean) as (Action | 'remove')[], [
-    initialMenuItems,
-    showRemove,
-  ]);
+  const menuItems = useMemo(
+    () => [...initialMenuItems, showRemove ? 'remove' : undefined].filter(Boolean) as (Action | 'remove')[],
+    [initialMenuItems, showRemove]
+  );
 
   const handleSelectImage = useCallback(async () => {
     const image = await openPicker({

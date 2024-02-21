@@ -56,7 +56,7 @@ type ForwardRefExoticComponent<E, OwnProps> = React.ForwardRefExoticComponent<
 
 interface ForwardRefComponent<
   DefaultComponentType,
-  OwnProps = {}
+  OwnProps = {},
   /**
    * Extends original type to ensure built in React types play nice
    * with polymorphic components still e.g. `React.ElementRef` etc.

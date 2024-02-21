@@ -115,38 +115,40 @@ interface SettingsStateUpdateLanguageSuccessAction {
   payload: SettingsState['language'];
 }
 
-export const settingsLoadState = () => async (
-  dispatch: ThunkDispatch<
-    AppState,
-    unknown,
-    SettingsStateUpdateNativeCurrencyAndTestnetsSuccessAction | SettingsStateUpdateAppIconSuccessAction
-  >
-) => {
-  try {
-    const nativeCurrency = await getNativeCurrency();
-    const testnetsEnabled = await getTestnetsEnabled();
-    const appIcon = (await getAppIcon()) as string;
-    dispatch({
-      payload: appIcon,
-      type: SETTINGS_UPDATE_APP_ICON_SUCCESS,
-    });
+export const settingsLoadState =
+  () =>
+  async (
+    dispatch: ThunkDispatch<
+      AppState,
+      unknown,
+      SettingsStateUpdateNativeCurrencyAndTestnetsSuccessAction | SettingsStateUpdateAppIconSuccessAction
+    >
+  ) => {
+    try {
+      const nativeCurrency = await getNativeCurrency();
+      const testnetsEnabled = await getTestnetsEnabled();
+      const appIcon = (await getAppIcon()) as string;
+      dispatch({
+        payload: appIcon,
+        type: SETTINGS_UPDATE_APP_ICON_SUCCESS,
+      });
 
-    const flashbotsEnabled = await getFlashbotsEnabled();
+      const flashbotsEnabled = await getFlashbotsEnabled();
 
-    analytics.identify({
-      currency: nativeCurrency,
-      enabledFlashbots: flashbotsEnabled,
-      enabledTestnets: testnetsEnabled,
-    });
+      analytics.identify({
+        currency: nativeCurrency,
+        enabledFlashbots: flashbotsEnabled,
+        enabledTestnets: testnetsEnabled,
+      });
 
-    dispatch({
-      payload: { flashbotsEnabled, nativeCurrency, testnetsEnabled },
-      type: SETTINGS_UPDATE_ACCOUNT_SETTINGS_SUCCESS,
-    });
-  } catch (error) {
-    logger.log('Error loading native currency and testnets pref', error);
-  }
-};
+      dispatch({
+        payload: { flashbotsEnabled, nativeCurrency, testnetsEnabled },
+        type: SETTINGS_UPDATE_ACCOUNT_SETTINGS_SUCCESS,
+      });
+    } catch (error) {
+      logger.log('Error loading native currency and testnets pref', error);
+    }
+  };
 
 export const settingsLoadNetwork = () => async (dispatch: Dispatch<SettingsStateUpdateNetworkSuccessAction>) => {
   try {
@@ -178,15 +180,14 @@ export const settingsLoadLanguage = () => async (dispatch: Dispatch<SettingsStat
   }
 };
 
-export const settingsChangeTestnetsEnabled = (testnetsEnabled: boolean) => async (
-  dispatch: Dispatch<SettingsStateUpdateTestnetPrefAction>
-) => {
-  dispatch({
-    payload: testnetsEnabled,
-    type: SETTINGS_UPDATE_TESTNET_PREF_SUCCESS,
-  });
-  saveTestnetsEnabled(testnetsEnabled);
-};
+export const settingsChangeTestnetsEnabled =
+  (testnetsEnabled: boolean) => async (dispatch: Dispatch<SettingsStateUpdateTestnetPrefAction>) => {
+    dispatch({
+      payload: testnetsEnabled,
+      type: SETTINGS_UPDATE_TESTNET_PREF_SUCCESS,
+    });
+    saveTestnetsEnabled(testnetsEnabled);
+  };
 
 export const settingsChangeAppIcon = (appIcon: string) => (dispatch: Dispatch<SettingsStateUpdateAppIconSuccessAction>) => {
   const callback = async () => {
@@ -220,24 +221,22 @@ export const settingsChangeAppIcon = (appIcon: string) => (dispatch: Dispatch<Se
   }
 };
 
-export const settingsChangeFlashbotsEnabled = (flashbotsEnabled: boolean) => async (
-  dispatch: Dispatch<SettingsStateUpdateFlashbotsPrefAction>
-) => {
-  dispatch({
-    payload: flashbotsEnabled,
-    type: SETTINGS_UPDATE_FLASHBOTS_PREF_SUCCESS,
-  });
-  saveFlashbotsEnabled(flashbotsEnabled);
-};
+export const settingsChangeFlashbotsEnabled =
+  (flashbotsEnabled: boolean) => async (dispatch: Dispatch<SettingsStateUpdateFlashbotsPrefAction>) => {
+    dispatch({
+      payload: flashbotsEnabled,
+      type: SETTINGS_UPDATE_FLASHBOTS_PREF_SUCCESS,
+    });
+    saveFlashbotsEnabled(flashbotsEnabled);
+  };
 
-export const settingsUpdateAccountAddress = (accountAddress: string) => async (
-  dispatch: Dispatch<SettingsStateUpdateSettingsAddressAction>
-) => {
-  dispatch({
-    payload: accountAddress,
-    type: SETTINGS_UPDATE_SETTINGS_ADDRESS,
-  });
-};
+export const settingsUpdateAccountAddress =
+  (accountAddress: string) => async (dispatch: Dispatch<SettingsStateUpdateSettingsAddressAction>) => {
+    dispatch({
+      payload: accountAddress,
+      type: SETTINGS_UPDATE_SETTINGS_ADDRESS,
+    });
+  };
 
 export const settingsUpdateNetwork = (network: Network) => async (dispatch: Dispatch<SettingsStateUpdateNetworkSuccessAction>) => {
   const chainId = ethereumUtils.getChainIdFromNetwork(network);
@@ -267,23 +266,23 @@ export const settingsChangeLanguage = (language: Language) => async (dispatch: D
   }
 };
 
-export const settingsChangeNativeCurrency = (nativeCurrency: NativeCurrencyKey) => async (
-  dispatch: ThunkDispatch<AppState, unknown, SettingsStateUpdateNativeCurrencySuccessAction>
-) => {
-  dispatch(dataResetState());
-  dispatch(explorerClearState());
-  try {
-    dispatch({
-      payload: nativeCurrency,
-      type: SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS,
-    });
-    dispatch(explorerInit());
-    saveNativeCurrency(nativeCurrency);
-    analytics.identify({ currency: nativeCurrency });
-  } catch (error) {
-    logger.log('Error changing native currency', error);
-  }
-};
+export const settingsChangeNativeCurrency =
+  (nativeCurrency: NativeCurrencyKey) =>
+  async (dispatch: ThunkDispatch<AppState, unknown, SettingsStateUpdateNativeCurrencySuccessAction>) => {
+    dispatch(dataResetState());
+    dispatch(explorerClearState());
+    try {
+      dispatch({
+        payload: nativeCurrency,
+        type: SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS,
+      });
+      dispatch(explorerInit());
+      saveNativeCurrency(nativeCurrency);
+      analytics.identify({ currency: nativeCurrency });
+    } catch (error) {
+      logger.log('Error changing native currency', error);
+    }
+  };
 
 // -- Reducer --------------------------------------------------------------- //
 export const INITIAL_STATE: SettingsState = {

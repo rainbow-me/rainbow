@@ -135,7 +135,10 @@ export const shouldPromptCampaign = async (campaign: PromoSheet): Promise<boolea
 
 export const __INTERNAL_ACTION_CHECKS: {
   [key: string]: ActionFn;
-} = Object.keys(fns).reduce((acc, fnKey) => {
-  acc[fnKey] = fns[fnKey as keyof typeof fns];
-  return acc;
-}, {} as { [key: string]: ActionFn });
+} = Object.keys(fns).reduce(
+  (acc, fnKey) => {
+    acc[fnKey] = fns[fnKey as keyof typeof fns];
+    return acc;
+  },
+  {} as { [key: string]: ActionFn }
+);

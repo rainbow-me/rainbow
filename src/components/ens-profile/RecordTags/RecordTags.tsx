@@ -74,7 +74,7 @@ export default function RecordTags({
 
 const tagSizes = selectTextSizes('14px / 19px (Deprecated)', '16px / 22px (Deprecated)');
 
-type TagSize = typeof tagSizes[number];
+type TagSize = (typeof tagSizes)[number];
 
 function Tag({
   children,

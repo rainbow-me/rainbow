@@ -48,13 +48,15 @@ export default function useAccountSettings() {
 
   const settingsChangeNativeCurrency = useCallback((currency: NativeCurrencyKey) => dispatch(changeNativeCurrency(currency)), [dispatch]);
 
-  const settingsChangeTestnetsEnabled = useCallback((testnetsEnabled: boolean) => dispatch(changeTestnetsEnabled(testnetsEnabled)), [
-    dispatch,
-  ]);
+  const settingsChangeTestnetsEnabled = useCallback(
+    (testnetsEnabled: boolean) => dispatch(changeTestnetsEnabled(testnetsEnabled)),
+    [dispatch]
+  );
 
-  const settingsChangeFlashbotsEnabled = useCallback((flashbotsEnabled: boolean) => dispatch(changeFlashbotsEnabled(flashbotsEnabled)), [
-    dispatch,
-  ]);
+  const settingsChangeFlashbotsEnabled = useCallback(
+    (flashbotsEnabled: boolean) => dispatch(changeFlashbotsEnabled(flashbotsEnabled)),
+    [dispatch]
+  );
 
   return {
     settingsChangeAppIcon,

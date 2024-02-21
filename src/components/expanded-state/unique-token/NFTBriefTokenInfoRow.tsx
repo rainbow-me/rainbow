@@ -62,10 +62,10 @@ export default function NFTBriefTokenInfoRow({ asset }: { asset: UniqueAsset }) 
   const currentPrice = asset?.currentPrice ?? listingValue;
 
   const [showCurrentPriceInEth, setShowCurrentPriceInEth] = useState(true);
-  const toggleCurrentPriceDisplayCurrency = useCallback(() => setShowCurrentPriceInEth(!showCurrentPriceInEth), [
-    showCurrentPriceInEth,
-    setShowCurrentPriceInEth,
-  ]);
+  const toggleCurrentPriceDisplayCurrency = useCallback(
+    () => setShowCurrentPriceInEth(!showCurrentPriceInEth),
+    [showCurrentPriceInEth, setShowCurrentPriceInEth]
+  );
 
   const [showFloorInEth, setShowFloorInEth] = useState(true);
   const toggleFloorDisplayCurrency = useCallback(() => {

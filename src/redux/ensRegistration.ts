@@ -124,33 +124,31 @@ export const ensRegistrationsLoadState = () => async (dispatch: Dispatch<EnsRegi
   } catch (error) {}
 };
 
-export const startRegistration = (name: string, mode: keyof typeof REGISTRATION_MODES) => async (
-  dispatch: AppDispatch,
-  getState: AppGetState
-) => {
-  const {
-    ensRegistration: { registrations },
-    settings: { accountAddress },
-  } = getState();
-  const lcAccountAddress = accountAddress.toLowerCase();
-  const accountRegistrations = registrations?.[lcAccountAddress] || {};
-  const registration = accountRegistrations[name] || {};
+export const startRegistration =
+  (name: string, mode: keyof typeof REGISTRATION_MODES) => async (dispatch: AppDispatch, getState: AppGetState) => {
+    const {
+      ensRegistration: { registrations },
+      settings: { accountAddress },
+    } = getState();
+    const lcAccountAddress = accountAddress.toLowerCase();
+    const accountRegistrations = registrations?.[lcAccountAddress] || {};
+    const registration = accountRegistrations[name] || {};
 
-  const updatedEnsRegistrationManager = {
-    currentRegistrationName: name,
-    registrations: {
-      ...registrations,
-      [lcAccountAddress]: {
-        ...accountRegistrations,
-        [name]: { ...registration, mode, name },
+    const updatedEnsRegistrationManager = {
+      currentRegistrationName: name,
+      registrations: {
+        ...registrations,
+        [lcAccountAddress]: {
+          ...accountRegistrations,
+          [name]: { ...registration, mode, name },
+        },
       },
-    },
+    };
+    dispatch({
+      payload: updatedEnsRegistrationManager,
+      type: ENS_START_REGISTRATION,
+    });
   };
-  dispatch({
-    payload: updatedEnsRegistrationManager,
-    type: ENS_START_REGISTRATION,
-  });
-};
 
 export const continueRegistration = (name: string) => async (dispatch: AppDispatch) => {
   const updatedEnsRegistrationManager = {
@@ -323,37 +321,37 @@ export const removeRecordByKey = (key: string) => async (dispatch: AppDispatch, 
   });
 };
 
-export const saveCommitRegistrationParameters = (
-  registrationParameters: RegistrationParameters | TransactionRegistrationParameters
-) => async (dispatch: AppDispatch, getState: AppGetState) => {
-  const {
-    ensRegistration: { registrations, currentRegistrationName },
-    settings: { accountAddress },
-  } = getState();
-  const registrationName = (registrationParameters as RegistrationParameters)?.name || currentRegistrationName;
-  const lcAccountAddress = accountAddress.toLowerCase();
-  const accountRegistrations = registrations?.[lcAccountAddress] || {};
-  const registration = accountRegistrations[registrationName] || {};
-  const updatedEnsRegistrationManager = {
-    registrations: {
-      ...registrations,
-      [lcAccountAddress]: {
-        ...accountRegistrations,
-        [registrationName]: {
-          ...registration,
-          ...registrationParameters,
+export const saveCommitRegistrationParameters =
+  (registrationParameters: RegistrationParameters | TransactionRegistrationParameters) =>
+  async (dispatch: AppDispatch, getState: AppGetState) => {
+    const {
+      ensRegistration: { registrations, currentRegistrationName },
+      settings: { accountAddress },
+    } = getState();
+    const registrationName = (registrationParameters as RegistrationParameters)?.name || currentRegistrationName;
+    const lcAccountAddress = accountAddress.toLowerCase();
+    const accountRegistrations = registrations?.[lcAccountAddress] || {};
+    const registration = accountRegistrations[registrationName] || {};
+    const updatedEnsRegistrationManager = {
+      registrations: {
+        ...registrations,
+        [lcAccountAddress]: {
+          ...accountRegistrations,
+          [registrationName]: {
+            ...registration,
+            ...registrationParameters,
+          },
         },
       },
-    },
+    };
+
+    saveLocalENSRegistrations(updatedEnsRegistrationManager.registrations, accountAddress, NetworkTypes.mainnet);
+
+    dispatch({
+      payload: updatedEnsRegistrationManager,
+      type: ENS_SAVE_COMMIT_REGISTRATION_PARAMETERS,
+    });
   };
-
-  saveLocalENSRegistrations(updatedEnsRegistrationManager.registrations, accountAddress, NetworkTypes.mainnet);
-
-  dispatch({
-    payload: updatedEnsRegistrationManager,
-    type: ENS_SAVE_COMMIT_REGISTRATION_PARAMETERS,
-  });
-};
 
 export const clearCurrentRegistrationName = () => async (dispatch: AppDispatch) => {
   dispatch({
@@ -361,38 +359,36 @@ export const clearCurrentRegistrationName = () => async (dispatch: AppDispatch) 
   });
 };
 
-export const updateTransactionRegistrationParameters = (registrationParameters: TransactionRegistrationParameters) => async (
-  dispatch: AppDispatch,
-  getState: AppGetState
-) => {
-  const {
-    ensRegistration: { registrations, currentRegistrationName },
-    settings: { accountAddress },
-  } = getState();
+export const updateTransactionRegistrationParameters =
+  (registrationParameters: TransactionRegistrationParameters) => async (dispatch: AppDispatch, getState: AppGetState) => {
+    const {
+      ensRegistration: { registrations, currentRegistrationName },
+      settings: { accountAddress },
+    } = getState();
 
-  const lcAccountAddress = accountAddress.toLowerCase();
-  const accountRegistrations = registrations?.[lcAccountAddress] || {};
-  const registration = accountRegistrations[currentRegistrationName] || {};
-  const updatedEnsRegistrationManager = {
-    registrations: {
-      ...registrations,
-      [lcAccountAddress]: {
-        ...accountRegistrations,
-        [currentRegistrationName]: {
-          ...registration,
-          ...registrationParameters,
+    const lcAccountAddress = accountAddress.toLowerCase();
+    const accountRegistrations = registrations?.[lcAccountAddress] || {};
+    const registration = accountRegistrations[currentRegistrationName] || {};
+    const updatedEnsRegistrationManager = {
+      registrations: {
+        ...registrations,
+        [lcAccountAddress]: {
+          ...accountRegistrations,
+          [currentRegistrationName]: {
+            ...registration,
+            ...registrationParameters,
+          },
         },
       },
-    },
+    };
+
+    saveLocalENSRegistrations(updatedEnsRegistrationManager.registrations, accountAddress, NetworkTypes.mainnet);
+
+    dispatch({
+      payload: updatedEnsRegistrationManager,
+      type: ENS_UPDATE_REGISTRATION_PARAMETERS,
+    });
   };
-
-  saveLocalENSRegistrations(updatedEnsRegistrationManager.registrations, accountAddress, NetworkTypes.mainnet);
-
-  dispatch({
-    payload: updatedEnsRegistrationManager,
-    type: ENS_UPDATE_REGISTRATION_PARAMETERS,
-  });
-};
 
 export const removeRegistrationByName = (name: string) => async (dispatch: AppDispatch, getState: AppGetState) => {
   const {

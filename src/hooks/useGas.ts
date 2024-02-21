@@ -115,16 +115,15 @@ export default function useGas({ nativeAsset }: { nativeAsset?: ParsedAddressAss
 
   const prevSelectedGasFee = usePrevious(gasData?.selectedGasFee);
 
-  const isSufficientGas = useMemo(() => checkSufficientGas(gasData?.selectedGasFee?.gasFee, gasData?.txNetwork, nativeAsset), [
-    gasData?.selectedGasFee?.gasFee,
-    gasData?.txNetwork,
-    nativeAsset,
-  ]);
+  const isSufficientGas = useMemo(
+    () => checkSufficientGas(gasData?.selectedGasFee?.gasFee, gasData?.txNetwork, nativeAsset),
+    [gasData?.selectedGasFee?.gasFee, gasData?.txNetwork, nativeAsset]
+  );
 
-  const isValidGas = useMemo(() => checkValidGas(gasData?.selectedGasFee?.gasFeeParams, gasData?.txNetwork), [
-    gasData?.selectedGasFee,
-    gasData?.txNetwork,
-  ]);
+  const isValidGas = useMemo(
+    () => checkValidGas(gasData?.selectedGasFee?.gasFeeParams, gasData?.txNetwork),
+    [gasData?.selectedGasFee, gasData?.txNetwork]
+  );
 
   const isGasReady = useMemo(
     () => checkGasReady(gasData?.selectedGasFee?.gasFee, gasData?.selectedGasFee?.gasFeeParams, gasData?.txNetwork),

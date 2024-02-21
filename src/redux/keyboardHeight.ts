@@ -87,22 +87,21 @@ export const keyboardHeightsLoadState = () => async (dispatch: Dispatch<Keyboard
   });
 };
 
-export const setKeyboardHeight = ({ height, keyboardType = KeyboardType.default }: SetKeyboardHeightFunctionParameter) => async (
-  dispatch: Dispatch<KeyboardHeightSaveAction>,
-  getState: AppGetState
-) => {
-  await dispatch({
-    height,
-    keyboardType,
-    type: SAVE,
-  });
+export const setKeyboardHeight =
+  ({ height, keyboardType = KeyboardType.default }: SetKeyboardHeightFunctionParameter) =>
+  async (dispatch: Dispatch<KeyboardHeightSaveAction>, getState: AppGetState) => {
+    await dispatch({
+      height,
+      keyboardType,
+      type: SAVE,
+    });
 
-  const prevState = getState().keyboardHeight.keyboardHeight;
-  saveKeyboardHeight({
-    ...prevState,
-    [keyboardType]: height,
-  });
-};
+    const prevState = getState().keyboardHeight.keyboardHeight;
+    saveKeyboardHeight({
+      ...prevState,
+      [keyboardType]: height,
+    });
+  };
 
 // -- Reducer ----------------------------------------- //
 export default (state: KeyboardHeightState = INITIAL_STATE, action: KeyboardHeightAction) =>

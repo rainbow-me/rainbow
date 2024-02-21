@@ -93,7 +93,7 @@ const AuthStack = createStackNavigator();
 const BSStack = createBottomSheetNavigator();
 
 function MainNavigator() {
-  const initialRoute = (useContext(InitialRouteContext) as unknown) as string;
+  const initialRoute = useContext(InitialRouteContext) as unknown as string;
   return (
     <Stack.Navigator initialRouteName={initialRoute} {...stackNavigationConfig} screenOptions={defaultScreenStackOptions}>
       <Stack.Screen component={SwipeNavigator} name={Routes.SWIPE_LAYOUT} options={expandedPreset} />

@@ -87,11 +87,10 @@ const ImageAvatar = ({ image, size = 'medium', onLoad = undefined, ...props }) =
   const { colors, isDarkMode } = useTheme();
   const { dimensions, shadow } = useMemo(() => sizeConfigs(accentColor, colors, isDarkMode)[size], [accentColor, colors, isDarkMode, size]);
 
-  const shadows = useMemo(() => (size === 'header' || size === 'smaller' ? buildSmallShadows(colors.shadow, colors) : shadow), [
-    shadow,
-    size,
-    colors,
-  ]);
+  const shadows = useMemo(
+    () => (size === 'header' || size === 'smaller' ? buildSmallShadows(colors.shadow, colors) : shadow),
+    [shadow, size, colors]
+  );
 
   return (
     <ShadowStack {...props} {...borders.buildCircleAsObject(dimensions)} backgroundColor={colors.white} shadows={shadows}>

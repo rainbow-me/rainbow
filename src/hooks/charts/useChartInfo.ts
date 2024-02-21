@@ -15,7 +15,7 @@ import { NetworkProperties } from '@/networks/types';
 import { Network } from '@/helpers';
 
 const chartTimes = ['hour', 'day', 'week', 'month', 'year'] as const;
-type ChartTime = typeof chartTimes[number];
+type ChartTime = (typeof chartTimes)[number];
 type PriceChartTimeData = { points?: [x: number, y: number][] };
 
 const getChartTimeArg = (selected: ChartTime) =>

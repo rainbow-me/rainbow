@@ -10,7 +10,7 @@ import { watchingAlert } from '@/utils';
 import { RainbowToken } from '@/entities';
 
 export default function useExpandedStateNavigation(
-  inputType: typeof AssetInputTypes[keyof typeof AssetInputTypes] | null,
+  inputType: (typeof AssetInputTypes)[keyof typeof AssetInputTypes] | null,
   fromDiscover = false,
   asset: RainbowToken
 ) {
