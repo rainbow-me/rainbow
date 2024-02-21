@@ -286,11 +286,6 @@
       "hidden": "Tersembunyi"
     },
     "cards": {
-      "dpi": {
-        "title": "Indeks DeFi Pulse",
-        "body": "Semua token keuangan terdesentralisasi teratas dalam satu. Lacak industri.",
-        "view": "Lihat"
-      },
       "ens_create_profile": {
         "title": "Buat profil ENS Anda",
         "body": "Ganti alamat dompet Anda dengan profil yang sepenuhnya dimiliki oleh Anda."
@@ -1262,6 +1257,10 @@
         "get_started": "Mulai",
         "invalid_code": "Kode tidak valid"
       },
+      "notifications": {
+        "enable": "Aktifkan Notifikasi Poin",
+        "disable": "Nonaktifkan Notifikasi Poin"
+      },
       "points": {
         "referral_code": "Kode Referral",
         "share_link": "Bagikan Tautan",
@@ -1287,7 +1286,9 @@
         "referral_code_copied": "Kode rujukan telah disalin",
         "earn_points_for_referring": "Dapatkan poin ketika rujukanmu menukar $100 melalui Rainbow, plus dapatkan 10% dari poin yang diperoleh rujukanmu",
         "already_claimed_points": "Maaf! Kamu sudah mengklaim poinmu.",
-        "now": "Sekarang"
+        "now": "Sekarang",
+        "unranked": "Tidak Terperingkat",
+        "points_to_rank": "750 poin untuk naik peringkat"
       },
       "console": {
         "claim_bonus_paragraph": "Anda akan mendapatkan tambahan 100 poin setelah Anda menukar minimal $100 melalui Rainbow",
@@ -1295,8 +1296,8 @@
         "true_believer": "Pengikut Setia",
         "registration_complete": "Pendaftaran selesai",
         "account": "Akun",
+        "points_you_have": "Anda Memiliki",
         "points_earned": "Poin yang Didapat",
-        "share_bonus": "Bonus Berbagi",
         "share_bonus_paragraph_one": "Semua sudah siap!",
         "share_bonus_paragraph_two": "Terus dapatkan poin dengan menukar, jembatan, mencetak, merujuk teman, dan lainnya",
         "share_bonus_paragraph_three": "Semakin Anda menggunakan Rainbow, semakin banyak hadiah yang akan Anda dapatkan",
@@ -1323,7 +1324,21 @@
         "referral_link_bonus_text_extended": "Plus, Anda akan mendapatkan 10% dari poin yang diperoleh oleh siapapun yang Anda rujuk",
         "complete_onboarding": "Selesai",
         "share_to_x": "Bagikan ke X",
-        "hardware_wallet_alert": "Dukungan dompet perangkat keras akan segera hadir!"
+        "hardware_wallet_alert": "Dukungan dompet perangkat keras akan segera hadir!",
+        "view_weekly_earnings_week_of": "Minggu dari %{startOfWeek} - %{endOfWeek}",
+        "view_weekly_earnings_title": "Menghitung poin yang didapat",
+        "view_weekly_earnings_counted": "Pendapatan mingguan terhitung",
+        "view_weekly_earnings_close_button": "Tutup",
+        "view_weekly_earnings_retroactive_points": "Poin Retroaktif",
+        "view_weekly_earnings_activity": "Aktivitas Anda",
+        "view_weekly_earnings_referral_activity": "Aktivitas Referal",
+        "view_weekly_earnings_total_earnings": "Total",
+        "view_weekly_earnings_new_referrals": "Referal Baru",
+        "wallet_balance_required": "Saldo dompet diperlukan",
+        "require_balance_paragraph_one": "Untuk melanjutkan, pastikan Anda memiliki saldo ETH di salah satu jaringan berikut:",
+        "require_balance_paragraph_two": "Atau sebagai alternatif, saldo MATIC di Polygon atau saldo BNB di BSC",
+        "fund_my_wallet": "Isi Saldo Dompet Saya",
+        "points": "Poin"
       }
     },
     "pools": {
@@ -1708,6 +1723,7 @@
       "notifications": "Notifikasi",
       "notifications_section": {
         "my_wallets": "Dompet Saya",
+        "points": "Poin",
         "watched_wallets": "Dompet yang Diawasi",
         "allow_notifications": "Izinkan Notifikasi",
         "sent": "Dikirim",
@@ -2366,6 +2382,7 @@
         "message": "Tempelkan URI WalletConnect di bawah ini",
         "title": "Sesi WalletConnect Baru"
       },
+      "none": "Tidak ada",
       "switch_network": "Ganti Jaringan",
       "switch_wallet": "Ganti Dompet",
       "titles": {
@@ -2413,7 +2430,8 @@
         "request_invalid": "Permintaan berisi parameter yang tidak valid. Silakan coba lagi atau hubungi tim dukungan Rainbow dan/atau beranda.",
         "eth_sign": "Rainbow tidak mendukung eth_sign lama karena pertimbangan keamanan.  \n Silakan Hubungi tim dukungan Rainbow dan/atau dapp jika Anda memiliki pertanyaan.",
         "request_unsupported_network": "Jaringan yang ditentukan dalam permintaan ini tidak didukung oleh Rainbow.",
-        "request_unsupported_methods": "Metode RPC yang ditentukan dalam permintaan ini tidak didukung oleh Rainbow."
+        "request_unsupported_methods": "Metode RPC yang ditentukan dalam permintaan ini tidak didukung oleh Rainbow.",
+        "no_accounts_found": "Tidak ada akun yang ditemukan di ruang nama yang disetujui."
       },
       "dapp_warnings": {
         "info_alert": {
