@@ -1,0 +1,42 @@
+diff --git a/node_modules/react-native-haptic-feedback/build/index.js b/node_modules/react-native-haptic-feedback/build/index.js
+index 0961b2d..d9124b4 100644
+--- a/node_modules/react-native-haptic-feedback/build/index.js
++++ b/node_modules/react-native-haptic-feedback/build/index.js
+@@ -1,4 +1,4 @@
+-import { NativeModules } from "react-native";
++import { NativeModules, Platform } from "react-native";
+ import { HapticFeedbackTypes } from "./types";
+ export * from "./types";
+ const defaultOptions = {
+@@ -13,7 +13,30 @@ class RNReactNativeHapticFeedback {
+             const hapticFeedback = isTurboModuleEnabled
+                 ? require("./NativeHapticFeedback").default
+                 : NativeModules.RNHapticFeedback;
+-            hapticFeedback.trigger(type, triggerOptions);
++            if (Platform.OS === "android") {
++                    switch (type) {
++                        case 'impactLight':
++                            NativeModules.RNRainbowHaptics.impact("light")
++                            break;
++                        case 'impactHeavy':
++                            NativeModules.RNRainbowHaptics.impact("heavy")
++                            break;
++                        case 'notificationSuccess':
++                            NativeModules.RNRainbowHaptics.notification("success")
++                            break;
++                        case 'notificationWarning':
++                            NativeModules.RNRainbowHaptics.notification("warning")
++                            break;
++                        case 'notificationError':
++                            NativeModules.RNRainbowHaptics.notification("error")
++                            break;
++                        default:
++                            NativeModules.RNRainbowHaptics.selection()
++                            break;
++                    }
++                } else {
++                    NativeModules.RNReactNativeHapticFeedback.trigger(type, triggerOptions);
++                }
+         }
+         catch (err) {
+             console.warn("RNReactNativeHapticFeedback is not available");

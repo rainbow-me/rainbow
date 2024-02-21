@@ -101,7 +101,7 @@ export const useSwappableUserAssets = (params: { outputCurrency: SwappableAsset 
 
   useEffect(() => {
     getSwappableAddressesInWallet();
-  }, [getSwappableAddressesInWallet]);
+  }, []);
 
   if (!outputCurrency) {
     return {

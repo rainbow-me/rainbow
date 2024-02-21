@@ -3,6 +3,7 @@
 //
 
 #import "React/RCTBridgeModule.h"
+#import <Expo/Expo.h>
 #import "React/RCTView.h"
 
 #import <SDWebImage/SDWebImage.h>

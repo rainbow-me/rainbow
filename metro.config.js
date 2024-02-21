@@ -1,6 +1,8 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 const blacklist = require('metro-config/src/defaults/exclusionList');
-const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
+const { getDefaultConfig } = require('expo/metro-config');
+const { mergeConfig } = require('@react-native/metro-config');
+const { createSentryMetroSerializer } = require('@sentry/react-native/dist/js/tools/sentryMetroSerializer');
 
 // Deny list is a function that takes an array of regexes and combines
 // them with the default blacklist to return a single regex.
@@ -30,6 +32,9 @@ if (process.env.CI) {
 const rainbowConfig = {
   resolver: {
     blacklistRE,
+  },
+  serializer: {
+    customSerializer: createSentryMetroSerializer(),
   },
   transformer,
 };

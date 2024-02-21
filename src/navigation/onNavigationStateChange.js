@@ -1,10 +1,10 @@
 import { NativeModules } from 'react-native';
-import { sentryUtils } from '../utils';
 import Routes from './routesNames';
 import { Navigation } from './index';
 import { StatusBarHelper } from '@/helpers';
 import { analytics } from '@/analytics';
 import { currentColors } from '@/theme';
+import { sentryUtils } from '@/utils';
 
 let memState;
 let memRouteName;
@@ -89,7 +89,6 @@ export function onNavigationStateChange(currentState) {
         network: asset.network,
       };
     }
-
     sentryUtils.addNavBreadcrumb(memPrevRouteName, routeName, paramsToTrack);
     return analytics.screen(routeName, paramsToTrack);
   }

@@ -66,7 +66,7 @@ public class MainActivity extends ReactActivity {
       }
       @Override
       protected void loadApp(String appKey) {
-          RNBootSplash.init(MainActivity.this);
+          RNBootSplash.init(MainActivity.this, R.style.BootTheme);
           super.loadApp(appKey);
       }
     };

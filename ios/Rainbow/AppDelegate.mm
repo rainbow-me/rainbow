@@ -5,6 +5,7 @@
 
 #import "Firebase.h"
 #import "AppDelegate.h"
+#import "ExpoModulesCore-Swift.h"
 #import "Rainbow-Swift.h"
 #import <RNBranch/RNBranch.h>
 #import <React/RCTBundleURLProvider.h>
@@ -111,7 +112,7 @@ RCT_EXPORT_METHOD(hideAnimated) {
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
   #if DEBUG
-    return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
+    return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@".expo/.virtual-metro-entry"];
   #else
     return [CodePush bundleURL];
   #endif

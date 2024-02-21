@@ -2,7 +2,7 @@ import { nanoid } from 'nanoid';
 import { expect, test } from '@jest/globals';
 import * as Sentry from '@sentry/react-native';
 
-import { Logger, LogLevel, RainbowError, sentryTransport } from '@/logger';
+import { Logger, LogLevel, RainbowError, SentrySeverityLevel, sentryTransport } from '@/logger';
 
 jest.mock('@sentry/react-native', () => ({
   addBreadcrumb: jest.fn(),
@@ -149,7 +149,7 @@ describe('general functionality', () => {
       message,
       data: {},
       type: 'default',
-      level: undefined, // Sentry bug, undefined
+      level: LogLevel.Log,
       timestamp: Date.now(),
     });
     expect(Sentry.captureMessage).toHaveBeenCalledWith(message, {
@@ -162,11 +162,11 @@ describe('general functionality', () => {
       message,
       data: {},
       type: 'default',
-      level: Sentry.Severity.Warning,
+      level: SentrySeverityLevel.Warning,
       timestamp: Date.now(),
     });
     expect(Sentry.captureMessage).toHaveBeenCalledWith(message, {
-      level: Sentry.Severity.Warning,
+      level: SentrySeverityLevel.Warning,
       tags: undefined,
       extra: {},
     });

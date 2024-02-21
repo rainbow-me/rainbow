@@ -1,4 +1,7 @@
 package me.rainbow;
+import android.content.res.Configuration;
+import expo.modules.ApplicationLifecycleDispatcher;
+import expo.modules.ReactNativeHostWrapper;
 
 import android.app.Application;
 import android.content.Context;
@@ -36,7 +39,7 @@ public class MainApplication extends Application implements ReactApplication {
       private static Context context;
 
     private final ReactNativeHost mReactNativeHost =
-      new DefaultReactNativeHost(this) {
+      new ReactNativeHostWrapper(this, new DefaultReactNativeHost(this) {
         @Override
         public boolean getUseDeveloperSupport() {
           return BuildConfig.DEBUG;
@@ -68,7 +71,7 @@ public class MainApplication extends Application implements ReactApplication {
 
         @Override
         protected String getJSMainModuleName() {
-          return "index";
+          return ".expo/.virtual-metro-entry";
         }
 
 
@@ -81,7 +84,7 @@ public class MainApplication extends Application implements ReactApplication {
 	        protected Boolean isHermesEnabled() {
 	          return BuildConfig.IS_HERMES_ENABLED;
 	        }
-      };
+      });
 
   @Override
   public ReactNativeHost getReactNativeHost() {
@@ -102,6 +105,7 @@ public class MainApplication extends Application implements ReactApplication {
     
     RNBranchModule.getAutoInstance(this);
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+    ApplicationLifecycleDispatcher.onApplicationCreate(this);
   }
 
    public static Context getAppContext() {
@@ -136,5 +140,11 @@ public class MainApplication extends Application implements ReactApplication {
         e.printStackTrace();
       }
     }
+  }
+
+  @Override
+  public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    ApplicationLifecycleDispatcher.onConfigurationChanged(this, newConfig);
   }
 }
