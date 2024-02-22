@@ -498,7 +498,7 @@ const UniqueTokenExpandedStateHeader = ({
                   {asset.familyImage ? (
                     <Bleed vertical="6px">
                       <FamilyImageWrapper>
-                        <FamilyImage source={{ uri: asset.familyImage }} />
+                        <FamilyImage size={30} source={{ uri: asset.familyImage }} />
                       </FamilyImageWrapper>
                     </Bleed>
                   ) : null}
