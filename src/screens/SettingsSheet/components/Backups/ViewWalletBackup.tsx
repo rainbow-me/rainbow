@@ -45,6 +45,7 @@ import { checkUserDataForBackupProvider, checkWalletsForBackupStatus } from '../
 import useCloudBackups from '@/hooks/useCloudBackups';
 import { WalletCountPerType, useVisibleWallets } from '../../useVisibleWallets';
 import { format } from 'date-fns';
+import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 
 type ViewWalletBackupParams = {
   ViewWalletBackup: { walletId: string; title: string; imported?: boolean };
@@ -67,7 +68,9 @@ type WalletAvatarProps = {
 };
 
 const WalletAvatar = ({ account }: WalletAvatarProps) => {
-  const { data: ENSAvatar } = useENSAvatar(account.label);
+  const label = useMemo(() => removeFirstEmojiFromString(account.label), [account.label]);
+
+  const { data: ENSAvatar } = useENSAvatar(label);
   const accountImage = addressHashedEmoji(account.address);
 
   return ENSAvatar?.imageUrl ? (
@@ -460,7 +463,7 @@ const ViewWalletBackup = () => {
                     <MenuItem.Title
                       text={
                         account.label.endsWith('.eth')
-                          ? abbreviations.abbreviateEnsForDisplay(account.label, 20) ?? ''
+                          ? abbreviations.abbreviateEnsForDisplay(removeFirstEmojiFromString(account.label), 20) ?? ''
                           : abbreviations.address(account.address, 3, 5) ?? ''
                       }
                       weight="semibold"

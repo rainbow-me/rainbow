@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { cloudPlatform } from '@/utils/platform';
 import Menu from '../Menu';
 import MenuContainer from '../MenuContainer';
@@ -21,7 +21,7 @@ import { ContactAvatar } from '@/components/contacts';
 import { useTheme } from '@/theme';
 import Routes from '@/navigation/routesNames';
 import { backupsCard } from '@/components/cards/utils/constants';
-import { AmendedRainbowWallet, WalletCountPerType, useVisibleWallets } from '../../useVisibleWallets';
+import { WalletCountPerType, useVisibleWallets } from '../../useVisibleWallets';
 import useCloudBackups from '@/hooks/useCloudBackups';
 import { SETTINGS_BACKUP_ROUTES } from './routes';
 import { RainbowAccount, createWallet } from '@/model/wallet';
@@ -30,17 +30,19 @@ import { useDispatch } from 'react-redux';
 import { walletsLoadState } from '@/redux/wallets';
 import { RainbowError, logger } from '@/logger';
 import { IS_IOS } from '@/env';
-import { useCreateBackup } from '@/components/backup/useCreateBackup';
-import { InteractionManager } from 'react-native';
+import { BackupTypes, useCreateBackup } from '@/components/backup/useCreateBackup';
 import { BackUpMenuItem } from './BackUpMenuButton';
 import { format } from 'date-fns';
+import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 
 type WalletPillProps = {
   account: RainbowAccount;
 };
 
 const WalletPill = ({ account }: WalletPillProps) => {
-  const { data: ENSAvatar } = useENSAvatar(account.label);
+  const label = useMemo(() => removeFirstEmojiFromString(account.label), [account.label]);
+
+  const { data: ENSAvatar } = useENSAvatar(label);
   const { colors, isDarkMode } = useTheme();
 
   const accountImage = addressHashedEmoji(account.address);
@@ -66,8 +68,8 @@ const WalletPill = ({ account }: WalletPillProps) => {
         <ContactAvatar alignSelf="center" color={account.color} marginRight={4} size="smaller" value={accountImage} />
       )}
       <Text color={'secondary (Deprecated)'} size="11pt" weight="semibold">
-        {account.label.endsWith('.eth')
-          ? abbreviations.abbreviateEnsForDisplay(account.label, 0, 8) ?? ''
+        {label.endsWith('.eth')
+          ? abbreviations.abbreviateEnsForDisplay(label, 8, 4) ?? ''
           : abbreviations.address(account.address, 3, 5) ?? ''}
       </Text>
     </Box>
@@ -87,7 +89,6 @@ export const WalletsAndBackup = () => {
   const { navigate } = useNavigation();
   const { wallets } = useWallets();
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const walletIdToBackup = useRef<string>('');
 
   const { backups, userData } = useCloudBackups();
   const dispatch = useDispatch();
@@ -95,7 +96,7 @@ export const WalletsAndBackup = () => {
   const initializeWallet = useInitializeWallet();
 
   const { onSubmit, loading } = useCreateBackup({
-    walletId: walletIdToBackup.current,
+    walletId: undefined, // NOTE: This is not used for backing up All wallets
   });
 
   const { manageCloudBackups } = useManageCloudBackups();
@@ -132,53 +133,9 @@ export const WalletsAndBackup = () => {
     ];
   }, [visibleWallets]);
 
-  const getAndSetWalletIdToBackup = useCallback(() => {
-    const firstWalletThatNeedsBackedUp = sortedWallets.find(wallet => !wallet.isBackedUp);
-    const numberOfWalletsThatNeedBackedUp = sortedWallets.filter(wallet => !wallet.isBackedUp).length;
-    if (numberOfWalletsThatNeedBackedUp === 0 || !firstWalletThatNeedsBackedUp) {
-      return;
-    }
-    walletIdToBackup.current = firstWalletThatNeedsBackedUp.id;
-    return {
-      firstWalletThatNeedsBackedUp,
-      numberOfWalletsThatNeedBackedUp,
-    };
-  }, [sortedWallets]);
-
-  const showExplainerSheet = useCallback(
-    async (wallet: AmendedRainbowWallet) => {
-      navigate(Routes.EXPLAIN_SHEET, {
-        onClose: () => {
-          InteractionManager.runAfterInteractions(() => {
-            setTimeout(() => {
-              // NOTE: We lose the ref value when we navigate and come back to this screen, so let's set it again
-              getAndSetWalletIdToBackup();
-              if (walletIdToBackup.current) {
-                onSubmit();
-              }
-            }, 300);
-          });
-        },
-        type: 'add_to_backups',
-        walletName: wallet.name,
-      });
-    },
-    [navigate, onSubmit, getAndSetWalletIdToBackup]
-  );
-
-  const enableCloudBackups = useCallback(() => {
-    const data = getAndSetWalletIdToBackup();
-    if (!data) {
-      return;
-    }
-
-    const { firstWalletThatNeedsBackedUp, numberOfWalletsThatNeedBackedUp } = data;
-    if (numberOfWalletsThatNeedBackedUp === 1) {
-      onSubmit();
-    } else {
-      showExplainerSheet(firstWalletThatNeedsBackedUp);
-    }
-  }, [onSubmit, showExplainerSheet, getAndSetWalletIdToBackup]);
+  const backupAllNonBackedUpWalletsTocloud = useCallback(async () => {
+    onSubmit(BackupTypes.All);
+  }, [onSubmit]);
 
   const onViewCloudBackups = useCallback(async () => {
     navigate(SETTINGS_BACKUP_ROUTES.VIEW_CLOUD_BACKUPS, {
@@ -260,7 +217,11 @@ export const WalletsAndBackup = () => {
             </Menu>
 
             <Menu description={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups_description)}>
-              <BackUpMenuItem title={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)} loading={loading} onPress={enableCloudBackups} />
+              <BackUpMenuItem
+                title={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)}
+                loading={loading}
+                onPress={backupAllNonBackedUpWalletsTocloud}
+              />
             </Menu>
 
             <Stack space={'24px'}>
@@ -385,7 +346,7 @@ export const WalletsAndBackup = () => {
                   })}
                   icon="􀎽"
                   loading={loading}
-                  onPress={enableCloudBackups}
+                  onPress={backupAllNonBackedUpWalletsTocloud}
                 />
               </Menu>
             </Stack>
@@ -570,7 +531,11 @@ export const WalletsAndBackup = () => {
                   </Text>
                 }
               >
-                <BackUpMenuItem title={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)} loading={loading} onPress={enableCloudBackups} />
+                <BackUpMenuItem
+                  title={i18n.t(i18n.l.back_up.cloud.enable_cloud_backups)}
+                  loading={loading}
+                  onPress={backupAllNonBackedUpWalletsTocloud}
+                />
               </Menu>
             </Stack>
           </Stack>
@@ -580,7 +545,7 @@ export const WalletsAndBackup = () => {
   }, [
     backupProvider,
     loading,
-    enableCloudBackups,
+    backupAllNonBackedUpWalletsTocloud,
     sortedWallets,
     onCreateNewSecretPhrase,
     navigate,

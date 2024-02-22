@@ -10,12 +10,18 @@ import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { Navigation } from '@/navigation';
 import { InteractionManager } from 'react-native';
 import { DelayedAlert } from '../alerts';
+import { loadAllKeys } from '@/model/keychain';
 
 type UseCreateBackupProps = {
-  walletId: string;
+  walletId?: string;
 };
 
 export type useCreateBackupStateType = 'none' | 'loading' | 'success' | 'error';
+
+export enum BackupTypes {
+  Single = 'single',
+  All = 'all',
+}
 
 export const useCreateBackup = ({ walletId }: UseCreateBackupProps) => {
   const { fetchBackups } = useCloudBackups();
@@ -57,9 +63,23 @@ export const useCreateBackup = ({ walletId }: UseCreateBackupProps) => {
   );
 
   const onConfirmBackup = useCallback(
-    async (password: string) => {
+    async (password: string, type: BackupTypes) => {
       analytics.track('Tapped "Confirm Backup"');
       setLoading('loading');
+
+      if (type === BackupTypes.All) {
+        const allKeys = await loadAllKeys();
+        console.log(JSON.stringify(allKeys, null, 2));
+        // TODO: Logic for fetch all keys and backup
+        return;
+      }
+
+      if (!walletId) {
+        onError('Wallet not found. Please try again.');
+        setLoading('error');
+        return;
+      }
+
       await walletCloudBackup({
         onError,
         onSuccess,
@@ -96,14 +116,17 @@ export const useCreateBackup = ({ walletId }: UseCreateBackupProps) => {
     });
   }, [walletId]);
 
-  const onSubmit = useCallback(async () => {
-    const password = await getPassword();
-    if (password) {
-      onConfirmBackup(password);
-      return;
-    }
-    setLoadingStateWithTimeout('error');
-  }, [getPassword, onConfirmBackup, setLoadingStateWithTimeout]);
+  const onSubmit = useCallback(
+    async (type = BackupTypes.Single) => {
+      const password = await getPassword();
+      if (password) {
+        onConfirmBackup(password, type);
+        return;
+      }
+      setLoadingStateWithTimeout('error');
+    },
+    [getPassword, onConfirmBackup, setLoadingStateWithTimeout]
+  );
 
   return { onSuccess, onError, onSubmit, loading };
 };
