@@ -50,13 +50,12 @@ export function handleNFTImages({
           })) ?? null;
 
   const lowResUrl =
-    url?.startsWith?.(GOOGLE_USER_CONTENT_URL) && !isGIF
-      ? url.replace(/=s\d+$/, `=s${cardSize}`)
+    previewUrl?.startsWith?.(GOOGLE_USER_CONTENT_URL) && !isGIF
+      ? previewUrl
       : maybeSignUri(url, {
           w: cardSize,
           // reformat to png in the case that the image may be an SVG or is a GIF
           fm: (!previewUrl && (!mimeType || isSVG)) || isGIF ? 'png' : undefined,
         }) ?? null;
-
   return { highResUrl, lowResUrl };
 }
