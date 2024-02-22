@@ -192,7 +192,7 @@ const BottomRow = React.memo(function BottomRow({
     const inAsset = transaction?.changes?.find(a => a?.direction === 'in')?.asset;
     const outAsset = transaction?.changes?.find(a => a?.direction === 'out')?.asset;
 
-    if (!!inAsset && !!outAsset) description = `${inAsset?.symbol} 􀄫 ${outAsset?.symbol}`;
+    if (!!inAsset && !!outAsset) description = `${outAsset?.symbol} 􀄫 ${inAsset?.symbol}`;
   }
 
   const nftChangesAmount = transaction.changes
@@ -324,7 +324,7 @@ export const ActivityIcon = ({
               borderRadius: 10,
             }}
             source={{
-              uri: transaction.asset.icon_url,
+              uri: transaction.asset.icon_url || transaction.asset.image_url,
             }}
           />
         </View>
