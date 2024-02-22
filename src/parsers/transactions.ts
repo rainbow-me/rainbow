@@ -138,14 +138,13 @@ export const parseTransaction = async (
 
 export const parseNewTransaction = (tx: NewTransaction): RainbowTransaction => {
   const asset = tx?.changes?.[0]?.asset || tx.asset;
-  const methodName = 'Unknown method';
 
   return {
     ...tx,
     status: 'pending',
     data: tx.data,
     title: `${tx.type}.${tx.status}`,
-    description: asset?.name || methodName,
+    description: asset?.name,
     from: tx.from,
     changes: tx.changes,
     hash: tx.hash,
