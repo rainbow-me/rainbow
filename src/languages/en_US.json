@@ -677,6 +677,7 @@
         "registrant": "Registrant",
         "resolver": "Resolver",
         "save_to_photos": "Save to Photos",
+        "sell_for_x": "Sell for %{price}",
         "set_primary_name": "Set as my ENS name",
         "share_token_info": "Share %{uniqueTokenName} Info",
         "showcase": "Showcase",
