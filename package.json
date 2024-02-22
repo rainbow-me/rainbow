@@ -107,7 +107,7 @@
     "@metamask/eth-sig-util": "7.0.1",
     "@notifee/react-native": "5.6.0",
     "@rainbow-me/react-native-animated-number": "0.0.2",
-    "@rainbow-me/swaps": "0.6.0",
+    "@rainbow-me/swaps": "0.9.1",
     "@react-native-async-storage/async-storage": "1.18.2",
     "@react-native-camera-roll/camera-roll": "5.7.1",
     "@react-native-community/blur": "4.3.2",
