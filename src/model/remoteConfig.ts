@@ -16,6 +16,8 @@ import {
   BASE_MAINNET_RPC_DEV,
   BSC_MAINNET_RPC,
   ZORA_MAINNET_RPC,
+  AVALANCHE_MAINNET_RPC,
+  AVALANCHE_MAINNET_RPC_DEV,
 } from 'react-native-dotenv';
 import { RainbowError, logger } from '@/logger';
 import { getNetwork, saveNetwork } from '@/handlers/localstorage/globalSettings';
@@ -39,6 +41,7 @@ interface RainbowConfig extends Record<string, string | boolean | number> {
   polygon_mainnet_rpc: string;
   zora_mainnet_rpc: string;
   base_mainnet_rpc: string;
+  avalanche_mainnet_rpc: string;
   swagg_enabled: boolean;
   trace_call_block_number_offset: number;
   profiles_enabled: boolean;
@@ -86,6 +89,7 @@ const DEFAULT_CONFIG: RainbowConfig = {
     bsc: 200,
     base: 200,
     zora: 200,
+    avalanche: 200,
   }),
   ethereum_goerli_rpc: __DEV__ ? ETHEREUM_GOERLI_RPC_DEV : ETHEREUM_GOERLI_RPC,
   ethereum_mainnet_rpc: __DEV__ ? ETHEREUM_MAINNET_RPC_DEV : ETHEREUM_MAINNET_RPC,
@@ -98,6 +102,7 @@ const DEFAULT_CONFIG: RainbowConfig = {
   bsc_mainnet_rpc: BSC_MAINNET_RPC,
   zora_mainnet_rpc: ZORA_MAINNET_RPC,
   base_mainnet_rpc: __DEV__ ? BASE_MAINNET_RPC_DEV : BASE_MAINNET_RPC,
+  avalanche_mainnet_rpc: __DEV__ ? AVALANCHE_MAINNET_RPC_DEV : AVALANCHE_MAINNET_RPC,
   swagg_enabled: true,
   trace_call_block_number_offset: 20,
   profiles_enabled: true,
