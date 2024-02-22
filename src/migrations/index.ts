@@ -11,6 +11,7 @@ import { prepareDefaultNotificationGroupSettingsState } from '@/migrations/migra
 import { changeLanguageKeys } from './migrations/changeLanguageKeys';
 import { fixHiddenUSDC } from './migrations/fixHiddenUSDC';
 import { purgeWcConnectionsWithoutAccounts } from './migrations/purgeWcConnectionsWithoutAccounts';
+import { migratePinnedAndHiddenTokenUniqueIds } from './migrations/migratePinnedAndHiddenTokenUniqueIds';
 
 /**
  * Local storage for migrations only. Should not be exported.
@@ -33,6 +34,7 @@ const migrations: Migration[] = [
   changeLanguageKeys(),
   fixHiddenUSDC(),
   purgeWcConnectionsWithoutAccounts(),
+  migratePinnedAndHiddenTokenUniqueIds(),
 ];
 
 /**

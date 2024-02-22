@@ -1202,6 +1202,7 @@ const SimulationCard = ({
               key={`${change?.asset?.assetCode}-${change?.quantity}`}
               amount={change?.quantity || '10'}
               asset={change?.asset}
+              price={change?.price}
               eventType="receive"
             />
           );
@@ -1411,12 +1412,11 @@ const DetailsCard = ({
 
   const showFunctionRow = meta?.to?.function || (methodName && methodName.substring(0, 2) !== '0x');
   const isContract = showFunctionRow || meta?.to?.created || meta?.to?.sourceCodeStatus;
-
+  const showTransferToRow = !!meta?.transferTo?.address;
   // Hide DetailsCard if balance is insufficient once loaded
   if (!isLoading && isBalanceEnough === false) {
     return <></>;
   }
-
   return (
     <FadedScrollCard
       cardHeight={cardHeight}
@@ -1442,13 +1442,28 @@ const DetailsCard = ({
         <Animated.View style={listStyle}>
           <Stack space="24px">
             {<DetailRow currentNetwork={currentNetwork} detailType="chain" value={getNetworkObj(currentNetwork).name} />}
-            {!!(meta?.to?.address || toAddress) && (
+            {!!(meta?.to?.address || toAddress || showTransferToRow) && (
               <DetailRow
                 detailType={isContract ? 'contract' : 'to'}
-                onPress={() => ethereumUtils.openAddressInBlockExplorer(meta?.to?.address! || toAddress, currentNetwork)}
-                value={meta?.to?.name || abbreviations.address(meta?.to?.address || toAddress, 4, 6) || meta?.to?.address || toAddress}
+                onPress={() =>
+                  ethereumUtils.openAddressInBlockExplorer(
+                    meta?.to?.address! || toAddress || meta?.transferTo?.address || '',
+                    currentNetwork
+                  )
+                }
+                value={
+                  meta?.to?.name ||
+                  abbreviations.address(meta?.to?.address || toAddress, 4, 6) ||
+                  meta?.to?.address ||
+                  toAddress ||
+                  meta?.transferTo?.address ||
+                  ''
+                }
               />
             )}
+            {showFunctionRow && <DetailRow detailType="function" value={methodName} />}
+            {!!meta?.to?.sourceCodeStatus && <DetailRow detailType="sourceCodeVerification" value={meta.to.sourceCodeStatus} />}
+            {!!meta?.to?.created && <DetailRow detailType="dateCreated" value={formatDate(meta?.to?.created)} />}
             {showFunctionRow && <DetailRow detailType="function" value={methodName} />}
             {!!meta?.to?.sourceCodeStatus && <DetailRow detailType="sourceCodeVerification" value={meta.to.sourceCodeStatus} />}
             {!!meta?.to?.created && <DetailRow detailType="dateCreated" value={formatDate(meta?.to?.created)} />}
@@ -1594,7 +1609,7 @@ const SimulatedEventRow = ({
   if (asset?.type === TransactionAssetType.Native) {
     assetCode = ETH_ADDRESS;
   }
-  const showUSD = (eventType === 'send' || eventType === 'receive') && price;
+  const showUSD = (eventType === 'send' || eventType === 'receive') && !!price;
   const formattedPrice = `$${price?.toLocaleString?.('en-US', {
     maximumFractionDigits: 2,
   })}`;
