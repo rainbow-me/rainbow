@@ -24,7 +24,6 @@ import ShowcaseScreen from '../screens/ShowcaseSheet';
 import { SignTransactionSheet } from '../screens/SignTransactionSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import NotificationsPromoSheet from '../screens/NotificationsPromoSheet';
-import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
 import { WalletDiagnosticsSheet } from '../screens/Diagnostics';
@@ -38,6 +37,7 @@ import {
   hardwareWalletTxNavigatorConfig,
   consoleSheetConfig,
   customGasSheetConfig,
+  dappBrowserConfig,
   defaultScreenStackOptions,
   ensAdditionalRecordsSheetConfig,
   ensConfirmRegisterSheetConfig,
@@ -46,7 +46,6 @@ import {
   externalLinkWarningSheetConfig,
   mintsSheetConfig,
   nativeStackDefaultConfig,
-  nativeStackDefaultConfigWithoutStatusBar,
   nftOffersSheetConfig,
   nftSingleOfferSheetConfig,
   pairHardwareWalletNavigatorConfig,
@@ -80,6 +79,7 @@ import createNativeStackNavigator from '@/react-native-cool-modals/createNativeS
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
+import { DappBrowser } from '@/screens/DappBrowser/DappBrowser';
 import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
 import { AddWalletNavigator } from './AddWalletNavigator';
 import { HardwareWalletTxNavigator } from './HardwareWalletTxNavigator';
@@ -283,6 +283,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen name={Routes.NFT_SINGLE_OFFER_SHEET} component={NFTSingleOfferSheet} {...nftSingleOfferSheetConfig} />
       <NativeStack.Screen name={Routes.MINTS_SHEET} component={MintsSheet} {...mintsSheetConfig} />
       <NativeStack.Screen component={ConsoleSheet} name={Routes.CONSOLE_SHEET} {...consoleSheetConfig} />
+      <NativeStack.Screen component={DappBrowser} name={Routes.DAPP_BROWSER} {...dappBrowserConfig} />
     </NativeStack.Navigator>
   );
 }

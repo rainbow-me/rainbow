@@ -16,6 +16,7 @@ const Routes = {
   CONSOLE_SHEET: 'ConsoleSheet',
   CURRENCY_SELECT_SCREEN: 'CurrencySelectScreen',
   CUSTOM_GAS_SHEET: 'CustomGasSheet',
+  DAPP_BROWSER: 'DappBrowser',
   DIAGNOSTICS_SHEET: 'DiagnosticsSheet',
   DISCOVER_SCREEN: 'DiscoverScreen',
   ENS_ADDITIONAL_RECORDS_SHEET: 'ENSAdditionalRecordsSheet',
