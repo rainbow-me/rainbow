@@ -1,7 +1,6 @@
 import { AssetType } from '@/entities';
 import { UniqueAsset } from '@/entities/uniqueAssets';
 import {
-  SimpleHashNFT,
   ValidatedSimpleHashNFT,
   SimpleHashChain,
   SimpleHashFloorPrice,
