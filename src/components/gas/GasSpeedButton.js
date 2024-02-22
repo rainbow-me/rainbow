@@ -344,11 +344,12 @@ const GasSpeedButton = ({
         return { mainnet_address: MATIC_MAINNET_ADDRESS, symbol: 'MATIC' };
       case networkTypes.bsc:
         return { mainnet_address: BNB_BSC_ADDRESS, symbol: 'BNB' };
+      case networkTypes.avalanche:
+        return { mainnet_address: AVAX_AVALANCHE_ADDRESS, symbol: 'AVAX' };
       case networkTypes.optimism:
       case networkTypes.arbitrum:
       case networkTypes.zora:
       case networkTypes.base:
-      case networkTypes.avalanche:
       default:
         return { mainnet_address: ETH_ADDRESS, symbol: 'ETH' };
     }
