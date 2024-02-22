@@ -64,6 +64,8 @@ import { getUniqueTokenType, magicMemo, safeAreaInsetValues } from '@/utils';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
 import isHttpUrl from '@/helpers/isHttpUrl';
+import { useNFTOffers } from '@/resources/reservoir/nftOffersQuery';
+import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurAmount: 100,
@@ -226,6 +228,28 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
   const { isReadOnlyWallet } = useWallets();
   const collecible = useCollectible(passedAsset?.uniqueId);
   const asset = external ? passedAsset : collecible;
+  const {
+    data: { nftOffers },
+  } = useNFTOffers({
+    walletAddress: accountAddress,
+  });
+
+  const offer = useMemo(() => nftOffers?.find(offer => offer.nft.uniqueId === asset.fullUniqueId), [asset.fullUniqueId, nftOffers]);
+  const offerValue = useMemo(
+    () =>
+      offer
+        ? convertAmountToNativeDisplay(
+            offer.netAmount.usd,
+            'USD',
+            undefined,
+            // don't show decimals
+            true,
+            // abbreviate if amount is >= 10,000
+            offer.netAmount.decimal >= 10_000
+          )
+        : undefined,
+    [offer]
+  );
 
   const isSupportedOnRainbowWeb = getIsSupportedOnRainbowWeb(asset.network);
 
@@ -461,52 +485,66 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
                         onRefresh={activateRefreshMetadataToast}
                       />
                     </Stack>
-                    {isNFT || isENS ? (
-                      <Columns space="15px (Deprecated)">
-                        {hasEditButton ? (
-                          <SheetActionButton
-                            color={imageColor}
-                            label={`􀉮 ${lang.t('expanded_state.unique_expanded.edit')}`}
-                            nftShadows
-                            onPress={handlePressEdit}
-                            testID="edit"
-                            textColor={textColor}
-                            weight="heavy"
-                          />
-                        ) : isParty ? (
-                          <SheetActionButton
-                            color={imageColor}
-                            nftShadows
-                            onPress={handlePressParty}
-                            testID="unique-expanded-state-party-button"
-                            textColor={textColor}
-                            weight="heavy"
-                          >
-                            <ImgixImage resizeMode="contain" source={partyLogo as any} size={20} style={{ height: 25, width: 25 }} />
-                            <Text weight="heavy" size="20pt" color={{ custom: textColor }}>
-                              Party
-                            </Text>
-                          </SheetActionButton>
-                        ) : asset.permalink ? (
-                          <SheetActionButton
-                            color={imageColor}
-                            label={
-                              hasSendButton
-                                ? `􀮶 ${marketplaceName}`
-                                : `􀮶 ${lang.t('expanded_state.unique_expanded.view_on_marketplace_name', {
-                                    marketplaceName,
-                                  })}`
-                            }
-                            nftShadows
-                            onPress={handlePressMarketplaceName}
-                            testID="unique-expanded-state-send"
-                            textColor={textColor}
-                            weight="heavy"
-                          />
-                        ) : null}
-                        {hasSendButton ? <SendActionButton asset={asset} color={imageColor} nftShadows textColor={textColor} /> : null}
-                      </Columns>
-                    ) : null}
+                    <Stack space="15px (Deprecated)">
+                      {isNFT || isENS ? (
+                        <Columns space="15px (Deprecated)">
+                          {hasEditButton ? (
+                            <SheetActionButton
+                              color={imageColor}
+                              label={`􀉮 ${lang.t('expanded_state.unique_expanded.edit')}`}
+                              nftShadows
+                              onPress={handlePressEdit}
+                              testID="edit"
+                              textColor={textColor}
+                              weight="heavy"
+                            />
+                          ) : isParty ? (
+                            <SheetActionButton
+                              color={imageColor}
+                              nftShadows
+                              onPress={handlePressParty}
+                              testID="unique-expanded-state-party-button"
+                              textColor={textColor}
+                              weight="heavy"
+                            >
+                              <ImgixImage resizeMode="contain" source={partyLogo as any} size={20} style={{ height: 25, width: 25 }} />
+                              <Text weight="heavy" size="20pt" color={{ custom: textColor }}>
+                                Party
+                              </Text>
+                            </SheetActionButton>
+                          ) : asset.permalink ? (
+                            <SheetActionButton
+                              color={imageColor}
+                              label={
+                                hasSendButton
+                                  ? `􀮶 ${marketplaceName}`
+                                  : `􀮶 ${lang.t('expanded_state.unique_expanded.view_on_marketplace_name', {
+                                      marketplaceName,
+                                    })}`
+                              }
+                              nftShadows
+                              onPress={handlePressMarketplaceName}
+                              testID="unique-expanded-state-send"
+                              textColor={textColor}
+                              weight="heavy"
+                            />
+                          ) : null}
+                          {hasSendButton ? <SendActionButton asset={asset} color={imageColor} nftShadows textColor={textColor} /> : null}
+                        </Columns>
+                      ) : null}
+                      {!!offer && (
+                        <SheetActionButton
+                          color={imageColor}
+                          label={`􀋡 ${lang.t('expanded_state.unique_expanded.sell_for_x', {
+                            price: offerValue,
+                          })}`}
+                          nftShadows
+                          onPress={() => navigate(Routes.NFT_SINGLE_OFFER_SHEET, { offer })}
+                          textColor={textColor}
+                          weight="heavy"
+                        />
+                      )}
+                    </Stack>
                     {asset.network !== Network.mainnet ? (
                       // @ts-expect-error JavaScript component
                       <L2Disclaimer
