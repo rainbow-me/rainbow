@@ -1836,9 +1836,14 @@
           "failed": "Burn Failed"
         },
         "cancel": {
-          "pending": "Canceling",
+          "pending": "Cancelling",
           "confirmed": "Cancelled",
           "failed": "Cancel Failed"
+        },
+        "speed_up": {
+          "pending": "Speeding Up",
+          "confirmed": "Sped Up",
+          "failed": "Speed Up Failed"
         },
         "send": {
           "pending": "Sending",

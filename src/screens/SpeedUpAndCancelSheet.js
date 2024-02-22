@@ -31,7 +31,7 @@ import { gasUtils, safeAreaInsetValues } from '@/utils';
 import logger from '@/utils/logger';
 import { getNetworkObj } from '@/networks';
 import * as i18n from '@/languages';
-import { usePendingTransactionsStore } from '@/state/pendingTransactions';
+import { updateTransaction, usePendingTransactionsStore } from '@/state/pendingTransactions';
 
 const { CUSTOM, URGENT } = gasUtils;
 
@@ -112,7 +112,6 @@ export default function SpeedUpAndCancelSheet() {
     params: { type, tx, accentColor },
   } = useRoute();
 
-  const { updatePendingTransaction } = usePendingTransactionsStore();
   const [ready, setReady] = useState(false);
   const [txType, setTxType] = useState();
   const [minGasPrice, setMinGasPrice] = useState(calcGasParamRetryValue(tx.gasPrice));
@@ -171,9 +170,10 @@ export default function SpeedUpAndCancelSheet() {
       const updatedTx = { ...tx };
       // Update the hash on the copy of the original tx
       updatedTx.hash = res.result?.hash;
-      updatedTx.status = TransactionStatusTypes.cancelling;
-      updatedTx.title = `${updatedTx.type}.${updatedTx.status}`;
-      updatePendingTransaction({ address: accountAddress, transaction: updatedTx, network: currentNetwork });
+      updatedTx.status = 'pending';
+      updatedTx.type = 'cancel';
+      console.log({ before: tx.nonce, after: updatedTx.nonce, hash: updatedTx.hash });
+      updateTransaction({ address: accountAddress, transaction: updatedTx, network: currentNetwork });
     } catch (e) {
       logger.log('Error submitting cancel tx', e);
     } finally {
@@ -193,7 +193,6 @@ export default function SpeedUpAndCancelSheet() {
     isHardwareWallet,
     nonce,
     tx,
-    updatePendingTransaction,
   ]);
 
   const handleCancellationWrapperFn = useCallback(async () => {
@@ -241,9 +240,10 @@ export default function SpeedUpAndCancelSheet() {
       const updatedTx = { ...tx };
       // Update the hash on the copy of the original tx
       updatedTx.hash = res?.result?.hash;
-      updatedTx.status = TransactionStatusTypes.speeding_up;
-      updatedTx.title = `${updatedTx.type}.${updatedTx.status}`;
-      updatePendingTransaction({ address: accountAddress, transaction: updatedTx, network: currentNetwork });
+      updatedTx.status = 'pending';
+      updatedTx.type = 'speed_up';
+
+      updateTransaction({ address: accountAddress, transaction: updatedTx, network: currentNetwork });
     } catch (e) {
       logger.log('Error submitting speed up tx', e);
     } finally {
@@ -266,7 +266,6 @@ export default function SpeedUpAndCancelSheet() {
     saveCommitTransactionHash,
     to,
     tx,
-    updatePendingTransaction,
     value,
   ]);
 
