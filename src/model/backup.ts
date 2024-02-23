@@ -138,6 +138,11 @@ export async function backupAllWalletsToCloud({
       );
 
     const now = Date.now();
+    logger.debug(`Creating backup with all wallets to ${cloudPlatform}`, {
+      category: 'backup',
+      time: now,
+      label: cloudPlatform,
+    });
 
     if (!latestBackup) {
       const data = {
@@ -183,6 +188,12 @@ export async function backupAllWalletsToCloud({
 
     // TODO: How do we handle this when backing up all wallets. We need walletId which we don't have
     // await dispatch(setWalletBackedUp(walletId, WalletBackupTypes.cloud, updatedBackupFile));
+
+    logger.debug(`Successfully backed up all wallets to ${cloudPlatform}`, {
+      category: 'backup',
+      time: now,
+      label: cloudPlatform,
+    });
 
     onSuccess?.();
   } catch (error: any) {
