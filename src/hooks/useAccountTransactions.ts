@@ -140,7 +140,6 @@ export default function useAccountTransactions() {
   const { sections } = buildTransactionsSections(accountState);
 
   const remainingItemsLabel = useMemo(() => {
-    console.log({ hasNextPage });
     if (!hasNextPage) {
       return null;
     }

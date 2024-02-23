@@ -106,7 +106,6 @@ export function useBackendTransaction({ hash, network }: BackendTransactionArgs)
         if (tx) {
           return tx;
         }
-        console.log('fuck');
         return {};
       }
     },

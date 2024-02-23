@@ -770,7 +770,6 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
     return navigateToSwapDetailsModal();
   }, [loading, navigateToSwapDetailsModal]);
 
-  console.log({ outputCurrency });
   return (
     <Wrapper keyboardType={KeyboardType.numpad}>
       <Box height="full" width="full">
