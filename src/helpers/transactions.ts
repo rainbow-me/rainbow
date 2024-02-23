@@ -1,4 +1,4 @@
-import { TransactionStatus, TransactionType, TransactionTypes } from '@/entities';
+import { TransactionStatus } from '@/entities';
 
 export const calculateTimestampOfToday = () => {
   const d = new Date();
@@ -32,31 +32,3 @@ export const todayTimestamp = calculateTimestampOfToday();
 export const yesterdayTimestamp = calculateTimestampOfYesterday();
 export const thisMonthTimestamp = calculateTimestampOfThisMonth();
 export const thisYearTimestamp = calculateTimestampOfThisYear();
-
-/**
- * Returns the `TransactionStatus` that represents completion for a given
- * transaction type.
- *
- * @param type The transaction type.
- * @returns The confirmed status.
- */
-export const getConfirmedState = (type?: TransactionType): TransactionStatus => {
-  switch (type) {
-    case TransactionTypes.authorize:
-      return TransactionStatus.approved;
-    case TransactionTypes.deposit:
-      return TransactionStatus.deposited;
-    case TransactionTypes.withdraw:
-      return TransactionStatus.withdrew;
-    case TransactionTypes.receive:
-      return TransactionStatus.received;
-    case TransactionTypes.purchase:
-      return TransactionStatus.purchased;
-    case TransactionTypes.sell:
-      return TransactionStatus.sold;
-    case TransactionTypes.mint:
-      return TransactionStatus.minted;
-    default:
-      return TransactionStatus.sent;
-  }
-};

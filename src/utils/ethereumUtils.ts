@@ -19,6 +19,7 @@ import {
   EthereumAddress,
   GasFee,
   LegacySelectedGasFee,
+  NewTransaction,
   ParsedAddressAsset,
   RainbowToken,
   RainbowTransaction,
@@ -220,7 +221,7 @@ const getBalanceAmount = (
   return amount;
 };
 
-const getHash = (txn: RainbowTransaction) => txn.hash?.split('-').shift();
+const getHash = (txn: RainbowTransaction | NewTransaction) => txn.hash?.split('-').shift();
 
 export const checkWalletEthZero = () => {
   const ethAsset = getAccountAsset(ETH_ADDRESS);

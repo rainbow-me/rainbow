@@ -42,7 +42,6 @@ import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
 import {
   useAccountSettings,
-  useAccountTransactions,
   useColorForAsset,
   useContacts,
   useDimensions,
@@ -59,6 +58,7 @@ import { useTheme } from '@/theme';
 import { ethereumUtils, getUniqueTokenType, promiseUtils } from '@/utils';
 import logger from '@/utils/logger';
 import { getNetworkObj } from '@/networks';
+import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 
 const Container = styled(Centered).attrs({
@@ -200,7 +200,15 @@ export const SendConfirmationSheet = () => {
   const [alreadySentTransactionsTotal, setAlreadySentTransactionsTotal] = useState(0);
   const [alreadySentTransactionsCurrentNetwork, setAlreadySentTransactionsCurrentNetwork] = useState(0);
 
-  const { transactions } = useAccountTransactions(true, true);
+  const { data } = useConsolidatedTransactions({
+    address: accountAddress,
+    currency: nativeCurrency,
+  });
+
+  const pages = data?.pages;
+
+  const transactions = useMemo(() => pages?.flatMap(p => p.transactions) || [], [pages]);
+
   const { userAccounts, watchedAccounts } = useUserAccounts();
   const { walletNames } = useWallets();
   const isSendingToUserAccount = useMemo(() => {

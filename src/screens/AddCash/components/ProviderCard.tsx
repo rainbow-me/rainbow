@@ -26,7 +26,6 @@ type PaymentMethodConfig = {
 
 const providerLogos = {
   [FiatProviderName.Ramp]: RampLogo,
-  [FiatProviderName.Ratio]: RatioLogo,
   [FiatProviderName.Coinbase]: CoinbaseLogo,
   [FiatProviderName.Moonpay]: MoonpayLogo,
 };
