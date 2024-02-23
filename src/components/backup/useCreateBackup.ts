@@ -1,16 +1,15 @@
 /* eslint-disable no-promise-executor-return */
 import { useCallback, useState } from 'react';
-import { getLocalBackupPassword, saveLocalBackupPassword } from '@/model/backup';
+import { backupAllWalletsToCloud, getLocalBackupPassword, saveLocalBackupPassword } from '@/model/backup';
 import useCloudBackups from '@/hooks/useCloudBackups';
 import { cloudPlatform } from '@/utils/platform';
 import { analytics } from '@/analytics';
-import { useWalletCloudBackup } from '@/hooks';
+import { useWalletCloudBackup, useWallets } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { Navigation } from '@/navigation';
 import { InteractionManager } from 'react-native';
 import { DelayedAlert } from '../alerts';
-import { loadAllKeys } from '@/model/keychain';
 
 type UseCreateBackupProps = {
   walletId?: string;
@@ -26,6 +25,7 @@ export enum BackupTypes {
 export const useCreateBackup = ({ walletId }: UseCreateBackupProps) => {
   const { fetchBackups } = useCloudBackups();
   const walletCloudBackup = useWalletCloudBackup();
+  const { latestBackup } = useWallets();
   const [loading, setLoading] = useState<useCreateBackupStateType>('none');
   const [alreadyHasLocalPassword, setAlreadyHasLocalPassword] = useState(false);
 
@@ -68,9 +68,12 @@ export const useCreateBackup = ({ walletId }: UseCreateBackupProps) => {
       setLoading('loading');
 
       if (type === BackupTypes.All) {
-        const allKeys = await loadAllKeys();
-        console.log(JSON.stringify(allKeys, null, 2));
-        // TODO: Logic for fetch all keys and backup
+        backupAllWalletsToCloud({
+          password,
+          latestBackup,
+          onError,
+          onSuccess,
+        });
         return;
       }
 
@@ -87,7 +90,7 @@ export const useCreateBackup = ({ walletId }: UseCreateBackupProps) => {
         walletId,
       });
     },
-    [onError, onSuccess, walletCloudBackup, walletId]
+    [onError, onSuccess, walletCloudBackup, walletId, latestBackup]
   );
 
   const getPassword = useCallback(async (): Promise<string | null> => {

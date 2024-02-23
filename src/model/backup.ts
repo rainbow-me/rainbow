@@ -12,7 +12,10 @@ import oldLogger from '@/utils/logger';
 import { logger, RainbowError } from '@/logger';
 import { IS_ANDROID } from '@/env';
 import AesEncryptor from '../handlers/aesEncryption';
-import { authenticateWithPINAndCreateIfNeeded, decryptPIN } from '@/handlers/authentication';
+import { authenticateWithPIN, authenticateWithPINAndCreateIfNeeded, decryptPIN } from '@/handlers/authentication';
+import * as i18n from '@/languages';
+import { getUserError } from '@/hooks/useWalletCloudBackup';
+import { cloudPlatform } from '@/utils/platform';
 
 const encryptor = new AesEncryptor();
 const PIN_REGEX = /^\d{4}$/;
@@ -85,6 +88,115 @@ async function extractSecretsForWallet(wallet: RainbowWallet) {
   return secrets;
 }
 
+export async function backupAllWalletsToCloud({
+  password,
+  latestBackup,
+  onError,
+  onSuccess,
+}: {
+  password: BackupPassword;
+  latestBackup: string | null;
+  onError?: (message: string) => void;
+  onSuccess?: () => void;
+}) {
+  let userPIN: string | undefined;
+  const hasBiometricsEnabled = await kc.getSupportedBiometryType();
+  if (IS_ANDROID && !hasBiometricsEnabled) {
+    try {
+      userPIN = (await authenticateWithPIN()) ?? undefined;
+    } catch (e) {
+      onError?.(i18n.t(i18n.l.back_up.wrong_pin));
+      return;
+    }
+  }
+
+  try {
+    /**
+     * Loop over all keys and decrypt if necessary for android
+     * if no latest backup, create first backup with all secrets
+     * if latest backup, update updatedAt and add new secrets to the backup
+     */
+
+    const allKeys = await keychain.loadAllKeys();
+    if (!allKeys) {
+      onError?.('No keys found. Please try again.'); // TODO: i18n this
+      return;
+    }
+
+    const allSecrets = allKeys
+      .filter(key => {
+        return key?.username?.indexOf(seedPhraseKey) !== -1 || key?.username?.indexOf(privateKeyKey) !== -1;
+      })
+      .reduce(
+        (prev, curr) => {
+          return {
+            ...prev,
+            [curr.username]: curr.password,
+          };
+        },
+        {} as { [key: string]: string }
+      );
+
+    const now = Date.now();
+
+    if (!latestBackup) {
+      const data = {
+        createdAt: now,
+        secrets: {},
+      };
+      const promises = Object.entries(allSecrets).map(async ([username, password]) => {
+        const processedNewSecrets = await decryptAllPinEncryptedSecretsIfNeeded({ [username]: password }, userPIN);
+
+        data.secrets = {
+          ...data.secrets,
+          ...processedNewSecrets,
+        };
+      });
+
+      await Promise.all(promises);
+      encryptAndSaveDataToCloud(data, password, `backup_${now}.json`);
+    } else {
+      // if we have a latest backup file, we need to update the updatedAt and add new secrets to the backup file..
+      const backup = await getDataFromCloud(password, latestBackup);
+      if (!backup) {
+        onError?.('Backup not found. Please try again.'); // TODO: i18n this
+        return;
+      }
+
+      const data = {
+        createdAt: backup.createdAt,
+        secrets: backup.secrets,
+      };
+
+      const promises = Object.entries(allSecrets).map(async ([username, password]) => {
+        const processedNewSecrets = await decryptAllPinEncryptedSecretsIfNeeded({ [username]: password }, userPIN);
+
+        data.secrets = {
+          ...data.secrets,
+          ...processedNewSecrets,
+        };
+      });
+
+      await Promise.all(promises);
+      encryptAndSaveDataToCloud(data, password, latestBackup);
+    }
+
+    // TODO: How do we handle this when backing up all wallets. We need walletId which we don't have
+    // await dispatch(setWalletBackedUp(walletId, WalletBackupTypes.cloud, updatedBackupFile));
+
+    onSuccess?.();
+  } catch (error: any) {
+    const userError = getUserError(error);
+    onError?.(userError);
+    captureException(error);
+    analytics.track(`Error backing up all wallets to ${cloudPlatform}`, {
+      category: 'backup',
+      error: userError,
+      label: cloudPlatform,
+    });
+  }
+}
+
 export async function backupWalletToCloud({
   password,
   wallet,
@@ -130,7 +242,7 @@ export async function addWalletToCloudBackup({
 }
 
 // we decrypt seedphrase and private key before backing up
-async function decryptAllPinEncryptedSecretsIfNeeded(secrets: Record<string, string>, userPIN?: string) {
+export async function decryptAllPinEncryptedSecretsIfNeeded(secrets: Record<string, string>, userPIN?: string) {
   const processedSecrets = { ...secrets };
   // We need to decrypt PIN code encrypted secrets before backup
   const hasBiometricsEnabled = await kc.getSupportedBiometryType();

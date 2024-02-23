@@ -18,7 +18,7 @@ import { IS_ANDROID } from '@/env';
 import { authenticateWithPIN } from '@/handlers/authentication';
 import * as i18n from '@/languages';
 
-function getUserError(e: Error) {
+export function getUserError(e: Error) {
   switch (e.message) {
     case CLOUD_BACKUP_ERRORS.KEYCHAIN_ACCESS_ERROR:
       return i18n.t(i18n.l.back_up.errors.keychain_access);
