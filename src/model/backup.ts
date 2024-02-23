@@ -16,6 +16,7 @@ import { authenticateWithPIN, authenticateWithPINAndCreateIfNeeded, decryptPIN }
 import * as i18n from '@/languages';
 import { getUserError } from '@/hooks/useWalletCloudBackup';
 import { cloudPlatform } from '@/utils/platform';
+import { setAllWalletsWithIdsAsBackedUp, setWalletBackedUp } from '@/redux/wallets';
 
 const encryptor = new AesEncryptor();
 const PIN_REGEX = /^\d{4}$/;
@@ -89,15 +90,19 @@ async function extractSecretsForWallet(wallet: RainbowWallet) {
 }
 
 export async function backupAllWalletsToCloud({
+  wallets,
   password,
   latestBackup,
   onError,
   onSuccess,
+  dispatch,
 }: {
+  wallets: AllRainbowWallets;
   password: BackupPassword;
   latestBackup: string | null;
   onError?: (message: string) => void;
   onSuccess?: () => void;
+  dispatch: any;
 }) {
   let userPIN: string | undefined;
   const hasBiometricsEnabled = await kc.getSupportedBiometryType();
@@ -144,6 +149,7 @@ export async function backupAllWalletsToCloud({
       label: cloudPlatform,
     });
 
+    let updatedBackupFile: any = null;
     if (!latestBackup) {
       const data = {
         createdAt: now,
@@ -159,7 +165,7 @@ export async function backupAllWalletsToCloud({
       });
 
       await Promise.all(promises);
-      encryptAndSaveDataToCloud(data, password, `backup_${now}.json`);
+      updatedBackupFile = await encryptAndSaveDataToCloud(data, password, `backup_${now}.json`);
     } else {
       // if we have a latest backup file, we need to update the updatedAt and add new secrets to the backup file..
       const backup = await getDataFromCloud(password, latestBackup);
@@ -183,11 +189,11 @@ export async function backupAllWalletsToCloud({
       });
 
       await Promise.all(promises);
-      encryptAndSaveDataToCloud(data, password, latestBackup);
+      updatedBackupFile = await encryptAndSaveDataToCloud(data, password, latestBackup);
     }
 
-    // TODO: How do we handle this when backing up all wallets. We need walletId which we don't have
-    // await dispatch(setWalletBackedUp(walletId, WalletBackupTypes.cloud, updatedBackupFile));
+    const walletIdsToUpdate = Object.keys(wallets);
+    await dispatch(setAllWalletsWithIdsAsBackedUp(walletIdsToUpdate, WalletBackupTypes.cloud, updatedBackupFile));
 
     logger.debug(`Successfully backed up all wallets to ${cloudPlatform}`, {
       category: 'backup',

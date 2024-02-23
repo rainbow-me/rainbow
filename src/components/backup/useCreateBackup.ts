@@ -10,6 +10,7 @@ import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { Navigation } from '@/navigation';
 import { InteractionManager } from 'react-native';
 import { DelayedAlert } from '../alerts';
+import { useDispatch } from 'react-redux';
 
 type UseCreateBackupProps = {
   walletId?: string;
@@ -23,9 +24,11 @@ export enum BackupTypes {
 }
 
 export const useCreateBackup = ({ walletId }: UseCreateBackupProps) => {
+  const dispatch = useDispatch();
+
   const { fetchBackups } = useCloudBackups();
   const walletCloudBackup = useWalletCloudBackup();
-  const { latestBackup } = useWallets();
+  const { latestBackup, wallets } = useWallets();
   const [loading, setLoading] = useState<useCreateBackupStateType>('none');
   const [alreadyHasLocalPassword, setAlreadyHasLocalPassword] = useState(false);
 
@@ -69,10 +72,12 @@ export const useCreateBackup = ({ walletId }: UseCreateBackupProps) => {
 
       if (type === BackupTypes.All) {
         backupAllWalletsToCloud({
+          wallets,
           password,
           latestBackup,
           onError,
           onSuccess,
+          dispatch,
         });
         return;
       }
