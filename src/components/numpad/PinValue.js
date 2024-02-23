@@ -32,26 +32,10 @@ const PinValue = ({ translateX, value, ...props }) => {
   return (
     <Flex {...props}>
       <Animated.View style={animatedStyles}>
-        {value && value.length ? (
-          <FilledValue backgroundColor={colors.appleBlue} />
-        ) : (
-          <EmptyValue />
-        )}
-        {value && value.length > 1 ? (
-          <FilledValue backgroundColor={colors.appleBlue} />
-        ) : (
-          <EmptyValue />
-        )}
-        {value && value.length > 2 ? (
-          <FilledValue backgroundColor={colors.appleBlue} />
-        ) : (
-          <EmptyValue />
-        )}
-        {value && value.length > 3 ? (
-          <FilledValue backgroundColor={colors.appleBlue} />
-        ) : (
-          <EmptyValue />
-        )}
+        {value && value.length ? <FilledValue backgroundColor={colors.appleBlue} /> : <EmptyValue />}
+        {value && value.length > 1 ? <FilledValue backgroundColor={colors.appleBlue} /> : <EmptyValue />}
+        {value && value.length > 2 ? <FilledValue backgroundColor={colors.appleBlue} /> : <EmptyValue />}
+        {value && value.length > 3 ? <FilledValue backgroundColor={colors.appleBlue} /> : <EmptyValue />}
       </Animated.View>
     </Flex>
   );

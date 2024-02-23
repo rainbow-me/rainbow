@@ -11,19 +11,13 @@ interface WrapperProps extends HoldToAuthorizeBaseProps {
   disableLongPress?: boolean;
 }
 
-const HoldToAuthorizeButtonWithBiometrics = ({
-  disableLongPress,
-  label,
-  ...props
-}: WrapperProps) => {
+const HoldToAuthorizeButtonWithBiometrics = ({ disableLongPress, label, ...props }: WrapperProps) => {
   const biometryType = useBiometryType();
   const { colors } = useTheme();
   const deviceDimensions = useDimensions();
 
   const isLongPressAvailableForBiometryType =
-    biometryType === BiometryTypes.FaceID ||
-    biometryType === BiometryTypes.Face ||
-    biometryType === BiometryTypes.none;
+    biometryType === BiometryTypes.FaceID || biometryType === BiometryTypes.Face || biometryType === BiometryTypes.none;
 
   return (
     <HoldToAuthorizeButtonContent
@@ -34,10 +28,7 @@ const HoldToAuthorizeButtonWithBiometrics = ({
       label={
         isLongPressAvailableForBiometryType
           ? label
-          : label.replace(
-              lang.t('button.hold_to_authorize.hold_keyword'),
-              lang.t('button.hold_to_authorize.tap_keyword')
-            )
+          : label.replace(lang.t('button.hold_to_authorize.hold_keyword'), lang.t('button.hold_to_authorize.tap_keyword'))
       }
     />
   );

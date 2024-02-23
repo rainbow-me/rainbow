@@ -22,6 +22,7 @@
       "tab_investments": "Piscines",
       "tab_savings": "Économies",
       "tab_showcase": "Showcase",
+      "tab_points": "Points",
       "tab_positions": "Positions",
       "tab_transactions": "Transactions",
       "tab_transactions_tooltip": "Transactions et transferts de jetons",
@@ -240,6 +241,7 @@
       "exchange_again": "Échanger à nouveau",
       "exchange_search_placeholder": "Recherche de jetons",
       "exchange_search_placeholder_network": "Recherche de jetons sur %{network}",
+      "favorites": "Favoris",
       "go_back": "Retourner",
       "go_back_lowercase": "retourner",
       "got_it": "Compris",
@@ -284,11 +286,6 @@
       "hidden": "Caché"
     },
     "cards": {
-      "dpi": {
-        "title": "Index DeFi Pulse",
-        "body": "Tous les principaux jetons de finance décentralisée en un seul. Suivez l'industrie.",
-        "view": "Voir"
-      },
       "ens_create_profile": {
         "title": "Créez votre profil ENS",
         "body": "Remplacez votre adresse de portefeuille par un profil entièrement à vous."
@@ -432,17 +429,6 @@
       "sync_codepush": "Synchroniser codepush"
     },
     "discover": {
-      "lists": {
-        "lists_title": "Listes",
-        "this_list_is_empty": "Cette liste est vide !",
-        "types": {
-          "trending": "Tendance",
-          "watchlist": "Liste de surveillance",
-          "favorites": "Favoris",
-          "defi": "DeFi",
-          "stablecoins": "Stablecoins"
-        }
-      },
       "pulse": {
         "pulse_description": "Tous les principaux tokens DeFi en un",
         "today_suffix": "aujourd'hui",
@@ -637,6 +623,7 @@
         }
       },
       "swap_details": {
+        "reward": "Récompense",
         "exchange_rate": "Taux de change",
         "rainbow_fee": "Frais Rainbow inclus",
         "refuel": "Tokens de réseau supplémentaires",
@@ -1161,8 +1148,37 @@
       "withdrawal_dropdown_label": "Pour",
       "withdrawal_input_label": "Obtenir"
     },
+    "minting": {
+      "hold_to_mint": "Maintenir pour créer",
+      "minting": "Frappage...",
+      "minted": "Créé",
+      "mint_unavailable": "Création indisponible",
+      "mint_on_mintdotfun": "􀮶 Créer sur mint.fun",
+      "error_minting": "Erreur lors de la frappe",
+      "mint_price": "Prix de création",
+      "free": "Gratuit",
+      "by": "Par",
+      "unknown": "inconnu",
+      "max": "Max",
+      "nft_count": "%{number} NFTs",
+      "description": "Description",
+      "total_minted": "Total créé",
+      "first_event": "Premier évènement",
+      "last_event": "Dernier évènement",
+      "max_supply": "Approvisionnement maximum",
+      "contract": "Contrat",
+      "network": "Réseau",
+      "could_not_find_collection": "Impossible de trouver la collection",
+      "unable_to_find_check_again": "Nous ne sommes pas en mesure de trouver cette collection, vérifiez à nouveau l'adresse et le réseau ou essayez plus tard",
+      "mintdotfun_unsupported_network": "Mint.fun ne prend pas en charge ce réseau"
+    },
     "nfts": {
-      "selling": "Vente"
+      "selling": "Vente",
+      "sort": {
+        "abc": "Abc",
+        "most_recent": "Le plus récent",
+        "floor_price": "Prix Plancher"
+      }
     },
     "nft_offers": {
       "card": {
@@ -1220,6 +1236,109 @@
       },
       "info": {
         "address_copied_to_clipboard": "Adresse copiée dans le presse-papiers"
+      }
+    },
+    "points": {
+      "placeholder": {
+        "coming_soon_title": "Bientôt disponible",
+        "coming_soon_description": "Les points sont tout proches.\nCommencez à en gagner dès aujourd'hui."
+      },
+      "claim": {
+        "title": "Réclamez vos points",
+        "subtitle": "Les points sont là. Découvrez combien vous en avez reçu.",
+        "get_started": "Commencer",
+        "use_referral_code": "Utiliser un code de parrainage"
+      },
+      "referral": {
+        "title": "Entrez votre code de parrainage",
+        "subtitle": "Entrez un code de parrainage ci-dessous pour réclamer votre récompense bonus.",
+        "back": "Retour",
+        "error": "Une erreur s’est produite. Veuillez redémarrer l'application et réessayer.",
+        "get_started": "Commencer",
+        "invalid_code": "Code Invalide"
+      },
+      "notifications": {
+        "enable": "Activer les notifications de points",
+        "disable": "Désactiver les notifications de points"
+      },
+      "points": {
+        "referral_code": "Code de Parrainage",
+        "share_link": "Partager le lien",
+        "next_drop": "Prochaine Distribution",
+        "your_rank": "Votre Classement",
+        "of_x": "De %{totalUsers}",
+        "referrals": "Parrainages",
+        "streak": "Série",
+        "longest_yet": "Record à battre",
+        "day": "jour",
+        "days": "jours",
+        "leaderboard": "Classement",
+        "sunday": "Dim",
+        "monday": "Lun",
+        "tuesday": "Mar",
+        "wednesday": "Mer",
+        "thursday": "Jeu",
+        "friday": "Ven",
+        "saturday": "Sam",
+        "today": "Aujourd'hui :)",
+        "error": "Oups !\nVeuillez tirer pour rafraîchir.",
+        "points": "points",
+        "referral_code_copied": "Code de parrainage copié",
+        "earn_points_for_referring": "Gagnez des points lorsque vos filleuls échangent 100 $ à travers Rainbow, plus gagnez 10 % des points que vos filleuls gagnent",
+        "already_claimed_points": "Désolé ! Vous avez déjà réclamé vos points.",
+        "now": "Maintenant",
+        "unranked": "Non classé",
+        "points_to_rank": "750 points pour être classé"
+      },
+      "console": {
+        "claim_bonus_paragraph": "Vous recevrez 100 points supplémentaires une fois que vous aurez échangé au moins 100 $ via Rainbow",
+        "welcome_bonus": "Bonus de Bienvenue",
+        "true_believer": "Vrai Croyant",
+        "registration_complete": "Inscription complète",
+        "account": "Compte",
+        "points_you_have": "Vous avez",
+        "points_earned": "Points Gagnés",
+        "share_bonus_paragraph_one": "Tout est prêt !",
+        "share_bonus_paragraph_two": "Continuez à gagner des points en échangeant, en créant des ponts, en frappant monnaie, en référant des amis, et plus encore",
+        "share_bonus_paragraph_three": "Plus vous utilisez Rainbow, plus vous serez récompensé",
+        "calculation_complete": "Calcul terminé",
+        "metamask_swaps": "Échanges MetaMask",
+        "wallet_balance": "Solde du portefeuille",
+        "rainbow_nfts_owned": "NFTs Rainbow Possédés",
+        "rainbow_swaps": "Échanges Rainbow",
+        "calculating_points": "Calcul des points",
+        "access_granted": "Accès accordé",
+        "sign_in_with_wallet": "Connectez-vous avec votre portefeuille",
+        "auth_required": "Autorisation requise",
+        "proceed_to_share": "Continuer",
+        "skip_referral": "Passer",
+        "sign_in": "Se connecter",
+        "try_a_swap": "􀖅 Try a swap :)",
+        "get_some_eth": "Obtenez un peu d'ETH",
+        "generic_alert": "Un problème est survenu, veuillez réessayer.",
+        "existing_user_alert": "Points déjà réclamés. Veuillez redémarrer l'application pour actualiser.",
+        "invalid_referral_code_alert": "Code de parrainage invalide. Veuillez vérifier votre code et réessayer.",
+        "no_balance_alert": "Pour vous inscrire aux Points, vous devez avoir un solde de portefeuille non nul.",
+        "referral_link_is_ready": "Votre lien de parrainage est prêt",
+        "referral_link_bonus_text": "Tweetez votre lien de parrainage et obtenez 250 points supplémentaires",
+        "referral_link_bonus_text_extended": "De plus, vous gagnerez 10% des points gagnés par chaque personne que vous parrainez",
+        "complete_onboarding": "Terminé",
+        "share_to_x": "Partager sur X",
+        "hardware_wallet_alert": "Le support des portefeuilles matériels arrive bientôt !",
+        "view_weekly_earnings_week_of": "Semaine du %{startOfWeek} - %{endOfWeek}",
+        "view_weekly_earnings_title": "Comptage des points gagnés",
+        "view_weekly_earnings_counted": "Gains hebdomadaires comptés",
+        "view_weekly_earnings_close_button": "Fermer",
+        "view_weekly_earnings_retroactive_points": "Points rétroactifs",
+        "view_weekly_earnings_activity": "Votre activité",
+        "view_weekly_earnings_referral_activity": "Activité de parrainage",
+        "view_weekly_earnings_total_earnings": "Total",
+        "view_weekly_earnings_new_referrals": "Nouveaux parrainages",
+        "wallet_balance_required": "Solde du portefeuille requis",
+        "require_balance_paragraph_one": "Pour continuer, assurez-vous d'avoir un solde en ETH sur l'un des réseaux suivants :",
+        "require_balance_paragraph_two": "Ou alternativement, un solde en MATIC sur Polygon ou un solde en BNB sur BSC",
+        "fund_my_wallet": "Financer mon portefeuille",
+        "points": "Points"
       }
     },
     "pools": {
@@ -1442,6 +1561,27 @@
         "subheader": "PRÉSENTATION"
       }
     },
+    "nft_offers_launch": {
+      "primary_button": {
+        "has_offers": "Voir offres",
+        "not_has_offers": "Fermer"
+      },
+      "secondary_button": "Peut-être plus tard",
+      "info_row_1": {
+        "title": "Toutes vos offres en un seul endroit",
+        "description": "Visualisez vos offres sur tous les marchés NFT."
+      },
+      "info_row_2": {
+        "title": "Accepter depuis Rainbow",
+        "description": "Acceptez les offres en un seul clic et échangez vers le jeton de votre choix."
+      },
+      "info_row_3": {
+        "title": "Modes de tri intelligents",
+        "description": "Comparez aux prix de plancher, ou visualisez vos offres les plus élevées ou les plus récentes."
+      },
+      "header": "Offers :)s",
+      "subheader": "PRÉSENTATION"
+    },
     "review": {
       "alert": {
         "are_you_enjoying_rainbow": "Appréciez-vous Rainbow? 🥰",
@@ -1493,6 +1633,10 @@
       "error_text": "Veuillez vérifier votre connexion Internet et revenez plus tard.",
       "ended_title": "Programme terminé",
       "ended_text": "Restez à l'écoute de ce que nous avons en réserve pour vous !",
+      "info": {
+        "title": "Gagnez des OP en échangeant et en connectant",
+        "description": "Obtenez du cashback en échangeant ou en connectant à Optimism. Les récompenses sont distribuées mensuellement."
+      },
       "op": {
         "airdrop_timing": {
           "title": "Airdrops chaque semaine",
@@ -1579,6 +1723,7 @@
       "notifications": "Notifications",
       "notifications_section": {
         "my_wallets": "Mes Portefeuilles",
+        "points": "Points",
         "watched_wallets": "Portefeuilles surveillés",
         "allow_notifications": "Autoriser les notifications",
         "sent": "Envoyé",
@@ -1705,6 +1850,8 @@
         "failed": "Échoué",
         "purchased": "Achété",
         "purchasing": "Achète",
+        "minting": "Création",
+        "minted": "Créé",
         "received": "Reçu",
         "receiving": "Récevant",
         "self": "Soi",
@@ -2216,6 +2363,7 @@
       "wallet_alert": {
         "message_support": "Message de support",
         "close": "Fermer",
+        "learn_more": "En savoir plus",
         "message": "Pour de l'aide, veuillez contacter le support! \nNous vous répondrons bientôt!",
         "title": "Une erreur s'est produite"
       }
@@ -2226,6 +2374,7 @@
       "available_networks": "Réseaux disponibles",
       "change_network": "Changer de réseau",
       "connected_apps": "Applications connectées",
+      "no_connected_apps": "Pas encore d'applications connectées 😢",
       "disconnect": "Déconnecter",
       "go_back_to_your_browser": "Retournez à votre navigateur",
       "paste_uri": {
@@ -2233,6 +2382,7 @@
         "message": "Collez l'URI WalletConnect ci-dessous",
         "title": "Nouvelle session WalletConnect"
       },
+      "none": "Aucun",
       "switch_network": "Changer de réseau",
       "switch_wallet": "Changer de portefeuille",
       "titles": {
@@ -2275,9 +2425,92 @@
         "pairing_timeout": "Cette session a expiré avant qu'une connexion ne puisse être établie. Cela est généralement dû à une erreur réseau. S'il vous plaît, réessayez.",
         "pairing_unsupported_methods": "La dapp a demandé des méthodes RPC de portefeuille qui ne sont pas prises en charge par Rainbow.",
         "pairing_unsupported_networks": "Le dapp a demandé des réseau(x) non pris en charge par Rainbow.",
+        "read_only_wallet_on_signing_method": "Il semble que vous utilisiez un portefeuille en lecture seule, ce qui n'est pas autorisé pour cette demande.",
+        "namespaces_invalid": "Il y a eu un problème avec les espaces de nom demandés par l'application. Veuillez réessayer ou contacter les équipes de support de Rainbow et/ou de l'application.",
         "request_invalid": "La demande contenait des paramètres non valides. Veuillez réessayer ou contacter les équipes d'assistance de Rainbow et/ou de dapp.",
+        "eth_sign": "Rainbow ne prend pas en charge eth_sign traditionnel en raison de préoccupations de sécurité.  \n Veuillez contacter les équipes de support de Rainbow et/ou de l'application si vous avez des questions.",
         "request_unsupported_network": "Le réseau spécifié dans cette demande n'est pas pris en charge par Rainbow.",
-        "request_unsupported_methods": "La méthode(s) RPC spécifiée dans cette demande n'est pas prise en charge par Rainbow."
+        "request_unsupported_methods": "La méthode(s) RPC spécifiée dans cette demande n'est pas prise en charge par Rainbow.",
+        "no_accounts_found": "Aucun compte trouvé dans les espaces de noms approuvés."
+      },
+      "dapp_warnings": {
+        "info_alert": {
+          "title": "Cette application est probablement malveillante",
+          "description": "L'envoi de messages ou de transactions à partir de cette application pourrait entraîner la perte de vos actifs"
+        }
+      },
+      "simulation": {
+        "titles": {
+          "message_request": "Demande de message",
+          "transaction_request": "Demande de transaction"
+        },
+        "simulation_card": {
+          "titles": {
+            "not_enough_native_balance": "Pas assez de %{symbol}",
+            "likely_to_fail": "Susceptible d'échouer",
+            "simulation_unavailable": "Simulation non disponible",
+            "simulation_result": "Résultat simulé",
+            "simulating": "En simulation",
+            "proceed_carefully": "Procéder avec prudence",
+            "suspicious_transaction": "Transaction Suspecte"
+          },
+          "messages": {
+            "no_changes": "Aucun changement détecté",
+            "need_more_native": "Vous aurez besoin de plus de %{symbol} sur %{network} pour payer cette transaction. Obtenez plus de %{symbol} ci-dessous pour continuer avec cette demande.",
+            "unavailable_personal_sign": "La simulation pour les signatures personnelles n'est pas encore prise en charge",
+            "unavailable_zora_network": "La simulation sur Zora n'est pas encore prise en charge",
+            "failed_to_simulate": "La simulation a échoué, ce qui suggère que votre transaction est susceptible d'échouer. Cela peut être un problème avec l'application que vous utilisez.",
+            "warning": "Aucun comportement malveillant connu n'a été détecté, mais cette transaction présente des caractéristiques qui pourraient représenter un risque pour votre portefeuille.",
+            "malicious": "Signer cette transaction pourrait entraîner la perte d'accès à tout ce qui se trouve dans votre portefeuille."
+          },
+          "event_row": {
+            "unlimited": "Illimité",
+            "types": {
+              "send": "Envoyer",
+              "receive": "Recevoir",
+              "approve": "Approuver",
+              "revoke": "Révoquer"
+            }
+          }
+        },
+        "details_card": {
+          "title": "Détails",
+          "types": {
+            "chain": "Réseau",
+            "contract": "Contrat",
+            "contract_created": "Contrat créé",
+            "to": "À",
+            "function": "Fonction",
+            "source_code": "Code Source",
+            "nonce": "Nonce"
+          },
+          "unknown": "Inconnue"
+        },
+        "message_card": {
+          "title": "Message",
+          "copy": "Copier"
+        },
+        "profile_section": {
+          "signing_with": "Signer avec",
+          "free_to_sign": "Libre de signer",
+          "no_native_balance": "No %{symbol}",
+          "on_network": "sur %{network}"
+        },
+        "buttons": {
+          "cancel": "Annuler",
+          "confirm": "􀎽 Confirmer",
+          "get_native_token": "Obtenir %{symbol}",
+          "buy_native_token": "Acheter %{symbol}"
+        },
+        "formatted_dates": {
+          "today": "Aujourd'hui :)",
+          "day_ago": "il y a un jour",
+          "days_ago": "il y a quelques jours",
+          "week_ago": "il y a une semaine",
+          "weeks_ago": "il y a quelques semaines",
+          "month_ago": "il y a un mois",
+          "months_ago": "il y a des mois"
+        }
       }
     },
     "warning": {

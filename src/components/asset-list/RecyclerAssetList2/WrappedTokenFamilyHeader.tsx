@@ -11,13 +11,7 @@ type Props = {
   testID?: string;
 };
 
-export default React.memo(function WrappedTokenFamilyHeader({
-  name,
-  total,
-  image,
-  theme,
-  testID,
-}: Props) {
+export default React.memo(function WrappedTokenFamilyHeader({ name, total, image, theme, testID }: Props) {
   const { openFamilies, updateOpenFamilies } = useOpenFamilies();
   const isFamilyOpen = openFamilies[name];
 

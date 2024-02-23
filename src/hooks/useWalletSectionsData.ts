@@ -10,24 +10,17 @@ import useWallets from './useWallets';
 import { buildBriefWalletSectionsSelector } from '@/helpers/buildWalletSections';
 import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import { useLegacyNFTs } from '@/resources/nfts';
+import useNftSort from './useNFTsSortBy';
 
 export default function useWalletSectionsData({
   type,
 }: {
   type?: string;
 } = {}) {
-  const {
-    isLoading: isLoadingUserAssets,
-    data: sortedAssets = [],
-  } = useSortedUserAssets();
+  const { isLoading: isLoadingUserAssets, data: sortedAssets = [] } = useSortedUserAssets();
   const isWalletEthZero = useIsWalletEthZero();
 
-  const {
-    accountAddress,
-    language,
-    network,
-    nativeCurrency,
-  } = useAccountSettings();
+  const { accountAddress, language, network, nativeCurrency } = useAccountSettings();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const {
     data: { nfts: allUniqueTokens },
@@ -38,12 +31,11 @@ export default function useWalletSectionsData({
   const { hiddenTokens } = useHiddenTokens();
   const { isReadOnlyWallet } = useWallets();
 
-  const {
-    hiddenCoinsObj: hiddenCoins,
-    pinnedCoinsObj: pinnedCoins,
-  } = useCoinListEditOptions();
+  const { hiddenCoinsObj: hiddenCoins, pinnedCoinsObj: pinnedCoins } = useCoinListEditOptions();
 
   const { isCoinListEdited } = useCoinListEdited();
+
+  const { nftSort } = useNftSort();
 
   const walletSections = useMemo(() => {
     const accountInfo = {
@@ -63,11 +55,10 @@ export default function useWalletSectionsData({
       listType: type,
       showcaseTokens,
       uniqueTokens: allUniqueTokens,
+      nftSort,
     };
 
-    const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(
-      accountInfo
-    );
+    const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(accountInfo, nftSort);
     const hasNFTs = allUniqueTokens.length > 0;
 
     return {
@@ -78,21 +69,22 @@ export default function useWalletSectionsData({
       briefSectionsData,
     };
   }, [
-    allUniqueTokens,
     hiddenCoins,
-    hiddenTokens,
     isCoinListEdited,
     isLoadingUserAssets,
-    isReadOnlyWallet,
-    isWalletEthZero,
     language,
     nativeCurrency,
     network,
     pinnedCoins,
-    showcaseTokens,
-    sortedAssets,
-    type,
     sendableUniqueTokens,
+    sortedAssets,
+    isWalletEthZero,
+    hiddenTokens,
+    isReadOnlyWallet,
+    type,
+    showcaseTokens,
+    allUniqueTokens,
+    nftSort,
   ]);
   return walletSections;
 }

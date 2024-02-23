@@ -17,21 +17,10 @@ import { MaxUint256 } from '@ethersproject/constants';
 import { mapKeys, mapValues } from 'lodash';
 import { IS_TESTING } from 'react-native-dotenv';
 import { Token } from '../entities/tokens';
-import {
-  estimateGasWithPadding,
-  getProviderForNetwork,
-  toHexNoLeadingZeros,
-} from './web3';
-import config from '@/model/config';
+import { estimateGasWithPadding, getProviderForNetwork, toHexNoLeadingZeros } from './web3';
+import { getRemoteConfig } from '@/model/remoteConfig';
 import { Asset } from '@/entities';
-import {
-  add,
-  convertRawAmountToDecimalFormat,
-  divide,
-  lessThan,
-  multiply,
-  subtract,
-} from '@/helpers/utilities';
+import { add, convertRawAmountToDecimalFormat, divide, lessThan, multiply, subtract } from '@/helpers/utilities';
 import { Network } from '@/helpers/networkTypes';
 import { erc20ABI, ethUnits } from '@/references';
 import { ethereumUtils, logger } from '@/utils';
@@ -46,9 +35,7 @@ const EXTRA_GAS_PADDING = 1.5;
 const SWAP_GAS_PADDING = 1.1;
 const CHAIN_IDS_WITH_TRACE_SUPPORT = [ChainId.mainnet];
 
-export async function getClosestGasEstimate(
-  estimationFn: (gasEstimate: number) => Promise<boolean>
-) {
+export async function getClosestGasEstimate(estimationFn: (gasEstimate: number) => Promise<boolean>) {
   // From 200k to 1M
   const gasEstimates = Array.from(Array(21).keys())
     .filter(x => x > 3)
@@ -69,10 +56,7 @@ export async function getClosestGasEstimate(
         lowestSuccessfulGuess = guessIndex;
       }
       end = guessIndex;
-      guessIndex = Math.max(
-        Math.floor((end + start) / 2) - 1,
-        highestFailedGuess || 0
-      );
+      guessIndex = Math.max(Math.floor((end + start) / 2) - 1, highestFailedGuess || 0);
     } else if (!gasEstimationSucceded) {
       if (!highestFailedGuess || guessIndex > highestFailedGuess) {
         highestFailedGuess = guessIndex;
@@ -85,11 +69,9 @@ export async function getClosestGasEstimate(
     }
 
     if (
-      (highestFailedGuess !== null &&
-        highestFailedGuess + 1 === lowestSuccessfulGuess) ||
+      (highestFailedGuess !== null && highestFailedGuess + 1 === lowestSuccessfulGuess) ||
       lowestSuccessfulGuess === 0 ||
-      (lowestSuccessfulGuess !== null &&
-        lowestFailureGuess === lowestSuccessfulGuess - 1)
+      (lowestSuccessfulGuess !== null && lowestFailureGuess === lowestSuccessfulGuess - 1)
     ) {
       return gasEstimates[lowestSuccessfulGuess];
     }
@@ -100,57 +82,35 @@ export async function getClosestGasEstimate(
   }
 }
 
-const getCrosschainSwapDefaultGasLimit = (tradeDetails: CrosschainQuote) =>
-  tradeDetails?.routes?.[0]?.userTxs?.[0]?.gasFees?.gasLimit;
+const getCrosschainSwapDefaultGasLimit = (tradeDetails: CrosschainQuote) => tradeDetails?.routes?.[0]?.userTxs?.[0]?.gasFees?.gasLimit;
 
 const getCrosschainSwapRainbowDefaultGasLimit = (chainId: ChainId) =>
   ethereumUtils.getBasicSwapGasLimit(Number(chainId)) * EXTRA_GAS_PADDING;
 
-export const getCrosschainSwapServiceTime = (tradeDetails: CrosschainQuote) =>
-  tradeDetails?.routes?.[0]?.serviceTime;
+export const getCrosschainSwapServiceTime = (tradeDetails: CrosschainQuote) => tradeDetails?.routes?.[0]?.serviceTime;
 
-export const getDefaultGasLimitForTrade = (
-  tradeDetails: Quote,
-  chainId: ChainId
-): number => {
+export const getDefaultGasLimitForTrade = (tradeDetails: Quote, chainId: ChainId): number => {
   const allowsPermit =
-    chainId === ChainId.mainnet &&
-    ALLOWS_PERMIT[
-      tradeDetails?.sellTokenAddress?.toLowerCase() as keyof PermitSupportedTokenList
-    ];
+    chainId === ChainId.mainnet && ALLOWS_PERMIT[tradeDetails?.sellTokenAddress?.toLowerCase() as keyof PermitSupportedTokenList];
 
   let defaultGasLimit = tradeDetails?.defaultGasLimit;
 
   if (allowsPermit) {
-    defaultGasLimit = Math.max(
-      Number(defaultGasLimit),
-      Number(ethUnits.basic_swap_permit) * EXTRA_GAS_PADDING
-    ).toString();
+    defaultGasLimit = Math.max(Number(defaultGasLimit), Number(ethUnits.basic_swap_permit) * EXTRA_GAS_PADDING).toString();
   }
-  return (
-    Number(defaultGasLimit || 0) ||
-    ethereumUtils.getBasicSwapGasLimit(Number(chainId)) * EXTRA_GAS_PADDING
-  );
+  return Number(defaultGasLimit || 0) || ethereumUtils.getBasicSwapGasLimit(Number(chainId)) * EXTRA_GAS_PADDING;
 };
 
-export const getStateDiff = async (
-  provider: StaticJsonRpcProvider,
-  tradeDetails: Quote
-): Promise<any> => {
+export const getStateDiff = async (provider: StaticJsonRpcProvider, tradeDetails: Quote): Promise<any> => {
   const tokenAddress = tradeDetails.sellTokenAddress;
   const fromAddr = tradeDetails.from;
   const toAddr = RAINBOW_ROUTER_CONTRACT_ADDRESS;
   const tokenContract = new Contract(tokenAddress, erc20ABI, provider);
-  const {
-    number: blockNumber,
-  } = await (provider.getBlock as () => Promise<Block>)();
+  const { number: blockNumber } = await (provider.getBlock as () => Promise<Block>)();
 
   // Get data
-  const { data } = await tokenContract.populateTransaction.approve(
-    toAddr,
-    MaxUint256.toHexString()
-  );
-
+  const { data } = await tokenContract.populateTransaction.approve(toAddr, MaxUint256.toHexString());
+  const { trace_call_block_number_offset } = getRemoteConfig();
   // trace_call default params
   const callParams = [
     {
@@ -160,15 +120,13 @@ export const getStateDiff = async (
       value: '0x0',
     },
     ['stateDiff'],
-    blockNumber - Number(config.trace_call_block_number_offset || 20),
+    blockNumber - Number(trace_call_block_number_offset || 20),
   ];
 
   const trace = await provider.send('trace_call', callParams);
 
   if (trace.stateDiff) {
-    const slotAddress = Object.keys(
-      trace.stateDiff[tokenAddress]?.storage
-    )?.[0];
+    const slotAddress = Object.keys(trace.stateDiff[tokenAddress]?.storage)?.[0];
     if (slotAddress) {
       const formattedStateDiff = {
         [tokenAddress]: {
@@ -192,16 +150,9 @@ export const getSwapGasLimitWithFakeApproval = async (
 
   try {
     stateDiff = await getStateDiff(provider, tradeDetails);
-    const { router, methodName, params, methodArgs } = getQuoteExecutionDetails(
-      tradeDetails,
-      { from: tradeDetails.from },
-      provider
-    );
+    const { router, methodName, params, methodArgs } = getQuoteExecutionDetails(tradeDetails, { from: tradeDetails.from }, provider);
 
-    const { data } = await router.populateTransaction[methodName](
-      ...(methodArgs ?? []),
-      params
-    );
+    const { data } = await router.populateTransaction[methodName](...(methodArgs ?? []), params);
 
     const gasLimit = await getClosestGasEstimate(async (gas: number) => {
       const callParams = [
@@ -210,9 +161,7 @@ export const getSwapGasLimitWithFakeApproval = async (
           from: tradeDetails.from,
           gas: toHexNoLeadingZeros(gas),
           gasPrice: toHexNoLeadingZeros(`100000000000`),
-          to:
-            (tradeDetails as CrosschainQuote)?.allowanceTarget ||
-            RAINBOW_ROUTER_CONTRACT_ADDRESS,
+          to: (tradeDetails as CrosschainQuote)?.allowanceTarget || RAINBOW_ROUTER_CONTRACT_ADDRESS,
           value: '0x0', // 100 gwei
         },
         'latest',
@@ -223,9 +172,7 @@ export const getSwapGasLimitWithFakeApproval = async (
         logger.log(`Estimate worked with gasLimit: `, gas);
         return true;
       } catch (e) {
-        logger.log(
-          `Estimate failed with gasLimit ${gas}. Trying with different amounts...`
-        );
+        logger.log(`Estimate failed with gasLimit ${gas}. Trying with different amounts...`);
         return false;
       }
     });
@@ -238,6 +185,36 @@ export const getSwapGasLimitWithFakeApproval = async (
     logger.log(`Blew up trying to get state diff. Falling back to defaults`, e);
   }
   return getDefaultGasLimitForTrade(tradeDetails, chainId);
+};
+
+export const isUnwrapNative = ({
+  buyTokenAddress,
+  chainId,
+  sellTokenAddress,
+}: {
+  chainId: ChainId;
+  sellTokenAddress: string;
+  buyTokenAddress: string;
+}) => {
+  return (
+    sellTokenAddress.toLowerCase() === WRAPPED_ASSET[chainId].toLowerCase() &&
+    buyTokenAddress.toLowerCase() === ETH_ADDRESS_AGGREGATORS.toLowerCase()
+  );
+};
+
+export const isWrapNative = ({
+  buyTokenAddress,
+  chainId,
+  sellTokenAddress,
+}: {
+  chainId: ChainId;
+  sellTokenAddress: string;
+  buyTokenAddress: string;
+}) => {
+  return (
+    sellTokenAddress.toLowerCase() === ETH_ADDRESS_AGGREGATORS.toLowerCase() &&
+    buyTokenAddress.toLowerCase() === WRAPPED_ASSET[chainId].toLowerCase()
+  );
 };
 
 export const estimateSwapGasLimit = async ({
@@ -255,29 +232,27 @@ export const estimateSwapGasLimit = async ({
     return ethereumUtils.getBasicSwapGasLimit(Number(chainId));
   }
   const { sellTokenAddress, buyTokenAddress } = tradeDetails;
-  const isWrapNativeAsset =
-    sellTokenAddress === ETH_ADDRESS_AGGREGATORS &&
-    buyTokenAddress === WRAPPED_ASSET[chainId];
-  const isUnwrapNativeAsset =
-    sellTokenAddress === WRAPPED_ASSET[chainId] &&
-    buyTokenAddress === ETH_ADDRESS_AGGREGATORS;
+  const isWrapNativeAsset = isWrapNative({
+    buyTokenAddress,
+    sellTokenAddress,
+    chainId,
+  });
+  const isUnwrapNativeAsset = isUnwrapNative({
+    buyTokenAddress,
+    sellTokenAddress,
+    chainId,
+  });
 
   // Wrap / Unwrap Eth
   if (isWrapNativeAsset || isUnwrapNativeAsset) {
-    const default_estimate = isWrapNativeAsset
-      ? ethUnits.weth_wrap
-      : ethUnits.weth_unwrap;
+    const default_estimate = isWrapNativeAsset ? ethUnits.weth_wrap : ethUnits.weth_unwrap;
     try {
       const gasLimit = await estimateGasWithPadding(
         {
           from: tradeDetails.from,
           value: isWrapNativeAsset ? tradeDetails.buyAmount : '0',
         },
-        getWrappedAssetMethod(
-          isWrapNativeAsset ? 'deposit' : 'withdraw',
-          provider,
-          chainId
-        ),
+        getWrappedAssetMethod(isWrapNativeAsset ? 'deposit' : 'withdraw', provider, chainId),
         // @ts-ignore
         isUnwrapNativeAsset ? [tradeDetails.buyAmount] : null,
         provider,
@@ -291,27 +266,13 @@ export const estimateSwapGasLimit = async ({
     // Swap
   } else {
     try {
-      const { params, method, methodArgs } = getQuoteExecutionDetails(
-        tradeDetails,
-        { from: tradeDetails.from },
-        provider
-      );
+      const { params, method, methodArgs } = getQuoteExecutionDetails(tradeDetails, { from: tradeDetails.from }, provider);
 
       if (requiresApprove) {
-        if (
-          CHAIN_IDS_WITH_TRACE_SUPPORT.includes(chainId) &&
-          IS_TESTING !== 'true'
-        ) {
+        if (CHAIN_IDS_WITH_TRACE_SUPPORT.includes(chainId) && IS_TESTING !== 'true') {
           try {
-            const gasLimitWithFakeApproval = await getSwapGasLimitWithFakeApproval(
-              chainId,
-              provider,
-              tradeDetails
-            );
-            logger.debug(
-              ' ✅ Got gasLimitWithFakeApproval!',
-              gasLimitWithFakeApproval
-            );
+            const gasLimitWithFakeApproval = await getSwapGasLimitWithFakeApproval(chainId, provider, tradeDetails);
+            logger.debug(' ✅ Got gasLimitWithFakeApproval!', gasLimitWithFakeApproval);
             return gasLimitWithFakeApproval;
           } catch (e) {
             logger.debug('Error estimating swap gas limit with approval', e);
@@ -321,13 +282,7 @@ export const estimateSwapGasLimit = async ({
         return getDefaultGasLimitForTrade(tradeDetails, chainId);
       }
 
-      const gasLimit = await estimateGasWithPadding(
-        params,
-        method,
-        methodArgs as any,
-        provider,
-        SWAP_GAS_PADDING
-      );
+      const gasLimit = await estimateGasWithPadding(params, method, methodArgs as any, provider, SWAP_GAS_PADDING);
       return gasLimit || getDefaultGasLimitForTrade(tradeDetails, chainId);
     } catch (error) {
       return getDefaultGasLimitForTrade(tradeDetails, chainId);
@@ -351,20 +306,10 @@ export const estimateCrosschainSwapGasLimit = async ({
   }
   try {
     if (requiresApprove) {
-      if (
-        CHAIN_IDS_WITH_TRACE_SUPPORT.includes(chainId) &&
-        IS_TESTING !== 'true'
-      ) {
+      if (CHAIN_IDS_WITH_TRACE_SUPPORT.includes(chainId) && IS_TESTING !== 'true') {
         try {
-          const gasLimitWithFakeApproval = await getSwapGasLimitWithFakeApproval(
-            chainId,
-            provider,
-            tradeDetails
-          );
-          logger.debug(
-            ' ✅ Got gasLimitWithFakeApproval!',
-            gasLimitWithFakeApproval
-          );
+          const gasLimitWithFakeApproval = await getSwapGasLimitWithFakeApproval(chainId, provider, tradeDetails);
+          logger.debug(' ✅ Got gasLimitWithFakeApproval!', gasLimitWithFakeApproval);
           return gasLimitWithFakeApproval;
         } catch (e) {
           logger.debug('Error estimating swap gas limit with approval', e);
@@ -372,9 +317,7 @@ export const estimateCrosschainSwapGasLimit = async ({
       }
 
       const routeGasLimit = getCrosschainSwapDefaultGasLimit(tradeDetails);
-      const rainbowDefaultGasLimit = getCrosschainSwapRainbowDefaultGasLimit(
-        chainId
-      );
+      const rainbowDefaultGasLimit = getCrosschainSwapRainbowDefaultGasLimit(chainId);
       if (routeGasLimit && lessThan(rainbowDefaultGasLimit, routeGasLimit)) {
         return routeGasLimit;
       }
@@ -394,9 +337,7 @@ export const estimateCrosschainSwapGasLimit = async ({
       SWAP_GAS_PADDING
     );
     const routeGasLimit = getCrosschainSwapDefaultGasLimit(tradeDetails);
-    const rainbowDefaultGasLimit = getCrosschainSwapRainbowDefaultGasLimit(
-      chainId
-    );
+    const rainbowDefaultGasLimit = getCrosschainSwapRainbowDefaultGasLimit(chainId);
 
     let fallbackGasLimit: BigNumberish = rainbowDefaultGasLimit;
     if (routeGasLimit && lessThan(rainbowDefaultGasLimit, routeGasLimit)) {
@@ -405,9 +346,7 @@ export const estimateCrosschainSwapGasLimit = async ({
     return gasLimit || fallbackGasLimit;
   } catch (error) {
     const routeGasLimit = getCrosschainSwapDefaultGasLimit(tradeDetails);
-    const rainbowDefaultGasLimit = getCrosschainSwapRainbowDefaultGasLimit(
-      chainId
-    );
+    const rainbowDefaultGasLimit = getCrosschainSwapRainbowDefaultGasLimit(chainId);
 
     let fallbackGasLimit: BigNumberish = rainbowDefaultGasLimit;
     if (routeGasLimit && lessThan(rainbowDefaultGasLimit, routeGasLimit)) {
@@ -417,27 +356,18 @@ export const estimateCrosschainSwapGasLimit = async ({
   }
 };
 
-export const computeSlippageAdjustedAmounts = (
-  trade: any,
-  allowedSlippageInBlips: string
-): { [field in Field]: BigNumberish } => {
+export const computeSlippageAdjustedAmounts = (trade: any, allowedSlippageInBlips: string): { [field in Field]: BigNumberish } => {
   let input = trade?.sellAmount;
   let output = trade?.buyAmount;
   if (trade?.tradeType === 'exact_input' && trade?.buyAmount) {
     const product = multiply(trade.buyAmount, allowedSlippageInBlips);
     const result = divide(product, '10000');
-    output = convertRawAmountToDecimalFormat(
-      subtract(output, result),
-      trade.outputTokenDecimals
-    );
+    output = convertRawAmountToDecimalFormat(subtract(output, result), trade.outputTokenDecimals);
   } else if (trade?.tradeType === 'exact_output' && trade?.sellAmount) {
     const product = multiply(trade.sellAmount, allowedSlippageInBlips);
     const result = divide(product, '10000');
 
-    input = convertRawAmountToDecimalFormat(
-      add(input, result),
-      trade.inputTokenDecimals
-    );
+    input = convertRawAmountToDecimalFormat(add(input, result), trade.inputTokenDecimals);
   }
 
   const results = {
@@ -447,9 +377,6 @@ export const computeSlippageAdjustedAmounts = (
   return results;
 };
 
-export const getTokenForCurrency = (
-  currency: Asset,
-  chainId: ChainId
-): Token => {
+export const getTokenForCurrency = (currency: Asset, chainId: ChainId): Token => {
   return { ...currency, chainId } as Token;
 };

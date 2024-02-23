@@ -53,29 +53,18 @@ export class LedgerSigner extends Signer {
   }
 
   // @skylarbarrera - may end up removing/tweaking retry logic but for now it works and lets us move forward
-  _retry<T = any>(
-    callback: (eth: AppEth) => Promise<T>,
-    timeout?: number
-  ): Promise<T> {
+  _retry<T = any>(callback: (eth: AppEth) => Promise<T>, timeout?: number): Promise<T> {
     return new Promise(async (resolve, reject) => {
       if (timeout && timeout > 0) {
         setTimeout(() => {
-          logger.debug(
-            'Ledger: Signer timeout',
-            {},
-            logger.DebugContext.ledger
-          );
+          logger.debug('Ledger: Signer timeout', {}, logger.DebugContext.ledger);
           return reject(new RainbowError('Ledger: Signer timeout'));
         }, timeout);
       }
 
       const eth = await this._eth;
       if (!eth) {
-        logger.debug(
-          'Ledger: Eth app not open',
-          {},
-          logger.DebugContext.ledger
-        );
+        logger.debug('Ledger: Eth app not open', {}, logger.DebugContext.ledger);
         return reject(new Error('Ledger: Eth app not open'));
       }
 
@@ -118,27 +107,17 @@ export class LedgerSigner extends Signer {
 
     const messageHex = hexlify(message).substring(2);
 
-    const sig = await this._retry(eth =>
-      eth.signPersonalMessage(this.path!, messageHex)
-    );
+    const sig = await this._retry(eth => eth.signPersonalMessage(this.path!, messageHex));
     sig.r = '0x' + sig.r;
     sig.s = '0x' + sig.s;
     return joinSignature(sig);
   }
 
   async signTypedDataMessage(data: any, legacy: boolean): Promise<string> {
-    const version =
-      legacy === false ? SignTypedDataVersion.V4 : SignTypedDataVersion.V3;
-    const { domain, types, primaryType, message } = TypedDataUtils.sanitizeData(
-      data
-    );
+    const version = legacy === false ? SignTypedDataVersion.V4 : SignTypedDataVersion.V3;
+    const { domain, types, primaryType, message } = TypedDataUtils.sanitizeData(data);
 
-    const domainSeparatorHex = TypedDataUtils.hashStruct(
-      'EIP712Domain',
-      domain,
-      types,
-      version
-    ).toString('hex');
+    const domainSeparatorHex = TypedDataUtils.hashStruct('EIP712Domain', domain, types, version).toString('hex');
 
     const hashStructMessageHex = TypedDataUtils.hashStruct(
       // @ts-ignore
@@ -148,13 +127,7 @@ export class LedgerSigner extends Signer {
       version
     ).toString('hex');
 
-    const sig = await this._retry(eth =>
-      eth.signEIP712HashedMessage(
-        this.path!,
-        domainSeparatorHex,
-        hashStructMessageHex
-      )
-    );
+    const sig = await this._retry(eth => eth.signEIP712HashedMessage(this.path!, domainSeparatorHex, hashStructMessageHex));
     sig.r = '0x' + sig.r;
     sig.s = '0x' + sig.s;
     return joinSignature(sig);
@@ -186,9 +159,7 @@ export class LedgerSigner extends Signer {
         nft: true,
       })
     );
-    const sig = await this._retry(eth =>
-      eth.signTransaction(this.path!, unsignedTx, resolution)
-    );
+    const sig = await this._retry(eth => eth.signTransaction(this.path!, unsignedTx, resolution));
     return serialize(baseTx, {
       r: '0x' + sig.r,
       s: '0x' + sig.s,

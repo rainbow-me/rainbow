@@ -17,11 +17,9 @@ import { isNativeAsset } from '@/handlers/assets';
 import { Network } from '@/networks/types';
 import { useAccountAsset } from '@/hooks';
 import { colors, fonts, fontWithWidth, getFontSize } from '@/styles';
-import { deviceUtils, ethereumUtils } from '@/utils';
+import { deviceUtils } from '@/utils';
 
-const SafeRadialGradient = (IS_TESTING === 'true'
-  ? View
-  : RadialGradient) as typeof RadialGradient;
+const SafeRadialGradient = (IS_TESTING === 'true' ? View : RadialGradient) as typeof RadialGradient;
 
 interface FastCurrencySelectionRowProps {
   item: any;
@@ -41,10 +39,7 @@ export function FavStar({ toggleFavorite, favorite, theme }: FavStarProps) {
         center={[0, 15]}
         colors={
           favorite
-            ? [
-                colors.alpha('#FFB200', isDarkMode ? 0.15 : 0),
-                colors.alpha('#FFB200', isDarkMode ? 0.05 : 0.2),
-              ]
+            ? [colors.alpha('#FFB200', isDarkMode ? 0.15 : 0), colors.alpha('#FFB200', isDarkMode ? 0.05 : 0.2)]
             : colors.gradients.lightestGrey
         }
         style={[sx.gradient, sx.starGradient]}
@@ -73,29 +68,13 @@ interface InfoProps {
   theme: any;
 }
 
-export function Info({
-  contextMenuProps,
-  showFavoriteButton,
-  theme,
-}: InfoProps) {
+export function Info({ contextMenuProps, showFavoriteButton, theme }: InfoProps) {
   const { colors } = theme;
   return (
-    <ContextMenuButton
-      onPressMenuItem={contextMenuProps.handlePressMenuItem}
-      {...contextMenuProps}
-      style={showFavoriteButton && sx.info}
-    >
+    <ContextMenuButton onPressMenuItem={contextMenuProps.handlePressMenuItem} {...contextMenuProps} style={showFavoriteButton && sx.info}>
       <ButtonPressAnimation>
-        <SafeRadialGradient
-          center={[0, 15]}
-          colors={colors.gradients.lightestGrey}
-          style={[sx.gradient, sx.igradient]}
-        >
-          <Text
-            color={{ custom: colors.alpha(colors.blueGreyDark, 0.3) }}
-            size="16px / 22px (Deprecated)"
-            weight="bold"
-          >
+        <SafeRadialGradient center={[0, 15]} colors={colors.gradients.lightestGrey} style={[sx.gradient, sx.igradient]}>
+          <Text color={{ custom: colors.alpha(colors.blueGreyDark, 0.3) }} size="16px / 22px (Deprecated)" weight="bold">
             􀅳
           </Text>
         </SafeRadialGradient>
@@ -123,7 +102,7 @@ export default React.memo(function FastCurrencySelectionRow({
     mainnet_address,
     name,
     testID,
-    type,
+    network,
     disabled,
   },
 }: FastCurrencySelectionRowProps) {
@@ -131,13 +110,8 @@ export default React.memo(function FastCurrencySelectionRow({
 
   // TODO https://github.com/rainbow-me/rainbow/pull/3313/files#r876259954
   const item = useAccountAsset(uniqueId, nativeCurrency);
-  const network = ethereumUtils.getNetworkFromType(type) ?? Network.mainnet;
-  const rowTestID = `${testID}-exchange-coin-row-${
-    symbol ?? item?.symbol ?? ''
-  }-${type || 'token'}`;
-  const isInfoButtonVisible =
-    !item?.isNativeAsset ||
-    (!isNativeAsset(address ?? item?.address, network) && !showBalance);
+  const rowTestID = `${testID}-exchange-coin-row-${symbol ?? item?.symbol ?? ''}-${network || Network.mainnet}`;
+  const isInfoButtonVisible = !item?.isNativeAsset || (!isNativeAsset(address ?? item?.address, network) && !showBalance);
 
   return (
     <View style={sx.row}>
@@ -149,13 +123,15 @@ export default React.memo(function FastCurrencySelectionRow({
         disabled={disabled}
       >
         <View style={sx.rootContainer}>
-          <FastCoinIcon
-            address={address || item?.address}
-            network={network}
-            mainnetAddress={mainnet_address ?? item?.mainnet_address}
-            symbol={symbol ?? item?.symbol}
-            theme={theme}
-          />
+          <View style={sx.iconContainer}>
+            <FastCoinIcon
+              address={address || item?.address}
+              network={favorite ? Network.mainnet : network}
+              mainnetAddress={mainnet_address ?? item?.mainnet_address}
+              symbol={symbol ?? item?.symbol}
+              theme={theme}
+            />
+          </View>
           <View style={sx.innerContainer}>
             <View
               style={[
@@ -166,15 +142,7 @@ export default React.memo(function FastCurrencySelectionRow({
                 },
               ]}
             >
-              <RNText
-                ellipsizeMode="tail"
-                numberOfLines={1}
-                style={[
-                  sx.name,
-                  { color: colors.dark },
-                  showBalance && sx.nameWithBalances,
-                ]}
-              >
+              <RNText ellipsizeMode="tail" numberOfLines={1} style={[sx.name, { color: colors.dark }, showBalance && sx.nameWithBalances]}>
                 {name ?? item?.name}
               </RNText>
               {!showBalance && (
@@ -194,21 +162,10 @@ export default React.memo(function FastCurrencySelectionRow({
             </View>
             {showBalance && (
               <View style={[sx.column, sx.balanceColumn]}>
-                <Text
-                  align="right"
-                  color="primary (Deprecated)"
-                  size="16px / 22px (Deprecated)"
-                  weight="medium"
-                >
-                  {item?.native?.balance?.display ??
-                    `${nativeCurrencySymbol}0.00`}
+                <Text align="right" color="primary (Deprecated)" size="16px / 22px (Deprecated)" weight="medium">
+                  {item?.native?.balance?.display ?? `${nativeCurrencySymbol}0.00`}
                 </Text>
-                <Text
-                  align="right"
-                  color={{ custom: theme.colors.blueGreyDark50 }}
-                  size="14px / 19px (Deprecated)"
-                  weight="medium"
-                >
+                <Text align="right" color={{ custom: theme.colors.blueGreyDark50 }} size="14px / 19px (Deprecated)" weight="medium">
                   {item?.balance?.display ?? ''}
                 </Text>
               </View>
@@ -218,13 +175,7 @@ export default React.memo(function FastCurrencySelectionRow({
       </ButtonPressAnimation>
       {!showBalance && (
         <View style={sx.fav}>
-          {isInfoButtonVisible && (
-            <Info
-              contextMenuProps={contextMenuProps}
-              showFavoriteButton={showFavoriteButton}
-              theme={theme}
-            />
-          )}
+          {isInfoButtonVisible && <Info contextMenuProps={contextMenuProps} showFavoriteButton={showFavoriteButton} theme={theme} />}
           {showFavoriteButton &&
             (ios ? (
               // @ts-ignore
@@ -244,31 +195,28 @@ export default React.memo(function FastCurrencySelectionRow({
                 wiggleFactor={0}
               >
                 {({ onNewEmoji }: { onNewEmoji: () => void }) => (
-                  <FavStar
-                    favorite={favorite}
-                    theme={theme}
-                    toggleFavorite={() => toggleFavorite(onNewEmoji)}
-                  />
+                  <FavStar favorite={favorite} theme={theme} toggleFavorite={() => toggleFavorite(onNewEmoji)} />
                 )}
               </FloatingEmojis>
             ) : (
-              <FavStar
-                favorite={favorite}
-                theme={theme}
-                toggleFavorite={toggleFavorite}
-              />
+              <FavStar favorite={favorite} theme={theme} toggleFavorite={toggleFavorite} />
             ))}
         </View>
       )}
     </View>
   );
-},
-isEqual);
+}, isEqual);
 
 const sx = StyleSheet.create({
   addGradient: {
     paddingBottom: 3,
     paddingLeft: 1,
+  },
+  iconContainer: {
+    elevation: 6,
+    height: 59,
+    overflow: 'visible',
+    paddingTop: 9,
   },
   addText: {
     fontSize: 26,

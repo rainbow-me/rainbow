@@ -3,14 +3,7 @@ import { format } from 'date-fns';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAccountSettings, useENSLocalTransactions } from '.';
 import { fetchRegistrationDate } from '@/handlers/ens';
-import {
-  ENS_DOMAIN,
-  formatRentPrice,
-  getAvailable,
-  getENSRegistrarControllerContract,
-  getNameExpires,
-  getRentPrice,
-} from '@/helpers/ens';
+import { ENS_DOMAIN, formatRentPrice, getAvailable, getENSRegistrarControllerContract, getNameExpires, getRentPrice } from '@/helpers/ens';
 import { Network } from '@/helpers/networkTypes';
 import { timeUnits } from '@/references';
 import { ethereumUtils, validateENS } from '@/utils';
@@ -20,13 +13,7 @@ const formatTime = (timestamp: string, abbreviated: boolean = true) => {
   return format(new Date(Number(timestamp) * 1000), style);
 };
 
-export default function useENSSearch({
-  yearsDuration = 1,
-  name: inputName,
-}: {
-  yearsDuration?: number;
-  name: string;
-}) {
+export default function useENSSearch({ yearsDuration = 1, name: inputName }: { yearsDuration?: number; name: string }) {
   const [contract, setContract]: any = useState(null);
 
   useEffect(() => {
@@ -42,11 +29,7 @@ export default function useENSSearch({
   const name = inputName.replace(ENS_DOMAIN, '');
   const { nativeCurrency } = useAccountSettings();
 
-  const {
-    commitTransactionHash,
-    confirmedRegistrationTransaction,
-    pendingRegistrationTransaction,
-  } = useENSLocalTransactions({
+  const { commitTransactionHash, confirmedRegistrationTransaction, pendingRegistrationTransaction } = useENSLocalTransactions({
     name: `${name}${ENS_DOMAIN}`,
   });
 
@@ -67,19 +50,9 @@ export default function useENSSearch({
       };
     }
 
-    const [isAvailable, rentPrice] = await Promise.all([
-      getAvailable(name, contract),
-      getRentPrice(name, duration, contract),
-    ]);
-    const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(
-      Network.mainnet
-    );
-    const formattedRentPrice = formatRentPrice(
-      rentPrice,
-      yearsDuration,
-      nativeCurrency,
-      nativeAssetPrice
-    );
+    const [isAvailable, rentPrice] = await Promise.all([getAvailable(name, contract), getRentPrice(name, duration, contract)]);
+    const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(Network.mainnet);
+    const formattedRentPrice = formatRentPrice(rentPrice, yearsDuration, nativeCurrency, nativeAssetPrice);
 
     if (isAvailable) {
       if (confirmedRegistrationTransaction) {
@@ -113,10 +86,7 @@ export default function useENSSearch({
         valid: true,
       };
     } else {
-      const [registrationDate, nameExpires] = await Promise.all([
-        fetchRegistrationDate(name + ENS_DOMAIN),
-        getNameExpires(name),
-      ]);
+      const [registrationDate, nameExpires] = await Promise.all([fetchRegistrationDate(name + ENS_DOMAIN), getNameExpires(name)]);
 
       const formattedRegistrarionDate = formatTime(registrationDate, false);
       const formattedExpirationDate = formatTime(nameExpires);

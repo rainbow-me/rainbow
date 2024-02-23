@@ -1,20 +1,14 @@
 import { Migration, MigrationName } from '@/migrations/types';
-import {
-  getAllNotificationSettingsFromStorage,
-  setAllNotificationSettingsToStorage,
-} from '@/notifications/settings/storage';
+import { getAllWalletNotificationSettingsFromStorage, setAllWalletNotificationSettingsToStorage } from '@/notifications/settings/storage';
 
 export function migrateNotificationSettingsToV2(): Migration {
   return {
     name: MigrationName.migrateNotificationSettingsToVersion2,
     async migrate() {
-      const walletSettings = getAllNotificationSettingsFromStorage();
+      const walletSettings = getAllWalletNotificationSettingsFromStorage();
       let settingsVersion = 1;
 
-      if (
-        walletSettings.length > 0 &&
-        walletSettings[0].successfullyFinishedInitialSubscription !== undefined
-      ) {
+      if (walletSettings.length > 0 && walletSettings[0].successfullyFinishedInitialSubscription !== undefined) {
         settingsVersion = 2;
       }
 
@@ -27,7 +21,7 @@ export function migrateNotificationSettingsToV2(): Migration {
           ...wallet,
           successfullyFinishedInitialSubscription: true,
         }));
-        setAllNotificationSettingsToStorage(newSettings);
+        setAllWalletNotificationSettingsToStorage(newSettings);
       }
       return;
     },

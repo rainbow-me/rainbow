@@ -36,11 +36,10 @@ export enum CellType {
   EMPTY_WALLET_SPACER = 'EMPTY_WALLET_SPACER',
   BIG_EMPTY_WALLET_SPACER = 'BIG_EMPTY_WALLET_SPACER',
   EMPTY_ROW = 'EMPTY_ROW',
+
+  REMOTE_CARD_CAROUSEL = 'REMOTE_CARD_CAROUSEL',
 }
-export type RecyclerListViewRef = RecyclerListView<
-  RecyclerListViewProps,
-  RecyclerListViewState
->;
+export type RecyclerListViewRef = RecyclerListView<RecyclerListViewProps, RecyclerListViewState>;
 
 export type BaseCellType = { type: CellType; uid: string; hidden?: boolean };
 
@@ -49,6 +48,11 @@ export type CoinDividerExtraData = {
   value: number;
   defaultToEditButton: boolean;
 };
+
+export type AssetListHeaderExtraData = {
+  type: CellType.NFTS_HEADER;
+};
+
 export type AssetsHeaderExtraData = {
   type: CellType.PROFILE_STICKY_HEADER;
   value: string;
@@ -76,12 +80,12 @@ export type NFTFamilyExtraData = {
 };
 
 export type CellExtraData =
-  | { type: CellType.NFTS_HEADER }
   | { type: CellType.LOADING_ASSETS }
   | NFTFamilyExtraData
   | CoinDividerExtraData
   | CoinExtraData
   | NFTExtraData
+  | AssetListHeaderExtraData
   | AssetsHeaderExtraData
   | PositionExtraData
   | PositionHeaderExtraData;

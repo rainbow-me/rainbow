@@ -1,7 +1,7 @@
 import { ChainId } from '@rainbow-me/swaps';
-import { AssetType } from './assetTypes';
 import { EthereumAddress } from '.';
-import { Network } from '@/helpers';
+import { Chain } from '@wagmi/chains';
+import { Network } from '@/networks/types';
 
 export interface ZerionAssetPrice {
   value: number;
@@ -25,7 +25,7 @@ export interface ZerionAsset {
   name: string;
   symbol: string;
   decimals: number;
-  type?: AssetType | null;
+  type?: string;
   icon_url?: string | null;
   price?: ZerionAssetPrice | null;
 }
@@ -48,9 +48,7 @@ type RainbowTokenOwnFields = Omit<RainbowToken, keyof Asset>;
 // `ParsedAddressAsset`. The token metadata is of the type `RainbowToken`, but
 // some fields overlap with the guaranteed `Asset` fields, so the
 // `Partial<RainbowTokenOwnFields>` type is used.
-export interface ParsedAddressAsset
-  extends Asset,
-    Partial<RainbowTokenOwnFields> {
+export interface ParsedAddressAsset extends Asset, Partial<RainbowTokenOwnFields> {
   balance?: {
     amount?: string;
     display?: string;
@@ -68,12 +66,12 @@ export interface ParsedAddressAsset
     value?: number;
   };
   asset_contract?: AssetContract;
-  type: string;
+  type?: string;
   id?: string;
   uniqueId: string;
   mainnet_address?: EthereumAddress;
   isNativeAsset?: boolean;
-  network?: Network;
+  network: Network;
 }
 
 export interface SwappableAsset extends ParsedAddressAsset {
@@ -85,7 +83,30 @@ export interface SwappableAsset extends ParsedAddressAsset {
   implementations?: {
     [network: string]: { address: EthereumAddress; decimals: number };
   };
-  network?: Network;
+  network: Network;
+}
+
+export interface TokenSearchNetwork {
+  address: string;
+  decimals: number;
+}
+
+export interface TokenSearchToken {
+  decimals: number;
+  highLiquidity: boolean;
+  name: string;
+  symbol: string;
+  uniqueId: string;
+  colors: { primary: string; fallback: string };
+  icon_url: string;
+  color: string;
+  shadowColor: string;
+  rainbowMetadataId: number;
+  isRainbowCurated: boolean;
+  isVerified: boolean;
+  networks: {
+    [chainId in Chain['id']]: TokenSearchNetwork;
+  };
 }
 
 export interface RainbowToken extends Asset {
@@ -97,7 +118,8 @@ export interface RainbowToken extends Asset {
   isVerified?: boolean;
   shadowColor?: string;
   uniqueId: string;
-  type: string;
+  type?: string;
+  network: Network;
   mainnet_address?: EthereumAddress;
   networks?: any;
 }

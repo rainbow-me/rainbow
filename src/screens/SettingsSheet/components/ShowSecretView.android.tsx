@@ -3,14 +3,7 @@ import { Centered } from '@/components/layout';
 import { ModalHeaderHeight } from '@/components/modal';
 import { analytics } from '@/analytics';
 import { SecretDisplaySection } from '@/components/secret-display/SecretDisplaySection';
-import {
-  BackgroundProvider,
-  Box,
-  Inline,
-  Inset,
-  Stack,
-  Text,
-} from '@/design-system';
+import { BackgroundProvider, Box, Inline, Inset, Stack, Text } from '@/design-system';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 
 export default function ShowSecretView() {

@@ -5,11 +5,7 @@ import ImageAvatar from '../contacts/ImageAvatar';
 import { Flex, InnerBorder } from '../layout';
 import { Text } from '../text';
 import ContextMenu from '@/components/native-context-menu/contextMenu';
-import {
-  useAccountProfile,
-  useLatestCallback,
-  useOnAvatarPress,
-} from '@/hooks';
+import { useAccountProfile, useLatestCallback, useOnAvatarPress } from '@/hooks';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
@@ -47,10 +43,7 @@ export default function AvatarCircle({
   ...props
 }) {
   const { colors, isDarkMode } = useTheme();
-  const {
-    accountColor: profileAccountColor,
-    accountSymbol: profileAccountSymbol,
-  } = useAccountProfile();
+  const { accountColor: profileAccountColor, accountSymbol: profileAccountSymbol } = useAccountProfile();
 
   const accountSymbol = showcaseAccountSymbol || profileAccountSymbol;
   const resolvedColor =
@@ -63,12 +56,7 @@ export default function AvatarCircle({
     () => ({
       default: [
         [0, 2, 5, isDarkMode ? colors.trueBlack : colors.dark, 0.2],
-        [
-          0,
-          6,
-          10,
-          isDarkMode ? colors.trueBlack : colors.alpha(resolvedColor, 0.6),
-        ],
+        [0, 6, 10, isDarkMode ? colors.trueBlack : colors.alpha(resolvedColor, 0.6)],
       ],
       overlay: [
         [0, 6, 10, isDarkMode ? colors.trueBlack : colors.shadowBlack, 0.08],
@@ -78,27 +66,17 @@ export default function AvatarCircle({
     [resolvedColor, colors, isDarkMode]
   );
 
-  const {
-    avatarContextMenuConfig,
-    onAvatarPressProfile,
-    onSelectionCallback,
-    hasENSProfile,
-  } = useOnAvatarPress({ screenType: 'wallet' });
+  const { avatarContextMenuConfig, onAvatarPressProfile, onSelectionCallback, hasENSProfile } = useOnAvatarPress({ screenType: 'wallet' });
 
   const handlePressMenuItem = useLatestCallback(e => {
-    const index = avatarContextMenuConfig.menuItems?.findIndex(
-      item => item.actionKey === e.nativeEvent.actionKey
-    );
+    const index = avatarContextMenuConfig.menuItems?.findIndex(item => item.actionKey === e.nativeEvent.actionKey);
     onSelectionCallback(index);
   });
 
   const Wrapper = hasENSProfile ? React.Fragment : ContextMenu;
 
   return (
-    <Wrapper
-      menuConfig={avatarContextMenuConfig}
-      onPressMenuItem={handlePressMenuItem}
-    >
+    <Wrapper menuConfig={avatarContextMenuConfig} onPressMenuItem={handlePressMenuItem}>
       <ButtonPressAnimation
         disabled={!isAvatarPickerAvailable}
         enableHapticFeedback={isAvatarPickerAvailable}

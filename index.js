@@ -11,10 +11,7 @@ import { PerformanceTracking } from './src/performance/tracking';
 import { PerformanceMetrics } from './src/performance/tracking/types/PerformanceMetrics';
 
 analytics.track('Started executing JavaScript bundle');
-PerformanceTracking.logDirectly(
-  PerformanceMetrics.loadJSBundle,
-  Date.now() - StartTime.START_TIME
-);
+PerformanceTracking.logDirectly(PerformanceMetrics.loadJSBundle, Date.now() - StartTime.START_TIME);
 PerformanceTracking.startMeasuring(PerformanceMetrics.loadRootAppComponent);
 PerformanceTracking.startMeasuring(PerformanceMetrics.timeToInteractive);
 
@@ -25,6 +22,4 @@ to start before all of the imports.
  */
 require('react-native-gesture-handler');
 require('./shim');
-require('./src/model/config');
-
 require('./src/App');

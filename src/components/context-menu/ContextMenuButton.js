@@ -3,14 +3,7 @@ import React from 'react';
 import { ContextMenuButton as IOSContextMenuButton } from 'react-native-ios-context-menu';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 
-export default function ContextMenuButton({
-  children,
-  menuItems,
-  menuTitle,
-  onPressAndroid,
-  onPressMenuItem,
-  testID,
-}) {
+export default function ContextMenuButton({ children, menuItems, menuTitle, onPressAndroid, onPressMenuItem, testID }) {
   return (
     <IOSContextMenuButton
       activeOpacity={0}

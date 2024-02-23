@@ -11,18 +11,11 @@ import {
   useWalletSectionsData,
 } from '@/hooks';
 import useOpenPositionCards from '@/hooks/useOpenPositionCards';
+import * as ls from '@/storage';
 
 const FILTER_TYPES = {
-  'ens-profile': [
-    CellType.NFT_SPACE_AFTER,
-    CellType.NFT,
-    CellType.FAMILY_HEADER,
-  ],
-  'select-nft': [
-    CellType.NFT_SPACE_AFTER,
-    CellType.NFT,
-    CellType.FAMILY_HEADER,
-  ],
+  'ens-profile': [CellType.NFT_SPACE_AFTER, CellType.NFT, CellType.FAMILY_HEADER],
+  'select-nft': [CellType.NFT_SPACE_AFTER, CellType.NFT, CellType.FAMILY_HEADER],
 } as { [key in AssetListType]: CellType[] };
 
 export default function useMemoBriefSectionData({
@@ -69,19 +62,11 @@ export default function useMemoBriefSectionData({
     const filterTypes = type ? FILTER_TYPES[type as AssetListType] : [];
     const briefSectionsDataFiltered = sectionsDataToUse
       .filter((data, arrIndex, arr) => {
-        if (
-          filterTypes &&
-          filterTypes.length !== 0 &&
-          !filterTypes.includes(data.type)
-        ) {
+        if (filterTypes && filterTypes.length !== 0 && !filterTypes.includes(data.type)) {
           return false;
         }
 
-        if (
-          arr[arrIndex - 1]?.type === CellType.COIN &&
-          data.type !== CellType.COIN_DIVIDER &&
-          data.type !== CellType.COIN
-        ) {
+        if (arr[arrIndex - 1]?.type === CellType.COIN && data.type !== CellType.COIN_DIVIDER && data.type !== CellType.COIN) {
           afterCoins = true;
         }
         if (afterCoins && isCoinListEdited) {
@@ -96,19 +81,10 @@ export default function useMemoBriefSectionData({
         if (data.type === CellType.PROFILE_STICKY_HEADER) {
           stickyHeaders.push(index);
         }
-        if (
-          data.type === CellType.COIN &&
-          !isSmallBalancesOpen &&
-          !isCoinListEdited &&
-          afterDivider
-        ) {
+        if (data.type === CellType.COIN && !isSmallBalancesOpen && !isCoinListEdited && afterDivider) {
           return false;
         }
-        if (
-          data.type === CellType.COIN &&
-          hiddenCoinsObj[(data as CoinExtraData).uniqueId] &&
-          !isCoinListEdited
-        ) {
+        if (data.type === CellType.COIN && hiddenCoinsObj[(data as CoinExtraData).uniqueId] && !isCoinListEdited) {
           return false;
         }
 
@@ -128,10 +104,7 @@ export default function useMemoBriefSectionData({
           isGroupOpen = openFamilies[name];
         }
 
-        if (
-          data.type === CellType.NFT ||
-          data.type === CellType.NFT_SPACE_AFTER
-        ) {
+        if (data.type === CellType.NFT || data.type === CellType.NFT_SPACE_AFTER) {
           return isGroupOpen;
         }
 
@@ -146,15 +119,7 @@ export default function useMemoBriefSectionData({
         return { type: cellType, uid };
       });
     return briefSectionsDataFiltered;
-  }, [
-    sectionsDataToUse,
-    type,
-    isCoinListEdited,
-    isSmallBalancesOpen,
-    hiddenCoinsObj,
-    isPositionCardsOpen,
-    openFamilies,
-  ]);
+  }, [sectionsDataToUse, type, isCoinListEdited, isSmallBalancesOpen, hiddenCoinsObj, isPositionCardsOpen, openFamilies]);
   const memoizedResult = useDeepCompareMemo(() => result, [result]);
   const additionalData = useDeepCompareMemo(
     () =>

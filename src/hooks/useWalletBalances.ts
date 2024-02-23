@@ -2,10 +2,7 @@ import { Contract } from '@ethersproject/contracts';
 import { useQuery } from '@tanstack/react-query';
 import { isEmpty, keys } from 'lodash';
 import { useCallback } from 'react';
-import {
-  saveWalletBalances,
-  WALLET_BALANCES_FROM_STORAGE,
-} from '@/handlers/localstorage/walletBalances';
+import { saveWalletBalances, WALLET_BALANCES_FROM_STORAGE } from '@/handlers/localstorage/walletBalances';
 import { web3Provider } from '@/handlers/web3';
 import { AllRainbowWallets } from '@/model/wallet';
 import { queryClient } from '@/react-query';
@@ -33,16 +30,9 @@ const useWalletBalances = (wallets: AllRainbowWallets) => {
 
     try {
       // Check all the ETH balances at once
-      const balanceCheckerContract = new Contract(
-        getNetworkObj(network).balanceCheckerAddress,
-        balanceCheckerContractAbi,
-        web3Provider
-      );
+      const balanceCheckerContract = new Contract(getNetworkObj(network).balanceCheckerAddress, balanceCheckerContractAbi, web3Provider);
 
-      const balances = await balanceCheckerContract.balances(
-        keys(walletBalances),
-        [ETH_ADDRESS]
-      );
+      const balances = await balanceCheckerContract.balances(keys(walletBalances), [ETH_ADDRESS]);
 
       Object.keys(walletBalances).forEach((address, index) => {
         const amountInETH = fromWei(balances[index].toString());

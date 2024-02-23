@@ -3,11 +3,7 @@ import React, { useCallback } from 'react';
 import { useNavigation } from '../../navigation/Navigation';
 import { magicMemo } from '../../utils';
 import { Row } from '../layout';
-import {
-  CardSize,
-  UniqueTokenCardMargin,
-  UniqueTokenRowPadding,
-} from './CardSize';
+import { CardSize, UniqueTokenCardMargin, UniqueTokenRowPadding } from './CardSize';
 import UniqueTokenCard from './UniqueTokenCard';
 import { useWallets } from '@/hooks';
 import Routes from '@/navigation/routesNames';
@@ -49,13 +45,7 @@ const UniqueTokenRow = magicMemo(({ item, external = false }) => {
   return (
     <Container>
       {item.map((uniqueToken, index) => (
-        <UniqueTokenCardItem
-          disabled={false}
-          index={index}
-          item={uniqueToken}
-          key={uniqueToken.uniqueId}
-          onPress={handleItemPress}
-        />
+        <UniqueTokenCardItem disabled={false} index={index} item={uniqueToken} key={uniqueToken.uniqueId} onPress={handleItemPress} />
       ))}
     </Container>
   );

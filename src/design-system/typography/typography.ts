@@ -13,16 +13,9 @@ const capsize = (options: Parameters<typeof precomputeValues>[0]) => {
 
   return {
     fontSize,
-    lineHeight:
-      values.lineHeight !== 'normal'
-        ? parseFloat(values.lineHeight)
-        : undefined,
-    marginBottom: PixelRatio.roundToNearestPixel(
-      baselineTrimEm * fontSize * fontScale
-    ),
-    marginTop: PixelRatio.roundToNearestPixel(
-      capHeightTrimEm * fontSize * fontScale
-    ),
+    lineHeight: values.lineHeight !== 'normal' ? parseFloat(values.lineHeight) : undefined,
+    marginBottom: PixelRatio.roundToNearestPixel(baselineTrimEm * fontSize * fontScale),
+    marginTop: PixelRatio.roundToNearestPixel(capHeightTrimEm * fontSize * fontScale),
   } as const;
 };
 
@@ -48,22 +41,26 @@ export const fonts = {
       fontFamily: ios ? 'SF Pro Rounded' : 'SF-Pro-Rounded-Heavy',
       fontWeight: ios ? fontWeights.heavy : 'normal',
     },
+    black: {
+      fontFamily: ios ? 'SF Pro Rounded' : 'SF-Pro-Rounded-Black',
+      fontWeight: ios ? fontWeights.black : 'normal',
+    },
   },
 
   SFMono: {
     regular: {
-      fontFamily: ios ? 'SF Mono' : 'SFMono-Regular',
+      fontFamily: ios ? 'SF Mono' : 'SF-Mono-Regular',
       fontWeight: ios ? fontWeights.regular : 'normal',
     },
     medium: {
-      fontFamily: ios ? 'SF Mono' : 'SFMono-Medium',
+      fontFamily: ios ? 'SF Mono' : 'SF-Mono-Medium',
       fontWeight: ios ? fontWeights.medium : 'normal',
     },
   },
 } as const;
 
-const { heavy, bold } = fonts.SFProRounded;
-export const headingWeights = { heavy, bold };
+const { black, heavy, bold } = fonts.SFProRounded;
+export const headingWeights = { black, heavy, bold };
 export const textWeights = fonts.SFProRounded;
 
 // Sourced from https://seek-oss.github.io/capsize
@@ -105,12 +102,8 @@ const createTextSize = ({
   }
   return {
     ...styles,
-    marginTop: PixelRatio.roundToNearestPixel(
-      styles.marginTop + marginCorrectionForPlatform
-    ),
-    marginBottom: PixelRatio.roundToNearestPixel(
-      styles.marginBottom - marginCorrectionForPlatform
-    ),
+    marginTop: PixelRatio.roundToNearestPixel(styles.marginTop + marginCorrectionForPlatform),
+    marginBottom: PixelRatio.roundToNearestPixel(styles.marginBottom - marginCorrectionForPlatform),
   };
 };
 

@@ -10,12 +10,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {
-  InteractionManager,
-  Keyboard,
-  SectionList,
-  SectionListData,
-} from 'react-native';
+import { InteractionManager, Keyboard, SectionList, SectionListData } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { ButtonPressAnimation } from '../animations';
 import useAccountSettings from '../../hooks/useAccountSettings';
@@ -42,14 +37,12 @@ import { toggleFavorite, useFavorites } from '@/resources/favorites';
 
 const deviceWidth = deviceUtils.dimensions.width;
 
-const HeaderBackground = styled(LinearGradient).attrs(
-  ({ theme: { colors } }: { theme: { colors: Colors } }) => ({
-    colors: [colors.white, colors.alpha(colors.white, 0)],
-    end: { x: 0.5, y: 1 },
-    locations: [0.65, 1],
-    start: { x: 0.5, y: 0 },
-  })
-)({
+const HeaderBackground = styled(LinearGradient).attrs(({ theme: { colors } }: { theme: { colors: Colors } }) => ({
+  colors: [colors.white, colors.alpha(colors.white, 0)],
+  end: { x: 0.5, y: 1 },
+  locations: [0.65, 1],
+  start: { x: 0.5, y: 0 },
+}))({
   height: 40,
   position: 'absolute',
   width: deviceWidth,
@@ -65,8 +58,7 @@ const HeaderTitleGradient = styled(GradientText).attrs({
 
 const contentContainerStyle = { paddingBottom: 9.5 };
 const scrollIndicatorInsets = { bottom: 24 };
-const keyExtractor = ({ uniqueId }: { uniqueId: string }) =>
-  `ExchangeAssetList-${uniqueId}`;
+const keyExtractor = ({ uniqueId }: { uniqueId: string }) => `ExchangeAssetList-${uniqueId}`;
 
 function useSwapDetailsClipboardState() {
   const [copiedText, setCopiedText] = useState<string>();
@@ -119,36 +111,18 @@ interface ExchangeAssetListProps {
   isExchangeList?: boolean;
 }
 
-const ExchangeAssetList: ForwardRefRenderFunction<
-  SectionList,
-  ExchangeAssetListProps
-> = (
-  {
-    footerSpacer,
-    keyboardDismissMode = 'none',
-    itemProps,
-    items,
-    onLayout,
-    query,
-    testID,
-    isExchangeList,
-  },
+const ExchangeAssetList: ForwardRefRenderFunction<SectionList, ExchangeAssetListProps> = (
+  { footerSpacer, keyboardDismissMode = 'none', itemProps, items, onLayout, query, testID, isExchangeList },
   ref
 ) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { sectionListRef = useRef<SectionList>(null) } = useContext(
-    DiscoverSheetContext
-  ) || {
+  const { sectionListRef = useRef<SectionList>(null) } = useContext(DiscoverSheetContext) || {
     sectionListRef: undefined,
   };
   useImperativeHandle(ref, () => sectionListRef.current as SectionList);
   const prevQuery = usePrevious(query);
   const { getParent: dangerouslyGetParent, navigate } = useNavigation();
-  const {
-    copiedText,
-    copyCount,
-    onCopySwapDetailsText,
-  } = useSwapDetailsClipboardState();
+  const { copiedText, copyCount, onCopySwapDetailsText } = useSwapDetailsClipboardState();
 
   // Scroll to top once the query is cleared
   if (prevQuery && prevQuery.length && !query.length) {
@@ -190,43 +164,18 @@ const ExchangeAssetList: ForwardRefRenderFunction<
     navigate(Routes.EXPLAIN_SHEET, { type: 'verified' });
   }, [navigate]);
 
-  const ExchangeAssetSectionListHeader = ({
-    section,
-  }: {
-    section: SectionListData<EnrichedExchangeAsset>;
-  }) => {
+  const ExchangeAssetSectionListHeader = ({ section }: { section: SectionListData<EnrichedExchangeAsset> }) => {
     const TitleComponent = section.useGradientText
       ? HeaderTitleGradient
-      : ({
-          children,
-          color,
-          testID,
-        }: {
-          children: ReactElement;
-          color: string;
-          testID: string;
-        }) => (
-          <Text
-            size="14px / 19px (Deprecated)"
-            weight="heavy"
-            color={{ custom: color || colors.blueGreyDark50 }}
-            testID={testID}
-          >
+      : ({ children, color, testID }: { children: ReactElement; color: string; testID: string }) => (
+          <Text size="14px / 19px (Deprecated)" weight="heavy" color={{ custom: color || colors.blueGreyDark50 }} testID={testID}>
             {children}
           </Text>
         );
     const isVerified = section.title === TokenSectionTypes.verifiedTokenSection;
     return section?.title ? (
-      <ButtonPressAnimation
-        disabled={!isVerified}
-        onPress={openVerifiedExplainer}
-        scaleTo={0.96}
-      >
-        <Box
-          paddingTop={section.useGradientText ? '10px' : { custom: 14 }}
-          paddingBottom="4px"
-          paddingLeft="20px"
-        >
+      <ButtonPressAnimation disabled={!isVerified} onPress={openVerifiedExplainer} scaleTo={0.96}>
+        <Box paddingTop={section.useGradientText ? '10px' : { custom: 14 }} paddingBottom="4px" paddingLeft="20px">
           <HeaderBackground />
           <Box>
             <TitleComponent color={section.color} testID={section.key}>
@@ -238,26 +187,18 @@ const ExchangeAssetList: ForwardRefRenderFunction<
     ) : null;
   };
 
-  const FooterSpacer = useCallback(
-    () => (footerSpacer ? <Box width="full" height={{ custom: 35 }} /> : null),
-    [footerSpacer]
-  );
+  const FooterSpacer = useCallback(() => (footerSpacer ? <Box width="full" height={{ custom: 35 }} /> : null), [footerSpacer]);
 
   const isFocused = useIsFocused();
 
   const theme = useTheme();
   const { favoritesMetadata } = useFavorites();
   const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
-  const [localFavorite, setLocalFavorite] = useState<
-    Record<string, boolean | undefined> | undefined
-  >(() =>
-    Object.keys(favoritesMetadata).reduce(
-      (acc: Record<string, boolean | undefined>, curr: string) => {
-        acc[curr] = favoritesMetadata[curr].favorite;
-        return acc;
-      },
-      {}
-    )
+  const [localFavorite, setLocalFavorite] = useState<Record<string, boolean | undefined> | undefined>(() =>
+    Object.keys(favoritesMetadata).reduce((acc: Record<string, boolean | undefined>, curr: string) => {
+      acc[curr] = favoritesMetadata[curr].favorite;
+      return acc;
+    }, {})
   );
 
   const enrichedItems = useMemo(
@@ -274,13 +215,11 @@ const ExchangeAssetList: ForwardRefRenderFunction<
             if (rowData.ens) {
               return itemProps.onPress(givenItem);
             }
-            const asset = store.getState().data.genericAssets?.[
-              rowData.uniqueId
-            ];
+
             if (rowData.isVerified || itemProps.showBalance) {
-              itemProps.onPress(rowData ?? asset);
+              itemProps.onPress(rowData);
             } else {
-              handleUnverifiedTokenPress(rowData || asset);
+              handleUnverifiedTokenPress(rowData);
             }
           },
           showBalance: itemProps.showBalance,
@@ -307,16 +246,7 @@ const ExchangeAssetList: ForwardRefRenderFunction<
           },
         })),
       })),
-    [
-      handleUnverifiedTokenPress,
-      itemProps,
-      items,
-      nativeCurrency,
-      nativeCurrencySymbol,
-      onCopySwapDetailsText,
-      testID,
-      theme,
-    ]
+    [handleUnverifiedTokenPress, itemProps, items, nativeCurrency, nativeCurrencySymbol, onCopySwapDetailsText, testID, theme]
   );
 
   // we don't wanna cause recreating of everything if only local fav is changing
@@ -361,8 +291,4 @@ const ExchangeAssetList: ForwardRefRenderFunction<
   );
 };
 
-export default magicMemo(forwardRef(ExchangeAssetList), [
-  'items',
-  'query',
-  'itemProps',
-]);
+export default magicMemo(forwardRef(ExchangeAssetList), ['items', 'query', 'itemProps']);

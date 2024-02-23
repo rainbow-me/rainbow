@@ -22,9 +22,7 @@ const PropertyActionsEnum = {
 const getViewTraitOnNftMarketplaceAction = marketplaceName => {
   return {
     actionKey: PropertyActionsEnum.viewTraitOnNftMarketplace,
-    actionTitle: lang.t(
-      'expanded_state.unique_expanded.view_all_with_property'
-    ),
+    actionTitle: lang.t('expanded_state.unique_expanded.view_all_with_property'),
     discoverabilityTitle: marketplaceName,
     icon: {
       iconType: 'SYSTEM',
@@ -52,8 +50,7 @@ const Container = styled(Column)({
 });
 
 const OuterBorder = styled(Centered)({
-  borderColor: ({ color, theme: { colors } }) =>
-    color || colors.alpha(colors.whiteLabel, 0.15),
+  borderColor: ({ color, theme: { colors } }) => color || colors.alpha(colors.whiteLabel, 0.15),
   borderRadius: TagBorderRadius,
   borderWidth: 2,
   flex: 0,
@@ -78,12 +75,7 @@ const Title = styled(TextElement).attrs(({ color, theme: { colors } }) => ({
   marginBottom: 1,
 });
 
-const getNftTraitUrl = (
-  marketplaceId,
-  collectionId,
-  traitTitle,
-  traitValue
-) => {
+const getNftTraitUrl = (marketplaceId, collectionId, traitTitle, traitValue) => {
   switch (marketplaceId) {
     case 'stratos':
       return `https://stratosnft.io/collection/${collectionId}?attributes=${traitTitle}:${traitValue}`;
@@ -111,23 +103,14 @@ const Tag = ({
   ...props
 }) => {
   const { colors } = useTheme();
-  const isURL =
-    typeof originalValue === 'string' &&
-    originalValue.toLowerCase().startsWith('https://');
+  const isURL = typeof originalValue === 'string' && originalValue.toLowerCase().startsWith('https://');
 
-  const viewTraitOnNftMarketplaceAction = getViewTraitOnNftMarketplaceAction(
-    marketplaceName
-  );
+  const viewTraitOnNftMarketplaceAction = getViewTraitOnNftMarketplaceAction(marketplaceName);
 
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === PropertyActionsEnum.viewTraitOnNftMarketplace) {
-        const nftTraitUrl = getNftTraitUrl(
-          marketplaceId,
-          slug,
-          title,
-          originalValue
-        );
+        const nftTraitUrl = getNftTraitUrl(marketplaceId, slug, title, originalValue);
         Linking.openURL(nftTraitUrl);
       } else if (actionKey === PropertyActionsEnum.openURL) {
         Linking.openURL(originalValue);
@@ -154,34 +137,15 @@ const Tag = ({
         title: '',
       },
       idx => {
-        if (
-          androidContractActions[idx] ===
-          viewTraitOnNftMarketplaceAction.actionTitle
-        ) {
-          const nftTraitUrl = getNftTraitUrl(
-            marketplaceId,
-            slug,
-            title,
-            originalValue
-          );
+        if (androidContractActions[idx] === viewTraitOnNftMarketplaceAction.actionTitle) {
+          const nftTraitUrl = getNftTraitUrl(marketplaceId, slug, title, originalValue);
           Linking.openURL(nftTraitUrl);
-        } else if (
-          androidContractActions[idx] ===
-          openTraitURLInBrowserAction.actionTitle
-        ) {
+        } else if (androidContractActions[idx] === openTraitURLInBrowserAction.actionTitle) {
           Linking.openURL(originalValue);
         }
       }
     );
-  }, [
-    hideNftMarketplaceAction,
-    isURL,
-    slug,
-    title,
-    originalValue,
-    marketplaceId,
-    viewTraitOnNftMarketplaceAction.actionTitle,
-  ]);
+  }, [hideNftMarketplaceAction, isURL, slug, title, originalValue, marketplaceId, viewTraitOnNftMarketplaceAction.actionTitle]);
 
   const menuConfig = useMemo(() => {
     const menuItems = [];

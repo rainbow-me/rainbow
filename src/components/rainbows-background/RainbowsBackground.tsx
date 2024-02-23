@@ -65,11 +65,7 @@ interface Props {
 const RainbowsBackgroundComponent = ({ shouldAnimate }: Props) => (
   <>
     {rainbows.map(rainbow => (
-      <SingleRainbow
-        details={rainbow}
-        key={rainbow.id}
-        shouldAnimate={shouldAnimate}
-      />
+      <SingleRainbow details={rainbow} key={rainbow.id} shouldAnimate={shouldAnimate} />
     ))}
   </>
 );

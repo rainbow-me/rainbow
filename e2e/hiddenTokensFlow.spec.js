@@ -30,7 +30,7 @@ describe.skip('Hidden tokens flow', () => {
     await Helpers.tap('token-family-header-ENS');
     await Helpers.swipe('wallet-screen', 'up', 'slow');
     await Helpers.waitAndTap('wrapped-nft-rainbowtestwallet.eth');
-    await Helpers.waitAndTap('unique-token-expanded-state-context-menu-button');
+    await Helpers.waitAndTap('unique-mainnet-expanded-state-context-menu-button');
 
     if (android) {
       await waitFor(element(by.text('Hide')))
@@ -54,7 +54,7 @@ describe.skip('Hidden tokens flow', () => {
     await Helpers.tap('token-family-header-Hidden');
     await Helpers.swipe('wallet-screen', 'up', 'slow');
     await Helpers.waitAndTap('wrapped-nft-rainbowtestwallet.eth');
-    await Helpers.waitAndTap('unique-token-expanded-state-context-menu-button');
+    await Helpers.waitAndTap('unique-mainnet-expanded-state-context-menu-button');
 
     await waitFor(element(by.text('Unhide')))
       .toBeVisible()

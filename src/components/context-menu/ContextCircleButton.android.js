@@ -27,6 +27,12 @@ const ContextIcon = styled(Text).attrs(({ theme: { colors } }) => ({
   width: '100%',
 });
 
+const CircleBtn = props => (
+  <CircleButton {...props}>
+    <ContextIcon>􀍠</ContextIcon>
+  </CircleButton>
+);
+
 export default function ContextCircleButton(props) {
   const androidItems = useMemo(
     () => ({
@@ -39,21 +45,13 @@ export default function ContextCircleButton(props) {
   );
 
   const handlePressMenuItem = useLatestCallback(e => {
-    const index = androidItems.menuItems?.findIndex(
-      item => item.actionKey === e.nativeEvent.actionKey
-    );
+    const index = androidItems.menuItems?.findIndex(item => item.actionKey === e.nativeEvent.actionKey);
     props.onPressActionSheet(index);
   });
 
   return (
-    <ContextMenuButton
-      isAnchoredToRight
-      menuConfig={androidItems}
-      onPressMenuItem={handlePressMenuItem}
-    >
-      <CircleButton {...props}>
-        <ContextIcon>􀍠</ContextIcon>
-      </CircleButton>
+    <ContextMenuButton isAnchoredToRight menuConfig={androidItems} onPressMenuItem={handlePressMenuItem}>
+      {props.children || <CircleBtn />}
     </ContextMenuButton>
   );
 }

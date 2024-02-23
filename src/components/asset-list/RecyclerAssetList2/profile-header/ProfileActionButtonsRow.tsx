@@ -2,40 +2,24 @@ import Clipboard from '@react-native-community/clipboard';
 import lang from 'i18n-js';
 import * as React from 'react';
 import { PressableProps } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useDerivedValue,
-  withSpring,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
 import { CopyFloatingEmojis } from '@/components/floating-emojis';
 import { enableActionsOnReadOnlyWallet } from '@/config';
-import {
-  AccentColorProvider,
-  Box,
-  Column,
-  Columns,
-  Inset,
-  Stack,
-  Text,
-  useColorMode,
-} from '@/design-system';
+import { AccentColorProvider, Box, Column, Columns, Inset, Stack, Text, useColorMode } from '@/design-system';
 import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
-import {
-  useAccountProfile,
-  useSwapCurrencyHandlers,
-  useWallets,
-} from '@/hooks';
+import { useAccountProfile, useAccountSettings, useSwapCurrencyHandlers, useWallets } from '@/hooks';
 import { delayNext } from '@/hooks/useMagicAutofocus';
 import { useNavigation } from '@/navigation';
-import { watchingAlert } from '@/utils';
+import { ethereumUtils, watchingAlert } from '@/utils';
 import Routes from '@rainbow-me/routes';
 import showWalletErrorAlert from '@/helpers/support';
 import { analytics } from '@/analytics';
 import { useRecoilState } from 'recoil';
-import config from '@/model/config';
+import { useRemoteConfig } from '@/model/remoteConfig';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
+import { Network } from '@/networks/types';
 
 export const ProfileActionButtonsRowHeight = 80;
 
@@ -56,10 +40,9 @@ export function ProfileActionButtonsRow() {
     ],
   }));
 
-  if (!accentColorLoaded) return null;
+  const { f2c_enabled: addCashEnabled, swagg_enabled: swapEnabled } = useRemoteConfig();
 
-  const addCashEnabled = config.f2c_enabled;
-  const swapEnabled = config.swagg_enabled;
+  if (!accentColorLoaded) return null;
 
   return (
     <Box width="full">
@@ -110,12 +93,7 @@ function ActionButton({
 }) {
   const { colorMode } = useColorMode();
   return (
-    <ButtonPressAnimation
-      onPress={onPress}
-      pointerEvents="box-only"
-      scale={0.8}
-      testID={testID}
-    >
+    <ButtonPressAnimation onPress={onPress} pointerEvents="box-only" scale={0.8} testID={testID}>
       <Stack alignHorizontal="center" space="10px">
         <Box
           alignItems="center"
@@ -154,11 +132,7 @@ function ActionButton({
             {icon}
           </Text>
         </Box>
-        <Text
-          color="secondary80 (Deprecated)"
-          size="14px / 19px (Deprecated)"
-          weight="medium"
-        >
+        <Text color="secondary80 (Deprecated)" size="14px / 19px (Deprecated)" weight="medium">
           {children}
         </Text>
       </Stack>
@@ -194,35 +168,29 @@ function BuyButton() {
 
 function SwapButton() {
   const { isReadOnlyWallet } = useWallets();
+  const { accountAddress } = useAccountSettings();
 
   const { navigate } = useNavigation();
 
-  const { updateInputCurrency } = useSwapCurrencyHandlers({
-    shouldUpdate: false,
-    type: ExchangeModalTypes.swap,
-  });
-
-  const handlePress = React.useCallback(() => {
+  const handlePress = React.useCallback(async () => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
       analytics.track('Tapped "Swap"', {
         category: 'home screen',
       });
 
       android && delayNext();
+      const mainnetEth = await ethereumUtils.getNativeAssetForNetwork(Network.mainnet, accountAddress);
       navigate(Routes.EXCHANGE_MODAL, {
         fromDiscover: true,
         params: {
-          fromDiscover: true,
-          onSelectCurrency: updateInputCurrency,
-          title: lang.t('swap.modal_types.swap'),
-          type: CurrencySelectionTypes.input,
+          inputAsset: mainnetEth,
         },
-        screen: Routes.CURRENCY_SELECT_SCREEN,
+        screen: Routes.MAIN_EXCHANGE_SCREEN,
       });
     } else {
       watchingAlert();
     }
-  }, [isReadOnlyWallet, navigate, updateInputCurrency]);
+  }, [accountAddress, isReadOnlyWallet, navigate]);
 
   return (
     <ActionButton icon="􀖅" onPress={handlePress} testID="swap-button">
@@ -259,9 +227,7 @@ export function MoreButton() {
   // ////////////////////////////////////////////////////
   // Handlers
 
-  const [isToastActive, setToastActive] = useRecoilState(
-    addressCopiedToastAtom
-  );
+  const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
   const { accountAddress } = useAccountProfile();
   const handlePressCopy = React.useCallback(() => {
     if (!isToastActive) {
@@ -277,11 +243,7 @@ export function MoreButton() {
     <>
       {/* @ts-expect-error JavaScript component */}
       <CopyFloatingEmojis textToCopy={accountAddress}>
-        <ActionButton
-          onPress={handlePressCopy}
-          icon="􀐅"
-          testID="receive-button"
-        >
+        <ActionButton onPress={handlePressCopy} icon="􀐅" testID="receive-button">
           {lang.t('wallet.copy')}
         </ActionButton>
       </CopyFloatingEmojis>

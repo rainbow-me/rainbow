@@ -2,35 +2,24 @@ import URL from 'url-parse';
 import { parseUri } from '@walletconnect/utils';
 
 import store from '@/redux/store';
-import {
-  walletConnectOnSessionRequest,
-  walletConnectRemovePendingRedirect,
-  walletConnectSetPendingRedirect,
-} from '@/redux/walletconnect';
+import { walletConnectOnSessionRequest, walletConnectRemovePendingRedirect, walletConnectSetPendingRedirect } from '@/redux/walletconnect';
 import { scheduleActionOnAssetReceived } from '@/redux/data';
-import { emitAssetRequest, emitChartsRequest } from '@/redux/explorer';
+
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
 import { defaultConfig } from '@/config/experimental';
 import { PROFILES } from '@/config/experimentalHooks';
 import { delay } from '@/utils/delay';
-import {
-  checkIsValidAddressOrDomain,
-  isENSAddressFormat,
-} from '@/helpers/validators';
+import { checkIsValidAddressOrDomain, isENSAddressFormat } from '@/helpers/validators';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import ethereumUtils from '@/utils/ethereumUtils';
 import { logger } from '@/logger';
-import {
-  pair as pairWalletConnect,
-  setHasPendingDeeplinkPendingRedirect,
-} from '@/walletConnect';
+import { pair as pairWalletConnect, setHasPendingDeeplinkPendingRedirect } from '@/walletConnect';
 import { analyticsV2 } from '@/analytics';
 import { FiatProviderName } from '@/entities/f2c';
-import {
-  getPoapAndOpenSheetWithQRHash,
-  getPoapAndOpenSheetWithSecretWord,
-} from '@/utils/poaps';
+import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
+import { queryClient } from '@/react-query';
+import { pointsReferralCodeQueryKey } from '@/resources/points';
 
 /*
  * You can test these deeplinks with the following command:
@@ -38,10 +27,7 @@ import {
  *    `xcrun simctl openurl booted "https://link.rainbow.me/0x123"`
  */
 
-export default async function handleDeeplink(
-  url: string,
-  initialRoute: any = null
-) {
+export default async function handleDeeplink(url: string, initialRoute: any = null) {
   if (!url) {
     logger.warn(`handleDeeplink: No url provided`);
     return;
@@ -127,8 +113,6 @@ export default async function handleDeeplink(
             if (asset) {
               _action(asset);
             } else {
-              dispatch(emitAssetRequest(address));
-              dispatch(emitChartsRequest(address));
               scheduleActionOnAssetReceived(address, _action);
             }
           }, 50);
@@ -198,9 +182,20 @@ export default async function handleDeeplink(
         break;
       }
 
-      default: {
-        const addressOrENS = pathname?.split('/profile/')?.[1];
+      case 'points': {
+        const referralCode = query?.ref;
+        if (referralCode) {
+          analyticsV2.track(analyticsV2.event.pointsReferralCodeDeeplinkOpened);
+          queryClient.setQueryData(
+            pointsReferralCodeQueryKey,
+            (referralCode.slice(0, 3) + '-' + referralCode.slice(3, 7)).toLocaleUpperCase()
+          );
+        }
+        break;
+      }
 
+      default: {
+        const addressOrENS = pathname?.split('/profile/')?.[1] ?? pathname?.split('/')?.[1];
         /**
          * This handles ENS profile links on mobile i.e.
          * `https://rainbow.me/0x123...` which is why it's in the default case
@@ -211,16 +206,11 @@ export default async function handleDeeplink(
 
           if (isValid) {
             const profilesEnabled = defaultConfig?.[PROFILES]?.value;
-            const ensName = isENSAddressFormat(addressOrENS)
-              ? addressOrENS
-              : await fetchReverseRecordWithRetry(addressOrENS);
-            return Navigation.handleAction(
-              profilesEnabled ? Routes.PROFILE_SHEET : Routes.SHOWCASE_SHEET,
-              {
-                address: ensName || addressOrENS,
-                fromRoute: 'Deeplink',
-              }
-            );
+            const ensName = isENSAddressFormat(addressOrENS) ? addressOrENS : await fetchReverseRecordWithRetry(addressOrENS);
+            return Navigation.handleAction(profilesEnabled ? Routes.PROFILE_SHEET : Routes.SHOWCASE_SHEET, {
+              address: ensName || addressOrENS,
+              fromRoute: 'Deeplink',
+            });
           } else {
             logger.warn(`handleDeeplink: invalid address or ENS provided`, {
               url,
@@ -301,20 +291,14 @@ function handleWalletConnect(uri?: string, connector?: string) {
     if (parsedUri.version === 1) {
       store.dispatch(walletConnectSetPendingRedirect());
       store.dispatch(
-        walletConnectOnSessionRequest(
-          uri,
-          connector,
-          (status: any, dappScheme: any) => {
-            logger.debug(`walletConnectOnSessionRequest callback`, {
-              status,
-              dappScheme,
-            });
-            const type = status === 'approved' ? 'connect' : status;
-            store.dispatch(
-              walletConnectRemovePendingRedirect(type, dappScheme)
-            );
-          }
-        )
+        walletConnectOnSessionRequest(uri, connector, (status: any, dappScheme: any) => {
+          logger.debug(`walletConnectOnSessionRequest callback`, {
+            status,
+            dappScheme,
+          });
+          const type = status === 'approved' ? 'connect' : status;
+          store.dispatch(walletConnectRemovePendingRedirect(type, dappScheme));
+        })
       );
     } else if (parsedUri.version === 2) {
       logger.debug(`handleWalletConnect: handling v2`, { uri });

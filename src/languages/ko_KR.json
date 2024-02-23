@@ -22,6 +22,7 @@
       "tab_investments": "풀",
       "tab_savings": "저축",
       "tab_showcase": "쇼케이스",
+      "tab_points": "포인트",
       "tab_positions": "포지션",
       "tab_transactions": "거래",
       "tab_transactions_tooltip": "거래 및 토큰 이전",
@@ -240,6 +241,7 @@
       "exchange_again": "다시 교환",
       "exchange_search_placeholder": "토큰 검색",
       "exchange_search_placeholder_network": "%{network}에서 토큰 검색",
+      "favorites": "즐겨찾기",
       "go_back": "뒤로 가기",
       "go_back_lowercase": "뒤로 가기",
       "got_it": "알겠습니다",
@@ -284,11 +286,6 @@
       "hidden": "숨겨진"
     },
     "cards": {
-      "dpi": {
-        "title": "DeFi 펄스 인덱스",
-        "body": "상위 분산 금융 토큰이 모두 한 곳에. 산업 동향을 추적하다.",
-        "view": "보기"
-      },
       "ens_create_profile": {
         "title": "ENS 프로필 생성",
         "body": "지갑 주소를 완전히 자신이 소유한 프로필로 바꾸다."
@@ -432,17 +429,6 @@
       "sync_codepush": "코드푸시 동기화"
     },
     "discover": {
-      "lists": {
-        "lists_title": "목록들",
-        "this_list_is_empty": "이 목록은 비어있습니다!",
-        "types": {
-          "trending": "인기",
-          "watchlist": "관심목록",
-          "favorites": "즐겨찾기",
-          "defi": "DeFi",
-          "stablecoins": "안정화폐"
-        }
-      },
       "pulse": {
         "pulse_description": "한 곳에서 모든 최고의 DeFi 토큰",
         "today_suffix": "오늘",
@@ -637,6 +623,7 @@
         }
       },
       "swap_details": {
+        "reward": "보상",
         "exchange_rate": "환율",
         "rainbow_fee": "포함된 Rainbow 수수료",
         "refuel": "추가 네트워크 토큰",
@@ -1161,8 +1148,37 @@
       "withdrawal_dropdown_label": "위해",
       "withdrawal_input_label": "얻다"
     },
+    "minting": {
+      "hold_to_mint": "길게 누르면 민트가 됩니다",
+      "minting": "출하 중...",
+      "minted": "생성한",
+      "mint_unavailable": "민트 사용 불가능",
+      "mint_on_mintdotfun": "􀮶 민트 온 mint.fun",
+      "error_minting": "출하 오류",
+      "mint_price": "민트 가격",
+      "free": "무료",
+      "by": "로",
+      "unknown": "알 수 없음",
+      "max": "최대",
+      "nft_count": "%{number} NFTs",
+      "description": "설명",
+      "total_minted": "발행 총량",
+      "first_event": "첫 번째 이벤트",
+      "last_event": "마지막 이벤트",
+      "max_supply": "최대 공급량",
+      "contract": "계약 이름",
+      "network": "네트워크",
+      "could_not_find_collection": "컬렉션을 찾을 수 없습니다",
+      "unable_to_find_check_again": "이 컬렉션을 찾을 수 없습니다. 주소와 네트워크를 다시 확인하거나 나중에 다시 시도하세요",
+      "mintdotfun_unsupported_network": "Mint.fun은는이 네트워크를 지원하지 않습니다"
+    },
     "nfts": {
-      "selling": "판매"
+      "selling": "판매",
+      "sort": {
+        "abc": "가나다",
+        "most_recent": "최신순",
+        "floor_price": "최저 가격"
+      }
     },
     "nft_offers": {
       "card": {
@@ -1220,6 +1236,109 @@
       },
       "info": {
         "address_copied_to_clipboard": "주소가 클립보드에 복사되었습니다"
+      }
+    },
+    "points": {
+      "placeholder": {
+        "coming_soon_title": "곧 출시됩니다",
+        "coming_soon_description": "포인트가 곧 제공됩니다.\n오늘부터 적립하세요."
+      },
+      "claim": {
+        "title": "포인트를 청구하세요",
+        "subtitle": "포인트가 도착했습니다. 얼마나 많은 포인트를 받았는지 확인하세요.",
+        "get_started": "시작하기",
+        "use_referral_code": "추천 코드 사용"
+      },
+      "referral": {
+        "title": "추천 코드를 입력하세요",
+        "subtitle": "아래에 추천 코드를 입력하여 보너스 보상을 받으세요.",
+        "back": "뒤로",
+        "error": "문제가 발생했습니다. 앱을 다시 시작하고 다시 시도해 주세요.",
+        "get_started": "시작하기",
+        "invalid_code": "잘못된 코드"
+      },
+      "notifications": {
+        "enable": "포인트 알림 활성화",
+        "disable": "포인트 알림 비활성화"
+      },
+      "points": {
+        "referral_code": "추천 코드",
+        "share_link": "링크 공유하기",
+        "next_drop": "다음 드롭",
+        "your_rank": "당신의 순위",
+        "of_x": "%{totalUsers}의",
+        "referrals": "추천인",
+        "streak": "연속",
+        "longest_yet": "가장 긴 기록",
+        "day": "일",
+        "days": "일",
+        "leaderboard": "리더보드",
+        "sunday": "일",
+        "monday": "월",
+        "tuesday": "화",
+        "wednesday": "수",
+        "thursday": "목",
+        "friday": "금",
+        "saturday": "토",
+        "today": "오늘",
+        "error": "이런!\n새로고침해 주세요.",
+        "points": "포인트",
+        "referral_code_copied": "추천 코드가 복사되었습니다",
+        "earn_points_for_referring": "당신의 추천인이 Rainbow를 통해 $100를 교환할 때 포인트를 적립하고, 추천인이 적립한 포인트의 10%를 추가로 적립하세요",
+        "already_claimed_points": "죄송합니다! 이미 포인트를 청구하셨습니다.",
+        "now": "지금",
+        "unranked": "순위 없음",
+        "points_to_rank": "등급까지 750포인트"
+      },
+      "console": {
+        "claim_bonus_paragraph": "Rainbow에서 최소 $100를 스왑하면 추가로 100점을 받게 됩니다",
+        "welcome_bonus": "환영 보너스",
+        "true_believer": "진정한 믿음",
+        "registration_complete": "등록 완료",
+        "account": "계정",
+        "points_you_have": "보유하고 있습니다",
+        "points_earned": "획득한 포인트",
+        "share_bonus_paragraph_one": "모든 설정이 완료되었습니다!",
+        "share_bonus_paragraph_two": "스왑, 브릿징, 민팅, 친구 추천 등을 통해 포인트를 계속 획득하세요",
+        "share_bonus_paragraph_three": "Rainbow를 더 많이 이용할수록 더 많은 보상을 받게 됩니다",
+        "calculation_complete": "계산 완료",
+        "metamask_swaps": "메타마스크 스왑",
+        "wallet_balance": "지갑 잔액",
+        "rainbow_nfts_owned": "소유한 레인보우 NFTs",
+        "rainbow_swaps": "레인보우 스왑",
+        "calculating_points": "포인트 계산 중",
+        "access_granted": "접근 승인됨",
+        "sign_in_with_wallet": "지갑으로 로그인",
+        "auth_required": "인증 필요",
+        "proceed_to_share": "계속",
+        "skip_referral": "건너뛰기",
+        "sign_in": "로그인",
+        "try_a_swap": "스왑 시도하기",
+        "get_some_eth": "일부 ETH를 얻으세요",
+        "generic_alert": "문제가 발생했습니다. 다시 시도해 주세요.",
+        "existing_user_alert": "포인트가 이미 청구되었습니다. 앱을 다시 시작하여 새로 고침해주세요.",
+        "invalid_referral_code_alert": "유효하지 않은 추천 코드입니다. 코드를 다시 확인하고 다시 시도해 주세요.",
+        "no_balance_alert": "포인트에 등록하려면 지갑 잔액이 0이 아니어야 합니다.",
+        "referral_link_is_ready": "당신의 추천 링크가 준비되었습니다",
+        "referral_link_bonus_text": "당신의 추천 링크를 트윗하여 추가적인 250 포인트를 얻으세요",
+        "referral_link_bonus_text_extended": "더하여 당신이 추천한 사람들이 얻은 포인트의 10%를 벌 수 있습니다",
+        "complete_onboarding": "완료",
+        "share_to_x": "X에 공유하기",
+        "hardware_wallet_alert": "하드웨어 지갑 지원이 곧 제공됩니다!",
+        "view_weekly_earnings_week_of": "주간 %{startOfWeek} - %{endOfWeek}",
+        "view_weekly_earnings_title": "획득 포인트 집계 중",
+        "view_weekly_earnings_counted": "주간 수익 집계됨",
+        "view_weekly_earnings_close_button": "닫기",
+        "view_weekly_earnings_retroactive_points": "소급 포인트",
+        "view_weekly_earnings_activity": "당신의 활동",
+        "view_weekly_earnings_referral_activity": "추천인 활동",
+        "view_weekly_earnings_total_earnings": "총액",
+        "view_weekly_earnings_new_referrals": "새로운 추천인",
+        "wallet_balance_required": "지갑 잔액 필요",
+        "require_balance_paragraph_one": "계속하려면 다음 네트워크 중 하나에 ETH 잔액이 있는지 확인하세요:",
+        "require_balance_paragraph_two": "또는 Polygon에 MATIC 잔액이나 BSC에 BNB 잔액이 있는 경우",
+        "fund_my_wallet": "내 지갑 충전하기",
+        "points": "포인트"
       }
     },
     "pools": {
@@ -1442,6 +1561,27 @@
         "subheader": "소개합니다"
       }
     },
+    "nft_offers_launch": {
+      "primary_button": {
+        "has_offers": "보기 제안",
+        "not_has_offers": "닫기"
+      },
+      "secondary_button": "나중에 하기",
+      "info_row_1": {
+        "title": "모든 제안을 한 곳에서",
+        "description": "모든 NFT 마켓 플레이스에서 제공되는 상품을 확인하세요."
+      },
+      "info_row_2": {
+        "title": "Rainbow의 제안을 수락하세요",
+        "description": "1탭으로 제안을 수락하고 선택한 토큰으로 교환하세요."
+      },
+      "info_row_3": {
+        "title": "스마트 소트 모드",
+        "description": "바닥 가격과 비교하거나 가장 높은 가격 또는 최신 제안을 확인하세요."
+      },
+      "header": "제안",
+      "subheader": "소개합니다"
+    },
     "review": {
       "alert": {
         "are_you_enjoying_rainbow": "Rainbow이 마음에 드시나요? 🥰",
@@ -1493,6 +1633,10 @@
       "error_text": "인터넷 연결을 확인하고 나중에 다시 확인해주세요.",
       "ended_title": "프로그램이 종료되었습니다",
       "ended_text": "다음으로 우리가 준비한 것을 기대해주세요!",
+      "info": {
+        "title": "스왑 및 브리징으로 OP를 획득하세요",
+        "description": "옵티미즘에 스왑하거나 연결해 현금을 돌려받으세요. 보상은 매월 분배됩니다."
+      },
       "op": {
         "airdrop_timing": {
           "title": "매주 에어드롭",
@@ -1579,6 +1723,7 @@
       "notifications": "알림",
       "notifications_section": {
         "my_wallets": "내 지갑들",
+        "points": "포인트",
         "watched_wallets": "감시중인 지갑들",
         "allow_notifications": "알림 허용",
         "sent": "보냄",
@@ -1705,6 +1850,8 @@
         "failed": "실패",
         "purchased": "구매한",
         "purchasing": "구매 중",
+        "minting": "민팅",
+        "minted": "생성한",
         "received": "받음",
         "receiving": "수신 중",
         "self": "Self",
@@ -2216,6 +2363,7 @@
       "wallet_alert": {
         "message_support": "메시지 지원",
         "close": "닫기",
+        "learn_more": "더 알아보기",
         "message": "도움을 위해, 지원팀에게 연락주시길 바랍니다! \n곧 연락드리겠습니다!",
         "title": "오류가 발생하였습니다"
       }
@@ -2226,6 +2374,7 @@
       "available_networks": "사용 가능한 네트워크",
       "change_network": "네트워크 변경",
       "connected_apps": "연결된 앱",
+      "no_connected_apps": "아직 연결된 앱이 없습니다 😢",
       "disconnect": "연결 해제",
       "go_back_to_your_browser": "브라우저로 돌아가세요",
       "paste_uri": {
@@ -2233,6 +2382,7 @@
         "message": "아래에 WalletConnect URI를 붙여넣으세요",
         "title": "새 WalletConnect 세션"
       },
+      "none": "없음",
       "switch_network": "네트워크 전환",
       "switch_wallet": "지갑 전환",
       "titles": {
@@ -2275,9 +2425,92 @@
         "pairing_timeout": "연결이 확립되기 전에 이 세션이 시간 초과되었습니다. 이는 일반적으로 네트워크 오류로 인한 것입니다. 다시 시도해주세요.",
         "pairing_unsupported_methods": "Dapp이 Rainbow에서 지원하지 않는 지갑 RPC 방법을 요청했습니다.",
         "pairing_unsupported_networks": "해당 dapp은 Rainbow에서 지원하지 않는 네트워크를 요청했습니다.",
+        "read_only_wallet_on_signing_method": "읽기 전용 지갑을 사용중인 것 같습니다. 이 요청에 대해서는 허용되지 않습니다.",
+        "namespaces_invalid": "DApp에서 요청한 네임스페이스에 문제가 있습니다. 다시 시도하거나 Rainbow 및 DApp 지원 팀에 문의하십시오.",
         "request_invalid": "요청에 잘못된 매개변수가 포함되어 있습니다. 다시 시도하거나 Rainbow 및/또는 dapp 지원 팀에 문의하십시오.",
+        "eth_sign": "보안 문제로 인해 Rainbow는 이전 버전의 eth_sign을 지원하지 않습니다.  \n 궁금한 점이 있으면 Rainbow 및/또는 dapp 지원 팀에 문의하십시오.",
         "request_unsupported_network": "이 요청에서 지정한 네트워크는 Rainbow에서 지원하지 않습니다.",
-        "request_unsupported_methods": "이 요청에 명시된 RPC 방법은 Rainbow에서 지원하지 않습니다."
+        "request_unsupported_methods": "이 요청에 명시된 RPC 방법은 Rainbow에서 지원하지 않습니다.",
+        "no_accounts_found": "승인된 네임스페이스에서 계정을 찾을 수 없습니다."
+      },
+      "dapp_warnings": {
+        "info_alert": {
+          "title": "이 앱은 가능성이 있습니다.",
+          "description": "이 앱에서 메시지나 트랜잭션을 서명하면 자산을 분실할 수 있습니다."
+        }
+      },
+      "simulation": {
+        "titles": {
+          "message_request": "메시지 요청",
+          "transaction_request": "거래 요청"
+        },
+        "simulation_card": {
+          "titles": {
+            "not_enough_native_balance": "충분하지 않음 %{symbol}",
+            "likely_to_fail": "실패할 가능성이 높습니다.",
+            "simulation_unavailable": "시뮬레이션을 사용할 수 없습니다.",
+            "simulation_result": "시뮬레이션 결과",
+            "simulating": "시뮬레이션 중입니다.",
+            "proceed_carefully": "신중히 진행하세요",
+            "suspicious_transaction": "수상한 거래"
+          },
+          "messages": {
+            "no_changes": "변경 사항이 감지되지 않았습니다.",
+            "need_more_native": "이 거래를 위해 %{symbol} on %{network} 에 더 많은 것이 필요합니다. 이 요청을 계속하려면 아래에서 %{symbol} 를 받으십시오.",
+            "unavailable_personal_sign": "개인 서명의 시뮬레이션은 아직 지원되지 않습니다.",
+            "unavailable_zora_network": "Zora의 시뮬레이션은 아직 지원되지 않습니다.",
+            "failed_to_simulate": "시뮬레이션에 실패하여 거래가 실패할 가능성이 높습니다. 이는 사용중인 앱의 문제일 수 있습니다.",
+            "warning": "악의적인 행동은 감지되지 않았지만, 이 거래는 지갑에 위험을 줄 수 있는 특성을 가지고 있습니다.",
+            "malicious": "이 거래에 서명하면 지갑의 모든 접근 권한을 잃을 수 있습니다."
+          },
+          "event_row": {
+            "unlimited": "무제한",
+            "types": {
+              "send": "보내기",
+              "receive": "받기",
+              "approve": "승인하기",
+              "revoke": "취소하기"
+            }
+          }
+        },
+        "details_card": {
+          "title": "세부정보",
+          "types": {
+            "chain": "네트워크",
+            "contract": "계약 이름",
+            "contract_created": "계약서 생성함",
+            "to": "에게",
+            "function": "함수",
+            "source_code": "원본 코드",
+            "nonce": "Nonce"
+          },
+          "unknown": "미지"
+        },
+        "message_card": {
+          "title": "메시지",
+          "copy": "복사"
+        },
+        "profile_section": {
+          "signing_with": "서명 내용",
+          "free_to_sign": "자유롭게 서명",
+          "no_native_balance": "No %{symbol}",
+          "on_network": "on %{network}"
+        },
+        "buttons": {
+          "cancel": "취소",
+          "confirm": "􀎽 거래 보내기",
+          "get_native_token": "Get %{symbol}",
+          "buy_native_token": "구매 %{symbol}"
+        },
+        "formatted_dates": {
+          "today": "오늘",
+          "day_ago": "하루 전",
+          "days_ago": "일 전",
+          "week_ago": "일주일 전",
+          "weeks_ago": "주 전",
+          "month_ago": "한 달 전",
+          "months_ago": "개월 전"
+        }
       }
     },
     "warning": {

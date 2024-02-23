@@ -10,27 +10,12 @@ const CopyToast = ({ copiedText, copyCount }) => {
   const prevCopyCount = usePrevious(copyCount);
 
   useEffect(() => {
-    if (
-      (copiedText !== prevCopiedText || copyCount !== prevCopyCount) &&
-      copiedText !== undefined
-    ) {
+    if ((copiedText !== prevCopiedText || copyCount !== prevCopyCount) && copiedText !== undefined) {
       showToast();
     }
-  }, [
-    copiedText,
-    copyCount,
-    isVisible,
-    prevCopiedText,
-    prevCopyCount,
-    showToast,
-  ]);
+  }, [copiedText, copyCount, isVisible, prevCopiedText, prevCopyCount, showToast]);
 
-  return (
-    <Toast
-      isVisible={isVisible}
-      text={`􀁣 ${lang.t('toasts.copied', { copiedText })}`}
-    />
-  );
+  return <Toast isVisible={isVisible} text={`􀁣 ${lang.t('toasts.copied', { copiedText })}`} />;
 };
 
 export default magicMemo(CopyToast, ['copiedText', 'copyCount']);

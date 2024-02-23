@@ -12,9 +12,7 @@ import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDomina
 const UniqueTokenCardBorderRadius = 20;
 const UniqueTokenCardShadowFactory = colors => [0, 2, 6, colors.shadow, 0.08];
 
-const Container = styled.View(({ shadow }) =>
-  shadowUtil.buildAsObject(...shadow)
-);
+const Container = styled.View(({ shadow }) => shadowUtil.buildAsObject(...shadow));
 
 const Content = styled.View({
   borderRadius: UniqueTokenCardBorderRadius,
@@ -50,9 +48,7 @@ const UniqueTokenCard = ({
 
   const { colors } = useTheme();
 
-  const defaultShadow = useMemo(() => UniqueTokenCardShadowFactory(colors), [
-    colors,
-  ]);
+  const defaultShadow = useMemo(() => UniqueTokenCardShadowFactory(colors), [colors]);
 
   return (
     <Container
@@ -66,19 +62,13 @@ const UniqueTokenCard = ({
       <Content {...props} height={size} style={style} width={size}>
         <UniqueTokenImage
           backgroundColor={item.background || colors.lightestGrey}
-          imageUrl={isSVG ? item.lowResUrl : item.image_url}
+          imageUrl={item.lowResUrl || item.image_url}
           isCard
           item={item}
           resizeMode={resizeMode}
           small={smallENSName}
         />
-        {borderEnabled && (
-          <InnerBorder
-            opacity={0.04}
-            radius={UniqueTokenCardBorderRadius}
-            width={0.5}
-          />
-        )}
+        {borderEnabled && <InnerBorder opacity={0.04} radius={UniqueTokenCardBorderRadius} width={0.5} />}
       </Content>
     </Container>
   );

@@ -4,99 +4,71 @@ import { Network } from '@/helpers';
 import { useCoinListEditOptions } from '@/hooks';
 import { ETH_ADDRESS } from '@/references';
 import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
-import {
-  EthereumAddress,
-  ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
-} from '@rainbow-me/swaps';
+import { EthereumAddress, ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS } from '@rainbow-me/swaps';
 import { ethereumUtils } from '@/utils';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { RainbowNetworks, getNetworkObj } from '@/networks';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { RainbowNetworks, getNetworkObj, getSwappableNetworks } from '@/networks';
 
-type SwappableAddresses = {
-  [Network.mainnet]: EthereumAddress[];
-  [Network.optimism]: EthereumAddress[];
-  [Network.polygon]: EthereumAddress[];
-  [Network.arbitrum]: EthereumAddress[];
-};
+type SwappableAddresses = Record<Network, EthereumAddress[]>;
 
-export const useSwappableUserAssets = (params: {
-  outputCurrency: SwappableAsset;
-}) => {
+export const useSwappableUserAssets = (params: { outputCurrency: SwappableAsset }) => {
   const { outputCurrency } = params;
   const { data: sortedAssets } = useSortedUserAssets();
   const assetsInWallet = sortedAssets as SwappableAsset[];
   const { hiddenCoinsObj } = useCoinListEditOptions();
-  const [swappableAssets, setSwappableAssets] = useState<SwappableAddresses>({
-    [Network.mainnet]: [],
-    [Network.optimism]: [],
-    [Network.polygon]: [],
-    [Network.arbitrum]: [],
-  });
 
-  const filteredAssetsInWallet = useMemo(
-    () =>
-      assetsInWallet.filter(asset => {
-        // filter out hidden tokens
-        if (hiddenCoinsObj[asset.uniqueId]) return true;
-
-        // filter out networks where swaps are not enabled
-        const assetNetwork = ethereumUtils.getNetworkFromType(asset.type);
-        if (getNetworkObj(assetNetwork).features.swaps) return true;
-
-        return false;
-      }),
-    [assetsInWallet, hiddenCoinsObj]
+  const swappableAssetsRef = useRef<SwappableAddresses>(
+    getSwappableNetworks().reduce((acc, network) => {
+      acc[network.value as Network] = [];
+      return acc;
+    }, {} as SwappableAddresses)
   );
 
+  const filteredAssetsInWallet = (assetsInWallet || []).filter(asset => {
+    // filter out hidden tokens
+    if (hiddenCoinsObj[asset.uniqueId]) return true;
+
+    // filter out networks where swaps are not enabled
+    const assetNetwork = asset.network;
+    if (getNetworkObj(assetNetwork).features.swaps) return true;
+
+    return false;
+  });
+
   const getSwappableAddressesForNetwork = useCallback(
-    async (addresses: EthereumAddress[], network: Network) => {
+    async (addresses: EthereumAddress[], network: keyof SwappableAddresses) => {
       try {
         if (outputCurrency) {
-          const outputNetwork =
-            outputCurrency.type !== 'token'
-              ? outputCurrency.type
-              : Network.mainnet;
+          const outputNetwork = outputCurrency.network;
           if (outputNetwork !== network) {
             const swappableAddresses = (await walletFilter({
               addresses,
               fromChainId: ethereumUtils.getChainIdFromNetwork(network),
-              toChainId: ethereumUtils.getChainIdFromNetwork(
-                outputNetwork as Network
-              ),
+              toChainId: ethereumUtils.getChainIdFromNetwork(outputNetwork as Network),
             })) as string[];
-            setSwappableAssets(state => ({
-              ...state,
-              [network]: swappableAddresses,
-            }));
+
+            swappableAssetsRef.current[network] = swappableAddresses;
           } else {
-            setSwappableAssets(state => ({ ...state, [network]: addresses }));
+            swappableAssetsRef.current[network] = addresses;
           }
         }
       } catch (e) {
-        setSwappableAssets(state => ({ ...state, [network]: addresses }));
+        swappableAssetsRef.current[network] = addresses;
       }
     },
     [outputCurrency]
   );
 
   const getSwappableAddressesInWallet = useCallback(async () => {
-    const networks = RainbowNetworks.filter(
-      ({ features }) => features.swaps
-    ).map(({ value }) => value);
+    const networks = RainbowNetworks.filter(({ features }) => features.swaps).map(({ value }) => value);
 
     const walletFilterRequests: Promise<void>[] = [];
     networks.forEach(network => {
       const assetsAddressesOnChain = filteredAssetsInWallet
         .filter(asset => (asset?.network || Network.mainnet) === network)
-        .map(asset =>
-          asset?.address === ETH_ADDRESS
-            ? ETH_ADDRESS_AGGREGATORS
-            : asset?.address
-        );
+        .map(asset => (asset?.address === ETH_ADDRESS ? ETH_ADDRESS_AGGREGATORS : asset?.address));
       if (assetsAddressesOnChain.length) {
-        walletFilterRequests.push(
-          getSwappableAddressesForNetwork(assetsAddressesOnChain, network)
-        );
+        walletFilterRequests.push(getSwappableAddressesForNetwork(assetsAddressesOnChain, network as keyof SwappableAddresses));
       }
     });
     await Promise.all(walletFilterRequests);
@@ -106,41 +78,30 @@ export const useSwappableUserAssets = (params: {
     () =>
       filteredAssetsInWallet.filter(asset => {
         const assetNetwork = asset?.network || (Network.mainnet as Network);
-        const assetAddress =
-          asset?.address === ETH_ADDRESS
-            ? ETH_ADDRESS_AGGREGATORS
-            : asset?.address;
-        // we place our testnets (goerli) in the Network type which creates this type issue
-        // @ts-ignore
-        const isSwappable = swappableAssets[assetNetwork]?.includes(
-          assetAddress
-        );
+        const assetAddress = asset?.address === ETH_ADDRESS ? ETH_ADDRESS_AGGREGATORS : asset?.address;
+
+        const isSwappable = swappableAssetsRef.current[assetNetwork]?.includes(assetAddress);
         return isSwappable;
       }),
-    [filteredAssetsInWallet, swappableAssets]
+    [filteredAssetsInWallet]
   );
 
   const unswappableUserAssets = useMemo(
     () =>
       filteredAssetsInWallet.filter(asset => {
         const assetNetwork = asset?.network || (Network.mainnet as Network);
-        const assetAddress =
-          asset?.address === ETH_ADDRESS
-            ? ETH_ADDRESS_AGGREGATORS
-            : asset?.address;
+        const assetAddress = asset?.address === ETH_ADDRESS ? ETH_ADDRESS_AGGREGATORS : asset?.address;
         // we place our testnets (goerli) in the Network type which creates this type issue
         // @ts-ignore
-        const isNotSwappable = !swappableAssets[assetNetwork]?.includes(
-          assetAddress
-        );
+        const isNotSwappable = !swappableAssetsRef.current[assetNetwork]?.includes(assetAddress);
         return isNotSwappable;
       }),
-    [filteredAssetsInWallet, swappableAssets]
+    [filteredAssetsInWallet]
   );
 
   useEffect(() => {
     getSwappableAddressesInWallet();
-  }, []);
+  }, [getSwappableAddressesInWallet]);
 
   if (!outputCurrency) {
     return {

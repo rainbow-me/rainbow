@@ -13,14 +13,10 @@ const styles = StyleSheet.create({
 type StringNode = string | (string | null)[];
 
 export const nodeHasEmoji = (children: ReactNode) =>
-  (Array.isArray(children) ? children : [children]).some(
-    child => typeof child === 'string' && createEmojiRegex().test(child)
-  );
+  (Array.isArray(children) ? children : [children]).some(child => typeof child === 'string' && createEmojiRegex().test(child));
 
 export const nodeIsString = (children: ReactNode): children is StringNode =>
-  typeof children === 'string' ||
-  (Array.isArray(children) &&
-    children.every(child => typeof child === 'string' || child === null));
+  typeof children === 'string' || (Array.isArray(children) && children.every(child => typeof child === 'string' || child === null));
 
 /**
  * @description Renders a string of text containing emoji. This is required due
@@ -51,9 +47,7 @@ export const renderStringWithEmoji = (stringNode: StringNode) => {
         return string.split(emojiRegex).map((stringPart, index) => (
           <Fragment key={index}>
             {stringPart}
-            {emojis[index] ? (
-              <NativeText style={styles.emoji}>{emojis[index]}</NativeText>
-            ) : null}
+            {emojis[index] ? <NativeText style={styles.emoji}>{emojis[index]}</NativeText> : null}
           </Fragment>
         ));
       })}

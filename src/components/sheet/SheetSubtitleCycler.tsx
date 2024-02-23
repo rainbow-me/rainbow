@@ -1,18 +1,6 @@
-import React, {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import Animated, {
-  Easing,
-  interpolate,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-  SharedValue,
-} from 'react-native-reanimated';
+import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withTiming, SharedValue } from 'react-native-reanimated';
 import { Centered } from '../layout';
 import { SheetSubtitleCyclerItem } from './SheetSubtitleCyclerItem';
 import { useInterval, useTimeout } from '@/hooks';
@@ -25,13 +13,7 @@ interface Props {
   items: [string, string];
 }
 
-const SheetSubtitleCycler = ({
-  sharedValue,
-  errorIndex,
-  items,
-  isPaymentComplete,
-  interval = 3000,
-}: Props) => {
+const SheetSubtitleCycler = ({ sharedValue, errorIndex, items, isPaymentComplete, interval = 3000 }: Props) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const fadeOutAnimation = useSharedValue(isPaymentComplete ? 0 : 1);
 
@@ -49,15 +31,9 @@ const SheetSubtitleCycler = ({
     stopTimeout();
   }, [stopInterval, stopTimeout]);
 
-  const cycleTextOnce = useCallback(
-    () => setSelectedIndex(i => (i + 1) % items.length),
-    [items]
-  );
+  const cycleTextOnce = useCallback(() => setSelectedIndex(i => (i + 1) % items.length), [items]);
 
-  const startCycling = useCallback(
-    () => startInterval(() => cycleTextOnce(), interval),
-    [cycleTextOnce, interval, startInterval]
-  );
+  const startCycling = useCallback(() => startInterval(() => cycleTextOnce(), interval), [cycleTextOnce, interval, startInterval]);
 
   useEffect(() => {
     if (errorIndex !== null) {
@@ -76,15 +52,7 @@ const SheetSubtitleCycler = ({
   }, [clearTimers, cycleTextOnce, interval, startCycling, startTimeout]);
 
   const scaleStyle = useAnimatedStyle(() => {
-    const scale =
-      errorIndex !== null
-        ? interpolate(
-            sharedValue.value,
-            [-20, -10, 0, 10, 20],
-            [1.025, 1.25, 1, 1.25, 1.025],
-            'extend'
-          )
-        : 1;
+    const scale = errorIndex !== null ? interpolate(sharedValue.value, [-20, -10, 0, 10, 20], [1.025, 1.25, 1, 1.25, 1.025], 'extend') : 1;
 
     return {
       transform: [{ scale }],
@@ -100,12 +68,7 @@ const SheetSubtitleCycler = ({
       <TouchableWithoutFeedback onPress={handlePress}>
         <Centered paddingVertical={14} width="100%">
           {items.map((subtitle, index) => (
-            <SheetSubtitleCyclerItem
-              error={index === errorIndex}
-              key={subtitle}
-              selected={index === selectedIndex}
-              subtitle={subtitle}
-            />
+            <SheetSubtitleCyclerItem error={index === errorIndex} key={subtitle} selected={index === selectedIndex} subtitle={subtitle} />
           ))}
         </Centered>
       </TouchableWithoutFeedback>

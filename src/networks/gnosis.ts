@@ -4,7 +4,6 @@ import { gasUtils } from '@/utils';
 import { gnosis } from '@wagmi/chains';
 import { ETH_ADDRESS } from '@/references';
 import { getOptimismGasPrices } from '@/redux/gas';
-import config from '@/model/config';
 
 export const getGnosisNetworkObject = (): NetworkProperties => {
   return {
@@ -35,7 +34,6 @@ export const getGnosisNetworkObject = (): NetworkProperties => {
       walletconnect: false,
       swaps: false,
       nfts: true,
-      savings: false,
       pools: false,
       txs: false,
     },

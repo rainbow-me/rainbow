@@ -5,12 +5,7 @@ import meta from './Heading.meta';
 
 const docs: Docs = {
   meta,
-  examples: [
-    ...examples.sizes,
-    examples.withColor,
-    examples.withEmoji,
-    examples.withTruncation,
-  ],
+  examples: [...examples.sizes, examples.withColor, examples.withEmoji, examples.withTruncation],
 };
 
 export default docs;

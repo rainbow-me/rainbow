@@ -7,8 +7,7 @@ import * as i18n from '@/languages';
 const androidNetworkActions = () => {
   const { testnetsEnabled } = store.getState().settings;
   return RainbowNetworks.filter(
-    ({ features, networkType }) =>
-      features.walletconnect && (testnetsEnabled || networkType !== 'testnet')
+    ({ features, networkType }) => features.walletconnect && (testnetsEnabled || networkType !== 'testnet')
   ).map(network => network.name);
 };
 
@@ -17,27 +16,20 @@ export const NETWORK_MENU_ACTION_KEY_FILTER = 'switch-to-network-';
 export const networksMenuItems = () => {
   const { testnetsEnabled } = store.getState().settings;
   return RainbowNetworks.filter(
-    ({ features, networkType }) =>
-      features.walletconnect && (testnetsEnabled || networkType !== 'testnet')
+    ({ features, networkType }) => features.walletconnect && (testnetsEnabled || networkType !== 'testnet')
   ).map(network => ({
     actionKey: `${NETWORK_MENU_ACTION_KEY_FILTER}${network.value}`,
     actionTitle: network.name,
     icon: {
       iconType: 'ASSET',
-      iconValue: `${
-        network.networkType === 'layer2'
-          ? `${network.value}BadgeNoShadow`
-          : 'ethereumBadge'
-      }`,
+      iconValue: `${network.networkType === 'layer2' ? `${network.value}BadgeNoShadow` : 'ethereumBadge'}`,
     },
   }));
 };
 
 const networksAvailable = networksMenuItems();
 
-export const changeConnectionMenuItems = ({
-  isWalletConnectV2,
-}: { isWalletConnectV2?: boolean } = {}) => {
+export const changeConnectionMenuItems = ({ isWalletConnectV2 }: { isWalletConnectV2?: boolean } = {}) => {
   const baseOptions = [
     {
       actionKey: 'disconnect',
@@ -84,10 +76,7 @@ export const androidShowNetworksActionSheet = (callback: any) => {
     (idx: any) => {
       if (idx !== undefined) {
         const networkActions = androidNetworkActions();
-        const networkObj =
-          RainbowNetworks.find(
-            network => network.name === networkActions[idx]
-          ) || getNetworkObj(Network.mainnet);
+        const networkObj = RainbowNetworks.find(network => network.name === networkActions[idx]) || getNetworkObj(Network.mainnet);
         callback({ chainId: networkObj.id, network: networkObj.value });
       }
     }

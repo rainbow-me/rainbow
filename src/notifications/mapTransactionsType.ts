@@ -1,16 +1,11 @@
-import {
-  NotificationTransactionTypes,
-  NotificationTransactionTypesType,
-} from '@/notifications/types';
+import { NotificationTransactionTypes, NotificationTransactionTypesType } from '@/notifications/types';
 import { TransactionType } from '@/entities';
 
 /**
  * Mapping of notification backend transaction types sent in notification
  * payload, to internal `TransactionType` that we use in the app already.
  */
-export function mapNotificationTransactionType(
-  notificationTransactionType: NotificationTransactionTypesType
-): TransactionType {
+export function mapNotificationTransactionType(notificationTransactionType: NotificationTransactionTypesType): TransactionType {
   switch (notificationTransactionType) {
     case NotificationTransactionTypes.approve:
       return TransactionType.authorize;

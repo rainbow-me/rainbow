@@ -1,6 +1,6 @@
 import React from 'react';
 import { CoinDivider } from '../../../coin-divider';
-import { AssetListHeader, AssetListItemSkeleton } from '../../index';
+import { AssetListItemSkeleton } from '../../index';
 import FastBalanceCoinRow from '../FastComponents/FastBalanceCoinRow';
 import WrappedNFT from '../WrappedNFT';
 import WrappedTokenFamilyHeader from '../WrappedTokenFamilyHeader';
@@ -30,13 +30,10 @@ import { RotatingLearnCard } from '@/components/cards/RotatingLearnCard';
 import WrappedPosition from '../WrappedPosition';
 import WrappedPositionsListHeader from '../WrappedPositionsListHeader';
 import * as lang from '@/languages';
+import { RemoteCardCarousel } from '@/components/cards/remote-cards';
+import WrappedCollectiblesHeader from '../WrappedCollectiblesHeader';
 
-function rowRenderer(
-  type: CellType,
-  { uid }: { uid: string },
-  _: unknown,
-  extendedState: ExtendedState
-) {
+function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, extendedState: ExtendedState) {
   const data = extendedState.additionalData[uid];
   switch (type) {
     case CellType.ASSETS_HEADER_SPACE_AFTER:
@@ -58,9 +55,7 @@ function rowRenderer(
       return (
         <CoinDivider
           balancesSum={(data as CoinDividerExtraData).value}
-          defaultToEditButton={
-            (data as CoinDividerExtraData).defaultToEditButton
-          }
+          defaultToEditButton={(data as CoinDividerExtraData).defaultToEditButton}
           extendedState={extendedState}
         />
       );
@@ -91,13 +86,14 @@ function rowRenderer(
       );
     case CellType.PROFILE_STICKY_HEADER:
       return <ProfileStickyHeader />;
-    case CellType.COIN:
+    case CellType.REMOTE_CARD_CAROUSEL:
       return (
-        <FastBalanceCoinRow
-          extendedState={extendedState}
-          uniqueId={(data as CoinExtraData).uniqueId}
-        />
+        <CardRowWrapper>
+          <RemoteCardCarousel />
+        </CardRowWrapper>
       );
+    case CellType.COIN:
+      return <FastBalanceCoinRow extendedState={extendedState} uniqueId={(data as CoinExtraData).uniqueId} />;
     case CellType.PROFILE_ACTION_BUTTONS_ROW:
       return (
         <ProfileRowWrapper>
@@ -115,9 +111,7 @@ function rowRenderer(
         <ProfileRowWrapper>
           <ProfileBalanceRow
             totalValue={(data as AssetsHeaderExtraData).value}
-            isLoadingUserAssets={
-              (data as AssetsHeaderExtraData).isLoadingUserAssets
-            }
+            isLoadingUserAssets={(data as AssetsHeaderExtraData).isLoadingUserAssets}
           />
         </ProfileRowWrapper>
       );
@@ -128,13 +122,7 @@ function rowRenderer(
         </ProfileRowWrapper>
       );
     case CellType.NFTS_HEADER:
-      return (
-        // @ts-expect-error JavaScript component
-        <AssetListHeader
-          isSticky={false}
-          title={lang.t(lang.l.account.tab_collectibles)}
-        />
-      );
+      return <WrappedCollectiblesHeader />;
     case CellType.FAMILY_HEADER: {
       const { name, image, total } = data as NFTFamilyExtraData;
       return (
@@ -166,12 +154,7 @@ function rowRenderer(
     case CellType.POSITION: {
       const { uniqueId, index } = data as PositionExtraData;
 
-      return (
-        <WrappedPosition
-          placement={index % 2 === 0 ? 'left' : 'right'}
-          uniqueId={uniqueId}
-        />
-      );
+      return <WrappedPosition placement={index % 2 === 0 ? 'left' : 'right'} uniqueId={uniqueId} />;
     }
 
     case CellType.LOADING_ASSETS:
@@ -181,7 +164,4 @@ function rowRenderer(
   }
 }
 
-export default rowRenderer as (
-  type: string | number,
-  data: any
-) => React.ReactElement;
+export default rowRenderer as (type: string | number, data: any) => React.ReactElement;

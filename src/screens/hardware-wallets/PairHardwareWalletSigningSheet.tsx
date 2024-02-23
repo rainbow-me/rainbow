@@ -1,15 +1,7 @@
 import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
 import { Alert, Linking } from 'react-native';
-import {
-  Box,
-  Column,
-  Columns,
-  Inset,
-  Stack,
-  Text,
-  useForegroundColor,
-} from '@/design-system';
+import { Box, Column, Columns, Inset, Stack, Text, useForegroundColor } from '@/design-system';
 import { Layout } from '@/screens/hardware-wallets/components/Layout';
 import { ButtonPressAnimation } from '@/components/animations';
 import { TRANSLATIONS } from '@/screens/hardware-wallets/constants';
@@ -93,54 +85,34 @@ type RouteParams = {
 };
 
 export function PairHardwareWalletSigningSheet() {
-  const route = useRoute<
-    RouteProp<RouteParams, 'PairHardwareWalletSigningSheetParams'>
-  >();
+  const route = useRoute<RouteProp<RouteParams, 'PairHardwareWalletSigningSheetParams'>>();
   const { navigate, goBack } = useNavigation();
   const { isSmallPhone } = useDimensions();
   const deviceId = useRecoilValue(LedgerImportDeviceIdAtom);
-  const {
-    busy,
-    handleSetSeedPhrase,
-    handlePressImportButton,
-  } = useImportingWallet({ showImportModal: true });
+  const { busy, handleSetSeedPhrase, handlePressImportButton } = useImportingWallet({ showImportModal: true });
 
   const items: ItemDetails[] = [
     {
       title: i18n.t(TRANSLATIONS.blind_signing_instructions.step_1.title),
-      description: i18n.t(
-        TRANSLATIONS.blind_signing_instructions.step_1.description
-      ),
+      description: i18n.t(TRANSLATIONS.blind_signing_instructions.step_1.description),
     },
     {
       title: i18n.t(TRANSLATIONS.blind_signing_instructions.step_2.title),
-      description: i18n.t(
-        TRANSLATIONS.blind_signing_instructions.step_2.description
-      ),
+      description: i18n.t(TRANSLATIONS.blind_signing_instructions.step_2.description),
     },
     {
       title: i18n.t(TRANSLATIONS.blind_signing_instructions.step_3.title),
-      description: i18n.t(
-        TRANSLATIONS.blind_signing_instructions.step_3.description
-      ),
+      description: i18n.t(TRANSLATIONS.blind_signing_instructions.step_3.description),
     },
   ];
 
   const importHardwareWallet = useCallback(
     async (deviceId: string) => {
       if (busy) {
-        logger.debug(
-          '[importHardwareWallet] - busy, already trying to import',
-          { deviceId },
-          DebugContext.ledger
-        );
+        logger.debug('[importHardwareWallet] - busy, already trying to import', { deviceId }, DebugContext.ledger);
         return;
       }
-      logger.debug(
-        '[importHardwareWallet] - importing Hardware Wallet',
-        { deviceId },
-        DebugContext.ledger
-      );
+      logger.debug('[importHardwareWallet] - importing Hardware Wallet', { deviceId }, DebugContext.ledger);
       handleSetSeedPhrase(deviceId);
       handlePressImportButton(null, deviceId, null, null);
     },
@@ -156,10 +128,7 @@ export function PairHardwareWalletSigningSheet() {
 
   const errorCallback = useCallback(
     async (errorType: LEDGER_ERROR_CODES) => {
-      if (
-        errorType === LEDGER_ERROR_CODES.NO_ETH_APP ||
-        errorType === LEDGER_ERROR_CODES.OFF_OR_LOCKED
-      ) {
+      if (errorType === LEDGER_ERROR_CODES.NO_ETH_APP || errorType === LEDGER_ERROR_CODES.OFF_OR_LOCKED) {
         navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, {
           screen: Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET,
           params: {
@@ -168,12 +137,7 @@ export function PairHardwareWalletSigningSheet() {
           },
         });
       } else {
-        logger.error(
-          new RainbowError(
-            '[importHardwareWallet] - Disconnected or Unkown Error'
-          ),
-          { errorType }
-        );
+        logger.error(new RainbowError('[importHardwareWallet] - Disconnected or Unkown Error'), { errorType });
         logger.info('[importHardwareWallet] - issue connecting, trying again ');
         const transport = await TransportBLE.open(deviceId);
         await checkLedgerConnection({
@@ -181,10 +145,7 @@ export function PairHardwareWalletSigningSheet() {
           deviceId,
           successCallback,
           errorCallback: () => {
-            Alert.alert(
-              i18n.t(TRANSLATIONS.pairing_error_alert.title),
-              i18n.t(TRANSLATIONS.pairing_error_alert.body)
-            );
+            Alert.alert(i18n.t(TRANSLATIONS.pairing_error_alert.title), i18n.t(TRANSLATIONS.pairing_error_alert.body));
           },
         });
       }
@@ -211,28 +172,14 @@ export function PairHardwareWalletSigningSheet() {
               {i18n.t(TRANSLATIONS.enable_blind_signing)}
             </Text>
             <Stack space="10px">
-              <Text
-                align="center"
-                color="labelTertiary"
-                weight="semibold"
-                size="15pt / 135%"
-              >
+              <Text align="center" color="labelTertiary" weight="semibold" size="15pt / 135%">
                 {i18n.t(TRANSLATIONS.blind_signing_description)}
               </Text>
               <ButtonPressAnimation
-                onPress={() =>
-                  Linking.openURL(
-                    'https://www.ledger.com/academy/enable-blind-signing-why-when-and-how-to-stay-safe'
-                  )
-                }
+                onPress={() => Linking.openURL('https://www.ledger.com/academy/enable-blind-signing-why-when-and-how-to-stay-safe')}
                 scaleTo={0.9}
               >
-                <Text
-                  align="center"
-                  color="blue"
-                  weight="semibold"
-                  size="15pt / 135%"
-                >
+                <Text align="center" color="blue" weight="semibold" size="15pt / 135%">
                   {i18n.t(TRANSLATIONS.learn_more)}
                 </Text>
               </ButtonPressAnimation>
@@ -246,14 +193,8 @@ export function PairHardwareWalletSigningSheet() {
         </Stack>
       </Inset>
       <ActionButton
-        label={
-          route?.params?.shouldGoBack
-            ? i18n.t(TRANSLATIONS.blind_signing_enabled)
-            : i18n.t(TRANSLATIONS.finish_importing)
-        }
-        onPress={() =>
-          route?.params?.shouldGoBack ? goBack() : handleButtonPress()
-        }
+        label={route?.params?.shouldGoBack ? i18n.t(TRANSLATIONS.blind_signing_enabled) : i18n.t(TRANSLATIONS.finish_importing)}
+        onPress={() => (route?.params?.shouldGoBack ? goBack() : handleButtonPress())}
       />
     </Layout>
   );

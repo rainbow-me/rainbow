@@ -2,10 +2,7 @@ import c from 'chroma-js';
 import makeColorMoreChill from 'make-color-more-chill';
 import Palette, { IPalette } from 'react-native-palette-full';
 
-export default async function getDominantColorFromImage(
-  imageUrl: string,
-  colorToMeasureAgainst: string
-) {
+export default async function getDominantColorFromImage(imageUrl: string, colorToMeasureAgainst: string) {
   let colors: IPalette;
   if (/^http/.test(imageUrl)) {
     colors = await Palette.getNamedSwatchesFromUrl(imageUrl);
@@ -32,25 +29,15 @@ export default async function getDominantColorFromImage(
     colors.vibrantDark?.color;
 
   const fallbackColor =
-    colors.muted?.color ||
-    colors.vibrantLight?.color ||
-    colors.mutedLight?.color ||
-    colors.mutedDark?.color ||
-    colors.vibrantDark?.color;
+    colors.muted?.color || colors.vibrantLight?.color || colors.mutedLight?.color || colors.mutedDark?.color || colors.vibrantDark?.color;
 
   if (colors.vibrant?.color) {
-    const chillVibrant = makeColorMoreChill(
-      colors.vibrant?.color,
-      colorToMeasureAgainst
-    );
+    const chillVibrant = makeColorMoreChill(colors.vibrant?.color, colorToMeasureAgainst);
 
     if (c.deltaE(colors.vibrant?.color, chillVibrant) < 13) {
       return chillVibrant;
     } else if (fallbackColor !== undefined && fallbackColor !== color) {
-      const chillFallback = makeColorMoreChill(
-        fallbackColor,
-        colorToMeasureAgainst
-      );
+      const chillFallback = makeColorMoreChill(fallbackColor, colorToMeasureAgainst);
 
       if (fallbackColor === chillFallback) {
         return chillFallback;

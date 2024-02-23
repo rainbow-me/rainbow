@@ -6,15 +6,7 @@ import { omitFlatten } from '@/helpers/utilities';
 import { padding } from '@/styles';
 import { showActionSheetWithOptions } from '@/utils';
 
-const ActionSheetProps = [
-  'cancelButtonIndex',
-  'destructiveButtonIndex',
-  'message',
-  'onPress',
-  'options',
-  'tintColor',
-  'title',
-];
+const ActionSheetProps = ['cancelButtonIndex', 'destructiveButtonIndex', 'message', 'onPress', 'options', 'tintColor', 'title'];
 
 const style = padding.object(12, 8);
 
@@ -55,14 +47,8 @@ export default function ContextMenu({
   return (
     <Fragment>
       {onPressActionSheet && (
-        <TouchableWithoutFeedback
-          activeOpacity={activeOpacity}
-          onPress={handleShowActionSheet}
-          radiusAndroid={20}
-        >
-          {children || (
-            <ContextButton {...omitFlatten(props, ActionSheetProps)} />
-          )}
+        <TouchableWithoutFeedback activeOpacity={activeOpacity} onPress={handleShowActionSheet} radiusAndroid={20}>
+          {children || <ContextButton {...omitFlatten(props, ActionSheetProps)} />}
         </TouchableWithoutFeedback>
       )}
     </Fragment>

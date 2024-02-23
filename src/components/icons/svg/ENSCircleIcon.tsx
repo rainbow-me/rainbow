@@ -1,12 +1,5 @@
 import * as React from 'react';
-import Svg, {
-  Circle,
-  Defs,
-  LinearGradient,
-  Path,
-  Stop,
-  SvgProps,
-} from 'react-native-svg';
+import Svg, { Circle, Defs, LinearGradient, Path, Stop, SvgProps } from 'react-native-svg';
 
 const ENSCircleIcon = (props: SvgProps) => (
   <Svg height={317} viewBox="0 0 317 317" width={317} {...props}>
@@ -20,14 +13,7 @@ const ENSCircleIcon = (props: SvgProps) => (
       fill="#fff"
     />
     <Defs>
-      <LinearGradient
-        gradientUnits="userSpaceOnUse"
-        id="gradient"
-        x1={71}
-        x2={250}
-        y1={29}
-        y2={289}
-      >
+      <LinearGradient gradientUnits="userSpaceOnUse" id="gradient" x1={71} x2={250} y1={29} y2={289}>
         <Stop stopColor="#8597F3" />
         <Stop offset={1} stopColor="#6AB1EC" />
       </LinearGradient>

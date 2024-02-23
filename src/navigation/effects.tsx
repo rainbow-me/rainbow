@@ -1,9 +1,6 @@
 import React from 'react';
 import { Animated, StatusBar, View } from 'react-native';
-import {
-  StackNavigationOptions,
-  TransitionPreset,
-} from '@react-navigation/stack';
+import { StackNavigationOptions, TransitionPreset } from '@react-navigation/stack';
 
 import { IS_IOS } from '@/env';
 import { lightModeThemeColors } from '@/styles';
@@ -13,23 +10,15 @@ import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from '@/navigation/Hardware
 import { HeaderHeightWithStatusBar } from '@/components/header';
 import AvatarCircle from '@/components/profile/AvatarCircle';
 import Routes from '@/navigation/routesNames';
-import {
-  EmojiAvatar,
-  ProfileAvatarSize,
-} from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileAvatarRow';
+import { EmojiAvatar, ProfileAvatarSize } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileAvatarRow';
 import { BottomSheetNavigationOptions } from './bottom-sheet/types';
 
-const statusBarHeight = IS_IOS
-  ? safeAreaInsetValues.top
-  : StatusBar.currentHeight;
+const statusBarHeight = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight;
 export const sheetVerticalOffset = statusBarHeight;
 
 export const AVATAR_CIRCLE_TOP_MARGIN = android ? 10 : 4;
 
-const backgroundInterpolator = ({
-  current: { progress: current },
-  layouts: { screen },
-}: any) => {
+const backgroundInterpolator = ({ current: { progress: current }, layouts: { screen } }: any) => {
   const cardOpacity = current.interpolate({
     inputRange: [0, 1],
     outputRange: [0, 1],
@@ -50,10 +39,7 @@ const backgroundInterpolator = ({
   };
 };
 
-const emojiStyleInterpolator = ({
-  current: { progress: current },
-  layouts: { screen },
-}: any) => {
+const emojiStyleInterpolator = ({ current: { progress: current }, layouts: { screen } }: any) => {
   const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.975, 2],
     outputRange: [0, 0, 1, 1],
@@ -74,10 +60,7 @@ const emojiStyleInterpolator = ({
   };
 };
 
-export const speedUpAndCancelStyleInterpolator = ({
-  current: { progress: current },
-  layouts: { screen },
-}: any) => {
+export const speedUpAndCancelStyleInterpolator = ({ current: { progress: current }, layouts: { screen } }: any) => {
   const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.925, 2],
     outputRange: [0, 0, 0.6, 1],
@@ -102,10 +85,7 @@ export const speedUpAndCancelStyleInterpolator = ({
   };
 };
 
-const exchangeStyleInterpolator = ({
-  current: { progress: current },
-  layouts: { screen },
-}: any) => {
+const exchangeStyleInterpolator = ({ current: { progress: current }, layouts: { screen } }: any) => {
   const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.925, 2],
     outputRange: [0, 0, 1, 1],
@@ -130,39 +110,35 @@ const exchangeStyleInterpolator = ({
   };
 };
 
-export const expandStyleInterpolator = (targetOpacity: number) => ({
-  current: { progress: current },
-  layouts: { screen },
-}: any) => {
-  const backgroundOpacity = current.interpolate({
-    inputRange: [-1, 0, 0.975, 2],
-    outputRange: [0, 0, targetOpacity, targetOpacity],
-  });
+export const expandStyleInterpolator =
+  (targetOpacity: number) =>
+  ({ current: { progress: current }, layouts: { screen } }: any) => {
+    const backgroundOpacity = current.interpolate({
+      inputRange: [-1, 0, 0.975, 2],
+      outputRange: [0, 0, targetOpacity, targetOpacity],
+    });
 
-  const translateY = current.interpolate({
-    inputRange: [0, 1, 2],
-    outputRange: [screen.height, 0, -screen.height / 3],
-  });
+    const translateY = current.interpolate({
+      inputRange: [0, 1, 2],
+      outputRange: [screen.height, 0, -screen.height / 3],
+    });
 
-  return {
-    cardStyle: {
-      shadowColor: colors.themedColors?.shadow,
-      shadowOffset: { height: 10, width: 0 },
-      shadowOpacity: 0.5,
-      shadowRadius: 25,
-      transform: [{ translateY }],
-    },
-    overlayStyle: {
-      backgroundColor: lightModeThemeColors.blueGreyDarker,
-      opacity: backgroundOpacity,
-    },
+    return {
+      cardStyle: {
+        shadowColor: colors.themedColors?.shadow,
+        shadowOffset: { height: 10, width: 0 },
+        shadowOpacity: 0.5,
+        shadowRadius: 25,
+        transform: [{ translateY }],
+      },
+      overlayStyle: {
+        backgroundColor: lightModeThemeColors.blueGreyDarker,
+        opacity: backgroundOpacity,
+      },
+    };
   };
-};
 
-const savingsStyleInterpolator = ({
-  current: { progress: current },
-  layouts: { screen },
-}: any) => {
+const savingsStyleInterpolator = ({ current: { progress: current }, layouts: { screen } }: any) => {
   const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.975, 2],
     outputRange: [0, 0, 0.4, 0.4],
@@ -189,40 +165,36 @@ const savingsStyleInterpolator = ({
   };
 };
 
-const sheetStyleInterpolator = (targetOpacity = 1) => ({
-  current: { progress: current },
-  layouts: { screen },
-}: any) => {
-  const backgroundOpacity = current.interpolate({
-    inputRange: [-1, 0, 0.975, 2],
-    outputRange: [0, 0, targetOpacity, targetOpacity],
-  });
+const sheetStyleInterpolator =
+  (targetOpacity = 1) =>
+  ({ current: { progress: current }, layouts: { screen } }: any) => {
+    const backgroundOpacity = current.interpolate({
+      inputRange: [-1, 0, 0.975, 2],
+      outputRange: [0, 0, targetOpacity, targetOpacity],
+    });
 
-  const translateY = current.interpolate({
-    extrapolate: 'clamp',
-    inputRange: [0, 1],
-    outputRange: [screen.height, 0],
-  });
+    const translateY = current.interpolate({
+      extrapolate: 'clamp',
+      inputRange: [0, 1],
+      outputRange: [screen.height, 0],
+    });
 
-  return {
-    cardStyle: {
-      shadowColor: colors.themedColors?.shadowBlack,
-      shadowOffset: { height: 10, width: 0 },
-      shadowOpacity: 0.6,
-      shadowRadius: 25,
-      transform: [{ translateY }],
-    },
-    overlayStyle: {
-      backgroundColor: lightModeThemeColors.shadowBlack,
-      opacity: backgroundOpacity,
-    },
+    return {
+      cardStyle: {
+        shadowColor: colors.themedColors?.shadowBlack,
+        shadowOffset: { height: 10, width: 0 },
+        shadowOpacity: 0.6,
+        shadowRadius: 25,
+        transform: [{ translateY }],
+      },
+      overlayStyle: {
+        backgroundColor: lightModeThemeColors.shadowBlack,
+        opacity: backgroundOpacity,
+      },
+    };
   };
-};
 
-const swapDetailInterpolator = ({
-  current: { progress: current },
-  layouts: { screen },
-}: any) => {
+const swapDetailInterpolator = ({ current: { progress: current }, layouts: { screen } }: any) => {
   const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.975, 2],
     outputRange: [0, 0, 0.6, 0.6],
@@ -287,9 +259,7 @@ const sheetOpenSpec: TransitionPreset['transitionSpec']['open'] = {
  */
 const gestureResponseDistanceFactory = (distance: number) => distance;
 
-const gestureResponseDistance = gestureResponseDistanceFactory(
-  deviceUtils.dimensions.height
-);
+const gestureResponseDistance = gestureResponseDistanceFactory(deviceUtils.dimensions.height);
 const smallGestureResponseDistance = gestureResponseDistanceFactory(100);
 
 export const backgroundPreset = {
@@ -309,10 +279,7 @@ export const emojiPreset: StackNavigationOptions = {
       <Animated.View
         pointerEvents="none"
         style={{
-          backgroundColor:
-            colors.theme === 'dark'
-              ? colors.themedColors?.offWhite
-              : 'rgb(51, 54, 59)',
+          backgroundColor: colors.theme === 'dark' ? colors.themedColors?.offWhite : 'rgb(51, 54, 59)',
           height: deviceUtils.dimensions.height + 50,
           opacity: backgroundOpacity,
           position: 'absolute',
@@ -353,10 +320,7 @@ export const emojiPresetWallet: StackNavigationOptions = {
       <Animated.View
         pointerEvents="none"
         style={{
-          backgroundColor:
-            colors.theme === 'dark'
-              ? colors.themedColors?.offWhite
-              : 'rgb(51, 54, 59)',
+          backgroundColor: colors.theme === 'dark' ? colors.themedColors?.offWhite : 'rgb(51, 54, 59)',
           height: deviceUtils.dimensions.height + 50,
           opacity: backgroundOpacity,
           position: 'absolute',
@@ -448,8 +412,7 @@ export const overlayExpandedPreset: StackNavigationOptions = {
   detachPreviousScreen: false,
 };
 
-export const bottomSheetPreset: StackNavigationOptions &
-  BottomSheetNavigationOptions = {
+export const bottomSheetPreset: StackNavigationOptions & BottomSheetNavigationOptions = {
   cardOverlayEnabled: true,
   cardShadowEnabled: true,
   cardStyle: { backgroundColor: 'transparent' },
@@ -466,8 +429,12 @@ export const walletconnectBottomSheetPreset: BottomSheetNavigationOptions = {
   height: '100%',
 };
 
-export const expandedPresetWithSmallGestureResponseDistance: StackNavigationOptions &
-  BottomSheetNavigationOptions = {
+export const consoleSheetPreset: BottomSheetNavigationOptions = {
+  backdropColor: 'black',
+  backdropOpacity: 1,
+};
+
+export const expandedPresetWithSmallGestureResponseDistance: StackNavigationOptions & BottomSheetNavigationOptions = {
   ...expandedPreset,
   gestureResponseDistance: smallGestureResponseDistance,
 };
@@ -486,9 +453,7 @@ export const hardwareWalletTxNavigatorPreset = {
   backdropOpacity: 1,
 };
 
-export const sheetPreset = ({
-  route,
-}: any): StackNavigationOptions & BottomSheetNavigationOptions => {
+export const sheetPreset = ({ route }: any): StackNavigationOptions & BottomSheetNavigationOptions => {
   const shouldUseNonTransparentOverlay =
     route.params?.type === 'token' ||
     route.params?.type === 'unique_token' ||
@@ -498,14 +463,9 @@ export const sheetPreset = ({
     cardOverlayEnabled: true,
     cardShadowEnabled: true,
     cardStyle: { backgroundColor: 'transparent' },
-    cardStyleInterpolator: sheetStyleInterpolator(
-      shouldUseNonTransparentOverlay ? 0.7 : 0
-    ),
+    cardStyleInterpolator: sheetStyleInterpolator(shouldUseNonTransparentOverlay ? 0.7 : 0),
     gestureDirection: 'vertical',
-    gestureResponseDistance:
-      route.params?.type === 'unique_token'
-        ? gestureResponseDistanceFactory(150)
-        : gestureResponseDistance,
+    gestureResponseDistance: route.params?.type === 'unique_token' ? gestureResponseDistanceFactory(150) : gestureResponseDistance,
     transitionSpec: { close: closeSpec, open: sheetOpenSpec },
   };
 };

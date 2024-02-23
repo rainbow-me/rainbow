@@ -4,11 +4,7 @@ const compareInputs = (oldInputs: any, newInputs: any, prefix: any) => {
   // Edge-case: different array lengths
   if (oldInputs.length !== newInputs.length) {
     // Not helpful to compare item by item, so just output the whole array
-    logger.log(
-      `${prefix} - Inputs have a different length`,
-      oldInputs,
-      newInputs
-    );
+    logger.log(`${prefix} - Inputs have a different length`, oldInputs, newInputs);
     logger.log('Old inputs:', oldInputs);
     logger.log('New inputs:', newInputs);
     return;

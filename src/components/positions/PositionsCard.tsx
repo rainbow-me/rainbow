@@ -5,7 +5,7 @@ import { useTheme } from '@/theme';
 import { GenericCard } from '../cards/GenericCard';
 import startCase from 'lodash/startCase';
 import { CoinIcon, RequestVendorLogoIcon } from '../coin-icon';
-import { AssetType, EthereumAddress } from '@/entities';
+import { EthereumAddress } from '@/entities';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { analyticsV2 } from '@/analytics';
@@ -14,6 +14,7 @@ import { IS_ANDROID } from '@/env';
 import { capitalize, uniqBy } from 'lodash';
 import { RainbowDeposit, RainbowPosition } from '@/resources/defi/types';
 import { ethereumUtils } from '@/utils';
+import { Network } from '@/networks/types';
 
 type PositionCardProps = {
   position: RainbowPosition;
@@ -21,7 +22,7 @@ type PositionCardProps = {
 
 type CoinStackToken = {
   address: EthereumAddress;
-  type: AssetType;
+  network: Network;
   symbol: string;
 };
 
@@ -44,13 +45,7 @@ function CoinIconStack({ tokens }: { tokens: CoinStackToken[] }) {
               borderWidth: 2,
             }}
           >
-            <CoinIcon
-              address={token.address}
-              size={16}
-              symbol={token.symbol}
-              type={token.type}
-              ignoreBadge
-            />
+            <CoinIcon address={token.address} size={16} symbol={token.symbol} network={token.network} ignoreBadge />
           </Box>
         );
       })}
@@ -60,10 +55,7 @@ function CoinIconStack({ tokens }: { tokens: CoinStackToken[] }) {
 
 export const PositionCard = ({ position }: PositionCardProps) => {
   const { colors, isDarkMode } = useTheme();
-  const totalPositions =
-    (position.borrows?.length || 0) +
-    (position.deposits?.length || 0) +
-    (position.claimables?.length || 0);
+  const totalPositions = (position.borrows?.length || 0) + (position.deposits?.length || 0) + (position.claimables?.length || 0);
   const { navigate } = useNavigation();
 
   const onPressHandler = useCallback(() => {
@@ -77,7 +69,7 @@ export const PositionCard = ({ position }: PositionCardProps) => {
       deposit.underlying.forEach(({ asset }) => {
         tokens.push({
           address: asset.asset_code,
-          type: ethereumUtils.getAssetTypeFromNetwork(asset.network),
+          network: asset.network,
           symbol: asset.symbol,
         });
       });
@@ -86,7 +78,7 @@ export const PositionCard = ({ position }: PositionCardProps) => {
       deposit.underlying.forEach(({ asset }) => {
         tokens.push({
           address: asset.asset_code,
-          type: ethereumUtils.getAssetTypeFromNetwork(asset.network),
+          network: asset.network,
           symbol: asset.symbol,
         });
       });
@@ -95,7 +87,7 @@ export const PositionCard = ({ position }: PositionCardProps) => {
       deposit.underlying.forEach(({ asset }) => {
         tokens.push({
           address: asset.asset_code,
-          type: ethereumUtils.getAssetTypeFromNetwork(asset.network),
+          network: asset.network,
           symbol: asset.symbol,
         });
       });
@@ -104,7 +96,7 @@ export const PositionCard = ({ position }: PositionCardProps) => {
       deposit.underlying.forEach(({ asset }) => {
         tokens.push({
           address: asset.asset_code,
-          type: ethereumUtils.getAssetTypeFromNetwork(asset.network),
+          network: asset.network,
           symbol: asset.symbol,
         });
       });
@@ -114,8 +106,7 @@ export const PositionCard = ({ position }: PositionCardProps) => {
     return dedupedTokens?.slice(0, 5);
   }, [position]);
 
-  const positionColor =
-    position.dapp.colors.primary || position.dapp.colors.fallback;
+  const positionColor = position.dapp.colors.primary || position.dapp.colors.fallback;
 
   return (
     <Box width="full" height={{ custom: 117 }}>
@@ -148,17 +139,8 @@ export const PositionCard = ({ position }: PositionCardProps) => {
           </Box>
           <Stack space="12px">
             <Box style={{ width: '90%' }}>
-              <Inline
-                alignVertical="center"
-                horizontalSpace={'4px'}
-                wrap={false}
-              >
-                <Text
-                  color={{ custom: positionColor }}
-                  size="15pt"
-                  weight="bold"
-                  numberOfLines={1}
-                >
+              <Inline alignVertical="center" horizontalSpace={'4px'} wrap={false}>
+                <Text color={{ custom: positionColor }} size="15pt" weight="bold" numberOfLines={1}>
                   {capitalize(position.dapp.name.replaceAll('-', ' '))}
                 </Text>
 
@@ -173,23 +155,14 @@ export const PositionCard = ({ position }: PositionCardProps) => {
                       marginVertical: -11,
                     }}
                   >
-                    <Text
-                      color={{ custom: positionColor }}
-                      size="15pt"
-                      weight="semibold"
-                    >
+                    <Text color={{ custom: positionColor }} size="15pt" weight="semibold">
                       {totalPositions}
                     </Text>
                   </Box>
                 )}
               </Inline>
             </Box>
-            <Text
-              color={{ custom: colors.black }}
-              size="17pt"
-              weight="semibold"
-              numberOfLines={1}
-            >
+            <Text color={{ custom: colors.black }} size="17pt" weight="semibold" numberOfLines={1}>
               {position.totals.totals.display}
             </Text>
           </Stack>

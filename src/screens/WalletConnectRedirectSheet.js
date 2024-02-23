@@ -61,9 +61,7 @@ const WalletConnectRedirectSheet = () => {
             {titlesMap[type]}
           </Text>
         </Centered>
-        <BodyText color={colors.dark}>
-          {lang.t('walletconnect.go_back_to_your_browser')}
-        </BodyText>
+        <BodyText color={colors.dark}>{lang.t('walletconnect.go_back_to_your_browser')}</BodyText>
       </Centered>
     </Sheet>
   );

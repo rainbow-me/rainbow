@@ -1,17 +1,5 @@
-import React, {
-  FocusEvent,
-  ForwardRefRenderFunction,
-  MutableRefObject,
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
-import {
-  StyleProp,
-  TextInput,
-  TouchableWithoutFeedback,
-  ViewStyle,
-} from 'react-native';
+import React, { FocusEvent, ForwardRefRenderFunction, MutableRefObject, useCallback, useEffect, useState } from 'react';
+import { StyleProp, TextInput, TouchableWithoutFeedback, ViewStyle } from 'react-native';
 import { TokenSelectionButton } from '../buttons';
 import { ChainBadge, CoinIcon, CoinIconSize } from '../coin-icon';
 import { EnDash } from '../text';
@@ -21,11 +9,10 @@ import styled from '@/styled-thing';
 import { borders } from '@/styles';
 import { useTheme } from '@/theme';
 import { AccentColorProvider, Box, Space } from '@/design-system';
+import FastCoinIcon from '../asset-list/RecyclerAssetList2/FastComponents/FastCoinIcon';
 
 const ExchangeFieldHeight = android ? 64 : 38;
-const ExchangeFieldPadding: Space = android
-  ? '15px (Deprecated)'
-  : '19px (Deprecated)';
+const ExchangeFieldPadding: Space = android ? '15px (Deprecated)' : '19px (Deprecated)';
 
 const Input = styled(ExchangeInput).attrs({
   letterSpacing: 'roundedTightest',
@@ -65,7 +52,6 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
     disableCurrencySelection,
     editable,
     loading,
-    type,
     network,
     onBlur,
     onFocus,
@@ -81,7 +67,7 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
   ref
 ) => {
   const inputRef = ref as MutableRefObject<TextInput>;
-  const { colors } = useTheme();
+  const theme = useTheme();
   const [value, setValue] = useState(amount);
 
   const handleFocusField = useCallback(() => {
@@ -116,8 +102,8 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
   );
 
   const placeholderTextColor = symbol
-    ? colors.alpha(colors.blueGreyDark, 0.3)
-    : colors.alpha(colors.blueGreyDark, 0.1);
+    ? theme.colors.alpha(theme.colors.blueGreyDark, 0.3)
+    : theme.colors.alpha(theme.colors.blueGreyDark, 0.1);
 
   const placeholderText = symbol ? '0' : EnDash.unicode;
 
@@ -137,11 +123,9 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
       paddingRight={ExchangeFieldPadding}
       width="full"
       style={style}
-      testID={`${testID}-${symbol || 'empty'}-${type || 'empty'}`}
+      testID={`${testID}-${symbol || 'empty'}-${network || 'empty'}`}
     >
-      <TouchableWithoutFeedback
-        onPress={onTapWhileDisabled ?? handleFocusField}
-      >
+      <TouchableWithoutFeedback onPress={onTapWhileDisabled ?? handleFocusField}>
         <Box
           flexDirection="row"
           flexGrow={1}
@@ -154,23 +138,13 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
         >
           <Box paddingRight="10px">
             {symbol ? (
-              <CoinIcon
-                address={address}
-                mainnet_address={mainnetAddress}
-                symbol={symbol}
-                type={type}
-              />
+              <FastCoinIcon address={address} mainnetAddress={mainnetAddress} symbol={symbol} network={network} theme={theme} />
             ) : (
               <Box>
-                <AccentColorProvider
-                  color={colors.alpha(colors.blueGreyDark, 0.1)}
-                >
-                  <Box
-                    background="accent"
-                    style={{ ...borders.buildCircleAsObject(CoinIconSize) }}
-                  />
+                <AccentColorProvider color={theme.colors.alpha(theme.colors.blueGreyDark, 0.1)}>
+                  <Box background="accent" style={{ ...borders.buildCircleAsObject(CoinIconSize) }} />
                 </AccentColorProvider>
-                <ChainBadge assetType={network} />
+                <ChainBadge network={network} />
               </Box>
             )}
           </Box>
@@ -178,7 +152,7 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
           <Input
             {...(android &&
               color && {
-                selectionColor: colors.alpha(color, 0.4),
+                selectionColor: theme.colors.alpha(color, 0.4),
               })}
             color={color}
             editable={editable}
@@ -196,12 +170,7 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
         </Box>
       </TouchableWithoutFeedback>
       {!disableCurrencySelection && (
-        <TokenSelectionButton
-          color={color}
-          onPress={onPressSelectCurrency}
-          symbol={symbol}
-          testID={testID + '-selection-button'}
-        />
+        <TokenSelectionButton color={color} onPress={onPressSelectCurrency} symbol={symbol} testID={testID + '-selection-button'} />
       )}
     </Box>
   );

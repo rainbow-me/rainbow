@@ -8,11 +8,9 @@ const migrationsVersion = '0.0.1';
  * @desc get migrations
  * @return {Number}
  */
-export const getMigrationVersion = () =>
-  getGlobal(MIGRATION_VERSION, 0, migrationsVersion);
+export const getMigrationVersion = () => getGlobal(MIGRATION_VERSION, 0, migrationsVersion);
 
 /**
  * @desc save migrations
  */
-export const setMigrationVersion = (migration: any) =>
-  saveGlobal(MIGRATION_VERSION, migration, migrationsVersion);
+export const setMigrationVersion = (migration: any) => saveGlobal(MIGRATION_VERSION, migration, migrationsVersion);

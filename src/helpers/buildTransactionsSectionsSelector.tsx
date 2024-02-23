@@ -3,12 +3,7 @@ import { capitalize, groupBy, isEmpty } from 'lodash';
 import React from 'react';
 import { createSelector } from 'reselect';
 import { FastTransactionCoinRow, RequestCoinRow } from '../components/coin-row';
-import {
-  thisMonthTimestamp,
-  thisYearTimestamp,
-  todayTimestamp,
-  yesterdayTimestamp,
-} from './transactions';
+import { thisMonthTimestamp, thisYearTimestamp, todayTimestamp, yesterdayTimestamp } from './transactions';
 import { TransactionStatusTypes } from '@/entities';
 import * as i18n from '@/languages';
 
@@ -73,10 +68,7 @@ const buildTransactionsSections = (
   const transactionsWithContacts = transactions?.map(addContactInfo(contacts));
 
   if (!isEmpty(transactionsWithContacts)) {
-    const transactionsByDate = groupBy(
-      transactionsWithContacts,
-      groupTransactionByDate
-    );
+    const transactionsByDate = groupBy(transactionsWithContacts, groupTransactionByDate);
 
     sectionedTransactions = Object.keys(transactionsByDate)
       .filter(section => section !== 'Dropped')
@@ -86,9 +78,7 @@ const buildTransactionsSections = (
           accountAddress,
           mainnetAddress: mainnetAddresses[`${txn.address}_${txn.network}`],
         })),
-        renderItem: ({ item }: any) => (
-          <FastTransactionCoinRow item={item} theme={theme} />
-        ),
+        renderItem: ({ item }: any) => <FastTransactionCoinRow item={item} theme={theme} />,
         title: section,
       }));
 
@@ -97,10 +87,7 @@ const buildTransactionsSections = (
       ({ title }) => title === 'Pending'
     );
     if (pendingSectionIndex > 0) {
-      const pendingSection = sectionedTransactions.splice(
-        pendingSectionIndex,
-        1
-      );
+      const pendingSection = sectionedTransactions.splice(pendingSectionIndex, 1);
       sectionedTransactions.unshift(pendingSection[0]);
     }
   }
@@ -111,9 +98,7 @@ const buildTransactionsSections = (
     requestsToApprove = [
       {
         data: requests,
-        renderItem: ({ item }: any) => (
-          <RequestCoinRow item={item} theme={theme} />
-        ),
+        renderItem: ({ item }: any) => <RequestCoinRow item={item} theme={theme} />,
         title: 'Requests',
       },
     ];

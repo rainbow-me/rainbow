@@ -3,12 +3,7 @@ import { startCase } from 'lodash';
 import { NativeSyntheticEvent } from 'react-native';
 import { setClipboard } from '../../hooks/useClipboard';
 import { Network } from '@/helpers/networkTypes';
-import {
-  abbreviations,
-  ethereumUtils,
-  haptics,
-  showActionSheetWithOptions,
-} from '@/utils';
+import { abbreviations, ethereumUtils, haptics, showActionSheetWithOptions } from '@/utils';
 
 const buildBlockExplorerAction = (type: Network) => {
   const blockExplorerText = lang.t('exchange.coin_row.view_on', {
@@ -40,10 +35,7 @@ const CoinRowActions = {
   },
 };
 
-export default function contextMenuProps(
-  item: any,
-  onCopySwapDetailsText: (address: string) => void
-) {
+export default function contextMenuProps(item: any, onCopySwapDetailsText: (address: string) => void) {
   const handleCopyContractAddress = (address: string) => {
     haptics.selection();
     setClipboard(address);
@@ -51,14 +43,8 @@ export default function contextMenuProps(
   };
 
   const onPressAndroid = () => {
-    const blockExplorerText = `View on ${startCase(
-      ethereumUtils.getBlockExplorer(item?.type)
-    )}`;
-    const androidContractActions = [
-      lang.t('wallet.action.copy_contract_address'),
-      blockExplorerText,
-      lang.t('button.cancel'),
-    ];
+    const blockExplorerText = `View on ${startCase(ethereumUtils.getBlockExplorer(item?.network))}`;
+    const androidContractActions = [lang.t('wallet.action.copy_contract_address'), blockExplorerText, lang.t('button.cancel')];
 
     showActionSheetWithOptions(
       {
@@ -72,33 +58,29 @@ export default function contextMenuProps(
           handleCopyContractAddress(item?.address);
         }
         if (idx === 1) {
-          ethereumUtils.openTokenEtherscanURL(item?.address, item?.type);
+          ethereumUtils.openTokenEtherscanURL(item?.address, item?.network);
         }
       }
     );
   };
 
-  const blockExplorerAction = buildBlockExplorerAction(item?.type);
+  const blockExplorerAction = buildBlockExplorerAction(item?.network);
   const menuConfig = {
     menuItems: [
       blockExplorerAction,
       {
         ...CoinRowActions[CoinRowActionsEnum.copyAddress],
-        discoverabilityTitle: abbreviations.formatAddressForDisplay(
-          item?.address
-        ),
+        discoverabilityTitle: abbreviations.formatAddressForDisplay(item?.address),
       },
     ],
     menuTitle: `${item?.name} (${item?.symbol})`,
   };
 
-  const handlePressMenuItem = ({
-    nativeEvent: { actionKey },
-  }: NativeSyntheticEvent<{ actionKey: string }>) => {
+  const handlePressMenuItem = ({ nativeEvent: { actionKey } }: NativeSyntheticEvent<{ actionKey: string }>) => {
     if (actionKey === CoinRowActionsEnum.copyAddress) {
       handleCopyContractAddress(item?.address);
     } else if (actionKey === CoinRowActionsEnum.blockExplorer) {
-      ethereumUtils.openTokenEtherscanURL(item?.address, item?.type);
+      ethereumUtils.openTokenEtherscanURL(item?.address, item?.network);
     }
   };
   return {

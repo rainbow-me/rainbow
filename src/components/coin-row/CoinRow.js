@@ -7,8 +7,7 @@ import { padding } from '@/styles';
 
 const CoinRowPaddingTop = 9;
 const CoinRowPaddingBottom = 10;
-export const CoinRowHeight =
-  CoinIconSize + CoinRowPaddingTop + CoinRowPaddingBottom;
+export const CoinRowHeight = CoinIconSize + CoinRowPaddingTop + CoinRowPaddingBottom;
 
 const Container = styled(Row).attrs({
   align: 'center',
@@ -44,7 +43,7 @@ export default function CoinRow({
   testID,
   topRowRender,
   tokens,
-  type,
+  network,
   ...props
 }) {
   const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
@@ -61,15 +60,12 @@ export default function CoinRow({
           isHidden,
           isPinned,
           symbol,
-          type,
+          network,
           ...props,
         })
       )}
       <Content isHidden={isHidden} justify="center" style={contentStyles}>
-        <Row
-          align="center"
-          testID={`${testID}-${symbol || ''}-${type || 'token'}`}
-        >
+        <Row align="center" testID={`${testID}-${symbol || ''}-${network}`}>
           {topRowRender({
             name,
             nativeCurrency,
@@ -87,9 +83,7 @@ export default function CoinRow({
           })}
         </Row>
       </Content>
-      {typeof children === 'function'
-        ? children({ symbol, ...props })
-        : children}
+      {typeof children === 'function' ? children({ symbol, ...props }) : children}
     </Container>
   );
 }

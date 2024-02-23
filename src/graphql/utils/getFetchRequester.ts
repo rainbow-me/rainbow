@@ -2,7 +2,7 @@ import { rainbowFetch, RainbowFetchRequestOpts } from '@/rainbow-fetch';
 import { DocumentNode } from 'graphql';
 import { resolveRequestDocument } from 'graphql-request';
 import { buildGetQueryParams } from '@/graphql/utils/buildGetQueryParams';
-import { ARC_GRAPHQL_API_KEY } from 'react-native-dotenv';
+import { ARC_GRAPHQL_API_KEY, METADATA_GRAPHQL_API_KEY } from 'react-native-dotenv';
 
 const allowedOperations = ['mutation', 'query'];
 
@@ -40,23 +40,28 @@ const additionalConfig: {
       'x-api-key': ARC_GRAPHQL_API_KEY,
     },
   },
+  metadata: {
+    headers: {
+      Authorization: `Bearer ${METADATA_GRAPHQL_API_KEY}`,
+    },
+  },
+  metadataPOST: {
+    headers: {
+      Authorization: `Bearer ${METADATA_GRAPHQL_API_KEY}`,
+    },
+  },
 };
 
 export function getFetchRequester(config: Config) {
   const { url, method = 'POST' } = config.schema;
 
-  return async function requester<
-    TResponse = unknown,
-    TVariables = Record<string, unknown>
-  >(
+  return async function requester<TResponse = unknown, TVariables = Record<string, unknown>>(
     node: DocumentNode,
     variables?: TVariables,
     options?: Options
   ): Promise<TResponse> {
     const definitions = node.definitions.filter(
-      definition =>
-        definition.kind === 'OperationDefinition' &&
-        allowedOperations.includes(definition.operation)
+      definition => definition.kind === 'OperationDefinition' && allowedOperations.includes(definition.operation)
     );
 
     if (definitions.length !== 1) {

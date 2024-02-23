@@ -4,15 +4,16 @@ import { gasUtils } from '@/utils';
 import { bsc } from '@wagmi/chains';
 import { BNB_BSC_ADDRESS, BNB_MAINNET_ADDRESS } from '@/references';
 import { getBscGasPrices } from '@/redux/gas';
-import config from '@/model/config';
+import { getRemoteConfig } from '@/model/remoteConfig';
 
 export const getBSCNetworkObject = (): NetworkProperties => {
+  const { bsc_enabled, bsc_tx_enabled } = getRemoteConfig();
   return {
     // wagmi chain data
     ...bsc,
 
     // network related data
-    enabled: config.bsc_enabled,
+    enabled: bsc_enabled,
     name: 'BSC',
     longName: 'Binance Smart Chain',
     value: Network.bsc,
@@ -37,9 +38,8 @@ export const getBSCNetworkObject = (): NetworkProperties => {
       walletconnect: true,
       swaps: true,
       nfts: true,
-      savings: false,
       pools: false,
-      txs: config.bsc_tx_enabled,
+      txs: bsc_tx_enabled,
     },
 
     gas: {

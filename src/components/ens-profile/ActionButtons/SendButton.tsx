@@ -23,11 +23,5 @@ export default function SendButton({ ensName }: { ensName?: string }) {
     }
   }, [ensName, navigate]);
 
-  return (
-    <ActionButton
-      color="action (Deprecated)"
-      icon="􀈠"
-      onPress={handlePressSend}
-    />
-  );
+  return <ActionButton color="action (Deprecated)" icon="􀈠" onPress={handlePressSend} />;
 }

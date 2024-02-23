@@ -25,34 +25,21 @@ const ButtonShapeTypes = {
 };
 
 const shadowStyles = (colors, disabled, isDarkMode) => ({
-  shadowColor: colors.alpha(
-    isDarkMode ? colors.shadow : colors.blueGreyDark,
-    isDarkMode && disabled ? 0.2 : 0.5
-  ),
+  shadowColor: colors.alpha(isDarkMode ? colors.shadow : colors.blueGreyDark, isDarkMode && disabled ? 0.2 : 0.5),
   shadowOffset: { height: 4, width: 0 },
   shadowOpacity: 0.2,
   shadowRadius: 6,
 });
 
-const Container = styled(Centered)(
-  ({
-    disabled,
-    type,
-    showShadow,
-    backgroundColor,
-    size,
-    theme: { colors, isDarkMode },
-  }) => ({
-    ...(showShadow ? shadowStyles(colors, disabled, isDarkMode) : {}),
-    ...padding.object(...ButtonSizeTypes[size].padding),
-    backgroundColor: backgroundColor,
-    borderRadius: type === 'rounded' ? 14 : 50,
-    flexGrow: 0,
-  })
-);
+const Container = styled(Centered)(({ disabled, type, showShadow, backgroundColor, size, theme: { colors, isDarkMode } }) => ({
+  ...(showShadow ? shadowStyles(colors, disabled, isDarkMode) : {}),
+  ...padding.object(...ButtonSizeTypes[size].padding),
+  backgroundColor: backgroundColor,
+  borderRadius: type === 'rounded' ? 14 : 50,
+  flexGrow: 0,
+}));
 
-const shouldRenderChildrenAsText = children =>
-  isArray(children) ? isString(children[0]) : isString(children);
+const shouldRenderChildrenAsText = children => (isArray(children) ? isString(children[0]) : isString(children));
 
 const Button = ({
   backgroundColor,
@@ -76,17 +63,10 @@ const Button = ({
   const { colors, isDarkMode } = useTheme();
 
   return (
-    <ButtonPressAnimation
-      disabled={disabled}
-      onPress={onPress}
-      radiusAndroid={borderRadius}
-      testID={testID}
-    >
+    <ButtonPressAnimation disabled={disabled} onPress={onPress} radiusAndroid={borderRadius} testID={testID}>
       <Container
         {...props}
-        backgroundColor={
-          backgroundColor || (isDarkMode ? colors.offWhite : colors.grey)
-        }
+        backgroundColor={backgroundColor || (isDarkMode ? colors.offWhite : colors.grey)}
         disabled={disabled}
         showShadow={showShadow}
         size={size}
@@ -94,25 +74,13 @@ const Button = ({
         type={type}
       >
         {shouldRenderChildrenAsText(children) ? (
-          <Text
-            color={color || colors.whiteLabel}
-            size={ButtonSizeTypes[size].fontSize}
-            weight="semibold"
-            {...textProps}
-          >
+          <Text color={color || colors.whiteLabel} size={ButtonSizeTypes[size].fontSize} weight="semibold" {...textProps}>
             {children}
           </Text>
         ) : (
           children
         )}
-        {(!onPress || !disabled) && (
-          <InnerBorder
-            color={borderColor}
-            opacity={borderOpacity}
-            radius={borderRadius}
-            width={borderWidth}
-          />
-        )}
+        {(!onPress || !disabled) && <InnerBorder color={borderColor} opacity={borderOpacity} radius={borderRadius} width={borderWidth} />}
       </Container>
     </ButtonPressAnimation>
   );

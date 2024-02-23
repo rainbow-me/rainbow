@@ -4,14 +4,15 @@ import { gasUtils } from '@/utils';
 import { arbitrum } from '@wagmi/chains';
 import { ARBITRUM_ETH_ADDRESS } from '@/references';
 import { getArbitrumGasPrices } from '@/redux/gas';
-import config from '@/model/config';
+import { getRemoteConfig } from '@/model/remoteConfig';
 
 export const getArbitrumNetworkObject = (): NetworkProperties => {
+  const { arbitrum_enabled, arbitrum_tx_enabled } = getRemoteConfig();
   return {
     // wagmi chain data
     ...arbitrum,
     // network related data
-    enabled: config.arbitrum_enabled,
+    enabled: arbitrum_enabled,
     name: 'Arbitrum',
     longName: 'Arbitrum',
     value: Network.arbitrum,
@@ -36,18 +37,12 @@ export const getArbitrumNetworkObject = (): NetworkProperties => {
       walletconnect: true,
       swaps: true,
       nfts: true,
-      savings: false,
       pools: false,
-      txs: config.arbitrum_tx_enabled,
+      txs: arbitrum_tx_enabled,
     },
 
     gas: {
-      speeds: [
-        gasUtils.NORMAL,
-        gasUtils.FAST,
-        gasUtils.URGENT,
-        gasUtils.CUSTOM,
-      ],
+      speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT, gasUtils.CUSTOM],
 
       // ?
       gasType: 'eip1559',

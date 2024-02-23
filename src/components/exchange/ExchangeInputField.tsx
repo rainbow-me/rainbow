@@ -36,7 +36,7 @@ interface ExchangeInputFieldProps {
   inputAmount: string | null;
   inputCurrencyAddress: string;
   inputCurrencyMainnetAddress?: string;
-  inputCurrencyAssetType?: string;
+  inputCurrencyNetwork?: string;
   inputCurrencySymbol?: string;
   inputFieldRef: MutableRefObject<TextInput | null>;
   setInputAmount: (value: string | null) => void;
@@ -59,7 +59,7 @@ export default function ExchangeInputField({
   nativeCurrency,
   nativeFieldRef,
   network,
-  inputCurrencyAssetType,
+  inputCurrencyNetwork,
   onFocus,
   onPressMaxBalance,
   onPressSelectInputCurrency,
@@ -85,7 +85,7 @@ export default function ExchangeInputField({
         setAmount={setInputAmount}
         symbol={inputCurrencySymbol}
         testID={testID}
-        type={inputCurrencyAssetType}
+        type={inputCurrencyNetwork}
         updateOnFocus={updateAmountOnFocus}
         useCustomAndroidMask={android}
       />
@@ -103,12 +103,7 @@ export default function ExchangeInputField({
           testID={testID + '-native'}
           updateOnFocus={updateAmountOnFocus}
         />
-        <ExchangeMaxButton
-          color={color}
-          disabled={!inputCurrencySymbol}
-          onPress={onPressMaxBalance}
-          testID={testID + '-max'}
-        />
+        <ExchangeMaxButton color={color} disabled={!inputCurrencySymbol} onPress={onPressMaxBalance} testID={testID + '-max'} />
       </NativeFieldRow>
     </Container>
   );

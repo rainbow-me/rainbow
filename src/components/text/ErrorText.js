@@ -8,12 +8,7 @@ export default function ErrorText({ color, error }) {
   return (
     <RowWithMargins align="center" margin={9}>
       <Icon color={color || colors.red} name="warning" />
-      <Text
-        color={color || colors.red}
-        lineHeight="looser"
-        size="lmedium"
-        weight="medium"
-      >
+      <Text color={color || colors.red} lineHeight="looser" size="lmedium" weight="medium">
         {error}
       </Text>
     </RowWithMargins>

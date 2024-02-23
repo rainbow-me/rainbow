@@ -5,20 +5,11 @@ import { abbreviations } from '@/utils';
 
 const TruncatedENS = ({ ens, truncationLength, ...props }, ref) => {
   const text = useMemo(
-    () =>
-      ens
-        ? abbreviations.abbreviateEnsForDisplay(ens, truncationLength)
-        : lang.t('wallet.error_displaying_address'),
+    () => (ens ? abbreviations.abbreviateEnsForDisplay(ens, truncationLength) : lang.t('wallet.error_displaying_address')),
     [ens, truncationLength]
   );
   return (
-    <Text
-      {...props}
-      adjustsFontSizeToFit
-      minimumFontScale={0.5}
-      numberOfLines={1}
-      ref={ref}
-    >
+    <Text {...props} adjustsFontSizeToFit minimumFontScale={0.5} numberOfLines={1} ref={ref}>
       {text}
     </Text>
   );

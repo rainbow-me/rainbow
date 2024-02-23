@@ -1,19 +1,12 @@
 import lang from 'i18n-js';
 import { uniqBy } from 'lodash';
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { InteractionManager, View } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { useDispatch } from 'react-redux';
 import { useDebounce } from 'use-debounce/lib';
 import CurrencySelectionTypes from '@/helpers/currencySelectionTypes';
-import { emitAssetRequest } from '@/redux/explorer';
+
 import deviceUtils from '@/utils/deviceUtils';
 import { CurrencySelectionList } from '@/components/exchange';
 import { Row } from '@/components/layout';
@@ -21,23 +14,16 @@ import DiscoverSheetContext from '../DiscoverScreenContext';
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { fetchSuggestions } from '@/handlers/ens';
-import {
-  useAccountSettings,
-  useHardwareBackOnFocus,
-  usePrevious,
-  useSwapCurrencyList,
-} from '@/hooks';
+import { useAccountSettings, useHardwareBackOnFocus, usePrevious, useSearchCurrencyList } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
 import { ethereumUtils } from '@/utils';
 import { Network } from '@/helpers';
-import {
-  getPoapAndOpenSheetWithQRHash,
-  getPoapAndOpenSheetWithSecretWord,
-} from '@/utils/poaps';
+import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
+import { getHeaderHeight } from '@/navigation/SwipeNavigator';
 
 export const SearchContainer = styled(Row)({
   height: '100%',
@@ -61,11 +47,12 @@ export default function DiscoverSearch() {
 
   const { colors } = useTheme();
   const profilesEnabled = useExperimentalFlag(PROFILES);
+  const marginBottom = useMemo(() => getHeaderHeight(), []);
 
   const currencySelectionListRef = useRef();
   const [searchQueryForSearch] = useDebounce(searchQuery, 350);
   const [ensResults, setEnsResults] = useState([]);
-  const { swapCurrencyList, swapCurrencyListLoading } = useSwapCurrencyList(
+  const { swapCurrencyList, swapCurrencyListLoading } = useSearchCurrencyList(
     searchQueryForSearch,
     ethereumUtils.getChainIdFromNetwork(Network.mainnet),
     true
@@ -84,13 +71,9 @@ export default function DiscoverSearch() {
     let list = swapCurrencyList;
     const listKeys = swapCurrencyList.map(item => item.key);
 
-    const profilesSecond =
-      (listKeys[0] === 'favorites' && listKeys[1] !== 'verified') ||
-      listKeys[0] === 'verified';
+    const profilesSecond = (listKeys[0] === 'favorites' && listKeys[1] !== 'verified') || listKeys[0] === 'verified';
     const profilesThird =
-      listKeys[1] === 'verified' ||
-      listKeys[0] === 'unfilteredFavorites' ||
-      (listKeys[0] === 'favorites' && listKeys[1] === 'verified');
+      listKeys[1] === 'verified' || listKeys[0] === 'unfilteredFavorites' || (listKeys[0] === 'favorites' && listKeys[1] === 'verified');
 
     if (profilesSecond) {
       list.splice(1, 0, ...ensResults);
@@ -107,9 +90,7 @@ export default function DiscoverSearch() {
         // Remove dupes
         section.data = uniqBy(section?.data, 'symbol');
         // Remove dupes across sections
-        section.data = section?.data?.filter(
-          token => !symbols.includes(token?.symbol)
-        );
+        section.data = section?.data?.filter(token => !symbols.includes(token?.symbol));
         const sectionSymbols = section?.data?.map(token => token?.symbol);
         symbols = symbols.concat(sectionSymbols);
 
@@ -126,10 +107,7 @@ export default function DiscoverSearch() {
   const lastSearchQuery = usePrevious(searchQueryForSearch);
 
   const currencyListDataKey = useMemo(
-    () =>
-      `${swapCurrencyList?.[0]?.data?.[0]?.address || '_'}_${
-        ensResults?.[0]?.data?.[0]?.address || '_'
-      }`,
+    () => `${swapCurrencyList?.[0]?.data?.[0]?.address || '_'}_${ensResults?.[0]?.data?.[0]?.address || '_'}`,
     [ensResults, swapCurrencyList]
   );
 
@@ -173,14 +151,11 @@ export default function DiscoverSearch() {
         // navigate to Showcase sheet
         searchInputRef?.current?.blur();
         InteractionManager.runAfterInteractions(() => {
-          navigate(
-            profilesEnabled ? Routes.PROFILE_SHEET : Routes.SHOWCASE_SHEET,
-            {
-              address: item.nickname,
-              fromRoute: 'DiscoverSearch',
-              setIsSearchModeEnabled,
-            }
-          );
+          navigate(profilesEnabled ? Routes.PROFILE_SHEET : Routes.SHOWCASE_SHEET, {
+            address: item.nickname,
+            fromRoute: 'DiscoverSearch',
+            setIsSearchModeEnabled,
+          });
           if (profilesEnabled) {
             analytics.track('Viewed ENS profile', {
               category: 'profiles',
@@ -191,7 +166,9 @@ export default function DiscoverSearch() {
         });
       } else {
         const asset = ethereumUtils.getAccountAsset(item.uniqueId);
-        dispatch(emitAssetRequest(item.address));
+        if (item.favorite) {
+          item.network = Network.mainnet;
+        }
         navigate(Routes.EXPANDED_ASSET_SHEET, {
           asset: asset || item,
           fromDiscover: true,
@@ -199,13 +176,7 @@ export default function DiscoverSearch() {
         });
       }
     },
-    [
-      dispatch,
-      navigate,
-      profilesEnabled,
-      searchInputRef,
-      setIsSearchModeEnabled,
-    ]
+    [dispatch, navigate, profilesEnabled, searchInputRef, setIsSearchModeEnabled]
   );
 
   const itemProps = useMemo(
@@ -239,24 +210,10 @@ export default function DiscoverSearch() {
     if (searchQueryForSearch && !isSearching) {
       if (lastSearchQuery !== searchQueryForSearch) {
         setIsSearching(true);
-        fetchSuggestions(
-          searchQuery,
-          addEnsResults,
-          setIsFetchingEns,
-          profilesEnabled
-        );
+        fetchSuggestions(searchQuery, addEnsResults, setIsFetchingEns, profilesEnabled);
       }
     }
-  }, [
-    addEnsResults,
-    isSearching,
-    lastSearchQuery,
-    searchQuery,
-    searchQueryForSearch,
-    setIsFetchingEns,
-    setIsSearching,
-    profilesEnabled,
-  ]);
+  }, [addEnsResults, isSearching, lastSearchQuery, searchQuery, searchQueryForSearch, setIsFetchingEns, setIsSearching, profilesEnabled]);
 
   useEffect(() => {
     if (!swapCurrencyListLoading && !isFetchingEns) {
@@ -275,10 +232,7 @@ export default function DiscoverSearch() {
   }, [isSearchModeEnabled]);
 
   return (
-    <View
-      key={currencyListDataKey}
-      style={{ height: deviceUtils.dimensions.height - 140 }}
-    >
+    <View key={currencyListDataKey} style={{ height: deviceUtils.dimensions.height - 140 - marginBottom }}>
       <SearchContainer>
         <CurrencySelectionList
           footerSpacer

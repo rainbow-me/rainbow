@@ -64,10 +64,7 @@ export const PoolValue = ({ type, value, simple, ...props }) => {
     formattedValue = bigNumberFormat(value, nativeCurrency, value >= 10000);
   }
   return (
-    <PoolValueWrapper
-      backgroundColor={colors.alpha(color, simple ? 0 : 0.06)}
-      simple={simple}
-    >
+    <PoolValueWrapper backgroundColor={colors.alpha(color, simple ? 0 : 0.06)} simple={simple}>
       <PoolValueText color={color} simple={simple} {...props}>
         {formattedValue}
       </PoolValueText>

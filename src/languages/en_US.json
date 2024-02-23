@@ -286,11 +286,6 @@
       "hidden": "Hidden"
     },
     "cards": {
-      "dpi": {
-        "title": "DeFi Pulse Index",
-        "body": "All the top decentralized finance tokens in one. Track the industry.",
-        "view": "View"
-      },
       "ens_create_profile": {
         "title": "Create your ENS profile",
         "body": "Replace your wallet address with a profile owned entirely by you."
@@ -545,7 +540,7 @@
         "read_more_button": "Read more",
         "available_networks": "Available on %{availableNetworks} networks",
         "available_network": "Available on the %{availableNetwork} network",
-        "available_networkv2": "Also available on %{availableNetwork}",
+        "available_networkv2": "Only available on %{availableNetwork}",
         "l2_disclaimer": "This %{symbol} is on the %{network} network",
         "l2_disclaimer_send": "Sending on the %{network} network",
         "l2_disclaimer_dapp": "This app on the %{network} network",
@@ -682,6 +677,7 @@
         "registrant": "Registrant",
         "resolver": "Resolver",
         "save_to_photos": "Save to Photos",
+        "sell_for_x": "Sell for %{price}",
         "set_primary_name": "Set as my ENS name",
         "share_token_info": "Share %{uniqueTokenName} Info",
         "showcase": "Showcase",
@@ -1172,7 +1168,12 @@
       "mintdotfun_unsupported_network": "Mint.fun does not support this network"
     },
     "nfts": {
-      "selling": "Selling"
+      "selling": "Selling",
+      "sort": {
+        "abc": "Alphabetical",
+        "most_recent": "Recent",
+        "floor_price": "Floor Price"
+      }
     },
     "nft_offers": {
       "card": {
@@ -1230,8 +1231,107 @@
       }
     },
     "points": {
-      "coming_soon_title": "Coming Soon",
-      "coming_soon_description": "Points are just around the corner.\nStart earning today."
+      "placeholder": {
+        "coming_soon_title": "Coming Soon",
+        "coming_soon_description": "Points are just around the corner.\nStart earning today."
+      },
+      "claim": {
+        "title": "Claim your points",
+        "subtitle": "Points are here. Find out how many you've been awarded.",
+        "get_started": "Get Started",
+        "use_referral_code": "Use Referral Code"
+      },
+      "referral": {
+        "title": "Enter your referral code",
+        "subtitle": "Enter a referral code below to claim your bonus reward.",
+        "back": "Back",
+        "error": "Something went wrong. Please restart the app and try again.",
+        "get_started": "Get Started",
+        "invalid_code": "Invalid Code"
+      },
+      "notifications": {
+        "enable": "Enable Points Notifications",
+        "disable": "Disable Points Notifications"
+      },
+      "points": {
+        "referral_code": "Referral Code",
+        "share_link": "Share Link",
+        "next_drop": "Next Drop",
+        "your_rank": "Your Rank",
+        "of_x": "Of %{totalUsers}",
+        "referrals": "Referrals",
+        "streak": "Streak",
+        "longest_yet": "Longest yet",
+        "day": "day",
+        "days": "days",
+        "leaderboard": "Leaderboard",
+        "sunday": "Sun",
+        "monday": "Mon",
+        "tuesday": "Tue",
+        "wednesday": "Wed",
+        "thursday": "Thu",
+        "friday": "Fri",
+        "saturday": "Sat",
+        "today": "Today",
+        "error": "Oops!\nPlease pull to refresh.",
+        "points": "points",
+        "referral_code_copied": "Referral code copied",
+        "earn_points_for_referring": "Earn points when your referrals swap $100 through Rainbow, plus earn 10% of the points your referrals earn",
+        "already_claimed_points": "Sorry! You have already claimed your points.",
+        "now": "Now",
+        "unranked": "Unranked",
+        "points_to_rank": "750 points to rank"
+      },
+      "console": {
+        "claim_bonus_paragraph": "You'll receive an additional 100 points once you swap at least $100 through Rainbow",
+        "welcome_bonus": "Welcome Bonus",
+        "true_believer": "True Believer",
+        "registration_complete": "Registration complete",
+        "account": "Account",
+        "points_you_have": "You Have",
+        "points_earned": "Points Earned",
+        "share_bonus_paragraph_one": "You're all set!",
+        "share_bonus_paragraph_two": "Keep earning points by swapping, bridging, minting, referring friends, and more",
+        "share_bonus_paragraph_three": "The more you use Rainbow, the more you'll be rewarded",
+        "calculation_complete": "Calculation complete",
+        "metamask_swaps": "MetaMask Swaps",
+        "wallet_balance": "Wallet Balance",
+        "rainbow_nfts_owned": "Rainbow NFTs Owned",
+        "rainbow_swaps": "Rainbow Swaps",
+        "calculating_points": "Calculating points",
+        "access_granted": "Access granted",
+        "sign_in_with_wallet": "Sign in with your wallet",
+        "auth_required": "Authorization required",
+        "proceed_to_share": "Continue",
+        "skip_referral": "Skip",
+        "sign_in": "Sign In",
+        "try_a_swap": "Try a Swap",
+        "get_some_eth": "Get Some ETH",
+        "generic_alert": "Something went wrong, please try again.",
+        "existing_user_alert": "Points already claimed. Please restart the app to refresh.",
+        "invalid_referral_code_alert": "Invalid referral code. Please double check your code and try again.",
+        "no_balance_alert": "To enroll in Points, you must have a non-zero wallet balance.",
+        "referral_link_is_ready": "Your referral link is ready",
+        "referral_link_bonus_text": "Tweet your referral link and get an extra 250 points",
+        "referral_link_bonus_text_extended": "Plus you'll earn 10% of the points earned by anyone you refer",
+        "complete_onboarding": "Done",
+        "share_to_x": "Share to X",
+        "hardware_wallet_alert": "Hardware wallet support is coming soon!",
+        "view_weekly_earnings_week_of": "Week of %{startOfWeek} - %{endOfWeek}",
+        "view_weekly_earnings_title": "Counting earned points",
+        "view_weekly_earnings_counted": "Weekly earnings counted",
+        "view_weekly_earnings_close_button": "Close",
+        "view_weekly_earnings_retroactive_points": "Retroactive points",
+        "view_weekly_earnings_activity": "Your Activity",
+        "view_weekly_earnings_referral_activity": "Referral Activity",
+        "view_weekly_earnings_total_earnings": "Total",
+        "view_weekly_earnings_new_referrals": "New Referrals",
+        "wallet_balance_required": "Wallet balance required",
+        "require_balance_paragraph_one": "To continue, ensure you have an ETH balance on one of the following networks:",
+        "require_balance_paragraph_two": "Or alternatively, a MATIC balance on Polygon or a BNB balance on BSC",
+        "fund_my_wallet": "Fund My Wallet",
+        "points": "Points"
+      }
     },
     "pools": {
       "deposit": "Deposit",
@@ -1615,6 +1715,7 @@
       "notifications": "Notifications",
       "notifications_section": {
         "my_wallets": "My Wallets",
+        "points": "Points",
         "watched_wallets": "Watched Wallets",
         "allow_notifications": "Allow Notifications",
         "sent": "Sent",
@@ -2167,13 +2268,13 @@
         "please_enable_title": "Rainbow would like to send you push notifications"
       },
       "qr": {
-        "camera_access_needed": "Camera access needed to scan!",
+        "camera_access_needed": "Enabling this allows you to scan QR codes so you can connect to dApps and discover wallets.",
         "enable_camera_access": "Enable camera access",
         "error_mounting_camera": "Error mounting camera",
         "find_a_code": "Find a code to scan",
         "qr_1_app_connected": "1 Connected App",
         "qr_multiple_apps_connected": "%{appsConnectedCount} Connected Apps",
-        "scan_to_pay_or_connect": "Scan to pay or connect",
+        "scan_to_pay_or_connect": "Camera access needed",
         "simulator_mode": "Simulator Mode",
         "sorry_could_not_be_recognized": "Sorry, this QR code could not be recognized.",
         "unrecognized_qr_code_title": "Unrecognized QR Code"
@@ -2273,6 +2374,7 @@
         "message": "Paste WalletConnect URI below",
         "title": "New WalletConnect Session"
       },
+      "none": "None",
       "switch_network": "Switch Network",
       "switch_wallet": "Switch Wallet",
       "titles": {
@@ -2320,7 +2422,8 @@
         "request_invalid": "The request contained invalid parameters. Please try again or contact Rainbow and/or dapp support teams.",
         "eth_sign": "Rainbow does not support legacy eth_sign due to security concerns.  \n Please contact Rainbow and/or dapp support teams if you have any questions.",
         "request_unsupported_network": "The network specified in this request is not supported by Rainbow.",
-        "request_unsupported_methods": "The RPC method(s) specified in this request are not supported by Rainbow."
+        "request_unsupported_methods": "The RPC method(s) specified in this request are not supported by Rainbow.",
+        "no_accounts_found": "No accounts found in approved namespaces."
       },
       "dapp_warnings": {
         "info_alert": {
@@ -2339,14 +2442,18 @@
             "likely_to_fail": "Likely to Fail",
             "simulation_unavailable": "Simulation Unavailable",
             "simulation_result": "Simulated Result",
-            "simulating": "Simulating"
+            "simulating": "Simulating",
+            "proceed_carefully": "Proceed Carefully",
+            "suspicious_transaction": "Suspicious Transaction"
           },
           "messages": {
             "no_changes": "No Changes Detected",
             "need_more_native": "You’ll need more %{symbol} on %{network} to pay for this transaction. Get some %{symbol} below to continue with this request.",
             "unavailable_personal_sign": "Simulation for personal signs is not yet supported",
             "unavailable_zora_network": "Simulation on Zora is not yet supported",
-            "failed_to_simulate": "The simulation failed, which suggests your transaction is likely to fail. This may be an issue with the app you’re using."
+            "failed_to_simulate": "The simulation failed, which suggests your transaction is likely to fail. This may be an issue with the app you’re using.",
+            "warning": "No known malicious behavior was detected, but this transaction has characteristics that may pose a risk to your wallet.",
+            "malicious": "Signing this transaction could result in losing access to everything in your wallet."
           },
           "event_row": {
             "unlimited": "Unlimited",

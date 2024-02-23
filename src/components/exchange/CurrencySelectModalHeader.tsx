@@ -35,24 +35,11 @@ export default function CurrencySelectModalHeader({
   }, [dangerouslyGetState, handleBackButton, navigate]);
 
   return (
-    <Box
-      height={{ custom: CurrencySelectModalHeaderHeight }}
-      justifyContent="center"
-      alignItems="center"
-      width="full"
-      flexDirection="row"
-    >
+    <Box height={{ custom: CurrencySelectModalHeaderHeight }} justifyContent="center" alignItems="center" width="full" flexDirection="row">
       {/** @ts-expect-error JavaScript component */}
       {showHandle && <SheetHandleFixedToTop />}
       {showBackButton && (
-        <Box
-          position="absolute"
-          bottom="0px"
-          left="0px"
-          top={{ custom: 3 }}
-          justifyContent="center"
-          alignItems="center"
-        >
+        <Box position="absolute" bottom="0px" left="0px" top={{ custom: 3 }} justifyContent="center" alignItems="center">
           {/** @ts-expect-error JavaScript component */}
           <BackButton
             direction="left"
@@ -66,22 +53,11 @@ export default function CurrencySelectModalHeader({
       )}
       {showCoinIcon && (
         <Inset right="4px">
-          <CoinIcon
-            size={20}
-            {...defaultOutputAsset}
-            badgeSize="tiny"
-            badgeXPosition={-3}
-          />
+          <CoinIcon size={20} {...defaultOutputAsset} badgeSize="tiny" badgeXPosition={-3} />
         </Inset>
       )}
 
-      <Text
-        color="primary (Deprecated)"
-        size="18px / 27px (Deprecated)"
-        weight="heavy"
-        numberOfLines={1}
-        align="center"
-      >
+      <Text color="primary (Deprecated)" size="18px / 27px (Deprecated)" weight="heavy" numberOfLines={1} align="center">
         {title}
       </Text>
     </Box>

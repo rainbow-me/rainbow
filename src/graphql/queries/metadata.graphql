@@ -81,16 +81,8 @@ query getRewardsDataForWallet($address: String!) {
   }
 }
 
-query reverseResolveENSProfile(
-  $chainID: Int!
-  $address: String!
-  $fields: [String!]
-) {
-  reverseResolveENSProfile(
-    chainID: $chainID
-    address: $address
-    fields: $fields
-  ) {
+query reverseResolveENSProfile($chainID: Int!, $address: String!, $fields: [String!]) {
+  reverseResolveENSProfile(chainID: $chainID, address: $address, fields: $fields) {
     name
     address
     resolverAddress
@@ -148,6 +140,7 @@ fragment change on TransactionSimulationChange {
   asset {
     ...asset
   }
+  price
   quantity
 }
 fragment target on TransactionSimulationTarget {
@@ -164,16 +157,46 @@ fragment simulationError on TransactionError {
   type
 }
 
-query simulateTransactions(
-  $chainId: Int!
-  $transactions: [Transaction!]
-  $domain: String!
-) {
-  simulateTransactions(
-    chainID: $chainId
-    transactions: $transactions
-    domain: $domain
-  ) {
+query simulateTransactions($chainId: Int!, $transactions: [Transaction!], $domain: String!) {
+  simulateTransactions(chainID: $chainId, transactions: $transactions, domain: $domain) {
+    error {
+      ...simulationError
+    }
+    scanning {
+      result
+      description
+    }
+    simulation {
+      in {
+        ...change
+      }
+      out {
+        ...change
+      }
+      approvals {
+        asset {
+          ...asset
+        }
+        spender {
+          ...target
+        }
+        quantityAllowed
+        quantityAtRisk
+      }
+      meta {
+        transferTo {
+          ...target
+        }
+        to {
+          ...target
+        }
+      }
+    }
+  }
+}
+
+query simulateMessage($address: String!, $chainId: Int!, $message: Message!, $domain: String!) {
+  simulateMessage(address: $address, chainID: $chainId, message: $message, domain: $domain) {
     error {
       ...simulationError
     }
@@ -207,46 +230,271 @@ query simulateTransactions(
   }
 }
 
-query simulateMessage(
-  $address: String!
-  $chainId: Int!
-  $message: Message!
-  $domain: String!
-) {
-  simulateMessage(
-    address: $address
-    chainID: $chainId
-    message: $message
-    domain: $domain
-  ) {
+query getPointsDataForWallet($address: String!) {
+  points(address: $address) {
     error {
-      ...simulationError
+      message
+      type
     }
-    scanning {
-      result
-      description
+    meta {
+      distribution {
+        next
+      }
+      status
     }
-    simulation {
-      in {
-        ...change
+    leaderboard {
+      stats {
+        total_users
+        total_points
+        rank_cutoff
       }
-      out {
-        ...change
+      accounts {
+        address
+        earnings {
+          total
+        }
+        ens
+        avatarURL
       }
-      approvals {
-        asset {
-          ...asset
-        }
-        spender {
-          ...target
-        }
-        quantityAllowed
-        quantityAtRisk
+    }
+    user {
+      referralCode
+      earnings {
+        total
       }
-      meta {
-        to {
-          ...target
+      stats {
+        position {
+          unranked
+          current
         }
+        last_airdrop {
+          position {
+            unranked
+            current
+          }
+          earnings {
+            total
+          }
+          differences {
+            type
+            earnings {
+              total
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+query getPointsOnboardChallenge($address: String!, $referral: String) {
+  pointsOnboardChallenge(address: $address, referral: $referral)
+}
+
+mutation onboardPoints($address: String!, $signature: String!, $referral: String) {
+  onboardPoints(address: $address, signature: $signature, referral: $referral) {
+    error {
+      message
+      type
+    }
+    meta {
+      distribution {
+        next
+      }
+      status
+    }
+    leaderboard {
+      stats {
+        total_users
+        total_points
+        rank_cutoff
+      }
+      accounts {
+        address
+        earnings {
+          total
+        }
+        ens
+        avatarURL
+      }
+    }
+    user {
+      referralCode
+      earnings {
+        total
+      }
+      stats {
+        position {
+          unranked
+          current
+        }
+      }
+      onboarding {
+        earnings {
+          total
+        }
+        categories {
+          data {
+            usd_amount
+            total_collections
+            owned_collections
+          }
+          type
+          display_type
+          earnings {
+            total
+          }
+        }
+      }
+    }
+  }
+}
+
+query validateReferral($code: String!) {
+  validateReferral(referral: $code) {
+    valid
+    error {
+      type
+      message
+    }
+  }
+}
+
+mutation redeemCodeForPoints($address: String!, $redemptionCode: String!) {
+  redeemCode(address: $address, code: $redemptionCode) {
+    earnings {
+      total
+    }
+    redemption_code {
+      code
+    }
+    error {
+      type
+      message
+    }
+  }
+}
+
+fragment TokenAllTimeFragment on TokenAllTime {
+  highDate
+  highValue
+  lowDate
+  lowValue
+}
+
+fragment TokenColorsFragment on TokenColors {
+  fallback
+  primary
+  shadow
+}
+
+fragment TokenLinkFragment on TokenLink {
+  url
+}
+
+fragment TokenLinksFragment on TokenLinks {
+  facebook {
+    ...TokenLinkFragment
+  }
+  homepage {
+    ...TokenLinkFragment
+  }
+  reddit {
+    ...TokenLinkFragment
+  }
+  telegram {
+    ...TokenLinkFragment
+  }
+  twitter {
+    ...TokenLinkFragment
+  }
+}
+
+fragment TokenPriceChartFragment on TokenPriceChart {
+  points
+  timeEnd
+  timeStart
+}
+
+fragment TokenPriceChartsFragment on TokenPriceCharts {
+  day {
+    ...TokenPriceChartFragment
+  }
+  hour {
+    ...TokenPriceChartFragment
+  }
+  max {
+    ...TokenPriceChartFragment
+  }
+  month {
+    ...TokenPriceChartFragment
+  }
+  week {
+    ...TokenPriceChartFragment
+  }
+  year {
+    ...TokenPriceChartFragment
+  }
+}
+
+query externalToken($address: String!, $chainId: Int!, $currency: String) {
+  token(address: $address, chainID: $chainId, currency: $currency) {
+    colors {
+      ...TokenColorsFragment
+    }
+    decimals
+    iconUrl
+    name
+    networks
+    price {
+      relativeChange24h
+      value
+    }
+    symbol
+  }
+}
+
+query tokenMetadata($address: String!, $chainId: Int!, $currency: String) {
+  token(address: $address, chainID: $chainId, currency: $currency) {
+    circulatingSupply
+    colors {
+      ...TokenColorsFragment
+    }
+    description
+    fullyDilutedValuation
+    iconUrl
+    links {
+      ...TokenLinksFragment
+    }
+    marketCap
+    name
+    networks
+    price {
+      relativeChange24h
+      value
+    }
+    totalSupply
+    volume1d
+  }
+}
+
+query priceChart($chainId: Int!, $address: String!, $day: Boolean!, $hour: Boolean!, $week: Boolean!, $month: Boolean!, $year: Boolean!) {
+  token(chainID: $chainId, address: $address) {
+    priceCharts {
+      day @include(if: $day) {
+        points
+      }
+      hour @include(if: $hour) {
+        points
+      }
+      week @include(if: $week) {
+        points
+      }
+      month @include(if: $month) {
+        points
+      }
+      year @include(if: $year) {
+        points
       }
     }
   }

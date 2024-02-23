@@ -22,6 +22,7 @@
       "tab_investments": "Kolam",
       "tab_savings": "Tabungan",
       "tab_showcase": "Pameran",
+      "tab_points": "Poin",
       "tab_positions": "Posisi",
       "tab_transactions": "Transaksi",
       "tab_transactions_tooltip": "Transaksi dan Transfer Token",
@@ -240,6 +241,7 @@
       "exchange_again": "Tukar Lagi",
       "exchange_search_placeholder": "Cari token",
       "exchange_search_placeholder_network": "Cari token pada %{network}",
+      "favorites": "Favorit",
       "go_back": "Kembali",
       "go_back_lowercase": "Kembali",
       "got_it": "Mengerti",
@@ -284,11 +286,6 @@
       "hidden": "Tersembunyi"
     },
     "cards": {
-      "dpi": {
-        "title": "Indeks DeFi Pulse",
-        "body": "Semua token keuangan terdesentralisasi teratas dalam satu. Lacak industri.",
-        "view": "Lihat"
-      },
       "ens_create_profile": {
         "title": "Buat profil ENS Anda",
         "body": "Ganti alamat dompet Anda dengan profil yang sepenuhnya dimiliki oleh Anda."
@@ -432,17 +429,6 @@
       "sync_codepush": "Sinkronkan codepush"
     },
     "discover": {
-      "lists": {
-        "lists_title": "Daftar",
-        "this_list_is_empty": "Daftar ini kosong!",
-        "types": {
-          "trending": "Trending",
-          "watchlist": "Daftar Tontonan",
-          "favorites": "Favorit",
-          "defi": "DeFi",
-          "stablecoins": "Stablecoins"
-        }
-      },
       "pulse": {
         "pulse_description": "Semua token DeFi top dalam satu",
         "today_suffix": "hari ini",
@@ -637,6 +623,7 @@
         }
       },
       "swap_details": {
+        "reward": "Hadiah",
         "exchange_rate": "Nilai tukar",
         "rainbow_fee": "Biaya Rainbow yang sudah termasuk",
         "refuel": "Token jaringan extra",
@@ -1161,8 +1148,37 @@
       "withdrawal_dropdown_label": "Untuk",
       "withdrawal_input_label": "Dapatkan"
     },
+    "minting": {
+      "hold_to_mint": "Tahan Menghasilkan",
+      "minting": "Minting...",
+      "minted": "Dicetak",
+      "mint_unavailable": "Pemintahan Tidak Tersedia",
+      "mint_on_mintdotfun": "􀮶 Pemintahan di mint.fun",
+      "error_minting": "Kesalahan Mencetak",
+      "mint_price": "Harga Pemintahan",
+      "free": "Gratis",
+      "by": "Oleh",
+      "unknown": "tidak diketahui",
+      "max": "Maks",
+      "nft_count": "%{number} NFT",
+      "description": "Deskripsi",
+      "total_minted": "Total Terpintakan",
+      "first_event": "Acara Pertama",
+      "last_event": "Acara Terakhir",
+      "max_supply": "Persediaan Maks",
+      "contract": "Kontrak",
+      "network": "Jaringan",
+      "could_not_find_collection": "Tidak dapat menemukan koleksi",
+      "unable_to_find_check_again": "Kami tidak dapat menemukan koleksi ini, periksa kembali alamat dan jaringan atau coba lagi nanti",
+      "mintdotfun_unsupported_network": "Mint.fun tidak mendukung jaringan ini"
+    },
     "nfts": {
-      "selling": "Menjual"
+      "selling": "Menjual",
+      "sort": {
+        "abc": "Abjad",
+        "most_recent": "Terbaru",
+        "floor_price": "Harga Dasar"
+      }
     },
     "nft_offers": {
       "card": {
@@ -1220,6 +1236,109 @@
       },
       "info": {
         "address_copied_to_clipboard": "Alamat disalin ke papan klip"
+      }
+    },
+    "points": {
+      "placeholder": {
+        "coming_soon_title": "Segera Hadir",
+        "coming_soon_description": "Poin akan segera hadir.\nMulai mendapatkan hari ini."
+      },
+      "claim": {
+        "title": "Klaim poin Anda",
+        "subtitle": "Poin telah ada. Cari tahu berapa banyak yang telah Anda dapatkan.",
+        "get_started": "Mulai",
+        "use_referral_code": "Gunakan Kode Referral"
+      },
+      "referral": {
+        "title": "Masukkan kode rujukan Anda",
+        "subtitle": "Masukkan kode referral di bawah untuk mengklaim hadiah bonus Anda.",
+        "back": "Kembali",
+        "error": "Terjadi kesalahan. Silakan memulai ulang aplikasi dan coba lagi.",
+        "get_started": "Mulai",
+        "invalid_code": "Kode tidak valid"
+      },
+      "notifications": {
+        "enable": "Aktifkan Notifikasi Poin",
+        "disable": "Nonaktifkan Notifikasi Poin"
+      },
+      "points": {
+        "referral_code": "Kode Referral",
+        "share_link": "Bagikan Tautan",
+        "next_drop": "Pengeluaran Berikutnya",
+        "your_rank": "Peringkat Anda",
+        "of_x": "Dari %{totalUsers}",
+        "referrals": "Referal",
+        "streak": "Streak",
+        "longest_yet": "Terlama saat ini",
+        "day": "hari",
+        "days": "hari",
+        "leaderboard": "Papan Peringkat",
+        "sunday": "Ming",
+        "monday": "Sen",
+        "tuesday": "Sel",
+        "wednesday": "Rab",
+        "thursday": "Kam",
+        "friday": "Jum",
+        "saturday": "Sab",
+        "today": "Hari Ini",
+        "error": "Ups!\nSilakan tarik untuk memuat ulang.",
+        "points": "poin",
+        "referral_code_copied": "Kode rujukan telah disalin",
+        "earn_points_for_referring": "Dapatkan poin ketika rujukanmu menukar $100 melalui Rainbow, plus dapatkan 10% dari poin yang diperoleh rujukanmu",
+        "already_claimed_points": "Maaf! Kamu sudah mengklaim poinmu.",
+        "now": "Sekarang",
+        "unranked": "Tidak Terperingkat",
+        "points_to_rank": "750 poin untuk naik peringkat"
+      },
+      "console": {
+        "claim_bonus_paragraph": "Anda akan mendapatkan tambahan 100 poin setelah Anda menukar minimal $100 melalui Rainbow",
+        "welcome_bonus": "Bonus Selamat Datang",
+        "true_believer": "Pengikut Setia",
+        "registration_complete": "Pendaftaran selesai",
+        "account": "Akun",
+        "points_you_have": "Anda Memiliki",
+        "points_earned": "Poin yang Didapat",
+        "share_bonus_paragraph_one": "Semua sudah siap!",
+        "share_bonus_paragraph_two": "Terus dapatkan poin dengan menukar, jembatan, mencetak, merujuk teman, dan lainnya",
+        "share_bonus_paragraph_three": "Semakin Anda menggunakan Rainbow, semakin banyak hadiah yang akan Anda dapatkan",
+        "calculation_complete": "Perhitungan selesai",
+        "metamask_swaps": "Penukaran MetaMask",
+        "wallet_balance": "Saldo Dompet",
+        "rainbow_nfts_owned": "NFT Rainbow yang Dimiliki",
+        "rainbow_swaps": "Penukaran Rainbow",
+        "calculating_points": "Menghitung poin",
+        "access_granted": "Akses diberikan",
+        "sign_in_with_wallet": "Masuk dengan dompet Anda",
+        "auth_required": "Diperlukan otorisasi",
+        "proceed_to_share": "Lanjutkan",
+        "skip_referral": "Lewat",
+        "sign_in": "Masuk",
+        "try_a_swap": "Coba Penukaran",
+        "get_some_eth": "Dapatkan ETH",
+        "generic_alert": "Terjadi kesalahan, silakan coba lagi.",
+        "existing_user_alert": "Poin sudah diklaim. Silakan restart aplikasi untuk memperbarui.",
+        "invalid_referral_code_alert": "Kode rujukan tidak valid. Silakan periksa kembali kode Anda dan coba lagi.",
+        "no_balance_alert": "Untuk mendaftar di Poin, Anda harus memiliki saldo dompet yang bukan nol.",
+        "referral_link_is_ready": "Tautan rujukan Anda siap",
+        "referral_link_bonus_text": "Tweet tautan rujukan Anda dan dapatkan tambahan 250 poin",
+        "referral_link_bonus_text_extended": "Plus, Anda akan mendapatkan 10% dari poin yang diperoleh oleh siapapun yang Anda rujuk",
+        "complete_onboarding": "Selesai",
+        "share_to_x": "Bagikan ke X",
+        "hardware_wallet_alert": "Dukungan dompet perangkat keras akan segera hadir!",
+        "view_weekly_earnings_week_of": "Minggu dari %{startOfWeek} - %{endOfWeek}",
+        "view_weekly_earnings_title": "Menghitung poin yang didapat",
+        "view_weekly_earnings_counted": "Pendapatan mingguan terhitung",
+        "view_weekly_earnings_close_button": "Tutup",
+        "view_weekly_earnings_retroactive_points": "Poin Retroaktif",
+        "view_weekly_earnings_activity": "Aktivitas Anda",
+        "view_weekly_earnings_referral_activity": "Aktivitas Referal",
+        "view_weekly_earnings_total_earnings": "Total",
+        "view_weekly_earnings_new_referrals": "Referal Baru",
+        "wallet_balance_required": "Saldo dompet diperlukan",
+        "require_balance_paragraph_one": "Untuk melanjutkan, pastikan Anda memiliki saldo ETH di salah satu jaringan berikut:",
+        "require_balance_paragraph_two": "Atau sebagai alternatif, saldo MATIC di Polygon atau saldo BNB di BSC",
+        "fund_my_wallet": "Isi Saldo Dompet Saya",
+        "points": "Poin"
       }
     },
     "pools": {
@@ -1442,6 +1561,27 @@
         "subheader": "MEMPERKENALKAN"
       }
     },
+    "nft_offers_launch": {
+      "primary_button": {
+        "has_offers": "Lihat Penawaran",
+        "not_has_offers": "Tutup"
+      },
+      "secondary_button": "Mungkin Nanti",
+      "info_row_1": {
+        "title": "Semua penawaran Anda dalam satu tempat",
+        "description": "Lihat penawaran Anda di semua marketplace NFT."
+      },
+      "info_row_2": {
+        "title": "Terima dari Pelangi",
+        "description": "Terima penawaran dengan sekali tekan dan tukar ke token pilihan Anda."
+      },
+      "info_row_3": {
+        "title": "Mode penyortiran cerdas",
+        "description": "Bandingkan dengan harga lantai, atau lihat penawaran tertinggi atau terbaru Anda."
+      },
+      "header": "Penawaran",
+      "subheader": "MEMPERKENALKAN"
+    },
     "review": {
       "alert": {
         "are_you_enjoying_rainbow": "Apakah Anda menikmati Rainbow? 🥰",
@@ -1493,6 +1633,10 @@
       "error_text": "Harap periksa koneksi internet Anda dan cek kembali nanti.",
       "ended_title": "Program berakhir",
       "ended_text": "Tetap sintonik untuk apa yang kami siapkan untuk Anda selanjutnya!",
+      "info": {
+        "title": "Dapatkan OP untuk pertukaran dan penghubung",
+        "description": "Dapatkan pengembalian uang dengan menukarkan atau menghubungkan ke Optimism. Hadiah didistribusikan setiap bulan."
+      },
       "op": {
         "airdrop_timing": {
           "title": "Airdrops Setiap Minggu",
@@ -1579,6 +1723,7 @@
       "notifications": "Notifikasi",
       "notifications_section": {
         "my_wallets": "Dompet Saya",
+        "points": "Poin",
         "watched_wallets": "Dompet yang Diawasi",
         "allow_notifications": "Izinkan Notifikasi",
         "sent": "Dikirim",
@@ -1705,6 +1850,8 @@
         "failed": "Gagal",
         "purchased": "Dibeli",
         "purchasing": "Membeli",
+        "minting": "Pencetakan",
+        "minted": "Dicetak",
         "received": "Diterima",
         "receiving": "Menerima",
         "self": "Sendiri",
@@ -2216,6 +2363,7 @@
       "wallet_alert": {
         "message_support": "Pesan Dukungan",
         "close": "Tutup",
+        "learn_more": "Pelajari Lebih Lanjut",
         "message": "Untuk bantuan, silakan hubungi dukungan! \nKami akan segera menghubungi Anda!",
         "title": "Terjadi kesalahan"
       }
@@ -2226,6 +2374,7 @@
       "available_networks": "Jaringan yang Tersedia",
       "change_network": "Ubah Jaringan",
       "connected_apps": "Aplikasi yang Terhubung",
+      "no_connected_apps": "Belum ada aplikasi terhubung 😢",
       "disconnect": "Putuskan Sambungan",
       "go_back_to_your_browser": "Kembali ke browser Anda",
       "paste_uri": {
@@ -2233,6 +2382,7 @@
         "message": "Tempelkan URI WalletConnect di bawah ini",
         "title": "Sesi WalletConnect Baru"
       },
+      "none": "Tidak ada",
       "switch_network": "Ganti Jaringan",
       "switch_wallet": "Ganti Dompet",
       "titles": {
@@ -2275,9 +2425,92 @@
         "pairing_timeout": "Sesi ini habis waktu sebelum koneksi dapat dibuat. Biasanya ini disebabkan oleh kesalahan jaringan. Silakan coba lagi.",
         "pairing_unsupported_methods": "Beranda meminta metode RPC dompet yang tidak didukung oleh Rainbow.",
         "pairing_unsupported_networks": "Dapp meminta jaringan yang tidak didukung oleh Rainbow.",
+        "read_only_wallet_on_signing_method": "Sepertinya Anda menggunakan dompet hanya untuk membaca, yang tidak diizinkan untuk permintaan ini.",
+        "namespaces_invalid": "Ada masalah dengan namespace yang diminta oleh dapp. Silakan coba lagi atau hubungi tim dukungan Rainbow dan/atau dapp.",
         "request_invalid": "Permintaan berisi parameter yang tidak valid. Silakan coba lagi atau hubungi tim dukungan Rainbow dan/atau beranda.",
+        "eth_sign": "Rainbow tidak mendukung eth_sign lama karena pertimbangan keamanan.  \n Silakan Hubungi tim dukungan Rainbow dan/atau dapp jika Anda memiliki pertanyaan.",
         "request_unsupported_network": "Jaringan yang ditentukan dalam permintaan ini tidak didukung oleh Rainbow.",
-        "request_unsupported_methods": "Metode RPC yang ditentukan dalam permintaan ini tidak didukung oleh Rainbow."
+        "request_unsupported_methods": "Metode RPC yang ditentukan dalam permintaan ini tidak didukung oleh Rainbow.",
+        "no_accounts_found": "Tidak ada akun yang ditemukan di ruang nama yang disetujui."
+      },
+      "dapp_warnings": {
+        "info_alert": {
+          "title": "Aplikasi ini kemungkinan berbahaya",
+          "description": "Menandatangani pesan atau transaksi dari aplikasi ini bisa menyebabkan kehilangan aset Anda"
+        }
+      },
+      "simulation": {
+        "titles": {
+          "message_request": "Permintaan Pesan",
+          "transaction_request": "Permintaan Transaksi"
+        },
+        "simulation_card": {
+          "titles": {
+            "not_enough_native_balance": "Tidak Cukup %{symbol}",
+            "likely_to_fail": "Rendah · cenderung gagal",
+            "simulation_unavailable": "Simulasi Tidak Tersedia",
+            "simulation_result": "Hasil Simulasi",
+            "simulating": "Pemodelan",
+            "proceed_carefully": "Lanjutkan dengan Hati-Hati",
+            "suspicious_transaction": "Transaksi Mencurigakan"
+          },
+          "messages": {
+            "no_changes": "Tidak Ada Perubahan Terdeteksi",
+            "need_more_native": "Anda membutuhkan lebih banyak %{symbol} pada %{network} untuk membayar transaksi ini. Dapatkan beberapa %{symbol} di bawah ini untuk melanjutkan permintaan ini.",
+            "unavailable_personal_sign": "Simulasi untuk tanda pribadi belum didukung",
+            "unavailable_zora_network": "Simulasi di Zora belum didukung",
+            "failed_to_simulate": "Simulasi gagal, yang menunjukkan bahwa transaksi Anda kemungkinan akan gagal. Ini mungkin masalah dengan aplikasi yang Anda gunakan.",
+            "warning": "Tidak ada perilaku jahat yang terdeteksi, namun transaksi ini memiliki karakteristik yang mungkin berisiko bagi dompet Anda.",
+            "malicious": "Menandatangani transaksi ini bisa mengakibatkan kehilangan akses ke seluruh isi dompet Anda."
+          },
+          "event_row": {
+            "unlimited": "Tidak terbatas",
+            "types": {
+              "send": "Kirim",
+              "receive": "Terima",
+              "approve": "Disetujui",
+              "revoke": "Mencabut"
+            }
+          }
+        },
+        "details_card": {
+          "title": "Rincian",
+          "types": {
+            "chain": "Jaringan",
+            "contract": "Kontrak",
+            "contract_created": "Kontrak Dibuat",
+            "to": "Ke",
+            "function": "Fungsi",
+            "source_code": "Kode Sumber",
+            "nonce": "Nonce"
+          },
+          "unknown": "Tidak Diketahui"
+        },
+        "message_card": {
+          "title": "Pesan",
+          "copy": "Salin"
+        },
+        "profile_section": {
+          "signing_with": "Tanda tangan dengan",
+          "free_to_sign": "Bebas untuk menandatangani",
+          "no_native_balance": "Tidak ada %{symbol}",
+          "on_network": "pada %{network}"
+        },
+        "buttons": {
+          "cancel": "Batal",
+          "confirm": "􀎽 Kirim Transaksi",
+          "get_native_token": "Dapatkan %{symbol}",
+          "buy_native_token": "Beli %{symbol}"
+        },
+        "formatted_dates": {
+          "today": "Hari Ini",
+          "day_ago": "hari yang lalu",
+          "days_ago": "hari yang lalu",
+          "week_ago": "seminggu yang lalu",
+          "weeks_ago": "minggu yang lalu",
+          "month_ago": "sebulan yang lalu",
+          "months_ago": "bulan yang lalu"
+        }
       }
     },
     "warning": {

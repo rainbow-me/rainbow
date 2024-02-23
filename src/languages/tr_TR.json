@@ -22,6 +22,7 @@
       "tab_investments": "Havuzlar",
       "tab_savings": "Tasarruflar",
       "tab_showcase": "Vitrin",
+      "tab_points": "Noktalar",
       "tab_positions": "Pozisyonlar",
       "tab_transactions": "İşlemler",
       "tab_transactions_tooltip": "İşlemler ve Token Transferleri",
@@ -240,6 +241,7 @@
       "exchange_again": "Tekrar Değiştir",
       "exchange_search_placeholder": "Tokenları ara",
       "exchange_search_placeholder_network": "%{network}üzerinde tokenları ara",
+      "favorites": "Favoriler",
       "go_back": "Geri Dön",
       "go_back_lowercase": "geri dön",
       "got_it": "Anladım",
@@ -284,11 +286,6 @@
       "hidden": "Gizli"
     },
     "cards": {
-      "dpi": {
-        "title": "DeFi Pulse İndeksi",
-        "body": "Tüm en iyi merkeziyetsiz finans tokenları bir arada. Endüstriyi izleyin.",
-        "view": "Görüntüle"
-      },
       "ens_create_profile": {
         "title": "ENS profilinizi oluşturun",
         "body": "Cüzdan adresinizi tamamen sizin tarafınızdan sahip olunan bir profil ile değiştirin."
@@ -432,17 +429,6 @@
       "sync_codepush": "Sync kodu itele"
     },
     "discover": {
-      "lists": {
-        "lists_title": "Listeler",
-        "this_list_is_empty": "Bu liste boş!",
-        "types": {
-          "trending": "Trending",
-          "watchlist": "İzleme Listesi",
-          "favorites": "Favoriler",
-          "defi": "DeFi",
-          "stablecoins": "Stablecoins"
-        }
-      },
       "pulse": {
         "pulse_description": "Tüm üst DeFi tokenları bir arada",
         "today_suffix": "bugün",
@@ -637,6 +623,7 @@
         }
       },
       "swap_details": {
+        "reward": "Ödül",
         "exchange_rate": "Döviz kuru",
         "rainbow_fee": "Dahil Rainbow ücreti",
         "refuel": "Ekstra ağ tokenleri",
@@ -1161,8 +1148,37 @@
       "withdrawal_dropdown_label": "İçin",
       "withdrawal_input_label": "Al"
     },
+    "minting": {
+      "hold_to_mint": "Basınca Basarak Üret",
+      "minting": "Basılıyor...",
+      "minted": "Basılmış",
+      "mint_unavailable": "Üretim Mevcut Değil",
+      "mint_on_mintdotfun": "􀮶 mintdotfun'da üretin",
+      "error_minting": "Basım Hatası",
+      "mint_price": "Üretim Fiyatı",
+      "free": "Ücretsiz",
+      "by": "Tarafından",
+      "unknown": "bilinmeyen",
+      "max": "Maks",
+      "nft_count": "%{number} NFT",
+      "description": "Açıklama",
+      "total_minted": "Toplam Üretilen",
+      "first_event": "İlk Olay",
+      "last_event": "Son Olay",
+      "max_supply": "Maksimum Arz",
+      "contract": "Sözleşme",
+      "network": "Ağ",
+      "could_not_find_collection": "Koleksiyon bulunamadı",
+      "unable_to_find_check_again": "Bu koleksiyon bulunamadı, adresi ve ağı doğrulayın veya daha sonra tekrar deneyin",
+      "mintdotfun_unsupported_network": "Mint.fun bu ağı desteklemiyor"
+    },
     "nfts": {
-      "selling": "Satış"
+      "selling": "Satış",
+      "sort": {
+        "abc": "Abc",
+        "most_recent": "En Yeni",
+        "floor_price": "Taban Fiyatı"
+      }
     },
     "nft_offers": {
       "card": {
@@ -1220,6 +1236,109 @@
       },
       "info": {
         "address_copied_to_clipboard": "Adres panoya kopyalandı"
+      }
+    },
+    "points": {
+      "placeholder": {
+        "coming_soon_title": "Yakında",
+        "coming_soon_description": "Puanlar yakında sizlerle.\nBugünden kazanmaya başlayın."
+      },
+      "claim": {
+        "title": "Puanlarınızı Talep Edin",
+        "subtitle": "Puanların burada. Ne kadar puan kazandığınızı öğrenin.",
+        "get_started": "Başlayın",
+        "use_referral_code": "Yönlendirme Kodu Kullan"
+      },
+      "referral": {
+        "title": "Referans kodunuzu girin",
+        "subtitle": "Bonus ödülünüzü talep etmek için aşağıya bir yönlendirme kodu giriniz.",
+        "back": "Geri",
+        "error": "Bir şeyler ters gitti. Lütfen uygulamayı yeniden başlatın ve tekrar deneyin.",
+        "get_started": "Başlayın",
+        "invalid_code": "uygun olduğunuzu kabul edersiniz"
+      },
+      "notifications": {
+        "enable": "Puan Bildirimlerini Etkinleştir",
+        "disable": "Puan Bildirimlerini Devre Dışı Bırak"
+      },
+      "points": {
+        "referral_code": "Yönlendirme Kodu",
+        "share_link": "Linki Paylaş",
+        "next_drop": "Sonraki Dağıtım",
+        "your_rank": "Sıralamanız",
+        "of_x": "%{totalUsers}adet",
+        "referrals": "Referanslar",
+        "streak": "Serilik",
+        "longest_yet": "Şimdiye kadarki en uzun",
+        "day": "gün",
+        "days": "günler",
+        "leaderboard": "Lider Tablosu",
+        "sunday": "Paz",
+        "monday": "Pts",
+        "tuesday": "Sal",
+        "wednesday": "Çar",
+        "thursday": "Per",
+        "friday": "Cum",
+        "saturday": "Cmt",
+        "today": "Bugün",
+        "error": "Hata!\nYenilemek için aşağı çekin.",
+        "points": "puanlar",
+        "referral_code_copied": "Referans kodu kopyalandı",
+        "earn_points_for_referring": "Rainbow üzerinden takas yapan tavsiyeleriniz için puan kazanın, ayrıca tavsiyelerinizin kazandığı puanların %10'unu kazanın",
+        "already_claimed_points": "Üzgünüz! Puanlarınızı zaten talep ettiniz.",
+        "now": "Şimdi",
+        "unranked": "Sıralamasız",
+        "points_to_rank": "Rütbeye ulaşmak için 750 puan"
+      },
+      "console": {
+        "claim_bonus_paragraph": "Rainbow üzerinden en az 100 dolarlık takas yapmanız durumunda ekstra 100 puan alacaksınız",
+        "welcome_bonus": "Hoş Geldin Bonusu",
+        "true_believer": "Gerçek İnanan",
+        "registration_complete": "Kayıt Tamamlandı",
+        "account": "Hesap",
+        "points_you_have": "Sahip Olduğunuz",
+        "points_earned": "Kazanılan Puanlar",
+        "share_bonus_paragraph_one": "Her şey hazır!",
+        "share_bonus_paragraph_two": "Takas yaparak, köprü oluşturarak, madeni para basarak, arkadaşlarını davet ederek ve daha fazlasını yaparak puan kazanmaya devam ediniz",
+        "share_bonus_paragraph_three": "Rainbow'u ne kadar çok kullanırsanız, o kadar çok ödüllendirileceksiniz",
+        "calculation_complete": "Hesaplama tamamlandı",
+        "metamask_swaps": "MetaMask Takasları",
+        "wallet_balance": "Cüzdan Bakiyesi",
+        "rainbow_nfts_owned": "Sahip Olunan Rainbow NFT'ler",
+        "rainbow_swaps": "Rainbow Takasları",
+        "calculating_points": "Puan hesaplanıyor",
+        "access_granted": "Erişim izni verildi",
+        "sign_in_with_wallet": "Cüzdanınızla giriş yapın",
+        "auth_required": "Yetki gerekiyor",
+        "proceed_to_share": "Devam Et",
+        "skip_referral": "Atla",
+        "sign_in": "Oturum Aç",
+        "try_a_swap": "Bir Takas Deneyin",
+        "get_some_eth": "Biraz ETH Al",
+        "generic_alert": "Bir şeyler ters gitti, lütfen tekrar deneyin.",
+        "existing_user_alert": "Puanlar zaten talep edilmiş. Yenilemek için uygulamayı yeniden başlatın.",
+        "invalid_referral_code_alert": "Geçersiz referans kodu. Kodunuzu kontrol edip tekrar deneyin.",
+        "no_balance_alert": "Puanlara katılmak için, sıfırdan farklı bir cüzdan bakiyeniz olması gerekir.",
+        "referral_link_is_ready": "Referans bağlantınız hazır",
+        "referral_link_bonus_text": "Referans bağlantınızı tweetleyin ve ekstra 250 puan kazanın",
+        "referral_link_bonus_text_extended": "Üstelik, referans kodu ile getirdiğiniz herkesin kazandığı puanların %10'unu da kazanacaksınız",
+        "complete_onboarding": "Tamamlandı",
+        "share_to_x": "X'e paylaş",
+        "hardware_wallet_alert": "Donanım cüzdanı desteği yakında geliyor!",
+        "view_weekly_earnings_week_of": "Hafta %{startOfWeek} - %{endOfWeek}",
+        "view_weekly_earnings_title": "Kazanılan puanlar hesaplanıyor",
+        "view_weekly_earnings_counted": "Haftalık kazanç hesaplandı",
+        "view_weekly_earnings_close_button": "Kapat",
+        "view_weekly_earnings_retroactive_points": "Geriye Dönük Puanlar",
+        "view_weekly_earnings_activity": "Aktiviteniz",
+        "view_weekly_earnings_referral_activity": "Yönlendirme Aktivitesi",
+        "view_weekly_earnings_total_earnings": "Toplam",
+        "view_weekly_earnings_new_referrals": "Yeni Yönlendirmeler",
+        "wallet_balance_required": "Cüzdan bakiyesi gereklidir",
+        "require_balance_paragraph_one": "Devam etmek için aşağıdaki ağlardan birinde ETH bakiyeniz olduğundan emin olun:",
+        "require_balance_paragraph_two": "Veya alternatif olarak, Polygon'da MATIC bakiyeniz veya BSC'de BNB bakiyeniz olmalı",
+        "fund_my_wallet": "Cüzdanımı Fonla",
+        "points": "Noktalar"
       }
     },
     "pools": {
@@ -1442,6 +1561,27 @@
         "subheader": "TANITIM"
       }
     },
+    "nft_offers_launch": {
+      "primary_button": {
+        "has_offers": "Teklifleri Görüntüle",
+        "not_has_offers": "Kapat"
+      },
+      "secondary_button": "Belki Daha Sonra",
+      "info_row_1": {
+        "title": "Tekliflerinizin Hepsi Bir Arada",
+        "description": "Tüm NFT pazarlarında tekliflerinizi görüntüleyin."
+      },
+      "info_row_2": {
+        "title": "Gökkuşağından Kabul Edin",
+        "description": "Tek bir dokunuşla teklifleri kabul edin ve istediğiniz tokena geçin."
+      },
+      "info_row_3": {
+        "title": "Akıllı sıralama modları",
+        "description": "Taban fiyatlarla karşılaştırın veya en yüksek veya en son tekliflerinizi görüntüleyin."
+      },
+      "header": "Teklifler",
+      "subheader": "TANITIM"
+    },
     "review": {
       "alert": {
         "are_you_enjoying_rainbow": "Rainbow'dan memnun musunuz? 🥰",
@@ -1493,6 +1633,10 @@
       "error_text": "Lütfen internet bağlantınızı kontrol edin ve daha sonra tekrar deneyin.",
       "ended_title": "Program sona erdi",
       "ended_text": "Sizin için ne hazırladığımızı görmek için bekleyin!",
+      "info": {
+        "title": "Swap ve köprüleme yaparak OP kazanın",
+        "description": "Optimism üzerinde takas yaparak veya köprü üzerinden nakit para iadesi alın. Ödüller aylık olarak dağıtılır."
+      },
       "op": {
         "airdrop_timing": {
           "title": "Her Hafta Havaalanları",
@@ -1579,6 +1723,7 @@
       "notifications": "Bildirimler",
       "notifications_section": {
         "my_wallets": "Cüzdanlarım",
+        "points": "Noktalar",
         "watched_wallets": "İzlenen Cüzdanlar",
         "allow_notifications": "Bildirimlere İzin Ver",
         "sent": "Gönderilen",
@@ -1705,6 +1850,8 @@
         "failed": "Başarısız",
         "purchased": "Satın Alındı",
         "purchasing": "Satın Alma",
+        "minting": "Madencilik",
+        "minted": "Basılmış",
         "received": "Alınan",
         "receiving": "Alma",
         "self": "Kendi",
@@ -2216,6 +2363,7 @@
       "wallet_alert": {
         "message_support": "Mesaj Destek",
         "close": "Kapat",
+        "learn_more": "Daha Fazla Öğren",
         "message": "Yardım için, lütfen destek ekibimize ulaşın! \nSize yakında geri döneceğiz!",
         "title": "Bir hata oluştu"
       }
@@ -2226,6 +2374,7 @@
       "available_networks": "Kullanılabilir Ağlar",
       "change_network": "Ağı Değiştir",
       "connected_apps": "Bağlı uygulamalar",
+      "no_connected_apps": "Henüz Bağlı Uygulamalar Yok 😢",
       "disconnect": "Bağlantıyı Kes",
       "go_back_to_your_browser": "Tarayıcınıza geri dönün",
       "paste_uri": {
@@ -2233,6 +2382,7 @@
         "message": "WalletConnect URI'yi aşağıya yapıştırın",
         "title": "Yeni WalletConnect Oturumu"
       },
+      "none": "Hiçbiri",
       "switch_network": "Ağı Değiştir",
       "switch_wallet": "Cüzdanı Değiştir",
       "titles": {
@@ -2275,9 +2425,92 @@
         "pairing_timeout": "Bağlantı kurulmadan önce bu oturumun süresi doldu. Bu genellikle bir ağ hatası nedeniyle olur. Lütfen tekrar deneyin.",
         "pairing_unsupported_methods": "Dapp, Rainbow tarafından desteklenmeyen cüzdan RPC yöntemlerini istedi.",
         "pairing_unsupported_networks": "Dapp, Rainbow tarafından desteklenmeyen ağları istedi.",
+        "read_only_wallet_on_signing_method": "Bu istek için izin verilmeyen bir salt okunur cüzdan kullandığınız görünüyor.",
+        "namespaces_invalid": "Dapp tarafından istenen isim alanları ile ilgili bir sorun oluştu. Lütfen tekrar deneyin veya Rainbow ve/veya dapp destek ekipleriyle iletişime geçin.",
         "request_invalid": "İstekte geçersiz parametreler bulunuyordu. Lütfen tekrar deneyin veya Rainbow ve/veya dapp destek ekipleri ile iletişime geçin.",
+        "eth_sign": "Güvenlik endişeleri nedeniyle Rainbow, eski eth_sign'ı desteklememektedir.  \n Herhangi bir sorunuz varsa lütfen Rainbow ve/veya dapp destek ekipleriyle iletişime geçin.",
         "request_unsupported_network": "Bu istekte belirtilen ağ, Rainbow tarafından desteklenmiyor.",
-        "request_unsupported_methods": "Bu istekte belirtilen RPC yöntemi(ler) Rainbow tarafından desteklenmiyor."
+        "request_unsupported_methods": "Bu istekte belirtilen RPC yöntemi(ler) Rainbow tarafından desteklenmiyor.",
+        "no_accounts_found": "Onaylanmış ad alanlarında hiç hesap bulunamadı."
+      },
+      "dapp_warnings": {
+        "info_alert": {
+          "title": "Bu uygulama muhtemelen kötücül",
+          "description": "Bu uygulamadan mesaj veya işlem imzalamak varlıklarınızı kaybetmenize neden olabilir"
+        }
+      },
+      "simulation": {
+        "titles": {
+          "message_request": "Mesaj İsteği",
+          "transaction_request": "İşlem İsteği"
+        },
+        "simulation_card": {
+          "titles": {
+            "not_enough_native_balance": "Yeterli Değil %{symbol}",
+            "likely_to_fail": "Muhtemelen Başarısız",
+            "simulation_unavailable": "Simülasyon Müsait Değil",
+            "simulation_result": "Simüle Edilmiş Sonuç",
+            "simulating": "Simülasyon Yapılıyor",
+            "proceed_carefully": "Dikkatli İlerleyin",
+            "suspicious_transaction": "Şüpheli İşlem"
+          },
+          "messages": {
+            "no_changes": "Değişiklik Algılanmadı",
+            "need_more_native": "Bu işlemi ödeyebilmek için %{network} da daha fazla %{symbol} 'a ihtiyacınız olacak. Bu isteği sürdürmek için aşağıdaki %{symbol} satın alın.",
+            "unavailable_personal_sign": "Kişisel imzaların simülasyonu henüz desteklenmiyor",
+            "unavailable_zora_network": "Zora üzerinde simülasyon henüz desteklenmiyor",
+            "failed_to_simulate": "Simülasyon başarısız oldu, bu da işleminizin başarısız olma ihtimalinin yüksek olduğunu gösteriyor. Bu, kullandığınız uygulama ile ilgili bir sorun olabilir.",
+            "warning": "Herhangi bir kötü niyetli davranış tespit edilmemiş olsa da, bu işlemin cüzdanınıza risk oluşturabilecek özellikleri bulunmaktadır.",
+            "malicious": "Bu işlemi imzalamak, cüzdanınızdaki her şeye erişimi kaybetmenize neden olabilir."
+          },
+          "event_row": {
+            "unlimited": "Sınırsız",
+            "types": {
+              "send": "Gönder",
+              "receive": "Al",
+              "approve": "Onayla",
+              "revoke": "İptal Etme"
+            }
+          }
+        },
+        "details_card": {
+          "title": "Detaylar",
+          "types": {
+            "chain": "Ağ",
+            "contract": "Sözleşme",
+            "contract_created": "Sözleşme Oluşturuldu",
+            "to": "Kime",
+            "function": "Fonksiyon",
+            "source_code": "Kaynak Kodu",
+            "nonce": "Nonce"
+          },
+          "unknown": "Bilinmeyen"
+        },
+        "message_card": {
+          "title": "Mesaj",
+          "copy": "Kopyala"
+        },
+        "profile_section": {
+          "signing_with": "İle İmzalama",
+          "free_to_sign": "Ücretsiz İmzalanabilir",
+          "no_native_balance": "Yok %{symbol}",
+          "on_network": "%{network}üzerinde"
+        },
+        "buttons": {
+          "cancel": "İptal",
+          "confirm": "􀎽 İşlem Gönder",
+          "get_native_token": "Alın %{symbol}",
+          "buy_native_token": "Satın Alın %{symbol}"
+        },
+        "formatted_dates": {
+          "today": "Bugün",
+          "day_ago": "bir gün önce",
+          "days_ago": "{0} gün önce",
+          "week_ago": "bir hafta önce",
+          "weeks_ago": "{0} hafta önce",
+          "month_ago": "bir ay önce",
+          "months_ago": "{0} ay önce"
+        }
       }
     },
     "warning": {

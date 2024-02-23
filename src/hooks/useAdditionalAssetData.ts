@@ -1,59 +1,53 @@
 import { useQuery } from '@tanstack/react-query';
-import { useCallback } from 'react';
-import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
-import { useAccountSettings } from './index';
-import { EthereumAddress } from '@/entities';
-import { getAdditionalAssetData } from '@/handlers/dispersion';
-import { bigNumberFormat } from '@/helpers/bigNumberFormat';
-import { greaterThanOrEqualTo, multiply } from '@/helpers/utilities';
-import { ETH_ADDRESS, WETH_ADDRESS } from '@/references';
-import { implementation } from '@/entities/dispersion';
-import { Network } from '@/helpers';
+import { NativeCurrencyKey } from '@/entities';
+import { Network } from '@/networks/types';
+import { metadataClient } from '@/graphql';
+import { ethereumUtils } from '@/utils';
+import { Token } from '@/graphql/__generated__/metadata';
 
-export default function useAdditionalAssetData(
-  rawAddress: EthereumAddress,
-  tokenPrice = 0,
-  chainId = 1
-): {
-  description?: string;
-  loading: boolean;
-  totalVolume: string | null;
-  totalLiquidity: string | null;
-  marketCap: string | null;
-  links: Record<string, string[]>;
-  networks: Record<string, implementation>;
-} {
-  const { data } = useQuery(['additionalAssetData', rawAddress], () =>
-    getAdditionalAssetData(rawAddress, chainId)
+// Types
+type TokenMetadata = Pick<
+  Token,
+  'description' | 'volume1d' | 'marketCap' | 'totalSupply' | 'circulatingSupply' | 'fullyDilutedValuation' | 'links'
+>;
+
+// Types for the query arguments
+type AdditionalAssetDataArgs = {
+  address: string;
+  network: Network;
+  currency: NativeCurrencyKey;
+};
+
+// Query Key function
+const createAdditionalAssetDataQueryKey = ({ address, network, currency }: AdditionalAssetDataArgs) => [
+  'additionalAssetData',
+  address,
+  network,
+  currency,
+];
+
+// Refactor the getAdditionalAssetData function to accept the new parameters
+async function getAdditionalAssetData({ address, network, currency }: AdditionalAssetDataArgs): Promise<TokenMetadata | null> {
+  const chainId = ethereumUtils.getChainIdFromNetwork(network);
+  const data = await metadataClient.tokenMetadata({
+    address,
+    chainId,
+    currency,
+  });
+
+  if (data.token) {
+    return data.token as TokenMetadata;
+  }
+  return null;
+}
+
+// Usage of the useQuery hook
+export default function useAdditionalAssetData({ address, network, currency }: AdditionalAssetDataArgs) {
+  return useQuery<TokenMetadata | null>(
+    createAdditionalAssetDataQueryKey({ address, network, currency }),
+    () => getAdditionalAssetData({ address, network, currency }),
+    {
+      enabled: !!address && !!network && !!currency, // Ensure all parameters are provided
+    }
   );
-  const { nativeCurrency } = useAccountSettings();
-  const format = useCallback(
-    (value: string) =>
-      bigNumberFormat(
-        value,
-        nativeCurrency,
-        greaterThanOrEqualTo(value, 10000)
-      ),
-    [nativeCurrency]
-  );
-  const rate = useNativeCurrencyToUSD();
-  const loading = !data;
-  const marketCap = data?.circulatingSupply
-    ? format(multiply(data?.circulatingSupply, tokenPrice))
-    : null;
-  const totalLiquidity = data?.totalLiquidity
-    ? format(multiply(data?.totalLiquidity, tokenPrice))
-    : null;
-  const totalVolume = data?.oneDayVolumeUSD
-    ? format(multiply(data?.oneDayVolumeUSD, rate))
-    : null;
-  return {
-    description: data?.description,
-    links: data?.links,
-    loading,
-    marketCap,
-    networks: data?.networks,
-    totalLiquidity,
-    totalVolume,
-  };
 }

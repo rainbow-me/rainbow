@@ -1,10 +1,4 @@
-import React, {
-  useEffect,
-  createContext,
-  PropsWithChildren,
-  useCallback,
-  useContext,
-} from 'react';
+import React, { useEffect, createContext, PropsWithChildren, useCallback, useContext } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
 import { InteractionManager } from 'react-native';
 import { noop } from 'lodash';
@@ -15,6 +9,7 @@ import { campaigns } from '@/storage';
 import { checkForCampaign } from '@/components/remote-promo-sheet/checkForCampaign';
 import { runFeatureUnlockChecks } from '@/handlers/walletReadyEvents';
 import { runLocalCampaignChecks } from './localCampaignChecks';
+import { useRemoteConfig } from '@/model/remoteConfig';
 
 interface WalletReadyContext {
   isWalletReady: boolean;
@@ -28,11 +23,9 @@ export const RemotePromoSheetContext = createContext<WalletReadyContext>({
 
 type WalletReadyProvider = PropsWithChildren & WalletReadyContext;
 
-export const RemotePromoSheetProvider = ({
-  isWalletReady = false,
-  children,
-}: WalletReadyProvider) => {
-  const remotePromoSheets = useExperimentalFlag(REMOTE_PROMO_SHEETS);
+export const RemotePromoSheetProvider = ({ isWalletReady = false, children }: WalletReadyProvider) => {
+  const { remote_promo_enabled } = useRemoteConfig();
+  const remotePromoSheets = useExperimentalFlag(REMOTE_PROMO_SHEETS) || remote_promo_enabled;
 
   const runChecks = useCallback(async () => {
     if (!isWalletReady) return;
@@ -67,12 +60,7 @@ export const RemotePromoSheetProvider = ({
     };
   }, [runChecks]);
 
-  return (
-    <RemotePromoSheetContext.Provider value={{ isWalletReady, runChecks }}>
-      {children}
-    </RemotePromoSheetContext.Provider>
-  );
+  return <RemotePromoSheetContext.Provider value={{ isWalletReady, runChecks }}>{children}</RemotePromoSheetContext.Provider>;
 };
 
-export const useRemotePromoSheetContext = () =>
-  useContext(RemotePromoSheetContext);
+export const useRemotePromoSheetContext = () => useContext(RemotePromoSheetContext);

@@ -11,15 +11,10 @@ const docs: DocsType = {
   description: (
     <>
       <Docs.Text>
-        Arranges child nodes{' '}
-        <Docs.Strong>
-          horizontally, wrapping to multiple lines if needed
-        </Docs.Strong>
-        , with equal spacing between items.
+        Arranges child nodes <Docs.Strong>horizontally, wrapping to multiple lines if needed</Docs.Strong>, with equal spacing between
+        items.
       </Docs.Text>
-      <Docs.Text>
-        If there is only a single child node, no space will be rendered.
-      </Docs.Text>
+      <Docs.Text>If there is only a single child node, no space will be rendered.</Docs.Text>
     </>
   ),
   examples: [
@@ -28,8 +23,7 @@ const docs: DocsType = {
       ...examples.noWrap,
       description: (
         <Docs.Text>
-          To disable wrapping of the child nodes, set the{' '}
-          <Docs.Code>wrap</Docs.Code> prop to <Docs.Code>false</Docs.Code>.
+          To disable wrapping of the child nodes, set the <Docs.Code>wrap</Docs.Code> prop to <Docs.Code>false</Docs.Code>.
         </Docs.Text>
       ),
     },
@@ -41,8 +35,7 @@ const docs: DocsType = {
       ...examples.centerAlignedHorizontally,
       description: (
         <Docs.Text>
-          To align content horizontally within the component, use the{' '}
-          <Docs.Code>alignHorizontal</Docs.Code> prop.
+          To align content horizontally within the component, use the <Docs.Code>alignHorizontal</Docs.Code> prop.
         </Docs.Text>
       ),
     },
@@ -51,8 +44,7 @@ const docs: DocsType = {
       ...examples.centerAlignedVertically,
       description: (
         <Docs.Text>
-          To align content vertically within the component, use the{' '}
-          <Docs.Code>alignVertical</Docs.Code> prop.
+          To align content vertically within the component, use the <Docs.Code>alignVertical</Docs.Code> prop.
         </Docs.Text>
       ),
     },

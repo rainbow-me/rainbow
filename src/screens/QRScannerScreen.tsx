@@ -1,32 +1,23 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { useIsEmulator } from 'react-native-device-info';
-import Animated, {
-  interpolate,
-  useAnimatedStyle,
-} from 'react-native-reanimated';
+import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Header } from '@/components/header';
 import { Centered } from '@/components/layout';
 import { Navbar } from '@/components/navbar/Navbar';
-import {
-  CameraDimmer,
-  EmulatorPasteUriButton,
-  QRCodeScanner,
-} from '@/components/qrcode-scanner';
-import {
-  AccentColorProvider,
-  Box,
-  ColorModeProvider,
-  Text,
-} from '@/design-system';
-import { useDimensions } from '@/hooks';
+import { CameraDimmer, EmulatorPasteUriButton, QRCodeScanner } from '@/components/qrcode-scanner';
+import { AccentColorProvider, Box, ColorModeProvider, Text } from '@/design-system';
+import { useDimensions, useHardwareBack, useScanner } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { usePagerPosition } from '@/navigation/ScrollPositionContext';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
+import { useIsFocused } from '@react-navigation/native';
+import { useIsForeground } from '@/hooks/useIsForeground';
+import { useCameraPermission, useCodeScanner } from 'react-native-vision-camera';
 
 const Background = styled(View)({
   backgroundColor: 'black',
@@ -57,11 +48,53 @@ export default function QRScannerScreen() {
   const scrollPosition = usePagerPosition();
   const { top: topInset } = useSafeAreaInsets();
   const { colors } = useTheme();
+  const { hasPermission, requestPermission } = useCameraPermission();
+  const isFocused = useIsFocused();
+  const isForeground = useIsForeground();
+  const [cameraActive, setCameraActive] = useState(true);
+  const isActive = isFocused && isForeground && hasPermission;
+  const navigation = useNavigation();
 
-  const [flashEnabled, setFlashEnabled] = React.useState(false);
+  const [flashEnabled, setFlashEnabled] = useState(false);
 
-  const handleCloseScanner = React.useCallback(() => {
-    navigate(Routes.WALLET_SCREEN);
+  const hideCamera = useCallback(() => {
+    setFlashEnabled(false);
+  }, [setFlashEnabled]);
+
+  const { onScan } = useScanner(hasPermission, hideCamera);
+
+  const codeScanner = useCodeScanner({
+    codeTypes: ['qr', 'ean-13'],
+    onCodeScanned: codes => {
+      if (codes[0].value) {
+        onScan({ data: codes[0].value });
+      }
+    },
+  });
+
+  useHardwareBack(hideCamera);
+
+  // cleanup for swiping away
+  useEffect(() => {
+    const unsubscribeBeforeRemove = navigation.addListener('beforeRemove', e => {
+      e.preventDefault();
+      setCameraActive(false);
+      setFlashEnabled(false);
+      setTimeout(() => {
+        navigation.dispatch(e.data.action);
+      }, 0);
+    });
+
+    return unsubscribeBeforeRemove;
+  }, [navigation]);
+
+  // cleanup for using the back button
+  const handleCloseScanner = useCallback(() => {
+    setFlashEnabled(false);
+    setCameraActive(false);
+    setTimeout(() => {
+      navigate(Routes.WALLET_SCREEN);
+    }, 0);
   }, [navigate]);
 
   const containerStyle = useAnimatedStyle(() => {
@@ -99,28 +132,13 @@ export default function QRScannerScreen() {
     <Box style={{ backgroundColor: colors.trueBlack }}>
       <Box as={Animated.View} pointerEvents="box-none" style={containerStyle}>
         <ColorModeProvider value="darkTinted">
-          <Box
-            position="absolute"
-            top={{ custom: topInset }}
-            width="full"
-            style={{ zIndex: 1 }}
-          >
+          <Box position="absolute" top={{ custom: topInset }} width="full" style={{ zIndex: 1 }}>
             <Navbar
               hasStatusBarInset={false}
               leftComponent={
                 <Navbar.Item onPress={handleCloseScanner}>
-                  <Box
-                    alignItems="center"
-                    justifyContent="center"
-                    height={{ custom: 36 }}
-                    width={{ custom: 36 }}
-                  >
-                    <Text
-                      align="center"
-                      color="label"
-                      size="icon 20px"
-                      weight="semibold"
-                    >
+                  <Box alignItems="center" justifyContent="center" height={{ custom: 36 }} width={{ custom: 36 }}>
+                    <Text align="center" color="label" size="icon 20px" weight="semibold">
                       􀆄
                     </Text>
                   </Box>
@@ -129,18 +147,8 @@ export default function QRScannerScreen() {
               rightComponent={
                 <AccentColorProvider color="#FFDA24">
                   <Navbar.Item onPress={() => setFlashEnabled(!flashEnabled)}>
-                    <Box
-                      alignItems="center"
-                      justifyContent="center"
-                      height={{ custom: 36 }}
-                      width={{ custom: 36 }}
-                    >
-                      <Text
-                        align="center"
-                        color={flashEnabled ? 'accent' : 'label'}
-                        size="icon 20px"
-                        weight="semibold"
-                      >
+                    <Box alignItems="center" justifyContent="center" height={{ custom: 36 }} width={{ custom: 36 }}>
+                      <Text align="center" color={flashEnabled ? 'accent' : 'label'} size="icon 20px" weight="semibold">
                         {flashEnabled ? '􀞋' : '􀝌'}
                       </Text>
                     </Box>
@@ -153,23 +161,14 @@ export default function QRScannerScreen() {
           <ScannerContainer>
             <Background />
             <CameraDimmer cameraVisible={true}>
-              {android && (
-                <ScannerHeader>
-                  <EmulatorPasteUriButton />
-                </ScannerHeader>
-              )}
-              {!isEmulator && (
-                <QRCodeScanner
-                  flashEnabled={flashEnabled}
-                  setFlashEnabled={setFlashEnabled}
-                />
-              )}
+              <QRCodeScanner
+                flashEnabled={flashEnabled}
+                codeScanner={codeScanner}
+                hasPermission={hasPermission}
+                requestPermission={requestPermission}
+                isActive={isActive && cameraActive}
+              />
             </CameraDimmer>
-            {ios && (
-              <ScannerHeader>
-                <EmulatorPasteUriButton />
-              </ScannerHeader>
-            )}
           </ScannerContainer>
         </ColorModeProvider>
         <Box

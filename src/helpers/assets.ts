@@ -1,19 +1,13 @@
 import lang from 'i18n-js';
 import { chunk, compact, groupBy, isEmpty, slice, sortBy } from 'lodash';
-import { add, convertAmountToNativeDisplay, greaterThan } from './utilities';
+import { add, greaterThan } from './utilities';
 import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
-import store from '@/redux/store';
-import {
-  ETH_ADDRESS,
-  ETH_ICON_URL,
-  supportedNativeCurrencies,
-} from '@/references';
-import {
-  ethereumUtils,
-  getUniqueTokenFormat,
-  getUniqueTokenType,
-} from '@/utils';
+import { supportedNativeCurrencies } from '@/references';
+import { getUniqueTokenFormat, getUniqueTokenType } from '@/utils';
 import * as i18n from '@/languages';
+import * as ls from '@/storage';
+import { UniqueAsset } from '@/entities';
+import { CollectibleSortByOptions } from '@/hooks/useNFTsSortBy';
 
 const COINS_TO_SHOW = 5;
 
@@ -32,13 +26,7 @@ const getTotal = (assets: any) =>
     return add(acc, balance);
   }, 0);
 
-export const buildCoinsList = (
-  sortedAssets: any,
-  nativeCurrency: any,
-  isCoinListEdited: any,
-  pinnedCoins: any,
-  hiddenCoins: any
-) => {
+export const buildCoinsList = (sortedAssets: any, nativeCurrency: any, isCoinListEdited: any, pinnedCoins: any, hiddenCoins: any) => {
   if (!sortedAssets.length) {
     return {
       assets: [],
@@ -47,7 +35,7 @@ export const buildCoinsList = (
     };
   }
 
-  let standardAssets: any = [],
+  const standardAssets: any = [],
     pinnedAssets: any = [],
     smallAssets: any = [],
     hiddenAssets: any = [];
@@ -130,13 +118,7 @@ export const buildCoinsList = (
 };
 
 // TODO make it better
-export const buildBriefCoinsList = (
-  sortedAssets: any,
-  nativeCurrency: any,
-  isCoinListEdited: any,
-  pinnedCoins: any,
-  hiddenCoins: any
-) => {
+export const buildBriefCoinsList = (sortedAssets: any, nativeCurrency: any, isCoinListEdited: any, pinnedCoins: any, hiddenCoins: any) => {
   const { assets, smallBalancesValue, totalBalancesValue } = buildCoinsList(
     sortedAssets,
     nativeCurrency,
@@ -146,7 +128,7 @@ export const buildBriefCoinsList = (
   );
   const briefAssets = [];
   if (assets) {
-    for (let asset of assets) {
+    for (const asset of assets) {
       if (asset.coinDivider) {
         briefAssets.push({
           defaultToEditButton: asset.defaultToEditButton,
@@ -155,7 +137,7 @@ export const buildBriefCoinsList = (
           value: smallBalancesValue,
         });
       } else if (asset.smallBalancesContainer) {
-        for (let smallAsset of asset.assets) {
+        for (const smallAsset of asset.assets) {
           briefAssets.push({
             type: 'COIN',
             uid: 'coin-' + smallAsset.uniqueId,
@@ -175,10 +157,11 @@ export const buildBriefCoinsList = (
   return { briefAssets, totalBalancesValue };
 };
 
-export const buildUniqueTokenList = (
-  uniqueTokens: any,
-  selectedShowcaseTokens: any[] = []
-) => {
+interface Dictionary<T> {
+  [index: string]: T;
+}
+
+export const buildUniqueTokenList = (uniqueTokens: any, selectedShowcaseTokens: any[] = []) => {
   let rows: any = [];
   const showcaseTokens = [];
   const bundledShowcaseTokens = [];
@@ -186,7 +169,7 @@ export const buildUniqueTokenList = (
   const grouped = groupBy(uniqueTokens, token => token.familyName);
   const families = Object.keys(grouped);
 
-  for (let family of families) {
+  for (const family of families) {
     const tokensRow: any = [];
     for (let j = 0; j < grouped[family].length; j += 2) {
       if (selectedShowcaseTokens.includes(grouped[family][j].uniqueId)) {
@@ -205,9 +188,7 @@ export const buildUniqueTokenList = (
     tokens = chunk(tokens, 50);
     // eslint-disable-next-line no-loop-func
     tokens.forEach((tokenChunk, index) => {
-      const id = tokensRow[0]
-        .map(({ uniqueId }: any) => uniqueId)
-        .join(`__${index}`);
+      const id = tokensRow[0].map(({ uniqueId }: any) => uniqueId).join(`__${index}`);
       rows.push({
         childrenAmount: grouped[family].length,
         familyImage: tokensRow?.[0]?.[0]?.familyImage ?? null,
@@ -223,10 +204,7 @@ export const buildUniqueTokenList = (
   rows = sortBy(rows, row => row.familyName.replace(regex, '').toLowerCase());
 
   showcaseTokens.sort(function (a, b) {
-    return (
-      selectedShowcaseTokens?.indexOf(a.uniqueId) -
-      selectedShowcaseTokens?.indexOf(b.uniqueId)
-    );
+    return selectedShowcaseTokens?.indexOf(a.uniqueId) - selectedShowcaseTokens?.indexOf(b.uniqueId);
   });
 
   for (let i = 0; i < showcaseTokens.length; i += 2) {
@@ -244,9 +222,7 @@ export const buildUniqueTokenList = (
         isHeader: true,
         stableId: 'showcase_stable_id',
         tokens: bundledShowcaseTokens,
-        uniqueId: `sc_${showcaseTokens
-          .map(({ uniqueId }) => uniqueId)
-          .join('__')}`,
+        uniqueId: `sc_${showcaseTokens.map(({ uniqueId }) => uniqueId).join('__')}`,
       },
     ].concat(rows);
   }
@@ -261,20 +237,42 @@ export const buildUniqueTokenList = (
 
 const regex = RegExp(/\s*(the)\s/, 'i');
 
+const sortCollectibles = (assetsByName: Dictionary<UniqueAsset[]>, collectibleSortBy: string) => {
+  const families = Object.keys(assetsByName);
+
+  switch (collectibleSortBy) {
+    case CollectibleSortByOptions.MOST_RECENT:
+      return families.sort((a, b) => {
+        const maxDateA = Math.max(Number(...assetsByName[a].map(asset => asset.acquisition_date)));
+        const maxDateB = Math.max(Number(...assetsByName[b].map(asset => asset.acquisition_date)));
+        return maxDateB - maxDateA;
+      });
+    case CollectibleSortByOptions.ABC:
+      return families.sort((a, b) => a.replace(regex, '').toLowerCase().localeCompare(b.replace(regex, '').toLowerCase()));
+    case CollectibleSortByOptions.FLOOR_PRICE:
+      return families.sort((a, b) => {
+        const minPriceA = Math.min(...assetsByName[a].map(asset => (asset.floorPriceEth !== undefined ? asset.floorPriceEth : -1)));
+        const minPriceB = Math.min(...assetsByName[b].map(asset => (asset.floorPriceEth !== undefined ? asset.floorPriceEth : -1)));
+        return minPriceB - minPriceA;
+      });
+    default:
+      return families;
+  }
+};
+
 export const buildBriefUniqueTokenList = (
   uniqueTokens: any,
   selectedShowcaseTokens: any,
   sellingTokens: any[] = [],
   hiddenTokens: string[] = [],
   listType: AssetListType = 'wallet',
-  isReadOnlyWallet = false
+  isReadOnlyWallet = false,
+  nftSort: string = CollectibleSortByOptions.MOST_RECENT
 ) => {
   const hiddenUniqueTokensIds = uniqueTokens
     .filter(({ fullUniqueId }: any) => hiddenTokens.includes(fullUniqueId))
     .map(({ uniqueId }: any) => uniqueId);
-  const nonHiddenUniqueTokens = uniqueTokens.filter(
-    ({ fullUniqueId }: any) => !hiddenTokens.includes(fullUniqueId)
-  );
+  const nonHiddenUniqueTokens = uniqueTokens.filter(({ fullUniqueId }: any) => !hiddenTokens.includes(fullUniqueId));
   const uniqueTokensInShowcaseIds = nonHiddenUniqueTokens
     .filter(({ uniqueId }: any) => selectedShowcaseTokens?.includes(uniqueId))
     .map(({ uniqueId }: any) => uniqueId);
@@ -287,12 +285,19 @@ export const buildBriefUniqueTokenList = (
     }
     return true;
   });
-  const grouped2 = groupBy(filteredUniqueTokens, token => token.familyName);
-  const families2 = sortBy(Object.keys(grouped2), row =>
-    row.replace(regex, '').toLowerCase()
-  );
+
+  // group the assets by collection name
+  const assetsByName = groupBy(filteredUniqueTokens, token => token.familyName);
+
+  // depending on the sort by option, sort the collections
+  const families2 = sortCollectibles(assetsByName, nftSort);
+
   const result = [
-    { type: 'NFTS_HEADER', uid: 'nfts-header' },
+    {
+      type: 'NFTS_HEADER',
+      nftSort,
+      uid: `nft-headers-${nftSort}`,
+    },
     { type: 'NFTS_HEADER_SPACE_AFTER', uid: 'nfts-header-space-after' },
   ];
   if (uniqueTokensInShowcaseIds.length > 0 && listType !== 'select-nft') {
@@ -337,16 +342,16 @@ export const buildBriefUniqueTokenList = (
     }
     result.push({ type: 'NFT_SPACE_AFTER', uid: `showcase-space-after` });
   }
-  for (let family of families2) {
+  for (const family of families2) {
     result.push({
       // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
-      image: grouped2[family][0].familyImage,
+      image: assetsByName[family][0].familyImage,
       name: family,
-      total: grouped2[family].length,
+      total: assetsByName[family].length,
       type: 'FAMILY_HEADER',
       uid: family,
     });
-    const tokens = grouped2[family].map(({ uniqueId }) => uniqueId);
+    const tokens = assetsByName[family].map(({ uniqueId }) => uniqueId);
     for (let index = 0; index < tokens.length; index++) {
       const uniqueId = tokens[index];
 
@@ -356,11 +361,7 @@ export const buildBriefUniqueTokenList = (
 
     result.push({ type: 'NFT_SPACE_AFTER', uid: `${family}-space-after` });
   }
-  if (
-    hiddenUniqueTokensIds.length > 0 &&
-    listType === 'wallet' &&
-    !isReadOnlyWallet
-  ) {
+  if (hiddenUniqueTokensIds.length > 0 && listType === 'wallet' && !isReadOnlyWallet) {
     result.push({
       // @ts-expect-error "name" does not exist in type.
       name: lang.t('button.hidden'),
@@ -384,12 +385,7 @@ export const buildBriefUniqueTokenList = (
   return result;
 };
 
-export const buildUniqueTokenName = ({
-  collection,
-  id,
-  name,
-  uniqueId,
-}: any) => {
+export const buildUniqueTokenName = ({ collection, id, name, uniqueId }: any) => {
   if (name) return name;
   if (id) return `${collection?.name} #${id}`;
   return uniqueId;

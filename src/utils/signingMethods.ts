@@ -14,13 +14,10 @@ const allTypes = displayTypes.message.concat(displayTypes.transaction);
 
 export const isSigningMethod = (method: string) => allTypes.includes(method);
 
-export const isMessageDisplayType = (method: string) =>
-  displayTypes.message.includes(method);
+export const isMessageDisplayType = (method: string) => displayTypes.message.includes(method);
 
-export const isTransactionDisplayType = (method: string) =>
-  displayTypes.transaction.includes(method);
+export const isTransactionDisplayType = (method: string) => displayTypes.transaction.includes(method);
 
-export const isSignTypedData = (method: string) =>
-  method.startsWith(SIGN_TYPED_DATA);
+export const isSignTypedData = (method: string) => method.startsWith(SIGN_TYPED_DATA);
 
 export const isPersonalSign = (method: string) => method === PERSONAL_SIGN;

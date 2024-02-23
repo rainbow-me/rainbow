@@ -23,13 +23,7 @@ const ACTIONS = {
   SHARE: 'share',
 };
 
-export default function MoreButton({
-  address,
-  ensName,
-}: {
-  address?: string;
-  ensName?: string;
-}) {
+export default function MoreButton({ address, ensName }: { address?: string; ensName?: string }) {
   const { switchToWalletWithAddress, selectedWallet } = useWallets();
   const { isWatching } = useWatchWallet({ address });
   const { navigate } = useNavigation();
@@ -39,19 +33,14 @@ export default function MoreButton({
     params: { setIsSearchModeEnabled },
   } = useRoute<any>();
   const isSelectedWallet = useMemo(() => {
-    const visibleWallet = selectedWallet.addresses.find(
-      (wallet: { visible: boolean }) => wallet.visible
-    );
+    const visibleWallet = selectedWallet.addresses.find((wallet: { visible: boolean }) => wallet.visible);
 
     return visibleWallet.address.toLowerCase() === address?.toLowerCase();
   }, [selectedWallet.addresses, address]);
 
   const contact = address ? contacts[address.toLowerCase()] : undefined;
 
-  const formattedAddress = useMemo(
-    () => (address ? formatAddressForDisplay(address, 4, 4) : ''),
-    [address]
-  );
+  const formattedAddress = useMemo(() => (address ? formatAddressForDisplay(address, 4, 4) : ''), [address]);
 
   const menuItems = useMemo(() => {
     return [
@@ -160,10 +149,7 @@ export default function MoreButton({
     ]
   );
 
-  const menuConfig = useMemo(
-    () => ({ menuItems, ...(ios && { menuTitle: '' }) }),
-    [menuItems]
-  );
+  const menuConfig = useMemo(() => ({ menuItems, ...(ios && { menuTitle: '' }) }), [menuItems]);
   return (
     <ContextMenuButton
       enableContextMenu

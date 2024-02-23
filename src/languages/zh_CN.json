@@ -22,6 +22,7 @@
       "tab_investments": "池",
       "tab_savings": "储蓄",
       "tab_showcase": "展示",
+      "tab_points": "积分",
       "tab_positions": "持仓",
       "tab_transactions": "交易",
       "tab_transactions_tooltip": "交易和代币转账",
@@ -240,6 +241,7 @@
       "exchange_again": "再次交易",
       "exchange_search_placeholder": "搜索代币",
       "exchange_search_placeholder_network": "在 %{network} 上搜索代币",
+      "favorites": "收藏夹",
       "go_back": "返回",
       "go_back_lowercase": "返回",
       "got_it": "我知道了",
@@ -284,11 +286,6 @@
       "hidden": "隐藏"
     },
     "cards": {
-      "dpi": {
-        "title": "DeFi脉冲指数",
-        "body": "所有顶级的去中心化金融令牌在一个。跟踪行业。",
-        "view": "查看"
-      },
       "ens_create_profile": {
         "title": "创建你的ENS个人资料",
         "body": "用完全由您拥有的个人资料替换您的钱包地址。"
@@ -432,17 +429,6 @@
       "sync_codepush": "同步代码推送"
     },
     "discover": {
-      "lists": {
-        "lists_title": "列表",
-        "this_list_is_empty": "这个列表是空的！",
-        "types": {
-          "trending": "热门",
-          "watchlist": "观察列表",
-          "favorites": "收藏夹",
-          "defi": "去中心化金融",
-          "stablecoins": "稳定币"
-        }
-      },
       "pulse": {
         "pulse_description": "所有顶级DeFi代币汇总",
         "today_suffix": "今天",
@@ -637,6 +623,7 @@
         }
       },
       "swap_details": {
+        "reward": "奖励",
         "exchange_rate": "汇率",
         "rainbow_fee": "包含 Rainbow 费用",
         "refuel": "额外网络令牌",
@@ -1161,8 +1148,37 @@
       "withdrawal_dropdown_label": "对于",
       "withdrawal_input_label": "获取"
     },
+    "minting": {
+      "hold_to_mint": "按住以造币",
+      "minting": "正在建造...",
+      "minted": "已铸造",
+      "mint_unavailable": "造币不可用",
+      "mint_on_mintdotfun": "􀮶 在mint.fun上造币",
+      "error_minting": "建造错误",
+      "mint_price": "造币价格",
+      "free": "免费",
+      "by": "由",
+      "unknown": "未知",
+      "max": "最大",
+      "nft_count": "%{number} NFTs",
+      "description": "说明",
+      "total_minted": "总共造币",
+      "first_event": "首次事件",
+      "last_event": "最后事件",
+      "max_supply": "最大供给量",
+      "contract": "合约",
+      "network": "网络",
+      "could_not_find_collection": "找不到收藏品",
+      "unable_to_find_check_again": "我们无法找到这个收藏品，请再次检查地址和网络或稍后重试",
+      "mintdotfun_unsupported_network": "Mint.fun不支持此网络"
+    },
     "nfts": {
-      "selling": "出售"
+      "selling": "出售",
+      "sort": {
+        "abc": "字母顺序",
+        "most_recent": "最新的",
+        "floor_price": "底价"
+      }
     },
     "nft_offers": {
       "card": {
@@ -1220,6 +1236,109 @@
       },
       "info": {
         "address_copied_to_clipboard": "地址已复制到剪贴板"
+      }
+    },
+    "points": {
+      "placeholder": {
+        "coming_soon_title": "即将推出",
+        "coming_soon_description": "积分就在不远处。\n今天就开始赚取积分。"
+      },
+      "claim": {
+        "title": "领取你的积分",
+        "subtitle": "积分就在这里。查看你获得了多少积分。",
+        "get_started": "开始",
+        "use_referral_code": "使用推荐码"
+      },
+      "referral": {
+        "title": "输入你的推荐码",
+        "subtitle": "在下方输入推荐码以领取你的奖励红利。",
+        "back": "返回",
+        "error": "出现了一些问题。请重启应用并重试。",
+        "get_started": "开始",
+        "invalid_code": "无效代码"
+      },
+      "notifications": {
+        "enable": "启用积分通知",
+        "disable": "禁用积分通知"
+      },
+      "points": {
+        "referral_code": "推荐码",
+        "share_link": "分享链接",
+        "next_drop": "下一次发布",
+        "your_rank": "你的排名",
+        "of_x": "共 %{totalUsers}个",
+        "referrals": "推荐人",
+        "streak": "连续登录",
+        "longest_yet": "最长记录",
+        "day": "天",
+        "days": "天",
+        "leaderboard": "排行榜",
+        "sunday": "周日",
+        "monday": "周一",
+        "tuesday": "周二",
+        "wednesday": "周三",
+        "thursday": "周四",
+        "friday": "周五",
+        "saturday": "周六",
+        "today": "今天",
+        "error": "糟糕！\n请下拉刷新。",
+        "points": "积分",
+        "referral_code_copied": "推荐码已复制",
+        "earn_points_for_referring": "当您的推荐人通过Rainbow换取100美元时，您可以获得积分，此外您还可以获得推荐人所赚积分的10%",
+        "already_claimed_points": "抱歉！您已经领取了您的积分。",
+        "now": "现在",
+        "unranked": "未排名",
+        "points_to_rank": "距离排名还需750积分"
+      },
+      "console": {
+        "claim_bonus_paragraph": "一旦您通过Rainbow兑换至少$100，您将额外获得100积分",
+        "welcome_bonus": "欢迎奖励",
+        "true_believer": "真正的信徒",
+        "registration_complete": "注册完成",
+        "account": "账户",
+        "points_you_have": "你有",
+        "points_earned": "获得积分",
+        "share_bonus_paragraph_one": "您已全部设置就绪！",
+        "share_bonus_paragraph_two": "继续通过兑换、桥接、铸造、推荐朋友等方式赚取积分",
+        "share_bonus_paragraph_three": "您在Rainbow的使用越多，奖励就越多",
+        "calculation_complete": "计算完成",
+        "metamask_swaps": "MetaMask 交换",
+        "wallet_balance": "钱包余额",
+        "rainbow_nfts_owned": "拥有的彩虹 NFTs",
+        "rainbow_swaps": "彩虹交换",
+        "calculating_points": "计算积分",
+        "access_granted": "授权成功",
+        "sign_in_with_wallet": "用您的钱包登录",
+        "auth_required": "需要授权",
+        "proceed_to_share": "继续",
+        "skip_referral": "跳过",
+        "sign_in": "登陆",
+        "try_a_swap": "尝试一次交换",
+        "get_some_eth": "获取一些ETH",
+        "generic_alert": "出现错误，请再试一次。",
+        "existing_user_alert": "积分已经领取。请重启应用以刷新。",
+        "invalid_referral_code_alert": "推荐码无效。请检查您的代码然后再试一次。",
+        "no_balance_alert": "要注册消费积分，您的钱包余额必须不为零。",
+        "referral_link_is_ready": "您的推荐链接已准备好",
+        "referral_link_bonus_text": "在Twitter上分享您的推荐链接，额外获得250积分",
+        "referral_link_bonus_text_extended": "您将赚取您推荐的每个人所获得积分的10%",
+        "complete_onboarding": "完成",
+        "share_to_x": "分享至X",
+        "hardware_wallet_alert": "硬件钱包支持即将推出！",
+        "view_weekly_earnings_week_of": "周 %{startOfWeek} - %{endOfWeek}",
+        "view_weekly_earnings_title": "正在计算赚取的积分",
+        "view_weekly_earnings_counted": "已计算的周收益",
+        "view_weekly_earnings_close_button": "关闭",
+        "view_weekly_earnings_retroactive_points": "追溯积分",
+        "view_weekly_earnings_activity": "你的活动",
+        "view_weekly_earnings_referral_activity": "推荐活动",
+        "view_weekly_earnings_total_earnings": "总计",
+        "view_weekly_earnings_new_referrals": "新的推荐",
+        "wallet_balance_required": "需要钱包余额",
+        "require_balance_paragraph_one": "继续操作前，请确保您在以下网络之一上有ETH余额：",
+        "require_balance_paragraph_two": "或者，在Polygon上有MATIC余额，或在BSC上有BNB余额",
+        "fund_my_wallet": "为我的钱包充值",
+        "points": "积分"
       }
     },
     "pools": {
@@ -1442,6 +1561,27 @@
         "subheader": "介绍"
       }
     },
+    "nft_offers_launch": {
+      "primary_button": {
+        "has_offers": "查看报价",
+        "not_has_offers": "关闭"
+      },
+      "secondary_button": "稍后再说",
+      "info_row_1": {
+        "title": "所有报价集中在一个地方",
+        "description": "查看你在所有NFT市场上的报价。"
+      },
+      "info_row_2": {
+        "title": "从彩虹接受",
+        "description": "一键接受报价并交换为所选的代币。"
+      },
+      "info_row_3": {
+        "title": "智能排序模式",
+        "description": "与底价进行比较，或查看您的最高或最新报价。"
+      },
+      "header": "报价",
+      "subheader": "介绍"
+    },
     "review": {
       "alert": {
         "are_you_enjoying_rainbow": "你喜欢Rainbow吗？🥰",
@@ -1493,6 +1633,10 @@
       "error_text": "请检查您的网络连接，稍后再试。",
       "ended_title": "计划已结束",
       "ended_text": "敬请期待我们为您准备的下一步计划！",
+      "info": {
+        "title": "通过交换和桥接获取OP",
+        "description": "通过在Optimism上进行交换或桥接来获得现金返还。奖励每月分发。"
+      },
       "op": {
         "airdrop_timing": {
           "title": "每周空投",
@@ -1579,6 +1723,7 @@
       "notifications": "通知",
       "notifications_section": {
         "my_wallets": "我的钱包",
+        "points": "积分",
         "watched_wallets": "监控的钱包",
         "allow_notifications": "允许通知",
         "sent": "已发送",
@@ -1705,6 +1850,8 @@
         "failed": "失败",
         "purchased": "已购买",
         "purchasing": "购买",
+        "minting": "铸造",
+        "minted": "已铸造",
         "received": "已收到",
         "receiving": "接收",
         "self": "自己",
@@ -2216,6 +2363,7 @@
       "wallet_alert": {
         "message_support": "消息支持",
         "close": "关闭",
+        "learn_more": "了解详情",
         "message": "如需帮助，请联系支持！ \n我们会尽快回复您！",
         "title": "发生错误"
       }
@@ -2226,6 +2374,7 @@
       "available_networks": "可用网络",
       "change_network": "更改网络",
       "connected_apps": "已连接的应用",
+      "no_connected_apps": "尚未连接任何应用 😢",
       "disconnect": "断开连接",
       "go_back_to_your_browser": "返回到您的浏览器",
       "paste_uri": {
@@ -2233,6 +2382,7 @@
         "message": "将 WalletConnect URI 粘贴在下方",
         "title": "新的 WalletConnect 会话"
       },
+      "none": "无",
       "switch_network": "切换网络",
       "switch_wallet": "切换钱包",
       "titles": {
@@ -2275,9 +2425,92 @@
         "pairing_timeout": "此会话因未能建立连接而超时。这通常是由于网络错误。请再试一次。",
         "pairing_unsupported_methods": "dapp请求的钱包RPC方法不受Rainbow支持。",
         "pairing_unsupported_networks": "该dapp请求的网络不受Rainbow支持。",
+        "read_only_wallet_on_signing_method": "看起来您正在使用只读钱包，该请求不允许使用只读钱包。",
+        "namespaces_invalid": "DApp请求的命名空间有问题。请再试一次或联系Rainbow和/或DApp支持团队。",
         "request_invalid": "请求中包含无效的参数。请再试一次或联系Rainbow和/或dapp支持团队。",
+        "eth_sign": "由于安全考虑，Rainbow不支持旧版eth_sign。  \n 如果你有任何问题，请联系Rainbow和/或dapp支持团队。",
         "request_unsupported_network": "该请求中指定的网络不受Rainbow支持。",
-        "request_unsupported_methods": "请求中指定的RPC方法不受Rainbow支持。"
+        "request_unsupported_methods": "请求中指定的RPC方法不受Rainbow支持。",
+        "no_accounts_found": "在批准的命名空间中未找到账户。"
+      },
+      "dapp_warnings": {
+        "info_alert": {
+          "title": "此应用可能是恶意的",
+          "description": "从此应用程序签署消息或交易可能会导致资产丢失"
+        }
+      },
+      "simulation": {
+        "titles": {
+          "message_request": "消息请求",
+          "transaction_request": "交易请求"
+        },
+        "simulation_card": {
+          "titles": {
+            "not_enough_native_balance": "%{symbol}不够",
+            "likely_to_fail": "可能失败",
+            "simulation_unavailable": "模拟不可用",
+            "simulation_result": "模拟结果",
+            "simulating": "正在模拟",
+            "proceed_carefully": "请谨慎操作",
+            "suspicious_transaction": "可疑交易"
+          },
+          "messages": {
+            "no_changes": "未检测到任何更改",
+            "need_more_native": "你需要更多的 %{symbol} 在 %{network} 上支付这笔交易。获得下面的 %{symbol} 继续进行这个请求。",
+            "unavailable_personal_sign": "尚不支持个人签名的模拟",
+            "unavailable_zora_network": "尚不支持Zora的模拟",
+            "failed_to_simulate": "模拟失败，您的交易可能会失败。这可能与您正在使用的应用有关。",
+            "warning": "没有检测到已知的恶意行为，但此交易具有可能对您的钱包构成风险的特点。",
+            "malicious": "签署此交易可能会导致您失去钱包中的所有内容。"
+          },
+          "event_row": {
+            "unlimited": "无限",
+            "types": {
+              "send": "发送",
+              "receive": "接收",
+              "approve": "批准",
+              "revoke": "撤销"
+            }
+          }
+        },
+        "details_card": {
+          "title": "详细信息",
+          "types": {
+            "chain": "网络",
+            "contract": "合约",
+            "contract_created": "合约已创建",
+            "to": "至",
+            "function": "功能",
+            "source_code": "源代码",
+            "nonce": "Nonce"
+          },
+          "unknown": "未知"
+        },
+        "message_card": {
+          "title": "消息",
+          "copy": "复制"
+        },
+        "profile_section": {
+          "signing_with": "签名使用",
+          "free_to_sign": "可自由签名",
+          "no_native_balance": "没有 %{symbol}",
+          "on_network": "在 %{network}上"
+        },
+        "buttons": {
+          "cancel": "取消",
+          "confirm": "􀎽 发送交易",
+          "get_native_token": "获取 %{symbol}",
+          "buy_native_token": "购买 %{symbol}"
+        },
+        "formatted_dates": {
+          "today": "今天",
+          "day_ago": "day ago",
+          "days_ago": "days ago",
+          "week_ago": "week ago",
+          "weeks_ago": "weeks ago",
+          "month_ago": "month ago",
+          "months_ago": "months ago"
+        }
       }
     },
     "warning": {

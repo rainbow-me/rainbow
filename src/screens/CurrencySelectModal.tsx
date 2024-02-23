@@ -1,35 +1,15 @@
 import lang from 'i18n-js';
-import { ChainId } from '@rainbow-me/swaps';
 import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import { uniqBy } from 'lodash';
 import { matchSorter } from 'match-sorter';
-import React, {
-  Fragment,
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import {
-  DefaultSectionT,
-  InteractionManager,
-  Keyboard,
-  Linking,
-  SectionList,
-  TextInput,
-} from 'react-native';
+import React, { Fragment, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { DefaultSectionT, InteractionManager, Keyboard, Linking, SectionList, TextInput } from 'react-native';
 import { MMKV } from 'react-native-mmkv';
 import Animated from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
 import { useDebounce } from 'use-debounce';
 import GestureBlocker from '../components/GestureBlocker';
-import {
-  CurrencySelectionList,
-  CurrencySelectModalHeader,
-  ExchangeSearch,
-} from '../components/exchange';
+import { CurrencySelectionList, CurrencySelectModalHeader, ExchangeSearch } from '../components/exchange';
 import NetworkSwitcherv1 from '../components/exchange/NetworkSwitcher';
 import { KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
@@ -38,7 +18,7 @@ import { analytics } from '@/analytics';
 import { addHexPrefix, isL2Network } from '@/handlers/web3';
 import { CurrencySelectionTypes, Network, TokenSectionTypes } from '@/helpers';
 import {
-  useCoinListEditOptions,
+  useAccountSettings,
   useInteraction,
   useMagicAutofocus,
   usePrevious,
@@ -48,7 +28,6 @@ import {
 } from '@/hooks';
 import { delayNext } from '@/hooks/useMagicAutofocus';
 import { getActiveRoute, useNavigation } from '@/navigation/Navigation';
-import { emitAssetRequest, emitChartsRequest } from '@/redux/explorer';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils, filterList } from '@/utils';
 import NetworkSwitcherv2 from '@/components/exchange/NetworkSwitcherv2';
@@ -59,6 +38,9 @@ import { useTheme } from '@/theme';
 import { IS_TEST } from '@/env';
 import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import DiscoverSearchInput from '@/components/discover/DiscoverSearchInput';
+import { prefetchExternalToken } from '@/resources/assets/externalAssetsQuery';
+import { getNetworkFromChainId } from '@/utils/ethereumUtils';
+import { getNetworkObj } from '@/networks';
 
 export interface EnrichedExchangeAsset extends SwappableAsset {
   ens: boolean;
@@ -73,22 +55,15 @@ export interface EnrichedExchangeAsset extends SwappableAsset {
 }
 
 const storage = new MMKV();
-const getHasShownWarning = () =>
-  storage.getBoolean(STORAGE_IDS.SHOWN_SWAP_RESET_WARNING);
-const setHasShownWarning = () =>
-  storage.set(STORAGE_IDS.SHOWN_SWAP_RESET_WARNING, true);
+const getHasShownWarning = () => storage.getBoolean(STORAGE_IDS.SHOWN_SWAP_RESET_WARNING);
+const setHasShownWarning = () => storage.set(STORAGE_IDS.SHOWN_SWAP_RESET_WARNING, true);
 
-const headerlessSection = (
-  data: SwappableAsset[]
-): { data: SwappableAsset[]; title: string; key: string }[] => [
+const headerlessSection = (data: SwappableAsset[]): { data: SwappableAsset[]; title: string; key: string }[] => [
   { data, title: '', key: 'swappableAssets' },
 ];
 const Wrapper = ios ? KeyboardFixedOpenLayout : Fragment;
 
-const searchWalletCurrencyList = (
-  searchList: SwappableAsset[],
-  query: string
-) => {
+const searchWalletCurrencyList = (searchList: SwappableAsset[], query: string) => {
   const isAddress = query.match(/^(0x)?[0-9a-fA-F]{40}$/);
 
   if (isAddress) {
@@ -122,6 +97,7 @@ export default function CurrencySelectModal() {
   const isFocused = useIsFocused();
   const prevIsFocused = usePrevious(isFocused);
   const { goBack, navigate, getState: dangerouslyGetState } = useNavigation();
+  const { nativeCurrency } = useAccountSettings();
   const { colors } = useTheme();
   const dispatch = useDispatch();
   const {
@@ -148,18 +124,13 @@ export default function CurrencySelectModal() {
   const [searchQueryForSearch] = useDebounce(searchQuery, 350);
   const { data: sortedAssets } = useSortedUserAssets();
   const assetsInWallet = sortedAssets as SwappableAsset[];
-  const { hiddenCoinsObj } = useCoinListEditOptions();
 
   const [currentChainId, setCurrentChainId] = useState(chainId);
   const prevChainId = usePrevious(currentChainId);
 
   const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
-  const NetworkSwitcher = crosschainSwapsEnabled
-    ? NetworkSwitcherv2
-    : NetworkSwitcherv1;
-  const SearchInput = crosschainSwapsEnabled
-    ? DiscoverSearchInput
-    : ExchangeSearch;
+  const NetworkSwitcher = crosschainSwapsEnabled ? NetworkSwitcherv2 : NetworkSwitcherv1;
+  const SearchInput = crosschainSwapsEnabled ? DiscoverSearchInput : ExchangeSearch;
 
   useEffect(() => {
     if (chainId && typeof chainId === 'number') {
@@ -169,44 +140,13 @@ export default function CurrencySelectModal() {
 
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
-  // TODO: remove this value when crosschain swaps is released
-  const filteredAssetsInWallet = useMemo(() => {
-    if (type === CurrencySelectionTypes.input) {
-      let filteredAssetsInWallet = assetsInWallet?.filter(
-        asset => !hiddenCoinsObj[asset.uniqueId]
-      );
-      // TODO: remove this once BACK-219 is fixed
-      if (fromDiscover && defaultOutputAsset?.implementations) {
-        const outputTokenNetworks = Object.keys(
-          defaultOutputAsset?.implementations
-        );
+  const { crosschainExactMatches, swapCurrencyList, swapCurrencyListLoading } = useSwapCurrencyList(
+    searchQueryForSearch,
+    currentChainId,
+    false
+  );
 
-        filteredAssetsInWallet = filteredAssetsInWallet.filter(asset => {
-          const network = ethereumUtils.getNetworkFromType(asset.type);
-          return outputTokenNetworks.includes(network);
-        });
-      }
-      return filteredAssetsInWallet;
-    }
-    return [];
-  }, [
-    type,
-    assetsInWallet,
-    fromDiscover,
-    defaultOutputAsset?.implementations,
-    hiddenCoinsObj,
-  ]);
-
-  const {
-    crosschainExactMatches,
-    swapCurrencyList,
-    swapCurrencyListLoading,
-  } = useSwapCurrencyList(searchQueryForSearch, currentChainId, false);
-
-  const {
-    swappableUserAssets,
-    unswappableUserAssets,
-  } = useSwappableUserAssets({ outputCurrency });
+  const { swappableUserAssets, unswappableUserAssets } = useSwappableUserAssets({ outputCurrency });
 
   const checkForSameNetwork = useCallback(
     (newAsset: any, selectAsset: any, type: any) => {
@@ -214,16 +154,13 @@ export default function CurrencySelectModal() {
       const hasShownWarning = getHasShownWarning();
       if (
         otherAsset &&
-        ethereumUtils.getChainIdFromType(newAsset?.type) !==
-          ethereumUtils.getChainIdFromType(otherAsset?.type) &&
+        ethereumUtils.getChainIdFromNetwork(newAsset?.network) !== ethereumUtils.getChainIdFromNetwork(otherAsset?.network) &&
         !hasShownWarning
       ) {
         Keyboard.dismiss();
         InteractionManager.runAfterInteractions(() => {
           navigate(Routes.EXPLAIN_SHEET, {
-            network: newAsset?.type
-              ? ethereumUtils.getNetworkFromType(newAsset?.type)
-              : Network.mainnet,
+            network: newAsset?.network,
             onClose: () => {
               setHasShownWarning();
               selectAsset();
@@ -250,36 +187,25 @@ export default function CurrencySelectModal() {
   }, []);
 
   const getWalletCurrencyList = useCallback(() => {
-    const listToUse = crosschainSwapsEnabled
-      ? swappableUserAssets
-      : filteredAssetsInWallet;
     let walletCurrencyList;
     if (type === CurrencySelectionTypes.input) {
       if (searchQueryForSearch !== '') {
-        const searchResults = searchWalletCurrencyList(
-          listToUse,
-          searchQueryForSearch
-        );
+        const searchResults = searchWalletCurrencyList(swappableUserAssets, searchQueryForSearch);
         walletCurrencyList = headerlessSection(searchResults);
         if (crosschainSwapsEnabled) {
-          const unswappableSearchResults = searchWalletCurrencyList(
-            unswappableUserAssets,
-            searchQueryForSearch
-          );
+          const unswappableSearchResults = searchWalletCurrencyList(unswappableUserAssets, searchQueryForSearch);
           walletCurrencyList.push({
             data: unswappableSearchResults.map(unswappableAsset => ({
               ...unswappableAsset,
               disabled: true,
             })),
-            title: lang.t(
-              `exchange.token_sections.${TokenSectionTypes.unswappableTokenSection}`
-            ),
+            title: lang.t(`exchange.token_sections.${TokenSectionTypes.unswappableTokenSection}`),
             key: 'unswappableAssets',
           });
         }
         return walletCurrencyList;
       } else {
-        walletCurrencyList = headerlessSection(listToUse);
+        walletCurrencyList = headerlessSection(swappableUserAssets);
         let unswappableAssets = unswappableUserAssets;
         if (IS_TEST) {
           unswappableAssets = unswappableAssets.concat({
@@ -287,7 +213,7 @@ export default function CurrencySelectModal() {
             decimals: 18,
             name: 'Unswappable',
             symbol: 'UNSWAP',
-            type: 'token',
+            network: Network.mainnet,
             id: 'foobar',
             uniqueId: '0x123',
           });
@@ -298,23 +224,14 @@ export default function CurrencySelectModal() {
               ...unswappableAsset,
               disabled: true,
             })),
-            title: lang.t(
-              `exchange.token_sections.${TokenSectionTypes.unswappableTokenSection}`
-            ),
+            title: lang.t(`exchange.token_sections.${TokenSectionTypes.unswappableTokenSection}`),
             key: 'unswappableAssets',
           });
         }
         return walletCurrencyList;
       }
     }
-  }, [
-    filteredAssetsInWallet,
-    searchQueryForSearch,
-    type,
-    crosschainSwapsEnabled,
-    swappableUserAssets,
-    unswappableUserAssets,
-  ]);
+  }, [searchQueryForSearch, type, crosschainSwapsEnabled, swappableUserAssets, unswappableUserAssets]);
 
   const activeSwapCurrencyList = useMemo(() => {
     if (crosschainExactMatches.length) {
@@ -324,9 +241,7 @@ export default function CurrencySelectModal() {
   }, [crosschainExactMatches, swapCurrencyList]);
 
   const currencyList = useMemo(() => {
-    let list = (type === CurrencySelectionTypes.input
-      ? getWalletCurrencyList()
-      : activeSwapCurrencyList) as {
+    let list = (type === CurrencySelectionTypes.input ? getWalletCurrencyList() : activeSwapCurrencyList) as {
       data: EnrichedExchangeAsset[];
       title: string;
     }[];
@@ -337,9 +252,7 @@ export default function CurrencySelectModal() {
       // Remove dupes
       section.data = uniqBy(section?.data, 'uniqueId');
       // Remove dupes across sections
-      section.data = section?.data?.filter(
-        token => !uniqueIds.includes(token?.uniqueId)
-      );
+      section.data = section?.data?.filter(token => !uniqueIds.includes(token?.uniqueId));
       const sectionUniqueIds = section?.data?.map(token => token?.uniqueId);
       uniqueIds = uniqueIds.concat(sectionUniqueIds);
 
@@ -353,9 +266,7 @@ export default function CurrencySelectModal() {
         // Remove dupes
         section.data = uniqBy(section?.data, 'symbol');
         // Remove dupes across sections
-        section.data = section?.data?.filter(
-          token => !symbols.includes(token?.symbol)
-        );
+        section.data = section?.data?.filter(token => !symbols.includes(token?.symbol));
         const sectionSymbols = section?.data?.map(token => token?.symbol);
         symbols = symbols.concat(sectionSymbols);
 
@@ -376,27 +287,21 @@ export default function CurrencySelectModal() {
           () => {
             navigate(Routes.EXCHANGE_MODAL, {
               params: {
-                inputAsset:
-                  type === CurrencySelectionTypes.output
-                    ? defaultInputAsset
-                    : item,
-                outputAsset:
-                  type === CurrencySelectionTypes.input
-                    ? defaultOutputAsset
-                    : item,
+                inputAsset: type === CurrencySelectionTypes.output ? defaultInputAsset : item,
+                outputAsset: type === CurrencySelectionTypes.input ? defaultOutputAsset : item,
                 ...params,
               },
               screen: Routes.MAIN_EXCHANGE_SCREEN,
             });
             setSearchQuery('');
-            setCurrentChainId(ethereumUtils.getChainIdFromType(item.type));
+            setCurrentChainId(ethereumUtils.getChainIdFromNetwork(item.network));
           },
           android ? 500 : 0
         );
       } else {
         navigate(Routes.MAIN_EXCHANGE_SCREEN);
         setSearchQuery('');
-        setCurrentChainId(ethereumUtils.getChainIdFromType(item.type));
+        setCurrentChainId(ethereumUtils.getChainIdFromNetwork(item.network));
       }
       if (searchQueryForSearch) {
         analytics.track('Selected a search result in Swap', {
@@ -408,31 +313,14 @@ export default function CurrencySelectModal() {
         });
       }
     },
-    [
-      dangerouslyGetState,
-      defaultInputAsset,
-      defaultOutputAsset,
-      fromDiscover,
-      goBack,
-      navigate,
-      params,
-      searchQueryForSearch,
-      type,
-    ]
+    [dangerouslyGetState, defaultInputAsset, defaultOutputAsset, fromDiscover, goBack, navigate, params, searchQueryForSearch, type]
   );
   const checkForRequiredAssets = useCallback(
     (item: any) => {
-      if (
-        type === CurrencySelectionTypes.output &&
-        currentChainId &&
-        currentChainId !== ChainId.mainnet
-      ) {
-        const currentL2Name = ethereumUtils.getNetworkNameFromChainId(
-          currentChainId
-        );
+      if (type === CurrencySelectionTypes.output && currentChainId && currentChainId !== getNetworkObj(Network.mainnet).id) {
+        const currentL2Name = ethereumUtils.getNetworkNameFromChainId(currentChainId);
         const currentL2WalletAssets = assetsInWallet.filter(
-          ({ network }) =>
-            network && network?.toLowerCase() === currentL2Name?.toLowerCase()
+          ({ network }) => network && network?.toLowerCase() === currentL2Name?.toLowerCase()
         );
         if (currentL2WalletAssets?.length < 1) {
           Keyboard.dismiss();
@@ -457,31 +345,34 @@ export default function CurrencySelectModal() {
     (item: any) => {
       if (!crosschainSwapsEnabled && checkForRequiredAssets(item)) return;
 
-      const isMainnet = currentChainId === 1;
-      const assetWithType =
-        isMainnet && type === CurrencySelectionTypes.output
-          ? { ...item, type: 'token' }
-          : {
-              ...item,
-              decimals:
-                item?.networks?.[currentChainId]?.decimals || item.decimals,
-            };
+      let newAsset = item;
 
       const selectAsset = () => {
-        dispatch(emitChartsRequest(item.mainnet_address || item.address));
-        dispatch(emitAssetRequest(item.mainnet_address || item.address));
+        if (!item?.balance) {
+          const network = getNetworkFromChainId(currentChainId);
+          prefetchExternalToken({
+            address: item.address,
+            network,
+            currency: nativeCurrency,
+          });
+          // if the asset is external we need to add the network specific information
+          newAsset = {
+            ...newAsset,
+            decimals: item?.networks?.[currentChainId]?.decimals || item.decimals,
+            address: item?.address || item?.networks?.[currentChainId]?.address,
+            network: getNetworkFromChainId(currentChainId),
+          };
+        }
         setIsTransitioning(true); // continue to display list during transition
         callback?.();
-        onSelectCurrency(assetWithType, handleNavigate);
+        onSelectCurrency(newAsset, handleNavigate);
       };
       if (
         !crosschainSwapsEnabled &&
         checkForSameNetwork(
-          assetWithType,
+          newAsset,
           selectAsset,
-          type === CurrencySelectionTypes.output
-            ? CurrencySelectionTypes.output
-            : CurrencySelectionTypes.input
+          type === CurrencySelectionTypes.output ? CurrencySelectionTypes.output : CurrencySelectionTypes.input
         )
       )
         return;
@@ -493,9 +384,8 @@ export default function CurrencySelectModal() {
       checkForRequiredAssets,
       currentChainId,
       type,
-      chainId,
       checkForSameNetwork,
-      dispatch,
+      nativeCurrency,
       callback,
       onSelectCurrency,
       handleNavigate,
@@ -503,7 +393,7 @@ export default function CurrencySelectModal() {
   );
 
   const itemProps = useMemo(() => {
-    const isMainnet = currentChainId === ChainId.mainnet;
+    const isMainnet = currentChainId === getNetworkObj(Network.mainnet).id;
     return {
       onPress: handleSelectAsset,
       showBalance: type === CurrencySelectionTypes.input,
@@ -511,10 +401,7 @@ export default function CurrencySelectModal() {
     };
   }, [handleSelectAsset, type, currentChainId]);
 
-  const searchingOnL2Network = useMemo(
-    () => isL2Network(ethereumUtils.getNetworkFromChainId(currentChainId)),
-    [currentChainId]
-  );
+  const searchingOnL2Network = useMemo(() => isL2Network(ethereumUtils.getNetworkFromChainId(currentChainId)), [currentChainId]);
 
   const [startInteraction] = useInteraction();
   useEffect(() => {
@@ -529,25 +416,16 @@ export default function CurrencySelectModal() {
         }, 750);
       }
     }
-  }, [
-    isFocused,
-    startInteraction,
-    prevIsFocused,
-    restoreFocusOnSwapModal,
-    toggleGestureEnabled,
-    fromDiscover,
-  ]);
+  }, [isFocused, startInteraction, prevIsFocused, restoreFocusOnSwapModal, toggleGestureEnabled, fromDiscover]);
 
   const handleBackButton = useCallback(() => {
     setSearchQuery('');
     InteractionManager.runAfterInteractions(() => {
-      const inputChainId = ethereumUtils.getChainIdFromType(
-        inputCurrency?.type
-      );
+      const inputChainId = ethereumUtils.getChainIdFromNetwork(inputCurrency?.network);
       setCurrentChainId(inputChainId);
     });
     setIsTransitioning(true); // continue to display list while transitiong back
-  }, [inputCurrency?.type]);
+  }, [inputCurrency?.network]);
 
   useEffect(() => {
     // check if list has items before attempting to scroll
@@ -567,13 +445,7 @@ export default function CurrencySelectModal() {
     <Wrapper>
       <Box as={Animated.View} height="full" width="full">
         {/* @ts-expect-error JavaScript component */}
-        <Modal
-          containerPadding={0}
-          fullScreenOnAndroid
-          height="100%"
-          overflow="hidden"
-          radius={30}
-        >
+        <Modal containerPadding={0} fullScreenOnAndroid height="100%" overflow="hidden" radius={30}>
           <GestureBlocker type="top" />
           <Rows>
             <Row height="content">

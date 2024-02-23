@@ -12,22 +12,9 @@ import { MaxToleranceInput } from './MaxToleranceInput';
 import SourcePicker from './SourcePicker';
 
 import { Network } from '@/helpers';
-import {
-  Box,
-  ColorModeProvider,
-  Column,
-  Columns,
-  Inset,
-  Stack,
-  Text,
-} from '@/design-system';
+import { Box, ColorModeProvider, Column, Columns, Inset, Stack, Text } from '@/design-system';
 
-import {
-  useAccountSettings,
-  useColorForAsset,
-  useKeyboardHeight,
-  useSwapSettings,
-} from '@/hooks';
+import { useAccountSettings, useColorForAsset, useKeyboardHeight, useSwapSettings } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { Source } from '@/redux/swap';
 import Routes from '@/navigation/routesNames';
@@ -44,10 +31,7 @@ function useAndroidDisableGesturesOnFocus() {
 }
 
 export default function SwapSettingsState({ asset }) {
-  const {
-    flashbotsEnabled,
-    settingsChangeFlashbotsEnabled,
-  } = useAccountSettings();
+  const { flashbotsEnabled, settingsChangeFlashbotsEnabled } = useAccountSettings();
   const {
     params: { swapSupportsFlashbots = false, network },
   } = useRoute();
@@ -79,14 +63,8 @@ export default function SwapSettingsState({ asset }) {
 
   useEffect(() => {
     if (IS_ANDROID) {
-      keyboardShowListener.current = Keyboard.addListener(
-        'keyboardDidShow',
-        handleKeyboardDidShow
-      );
-      keyboardHideListener.current = Keyboard.addListener(
-        'keyboardDidHide',
-        handleKeyboardDidHide
-      );
+      keyboardShowListener.current = Keyboard.addListener('keyboardDidShow', handleKeyboardDidShow);
+      keyboardHideListener.current = Keyboard.addListener('keyboardDidHide', handleKeyboardDidHide);
     }
     return () => {
       keyboardShowListener.current?.remove();
@@ -105,13 +83,9 @@ export default function SwapSettingsState({ asset }) {
     [updateSwapSource]
   );
 
-  const sheetHeightWithoutKeyboard =
-    (android ? 275 : 245) + (swapSupportsFlashbots ? 55 : 0);
+  const sheetHeightWithoutKeyboard = (android ? 275 : 245) + (swapSupportsFlashbots ? 55 : 0);
 
-  const sheetHeightWithKeyboard =
-    sheetHeightWithoutKeyboard +
-    keyboardHeight +
-    (deviceUtils.isSmallPhone ? 30 : 0);
+  const sheetHeightWithKeyboard = sheetHeightWithoutKeyboard + keyboardHeight + (deviceUtils.isSmallPhone ? 30 : 0);
 
   useEffect(() => {
     setParams({ longFormHeight: sheetHeightWithKeyboard });
@@ -144,18 +118,10 @@ export default function SwapSettingsState({ asset }) {
         <ExchangeHeader testID="swap-settings" />
         <Inset bottom="24px" horizontal="24px" top="10px">
           <Stack space="24px">
-            <Text
-              align="center"
-              color="primary (Deprecated)"
-              size="18px / 27px (Deprecated)"
-              weight="bold"
-            >
+            <Text align="center" color="primary (Deprecated)" size="18px / 27px (Deprecated)" weight="bold">
               {lang.t('exchange.settings')}
             </Text>
-            <SourcePicker
-              currentSource={currentSource}
-              onSelect={updateSource}
-            />
+            <SourcePicker currentSource={currentSource} onSelect={updateSource} />
             {swapSupportsFlashbots && (
               <Columns alignHorizontal="justify" alignVertical="center">
                 <Column width="content">
@@ -168,18 +134,9 @@ export default function SwapSettingsState({ asset }) {
                     paddingVertical="12px"
                     style={{ maxWidth: MAX_TEXT_WIDTH }}
                   >
-                    <Text
-                      color="primary (Deprecated)"
-                      size="16px / 22px (Deprecated)"
-                      weight="bold"
-                      numberOfLines={2}
-                    >
+                    <Text color="primary (Deprecated)" size="16px / 22px (Deprecated)" weight="bold" numberOfLines={2}>
                       {lang.t('exchange.use_flashbots')}
-                      <Text
-                        color="secondary30 (Deprecated)"
-                        size="16px / 22px (Deprecated)"
-                        weight="bold"
-                      >
+                      <Text color="secondary30 (Deprecated)" size="16px / 22px (Deprecated)" weight="bold">
                         {' 􀅵'}
                       </Text>
                     </Text>
@@ -195,11 +152,7 @@ export default function SwapSettingsState({ asset }) {
                 </Column>
               </Columns>
             )}
-            <MaxToleranceInput
-              colorForAsset={colorForAsset}
-              currentNetwork={network}
-              ref={slippageRef}
-            />
+            <MaxToleranceInput colorForAsset={colorForAsset} currentNetwork={network} ref={slippageRef} />
           </Stack>
         </Inset>
       </FloatingPanel>
@@ -207,10 +160,7 @@ export default function SwapSettingsState({ asset }) {
         <Inset horizontal="24px" top="24px">
           <Columns alignHorizontal="justify">
             <Column width="content">
-              <ButtonPressAnimation
-                onPress={resetToDefaults}
-                testID="swap-settings-defaults-button"
-              >
+              <ButtonPressAnimation onPress={resetToDefaults} testID="swap-settings-defaults-button">
                 <Box
                   borderRadius={20}
                   style={{
@@ -220,12 +170,7 @@ export default function SwapSettingsState({ asset }) {
                   }}
                 >
                   <Inset space="8px" top={{ custom: android ? 6 : 8 }}>
-                    <Text
-                      color="primary (Deprecated)"
-                      size="16px / 22px (Deprecated)"
-                      weight="bold"
-                      numberOfLines={1}
-                    >
+                    <Text color="primary (Deprecated)" size="16px / 22px (Deprecated)" weight="bold" numberOfLines={1}>
                       {lang.t('exchange.use_defaults')}
                     </Text>
                   </Inset>
@@ -240,17 +185,9 @@ export default function SwapSettingsState({ asset }) {
                 }}
                 style={{ maxWidth: 130 }}
               >
-                <Box
-                  borderRadius={20}
-                  style={{ borderColor: colorForAsset, borderWidth: 2 }}
-                >
+                <Box borderRadius={20} style={{ borderColor: colorForAsset, borderWidth: 2 }}>
                   <Inset space="8px" top={{ custom: android ? 6 : 8 }}>
-                    <Text
-                      color="primary (Deprecated)"
-                      size="16px / 22px (Deprecated)"
-                      weight="bold"
-                      numberOfLines={1}
-                    >
+                    <Text color="primary (Deprecated)" size="16px / 22px (Deprecated)" weight="bold" numberOfLines={1}>
                       {lang.t('exchange.done')}
                     </Text>
                   </Inset>

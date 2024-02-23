@@ -15,10 +15,7 @@ export default function useClipboard() {
   const [hasClipboardData, setHasClipboardData] = useState(false);
   const [clipboardData, updateClipboardData] = useState('');
 
-  const checkClipboard = useCallback(
-    () => Clipboard.hasString().then(setHasClipboardData),
-    [setHasClipboardData]
-  );
+  const checkClipboard = useCallback(() => Clipboard.hasString().then(setHasClipboardData), [setHasClipboardData]);
 
   const getClipboard = useCallback(
     (callback: (result: string) => void) =>

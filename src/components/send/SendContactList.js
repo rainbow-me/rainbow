@@ -41,14 +41,12 @@ const SectionTitle = styled(Text).attrs({
   marginTop: android ? 6 : 12,
 });
 
-const SectionWrapper = styled(LinearGradient).attrs(
-  ({ theme: { colors } }) => ({
-    colors: [colors.white, colors.alpha(colors.white, 0)],
-    end: { x: 0.5, y: 1 },
-    locations: [0.55, 1],
-    start: { x: 0.5, y: 0 },
-  })
-)({
+const SectionWrapper = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
+  colors: [colors.white, colors.alpha(colors.white, 0)],
+  end: { x: 0.5, y: 1 },
+  locations: [0.55, 1],
+  start: { x: 0.5, y: 0 },
+}))({
   height: 40,
 });
 
@@ -83,10 +81,7 @@ export default function SendContactList({
   const contactRefs = useRef({});
   const touchedContact = useRef(undefined);
 
-  const filteredContacts = useMemo(
-    () => filterList(contacts, currentInput, ['nickname']),
-    [contacts, currentInput]
-  );
+  const filteredContacts = useMemo(() => filterList(contacts, currentInput, ['nickname']), [contacts, currentInput]);
 
   const handleCloseAllDifferentContacts = useCallback(address => {
     if (touchedContact.current && contactRefs.current[touchedContact.current]) {
@@ -111,8 +106,7 @@ export default function SendContactList({
 
   const renderItemCallback = useCallback(
     ({ item, section }) => {
-      const ComponentToReturn =
-        section.id === 'contacts' ? SwipeableContactRow : ContactRow;
+      const ComponentToReturn = section.id === 'contacts' ? SwipeableContactRow : ContactRow;
 
       return (
         <ComponentToReturn
@@ -128,22 +122,13 @@ export default function SendContactList({
         />
       );
     },
-    [
-      handleCloseAllDifferentContacts,
-      handleEditContact,
-      onPressContact,
-      removeContact,
-    ]
+    [handleCloseAllDifferentContacts, handleEditContact, onPressContact, removeContact]
   );
 
   const filteredAddresses = useMemo(() => {
     return sortBy(
       filterList(
-        userAccounts.filter(
-          account =>
-            account.visible &&
-            account.address.toLowerCase() !== accountAddress.toLowerCase()
-        ),
+        userAccounts.filter(account => account.visible && account.address.toLowerCase() !== accountAddress.toLowerCase()),
         currentInput,
         ['label']
       ),
@@ -154,11 +139,7 @@ export default function SendContactList({
   const filteredWatchedAddresses = useMemo(() => {
     return sortBy(
       filterList(
-        watchedAccounts.filter(
-          account =>
-            account.visible &&
-            account.address.toLowerCase() !== accountAddress.toLowerCase()
-        ),
+        watchedAccounts.filter(account => account.visible && account.address.toLowerCase() !== accountAddress.toLowerCase()),
         currentInput,
         ['label']
       ),
@@ -168,13 +149,9 @@ export default function SendContactList({
 
   const filteredEnsSuggestions = useMemo(() => {
     const ownedAddresses = filteredAddresses.map(account => account.address);
-    const watchedAddresses = filteredWatchedAddresses.map(
-      account => account.address
-    );
+    const watchedAddresses = filteredWatchedAddresses.map(account => account.address);
     const allAddresses = [...ownedAddresses, ...watchedAddresses];
-    return ensSuggestions.filter(
-      account => !allAddresses?.includes(toChecksumAddress(account?.address))
-    );
+    return ensSuggestions.filter(account => !allAddresses?.includes(toChecksumAddress(account?.address)));
   }, [filteredAddresses, filteredWatchedAddresses, ensSuggestions]);
 
   const sections = useMemo(() => {
@@ -206,21 +183,12 @@ export default function SendContactList({
       });
     return tmp;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    currentInput,
-    ensSuggestions,
-    filteredAddresses,
-    filteredContacts,
-    isDarkMode,
-  ]);
+  }, [currentInput, ensSuggestions, filteredAddresses, filteredContacts, isDarkMode]);
 
   const flyInKey = useDeepCompareMemo(() => String(Date.now()), [sections]);
 
   const shouldShowEmptyState =
-    filteredContacts.length === 0 &&
-    filteredAddresses.length === 0 &&
-    ensSuggestions.length === 0 &&
-    !loadingEnsSuggestions;
+    filteredContacts.length === 0 && filteredAddresses.length === 0 && ensSuggestions.length === 0 && !loadingEnsSuggestions;
 
   return (
     <FlyInAnimation key={flyInKey}>
@@ -240,11 +208,7 @@ export default function SendContactList({
         />
       )}
       <ToastPositionContainer
-        bottom={
-          DeviceInfo.hasNotch()
-            ? keyboardHeight - SheetHandleFixedToTopHeight
-            : keyboardHeight - SheetHandleFixedToTopHeight * 1.5
-        }
+        bottom={DeviceInfo.hasNotch() ? keyboardHeight - SheetHandleFixedToTopHeight : keyboardHeight - SheetHandleFixedToTopHeight * 1.5}
       >
         <InvalidPasteToast />
       </ToastPositionContainer>

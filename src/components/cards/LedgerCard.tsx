@@ -2,14 +2,7 @@ import * as i18n from '@/languages';
 import React from 'react';
 import { useNavigation } from '../../navigation/Navigation';
 import { analyticsV2 } from '@/analytics';
-import {
-  Box,
-  ColorModeProvider,
-  Column,
-  Columns,
-  Stack,
-  Text,
-} from '@/design-system';
+import { Box, ColorModeProvider, Column, Columns, Stack, Text } from '@/design-system';
 import Routes from '@/navigation/routesNames';
 import { GenericCard, Gradient } from './GenericCard';
 import { ORB_SIZE } from './reusables/IconOrb';
@@ -18,10 +11,7 @@ import ledgerLogo from '@/assets/ledgerLogo.png';
 import { ImgixImage } from '../images';
 import ledgerNano from '@/assets/ledger-nano.png';
 import { Source } from 'react-native-fast-image';
-import {
-  LEDGER_NANO_HEIGHT,
-  LEDGER_NANO_WIDTH,
-} from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
+import { LEDGER_NANO_HEIGHT, LEDGER_NANO_WIDTH } from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
 
 const TRANSLATIONS = i18n.l.cards.ledger;
 const GRADIENT: Gradient = {
@@ -48,12 +38,7 @@ export const LedgerCard = () => {
 
   return (
     <ColorModeProvider value="darkTinted">
-      <GenericCard
-        gradient={GRADIENT}
-        onPress={handlePress}
-        testID="ledger-card"
-        type={cardType}
-      >
+      <GenericCard gradient={GRADIENT} onPress={handlePress} testID="ledger-card" type={cardType}>
         <Stack space="28px">
           <Columns space="20px">
             <Column>

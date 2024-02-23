@@ -4,15 +4,16 @@ import { gasUtils } from '@/utils';
 import { base } from '@wagmi/chains';
 import { BASE_ETH_ADDRESS } from '@/references';
 import { getBaseGasPrices } from '@/redux/gas';
-import config from '@/model/config';
+import { getRemoteConfig } from '@/model/remoteConfig';
 
 export const getBaseNetworkObject = (): NetworkProperties => {
+  const { base_enabled, base_tx_enabled, op_chains_enabled, op_chains_tx_enabled } = getRemoteConfig();
   return {
     // wagmi chain data
     ...base,
 
     // network related data
-    enabled: config.base_enabled && config.op_chains_enabled,
+    enabled: base_enabled && op_chains_enabled,
     name: 'Base',
     longName: 'Base',
     value: Network.base,
@@ -35,18 +36,12 @@ export const getBaseNetworkObject = (): NetworkProperties => {
       walletconnect: true,
       swaps: true,
       nfts: true,
-      savings: false,
       pools: false,
-      txs: config.base_tx_enabled && config.op_chains_tx_enabled,
+      txs: base_tx_enabled && op_chains_tx_enabled,
     },
 
     gas: {
-      speeds: [
-        gasUtils.NORMAL,
-        gasUtils.FAST,
-        gasUtils.URGENT,
-        gasUtils.CUSTOM,
-      ],
+      speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT, gasUtils.CUSTOM],
       // ?
       gasType: 'eip1559',
       roundGasDisplay: true,

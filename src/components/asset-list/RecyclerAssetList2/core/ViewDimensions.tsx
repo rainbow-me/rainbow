@@ -7,10 +7,7 @@ import { AssetListItemSkeletonHeight } from '../../AssetListItemSkeleton';
 import { CellType } from './ViewTypes';
 import { deviceUtils } from '@/utils';
 import { ProfileActionButtonsRowHeight } from '../profile-header/ProfileActionButtonsRow';
-import {
-  ProfileAvatarRowHeight,
-  ProfileAvatarRowTopInset,
-} from '../profile-header/ProfileAvatarRow';
+import { ProfileAvatarRowHeight, ProfileAvatarRowTopInset } from '../profile-header/ProfileAvatarRow';
 import { ProfileNameRowHeight } from '../profile-header/ProfileNameRow';
 import { ProfileBalanceRowHeight } from '../profile-header/ProfileBalanceRow';
 import { ProfileStickyHeaderHeight } from '../profile-header/ProfileStickyHeader';
@@ -67,6 +64,7 @@ const ViewDimensions: Record<CellType, Dim> = {
     height: 130,
     width: deviceUtils.dimensions.width / 2 - 0.1,
   },
+  [CellType.REMOTE_CARD_CAROUSEL]: { height: 112 },
 };
 
 export default ViewDimensions;

@@ -11,10 +11,7 @@ import { RootStackParamList } from '@/navigation/types';
 
 export const router = (
   routerOptions: StackRouterOptions
-): Router<
-  StackNavigationState<RootStackParamList>,
-  CommonNavigationAction | StackActionType
-> => {
+): Router<StackNavigationState<RootStackParamList>, CommonNavigationAction | StackActionType> => {
   const stackRouter = StackRouter(routerOptions);
 
   return {

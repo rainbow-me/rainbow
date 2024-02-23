@@ -1,10 +1,6 @@
 import { Block, StaticJsonRpcProvider } from '@ethersproject/providers';
-import {
-  estimateGasWithPadding,
-  getProviderForNetwork,
-  toHexNoLeadingZeros,
-} from './web3';
-import config from '@/model/config';
+import { estimateGasWithPadding, getProviderForNetwork, toHexNoLeadingZeros } from './web3';
+import { getRemoteConfig } from '@/model/remoteConfig';
 import { MaxUint256 } from '@ethersproject/constants';
 import { RainbowError, logger } from '@/logger';
 import { Network } from '@/helpers';
@@ -18,13 +14,9 @@ type TxData = {
   data: string;
 };
 
-const getStateDiff = async (
-  provider: StaticJsonRpcProvider,
-  approval: TxData
-): Promise<any> => {
-  const {
-    number: blockNumber,
-  } = await (provider.getBlock as () => Promise<Block>)();
+const getStateDiff = async (provider: StaticJsonRpcProvider, approval: TxData): Promise<any> => {
+  const { number: blockNumber } = await (provider.getBlock as () => Promise<Block>)();
+  const { trace_call_block_number_offset } = getRemoteConfig();
 
   // trace_call default params
   const callParams = [
@@ -34,9 +26,7 @@ const getStateDiff = async (
       to: approval.to,
     },
     ['stateDiff'],
-    toHexNoLeadingZeros(
-      blockNumber - Number(config.trace_call_block_number_offset || 20)
-    ),
+    toHexNoLeadingZeros(blockNumber - Number(trace_call_block_number_offset || 20)),
   ];
 
   const trace = await provider.send('trace_call', callParams);
@@ -103,9 +93,7 @@ export const estimateNFTOfferGas = async (
         logger.info(`Estimate worked with gasLimit: ${gas}`);
         return true;
       } catch (e) {
-        logger.info(
-          `Estimate failed with gasLimit: ${gas}. Trying with different amounts...`
-        );
+        logger.info(`Estimate failed with gasLimit: ${gas}. Trying with different amounts...`);
         return false;
       }
     });
@@ -113,16 +101,10 @@ export const estimateNFTOfferGas = async (
     if (gasLimit && gasLimit >= ethUnits.basic_swap) {
       return gasLimit.toString();
     } else {
-      logger.error(
-        new RainbowError('Could not find a gas estimate for NFT Offer')
-      );
+      logger.error(new RainbowError('Could not find a gas estimate for NFT Offer'));
     }
   } catch (e) {
-    logger.error(
-      new RainbowError(
-        `Blew up trying to get state diff for NFT Offer.\nerror: ${e}`
-      )
-    );
+    logger.error(new RainbowError(`Blew up trying to get state diff for NFT Offer.\nerror: ${e}`));
   }
   return fallbackGas;
 };

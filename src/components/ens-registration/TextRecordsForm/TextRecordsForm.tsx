@@ -21,15 +21,7 @@ export default function TextRecordsForm({
   onError?: ({ yOffset }: { yOffset: number }) => void;
   selectionColor?: string;
 }) {
-  const {
-    errors,
-    isLoading,
-    selectedFields,
-    onChangeField,
-    onBlurField,
-    submitting,
-    values,
-  } = useENSRegistrationForm();
+  const { errors, isLoading, selectedFields, onChangeField, onBlurField, submitting, values } = useENSRegistrationForm();
 
   const [yOffsets, setYOffsets] = useState<{ [key: string]: number }>({});
 
@@ -71,39 +63,34 @@ export default function TextRecordsForm({
         </Box>
       ) : (
         <>
-          {selectedFields.map(
-            ({ label, inputProps, placeholder, startsWith, id, key }) => (
-              <Box key={id} onLayout={e => handleLayout(e, key)}>
-                <Field
-                  autoFocus={autoFocusKey === key}
-                  defaultValue={values[key]}
-                  errorMessage={errors[key]}
-                  inputProps={inputProps}
-                  key={key}
-                  label={label}
-                  onChangeText={debounce(
-                    text => onChangeField({ key, value: text }),
-                    300
-                  )}
-                  onEndEditing={({ nativeEvent }) => {
-                    onBlurField({ key, value: nativeEvent.text });
-                  }}
-                  onFocus={onFocus}
-                  placeholder={placeholder}
-                  selectionColor={selectionColor}
-                  shouldFormatText={
-                    key === ENS_RECORDS.name ||
-                    key === ENS_RECORDS.description ||
-                    key === ENS_RECORDS.notice ||
-                    key === ENS_RECORDS.keywords ||
-                    key === ENS_RECORDS.pronouns
-                  }
-                  startsWith={startsWith}
-                  testID={`ens-text-record-${key}`}
-                />
-              </Box>
-            )
-          )}
+          {selectedFields.map(({ label, inputProps, placeholder, startsWith, id, key }) => (
+            <Box key={id} onLayout={e => handleLayout(e, key)}>
+              <Field
+                autoFocus={autoFocusKey === key}
+                defaultValue={values[key]}
+                errorMessage={errors[key]}
+                inputProps={inputProps}
+                key={key}
+                label={label}
+                onChangeText={debounce(text => onChangeField({ key, value: text }), 300)}
+                onEndEditing={({ nativeEvent }) => {
+                  onBlurField({ key, value: nativeEvent.text });
+                }}
+                onFocus={onFocus}
+                placeholder={placeholder}
+                selectionColor={selectionColor}
+                shouldFormatText={
+                  key === ENS_RECORDS.name ||
+                  key === ENS_RECORDS.description ||
+                  key === ENS_RECORDS.notice ||
+                  key === ENS_RECORDS.keywords ||
+                  key === ENS_RECORDS.pronouns
+                }
+                startsWith={startsWith}
+                testID={`ens-text-record-${key}`}
+              />
+            </Box>
+          ))}
         </>
       )}
     </Box>

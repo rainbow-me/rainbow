@@ -39,9 +39,7 @@ export const SortOptions: { [key: string]: SortOption } = {
 const MMKV_KEY = 'nftOffersSort';
 
 export const nftOffersSortAtom = atom<SortCriterion>({
-  default:
-    (mmkv.getString(MMKV_KEY) as SortCriterion | undefined) ??
-    SortOptions.Highest.criterion,
+  default: (mmkv.getString(MMKV_KEY) as SortCriterion | undefined) ?? SortOptions.Highest.criterion,
   key: 'nftOffersSort',
 });
 
@@ -72,8 +70,7 @@ export const SortMenu = ({ type }: { type: 'card' | 'sheet' }) => {
           iconType: 'SYSTEM',
           iconValue: 'chart.line.uptrend.xyaxis',
         },
-        menuState:
-          sortOption.criterion === SortOptions.Highest.criterion ? 'on' : 'off',
+        menuState: sortOption.criterion === SortOptions.Highest.criterion ? 'on' : 'off',
       },
       {
         actionKey: SortOptions.FromFloor.criterion,
@@ -82,10 +79,7 @@ export const SortMenu = ({ type }: { type: 'card' | 'sheet' }) => {
           iconType: 'SYSTEM',
           iconValue: 'plus.forwardslash.minus',
         },
-        menuState:
-          sortOption.criterion === SortOptions.FromFloor.criterion
-            ? 'on'
-            : 'off',
+        menuState: sortOption.criterion === SortOptions.FromFloor.criterion ? 'on' : 'off',
       },
       {
         actionKey: SortOptions.Recent.criterion,
@@ -94,17 +88,12 @@ export const SortMenu = ({ type }: { type: 'card' | 'sheet' }) => {
           iconType: 'SYSTEM',
           iconValue: 'clock',
         },
-        menuState:
-          sortOption.criterion === SortOptions.Recent.criterion ? 'on' : 'off',
+        menuState: sortOption.criterion === SortOptions.Recent.criterion ? 'on' : 'off',
       },
     ],
   };
 
-  const onPressMenuItem = ({
-    nativeEvent: { actionKey: sortCriterion },
-  }: {
-    nativeEvent: { actionKey: SortCriterion };
-  }) => {
+  const onPressMenuItem = ({ nativeEvent: { actionKey: sortCriterion } }: { nativeEvent: { actionKey: SortCriterion } }) => {
     haptics.selection();
     setSortCriterion(sortCriterion);
     mmkv.set(MMKV_KEY, sortCriterion);
@@ -114,10 +103,7 @@ export const SortMenu = ({ type }: { type: 'card' | 'sheet' }) => {
   };
 
   return (
-    <ContextMenuButton
-      menuConfig={menuConfig}
-      onPressMenuItem={onPressMenuItem}
-    >
+    <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={onPressMenuItem}>
       <ButtonPressAnimation>
         <ConditionalWrap
           condition={type === 'sheet'}
@@ -136,26 +122,14 @@ export const SortMenu = ({ type }: { type: 'card' | 'sheet' }) => {
         >
           <Inset top={type === 'sheet' ? undefined : '2px'}>
             <Inline alignVertical="center" space={{ custom: 5 }}>
-              <Text
-                size={type === 'sheet' ? '13pt' : '15pt'}
-                weight={type === 'sheet' ? 'heavy' : 'bold'}
-                color="labelTertiary"
-              >
+              <Text size={type === 'sheet' ? '13pt' : '15pt'} weight={type === 'sheet' ? 'heavy' : 'bold'} color="labelTertiary">
                 {sortOption.icon}
               </Text>
               <Inline alignVertical="center">
-                <Text
-                  color="label"
-                  size={type === 'sheet' ? '15pt' : '17pt'}
-                  weight={type === 'sheet' ? 'heavy' : 'bold'}
-                >
+                <Text color="label" size={type === 'sheet' ? '15pt' : '17pt'} weight={type === 'sheet' ? 'heavy' : 'bold'}>
                   {sortOption.name + ' '}
                 </Text>
-                <Text
-                  color="label"
-                  size={type === 'sheet' ? '13pt' : '15pt'}
-                  weight={type === 'sheet' ? 'heavy' : 'bold'}
-                >
+                <Text color="label" size={type === 'sheet' ? '13pt' : '15pt'} weight={type === 'sheet' ? 'heavy' : 'bold'}>
                   􀆈
                 </Text>
               </Inline>

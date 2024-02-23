@@ -10,14 +10,11 @@ import * as i18n from '@/languages';
 const AnimatedImgixImage = Animated.createAnimatedComponent(Image);
 
 const TokenFamilyHeaderAnimationDuration = 200;
-const TokenFamilyHeaderHeight = 44;
+const TokenFamilyHeaderHeight = 48;
 
 const PositionListHeader = ({ total, ...props }: { total: string }) => {
   const { colors } = useTheme();
-  const {
-    isPositionCardsOpen,
-    toggleOpenPositionCards,
-  } = useOpenPositionCards();
+  const { isPositionCardsOpen, toggleOpenPositionCards } = useOpenPositionCards();
 
   const toValue = Number(!!isPositionCardsOpen);
 
@@ -70,11 +67,7 @@ const PositionListHeader = ({ total, ...props }: { total: string }) => {
         testID={`positions-list-header`}
         {...props}
       >
-        <Box
-          height={{ custom: TokenFamilyHeaderHeight }}
-          paddingHorizontal={'19px (Deprecated)'}
-          justifyContent="center"
-        >
+        <Box height={{ custom: TokenFamilyHeaderHeight }} paddingHorizontal={'19px (Deprecated)'} justifyContent="center">
           <Inline alignHorizontal="justify" alignVertical="center">
             <Text size="22pt" color={'label'} weight="heavy">
               {i18n.t(i18n.l.account.tab_positions)}
@@ -87,11 +80,7 @@ const PositionListHeader = ({ total, ...props }: { total: string }) => {
                   </Text>
                 </Animated.View>
               )}
-              <AnimatedImgixImage
-                source={CaretImageSource as any}
-                style={imageAnimatedStyles}
-                tintColor={colors.dark}
-              />
+              <AnimatedImgixImage source={CaretImageSource as any} style={imageAnimatedStyles} tintColor={colors.dark} />
             </Inline>
           </Inline>
         </Box>

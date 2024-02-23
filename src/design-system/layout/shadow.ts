@@ -1,8 +1,4 @@
-import {
-  shadowColors,
-  ShadowColor,
-  ForegroundColor,
-} from './../color/palettes';
+import { shadowColors, ShadowColor, ForegroundColor } from './../color/palettes';
 import { CustomColor } from '../color/useForegroundColor';
 
 type ShadowSize = '12px' | '18px' | '24px' | '30px';
@@ -38,10 +34,7 @@ function coloredShadows<Size extends ShadowSize>(
   );
 }
 
-const shadowHierarchy: Record<
-  ShadowSize | `${ShadowSize} ${ShadowColor}`,
-  ShadowValue
-> = {
+const shadowHierarchy: Record<ShadowSize | `${ShadowSize} ${ShadowColor}`, ShadowValue> = {
   '12px': {
     light: {
       ios: [
@@ -203,10 +196,7 @@ type DeprecatedShadowName =
   | '30px medium'
   | '30px heavy';
 
-const deprecatedShadowHierarchy: Record<
-  DeprecatedShadowName,
-  DeprecatedShadowValue
-> = {
+const deprecatedShadowHierarchy: Record<DeprecatedShadowName, DeprecatedShadowValue> = {
   '9px medium': {
     ios: [
       { x: 0, y: 1, blur: 3, opacity: 0.12 },
@@ -274,9 +264,7 @@ const deprecatedShadowHierarchy: Record<
   },
 };
 
-function defineValuesForColorModes<Value>(
-  defineValue: (colorMode: ShadowColorMode) => Value
-) {
+function defineValuesForColorModes<Value>(defineValue: (colorMode: ShadowColorMode) => Value) {
   return {
     light: defineValue('light'),
     dark: defineValue('dark'),
@@ -286,47 +274,42 @@ function defineValuesForColorModes<Value>(
 export const shadows = {
   ...shadowHierarchy,
 
-  ...(Object.entries(deprecatedShadowHierarchy).reduce(
-    (currentShadows, [key, hierarchy]) => {
-      const nextShadows = shadowColors.reduce(
-        (currentShadows, color) => ({
-          ...currentShadows,
-          [`${key} ${color} (Deprecated)`]: defineValuesForColorModes(() => ({
-            ios: hierarchy.ios.map((attrs, i) => ({
-              ...attrs,
-              color: i === hierarchy.ios.length - 1 ? 'shadowFar' : color,
-            })),
-            android: {
-              ...hierarchy.android,
-              color: color || 'shadowFar',
-            },
-          })),
-        }),
-        {}
-      );
-
-      return {
+  ...(Object.entries(deprecatedShadowHierarchy).reduce((currentShadows, [key, hierarchy]) => {
+    const nextShadows = shadowColors.reduce(
+      (currentShadows, color) => ({
         ...currentShadows,
-        [`${key} (Deprecated)`]: defineValuesForColorModes(() => ({
-          ios: hierarchy.ios.map(attrs => ({
+        [`${key} ${color} (Deprecated)`]: defineValuesForColorModes(() => ({
+          ios: hierarchy.ios.map((attrs, i) => ({
             ...attrs,
-            color: 'shadowFar',
+            color: i === hierarchy.ios.length - 1 ? 'shadowFar' : color,
           })),
           android: {
             ...hierarchy.android,
-            color: 'shadowFar',
+            color: color || 'shadowFar',
           },
         })),
-        ...nextShadows,
-      };
-    },
-    {}
-  ) as { [key in DeprecatedShadowKey]: ShadowValue }),
+      }),
+      {}
+    );
+
+    return {
+      ...currentShadows,
+      [`${key} (Deprecated)`]: defineValuesForColorModes(() => ({
+        ios: hierarchy.ios.map(attrs => ({
+          ...attrs,
+          color: 'shadowFar',
+        })),
+        android: {
+          ...hierarchy.android,
+          color: 'shadowFar',
+        },
+      })),
+      ...nextShadows,
+    };
+  }, {}) as { [key in DeprecatedShadowKey]: ShadowValue }),
 };
 
-type DeprecatedShadowKey =
-  | `${DeprecatedShadowName} (Deprecated)`
-  | `${DeprecatedShadowName} ${ShadowColor} (Deprecated)`;
+type DeprecatedShadowKey = `${DeprecatedShadowName} (Deprecated)` | `${DeprecatedShadowName} ${ShadowColor} (Deprecated)`;
 
 export type CustomShadow = { custom: ShadowValue };
 export type Shadow = keyof typeof shadows | CustomShadow;

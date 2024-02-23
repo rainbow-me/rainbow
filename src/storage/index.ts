@@ -1,6 +1,6 @@
 import { MMKV } from 'react-native-mmkv';
 
-import { Account, Campaigns, Device, Review } from '@/storage/schema';
+import { Account, Cards, Campaigns, Device, Review } from '@/storage/schema';
 import { EthereumAddress } from '@/entities';
 import { Network } from '@/networks/types';
 
@@ -22,10 +22,7 @@ export class Storage<Scopes extends unknown[], Schema> {
    *   `set([key], value)`
    *   `set([scope, key], value)`
    */
-  set<Key extends keyof Schema>(
-    scopes: [...Scopes, Key],
-    data: Schema[Key]
-  ): void {
+  set<Key extends keyof Schema>(scopes: [...Scopes, Key], data: Schema[Key]): void {
     // stored as `{ data: <value> }` structure to ease stringification
     this.store.set(scopes.join(this.sep), JSON.stringify({ data }));
   }
@@ -36,9 +33,7 @@ export class Storage<Scopes extends unknown[], Schema> {
    *   `get([key])`
    *   `get([scope, key])`
    */
-  get<Key extends keyof Schema>(
-    scopes: [...Scopes, Key]
-  ): Schema[Key] | undefined {
+  get<Key extends keyof Schema>(scopes: [...Scopes, Key]): Schema[Key] | undefined {
     const res = this.store.getString(scopes.join(this.sep));
     if (!res) return undefined;
     // parsed from storage structure `{ data: <value> }`
@@ -80,3 +75,5 @@ export const account = new Storage<[EthereumAddress, Network], Account>({
 export const review = new Storage<[], Review>({ id: 'review' });
 
 export const campaigns = new Storage<[], Campaigns>({ id: 'campaigns' });
+
+export const cards = new Storage<[], Cards>({ id: 'cards' });

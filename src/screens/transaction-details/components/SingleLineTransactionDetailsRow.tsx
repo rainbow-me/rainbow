@@ -8,11 +8,7 @@ type Props = {
   value: string;
 };
 
-export const SingleLineTransactionDetailsRow: React.FC<Props> = ({
-  icon,
-  title,
-  value,
-}) => {
+export const SingleLineTransactionDetailsRow: React.FC<Props> = ({ icon, title, value }) => {
   return (
     <Inline alignVertical="center" wrap={false}>
       <Columns alignVertical="center">
@@ -23,12 +19,7 @@ export const SingleLineTransactionDetailsRow: React.FC<Props> = ({
           </Text>
         </Inline>
         <Inline alignHorizontal="right">
-          <Text
-            color="labelTertiary"
-            size="17pt"
-            weight="medium"
-            numberOfLines={1}
-          >
+          <Text color="labelTertiary" size="17pt" weight="medium" numberOfLines={1}>
             {value}
           </Text>
         </Inline>

@@ -19,14 +19,10 @@ const gasPrices = networkObj.getGasPrices();
 
 // Getting a subset of network objects
 
-const layer2s = RainbowNetworks.filter(
-  network => network.networkType === 'layer2'
-);
+const layer2s = RainbowNetworks.filter(network => network.networkType === 'layer2');
 
 // Or networks that match specific properties
-const walletconnectNetworks = RainbowNetworks.filter(
-  network => network.features.walletconnect
-).map(network => network.value);
+const walletconnectNetworks = RainbowNetworks.filter(network => network.features.walletconnect).map(network => network.value);
 ```
 
 ## Network Objects
@@ -38,7 +34,7 @@ This will allow us a safely typed and consistent interface to scale our supporte
 
 #### Add Remote Config
 
-Add the following variables to `@/model/config`, `networkName_enabled` & `networkName_tx_enabled`. Make sure you add it to the parsing section as a boolean so it is processed & typed correctly.
+Add the following variables to `@/model/remoteConfig`, `networkName_enabled` & `networkName_tx_enabled`. Make sure you add it to the parsing section as a boolean so it is processed & typed correctly.
 
 #### Add Network Config
 

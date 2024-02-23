@@ -1,22 +1,8 @@
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
-import React, {
-  ForwardRefRenderFunction,
-  MutableRefObject,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-} from 'react';
+import React, { ForwardRefRenderFunction, MutableRefObject, useCallback, useContext, useEffect, useMemo, useRef } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import Spinner from '../../assets/chartSpinner.png';
 import DiscoverSheetContext from '../../screens/discover/DiscoverScreenContext';
 import { ClearInputDecorator, Input } from '../inputs';
@@ -41,13 +27,11 @@ const ShadowContainer = styled(ShadowStack)(() => ({
   ...margin.object(0, 20, 20, 20),
 }));
 
-const BackgroundGradient = styled(LinearGradient).attrs(
-  ({ theme: { colors } }: { theme: { colors: Colors } }) => ({
-    colors: colors.gradients.offWhite,
-    end: { x: 0.5, y: 1 },
-    start: { x: 0.5, y: 0 },
-  })
-)({
+const BackgroundGradient = styled(LinearGradient).attrs(({ theme: { colors } }: { theme: { colors: Colors } }) => ({
+  colors: colors.gradients.offWhite,
+  end: { x: 0.5, y: 1 },
+  start: { x: 0.5, y: 0 },
+}))({
   borderRadius: ExchangeSearchHeight / 2,
   height: ExchangeSearchWidth,
   left: 0,
@@ -87,10 +71,8 @@ const SearchInput = styled(Input).attrs(
   flex: 1,
   height: ios ? 39 : 56,
   marginBottom: 1,
-  marginLeft: ({ isSearchModeEnabled }: { isSearchModeEnabled: boolean }) =>
-    isSearchModeEnabled ? 4 : 0,
-  textAlign: ({ isSearchModeEnabled }: { isSearchModeEnabled: boolean }) =>
-    isSearchModeEnabled ? 'left' : 'center',
+  marginLeft: ({ isSearchModeEnabled }: { isSearchModeEnabled: boolean }) => (isSearchModeEnabled ? 4 : 0),
+  textAlign: ({ isSearchModeEnabled }: { isSearchModeEnabled: boolean }) => (isSearchModeEnabled ? 'left' : 'center'),
 });
 
 const rotationConfig = {
@@ -119,10 +101,7 @@ interface ExchangeSearchProps {
   clearTextOnFocus: boolean;
 }
 
-const ExchangeSearch: ForwardRefRenderFunction<
-  TextInput,
-  ExchangeSearchProps
-> = (
+const ExchangeSearch: ForwardRefRenderFunction<TextInput, ExchangeSearchProps> = (
   {
     isDiscover,
     isFetching,
@@ -149,9 +128,7 @@ const ExchangeSearch: ForwardRefRenderFunction<
     onChangeText?.('');
   }, [isDiscover, searchQuery, inputRef, onChangeText]);
 
-  const ExchangeSearchWidthFocused = isDiscover
-    ? ExchangeSearchWidth - DoneButtonWidth
-    : ExchangeSearchWidth;
+  const ExchangeSearchWidthFocused = isDiscover ? ExchangeSearchWidth - DoneButtonWidth : ExchangeSearchWidth;
 
   const spinnerRotation = useSharedValue(0);
   const spinnerScale = useSharedValue(0);
@@ -167,18 +144,11 @@ const ExchangeSearch: ForwardRefRenderFunction<
     if ((isFetching || isSearching) && !isEmpty(searchQuery)) {
       clearTimeout(spinnerTimeout.current as NodeJS.Timeout);
       spinnerRotation.value = 0;
-      spinnerRotation.value = withRepeat(
-        withTiming(360, rotationConfig),
-        -1,
-        false
-      );
+      spinnerRotation.value = withRepeat(withTiming(360, rotationConfig), -1, false);
       spinnerScale.value = withTiming(1, timingConfig);
     } else {
       spinnerScale.value = withTiming(0, timingConfig);
-      spinnerTimeout.current = setTimeout(
-        () => (spinnerRotation.value = 0),
-        timingConfig.duration
-      );
+      spinnerTimeout.current = setTimeout(() => (spinnerRotation.value = 0), timingConfig.duration);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFetching, isSearching, searchQuery]);
@@ -193,10 +163,7 @@ const ExchangeSearch: ForwardRefRenderFunction<
   const spinnerStyle = useAnimatedStyle(() => {
     return {
       opacity: spinnerScale.value,
-      transform: [
-        { rotate: `${spinnerRotation.value}deg` },
-        { scale: spinnerScale.value },
-      ],
+      transform: [{ rotate: `${spinnerRotation.value}deg` }, { scale: spinnerScale.value }],
     };
   });
 
@@ -206,9 +173,7 @@ const ExchangeSearch: ForwardRefRenderFunction<
       borderRadius={ExchangeSearchHeight / 2}
       height={ExchangeSearchHeight}
       shadows={shadows}
-      width={
-        isSearchModeEnabled ? ExchangeSearchWidthFocused : ExchangeSearchWidth
-      }
+      width={isSearchModeEnabled ? ExchangeSearchWidthFocused : ExchangeSearchWidth}
     >
       <Box
         flexDirection="row"
@@ -221,16 +186,8 @@ const ExchangeSearch: ForwardRefRenderFunction<
 
         {isSearchModeEnabled && !IS_TEST && (
           <>
-            <Box
-              as={Animated.View}
-              paddingTop={{ custom: 14 }}
-              style={searchIconStyle}
-            >
-              <Text
-                weight="semibold"
-                size="17pt"
-                color={{ custom: colors.alpha(colors.blueGreyDark, 0.6) }}
-              >
+            <Box as={Animated.View} paddingTop={{ custom: 14 }} style={searchIconStyle}>
+              <Text weight="semibold" size="17pt" color={{ custom: colors.alpha(colors.blueGreyDark, 0.6) }}>
                 􀊫
               </Text>
             </Box>

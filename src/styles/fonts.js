@@ -2,6 +2,7 @@ const font = {};
 
 font.family = {
   SFProRounded: ios ? 'SF Pro Rounded' : 'SF-Pro-Rounded',
+  SFMono: ios ? 'SF Mono' : 'SF-Mono-Bold',
 };
 
 font.letterSpacing = {
@@ -69,5 +70,4 @@ font.weight = {
 
 export default font;
 
-export const getFontSize = key =>
-  Number.isInteger(key) ? key : Number(key.replace('px', ''));
+export const getFontSize = key => (Number.isInteger(key) ? key : Number(key.replace('px', '')));

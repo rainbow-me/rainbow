@@ -1,7 +1,7 @@
 import { RainbowFetchClient } from '../rainbow-fetch';
 import { EthereumAddress, IndexToken, RainbowToken } from '@/entities';
 import UniswapAssetsCache from '@/utils/uniswapAssetsCache';
-import { logger, RainbowError } from '@/logger';
+import { logger } from '@/logger';
 
 const dispersionApi = new RainbowFetchClient({
   baseURL: 'https://metadata.p.rainbow.me',
@@ -12,9 +12,7 @@ const dispersionApi = new RainbowFetchClient({
   timeout: 30000,
 });
 
-export const getUniswapV2Tokens = async (
-  addresses: EthereumAddress[]
-): Promise<Record<EthereumAddress, RainbowToken> | null> => {
+export const getUniswapV2Tokens = async (addresses: EthereumAddress[]): Promise<Record<EthereumAddress, RainbowToken> | null> => {
   try {
     const key = addresses.join(',');
     if (UniswapAssetsCache.cache[key]) {
@@ -34,24 +32,7 @@ export const getUniswapV2Tokens = async (
   return null;
 };
 
-export const getDPIBalance = async (): Promise<{
-  base: IndexToken;
-  underlying: IndexToken[];
-} | null> => {
-  try {
-    const res = await dispersionApi.get('/dispersion/v1/dpi');
-    return res?.data?.data ?? null;
-  } catch (e: any) {
-    logger.warn(`dispersionApi: error fetching dpi balance`, {
-      message: e.message,
-    });
-    return null;
-  }
-};
-
-export const getTrendingAddresses = async (): Promise<
-  EthereumAddress[] | null
-> => {
+export const getTrendingAddresses = async (): Promise<EthereumAddress[] | null> => {
   try {
     const res = await dispersionApi.get('/dispersion/v1/trending');
     return res?.data?.data?.trending ?? null;
@@ -63,14 +44,9 @@ export const getTrendingAddresses = async (): Promise<
   }
 };
 
-export const getAdditionalAssetData = async (
-  address: EthereumAddress,
-  chainId = 1
-) => {
+export const getAdditionalAssetData = async (address: EthereumAddress, chainId = 1) => {
   try {
-    const res = await dispersionApi.get(
-      `/dispersion/v1/expanded/${chainId}/${address}`
-    );
+    const res = await dispersionApi.get(`/dispersion/v1/expanded/${chainId}/${address}`);
     return res?.data?.data ?? null;
   } catch (e: any) {
     logger.warn(`dispersionApi: error fetching additional asset data`, {
