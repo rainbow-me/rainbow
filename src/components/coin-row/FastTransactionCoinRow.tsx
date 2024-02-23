@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { StyleSheet, View, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { ButtonPressAnimation } from '../animations';
 import FastTransactionStatusBadge from './FastTransactionStatusBadge';
 import { Bleed, Box, Inline, Text, globalColors, useForegroundColor } from '@/design-system';
