@@ -76,7 +76,7 @@ const preload = (sources: Source[], size?: number, fm?: string): void => {
   return;
 };
 
-const ImgixImageWithForwardRef = React.forwardRef((props: ImgixImageProps, ref: React.Ref<any>) => (
+const ImgixImageWithForwardRef = React.forwardRef((props: MergedImgixImageProps, ref: React.Ref<any>) => (
   <ImgixImage forwardedRef={ref} {...props} />
 ));
 

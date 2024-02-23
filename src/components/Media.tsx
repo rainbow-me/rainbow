@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { maybeSignUri } from '@/handlers/imgix';
-import { ImageStyle, StyleProp, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 // @ts-ignore
 import Video from 'react-native-video';
@@ -26,7 +26,11 @@ export function Media({
   url: string;
   mimeType?: string;
   fallbackUrl?: string;
-  style?: StyleProp<ImageStyle>;
+  style?: {
+    width: number;
+    height: number;
+    borderRadius: number;
+  };
   size?: number;
   onLayout?: () => void;
   onError?: () => void;
