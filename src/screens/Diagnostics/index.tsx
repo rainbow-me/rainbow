@@ -102,7 +102,6 @@ export const WalletDiagnosticsSheet = () => {
           setKeys(processedKeys);
         }
       } catch (error) {
-        console.log({ error });
         logger.error(new RainbowError('Error processing keys for wallet diagnostics'), {
           message: (error as Error).message,
           context: 'init',
