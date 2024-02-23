@@ -324,6 +324,7 @@ export const ActivityIcon = ({
               borderRadius: 10,
             }}
             source={{
+              // @ts-ignore local nft assets have diff types
               uri: transaction.asset.icon_url || transaction.asset.image_url,
             }}
           />
