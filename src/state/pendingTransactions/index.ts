@@ -1,6 +1,9 @@
-import { RainbowTransaction } from '@/entities/transactions';
-import { createStore } from './internal/createStore';
+import { RainbowTransaction, NewTransaction } from '@/entities/transactions';
+import { createStore } from '../internal/createStore';
 import create from 'zustand';
+import { parseNewTransaction } from '@/parsers/transactions';
+import { Network } from '@/networks/types';
+import { nonceStore } from '../nonces';
 
 export interface PendingTransactionsState {
   pendingTransactions: Record<string, RainbowTransaction[]>;
@@ -64,3 +67,43 @@ export const pendingTransactionsStore = createStore<PendingTransactionsState>(
 );
 
 export const usePendingTransactionsStore = create(pendingTransactionsStore);
+
+export const addNewTransaction = ({
+  address,
+  network,
+  transaction,
+}: {
+  address: string;
+  network: Network;
+  transaction: NewTransaction;
+}) => {
+  const { addPendingTransaction } = pendingTransactionsStore.getState();
+  const { setNonce } = nonceStore.getState();
+  const parsedTransaction = parseNewTransaction(transaction);
+  addPendingTransaction({ address, pendingTransaction: parsedTransaction });
+  setNonce({
+    address,
+    network,
+    currentNonce: transaction.nonce,
+  });
+};
+
+export const updateTransaction = ({
+  address,
+  network,
+  transaction,
+}: {
+  address: string;
+  network: Network;
+  transaction: NewTransaction;
+}) => {
+  const { updatePendingTransaction } = pendingTransactionsStore.getState();
+  const { setNonce } = nonceStore.getState();
+  const parsedTransaction = parseNewTransaction(transaction);
+  updatePendingTransaction({ address, pendingTransaction: parsedTransaction });
+  setNonce({
+    address,
+    network,
+    currentNonce: transaction.nonce,
+  });
+};

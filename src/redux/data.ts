@@ -1,5 +1,5 @@
 import { StaticJsonRpcProvider, TransactionResponse } from '@ethersproject/providers';
-import { isEmpty, isNil, partition } from 'lodash';
+import { isEmpty, isNil } from 'lodash';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { AppGetState, AppState } from './store';
@@ -24,18 +24,12 @@ import WalletTypes from '@/helpers/walletTypes';
 import { Navigation } from '@/navigation';
 import { triggerOnSwipeLayout } from '@/navigation/onNavigationStateChange';
 import { Network } from '@/helpers/networkTypes';
-import { parseAsset, parseNewTransaction, parseTransactions } from '@/parsers';
+import { parseAsset, parseNewTransaction } from '@/parsers';
 import { ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils, isLowerCaseMatch } from '@/utils';
 import logger from '@/utils/logger';
-import {
-  fetchWalletENSDataAfterRegistration,
-  getPendingTransactionData,
-  getTransactionFlashbotStatus,
-  getTransactionReceiptStatus,
-  getTransactionSocketStatus,
-} from '@/handlers/transactions';
+import { fetchWalletENSDataAfterRegistration, getTransactionFlashbotStatus, getTransactionSocketStatus } from '@/handlers/transactions';
 import { SwapType } from '@rainbow-me/swaps';
 import { logger as loggr } from '@/logger';
 import { queryClient } from '@/react-query';
@@ -351,17 +345,6 @@ export const transactionsReceived =
 
     loggr.debug('transactionsReceived: attempting to parse transactions');
 
-    const { parsedTransactions, potentialNftTransaction } = await parseTransactions(
-      transactionData,
-      accountAddress,
-      nativeCurrency,
-      transactions,
-      pendingTransactions,
-      undefined,
-      currentNetwork,
-      appended
-    );
-
     const isCurrentAccountAddress = accountAddress === getState().settings.accountAddress;
     if (!isCurrentAccountAddress) {
       loggr.debug('transactionsReceived: transaction accountAddress does not match current accountAddress', {
@@ -369,42 +352,6 @@ export const transactionsReceived =
         currentAccountAddress: getState().settings.accountAddress,
       });
       return;
-    }
-
-    if (appended && potentialNftTransaction) {
-      setTimeout(() => {
-        queryClient.invalidateQueries({
-          queryKey: nftsQueryKey({ address: accountAddress }),
-        });
-      }, 60000);
-    }
-
-    const txHashes = parsedTransactions.map(tx => ethereumUtils.getHash(tx));
-    const updatedPendingTransactions = pendingTransactions.filter(tx => !txHashes.includes(ethereumUtils.getHash(tx)));
-
-    dispatch({
-      payload: updatedPendingTransactions,
-      type: DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS,
-    });
-    dispatch({
-      payload: parsedTransactions,
-      type: DATA_LOAD_TRANSACTIONS_SUCCESS,
-    });
-    saveLocalTransactions(parsedTransactions, accountAddress, network);
-    saveLocalPendingTransactions(updatedPendingTransactions, accountAddress, network);
-
-    if (appended && parsedTransactions.length) {
-      if (
-        selected &&
-        !selected.backedUp &&
-        !selected.imported &&
-        selected.type !== WalletTypes.readOnly &&
-        selected.type !== WalletTypes.bluetooth
-      ) {
-        setTimeout(() => {
-          triggerOnSwipeLayout(() => Navigation.handleAction(Routes.BACKUP_SHEET, { single: true }));
-        }, BACKUP_SHEET_DELAY_MS);
-      }
     }
   };
 
@@ -572,107 +519,7 @@ export const dataWatchPendingTransactions =
     if (isEmpty(pending)) {
       return true;
     }
-    let txStatusesDidChange = false;
-    const updatedPendingTransactions = await Promise.all(
-      pending.map(async tx => {
-        const updatedPendingTransaction: RainbowTransaction = { ...tx };
-        const txHash = ethereumUtils.getHash(tx) || '';
-        let pendingTransactionData: {
-          title: string;
-          minedAt: number | null;
-          pending: boolean;
-          status: TransactionStatus;
-        } | null = {
-          status: TransactionStatus.sending,
-          title: tx?.title || TransactionStatus.sending,
-          minedAt: null,
-          pending: true,
-        };
-        try {
-          logger.log('Checking pending tx with hash', txHash);
-          const p = (await getProviderForNetwork(updatedPendingTransaction.network)) || provider;
-          const txObj: TransactionResponse | undefined = await p.getTransaction(txHash);
-          // if the nonce of last confirmed tx is higher than this pending tx then it got dropped
-          const nonceAlreadyIncluded = currentNonce > (tx?.nonce ?? txObj.nonce);
-          if ((txObj && txObj?.blockNumber && txObj?.blockHash) || nonceAlreadyIncluded) {
-            // When speeding up a non "normal tx" we need to resubscribe
-            // because zerion "append" event isn't reliable
-            logger.log('TX CONFIRMED!', txObj);
-            if (!nonceAlreadyIncluded) {
-              appEvents.emit('transactionConfirmed', {
-                ...txObj,
-                internalType: tx.type,
-              });
-            }
-            if (tx?.ensRegistration) {
-              fetchWalletENSDataAfterRegistration();
-            }
-            const transactionStatus = await getTransactionReceiptStatus(updatedPendingTransaction, nonceAlreadyIncluded, txObj);
 
-            // approvals are not via socket so we dont want to check their status with them.
-            const isApproveTx = transactionStatus === TransactionStatus.approved || transactionStatus === TransactionStatus.approving;
-            if (updatedPendingTransaction?.swap?.type === SwapType.crossChain && !isApproveTx) {
-              pendingTransactionData = await getTransactionSocketStatus(updatedPendingTransaction);
-              if (!pendingTransactionData.pending) {
-                appEvents.emit('transactionConfirmed', {
-                  ...txObj,
-                  internalType: tx.type,
-                });
-                txStatusesDidChange = true;
-              }
-            } else {
-              pendingTransactionData = getPendingTransactionData(updatedPendingTransaction, transactionStatus);
-              txStatusesDidChange = true;
-            }
-          } else if (tx.flashbots) {
-            pendingTransactionData = await getTransactionFlashbotStatus(updatedPendingTransaction, txHash);
-            if (pendingTransactionData && !pendingTransactionData.pending) {
-              txStatusesDidChange = true;
-              if (tx.from && tx.network) {
-                const { setNonce, nonces } = nonceStore.getState();
-                const currentNonce = nonces[tx.from!][tx.network].currentNonce;
-                if (currentNonce) {
-                  setNonce({ address: tx.from, currentNonce: currentNonce - 1, network: tx.network });
-                }
-              }
-            }
-          }
-          if (pendingTransactionData) {
-            updatedPendingTransaction.title = pendingTransactionData.title;
-            updatedPendingTransaction.status = pendingTransactionData.status;
-            updatedPendingTransaction.pending = pendingTransactionData.pending;
-            updatedPendingTransaction.minedAt = pendingTransactionData.minedAt;
-          }
-        } catch (error) {
-          logger.log('Error watching pending txn', error);
-        }
-        return updatedPendingTransaction;
-      })
-    );
-
-    if (txStatusesDidChange) {
-      const { accountAddress, network } = getState().settings;
-      const [newDataTransactions, pendingTransactions] = partition(
-        updatedPendingTransactions.filter(({ status }) => status !== TransactionStatus.unknown),
-        tx => !tx.pending
-      );
-      dispatch({
-        payload: pendingTransactions,
-        type: DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS,
-      });
-      saveLocalPendingTransactions(pendingTransactions, accountAddress, network);
-
-      const { transactions } = getState().data;
-      const updatedTransactions = newDataTransactions.concat(transactions);
-      dispatch({
-        payload: updatedTransactions,
-        type: DATA_LOAD_TRANSACTIONS_SUCCESS,
-      });
-      saveLocalTransactions(updatedTransactions, accountAddress, network);
-      if (!pendingTransactions?.length) {
-        return true;
-      }
-    }
     return false;
   };
 
@@ -689,6 +536,7 @@ export const dataWatchPendingTransactions =
 export const dataUpdateTransaction =
   (txHash: string, txObj: RainbowTransaction, watch: boolean, provider: StaticJsonRpcProvider | null = null) =>
   async (dispatch: ThunkDispatch<AppState, unknown, DataUpdatePendingTransactionSuccessAction>, getState: AppGetState) => {
+    return;
     const { pendingTransactions } = getState().data;
 
     const allOtherTx = pendingTransactions.filter(tx => tx.hash !== txHash);
@@ -718,6 +566,7 @@ export const dataUpdateTransaction =
 export const checkPendingTransactionsOnInitialize =
   (accountAddressToWatch: string, provider: StaticJsonRpcProvider | null = null) =>
   async (dispatch: ThunkDispatch<AppState, unknown, never>, getState: AppGetState) => {
+    return;
     const { accountAddress: currentAccountAddress, network } = getState().settings;
     if (currentAccountAddress !== accountAddressToWatch) return;
     const providerForNetwork = await getProviderForNetwork(network);
@@ -772,21 +621,14 @@ export default (state: DataState = INITIAL_STATE, action: DataAction) => {
         ...state,
         ethUSDPrice: action.payload,
       };
-    case DATA_LOAD_TRANSACTIONS_REQUEST:
-      return {
-        ...state,
-        isLoadingTransactions: true,
-      };
     case DATA_LOAD_TRANSACTIONS_SUCCESS:
       return {
         ...state,
-        isLoadingTransactions: false,
         transactions: action.payload,
       };
     case DATA_LOAD_TRANSACTIONS_FAILURE:
       return {
         ...state,
-        isLoadingTransactions: false,
       };
     case DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS:
       return {

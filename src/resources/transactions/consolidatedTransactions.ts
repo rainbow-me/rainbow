@@ -6,7 +6,7 @@ import { RainbowError, logger } from '@/logger';
 import { rainbowFetch } from '@/rainbow-fetch';
 import { ADDYS_API_KEY } from 'react-native-dotenv';
 import { RainbowNetworks } from '@/networks';
-//import { parseTransaction } from '@/parsers/transactions';
+import { parseTransaction } from '@/parsers/transactions';
 
 const CONSOLIDATED_TRANSACTIONS_INTERVAL = 30000;
 const CONSOLIDATED_TRANSACTIONS_TIMEOUT = 20000;
@@ -107,17 +107,12 @@ async function parseConsolidatedTransactions(
 ): Promise<RainbowTransaction[]> {
   const data = message?.payload?.transactions || [];
 
-  return [];
-  //   const parsedTransactionPromises = data.map((tx: TransactionApiResponse) =>
-  //     parseTransaction(tx, currency)
-  //   );
-  //   // Filter out undefined values immediately
+  const parsedTransactionPromises = data.map((tx: TransactionApiResponse) => parseTransaction(tx, currency));
+  // Filter out undefined values immediately
 
-  //   const parsedConsolidatedTransactions = (
-  //     await Promise.all(parsedTransactionPromises)
-  //   ).flat(); // Filter out any remaining undefined values
+  const parsedConsolidatedTransactions = (await Promise.all(parsedTransactionPromises)).flat(); // Filter out any remaining undefined values
 
-  //   return parsedConsolidatedTransactions;
+  return parsedConsolidatedTransactions;
 }
 
 // ///////////////////////////////////////////////
