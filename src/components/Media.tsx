@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { maybeSignUri } from '@/handlers/imgix';
-import { Image, ImageStyle, View } from 'react-native';
+import { ImageStyle, StyleProp, StyleSheet, View } from 'react-native';
+import FastImage from 'react-native-fast-image';
 // @ts-ignore
 import Video from 'react-native-video';
 import SvgImage from './svg/SvgImage';
@@ -25,7 +26,7 @@ export function Media({
   url: string;
   mimeType?: string;
   fallbackUrl?: string;
-  style?: ImageStyle;
+  style?: StyleProp<ImageStyle>;
   size?: number;
   onLayout?: () => void;
   onError?: () => void;
@@ -62,7 +63,7 @@ export function Media({
       );
     case MimeType.SVG:
       return (
-        <View style={{ ...style, overflow: 'hidden' }}>
+        <View style={StyleSheet.flatten([style, { overflow: 'hidden' }])}>
           <SvgImage fallbackUri={signedFallbackUrl} onLayout={onLayout} onError={onError} style={style} source={{ uri: signedUrl }} />
         </View>
       );
@@ -70,6 +71,6 @@ export function Media({
     case MimeType.PNG:
     case MimeType.JPG:
     default:
-      return <Image onLayout={onLayout} onError={onError} source={{ uri: signedUrl }} style={style} />;
+      return <FastImage onLayout={onLayout} onError={onError} resizeMode="cover" style={style} source={{ uri: signedUrl }} />;
   }
 }
