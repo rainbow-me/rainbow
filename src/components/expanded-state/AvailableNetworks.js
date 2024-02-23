@@ -11,7 +11,7 @@ import { ethereumUtils } from '@/utils';
 import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '../animations';
 import { Column, Row } from '../layout';
-import { ChainBadge, CoinIcon } from '../coin-icon';
+import { ChainBadge } from '../coin-icon';
 import Divider from '../Divider';
 import { Text } from '../text';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';

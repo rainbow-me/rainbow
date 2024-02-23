@@ -4,7 +4,7 @@ import { useTheme } from '@/theme';
 
 import { GenericCard } from '../cards/GenericCard';
 import startCase from 'lodash/startCase';
-import { CoinIcon, RequestVendorLogoIcon } from '../coin-icon';
+import { RequestVendorLogoIcon } from '../coin-icon';
 import { EthereumAddress } from '@/entities';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -13,7 +13,6 @@ import { event } from '@/analytics/event';
 import { IS_ANDROID } from '@/env';
 import { capitalize, uniqBy } from 'lodash';
 import { RainbowDeposit, RainbowPosition } from '@/resources/defi/types';
-import { ethereumUtils } from '@/utils';
 import { Network } from '@/networks/types';
 import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
 import { useAccountSettings } from '@/hooks';

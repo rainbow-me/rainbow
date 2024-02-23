@@ -3,7 +3,7 @@ import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { Linking, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ChainBadge, CoinIcon, DashedWrapper } from '../components/coin-icon';
+import { ChainBadge, DashedWrapper } from '../components/coin-icon';
 import { Centered, Column, ColumnWithMargins, Row, RowWithMargins } from '../components/layout';
 import Routes from '@/navigation/routesNames';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';

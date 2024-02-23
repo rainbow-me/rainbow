@@ -2,7 +2,7 @@
 /* eslint-disable no-undef */
 import AnimateNumber from '@bankify/react-native-animate-number';
 import lang from 'i18n-js';
-import { isEmpty, isNaN, isNil, upperFirst } from 'lodash';
+import { isEmpty, isNaN, isNil } from 'lodash';
 import makeColorMoreChill from 'make-color-more-chill';
 import { AnimatePresence, MotiView } from 'moti';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -10,7 +10,7 @@ import { InteractionManager, Keyboard } from 'react-native';
 import { Easing } from 'react-native-reanimated';
 import { darkModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
-import { ChainBadge, CoinIcon } from '../coin-icon';
+import { ChainBadge } from '../coin-icon';
 import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
 import { GasSpeedLabelPager } from '.';

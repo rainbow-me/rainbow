@@ -1,9 +1,10 @@
 import React, { createElement } from 'react';
-import { CoinIcon, CoinIconSize } from '../coin-icon';
+import { CoinIconSize } from '../coin-icon';
 import { Column, Row } from '../layout';
 import { useAccountSettings } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
+import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
 
 const CoinRowPaddingTop = 9;
 const CoinRowPaddingBottom = 10;
@@ -31,7 +32,7 @@ export default function CoinRow({
   badgeYPosition,
   bottomRowRender,
   children,
-  coinIconRender = CoinIcon,
+  coinIconRender = RainbowCoinIcon,
   containerStyles,
   contentStyles,
   isFirstCoinRow,
