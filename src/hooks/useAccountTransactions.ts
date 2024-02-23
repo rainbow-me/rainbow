@@ -5,8 +5,6 @@ import useContacts from './useContacts';
 import useRequests from './useRequests';
 import { useNavigation } from '@/navigation';
 import { useTheme } from '@/theme';
-import { getCachedProviderForNetwork, isHardHat } from '@/handlers/web3';
-import { useUserAssets } from '@/resources/assets/UserAssetsQuery';
 import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
 import { RainbowTransaction } from '@/entities';
 import { pendingTransactionsStore, usePendingTransactionsStore } from '@/state/pendingTransactions';
@@ -17,15 +15,7 @@ import { nonceStore } from '@/state/nonces';
 export const NOE_PAGE = 30;
 
 export default function useAccountTransactions() {
-  const { network: currentNetwork, accountAddress, nativeCurrency } = useAccountSettings();
-  const provider = getCachedProviderForNetwork(currentNetwork);
-  const providerUrl = provider?.connection?.url;
-  const connectedToHardhat = isHardHat(providerUrl);
-  const { data: userAssets } = useUserAssets({
-    address: accountAddress,
-    currency: nativeCurrency,
-    connectedToHardhat,
-  });
+  const { accountAddress, nativeCurrency } = useAccountSettings();
 
   const { pendingTransactions: storePendingTransactions } = usePendingTransactionsStore();
 
