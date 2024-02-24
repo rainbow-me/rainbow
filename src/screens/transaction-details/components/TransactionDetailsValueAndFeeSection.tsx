@@ -2,17 +2,20 @@ import React from 'react';
 import { DoubleLineTransactionDetailsRow } from '@/screens/transaction-details/components/DoubleLineTransactionDetailsRow';
 import { TransactionDetailsSymbol } from '@/screens/transaction-details/components/TransactionDetailsSymbol';
 import { RainbowTransaction, RainbowTransactionFee } from '@/entities/transactions/transaction';
-import { CoinIcon } from '@/components/coin-icon';
-import { Box, Stack } from '@/design-system';
+import { Box, Stack, globalColors } from '@/design-system';
 import { TransactionDetailsDivider } from '@/screens/transaction-details/components/TransactionDetailsDivider';
 import * as i18n from '@/languages';
-import { TransactionType } from '@/entities';
-import { ethereumUtils } from '@/utils';
 import { Network } from '@/networks/types';
-import { useUserAsset } from '@/resources/assets/useUserAsset';
-import { getUniqueId } from '@/utils/ethereumUtils';
-import FastCoinIcon from '@/components/asset-list/RecyclerAssetList2/FastComponents/FastCoinIcon';
+import { convertAmountAndPriceToNativeDisplay, convertRawAmountToBalance } from '@/helpers/utilities';
+import { useAccountSettings } from '@/hooks';
 import { useTheme } from '@/theme';
+import FastCoinIcon from '@/components/asset-list/RecyclerAssetList2/FastComponents/FastCoinIcon';
+import { View } from 'react-native';
+import { ImgixImage } from '@/components/images';
+import { CardSize } from '@/components/unique-token/CardSize';
+import ChainBadge from '@/components/coin-icon/ChainBadge';
+import { ETH_ADDRESS } from '@rainbow-me/swaps';
+import { ETH_SYMBOL } from '@/references';
 
 type Props = {
   transaction: RainbowTransaction;
@@ -23,27 +26,20 @@ type Props = {
 
 export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({ transaction }) => {
   const theme = useTheme();
-  const { network, symbol, type, fee } = transaction;
-  const assetUniqueId = getUniqueId(transaction?.address || '', transaction?.network || Network.mainnet);
-  const { data: assetData } = useUserAsset(assetUniqueId);
+  const { nativeCurrency } = useAccountSettings();
+  const { fee } = transaction;
+  const assetData = transaction?.asset;
+  const change = transaction?.changes?.[0];
 
-  const coinAddress = assetData?.address || transaction?.address || '';
-  const mainnetCoinAddress = assetData?.mainnet_address;
-  const coinSymbol =
-    type === TransactionType.contract_interaction
-      ? ethereumUtils.getNetworkNativeAsset(network ?? Network.mainnet)?.symbol
-      : assetData?.symbol ?? symbol ?? undefined;
-
-  const value = transaction.balance?.display;
-  const nativeCurrencyValue = transaction.native?.display;
-
+  const value = change?.value || transaction.balance?.display;
+  const valueDisplay = convertRawAmountToBalance(value || '', assetData!).display || '';
+  const nativeCurrencyValue = convertAmountAndPriceToNativeDisplay(
+    change?.asset?.balance?.amount || '',
+    change?.asset?.price?.value || '',
+    nativeCurrency
+  ).display;
   const feeValue = fee?.value.display ?? '';
   const feeNativeCurrencyValue = fee?.native?.display ?? '';
-
-  if (!fee && !value) {
-    return null;
-  }
-
   return (
     <>
       <TransactionDetailsDivider />
@@ -52,16 +48,52 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({ transact
           {value && (
             <DoubleLineTransactionDetailsRow
               leftComponent={
-                <FastCoinIcon
-                  mainnetAddress={mainnetCoinAddress}
-                  address={coinAddress}
-                  symbol={coinSymbol || ''}
-                  network={network || Network.mainnet}
-                  theme={theme}
-                />
+                assetData?.type === 'nft' ? (
+                  <View
+                    style={{
+                      shadowColor: globalColors.grey100,
+                      shadowOffset: { width: 0, height: 2 },
+                      shadowOpacity: 0.02,
+                      shadowRadius: 3,
+                      paddingTop: 9,
+                      paddingBottom: 10,
+                      overflow: 'visible',
+                    }}
+                  >
+                    <View
+                      style={{
+                        shadowColor: theme.colorScheme === 'dark' || !assetData.color ? globalColors.grey100 : assetData.color,
+                        shadowOffset: { width: 0, height: 6 },
+                        shadowOpacity: 0.24,
+                        shadowRadius: 9,
+                      }}
+                    >
+                      <ImgixImage
+                        size={CardSize}
+                        style={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: 10,
+                        }}
+                        source={{
+                          uri: assetData.icon_url,
+                        }}
+                      />
+                    </View>
+                    {transaction.network !== Network.mainnet && <ChainBadge network={transaction.network} badgeYPosition={10} />}
+                  </View>
+                ) : (
+                  <FastCoinIcon
+                    address={assetData?.address || ETH_ADDRESS}
+                    network={transaction.network}
+                    mainnetAddress={assetData?.mainnet_address}
+                    symbol={assetData?.symbol || ETH_SYMBOL}
+                    theme={theme}
+                  />
+                )
               }
               title={i18n.t(i18n.l.transaction_details.value)}
-              value={value}
+              value={valueDisplay || ''}
               secondaryValue={nativeCurrencyValue}
             />
           )}

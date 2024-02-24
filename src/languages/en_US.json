@@ -1829,35 +1829,139 @@
       "pending_title": "Pending",
       "dropped_title": "Dropped",
       "type": {
-        "approved": "Approved",
-        "approving": "Approving",
-        "bridging": "Bridging",
-        "bridged": "Bridged",
-        "cancelled": "Cancelled",
-        "cancelling": "Cancelling",
-        "contract interaction": "Contract interaction",
-        "deposited": "Deposited",
-        "depositing": "Depositing",
-        "dropped": "Dropped",
-        "failed": "Failed",
-        "purchased": "Purchased",
-        "purchasing": "Purchasing",
-        "minting": "Minting",
-        "minted": "Minted",
-        "received": "Received",
-        "receiving": "Receiving",
-        "self": "Self",
-        "sending": "Sending",
-        "sent": "Sent",
-        "speeding up": "Speeding up",
-        "selling": "Selling",
-        "sold": "Sold",
-        "swapped": "Swapped",
-        "swapping": "Swapping",
-        "unknown": "Unknown",
-        "withdrawing": "Withdrawing",
-        "withdrew": "Withdrew"
+        "savings": "Savings",
+        "cancelled": "Transaction Cancelled",
+        "burn": {
+          "pending": "Burning",
+          "confirmed": "Burned",
+          "failed": "Burn Failed"
+        },
+        "cancel": {
+          "pending": "Cancelling",
+          "confirmed": "Cancelled",
+          "failed": "Cancel Failed"
+        },
+        "speed_up": {
+          "pending": "Speeding Up",
+          "confirmed": "Sped Up",
+          "failed": "Speed Up Failed"
+        },
+        "send": {
+          "pending": "Sending",
+          "confirmed": "Sent",
+          "failed": "Send Failed"
+        },
+        "receive": {
+          "pending": "",
+          "confirmed": "Received",
+          "failed": ""
+        },
+        "withdraw": {
+          "pending": "Withdrawing",
+          "confirmed": "Withdrew",
+          "failed": "Withdraw Failed"
+        },
+        "deposit": {
+          "pending": "Depositing",
+          "confirmed": "Deposited",
+          "failed": "Deposit Failed"
+        },
+        "mint": {
+          "pending": "Minting",
+          "confirmed": "Minted",
+          "failed": "Mint Failed"
+        },
+        "approve": {
+          "pending": "Approving",
+          "confirmed": "Approved",
+          "failed": "Approve Failed"
+        },
+        "contract_interaction": {
+          "pending": "Interaction Pending",
+          "confirmed": "Interacted",
+          "failed": "Interaction Failed"
+        },
+        "swap": {
+          "pending": "Swapping",
+          "confirmed": "Swapped",
+          "failed": "Swap Failed"
+        },
+        "borrow": {
+          "pending": "Borrowing",
+          "confirmed": "Borrowed",
+          "failed": "Borrow Failed"
+        },
+        "claim": {
+          "pending": "Claiming",
+          "confirmed": "Claimed",
+          "failed": "Claim Failed"
+        },
+        "deployment": {
+          "pending": "Deploying",
+          "confirmed": "Deployed",
+          "failed": "Deploy Failed"
+        },
+        "repay": {
+          "pending": "Repaying",
+          "confirmed": "Repayed",
+          "failed": "Repay Failed"
+        },
+        "stake": {
+          "pending": "Staking",
+          "confirmed": "Staked",
+          "failed": "Stake Failed"
+        },
+        "unstake": {
+          "pending": "Unstaking",
+          "confirmed": "Unstaked",
+          "failed": "Unstake Failed"
+        },
+        "purchase": {
+          "pending": "Purchasing",
+          "confirmed": "Purchased",
+          "failed": "Purchase Failed"
+        },
+        "revoke": {
+          "pending": "Revoking",
+          "confirmed": "Revoked",
+          "failed": "Revoke Failed"
+        },
+        "sale": {
+          "pending": "Selling",
+          "confirmed": "Sold",
+          "failed": "Sale Failed"
+        },
+        "bridge": {
+          "pending": "Bridging",
+          "confirmed": "Bridged",
+          "failed": "Bridge Failed"
+        },
+        "airdrop": {
+          "pending": "",
+          "confirmed": "Airdropped",
+          "failed": ""
+        },
+        "wrap": {
+          "pending": "Wrapping",
+          "confirmed": "Wrapped",
+          "failed": "Wrap Failed"
+        },
+        "unwrap": {
+          "pending": "Unwrapping",
+          "confirmed": "Unwrapped",
+          "failed": "Unwrap Failed"
+        },
+        "bid": {
+          "pending": "Bidding",
+          "confirmed": "Bid",
+          "failed": "Bid Failed"
+        }
       },
+      "approvals": {
+        "no_allowance": "No Allowance",
+        "unlimited": "Unlimited"
+      },
+      "no_value": "No value",
       "savings": "Savings",
       "signed": "Signed",
       "contract_interaction": "Contract Interaction",
@@ -2361,6 +2465,7 @@
       }
     },
     "walletconnect": {
+      "requests": "Requests",
       "wants_to_connect": "wants to connect to your wallet",
       "wants_to_connect_to_network": "wants to connect to the %{network} network",
       "available_networks": "Available Networks",
