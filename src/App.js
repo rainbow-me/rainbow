@@ -60,6 +60,7 @@ import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { RemotePromoSheetProvider } from '@/components/remote-promo-sheet/RemotePromoSheetProvider';
 import { RemoteCardProvider } from '@/components/cards/remote-cards';
 import { initializeRemoteConfig } from '@/model/remoteConfig';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -366,7 +367,9 @@ function Root() {
               <RainbowContextWrapper>
                 <SharedValuesProvider>
                   <ErrorBoundary>
-                    <App />
+                    <GestureHandlerRootView style={{ flex: 1 }}>
+                      <App />
+                    </GestureHandlerRootView>
                   </ErrorBoundary>
                 </SharedValuesProvider>
               </RainbowContextWrapper>
