@@ -5,6 +5,7 @@ import { AppRegistry, AppState, Dimensions, InteractionManager, Linking, LogBox,
 
 // eslint-disable-next-line import/default
 import codePush from 'react-native-code-push';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import { connect, Provider as ReduxProvider } from 'react-redux';
@@ -60,7 +61,6 @@ import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { RemotePromoSheetProvider } from '@/components/remote-promo-sheet/RemotePromoSheetProvider';
 import { RemoteCardProvider } from '@/components/cards/remote-cards';
 import { initializeRemoteConfig } from '@/model/remoteConfig';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
