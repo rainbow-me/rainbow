@@ -20,7 +20,7 @@ import { Network } from '@/helpers/networkTypes';
 import { ETH_ADDRESS } from '@/references';
 import { convertRawAmountToBalance, convertRawAmountToNativeDisplay } from '@/helpers/utilities';
 import { ethereumUtils, getTokenMetadata } from '@/utils';
-import { RAINBOW_ROUTER_CONTRACT_ADDRESS, SOCKET_REGISTRY_CONTRACT_ADDRESSESS } from '@rainbow-me/swaps';
+import { RAINBOW_ROUTER_CONTRACT_ADDRESS, SOCKET_GATEWAY_CONTRACT_ADDRESSESS } from '@rainbow-me/swaps';
 import { RainbowTransactionFee } from '@/entities/transactions/transaction';
 import * as i18n from '@/languages';
 
@@ -196,7 +196,7 @@ const overrideTradeRefund = (txn: ZerionTransaction): ZerionTransaction => {
 };
 
 const swapAddresses = ((): Set<string> => {
-  const contractAddresses = new Set(Array.from(SOCKET_REGISTRY_CONTRACT_ADDRESSESS.values()).map(addr => addr.toLowerCase()));
+  const contractAddresses = new Set(Array.from(SOCKET_GATEWAY_CONTRACT_ADDRESSESS.values()).map(addr => addr.toLowerCase()));
 
   contractAddresses.add(RAINBOW_ROUTER_CONTRACT_ADDRESS.toLowerCase());
 
@@ -265,67 +265,65 @@ const parseTransaction = async (
 
   if (txn.changes.length) {
     const fee = network === Network.mainnet ? getTransactionFee(txn, nativeCurrency) : undefined;
-    const internalTransactions = txn.changes.map(
-      (internalTxn, index): RainbowTransaction => {
-        const address = internalTxn?.asset?.asset_code?.toLowerCase() ?? '';
-        const metadata = getTokenMetadata(address);
-        const updatedAsset = {
-          address,
-          decimals: internalTxn?.asset?.decimals,
-          name: internalTxn?.asset?.name,
-          symbol: toUpper(internalTxn?.asset?.symbol ?? ''),
-          ...metadata,
-        };
-        const priceUnit = internalTxn.price ?? internalTxn?.asset?.price?.value ?? 0;
-        const valueUnit = internalTxn.value || 0;
-        const nativeDisplay = convertRawAmountToNativeDisplay(valueUnit, updatedAsset.decimals, priceUnit, nativeCurrency);
+    const internalTransactions = txn.changes.map((internalTxn, index): RainbowTransaction => {
+      const address = internalTxn?.asset?.asset_code?.toLowerCase() ?? '';
+      const metadata = getTokenMetadata(address);
+      const updatedAsset = {
+        address,
+        decimals: internalTxn?.asset?.decimals,
+        name: internalTxn?.asset?.name,
+        symbol: toUpper(internalTxn?.asset?.symbol ?? ''),
+        ...metadata,
+      };
+      const priceUnit = internalTxn.price ?? internalTxn?.asset?.price?.value ?? 0;
+      const valueUnit = internalTxn.value || 0;
+      const nativeDisplay = convertRawAmountToNativeDisplay(valueUnit, updatedAsset.decimals, priceUnit, nativeCurrency);
 
-        if (purchaseTransactionsHashes.includes(txn.hash.toLowerCase())) {
-          txn.type = TransactionType.purchase;
-        }
-
-        const status = getTransactionLabel({
-          direction: internalTxn.direction || txn.direction,
-          pending: false,
-          protocol: txn.protocol,
-          status: txn.status,
-          type: txn.type,
-        });
-
-        const title = getTitle({
-          protocol: txn.protocol,
-          status,
-          type: txn.type,
-        });
-
-        const description = getDescription({
-          name: updatedAsset.name,
-          status,
-          type: txn.type,
-        });
-
-        return {
-          address: updatedAsset.address.toLowerCase() === ETH_ADDRESS ? ETH_ADDRESS : updatedAsset.address,
-          balance: convertRawAmountToBalance(valueUnit, updatedAsset),
-          description,
-          from: internalTxn.address_from ?? txn.address_from,
-          hash: `${txn.hash}-${index}`,
-          minedAt: txn.mined_at,
-          name: updatedAsset.name,
-          native: isL2Network(network) ? { amount: '', display: '' } : nativeDisplay,
-          network,
-          nonce: txn.nonce,
-          pending: false,
-          protocol: txn.protocol,
-          status,
-          symbol: updatedAsset.symbol,
-          title,
-          to: internalTxn.address_to ?? txn.address_to,
-          type: txn.type,
-          fee,
-        };
+      if (purchaseTransactionsHashes.includes(txn.hash.toLowerCase())) {
+        txn.type = TransactionType.purchase;
       }
-    );
+
+      const status = getTransactionLabel({
+        direction: internalTxn.direction || txn.direction,
+        pending: false,
+        protocol: txn.protocol,
+        status: txn.status,
+        type: txn.type,
+      });
+
+      const title = getTitle({
+        protocol: txn.protocol,
+        status,
+        type: txn.type,
+      });
+
+      const description = getDescription({
+        name: updatedAsset.name,
+        status,
+        type: txn.type,
+      });
+
+      return {
+        address: updatedAsset.address.toLowerCase() === ETH_ADDRESS ? ETH_ADDRESS : updatedAsset.address,
+        balance: convertRawAmountToBalance(valueUnit, updatedAsset),
+        description,
+        from: internalTxn.address_from ?? txn.address_from,
+        hash: `${txn.hash}-${index}`,
+        minedAt: txn.mined_at,
+        name: updatedAsset.name,
+        native: isL2Network(network) ? { amount: '', display: '' } : nativeDisplay,
+        network,
+        nonce: txn.nonce,
+        pending: false,
+        protocol: txn.protocol,
+        status,
+        symbol: updatedAsset.symbol,
+        title,
+        to: internalTxn.address_to ?? txn.address_to,
+        type: txn.type,
+        fee,
+      };
+    });
     return reverse(internalTransactions);
   }
   const parsedTransaction = await parseTransactionWithEmptyChanges(txn, nativeCurrency, network);
