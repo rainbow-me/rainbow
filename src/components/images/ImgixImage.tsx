@@ -1,5 +1,6 @@
 import * as React from 'react';
 import FastImage, { FastImageProps, Source } from 'react-native-fast-image';
+import { Image } from 'react-native';
 
 import { maybeSignSource } from '../../handlers/imgix';
 
@@ -11,7 +12,6 @@ export type ImgixImageProps = FastImageProps & {
 // Here we're emulating the pattern used in react-native-fast-image:
 // https://github.com/DylanVann/react-native-fast-image/blob/0439f7190f141e51a391c84890cdd8a7067c6ad3/src/index.tsx#L146
 type HiddenImgixImageProps = {
-  forwardedRef?: React.Ref<any>;
   maxRetries?: number;
   retryOnError?: boolean;
   size: number;
@@ -57,7 +57,7 @@ class ImgixImage extends React.PureComponent<MergedImgixImageProps, ImgixImagePr
     // Use the local state as the signing source, as opposed to the prop directly.
     // (The source prop may point to an untrusted URL.)
     const { retryCount, source } = this.state;
-    const Component = maybeComponent || FastImage;
+    const Component = maybeComponent || Image;
     return <Component {...props} key={`${JSON.stringify(source)}-${retryCount}`} onError={this.handleError} source={source} />;
   }
 }
@@ -71,18 +71,13 @@ const preload = (sources: Source[], size?: number, fm?: string): void => {
         w: size,
       }),
     };
-    return FastImage.preload(sources.map(source => maybeSignSource(source, options)));
   }
   return;
 };
 
-const ImgixImageWithForwardRef = React.forwardRef((props: MergedImgixImageProps, ref: React.Ref<any>) => (
-  <ImgixImage forwardedRef={ref} {...props} />
-));
-
 const { cacheControl, clearDiskCache, clearMemoryCache, contextTypes, priority, resizeMode } = FastImage;
 
-export default Object.assign(ImgixImageWithForwardRef, {
+export default Object.assign(ImgixImage, {
   cacheControl,
   clearDiskCache,
   clearMemoryCache,

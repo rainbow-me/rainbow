@@ -1,5 +1,4 @@
 import React from 'react';
-import { Image } from 'react-native';
 import Animated, {
   interpolate,
   useAnimatedReaction,
@@ -10,12 +9,13 @@ import Animated, {
   SharedValue,
 } from 'react-native-reanimated';
 import { RainbowAnimationDetails } from './types';
+import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 
 const INITIAL_SIZE = 375;
 const BASE_DELAY = 69;
 
-const RainbowImage = styled(Image)({
+const RainbowImage = styled(ImgixImage)({
   height: INITIAL_SIZE,
   position: 'absolute',
   width: INITIAL_SIZE,
