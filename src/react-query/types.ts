@@ -15,6 +15,11 @@ export type QueryConfigWithSelect<TQueryFnData, TError, TData, TQueryKey extends
   'cacheTime' | 'enabled' | 'refetchInterval' | 'retry' | 'staleTime' | 'select' | 'onError' | 'onSettled' | 'onSuccess'
 >;
 
+export type InfiniteQueryConfig<TQueryFnData, TError, TData> = Pick<
+  UseInfiniteQueryOptions<TQueryFnData, TError, TData, TQueryFnData, Array<string | { [key: string]: any }>>,
+  'cacheTime' | 'enabled' | 'refetchInterval' | 'retry' | 'staleTime' | 'select' | 'onError' | 'onSettled' | 'onSuccess'
+>;
+
 // Note: we probably want to restrict the amount of configuration
 // to the React Query hook. So we are picking out the only the
 // configuration the consumer needs. I think these options are
@@ -44,9 +49,4 @@ export type UseQueryData<QueryFnType extends (...args: any) => any> = ExtractFnR
 export type QueryConfigDeprecated<QueryFnType extends (...args: any) => any> = Omit<
   UseQueryOptions<ExtractFnReturnType<QueryFnType>>,
   'queryKey' | 'queryFn'
->;
-
-export type InfiniteQueryConfig<TQueryFnData, TError, TData> = Pick<
-  UseInfiniteQueryOptions<TQueryFnData, TError, TData, TQueryFnData, Array<string | { [key: string]: any }>>,
-  'cacheTime' | 'enabled' | 'refetchInterval' | 'retry' | 'staleTime' | 'select' | 'onError' | 'onSettled' | 'onSuccess'
 >;

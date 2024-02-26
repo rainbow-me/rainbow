@@ -1,6 +1,5 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { CoinIcon } from '../../coin-icon';
 import { Centered } from '../../layout';
 import { Text, TruncatedText } from '../../text';
 import { Box, Column, Columns, Row, Rows } from '@/design-system';
@@ -9,6 +8,7 @@ import { SwapModalField } from '@/redux/swap';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 
 export const CurrencyTileHeight = android ? 153 : 143;
 
@@ -63,6 +63,7 @@ export default function CurrencyTile({
   const inputAsExact = useSelector(state => state.swap.independentField !== SwapModalField.output);
   const { nativeCurrency } = useAccountSettings();
   const colorForAsset = useColorForAsset(asset);
+  const theme = useTheme();
   const { address, mainnet_address, symbol, network } = asset;
   const isOther = (inputAsExact && type === 'output') || (!inputAsExact && type === 'input');
 
@@ -74,14 +75,13 @@ export default function CurrencyTile({
       <Box paddingHorizontal="15px (Deprecated)">
         <Rows alignHorizontal="center" alignVertical="center" space="10px">
           <Row height="content">
-            <CoinIcon
-              address={address}
-              badgeXPosition={-5}
-              badgeYPosition={0}
-              mainnet_address={mainnet_address}
+            <RainbowCoinIcon
               size={50}
-              symbol={symbol}
-              network={network}
+              icon={asset?.icon_url}
+              network={asset?.network}
+              symbol={asset?.symbol}
+              colors={asset?.colors}
+              theme={theme}
             />
           </Row>
           <Row height="content">

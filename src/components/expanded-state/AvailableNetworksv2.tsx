@@ -2,11 +2,9 @@ import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import Divider from '../Divider';
-import { CoinIcon } from '../coin-icon';
 import ChainBadge from '../coin-icon/ChainBadge';
 import { Box, Inline, Text } from '@/design-system';
 import { useNavigation } from '@/navigation';
-import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { position } from '@/styles';
 import { ethereumUtils } from '@/utils';
@@ -18,6 +16,7 @@ import { ButtonPressAnimation } from '../animations';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { implementation } from '@/entities/dispersion';
 import { RainbowNetworks, getNetworkObj } from '@/networks';
+import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 
 const NOOP = () => null;
 
@@ -158,7 +157,7 @@ const AvailableNetworksv2 = ({
                         {network !== Network.mainnet ? (
                           <ChainBadge network={network} position="relative" size="small" />
                         ) : (
-                          <CoinIcon address={ETH_ADDRESS} size={20} symbol={ETH_SYMBOL} network={Network.mainnet} />
+                          <EthCoinIcon size={20} />
                         )}
                       </Box>
                     );
