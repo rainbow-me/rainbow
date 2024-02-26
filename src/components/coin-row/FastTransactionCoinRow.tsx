@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ButtonPressAnimation } from '../animations';
-import FastCoinIcon from '../asset-list/RecyclerAssetList2/FastComponents/FastCoinIcon';
 import FastTransactionStatusBadge from './FastTransactionStatusBadge';
 import { Bleed, Box, Inline, Text, globalColors, useForegroundColor } from '@/design-system';
 import { NativeCurrencyKey, RainbowTransaction } from '@/entities';
@@ -20,6 +19,7 @@ import { convertAmountAndPriceToNativeDisplay, convertAmountToBalanceDisplay, gr
 import { TwoCoinsIcon } from '../coin-icon/TwoCoinsIcon';
 import Spinner from '../Spinner';
 import * as lang from '@/languages';
+import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
 
 export const getApprovalLabel = ({ approvalAmount, asset, type }: Pick<RainbowTransaction, 'type' | 'asset' | 'approvalAmount'>) => {
   if (!approvalAmount || !asset) return;
@@ -335,13 +335,16 @@ export const ActivityIcon = ({
   }
 
   return (
-    <FastCoinIcon
-      address={transaction.asset?.address || ETH_ADDRESS}
-      network={transaction.network}
-      mainnetAddress={transaction.asset?.mainnet_address}
-      symbol={transaction.asset?.symbol || ETH_SYMBOL}
-      theme={theme}
-    />
+    <View style={sx.iconContainer}>
+      <RainbowCoinIcon
+        size={40}
+        icon={transaction?.asset?.icon_url}
+        network={transaction?.asset?.network || Network.mainnet}
+        symbol={transaction?.asset?.symbol || ''}
+        theme={theme}
+        colors={transaction?.asset?.colors}
+      />
+    </View>
   );
 };
 

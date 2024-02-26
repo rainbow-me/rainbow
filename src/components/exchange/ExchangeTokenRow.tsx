@@ -4,13 +4,12 @@ import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
 import { isNativeAsset } from '@/handlers/assets';
 import { Network } from '@/networks/types';
 import { useAsset, useDimensions } from '@/hooks';
-
-import FastCoinIcon from '../asset-list/RecyclerAssetList2/FastComponents/FastCoinIcon';
 import { ButtonPressAnimation } from '../animations';
 import { FloatingEmojis } from '../floating-emojis';
 import { IS_IOS } from '@/env';
 import { FavStar, Info } from '../asset-list/RecyclerAssetList2/FastComponents/FastCurrencySelectionRow';
 import { View } from 'react-native';
+import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
 
 interface ExchangeTokenRowProps {
   item: any;
@@ -28,7 +27,6 @@ export default React.memo(function ExchangeTokenRow({
     contextMenuProps,
     symbol,
     address,
-    mainnet_address,
     name,
     testID,
     network,
@@ -44,7 +42,6 @@ export default React.memo(function ExchangeTokenRow({
   const rowTestID = `${testID}-exchange-coin-row-${symbol ?? item?.symbol ?? ''}-${network || Network.mainnet}`;
 
   const isInfoButtonVisible = !item?.isNativeAsset || (!isNativeAsset(address ?? item?.address, network) && !showBalance);
-
   return (
     <Columns alignVertical="center" space="10px">
       <Column>
@@ -60,13 +57,13 @@ export default React.memo(function ExchangeTokenRow({
           <Columns alignVertical="center" space="10px">
             <Column width="content">
               <View style={{ height: 59, paddingTop: 9 }}>
-                <Box
-                  as={FastCoinIcon}
-                  address={address || item?.address}
-                  network={network || Network.mainnet}
-                  mainnetAddress={mainnet_address ?? item?.mainnet_address}
-                  symbol={symbol ?? item?.symbol}
+                <RainbowCoinIcon
+                  size={40}
+                  icon={item?.icon_url || item?.iconUrl || ''}
+                  network={network}
+                  symbol={item?.symbol || symbol}
                   theme={theme}
+                  colors={item?.colors || undefined}
                 />
               </View>
             </Column>

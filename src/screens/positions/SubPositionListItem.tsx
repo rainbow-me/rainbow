@@ -1,14 +1,15 @@
 import React from 'react';
 import { Bleed, Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
 import { useTheme } from '@/theme';
-import { CoinIcon } from '@/components/coin-icon';
 import {
   convertAmountToPercentageDisplay,
   convertAmountToPercentageDisplayWithThreshold,
   convertRawAmountToRoundedDecimal,
 } from '@/helpers/utilities';
 import { NativeDisplay, PositionAsset } from '@/resources/defi/types';
-import ethereumUtils from '@/utils/ethereumUtils';
+import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
+import { useAccountSettings } from '@/hooks';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 
 type Props = {
   asset: PositionAsset;
@@ -19,14 +20,22 @@ type Props = {
 };
 
 export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, native, positionColor }) => {
-  const { colors } = useTheme();
+  const theme = useTheme();
+  const { nativeCurrency } = useAccountSettings();
+  const { data: externalAsset } = useExternalToken({ address: asset.asset_code, network: asset.network, currency: nativeCurrency });
 
-  const priceChangeColor = (asset.price?.relative_change_24h || 0) < 0 ? colors.blueGreyDark60 : colors.green;
+  const priceChangeColor = (asset.price?.relative_change_24h || 0) < 0 ? theme.colors.blueGreyDark60 : theme.colors.green;
 
   return (
     <Columns space={'10px'}>
       <Column width={'content'}>
-        <CoinIcon address={asset.asset_code} network={asset.network} symbol={asset.symbol} />
+        <RainbowCoinIcon
+          icon={externalAsset?.icon_url}
+          network={asset.network}
+          symbol={asset.symbol}
+          theme={theme}
+          colors={externalAsset?.colors}
+        />
       </Column>
       <Box justifyContent="center" style={{ height: 40 }}>
         <Stack space="10px">
@@ -57,7 +66,7 @@ export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, nat
                     <Bleed vertical={{ custom: 3 }}>
                       <Box
                         style={{
-                          backgroundColor: colors.alpha(positionColor, 0.08),
+                          backgroundColor: theme.colors.alpha(positionColor, 0.08),
                           borderRadius: 7,
                           height: 18,
                         }}

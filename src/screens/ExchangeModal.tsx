@@ -798,6 +798,8 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
                   inputCurrencyMainnetAddress={inputCurrency?.mainnet_address}
                   inputCurrencySymbol={inputCurrency?.symbol}
                   inputFieldRef={inputFieldRef}
+                  inputCurrencyIcon={inputCurrency?.icon_url}
+                  inputCurrencyColors={inputCurrency?.colors}
                   loading={loading}
                   nativeAmount={nativeAmountDisplay}
                   nativeCurrency={nativeCurrency}
@@ -828,6 +830,8 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
                   loading={loading}
                   outputAmount={outputAmountDisplay}
                   outputCurrencyAddress={outputCurrency?.address}
+                  outputCurrencyIcon={outputCurrency?.icon_url}
+                  outputCurrencyColors={outputCurrency?.colors}
                   outputCurrencyMainnetAddress={outputCurrency?.mainnet_address}
                   outputCurrencySymbol={outputCurrency?.symbol}
                   outputFieldRef={outputFieldRef}
