@@ -20,7 +20,7 @@ import { Network } from '@/helpers/networkTypes';
 import { ETH_ADDRESS } from '@/references';
 import { convertRawAmountToBalance, convertRawAmountToNativeDisplay } from '@/helpers/utilities';
 import { ethereumUtils, getTokenMetadata } from '@/utils';
-import { RAINBOW_ROUTER_CONTRACT_ADDRESS, SOCKET_REGISTRY_CONTRACT_ADDRESSESS } from '@rainbow-me/swaps';
+import { RAINBOW_ROUTER_CONTRACT_ADDRESS, SOCKET_GATEWAY_CONTRACT_ADDRESSESS } from '@rainbow-me/swaps';
 import { RainbowTransactionFee } from '@/entities/transactions/transaction';
 import * as i18n from '@/languages';
 
@@ -196,7 +196,7 @@ const overrideTradeRefund = (txn: ZerionTransaction): ZerionTransaction => {
 };
 
 const swapAddresses = ((): Set<string> => {
-  const contractAddresses = new Set(Array.from(SOCKET_REGISTRY_CONTRACT_ADDRESSESS.values()).map(addr => addr.toLowerCase()));
+  const contractAddresses = new Set(Array.from(SOCKET_GATEWAY_CONTRACT_ADDRESSESS.values()).map(addr => addr.toLowerCase()));
 
   contractAddresses.add(RAINBOW_ROUTER_CONTRACT_ADDRESS.toLowerCase());
 
