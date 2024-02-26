@@ -7,13 +7,13 @@ import { getAvalancheGasPrices } from '@/redux/gas';
 import { getRemoteConfig } from '@/model/remoteConfig';
 
 export const getAvalancheNetworkObject = (): NetworkProperties => {
-  const { base_enabled, base_tx_enabled, op_chains_enabled, op_chains_tx_enabled } = getRemoteConfig();
+  const { avax_enabled, avax_tx_enabled } = getRemoteConfig();
   return {
     // wagmi chain data
     ...avalanche,
 
     // network related data
-    enabled: base_enabled && op_chains_enabled,
+    enabled: avax_enabled,
     name: 'Avalanche',
     longName: 'Avalanche',
     value: Network.avalanche,
@@ -27,7 +27,8 @@ export const getAvalancheNetworkObject = (): NetworkProperties => {
 
     rpc: proxyRpcEndpoint(avalanche.id),
     getProvider: getProviderForNetwork(Network.avalanche),
-    balanceCheckerAddress: '0x1C8cFdE3Ba6eFc4FF8Dd5C93044B9A690b6CFf36',
+    // need to find balance checker address
+    balanceCheckerAddress: '',
 
     // features
     features: {
@@ -37,7 +38,7 @@ export const getAvalancheNetworkObject = (): NetworkProperties => {
       swaps: true,
       nfts: true,
       pools: false,
-      txs: base_tx_enabled && op_chains_tx_enabled,
+      txs: avax_tx_enabled,
     },
 
     gas: {
