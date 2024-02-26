@@ -526,7 +526,9 @@
       "hardhat>@nomicfoundation/ethereumjs-blockchain>level>classic-level": false,
       "hardhat>keccak": false,
       "react-native-storage": false,
-      "react-native-storage>opencollective>babel-polyfill>core-js": false
+      "react-native-storage>opencollective>babel-polyfill>core-js": false,
+      "viem>ws>bufferutil": false,
+      "viem>ws>utf-8-validate": false
     }
   },
   "lint-staged": {
