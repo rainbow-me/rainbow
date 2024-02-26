@@ -3,7 +3,7 @@ import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { avalanche } from '@wagmi/chains';
 import { BASE_ETH_ADDRESS } from '@/references';
-import { getBaseGasPrices } from '@/redux/gas';
+import { getAvalancheGasPrices } from '@/redux/gas';
 import { getRemoteConfig } from '@/model/remoteConfig';
 
 export const getAvalancheNetworkObject = (): NetworkProperties => {
@@ -50,7 +50,7 @@ export const getAvalancheNetworkObject = (): NetworkProperties => {
       // this prob can just be blockTime,
       pollingIntervalInMs: 5_000,
 
-      getGasPrices: getBaseGasPrices,
+      getGasPrices: getAvalancheGasPrices,
     },
 
     swaps: {
