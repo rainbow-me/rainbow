@@ -3364,13 +3364,6 @@
     "@ethersproject/wallet" "5.7.0"
     "@metamask/eth-sig-util" "7.0.0"
 
-"@ratio.me/ratio-react-native-library@0.8.5":
-  version "0.8.5"
-  resolved "https://registry.yarnpkg.com/@ratio.me/ratio-react-native-library/-/ratio-react-native-library-0.8.5.tgz#d1b0647f482db5db13827037f1f9fa99b01b7692"
-  integrity sha512-fsw353L/LlQQ9+tqz3Fw15ZFJ85Akty075iqCmUxqJIm+pxRP3MhDhJjSgEJ01OgYoX2mDWKJG3UcDh7cE+Evw==
-  dependencies:
-    react-native-swipe-gestures "^1.0.5"
-
 "@react-native-async-storage/async-storage@1.18.2":
   version "1.18.2"
   resolved "https://registry.yarnpkg.com/@react-native-async-storage/async-storage/-/async-storage-1.18.2.tgz#ec8fd487a0b6c9500b43ece4b8779d1561f12e91"
@@ -3790,10 +3783,10 @@
     "@noble/hashes" "~1.3.2"
     "@scure/base" "~1.1.4"
 
-"@segment/analytics-react-native@2.17.0":
-  version "2.17.0"
-  resolved "https://registry.yarnpkg.com/@segment/analytics-react-native/-/analytics-react-native-2.17.0.tgz#c0d626ba152e59e9f793b5347f37a9fc980eab0d"
-  integrity sha512-0KBqrSand0YeoKxtah5Fv5Oc0egUVZJqfHib9AWGx3g8FNFWKMqwmZ0Ia+kfqv88L/woj1AFanmUoe7qo8BpvQ==
+"@segment/analytics-react-native@2.15.0":
+  version "2.15.0"
+  resolved "https://registry.yarnpkg.com/@segment/analytics-react-native/-/analytics-react-native-2.15.0.tgz#3fd4cf509922f5069c6b98892df0024bd70cff68"
+  integrity sha512-c+HyWgfN2IwFAWb5wsPxniHtILp5GJKK0G4diT6+aR6xPqfnX8u3gl/vkqUVIPfO+g6shENGBqoz5Jv1Hs/9jg==
   dependencies:
     "@segment/sovran-react-native" "^1"
     deepmerge "^4.2.2"
@@ -15790,11 +15783,6 @@ react-native-svg@13.9.0:
   dependencies:
     css-select "^5.1.0"
     css-tree "^1.1.3"
-
-react-native-swipe-gestures@^1.0.5:
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/react-native-swipe-gestures/-/react-native-swipe-gestures-1.0.5.tgz#a172cb0f3e7478ccd681fd36b8bfbcdd098bde7c"
-  integrity sha512-Ns7Bn9H/Tyw278+5SQx9oAblDZ7JixyzeOczcBK8dipQk2pD7Djkcfnf1nB/8RErAmMLL9iXgW0QHqiII8AhKw==
 
 react-native-tab-view@3.5.1:
   version "3.5.1"
