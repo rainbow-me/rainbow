@@ -20,7 +20,6 @@ import { ImgixImage } from '@/components/images';
 import { getFormattedTimeQuantity, convertAmountToNativeDisplay, handleSignificantDecimals } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { NftOffer } from '@/graphql/__generated__/arc';
-import { CoinIcon } from '@/components/coin-icon';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useNavigation } from '@/navigation';
 import { IS_ANDROID } from '@/env';
@@ -28,7 +27,7 @@ import ConditionalWrap from 'conditional-wrap';
 import Routes from '@/navigation/routesNames';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountSettings, useGas, useWallets } from '@/hooks';
-import { TransactionStatus, TransactionType } from '@/entities';
+import { NewTransaction } from '@/entities';
 import { analyticsV2 } from '@/analytics';
 import { BigNumber } from '@ethersproject/bignumber';
 import { HoldToAuthorizeButton } from '@/components/buttons';
@@ -38,7 +37,7 @@ import { Execute, getClient } from '@reservoir0x/reservoir-sdk';
 import { privateKeyToAccount } from 'viem/accounts';
 import { createWalletClient, http } from 'viem';
 import { useDispatch } from 'react-redux';
-import { dataAddNewTransaction } from '@/redux/data';
+
 import { RainbowError, logger } from '@/logger';
 import { estimateNFTOfferGas } from '@/handlers/nftOffers';
 import { useTheme } from '@/theme';
@@ -48,6 +47,11 @@ import { CardSize } from '@/components/unique-token/CardSize';
 import { queryClient } from '@/react-query';
 import { nftOffersQueryKey } from '@/resources/reservoir/nftOffersQuery';
 import { getRainbowFeeAddress } from '@/resources/reservoir/utils';
+import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { addNewTransaction } from '@/state/pendingTransactions';
+import { getUniqueId } from '@/utils/ethereumUtils';
+import { getNextNonce } from '@/state/nonces';
 
 const NFT_IMAGE_HEIGHT = 160;
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
@@ -80,9 +84,9 @@ function Row({ symbol, label, value }: { symbol: string; label: string; value: R
 export function NFTSingleOfferSheet() {
   const { params } = useRoute();
   const { navigate, setParams } = useNavigation();
-  const { accountAddress } = useAccountSettings();
+  const { accountAddress, nativeCurrency } = useAccountSettings();
   const { isReadOnlyWallet } = useWallets();
-  const { isDarkMode } = useTheme();
+  const theme = useTheme();
   const { updateTxFee, startPollingGasFees, stopPollingGasFees, isSufficientGas, isValidGas } = useGas();
   const dispatch = useDispatch();
   const {
@@ -90,6 +94,12 @@ export function NFTSingleOfferSheet() {
   } = useLegacyNFTs({ address: accountAddress });
 
   const { offer } = params as { offer: NftOffer };
+
+  const { data: externalAsset } = useExternalToken({
+    address: offer.paymentToken.address,
+    network: offer.network as Network,
+    currency: nativeCurrency,
+  });
 
   const [height, setHeight] = useState(0);
   const didErrorRef = useRef<boolean>(false);
@@ -263,6 +273,8 @@ export function NFTSingleOfferSheet() {
       chain: networkObj,
       transport: http(networkObj.rpc),
     });
+    const nonce = await getNextNonce({ address: accountAddress, network });
+
     getClient()?.actions.acceptOffer({
       items: [
         {
@@ -307,37 +319,63 @@ export function NFTSingleOfferSheet() {
           }
           step.items?.forEach(item => {
             if (item.txHashes?.[0] && !txsRef.current.includes(item.txHashes?.[0]) && item.status === 'incomplete') {
-              let tx;
+              let tx: NewTransaction | null = null;
+              const asset = {
+                ...nft,
+                address: nft.asset_contract.address || '',
+                symbol: 'NFT',
+                decimals: 18,
+              };
               if (step.id === 'sale') {
                 tx = {
+                  status: 'pending',
                   to: item.data?.to,
                   from: item.data?.from,
                   hash: item.txHashes[0],
-                  network: offer.network,
-                  amount: offer.netAmount.decimal,
+                  network: offer.network as Network,
+                  nonce: item?.txHashes?.length > 1 ? nonce + 1 : nonce,
                   asset: {
-                    address: offer.paymentToken.address,
-                    symbol: offer.paymentToken.symbol,
+                    ...offer.paymentToken,
+                    network: offer.network as Network,
+                    uniqueId: getUniqueId(offer.paymentToken.address, offer.network as Network),
                   },
-                  nft,
-                  type: TransactionType.sell,
-                  status: TransactionStatus.selling,
+                  changes: [
+                    {
+                      direction: 'out',
+                      asset,
+                      value: 1,
+                    },
+                    {
+                      direction: 'in',
+                      asset: {
+                        ...offer.paymentToken,
+                        network: offer.network as Network,
+                        uniqueId: getUniqueId(offer.paymentToken.address, offer.network as Network),
+                      },
+                      value: offer.grossAmount.raw,
+                    },
+                  ],
+                  type: 'sale',
                 };
               } else if (step.id === 'nft-approval') {
                 tx = {
+                  status: 'pending',
                   to: item.data?.to,
                   from: item.data?.from,
                   hash: item.txHashes[0],
-                  network: offer.network,
-                  nft,
-                  type: TransactionType.authorize,
-                  status: TransactionStatus.approving,
+                  network: offer.network as Network,
+                  nonce,
+                  asset,
+                  type: 'approve',
                 };
               }
               if (tx) {
+                addNewTransaction({
+                  transaction: tx,
+                  address: accountAddress,
+                  network: offer.network as Network,
+                });
                 txsRef.current.push(tx.hash);
-                // @ts-ignore TODO: fix when we overhaul tx list, types are not good
-                dispatch(dataAddNewTransaction(tx));
               }
             } else if (item.status === 'complete' && step.id === 'sale' && !didCompleteRef.current) {
               didCompleteRef.current = true;
@@ -363,7 +401,7 @@ export function NFTSingleOfferSheet() {
       },
     });
     navigate(Routes.PROFILE_SCREEN);
-  }, [accountAddress, dispatch, feeParam, navigate, network, nft, offer, rainbowFeeDecimal]);
+  }, [accountAddress, feeParam, navigate, network, nft, offer, rainbowFeeDecimal]);
 
   return (
     <BackgroundProvider color="surfaceSecondary">
@@ -447,8 +485,15 @@ export function NFTSingleOfferSheet() {
                   </Column>
                   <Column>
                     <Inline space="4px" alignVertical="center" alignHorizontal="right">
-                      <CoinIcon address={offer.paymentToken.address} size={16} symbol={offer.paymentToken.symbol} network={offer.network} />
-
+                      <RainbowCoinIcon
+                        size={16}
+                        icon={externalAsset?.icon_url}
+                        network={offer?.network as Network}
+                        symbol={offer.paymentToken.symbol}
+                        theme={theme}
+                        colors={externalAsset?.colors}
+                        ignoreBadge
+                      />
                       <Text color="label" align="right" size="17pt" weight="bold">
                         {listPrice} {offer.paymentToken.symbol}
                       </Text>
@@ -478,11 +523,14 @@ export function NFTSingleOfferSheet() {
                   label={i18n.t(i18n.l.nft_offers.single_offer_sheet.floor_price)}
                   value={
                     <Inline space="4px" alignVertical="center" alignHorizontal="right">
-                      <CoinIcon
-                        address={offer.floorPrice.paymentToken.address}
+                      <RainbowCoinIcon
                         size={16}
-                        symbol={offer.floorPrice.paymentToken.symbol}
-                        network={offer.network}
+                        icon={externalAsset?.icon_url}
+                        network={offer?.network as Network}
+                        symbol={offer.paymentToken.symbol}
+                        theme={theme}
+                        colors={externalAsset?.colors}
+                        ignoreBadge
                       />
 
                       <Text color="labelSecondary" align="right" size="17pt" weight="medium">
@@ -563,8 +611,15 @@ export function NFTSingleOfferSheet() {
                   </Column>
                   <Column>
                     <Inline space="4px" alignVertical="center" alignHorizontal="right">
-                      <CoinIcon address={offer.paymentToken.address} size={16} symbol={offer.paymentToken.symbol} network={offer.network} />
-
+                      <RainbowCoinIcon
+                        size={16}
+                        icon={externalAsset?.icon_url}
+                        network={offer?.network as Network}
+                        symbol={offer.paymentToken.symbol}
+                        theme={theme}
+                        colors={externalAsset?.colors}
+                        ignoreBadge
+                      />
                       <Text color="label" align="right" size="17pt" weight="bold">
                         {netCrypto} {offer.paymentToken.symbol}
                       </Text>
@@ -643,7 +698,7 @@ export function NFTSingleOfferSheet() {
                     }}
                     horizontalPadding={0}
                     currentNetwork={offer.network}
-                    theme={isDarkMode ? 'dark' : 'light'}
+                    theme={theme.isDarkMode ? 'dark' : 'light'}
                   />
                 </>
               )}

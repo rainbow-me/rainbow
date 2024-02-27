@@ -64,7 +64,9 @@ import { NoResultsType } from '@/components/list/NoResults';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import { Wallet } from '@ethersproject/wallet';
 import { getNetworkObj } from '@/networks';
+import { addNewTransaction } from '@/state/pendingTransactions';
 import { getNextNonce } from '@/state/nonces';
+import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight;
@@ -97,7 +99,6 @@ const validateRecipient = toAddress => {
 export default function SendSheet(props) {
   const dispatch = useDispatch();
   const { goBack, navigate } = useNavigation();
-  const { dataAddNewTransaction } = useTransactionConfirmation();
   const { data: sortedAssets } = useSortedUserAssets();
   const {
     gasFeeParamsBySpeed,
@@ -164,8 +165,10 @@ export default function SendSheet(props) {
   const isNft = selected?.type === AssetTypes.nft;
 
   let colorForAsset = useColorForAsset(selected, null, false, true);
+  const nftColor = usePersistentDominantColorFromImage(selected?.lowResUrl) ?? colors.appleBlue;
+
   if (isNft) {
-    colorForAsset = colors.appleBlue;
+    colorForAsset = nftColor;
   }
 
   const uniqueTokenType = isNft ? getUniqueTokenType(selected) : undefined;
@@ -486,7 +489,14 @@ export default function SendSheet(props) {
             txDetails.data = data;
             txDetails.value = value;
             txDetails.txTo = signableTransaction.to;
-            await dispatch(dataAddNewTransaction(txDetails, null, false, currentProvider));
+            txDetails.pending = true;
+            txDetails.type = 'send';
+            txDetails.status = 'pending';
+            addNewTransaction({
+              address: accountAddress,
+              network: currentNetwork,
+              transaction: txDetails,
+            });
           }
         }
       } catch (error) {
@@ -510,8 +520,6 @@ export default function SendSheet(props) {
       amountDetails.isSufficientBalance,
       currentNetwork,
       currentProvider,
-      dataAddNewTransaction,
-      dispatch,
       ensName,
       ensProfile?.data?.coinAddresses,
       ensProfile?.data?.contenthash,
@@ -868,6 +876,7 @@ export default function SendSheet(props) {
             txSpeedRenderer={
               <GasSpeedButton
                 asset={selected}
+                fallbackColor={colorForAsset}
                 currentNetwork={currentNetwork}
                 horizontalPadding={0}
                 marginBottom={17}

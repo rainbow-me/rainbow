@@ -3,19 +3,19 @@ import { ChainId, ETH_ADDRESS, fillQuote, Quote, unwrapNativeAsset, wrapNativeAs
 import { captureException } from '@sentry/react-native';
 import { toLower } from 'lodash';
 import { Rap, RapExchangeActionParameters, SwapActionParameters } from '../common';
-import { ProtocolType, TransactionStatus, TransactionType } from '@/entities';
+import { NewTransaction } from '@/entities';
 
 import { toHex } from '@/handlers/web3';
 import { parseGasParamAmounts } from '@/parsers';
-import { dataAddNewTransaction } from '@/redux/data';
 import store from '@/redux/store';
-import { AllowancesCache, ethereumUtils } from '@/utils';
+import { AllowancesCache } from '@/utils';
 import logger from '@/utils/logger';
 import { estimateSwapGasLimit } from '@/handlers/swap';
 import { MMKV } from 'react-native-mmkv';
 import { STORAGE_IDS } from '@/model/mmkv';
 import { REFERRER } from '@/references';
 import { overrideWithFastSpeedIfNeeded } from '../utils';
+import { addNewTransaction } from '@/state/pendingTransactions';
 
 export const swapMetadataStorage = new MMKV({
   id: STORAGE_IDS.SWAPS_METADATA_STORAGE,
@@ -85,7 +85,7 @@ const swap = async (
   const { inputAmount, tradeDetails, permit, chainId, requiresApprove } = parameters as SwapActionParameters;
   const { dispatch } = store;
   const { accountAddress } = store.getState().settings;
-  const { inputCurrency } = store.getState().swap;
+  const { inputCurrency, outputCurrency } = store.getState().swap;
   const { gasFeeParamsBySpeed, selectedGasFee } = store.getState().gas;
   let gasParams = parseGasParamAmounts(selectedGasFee);
 
@@ -148,22 +148,33 @@ const swap = async (
 
   logger.log(`[${actionName}] response`, swap);
 
-  const newTransaction = {
-    ...gasParams,
-    amount: inputAmount,
-    asset: inputCurrency,
+  if (!swap || !swap?.hash) throw Error;
+
+  const newTransaction: NewTransaction = {
     data: swap?.data,
-    flashbots: parameters.flashbots,
     from: accountAddress,
-    gasLimit,
-    hash: swap?.hash ?? null,
-    network: ethereumUtils.getNetworkFromChainId(Number(chainId)),
-    nonce: swap?.nonce ?? null,
-    protocol: ProtocolType.uniswap,
-    status: TransactionStatus.swapping,
     to: swap?.to ?? null,
-    type: TransactionType.trade,
-    value: (swap && toHex(swap.value)) || undefined,
+    value: tradeDetails?.value?.toString() || '',
+    asset: outputCurrency,
+    changes: [
+      {
+        direction: 'out',
+        asset: inputCurrency,
+        value: tradeDetails.sellAmount.toString(),
+      },
+      {
+        direction: 'in',
+        asset: outputCurrency,
+        value: tradeDetails.buyAmount.toString(),
+      },
+    ],
+    hash: swap.hash,
+    network: inputCurrency.network,
+    nonce: swap.nonce,
+    status: 'pending',
+    type: 'swap',
+    flashbots: parameters.flashbots,
+    ...gasParams,
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
 
@@ -171,15 +182,12 @@ const swap = async (
     swapMetadataStorage.set(swap.hash.toLowerCase(), JSON.stringify({ type: 'swap', data: parameters.meta }));
   }
 
-  dispatch(
-    dataAddNewTransaction(
-      newTransaction,
-      accountAddress,
-      false,
-      // @ts-ignore
-      wallet?.provider
-    )
-  );
+  addNewTransaction({
+    address: accountAddress,
+    transaction: newTransaction,
+    network: inputCurrency.network,
+  });
+
   return swap?.nonce;
 };
 

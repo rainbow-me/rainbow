@@ -3,12 +3,8 @@ import { EthereumAddress } from '@/entities';
 
 const defaultNumCharsPerSection = 6;
 
-export function address(
-  currentAddress: EthereumAddress,
-  truncationLength = defaultNumCharsPerSection,
-  firstSectionLength: number
-): string | undefined {
-  if (!currentAddress) return;
+export function address(currentAddress: EthereumAddress, truncationLength = defaultNumCharsPerSection, firstSectionLength: number): string {
+  if (!currentAddress) return '';
 
   return [
     currentAddress.substring(0, firstSectionLength || truncationLength),
@@ -16,7 +12,7 @@ export function address(
   ].join('...');
 }
 
-export function formatAddressForDisplay(text: string, truncationLength = 4, firstSectionLength = 10): string | undefined {
+export function formatAddressForDisplay(text: string, truncationLength = 4, firstSectionLength = 10): string {
   return isValidDomainFormat(text) ? text : address(text, truncationLength, firstSectionLength);
 }
 

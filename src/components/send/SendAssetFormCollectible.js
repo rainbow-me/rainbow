@@ -97,7 +97,6 @@ export default function SendAssetFormCollectible({ asset, buttonRenderer, txSpee
             disablePreview
             height={imageHeight}
             horizontalPadding={24}
-            resizeMode="cover"
             width={imageWidth}
           />
         )}
