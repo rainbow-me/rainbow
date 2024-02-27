@@ -133,6 +133,9 @@ const getUpdatedGasFeeParams = (
     case Network.bsc:
       nativeTokenPriceUnit = ethereumUtils.getBnbPriceUnit();
       break;
+    case Network.avalanche:
+      nativeTokenPriceUnit = ethereumUtils.getAvaxPriceUnit();
+      break;
     default:
       nativeTokenPriceUnit = ethereumUtils.getEthPriceUnit();
       break;

@@ -21,7 +21,7 @@ import { add, greaterThan, toFixedDecimals } from '@/helpers/utilities';
 import { getCrossChainTimeEstimate } from '@/utils/crossChainTimeEstimates';
 import { useAccountSettings, useColorForAsset, useGas, usePrevious, useSwapCurrencies } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import { BNB_BSC_ADDRESS, ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@/references';
+import { BNB_BSC_ADDRESS, ETH_ADDRESS, MATIC_MAINNET_ADDRESS, AVAX_AVALANCHE_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, margin, padding } from '@/styles';

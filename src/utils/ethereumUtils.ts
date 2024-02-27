@@ -43,6 +43,7 @@ import {
   optimismGasOracleAbi,
   OVM_GAS_PRICE_ORACLE,
   BNB_MAINNET_ADDRESS,
+  AVAX_AVALANCHE_ADDRESS,
 } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { logger, RainbowError } from '@/logger';
@@ -171,12 +172,16 @@ const getAssetPrice = (address: EthereumAddress = ETH_ADDRESS): number => {
 };
 
 export const useNativeAssetForNetwork = (network: Network) => {
-  const address = getNetworkObj(network).nativeCurrency?.mainnetAddress || ETH_ADDRESS;
+  let address = getNetworkObj(network).nativeCurrency?.mainnetAddress || ETH_ADDRESS;
+  let theNetwork = Network.mainnet;
   const { nativeCurrency } = store.getState().settings;
-
+  if (network === Network.avalanche) {
+    address = getNetworkObj(network).nativeCurrency?.address;
+    theNetwork = Network.avalanche;
+  }
   const { data: nativeAsset } = useExternalToken({
     address,
-    network: Network.mainnet,
+    network: theNetwork,
     currency: nativeCurrency,
   });
 
@@ -189,6 +194,8 @@ const getPriceOfNativeAssetForNetwork = (network: Network) => {
     return getMaticPriceUnit();
   } else if (network === Network.bsc) {
     return getBnbPriceUnit();
+  } else if (network === Network.avalanche) {
+    return getAvaxPriceUnit();
   }
   return getEthPriceUnit();
 };
@@ -197,6 +204,7 @@ const getEthPriceUnit = () => getAssetPrice();
 
 const getMaticPriceUnit = () => getAssetPrice(MATIC_MAINNET_ADDRESS);
 const getBnbPriceUnit = () => getAssetPrice(BNB_MAINNET_ADDRESS);
+const getAvaxPriceUnit = () => getAssetPrice(getUniqueId(AVAX_AVALANCHE_ADDRESS, Network.avalanche));
 
 const getBalanceAmount = (
   selectedGasFee: SelectedGasFee | LegacySelectedGasFee,
@@ -538,6 +546,8 @@ const getBasicSwapGasLimit = (chainId: number) => {
       return ethUnits.basic_swap_bsc;
     case getChainIdFromNetwork(Network.optimism):
       return ethUnits.basic_swap_optimism;
+    // check this out l8r
+    // case getChainIdFromNetwork(Network.avalanche):
     default:
       return ethUnits.basic_swap;
   }
@@ -559,6 +569,7 @@ export default {
   getHash,
   getMaticPriceUnit,
   getBnbPriceUnit,
+  getAvaxPriceUnit,
   getMultichainAssetAddress,
   getNativeAssetForNetwork,
   getNetworkFromChainId,
