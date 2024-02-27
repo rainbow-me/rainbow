@@ -28,7 +28,26 @@ import networkTypes from '@/helpers/networkTypes';
 import { explorerInit } from '@/redux/explorer';
 import { Navigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
-import { sendETHtoTestWallet } from 'e2e/helpers';
+import { JsonRpcProvider } from '@ethersproject/providers';
+import { Wallet } from '@ethersproject/wallet';
+import { parseEther } from '@ethersproject/units';
+
+export function getProvider() {
+  return new JsonRpcProvider('http://127.0.0.1:8545', 'any');
+}
+const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
+
+export async function sendETHtoTestWallet() {
+  const provider = getProvider();
+  // Hardhat account 0 that has 10000 ETH
+  const wallet = new Wallet('0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80', provider);
+  // Sending 20 ETH so we have enough to pay the tx fees even when the gas is too high
+  await wallet.sendTransaction({
+    to: TESTING_WALLET,
+    value: parseEther('20'),
+  });
+  return true;
+}
 
 export const RainbowContext = createContext({});
 const storageKey = 'config';
