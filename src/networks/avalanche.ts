@@ -2,7 +2,7 @@ import { getProviderForNetwork, proxyRpcEndpoint } from '@/handlers/web3';
 import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { avalanche } from '@wagmi/chains';
-import { BASE_ETH_ADDRESS } from '@/references';
+import { AVAX_AVALANCHE_ADDRESS } from '@/references';
 import { getAvalancheGasPrices } from '@/redux/gas';
 import { getRemoteConfig } from '@/model/remoteConfig';
 
@@ -13,7 +13,7 @@ export const getAvalancheNetworkObject = (): NetworkProperties => {
     ...avalanche,
 
     // network related data
-    enabled: avax_enabled,
+    enabled: avax_enabled || __DEV__,
     name: 'Avalanche',
     longName: 'Avalanche',
     value: Network.avalanche,
@@ -22,7 +22,7 @@ export const getAvalancheNetworkObject = (): NetworkProperties => {
 
     nativeCurrency: {
       ...avalanche.nativeCurrency,
-      address: BASE_ETH_ADDRESS,
+      address: AVAX_AVALANCHE_ADDRESS,
     },
 
     rpc: proxyRpcEndpoint(avalanche.id),
@@ -38,7 +38,7 @@ export const getAvalancheNetworkObject = (): NetworkProperties => {
       swaps: true,
       nfts: true,
       pools: false,
-      txs: avax_tx_enabled,
+      txs: avax_tx_enabled || __DEV__,
     },
 
     gas: {
@@ -46,7 +46,6 @@ export const getAvalancheNetworkObject = (): NetworkProperties => {
       // ?
       gasType: 'eip1559',
       roundGasDisplay: true,
-      OptimismTxFee: true,
 
       // this prob can just be blockTime,
       pollingIntervalInMs: 5_000,
