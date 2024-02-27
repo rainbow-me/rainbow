@@ -36,10 +36,8 @@ import { loadPrivateKey } from '@/model/wallet';
 import { Execute, getClient } from '@reservoir0x/reservoir-sdk';
 import { privateKeyToAccount } from 'viem/accounts';
 import { createWalletClient, http } from 'viem';
-import { useDispatch } from 'react-redux';
 
 import { RainbowError, logger } from '@/logger';
-import { estimateNFTOfferGas } from '@/handlers/nftOffers';
 import { useTheme } from '@/theme';
 import { Network } from '@/helpers';
 import { getNetworkObj } from '@/networks';
@@ -52,6 +50,9 @@ import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { getNextNonce } from '@/state/nonces';
+import { metadataPOSTClient } from '@/graphql';
+import { ethUnits } from '@/references';
+import { Transaction } from '@/graphql/__generated__/metadataPOST';
 
 const NFT_IMAGE_HEIGHT = 160;
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
@@ -88,7 +89,7 @@ export function NFTSingleOfferSheet() {
   const { isReadOnlyWallet } = useWallets();
   const theme = useTheme();
   const { updateTxFee, startPollingGasFees, stopPollingGasFees, isSufficientGas, isValidGas } = useGas();
-  const dispatch = useDispatch();
+
   const {
     data: { nftsMap },
   } = useLegacyNFTs({ address: accountAddress });
@@ -202,32 +203,39 @@ export function NFTSingleOfferSheet() {
       precheck: true,
       wallet: signer,
       onProgress: async (steps: Execute['steps']) => {
-        let sale;
-        let approval;
+        let reservoirEstimate = 0;
+        const txs: Transaction[] = [];
+        const fallbackEstimate =
+          offer.network === Network.mainnet ? ethUnits.mainnet_nft_offer_gas_fee_fallback : ethUnits.l2_nft_offer_gas_fee_fallback;
         steps.forEach(step =>
-          step.items?.forEach(async item => {
-            if (item.data?.data && item.data?.to && item.data?.from) {
-              if (step.id === 'sale') {
-                sale = {
-                  to: item.data.to,
-                  from: item.data.from,
-                  data: item.data.data,
-                };
-              } else if (step.id === 'nft-approval') {
-                approval = {
-                  to: item.data.to,
-                  from: item.data.from,
-                  data: item.data.data,
-                };
-              }
+          step.items?.forEach(item => {
+            if (item?.data?.to && item?.data?.from && item?.data?.data) {
+              txs.push({
+                to: item.data.to,
+                from: item.data.from,
+                data: item.data.data,
+                value: item.data.value ?? '0x0',
+              });
+            }
+            // @ts-ignore missing from reservoir type
+            const txEstimate = item.gasEstimate;
+            if (typeof txEstimate === 'number') {
+              reservoirEstimate += txEstimate;
             }
           })
         );
-        const gas = await estimateNFTOfferGas(offer, approval, sale);
-        if (gas) {
-          updateTxFee(gas, null);
-          startPollingGasFees(network);
-        }
+        const txSimEstimate = parseInt(
+          (
+            await metadataPOSTClient.simulateTransactions({
+              chainId: networkObj.id,
+              transactions: txs,
+            })
+          )?.simulateTransactions?.[0]?.gas?.estimate ?? '0x0',
+          16
+        );
+        const estimate = txSimEstimate || reservoirEstimate || fallbackEstimate;
+        updateTxFee(estimate, null);
+        startPollingGasFees(network);
       },
     });
   }, [accountAddress, feeParam, network, offer, startPollingGasFees, updateTxFee]);
