@@ -141,3 +141,11 @@ export const AdworldIcon: UnlockableAppIcon = {
   unlockingNfts: [ADWORLD_NFT_ADDRESS],
   unlockKey: 'adworld_nft_app_icon',
 };
+
+export const FarcasterIcon: UnlockableAppIcon = {
+  key: 'farcaster',
+  explainSheetType: 'farcaster_app_icon',
+  network: Network.farcaster,
+  unlockingNfts: [FARCASTER_NFT_ADDRESS],
+  unlockKey: 'farcaster_nft_app_icon',
+};

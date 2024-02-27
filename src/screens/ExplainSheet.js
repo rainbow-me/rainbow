@@ -21,6 +21,7 @@ import AppIconZora from '@/assets/appIconZora.png';
 import AppIconZorb from '@/assets/appIconZorb.png';
 import AppIconPoolboy from '@/assets/appIconPoolboy.png';
 import AppIconAdworld from '@/assets/appIconAdworld.png';
+import AppIconFarcaster from '@/assets/appIconFarcaster.png';
 import TheMergePng from '@/assets/theMerge.png';
 import networkTypes from '@/helpers/networkTypes';
 import { delay, toFixedDecimals } from '@/helpers/utilities';
@@ -239,6 +240,23 @@ const AdworldAppIcon = () => {
       <Box
         as={ImgixImage}
         source={AppIconAdworld}
+        size={APP_ICON_SIZE}
+        width={{ custom: APP_ICON_SIZE }}
+        height={{ custom: APP_ICON_SIZE }}
+        shadow="18px accent"
+        borderRadius={14}
+      />
+    </AccentColorProvider>
+  );
+};
+
+const FarcasterAppIcon = () => {
+  const { colors } = useTheme();
+  return (
+    <AccentColorProvider color={colors.farcasterPurple}>
+      <Box
+        as={ImgixImage}
+        source={AppIconFarcaster}
         size={APP_ICON_SIZE}
         width={{ custom: APP_ICON_SIZE }}
         height={{ custom: APP_ICON_SIZE }}
@@ -548,6 +566,18 @@ export const explainers = (params, theme) => {
         label: lang.t('explain.icon_unlock.button'),
         textColor: colors?.adworldRed,
         bgColor: colors?.adworldRed06,
+      },
+    },
+    farcaster_app_icon: {
+      logo: <FarcasterAppIcon />,
+      extraHeight: -90,
+      text: FARCASTER_APP_ICON_EXPLAINER,
+      title: FARCASTER_APP_ICON_TITLE,
+      button: {
+        onPress: navigateToAppIconSettings,
+        label: lang.t('explain.icon_unlock.button'),
+        textColor: colors?.farcasterPurple,
+        bgColor: colors?.farcasterPurple06,
       },
     },
     output_disabled: {
