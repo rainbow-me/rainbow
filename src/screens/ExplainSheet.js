@@ -394,6 +394,10 @@ const ADWORLD_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.adworld_text');
 
 const ADWORLD_APP_ICON_TITLE = lang.t('explain.icon_unlock.adworld_title');
 
+const FARCASTER_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.farcaster_text');
+
+const FARCASTER_APP_ICON_TITLE = lang.t('explain.icon_unlock.farcaster_title');
+
 const navigateToAppIconSettings = async (navigate, goBack) => {
   goBack();
   navigate(Routes.SETTINGS_SHEET);
