@@ -28,6 +28,7 @@ import networkTypes from '@/helpers/networkTypes';
 import { explorerInit } from '@/redux/explorer';
 import { Navigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
+import { sendETHtoTestWallet } from 'e2e/helpers';
 
 export const RainbowContext = createContext({});
 const storageKey = 'config';
@@ -77,6 +78,8 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
     try {
       const ready = await web3SetHttpProvider((ios && HARDHAT_URL_IOS) || (android && HARDHAT_URL_ANDROID) || 'http://127.0.0.1:8545');
       logger.debug('connected to hardhat', { ready });
+
+      await sendETHtoTestWallet();
     } catch (e: any) {
       await web3SetHttpProvider(networkTypes.mainnet);
       logger.error(new RainbowError('error connecting to hardhat'), {
