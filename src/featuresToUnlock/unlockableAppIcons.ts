@@ -39,6 +39,9 @@ const POOLBOY_NFT_ADDRESS: EthereumAddress = '0xf25298fa62a2eb94fc06626966f6f213
 // adworld app icon unlocking NFTs
 const ADWORLD_NFT_ADDRESS: EthereumAddress = '0x6171f829e107f70b58d67594c6b62a7d3eb7f23b';
 
+// farcaster app icon unlocking NFTs
+const FARCASTER_NFT_ADDRESS: EthereumAddress = '0x76843c8f8a369d29c719141a065ff561abe2420b';
+
 export interface UnlockableAppIcon {
   key: string; // string used for analytics
   network: Network; // network that the unlockingNfts exist on
@@ -145,7 +148,7 @@ export const AdworldIcon: UnlockableAppIcon = {
 export const FarcasterIcon: UnlockableAppIcon = {
   key: 'farcaster',
   explainSheetType: 'farcaster_app_icon',
-  network: Network.farcaster,
+  network: Network.base,
   unlockingNfts: [FARCASTER_NFT_ADDRESS],
   unlockKey: 'farcaster_nft_app_icon',
 };
