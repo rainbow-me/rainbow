@@ -529,23 +529,6 @@ const calculateL1FeeOptimism = async (tx: RainbowTransaction, provider: Provider
   }
 };
 
-const getMultichainAssetAddress = (asset: RainbowToken, network: Network): EthereumAddress => {
-  const address = asset?.mainnet_address || asset?.address;
-  let realAddress = address?.toLowerCase() === ETH_ADDRESS_AGGREGATORS.toLowerCase() ? ETH_ADDRESS : address;
-
-  if (network === Network.optimism && address.toLowerCase() === OPTIMISM_ETH_ADDRESS) {
-    realAddress = ETH_ADDRESS;
-  } else if (network === Network.arbitrum && address.toLowerCase() === ARBITRUM_ETH_ADDRESS) {
-    realAddress = ETH_ADDRESS;
-  } else if (network === Network.polygon && address.toLowerCase() === MATIC_POLYGON_ADDRESS) {
-    realAddress = MATIC_POLYGON_ADDRESS;
-  } else if (network === Network.bsc && address.toLowerCase() === BNB_BSC_ADDRESS) {
-    realAddress = BNB_BSC_ADDRESS;
-  }
-
-  return realAddress;
-};
-
 const getBasicSwapGasLimit = (chainId: number) => {
   switch (chainId) {
     case getChainIdFromNetwork(Network.arbitrum):
@@ -580,7 +563,6 @@ export default {
   getMaticPriceUnit,
   getBnbPriceUnit,
   getAvaxPriceUnit,
-  getMultichainAssetAddress,
   getNativeAssetForNetwork,
   getNetworkFromChainId,
   getNetworkNameFromChainId,
