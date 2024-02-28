@@ -347,6 +347,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
       polygon: '#A275EE',
       bsc: '#F0B90B',
       zora: '#6183F0',
+      avalanche: '#FF5D5E',
     };
   }
 
