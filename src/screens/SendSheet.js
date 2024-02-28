@@ -232,7 +232,6 @@ export default function SendSheet(props) {
 
   // Update all fields passed via params if needed
   useEffect(() => {
-    console.log('Update all fields passed via params if needed');
     if (recipientOverride && !recipient) {
       setIsValidAddress(true);
       setRecipient(recipientOverride);
@@ -264,7 +263,6 @@ export default function SendSheet(props) {
     // after we know the network that the asset
     // belongs to
     if (prevNetwork !== currentNetwork) {
-      console.log('poll gas');
       InteractionManager.runAfterInteractions(() => {
         startPollingGasFees(currentNetwork);
       });
@@ -282,7 +280,6 @@ export default function SendSheet(props) {
 
   useEffect(() => {
     const updateNetworkAndProvider = async () => {
-      console.log('updateNetworkAndProvider');
       const assetNetwork = selected?.network;
       if (assetNetwork && (assetNetwork !== currentNetwork || !currentNetwork || prevNetwork !== currentNetwork)) {
         let provider = web3Provider;
@@ -328,7 +325,6 @@ export default function SendSheet(props) {
 
   useEffect(() => {
     if (maxEnabled) {
-      console.log('maxEnabled');
       const newBalanceAmount = updateMaxInputBalance(selected);
       sendUpdateAssetAmount(newBalanceAmount);
     }
@@ -351,7 +347,6 @@ export default function SendSheet(props) {
 
   useEffect(() => {
     const resolveAddressIfNeeded = async () => {
-      console.log('resolveAddressIfNeeded');
       let realAddress = debouncedRecipient;
       const isValid = await checkIsValidAddressOrDomainFormat(debouncedRecipient);
       if (isValid) {
@@ -704,7 +699,6 @@ export default function SendSheet(props) {
   );
 
   useEffect(() => {
-    console.log('updateDefaultGasLimit');
     updateDefaultGasLimit();
   }, [updateDefaultGasLimit]);
 
@@ -724,7 +718,6 @@ export default function SendSheet(props) {
   const [ensSuggestions, setEnsSuggestions] = useState([]);
   const [loadingEnsSuggestions, setLoadingEnsSuggestions] = useState(false);
   useEffect(() => {
-    console.log('setENSSuggsetions');
     if (network === Network.mainnet && !recipientOverride && recipient?.length) {
       setLoadingEnsSuggestions(true);
       debouncedFetchSuggestions(recipient, setEnsSuggestions, setLoadingEnsSuggestions, profilesEnabled);
@@ -732,12 +725,10 @@ export default function SendSheet(props) {
   }, [network, recipient, recipientOverride, setEnsSuggestions, watchedAccounts, profilesEnabled]);
 
   useEffect(() => {
-    console.log('checkAddress');
     checkAddress(debouncedInput);
   }, [checkAddress, debouncedInput]);
 
   useEffect(() => {
-    console.log('estiamte Gas');
     if (!currentProvider?._network?.chainId) return;
     const currentProviderNetwork = ethereumUtils.getNetworkFromChainId(Number(currentProvider._network.chainId));
     const assetNetwork = selected?.network;
