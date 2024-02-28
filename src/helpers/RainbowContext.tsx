@@ -28,26 +28,6 @@ import networkTypes from '@/helpers/networkTypes';
 import { explorerInit } from '@/redux/explorer';
 import { Navigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
-import { JsonRpcProvider } from '@ethersproject/providers';
-import { Wallet } from '@ethersproject/wallet';
-import { parseEther } from '@ethersproject/units';
-
-export function getProvider() {
-  return new JsonRpcProvider('http://127.0.0.1:8545', 'any');
-}
-const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
-
-export async function sendETHtoTestWallet() {
-  const provider = getProvider();
-  // Hardhat account 0 that has 10000 ETH
-  const wallet = new Wallet('0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80', provider);
-  // Sending 20 ETH so we have enough to pay the tx fees even when the gas is too high
-  await wallet.sendTransaction({
-    to: TESTING_WALLET,
-    value: parseEther('20'),
-  });
-  return true;
-}
 
 export const RainbowContext = createContext({});
 const storageKey = 'config';
@@ -95,10 +75,8 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
 
   const connectToHardhat = useCallback(async () => {
     try {
-      const ready = await web3SetHttpProvider((ios && HARDHAT_URL_IOS) || (android && HARDHAT_URL_ANDROID) || 'http://127.0.0.1:8545');
+      const ready = await web3SetHttpProvider('http://127.0.0.1:8545');
       logger.debug('connected to hardhat', { ready });
-
-      await sendETHtoTestWallet();
     } catch (e: any) {
       await web3SetHttpProvider(networkTypes.mainnet);
       logger.error(new RainbowError('error connecting to hardhat'), {

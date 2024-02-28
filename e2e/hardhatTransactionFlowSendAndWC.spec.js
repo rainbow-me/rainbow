@@ -91,7 +91,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
   });
 
-  it.skip('Should open send sheet after tapping send fab', async () => {
+  it('Should open send sheet after tapping send fab', async () => {
     await Helpers.waitAndTap('send-button');
     await Helpers.checkIfVisible('send-asset-form-field');
   });
