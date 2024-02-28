@@ -116,6 +116,7 @@ const DEFAULT_CONFIG: RainbowConfig = {
   zora_enabled: true,
   base_enabled: true,
   op_chains_enabled: true,
+  avax_enabled: true,
 
   mainnet_enabled: true,
 
@@ -128,6 +129,7 @@ const DEFAULT_CONFIG: RainbowConfig = {
   optimism_tx_enabled: true,
   zora_tx_enabled: true,
   op_chains_tx_enabled: true,
+  avax_tx_enabled: true,
 
   mainnet_tx_enabled: true,
 
