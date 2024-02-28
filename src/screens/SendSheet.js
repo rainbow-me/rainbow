@@ -97,7 +97,6 @@ const validateRecipient = toAddress => {
 };
 
 export default function SendSheet(props) {
-  const dispatch = useDispatch();
   const { goBack, navigate } = useNavigation();
   const { data: sortedAssets } = useSortedUserAssets();
   const {
@@ -722,8 +721,6 @@ export default function SendSheet(props) {
     if (network === Network.mainnet && !recipientOverride && recipient?.length) {
       setLoadingEnsSuggestions(true);
       debouncedFetchSuggestions(recipient, setEnsSuggestions, setLoadingEnsSuggestions, profilesEnabled);
-    } else {
-      setEnsSuggestions([]);
     }
   }, [network, recipient, recipientOverride, setEnsSuggestions, watchedAccounts, profilesEnabled]);
 

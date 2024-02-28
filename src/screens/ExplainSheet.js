@@ -21,6 +21,7 @@ import AppIconZora from '@/assets/appIconZora.png';
 import AppIconZorb from '@/assets/appIconZorb.png';
 import AppIconPoolboy from '@/assets/appIconPoolboy.png';
 import AppIconAdworld from '@/assets/appIconAdworld.png';
+import AppIconFarcaster from '@/assets/appIconFarcaster.png';
 import TheMergePng from '@/assets/theMerge.png';
 import networkTypes from '@/helpers/networkTypes';
 import { delay, toFixedDecimals } from '@/helpers/utilities';
@@ -249,6 +250,23 @@ const AdworldAppIcon = () => {
   );
 };
 
+const FarcasterAppIcon = () => {
+  const { colors } = useTheme();
+  return (
+    <AccentColorProvider color={colors.farcasterPurple}>
+      <Box
+        as={ImgixImage}
+        source={AppIconFarcaster}
+        size={APP_ICON_SIZE}
+        width={{ custom: APP_ICON_SIZE }}
+        height={{ custom: APP_ICON_SIZE }}
+        shadow="18px accent"
+        borderRadius={14}
+      />
+    </AccentColorProvider>
+  );
+};
+
 const TheMergeIcon = () => {
   return (
     <Box
@@ -376,6 +394,10 @@ const ADWORLD_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.adworld_text');
 
 const ADWORLD_APP_ICON_TITLE = lang.t('explain.icon_unlock.adworld_title');
 
+const FARCASTER_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.farcaster_text');
+
+const FARCASTER_APP_ICON_TITLE = lang.t('explain.icon_unlock.farcaster_title');
+
 const navigateToAppIconSettings = async (navigate, goBack) => {
   goBack();
   navigate(Routes.SETTINGS_SHEET);
@@ -384,7 +406,7 @@ const navigateToAppIconSettings = async (navigate, goBack) => {
 };
 
 export const explainers = (params, theme) => {
-  const colors = theme.colors;
+  const colors = theme?.colors;
   return {
     op_rewards_airdrop_timing: {
       emoji: '📦',
@@ -548,6 +570,18 @@ export const explainers = (params, theme) => {
         label: lang.t('explain.icon_unlock.button'),
         textColor: colors?.adworldRed,
         bgColor: colors?.adworldRed06,
+      },
+    },
+    farcaster_app_icon: {
+      logo: <FarcasterAppIcon />,
+      extraHeight: -60,
+      text: FARCASTER_APP_ICON_EXPLAINER,
+      title: FARCASTER_APP_ICON_TITLE,
+      button: {
+        onPress: navigateToAppIconSettings,
+        label: lang.t('explain.icon_unlock.button'),
+        textColor: colors?.farcasterPurple,
+        bgColor: colors?.farcasterPurple06,
       },
     },
     output_disabled: {
