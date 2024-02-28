@@ -140,7 +140,7 @@ export const tokenGatedIcons: { [key: string]: LockedAppIcon } = {
   farcaster: {
     accentColor: 'farcasterPurple',
     key: FarcasterIcon.key,
-    name: 'Farcaster',
+    name: 'Rainbowcast',
     source: AppIconFarcaster,
     unlock_key: FarcasterIcon.unlockKey,
   },
