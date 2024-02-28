@@ -146,6 +146,13 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
 
   const { accentColor } = useAccountAccentColor();
 
+  useEffect(() => {
+    const goToDappBrowser = true;
+    if (goToDappBrowser) {
+      navigation.navigate(Routes.DAPP_BROWSER);
+    }
+  }, [navigation]);
+
   return (
     <View
       style={{

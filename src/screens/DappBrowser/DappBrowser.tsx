@@ -77,6 +77,10 @@ const timingConfig = {
 
 const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 
+const getInjectedJS = async () => {
+  return RNFS.readFile(`${RNFS.MainBundlePath}/InjectedJSBundle.js`, 'utf8');
+};
+
 export const DappBrowser = () => {
   return (
     <BrowserContextProvider>
@@ -440,6 +444,9 @@ const BrowserTab = React.memo(function BrowserTab({ loadProgress, tabIndex }: Br
   const { colorMode } = useColorMode();
   const { width: deviceWidth } = useDimensions();
 
+  const [injectedJS, setInjectedJS] = useState<string | null>(null);
+  const messengers = useRef<any[]>([]);
+
   const webViewRef = useRef<WebView>(null);
   const viewShotRef = useRef<ViewShot | null>(null);
 
@@ -477,6 +484,20 @@ const BrowserTab = React.memo(function BrowserTab({ loadProgress, tabIndex }: Br
   //   tabIndex,
   //   tabStates.length,
   // ]);
+
+  useEffect(() => {
+    const loadInjectedJS = async () => {
+      try {
+        console.log('[BROWSER]: loading injected JS...');
+        const jsToInject = await getInjectedJS();
+        console.log('[BROWSER]: got injected JS', jsToInject);
+        setInjectedJS(jsToInject);
+      } catch (e) {
+        console.log('error', e);
+      }
+    };
+    loadInjectedJS();
+  }, []);
 
   const webViewStyle = useAnimatedStyle(() => {
     const isActiveTab = activeTabIndex === tabIndex;
@@ -546,7 +567,7 @@ const BrowserTab = React.memo(function BrowserTab({ loadProgress, tabIndex }: Br
     }
   };
 
-  const onNavigationStateChange = useCallback(
+  const handleNavigationStateChange = useCallback(
     (navState: WebViewNavigation) => {
       if (
         navState.url !== tabStates[tabIndex].url &&
@@ -674,9 +695,78 @@ const BrowserTab = React.memo(function BrowserTab({ loadProgress, tabIndex }: Br
 
   const [backgroundColor, setBackgroundColor] = useState<string>();
 
-  const onMessage = (event: WebViewMessageEvent) => {
-    setBackgroundColor(event.nativeEvent.data);
+  const createMessengers = (origin: string) => {
+    const newMessenger = {
+      onMessage: (data: any) => {
+        alert('[BROWSER]: APP RECEIVED MESSAGE' + JSON.stringify(data));
+      },
+      sendMessage: (data: any) => {
+        console.log('[BROWSER]: sending msg to webview');
+        webViewRef.current?.injectJavaScript(`window.postMessage(${JSON.stringify(data)})`);
+      },
+      url: origin,
+    };
+
+    messengers.current.push(newMessenger);
   };
+
+  useEffect(() => {
+    setTimeout(() => {
+      const m = messengers.current.find(m => {
+        return m.url === new URL(tabStates[tabIndex].url).origin;
+      });
+      if (m) {
+        m?.sendMessage({ type: 'message', payload: 'ping' });
+      }
+    }, 5000);
+  });
+
+  const handleMessage = useCallback((event: WebViewMessageEvent) => {
+    // setBackgroundColor(event.nativeEvent.data);
+    let data = event.nativeEvent.data as any;
+    try {
+      // validate message and parse data
+      const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
+      if (!parsedData || (!parsedData.name && !parsedData.type)) return;
+      // ignore other messages like loading progress
+      if (parsedData.type === 'message') {
+        const { origin } = new URL(event.nativeEvent.url);
+        messengers.current.forEach((m: any) => {
+          const messengerUrlOrigin = new URL(m.url).origin;
+          if (messengerUrlOrigin === origin) {
+            m.onMessage(parsedData);
+          }
+        });
+      }
+      // eslint-disable-next-line no-empty
+    } catch (e) {}
+  }, []);
+
+  const handleOnLoadStart = useCallback((event: { nativeEvent: { url: string | URL } }) => {
+    const { origin } = new URL(event.nativeEvent.url);
+    messengers.current = [];
+    createMessengers(origin);
+  }, []);
+
+  const handleOnLoad = useCallback(() => {}, []);
+
+  const handleOnLoadEnd = useCallback(() => {}, []);
+
+  const handleOnError = useCallback(() => {}, []);
+
+  const handleShouldStartLoadWithRequest = useCallback(() => {
+    return true;
+  }, []);
+
+  const handleOnLoadProgress = useCallback(
+    ({ nativeEvent }: { nativeEvent: { progress: number } }) => {
+      if (loadProgress) {
+        if (loadProgress.value === 1) loadProgress.value = 0;
+        loadProgress.value = withTiming(nativeEvent.progress, timingConfig);
+      }
+    },
+    [loadProgress]
+  );
 
   return (
     <TouchableWithoutFeedback onPress={handlePress}>
@@ -718,60 +808,36 @@ const BrowserTab = React.memo(function BrowserTab({ loadProgress, tabIndex }: Br
               }
             >
               <WebView
-                allowsBackForwardNavigationGestures
+                injectedJavaScriptBeforeContentLoaded={injectedJS}
                 allowsInlineMediaPlayback
-                applicationNameForUserAgent="Rainbow"
+                allowsBackForwardNavigationGestures
+                applicationNameForUserAgent={'Rainbow Wallet'}
                 automaticallyAdjustContentInsets
                 automaticallyAdjustsScrollIndicatorInsets
                 containerStyle={{
-                  // backgroundColor:
-                  //   backgroundColor ||
-                  //   (colorMode === 'dark'
-                  //     ? globalColors.grey100
-                  //     : globalColors.white100),
                   overflow: 'visible',
-                  // paddingBottom: safeAreaInsetValues.bottom + 104,
-                  // paddingTop: safeAreaInsetValues.top,
                 }}
                 contentInset={{
                   bottom: safeAreaInsetValues.bottom + 104,
-                  // left: 0,
-                  // right: 0,
-                  // top: safeAreaInsetValues.top,
                 }}
-                // contentInsetAdjustmentBehavior="always"
-                decelerationRate="normal"
+                decelerationRate={'normal'}
                 injectedJavaScript={getWebsiteBackgroundColor}
                 mediaPlaybackRequiresUserAction
-                onLoadProgress={({ nativeEvent }) => {
-                  if (loadProgress) {
-                    if (loadProgress.value === 1) loadProgress.value = 0;
-                    loadProgress.value = withTiming(nativeEvent.progress, timingConfig);
-                  }
-                }}
-                onMessage={onMessage}
-                onNavigationStateChange={onNavigationStateChange}
-                // onScroll={event => {
-                //   if (event.nativeEvent) {
-                //     console.log('event: ' + JSON.stringify(event.nativeEvent));
-                //   }
-                // }}
-                // pullToRefreshEnabled
+                onLoadStart={handleOnLoadStart}
+                onLoad={handleOnLoad}
+                onLoadEnd={handleOnLoadEnd}
+                onError={handleOnError}
+                onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
+                onLoadProgress={handleOnLoadProgress}
+                onMessage={handleMessage}
+                onNavigationStateChange={handleNavigationStateChange}
+                originWhitelist={['*']}
                 ref={webViewRef}
                 source={{ uri: tabStates[tabIndex].url }}
                 style={[
                   styles.webViewStyle,
                   {
                     backgroundColor: backgroundColor || (colorMode === 'dark' ? globalColors.grey100 : globalColors.white100),
-                    // borderColor: tabViewVisible
-                    //   ? 'transparent'
-                    //   : separatorSecondary,
-                    // bottom: safeAreaInsetValues.bottom + 104,
-                    // marginBottom: safeAreaInsetValues.bottom + 104,
-                    // marginTop: safeAreaInsetValues.top,
-                    // paddingBottom: safeAreaInsetValues.bottom + 104,
-                    // paddingTop: safeAreaInsetValues.top,
-                    // top: safeAreaInsetValues.top,
                   },
                 ]}
               />

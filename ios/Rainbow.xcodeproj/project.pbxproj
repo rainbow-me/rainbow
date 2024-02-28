@@ -14,6 +14,7 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		1539422824C7C7E200E4A9D1 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 1539422724C7C7E100E4A9D1 /* Settings.bundle */; };
 		1539422D24C7CF9300E4A9D1 /* SettingsBundleHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1539422C24C7CF9300E4A9D1 /* SettingsBundleHelper.swift */; };
+		155D60932B8E72B400FF1CB8 /* InjectedJSBundle.js in Resources */ = {isa = PBXBuildFile; fileRef = 155D60922B8E72B400FF1CB8 /* InjectedJSBundle.js */; };
 		15C398812880EDFF006033AC /* og@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 15C3987D2880EDFF006033AC /* og@3x.png */; };
 		15C398832880EDFF006033AC /* og@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 15C3987F2880EDFF006033AC /* og@2x.png */; };
 		15CF49BC2889AF7C005F92C9 /* optimism@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 15CF49BA2889AF7C005F92C9 /* optimism@3x.png */; };
@@ -191,6 +192,7 @@
 		14541503116A94F3E3BAF7E6 /* libPods-PriceWidgetExtension.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PriceWidgetExtension.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1539422724C7C7E100E4A9D1 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		1539422C24C7CF9300E4A9D1 /* SettingsBundleHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsBundleHelper.swift; sourceTree = "<group>"; };
+		155D60922B8E72B400FF1CB8 /* InjectedJSBundle.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = InjectedJSBundle.js; path = ../src/browser/InjectedJSBundle.js; sourceTree = "<group>"; };
 		157155032418733F009B698B /* RainbowRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RainbowRelease.entitlements; path = Rainbow/RainbowRelease.entitlements; sourceTree = "<group>"; };
 		157155042418734C009B698B /* RainbowDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RainbowDebug.entitlements; path = Rainbow/RainbowDebug.entitlements; sourceTree = "<group>"; };
 		15C3987D2880EDFF006033AC /* og@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "og@3x.png"; sourceTree = "<group>"; };
@@ -406,6 +408,7 @@
 				A4D04BA723D12F27008C1DEC /* Button */,
 				3C379D5D20FD1F92009AF81F /* Rainbow.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
+				155D60922B8E72B400FF1CB8 /* InjectedJSBundle.js */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
@@ -896,6 +899,7 @@
 				AA6228EF24272F510078BDAA /* SF-Pro-Rounded-Bold.otf in Resources */,
 				AA6228F024272F510078BDAA /* SF-Pro-Rounded-Heavy.otf in Resources */,
 				15CF49C02889AFAD005F92C9 /* pixel@3x.png in Resources */,
+				155D60932B8E72B400FF1CB8 /* InjectedJSBundle.js in Resources */,
 				B54C1D172935A54F007560D9 /* zora@2x.png in Resources */,
 				15CF49BC2889AF7C005F92C9 /* optimism@3x.png in Resources */,
 				AA6228F124272F510078BDAA /* SF-Pro-Rounded-Medium.otf in Resources */,
