@@ -574,7 +574,7 @@ export const explainers = (params, theme) => {
     },
     farcaster_app_icon: {
       logo: <FarcasterAppIcon />,
-      extraHeight: -110,
+      extraHeight: -60,
       text: FARCASTER_APP_ICON_EXPLAINER,
       title: FARCASTER_APP_ICON_TITLE,
       button: {
