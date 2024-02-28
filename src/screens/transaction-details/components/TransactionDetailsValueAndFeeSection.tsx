@@ -40,6 +40,9 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({ transact
   ).display;
   const feeValue = fee?.value.display ?? '';
   const feeNativeCurrencyValue = fee?.native?.display ?? '';
+
+  if (!value && !fee) return null;
+
   return (
     <>
       <TransactionDetailsDivider />
