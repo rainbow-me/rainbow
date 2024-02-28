@@ -329,7 +329,7 @@
     "@types/mocha": "9.0.0",
     "@types/node": "16.11.6",
     "@types/qs": "6.9.7",
-    "@types/react": "18.2.0",
+    "@types/react": "18.2.60",
     "@types/react-test-renderer": "16.9.3",
     "@types/styled-components": "5.1.7",
     "@types/url-parse": "1.4.3",
