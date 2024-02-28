@@ -406,7 +406,7 @@ const navigateToAppIconSettings = async (navigate, goBack) => {
 };
 
 export const explainers = (params, theme) => {
-  const colors = theme.colors;
+  const colors = theme?.colors;
   return {
     op_rewards_airdrop_timing: {
       emoji: '📦',
@@ -574,7 +574,7 @@ export const explainers = (params, theme) => {
     },
     farcaster_app_icon: {
       logo: <FarcasterAppIcon />,
-      extraHeight: -90,
+      extraHeight: -110,
       text: FARCASTER_APP_ICON_EXPLAINER,
       title: FARCASTER_APP_ICON_TITLE,
       button: {
