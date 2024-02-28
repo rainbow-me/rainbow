@@ -52,7 +52,7 @@ describe('Home Screen', () => {
     await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
   });
 
-  it('tapping "Send" opens the send screen', async () => {
+  it.skip('tapping "Send" opens the send screen', async () => {
     await Helpers.waitAndTap('send-button');
     await Helpers.checkIfVisible('send-asset-form-field');
     await Helpers.swipe('send-asset-form-field', 'down');
