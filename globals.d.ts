@@ -43,6 +43,7 @@ declare module 'react-native-dotenv' {
   export const BASE_MAINNET_RPC: string;
   export const BASE_MAINNET_RPC_DEV: string;
   export const AVALANCHE_MAINNET_RPC: string;
+  export const AVALANCHE_MAINNET_RPC_DEV: string;
   export const AVALANCHE_FUJI_RPC: string;
   export const POLYGON_MAINNET_RPC: string;
   export const ARBITRUM_MAINNET_RPC: string;
