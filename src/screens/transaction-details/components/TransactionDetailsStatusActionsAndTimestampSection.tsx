@@ -25,13 +25,13 @@ type Props = {
 };
 
 export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props> = ({ transaction, hideIcon }) => {
-  const { minedAt, status, pending, from } = transaction;
+  const { minedAt, status, from } = transaction;
   const dispatch = useDispatch();
   const { navigate, goBack } = useNavigation();
   const accountAddress = useSelector((state: AppState) => state.settings.accountAddress);
   const date = formatTransactionDetailsDate(minedAt ?? undefined);
   const { colors } = useTheme();
-  const { icon, color, gradient } = getIconColorAndGradientForTransactionStatus(colors, status, pending);
+  const { icon, color, gradient } = getIconColorAndGradientForTransactionStatus(colors, status);
 
   const isOutgoing = from?.toLowerCase() === accountAddress?.toLowerCase();
   const canBeResubmitted = isOutgoing && !minedAt;
@@ -66,15 +66,6 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
               },
             ]
           : []),
-        {
-          actionKey: 'remove',
-          actionTitle: i18n.t(i18n.l.transaction_details.actions_menu.remove),
-          menuAttributes: ['destructive'],
-          icon: {
-            iconType: 'SYSTEM',
-            iconValue: 'trash',
-          },
-        },
       ],
     }),
     [canBeCancelled, canBeResubmitted]
@@ -98,17 +89,9 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
             type: 'cancel',
           });
           return;
-        case 'remove':
-          if (transaction.hash && transaction.network) {
-            // remove tx
-            dispatch(dataRemovePendingTransaction(transaction.hash, transaction.network));
-            // close tx details sheet
-            goBack();
-          }
-          return;
       }
     },
-    [dispatch, goBack, navigate, transaction]
+    [navigate, transaction]
   );
 
   return (

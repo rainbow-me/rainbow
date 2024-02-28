@@ -5,7 +5,7 @@ type Props = {
   leftComponent: React.ReactNode;
   secondaryValue?: string;
   title: string;
-  value: string;
+  value: string | number;
 };
 
 export const DoubleLineTransactionDetailsRow: React.FC<Props> = ({ leftComponent, secondaryValue, value, title }) => (

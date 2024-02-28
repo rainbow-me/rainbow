@@ -9,8 +9,8 @@ import Animated, {
   SharedValue,
 } from 'react-native-reanimated';
 import { RainbowAnimationDetails } from './types';
-import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
+import { ImgixImage } from '../images';
 
 const INITIAL_SIZE = 375;
 const BASE_DELAY = 69;

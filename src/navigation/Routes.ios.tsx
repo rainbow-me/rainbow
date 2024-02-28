@@ -24,7 +24,6 @@ import ShowcaseScreen from '../screens/ShowcaseSheet';
 import { SignTransactionSheet } from '../screens/SignTransactionSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import NotificationsPromoSheet from '../screens/NotificationsPromoSheet';
-import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
 import { WalletDiagnosticsSheet } from '../screens/Diagnostics';
