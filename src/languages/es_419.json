@@ -286,11 +286,6 @@
       "hidden": "Oculto"
     },
     "cards": {
-      "dpi": {
-        "title": "DeFi Pulse Index",
-        "body": "Todos los principales tokens de finanzas descentralizadas en uno solo. Rastrea la industria.",
-        "view": "Ver"
-      },
       "ens_create_profile": {
         "title": "Crea tu perfil ENS",
         "body": "Reemplaza tu dirección de billetera con un perfil de tu propiedad."
@@ -1262,6 +1257,10 @@
         "get_started": "Comenzar",
         "invalid_code": "Código inválido"
       },
+      "notifications": {
+        "enable": "Activar Notificaciones de Puntos",
+        "disable": "Desactivar notificaciones de puntos"
+      },
       "points": {
         "referral_code": "Código de Referido",
         "share_link": "Compartir enlace",
@@ -1287,7 +1286,9 @@
         "referral_code_copied": "Código de referencia copiado",
         "earn_points_for_referring": "Gana puntos cuando tus referidos intercambien $100 a través de Rainbow, además gana el 10% de los puntos que tus referidos ganan",
         "already_claimed_points": "¡Lo siento! Ya has reclamado tus puntos.",
-        "now": "Ahora"
+        "now": "Ahora",
+        "unranked": "Sin clasificar",
+        "points_to_rank": "750 puntos para clasificar"
       },
       "console": {
         "claim_bonus_paragraph": "Recibirás 100 puntos adicionales una vez que cambies al menos $100 a través de Rainbow",
@@ -1295,8 +1296,8 @@
         "true_believer": "Verdadero Creyente",
         "registration_complete": "Registro completo",
         "account": "Cuenta",
+        "points_you_have": "Tienes",
         "points_earned": "Puntos Ganados",
-        "share_bonus": "Bono por Compartir",
         "share_bonus_paragraph_one": "¡Todo listo!",
         "share_bonus_paragraph_two": "Sigue ganando puntos intercambiando, enlazando, acuñando, refiriendo amigos y más",
         "share_bonus_paragraph_three": "Cuanto más uses Rainbow, más serás recompensado",
@@ -1323,7 +1324,21 @@
         "referral_link_bonus_text_extended": "Además ganarás el 10% de los puntos que obtenga cualquier persona que refieras",
         "complete_onboarding": "Listo",
         "share_to_x": "Compartir en X",
-        "hardware_wallet_alert": "¡El soporte para billeteras de hardware llegará pronto!"
+        "hardware_wallet_alert": "¡El soporte para billeteras de hardware llegará pronto!",
+        "view_weekly_earnings_week_of": "Semana del %{startOfWeek} - %{endOfWeek}",
+        "view_weekly_earnings_title": "Contando puntos ganados",
+        "view_weekly_earnings_counted": "Ganancias semanales contadas",
+        "view_weekly_earnings_close_button": "Cerrar",
+        "view_weekly_earnings_retroactive_points": "Puntos retroactivos",
+        "view_weekly_earnings_activity": "Tu Actividad",
+        "view_weekly_earnings_referral_activity": "Actividad de Referidos",
+        "view_weekly_earnings_total_earnings": "Total",
+        "view_weekly_earnings_new_referrals": "Nuevos Referidos",
+        "wallet_balance_required": "Se requiere saldo en la cartera",
+        "require_balance_paragraph_one": "Para continuar, asegúrate de tener saldo en ETH en una de las siguientes redes:",
+        "require_balance_paragraph_two": "O alternativamente, un saldo en MATIC en Polygon o un saldo en BNB en BSC",
+        "fund_my_wallet": "Fondos para Mi Cartera",
+        "points": "Puntos"
       }
     },
     "pools": {
@@ -1708,6 +1723,7 @@
       "notifications": "Notificaciones",
       "notifications_section": {
         "my_wallets": "Mis Billeteras",
+        "points": "Puntos",
         "watched_wallets": "Billeteras Observadas",
         "allow_notifications": "Permitir Notificaciones",
         "sent": "Enviado",
@@ -2366,6 +2382,7 @@
         "message": "Pegar URI de WalletConnect a continuación",
         "title": "Nueva Sesión de WalletConnect"
       },
+      "none": "Ninguno",
       "switch_network": "Cambiar Red",
       "switch_wallet": "Cambiar Billetera",
       "titles": {
@@ -2413,7 +2430,8 @@
         "request_invalid": "La solicitud contiene parámetros no válidos. Por favor, intenta nuevamente o contacta con los equipos de soporte de Rainbow y/o la dapp.",
         "eth_sign": "Rainbow no admite el antiguo eth_sign debido a preocupaciones de seguridad.  \n Por favor, contacte a los equipos de soporte de Rainbow y/o dapp si tiene alguna pregunta.",
         "request_unsupported_network": "La red especificada en esta solicitud no es compatible con Rainbow.",
-        "request_unsupported_methods": "El/los método(s) RPC especificado(s) en esta solicitud no son compatibles con Rainbow."
+        "request_unsupported_methods": "El/los método(s) RPC especificado(s) en esta solicitud no son compatibles con Rainbow.",
+        "no_accounts_found": "No se encontraron cuentas en los espacios de nombres aprobados."
       },
       "dapp_warnings": {
         "info_alert": {
