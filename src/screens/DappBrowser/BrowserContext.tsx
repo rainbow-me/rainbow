@@ -1,6 +1,5 @@
 import React, { createContext, useCallback, useContext, useRef, useState } from 'react';
-import { Easing } from 'react-native';
-import Animated, { runOnJS, useAnimatedRef, useScrollViewOffset, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { Easing, runOnJS, useAnimatedRef, useScrollViewOffset, useSharedValue, withTiming } from 'react-native-reanimated';
 import WebView from 'react-native-webview';
 
 interface BrowserContextType {
@@ -90,6 +89,7 @@ const timingConfig = {
 
 // this is sloppy and causes tons of rerenders, needs to be reworked
 export const BrowserContextProvider = ({ children }: { children: React.ReactNode }) => {
+  console.log('[BROWSER]: RENDER BrowserContextProvider');
   const [activeTabIndex, setActiveTabIndex] = useState<number>(0);
   const [isBrowserInputFocused, setIsBrowserInputFocused] = useState<boolean>(false);
   const [tabStates, setTabStates] = useState<TabState[]>([

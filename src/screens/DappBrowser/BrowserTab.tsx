@@ -18,8 +18,8 @@ import { Freeze } from 'react-freeze';
 import { COLLAPSED_WEBVIEW_HEIGHT_UNSCALED, TAB_VIEW_COLUMN_WIDTH, TAB_VIEW_ROW_HEIGHT, WEBVIEW_HEIGHT } from './Dimensions';
 
 interface BrowserTabProps {
-  loadProgress: Animated.SharedValue<number>;
   tabIndex: number;
+  onLoadProgress: (progress: number) => void;
 }
 
 type ScreenshotType = {
@@ -67,12 +67,8 @@ const getWebsiteBackgroundColor = `
   true;
   `;
 
-const timingConfig = {
-  duration: 500,
-  easing: Easing.bezier(0.22, 1, 0.36, 1),
-};
-
-export const BrowserTab = React.memo(function BrowserTab({ loadProgress, tabIndex }: BrowserTabProps) {
+export const BrowserTab = React.memo(function BrowserTab({ tabIndex, onLoadProgress }: BrowserTabProps) {
+  console.log('[BROWSER]: Render BrowserTab');
   const {
     activeTabIndex,
     scrollViewOffset,
@@ -106,7 +102,7 @@ export const BrowserTab = React.memo(function BrowserTab({ loadProgress, tabInde
       try {
         console.log('[BROWSER]: loading injected JS...');
         const jsToInject = await getInjectedJS();
-        console.log('[BROWSER]: got injected JS', jsToInject);
+        console.log('[BROWSER]: got injected JS');
         setInjectedJS(jsToInject);
       } catch (e) {
         console.log('error', e);
@@ -177,7 +173,6 @@ export const BrowserTab = React.memo(function BrowserTab({ loadProgress, tabInde
       if (isActiveTab) {
         toggleTabView();
       } else {
-        // console.log('SETTING ACTIVE TAB INDEX = ' + tabIndex);
         setActiveTabIndex(tabIndex);
       }
     }
@@ -280,10 +275,10 @@ export const BrowserTab = React.memo(function BrowserTab({ loadProgress, tabInde
   const createMessengers = (origin: string) => {
     const newMessenger = {
       onMessage: (data: any) => {
-        alert('[BROWSER]: APP RECEIVED MESSAGE' + JSON.stringify(data));
+        console.log('[BROWSER]: APP RECEIVED MESSAGE' + JSON.stringify(data));
       },
       sendMessage: (data: any) => {
-        console.log('[BROWSER]: sending msg to webview');
+        console.log('[BROWSER]: sending msg to webview', data);
         webViewRef.current?.injectJavaScript(`window.postMessage(${JSON.stringify(data)})`);
       },
       url: origin,
@@ -347,25 +342,14 @@ export const BrowserTab = React.memo(function BrowserTab({ loadProgress, tabInde
     return true;
   }, []);
 
-  const handleOnLoadProgress = useCallback(
-    ({ nativeEvent }: { nativeEvent: { progress: number } }) => {
-      if (loadProgress) {
-        if (loadProgress.value === 1) loadProgress.value = 0;
-        loadProgress.value = withTiming(nativeEvent.progress, timingConfig);
-      }
-    },
-    [loadProgress]
-  );
+  const handleOnLoadProgress = useCallback(({ nativeEvent }: { nativeEvent: { progress: number } }) => {
+    onLoadProgress(nativeEvent.progress);
+    console.log('[BROWSER]: Loading progress:', nativeEvent.progress);
+  }, []);
 
   return (
     <TouchableWithoutFeedback onPress={handlePress}>
-      <Animated.View
-        style={[
-          styles.webViewContainer,
-          // { borderColor: tabViewVisible ? 'transparent' : separatorSecondary },
-          webViewStyle,
-        ]}
-      >
+      <Animated.View style={[styles.webViewContainer, webViewStyle]}>
         <ViewShot options={{ format: 'jpg' }} ref={viewShotRef}>
           <View
             collapsable={false}
@@ -376,14 +360,7 @@ export const BrowserTab = React.memo(function BrowserTab({ loadProgress, tabInde
             }}
           >
             <Freeze
-              freeze={
-                !isActiveTab
-                // || (isActiveTab &&
-                // tabViewFullyVisible &&
-                // screenshot?.url === tabStates[tabIndex].url
-                // && !!screenshot?.isRendered
-                // )
-              }
+              freeze={!isActiveTab}
               placeholder={
                 <Box
                   style={[
@@ -439,23 +416,14 @@ export const BrowserTab = React.memo(function BrowserTab({ loadProgress, tabInde
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               from={{ opacity: 0 }}
-              // height={WEBVIEW_HEIGHT}
               pointerEvents="none"
-              // source={{ uri: screenshot?.uri }}
               style={[
                 styles.webViewStyle,
                 {
-                  // backgroundColor:
-                  //   colorMode === 'dark'
-                  //     ? '#191A1C'
-                  //     : globalColors.blueGrey10,
                   height: COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
                   left: 0,
                   position: 'absolute',
-                  // resizeMode: 'contain',
                   top: 0,
-                  // top:
-                  //   -(WEBVIEW_HEIGHT - COLLAPSED_WEBVIEW_HEIGHT_UNSCALED) / 2,
                   zIndex: 20000,
                 },
               ]}
@@ -464,29 +432,14 @@ export const BrowserTab = React.memo(function BrowserTab({ loadProgress, tabInde
                 easing: Easing.bezier(0.2, 0, 0, 1),
                 type: 'timing',
               }}
-              // width={deviceWidth}
             >
               <Image
                 height={WEBVIEW_HEIGHT}
-                // onLayout={() => {
-                //   if (screenshot?.isRendered) return;
-                //   setScreenshot({
-                //     isRendered: true,
-                //     uri: screenshot?.uri,
-                //     url: screenshot?.url,
-                //   });
-                // }}
                 onError={e => console.log('Image loading error:', e.nativeEvent.error)}
-                // source={{ uri: screenshot?.uri }}
                 source={{ uri: screenshot?.uri }}
-                // source={{ uri: `file://${screenshot.uri}` }}
                 style={[
                   styles.webViewStyle,
                   {
-                    // backgroundColor:
-                    //   colorMode === 'dark'
-                    //     ? '#191A1C'
-                    //     : globalColors.blueGrey10,
                     left: 0,
                     position: 'absolute',
                     resizeMode: 'contain',
@@ -506,29 +459,16 @@ export const BrowserTab = React.memo(function BrowserTab({ loadProgress, tabInde
 const styles = StyleSheet.create({
   webViewContainer: {
     alignSelf: 'center',
-    // backgroundColor: 'red',
-    // borderWidth: 1,
-    // justifyContent: 'center',
     overflow: 'hidden',
     position: 'absolute',
-    // position: 'relative',
-    // top: safeAreaInsetValues.top + 72,
     top: safeAreaInsetValues.top,
-    // top: 0,
-    // transformOrigin: 'top',
     width: deviceUtils.dimensions.width,
   },
   webViewStyle: {
     borderCurve: 'continuous',
-    // borderRadius: 10,
-    // borderWidth: 1,
-    // flex: 1,
     height: WEBVIEW_HEIGHT,
-    // left: 0,
     maxHeight: WEBVIEW_HEIGHT,
     minHeight: WEBVIEW_HEIGHT,
-    // position: 'absolute',
-    // top: safeAreaInsetValues.top,
     width: deviceUtils.dimensions.width,
   },
 });

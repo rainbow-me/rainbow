@@ -1,6 +1,6 @@
 import { BlurView } from '@react-native-community/blur';
-import React from 'react';
-import Animated, { useAnimatedKeyboard, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import React, { useCallback } from 'react';
+import Animated, { Easing, useAnimatedKeyboard, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
 import { SheetGestureBlocker } from '@/components/sheet/SheetGestureBlocker';
@@ -12,7 +12,7 @@ import { BrowserContextProvider, useBrowserContext } from './BrowserContext';
 import { AddressBar } from './AddressBar';
 import { BrowserToolbar } from './BrowserToolbar';
 import { BrowserTab } from './BrowserTab';
-import { Easing, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { TAB_VIEW_ROW_HEIGHT } from './Dimensions';
 
 const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
@@ -23,6 +23,7 @@ const timingConfig = {
 };
 
 const DappBrowserComponent = () => {
+  console.log('[BROWSER]: Render DappBrowserComponent');
   const { scrollViewRef, tabStates, tabViewProgress, tabViewVisible } = useBrowserContext();
   const { width: deviceWidth } = useDimensions();
   const separatorSecondary = useForegroundColor('separatorSecondary');
@@ -54,6 +55,16 @@ const DappBrowserComponent = () => {
     []
   );
 
+  const handleOnLoadProgress = useCallback(
+    (progress: number) => {
+      if (loadProgress) {
+        if (loadProgress.value === 1) loadProgress.value = 0;
+        loadProgress.value = withTiming(progress, timingConfig);
+      }
+    },
+    [loadProgress]
+  );
+
   return (
     <SheetGestureBlocker>
       <Box as={Page} height="full" style={styles.rootViewBackground} width="full">
@@ -76,7 +87,7 @@ const DappBrowserComponent = () => {
           showsVerticalScrollIndicator={false}
         >
           {tabStates.map((tab, index) => (
-            <BrowserTab key={index} loadProgress={loadProgress} tabIndex={index} />
+            <BrowserTab key={index} tabIndex={index} onLoadProgress={handleOnLoadProgress} />
           ))}
         </Animated.ScrollView>
         <Box
@@ -102,6 +113,7 @@ const DappBrowserComponent = () => {
 };
 
 export const DappBrowser = () => {
+  console.log('[BROWSER]: Render DappBrowser');
   return (
     <BrowserContextProvider>
       <ColorModeProvider value="dark">
