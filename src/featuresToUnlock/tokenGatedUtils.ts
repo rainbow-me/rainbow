@@ -13,7 +13,7 @@ export type TokenGateCheckerNetwork =
   | Network.bsc
   | Network.base;
 
-const TOKEN_GATE_CHECKER_ADDRESS: Record<TokenGateCheckerNetwork, string> = {
+const TOKEN_GATE_CHECKER_ADDRESS: Record<TokenGateCheckerNetwork, EthereumAddress> = {
   [Network.arbitrum]: '0x2a0332e28913a06fa924d40a3e2160f763010417',
   [Network.mainnet]: '0x47c9c137fc9aa5ccdbea707b0b27d52780565476',
   [Network.optimism]: '0x400a9f1bb1db80643c33710c2232a0d74ef5cff1',
