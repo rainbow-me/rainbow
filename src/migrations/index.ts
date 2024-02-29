@@ -12,6 +12,7 @@ import { changeLanguageKeys } from './migrations/changeLanguageKeys';
 import { fixHiddenUSDC } from './migrations/fixHiddenUSDC';
 import { purgeWcConnectionsWithoutAccounts } from './migrations/purgeWcConnectionsWithoutAccounts';
 import { migratePinnedAndHiddenTokenUniqueIds } from './migrations/migratePinnedAndHiddenTokenUniqueIds';
+import { migratePersistedQueriesToMMKV } from './migrations/migratePersistedQueriesToMMKV';
 
 /**
  * Local storage for migrations only. Should not be exported.
@@ -35,6 +36,7 @@ const migrations: Migration[] = [
   fixHiddenUSDC(),
   purgeWcConnectionsWithoutAccounts(),
   migratePinnedAndHiddenTokenUniqueIds(),
+  migratePersistedQueriesToMMKV(),
 ];
 
 /**
