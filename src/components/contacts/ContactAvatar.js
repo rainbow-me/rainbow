@@ -8,14 +8,15 @@ import { Text } from '../text';
 import { borders } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
 import { IS_ANDROID } from '@/env';
+import { useColorMode } from '@/design-system';
 
 const buildShadows = (color, size, darkMode, colors) => {
   if (size === 'small') {
     return [
-      [0, 3, 5, colors.shadow, 0.14],
-      [0, 6, 10, darkMode ? darkModeThemeColors.shadow : darkModeThemeColors.avatarBackgrounds[color] || color, 0.2],
+      [0, 4, 12, !darkMode && color ? colors.avatarBackgrounds[color] || color : colors.shadow, darkMode ? 0.16 : 0.2],
+      [0, 2, 6, colors.trueBlack, 0.02],
     ];
-  } else if (size === 'smaller') {
+  } else if (size === 'smaller' || size === 'smallest') {
     return [[0, 4, 12, darkMode ? darkModeThemeColors.shadow : darkModeThemeColors.avatarBackgrounds[color] || color, 0.3]];
   } else if (size === 'lmedium' || size === 'medium' || size === 'smedium') {
     return [[0, 4, IS_ANDROID ? 5 : 12, darkMode ? colors.shadow : colors.avatarBackgrounds[color] || color, 0.4]];
@@ -77,7 +78,7 @@ const sizeConfigs = colors => ({
   },
   smaller: {
     dimensions: 20,
-    textSize: 'micro',
+    textSize: 'xtiny',
   },
   smedium: {
     dimensions: 36,
@@ -93,12 +94,16 @@ const sizeConfigs = colors => ({
         ],
     textSize: 'large',
   },
+  smallest: {
+    dimensions: 16,
+    textSize: 'micro',
+  },
 });
 
 const ContactAvatar = ({ color, size = 'medium', value, ...props }) => {
+  const { isDarkMode } = useColorMode();
   const { colors } = useTheme();
   const { dimensions, textSize } = useMemo(() => sizeConfigs(colors)[size], [colors, size]);
-  const { isDarkMode } = useTheme();
 
   const shadows = useMemo(
     () => buildShadows(color, size, props?.forceDarkMode || isDarkMode, colors),
