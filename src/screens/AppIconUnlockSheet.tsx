@@ -3,7 +3,7 @@ import { useNavigation } from '@/navigation';
 import React, { useCallback, useEffect } from 'react';
 import { View } from 'react-native';
 import { AccentColorProvider, Box, Inset, Stack, Text, useBackgroundColor } from '@/design-system';
-import { UnlockableAppIcon, unlockableAppIcons } from '@/appIcons/appIcons';
+import { UnlockableAppIconKey, unlockableAppIcons } from '@/appIcons/appIcons';
 import { ImgixImage } from '@/components/images';
 import { Source } from 'react-native-fast-image';
 import { RouteProp, useRoute } from '@react-navigation/native';
@@ -13,13 +13,13 @@ import { delay } from '@/utils/delay';
 import Routes from '@/navigation/routesNames';
 import { SheetActionButton } from '@/components/sheet';
 import { campaigns } from '@/storage';
-import { analytics } from '@/analytics';
+import { analyticsV2 } from '@/analytics';
 
 const APP_ICON_SIZE = 64;
 
 type AppIconUnlockSheetParams = {
   [Routes.APP_ICON_UNLOCK_SHEET]: {
-    appIconKey: keyof typeof unlockableAppIcons;
+    appIconKey: UnlockableAppIconKey;
   };
 };
 
@@ -30,21 +30,20 @@ export default function AppIconUnlockSheet() {
 
   const { appIconKey } = params;
 
-  const { accentColor, image } = unlockableAppIcons[appIconKey as keyof typeof unlockableAppIcons] as UnlockableAppIcon;
+  const { accentColor, image } = unlockableAppIcons[appIconKey];
 
   const navigateToAppIconSettings = useCallback(async () => {
     goBack();
     navigate(Routes.SETTINGS_SHEET);
     await delay(500);
     navigate(Routes.SETTINGS_SHEET, { screen: 'AppIconSection' });
-    analytics.track('Activated App Icon Unlock', { campaign: appIconKey });
+    analyticsV2.track(analyticsV2.event.appIconUnlockSheetCTAPressed, { appIcon: appIconKey });
   }, [appIconKey, goBack, navigate]);
 
   useEffect(() => {
-    analytics.track('Viewed App Icon Unlock', { campaign: appIconKey });
+    analyticsV2.track(analyticsV2.event.appIconUnlockSheetViewed, { appIcon: appIconKey });
     return () => {
       campaigns.set(['isCurrentlyShown'], false);
-      analytics.track('Dismissed App Icon Unlock', { campaign: appIconKey });
     };
   }, [appIconKey]);
 
@@ -68,11 +67,9 @@ export default function AppIconUnlockSheet() {
                   />
                 </AccentColorProvider>
                 <Text size="22pt" weight="heavy" color="label" align="center">
-                  {/* @ts-ignore */}
                   {i18n.t(i18n.l.app_icon_unlock_sheet[`${appIconKey}_title`])}
                 </Text>
                 <Text size="18px / 27px (Deprecated)" weight="regular" color="labelTertiary" align="center">
-                  {/* @ts-ignore */}
                   {i18n.t(i18n.l.app_icon_unlock_sheet[`${appIconKey}_description`])}
                 </Text>
               </Stack>

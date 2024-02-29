@@ -11,7 +11,7 @@ import { useTheme } from '@/theme';
 import Logger from '@/utils/logger';
 import { analytics } from '@/analytics';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
-import { AppIcon, freeAppIcons, unlockableAppIcons } from '@/appIcons/appIcons';
+import { AppIcon, UnlockableAppIcon, UnlockableAppIconKey, freeAppIcons, unlockableAppIcons } from '@/appIcons/appIcons';
 import { unlockableAppIconStorage } from '@/featuresToUnlock/unlockableAppIconCheck';
 
 const AppIconSection = () => {
@@ -27,10 +27,10 @@ const AppIconSection = () => {
     [settingsChangeAppIcon]
   );
 
-  const unlockedAppIcons = useMemo(
+  const unlockedAppIcons: Record<string, AppIcon> = useMemo(
     () => ({
       ...freeAppIcons,
-      ...Object.keys(unlockableAppIcons).reduce(
+      ...(Object.keys(unlockableAppIcons) as UnlockableAppIconKey[]).reduce(
         (unlockedAppIcons, appIconKey) => {
           const appIcon = unlockableAppIcons[appIconKey];
           const unlocked = unlockableAppIconStorage.getBoolean(appIconKey);
@@ -41,7 +41,7 @@ const AppIconSection = () => {
           }
           return unlockedAppIcons;
         },
-        {} as { [key: string]: AppIcon }
+        {} as Record<UnlockableAppIconKey, UnlockableAppIcon>
       ),
     }),
     []

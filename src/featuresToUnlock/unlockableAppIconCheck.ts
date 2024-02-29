@@ -3,7 +3,7 @@ import { EthereumAddress } from '@/entities';
 import { Navigation } from '@/navigation';
 import { logger } from '@/utils';
 import Routes from '@/navigation/routesNames';
-import { unlockableAppIcons } from '@/appIcons/appIcons';
+import { UnlockableAppIconKey, unlockableAppIcons } from '@/appIcons/appIcons';
 import { Network } from '@/helpers';
 import { MMKV } from 'react-native-mmkv';
 import { STORAGE_IDS } from '@/model/mmkv';
@@ -18,7 +18,7 @@ export const unlockableAppIconStorage = new MMKV({
  * @param appIconKey key of unlockableAppIcons
  * @returns true if appIconFeature unlocked state changes to true, otherwise false
  */
-export const unlockableAppIconCheck = async (appIconKey: string, walletsToCheck: EthereumAddress[]) => {
+export const unlockableAppIconCheck = async (appIconKey: UnlockableAppIconKey, walletsToCheck: EthereumAddress[]) => {
   const appIcon = unlockableAppIcons[appIconKey];
 
   const handled = unlockableAppIconStorage.getBoolean(appIconKey);

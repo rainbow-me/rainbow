@@ -56,36 +56,49 @@ const ADWORLD_NFT_ADDRESS: EthereumAddress = '0x6171f829e107f70b58d67594c6b62a7d
 // farcaster app icon unlocking NFTs
 const FARCASTER_NFT_ADDRESS: EthereumAddress = '0x76843c8f8a369d29c719141a065ff561abe2420b';
 
-export type AppIcon = {
+export interface AppIcon {
   accentColor: string;
   displayName: string;
   image: ImageSourcePropType;
-};
+}
 
-export type UnlockableAppIcon = AppIcon & {
-  unlockingNFTs: Partial<{ [key in Network]: EthereumAddress[] }>;
-};
+export interface UnlockableAppIcon extends AppIcon {
+  unlockingNFTs: Partial<Record<Network, EthereumAddress[]>>;
+}
 
-export const freeAppIcons: { [key: string]: AppIcon } = {
+export const freeAppIcons: Record<string, AppIcon> = {
   og: {
     accentColor: '#001E59',
     displayName: 'OG',
     image: AppIconOg,
-  } as AppIcon,
+  },
   pixel: {
     accentColor: '#001E59',
     displayName: 'Pixel',
     image: AppIconPixel,
-  } as AppIcon,
+  },
 };
 
-export const unlockableAppIcons: { [key: string]: UnlockableAppIcon } = {
+export type UnlockableAppIconKey =
+  | 'optimism'
+  | 'smol'
+  | 'zora'
+  | 'golddoge'
+  | 'raindoge'
+  | 'pooly'
+  | 'finiliar'
+  | 'zorb'
+  | 'poolboy'
+  | 'adworld'
+  | 'farcaster';
+
+export const unlockableAppIcons: Record<UnlockableAppIconKey, UnlockableAppIcon> = {
   optimism: {
     accentColor: '#FF0420',
     displayName: 'Optimism',
     image: AppIconOptimism,
     unlockingNFTs: { [Network.optimism]: [OPTIMISTIC_EXPLORER_NFT_ADDRESS] },
-  } as UnlockableAppIcon,
+  },
   smol: {
     accentColor: '#7D50E6',
     displayName: 'SMOL',
@@ -100,59 +113,59 @@ export const unlockableAppIcons: { [key: string]: UnlockableAppIcon } = {
         RAINBOW_SMOL_NFT_ADDRESS,
       ],
     },
-  } as UnlockableAppIcon,
+  },
   zora: {
     accentColor: '#001E59',
     displayName: 'Zora',
     image: AppIconZora,
     unlockingNFTs: { [Network.mainnet]: [ZORA_NFT_ADDRESS] },
-  } as UnlockableAppIcon,
+  },
   golddoge: {
     accentColor: '#FCAC34',
     displayName: 'GOLDDOGE',
     image: AppIconGoldDoge,
     unlockingNFTs: { [Network.mainnet]: [GOLDDOGE_NFT_ADDRESS] },
-  } as UnlockableAppIcon,
+  },
   raindoge: {
     accentColor: '#FCAC34',
     displayName: 'RAINDOGE',
     image: AppIconRainDoge,
     unlockingNFTs: { [Network.mainnet]: [RAINDOGE_NFT_ADDRESS] },
-  } as UnlockableAppIcon,
+  },
   pooly: {
     accentColor: '#6434C4',
     displayName: 'Rainbow Pooly',
     image: AppIconPooly,
     unlockingNFTs: { [Network.mainnet]: [POOLY_NFT_ADDRESS, POOLY_NFT_ADDRESS_2] },
-  } as UnlockableAppIcon,
+  },
   finiliar: {
     accentColor: '#F89C9C',
     displayName: 'Rainbow Finiliar',
     image: AppIconFiniliar,
     unlockingNFTs: { [Network.mainnet]: [FINI_NFT_ADDRESS, RAINBOW_FINI_NFT_ADDRESS], [Network.base]: [BASE_WARS_FINI_NFT_ADDRESS] },
-  } as UnlockableAppIcon,
+  },
   zorb: {
     accentColor: '#FC4C74',
     displayName: 'Rainbow Zorb Energy',
     image: AppIconZorb,
     unlockingNFTs: { [Network.zora]: [ZORB_NFT_ADDRESS] },
-  } as UnlockableAppIcon,
+  },
   poolboy: {
     accentColor: '#E46CA4',
     displayName: 'Rainbow Poolboy',
     image: AppIconPoolboy,
     unlockingNFTs: { [Network.mainnet]: [POOLBOY_NFT_ADDRESS] },
-  } as UnlockableAppIcon,
+  },
   adworld: {
     accentColor: '#FC0414',
     displayName: 'Rainbow World',
     image: AppIconAdworld,
     unlockingNFTs: { [Network.base]: [ADWORLD_NFT_ADDRESS] },
-  } as UnlockableAppIcon,
+  },
   farcaster: {
     accentColor: '#A342FF',
     displayName: 'Rainbowcast',
     image: AppIconFarcaster,
     unlockingNFTs: { [Network.base]: [FARCASTER_NFT_ADDRESS] },
-  } as UnlockableAppIcon,
+  },
 };

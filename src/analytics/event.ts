@@ -1,3 +1,4 @@
+import { UnlockableAppIconKey, unlockableAppIcons } from '@/appIcons/appIcons';
 import { CardType } from '@/components/cards/GenericCard';
 import { LearnCategory } from '@/components/cards/utils/types';
 import { FiatProviderName } from '@/entities/f2c';
@@ -114,6 +115,9 @@ export const event = {
 
   remoteCardPrimaryButtonPressed: 'remote_card.primary_button_pressed',
   remoteCardDismissed: 'remote_card.dismissed',
+
+  appIconUnlockSheetViewed: 'app_icon_unlock_sheet.viewed',
+  appIconUnlockSheetCTAPressed: 'app_icon_unlock_sheet.cta_pressed',
 } as const;
 
 /**
@@ -431,8 +435,14 @@ export type EventProperties = {
     action: string;
     props: string;
   };
-
   [event.remoteCardDismissed]: {
     cardKey: string;
+  };
+
+  [event.appIconUnlockSheetViewed]: {
+    appIcon: UnlockableAppIconKey;
+  };
+  [event.appIconUnlockSheetCTAPressed]: {
+    appIcon: UnlockableAppIconKey;
   };
 };
