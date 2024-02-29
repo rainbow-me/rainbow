@@ -28,7 +28,7 @@ export type {
 export { NativeCurrencyKeys } from './nativeCurrencyTypes';
 export type { NativeCurrencyKey } from './nativeCurrencyTypes';
 export type Numberish = string | number;
-export { default as ProtocolTypeNames, ProtocolType } from './protocolTypes';
+export type { ProtocolType } from './protocolTypes';
 export type { UniqueAsset } from './uniqueAssets';
 export type {
   Asset,
@@ -48,16 +48,7 @@ export type {
   ZerionTransaction,
   ZerionTransactionChange,
 } from './transactions';
-export {
-  GasFeeTypes,
-  TransactionDirection,
-  TransactionDirections,
-  TransactionStatus,
-  TransactionStatusTypes,
-  TransactionType,
-  TransactionTypes,
-  ZerionTransactionStatus,
-} from './transactions';
+export { GasFeeTypes, TransactionDirection, TransactionDirections, TransactionStatus, TransactionStatusTypes } from './transactions';
 export type { EthereumAddress } from './wallet';
 export type { TokenSearchThreshold, TokenSearchTokenListId, TokenSearchUniswapAssetKey } from './tokenSearch';
 export type {

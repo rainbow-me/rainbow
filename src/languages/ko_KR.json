@@ -286,11 +286,6 @@
       "hidden": "숨겨진"
     },
     "cards": {
-      "dpi": {
-        "title": "DeFi 펄스 인덱스",
-        "body": "상위 분산 금융 토큰이 모두 한 곳에. 산업 동향을 추적하다.",
-        "view": "보기"
-      },
       "ens_create_profile": {
         "title": "ENS 프로필 생성",
         "body": "지갑 주소를 완전히 자신이 소유한 프로필로 바꾸다."
@@ -1262,6 +1257,10 @@
         "get_started": "시작하기",
         "invalid_code": "잘못된 코드"
       },
+      "notifications": {
+        "enable": "포인트 알림 활성화",
+        "disable": "포인트 알림 비활성화"
+      },
       "points": {
         "referral_code": "추천 코드",
         "share_link": "링크 공유하기",
@@ -1287,7 +1286,9 @@
         "referral_code_copied": "추천 코드가 복사되었습니다",
         "earn_points_for_referring": "당신의 추천인이 Rainbow를 통해 $100를 교환할 때 포인트를 적립하고, 추천인이 적립한 포인트의 10%를 추가로 적립하세요",
         "already_claimed_points": "죄송합니다! 이미 포인트를 청구하셨습니다.",
-        "now": "지금"
+        "now": "지금",
+        "unranked": "순위 없음",
+        "points_to_rank": "등급까지 750포인트"
       },
       "console": {
         "claim_bonus_paragraph": "Rainbow에서 최소 $100를 스왑하면 추가로 100점을 받게 됩니다",
@@ -1295,8 +1296,8 @@
         "true_believer": "진정한 믿음",
         "registration_complete": "등록 완료",
         "account": "계정",
+        "points_you_have": "보유하고 있습니다",
         "points_earned": "획득한 포인트",
-        "share_bonus": "공유 보너스",
         "share_bonus_paragraph_one": "모든 설정이 완료되었습니다!",
         "share_bonus_paragraph_two": "스왑, 브릿징, 민팅, 친구 추천 등을 통해 포인트를 계속 획득하세요",
         "share_bonus_paragraph_three": "Rainbow를 더 많이 이용할수록 더 많은 보상을 받게 됩니다",
@@ -1323,7 +1324,21 @@
         "referral_link_bonus_text_extended": "더하여 당신이 추천한 사람들이 얻은 포인트의 10%를 벌 수 있습니다",
         "complete_onboarding": "완료",
         "share_to_x": "X에 공유하기",
-        "hardware_wallet_alert": "하드웨어 지갑 지원이 곧 제공됩니다!"
+        "hardware_wallet_alert": "하드웨어 지갑 지원이 곧 제공됩니다!",
+        "view_weekly_earnings_week_of": "주간 %{startOfWeek} - %{endOfWeek}",
+        "view_weekly_earnings_title": "획득 포인트 집계 중",
+        "view_weekly_earnings_counted": "주간 수익 집계됨",
+        "view_weekly_earnings_close_button": "닫기",
+        "view_weekly_earnings_retroactive_points": "소급 포인트",
+        "view_weekly_earnings_activity": "당신의 활동",
+        "view_weekly_earnings_referral_activity": "추천인 활동",
+        "view_weekly_earnings_total_earnings": "총액",
+        "view_weekly_earnings_new_referrals": "새로운 추천인",
+        "wallet_balance_required": "지갑 잔액 필요",
+        "require_balance_paragraph_one": "계속하려면 다음 네트워크 중 하나에 ETH 잔액이 있는지 확인하세요:",
+        "require_balance_paragraph_two": "또는 Polygon에 MATIC 잔액이나 BSC에 BNB 잔액이 있는 경우",
+        "fund_my_wallet": "내 지갑 충전하기",
+        "points": "포인트"
       }
     },
     "pools": {
@@ -1708,6 +1723,7 @@
       "notifications": "알림",
       "notifications_section": {
         "my_wallets": "내 지갑들",
+        "points": "포인트",
         "watched_wallets": "감시중인 지갑들",
         "allow_notifications": "알림 허용",
         "sent": "보냄",
@@ -2366,6 +2382,7 @@
         "message": "아래에 WalletConnect URI를 붙여넣으세요",
         "title": "새 WalletConnect 세션"
       },
+      "none": "없음",
       "switch_network": "네트워크 전환",
       "switch_wallet": "지갑 전환",
       "titles": {
@@ -2413,7 +2430,8 @@
         "request_invalid": "요청에 잘못된 매개변수가 포함되어 있습니다. 다시 시도하거나 Rainbow 및/또는 dapp 지원 팀에 문의하십시오.",
         "eth_sign": "보안 문제로 인해 Rainbow는 이전 버전의 eth_sign을 지원하지 않습니다.  \n 궁금한 점이 있으면 Rainbow 및/또는 dapp 지원 팀에 문의하십시오.",
         "request_unsupported_network": "이 요청에서 지정한 네트워크는 Rainbow에서 지원하지 않습니다.",
-        "request_unsupported_methods": "이 요청에 명시된 RPC 방법은 Rainbow에서 지원하지 않습니다."
+        "request_unsupported_methods": "이 요청에 명시된 RPC 방법은 Rainbow에서 지원하지 않습니다.",
+        "no_accounts_found": "승인된 네임스페이스에서 계정을 찾을 수 없습니다."
       },
       "dapp_warnings": {
         "info_alert": {

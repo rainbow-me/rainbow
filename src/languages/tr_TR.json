@@ -286,11 +286,6 @@
       "hidden": "Gizli"
     },
     "cards": {
-      "dpi": {
-        "title": "DeFi Pulse İndeksi",
-        "body": "Tüm en iyi merkeziyetsiz finans tokenları bir arada. Endüstriyi izleyin.",
-        "view": "Görüntüle"
-      },
       "ens_create_profile": {
         "title": "ENS profilinizi oluşturun",
         "body": "Cüzdan adresinizi tamamen sizin tarafınızdan sahip olunan bir profil ile değiştirin."
@@ -1262,6 +1257,10 @@
         "get_started": "Başlayın",
         "invalid_code": "uygun olduğunuzu kabul edersiniz"
       },
+      "notifications": {
+        "enable": "Puan Bildirimlerini Etkinleştir",
+        "disable": "Puan Bildirimlerini Devre Dışı Bırak"
+      },
       "points": {
         "referral_code": "Yönlendirme Kodu",
         "share_link": "Linki Paylaş",
@@ -1287,7 +1286,9 @@
         "referral_code_copied": "Referans kodu kopyalandı",
         "earn_points_for_referring": "Rainbow üzerinden takas yapan tavsiyeleriniz için puan kazanın, ayrıca tavsiyelerinizin kazandığı puanların %10'unu kazanın",
         "already_claimed_points": "Üzgünüz! Puanlarınızı zaten talep ettiniz.",
-        "now": "Şimdi"
+        "now": "Şimdi",
+        "unranked": "Sıralamasız",
+        "points_to_rank": "Rütbeye ulaşmak için 750 puan"
       },
       "console": {
         "claim_bonus_paragraph": "Rainbow üzerinden en az 100 dolarlık takas yapmanız durumunda ekstra 100 puan alacaksınız",
@@ -1295,8 +1296,8 @@
         "true_believer": "Gerçek İnanan",
         "registration_complete": "Kayıt Tamamlandı",
         "account": "Hesap",
+        "points_you_have": "Sahip Olduğunuz",
         "points_earned": "Kazanılan Puanlar",
-        "share_bonus": "Paylaşım Bonusu",
         "share_bonus_paragraph_one": "Her şey hazır!",
         "share_bonus_paragraph_two": "Takas yaparak, köprü oluşturarak, madeni para basarak, arkadaşlarını davet ederek ve daha fazlasını yaparak puan kazanmaya devam ediniz",
         "share_bonus_paragraph_three": "Rainbow'u ne kadar çok kullanırsanız, o kadar çok ödüllendirileceksiniz",
@@ -1323,7 +1324,21 @@
         "referral_link_bonus_text_extended": "Üstelik, referans kodu ile getirdiğiniz herkesin kazandığı puanların %10'unu da kazanacaksınız",
         "complete_onboarding": "Tamamlandı",
         "share_to_x": "X'e paylaş",
-        "hardware_wallet_alert": "Donanım cüzdanı desteği yakında geliyor!"
+        "hardware_wallet_alert": "Donanım cüzdanı desteği yakında geliyor!",
+        "view_weekly_earnings_week_of": "Hafta %{startOfWeek} - %{endOfWeek}",
+        "view_weekly_earnings_title": "Kazanılan puanlar hesaplanıyor",
+        "view_weekly_earnings_counted": "Haftalık kazanç hesaplandı",
+        "view_weekly_earnings_close_button": "Kapat",
+        "view_weekly_earnings_retroactive_points": "Geriye Dönük Puanlar",
+        "view_weekly_earnings_activity": "Aktiviteniz",
+        "view_weekly_earnings_referral_activity": "Yönlendirme Aktivitesi",
+        "view_weekly_earnings_total_earnings": "Toplam",
+        "view_weekly_earnings_new_referrals": "Yeni Yönlendirmeler",
+        "wallet_balance_required": "Cüzdan bakiyesi gereklidir",
+        "require_balance_paragraph_one": "Devam etmek için aşağıdaki ağlardan birinde ETH bakiyeniz olduğundan emin olun:",
+        "require_balance_paragraph_two": "Veya alternatif olarak, Polygon'da MATIC bakiyeniz veya BSC'de BNB bakiyeniz olmalı",
+        "fund_my_wallet": "Cüzdanımı Fonla",
+        "points": "Noktalar"
       }
     },
     "pools": {
@@ -1708,6 +1723,7 @@
       "notifications": "Bildirimler",
       "notifications_section": {
         "my_wallets": "Cüzdanlarım",
+        "points": "Noktalar",
         "watched_wallets": "İzlenen Cüzdanlar",
         "allow_notifications": "Bildirimlere İzin Ver",
         "sent": "Gönderilen",
@@ -2366,6 +2382,7 @@
         "message": "WalletConnect URI'yi aşağıya yapıştırın",
         "title": "Yeni WalletConnect Oturumu"
       },
+      "none": "Hiçbiri",
       "switch_network": "Ağı Değiştir",
       "switch_wallet": "Cüzdanı Değiştir",
       "titles": {
@@ -2413,7 +2430,8 @@
         "request_invalid": "İstekte geçersiz parametreler bulunuyordu. Lütfen tekrar deneyin veya Rainbow ve/veya dapp destek ekipleri ile iletişime geçin.",
         "eth_sign": "Güvenlik endişeleri nedeniyle Rainbow, eski eth_sign'ı desteklememektedir.  \n Herhangi bir sorunuz varsa lütfen Rainbow ve/veya dapp destek ekipleriyle iletişime geçin.",
         "request_unsupported_network": "Bu istekte belirtilen ağ, Rainbow tarafından desteklenmiyor.",
-        "request_unsupported_methods": "Bu istekte belirtilen RPC yöntemi(ler) Rainbow tarafından desteklenmiyor."
+        "request_unsupported_methods": "Bu istekte belirtilen RPC yöntemi(ler) Rainbow tarafından desteklenmiyor.",
+        "no_accounts_found": "Onaylanmış ad alanlarında hiç hesap bulunamadı."
       },
       "dapp_warnings": {
         "info_alert": {

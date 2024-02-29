@@ -286,11 +286,6 @@
       "hidden": "छुपा हुआ"
     },
     "cards": {
-      "dpi": {
-        "title": "DeFi पल्स सूचकांक",
-        "body": "सभी शीर्ष डेसेंट्रलाइज्ड वित्त टोकन एक में। उद्योग की ट्रैकिंग करें।",
-        "view": "देखें"
-      },
       "ens_create_profile": {
         "title": "अपनी ENS प्रोफ़ाइल बनाएं",
         "body": "अपने वॉलेट एड्रेस को पूरी तरह आपके द्वारा स्वामित्व वाली प्रोफ़ाइल से बदलें।"
@@ -1262,6 +1257,10 @@
         "get_started": "शुरुआत करें",
         "invalid_code": "अमान्य कोड"
       },
+      "notifications": {
+        "enable": "अंक सूचनाएँ सक्षम करें",
+        "disable": "पॉइंट्स सूचनाएँ निष्क्रिय करें"
+      },
       "points": {
         "referral_code": "रेफरल कोड",
         "share_link": "लिंक साझा करें",
@@ -1287,7 +1286,9 @@
         "referral_code_copied": "रेफरल कोड कॉपी किया गया",
         "earn_points_for_referring": "जब आपके रेफरल Rainbow के माध्यम से $100 का आदान-प्रदान करते हैं तो अंक अर्जित करें, साथ ही अपने रेफरल्स द्वारा अर्जित अंकों का 10% भी कमाएं",
         "already_claimed_points": "क्षमा करें! आप पहले ही अपने अंक दावा कर चुके हैं।",
-        "now": "अब"
+        "now": "अब",
+        "unranked": "अश्रेणीकृत",
+        "points_to_rank": "रैंक हेतु 750 अंक आवश्यक"
       },
       "console": {
         "claim_bonus_paragraph": "आपको Rainbow के माध्यम से कम से कम $100 बदलने पर अतिरिक्त 100 अंक मिलेंगे",
@@ -1295,8 +1296,8 @@
         "true_believer": "सच्चा विश्वासी",
         "registration_complete": "पंजीकरण पूरा हुआ",
         "account": "खाता",
+        "points_you_have": "आपके पास है",
         "points_earned": "अर्जित अंक",
-        "share_bonus": "साझा बोनस",
         "share_bonus_paragraph_one": "आपकी सभी व्यवस्था हो चुकी है!",
         "share_bonus_paragraph_two": "अदला-बदली करके, पुल बनाके, मुद्रांकन करके, मित्रों को संदर्भित करके, और और तरीकों से अंकों को अर्जित करते रहिए",
         "share_bonus_paragraph_three": "जितना अधिक आप Rainbow का उपयोग करेंगे, उतना ही अधिक आपको पुरस्कृत किया जाएगा",
@@ -1323,7 +1324,21 @@
         "referral_link_bonus_text_extended": "प्लस आपको जो कोई आपके रेफ़र करेगा उसके अर्जित किए गए अंकों का 10% भी मिलेगा",
         "complete_onboarding": "हो गया",
         "share_to_x": "X को शेयर करें",
-        "hardware_wallet_alert": "हार्डवेयर वॉलेट सपोर्ट जल्द ही आ रहा है!"
+        "hardware_wallet_alert": "हार्डवेयर वॉलेट सपोर्ट जल्द ही आ रहा है!",
+        "view_weekly_earnings_week_of": "सप्ताह %{startOfWeek} - %{endOfWeek}",
+        "view_weekly_earnings_title": "अर्जित अंकों की गणना",
+        "view_weekly_earnings_counted": "साप्ताहिक कमाई की गणना की गई",
+        "view_weekly_earnings_close_button": "बंद करें",
+        "view_weekly_earnings_retroactive_points": "पूर्वव्यापी पॉइंट्स",
+        "view_weekly_earnings_activity": "आपकी गतिविधि",
+        "view_weekly_earnings_referral_activity": "रेफरल गतिविधि",
+        "view_weekly_earnings_total_earnings": "कुल",
+        "view_weekly_earnings_new_referrals": "नए रेफरल",
+        "wallet_balance_required": "वॉलेट बैलेंस की आवश्यकता",
+        "require_balance_paragraph_one": "जारी रखने के लिए, सुनिश्चित करें कि निम्नलिखित नेटवर्क्स में से एक पर आपके पास ETH बैलेंस है:",
+        "require_balance_paragraph_two": "या वैकल्पिक रूप से, पॉलिगॉन पर MATIC बैलेंस या BSC पर BNB बैलेंस",
+        "fund_my_wallet": "मेरा वॉलेट फंड करें",
+        "points": "अंक"
       }
     },
     "pools": {
@@ -1708,6 +1723,7 @@
       "notifications": "सूचनाएं",
       "notifications_section": {
         "my_wallets": "मेरे वॉलेट",
+        "points": "अंक",
         "watched_wallets": "देखे गए वॉलेट",
         "allow_notifications": "सूचनाएँ अनुमति दें",
         "sent": "भेजा",
@@ -2366,6 +2382,7 @@
         "message": "नीचे WalletConnect URI पेस्ट करें",
         "title": "नया WalletConnect सत्र"
       },
+      "none": "कोई नहीं",
       "switch_network": "नेटवर्क स्विच करें",
       "switch_wallet": "वॉलेट स्विच करें",
       "titles": {
@@ -2413,7 +2430,8 @@
         "request_invalid": "अनुरोध में अमान्य पैरामीटर थे। कृपया पुनः प्रयास करें या रेनबो और/या डैप समर्थन टीमों से संपर्क करें।",
         "eth_sign": "सुरक्षा चिंता के कारण रेनबो लीगेसी eth_sign का समर्थन नहीं करता है।  \n कृप्या किसी भी प्रश्न होने पर रेनबो और/या डैप समर्थन टीम से संपर्क करें।",
         "request_unsupported_network": "इस अनुरोध में निर्दिष्ट नेटवर्क को रेनबो द्वारा समर्थित नहीं किया जाता है।",
-        "request_unsupported_methods": "इस अनुरोध में उल्लिखित RPC विधि(एँ) रेनबो द्वारा समर्थित नहीं हैं।"
+        "request_unsupported_methods": "इस अनुरोध में उल्लिखित RPC विधि(एँ) रेनबो द्वारा समर्थित नहीं हैं।",
+        "no_accounts_found": "स्वीकृत नेमस्पेस में कोई खाते नहीं मिले।"
       },
       "dapp_warnings": {
         "info_alert": {

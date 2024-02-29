@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigation } from '@/navigation';
 import { Bleed, Box, Column, Columns, globalColors, Inline, Inset, Stack, Text, useBackgroundColor, useColorMode } from '@/design-system';
-import { CoinIcon } from '@/components/coin-icon';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { NftOffer } from '@/graphql/__generated__/arc';
 import { ImgixImage } from '@/components/images';
@@ -14,6 +13,10 @@ import { useTheme } from '@/theme';
 import { CardSize } from '@/components/unique-token/CardSize';
 import { View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
+import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
+import { Network } from '@/networks/types';
+import { useAccountSettings } from '@/hooks';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 
 const NFT_SIZE = 50;
 const MARKETPLACE_ORB_SIZE = 18;
@@ -90,8 +93,15 @@ export const FakeOfferRow = () => {
 
 export const OfferRow = ({ offer }: { offer: NftOffer }) => {
   const { navigate } = useNavigation();
+  const { nativeCurrency } = useAccountSettings();
   const { colorMode } = useColorMode();
+  const theme = useTheme();
   const bgColor = useBackgroundColor('surfaceSecondaryElevated');
+  const { data: externalAsset } = useExternalToken({
+    address: offer.paymentToken.address,
+    network: offer.network as Network,
+    currency: nativeCurrency,
+  });
 
   const isFloorDiffPercentagePositive = offer.floorDifferencePercentage >= 0;
   const dollarAmount = convertAmountToNativeDisplay(
@@ -200,11 +210,13 @@ export const OfferRow = ({ offer }: { offer: NftOffer }) => {
         <View style={{ alignItems: 'flex-end' }}>
           <View style={{ flexDirection: 'row', paddingBottom: 10 }}>
             <View style={{ marginVertical: -2, paddingRight: 6 }}>
-              <CoinIcon
-                address={offer.paymentToken.address}
+              <RainbowCoinIcon
                 size={COIN_ICON_SIZE}
+                icon={externalAsset?.icon_url}
+                network={offer?.network as Network}
                 symbol={offer.paymentToken.symbol}
-                network={offer.network}
+                theme={theme}
+                colors={externalAsset?.colors}
                 ignoreBadge
               />
             </View>

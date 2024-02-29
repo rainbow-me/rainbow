@@ -26,7 +26,9 @@ export const TransactionDetails = () => {
   const navigation = useNavigation();
   const route = useRoute<RouteProp<RouteParams, 'TransactionDetails'>>();
   const { setParams } = navigation;
-  const { transaction } = route.params;
+  const { transaction: tx } = route.params;
+
+  const transaction = tx;
   const [sheetHeight, setSheetHeight] = useState(0);
   const [statusIconHidden, setStatusIconHidden] = useState(false);
   const { presentedToast, presentToastFor } = useTransactionDetailsToasts();
