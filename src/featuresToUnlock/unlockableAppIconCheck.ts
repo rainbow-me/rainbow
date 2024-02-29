@@ -6,9 +6,10 @@ import Routes from '@/navigation/routesNames';
 import { unlockableAppIcons } from '@/appIcons/appIcons';
 import { Network } from '@/helpers';
 import { MMKV } from 'react-native-mmkv';
+import { STORAGE_IDS } from '@/model/mmkv';
 
 export const unlockableAppIconStorage = new MMKV({
-  id: 'unlockableAppIcons',
+  id: STORAGE_IDS.UNLOCKABLE_APP_ICONS,
 });
 
 /**
