@@ -15,6 +15,25 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.17] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.17)
+
+### Added
+
+- added transferTo field in send details (#5384)
+- added accent colors to NFTs (#5412)
+- added translations for points, notification strings and new wallet connect strings (#5412)
+- added sell button to the NFT expanded state if an offer exists (#5428)
+
+### Changed
+
+- removed unused dependencies and updated some (#5417, #5427)
+- transactions refactor (#5369)
+- coin icon refactor (#5418)
+
+### Fixed
+
+- reduced imgix usage to fix NFT issues (#5413)
+
 ## [1.9.16] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.16)
 
 ### Added
