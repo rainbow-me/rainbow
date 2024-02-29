@@ -157,8 +157,6 @@ export const nftOffersSheetConfig = {
       ...params,
       backgroundOpacity: 1,
       scrollEnabled: true,
-      springDamping: 1,
-      transitionDuration: 0.3,
     }),
   }),
 };
@@ -174,8 +172,6 @@ export const nftSingleOfferSheetConfig = {
     ...buildCoolModalConfig({
       ...params,
       longFormHeight: longFormHeight || 0,
-      springDamping: 1,
-      transitionDuration: 0.3,
     }),
   }),
 };
@@ -186,8 +182,6 @@ export const mintsSheetConfig = {
       ...params,
       backgroundOpacity: 1,
       scrollEnabled: true,
-      springDamping: 1,
-      transitionDuration: 0.3,
     }),
   }),
 };
@@ -205,20 +199,6 @@ export const consoleSheetConfig = {
   }),
 };
 
-export const dappBrowserConfig = {
-  options: ({ route: { params = {} } }) => ({
-    ...buildCoolModalConfig({
-      ...params,
-      backgroundOpacity: 1,
-      cornerRadius: 0,
-      // relevantScrollViewDepth: 2,
-      springDamping: 1,
-      topOffset: 0,
-      transitionDuration: 0.3,
-    }),
-  }),
-};
-
 export const swapConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
@@ -229,20 +209,6 @@ export const swapConfig = {
       springDamping: 1,
       topOffset: 0,
       transitionDuration: 0.3,
-    }),
-  }),
-};
-
-export const mintSheetConfig: PartialNavigatorConfigOptions = {
-  options: ({ route: { params = {} } }) => ({
-    ...buildCoolModalConfig({
-      ...params,
-      backgroundOpacity: 1,
-      cornerRadius: 'device',
-      scrollEnabled: true,
-      springDamping: 1,
-      topOffset: 0,
-      transitionDuration: 0.25,
     }),
   }),
 };
@@ -269,19 +235,6 @@ export const walletDiagnosticsSheetConfig = {
       transitionDuration: 0.3,
     });
   },
-};
-
-export const feedControlPanelConfig = {
-  options: ({ route: { params = {} } }) => ({
-    ...buildCoolModalConfig({
-      ...params,
-      backgroundOpacity: 0.8,
-      cornerRadius: 0,
-      springDamping: 1,
-      topOffset: 0,
-      transitionDuration: 0.3,
-    }),
-  }),
 };
 
 export const customGasSheetConfig: PartialNavigatorConfigOptions = {
