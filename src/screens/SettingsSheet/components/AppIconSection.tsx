@@ -9,7 +9,7 @@ import { ImgixImage } from '@/components/images';
 import { useTheme } from '@/theme';
 import Logger from '@/utils/logger';
 import { analytics } from '@/analytics';
-import { AppIcon, UnlockableAppIcon, UnlockableAppIconKey, freeAppIcons, unlockableAppIcons } from '@/appIcons/appIcons';
+import { AppIcon, AppIconKey, UnlockableAppIcon, UnlockableAppIconKey, freeAppIcons, unlockableAppIcons } from '@/appIcons/appIcons';
 import { unlockableAppIconStorage } from '@/featuresToUnlock/unlockableAppIconCheck';
 
 const AppIconSection = () => {
@@ -25,7 +25,7 @@ const AppIconSection = () => {
     [settingsChangeAppIcon]
   );
 
-  const unlockedAppIcons: Record<string, AppIcon> = useMemo(
+  const unlockedAppIcons: Record<AppIconKey, AppIcon> = useMemo(
     () => ({
       ...freeAppIcons,
       ...(Object.keys(unlockableAppIcons) as UnlockableAppIconKey[]).reduce(

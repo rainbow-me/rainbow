@@ -1,4 +1,4 @@
-import { checkIfWalletsOwnNft } from './tokenGatedUtils';
+import { TokenGateCheckerNetwork, checkIfWalletsOwnNft } from './tokenGatedUtils';
 import { EthereumAddress } from '@/entities';
 import { Navigation } from '@/navigation';
 import { logger } from '@/utils';
@@ -30,9 +30,11 @@ export const unlockableAppIconCheck = async (appIconKey: UnlockableAppIconKey, w
   try {
     const found = (
       await Promise.all(
-        Object.entries(appIcon.unlockingNFTs).map(([network, nfts]) => {
+        (Object.keys(appIcon.unlockingNFTs) as TokenGateCheckerNetwork[]).map(async network => {
+          const nfts = appIcon.unlockingNFTs[network];
+          if (!nfts) return;
           logger.log(`Checking ${appIconKey} on network ${network}`);
-          return checkIfWalletsOwnNft(nfts, network as Network, walletsToCheck);
+          return await checkIfWalletsOwnNft(nfts, network, walletsToCheck);
         })
       )
     ).some(result => !!result);

@@ -14,6 +14,7 @@ import AppIconZorb from '@/assets/appIconZorb.png';
 import AppIconPoolboy from '@/assets/appIconPoolboy.png';
 import AppIconAdworld from '@/assets/appIconAdworld.png';
 import AppIconFarcaster from '@/assets/appIconFarcaster.png';
+import { TokenGateCheckerNetwork } from '@/featuresToUnlock/tokenGatedUtils';
 
 // optimism app icon unlocking NFTs
 const OPTIMISTIC_EXPLORER_NFT_ADDRESS: EthereumAddress = '0x81b30ff521D1fEB67EDE32db726D95714eb00637';
@@ -63,7 +64,7 @@ export interface AppIcon {
 }
 
 export interface UnlockableAppIcon extends AppIcon {
-  unlockingNFTs: Partial<Record<Network, EthereumAddress[]>>;
+  unlockingNFTs: Partial<Record<TokenGateCheckerNetwork, EthereumAddress[]>>;
 }
 
 export type FreeAppIconKey = 'og' | 'pixel';
