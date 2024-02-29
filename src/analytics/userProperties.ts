@@ -1,6 +1,9 @@
 import { NativeCurrencyKey } from '@/entities';
 import { Language } from '@/languages';
 
+// have to put this here or redux gets important and tests break
+type PushNotificationPermissionStatus = 'enabled' | 'disabled' | 'never asked';
+
 // these are all reported seperately so they must be optional
 export interface UserProperties {
   // settings
@@ -27,6 +30,11 @@ export interface UserProperties {
   numberOfMints?: number;
   numberOfFreeMints?: number;
   numberOfPaidMints?: number;
+
+  // notifications:
+  notificationsPermissionStatus?: PushNotificationPermissionStatus;
+  numberOfImportedWalletsWithNotificationsTurnedOn?: number;
+  numberOfWatchedWalletsWithNotificationsTurnedOn?: number;
 
   // ens
   // TODO: remove ensProfile tracking the entire object

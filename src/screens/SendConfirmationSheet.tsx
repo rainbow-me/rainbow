@@ -349,9 +349,9 @@ export const SendConfirmationSheet = () => {
 
   const handleL2DisclaimerPress = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
-      type: isNft ? asset.network : asset.type,
+      type: asset.network,
     });
-  }, [asset.network, asset.type, isNft, navigate]);
+  }, [asset.network, navigate]);
 
   const nativeDisplayAmount = useMemo(
     () => convertAmountToNativeDisplay(amountDetails.nativeAmount, nativeCurrency),
