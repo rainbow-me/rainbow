@@ -286,11 +286,6 @@
       "hidden": "ซ่อน"
     },
     "cards": {
-      "dpi": {
-        "title": "ดัชนี DeFi Pulse",
-        "body": "ทุกโทเค็นการเงินทางเลือกที่ดีที่สุดอยู่ในนี้ เติมติดตามอุตสาหกรรม.",
-        "view": "ดู"
-      },
       "ens_create_profile": {
         "title": "สร้างโปรไฟล์ ENS ของคุณ",
         "body": "แทนที่ที่อยู่กระเป๋าเงินของคุณด้วยโปรไฟล์ที่คุณเป็นเจ้าของอย่างเต็มที่."
@@ -1262,6 +1257,10 @@
         "get_started": "เริ่มทำงาน",
         "invalid_code": "รหัสไม่ถูกต้อง"
       },
+      "notifications": {
+        "enable": "เปิดใช้งานการแจ้งเตือนคะแนน",
+        "disable": "ปิดการแจ้งเตือนคะแนน"
+      },
       "points": {
         "referral_code": "รหัสอ้างอิง",
         "share_link": "แชร์ลิงค์",
@@ -1287,7 +1286,9 @@
         "referral_code_copied": "คัดลอกโค้ดการอ้างอิงเรียบร้อย",
         "earn_points_for_referring": "รับคะแนนเมื่อผู้ที่คุณอ้างอิงแลกเปลี่ยนเงินผ่าน Rainbow มูลค่า $100 และรับ 10% ของคะแนนที่ผู้ที่คุณอ้างอิงได้รับ",
         "already_claimed_points": "ขออภัย! คุณได้รับคะแนนนี้แล้ว.",
-        "now": "ตอนนี้"
+        "now": "ตอนนี้",
+        "unranked": "ไม่มีอันดับ",
+        "points_to_rank": "ต้องการคะแนนอีก 750 คะแนนเพื่อจัดอันดับ"
       },
       "console": {
         "claim_bonus_paragraph": "คุณจะได้รับแต้มเพิ่มอีก 100 แต้ม เมื่อคุณทำการแลกเปลี่ยนเงินอย่างน้อย $100 ผ่าน Rainbow",
@@ -1295,8 +1296,8 @@
         "true_believer": "ผู้ศรัทธาจริง",
         "registration_complete": "การลงทะเบียนเสร็จสิ้น",
         "account": "บัญชี",
+        "points_you_have": "คุณมี",
         "points_earned": "แต้มที่ได้รับ",
-        "share_bonus": "โบนัสแชร์",
         "share_bonus_paragraph_one": "คุณพร้อมแล้ว!",
         "share_bonus_paragraph_two": "คุณสามารถหาแต้มได้โดยการแลกเปลี่ยน, การเชื่อมต่อ, การสร้างสกุลเงิน, การอ้างอิงเพื่อน, และอื่นๆ",
         "share_bonus_paragraph_three": "ยิ่งคุณใช้ Rainbow มาก เท่าไหร่ คุณก็จะได้รับรางวัลมากเท่านั้น",
@@ -1323,7 +1324,21 @@
         "referral_link_bonus_text_extended": "นอกจากนี้คุณจะได้รับ 10% ของคะแนนที่ได้จากการอ้างอิงผู้อื่น",
         "complete_onboarding": "เสร็จสิ้น",
         "share_to_x": "แชร์ไปที่ X",
-        "hardware_wallet_alert": "การสนับสนุนกระเป๋าสตางค์ฮาร์ดแวร์กำลังจะมาในไม่ช้า!"
+        "hardware_wallet_alert": "การสนับสนุนกระเป๋าสตางค์ฮาร์ดแวร์กำลังจะมาในไม่ช้า!",
+        "view_weekly_earnings_week_of": "สัปดาห์ของ %{startOfWeek} - %{endOfWeek}",
+        "view_weekly_earnings_title": "การนับคะแนนที่ได้รับ",
+        "view_weekly_earnings_counted": "การนับรายได้รายสัปดาห์",
+        "view_weekly_earnings_close_button": "ปิด",
+        "view_weekly_earnings_retroactive_points": "คะแนนย้อนหลัง",
+        "view_weekly_earnings_activity": "กิจกรรมของคุณ",
+        "view_weekly_earnings_referral_activity": "กิจกรรมการอ้างอิง",
+        "view_weekly_earnings_total_earnings": "ทั้งหมด",
+        "view_weekly_earnings_new_referrals": "การอ้างอิงใหม่",
+        "wallet_balance_required": "ต้องการยอดเงินในกระเป๋าเงิน",
+        "require_balance_paragraph_one": "เพื่อดำเนินการต่อ โปรดตรวจสอบว่าคุณมียอด ETH บนหนึ่งในเครือข่ายต่อไปนี้:",
+        "require_balance_paragraph_two": "หรือเลือกใช้ยอด MATIC บน Polygon หรือยอด BNB บน BSC",
+        "fund_my_wallet": "เติมเงินในกระเป๋าของฉัน",
+        "points": "แต้ม"
       }
     },
     "pools": {
@@ -1708,6 +1723,7 @@
       "notifications": "การแจ้งเตือน",
       "notifications_section": {
         "my_wallets": "กระเป๋าของฉัน",
+        "points": "แต้ม",
         "watched_wallets": "กระเป๋าที่สังเกต",
         "allow_notifications": "อนุญาตการแจ้งเตือน",
         "sent": "ส่งแล้ว",
@@ -2366,6 +2382,7 @@
         "message": "วาง URI WalletConnect ด้านล่าง",
         "title": "เซสชัน WalletConnect ใหม่"
       },
+      "none": "ไม่มี",
       "switch_network": "สลับเครือข่าย",
       "switch_wallet": "สลับกระเป๋าสตางค์",
       "titles": {
@@ -2413,7 +2430,8 @@
         "request_invalid": "คำขอมีพารามิเตอร์ที่ไม่ถูกต้อง โปรดลองอีกครั้งหรือติดต่อทีมสนับสนุน Rainbow และ/หรือ ดัพ",
         "eth_sign": "Rainbow ไม่สนับสนุน eth_sign แบบเก่าเนื่องจากมีข้อกังวลเรื่องความปลอดภัย  \n หากคุณมีคำถาม โปรดติดต่อทีมสนับสนุน Rainbow และ/หรือ dapp",
         "request_unsupported_network": "Rainbow ไม่รองรับเครือข่ายที่ระบุไว้ในคำขอนี้.",
-        "request_unsupported_methods": "วิธีการ RPC ที่ระบุในคำขอนี้ไม่ได้รับการสนับสนุนโดย Rainbow"
+        "request_unsupported_methods": "วิธีการ RPC ที่ระบุในคำขอนี้ไม่ได้รับการสนับสนุนโดย Rainbow",
+        "no_accounts_found": "ไม่พบบัญชีในพื้นที่ที่ได้รับการอนุมัติ"
       },
       "dapp_warnings": {
         "info_alert": {

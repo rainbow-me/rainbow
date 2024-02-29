@@ -6,21 +6,11 @@ import { Network } from '@/helpers/networkTypes';
 import { greaterThan } from '@/helpers/utilities';
 import { RainbowNetworks } from '@/networks';
 import { rainbowFetch } from '@/rainbow-fetch';
-import {
-  createQueryKey,
-  queryClient,
-  QueryConfigWithSelect,
-  QueryFunctionArgs,
-  QueryFunctionResult,
-} from '@/react-query';
+import { createQueryKey, queryClient, QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { filterPositionsData, parseAddressAsset } from './assets';
 import { fetchHardhatBalances } from './hardhatAssets';
-import {
-  AddysAccountAssetsMeta,
-  AddysAccountAssetsResponse,
-  RainbowAddressAssets,
-} from './types';
+import { AddysAccountAssetsMeta, AddysAccountAssetsResponse, RainbowAddressAssets } from './types';
 
 // ///////////////////////////////////////////////
 // Query Types
@@ -34,27 +24,15 @@ export type UserAssetsArgs = {
 // ///////////////////////////////////////////////
 // Query Key
 
-export const userAssetsQueryKey = ({
-  address,
-  currency,
-  connectedToHardhat,
-}: UserAssetsArgs) =>
-  createQueryKey(
-    'userAssets',
-    { address, currency, connectedToHardhat },
-    { persisterVersion: 1 }
-  );
+export const userAssetsQueryKey = ({ address, currency, connectedToHardhat }: UserAssetsArgs) =>
+  createQueryKey('userAssets', { address, currency, connectedToHardhat }, { persisterVersion: 1 });
 
 type UserAssetsQueryKey = ReturnType<typeof userAssetsQueryKey>;
 
 // ///////////////////////////////////////////////
 // Query Function
 
-const fetchUserAssetsForChainIds = async (
-  address: string,
-  currency: NativeCurrencyKey,
-  chainIds: number[]
-) => {
+const fetchUserAssetsForChainIds = async (address: string, currency: NativeCurrencyKey, chainIds: number[]) => {
   const chainIdsString = chainIds.join(',');
   const url = `https://addys.p.rainbow.me/v3/${chainIdsString}/${address}/assets`;
 
@@ -75,9 +53,8 @@ async function userAssetsQueryFunction({
   queryKey: [{ address, currency, connectedToHardhat }],
 }: QueryFunctionArgs<typeof userAssetsQueryKey>) {
   const cache = queryClient.getQueryCache();
-  const cachedAddressAssets = (cache.find(
-    userAssetsQueryKey({ address, currency, connectedToHardhat })
-  )?.state?.data || {}) as RainbowAddressAssets;
+  const cachedAddressAssets = (cache.find(userAssetsQueryKey({ address, currency, connectedToHardhat }))?.state?.data ||
+    {}) as RainbowAddressAssets;
 
   if (connectedToHardhat) {
     const parsedHardhatResults = await fetchHardhatBalances(address);
@@ -85,14 +62,9 @@ async function userAssetsQueryFunction({
   }
 
   try {
-    const chainIds = RainbowNetworks.filter(
-      network => network.enabled && network.networkType !== 'testnet'
-    ).map(network => network.id);
+    const chainIds = RainbowNetworks.filter(network => network.enabled && network.networkType !== 'testnet').map(network => network.id);
 
-    const {
-      erroredChainIds,
-      results,
-    } = await fetchAndParseUserAssetsForChainIds(address, currency, chainIds);
+    const { erroredChainIds, results } = await fetchAndParseUserAssetsForChainIds(address, currency, chainIds);
     let parsedSuccessResults = results;
 
     // grab cached data for chain IDs with errors
@@ -100,9 +72,7 @@ async function userAssetsQueryFunction({
       const cachedDataForErroredChainIds = Object.keys(cachedAddressAssets)
         .filter(uniqueId => {
           const cachedAsset = cachedAddressAssets[uniqueId];
-          return erroredChainIds?.find(
-            (chainId: number) => chainId === cachedAsset.chainId
-          );
+          return erroredChainIds?.find((chainId: number) => chainId === cachedAsset.chainId);
         })
         .reduce((cur, uniqueId) => {
           return Object.assign(cur, {
@@ -115,12 +85,7 @@ async function userAssetsQueryFunction({
         ...cachedDataForErroredChainIds,
       };
 
-      retryErroredChainIds(
-        address,
-        currency,
-        connectedToHardhat,
-        erroredChainIds
-      );
+      retryErroredChainIds(address, currency, connectedToHardhat, erroredChainIds);
     }
 
     return parsedSuccessResults;
@@ -135,11 +100,7 @@ const retryErroredChainIds = async (
   connectedToHardhat: boolean,
   erroredChainIds: number[]
 ) => {
-  const { meta, results } = await fetchAndParseUserAssetsForChainIds(
-    address,
-    currency,
-    erroredChainIds
-  );
+  const { meta, results } = await fetchAndParseUserAssetsForChainIds(address, currency, erroredChainIds);
   let parsedSuccessResults = results;
   const successChainIds = meta?.chain_ids;
 
@@ -149,16 +110,13 @@ const retryErroredChainIds = async (
 
   // grab cached data without data that will be replaced
   const cache = queryClient.getQueryCache();
-  const cachedAddressAssets = (cache.find(
-    userAssetsQueryKey({ address, currency, connectedToHardhat })
-  )?.state?.data || {}) as RainbowAddressAssets;
+  const cachedAddressAssets = (cache.find(userAssetsQueryKey({ address, currency, connectedToHardhat }))?.state?.data ||
+    {}) as RainbowAddressAssets;
 
   const cachedData = Object.keys(cachedAddressAssets)
     .filter(uniqueId => {
       const cachedAsset = cachedAddressAssets[uniqueId];
-      return successChainIds?.find(
-        (chainId: number) => chainId !== cachedAsset.chainId
-      );
+      return successChainIds?.find((chainId: number) => chainId !== cachedAsset.chainId);
     })
     .reduce((cur, uniqueId) => {
       return Object.assign(cur, {
@@ -171,10 +129,7 @@ const retryErroredChainIds = async (
     ...parsedSuccessResults,
   };
 
-  queryClient.setQueryData(
-    userAssetsQueryKey({ address, currency, connectedToHardhat }),
-    parsedSuccessResults
-  );
+  queryClient.setQueryData(userAssetsQueryKey({ address, currency, connectedToHardhat }), parsedSuccessResults);
 };
 
 type UserAssetsResult = QueryFunctionResult<typeof userAssetsQueryFunction>;
@@ -194,11 +149,7 @@ const fetchAndParseUserAssetsForChainIds = async (
   let parsedSuccessResults = parseUserAssetsByChain(data);
 
   // filter out positions data
-  parsedSuccessResults = filterPositionsData(
-    address,
-    currency,
-    parsedSuccessResults
-  );
+  parsedSuccessResults = filterPositionsData(address, currency, parsedSuccessResults);
 
   // update account empty state
   if (!isEmpty(parsedSuccessResults)) {
@@ -210,18 +161,15 @@ const fetchAndParseUserAssetsForChainIds = async (
 };
 
 function parseUserAssetsByChain(message: AddysAccountAssetsResponse) {
-  return Object.values(message?.payload?.assets || {}).reduce(
-    (dict, assetData) => {
-      if (greaterThan(assetData?.quantity, 0)) {
-        const parsedAsset = parseAddressAsset({
-          assetData,
-        });
-        dict[parsedAsset?.uniqueId] = parsedAsset;
-      }
-      return dict;
-    },
-    {} as RainbowAddressAssets
-  );
+  return Object.values(message?.payload?.assets || {}).reduce((dict, assetData) => {
+    if (greaterThan(assetData?.quantity, 0)) {
+      const parsedAsset = parseAddressAsset({
+        assetData,
+      });
+      dict[parsedAsset?.uniqueId] = parsedAsset;
+    }
+    return dict;
+  }, {} as RainbowAddressAssets);
 }
 
 // ///////////////////////////////////////////////
@@ -229,18 +177,9 @@ function parseUserAssetsByChain(message: AddysAccountAssetsResponse) {
 
 export async function fetchUserAssets<TSelectResult = UserAssetsResult>(
   { address, currency, connectedToHardhat }: UserAssetsArgs,
-  config: QueryConfigWithSelect<
-    UserAssetsResult,
-    Error,
-    TSelectResult,
-    UserAssetsQueryKey
-  > = {}
+  config: QueryConfigWithSelect<UserAssetsResult, Error, TSelectResult, UserAssetsQueryKey> = {}
 ) {
-  return await queryClient.fetchQuery(
-    userAssetsQueryKey({ address, currency, connectedToHardhat }),
-    userAssetsQueryFunction,
-    config
-  );
+  return await queryClient.fetchQuery(userAssetsQueryKey({ address, currency, connectedToHardhat }), userAssetsQueryFunction, config);
 }
 
 // ///////////////////////////////////////////////
@@ -248,21 +187,12 @@ export async function fetchUserAssets<TSelectResult = UserAssetsResult>(
 
 export function useUserAssets<TSelectResult = UserAssetsResult>(
   { address, currency, connectedToHardhat }: UserAssetsArgs,
-  config: QueryConfigWithSelect<
-    UserAssetsResult,
-    Error,
-    TSelectResult,
-    UserAssetsQueryKey
-  > = {}
+  config: QueryConfigWithSelect<UserAssetsResult, Error, TSelectResult, UserAssetsQueryKey> = {}
 ) {
-  return useQuery(
-    userAssetsQueryKey({ address, currency, connectedToHardhat }),
-    userAssetsQueryFunction,
-    {
-      enabled: !!address && !!currency,
-      staleTime: 60_000, // 1 minute
-      refetchInterval: 120_000, // 2 minutes
-      ...config,
-    }
-  );
+  return useQuery(userAssetsQueryKey({ address, currency, connectedToHardhat }), userAssetsQueryFunction, {
+    enabled: !!address && !!currency,
+    staleTime: 60_000, // 1 minute
+    refetchInterval: 120_000, // 2 minutes
+    ...config,
+  });
 }

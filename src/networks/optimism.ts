@@ -7,12 +7,7 @@ import { getOptimismGasPrices } from '@/redux/gas';
 import { getRemoteConfig } from '@/model/remoteConfig';
 
 export const getOptimismNetworkObject = (): NetworkProperties => {
-  const {
-    optimism_enabled,
-    optimism_tx_enabled,
-    op_chains_enabled,
-    op_chains_tx_enabled,
-  } = getRemoteConfig();
+  const { optimism_enabled, optimism_tx_enabled, op_chains_enabled, op_chains_tx_enabled } = getRemoteConfig();
   return {
     // wagmi chain data
     ...optimism,
@@ -41,18 +36,12 @@ export const getOptimismNetworkObject = (): NetworkProperties => {
       walletconnect: true,
       swaps: true,
       nfts: true,
-      savings: false,
       pools: false,
       txs: optimism_tx_enabled && op_chains_tx_enabled,
     },
 
     gas: {
-      speeds: [
-        gasUtils.NORMAL,
-        gasUtils.FAST,
-        gasUtils.URGENT,
-        gasUtils.CUSTOM,
-      ],
+      speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT, gasUtils.CUSTOM],
 
       // ?
       gasType: 'eip1559',

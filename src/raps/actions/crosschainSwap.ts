@@ -1,22 +1,12 @@
 import { Wallet } from '@ethersproject/wallet';
 import { Signer } from '@ethersproject/abstract-signer';
-import {
-  ChainId,
-  CrosschainQuote,
-  fillCrosschainQuote,
-  SwapType,
-} from '@rainbow-me/swaps';
+import { ChainId, CrosschainQuote, fillCrosschainQuote, SwapType } from '@rainbow-me/swaps';
 import { captureException } from '@sentry/react-native';
-import {
-  CrosschainSwapActionParameters,
-  Rap,
-  RapExchangeActionParameters,
-} from '../common';
-import { ProtocolType, TransactionStatus, TransactionType } from '@/entities';
+import { CrosschainSwapActionParameters, Rap, RapExchangeActionParameters } from '../common';
+import { NewTransaction } from '@/entities';
 
 import { toHex } from '@/handlers/web3';
 import { parseGasParamAmounts } from '@/parsers';
-import { dataAddNewTransaction } from '@/redux/data';
 import store from '@/redux/store';
 import { ethereumUtils } from '@/utils';
 import logger from '@/utils/logger';
@@ -24,6 +14,7 @@ import { estimateCrosschainSwapGasLimit } from '@/handlers/swap';
 import { swapMetadataStorage } from './swap';
 import { REFERRER } from '@/references';
 import { overrideWithFastSpeedIfNeeded } from '../utils';
+import { addNewTransaction } from '@/state/pendingTransactions';
 
 const actionName = 'crosschainSwap';
 
@@ -63,14 +54,7 @@ export const executeCrosschainSwap = async ({
     nonce: nonce ? toHex(nonce) : undefined,
   };
 
-  logger.debug(
-    'FILLCROSSCHAINSWAP',
-    tradeDetails,
-    transactionParams,
-    walletAddress,
-    permit,
-    chainId
-  );
+  logger.debug('FILLCROSSCHAINSWAP', tradeDetails, transactionParams, walletAddress, permit, chainId);
   return fillCrosschainQuote(tradeDetails, transactionParams, wallet, REFERRER);
 };
 
@@ -82,12 +66,7 @@ const crosschainSwap = async (
   baseNonce?: number
 ): Promise<number | undefined> => {
   logger.log(`[${actionName}] base nonce`, baseNonce, 'index:', index);
-  const {
-    inputAmount,
-    tradeDetails,
-    chainId,
-    requiresApprove,
-  } = parameters as CrosschainSwapActionParameters;
+  const { inputAmount, tradeDetails, chainId, requiresApprove } = parameters as CrosschainSwapActionParameters;
   const { dispatch } = store;
   const { accountAddress } = store.getState().settings;
   const { inputCurrency, outputCurrency } = store.getState().swap;
@@ -145,47 +124,52 @@ const crosschainSwap = async (
   logger.log(`[${actionName}] response`, swap);
 
   const isBridge = inputCurrency.symbol === outputCurrency.symbol;
-  const newTransaction = {
-    ...gasParams,
-    amount: inputAmount,
-    asset: inputCurrency,
+  if (!swap?.hash) return;
+
+  const newTransaction: NewTransaction = {
     data: swap?.data,
-    flashbots: parameters.flashbots,
     from: accountAddress,
-    gasLimit,
-    hash: swap?.hash,
-    network: ethereumUtils.getNetworkFromChainId(Number(chainId)),
+    to: swap?.to ?? null,
+    value: tradeDetails?.value?.toString() || '',
+    asset: outputCurrency,
+    changes: [
+      {
+        direction: 'out',
+        asset: inputCurrency,
+        value: tradeDetails.sellAmount.toString(),
+      },
+      {
+        direction: 'in',
+        asset: outputCurrency,
+        value: tradeDetails.buyAmount.toString(),
+      },
+    ],
+    hash: swap.hash,
+    network: inputCurrency.network,
     nonce: swap?.nonce,
-    protocol: ProtocolType.socket,
-    status: isBridge ? TransactionStatus.bridging : TransactionStatus.swapping,
-    to: swap?.to,
-    type: TransactionType.trade,
-    value: (swap && toHex(swap.value)) || undefined,
+    status: 'pending',
+    type: 'swap',
+    flashbots: parameters.flashbots,
     swap: {
       type: SwapType.crossChain,
-      fromChainId: ethereumUtils.getChainIdFromType(inputCurrency?.type),
-      toChainId: ethereumUtils.getChainIdFromType(outputCurrency?.type),
+      fromChainId: ethereumUtils.getChainIdFromNetwork(inputCurrency?.network),
+      toChainId: ethereumUtils.getChainIdFromNetwork(outputCurrency?.network),
       isBridge,
     },
+    ...gasParams,
   };
+
+  addNewTransaction({
+    address: accountAddress,
+    transaction: newTransaction,
+    network: inputCurrency.network,
+  });
   logger.log(`[${actionName}] adding new txn`, newTransaction);
 
   if (parameters.meta && swap?.hash) {
-    swapMetadataStorage.set(
-      swap.hash.toLowerCase(),
-      JSON.stringify({ type: 'swap', data: parameters.meta })
-    );
+    swapMetadataStorage.set(swap.hash.toLowerCase(), JSON.stringify({ type: 'swap', data: parameters.meta }));
   }
 
-  dispatch(
-    dataAddNewTransaction(
-      // @ts-ignore
-      newTransaction,
-      accountAddress,
-      false,
-      wallet?.provider
-    )
-  );
   return swap?.nonce;
 };
 

@@ -1,8 +1,7 @@
 import lang from 'i18n-js';
-import isValidDomain from 'is-valid-domain';
 import isEmpty from 'lodash/isEmpty';
-import { MMKV, NativeMMKV } from 'react-native-mmkv';
-import { AssetType, NativeCurrencyKey, ParsedAddressAsset } from '@/entities';
+import { MMKV } from 'react-native-mmkv';
+import { NativeCurrencyKey, ParsedAddressAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
 import { Network } from '@/helpers/networkTypes';
 import { convertRawAmountToBalance } from '@/helpers/utilities';
@@ -13,12 +12,8 @@ import store from '@/redux/store';
 import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
 import { RainbowPositions } from '@/resources/defi/types';
 import { ethereumUtils } from '@/utils';
-import {
-  AddysAddressAsset,
-  AddysAsset,
-  ParsedAsset,
-  RainbowAddressAssets,
-} from './types';
+import { AddysAddressAsset, AddysAsset, ParsedAsset, RainbowAddressAssets } from './types';
+import { getUniqueId } from '@/utils/ethereumUtils';
 
 const storage = new MMKV();
 
@@ -29,9 +24,7 @@ export const filterPositionsData = (
   currency: NativeCurrencyKey,
   assetsData: RainbowAddressAssets
 ): RainbowAddressAssets => {
-  const positionsObj: RainbowPositions | undefined = queryClient.getQueryData(
-    positionsQueryKey({ address, currency })
-  );
+  const positionsObj: RainbowPositions | undefined = queryClient.getQueryData(positionsQueryKey({ address, currency }));
   const positionTokens = positionsObj?.positionTokens || [];
 
   if (isEmpty(positionTokens)) {
@@ -39,10 +32,7 @@ export const filterPositionsData = (
   }
 
   return Object.keys(assetsData)
-    .filter(
-      uniqueId =>
-        !positionTokens.find(positionToken => positionToken === uniqueId)
-    )
+    .filter(uniqueId => !positionTokens.find(positionToken => positionToken === uniqueId))
     .reduce((cur, uniqueId) => {
       return Object.assign(cur, {
         [uniqueId]: assetsData[uniqueId],
@@ -50,27 +40,17 @@ export const filterPositionsData = (
     }, {});
 };
 
-export function parseAsset({
-  address,
-  asset,
-}: {
-  address: string;
-  asset: AddysAsset;
-}): ParsedAsset {
+export function parseAsset({ address, asset }: { address: string; asset: AddysAsset }): ParsedAsset {
   const chainName = asset?.network;
   const network = chainName;
   const chainId = ethereumUtils.getChainIdFromNetwork(chainName);
   const mainnetAddress = asset?.networks?.[MAINNET_CHAIN_ID]?.address;
-  const uniqueId =
-    network && network !== Network.mainnet ? `${address}_${network}` : address;
-
-  const nonMainnetNetwork = network !== Network.mainnet ? network : undefined;
-  const assetType = asset?.type ?? nonMainnetNetwork ?? AssetType.token;
+  const uniqueId = getUniqueId(address, network);
 
   const parsedAsset = {
     address,
     color: asset?.colors?.primary,
-    colors: asset?.colors,
+    colors: asset.colors,
     chainId,
     chainName,
     decimals: asset?.decimals,
@@ -84,18 +64,14 @@ export function parseAsset({
     // networks: asset?.networks,
     price: asset?.price,
     symbol: asset?.symbol,
-    type: assetType,
+    type: asset?.type,
     uniqueId,
   };
 
   return parsedAsset;
 }
 
-export function parseAddressAsset({
-  assetData,
-}: {
-  assetData: AddysAddressAsset;
-}): ParsedAddressAsset {
+export function parseAddressAsset({ assetData }: { assetData: AddysAddressAsset }): ParsedAddressAsset {
   const asset = assetData?.asset;
   const quantity = assetData?.quantity;
   const address = assetData?.asset?.asset_code;
@@ -120,10 +96,7 @@ function addHiddenCoins(coins: string[], address: string) {
   const storageKey = 'hidden-coins-obj-' + address;
   const storageEntity = storage.getString(storageKey);
   const list = Object.keys(storageEntity ? JSON.parse(storageEntity) : {});
-  const newHiddenCoins = [
-    ...list.filter((i: string) => !coins.includes(i)),
-    ...coins,
-  ].reduce((acc, curr) => {
+  const newHiddenCoins = [...list.filter((i: string) => !coins.includes(i)), ...coins].reduce((acc, curr) => {
     acc[curr] = true;
     return acc;
   }, {} as BooleanMap);

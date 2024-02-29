@@ -32,12 +32,14 @@ const BasicExample = () => (
   <View
     style={{
       backgroundColor: 'black',
-    }}>
+    }}
+  >
     <ChartPathProvider
       data={{
         points,
         smoothingStrategy: 'bezier',
-      }}>
+      }}
+    >
       <ChartPath height={SIZE / 2} stroke="yellow" width={SIZE} />
       <ChartDot
         style={{

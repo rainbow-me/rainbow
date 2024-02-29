@@ -15,11 +15,7 @@ export interface TextLinkProps {
  * @description Renders a plain, static text link, designed to be used within a
  * block of text.
  */
-export function TextLink({
-  children,
-  url,
-  handleLinkPress = Linking.openURL,
-}: TextLinkProps) {
+export function TextLink({ children, url, handleLinkPress = Linking.openURL }: TextLinkProps) {
   const onPressHandler = useCallback(() => {
     handleLinkPress(url);
   }, [handleLinkPress, url]);

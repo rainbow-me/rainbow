@@ -25,10 +25,10 @@ import BaseBadgeDark from '../../assets/badges/baseBadgeDark.png';
 import BaseBadgeLarge from '../../assets/badges/baseBadgeLarge.png';
 import BaseBadgeLargeDark from '../../assets/badges/baseBadgeLargeDark.png';
 import { Centered } from '../layout';
-import { AssetType } from '@/entities';
 import styled from '@/styled-thing';
 import { position as positions } from '@/styles';
 import { ChainBadgeSizeConfigs } from '@/components/coin-icon/ChainBadgeSizeConfigs';
+import { Network } from '@/networks/types';
 
 const ChainIcon = styled(FastImage)({
   height: ({ containerSize }) => containerSize,
@@ -36,21 +36,19 @@ const ChainIcon = styled(FastImage)({
   width: ({ containerSize }) => containerSize,
 });
 
-const IndicatorIconContainer = styled(Centered)(
-  ({ marginBottom, iconSize, badgeXPosition, badgeYPosition, position }) => ({
-    bottom: position === 'relative' ? 0 : badgeYPosition,
-    left: position === 'relative' ? 0 : badgeXPosition,
-    ...positions.sizeAsObject(iconSize),
-    elevation: 10,
-    marginBottom,
-    overflow: 'visible',
-    position: position || 'absolute',
-    zIndex: 10,
-  })
-);
+const IndicatorIconContainer = styled(Centered)(({ marginBottom, iconSize, badgeXPosition, badgeYPosition, position }) => ({
+  bottom: position === 'relative' ? 0 : badgeYPosition,
+  left: position === 'relative' ? 0 : badgeXPosition,
+  ...positions.sizeAsObject(iconSize),
+  elevation: 10,
+  marginBottom,
+  overflow: 'visible',
+  position: position || 'absolute',
+  zIndex: 10,
+}));
 
 export default function ChainBadge({
-  assetType,
+  network,
   badgeXPosition = -7,
   badgeYPosition = 0,
   marginBottom = 0,
@@ -66,36 +64,36 @@ export default function ChainBadge({
   const source = useMemo(() => {
     let val = null;
     if (size === 'large') {
-      if (assetType === AssetType.arbitrum) {
+      if (network === Network.arbitrum) {
         val = isDarkMode ? ArbitrumBadgeLargeDark : ArbitrumBadgeLarge;
-      } else if (assetType === AssetType.optimism) {
+      } else if (network === Network.optimism) {
         val = isDarkMode ? OptimismBadgeLargeDark : OptimismBadgeLarge;
-      } else if (assetType === AssetType.polygon) {
+      } else if (network === Network.polygon) {
         val = isDarkMode ? PolygonBadgeLargeDark : PolygonBadgeLarge;
-      } else if (assetType === AssetType.bsc) {
+      } else if (network === Network.bsc) {
         val = isDarkMode ? BscBadgeLargeDark : BscBadgeLarge;
-      } else if (assetType === AssetType.zora) {
+      } else if (network === Network.zora) {
         val = isDarkMode ? ZoraBadgeLargeDark : ZoraBadgeLarge;
-      } else if (assetType === AssetType.base) {
+      } else if (network === Network.base) {
         val = isDarkMode ? BaseBadgeLargeDark : BaseBadgeLarge;
       }
     } else {
-      if (assetType === AssetType.arbitrum) {
+      if (network === Network.arbitrum) {
         val = isDarkMode ? ArbitrumBadgeDark : ArbitrumBadge;
-      } else if (assetType === AssetType.optimism) {
+      } else if (network === Network.optimism) {
         val = isDarkMode ? OptimismBadgeDark : OptimismBadge;
-      } else if (assetType === AssetType.polygon) {
+      } else if (network === Network.polygon) {
         val = isDarkMode ? PolygonBadgeDark : PolygonBadge;
-      } else if (assetType === AssetType.bsc) {
+      } else if (network === Network.bsc) {
         val = isDarkMode ? BscBadgeDark : BscBadge;
-      } else if (assetType === AssetType.zora) {
+      } else if (network === Network.zora) {
         val = isDarkMode ? ZoraBadgeDark : ZoraBadge;
-      } else if (assetType === AssetType.base) {
+      } else if (network === Network.base) {
         val = isDarkMode ? BaseBadgeDark : BaseBadge;
       }
     }
     return val;
-  }, [assetType, isDarkMode, size]);
+  }, [network, isDarkMode, size]);
 
   if (!source) return null;
 
@@ -107,11 +105,7 @@ export default function ChainBadge({
       marginBottom={marginBottom}
       position={position}
     >
-      <ChainIcon
-        containerSize={containerSize}
-        iconSize={iconSize}
-        source={source}
-      />
+      <ChainIcon containerSize={containerSize} iconSize={iconSize} source={source} />
     </IndicatorIconContainer>
   );
 }

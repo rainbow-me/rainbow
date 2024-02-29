@@ -1,11 +1,4 @@
-import React, {
-  createContext,
-  PropsWithChildren,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, { createContext, PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
 import { MMKV } from 'react-native-mmkv';
 import { useSharedValue } from 'react-native-reanimated';
 import DevButton from '../components/dev-buttons/DevButton';
@@ -48,10 +41,7 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
   // on unmounting all shared values.
   useSharedValue(0);
   const [config, setConfig] = useState<Record<string, boolean>>(
-    Object.entries(defaultConfig).reduce(
-      (acc, [key, { value }]) => ({ ...acc, [key]: value }),
-      {}
-    )
+    Object.entries(defaultConfig).reduce((acc, [key, { value }]) => ({ ...acc, [key]: value }), {})
   );
   const [globalState, updateGlobalState] = useState({});
 
@@ -62,19 +52,12 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
     }
   }, []);
 
-  const setConfigWithStorage = useCallback(
-    (newConfig: Record<string, boolean>) => {
-      storage.set(storageKey, JSON.stringify(newConfig));
-      setConfig(newConfig);
-    },
-    []
-  );
+  const setConfigWithStorage = useCallback((newConfig: Record<string, boolean>) => {
+    storage.set(storageKey, JSON.stringify(newConfig));
+    setConfig(newConfig);
+  }, []);
 
-  const setGlobalState = useCallback(
-    (newState: any) =>
-      updateGlobalState(prev => ({ ...prev, ...(newState || {}) })),
-    [updateGlobalState]
-  );
+  const setGlobalState = useCallback((newState: any) => updateGlobalState(prev => ({ ...prev, ...(newState || {}) })), [updateGlobalState]);
 
   const initialValue = useMemo(
     () => ({
@@ -92,11 +75,7 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
 
   const connectToHardhat = useCallback(async () => {
     try {
-      const ready = await web3SetHttpProvider(
-        (ios && HARDHAT_URL_IOS) ||
-          (android && HARDHAT_URL_ANDROID) ||
-          'http://127.0.0.1:8545'
-      );
+      const ready = await web3SetHttpProvider('http://127.0.0.1:8545');
       logger.debug('connected to hardhat', { ready });
     } catch (e: any) {
       await web3SetHttpProvider(networkTypes.mainnet);
@@ -114,22 +93,13 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
       {/* @ts-expect-error ts-migrate(2741) FIXME: Property 'color' is missing in type... Remove this comment to see the full error message */}
       {showReloadButton && __DEV__ && <DevButton initialDisplacement={200} />}
       {((showConnectToHardhatButton && __DEV__) || IS_TESTING === 'true') && (
-        <DevButton
-          color={colors.purple}
-          onPress={connectToHardhat}
-          initialDisplacement={150}
-          testID={'dev-button-hardhat'}
-          size={20}
-        >
+        <DevButton color={colors.purple} onPress={connectToHardhat} initialDisplacement={150} testID={'dev-button-hardhat'} size={20}>
           {/* @ts-ignore */}
           <Emoji>👷</Emoji>
         </DevButton>
       )}
       {showSwitchModeButton && __DEV__ && (
-        <DevButton
-          color={colors.dark}
-          onPress={() => setTheme(isDarkMode ? 'light' : 'dark')}
-        >
+        <DevButton color={colors.dark} onPress={() => setTheme(isDarkMode ? 'light' : 'dark')}>
           {/* @ts-expect-error ts-migrate(2741) FIXME: Property 'name' is missing in type... Remove this comment to see the full error message */}
           <Emoji>{isDarkMode ? '🌞' : '🌚'}</Emoji>
         </DevButton>

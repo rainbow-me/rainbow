@@ -13,16 +13,9 @@ const capsize = (options: Parameters<typeof precomputeValues>[0]) => {
 
   return {
     fontSize,
-    lineHeight:
-      values.lineHeight !== 'normal'
-        ? parseFloat(values.lineHeight)
-        : undefined,
-    marginBottom: PixelRatio.roundToNearestPixel(
-      baselineTrimEm * fontSize * fontScale
-    ),
-    marginTop: PixelRatio.roundToNearestPixel(
-      capHeightTrimEm * fontSize * fontScale
-    ),
+    lineHeight: values.lineHeight !== 'normal' ? parseFloat(values.lineHeight) : undefined,
+    marginBottom: PixelRatio.roundToNearestPixel(baselineTrimEm * fontSize * fontScale),
+    marginTop: PixelRatio.roundToNearestPixel(capHeightTrimEm * fontSize * fontScale),
   } as const;
 };
 
@@ -109,12 +102,8 @@ const createTextSize = ({
   }
   return {
     ...styles,
-    marginTop: PixelRatio.roundToNearestPixel(
-      styles.marginTop + marginCorrectionForPlatform
-    ),
-    marginBottom: PixelRatio.roundToNearestPixel(
-      styles.marginBottom - marginCorrectionForPlatform
-    ),
+    marginTop: PixelRatio.roundToNearestPixel(styles.marginTop + marginCorrectionForPlatform),
+    marginBottom: PixelRatio.roundToNearestPixel(styles.marginBottom - marginCorrectionForPlatform),
   };
 };
 

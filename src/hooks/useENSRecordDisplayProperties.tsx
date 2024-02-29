@@ -6,11 +6,7 @@ import URL from 'url-parse';
 import useClipboard from './useClipboard';
 import useENSRegistration from './useENSRegistration';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import {
-  ENS_RECORDS,
-  REGISTRATION_MODES,
-  textRecordFields,
-} from '@/helpers/ens';
+import { ENS_RECORDS, REGISTRATION_MODES, textRecordFields } from '@/helpers/ens';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
@@ -64,16 +60,9 @@ export default function useENSRecordDisplayProperties({
   value: string;
   type: 'address' | 'record';
 }) {
-  const isImageValue = useMemo(
-    () => Object.keys(imageKeyMap).includes(recordKey),
-    [recordKey]
-  );
+  const isImageValue = useMemo(() => Object.keys(imageKeyMap).includes(recordKey), [recordKey]);
 
-  const isUrlRecord = useMemo(
-    () =>
-      [ENS_RECORDS.url, ENS_RECORDS.website].includes(recordKey as ENS_RECORDS),
-    [recordKey]
-  );
+  const isUrlRecord = useMemo(() => [ENS_RECORDS.url, ENS_RECORDS.website].includes(recordKey as ENS_RECORDS), [recordKey]);
   const isUrlValue = useMemo(() => recordValue.match(/^http/), [recordValue]);
 
   const url = useMemo(() => {
@@ -81,9 +70,7 @@ export default function useENSRecordDisplayProperties({
       return images?.[recordKey as 'avatar' | 'cover']?.imageUrl || undefined;
     }
     if (isUrlValue || isUrlRecord) {
-      return recordValue.match(/^http/)
-        ? recordValue
-        : `https://${recordValue}`;
+      return recordValue.match(/^http/) ? recordValue : `https://${recordValue}`;
     }
     if (links[recordKey]) {
       return `${links[recordKey]}${recordValue.replace('@', '')}`;
@@ -100,8 +87,7 @@ export default function useENSRecordDisplayProperties({
 
   const label = useMemo(() => {
     if (textRecordFields[recordKey as keyof typeof textRecordFields]?.label) {
-      return textRecordFields[recordKey as keyof typeof textRecordFields]!
-        .label;
+      return textRecordFields[recordKey as keyof typeof textRecordFields]!.label;
     }
     if (recordKey.includes('.')) {
       return recordKey;
@@ -135,23 +121,13 @@ export default function useENSRecordDisplayProperties({
       return recordValue.replace('@', '');
     }
     return recordValue;
-  }, [
-    displayUrl,
-    displayUrlUsername,
-    isUrlRecord,
-    isUrlValue,
-    recordKey,
-    recordValue,
-    type,
-  ]);
+  }, [displayUrl, displayUrlUsername, isUrlRecord, isUrlValue, recordKey, recordValue, type]);
 
   const icon = useMemo(() => icons[recordKey], [recordKey]);
 
   const menuItems = useMemo(() => {
     return [
-      allowEdit &&
-      type === 'record' &&
-      Object.values(ENS_RECORDS).includes(recordKey as ENS_RECORDS)
+      allowEdit && type === 'record' && Object.values(ENS_RECORDS).includes(recordKey as ENS_RECORDS)
         ? {
             actionKey: 'edit',
             actionTitle: lang.t('expanded_state.unique_expanded.edit'),
@@ -164,10 +140,7 @@ export default function useENSRecordDisplayProperties({
       url
         ? {
             actionKey: 'open-url',
-            actionTitle: lang.t(
-              'expanded_state.unique_expanded.view_on_platform',
-              { platform: isUrlValue ? 'Web' : label }
-            ),
+            actionTitle: lang.t('expanded_state.unique_expanded.view_on_platform', { platform: isUrlValue ? 'Web' : label }),
             discoverabilityTitle: displayUrl,
             icon: {
               iconType: 'SYSTEM',
@@ -185,16 +158,7 @@ export default function useENSRecordDisplayProperties({
         },
       },
     ].filter(Boolean);
-  }, [
-    allowEdit,
-    displayUrl,
-    isUrlValue,
-    label,
-    recordKey,
-    recordValue,
-    type,
-    url,
-  ]);
+  }, [allowEdit, displayUrl, isUrlValue, label, recordKey, recordValue, type, url]);
 
   const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();
@@ -217,15 +181,7 @@ export default function useENSRecordDisplayProperties({
         });
       }
     },
-    [
-      ensName,
-      navigate,
-      recordKey,
-      recordValue,
-      setClipboard,
-      startRegistration,
-      url,
-    ]
+    [ensName, navigate, recordKey, recordValue, setClipboard, startRegistration, url]
   );
 
   const Button = useCallback(

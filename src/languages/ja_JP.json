@@ -286,11 +286,6 @@
       "hidden": "非表示"
     },
     "cards": {
-      "dpi": {
-        "title": "DeFi Pulse Index",
-        "body": "1つにまとめたトップの分散型金融トークンを追跡します。業界の状況を把握しましょう。",
-        "view": "表示"
-      },
       "ens_create_profile": {
         "title": "ENSプロファイルを作成する",
         "body": "プロファイルは完全にあなたが所有するウォレットアドレスに置き換えられます。"
@@ -1262,6 +1257,10 @@
         "get_started": "始める",
         "invalid_code": "無効なコード"
       },
+      "notifications": {
+        "enable": "ポイント通知を有効にする",
+        "disable": "ポイント通知を無効にする"
+      },
       "points": {
         "referral_code": "紹介コード",
         "share_link": "リンクを共有する",
@@ -1287,7 +1286,9 @@
         "referral_code_copied": "紹介コードをコピーしました",
         "earn_points_for_referring": "あなたの紹介者がRainbowを通じて$100を交換するとポイントが獲得でき、さらに紹介者が獲得するポイントの10%を獲得できます",
         "already_claimed_points": "申し訳ありません！ ポイントは既に請求済みです。",
-        "now": "今"
+        "now": "今",
+        "unranked": "ランク外",
+        "points_to_rank": "ランクには750ポイントが必要です"
       },
       "console": {
         "claim_bonus_paragraph": "Rainbowで少なくとも$100をスワップすると、追加で100ポイントがもらえます",
@@ -1295,8 +1296,8 @@
         "true_believer": "真の信者",
         "registration_complete": "登録完了",
         "account": "アカウント",
+        "points_you_have": "あなたの持ち点",
         "points_earned": "獲得ポイント",
-        "share_bonus": "シェアボーナス",
         "share_bonus_paragraph_one": "準備は整いました！",
         "share_bonus_paragraph_two": "スワッピング、ブリッジング、ミンティング、友達の紹介などでポイントを獲得し続けてください",
         "share_bonus_paragraph_three": "Rainbowを使えば使うほど、報酬を多く受け取れます",
@@ -1323,7 +1324,21 @@
         "referral_link_bonus_text_extended": "さらに紹介した人が獲得したポイントの10%を獲得します",
         "complete_onboarding": "完了",
         "share_to_x": "Xにシェアする",
-        "hardware_wallet_alert": "ハードウェアウォレットのサポートはもうすぐです！"
+        "hardware_wallet_alert": "ハードウェアウォレットのサポートはもうすぐです！",
+        "view_weekly_earnings_week_of": "%{startOfWeek} 週目 - %{endOfWeek}",
+        "view_weekly_earnings_title": "獲得ポイントの集計",
+        "view_weekly_earnings_counted": "週間収益が集計されました",
+        "view_weekly_earnings_close_button": "閉じる",
+        "view_weekly_earnings_retroactive_points": "遡及ポイント",
+        "view_weekly_earnings_activity": "あなたのアクティビティ",
+        "view_weekly_earnings_referral_activity": "紹介アクティビティ",
+        "view_weekly_earnings_total_earnings": "合計",
+        "view_weekly_earnings_new_referrals": "新規紹介",
+        "wallet_balance_required": "ウォレットの残高が必要です",
+        "require_balance_paragraph_one": "続行するには、以下のネットワークのいずれかにETH残高があることを確認してください：",
+        "require_balance_paragraph_two": "または、Polygon上のMATIC残高、またはBSC上のBNB残高があること",
+        "fund_my_wallet": "マイウォレットに資金を追加",
+        "points": "ポイント"
       }
     },
     "pools": {
@@ -1708,6 +1723,7 @@
       "notifications": "通知",
       "notifications_section": {
         "my_wallets": "私の財布",
+        "points": "ポイント",
         "watched_wallets": "ウォッチリストに追加された財布",
         "allow_notifications": "通知の許可",
         "sent": "送信済み",
@@ -2366,6 +2382,7 @@
         "message": "以下にWalletConnect URIを貼り付ける",
         "title": "新しいWalletConnectセッション"
       },
+      "none": "なし",
       "switch_network": "ネットワークを切り替える",
       "switch_wallet": "ウォレットを切り替える",
       "titles": {
@@ -2413,7 +2430,8 @@
         "request_invalid": "リクエストに無効なパラメータが含まれています。もう一度試すか、Rainbowおよび/またはDappのサポートチームに連絡してください",
         "eth_sign": "Rainbowは、セキュリティ上の懸念から旧式のeth_signをサポートしていません。  \n ご不明な点がありましたら、Rainbowおよび/またはdappのサポートチームにお問い合わせください。",
         "request_unsupported_network": "このリクエストで指定されたネットワークは、Rainbowでサポートされていません。",
-        "request_unsupported_methods": "このリクエストで指定されたRPCメソッドはRainbowでサポートされていません"
+        "request_unsupported_methods": "このリクエストで指定されたRPCメソッドはRainbowでサポートされていません",
+        "no_accounts_found": "承認された名前空間にアカウントが見つかりませんでした。"
       },
       "dapp_warnings": {
         "info_alert": {

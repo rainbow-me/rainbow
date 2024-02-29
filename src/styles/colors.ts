@@ -5,9 +5,7 @@ import { memoFn } from '../utils/memoFn';
 
 export type Colors = ReturnType<typeof getColorsByTheme>;
 
-const buildRgba = memoFn(
-  (color: string, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`
-);
+const buildRgba = memoFn((color: string, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`);
 
 const darkModeColors = {
   appleBlue: '#1F87FF',
@@ -113,6 +111,8 @@ const getColorsByTheme = (darkMode?: boolean) => {
     dpiLight: '#9B74EC', // '155, 116, 236'
     dpiMid: '#8E62E9', // '142, 98, 233'
     exchangeFallback: '#F4F4F5', // '244, 244, 245'
+    farcasterPurple: 'rgba(163, 66, 255, 1)',
+    farcasterPurple06: 'rgba(163, 66, 255, 0.06)',
     finiliarPink: '#F89C9C', // '248, 156, 156'
     finiliarPink06: 'rgba(248, 156, 156, 0.06)',
     flamingo: '#E540F1', // '229, 64, 241'
@@ -195,9 +195,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
     ...assetIconColors,
     random: () => {
       const assetIconColorValues = Object.values(assetIconColors);
-      return assetIconColorValues[
-        Math.floor(Math.random() * assetIconColorValues.length)
-      ];
+      return assetIconColorValues[Math.floor(Math.random() * assetIconColorValues.length)];
     },
   };
 
@@ -222,10 +220,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
     lightestGrey: ['#FFFFFF', '#F2F4F7'],
     lightestGreyReverse: ['#F2F4F7', '#FFFFFF'],
     lightGrey: [buildRgba('#ECF1F5', 0.5), buildRgba('#DFE4EB', 0.5)],
-    lightGreyTransparent: [
-      buildRgba(base.blueGreyDark, 0.02),
-      buildRgba(base.blueGreyDark, 0.06),
-    ],
+    lightGreyTransparent: [buildRgba(base.blueGreyDark, 0.02), buildRgba(base.blueGreyDark, 0.06)],
     lightGreyWhite: [buildRgba('#F0F2F5', 0.5), buildRgba('#FFFFFF', 0.5)],
     offWhite: [base.white, base.offWhite],
     rainbow: ['#FFB114', '#FF54BB', '#7EA4DE'],
@@ -235,28 +230,16 @@ const getColorsByTheme = (darkMode?: boolean) => {
     success: ['#FAFF00', '#2CCC00'],
     successTint: ['#FFFFF0', '#FCFEFB'],
     swapPurpleTintToSwapPurple: ['#7D85FF', base.swapPurple],
-    transparentToAppleBlue: [
-      buildRgba(base.appleBlue, 0.02),
-      buildRgba(base.appleBlue, 0.06),
-    ],
+    transparentToAppleBlue: [buildRgba(base.appleBlue, 0.02), buildRgba(base.appleBlue, 0.06)],
     transparentToRed: [buildRgba(base.red, 0), buildRgba(base.red, 0.06)],
     transparentToGreen: [buildRgba(base.green, 0), buildRgba(base.green, 0.06)],
-    transparentToLightGrey: [
-      buildRgba(base.blueGreyDark, 0),
-      buildRgba(base.blueGreyDark, 0.06),
-    ],
-    transparentToLightOrange: [
-      buildRgba(base.lightOrange, 0),
-      buildRgba(base.lightOrange, 0.06),
-    ],
+    transparentToLightGrey: [buildRgba(base.blueGreyDark, 0), buildRgba(base.blueGreyDark, 0.06)],
+    transparentToLightOrange: [buildRgba(base.lightOrange, 0), buildRgba(base.lightOrange, 0.06)],
     vividRainbow: ['#FFB114', '#FF54BB', '#00F0FF'],
     vividRainbowTint: ['#FFFAF1', '#FFF5FB', '#F0FEFF'],
     warning: ['#FFD963', '#FFB200'],
     warningTint: ['#FFFDF6', '#FFFBF2'],
-    white80ToTransparent: [
-      buildRgba(base.whiteLabel, 0.8),
-      buildRgba(base.whiteLabel, 0),
-    ],
+    white80ToTransparent: [buildRgba(base.whiteLabel, 0.8), buildRgba(base.whiteLabel, 0)],
     whiteButton: ['#FFFFFF', '#F7F9FA'],
   };
 
@@ -284,14 +267,9 @@ const getColorsByTheme = (darkMode?: boolean) => {
     walletconnect: '#4099FF', // '64, 153, 255'
   };
 
-  const isColorLight = memoFn(
-    (targetColor: string) => chroma(targetColor ?? base.white).luminance() > 0.5
-  );
+  const isColorLight = memoFn((targetColor: string) => chroma(targetColor ?? base.white).luminance() > 0.5);
 
-  const getTextColorForBackground = (
-    targetColor: string,
-    textColors?: { dark: string; light: string }
-  ) => {
+  const getTextColorForBackground = (targetColor: string, textColors?: { dark: string; light: string }) => {
     const dark = textColors?.dark ?? base.black;
     const light = textColors?.light ?? base.white;
 
@@ -305,15 +283,10 @@ const getColorsByTheme = (darkMode?: boolean) => {
     });
 
   const isColorDark = memoFn((targetColor: string) => {
-    return (
-      chroma.contrast(targetColor, darkModeColors.white) < 1.5 ||
-      chroma(targetColor ?? base.white).luminance() < 0.11
-    );
+    return chroma.contrast(targetColor, darkModeColors.white) < 1.5 || chroma(targetColor ?? base.white).luminance() < 0.11;
   });
 
-  const brighten = memoFn((targetColor: string) =>
-    chroma(targetColor).brighten(2).saturate(0.3).hex()
-  );
+  const brighten = memoFn((targetColor: string) => chroma(targetColor).brighten(2).saturate(0.3).hex());
 
   const transparent = {
     appleBlueTransparent: buildRgba(base.appleBlue, 0.2), // '50, 50, 93'
@@ -334,15 +307,9 @@ const getColorsByTheme = (darkMode?: boolean) => {
       ens: ['#456AFF', '#5FA9EE'],
       lighterGrey: [buildRgba('#1F222A', 0.8), buildRgba('#1F222A', 0.6)],
       lightestGrey: [buildRgba('#1F222A', 0.8), buildRgba('#1F222A', 0.3)],
-      lightestGreyReverse: [
-        buildRgba('#1F222A', 0.1),
-        buildRgba('#1F222A', 0.8),
-      ],
+      lightestGreyReverse: [buildRgba('#1F222A', 0.1), buildRgba('#1F222A', 0.8)],
       lightGrey: ['#1F222A', buildRgba('#1F222A', 0.8)],
-      lightGreyTransparent: [
-        buildRgba(base.blueGreyDark, 0.02),
-        buildRgba(base.blueGreyDark, 0.06),
-      ],
+      lightGreyTransparent: [buildRgba(base.blueGreyDark, 0.02), buildRgba(base.blueGreyDark, 0.06)],
       lightGreyWhite: [buildRgba('#F0F2F5', 0.05), buildRgba('#FFFFFF', 0.01)],
       offWhite: ['#1F222A', '#1F222A'],
       rainbow: ['#FFB114', '#FF54BB', '#7EA4DE'],
@@ -352,31 +319,16 @@ const getColorsByTheme = (darkMode?: boolean) => {
       success: ['#FAFF00', '#2CCC00'],
       successTint: ['#202118', '#141E18'],
       swapPurpleTintToSwapPurple: ['#7D85FF', base.swapPurple],
-      transparentToAppleBlue: [
-        buildRgba(base.appleBlue, 0.02),
-        buildRgba(base.appleBlue, 0.06),
-      ],
+      transparentToAppleBlue: [buildRgba(base.appleBlue, 0.02), buildRgba(base.appleBlue, 0.06)],
       transparentToRed: [buildRgba(base.red, 0), buildRgba(base.red, 0.06)],
-      transparentToGreen: [
-        buildRgba(base.green, 0),
-        buildRgba(base.green, 0.06),
-      ],
-      transparentToLightGrey: [
-        buildRgba(base.blueGreyDark, 0),
-        buildRgba(base.blueGreyDark, 0.06),
-      ],
-      transparentToLightOrange: [
-        buildRgba(base.lightOrange, 0),
-        buildRgba(base.lightOrange, 0.06),
-      ],
+      transparentToGreen: [buildRgba(base.green, 0), buildRgba(base.green, 0.06)],
+      transparentToLightGrey: [buildRgba(base.blueGreyDark, 0), buildRgba(base.blueGreyDark, 0.06)],
+      transparentToLightOrange: [buildRgba(base.lightOrange, 0), buildRgba(base.lightOrange, 0.06)],
       vividRainbow: ['#FFB114', '#FF54BB', '#00F0FF'],
       vividRainbowTint: ['#201C19', '#201723', '#112028'],
       warning: ['#FFD963', '#FFB200'],
       warningTint: ['#201F1E', '#201C18'],
-      white80ToTransparent: [
-        buildRgba(base.whiteLabel, 0.8),
-        buildRgba(base.whiteLabel, 0),
-      ],
+      white80ToTransparent: [buildRgba(base.whiteLabel, 0.8), buildRgba(base.whiteLabel, 0)],
       whiteButton: ['#404656', buildRgba('#404656', 0.8)],
     };
 
@@ -437,8 +389,7 @@ const getColorForString = (colorString = '', providedThemeColors = colors) => {
 export const darkModeThemeColors = getColorsByTheme(true);
 export const lightModeThemeColors = getColorsByTheme(false);
 const colors = currentColors.themedColors ?? lightModeThemeColors;
-export const getRandomColor = () =>
-  Math.floor(Math.random() * colors.avatarColor.length);
+export const getRandomColor = () => Math.floor(Math.random() * colors.avatarColor.length);
 
 currentColors.themedColors = lightModeThemeColors;
 

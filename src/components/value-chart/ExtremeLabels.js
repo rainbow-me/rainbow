@@ -10,13 +10,7 @@ function trim(val) {
   return Math.min(Math.max(val, 0.05), 0.95);
 }
 
-const CenteredLabel = ({
-  position,
-  fontSize = '14px / 19px (Deprecated)',
-  style,
-  width,
-  ...props
-}) => {
+const CenteredLabel = ({ position, fontSize = '14px / 19px (Deprecated)', style, width, ...props }) => {
   const [componentWidth, setWidth] = useState(0);
   const onLayout = useCallback(
     ({
@@ -30,16 +24,7 @@ const CenteredLabel = ({
   );
 
   const left = useMemo(
-    () =>
-      Math.max(
-        Math.floor(
-          Math.min(
-            width * position - componentWidth / 2,
-            width - componentWidth - 10
-          )
-        ),
-        10
-      ),
+    () => Math.max(Math.floor(Math.min(width * position - componentWidth / 2, width - componentWidth - 10)), 10),
     [componentWidth, position, width]
   );
   return (
@@ -68,12 +53,8 @@ const Labels = ({ color, width, isCard }) => {
   if (!greatestX) {
     return null;
   }
-  const positionMin = trim(
-    (smallestY.x - smallestX.x) / (greatestX.x - smallestX.x)
-  );
-  const positionMax = trim(
-    (greatestY.x - smallestX.x) / (greatestX.x - smallestX.x)
-  );
+  const positionMin = trim((smallestY.x - smallestX.x) / (greatestX.x - smallestX.x));
+  const positionMax = trim((greatestY.x - smallestX.x) / (greatestX.x - smallestX.x));
 
   return (
     <>

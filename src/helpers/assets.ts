@@ -26,13 +26,7 @@ const getTotal = (assets: any) =>
     return add(acc, balance);
   }, 0);
 
-export const buildCoinsList = (
-  sortedAssets: any,
-  nativeCurrency: any,
-  isCoinListEdited: any,
-  pinnedCoins: any,
-  hiddenCoins: any
-) => {
+export const buildCoinsList = (sortedAssets: any, nativeCurrency: any, isCoinListEdited: any, pinnedCoins: any, hiddenCoins: any) => {
   if (!sortedAssets.length) {
     return {
       assets: [],
@@ -124,13 +118,7 @@ export const buildCoinsList = (
 };
 
 // TODO make it better
-export const buildBriefCoinsList = (
-  sortedAssets: any,
-  nativeCurrency: any,
-  isCoinListEdited: any,
-  pinnedCoins: any,
-  hiddenCoins: any
-) => {
+export const buildBriefCoinsList = (sortedAssets: any, nativeCurrency: any, isCoinListEdited: any, pinnedCoins: any, hiddenCoins: any) => {
   const { assets, smallBalancesValue, totalBalancesValue } = buildCoinsList(
     sortedAssets,
     nativeCurrency,
@@ -173,10 +161,7 @@ interface Dictionary<T> {
   [index: string]: T;
 }
 
-export const buildUniqueTokenList = (
-  uniqueTokens: any,
-  selectedShowcaseTokens: any[] = []
-) => {
+export const buildUniqueTokenList = (uniqueTokens: any, selectedShowcaseTokens: any[] = []) => {
   let rows: any = [];
   const showcaseTokens = [];
   const bundledShowcaseTokens = [];
@@ -203,9 +188,7 @@ export const buildUniqueTokenList = (
     tokens = chunk(tokens, 50);
     // eslint-disable-next-line no-loop-func
     tokens.forEach((tokenChunk, index) => {
-      const id = tokensRow[0]
-        .map(({ uniqueId }: any) => uniqueId)
-        .join(`__${index}`);
+      const id = tokensRow[0].map(({ uniqueId }: any) => uniqueId).join(`__${index}`);
       rows.push({
         childrenAmount: grouped[family].length,
         familyImage: tokensRow?.[0]?.[0]?.familyImage ?? null,
@@ -221,10 +204,7 @@ export const buildUniqueTokenList = (
   rows = sortBy(rows, row => row.familyName.replace(regex, '').toLowerCase());
 
   showcaseTokens.sort(function (a, b) {
-    return (
-      selectedShowcaseTokens?.indexOf(a.uniqueId) -
-      selectedShowcaseTokens?.indexOf(b.uniqueId)
-    );
+    return selectedShowcaseTokens?.indexOf(a.uniqueId) - selectedShowcaseTokens?.indexOf(b.uniqueId);
   });
 
   for (let i = 0; i < showcaseTokens.length; i += 2) {
@@ -242,9 +222,7 @@ export const buildUniqueTokenList = (
         isHeader: true,
         stableId: 'showcase_stable_id',
         tokens: bundledShowcaseTokens,
-        uniqueId: `sc_${showcaseTokens
-          .map(({ uniqueId }) => uniqueId)
-          .join('__')}`,
+        uniqueId: `sc_${showcaseTokens.map(({ uniqueId }) => uniqueId).join('__')}`,
       },
     ].concat(rows);
   }
@@ -259,42 +237,22 @@ export const buildUniqueTokenList = (
 
 const regex = RegExp(/\s*(the)\s/, 'i');
 
-const sortCollectibles = (
-  assetsByName: Dictionary<UniqueAsset[]>,
-  collectibleSortBy: string
-) => {
+const sortCollectibles = (assetsByName: Dictionary<UniqueAsset[]>, collectibleSortBy: string) => {
   const families = Object.keys(assetsByName);
 
   switch (collectibleSortBy) {
     case CollectibleSortByOptions.MOST_RECENT:
       return families.sort((a, b) => {
-        const maxDateA = Math.max(
-          Number(...assetsByName[a].map(asset => asset.acquisition_date))
-        );
-        const maxDateB = Math.max(
-          Number(...assetsByName[b].map(asset => asset.acquisition_date))
-        );
+        const maxDateA = Math.max(Number(...assetsByName[a].map(asset => asset.acquisition_date)));
+        const maxDateB = Math.max(Number(...assetsByName[b].map(asset => asset.acquisition_date)));
         return maxDateB - maxDateA;
       });
     case CollectibleSortByOptions.ABC:
-      return families.sort((a, b) =>
-        a
-          .replace(regex, '')
-          .toLowerCase()
-          .localeCompare(b.replace(regex, '').toLowerCase())
-      );
+      return families.sort((a, b) => a.replace(regex, '').toLowerCase().localeCompare(b.replace(regex, '').toLowerCase()));
     case CollectibleSortByOptions.FLOOR_PRICE:
       return families.sort((a, b) => {
-        const minPriceA = Math.min(
-          ...assetsByName[a].map(asset =>
-            asset.floorPriceEth !== undefined ? asset.floorPriceEth : -1
-          )
-        );
-        const minPriceB = Math.min(
-          ...assetsByName[b].map(asset =>
-            asset.floorPriceEth !== undefined ? asset.floorPriceEth : -1
-          )
-        );
+        const minPriceA = Math.min(...assetsByName[a].map(asset => (asset.floorPriceEth !== undefined ? asset.floorPriceEth : -1)));
+        const minPriceB = Math.min(...assetsByName[b].map(asset => (asset.floorPriceEth !== undefined ? asset.floorPriceEth : -1)));
         return minPriceB - minPriceA;
       });
     default:
@@ -314,9 +272,7 @@ export const buildBriefUniqueTokenList = (
   const hiddenUniqueTokensIds = uniqueTokens
     .filter(({ fullUniqueId }: any) => hiddenTokens.includes(fullUniqueId))
     .map(({ uniqueId }: any) => uniqueId);
-  const nonHiddenUniqueTokens = uniqueTokens.filter(
-    ({ fullUniqueId }: any) => !hiddenTokens.includes(fullUniqueId)
-  );
+  const nonHiddenUniqueTokens = uniqueTokens.filter(({ fullUniqueId }: any) => !hiddenTokens.includes(fullUniqueId));
   const uniqueTokensInShowcaseIds = nonHiddenUniqueTokens
     .filter(({ uniqueId }: any) => selectedShowcaseTokens?.includes(uniqueId))
     .map(({ uniqueId }: any) => uniqueId);
@@ -405,11 +361,7 @@ export const buildBriefUniqueTokenList = (
 
     result.push({ type: 'NFT_SPACE_AFTER', uid: `${family}-space-after` });
   }
-  if (
-    hiddenUniqueTokensIds.length > 0 &&
-    listType === 'wallet' &&
-    !isReadOnlyWallet
-  ) {
+  if (hiddenUniqueTokensIds.length > 0 && listType === 'wallet' && !isReadOnlyWallet) {
     result.push({
       // @ts-expect-error "name" does not exist in type.
       name: lang.t('button.hidden'),
@@ -433,12 +385,7 @@ export const buildBriefUniqueTokenList = (
   return result;
 };
 
-export const buildUniqueTokenName = ({
-  collection,
-  id,
-  name,
-  uniqueId,
-}: any) => {
+export const buildUniqueTokenName = ({ collection, id, name, uniqueId }: any) => {
   if (name) return name;
   if (id) return `${collection?.name} #${id}`;
   return uniqueId;

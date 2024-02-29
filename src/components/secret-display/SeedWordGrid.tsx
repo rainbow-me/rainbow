@@ -26,19 +26,8 @@ export function SeedWordGrid({ seed }: Props) {
             {times(wordColumn.length, index => {
               const number = Number(index + 1 + colIndex * wordColumn.length);
               return (
-                <Row
-                  style={styles.gridItem}
-                  align="center"
-                  justify="end"
-                  key={`grid_number_${number}`}
-                >
-                  <Text
-                    lineHeight="looser"
-                    size="lmedium"
-                    weight="semibold"
-                    align="right"
-                    color={colors.alpha(colors.appleBlue, 0.6)}
-                  >
+                <Row style={styles.gridItem} align="center" justify="end" key={`grid_number_${number}`}>
+                  <Text lineHeight="looser" size="lmedium" weight="semibold" align="right" color={colors.alpha(colors.appleBlue, 0.6)}>
                     {number}
                   </Text>
                 </Row>
@@ -47,11 +36,7 @@ export function SeedWordGrid({ seed }: Props) {
           </ColumnWithMargins>
           <ColumnWithMargins margin={9}>
             {wordColumn.map((word, index) => (
-              <Row
-                style={styles.gridItem}
-                align="center"
-                key={`${word}${index}`}
-              >
+              <Row style={styles.gridItem} align="center" key={`${word}${index}`}>
                 <Text size="lmedium" lineHeight="looser" weight="bold">
                   {word}
                 </Text>

@@ -79,56 +79,16 @@ export function CheckmarkAnimation() {
   };
 
   const pulsingCheckmarkAnimation = useDerivedValue(() =>
-    withDelay(
-      2000,
-      withRepeat(
-        withSequence(
-          withDelay(2000, withTiming(1)),
-          withTiming(1.1),
-          withTiming(1)
-        ),
-        -1
-      )
-    )
+    withDelay(2000, withRepeat(withSequence(withDelay(2000, withTiming(1)), withTiming(1.1), withTiming(1)), -1))
   );
   const pulsingCircleAnimation = useDerivedValue(() =>
-    withDelay(
-      1800,
-      withRepeat(
-        withSequence(
-          withDelay(2000, withTiming(1)),
-          withTiming(1.05),
-          withTiming(1)
-        ),
-        -1
-      )
-    )
+    withDelay(1800, withRepeat(withSequence(withDelay(2000, withTiming(1)), withTiming(1.05), withTiming(1)), -1))
   );
   const rippleCircleAnimation = useDerivedValue(() =>
-    withDelay(
-      1800,
-      withRepeat(
-        withSequence(
-          withDelay(2000, withTiming(0)),
-          withTiming(1),
-          withTiming(0)
-        ),
-        -1
-      )
-    )
+    withDelay(1800, withRepeat(withSequence(withDelay(2000, withTiming(0)), withTiming(1), withTiming(0)), -1))
   );
   const rippleCircleScaleAnimation = useDerivedValue(() =>
-    withDelay(
-      1800,
-      withRepeat(
-        withSequence(
-          withDelay(2000, withTiming(0.6)),
-          withTiming(1),
-          withTiming(0.6)
-        ),
-        -1
-      )
-    )
+    withDelay(1800, withRepeat(withSequence(withDelay(2000, withTiming(0.6)), withTiming(1), withTiming(0.6)), -1))
   );
   const pulseCheckmarkStyle = useAnimatedStyle(() => ({
     transform: [{ scale: pulsingCheckmarkAnimation.value }],
@@ -142,12 +102,7 @@ export function CheckmarkAnimation() {
   }));
 
   return (
-    <Box
-      alignItems="center"
-      height={{ custom: 132 }}
-      justifyContent="center"
-      width="full"
-    >
+    <Box alignItems="center" height={{ custom: 132 }} justifyContent="center" width="full">
       <Box
         alignItems="center"
         as={Animated.View}
@@ -164,18 +119,13 @@ export function CheckmarkAnimation() {
           borderRadius={200}
           height={{ custom: 120 }}
           justifyContent="center"
-          style={[
-            { overflow: 'hidden', position: 'absolute' },
-            rippleCircleStyle,
-          ]}
+          style={[{ overflow: 'hidden', position: 'absolute' }, rippleCircleStyle]}
           width={{ custom: 120 }}
         >
           <RadialGradient
             center={[60, 60]}
             colors={
-              android
-                ? colors.gradients.checkmarkAnimation
-                : ['rgba(31,194,74,0.00)', 'rgba(31,194,74,0.03)']
+              android ? colors.gradients.checkmarkAnimation : ['rgba(31,194,74,0.00)', 'rgba(31,194,74,0.03)']
               // https://github.com/surajitsarkar19/react-native-radial-gradient/issues/9
             }
             stops={[1, 0.5]}
@@ -194,18 +144,13 @@ export function CheckmarkAnimation() {
           entering={circleEntering}
           height={{ custom: 100 }}
           justifyContent="center"
-          style={[
-            { overflow: 'hidden', position: 'absolute' },
-            pulseCircleStyle,
-          ]}
+          style={[{ overflow: 'hidden', position: 'absolute' }, pulseCircleStyle]}
           width={{ custom: 100 }}
         >
           <RadialGradient
             center={[60, 60]}
             colors={
-              android
-                ? colors.gradients.checkmarkAnimation
-                : ['rgba(31,194,74,0.00)', 'rgba(31,194,74,0.06)']
+              android ? colors.gradients.checkmarkAnimation : ['rgba(31,194,74,0.00)', 'rgba(31,194,74,0.06)']
               // https://github.com/surajitsarkar19/react-native-radial-gradient/issues/9
             }
             stops={[1, 0.5]}

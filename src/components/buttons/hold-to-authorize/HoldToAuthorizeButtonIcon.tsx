@@ -32,25 +32,13 @@ export default function HoldToAuthorizeButtonIcon({ sharedValue }: Props) {
       circleFillProgressOverride.value = null;
     }
 
-    return circleFillProgressOverride.value !== null
-      ? circleFillProgressOverride.value
-      : sharedValue.value;
+    return circleFillProgressOverride.value !== null ? circleFillProgressOverride.value : sharedValue.value;
   });
 
   const animatedStyle = useAnimatedStyle(() => {
-    const opacity = interpolate(
-      sharedValue.value,
-      [0, 10, 25],
-      [0, 0.333, 1],
-      Extrapolation.CLAMP
-    );
+    const opacity = interpolate(sharedValue.value, [0, 10, 25], [0, 0.333, 1], Extrapolation.CLAMP);
 
-    const scale = interpolate(
-      sharedValue.value,
-      [30, 100],
-      [0.85, 1],
-      Extrapolation.CLAMP
-    );
+    const scale = interpolate(sharedValue.value, [30, 100], [0.85, 1], Extrapolation.CLAMP);
 
     return {
       opacity,
@@ -60,10 +48,7 @@ export default function HoldToAuthorizeButtonIcon({ sharedValue }: Props) {
 
   return (
     <Container>
-      <Animated.View
-        {...position.centeredAsObject}
-        style={[position.coverAsObject, animatedStyle]}
-      >
+      <Animated.View {...position.centeredAsObject} style={[position.coverAsObject, animatedStyle]}>
         <Icon name="progress" progress={circleFillProgress} />
       </Animated.View>
     </Container>

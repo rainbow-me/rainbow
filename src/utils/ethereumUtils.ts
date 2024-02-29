@@ -8,49 +8,27 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { queryClient } from '@/react-query';
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'eth-... Remove this comment to see the full error message
 import { parse } from 'eth-url-parser';
-import {
-  addHexPrefix,
-  isValidAddress,
-  toChecksumAddress,
-} from 'ethereumjs-util';
+import { addHexPrefix, isValidAddress, toChecksumAddress } from 'ethereumjs-util';
 import { Contract } from '@ethersproject/contracts';
 import lang from 'i18n-js';
 import { cloneDeep, isEmpty, isString, replace } from 'lodash';
 import { InteractionManager, Linking } from 'react-native';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
-import { useSelector } from 'react-redux';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import {
-  AssetType,
   EthereumAddress,
   GasFee,
   LegacySelectedGasFee,
-  NativeCurrencyKey,
+  NewTransaction,
   ParsedAddressAsset,
   RainbowToken,
   RainbowTransaction,
   SelectedGasFee,
 } from '@/entities';
 import { getOnchainAssetBalance } from '@/handlers/assets';
-import {
-  getCachedProviderForNetwork,
-  getProviderForNetwork,
-  isHardHat,
-  isL2Network,
-  isTestnetNetwork,
-  toHex,
-} from '@/handlers/web3';
+import { getCachedProviderForNetwork, getProviderForNetwork, isHardHat, isTestnetNetwork, toHex } from '@/handlers/web3';
 import { Network } from '@/helpers/networkTypes';
-import {
-  convertAmountAndPriceToNativeDisplay,
-  convertAmountToPercentageDisplay,
-  convertRawAmountToDecimalFormat,
-  fromWei,
-  greaterThan,
-  isZero,
-  subtract,
-  add,
-} from '@/helpers/utilities';
+import { convertRawAmountToDecimalFormat, fromWei, greaterThan, isZero, subtract, add } from '@/helpers/utilities';
 import { Navigation } from '@/navigation';
 import { parseAssetNative } from '@/parsers';
 import store from '@/redux/store';
@@ -70,48 +48,55 @@ import Routes from '@/navigation/routesNames';
 import { logger, RainbowError } from '@/logger';
 import { IS_IOS } from '@/env';
 import { RainbowNetworks, getNetworkObj } from '@/networks';
+import {
+  externalTokenQueryKey,
+  FormattedExternalAsset,
+  fetchExternalToken,
+  useExternalToken,
+} from '@/resources/assets/externalAssetsQuery';
 
-// TODO: https://linear.app/rainbow/issue/APP-631/remove-networks-from-assettype
-const getNetworkNativeAsset = (
-  network: Network
-): ParsedAddressAsset | undefined => {
+const getNetworkNativeAsset = (network: Network): ParsedAddressAsset | undefined => {
   const nativeAssetAddress = getNetworkObj(network).nativeCurrency.address;
-  const nativeAssetUniqueId =
-    network === Network.mainnet
-      ? nativeAssetAddress
-      : `${nativeAssetAddress}_${network}`;
+  const nativeAssetUniqueId = getUniqueId(nativeAssetAddress, network);
 
   return getAccountAsset(nativeAssetUniqueId);
 };
 
-export const getNativeAssetForNetwork = async (
-  network: Network,
-  address: EthereumAddress
-): Promise<ParsedAddressAsset | undefined> => {
+export const getNativeAssetForNetwork = async (network: Network, address: EthereumAddress): Promise<ParsedAddressAsset | undefined> => {
   const networkNativeAsset = getNetworkNativeAsset(network);
-  const { accountAddress } = store.getState().settings;
-  const differentWallet =
-    address?.toLowerCase() !== accountAddress?.toLowerCase();
+  const { accountAddress, nativeCurrency } = store.getState().settings;
+  const differentWallet = address?.toLowerCase() !== accountAddress?.toLowerCase();
   let nativeAsset = differentWallet ? undefined : networkNativeAsset;
 
   // If the asset is on a different wallet, or not available in this wallet
   if (differentWallet || !nativeAsset) {
-    const mainnetAddress =
-      getNetworkObj(network)?.nativeCurrency?.mainnetAddress || ETH_ADDRESS;
+    const mainnetAddress = getNetworkObj(network)?.nativeCurrency?.mainnetAddress || ETH_ADDRESS;
 
-    nativeAsset = store.getState().data?.genericAssets?.[mainnetAddress];
+    const externalAsset = await queryClient.fetchQuery(
+      externalTokenQueryKey({ address, network, currency: nativeCurrency }),
+      async () => fetchExternalToken({ address, network, currency: nativeCurrency }),
+      {
+        staleTime: 60000,
+      }
+    );
+    if (externalAsset) {
+      // @ts-ignore
+      nativeAsset = {
+        ...externalAsset,
+        network,
+        uniqueId: getUniqueId(getNetworkObj(network).nativeCurrency.address, network),
+        address: getNetworkObj(network).nativeCurrency.address,
+        decimals: getNetworkObj(network).nativeCurrency.decimals,
+        symbol: getNetworkObj(network).nativeCurrency.symbol,
+      };
+    }
 
     const provider = await getProviderForNetwork(network);
     if (nativeAsset) {
       nativeAsset.mainnet_address = mainnetAddress;
       nativeAsset.address = getNetworkObj(network).nativeCurrency.address;
 
-      const balance = await getOnchainAssetBalance(
-        nativeAsset,
-        address,
-        network,
-        provider
-      );
+      const balance = await getOnchainAssetBalance(nativeAsset, address, network, provider);
 
       if (balance) {
         const assetWithBalance = {
@@ -125,10 +110,7 @@ export const getNativeAssetForNetwork = async (
   return nativeAsset;
 };
 
-const getAsset = (
-  accountAssets: Record<string, ParsedAddressAsset>,
-  uniqueId: EthereumAddress = ETH_ADDRESS
-) => {
+const getAsset = (accountAssets: Record<string, ParsedAddressAsset>, uniqueId: EthereumAddress = ETH_ADDRESS) => {
   const loweredUniqueId = uniqueId.toLowerCase();
   return accountAssets[loweredUniqueId];
 };
@@ -150,57 +132,55 @@ const getUserAssetFromCache = (uniqueId: string) => {
   return cachedAddressAssets?.[uniqueId];
 };
 
+const getExternalAssetFromCache = (uniqueId: string) => {
+  const { nativeCurrency } = store.getState().settings;
+  const { network, address } = getAddressAndNetworkFromUniqueId(uniqueId);
+
+  try {
+    const cachedExternalAsset = queryClient.getQueryData<FormattedExternalAsset>(
+      externalTokenQueryKey({
+        address,
+        currency: nativeCurrency,
+        network,
+      })
+    );
+
+    return cachedExternalAsset;
+  } catch (e) {
+    console.log(e);
+  }
+};
+
 const getAssetFromAllAssets = (uniqueId: EthereumAddress | undefined) => {
   const loweredUniqueId = uniqueId?.toLowerCase() ?? '';
   const accountAsset = getUserAssetFromCache(loweredUniqueId);
-  const genericAsset = store.getState().data?.genericAssets?.[loweredUniqueId];
-  return accountAsset ?? genericAsset;
+  const externalAsset = getExternalAssetFromCache(loweredUniqueId);
+  return accountAsset ?? externalAsset;
 };
 
-const getAccountAsset = (
-  uniqueId: EthereumAddress | undefined
-): ParsedAddressAsset | undefined => {
+const getAccountAsset = (uniqueId: EthereumAddress | undefined): ParsedAddressAsset | undefined => {
   const loweredUniqueId = uniqueId?.toLowerCase() ?? '';
   const accountAsset = getUserAssetFromCache(loweredUniqueId);
   return accountAsset;
 };
 
 const getAssetPrice = (address: EthereumAddress = ETH_ADDRESS): number => {
-  const genericAsset = store.getState().data?.genericAssets?.[address];
-  const genericPrice = genericAsset?.price?.value;
+  const externalAsset = getExternalAssetFromCache(address);
+  const genericPrice = externalAsset?.price?.value;
   return genericPrice || getAccountAsset(address)?.price?.value || 0;
 };
 
-export const useEth = (): ParsedAddressAsset => {
-  return useSelector(
-    ({
-      // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
-      data: {
-        genericAssets: { [ETH_ADDRESS]: asset },
-      },
-    }) => asset
-  );
-};
+export const useNativeAssetForNetwork = (network: Network) => {
+  const address = getNetworkObj(network).nativeCurrency?.mainnetAddress || ETH_ADDRESS;
+  const { nativeCurrency } = store.getState().settings;
 
-export const useNativeAssetForNetwork = (
-  network: Network
-): ParsedAddressAsset => {
-  const address =
-    getNetworkObj(network).nativeCurrency?.mainnetAddress || ETH_ADDRESS;
+  const { data: nativeAsset } = useExternalToken({
+    address,
+    network: Network.mainnet,
+    currency: nativeCurrency,
+  });
 
-  return useSelector(
-    ({
-      // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
-      data: {
-        genericAssets: { [address]: asset },
-      },
-    }) => asset
-  );
-};
-
-export const useEthUSDPrice = (): number => {
-  // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
-  return useSelector(({ data: { ethUSDPrice } }) => ethUSDPrice);
+  return nativeAsset;
 };
 
 // anotha 1
@@ -224,13 +204,11 @@ const getBalanceAmount = (
   l1GasFeeOptimism?: BigNumberish
 ) => {
   const accountAsset = getAccountAsset(selected?.uniqueId);
-  let amount =
-    selected?.balance?.amount ?? accountAsset?.balance?.amount ?? '0';
+  let amount = selected?.balance?.amount ?? accountAsset?.balance?.amount ?? '0';
   if (selected?.isNativeAsset) {
     if (!isEmpty(selectedGasFee)) {
       const gasFee = selectedGasFee?.gasFee as GasFee;
-      let txFeeRaw =
-        gasFee?.maxFee?.value.amount || gasFee?.estimatedFee?.value.amount;
+      let txFeeRaw = gasFee?.maxFee?.value.amount || gasFee?.estimatedFee?.value.amount;
       if (l1GasFeeOptimism) {
         txFeeRaw = add(l1GasFeeOptimism.toString(), txFeeRaw);
       }
@@ -243,28 +221,7 @@ const getBalanceAmount = (
   return amount;
 };
 
-const getHash = (txn: RainbowTransaction) => txn.hash?.split('-').shift();
-
-const formatGenericAsset = (
-  asset: ParsedAddressAsset,
-  nativeCurrency: NativeCurrencyKey
-) => {
-  return {
-    ...asset,
-    native: {
-      change: asset?.price?.relative_change_24h
-        ? convertAmountToPercentageDisplay(
-            `${asset?.price?.relative_change_24h}`
-          )
-        : '',
-      price: convertAmountAndPriceToNativeDisplay(
-        1,
-        asset?.price?.value || 0,
-        nativeCurrency
-      ),
-    },
-  };
-};
+const getHash = (txn: RainbowTransaction | NewTransaction) => txn.hash?.split('-').shift();
 
 export const checkWalletEthZero = () => {
   const ethAsset = getAccountAsset(ETH_ADDRESS);
@@ -306,45 +263,11 @@ const getDataString = (func: string, arrVals: string[]) => {
 };
 
 /**
- * @desc get asset type from network
- * @param  {Network} network
- */
-const getAssetTypeFromNetwork = (network: Network) => {
-  return isL2Network(network)
-    ? ((network as unknown) as AssetType)
-    : AssetType.token;
-};
-
-/**
- * @desc get network string from asset type
- * @param  {String} type
- */
-const getNetworkFromType = (type: string) => {
-  if (type === AssetType.token || type === AssetType.compound) {
-    return Network.mainnet;
-  }
-  return type as Network;
-};
-
-/**
- * @desc get chainId from asset type
- * @param  {String} type
- */
-const getChainIdFromType = (type: string) => {
-  return getChainIdFromNetwork(
-    type === 'token' ? Network.mainnet : (type as Network)
-  );
-};
-
-/**
  * @desc get network string from chainId
  * @param  {Number} chainId
  */
 export const getNetworkFromChainId = (chainId: number): Network => {
-  return (
-    RainbowNetworks.find(network => network.id === chainId)?.value ||
-    getNetworkObj(Network.mainnet).value
-  );
+  return RainbowNetworks.find(network => network.id === chainId)?.value || getNetworkObj(Network.mainnet).value;
 };
 
 /**
@@ -352,10 +275,7 @@ export const getNetworkFromChainId = (chainId: number): Network => {
  * @param  {Number} chainId
  */
 const getNetworkNameFromChainId = (chainId: number): string => {
-  return (
-    RainbowNetworks.find(network => network.id === chainId)?.name ||
-    getNetworkObj(Network.mainnet).name
-  );
+  return RainbowNetworks.find(network => network.id === chainId)?.name || getNetworkObj(Network.mainnet).name;
 };
 
 /**
@@ -372,8 +292,7 @@ const getChainIdFromNetwork = (network: Network): number => {
  */
 function getEtherscanHostForNetwork(network?: Network): string {
   const base_host = 'etherscan.io';
-  const blockExplorer = getNetworkObj(network || Network.mainnet).blockExplorers
-    ?.default?.url;
+  const blockExplorer = getNetworkObj(network || Network.mainnet).blockExplorers?.default?.url;
 
   if (network && isTestnetNetwork(network)) {
     return `${network}.${base_host}`;
@@ -410,9 +329,7 @@ export const fetchContractABI = async (address: EthereumAddress) => {
  * @param  {String} address
  * @return {Promise<Boolean>}
  */
-const hasPreviousTransactions = (
-  address: EthereumAddress
-): Promise<boolean> => {
+const hasPreviousTransactions = (address: EthereumAddress): Promise<boolean> => {
   return new Promise(async resolve => {
     try {
       const url = `https://aha.rainbow.me/?address=${address}`;
@@ -441,9 +358,7 @@ const hasPreviousTransactions = (
  * @param  {String} address
  * @return {Promise<number>}
  */
-export const getFirstTransactionTimestamp = async (
-  address: EthereumAddress
-): Promise<number | undefined> => {
+export const getFirstTransactionTimestamp = async (address: EthereumAddress): Promise<number | undefined> => {
   const url = `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=asc&page=1&offset=1&apikey=${ETHERSCAN_API_KEY}`;
   const response = await fetch(url);
   const parsedResponse = await response.json();
@@ -455,10 +370,7 @@ function getBlockExplorer(network: Network) {
   return getNetworkObj(network).blockExplorers?.default.name || 'etherscan';
 }
 
-function openAddressInBlockExplorer(
-  address: EthereumAddress,
-  network: Network
-) {
+function openAddressInBlockExplorer(address: EthereumAddress, network: Network) {
   const explorer = getNetworkObj(network)?.blockExplorers?.default?.url;
   Linking.openURL(`${explorer}/address/${address}`);
 }
@@ -469,11 +381,7 @@ function openTokenEtherscanURL(address: EthereumAddress, network: Network) {
   Linking.openURL(`${explorer}/token/${address}`);
 }
 
-function openNftInBlockExplorer(
-  contractAddress: string,
-  tokenId: string,
-  network: Network
-) {
+function openNftInBlockExplorer(contractAddress: string, tokenId: string, network: Network) {
   const explorer = getNetworkObj(network)?.blockExplorers?.default?.url;
   Linking.openURL(`${explorer}/token/${contractAddress}?a=${tokenId}`);
 }
@@ -507,10 +415,7 @@ async function parseEthereumUrl(data: string) {
 
     // @ts-ignore
     if (!asset || asset?.balance.amount === 0) {
-      Alert.alert(
-        lang.t('wallet.alerts.ooops'),
-        lang.t('wallet.alerts.dont_have_asset_in_wallet')
-      );
+      Alert.alert(lang.t('wallet.alerts.ooops'), lang.t('wallet.alerts.dont_have_asset_in_wallet'));
       return;
     }
     address = ethUrl.target_address;
@@ -521,19 +426,11 @@ async function parseEthereumUrl(data: string) {
     asset = getAccountAsset(targetUniqueId);
     // @ts-ignore
     if (!asset || asset?.balance.amount === 0) {
-      Alert.alert(
-        lang.t('wallet.alerts.ooops'),
-        lang.t('wallet.alerts.dont_have_asset_in_wallet')
-      );
+      Alert.alert(lang.t('wallet.alerts.ooops'), lang.t('wallet.alerts.dont_have_asset_in_wallet'));
       return;
     }
     address = ethUrl.parameters?.address;
-    nativeAmount =
-      ethUrl.parameters?.uint256 &&
-      convertRawAmountToDecimalFormat(
-        ethUrl.parameters.uint256,
-        asset.decimals
-      );
+    nativeAmount = ethUrl.parameters?.uint256 && convertRawAmountToDecimalFormat(ethUrl.parameters.uint256, asset.decimals);
   } else {
     Alert.alert(lang.t('wallet.alerts.this_action_not_supported'));
     return;
@@ -554,13 +451,24 @@ async function parseEthereumUrl(data: string) {
   });
 }
 
-const getUniqueId = (address: EthereumAddress, network: Network) =>
-  network === Network.mainnet ? address : `${address}_${network}`;
+export const getUniqueId = (address: EthereumAddress, network: Network) => `${address}_${network}`;
 
-const calculateL1FeeOptimism = async (
-  tx: RainbowTransaction,
-  provider: Provider
-): Promise<BigNumberish | undefined> => {
+export const getAddressAndNetworkFromUniqueId = (uniqueId: string): { address: EthereumAddress; network: Network } => {
+  const parts = uniqueId.split('_');
+
+  // If the unique ID does not contain '_', it's a mainnet address
+  if (parts.length === 1) {
+    return { address: parts[0], network: Network.mainnet };
+  }
+
+  // If the unique ID contains '_', the last part is the network and the rest is the address
+  const network = parts[1] as Network; // Assuming the last part is a valid Network enum value
+  const address = parts[0];
+
+  return { address, network };
+};
+
+const calculateL1FeeOptimism = async (tx: RainbowTransaction, provider: Provider): Promise<BigNumberish | undefined> => {
   const newTx = cloneDeep(tx);
   try {
     if (newTx.value) {
@@ -585,22 +493,15 @@ const calculateL1FeeOptimism = async (
     if (newTx.gasLimit) {
       newTx.gasLimit = toHex(newTx.gasLimit);
     } else {
-      newTx.gasLimit = toHex(
-        newTx.data === '0x' ? ethUnits.basic_tx : ethUnits.basic_transfer
-      );
+      newTx.gasLimit = toHex(newTx.data === '0x' ? ethUnits.basic_tx : ethUnits.basic_transfer);
     }
     // @ts-expect-error ts-migrate(2551) FIXME: Property 'selectedGasPrice' does not exist on type... Remove this comment to see the full error message
-    const currentGasPrice = store.getState().gas.selectedGasPrice?.value
-      ?.amount;
+    const currentGasPrice = store.getState().gas.selectedGasPrice?.value?.amount;
     if (currentGasPrice) newTx.gasPrice = toHex(currentGasPrice);
     // @ts-expect-error ts-migrate(100005) FIXME: Remove this comment to see the full error message
     const serializedTx = serialize(newTx);
 
-    const OVM_GasPriceOracle = new Contract(
-      OVM_GAS_PRICE_ORACLE,
-      optimismGasOracleAbi,
-      provider
-    );
+    const OVM_GasPriceOracle = new Contract(OVM_GAS_PRICE_ORACLE, optimismGasOracleAbi, provider);
     const l1FeeInWei = await OVM_GasPriceOracle.getL1Fee(serializedTx);
     return l1FeeInWei;
   } catch (e: any) {
@@ -610,35 +511,17 @@ const calculateL1FeeOptimism = async (
   }
 };
 
-const getMultichainAssetAddress = (
-  asset: RainbowToken,
-  network: Network
-): EthereumAddress => {
+const getMultichainAssetAddress = (asset: RainbowToken, network: Network): EthereumAddress => {
   const address = asset?.mainnet_address || asset?.address;
-  let realAddress =
-    address?.toLowerCase() === ETH_ADDRESS_AGGREGATORS.toLowerCase()
-      ? ETH_ADDRESS
-      : address;
+  let realAddress = address?.toLowerCase() === ETH_ADDRESS_AGGREGATORS.toLowerCase() ? ETH_ADDRESS : address;
 
-  if (
-    network === Network.optimism &&
-    address.toLowerCase() === OPTIMISM_ETH_ADDRESS
-  ) {
+  if (network === Network.optimism && address.toLowerCase() === OPTIMISM_ETH_ADDRESS) {
     realAddress = ETH_ADDRESS;
-  } else if (
-    network === Network.arbitrum &&
-    address.toLowerCase() === ARBITRUM_ETH_ADDRESS
-  ) {
+  } else if (network === Network.arbitrum && address.toLowerCase() === ARBITRUM_ETH_ADDRESS) {
     realAddress = ETH_ADDRESS;
-  } else if (
-    network === Network.polygon &&
-    address.toLowerCase() === MATIC_POLYGON_ADDRESS
-  ) {
+  } else if (network === Network.polygon && address.toLowerCase() === MATIC_POLYGON_ADDRESS) {
     realAddress = MATIC_POLYGON_ADDRESS;
-  } else if (
-    network === Network.bsc &&
-    address.toLowerCase() === BNB_BSC_ADDRESS
-  ) {
+  } else if (network === Network.bsc && address.toLowerCase() === BNB_BSC_ADDRESS) {
     realAddress = BNB_BSC_ADDRESS;
   }
 
@@ -662,7 +545,6 @@ const getBasicSwapGasLimit = (chainId: number) => {
 
 export default {
   calculateL1FeeOptimism,
-  formatGenericAsset,
   getAssetFromAllAssets,
   getAccountAsset,
   getAsset,
@@ -671,7 +553,6 @@ export default {
   getBasicSwapGasLimit,
   getBlockExplorer,
   getChainIdFromNetwork,
-  getChainIdFromType,
   getDataString,
   getEtherscanHostForNetwork,
   getEthPriceUnit,
@@ -681,11 +562,9 @@ export default {
   getMultichainAssetAddress,
   getNativeAssetForNetwork,
   getNetworkFromChainId,
-  getNetworkFromType,
   getNetworkNameFromChainId,
   getNetworkNativeAsset,
   getPriceOfNativeAssetForNetwork,
-  getAssetTypeFromNetwork,
   getUniqueId,
   hasPreviousTransactions,
   isEthAddress,

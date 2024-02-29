@@ -7,25 +7,10 @@ import { buildUniqueTokenName } from '../../../helpers/assets';
 import { ButtonPressAnimation } from '../../animations';
 import saveToCameraRoll from './saveToCameraRoll';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import {
-  Bleed,
-  Column,
-  Columns,
-  Heading,
-  Inline,
-  Inset,
-  Space,
-  Stack,
-  Text,
-} from '@/design-system';
+import { Bleed, Column, Columns, Heading, Inline, Inset, Space, Stack, Text } from '@/design-system';
 import { UniqueAsset } from '@/entities';
 import { Network } from '@/helpers';
-import {
-  useClipboard,
-  useDimensions,
-  useHiddenTokens,
-  useShowcaseTokens,
-} from '@/hooks';
+import { useClipboard, useDimensions, useHiddenTokens, useShowcaseTokens } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation/Navigation';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
@@ -35,6 +20,9 @@ import { ethereumUtils, magicMemo, showActionSheetWithOptions } from '@/utils';
 import { getFullResUrl } from '@/utils/getFullResUrl';
 import isSVGImage from '@/utils/isSVG';
 import { refreshNFTContractMetadata } from '@/resources/nfts/simplehash';
+import { ContextCircleButton } from '@/components/context-menu';
+import { IS_ANDROID, IS_IOS } from '@/env';
+import { MenuActionConfig, MenuConfig } from 'react-native-ios-context-menu';
 
 const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',
@@ -67,12 +55,9 @@ const getAssetActions = (network: Network) =>
     },
     [AssetActionsEnum.etherscan]: {
       actionKey: AssetActionsEnum.etherscan,
-      actionTitle: lang.t(
-        'expanded_state.unique_expanded.view_on_block_explorer',
-        {
-          blockExplorerName: startCase(ethereumUtils.getBlockExplorer(network)),
-        }
-      ),
+      actionTitle: lang.t('expanded_state.unique_expanded.view_on_block_explorer', {
+        blockExplorerName: startCase(ethereumUtils.getBlockExplorer(network)),
+      }),
       icon: {
         iconType: 'SYSTEM',
         iconValue: 'link',
@@ -118,7 +103,7 @@ const getAssetActions = (network: Network) =>
         iconValue: 'looksrare',
       },
     },
-  } as const);
+  }) as const;
 
 const FamilyActionsEnum = {
   collectionWebsite: 'collectionWebsite',
@@ -200,14 +185,8 @@ const UniqueTokenExpandedStateHeader = ({
   const { width: deviceWidth } = useDimensions();
   const { showcaseTokens, removeShowcaseToken } = useShowcaseTokens();
   const { hiddenTokens, addHiddenToken, removeHiddenToken } = useHiddenTokens();
-  const isHiddenAsset = useMemo(
-    () => hiddenTokens.includes(asset.fullUniqueId) as boolean,
-    [hiddenTokens, asset.fullUniqueId]
-  );
-  const isShowcaseAsset = useMemo(
-    () => showcaseTokens.includes(asset.uniqueId) as boolean,
-    [showcaseTokens, asset.uniqueId]
-  );
+  const isHiddenAsset = useMemo(() => hiddenTokens.includes(asset.fullUniqueId) as boolean, [hiddenTokens, asset.fullUniqueId]);
+  const isShowcaseAsset = useMemo(() => showcaseTokens.includes(asset.uniqueId) as boolean, [showcaseTokens, asset.uniqueId]);
   const { goBack } = useNavigation();
 
   const formattedCollectionUrl = useMemo(() => {
@@ -269,12 +248,10 @@ const UniqueTokenExpandedStateHeader = ({
 
   // @ts-expect-error image_url could be null or undefined?
   const isSVG = isSVGImage(asset.image_url);
-  const isENS =
-    asset.asset_contract?.address?.toLowerCase() ===
-    ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
+  const isENS = asset.asset_contract?.address?.toLowerCase() === ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
 
   const isPhotoDownloadAvailable = !isSVG && !isENS;
-  const assetMenuConfig = useMemo(() => {
+  const assetMenuConfig: MenuConfig = useMemo(() => {
     const AssetActions = getAssetActions(asset.network);
 
     return {
@@ -305,8 +282,7 @@ const UniqueTokenExpandedStateHeader = ({
           : []),
         {
           ...AssetActions[AssetActionsEnum.copyTokenID],
-          discoverabilityTitle:
-            asset.id.length > 15 ? `${asset.id.slice(0, 15)}...` : asset.id,
+          discoverabilityTitle: asset.id.length > 15 ? `${asset.id.slice(0, 15)}...` : asset.id,
         },
         ...(isSupportedOnRainbowWeb
           ? [
@@ -322,9 +298,7 @@ const UniqueTokenExpandedStateHeader = ({
         ...(asset.network === Network.mainnet
           ? [
               {
-                menuTitle: lang.t(
-                  'expanded_state.unique_expanded.view_on_marketplace'
-                ),
+                menuTitle: lang.t('expanded_state.unique_expanded.view_on_marketplace'),
                 menuItems: [AssetActions.opensea, AssetActions.looksrare],
               },
             ]
@@ -332,34 +306,19 @@ const UniqueTokenExpandedStateHeader = ({
       ],
       menuTitle: '',
     };
-  }, [
-    asset.id,
-    asset?.network,
-    isPhotoDownloadAvailable,
-    isHiddenAsset,
-    isModificationActionsEnabled,
-    isSupportedOnRainbowWeb,
-  ]);
+  }, [asset.id, asset?.network, isPhotoDownloadAvailable, isHiddenAsset, isModificationActionsEnabled, isSupportedOnRainbowWeb]);
 
   const handlePressFamilyMenuItem = useCallback(
     // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
     ({ nativeEvent: { actionKey } }) => {
-      if (
-        actionKey === FamilyActionsEnum.viewCollection &&
-        asset.marketplaceCollectionUrl
-      ) {
+      if (actionKey === FamilyActionsEnum.viewCollection && asset.marketplaceCollectionUrl) {
         Linking.openURL(asset.marketplaceCollectionUrl);
       } else if (actionKey === FamilyActionsEnum.collectionWebsite) {
         // @ts-expect-error external_link and external_url could be null or undefined?
         Linking.openURL(asset.external_link || asset.collection.external_url);
       } else if (actionKey === FamilyActionsEnum.twitter) {
-        Linking.openURL(
-          'https://twitter.com/' + asset.collection.twitter_username
-        );
-      } else if (
-        actionKey === FamilyActionsEnum.discord &&
-        asset.collection.discord_url
-      ) {
+        Linking.openURL('https://twitter.com/' + asset.collection.twitter_username);
+      } else if (actionKey === FamilyActionsEnum.discord && asset.collection.discord_url) {
         Linking.openURL(asset.collection.discord_url);
       }
     },
@@ -379,13 +338,9 @@ const UniqueTokenExpandedStateHeader = ({
       } else if (actionKey === AssetActionsEnum.rainbowWeb) {
         Linking.openURL(rainbowWebUrl);
       } else if (actionKey === AssetActionsEnum.opensea) {
-        Linking.openURL(
-          `https://opensea.io/assets/${asset.asset_contract.address}/${asset.id}`
-        );
+        Linking.openURL(`https://opensea.io/assets/${asset.asset_contract.address}/${asset.id}`);
       } else if (actionKey === AssetActionsEnum.looksrare) {
-        Linking.openURL(
-          `https://looksrare.org/collections/${asset.asset_contract.address}/${asset.id}`
-        );
+        Linking.openURL(`https://looksrare.org/collections/${asset.asset_contract.address}/${asset.id}`);
       } else if (actionKey === AssetActionsEnum.copyTokenID) {
         setClipboard(asset.id);
       } else if (actionKey === AssetActionsEnum.download) {
@@ -427,12 +382,8 @@ const UniqueTokenExpandedStateHeader = ({
     const hasDiscord = !!asset.collection.discord_url;
 
     const baseActions = [
-      ...(hasCollection
-        ? [lang.t('expanded_state.unique_expanded.view_collection')]
-        : []),
-      ...(hasWebsite
-        ? [lang.t('expanded_state.unique_expanded.collection_website')]
-        : []),
+      ...(hasCollection ? [lang.t('expanded_state.unique_expanded.view_collection')] : []),
+      ...(hasWebsite ? [lang.t('expanded_state.unique_expanded.collection_website')] : []),
       ...(hasTwitter ? [lang.t('expanded_state.unique_expanded.twitter')] : []),
       ...(hasDiscord ? [lang.t('expanded_state.unique_expanded.discord')] : []),
     ];
@@ -457,9 +408,7 @@ const UniqueTokenExpandedStateHeader = ({
             asset.external_link || asset.collection.external_url
           );
         } else if (idx === twitterIndex) {
-          Linking.openURL(
-            'https://twitter.com/' + asset.collection.twitter_username
-          );
+          Linking.openURL('https://twitter.com/' + asset.collection.twitter_username);
         } else if (idx === discordIndex && asset.collection.discord_url) {
           Linking.openURL(asset.collection.discord_url);
         }
@@ -473,133 +422,64 @@ const UniqueTokenExpandedStateHeader = ({
     asset.marketplaceCollectionUrl,
   ]);
 
-  const onPressAndroidAsset = useCallback(() => {
-    const blockExplorerActionName = lang.t(
-      'expanded_state.unique_expanded.view_on_block_explorer',
-      {
-        blockExplorerName: startCase(
-          ethereumUtils.getBlockExplorer(asset.network)
-        ),
-      }
-    );
-
-    const androidContractActions = [
-      ...(isSupportedOnRainbowWeb
-        ? [lang.t('expanded_state.unique_expanded.view_on_web')]
-        : []),
-      blockExplorerActionName,
-      ...(isPhotoDownloadAvailable
-        ? ([lang.t('expanded_state.unique_expanded.save_to_photos')] as const)
-        : []),
-      lang.t('expanded_state.unique_expanded.copy_token_id'),
-      ...(isModificationActionsEnabled
-        ? [
-            isHiddenAsset
-              ? lang.t('expanded_state.unique_expanded.unhide')
-              : lang.t('expanded_state.unique_expanded.hide'),
-          ]
-        : []),
-      lang.t('expanded_state.unique_expanded.refresh'),
-    ] as const;
-
-    const rainbowWebIndex = isSupportedOnRainbowWeb ? 0 : -1;
-    const blockExplorerIndex = rainbowWebIndex + 1;
-    const photoDownloadIndex = isPhotoDownloadAvailable
-      ? blockExplorerIndex + 1
-      : blockExplorerIndex;
-    const copyTokenIndex = photoDownloadIndex + 1;
-    const hideTokenIndex = copyTokenIndex + 1;
-    const refreshIndex = hideTokenIndex + 1;
-
-    showActionSheetWithOptions(
-      {
-        options: androidContractActions,
-        showSeparators: true,
-        title: '',
-      },
-      (idx: number) => {
-        if (idx === rainbowWebIndex) {
-          Linking.openURL(rainbowWebUrl);
-        } else if (idx === blockExplorerIndex) {
-          ethereumUtils.openNftInBlockExplorer(
-            // @ts-expect-error address could be undefined?
-            asset.asset_contract.address,
-            asset.id,
-            asset.network
-          );
-        } else if (idx === photoDownloadIndex) {
-          saveToCameraRoll(getFullResUrl(asset.image_original_url));
-        } else if (idx === copyTokenIndex) {
-          setClipboard(asset.id);
-        } else if (idx === hideTokenIndex) {
-          if (isHiddenAsset) {
-            removeHiddenToken(asset);
-          } else {
-            addHiddenToken(asset);
-
-            if (isShowcaseAsset) {
-              removeShowcaseToken(asset.uniqueId);
-            }
-          }
-
-          goBack();
-        } else if (idx === refreshIndex) {
-          refreshNFTContractMetadata(asset).then(onRefresh);
-        }
-      }
-    );
-  }, [
-    asset,
-    isSupportedOnRainbowWeb,
-    isPhotoDownloadAvailable,
-    isModificationActionsEnabled,
-    isHiddenAsset,
-    rainbowWebUrl,
-    setClipboard,
-    goBack,
-    removeHiddenToken,
-    addHiddenToken,
-    isShowcaseAsset,
-    removeShowcaseToken,
-    onRefresh,
-  ]);
-
   const overflowMenuHitSlop: Space = '15px (Deprecated)';
   const familyNameHitSlop: Space = '19px (Deprecated)';
+
+  const assetMenuOptions = useMemo(() => {
+    return (
+      assetMenuConfig?.menuItems
+        ?.filter((item): item is MenuActionConfig => 'actionTitle' in item)
+        .map((item: MenuActionConfig) => item.actionTitle) ?? []
+    );
+  }, [assetMenuConfig]);
 
   return (
     <Stack space="15px (Deprecated)">
       <Columns space="24px">
-        <Heading
-          containsEmoji
-          color="primary (Deprecated)"
-          size="23px / 27px (Deprecated)"
-          weight="heavy"
-        >
+        <Heading containsEmoji color="primary (Deprecated)" size="23px / 27px (Deprecated)" weight="heavy">
           {buildUniqueTokenName(asset)}
         </Heading>
         <Column width="content">
           <Bleed space={overflowMenuHitSlop}>
-            <ContextMenuButton
-              menuConfig={assetMenuConfig}
-              {...(android ? { onPress: onPressAndroidAsset } : {})}
-              isMenuPrimaryAction
-              onPressMenuItem={handlePressAssetMenuItem}
-              testID="unique-token-expanded-state-context-menu-button"
-              useActionSheetFallback={false}
-            >
-              <ButtonPressAnimation scaleTo={0.75}>
-                <Inset space={overflowMenuHitSlop}>
-                  <Text
-                    color="accent"
-                    size="23px / 27px (Deprecated)"
-                    weight="heavy"
-                  >
-                    􀍡
-                  </Text>
-                </Inset>
-              </ButtonPressAnimation>
-            </ContextMenuButton>
+            {/* NOTE: Necessary since other context menu overflows off screen on android */}
+            {IS_ANDROID && (
+              <ContextCircleButton
+                options={assetMenuOptions}
+                onPressActionSheet={(index: number) => {
+                  const actionItems = (assetMenuConfig?.menuItems || []).filter((item): item is MenuActionConfig => 'actionTitle' in item);
+                  const actionKey: MenuActionConfig = actionItems[index];
+                  if (!actionKey) return;
+                  handlePressAssetMenuItem({
+                    nativeEvent: { actionKey: actionKey.actionKey },
+                  });
+                }}
+              >
+                <ButtonPressAnimation scaleTo={0.75}>
+                  <Inset space={overflowMenuHitSlop}>
+                    <Text color="accent" size="23px / 27px (Deprecated)" weight="heavy">
+                      􀍡
+                    </Text>
+                  </Inset>
+                </ButtonPressAnimation>
+              </ContextCircleButton>
+            )}
+            {IS_IOS && (
+              <ContextMenuButton
+                menuConfig={assetMenuConfig}
+                isMenuPrimaryAction
+                onPressMenuItem={handlePressAssetMenuItem}
+                testID="unique-token-expanded-state-context-menu-button"
+                useActionSheetFallback={false}
+              >
+                <ButtonPressAnimation scaleTo={0.75}>
+                  <Inset space={overflowMenuHitSlop}>
+                    <Text color="accent" size="23px / 27px (Deprecated)" weight="heavy">
+                      􀍡
+                    </Text>
+                  </Inset>
+                </ButtonPressAnimation>
+              </ContextMenuButton>
+            )}
           </Bleed>
         </Column>
       </Columns>
@@ -607,7 +487,7 @@ const UniqueTokenExpandedStateHeader = ({
         <Bleed space={familyNameHitSlop}>
           <ContextMenuButton
             menuConfig={familyMenuConfig}
-            {...(android ? { onPress: onPressAndroidFamily } : {})}
+            {...(android ? { onPress: onPressAndroidFamily, isAnchoredToRight: true } : {})}
             isMenuPrimaryAction
             onPressMenuItem={handlePressFamilyMenuItem}
             useActionSheetFallback={false}
@@ -618,7 +498,7 @@ const UniqueTokenExpandedStateHeader = ({
                   {asset.familyImage ? (
                     <Bleed vertical="6px">
                       <FamilyImageWrapper>
-                        <FamilyImage source={{ uri: asset.familyImage }} />
+                        <FamilyImage size={30} source={{ uri: asset.familyImage }} />
                       </FamilyImageWrapper>
                     </Bleed>
                   ) : null}
@@ -628,20 +508,11 @@ const UniqueTokenExpandedStateHeader = ({
                         maxWidth: deviceWidth - paddingHorizontal * 6,
                       }}
                     >
-                      <Text
-                        color="secondary50 (Deprecated)"
-                        numberOfLines={1}
-                        size="16px / 22px (Deprecated)"
-                        weight="bold"
-                      >
+                      <Text color="secondary50 (Deprecated)" numberOfLines={1} size="16px / 22px (Deprecated)" weight="bold">
                         {asset.familyName}
                       </Text>
                     </View>
-                    <Text
-                      color="secondary50 (Deprecated)"
-                      size="16px / 22px (Deprecated)"
-                      weight="bold"
-                    >
+                    <Text color="secondary50 (Deprecated)" size="16px / 22px (Deprecated)" weight="bold">
                       􀆊
                     </Text>
                   </Inline>

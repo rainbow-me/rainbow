@@ -1,15 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
-import React, {
-  forwardRef,
-  useCallback,
-  useContext,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Column, Row } from '@/components/layout';
 import { Text } from '@/components/text';
@@ -48,10 +39,7 @@ const sendQueryAnalytics = query => {
 
 export let discoverOpenSearchFnRef = null;
 
-export default forwardRef(function DiscoverSearchContainer(
-  { children, showSearch, setShowSearch },
-  ref
-) {
+export default forwardRef(function DiscoverSearchContainer({ children, showSearch, setShowSearch }, ref) {
   const searchInputRef = useRef();
   const sectionListRef = useRef();
   useImperativeHandle(ref, () => searchInputRef.current);
@@ -60,9 +48,7 @@ export default forwardRef(function DiscoverSearchContainer(
   const [isFetchingEns, setIsFetchingEns] = useState(false);
   const delayedShowSearch = useDelayedValueWithLayoutAnimation(showSearch);
 
-  const { setIsSearchModeEnabled, isSearchModeEnabled } = useContext(
-    DiscoverSheetContext
-  );
+  const { setIsSearchModeEnabled, isSearchModeEnabled } = useContext(DiscoverSheetContext);
 
   const setIsInputFocused = useCallback(
     value => {
@@ -117,14 +103,7 @@ export default forwardRef(function DiscoverSearchContainer(
       setIsFetchingEns,
       setIsSearching,
     }),
-    [
-      isSearchModeEnabled,
-      setIsSearchModeEnabled,
-      cancelSearch,
-      isFetchingEns,
-      isSearching,
-      searchQuery,
-    ]
+    [isSearchModeEnabled, setIsSearchModeEnabled, cancelSearch, isFetchingEns, isSearching, searchQuery]
   );
 
   useEffect(() => {
@@ -154,23 +133,17 @@ export default forwardRef(function DiscoverSearchContainer(
             onBlur={() => setIsInputFocused(false)}
             onChangeText={setSearchQuery}
             onFocus={onTapSearch}
-            placeholderText={
-              isSearchModeEnabled ? placeholderText : `􀊫 ${placeholderText}`
-            }
+            placeholderText={isSearchModeEnabled ? placeholderText : `􀊫 ${placeholderText}`}
             ref={searchInputRef}
             searchQuery={searchQuery}
             testID="discover-search"
           />
         </Column>
         <CancelButton onPress={cancelSearch} testID="done-button">
-          {delayedShowSearch && (
-            <CancelText>{lang.t('button.done')}</CancelText>
-          )}
+          {delayedShowSearch && <CancelText>{lang.t('button.done')}</CancelText>}
         </CancelButton>
       </Row>
-      <DiscoverSheetContext.Provider value={contextValue}>
-        {children}
-      </DiscoverSheetContext.Provider>
+      <DiscoverSheetContext.Provider value={contextValue}>{children}</DiscoverSheetContext.Provider>
     </>
   );
 });

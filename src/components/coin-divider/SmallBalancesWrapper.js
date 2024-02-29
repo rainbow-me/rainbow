@@ -14,14 +14,10 @@ const Container = styled(OpacityToggler).attrs(({ isVisible }) => ({
 export default function SmallBalancesWrapper({ assets = [] }) {
   const { isSmallBalancesOpen } = useOpenSmallBalances();
   // wait until refresh of RLV
-  const delayedIsSmallBalancesOpen =
-    useFrameDelayedValue(isSmallBalancesOpen) && isSmallBalancesOpen;
+  const delayedIsSmallBalancesOpen = useFrameDelayedValue(isSmallBalancesOpen) && isSmallBalancesOpen;
 
   return (
-    <Container
-      isVisible={!delayedIsSmallBalancesOpen}
-      numberOfRows={assets.length}
-    >
+    <Container isVisible={!delayedIsSmallBalancesOpen} numberOfRows={assets.length}>
       {assets}
     </Container>
   );

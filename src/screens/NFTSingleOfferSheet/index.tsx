@@ -17,14 +17,9 @@ import {
   useForegroundColor,
 } from '@/design-system';
 import { ImgixImage } from '@/components/images';
-import {
-  getFormattedTimeQuantity,
-  convertAmountToNativeDisplay,
-  handleSignificantDecimals,
-} from '@/helpers/utilities';
+import { getFormattedTimeQuantity, convertAmountToNativeDisplay, handleSignificantDecimals } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { NftOffer } from '@/graphql/__generated__/arc';
-import { CoinIcon } from '@/components/coin-icon';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useNavigation } from '@/navigation';
 import { IS_ANDROID } from '@/env';
@@ -32,7 +27,7 @@ import ConditionalWrap from 'conditional-wrap';
 import Routes from '@/navigation/routesNames';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountSettings, useGas, useWallets } from '@/hooks';
-import { TransactionStatus, TransactionType } from '@/entities';
+import { NewTransaction } from '@/entities';
 import { analyticsV2 } from '@/analytics';
 import { BigNumber } from '@ethersproject/bignumber';
 import { HoldToAuthorizeButton } from '@/components/buttons';
@@ -42,7 +37,7 @@ import { Execute, getClient } from '@reservoir0x/reservoir-sdk';
 import { privateKeyToAccount } from 'viem/accounts';
 import { createWalletClient, http } from 'viem';
 import { useDispatch } from 'react-redux';
-import { dataAddNewTransaction } from '@/redux/data';
+
 import { RainbowError, logger } from '@/logger';
 import { estimateNFTOfferGas } from '@/handlers/nftOffers';
 import { useTheme } from '@/theme';
@@ -52,21 +47,18 @@ import { CardSize } from '@/components/unique-token/CardSize';
 import { queryClient } from '@/react-query';
 import { nftOffersQueryKey } from '@/resources/reservoir/nftOffersQuery';
 import { getRainbowFeeAddress } from '@/resources/reservoir/utils';
+import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { addNewTransaction } from '@/state/pendingTransactions';
+import { getUniqueId } from '@/utils/ethereumUtils';
+import { getNextNonce } from '@/state/nonces';
 
 const NFT_IMAGE_HEIGHT = 160;
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 const RAINBOW_FEE_BIPS = 85;
 const BIPS_TO_DECIMAL_RATIO = 10000;
 
-function Row({
-  symbol,
-  label,
-  value,
-}: {
-  symbol: string;
-  label: string;
-  value: React.ReactNode;
-}) {
+function Row({ symbol, label, value }: { symbol: string; label: string; value: React.ReactNode }) {
   return (
     <Box height="36px" alignItems="center">
       <Columns>
@@ -92,22 +84,22 @@ function Row({
 export function NFTSingleOfferSheet() {
   const { params } = useRoute();
   const { navigate, setParams } = useNavigation();
-  const { accountAddress } = useAccountSettings();
+  const { accountAddress, nativeCurrency } = useAccountSettings();
   const { isReadOnlyWallet } = useWallets();
-  const { isDarkMode } = useTheme();
-  const {
-    updateTxFee,
-    startPollingGasFees,
-    stopPollingGasFees,
-    isSufficientGas,
-    isValidGas,
-  } = useGas();
+  const theme = useTheme();
+  const { updateTxFee, startPollingGasFees, stopPollingGasFees, isSufficientGas, isValidGas } = useGas();
   const dispatch = useDispatch();
   const {
     data: { nftsMap },
   } = useLegacyNFTs({ address: accountAddress });
 
   const { offer } = params as { offer: NftOffer };
+
+  const { data: externalAsset } = useExternalToken({
+    address: offer.paymentToken.address,
+    network: offer.network as Network,
+    currency: nativeCurrency,
+  });
 
   const [height, setHeight] = useState(0);
   const didErrorRef = useRef<boolean>(false);
@@ -120,26 +112,15 @@ export function NFTSingleOfferSheet() {
 
   const network = offer.network as Network;
   const rainbowFeeAddress = getRainbowFeeAddress(network);
-  const rainbowFeeDecimal =
-    (offer.grossAmount.decimal * RAINBOW_FEE_BIPS) / BIPS_TO_DECIMAL_RATIO;
+  const rainbowFeeDecimal = (offer.grossAmount.decimal * RAINBOW_FEE_BIPS) / BIPS_TO_DECIMAL_RATIO;
   const feeParam = rainbowFeeAddress
-    ? `${rainbowFeeAddress}:${BigNumber.from(offer.grossAmount.raw)
-        .mul(RAINBOW_FEE_BIPS)
-        .div(BIPS_TO_DECIMAL_RATIO)
-        .toString()}`
+    ? `${rainbowFeeAddress}:${BigNumber.from(offer.grossAmount.raw).mul(RAINBOW_FEE_BIPS).div(BIPS_TO_DECIMAL_RATIO).toString()}`
     : undefined;
 
-  const [timeRemaining, setTimeRemaining] = useState(
-    offer.validUntil
-      ? Math.max(offer.validUntil * 1000 - Date.now(), 0)
-      : undefined
-  );
-  const isExpiring =
-    timeRemaining !== undefined && timeRemaining <= TWO_HOURS_MS;
+  const [timeRemaining, setTimeRemaining] = useState(offer.validUntil ? Math.max(offer.validUntil * 1000 - Date.now(), 0) : undefined);
+  const isExpiring = timeRemaining !== undefined && timeRemaining <= TWO_HOURS_MS;
   const isExpired = timeRemaining === 0;
-  const time = timeRemaining
-    ? getFormattedTimeQuantity(timeRemaining)
-    : undefined;
+  const time = timeRemaining ? getFormattedTimeQuantity(timeRemaining) : undefined;
 
   const isFloorDiffPercentagePositive = offer.floorDifferencePercentage >= 0;
   const listPrice = handleSignificantDecimals(
@@ -249,14 +230,7 @@ export function NFTSingleOfferSheet() {
         }
       },
     });
-  }, [
-    accountAddress,
-    feeParam,
-    network,
-    offer,
-    startPollingGasFees,
-    updateTxFee,
-  ]);
+  }, [accountAddress, feeParam, network, offer, startPollingGasFees, updateTxFee]);
 
   // estimate gas
   useEffect(() => {
@@ -269,9 +243,7 @@ export function NFTSingleOfferSheet() {
   }, [estimateGas, isExpired, isReadOnlyWallet, stopPollingGasFees]);
 
   const acceptOffer = useCallback(async () => {
-    logger.info(
-      `Initiating sale of NFT ${offer.nft.contractAddress}:${offer.nft.tokenId}`
-    );
+    logger.info(`Initiating sale of NFT ${offer.nft.contractAddress}:${offer.nft.tokenId}`);
     const analyticsEventObject = {
       nft: {
         contractAddress: offer.nft.contractAddress,
@@ -301,6 +273,8 @@ export function NFTSingleOfferSheet() {
       chain: networkObj,
       transport: http(networkObj.rpc),
     });
+    const nonce = await getNextNonce({ address: accountAddress, network });
+
     getClient()?.actions.acceptOffer({
       items: [
         {
@@ -333,8 +307,7 @@ export function NFTSingleOfferSheet() {
               i18n.t(i18n.l.nft_offers.single_offer_sheet.error.message),
               [
                 {
-                  onPress: () =>
-                    navigate(Routes.NFT_SINGLE_OFFER_SHEET, { offer }),
+                  onPress: () => navigate(Routes.NFT_SINGLE_OFFER_SHEET, { offer }),
                   text: i18n.t(i18n.l.button.go_back),
                 },
                 {
@@ -345,68 +318,79 @@ export function NFTSingleOfferSheet() {
             return;
           }
           step.items?.forEach(item => {
-            if (
-              item.txHashes?.[0] &&
-              !txsRef.current.includes(item.txHashes?.[0]) &&
-              item.status === 'incomplete'
-            ) {
-              let tx;
+            if (item.txHashes?.[0] && !txsRef.current.includes(item.txHashes?.[0]) && item.status === 'incomplete') {
+              let tx: NewTransaction | null = null;
+              const asset = {
+                ...nft,
+                address: nft.asset_contract.address || '',
+                symbol: 'NFT',
+                decimals: 18,
+              };
               if (step.id === 'sale') {
                 tx = {
+                  status: 'pending',
                   to: item.data?.to,
                   from: item.data?.from,
                   hash: item.txHashes[0],
-                  network: offer.network,
-                  amount: offer.netAmount.decimal,
+                  network: offer.network as Network,
+                  nonce: item?.txHashes?.length > 1 ? nonce + 1 : nonce,
                   asset: {
-                    address: offer.paymentToken.address,
-                    symbol: offer.paymentToken.symbol,
+                    ...offer.paymentToken,
+                    network: offer.network as Network,
+                    uniqueId: getUniqueId(offer.paymentToken.address, offer.network as Network),
                   },
-                  nft,
-                  type: TransactionType.sell,
-                  status: TransactionStatus.selling,
+                  changes: [
+                    {
+                      direction: 'out',
+                      asset,
+                      value: 1,
+                    },
+                    {
+                      direction: 'in',
+                      asset: {
+                        ...offer.paymentToken,
+                        network: offer.network as Network,
+                        uniqueId: getUniqueId(offer.paymentToken.address, offer.network as Network),
+                      },
+                      value: offer.grossAmount.raw,
+                    },
+                  ],
+                  type: 'sale',
                 };
               } else if (step.id === 'nft-approval') {
                 tx = {
+                  status: 'pending',
                   to: item.data?.to,
                   from: item.data?.from,
                   hash: item.txHashes[0],
-                  network: offer.network,
-                  nft,
-                  type: TransactionType.authorize,
-                  status: TransactionStatus.approving,
+                  network: offer.network as Network,
+                  nonce,
+                  asset,
+                  type: 'approve',
                 };
               }
               if (tx) {
+                addNewTransaction({
+                  transaction: tx,
+                  address: accountAddress,
+                  network: offer.network as Network,
+                });
                 txsRef.current.push(tx.hash);
-                // @ts-ignore TODO: fix when we overhaul tx list, types are not good
-                dispatch(dataAddNewTransaction(tx));
               }
-            } else if (
-              item.status === 'complete' &&
-              step.id === 'sale' &&
-              !didCompleteRef.current
-            ) {
+            } else if (item.status === 'complete' && step.id === 'sale' && !didCompleteRef.current) {
               didCompleteRef.current = true;
 
               // remove offer from cache
               queryClient.setQueryData(
                 nftOffersQueryKey({ walletAddress: accountAddress }),
-                (
-                  cachedData: { nftOffers: NftOffer[] | undefined } | undefined
-                ) => {
+                (cachedData: { nftOffers: NftOffer[] | undefined } | undefined) => {
                   return {
-                    nftOffers: cachedData?.nftOffers?.filter(
-                      cachedOffer =>
-                        cachedOffer.nft.uniqueId !== offer.nft.uniqueId
-                    ),
+                    nftOffers: cachedData?.nftOffers?.filter(cachedOffer => cachedOffer.nft.uniqueId !== offer.nft.uniqueId),
                   };
                 }
               );
 
-              logger.info(
-                `Completed sale of NFT ${offer.nft.contractAddress}:${offer.nft.tokenId}`
-              );
+              logger.info(`Completed sale of NFT ${offer.nft.contractAddress}:${offer.nft.tokenId}`);
               analyticsV2.track(analyticsV2.event.nftOffersAcceptedOffer, {
                 status: 'completed',
                 ...analyticsEventObject,
@@ -417,16 +401,7 @@ export function NFTSingleOfferSheet() {
       },
     });
     navigate(Routes.PROFILE_SCREEN);
-  }, [
-    accountAddress,
-    dispatch,
-    feeParam,
-    navigate,
-    network,
-    nft,
-    offer,
-    rainbowFeeDecimal,
-  ]);
+  }, [accountAddress, feeParam, navigate, network, nft, offer, rainbowFeeDecimal]);
 
   return (
     <BackgroundProvider color="surfaceSecondary">
@@ -440,37 +415,16 @@ export function NFTSingleOfferSheet() {
                 </Text>
                 <Inset top="10px">
                   {timeRemaining !== undefined && (
-                    <Inline
-                      space="4px"
-                      alignHorizontal="center"
-                      alignVertical="center"
-                    >
-                      <Text
-                        color={
-                          isExpiring || isExpired ? 'red' : 'labelTertiary'
-                        }
-                        align="center"
-                        size="13pt"
-                        weight="semibold"
-                      >
+                    <Inline space="4px" alignHorizontal="center" alignVertical="center">
+                      <Text color={isExpiring || isExpired ? 'red' : 'labelTertiary'} align="center" size="13pt" weight="semibold">
                         {isExpired ? '􀇾' : '􀐫'}
                       </Text>
-                      <Text
-                        color={
-                          isExpiring || isExpired ? 'red' : 'labelTertiary'
-                        }
-                        align="center"
-                        size="15pt"
-                        weight="semibold"
-                      >
+                      <Text color={isExpiring || isExpired ? 'red' : 'labelTertiary'} align="center" size="15pt" weight="semibold">
                         {isExpired
                           ? i18n.t(i18n.l.nft_offers.single_offer_sheet.expired)
-                          : i18n.t(
-                              i18n.l.nft_offers.single_offer_sheet.expires_in,
-                              {
-                                timeLeft: time!,
-                              }
-                            )}
+                          : i18n.t(i18n.l.nft_offers.single_offer_sheet.expires_in, {
+                              timeLeft: time!,
+                            })}
                       </Text>
                     </Inline>
                   )}
@@ -496,9 +450,7 @@ export function NFTSingleOfferSheet() {
                   <ConditionalWrap
                     condition={!!offer.nft.predominantColor}
                     wrap={(children: React.ReactNode) => (
-                      <AccentColorProvider color={offer.nft.predominantColor!}>
-                        {children}
-                      </AccentColorProvider>
+                      <AccentColorProvider color={offer.nft.predominantColor!}>{children}</AccentColorProvider>
                     )}
                   >
                     <Box
@@ -509,15 +461,11 @@ export function NFTSingleOfferSheet() {
                         custom: NFT_IMAGE_HEIGHT,
                       }}
                       height={{
-                        custom: offer.nft.aspectRatio
-                          ? NFT_IMAGE_HEIGHT / offer.nft.aspectRatio
-                          : NFT_IMAGE_HEIGHT,
+                        custom: offer.nft.aspectRatio ? NFT_IMAGE_HEIGHT / offer.nft.aspectRatio : NFT_IMAGE_HEIGHT,
                       }}
                       borderRadius={16}
                       size={CardSize}
-                      shadow={
-                        offer.nft.predominantColor ? '30px accent' : '30px'
-                      }
+                      shadow={offer.nft.predominantColor ? '30px accent' : '30px'}
                     />
                   </ConditionalWrap>
                 </ButtonPressAnimation>
@@ -536,47 +484,29 @@ export function NFTSingleOfferSheet() {
                     </Inset>
                   </Column>
                   <Column>
-                    <Inline
-                      space="4px"
-                      alignVertical="center"
-                      alignHorizontal="right"
-                    >
-                      <CoinIcon
-                        address={offer.paymentToken.address}
+                    <Inline space="4px" alignVertical="center" alignHorizontal="right">
+                      <RainbowCoinIcon
                         size={16}
+                        icon={externalAsset?.icon_url}
+                        network={offer?.network as Network}
                         symbol={offer.paymentToken.symbol}
+                        theme={theme}
+                        colors={externalAsset?.colors}
+                        ignoreBadge
                       />
-
-                      <Text
-                        color="label"
-                        align="right"
-                        size="17pt"
-                        weight="bold"
-                      >
+                      <Text color="label" align="right" size="17pt" weight="bold">
                         {listPrice} {offer.paymentToken.symbol}
                       </Text>
                     </Inline>
 
                     <Inset top="6px">
                       <Inline alignHorizontal="right">
-                        <Text
-                          size="13pt"
-                          weight="medium"
-                          color={
-                            isFloorDiffPercentagePositive
-                              ? 'green'
-                              : 'labelTertiary'
-                          }
-                        >
-                          {`${isFloorDiffPercentagePositive ? '+' : ''}${
-                            offer.floorDifferencePercentage
-                          }% `}
+                        <Text size="13pt" weight="medium" color={isFloorDiffPercentagePositive ? 'green' : 'labelTertiary'}>
+                          {`${isFloorDiffPercentagePositive ? '+' : ''}${offer.floorDifferencePercentage}% `}
                         </Text>
                         <Text size="13pt" weight="medium" color="labelTertiary">
                           {i18n.t(
-                            isFloorDiffPercentagePositive
-                              ? i18n.l.nft_offers.sheet.above_floor
-                              : i18n.l.nft_offers.sheet.below_floor
+                            isFloorDiffPercentagePositive ? i18n.l.nft_offers.sheet.above_floor : i18n.l.nft_offers.sheet.below_floor
                           )}
                         </Text>
                       </Inline>
@@ -590,27 +520,20 @@ export function NFTSingleOfferSheet() {
               <Inset top="24px">
                 <Row
                   symbol="􀐾"
-                  label={i18n.t(
-                    i18n.l.nft_offers.single_offer_sheet.floor_price
-                  )}
+                  label={i18n.t(i18n.l.nft_offers.single_offer_sheet.floor_price)}
                   value={
-                    <Inline
-                      space="4px"
-                      alignVertical="center"
-                      alignHorizontal="right"
-                    >
-                      <CoinIcon
-                        address={offer.floorPrice.paymentToken.address}
+                    <Inline space="4px" alignVertical="center" alignHorizontal="right">
+                      <RainbowCoinIcon
                         size={16}
-                        symbol={offer.floorPrice.paymentToken.symbol}
+                        icon={externalAsset?.icon_url}
+                        network={offer?.network as Network}
+                        symbol={offer.paymentToken.symbol}
+                        theme={theme}
+                        colors={externalAsset?.colors}
+                        ignoreBadge
                       />
 
-                      <Text
-                        color="labelSecondary"
-                        align="right"
-                        size="17pt"
-                        weight="medium"
-                      >
+                      <Text color="labelSecondary" align="right" size="17pt" weight="medium">
                         {floorPrice} {offer.floorPrice.paymentToken.symbol}
                       </Text>
                     </Inline>
@@ -619,15 +542,9 @@ export function NFTSingleOfferSheet() {
 
                 <Row
                   symbol="􀍩"
-                  label={i18n.t(
-                    i18n.l.nft_offers.single_offer_sheet.marketplace
-                  )}
+                  label={i18n.t(i18n.l.nft_offers.single_offer_sheet.marketplace)}
                   value={
-                    <Inline
-                      space="4px"
-                      alignVertical="center"
-                      alignHorizontal="right"
-                    >
+                    <Inline space="4px" alignVertical="center" alignHorizontal="right">
                       <Box
                         as={ImgixImage}
                         background="surfaceSecondaryElevated"
@@ -639,12 +556,7 @@ export function NFTSingleOfferSheet() {
                         // shadow is way off on android idk why
                         shadow={IS_ANDROID ? undefined : '30px accent'}
                       />
-                      <Text
-                        color="labelSecondary"
-                        align="right"
-                        size="17pt"
-                        weight="medium"
-                      >
+                      <Text color="labelSecondary" align="right" size="17pt" weight="medium">
                         {offer.marketplace.name}
                       </Text>
                     </Inline>
@@ -653,17 +565,9 @@ export function NFTSingleOfferSheet() {
                 {!!feesPercentage && (
                   <Row
                     symbol="􀘾"
-                    label={i18n.t(
-                      i18n.l.nft_offers.single_offer_sheet.marketplace_fees,
-                      { marketplace: offer.marketplace.name }
-                    )}
+                    label={i18n.t(i18n.l.nft_offers.single_offer_sheet.marketplace_fees, { marketplace: offer.marketplace.name })}
                     value={
-                      <Text
-                        color="labelSecondary"
-                        align="right"
-                        size="17pt"
-                        weight="medium"
-                      >
+                      <Text color="labelSecondary" align="right" size="17pt" weight="medium">
                         {feesPercentage}%
                       </Text>
                     }
@@ -672,16 +576,9 @@ export function NFTSingleOfferSheet() {
                 {!!royaltiesPercentage && (
                   <Row
                     symbol="􀣶"
-                    label={i18n.t(
-                      i18n.l.nft_offers.single_offer_sheet.creator_royalties
-                    )}
+                    label={i18n.t(i18n.l.nft_offers.single_offer_sheet.creator_royalties)}
                     value={
-                      <Text
-                        color="labelSecondary"
-                        align="right"
-                        size="17pt"
-                        weight="medium"
-                      >
+                      <Text color="labelSecondary" align="right" size="17pt" weight="medium">
                         {royaltiesPercentage}%
                       </Text>
                     }
@@ -713,34 +610,23 @@ export function NFTSingleOfferSheet() {
                     </Text>
                   </Column>
                   <Column>
-                    <Inline
-                      space="4px"
-                      alignVertical="center"
-                      alignHorizontal="right"
-                    >
-                      <CoinIcon
-                        address={offer.paymentToken.address}
+                    <Inline space="4px" alignVertical="center" alignHorizontal="right">
+                      <RainbowCoinIcon
                         size={16}
+                        icon={externalAsset?.icon_url}
+                        network={offer?.network as Network}
                         symbol={offer.paymentToken.symbol}
+                        theme={theme}
+                        colors={externalAsset?.colors}
+                        ignoreBadge
                       />
-
-                      <Text
-                        color="label"
-                        align="right"
-                        size="17pt"
-                        weight="bold"
-                      >
+                      <Text color="label" align="right" size="17pt" weight="bold">
                         {netCrypto} {offer.paymentToken.symbol}
                       </Text>
                     </Inline>
 
                     <Inset top="10px">
-                      <Text
-                        color="labelSecondary"
-                        align="right"
-                        size="13pt"
-                        weight="semibold"
-                      >
+                      <Text color="labelSecondary" align="right" size="13pt" weight="semibold">
                         {netCurrency}
                       </Text>
                     </Inset>
@@ -748,9 +634,7 @@ export function NFTSingleOfferSheet() {
                 </Columns>
               </Inset>
               {isReadOnlyWallet || isExpired ? (
-                <AccentColorProvider
-                  color={offer.nft.predominantColor || buttonColorFallback}
-                >
+                <AccentColorProvider color={offer.nft.predominantColor || buttonColorFallback}>
                   {/* @ts-ignore js component */}
                   <Box
                     as={ButtonPressAnimation}
@@ -764,38 +648,27 @@ export function NFTSingleOfferSheet() {
                     alignItems="center"
                     style={{ overflow: 'hidden' }}
                     onPress={() => {
-                      analyticsV2.track(
-                        analyticsV2.event.nftOffersViewedExternalOffer,
-                        {
-                          marketplace: offer.marketplace.name,
-                          offerValueUSD: offer.grossAmount.usd,
-                          offerValue: offer.grossAmount.decimal,
-                          offerCurrency: {
-                            symbol: offer.paymentToken.symbol,
-                            contractAddress: offer.paymentToken.address,
-                          },
-                          floorDifferencePercentage:
-                            offer.floorDifferencePercentage,
-                          nft: {
-                            contractAddress: offer.nft.contractAddress,
-                            tokenId: offer.nft.tokenId,
-                            network: offer.network,
-                          },
-                        }
-                      );
+                      analyticsV2.track(analyticsV2.event.nftOffersViewedExternalOffer, {
+                        marketplace: offer.marketplace.name,
+                        offerValueUSD: offer.grossAmount.usd,
+                        offerValue: offer.grossAmount.decimal,
+                        offerCurrency: {
+                          symbol: offer.paymentToken.symbol,
+                          contractAddress: offer.paymentToken.address,
+                        },
+                        floorDifferencePercentage: offer.floorDifferencePercentage,
+                        nft: {
+                          contractAddress: offer.nft.contractAddress,
+                          tokenId: offer.nft.tokenId,
+                          network: offer.network,
+                        },
+                      });
                       Linking.openURL(offer.url);
                     }}
                   >
-                    <Text
-                      color="label"
-                      align="center"
-                      size="17pt"
-                      weight="heavy"
-                    >
+                    <Text color="label" align="center" size="17pt" weight="heavy">
                       {i18n.t(
-                        isExpired
-                          ? i18n.l.nft_offers.single_offer_sheet.offer_expired
-                          : i18n.l.nft_offers.single_offer_sheet.view_offer
+                        isExpired ? i18n.l.nft_offers.single_offer_sheet.offer_expired : i18n.l.nft_offers.single_offer_sheet.view_offer
                       )}
                     </Text>
                   </Box>
@@ -804,20 +677,15 @@ export function NFTSingleOfferSheet() {
                 <>
                   {/* @ts-ignore */}
                   <HoldToAuthorizeButton
-                    backgroundColor={
-                      offer.nft.predominantColor || buttonColorFallback
-                    }
+                    backgroundColor={offer.nft.predominantColor || buttonColorFallback}
                     disabled={!isSufficientGas || !isValidGas}
                     hideInnerBorder
                     label={
                       insufficientEth
                         ? lang.t('button.confirm_exchange.insufficient_token', {
-                            tokenName: getNetworkObj(offer.network as Network)
-                              .nativeCurrency.symbol,
+                            tokenName: getNetworkObj(offer.network as Network).nativeCurrency.symbol,
                           })
-                        : i18n.t(
-                            i18n.l.nft_offers.single_offer_sheet.hold_to_sell
-                          )
+                        : i18n.t(i18n.l.nft_offers.single_offer_sheet.hold_to_sell)
                     }
                     onLongPress={acceptOffer}
                     parentHorizontalPadding={28}
@@ -830,7 +698,7 @@ export function NFTSingleOfferSheet() {
                     }}
                     horizontalPadding={0}
                     currentNetwork={offer.network}
-                    theme={isDarkMode ? 'dark' : 'light'}
+                    theme={theme.isDarkMode ? 'dark' : 'light'}
                   />
                 </>
               )}

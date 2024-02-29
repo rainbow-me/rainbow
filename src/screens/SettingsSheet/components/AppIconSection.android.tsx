@@ -17,6 +17,7 @@ import AppIconZora from '@/assets/appIconZora.png';
 import AppIconZorb from '@/assets/appIconZorb.png';
 import AppIconPoolboy from '@/assets/appIconPoolboy.png';
 import AppIconAdworld from '@/assets/appIconAdworld.png';
+import AppIconFarcaster from '@/assets/appIconFarcaster.png';
 import { BackgroundProvider, Box, Inline, Inset, Text } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
 import { ImgixImage } from '@/components/images';
@@ -24,6 +25,7 @@ import { useTheme } from '@/theme';
 import Logger from '@/utils/logger';
 import {
   AdworldIcon,
+  FarcasterIcon,
   FiniliarIcon,
   GoldDogeIcon,
   OptimismIcon,
@@ -135,6 +137,13 @@ export const tokenGatedIcons: { [key: string]: LockedAppIcon } = {
     source: AppIconAdworld,
     unlock_key: AdworldIcon.unlockKey,
   },
+  farcaster: {
+    accentColor: 'farcasterPurple',
+    key: FarcasterIcon.key,
+    name: 'Rainbowcast',
+    source: AppIconFarcaster,
+    unlock_key: FarcasterIcon.unlockKey,
+  },
 };
 
 const mmkv = new MMKV();
@@ -181,44 +190,37 @@ const AppIconSection = () => {
             </Inline>
             <MenuContainer>
               <Menu>
-                {appIconListItemsWithUnlocked.map(
-                  ({ key, name, accentColor, source }) => (
-                    <MenuItem
-                      key={key}
-                      leftComponent={
-                        <Box
+                {appIconListItemsWithUnlocked.map(({ key, name, accentColor, source }) => (
+                  <MenuItem
+                    key={key}
+                    leftComponent={
+                      <Box
+                        style={{
+                          shadowColor: isDarkMode
+                            ? colors.shadowBlack
+                            : (accentColor && (colors as any)[accentColor]) || colors.shadowBlack,
+                          shadowOffset: { height: 4, width: 0 },
+                          shadowOpacity: 0.3,
+                          shadowRadius: 4,
+                        }}
+                      >
+                        <ImgixImage
+                          source={source as Source}
                           style={{
-                            shadowColor: isDarkMode
-                              ? colors.shadowBlack
-                              : (accentColor && (colors as any)[accentColor]) ||
-                                colors.shadowBlack,
-                            shadowOffset: { height: 4, width: 0 },
-                            shadowOpacity: 0.3,
-                            shadowRadius: 4,
+                            height: 36,
+                            width: 36,
+                            borderRadius: 8,
                           }}
-                        >
-                          <ImgixImage
-                            source={source as Source}
-                            style={{
-                              height: 36,
-                              width: 36,
-                              borderRadius: 8,
-                            }}
-                            size={30}
-                          />
-                        </Box>
-                      }
-                      onPress={() => onSelectIcon(key)}
-                      rightComponent={
-                        key === appIcon && (
-                          <MenuItem.StatusIcon status="selected" />
-                        )
-                      }
-                      size={60}
-                      titleComponent={<MenuItem.Title text={name} />}
-                    />
-                  )
-                )}
+                          size={30}
+                        />
+                      </Box>
+                    }
+                    onPress={() => onSelectIcon(key)}
+                    rightComponent={key === appIcon && <MenuItem.StatusIcon status="selected" />}
+                    size={60}
+                    titleComponent={<MenuItem.Title text={name} />}
+                  />
+                ))}
               </Menu>
             </MenuContainer>
           </Inset>

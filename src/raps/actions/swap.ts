@@ -1,33 +1,21 @@
 import { Signer } from '@ethersproject/abstract-signer';
-import {
-  ChainId,
-  ETH_ADDRESS,
-  fillQuote,
-  Quote,
-  unwrapNativeAsset,
-  wrapNativeAsset,
-  WRAPPED_ASSET,
-} from '@rainbow-me/swaps';
+import { ChainId, ETH_ADDRESS, fillQuote, Quote, unwrapNativeAsset, wrapNativeAsset, WRAPPED_ASSET } from '@rainbow-me/swaps';
 import { captureException } from '@sentry/react-native';
 import { toLower } from 'lodash';
-import {
-  Rap,
-  RapExchangeActionParameters,
-  SwapActionParameters,
-} from '../common';
-import { ProtocolType, TransactionStatus, TransactionType } from '@/entities';
+import { Rap, RapExchangeActionParameters, SwapActionParameters } from '../common';
+import { NewTransaction } from '@/entities';
 
 import { toHex } from '@/handlers/web3';
 import { parseGasParamAmounts } from '@/parsers';
-import { dataAddNewTransaction } from '@/redux/data';
 import store from '@/redux/store';
-import { AllowancesCache, ethereumUtils } from '@/utils';
+import { AllowancesCache } from '@/utils';
 import logger from '@/utils/logger';
 import { estimateSwapGasLimit } from '@/handlers/swap';
 import { MMKV } from 'react-native-mmkv';
 import { STORAGE_IDS } from '@/model/mmkv';
 import { REFERRER } from '@/references';
 import { overrideWithFastSpeedIfNeeded } from '../utils';
+import { addNewTransaction } from '@/state/pendingTransactions';
 
 export const swapMetadataStorage = new MMKV({
   id: STORAGE_IDS.SWAPS_METADATA_STORAGE,
@@ -72,57 +60,17 @@ export const executeSwap = async ({
   };
 
   // Wrap Eth
-  if (
-    sellTokenAddress === ETH_ADDRESS &&
-    buyTokenAddress === WRAPPED_ASSET[chainId]
-  ) {
-    logger.debug(
-      'wrapping native asset',
-      tradeDetails.buyAmount,
-      walletAddress,
-      chainId
-    );
-    return wrapNativeAsset(
-      tradeDetails.buyAmount,
-      wallet,
-      chainId,
-      transactionParams
-    );
+  if (sellTokenAddress === ETH_ADDRESS && buyTokenAddress === WRAPPED_ASSET[chainId]) {
+    logger.debug('wrapping native asset', tradeDetails.buyAmount, walletAddress, chainId);
+    return wrapNativeAsset(tradeDetails.buyAmount, wallet, chainId, transactionParams);
     // Unwrap Weth
-  } else if (
-    sellTokenAddress === WRAPPED_ASSET[chainId] &&
-    buyTokenAddress === ETH_ADDRESS
-  ) {
-    logger.debug(
-      'unwrapping native asset',
-      tradeDetails.sellAmount,
-      walletAddress,
-      chainId
-    );
-    return unwrapNativeAsset(
-      tradeDetails.sellAmount,
-      wallet,
-      chainId,
-      transactionParams
-    );
+  } else if (sellTokenAddress === WRAPPED_ASSET[chainId] && buyTokenAddress === ETH_ADDRESS) {
+    logger.debug('unwrapping native asset', tradeDetails.sellAmount, walletAddress, chainId);
+    return unwrapNativeAsset(tradeDetails.sellAmount, wallet, chainId, transactionParams);
     // Swap
   } else {
-    logger.debug(
-      'FILLQUOTE',
-      tradeDetails,
-      transactionParams,
-      walletAddress,
-      permit,
-      chainId
-    );
-    return fillQuote(
-      tradeDetails,
-      transactionParams,
-      wallet,
-      permit,
-      chainId,
-      REFERRER
-    );
+    logger.debug('FILLQUOTE', tradeDetails, transactionParams, walletAddress, permit, chainId);
+    return fillQuote(tradeDetails, transactionParams, wallet, permit, chainId, REFERRER);
   }
 };
 
@@ -134,16 +82,10 @@ const swap = async (
   baseNonce?: number
 ): Promise<number | undefined> => {
   logger.log(`[${actionName}] base nonce`, baseNonce, 'index:', index);
-  const {
-    inputAmount,
-    tradeDetails,
-    permit,
-    chainId,
-    requiresApprove,
-  } = parameters as SwapActionParameters;
+  const { inputAmount, tradeDetails, permit, chainId, requiresApprove } = parameters as SwapActionParameters;
   const { dispatch } = store;
   const { accountAddress } = store.getState().settings;
-  const { inputCurrency } = store.getState().swap;
+  const { inputCurrency, outputCurrency } = store.getState().swap;
   const { gasFeeParamsBySpeed, selectedGasFee } = store.getState().gas;
   let gasParams = parseGasParamAmounts(selectedGasFee);
 
@@ -193,9 +135,7 @@ const swap = async (
     if (permit) {
       const walletAddress = await wallet.getAddress();
       // Clear the allowance
-      const cacheKey = toLower(
-        `${walletAddress}|${tradeDetails.sellTokenAddress}|${tradeDetails.to}`
-      );
+      const cacheKey = toLower(`${walletAddress}|${tradeDetails.sellTokenAddress}|${tradeDetails.to}`);
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete AllowancesCache.cache[cacheKey];
     }
@@ -208,41 +148,46 @@ const swap = async (
 
   logger.log(`[${actionName}] response`, swap);
 
-  const newTransaction = {
-    ...gasParams,
-    amount: inputAmount,
-    asset: inputCurrency,
+  if (!swap || !swap?.hash) throw Error;
+
+  const newTransaction: NewTransaction = {
     data: swap?.data,
-    flashbots: parameters.flashbots,
     from: accountAddress,
-    gasLimit,
-    hash: swap?.hash ?? null,
-    network: ethereumUtils.getNetworkFromChainId(Number(chainId)),
-    nonce: swap?.nonce ?? null,
-    protocol: ProtocolType.uniswap,
-    status: TransactionStatus.swapping,
     to: swap?.to ?? null,
-    type: TransactionType.trade,
-    value: (swap && toHex(swap.value)) || undefined,
+    value: tradeDetails?.value?.toString() || '',
+    asset: outputCurrency,
+    changes: [
+      {
+        direction: 'out',
+        asset: inputCurrency,
+        value: tradeDetails.sellAmount.toString(),
+      },
+      {
+        direction: 'in',
+        asset: outputCurrency,
+        value: tradeDetails.buyAmount.toString(),
+      },
+    ],
+    hash: swap.hash,
+    network: inputCurrency.network,
+    nonce: swap.nonce,
+    status: 'pending',
+    type: 'swap',
+    flashbots: parameters.flashbots,
+    ...gasParams,
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
 
   if (parameters.meta && swap?.hash) {
-    swapMetadataStorage.set(
-      swap.hash.toLowerCase(),
-      JSON.stringify({ type: 'swap', data: parameters.meta })
-    );
+    swapMetadataStorage.set(swap.hash.toLowerCase(), JSON.stringify({ type: 'swap', data: parameters.meta }));
   }
 
-  dispatch(
-    dataAddNewTransaction(
-      newTransaction,
-      accountAddress,
-      false,
-      // @ts-ignore
-      wallet?.provider
-    )
-  );
+  addNewTransaction({
+    address: accountAddress,
+    transaction: newTransaction,
+    network: inputCurrency.network,
+  });
+
   return swap?.nonce;
 };
 

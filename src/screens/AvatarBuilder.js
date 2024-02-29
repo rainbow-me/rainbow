@@ -1,10 +1,6 @@
 import React, { useMemo, useRef, useState } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useRoute } from '@react-navigation/native';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import ColorCircle from '../components/avatar-builder/ColorCircle';
@@ -21,8 +17,7 @@ import { useTheme } from '@/theme';
 
 const AvatarCircleHeight = 60;
 const AvatarCircleMarginTop = 2;
-const AvatarBuilderTopPoint =
-  HeaderHeightWithStatusBar + AvatarCircleHeight + AvatarCircleMarginTop;
+const AvatarBuilderTopPoint = HeaderHeightWithStatusBar + AvatarCircleHeight + AvatarCircleMarginTop;
 
 const Container = styled(Column)({
   backgroundColor: ({ theme: { colors } }) => colors.transparent,
@@ -31,8 +26,7 @@ const Container = styled(Column)({
 const SheetContainer = styled(Column)({
   backgroundColor: ({ theme: { colors } }) => colors.white,
   borderRadius: 20,
-  height: ({ deviceHeight }) =>
-    deviceHeight ? Math.floor((deviceHeight / 13) ** 1.5) : 420,
+  height: ({ deviceHeight }) => (deviceHeight ? Math.floor((deviceHeight / 13) ** 1.5) : 420),
   overflow: 'hidden',
   width: '100%',
 });
@@ -69,9 +63,7 @@ const AvatarBuilder = () => {
   const { colors } = useTheme();
   const selectedRingPosition = useSharedValue(params.initialAccountColor * 40);
   const { goBack } = useNavigation();
-  const [currentAccountColor, setCurrentAccountColor] = useState(
-    colors.avatarBackgrounds[params.initialAccountColor]
-  );
+  const [currentAccountColor, setCurrentAccountColor] = useState(colors.avatarBackgrounds[params.initialAccountColor]);
   const [currentEmoji, setCurrentEmoji] = useState(null);
   const colorIndex = useRef(params.initialAccountColor);
   const { saveInfo } = useUpdateEmoji();
@@ -88,8 +80,7 @@ const AvatarBuilder = () => {
 
   const selectedOffset = useMemo(() => {
     const maxOffset = colors.avatarBackgrounds.length * 40 - width + 20;
-    const rawOffset =
-      params.initialAccountColor * 40 - width / 2 + width ** 0.5 * 1.5;
+    const rawOffset = params.initialAccountColor * 40 - width / 2 + width ** 0.5 * 1.5;
     let finalOffset = rawOffset;
     if (rawOffset < 0) {
       finalOffset = 0;
@@ -105,21 +96,10 @@ const AvatarBuilder = () => {
   return (
     <Container {...deviceUtils.dimensions} testID="avatar-builder">
       <TouchableBackdrop onPress={goBack} />
-      <Column
-        align="center"
-        pointerEvents="box-none"
-        top={AvatarBuilderTopPoint + AVATAR_CIRCLE_TOP_MARGIN}
-      >
+      <Column align="center" pointerEvents="box-none" top={AvatarBuilderTopPoint + AVATAR_CIRCLE_TOP_MARGIN}>
         <Row justify="center" paddingBottom={16} paddingTop={15} width="100%">
-          <ScrollableColorPicker
-            contentOffset={selectedOffset}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-          >
-            <SelectedColorRing
-              selectedColor={currentAccountColor}
-              style={selectedRingStyle}
-            />
+          <ScrollableColorPicker contentOffset={selectedOffset} horizontal showsHorizontalScrollIndicator={false}>
+            <SelectedColorRing selectedColor={currentAccountColor} style={selectedRingStyle} />
             {colors.avatarBackgrounds.map((color, index) => (
               <ColorCircle
                 backgroundColor={color}
@@ -127,10 +107,7 @@ const AvatarBuilder = () => {
                 key={color}
                 onPressColor={() => {
                   const destination = index * 40;
-                  selectedRingPosition.value = withSpring(
-                    destination,
-                    springConfig
-                  );
+                  selectedRingPosition.value = withSpring(destination, springConfig);
                   colorIndex.current = colors.avatarBackgrounds.indexOf(color);
                   setCurrentAccountColor(color);
                   saveInfo(currentEmoji, colorIndex.current);
@@ -140,12 +117,7 @@ const AvatarBuilder = () => {
           </ScrollableColorPicker>
         </Row>
         <SheetContainer deviceHeight={height}>
-          <EmojiSelector
-            columns={7}
-            onEmojiSelected={onChangeEmoji}
-            showHistory={false}
-            showSearchBar={false}
-          />
+          <EmojiSelector columns={7} onEmojiSelected={onChangeEmoji} showHistory={false} showSearchBar={false} />
         </SheetContainer>
       </Column>
     </Container>

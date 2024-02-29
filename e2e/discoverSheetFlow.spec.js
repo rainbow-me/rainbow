@@ -23,10 +23,7 @@ describe('Discover Screen Flow', () => {
   it('Should show the "Add wallet modal" after tapping import with a valid seed"', async () => {
     await Helpers.clearField('import-sheet-input');
     await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
-    await Helpers.checkIfElementHasString(
-      'import-sheet-button-label',
-      'Continue'
-    );
+    await Helpers.checkIfElementHasString('import-sheet-button-label', 'Continue');
     await Helpers.waitAndTap('import-sheet-button');
     await Helpers.checkIfVisible('wallet-info-modal');
   });
@@ -83,15 +80,9 @@ describe('Discover Screen Flow', () => {
 
   it('Should search and open expanded state for SOCKS', async () => {
     await Helpers.typeText('discover-search-input', 'SOCKS\n', true);
-    await Helpers.checkIfVisible(
-      'discover-currency-select-list-exchange-coin-row-SOCKS-token'
-    );
-    await Helpers.checkIfNotVisible(
-      'discover-currency-select-list-exchange-coin-row-ETH-token'
-    );
-    await Helpers.waitAndTap(
-      'discover-currency-select-list-exchange-coin-row-SOCKS-token'
-    );
+    await Helpers.checkIfVisible('discover-currency-select-list-exchange-coin-row-SOCKS-mainnet');
+    await Helpers.checkIfNotVisible('discover-currency-select-list-exchange-coin-row-ETH-mainnet');
+    await Helpers.waitAndTap('discover-currency-select-list-exchange-coin-row-SOCKS-mainnet');
     await Helpers.checkIfVisible('chart-header-Unisocks');
   });
 
@@ -100,9 +91,7 @@ describe('Discover Screen Flow', () => {
       // RNBW-4035
       await Helpers.swipe('expanded-state-header', 'down');
     }
-    await Helpers.checkIfNotVisible(
-      'discover-currency-select-list-exchange-coin-row-ETH-token'
-    );
+    await Helpers.checkIfNotVisible('discover-currency-select-list-exchange-coin-row-ETH-mainnet');
   });
 
   it('Should display search results in the correct order', async () => {
@@ -117,20 +106,10 @@ describe('Discover Screen Flow', () => {
 
   it.skip('Should search and open Profile Sheet for rainbowwallet.eth', async () => {
     await Helpers.waitAndTap('discover-search-clear-input');
-    await Helpers.typeText(
-      'discover-search-input',
-      'rainbowwallet.eth\n',
-      true
-    );
-    await Helpers.checkIfVisible(
-      'discover-currency-select-list-contact-row-rainbowwallet.eth'
-    );
-    await Helpers.checkIfNotVisible(
-      'discover-currency-select-list-exchange-coin-row-ETH-token'
-    );
-    await Helpers.waitAndTap(
-      'discover-currency-select-list-contact-row-rainbowwallet.eth'
-    );
+    await Helpers.typeText('discover-search-input', 'rainbowwallet.eth\n', true);
+    await Helpers.checkIfVisible('discover-currency-select-list-contact-row-rainbowwallet.eth');
+    await Helpers.checkIfNotVisible('discover-currency-select-list-exchange-coin-row-ETH-mainnet');
+    await Helpers.waitAndTap('discover-currency-select-list-contact-row-rainbowwallet.eth');
     await Helpers.checkIfVisible('profile-sheet');
   });
 
@@ -141,31 +120,11 @@ describe('Discover Screen Flow', () => {
   it.skip('Should close profile and return to Search on swiping down', async () => {
     await Helpers.swipe('profile-sheet', 'down');
     await Helpers.waitAndTap('discover-search-clear-input');
-    await Helpers.checkIfVisible(
-      'discover-currency-select-list-exchange-coin-row-ETH-token'
-    );
+    await Helpers.checkIfVisible('discover-currency-select-list-exchange-coin-row-ETH-mainnet');
   });
 
   it('Should close search and return to Discover Home on pressing Done', async () => {
     await Helpers.waitAndTap('done-button');
-  });
-
-  it.skip('Should open DPI expanded state on DPI press', async () => {
-    await Helpers.swipe('discover-sheet', 'up', 0.8);
-    await Helpers.waitAndTap('dpi-button');
-    await Helpers.checkIfVisible('index-expanded-state');
-    await Helpers.checkIfVisible('index-underlying-assets');
-  });
-
-  it.skip('Should open underlying asset expanded state', async () => {
-    await Helpers.waitAndTap('underlying-asset-UNI');
-    await Helpers.checkIfVisible('chart-header-Uniswap');
-    await Helpers.swipe('expanded-state-header', 'down');
-  });
-
-  it.skip('Should close DPI expanded state and return to Discover Home', async () => {
-    await Helpers.swipe('index-expanded-state-header', 'down');
-    await Helpers.checkIfVisible('discover-header');
   });
 
   afterAll(async () => {

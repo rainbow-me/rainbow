@@ -6,27 +6,19 @@ import {
 } from 'react-native-dotenv';
 import { Rap, RapActionTypes, RapENSActionParameters } from '../common';
 import { analytics } from '@/analytics';
-import { ENSRegistrationRecords, TransactionGasParamAmounts } from '@/entities';
-import {
-  estimateENSTransactionGasLimit,
-  formatRecordsForTransaction,
-} from '@/handlers/ens';
+import { ENSRegistrationRecords, NewTransaction, TransactionGasParamAmounts } from '@/entities';
+import { estimateENSTransactionGasLimit, formatRecordsForTransaction } from '@/handlers/ens';
 import { toHex } from '@/handlers/web3';
 import { NetworkTypes } from '@/helpers';
-import {
-  ENSRegistrationTransactionType,
-  getENSExecutionDetails,
-  REGISTRATION_MODES,
-} from '@/helpers/ens';
-import { dataAddNewTransaction } from '@/redux/data';
-import {
-  saveCommitRegistrationParameters,
-  updateTransactionRegistrationParameters,
-} from '@/redux/ensRegistration';
+import { ENSRegistrationTransactionType, getENSExecutionDetails, REGISTRATION_MODES } from '@/helpers/ens';
+
+import { saveCommitRegistrationParameters, updateTransactionRegistrationParameters } from '@/redux/ensRegistration';
 import store from '@/redux/store';
 import { ethereumUtils } from '@/utils';
 import logger from '@/utils/logger';
 import { parseGasParamAmounts } from '@/parsers';
+import { addNewTransaction } from '@/state/pendingTransactions';
+import { Network } from '@/networks/types';
 
 const executeCommit = async (
   name?: string,
@@ -55,9 +47,7 @@ const executeCommit = async (
     contract?.commit(...methodArguments, {
       gasLimit: gasLimit ? toHex(gasLimit) : undefined,
       maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
-      maxPriorityFeePerGas: maxPriorityFeePerGas
-        ? toHex(maxPriorityFeePerGas)
-        : undefined,
+      maxPriorityFeePerGas: maxPriorityFeePerGas ? toHex(maxPriorityFeePerGas) : undefined,
       nonce: nonce ? toHex(nonce) : undefined,
       ...(value ? { value } : {}),
     })
@@ -90,9 +80,7 @@ const executeRegisterWithConfig = async (
     contract?.registerWithConfig(...methodArguments, {
       gasLimit: gasLimit ? toHex(gasLimit) : undefined,
       maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
-      maxPriorityFeePerGas: maxPriorityFeePerGas
-        ? toHex(maxPriorityFeePerGas)
-        : undefined,
+      maxPriorityFeePerGas: maxPriorityFeePerGas ? toHex(maxPriorityFeePerGas) : undefined,
       nonce: nonce ? toHex(nonce) : undefined,
       ...(value ? { value } : {}),
     })
@@ -119,9 +107,7 @@ const executeMulticall = async (
     contract?.multicall(...methodArguments, {
       gasLimit: gasLimit ? toHex(gasLimit) : undefined,
       maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
-      maxPriorityFeePerGas: maxPriorityFeePerGas
-        ? toHex(maxPriorityFeePerGas)
-        : undefined,
+      maxPriorityFeePerGas: maxPriorityFeePerGas ? toHex(maxPriorityFeePerGas) : undefined,
       nonce: nonce ? toHex(nonce) : undefined,
       ...(value ? { value } : {}),
     })
@@ -153,9 +139,7 @@ const executeRenew = async (
     contract?.renew(...methodArguments, {
       gasLimit: gasLimit ? toHex(gasLimit) : undefined,
       maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
-      maxPriorityFeePerGas: maxPriorityFeePerGas
-        ? toHex(maxPriorityFeePerGas)
-        : undefined,
+      maxPriorityFeePerGas: maxPriorityFeePerGas ? toHex(maxPriorityFeePerGas) : undefined,
       nonce: nonce ? toHex(nonce) : undefined,
       ...(value ? { value } : {}),
     })
@@ -183,9 +167,7 @@ const executeSetName = async (
     contract?.setName(...methodArguments, {
       gasLimit: gasLimit ? toHex(gasLimit) : undefined,
       maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
-      maxPriorityFeePerGas: maxPriorityFeePerGas
-        ? toHex(maxPriorityFeePerGas)
-        : undefined,
+      maxPriorityFeePerGas: maxPriorityFeePerGas ? toHex(maxPriorityFeePerGas) : undefined,
       nonce: nonce ? toHex(nonce) : undefined,
       ...(value ? { value } : {}),
     })
@@ -213,9 +195,7 @@ const executeSetAddr = async (
     contract?.setAddr(...methodArguments, {
       gasLimit: gasLimit ? toHex(gasLimit) : undefined,
       maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
-      maxPriorityFeePerGas: maxPriorityFeePerGas
-        ? toHex(maxPriorityFeePerGas)
-        : undefined,
+      maxPriorityFeePerGas: maxPriorityFeePerGas ? toHex(maxPriorityFeePerGas) : undefined,
       nonce: nonce ? toHex(nonce) : undefined,
       ...(value ? { value } : {}),
     })
@@ -243,9 +223,7 @@ const executeSetContenthash = async (
     contract?.setContenthash(...methodArguments, {
       gasLimit: gasLimit ? toHex(gasLimit) : undefined,
       maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
-      maxPriorityFeePerGas: maxPriorityFeePerGas
-        ? toHex(maxPriorityFeePerGas)
-        : undefined,
+      maxPriorityFeePerGas: maxPriorityFeePerGas ? toHex(maxPriorityFeePerGas) : undefined,
       nonce: nonce ? toHex(nonce) : undefined,
       ...(value ? { value } : {}),
     })
@@ -273,9 +251,7 @@ const executeSetText = async (
     contract?.setText(...methodArguments, {
       gasLimit: gasLimit ? toHex(gasLimit) : undefined,
       maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
-      maxPriorityFeePerGas: maxPriorityFeePerGas
-        ? toHex(maxPriorityFeePerGas)
-        : undefined,
+      maxPriorityFeePerGas: maxPriorityFeePerGas ? toHex(maxPriorityFeePerGas) : undefined,
       nonce: nonce ? toHex(nonce) : undefined,
       ...(value ? { value } : {}),
     })
@@ -305,9 +281,7 @@ const executeReclaim = async (
     contract?.reclaim(...methodArguments, {
       gasLimit: gasLimit ? toHex(gasLimit) : undefined,
       maxFeePerGas: maxFeePerGas ? toHex(maxFeePerGas) : undefined,
-      maxPriorityFeePerGas: maxPriorityFeePerGas
-        ? toHex(maxPriorityFeePerGas)
-        : undefined,
+      maxPriorityFeePerGas: maxPriorityFeePerGas ? toHex(maxPriorityFeePerGas) : undefined,
       nonce: nonce ? toHex(nonce) : undefined,
       ...(value ? { value } : {}),
     })
@@ -327,15 +301,7 @@ const ensAction = async (
   const { accountAddress: ownerAddress } = store.getState().settings;
   const { selectedGasFee } = store.getState().gas;
 
-  const {
-    name,
-    duration,
-    rentPrice,
-    records,
-    salt,
-    toAddress,
-    mode,
-  } = parameters;
+  const { name, duration, rentPrice, records, salt, toAddress, mode } = parameters;
 
   logger.log(`[${actionName}] rap for`, name);
 
@@ -356,8 +322,7 @@ const ensAction = async (
     const notUseOwnerAddress =
       IS_TESTING !== 'true' &&
       mode === REGISTRATION_MODES.CREATE &&
-      (type === ENSRegistrationTransactionType.MULTICALL ||
-        type === ENSRegistrationTransactionType.SET_TEXT);
+      (type === ENSRegistrationTransactionType.MULTICALL || type === ENSRegistrationTransactionType.SET_TEXT);
 
     gasLimit = await estimateENSTransactionGasLimit({
       duration,
@@ -378,9 +343,7 @@ const ensAction = async (
   let maxFeePerGas;
   let maxPriorityFeePerGas;
   try {
-    const gasParams = parseGasParamAmounts(
-      selectedGasFee
-    ) as TransactionGasParamAmounts;
+    const gasParams = parseGasParamAmounts(selectedGasFee) as TransactionGasParamAmounts;
     maxFeePerGas = gasParams.maxFeePerGas;
     maxPriorityFeePerGas = gasParams.maxPriorityFeePerGas;
 
@@ -419,15 +382,7 @@ const ensAction = async (
         });
         break;
       case ENSRegistrationTransactionType.MULTICALL:
-        tx = await executeMulticall(
-          name,
-          ensRegistrationRecords,
-          gasLimit,
-          maxFeePerGas,
-          maxPriorityFeePerGas,
-          wallet,
-          nonce
-        );
+        tx = await executeMulticall(name, ensRegistrationRecords, gasLimit, maxFeePerGas, maxPriorityFeePerGas, wallet, nonce);
         analytics.track('Edited ENS records', {
           category: 'profiles',
         });
@@ -455,88 +410,37 @@ const ensAction = async (
         });
         break;
       case ENSRegistrationTransactionType.RENEW:
-        tx = await executeRenew(
-          name,
-          duration,
-          ownerAddress,
-          rentPrice,
-          gasLimit,
-          maxFeePerGas,
-          maxPriorityFeePerGas,
-          wallet,
-          nonce
-        );
+        tx = await executeRenew(name, duration, ownerAddress, rentPrice, gasLimit, maxFeePerGas, maxPriorityFeePerGas, wallet, nonce);
         analytics.track('Extended ENS', {
           category: 'profiles',
         });
         break;
       case ENSRegistrationTransactionType.SET_TEXT:
-        tx = await executeSetText(
-          name,
-          ensRegistrationRecords,
-          gasLimit,
-          maxFeePerGas,
-          maxPriorityFeePerGas,
-          wallet,
-          nonce
-        );
+        tx = await executeSetText(name, ensRegistrationRecords, gasLimit, maxFeePerGas, maxPriorityFeePerGas, wallet, nonce);
         analytics.track('Edited ENS records', {
           category: 'profiles',
         });
         break;
       case ENSRegistrationTransactionType.SET_CONTENTHASH:
-        tx = await executeSetContenthash(
-          name,
-          ensRegistrationRecords,
-          gasLimit,
-          maxFeePerGas,
-          maxPriorityFeePerGas,
-          wallet,
-          nonce
-        );
+        tx = await executeSetContenthash(name, ensRegistrationRecords, gasLimit, maxFeePerGas, maxPriorityFeePerGas, wallet, nonce);
         analytics.track('Edited ENS records', {
           category: 'profiles',
         });
         break;
       case ENSRegistrationTransactionType.SET_ADDR:
-        tx = await executeSetAddr(
-          name,
-          ensRegistrationRecords,
-          gasLimit,
-          maxFeePerGas,
-          maxPriorityFeePerGas,
-          wallet,
-          nonce
-        );
+        tx = await executeSetAddr(name, ensRegistrationRecords, gasLimit, maxFeePerGas, maxPriorityFeePerGas, wallet, nonce);
         analytics.track('Edited ENS records', {
           category: 'profiles',
         });
         break;
       case ENSRegistrationTransactionType.RECLAIM:
-        tx = await executeReclaim(
-          name,
-          toAddress,
-          ensRegistrationRecords,
-          gasLimit,
-          maxFeePerGas,
-          maxPriorityFeePerGas,
-          wallet,
-          nonce
-        );
+        tx = await executeReclaim(name, toAddress, ensRegistrationRecords, gasLimit, maxFeePerGas, maxPriorityFeePerGas, wallet, nonce);
         analytics.track('Transferred ENS control', {
           category: 'profiles',
         });
         break;
       case ENSRegistrationTransactionType.SET_NAME:
-        tx = await executeSetName(
-          name,
-          ownerAddress,
-          gasLimit,
-          maxFeePerGas,
-          maxPriorityFeePerGas,
-          wallet,
-          nonce
-        );
+        tx = await executeSetName(name, ownerAddress, gasLimit, maxFeePerGas, maxPriorityFeePerGas, wallet, nonce);
         analytics.track('Set ENS to primary ', {
           category: 'profiles',
         });
@@ -549,31 +453,32 @@ const ensAction = async (
 
   logger.log(`[${actionName}] response`, tx);
 
-  const nativeAsset = await ethereumUtils.getNetworkNativeAsset(
-    NetworkTypes.mainnet
-  );
-  const newTransaction = {
-    amount: 0,
-    asset: nativeAsset,
+  const newTransaction: NewTransaction = {
     data: tx.data,
-    ensCommitRegistrationName:
-      type === ENSRegistrationTransactionType.COMMIT ? name : undefined,
+    ensCommitRegistrationName: type === ENSRegistrationTransactionType.COMMIT ? name : undefined,
     ensRegistration: true,
     from: ownerAddress,
-    gasLimit,
     hash: tx?.hash,
     maxFeePerGas,
     maxPriorityFeePerGas,
     nonce: tx?.nonce,
+    type: 'contract_interaction',
+    contract: {
+      name: 'ENS',
+      iconUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/dapps/ens.domains.png',
+    },
     to: tx?.to,
     value: toHex(tx.value),
     network: NetworkTypes.mainnet,
+    status: 'pending',
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
-  // @ts-expect-error Since src/redux/data.js is not typed yet, `accountAddress`
-  // being a string conflicts with the inferred type of "null" for the second
-  // parameter.
-  await dispatch(dataAddNewTransaction(newTransaction, ownerAddress));
+
+  addNewTransaction({
+    address: ownerAddress,
+    transaction: newTransaction,
+    network: Network.mainnet,
+  });
   return tx?.nonce;
 };
 
@@ -584,14 +489,7 @@ const commitENS = async (
   parameters: RapENSActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
-  return ensAction(
-    wallet,
-    RapActionTypes.commitENS,
-    index,
-    parameters,
-    ENSRegistrationTransactionType.COMMIT,
-    baseNonce
-  );
+  return ensAction(wallet, RapActionTypes.commitENS, index, parameters, ENSRegistrationTransactionType.COMMIT, baseNonce);
 };
 
 const multicallENS = async (
@@ -601,14 +499,7 @@ const multicallENS = async (
   parameters: RapENSActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
-  return ensAction(
-    wallet,
-    RapActionTypes.multicallENS,
-    index,
-    parameters,
-    ENSRegistrationTransactionType.MULTICALL,
-    baseNonce
-  );
+  return ensAction(wallet, RapActionTypes.multicallENS, index, parameters, ENSRegistrationTransactionType.MULTICALL, baseNonce);
 };
 
 const registerWithConfig = async (
@@ -635,14 +526,7 @@ const renewENS = async (
   parameters: RapENSActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
-  return ensAction(
-    wallet,
-    RapActionTypes.renewENS,
-    index,
-    parameters,
-    ENSRegistrationTransactionType.RENEW,
-    baseNonce
-  );
+  return ensAction(wallet, RapActionTypes.renewENS, index, parameters, ENSRegistrationTransactionType.RENEW, baseNonce);
 };
 
 const setNameENS = async (
@@ -652,14 +536,7 @@ const setNameENS = async (
   parameters: RapENSActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
-  return ensAction(
-    wallet,
-    RapActionTypes.setNameENS,
-    index,
-    parameters,
-    ENSRegistrationTransactionType.SET_NAME,
-    baseNonce
-  );
+  return ensAction(wallet, RapActionTypes.setNameENS, index, parameters, ENSRegistrationTransactionType.SET_NAME, baseNonce);
 };
 
 const setAddrENS = async (
@@ -669,14 +546,7 @@ const setAddrENS = async (
   parameters: RapENSActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
-  return ensAction(
-    wallet,
-    RapActionTypes.setAddrENS,
-    index,
-    parameters,
-    ENSRegistrationTransactionType.SET_ADDR,
-    baseNonce
-  );
+  return ensAction(wallet, RapActionTypes.setAddrENS, index, parameters, ENSRegistrationTransactionType.SET_ADDR, baseNonce);
 };
 
 const reclaimENS = async (
@@ -686,14 +556,7 @@ const reclaimENS = async (
   parameters: RapENSActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
-  return ensAction(
-    wallet,
-    RapActionTypes.reclaimENS,
-    index,
-    parameters,
-    ENSRegistrationTransactionType.RECLAIM,
-    baseNonce
-  );
+  return ensAction(wallet, RapActionTypes.reclaimENS, index, parameters, ENSRegistrationTransactionType.RECLAIM, baseNonce);
 };
 
 const setTextENS = async (
@@ -703,14 +566,7 @@ const setTextENS = async (
   parameters: RapENSActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
-  return ensAction(
-    wallet,
-    RapActionTypes.setTextENS,
-    index,
-    parameters,
-    ENSRegistrationTransactionType.SET_TEXT,
-    baseNonce
-  );
+  return ensAction(wallet, RapActionTypes.setTextENS, index, parameters, ENSRegistrationTransactionType.SET_TEXT, baseNonce);
 };
 
 const setContenthashENS = async (
@@ -720,14 +576,7 @@ const setContenthashENS = async (
   parameters: RapENSActionParameters,
   baseNonce?: number
 ): Promise<number | undefined> => {
-  return ensAction(
-    wallet,
-    RapActionTypes.setContenthashENS,
-    index,
-    parameters,
-    ENSRegistrationTransactionType.SET_CONTENTHASH,
-    baseNonce
-  );
+  return ensAction(wallet, RapActionTypes.setContenthashENS, index, parameters, ENSRegistrationTransactionType.SET_CONTENTHASH, baseNonce);
 };
 
 export default {

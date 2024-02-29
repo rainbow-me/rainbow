@@ -14,18 +14,10 @@ const TOKEN_GATE_CHECKER_ADDRESS: Record<string, string> = {
   base: '0x7edddf0b8e7471e0ebf0df67ad179598c0bef695',
 };
 
-export const checkIfWalletsOwnNft = async (
-  tokenAddress: EthereumAddress[],
-  network: Network,
-  walletsToCheck: EthereumAddress[]
-) => {
+export const checkIfWalletsOwnNft = async (tokenAddress: EthereumAddress[], network: Network, walletsToCheck: EthereumAddress[]) => {
   const p = await getProviderForNetwork(network);
 
-  const contractInstance = new Contract(
-    TOKEN_GATE_CHECKER_ADDRESS[network],
-    tokenGateCheckerAbi,
-    p
-  );
+  const contractInstance = new Contract(TOKEN_GATE_CHECKER_ADDRESS[network], tokenGateCheckerAbi, p);
 
   try {
     const found = contractInstance.areOwners(tokenAddress, walletsToCheck);

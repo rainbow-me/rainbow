@@ -9,8 +9,7 @@ globalStyle('*', {
 globalStyle('html, body', {
   backgroundColor: colorModeVars.backgroundColors['body (Deprecated)'],
   color: colorModeVars.foregroundColors['primary (Deprecated)'],
-  fontFamily:
-    "'SFRounded', ui-rounded, 'SF Pro Rounded', system-ui, 'Helvetica Neue', Arial, Helvetica, sans-serif",
+  fontFamily: "'SFRounded', ui-rounded, 'SF Pro Rounded', system-ui, 'Helvetica Neue', Arial, Helvetica, sans-serif",
   margin: 0,
   MozOsxFontSmoothing: 'grayscale',
   padding: 0,

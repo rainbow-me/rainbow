@@ -81,8 +81,6 @@ const Routes = {
   SWAP_DETAILS_SHEET: 'SwapDetailsSheet',
   SWAP_SETTINGS_SHEET: 'SwapSettingsSheet',
   SWIPE_LAYOUT: 'SwipeLayout',
-  TOKEN_INDEX_SCREEN: 'TokenIndexScreen',
-  TOKEN_INDEX_SHEET: 'TokenIndexSheet',
   TRANSACTION_DETAILS: 'TransactionDetails',
   WALLET_CONNECT_APPROVAL_SHEET: 'WalletConnectApprovalSheet',
   WALLET_CONNECT_REDIRECT_SHEET: 'WalletConnectRedirectSheet',
@@ -109,12 +107,9 @@ export const NATIVE_ROUTES = [
   Routes.SETTINGS_SHEET,
   Routes.EXCHANGE_MODAL,
   Routes.EXPANDED_ASSET_SHEET,
-  Routes.TOKEN_INDEX_SHEET,
   Routes.CHANGE_WALLET_SHEET,
   Routes.MODAL_SCREEN,
-  ...(IS_IOS
-    ? [Routes.SEND_SHEET_NAVIGATOR, Routes.ADD_CASH_SCREEN_NAVIGATOR]
-    : []),
+  ...(IS_IOS ? [Routes.SEND_SHEET_NAVIGATOR, Routes.ADD_CASH_SCREEN_NAVIGATOR] : []),
 ];
 
 const RoutesWithPlatformDifferences = {

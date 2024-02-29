@@ -1,19 +1,13 @@
-import { arcClient, arcDevClient } from '@/graphql';
+import { arcClient } from '@/graphql';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { IS_DEV } from '@/env';
 import { logger } from '@/logger';
 
 export type PoapMintError = 'LIMIT_EXCEEDED' | 'EVENT_EXPIRED' | 'UNKNOWN';
 
-export const getPoapAndOpenSheetWithSecretWord = async (
-  secretWord: string,
-  goBack: boolean
-) => {
+export const getPoapAndOpenSheetWithSecretWord = async (secretWord: string, goBack: boolean) => {
   try {
-    const client = IS_DEV ? arcDevClient : arcClient;
-
-    const event = await client.getPoapEventBySecretWord({
+    const event = await arcClient.getPoapEventBySecretWord({
       secretWord,
     });
 
@@ -30,14 +24,9 @@ export const getPoapAndOpenSheetWithSecretWord = async (
   }
 };
 
-export const getPoapAndOpenSheetWithQRHash = async (
-  qrHash: string,
-  goBack: boolean
-) => {
+export const getPoapAndOpenSheetWithQRHash = async (qrHash: string, goBack: boolean) => {
   try {
-    const client = IS_DEV ? arcDevClient : arcClient;
-
-    const event = await client.getPoapEventByQrHash({
+    const event = await arcClient.getPoapEventByQrHash({
       qrHash,
     });
 

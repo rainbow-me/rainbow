@@ -1,23 +1,21 @@
 import { useRoute } from '@react-navigation/native';
 import { useCallback, useMemo } from 'react';
 import { InteractionManager } from 'react-native';
-import useAsset from './useAsset';
+
 import useWallets from './useWallets';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import AssetInputTypes from '@/helpers/assetInputTypes';
 import { useNavigation } from '@/navigation';
 import { watchingAlert } from '@/utils';
+import { RainbowToken } from '@/entities';
 
 export default function useExpandedStateNavigation(
-  inputType: typeof AssetInputTypes[keyof typeof AssetInputTypes],
-  fromDiscover = false
+  inputType: (typeof AssetInputTypes)[keyof typeof AssetInputTypes] | null,
+  fromDiscover = false,
+  asset: RainbowToken
 ) {
   const { goBack, navigate } = useNavigation();
-  const { params } = useRoute();
   const { isReadOnlyWallet } = useWallets();
-
-  // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
-  const asset = useAsset(params.asset);
 
   const navigationPayload = useMemo(() => {
     switch (inputType) {
@@ -45,10 +43,7 @@ export default function useExpandedStateNavigation(
 
       InteractionManager.runAfterInteractions(goBack);
       InteractionManager.runAfterInteractions(() => {
-        setTimeout(
-          () => navigate(routeName, traverseParams(navigationPayload)),
-          50
-        );
+        setTimeout(() => navigate(routeName, traverseParams(navigationPayload)), 50);
       });
     },
     [goBack, isReadOnlyWallet, navigate, navigationPayload]

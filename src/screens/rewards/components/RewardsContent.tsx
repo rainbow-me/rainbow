@@ -16,24 +16,13 @@ type Props = {
   isLoadingError?: boolean;
 };
 
-export const RewardsContent: React.FC<Props> = ({
-  assetPrice,
-  data,
-  isLoading,
-  isLoadingError,
-}) => {
+export const RewardsContent: React.FC<Props> = ({ assetPrice, data, isLoading, isLoadingError }) => {
   if (isLoading) {
     return <RewardsFakeContent />;
   }
 
   if (isLoadingError || !data || !data.rewards) {
-    return (
-      <RewardsProgramStatus
-        emoji="😵"
-        title={i18n.t(i18n.l.rewards.error_title)}
-        text={i18n.t(i18n.l.rewards.error_text)}
-      />
-    );
+    return <RewardsProgramStatus emoji="😵" title={i18n.t(i18n.l.rewards.error_title)} text={i18n.t(i18n.l.rewards.error_text)} />;
   }
 
   return (
@@ -62,11 +51,7 @@ export const RewardsContent: React.FC<Props> = ({
         />
       )}
       {data.rewards.stats && (
-        <RewardsStats
-          actions={data.rewards.stats?.actions ?? []}
-          assetPrice={assetPrice}
-          color={data.rewards.meta.color}
-        />
+        <RewardsStats actions={data.rewards.stats?.actions ?? []} assetPrice={assetPrice} color={data.rewards.meta.color} />
       )}
     </Box>
   );

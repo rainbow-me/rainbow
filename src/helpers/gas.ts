@@ -25,42 +25,28 @@ export const getTrendKey = memoFn((trend: number) => {
   return NO_TREND;
 });
 
-export const calculateMinerTipAddDifference = memoFn(
-  (maxPriorityFee: string, txNetwork: Network) => {
-    const networkObject = getNetworkObj(txNetwork);
-    const isL2 = networkObject.networkType === 'layer2';
-    const FEE_INCREMENT = isL2
-      ? PRIORITY_FEE_L2_INCREMENT
-      : PRIORITY_FEE_INCREMENT;
-    const FEE_THRESHOLD = isL2
-      ? PRIORITY_FEE_L2_THRESHOLD
-      : PRIORITY_FEE_THRESHOLD;
-    const diff =
-      Math.round((Number(maxPriorityFee) % FEE_INCREMENT) * 100) / 100;
-    if (diff > FEE_INCREMENT - FEE_THRESHOLD) {
-      return 2 * FEE_INCREMENT - diff;
-    } else {
-      return FEE_INCREMENT - diff;
-    }
+export const calculateMinerTipAddDifference = memoFn((maxPriorityFee: string, txNetwork: Network) => {
+  const networkObject = getNetworkObj(txNetwork);
+  const isL2 = networkObject.networkType === 'layer2';
+  const FEE_INCREMENT = isL2 ? PRIORITY_FEE_L2_INCREMENT : PRIORITY_FEE_INCREMENT;
+  const FEE_THRESHOLD = isL2 ? PRIORITY_FEE_L2_THRESHOLD : PRIORITY_FEE_THRESHOLD;
+  const diff = Math.round((Number(maxPriorityFee) % FEE_INCREMENT) * 100) / 100;
+  if (diff > FEE_INCREMENT - FEE_THRESHOLD) {
+    return 2 * FEE_INCREMENT - diff;
+  } else {
+    return FEE_INCREMENT - diff;
   }
-);
+});
 
-export const calculateMinerTipSubstDifference = memoFn(
-  (maxPriorityFee: string, txNetwork: Network) => {
-    const networkObject = getNetworkObj(txNetwork);
-    const isL2 = networkObject.networkType === 'layer2';
-    const FEE_INCREMENT = isL2
-      ? PRIORITY_FEE_L2_INCREMENT
-      : PRIORITY_FEE_INCREMENT;
-    const FEE_THRESHOLD = isL2
-      ? PRIORITY_FEE_L2_THRESHOLD
-      : PRIORITY_FEE_THRESHOLD;
-    const diff =
-      Math.round((Number(maxPriorityFee) % FEE_INCREMENT) * 100) / 100;
-    if (diff < FEE_THRESHOLD) {
-      return FEE_INCREMENT + diff;
-    } else {
-      return diff || FEE_INCREMENT;
-    }
+export const calculateMinerTipSubstDifference = memoFn((maxPriorityFee: string, txNetwork: Network) => {
+  const networkObject = getNetworkObj(txNetwork);
+  const isL2 = networkObject.networkType === 'layer2';
+  const FEE_INCREMENT = isL2 ? PRIORITY_FEE_L2_INCREMENT : PRIORITY_FEE_INCREMENT;
+  const FEE_THRESHOLD = isL2 ? PRIORITY_FEE_L2_THRESHOLD : PRIORITY_FEE_THRESHOLD;
+  const diff = Math.round((Number(maxPriorityFee) % FEE_INCREMENT) * 100) / 100;
+  if (diff < FEE_THRESHOLD) {
+    return FEE_INCREMENT + diff;
+  } else {
+    return diff || FEE_INCREMENT;
   }
-);
+});

@@ -21,11 +21,7 @@ export default function WatchButton({ ensName }: { ensName?: string }) {
   }, [ensName, navigate, startRegistration]);
 
   return (
-    <ActionButton
-      onPress={handlePressEdit}
-      testID="edit-profile-button"
-      variant="outlined"
-    >
+    <ActionButton onPress={handlePressEdit} testID="edit-profile-button" variant="outlined">
       {lang.t('profiles.actions.edit_profile')}
     </ActionButton>
   );

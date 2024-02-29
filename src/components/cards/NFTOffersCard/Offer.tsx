@@ -4,22 +4,9 @@ import ConditionalWrap from 'conditional-wrap';
 import { TextColor, globalColors } from '@/design-system/color/palettes';
 import { ImgixImage } from '@/components/images';
 import MaskedView from '@react-native-masked-view/masked-view';
-import {
-  convertAmountToNativeDisplay,
-  getFormattedTimeQuantity,
-  handleSignificantDecimals,
-} from '@/helpers/utilities';
-import { CoinIcon } from '@/components/coin-icon';
+import { convertAmountToNativeDisplay, getFormattedTimeQuantity, handleSignificantDecimals } from '@/helpers/utilities';
 import { NftOffer, SortCriterion } from '@/graphql/__generated__/arc';
-import {
-  AccentColorProvider,
-  Box,
-  Inline,
-  Inset,
-  Text,
-  useBackgroundColor,
-  useColorMode,
-} from '@/design-system';
+import { AccentColorProvider, Box, Inline, Inset, Text, useBackgroundColor, useColorMode } from '@/design-system';
 import { RainbowError, logger } from '@/logger';
 import { ButtonPressAnimation } from '@/components/animations';
 import Routes from '@/navigation/routesNames';
@@ -32,6 +19,10 @@ import { useRecoilValue } from 'recoil';
 import { nftOffersSortAtom } from '@/components/nft-offers/SortMenu';
 import { View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
+import { useAccountSettings } from '@/hooks';
+import { Network } from '@/networks/types';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 export const CELL_HORIZONTAL_PADDING = 7;
@@ -58,34 +49,14 @@ export const FakeOffer = () => {
   return (
     <AccentColorProvider color={colors.skeleton}>
       <Inset vertical="10px" horizontal={{ custom: 7 }}>
-        <Box
-          background="accent"
-          width={{ custom: NFT_IMAGE_SIZE }}
-          height={{ custom: NFT_IMAGE_SIZE }}
-          borderRadius={12}
-        />
+        <Box background="accent" width={{ custom: NFT_IMAGE_SIZE }} height={{ custom: NFT_IMAGE_SIZE }} borderRadius={12} />
         <Box paddingBottom={{ custom: 7 }} paddingTop={{ custom: 12 }}>
           <Inline space="4px" alignVertical="center">
-            <Box
-              background="accent"
-              width={{ custom: 12 }}
-              height={{ custom: 12 }}
-              borderRadius={6}
-            />
-            <Box
-              background="accent"
-              width={{ custom: 50 }}
-              height={{ custom: 9.3333 }}
-              borderRadius={9.3333 / 2}
-            />
+            <Box background="accent" width={{ custom: 12 }} height={{ custom: 12 }} borderRadius={6} />
+            <Box background="accent" width={{ custom: 50 }} height={{ custom: 9.3333 }} borderRadius={9.3333 / 2} />
           </Inline>
         </Box>
-        <Box
-          background="accent"
-          width={{ custom: 50 }}
-          height={{ custom: 9.3333 }}
-          borderRadius={9.3333 / 2}
-        />
+        <Box background="accent" width={{ custom: 50 }} height={{ custom: 9.3333 }} borderRadius={9.3333 / 2} />
       </Inset>
     </AccentColorProvider>
   );
@@ -94,20 +65,20 @@ export const FakeOffer = () => {
 export const Offer = ({ offer }: { offer: NftOffer }) => {
   const { navigate } = useNavigation();
   const { colorMode } = useColorMode();
-  const { isDarkMode } = useTheme();
+  const theme = useTheme();
+  const { nativeCurrency } = useAccountSettings();
+  const { data: externalAsset } = useExternalToken({
+    address: offer.paymentToken.address,
+    network: offer.network as Network,
+    currency: nativeCurrency,
+  });
 
   const surfacePrimaryElevated = useBackgroundColor('surfacePrimaryElevated');
-  const surfaceSecondaryElevated = useBackgroundColor(
-    'surfaceSecondaryElevated'
-  );
+  const surfaceSecondaryElevated = useBackgroundColor('surfaceSecondaryElevated');
 
   const sortCriterion = useRecoilValue(nftOffersSortAtom);
 
-  const [timeRemaining, setTimeRemaining] = useState(
-    offer.validUntil
-      ? Math.max(offer.validUntil * 1000 - Date.now(), 0)
-      : undefined
-  );
+  const [timeRemaining, setTimeRemaining] = useState(offer.validUntil ? Math.max(offer.validUntil * 1000 - Date.now(), 0) : undefined);
 
   useEffect(() => {
     if (offer.validUntil) {
@@ -118,15 +89,7 @@ export const Offer = ({ offer }: { offer: NftOffer }) => {
     }
   }, [offer.validUntil]);
 
-  useEffect(
-    () =>
-      setTimeRemaining(
-        offer.validUntil
-          ? Math.max(offer.validUntil * 1000 - Date.now(), 0)
-          : undefined
-      ),
-    [offer.validUntil]
-  );
+  useEffect(() => setTimeRemaining(offer.validUntil ? Math.max(offer.validUntil * 1000 - Date.now(), 0) : undefined), [offer.validUntil]);
 
   const cryptoAmount = handleSignificantDecimals(
     offer.grossAmount.decimal,
@@ -138,8 +101,7 @@ export const Offer = ({ offer }: { offer: NftOffer }) => {
     offer.grossAmount.decimal >= 10_000
   );
   const isFloorDiffPercentagePositive = offer.floorDifferencePercentage >= 0;
-  const isExpiring =
-    timeRemaining !== undefined && timeRemaining <= TWO_HOURS_MS;
+  const isExpiring = timeRemaining !== undefined && timeRemaining <= TWO_HOURS_MS;
 
   let secondaryTextColor: TextColor;
   let secondaryText;
@@ -148,9 +110,7 @@ export const Offer = ({ offer }: { offer: NftOffer }) => {
     case SortCriterion.DateCreated:
       if (isExpiring) {
         secondaryTextColor = 'red';
-        secondaryText = timeRemaining
-          ? getFormattedTimeQuantity(timeRemaining)
-          : i18n.t(i18n.l.nft_offers.card.expired);
+        secondaryText = timeRemaining ? getFormattedTimeQuantity(timeRemaining) : i18n.t(i18n.l.nft_offers.card.expired);
       } else {
         secondaryTextColor = 'labelTertiary';
         secondaryText = convertAmountToNativeDisplay(
@@ -167,9 +127,7 @@ export const Offer = ({ offer }: { offer: NftOffer }) => {
     case SortCriterion.FloorDifferencePercentage:
       if (isExpiring) {
         secondaryTextColor = 'red';
-        secondaryText = timeRemaining
-          ? getFormattedTimeQuantity(timeRemaining)
-          : i18n.t(i18n.l.nft_offers.card.expired);
+        secondaryText = timeRemaining ? getFormattedTimeQuantity(timeRemaining) : i18n.t(i18n.l.nft_offers.card.expired);
       } else if (isFloorDiffPercentagePositive) {
         secondaryTextColor = 'green';
         secondaryText = `+${offer.floorDifferencePercentage}%`;
@@ -235,10 +193,7 @@ export const Offer = ({ offer }: { offer: NftOffer }) => {
       >
         <View
           style={{
-            shadowColor:
-              colorMode === 'dark' || !offer.nft.predominantColor
-                ? globalColors.grey100
-                : offer.nft.predominantColor,
+            shadowColor: colorMode === 'dark' || !offer.nft.predominantColor ? globalColors.grey100 : offer.nft.predominantColor,
             shadowOffset: { width: 0, height: 6 },
             shadowOpacity: 0.24,
             shadowRadius: 9,
@@ -264,9 +219,7 @@ export const Offer = ({ offer }: { offer: NftOffer }) => {
                 width: NFT_IMAGE_SIZE,
                 height: NFT_IMAGE_SIZE,
                 borderRadius: 12,
-                backgroundColor: isDarkMode
-                  ? surfaceSecondaryElevated
-                  : surfacePrimaryElevated,
+                backgroundColor: theme.isDarkMode ? surfaceSecondaryElevated : surfacePrimaryElevated,
               }}
               size={CardSize}
             />
@@ -281,12 +234,17 @@ export const Offer = ({ offer }: { offer: NftOffer }) => {
           alignItems: 'center',
         }}
       >
-        <CoinIcon
-          address={offer.paymentToken.address}
-          size={12}
-          symbol={offer.paymentToken.symbol}
-          style={{ marginRight: 4 }}
-        />
+        <View style={{ marginRight: 4 }}>
+          <RainbowCoinIcon
+            size={12}
+            icon={externalAsset?.icon_url}
+            network={offer?.network as Network}
+            symbol={offer.paymentToken.symbol}
+            theme={theme}
+            colors={externalAsset?.colors}
+            ignoreBadge
+          />
+        </View>
         <Text color="label" size="13pt" weight="heavy">
           {cryptoAmount}
         </Text>

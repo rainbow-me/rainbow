@@ -85,49 +85,26 @@ function splitPositionStyles(style: ViewStyle) {
   ];
 }
 
-export const ApplyShadow = React.forwardRef(
-  (
-    { backgroundColor, children: child, shadows }: ApplyShadowProps,
-    ref: React.Ref<any>
-  ) => {
-    if (!shadows) return child;
+export const ApplyShadow = React.forwardRef(({ backgroundColor, children: child, shadows }: ApplyShadowProps, ref: React.Ref<any>) => {
+  if (!shadows) return child;
 
-    const [parentStyles, childStyles] = splitPositionStyles(
-      StyleSheet.flatten(child.props.style) || {}
-    );
-    const iosShadows = [...shadows.ios].reverse();
-    const androidChildStyles = {
-      elevation: (shadows.android.elevation || 0) + 1,
-      shadowColor: 'transparent',
-    };
+  const [parentStyles, childStyles] = splitPositionStyles(StyleSheet.flatten(child.props.style) || {});
+  const iosShadows = [...shadows.ios].reverse();
+  const androidChildStyles = {
+    elevation: (shadows.android.elevation || 0) + 1,
+    shadowColor: 'transparent',
+  };
 
-    return (
-      <View ref={ref} style={parentStyles}>
-        {(ios || web) && (
-          <IOSShadow
-            backgroundColor={backgroundColor}
-            shadows={iosShadows}
-            style={childStyles}
-          />
-        )}
-        {android && (
-          <AndroidShadow
-            backgroundColor={backgroundColor}
-            shadow={shadows.android}
-            style={childStyles}
-          />
-        )}
+  return (
+    <View ref={ref} style={parentStyles}>
+      {(ios || web) && <IOSShadow backgroundColor={backgroundColor} shadows={iosShadows} style={childStyles} />}
+      {android && <AndroidShadow backgroundColor={backgroundColor} shadow={shadows.android} style={childStyles} />}
 
-        {React.cloneElement(child, {
-          style: [
-            { flex: 1 },
-            childStyles,
-            android ? androidChildStyles : undefined,
-          ],
-        })}
-      </View>
-    );
-  }
-);
+      {React.cloneElement(child, {
+        style: [{ flex: 1 }, childStyles, android ? androidChildStyles : undefined],
+      })}
+    </View>
+  );
+});
 
 ApplyShadow.displayName = 'ApplyShadow';

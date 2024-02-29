@@ -20,56 +20,44 @@ const ButtonContent = styled(RowWithMargins).attrs({
   height: '100%',
   paddingBottom: 2,
 });
-const ButtonLabel = styled(Text).attrs(
-  ({
-    textColor: color,
-    theme: { colors },
-  }: {
-    textColor: string;
-    theme: ThemeContextProps;
-  }) => ({
-    align: 'center',
-    color: color || colors.dark,
-    size: 'larger',
-    weight: 'bold',
-  })
-)({});
+const ButtonLabel = styled(Text).attrs(({ textColor: color, theme: { colors } }: { textColor: string; theme: ThemeContextProps }) => ({
+  align: 'center',
+  color: color || colors.dark,
+  size: 'larger',
+  weight: 'bold',
+}))({});
 const ButtonEmoji = styled(Emoji).attrs({
   align: 'center',
   size: 16.25,
 })({
   paddingBottom: 1.5,
 });
-const DarkShadow = styled(Reanimated.View)(
-  ({ theme: { colors, isDarkMode } }: { theme: ThemeContextProps }) => ({
-    ...shadow.buildAsObject(0, 10, 30, colors.dark, isDarkMode ? 0 : 1),
-    backgroundColor: colors.white,
-    borderRadius: 30,
-    height: 60,
-    left: -3,
-    opacity: 0.2,
-    position: 'absolute',
-    top: -3,
-    width: 236,
-  })
-);
-const Shadow = styled(Reanimated.View)(
-  ({ theme: { colors, isDarkMode } }: { theme: ThemeContextProps }) => ({
-    ...shadow.buildAsObject(0, 5, 15, colors.shadow, isDarkMode ? 0 : 0.4),
-    borderRadius: 30,
-    height: 60,
-    position: 'absolute',
-    width: 236,
-    ...(ios
-      ? {
-          left: -3,
-          top: -3,
-        }
-      : {
-          elevation: 30,
-        }),
-  })
-);
+const DarkShadow = styled(Reanimated.View)(({ theme: { colors, isDarkMode } }: { theme: ThemeContextProps }) => ({
+  ...shadow.buildAsObject(0, 10, 30, colors.dark, isDarkMode ? 0 : 1),
+  backgroundColor: colors.white,
+  borderRadius: 30,
+  height: 60,
+  left: -3,
+  opacity: 0.2,
+  position: 'absolute',
+  top: -3,
+  width: 236,
+}));
+const Shadow = styled(Reanimated.View)(({ theme: { colors, isDarkMode } }: { theme: ThemeContextProps }) => ({
+  ...shadow.buildAsObject(0, 5, 15, colors.shadow, isDarkMode ? 0 : 0.4),
+  borderRadius: 30,
+  height: 60,
+  position: 'absolute',
+  width: 236,
+  ...(ios
+    ? {
+        left: -3,
+        top: -3,
+      }
+    : {
+        elevation: 30,
+      }),
+}));
 
 interface Props extends BaseButtonAnimationProps {
   height: number;
@@ -92,13 +80,7 @@ export const WelcomeScreenRainbowButton = ({
   ...props
 }: Props) => {
   return (
-    <ButtonPressAnimation
-      onPress={onPress}
-      overflowMargin={40}
-      radiusAndroid={height / 2}
-      scaleTo={0.9}
-      {...props}
-    >
+    <ButtonPressAnimation onPress={onPress} overflowMargin={40} radiusAndroid={height / 2} scaleTo={0.9} {...props}>
       {ios && <DarkShadow style={darkShadowStyle} />}
       <Shadow style={shadowStyle} />
       <ButtonContainer height={height} style={style}>

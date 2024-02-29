@@ -3,13 +3,7 @@ import React, { ReactNode } from 'react';
 
 import { sprinkles } from './sprinkles.css';
 
-export const TextLink = ({
-  children,
-  href,
-}: {
-  children: ReactNode;
-  href: string;
-}) => (
+export const TextLink = ({ children, href }: { children: ReactNode; href: string }) => (
   <a
     className={classnames([
       sprinkles({

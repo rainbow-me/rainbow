@@ -9,8 +9,8 @@ import { ImgixImage } from '@/components/images';
 import CaretImageSource from '@/assets/family-dropdown-arrow.png';
 import Spinner from '@/components/Spinner';
 import { useTheme } from '@/theme';
-import { CoinIcon } from '@/components/coin-icon';
 import { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 
 const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   resizeMode: ImgixImage.resizeMode.contain,
@@ -44,27 +44,19 @@ export default function SwapDetailsRefuelRow({ tradeDetails, testID }) {
     <Rows testID={testID}>
       <Columns alignVertical="center" space="4px">
         <Column>
-          <SwapDetailsLabel>
-            {lang.t('expanded_state.swap_details.refuel')}
-          </SwapDetailsLabel>
+          <SwapDetailsLabel>{lang.t('expanded_state.swap_details.refuel')}</SwapDetailsLabel>
         </Column>
         {tradeDetails.refuel ? (
           <>
             <Column width="content">
-              <Box
-                paddingRight="2px"
-                marginTop={ICON_ALIGN_MARGIN}
-                marginBottom={ICON_ALIGN_MARGIN}
-              >
-                <CoinIcon
-                  address={fromNativeAsset?.address}
-                  mainnet_address={fromNativeAsset?.mainnet_address}
-                  symbol={fromAsset?.symbol}
+              <Box paddingRight="2px" marginTop={ICON_ALIGN_MARGIN} marginBottom={ICON_ALIGN_MARGIN}>
+                <RainbowCoinIcon
                   size={20}
-                  type={ethereumUtils.getAssetTypeFromNetwork(fromNetwork)}
-                  badgeXPosition={-6}
-                  badgeYPosition={0}
-                  badgeSize="tiny"
+                  icon={fromNativeAsset?.icon_url}
+                  network={fromNetwork}
+                  symbol={fromAsset?.symbol}
+                  colors={fromNativeAsset?.colors}
+                  ignoreBadge
                 />
               </Box>
             </Column>
@@ -74,20 +66,14 @@ export default function SwapDetailsRefuelRow({ tradeDetails, testID }) {
               </Box>
             </Column>
             <Column width="content">
-              <Box
-                paddingLeft="4px"
-                marginTop={ICON_ALIGN_MARGIN}
-                marginBottom={ICON_ALIGN_MARGIN}
-              >
-                <CoinIcon
-                  address={toNativeAsset?.address}
-                  mainnet_address={toNativeAsset?.mainnet_address}
-                  symbol={toAsset?.symbol}
+              <Box paddingLeft="4px" marginTop={ICON_ALIGN_MARGIN} marginBottom={ICON_ALIGN_MARGIN}>
+                <RainbowCoinIcon
                   size={20}
-                  type={ethereumUtils.getAssetTypeFromNetwork(toNetwork)}
-                  badgeXPosition={-6}
-                  badgeYPosition={0}
-                  badgeSize="tiny"
+                  icon={toNativeAsset?.icon_url}
+                  network={toNetwork}
+                  symbol={toAsset?.symbol}
+                  colors={toNativeAsset?.colors}
+                  ignoreBadge
                 />
               </Box>
             </Column>

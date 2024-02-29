@@ -1,22 +1,16 @@
 import lang from 'i18n-js';
 import React, { useMemo } from 'react';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
-import { CoinIcon, CoinIconGroup } from '../../coin-icon';
 import { Column, ColumnWithMargins, Row, RowWithMargins } from '../../layout';
 import ChartContextButton from './ChartContextButton';
-import {
-  ChartDateLabel,
-  ChartHeaderSubtitle,
-  ChartPercentChangeLabel,
-  ChartPriceLabel,
-} from './chart-data-labels';
+import { ChartDateLabel, ChartHeaderSubtitle, ChartPercentChangeLabel, ChartPriceLabel } from './chart-data-labels';
 import { useChartData } from '@/react-native-animated-charts/src';
 import ChartTypes from '@/helpers/chartTypes';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
-import { useAccountSettings, useBooleanState, useDimensions } from '@/hooks';
+import { useAccountSettings, useBooleanState } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { useDispatch, useSelector } from 'react-redux';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 
 const noPriceData = lang.t('expanded_state.chart.no_price_data');
 
@@ -55,8 +49,8 @@ export default function ChartExpandedStateHeader({
   testID,
   chartType,
 }) {
-  const { colors } = useTheme();
-  const color = givenColors || colors.dark;
+  const theme = useTheme();
+  const color = givenColors || theme.colors.dark;
   const tokens = useMemo(() => {
     return isPool ? asset.tokens : [asset];
   }, [asset, isPool]);
@@ -75,17 +69,13 @@ export default function ChartExpandedStateHeader({
 
   const showPriceChange = !isNoPriceData && showChart && !isNaN(latestChange);
 
-  const invertedChartTypes = Object.entries(ChartTypes).reduce(
-    (acc, [key, value]) => {
-      acc[value] = key;
-      return acc;
-    },
-    {}
-  );
+  const invertedChartTypes = Object.entries(ChartTypes).reduce((acc, [key, value]) => {
+    acc[value] = key;
+    return acc;
+  }, {});
   const timespan = invertedChartTypes[chartType];
 
-  const formattedTimespan =
-    timespan.charAt(0).toUpperCase() + timespan.slice(1);
+  const formattedTimespan = timespan.charAt(0).toUpperCase() + timespan.slice(1);
 
   const { data } = useChartData();
 
@@ -119,27 +109,20 @@ export default function ChartExpandedStateHeader({
 
   return (
     <Container showChart={showChart}>
-      <Row
-        align="center"
-        justify="space-between"
-        testID={
-          testID ? `${testID}-expanded-state-header` : 'expanded-state-header'
-        }
-      >
-        {tokens.length === 1 ? (
-          <CoinIcon badgeXPosition={-7} badgeYPosition={0} {...asset} />
-        ) : (
-          <CoinIconGroup tokens={tokens} />
-        )}
+      <Row align="center" justify="space-between" testID={testID ? `${testID}-expanded-state-header` : 'expanded-state-header'}>
+        <RainbowCoinIcon
+          size={40}
+          icon={asset?.icon_url}
+          network={asset?.network}
+          symbol={asset?.symbol}
+          theme={theme}
+          colors={asset?.colors}
+        />
 
         <ChartContextButton asset={asset} color={color} />
       </Row>
       <Column>
-        <RowWithMargins
-          height={30}
-          justify="space-between"
-          marginHorizontal={1}
-        >
+        <RowWithMargins height={30} justify="space-between" marginHorizontal={1}>
           <ChartPriceLabel
             defaultValue={title}
             isNoPriceData={isNoPriceData}
@@ -148,12 +131,7 @@ export default function ChartExpandedStateHeader({
             priceValue={price}
             tabularNums={tabularNums}
           />
-          {showPriceChange && (
-            <ChartPercentChangeLabel
-              latestChange={latestChange}
-              ratio={ratio}
-            />
-          )}
+          {showPriceChange && <ChartPercentChangeLabel latestChange={latestChange} ratio={ratio} />}
         </RowWithMargins>
 
         <RowWithMargins
@@ -163,21 +141,13 @@ export default function ChartExpandedStateHeader({
           marginVertical={android ? 4 : 1}
         >
           <ChartHeaderSubtitle
-            color={
-              isNoPriceData ? colors.alpha(colors.blueGreyDark, 0.8) : color
-            }
+            color={isNoPriceData ? theme.colors.alpha(theme.colors.blueGreyDark, 0.8) : color}
             testID={`chart-header-${titleOrNoPriceData}`}
             weight={isNoPriceData ? 'semibold' : 'bold'}
           >
             {titleOrNoPriceData}
           </ChartHeaderSubtitle>
-          {showPriceChange && (
-            <ChartDateLabel
-              chartTimeDefaultValue={defaultTimeValue}
-              dateRef={dateRef}
-              ratio={ratio}
-            />
-          )}
+          {showPriceChange && <ChartDateLabel chartTimeDefaultValue={defaultTimeValue} dateRef={dateRef} ratio={ratio} />}
         </RowWithMargins>
       </Column>
     </Container>

@@ -26,9 +26,5 @@ function renderChild(child, index) {
 }
 
 export default function TokenInfoRow({ children, ...props }) {
-  return (
-    <Container {...props}>
-      {Children.toArray(children).map(renderChild)}
-    </Container>
-  );
+  return <Container {...props}>{Children.toArray(children).map(renderChild)}</Container>;
 }

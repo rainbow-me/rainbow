@@ -38,18 +38,12 @@ export const getMainnetNetworkObject = (): NetworkProperties => {
       walletconnect: true,
       swaps: true,
       nfts: true,
-      savings: true,
       pools: true,
       txs: mainnet_tx_enabled,
     },
 
     gas: {
-      speeds: [
-        gasUtils.NORMAL,
-        gasUtils.FAST,
-        gasUtils.URGENT,
-        gasUtils.CUSTOM,
-      ],
+      speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT, gasUtils.CUSTOM],
       gasType: 'eip1559',
       roundGasDisplay: true,
 

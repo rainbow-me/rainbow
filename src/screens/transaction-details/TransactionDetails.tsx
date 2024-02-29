@@ -8,7 +8,6 @@ import { BackgroundProvider, Box } from '@/design-system';
 import { TransactionDetailsValueAndFeeSection } from '@/screens/transaction-details/components/TransactionDetailsValueAndFeeSection';
 import { TransactionDetailsHashAndActionsSection } from '@/screens/transaction-details/components/TransactionDetailsHashAndActionsSection';
 import { TransactionDetailsFromToSection } from '@/screens/transaction-details/components/TransactionDetailsFromToSection';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import * as i18n from '@/languages';
 import { TransactionDetailsStatusActionsAndTimestampSection } from '@/screens/transaction-details/components/TransactionDetailsStatusActionsAndTimestampSection';
@@ -27,17 +26,16 @@ export const TransactionDetails = () => {
   const navigation = useNavigation();
   const route = useRoute<RouteProp<RouteParams, 'TransactionDetails'>>();
   const { setParams } = navigation;
-  const { transaction } = route.params;
+  const { transaction: tx } = route.params;
+
+  const transaction = tx;
   const [sheetHeight, setSheetHeight] = useState(0);
   const [statusIconHidden, setStatusIconHidden] = useState(false);
   const { presentedToast, presentToastFor } = useTransactionDetailsToasts();
   const { height: deviceHeight } = useDimensions();
 
   // Dynamic sheet height based on content height
-  useEffect(() => setParams({ longFormHeight: sheetHeight }), [
-    setParams,
-    sheetHeight,
-  ]);
+  useEffect(() => setParams({ longFormHeight: sheetHeight }), [setParams, sheetHeight]);
 
   const onSheetContentLayout = (event: LayoutChangeEvent) => {
     const contentHeight = event.nativeEvent.layout.height;
@@ -66,24 +64,11 @@ export const TransactionDetails = () => {
           deferredHeight={IS_ANDROID}
           showsVerticalScrollIndicator={false}
         >
-          <Box
-            paddingHorizontal="20px"
-            paddingBottom="20px"
-            onLayout={onSheetContentLayout}
-          >
-            <TransactionDetailsStatusActionsAndTimestampSection
-              hideIcon={statusIconHidden}
-              transaction={transaction}
-            />
-            <TransactionDetailsFromToSection
-              transaction={transaction}
-              presentToast={presentAddressToast}
-            />
+          <Box paddingHorizontal="20px" paddingBottom="20px" onLayout={onSheetContentLayout}>
+            <TransactionDetailsStatusActionsAndTimestampSection hideIcon={statusIconHidden} transaction={transaction} />
+            <TransactionDetailsFromToSection transaction={transaction} presentToast={presentAddressToast} />
             <TransactionDetailsValueAndFeeSection transaction={transaction} />
-            <TransactionDetailsHashAndActionsSection
-              transaction={transaction}
-              presentToast={presentHashToast}
-            />
+            <TransactionDetailsHashAndActionsSection transaction={transaction} presentToast={presentHashToast} />
           </Box>
           <ToastPositionContainer>
             <Toast
@@ -91,11 +76,7 @@ export const TransactionDetails = () => {
               text={i18n.t(i18n.l.transaction_details.address_copied)}
               testID="address-copied-toast"
             />
-            <Toast
-              isVisible={presentedToast === 'hash'}
-              text={i18n.t(i18n.l.transaction_details.hash_copied)}
-              testID="hash-copied-toast"
-            />
+            <Toast isVisible={presentedToast === 'hash'} text={i18n.t(i18n.l.transaction_details.hash_copied)} testID="hash-copied-toast" />
           </ToastPositionContainer>
         </SlackSheet>
       )}

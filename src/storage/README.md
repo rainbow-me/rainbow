@@ -50,23 +50,13 @@ enum Network {
 
 type WalletAddress = `Ox${string}`;
 
-const networkAndWallet = new Storage<
-  [Network, WalletAddress],
-  NetworkAndWalletSchema
->({
+const networkAndWallet = new Storage<[Network, WalletAddress], NetworkAndWalletSchema>({
   id: 'networkAndWallet',
 });
 
-networkAndWallet.set(
-  [Network.Mainnet, '0x12345', 'contacts'],
-  [{ name: 'rainbow.eth', address: '0x67890' }]
-);
+networkAndWallet.set([Network.Mainnet, '0x12345', 'contacts'], [{ name: 'rainbow.eth', address: '0x67890' }]);
 
-const contacts: Contact[] = networkAndWallet.get([
-  Network.Mainnet,
-  '0x12345',
-  'contacts',
-]);
+const contacts: Contact[] = networkAndWallet.get([Network.Mainnet, '0x12345', 'contacts']);
 ```
 
 Here, if `[Network.Mainnet, '0x12345']` are not supplied along with the key of

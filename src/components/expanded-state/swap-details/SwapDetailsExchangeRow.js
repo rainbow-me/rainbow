@@ -6,17 +6,7 @@ import { convertAmountToPercentageDisplay } from '../../../helpers/utilities';
 import Pill from '../../Pill';
 import { ButtonPressAnimation } from '../../animations';
 import { SwapDetailsLabel, SwapDetailsValue } from './SwapDetailsRow';
-import {
-  Bleed,
-  Box,
-  Column,
-  Columns,
-  Cover,
-  Inline,
-  Stack,
-  Text,
-  useForegroundColor,
-} from '@/design-system';
+import { Bleed, Box, Column, Columns, Cover, Inline, Stack, Text, useForegroundColor } from '@/design-system';
 import { usePrevious, useStepper } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { getExchangeIconUrl, magicMemo } from '@/utils';
@@ -27,9 +17,7 @@ const parseExchangeName = name => {
   const networks = RainbowNetworks.map(network => network.name.toLowerCase());
 
   const removeNetworks = name =>
-    networks.some(network => name.toLowerCase().includes(network))
-      ? name.slice(name.indexOf('_') + 1, name.length)
-      : name;
+    networks.some(network => name.toLowerCase().includes(network)) ? name.slice(name.indexOf('_') + 1, name.length) : name;
 
   const removeBridge = name => name.replace('-bridge', '');
 
@@ -83,15 +71,8 @@ const ExchangeIcon = magicMemo(
                     }
                   }
                 >
-                  <Text
-                    align="center"
-                    color="secondary80 (Deprecated)"
-                    size="14px / 19px (Deprecated)"
-                    weight="semibold"
-                  >
-                    {typeof protocol === 'string'
-                      ? protocol?.substring(0, 1)?.toUpperCase()
-                      : 'U'}
+                  <Text align="center" color="secondary80 (Deprecated)" size="14px / 19px (Deprecated)" weight="semibold">
+                    {typeof protocol === 'string' ? protocol?.substring(0, 1)?.toUpperCase() : 'U'}
                   </Text>
                 </Box>
               </Cover>
@@ -110,17 +91,8 @@ const ExchangeIconStack = magicMemo(
       <Inline>
         {protocols?.icons?.map((icon, index) => {
           return (
-            <Box
-              key={`protocol-icon-${index}`}
-              marginLeft={{ custom: -4 }}
-              zIndex={protocols?.icons?.length - index}
-            >
-              <ExchangeIcon
-                icon={icon}
-                protocol={
-                  protocols?.name || protocols.names[index] || 'Unknown'
-                }
-              />
+            <Box key={`protocol-icon-${index}`} marginLeft={{ custom: -4 }} zIndex={protocols?.icons?.length - index}>
+              <ExchangeIcon icon={icon} protocol={protocols?.name || protocols.names[index] || 'Unknown'} />
             </Box>
           );
         })}
@@ -137,20 +109,11 @@ const CrossChainIconStack = magicMemo(
         {protocols?.icons?.map((icon, index) => {
           return (
             <Inline key={`protocol-icon-${index}`} marginLeft={{ custom: 0 }}>
-              <ExchangeIcon
-                icon={icon}
-                protocol={
-                  protocols?.name || protocols.names[index] || 'Unknown'
-                }
-              />
+              <ExchangeIcon icon={icon} protocol={protocols?.name || protocols.names[index] || 'Unknown'} />
 
               {index < protocols?.icons.length - 1 && (
                 <Box paddingTop="6px">
-                  <Text
-                    color="secondary50 (Deprecated)"
-                    size="11pt"
-                    weight="semibold"
-                  >
+                  <Text color="secondary50 (Deprecated)" size="11pt" weight="semibold">
                     􀆊
                   </Text>
                 </Box>
@@ -170,17 +133,10 @@ export default function SwapDetailsExchangeRow({ routes, protocols, testID }) {
   const steps = useMemo(() => {
     const sortedProtocols = protocols?.sort((a, b) => b.part - a.part);
     const defaultCase = {
-      icons: sortedProtocols.map(({ name }) =>
-        getExchangeIconUrl(parseExchangeName(name))
-      ),
-      label: lang.t(
-        bridges
-          ? 'expanded_state.swap_details.number_of_steps'
-          : 'expanded_state.swap_details.number_of_exchanges',
-        {
-          number: sortedProtocols?.length,
-        }
-      ),
+      icons: sortedProtocols.map(({ name }) => getExchangeIconUrl(parseExchangeName(name))),
+      label: lang.t(bridges ? 'expanded_state.swap_details.number_of_steps' : 'expanded_state.swap_details.number_of_exchanges', {
+        number: sortedProtocols?.length,
+      }),
       names: sortedProtocols.map(({ name }) => name),
     };
     if (sortedProtocols.length === 1) {
@@ -193,9 +149,7 @@ export default function SwapDetailsExchangeRow({ routes, protocols, testID }) {
           icons: [getExchangeIconUrl(protocolName)],
           label: capitalize(protocolName.replace('_', ' ')),
           name: SocketBridges[protocol.name] ?? protocolName.slice('_'),
-          action: isBridge
-            ? lang.t('expanded_state.swap.bridge')
-            : lang.t('expanded_state.swap.swap'),
+          action: isBridge ? lang.t('expanded_state.swap.bridge') : lang.t('expanded_state.swap.swap'),
           part: convertAmountToPercentageDisplay(protocol.part),
         },
       ];
@@ -210,9 +164,7 @@ export default function SwapDetailsExchangeRow({ routes, protocols, testID }) {
         label: capitalize(protocolName.replace('_', ' ')),
         name: SocketBridges[protocol.name] ?? protocolName.slice('_'),
         isBridge,
-        action: isBridge
-          ? lang.t('expanded_state.swap.bridge')
-          : lang.t('expanded_state.swap.swap'),
+        action: isBridge ? lang.t('expanded_state.swap.bridge') : lang.t('expanded_state.swap.swap'),
         part,
       };
     });
@@ -236,9 +188,7 @@ export default function SwapDetailsExchangeRow({ routes, protocols, testID }) {
         >
           <Columns alignHorizontal="right" alignVertical="center" space="4px">
             <Column>
-              <SwapDetailsLabel>
-                {lang.t('expanded_state.swap.swapping_via')}
-              </SwapDetailsLabel>
+              <SwapDetailsLabel>{lang.t('expanded_state.swap.swapping_via')}</SwapDetailsLabel>
             </Column>
             <Column width="content">
               <Box
@@ -247,11 +197,7 @@ export default function SwapDetailsExchangeRow({ routes, protocols, testID }) {
                 }}
               >
                 <Bleed vertical="10px">
-                  {bridges ? (
-                    <CrossChainIconStack protocols={steps[step]} />
-                  ) : (
-                    <ExchangeIconStack protocols={steps[step]} />
-                  )}
+                  {bridges ? <CrossChainIconStack protocols={steps[step]} /> : <ExchangeIconStack protocols={steps[step]} />}
                 </Bleed>
               </Box>
             </Column>
@@ -282,9 +228,7 @@ export default function SwapDetailsExchangeRow({ routes, protocols, testID }) {
     return (
       <Columns alignVertical="center" space="4px" testID={testID}>
         <Column>
-          <SwapDetailsLabel>
-            {lang.t('expanded_state.swap.swapping_via')}
-          </SwapDetailsLabel>
+          <SwapDetailsLabel>{lang.t('expanded_state.swap.swapping_via')}</SwapDetailsLabel>
         </Column>
         <Column width="content">
           <Box

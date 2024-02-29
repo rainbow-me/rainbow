@@ -10,11 +10,7 @@ const ListItemArrowGroup = ({ children }) => {
   return (
     <RowWithMargins align="center" flex={1} justify="end" margin={7}>
       {typeof children === 'string' ? (
-        <Text
-          color={colors.alpha(colors.blueGreyDark, 0.6)}
-          size="large"
-          weight="medium"
-        >
+        <Text color={colors.alpha(colors.blueGreyDark, 0.6)} size="large" weight="medium">
           {children}
         </Text>
       ) : (

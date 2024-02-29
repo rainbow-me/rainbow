@@ -9,7 +9,4 @@ export { useChartData } from './helpers/useChartData';
 export { default as simplifyData } from './simplification/simplifyData';
 export { default as monotoneCubicInterpolation } from './interpolations/monotoneCubicInterpolation';
 export { default as bSplineInterpolation } from './interpolations/bSplineInterpolation';
-export {
-  CurrentPositionVerticalLine,
-  OpeningPositionHorizontalLine,
-} from './charts/linear/ChartLines';
+export { CurrentPositionVerticalLine, OpeningPositionHorizontalLine } from './charts/linear/ChartLines';

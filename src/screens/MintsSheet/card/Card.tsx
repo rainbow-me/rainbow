@@ -1,32 +1,20 @@
 import { MintableCollection, MintedNft } from '@/graphql/__generated__/arc';
 import React, { useEffect, useState } from 'react';
 import { getTimeElapsedFromDate } from '../utils';
-import {
-  Bleed,
-  Box,
-  Cover,
-  Inline,
-  Inset,
-  Stack,
-  Text,
-  useForegroundColor,
-} from '@/design-system';
-import {
-  abbreviateNumber,
-  convertRawAmountToRoundedDecimal,
-} from '@/helpers/utilities';
+import { Bleed, Box, Cover, Inline, Inset, Stack, Text, useForegroundColor } from '@/design-system';
+import { abbreviateNumber, convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import { getNetworkObj } from '@/networks';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Placeholder, RecentMintCell } from './RecentMintCell';
-import { Linking, View } from 'react-native';
+import { View } from 'react-native';
 import { useTheme } from '@/theme';
 import { analyticsV2 } from '@/analytics';
 import * as i18n from '@/languages';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
-import { CoinIcon } from '@/components/coin-icon';
 import { Network } from '@/helpers';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
+import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 
 export const NUM_NFTS = 3;
 
@@ -34,22 +22,14 @@ export function Card({ collection }: { collection: MintableCollection }) {
   const { isDarkMode } = useTheme();
 
   const [timeElapsed, setTimeElapsed] = useState(
-    collection.firstEvent
-      ? getTimeElapsedFromDate(new Date(collection.firstEvent))
-      : undefined
+    collection.firstEvent ? getTimeElapsedFromDate(new Date(collection.firstEvent)) : undefined
   );
 
   const separator = useForegroundColor('separator');
   const separatorTertiary = useForegroundColor('separatorTertiary');
 
-  const price = convertRawAmountToRoundedDecimal(
-    collection.mintStatus.price,
-    18,
-    6
-  );
-  const currencySymbol = getNetworkObj(
-    getNetworkFromChainId(collection.chainId)
-  ).nativeCurrency.symbol;
+  const price = convertRawAmountToRoundedDecimal(collection.mintStatus.price, 18, 6);
+  const currencySymbol = getNetworkObj(getNetworkFromChainId(collection.chainId)).nativeCurrency.symbol;
   const isFree = !price;
 
   const network = getNetworkFromChainId(collection.chainId);
@@ -77,13 +57,9 @@ export function Card({ collection }: { collection: MintableCollection }) {
             <Cover alignVertical="top" alignHorizontal="right">
               <Bleed vertical="3px">
                 {network !== Network.mainnet ? (
-                  <ChainBadge
-                    assetType={network}
-                    position="relative"
-                    size="medium"
-                  />
+                  <ChainBadge network={network} position="relative" size="medium" />
                 ) : (
-                  <CoinIcon size={20} />
+                  <EthCoinIcon size={20} />
                 )}
               </Bleed>
             </Cover>
@@ -158,15 +134,8 @@ export function Card({ collection }: { collection: MintableCollection }) {
               background="fillSecondary"
               style={{ borderWidth: 1, borderColor: separatorTertiary }}
             >
-              <Text
-                color="labelTertiary"
-                size="13pt"
-                weight="bold"
-                align="center"
-              >
-                {isFree
-                  ? i18n.t(i18n.l.mints.mints_sheet.card.free)
-                  : `${price} ${currencySymbol}`}
+              <Text color="labelTertiary" size="13pt" weight="bold" align="center">
+                {isFree ? i18n.t(i18n.l.mints.mints_sheet.card.free) : `${price} ${currencySymbol}`}
               </Text>
             </Box>
           </Inline>

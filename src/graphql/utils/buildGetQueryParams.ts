@@ -11,8 +11,7 @@
  * @param {string} str GraphQL query
  * @returns {string} Cleaned query
  */
-const queryCleaner = (str: string): string =>
-  str.replace(/([\s,]|#[^\n\r]+)+/g, ' ').trim();
+const queryCleaner = (str: string): string => str.replace(/([\s,]|#[^\n\r]+)+/g, ' ').trim();
 
 type TBuildGetQueryParams<V> =
   | {
@@ -35,15 +34,9 @@ type TBuildGetQueryParams<V> =
  * @param {string|undefined} param0.operationName the GraphQL operation name
  * @param {any|any[]} param0.variables the GraphQL variables to use
  */
-export const buildGetQueryParams = <V>({
-  query,
-  variables,
-  operationName,
-}: TBuildGetQueryParams<V>): string => {
+export const buildGetQueryParams = <V>({ query, variables, operationName }: TBuildGetQueryParams<V>): string => {
   if (!Array.isArray(query)) {
-    const search: string[] = [
-      `query=${encodeURIComponent(queryCleaner(query))}`,
-    ];
+    const search: string[] = [`query=${encodeURIComponent(queryCleaner(query))}`];
 
     if (variables) {
       search.push(`variables=${encodeURIComponent(JSON.stringify(variables))}`);
@@ -57,15 +50,11 @@ export const buildGetQueryParams = <V>({
   }
 
   if (typeof variables !== 'undefined' && !Array.isArray(variables)) {
-    throw new Error(
-      'Cannot create query with given variable type, array expected'
-    );
+    throw new Error('Cannot create query with given variable type, array expected');
   }
 
   // Batch support
-  const payload = query.reduce<
-    { query: string; variables: string | undefined }[]
-  >((accu, currentQuery, index) => {
+  const payload = query.reduce<{ query: string; variables: string | undefined }[]>((accu, currentQuery, index) => {
     accu.push({
       query: queryCleaner(currentQuery),
       variables: variables ? JSON.stringify(variables[index]) : undefined,

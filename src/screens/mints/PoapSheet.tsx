@@ -1,12 +1,6 @@
 import { BlurView } from '@react-native-community/blur';
 
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Linking, View } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 
@@ -14,20 +8,9 @@ import useWallets from '../../hooks/useWallets';
 import Routes from '@/navigation/routesNames';
 
 import ImgixImage from '../../components/images/ImgixImage';
-import {
-  SheetActionButton,
-  SheetActionButtonRow,
-  SlackSheet,
-} from '../../components/sheet';
+import { SheetActionButton, SheetActionButtonRow, SlackSheet } from '../../components/sheet';
 import { CardSize } from '../../components/unique-token/CardSize';
-import {
-  Box,
-  ColorModeProvider,
-  Row,
-  Rows,
-  Stack,
-  Text,
-} from '@/design-system';
+import { Box, ColorModeProvider, Row, Rows, Stack, Text } from '@/design-system';
 import { useAccountProfile, useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
@@ -40,12 +23,12 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { PoapEvent } from '@/graphql/__generated__/arcDev';
 import { format } from 'date-fns';
-import { arcClient, arcDevClient } from '@/graphql';
+import { arcClient } from '@/graphql';
 import Spinner from '@/components/Spinner';
 import { delay } from '@/utils/delay';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { UniqueAsset } from '@/entities';
-import { IS_DEV, IS_IOS } from '@/env';
+import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';
 import { PoapMintError } from '@/utils/poaps';
 import { analyticsV2 } from '@/analytics';
@@ -100,9 +83,7 @@ const PoapSheet = () => {
   });
 
   const [claimStatus, setClaimStatus] = useState<PoapClaimStatus>('none');
-  const [errorCode, setErrorCode] = useState<PoapMintError | undefined>(
-    undefined
-  );
+  const [errorCode, setErrorCode] = useState<PoapMintError | undefined>(undefined);
   const [nft, setNft] = useState<UniqueAsset | null>(null);
 
   const poapEvent: PoapEvent = (params.params as PoapSheetProps)?.event;
@@ -117,8 +98,7 @@ const PoapSheet = () => {
     return format(new Date(poapEvent.createdAt), 'MMMM dd, yyyy');
   };
 
-  const imageColor =
-    usePersistentDominantColorFromImage(imageUrl) ?? colors.paleBlue;
+  const imageColor = usePersistentDominantColorFromImage(imageUrl) ?? colors.paleBlue;
 
   const sheetRef = useRef();
   const yPosition = useSharedValue(0);
@@ -129,9 +109,8 @@ const PoapSheet = () => {
       return;
     }
     setClaimStatus('claiming');
-    const client = IS_DEV ? arcDevClient : arcClient;
     if (!poapEvent.secret || !poapEvent.qrHash) return;
-    const response = await client.claimPoapByQrHash({
+    const response = await arcClient.claimPoapByQrHash({
       walletAddress: accountAddress,
       qrHash: poapEvent.qrHash,
       secret: poapEvent.secret,
@@ -155,15 +134,7 @@ const PoapSheet = () => {
         setErrorCode('UNKNOWN');
       }
     }
-  }, [
-    accountAddress,
-    isReadOnlyWallet,
-    poapEvent.id,
-    poapEvent.qrHash,
-    poapEvent.secret,
-    poapMintType,
-    setClaimStatus,
-  ]);
+  }, [accountAddress, isReadOnlyWallet, poapEvent.id, poapEvent.qrHash, poapEvent.secret, poapMintType, setClaimStatus]);
 
   const claimPoapBySecret = useCallback(async () => {
     if (isReadOnlyWallet) {
@@ -172,9 +143,8 @@ const PoapSheet = () => {
     }
     if (!poapEvent.secretWord) return;
     setClaimStatus('claiming');
-    const client = IS_DEV ? arcDevClient : arcClient;
 
-    const response = await client.claimPoapBySecretWord({
+    const response = await arcClient.claimPoapBySecretWord({
       walletAddress: accountAddress,
       secretWord: poapEvent.secretWord,
     });
@@ -196,13 +166,7 @@ const PoapSheet = () => {
         setErrorCode('UNKNOWN');
       }
     }
-  }, [
-    accountAddress,
-    isReadOnlyWallet,
-    poapEvent.id,
-    poapEvent.secretWord,
-    poapMintType,
-  ]);
+  }, [accountAddress, isReadOnlyWallet, poapEvent.id, poapEvent.secretWord, poapMintType]);
 
   const actionOnPress = useCallback(async () => {
     if (claimStatus === 'claimed') {
@@ -225,20 +189,10 @@ const PoapSheet = () => {
         await claimPoapByQrHash();
       }
     }
-  }, [
-    claimPoapByQrHash,
-    claimPoapBySecret,
-    claimStatus,
-    goBack,
-    navigate,
-    nft,
-    poapMintType,
-  ]);
+  }, [claimPoapByQrHash, claimPoapBySecret, claimStatus, goBack, navigate, nft, poapMintType]);
 
   useEffect(() => {
-    const nft = nfts.find(
-      item => item.image_original_url === poapEvent.imageUrl
-    );
+    const nft = nfts.find(item => item.image_original_url === poapEvent.imageUrl);
     if (nft) {
       setClaimStatus('claimed');
       setNft(nft);
@@ -278,11 +232,7 @@ const PoapSheet = () => {
       )}
       {/* @ts-expect-error JavaScript component */}
       <SlackSheet
-        backgroundColor={
-          isDarkMode
-            ? `rgba(22, 22, 22, ${ios ? 0.4 : 1})`
-            : `rgba(26, 26, 26, ${ios ? 0.4 : 1})`
-        }
+        backgroundColor={isDarkMode ? `rgba(22, 22, 22, ${ios ? 0.4 : 1})` : `rgba(26, 26, 26, ${ios ? 0.4 : 1})`}
         height={'100%'}
         ref={sheetRef}
         scrollEnabled
@@ -330,26 +280,17 @@ const PoapSheet = () => {
                   </Text>
                 )}
                 <SheetActionButtonRow>
-                  <SheetActionButton
-                    color={claimStatus === 'error' ? colors.red : imageColor}
-                    onPress={actionOnPress}
-                  >
-                    {claimStatus === 'claiming' && (
-                      <Spinner
-                        color={lightScheme.white}
-                        size={'small'}
-                        style={{ paddingRight: 6 }}
-                      />
-                    )}
+                  <SheetActionButton color={claimStatus === 'error' ? colors.red : imageColor} onPress={actionOnPress}>
+                    {claimStatus === 'claiming' && <Spinner color={lightScheme.white} size={'small'} style={{ paddingRight: 6 }} />}
                     <Text size="17pt" color="label" weight="bold">
                       {/* eslint-disable-next-line no-nested-ternary*/}
                       {claimStatus === 'claimed'
                         ? i18n.t(i18n.l.poaps.minted)
                         : claimStatus === 'claiming'
-                        ? i18n.t(i18n.l.poaps.minting)
-                        : claimStatus === 'none'
-                        ? i18n.t(i18n.l.poaps.mint_poap)
-                        : i18n.t(i18n.l.poaps.error)}
+                          ? i18n.t(i18n.l.poaps.minting)
+                          : claimStatus === 'none'
+                            ? i18n.t(i18n.l.poaps.mint_poap)
+                            : i18n.t(i18n.l.poaps.error)}
                     </Text>
                   </SheetActionButton>
                 </SheetActionButtonRow>

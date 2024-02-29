@@ -1,10 +1,4 @@
-import {
-  ApolloClient,
-  ApolloQueryResult,
-  HttpLink,
-  InMemoryCache,
-  QueryOptions,
-} from '@apollo/client';
+import { ApolloClient, ApolloQueryResult, HttpLink, InMemoryCache, QueryOptions } from '@apollo/client';
 import { OperationVariables } from '@apollo/client/core/types';
 
 const defaultOptions = {
@@ -17,17 +11,6 @@ const defaultOptions = {
     fetchPolicy: 'no-cache',
   },
 };
-
-/**
- * @deprecated Use the `@/graphql` module for new GraphQL queries.
- * @link https://github.com/rainbow-me/rainbow/blob/develop/src/graphql/README.md
- * */
-export const compoundClientDeprecated = new ApolloClient({
-  cache: new InMemoryCache(),
-  link: new HttpLink({
-    uri: 'https://api.thegraph.com/subgraphs/name/graphprotocol/compound-v2',
-  }),
-});
 
 export class ApolloClientWithTimeout extends ApolloClient<any> {
   queryWithTimeout<T = any, TVariables = OperationVariables>(

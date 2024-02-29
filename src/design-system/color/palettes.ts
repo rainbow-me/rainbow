@@ -198,10 +198,7 @@ export type BackgroundColorValue = {
   mode: ColorMode;
 };
 
-export const backgroundColors: Record<
-  BackgroundColor,
-  BackgroundColorValue | ContextualColorValue<BackgroundColorValue>
-> = {
+export const backgroundColors: Record<BackgroundColor, BackgroundColorValue | ContextualColorValue<BackgroundColorValue>> = {
   'surfacePrimary': {
     light: {
       color: globalColors.white100,
@@ -453,9 +450,7 @@ export type ForegroundColor =
   | 'secondary80 (Deprecated)'
   | 'swap (Deprecated)';
 
-function selectBackgroundAsForeground(
-  backgroundName: BackgroundColor
-): string | ContextualColorValue<string> {
+function selectBackgroundAsForeground(backgroundName: BackgroundColor): string | ContextualColorValue<string> {
   const bg = backgroundColors[backgroundName];
 
   if ('color' in bg) {
@@ -470,10 +465,7 @@ function selectBackgroundAsForeground(
   };
 }
 
-export const foregroundColors: Record<
-  ForegroundColor,
-  string | ContextualColorValue<string>
-> = {
+export const foregroundColors: Record<ForegroundColor, string | ContextualColorValue<string>> = {
   'label': {
     light: globalColors.grey100,
     dark: globalColors.white100,
@@ -641,10 +633,7 @@ export const foregroundColors: Record<
  * resolves the value based on the requested color mode. This is useful because
  * some color modes can inherit from others, e.g. `"dark"` and `"darkTinted"`.
  */
-export function getValueForColorMode<Value>(
-  value: Value | ContextualColorValue<Value>,
-  colorMode: ColorMode
-): Value {
+export function getValueForColorMode<Value>(value: Value | ContextualColorValue<Value>, colorMode: ColorMode): Value {
   if (typeof value === 'object' && value !== null && 'light' in value) {
     if (colorMode === 'darkTinted') {
       return value.darkTinted ?? value.dark;
@@ -688,9 +677,7 @@ function createPalette(colorMode: ColorMode): Palette {
 
       return value[colorMode];
     }),
-    foregroundColors: mapValues(foregroundColors, value =>
-      getValueForColorMode(value, colorMode)
-    ),
+    foregroundColors: mapValues(foregroundColors, value => getValueForColorMode(value, colorMode)),
   };
 }
 
@@ -701,9 +688,7 @@ export const palettes: Record<ColorMode, Palette> = {
   lightTinted: createPalette('lightTinted'),
 };
 
-function selectForegroundColors<
-  SelectedColors extends readonly (ForegroundColor | 'accent')[]
->(...colors: SelectedColors): SelectedColors {
+function selectForegroundColors<SelectedColors extends readonly (ForegroundColor | 'accent')[]>(...colors: SelectedColors): SelectedColors {
   return colors;
 }
 
@@ -733,19 +718,10 @@ export const textColors = selectForegroundColors(
   'secondary70 (Deprecated)',
   'secondary80 (Deprecated)'
 );
-export type TextColor = typeof textColors[number];
+export type TextColor = (typeof textColors)[number];
 
-export const shadowColors = selectForegroundColors(
-  'accent',
-  'blue',
-  'green',
-  'red',
-  'purple',
-  'pink',
-  'orange',
-  'yellow'
-);
-export type ShadowColor = typeof shadowColors[number];
+export const shadowColors = selectForegroundColors('accent', 'blue', 'green', 'red', 'purple', 'pink', 'orange', 'yellow');
+export type ShadowColor = (typeof shadowColors)[number];
 
 export const separatorColors = selectForegroundColors(
   'separator',
@@ -757,4 +733,4 @@ export const separatorColors = selectForegroundColors(
   'divider80 (Deprecated)',
   'divider100 (Deprecated)'
 );
-export type SeparatorColor = typeof separatorColors[number];
+export type SeparatorColor = (typeof separatorColors)[number];

@@ -11,11 +11,7 @@ const defaultPath =
 
 const SwapIcon = ({ color, colors, small, ...props }) => (
   <Svg height="21" viewBox="0 0 26 21" width="26" {...props}>
-    <Path
-      d={small ? smallPath : defaultPath}
-      fill={color || colors.white}
-      fillRule="nonzero"
-    />
+    <Path d={small ? smallPath : defaultPath} fill={color || colors.white} fillRule="nonzero" />
   </Svg>
 );
 

@@ -14,28 +14,13 @@ import {
 } from '@/design-system';
 import React, { useEffect, useState } from 'react';
 import { FlashList } from '@shopify/flash-list';
-import {
-  ButtonPressAnimation,
-  ShimmerAnimation,
-} from '@/components/animations';
+import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
 import { useAccountSettings, useDimensions } from '@/hooks';
-import {
-  nftOffersQueryKey,
-  useNFTOffers,
-} from '@/resources/reservoir/nftOffersQuery';
+import { nftOffersQueryKey, useNFTOffers } from '@/resources/reservoir/nftOffersQuery';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import * as i18n from '@/languages';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
-import {
-  CELL_HORIZONTAL_PADDING,
-  FakeOffer,
-  NFT_IMAGE_SIZE,
-  Offer,
-} from './Offer';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { CELL_HORIZONTAL_PADDING, FakeOffer, NFT_IMAGE_SIZE, Offer } from './Offer';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { SortMenu } from '@/components/nft-offers/SortMenu';
@@ -107,18 +92,9 @@ export const NFTOffersCard = () => {
     }
   }, [hasOffers, heightValue, isFetching, isLoading, offers.length]);
 
-  const totalUSDValue = offers.reduce(
-    (acc: number, offer: NftOffer) => acc + offer.grossAmount.usd,
-    0
-  );
+  const totalUSDValue = offers.reduce((acc: number, offer: NftOffer) => acc + offer.grossAmount.usd, 0);
 
-  const totalValue = convertAmountToNativeDisplay(
-    totalUSDValue,
-    'USD',
-    undefined,
-    true,
-    totalUSDValue >= 10_000
-  );
+  const totalValue = convertAmountToNativeDisplay(totalUSDValue, 'USD', undefined, true, totalUSDValue >= 10_000);
 
   return (
     <Bleed horizontal="20px">
@@ -131,12 +107,7 @@ export const NFTOffersCard = () => {
                 <Inline alignVertical="center" space={{ custom: 7 }}>
                   {!offers.length ? (
                     <AccentColorProvider color={colors.skeleton}>
-                      <Box
-                        background="accent"
-                        height={{ custom: 14 }}
-                        width={{ custom: 157 }}
-                        borderRadius={7}
-                      />
+                      <Box background="accent" height={{ custom: 14 }} width={{ custom: 157 }} borderRadius={7} />
                     </AccentColorProvider>
                   ) : (
                     <>
@@ -158,12 +129,7 @@ export const NFTOffersCard = () => {
                           alignItems="center"
                           padding={{ custom: 5 }}
                         >
-                          <Text
-                            align="center"
-                            color="labelTertiary"
-                            size="13pt"
-                            weight="semibold"
-                          >
+                          <Text align="center" color="labelTertiary" size="13pt" weight="semibold">
                             {totalValue}
                           </Text>
                         </Box>
@@ -188,17 +154,11 @@ export const NFTOffersCard = () => {
                       }}
                       style={{ flex: 1 }}
                       renderItem={({ item }) => <Offer offer={item} />}
-                      keyExtractor={offer =>
-                        offer.nft.uniqueId + offer.createdAt
-                      }
+                      keyExtractor={offer => offer.nft.uniqueId + offer.createdAt}
                     />
                   ) : (
                     // need this due to FlashList bug https://github.com/Shopify/flash-list/issues/757
-                    <ScrollView
-                      horizontal
-                      showsHorizontalScrollIndicator={false}
-                      contentContainerStyle={{ paddingHorizontal: 13 }}
-                    >
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 13 }}>
                       <FakeOffer />
                       <FakeOffer />
                       <FakeOffer />
@@ -221,10 +181,7 @@ export const NFTOffersCard = () => {
                     alignItems="center"
                     style={{ overflow: 'hidden' }}
                     onPress={() => {
-                      analyticsV2.track(
-                        analyticsV2.event.nftOffersOpenedOffersSheet,
-                        { entryPoint: 'NFTOffersCard' }
-                      );
+                      analyticsV2.track(analyticsV2.event.nftOffersOpenedOffersSheet, { entryPoint: 'NFTOffersCard' });
                       navigate(Routes.NFT_OFFERS_SHEET);
                     }}
                   >
@@ -234,12 +191,7 @@ export const NFTOffersCard = () => {
                       // 86 = 20px horizontal padding + 10px spacing + 36px refresh button width
                       width={deviceWidth - 86}
                     />
-                    <Text
-                      color="label"
-                      align="center"
-                      size="15pt"
-                      weight="bold"
-                    >
+                    <Text color="label" align="center" size="15pt" weight="bold">
                       {i18n.t(i18n.l.nft_offers.card.button)}
                     </Text>
                   </Box>
@@ -268,17 +220,9 @@ export const NFTOffersCard = () => {
                     }}
                   >
                     {isFetching ? (
-                      <LoadingSpinner
-                        color={colorMode === 'light' ? 'black' : 'white'}
-                        size={20}
-                      />
+                      <LoadingSpinner color={colorMode === 'light' ? 'black' : 'white'} size={20} />
                     ) : (
-                      <Text
-                        align="center"
-                        color="label"
-                        size="17pt"
-                        weight="bold"
-                      >
+                      <Text align="center" color="label" size="17pt" weight="bold">
                         􀅈
                       </Text>
                     )}

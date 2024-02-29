@@ -23,31 +23,14 @@ const buildAccountProfile = (
   },
   account: { accountAddress: string }
 ) => {
-  const selectedWallet = findWalletWithAccount(
-    wallet.wallets || {},
-    account.accountAddress
-  );
-  return getAccountProfileInfo(
-    selectedWallet || wallet.selectedWallet,
-    wallet.walletNames,
-    account.accountAddress
-  );
+  const selectedWallet = findWalletWithAccount(wallet.wallets || {}, account.accountAddress);
+  return getAccountProfileInfo(selectedWallet || wallet.selectedWallet, wallet.walletNames, account.accountAddress);
 };
 
-const accountProfileSelector = createSelector(
-  [walletSelector, settingsSelector],
-  buildAccountProfile
-);
+const accountProfileSelector = createSelector([walletSelector, settingsSelector], buildAccountProfile);
 
 export default function useAccountProfile() {
-  const {
-    accountAddress,
-    accountColor,
-    accountENS,
-    accountImage,
-    accountName,
-    accountSymbol,
-  } = useSelector(accountProfileSelector);
+  const { accountAddress, accountColor, accountENS, accountImage, accountName, accountSymbol } = useSelector(accountProfileSelector);
 
   return {
     accountAddress,

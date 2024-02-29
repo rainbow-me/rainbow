@@ -39,10 +39,7 @@ function RecyclerAssetList({
   type?: AssetListType;
   walletBriefSectionsData: any[];
 }) {
-  const {
-    memoizedResult: briefSectionsData,
-    additionalData,
-  } = useMemoBriefSectionData({
+  const { memoizedResult: briefSectionsData, additionalData } = useMemoBriefSectionData({
     briefSectionsData: walletBriefSectionsData,
     externalAddress,
     type,
@@ -50,10 +47,7 @@ function RecyclerAssetList({
 
   const insets = useSafeAreaInsets();
 
-  const position = useMemoOne(
-    () => new RNAnimated.Value(type === 'wallet' ? -insets.top : 0),
-    []
-  );
+  const position = useMemoOne(() => new RNAnimated.Value(type === 'wallet' ? -insets.top : 0), []);
 
   const extendedState = useMemo(
     () => ({ additionalData, externalAddress, onPressUniqueToken }),
@@ -62,9 +56,7 @@ function RecyclerAssetList({
 
   return (
     <RecyclerAssetListScrollPositionContext.Provider value={position}>
-      {type === 'wallet' && (
-        <NavbarOverlay accentColor={accentColor} position={position} />
-      )}
+      {type === 'wallet' && <NavbarOverlay accentColor={accentColor} position={position} />}
       <StickyHeaderManager yOffset={ios ? navbarHeight + insets.top - 8 : 100}>
         <RawMemoRecyclerAssetList
           briefSectionsData={briefSectionsData}
@@ -85,13 +77,7 @@ export default React.memo(RecyclerAssetList);
 
 // //////////////////////////////////////////////////////////
 
-function NavbarOverlay({
-  accentColor,
-  position,
-}: {
-  accentColor?: string;
-  position: RNAnimated.Value;
-}) {
+function NavbarOverlay({ accentColor, position }: { accentColor?: string; position: RNAnimated.Value }) {
   const { navigate } = useNavigation();
   const { colors, isDarkMode } = useTheme();
   const insets = useSafeAreaInsets();
@@ -229,9 +215,7 @@ function NavbarOverlay({
       as={RNAnimated.View}
       style={[
         {
-          shadowColor: isDarkMode
-            ? colors.shadowBlack
-            : colors.rowDividerExtraLight,
+          shadowColor: isDarkMode ? colors.shadowBlack : colors.rowDividerExtraLight,
           shadowOffset: { width: 0, height: isDarkMode ? 4 : 1 },
           // shadowOpacity: isDarkMode ? 0.4 : 0.04,
           shadowRadius: isDarkMode ? 20 : 0,
@@ -291,10 +275,7 @@ function NavbarOverlay({
                 </View>
               </AndroidContextMenu>
             ) : (
-              <ContextMenuButton
-                menuConfig={menuConfig}
-                onPressMenuItem={handlePressMenuItem}
-              >
+              <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem}>
                 <Navbar.Item>
                   <Navbar.TextIcon color={accentColor as string} icon="􀍠" />
                 </Navbar.Item>

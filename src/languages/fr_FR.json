@@ -286,11 +286,6 @@
       "hidden": "Caché"
     },
     "cards": {
-      "dpi": {
-        "title": "Index DeFi Pulse",
-        "body": "Tous les principaux jetons de finance décentralisée en un seul. Suivez l'industrie.",
-        "view": "Voir"
-      },
       "ens_create_profile": {
         "title": "Créez votre profil ENS",
         "body": "Remplacez votre adresse de portefeuille par un profil entièrement à vous."
@@ -1262,6 +1257,10 @@
         "get_started": "Commencer",
         "invalid_code": "Code Invalide"
       },
+      "notifications": {
+        "enable": "Activer les notifications de points",
+        "disable": "Désactiver les notifications de points"
+      },
       "points": {
         "referral_code": "Code de Parrainage",
         "share_link": "Partager le lien",
@@ -1287,7 +1286,9 @@
         "referral_code_copied": "Code de parrainage copié",
         "earn_points_for_referring": "Gagnez des points lorsque vos filleuls échangent 100 $ à travers Rainbow, plus gagnez 10 % des points que vos filleuls gagnent",
         "already_claimed_points": "Désolé ! Vous avez déjà réclamé vos points.",
-        "now": "Maintenant"
+        "now": "Maintenant",
+        "unranked": "Non classé",
+        "points_to_rank": "750 points pour être classé"
       },
       "console": {
         "claim_bonus_paragraph": "Vous recevrez 100 points supplémentaires une fois que vous aurez échangé au moins 100 $ via Rainbow",
@@ -1295,8 +1296,8 @@
         "true_believer": "Vrai Croyant",
         "registration_complete": "Inscription complète",
         "account": "Compte",
+        "points_you_have": "Vous avez",
         "points_earned": "Points Gagnés",
-        "share_bonus": "Bonus de Partage",
         "share_bonus_paragraph_one": "Tout est prêt !",
         "share_bonus_paragraph_two": "Continuez à gagner des points en échangeant, en créant des ponts, en frappant monnaie, en référant des amis, et plus encore",
         "share_bonus_paragraph_three": "Plus vous utilisez Rainbow, plus vous serez récompensé",
@@ -1323,7 +1324,21 @@
         "referral_link_bonus_text_extended": "De plus, vous gagnerez 10% des points gagnés par chaque personne que vous parrainez",
         "complete_onboarding": "Terminé",
         "share_to_x": "Partager sur X",
-        "hardware_wallet_alert": "Le support des portefeuilles matériels arrive bientôt !"
+        "hardware_wallet_alert": "Le support des portefeuilles matériels arrive bientôt !",
+        "view_weekly_earnings_week_of": "Semaine du %{startOfWeek} - %{endOfWeek}",
+        "view_weekly_earnings_title": "Comptage des points gagnés",
+        "view_weekly_earnings_counted": "Gains hebdomadaires comptés",
+        "view_weekly_earnings_close_button": "Fermer",
+        "view_weekly_earnings_retroactive_points": "Points rétroactifs",
+        "view_weekly_earnings_activity": "Votre activité",
+        "view_weekly_earnings_referral_activity": "Activité de parrainage",
+        "view_weekly_earnings_total_earnings": "Total",
+        "view_weekly_earnings_new_referrals": "Nouveaux parrainages",
+        "wallet_balance_required": "Solde du portefeuille requis",
+        "require_balance_paragraph_one": "Pour continuer, assurez-vous d'avoir un solde en ETH sur l'un des réseaux suivants :",
+        "require_balance_paragraph_two": "Ou alternativement, un solde en MATIC sur Polygon ou un solde en BNB sur BSC",
+        "fund_my_wallet": "Financer mon portefeuille",
+        "points": "Points"
       }
     },
     "pools": {
@@ -1708,6 +1723,7 @@
       "notifications": "Notifications",
       "notifications_section": {
         "my_wallets": "Mes Portefeuilles",
+        "points": "Points",
         "watched_wallets": "Portefeuilles surveillés",
         "allow_notifications": "Autoriser les notifications",
         "sent": "Envoyé",
@@ -2366,6 +2382,7 @@
         "message": "Collez l'URI WalletConnect ci-dessous",
         "title": "Nouvelle session WalletConnect"
       },
+      "none": "Aucun",
       "switch_network": "Changer de réseau",
       "switch_wallet": "Changer de portefeuille",
       "titles": {
@@ -2413,7 +2430,8 @@
         "request_invalid": "La demande contenait des paramètres non valides. Veuillez réessayer ou contacter les équipes d'assistance de Rainbow et/ou de dapp.",
         "eth_sign": "Rainbow ne prend pas en charge eth_sign traditionnel en raison de préoccupations de sécurité.  \n Veuillez contacter les équipes de support de Rainbow et/ou de l'application si vous avez des questions.",
         "request_unsupported_network": "Le réseau spécifié dans cette demande n'est pas pris en charge par Rainbow.",
-        "request_unsupported_methods": "La méthode(s) RPC spécifiée dans cette demande n'est pas prise en charge par Rainbow."
+        "request_unsupported_methods": "La méthode(s) RPC spécifiée dans cette demande n'est pas prise en charge par Rainbow.",
+        "no_accounts_found": "Aucun compte trouvé dans les espaces de noms approuvés."
       },
       "dapp_warnings": {
         "info_alert": {

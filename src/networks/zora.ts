@@ -7,12 +7,7 @@ import { getZoraGasPrices } from '@/redux/gas';
 import { getRemoteConfig } from '@/model/remoteConfig';
 
 export const getZoraNetworkObject = (): NetworkProperties => {
-  const {
-    zora_enabled,
-    zora_tx_enabled,
-    op_chains_enabled,
-    op_chains_tx_enabled,
-  } = getRemoteConfig();
+  const { zora_enabled, zora_tx_enabled, op_chains_enabled, op_chains_tx_enabled } = getRemoteConfig();
   return {
     // wagmi chain data
     ...zora,
@@ -41,18 +36,12 @@ export const getZoraNetworkObject = (): NetworkProperties => {
       walletconnect: true,
       swaps: true,
       nfts: true,
-      savings: false,
       pools: false,
       txs: zora_tx_enabled && op_chains_tx_enabled,
     },
 
     gas: {
-      speeds: [
-        gasUtils.NORMAL,
-        gasUtils.FAST,
-        gasUtils.URGENT,
-        gasUtils.CUSTOM,
-      ],
+      speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT, gasUtils.CUSTOM],
 
       // ?
       gasType: 'eip1559',

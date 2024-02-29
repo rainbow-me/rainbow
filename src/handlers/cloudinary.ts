@@ -37,9 +37,7 @@ export const signCloudinaryIconUrl = memoFn(
 
     const directory = internalAddress.split('/')[0];
 
-    const usedWidth = supportedSizeTransformations[directory]
-      ? pickScale(supportedSizeTransformations[directory], width)
-      : width;
+    const usedWidth = supportedSizeTransformations[directory] ? pickScale(supportedSizeTransformations[directory], width) : width;
 
     const cloudinaryImg = cloudinaryURL(internalAddress, {
       height: usedWidth,
@@ -52,8 +50,7 @@ export const signCloudinaryIconUrl = memoFn(
     }
     return cloudinaryImg;
   },
-  (url, options) =>
-    `${url}-${options.width}-${options.height}-${options.format}`
+  (url, options) => `${url}-${options.width}-${options.height}-${options.format}`
 );
 
 export function isCloudinaryStorageIconLink(url: string): boolean {

@@ -7,10 +7,7 @@ import { AssetListItemSkeletonHeight } from '../../AssetListItemSkeleton';
 import { CellType } from './ViewTypes';
 import { deviceUtils } from '@/utils';
 import { ProfileActionButtonsRowHeight } from '../profile-header/ProfileActionButtonsRow';
-import {
-  ProfileAvatarRowHeight,
-  ProfileAvatarRowTopInset,
-} from '../profile-header/ProfileAvatarRow';
+import { ProfileAvatarRowHeight, ProfileAvatarRowTopInset } from '../profile-header/ProfileAvatarRow';
 import { ProfileNameRowHeight } from '../profile-header/ProfileNameRow';
 import { ProfileBalanceRowHeight } from '../profile-header/ProfileBalanceRow';
 import { ProfileStickyHeaderHeight } from '../profile-header/ProfileStickyHeader';

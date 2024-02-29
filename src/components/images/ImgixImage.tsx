@@ -1,6 +1,5 @@
 import * as React from 'react';
 import FastImage, { FastImageProps, Source } from 'react-native-fast-image';
-import { Image } from 'react-native';
 
 import { maybeSignSource } from '../../handlers/imgix';
 
@@ -12,6 +11,7 @@ export type ImgixImageProps = FastImageProps & {
 // Here we're emulating the pattern used in react-native-fast-image:
 // https://github.com/DylanVann/react-native-fast-image/blob/0439f7190f141e51a391c84890cdd8a7067c6ad3/src/index.tsx#L146
 type HiddenImgixImageProps = {
+  forwardedRef?: React.Ref<any>;
   maxRetries?: number;
   retryOnError?: boolean;
   size: number;
@@ -20,10 +20,7 @@ type HiddenImgixImageProps = {
 type MergedImgixImageProps = ImgixImageProps & HiddenImgixImageProps;
 
 // ImgixImage must be a class Component to support Animated.createAnimatedComponent.
-class ImgixImage extends React.PureComponent<
-  MergedImgixImageProps,
-  ImgixImageProps & { retryCount: number }
-> {
+class ImgixImage extends React.PureComponent<MergedImgixImageProps, ImgixImageProps & { retryCount: number }> {
   static getDerivedStateFromProps(props: MergedImgixImageProps) {
     const { source, size, fm } = props;
     const options = {
@@ -36,10 +33,7 @@ class ImgixImage extends React.PureComponent<
 
     return {
       retryCount: 0,
-      source:
-        !!source && typeof source === 'object'
-          ? maybeSignSource(source, options)
-          : source,
+      source: !!source && typeof source === 'object' ? maybeSignSource(source, options) : source,
     };
   }
 
@@ -47,9 +41,7 @@ class ImgixImage extends React.PureComponent<
     const { onError, retryOnError, maxRetries = 5 } = this.props;
     const { retryCount } = this.state;
     // We don't want to retry if there is a 404.
-    const isNotFound =
-      err?.nativeEvent?.statusCode === 404 ||
-      err?.nativeEvent?.message?.includes('404');
+    const isNotFound = err?.nativeEvent?.statusCode === 404 || err?.nativeEvent?.message?.includes('404');
     const shouldRetry = retryOnError && !isNotFound;
 
     if (shouldRetry && retryCount < maxRetries) {
@@ -65,15 +57,8 @@ class ImgixImage extends React.PureComponent<
     // Use the local state as the signing source, as opposed to the prop directly.
     // (The source prop may point to an untrusted URL.)
     const { retryCount, source } = this.state;
-    const Component = maybeComponent || Image;
-    return (
-      <Component
-        {...props}
-        key={`${JSON.stringify(source)}-${retryCount}`}
-        onError={this.handleError}
-        source={source}
-      />
-    );
+    const Component = maybeComponent || FastImage;
+    return <Component {...props} key={`${JSON.stringify(source)}-${retryCount}`} onError={this.handleError} source={source} />;
   }
 }
 
@@ -86,20 +71,18 @@ const preload = (sources: Source[], size?: number, fm?: string): void => {
         w: size,
       }),
     };
+    return FastImage.preload(sources.map(source => maybeSignSource(source, options)));
   }
   return;
 };
 
-const {
-  cacheControl,
-  clearDiskCache,
-  clearMemoryCache,
-  contextTypes,
-  priority,
-  resizeMode,
-} = FastImage;
+const ImgixImageWithForwardRef = React.forwardRef((props: MergedImgixImageProps, ref: React.Ref<any>) => (
+  <ImgixImage forwardedRef={ref} {...props} />
+));
 
-export default Object.assign(ImgixImage, {
+const { cacheControl, clearDiskCache, clearMemoryCache, contextTypes, priority, resizeMode } = FastImage;
+
+export default Object.assign(ImgixImageWithForwardRef, {
   cacheControl,
   clearDiskCache,
   clearMemoryCache,

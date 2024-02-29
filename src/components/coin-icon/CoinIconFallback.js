@@ -29,16 +29,7 @@ const fallbackIconStyle = size => {
 };
 
 export const CoinIconFallback = fallbackProps => {
-  const {
-    address,
-    height,
-    network,
-    symbol,
-    shadowColor,
-    theme,
-    size,
-    width,
-  } = fallbackProps;
+  const { address, height, network, symbol, shadowColor, theme, size, width } = fallbackProps;
 
   const { colors } = theme;
   const imageUrl = getUrlForTrustIconFallback(address, network);
@@ -50,6 +41,7 @@ export const CoinIconFallback = fallbackProps => {
 
   const fallbackIconColor = useColorForAsset({
     address,
+    network,
   });
 
   // we store data inside the object outside the component
@@ -68,9 +60,7 @@ export const CoinIconFallback = fallbackProps => {
   const onError = useCallback(
     // @ts-expect-error passed to an untyped JS component
     err => {
-      const newError = err?.nativeEvent?.message?.includes('404')
-        ? ImageState.NOT_FOUND
-        : ImageState.ERROR;
+      const newError = err?.nativeEvent?.message?.includes('404') ? ImageState.NOT_FOUND : ImageState.ERROR;
       if (imagesCache[key] === newError) {
         return;
       } else {
@@ -91,11 +81,7 @@ export const CoinIconFallback = fallbackProps => {
           onError={onError}
           onLoad={onLoad}
           size={size}
-          style={[
-            sx.coinIconFallback,
-            isLoaded && { backgroundColor: colors.white },
-            { height, width, borderRadius: height / 2 },
-          ]}
+          style={[sx.coinIconFallback, isLoaded && { backgroundColor: colors.white }, { height, width, borderRadius: height / 2 }]}
           {...fallbackProps}
         />
       )}

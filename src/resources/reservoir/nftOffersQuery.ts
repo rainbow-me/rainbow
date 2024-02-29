@@ -1,24 +1,12 @@
 import { analyticsV2 } from '@/analytics';
 import { nftOffersSortAtom } from '@/components/nft-offers/SortMenu';
 import { NFT_OFFERS, useExperimentalFlag } from '@/config';
-import { IS_PROD } from '@/env';
-import { arcClient, arcDevClient } from '@/graphql';
-import {
-  GetNftOffersQuery,
-  NftOffer,
-  SortCriterion,
-} from '@/graphql/__generated__/arc';
-import {
-  QueryFunctionArgs,
-  QueryFunctionResult,
-  createQueryKey,
-  queryClient,
-} from '@/react-query';
+import { arcClient } from '@/graphql';
+import { GetNftOffersQuery, NftOffer, SortCriterion } from '@/graphql/__generated__/arc';
+import { QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useRecoilValue } from 'recoil';
-
-const graphqlClient = IS_PROD ? arcClient : arcDevClient;
 
 export type NFTOffersArgs = {
   walletAddress: string;
@@ -29,21 +17,13 @@ function sortNftOffers(nftOffers: NftOffer[], sortCriterion: SortCriterion) {
   let sortedOffers;
   switch (sortCriterion) {
     case SortCriterion.TopBidValue:
-      sortedOffers = nftOffers
-        .slice()
-        .sort((a, b) => b.netAmount.usd - a.netAmount.usd);
+      sortedOffers = nftOffers.slice().sort((a, b) => b.netAmount.usd - a.netAmount.usd);
       break;
     case SortCriterion.FloorDifferencePercentage:
-      sortedOffers = nftOffers
-        .slice()
-        .sort(
-          (a, b) => b.floorDifferencePercentage - a.floorDifferencePercentage
-        );
+      sortedOffers = nftOffers.slice().sort((a, b) => b.floorDifferencePercentage - a.floorDifferencePercentage);
       break;
     case SortCriterion.DateCreated:
-      sortedOffers = nftOffers
-        .slice()
-        .sort((a, b) => b.createdAt - a.createdAt);
+      sortedOffers = nftOffers.slice().sort((a, b) => b.createdAt - a.createdAt);
       break;
     default:
       sortedOffers = nftOffers;
@@ -51,37 +31,23 @@ function sortNftOffers(nftOffers: NftOffer[], sortCriterion: SortCriterion) {
   return sortedOffers;
 }
 
-export const nftOffersQueryKey = ({
-  walletAddress,
-  sortBy = SortCriterion.TopBidValue,
-}: NFTOffersArgs) =>
-  createQueryKey(
-    'nftOffers',
-    { walletAddress, sortBy },
-    { persisterVersion: 1 }
-  );
+export const nftOffersQueryKey = ({ walletAddress, sortBy = SortCriterion.TopBidValue }: NFTOffersArgs) =>
+  createQueryKey('nftOffers', { walletAddress, sortBy }, { persisterVersion: 1 });
 
 type NFTOffersQueryKey = ReturnType<typeof nftOffersQueryKey>;
 
-async function nftOffersQueryFunction({
-  queryKey: [{ walletAddress, sortBy }],
-}: QueryFunctionArgs<typeof nftOffersQueryKey>) {
-  const data = await graphqlClient.getNFTOffers({
+async function nftOffersQueryFunction({ queryKey: [{ walletAddress, sortBy }] }: QueryFunctionArgs<typeof nftOffersQueryKey>) {
+  const data = await arcClient.getNFTOffers({
     walletAddress,
     sortBy,
   });
   return data;
 }
 
-export type NftOffersResult = QueryFunctionResult<
-  typeof nftOffersQueryFunction
->;
+export type NftOffersResult = QueryFunctionResult<typeof nftOffersQueryFunction>;
 
-export async function fetchNftOffers({
-  walletAddress,
-  sortBy = SortCriterion.TopBidValue,
-}: NFTOffersArgs) {
-  const data = await graphqlClient.getNFTOffers({
+export async function fetchNftOffers({ walletAddress, sortBy = SortCriterion.TopBidValue }: NFTOffersArgs) {
+  const data = await arcClient.getNFTOffers({
     walletAddress,
     // TODO: remove sortBy once the backend supports it
     sortBy: SortCriterion.TopBidValue,
@@ -111,7 +77,7 @@ export function useNFTOffers({ walletAddress }: { walletAddress: string }) {
   const query = useQuery<GetNftOffersQuery>(
     queryKey,
     async () =>
-      await graphqlClient.getNFTOffers({
+      await arcClient.getNFTOffers({
         walletAddress,
         // TODO: remove sortBy once the backend supports it
         sortBy: SortCriterion.TopBidValue,
@@ -124,38 +90,25 @@ export function useNFTOffers({ walletAddress }: { walletAddress: string }) {
     }
   );
 
-  const sortedOffers = sortNftOffers(
-    query.data?.nftOffers || [],
-    sortCriterion
-  );
+  const sortedOffers = sortNftOffers(query.data?.nftOffers || [], sortCriterion);
 
   useEffect(() => {
     const nftOffers = query.data?.nftOffers ?? [];
-    const totalUSDValue = nftOffers.reduce(
-      (acc: number, offer: NftOffer) => acc + offer.grossAmount.usd,
-      0
-    );
-    const offerVarianceArray = nftOffers.map(
-      offer => offer.floorDifferencePercentage / 100
-    );
+    const totalUSDValue = nftOffers.reduce((acc: number, offer: NftOffer) => acc + offer.grossAmount.usd, 0);
+    const offerVarianceArray = nftOffers.map(offer => offer.floorDifferencePercentage / 100);
     offerVarianceArray.sort((a, b) => a - b);
 
     // calculate median offer variance
     const middleIndex = Math.floor(offerVarianceArray.length / 2);
     let medianVariance;
     if (offerVarianceArray.length % 2 === 0) {
-      medianVariance =
-        (offerVarianceArray[middleIndex - 1] +
-          offerVarianceArray[middleIndex]) /
-        2;
+      medianVariance = (offerVarianceArray[middleIndex - 1] + offerVarianceArray[middleIndex]) / 2;
     } else {
       medianVariance = offerVarianceArray[middleIndex];
     }
 
     // calculate mean offer variance
-    const meanVariance =
-      offerVarianceArray.reduce((acc, cur) => acc + cur, 0) /
-      offerVarianceArray.length;
+    const meanVariance = offerVarianceArray.reduce((acc, cur) => acc + cur, 0) / offerVarianceArray.length;
 
     analyticsV2.identify({
       nftOffersAmount: nftOffers.length,
@@ -170,10 +123,7 @@ export function useNFTOffers({ walletAddress }: { walletAddress: string }) {
     const nftOffers = query.data?.nftOffers ?? [];
     if (nftOffers.length) {
       const interval = setInterval(() => {
-        const validOffers = nftOffers.filter(
-          (offer: NftOffer) =>
-            !offer.validUntil || offer.validUntil * 1000 - Date.now() > 0
-        );
+        const validOffers = nftOffers.filter((offer: NftOffer) => !offer.validUntil || offer.validUntil * 1000 - Date.now() > 0);
         if (validOffers.length < nftOffers.length) {
           queryClient.setQueryData(queryKey, { nftOffers: validOffers });
         }

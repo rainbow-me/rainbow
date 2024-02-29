@@ -14,28 +14,14 @@ import { Text } from '../components/text';
 import { removeWalletData } from '../handlers/localstorage/removeWallet';
 import { cleanUpWalletKeys, RainbowWallet } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
-import {
-  addressSetSelected,
-  walletsSetSelected,
-  walletsUpdate,
-} from '../redux/wallets';
+import { addressSetSelected, walletsSetSelected, walletsUpdate } from '../redux/wallets';
 import { analytics, analyticsV2 } from '@/analytics';
 import { getExperimetalFlag, HARDWARE_WALLETS } from '@/config';
 import { useRemotePromoSheetContext } from '@/components/remote-promo-sheet/RemotePromoSheetProvider';
-import {
-  useAccountSettings,
-  useInitializeWallet,
-  useWallets,
-  useWalletsWithBalancesAndNames,
-  useWebData,
-} from '@/hooks';
+import { useAccountSettings, useInitializeWallet, useWallets, useWalletsWithBalancesAndNames, useWebData } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
-import {
-  deviceUtils,
-  doesWalletsContainAddress,
-  showActionSheetWithOptions,
-} from '@/utils';
+import { deviceUtils, doesWalletsContainAddress, showActionSheetWithOptions } from '@/utils';
 import logger from '@/utils/logger';
 import { useTheme } from '@/theme';
 import { EthereumAddress } from '@/entities';
@@ -47,15 +33,13 @@ const listPaddingBottom = 6;
 const walletRowHeight = 59;
 const maxListHeight = deviceHeight - 220;
 
-const EditButton = styled(ButtonPressAnimation).attrs(
-  ({ editMode }: { editMode: boolean }) => ({
-    scaleTo: 0.96,
-    wrapperStyle: {
-      width: editMode ? 70 : 58,
-    },
-    width: editMode ? 100 : 100,
-  })
-)(
+const EditButton = styled(ButtonPressAnimation).attrs(({ editMode }: { editMode: boolean }) => ({
+  scaleTo: 0.96,
+  wrapperStyle: {
+    width: editMode ? 70 : 58,
+  },
+  width: editMode ? 100 : 100,
+}))(
   ios
     ? {
         position: 'absolute',
@@ -70,17 +54,15 @@ const EditButton = styled(ButtonPressAnimation).attrs(
       }
 );
 
-const EditButtonLabel = styled(Text).attrs(
-  ({ theme: { colors }, editMode }: { theme: any; editMode: boolean }) => ({
-    align: 'right',
-    color: colors.appleBlue,
-    letterSpacing: 'roundedMedium',
-    size: 'large',
-    weight: editMode ? 'bold' : 'semibold',
-    numberOfLines: 1,
-    ellipsizeMode: 'tail',
-  })
-)({
+const EditButtonLabel = styled(Text).attrs(({ theme: { colors }, editMode }: { theme: any; editMode: boolean }) => ({
+  align: 'right',
+  color: colors.appleBlue,
+  letterSpacing: 'roundedMedium',
+  size: 'large',
+  weight: editMode ? 'bold' : 'semibold',
+  numberOfLines: 1,
+  ellipsizeMode: 'tail',
+}))({
   height: 40,
 });
 
@@ -98,8 +80,7 @@ const getWalletRowCount = (wallets: any) => {
   if (wallets) {
     Object.keys(wallets).forEach(key => {
       // Addresses
-      count += wallets[key].addresses.filter((account: any) => account.visible)
-        .length;
+      count += wallets[key].addresses.filter((account: any) => account.visible).length;
     });
   }
   return count;
@@ -126,19 +107,13 @@ export default function ChangeWalletSheet() {
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
 
   const [editMode, setEditMode] = useState(false);
-  const [currentAddress, setCurrentAddress] = useState(
-    currentAccountAddress || accountAddress
-  );
-  const [currentSelectedWallet, setCurrentSelectedWallet] = useState(
-    selectedWallet
-  );
+  const [currentAddress, setCurrentAddress] = useState(currentAccountAddress || accountAddress);
+  const [currentSelectedWallet, setCurrentSelectedWallet] = useState(selectedWallet);
 
   const walletRowCount = useMemo(() => getWalletRowCount(wallets), [wallets]);
 
   let headerHeight = 30;
-  let listHeight =
-    walletRowHeight * walletRowCount +
-    (!watchOnly ? footerHeight + listPaddingBottom : android ? 20 : 0);
+  let listHeight = walletRowHeight * walletRowCount + (!watchOnly ? footerHeight + listPaddingBottom : android ? 20 : 0);
   let scrollEnabled = false;
   let showDividers = false;
   if (listHeight > maxListHeight) {
@@ -179,16 +154,7 @@ export default function ChangeWalletSheet() {
         logger.log('error while switching account', e);
       }
     },
-    [
-      currentAddress,
-      dispatch,
-      editMode,
-      goBack,
-      initializeWallet,
-      onChangeWallet,
-      wallets,
-      watchOnly,
-    ]
+    [currentAddress, dispatch, editMode, goBack, initializeWallet, onChangeWallet, wallets, watchOnly]
   );
 
   const deleteWallet = useCallback(
@@ -202,17 +168,13 @@ export default function ChangeWalletSheet() {
         [walletId]: {
           ...currentWallet,
           addresses: (currentWallet.addresses ?? []).map(account =>
-            account.address.toLowerCase() === address.toLowerCase()
-              ? { ...account, visible: false }
-              : account
+            account.address.toLowerCase() === address.toLowerCase() ? { ...account, visible: false } : account
           ),
         },
       };
       // If there are no visible wallets
       // then delete the wallet
-      const visibleAddresses = (newWallets as any)[walletId].addresses.filter(
-        (account: any) => account.visible
-      );
+      const visibleAddresses = (newWallets as any)[walletId].addresses.filter((account: any) => account.visible);
       if (visibleAddresses.length === 0) {
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete newWallets[walletId];
@@ -229,9 +191,7 @@ export default function ChangeWalletSheet() {
     (walletId: string, address: string) => {
       const wallet = wallets?.[walletId];
       if (!wallet) return;
-      const account = wallet.addresses.find(
-        account => account.address === address
-      );
+      const account = wallet.addresses.find(account => account.address === address);
 
       InteractionManager.runAfterInteractions(() => {
         goBack();
@@ -250,9 +210,7 @@ export default function ChangeWalletSheet() {
                   });
 
                   const walletAddresses = wallets[walletId].addresses;
-                  const walletAddressIndex = walletAddresses.findIndex(
-                    account => account.address === address
-                  );
+                  const walletAddressIndex = walletAddresses.findIndex(account => account.address === address);
                   const walletAddress = walletAddresses[walletAddressIndex];
 
                   const updatedWalletAddress = {
@@ -261,9 +219,7 @@ export default function ChangeWalletSheet() {
                     label: args.name,
                   };
                   const updatedWalletAddresses = [...walletAddresses];
-                  updatedWalletAddresses[
-                    walletAddressIndex
-                  ] = updatedWalletAddress;
+                  updatedWalletAddresses[walletAddressIndex] = updatedWalletAddress;
 
                   const updatedWallet = {
                     ...wallets[walletId],
@@ -279,11 +235,7 @@ export default function ChangeWalletSheet() {
                     await dispatch(walletsSetSelected(updatedWallet));
                   }
 
-                  updateWebProfile(
-                    address,
-                    args.name,
-                    colors.avatarBackgrounds[args.color]
-                  );
+                  updateWebProfile(address, args.name, colors.avatarBackgrounds[args.color]);
 
                   await dispatch(walletsUpdate(updatedWallets));
                 } else {
@@ -301,15 +253,7 @@ export default function ChangeWalletSheet() {
         }, 50);
       });
     },
-    [
-      wallets,
-      goBack,
-      navigate,
-      dispatch,
-      currentSelectedWallet.id,
-      updateWebProfile,
-      colors.avatarBackgrounds,
-    ]
+    [wallets, goBack, navigate, dispatch, currentSelectedWallet.id, updateWebProfile, colors.avatarBackgrounds]
   );
 
   const onPressEdit = useCallback(
@@ -323,9 +267,7 @@ export default function ChangeWalletSheet() {
   const onPressNotifications = useCallback(
     (walletName: string, address: string) => {
       analytics.track('Tapped "Notification Settings"');
-      const walletNotificationSettings = getNotificationSettingsForWalletWithAddress(
-        address
-      );
+      const walletNotificationSettings = getNotificationSettingsForWalletWithAddress(address);
       if (walletNotificationSettings) {
         navigate(Routes.SETTINGS_SHEET, {
           params: {
@@ -336,11 +278,9 @@ export default function ChangeWalletSheet() {
           screen: Routes.WALLET_NOTIFICATIONS_SETTINGS,
         });
       } else {
-        Alert.alert(
-          lang.t('wallet.action.notifications.alert_title'),
-          lang.t('wallet.action.notifications.alert_message'),
-          [{ text: 'OK' }]
-        );
+        Alert.alert(lang.t('wallet.action.notifications.alert_title'), lang.t('wallet.action.notifications.alert_message'), [
+          { text: 'OK' },
+        ]);
       }
     },
     [navigate]
@@ -356,9 +296,7 @@ export default function ChangeWalletSheet() {
       for (let i = 0; i < Object.keys(wallets as any).length; i++) {
         const key = Object.keys(wallets as any)[i];
         const someWallet = wallets?.[key];
-        const otherAccount = someWallet?.addresses.find(
-          account => account.visible && account.address !== address
-        );
+        const otherAccount = someWallet?.addresses.find(account => account.visible && account.address !== address);
         if (otherAccount) {
           isLastAvailableWallet = true;
           break;
@@ -440,16 +378,12 @@ export default function ChangeWalletSheet() {
       {android && <Whitespace />}
       <Column height={headerHeight} justify="space-between">
         <Centered>
-          <SheetTitle testID="change-wallet-sheet-title">
-            {lang.t('wallet.label')}
-          </SheetTitle>
+          <SheetTitle testID="change-wallet-sheet-title">{lang.t('wallet.label')}</SheetTitle>
 
           {!watchOnly && (
             <Row style={{ position: 'absolute', right: 0 }}>
               <EditButton editMode={editMode} onPress={onPressEditMode}>
-                <EditButtonLabel editMode={editMode}>
-                  {editMode ? lang.t('button.done') : lang.t('button.edit')}
-                </EditButtonLabel>
+                <EditButtonLabel editMode={editMode}>{editMode ? lang.t('button.done') : lang.t('button.edit')}</EditButtonLabel>
               </EditButton>
             </Row>
           )}

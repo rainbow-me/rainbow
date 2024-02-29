@@ -1,8 +1,4 @@
-export default function simplifyData(
-  data,
-  pickRange = 10,
-  includeExtremes = true
-) {
+export default function simplifyData(data, pickRange = 10, includeExtremes = true) {
   if (!data) {
     return [];
   }
@@ -22,12 +18,5 @@ export default function simplifyData(
     }
   }
 
-  return data.filter(
-    (_, i) =>
-      i % pickRange === 0 ||
-      i === min ||
-      i === max ||
-      i === 0 ||
-      i === data.length - 1
-  );
+  return data.filter((_, i) => i % pickRange === 0 || i === min || i === max || i === 0 || i === data.length - 1);
 }

@@ -65,19 +65,12 @@ export const HardwareWalletTxNavigator = () => {
 
   const deviceId = selectedWallet?.deviceId;
   const [isReady, setIsReady] = useRecoilState(LedgerIsReadyAtom);
-  const [readyForPolling, setReadyForPolling] = useRecoilState(
-    readyForPollingAtom
-  );
-  const [triggerPollerCleanup, setTriggerPollerCleanup] = useRecoilState(
-    triggerPollerCleanupAtom
-  );
+  const [readyForPolling, setReadyForPolling] = useRecoilState(readyForPollingAtom);
+  const [triggerPollerCleanup, setTriggerPollerCleanup] = useRecoilState(triggerPollerCleanupAtom);
 
   const errorCallback = useCallback(
     (errorType: LEDGER_ERROR_CODES) => {
-      if (
-        errorType === LEDGER_ERROR_CODES.NO_ETH_APP ||
-        errorType === LEDGER_ERROR_CODES.OFF_OR_LOCKED
-      ) {
+      if (errorType === LEDGER_ERROR_CODES.NO_ETH_APP || errorType === LEDGER_ERROR_CODES.OFF_OR_LOCKED) {
         navigate(Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET, {
           errorType,
           deviceId,
@@ -131,14 +124,8 @@ export const HardwareWalletTxNavigator = () => {
             sceneContainerStyle={{ backgroundColor: backgroundColor }}
             tabBar={() => null}
           >
-            <Swipe.Screen
-              component={PairHardwareWalletAgainSheet}
-              name={Routes.PAIR_HARDWARE_WALLET_AGAIN_SHEET}
-            />
-            <Swipe.Screen
-              component={PairHardwareWalletErrorSheet}
-              name={Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET}
-            />
+            <Swipe.Screen component={PairHardwareWalletAgainSheet} name={Routes.PAIR_HARDWARE_WALLET_AGAIN_SHEET} />
+            <Swipe.Screen component={PairHardwareWalletErrorSheet} name={Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET} />
           </Swipe.Navigator>
         </SimpleSheet>
       )}

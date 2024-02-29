@@ -4,15 +4,7 @@ import { TextInputProps } from 'react-native';
 import Spinner from '../../Spinner';
 import { Input } from '../../inputs';
 import SearchInputGradientBackground from './SearchInputGradientBackground';
-import {
-  Box,
-  Column,
-  Columns,
-  Cover,
-  Heading,
-  Inset,
-  useHeadingStyle,
-} from '@/design-system';
+import { Box, Column, Columns, Cover, Heading, Inset, useHeadingStyle } from '@/design-system';
 import { useDimensions, useMagicAutofocus } from '@/hooks';
 
 export type SearchInputProps = {
@@ -25,15 +17,7 @@ export type SearchInputProps = {
   testID: string;
 };
 
-const SearchInput = ({
-  isLoading,
-  onChangeText,
-  value,
-  variant = 'rainbow',
-  selectionColor,
-  state,
-  testID,
-}: SearchInputProps) => {
+const SearchInput = ({ isLoading, onChangeText, value, variant = 'rainbow', selectionColor, state, testID }: SearchInputProps) => {
   const { width: deviceWidth } = useDimensions();
   const headingStyle = useHeadingStyle({
     color: 'primary (Deprecated)',
@@ -59,23 +43,11 @@ const SearchInput = ({
       <Cover>
         <Box
           as={MaskedView}
-          maskElement={
-            <Box
-              background="body (Deprecated)"
-              borderRadius={46}
-              height={`${height}px`}
-              width="full"
-            />
-          }
+          maskElement={<Box background="body (Deprecated)" borderRadius={46} height={`${height}px`} width="full" />}
           //@ts-ignore overloaded props
           style={useMemo(() => ({ height: '100%', width: '100%' }), [])}
         >
-          <SearchInputGradientBackground
-            height={height}
-            state={state}
-            variant={variant}
-            width={deviceWidth}
-          />
+          <SearchInputGradientBackground height={height} state={state} variant={variant} width={deviceWidth} />
         </Box>
       </Cover>
       <Cover>
@@ -83,24 +55,13 @@ const SearchInput = ({
           as={MaskedView}
           maskElement={
             <Inset space="3px">
-              <Box
-                background="body (Deprecated)"
-                borderRadius={46}
-                height={{ custom: height - strokeWidth * 2 }}
-                width="full"
-              />
+              <Box background="body (Deprecated)" borderRadius={46} height={{ custom: height - strokeWidth * 2 }} width="full" />
             </Inset>
           }
           // @ts-ignore overloaded props
           style={useMemo(() => ({ height: '100%', width: '100%' }), [])}
         >
-          <SearchInputGradientBackground
-            height={height}
-            state={state}
-            type="tint"
-            variant={variant}
-            width={deviceWidth}
-          />
+          <SearchInputGradientBackground height={height} state={state} type="tint" variant={variant} width={deviceWidth} />
         </Box>
       </Cover>
       <Box height={`${height}px`} justifyContent="center" width="full">
@@ -116,11 +77,7 @@ const SearchInput = ({
                         <Spinner duration={1000} size={28} />
                       </Box>
                     ) : (
-                      <Heading
-                        color="primary (Deprecated)"
-                        size="30px / 34px (Deprecated)"
-                        weight="heavy"
-                      >
+                      <Heading color="primary (Deprecated)" size="30px / 34px (Deprecated)" weight="heavy">
                         􀊫
                       </Heading>
                     )}
@@ -128,12 +85,7 @@ const SearchInput = ({
                 }
                 style={useMemo(() => ({ height, width: 42 }), [])}
               >
-                <SearchInputGradientBackground
-                  height={height}
-                  state={state}
-                  variant={variant}
-                  width={deviceWidth}
-                />
+                <SearchInputGradientBackground height={height} state={state} variant={variant} width={deviceWidth} />
               </MaskedView>
             </Column>
             <Input
@@ -156,12 +108,7 @@ const SearchInput = ({
               value={value}
             />
             <Column width="content">
-              <Heading
-                align="right"
-                color="primary (Deprecated)"
-                size="30px / 34px (Deprecated)"
-                weight="heavy"
-              >
+              <Heading align="right" color="primary (Deprecated)" size="30px / 34px (Deprecated)" weight="heavy">
                 .eth
               </Heading>
             </Column>

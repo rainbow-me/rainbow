@@ -1,12 +1,5 @@
 import { BlurView } from '@react-native-community/blur';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useReducer,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { Linking, StatusBar, View } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 import useWallets from '../../hooks/useWallets';
@@ -14,44 +7,26 @@ import { GasSpeedButton } from '@/components/gas';
 import { Execute, getClient } from '@reservoir0x/reservoir-sdk';
 import { privateKeyToAccount } from 'viem/accounts';
 import { createWalletClient, http } from 'viem';
-import { dataAddNewTransaction } from '@/redux/data';
 import { HoldToAuthorizeButton } from '@/components/buttons';
 import Routes from '@/navigation/routesNames';
 import ImgixImage from '../../components/images/ImgixImage';
 import { SlackSheet } from '../../components/sheet';
 import { CardSize } from '../../components/unique-token/CardSize';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import {
-  Box,
-  ColorModeProvider,
-  Column,
-  Columns,
-  Inline,
-  Inset,
-  Separator,
-  Stack,
-  Text,
-} from '@/design-system';
-import {
-  useAccountProfile,
-  useAccountSettings,
-  useDimensions,
-  useENSAvatar,
-  useGas,
-  usePersistentAspectRatio,
-} from '@/hooks';
+import { Box, ColorModeProvider, Column, Columns, Inline, Inset, Separator, Stack, Text } from '@/design-system';
+import { useAccountProfile, useAccountSettings, useDimensions, useENSAvatar, useGas, usePersistentAspectRatio } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
-import { CoinIcon, abbreviations, ethereumUtils, watchingAlert } from '@/utils';
+import { abbreviations, ethereumUtils, watchingAlert } from '@/utils';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { maybeSignUri } from '@/handlers/imgix';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { ReservoirCollection } from '@/graphql/__generated__/arcDev';
 import { format } from 'date-fns';
-import { TransactionStatus, TransactionType } from '@/entities';
+import { NewTransaction, RainbowTransaction } from '@/entities';
 import * as i18n from '@/languages';
 import { analyticsV2 } from '@/analytics';
 import { event } from '@/analytics/event';
@@ -78,6 +53,10 @@ import { QuantityButton } from './components/QuantityButton';
 import { estimateGas, getProviderForNetwork } from '@/handlers/web3';
 import { getRainbowFeeAddress } from '@/resources/reservoir/utils';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
+import { addNewTransaction } from '@/state/pendingTransactions';
+import { getUniqueId } from '@/utils/ethereumUtils';
+import { getNextNonce } from '@/state/nonces';
 
 const NFT_IMAGE_HEIGHT = 250;
 // inset * 2 -> 28 *2
@@ -117,15 +96,7 @@ interface MintSheetProps {
   chainId: number;
 }
 
-function MintInfoRow({
-  symbol,
-  label,
-  value,
-}: {
-  symbol: string;
-  label: string;
-  value: React.ReactNode;
-}) {
+function MintInfoRow({ symbol, label, value }: { symbol: string; label: string; value: React.ReactNode }) {
   return (
     <Box alignItems="center">
       <Columns>
@@ -165,83 +136,52 @@ const MintSheet = () => {
   const [insufficientEth, setInsufficientEth] = useState(false);
   const [showNativePrice, setShowNativePrice] = useState(false);
   const [gasError, setGasError] = useState(false);
-  const currentNetwork =
-    RainbowNetworks.find(({ id }) => id === mintCollection.chainId)?.value ||
-    Network.mainnet;
+  const currentNetwork = RainbowNetworks.find(({ id }) => id === mintCollection.chainId)?.value || Network.mainnet;
   const [ensName, setENSName] = useState<string>('');
-  const [mintStatus, setMintStatus] = useState<
-    'none' | 'minting' | 'minted' | 'error'
-  >('none');
+  const [mintStatus, setMintStatus] = useState<'none' | 'minting' | 'minted' | 'error'>('none');
   const txRef = useRef<string>();
 
   const { data: ensAvatar } = useENSAvatar(ensName, {
     enabled: Boolean(ensName),
   });
 
-  const [quantity, setQuantity] = useReducer(
-    (quantity: number, increment: number) => {
-      if (quantity === 1 && increment === -1) {
-        return quantity;
-      }
-      if (
-        maxMintsPerWallet &&
-        quantity === maxMintsPerWallet &&
-        increment === 1
-      ) {
-        return quantity;
-      }
-      return quantity + increment;
-    },
-    1
-  );
+  const [quantity, setQuantity] = useReducer((quantity: number, increment: number) => {
+    if (quantity === 1 && increment === -1) {
+      return quantity;
+    }
+    if (maxMintsPerWallet && quantity === maxMintsPerWallet && increment === 1) {
+      return quantity;
+    }
+    return quantity + increment;
+  }, 1);
 
   // if there is no max mint info, we fallback to 1 to be safe
-  const maxMintsPerWallet = Number(
-    mintCollection.publicMintInfo?.maxMintsPerWallet
-  );
+  const maxMintsPerWallet = Number(mintCollection.publicMintInfo?.maxMintsPerWallet);
 
-  const price = convertRawAmountToBalance(
-    mintCollection.publicMintInfo?.price?.amount?.raw || '0',
-    {
-      decimals: mintCollection.publicMintInfo?.price?.currency?.decimals || 18,
-      symbol: mintCollection.publicMintInfo?.price?.currency?.symbol || 'ETH',
-    }
-  );
+  const price = convertRawAmountToBalance(mintCollection.publicMintInfo?.price?.amount?.raw || '0', {
+    decimals: mintCollection.publicMintInfo?.price?.currency?.decimals || 18,
+    symbol: mintCollection.publicMintInfo?.price?.currency?.symbol || 'ETH',
+  });
 
   // case where mint isnt eth? prob not with our current entrypoints
   const mintPriceAmount = multiply(price.amount, quantity);
-  const mintPriceDisplay = convertAmountToBalanceDisplay(
-    multiply(price.amount, quantity),
-    {
-      decimals: mintCollection.publicMintInfo?.price?.currency?.decimals || 18,
-      symbol: mintCollection.publicMintInfo?.price?.currency?.symbol || 'ETH',
-    }
-  );
+  const mintPriceDisplay = convertAmountToBalanceDisplay(multiply(price.amount, quantity), {
+    decimals: mintCollection.publicMintInfo?.price?.currency?.decimals || 18,
+    symbol: mintCollection.publicMintInfo?.price?.currency?.symbol || 'ETH',
+  });
 
   const priceOfEth = ethereumUtils.getEthPriceUnit() as number;
 
-  const nativeMintPriceDisplay = convertAmountToNativeDisplay(
-    parseFloat(multiply(price.amount, quantity)) * priceOfEth,
-    nativeCurrency
-  );
+  const nativeMintPriceDisplay = convertAmountToNativeDisplay(parseFloat(multiply(price.amount, quantity)) * priceOfEth, nativeCurrency);
 
-  const {
-    updateTxFee,
-    startPollingGasFees,
-    stopPollingGasFees,
-    getTotalGasPrice,
-  } = useGas();
+  const { updateTxFee, startPollingGasFees, stopPollingGasFees, getTotalGasPrice } = useGas();
 
   const imageUrl = maybeSignUri(mintCollection.image || '');
   const { result: aspectRatio } = usePersistentAspectRatio(imageUrl || '');
   // isMintingPublicSale handles if theres a time based mint, otherwise if there is a price we should be able to mint
-  const isMintingAvailable =
-    !(isReadOnlyWallet || isHardwareWallet) &&
-    !!mintCollection.publicMintInfo &&
-    (!gasError || insufficientEth);
+  const isMintingAvailable = !(isReadOnlyWallet || isHardwareWallet) && !!mintCollection.publicMintInfo && (!gasError || insufficientEth);
 
-  const imageColor =
-    usePersistentDominantColorFromImage(imageUrl) ?? colors.paleBlue;
+  const imageColor = usePersistentDominantColorFromImage(imageUrl) ?? colors.paleBlue;
 
   const sheetRef = useRef();
   const yPosition = useSharedValue(0);
@@ -259,13 +199,7 @@ const MintSheet = () => {
   // check address balance
   useEffect(() => {
     const checkInsufficientEth = async () => {
-      const nativeBalance =
-        (
-          await ethereumUtils.getNativeAssetForNetwork(
-            currentNetwork,
-            accountAddress
-          )
-        )?.balance?.amount ?? 0;
+      const nativeBalance = (await ethereumUtils.getNativeAssetForNetwork(currentNetwork, accountAddress))?.balance?.amount ?? 0;
 
       const totalMintPrice = multiply(price.amount, quantity);
       if (greaterThanOrEqualTo(totalMintPrice, nativeBalance)) {
@@ -275,12 +209,7 @@ const MintSheet = () => {
       const txFee = getTotalGasPrice();
       const txFeeWithBuffer = multiply(txFee, 1.2);
       // gas price + mint price
-      setInsufficientEth(
-        greaterThanOrEqualTo(
-          add(txFeeWithBuffer, totalMintPrice),
-          nativeBalance
-        )
-      );
+      setInsufficientEth(greaterThanOrEqualTo(add(txFeeWithBuffer, totalMintPrice), nativeBalance));
     };
     checkInsufficientEth();
   }, [
@@ -326,18 +255,14 @@ const MintSheet = () => {
       });
       try {
         await getClient()?.actions.buyToken({
-          items: [
-            { fillType: 'mint', collection: mintCollection.id!, quantity },
-          ],
+          items: [{ fillType: 'mint', collection: mintCollection.id!, quantity }],
           wallet: signer!,
           chainId: networkObj.id,
           precheck: true,
           onProgress: async (steps: Execute['steps']) => {
             steps.forEach(step => {
               if (step.error) {
-                logger.error(
-                  new RainbowError(`NFT Mints: Gas Step Error: ${step.error}`)
-                );
+                logger.error(new RainbowError(`NFT Mints: Gas Step Error: ${step.error}`));
                 return;
               }
               step.items?.forEach(async item => {
@@ -352,10 +277,7 @@ const MintSheet = () => {
                 let l1GasFeeOptimism = null;
                 // add l1Fee for OP Chains
                 if (getNetworkObj(currentNetwork).gas.OptimismTxFee) {
-                  l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
-                    tx,
-                    provider
-                  );
+                  l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(tx as RainbowTransaction, provider);
                 }
                 if (gas) {
                   setGasError(false);
@@ -371,39 +293,18 @@ const MintSheet = () => {
         });
       } catch (e) {
         setGasError(true);
-        logger.error(
-          new RainbowError(`NFT Mints: Gas Step Error: ${(e as Error).message}`)
-        );
+        logger.error(new RainbowError(`NFT Mints: Gas Step Error: ${(e as Error).message}`));
       }
     };
     estimateMintGas();
-  }, [
-    accountAddress,
-    currentNetwork,
-    mintCollection.id,
-    quantity,
-    updateTxFee,
-  ]);
+  }, [accountAddress, currentNetwork, mintCollection.id, quantity, updateTxFee]);
 
-  const deployerDisplay = abbreviations.address(
-    mintCollection.creator || '',
-    4,
-    6
-  );
+  const deployerDisplay = abbreviations.address(mintCollection.creator || '', 4, 6);
 
-  const contractAddressDisplay = `${abbreviations.address(
-    mintCollection.id || '',
-    4,
-    6
-  )} 􀄯`;
+  const contractAddressDisplay = `${abbreviations.address(mintCollection.id || '', 4, 6)} 􀄯`;
 
   const buildMintDotFunUrl = (contract: string, network: Network) => {
-    const MintDotFunNetworks = [
-      Network.mainnet,
-      Network.optimism,
-      Network.base,
-      Network.zora,
-    ];
+    const MintDotFunNetworks = [Network.mainnet, Network.optimism, Network.base, Network.zora];
     if (!MintDotFunNetworks.includes(network)) {
       Alert.alert(i18n.t(i18n.l.minting.mintdotfun_unsupported_network));
     }
@@ -461,6 +362,7 @@ const MintSheet = () => {
     });
 
     const feeAddress = getRainbowFeeAddress(currentNetwork);
+    const nonce = await getNextNonce({ address: accountAddress, network: currentNetwork });
     try {
       await getClient()?.actions.buyToken({
         items: [
@@ -476,43 +378,63 @@ const MintSheet = () => {
         onProgress: (steps: Execute['steps']) => {
           steps.forEach(step => {
             if (step.error) {
-              logger.error(
-                new RainbowError(`Error minting NFT: ${step.error}`)
-              );
+              logger.error(new RainbowError(`Error minting NFT: ${step.error}`));
               setMintStatus('error');
               return;
             }
             step.items?.forEach(item => {
-              if (
-                item.txHashes?.[0] &&
-                txRef.current !== item.txHashes?.[0] &&
-                item.status === 'incomplete'
-              ) {
-                const tx = {
+              if (item.txHashes?.[0] && txRef.current !== item.txHashes?.[0] && item.status === 'incomplete') {
+                const asset = {
+                  type: 'nft',
+                  icon_url: imageUrl,
+                  address: mintCollection.id || '',
+                  network: currentNetwork,
+                  name: mintCollection.name || '',
+                  decimals: 18,
+                  symbol: 'NFT',
+                  uniqueId: `${mintCollection.id}-${item.txHashes[0]}`,
+                };
+
+                const paymentAsset = {
+                  type: 'nft',
+                  address: ETH_ADDRESS,
+                  network: currentNetwork,
+                  name: mintCollection.publicMintInfo?.price?.currency?.name || 'Ethereum',
+                  decimals: mintCollection.publicMintInfo?.price?.currency?.decimals || 18,
+                  symbol: ETH_SYMBOL,
+                  uniqueId: getUniqueId(ETH_ADDRESS, currentNetwork),
+                };
+
+                const tx: NewTransaction = {
+                  status: 'pending',
                   to: item.data?.to,
                   from: item.data?.from,
                   hash: item.txHashes[0],
                   network: currentNetwork,
-                  amount: mintPriceAmount,
-                  asset: {
-                    address: ETH_ADDRESS,
-                    symbol: ETH_SYMBOL,
-                  },
-                  nft: {
-                    predominantColor: imageColor,
-                    collection: {
-                      image: imageUrl,
+                  nonce,
+                  changes: [
+                    {
+                      direction: 'out',
+                      asset: paymentAsset,
+                      value: mintPriceAmount,
                     },
-                    lowResUrl: imageUrl,
-                    name: mintCollection.name,
-                  },
-                  type: TransactionType.mint,
-                  status: TransactionStatus.minting,
+                    ...Array(quantity).fill({
+                      direction: 'in',
+                      asset,
+                    }),
+                  ],
+                  description: asset.name,
+                  asset,
+                  type: 'mint',
                 };
 
                 txRef.current = tx.hash;
-                // @ts-expect-error TODO: fix when we overhaul tx list, types are not good
-                dispatch(dataAddNewTransaction(tx));
+
+                addNewTransaction({
+                  transaction: tx,
+                  address: accountAddress,
+                  network: currentNetwork,
+                });
                 analyticsV2.track(event.mintsMintedNFT, {
                   collectionName: mintCollection.name || '',
                   contract: mintCollection.id || '',
@@ -536,21 +458,19 @@ const MintSheet = () => {
         quantity,
         priceInEth: mintPriceAmount,
       });
-      logger.error(
-        new RainbowError(`Error minting NFT: ${(e as Error).message}`)
-      );
+      logger.error(new RainbowError(`Error minting NFT: ${(e as Error).message}`));
     }
   }, [
     accountAddress,
     currentNetwork,
-    dispatch,
-    imageColor,
     imageUrl,
     isMintingAvailable,
     isReadOnlyWallet,
     mintCollection.chainId,
     mintCollection.id,
     mintCollection.name,
+    mintCollection.publicMintInfo?.price?.currency?.decimals,
+    mintCollection.publicMintInfo?.price?.currency?.name,
     mintPriceAmount,
     navigate,
     quantity,
@@ -592,11 +512,7 @@ const MintSheet = () => {
       )}
       {/* @ts-expect-error JavaScript component */}
       <SlackSheet
-        backgroundColor={
-          isDarkMode
-            ? `rgba(22, 22, 22, ${ios ? 0.4 : 1})`
-            : `rgba(26, 26, 26, ${ios ? 0.4 : 1})`
-        }
+        backgroundColor={isDarkMode ? `rgba(22, 22, 22, ${ios ? 0.4 : 1})` : `rgba(26, 26, 26, ${ios ? 0.4 : 1})`}
         {...(IS_IOS ? { height: '100%' } : {})}
         ref={sheetRef}
         scrollEnabled
@@ -606,12 +522,7 @@ const MintSheet = () => {
       >
         <ColorModeProvider value="darkTinted">
           <Inset horizontal={'28px'}>
-            <Stack
-              space="28px"
-              separator={
-                <Separator color={'divider40 (Deprecated)'} thickness={1} />
-              }
-            >
+            <Stack space="28px" separator={<Separator color={'divider40 (Deprecated)'} thickness={1} />}>
               <Stack space="28px" alignHorizontal="center">
                 <Box paddingTop={'28px'}>
                   <Stack space={'28px'} alignHorizontal="center">
@@ -623,9 +534,7 @@ const MintSheet = () => {
                         custom: NFT_IMAGE_HEIGHT,
                       }}
                       height={{
-                        custom: aspectRatio
-                          ? NFT_IMAGE_HEIGHT / aspectRatio
-                          : NFT_IMAGE_HEIGHT,
+                        custom: aspectRatio ? NFT_IMAGE_HEIGHT / aspectRatio : NFT_IMAGE_HEIGHT,
                       }}
                       borderRadius={16}
                       size={CardSize}
@@ -645,27 +554,17 @@ const MintSheet = () => {
                       </Text>
 
                       {ensAvatar?.imageUrl ? (
-                        <ImgixImage
-                          size={100}
-                          source={{ uri: ensAvatar?.imageUrl }}
-                          style={{ width: 20, height: 20, borderRadius: 10 }}
-                        />
+                        <ImgixImage size={100} source={{ uri: ensAvatar?.imageUrl }} style={{ width: 20, height: 20, borderRadius: 10 }} />
                       ) : (
                         <ContactAvatar
                           forceDarkMode
                           size="smaller"
                           value={ensName || mintCollection?.creator}
-                          color={addressHashedColorIndex(
-                            mintCollection?.creator || ''
-                          )}
+                          color={addressHashedColorIndex(mintCollection?.creator || '')}
                         />
                       )}
                       <Text size="15pt" color="labelSecondary" weight="bold">
-                        {` ${
-                          ensName ||
-                          deployerDisplay ||
-                          i18n.t(i18n.l.minting.unknown)
-                        }`}
+                        {` ${ensName || deployerDisplay || i18n.t(i18n.l.minting.unknown)}`}
                       </Text>
                     </Inline>
                   </Stack>
@@ -679,30 +578,17 @@ const MintSheet = () => {
                   <Columns alignHorizontal="justify">
                     <Column width={'content'}>
                       <Stack space={{ custom: 14 }}>
-                        <Text
-                          color="labelSecondary"
-                          align="left"
-                          size="13pt"
-                          weight="semibold"
-                        >
+                        <Text color="labelSecondary" align="left" size="13pt" weight="semibold">
                           {i18n.t(i18n.l.minting.mint_price)}
                         </Text>
-                        <ButtonPressAnimation
-                          disabled={isZero(mintPriceAmount)}
-                          onPress={() => setShowNativePrice(!showNativePrice)}
-                        >
+                        <ButtonPressAnimation disabled={isZero(mintPriceAmount)} onPress={() => setShowNativePrice(!showNativePrice)}>
                           <Inline alignVertical="center">
-                            <Text
-                              color="label"
-                              align="left"
-                              size="22pt"
-                              weight="bold"
-                            >
+                            <Text color="label" align="left" size="22pt" weight="bold">
                               {isZero(mintPriceAmount)
                                 ? i18n.t(i18n.l.minting.free)
                                 : showNativePrice
-                                ? nativeMintPriceDisplay
-                                : mintPriceDisplay}
+                                  ? nativeMintPriceDisplay
+                                  : mintPriceDisplay}
                             </Text>
                           </Inline>
                         </ButtonPressAnimation>
@@ -712,16 +598,8 @@ const MintSheet = () => {
                     <Column width={'content'}>
                       <Stack space="2px">
                         {
-                          <Text
-                            color="labelSecondary"
-                            align="center"
-                            size="13pt"
-                            weight="semibold"
-                            numberOfLines={1}
-                          >
-                            {quantity === Number(maxMintsPerWallet)
-                              ? i18n.t(i18n.l.minting.max)
-                              : ''}
+                          <Text color="labelSecondary" align="center" size="13pt" weight="semibold" numberOfLines={1}>
+                            {quantity === Number(maxMintsPerWallet) ? i18n.t(i18n.l.minting.max) : ''}
                           </Text>
                         }
 
@@ -738,9 +616,7 @@ const MintSheet = () => {
 
                   {/* @ts-ignore */}
                   <HoldToAuthorizeButton
-                    backgroundColor={
-                      mintStatus === 'error' ? colors.red : imageColor
-                    }
+                    backgroundColor={mintStatus === 'error' ? colors.red : imageColor}
                     hideInnerBorder
                     label={buttonLabel}
                     onLongPress={actionOnPress}
@@ -767,12 +643,7 @@ const MintSheet = () => {
                   <Text color="label" align="left" size="17pt" weight="heavy">
                     {i18n.t(i18n.l.minting.description)}
                   </Text>
-                  <Text
-                    color="labelTertiary"
-                    align="left"
-                    size="17pt"
-                    weight="medium"
-                  >
+                  <Text color="labelTertiary" align="left" size="17pt" weight="medium">
                     {mintCollection.description}
                   </Text>
                 </Stack>
@@ -783,12 +654,7 @@ const MintSheet = () => {
                     symbol="􀐾"
                     label={i18n.t(i18n.l.minting.total_minted)}
                     value={
-                      <Text
-                        color="labelSecondary"
-                        align="right"
-                        size="17pt"
-                        weight="medium"
-                      >
+                      <Text color="labelSecondary" align="right" size="17pt" weight="medium">
                         {i18n.t(i18n.l.minting.nft_count, {
                           number: mintCollection.tokenCount,
                         })}
@@ -801,12 +667,7 @@ const MintSheet = () => {
                     symbol="􀐫"
                     label={i18n.t(i18n.l.minting.first_event)}
                     value={
-                      <Text
-                        color="labelSecondary"
-                        align="right"
-                        size="17pt"
-                        weight="medium"
-                      >
+                      <Text color="labelSecondary" align="right" size="17pt" weight="medium">
                         {getFormattedDate(mintCollection?.createdAt)}
                       </Text>
                     }
@@ -818,20 +679,8 @@ const MintSheet = () => {
                     symbol="􀉆"
                     label={i18n.t(i18n.l.minting.contract)}
                     value={
-                      <ButtonPressAnimation
-                        onPress={() =>
-                          ethereumUtils.openAddressInBlockExplorer(
-                            mintCollection.id!,
-                            currentNetwork
-                          )
-                        }
-                      >
-                        <Text
-                          color={{ custom: imageColor }}
-                          align="right"
-                          size="17pt"
-                          weight="medium"
-                        >
+                      <ButtonPressAnimation onPress={() => ethereumUtils.openAddressInBlockExplorer(mintCollection.id!, currentNetwork)}>
+                        <Text color={{ custom: imageColor }} align="right" size="17pt" weight="medium">
                           {contractAddressDisplay}
                         </Text>
                       </ButtonPressAnimation>
@@ -844,34 +693,13 @@ const MintSheet = () => {
                   label={i18n.t(i18n.l.minting.network)}
                   value={
                     <Inset vertical={{ custom: -4 }}>
-                      <Inline
-                        space="4px"
-                        alignVertical="center"
-                        alignHorizontal="right"
-                      >
+                      <Inline space="4px" alignVertical="center" alignHorizontal="right">
                         {currentNetwork === Network.mainnet ? (
-                          <CoinIcon
-                            address={ETH_ADDRESS}
-                            size={16}
-                            symbol={ETH_SYMBOL}
-                            forceFallback={undefined}
-                            shadowColor={undefined}
-                            style={undefined}
-                          />
+                          <EthCoinIcon size={16} />
                         ) : (
-                          <ChainBadge
-                            assetType={currentNetwork}
-                            position="relative"
-                            size="small"
-                            forceDark={true}
-                          />
+                          <ChainBadge network={currentNetwork} position="relative" size="small" forceDark={true} />
                         )}
-                        <Text
-                          color="labelSecondary"
-                          align="right"
-                          size="17pt"
-                          weight="medium"
-                        >
+                        <Text color="labelSecondary" align="right" size="17pt" weight="medium">
                           {`${getNetworkObj(currentNetwork).name}`}
                         </Text>
                       </Inline>

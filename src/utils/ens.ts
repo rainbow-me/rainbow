@@ -16,29 +16,21 @@ const ERROR_CODES = {
 /**
  * @description Gets the ENS NFT `avatarUrl` from the record `avatar`
  */
-export function getENSNFTAvatarUrl(
-  uniqueTokens: UniqueAsset[],
-  avatar?: string
-) {
+export function getENSNFTAvatarUrl(uniqueTokens: UniqueAsset[], avatar?: string) {
   let avatarUrl;
   if (avatar) {
     const isNFTAvatar = isENSNFTRecord(avatar);
     if (isNFTAvatar) {
       const { contractAddress, tokenId } = parseENSNFTRecord(avatar);
       const uniqueToken = uniqueTokens.find(
-        token =>
-          token.asset_contract.address?.toLowerCase() ===
-            contractAddress.toLowerCase() && token.id === tokenId
+        token => token.asset_contract.address?.toLowerCase() === contractAddress.toLowerCase() && token.id === tokenId
       );
       if (uniqueToken?.image_url) {
         avatarUrl = uniqueToken?.image_url;
       } else if (uniqueToken?.image_thumbnail_url) {
         avatarUrl = uniqueToken?.image_thumbnail_url;
       }
-    } else if (
-      avatar.startsWith('http') ||
-      (avatar.startsWith('/') && !avatar.match(/^\/(ipfs|ipns)/))
-    ) {
+    } else if (avatar.startsWith('http') || (avatar.startsWith('/') && !avatar.match(/^\/(ipfs|ipns)/))) {
       avatarUrl = avatar;
     }
   }
@@ -61,9 +53,7 @@ export function normalizeENS(name: string) {
  * @description Converts the ENS NFT record string to a unique token metadata object
  */
 export function parseENSNFTRecord(record: string) {
-  const [standard, contractAddress, tokenId] = record
-    .replace('eip155:1/', '')
-    .split(/[:/]+/);
+  const [standard, contractAddress, tokenId] = record.replace('eip155:1/', '').split(/[:/]+/);
   return {
     contractAddress,
     standard,
@@ -111,7 +101,7 @@ export function validateENS(
 ): {
   valid: boolean;
   hint?: string;
-  code?: typeof ERROR_CODES[keyof typeof ERROR_CODES];
+  code?: (typeof ERROR_CODES)[keyof typeof ERROR_CODES];
 } {
   const splitDomain = domain.split('.');
 

@@ -13,6 +13,8 @@ export enum MigrationName {
   prepareDefaultNotificationGroupSettingsState = 'migration_addDefaultNotificationGroupSettings',
   changeLanguageKeys = 'migration_changeLanguageKeys',
   fixHiddenUSDC = 'migration_fixHiddenUSDC',
+  purgeWcConnectionsWithoutAccounts = 'migration_purgeWcConnectionsWithoutAccounts',
+  migratePinnedAndHiddenTokenUniqueIds = 'migration_migratePinnedAndHiddenTokenUniqueIds',
 }
 
 export type Migration = {
