@@ -66,18 +66,7 @@ export interface UnlockableAppIcon extends AppIcon {
   unlockingNFTs: Partial<Record<Network, EthereumAddress[]>>;
 }
 
-export const freeAppIcons: Record<string, AppIcon> = {
-  og: {
-    accentColor: '#001E59',
-    displayName: 'OG',
-    image: AppIconOg,
-  },
-  pixel: {
-    accentColor: '#001E59',
-    displayName: 'Pixel',
-    image: AppIconPixel,
-  },
-};
+export type FreeAppIconKey = 'og' | 'pixel';
 
 export type UnlockableAppIconKey =
   | 'optimism'
@@ -91,6 +80,21 @@ export type UnlockableAppIconKey =
   | 'poolboy'
   | 'adworld'
   | 'farcaster';
+
+export type AppIconKey = FreeAppIconKey | UnlockableAppIconKey;
+
+export const freeAppIcons: Record<FreeAppIconKey, AppIcon> = {
+  og: {
+    accentColor: '#001E59',
+    displayName: 'OG',
+    image: AppIconOg,
+  },
+  pixel: {
+    accentColor: '#001E59',
+    displayName: 'Pixel',
+    image: AppIconPixel,
+  },
+};
 
 export const unlockableAppIcons: Record<UnlockableAppIconKey, UnlockableAppIcon> = {
   optimism: {

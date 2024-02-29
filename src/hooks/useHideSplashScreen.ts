@@ -10,6 +10,7 @@ import { analytics } from '@/analytics';
 import { onHandleStatusBar } from '@/navigation/onNavigationStateChange';
 import { getAppIcon } from '@/handlers/localstorage/globalSettings';
 import { RainbowError, logger } from '@/logger';
+import { AppIconKey } from '@/appIcons/appIcons';
 const Sound = require('react-native-sound');
 
 const { RainbowSplashScreen, RNBootSplash } = NativeModules;
@@ -49,7 +50,7 @@ export default function useHideSplashScreen() {
       alreadyLoggedPerformance.current = true;
 
       // need to load setting straight from storage, redux isnt ready yet
-      const appIcon = (await getAppIcon()) as string;
+      const appIcon = (await getAppIcon()) as AppIconKey;
       if (appIcon === 'poolboy') {
         const sound = new Sound(require('../assets/sounds/RainbowSega.mp3'), (error: any) => {
           if (error) {
