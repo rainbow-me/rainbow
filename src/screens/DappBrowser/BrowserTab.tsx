@@ -3,10 +3,9 @@ import { Box, globalColors, useColorMode } from '@/design-system';
 import { useDimensions } from '@/hooks';
 import { AnimatePresence, MotiView } from 'moti';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import Animated, { Easing, interpolate, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import ViewShot from 'react-native-view-shot';
 import WebView, { WebViewMessageEvent, WebViewNavigation } from 'react-native-webview';
-import RNFS from 'react-native-fs';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 import { transformOrigin } from 'react-native-redash';
@@ -16,16 +15,23 @@ import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { Image, StyleSheet, View } from 'react-native';
 import { Freeze } from 'react-freeze';
 import { COLLAPSED_WEBVIEW_HEIGHT_UNSCALED, TAB_VIEW_COLUMN_WIDTH, TAB_VIEW_ROW_HEIGHT, WEBVIEW_HEIGHT } from './Dimensions';
+import RNFS from 'react-native-fs';
+import { WebViewEvent } from 'react-native-webview/lib/WebViewTypes';
 
 interface BrowserTabProps {
   tabIndex: number;
-  onLoadProgress: (progress: number) => void;
+  injectedJS: string;
 }
 
 type ScreenshotType = {
   id: string;
   isRendered?: boolean;
   uri: string;
+};
+
+const timingConfig = {
+  duration: 500,
+  easing: Easing.bezier(0.22, 1, 0.36, 1),
 };
 
 const screenshotStorage = new MMKV();
@@ -67,8 +73,7 @@ const getWebsiteBackgroundColor = `
   true;
   `;
 
-export const BrowserTab = React.memo(function BrowserTab({ tabIndex, onLoadProgress }: BrowserTabProps) {
-  console.log('[BROWSER]: Render BrowserTab');
+export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS }: BrowserTabProps) {
   const {
     activeTabIndex,
     scrollViewOffset,
@@ -84,7 +89,6 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, onLoadProgr
   const { colorMode } = useColorMode();
   const { width: deviceWidth } = useDimensions();
 
-  const [injectedJS, setInjectedJS] = useState<string | null>(null);
   const messengers = useRef<any[]>([]);
 
   const webViewRef = useRef<WebView>(null);
@@ -93,23 +97,8 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, onLoadProgr
   const isActiveTab = useMemo(() => activeTabIndex === tabIndex, [activeTabIndex, tabIndex]);
 
   const tabId = useMemo(() => `${tabIndex}-${tabStates[tabIndex].url}`, [tabIndex, tabStates]);
-  const getInjectedJS = async () => {
-    return RNFS.readFile(`${RNFS.MainBundlePath}/InjectedJSBundle.js`, 'utf8');
-  };
 
-  useEffect(() => {
-    const loadInjectedJS = async () => {
-      try {
-        console.log('[BROWSER]: loading injected JS...');
-        const jsToInject = await getInjectedJS();
-        console.log('[BROWSER]: got injected JS');
-        setInjectedJS(jsToInject);
-      } catch (e) {
-        console.log('error', e);
-      }
-    };
-    loadInjectedJS();
-  }, []);
+  console.log('[BROWSER]: Render BrowserTab', { tabId, isActiveTab, url: webViewRefs.current[tabIndex]?.state });
 
   const webViewStyle = useAnimatedStyle(() => {
     const isActiveTab = activeTabIndex === tabIndex;
@@ -169,6 +158,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, onLoadProgr
   }, [activeTabIndex, tabIndex, tabViewProgress]);
 
   const handlePress = () => {
+    console.log('handle press', tabViewVisible, isActiveTab);
     if (tabViewVisible) {
       if (isActiveTab) {
         toggleTabView();
@@ -180,11 +170,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, onLoadProgr
 
   const handleNavigationStateChange = useCallback(
     (navState: WebViewNavigation) => {
-      if (
-        navState.url !== tabStates[tabIndex].url &&
-        // This prevents
-        navState.navigationType !== 'other'
-      ) {
+      if (navState.url !== tabStates[tabIndex].url && navState.navigationType !== 'other') {
         updateActiveTabState(tabIndex, {
           canGoBack: navState.canGoBack,
           canGoForward: navState.canGoForward,
@@ -194,6 +180,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, onLoadProgr
         updateActiveTabState(tabIndex, {
           canGoBack: navState.canGoBack,
           canGoForward: navState.canGoForward,
+          url: tabStates[tabIndex].url,
         });
       }
     },
@@ -272,187 +259,216 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, onLoadProgr
 
   const [backgroundColor, setBackgroundColor] = useState<string>();
 
-  const createMessengers = (origin: string) => {
-    const newMessenger = {
-      onMessage: (data: any) => {
-        console.log('[BROWSER]: APP RECEIVED MESSAGE' + JSON.stringify(data));
-      },
-      sendMessage: (data: any) => {
-        console.log('[BROWSER]: sending msg to webview', data);
-        webViewRef.current?.injectJavaScript(`window.postMessage(${JSON.stringify(data)})`);
-      },
-      url: origin,
-    };
+  const createMessengers = useCallback(
+    (origin: string, tabId: string) => {
+      const newMessenger = {
+        onMessage: (data: any) => {
+          console.log('[BROWSER]: APP RECEIVED MESSAGE', tabStates[tabIndex].url, data);
+        },
+        sendMessage: (data: any) => {
+          console.log('[BROWSER]: sending msg to webview', tabStates[tabIndex].url, data);
+          webViewRef.current?.injectJavaScript(`window.postMessage(${JSON.stringify(data)})`);
+        },
+        url: origin,
+        tabId,
+      };
 
-    messengers.current.push(newMessenger);
-  };
+      messengers.current.push(newMessenger);
+    },
+    [tabIndex, tabStates]
+  );
 
-  useEffect(() => {
-    setTimeout(() => {
+  const handleMessage = useCallback(
+    (event: WebViewMessageEvent) => {
+      if (!isActiveTab) return;
+      const data = event.nativeEvent.data as any;
+      try {
+        // validate message and parse data
+        const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
+        if (!parsedData || (!parsedData.name && !parsedData.type)) return;
+        // ignore other messages like loading progress
+        if (parsedData.type === 'message') {
+          const { origin } = new URL(event.nativeEvent.url);
+          messengers.current.forEach((m: any) => {
+            const messengerUrlOrigin = new URL(m.url).origin;
+            if (messengerUrlOrigin === origin) {
+              m.onMessage(parsedData);
+            }
+          });
+        } else if (parsedData.type === 'bg') {
+          setBackgroundColor(parsedData.payload);
+        }
+        // eslint-disable-next-line no-empty
+      } catch (e) {}
+    },
+    [isActiveTab]
+  );
+
+  const handleOnLoadStart = useCallback(
+    (event: { nativeEvent: { url: string | URL } }) => {
+      const { origin } = new URL(event.nativeEvent.url);
+      messengers.current = [];
+      createMessengers(origin, getTabId(tabIndex, tabStates[tabIndex].url));
+    },
+    [createMessengers, tabIndex, tabStates]
+  );
+
+  const handleOnLoad = useCallback(
+    (event: WebViewEvent) => {
+      // console.log('[BROWSER]: handleOnLoad', { event, tabIndex, url: tabStates[tabIndex].url });
+      if (event.nativeEvent.loading) return;
       const m = messengers.current.find(m => {
-        return m.url === new URL(tabStates[tabIndex].url).origin;
+        return m.url === new URL(tabStates[tabIndex].url).origin && m.tabId === getTabId(tabIndex, tabStates[tabIndex].url);
       });
       if (m) {
         m?.sendMessage({ type: 'message', payload: 'ping' });
       }
-    }, 5000);
-  });
-
-  const handleMessage = useCallback((event: WebViewMessageEvent) => {
-    const data = event.nativeEvent.data as any;
-    try {
-      // validate message and parse data
-      const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
-      if (!parsedData || (!parsedData.name && !parsedData.type)) return;
-      // ignore other messages like loading progress
-      if (parsedData.type === 'message') {
-        const { origin } = new URL(event.nativeEvent.url);
-        messengers.current.forEach((m: any) => {
-          const messengerUrlOrigin = new URL(m.url).origin;
-          if (messengerUrlOrigin === origin) {
-            m.onMessage(parsedData);
-          }
-        });
-      } else if (parsedData.type === 'bg') {
-        setBackgroundColor(parsedData.payload);
-      }
-      // eslint-disable-next-line no-empty
-    } catch (e) {}
-  }, []);
-
-  const handleOnLoadStart = useCallback((event: { nativeEvent: { url: string | URL } }) => {
-    const { origin } = new URL(event.nativeEvent.url);
-    messengers.current = [];
-    createMessengers(origin);
-  }, []);
-
-  const handleOnLoad = useCallback(() => {
-    console.log('onLoad');
-  }, []);
+    },
+    [tabIndex, tabStates]
+  );
 
   const handleOnLoadEnd = useCallback(() => {
-    console.log('onLoad');
-  }, []);
+    console.log('[BROWSER]: handleOnLoadEnd', tabStates[tabIndex].url);
+  }, [tabIndex, tabStates]);
 
   const handleOnError = useCallback(() => {
-    console.log('onLoad');
-  }, []);
+    console.log('[BROWSER]: handleOnError', tabStates[tabIndex].url);
+  }, [tabIndex, tabStates]);
 
   const handleShouldStartLoadWithRequest = useCallback(() => {
     return true;
   }, []);
 
-  const handleOnLoadProgress = useCallback(({ nativeEvent }: { nativeEvent: { progress: number } }) => {
-    onLoadProgress(nativeEvent.progress);
-    console.log('[BROWSER]: Loading progress:', nativeEvent.progress);
-  }, []);
+  const loadProgress = useSharedValue(0);
+
+  const progressBarStyle = useAnimatedStyle(
+    () => ({
+      opacity: loadProgress.value === 1 ? withTiming(0, timingConfig) : withTiming(1, timingConfig),
+      width: loadProgress.value * deviceWidth,
+    }),
+    []
+  );
+
+  const handleOnLoadProgress = useCallback(
+    ({ nativeEvent: { progress } }: { nativeEvent: { progress: number } }) => {
+      if (loadProgress) {
+        if (loadProgress.value === 1) loadProgress.value = 0;
+        loadProgress.value = withTiming(progress, timingConfig);
+      }
+    },
+    [loadProgress]
+  );
 
   return (
-    <TouchableWithoutFeedback onPress={handlePress}>
-      <Animated.View style={[styles.webViewContainer, webViewStyle]}>
-        <ViewShot options={{ format: 'jpg' }} ref={viewShotRef}>
-          <View
-            collapsable={false}
-            style={{
-              backgroundColor: backgroundColor || (colorMode === 'dark' ? '#191A1C' : globalColors.white100),
-              height: WEBVIEW_HEIGHT,
-              width: '100%',
-            }}
-          >
-            <Freeze
-              freeze={!isActiveTab}
-              placeholder={
-                <Box
+    <>
+      <TouchableWithoutFeedback onPress={handlePress}>
+        <Animated.View style={[styles.webViewContainer, webViewStyle]}>
+          <ViewShot options={{ format: 'jpg' }} ref={viewShotRef}>
+            <View
+              collapsable={false}
+              style={{
+                backgroundColor: backgroundColor || (colorMode === 'dark' ? '#191A1C' : globalColors.white100),
+                height: WEBVIEW_HEIGHT,
+                width: '100%',
+              }}
+            >
+              <Freeze
+                freeze={!isActiveTab}
+                placeholder={
+                  <Box
+                    style={[
+                      styles.webViewStyle,
+                      {
+                        backgroundColor: backgroundColor || (colorMode === 'dark' ? '#191A1C' : globalColors.blueGrey10),
+                        height: COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
+                      },
+                    ]}
+                  />
+                }
+              >
+                <WebView
+                  injectedJavaScriptBeforeContentLoaded={injectedJS}
+                  allowsInlineMediaPlayback
+                  allowsBackForwardNavigationGestures
+                  applicationNameForUserAgent={'Rainbow Wallet'}
+                  automaticallyAdjustContentInsets
+                  automaticallyAdjustsScrollIndicatorInsets
+                  pointerEvents="none"
+                  containerStyle={{
+                    overflow: 'visible',
+                  }}
+                  contentInset={{
+                    bottom: safeAreaInsetValues.bottom + 104,
+                  }}
+                  decelerationRate={'normal'}
+                  injectedJavaScript={getWebsiteBackgroundColor}
+                  mediaPlaybackRequiresUserAction
+                  onLoadStart={handleOnLoadStart}
+                  onLoad={handleOnLoad}
+                  onLoadEnd={handleOnLoadEnd}
+                  onError={handleOnError}
+                  onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
+                  onLoadProgress={handleOnLoadProgress}
+                  onMessage={handleMessage}
+                  onNavigationStateChange={handleNavigationStateChange}
+                  originWhitelist={['*']}
+                  ref={webViewRef}
+                  source={{ uri: tabStates[tabIndex].url }}
                   style={[
                     styles.webViewStyle,
                     {
-                      backgroundColor: backgroundColor || (colorMode === 'dark' ? '#191A1C' : globalColors.blueGrey10),
-                      height: COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
+                      backgroundColor: backgroundColor || (colorMode === 'dark' ? globalColors.grey100 : globalColors.white100),
                     },
                   ]}
                 />
-              }
-            >
-              <WebView
-                injectedJavaScriptBeforeContentLoaded={injectedJS || ''}
-                allowsInlineMediaPlayback
-                allowsBackForwardNavigationGestures
-                applicationNameForUserAgent={'Rainbow Wallet'}
-                automaticallyAdjustContentInsets
-                automaticallyAdjustsScrollIndicatorInsets
-                containerStyle={{
-                  overflow: 'visible',
-                }}
-                contentInset={{
-                  bottom: safeAreaInsetValues.bottom + 104,
-                }}
-                decelerationRate={'normal'}
-                injectedJavaScript={getWebsiteBackgroundColor}
-                mediaPlaybackRequiresUserAction
-                onLoadStart={handleOnLoadStart}
-                onLoad={handleOnLoad}
-                onLoadEnd={handleOnLoadEnd}
-                onError={handleOnError}
-                onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
-                onLoadProgress={handleOnLoadProgress}
-                onMessage={handleMessage}
-                onNavigationStateChange={handleNavigationStateChange}
-                originWhitelist={['*']}
-                ref={webViewRef}
-                source={{ uri: tabStates[tabIndex].url }}
+              </Freeze>
+            </View>
+          </ViewShot>
+          <AnimatePresence>
+            {(!isActiveTab || tabViewVisible) && (
+              <MotiView
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                from={{ opacity: 0 }}
+                pointerEvents="none"
                 style={[
                   styles.webViewStyle,
                   {
-                    backgroundColor: backgroundColor || (colorMode === 'dark' ? globalColors.grey100 : globalColors.white100),
-                  },
-                ]}
-              />
-            </Freeze>
-          </View>
-        </ViewShot>
-        <AnimatePresence>
-          {(!isActiveTab || tabViewVisible) && (
-            <MotiView
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              from={{ opacity: 0 }}
-              pointerEvents="none"
-              style={[
-                styles.webViewStyle,
-                {
-                  height: COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
-                  left: 0,
-                  position: 'absolute',
-                  top: 0,
-                  zIndex: 20000,
-                },
-              ]}
-              transition={{
-                duration: 300,
-                easing: Easing.bezier(0.2, 0, 0, 1),
-                type: 'timing',
-              }}
-            >
-              <Image
-                height={WEBVIEW_HEIGHT}
-                onError={e => console.log('Image loading error:', e.nativeEvent.error)}
-                source={{ uri: screenshot?.uri }}
-                style={[
-                  styles.webViewStyle,
-                  {
+                    height: COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
                     left: 0,
                     position: 'absolute',
-                    resizeMode: 'contain',
                     top: 0,
+                    zIndex: 20000,
                   },
                 ]}
-                width={deviceWidth}
-              />
-            </MotiView>
-          )}
-        </AnimatePresence>
-      </Animated.View>
-    </TouchableWithoutFeedback>
+                transition={{
+                  duration: 300,
+                  easing: Easing.bezier(0.2, 0, 0, 1),
+                  type: 'timing',
+                }}
+              >
+                <Image
+                  height={WEBVIEW_HEIGHT}
+                  onError={e => console.log('Image loading error:', e.nativeEvent.error)}
+                  source={{ uri: screenshot?.uri }}
+                  style={[
+                    styles.webViewStyle,
+                    {
+                      left: 0,
+                      position: 'absolute',
+                      resizeMode: 'contain',
+                      top: 0,
+                    },
+                  ]}
+                  width={deviceWidth}
+                />
+              </MotiView>
+            )}
+          </AnimatePresence>
+        </Animated.View>
+      </TouchableWithoutFeedback>
+      {isActiveTab && <Box as={Animated.View} background="blue" style={[styles.progressBar, progressBarStyle]} />}
+    </>
   );
 });
 
@@ -470,5 +486,13 @@ const styles = StyleSheet.create({
     maxHeight: WEBVIEW_HEIGHT,
     minHeight: WEBVIEW_HEIGHT,
     width: deviceUtils.dimensions.width,
+  },
+  progressBar: {
+    height: 2,
+    top: WEBVIEW_HEIGHT - 81,
+    left: 0,
+    width: deviceUtils.dimensions.width,
+    position: 'absolute',
+    zIndex: 11000,
   },
 });

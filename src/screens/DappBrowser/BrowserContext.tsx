@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import React, { createContext, useCallback, useContext, useRef, useState } from 'react';
 import Animated, { Easing, runOnJS, useAnimatedRef, useScrollViewOffset, useSharedValue, withTiming } from 'react-native-reanimated';
 import WebView from 'react-native-webview';
+import isEqual from 'react-fast-compare';
 
 interface BrowserContextType {
   activeTabIndex: number;
@@ -8,7 +10,6 @@ interface BrowserContextType {
   goBack: () => void;
   goForward: () => void;
   isBrowserInputFocused: boolean;
-  // loadProgress: Animated.SharedValue<number> | undefined;
   newTab: () => void;
   onRefresh: () => void;
   scrollViewOffset: Animated.SharedValue<number> | undefined;
@@ -59,13 +60,12 @@ const defaultContext: BrowserContextType = {
   },
   tabStates: [
     { url: 'https://www.google.com/', canGoBack: false, canGoForward: false },
-    {
-      url: 'https://www.rainbowkit.com/',
-      canGoBack: false,
-      canGoForward: false,
-    },
-    { url: 'https://app.uniswap.org/', canGoBack: false, canGoForward: false },
-    { url: 'https://www.google.com/', canGoBack: false, canGoForward: false },
+    // {
+    //   url: 'https://www.rainbowkit.com/',
+    //   canGoBack: false,
+    //   canGoForward: false,
+    // },
+    // { url: 'https://app.uniswap.org/', canGoBack: false, canGoForward: false },
   ],
   tabViewFullyVisible: false,
   tabViewVisible: false,
@@ -89,29 +89,23 @@ const timingConfig = {
 
 // this is sloppy and causes tons of rerenders, needs to be reworked
 export const BrowserContextProvider = ({ children }: { children: React.ReactNode }) => {
-  console.log('[BROWSER]: RENDER BrowserContextProvider');
   const [activeTabIndex, setActiveTabIndex] = useState<number>(0);
   const [isBrowserInputFocused, setIsBrowserInputFocused] = useState<boolean>(false);
-  const [tabStates, setTabStates] = useState<TabState[]>([
-    { url: 'https://www.google.com/', canGoBack: false, canGoForward: false },
-    {
-      url: 'https://www.rainbowkit.com/',
-      canGoBack: false,
-      canGoForward: false,
-    },
-    { url: 'https://app.uniswap.org/', canGoBack: false, canGoForward: false },
-    { url: 'https://www.google.com/', canGoBack: false, canGoForward: false },
-  ]);
+  const [tabStates, setTabStates] = useState<TabState[]>(defaultContext.tabStates);
   const [tabViewFullyVisible, setTabViewFullyVisible] = useState(false);
   const [tabViewVisible, setTabViewVisible] = useState(false);
 
-  const updateActiveTabState = useCallback((tabIndex: number, newState: Partial<TabState>) => {
-    setTabStates(prevTabStates => {
-      const updatedTabs = [...prevTabStates];
-      updatedTabs[tabIndex] = { ...updatedTabs[tabIndex], ...newState };
-      return updatedTabs;
-    });
-  }, []);
+  const updateActiveTabState = useCallback(
+    (tabIndex: number, newState: Partial<TabState>) => {
+      if (isEqual(tabStates[tabIndex], newState)) return;
+      setTabStates(prevTabStates => {
+        const updatedTabs = [...prevTabStates];
+        updatedTabs[tabIndex] = { ...updatedTabs[tabIndex], ...newState };
+        return updatedTabs;
+      });
+    },
+    [tabStates]
+  );
 
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
   const webViewRefs = useRef<WebView[]>([]);

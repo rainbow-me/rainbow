@@ -1,7 +1,8 @@
 import { BlurView } from '@react-native-community/blur';
-import React, { useCallback } from 'react';
-import Animated, { Easing, useAnimatedKeyboard, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import React, { useEffect, useState } from 'react';
+import Animated, { useAnimatedKeyboard, useAnimatedStyle } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
+import RNFS from 'react-native-fs';
 
 import { SheetGestureBlocker } from '@/components/sheet/SheetGestureBlocker';
 import { Page } from '@/components/layout';
@@ -17,19 +18,30 @@ import { TAB_VIEW_ROW_HEIGHT } from './Dimensions';
 
 const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 
-const timingConfig = {
-  duration: 500,
-  easing: Easing.bezier(0.22, 1, 0.36, 1),
-};
-
 const DappBrowserComponent = () => {
   console.log('[BROWSER]: Render DappBrowserComponent');
+  const [injectedJS, setInjectedJS] = useState<string | ''>('');
+
+  const getInjectedJS = async () => {
+    return RNFS.readFile(`${RNFS.MainBundlePath}/InjectedJSBundle.js`, 'utf8');
+  };
+  useEffect(() => {
+    const loadInjectedJS = async () => {
+      try {
+        console.log('[BROWSER]: loading injected JS...');
+        const jsToInject = await getInjectedJS();
+        console.log('[BROWSER]: got injected JS');
+        setInjectedJS(jsToInject);
+      } catch (e) {
+        console.log('error', e);
+      }
+    };
+    loadInjectedJS();
+  }, []);
+
   const { scrollViewRef, tabStates, tabViewProgress, tabViewVisible } = useBrowserContext();
   const { width: deviceWidth } = useDimensions();
   const separatorSecondary = useForegroundColor('separatorSecondary');
-
-  const loadProgress = useSharedValue(0);
-
   const keyboard = useAnimatedKeyboard();
 
   const backgroundStyle = useAnimatedStyle(
@@ -45,24 +57,6 @@ const DappBrowserComponent = () => {
       transform: [{ translateY: Math.min(-(keyboard.height.value - 70), 0) }],
     }),
     []
-  );
-
-  const progressBarStyle = useAnimatedStyle(
-    () => ({
-      opacity: loadProgress.value === 1 ? withTiming(0, timingConfig) : withTiming(1, timingConfig),
-      width: loadProgress.value * deviceWidth,
-    }),
-    []
-  );
-
-  const handleOnLoadProgress = useCallback(
-    (progress: number) => {
-      if (loadProgress) {
-        if (loadProgress.value === 1) loadProgress.value = 0;
-        loadProgress.value = withTiming(progress, timingConfig);
-      }
-    },
-    [loadProgress]
   );
 
   return (
@@ -86,9 +80,7 @@ const DappBrowserComponent = () => {
           scrollEnabled={tabViewVisible}
           showsVerticalScrollIndicator={false}
         >
-          {tabStates.map((tab, index) => (
-            <BrowserTab key={index} tabIndex={index} onLoadProgress={handleOnLoadProgress} />
-          ))}
+          {injectedJS && tabStates.map((tab, index) => <BrowserTab key={index} tabIndex={index} injectedJS={injectedJS} />)}
         </Animated.ScrollView>
         <Box
           as={AnimatedBlurView}
@@ -104,7 +96,6 @@ const DappBrowserComponent = () => {
         >
           <AddressBar />
           <BrowserToolbar />
-          <Box as={Animated.View} background="blue" style={[styles.progressBar, progressBarStyle]} />
           <Box height={{ custom: 0.5 }} position="absolute" style={{ backgroundColor: separatorSecondary }} top="0px" width="full" />
         </Box>
       </Box>
@@ -124,19 +115,8 @@ export const DappBrowser = () => {
 };
 
 const styles = StyleSheet.create({
-  progressBar: {
-    // bottom: safeAreaInsetValues.bottom + 102,
-    height: 2,
-    left: 0,
-    position: 'absolute',
-    top: 0,
-    zIndex: 11000,
-  },
   rootViewBackground: {
-    // backgroundColor: globalColors.grey100,
     backgroundColor: 'transparent',
     flex: 1,
-    // paddingBottom: safeAreaInsetValues.bottom + 48,
-    // paddingTop: safeAreaInsetValues.top,
   },
 });
