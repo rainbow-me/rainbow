@@ -294,7 +294,7 @@
     "url": "0.10.3",
     "url-join": "4.0.1",
     "url-parse": "1.5.10",
-    "use-debounce": "7.0.0",
+    "use-debounce": "10.0.0",
     "use-deep-compare": "1.1.0",
     "use-memo-one": "1.1.1",
     "util": "0.10.4",

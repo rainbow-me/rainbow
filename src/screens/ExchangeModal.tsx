@@ -5,8 +5,8 @@ import React, { MutableRefObject, useCallback, useEffect, useLayoutEffect, useMe
 import equal from 'react-fast-compare';
 import { EmitterSubscription, InteractionManager, Keyboard, NativeModules, TextInput, View } from 'react-native';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
-import { useDispatch, useSelector } from 'react-redux';
-import { useDebounce } from 'use-debounce/lib';
+import { useDispatch } from 'react-redux';
+import { useDebounce } from 'use-debounce';
 import { useMemoOne } from 'use-memo-one';
 import { dismissingScreenListener } from '../../shim';
 import {
