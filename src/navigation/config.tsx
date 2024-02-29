@@ -203,9 +203,8 @@ export const swapConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
-      backgroundOpacity: 1,
+      backgroundOpacity: 0.9,
       cornerRadius: 0,
-      // relevantScrollViewDepth: 2,
       springDamping: 1,
       topOffset: 0,
       transitionDuration: 0.3,

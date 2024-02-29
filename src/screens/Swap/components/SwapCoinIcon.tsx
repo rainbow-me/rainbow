@@ -9,8 +9,11 @@ import { Network } from '@/networks/types';
 import { borders, fonts } from '@/styles';
 import { ThemeContextProps } from '@/theme';
 import { FallbackIcon as CoinIconTextFallback, isETH } from '@/utils';
-
 import { FastSwapCoinIconImage } from './FastSwapCoinIconImage';
+
+// TODO: Delete this and replace with RainbowCoinIcon
+// ⚠️ When replacing this component with RainbowCoinIcon, make sure
+// ⚠️ to exactly replicate the sizing and shadows defined below
 
 const fallbackTextStyles = {
   fontFamily: fonts.family.SFProRounded,
@@ -41,15 +44,7 @@ const smallFallbackIconStyle = {
  * @param param0 - optional mainnetAddress, address and network
  * @returns a proper type and address to use for the url
  */
-function resolveNetworkAndAddress({
-  address,
-  mainnetAddress,
-  network,
-}: {
-  mainnetAddress?: string;
-  address: string;
-  network: Network;
-}) {
+function resolveNetworkAndAddress({ address, mainnetAddress, network }: { mainnetAddress?: string; address: string; network: Network }) {
   if (mainnetAddress) {
     return {
       resolvedAddress: mainnetAddress,
@@ -65,8 +60,9 @@ function resolveNetworkAndAddress({
 
 export const SwapCoinIcon = React.memo(function FeedCoinIcon({
   address,
+  color,
   disableShadow,
-  forceDarkMode = true,
+  forceDarkMode,
   large,
   mainnetAddress,
   network,
@@ -75,6 +71,7 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
   theme,
 }: {
   address: string;
+  color?: string;
   disableShadow?: boolean;
   forceDarkMode?: boolean;
   large?: boolean;
@@ -96,39 +93,21 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
     address: resolvedAddress,
   });
 
-  const shadowColor =
-    theme.isDarkMode || forceDarkMode ? colors.shadow : fallbackIconColor;
+  const shadowColor = theme.isDarkMode || forceDarkMode ? colors.shadow : color || fallbackIconColor;
   const eth = isETH(resolvedAddress);
 
   return (
-    <View
-      style={
-        small ? sx.containerSmall : large ? sx.containerLarge : sx.container
-      }
-    >
+    <View style={small ? sx.containerSmall : large ? sx.containerLarge : sx.container}>
       {eth ? (
         <View
           style={[
             sx.reactCoinIconContainer,
-            small
-              ? sx.coinIconFallbackSmall
-              : large
-              ? sx.coinIconFallbackLarge
-              : sx.coinIconFallback,
+            small ? sx.coinIconFallbackSmall : large ? sx.coinIconFallbackLarge : sx.coinIconFallback,
             small || disableShadow ? {} : sx.withShadow,
             { shadowColor },
           ]}
         >
-          <Image
-            source={EthIcon}
-            style={
-              small
-                ? sx.coinIconFallbackSmall
-                : large
-                ? sx.coinIconFallbackLarge
-                : sx.coinIconFallback
-            }
-          />
+          <Image source={EthIcon} style={small ? sx.coinIconFallbackSmall : large ? sx.coinIconFallbackLarge : sx.coinIconFallback} />
         </View>
       ) : (
         <FastSwapCoinIconImage
@@ -142,13 +121,7 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
             <CoinIconTextFallback
               color={fallbackIconColor}
               height={small ? 16 : large ? 36 : 32}
-              style={
-                small
-                  ? smallFallbackIconStyle
-                  : large
-                  ? largeFallbackIconStyle
-                  : fallbackIconStyle
-              }
+              style={small ? smallFallbackIconStyle : large ? largeFallbackIconStyle : fallbackIconStyle}
               symbol={symbol}
               textStyles={fallbackTextStyles}
               width={small ? 16 : large ? 36 : 32}
@@ -222,7 +195,7 @@ const sx = StyleSheet.create({
       height: 4,
       width: 0,
     },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.2,
     shadowRadius: 6,
   },
 });
