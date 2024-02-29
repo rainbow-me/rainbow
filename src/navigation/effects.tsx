@@ -448,6 +448,11 @@ export const nftSingleOfferSheetPreset = ({ route }: any) => ({
   height: route?.params.longFormHeight,
 });
 
+export const appIconUnlockSheetPreset = ({ route }: any) => ({
+  ...bottomSheetPreset,
+  height: route?.params.longFormHeight,
+});
+
 export const hardwareWalletTxNavigatorPreset = {
   height: HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT,
   backdropOpacity: 1,

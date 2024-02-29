@@ -9,7 +9,8 @@ import { ImgixImage } from '@/components/images';
 import { useTheme } from '@/theme';
 import Logger from '@/utils/logger';
 import { analytics } from '@/analytics';
-import { AppIcon, freeAppIcons, unlockableAppIconStorage, unlockableAppIcons } from '@/appIcons/constants';
+import { AppIcon, freeAppIcons, unlockableAppIcons } from '@/appIcons/appIcons';
+import { unlockableAppIconStorage } from '@/featuresToUnlock/unlockableAppIconCheck';
 
 const AppIconSection = () => {
   const { appIcon, settingsChangeAppIcon } = useAccountSettings();

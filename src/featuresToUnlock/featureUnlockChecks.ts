@@ -1,19 +1,5 @@
-import { unlockableAppIcons } from '@/appIcons/constants';
+import { unlockableAppIcons } from '@/appIcons/appIcons';
 import { unlockableAppIconCheck } from './unlockableAppIconCheck';
-import {
-  AdworldIcon,
-  FarcasterIcon,
-  FiniliarIcon,
-  FiniliarIconBase,
-  GoldDogeIcon,
-  OptimismIcon,
-  PoolboyIcon,
-  PoolyIcon,
-  RainDogeIcon,
-  SmolIcon,
-  ZoraIcon,
-  ZorbIcon,
-} from './unlockableAppIcons';
 import { EthereumAddress } from '@/entities';
 
 // a FeatureUnlockCheck fn should take in a list of wallet addresses to check for feature unlockability

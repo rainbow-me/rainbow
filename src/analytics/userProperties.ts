@@ -11,6 +11,7 @@ export interface UserProperties {
   enabledFlashbots?: boolean;
   pinnedCoins?: string[];
   hiddenCOins?: string[];
+  appIcon?: string;
 
   // assets
   NFTs?: number;

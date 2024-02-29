@@ -1,14 +1,15 @@
-import { MMKV } from 'react-native-mmkv';
 import { checkIfWalletsOwnNft } from './tokenGatedUtils';
-import { UnlockableAppIcon } from './unlockableAppIcons';
 import { EthereumAddress } from '@/entities';
 import { Navigation } from '@/navigation';
 import { logger } from '@/utils';
 import Routes from '@/navigation/routesNames';
-import { analytics } from '@/analytics';
-import { campaigns } from '@/storage';
-import { unlockableAppIconStorage, unlockableAppIcons } from '@/appIcons/constants';
+import { unlockableAppIcons } from '@/appIcons/appIcons';
 import { Network } from '@/helpers';
+import { MMKV } from 'react-native-mmkv';
+
+export const unlockableAppIconStorage = new MMKV({
+  id: 'unlockableAppIcons',
+});
 
 /**
  * Checks if an nft-locked app icon is unlockable, and unlocks it if so w/ corresponding explain sheet.
@@ -44,25 +45,7 @@ export const unlockableAppIconCheck = async (appIconKey: string, walletsToCheck:
       if (found) {
         unlockableAppIconStorage.set(appIconKey, true);
         logger.log('Feature check', appIconKey, 'set to true. Wont show up anymore!');
-        analytics.track('Viewed App Icon Unlock', { campaign: appIconKey });
-        // Navigation.handleAction(Routes.EXPLAIN_SHEET, {
-        //   type: explainSheetType,
-        //   onPress: () => {
-        //     analytics.track('Activated App Icon Unlock', { campaign: key });
-        //     setTimeout(() => {
-        //       Navigation.handleAction(Routes.SETTINGS_SHEET, {});
-        //       setTimeout(() => {
-        //         Navigation.handleAction(Routes.SETTINGS_SHEET, {
-        //           screen: 'AppIconSection',
-        //         });
-        //       }, 300);
-        //     }, 300);
-        //   },
-        //   handleClose: () => {
-        //     campaigns.set(['isCurrentlyShown'], false);
-        //     analytics.track('Dismissed App Icon Unlock', { campaign: key });
-        //   },
-        // });
+        Navigation.handleAction(Routes.APP_ICON_UNLOCK_SHEET, { appIconKey });
         return true;
       }
     }, 1000);
