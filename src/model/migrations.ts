@@ -639,30 +639,12 @@ export default async function runMigrations() {
 
   migrations.push(v18);
 
-  /*
-   *************** Migration v19 ******************
-    Move favorites from local storage to react query mmkv
-   */
-  // const v19 = async () => {
-  //   const favoritesMetadata = await queryStorage.get(['favorites']);
-
-  //   if (favoritesMetadata) {
-  //     const lowercasedFavoritesMetadata: Record<EthereumAddress, RainbowToken> = {};
-  //     Object.keys(favoritesMetadata).forEach((address: string) => {
-  //       lowercasedFavoritesMetadata[address.toLowerCase()] = favoritesMetadata[address];
-  //     });
-  //     queryClient.setQueryData(favoritesQueryKey, lowercasedFavoritesMetadata);
-  //   }
-  // };
-
-  // migrations.push(v19);
-
-  // logger.sentry(`Migrations: ready to run migrations starting on number ${currentVersion}`);
-  // // await setMigrationVersion(17);
-  // if (migrations.length === currentVersion) {
-  //   logger.sentry(`Migrations: Nothing to run`);
-  //   return;
-  // }
+  logger.sentry(`Migrations: ready to run migrations starting on number ${currentVersion}`);
+  // await setMigrationVersion(17);
+  if (migrations.length === currentVersion) {
+    logger.sentry(`Migrations: Nothing to run`);
+    return;
+  }
 
   for (let i = currentVersion; i < migrations.length; i++) {
     logger.sentry(`Migrations: Running migration v${i}`);
