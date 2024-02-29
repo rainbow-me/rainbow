@@ -36,6 +36,7 @@ export type { CoverProps } from './components/Cover/Cover';
 export type { CustomShadow } from './layout/shadow';
 export type { HeadingProps } from './components/Heading/Heading';
 export type { HitSlopProps } from './components/HitSlop/HitSlop';
+export type { IconContainerProps } from './components/IconContainer/IconContainer';
 export type { InlineProps } from './components/Inline/Inline';
 export type { InsetProps } from './components/Inset/Inset';
 export type { MarkdownTextProps } from './components/MarkdownText/MarkdownText';
