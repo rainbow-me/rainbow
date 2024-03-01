@@ -19,11 +19,7 @@ export async function createAndShareStateDumpFile() {
     }
     await RNFS.writeFile(documentsFilePath, stringifiedState, 'utf8');
     if (IS_ANDROID) {
-      await RNFS.writeFile(
-        `${RNFS.DownloadDirectoryPath}/app_state_dump_${Date.now()}.json`,
-        stringifiedState,
-        'utf8'
-      );
+      await RNFS.writeFile(`${RNFS.DownloadDirectoryPath}/app_state_dump_${Date.now()}.json`, stringifiedState, 'utf8');
     }
     await RNShare.open({
       url: `file://${documentsFilePath}`,

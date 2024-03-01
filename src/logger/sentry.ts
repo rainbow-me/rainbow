@@ -11,9 +11,7 @@ import isTestFlight from '@/helpers/isTestFlight';
  * detox doesn't like setTimeout calls that are used inside When enabled detox
  * hangs and timeouts on all test cases
  */
-export const sentryRoutingInstrumentation = IS_PROD
-  ? new Sentry.ReactNavigationInstrumentation()
-  : undefined;
+export const sentryRoutingInstrumentation = IS_PROD ? new Sentry.ReactNavigationInstrumentation() : undefined;
 
 export const defaultOptions = {
   dsn: SENTRY_ENDPOINT,

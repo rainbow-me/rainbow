@@ -25,13 +25,7 @@ export default function KeyboardFixedOpenLayout({
   const containerHeight = screenHeight - keyboardHeight - additionalPadding;
 
   return (
-    <Box
-      height={{ custom: containerHeight }}
-      left="0px"
-      position={position}
-      right="0px"
-      top="0px"
-    >
+    <Box height={{ custom: containerHeight }} left="0px" position={position} right="0px" top="0px">
       <KeyboardAvoidingView behavior="height" enabled={!!keyboardHeight}>
         <Box
           alignItems="center"

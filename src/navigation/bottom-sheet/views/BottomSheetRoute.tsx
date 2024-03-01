@@ -1,16 +1,8 @@
-import BottomSheet, {
-  BottomSheetBackdrop,
-  BottomSheetBackdropProps,
-} from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps } from '@gorhom/bottom-sheet';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Keyboard, View, ViewStyle } from 'react-native';
 import { isKeyboardOpen } from '../../../helpers';
-import {
-  CONTAINER_HEIGHT,
-  DEFAULT_BACKDROP_COLOR,
-  DEFAULT_BACKDROP_OPACITY,
-  DEFAULT_HEIGHT,
-} from '../constants';
+import { CONTAINER_HEIGHT, DEFAULT_BACKDROP_COLOR, DEFAULT_BACKDROP_OPACITY, DEFAULT_HEIGHT } from '../constants';
 import { BottomSheetNavigatorContext } from '../contexts/internal';
 import type { BottomSheetDescriptor } from '../types';
 
@@ -21,12 +13,7 @@ interface Props {
   onDismiss: (key: string, removed: boolean) => void;
 }
 
-const BottomSheetRoute = ({
-  routeKey,
-  descriptor: { options, render, navigation },
-  onDismiss,
-  removing = false,
-}: Props) => {
+const BottomSheetRoute = ({ routeKey, descriptor: { options, render, navigation }, onDismiss, removing = false }: Props) => {
   // #region extract options
   const {
     enableContentPanningGesture,
@@ -101,11 +88,7 @@ const BottomSheetRoute = ({
       setEnableHandlePanningGesture: handleSettingEnableHandlePanningGesture,
       setSnapPoints: handleSettingSnapPoints,
     }),
-    [
-      handleSettingEnableContentPanningGesture,
-      handleSettingEnableHandlePanningGesture,
-      handleSettingSnapPoints,
-    ]
+    [handleSettingEnableContentPanningGesture, handleSettingEnableHandlePanningGesture, handleSettingSnapPoints]
   );
   // #endregion
 

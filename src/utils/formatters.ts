@@ -10,24 +10,14 @@ export const getFirstGrapheme = (string: string) => {
   return grapheme.splitGraphemes(string)[0];
 };
 
-export const initials = (string: string) =>
-  !string || !isString(string)
-    ? '?'
-    : string.split(' ').map(firstCharacterOfString).join('');
+export const initials = (string: string) => (!string || !isString(string) ? '?' : string.split(' ').map(firstCharacterOfString).join(''));
 
 export function removeLeadingZeros(value = ''): string {
-  if (
-    value.length > 1 &&
-    value.substring(0, 1) === '0' &&
-    value.substring(1, 2) !== '.'
-  ) {
+  if (value.length > 1 && value.substring(0, 1) === '0' && value.substring(1, 2) !== '.') {
     return removeLeadingZeros(value.substring(1));
   }
 
-  if (
-    value.substring(value.length - 1, value.length) === '.' &&
-    value.indexOf('.') !== value.length - 1
-  ) {
+  if (value.substring(value.length - 1, value.length) === '.' && value.indexOf('.') !== value.length - 1) {
     return value.substring(0, value.length - 1);
   }
 

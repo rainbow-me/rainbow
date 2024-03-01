@@ -10,13 +10,7 @@ import { deviceUtils } from '@/utils';
 import { useDimensions } from '@/hooks';
 import { borders } from '@/styles';
 import { IS_IOS } from '@/env';
-import {
-  Box,
-  Text,
-  Separator,
-  useForegroundColor,
-  useBackgroundColor,
-} from '@/design-system';
+import { Box, Text, Separator, useForegroundColor, useBackgroundColor } from '@/design-system';
 import { AppState } from '@/redux/store';
 import { getProviders } from '@/resources/f2c';
 import Skeleton from '@/components/skeleton/Skeleton';
@@ -24,7 +18,6 @@ import Navigation from '@/navigation/Navigation';
 import { WrappedAlert } from '@/helpers/alert';
 import { logger, RainbowError } from '@/logger';
 
-import { Ratio } from '@/screens/AddCash/providers/Ratio';
 import { Ramp } from '@/screens/AddCash/providers/Ramp';
 import { Coinbase } from '@/screens/AddCash/providers/Coinbase';
 import { Moonpay } from '@/screens/AddCash/providers/Moonpay';
@@ -35,7 +28,6 @@ const deviceHeight = deviceUtils.dimensions.height;
 const statusBarHeight = StatusBar.currentHeight || 0;
 
 const providerComponents = {
-  [FiatProviderName.Ratio]: Ratio,
   [FiatProviderName.Ramp]: Ramp,
   [FiatProviderName.Coinbase]: Coinbase,
   [FiatProviderName.Moonpay]: Moonpay,
@@ -49,11 +41,13 @@ export function AddCashSheet() {
   }));
   const borderColor = useForegroundColor('separatorTertiary');
   const skeletonColor = useBackgroundColor('surfaceSecondaryElevated');
-  const sheetHeight = IS_IOS
-    ? deviceHeight - insets.top
-    : deviceHeight + statusBarHeight;
+  const sheetHeight = IS_IOS ? deviceHeight - insets.top : deviceHeight + statusBarHeight;
 
-  const { isLoading, data: providers, error } = useQuery(
+  const {
+    isLoading,
+    data: providers,
+    error,
+  } = useQuery(
     ['f2c', 'providers'],
     async () => {
       const [{ data, error }] = await wait(1000, [await getProviders()]);
@@ -78,15 +72,11 @@ export function AddCashSheet() {
     if (error) {
       Navigation.goBack();
 
-      WrappedAlert.alert(
-        lang.t(lang.l.wallet.add_cash_v2.generic_error.title),
-        lang.t(lang.l.wallet.add_cash_v2.generic_error.message),
-        [
-          {
-            text: lang.t(lang.l.wallet.add_cash_v2.generic_error.button),
-          },
-        ]
-      );
+      WrappedAlert.alert(lang.t(lang.l.wallet.add_cash_v2.generic_error.title), lang.t(lang.l.wallet.add_cash_v2.generic_error.message), [
+        {
+          text: lang.t(lang.l.wallet.add_cash_v2.generic_error.button),
+        },
+      ]);
     }
   }, [providers, error]);
 
@@ -121,12 +111,7 @@ export function AddCashSheet() {
           ...borders.buildRadiusAsObject('top', 30),
         }}
       >
-        <Box
-          width="full"
-          paddingTop="52px"
-          paddingHorizontal="20px"
-          paddingBottom={{ custom: isNarrowPhone ? 15 : insets.bottom + 11 }}
-        >
+        <Box width="full" paddingTop="52px" paddingHorizontal="20px" paddingBottom={{ custom: isNarrowPhone ? 15 : insets.bottom + 11 }}>
           <Box paddingHorizontal="20px">
             <Text size="26pt" weight="heavy" color="label" align="center">
               {lang.t(lang.l.wallet.add_cash_v2.sheet_title)}
@@ -154,18 +139,9 @@ export function AddCashSheet() {
                   .map((_, index) => {
                     const height = 140;
                     return (
-                      <Box
-                        key={index}
-                        paddingTop="20px"
-                        height={{ custom: height + 20 }}
-                      >
+                      <Box key={index} paddingTop="20px" height={{ custom: height + 20 }}>
                         <Skeleton skeletonColor={skeletonColor}>
-                          <Box
-                            background="surfacePrimaryElevated"
-                            borderRadius={30}
-                            height={{ custom: height }}
-                            width="full"
-                          />
+                          <Box background="surfacePrimaryElevated" borderRadius={30} height={{ custom: height }} width="full" />
                         </Skeleton>
                       </Box>
                     );
@@ -184,15 +160,12 @@ export function AddCashSheet() {
               >
                 <Box paddingBottom="12px">
                   <Text size="17pt" weight="bold" color="labelTertiary">
-                    􀵲{' '}
-                    {lang.t(lang.l.wallet.add_cash_v2.sheet_empty_state.title)}
+                    􀵲 {lang.t(lang.l.wallet.add_cash_v2.sheet_empty_state.title)}
                   </Text>
                 </Box>
 
                 <Text size="15pt" weight="semibold" color="labelQuaternary">
-                  {lang.t(
-                    lang.l.wallet.add_cash_v2.sheet_empty_state.description
-                  )}
+                  {lang.t(lang.l.wallet.add_cash_v2.sheet_empty_state.description)}
                 </Text>
               </Box>
             </Box>

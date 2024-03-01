@@ -25,9 +25,7 @@ function selectBestFontFit(weight) {
 }
 
 function familyFontWithAndroidWidth(weight, family) {
-  return `${fonts.family[family]}${
-    android ? `-${selectBestFontFit(weight)}` : ''
-  }`;
+  return `${fonts.family[family]}${android ? `-${selectBestFontFit(weight)}` : ''}`;
 }
 
 export function fontWithWidth(weight, family = 'SFProRounded') {
@@ -41,40 +39,27 @@ export function fontWithWidth(weight, family = 'SFProRounded') {
 
 const buildTextStyles = css`
   /* Color */
-  color: ${({ color, theme }) =>
-    colors.get(color, theme.colors) || theme.colors.dark};
+  color: ${({ color, theme }) => colors.get(color, theme.colors) || theme.colors.dark};
 
   /* Font Family */
   ${({ isEmoji, family = 'SFProRounded', mono, weight }) => {
-    const t = isEmoji
-      ? ''
-      : `font-family: ${familyFontWithAndroidWidth(weight, family, mono)};`;
+    const t = isEmoji ? '' : `font-family: ${familyFontWithAndroidWidth(weight, family, mono)};`;
     return t;
   }}
 
   /* Font Size */
-  font-size:  ${({ size = 'medium' }) =>
-    typeof size === 'number' ? size : fonts?.size?.[size] ?? size};
+  font-size:  ${({ size = 'medium' }) => (typeof size === 'number' ? size : fonts?.size?.[size] ?? size)};
 
   /* Font Weight */
-  ${({ isEmoji, weight = 'regular' }) =>
-    isEmoji || isNil(weight) || android
-      ? ''
-      : `font-weight: ${fonts?.weight?.[weight] ?? weight};`}
+  ${({ isEmoji, weight = 'regular' }) => (isEmoji || isNil(weight) || android ? '' : `font-weight: ${fonts?.weight?.[weight] ?? weight};`)}
 
   /* Letter Spacing */
   ${({ letterSpacing = 'rounded' }) =>
-    isNil(letterSpacing)
-      ? ''
-      : `letter-spacing: ${
-          fonts?.letterSpacing?.[letterSpacing] ?? letterSpacing
-        };`}
+    isNil(letterSpacing) ? '' : `letter-spacing: ${fonts?.letterSpacing?.[letterSpacing] ?? letterSpacing};`}
 
   /* Line Height */
   ${({ isEmoji, lineHeight }) =>
-    isNil(lineHeight) || (isEmoji && android)
-      ? ''
-      : `line-height: ${fonts?.lineHeight?.[lineHeight] ?? lineHeight};`}
+    isNil(lineHeight) || (isEmoji && android) ? '' : `line-height: ${fonts?.lineHeight?.[lineHeight] ?? lineHeight};`}
 
   /* Opacity */
   ${({ opacity }) => (isNil(opacity) ? '' : `opacity: ${opacity};`)}

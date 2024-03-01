@@ -15,12 +15,7 @@ import WalletTypes from '@/helpers/walletTypes';
 import { logger, RainbowError } from '@/logger';
 import { captureException } from '@sentry/react-native';
 import { useDispatch } from 'react-redux';
-import {
-  backupUserDataIntoCloud,
-  fetchUserDataFromCloud,
-  isCloudBackupAvailable,
-  logoutFromGoogleDrive,
-} from '@/handlers/cloudBackup';
+import { backupUserDataIntoCloud, fetchUserDataFromCloud, isCloudBackupAvailable, logoutFromGoogleDrive } from '@/handlers/cloudBackup';
 import showWalletErrorAlert from '@/helpers/support';
 import { cloudPlatform } from '@/utils/platform';
 import { IS_ANDROID, IS_IOS } from '@/env';
@@ -93,18 +88,13 @@ export const AddWalletSheet = () => {
                 const name = args?.name ?? '';
                 const color = args?.color ?? null;
                 // Check if the selected wallet is the primary
-                let primaryWalletKey = selectedWallet.primary
-                  ? selectedWallet.id
-                  : null;
+                let primaryWalletKey = selectedWallet.primary ? selectedWallet.id : null;
 
                 // If it's not, then find it
                 !primaryWalletKey &&
                   Object.keys(wallets as any).some(key => {
                     const wallet = wallets?.[key];
-                    if (
-                      wallet?.type === WalletTypes.mnemonic &&
-                      wallet.primary
-                    ) {
+                    if (wallet?.type === WalletTypes.mnemonic && wallet.primary) {
                       primaryWalletKey = key;
                       return true;
                     }
@@ -116,10 +106,7 @@ export const AddWalletSheet = () => {
                 !primaryWalletKey &&
                   Object.keys(wallets as any).some(key => {
                     const wallet = wallets?.[key];
-                    if (
-                      wallet?.type === WalletTypes.mnemonic &&
-                      wallet.imported
-                    ) {
+                    if (wallet?.type === WalletTypes.mnemonic && wallet.imported) {
                       primaryWalletKey = key;
                       return true;
                     }
@@ -127,28 +114,18 @@ export const AddWalletSheet = () => {
                   });
                 try {
                   // If we found it and it's not damaged use it to create the new account
-                  if (
-                    primaryWalletKey &&
-                    !wallets?.[primaryWalletKey].damaged
-                  ) {
-                    const newWallets = await dispatch(
-                      createAccountForWallet(primaryWalletKey, color, name)
-                    );
+                  if (primaryWalletKey && !wallets?.[primaryWalletKey].damaged) {
+                    const newWallets = await dispatch(createAccountForWallet(primaryWalletKey, color, name));
                     // @ts-ignore
                     await initializeWallet();
                     // If this wallet was previously backed up to the cloud
                     // We need to update userData backup so it can be restored too
-                    if (
-                      wallets?.[primaryWalletKey].backedUp &&
-                      wallets[primaryWalletKey].backupType ===
-                        WalletBackupTypes.cloud
-                    ) {
+                    if (wallets?.[primaryWalletKey].backedUp && wallets[primaryWalletKey].backupType === WalletBackupTypes.cloud) {
                       try {
                         await backupUserDataIntoCloud({ wallets: newWallets });
                       } catch (e) {
                         logger.error(e as RainbowError, {
-                          description:
-                            'Updating wallet userdata failed after new account creation',
+                          description: 'Updating wallet userdata failed after new account creation',
                         });
                         captureException(e);
                         throw e;
@@ -233,10 +210,7 @@ export const AddWalletSheet = () => {
           const data = await fetchUserDataFromCloud();
           if (data?.wallets) {
             Object.values(data.wallets as RainbowWallet[]).forEach(wallet => {
-              if (
-                wallet.backedUp &&
-                wallet.backupType === WalletBackupTypes.cloud
-              ) {
+              if (wallet.backedUp && wallet.backupType === WalletBackupTypes.cloud) {
                 proceed = true;
               }
             });
@@ -249,10 +223,7 @@ export const AddWalletSheet = () => {
           logger.error(e as RainbowError);
         } finally {
           if (!proceed) {
-            Alert.alert(
-              i18n.t(TRANSLATIONS.options.cloud.no_backups),
-              i18n.t(TRANSLATIONS.options.cloud.no_google_backups)
-            );
+            Alert.alert(i18n.t(TRANSLATIONS.options.cloud.no_backups), i18n.t(TRANSLATIONS.options.cloud.no_google_backups));
           }
         }
       }
@@ -261,8 +232,7 @@ export const AddWalletSheet = () => {
     }
   };
 
-  const cloudRestoreEnabled =
-    isFirstWallet && (IS_ANDROID || walletsBackedUp > 0);
+  const cloudRestoreEnabled = isFirstWallet && (IS_ANDROID || walletsBackedUp > 0);
 
   let restoreFromCloudDescription;
   if (IS_IOS) {
@@ -270,21 +240,14 @@ export const AddWalletSheet = () => {
     // no backups at this point, since `cloudRestoreEnabled`
     // would be false in that case.
     if (walletsBackedUp > 1) {
-      restoreFromCloudDescription = i18n.t(
-        TRANSLATIONS.options.cloud.description_ios_multiple_wallets,
-        {
-          walletCount: walletsBackedUp,
-        }
-      );
+      restoreFromCloudDescription = i18n.t(TRANSLATIONS.options.cloud.description_ios_multiple_wallets, {
+        walletCount: walletsBackedUp,
+      });
     } else {
-      restoreFromCloudDescription = i18n.t(
-        TRANSLATIONS.options.cloud.description_ios_one_wallet
-      );
+      restoreFromCloudDescription = i18n.t(TRANSLATIONS.options.cloud.description_ios_one_wallet);
     }
   } else {
-    restoreFromCloudDescription = i18n.t(
-      TRANSLATIONS.options.cloud.description_android
-    );
+    restoreFromCloudDescription = i18n.t(TRANSLATIONS.options.cloud.description_android);
   }
 
   const onPressConnectHardwareWallet = () => {
@@ -347,33 +310,15 @@ export const AddWalletSheet = () => {
   };
 
   return (
-    <Box
-      height="full"
-      width="full"
-      background="surfaceSecondary"
-      testID="add-wallet-sheet"
-    >
+    <Box height="full" width="full" background="surfaceSecondary" testID="add-wallet-sheet">
       <Inset horizontal="20px" top="36px" bottom="104px">
         <Stack space="32px">
           <Stack space="20px">
             <Text align="center" size="26pt" weight="bold" color="label">
-              {i18n.t(
-                TRANSLATIONS[
-                  isFirstWallet ? 'first_wallet' : 'additional_wallet'
-                ].title
-              )}
+              {i18n.t(TRANSLATIONS[isFirstWallet ? 'first_wallet' : 'additional_wallet'].title)}
             </Text>
-            <Text
-              align="center"
-              size="15pt / 135%"
-              weight="semibold"
-              color="labelTertiary"
-            >
-              {i18n.t(
-                TRANSLATIONS[
-                  isFirstWallet ? 'first_wallet' : 'additional_wallet'
-                ].description
-              )}
+            <Text align="center" size="15pt / 135%" weight="semibold" color="labelTertiary">
+              {i18n.t(TRANSLATIONS[isFirstWallet ? 'first_wallet' : 'additional_wallet'].description)}
             </Text>
           </Stack>
           <View
@@ -392,12 +337,7 @@ export const AddWalletSheet = () => {
                 shadowRadius: 6,
               }}
             >
-              <Box
-                paddingVertical="24px"
-                paddingHorizontal="20px"
-                background="surfaceSecondaryElevated"
-                borderRadius={18}
-              >
+              <Box paddingVertical="24px" paddingHorizontal="20px" background="surfaceSecondaryElevated" borderRadius={18}>
                 <AddWalletList
                   totalHorizontalInset={40}
                   items={[

@@ -31,22 +31,14 @@ const TabsWithShadows = ({ category, onTabSelect }: Props) => {
       </View>
       <View style={[{ shadowColor: colors.shadowBlack }, sx.gradientContainer]}>
         <LinearGradient
-          colors={[
-            colors.white,
-            colors.white,
-            isDarkMode ? colors.white : '#F0F5FA',
-          ]}
+          colors={[colors.white, colors.white, isDarkMode ? colors.white : '#F0F5FA']}
           end={{ x: 0.5, y: 1 }}
           pointerEvents="none"
           start={{ x: 0.5, y: 0 }}
           style={sx.gradient}
         />
       </View>
-      <TabBar
-        activeCategory={category}
-        categoryKeys={categoryKeys}
-        onPress={onTabSelect}
-      />
+      <TabBar activeCategory={category} categoryKeys={categoryKeys} onPress={onTabSelect} />
     </View>
   );
 };

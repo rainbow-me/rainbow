@@ -2,38 +2,24 @@ import lang from 'i18n-js';
 import { startCase } from 'lodash';
 import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
-import Animated, {
-  interpolate,
-  interpolateColor,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { interpolate, interpolateColor, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '../../animations';
 import { Text, TruncatedAddress } from '../../text';
 import SwapDetailsRow from './SwapDetailsRow';
 import { useClipboard, useColorForAsset } from '@/hooks';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth } from '@/styles';
-import {
-  abbreviations,
-  ethereumUtils,
-  showActionSheetWithOptions,
-} from '@/utils';
+import { abbreviations, ethereumUtils, showActionSheetWithOptions } from '@/utils';
 
 const SwapDetailsText = styled(Text).attrs({
   lineHeight: android ? 18 : 17,
 })();
 
-export const SwapDetailsValue = styled(SwapDetailsText).attrs(
-  ({ theme: { colors }, color = colors.alpha(colors.blueGreyDark, 0.8) }) => ({
-    color,
-  })
-)(fontWithWidth(fonts.weight.bold));
+export const SwapDetailsValue = styled(SwapDetailsText).attrs(({ theme: { colors }, color = colors.alpha(colors.blueGreyDark, 0.8) }) => ({
+  color,
+}))(fontWithWidth(fonts.weight.bold));
 
-const AnimatedTruncatedAddress = Animated.createAnimatedComponent(
-  TruncatedAddress
-);
+const AnimatedTruncatedAddress = Animated.createAnimatedComponent(TruncatedAddress);
 const AnimatedText = Animated.createAnimatedComponent(Text);
 
 const ContractActionsEnum = {
@@ -66,29 +52,18 @@ const buildBlockExplorerAction = type => {
   };
 };
 
-function SwapDetailsContractRowContent({
-  asset,
-  menuVisible,
-  scaleTo = 1.06,
-  ...props
-}) {
+function SwapDetailsContractRowContent({ asset, menuVisible, scaleTo = 1.06, ...props }) {
   const { colors } = useTheme();
   const colorForAsset = useColorForAsset(asset);
   const animation = useSharedValue(menuVisible ? 1 : 0);
-  const startingColor = useMemo(() => colors.alpha(colors.blueGreyDark, 0.8), [
-    colors,
-  ]);
+  const startingColor = useMemo(() => colors.alpha(colors.blueGreyDark, 0.8), [colors]);
 
   useLayoutEffect(() => {
     animation.value = withTiming(menuVisible ? 1 : 0, { duration: 150 });
   }, [menuVisible, animation]);
 
   const colorStyle = useAnimatedStyle(() => {
-    const color = interpolateColor(
-      animation.value,
-      [0, 1],
-      [startingColor, colorForAsset]
-    );
+    const color = interpolateColor(animation.value, [0, 1], [startingColor, colorForAsset]);
     return {
       color,
     };
@@ -110,27 +85,15 @@ function SwapDetailsContractRowContent({
             token: asset?.symbol,
           })}
         >
-          <SwapDetailsValue
-            address={asset?.address}
-            as={AnimatedTruncatedAddress}
-            firstSectionLength={6}
-            style={colorStyle}
-          />
-          <SwapDetailsValue
-            as={AnimatedText}
-            style={colorStyle}
-          >{` 􀍡`}</SwapDetailsValue>
+          <SwapDetailsValue address={asset?.address} as={AnimatedTruncatedAddress} firstSectionLength={6} style={colorStyle} />
+          <SwapDetailsValue as={AnimatedText} style={colorStyle}>{` 􀍡`}</SwapDetailsValue>
         </SwapDetailsRow>
       </ButtonPressAnimation>
     </Animated.View>
   );
 }
 
-export default function SwapDetailsContractRow({
-  asset,
-  onCopySwapDetailsText,
-  ...props
-}) {
+export default function SwapDetailsContractRow({ asset, onCopySwapDetailsText, ...props }) {
   const { setClipboard } = useClipboard();
   const handleCopyContractAddress = useCallback(
     address => {
@@ -142,27 +105,25 @@ export default function SwapDetailsContractRow({
   const [menuVisible, setMenuVisible] = useState(false);
 
   const menuConfig = useMemo(() => {
-    const blockExplorerAction = buildBlockExplorerAction(asset?.type);
+    const blockExplorerAction = buildBlockExplorerAction(asset?.network);
     return {
       menuItems: [
         blockExplorerAction,
         {
           ...ContractActions[ContractActionsEnum.copyAddress],
-          discoverabilityTitle: abbreviations.formatAddressForDisplay(
-            asset?.address
-          ),
+          discoverabilityTitle: abbreviations.formatAddressForDisplay(asset?.address),
         },
       ],
       menuTitle: `${asset?.name} (${asset?.symbol})`,
     };
-  }, [asset?.address, asset?.name, asset?.symbol, asset?.type]);
+  }, [asset?.address, asset?.name, asset?.symbol, asset?.network]);
 
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === ContractActionsEnum.copyAddress) {
         handleCopyContractAddress(asset?.address);
       } else if (actionKey === ContractActionsEnum.blockExplorer) {
-        ethereumUtils.openTokenEtherscanURL(asset?.address, asset?.type);
+        ethereumUtils.openTokenEtherscanURL(asset?.address, asset?.network);
       }
     },
     [asset, handleCopyContractAddress]
@@ -170,13 +131,9 @@ export default function SwapDetailsContractRow({
 
   const onPressAndroid = useCallback(() => {
     const blockExplorerText = lang.t('expanded_state.swap.view_on', {
-      blockExplorerName: startCase(ethereumUtils.getBlockExplorer(asset?.type)),
+      blockExplorerName: startCase(ethereumUtils.getBlockExplorer(asset?.network)),
     });
-    const androidContractActions = [
-      lang.t('wallet.action.copy_contract_address'),
-      blockExplorerText,
-      lang.t('button.cancel'),
-    ];
+    const androidContractActions = [lang.t('wallet.action.copy_contract_address'), blockExplorerText, lang.t('button.cancel')];
     showActionSheetWithOptions(
       {
         cancelButtonIndex: 2,
@@ -189,7 +146,7 @@ export default function SwapDetailsContractRow({
           handleCopyContractAddress(asset?.address);
         }
         if (idx === 1) {
-          ethereumUtils.openTokenEtherscanURL(asset?.address, asset?.type);
+          ethereumUtils.openTokenEtherscanURL(asset?.address, asset?.network);
         }
       }
     );

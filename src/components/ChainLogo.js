@@ -34,51 +34,22 @@ const Content = styled(Centered)(({ size }) => ({
   overflow: 'visible',
 }));
 
-export default function ChainLogo({
-  network,
-  size = 44,
-  withShadows = true,
-  ...props
-}) {
+export default function ChainLogo({ network, size = 44, withShadows = true, ...props }) {
   const { isDarkMode } = useTheme();
   const source = useMemo(() => {
     let val = null;
     if (network === networkTypes.arbitrum) {
-      val = withShadows
-        ? isDarkMode
-          ? ArbitrumBadgeDark
-          : ArbitrumBadge
-        : ArbitrumBadgeNoShadow;
+      val = withShadows ? (isDarkMode ? ArbitrumBadgeDark : ArbitrumBadge) : ArbitrumBadgeNoShadow;
     } else if (network === networkTypes.optimism) {
-      val = withShadows
-        ? isDarkMode
-          ? OptimismBadgeDark
-          : OptimismBadge
-        : OptimismBadgeNoShadow;
+      val = withShadows ? (isDarkMode ? OptimismBadgeDark : OptimismBadge) : OptimismBadgeNoShadow;
     } else if (network === networkTypes.polygon) {
-      val = withShadows
-        ? isDarkMode
-          ? PolygonBadgeDark
-          : PolygonBadge
-        : PolygonBadgeNoShadow;
+      val = withShadows ? (isDarkMode ? PolygonBadgeDark : PolygonBadge) : PolygonBadgeNoShadow;
     } else if (network === networkTypes.bsc) {
-      val = withShadows
-        ? isDarkMode
-          ? BscBadgeDark
-          : BscBadge
-        : BscBadgeNoShadow;
+      val = withShadows ? (isDarkMode ? BscBadgeDark : BscBadge) : BscBadgeNoShadow;
     } else if (network === networkTypes.zora) {
-      val = withShadows
-        ? isDarkMode
-          ? ZoraBadgeDark
-          : ZoraBadge
-        : ZoraBadgeNoShadow;
+      val = withShadows ? (isDarkMode ? ZoraBadgeDark : ZoraBadge) : ZoraBadgeNoShadow;
     } else if (network === networkTypes.base) {
-      val = withShadows
-        ? isDarkMode
-          ? BaseBadgeDark
-          : BaseBadge
-        : BaseBadgeNoShadow;
+      val = withShadows ? (isDarkMode ? BaseBadgeDark : BaseBadge) : BaseBadgeNoShadow;
     }
     return val;
   }, [isDarkMode, network, withShadows]);

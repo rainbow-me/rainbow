@@ -6,30 +6,18 @@ import { rankings } from 'match-sorter';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTheme } from '../theme/ThemeContext';
 import usePrevious from './usePrevious';
-import {
-  AssetType,
-  RainbowToken,
-  RainbowToken as RT,
-  TokenSearchTokenListId,
-} from '@/entities';
+import { RainbowToken, RainbowToken as RT, TokenSearchTokenListId } from '@/entities';
 import { tokenSearch } from '@/handlers/tokenSearch';
 import { addHexPrefix, getProviderForNetwork } from '@/handlers/web3';
 import tokenSectionTypes from '@/helpers/tokenSectionTypes';
-import {
-  DAI_ADDRESS,
-  erc20ABI,
-  ETH_ADDRESS,
-  rainbowTokenList,
-  USDC_ADDRESS,
-  WBTC_ADDRESS,
-  WETH_ADDRESS,
-} from '@/references';
+import { DAI_ADDRESS, erc20ABI, ETH_ADDRESS, rainbowTokenList, USDC_ADDRESS, WBTC_ADDRESS, WETH_ADDRESS } from '@/references';
 import { ethereumUtils, filterList, isLowerCaseMatch, logger } from '@/utils';
 import useSwapCurrencies from '@/hooks/useSwapCurrencies';
 import { Network } from '@/helpers';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { IS_TEST } from '@/env';
 import { useFavorites } from '@/resources/favorites';
+import { getUniqueId } from '@/utils/ethereumUtils';
 
 const MAINNET_CHAINID = 1;
 type swapCurrencyListType =
@@ -66,11 +54,7 @@ const searchCurrencyList = async (searchParams: {
   const formattedQuery = isAddress ? addHexPrefix(query).toLowerCase() : query;
   if (typeof searchList === 'string') {
     const threshold = isAddress ? 'CASE_SENSITIVE_EQUAL' : 'CONTAINS';
-    if (
-      chainId === MAINNET_CHAINID &&
-      !formattedQuery &&
-      searchList !== 'verifiedAssets'
-    ) {
+    if (chainId === MAINNET_CHAINID && !formattedQuery && searchList !== 'verifiedAssets') {
       return [];
     }
     return tokenSearch({
@@ -83,30 +67,18 @@ const searchCurrencyList = async (searchParams: {
   } else {
     return (
       filterList(searchList, formattedQuery, keys, {
-        threshold: isAddress
-          ? rankings.CASE_SENSITIVE_EQUAL
-          : rankings.CONTAINS,
+        threshold: isAddress ? rankings.CASE_SENSITIVE_EQUAL : rankings.CONTAINS,
       }) || []
     );
   }
 };
 
-const useSearchCurrencyList = (
-  searchQuery: string,
-  searchChainId = MAINNET_CHAINID,
-  isDiscover = false
-) => {
+const useSearchCurrencyList = (searchQuery: string, searchChainId = MAINNET_CHAINID, isDiscover = false) => {
   const previousChainId = usePrevious(searchChainId);
 
-  const searching = useMemo(
-    () => searchQuery !== '' || MAINNET_CHAINID !== searchChainId,
-    [searchChainId, searchQuery]
-  );
+  const searching = useMemo(() => searchQuery !== '' || MAINNET_CHAINID !== searchChainId, [searchChainId, searchQuery]);
 
-  const {
-    favorites: favoriteAddresses,
-    favoritesMetadata: favoriteMap,
-  } = useFavorites();
+  const { favorites: favoriteAddresses, favoritesMetadata: favoriteMap } = useFavorites();
 
   const curatedMap = rainbowTokenList.CURATED_TOKENS;
   const unfilteredFavorites = Object.values(favoriteMap);
@@ -117,13 +89,8 @@ const useSearchCurrencyList = (
   const [highLiquidityAssets, setHighLiquidityAssets] = useState<RT[]>([]);
   const [lowLiquidityAssets, setLowLiquidityAssets] = useState<RT[]>([]);
   const [verifiedAssets, setVerifiedAssets] = useState<RT[]>([]);
-  const [fetchingCrosschainAssets, setFetchingCrosschainAssets] = useState(
-    false
-  );
-  const [
-    crosschainVerifiedAssets,
-    setCrosschainVerifiedAssets,
-  ] = useState<CrosschainVerifiedAssets>({
+  const [fetchingCrosschainAssets, setFetchingCrosschainAssets] = useState(false);
+  const [crosschainVerifiedAssets, setCrosschainVerifiedAssets] = useState<CrosschainVerifiedAssets>({
     [Network.mainnet]: [],
     [Network.optimism]: [],
     [Network.polygon]: [],
@@ -132,28 +99,18 @@ const useSearchCurrencyList = (
   });
 
   const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
+
   const { inputCurrency } = useSwapCurrencies();
-  const previousInputCurrencyType = usePrevious(inputCurrency?.type);
-  const inputChainId = useMemo(
-    () => ethereumUtils.getChainIdFromType(inputCurrency?.type),
-    [inputCurrency?.type]
-  );
+  const previousInputCurrencyNetwork = usePrevious(inputCurrency?.network);
+  const inputChainId = useMemo(() => ethereumUtils.getChainIdFromNetwork(inputCurrency?.network), [inputCurrency?.network]);
   const isCrosschainSearch = useMemo(() => {
-    if (
-      inputChainId &&
-      inputChainId !== searchChainId &&
-      crosschainSwapsEnabled &&
-      !isDiscover
-    ) {
+    if (inputChainId && inputChainId !== searchChainId && crosschainSwapsEnabled && !isDiscover) {
       return true;
     }
   }, [inputChainId, searchChainId, crosschainSwapsEnabled, isDiscover]);
 
   const isFavorite = useCallback(
-    (address: EthereumAddress) =>
-      favoriteAddresses
-        .map(a => a?.toLowerCase())
-        .includes(address?.toLowerCase()),
+    (address: EthereumAddress) => favoriteAddresses.map(a => a?.toLowerCase()).includes(address?.toLowerCase()),
     [favoriteAddresses]
   );
   const handleSearchResponse = useCallback(
@@ -163,7 +120,6 @@ const useSearchCurrencyList = (
         .map(token => {
           const t: RT = {
             ...token,
-            type: token?.type || AssetType.token,
             address: token?.address || token.uniqueId.toLowerCase(),
           } as RT;
 
@@ -181,19 +137,9 @@ const useSearchCurrencyList = (
       .sort((t1, t2) => {
         const { address: address1, name: name1 } = t1;
         const { address: address2, name: name2 } = t2;
-        const mainnetPriorityTokens = [
-          ETH_ADDRESS,
-          WETH_ADDRESS,
-          DAI_ADDRESS,
-          USDC_ADDRESS,
-          WBTC_ADDRESS,
-        ];
-        const rankA = mainnetPriorityTokens.findIndex(
-          address => address === address1.toLowerCase()
-        );
-        const rankB = mainnetPriorityTokens.findIndex(
-          address => address === address2.toLowerCase()
-        );
+        const mainnetPriorityTokens = [ETH_ADDRESS, WETH_ADDRESS, DAI_ADDRESS, USDC_ADDRESS, WBTC_ADDRESS];
+        const rankA = mainnetPriorityTokens.findIndex(address => address === address1.toLowerCase());
+        const rankB = mainnetPriorityTokens.findIndex(address => address === address2.toLowerCase());
         const aIsRanked = rankA > -1;
         const bIsRanked = rankB > -1;
         if (aIsRanked) {
@@ -220,8 +166,7 @@ const useSearchCurrencyList = (
     async (searchQuery: string, chainId: number): Promise<RT[] | null> => {
       if (searching) {
         if (isAddress(searchQuery)) {
-          const tokenListEntry =
-            rainbowTokenList.RAINBOW_TOKEN_LIST[searchQuery.toLowerCase()];
+          const tokenListEntry = rainbowTokenList.RAINBOW_TOKEN_LIST[searchQuery.toLowerCase()];
           if (tokenListEntry) {
             return [tokenListEntry];
           }
@@ -235,10 +180,8 @@ const useSearchCurrencyList = (
               tokenContract.decimals(),
               getAddress(searchQuery),
             ]);
-            const uniqueId =
-              chainId === ChainId.mainnet ? address : `${address}_${network}`;
-            const type =
-              chainId === ChainId.mainnet ? AssetType.token : network;
+            const uniqueId = getUniqueId(address, network);
+
             return [
               {
                 decimals,
@@ -254,7 +197,7 @@ const useSearchCurrencyList = (
                   },
                 },
                 symbol,
-                type,
+                network,
                 uniqueId,
               } as RainbowToken,
             ];
@@ -291,9 +234,7 @@ const useSearchCurrencyList = (
   const getCrosschainVerifiedAssets = useCallback(async () => {
     const crosschainAssetRequests: Promise<void>[] = [];
     Object.keys(crosschainVerifiedAssets).forEach(network => {
-      crosschainAssetRequests.push(
-        getCrosschainVerifiedAssetsForNetwork(network as Network)
-      );
+      crosschainAssetRequests.push(getCrosschainVerifiedAssetsForNetwork(network as Network));
     });
     await Promise.all(crosschainAssetRequests);
   }, [crosschainVerifiedAssets, getCrosschainVerifiedAssetsForNetwork]);
@@ -341,10 +282,7 @@ const useSearchCurrencyList = (
           setFavoriteAssets((await getFavorites()) || []);
           break;
         case 'importedAssets': {
-          const importedAssetResult = await getImportedAsset(
-            searchQuery,
-            searchChainId
-          );
+          const importedAssetResult = await getImportedAsset(searchQuery, searchChainId);
           if (importedAssetResult) {
             setImportedAssets(handleSearchResponse(importedAssetResult));
           }
@@ -352,31 +290,16 @@ const useSearchCurrencyList = (
         }
       }
     },
-    [
-      getFavorites,
-      getImportedAsset,
-      handleSearchResponse,
-      searchQuery,
-      searchChainId,
-      inputChainId,
-      isCrosschainSearch,
-    ]
+    [getFavorites, getImportedAsset, handleSearchResponse, searchQuery, searchChainId, inputChainId, isCrosschainSearch]
   );
 
   const search = useCallback(async () => {
     const categories: swapCurrencyListType[] =
       searchChainId === MAINNET_CHAINID
-        ? [
-            'favoriteAssets',
-            'highLiquidityAssets',
-            'verifiedAssets',
-            'importedAssets',
-          ]
+        ? ['favoriteAssets', 'highLiquidityAssets', 'verifiedAssets', 'importedAssets']
         : ['verifiedAssets', 'importedAssets'];
     setLoading(true);
-    await Promise.all(
-      categories.map(assetType => getResultsForAssetType(assetType))
-    );
+    await Promise.all(categories.map(assetType => getResultsForAssetType(assetType)));
   }, [searchChainId, getResultsForAssetType]);
 
   const slowSearch = useCallback(async () => {
@@ -409,11 +332,7 @@ const useSearchCurrencyList = (
       setFetchingCrosschainAssets(true);
       getCrosschainVerifiedAssets();
     }
-  }, [
-    getCrosschainVerifiedAssets,
-    fetchingCrosschainAssets,
-    crosschainSwapsEnabled,
-  ]);
+  }, [getCrosschainVerifiedAssets, fetchingCrosschainAssets, crosschainSwapsEnabled]);
 
   useEffect(() => {
     const doSearch = async () => {
@@ -421,7 +340,7 @@ const useSearchCurrencyList = (
         (searching && !wasSearching) ||
         (searching && previousSearchQuery !== searchQuery) ||
         searchChainId !== previousChainId ||
-        inputCurrency?.type !== previousInputCurrencyType
+        inputCurrency?.network !== previousInputCurrencyNetwork
       ) {
         if (searchChainId === MAINNET_CHAINID) {
           search();
@@ -438,13 +357,7 @@ const useSearchCurrencyList = (
     };
     doSearch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    searching,
-    searchQuery,
-    searchChainId,
-    isCrosschainSearch,
-    inputCurrency?.type,
-  ]);
+  }, [searching, searchQuery, searchChainId, isCrosschainSearch, inputCurrency?.network]);
 
   const { colors } = useTheme();
 
@@ -452,60 +365,35 @@ const useSearchCurrencyList = (
     const list = [];
 
     let bridgeAsset = isCrosschainSearch
-      ? verifiedAssets.find(
-          asset =>
-            isLowerCaseMatch(asset?.name, inputCurrency?.name) &&
-            asset?.type !== inputCurrency?.type
-        )
+      ? verifiedAssets.find(asset => isLowerCaseMatch(asset?.name, inputCurrency?.name) && asset?.network !== inputCurrency?.network)
       : null;
     if (searching) {
       const importedAsset = importedAssets?.[0];
       let verifiedAssetsWithImport = verifiedAssets;
       let highLiquidityAssetsWithImport = highLiquidityAssets;
       let lowLiquidityAssetsWithoutImport = lowLiquidityAssets;
-      const verifiedAddresses = verifiedAssets.map(({ uniqueId }) =>
-        uniqueId.toLowerCase()
-      );
-      const highLiquidityAddresses = verifiedAssets.map(({ uniqueId }) =>
-        uniqueId.toLowerCase()
-      );
+      const verifiedAddresses = verifiedAssets.map(({ uniqueId }) => uniqueId.toLowerCase());
+      const highLiquidityAddresses = verifiedAssets.map(({ uniqueId }) => uniqueId.toLowerCase());
       // this conditional prevents the imported token from jumping
       // sections if verified/highliquidity search responds later
       // than the contract checker in getImportedAsset
       if (importedAsset && !isFavorite(importedAsset?.address)) {
-        lowLiquidityAssetsWithoutImport = lowLiquidityAssets.filter(
-          ({ address }) => address.toLowerCase() !== importedAsset?.address
-        );
-        if (
-          importedAsset?.isVerified &&
-          !verifiedAddresses.includes(importedAsset?.address.toLowerCase())
-        ) {
+        lowLiquidityAssetsWithoutImport = lowLiquidityAssets.filter(({ address }) => address.toLowerCase() !== importedAsset?.address);
+        if (importedAsset?.isVerified && !verifiedAddresses.includes(importedAsset?.address.toLowerCase())) {
           verifiedAssetsWithImport = [importedAsset, ...verifiedAssets];
         } else {
-          if (
-            !highLiquidityAddresses.includes(
-              importedAsset?.address.toLowerCase()
-            )
-          ) {
-            highLiquidityAssetsWithImport = [
-              importedAsset,
-              ...highLiquidityAssets,
-            ];
+          if (!highLiquidityAddresses.includes(importedAsset?.address.toLowerCase())) {
+            highLiquidityAssetsWithImport = [importedAsset, ...highLiquidityAssets];
           }
         }
       }
       if (inputCurrency?.name && verifiedAssets.length) {
         if (bridgeAsset) {
           list.push({
-            color:
-              colors.networkColors[
-                ethereumUtils.getNetworkFromType(bridgeAsset.type)
-              ],
+            color: colors.networkColors[bridgeAsset.network],
             data: [bridgeAsset],
             key: 'bridgeAsset',
-            title: lang.t(
-              `exchange.token_sections.${tokenSectionTypes.bridgeTokenSection}`
-            ),
+            title: lang.t(`exchange.token_sections.${tokenSectionTypes.bridgeTokenSection}`),
           });
         }
       }
@@ -514,18 +402,14 @@ const useSearchCurrencyList = (
           color: colors.yellowFavorite,
           data: abcSort(favoriteAssets, 'name'),
           key: 'favorites',
-          title: lang.t(
-            `exchange.token_sections.${tokenSectionTypes.favoriteTokenSection}`
-          ),
+          title: lang.t(`exchange.token_sections.${tokenSectionTypes.favoriteTokenSection}`),
         });
       }
       if (verifiedAssetsWithImport?.length) {
         list.push({
           data: verifiedAssetsWithImport,
           key: 'verified',
-          title: lang.t(
-            `exchange.token_sections.${tokenSectionTypes.verifiedTokenSection}`
-          ),
+          title: lang.t(`exchange.token_sections.${tokenSectionTypes.verifiedTokenSection}`),
           useGradientText: !IS_TEST,
         });
       }
@@ -533,37 +417,26 @@ const useSearchCurrencyList = (
         list.push({
           data: highLiquidityAssetsWithImport,
           key: 'highLiquidity',
-          title: lang.t(
-            `exchange.token_sections.${tokenSectionTypes.unverifiedTokenSection}`
-          ),
+          title: lang.t(`exchange.token_sections.${tokenSectionTypes.unverifiedTokenSection}`),
         });
       }
       if (lowLiquidityAssetsWithoutImport?.length) {
         list.push({
           data: lowLiquidityAssetsWithoutImport,
           key: 'lowLiquidity',
-          title: lang.t(
-            `exchange.token_sections.${tokenSectionTypes.lowLiquidityTokenSection}`
-          ),
+          title: lang.t(`exchange.token_sections.${tokenSectionTypes.lowLiquidityTokenSection}`),
         });
       }
     } else {
       const curatedAssets = searchChainId === MAINNET_CHAINID && getCurated();
       if (inputCurrency?.name && isCrosschainSearch && curatedAssets) {
-        bridgeAsset = curatedAssets.find(
-          asset => asset?.name === inputCurrency?.name
-        );
+        bridgeAsset = curatedAssets.find(asset => asset?.name === inputCurrency?.name);
         if (bridgeAsset) {
           list.push({
-            color:
-              colors.networkColors[
-                ethereumUtils.getNetworkFromType(bridgeAsset.type)
-              ],
+            color: colors.networkColors[bridgeAsset.network],
             data: [bridgeAsset],
             key: 'bridgeAsset',
-            title: lang.t(
-              `exchange.token_sections.${tokenSectionTypes.bridgeTokenSection}`
-            ),
+            title: lang.t(`exchange.token_sections.${tokenSectionTypes.bridgeTokenSection}`),
           });
         }
       }
@@ -572,18 +445,14 @@ const useSearchCurrencyList = (
           color: colors.yellowFavorite,
           data: abcSort(unfilteredFavorites, 'name'),
           key: 'unfilteredFavorites',
-          title: lang.t(
-            `exchange.token_sections.${tokenSectionTypes.favoriteTokenSection}`
-          ),
+          title: lang.t(`exchange.token_sections.${tokenSectionTypes.favoriteTokenSection}`),
         });
       }
       if (curatedAssets && curatedAssets.length) {
         list.push({
           data: curatedAssets,
           key: 'curated',
-          title: lang.t(
-            `exchange.token_sections.${tokenSectionTypes.verifiedTokenSection}`
-          ),
+          title: lang.t(`exchange.token_sections.${tokenSectionTypes.verifiedTokenSection}`),
           useGradientText: !IS_TEST,
         });
       }
@@ -604,7 +473,7 @@ const useSearchCurrencyList = (
     inputCurrency?.name,
     colors.networkColors,
     isCrosschainSearch,
-    inputCurrency?.type,
+    inputCurrency?.network,
   ]);
 
   const crosschainExactMatches = useMemo(() => {
@@ -612,19 +481,15 @@ const useSearchCurrencyList = (
     if (!searchQuery) return [];
     const exactMatches: RT[] = [];
     Object.keys(crosschainVerifiedAssets).forEach(network => {
-      const currentNetworkChainId = ethereumUtils.getChainIdFromNetwork(
-        network as Network
-      );
+      const currentNetworkChainId = ethereumUtils.getChainIdFromNetwork(network as Network);
       if (currentNetworkChainId !== searchChainId) {
         // including goerli in our networks type is causing this type issue
         // @ts-ignore
-        const exactMatch = crosschainVerifiedAssets[network as Network].find(
-          (asset: RT) => {
-            const symbolMatch = isLowerCaseMatch(asset?.symbol, searchQuery);
-            const nameMatch = isLowerCaseMatch(asset?.name, searchQuery);
-            return symbolMatch || nameMatch;
-          }
-        );
+        const exactMatch = crosschainVerifiedAssets[network as Network].find((asset: RT) => {
+          const symbolMatch = isLowerCaseMatch(asset?.symbol, searchQuery);
+          const nameMatch = isLowerCaseMatch(asset?.name, searchQuery);
+          return symbolMatch || nameMatch;
+        });
         if (exactMatch) {
           exactMatches.push({ ...exactMatch, network });
         }
@@ -635,20 +500,13 @@ const useSearchCurrencyList = (
         {
           data: exactMatches,
           key: 'verified',
-          title: lang.t(
-            `exchange.token_sections.${tokenSectionTypes.crosschainMatchSection}`
-          ),
+          title: lang.t(`exchange.token_sections.${tokenSectionTypes.crosschainMatchSection}`),
           useGradientText: !IS_TEST,
         },
       ];
     }
     return [];
-  }, [
-    crosschainVerifiedAssets,
-    currencyList.length,
-    searchChainId,
-    searchQuery,
-  ]);
+  }, [crosschainVerifiedAssets, currencyList.length, searchChainId, searchQuery]);
 
   return {
     crosschainExactMatches,

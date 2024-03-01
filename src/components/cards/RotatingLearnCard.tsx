@@ -29,16 +29,7 @@ const learnCards: LearnCardDetails[] = [
 ];
 
 export const RotatingLearnCard = () => {
-  const [index, incrementIndex] = useReducer(
-    i => (i === learnCards.length - 1 ? 0 : i + 1),
-    0
-  );
+  const [index, incrementIndex] = useReducer(i => (i === learnCards.length - 1 ? 0 : i + 1), 0);
 
-  return (
-    <LearnCard
-      type="stretch"
-      rotate={() => delay(300).then(incrementIndex)}
-      cardDetails={learnCards[index]}
-    />
-  );
+  return <LearnCard type="stretch" rotate={() => delay(300).then(incrementIndex)} cardDetails={learnCards[index]} />;
 };

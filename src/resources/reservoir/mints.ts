@@ -1,15 +1,13 @@
 import { EthereumAddress } from '@/entities';
-import { arcDevClient, arcClient } from '@/graphql';
+import { arcClient } from '@/graphql';
 import { getNetworkObj } from '@/networks';
 import { Navigation } from '@/navigation';
 import { Network } from '@/networks/types';
 import Routes from '@/navigation/routesNames';
-import { IS_DEV } from '@/env';
 import { logger } from '@/logger';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as lang from '@/languages';
 
-const client = IS_DEV ? arcDevClient : arcClient;
 const showAlert = () => {
   Alert.alert(
     lang.t(lang.l.minting.could_not_find_collection),
@@ -18,17 +16,14 @@ const showAlert = () => {
     { cancelable: false }
   );
 };
-export const navigateToMintCollection = async (
-  contractAddress: EthereumAddress,
-  network: Network
-) => {
+export const navigateToMintCollection = async (contractAddress: EthereumAddress, network: Network) => {
   logger.debug('Mints: Navigating to Mint Collection', {
     contractAddress,
     network,
   });
   try {
     const chainId = getNetworkObj(network).id;
-    const res = await client.getReservoirCollection({
+    const res = await arcClient.getReservoirCollection({
       contractAddress,
       chainId,
     });

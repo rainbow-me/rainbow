@@ -84,9 +84,7 @@ function ScreenView({ colors, descriptors, navigation, route, state, hidden }) {
         backgroundOpacity={backgroundOpacity}
         cornerRadius={cornerRadius}
         customStack={customStack}
-        disableShortFormAfterTransitionToLongForm={
-          disableShortFormAfterTransitionToLongForm
-        }
+        disableShortFormAfterTransitionToLongForm={disableShortFormAfterTransitionToLongForm}
         dismissable={dismissable}
         gestureEnabled={gestureEnabled}
         headerHeight={headerHeight}
@@ -140,10 +138,7 @@ function ScreenView({ colors, descriptors, navigation, route, state, hidden }) {
           style={[
             sx.container,
             {
-              backgroundColor:
-                stackPresentation !== 'transparentModal'
-                  ? colors.background
-                  : undefined,
+              backgroundColor: stackPresentation !== 'transparentModal' ? colors.background : undefined,
             },
             contentStyle,
           ]}
@@ -172,9 +167,7 @@ export default function NativeStackView({ state, navigation, descriptors }) {
           <ScreenView
             colors={colors}
             descriptors={descriptors}
-            hidden={
-              limitActiveModals && nonSingleRoutesLength - 3 >= i && i !== 0
-            }
+            hidden={limitActiveModals && nonSingleRoutesLength - 3 >= i && i !== 0}
             key={`screen${i}`}
             navigation={navigation}
             route={route}

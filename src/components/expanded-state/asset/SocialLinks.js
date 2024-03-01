@@ -6,10 +6,6 @@ import EdgeFade from '../../EdgeFade';
 import styled from '@/styled-thing';
 import { ethereumUtils } from '@/utils';
 
-const TWITTER_URL = 'https://twitter.com/';
-const TELEGRAM_URL = 'https://t.me/';
-const FACEBOOK_URL = 'https://www.facebook.com/';
-
 const Carousel = styled.ScrollView.attrs({
   contentContainerStyle: {
     paddingHorizontal: 13,
@@ -31,14 +27,7 @@ const CommunityLink = styled(Link).attrs({
   paddingTop: ios ? 9.5 : 5,
 });
 
-export default function SocialLinks({
-  address,
-  color,
-  isNativeAsset,
-  links,
-  marginTop,
-  type,
-}) {
+export default function SocialLinks({ address, color, isNativeAsset, links, marginTop, type }) {
   const etherscanURL = ethereumUtils.getEtherscanHostForNetwork(type);
   const blockExplorerName = ethereumUtils.getBlockExplorer(type);
   return (
@@ -53,33 +42,33 @@ export default function SocialLinks({
             url={`${etherscanURL}/token/${address}`}
           />
         )}
-        {!!links?.twitter_screen_name && (
+        {!!links?.twitter?.url && (
           <CommunityLink
             color={color}
             display={lang.t('expanded_state.asset.social.twitter')}
             emojiName="twitter"
             transformOrigin="center"
-            url={`${TWITTER_URL}${links?.twitter_screen_name}`}
+            url={links.twitter.url}
           />
         )}
-        {!!links?.homepage?.[0] && (
+        {!!links?.homepage?.url && (
           <CommunityLink
             color={color}
             display={lang.t('expanded_state.asset.social.homepage')}
             transformOrigin="center"
-            url={links?.homepage?.[0]}
+            url={links.homepage.url}
           />
         )}
-        {!!links?.telegram_channel_identifier && (
+        {!!links?.telegram?.url && (
           <CommunityLink
             color={color}
             display={lang.t('expanded_state.asset.social.telegram')}
             emojiName="telegram"
             transformOrigin="center"
-            url={`${TELEGRAM_URL}${links?.telegram_channel_identifier}`}
+            url={links.telegram.url}
           />
         )}
-        {!!links?.subreddit_url && (
+        {!!links?.reddit?.url && (
           <CommunityLink
             color={color}
             display={lang.t('expanded_state.asset.social.reddit')}
@@ -88,13 +77,13 @@ export default function SocialLinks({
             url={links?.subreddit_url}
           />
         )}
-        {!!links?.facebook_username && (
+        {!!links?.facebook?.url && (
           <CommunityLink
             color={color}
             display={lang.t('expanded_state.asset.social.facebook')}
             emojiName="facebook"
             transformOrigin="center"
-            url={`${FACEBOOK_URL}${links?.facebook_username}`}
+            url={links.facebook.url}
           />
         )}
       </Carousel>

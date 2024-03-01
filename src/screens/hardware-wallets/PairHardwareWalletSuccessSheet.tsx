@@ -19,12 +19,7 @@ export const PairHardwareWalletSuccessSheet = () => {
             {i18n.t(TRANSLATIONS.device_connected)}
           </Text>
           <Stack space="10px">
-            <Text
-              align="center"
-              color="labelTertiary"
-              weight="semibold"
-              size="15pt / 135%"
-            >
+            <Text align="center" color="labelTertiary" weight="semibold" size="15pt / 135%">
               {i18n.t(TRANSLATIONS.almost_done)}
             </Text>
           </Stack>
@@ -33,10 +28,7 @@ export const PairHardwareWalletSuccessSheet = () => {
       <Box paddingBottom="36px">
         <CheckmarkAnimation />
       </Box>
-      <ActionButton
-        label={i18n.t(i18n.l.button.next)}
-        onPress={() => navigate(Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET)}
-      />
+      <ActionButton label={i18n.t(i18n.l.button.next)} onPress={() => navigate(Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET)} />
     </Layout>
   );
 };

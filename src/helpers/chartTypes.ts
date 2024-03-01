@@ -1,11 +1,11 @@
 const chartTypes = {
-  hour: 'h',
-  day: 'd',
-  week: 'w',
-  month: 'm',
-  year: 'y',
-  max: 'a',
+  hour: 'hour',
+  day: 'day',
+  week: 'week',
+  month: 'month',
+  year: 'year',
+  max: 'all',
 } as const;
 
 export default chartTypes;
-export type ChartType = typeof chartTypes[keyof typeof chartTypes];
+export type ChartType = (typeof chartTypes)[keyof typeof chartTypes];

@@ -33,10 +33,7 @@ export default function DashedWrapper(props: DashedWrapperProps) {
 
   return (
     <Box width={{ custom: size }} height={{ custom: size }}>
-      <MaskedView
-        maskElement={maskElement}
-        style={{ width: size, height: size, position: 'absolute' }}
-      >
+      <MaskedView maskElement={maskElement} style={{ width: size, height: size, position: 'absolute' }}>
         <LinearGradient
           colors={colors}
           end={{ x: 0, y: 0 }}

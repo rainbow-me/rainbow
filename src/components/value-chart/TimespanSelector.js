@@ -11,15 +11,13 @@ const Container = styled(Centered)({
   width: '100%',
 });
 
-const TimespanItemLabel = styled(Text).attrs(
-  ({ color, isSelected, theme: { colors } }) => ({
-    align: 'center',
-    color: isSelected ? color : colors.alpha(colors.blueGreyDark, 0.4),
-    letterSpacing: 'roundedTighter',
-    size: 'smedium',
-    weight: 'bold',
-  })
-)({
+const TimespanItemLabel = styled(Text).attrs(({ color, isSelected, theme: { colors } }) => ({
+  align: 'center',
+  color: isSelected ? color : colors.alpha(colors.blueGreyDark, 0.4),
+  letterSpacing: 'roundedTighter',
+  size: 'smedium',
+  weight: 'bold',
+}))({
   ...padding.object(0, 9),
 });
 
@@ -32,19 +30,12 @@ const TimespanItemRow = styled(Row).attrs({
 const TimespanItem = ({ color, isSelected, item, ...props }) => (
   <Centered flexShrink={0} height={32} {...props}>
     <TimespanItemLabel color={color} isSelected={isSelected}>
-      {ChartTypes[item] === ChartTypes.max
-        ? 'MAX'
-        : `1${item.charAt(0).toUpperCase()}`}
+      {ChartTypes[item] === ChartTypes.max ? 'MAX' : `1${item.charAt(0).toUpperCase()}`}
     </TimespanItemLabel>
   </Centered>
 );
 
-const TimespanSelector = ({
-  color,
-  defaultIndex = 0,
-  reloadChart,
-  timespans,
-}) => {
+const TimespanSelector = ({ color, defaultIndex = 0, reloadChart, timespans }) => {
   const { colors } = useTheme();
   return (
     <Container>

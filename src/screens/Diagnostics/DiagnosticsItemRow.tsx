@@ -13,11 +13,7 @@ import { DiagnosticsSecretInput } from '@/screens/Diagnostics/DiagnosticsSecretI
 
 export const DiagnosticsItemRow = ({ data }: any) => {
   const { colors } = useTheme();
-  const {
-    busy,
-    handleSetSeedPhrase,
-    handlePressImportButton,
-  } = useImportingWallet();
+  const { busy, handleSetSeedPhrase, handlePressImportButton } = useImportingWallet();
 
   const handlePressRestore = useCallback(async () => {
     if (busy) return;
@@ -32,13 +28,10 @@ export const DiagnosticsItemRow = ({ data }: any) => {
               // @ts-expect-error poorly typed function
               await handlePressImportButton(null, data.secret);
             } catch (error) {
-              logger.error(
-                new RainbowError('Error restoring from wallet diagnostics'),
-                {
-                  message: (error as Error).message,
-                  context: 'restore',
-                }
-              );
+              logger.error(new RainbowError('Error restoring from wallet diagnostics'), {
+                message: (error as Error).message,
+                context: 'restore',
+              });
             }
           },
           text: lang.t('wallet.diagnostics.restore.yes_i_understand'),
@@ -81,8 +74,7 @@ export const DiagnosticsItemRow = ({ data }: any) => {
       {data.createdAt && (
         <RowWithMargins>
           <Text size="lmedium">
-            <Bold>{lang.t('wallet.diagnostics.restore.created_at')}:</Bold>{' '}
-            {` `}
+            <Bold>{lang.t('wallet.diagnostics.restore.created_at')}:</Bold> {` `}
             <Text color={colors.blueGreyDark50}>{data.createdAt}</Text>
           </Text>
         </RowWithMargins>
@@ -105,10 +97,7 @@ export const DiagnosticsItemRow = ({ data }: any) => {
         <Bold>{lang.t('wallet.diagnostics.restore.secret')}:</Bold> {` `}
       </Text>
       <RowWithMargins>
-        <DiagnosticsSecretInput
-          color={colors.blueGreyDark}
-          value={data.secret}
-        />
+        <DiagnosticsSecretInput color={colors.blueGreyDark} value={data.secret} />
       </RowWithMargins>
       <ButtonPressAnimation onPress={handlePressRestore}>
         <View

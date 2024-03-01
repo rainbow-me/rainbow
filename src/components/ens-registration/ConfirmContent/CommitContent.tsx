@@ -23,44 +23,23 @@ const CommitContent = ({
     <Inset vertical={isSmallPhone ? '24px' : '30px (Deprecated)'}>
       <Stack space={isSmallPhone ? '19px (Deprecated)' : '30px (Deprecated)'}>
         <Separator color="divider60 (Deprecated)" />
-        <Inline
-          alignHorizontal="center"
-          alignVertical="center"
-          space="6px"
-          wrap={false}
-        >
+        <Inline alignHorizontal="center" alignVertical="center" space="6px" wrap={false}>
           <Box>
-            <ImgixImage
-              source={brain as Source}
-              style={{ height: 20, width: 20 }}
-              size={30}
-            />
+            <ImgixImage source={brain as Source} style={{ height: 20, width: 20 }} size={30} />
           </Box>
-          <Text
-            align="center"
-            color="secondary50 (Deprecated)"
-            size="14px / 19px (Deprecated)"
-            weight="bold"
-            numberOfLines={1}
-          >
+          <Text align="center" color="secondary50 (Deprecated)" size="14px / 19px (Deprecated)" weight="bold" numberOfLines={1}>
             {lang.t('profiles.confirm.suggestion')}
           </Text>
         </Inline>
         <RegistrationReviewRows
           duration={duration}
-          estimatedCostETH={
-            registrationCostsData?.estimatedTotalRegistrationCost?.eth
-          }
+          estimatedCostETH={registrationCostsData?.estimatedTotalRegistrationCost?.eth}
           maxDuration={99}
           mode={REGISTRATION_MODES.CREATE}
           networkFee={registrationCostsData?.estimatedNetworkFee?.display}
           onChangeDuration={setDuration}
-          registrationFee={
-            registrationCostsData?.estimatedRentPrice?.total?.display
-          }
-          totalCost={
-            registrationCostsData?.estimatedTotalRegistrationCost?.display
-          }
+          registrationFee={registrationCostsData?.estimatedRentPrice?.total?.display}
+          totalCost={registrationCostsData?.estimatedTotalRegistrationCost?.display}
         />
         <Separator color="divider60 (Deprecated)" />
       </Stack>

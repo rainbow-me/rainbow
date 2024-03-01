@@ -99,9 +99,8 @@ export const withTruncation: Example = {
       <View>
         <Guide />
         <Text color="label" size="17pt" weight="bold">
-          Truncated text truncated text truncated text truncated text truncated
-          text truncated text Truncated text truncated text truncated text
-          truncated text truncated text truncated text
+          Truncated text truncated text truncated text truncated text truncated text truncated text Truncated text truncated text truncated
+          text truncated text truncated text truncated text
         </Text>
         <Guide />
       </View>
@@ -114,12 +113,7 @@ export const withWeight: Example = {
     source(
       <Stack space="10px">
         {Object.entries(fontWeights).map(([name, value]) => (
-          <Text
-            key={value}
-            color="label"
-            size="17pt"
-            weight={name as keyof typeof fontWeights}
-          >
+          <Text key={value} color="label" size="17pt" weight={name as keyof typeof fontWeights}>
             {name} ({value})
           </Text>
         ))}
@@ -152,8 +146,7 @@ export const withColor: Example = {
         <View>
           <View
             style={{
-              backgroundColor:
-                palettes.dark.backgroundColors['surfacePrimary'].color,
+              backgroundColor: palettes.dark.backgroundColors['surfacePrimary'].color,
               padding: 24,
             }}
           >

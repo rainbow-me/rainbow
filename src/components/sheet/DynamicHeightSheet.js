@@ -1,25 +1,12 @@
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
-import React, {
-  forwardRef,
-  Fragment,
-  useContext,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useRef,
-} from 'react';
+import React, { forwardRef, Fragment, useContext, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
 import { Pressable, StyleSheet, TouchableWithoutFeedback } from 'react-native';
-import Animated, {
-  useAnimatedScrollHandler,
-  useSharedValue,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
 import { Centered } from '../layout';
-import SheetHandleFixedToTop, {
-  SheetHandleFixedToTopHeight,
-} from './SheetHandleFixedToTop';
+import SheetHandleFixedToTop, { SheetHandleFixedToTopHeight } from './SheetHandleFixedToTop';
 import { useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
@@ -59,23 +46,13 @@ const Content = styled.ScrollView.attrs(({ limitScrollViewContent }) => ({
   directionalLockEnabled: true,
   keyboardShouldPersistTaps: 'always',
   scrollEventThrottle: 16,
-}))(
-  ({
-    contentHeight,
-    deviceHeight,
-    backgroundColor,
-    removeTopPadding,
-    sheetHeightRatio = 0.67,
-  }) => ({
-    // Default to 2/3 of the screen
-    backgroundColor: backgroundColor,
-    ...(contentHeight
-      ? { height: deviceHeight * sheetHeightRatio + contentHeight }
-      : {}), // Set height to a ratio of the device height
-    paddingTop: removeTopPadding ? 0 : SheetHandleFixedToTopHeight,
-    width: '100%',
-  })
-);
+}))(({ contentHeight, deviceHeight, backgroundColor, removeTopPadding, sheetHeightRatio = 0.67 }) => ({
+  // Default to 2/3 of the screen
+  backgroundColor: backgroundColor,
+  ...(contentHeight ? { height: deviceHeight * sheetHeightRatio + contentHeight } : {}), // Set height to a ratio of the device height
+  paddingTop: removeTopPadding ? 0 : SheetHandleFixedToTopHeight,
+  width: '100%',
+}));
 
 const ContentWrapper = styled.View({
   ...position.sizeAsObject('100%'),
@@ -115,10 +92,7 @@ export default forwardRef(function SlackSheet(
   const { height: deviceHeight } = useDimensions();
   const { goBack } = useNavigation();
   const insets = useSafeAreaInsets();
-  const bottomInset = useMemo(
-    () => (insets.bottom || scrollEnabled ? 42 : 30),
-    [insets.bottom, scrollEnabled]
-  );
+  const bottomInset = useMemo(() => (insets.bottom || scrollEnabled ? 42 : 30), [insets.bottom, scrollEnabled]);
   const { colors } = useTheme();
   const contentContainerStyle = useMemo(
     () => ({
@@ -143,9 +117,7 @@ export default forwardRef(function SlackSheet(
   // In discover sheet we need to set it additionally
   useEffect(
     () => {
-      discoverSheet &&
-        ios &&
-        sheet.current.setNativeProps({ scrollIndicatorInsets });
+      discoverSheet && ios && sheet.current.setNativeProps({ scrollIndicatorInsets });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
@@ -167,9 +139,7 @@ export default forwardRef(function SlackSheet(
 
   return (
     <Fragment>
-      {IS_ANDROID ? (
-        <Pressable onPress={goBack} style={[StyleSheet.absoluteFillObject]} />
-      ) : null}
+      {IS_ANDROID ? <Pressable onPress={goBack} style={[StyleSheet.absoluteFillObject]} /> : null}
       <TouchableBackdrop onPress={goBack} />
 
       <Container
@@ -189,15 +159,11 @@ export default forwardRef(function SlackSheet(
             <AndroidBackground backgroundColor={bg} />
           </AndroidBackground>
         )}
-        {!hideHandle && (
-          <SheetHandleFixedToTop showBlur={showBlur || scrollEnabled} />
-        )}
+        {!hideHandle && <SheetHandleFixedToTop showBlur={showBlur || scrollEnabled} />}
         <ContentWrapper backgroundColor={bg}>
           {renderHeader?.(yPosition)}
           <Content
-            as={
-              isInsideBottomSheet ? BottomSheetScrollView : Animated.ScrollView
-            }
+            as={isInsideBottomSheet ? BottomSheetScrollView : Animated.ScrollView}
             backgroundColor={bg}
             contentContainerStyle={scrollEnabled && contentContainerStyle}
             contentHeight={contentHeight}

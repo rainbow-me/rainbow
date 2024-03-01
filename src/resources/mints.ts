@@ -1,8 +1,8 @@
 import { analyticsV2 } from '@/analytics';
 import { useCallback, useEffect, useMemo } from 'react';
 import { MINTS, useExperimentalFlag } from '@/config';
-import { IS_PROD, IS_TEST } from '@/env';
-import { arcClient, arcDevClient } from '@/graphql';
+import { IS_TEST } from '@/env';
+import { arcClient } from '@/graphql';
 import { GetMintableCollectionsQuery } from '@/graphql/__generated__/arc';
 import { createQueryKey } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
@@ -11,7 +11,6 @@ import { MMKV } from 'react-native-mmkv';
 import * as i18n from '@/languages';
 import { useRemoteConfig } from '@/model/remoteConfig';
 
-const graphqlClient = IS_PROD ? arcClient : arcDevClient;
 const mmkv = new MMKV();
 
 const MINTS_FILTER_MMKV_KEY = 'mintsFilter';
@@ -23,9 +22,7 @@ export enum MintsFilter {
 }
 
 const mintsFilterAtom = atom<MintsFilter>({
-  default:
-    (mmkv.getString(MINTS_FILTER_MMKV_KEY) as MintsFilter | undefined) ??
-    MintsFilter.All,
+  default: (mmkv.getString(MINTS_FILTER_MMKV_KEY) as MintsFilter | undefined) ?? MintsFilter.All,
   key: MINTS_FILTER_MMKV_KEY,
 });
 
@@ -70,8 +67,7 @@ export function useMintsFilter() {
  */
 export function useMints({ walletAddress }: { walletAddress: string }) {
   const { mints_enabled } = useRemoteConfig();
-  const mintsEnabled =
-    (useExperimentalFlag(MINTS) || mints_enabled) && !IS_TEST;
+  const mintsEnabled = (useExperimentalFlag(MINTS) || mints_enabled) && !IS_TEST;
   const { filter } = useMintsFilter();
   const queryKey = mintsQueryKey({
     address: walletAddress,
@@ -80,7 +76,7 @@ export function useMints({ walletAddress }: { walletAddress: string }) {
   const query = useQuery<GetMintableCollectionsQuery>(
     queryKey,
     async () =>
-      await graphqlClient.getMintableCollections({
+      await arcClient.getMintableCollections({
         walletAddress,
       }),
     {
@@ -91,30 +87,19 @@ export function useMints({ walletAddress }: { walletAddress: string }) {
     }
   );
 
-  const featuredMint = query.data?.getMintableCollections?.collections?.find(
-    c => c.imageURL
-  );
+  const featuredMint = query.data?.getMintableCollections?.collections?.find(c => c.imageURL);
 
   const freeMints = useMemo(
-    () =>
-      query.data?.getMintableCollections?.collections.filter(
-        collection => collection.mintStatus.price === '0'
-      ),
+    () => query.data?.getMintableCollections?.collections.filter(collection => collection.mintStatus.price === '0'),
     [query.data?.getMintableCollections?.collections]
   );
 
   const paidMints = useMemo(
-    () =>
-      query.data?.getMintableCollections?.collections.filter(
-        collection => collection.mintStatus.price !== '0'
-      ),
+    () => query.data?.getMintableCollections?.collections.filter(collection => collection.mintStatus.price !== '0'),
     [query.data?.getMintableCollections?.collections]
   );
 
-  const allMints = useMemo(
-    () => query.data?.getMintableCollections?.collections,
-    [query.data?.getMintableCollections?.collections]
-  );
+  const allMints = useMemo(() => query.data?.getMintableCollections?.collections, [query.data?.getMintableCollections?.collections]);
 
   let filteredMints;
   switch (filter) {

@@ -11,15 +11,10 @@ const docs: DocsType = {
   description: (
     <>
       <Docs.Text>
-        Arranges children <Docs.Strong>vertically</Docs.Strong> with equal
-        spacing between them, plus an optional <Docs.Code>separator</Docs.Code>{' '}
-        element. Items can be aligned with{' '}
-        <Docs.Code>alignHorizontal</Docs.Code>.
+        Arranges children <Docs.Strong>vertically</Docs.Strong> with equal spacing between them, plus an optional{' '}
+        <Docs.Code>separator</Docs.Code> element. Items can be aligned with <Docs.Code>alignHorizontal</Docs.Code>.
       </Docs.Text>
-      <Docs.Text>
-        If there is only a single child node, no space or separators will be
-        rendered.
-      </Docs.Text>
+      <Docs.Text>If there is only a single child node, no space or separators will be rendered.</Docs.Text>
     </>
   ),
   examples: [
@@ -28,10 +23,7 @@ const docs: DocsType = {
     {
       ...examples.nested,
       description: (
-        <Docs.Text>
-          Stacks can be nested within each other for layouts with differing
-          amounts of space between groups of content.
-        </Docs.Text>
+        <Docs.Text>Stacks can be nested within each other for layouts with differing amounts of space between groups of content.</Docs.Text>
       ),
     },
     examples.withText,

@@ -63,12 +63,7 @@ The library has been designed to provide as much flexibility as possible with th
 ```jsx
 import React from 'react';
 import { Dimensions, View } from 'react-native';
-import {
-  ChartDot,
-  ChartPath,
-  ChartPathProvider,
-  monotoneCubicInterpolation,
-} from 'react-native-animated-charts';
+import { ChartDot, ChartPath, ChartPathProvider, monotoneCubicInterpolation } from 'react-native-animated-charts';
 
 export const { width: SIZE } = Dimensions.get('window');
 

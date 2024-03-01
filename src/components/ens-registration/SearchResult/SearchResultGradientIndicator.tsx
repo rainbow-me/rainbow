@@ -13,13 +13,7 @@ type Props = {
   testID?: string;
 };
 
-const SearchResultGradientIndicator = ({
-  type,
-  isRegistered = false,
-  price,
-  expirationDate,
-  testID,
-}: Props) => {
+const SearchResultGradientIndicator = ({ type, isRegistered = false, price, expirationDate, testID }: Props) => {
   const { colors } = useTheme();
   const { isSmallPhone } = useDimensions();
   let text: string | undefined, gradient: string[];
@@ -57,19 +51,11 @@ const SearchResultGradientIndicator = ({
       start={{ x: 0, y: 0.6 }}
     >
       <Inset horizontal="15px (Deprecated)">
-        <AccentColorProvider
-          color={isRegistered ? colors.lightOrange : colors.green}
-        >
+        <AccentColorProvider color={isRegistered ? colors.lightOrange : colors.green}>
           <Text
-            color={
-              type === 'availability' ? 'accent' : 'secondary80 (Deprecated)'
-            }
+            color={type === 'availability' ? 'accent' : 'secondary80 (Deprecated)'}
             containsEmoji
-            size={
-              isSmallPhone
-                ? '18px / 27px (Deprecated)'
-                : '20px / 24px (Deprecated)'
-            }
+            size={isSmallPhone ? '18px / 27px (Deprecated)' : '20px / 24px (Deprecated)'}
             testID={testID}
             weight="heavy"
           >

@@ -34,51 +34,20 @@ const GasSpeedLabel = styled(Text).attrs({
   ...padding.object(0, 3),
 });
 
-const GasSpeedLabelPager = ({
-  label,
-  theme,
-  onPress,
-  colorForAsset,
-  dropdownEnabled,
-}) => {
+const GasSpeedLabelPager = ({ label, theme, onPress, colorForAsset, dropdownEnabled }) => {
   const { colors } = useTheme();
 
   return (
-    <SpeedButton
-      color={colorForAsset}
-      disabled={!dropdownEnabled}
-      onPress={onPress}
-    >
+    <SpeedButton color={colorForAsset} disabled={!dropdownEnabled} onPress={onPress}>
       <Row>
         <GasSpeedEmoji label={label} />
-        <GasSpeedLabel
-          color={
-            theme === 'dark'
-              ? colors.whiteLabel
-              : colors.alpha(colors.blueGreyDark, 0.8)
-          }
-        >
+        <GasSpeedLabel color={theme === 'dark' ? colors.whiteLabel : colors.alpha(colors.blueGreyDark, 0.8)}>
           {upperFirst(label)}
         </GasSpeedLabel>
-        {dropdownEnabled && (
-          <Symbol
-            color={
-              theme !== 'light'
-                ? colors.whiteLabel
-                : colors.alpha(colors.blueGreyDark, 0.8)
-            }
-          >
-            􀁰
-          </Symbol>
-        )}
+        {dropdownEnabled && <Symbol color={theme !== 'light' ? colors.whiteLabel : colors.alpha(colors.blueGreyDark, 0.8)}>􀁰</Symbol>}
       </Row>
     </SpeedButton>
   );
 };
 
-export default magicMemo(GasSpeedLabelPager, [
-  'label',
-  'theme',
-  'onPress',
-  'colorForAsset',
-]);
+export default magicMemo(GasSpeedLabelPager, ['label', 'theme', 'onPress', 'colorForAsset']);

@@ -20,9 +20,7 @@ export class MMKV implements NativeMMKV {
 
     // `this.storage` is just a shorthand to the shared global storage, scoped to this instance
     // eslint-disable-next-line no-multi-assign
-    this.storage = GLOBAL_SHARED_STORAGE[this.id] =
-      GLOBAL_SHARED_STORAGE[this.id] ||
-      new Map<string, string | boolean | number>();
+    this.storage = GLOBAL_SHARED_STORAGE[this.id] = GLOBAL_SHARED_STORAGE[this.id] || new Map<string, string | boolean | number>();
   }
 
   clearAll() {

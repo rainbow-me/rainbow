@@ -9,10 +9,7 @@ type props = {
   network?: Network;
 };
 
-export const hasNonZeroAssetBalance: ActionFn<props> = async ({
-  assetAddress,
-  network,
-}) => {
+export const hasNonZeroAssetBalance: ActionFn<props> = async ({ assetAddress, network }) => {
   const { accountAddress, nativeCurrency } = store.getState().settings;
 
   const assets = await fetchUserAssets({
@@ -27,10 +24,7 @@ export const hasNonZeroAssetBalance: ActionFn<props> = async ({
       return asset.uniqueId.toLowerCase() === assetAddress.toLowerCase();
     }
 
-    return (
-      asset.uniqueId.toLowerCase() === assetAddress.toLowerCase() &&
-      asset.network === network
-    );
+    return asset.uniqueId.toLowerCase() === assetAddress.toLowerCase() && asset.network === network;
   });
   if (!desiredAsset) return false;
 

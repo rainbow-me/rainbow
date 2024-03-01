@@ -11,10 +11,7 @@ export default function ProfileModalContainer({ onPressBackdrop, ...props }) {
   const { params } = useRoute();
 
   return (
-    <KeyboardFixedOpenLayout
-      additionalPadding={params?.additionalPadding && IS_IOS ? 80 : 0}
-      position="absolute"
-    >
+    <KeyboardFixedOpenLayout additionalPadding={params?.additionalPadding && IS_IOS ? 80 : 0} position="absolute">
       <TouchableBackdrop onPress={onPressBackdrop} />
       <FloatingPanels maxWidth={deviceWidth - 110}>
         <AssetPanel {...props} />

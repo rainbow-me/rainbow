@@ -4,9 +4,7 @@ import { useRefreshAccountData } from '@/hooks';
 import { useTheme } from '@/theme';
 import { navbarHeight } from '@/components/navbar/Navbar';
 
-export default function RefreshControlWrapped(
-  props: Partial<RefreshControlProps>
-) {
+export default function RefreshControlWrapped(props: Partial<RefreshControlProps>) {
   const { refresh, isRefreshing } = useRefreshAccountData();
   const { colors } = useTheme();
 

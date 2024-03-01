@@ -1,13 +1,8 @@
-import {
-  Dimension,
-  Layout,
-  LayoutManager,
-  LayoutProvider,
-} from 'recyclerlistview';
+import { Dimension, Layout, LayoutManager, LayoutProvider } from 'recyclerlistview';
 import ViewDimensions from './ViewDimensions';
 import { BaseCellType, CellType } from './ViewTypes';
 import { deviceUtils } from '@/utils';
-import { TrimmedCard } from '@/components/cards/remote-cards';
+import { TrimmedCard } from '@/resources/cards/cardCollectionQuery';
 
 const getStyleOverridesForIndex = (indices: number[]) => (index: number) => {
   if (indices.includes(index)) {
@@ -23,29 +18,15 @@ class BetterLayoutProvider extends LayoutProvider {
   private readonly indicesToOverride: number[];
   constructor(
     getLayoutTypeForIndex: (index: number) => string | number,
-    setLayoutForType: (
-      type: string | number,
-      dim: Dimension,
-      index: number
-    ) => void,
+    setLayoutForType: (type: string | number, dim: Dimension, index: number) => void,
     indicesToOverride: number[]
   ) {
     super(getLayoutTypeForIndex, setLayoutForType);
     this.indicesToOverride = indicesToOverride;
   }
-  public newLayoutManager(
-    renderWindowSize: Dimension,
-    isHorizontal?: boolean,
-    cachedLayouts?: Layout[]
-  ): LayoutManager {
-    const oldLayoutManager = super.newLayoutManager(
-      renderWindowSize,
-      isHorizontal,
-      cachedLayouts
-    );
-    oldLayoutManager.getStyleOverridesForIndex = getStyleOverridesForIndex(
-      this.indicesToOverride
-    );
+  public newLayoutManager(renderWindowSize: Dimension, isHorizontal?: boolean, cachedLayouts?: Layout[]): LayoutManager {
+    const oldLayoutManager = super.newLayoutManager(renderWindowSize, isHorizontal, cachedLayouts);
+    oldLayoutManager.getStyleOverridesForIndex = getStyleOverridesForIndex(this.indicesToOverride);
     return oldLayoutManager;
   }
 }
@@ -80,10 +61,7 @@ const getLayoutProvider = (
         dim.height = ViewDimensions[type].height;
         dim.width = ViewDimensions[type].width || dim.width;
 
-        if (
-          (type === CellType.REMOTE_CARD_CAROUSEL && !cards.length) ||
-          (type === CellType.REMOTE_CARD_CAROUSEL && isReadOnlyWallet)
-        ) {
+        if ((type === CellType.REMOTE_CARD_CAROUSEL && !cards.length) || (type === CellType.REMOTE_CARD_CAROUSEL && isReadOnlyWallet)) {
           dim.height = 0;
         }
       }

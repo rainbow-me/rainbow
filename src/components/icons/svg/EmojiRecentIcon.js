@@ -5,14 +5,7 @@ import Svg, { Defs, Path, RadialGradient, Stop } from 'react-native-svg';
 const EmojiRecentIcon = ({ color, ...props }) => (
   <Svg height="30" viewBox="0 0 30 30" width="30" {...props}>
     <Defs>
-      <RadialGradient
-        cx="100%"
-        cy="49.9814195%"
-        fx="100%"
-        fy="49.9814195%"
-        id="rainbow"
-        r="108.068849%"
-      >
+      <RadialGradient cx="100%" cy="49.9814195%" fx="100%" fy="49.9814195%" id="rainbow" r="108.068849%">
         <Stop offset="0%" stopColor="#FFB114" />
         <Stop offset="63.5417%" stopColor="#FF54BB" />
         <Stop offset="100%" stopColor="#00F0FF" />

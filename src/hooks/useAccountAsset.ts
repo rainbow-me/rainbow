@@ -3,10 +3,7 @@ import { parseAssetNative } from '@/parsers';
 import { useUserAsset } from '@/resources/assets/useUserAsset';
 
 // this is meant to be used for assets contained in the current wallet
-export default function useAccountAsset(
-  uniqueId: string,
-  nativeCurrency: string | undefined = undefined
-) {
+export default function useAccountAsset(uniqueId: string, nativeCurrency: string | undefined = undefined) {
   const { data: accountAsset } = useUserAsset(uniqueId);
 
   // this is temporary for FastBalanceCoinRow to make a tiny bit faster

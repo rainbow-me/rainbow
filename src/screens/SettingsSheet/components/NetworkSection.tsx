@@ -7,19 +7,12 @@ import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
 import { analytics } from '@/analytics';
 import { Separator, Stack } from '@/design-system';
-import {
-  useAccountSettings,
-  useInitializeAccountData,
-  useLoadAccountData,
-  useResetAccountState,
-} from '@/hooks';
+import { useAccountSettings, useInitializeAccountData, useLoadAccountData, useResetAccountState } from '@/hooks';
 import { settingsUpdateNetwork } from '@/redux/settings';
 import { Network } from '@/helpers';
 import { RainbowNetworks } from '@/networks';
 
-const networks = values(RainbowNetworks).filter(
-  ({ networkType }) => networkType !== 'layer2'
-);
+const networks = values(RainbowNetworks).filter(({ networkType }) => networkType !== 'layer2');
 
 interface NetworkSectionProps {
   inDevSection?: boolean;
@@ -51,9 +44,7 @@ const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
         disabled={!testnetsEnabled && networkType === 'testnet'}
         key={value}
         onPress={() => onNetworkChange(value)}
-        rightComponent={
-          value === network && <MenuItem.StatusIcon status="selected" />
-        }
+        rightComponent={value === network && <MenuItem.StatusIcon status="selected" />}
         size={52}
         testID={`${value}-network`}
         titleComponent={
@@ -68,9 +59,7 @@ const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
   }, [inDevSection, network, onNetworkChange, testnetsEnabled]);
 
   return inDevSection ? (
-    <Stack separator={<Separator color="divider60 (Deprecated)" />}>
-      {renderNetworkList()}
-    </Stack>
+    <Stack separator={<Separator color="divider60 (Deprecated)" />}>{renderNetworkList()}</Stack>
   ) : (
     <MenuContainer>
       <Menu>{renderNetworkList()}</Menu>

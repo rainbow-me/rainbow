@@ -4,14 +4,7 @@ import { BigNumber } from 'bignumber.js';
 import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import Routes from '@/navigation/routesNames';
-import React, {
-  Fragment,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator } from 'react-native';
 import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
@@ -19,33 +12,17 @@ import Divider from '../components/Divider';
 import Spinner from '../components/Spinner';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, Column, Row } from '../components/layout';
-import {
-  SheetActionButton,
-  SheetActionButtonRow,
-  SheetHandleFixedToTop,
-  SheetKeyboardAnimation,
-  SlackSheet,
-} from '../components/sheet';
+import { SheetActionButton, SheetActionButtonRow, SheetHandleFixedToTop, SheetKeyboardAnimation, SlackSheet } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import {
-  removeRegistrationByName,
-  saveCommitRegistrationParameters,
-} from '@/redux/ensRegistration';
+import { removeRegistrationByName, saveCommitRegistrationParameters } from '@/redux/ensRegistration';
 import { GasFeeTypes, TransactionStatusTypes } from '@/entities';
-import {
-  getFlashbotsProvider,
-  getProviderForNetwork,
-  isL2Network,
-  toHex,
-} from '@/handlers/web3';
-import { Network } from '@/helpers';
+import { getFlashbotsProvider, getProviderForNetwork, isL2Network, toHex } from '@/handlers/web3';
 import { greaterThan } from '@/helpers/utilities';
 import { useAccountSettings, useDimensions, useGas, useWallets } from '@/hooks';
 import { sendTransaction } from '@/model/wallet';
 import { useNavigation } from '@/navigation';
-import { getTitle, parseGasParamsForTransaction } from '@/parsers';
-import { dataUpdateTransaction } from '@/redux/data';
+import { parseGasParamsForTransaction } from '@/parsers';
 import { updateGasFeeForSpeed } from '@/redux/gas';
 import { ethUnits } from '@/references';
 import styled from '@/styled-thing';
@@ -54,6 +31,7 @@ import { gasUtils, safeAreaInsetValues } from '@/utils';
 import logger from '@/utils/logger';
 import { getNetworkObj } from '@/networks';
 import * as i18n from '@/languages';
+import { updateTransaction, usePendingTransactionsStore } from '@/state/pendingTransactions';
 
 const { CUSTOM, URGENT } = gasUtils;
 
@@ -85,12 +63,10 @@ const ExtendedSheetBackground = styled.View({
   width: '100%',
 });
 
-const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
-  ({ theme: { colors } }) => ({
-    color: colors.alpha(colors.blueGreyDark, 0.3),
-    size: 'large',
-  })
-)({});
+const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(({ theme: { colors } }) => ({
+  color: colors.alpha(colors.blueGreyDark, 0.3),
+  size: 'large',
+}))({});
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const AnimatedSheet = Animated.createAnimatedComponent(CenteredSheet);
@@ -117,9 +93,7 @@ const text = {
 const calcGasParamRetryValue = prevWeiValue => {
   const prevWeiValueBN = new BigNumber(prevWeiValue);
 
-  const newWeiValueBN = prevWeiValueBN
-    .times(new BigNumber('110'))
-    .dividedBy(new BigNumber('100'));
+  const newWeiValueBN = prevWeiValueBN.times(new BigNumber('110')).dividedBy(new BigNumber('100'));
 
   const newWeiValue = newWeiValueBN.toFixed(0);
   return Number(newWeiValue);
@@ -131,14 +105,7 @@ export default function SpeedUpAndCancelSheet() {
   const { isHardwareWallet } = useWallets();
   const dispatch = useDispatch();
   const { height: deviceHeight } = useDimensions();
-  const {
-    gasFeeParamsBySpeed,
-    updateGasFeeOption,
-    selectedGasFee,
-    startPollingGasFees,
-    stopPollingGasFees,
-    updateTxFee,
-  } = useGas();
+  const { gasFeeParamsBySpeed, updateGasFeeOption, selectedGasFee, startPollingGasFees, stopPollingGasFees, updateTxFee } = useGas();
   const calculatingGasLimit = useRef(false);
   const speedUrgentSelected = useRef(false);
   const {
@@ -147,15 +114,9 @@ export default function SpeedUpAndCancelSheet() {
 
   const [ready, setReady] = useState(false);
   const [txType, setTxType] = useState();
-  const [minGasPrice, setMinGasPrice] = useState(
-    calcGasParamRetryValue(tx.gasPrice)
-  );
-  const [minMaxPriorityFeePerGas, setMinMaxPriorityFeePerGas] = useState(
-    calcGasParamRetryValue(tx.maxPriorityFeePerGas)
-  );
-  const [minMaxFeePerGas, setMinMaxFeePerGas] = useState(
-    calcGasParamRetryValue(tx.maxFeePerGas)
-  );
+  const [minGasPrice, setMinGasPrice] = useState(calcGasParamRetryValue(tx.gasPrice));
+  const [minMaxPriorityFeePerGas, setMinMaxPriorityFeePerGas] = useState(calcGasParamRetryValue(tx.maxPriorityFeePerGas));
+  const [minMaxFeePerGas, setMinMaxFeePerGas] = useState(calcGasParamRetryValue(tx.maxFeePerGas));
   const fetchedTx = useRef(false);
   const [currentNetwork, setCurrentNetwork] = useState(null);
   const [currentProvider, setCurrentProvider] = useState(null);
@@ -164,7 +125,7 @@ export default function SpeedUpAndCancelSheet() {
   const [nonce, setNonce] = useState(null);
   const [to, setTo] = useState(tx.to);
   const [value, setValue] = useState(null);
-  const isL2 = isL2Network(tx.network);
+  const isL2 = isL2Network(tx?.network || null);
 
   const getNewTransactionGasParams = useCallback(() => {
     const gasParams = parseGasParamsForTransaction(selectedGasFee);
@@ -172,32 +133,19 @@ export default function SpeedUpAndCancelSheet() {
       const rawMaxPriorityFeePerGas = gasParams.maxPriorityFeePerGas;
       const rawMaxFeePerGas = gasParams.maxFeePerGas;
 
-      const maxPriorityFeePerGas = greaterThan(
-        rawMaxPriorityFeePerGas,
-        minMaxPriorityFeePerGas
-      )
+      const maxPriorityFeePerGas = greaterThan(rawMaxPriorityFeePerGas, minMaxPriorityFeePerGas)
         ? toHex(rawMaxPriorityFeePerGas)
         : toHex(minMaxPriorityFeePerGas);
 
-      const maxFeePerGas = greaterThan(rawMaxFeePerGas, minMaxFeePerGas)
-        ? toHex(rawMaxFeePerGas)
-        : toHex(minMaxFeePerGas);
+      const maxFeePerGas = greaterThan(rawMaxFeePerGas, minMaxFeePerGas) ? toHex(rawMaxFeePerGas) : toHex(minMaxFeePerGas);
       return { maxFeePerGas, maxPriorityFeePerGas };
     } else {
       const rawGasPrice = gasParams.gasPrice;
       return {
-        gasPrice: greaterThan(rawGasPrice, minGasPrice)
-          ? toHex(rawGasPrice)
-          : toHex(minGasPrice),
+        gasPrice: greaterThan(rawGasPrice, minGasPrice) ? toHex(rawGasPrice) : toHex(minGasPrice),
       };
     }
-  }, [
-    txType,
-    selectedGasFee,
-    minMaxPriorityFeePerGas,
-    minMaxFeePerGas,
-    minGasPrice,
-  ]);
+  }, [txType, selectedGasFee, minMaxPriorityFeePerGas, minMaxFeePerGas, minGasPrice]);
 
   const cancelCommitTransactionHash = useCallback(() => {
     dispatch(removeRegistrationByName(tx?.ensCommitRegistrationName));
@@ -211,10 +159,7 @@ export default function SpeedUpAndCancelSheet() {
         to: accountAddress,
         ...newGasParams,
       };
-      const originalHash = tx.hash;
-      const {
-        result: { hash },
-      } = await sendTransaction({
+      const res = await sendTransaction({
         provider: currentProvider,
         transaction: cancelTxPayload,
       });
@@ -224,15 +169,10 @@ export default function SpeedUpAndCancelSheet() {
       }
       const updatedTx = { ...tx };
       // Update the hash on the copy of the original tx
-      updatedTx.hash = hash;
-      if (originalHash.split('-').length > 1) {
-        updatedTx.hash += `-${originalHash.split('-')[1]}`;
-      }
-      updatedTx.status = TransactionStatusTypes.cancelling;
-      updatedTx.title = getTitle(updatedTx);
-      dispatch(
-        dataUpdateTransaction(originalHash, updatedTx, true, currentProvider)
-      );
+      updatedTx.hash = res.result?.hash;
+      updatedTx.status = 'pending';
+      updatedTx.type = 'cancel';
+      updateTransaction({ address: accountAddress, transaction: updatedTx, network: currentNetwork });
     } catch (e) {
       logger.log('Error submitting cancel tx', e);
     } finally {
@@ -245,8 +185,8 @@ export default function SpeedUpAndCancelSheet() {
   }, [
     accountAddress,
     cancelCommitTransactionHash,
+    currentNetwork,
     currentProvider,
-    dispatch,
     getNewTransactionGasParams,
     goBack,
     isHardwareWallet,
@@ -287,27 +227,22 @@ export default function SpeedUpAndCancelSheet() {
         value,
         ...newGasParams,
       };
-      const originalHash = tx.hash;
-      const {
-        result: { hash },
-      } = await sendTransaction({
+
+      const res = await sendTransaction({
         provider: currentProvider,
         transaction: fasterTxPayload,
       });
-      if (tx?.ensCommitRegistrationName) {
-        saveCommitTransactionHash(hash);
+
+      if (tx?.ensCommitRegistrationName && res.result?.hash) {
+        saveCommitTransactionHash(res?.result?.hash);
       }
       const updatedTx = { ...tx };
       // Update the hash on the copy of the original tx
-      updatedTx.hash = hash;
-      if (originalHash.split('-').length > 1) {
-        updatedTx.hash += `-${originalHash.split('-')[1]}`;
-      }
-      updatedTx.status = TransactionStatusTypes.speeding_up;
-      updatedTx.title = getTitle(updatedTx);
-      dispatch(
-        dataUpdateTransaction(originalHash, updatedTx, true, currentProvider)
-      );
+      updatedTx.hash = res?.result?.hash;
+      updatedTx.status = 'pending';
+      updatedTx.type = 'speed_up';
+
+      updateTransaction({ address: accountAddress, transaction: updatedTx, network: currentNetwork });
     } catch (e) {
       logger.log('Error submitting speed up tx', e);
     } finally {
@@ -318,9 +253,10 @@ export default function SpeedUpAndCancelSheet() {
       goBack();
     }
   }, [
+    accountAddress,
+    currentNetwork,
     currentProvider,
     data,
-    dispatch,
     gasLimit,
     getNewTransactionGasParams,
     goBack,
@@ -342,7 +278,7 @@ export default function SpeedUpAndCancelSheet() {
 
   // Set the network
   useEffect(() => {
-    setCurrentNetwork(tx.network || network);
+    setCurrentNetwork(tx?.network || network);
   }, [network, tx.network]);
 
   // Set the provider
@@ -351,7 +287,7 @@ export default function SpeedUpAndCancelSheet() {
       startPollingGasFees(currentNetwork, tx.flashbots);
       const updateProvider = async () => {
         let provider;
-        if (getNetworkObj(tx.network).features.flashbots && tx.flashbots) {
+        if (getNetworkObj(tx?.network).features.flashbots && tx.flashbots) {
           logger.debug('using flashbots provider');
           provider = await getFlashbotsProvider();
         } else {
@@ -367,42 +303,26 @@ export default function SpeedUpAndCancelSheet() {
         stopPollingGasFees();
       };
     }
-  }, [
-    currentNetwork,
-    startPollingGasFees,
-    stopPollingGasFees,
-    tx.flashbots,
-    tx.network,
-  ]);
+  }, [currentNetwork, startPollingGasFees, stopPollingGasFees, tx.flashbots, tx?.network]);
 
   // Update gas limit
   useEffect(() => {
-    if (
-      !speedUrgentSelected.current &&
-      !isEmpty(gasFeeParamsBySpeed) &&
-      gasLimit
-    ) {
+    if (!speedUrgentSelected.current && !isEmpty(gasFeeParamsBySpeed) && gasLimit) {
       updateTxFee(gasLimit);
       // Always default to urgent
       updateGasFeeOption(gasUtils.URGENT);
       speedUrgentSelected.current = true;
     }
-  }, [
-    currentNetwork,
-    gasLimit,
-    gasFeeParamsBySpeed,
-    updateGasFeeOption,
-    updateTxFee,
-  ]);
+  }, [currentNetwork, gasLimit, gasFeeParamsBySpeed, updateGasFeeOption, updateTxFee]);
 
   useEffect(() => {
     const init = async () => {
       if (currentNetwork && currentProvider && !fetchedTx.current) {
         try {
           fetchedTx.current = true;
-          const hexGasLimit = toHex(tx.gasLimit.toString());
-          const hexValue = toHex(tx.value.toString());
-          const hexData = tx.data;
+          const hexGasLimit = toHex(tx?.gasLimit?.toString() || '0x');
+          const hexValue = toHex(tx?.value?.toString() || '0x');
+          const hexData = tx?.data;
 
           setReady(true);
           setNonce(tx.nonce);
@@ -412,12 +332,8 @@ export default function SpeedUpAndCancelSheet() {
           setGasLimit(hexGasLimit);
           if (!isL2) {
             setTxType(GasFeeTypes.eip1559);
-            const hexMaxPriorityFeePerGas = toHex(
-              tx.maxPriorityFeePerGas.toString()
-            );
-            setMinMaxPriorityFeePerGas(
-              calcGasParamRetryValue(hexMaxPriorityFeePerGas)
-            );
+            const hexMaxPriorityFeePerGas = toHex(tx.maxPriorityFeePerGas.toString());
+            setMinMaxPriorityFeePerGas(calcGasParamRetryValue(hexMaxPriorityFeePerGas));
             const hexMaxFeePerGas = toHex(tx.maxFeePerGas.toString());
             setMinMaxFeePerGas(calcGasParamRetryValue(hexMaxFeePerGas));
           } else {
@@ -427,28 +343,16 @@ export default function SpeedUpAndCancelSheet() {
           }
         } catch (e) {
           logger.log('something went wrong while fetching tx info ', e);
-          logger.sentry(
-            'Error speeding up or canceling transaction: [error]',
-            e
-          );
-          logger.sentry(
-            'Error speeding up or canceling transaction: [transaction]',
-            tx
-          );
-          const speedUpOrCancelError = new Error(
-            'Error speeding up or canceling transaction'
-          );
+          logger.sentry('Error speeding up or canceling transaction: [error]', e);
+          logger.sentry('Error speeding up or canceling transaction: [transaction]', tx);
+          const speedUpOrCancelError = new Error('Error speeding up or canceling transaction');
           captureException(speedUpOrCancelError);
           if (type === SPEED_UP) {
-            Alert.alert(
-              lang.t('wallet.speed_up.unable_to_speed_up'),
-              lang.t('wallet.speed_up.problem_while_fetching_transaction_data'),
-              [
-                {
-                  onPress: () => goBack(),
-                },
-              ]
-            );
+            Alert.alert(lang.t('wallet.speed_up.unable_to_speed_up'), lang.t('wallet.speed_up.problem_while_fetching_transaction_data'), [
+              {
+                onPress: () => goBack(),
+              },
+            ]);
           }
           // We don't care about this for cancellations
         }
@@ -456,44 +360,19 @@ export default function SpeedUpAndCancelSheet() {
     };
 
     init();
-  }, [
-    currentNetwork,
-    currentProvider,
-    goBack,
-    isL2,
-    network,
-    tx,
-    tx.gasLimit,
-    tx.hash,
-    type,
-    updateGasFeeOption,
-  ]);
+  }, [currentNetwork, currentProvider, goBack, isL2, network, tx, tx.gasLimit, tx.hash, type, updateGasFeeOption]);
 
   useEffect(() => {
     if (!isEmpty(gasFeeParamsBySpeed) && !calculatingGasLimit.current) {
       calculatingGasLimit.current = true;
-      if (
-        greaterThan(
-          minMaxPriorityFeePerGas,
-          gasFeeParamsBySpeed?.fast?.maxPriorityFeePerGas?.amount
-        )
-      ) {
+      if (greaterThan(minMaxPriorityFeePerGas, gasFeeParamsBySpeed?.fast?.maxPriorityFeePerGas?.amount)) {
         dispatch(updateGasFeeForSpeed(gasUtils.FAST, minMaxPriorityFeePerGas));
       }
-      const gasLimitForNewTx =
-        type === CANCEL_TX ? ethUnits.basic_tx : tx.gasLimit;
+      const gasLimitForNewTx = type === CANCEL_TX ? ethUnits.basic_tx : tx.gasLimit;
       updateTxFee(gasLimitForNewTx);
       calculatingGasLimit.current = false;
     }
-  }, [
-    dispatch,
-    gasFeeParamsBySpeed,
-    minMaxPriorityFeePerGas,
-    tx,
-    tx.gasLimit,
-    type,
-    updateTxFee,
-  ]);
+  }, [dispatch, gasFeeParamsBySpeed, minMaxPriorityFeePerGas, tx, tx.gasLimit, type, updateTxFee]);
 
   const offset = useSharedValue(0);
 
@@ -501,13 +380,9 @@ export default function SpeedUpAndCancelSheet() {
     offset.value = withSpring(0, springConfig);
   }, [offset]);
 
-  const sheetHeight = ios
-    ? (type === CANCEL_TX ? 491 : 442) + safeAreaInsetValues.bottom
-    : 850 + safeAreaInsetValues.bottom;
+  const sheetHeight = ios ? (type === CANCEL_TX ? 491 : 442) + safeAreaInsetValues.bottom : 850 + safeAreaInsetValues.bottom;
 
-  const marginTop = android
-    ? deviceHeight - sheetHeight + (type === CANCEL_TX ? 290 : 340)
-    : null;
+  const marginTop = android ? deviceHeight - sheetHeight + (type === CANCEL_TX ? 290 : 340) : null;
 
   const { colors, isDarkMode } = useTheme();
   const speeds = useMemo(() => {
@@ -519,19 +394,9 @@ export default function SpeedUpAndCancelSheet() {
   }, [isL2]);
 
   return (
-    <SheetKeyboardAnimation
-      as={AnimatedContainer}
-      isKeyboardVisible={false}
-      translateY={offset}
-    >
+    <SheetKeyboardAnimation as={AnimatedContainer} isKeyboardVisible={false} translateY={offset}>
       <ExtendedSheetBackground />
-      <SlackSheet
-        backgroundColor={colors.transparent}
-        borderRadius={0}
-        height={sheetHeight}
-        hideHandle
-        scrollEnabled={false}
-      >
+      <SlackSheet backgroundColor={colors.transparent} borderRadius={0} height={sheetHeight} hideHandle scrollEnabled={false}>
         <Column>
           <AnimatedSheet
             backgroundColor={colors.white}
@@ -543,63 +408,30 @@ export default function SpeedUpAndCancelSheet() {
             <SheetHandleFixedToTop showBlur={false} />
             <Centered direction="column">
               {!ready ? (
-                <Column
-                  align="center"
-                  backgroundColor={colors.white}
-                  height={300}
-                  justify="center"
-                  marginBottom={12}
-                  marginTop={30}
-                >
+                <Column align="center" backgroundColor={colors.white} height={300} justify="center" marginBottom={12} marginTop={30}>
                   <LoadingSpinner />
                 </Column>
               ) : (
                 <Fragment>
                   <Column marginBottom={12} marginTop={30}>
-                    <Emoji
-                      name={
-                        type === CANCEL_TX ? 'skull_and_crossbones' : 'rocket'
-                      }
-                      size="biggest"
-                    />
+                    <Emoji name={type === CANCEL_TX ? 'skull_and_crossbones' : 'rocket'} size="biggest" />
                   </Column>
                   <Column marginBottom={12}>
-                    <Text
-                      align="center"
-                      color={colors.dark}
-                      size="big"
-                      weight="heavy"
-                    >
+                    <Text align="center" color={colors.dark} size="big" weight="heavy">
                       {title[type]}
                     </Text>
                   </Column>
-                  <Column
-                    marginBottom={30}
-                    maxWidth={375}
-                    paddingHorizontal={42}
-                  >
-                    <Text
-                      align="center"
-                      color={colors.alpha(colors.blueGreyDark, 0.5)}
-                      lineHeight="looser"
-                      size="large"
-                      weight="regular"
-                    >
+                  <Column marginBottom={30} maxWidth={375} paddingHorizontal={42}>
+                    <Text align="center" color={colors.alpha(colors.blueGreyDark, 0.5)} lineHeight="looser" size="large" weight="regular">
                       {text[type]}
                     </Text>
                   </Column>
                   <Centered marginBottom={24}>
-                    <Divider
-                      color={colors.rowDividerExtraLight}
-                      inset={[0, 143.5]}
-                    />
+                    <Divider color={colors.rowDividerExtraLight} inset={[0, 143.5]} />
                   </Centered>
                   {type === CANCEL_TX && (
                     <Column marginBottom={android && 15}>
-                      <SheetActionButtonRow
-                        ignorePaddingBottom
-                        ignorePaddingTop={ios}
-                      >
+                      <SheetActionButtonRow ignorePaddingBottom ignorePaddingTop={ios}>
                         <SheetActionButton
                           color={colors.red}
                           label={`􀎽 ${lang.t('button.attempt_cancellation')}`}
@@ -621,10 +453,7 @@ export default function SpeedUpAndCancelSheet() {
                     </Column>
                   )}
                   {type === SPEED_UP && (
-                    <SheetActionButtonRow
-                      ignorePaddingBottom={ios}
-                      ignorePaddingTop={ios}
-                    >
+                    <SheetActionButtonRow ignorePaddingBottom={ios} ignorePaddingTop={ios}>
                       <SheetActionButton
                         color={colors.white}
                         label={lang.t('button.cancel')}

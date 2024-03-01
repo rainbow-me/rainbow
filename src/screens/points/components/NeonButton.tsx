@@ -7,29 +7,13 @@ import { useDimensions } from '@/hooks';
 import { useTheme } from '@/theme';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 
-export const NeonButton = ({
-  color,
-  label,
-  onPress,
-  width,
-}: {
-  color?: string;
-  label: string;
-  onPress?: () => void;
-  width?: number;
-}) => {
+export const NeonButton = ({ color, label, onPress, width }: { color?: string; label: string; onPress?: () => void; width?: number }) => {
   const { width: deviceWidth } = useDimensions();
   const { colors } = useTheme();
   const green = useForegroundColor('green');
 
   return (
-    <ButtonPressAnimation
-      hapticType="impactHeavy"
-      onPress={onPress}
-      scaleTo={0.94}
-      style={styles.neonButtonWrapper}
-      transformOrigin="top"
-    >
+    <ButtonPressAnimation hapticType="impactHeavy" onPress={onPress} scaleTo={0.94} style={styles.neonButtonWrapper} transformOrigin="top">
       <Animated.View
         style={[
           styles.neonButton,
@@ -63,12 +47,7 @@ export const NeonButton = ({
             },
           ]}
         >
-          <Text
-            align="center"
-            color={color ? { custom: color } : 'green'}
-            size="20pt"
-            weight="heavy"
-          >
+          <Text align="center" color={color ? { custom: color } : 'green'} size="20pt" weight="heavy">
             {label}
           </Text>
         </RNText>

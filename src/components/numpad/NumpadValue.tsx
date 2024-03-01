@@ -1,10 +1,7 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
-import Animated, {
-  useAnimatedStyle,
-  SharedValue,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 import { Text } from '../text';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
@@ -17,18 +14,16 @@ interface WidthParams {
   width: number;
 }
 
-const GradientBackground = styled(RadialGradient).attrs(
-  ({ width }: WidthParams) => {
-    const radius = width - 48;
+const GradientBackground = styled(RadialGradient).attrs(({ width }: WidthParams) => {
+  const radius = width - 48;
 
-    return {
-      center: [radius, 53.5],
-      colors: ['#FFB114', '#FF54BB', '#00F0FF', '#34F3FF'],
-      radius,
-      stops: [0.2049, 0.6354, 0.8318, 0.9541],
-    };
-  }
-)({
+  return {
+    center: [radius, 53.5],
+    colors: ['#FFB114', '#FF54BB', '#00F0FF', '#34F3FF'],
+    radius,
+    stops: [0.2049, 0.6354, 0.8318, 0.9541],
+  };
+})({
   height: ({ width }: WidthParams) => Math.round(width * HeightMultiple),
   width: '100%',
 });
@@ -44,16 +39,14 @@ const StyledMaskedView = styled(MaskedView)({
 
 type ValueTextParams = WidthParams & { theme: ThemeContextProps };
 
-const ValueText = styled(Text).attrs(
-  ({ width, theme: { colors } }: ValueTextParams) => ({
-    align: 'center',
-    color: colors.white,
-    letterSpacing: 'roundedTightest',
-    lineHeight: Math.round(width * HeightMultiple),
-    size: Math.round(width * FontSizeMultiple),
-    weight: 'bold',
-  })
-)({});
+const ValueText = styled(Text).attrs(({ width, theme: { colors } }: ValueTextParams) => ({
+  align: 'center',
+  color: colors.white,
+  letterSpacing: 'roundedTightest',
+  lineHeight: Math.round(width * HeightMultiple),
+  size: Math.round(width * FontSizeMultiple),
+  weight: 'bold',
+}))({});
 
 interface Props {
   scale: SharedValue<number>;

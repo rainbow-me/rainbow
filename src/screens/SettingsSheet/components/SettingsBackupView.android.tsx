@@ -21,11 +21,7 @@ export default function SettingsBackupView() {
                 </Text>
               </Box>
             </Inline>
-            {(params as any)?.type === 'AlreadyBackedUpView' ? (
-              <AlreadyBackedUpView />
-            ) : (
-              <NeedsBackupView />
-            )}
+            {(params as any)?.type === 'AlreadyBackedUpView' ? <AlreadyBackedUpView /> : <NeedsBackupView />}
           </Inset>
         </SimpleSheet>
       )}

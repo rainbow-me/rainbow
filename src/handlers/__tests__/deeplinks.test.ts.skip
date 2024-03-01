@@ -23,10 +23,6 @@ jest.mock('@/redux/walletconnect');
 jest.mock('@/redux/data', () => ({
   scheduleActionOnAssetReceived: jest.fn(),
 }));
-jest.mock('@/redux/explorer', () => ({
-  emitAssetRequest: jest.fn(),
-  emitChartsRequest: jest.fn(),
-}));
 jest.mock('@/utils/profileUtils', () => ({
   fetchReverseRecordWithRetry: jest.fn(),
 }));

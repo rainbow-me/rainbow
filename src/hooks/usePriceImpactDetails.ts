@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import useAccountSettings from './useAccountSettings';
-import { AssetType, SwappableAsset } from '@/entities';
+import { SwappableAsset } from '@/entities';
 import { Network } from '@/helpers';
 
 import { useTheme } from '@/theme';
@@ -36,13 +36,9 @@ export default function usePriceImpactDetails(
   const { colors } = useTheme();
 
   const sellNetwork = (tradeDetails as CrosschainQuote)?.fromChainId
-    ? ethereumUtils.getNetworkFromChainId(
-        (tradeDetails as CrosschainQuote)?.fromChainId
-      )
+    ? ethereumUtils.getNetworkFromChainId((tradeDetails as CrosschainQuote)?.fromChainId)
     : currentNetwork;
-  const buyNetwork = ethereumUtils.getNetworkFromType(
-    outputCurrency?.type || AssetType.token
-  );
+  const buyNetwork = outputCurrency?.network || currentNetwork;
   const sellNativeAsset = useNativeAssetForNetwork(sellNetwork);
   const buyNativeAsset = useNativeAssetForNetwork(buyNetwork);
 
@@ -127,13 +123,8 @@ export default function usePriceImpactDetails(
   const { impactDisplay, priceImpact, percentDisplay } = useMemo(() => {
     const nativeAmountImpact = subtract(inputNativeAmount, outputNativeAmount);
     const priceImpact = divide(nativeAmountImpact, inputNativeAmount);
-    const percentDisplay = convertAmountToPercentageDisplayWithThreshold(
-      priceImpact
-    );
-    const impactDisplay = convertAmountToNativeDisplay(
-      nativeAmountImpact,
-      nativeCurrency
-    );
+    const percentDisplay = convertAmountToPercentageDisplayWithThreshold(priceImpact);
+    const impactDisplay = convertAmountToNativeDisplay(nativeAmountImpact, nativeCurrency);
     return { impactDisplay, priceImpact, percentDisplay };
   }, [outputNativeAmount, nativeCurrency, inputNativeAmount]);
 

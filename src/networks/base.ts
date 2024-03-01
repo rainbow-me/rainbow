@@ -7,12 +7,7 @@ import { getBaseGasPrices } from '@/redux/gas';
 import { getRemoteConfig } from '@/model/remoteConfig';
 
 export const getBaseNetworkObject = (): NetworkProperties => {
-  const {
-    base_enabled,
-    base_tx_enabled,
-    op_chains_enabled,
-    op_chains_tx_enabled,
-  } = getRemoteConfig();
+  const { base_enabled, base_tx_enabled, op_chains_enabled, op_chains_tx_enabled } = getRemoteConfig();
   return {
     // wagmi chain data
     ...base,
@@ -46,12 +41,7 @@ export const getBaseNetworkObject = (): NetworkProperties => {
     },
 
     gas: {
-      speeds: [
-        gasUtils.NORMAL,
-        gasUtils.FAST,
-        gasUtils.URGENT,
-        gasUtils.CUSTOM,
-      ],
+      speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT, gasUtils.CUSTOM],
       // ?
       gasType: 'eip1559',
       roundGasDisplay: true,

@@ -1,4 +1,4 @@
-import lang from 'i18n-js';
+import * as lang from '@/languages';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { SectionList, StyleSheet, View } from 'react-native';
 import sectionListGetItemLayout from 'react-native-section-list-get-item-layout';
@@ -25,14 +25,12 @@ const ActivityListHeaderHeight = 42;
 const TRANSACTION_COIN_ROW_VERTICAL_PADDING = 7;
 
 const getItemLayout = sectionListGetItemLayout({
-  getItemHeight: () =>
-    CoinRowHeight + TRANSACTION_COIN_ROW_VERTICAL_PADDING * 2,
+  getItemHeight: () => CoinRowHeight + TRANSACTION_COIN_ROW_VERTICAL_PADDING * 2,
   getSectionHeaderHeight: () => ActivityListHeaderHeight,
 });
 
 const keyExtractor = ({ hash, timestamp, transactionDisplayDetails }) =>
-  hash ||
-  (timestamp ? timestamp.ms : transactionDisplayDetails?.timestampInMs || 0);
+  hash || (timestamp ? timestamp.ms : transactionDisplayDetails?.timestampInMs || 0);
 
 const renderSectionHeader = ({ section, colors }) => {
   return (
@@ -70,13 +68,7 @@ function ListFooterComponent({ label, onPress }) {
       {isLoading ? (
         <LoadingSpinner />
       ) : (
-        <Text
-          align="center"
-          color={colors.alpha(colors.blueGreyDark, 0.3)}
-          lineHeight="loose"
-          size="smedium"
-          weight="bold"
-        >
+        <Text align="center" color={colors.alpha(colors.blueGreyDark, 0.3)} lineHeight="loose" size="smedium" weight="bold">
           {label}
         </Text>
       )}
@@ -103,17 +95,14 @@ const ActivityList = ({
     let currentPendingTransactionsCount = 0;
     const pendingTxSection = sections[requests?.length ? 1 : 0];
 
-    if (pendingTxSection && pendingTxSection.title === 'Pending') {
+    if (pendingTxSection && pendingTxSection.title === lang.t(lang.l.transactions.pending_title)) {
       currentPendingTransactionsCount = pendingTxSection.data.length;
     }
     return currentPendingTransactionsCount;
   }, [sections, requests]);
 
   const { colors } = useTheme();
-  const renderSectionHeaderWithTheme = useCallback(
-    ({ section }) => renderSectionHeader({ colors, section }),
-    [colors]
-  );
+  const renderSectionHeaderWithTheme = useCallback(({ section }) => renderSectionHeader({ colors, section }), [colors]);
 
   const handleListRef = ref => {
     if (!ref) return;
@@ -126,14 +115,7 @@ const ActivityList = ({
     } else {
       return (
         <SectionList
-          ListFooterComponent={() =>
-            remainingItemsLabel && (
-              <ListFooterComponent
-                label={remainingItemsLabel}
-                onPress={nextPage}
-              />
-            )
-          }
+          ListFooterComponent={() => remainingItemsLabel && <ListFooterComponent label={remainingItemsLabel} onPress={nextPage} />}
           ref={handleListRef}
           ListHeaderComponent={header}
           alwaysBounceVertical={false}
@@ -157,10 +139,7 @@ const ActivityList = ({
     }
   } else {
     return (
-      <ActivityListEmptyState
-        emoji="👻"
-        label={lang.t('activity_list.empty_state.testnet_label')}
-      >
+      <ActivityListEmptyState emoji="👻" label={lang.t(lang.l.empty_state.testnet_label)}>
         {header}
       </ActivityListEmptyState>
     );

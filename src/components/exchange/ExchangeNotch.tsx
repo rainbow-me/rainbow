@@ -14,16 +14,13 @@ import { useTheme } from '@/theme';
 const notchHeight = 48;
 const notchSideWidth = 78;
 
-const NotchMiddle = styled(FastImage).attrs(
-  ({ isDarkMode }: { isDarkMode: boolean }) => ({
-    resizeMode: FastImage.resizeMode.stretch,
-    source: isDarkMode ? ExchangeNotchMiddleDark : ExchangeNotchMiddle,
-  })
-)({
+const NotchMiddle = styled(FastImage).attrs(({ isDarkMode }: { isDarkMode: boolean }) => ({
+  resizeMode: FastImage.resizeMode.stretch,
+  source: isDarkMode ? ExchangeNotchMiddleDark : ExchangeNotchMiddle,
+}))({
   height: notchHeight,
   left: 0,
-  width: ({ deviceWidth }: { deviceWidth: number }) =>
-    deviceWidth - notchSideWidth * 2,
+  width: ({ deviceWidth }: { deviceWidth: number }) => deviceWidth - notchSideWidth * 2,
 });
 
 const NotchSide = styled(FastImage)({
@@ -49,13 +46,9 @@ export default function ExchangeNotch({ testID }: ExchangeNotchProps) {
       testID={`${testID}-notch`}
       top={{ custom: 132 }}
     >
-      <NotchSide
-        source={isDarkMode ? ExchangeNotchLeftDark : ExchangeNotchLeft}
-      />
+      <NotchSide source={isDarkMode ? ExchangeNotchLeftDark : ExchangeNotchLeft} />
       <NotchMiddle deviceWidth={deviceWidth} isDarkMode={isDarkMode} />
-      <NotchSide
-        source={isDarkMode ? ExchangeNotchRightDark : ExchangeNotchRight}
-      />
+      <NotchSide source={isDarkMode ? ExchangeNotchRightDark : ExchangeNotchRight} />
     </Box>
   );
 }

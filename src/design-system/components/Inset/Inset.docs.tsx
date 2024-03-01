@@ -24,9 +24,7 @@ const docs: DocsType = {
     },
     {
       ...examples.horizontalSpace,
-      description: (
-        <Docs.Text>Space can also be customized per axis.</Docs.Text>
-      ),
+      description: <Docs.Text>Space can also be customized per axis.</Docs.Text>,
       showFrame: true,
     },
     {

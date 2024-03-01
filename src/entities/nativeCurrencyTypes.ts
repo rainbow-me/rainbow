@@ -10,7 +10,4 @@ type NativeCurrencyKeysMap = { [Key in NativeCurrencyKey]: Key };
 /**
  * An enum of native currencies such as "USD" or "ETH".
  */
-export const NativeCurrencyKeys = mapValues(
-  supportedNativeCurrencies,
-  (_value, key) => key
-) as NativeCurrencyKeysMap;
+export const NativeCurrencyKeys = mapValues(supportedNativeCurrencies, (_value, key) => key) as NativeCurrencyKeysMap;

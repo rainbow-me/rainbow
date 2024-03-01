@@ -15,16 +15,13 @@ const StyledWebView = styled(WebView)({
   marginTop: android ? 30 : 50,
 });
 
-const formatColor = color =>
-  color && typeof color === 'string' ? color.replace('#', '') : null;
+const formatColor = color => (color && typeof color === 'string' ? color.replace('#', '') : null);
 
 const buildPlayerUrl = options => {
   const qsArray = [];
   for (const p in options)
     if (options.hasOwnProperty(p)) {
-      qsArray.push(
-        `${encodeURIComponent(p)}=${encodeURIComponent(options[p])}`
-      );
+      qsArray.push(`${encodeURIComponent(p)}=${encodeURIComponent(options[p])}`);
     }
   const qs = qsArray.join('&');
   const base_url = `https://rainbow-me.github.io/rainbow-playa/index.html`;
@@ -103,13 +100,7 @@ export default function AudioPlayer({ fontColor, imageColor, uri }) {
         />
       )}
       {!ready && (
-        <Centered
-          flex={1}
-          style={[
-            StyleSheet.absoluteFill,
-            { backgroundColor: colors.transparent },
-          ]}
-        >
+        <Centered flex={1} style={[StyleSheet.absoluteFill, { backgroundColor: colors.transparent }]}>
           <Spinner color={imageColor} size={30} />
         </Centered>
       )}

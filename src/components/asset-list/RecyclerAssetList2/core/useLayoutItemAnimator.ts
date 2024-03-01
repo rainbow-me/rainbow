@@ -2,10 +2,7 @@ import { MutableRefObject, useMemo } from 'react';
 import { LayoutAnimation, LayoutAnimationConfig } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BaseItemAnimator } from 'recyclerlistview';
-import {
-  FabWrapperBottomPosition,
-  FloatingActionButtonSize,
-} from '../../../fab';
+import { FabWrapperBottomPosition, FloatingActionButtonSize } from '../../../fab';
 import { ListFooter } from '../../../list';
 import { AssetListHeaderHeight } from '../../AssetListHeader';
 import { RecyclerListViewRef } from './ViewTypes';
@@ -32,11 +29,7 @@ class LayoutItemAnimator extends BaseItemAnimator {
   paddingBottom: number;
   topMargin: number;
   ref: RecyclerListViewRef | undefined;
-  constructor(
-    paddingBottom: number,
-    topMargin: MutableRefObject<number>,
-    ref: MutableRefObject<RecyclerListViewRef | undefined>
-  ) {
+  constructor(paddingBottom: number, topMargin: MutableRefObject<number>, ref: MutableRefObject<RecyclerListViewRef | undefined>) {
     super();
     this.paddingBottom = paddingBottom;
     this.topMargin = topMargin.current;
@@ -52,20 +45,13 @@ class LayoutItemAnimator extends BaseItemAnimator {
     const hasScrollOffset = !!this.ref?.getCurrentScrollOffset;
     const hasContentDimension = !!this.ref?.getContentDimension;
 
-    const globalDeviceDimensions =
-      deviceUtils.dimensions.height -
-      this.topMargin -
-      AssetListHeaderHeight -
-      10;
+    const globalDeviceDimensions = deviceUtils.dimensions.height - this.topMargin - AssetListHeaderHeight - 10;
     const shouldConfigureNext =
       hasScrollOffset &&
       hasContentDimension &&
       this.ref &&
       this.ref.getCurrentScrollOffset() > 0 &&
-      this.ref.getContentDimension().height <
-        this.ref.getCurrentScrollOffset() +
-          globalDeviceDimensions +
-          this.paddingBottom;
+      this.ref.getContentDimension().height < this.ref.getCurrentScrollOffset() + globalDeviceDimensions + this.paddingBottom;
 
     if (shouldConfigureNext) {
       LayoutAnimation.configureNext(easingAnimation);
@@ -75,8 +61,7 @@ class LayoutItemAnimator extends BaseItemAnimator {
   };
 }
 
-const FabSizeWithPadding =
-  FloatingActionButtonSize + FabWrapperBottomPosition * 2;
+const FabSizeWithPadding = FloatingActionButtonSize + FabWrapperBottomPosition * 2;
 
 export default function useLayoutItemAnimator(
   ref: MutableRefObject<RecyclerListViewRef | undefined>,
@@ -89,8 +74,5 @@ export default function useLayoutItemAnimator(
     // @ts-ignore
     ListFooter.height -
     FloatingActionButtonSize / 2;
-  return useMemo(
-    () => new LayoutItemAnimator(paddingBottom, topMarginRef, ref),
-    [paddingBottom, ref, topMarginRef]
-  );
+  return useMemo(() => new LayoutItemAnimator(paddingBottom, topMarginRef, ref), [paddingBottom, ref, topMarginRef]);
 }

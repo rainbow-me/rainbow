@@ -44,34 +44,19 @@ export const InfoCard = ({
   }
 
   return (
-    <Box
-      padding="20px"
-      background="surfaceSecondaryElevated"
-      shadow="12px"
-      height={{ custom: 98 }}
-      borderRadius={18}
-    >
+    <Box padding="20px" background="surfaceSecondaryElevated" shadow="12px" height={{ custom: 98 }} borderRadius={18}>
       <Stack space="12px">
         <Text color="labelSecondary" weight="bold" size="15pt">
           {title}
         </Text>
         <Box height={{ custom: 15 }} justifyContent="flex-end">
-          <Text
-            color={mainTextColor === 'primary' ? 'label' : 'labelTertiary'}
-            weight="heavy"
-            size={mainTextFontSize}
-          >
+          <Text color={mainTextColor === 'primary' ? 'label' : 'labelTertiary'} weight="heavy" size={mainTextFontSize}>
             {mainText}
           </Text>
         </Box>
         <Inline space="4px" wrap={false}>
           {icon && (
-            <Text
-              align="center"
-              weight="heavy"
-              size="12pt"
-              color={{ custom: accentColor }}
-            >
+            <Text align="center" weight="heavy" size="12pt" color={{ custom: accentColor }}>
               {icon}
             </Text>
           )}

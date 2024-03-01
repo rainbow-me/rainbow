@@ -24,7 +24,6 @@ import ShowcaseScreen from '../screens/ShowcaseSheet';
 import { SignTransactionSheet } from '../screens/SignTransactionSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import NotificationsPromoSheet from '../screens/NotificationsPromoSheet';
-import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
 import { WalletDiagnosticsSheet } from '../screens/Diagnostics';
@@ -68,14 +67,9 @@ import {
   portalSheetConfig,
   walletDiagnosticsSheetConfig,
   positionSheetConfig,
+  appIconUnlockSheetConfig,
 } from './config';
-import {
-  addCashSheet,
-  emojiPreset,
-  emojiPresetWallet,
-  overlayExpandedPreset,
-  sheetPreset,
-} from './effects';
+import { addCashSheet, emojiPreset, emojiPresetWallet, overlayExpandedPreset, sheetPreset } from './effects';
 import { InitialRouteContext } from './initialRoute';
 import { nativeStackConfig } from './nativeStackConfig';
 import { onNavigationStateChange } from './onNavigationStateChange';
@@ -100,6 +94,7 @@ import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
 import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoSheet';
 import { ConsoleSheet } from '@/screens/points/ConsoleSheet';
 import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileContext';
+import AppIconUnlockSheet from '@/screens/AppIconUnlockSheet';
 
 type StackNavigatorParams = {
   [Routes.SEND_SHEET]: unknown;
@@ -111,69 +106,31 @@ const NativeStack = createNativeStackNavigator();
 
 function SendFlowNavigator() {
   return (
-    <Stack.Navigator
-      {...stackNavigationConfig}
-      initialRouteName={Routes.SEND_SHEET}
-    >
-      <Stack.Screen
-        component={ModalScreen}
-        name={Routes.MODAL_SCREEN}
-        options={overlayExpandedPreset}
-      />
-      <Stack.Screen
-        component={SendSheet}
-        name={Routes.SEND_SHEET}
-        options={sheetPreset}
-      />
+    <Stack.Navigator {...stackNavigationConfig} initialRouteName={Routes.SEND_SHEET}>
+      <Stack.Screen component={ModalScreen} name={Routes.MODAL_SCREEN} options={overlayExpandedPreset} />
+      <Stack.Screen component={SendSheet} name={Routes.SEND_SHEET} options={sheetPreset} />
     </Stack.Navigator>
   );
 }
 
 function MainNavigator() {
-  const initialRoute = (useContext(InitialRouteContext) as unknown) as string;
+  const initialRoute = useContext(InitialRouteContext) as unknown as string;
 
   return (
-    <Stack.Navigator
-      initialRouteName={initialRoute}
-      {...stackNavigationConfig}
-      screenOptions={defaultScreenStackOptions}
-    >
+    <Stack.Navigator initialRouteName={initialRoute} {...stackNavigationConfig} screenOptions={defaultScreenStackOptions}>
       <Stack.Screen component={SwipeNavigator} name={Routes.SWIPE_LAYOUT} />
-      <Stack.Screen
-        component={WelcomeScreen}
-        name={Routes.WELCOME_SCREEN}
-        options={{ animationEnabled: false, gestureEnabled: false }}
-      />
-      <Stack.Screen
-        component={AvatarBuilder}
-        name={Routes.AVATAR_BUILDER}
-        options={emojiPreset}
-      />
-      <Stack.Screen
-        component={AvatarBuilder}
-        name={Routes.AVATAR_BUILDER_WALLET}
-        options={emojiPresetWallet}
-      />
-      <Stack.Screen
-        component={AddCashSheet}
-        name={Routes.ADD_CASH_SHEET}
-        options={addCashSheet}
-      />
+      <Stack.Screen component={WelcomeScreen} name={Routes.WELCOME_SCREEN} options={{ animationEnabled: false, gestureEnabled: false }} />
+      <Stack.Screen component={AvatarBuilder} name={Routes.AVATAR_BUILDER} options={emojiPreset} />
+      <Stack.Screen component={AvatarBuilder} name={Routes.AVATAR_BUILDER_WALLET} options={emojiPresetWallet} />
+      <Stack.Screen component={AddCashSheet} name={Routes.ADD_CASH_SHEET} options={addCashSheet} />
     </Stack.Navigator>
   );
 }
 
 function MainStack() {
   return (
-    <Stack.Navigator
-      initialRouteName={Routes.MAIN_NAVIGATOR_WRAPPER}
-      {...stackNavigationConfig}
-      screenOptions={defaultScreenStackOptions}
-    >
-      <Stack.Screen
-        component={MainNavigator}
-        name={Routes.MAIN_NAVIGATOR_WRAPPER}
-      />
+    <Stack.Navigator initialRouteName={Routes.MAIN_NAVIGATOR_WRAPPER} {...stackNavigationConfig} screenOptions={defaultScreenStackOptions}>
+      <Stack.Screen component={MainNavigator} name={Routes.MAIN_NAVIGATOR_WRAPPER} />
     </Stack.Navigator>
   );
 }
@@ -185,11 +142,7 @@ function NativeStackNavigator() {
   return (
     <NativeStack.Navigator {...nativeStackConfig}>
       <NativeStack.Screen component={MainStack} name={Routes.STACK} />
-      <NativeStack.Screen
-        component={LearnWebViewScreen}
-        name={Routes.LEARN_WEB_VIEW_SCREEN}
-        {...learnWebViewScreenConfig}
-      />
+      <NativeStack.Screen component={LearnWebViewScreen} name={Routes.LEARN_WEB_VIEW_SCREEN} {...learnWebViewScreenConfig} />
       <NativeStack.Screen
         component={ReceiveModal}
         name={Routes.RECEIVE_MODAL}
@@ -199,36 +152,16 @@ function NativeStackNavigator() {
           customStack: true,
         }}
       />
-      <NativeStack.Screen
-        component={SettingsSheet}
-        name={Routes.SETTINGS_SHEET}
-        {...settingsSheetConfig}
-      />
+      <NativeStack.Screen component={SettingsSheet} name={Routes.SETTINGS_SHEET} {...settingsSheetConfig} />
       <NativeStack.Screen
         component={ExchangeModalNavigator}
         name={Routes.EXCHANGE_MODAL}
         options={{ ...nativeStackDefaultConfig, relevantScrollViewDepth: 2 }}
       />
-      <NativeStack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.EXPANDED_ASSET_SHEET}
-        {...expandedAssetSheetConfigWithLimit}
-      />
-      <NativeStack.Screen
-        component={PoapSheet}
-        name={Routes.POAP_SHEET}
-        {...expandedAssetSheetConfigWithLimit}
-      />
-      <NativeStack.Screen
-        component={MintSheet}
-        name={Routes.MINT_SHEET}
-        {...expandedAssetSheetConfigWithLimit}
-      />
-      <NativeStack.Screen
-        component={PositionSheet}
-        name={Routes.POSITION_SHEET}
-        {...positionSheetConfig}
-      />
+      <NativeStack.Screen component={ExpandedAssetSheet} name={Routes.EXPANDED_ASSET_SHEET} {...expandedAssetSheetConfigWithLimit} />
+      <NativeStack.Screen component={PoapSheet} name={Routes.POAP_SHEET} {...expandedAssetSheetConfigWithLimit} />
+      <NativeStack.Screen component={MintSheet} name={Routes.MINT_SHEET} {...expandedAssetSheetConfigWithLimit} />
+      <NativeStack.Screen component={PositionSheet} name={Routes.POSITION_SHEET} {...positionSheetConfig} />
       <NativeStack.Screen
         component={ShowcaseScreen}
         name={Routes.SHOWCASE_SHEET}
@@ -253,36 +186,16 @@ function NativeStackNavigator() {
           topOffset: 0,
         }}
       />
-      <Stack.Screen
-        component={SendConfirmationSheet}
-        name={Routes.SEND_CONFIRMATION_SHEET}
-        {...sendConfirmationSheetConfig}
-      />
-      <NativeStack.Screen
-        component={ExplainSheet}
-        name={Routes.EXPLAIN_SHEET}
-        {...explainSheetConfig}
-      />
-      <NativeStack.Screen
-        component={RemotePromoSheet}
-        name={Routes.REMOTE_PROMO_SHEET}
-        {...promoSheetConfig}
-      />
-      <NativeStack.Screen
-        component={NotificationsPromoSheet}
-        name={Routes.NOTIFICATIONS_PROMO_SHEET}
-        {...promoSheetConfig}
-      />
+      <Stack.Screen component={SendConfirmationSheet} name={Routes.SEND_CONFIRMATION_SHEET} {...sendConfirmationSheetConfig} />
+      <NativeStack.Screen component={ExplainSheet} name={Routes.EXPLAIN_SHEET} {...explainSheetConfig} />
+      <NativeStack.Screen component={RemotePromoSheet} name={Routes.REMOTE_PROMO_SHEET} {...promoSheetConfig} />
+      <NativeStack.Screen component={NotificationsPromoSheet} name={Routes.NOTIFICATIONS_PROMO_SHEET} {...promoSheetConfig} />
       <NativeStack.Screen
         component={ExternalLinkWarningSheet}
         name={Routes.EXTERNAL_LINK_WARNING_SHEET}
         {...externalLinkWarningSheetConfig}
       />
-      <NativeStack.Screen
-        component={WalletDiagnosticsSheet}
-        name={Routes.DIAGNOSTICS_SHEET}
-        {...walletDiagnosticsSheetConfig}
-      />
+      <NativeStack.Screen component={WalletDiagnosticsSheet} name={Routes.DIAGNOSTICS_SHEET} {...walletDiagnosticsSheetConfig} />
       <NativeStack.Screen
         component={ChangeWalletSheet}
         name={Routes.CHANGE_WALLET_SHEET}
@@ -305,11 +218,7 @@ function NativeStackNavigator() {
           transitionDuration: 0.25,
         }}
       />
-      <NativeStack.Screen
-        component={BackupSheet}
-        name={Routes.BACKUP_SHEET}
-        {...backupSheetConfig}
-      />
+      <NativeStack.Screen component={BackupSheet} name={Routes.BACKUP_SHEET} {...backupSheetConfig} />
       <NativeStack.Screen
         component={ModalScreen}
         name={Routes.MODAL_SCREEN}
@@ -320,36 +229,12 @@ function NativeStackNavigator() {
           topOffset: 0,
         }}
       />
-      <NativeStack.Screen
-        component={RestoreSheet}
-        name={Routes.RESTORE_SHEET}
-        {...restoreSheetConfig}
-      />
-      <NativeStack.Screen
-        component={SignTransactionSheet}
-        name={Routes.CONFIRM_REQUEST}
-        {...signTransactionSheetConfig}
-      />
-      <NativeStack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.CUSTOM_GAS_SHEET}
-        {...customGasSheetConfig}
-      />
-      <NativeStack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.SWAP_DETAILS_SHEET}
-        {...swapDetailsSheetConfig}
-      />
-      <NativeStack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.SWAP_SETTINGS_SHEET}
-        {...customGasSheetConfig}
-      />
-      <NativeStack.Screen
-        component={QRScannerScreen}
-        name={Routes.QR_SCANNER_SCREEN}
-        {...qrScannerConfig}
-      />
+      <NativeStack.Screen component={RestoreSheet} name={Routes.RESTORE_SHEET} {...restoreSheetConfig} />
+      <NativeStack.Screen component={SignTransactionSheet} name={Routes.CONFIRM_REQUEST} {...signTransactionSheetConfig} />
+      <NativeStack.Screen component={ExpandedAssetSheet} name={Routes.CUSTOM_GAS_SHEET} {...customGasSheetConfig} />
+      <NativeStack.Screen component={ExpandedAssetSheet} name={Routes.SWAP_DETAILS_SHEET} {...swapDetailsSheetConfig} />
+      <NativeStack.Screen component={ExpandedAssetSheet} name={Routes.SWAP_SETTINGS_SHEET} {...customGasSheetConfig} />
+      <NativeStack.Screen component={QRScannerScreen} name={Routes.QR_SCANNER_SCREEN} {...qrScannerConfig} />
       <NativeStack.Screen
         component={PairHardwareWalletNavigator}
         name={Routes.PAIR_HARDWARE_WALLET_NAVIGATOR}
@@ -360,23 +245,11 @@ function NativeStackNavigator() {
         name={Routes.HARDWARE_WALLET_TX_NAVIGATOR}
         {...hardwareWalletTxNavigatorConfig}
       />
-      <NativeStack.Screen
-        component={AddWalletNavigator}
-        name={Routes.ADD_WALLET_NAVIGATOR}
-        {...addWalletNavigatorConfig}
-      />
-      <NativeStack.Screen
-        component={Portal}
-        name={Routes.PORTAL}
-        {...portalSheetConfig}
-      />
+      <NativeStack.Screen component={AddWalletNavigator} name={Routes.ADD_WALLET_NAVIGATOR} {...addWalletNavigatorConfig} />
+      <NativeStack.Screen component={Portal} name={Routes.PORTAL} {...portalSheetConfig} />
       {profilesEnabled && (
         <>
-          <NativeStack.Screen
-            component={RegisterENSNavigator}
-            name={Routes.REGISTER_ENS_NAVIGATOR}
-            {...registerENSNavigatorConfig}
-          />
+          <NativeStack.Screen component={RegisterENSNavigator} name={Routes.REGISTER_ENS_NAVIGATOR} {...registerENSNavigatorConfig} />
           <NativeStack.Screen
             component={ENSConfirmRegisterSheet}
             name={Routes.ENS_CONFIRM_REGISTER_SHEET}
@@ -387,16 +260,8 @@ function NativeStackNavigator() {
             name={Routes.ENS_ADDITIONAL_RECORDS_SHEET}
             {...ensAdditionalRecordsSheetConfig}
           />
-          <NativeStack.Screen
-            component={ProfileSheet}
-            name={Routes.PROFILE_SHEET}
-            {...profileConfig}
-          />
-          <NativeStack.Screen
-            component={ProfileSheet}
-            name={Routes.PROFILE_PREVIEW_SHEET}
-            {...profilePreviewConfig}
-          />
+          <NativeStack.Screen component={ProfileSheet} name={Routes.PROFILE_SHEET} {...profileConfig} />
+          <NativeStack.Screen component={ProfileSheet} name={Routes.PROFILE_PREVIEW_SHEET} {...profilePreviewConfig} />
           <NativeStack.Screen
             component={SelectENSSheet}
             name={Routes.SELECT_ENS_SHEET}
@@ -410,50 +275,16 @@ function NativeStackNavigator() {
           />
         </>
       )}
-      <NativeStack.Screen
-        component={SendFlowNavigator}
-        name={Routes.SEND_SHEET_NAVIGATOR}
-      />
-      <NativeStack.Screen
-        component={WalletConnectApprovalSheet}
-        name={Routes.WALLET_CONNECT_APPROVAL_SHEET}
-        {...basicSheetConfig}
-      />
-      <NativeStack.Screen
-        component={WalletConnectRedirectSheet}
-        name={Routes.WALLET_CONNECT_REDIRECT_SHEET}
-        {...basicSheetConfig}
-      />
-      <NativeStack.Screen
-        name={Routes.TRANSACTION_DETAILS}
-        component={TransactionDetails}
-        {...transactionDetailsConfig}
-      />
-      <NativeStack.Screen
-        name={Routes.OP_REWARDS_SHEET}
-        component={RewardsSheet}
-        {...opRewardsSheetConfig}
-      />
-      <NativeStack.Screen
-        name={Routes.NFT_OFFERS_SHEET}
-        component={NFTOffersSheet}
-        {...nftOffersSheetConfig}
-      />
-      <NativeStack.Screen
-        name={Routes.NFT_SINGLE_OFFER_SHEET}
-        component={NFTSingleOfferSheet}
-        {...nftSingleOfferSheetConfig}
-      />
-      <NativeStack.Screen
-        name={Routes.MINTS_SHEET}
-        component={MintsSheet}
-        {...mintsSheetConfig}
-      />
-      <NativeStack.Screen
-        component={ConsoleSheet}
-        name={Routes.CONSOLE_SHEET}
-        {...consoleSheetConfig}
-      />
+      <NativeStack.Screen component={SendFlowNavigator} name={Routes.SEND_SHEET_NAVIGATOR} />
+      <NativeStack.Screen component={WalletConnectApprovalSheet} name={Routes.WALLET_CONNECT_APPROVAL_SHEET} {...basicSheetConfig} />
+      <NativeStack.Screen component={WalletConnectRedirectSheet} name={Routes.WALLET_CONNECT_REDIRECT_SHEET} {...basicSheetConfig} />
+      <NativeStack.Screen name={Routes.TRANSACTION_DETAILS} component={TransactionDetails} {...transactionDetailsConfig} />
+      <NativeStack.Screen name={Routes.OP_REWARDS_SHEET} component={RewardsSheet} {...opRewardsSheetConfig} />
+      <NativeStack.Screen name={Routes.NFT_OFFERS_SHEET} component={NFTOffersSheet} {...nftOffersSheetConfig} />
+      <NativeStack.Screen name={Routes.NFT_SINGLE_OFFER_SHEET} component={NFTSingleOfferSheet} {...nftSingleOfferSheetConfig} />
+      <NativeStack.Screen name={Routes.MINTS_SHEET} component={MintsSheet} {...mintsSheetConfig} />
+      <NativeStack.Screen component={ConsoleSheet} name={Routes.CONSOLE_SHEET} {...consoleSheetConfig} />
+      <NativeStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} {...appIconUnlockSheetConfig} />
     </NativeStack.Navigator>
   );
 }
