@@ -237,10 +237,7 @@ export function delay(ms) {
 
 export function getProvider() {
   if (!getProvider._instance) {
-    getProvider._instance = new JsonRpcProvider(
-      device.getPlatform() === 'ios' ? process.env.HARDHAT_URL_IOS : process.env.HARDHAT_URL_ANDROID,
-      'any'
-    );
+    getProvider._instance = new JsonRpcProvider('http://127.0.0.1:8545', 'any');
   }
   return getProvider._instance;
 }
