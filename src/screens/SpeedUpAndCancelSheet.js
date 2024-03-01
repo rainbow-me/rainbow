@@ -172,7 +172,6 @@ export default function SpeedUpAndCancelSheet() {
       updatedTx.hash = res.result?.hash;
       updatedTx.status = 'pending';
       updatedTx.type = 'cancel';
-      console.log({ before: tx.nonce, after: updatedTx.nonce, hash: updatedTx.hash });
       updateTransaction({ address: accountAddress, transaction: updatedTx, network: currentNetwork });
     } catch (e) {
       logger.log('Error submitting cancel tx', e);

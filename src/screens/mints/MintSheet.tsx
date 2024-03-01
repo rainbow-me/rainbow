@@ -19,7 +19,7 @@ import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
-import { CoinIcon, abbreviations, ethereumUtils, watchingAlert } from '@/utils';
+import { abbreviations, ethereumUtils, watchingAlert } from '@/utils';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { maybeSignUri } from '@/handlers/imgix';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -53,6 +53,7 @@ import { QuantityButton } from './components/QuantityButton';
 import { estimateGas, getProviderForNetwork } from '@/handlers/web3';
 import { getRainbowFeeAddress } from '@/resources/reservoir/utils';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { getNextNonce } from '@/state/nonces';
@@ -694,14 +695,7 @@ const MintSheet = () => {
                     <Inset vertical={{ custom: -4 }}>
                       <Inline space="4px" alignVertical="center" alignHorizontal="right">
                         {currentNetwork === Network.mainnet ? (
-                          <CoinIcon
-                            address={ETH_ADDRESS}
-                            size={16}
-                            symbol={ETH_SYMBOL}
-                            forceFallback={undefined}
-                            shadowColor={undefined}
-                            style={undefined}
-                          />
+                          <EthCoinIcon size={16} />
                         ) : (
                           <ChainBadge network={currentNetwork} position="relative" size="small" forceDark={true} />
                         )}

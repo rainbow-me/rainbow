@@ -20,7 +20,6 @@ import { ImgixImage } from '@/components/images';
 import { getFormattedTimeQuantity, convertAmountToNativeDisplay, handleSignificantDecimals } from '@/helpers/utilities';
 import * as i18n from '@/languages';
 import { NftOffer } from '@/graphql/__generated__/arc';
-import { CoinIcon } from '@/components/coin-icon';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useNavigation } from '@/navigation';
 import { IS_ANDROID } from '@/env';
@@ -48,6 +47,8 @@ import { CardSize } from '@/components/unique-token/CardSize';
 import { queryClient } from '@/react-query';
 import { nftOffersQueryKey } from '@/resources/reservoir/nftOffersQuery';
 import { getRainbowFeeAddress } from '@/resources/reservoir/utils';
+import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { getNextNonce } from '@/state/nonces';
@@ -83,9 +84,9 @@ function Row({ symbol, label, value }: { symbol: string; label: string; value: R
 export function NFTSingleOfferSheet() {
   const { params } = useRoute();
   const { navigate, setParams } = useNavigation();
-  const { accountAddress } = useAccountSettings();
+  const { accountAddress, nativeCurrency } = useAccountSettings();
   const { isReadOnlyWallet } = useWallets();
-  const { isDarkMode } = useTheme();
+  const theme = useTheme();
   const { updateTxFee, startPollingGasFees, stopPollingGasFees, isSufficientGas, isValidGas } = useGas();
   const dispatch = useDispatch();
   const {
@@ -93,6 +94,12 @@ export function NFTSingleOfferSheet() {
   } = useLegacyNFTs({ address: accountAddress });
 
   const { offer } = params as { offer: NftOffer };
+
+  const { data: externalAsset } = useExternalToken({
+    address: offer.paymentToken.address,
+    network: offer.network as Network,
+    currency: nativeCurrency,
+  });
 
   const [height, setHeight] = useState(0);
   const didErrorRef = useRef<boolean>(false);
@@ -478,8 +485,15 @@ export function NFTSingleOfferSheet() {
                   </Column>
                   <Column>
                     <Inline space="4px" alignVertical="center" alignHorizontal="right">
-                      <CoinIcon address={offer.paymentToken.address} size={16} symbol={offer.paymentToken.symbol} network={offer.network} />
-
+                      <RainbowCoinIcon
+                        size={16}
+                        icon={externalAsset?.icon_url}
+                        network={offer?.network as Network}
+                        symbol={offer.paymentToken.symbol}
+                        theme={theme}
+                        colors={externalAsset?.colors}
+                        ignoreBadge
+                      />
                       <Text color="label" align="right" size="17pt" weight="bold">
                         {listPrice} {offer.paymentToken.symbol}
                       </Text>
@@ -509,11 +523,14 @@ export function NFTSingleOfferSheet() {
                   label={i18n.t(i18n.l.nft_offers.single_offer_sheet.floor_price)}
                   value={
                     <Inline space="4px" alignVertical="center" alignHorizontal="right">
-                      <CoinIcon
-                        address={offer.floorPrice.paymentToken.address}
+                      <RainbowCoinIcon
                         size={16}
-                        symbol={offer.floorPrice.paymentToken.symbol}
-                        network={offer.network}
+                        icon={externalAsset?.icon_url}
+                        network={offer?.network as Network}
+                        symbol={offer.paymentToken.symbol}
+                        theme={theme}
+                        colors={externalAsset?.colors}
+                        ignoreBadge
                       />
 
                       <Text color="labelSecondary" align="right" size="17pt" weight="medium">
@@ -594,8 +611,15 @@ export function NFTSingleOfferSheet() {
                   </Column>
                   <Column>
                     <Inline space="4px" alignVertical="center" alignHorizontal="right">
-                      <CoinIcon address={offer.paymentToken.address} size={16} symbol={offer.paymentToken.symbol} network={offer.network} />
-
+                      <RainbowCoinIcon
+                        size={16}
+                        icon={externalAsset?.icon_url}
+                        network={offer?.network as Network}
+                        symbol={offer.paymentToken.symbol}
+                        theme={theme}
+                        colors={externalAsset?.colors}
+                        ignoreBadge
+                      />
                       <Text color="label" align="right" size="17pt" weight="bold">
                         {netCrypto} {offer.paymentToken.symbol}
                       </Text>
@@ -674,7 +698,7 @@ export function NFTSingleOfferSheet() {
                     }}
                     horizontalPadding={0}
                     currentNetwork={offer.network}
-                    theme={isDarkMode ? 'dark' : 'light'}
+                    theme={theme.isDarkMode ? 'dark' : 'light'}
                   />
                 </>
               )}

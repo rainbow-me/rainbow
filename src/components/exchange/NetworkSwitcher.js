@@ -2,15 +2,14 @@ import lang from 'i18n-js';
 import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import Divider from '../Divider';
-import { CoinIcon } from '../coin-icon';
 import ChainBadge from '../coin-icon/ChainBadge';
 import { ContextMenuButton } from '../context-menu';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
-import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { padding, position } from '@/styles';
 import { ethereumUtils, showActionSheetWithOptions } from '@/utils';
 import { RainbowNetworks, getNetworkObj } from '@/networks';
+import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 
 const networkMenuItems = () => {
   return RainbowNetworks.filter(network => network.features.swaps).map(network => ({
@@ -87,7 +86,7 @@ const NetworkSwitcherv1 = ({
             {currentChainId !== 1 ? (
               <ChainBadge network={ethereumUtils.getNetworkFromChainId(currentChainId)} position="relative" size="small" />
             ) : (
-              <CoinIcon address={ETH_ADDRESS} size={20} symbol={ETH_SYMBOL} />
+              <EthCoinIcon size={20} />
             )}
           </Column>
           <Column flex={1} justify="center" marginHorizontal={8}>

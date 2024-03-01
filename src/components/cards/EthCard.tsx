@@ -11,7 +11,6 @@ import Routes from '@/navigation/routesNames';
 import { analyticsV2 } from '@/analytics';
 import { ETH_ADDRESS } from '@/references';
 import { ChartPath, ChartPathProvider } from '@/react-native-animated-charts/src';
-import { CoinIcon } from '../coin-icon';
 import Labels from '../value-chart/ExtremeLabels';
 import showWalletErrorAlert from '@/helpers/support';
 import { IS_IOS } from '@/env';
@@ -25,6 +24,7 @@ import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import assetTypes from '@/entities/assetTypes';
 import { Network } from '@/networks/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
+import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 
 export const ETH_CARD_HEIGHT = 284.3;
 
@@ -156,7 +156,7 @@ export const EthCard = () => {
                   </>
                 ) : (
                   <>
-                    <CoinIcon address={ETH_ADDRESS} size={20} symbol={ethAsset.symbol} network={Network.mainnet} />
+                    <EthCoinIcon size={20} />
                     <Text size="17pt" color={{ custom: colorForAsset }} weight="heavy">
                       {ethAsset?.name}
                     </Text>
