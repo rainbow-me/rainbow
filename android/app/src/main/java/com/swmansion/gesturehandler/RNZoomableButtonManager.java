@@ -1,4 +1,5 @@
-package com.swmansion.gesturehandler.react;
+package com.swmansion.gesturehandler;
+
 import android.content.Context;
 import android.view.MotionEvent;
 import android.view.animation.Animation;
@@ -17,6 +18,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.annotation.Nullable;
+import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager;
 
 public class RNZoomableButtonManager extends
         RNGestureHandlerButtonViewManager {

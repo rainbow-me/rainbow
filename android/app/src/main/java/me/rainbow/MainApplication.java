@@ -28,7 +28,7 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactNativeHost;
 import me.rainbow.BuildConfig;
 import java.lang.reflect.InvocationTargetException;
-
+import com.swmansion.gesturehandler.RNGestureHandlerPackage;
 
 
 public class MainApplication extends Application implements ReactApplication {
@@ -58,6 +58,7 @@ public class MainApplication extends Application implements ReactApplication {
           packages.add(new RNBackHandlerPackage());
           packages.add(new RNTextAnimatorPackage());
           packages.add(new RNZoomableButtonPackage());
+          packages.add(new RNGestureHandlerPackage());
           packages.add(new InternalPackage());
           packages.add(new KeychainPackage(new KeychainModuleBuilder().withoutWarmUp()));
           packages.add(new RNStartTimePackage(MainApplication.START_MARK));

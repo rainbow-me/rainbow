@@ -4,7 +4,7 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
-import com.swmansion.gesturehandler.react.RNZoomableButtonManager;
+import com.swmansion.gesturehandler.RNZoomableButtonManager;
 
 import java.util.Arrays;
 import java.util.Collections;
