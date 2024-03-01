@@ -17,7 +17,6 @@ import { COLLAPSED_WEBVIEW_HEIGHT_UNSCALED, TAB_VIEW_COLUMN_WIDTH, TAB_VIEW_ROW_
 import RNFS from 'react-native-fs';
 import { WebViewEvent } from 'react-native-webview/lib/WebViewTypes';
 import { appMessenger } from '@/browserMessaging/AppMessenger';
-import { url } from 'inspector';
 
 interface BrowserTabProps {
   tabIndex: number;
@@ -309,7 +308,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
         return m.url === new URL(tabStates[tabIndex].url).origin && m.tabId === getTabId(tabIndex, tabStates[tabIndex].url);
       });
       if (m) {
-        m?.sendMessage({ type: 'message', payload: 'ping' });
+        m.send('ping', { message: 'hello' });
       }
     },
     [tabIndex, tabStates]

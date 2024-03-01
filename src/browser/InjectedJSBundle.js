@@ -86,4 +86,5 @@ const webviewMessenger = createMessenger({
 
 webviewMessenger.reply('*', async payload => {
   alert('Webview got message' + JSON.stringify(payload));
+  webviewMessenger.send('pong', { message: 'world' });
 });

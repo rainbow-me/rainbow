@@ -5,6 +5,7 @@ const Routes = {
   ADD_CASH_SHEET: 'AddCashSheet',
   ADD_WALLET_NAVIGATOR: 'AddWalletNavigator',
   ADD_WALLET_SHEET: 'AddWalletSheet',
+  APP_ICON_UNLOCK_SHEET: 'AppIconUnlockSheet',
   AVATAR_BUILDER: 'AvatarBuilder',
   AVATAR_BUILDER_WALLET: 'AvatarBuilderWallet',
   BACKUP_SCREEN: 'BackupScreen',

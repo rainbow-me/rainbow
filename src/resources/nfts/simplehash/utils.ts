@@ -137,7 +137,7 @@ export function simpleHashNFTToUniqueAsset(nft: ValidatedSimpleHashNFT, address:
 
   const { highResUrl: imageUrl, lowResUrl } = handleNFTImages({
     originalUrl: nft.image_url ?? nft.extra_metadata?.image_original_url,
-    previewUrl: nft.previews.image_large_url,
+    previewUrl: nft.previews.image_small_url,
     mimeType: nft.image_properties?.mime_type,
   });
 

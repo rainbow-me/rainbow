@@ -2,14 +2,13 @@ import React, { useRef, useMemo } from 'react';
 import { ScrollView } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
 import { ButtonPressAnimation } from '../animations';
-import { CoinIcon } from '../coin-icon';
 import ChainBadge from '../coin-icon/ChainBadge';
 import { Bleed, Box, Columns, Inline, Text } from '@/design-system';
 import { Network } from '@/helpers';
-import { ETH_ADDRESS, ETH_SYMBOL } from '@rainbow-me/references';
 import { position } from '@rainbow-me/styles';
 import { useTheme } from '@/theme';
 import { sortNetworks } from '@/networks';
+import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 
 const NetworkSwitcherv2 = ({
   currentChainId,
@@ -79,7 +78,7 @@ const NetworkSwitcherv2 = ({
                   )}
                   <Inline alignHorizontal="center" alignVertical="center" horizontalSpace="4px" wrap={false}>
                     {network === Network.mainnet ? (
-                      <CoinIcon address={ETH_ADDRESS} size={20} symbol={ETH_SYMBOL} network={network} />
+                      <EthCoinIcon size={20} />
                     ) : (
                       <ChainBadge network={network} position="relative" size="small" />
                     )}
