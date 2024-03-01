@@ -50,7 +50,7 @@ export function parseAsset({ address, asset }: { address: string; asset: AddysAs
   const parsedAsset = {
     address,
     color: asset?.colors?.primary,
-    colors: asset?.colors,
+    colors: asset.colors,
     chainId,
     chainName,
     decimals: asset?.decimals,

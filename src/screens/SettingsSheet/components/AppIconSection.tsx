@@ -16,6 +16,7 @@ import AppIconZora from '@/assets/appIconZora.png';
 import AppIconZorb from '@/assets/appIconZorb.png';
 import AppIconPoolboy from '@/assets/appIconPoolboy.png';
 import AppIconAdworld from '@/assets/appIconAdworld.png';
+import AppIconFarcaster from '@/assets/appIconFarcaster.png';
 import { Box } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
 import { ImgixImage } from '@/components/images';
@@ -23,6 +24,7 @@ import { useTheme } from '@/theme';
 import Logger from '@/utils/logger';
 import {
   AdworldIcon,
+  FarcasterIcon,
   FiniliarIcon,
   GoldDogeIcon,
   OptimismIcon,
@@ -132,6 +134,13 @@ export const tokenGatedIcons: { [key: string]: LockedAppIcon } = {
     name: 'Rainbow World',
     source: AppIconAdworld,
     unlock_key: AdworldIcon.unlockKey,
+  },
+  farcaster: {
+    accentColor: 'farcasterPurple',
+    key: FarcasterIcon.key,
+    name: 'Rainbowcast',
+    source: AppIconFarcaster,
+    unlock_key: FarcasterIcon.unlockKey,
   },
 };
 

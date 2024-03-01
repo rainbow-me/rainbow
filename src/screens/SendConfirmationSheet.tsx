@@ -14,7 +14,6 @@ import Pill from '../components/Pill';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import ButtonPressAnimation from '../components/animations/ButtonPressAnimation';
 import Callout from '../components/callout/Callout';
-import { CoinIcon } from '../components/coin-icon';
 import RequestVendorLogoIcon from '../components/coin-icon/RequestVendorLogoIcon';
 import { ContactAvatar } from '../components/contacts';
 import ImageAvatar from '../components/contacts/ImageAvatar';
@@ -60,6 +59,7 @@ import { ethereumUtils, getUniqueTokenType, promiseUtils } from '@/utils';
 import logger from '@/utils/logger';
 import { getNetworkObj } from '@/networks';
 import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 
 const Container = styled(Centered).attrs({
   direction: 'column',
@@ -179,7 +179,7 @@ const ChevronDown = () => {
 };
 
 export const SendConfirmationSheet = () => {
-  const { colors, isDarkMode } = useTheme();
+  const theme = useTheme();
   const { accountAddress, nativeCurrency } = useAccountSettings();
   const { goBack, navigate, setParams } = useNavigation();
   const { height: deviceHeight, isSmallPhone, isTinyPhone, width: deviceWidth } = useDimensions();
@@ -349,9 +349,9 @@ export const SendConfirmationSheet = () => {
 
   const handleL2DisclaimerPress = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
-      type: isNft ? asset.network : asset.type,
+      type: asset.network,
     });
-  }, [asset.network, asset.type, isNft, navigate]);
+  }, [asset.network, navigate]);
 
   const nativeDisplayAmount = useMemo(
     () => convertAmountToNativeDisplay(amountDetails.nativeAmount, nativeCurrency),
@@ -361,7 +361,7 @@ export const SendConfirmationSheet = () => {
   let color = useColorForAsset(asset);
 
   if (isNft) {
-    color = colors.appleBlue;
+    color = theme.colors.appleBlue;
   }
 
   const shouldShowChecks = isL2 && !isSendingToUserAccount && alreadySentTransactionsCurrentNetwork < 3;
@@ -471,7 +471,7 @@ export const SendConfirmationSheet = () => {
                 <Row marginTop={12}>
                   <Text
                     color={{
-                      custom: isNft ? colors.alpha(colors.blueGreyDark, 0.6) : color,
+                      custom: isNft ? theme.colors.alpha(theme.colors.blueGreyDark, 0.6) : color,
                     }}
                     size="16px / 22px (Deprecated)"
                     weight={isNft ? 'bold' : 'heavy'}
@@ -485,7 +485,7 @@ export const SendConfirmationSheet = () => {
                   {isNft ? (
                     // @ts-expect-error JavaScript component
                     <RequestVendorLogoIcon
-                      backgroundColor={asset.background || colors.lightestGrey}
+                      backgroundColor={asset.background || theme.colors.lightestGrey}
                       badgeXPosition={-7}
                       badgeYPosition={0}
                       borderRadius={10}
@@ -495,8 +495,14 @@ export const SendConfirmationSheet = () => {
                       size={50}
                     />
                   ) : (
-                    // eslint-disable-next-line react/jsx-props-no-spreading
-                    <CoinIcon size={50} {...asset} />
+                    <RainbowCoinIcon
+                      size={50}
+                      icon={asset?.icon_url}
+                      network={asset?.network}
+                      symbol={asset?.symbol || ''}
+                      theme={theme}
+                      colors={asset?.colors}
+                    />
                   )}
                 </Row>
               </Column>
@@ -507,7 +513,7 @@ export const SendConfirmationSheet = () => {
               <Pill borderRadius={15} height={30} minWidth={39} paddingHorizontal={10} paddingVertical={5.5}>
                 <OldText
                   align="center"
-                  color={colors.blueGreyDark60}
+                  color={theme.colors.blueGreyDark60}
                   letterSpacing="roundedMedium"
                   lineHeight={20}
                   size="large"
@@ -538,7 +544,7 @@ export const SendConfirmationSheet = () => {
                     >
                       <Text
                         color={{
-                          custom: colors.alpha(colors.blueGreyDark, isDarkMode ? 0.5 : 0.6),
+                          custom: theme.colors.alpha(theme.colors.blueGreyDark, theme.isDarkMode ? 0.5 : 0.6),
                         }}
                         size="20px / 24px (Deprecated)"
                         weight="heavy"
@@ -549,7 +555,11 @@ export const SendConfirmationSheet = () => {
                   </Centered>
                 </Row>
                 <Row marginTop={12}>
-                  <Text color={{ custom: colors.alpha(colors.blueGreyDark, 0.6) }} size="16px / 22px (Deprecated)" weight="bold">
+                  <Text
+                    color={{ custom: theme.colors.alpha(theme.colors.blueGreyDark, 0.6) }}
+                    size="16px / 22px (Deprecated)"
+                    weight="bold"
+                  >
                     {getMessage()}
                   </Text>
                 </Row>
@@ -563,7 +573,7 @@ export const SendConfirmationSheet = () => {
               </Column>
             </Row>
             {/* @ts-expect-error JavaScript component */}
-            <Divider color={colors.rowDividerExtraLight} inset={[0]} />
+            <Divider color={theme.colors.rowDividerExtraLight} inset={[0]} />
           </Column>
           {(isL2 || isENS || shouldShowChecks) && (
             <Inset bottom="30px (Deprecated)" horizontal="19px (Deprecated)">
@@ -573,7 +583,7 @@ export const SendConfirmationSheet = () => {
                     {/* @ts-expect-error JavaScript component */}
                     <L2Disclaimer
                       network={asset.network}
-                      colors={colors}
+                      colors={theme.colors}
                       hideDivider
                       marginBottom={0}
                       marginHorizontal={0}

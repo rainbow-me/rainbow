@@ -12,8 +12,6 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		1539422824C7C7E200E4A9D1 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 1539422724C7C7E100E4A9D1 /* Settings.bundle */; };
-		1539422D24C7CF9300E4A9D1 /* SettingsBundleHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1539422C24C7CF9300E4A9D1 /* SettingsBundleHelper.swift */; };
 		15C398812880EDFF006033AC /* og@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 15C3987D2880EDFF006033AC /* og@3x.png */; };
 		15C398832880EDFF006033AC /* og@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 15C3987F2880EDFF006033AC /* og@2x.png */; };
 		15CF49BC2889AF7C005F92C9 /* optimism@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 15CF49BA2889AF7C005F92C9 /* optimism@3x.png */; };
@@ -60,6 +58,8 @@
 		B54C1D1329358946007560D9 /* raindoge@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B54C1D0F29358946007560D9 /* raindoge@2x.png */; };
 		B54C1D162935A54F007560D9 /* zora@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B54C1D142935A54F007560D9 /* zora@3x.png */; };
 		B54C1D172935A54F007560D9 /* zora@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B54C1D152935A54F007560D9 /* zora@2x.png */; };
+		B597E7C22B8E9E18004782B6 /* farcaster@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B597E7C02B8E9E18004782B6 /* farcaster@3x.png */; };
+		B597E7C32B8E9E18004782B6 /* farcaster@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B597E7C12B8E9E18004782B6 /* farcaster@2x.png */; };
 		B5C070C62A4A387400D854BA /* zorb@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B5C070C42A4A387400D854BA /* zorb@3x.png */; };
 		B5C070C72A4A387400D854BA /* zorb@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B5C070C52A4A387400D854BA /* zorb@2x.png */; };
 		B5CC6D382A78732A0037D5A3 /* poolboy@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B5CC6D372A78732A0037D5A3 /* poolboy@2x.png */; };
@@ -189,8 +189,6 @@
 		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Rainbow/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Rainbow/main.m; sourceTree = "<group>"; };
-		1539422724C7C7E100E4A9D1 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
-		1539422C24C7CF9300E4A9D1 /* SettingsBundleHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsBundleHelper.swift; sourceTree = "<group>"; };
 		157155032418733F009B698B /* RainbowRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RainbowRelease.entitlements; path = Rainbow/RainbowRelease.entitlements; sourceTree = "<group>"; };
 		157155042418734C009B698B /* RainbowDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RainbowDebug.entitlements; path = Rainbow/RainbowDebug.entitlements; sourceTree = "<group>"; };
 		15C3987D2880EDFF006033AC /* og@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "og@3x.png"; sourceTree = "<group>"; };
@@ -280,6 +278,8 @@
 		B54C1D0F29358946007560D9 /* raindoge@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "raindoge@2x.png"; sourceTree = "<group>"; };
 		B54C1D142935A54F007560D9 /* zora@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "zora@3x.png"; sourceTree = "<group>"; };
 		B54C1D152935A54F007560D9 /* zora@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "zora@2x.png"; sourceTree = "<group>"; };
+		B597E7C02B8E9E18004782B6 /* farcaster@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "farcaster@3x.png"; sourceTree = "<group>"; };
+		B597E7C12B8E9E18004782B6 /* farcaster@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "farcaster@2x.png"; sourceTree = "<group>"; };
 		B5C070C42A4A387400D854BA /* zorb@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "zorb@3x.png"; sourceTree = "<group>"; };
 		B5C070C52A4A387400D854BA /* zorb@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "zorb@2x.png"; sourceTree = "<group>"; };
 		B5CC6D372A78732A0037D5A3 /* poolboy@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "poolboy@2x.png"; sourceTree = "<group>"; };
@@ -397,7 +397,6 @@
 			children = (
 				15C398772880DF82006033AC /* AppIcons */,
 				4D098C2C2811A95F006A801A /* RNStartTime */,
-				1539422B24C7CF7B00E4A9D1 /* Settings */,
 				66A1FEAE24AB63D600C3F539 /* RNCoolModals */,
 				15E531D7242DAB3500797B89 /* NSNotifications */,
 				15E531D6242B28F800797B89 /* Animations */,
@@ -415,20 +414,11 @@
 				A4277D9E23CBD1910042BAF4 /* Extensions.swift */,
 				A4277DA223CFE85F0042BAF4 /* Theme.swift */,
 				6635730524939991006ACFA6 /* SafeStoreReview.m */,
-				1539422724C7C7E100E4A9D1 /* Settings.bundle */,
 				66A28EAF24CAF1B500410A88 /* TestFlight.m */,
 				C04D10EF25AFC8C1003BEF7A /* Extras.json */,
 				6655FFB325BB2B0700642961 /* ThemeModule.m */,
 			);
 			name = Rainbow;
-			sourceTree = "<group>";
-		};
-		1539422B24C7CF7B00E4A9D1 /* Settings */ = {
-			isa = PBXGroup;
-			children = (
-				1539422C24C7CF9300E4A9D1 /* SettingsBundleHelper.swift */,
-			);
-			name = Settings;
 			sourceTree = "<group>";
 		};
 		15C398772880DF82006033AC /* AppIcons */ = {
@@ -442,6 +432,8 @@
 				B5CE8FFD29A5758100EB1EFA /* pooly@3x.png */,
 				B52242E428B1B11F0024D19D /* smol@2x.png */,
 				B52242E528B1B11F0024D19D /* smol@3x.png */,
+				B597E7C12B8E9E18004782B6 /* farcaster@2x.png */,
+				B597E7C02B8E9E18004782B6 /* farcaster@3x.png */,
 				15CF49BF2889AFAD005F92C9 /* pixel@2x.png */,
 				B50C9AEA2A9D18DC00EB0019 /* adworld@2x.png */,
 				B50C9AE92A9D18DC00EB0019 /* adworld@3x.png */,
@@ -874,6 +866,7 @@
 				B54C1D1329358946007560D9 /* raindoge@2x.png in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 				B5D7F2F129E8D41E003D6A54 /* finiliar@2x.png in Resources */,
+				B597E7C22B8E9E18004782B6 /* farcaster@3x.png in Resources */,
 				B54C1D1029358946007560D9 /* golddoge@3x.png in Resources */,
 				AA0B1CBD2B00C5E100EAF77D /* SF-Mono-Bold.otf in Resources */,
 				24979E8920F84250007EB0DA /* GoogleService-Info.plist in Resources */,
@@ -882,7 +875,6 @@
 				B5C070C72A4A387400D854BA /* zorb@2x.png in Resources */,
 				B5CC6D382A78732A0037D5A3 /* poolboy@2x.png in Resources */,
 				15CF49BD2889AF7C005F92C9 /* optimism@2x.png in Resources */,
-				1539422824C7C7E200E4A9D1 /* Settings.bundle in Resources */,
 				15C398832880EDFF006033AC /* og@2x.png in Resources */,
 				AA0B1CBB2B00C5E100EAF77D /* SF-Mono-Semibold.otf in Resources */,
 				B50C9AEC2A9D18DC00EB0019 /* adworld@2x.png in Resources */,
@@ -904,6 +896,7 @@
 				15C398812880EDFF006033AC /* og@3x.png in Resources */,
 				B52242E728B1B11F0024D19D /* smol@3x.png in Resources */,
 				AA6228F224272F510078BDAA /* SF-Pro-Rounded-Regular.otf in Resources */,
+				B597E7C32B8E9E18004782B6 /* farcaster@2x.png in Resources */,
 				B5CE8FFF29A5758100EB1EFA /* pooly@3x.png in Resources */,
 				B5D7F2F029E8D41E003D6A54 /* finiliar@3x.png in Resources */,
 				AA6228F324272F510078BDAA /* SF-Pro-Rounded-Semibold.otf in Resources */,
@@ -1170,7 +1163,6 @@
 				C18FCD3C273C64D10079CE28 /* TokenDetails.swift in Sources */,
 				C179298527499A5B00044684 /* Constants.swift in Sources */,
 				6655FFB425BB2B0700642961 /* ThemeModule.m in Sources */,
-				1539422D24C7CF9300E4A9D1 /* SettingsBundleHelper.swift in Sources */,
 				C18C8E022798B02700D38B34 /* CurrencyProvider.swift in Sources */,
 				66A1FEB624AB641100C3F539 /* RNCMScreen.m in Sources */,
 				C18FCD3F273C64D80079CE28 /* CoinGeckoToken.swift in Sources */,
@@ -1524,7 +1516,7 @@
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.9.17;
+				MARKETING_VERSION = 1.9.18;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (
@@ -1587,7 +1579,7 @@
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.9.17;
+				MARKETING_VERSION = 1.9.18;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (
@@ -1695,7 +1687,7 @@
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.9.17;
+				MARKETING_VERSION = 1.9.18;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (
@@ -1804,7 +1796,7 @@
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.9.17;
+				MARKETING_VERSION = 1.9.18;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (
