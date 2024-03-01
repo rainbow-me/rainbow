@@ -694,6 +694,8 @@ export const checkKeychainIntegrity = () => async (dispatch: ThunkDispatch<AppSt
     }
     logger.info('[KeychainIntegrityCheck]: check completed');
     await saveKeychainIntegrityState('done');
+
+    return healthyKeychain;
   } catch (e) {
     logger.error(new RainbowError("[KeychainIntegrityCheck]: error thrown'"), {
       message: (e as Error)?.message,

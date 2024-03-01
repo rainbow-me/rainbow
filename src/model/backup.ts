@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NativeModules } from 'react-native';
 import { captureException } from '@sentry/react-native';
 import { endsWith } from 'lodash';
@@ -680,11 +681,17 @@ export async function checkIdentifierOnLaunch() {
 
     return new Promise(resolve => {
       Navigation.handleAction(Routes.CHECK_IDENTIFIER_SCREEN, {
+        // Just a reinstall, let's update the identifer and send them back to the app
         onSuccess: async () => {
           identifier.set(['identifier'], uuid);
+          Navigation.handleAction(Routes.WALLET_SCREEN, {});
           resolve(true); // Resolve the promise here
         },
+        // Detected a phone migration, let's clear the app and send them to the welcome screen
         onFailure: async () => {
+          // TODO: Is there more we need to wipe here?
+          await kc.clear();
+          await AsyncStorage.clear();
           Navigation.handleAction(Routes.WELCOME_SCREEN, {});
           resolve(false); // Resolve with false or another value indicating failure
         },
