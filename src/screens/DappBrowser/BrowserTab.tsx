@@ -16,6 +16,8 @@ import { Freeze } from 'react-freeze';
 import { COLLAPSED_WEBVIEW_HEIGHT_UNSCALED, TAB_VIEW_COLUMN_WIDTH, TAB_VIEW_ROW_HEIGHT, WEBVIEW_HEIGHT } from './Dimensions';
 import RNFS from 'react-native-fs';
 import { WebViewEvent } from 'react-native-webview/lib/WebViewTypes';
+import { appMessenger } from '@/browserMessaging/AppMessenger';
+import { url } from 'inspector';
 
 interface BrowserTabProps {
   tabIndex: number;
@@ -257,24 +259,11 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
 
   const [backgroundColor, setBackgroundColor] = useState<string>();
 
-  const createMessengers = useCallback(
-    (origin: string, tabId: string) => {
-      const newMessenger = {
-        onMessage: (data: any) => {
-          console.log('[BROWSER]: APP RECEIVED MESSAGE', tabStates[tabIndex].url, data);
-        },
-        sendMessage: (data: any) => {
-          console.log('[BROWSER]: sending msg to webview', tabStates[tabIndex].url, data);
-          webViewRef.current?.injectJavaScript(`window.postMessage(${JSON.stringify(data)})`);
-        },
-        url: origin,
-        tabId,
-      };
-
-      messengers.current.push(newMessenger);
-    },
-    [tabIndex, tabStates]
-  );
+  const createMessengers = useCallback((origin: string, tabId: string) => {
+    if (!webViewRef.current) return;
+    const msngr = appMessenger(webViewRef.current, tabId, origin);
+    messengers.current.push(msngr);
+  }, []);
 
   const handleMessage = useCallback(
     (event: WebViewMessageEvent) => {
