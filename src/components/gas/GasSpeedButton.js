@@ -137,6 +137,7 @@ const GasSpeedButton = ({
   validateGasParams,
   flashbotTransaction = false,
   crossChainServiceTime,
+  loading,
 }) => {
   const { colors } = useTheme();
   const { navigate, goBack } = useNavigation();
@@ -178,7 +179,7 @@ const GasSpeedButton = ({
 
   const formatGasPrice = useCallback(
     animatedValue => {
-      if (animatedValue === null || isNaN(animatedValue)) {
+      if (animatedValue === null || loading || isNaN(animatedValue)) {
         return 0;
       }
       !gasPriceReady && setGasPriceReady(true);
@@ -199,7 +200,7 @@ const GasSpeedButton = ({
         }`;
       }
     },
-    [gasPriceReady, isLegacyGasNetwork, nativeCurrencySymbol, nativeCurrency]
+    [loading, gasPriceReady, isLegacyGasNetwork, nativeCurrencySymbol, nativeCurrency]
   );
 
   const openCustomOptionsRef = useRef();
@@ -232,7 +233,7 @@ const GasSpeedButton = ({
 
   const renderGasPriceText = useCallback(
     animatedNumber => {
-      const priceText = animatedNumber === 0 ? lang.t('swap.loading') : animatedNumber;
+      const priceText = animatedNumber === 0 || loading ? lang.t('swap.loading') : animatedNumber;
       return (
         <Text
           color={theme === 'dark' ? colors.whiteLabel : colors.alpha(colors.blueGreyDark, 0.8)}
@@ -244,7 +245,7 @@ const GasSpeedButton = ({
         </Text>
       );
     },
-    [theme, colors]
+    [loading, theme, colors]
   );
 
   // I'M SHITTY CODE BUT GOT THINGS DONE REFACTOR ME ASAP

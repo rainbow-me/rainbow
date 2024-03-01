@@ -102,6 +102,7 @@ export function NFTSingleOfferSheet() {
     currency: nativeCurrency,
   });
 
+  const [isGasReady, setIsGasReady] = useState<boolean>(false);
   const [height, setHeight] = useState(0);
   const didErrorRef = useRef<boolean>(false);
   const didCompleteRef = useRef<boolean>(false);
@@ -180,75 +181,82 @@ export function NFTSingleOfferSheet() {
   }, [offer.validUntil]);
 
   const estimateGas = useCallback(() => {
-    const networkObj = getNetworkObj(network);
-    const signer = createWalletClient({
-      // @ts-ignore
-      account: accountAddress,
-      chain: networkObj,
-      transport: http(networkObj.rpc),
-    });
-    getClient()?.actions.acceptOffer({
-      items: [
-        {
-          token: `${offer.nft.contractAddress}:${offer.nft.tokenId}`,
-          quantity: 1,
-        },
-      ],
-      options: feeParam
-        ? {
-            feesOnTop: [feeParam],
-          }
-        : undefined,
-      chainId: networkObj.id,
-      precheck: true,
-      wallet: signer,
-      onProgress: async (steps: Execute['steps']) => {
-        let reservoirEstimate = 0;
-        const txs: Transaction[] = [];
-        const fallbackEstimate =
-          offer.network === Network.mainnet ? ethUnits.mainnet_nft_offer_gas_fee_fallback : ethUnits.l2_nft_offer_gas_fee_fallback;
-        steps.forEach(step =>
-          step.items?.forEach(item => {
-            if (item?.data?.to && item?.data?.from && item?.data?.data) {
-              txs.push({
-                to: item.data.to,
-                from: item.data.from,
-                data: item.data.data,
-                value: item.data.value ?? '0x0',
-              });
+    try {
+      const networkObj = getNetworkObj(network);
+      const signer = createWalletClient({
+        // @ts-ignore
+        account: accountAddress,
+        chain: networkObj,
+        transport: http(networkObj.rpc),
+      });
+      getClient()?.actions.acceptOffer({
+        items: [
+          {
+            token: `${offer.nft.contractAddress}:${offer.nft.tokenId}`,
+            quantity: 1,
+          },
+        ],
+        options: feeParam
+          ? {
+              feesOnTop: [feeParam],
             }
-            // @ts-ignore missing from reservoir type
-            const txEstimate = item.gasEstimate;
-            if (typeof txEstimate === 'number') {
-              reservoirEstimate += txEstimate;
-            }
-          })
-        );
-        const txSimEstimate = parseInt(
-          (
-            await metadataPOSTClient.simulateTransactions({
-              chainId: networkObj.id,
-              transactions: txs,
+          : undefined,
+        chainId: networkObj.id,
+        precheck: true,
+        wallet: signer,
+        onProgress: async (steps: Execute['steps']) => {
+          let reservoirEstimate = 0;
+          const txs: Transaction[] = [];
+          const fallbackEstimate =
+            offer.network === Network.mainnet ? ethUnits.mainnet_nft_offer_gas_fee_fallback : ethUnits.l2_nft_offer_gas_fee_fallback;
+          steps.forEach(step =>
+            step.items?.forEach(item => {
+              if (item?.data?.to && item?.data?.from && item?.data?.data) {
+                txs.push({
+                  to: item.data.to,
+                  from: item.data.from,
+                  data: item.data.data,
+                  value: item.data.value ?? '0x0',
+                });
+              }
+              // @ts-ignore missing from reservoir type
+              const txEstimate = item.gasEstimate;
+              if (typeof txEstimate === 'number') {
+                reservoirEstimate += txEstimate;
+              }
             })
-          )?.simulateTransactions?.[0]?.gas?.estimate ?? '0x0',
-          16
-        );
-        const estimate = txSimEstimate || reservoirEstimate || fallbackEstimate;
-        updateTxFee(estimate, null);
-        startPollingGasFees(network);
-      },
-    });
-  }, [accountAddress, feeParam, network, offer, startPollingGasFees, updateTxFee]);
+          );
+          const txSimEstimate = parseInt(
+            (
+              await metadataPOSTClient.simulateTransactions({
+                chainId: networkObj.id,
+                transactions: txs,
+              })
+            )?.simulateTransactions?.[0]?.gas?.estimate ?? '0x0',
+            16
+          );
+          const estimate = txSimEstimate || reservoirEstimate || fallbackEstimate;
+          if (estimate) {
+            updateTxFee(estimate, null);
+            setIsGasReady(true);
+          }
+        },
+      });
+    } catch {
+      logger.error(new RainbowError('NFT Offer: Failed to estimate gas'));
+    }
+  }, [accountAddress, feeParam, network, offer, updateTxFee]);
 
   // estimate gas
   useEffect(() => {
     if (!isReadOnlyWallet && !isExpired) {
+      startPollingGasFees(network);
       estimateGas();
     }
     return () => {
       stopPollingGasFees();
     };
-  }, [estimateGas, isExpired, isReadOnlyWallet, stopPollingGasFees]);
+  }, [estimateGas, isExpired, isReadOnlyWallet, network, startPollingGasFees, stopPollingGasFees, updateTxFee]);
 
   const acceptOffer = useCallback(async () => {
     logger.info(`Initiating sale of NFT ${offer.nft.contractAddress}:${offer.nft.tokenId}`);
@@ -704,6 +712,7 @@ export function NFTSingleOfferSheet() {
                     asset={{
                       color: offer.nft.predominantColor || buttonColorFallback,
                     }}
+                    loading={!isGasReady}
                     horizontalPadding={0}
                     currentNetwork={offer.network}
                     theme={theme.isDarkMode ? 'dark' : 'light'}
