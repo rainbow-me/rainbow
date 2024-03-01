@@ -137,7 +137,7 @@ const GasSpeedButton = ({
   validateGasParams,
   flashbotTransaction = false,
   crossChainServiceTime,
-  loading,
+  loading = false,
 }) => {
   const { colors } = useTheme();
   const { navigate, goBack } = useNavigation();
