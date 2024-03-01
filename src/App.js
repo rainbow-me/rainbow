@@ -60,6 +60,7 @@ import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { RemotePromoSheetProvider } from '@/components/remote-promo-sheet/RemotePromoSheetProvider';
 import { RemoteCardProvider } from '@/components/cards/remote-cards';
 import { initializeRemoteConfig } from '@/model/remoteConfig';
+import { checkIdentifierOnLaunch, getDeviceUUID } from './model/backup';
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -112,6 +113,7 @@ class OldApp extends Component {
     if (!__DEV__ && isTestFlight) {
       logger.info(`Test flight usage - ${isTestFlight}`);
     }
+
     this.identifyFlow();
     InteractionManager.runAfterInteractions(() => {
       rainbowTokenList.update();
@@ -134,6 +136,8 @@ class OldApp extends Component {
      * Needs to be called AFTER FCM token is loaded
      */
     initWalletConnectListeners();
+
+    await checkIdentifierOnLaunch();
 
     /**
      * Launch the review prompt after the app is launched

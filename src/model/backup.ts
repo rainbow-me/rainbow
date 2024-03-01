@@ -1,3 +1,4 @@
+import { NativeModules } from 'react-native';
 import { captureException } from '@sentry/react-native';
 import { endsWith } from 'lodash';
 import { CLOUD_BACKUP_ERRORS, encryptAndSaveDataToCloud, getDataFromCloud } from '@/handlers/cloudBackup';
@@ -16,8 +17,12 @@ import { authenticateWithPIN, authenticateWithPINAndCreateIfNeeded, decryptPIN }
 import * as i18n from '@/languages';
 import { getUserError } from '@/hooks/useWalletCloudBackup';
 import { cloudPlatform } from '@/utils/platform';
-import { setAllWalletsWithIdsAsBackedUp, setWalletBackedUp } from '@/redux/wallets';
+import { setAllWalletsWithIdsAsBackedUp } from '@/redux/wallets';
+import { identifier } from '@/storage';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 
+const { DeviceUUID } = NativeModules;
 const encryptor = new AesEncryptor();
 const PIN_REGEX = /^\d{4}$/;
 
@@ -619,4 +624,75 @@ export async function fetchBackupPassword(): Promise<null | BackupPassword> {
     captureException(e);
     return null;
   }
+}
+
+export async function getDeviceUUID(): Promise<string | null> {
+  if (IS_ANDROID) {
+    return null;
+  }
+
+  return new Promise(resolve => {
+    DeviceUUID.getUUID((error: unknown, uuid: string[]) => {
+      if (error) {
+        console.log('Got error when trying to get uuid from Native side');
+        resolve(null);
+      } else {
+        resolve(uuid[0]);
+      }
+    });
+  });
+}
+
+/**
+ * Checks if the identifier is the same as the one stored in localstorage
+ * The identifier can get out of sync in two instances:
+ * 1. when the user reinstalls the app
+ * 2. when the user migrates phones (we really only care about this instance)
+ *
+ * The goal here is to not allow them into the app if they have broken keychain data from a phone migration
+ *
+ * @returns a promise function to be ran after successful biometric authentication
+ */
+export async function checkIdentifierOnLaunch() {
+  // Unable to really persist things on Android, so let's just exit early...
+  if (IS_ANDROID) {
+    return;
+  }
+
+  try {
+    const uuid = await getDeviceUUID();
+    if (!uuid) {
+      throw new Error('Unable to retrieve identifier for vendor');
+    }
+
+    const currentIdentifier = identifier.get(['identifier']);
+    console.log('CurrentIdentifier: ', currentIdentifier);
+    // if we don't have a current identifier, set it and exit early
+    if (!currentIdentifier) {
+      identifier.set(['identifier'], uuid);
+      return;
+    }
+
+    // // if our identifiers match up, we can assume no reinstall/migration
+    // if (currentIdentifier === uuid) {
+    //   return;
+    // }
+
+    return new Promise(resolve => {
+      Navigation.handleAction(Routes.CHECK_IDENTIFIER_SCREEN, {
+        onSuccess: async () => {
+          identifier.set(['identifier'], uuid);
+          resolve(true); // Resolve the promise here
+        },
+        onFailure: async () => {
+          Navigation.handleAction(Routes.WELCOME_SCREEN, {});
+          resolve(false); // Resolve with false or another value indicating failure
+        },
+      });
+    });
+  } catch (error) {
+    // TODO: LOGGING HERE?
+  }
+
+  return false;
 }
