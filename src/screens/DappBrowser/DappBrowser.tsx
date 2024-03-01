@@ -18,19 +18,17 @@ import { TAB_VIEW_ROW_HEIGHT } from './Dimensions';
 
 const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 
+const getInjectedJS = async () => {
+  return RNFS.readFile(`${RNFS.MainBundlePath}/InjectedJSBundle.js`, 'utf8');
+};
+
 const DappBrowserComponent = () => {
-  console.log('[BROWSER]: Render DappBrowserComponent');
   const [injectedJS, setInjectedJS] = useState<string | ''>('');
 
-  const getInjectedJS = async () => {
-    return RNFS.readFile(`${RNFS.MainBundlePath}/InjectedJSBundle.js`, 'utf8');
-  };
   useEffect(() => {
     const loadInjectedJS = async () => {
       try {
-        console.log('[BROWSER]: loading injected JS...');
         const jsToInject = await getInjectedJS();
-        console.log('[BROWSER]: got injected JS');
         setInjectedJS(jsToInject);
       } catch (e) {
         console.log('error', e);
@@ -104,7 +102,6 @@ const DappBrowserComponent = () => {
 };
 
 export const DappBrowser = () => {
-  console.log('[BROWSER]: Render DappBrowser');
   return (
     <BrowserContextProvider>
       <ColorModeProvider value="dark">

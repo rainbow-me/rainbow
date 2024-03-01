@@ -68,7 +68,7 @@ const getInitialScreenshot = (id: string): ScreenshotType | null => {
 
 const getWebsiteBackgroundColor = `
   const bgColor = window.getComputedStyle(document.body, null).getPropertyValue('background-color');
-  window.ReactNativeWebView.postMessage({ type: "bg", payload: bgColor});
+  window.ReactNativeWebView.postMessage(JSON.stringify({ type: "bg", payload: bgColor}));
   true;
   `;
 
@@ -157,7 +157,6 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
   }, [activeTabIndex, tabIndex, tabViewProgress]);
 
   const handlePress = () => {
-    console.log('handle press', tabViewVisible, isActiveTab);
     if (tabViewVisible) {
       if (isActiveTab) {
         toggleTabView();
@@ -295,6 +294,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
             }
           });
         } else if (parsedData.type === 'bg') {
+          console.log('[BROWSER]: received bg color', parsedData.payload);
           setBackgroundColor(parsedData.payload);
         }
         // eslint-disable-next-line no-empty
@@ -389,10 +389,9 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
                   injectedJavaScriptBeforeContentLoaded={injectedJS}
                   allowsInlineMediaPlayback
                   allowsBackForwardNavigationGestures
-                  applicationNameForUserAgent={'Rainbow Wallet'}
+                  applicationNameForUserAgent={'Rainbow'}
                   automaticallyAdjustContentInsets
                   automaticallyAdjustsScrollIndicatorInsets
-                  pointerEvents="none"
                   containerStyle={{
                     overflow: 'visible',
                   }}
@@ -410,7 +409,6 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
                   onLoadProgress={handleOnLoadProgress}
                   onMessage={handleMessage}
                   onNavigationStateChange={handleNavigationStateChange}
-                  originWhitelist={['*']}
                   ref={webViewRef}
                   source={{ uri: tabStates[tabIndex].url }}
                   style={[

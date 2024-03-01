@@ -60,12 +60,12 @@ const defaultContext: BrowserContextType = {
   },
   tabStates: [
     { url: 'https://www.google.com/', canGoBack: false, canGoForward: false },
-    // {
-    //   url: 'https://www.rainbowkit.com/',
-    //   canGoBack: false,
-    //   canGoForward: false,
-    // },
-    // { url: 'https://app.uniswap.org/', canGoBack: false, canGoForward: false },
+    {
+      url: 'https://www.rainbowkit.com/',
+      canGoBack: false,
+      canGoForward: false,
+    },
+    { url: 'https://app.uniswap.org/', canGoBack: false, canGoForward: false },
   ],
   tabViewFullyVisible: false,
   tabViewVisible: false,
