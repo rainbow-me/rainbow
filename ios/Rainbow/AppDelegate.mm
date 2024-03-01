@@ -163,11 +163,6 @@ sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application{
-  BOOL action = [SettingsBundleHelper checkAndExecuteSettings];
-  if(action){
-    [SentrySDK captureMessage:@"Keychain Wiped!"];
-    RCTTriggerReloadCommandListeners(@"keychain wiped");
-  }
   // delete the badge
   [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
   // delete the notifications from WC

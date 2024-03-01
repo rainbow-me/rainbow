@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.9.17-1",
+  "version": "1.9.18-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn postinstall && yarn graphql-codegen",
@@ -429,7 +429,7 @@
     "**/@babel/traverse": "7.23.2",
     "**/browserify-sign": "4.2.2",
     "**/axios": "1.6.1",
-    "**/ip":  "1.1.9"
+    "**/ip": "1.1.9"
   },
   "react-native": {
     "@tanstack/query-async-storage-persister": "@tanstack/query-async-storage-persister/build/esm/index",
