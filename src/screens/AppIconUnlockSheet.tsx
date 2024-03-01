@@ -48,7 +48,7 @@ export default function AppIconUnlockSheet() {
   }, [appIconKey]);
 
   return (
-    <SimpleSheet backgroundColor={useBackgroundColor('surfacePrimary')}>
+    <SimpleSheet backgroundColor={useBackgroundColor('surfacePrimary')} scrollEnabled={false}>
       <View onLayout={e => setParams({ longFormHeight: e.nativeEvent.layout.height })}>
         <Inset top="36px" bottom="20px" horizontal="20px">
           <Stack space="36px">

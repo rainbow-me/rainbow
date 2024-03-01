@@ -1,5 +1,5 @@
 import React from 'react';
-import { Animated, StatusBar, View } from 'react-native';
+import { Animated, Dimensions, StatusBar, View } from 'react-native';
 import { StackNavigationOptions, TransitionPreset } from '@react-navigation/stack';
 
 import { IS_IOS } from '@/env';
@@ -12,6 +12,7 @@ import AvatarCircle from '@/components/profile/AvatarCircle';
 import Routes from '@/navigation/routesNames';
 import { EmojiAvatar, ProfileAvatarSize } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileAvatarRow';
 import { BottomSheetNavigationOptions } from './bottom-sheet/types';
+import { initialWindowMetrics } from 'react-native-safe-area-context';
 
 const statusBarHeight = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight;
 export const sheetVerticalOffset = statusBarHeight;
@@ -445,12 +446,12 @@ export const addWalletNavigatorPreset = ({ route }: any) => ({
 
 export const nftSingleOfferSheetPreset = ({ route }: any) => ({
   ...bottomSheetPreset,
-  height: route?.params.longFormHeight,
+  height: (route?.params.longFormHeight || 0) + (initialWindowMetrics?.insets?.bottom || 0),
 });
 
 export const appIconUnlockSheetPreset = ({ route }: any) => ({
   ...bottomSheetPreset,
-  height: route?.params.longFormHeight,
+  height: (route?.params.longFormHeight || 0) + (initialWindowMetrics?.insets?.bottom || 0),
 });
 
 export const hardwareWalletTxNavigatorPreset = {
