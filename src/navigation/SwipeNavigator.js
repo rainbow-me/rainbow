@@ -3,12 +3,12 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import Animated, { useAnimatedStyle, useSharedValue, interpolate, Extrapolate } from 'react-native-reanimated';
 import { TabBarIcon } from '@/components/icons/TabBarIcon';
-import { FlexItem } from '@/components/layout';
+import { FlexItem, Page } from '@/components/layout';
 import { TestnetToast } from '@/components/toasts';
 import { web3Provider } from '@/handlers/web3';
 import DiscoverScreen, { discoverScrollToTopFnRef } from '../screens/discover/DiscoverScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import { deviceUtils } from '../utils';
+import { deviceUtils, safeAreaInsetValues } from '../utils';
 import { ScrollPositionContext } from './ScrollPositionContext';
 import Routes from './routesNames';
 import { useAccountAccentColor, useAccountSettings, useCoinListEdited, useDimensions } from '@/hooks';
@@ -26,6 +26,7 @@ import SectionListScrollToTopProvider, { useSectionListScrollToTopContext } from
 import { isUsingButtonNavigation } from '@/helpers/statusBarHelper';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useExperimentalFlag, POINTS } from '@/config';
+import NetworkLogger from 'react-native-network-logger';
 
 const HORIZONTAL_TAB_BAR_INSET = 6;
 
@@ -63,7 +64,7 @@ const TabBar = ({ state, descriptors, navigation, position, jumpTo, lastPress, s
 
   const showPointsTab = useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
 
-  const NUMBER_OF_TABS = showPointsTab ? 4 : 3;
+  const NUMBER_OF_TABS = showPointsTab ? 5 : 4;
   const tabWidth = (deviceWidth - HORIZONTAL_TAB_BAR_INSET * 2) / NUMBER_OF_TABS;
   const tabPillStartPosition = (tabWidth - 72) / 2 + HORIZONTAL_TAB_BAR_INSET;
 
@@ -76,19 +77,21 @@ const TabBar = ({ state, descriptors, navigation, position, jumpTo, lastPress, s
   const pos2 = useSharedValue(tabPillStartPosition + tabWidth);
   const pos3 = useSharedValue(tabPillStartPosition + tabWidth * 2);
   const pos4 = useSharedValue(tabPillStartPosition + tabWidth * 3);
+  const pos5 = useSharedValue(tabPillStartPosition + tabWidth * 4);
 
   useEffect(() => {
     pos1.value = tabPillStartPosition;
     pos2.value = tabPillStartPosition + tabWidth;
     pos3.value = tabPillStartPosition + tabWidth * 2;
     pos4.value = tabPillStartPosition + tabWidth * 3;
-  }, [pos1, pos2, pos3, pos4, tabPillStartPosition, tabWidth]);
+    pos5.value = tabPillStartPosition + tabWidth * 4;
+  }, [pos1, pos2, pos3, pos4, pos5, tabPillStartPosition, tabWidth]);
 
   const tabStyle = useAnimatedStyle(() => {
     const translateX = interpolate(
       reanimatedPosition.value,
-      [0, 1, 2, 3],
-      [pos1.value, pos2.value, pos3.value, pos4.value],
+      [0, 1, 2, 3, 4],
+      [pos1.value, pos2.value, pos3.value, pos4.value, pos5.value],
       Extrapolate.EXTEND
     );
     return {
@@ -350,6 +353,7 @@ export function SwipeNavigator() {
               <Swipe.Screen component={DiscoverScreen} name={Routes.DISCOVER_SCREEN} options={{ tabBarIcon: 'tabDiscover' }} />
               <Swipe.Screen component={ProfileScreen} name={Routes.PROFILE_SCREEN} options={{ tabBarIcon: 'tabActivity' }} />
               {showPointsTab && <Swipe.Screen component={PointsScreen} name={Routes.POINTS_SCREEN} options={{ tabBarIcon: 'tabPoints' }} />}
+              <Swipe.Screen component={NetworkTab} name="NETWORK_LOGGER" options={{ tabBarIcon: 'tabActivity' }} />
             </Swipe.Navigator>
           </ScrollPositionContext.Provider>
         </RecyclerListViewScrollToTopProvider>
@@ -359,3 +363,19 @@ export function SwipeNavigator() {
     </FlexItem>
   );
 }
+
+const NetworkTab = () => {
+  return (
+    <Page>
+      <Box
+        height={{ custom: deviceUtils.dimensions.height }}
+        paddingBottom={{ custom: getHeaderHeight() }}
+        paddingTop={{ custom: safeAreaInsetValues.top }}
+        style={{ flex: 1 }}
+        width={{ custom: deviceUtils.dimensions.width }}
+      >
+        <NetworkLogger maxRows={50} theme="dark" />
+      </Box>
+    </Page>
+  );
+};

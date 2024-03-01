@@ -2,6 +2,7 @@ import './languages';
 import * as Sentry from '@sentry/react-native';
 import React, { Component } from 'react';
 import { AppRegistry, AppState, Dimensions, InteractionManager, Linking, LogBox, View } from 'react-native';
+import { startNetworkLogging } from 'react-native-network-logger';
 
 // eslint-disable-next-line import/default
 import codePush from 'react-native-code-push';
@@ -387,4 +388,5 @@ const PlaygroundWithReduxStore = () => (
   </ReduxProvider>
 );
 
+startNetworkLogging();
 AppRegistry.registerComponent('Rainbow', () => (designSystemPlaygroundEnabled ? PlaygroundWithReduxStore : RootWithCodePush));
