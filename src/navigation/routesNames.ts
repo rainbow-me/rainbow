@@ -100,6 +100,8 @@ const Routes = {
   SETTINGS_SECTION_NETWORK: 'NetworkSection',
   SETTINGS_SECTION_NOTIFICATIONS: 'NotificationsSection',
   SETTINGS_SECTION_PRIVACY: 'PrivacySection',
+
+  SWAPS: 'Swaps',
 } as const;
 
 export const NATIVE_ROUTES = [
