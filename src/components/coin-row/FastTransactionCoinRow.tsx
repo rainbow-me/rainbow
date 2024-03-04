@@ -11,11 +11,14 @@ import { ImgixImage } from '../images';
 import { CardSize } from '../unique-token/CardSize';
 import { ChainBadge } from '../coin-icon';
 import { Network } from '@/networks/types';
-import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { address } from '@/utils/abbreviations';
-import { Colors } from '@/styles';
 import { TransactionType } from '@/resources/transactions/types';
-import { convertAmountAndPriceToNativeDisplay, convertAmountToBalanceDisplay, greaterThan } from '@/helpers/utilities';
+import {
+  convertAmountAndPriceToNativeDisplay,
+  convertAmountToBalanceDisplay,
+  convertRawAmountToBalance,
+  greaterThan,
+} from '@/helpers/utilities';
 import { TwoCoinsIcon } from '../coin-icon/TwoCoinsIcon';
 import Spinner from '../Spinner';
 import * as lang from '@/languages';
@@ -25,7 +28,13 @@ export const getApprovalLabel = ({ approvalAmount, asset, type }: Pick<RainbowTr
   if (!approvalAmount || !asset) return;
   if (approvalAmount === 'UNLIMITED') return lang.t(lang.l.transactions.approvals.unlimited);
   if (type === 'revoke') return lang.t(lang.l.transactions.approvals.no_allowance);
-  return `${approvalAmount} ${asset.symbol}`;
+  const amountDisplay = convertRawAmountToBalance(
+    approvalAmount,
+    { decimals: asset?.decimals, symbol: asset?.symbol },
+    undefined,
+    true
+  )?.display;
+  return amountDisplay || '';
 };
 
 const approvalTypeValues = (transaction: RainbowTransaction) => {
@@ -345,34 +354,6 @@ export const ActivityIcon = ({
         colors={transaction?.asset?.colors}
       />
     </View>
-  );
-};
-
-const ActivityDescription = ({ transaction, colors }: { transaction: RainbowTransaction; colors: Colors }) => {
-  const { type, to, asset } = transaction;
-  let description = transaction.description;
-  let tag: string | undefined;
-  if (type === 'contract_interaction' && to) {
-    description = transaction.contract?.name || address(to, 6, 4);
-    tag = transaction.description;
-  }
-
-  const nftChangesAmount = transaction.changes
-    ?.filter(c => asset?.address === c?.asset.address && c?.asset.type === 'nft')
-    .filter(Boolean).length;
-  if (nftChangesAmount) tag = nftChangesAmount.toString();
-
-  return (
-    <Inline space="4px" alignVertical="center" wrap={false}>
-      <Text size="16px / 22px (Deprecated)" weight="regular" color={{ custom: colors.dark }}>
-        {description}
-      </Text>
-      {tag && (
-        <Text size="16px / 22px (Deprecated)" weight="regular" color={{ custom: colors.dark }}>
-          {tag}
-        </Text>
-      )}
-    </Inline>
   );
 };
 
