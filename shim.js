@@ -3,13 +3,13 @@ import 'react-native-url-polyfill/auto';
 import '@ethersproject/shims';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ReactNative from 'react-native';
-import Animated from 'react-native-reanimated';
 import Storage from 'react-native-storage';
 // import { debugLayoutAnimations } from './src/config/debug';
 import { mmkvStorageBackend } from '@/handlers/localstorage/mmkvStorageBackend';
 import toLocaleStringPolyfill from '@/helpers/toLocaleStringPolyfill';
 import logger from '@/utils/logger';
 import 'fast-text-encoding';
+import globalVariables from './globalVariables';
 
 if (typeof BigInt === 'undefined') global.BigInt = require('big-integer');
 
@@ -33,8 +33,6 @@ if (ReactNative.Keyboard.removeEventListener) {
   ReactNative.Keyboard.removeListener = ReactNative.Keyboard.removeEventListener;
 }
 
-ReactNative.Platform.OS === 'ios' && Animated.addWhitelistedNativeProps({ d: true });
-
 const storage = new Storage({
   defaultExpires: null,
   size: 10000,
@@ -46,33 +44,13 @@ if (ReactNative.Platform.OS === 'android') {
   ReactNative.UIManager.setLayoutAnimationEnabledExperimental?.(true);
 }
 
-if (!global.__reanimatedModuleProxy && !ReactNative.TurboModuleRegistry.get('NativeReanimated')) {
-  global.__reanimatedModuleProxy = {
-    __shimmed: true,
-    installCoreFunctions() {},
-    makeMutable(init) {
-      return { value: init };
-    },
-    makeRemote() {},
-    makeShareable() {
-      return () => {};
-    },
-    registerEventHandler() {},
-    startMapper() {},
-    stopMapper() {},
-    unregisterEventHandler() {},
-  };
-}
-
 global.storage = storage;
 
-// shimming for reanimated need to happen before importing globalVariables.js
-// eslint-disable-next-line import/no-commonjs
-for (const variable of Object.entries(require('./globalVariables').default)) {
-  Object.defineProperty(global, variable[0], {
-    get: () => variable[1],
+for (const [key, value] of Object.entries(globalVariables)) {
+  Object.defineProperty(global, key, {
+    get: () => value,
     set: () => {
-      logger.sentry(`Trying to override internal Rainbow var ${variable[0]}`);
+      logger.sentry(`Trying to override internal Rainbow var ${key}`);
     },
   });
 }
