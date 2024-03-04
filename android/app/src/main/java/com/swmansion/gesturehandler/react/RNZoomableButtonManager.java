@@ -20,7 +20,7 @@ import javax.annotation.Nullable;
 
 public class RNZoomableButtonManager extends
         RNGestureHandlerButtonViewManager {
-    static class ZoomableButtonViewGroup extends ButtonViewGroup {
+    public static class ZoomableButtonViewGroup extends ButtonViewGroup {
         int mMinLongPressDuration = 500;
         float mScaleTo = 0.86f;
         int mDuration = 160;
