@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import lang from 'i18n-js';
 import React, { useCallback, useContext, useState } from 'react';
-import { InteractionManager, Switch } from 'react-native';
+import { InteractionManager } from 'react-native';
 import codePush from 'react-native-code-push';
 import {
   // @ts-ignore
@@ -48,18 +48,18 @@ import { defaultConfig, getExperimetalFlag, LOG_PUSH } from '@/config';
 import { settingsUpdateNetwork } from '@/redux/settings';
 import { serialize } from '@/logger/logDump';
 import { isAuthenticated } from '@/utils/authentication';
-import { DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS } from '@/redux/data';
-import { saveLocalPendingTransactions } from '@/handlers/localstorage/accountLocal';
 import { getFCMToken } from '@/notifications/tokens';
 import { BackgroundProvider, Box, Inline, Inset, Text } from '@/design-system';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { removeGlobalNotificationSettings } from '@/notifications/settings/settings';
+import { pendingTransactionsStore } from '@/state/pendingTransactions';
+import { nonceStore } from '@/state/nonces';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
   const { config, setConfig } = useContext(RainbowContext) as any;
   const { wallets } = useWallets();
-  const { accountAddress, testnetsEnabled, settingsChangeTestnetsEnabled } = useAccountSettings();
+  const { testnetsEnabled, settingsChangeTestnetsEnabled } = useAccountSettings();
   const { walletNotificationSettings } = useAllNotificationSettingsFromStorage();
   const dispatch = useDispatch();
   const resetAccountState = useResetAccountState();
@@ -182,16 +182,12 @@ const DevSection = () => {
   }, [walletNotificationSettings]);
 
   const clearPendingTransactions = async () => {
-    // clear local storage
-    saveLocalPendingTransactions([], accountAddress, Network.mainnet);
+    const { clearPendingTransactions: clearPendingTxs } = pendingTransactionsStore.getState();
+    const { clearNonces } = nonceStore.getState();
 
-    // clear redux
-    dispatch({
-      payload: [],
-      type: DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS,
-    });
+    clearPendingTxs();
+    clearNonces();
   };
-
   const clearLocalStorage = async () => {
     setLoadingStates(prev => ({ ...prev, clearLocalStorage: true }));
 

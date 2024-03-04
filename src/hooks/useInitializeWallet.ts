@@ -20,7 +20,6 @@ import useResetAccountState from './useResetAccountState';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { runKeychainIntegrityChecks } from '@/handlers/walletReadyEvents';
-import { checkPendingTransactionsOnInitialize } from '@/redux/data';
 import { RainbowError, logger } from '@/logger';
 
 export default function useInitializeWallet() {
@@ -143,7 +142,6 @@ export default function useInitializeWallet() {
           walletStatus: getWalletStatusForPerformanceMetrics(isNew, isImporting),
         });
 
-        dispatch(checkPendingTransactionsOnInitialize(walletAddress));
         return walletAddress;
       } catch (error) {
         PerformanceTracking.clearMeasure(PerformanceMetrics.useInitializeWallet);
