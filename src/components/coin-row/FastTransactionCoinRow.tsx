@@ -11,9 +11,7 @@ import { ImgixImage } from '../images';
 import { CardSize } from '../unique-token/CardSize';
 import { ChainBadge } from '../coin-icon';
 import { Network } from '@/networks/types';
-import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { address } from '@/utils/abbreviations';
-import { Colors } from '@/styles';
 import { TransactionType } from '@/resources/transactions/types';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToBalanceDisplay, greaterThan } from '@/helpers/utilities';
 import { TwoCoinsIcon } from '../coin-icon/TwoCoinsIcon';
@@ -188,6 +186,11 @@ const BottomRow = React.memo(function BottomRow({
     tag = transaction.description;
   }
 
+  if (transaction?.type === 'mint') {
+    const inAsset = transaction?.changes?.find(a => a?.direction === 'in')?.asset;
+    description = inAsset?.name || '';
+  }
+
   if (['wrap', 'unwrap', 'swap'].includes(transaction?.type)) {
     const inAsset = transaction?.changes?.find(a => a?.direction === 'in')?.asset;
     const outAsset = transaction?.changes?.find(a => a?.direction === 'out')?.asset;
@@ -345,34 +348,6 @@ export const ActivityIcon = ({
         colors={transaction?.asset?.colors}
       />
     </View>
-  );
-};
-
-const ActivityDescription = ({ transaction, colors }: { transaction: RainbowTransaction; colors: Colors }) => {
-  const { type, to, asset } = transaction;
-  let description = transaction.description;
-  let tag: string | undefined;
-  if (type === 'contract_interaction' && to) {
-    description = transaction.contract?.name || address(to, 6, 4);
-    tag = transaction.description;
-  }
-
-  const nftChangesAmount = transaction.changes
-    ?.filter(c => asset?.address === c?.asset.address && c?.asset.type === 'nft')
-    .filter(Boolean).length;
-  if (nftChangesAmount) tag = nftChangesAmount.toString();
-
-  return (
-    <Inline space="4px" alignVertical="center" wrap={false}>
-      <Text size="16px / 22px (Deprecated)" weight="regular" color={{ custom: colors.dark }}>
-        {description}
-      </Text>
-      {tag && (
-        <Text size="16px / 22px (Deprecated)" weight="regular" color={{ custom: colors.dark }}>
-          {tag}
-        </Text>
-      )}
-    </Inline>
   );
 };
 
