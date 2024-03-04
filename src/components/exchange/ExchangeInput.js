@@ -132,7 +132,7 @@ const ExchangeInput = (
         value={value}
         weight={weight}
       />
-      {useCustomAndroidMask && value > 0 && !ref.current?.isFocused() && (
+      {useCustomAndroidMask && value > 0 && !ref.current?.isFocused?.() && (
         <AndroidMaskWrapper>
           <Text color={color} letterSpacing={letterSpacing} size={size} testID={testID} weight={weight} {...props}>
             {valueToRender}

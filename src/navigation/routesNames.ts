@@ -5,6 +5,7 @@ const Routes = {
   ADD_CASH_SHEET: 'AddCashSheet',
   ADD_WALLET_NAVIGATOR: 'AddWalletNavigator',
   ADD_WALLET_SHEET: 'AddWalletSheet',
+  APP_ICON_UNLOCK_SHEET: 'AppIconUnlockSheet',
   AVATAR_BUILDER: 'AvatarBuilder',
   AVATAR_BUILDER_WALLET: 'AvatarBuilderWallet',
   BACKUP_SCREEN: 'BackupScreen',
@@ -100,6 +101,8 @@ const Routes = {
   SETTINGS_SECTION_NETWORK: 'NetworkSection',
   SETTINGS_SECTION_NOTIFICATIONS: 'NotificationsSection',
   SETTINGS_SECTION_PRIVACY: 'PrivacySection',
+
+  SWAPS: 'Swaps',
 } as const;
 
 export const NATIVE_ROUTES = [

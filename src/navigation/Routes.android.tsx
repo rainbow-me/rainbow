@@ -55,6 +55,7 @@ import {
   walletconnectBottomSheetPreset,
   consoleSheetPreset,
   swapSheetPreset,
+  appIconUnlockSheetPreset,
 } from './effects';
 import { InitialRouteContext } from './initialRoute';
 import { onNavigationStateChange } from './onNavigationStateChange';
@@ -87,6 +88,7 @@ import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoShe
 import { ConsoleSheet } from '@/screens/points/ConsoleSheet';
 import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileContext';
 import { SwapScreen } from '@/screens/Swap/Swap';
+import AppIconUnlockSheet from '@/screens/AppIconUnlockSheet';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -227,6 +229,7 @@ function BSNavigator() {
       <BSStack.Screen name={Routes.MINTS_SHEET} component={MintsSheet} />
       <BSStack.Screen component={SignTransactionSheet} name={Routes.CONFIRM_REQUEST} options={walletconnectBottomSheetPreset} />
       <BSStack.Screen component={ConsoleSheet} name={Routes.CONSOLE_SHEET} options={consoleSheetPreset} />
+      <BSStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} options={appIconUnlockSheetPreset} />
     </BSStack.Navigator>
   );
 }
