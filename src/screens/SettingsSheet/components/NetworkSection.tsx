@@ -30,7 +30,7 @@ const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
       await resetAccountState();
       await dispatch(settingsUpdateNetwork(network));
       InteractionManager.runAfterInteractions(async () => {
-        await loadAccountData(network);
+        await loadAccountData();
         initializeAccountData();
         analytics.track('Changed network', { network });
       });

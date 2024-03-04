@@ -119,7 +119,7 @@ export default function useInitializeWallet() {
 
         // Newly created / imported accounts have no data in localstorage
         if (!(isNew || isImporting)) {
-          await loadAccountData(network);
+          await loadAccountData();
           logger.debug('loaded account data', {
             network,
           });

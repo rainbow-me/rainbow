@@ -156,20 +156,6 @@ const DevSection = () => {
 
   const codePushVersion = useAppVersion()[1];
 
-  const revertToMainnet = useCallback(async () => {
-    await resetAccountState();
-    await dispatch(settingsUpdateNetwork(Network.mainnet));
-    InteractionManager.runAfterInteractions(async () => {
-      await loadAccountData(Network.mainnet);
-      initializeAccountData();
-    });
-  }, [dispatch, initializeAccountData, loadAccountData, resetAccountState]);
-
-  const toggleTestnetsEnabled = useCallback(async () => {
-    testnetsEnabled && revertToMainnet();
-    await dispatch(settingsChangeTestnetsEnabled(!testnetsEnabled));
-  }, [dispatch, revertToMainnet, settingsChangeTestnetsEnabled, testnetsEnabled]);
-
   const clearAllNotificationSettings = useCallback(async () => {
     // loop through notification settings and unsubscribe all wallets
     // from firebase first or we’re gonna keep getting them even after
