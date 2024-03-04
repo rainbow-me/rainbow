@@ -3,7 +3,7 @@ import { BlurView } from '@react-native-community/blur';
 import MaskedView from '@react-native-masked-view/masked-view';
 import c from 'chroma-js';
 import React, { ReactNode, useMemo } from 'react';
-import { StyleSheet, Text as RNText, ScrollView, TextInput, ViewStyle } from 'react-native';
+import { StyleSheet, Text as RNText, ScrollView, TextInput, ViewStyle, StatusBar } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
@@ -103,6 +103,7 @@ import {
 import { useAnimatedSwapStyles, useSwapInputsController, useSwapNavigation, useSwapTextStyles } from './hooks/swapHooks';
 import { inputKeys } from './types';
 import { getHighContrastColor, getTintedBackgroundColor, opacity } from './utils';
+import { IS_ANDROID, IS_IOS } from '@/env';
 
 /** README
  * This prototype is largely driven by Reanimated and Gesture Handler, which
@@ -260,7 +261,7 @@ export function SwapScreen() {
 
   return (
     <SheetGestureBlocker disabled={!(isInputSearchFocused || isOutputSearchFocused)}>
-      <Box as={Page} style={styles.rootViewBackground} testID="feed-screen" width="full">
+      <Box as={Page} style={styles.rootViewBackground} testID="feed-screen" height="full" width="full">
         <SwapBackground bottomColor={bottomColor} topColor={topColor}>
           <Box alignItems="center" height="full" paddingTop={{ custom: 29 }} width="full">
             <SwapInput color={topColor} otherInputProgress={outputProgress} progress={inputProgress}>
@@ -484,7 +485,7 @@ export function SwapScreen() {
               bottom="0px"
               justifyContent="center"
               position="absolute"
-              style={[{ flex: 1, flexDirection: 'column', gap: 16, zIndex: -10 }, keyboardStyle]}
+              style={[{ flex: 1, flexDirection: 'column', gap: 16, zIndex: 10 }, keyboardStyle]}
               width="full"
             >
               <PanGestureHandler>
@@ -565,7 +566,14 @@ export function SwapScreen() {
             </Box>
           </Box>
         </SwapBackground>
-        <Box as={Animated.View} pointerEvents="box-none" position="absolute" style={focusedSearchStyle} top="0px" width="full">
+        <Box
+          as={Animated.View}
+          pointerEvents="box-none"
+          position="absolute"
+          style={focusedSearchStyle}
+          top={{ custom: IS_IOS ? 0 : (StatusBar.currentHeight ?? 0) - 6 ?? 0 }}
+          width="full"
+        >
           <Box
             borderRadius={5}
             height={{ custom: 5 }}
@@ -578,7 +586,7 @@ export function SwapScreen() {
             width={{ custom: 36 }}
           />
           <Navbar
-            hasStatusBarInset
+            hasStatusBarInset={IS_IOS}
             leftComponent={
               <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.8}>
                 {accountImage ? (
@@ -631,7 +639,7 @@ export function SwapScreen() {
                           align="center"
                           color={isDarkMode ? 'label' : 'labelSecondary'}
                           size="icon 17px"
-                          style={{ lineHeight: 33 }}
+                          style={{ lineHeight: IS_ANDROID ? 17 : 33 }}
                           weight="regular"
                         >
                           􀣌
@@ -643,7 +651,7 @@ export function SwapScreen() {
               </ButtonPressAnimation>
             }
             titleComponent={
-              <Inset bottom={{ custom: 5.5 }}>
+              <Inset bottom={{ custom: IS_IOS ? 5.5 : 14 }}>
                 <Text align="center" color="label" size="20pt" weight="heavy">
                   {i18n.t(i18n.l.swap.modal_types.swap)}
                 </Text>
@@ -692,9 +700,9 @@ const SwapBackground = ({
       borderRadius={ScreenCornerRadius}
       colors={[topColorDarkened, bottomColorDarkened]}
       end={{ x: 0.5, y: 1 }}
-      height={{ custom: deviceHeight }}
+      height={{ custom: deviceHeight + (IS_ANDROID ? StatusBar.currentHeight ?? 0 : 0) }}
       justifyContent="center"
-      paddingTop={{ custom: safeAreaInsetValues.top + (navbarHeight - 12) }}
+      paddingTop={{ custom: safeAreaInsetValues.top + (navbarHeight - 12) + (IS_ANDROID ? StatusBar.currentHeight ?? 0 : 0) }}
       start={{ x: 0.5, y: 0 }}
       style={{ backgroundColor: topColor }}
       width={{ custom: deviceWidth }}
@@ -839,6 +847,7 @@ export const SwapInput = ({
       as={Animated.View}
       style={[containerStyle, styles.staticInputContainerStyles, { shadowColor: mixedShadowColor }]}
       width={{ custom: BASE_INPUT_WIDTH }}
+      zIndex={100}
     >
       <Box as={Animated.View} style={[inputStyle, styles.staticInputStyles]}>
         {children}
@@ -1573,8 +1582,13 @@ const styles = StyleSheet.create({
   },
   inputTextMask: { alignItems: 'center', flexDirection: 'row', height: 36, pointerEvents: 'box-only' },
   rootViewBackground: {
-    backgroundColor: 'transparent',
     borderRadius: ScreenCornerRadius,
+    ...(IS_ANDROID
+      ? {
+          borderBottomLeftRadius: 0,
+          borderBottomRightRadius: 0,
+        }
+      : {}),
     flex: 1,
     overflow: 'hidden',
   },
@@ -1585,6 +1599,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.1,
     shadowRadius: 9,
+    zIndex: 10,
   },
   staticInputStyles: {
     borderCurve: 'continuous',
@@ -1598,6 +1613,7 @@ const styles = StyleSheet.create({
     padding: 16,
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 10,
+    zIndex: 10,
   },
 });
 //

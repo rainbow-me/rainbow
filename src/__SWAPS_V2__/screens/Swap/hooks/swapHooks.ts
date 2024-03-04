@@ -622,6 +622,7 @@ export function useSwapTextStyles({
       flexGrow: 0,
       flexShrink: 1,
       opacity,
+      zIndex: 10,
     };
   }, [isDarkMode, topColor]);
 
@@ -655,6 +656,7 @@ export function useSwapTextStyles({
       flexGrow: 0,
       flexShrink: 1,
       opacity,
+      zIndex: 10,
     };
   }, [bottomColor, isDarkMode]);
 
