@@ -222,7 +222,7 @@
     "react-native-extra-dimensions-android": "1.2.2",
     "react-native-fast-image": "8.5.11",
     "react-native-fs": "2.16.6",
-    "react-native-gesture-handler": "rainbow-me/react-native-gesture-handler#0c4b8bef72a8d5d1719521543982ba6abcd0d930",
+    "react-native-gesture-handler": "git+https://github.com/rainbow-me/react-native-gesture-handler#72ab14623d2b27b258f313b0cf1186cbdc7aabd6",
     "react-native-get-random-values": "1.5.0",
     "react-native-haptic-feedback": "1.11.0",
     "react-native-image-crop-picker": "0.37.3",
