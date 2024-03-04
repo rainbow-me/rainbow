@@ -87,7 +87,7 @@ import { SignTransactionSheet } from '@/screens/SignTransactionSheet';
 import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoSheet';
 import { ConsoleSheet } from '@/screens/points/ConsoleSheet';
 import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileContext';
-import { SwapScreen } from '@/__SWAPS_V2__/Swap/Swap';
+import { SwapScreen } from '@/__SWAPS_V2__/screens/Swap/Swap';
 import AppIconUnlockSheet from '@/screens/AppIconUnlockSheet';
 import { useRemoteConfig } from '@/model/remoteConfig';
 

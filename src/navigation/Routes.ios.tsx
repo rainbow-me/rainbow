@@ -81,7 +81,7 @@ import createNativeStackNavigator from '@/react-native-cool-modals/createNativeS
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
-import { SwapScreen } from '@/__SWAPS_V2__/Swap/Swap';
+import { SwapScreen } from '@/__SWAPS_V2__/screens/Swap/Swap';
 import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
 import { AddWalletNavigator } from './AddWalletNavigator';
 import { HardwareWalletTxNavigator } from './HardwareWalletTxNavigator';
