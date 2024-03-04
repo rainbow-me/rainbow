@@ -62,7 +62,7 @@ import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
 import { deviceUtils } from '@/utils';
-import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import useExperimentalFlag, { PROFILES, SWAPS_V2 } from '@/config/experimentalHooks';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
@@ -87,8 +87,9 @@ import { SignTransactionSheet } from '@/screens/SignTransactionSheet';
 import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoSheet';
 import { ConsoleSheet } from '@/screens/points/ConsoleSheet';
 import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileContext';
-import { SwapScreen } from '@/screens/Swap/Swap';
+import { SwapScreen } from '@/__SWAPS_V2__/Swap/Swap';
 import AppIconUnlockSheet from '@/screens/AppIconUnlockSheet';
+import { useRemoteConfig } from '@/model/remoteConfig';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -149,9 +150,13 @@ function MainOuterNavigator() {
 
 function BSNavigator() {
   const profilesEnabled = useExperimentalFlag(PROFILES);
+  const remoteConfig = useRemoteConfig();
+  const swapsV2Enabled = useExperimentalFlag(SWAPS_V2) || remoteConfig.swaps_v2;
 
   return (
     <BSStack.Navigator>
+      {swapsV2Enabled && <BSStack.Screen component={SwapScreen} name={Routes.SWAP} options={swapSheetPreset} />}
+
       <BSStack.Screen component={MainOuterNavigator} name={Routes.MAIN_NAVIGATOR_WRAPPER} />
       <BSStack.Screen
         component={ShowcaseSheet}
@@ -162,7 +167,6 @@ function BSNavigator() {
       />
       <BSStack.Screen component={LearnWebViewScreen} name={Routes.LEARN_WEB_VIEW_SCREEN} {...learnWebViewScreenConfig} />
       <BSStack.Screen component={ExpandedAssetSheet} name={Routes.EXPANDED_ASSET_SHEET} />
-      <BSStack.Screen component={SwapScreen} name={Routes.SWAP} options={swapSheetPreset} />
       <BSStack.Screen component={PoapSheet} name={Routes.POAP_SHEET} />
       <BSStack.Screen component={MintSheet} name={Routes.MINT_SHEET} />
       <BSStack.Screen component={QRScannerScreen} name={Routes.QR_SCANNER_SCREEN} />

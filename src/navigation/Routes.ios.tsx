@@ -76,12 +76,12 @@ import { nativeStackConfig } from './nativeStackConfig';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
-import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import useExperimentalFlag, { PROFILES, SWAPS_V2 } from '@/config/experimentalHooks';
 import createNativeStackNavigator from '@/react-native-cool-modals/createNativeStackNavigator';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
-import { SwapScreen } from '@/screens/Swap/Swap';
+import { SwapScreen } from '@/__SWAPS_V2__/Swap/Swap';
 import { TransactionDetails } from '@/screens/transaction-details/TransactionDetails';
 import { AddWalletNavigator } from './AddWalletNavigator';
 import { HardwareWalletTxNavigator } from './HardwareWalletTxNavigator';
@@ -97,6 +97,7 @@ import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoShe
 import { ConsoleSheet } from '@/screens/points/ConsoleSheet';
 import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileContext';
 import AppIconUnlockSheet from '@/screens/AppIconUnlockSheet';
+import { useRemoteConfig } from '@/model/remoteConfig';
 
 type StackNavigatorParams = {
   [Routes.SEND_SHEET]: unknown;
@@ -139,7 +140,10 @@ function MainStack() {
 
 function NativeStackNavigator() {
   const { colors, isDarkMode } = useTheme();
+  const remoteConfig = useRemoteConfig();
+
   const profilesEnabled = useExperimentalFlag(PROFILES);
+  const swapsV2Enabled = useExperimentalFlag(SWAPS_V2) || remoteConfig.swaps_v2;
 
   return (
     <NativeStack.Navigator {...nativeStackConfig}>
@@ -286,7 +290,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen name={Routes.NFT_SINGLE_OFFER_SHEET} component={NFTSingleOfferSheet} {...nftSingleOfferSheetConfig} />
       <NativeStack.Screen name={Routes.MINTS_SHEET} component={MintsSheet} {...mintsSheetConfig} />
       <NativeStack.Screen component={ConsoleSheet} name={Routes.CONSOLE_SHEET} {...consoleSheetConfig} />
-      <NativeStack.Screen component={SwapScreen} name={Routes.SWAP} {...swapConfig} />
+      {swapsV2Enabled && <NativeStack.Screen component={SwapScreen} name={Routes.SWAP} {...swapConfig} />}
       <NativeStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} {...appIconUnlockSheetConfig} />
     </NativeStack.Navigator>
   );
