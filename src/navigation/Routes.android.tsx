@@ -54,6 +54,7 @@ import {
   nftSingleOfferSheetPreset,
   walletconnectBottomSheetPreset,
   consoleSheetPreset,
+  swapSheetPreset,
   appIconUnlockSheetPreset,
 } from './effects';
 import { InitialRouteContext } from './initialRoute';
@@ -86,6 +87,7 @@ import { SignTransactionSheet } from '@/screens/SignTransactionSheet';
 import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoSheet';
 import { ConsoleSheet } from '@/screens/points/ConsoleSheet';
 import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileContext';
+import { SwapScreen } from '@/screens/Swap/Swap';
 import AppIconUnlockSheet from '@/screens/AppIconUnlockSheet';
 
 const Stack = createStackNavigator();
@@ -160,6 +162,7 @@ function BSNavigator() {
       />
       <BSStack.Screen component={LearnWebViewScreen} name={Routes.LEARN_WEB_VIEW_SCREEN} {...learnWebViewScreenConfig} />
       <BSStack.Screen component={ExpandedAssetSheet} name={Routes.EXPANDED_ASSET_SHEET} />
+      <BSStack.Screen component={SwapScreen} name={Routes.SWAP} options={swapSheetPreset} />
       <BSStack.Screen component={PoapSheet} name={Routes.POAP_SHEET} />
       <BSStack.Screen component={MintSheet} name={Routes.MINT_SHEET} />
       <BSStack.Screen component={QRScannerScreen} name={Routes.QR_SCANNER_SCREEN} />

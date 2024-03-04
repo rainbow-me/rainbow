@@ -5,6 +5,7 @@ import { AppRegistry, AppState, Dimensions, InteractionManager, Linking, LogBox,
 
 // eslint-disable-next-line import/default
 import codePush from 'react-native-code-push';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import { connect, Provider as ReduxProvider } from 'react-redux';
@@ -366,7 +367,9 @@ function Root() {
               <RainbowContextWrapper>
                 <SharedValuesProvider>
                   <ErrorBoundary>
-                    <App />
+                    <GestureHandlerRootView style={{ flex: 1 }}>
+                      <App />
+                    </GestureHandlerRootView>
                   </ErrorBoundary>
                 </SharedValuesProvider>
               </RainbowContextWrapper>

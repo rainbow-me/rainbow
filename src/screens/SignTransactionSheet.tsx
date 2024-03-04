@@ -881,7 +881,6 @@ export const SignTransactionSheet = () => {
 
   return (
     // This PanGestureHandler blocks sheet dismiss gestures on iOS
-    // @ts-expect-error Property 'children' does not exist on type
     <PanGestureHandler enabled={IS_IOS}>
       <Animated.View>
         <Inset bottom={{ custom: SCREEN_BOTTOM_INSET }}>
