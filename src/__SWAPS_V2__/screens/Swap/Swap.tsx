@@ -261,7 +261,7 @@ export function SwapScreen() {
 
   return (
     <SheetGestureBlocker disabled={!(isInputSearchFocused || isOutputSearchFocused)}>
-      <Box as={Page} style={styles.rootViewBackground} testID="feed-screen" height="full" width="full">
+      <Box as={Page} style={styles.rootViewBackground} testID="feed-screen" width="full">
         <SwapBackground bottomColor={bottomColor} topColor={topColor}>
           <Box alignItems="center" height="full" paddingTop={{ custom: 29 }} width="full">
             <SwapInput color={topColor} otherInputProgress={outputProgress} progress={inputProgress}>
