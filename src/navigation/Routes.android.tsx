@@ -150,13 +150,10 @@ function MainOuterNavigator() {
 
 function BSNavigator() {
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const remoteConfig = useRemoteConfig();
-  const swapsV2Enabled = useExperimentalFlag(SWAPS_V2) || remoteConfig.swaps_v2;
+  const swapsV2Enabled = useExperimentalFlag(SWAPS_V2);
 
   return (
     <BSStack.Navigator>
-      {swapsV2Enabled && <BSStack.Screen component={SwapScreen} name={Routes.SWAP} options={swapSheetPreset} />}
-
       <BSStack.Screen component={MainOuterNavigator} name={Routes.MAIN_NAVIGATOR_WRAPPER} />
       <BSStack.Screen
         component={ShowcaseSheet}
@@ -234,6 +231,7 @@ function BSNavigator() {
       <BSStack.Screen component={SignTransactionSheet} name={Routes.CONFIRM_REQUEST} options={walletconnectBottomSheetPreset} />
       <BSStack.Screen component={ConsoleSheet} name={Routes.CONSOLE_SHEET} options={consoleSheetPreset} />
       <BSStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} options={appIconUnlockSheetPreset} />
+      {swapsV2Enabled && <BSStack.Screen component={SwapScreen} name={Routes.SWAP} options={swapSheetPreset} />}
     </BSStack.Navigator>
   );
 }

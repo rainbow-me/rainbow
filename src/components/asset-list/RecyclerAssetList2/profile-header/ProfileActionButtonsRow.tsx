@@ -182,7 +182,7 @@ function SwapButton() {
 
       android && delayNext();
       if (swapsV2Enabled) {
-        navigate(Routes.SWAPS, {
+        navigate(Routes.SWAP, {
           inputAsset: ETH_ADDRESS,
         });
         return;

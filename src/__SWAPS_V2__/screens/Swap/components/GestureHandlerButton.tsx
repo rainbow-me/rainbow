@@ -3,6 +3,8 @@ import { StyleProp, ViewProps, ViewStyle } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
+import ConditionalWrap from 'conditional-wrap';
+import { IS_IOS } from '@/env';
 
 type GestureHandlerButtonProps = {
   children: React.ReactNode;
@@ -38,12 +40,23 @@ export function GestureHandlerButton({
   );
 
   return (
-    <ButtonPressAnimation disabled={disabled} scaleTo={disableButtonPressWrapper ? 1 : scaleTo} useLateHaptic={disableButtonPressWrapper}>
+    <ConditionalWrap
+      condition={IS_IOS}
+      wrap={children => (
+        <ButtonPressAnimation
+          disabled={disabled}
+          scaleTo={disableButtonPressWrapper ? 1 : scaleTo}
+          useLateHaptic={disableButtonPressWrapper}
+        >
+          {children}
+        </ButtonPressAnimation>
+      )}
+    >
       <GestureDetector gesture={pressHandler}>
         <Animated.View accessible accessibilityRole="button" pointerEvents={pointerEvents} style={style}>
           {children}
         </Animated.View>
       </GestureDetector>
-    </ButtonPressAnimation>
+    </ConditionalWrap>
   );
 }
