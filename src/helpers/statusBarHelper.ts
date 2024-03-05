@@ -1,4 +1,5 @@
-import { ColorValue, StatusBar, StatusBarAnimation, Dimensions } from 'react-native';
+import { ColorValue, StatusBar, StatusBarAnimation } from 'react-native';
+import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 
 export const setTranslucent = (translucent: boolean): void => {
   StatusBar.setTranslucent(translucent);
@@ -31,8 +32,5 @@ export const setDarkContent = (isAnimated = true) => {
 };
 
 export const isUsingButtonNavigation = () => {
-  const deviceHeight = Dimensions.get('screen').height;
-  const windowHeight = Dimensions.get('window').height;
-  const bottomNavBarHeight = deviceHeight - windowHeight;
-  return bottomNavBarHeight > 70;
+  return getSoftMenuBarHeight() > 95;
 };
