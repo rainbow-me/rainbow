@@ -55,7 +55,7 @@ interface RainbowConfig extends Record<string, string | boolean | number> {
   op_chains_enabled: boolean;
   mainnet_enabled: boolean;
   goerli_enabled: boolean;
-  avax_enabled: boolean;
+  avalanche_enabled: boolean;
 
   arbitrum_tx_enabled: boolean;
   base_tx_enabled: boolean;
@@ -66,7 +66,7 @@ interface RainbowConfig extends Record<string, string | boolean | number> {
   op_chains_tx_enabled: boolean;
   mainnet_tx_enabled: boolean;
   goerli_tx_enabled: boolean;
-  avax_tx_enabled: boolean;
+  avalanche_tx_enabled: boolean;
 
   base_swaps_enabled: boolean;
   mints_enabled: boolean;
@@ -116,7 +116,7 @@ const DEFAULT_CONFIG: RainbowConfig = {
   zora_enabled: true,
   base_enabled: true,
   op_chains_enabled: true,
-  avax_enabled: true,
+  avalanche_enabled: true,
 
   mainnet_enabled: true,
 
@@ -129,7 +129,7 @@ const DEFAULT_CONFIG: RainbowConfig = {
   optimism_tx_enabled: true,
   zora_tx_enabled: true,
   op_chains_tx_enabled: true,
-  avax_tx_enabled: true,
+  avalanche_tx_enabled: true,
 
   mainnet_tx_enabled: true,
 
