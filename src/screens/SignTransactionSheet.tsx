@@ -1464,9 +1464,6 @@ const DetailsCard = ({
             {showFunctionRow && <DetailRow detailType="function" value={methodName} />}
             {!!meta?.to?.sourceCodeStatus && <DetailRow detailType="sourceCodeVerification" value={meta.to.sourceCodeStatus} />}
             {!!meta?.to?.created && <DetailRow detailType="dateCreated" value={formatDate(meta?.to?.created)} />}
-            {showFunctionRow && <DetailRow detailType="function" value={methodName} />}
-            {!!meta?.to?.sourceCodeStatus && <DetailRow detailType="sourceCodeVerification" value={meta.to.sourceCodeStatus} />}
-            {!!meta?.to?.created && <DetailRow detailType="dateCreated" value={formatDate(meta?.to?.created)} />}
             {nonce && <DetailRow detailType="nonce" value={nonce} />}
           </Stack>
         </Animated.View>

@@ -72,6 +72,7 @@ interface RainbowConfig extends Record<string, string | boolean | number> {
   remote_promo_enabled: boolean;
   points_notifications_toggle: boolean;
   swaps_v2: boolean;
+  dapp_browser: boolean;
 }
 
 const DEFAULT_CONFIG: RainbowConfig = {
@@ -136,6 +137,7 @@ const DEFAULT_CONFIG: RainbowConfig = {
   remote_promo_enabled: false,
   points_notifications_toggle: true,
   swaps_v2: false,
+  dapp_browser: false,
 };
 
 export async function fetchRemoteConfig(): Promise<RainbowConfig> {
@@ -180,7 +182,8 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
         key === 'remote_promo_enabled' ||
         key === 'remote_cards_enabled' ||
         key === 'points_notifications_toggle' ||
-        key === 'swaps_v2'
+        key === 'swaps_v2' ||
+        key === 'dapp_browser'
       ) {
         config[key] = entry.asBoolean();
       } else {
