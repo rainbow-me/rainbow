@@ -102,10 +102,10 @@ export const getWalletsThatNeedBackedUp = (wallets: { [key: string]: RainbowWall
   return walletsToBackup;
 };
 
-export const fetchBackupPasswordAndNavigate = async navigate => {
+export const fetchBackupPasswordAndNavigate = async () => {
   const password = await getLocalBackupPassword();
 
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     return Navigation.handleAction(Routes.BACKUP_SHEET, {
       step: WalletBackupStepTypes.backup_cloud,
       password,
@@ -113,10 +113,5 @@ export const fetchBackupPasswordAndNavigate = async navigate => {
         resolve(password);
       },
     });
-  });
-
-  navigate(Routes.BACKUP_SHEET, {
-    nativeScreen: true,
-    step: WalletBackupStepTypes.backup_cloud,
   });
 };
