@@ -327,6 +327,7 @@
     "@types/qs": "6.9.7",
     "@types/react": "18.0.29",
     "@types/react-native": "0.70.7",
+    "@types/react-native-extra-dimensions-android": "1.2.3",
     "@types/react-test-renderer": "16.9.3",
     "@types/styled-components": "5.1.7",
     "@types/url-parse": "1.4.3",
