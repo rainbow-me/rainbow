@@ -27,7 +27,7 @@ export default function HourglassAnimation() {
   );
 
   const offsetSandMask = useDerivedValue(() =>
-    withRepeat(withSequence(withTiming(0, sandConfig), withTiming(34, sandConfig), withTiming(0, sandConfig)), -1)
+    withRepeat(withSequence(withTiming(0, sandConfig), withTiming(34, sandConfig), withTiming(0, sandConfig)), -1, true)
   );
 
   const animatedRotationStyles = useAnimatedStyle(() => ({
@@ -58,6 +58,7 @@ export default function HourglassAnimation() {
                 d="M73.173,6 L73.173,37.356 L72.389,42.825 L73.173,48.295 L73.173,79.65 L47,79.65 L47,47.752 L49.095,42.825 L47,37.898 L47,6 L73.173,6 Z M60.389,33.872 C58.972,33.872 55.698,36.856 50.569,42.825 C55.698,48.795 58.972,51.779 60.389,51.779 C61.762,51.779 65.134,48.794 70.505,42.825 C65.134,36.857 61.762,33.872 60.389,33.872 Z"
                 fill={accentColor}
                 id="hourglass-sand-mask"
+                // @ts-ignore
                 style={animatedSandStyles}
                 transform="translate(0, 0)"
               />

@@ -180,7 +180,22 @@ export const nftSingleOfferSheetConfig = {
   }) => ({
     ...buildCoolModalConfig({
       ...params,
-      longFormHeight: longFormHeight || 0,
+      longFormHeight: longFormHeight || -1 * safeAreaInsetValues.bottom,
+    }),
+  }),
+};
+
+export const appIconUnlockSheetConfig = {
+  options: ({
+    route: {
+      params: { longFormHeight, ...params },
+    },
+  }: {
+    route: { params: any };
+  }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      longFormHeight: longFormHeight || -1 * safeAreaInsetValues.bottom,
     }),
   }),
 };
