@@ -48,11 +48,11 @@ import { defaultConfig, getExperimetalFlag, LOG_PUSH } from '@/config';
 import { settingsUpdateNetwork } from '@/redux/settings';
 import { serialize } from '@/logger/logDump';
 import { isAuthenticated } from '@/utils/authentication';
-import { DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS } from '@/redux/data';
-import { saveLocalPendingTransactions } from '@/handlers/localstorage/accountLocal';
+
 import { getFCMToken } from '@/notifications/tokens';
 import { removeGlobalNotificationSettings } from '@/notifications/settings/settings';
 import { nonceStore } from '@/state/nonces';
+import { pendingTransactionsStore } from '@/state/pendingTransactions';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
@@ -181,17 +181,10 @@ const DevSection = () => {
   }, [walletNotificationSettings]);
 
   const clearPendingTransactions = async () => {
-    // clear local storage
-    saveLocalPendingTransactions([], accountAddress, Network.mainnet);
-    // clear redux
-    dispatch({
-      payload: [],
-      type: DATA_UPDATE_PENDING_TRANSACTIONS_SUCCESS,
-    });
-
-    // reset nonces
+    const { clearPendingTransactions: clearPendingTxs } = pendingTransactionsStore.getState();
     const { clearNonces } = nonceStore.getState();
 
+    clearPendingTxs();
     clearNonces();
   };
 

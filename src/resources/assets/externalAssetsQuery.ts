@@ -19,6 +19,7 @@ const EXTERNAL_TOKEN_STALE_TIME = 1000 * 60; // 1 minute
 // Types
 type ExternalToken = Pick<Token, 'decimals' | 'iconUrl' | 'name' | 'networks' | 'symbol' | 'colors' | 'price'>;
 export type FormattedExternalAsset = ExternalToken & {
+  icon_url?: string;
   native: {
     change: string;
     price: {
@@ -49,6 +50,7 @@ const formatExternalAsset = (asset: ExternalToken, nativeCurrency: NativeCurrenc
       change: asset?.price?.relativeChange24h ? convertAmountToPercentageDisplay(`${asset?.price?.relativeChange24h}`) : '',
       price: convertAmountAndPriceToNativeDisplay(1, asset?.price?.value || 0, nativeCurrency),
     },
+    icon_url: asset?.iconUrl || undefined,
   };
 };
 

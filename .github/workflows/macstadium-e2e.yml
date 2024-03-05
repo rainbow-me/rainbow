@@ -22,20 +22,26 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Set up github keys
-        run: git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
+        run:  echo 'hi 00' && git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null" &&  echo 'hi 0'
 
       - name: Set up ENV vars & scripts
         run: |
           # read local env vars
+          echo 'hi'
           source ~/.bashrc
+           echo 'hi 1'
           # fetch env vars
           git clone git@github.com:rainbow-me/rainbow-env.git
+           echo '2'
           # unpack dotenv
           mv rainbow-env/dotenv .env && rm -rf rainbow-env 
           # run CI scripts
+           echo 'hi 3'
           eval $CI_SCRIPTS
+           echo 'hi 4'
           # tweak dotenv for e2e 
           sed -i''-e "s/\IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
+           echo 'hi 5'
       - name: Install deps via Yarn
         run: yarn setup-ci
 
