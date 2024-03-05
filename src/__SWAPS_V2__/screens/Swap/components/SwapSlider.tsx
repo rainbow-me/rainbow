@@ -1,11 +1,6 @@
 import React, { ReactElement, useCallback, useMemo, useRef } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import {
-  PanGestureHandler,
-  PanGestureHandlerEventPayload,
-  TapGestureHandler,
-  TapGestureHandlerGestureEvent,
-} from 'react-native-gesture-handler';
+import { PanGestureHandler, TapGestureHandler, TapGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
   interpolateColor,
@@ -140,12 +135,12 @@ export const SwapSlider = ({
   });
 
   const onSlide = useAnimatedGestureHandler({
-    onStart: (event: PanGestureHandlerEventPayload, ctx: { startX: number }) => {
+    onStart: (event, ctx: { startX: number }) => {
       ctx.startX = x.value;
       pressProgress.value = withSpring(1, sliderConfig);
       inputMethod.value = 'slider';
     },
-    onActive: (event: PanGestureHandlerEventPayload, ctx: { startX: number }) => {
+    onActive: (event, ctx: { startX: number }) => {
       const rawX = ctx.startX + event.translationX || 0;
 
       const calculateOvershoot = (distance: number, maxOverscroll: number): number => {
@@ -178,7 +173,7 @@ export const SwapSlider = ({
         overshoot.value = calculateOvershoot(overshootX, maxOverscroll);
       }
     },
-    onFinish: (event: PanGestureHandlerEventPayload, ctx: { startX: number }) => {
+    onFinish: (event, ctx: { startX: number }) => {
       const onFinished = () => {
         overshoot.value = withSpring(0, sliderConfig);
         if (xPercentage.value >= 0.995) {

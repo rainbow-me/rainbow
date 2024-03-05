@@ -56,6 +56,7 @@ export type BoxProps = {
   right?: PositionSpace;
   top?: PositionSpace;
   width?: Width;
+  overflow?: 'visible' | 'hidden' | 'scroll' | 'auto';
 } & (
   | {
       borderBottomRadius?: number;
