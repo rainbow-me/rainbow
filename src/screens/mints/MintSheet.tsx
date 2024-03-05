@@ -139,6 +139,7 @@ const MintSheet = () => {
   const [ensName, setENSName] = useState<string>('');
   const [mintStatus, setMintStatus] = useState<'none' | 'minting' | 'minted' | 'error'>('none');
   const txRef = useRef<string>();
+  const [isGasReady, setIsGasReady] = useState<boolean>(false);
 
   const { data: ensAvatar } = useENSAvatar(ensName, {
     enabled: Boolean(ensName),
@@ -287,6 +288,7 @@ const MintSheet = () => {
             if (txSimEstimate) {
               setGasError(false);
               updateTxFee(txSimEstimate, null);
+              setIsGasReady(true);
             }
           },
         });
@@ -631,6 +633,7 @@ const MintSheet = () => {
                       horizontalPadding={0}
                       currentNetwork={currentNetwork}
                       theme={'dark'}
+                      loading={!isGasReady}
                       marginBottom={0}
                     />
                   </Box>
