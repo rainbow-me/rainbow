@@ -8,6 +8,7 @@ export enum Network {
   bsc = 'bsc',
   zora = 'zora',
   gnosis = 'gnosis',
+  avalanche = 'avalanche',
   blast = 'blast',
 }
 
@@ -23,5 +24,6 @@ export default {
   bsc: 'bsc' as Network,
   zora: 'zora' as Network,
   gnosis: 'gnosis' as Network,
+  avalanche: 'avalanche' as Network,
   blast: 'blast' as Network,
 };

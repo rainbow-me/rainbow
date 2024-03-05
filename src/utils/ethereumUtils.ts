@@ -43,6 +43,7 @@ import {
   optimismGasOracleAbi,
   OVM_GAS_PRICE_ORACLE,
   BNB_MAINNET_ADDRESS,
+  AVAX_AVALANCHE_ADDRESS,
 } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { logger, RainbowError } from '@/logger';
@@ -171,12 +172,16 @@ const getAssetPrice = (address: EthereumAddress = ETH_ADDRESS): number => {
 };
 
 export const useNativeAssetForNetwork = (network: Network) => {
-  const address = getNetworkObj(network).nativeCurrency?.mainnetAddress || ETH_ADDRESS;
+  let address = getNetworkObj(network).nativeCurrency?.mainnetAddress || ETH_ADDRESS;
+  let theNetwork = Network.mainnet;
   const { nativeCurrency } = store.getState().settings;
-
+  if (network === Network.avalanche) {
+    address = getNetworkObj(network).nativeCurrency?.address;
+    theNetwork = Network.avalanche;
+  }
   const { data: nativeAsset } = useExternalToken({
     address,
-    network: Network.mainnet,
+    network: theNetwork,
     currency: nativeCurrency,
   });
 
@@ -189,6 +194,8 @@ const getPriceOfNativeAssetForNetwork = (network: Network) => {
     return getMaticPriceUnit();
   } else if (network === Network.bsc) {
     return getBnbPriceUnit();
+  } else if (network === Network.avalanche) {
+    return getAvaxPriceUnit();
   }
   return getEthPriceUnit();
 };
@@ -197,6 +204,7 @@ const getEthPriceUnit = () => getAssetPrice();
 
 const getMaticPriceUnit = () => getAssetPrice(MATIC_MAINNET_ADDRESS);
 const getBnbPriceUnit = () => getAssetPrice(BNB_MAINNET_ADDRESS);
+const getAvaxPriceUnit = () => getAssetPrice(getUniqueId(AVAX_AVALANCHE_ADDRESS, Network.avalanche));
 
 const getBalanceAmount = (
   selectedGasFee: SelectedGasFee | LegacySelectedGasFee,
@@ -511,23 +519,6 @@ const calculateL1FeeOptimism = async (tx: RainbowTransaction, provider: Provider
   }
 };
 
-const getMultichainAssetAddress = (asset: RainbowToken, network: Network): EthereumAddress => {
-  const address = asset?.mainnet_address || asset?.address;
-  let realAddress = address?.toLowerCase() === ETH_ADDRESS_AGGREGATORS.toLowerCase() ? ETH_ADDRESS : address;
-
-  if (network === Network.optimism && address.toLowerCase() === OPTIMISM_ETH_ADDRESS) {
-    realAddress = ETH_ADDRESS;
-  } else if (network === Network.arbitrum && address.toLowerCase() === ARBITRUM_ETH_ADDRESS) {
-    realAddress = ETH_ADDRESS;
-  } else if (network === Network.polygon && address.toLowerCase() === MATIC_POLYGON_ADDRESS) {
-    realAddress = MATIC_POLYGON_ADDRESS;
-  } else if (network === Network.bsc && address.toLowerCase() === BNB_BSC_ADDRESS) {
-    realAddress = BNB_BSC_ADDRESS;
-  }
-
-  return realAddress;
-};
-
 const getBasicSwapGasLimit = (chainId: number) => {
   switch (chainId) {
     case getChainIdFromNetwork(Network.arbitrum):
@@ -559,7 +550,7 @@ export default {
   getHash,
   getMaticPriceUnit,
   getBnbPriceUnit,
-  getMultichainAssetAddress,
+  getAvaxPriceUnit,
   getNativeAssetForNetwork,
   getNetworkFromChainId,
   getNetworkNameFromChainId,
