@@ -152,17 +152,21 @@ export const walletsLoadState =
 
       if (!selectedWallet) {
         const address = await loadAddress();
-        keys(wallets).some(key => {
-          const someWallet = wallets[key];
-          const found = someWallet.addresses.some(account => {
-            return toChecksumAddress(account.address) === toChecksumAddress(address!);
+        if (!address) {
+          selectedWallet = wallets[Object.keys(wallets)[0]];
+        } else {
+          keys(wallets).some(key => {
+            const someWallet = wallets[key];
+            const found = someWallet.addresses.some(account => {
+              return toChecksumAddress(account.address) === toChecksumAddress(address!);
+            });
+            if (found) {
+              selectedWallet = someWallet;
+              logger.info('Found selected wallet based on loadAddress result');
+            }
+            return found;
           });
-          if (found) {
-            selectedWallet = someWallet;
-            logger.info('Found selected wallet based on loadAddress result');
-          }
-          return found;
-        });
+        }
       }
 
       // Recover from broken state (account address not in selected wallet)

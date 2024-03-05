@@ -107,6 +107,8 @@
       "private_key_singluar": "Private Key",
       "backup_deleted_successfully": "Backups Deleted Successfully",
       "cloud": {
+        "no_backups": "No backups found",
+        "fetching_backups": "Retrieving backups from %{cloudPlatformName}",
         "back_up_to_platform": "Back up to %{cloudPlatformName}",
         "restore_from_platform": "Restore from %{cloudPlatformName}",
         "how_would_you_like_to_backup": "How would you like to back up your wallet?",
@@ -2364,9 +2366,7 @@
         "add_wallet_sheet": {
           "options": {
             "cloud": {
-              "description_android": "If you previously backed up your wallet on Google Drive, tap here to restore it.",
-              "description_ios_one_wallet": "You have 1 wallet backed up",
-              "description_ios_multiple_wallets": "You have %{walletCount} wallets backed up",
+              "description_restore_sheet": "If you previously backed up to %{cloudPlatform}, tap here to restore it.",
               "description_with_latest_backup_date": "Latest back up %{fromNow} at %{time}",
               "title": "Restore from %{platform}",
               "no_backups": "No backups found",

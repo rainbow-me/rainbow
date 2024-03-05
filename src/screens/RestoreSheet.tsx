@@ -7,7 +7,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import { settingsOptions, sharedCoolModalTopOffset } from '@/navigation/config';
 import { useTheme } from '@/theme';
-import { Backup, BackupUserData } from '@/model/backup';
 import { BackgroundProvider } from '@/design-system';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { useDimensions } from '@/hooks';
@@ -18,10 +17,6 @@ const NativeStack = createStackNavigator();
 
 export type RestoreSheetParams = {
   RestoreSheet: {
-    backups: {
-      files: Backup[];
-    };
-    userData: BackupUserData;
     fromSettings?: boolean;
   };
 };
@@ -29,7 +24,7 @@ export type RestoreSheetParams = {
 export function RestoreSheet() {
   const { top } = useSafeAreaInsets();
   const { height: deviceHeight } = useDimensions();
-  const { params: { backups, userData, fromSettings = false } = {} } = useRoute<RouteProp<RestoreSheetParams, 'RestoreSheet'>>();
+  const { params: { fromSettings = false } = {} } = useRoute<RouteProp<RestoreSheetParams, 'RestoreSheet'>>();
 
   const { colors } = useTheme();
   const memoSettingsOptions = useMemo(() => settingsOptions(colors, fromSettings), [colors, fromSettings]);
@@ -44,16 +39,8 @@ export function RestoreSheet() {
           scrollEnabled={false}
         >
           <NativeStack.Navigator initialRouteName={Routes.CHOOSE_BACKUP_SHEET} screenOptions={{ ...memoSettingsOptions, title: '' }}>
-            <NativeStack.Screen
-              component={ChooseBackupStep}
-              initialParams={{ backups, userData, fromSettings }}
-              name={Routes.CHOOSE_BACKUP_SHEET}
-            />
-            <NativeStack.Screen
-              component={RestoreCloudStep}
-              initialParams={{ backups, userData, fromSettings }}
-              name={Routes.RESTORE_CLOUD_SHEET}
-            />
+            <NativeStack.Screen component={ChooseBackupStep} initialParams={{ fromSettings }} name={Routes.CHOOSE_BACKUP_SHEET} />
+            <NativeStack.Screen component={RestoreCloudStep} initialParams={{ fromSettings }} name={Routes.RESTORE_CLOUD_SHEET} />
           </NativeStack.Navigator>
         </SimpleSheet>
       )}

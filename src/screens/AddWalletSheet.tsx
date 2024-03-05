@@ -29,12 +29,12 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useInitializeWallet, useWallets } from '@/hooks';
 import { format, formatDistance } from 'date-fns';
 import { Backup, parseTimestampFromFilename } from '@/model/backup';
+import useCloudBackups from '@/hooks/useCloudBackups';
 
 const TRANSLATIONS = i18n.l.wallet.new.add_wallet_sheet;
 
 export type AddWalletSheetParams = {
   isFirstWallet: boolean;
-  backups: { files: Backup[] };
 };
 
 type RouteParams = {
@@ -43,7 +43,7 @@ type RouteParams = {
 
 export const AddWalletSheet = () => {
   const {
-    params: { isFirstWallet, backups },
+    params: { isFirstWallet },
   } = useRoute<RouteProp<RouteParams, 'AddWalletSheetParams'>>();
 
   const { goBack, navigate } = useNavigation();
@@ -54,22 +54,6 @@ export const AddWalletSheet = () => {
   const initializeWallet = useInitializeWallet();
   const creatingWallet = useRef<boolean>();
   const { isDamaged, selectedWallet, wallets } = useWallets();
-
-  const latestWalletBackedUpDate = useMemo(() => {
-    let lastBackupDate: number | undefined = undefined;
-    if (backups?.files.length) {
-      backups.files.forEach(backup => {
-        if (backup.isFile && backup.name) {
-          const ts = parseTimestampFromFilename(backup.name);
-
-          if (ts > (lastBackupDate || 0)) {
-            lastBackupDate = ts;
-          }
-        }
-      });
-    }
-    return lastBackupDate;
-  }, [backups]);
 
   const onPressCreate = async () => {
     try {
@@ -217,40 +201,15 @@ export const AddWalletSheet = () => {
     }
 
     try {
-      const userData = await fetchUserDataFromCloud();
-      if (!userData) {
-        Alert.alert(i18n.t(TRANSLATIONS.options.cloud.no_backups), i18n.t(TRANSLATIONS.options.cloud.no_google_backups));
-        return;
-      }
-
-      // merging UserData.json with eventual selected backup file
-      navigate(Routes.RESTORE_SHEET, { userData, backups });
-      logger.info(`Downloaded ${cloudPlatform} backup info`);
+      navigate(Routes.RESTORE_SHEET);
     } catch (e) {
       logger.error(e as RainbowError);
     }
   };
 
-  const cloudRestoreEnabled = isFirstWallet && (IS_ANDROID || !!latestWalletBackedUpDate);
-
-  let restoreFromCloudDescription;
-  if (IS_IOS) {
-    // It is not possible for the user to be on iOS and have
-    // no backups at this point, since `cloudRestoreEnabled`
-    // would be false in that case.
-    if (latestWalletBackedUpDate) {
-      restoreFromCloudDescription = i18n.t(TRANSLATIONS.options.cloud.description_with_latest_backup_date, {
-        fromNow: formatDistance(new Date(latestWalletBackedUpDate), Date.now(), {
-          addSuffix: true,
-        }),
-        time: format(new Date(latestWalletBackedUpDate), 'p'),
-      });
-    } else {
-      restoreFromCloudDescription = i18n.t(TRANSLATIONS.options.cloud.description_ios_one_wallet);
-    }
-  } else {
-    restoreFromCloudDescription = i18n.t(TRANSLATIONS.options.cloud.description_android);
-  }
+  const restoreFromCloudDescription = i18n.t(TRANSLATIONS.options.cloud.description_restore_sheet, {
+    cloudPlatform,
+  });
 
   const onPressConnectHardwareWallet = () => {
     analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
@@ -317,7 +276,7 @@ export const AddWalletSheet = () => {
           totalHorizontalInset={24}
           items={[
             ...(!isFirstWallet ? [create] : []),
-            ...(cloudRestoreEnabled ? [restoreFromCloud] : []),
+            ...(isFirstWallet ? [restoreFromCloud] : []),
             restoreFromSeed,
             ...(hardwareWalletsEnabled ? [connectHardwareWallet] : []),
             watch,
