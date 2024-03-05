@@ -1,6 +1,7 @@
 ### Swaps V2
 
 Please keep ALL code related to Swaps V2 inside of this folder. Here is the underlying process of how Swaps V2 work will proceed:
+
 1. We will develop Swaps V2 from the ground up with no overlap with the existing swaps flow.
 2. When you create a file inside of this folder, PLEASE copy the folder structure of how it will fit into the app.
 

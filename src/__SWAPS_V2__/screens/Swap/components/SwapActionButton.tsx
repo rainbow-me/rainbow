@@ -1,8 +1,8 @@
 /* eslint-disable no-nested-ternary */
 import c from 'chroma-js';
 import React, { useMemo } from 'react';
-import { StyleSheet } from 'react-native';
-import Animated from 'react-native-reanimated';
+import { StyleProp, StyleSheet, TextStyle } from 'react-native';
+import { SharedValue } from 'react-native-reanimated';
 
 import { ButtonPressAnimation } from '@/components/animations';
 import { AnimatedText, Box, Column, Columns, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
@@ -27,9 +27,9 @@ export const SwapActionButton = ({
   borderRadius?: number;
   disableShadow?: boolean;
   hugContent?: boolean;
-  icon?: string | Readonly<Animated.SharedValue<string | undefined>>;
-  iconStyle?: Animated.AnimateStyle<unknown>;
-  label: string | Readonly<Animated.SharedValue<string | undefined>>;
+  icon?: string | Readonly<SharedValue<string | undefined>>;
+  iconStyle?: StyleProp<TextStyle>;
+  label: string | Readonly<SharedValue<string | undefined>>;
   onLongPress?: () => void;
   onPress?: () => void;
   outline?: boolean;
