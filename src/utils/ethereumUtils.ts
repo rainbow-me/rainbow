@@ -529,8 +529,6 @@ const getBasicSwapGasLimit = (chainId: number) => {
       return ethUnits.basic_swap_bsc;
     case getChainIdFromNetwork(Network.optimism):
       return ethUnits.basic_swap_optimism;
-    // check this out l8r
-    // case getChainIdFromNetwork(Network.avalanche):
     default:
       return ethUnits.basic_swap;
   }
