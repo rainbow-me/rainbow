@@ -366,8 +366,8 @@ export const getAvalancheGasPrices = async () => {
   const provider = await getProviderForNetwork(Network.avalanche);
   const baseGasPrice = await provider.getGasPrice();
 
-  const BasePriceBumpFactor = 1.05;
-  const normalGasPrice = toHex(Math.ceil(Number((baseGasPrice.toString(), BasePriceBumpFactor))));
+  const AvalanchePriceBumpFactor = 1.05;
+  const normalGasPrice = toHex(Math.ceil(Number((baseGasPrice.toString(), AvalanchePriceBumpFactor))));
 
   const priceData = {
     fast: normalGasPrice,
