@@ -24,6 +24,10 @@ import BaseBadge from '../../assets/badges/baseBadge.png';
 import BaseBadgeDark from '../../assets/badges/baseBadgeDark.png';
 import BaseBadgeLarge from '../../assets/badges/baseBadgeLarge.png';
 import BaseBadgeLargeDark from '../../assets/badges/baseBadgeLargeDark.png';
+import BlastBadge from '../../assets/badges/blastBadge.png';
+import BlastBadgeDark from '../../assets/badges/blastBadgeDark.png';
+import BlastBadgeLarge from '../../assets/badges/blastBadgeLarge.png';
+import BlastBadgeLargeDark from '../../assets/badges/blastBadgeLargeDark.png';
 import { Centered } from '../layout';
 import styled from '@/styled-thing';
 import { position as positions } from '@/styles';
@@ -76,6 +80,8 @@ export default function ChainBadge({
         val = isDarkMode ? ZoraBadgeLargeDark : ZoraBadgeLarge;
       } else if (network === Network.base) {
         val = isDarkMode ? BaseBadgeLargeDark : BaseBadgeLarge;
+      } else if (network === Network.blast) {
+        val = isDarkMode ? BlastBadgeLargeDark : BlastBadgeLarge;
       }
     } else {
       if (network === Network.arbitrum) {
@@ -90,6 +96,8 @@ export default function ChainBadge({
         val = isDarkMode ? ZoraBadgeDark : ZoraBadge;
       } else if (network === Network.base) {
         val = isDarkMode ? BaseBadgeDark : BaseBadge;
+      } else if (network === Network.blast) {
+        val = isDarkMode ? BlastBadgeDark : BlastBadge;
       }
     }
     return val;
