@@ -10,11 +10,7 @@ import { getAllActiveSessions } from '@/walletConnect';
 function cyclicReplacer() {
   const seenObjects = new Map<object, string[]>(); // Tracks objects and their paths
 
-  function replacer(
-    key: string | undefined,
-    value: any,
-    path: string[] = []
-  ): any {
+  function replacer(key: string | undefined, value: any, path: string[] = []): any {
     if (typeof value === 'object' && value !== null) {
       // Determine the new path
       const newPath = key !== undefined ? path.concat(key) : path;
