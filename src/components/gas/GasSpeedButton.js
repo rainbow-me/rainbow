@@ -304,9 +304,9 @@ const GasSpeedButton = ({
         type: 'crossChainGas',
       });
     } else {
-      const nativeAsset = await ethereumUtils.getNativeAssetForNetwork(networkName);
+      const nativeAsset = await ethereumUtils.getNativeAssetForNetwork(currentNetwork);
       navigate(Routes.EXPLAIN_SHEET, {
-        network: networkName,
+        network: currentNetwork,
         type: 'gas',
         nativeAsset,
       });
