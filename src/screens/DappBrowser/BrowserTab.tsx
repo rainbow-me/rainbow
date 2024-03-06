@@ -69,7 +69,7 @@ const getInitialScreenshot = (id: string): ScreenshotType | null => {
 
 const getWebsiteBackgroundColor = `
   const bgColor = window.getComputedStyle(document.body, null).getPropertyValue('background-color');
-  window.ReactNativeWebView.postMessage(JSON.stringify({ type: "bg", payload: bgColor}));
+  window.ReactNativeWebView.postMessage(JSON.stringify({ topic: "bg", payload: bgColor}));
   true;
   `;
 
@@ -271,20 +271,21 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
       try {
         // validate message and parse data
         const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
-        if (!parsedData || (!parsedData.name && !parsedData.type)) return;
-        // ignore other messages like loading progress
-        if (parsedData.type === 'message') {
+        if (!parsedData || (!parsedData.topic && !parsedData.payload)) return;
+        if (parsedData.topic === 'bg') {
+          console.log('[BROWSER]: received bg color', parsedData.payload);
+          setBackgroundColor(parsedData.payload);
+        } else {
           const { origin } = new URL(event.nativeEvent.url);
           messengers.current.forEach((m: any) => {
             const messengerUrlOrigin = new URL(m.url).origin;
             if (messengerUrlOrigin === origin) {
-              m.onMessage(parsedData);
+              console.log('[BROWSER]: received message', parsedData.topic, parsedData.payload);
+              m.listeners[parsedData.topic]?.(parsedData.payload);
             }
           });
-        } else if (parsedData.type === 'bg') {
-          console.log('[BROWSER]: received bg color', parsedData.payload);
-          setBackgroundColor(parsedData.payload);
         }
+
         // eslint-disable-next-line no-empty
       } catch (e) {}
     },
@@ -308,6 +309,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
         return m.url === new URL(tabStates[tabIndex].url).origin && m.tabId === getTabId(tabIndex, tabStates[tabIndex].url);
       });
       if (m) {
+        console.log('[BROWSER]: sending hello from app to webview');
         m.send('ping', { message: 'hello' });
       }
     },
