@@ -12,13 +12,7 @@ let memPrevRouteName;
 
 let action = null;
 
-const isOnSwipeScreen = name =>
-  [
-    Routes.WALLET_SCREEN,
-    Routes.DISCOVER_SCREEN,
-    Routes.PROFILE_SCREEN,
-    Routes.POINTS_SCREEN,
-  ].includes(name);
+const isOnSwipeScreen = name => [Routes.WALLET_SCREEN, Routes.DISCOVER_SCREEN, Routes.PROFILE_SCREEN, Routes.POINTS_SCREEN].includes(name);
 
 export function triggerOnSwipeLayout(newAction) {
   if (isOnSwipeScreen(Navigation.getActiveRoute()?.name)) {
@@ -34,26 +28,16 @@ export function onHandleStatusBar(currentState, prevState) {
     StatusBarHelper.setLightContent();
     return;
   }
-  const isFromWalletScreen = Navigation.getActiveRoute()?.params
-    ?.isFromWalletScreen;
+  const isFromWalletScreen = Navigation.getActiveRoute()?.params?.isFromWalletScreen;
 
-  const isRoutesLengthDecrease =
-    prevState?.routes.length > currentState?.routes.length;
+  const isRoutesLengthDecrease = prevState?.routes.length > currentState?.routes.length;
   switch (routeName) {
     case Routes.EXPANDED_ASSET_SHEET:
       // handles the status bar when opening nested modals
-      if (
-        isRoutesLengthDecrease &&
-        isFromWalletScreen &&
-        routeName === Routes.EXPANDED_ASSET_SHEET
-      ) {
+      if (isRoutesLengthDecrease && isFromWalletScreen && routeName === Routes.EXPANDED_ASSET_SHEET) {
         StatusBarHelper.setDarkContent();
         break;
-      } else if (
-        !android &&
-        isFromWalletScreen &&
-        memRouteName !== Routes.WALLET_SCREEN
-      ) {
+      } else if (!android && isFromWalletScreen && memRouteName !== Routes.WALLET_SCREEN) {
         StatusBarHelper.setLightContent();
         break;
       }

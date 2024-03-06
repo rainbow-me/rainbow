@@ -12,12 +12,7 @@ import store from '@/redux/store';
 import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
 import { RainbowPositions } from '@/resources/defi/types';
 import { ethereumUtils } from '@/utils';
-import {
-  AddysAddressAsset,
-  AddysAsset,
-  ParsedAsset,
-  RainbowAddressAssets,
-} from './types';
+import { AddysAddressAsset, AddysAsset, ParsedAsset, RainbowAddressAssets } from './types';
 import { getUniqueId } from '@/utils/ethereumUtils';
 
 const storage = new MMKV();
@@ -29,9 +24,7 @@ export const filterPositionsData = (
   currency: NativeCurrencyKey,
   assetsData: RainbowAddressAssets
 ): RainbowAddressAssets => {
-  const positionsObj: RainbowPositions | undefined = queryClient.getQueryData(
-    positionsQueryKey({ address, currency })
-  );
+  const positionsObj: RainbowPositions | undefined = queryClient.getQueryData(positionsQueryKey({ address, currency }));
   const positionTokens = positionsObj?.positionTokens || [];
 
   if (isEmpty(positionTokens)) {
@@ -39,10 +32,7 @@ export const filterPositionsData = (
   }
 
   return Object.keys(assetsData)
-    .filter(
-      uniqueId =>
-        !positionTokens.find(positionToken => positionToken === uniqueId)
-    )
+    .filter(uniqueId => !positionTokens.find(positionToken => positionToken === uniqueId))
     .reduce((cur, uniqueId) => {
       return Object.assign(cur, {
         [uniqueId]: assetsData[uniqueId],
@@ -50,13 +40,7 @@ export const filterPositionsData = (
     }, {});
 };
 
-export function parseAsset({
-  address,
-  asset,
-}: {
-  address: string;
-  asset: AddysAsset;
-}): ParsedAsset {
+export function parseAsset({ address, asset }: { address: string; asset: AddysAsset }): ParsedAsset {
   const chainName = asset?.network;
   const network = chainName;
   const chainId = ethereumUtils.getChainIdFromNetwork(chainName);
@@ -66,7 +50,7 @@ export function parseAsset({
   const parsedAsset = {
     address,
     color: asset?.colors?.primary,
-    colors: asset?.colors,
+    colors: asset.colors,
     chainId,
     chainName,
     decimals: asset?.decimals,
@@ -87,11 +71,7 @@ export function parseAsset({
   return parsedAsset;
 }
 
-export function parseAddressAsset({
-  assetData,
-}: {
-  assetData: AddysAddressAsset;
-}): ParsedAddressAsset {
+export function parseAddressAsset({ assetData }: { assetData: AddysAddressAsset }): ParsedAddressAsset {
   const asset = assetData?.asset;
   const quantity = assetData?.quantity;
   const address = assetData?.asset?.asset_code;
@@ -116,10 +96,7 @@ function addHiddenCoins(coins: string[], address: string) {
   const storageKey = 'hidden-coins-obj-' + address;
   const storageEntity = storage.getString(storageKey);
   const list = Object.keys(storageEntity ? JSON.parse(storageEntity) : {});
-  const newHiddenCoins = [
-    ...list.filter((i: string) => !coins.includes(i)),
-    ...coins,
-  ].reduce((acc, curr) => {
+  const newHiddenCoins = [...list.filter((i: string) => !coins.includes(i)), ...coins].reduce((acc, curr) => {
     acc[curr] = true;
     return acc;
   }, {} as BooleanMap);

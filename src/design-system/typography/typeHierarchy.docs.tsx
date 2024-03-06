@@ -13,8 +13,7 @@ const docs: DocsType = {
   },
   description: (
     <Docs.Text>
-      To adjust the size of typography components, the{' '}
-      <Docs.Code>size</Docs.Code> prop is made available.
+      To adjust the size of typography components, the <Docs.Code>size</Docs.Code> prop is made available.
     </Docs.Text>
   ),
   examples: [

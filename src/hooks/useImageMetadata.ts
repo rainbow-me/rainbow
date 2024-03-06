@@ -9,10 +9,7 @@ export default function useImageMetadata(imageUrl: string | null) {
   const dispatch = useDispatch();
   const { width: deviceWidth } = useDimensions();
 
-  const imageMetadataSelector = useCallback(
-    (state: AppState) => state.imageMetadata.imageMetadata[imageUrl!],
-    [imageUrl]
-  );
+  const imageMetadataSelector = useCallback((state: AppState) => state.imageMetadata.imageMetadata[imageUrl!], [imageUrl]);
 
   const selectorMeta = useSelector(imageMetadataSelector);
   const metadata = selectorMeta || null;

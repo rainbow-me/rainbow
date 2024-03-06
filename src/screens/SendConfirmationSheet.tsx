@@ -4,13 +4,7 @@ import { toChecksumAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
 import * as i18n from '@/languages';
 import { capitalize, isEmpty } from 'lodash';
-import React, {
-  Fragment,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ContactRowInfoButton from '../components/ContactRowInfoButton';
@@ -20,7 +14,6 @@ import Pill from '../components/Pill';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import ButtonPressAnimation from '../components/animations/ButtonPressAnimation';
 import Callout from '../components/callout/Callout';
-import { CoinIcon } from '../components/coin-icon';
 import RequestVendorLogoIcon from '../components/coin-icon/RequestVendorLogoIcon';
 import { ContactAvatar } from '../components/contacts';
 import ImageAvatar from '../components/contacts/ImageAvatar';
@@ -33,10 +26,7 @@ import { SheetTitle, SlackSheet } from '../components/sheet';
 import { Text as OldText } from '../components/text';
 import { ENSProfile } from '../entities/ens';
 import { address } from '../utils/abbreviations';
-import {
-  addressHashedColorIndex,
-  addressHashedEmoji,
-} from '../utils/profileUtils';
+import { addressHashedColorIndex, addressHashedEmoji } from '../utils/profileUtils';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { Box, Heading, Inset, Stack, Text } from '@/design-system';
 import {
@@ -47,15 +37,11 @@ import {
 } from '@/handlers/ens';
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { estimateGasLimit } from '@/handlers/web3';
-import {
-  removeFirstEmojiFromString,
-  returnStringFirstEmoji,
-} from '@/helpers/emojiHandler';
+import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
 import {
   useAccountSettings,
-  useAccountTransactions,
   useColorForAsset,
   useContacts,
   useDimensions,
@@ -72,6 +58,8 @@ import { useTheme } from '@/theme';
 import { ethereumUtils, getUniqueTokenType, promiseUtils } from '@/utils';
 import logger from '@/utils/logger';
 import { getNetworkObj } from '@/networks';
+import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 
 const Container = styled(Centered).attrs({
   direction: 'column',
@@ -88,11 +76,7 @@ const SendButtonWrapper = styled(Column).attrs({
 
 export type Checkbox = {
   checked: boolean;
-  id:
-    | 'clear-records'
-    | 'set-address'
-    | 'transfer-control'
-    | 'has-wallet-that-supports';
+  id: 'clear-records' | 'set-address' | 'transfer-control' | 'has-wallet-that-supports';
   label: string;
 };
 
@@ -101,10 +85,7 @@ const hasClearProfileInfo = (ensProfile?: ENSProfile) =>
     ...ensProfile?.data?.records,
     ...ensProfile?.data?.coinAddresses,
   }) && !ensProfile?.data?.contenthash;
-const doesNamePointToRecipient = (
-  ensProfile?: ENSProfile,
-  recipientAddress?: string
-) =>
+const doesNamePointToRecipient = (ensProfile?: ENSProfile, recipientAddress?: string) =>
   ensProfile?.data?.address?.toLowerCase() === recipientAddress?.toLowerCase();
 const isRegistrant = (ensProfile?: ENSProfile) => ensProfile?.isRegistrant;
 
@@ -128,21 +109,16 @@ export function getDefaultCheckboxes({
         ensProfile?.isOwner && {
           checked: false,
           id: 'clear-records',
-          label: lang.t(
-            'wallet.transaction.checkboxes.clear_profile_information'
-          ),
+          label: lang.t('wallet.transaction.checkboxes.clear_profile_information'),
         },
       !doesNamePointToRecipient(ensProfile, toAddress) &&
         ensProfile?.isOwner && {
           checked: false,
           id: 'set-address',
-          label: lang.t(
-            'wallet.transaction.checkboxes.point_name_to_recipient'
-          ),
+          label: lang.t('wallet.transaction.checkboxes.point_name_to_recipient'),
         },
       isRegistrant(ensProfile) &&
-        ensProfile?.data?.owner?.address?.toLowerCase() !==
-          toAddress.toLowerCase() && {
+        ensProfile?.data?.owner?.address?.toLowerCase() !== toAddress.toLowerCase() && {
           checked: false,
           id: 'transfer-control',
           label: lang.t('wallet.transaction.checkboxes.transfer_control'),
@@ -153,12 +129,9 @@ export function getDefaultCheckboxes({
     {
       checked: false,
       id: 'has-wallet-that-supports',
-      label: lang.t(
-        'wallet.transaction.checkboxes.has_a_wallet_that_supports',
-        {
-          networkName: capitalize(network),
-        }
-      ),
+      label: lang.t('wallet.transaction.checkboxes.has_a_wallet_that_supports', {
+        networkName: capitalize(network),
+      }),
     },
   ];
 }
@@ -187,20 +160,8 @@ export function getSheetHeight({
 const ChevronDown = () => {
   const { colors } = useTheme();
   return (
-    <Column
-      align="center"
-      height={ios ? 34.5 : 30}
-      marginTop={android ? -14 : 0}
-      position="absolute"
-      width={50}
-    >
-      <OldText
-        align="center"
-        color={colors.alpha(colors.blueGreyDark, 0.15)}
-        letterSpacing="zero"
-        size="larger"
-        weight="semibold"
-      >
+    <Column align="center" height={ios ? 34.5 : 30} marginTop={android ? -14 : 0} position="absolute" width={50}>
+      <OldText align="center" color={colors.alpha(colors.blueGreyDark, 0.15)} letterSpacing="zero" size="larger" weight="semibold">
         􀆈
       </OldText>
       <OldText
@@ -218,15 +179,10 @@ const ChevronDown = () => {
 };
 
 export const SendConfirmationSheet = () => {
-  const { colors, isDarkMode } = useTheme();
+  const theme = useTheme();
   const { accountAddress, nativeCurrency } = useAccountSettings();
   const { goBack, navigate, setParams } = useNavigation();
-  const {
-    height: deviceHeight,
-    isSmallPhone,
-    isTinyPhone,
-    width: deviceWidth,
-  } = useDimensions();
+  const { height: deviceHeight, isSmallPhone, isTinyPhone, width: deviceWidth } = useDimensions();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const insets = useSafeAreaInsets();
   const { contacts } = useContacts();
@@ -237,30 +193,22 @@ export const SendConfirmationSheet = () => {
   }, []);
 
   const {
-    params: {
-      amountDetails,
-      asset,
-      callback,
-      ensProfile,
-      isL2,
-      isNft,
-      network,
-      to,
-      toAddress,
-    },
+    params: { amountDetails, asset, callback, ensProfile, isL2, isNft, network, to, toAddress },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } = useRoute<any>();
 
-  const [
-    alreadySentTransactionsTotal,
-    setAlreadySentTransactionsTotal,
-  ] = useState(0);
-  const [
-    alreadySentTransactionsCurrentNetwork,
-    setAlreadySentTransactionsCurrentNetwork,
-  ] = useState(0);
+  const [alreadySentTransactionsTotal, setAlreadySentTransactionsTotal] = useState(0);
+  const [alreadySentTransactionsCurrentNetwork, setAlreadySentTransactionsCurrentNetwork] = useState(0);
 
-  const { transactions } = useAccountTransactions(true, true);
+  const { data } = useConsolidatedTransactions({
+    address: accountAddress,
+    currency: nativeCurrency,
+  });
+
+  const pages = data?.pages;
+
+  const transactions = useMemo(() => pages?.flatMap(p => p.transactions) || [], [pages]);
+
   const { userAccounts, watchedAccounts } = useUserAccounts();
   const { walletNames } = useWallets();
   const isSendingToUserAccount = useMemo(() => {
@@ -277,10 +225,7 @@ export const SendConfirmationSheet = () => {
       let sends = 0;
       let sendsCurrentNetwork = 0;
       transactions.forEach(tx => {
-        if (
-          tx.to?.toLowerCase() === toAddress?.toLowerCase() &&
-          tx.from?.toLowerCase() === accountAddress?.toLowerCase()
-        ) {
+        if (tx.to?.toLowerCase() === toAddress?.toLowerCase() && tx.from?.toLowerCase() === accountAddress?.toLowerCase()) {
           sends += 1;
           if (tx.network === network) {
             sendsCurrentNetwork += 1;
@@ -294,13 +239,7 @@ export const SendConfirmationSheet = () => {
         }
       }
     }
-  }, [
-    accountAddress,
-    isSendingToUserAccount,
-    network,
-    toAddress,
-    transactions,
-  ]);
+  }, [accountAddress, isSendingToUserAccount, network, toAddress, transactions]);
 
   const contact = useMemo(() => {
     return contacts?.[toAddress?.toLowerCase()];
@@ -309,9 +248,7 @@ export const SendConfirmationSheet = () => {
   const uniqueTokenType = getUniqueTokenType(asset);
   const isENS = uniqueTokenType === 'ENS' && profilesEnabled;
 
-  const [checkboxes, setCheckboxes] = useState<Checkbox[]>(
-    getDefaultCheckboxes({ ensProfile, isENS, network, toAddress })
-  );
+  const [checkboxes, setCheckboxes] = useState<Checkbox[]>(getDefaultCheckboxes({ ensProfile, isENS, network, toAddress }));
 
   useEffect(() => {
     if (isENS) {
@@ -326,18 +263,14 @@ export const SendConfirmationSheet = () => {
           true
         ),
       ];
-      const sendENSOptions = Object.fromEntries(
-        checkboxes.map(option => [option.id, option.checked])
-      ) as {
+      const sendENSOptions = Object.fromEntries(checkboxes.map(option => [option.id, option.checked])) as {
         [key in Checkbox['id']]: Checkbox['checked'];
       };
       const cleanENSName = asset?.name?.split(' ')?.[0] ?? asset?.name;
 
       if (sendENSOptions['clear-records']) {
         let records = Object.keys({
-          ...(ensProfile?.data?.contenthash
-            ? { contenthash: ensProfile?.data?.contenthash }
-            : {}),
+          ...(ensProfile?.data?.contenthash ? { contenthash: ensProfile?.data?.contenthash } : {}),
           ...(ensProfile?.data?.coinAddresses ?? {}),
           ...(ensProfile?.data?.records ?? {}),
         }).reduce((records, recordKey) => {
@@ -416,36 +349,29 @@ export const SendConfirmationSheet = () => {
 
   const handleL2DisclaimerPress = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
-      type: isNft ? asset.network : asset.type,
+      type: asset.network,
     });
-  }, [asset.network, asset.type, isNft, navigate]);
+  }, [asset.network, navigate]);
 
   const nativeDisplayAmount = useMemo(
-    () =>
-      convertAmountToNativeDisplay(amountDetails.nativeAmount, nativeCurrency),
+    () => convertAmountToNativeDisplay(amountDetails.nativeAmount, nativeCurrency),
     [amountDetails.nativeAmount, nativeCurrency]
   );
 
   let color = useColorForAsset(asset);
 
   if (isNft) {
-    color = colors.appleBlue;
+    color = theme.colors.appleBlue;
   }
 
-  const shouldShowChecks =
-    isL2 &&
-    !isSendingToUserAccount &&
-    alreadySentTransactionsCurrentNetwork < 3;
+  const shouldShowChecks = isL2 && !isSendingToUserAccount && alreadySentTransactionsCurrentNetwork < 3;
 
   useEffect(() => {
     setParams({ shouldShowChecks });
   }, [setParams, shouldShowChecks]);
 
   const canSubmit =
-    isSufficientGas &&
-    isValidGas &&
-    (!shouldShowChecks ||
-      checkboxes.filter(check => check.checked === false).length === 0);
+    isSufficientGas && isValidGas && (!shouldShowChecks || checkboxes.filter(check => check.checked === false).length === 0);
 
   const insufficientEth = isSufficientGas === false && isValidGas;
 
@@ -454,15 +380,9 @@ export const SendConfirmationSheet = () => {
     try {
       setIsAuthorizing(true);
       if (isENS) {
-        const clearRecords = checkboxes.some(
-          ({ checked, id }) => checked && id === 'clear-records'
-        );
-        const setAddress = checkboxes.some(
-          ({ checked, id }) => checked && id === 'set-address'
-        );
-        const transferControl = checkboxes.some(
-          ({ checked, id }) => checked && id === 'transfer-control'
-        );
+        const clearRecords = checkboxes.some(({ checked, id }) => checked && id === 'clear-records');
+        const setAddress = checkboxes.some(({ checked, id }) => checked && id === 'set-address');
+        const transferControl = checkboxes.some(({ checked, id }) => checked && id === 'transfer-control');
         await callback({
           ens: { clearRecords, setAddress, transferControl },
         });
@@ -478,13 +398,9 @@ export const SendConfirmationSheet = () => {
   const existingAccount = useMemo(() => {
     let existingAcct = null;
     if (toAddress) {
-      const allAccounts = [...userAccounts, ...watchedAccounts].filter(
-        acct => acct.visible
-      );
+      const allAccounts = [...userAccounts, ...watchedAccounts].filter(acct => acct.visible);
       for (const account of allAccounts) {
-        if (
-          toChecksumAddress(account.address) === toChecksumAddress(toAddress)
-        ) {
+        if (toChecksumAddress(account.address) === toChecksumAddress(toAddress)) {
           existingAcct = account;
           break;
         }
@@ -493,9 +409,7 @@ export const SendConfirmationSheet = () => {
     return existingAcct;
   }, [toAddress, userAccounts, watchedAccounts]);
 
-  let avatarName = removeFirstEmojiFromString(
-    existingAccount?.label || contact?.nickname
-  );
+  let avatarName = removeFirstEmojiFromString(existingAccount?.label || contact?.nickname);
 
   if (!avatarName) {
     if (isValidDomainFormat(to)) {
@@ -507,27 +421,17 @@ export const SendConfirmationSheet = () => {
     }
   }
 
-  const avatarValue =
-    returnStringFirstEmoji(existingAccount?.label) ||
-    addressHashedEmoji(toAddress);
+  const avatarValue = returnStringFirstEmoji(existingAccount?.label) || addressHashedEmoji(toAddress);
 
-  const avatarColor =
-    existingAccount?.color ||
-    contact?.color ||
-    addressHashedColorIndex(toAddress);
+  const avatarColor = existingAccount?.color || contact?.color || addressHashedColorIndex(toAddress);
 
   const { data: avatar } = useENSAvatar(to, {
     enabled: isENSAddressFormat(to),
   });
 
-  const accountImage = profilesEnabled
-    ? avatar?.imageUrl || existingAccount?.image
-    : existingAccount?.image;
+  const accountImage = profilesEnabled ? avatar?.imageUrl || existingAccount?.image : existingAccount?.image;
 
-  const imageUrl = svgToPngIfNeeded(
-    asset.image_thumbnail_url || asset.image_url,
-    true
-  );
+  const imageUrl = svgToPngIfNeeded(asset.image_thumbnail_url || asset.image_url, true);
 
   const contentHeight = getSheetHeight({
     checkboxes,
@@ -551,45 +455,28 @@ export const SendConfirmationSheet = () => {
   };
 
   return (
-    <Container
-      deviceHeight={deviceHeight}
-      height={contentHeight}
-      insets={insets}
-    >
+    <Container deviceHeight={deviceHeight} height={contentHeight} insets={insets}>
       {ios && <TouchableBackdrop onPress={goBack} />}
 
       {/* @ts-expect-error JavaScript component */}
-      <SlackSheet
-        additionalTopPadding={android}
-        contentHeight={contentHeight}
-        scrollEnabled={false}
-      >
+      <SlackSheet additionalTopPadding={android} contentHeight={contentHeight} scrollEnabled={false}>
         <SheetTitle>{lang.t('wallet.transaction.sending_title')}</SheetTitle>
         <Column height={contentHeight}>
           <Column padding={24}>
             <Row>
               <Column justify="center" width={deviceWidth - 117}>
-                <Heading
-                  numberOfLines={1}
-                  color="primary (Deprecated)"
-                  size="26px / 30px (Deprecated)"
-                  weight="heavy"
-                >
+                <Heading numberOfLines={1} color="primary (Deprecated)" size="26px / 30px (Deprecated)" weight="heavy">
                   {isNft ? asset?.name : nativeDisplayAmount}
                 </Heading>
                 <Row marginTop={12}>
                   <Text
                     color={{
-                      custom: isNft
-                        ? colors.alpha(colors.blueGreyDark, 0.6)
-                        : color,
+                      custom: isNft ? theme.colors.alpha(theme.colors.blueGreyDark, 0.6) : color,
                     }}
                     size="16px / 22px (Deprecated)"
                     weight={isNft ? 'bold' : 'heavy'}
                   >
-                    {isNft
-                      ? asset.familyName
-                      : `${amountDetails.assetAmount} ${asset.symbol}`}
+                    {isNft ? asset.familyName : `${amountDetails.assetAmount} ${asset.symbol}`}
                   </Text>
                 </Row>
               </Column>
@@ -598,7 +485,7 @@ export const SendConfirmationSheet = () => {
                   {isNft ? (
                     // @ts-expect-error JavaScript component
                     <RequestVendorLogoIcon
-                      backgroundColor={asset.background || colors.lightestGrey}
+                      backgroundColor={asset.background || theme.colors.lightestGrey}
                       badgeXPosition={-7}
                       badgeYPosition={0}
                       borderRadius={10}
@@ -608,8 +495,14 @@ export const SendConfirmationSheet = () => {
                       size={50}
                     />
                   ) : (
-                    // eslint-disable-next-line react/jsx-props-no-spreading
-                    <CoinIcon size={50} {...asset} />
+                    <RainbowCoinIcon
+                      size={50}
+                      icon={asset?.icon_url}
+                      network={asset?.network}
+                      symbol={asset?.symbol || ''}
+                      theme={theme}
+                      colors={asset?.colors}
+                    />
                   )}
                 </Row>
               </Column>
@@ -617,16 +510,10 @@ export const SendConfirmationSheet = () => {
 
             <Row marginVertical={19}>
               {/* @ts-expect-error – JS component */}
-              <Pill
-                borderRadius={15}
-                height={30}
-                minWidth={39}
-                paddingHorizontal={10}
-                paddingVertical={5.5}
-              >
+              <Pill borderRadius={15} height={30} minWidth={39} paddingHorizontal={10} paddingVertical={5.5}>
                 <OldText
                   align="center"
-                  color={colors.blueGreyDark60}
+                  color={theme.colors.blueGreyDark60}
                   letterSpacing="roundedMedium"
                   lineHeight={20}
                   size="large"
@@ -643,12 +530,7 @@ export const SendConfirmationSheet = () => {
             <Row marginBottom={android ? 15 : 30}>
               <Column flex={1} justify="center">
                 <Row width={android ? '80%' : '90%'}>
-                  <Heading
-                    numberOfLines={1}
-                    color="primary (Deprecated)"
-                    size="26px / 30px (Deprecated)"
-                    weight="heavy"
-                  >
+                  <Heading numberOfLines={1} color="primary (Deprecated)" size="26px / 30px (Deprecated)" weight="heavy">
                     {avatarName}
                   </Heading>
                   <Centered marginLeft={4}>
@@ -662,10 +544,7 @@ export const SendConfirmationSheet = () => {
                     >
                       <Text
                         color={{
-                          custom: colors.alpha(
-                            colors.blueGreyDark,
-                            isDarkMode ? 0.5 : 0.6
-                          ),
+                          custom: theme.colors.alpha(theme.colors.blueGreyDark, theme.isDarkMode ? 0.5 : 0.6),
                         }}
                         size="20px / 24px (Deprecated)"
                         weight="heavy"
@@ -677,7 +556,7 @@ export const SendConfirmationSheet = () => {
                 </Row>
                 <Row marginTop={12}>
                   <Text
-                    color={{ custom: colors.alpha(colors.blueGreyDark, 0.6) }}
+                    color={{ custom: theme.colors.alpha(theme.colors.blueGreyDark, 0.6) }}
                     size="16px / 22px (Deprecated)"
                     weight="bold"
                   >
@@ -689,16 +568,12 @@ export const SendConfirmationSheet = () => {
                 {accountImage ? (
                   <ImageAvatar image={accountImage} size="lmedium" />
                 ) : (
-                  <ContactAvatar
-                    color={avatarColor}
-                    size="lmedium"
-                    value={avatarValue}
-                  />
+                  <ContactAvatar color={avatarColor} size="lmedium" value={avatarValue} />
                 )}
               </Column>
             </Row>
             {/* @ts-expect-error JavaScript component */}
-            <Divider color={colors.rowDividerExtraLight} inset={[0]} />
+            <Divider color={theme.colors.rowDividerExtraLight} inset={[0]} />
           </Column>
           {(isL2 || isENS || shouldShowChecks) && (
             <Inset bottom="30px (Deprecated)" horizontal="19px (Deprecated)">
@@ -708,34 +583,24 @@ export const SendConfirmationSheet = () => {
                     {/* @ts-expect-error JavaScript component */}
                     <L2Disclaimer
                       network={asset.network}
-                      colors={colors}
+                      colors={theme.colors}
                       hideDivider
                       marginBottom={0}
                       marginHorizontal={0}
                       onPress={handleL2DisclaimerPress}
                       prominent
-                      customText={i18n.t(
-                        i18n.l.expanded_state.asset.l2_disclaimer_send,
-                        {
-                          network: getNetworkObj(asset.network).name,
-                        }
-                      )}
+                      customText={i18n.t(i18n.l.expanded_state.asset.l2_disclaimer_send, {
+                        network: getNetworkObj(asset.network).name,
+                      })}
                       symbol={asset.symbol}
                     />
                   </Fragment>
                 )}
                 {isENS && checkboxes.length > 0 && (
-                  <ButtonPressAnimation
-                    onPress={handleENSConfigurationPress}
-                    scale={0.95}
-                  >
+                  <ButtonPressAnimation onPress={handleENSConfigurationPress} scale={0.95}>
                     <Callout
                       after={
-                        <Text
-                          color="secondary30 (Deprecated)"
-                          size="16px / 22px (Deprecated)"
-                          weight="heavy"
-                        >
+                        <Text color="secondary30 (Deprecated)" size="16px / 22px (Deprecated)" weight="heavy">
                           􀅵
                         </Text>
                       }
@@ -795,10 +660,7 @@ export const SendConfirmationSheet = () => {
           </SendButtonWrapper>
           {isENS && (
             /* @ts-expect-error JavaScript component */
-            <GasSpeedButton
-              currentNetwork={network}
-              theme={isDarkMode ? 'dark' : 'light'}
-            />
+            <GasSpeedButton currentNetwork={network} theme={isDarkMode ? 'dark' : 'light'} />
           )}
         </Column>
       </SlackSheet>

@@ -1,9 +1,4 @@
-import {
-  createNavigatorFactory,
-  StackRouter as OldStackRouter,
-  StackActions,
-  useNavigationBuilder,
-} from '@react-navigation/native';
+import { createNavigatorFactory, StackRouter as OldStackRouter, StackActions, useNavigationBuilder } from '@react-navigation/native';
 import * as React from 'react';
 
 import NativeStackView from './NativeStackView';
@@ -17,9 +12,7 @@ function NativeStackNavigator(props) {
       ...oldRouter,
       getStateForAction(state, action, options) {
         if (action.type === 'PUSH') {
-          if (
-            state.routes[state.routes.length - 1].name === action.payload.name
-          ) {
+          if (state.routes[state.routes.length - 1].name === action.payload.name) {
             logger.log('pushing twice the same name is not allowed');
             return state;
           }
@@ -55,14 +48,7 @@ function NativeStackNavigator(props) {
     }
   }, [navigation, state.index, state.key]);
 
-  return (
-    <NativeStackView
-      {...rest}
-      descriptors={descriptors}
-      navigation={navigation}
-      state={state}
-    />
-  );
+  return <NativeStackView {...rest} descriptors={descriptors} navigation={navigation} state={state} />;
 }
 
 export default createNavigatorFactory(NativeStackNavigator);

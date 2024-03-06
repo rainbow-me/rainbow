@@ -11,14 +11,7 @@ import { AppState } from '@/redux/store';
 import logger from '@/utils/logger';
 
 const walletSelector = createSelector(
-  ({
-    wallets: {
-      isWalletLoading,
-      selected = {} as RainbowWallet,
-      walletNames,
-      wallets,
-    },
-  }: AppState) => ({
+  ({ wallets: { isWalletLoading, selected = {} as RainbowWallet, walletNames, wallets } }: AppState) => ({
     isWalletLoading,
     selectedWallet: selected as any,
     walletNames,
@@ -36,13 +29,7 @@ const walletSelector = createSelector(
 export default function useWallets() {
   const initializeWallet = useInitializeWallet();
   const dispatch = useDispatch();
-  const {
-    isWalletLoading,
-    latestBackup,
-    selectedWallet,
-    walletNames,
-    wallets,
-  } = useSelector(walletSelector);
+  const { isWalletLoading, latestBackup, selectedWallet, walletNames, wallets } = useSelector(walletSelector);
 
   const isDamaged = useMemo(() => {
     const bool = selectedWallet?.damaged;
@@ -54,15 +41,10 @@ export default function useWallets() {
     return bool;
   }, [selectedWallet, wallets]);
 
-  const switchToWalletWithAddress = async (
-    address: string
-  ): Promise<string | null> => {
+  const switchToWalletWithAddress = async (address: string): Promise<string | null> => {
     const walletKey = Object.keys(wallets!).find(key => {
       // Addresses
-      return wallets![key].addresses.find(
-        (account: RainbowAccount) =>
-          account.address.toLowerCase() === address.toLowerCase()
-      );
+      return wallets![key].addresses.find((account: RainbowAccount) => account.address.toLowerCase() === address.toLowerCase());
     });
 
     if (!walletKey) return null;

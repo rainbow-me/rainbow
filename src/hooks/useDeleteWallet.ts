@@ -5,23 +5,15 @@ import { useWallets } from '@/hooks';
 import { RainbowAccount, RainbowWallet } from '@/model/wallet';
 import { walletsUpdate } from '@/redux/wallets';
 
-export default function useDeleteWallet({
-  address: primaryAddress,
-}: {
-  address?: string;
-}) {
+export default function useDeleteWallet({ address: primaryAddress }: { address?: string }) {
   const dispatch = useDispatch();
 
   const { wallets } = useWallets();
 
   const [watchingWalletId] = useMemo(() => {
     return (
-      Object.entries<RainbowWallet>(
-        wallets || {}
-      ).find(([_, wallet]: [string, RainbowWallet]) =>
-        wallet.addresses.some(
-          ({ address }: RainbowAccount) => address === primaryAddress
-        )
+      Object.entries<RainbowWallet>(wallets || {}).find(([_, wallet]: [string, RainbowWallet]) =>
+        wallet.addresses.some(({ address }: RainbowAccount) => address === primaryAddress)
       ) || ['', '']
     );
   }, [primaryAddress, wallets]);
@@ -31,9 +23,7 @@ export default function useDeleteWallet({
       ...wallets,
       [watchingWalletId]: {
         ...wallets![watchingWalletId],
-        addresses: wallets![
-          watchingWalletId
-        ].addresses.map((account: { address: string }) =>
+        addresses: wallets![watchingWalletId].addresses.map((account: { address: string }) =>
           account.address.toLowerCase() === primaryAddress?.toLowerCase()
             ? { ...(account as RainbowAccount), visible: false }
             : (account as RainbowAccount)
@@ -42,9 +32,7 @@ export default function useDeleteWallet({
     };
     // If there are no visible wallets
     // then delete the wallet
-    const visibleAddresses = newWallets[watchingWalletId].addresses.filter(
-      (account: { visible: boolean }) => account.visible
-    );
+    const visibleAddresses = newWallets[watchingWalletId].addresses.filter((account: { visible: boolean }) => account.visible);
     if (visibleAddresses.length === 0) {
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete newWallets[watchingWalletId];

@@ -4,20 +4,13 @@ import { values } from 'lodash';
 import { useCallback } from 'react';
 import { Linking } from 'react-native';
 import { useDispatch } from 'react-redux';
-import {
-  addWalletToCloudBackup,
-  backupWalletToCloud,
-  fetchBackupPassword,
-} from '../model/backup';
+import { addWalletToCloudBackup, backupWalletToCloud, fetchBackupPassword } from '../model/backup';
 import { setWalletBackedUp } from '../redux/wallets';
 import { cloudPlatform } from '../utils/platform';
 import useWallets from './useWallets';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
-import {
-  CLOUD_BACKUP_ERRORS,
-  isCloudBackupAvailable,
-} from '@/handlers/cloudBackup';
+import { CLOUD_BACKUP_ERRORS, isCloudBackupAvailable } from '@/handlers/cloudBackup';
 import { delay } from '@/helpers/utilities';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import logger from '@/utils/logger';
@@ -71,30 +64,26 @@ export default function useWalletCloudBackup() {
         analytics.track('iCloud not enabled', {
           category: 'backup',
         });
-        Alert.alert(
-          lang.t('modal.back_up.alerts.cloud_not_enabled.label'),
-          lang.t('modal.back_up.alerts.cloud_not_enabled.description'),
-          [
-            {
-              onPress: () => {
-                Linking.openURL('https://support.apple.com/en-us/HT204025');
-                analytics.track('View how to Enable iCloud', {
-                  category: 'backup',
-                });
-              },
-              text: lang.t('modal.back_up.alerts.cloud_not_enabled.show_me'),
+        Alert.alert(lang.t('modal.back_up.alerts.cloud_not_enabled.label'), lang.t('modal.back_up.alerts.cloud_not_enabled.description'), [
+          {
+            onPress: () => {
+              Linking.openURL('https://support.apple.com/en-us/HT204025');
+              analytics.track('View how to Enable iCloud', {
+                category: 'backup',
+              });
             },
-            {
-              onPress: () => {
-                analytics.track('Ignore how to enable iCloud', {
-                  category: 'backup',
-                });
-              },
-              style: 'cancel',
-              text: lang.t('modal.back_up.alerts.cloud_not_enabled.no_thanks'),
+            text: lang.t('modal.back_up.alerts.cloud_not_enabled.show_me'),
+          },
+          {
+            onPress: () => {
+              analytics.track('Ignore how to enable iCloud', {
+                category: 'backup',
+              });
             },
-          ]
-        );
+            style: 'cancel',
+            text: lang.t('modal.back_up.alerts.cloud_not_enabled.no_thanks'),
+          },
+        ]);
         return;
       }
 
@@ -154,10 +143,7 @@ export default function useWalletCloudBackup() {
             userPIN,
           });
         } else {
-          logger.log(
-            `adding wallet to ${cloudPlatform} backup`,
-            wallets![walletId]
-          );
+          logger.log(`adding wallet to ${cloudPlatform} backup`, wallets![walletId]);
           updatedBackupFile = await addWalletToCloudBackup({
             password: fetchedPassword,
             wallet: wallets![walletId],
@@ -168,9 +154,7 @@ export default function useWalletCloudBackup() {
       } catch (e: any) {
         const userError = getUserError(e);
         !!onError && onError(userError);
-        logger.sentry(
-          `error while trying to backup wallet to ${cloudPlatform}`
-        );
+        logger.sentry(`error while trying to backup wallet to ${cloudPlatform}`);
         captureException(e);
         analytics.track(`Error during ${cloudPlatform} Backup`, {
           category: 'backup',
@@ -182,21 +166,13 @@ export default function useWalletCloudBackup() {
 
       try {
         logger.log('backup completed!');
-        await dispatch(
-          setWalletBackedUp(
-            walletId,
-            WalletBackupTypes.cloud,
-            updatedBackupFile
-          )
-        );
+        await dispatch(setWalletBackedUp(walletId, WalletBackupTypes.cloud, updatedBackupFile));
         logger.log('backup saved everywhere!');
         !!onSuccess && onSuccess();
       } catch (e) {
         logger.sentry('error while trying to save wallet backup state');
         captureException(e);
-        const userError = getUserError(
-          new Error(CLOUD_BACKUP_ERRORS.WALLET_BACKUP_STATUS_UPDATE_FAILED)
-        );
+        const userError = getUserError(new Error(CLOUD_BACKUP_ERRORS.WALLET_BACKUP_STATUS_UPDATE_FAILED));
         !!onError && onError(userError);
         analytics.track('Error updating Backup status', {
           category: 'backup',

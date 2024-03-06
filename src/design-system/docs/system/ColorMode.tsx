@@ -1,11 +1,5 @@
 import * as React from 'react';
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
 import { Button } from './Button';
 import * as modes from './colorModes.css';
@@ -24,19 +18,11 @@ export const ColorModeContext = createContext<ColorModeContextValues>({
   setColorMode: () => {},
 });
 
-export function ColorModeProvider({
-  children,
-}: {
-  children: ReactNode | ((colorMode: ColorMode) => ReactNode);
-}) {
+export function ColorModeProvider({ children }: { children: ReactNode | ((colorMode: ColorMode) => ReactNode) }) {
   const [colorMode, setColorMode] = useState<ColorMode>('light');
 
   useEffect(() => {
-    const currentColorMode = document.documentElement.classList.contains(
-      modes.dark
-    )
-      ? 'dark'
-      : 'light';
+    const currentColorMode = document.documentElement.classList.contains(modes.dark) ? 'dark' : 'light';
     document.documentElement.classList.add(modes[currentColorMode]);
     setColorMode(currentColorMode);
   }, []);
@@ -76,12 +62,8 @@ export function ColorModeToggle() {
         top: '16px',
       })}
     >
-      <Button
-        onClick={() => setColorMode(colorMode === 'light' ? 'dark' : 'light')}
-      >
-        <div className={sprinkles({ fontSize: '32px' })}>
-          {colorMode === 'light' ? '🌞' : '🌛'}
-        </div>
+      <Button onClick={() => setColorMode(colorMode === 'light' ? 'dark' : 'light')}>
+        <div className={sprinkles({ fontSize: '32px' })}>{colorMode === 'light' ? '🌞' : '🌛'}</div>
       </Button>
     </div>
   );

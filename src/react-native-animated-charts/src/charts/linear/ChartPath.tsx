@@ -24,10 +24,7 @@ import Animated, {
 import { getYForX } from 'react-native-redash';
 import Svg, { Path, PathProps } from 'react-native-svg';
 import { ChartData, PathData } from '../../helpers/ChartContext';
-import {
-  requireOnWorklet,
-  useWorkletValue,
-} from '../../helpers/requireOnWorklet';
+import { requireOnWorklet, useWorkletValue } from '../../helpers/requireOnWorklet';
 import { useChartData } from '../../helpers/useChartData';
 
 export const FIX_CLIPPED_PATH_MAGIC_NUMBER = 22;
@@ -139,33 +136,27 @@ const ChartPathInner = React.memo(
     const translationX = useSharedValue<number | null>(null);
     const translationY = useSharedValue<number | null>(null);
 
-    const setOriginData = useWorkletCallback(
-      (path: PathData, index?: number) => {
-        if (!path.data.length) {
-          return;
-        }
+    const setOriginData = useWorkletCallback((path: PathData, index?: number) => {
+      if (!path.data.length) {
+        return;
+      }
 
-        if (typeof index === 'undefined') {
-          originalX.value = '';
-          originalY.value = '';
-          return;
-        }
+      if (typeof index === 'undefined') {
+        originalX.value = '';
+        originalY.value = '';
+        return;
+      }
 
-        originalX.value = path.data[index].x.toString();
-        originalY.value = path.data[index].y.toString();
-      },
-      []
-    );
+      originalX.value = path.data[index].x.toString();
+      originalY.value = path.data[index].y.toString();
+    }, []);
 
     const resetGestureState = useWorkletCallback(() => {
       originalX.value = '';
       originalY.value = '';
       positionY.value = -1;
       isActive.value = false;
-      pathOpacity.value = withTiming(
-        1,
-        timingFeedbackConfig || timingFeedbackDefaultConfig
-      );
+      pathOpacity.value = withTiming(1, timingFeedbackConfig || timingFeedbackDefaultConfig);
       translationX.value = null;
       translationY.value = null;
     }, []);
@@ -191,17 +182,11 @@ const ChartPathInner = React.memo(
         if (previousPath && currentPath) {
           const d3Interpolate = requireOnWorklet('d3-interpolate-path');
 
-          interpolatorWorklet().value = d3Interpolate.interpolatePath(
-            previousPath.path,
-            currentPath.path
-          );
+          interpolatorWorklet().value = d3Interpolate.interpolatePath(previousPath.path, currentPath.path);
 
           progress.value = 0;
 
-          progress.value = withDelay(
-            Platform.OS === 'ios' ? 0 : 100,
-            withTiming(1, timingAnimationConfig || timingAnimationDefaultConfig)
-          );
+          progress.value = withDelay(Platform.OS === 'ios' ? 0 : 100, withTiming(1, timingAnimationConfig || timingAnimationDefaultConfig));
         } else {
           interpolatorWorklet().value = undefined;
           progress.value = 1;
@@ -214,13 +199,7 @@ const ChartPathInner = React.memo(
     useAnimatedReaction(
       () => ({ x: translationX.value, y: translationY.value }),
       values => {
-        if (
-          !currentPath ||
-          !currentPath.parsed ||
-          progress.value === 0 ||
-          values.x === null ||
-          values.y === null
-        ) {
+        if (!currentPath || !currentPath.parsed || progress.value === 0 || values.x === null || values.y === null) {
           return;
         }
 
@@ -248,20 +227,14 @@ const ChartPathInner = React.memo(
         if (currentPath.points[index].x > values.x) {
           const prevPointOriginalX = currentPath.points[index - 1]?.originalX;
           if (prevPointOriginalX) {
-            const distance =
-              (currentPath.points[index].x - values.x) /
-              (currentPath.points[index].x - currentPath.points[index - 1].x);
-            adjustedPointX =
-              prevPointOriginalX * distance + pointX * (1 - distance);
+            const distance = (currentPath.points[index].x - values.x) / (currentPath.points[index].x - currentPath.points[index - 1].x);
+            adjustedPointX = prevPointOriginalX * distance + pointX * (1 - distance);
           }
         } else {
           const nextPointOriginalX = currentPath.points[index + 1]?.originalX;
           if (nextPointOriginalX) {
-            const distance =
-              (values.x - currentPath.points[index].x) /
-              (currentPath.points[index + 1].x - currentPath.points[index].x);
-            adjustedPointX =
-              nextPointOriginalX * distance + pointX * (1 - distance);
+            const distance = (values.x - currentPath.points[index].x) / (currentPath.points[index + 1].x - currentPath.points[index].x);
+            adjustedPointX = nextPointOriginalX * distance + pointX * (1 - distance);
           }
         }
 
@@ -287,14 +260,9 @@ const ChartPathInner = React.memo(
         };
       }
 
-      props.d = interpolatorWorklet().value
-        ? interpolatorWorklet().value(progress.value)
-        : currentPath.path;
+      props.d = interpolatorWorklet().value ? interpolatorWorklet().value(progress.value) : currentPath.path;
 
-      props.strokeWidth =
-        pathOpacity.value *
-          (Number(strokeWidth) - Number(selectedStrokeWidth)) +
-        Number(selectedStrokeWidth);
+      props.strokeWidth = pathOpacity.value * (Number(strokeWidth) - Number(selectedStrokeWidth)) + Number(selectedStrokeWidth);
 
       if (Platform.OS === 'ios') {
         props.style = {
@@ -311,10 +279,7 @@ const ChartPathInner = React.memo(
           if (!isActive.value) {
             isActive.value = true;
 
-            pathOpacity.value = withTiming(
-              0,
-              timingFeedbackConfig || timingFeedbackDefaultConfig
-            );
+            pathOpacity.value = withTiming(0, timingFeedbackConfig || timingFeedbackDefaultConfig);
 
             if (hapticsEnabled) {
               impactHeavy();
@@ -348,10 +313,7 @@ const ChartPathInner = React.memo(
           if (Platform.OS === 'android') {
             state.value = event.state;
             isActive.value = true;
-            pathOpacity.value = withTiming(
-              0,
-              timingFeedbackConfig || timingFeedbackDefaultConfig
-            );
+            pathOpacity.value = withTiming(0, timingFeedbackConfig || timingFeedbackDefaultConfig);
 
             if (hapticsEnabled) {
               impactHeavy();
@@ -369,7 +331,7 @@ const ChartPathInner = React.memo(
     });
 
     return (
-      // @ts-expect-error We use an old version of RNGH which doesn't support React 18 types well
+      // @ts-ignore
       <LongPressGestureHandler
         enabled={gestureEnabled}
         maxDist={100000}
@@ -381,21 +343,17 @@ const ChartPathInner = React.memo(
         <Animated.View>
           <Svg
             style={{
-              height:
-                height +
-                (isCard
-                  ? FIX_CLIPPED_PATH_FOR_CARD_MAGIC_NUMBER
-                  : FIX_CLIPPED_PATH_MAGIC_NUMBER),
+              height: height + (isCard ? FIX_CLIPPED_PATH_FOR_CARD_MAGIC_NUMBER : FIX_CLIPPED_PATH_MAGIC_NUMBER),
               width,
             }}
             viewBox={`0 0 ${width} ${height}`}
           >
             <AnimatedPath
-              // @ts-expect-error
               animatedProps={animatedProps}
               stroke={stroke}
               strokeWidth={strokeWidth}
               strokeLinecap="round"
+              // @ts-ignore
               style={pathAnimatedStyles}
               {...props}
             />
@@ -423,18 +381,8 @@ export const ChartPath = React.memo(
     isCard = false,
     ...props
   }: ChartPathProps) => {
-    const {
-      positionX,
-      positionY,
-      originalX,
-      originalY,
-      state,
-      isActive,
-      progress,
-      pathOpacity,
-      currentPath,
-      previousPath,
-    } = useChartData();
+    const { positionX, positionY, originalX, originalY, state, isActive, progress, pathOpacity, currentPath, previousPath } =
+      useChartData();
 
     let renderPath = null;
 

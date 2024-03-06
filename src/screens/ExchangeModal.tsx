@@ -1,24 +1,9 @@
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import { isEmpty, isEqual } from 'lodash';
-import React, {
-  MutableRefObject,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { MutableRefObject, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import equal from 'react-fast-compare';
-import {
-  EmitterSubscription,
-  InteractionManager,
-  Keyboard,
-  NativeModules,
-  TextInput,
-  View,
-} from 'react-native';
+import { EmitterSubscription, InteractionManager, Keyboard, NativeModules, TextInput, View } from 'react-native';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useDispatch, useSelector } from 'react-redux';
 import { useDebounce } from 'use-debounce/lib';
@@ -41,12 +26,7 @@ import { getRemoteConfig, useRemoteConfig } from '@/model/remoteConfig';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { Box, Row, Rows } from '@/design-system';
-import {
-  GasFee,
-  LegacyGasFee,
-  LegacyGasFeeParams,
-  SwappableAsset,
-} from '@/entities';
+import { GasFee, LegacyGasFee, LegacyGasFeeParams, SwappableAsset } from '@/entities';
 import { ExchangeModalTypes, isKeyboardOpen, Network } from '@/helpers';
 import { KeyboardType } from '@/helpers/keyboardTypes';
 import { getProviderForNetwork, getFlashbotsProvider } from '@/handlers/web3';
@@ -54,7 +34,6 @@ import { delay, greaterThan } from '@/helpers/utilities';
 import {
   useAccountSettings,
   useColorForAsset,
-  useCurrentNonce,
   useGas,
   usePrevious,
   usePriceImpactDetails,
@@ -69,27 +48,14 @@ import {
 } from '@/hooks';
 import { loadWallet } from '@/model/wallet';
 import { useNavigation } from '@/navigation';
-import {
-  executeRap,
-  getSwapRapEstimationByType,
-  getSwapRapTypeByExchangeType,
-} from '@/raps';
-import {
-  swapClearState,
-  SwapModalField,
-  TypeSpecificParameters,
-  updateSwapSlippage,
-  updateSwapTypeDetails,
-} from '@/redux/swap';
+import { executeRap, getSwapRapEstimationByType, getSwapRapTypeByExchangeType } from '@/raps';
+import { swapClearState, SwapModalField, TypeSpecificParameters, updateSwapSlippage, updateSwapTypeDetails } from '@/redux/swap';
 import { ethUnits } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils, gasUtils } from '@/utils';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import logger from '@/utils/logger';
-import {
-  CrosschainSwapActionParameters,
-  SwapActionParameters,
-} from '@/raps/common';
+import { CrosschainSwapActionParameters, SwapActionParameters } from '@/raps/common';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
 import store from '@/redux/store';
@@ -104,6 +70,7 @@ import Animated from 'react-native-reanimated';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
 import { SwapPriceImpactType } from '@/hooks/usePriceImpactDetails';
+import { getNextNonce } from '@/state/nonces';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -118,12 +85,10 @@ export const DEFAULT_SLIPPAGE_BIPS = {
 };
 
 export const getDefaultSlippageFromConfig = (network: Network) => {
-  const configSlippage = (getRemoteConfig()
-    .default_slippage_bips as unknown) as {
+  const configSlippage = getRemoteConfig().default_slippage_bips as unknown as {
     [network: string]: number;
   };
-  const slippage =
-    configSlippage?.[network] ?? DEFAULT_SLIPPAGE_BIPS[network] ?? 100;
+  const slippage = configSlippage?.[network] ?? DEFAULT_SLIPPAGE_BIPS[network] ?? 100;
   return slippage;
 };
 const NOOP = () => null;
@@ -140,20 +105,10 @@ interface ExchangeModalProps {
   typeSpecificParams: TypeSpecificParameters;
 }
 
-export default function ExchangeModal({
-  fromDiscover,
-  ignoreInitialTypeCheck,
-  testID,
-  type,
-  typeSpecificParams,
-}: ExchangeModalProps) {
+export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, type, typeSpecificParams }: ExchangeModalProps) {
   const { isHardwareWallet } = useWallets();
   const dispatch = useDispatch();
-  const {
-    slippageInBips,
-    maxInputUpdate,
-    flipCurrenciesUpdate,
-  } = useSwapSettings();
+  const { slippageInBips, maxInputUpdate, flipCurrenciesUpdate } = useSwapSettings();
   const {
     params: { inputAsset: defaultInputAsset, outputAsset: defaultOutputAsset },
   } = useRoute<{
@@ -171,13 +126,7 @@ export default function ExchangeModal({
 
   const title = lang.t('swap.modal_types.swap');
 
-  const {
-    goBack,
-    navigate,
-    setParams,
-    getParent: dangerouslyGetParent,
-    addListener,
-  } = useNavigation();
+  const { goBack, navigate, setParams, getParent: dangerouslyGetParent, addListener } = useNavigation();
 
   const {
     selectedGasFee,
@@ -190,12 +139,7 @@ export default function ExchangeModal({
     txNetwork,
     isGasReady,
   } = useGas();
-  const {
-    accountAddress,
-    flashbotsEnabled,
-    nativeCurrency,
-    network,
-  } = useAccountSettings();
+  const { accountAddress, flashbotsEnabled, nativeCurrency, network } = useAccountSettings();
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const prevGasFeesParamsBySpeed = usePrevious(gasFeeParamsBySpeed);
@@ -212,44 +156,20 @@ export default function ExchangeModal({
 
   const { colors } = useTheme();
   const inputCurrencyColor = useColorForAsset(inputCurrency, colors.appleBlue);
-  const outputCurrencyColor = useColorForAsset(
-    outputCurrency,
-    colors.appleBlue
-  );
+  const outputCurrencyColor = useColorForAsset(outputCurrency, colors.appleBlue);
 
-  const {
-    handleFocus,
-    inputFieldRef,
-    lastFocusedInputHandle,
-    setLastFocusedInputHandle,
-    nativeFieldRef,
-    outputFieldRef,
-  } = useSwapInputRefs();
+  const { handleFocus, inputFieldRef, lastFocusedInputHandle, setLastFocusedInputHandle, nativeFieldRef, outputFieldRef } =
+    useSwapInputRefs();
 
-  const {
-    updateInputAmount,
-    updateMaxInputAmount,
-    updateNativeAmount,
-    updateOutputAmount,
-  } = useSwapInputHandlers();
+  const { updateInputAmount, updateMaxInputAmount, updateNativeAmount, updateOutputAmount } = useSwapInputHandlers();
 
-  const {
-    inputNetwork,
-    outputNetwork,
-    chainId,
-    currentNetwork,
-    isCrosschainSwap,
-    isBridgeSwap,
-  } = useMemo(() => {
+  const { inputNetwork, outputNetwork, chainId, currentNetwork, isCrosschainSwap, isBridgeSwap } = useMemo(() => {
     const inputNetwork = inputCurrency?.network || Network.mainnet;
     const outputNetwork = outputCurrency?.network || Network.mainnet;
-    const chainId = ethereumUtils.getChainIdFromNetwork(
-      inputNetwork || outputNetwork
-    );
+    const chainId = ethereumUtils.getChainIdFromNetwork(inputNetwork || outputNetwork);
 
     const currentNetwork = ethereumUtils.getNetworkFromChainId(chainId);
-    const isCrosschainSwap =
-      crosschainSwapsEnabled && inputNetwork !== outputNetwork;
+    const isCrosschainSwap = crosschainSwapsEnabled && inputNetwork !== outputNetwork;
     const isBridgeSwap = inputCurrency?.symbol === outputCurrency?.symbol;
     return {
       inputNetwork,
@@ -259,54 +179,34 @@ export default function ExchangeModal({
       isCrosschainSwap,
       isBridgeSwap,
     };
-  }, [
-    crosschainSwapsEnabled,
-    inputCurrency?.symbol,
-    inputCurrency?.network,
-    outputCurrency?.symbol,
-    outputCurrency?.network,
-  ]);
+  }, [crosschainSwapsEnabled, inputCurrency?.symbol, inputCurrency?.network, outputCurrency?.symbol, outputCurrency?.network]);
 
-  const {
-    flipCurrencies,
-    navigateToSelectInputCurrency,
-    navigateToSelectOutputCurrency,
-    updateAndFocusInputAmount,
-  } = useSwapCurrencyHandlers({
-    currentNetwork,
-    inputNetwork,
-    outputNetwork,
-    defaultInputAsset,
-    defaultOutputAsset,
-    fromDiscover,
-    ignoreInitialTypeCheck,
-    inputFieldRef,
-    lastFocusedInputHandle,
-    nativeFieldRef,
-    outputFieldRef,
-    setLastFocusedInputHandle,
-    title,
-    type,
-  });
+  const { flipCurrencies, navigateToSelectInputCurrency, navigateToSelectOutputCurrency, updateAndFocusInputAmount } =
+    useSwapCurrencyHandlers({
+      currentNetwork,
+      inputNetwork,
+      outputNetwork,
+      defaultInputAsset,
+      defaultOutputAsset,
+      fromDiscover,
+      ignoreInitialTypeCheck,
+      inputFieldRef,
+      lastFocusedInputHandle,
+      nativeFieldRef,
+      outputFieldRef,
+      setLastFocusedInputHandle,
+      title,
+      type,
+    });
   const speedUrgentSelected = useRef(false);
 
   useEffect(() => {
-    if (
-      !speedUrgentSelected.current &&
-      !isEmpty(gasFeeParamsBySpeed) &&
-      getNetworkObj(currentNetwork).swaps?.defaultToFastGas
-    ) {
+    if (!speedUrgentSelected.current && !isEmpty(gasFeeParamsBySpeed) && getNetworkObj(currentNetwork).swaps?.defaultToFastGas) {
       // Default to fast for networks with speed options
       updateGasFeeOption(gasUtils.FAST);
       speedUrgentSelected.current = true;
     }
-  }, [
-    currentNetwork,
-    gasFeeParamsBySpeed,
-    selectedGasFee,
-    updateGasFeeOption,
-    updateTxFee,
-  ]);
+  }, [currentNetwork, gasFeeParamsBySpeed, selectedGasFee, updateGasFeeOption, updateTxFee]);
 
   useEffect(() => {
     if (currentNetwork !== prevTxNetwork) {
@@ -318,16 +218,10 @@ export default function ExchangeModal({
     return ethereumUtils.getBasicSwapGasLimit(Number(chainId));
   }, [chainId]);
 
-  const getNextNonce = useCurrentNonce(accountAddress, currentNetwork);
-
   const {
     result: {
       derivedValues: { inputAmount, nativeAmount, outputAmount },
-      displayValues: {
-        inputAmountDisplay,
-        outputAmountDisplay,
-        nativeAmountDisplay,
-      },
+      displayValues: { inputAmountDisplay, outputAmountDisplay, nativeAmountDisplay },
       tradeDetails,
     },
     loading,
@@ -338,20 +232,11 @@ export default function ExchangeModal({
   const lastTradeDetails = usePrevious(tradeDetails);
   const isSufficientBalance = useSwapIsSufficientBalance(inputAmount);
 
-  const { priceImpact, outputNativeAmount } = usePriceImpactDetails(
-    inputCurrency,
-    outputCurrency,
-    tradeDetails,
-    currentNetwork
-  );
-  const [debouncedIsHighPriceImpact] = useDebounce(
-    priceImpact.type !== SwapPriceImpactType.none,
-    1000
-  );
+  const { priceImpact, outputNativeAmount } = usePriceImpactDetails(inputCurrency, outputCurrency, tradeDetails, currentNetwork);
+  const [debouncedIsHighPriceImpact] = useDebounce(priceImpact.type !== SwapPriceImpactType.none, 1000);
   // For a limited period after the merge we need to block the use of flashbots.
   // This line should be removed after reenabling flashbots in remote config.
-  const swapSupportsFlashbots = getNetworkObj(currentNetwork).features
-    .flashbots;
+  const swapSupportsFlashbots = getNetworkObj(currentNetwork).features.flashbots;
   const flashbots = swapSupportsFlashbots && flashbotsEnabled;
 
   const isDismissing = useRef(false);
@@ -359,20 +244,18 @@ export default function ExchangeModal({
     if (ios) {
       return;
     }
-    ((dismissingScreenListener.current as unknown) as () => void) = () => {
+    (dismissingScreenListener.current as unknown as () => void) = () => {
       Keyboard.dismiss();
       isDismissing.current = true;
     };
-    const unsubscribe = (
-      dangerouslyGetParent()?.getParent()?.addListener || addListener
-    )(
+    const unsubscribe = (dangerouslyGetParent()?.getParent()?.addListener || addListener)(
       // @ts-expect-error - Not sure if this is even triggered as React Navigation apparently doesnt emit this event.
       'transitionEnd',
       // @ts-expect-error - Can't find any docs around this closing prop being sent is this a private API?
       ({ data: { closing } }) => {
         if (!closing && isDismissing.current) {
           isDismissing.current = false;
-          ((lastFocusedInputHandle as unknown) as MutableRefObject<TextInput>)?.current?.focus();
+          (lastFocusedInputHandle as unknown as MutableRefObject<TextInput>)?.current?.focus();
         }
       }
     );
@@ -384,7 +267,7 @@ export default function ExchangeModal({
 
   useEffect(() => {
     let slippage = DEFAULT_SLIPPAGE_BIPS?.[currentNetwork];
-    const configSlippage = (default_slippage_bips as unknown) as {
+    const configSlippage = default_slippage_bips as unknown as {
       [network: string]: number;
     };
     if (configSlippage?.[currentNetwork]) {
@@ -404,9 +287,7 @@ export default function ExchangeModal({
   const updateGasLimit = useCallback(async () => {
     try {
       const provider = await getProviderForNetwork(currentNetwork);
-      const swapParams:
-        | SwapActionParameters
-        | CrosschainSwapActionParameters = {
+      const swapParams: SwapActionParameters | CrosschainSwapActionParameters = {
         chainId,
         inputAmount: inputAmount!,
         outputAmount: outputAmount!,
@@ -431,11 +312,7 @@ export default function ExchangeModal({
             );
             updateTxFee(gasLimit, null, l1GasFeeOptimism);
           } else {
-            updateTxFee(
-              gasLimit,
-              null,
-              ethUnits.default_l1_gas_fee_optimism_swap
-            );
+            updateTxFee(gasLimit, null, ethUnits.default_l1_gas_fee_optimism_swap);
           }
         } else {
           updateTxFee(gasLimit, null);
@@ -444,17 +321,7 @@ export default function ExchangeModal({
     } catch (error) {
       updateTxFee(defaultGasLimit, null);
     }
-  }, [
-    chainId,
-    currentNetwork,
-    defaultGasLimit,
-    inputAmount,
-    isCrosschainSwap,
-    outputAmount,
-    tradeDetails,
-    type,
-    updateTxFee,
-  ]);
+  }, [chainId, currentNetwork, defaultGasLimit, inputAmount, isCrosschainSwap, outputAmount, tradeDetails, type, updateTxFee]);
 
   useEffect(() => {
     if (tradeDetails && !equal(tradeDetails, lastTradeDetails)) {
@@ -467,31 +334,18 @@ export default function ExchangeModal({
     if (isEmpty(prevGasFeesParamsBySpeed) && !isEmpty(gasFeeParamsBySpeed)) {
       updateTxFee(defaultGasLimit, null);
     }
-  }, [
-    defaultGasLimit,
-    gasFeeParamsBySpeed,
-    prevGasFeesParamsBySpeed,
-    updateTxFee,
-  ]);
+  }, [defaultGasLimit, gasFeeParamsBySpeed, prevGasFeesParamsBySpeed, updateTxFee]);
 
   // Update gas limit
   useEffect(() => {
     if (
       !isGasReady ||
       (!prevTxNetwork && txNetwork !== prevTxNetwork) ||
-      (!isEmpty(gasFeeParamsBySpeed) &&
-        !isEqual(gasFeeParamsBySpeed, prevGasFeesParamsBySpeed))
+      (!isEmpty(gasFeeParamsBySpeed) && !isEqual(gasFeeParamsBySpeed, prevGasFeesParamsBySpeed))
     ) {
       updateGasLimit();
     }
-  }, [
-    gasFeeParamsBySpeed,
-    isGasReady,
-    prevGasFeesParamsBySpeed,
-    prevTxNetwork,
-    txNetwork,
-    updateGasLimit,
-  ]);
+  }, [gasFeeParamsBySpeed, isGasReady, prevGasFeesParamsBySpeed, prevTxNetwork, txNetwork, updateGasLimit]);
 
   // Listen to gas prices, Uniswap reserves updates
   useEffect(() => {
@@ -503,41 +357,26 @@ export default function ExchangeModal({
     return () => {
       stopPollingGasFees();
     };
-  }, [
-    defaultGasLimit,
-    currentNetwork,
-    startPollingGasFees,
-    stopPollingGasFees,
-    updateDefaultGasLimit,
-    flashbots,
-  ]);
+  }, [defaultGasLimit, currentNetwork, startPollingGasFees, stopPollingGasFees, updateDefaultGasLimit, flashbots]);
 
   const checkGasVsOutput = async (gasPrice: string, outputPrice: string) => {
-    if (
-      greaterThan(outputPrice, 0) &&
-      greaterThan(gasPrice, outputPrice) &&
-      !(IS_ANDROID && IS_TEST)
-    ) {
+    if (greaterThan(outputPrice, 0) && greaterThan(gasPrice, outputPrice) && !(IS_ANDROID && IS_TEST)) {
       const res = new Promise(resolve => {
-        Alert.alert(
-          lang.t('swap.warning.cost.are_you_sure_title'),
-          lang.t('swap.warning.cost.this_transaction_will_cost_you_more'),
-          [
-            {
-              onPress: () => {
-                resolve(false);
-              },
-              text: lang.t('button.proceed_anyway'),
+        Alert.alert(lang.t('swap.warning.cost.are_you_sure_title'), lang.t('swap.warning.cost.this_transaction_will_cost_you_more'), [
+          {
+            onPress: () => {
+              resolve(false);
             },
-            {
-              onPress: () => {
-                resolve(true);
-              },
-              style: 'cancel',
-              text: lang.t('button.cancel'),
+            text: lang.t('button.proceed_anyway'),
+          },
+          {
+            onPress: () => {
+              resolve(true);
             },
-          ]
-        );
+            style: 'cancel',
+            text: lang.t('button.cancel'),
+          },
+        ]);
       });
       return res;
     } else {
@@ -554,9 +393,7 @@ export default function ExchangeModal({
   const submit = useCallback(
     async (amountInUSD: any) => {
       setIsAuthorizing(true);
-      const NotificationManager = ios
-        ? NativeModules.NotificationManager
-        : null;
+      const NotificationManager = ios ? NativeModules.NotificationManager : null;
       try {
         // load the correct network provider for the wallet
         const provider = await getProviderForNetwork(currentNetwork);
@@ -569,21 +406,14 @@ export default function ExchangeModal({
 
         // Switch to the flashbots provider if enabled
         // TODO(skylarbarrera): need to check if ledger and handle differently here
-        if (
-          flashbots &&
-          getNetworkObj(currentNetwork).features?.flashbots &&
-          wallet instanceof Wallet
-        ) {
+        if (flashbots && getNetworkObj(currentNetwork).features?.flashbots && wallet instanceof Wallet) {
           logger.debug('flashbots provider being set on mainnet');
           const flashbotsProvider = await getFlashbotsProvider();
           wallet = new Wallet(wallet.privateKey, flashbotsProvider);
         }
 
         let isSucessful = false;
-        const callback = (
-          success = false,
-          errorMessage: string | null = null
-        ) => {
+        const callback = (success = false, errorMessage: string | null = null) => {
           isSucessful = success;
           setIsAuthorizing(false);
           if (success) {
@@ -598,13 +428,8 @@ export default function ExchangeModal({
           }
         };
         logger.log('[exchange - handle submit] rap');
-        const nonce = await getNextNonce();
-        const {
-          independentField,
-          independentValue,
-          slippageInBips,
-          source,
-        } = store.getState().swap;
+        const nonce = await getNextNonce({ address: accountAddress, network: currentNetwork });
+        const { independentField, independentValue, slippageInBips, source } = store.getState().swap;
         const swapParameters = {
           chainId,
           flashbots,
@@ -613,12 +438,8 @@ export default function ExchangeModal({
           nonce,
           tradeDetails: {
             ...tradeDetails,
-            fromChainId: ethereumUtils.getChainIdFromNetwork(
-              inputCurrency?.network
-            ),
-            toChainId: ethereumUtils.getChainIdFromNetwork(
-              outputCurrency?.network
-            ),
+            fromChainId: ethereumUtils.getChainIdFromNetwork(inputCurrency?.network),
+            toChainId: ethereumUtils.getChainIdFromNetwork(outputCurrency?.network),
           } as Quote | CrosschainQuote,
           meta: {
             flashbots,
@@ -651,12 +472,9 @@ export default function ExchangeModal({
           inputTokenSymbol: inputCurrency?.symbol || '',
           isHardwareWallet,
           isHighPriceImpact: debouncedIsHighPriceImpact,
-          legacyGasPrice:
-            ((selectedGasFee?.gasFeeParams as unknown) as LegacyGasFeeParams)
-              ?.gasPrice?.amount || '',
+          legacyGasPrice: (selectedGasFee?.gasFeeParams as unknown as LegacyGasFeeParams)?.gasPrice?.amount || '',
           liquiditySources: JSON.stringify(tradeDetails?.protocols || []),
-          maxNetworkFee:
-            (selectedGasFee?.gasFee as GasFee)?.maxFee?.value?.amount || '',
+          maxNetworkFee: (selectedGasFee?.gasFee as GasFee)?.maxFee?.value?.amount || '',
           network: currentNetwork,
           networkFee: selectedGasFee?.gasFee?.estimatedFee?.value?.amount || '',
           outputTokenAddress: outputCurrency?.address || '',
@@ -697,7 +515,6 @@ export default function ExchangeModal({
       currentNetwork,
       debouncedIsHighPriceImpact,
       flashbots,
-      getNextNonce,
       goBack,
       inputAmount,
       inputCurrency,
@@ -735,12 +552,9 @@ export default function ExchangeModal({
         inputTokenSymbol: inputCurrency?.symbol || '',
         isHardwareWallet,
         isHighPriceImpact: debouncedIsHighPriceImpact,
-        legacyGasPrice:
-          ((selectedGasFee?.gasFeeParams as unknown) as LegacyGasFeeParams)
-            ?.gasPrice?.amount || '',
+        legacyGasPrice: (selectedGasFee?.gasFeeParams as unknown as LegacyGasFeeParams)?.gasPrice?.amount || '',
         liquiditySources: JSON.stringify(tradeDetails?.protocols || []),
-        maxNetworkFee:
-          (selectedGasFee?.gasFee as GasFee)?.maxFee?.value?.amount || '',
+        maxNetworkFee: (selectedGasFee?.gasFee as GasFee)?.maxFee?.value?.amount || '',
         network: currentNetwork,
         networkFee: selectedGasFee?.gasFee?.estimatedFee?.value?.amount || '',
         outputTokenAddress: outputCurrency?.address || '',
@@ -755,8 +569,7 @@ export default function ExchangeModal({
     const outputInUSD = outputNativeAmount;
     const gasPrice =
       (selectedGasFee?.gasFee as GasFee)?.maxFee?.native?.value?.amount ||
-      (selectedGasFee?.gasFee as LegacyGasFee)?.estimatedFee?.native?.value
-        ?.amount;
+      (selectedGasFee?.gasFee as LegacyGasFee)?.estimatedFee?.native?.value?.amount;
     const cancelTransaction = await checkGasVsOutput(gasPrice, outputInUSD);
 
     if (cancelTransaction) {
@@ -836,8 +649,7 @@ export default function ExchangeModal({
         asset: outputCurrency,
         network: currentNetwork,
         restoreFocusOnSwapModal: () => {
-          android &&
-            (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
+          android && (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
           setParams({ focused: true });
         },
         swapSupportsFlashbots,
@@ -848,10 +660,7 @@ export default function ExchangeModal({
     if (IS_IOS || !isKeyboardOpen()) {
       internalNavigate();
     } else {
-      keyboardListenerSubscription.current = Keyboard.addListener(
-        'keyboardDidHide',
-        internalNavigate
-      );
+      keyboardListenerSubscription.current = Keyboard.addListener('keyboardDidHide', internalNavigate);
     }
   }, [
     lastFocusedInputHandle,
@@ -882,8 +691,7 @@ export default function ExchangeModal({
           flashbotTransaction: flashbots,
           isRefuelTx,
           restoreFocusOnSwapModal: () => {
-            android &&
-              (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
+            android && (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
             setParams({ focused: true });
           },
           type: 'swap_details',
@@ -901,10 +709,7 @@ export default function ExchangeModal({
       if (IS_IOS || !isKeyboardOpen()) {
         internalNavigate();
       } else {
-        keyboardListenerSubscription.current = Keyboard.addListener(
-          'keyboardDidHide',
-          internalNavigate
-        );
+        keyboardListenerSubscription.current = Keyboard.addListener('keyboardDidHide', internalNavigate);
       }
     },
     [
@@ -928,7 +733,7 @@ export default function ExchangeModal({
   );
 
   const handleTapWhileDisabled = useCallback(() => {
-    const lastFocusedInput = (lastFocusedInputHandle?.current as unknown) as TextInput;
+    const lastFocusedInput = lastFocusedInputHandle?.current as unknown as TextInput;
     lastFocusedInput?.blur();
     navigate(Routes.EXPLAIN_SHEET, {
       inputToken: inputCurrency?.symbol,
@@ -993,6 +798,8 @@ export default function ExchangeModal({
                   inputCurrencyMainnetAddress={inputCurrency?.mainnet_address}
                   inputCurrencySymbol={inputCurrency?.symbol}
                   inputFieldRef={inputFieldRef}
+                  inputCurrencyIcon={inputCurrency?.icon_url}
+                  inputCurrencyColors={inputCurrency?.colors}
                   loading={loading}
                   nativeAmount={nativeAmountDisplay}
                   nativeCurrency={nativeCurrency}
@@ -1006,9 +813,7 @@ export default function ExchangeModal({
                   setInputAmount={updateInputAmount}
                   setNativeAmount={updateNativeAmount}
                   testID={`${testID}-input`}
-                  updateAmountOnFocus={
-                    maxInputUpdate || flipCurrenciesUpdate || isFillingParams
-                  }
+                  updateAmountOnFocus={maxInputUpdate || flipCurrenciesUpdate || isFillingParams}
                 />
                 <ExchangeOutputField
                   color={outputCurrencyColor}
@@ -1025,23 +830,20 @@ export default function ExchangeModal({
                   loading={loading}
                   outputAmount={outputAmountDisplay}
                   outputCurrencyAddress={outputCurrency?.address}
+                  outputCurrencyIcon={outputCurrency?.icon_url}
+                  outputCurrencyColors={outputCurrency?.colors}
                   outputCurrencyMainnetAddress={outputCurrency?.mainnet_address}
                   outputCurrencySymbol={outputCurrency?.symbol}
                   outputFieldRef={outputFieldRef}
                   setOutputAmount={updateOutputAmount}
                   testID={`${testID}-output`}
-                  updateAmountOnFocus={
-                    maxInputUpdate || flipCurrenciesUpdate || isFillingParams
-                  }
+                  updateAmountOnFocus={maxInputUpdate || flipCurrenciesUpdate || isFillingParams}
                 />
               </FloatingPanel>
               {showConfirmButton && (
                 <ExchangeDetailsRow
                   isHighPriceImpact={
-                    !confirmButtonProps.disabled &&
-                    !confirmButtonProps.loading &&
-                    debouncedIsHighPriceImpact &&
-                    isSufficientBalance
+                    !confirmButtonProps.disabled && !confirmButtonProps.loading && debouncedIsHighPriceImpact && isSufficientBalance
                   }
                   onFlipCurrencies={loading ? NOOP : flipCurrencies}
                   onPressImpactWarning={navigateToSwapDetailsModal}
@@ -1076,9 +878,7 @@ export default function ExchangeModal({
                 marginBottom={0}
                 marginTop={0}
                 testID={`${testID}-gas`}
-                crossChainServiceTime={getCrosschainSwapServiceTime(
-                  tradeDetails as CrosschainQuote
-                )}
+                crossChainServiceTime={getCrosschainSwapServiceTime(tradeDetails as CrosschainQuote)}
               />
             </Row>
           </Rows>

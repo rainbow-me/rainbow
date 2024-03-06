@@ -1,12 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import {
-  createQueryKey,
-  queryClient,
-  QueryConfig,
-  QueryFunctionArgs,
-  QueryFunctionResult,
-} from '@/react-query';
+import { createQueryKey, queryClient, QueryConfig, QueryFunctionArgs, QueryFunctionResult } from '@/react-query';
 
 import { PromoSheetOrder } from '@/graphql/__generated__/arc';
 import { arcClient } from '@/graphql';
@@ -25,53 +19,35 @@ export type PromoSheetCollectionArgs = {
 const promoSheetCollectionQueryKey = ({ order }: PromoSheetCollectionArgs) =>
   createQueryKey('promoSheetCollection', { order }, { persisterVersion: 1 });
 
-type PromoSheetCollectionQueryKey = ReturnType<
-  typeof promoSheetCollectionQueryKey
->;
+type PromoSheetCollectionQueryKey = ReturnType<typeof promoSheetCollectionQueryKey>;
 
 // ///////////////////////////////////////////////
 // Query Function
 
-async function promoSheetCollectionQueryFunction({
-  queryKey: [{ order }],
-}: QueryFunctionArgs<typeof promoSheetCollectionQueryKey>) {
+async function promoSheetCollectionQueryFunction({ queryKey: [{ order }] }: QueryFunctionArgs<typeof promoSheetCollectionQueryKey>) {
   const data = await arcClient.getPromoSheetCollection({ order });
   return data;
 }
 
-export type PromoSheetCollectionResult = QueryFunctionResult<
-  typeof promoSheetCollectionQueryFunction
->;
+export type PromoSheetCollectionResult = QueryFunctionResult<typeof promoSheetCollectionQueryFunction>;
 
 // ///////////////////////////////////////////////
 // Query Prefetcher
 
 export async function prefetchPromoSheetCollection(
   { order }: PromoSheetCollectionArgs,
-  config: QueryConfig<
-    PromoSheetCollectionResult,
-    Error,
-    PromoSheetCollectionQueryKey
-  > = {}
+  config: QueryConfig<PromoSheetCollectionResult, Error, PromoSheetCollectionQueryKey> = {}
 ) {
-  return await queryClient.prefetchQuery(
-    promoSheetCollectionQueryKey({ order }),
-    promoSheetCollectionQueryFunction,
-    config
-  );
+  return await queryClient.prefetchQuery(promoSheetCollectionQueryKey({ order }), promoSheetCollectionQueryFunction, config);
 }
 
 // ///////////////////////////////////////////////
 // Query Fetcher
 
-export async function fetchPromoSheetCollection({
-  order,
-}: PromoSheetCollectionArgs) {
-  return await queryClient.fetchQuery(
-    promoSheetCollectionQueryKey({ order }),
-    promoSheetCollectionQueryFunction,
-    { staleTime: defaultStaleTime }
-  );
+export async function fetchPromoSheetCollection({ order }: PromoSheetCollectionArgs) {
+  return await queryClient.fetchQuery(promoSheetCollectionQueryKey({ order }), promoSheetCollectionQueryFunction, {
+    staleTime: defaultStaleTime,
+  });
 }
 
 // ///////////////////////////////////////////////
@@ -79,18 +55,11 @@ export async function fetchPromoSheetCollection({
 
 export function usePromoSheetCollectionQuery(
   { order }: PromoSheetCollectionArgs = {},
-  {
-    enabled,
-    refetchInterval = 30_000,
-  }: { enabled?: boolean; refetchInterval?: number } = {}
+  { enabled, refetchInterval = 30_000 }: { enabled?: boolean; refetchInterval?: number } = {}
 ) {
-  return useQuery(
-    promoSheetCollectionQueryKey({ order }),
-    promoSheetCollectionQueryFunction,
-    {
-      enabled,
-      staleTime: defaultStaleTime,
-      refetchInterval,
-    }
-  );
+  return useQuery(promoSheetCollectionQueryKey({ order }), promoSheetCollectionQueryFunction, {
+    enabled,
+    staleTime: defaultStaleTime,
+    refetchInterval,
+  });
 }

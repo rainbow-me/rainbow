@@ -1,25 +1,15 @@
 import ImgixClient from 'imgix-core-js';
 import LRUCache from 'mnemonist/lru-cache';
 import { PixelRatio } from 'react-native';
-import {
-  IMGIX_DOMAIN as domain,
-  IMGIX_TOKEN as secureURLToken,
-} from 'react-native-dotenv';
+import { IMGIX_DOMAIN as domain, IMGIX_TOKEN as secureURLToken } from 'react-native-dotenv';
 import { Source } from 'react-native-fast-image';
 import parse from 'url-parse';
-import {
-  isCloudinaryStorageIconLink,
-  signCloudinaryIconUrl,
-} from '@/handlers/cloudinary';
+import { isCloudinaryStorageIconLink, signCloudinaryIconUrl } from '@/handlers/cloudinary';
 import { logger, RainbowError } from '@/logger';
+import { GOOGLE_USER_CONTENT_URL } from '@/utils/getFullResUrl';
 
 const shouldCreateImgixClient = (): ImgixClient | null => {
-  if (
-    typeof domain === 'string' &&
-    !!domain.length &&
-    typeof secureURLToken === 'string' &&
-    !!secureURLToken.length
-  ) {
+  if (typeof domain === 'string' && !!domain.length && typeof secureURLToken === 'string' && !!secureURLToken.length) {
     return new ImgixClient({
       domain,
       includeLibraryParam: false,
@@ -27,9 +17,7 @@ const shouldCreateImgixClient = (): ImgixClient | null => {
     });
   }
   logger.error(
-    new RainbowError(
-      '[Imgix] Image signing disabled. Please ensure you have specified both IMGIX_DOMAIN and IMGIX_TOKEN inside your .env.'
-    )
+    new RainbowError('[Imgix] Image signing disabled. Please ensure you have specified both IMGIX_DOMAIN and IMGIX_TOKEN inside your .env.')
   );
   return null;
 };
@@ -44,9 +32,7 @@ const staticImgixClient = shouldCreateImgixClient();
 //       This might be conditional based upon either the runtime
 //       hardware or the number of unique tokens a user may have.
 const capacity = 1024;
-export let staticSignatureLRU: LRUCache<string, string> = new LRUCache(
-  capacity
-);
+export let staticSignatureLRU: LRUCache<string, string> = new LRUCache(capacity);
 
 interface ImgOptions {
   w?: number;
@@ -54,10 +40,7 @@ interface ImgOptions {
   fm?: string;
 }
 
-const shouldSignUri = (
-  externalImageUri: string,
-  options?: ImgOptions
-): string | undefined => {
+const shouldSignUri = (externalImageUri: string, options?: ImgOptions): string | undefined => {
   try {
     const updatedOptions: ImgOptions = {};
     if (options?.w) {
@@ -89,17 +72,13 @@ const shouldSignUri = (
     if (staticImgixClient) {
       // Attempt to sign the image.
 
-      const signedExternalImageUri = staticImgixClient.buildURL(
-        externalImageUri,
-        updatedOptions
-      );
+      const signedExternalImageUri = staticImgixClient.buildURL(externalImageUri, updatedOptions);
 
       // Check that the URL was signed as expected.
       if (typeof signedExternalImageUri === 'string') {
         // Buffer the signature into the LRU for future use.
         const signature = `${externalImageUri}-${options?.w}-${options?.fm}`;
-        !staticSignatureLRU.has(signature) &&
-          staticSignatureLRU.set(signature, signedExternalImageUri);
+        !staticSignatureLRU.has(signature) && staticSignatureLRU.set(signature, signedExternalImageUri);
         // Return the signed image.
         return signedExternalImageUri;
       }
@@ -145,29 +124,19 @@ export const maybeSignUri = (
 ): string | undefined => {
   // If the image has already been signed, return this quickly.
   const signature = `${externalImageUri}-${options?.w}-${options?.fm}`;
-  if (
-    typeof externalImageUri === 'string' &&
-    staticSignatureLRU.has(signature as string) &&
-    !skipCaching
-  ) {
+  if (typeof externalImageUri === 'string' && staticSignatureLRU.has(signature as string) && !skipCaching) {
     return staticSignatureLRU.get(signature);
   }
-  if (
-    typeof externalImageUri === 'string' &&
-    !!externalImageUri.length &&
-    isPossibleToSignUri(externalImageUri)
-  ) {
+  if (typeof externalImageUri === 'string' && !!externalImageUri.length && isPossibleToSignUri(externalImageUri)) {
     return shouldSignUri(externalImageUri, options);
   }
   return externalImageUri;
 };
 
-export const maybeSignSource = (
-  source: Source,
-  options?: Record<string, unknown>
-): Source => {
+export const maybeSignSource = (source: Source, options?: Record<string, unknown>): Source => {
   if (!!source && typeof source === 'object') {
     const { uri: externalImageUri, ...extras } = source;
+
     return {
       ...extras,
       uri: maybeSignUri(externalImageUri, options),

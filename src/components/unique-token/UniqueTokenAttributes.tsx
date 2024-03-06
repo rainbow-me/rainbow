@@ -29,12 +29,7 @@ const UniqueTokenAttributes = ({
     () =>
       (sortList(traits, 'trait_type', 'asc') as typeof traits)
         .filter(
-          trait =>
-            trait.value !== undefined &&
-            trait.value !== null &&
-            trait.value !== '' &&
-            trait.trait_type &&
-            !isHttpUrl(trait.value)
+          trait => trait.value !== undefined && trait.value !== null && trait.value !== '' && trait.trait_type && !isHttpUrl(trait.value)
         )
         .sort(uniqueAssetTraitDisplayTypeCompareFunction)
         .map(trait => {
@@ -48,40 +43,24 @@ const UniqueTokenAttributes = ({
 
   return (
     <Inline space="10px">
-      {sortedTraits.map(
-        ({
-          color,
-          disableMenu,
-          lowercase,
-          value,
-          originalValue,
-          trait_type: type,
-          max_value: maxValue,
-        }) => (
-          <Tag
-            color={color}
-            disableMenu={disableMenu}
-            hideNftMarketplaceAction={hideNftMarketplaceAction}
-            key={`${type}${originalValue}`}
-            lowercase={lowercase}
-            marketplaceId={marketplaceId}
-            marketplaceName={marketplaceName}
-            maxValue={maxValue}
-            originalValue={originalValue}
-            slug={slug}
-            text={value}
-            title={type}
-          />
-        )
-      )}
+      {sortedTraits.map(({ color, disableMenu, lowercase, value, originalValue, trait_type: type, max_value: maxValue }) => (
+        <Tag
+          color={color}
+          disableMenu={disableMenu}
+          hideNftMarketplaceAction={hideNftMarketplaceAction}
+          key={`${type}${originalValue}`}
+          lowercase={lowercase}
+          marketplaceId={marketplaceId}
+          marketplaceName={marketplaceName}
+          maxValue={maxValue}
+          originalValue={originalValue}
+          slug={slug}
+          text={value}
+          title={type}
+        />
+      ))}
     </Inline>
   );
 };
 
-export default magicMemo(UniqueTokenAttributes, [
-  'color',
-  'slug',
-  'marketplaceId',
-  'marketplaceName',
-  'traits',
-]);
+export default magicMemo(UniqueTokenAttributes, ['color', 'slug', 'marketplaceId', 'marketplaceName', 'traits']);

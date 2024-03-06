@@ -1,14 +1,7 @@
 import { differenceWith, isEqual } from 'lodash';
 import { useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
-import {
-  useAccountSettings,
-  useENSAvatar,
-  useENSCover,
-  useENSRecords,
-  useENSRegistration,
-  usePrevious,
-} from '.';
+import { useAccountSettings, useENSAvatar, useENSCover, useENSRecords, useENSRegistration, usePrevious } from '.';
 import { Records, UniqueAsset } from '@/entities';
 import svgToPngIfNeeded from '@/handlers/svgs';
 import { deprecatedTextRecordFields, REGISTRATION_MODES } from '@/helpers/ens';
@@ -25,8 +18,7 @@ const getImageUrl = (
   mode?: keyof typeof REGISTRATION_MODES
 ) => {
   const recordValue = records?.[key];
-  let imageUrl =
-    getENSNFTAvatarUrl(uniqueTokens, records?.[key]) || defaultValue;
+  let imageUrl = getENSNFTAvatarUrl(uniqueTokens, records?.[key]) || defaultValue;
 
   if (changedRecords[key] === '' && mode === REGISTRATION_MODES.EDIT) {
     // If the image has been removed, update accordingly.
@@ -34,14 +26,8 @@ const getImageUrl = (
   } else if (recordValue) {
     const isNFT = isENSNFTRecord(recordValue);
     if (isNFT) {
-      const { contractAddress, tokenId } = parseENSNFTRecord(
-        records?.[key] || ''
-      );
-      const uniqueToken = uniqueTokens.find(
-        token =>
-          token.asset_contract.address === contractAddress &&
-          token.id === tokenId
-      );
+      const { contractAddress, tokenId } = parseENSNFTRecord(records?.[key] || '');
+      const uniqueToken = uniqueTokens.find(token => token.asset_contract.address === contractAddress && token.id === tokenId);
       if (uniqueToken?.image_url) {
         imageUrl = svgToPngIfNeeded(uniqueToken?.image_url, false);
       } else if (uniqueToken?.lowResUrl) {
@@ -52,8 +38,7 @@ const getImageUrl = (
     } else if (
       recordValue?.startsWith('http') ||
       recordValue?.startsWith('file') ||
-      ((recordValue?.startsWith('/') || recordValue?.startsWith('~')) &&
-        !recordValue?.match(/^\/(ipfs|ipns)/))
+      ((recordValue?.startsWith('/') || recordValue?.startsWith('~')) && !recordValue?.match(/^\/(ipfs|ipns)/))
     ) {
       imageUrl = recordValue;
     }
@@ -79,10 +64,7 @@ export default function useENSModifiedRegistration({
     address: accountAddress,
   });
 
-  const fetchEnabled =
-    mode === REGISTRATION_MODES.EDIT ||
-    mode === REGISTRATION_MODES.RENEW ||
-    mode === REGISTRATION_MODES.SET_NAME;
+  const fetchEnabled = mode === REGISTRATION_MODES.EDIT || mode === REGISTRATION_MODES.RENEW || mode === REGISTRATION_MODES.SET_NAME;
   const { data: avatar, isSuccess: isAvatarSuccess } = useENSAvatar(name, {
     enabled: fetchEnabled,
   });
@@ -90,11 +72,7 @@ export default function useENSModifiedRegistration({
     enabled: fetchEnabled,
   });
   const {
-    data: {
-      coinAddresses: fetchedCoinAddresses,
-      contenthash: fetchedContenthash,
-      records: fetchedRecords,
-    } = {},
+    data: { coinAddresses: fetchedCoinAddresses, contenthash: fetchedContenthash, records: fetchedRecords } = {},
     isSuccess: isRecordsSuccess,
   } = useENSRecords(name, {
     enabled: fetchEnabled,
@@ -103,11 +81,7 @@ export default function useENSModifiedRegistration({
   const isSuccess = isAvatarSuccess && isCoverSuccess && isRecordsSuccess;
 
   useEffect(() => {
-    if (
-      setInitialRecordsWhenInEditMode &&
-      mode === REGISTRATION_MODES.EDIT &&
-      isSuccess
-    ) {
+    if (setInitialRecordsWhenInEditMode && mode === REGISTRATION_MODES.EDIT && isSuccess) {
       const initialRecords = {
         contenthash: fetchedContenthash,
         ...fetchedRecords,
@@ -115,23 +89,13 @@ export default function useENSModifiedRegistration({
       } as Records;
       dispatch(ensRedux.setInitialRecords(initialRecords));
     }
-  }, [
-    dispatch,
-    mode,
-    fetchedCoinAddresses,
-    fetchedRecords,
-    isSuccess,
-    setInitialRecordsWhenInEditMode,
-    fetchedContenthash,
-  ]);
+  }, [dispatch, mode, fetchedCoinAddresses, fetchedRecords, isSuccess, setInitialRecordsWhenInEditMode, fetchedContenthash]);
 
   // Derive the records that should be added or removed from the profile
   // (these should be used for SET_TEXT txns instead of `records` to save
   // gas).
   const changedRecords = useMemo(() => {
-    const initialRecordsWithDeprecated = Object.entries(
-      deprecatedTextRecordFields
-    ).reduce((records, [deprecatedKey, key]) => {
+    const initialRecordsWithDeprecated = Object.entries(deprecatedTextRecordFields).reduce((records, [deprecatedKey, key]) => {
       return {
         ...records,
         // @ts-expect-error – This is a key in ENS_RECORDS...
@@ -139,11 +103,10 @@ export default function useENSModifiedRegistration({
       };
     }, initialRecords);
 
-    const entriesToChange = differenceWith(
-      Object.entries(records),
-      Object.entries(initialRecordsWithDeprecated),
-      isEqual
-    ) as [keyof Records, string][];
+    const entriesToChange = differenceWith(Object.entries(records), Object.entries(initialRecordsWithDeprecated), isEqual) as [
+      keyof Records,
+      string,
+    ][];
 
     const changedRecords = entriesToChange.reduce(
       (recordsToAdd: Partial<Records>, [key, value]) => ({
@@ -153,17 +116,11 @@ export default function useENSModifiedRegistration({
       {}
     );
 
-    const recordKeysWithValue = (Object.keys(
-      records
-    ) as (keyof Records)[]).filter((key: keyof Records) => {
+    const recordKeysWithValue = (Object.keys(records) as (keyof Records)[]).filter((key: keyof Records) => {
       return Boolean(records[key]);
     });
 
-    const keysToRemove = differenceWith(
-      Object.keys(initialRecords),
-      recordKeysWithValue,
-      isEqual
-    ) as (keyof Records)[];
+    const keysToRemove = differenceWith(Object.keys(initialRecords), recordKeysWithValue, isEqual) as (keyof Records)[];
 
     const removedRecords = keysToRemove.reduce(
       (recordsToAdd: Partial<Records>, key) => ({
@@ -181,11 +138,7 @@ export default function useENSModifiedRegistration({
 
   const prevChangedRecords = usePrevious(changedRecords);
   useEffect(() => {
-    if (
-      modifyChangedRecords &&
-      JSON.stringify(prevChangedRecords || {}) !==
-        JSON.stringify(changedRecords)
-    ) {
+    if (modifyChangedRecords && JSON.stringify(prevChangedRecords || {}) !== JSON.stringify(changedRecords)) {
       dispatch(ensRedux.setChangedRecords(changedRecords));
     }
   }, [changedRecords, dispatch, modifyChangedRecords, prevChangedRecords]);
@@ -194,35 +147,14 @@ export default function useENSModifiedRegistration({
   // (the avatar can be an NFT), then if the avatar is an NFT, we will
   // parse it to obtain the URL.
   const images = useMemo(() => {
-    const avatarUrl = getImageUrl(
-      'avatar',
-      records,
-      changedRecords,
-      uniqueTokens,
-      avatar?.imageUrl,
-      mode
-    );
-    const coverUrl = getImageUrl(
-      'header',
-      records,
-      changedRecords,
-      uniqueTokens,
-      cover?.imageUrl,
-      mode
-    );
+    const avatarUrl = getImageUrl('avatar', records, changedRecords, uniqueTokens, avatar?.imageUrl, mode);
+    const coverUrl = getImageUrl('header', records, changedRecords, uniqueTokens, cover?.imageUrl, mode);
 
     return {
       avatarUrl,
       coverUrl,
     };
-  }, [
-    records,
-    changedRecords,
-    uniqueTokens,
-    avatar?.imageUrl,
-    mode,
-    cover?.imageUrl,
-  ]);
+  }, [records, changedRecords, uniqueTokens, avatar?.imageUrl, mode, cover?.imageUrl]);
 
   return {
     changedRecords,

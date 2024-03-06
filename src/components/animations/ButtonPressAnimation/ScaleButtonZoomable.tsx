@@ -1,13 +1,6 @@
 import React, { createContext, PropsWithChildren } from 'react';
 import { ViewProps } from 'react-native';
-import Animated, {
-  Easing,
-  SharedValue,
-  useAnimatedStyle,
-  useDerivedValue,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { Easing, SharedValue, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 
 type ScaleButtonContextProps = SharedValue<number> | null;
 
@@ -23,12 +16,7 @@ type Props = ViewProps &
 // I couldn't just expend boundaries, because then it intercepts touches, so I managed to
 // extract animated component to external value
 
-export const ScaleButtonZoomable = ({
-  children,
-  style,
-  duration = 160,
-  testID,
-}: Props) => {
+export const ScaleButtonZoomable = ({ children, style, duration = 160, testID }: Props) => {
   const scale = useSharedValue(1);
   const scaleTraversed = useDerivedValue(() => {
     const value = withTiming(scale.value, {

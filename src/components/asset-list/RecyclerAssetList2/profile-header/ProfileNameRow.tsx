@@ -3,14 +3,7 @@ import { useRecoilState } from 'recoil';
 import Clipboard from '@react-native-community/clipboard';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Icon } from '@/components/icons';
-import {
-  Bleed,
-  Box,
-  Inline,
-  Inset,
-  Text,
-  useForegroundColor,
-} from '@/design-system';
+import { Bleed, Box, Inline, Inset, Text, useForegroundColor } from '@/design-system';
 import { useAccountProfile, useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { abbreviateEnsForDisplay } from '@/utils/abbreviations';
@@ -41,9 +34,7 @@ export function ProfileNameRow({
   // Name & press handler
 
   const { navigate } = useNavigation();
-  const [isToastActive, setToastActive] = useRecoilState(
-    addressCopiedToastAtom
-  );
+  const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
   const { accountAddress } = useAccountProfile();
 
   const onPressName = () => {
@@ -63,9 +54,7 @@ export function ProfileNameRow({
     Clipboard.setString(accountAddress);
   }, [accountAddress, disableOnPress, isToastActive, setToastActive]);
 
-  const name = accountENS
-    ? abbreviateEnsForDisplay(accountENS, 20)
-    : accountName;
+  const name = accountENS ? abbreviateEnsForDisplay(accountENS, 20) : accountName;
 
   // ////////////////////////////////////////////////////
   // Colors
@@ -80,18 +69,11 @@ export function ProfileNameRow({
   const horizontalInset = 19;
   const accountNameLeftOffset = 15;
   const caretIconWidth = 22;
-  const maxWidth =
-    deviceWidth -
-    (caretIconWidth + accountNameLeftOffset) -
-    horizontalInset * 2;
+  const maxWidth = deviceWidth - (caretIconWidth + accountNameLeftOffset) - horizontalInset * 2;
 
   const hitSlop: Space = '16px';
   return (
-    <Box
-      pointerEvents={disableOnPress ? 'none' : 'auto'}
-      position="absolute"
-      style={{ zIndex: 100 }}
-    >
+    <Box pointerEvents={disableOnPress ? 'none' : 'auto'} position="absolute" style={{ zIndex: 100 }}>
       {name && (
         <Bleed space={hitSlop}>
           <ButtonPressAnimation
@@ -103,21 +85,11 @@ export function ProfileNameRow({
             <Inset space={hitSlop}>
               <Inline alignVertical="center" space="4px" wrap={false}>
                 <Box style={{ maxWidth }}>
-                  <Text
-                    color="label"
-                    numberOfLines={1}
-                    size={variant === 'header' ? '22pt' : '22pt'}
-                    weight="bold"
-                  >
+                  <Text color="label" numberOfLines={1} size={variant === 'header' ? '22pt' : '22pt'} weight="bold">
                     {name}
                   </Text>
                 </Box>
-                <Icon
-                  color={iconColor}
-                  height={9}
-                  name="caretDownIcon"
-                  width={caretIconWidth}
-                />
+                <Icon color={iconColor} height={9} name="caretDownIcon" width={caretIconWidth} />
               </Inline>
             </Inset>
           </ButtonPressAnimation>

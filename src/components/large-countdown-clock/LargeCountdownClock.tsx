@@ -1,13 +1,7 @@
 import useCountdown from '@bradgarropy/use-countdown';
 import React, { ReactNode, useState } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import Animated, {
-  Easing,
-  useAnimatedProps,
-  useSharedValue,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { Easing, useAnimatedProps, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { Circle, Defs, G, RadialGradient, Stop, Svg } from 'react-native-svg';
 import { CheckmarkAnimation } from '../animations/CheckmarkAnimation';
 import { SeparatorDots } from './SeparatorDots';
@@ -27,13 +21,7 @@ const PROGRESS_STROKE_WIDTH = 8;
 const PROGRESS_CENTER_COORDINATE = PROGRESS_RADIUS + PROGRESS_STROKE_WIDTH / 2;
 const PROGRESS_STROKE_FULL_LENGTH = Math.round(2 * Math.PI * PROGRESS_RADIUS);
 
-export default function LargeCountdownClock({
-  minutes,
-  seconds,
-  initialSeconds,
-  initialMinutes,
-  onFinished,
-}: LargeCountdownClockProps) {
+export default function LargeCountdownClock({ minutes, seconds, initialSeconds, initialMinutes, onFinished }: LargeCountdownClockProps) {
   const [completed, setCompleted] = useState(false);
   const countdown = useCountdown({
     format: 'm:ss',
@@ -47,14 +35,10 @@ export default function LargeCountdownClock({
     },
     seconds,
   });
-  const {
-    displayMinutes,
-    displaySeconds,
-    fontSize,
-    minuteEndsWithOne,
-    lineHeight,
-    separatorSize,
-  } = useVariableFont(countdown.minutes, countdown.seconds);
+  const { displayMinutes, displaySeconds, fontSize, minuteEndsWithOne, lineHeight, separatorSize } = useVariableFont(
+    countdown.minutes,
+    countdown.seconds
+  );
 
   const accentColor = useForegroundColor('accent');
 
@@ -67,9 +51,7 @@ export default function LargeCountdownClock({
   // save full stroke value to use in animation
   const offset = useSharedValue(PROGRESS_STROKE_FULL_LENGTH);
   // calculate stroke value based on remaining time
-  offset.value =
-    PROGRESS_STROKE_FULL_LENGTH -
-    (timeRemaining / totalSeconds) * PROGRESS_STROKE_FULL_LENGTH;
+  offset.value = PROGRESS_STROKE_FULL_LENGTH - (timeRemaining / totalSeconds) * PROGRESS_STROKE_FULL_LENGTH;
 
   const animatedStroke = useAnimatedProps(() => ({
     strokeDashoffset: withTiming(offset.value, {
@@ -144,14 +126,7 @@ export default function LargeCountdownClock({
   };
 
   return (
-    <Box
-      alignItems="center"
-      as={Animated.View}
-      entering={entering}
-      height={{ custom: 132 }}
-      justifyContent="center"
-      width="full"
-    >
+    <Box alignItems="center" as={Animated.View} entering={entering} height={{ custom: 132 }} justifyContent="center" width="full">
       {completed ? (
         <CheckmarkAnimation />
       ) : (
@@ -184,10 +159,7 @@ export default function LargeCountdownClock({
               <ClockText fontSize={fontSize} lineHeight={lineHeight}>
                 {displayMinutes}
               </ClockText>
-              <SeparatorDots
-                minuteEndsWithOne={minuteEndsWithOne}
-                size={separatorSize}
-              />
+              <SeparatorDots minuteEndsWithOne={minuteEndsWithOne} size={separatorSize} />
               <ClockText fontSize={fontSize} lineHeight={lineHeight}>
                 {displaySeconds}
               </ClockText>
@@ -201,10 +173,7 @@ export default function LargeCountdownClock({
               justifyContent="center"
               key="onlySeconds"
               style={{
-                paddingRight:
-                  Number(displaySeconds) >= 10 && Number(displaySeconds) < 20
-                    ? 3
-                    : 0,
+                paddingRight: Number(displaySeconds) >= 10 && Number(displaySeconds) < 20 ? 3 : 0,
                 position: 'absolute',
               }}
             >
@@ -215,20 +184,9 @@ export default function LargeCountdownClock({
           )}
           <Svg height="132" viewBox="0 0 130 130" width="132">
             <Defs>
-              <RadialGradient
-                cx="50%"
-                cy="50%"
-                fx="50%"
-                fy="50%"
-                id="large-countdown-clock-fill"
-                r="50%"
-              >
+              <RadialGradient cx="50%" cy="50%" fx="50%" fy="50%" id="large-countdown-clock-fill" r="50%">
                 <Stop offset="0%" stopColor={accentColor} stopOpacity="0" />
-                <Stop
-                  offset="100%"
-                  stopColor={accentColor}
-                  stopOpacity="0.06"
-                />
+                <Stop offset="100%" stopColor={accentColor} stopOpacity="0.06" />
               </RadialGradient>
             </Defs>
             <G>
@@ -263,15 +221,7 @@ export default function LargeCountdownClock({
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
-const ClockText = ({
-  children,
-  fontSize,
-  lineHeight,
-}: {
-  children: ReactNode;
-  fontSize: number;
-  lineHeight: number;
-}) => {
+const ClockText = ({ children, fontSize, lineHeight }: { children: ReactNode; fontSize: number; lineHeight: number }) => {
   const textStyles = useTextStyle({
     align: 'center',
     color: 'accent',

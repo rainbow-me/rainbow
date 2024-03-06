@@ -2,6 +2,7 @@ import { ChainId } from '@rainbow-me/swaps';
 import { EthereumAddress } from '.';
 import { Chain } from '@wagmi/chains';
 import { Network } from '@/networks/types';
+import { TokenColors } from '@/graphql/__generated__/metadata';
 
 export interface ZerionAssetPrice {
   value: number;
@@ -48,19 +49,14 @@ type RainbowTokenOwnFields = Omit<RainbowToken, keyof Asset>;
 // `ParsedAddressAsset`. The token metadata is of the type `RainbowToken`, but
 // some fields overlap with the guaranteed `Asset` fields, so the
 // `Partial<RainbowTokenOwnFields>` type is used.
-export interface ParsedAddressAsset
-  extends Asset,
-    Partial<RainbowTokenOwnFields> {
+export interface ParsedAddressAsset extends Asset, Partial<RainbowTokenOwnFields> {
   balance?: {
     amount?: string;
     display?: string;
   };
   chainId?: number;
   color?: string;
-  colors?: {
-    primary?: string;
-    fallback?: string;
-  };
+  colors?: TokenColors;
   icon_url?: string;
   price?: {
     changed_at?: number;

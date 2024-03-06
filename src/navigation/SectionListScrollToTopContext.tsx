@@ -13,12 +13,8 @@ type ScrollToTopProviderProps = {
   children: React.ReactNode;
 };
 
-const SectionListScrollToTopProvider: React.FC<ScrollToTopProviderProps> = ({
-  children,
-}) => {
-  const [scrollToTopRef, setScrollToTopRef] = useState<SectionList | null>(
-    null
-  );
+const SectionListScrollToTopProvider: React.FC<ScrollToTopProviderProps> = ({ children }) => {
+  const [scrollToTopRef, setScrollToTopRef] = useState<SectionList | null>(null);
 
   const scrollToTop = () => {
     scrollToTopRef?.scrollToLocation({
@@ -29,15 +25,10 @@ const SectionListScrollToTopProvider: React.FC<ScrollToTopProviderProps> = ({
   };
 
   return (
-    <SectionListScrollToTopContext.Provider
-      value={{ scrollToTop, setScrollToTopRef }}
-    >
-      {children}
-    </SectionListScrollToTopContext.Provider>
+    <SectionListScrollToTopContext.Provider value={{ scrollToTop, setScrollToTopRef }}>{children}</SectionListScrollToTopContext.Provider>
   );
 };
 
-export const useSectionListScrollToTopContext = () =>
-  React.useContext(SectionListScrollToTopContext);
+export const useSectionListScrollToTopContext = () => React.useContext(SectionListScrollToTopContext);
 
 export default SectionListScrollToTopProvider;

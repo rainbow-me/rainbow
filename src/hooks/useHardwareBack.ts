@@ -16,11 +16,7 @@ import { BackHandler } from 'react-native';
  *
  * @param {Function} cb - optional callback which will be executed
  */
-export default function useHardwareBack(
-  cb: () => boolean | void,
-  shouldSkip = false,
-  deps: unknown[] = []
-) {
+export default function useHardwareBack(cb: () => boolean | void, shouldSkip = false, deps: unknown[] = []) {
   const callback = useCallback(() => {
     if (shouldSkip) {
       return;
@@ -41,11 +37,7 @@ export default function useHardwareBack(
   useEffect(callback, [callback]);
 }
 
-export function useHardwareBackOnFocus(
-  cb: () => boolean | undefined,
-  shouldSkip = false,
-  deps: unknown[] = []
-) {
+export function useHardwareBackOnFocus(cb: () => boolean | undefined, shouldSkip = false, deps: unknown[] = []) {
   const callback = useCallback(() => {
     if (shouldSkip) {
       return;

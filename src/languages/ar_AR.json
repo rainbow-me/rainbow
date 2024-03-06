@@ -286,11 +286,6 @@
       "hidden": "مخفي"
     },
     "cards": {
-      "dpi": {
-        "title": "مؤشر DeFi Pulse",
-        "body": "جميع الرموز المالية غير المركزية الرائدة في مكان واحد. تتبع الصناعة.",
-        "view": "عرض"
-      },
       "ens_create_profile": {
         "title": "أنشئ ملفك الشخصي ENS",
         "body": "استبدل عنوان محفظتك بملف شخصي يمتلكه فقط أنت."
@@ -1262,6 +1257,10 @@
         "get_started": "ابدأ الآن",
         "invalid_code": "رمز غير صالح"
       },
+      "notifications": {
+        "enable": "تفعيل إشعارات النقاط",
+        "disable": "تعطيل إشعارات النقاط"
+      },
       "points": {
         "referral_code": "كود الإحالة",
         "share_link": "شارك الرابط",
@@ -1287,7 +1286,9 @@
         "referral_code_copied": "تم نسخ رمز الإحالة",
         "earn_points_for_referring": "اربح نقاط عندما يقوم من تحيلهم بتبديل 100 دولار من خلال Rainbow، بالإضافة إلى كسب 10٪ من النقاط التي يكسبها من تحيلهم",
         "already_claimed_points": "عذرًا! لقد قمت بالفعل بالمطالبة بنقاطك.",
-        "now": "الآن"
+        "now": "الآن",
+        "unranked": "غير مصنف",
+        "points_to_rank": "750 نقطة للتصنيف"
       },
       "console": {
         "claim_bonus_paragraph": "سوف تحصل على 100 نقطة إضافية بمجرد استبدال ما قيمته 100 دولار على الأقل من خلال Rainbow",
@@ -1295,8 +1296,8 @@
         "true_believer": "المؤمن الحقيقي",
         "registration_complete": "اكتمال التسجيل",
         "account": "الحساب",
+        "points_you_have": "لديك",
         "points_earned": "النقاط المكتسبة",
-        "share_bonus": "مكافأة المشاركة",
         "share_bonus_paragraph_one": "أنت جاهز!",
         "share_bonus_paragraph_two": "استمر في كسب النقاط عن طريق الاستبدال، والتحويل، والتكوين، ودعوة الأصدقاء، والمزيد",
         "share_bonus_paragraph_three": "كلما زاد استخدامك لـ Rainbow، كلما حصلت على مكافآت أكبر",
@@ -1323,7 +1324,21 @@
         "referral_link_bonus_text_extended": "بالإضافة إلى أنك ستربح 10% من النقاط التي يحصل عليها أي شخص تقوم بإحالته",
         "complete_onboarding": "تم",
         "share_to_x": "مشاركة إلى X",
-        "hardware_wallet_alert": "دعم محافظ العتاد قادم قريبًا!"
+        "hardware_wallet_alert": "دعم محافظ العتاد قادم قريبًا!",
+        "view_weekly_earnings_week_of": "أسبوع %{startOfWeek} - %{endOfWeek}",
+        "view_weekly_earnings_title": "احتساب النقاط المكتسبة",
+        "view_weekly_earnings_counted": "تم احتساب الأرباح الأسبوعية",
+        "view_weekly_earnings_close_button": "إغلاق",
+        "view_weekly_earnings_retroactive_points": "النقاط بأثر رجعي",
+        "view_weekly_earnings_activity": "نشاطك",
+        "view_weekly_earnings_referral_activity": "نشاط الإحالة",
+        "view_weekly_earnings_total_earnings": "المجموع",
+        "view_weekly_earnings_new_referrals": "إحالات جديدة",
+        "wallet_balance_required": "مطلوب رصيد في المحفظة",
+        "require_balance_paragraph_one": "للمتابعة، تأكد من وجود رصيد ETH في إحدى الشبكات التالية:",
+        "require_balance_paragraph_two": "أو بديلًا، رصيد MATIC على شبكة Polygon أو رصيد BNB على شبكة BSC",
+        "fund_my_wallet": "تمويل محفظتي",
+        "points": "النقاط"
       }
     },
     "pools": {
@@ -1708,6 +1723,7 @@
       "notifications": "الإشعارات",
       "notifications_section": {
         "my_wallets": "محافظي",
+        "points": "النقاط",
         "watched_wallets": "المحافظ المراقبة",
         "allow_notifications": "السماح بالتنبيهات",
         "sent": "تم الإرسال",
@@ -2366,6 +2382,7 @@
         "message": "ألصق URI WalletConnect أدناه",
         "title": "جلسة WalletConnect جديدة"
       },
+      "none": "لا شيء",
       "switch_network": "تبديل الشبكة",
       "switch_wallet": "تبديل المحفظة",
       "titles": {
@@ -2413,7 +2430,8 @@
         "request_invalid": "احتوت الطلب على معايير غير صالحة. يرجى المحاولة مرة أخرى أو الاتصال بفرق الدعم في Rainbow و/أو dapp.",
         "eth_sign": "لا يدعم Rainbow الإصدار القديم من eth_sign بسبب القلق من الأمان.  \n يرجى الاتصال بفرق الدعم في Rainbow و/أو دعم التطبيقات اللامركزية إذا كان لديك أي أسئلة.",
         "request_unsupported_network": "الشبكة المحددة في هذا الطلب غير مدعومة بواسطة رينبو.",
-        "request_unsupported_methods": "الطرق RPC المحددة في هذا الطلب غير مدعومة بواسطة Rainbow."
+        "request_unsupported_methods": "الطرق RPC المحددة في هذا الطلب غير مدعومة بواسطة Rainbow.",
+        "no_accounts_found": "لم يتم العثور على حسابات في الأسماء المعتمدة."
       },
       "dapp_warnings": {
         "info_alert": {

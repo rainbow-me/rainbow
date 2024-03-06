@@ -1,8 +1,5 @@
 import { IS_ANDROID, IS_DEV } from '@/env';
-import {
-  authenticateWithPINAndCreateIfNeeded,
-  getExistingPIN,
-} from '@/handlers/authentication';
+import { authenticateWithPINAndCreateIfNeeded, getExistingPIN } from '@/handlers/authentication';
 import * as keychain from '@/keychain';
 
 const FAKE_LOCAL_AUTH_KEY = `fake-local-auth-key`;

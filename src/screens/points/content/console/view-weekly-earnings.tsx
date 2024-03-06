@@ -7,10 +7,7 @@ import { textColors, rainbowColors } from '../../constants';
 import * as i18n from '@/languages';
 import { useAccountProfile } from '@/hooks';
 import { startOfWeek, addDays, format, subWeeks } from 'date-fns';
-import {
-  abbreviateEnsForDisplay,
-  address as formatAddress,
-} from '@/utils/abbreviations';
+import { abbreviateEnsForDisplay, address as formatAddress } from '@/utils/abbreviations';
 import { NeonButton } from '../../components/NeonButton';
 import LineBreak from '../../components/LineBreak';
 import { Bleed, Box, Stack } from '@/design-system';
@@ -33,41 +30,28 @@ export const ViewWeeklyEarnings = () => {
   const weekBegins = startOfWeek(subWeeks(new Date(), 1), { weekStartsOn: 2 });
   const weekEnds = addDays(weekBegins, 7);
 
-  const accountName = (abbreviateEnsForDisplay(accountENS, 10) ||
-    formatAddress(accountAddress, 4, 5)) as string;
+  const accountName = (abbreviateEnsForDisplay(accountENS, 10) || formatAddress(accountAddress, 4, 5)) as string;
 
   const newTotalEarnings = points?.points?.user.earnings.total;
   const retroactive =
     points?.points?.user.stats.last_airdrop.differences
       ?.filter(difference => difference && difference.type === 'retroactive')
-      .reduce(
-        (sum, difference) => sum + (difference?.earnings?.total ?? 0),
-        0
-      ) || 0;
+      .reduce((sum, difference) => sum + (difference?.earnings?.total ?? 0), 0) || 0;
 
   const referral =
     points?.points?.user.stats.last_airdrop.differences
       ?.filter(difference => difference && difference.type === 'referral')
-      .reduce(
-        (sum, difference) => sum + (difference?.earnings?.total ?? 0),
-        0
-      ) || 0;
+      .reduce((sum, difference) => sum + (difference?.earnings?.total ?? 0), 0) || 0;
 
   const transaction =
     points?.points?.user.stats.last_airdrop.differences
       ?.filter(difference => difference && difference.type === 'transaction')
-      .reduce(
-        (sum, difference) => sum + (difference?.earnings?.total ?? 0),
-        0
-      ) || 0;
+      .reduce((sum, difference) => sum + (difference?.earnings?.total ?? 0), 0) || 0;
 
   const redemption =
     points?.points?.user.stats.last_airdrop.differences
       ?.filter(difference => difference && difference.type === 'redemption')
-      .reduce(
-        (sum, difference) => sum + (difference?.earnings?.total ?? 0),
-        0
-      ) || 0;
+      .reduce((sum, difference) => sum + (difference?.earnings?.total ?? 0), 0) || 0;
 
   const totalWeeklyEarnings = retroactive + transaction + referral + redemption;
 
@@ -82,33 +66,23 @@ export const ViewWeeklyEarnings = () => {
               textContent={`${i18n.t(i18n.l.points.console.account)}:`}
               weight="normal"
             />
-            <AnimatedText
-              enableHapticTyping
-              delayStart={300}
-              color={textColors.account}
-              textContent={accountName}
-            />
+            <AnimatedText enableHapticTyping delayStart={300} color={textColors.account} textContent={accountName} />
           </Line>
           <AnimatedText
             color={textColors.gray}
             delayStart={500}
             weight="normal"
-            textContent={`> ${i18n.t(
-              i18n.l.points.console.view_weekly_earnings_week_of,
-              {
-                startOfWeek: format(weekBegins, 'MMM d'),
-                endOfWeek: format(weekEnds, 'MMM d'),
-              }
-            )}`}
+            textContent={`> ${i18n.t(i18n.l.points.console.view_weekly_earnings_week_of, {
+              startOfWeek: format(weekBegins, 'MMM d'),
+              endOfWeek: format(weekEnds, 'MMM d'),
+            })}`}
           />
           <Line gap={0}>
             <AnimatedText
               color={textColors.gray}
               delayStart={500}
               weight="normal"
-              textContent={`> ${i18n.t(
-                i18n.l.points.console.view_weekly_earnings_title
-              )}`}
+              textContent={`> ${i18n.t(i18n.l.points.console.view_weekly_earnings_title)}`}
             />
             <AnimatedText
               delayStart={500}
@@ -126,9 +100,7 @@ export const ViewWeeklyEarnings = () => {
               <AnimatedText
                 color={rainbowColors.purple}
                 enableHapticTyping
-                textContent={`${i18n.t(
-                  i18n.l.points.console.view_weekly_earnings_retroactive_points
-                )}:`}
+                textContent={`${i18n.t(i18n.l.points.console.view_weekly_earnings_retroactive_points)}:`}
               />
               <AnimatedText
                 color={rainbowColors.purple}
@@ -144,9 +116,7 @@ export const ViewWeeklyEarnings = () => {
             <AnimatedText
               color={rainbowColors.blue}
               enableHapticTyping
-              textContent={`${i18n.t(
-                i18n.l.points.console.view_weekly_earnings_activity
-              )}:`}
+              textContent={`${i18n.t(i18n.l.points.console.view_weekly_earnings_activity)}:`}
             />
             <AnimatedText
               color={rainbowColors.blue}
@@ -162,9 +132,7 @@ export const ViewWeeklyEarnings = () => {
               color={rainbowColors.green}
               delayStart={1000}
               enableHapticTyping
-              textContent={`${i18n.t(
-                i18n.l.points.console.view_weekly_earnings_referral_activity
-              )}:`}
+              textContent={`${i18n.t(i18n.l.points.console.view_weekly_earnings_referral_activity)}:`}
             />
             <AnimatedText
               color={rainbowColors.green}
@@ -197,9 +165,7 @@ export const ViewWeeklyEarnings = () => {
               delayStart={1000}
               weight="normal"
               enableHapticTyping
-              textContent={`${i18n.t(
-                i18n.l.points.console.view_weekly_earnings_total_earnings
-              )}:`}
+              textContent={`${i18n.t(i18n.l.points.console.view_weekly_earnings_total_earnings)}:`}
             />
             <AnimatedText
               color={textColors.white}
@@ -212,9 +178,7 @@ export const ViewWeeklyEarnings = () => {
                 }, 500);
                 return () => clearTimeout(complete);
               }}
-              textContent={`+ ${abbreviateNumber(
-                totalWeeklyEarnings ?? 0
-              )} ${i18n.t(i18n.l.points.console.points)}`}
+              textContent={`+ ${abbreviateNumber(totalWeeklyEarnings ?? 0)} ${i18n.t(i18n.l.points.console.points)}`}
               typingSpeed={100}
             />
           </Line>
@@ -224,9 +188,7 @@ export const ViewWeeklyEarnings = () => {
             color={textColors.gray}
             delayStart={1000}
             weight="normal"
-            textContent={`> ${i18n.t(
-              i18n.l.points.console.view_weekly_earnings_counted
-            )}`}
+            textContent={`> ${i18n.t(i18n.l.points.console.view_weekly_earnings_counted)}`}
           />
           <Line alignHorizontal="justify">
             <AnimatedText
@@ -241,9 +203,7 @@ export const ViewWeeklyEarnings = () => {
               enableHapticTyping
               hapticType="impactHeavy"
               textAlign="right"
-              textContent={`${(newTotalEarnings ?? 0).toLocaleString(
-                'en-US'
-              )} ${i18n.t(i18n.l.points.console.points)}`}
+              textContent={`${(newTotalEarnings ?? 0).toLocaleString('en-US')} ${i18n.t(i18n.l.points.console.points)}`}
               onComplete={() => {
                 const complete = setTimeout(() => {
                   setShowCloseButton(true);
@@ -259,14 +219,9 @@ export const ViewWeeklyEarnings = () => {
         <Bleed horizontal={{ custom: 14 }}>
           <NeonButton
             color="#FEC101"
-            label={i18n.t(
-              i18n.l.points.console.view_weekly_earnings_close_button
-            )}
+            label={i18n.t(i18n.l.points.console.view_weekly_earnings_close_button)}
             onPress={() => {
-              analyticsV2.track(
-                analyticsV2.event
-                  .pointsViewedWeeklyEarningsScreenPressedCloseButton
-              );
+              analyticsV2.track(analyticsV2.event.pointsViewedWeeklyEarningsScreenPressedCloseButton);
               goBack();
             }}
           />

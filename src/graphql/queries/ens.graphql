@@ -65,17 +65,9 @@ query getRegistration($id: ID!) {
   }
 }
 
-query getRegistrationsByAddress(
-  $address: ID!
-  $registrationDate_gt: BigInt = "0"
-) {
+query getRegistrationsByAddress($address: ID!, $registrationDate_gt: BigInt = "0") {
   account(id: $address) {
-    registrations(
-      first: 99
-      orderBy: registrationDate
-      orderDirection: desc
-      where: { registrationDate_gt: $registrationDate_gt }
-    ) {
+    registrations(first: 99, orderBy: registrationDate, orderDirection: desc, where: { registrationDate_gt: $registrationDate_gt }) {
       domain {
         ...BaseEnsDomain
       }
@@ -94,10 +86,7 @@ query getRegistrationsByLabelhash($labelHash: ID!) {
 query getSuggestions($name: String!, $first: Int!) {
   domains(
     first: $first
-    where: {
-      name_starts_with: $name
-      resolvedAddress_not: "0x0000000000000000000000000000000000000000"
-    }
+    where: { name_starts_with: $name, resolvedAddress_not: "0x0000000000000000000000000000000000000000" }
     orderBy: labelName
     orderDirection: asc
   ) {

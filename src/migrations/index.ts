@@ -4,17 +4,15 @@ import * as env from '@/env';
 import { Storage } from '@/storage';
 import { logger, RainbowError } from '@/logger';
 
-import {
-  MIGRATIONS_DEBUG_CONTEXT,
-  MIGRATIONS_STORAGE_ID,
-  MigrationName,
-  Migration,
-} from '@/migrations/types';
+import { MIGRATIONS_DEBUG_CONTEXT, MIGRATIONS_STORAGE_ID, MigrationName, Migration } from '@/migrations/types';
 import { deleteImgixMMKVCache } from '@/migrations/migrations/deleteImgixMMKVCache';
 import { migrateNotificationSettingsToV2 } from '@/migrations/migrations/migrateNotificationSettingsToV2';
 import { prepareDefaultNotificationGroupSettingsState } from '@/migrations/migrations/prepareDefaultNotificationGroupSettingsState';
 import { changeLanguageKeys } from './migrations/changeLanguageKeys';
 import { fixHiddenUSDC } from './migrations/fixHiddenUSDC';
+import { purgeWcConnectionsWithoutAccounts } from './migrations/purgeWcConnectionsWithoutAccounts';
+import { migratePinnedAndHiddenTokenUniqueIds } from './migrations/migratePinnedAndHiddenTokenUniqueIds';
+import { migrateUnlockableAppIconStorage } from './migrations/migrateUnlockableAppIconStorage';
 
 /**
  * Local storage for migrations only. Should not be exported.
@@ -36,6 +34,9 @@ const migrations: Migration[] = [
   migrateNotificationSettingsToV2(),
   changeLanguageKeys(),
   fixHiddenUSDC(),
+  purgeWcConnectionsWithoutAccounts(),
+  migratePinnedAndHiddenTokenUniqueIds(),
+  migrateUnlockableAppIconStorage(),
 ];
 
 /**
@@ -104,11 +105,7 @@ export async function runMigrations(migrations: Migration[]) {
 
       ranMigrations.push(migration.name);
     } else {
-      logger.debug(
-        `Already migrated`,
-        { migration: migration.name },
-        MIGRATIONS_DEBUG_CONTEXT
-      );
+      logger.debug(`Already migrated`, { migration: migration.name }, MIGRATIONS_DEBUG_CONTEXT);
     }
   }
 

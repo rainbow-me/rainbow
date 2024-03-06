@@ -1,11 +1,6 @@
 import React, { Children, ReactNode } from 'react';
 import flattenChildren from 'react-flatten-children';
-import {
-  AlignHorizontal,
-  alignHorizontalToFlexAlign,
-  AlignVertical,
-  alignVerticalToFlexAlign,
-} from '../../layout/alignment';
+import { AlignHorizontal, alignHorizontalToFlexAlign, AlignVertical, alignVerticalToFlexAlign } from '../../layout/alignment';
 import { negateSpace, Space } from '../../layout/space';
 import { Box, BoxProps } from '../Box/Box';
 
@@ -27,9 +22,7 @@ export interface ColumnProps {
  * explicit width will share the remaining space equally.
  */
 export function Column(_props: ColumnProps): JSX.Element {
-  throw new Error(
-    'Column: Must be a direct child of Columns within the same component.'
-  );
+  throw new Error('Column: Must be a direct child of Columns within the same component.');
 }
 Column.__isColumn__ = true;
 
@@ -53,20 +46,13 @@ interface PrivateColumnProps extends ColumnProps {
 // consumers have access to. The public Column component is essentially used
 // as a mechanism for providing access to this component's props without
 // leaking private implementation detail.
-function PrivateColumn({
-  space,
-  width,
-  alignVertical,
-  children,
-}: PrivateColumnProps) {
+function PrivateColumn({ space, width, alignVertical, children }: PrivateColumnProps) {
   return (
     <Box
       flexBasis={width ? undefined : 0}
       flexGrow={width ? 0 : 1}
       flexShrink={width ? 0 : 1}
-      justifyContent={
-        alignVertical ? alignVerticalToFlexAlign[alignVertical] : undefined
-      }
+      justifyContent={alignVertical ? alignVerticalToFlexAlign[alignVertical] : undefined}
       paddingRight={space}
       width={width !== 'content' ? width : undefined}
     >
@@ -95,34 +81,19 @@ export interface ColumnsProps {
  * column, you'll need to nest another layout component inside, e.g.
  * `<Stack alignHorizontal="center">...</Stack>`.
  */
-export function Columns({
-  children,
-  alignHorizontal,
-  alignVertical,
-  space,
-}: ColumnsProps) {
+export function Columns({ children, alignHorizontal, alignVertical, space }: ColumnsProps) {
   return (
     <Box
-      alignItems={
-        alignVertical ? alignVerticalToFlexAlign[alignVertical] : undefined
-      }
+      alignItems={alignVertical ? alignVerticalToFlexAlign[alignVertical] : undefined}
       flexDirection="row"
-      justifyContent={
-        alignHorizontal
-          ? alignHorizontalToFlexAlign[alignHorizontal]
-          : undefined
-      }
+      justifyContent={alignHorizontal ? alignHorizontalToFlexAlign[alignHorizontal] : undefined}
       marginRight={space ? negateSpace(space) : undefined}
     >
       {Children.map(flattenChildren(children), child => {
         const columnProps = getColumnProps(child);
 
         return columnProps ? (
-          <PrivateColumn
-            {...columnProps}
-            alignVertical={alignVertical}
-            space={space}
-          />
+          <PrivateColumn {...columnProps} alignVertical={alignVertical} space={space} />
         ) : (
           <PrivateColumn alignVertical={alignVertical} space={space}>
             {child}

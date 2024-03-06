@@ -4,12 +4,7 @@ import ShadowStack from '@/react-native-shadow-stack';
 
 const AnimatedShadowStack = Animated.createAnimatedComponent(ShadowStack);
 
-export default function JellySelectorShadowIndicator({
-  height,
-  translateX,
-  width,
-  ...props
-}) {
+export default function JellySelectorShadowIndicator({ height, translateX, width, ...props }) {
   const { colors } = useTheme();
 
   const JellySelectorIndicatorShadow = useMemo(

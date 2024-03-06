@@ -1,8 +1,5 @@
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
-import {
-  removeFirstEmojiFromString,
-  returnStringFirstEmoji,
-} from '../../helpers/emojiHandler';
+import { removeFirstEmojiFromString, returnStringFirstEmoji } from '../../helpers/emojiHandler';
 import { abbreviations, magicMemo, profileUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
@@ -17,22 +14,17 @@ import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
 import { useContacts, useDimensions, useENSAvatar } from '@/hooks';
 import styled from '@/styled-thing';
 import { margin } from '@/styles';
-import {
-  addressHashedColorIndex,
-  addressHashedEmoji,
-} from '@/utils/profileUtils';
+import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 
-const ContactAddress = styled(TruncatedAddress).attrs(
-  ({ theme: { colors }, lite }) => ({
-    align: 'left',
-    color: colors.alpha(colors.blueGreyDark, 0.5),
-    firstSectionLength: 4,
-    letterSpacing: 'roundedMedium',
-    size: 'smedium',
-    truncationLength: 4,
-    weight: lite ? 'regular' : 'medium',
-  })
-)({
+const ContactAddress = styled(TruncatedAddress).attrs(({ theme: { colors }, lite }) => ({
+  align: 'left',
+  color: colors.alpha(colors.blueGreyDark, 0.5),
+  firstSectionLength: 4,
+  letterSpacing: 'roundedMedium',
+  size: 'smedium',
+  truncationLength: 4,
+  weight: lite ? 'regular' : 'medium',
+}))({
   width: '100%',
 });
 
@@ -60,25 +52,12 @@ const css = {
   symmetrical: margin.object(9.5, 19),
 };
 
-const ContactRow = (
-  { address, color, nickname, symmetricalMargins, ...props },
-  ref
-) => {
+const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, ref) => {
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const { width: deviceWidth } = useDimensions();
   const { onAddOrUpdateContacts } = useContacts();
   const { colors } = useTheme();
-  const {
-    accountType,
-    balance,
-    ens,
-    image,
-    label,
-    network,
-    onPress,
-    showcaseItem,
-    testID,
-  } = props;
+  const { accountType, balance, ens, image, label, network, onPress, showcaseItem, testID } = props;
 
   let cleanedUpBalance = balance;
   if (balance === '0.00') {
@@ -86,19 +65,10 @@ const ContactRow = (
   }
 
   // show avatar for contact rows that are accounts, not contacts
-  const avatar =
-    accountType !== 'contacts'
-      ? returnStringFirstEmoji(label) ||
-        profileUtils.addressHashedEmoji(address)
-      : null;
+  const avatar = accountType !== 'contacts' ? returnStringFirstEmoji(label) || profileUtils.addressHashedEmoji(address) : null;
 
   // if the accountType === 'suggestions', nickname will always be an ens or hex address, not a custom contact nickname
-  const initialENSName =
-    typeof ens === 'string'
-      ? ens
-      : nickname?.includes(ENS_DOMAIN)
-      ? nickname
-      : '';
+  const initialENSName = typeof ens === 'string' ? ens : nickname?.includes(ENS_DOMAIN) ? nickname : '';
 
   const [ensName, setENSName] = useState(initialENSName);
 
@@ -112,28 +82,12 @@ const ContactRow = (
         const name = await fetchReverseRecord(address);
         if (name !== ensName) {
           setENSName(name);
-          onAddOrUpdateContacts(
-            address,
-            name && isENSAddressFormat(nickname) ? name : nickname,
-            color,
-            network,
-            name
-          );
+          onAddOrUpdateContacts(address, name && isENSAddressFormat(nickname) ? name : nickname, color, network, name);
         }
       };
       fetchENSName();
     }
-  }, [
-    accountType,
-    onAddOrUpdateContacts,
-    address,
-    color,
-    ensName,
-    network,
-    nickname,
-    profilesEnabled,
-    setENSName,
-  ]);
+  }, [accountType, onAddOrUpdateContacts, address, color, ensName, network, nickname, profilesEnabled, setENSName]);
 
   let cleanedUpLabel = null;
   if (label) {
@@ -144,73 +98,43 @@ const ContactRow = (
     if (showcaseItem) {
       onPress(showcaseItem, nickname);
     } else {
-      const recipient =
-        accountType === 'suggestions' && isENSAddressFormat(nickname)
-          ? nickname
-          : ensName || address;
+      const recipient = accountType === 'suggestions' && isENSAddressFormat(nickname) ? nickname : ensName || address;
       onPress(recipient, nickname ?? recipient);
     }
   }, [accountType, address, ensName, nickname, onPress, showcaseItem]);
 
   const imageAvatar = profilesEnabled ? ensAvatar?.imageUrl : image;
 
-  const emoji = useMemo(() => (address ? addressHashedEmoji(address) : ''), [
-    address,
-  ]);
+  const emoji = useMemo(() => (address ? addressHashedEmoji(address) : ''), [address]);
   const emojiAvatar = avatar || emoji || nickname || label;
 
-  const colorIndex = useMemo(
-    () => (address ? addressHashedColorIndex(address) : 0),
-    [address]
-  );
+  const colorIndex = useMemo(() => (address ? addressHashedColorIndex(address) : 0), [address]);
   const bgColor = color ?? colors.avatarBackgrounds[colorIndex || 0];
 
   return (
-    <ButtonPressAnimation
-      exclusive
-      isInteraction
-      ref={ref}
-      scaleTo={0.98}
-      {...props}
-      onPress={handlePress}
-    >
+    <ButtonPressAnimation exclusive isInteraction ref={ref} scaleTo={0.98} {...props} onPress={handlePress}>
       <RowWithMargins
         height={40}
         margin={10}
         style={symmetricalMargins ? css.symmetrical : css.default}
-        testID={`${testID}-contact-row-${
-          removeFirstEmojiFromString(nickname) || ''
-        }`}
+        testID={`${testID}-contact-row-${removeFirstEmojiFromString(nickname) || ''}`}
       >
         {imageAvatar ? (
           <ImageAvatar image={imageAvatar} marginRight={10} size="medium" />
         ) : (
-          <ContactAvatar
-            color={bgColor}
-            marginRight={10}
-            size="medium"
-            value={emojiAvatar}
-          />
+          <ContactAvatar color={bgColor} marginRight={10} size="medium" value={emojiAvatar} />
         )}
         <Column justify={ios ? 'space-between' : 'center'}>
           {accountType === 'accounts' || accountType === 'watching' ? (
             <Fragment>
               {cleanedUpLabel || ens ? (
-                <ContactName deviceWidth={deviceWidth}>
-                  {cleanedUpLabel || ens}
-                </ContactName>
+                <ContactName deviceWidth={deviceWidth}>{cleanedUpLabel || ens}</ContactName>
               ) : (
                 <ContactName deviceWidth={deviceWidth}>
-                  {isValidDomainFormat(address)
-                    ? address
-                    : abbreviations.address(address, 4, 6)}
+                  {isValidDomainFormat(address) ? address : abbreviations.address(address, 4, 6)}
                 </ContactName>
               )}
-              <BottomRowText
-                color={colors.alpha(colors.blueGreyDark, 0.5)}
-                letterSpacing="roundedMedium"
-                weight="medium"
-              >
+              <BottomRowText color={colors.alpha(colors.blueGreyDark, 0.5)} letterSpacing="roundedMedium" weight="medium">
                 {cleanedUpBalance || 0} ETH
               </BottomRowText>
             </Fragment>
@@ -219,11 +143,7 @@ const ContactRow = (
               <ContactName deviceWidth={deviceWidth} lite={!!showcaseItem}>
                 {removeFirstEmojiFromString(nickname)}
               </ContactName>
-              {isValidDomainFormat(address) ? (
-                <ContactENS ens={address} />
-              ) : (
-                <ContactAddress address={address} lite={!!showcaseItem} />
-              )}
+              {isValidDomainFormat(address) ? <ContactENS ens={address} /> : <ContactAddress address={address} lite={!!showcaseItem} />}
             </Fragment>
           )}
         </Column>
@@ -232,8 +152,4 @@ const ContactRow = (
   );
 };
 
-export default magicMemo(React.forwardRef(ContactRow), [
-  'address',
-  'color',
-  'nickname',
-]);
+export default magicMemo(React.forwardRef(ContactRow), ['address', 'color', 'nickname']);

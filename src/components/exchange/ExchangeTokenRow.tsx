@@ -4,15 +4,12 @@ import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
 import { isNativeAsset } from '@/handlers/assets';
 import { Network } from '@/networks/types';
 import { useAsset, useDimensions } from '@/hooks';
-
-import FastCoinIcon from '../asset-list/RecyclerAssetList2/FastComponents/FastCoinIcon';
 import { ButtonPressAnimation } from '../animations';
 import { FloatingEmojis } from '../floating-emojis';
 import { IS_IOS } from '@/env';
-import {
-  FavStar,
-  Info,
-} from '../asset-list/RecyclerAssetList2/FastComponents/FastCurrencySelectionRow';
+import { FavStar, Info } from '../asset-list/RecyclerAssetList2/FastComponents/FastCurrencySelectionRow';
+import { View } from 'react-native';
+import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
 
 interface ExchangeTokenRowProps {
   item: any;
@@ -30,7 +27,6 @@ export default React.memo(function ExchangeTokenRow({
     contextMenuProps,
     symbol,
     address,
-    mainnet_address,
     name,
     testID,
     network,
@@ -43,14 +39,9 @@ export default React.memo(function ExchangeTokenRow({
     network,
   });
 
-  const rowTestID = `${testID}-exchange-coin-row-${
-    symbol ?? item?.symbol ?? ''
-  }-${network || Network.mainnet}`;
+  const rowTestID = `${testID}-exchange-coin-row-${symbol ?? item?.symbol ?? ''}-${network || Network.mainnet}`;
 
-  const isInfoButtonVisible =
-    !item?.isNativeAsset ||
-    (!isNativeAsset(address ?? item?.address, network) && !showBalance);
-
+  const isInfoButtonVisible = !item?.isNativeAsset || (!isNativeAsset(address ?? item?.address, network) && !showBalance);
   return (
     <Columns alignVertical="center" space="10px">
       <Column>
@@ -65,42 +56,29 @@ export default React.memo(function ExchangeTokenRow({
         >
           <Columns alignVertical="center" space="10px">
             <Column width="content">
-              <Box
-                as={FastCoinIcon}
-                address={address || item?.address}
-                network={network || Network.mainnet}
-                mainnetAddress={mainnet_address ?? item?.mainnet_address}
-                symbol={symbol ?? item?.symbol}
-                theme={theme}
-              />
+              <View style={{ height: 59, paddingTop: 9 }}>
+                <RainbowCoinIcon
+                  size={40}
+                  icon={item?.icon_url || item?.iconUrl || ''}
+                  network={network}
+                  symbol={item?.symbol || symbol}
+                  theme={theme}
+                  colors={item?.colors || undefined}
+                />
+              </View>
             </Column>
             <Column>
               <Stack space="8px">
-                <Text
-                  size="15pt"
-                  color="primary (Deprecated)"
-                  weight="semibold"
-                  numberOfLines={1}
-                >
+                <Text size="15pt" color="primary (Deprecated)" weight="semibold" numberOfLines={1}>
                   {name ?? item?.name}
                 </Text>
                 {showBalance && item?.balance?.display && (
-                  <Text
-                    size="13pt"
-                    color={{ custom: theme.colors.blueGreyDark50 }}
-                    numberOfLines={1}
-                    weight="medium"
-                  >
+                  <Text size="13pt" color={{ custom: theme.colors.blueGreyDark50 }} numberOfLines={1} weight="medium">
                     {item?.balance?.display ?? ''}
                   </Text>
                 )}
                 {!showBalance && (
-                  <Text
-                    size="13pt"
-                    color={{ custom: theme.colors.blueGreyDark50 }}
-                    weight="medium"
-                    numberOfLines={1}
-                  >
+                  <Text size="13pt" color={{ custom: theme.colors.blueGreyDark50 }} weight="medium" numberOfLines={1}>
                     {symbol ?? item?.symbol ?? ''}
                   </Text>
                 )}
@@ -114,20 +92,13 @@ export default React.memo(function ExchangeTokenRow({
           {showBalance && (
             <Box background="fillSecondary" padding="8px" borderRadius={15}>
               <Text size="15pt" weight="medium" color="labelSecondary">
-                {item?.native?.balance?.display ??
-                  `${nativeCurrencySymbol}0.00`}
+                {item?.native?.balance?.display ?? `${nativeCurrencySymbol}0.00`}
               </Text>
             </Box>
           )}
           {!showBalance && (
             <Inline alignVertical="center" space="12px">
-              {isInfoButtonVisible && (
-                <Info
-                  contextMenuProps={contextMenuProps}
-                  showFavoriteButton={showFavoriteButton}
-                  theme={theme}
-                />
-              )}
+              {isInfoButtonVisible && <Info contextMenuProps={contextMenuProps} showFavoriteButton={showFavoriteButton} theme={theme} />}
               {showFavoriteButton &&
                 (IS_IOS ? (
                   // @ts-ignore
@@ -147,19 +118,11 @@ export default React.memo(function ExchangeTokenRow({
                     wiggleFactor={0}
                   >
                     {({ onNewEmoji }: { onNewEmoji: () => void }) => (
-                      <FavStar
-                        favorite={favorite}
-                        theme={theme}
-                        toggleFavorite={() => toggleFavorite(onNewEmoji)}
-                      />
+                      <FavStar favorite={favorite} theme={theme} toggleFavorite={() => toggleFavorite(onNewEmoji)} />
                     )}
                   </FloatingEmojis>
                 ) : (
-                  <FavStar
-                    favorite={favorite}
-                    theme={theme}
-                    toggleFavorite={toggleFavorite}
-                  />
+                  <FavStar favorite={favorite} theme={theme} toggleFavorite={toggleFavorite} />
                 ))}
             </Inline>
           )}
@@ -167,5 +130,4 @@ export default React.memo(function ExchangeTokenRow({
       </Column>
     </Columns>
   );
-},
-isEqual);
+}, isEqual);

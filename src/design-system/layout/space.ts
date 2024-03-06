@@ -56,10 +56,7 @@ export const negativeSpace = {
   '-104px': -104,
 } as const;
 
-const spaceToNegativeSpace: Record<
-  keyof typeof space,
-  keyof typeof negativeSpace
-> = {
+const spaceToNegativeSpace: Record<keyof typeof space, keyof typeof negativeSpace> = {
   '1px (Deprecated)': '-1px (Deprecated)',
   '2px': '-2px',
   '3px': '-3px',
@@ -98,7 +95,5 @@ export type NegativeSpace = keyof typeof negativeSpace | CustomSpace;
 export type PositionSpace = keyof typeof positionSpace | CustomSpace;
 
 export function negateSpace(space: Space): NegativeSpace {
-  return typeof space === 'object'
-    ? { custom: -space.custom }
-    : spaceToNegativeSpace[space];
+  return typeof space === 'object' ? { custom: -space.custom } : spaceToNegativeSpace[space];
 }

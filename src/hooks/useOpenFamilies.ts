@@ -4,9 +4,7 @@ import useAccountSettings from './useAccountSettings';
 
 export default function useOpenFamilies() {
   const { accountAddress } = useAccountSettings();
-  const [openFamilies, setOpenFamilies] = useMMKVObject<
-    Record<string, boolean>
-  >('open-families-' + accountAddress);
+  const [openFamilies, setOpenFamilies] = useMMKVObject<Record<string, boolean>>('open-families-' + accountAddress);
 
   const updateOpenFamilies = useCallback(
     (value: Record<string, boolean>) =>

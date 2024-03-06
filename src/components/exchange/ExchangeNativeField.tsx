@@ -1,11 +1,4 @@
-import React, {
-  ForwardRefRenderFunction,
-  MutableRefObject,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, { ForwardRefRenderFunction, MutableRefObject, useCallback, useEffect, useMemo, useState } from 'react';
 import { TextInput, TouchableWithoutFeedback } from 'react-native';
 import { Row } from '../layout';
 import ExchangeInput from './ExchangeInput';
@@ -37,36 +30,17 @@ interface ExchangeNativeFieldProps {
   testID: string;
 }
 
-const ExchangeNativeField: ForwardRefRenderFunction<
-  TextInput,
-  ExchangeNativeFieldProps
-> = (
-  {
-    color,
-    editable,
-    height,
-    loading,
-    nativeAmount,
-    nativeCurrency,
-    onFocus,
-    setNativeAmount,
-    updateOnFocus,
-    testID,
-  },
+const ExchangeNativeField: ForwardRefRenderFunction<TextInput, ExchangeNativeFieldProps> = (
+  { color, editable, height, loading, nativeAmount, nativeCurrency, onFocus, setNativeAmount, updateOnFocus, testID },
   ref
 ) => {
   const nativeFieldRef = ref as MutableRefObject<TextInput>;
 
   const [value, setValue] = useState(nativeAmount);
 
-  const { mask, placeholder, symbol } = supportedNativeCurrencies[
-    nativeCurrency as NativeCurrencyKey
-  ];
+  const { mask, placeholder, symbol } = supportedNativeCurrencies[nativeCurrency as NativeCurrencyKey];
 
-  const handleFocusNativeField = useCallback(
-    () => nativeFieldRef?.current?.focus(),
-    [nativeFieldRef]
-  );
+  const handleFocusNativeField = useCallback(() => nativeFieldRef?.current?.focus(), [nativeFieldRef]);
 
   const handleFocus = useCallback(
     // @ts-expect-error passed to an untyped JS component
@@ -90,11 +64,10 @@ const ExchangeNativeField: ForwardRefRenderFunction<
 
   const { colors } = useTheme();
 
-  const isFocused = nativeFieldRef?.current?.isFocused();
+  const isFocused = nativeFieldRef?.current?.isFocused?.();
 
   const nativeAmountColor = useMemo(() => {
-    const nativeAmountExists =
-      typeof nativeAmount === 'string' && nativeAmount.length > 0;
+    const nativeAmountExists = typeof nativeAmount === 'string' && nativeAmount.length > 0;
 
     const color = isFocused ? colors.dark : colors.blueGreyDark;
     const opacity = isFocused ? 1 : nativeAmountExists ? 0.5 : 0.3;
@@ -110,12 +83,7 @@ const ExchangeNativeField: ForwardRefRenderFunction<
 
   return (
     <TouchableWithoutFeedback onPress={handleFocusNativeField}>
-      <Row
-        align="center"
-        flex={1}
-        height={height}
-        paddingTop={android ? 6 : undefined}
-      >
+      <Row align="center" flex={1} height={height} paddingTop={android ? 6 : undefined}>
         <Box paddingBottom={android ? '2px' : undefined}>
           <Text color={{ custom: nativeAmountColor }} size="20pt">
             {symbol}

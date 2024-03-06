@@ -1,24 +1,8 @@
 import React, { useCallback, useMemo } from 'react';
 import { RefreshControl, Share } from 'react-native';
 import { FloatingEmojis } from '@/components/floating-emojis';
-import {
-  Bleed,
-  Box,
-  Column,
-  Columns,
-  Cover,
-  Inset,
-  Separator,
-  Stack,
-  Text,
-  useForegroundColor,
-} from '@/design-system';
-import {
-  useAccountProfile,
-  useClipboard,
-  useDimensions,
-  useWallets,
-} from '@/hooks';
+import { Bleed, Box, Column, Columns, Cover, Inline, Inset, Separator, Stack, Text, useForegroundColor } from '@/design-system';
+import { useAccountProfile, useClipboard, useDimensions, useWallets } from '@/hooks';
 import { useTheme } from '@/theme';
 import { ScrollView } from 'react-native-gesture-handler';
 import MaskedView from '@react-native-masked-view/masked-view';
@@ -46,12 +30,124 @@ import { InfoCard } from '../components/InfoCard';
 import { displayNextDistribution } from '../constants';
 import { analyticsV2 } from '@/analytics';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
-import {
-  RemoteCardCarousel,
-  useRemoteCardContext,
-} from '@/components/cards/remote-cards';
+import { RemoteCardCarousel, useRemoteCardContext } from '@/components/cards/remote-cards';
 import { usePoints } from '@/resources/points';
-import { TextColor } from '@/design-system/color/palettes';
+import { GetPointsDataForWalletQuery } from '@/graphql/__generated__/metadataPOST';
+
+const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined }) => {
+  const labelSecondary = useForegroundColor('labelSecondary');
+  const green = useForegroundColor('green');
+  const yellow = useForegroundColor('yellow');
+  const red = useForegroundColor('red');
+
+  //
+  // NEXT REWARD CARD
+  //
+  const nextDistributionSeconds = points?.points?.meta?.distribution?.next;
+  const isLoadingNextRewardCard = nextDistributionSeconds === undefined;
+
+  const getNextRewardCardMainText = () => {
+    if (nextDistributionSeconds === undefined) return '';
+
+    // if next drop has not happened, show time remaining
+    return Date.now() >= nextDistributionSeconds * 1000
+      ? i18n.t(i18n.l.points.points.now)
+      : getFormattedTimeQuantity(nextDistributionSeconds * 1000 - Date.now(), 2);
+  };
+
+  const getNextRewardCardSubtitle = () => {
+    if (nextDistributionSeconds === undefined) return '';
+
+    // date and time of next drop
+    return displayNextDistribution(nextDistributionSeconds);
+  };
+
+  //
+  // REFERRALS CARD
+  //
+  const referralsEarnings = points?.points?.user?.earnings_by_type?.find(earningsGroup => earningsGroup?.type === 'referral')?.earnings
+    ?.total;
+  const qualifiedReferees = points?.points?.user?.stats?.referral?.qualified_referees;
+  const isLoadingReferralsCard = qualifiedReferees === undefined || referralsEarnings == undefined;
+
+  //
+  // RANK CARD
+  //
+  const rank = points?.points?.user.stats.position.current;
+  const isUnranked = points?.points?.user?.stats?.position?.unranked;
+  const lastWeekRank = points?.points?.user.stats.last_airdrop?.position.current;
+  const rankChange = rank && lastWeekRank ? rank - lastWeekRank : undefined;
+  const isLoadingRankCard = (!rank || rankChange === undefined) && isUnranked === undefined;
+
+  const getRankChangeIcon = () => {
+    if (rankChange === undefined || isUnranked) return undefined;
+
+    if (rankChange === 0) return '􁘶';
+
+    if (rankChange < 0) return '􀑁';
+
+    return '􁘳';
+  };
+
+  const getRankCardAccentColor = () => {
+    if (isUnranked) return green;
+
+    if (rankChange === undefined || rankChange > 0) return red;
+
+    if (rankChange === 0) return yellow;
+
+    return green;
+  };
+
+  const getRankCardSubtitle = () => {
+    if (isUnranked) return i18n.t(i18n.l.points.points.points_to_rank);
+
+    if (rankChange === undefined) return '';
+
+    return Math.abs(rankChange).toLocaleString('en-US');
+  };
+
+  const getRankCardMainText = () => {
+    if (!rank) return '';
+    return isUnranked ? i18n.t(i18n.l.points.points.unranked) : `#${rank.toLocaleString('en-US')}`;
+  };
+
+  return (
+    <Bleed space="20px">
+      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+        <Inset space="20px">
+          <Inline separator={<Box width={{ custom: 12 }} />} wrap={false}>
+            <InfoCard
+              loading={isLoadingNextRewardCard}
+              title={i18n.t(i18n.l.points.points.next_drop)}
+              mainText={getNextRewardCardMainText()}
+              icon="􀉉"
+              subtitle={getNextRewardCardSubtitle()}
+              accentColor={labelSecondary}
+            />
+            <InfoCard
+              loading={isLoadingReferralsCard}
+              title={i18n.t(i18n.l.points.points.referrals)}
+              mainText={qualifiedReferees?.toLocaleString('en-US') ?? '0'}
+              icon="􀇯"
+              subtitle={`${referralsEarnings?.toLocaleString('en-US') ?? '0'} ${i18n.t(i18n.l.points.points.points)}`}
+              accentColor={yellow}
+            />
+            <InfoCard
+              loading={isLoadingRankCard}
+              title={i18n.t(i18n.l.points.points.your_rank)}
+              mainText={getRankCardMainText()}
+              icon={getRankChangeIcon()}
+              subtitle={getRankCardSubtitle()}
+              mainTextColor={isUnranked ? 'secondary' : 'primary'}
+              accentColor={getRankCardAccentColor()}
+            />
+          </Inline>
+        </Inset>
+      </ScrollView>
+    </Bleed>
+  );
+};
 
 export default function PointsContent() {
   const { colors } = useTheme();
@@ -62,14 +158,16 @@ export default function PointsContent() {
   const { setClipboard } = useClipboard();
   const { isReadOnlyWallet } = useWallets();
 
-  const { data: points, isFetching, dataUpdatedAt, refetch } = usePoints({
+  const {
+    data: points,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = usePoints({
     walletAddress: accountAddress,
   });
 
-  const cards = useMemo(() => getCardsForPlacement(name as string), [
-    getCardsForPlacement,
-    name,
-  ]);
+  const cards = useMemo(() => getCardsForPlacement(name as string), [getCardsForPlacement, name]);
 
   useFocusEffect(
     useCallback(() => {
@@ -77,19 +175,10 @@ export default function PointsContent() {
     }, [])
   );
 
-  const labelSecondary = useForegroundColor('labelSecondary');
-  const green = useForegroundColor('green');
-  // const pink = useForegroundColor('pink');
-  // const yellow = useForegroundColor('yellow');
-
-  const [isToastActive, setToastActive] = useRecoilState(
-    addressCopiedToastAtom
-  );
+  const [isToastActive, setToastActive] = useRecoilState(addressCopiedToastAtom);
 
   const referralCode = points?.points?.user?.referralCode
-    ? points.points.user.referralCode.slice(0, 3) +
-      '-' +
-      points.points.user.referralCode.slice(3, 7)
+    ? points.points.user.referralCode.slice(0, 3) + '-' + points.points.user.referralCode.slice(3, 7)
     : undefined;
 
   const onPressCopy = React.useCallback(
@@ -102,9 +191,7 @@ export default function PointsContent() {
       }
       onNewEmoji();
       referralCode && setClipboard(referralCode);
-      analyticsV2.track(
-        analyticsV2.event.pointsPointsScreenPressedCopyReferralCodeButton
-      );
+      analyticsV2.track(analyticsV2.event.pointsPointsScreenPressedCopyReferralCodeButton);
     },
     [isToastActive, referralCode, setClipboard, setToastActive]
   );
@@ -120,23 +207,14 @@ export default function PointsContent() {
     setIsRefreshing(false);
   }, [dataUpdatedAt, refetch]);
 
-  const nextDistributionSeconds = points?.points?.meta?.distribution?.next;
-  const totalPointsString = points?.points?.user?.earnings?.total.toLocaleString(
-    'en-US'
-  );
+  const totalPointsString = points?.points?.user?.earnings?.total.toLocaleString('en-US');
   const totalPointsMaskSize = 60 * Math.max(totalPointsString?.length ?? 0, 4);
 
-  const totalUsers = points?.points?.leaderboard.stats.total_users;
   const rank = points?.points?.user.stats.position.current;
-  const lastWeekRank =
-    points?.points?.user.stats.last_airdrop?.position.current;
-  const rankChange = rank && lastWeekRank ? rank - lastWeekRank : undefined;
   const isUnranked = !!points?.points?.user?.stats?.position?.unranked;
 
   const canDisplayTotalPoints = !isNil(points?.points?.user.earnings.total);
-  const canDisplayNextRewardCard = !isNil(nextDistributionSeconds);
   const canDisplayCurrentRank = !!rank;
-  const canDisplayRankCard = canDisplayCurrentRank && !!totalUsers;
 
   const canDisplayLeaderboard = !!points?.points?.leaderboard.accounts;
 
@@ -145,31 +223,6 @@ export default function PointsContent() {
   const referralUrl = points?.points?.user?.referralCode
     ? `https://www.rainbow.me/points?ref=${points.points.user.referralCode}`
     : undefined;
-
-  const getRankChangeIcon = () => {
-    if (rankChange === undefined || isUnranked) return '';
-
-    if (rankChange === 0) return '􁘶';
-
-    if (rankChange < 0) return '􀑁';
-
-    return '􁘳';
-  };
-
-  const getRankChangeIconColor = () => {
-    if (rankChange === undefined || rankChange > 0) return colors.red;
-
-    if (rankChange === 0) return colors.yellow;
-
-    return colors.green;
-  };
-
-  const getRankChangeText = () => {
-    if (rankChange !== undefined) {
-      return Math.abs(rankChange).toLocaleString('en-US');
-    }
-    return '';
-  };
 
   return (
     <Box height="full" background="surfacePrimary" as={Page} flex={1}>
@@ -182,24 +235,13 @@ export default function PointsContent() {
           height: !shouldDisplayError ? undefined : '100%',
         }}
         showsVerticalScrollIndicator={!shouldDisplayError}
-        refreshControl={
-          <RefreshControl
-            onRefresh={refresh}
-            refreshing={isRefreshing}
-            tintColor={colors.alpha(colors.blueGreyDark, 0.4)}
-          />
-        }
+        refreshControl={<RefreshControl onRefresh={refresh} refreshing={isRefreshing} tintColor={colors.alpha(colors.blueGreyDark, 0.4)} />}
       >
         {!shouldDisplayError ? (
           <Inset horizontal="20px" top="10px">
             <Stack space="32px">
               <Bleed bottom={{ custom: 14 }}>
-                <Box
-                  flexDirection="row"
-                  alignItems="center"
-                  height={{ custom: 51 }}
-                  paddingLeft="4px"
-                >
+                <Box flexDirection="row" alignItems="center" height={{ custom: 51 }} paddingLeft="4px">
                   {canDisplayTotalPoints ? (
                     <MaskedView
                       style={{
@@ -223,10 +265,7 @@ export default function PointsContent() {
                           width: totalPointsMaskSize,
                           height: totalPointsMaskSize,
                           left: ios ? -100 : -144,
-                          top:
-                            -totalPointsMaskSize +
-                            (totalPointsString?.length ?? 0) * 5 +
-                            80,
+                          top: -totalPointsMaskSize + (totalPointsString?.length ?? 0) * 5 + 80,
                         }}
                       />
                     </MaskedView>
@@ -234,13 +273,7 @@ export default function PointsContent() {
                     <Skeleton height={31} width={200} />
                   )}
                   <Cover>
-                    <Box
-                      alignItems="flex-end"
-                      width="full"
-                      justifyContent="center"
-                      height="full"
-                      paddingRight="4px"
-                    >
+                    <Box alignItems="flex-end" width="full" justifyContent="center" height="full" paddingRight="4px">
                       <ImgixImage
                         source={Planet as Source}
                         size={60.19}
@@ -253,104 +286,28 @@ export default function PointsContent() {
                   </Cover>
                 </Box>
               </Bleed>
-              <Stack
-                space="24px"
-                separator={
-                  <Separator color="separatorTertiary" thickness={1} />
-                }
-              >
-                {!!cards.length && !isReadOnlyWallet && (
+              {!!cards.length && !isReadOnlyWallet && (
+                <>
                   <RemoteCardCarousel key="remote-cards" />
-                )}
-                <Columns space="12px">
-                  <Column width="1/2">
-                    {canDisplayNextRewardCard ? (
-                      <InfoCard
-                        // onPress={() => {}}
-                        title={i18n.t(i18n.l.points.points.next_drop)}
-                        mainText={
-                          Date.now() >= nextDistributionSeconds * 1000
-                            ? i18n.t(i18n.l.points.points.now)
-                            : getFormattedTimeQuantity(
-                                nextDistributionSeconds * 1000 - Date.now(),
-                                2
-                              )
-                        }
-                        icon="􀉉"
-                        subtitle={displayNextDistribution(
-                          nextDistributionSeconds
-                        )}
-                        accentColor={labelSecondary}
-                      />
-                    ) : (
-                      <Skeleton
-                        height={98}
-                        width={(deviceWidth - 40 - 12) / 2}
-                      />
-                    )}
-                  </Column>
-                  <Column width="1/2">
-                    {canDisplayRankCard ? (
-                      <InfoCard
-                        // onPress={() => {}}
-                        title={i18n.t(i18n.l.points.points.your_rank)}
-                        mainText={
-                          isUnranked
-                            ? i18n.t(i18n.l.points.points.unranked)
-                            : `#${rank.toLocaleString('en-US')}`
-                        }
-                        icon={getRankChangeIcon()}
-                        subtitle={
-                          isUnranked
-                            ? i18n.t(i18n.l.points.points.points_to_rank)
-                            : getRankChangeText()
-                        }
-                        mainTextColor={isUnranked ? 'secondary' : 'primary'}
-                        accentColor={
-                          isUnranked ? green : getRankChangeIconColor()
-                        }
-                      />
-                    ) : (
-                      <Skeleton
-                        height={98}
-                        width={(deviceWidth - 40 - 12) / 2}
-                      />
-                    )}
-                  </Column>
-                </Columns>
-              </Stack>
+                  <Separator color="separatorTertiary" thickness={1} />
+                </>
+              )}
+              <InfoCards points={points} />
               {!isReadOnlyWallet && (
                 <>
                   <Stack space="16px">
                     <Inset left="4px">
-                      {/* <ButtonPressAnimation>
-                    <Inline space="4px" alignVertical="center"> */}
                       <Text weight="bold" color="labelTertiary" size="15pt">
                         {i18n.t(i18n.l.points.points.referral_code)}
                       </Text>
-                      {/* <Text weight="heavy" color="labelQuaternary" size="13pt">
-                        􀅵
-                      </Text>
-                    </Inline>
-                  </ButtonPressAnimation> */}
                     </Inset>
                     {referralCode ? (
                       <Columns space="12px">
                         <Column width="1/2">
                           {/* @ts-ignore */}
-                          <FloatingEmojis
-                            distance={250}
-                            duration={500}
-                            fadeOut={false}
-                            scaleTo={0}
-                            size={50}
-                            wiggleFactor={0}
-                          >
+                          <FloatingEmojis distance={250} duration={500} fadeOut={false} scaleTo={0} size={50} wiggleFactor={0}>
                             {({ onNewEmoji }: { onNewEmoji: () => void }) => (
-                              <ButtonPressAnimation
-                                onPress={() => onPressCopy(onNewEmoji)}
-                                overflowMargin={50}
-                              >
+                              <ButtonPressAnimation onPress={() => onPressCopy(onNewEmoji)} overflowMargin={50}>
                                 <Box
                                   background="surfaceSecondaryElevated"
                                   shadow="12px"
@@ -360,12 +317,7 @@ export default function PointsContent() {
                                   justifyContent="center"
                                   alignItems="center"
                                 >
-                                  <Text
-                                    size="20pt"
-                                    align="center"
-                                    color="label"
-                                    weight="heavy"
-                                  >
+                                  <Text size="20pt" align="center" color="label" weight="heavy">
                                     {referralCode}
                                   </Text>
                                 </Box>
@@ -377,10 +329,7 @@ export default function PointsContent() {
                           <ButtonPressAnimation
                             onPress={() => {
                               if (referralUrl) {
-                                analyticsV2.track(
-                                  analyticsV2.event
-                                    .pointsPointsScreenPressedShareReferralLinkButton
-                                );
+                                analyticsV2.track(analyticsV2.event.pointsPointsScreenPressedShareReferralLinkButton);
                                 Share.share(
                                   IS_ANDROID
                                     ? {
@@ -419,23 +368,11 @@ export default function PointsContent() {
                                       paddingVertical="10px"
                                       justifyContent="center"
                                     >
-                                      <Text
-                                        align="center"
-                                        weight="heavy"
-                                        color="label"
-                                        size="15pt"
-                                      >
+                                      <Text align="center" weight="heavy" color="label" size="15pt">
                                         􀈂
                                       </Text>
-                                      <Text
-                                        align="center"
-                                        weight="heavy"
-                                        color="label"
-                                        size="16px / 22px (Deprecated)"
-                                      >
-                                        {i18n.t(
-                                          i18n.l.points.points.share_link
-                                        )}
+                                      <Text align="center" weight="heavy" color="label" size="16px / 22px (Deprecated)">
+                                        {i18n.t(i18n.l.points.points.share_link)}
                                       </Text>
                                     </Box>
                                   }
@@ -458,26 +395,15 @@ export default function PointsContent() {
                     ) : (
                       <Columns space="12px">
                         <Column width="1/2">
-                          <Skeleton
-                            width={(deviceWidth - 40 - 12) / 2}
-                            height={48}
-                          />
+                          <Skeleton width={(deviceWidth - 40 - 12) / 2} height={48} />
                         </Column>
                         <Column width="1/2">
-                          <Skeleton
-                            width={(deviceWidth - 40 - 12) / 2}
-                            height={48}
-                          />
+                          <Skeleton width={(deviceWidth - 40 - 12) / 2} height={48} />
                         </Column>
                       </Columns>
                     )}
                     <Inset horizontal="4px">
-                      <Text
-                        color="labelQuaternary"
-                        size="13pt"
-                        weight="semibold"
-                        align="left"
-                      >
+                      <Text color="labelQuaternary" size="13pt" weight="semibold" align="left">
                         {i18n.t(i18n.l.points.points.earn_points_for_referring)}
                       </Text>
                     </Inset>
@@ -497,13 +423,7 @@ export default function PointsContent() {
                     shadow="12px"
                     as={LinearGradient}
                     style={{ padding: 1.5, borderRadius: 18 }}
-                    colors={[
-                      '#31BCC4',
-                      '#57EA5F',
-                      '#F0D83F',
-                      '#DF5337',
-                      '#B756A7',
-                    ]}
+                    colors={['#31BCC4', '#57EA5F', '#F0D83F', '#DF5337', '#B756A7']}
                     useAngle={true}
                     angle={-15}
                     angleCenter={{ x: 0.5, y: 0.5 }}
@@ -519,26 +439,12 @@ export default function PointsContent() {
                       alignItems="center"
                     >
                       <Box style={{ maxWidth: 220 }}>
-                        <Text
-                          color="label"
-                          size="17pt"
-                          weight="heavy"
-                          numberOfLines={1}
-                          ellipsizeMode="middle"
-                        >
-                          {accountENS
-                            ? accountENS
-                            : formatAddress(accountAddress, 4, 5)}
+                        <Text color="label" size="17pt" weight="heavy" numberOfLines={1} ellipsizeMode="middle">
+                          {accountENS ? accountENS : formatAddress(accountAddress, 4, 5)}
                         </Text>
                       </Box>
-                      <Text
-                        color={isUnranked ? 'labelQuaternary' : 'label'}
-                        size="17pt"
-                        weight="heavy"
-                      >
-                        {isUnranked
-                          ? i18n.t(i18n.l.points.points.unranked)
-                          : `#${rank.toLocaleString('en-US')}`}
+                      <Text color={isUnranked ? 'labelQuaternary' : 'label'} size="17pt" weight="heavy">
+                        {isUnranked ? i18n.t(i18n.l.points.points.unranked) : `#${rank.toLocaleString('en-US')}`}
                       </Text>
                     </Box>
                   </Box>
@@ -546,16 +452,8 @@ export default function PointsContent() {
                   <Skeleton width={deviceWidth - 40} height={51} />
                 )}
                 {canDisplayLeaderboard ? (
-                  <Box
-                    background="surfaceSecondaryElevated"
-                    borderRadius={18}
-                    shadow="12px"
-                  >
-                    <Stack
-                      separator={
-                        <Separator color="separatorTertiary" thickness={1} />
-                      }
-                    >
+                  <Box background="surfaceSecondaryElevated" borderRadius={18} shadow="12px">
+                    <Stack separator={<Separator color="separatorTertiary" thickness={1} />}>
                       {points?.points?.leaderboard?.accounts
                         ?.slice(0, 100)
                         ?.map((account, index) => (
@@ -577,28 +475,15 @@ export default function PointsContent() {
             </Stack>
           </Inset>
         ) : (
-          <Box
-            alignItems="center"
-            justifyContent="center"
-            height="full"
-            width="full"
-          >
-            <Text
-              size="17pt"
-              weight="bold"
-              align="center"
-              color="labelTertiary"
-            >
+          <Box alignItems="center" justifyContent="center" height="full" width="full">
+            <Text size="17pt" weight="bold" align="center" color="labelTertiary">
               {i18n.t(i18n.l.points.points.error)}
             </Text>
           </Box>
         )}
       </ScrollView>
       <ToastPositionContainer>
-        <Toast
-          isVisible={isToastActive}
-          text={`􀁣 ${i18n.t(i18n.l.points.points.referral_code_copied)}`}
-        />
+        <Toast isVisible={isToastActive} text={`􀁣 ${i18n.t(i18n.l.points.points.referral_code_copied)}`} />
       </ToastPositionContainer>
     </Box>
   );

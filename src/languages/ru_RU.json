@@ -286,11 +286,6 @@
       "hidden": "Скрытый"
     },
     "cards": {
-      "dpi": {
-        "title": "Индекс DeFi Pulse",
-        "body": "Все лидирующие токены децентрализованного финансирования в одном месте. Отслеживайте отрасль.",
-        "view": "Просмотреть"
-      },
       "ens_create_profile": {
         "title": "Создайте свой профиль ENS",
         "body": "Замените адрес своего кошелька профилем, принадлежащим исключительно вам."
@@ -1262,6 +1257,10 @@
         "get_started": "Начать",
         "invalid_code": "Недействительный код"
       },
+      "notifications": {
+        "enable": "Включить уведомления о баллах",
+        "disable": "Отключить уведомления о баллах"
+      },
       "points": {
         "referral_code": "Реферальный код",
         "share_link": "Поделиться ссылкой",
@@ -1287,7 +1286,9 @@
         "referral_code_copied": "Реферальный код скопирован",
         "earn_points_for_referring": "Получайте баллы, когда ваши рефералы меняют $100 через Rainbow, плюс зарабатывайте 10% от баллов, которые получают ваши рефералы",
         "already_claimed_points": "Извините! Вы уже забрали свои баллы.",
-        "now": "Сейчас"
+        "now": "Сейчас",
+        "unranked": "Без ранга",
+        "points_to_rank": "750 баллов до ранга"
       },
       "console": {
         "claim_bonus_paragraph": "Вы получите дополнительные 100 баллов, когда обменяете хотя бы $100 через Rainbow",
@@ -1295,8 +1296,8 @@
         "true_believer": "Истинный Верующий",
         "registration_complete": "Регистрация завершена",
         "account": "Аккаунт",
+        "points_you_have": "У вас есть",
         "points_earned": "Начисленные Баллы",
-        "share_bonus": "Бонус за Поделиться",
         "share_bonus_paragraph_one": "Всё готово!",
         "share_bonus_paragraph_two": "Продолжайте набирать очки, обменивая, переводя мостом, выпуская, приглашая друзей и многое другое",
         "share_bonus_paragraph_three": "Чем больше вы пользуетесь Rainbow, тем больше вознаграждений вы получите",
@@ -1323,7 +1324,21 @@
         "referral_link_bonus_text_extended": "К тому же вы заработаете 10% баллов, набранных каждым приглашенным вами пользователем",
         "complete_onboarding": "Готово",
         "share_to_x": "Поделиться с X",
-        "hardware_wallet_alert": "Поддержка аппаратных кошельков скоро появится!"
+        "hardware_wallet_alert": "Поддержка аппаратных кошельков скоро появится!",
+        "view_weekly_earnings_week_of": "Неделя с %{startOfWeek} по %{endOfWeek}",
+        "view_weekly_earnings_title": "Подсчет заработанных баллов",
+        "view_weekly_earnings_counted": "Еженедельный заработок подсчитан",
+        "view_weekly_earnings_close_button": "Закрыть",
+        "view_weekly_earnings_retroactive_points": "Ретроактивные баллы",
+        "view_weekly_earnings_activity": "Ваша активность",
+        "view_weekly_earnings_referral_activity": "Активность по рефералам",
+        "view_weekly_earnings_total_earnings": "Всего",
+        "view_weekly_earnings_new_referrals": "Новые рефералы",
+        "wallet_balance_required": "Требуется баланс кошелька",
+        "require_balance_paragraph_one": "Чтобы продолжить, убедитесь, что у вас есть баланс ETH в одной из следующих сетей:",
+        "require_balance_paragraph_two": "Или, в качестве альтернативы, баланс MATIC на Polygon или баланс BNB на BSC",
+        "fund_my_wallet": "Пополнить мой кошелек",
+        "points": "Очки"
       }
     },
     "pools": {
@@ -1708,6 +1723,7 @@
       "notifications": "Оповещения",
       "notifications_section": {
         "my_wallets": "Мои кошельки",
+        "points": "Очки",
         "watched_wallets": "Просматриваемые кошельки",
         "allow_notifications": "Разрешить уведомления",
         "sent": "Отправлено",
@@ -2366,6 +2382,7 @@
         "message": "Вставьте WalletConnect URI ниже",
         "title": "Новая сессия WalletConnect"
       },
+      "none": "Нет",
       "switch_network": "Переключить сеть",
       "switch_wallet": "Переключить кошелек",
       "titles": {
@@ -2413,7 +2430,8 @@
         "request_invalid": "В запросе содержатся некорректные параметры. Пожалуйста, попробуйте снова или свяжитесь с командами поддержки Rainbow и/или dapp.",
         "eth_sign": "Rainbow не поддерживает устаревший eth_sign из-за проблем безопасности.  \n Пожалуйста, свяжитесь с командами поддержки Rainbow и/или dapp, если у вас есть вопросы.",
         "request_unsupported_network": "Сеть, указанная в этом запросе, не поддерживается Rainbow.",
-        "request_unsupported_methods": "Метод(ы) RPC, указанные в этом запросе, не поддерживаются Rainbow."
+        "request_unsupported_methods": "Метод(ы) RPC, указанные в этом запросе, не поддерживаются Rainbow.",
+        "no_accounts_found": "Не найдено аккаунтов в одобренных пространствах имен."
       },
       "dapp_warnings": {
         "info_alert": {

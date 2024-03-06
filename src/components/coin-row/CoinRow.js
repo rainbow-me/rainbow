@@ -1,14 +1,14 @@
 import React, { createElement } from 'react';
-import { CoinIcon, CoinIconGroup, CoinIconSize } from '../coin-icon';
+import { CoinIconSize } from '../coin-icon';
 import { Column, Row } from '../layout';
 import { useAccountSettings } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
+import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
 
 const CoinRowPaddingTop = 9;
 const CoinRowPaddingBottom = 10;
-export const CoinRowHeight =
-  CoinIconSize + CoinRowPaddingTop + CoinRowPaddingBottom;
+export const CoinRowHeight = CoinIconSize + CoinRowPaddingTop + CoinRowPaddingBottom;
 
 const Container = styled(Row).attrs({
   align: 'center',
@@ -32,7 +32,7 @@ export default function CoinRow({
   badgeYPosition,
   bottomRowRender,
   children,
-  coinIconRender = CoinIcon,
+  coinIconRender = RainbowCoinIcon,
   containerStyles,
   contentStyles,
   isFirstCoinRow,
@@ -50,21 +50,17 @@ export default function CoinRow({
   const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
   return (
     <Container style={containerStyles}>
-      {isPool ? (
-        <CoinIconGroup tokens={tokens} />
-      ) : (
-        createElement(coinIconRender, {
-          address,
-          badgeXPosition,
-          badgeYPosition,
-          isFirstCoinRow,
-          isHidden,
-          isPinned,
-          symbol,
-          network,
-          ...props,
-        })
-      )}
+      {createElement(coinIconRender, {
+        address,
+        badgeXPosition,
+        badgeYPosition,
+        isFirstCoinRow,
+        isHidden,
+        isPinned,
+        symbol,
+        network,
+        ...props,
+      })}
       <Content isHidden={isHidden} justify="center" style={contentStyles}>
         <Row align="center" testID={`${testID}-${symbol || ''}-${network}`}>
           {topRowRender({
@@ -84,9 +80,7 @@ export default function CoinRow({
           })}
         </Row>
       </Content>
-      {typeof children === 'function'
-        ? children({ symbol, ...props })
-        : children}
+      {typeof children === 'function' ? children({ symbol, ...props }) : children}
     </Container>
   );
 }

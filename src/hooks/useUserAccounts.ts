@@ -12,9 +12,7 @@ export default function useUserAccounts() {
   const network = useSelector((state: AppState) => state.settings.network);
 
   const userAccounts = useMemo(() => {
-    const filteredWallets = values(walletsWithBalancesAndNames).filter(
-      wallet => wallet.type !== walletTypes.readOnly
-    );
+    const filteredWallets = values(walletsWithBalancesAndNames).filter(wallet => wallet.type !== walletTypes.readOnly);
     const addresses: (RainbowAccount & { network: Network })[] = [];
     filteredWallets.forEach(wallet => {
       wallet.addresses.forEach(account => {
@@ -28,9 +26,7 @@ export default function useUserAccounts() {
   }, [network, walletsWithBalancesAndNames]);
 
   const watchedAccounts = useMemo(() => {
-    const filteredWallets = values(walletsWithBalancesAndNames).filter(
-      wallet => wallet.type === walletTypes.readOnly
-    );
+    const filteredWallets = values(walletsWithBalancesAndNames).filter(wallet => wallet.type === walletTypes.readOnly);
     const addresses: (RainbowAccount & { network: Network })[] = [];
     filteredWallets.forEach(wallet => {
       wallet.addresses.forEach(account => {

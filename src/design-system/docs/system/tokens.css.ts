@@ -72,10 +72,10 @@ export const backgroundColors = {
   'action (Deprecated)': colors.appleBlue,
 };
 
-export const fontSizes = [
-  ...Object.keys(typeHierarchy.heading),
-  ...Object.keys(typeHierarchy.text),
-] as (keyof typeof typeHierarchy.heading | keyof typeof typeHierarchy.text)[];
+export const fontSizes = [...Object.keys(typeHierarchy.heading), ...Object.keys(typeHierarchy.text)] as (
+  | keyof typeof typeHierarchy.heading
+  | keyof typeof typeHierarchy.text
+)[];
 
 export const fontWeights = {
   regular: '400',

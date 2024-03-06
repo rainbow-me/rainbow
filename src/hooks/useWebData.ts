@@ -1,11 +1,7 @@
 import GraphemeSplitter from 'grapheme-splitter';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  getPreference,
-  PreferenceActionType,
-  setPreference,
-} from '../model/preferences';
+import { getPreference, PreferenceActionType, setPreference } from '../model/preferences';
 import useAccountProfile from './useAccountProfile';
 import useAccountSettings from './useAccountSettings';
 import useWallets from './useWallets';
@@ -39,10 +35,7 @@ export default function useWebData() {
   const { wallets } = useWallets();
 
   const { showcaseTokens, webDataEnabled, hiddenTokens } = useSelector(
-    ({
-      hiddenTokens: { hiddenTokens },
-      showcaseTokens: { webDataEnabled, showcaseTokens },
-    }: AppState) => ({
+    ({ hiddenTokens: { hiddenTokens }, showcaseTokens: { webDataEnabled, showcaseTokens } }: AppState) => ({
       hiddenTokens,
       showcaseTokens,
       webDataEnabled,
@@ -54,40 +47,18 @@ export default function useWebData() {
 
   const initWebData = useCallback(
     async (showcaseTokens: any) => {
-      await setPreference(
-        PreferenceActionType.init,
-        'showcase',
-        accountAddress,
-        showcaseTokens
-      );
+      await setPreference(PreferenceActionType.init, 'showcase', accountAddress, showcaseTokens);
 
-      await setPreference(
-        PreferenceActionType.init,
-        'hidden',
-        accountAddress,
-        hiddenTokens
-      );
+      await setPreference(PreferenceActionType.init, 'hidden', accountAddress, hiddenTokens);
 
-      await setPreference(
-        PreferenceActionType.init,
-        'profile',
-        accountAddress,
-        {
-          accountColor: colors.avatarBackgrounds[accountColor],
-          accountSymbol: wipeNotEmoji(accountSymbol as string),
-        }
-      );
+      await setPreference(PreferenceActionType.init, 'profile', accountAddress, {
+        accountColor: colors.avatarBackgrounds[accountColor],
+        accountSymbol: wipeNotEmoji(accountSymbol as string),
+      });
 
       dispatch(updateWebDataEnabled(true, accountAddress));
     },
-    [
-      accountAddress,
-      accountColor,
-      accountSymbol,
-      colors.avatarBackgrounds,
-      dispatch,
-      hiddenTokens,
-    ]
+    [accountAddress, accountColor, accountSymbol, colors.avatarBackgrounds, dispatch, hiddenTokens]
   );
 
   const wipeWebData = useCallback(async () => {
@@ -105,16 +76,9 @@ export default function useWebData() {
       if (wallet.type === WalletTypes.readOnly) return;
       const data = {
         accountColor: color || accountColor,
-        accountSymbol: wipeNotEmoji(
-          name ? getAccountSymbol(name)! : (accountSymbol as string)
-        ),
+        accountSymbol: wipeNotEmoji(name ? getAccountSymbol(name)! : (accountSymbol as string)),
       };
-      await setPreference(
-        PreferenceActionType.update,
-        'profile',
-        address,
-        data
-      );
+      await setPreference(PreferenceActionType.update, 'profile', address, data);
     },
     [accountColor, accountSymbol, wallets, webDataEnabled]
   );
@@ -130,12 +94,7 @@ export default function useWebData() {
       const response = await getPreference('showcase', accountAddress);
       // If the showcase is populated, just updated it
       if (response?.ids?.length > 0) {
-        setPreference(
-          PreferenceActionType.update,
-          'showcase',
-          accountAddress,
-          assetIds
-        );
+        setPreference(PreferenceActionType.update, 'showcase', accountAddress, assetIds);
       } else {
         // Initialize showcase and profiles
         await initWebData(assetIds);
@@ -150,19 +109,9 @@ export default function useWebData() {
       const response = await getPreference('hidden', accountAddress);
       // If the showcase is populated, just updated it
       if (response?.ids?.length > 0) {
-        setPreference(
-          PreferenceActionType.update,
-          'hidden',
-          accountAddress,
-          assetIds
-        );
+        setPreference(PreferenceActionType.update, 'hidden', accountAddress, assetIds);
       } else {
-        await setPreference(
-          PreferenceActionType.init,
-          'hidden',
-          accountAddress,
-          assetIds
-        );
+        await setPreference(PreferenceActionType.init, 'hidden', accountAddress, assetIds);
 
         logger.log('hidden initialized!');
       }

@@ -1,36 +1,13 @@
-import { concat, isEmpty, isNil, keys, toLower } from 'lodash';
+import { isNil, toLower } from 'lodash';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { io, Socket } from 'socket.io-client';
 import { getExperimetalFlag, L2_TXS } from '@/config/experimental';
 import { getRemoteConfig } from '@/model/remoteConfig';
-import {
-  assetChartsReceived,
-  ChartsReceivedMessage,
-  DEFAULT_CHART_TYPE,
-} from './charts';
-import {
-  assetPricesChanged,
-  AssetPricesChangedMessage,
-  assetPricesReceived,
-  AssetPricesReceivedMessage,
-  portfolioReceived,
-  PortfolioReceivedMessage,
-  transactionsReceived,
-  TransactionsReceivedMessage,
-} from './data';
+import { transactionsReceived, TransactionsReceivedMessage } from './data';
 import { AppGetState, AppState } from './store';
 import { getProviderForNetwork, isHardHat } from '@/handlers/web3';
-import currencyTypes from '@/helpers/currencyTypes';
 import { Network } from '@/helpers/networkTypes';
-import {
-  BNB_MAINNET_ADDRESS,
-  ETH_ADDRESS,
-  MATIC_MAINNET_ADDRESS,
-  OP_ADDRESS,
-  rainbowTokenList,
-} from '@/references';
-import { TokensListenedCache } from '@/utils';
 import logger from '@/utils/logger';
 
 // -- Constants --------------------------------------- //
@@ -40,9 +17,6 @@ const EXPLORER_CLEAR_STATE = 'explorer/EXPLORER_CLEAR_STATE';
 const TRANSACTIONS_LIMIT = 250;
 
 const messages = {
-  ADDRESS_PORTFOLIO: {
-    RECEIVED: 'received address portfolio',
-  },
   ADDRESS_TRANSACTIONS: {
     APPENDED: 'appended address transactions',
     RECEIVED: 'received address transactions',
@@ -151,39 +125,12 @@ const addressSubscription = (
 ];
 
 /**
- * Configures a portfolio subscription.
- *
- * @param address The address to subscribe to.
- * @param currency The currency to use.
- * @param action The API action.
- * @returns Arguments for an `emit` function call.
- */
-const portfolioSubscription = (
-  address: string,
-  currency: string,
-  action: SocketGetActionType = 'get'
-): SocketEmitArguments => [
-  action,
-  {
-    payload: {
-      address,
-      currency: toLower(currency),
-      portfolio_fields: 'all',
-    },
-    scope: ['portfolio'],
-  },
-];
-
-/**
  * Configures a notifications subscription.
  *
  * @param address The address to subscribe to.
  * @returns Arguments for an `emit` function call.
  */
-export const notificationsSubscription = (address: string) => (
-  _: Dispatch,
-  getState: AppGetState
-) => {
+export const notificationsSubscription = (address: string) => (_: Dispatch, getState: AppGetState) => {
   const { addressSocket } = getState().explorer;
 
   const payload: SocketEmitArguments = [
@@ -206,10 +153,7 @@ export const notificationsSubscription = (address: string) => (
  * @param currency The currency to use.
  * @returns The arguments for an `emit` function call.
  */
-const l2AddressTransactionHistoryRequest = (
-  address: string,
-  currency: string
-): SocketEmitArguments => [
+const l2AddressTransactionHistoryRequest = (address: string, currency: string): SocketEmitArguments => [
   'get',
   {
     payload: {
@@ -235,9 +179,7 @@ const explorerUnsubscribe = () => (_: Dispatch, getState: AppGetState) => {
   const { addressSocket, addressSubscribed } = getState().explorer;
   const { nativeCurrency } = getState().settings;
   if (!isNil(addressSocket)) {
-    addressSocket.emit(
-      ...addressSubscription(addressSubscribed!, nativeCurrency, 'unsubscribe')
-    );
+    addressSocket.emit(...addressSubscription(addressSubscribed!, nativeCurrency, 'unsubscribe'));
     addressSocket.close();
   }
 };
@@ -245,9 +187,7 @@ const explorerUnsubscribe = () => (_: Dispatch, getState: AppGetState) => {
 /**
  * Clears the explorer's state and unsubscribes from listeners.
  */
-export const explorerClearState = () => (
-  dispatch: ThunkDispatch<AppState, unknown, ExplorerClearStateAction>
-) => {
+export const explorerClearState = () => (dispatch: ThunkDispatch<AppState, unknown, ExplorerClearStateAction>) => {
   dispatch(explorerUnsubscribe());
   dispatch({ type: EXPLORER_CLEAR_STATE });
 };
@@ -255,72 +195,46 @@ export const explorerClearState = () => (
 /**
  * Initializes the explorer, creating sockets and configuring listeners.
  */
-export const explorerInit = () => async (
-  dispatch: ThunkDispatch<AppState, unknown, ExplorerUpdateSocketsAction>,
-  getState: AppGetState
-) => {
-  const { network, accountAddress, nativeCurrency } = getState().settings;
-  const { addressSocket } = getState().explorer;
+export const explorerInit =
+  () => async (dispatch: ThunkDispatch<AppState, unknown, ExplorerUpdateSocketsAction>, getState: AppGetState) => {
+    const { network, accountAddress, nativeCurrency } = getState().settings;
+    const { addressSocket } = getState().explorer;
 
-  // if there is another socket unsubscribe first
-  if (addressSocket) {
-    dispatch(explorerUnsubscribe());
-  }
+    // if there is another socket unsubscribe first
+    if (addressSocket) {
+      dispatch(explorerUnsubscribe());
+    }
 
-  const provider = await getProviderForNetwork(network);
-  const providerUrl = provider?.connection?.url;
-  if (isHardHat(providerUrl) || network !== Network.mainnet) {
-    return;
-  }
+    const provider = await getProviderForNetwork(network);
+    const providerUrl = provider?.connection?.url;
+    if (isHardHat(providerUrl) || network !== Network.mainnet) {
+      return;
+    }
 
-  const newAddressSocket = createSocket('address');
-  dispatch({
-    payload: {
-      addressSocket: newAddressSocket,
-      addressSubscribed: accountAddress,
-    },
-    type: EXPLORER_UPDATE_SOCKETS,
-  });
+    const newAddressSocket = createSocket('address');
+    dispatch({
+      payload: {
+        addressSocket: newAddressSocket,
+        addressSubscribed: accountAddress,
+      },
+      type: EXPLORER_UPDATE_SOCKETS,
+    });
 
-  dispatch(listenOnAddressMessages(newAddressSocket));
+    dispatch(listenOnAddressMessages(newAddressSocket));
 
-  newAddressSocket.on(messages.CONNECT, () => {
-    newAddressSocket.emit(
-      ...addressSubscription(accountAddress, nativeCurrency)
-    );
-  });
-};
-
-/**
- * Emits a portfolio request. The result is handled by a listener in
- * `listenOnAddressMessages`.
- *
- * @param address The address.
- * @param currency The currency to use.
- */
-export const emitPortfolioRequest = (address: string, currency?: string) => (
-  _: Dispatch,
-  getState: AppGetState
-) => {
-  const nativeCurrency = currency || getState().settings.nativeCurrency;
-  const { addressSocket } = getState().explorer;
-
-  addressSocket?.emit(...portfolioSubscription(address, nativeCurrency));
-};
+    newAddressSocket.on(messages.CONNECT, () => {
+      newAddressSocket.emit(...addressSubscription(accountAddress, nativeCurrency));
+    });
+  };
 
 /**
  * Emits a layer-2 transaction history request for the current address. The
  * result is handled by a listener in `listenOnAddressMessages`.
  */
-export const emitL2TransactionHistoryRequest = () => (
-  _: Dispatch,
-  getState: AppGetState
-) => {
+export const emitL2TransactionHistoryRequest = () => (_: Dispatch, getState: AppGetState) => {
   const { accountAddress, nativeCurrency } = getState().settings;
   const { addressSocket } = getState().explorer;
-  addressSocket!.emit(
-    ...l2AddressTransactionHistoryRequest(accountAddress, nativeCurrency)
-  );
+  addressSocket!.emit(...l2AddressTransactionHistoryRequest(accountAddress, nativeCurrency));
 };
 
 /**
@@ -328,81 +242,48 @@ export const emitL2TransactionHistoryRequest = () => (
  *
  * @param socket The socket to add listeners to.
  */
-const listenOnAddressMessages = (socket: Socket) => (
-  dispatch: ThunkDispatch<AppState, unknown, never>
-) => {
-  socket.on(
-    messages.ADDRESS_PORTFOLIO.RECEIVED,
-    (message: PortfolioReceivedMessage) => {
-      dispatch(portfolioReceived(message));
-    }
-  );
+const listenOnAddressMessages = (socket: Socket) => (dispatch: ThunkDispatch<AppState, unknown, never>) => {
+  socket.on(messages.ADDRESS_TRANSACTIONS.RECEIVED, (message: TransactionsReceivedMessage) => {
+    // logger.log('mainnet txns received', message?.payload?.transactions);
 
-  socket.on(
-    messages.ADDRESS_TRANSACTIONS.RECEIVED,
-    (message: TransactionsReceivedMessage) => {
-      // logger.log('mainnet txns received', message?.payload?.transactions);
+    if (getExperimetalFlag(L2_TXS)) {
+      dispatch(emitL2TransactionHistoryRequest());
+    }
+    dispatch(transactionsReceived(message));
+  });
 
-      if (getExperimetalFlag(L2_TXS)) {
-        dispatch(emitL2TransactionHistoryRequest());
-      }
-      dispatch(transactionsReceived(message));
-    }
-  );
+  socket.on(messages.ADDRESS_TRANSACTIONS.RECEIVED_ARBITRUM, (message: TransactionsReceivedMessage) => {
+    // logger.log('arbitrum txns received', message?.payload?.transactions);
+    dispatch(transactionsReceived(message));
+  });
 
-  socket.on(
-    messages.ADDRESS_TRANSACTIONS.RECEIVED_ARBITRUM,
-    (message: TransactionsReceivedMessage) => {
-      // logger.log('arbitrum txns received', message?.payload?.transactions);
-      dispatch(transactionsReceived(message));
-    }
-  );
+  socket.on(messages.ADDRESS_TRANSACTIONS.RECEIVED_OPTIMISM, (message: TransactionsReceivedMessage) => {
+    // logger.log('optimism txns received', message?.payload?.transactions);
+    dispatch(transactionsReceived(message));
+  });
 
-  socket.on(
-    messages.ADDRESS_TRANSACTIONS.RECEIVED_OPTIMISM,
-    (message: TransactionsReceivedMessage) => {
-      // logger.log('optimism txns received', message?.payload?.transactions);
-      dispatch(transactionsReceived(message));
-    }
-  );
+  socket.on(messages.ADDRESS_TRANSACTIONS.RECEIVED_POLYGON, (message: TransactionsReceivedMessage) => {
+    // logger.log('polygon txns received', message?.payload?.transactions);
+    dispatch(transactionsReceived(message));
+  });
 
-  socket.on(
-    messages.ADDRESS_TRANSACTIONS.RECEIVED_POLYGON,
-    (message: TransactionsReceivedMessage) => {
-      // logger.log('polygon txns received', message?.payload?.transactions);
-      dispatch(transactionsReceived(message));
-    }
-  );
+  socket.on(messages.ADDRESS_TRANSACTIONS.RECEIVED_BSC, (message: TransactionsReceivedMessage) => {
+    // logger.log('bsc txns received', message?.payload?.transactions);
+    dispatch(transactionsReceived(message));
+  });
+  socket.on(messages.ADDRESS_TRANSACTIONS.RECEIVED_ZORA, (message: TransactionsReceivedMessage) => {
+    // logger.log('zora txns received', message?.payload?.transactions);
+    dispatch(transactionsReceived(message));
+  });
+  socket.on(messages.ADDRESS_TRANSACTIONS.RECEIVED_BASE, (message: TransactionsReceivedMessage) => {
+    // logger.log('base txns received', message?.payload?.transactions);
+    dispatch(transactionsReceived(message));
+  });
 
-  socket.on(
-    messages.ADDRESS_TRANSACTIONS.RECEIVED_BSC,
-    (message: TransactionsReceivedMessage) => {
-      // logger.log('bsc txns received', message?.payload?.transactions);
-      dispatch(transactionsReceived(message));
-    }
-  );
-  socket.on(
-    messages.ADDRESS_TRANSACTIONS.RECEIVED_ZORA,
-    (message: TransactionsReceivedMessage) => {
-      // logger.log('zora txns received', message?.payload?.transactions);
-      dispatch(transactionsReceived(message));
-    }
-  );
-  socket.on(
-    messages.ADDRESS_TRANSACTIONS.RECEIVED_BASE,
-    (message: TransactionsReceivedMessage) => {
-      // logger.log('base txns received', message?.payload?.transactions);
-      dispatch(transactionsReceived(message));
-    }
-  );
-
-  socket.on(
-    messages.ADDRESS_TRANSACTIONS.APPENDED,
-    (message: TransactionsReceivedMessage) => {
-      logger.log('txns appended', message?.payload?.transactions);
-      dispatch(transactionsReceived(message, true));
-    }
-  );
+  socket.on(messages.ADDRESS_TRANSACTIONS.APPENDED, (message: TransactionsReceivedMessage) => {
+    logger.log('txns appended', message?.payload?.transactions);
+    dispatch(transactionsReceived(message, true));
+  });
 };
 
 // -- Reducer ----------------------------------------- //
@@ -411,10 +292,7 @@ const INITIAL_STATE: ExplorerState = {
   addressSubscribed: null,
 };
 
-export default (
-  state: ExplorerState = INITIAL_STATE,
-  action: ExplorerAction
-): ExplorerState => {
+export default (state: ExplorerState = INITIAL_STATE, action: ExplorerAction): ExplorerState => {
   switch (action.type) {
     case EXPLORER_UPDATE_SOCKETS:
       return {

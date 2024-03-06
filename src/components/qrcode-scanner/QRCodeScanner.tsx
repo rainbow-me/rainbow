@@ -1,10 +1,6 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
-import {
-  Camera,
-  CodeScanner,
-  useCameraDevice,
-} from 'react-native-vision-camera';
+import { Camera, CodeScanner, useCameraDevice } from 'react-native-vision-camera';
 import Animated from 'react-native-reanimated';
 import { ErrorText } from '../text';
 import QRCodeScannerNeedsAuthorization from './QRCodeScannerNeedsAuthorization';
@@ -30,13 +26,7 @@ interface QRCodeScannerProps {
   requestPermission: () => Promise<boolean>;
 }
 
-export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
-  flashEnabled,
-  isActive,
-  codeScanner,
-  hasPermission,
-  requestPermission,
-}) => {
+export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({ flashEnabled, isActive, codeScanner, hasPermission, requestPermission }) => {
   const device = useCameraDevice('back');
   const customHeightValue = deviceHeight + androidSoftMenuHeight;
 
@@ -49,16 +39,9 @@ export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
   const cameraUI = (
     <>
       {!device ? (
-        <ErrorText
-          color="red"
-          error={lang.t('wallet.qr.error_mounting_camera')}
-        />
+        <ErrorText color="red" error={lang.t('wallet.qr.error_mounting_camera')} />
       ) : (
-        <Box
-          position="absolute"
-          width="full"
-          height={{ custom: customHeightValue }}
-        >
+        <Box position="absolute" width="full" height={{ custom: customHeightValue }}>
           <Box as={Animated.View} style={{ opacity: 1 }}>
             <Camera
               style={{
@@ -78,38 +61,21 @@ export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
           </Box>
           <Rows>
             <Row>
-              <Box
-                style={{ backgroundColor: 'black', opacity: 0.9 }}
-                height="full"
-              />
+              <Box style={{ backgroundColor: 'black', opacity: 0.9 }} height="full" />
             </Row>
             <Row height="content">
               <Box alignItems="center">
-                <CameraMaskSvg
-                  width={deviceWidth}
-                  height={deviceWidth - (IS_ANDROID ? 19 : 20)}
-                />
+                <CameraMaskSvg width={deviceWidth} height={deviceWidth - (IS_ANDROID ? 19 : 20)} />
               </Box>
               <Cover alignHorizontal="left">
-                <Box
-                  height="full"
-                  width={{ custom: 10 }}
-                  style={{ backgroundColor: 'black', opacity: 0.9 }}
-                />
+                <Box height="full" width={{ custom: 10 }} style={{ backgroundColor: 'black', opacity: 0.9 }} />
               </Cover>
               <Cover alignHorizontal="right">
-                <Box
-                  height="full"
-                  width={{ custom: 10 }}
-                  style={{ backgroundColor: 'black', opacity: 0.9 }}
-                />
+                <Box height="full" width={{ custom: 10 }} style={{ backgroundColor: 'black', opacity: 0.9 }} />
               </Cover>
             </Row>
             <Row>
-              <Box
-                style={{ backgroundColor: 'black', opacity: 0.9 }}
-                height="full"
-              />
+              <Box style={{ backgroundColor: 'black', opacity: 0.9 }} height="full" />
             </Row>
           </Rows>
         </Box>
@@ -122,13 +88,7 @@ export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({
       {hasPermission ? (
         cameraUI
       ) : (
-        <Box
-          position="absolute"
-          width="full"
-          height={{ custom: customHeightValue }}
-          alignItems="center"
-          justifyContent="center"
-        >
+        <Box position="absolute" width="full" height={{ custom: customHeightValue }} alignItems="center" justifyContent="center">
           <QRCodeScannerNeedsAuthorization onGetBack={requestPermission} />
         </Box>
       )}

@@ -185,15 +185,7 @@ const IconTypes = {
 const Icon = ({ name, testID, ...props }, ref) => {
   const IconElement = IconTypes[name] || Flex;
   const { colors } = useTheme();
-  return (
-    <IconElement
-      {...props}
-      colors={colors}
-      name={name}
-      ref={ref}
-      testID={testID}
-    />
-  );
+  return <IconElement {...props} colors={colors} name={name} ref={ref} testID={testID} />;
 };
 
 export default React.forwardRef(Icon);

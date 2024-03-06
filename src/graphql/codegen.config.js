@@ -7,11 +7,7 @@ module.exports = {
       ...config,
       [`./__generated__/${key}.ts`]: {
         documents: [value.document],
-        plugins: [
-          'typescript',
-          'typescript-operations',
-          'typescript-generic-sdk',
-        ],
+        plugins: ['typescript', 'typescript-operations', 'typescript-generic-sdk'],
         schema: [{ [value.schema.url]: { method: value.schema.method } }],
       },
     };

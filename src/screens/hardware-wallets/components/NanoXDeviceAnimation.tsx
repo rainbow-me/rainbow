@@ -1,22 +1,7 @@
 import React, { useEffect } from 'react';
 import { Source } from 'react-native-fast-image';
-import Animated, {
-  Easing,
-  interpolateColor,
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from 'react-native-reanimated';
-import {
-  BlurMask,
-  Canvas,
-  Circle,
-  mix,
-  SkiaMutableValue,
-  useSharedValueEffect,
-  useValue,
-} from '@shopify/react-native-skia';
+import Animated, { Easing, interpolateColor, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
+import { BlurMask, Canvas, Circle, mix, SkiaMutableValue, useSharedValueEffect, useValue } from '@shopify/react-native-skia';
 import ledgerNano from '@/assets/ledger-nano.png';
 import gridDotsLight from '@/assets/dot-grid-light.png';
 import gridDotsDark from '@/assets/dot-grid-dark.png';
@@ -103,9 +88,7 @@ export function NanoXDeviceAnimation({ state, isConnected }: Props) {
     <>
       <Animated.View style={animatedGridDotsWrapperStyle}>
         <ImgixImage
-          source={
-            (colorMode === 'light' ? gridDotsLight : gridDotsDark) as Source
-          }
+          source={(colorMode === 'light' ? gridDotsLight : gridDotsDark) as Source}
           style={{
             width: GRID_DOTS_SIZE,
             height: GRID_DOTS_SIZE,
@@ -117,13 +100,7 @@ export function NanoXDeviceAnimation({ state, isConnected }: Props) {
       <Animated.View style={animatedCirclesWrapperStyle}>
         <Canvas style={{ width: CIRCLES_SIZE, height: CIRCLES_SIZE }}>
           {circleColors.map((color, index) => (
-            <AnimatedCircle
-              key={index}
-              color={color}
-              xOrigin={xOrigin}
-              yOrigin={yOrigin}
-              isConnected={isConnected}
-            />
+            <AnimatedCircle key={index} color={color} xOrigin={xOrigin} yOrigin={yOrigin} isConnected={isConnected} />
           ))}
         </Canvas>
       </Animated.View>
@@ -140,8 +117,7 @@ export function NanoXDeviceAnimation({ state, isConnected }: Props) {
 
 // ///////////////////////////////////////////////////////////////////
 
-const getRandom = (min: number, max: number) =>
-  Math.random() * (max - min) + min;
+const getRandom = (min: number, max: number) => Math.random() * (max - min) + min;
 
 function AnimatedCircle({
   color,
@@ -171,10 +147,7 @@ function AnimatedCircle({
 
   useEffect(() => {
     progress.value = withRepeat(
-      withTiming(
-        progressOffset + (getRandom(-1, 1) > 0 ? 1 : -1) * (2 * Math.PI),
-        { duration: 3000, easing: Easing.linear }
-      ),
+      withTiming(progressOffset + (getRandom(-1, 1) > 0 ? 1 : -1) * (2 * Math.PI), { duration: 3000, easing: Easing.linear }),
       -1,
       false
     );
@@ -193,29 +166,11 @@ function AnimatedCircle({
     () => {
       // position animation
       const scalar = 0.5 - 0.4 * isConnectedValue.value;
-      x.current =
-        xOrigin.current -
-        mix(
-          Math.cos(progress.value),
-          scalar * -circleRadius,
-          scalar * circleRadius
-        ) +
-        xOffset.current;
-      y.current =
-        yOrigin.current -
-        mix(
-          Math.sin(progress.value),
-          scalar * -circleRadius,
-          scalar * circleRadius
-        ) +
-        yOffset.current;
+      x.current = xOrigin.current - mix(Math.cos(progress.value), scalar * -circleRadius, scalar * circleRadius) + xOffset.current;
+      y.current = yOrigin.current - mix(Math.sin(progress.value), scalar * -circleRadius, scalar * circleRadius) + yOffset.current;
 
       // color animation
-      colorValue.current = interpolateColor(
-        isConnectedValue.value,
-        [0, 1],
-        [color, colors.green]
-      );
+      colorValue.current = interpolateColor(isConnectedValue.value, [0, 1], [color, colors.green]);
     },
     progress,
     isConnectedValue

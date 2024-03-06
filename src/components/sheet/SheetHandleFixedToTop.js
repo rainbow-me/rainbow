@@ -7,8 +7,7 @@ import { padding } from '@/styles';
 const paddingBottom = 6;
 const paddingTop = 6;
 
-export const SheetHandleFixedToTopHeight =
-  HandleHeight + paddingBottom + paddingTop;
+export const SheetHandleFixedToTopHeight = HandleHeight + paddingBottom + paddingTop;
 
 const Container = styled(Centered)({
   ...padding.object(paddingTop, 0, paddingBottom),

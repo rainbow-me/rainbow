@@ -1,10 +1,4 @@
 PODS:
-  - appcenter-core (4.4.5):
-    - AppCenterReactNativeShared (~> 4.0)
-    - React-Core
-  - AppCenter/Core (4.4.3)
-  - AppCenterReactNativeShared (4.4.5):
-    - AppCenter/Core (= 4.4.3)
   - Base64 (1.1.2)
   - boost (1.76.0)
   - Branch (1.40.2)
@@ -228,10 +222,6 @@ PODS:
   - hermes-engine/Pre-built (0.72.3)
   - JWT (3.0.0-beta.14):
     - Base64 (~> 1.1.2)
-  - KTVCocoaHTTPServer (1.0.0):
-    - CocoaAsyncSocket
-  - KTVHTTPCache (2.0.1):
-    - KTVCocoaHTTPServer
   - libevent (2.1.12)
   - libwebp (1.3.2):
     - libwebp/demux (= 1.3.2)
@@ -636,9 +626,6 @@ PODS:
   - react-native-video (5.2.1):
     - React-Core
     - react-native-video/Video (= 5.2.1)
-  - react-native-video-cache (2.0.5):
-    - KTVHTTPCache (~> 2.0.0)
-    - React
   - react-native-video/Video (5.2.1):
     - React-Core
   - react-native-webview (13.2.3):
@@ -777,8 +764,8 @@ PODS:
     - React
   - RNFastImage (8.5.11):
     - React-Core
-    - SDWebImage (~> 5.12.5)
-    - SDWebImageWebPCoder (~> 0.8.4)
+    - SDWebImage (~> 5.18.11)
+    - SDWebImageWebPCoder (~> 0.14.5)
   - RNFBApp (18.3.0):
     - Firebase/CoreOnly (= 10.12.0)
     - React-Core
@@ -816,8 +803,6 @@ PODS:
     - React
   - RNKeychain (8.0.0):
     - React-Core
-  - RNLanguages (3.0.2):
-    - React
   - RNNotifee (5.6.0):
     - React-Core
     - RNNotifee/NotifeeCore (= 5.6.0)
@@ -829,35 +814,10 @@ PODS:
     - React-Core
   - RNReactNativeHapticFeedback (1.11.0):
     - React-Core
-  - RNReanimated (3.4.2):
-    - DoubleConversion
-    - FBLazyVector
-    - glog
-    - hermes-engine
-    - RCT-Folly
-    - RCTRequired
-    - RCTTypeSafety
-    - React-callinvoker
+  - RNReanimated (3.7.1):
+    - RCT-Folly (= 2021.07.22.00)
     - React-Core
-    - React-Core/DevSupport
-    - React-Core/RCTWebSocket
-    - React-CoreModules
-    - React-cxxreact
-    - React-hermes
-    - React-jsi
-    - React-jsiexecutor
-    - React-jsinspector
-    - React-RCTActionSheet
-    - React-RCTAnimation
-    - React-RCTAppDelegate
-    - React-RCTBlob
-    - React-RCTImage
-    - React-RCTLinking
-    - React-RCTNetwork
-    - React-RCTSettings
-    - React-RCTText
     - ReactCommon/turbomodule/core
-    - Yoga
   - RNScreens (3.23.0):
     - React-Core
     - React-RCTImage
@@ -875,12 +835,12 @@ PODS:
     - React-Core
   - RNTextSize (4.0.0-rc.1):
     - React
-  - SDWebImage (5.12.6):
-    - SDWebImage/Core (= 5.12.6)
-  - SDWebImage/Core (5.12.6)
-  - SDWebImageWebPCoder (0.8.5):
+  - SDWebImage (5.18.11):
+    - SDWebImage/Core (= 5.18.11)
+  - SDWebImage/Core (5.18.11)
+  - SDWebImageWebPCoder (0.14.5):
     - libwebp (~> 1.0)
-    - SDWebImage/Core (~> 5.10)
+    - SDWebImage/Core (~> 5.17)
   - segment-analytics-react-native (2.15.0):
     - React-Core
     - sovran-react-native
@@ -911,7 +871,6 @@ PODS:
     - Yoga (~> 1.14)
 
 DEPENDENCIES:
-  - appcenter-core (from `../node_modules/appcenter`)
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
   - BVLinearGradient (from `../node_modules/react-native-linear-gradient`)
   - CodePush (from `../node_modules/react-native-code-push`)
@@ -1002,7 +961,6 @@ DEPENDENCIES:
   - react-native-udp (from `../node_modules/react-native-udp`)
   - react-native-version-number (from `../node_modules/react-native-version-number`)
   - react-native-video (from `../node_modules/react-native-video`)
-  - react-native-video-cache (from `../node_modules/react-native-video-cache`)
   - react-native-webview (from `../node_modules/react-native-webview`)
   - react-native-widgetkit (from `../node_modules/react-native-widgetkit`)
   - react-native-worklets-core (from `../node_modules/react-native-worklets-core`)
@@ -1043,7 +1001,6 @@ DEPENDENCIES:
   - RNInputMask (from `../node_modules/react-native-text-input-mask/ios/InputMask`)
   - RNKeyboard (from `../node_modules/react-native-keyboard-area`)
   - RNKeychain (from `../node_modules/react-native-keychain`)
-  - RNLanguages (from `../node_modules/react-native-languages`)
   - "RNNotifee (from `../node_modules/@notifee/react-native`)"
   - RNOS (from `../node_modules/react-native-os`)
   - RNPermissions (from `../node_modules/react-native-permissions`)
@@ -1067,8 +1024,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - AppCenter
-    - AppCenterReactNativeShared
     - Base64
     - Branch
     - CocoaAsyncSocket
@@ -1097,8 +1052,6 @@ SPEC REPOS:
     - GoogleDataTransport
     - GoogleUtilities
     - JWT
-    - KTVCocoaHTTPServer
-    - KTVHTTPCache
     - libevent
     - libwebp
     - MMKV
@@ -1120,8 +1073,6 @@ SPEC REPOS:
     - YogaKit
 
 EXTERNAL SOURCES:
-  appcenter-core:
-    :path: "../node_modules/appcenter"
   boost:
     :podspec: "../node_modules/react-native/third-party-podspecs/boost.podspec"
   BVLinearGradient:
@@ -1234,8 +1185,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-version-number"
   react-native-video:
     :path: "../node_modules/react-native-video"
-  react-native-video-cache:
-    :path: "../node_modules/react-native-video-cache"
   react-native-webview:
     :path: "../node_modules/react-native-webview"
   react-native-widgetkit:
@@ -1316,8 +1265,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-keyboard-area"
   RNKeychain:
     :path: "../node_modules/react-native-keychain"
-  RNLanguages:
-    :path: "../node_modules/react-native-languages"
   RNNotifee:
     :path: "../node_modules/@notifee/react-native"
   RNOS:
@@ -1361,9 +1308,6 @@ CHECKOUT OPTIONS:
     :git: https://github.com/rainbow-me/PanModal
 
 SPEC CHECKSUMS:
-  AppCenter: 3fd04aa1b166e16fdb03ec81dabe488aece83fbd
-  appcenter-core: c593b2e4ac28d6a21b6a217c4a5e6b3de7b0b00f
-  AppCenterReactNativeShared: f395caeabde0dc3a11609dbcb737d0f14cd40e79
   Base64: cecfb41a004124895a7bcee567a89bae5a89d49b
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
   Branch: d99436c6f3d5b2529ba948d273e47e732830f207
@@ -1400,8 +1344,6 @@ SPEC CHECKSUMS:
   GoogleUtilities: 0759d1a57ebb953965c2dfe0ba4c82e95ccc2e34
   hermes-engine: 10fbd3f62405c41ea07e71973ea61e1878d07322
   JWT: ef71dfb03e1f842081e64dc42eef0e164f35d251
-  KTVCocoaHTTPServer: df8d7b861e603ff8037e9b2138aca2563a6b768d
-  KTVHTTPCache: 588c3eb16f6bd1e6fde1e230dabfb7bd4e490a4d
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
   MMKV: f21593c0af4b3f2a0ceb8f820f28bb639ea22bb7
@@ -1459,7 +1401,6 @@ SPEC CHECKSUMS:
   react-native-udp: 96a517e5a121cfe69f4b05eeeafefe00c623debf
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
   react-native-video: c26780b224543c62d5e1b2a7244a5cd1b50e8253
-  react-native-video-cache: 0f8b1b2195f234eabd507cfebdd91c2e82695008
   react-native-webview: b85dfe0bf95bef83e82fc354d6987c80fed5e7ad
   react-native-widgetkit: efb6680df237463bbe1be3a4d1a1578a1b0bb08f
   react-native-worklets-core: b4094f51cb2bc649e297206425cb8956f4945e3e
@@ -1488,7 +1429,7 @@ SPEC CHECKSUMS:
   RNCMaskedView: 949696f25ec596bfc697fc88e6f95cf0c79669b6
   RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
   RNExitApp: c4e052df2568b43bec8a37c7cd61194d4cfee2c3
-  RNFastImage: 945abf54742505d790d9024d230c69b1e866bc88
+  RNFastImage: 4ce7636223e71615774b99004103e946a73e7c32
   RNFBApp: 147c3274daa84d7410d457510548d5fb3b317e37
   RNFBCrashlytics: 4adc1698782408ecc0b0cf9e9b9060c82726afab
   RNFBMessaging: 0e98a1452a60e6828fcd7139b1ad45ebf4452aa8
@@ -1500,20 +1441,19 @@ SPEC CHECKSUMS:
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
   RNKeyboard: 14793d75953d99c6d950090b8e9698b234c5d08c
   RNKeychain: 4f63aada75ebafd26f4bc2c670199461eab85d94
-  RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNNotifee: 8ee6ddabfc44b16600b978983162e0d4db20ce19
   RNOS: 31db6fa4a197d179afbba9e6b4d28d450a7f250b
   RNPermissions: 4e3714e18afe7141d000beae3755e5b5fb2f5e05
   RNReactNativeHapticFeedback: 653a8c126a0f5e88ce15ffe280b3ff37e1fbb285
-  RNReanimated: 726395a2fa2f04cea340274ba57a4e659bc0d9c1
+  RNReanimated: 43675f1f0e704abe8ebf953fd79b00e66302cda2
   RNScreens: 6a8a3c6b808aa48dca1780df7b73ea524f602c63
   RNSentry: fbbdcd7213058e3de5fbaa452b25a06a16b4b382
   RNShare: eaee3dd5a06dad397c7d3b14762007035c5de405
   RNSound: 6c156f925295bdc83e8e422e7d8b38d33bc71852
   RNSVG: 53c661b76829783cdaf9b7a57258f3d3b4c28315
   RNTextSize: 21c94a67819fbf2c358a219bf6d251e3be9e5f29
-  SDWebImage: a47aea9e3d8816015db4e523daff50cfd294499d
-  SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
+  SDWebImage: a3ba0b8faac7228c3c8eadd1a55c9c9fe5e16457
+  SDWebImageWebPCoder: c94f09adbca681822edad9e532ac752db713eabf
   segment-analytics-react-native: 2b90f606cda9234dd110d117c4ffc918d9ba29bb
   Sentry: 0c5cd63d714187b4a39c331c1f0eb04ba7868341
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86

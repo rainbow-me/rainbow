@@ -45,18 +45,12 @@ export default function ContextCircleButton(props) {
   );
 
   const handlePressMenuItem = useLatestCallback(e => {
-    const index = androidItems.menuItems?.findIndex(
-      item => item.actionKey === e.nativeEvent.actionKey
-    );
+    const index = androidItems.menuItems?.findIndex(item => item.actionKey === e.nativeEvent.actionKey);
     props.onPressActionSheet(index);
   });
 
   return (
-    <ContextMenuButton
-      isAnchoredToRight
-      menuConfig={androidItems}
-      onPressMenuItem={handlePressMenuItem}
-    >
+    <ContextMenuButton isAnchoredToRight menuConfig={androidItems} onPressMenuItem={handlePressMenuItem}>
       {props.children || <CircleBtn />}
     </ContextMenuButton>
   );

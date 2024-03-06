@@ -2,18 +2,15 @@ import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import Divider from './Divider';
 import ButtonPressAnimation from './animations/ButtonPressAnimation';
-import { CoinIcon } from './coin-icon';
 import ChainBadge from './coin-icon/ChainBadge';
 import { Column, Row } from './layout';
 import { Text } from './text';
-import { isL2Asset } from '@/handlers/assets';
-import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { padding, position } from '@/styles';
 import { darkModeThemeColors } from '@/styles/colors';
-import { ethereumUtils } from '@/utils';
 import { getNetworkObj } from '@/networks';
 import * as lang from '@/languages';
 import { isL2Network } from '@/handlers/web3';
+import { EthCoinIcon } from './coin-icon/EthCoinIcon';
 
 const L2Disclaimer = ({
   network,
@@ -43,40 +40,15 @@ const L2Disclaimer = ({
 
   return (
     <>
-      <ButtonPressAnimation
-        marginBottom={marginBottom}
-        onPress={onPress}
-        scaleTo={0.95}
-      >
-        <Row
-          borderRadius={16}
-          marginHorizontal={marginHorizontal}
-          style={padding.object(android ? 6 : 10, 10, android ? 6 : 10, 10)}
-        >
-          <RadialGradient
-            {...radialGradientProps}
-            borderRadius={16}
-            radius={600}
-          />
+      <ButtonPressAnimation marginBottom={marginBottom} onPress={onPress} scaleTo={0.95}>
+        <Row borderRadius={16} marginHorizontal={marginHorizontal} style={padding.object(android ? 6 : 10, 10, android ? 6 : 10, 10)}>
+          <RadialGradient {...radialGradientProps} borderRadius={16} radius={600} />
           <Column justify="center">
-            {isL2 ? (
-              <ChainBadge
-                network={network}
-                position="relative"
-                size="small"
-                forceDark={forceDarkMode}
-              />
-            ) : (
-              <CoinIcon address={ETH_ADDRESS} size={20} symbol={ETH_SYMBOL} />
-            )}
+            {isL2 ? <ChainBadge network={network} position="relative" size="small" forceDark={forceDarkMode} /> : <EthCoinIcon size={20} />}
           </Column>
           <Column flex={1} justify="center" marginHorizontal={8}>
             <Text
-              color={
-                prominent
-                  ? colors.alpha(localColors.blueGreyDark, 0.8)
-                  : colors.alpha(localColors.blueGreyDark, 0.6)
-              }
+              color={prominent ? colors.alpha(localColors.blueGreyDark, 0.8) : colors.alpha(localColors.blueGreyDark, 0.6)}
               numberOfLines={2}
               size="smedium"
               weight={prominent ? 'heavy' : 'bold'}
@@ -90,20 +62,13 @@ const L2Disclaimer = ({
             </Text>
           </Column>
           <Column align="end" justify="center">
-            <Text
-              align="center"
-              color={colors.alpha(localColors.blueGreyDark, 0.3)}
-              size="smedium"
-              weight="heavy"
-            >
+            <Text align="center" color={colors.alpha(localColors.blueGreyDark, 0.3)} size="smedium" weight="heavy">
               􀅵
             </Text>
           </Column>
         </Row>
       </ButtonPressAnimation>
-      {hideDivider ? null : (
-        <Divider color={localColors.rowDividerExtraLight} />
-      )}
+      {hideDivider ? null : <Divider color={localColors.rowDividerExtraLight} />}
     </>
   );
 };

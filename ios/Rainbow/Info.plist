@@ -106,6 +106,15 @@
 					<string>zorb</string>
 				</array>
 			</dict>
+			<key>farcaster</key>
+			<dict>
+				<key>UIPrerenderedIcon</key>
+				<false/>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>farcaster</string>
+				</array>
+			</dict>
 			<key>adworld</key>
 			<dict>
 				<key>UIPrerenderedIcon</key>

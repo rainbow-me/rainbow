@@ -2,11 +2,9 @@ import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import Divider from '../Divider';
-import { CoinIcon } from '../coin-icon';
 import ChainBadge from '../coin-icon/ChainBadge';
 import { Box, Inline, Text } from '@/design-system';
 import { useNavigation } from '@/navigation';
-import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { position } from '@/styles';
 import { ethereumUtils } from '@/utils';
@@ -18,6 +16,7 @@ import { ButtonPressAnimation } from '../animations';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { implementation } from '@/entities/dispersion';
 import { RainbowNetworks, getNetworkObj } from '@/networks';
+import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 
 const NOOP = () => null;
 
@@ -61,11 +60,8 @@ const AvailableNetworksv2 = ({
       const newAsset = asset;
 
       // we need to convert the mainnet asset to the selected network's
-      newAsset.mainnet_address =
-        networks?.[ethereumUtils.getChainIdFromNetwork(Network.mainnet)]
-          ?.address ?? asset.address;
-      newAsset.address =
-        networks?.[ethereumUtils.getChainIdFromNetwork(chosenNetwork)].address;
+      newAsset.mainnet_address = networks?.[ethereumUtils.getChainIdFromNetwork(Network.mainnet)]?.address ?? asset.address;
+      newAsset.address = networks?.[ethereumUtils.getChainIdFromNetwork(chosenNetwork)].address;
       newAsset.uniqueId = `${asset.address}_${chosenNetwork}`;
       newAsset.type = chosenNetwork;
 
@@ -101,21 +97,16 @@ const AvailableNetworksv2 = ({
   }, [availableNetworks, convertAssetAndNavigate]);
 
   const networkMenuItems = useMemo(() => {
-    return RainbowNetworks.filter(
-      ({ features, value, id }) =>
-        features.swaps && value !== Network.mainnet && !!networks[id]
-    ).map(network => ({
-      actionKey: network.value,
-      actionTitle: network.name,
-      icon: {
-        iconType: 'ASSET',
-        iconValue: `${
-          network.networkType === 'layer2'
-            ? `${network.value}BadgeNoShadow`
-            : 'ethereumBadge'
-        }`,
-      },
-    }));
+    return RainbowNetworks.filter(({ features, value, id }) => features.swaps && value !== Network.mainnet && !!networks[id]).map(
+      network => ({
+        actionKey: network.value,
+        actionTitle: network.name,
+        icon: {
+          iconType: 'ASSET',
+          iconValue: `${network.networkType === 'layer2' ? `${network.value}BadgeNoShadow` : 'ethereumBadge'}`,
+        },
+      })
+    );
   }, [networks]);
 
   const MenuWrapper = availableNetworks.length > 1 ? ContextMenuButton : Box;
@@ -140,12 +131,7 @@ const AvailableNetworksv2 = ({
           marginHorizontal={{ custom: marginHorizontal }}
           testID={'available-networks-v2'}
         >
-          <Box
-            borderRadius={99}
-            paddingVertical="8px"
-            paddingHorizontal="12px"
-            justifyContent="center"
-          >
+          <Box borderRadius={99} paddingVertical="8px" paddingHorizontal="12px" justifyContent="center">
             <RadialGradient
               {...radialGradientProps}
               // @ts-ignore overloaded props
@@ -169,18 +155,9 @@ const AvailableNetworksv2 = ({
                         }}
                       >
                         {network !== Network.mainnet ? (
-                          <ChainBadge
-                            network={network}
-                            position="relative"
-                            size="small"
-                          />
+                          <ChainBadge network={network} position="relative" size="small" />
                         ) : (
-                          <CoinIcon
-                            address={ETH_ADDRESS}
-                            size={20}
-                            symbol={ETH_SYMBOL}
-                            network={Network.mainnet}
-                          />
+                          <EthCoinIcon size={20} />
                         )}
                       </Box>
                     );
@@ -188,42 +165,25 @@ const AvailableNetworksv2 = ({
                 </Box>
 
                 <Box paddingLeft="6px">
-                  <Text
-                    color="secondary60 (Deprecated)"
-                    size="14px / 19px (Deprecated)"
-                    weight="semibold"
-                    numberOfLines={2}
-                  >
+                  <Text color="secondary60 (Deprecated)" size="14px / 19px (Deprecated)" weight="semibold" numberOfLines={2}>
                     {availableNetworks?.length > 1
                       ? lang.t('expanded_state.asset.available_networks', {
                           availableNetworks: availableNetworks?.length,
                         })
                       : lang.t('expanded_state.asset.available_networkv2', {
-                          availableNetwork: getNetworkObj(
-                            availableNetworks?.[0]
-                          )?.name,
+                          availableNetwork: getNetworkObj(availableNetworks?.[0])?.name,
                         })}
                   </Text>
                 </Box>
               </Inline>
-              <Text
-                align="center"
-                color="secondary40 (Deprecated)"
-                size="14px / 19px (Deprecated)"
-                weight="semibold"
-              >
+              <Text align="center" color="secondary40 (Deprecated)" size="14px / 19px (Deprecated)" weight="semibold">
                 {availableNetworks?.length > 1 ? '􀁱' : '􀯻'}
               </Text>
             </Inline>
           </Box>
         </Box>
       </MenuWrapper>
-      {hideDivider ? null : (
-        <Divider
-          color={colors.rowDividerExtraLight}
-          backgroundColor={undefined}
-        />
-      )}
+      {hideDivider ? null : <Divider color={colors.rowDividerExtraLight} backgroundColor={undefined} />}
     </>
   );
 };

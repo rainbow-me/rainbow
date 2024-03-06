@@ -6,10 +6,7 @@ import { useAccountSettings } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
-import {
-  convertAmountToNativeDisplay,
-  convertRawAmountToRoundedDecimal,
-} from '@/helpers/utilities';
+import { convertAmountToNativeDisplay, convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
 import { useNFTListing } from '@/resources/nfts';
 import { UniqueAsset } from '@/entities';
@@ -19,19 +16,12 @@ import { ReviewPromptAction } from '@/storage/schema';
 
 const NONE = 'None';
 
-const formatPrice = (
-  price: number | null | undefined,
-  tokenSymbol: string | null | undefined = 'ETH'
-) => {
+const formatPrice = (price: number | null | undefined, tokenSymbol: string | null | undefined = 'ETH') => {
   if (price === null || price === undefined || !tokenSymbol) return NONE;
   return `${price === 0 ? '< 0.001' : price} ${tokenSymbol}`;
 };
 
-export default function NFTBriefTokenInfoRow({
-  asset,
-}: {
-  asset: UniqueAsset;
-}) {
+export default function NFTBriefTokenInfoRow({ asset }: { asset: UniqueAsset }) {
   const [hasDispatchedAction, setHasDispatchedAction] = useState(false);
   const { colors } = useTheme();
 
@@ -67,13 +57,7 @@ export default function NFTBriefTokenInfoRow({
     network: asset?.network,
   });
 
-  const listingValue =
-    listing &&
-    convertRawAmountToRoundedDecimal(
-      listing?.price,
-      listing?.payment_token?.decimals,
-      3
-    );
+  const listingValue = listing && convertRawAmountToRoundedDecimal(listing?.price, listing?.payment_token?.decimals, 3);
 
   const currentPrice = asset?.currentPrice ?? listingValue;
 
@@ -90,12 +74,7 @@ export default function NFTBriefTokenInfoRow({
       setHasDispatchedAction(true);
     }
     setShowFloorInEth(!showFloorInEth);
-  }, [
-    showFloorInEth,
-    setShowFloorInEth,
-    hasDispatchedAction,
-    setHasDispatchedAction,
-  ]);
+  }, [showFloorInEth, setShowFloorInEth, hasDispatchedAction, setHasDispatchedAction]);
 
   const handlePressCollectionFloor = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
@@ -103,21 +82,14 @@ export default function NFTBriefTokenInfoRow({
     });
   }, [navigate]);
 
-  const lastSalePrice = formatPrice(
-    asset?.lastPrice,
-    asset?.lastSalePaymentToken
-  );
+  const lastSalePrice = formatPrice(asset?.lastPrice, asset?.lastSalePaymentToken);
   const priceOfEth = ethereumUtils.getEthPriceUnit() as number;
 
   return (
     <Columns space="19px (Deprecated)">
       {/* @ts-expect-error JavaScript component */}
       <TokenInfoItem
-        color={
-          lastSalePrice === NONE && !currentPrice
-            ? colors.alpha(colors.whiteLabel, 0.5)
-            : colors.whiteLabel
-        }
+        color={lastSalePrice === NONE && !currentPrice ? colors.alpha(colors.whiteLabel, 0.5) : colors.whiteLabel}
         enableHapticFeedback={!!currentPrice}
         isNft
         onPress={toggleCurrentPriceDisplayCurrency}
@@ -140,11 +112,7 @@ export default function NFTBriefTokenInfoRow({
       {/* @ts-expect-error JavaScript component */}
       <TokenInfoItem
         align="right"
-        color={
-          floorPrice === NONE
-            ? colors.alpha(colors.whiteLabel, 0.5)
-            : colors.whiteLabel
-        }
+        color={floorPrice === NONE ? colors.alpha(colors.whiteLabel, 0.5) : colors.whiteLabel}
         enableHapticFeedback={floorPrice !== NONE}
         isNft
         loading={!floorPrice}
@@ -155,15 +123,10 @@ export default function NFTBriefTokenInfoRow({
         title="Floor price"
         weight={floorPrice === NONE ? 'bold' : 'heavy'}
       >
-        {showFloorInEth ||
-        nativeCurrency === 'ETH' ||
-        floorPrice === NONE ||
-        floorPrice === null
+        {showFloorInEth || nativeCurrency === 'ETH' || floorPrice === NONE || floorPrice === null
           ? floorPrice
           : convertAmountToNativeDisplay(
-              parseFloat(
-                floorPrice?.[0] === '<' ? floorPrice.substring(2) : floorPrice
-              ) * priceOfEth,
+              parseFloat(floorPrice?.[0] === '<' ? floorPrice.substring(2) : floorPrice) * priceOfEth,
               nativeCurrency
             )}
       </TokenInfoItem>

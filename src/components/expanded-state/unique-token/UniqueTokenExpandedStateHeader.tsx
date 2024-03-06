@@ -7,25 +7,10 @@ import { buildUniqueTokenName } from '../../../helpers/assets';
 import { ButtonPressAnimation } from '../../animations';
 import saveToCameraRoll from './saveToCameraRoll';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import {
-  Bleed,
-  Column,
-  Columns,
-  Heading,
-  Inline,
-  Inset,
-  Space,
-  Stack,
-  Text,
-} from '@/design-system';
+import { Bleed, Column, Columns, Heading, Inline, Inset, Space, Stack, Text } from '@/design-system';
 import { UniqueAsset } from '@/entities';
 import { Network } from '@/helpers';
-import {
-  useClipboard,
-  useDimensions,
-  useHiddenTokens,
-  useShowcaseTokens,
-} from '@/hooks';
+import { useClipboard, useDimensions, useHiddenTokens, useShowcaseTokens } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation/Navigation';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@/references';
@@ -70,12 +55,9 @@ const getAssetActions = (network: Network) =>
     },
     [AssetActionsEnum.etherscan]: {
       actionKey: AssetActionsEnum.etherscan,
-      actionTitle: lang.t(
-        'expanded_state.unique_expanded.view_on_block_explorer',
-        {
-          blockExplorerName: startCase(ethereumUtils.getBlockExplorer(network)),
-        }
-      ),
+      actionTitle: lang.t('expanded_state.unique_expanded.view_on_block_explorer', {
+        blockExplorerName: startCase(ethereumUtils.getBlockExplorer(network)),
+      }),
       icon: {
         iconType: 'SYSTEM',
         iconValue: 'link',
@@ -121,7 +103,7 @@ const getAssetActions = (network: Network) =>
         iconValue: 'looksrare',
       },
     },
-  } as const);
+  }) as const;
 
 const FamilyActionsEnum = {
   collectionWebsite: 'collectionWebsite',
@@ -203,14 +185,8 @@ const UniqueTokenExpandedStateHeader = ({
   const { width: deviceWidth } = useDimensions();
   const { showcaseTokens, removeShowcaseToken } = useShowcaseTokens();
   const { hiddenTokens, addHiddenToken, removeHiddenToken } = useHiddenTokens();
-  const isHiddenAsset = useMemo(
-    () => hiddenTokens.includes(asset.fullUniqueId) as boolean,
-    [hiddenTokens, asset.fullUniqueId]
-  );
-  const isShowcaseAsset = useMemo(
-    () => showcaseTokens.includes(asset.uniqueId) as boolean,
-    [showcaseTokens, asset.uniqueId]
-  );
+  const isHiddenAsset = useMemo(() => hiddenTokens.includes(asset.fullUniqueId) as boolean, [hiddenTokens, asset.fullUniqueId]);
+  const isShowcaseAsset = useMemo(() => showcaseTokens.includes(asset.uniqueId) as boolean, [showcaseTokens, asset.uniqueId]);
   const { goBack } = useNavigation();
 
   const formattedCollectionUrl = useMemo(() => {
@@ -272,9 +248,7 @@ const UniqueTokenExpandedStateHeader = ({
 
   // @ts-expect-error image_url could be null or undefined?
   const isSVG = isSVGImage(asset.image_url);
-  const isENS =
-    asset.asset_contract?.address?.toLowerCase() ===
-    ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
+  const isENS = asset.asset_contract?.address?.toLowerCase() === ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
 
   const isPhotoDownloadAvailable = !isSVG && !isENS;
   const assetMenuConfig: MenuConfig = useMemo(() => {
@@ -308,8 +282,7 @@ const UniqueTokenExpandedStateHeader = ({
           : []),
         {
           ...AssetActions[AssetActionsEnum.copyTokenID],
-          discoverabilityTitle:
-            asset.id.length > 15 ? `${asset.id.slice(0, 15)}...` : asset.id,
+          discoverabilityTitle: asset.id.length > 15 ? `${asset.id.slice(0, 15)}...` : asset.id,
         },
         ...(isSupportedOnRainbowWeb
           ? [
@@ -325,9 +298,7 @@ const UniqueTokenExpandedStateHeader = ({
         ...(asset.network === Network.mainnet
           ? [
               {
-                menuTitle: lang.t(
-                  'expanded_state.unique_expanded.view_on_marketplace'
-                ),
+                menuTitle: lang.t('expanded_state.unique_expanded.view_on_marketplace'),
                 menuItems: [AssetActions.opensea, AssetActions.looksrare],
               },
             ]
@@ -335,34 +306,19 @@ const UniqueTokenExpandedStateHeader = ({
       ],
       menuTitle: '',
     };
-  }, [
-    asset.id,
-    asset?.network,
-    isPhotoDownloadAvailable,
-    isHiddenAsset,
-    isModificationActionsEnabled,
-    isSupportedOnRainbowWeb,
-  ]);
+  }, [asset.id, asset?.network, isPhotoDownloadAvailable, isHiddenAsset, isModificationActionsEnabled, isSupportedOnRainbowWeb]);
 
   const handlePressFamilyMenuItem = useCallback(
     // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
     ({ nativeEvent: { actionKey } }) => {
-      if (
-        actionKey === FamilyActionsEnum.viewCollection &&
-        asset.marketplaceCollectionUrl
-      ) {
+      if (actionKey === FamilyActionsEnum.viewCollection && asset.marketplaceCollectionUrl) {
         Linking.openURL(asset.marketplaceCollectionUrl);
       } else if (actionKey === FamilyActionsEnum.collectionWebsite) {
         // @ts-expect-error external_link and external_url could be null or undefined?
         Linking.openURL(asset.external_link || asset.collection.external_url);
       } else if (actionKey === FamilyActionsEnum.twitter) {
-        Linking.openURL(
-          'https://twitter.com/' + asset.collection.twitter_username
-        );
-      } else if (
-        actionKey === FamilyActionsEnum.discord &&
-        asset.collection.discord_url
-      ) {
+        Linking.openURL('https://twitter.com/' + asset.collection.twitter_username);
+      } else if (actionKey === FamilyActionsEnum.discord && asset.collection.discord_url) {
         Linking.openURL(asset.collection.discord_url);
       }
     },
@@ -382,17 +338,13 @@ const UniqueTokenExpandedStateHeader = ({
       } else if (actionKey === AssetActionsEnum.rainbowWeb) {
         Linking.openURL(rainbowWebUrl);
       } else if (actionKey === AssetActionsEnum.opensea) {
-        Linking.openURL(
-          `https://opensea.io/assets/${asset.asset_contract.address}/${asset.id}`
-        );
+        Linking.openURL(`https://opensea.io/assets/${asset.asset_contract.address}/${asset.id}`);
       } else if (actionKey === AssetActionsEnum.looksrare) {
-        Linking.openURL(
-          `https://looksrare.org/collections/${asset.asset_contract.address}/${asset.id}`
-        );
+        Linking.openURL(`https://looksrare.org/collections/${asset.asset_contract.address}/${asset.id}`);
       } else if (actionKey === AssetActionsEnum.copyTokenID) {
         setClipboard(asset.id);
       } else if (actionKey === AssetActionsEnum.download) {
-        saveToCameraRoll(getFullResUrl(asset.image_original_url));
+        saveToCameraRoll(getFullResUrl(asset.image_url));
       } else if (actionKey === AssetActionsEnum.hide) {
         if (isHiddenAsset) {
           removeHiddenToken(asset);
@@ -430,12 +382,8 @@ const UniqueTokenExpandedStateHeader = ({
     const hasDiscord = !!asset.collection.discord_url;
 
     const baseActions = [
-      ...(hasCollection
-        ? [lang.t('expanded_state.unique_expanded.view_collection')]
-        : []),
-      ...(hasWebsite
-        ? [lang.t('expanded_state.unique_expanded.collection_website')]
-        : []),
+      ...(hasCollection ? [lang.t('expanded_state.unique_expanded.view_collection')] : []),
+      ...(hasWebsite ? [lang.t('expanded_state.unique_expanded.collection_website')] : []),
       ...(hasTwitter ? [lang.t('expanded_state.unique_expanded.twitter')] : []),
       ...(hasDiscord ? [lang.t('expanded_state.unique_expanded.discord')] : []),
     ];
@@ -460,9 +408,7 @@ const UniqueTokenExpandedStateHeader = ({
             asset.external_link || asset.collection.external_url
           );
         } else if (idx === twitterIndex) {
-          Linking.openURL(
-            'https://twitter.com/' + asset.collection.twitter_username
-          );
+          Linking.openURL('https://twitter.com/' + asset.collection.twitter_username);
         } else if (idx === discordIndex && asset.collection.discord_url) {
           Linking.openURL(asset.collection.discord_url);
         }
@@ -490,12 +436,7 @@ const UniqueTokenExpandedStateHeader = ({
   return (
     <Stack space="15px (Deprecated)">
       <Columns space="24px">
-        <Heading
-          containsEmoji
-          color="primary (Deprecated)"
-          size="23px / 27px (Deprecated)"
-          weight="heavy"
-        >
+        <Heading containsEmoji color="primary (Deprecated)" size="23px / 27px (Deprecated)" weight="heavy">
           {buildUniqueTokenName(asset)}
         </Heading>
         <Column width="content">
@@ -505,9 +446,7 @@ const UniqueTokenExpandedStateHeader = ({
               <ContextCircleButton
                 options={assetMenuOptions}
                 onPressActionSheet={(index: number) => {
-                  const actionItems = (assetMenuConfig?.menuItems || []).filter(
-                    (item): item is MenuActionConfig => 'actionTitle' in item
-                  );
+                  const actionItems = (assetMenuConfig?.menuItems || []).filter((item): item is MenuActionConfig => 'actionTitle' in item);
                   const actionKey: MenuActionConfig = actionItems[index];
                   if (!actionKey) return;
                   handlePressAssetMenuItem({
@@ -517,11 +456,7 @@ const UniqueTokenExpandedStateHeader = ({
               >
                 <ButtonPressAnimation scaleTo={0.75}>
                   <Inset space={overflowMenuHitSlop}>
-                    <Text
-                      color="accent"
-                      size="23px / 27px (Deprecated)"
-                      weight="heavy"
-                    >
+                    <Text color="accent" size="23px / 27px (Deprecated)" weight="heavy">
                       􀍡
                     </Text>
                   </Inset>
@@ -538,11 +473,7 @@ const UniqueTokenExpandedStateHeader = ({
               >
                 <ButtonPressAnimation scaleTo={0.75}>
                   <Inset space={overflowMenuHitSlop}>
-                    <Text
-                      color="accent"
-                      size="23px / 27px (Deprecated)"
-                      weight="heavy"
-                    >
+                    <Text color="accent" size="23px / 27px (Deprecated)" weight="heavy">
                       􀍡
                     </Text>
                   </Inset>
@@ -556,9 +487,7 @@ const UniqueTokenExpandedStateHeader = ({
         <Bleed space={familyNameHitSlop}>
           <ContextMenuButton
             menuConfig={familyMenuConfig}
-            {...(android
-              ? { onPress: onPressAndroidFamily, isAnchoredToRight: true }
-              : {})}
+            {...(android ? { onPress: onPressAndroidFamily, isAnchoredToRight: true } : {})}
             isMenuPrimaryAction
             onPressMenuItem={handlePressFamilyMenuItem}
             useActionSheetFallback={false}
@@ -569,7 +498,7 @@ const UniqueTokenExpandedStateHeader = ({
                   {asset.familyImage ? (
                     <Bleed vertical="6px">
                       <FamilyImageWrapper>
-                        <FamilyImage source={{ uri: asset.familyImage }} />
+                        <FamilyImage size={30} source={{ uri: asset.familyImage }} />
                       </FamilyImageWrapper>
                     </Bleed>
                   ) : null}
@@ -579,20 +508,11 @@ const UniqueTokenExpandedStateHeader = ({
                         maxWidth: deviceWidth - paddingHorizontal * 6,
                       }}
                     >
-                      <Text
-                        color="secondary50 (Deprecated)"
-                        numberOfLines={1}
-                        size="16px / 22px (Deprecated)"
-                        weight="bold"
-                      >
+                      <Text color="secondary50 (Deprecated)" numberOfLines={1} size="16px / 22px (Deprecated)" weight="bold">
                         {asset.familyName}
                       </Text>
                     </View>
-                    <Text
-                      color="secondary50 (Deprecated)"
-                      size="16px / 22px (Deprecated)"
-                      weight="bold"
-                    >
+                    <Text color="secondary50 (Deprecated)" size="16px / 22px (Deprecated)" weight="bold">
                       􀆊
                     </Text>
                   </Inline>

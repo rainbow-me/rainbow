@@ -81,16 +81,8 @@ query getRewardsDataForWallet($address: String!) {
   }
 }
 
-query reverseResolveENSProfile(
-  $chainID: Int!
-  $address: String!
-  $fields: [String!]
-) {
-  reverseResolveENSProfile(
-    chainID: $chainID
-    address: $address
-    fields: $fields
-  ) {
+query reverseResolveENSProfile($chainID: Int!, $address: String!, $fields: [String!]) {
+  reverseResolveENSProfile(chainID: $chainID, address: $address, fields: $fields) {
     name
     address
     resolverAddress
@@ -165,16 +157,8 @@ fragment simulationError on TransactionError {
   type
 }
 
-query simulateTransactions(
-  $chainId: Int!
-  $transactions: [Transaction!]
-  $domain: String!
-) {
-  simulateTransactions(
-    chainID: $chainId
-    transactions: $transactions
-    domain: $domain
-  ) {
+query simulateTransactions($chainId: Int!, $transactions: [Transaction!], $domain: String!) {
+  simulateTransactions(chainID: $chainId, transactions: $transactions, domain: $domain) {
     error {
       ...simulationError
     }
@@ -200,6 +184,9 @@ query simulateTransactions(
         quantityAtRisk
       }
       meta {
+        transferTo {
+          ...target
+        }
         to {
           ...target
         }
@@ -208,18 +195,8 @@ query simulateTransactions(
   }
 }
 
-query simulateMessage(
-  $address: String!
-  $chainId: Int!
-  $message: Message!
-  $domain: String!
-) {
-  simulateMessage(
-    address: $address
-    chainID: $chainId
-    message: $message
-    domain: $domain
-  ) {
+query simulateMessage($address: String!, $chainId: Int!, $message: Message!, $domain: String!) {
+  simulateMessage(address: $address, chainID: $chainId, message: $message, domain: $domain) {
     error {
       ...simulationError
     }
@@ -282,6 +259,12 @@ query getPointsDataForWallet($address: String!) {
     }
     user {
       referralCode
+      earnings_by_type {
+        type
+        earnings {
+          total
+        }
+      }
       earnings {
         total
       }
@@ -289,6 +272,10 @@ query getPointsDataForWallet($address: String!) {
         position {
           unranked
           current
+        }
+        referral {
+          total_referees
+          qualified_referees
         }
         last_airdrop {
           position {
@@ -314,11 +301,7 @@ query getPointsOnboardChallenge($address: String!, $referral: String) {
   pointsOnboardChallenge(address: $address, referral: $referral)
 }
 
-mutation onboardPoints(
-  $address: String!
-  $signature: String!
-  $referral: String
-) {
+mutation onboardPoints($address: String!, $signature: String!, $referral: String) {
   onboardPoints(address: $address, signature: $signature, referral: $referral) {
     error {
       message
@@ -347,14 +330,14 @@ mutation onboardPoints(
     }
     user {
       referralCode
+      earnings_by_type {
+        type
+        earnings {
+          total
+        }
+      }
       earnings {
         total
-      }
-      stats {
-        position {
-          unranked
-          current
-        }
       }
       onboarding {
         earnings {
@@ -370,6 +353,31 @@ mutation onboardPoints(
           display_type
           earnings {
             total
+          }
+        }
+      }
+      stats {
+        position {
+          unranked
+          current
+        }
+        referral {
+          total_referees
+          qualified_referees
+        }
+        last_airdrop {
+          position {
+            unranked
+            current
+          }
+          earnings {
+            total
+          }
+          differences {
+            type
+            earnings {
+              total
+            }
           }
         }
       }
@@ -505,15 +513,7 @@ query tokenMetadata($address: String!, $chainId: Int!, $currency: String) {
   }
 }
 
-query priceChart(
-  $chainId: Int!
-  $address: String!
-  $day: Boolean!
-  $hour: Boolean!
-  $week: Boolean!
-  $month: Boolean!
-  $year: Boolean!
-) {
+query priceChart($chainId: Int!, $address: String!, $day: Boolean!, $hour: Boolean!, $week: Boolean!, $month: Boolean!, $year: Boolean!) {
   token(chainID: $chainId, address: $address) {
     priceCharts {
       day @include(if: $day) {

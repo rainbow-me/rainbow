@@ -48,18 +48,11 @@ export function tapItemAtIndex(elementID, index) {
 
 export async function startIosSimulator() {
   if (device.getPlatform() === 'ios') {
-    await exec(
-      'open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/'
-    );
+    await exec('open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/');
   }
 }
 
-export async function typeText(
-  elementId,
-  text,
-  focus = true,
-  syncOnAndroid = false
-) {
+export async function typeText(elementId, text, focus = true, syncOnAndroid = false) {
   if (focus) {
     await tap(elementId);
   }
@@ -115,45 +108,22 @@ export function tapAlertWithButton(text, index) {
   return element(by.label(text)).atIndex(0).tap();
 }
 
-export async function waitAndSwipe(
-  elementId,
-  direction,
-  speed = 'fast',
-  percentage = 0.75,
-  timeout
-) {
+export async function waitAndSwipe(elementId, direction, speed = 'fast', percentage = 0.75, timeout) {
   await waitFor(element(by.id(elementId)))
     .toBeVisible()
     .withTimeout(timeout || DEFAULT_TIMEOUT);
   await element(by.id(elementId))?.swipe(direction, speed, percentage);
 }
 
-export async function swipe(
-  elementId,
-  direction,
-  speed = 'fast',
-  percentage = 0.75,
-  normalizedStartingPointY = NaN
-) {
-  await element(by.id(elementId))?.swipe(
-    direction,
-    speed,
-    percentage,
-    NaN,
-    normalizedStartingPointY
-  );
+export async function swipe(elementId, direction, speed = 'fast', percentage = 0.75, normalizedStartingPointY = NaN) {
+  await element(by.id(elementId))?.swipe(direction, speed, percentage, NaN, normalizedStartingPointY);
 }
 
 export async function scrollTo(scrollviewId, edge) {
   await element(by.id(scrollviewId)).scrollTo(edge);
 }
 
-export async function swipeUntilVisible(
-  elementId,
-  scrollViewId,
-  direction,
-  pctVisible = 75
-) {
+export async function swipeUntilVisible(elementId, scrollViewId, direction, pctVisible = 75) {
   let stop = false;
   while (!stop) {
     try {
@@ -267,12 +237,7 @@ export function delay(ms) {
 
 export function getProvider() {
   if (!getProvider._instance) {
-    getProvider._instance = new JsonRpcProvider(
-      device.getPlatform() === 'ios'
-        ? process.env.HARDHAT_URL_IOS
-        : process.env.HARDHAT_URL_ANDROID,
-      'any'
-    );
+    getProvider._instance = new JsonRpcProvider('http://127.0.0.1:8545', 'any');
   }
   return getProvider._instance;
 }
@@ -280,10 +245,7 @@ export function getProvider() {
 export async function sendETHtoTestWallet() {
   const provider = getProvider();
   // Hardhat account 0 that has 10000 ETH
-  const wallet = new Wallet(
-    '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80',
-    provider
-  );
+  const wallet = new Wallet('0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80', provider);
   // Sending 20 ETH so we have enough to pay the tx fees even when the gas is too high
   await wallet.sendTransaction({
     to: TESTING_WALLET,

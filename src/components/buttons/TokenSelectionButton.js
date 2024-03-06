@@ -34,13 +34,7 @@ const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   width: 8,
 });
 
-export default function TokenSelectionButton({
-  color,
-  borderRadius = 30,
-  onPress,
-  symbol,
-  testID,
-}) {
+export default function TokenSelectionButton({ color, borderRadius = 30, onPress, symbol, testID }) {
   const { isDarkMode, colors } = useTheme();
 
   const shadowsForAsset = useMemo(

@@ -5,6 +5,7 @@ const Routes = {
   ADD_CASH_SHEET: 'AddCashSheet',
   ADD_WALLET_NAVIGATOR: 'AddWalletNavigator',
   ADD_WALLET_SHEET: 'AddWalletSheet',
+  APP_ICON_UNLOCK_SHEET: 'AppIconUnlockSheet',
   AVATAR_BUILDER: 'AvatarBuilder',
   AVATAR_BUILDER_WALLET: 'AvatarBuilderWallet',
   BACKUP_SCREEN: 'BackupScreen',
@@ -108,9 +109,7 @@ export const NATIVE_ROUTES = [
   Routes.EXPANDED_ASSET_SHEET,
   Routes.CHANGE_WALLET_SHEET,
   Routes.MODAL_SCREEN,
-  ...(IS_IOS
-    ? [Routes.SEND_SHEET_NAVIGATOR, Routes.ADD_CASH_SCREEN_NAVIGATOR]
-    : []),
+  ...(IS_IOS ? [Routes.SEND_SHEET_NAVIGATOR, Routes.ADD_CASH_SCREEN_NAVIGATOR] : []),
 ];
 
 const RoutesWithPlatformDifferences = {

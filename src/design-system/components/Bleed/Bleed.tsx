@@ -20,16 +20,7 @@ export type BleedProps = {
  * is designed to make it easy to visually break out of a parent container
  * without having to refactor the entire component tree.
  */
-export function Bleed({
-  top,
-  space,
-  bottom,
-  left,
-  right,
-  horizontal,
-  vertical,
-  children,
-}: BleedProps) {
+export function Bleed({ top, space, bottom, left, right, horizontal, vertical, children }: BleedProps) {
   return (
     <Box
       margin={space ? negateSpace(space) : undefined}

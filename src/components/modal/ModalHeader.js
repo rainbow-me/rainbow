@@ -25,44 +25,18 @@ const TitleContainer = styled(Centered)({
   zIndex: 0,
 });
 
-export default function ModalHeader({
-  onPressBack,
-  onPressClose,
-  showBackButton,
-  showDoneButton = true,
-  title,
-  ...props
-}) {
+export default function ModalHeader({ onPressBack, onPressClose, showBackButton, showDoneButton = true, title, ...props }) {
   const { colors } = useTheme();
 
   return (
     <Container backgroundColor={colors.white} {...props}>
-      {showBackButton && (
-        <ModalHeaderButton
-          label={lang.t('settings.label')}
-          onPress={onPressBack}
-          side="left"
-        />
-      )}
+      {showBackButton && <ModalHeaderButton label={lang.t('settings.label')} onPress={onPressBack} side="left" />}
       <TitleContainer>
-        <TruncatedText
-          align="center"
-          color={colors.black}
-          height={21}
-          lineHeight="loose"
-          size="large"
-          weight="bold"
-        >
+        <TruncatedText align="center" color={colors.black} height={21} lineHeight="loose" size="large" weight="bold">
           {title}
         </TruncatedText>
       </TitleContainer>
-      {showDoneButton && (
-        <ModalHeaderButton
-          label={lang.t('settings.done')}
-          onPress={onPressClose}
-          side="right"
-        />
-      )}
+      {showDoneButton && <ModalHeaderButton label={lang.t('settings.done')} onPress={onPressClose} side="right" />}
     </Container>
   );
 }

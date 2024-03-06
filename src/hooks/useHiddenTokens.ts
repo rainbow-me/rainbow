@@ -1,10 +1,7 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import {
-  addHiddenToken as rawAddHiddenToken,
-  removeHiddenToken as rawRemoveHiddenToken,
-} from '../redux/hiddenTokens';
+import { addHiddenToken as rawAddHiddenToken, removeHiddenToken as rawRemoveHiddenToken } from '../redux/hiddenTokens';
 import useWallets from './useWallets';
 import useWebData from './useWebData';
 import { analytics } from '@/analytics';
@@ -23,8 +20,7 @@ export default function useHiddenTokens() {
   const addHiddenToken = useCallback(
     async (asset: UniqueAsset) => {
       dispatch(rawAddHiddenToken(asset.fullUniqueId));
-      !isReadOnlyWallet &&
-        updateWebHidden([...hiddenTokens, asset.fullUniqueId]);
+      !isReadOnlyWallet && updateWebHidden([...hiddenTokens, asset.fullUniqueId]);
 
       analytics.track('Toggled an NFT as Hidden', {
         collectionContractAddress: asset.asset_contract.address || null,
@@ -38,8 +34,7 @@ export default function useHiddenTokens() {
   const removeHiddenToken = useCallback(
     async (asset: UniqueAsset) => {
       dispatch(rawRemoveHiddenToken(asset.fullUniqueId));
-      !isReadOnlyWallet &&
-        updateWebHidden(hiddenTokens.filter(id => id !== asset.fullUniqueId));
+      !isReadOnlyWallet && updateWebHidden(hiddenTokens.filter(id => id !== asset.fullUniqueId));
 
       analytics.track('Toggled an NFT as Hidden', {
         collectionContractAddress: asset.asset_contract.address || null,

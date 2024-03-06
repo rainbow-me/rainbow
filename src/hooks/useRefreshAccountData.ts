@@ -44,9 +44,7 @@ export default function useRefreshAccountData() {
 
     try {
       const getWalletNames = dispatch(fetchWalletNames());
-      const getWalletENSAvatars = profilesEnabled
-        ? dispatch(fetchWalletENSAvatars())
-        : null;
+      const getWalletENSAvatars = profilesEnabled ? dispatch(fetchWalletENSAvatars()) : null;
       const wc = dispatch(walletConnectLoadState());
       return Promise.all([
         delay(1250), // minimum duration we want the "Pull to Refresh" animation to last

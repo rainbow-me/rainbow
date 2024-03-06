@@ -8,7 +8,5 @@ type props = {
 
 export const isSpecificAddress: ActionFn<props> = async ({ addresses }) => {
   const { accountAddress } = store.getState().settings;
-  return addresses
-    .map(address => address.toLowerCase())
-    .includes(accountAddress.toLowerCase());
+  return addresses.map(address => address.toLowerCase()).includes(accountAddress.toLowerCase());
 };

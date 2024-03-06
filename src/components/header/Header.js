@@ -6,9 +6,7 @@ import { safeAreaInsetValues } from '@/utils';
 import { StatusBar } from 'react-native';
 import { IS_IOS } from '@/env';
 
-const StatusBarHeight = IS_IOS
-  ? safeAreaInsetValues.top
-  : StatusBar.currentHeight;
+const StatusBarHeight = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight;
 export const HeaderHeight = 44;
 export const HeaderHeightWithStatusBar = HeaderHeight + StatusBarHeight;
 

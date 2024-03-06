@@ -1,10 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { metadataClient } from '@/graphql';
 import { QueryFunctionArgs, createQueryKey, queryClient } from '@/react-query';
-import {
-  convertAmountAndPriceToNativeDisplay,
-  convertAmountToPercentageDisplay,
-} from '@/helpers/utilities';
+import { convertAmountAndPriceToNativeDisplay, convertAmountToPercentageDisplay } from '@/helpers/utilities';
 import { NativeCurrencyKey } from '@/entities';
 import { Token } from '@/graphql/__generated__/metadata';
 import { ethereumUtils } from '@/utils';
@@ -20,11 +17,9 @@ const EXTERNAL_TOKEN_STALE_TIME = 1000 * 60; // 1 minute
 // OP_ADDRESS
 
 // Types
-type ExternalToken = Pick<
-  Token,
-  'decimals' | 'iconUrl' | 'name' | 'networks' | 'symbol' | 'colors' | 'price'
->;
+type ExternalToken = Pick<Token, 'decimals' | 'iconUrl' | 'name' | 'networks' | 'symbol' | 'colors' | 'price'>;
 export type FormattedExternalAsset = ExternalToken & {
+  icon_url?: string;
   native: {
     change: string;
     price: {
@@ -42,45 +37,25 @@ type ExternalTokenArgs = {
 };
 
 // Query Key for Token Price
-export const externalTokenQueryKey = ({
-  address,
-  network,
-  currency,
-}: ExternalTokenArgs) =>
-  createQueryKey(
-    'externalToken',
-    { address, network, currency },
-    { persisterVersion: 1 }
-  );
+export const externalTokenQueryKey = ({ address, network, currency }: ExternalTokenArgs) =>
+  createQueryKey('externalToken', { address, network, currency }, { persisterVersion: 1 });
 
 type externalTokenQueryKey = ReturnType<typeof externalTokenQueryKey>;
 
 // Helpers
-const formatExternalAsset = (
-  asset: ExternalToken,
-  nativeCurrency: NativeCurrencyKey
-): FormattedExternalAsset => {
+const formatExternalAsset = (asset: ExternalToken, nativeCurrency: NativeCurrencyKey): FormattedExternalAsset => {
   return {
     ...asset,
     native: {
-      change: asset?.price?.relativeChange24h
-        ? convertAmountToPercentageDisplay(`${asset?.price?.relativeChange24h}`)
-        : '',
-      price: convertAmountAndPriceToNativeDisplay(
-        1,
-        asset?.price?.value || 0,
-        nativeCurrency
-      ),
+      change: asset?.price?.relativeChange24h ? convertAmountToPercentageDisplay(`${asset?.price?.relativeChange24h}`) : '',
+      price: convertAmountAndPriceToNativeDisplay(1, asset?.price?.value || 0, nativeCurrency),
     },
+    icon_url: asset?.iconUrl || undefined,
   };
 };
 
 // Query Function for Token Price
-export async function fetchExternalToken({
-  address,
-  network,
-  currency,
-}: ExternalTokenArgs) {
+export async function fetchExternalToken({ address, network, currency }: ExternalTokenArgs) {
   const chainId = ethereumUtils.getChainIdFromNetwork(network);
   const response = await metadataClient.externalToken({
     address,
@@ -96,19 +71,13 @@ export async function fetchExternalToken({
 
 export async function externalTokenQueryFunction({
   queryKey: [{ address, network, currency }],
-}: QueryFunctionArgs<
-  typeof externalTokenQueryKey
->): Promise<FormattedExternalAsset | null> {
+}: QueryFunctionArgs<typeof externalTokenQueryKey>): Promise<FormattedExternalAsset | null> {
   if (!address || !network) return null;
   return await fetchExternalToken({ address, network, currency });
 }
 
 // Prefetch function for Token Price
-export async function prefetchExternalToken({
-  address,
-  network,
-  currency,
-}: ExternalTokenArgs) {
+export async function prefetchExternalToken({ address, network, currency }: ExternalTokenArgs) {
   await queryClient.prefetchQuery(
     externalTokenQueryKey({ address, network, currency }),
     async () => await fetchExternalToken({ address, network, currency }),
@@ -120,18 +89,10 @@ export async function prefetchExternalToken({
 }
 
 // Query Hook for Token Price
-export function useExternalToken({
-  address,
-  network,
-  currency,
-}: ExternalTokenArgs) {
-  return useQuery(
-    externalTokenQueryKey({ address, network, currency }),
-    externalTokenQueryFunction,
-    {
-      staleTime: EXTERNAL_TOKEN_STALE_TIME,
-      cacheTime: EXTERNAL_TOKEN_CACHE_TIME,
-      enabled: !!address && !!network,
-    }
-  );
+export function useExternalToken({ address, network, currency }: ExternalTokenArgs) {
+  return useQuery(externalTokenQueryKey({ address, network, currency }), externalTokenQueryFunction, {
+    staleTime: EXTERNAL_TOKEN_STALE_TIME,
+    cacheTime: EXTERNAL_TOKEN_CACHE_TIME,
+    enabled: !!address && !!network,
+  });
 }
