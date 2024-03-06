@@ -683,6 +683,8 @@
         "showcase": "Showcase",
         "toast_added_to_showcase": "Added to showcase",
         "toast_removed_from_showcase": "Removed from showcase",
+        "refreshing": "Refreshing metadata...",
+        "reported": "Reported as spam",
         "twitter": "Twitter",
         "view_all_with_property": "View All with Property",
         "view_collection": "View Collection",
@@ -692,6 +694,7 @@
         "view_on_platform": "View on %{platform}",
         "view_on_web": "View on Web",
         "refresh": "Refresh Metadata",
+        "report": "Report as Spam",
         "hide": "Hide",
         "unhide": "Unhide"
       }

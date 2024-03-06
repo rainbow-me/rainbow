@@ -144,3 +144,36 @@ export async function refreshNFTContractMetadata(nft: UniqueAsset) {
     }
   }
 }
+
+/**
+ * Report an nft as spam to SimpleHash
+ * @param nft
+ */
+export async function reportNFT(nft: UniqueAsset) {
+  const chain = nft.isPoap ? SimpleHashChain.Gnosis : getSimpleHashChainFromNetwork(nft.network);
+
+  if (!chain) {
+    logger.error(new RainbowError(`reportNFT: no SimpleHash chain for network: ${nft.network}`));
+  }
+
+  try {
+    await nftApi.post(
+      '/nfts/report/spam',
+      {
+        contract_address: nft.asset_contract.address,
+        chain_id: chain,
+        token_id: nft.id,
+        event_type: 'mark_as_spam',
+      },
+      {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'x-api-key': NFT_API_KEY,
+        },
+      }
+    );
+  } catch {
+    logger.error(new RainbowError(`reportNFT: failed to report NFT ${nft.asset_contract.address} #${nft.id} as spam to SimpleHash`));
+  }
+}
