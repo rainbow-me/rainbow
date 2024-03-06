@@ -174,6 +174,11 @@ const BottomRow = React.memo(function BottomRow({
     tag = transaction.description;
   }
 
+  if (transaction?.type === 'mint') {
+    const inAsset = transaction?.changes?.find(a => a?.direction === 'in')?.asset;
+    description = inAsset?.name || '';
+  }
+
   if (['wrap', 'unwrap', 'swap'].includes(transaction?.type)) {
     const inAsset = transaction?.changes?.find(a => a?.direction === 'in')?.asset;
     const outAsset = transaction?.changes?.find(a => a?.direction === 'out')?.asset;
