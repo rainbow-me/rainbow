@@ -12,9 +12,13 @@ import { CardSize } from '../unique-token/CardSize';
 import { ChainBadge } from '../coin-icon';
 import { Network } from '@/networks/types';
 import { address } from '@/utils/abbreviations';
-import { Colors } from '@/styles';
 import { TransactionType } from '@/resources/transactions/types';
-import { convertAmountAndPriceToNativeDisplay, convertAmountToBalanceDisplay, greaterThan } from '@/helpers/utilities';
+import {
+  convertAmountAndPriceToNativeDisplay,
+  convertAmountToBalanceDisplay,
+  convertRawAmountToBalance,
+  greaterThan,
+} from '@/helpers/utilities';
 import { TwoCoinsIcon } from '../coin-icon/TwoCoinsIcon';
 import Spinner from '../Spinner';
 import * as lang from '@/languages';
@@ -24,7 +28,13 @@ export const getApprovalLabel = ({ approvalAmount, asset, type }: Pick<RainbowTr
   if (!approvalAmount || !asset) return;
   if (approvalAmount === 'UNLIMITED') return lang.t(lang.l.transactions.approvals.unlimited);
   if (type === 'revoke') return lang.t(lang.l.transactions.approvals.no_allowance);
-  return `${approvalAmount} ${asset.symbol}`;
+  const amountDisplay = convertRawAmountToBalance(
+    approvalAmount,
+    { decimals: asset?.decimals, symbol: asset?.symbol },
+    undefined,
+    true
+  )?.display;
+  return amountDisplay || '';
 };
 
 const approvalTypeValues = (transaction: RainbowTransaction) => {
