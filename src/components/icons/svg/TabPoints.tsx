@@ -1,8 +1,9 @@
 import React from 'react';
 import { Path } from 'react-native-svg';
 import Svg from '../Svg';
+import { globalColors } from '@/design-system';
 
-const TabPoints = ({ colors = undefined, color = colors.black, size = 28 }) => {
+export const TabPoints = ({ color = globalColors.grey100, size = 28 }: { color: string; size: number }) => {
   return (
     <Svg height={size} viewBox="0 0 28 28" width={size}>
       <Path
@@ -14,5 +15,3 @@ const TabPoints = ({ colors = undefined, color = colors.black, size = 28 }) => {
     </Svg>
   );
 };
-
-export default TabPoints;
