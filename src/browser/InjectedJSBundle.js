@@ -46268,7 +46268,7 @@
           available: 'undefined' != typeof window,
           name: 'webviewMessenger',
           send: async (t, e, { id: r } = {}) => (
-            window.postMessage({ topic: `> ${t}`, payload: e, id: r }, '*'),
+            window.ReactNativeWebView.postMessage(JSON.stringify({ topic: `> ${t}`, payload: e, id: r }), '*'),
             new Promise((e, i) => {
               const n = o => {
                 if (
@@ -46301,7 +46301,7 @@
                 i = t;
               }
               const o = r.data.topic.replace('>', '<');
-              window.ReactNativeWebView.postMessage({ topic: o, payload: { error: i, response: n }, id: r.data.id });
+              window.ReactNativeWebView.postMessage(JSON.stringify({ topic: o, payload: { error: i, response: n }, id: r.data.id }));
             };
             return window.addEventListener('message', r, !1), () => window.removeEventListener('message', r);
           },

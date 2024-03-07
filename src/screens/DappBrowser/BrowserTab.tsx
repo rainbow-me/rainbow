@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Box, globalColors, useColorMode } from '@/design-system';
-import { useDimensions } from '@/hooks';
+import { useAccountSettings, useDimensions } from '@/hooks';
 import { AnimatePresence, MotiView } from 'moti';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -88,6 +88,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
   } = useBrowserContext();
   const { colorMode } = useColorMode();
   const { width: deviceWidth } = useDimensions();
+  const { accountAddress } = useAccountSettings();
 
   const messengers = useRef<any[]>([]);
 
@@ -266,6 +267,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
 
   const handleMessage = useCallback(
     (event: WebViewMessageEvent) => {
+      console.log('App received messsage from the webview', event.nativeEvent.data);
       if (!isActiveTab) return;
       const data = event.nativeEvent.data as any;
       try {
@@ -280,8 +282,15 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
           messengers.current.forEach((m: any) => {
             const messengerUrlOrigin = new URL(m.url).origin;
             if (messengerUrlOrigin === origin) {
-              console.log('[BROWSER]: received message', parsedData.topic, parsedData.payload);
-              m.listeners[parsedData.topic]?.(parsedData.payload);
+              console.log('[BROWSER]: received message', parsedData);
+              if (parsedData.payload.method === 'eth_requestAccounts') {
+                console.log('replying...');
+                const genericTopic = parsedData.topic.replace('> ', '');
+                m.reply(genericTopic, async () => {
+                  return [accountAddress];
+                });
+                m.listeners[genericTopic]?.({ data: parsedData });
+              }
             }
           });
         }
@@ -289,7 +298,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
         // eslint-disable-next-line no-empty
       } catch (e) {}
     },
-    [isActiveTab]
+    [accountAddress, isActiveTab]
   );
 
   const handleOnLoadStart = useCallback(
@@ -308,10 +317,10 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
       const m = messengers.current.find(m => {
         return m.url === new URL(tabStates[tabIndex].url).origin && m.tabId === getTabId(tabIndex, tabStates[tabIndex].url);
       });
-      if (m) {
-        console.log('[BROWSER]: sending hello from app to webview');
-        m.send('ping', { message: 'hello' });
-      }
+      // if (m) {
+      //   console.log('[BROWSER]: sending hello from app to webview');
+      //   m.send('ping', { message: 'hello' });
+      // }
     },
     [tabIndex, tabStates]
   );
@@ -376,6 +385,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
                 }
               >
                 <WebView
+                  webviewDebuggingEnabled={true}
                   injectedJavaScriptBeforeContentLoaded={injectedJS}
                   allowsInlineMediaPlayback
                   allowsBackForwardNavigationGestures

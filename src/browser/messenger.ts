@@ -160,7 +160,9 @@ export const messenger = createMessenger({
   name: 'webviewMessenger',
   async send(topic, payload, { id } = {}) {
     // Since the window messenger cannot reply asynchronously, we must include the direction in our message ('> {topic}')...
-    window.postMessage({ topic: `> ${topic}`, payload, id }, '*');
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    window.ReactNativeWebView.postMessage(JSON.stringify({ topic: `> ${topic}`, payload, id }), '*');
     // ... and also set up an event listener to listen for the response ('< {topic}').
     return new Promise((resolve, reject) => {
       const listener = (event: any) => {
@@ -198,11 +200,13 @@ export const messenger = createMessenger({
       const repliedTopic = event.data.topic.replace('>', '<');
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      window.ReactNativeWebView.postMessage({
-        topic: repliedTopic,
-        payload: { error, response },
-        id: event.data.id,
-      });
+      window.ReactNativeWebView.postMessage(
+        JSON.stringify({
+          topic: repliedTopic,
+          payload: { error, response },
+          id: event.data.id,
+        })
+      );
     };
     window.addEventListener('message', listener, false);
     return () => window.removeEventListener('message', listener);
