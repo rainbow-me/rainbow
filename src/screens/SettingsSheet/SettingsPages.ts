@@ -3,7 +3,7 @@ import lang from 'i18n-js';
 import Routes from '@/navigation/routesNames';
 
 import AppIconSection from './components/AppIconSection';
-import BackupSection from './components/Backups/WalletsAndBackup';
+import WalletsAndBackup from './components/Backups/WalletsAndBackup';
 import CurrencySection from './components/CurrencySection';
 import LanguageSection from './components/LanguageSection';
 import DevSection from './components/DevSection';
@@ -18,7 +18,7 @@ export const SettingsPages = {
     key: Routes.SETTINGS_SECTION_APP_ICON,
   },
   backup: {
-    component: BackupSection,
+    component: WalletsAndBackup,
     getTitle: () => lang.t('settings.backup'),
     key: Routes.SETTINGS_SECTION_BACKUP,
   },
