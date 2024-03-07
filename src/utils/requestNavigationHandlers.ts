@@ -8,13 +8,14 @@ import { WalletconnectResultType, walletConnectRemovePendingRedirect, walletConn
 import { InteractionManager } from 'react-native';
 import { SEND_TRANSACTION } from './signingMethods';
 import { handleSessionRequestResponse } from '@/walletConnect';
+import ethereumUtils from './ethereumUtils';
 
 export const handleWalletConnectRequest = async (request: RequestData) => {
   const pendingRedirect = store.getState().walletconnect.pendingRedirect;
   const walletConnector = store.getState().walletconnect.walletConnectors[request.peerId];
 
   // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
-  const network = request?.walletConnectV2RequestValues?.chainId || walletConnector?._chainId;
+  const network = ethereumUtils.getNetworkFromChainId(request?.walletConnectV2RequestValues?.chainId || walletConnector?._chainId);
   // @ts-expect-error Property '_accounts' is private and only accessible within class 'Connector'.ts(2341)
   const address = request?.walletConnectV2RequestValues?.address || walletConnector?._accounts?.[0];
 

@@ -163,9 +163,6 @@ export const SignTransactionSheet = () => {
   const [isBalanceEnough, setIsBalanceEnough] = useState<boolean>();
   const [nonceForDisplay, setNonceForDisplay] = useState<string>();
 
-  const isFocused = useIsFocused();
-  const dispatch = useDispatch();
-
   const [nativeAsset, setNativeAsset] = useState<ParsedAddressAsset | null>(null);
   const formattedDappUrl = useMemo(() => {
     try {
@@ -241,7 +238,7 @@ export const SignTransactionSheet = () => {
     async (data: string) => {
       const methodSignaturePrefix = data.substr(0, 10);
       try {
-        const { name } = await methodRegistryLookupAndParse(methodSignaturePrefix, getNetworkObj(currentNetwork!).id);
+        const { name } = await methodRegistryLookupAndParse(methodSignaturePrefix, getNetworkObj(currentNetwork).id);
         if (name) {
           setMethodName(name);
         }
@@ -350,8 +347,9 @@ export const SignTransactionSheet = () => {
 
   useEffect(() => {
     (async () => {
-      if (currentAddress && !isMessageRequest && !nonceForDisplay) {
+      if (!isMessageRequest && !nonceForDisplay) {
         try {
+          console.log({ currentAddress, currentNetwork });
           const nonce = await getNextNonce({ address: currentAddress, network: currentNetwork });
           if (nonce || nonce === 0) {
             const nonceAsString = nonce.toString();
@@ -630,10 +628,10 @@ export const SignTransactionSheet = () => {
       if (sendInsteadOfSign && sendResult?.hash) {
         txDetails = {
           status: 'pending',
-          asset: nativeAsset || displayDetails?.request?.asset,
+          asset: displayDetails?.request?.asset || nativeAsset,
           contract: {
-            name: displayDetails.dappName,
-            iconUrl: displayDetails.dappIcon,
+            name: transactionDetails.dappName,
+            iconUrl: transactionDetails.dappIcon,
           },
           data: sendResult.data,
           from: displayDetails?.request?.from,
@@ -656,8 +654,8 @@ export const SignTransactionSheet = () => {
         }
       }
       analytics.track('Approved WalletConnect transaction request', {
-        dappName: displayDetails.dappName,
-        dappUrl: displayDetails.dappUrl,
+        dappName: transactionDetails.dappName,
+        dappUrl: transactionDetails.dappUrl,
         isHardwareWallet: accountInfo.isHardwareWallet,
         network: currentNetwork,
       });
@@ -695,9 +693,10 @@ export const SignTransactionSheet = () => {
   }, [
     transactionDetails.payload.method,
     transactionDetails.displayDetails,
-    transactionDetails?.dappName,
+    transactionDetails.dappName,
+    transactionDetails.dappUrl,
+    transactionDetails.dappIcon,
     transactionDetails?.dappScheme,
-    transactionDetails?.dappUrl,
     req,
     currentNetwork,
     selectedGasFee,
@@ -822,7 +821,7 @@ export const SignTransactionSheet = () => {
 
                 <Box style={{ gap: 14, zIndex: 2 }}>
                   <SimulationCard
-                    currentNetwork={currentNetwork!}
+                    currentNetwork={currentNetwork}
                     expandedCardBottomInset={expandedCardBottomInset}
                     isBalanceEnough={isBalanceEnough}
                     isPersonalSign={isPersonalSign}
@@ -841,7 +840,7 @@ export const SignTransactionSheet = () => {
                     />
                   ) : (
                     <DetailsCard
-                      currentNetwork={currentNetwork!}
+                      currentNetwork={currentNetwork}
                       expandedCardBottomInset={expandedCardBottomInset}
                       isBalanceEnough={isBalanceEnough}
                       isLoading={isLoading}
@@ -900,7 +899,7 @@ export const SignTransactionSheet = () => {
                                     </Bleed>
                                     <Text color="labelQuaternary" size="13pt" weight="semibold">
                                       {`${walletBalance?.display} ${i18n.t(i18n.l.walletconnect.simulation.profile_section.on_network, {
-                                        network: getNetworkObj(currentNetwork!)?.name,
+                                        network: getNetworkObj(currentNetwork)?.name,
                                       })}`}
                                     </Text>
                                   </Inline>
@@ -1205,7 +1204,7 @@ const SimulationCard = ({
               <Text color="labelQuaternary" size="13pt" weight="semibold">
                 {i18n.t(i18n.l.walletconnect.simulation.simulation_card.messages.need_more_native, {
                   symbol: walletBalance?.symbol,
-                  network: getNetworkObj(currentNetwork!).name,
+                  network: getNetworkObj(currentNetwork).name,
                 })}
               </Text>
             ) : (
