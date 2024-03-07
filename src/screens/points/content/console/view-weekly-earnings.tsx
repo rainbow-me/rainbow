@@ -38,9 +38,14 @@ export const ViewWeeklyEarnings = () => {
       ?.filter(difference => difference && difference.type === 'retroactive')
       .reduce((sum, difference) => sum + (difference?.earnings?.total ?? 0), 0) || 0;
 
-  const referral =
+  const existingReferrals =
     points?.points?.user.stats.last_airdrop.differences
-      ?.filter(difference => difference && difference.type === 'referral')
+      ?.filter(difference => difference && difference.type === 'referral' && difference.group_id === 'referral_activity')
+      .reduce((sum, difference) => sum + (difference?.earnings?.total ?? 0), 0) || 0;
+
+  const newReferrals =
+    points?.points?.user.stats.last_airdrop.differences
+      ?.filter(difference => difference && difference.type === 'referral' && difference.group_id === 'new_referrals')
       .reduce((sum, difference) => sum + (difference?.earnings?.total ?? 0), 0) || 0;
 
   const transaction =
@@ -48,12 +53,12 @@ export const ViewWeeklyEarnings = () => {
       ?.filter(difference => difference && difference.type === 'transaction')
       .reduce((sum, difference) => sum + (difference?.earnings?.total ?? 0), 0) || 0;
 
-  const redemption =
+  const bonus =
     points?.points?.user.stats.last_airdrop.differences
       ?.filter(difference => difference && difference.type === 'redemption')
       .reduce((sum, difference) => sum + (difference?.earnings?.total ?? 0), 0) || 0;
 
-  const totalWeeklyEarnings = retroactive + transaction + referral + redemption;
+  const totalWeeklyEarnings = retroactive + transaction + existingReferrals + newReferrals + bonus;
 
   return (
     <Box height="full" justifyContent="space-between">
@@ -108,6 +113,23 @@ export const ViewWeeklyEarnings = () => {
                 enableHapticTyping
                 textAlign="right"
                 textContent={`+ ${abbreviateNumber(retroactive)}`}
+                typingSpeed={100}
+              />
+            </Line>
+          )}
+          {retroactive !== 0 && (
+            <Line alignHorizontal="justify">
+              <AnimatedText
+                color={rainbowColors.red}
+                enableHapticTyping
+                textContent={`${i18n.t(i18n.l.points.console.view_weekly_earnings_bonus_points)}:`}
+              />
+              <AnimatedText
+                color={rainbowColors.purple}
+                delayStart={1000}
+                enableHapticTyping
+                textAlign="right"
+                textContent={`+ ${abbreviateNumber(bonus)}`}
                 typingSpeed={100}
               />
             </Line>
