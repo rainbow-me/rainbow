@@ -260,58 +260,63 @@ index 5e0f521..bac18f7 100644
 +  }
  }
 diff --git a/node_modules/react-native-gesture-handler/src/web/handlers/FlingGestureHandler.ts b/node_modules/react-native-gesture-handler/src/web/handlers/FlingGestureHandler.ts
-index 38a0a7a..4df0424 100644
+index 38a0a7a..f767af3 100644
 --- a/node_modules/react-native-gesture-handler/src/web/handlers/FlingGestureHandler.ts
 +++ b/node_modules/react-native-gesture-handler/src/web/handlers/FlingGestureHandler.ts
-@@ -47,6 +47,7 @@ export default class FlingGestureHandler extends GestureHandler {
+@@ -47,7 +47,7 @@ export default class FlingGestureHandler extends GestureHandler {
  
      this.maxNumberOfPointersSimultaneously = 1;
  
-+    // @ts-expect-errors
-     this.delayTimeout = setTimeout(() => this.fail(), this.maxDurationMs);
+-    this.delayTimeout = setTimeout(() => this.fail(), this.maxDurationMs);
++    this.delayTimeout = setTimeout(() => this.fail(), this.maxDurationMs) as unknown as number;
    }
  
+   private tryEndFling(): boolean {
 diff --git a/node_modules/react-native-gesture-handler/src/web/handlers/LongPressGestureHandler.ts b/node_modules/react-native-gesture-handler/src/web/handlers/LongPressGestureHandler.ts
-index 7707b90..4a9b367 100644
+index 7707b90..cc68482 100644
 --- a/node_modules/react-native-gesture-handler/src/web/handlers/LongPressGestureHandler.ts
 +++ b/node_modules/react-native-gesture-handler/src/web/handlers/LongPressGestureHandler.ts
-@@ -102,6 +102,7 @@ export default class LongPressGestureHandler extends GestureHandler {
- 
-   private tryActivate(): void {
+@@ -104,7 +104,7 @@ export default class LongPressGestureHandler extends GestureHandler {
      if (this.minDurationMs > 0) {
-+      // @ts-expect-errors
        this.activationTimeout = setTimeout(() => {
          this.activate();
-       }, this.minDurationMs);
+-      }, this.minDurationMs);
++      }, this.minDurationMs) as unknown as number;
+     } else if (this.minDurationMs === 0) {
+       this.activate();
+     }
 diff --git a/node_modules/react-native-gesture-handler/src/web/handlers/PanGestureHandler.ts b/node_modules/react-native-gesture-handler/src/web/handlers/PanGestureHandler.ts
-index 4334740..e90e840 100644
+index 4334740..69f8cd0 100644
 --- a/node_modules/react-native-gesture-handler/src/web/handlers/PanGestureHandler.ts
 +++ b/node_modules/react-native-gesture-handler/src/web/handlers/PanGestureHandler.ts
-@@ -442,6 +442,7 @@ export default class PanGestureHandler extends GestureHandler {
-       this.begin();
- 
+@@ -444,7 +444,7 @@ export default class PanGestureHandler extends GestureHandler {
        if (this.activateAfterLongPress > 0) {
-+        // @ts-expect-errors
          this.activationTimeout = setTimeout(() => {
            this.activate();
-         }, this.activateAfterLongPress);
+-        }, this.activateAfterLongPress);
++        }, this.activateAfterLongPress) as unknown as number;
+       }
+     } else {
+       this.velocityX = this.tracker.getVelocityX(event.pointerId);
 diff --git a/node_modules/react-native-gesture-handler/src/web/handlers/TapGestureHandler.ts b/node_modules/react-native-gesture-handler/src/web/handlers/TapGestureHandler.ts
-index 7aa52c3..53b2287 100644
+index 7aa52c3..9b11e69 100644
 --- a/node_modules/react-native-gesture-handler/src/web/handlers/TapGestureHandler.ts
 +++ b/node_modules/react-native-gesture-handler/src/web/handlers/TapGestureHandler.ts
-@@ -87,6 +87,7 @@ export default class TapGestureHandler extends GestureHandler {
+@@ -87,7 +87,7 @@ export default class TapGestureHandler extends GestureHandler {
    private startTap(): void {
      this.clearTimeouts();
  
-+    // @ts-expect-errors
-     this.waitTimeout = setTimeout(() => this.fail(), this.maxDurationMs);
+-    this.waitTimeout = setTimeout(() => this.fail(), this.maxDurationMs);
++    this.waitTimeout = setTimeout(() => this.fail(), this.maxDurationMs) as unknown as number;
    }
  
-@@ -99,6 +100,7 @@ export default class TapGestureHandler extends GestureHandler {
+   private endTap(): void {
+@@ -99,7 +99,7 @@ export default class TapGestureHandler extends GestureHandler {
      ) {
        this.activate();
      } else {
-+      // @ts-expect-errors
-       this.delayTimeout = setTimeout(() => this.fail(), this.maxDelayMs);
+-      this.delayTimeout = setTimeout(() => this.fail(), this.maxDelayMs);
++      this.delayTimeout = setTimeout(() => this.fail(), this.maxDelayMs) as unknown as number;
      }
    }
+ 
