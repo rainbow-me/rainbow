@@ -59,7 +59,6 @@ import {
 const getNetworkNativeAsset = (network: Network): ParsedAddressAsset | undefined => {
   const nativeAssetAddress = getNetworkObj(network).nativeCurrency.address;
   const nativeAssetUniqueId = getUniqueId(nativeAssetAddress, network);
-
   return getAccountAsset(nativeAssetUniqueId);
 };
 
@@ -72,10 +71,11 @@ export const getNativeAssetForNetwork = async (network: Network, address: Ethere
   // If the asset is on a different wallet, or not available in this wallet
   if (differentWallet || !nativeAsset) {
     const mainnetAddress = getNetworkObj(network)?.nativeCurrency?.mainnetAddress || ETH_ADDRESS;
+    const nativeAssetAddress = getNetworkObj(network).nativeCurrency.address;
 
     const externalAsset = await queryClient.fetchQuery(
-      externalTokenQueryKey({ address, network, currency: nativeCurrency }),
-      async () => fetchExternalToken({ address, network, currency: nativeCurrency }),
+      externalTokenQueryKey({ address: nativeAssetAddress, network, currency: nativeCurrency }),
+      async () => fetchExternalToken({ address: nativeAssetAddress, network, currency: nativeCurrency }),
       {
         staleTime: 60000,
       }
