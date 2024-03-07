@@ -1,5 +1,5 @@
-import { createClient, SegmentClient } from '@segment/analytics-react-native';
-import { REACT_APP_SEGMENT_API_WRITE_KEY, LOG_DEBUG } from 'react-native-dotenv';
+import rudderClient from '@rudderstack/rudder-sdk-react-native';
+import { REACT_NATIVE_RUDDERSTACK_WRITE_KEY, RUDDERSTACK_DATA_PLANE_URL } from 'react-native-dotenv';
 
 import { EventProperties, event } from '@/analytics/event';
 import { UserProperties } from '@/analytics/userProperties';
@@ -7,21 +7,15 @@ import { logger } from '@/logger';
 import { device } from '@/storage';
 
 export class Analytics {
-  client: SegmentClient;
+  client: any;
   currentWalletAddressHash?: string;
   deviceId?: string;
   event = event;
   disabled = !!device.get(['doNotTrack']);
 
   constructor() {
-    this.client = createClient({
-      debug: (LOG_DEBUG || '').includes(logger.DebugContext.analytics),
-      trackAppLifecycleEvents: true,
-      trackDeepLinks: true,
-      writeKey: REACT_APP_SEGMENT_API_WRITE_KEY,
-    });
-
-    logger.debug(`Segment initialized`);
+    this.client = rudderClient;
+    logger.debug(`Analytics client initialized`);
   }
 
   /**
@@ -62,6 +56,12 @@ export class Analytics {
     return {
       walletAddressHash: this.currentWalletAddressHash,
     };
+  }
+
+  async initializeRudderstack() {
+    await rudderClient.setup(REACT_NATIVE_RUDDERSTACK_WRITE_KEY, {
+      dataPlaneUrl: RUDDERSTACK_DATA_PLANE_URL,
+    });
   }
 
   /**
@@ -106,9 +106,4 @@ export const analyticsV2 = new Analytics();
 /**
  * @deprecated Use the `analyticsV2` export from this same file
  */
-export const analytics = createClient({
-  debug: false,
-  trackAppLifecycleEvents: true,
-  trackDeepLinks: true,
-  writeKey: REACT_APP_SEGMENT_API_WRITE_KEY,
-});
+export const analytics = rudderClient;

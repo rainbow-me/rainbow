@@ -120,6 +120,7 @@ class OldApp extends Component {
     this.setState({ eventSubscription: eventSub });
     appEvents.on('transactionConfirmed', this.handleTransactionConfirmed);
 
+    await analyticsV2.initializeRudderstack();
     await this.setupDeeplinking();
 
     PerformanceTracking.finishMeasuring(PerformanceMetrics.loadRootAppComponent);
