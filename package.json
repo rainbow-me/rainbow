@@ -294,7 +294,7 @@
     "use-deep-compare": "1.1.0",
     "use-memo-one": "1.1.1",
     "util": "0.10.4",
-    "viem": "1.6.0",
+    "viem": "2.7.20",
     "vm-browserify": "0.0.4",
     "w2t": "3.0.2",
     "zustand": "4.5.0"
