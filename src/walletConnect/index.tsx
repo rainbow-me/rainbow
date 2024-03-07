@@ -42,6 +42,7 @@ import { RainbowNetworks } from '@/networks';
 import { uniq } from 'lodash';
 import { fetchDappMetadata } from '@/resources/metadata/dapp';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
+import { handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
 
 const SUPPORTED_EVM_CHAIN_IDS = RainbowNetworks.filter(({ features }) => features.walletconnect).map(({ id }) => id);
 
@@ -712,10 +713,7 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
 
       logger.debug(`WC v2: navigating to CONFIRM_REQUEST sheet`, {}, logger.DebugContext.walletconnect);
 
-      Navigation.handleAction(Routes.CONFIRM_REQUEST, {
-        openAutomatically: true,
-        transactionDetails: request,
-      });
+      handleWalletConnectRequest(request);
 
       analytics.track(analytics.event.wcShowingSigningRequest, {
         dappName: request.dappName,

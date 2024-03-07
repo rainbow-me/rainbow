@@ -141,9 +141,11 @@ export const SignTransactionSheet = () => {
   const {
     callback,
     transactionDetails,
-    onSucess: onSucessCallback,
+    onSuccess: onSuccessCallback,
     onCancel: onCancelCallback,
     onCloseScreen: onCloseScreenCallback,
+    network: currentNetwork,
+    address: currentAddress,
   } = routeParams;
 
   const isMessageRequest = isMessageDisplayType(transactionDetails.payload.method);
@@ -153,13 +155,7 @@ export const SignTransactionSheet = () => {
   const label = useForegroundColor('label');
   const surfacePrimary = useBackgroundColor('surfacePrimary');
 
-  const walletConnectors = useSelector(({ walletconnect }: AppState) => walletconnect.walletConnectors);
-  const walletConnector = walletConnectors[transactionDetails?.peerId];
-
-  // ^ all of this should be handled in the callbacks and not in the component
-
   const [provider, setProvider] = useState<StaticJsonRpcProvider | null>(null);
-  const [currentNetwork, setCurrentNetwork] = useState<Network | null>();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const [isLoading, setIsLoading] = useState(!isPersonalSign);
   const [methodName, setMethodName] = useState<string | null>(null);
@@ -216,15 +212,7 @@ export const SignTransactionSheet = () => {
     // use the default
     let gas = txPayload.gasLimit || txPayload.gas;
 
-    // sometimes provider is undefined, this is hack to ensure its defined
-    const localCurrentNetwork = ethereumUtils.getNetworkFromChainId(
-      Number(
-        transactionDetails?.walletConnectV2RequestValues?.chainId ||
-          // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
-          walletConnector?._chainId
-      )
-    );
-    const provider = await getProviderForNetwork(localCurrentNetwork);
+    const provider = await getProviderForNetwork(currentNetwork);
     try {
       // attempt to re-run estimation
       logger.debug('WC: Estimating gas limit', { gas }, logger.DebugContext.walletconnect);
@@ -247,14 +235,7 @@ export const SignTransactionSheet = () => {
         updateTxFee(gas, null);
       }
     }
-  }, [
-    currentNetwork,
-    req,
-    transactionDetails?.walletConnectV2RequestValues?.chainId,
-    updateTxFee,
-    // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
-    walletConnector?._chainId,
-  ]);
+  }, [currentNetwork, req, updateTxFee]);
 
   const fetchMethodName = useCallback(
     async (data: string) => {
@@ -334,72 +315,44 @@ export const SignTransactionSheet = () => {
   }, [isMessageRequest, isSufficientGas, currentNetwork, selectedGasFee, walletBalance, req]);
 
   const accountInfo = useMemo(() => {
-    // TODO where do we get address for sign/send transaction?
-    const address =
-      transactionDetails?.walletConnectV2RequestValues?.address ||
-      // @ts-expect-error Property '_accounts' is private and only accessible within class 'Connector'.ts(2341)
-      walletConnector?._accounts?.[0];
-    const selectedWallet = findWalletWithAccount(wallets!, address);
-    const profileInfo = getAccountProfileInfo(selectedWallet, walletNames, address);
+    const selectedWallet = findWalletWithAccount(wallets!, currentAddress);
+    const profileInfo = getAccountProfileInfo(selectedWallet, walletNames, currentAddress);
     return {
       ...profileInfo,
-      address,
+      address: currentAddress,
       isHardwareWallet: !!selectedWallet?.deviceId,
     };
-  }, [
-    transactionDetails?.walletConnectV2RequestValues?.address,
-    // @ts-expect-error Property '_accounts' is private and only accessible within class 'Connector'.ts(2341)
-    walletConnector?._accounts,
-    wallets,
-    walletNames,
-  ]);
-
-  useEffect(() => {
-    setCurrentNetwork(
-      ethereumUtils.getNetworkFromChainId(
-        Number(
-          transactionDetails?.walletConnectV2RequestValues?.chainId ||
-            // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
-            walletConnector?._chainId
-        )
-      )
-    );
-  }, [
-    transactionDetails?.walletConnectV2RequestValues?.chainId,
-    // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
-    walletConnector?._chainId,
-  ]);
+  }, [wallets, currentAddress, walletNames]);
 
   useEffect(() => {
     const initProvider = async () => {
       let p;
+      // check on this o.O
       if (currentNetwork === Network.mainnet) {
         p = await getFlashbotsProvider();
       } else {
-        p = await getProviderForNetwork(currentNetwork!);
+        p = await getProviderForNetwork(currentNetwork);
       }
 
       setProvider(p);
     };
-    currentNetwork && initProvider();
+    initProvider();
   }, [currentNetwork, setProvider]);
 
   useEffect(() => {
     (async () => {
-      if (currentNetwork) {
-        const asset = await ethereumUtils.getNativeAssetForNetwork(currentNetwork!, accountInfo.address);
-        if (asset) {
-          provider && setNativeAsset(asset);
-        }
+      const asset = await ethereumUtils.getNativeAssetForNetwork(currentNetwork, accountInfo.address);
+      if (asset) {
+        provider && setNativeAsset(asset);
       }
     })();
   }, [accountInfo.address, currentNetwork, provider]);
 
   useEffect(() => {
     (async () => {
-      if (accountInfo.address && currentNetwork && !isMessageRequest && !nonceForDisplay) {
+      if (currentAddress && !isMessageRequest && !nonceForDisplay) {
         try {
-          const nonce = await getNextNonce({ address: accountInfo.address, network: currentNetwork });
+          const nonce = await getNextNonce({ address: currentAddress, network: currentNetwork });
           if (nonce || nonce === 0) {
             const nonceAsString = nonce.toString();
             setNonceForDisplay(nonceAsString);
@@ -415,11 +368,7 @@ export const SignTransactionSheet = () => {
   useEffect(() => {
     const timeout = setTimeout(async () => {
       try {
-        const chainId = Number(
-          transactionDetails?.walletConnectV2RequestValues?.chainId ||
-            // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
-            walletConnector?._chainId
-        );
+        const chainId = ethereumUtils.getChainIdFromNetwork(currentNetwork);
         let simulationData;
         if (isMessageRequest) {
           // Message Signing
@@ -481,18 +430,7 @@ export const SignTransactionSheet = () => {
     return () => {
       clearTimeout(timeout);
     };
-  }, [
-    accountAddress,
-    currentNetwork,
-    isMessageRequest,
-    isPersonalSign,
-    req,
-    request.message,
-    simulationUnavailable,
-    transactionDetails,
-    // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
-    walletConnector?._chainId,
-  ]);
+  }, [accountAddress, currentNetwork, isMessageRequest, isPersonalSign, req, request.message, simulationUnavailable, transactionDetails]);
 
   const closeScreen = useCallback(
     (canceled: boolean) => {
@@ -531,16 +469,13 @@ export const SignTransactionSheet = () => {
         closeScreen(true);
       }
     },
-    [accountInfo.isHardwareWallet, callback, closeScreen, transactionDetails?.payload?.method]
+    [accountInfo.isHardwareWallet, callback, closeScreen, onCancelCallback, transactionDetails?.payload?.method]
   );
 
   const handleSignMessage = useCallback(async () => {
     const message = transactionDetails?.payload?.params.find((p: string) => !isAddress(p));
     let response = null;
 
-    if (!currentNetwork) {
-      return;
-    }
     const provider = await getProviderForNetwork(currentNetwork);
     if (!provider) {
       return;
@@ -569,8 +504,10 @@ export const SignTransactionSheet = () => {
         isHardwareWallet: accountInfo.isHardwareWallet,
         network: currentNetwork,
       });
+      console.log('response', response);
 
-      onSucessCallback?.(response.result);
+      console.log('pepe: ', !!onSuccessCallback);
+      onSuccessCallback?.(response.result);
 
       // where is this being used?
       if (callback) {
@@ -588,7 +525,7 @@ export const SignTransactionSheet = () => {
     currentNetwork,
     accountInfo.address,
     accountInfo.isHardwareWallet,
-    onSucessCallback,
+    onSuccessCallback,
     callback,
     closeScreen,
     onCancel,
@@ -724,19 +661,8 @@ export const SignTransactionSheet = () => {
         isHardwareWallet: accountInfo.isHardwareWallet,
         network: currentNetwork,
       });
-      if (isFocused && transactionDetails?.requestId) {
-        if (transactionDetails?.walletConnectV2RequestValues && sendResult.hash) {
-          await handleSessionRequestResponse(transactionDetails?.walletConnectV2RequestValues, {
-            result: sendResult.hash,
-            error: null,
-          });
-        } else {
-          if (sendResult.hash) {
-            await dispatch(walletConnectSendStatus(transactionDetails?.peerId, transactionDetails?.requestId, { result: sendResult.hash }));
-          }
-        }
-        dispatch(removeRequest(transactionDetails?.requestId));
-      }
+
+      onSuccessCallback?.(sendResult.hash);
 
       closeScreen(false);
       // When the tx is sent from a different wallet,
@@ -769,25 +695,21 @@ export const SignTransactionSheet = () => {
   }, [
     transactionDetails.payload.method,
     transactionDetails.displayDetails,
-    transactionDetails?.requestId,
-    transactionDetails?.walletConnectV2RequestValues,
-    transactionDetails?.peerId,
     transactionDetails?.dappName,
     transactionDetails?.dappScheme,
     transactionDetails?.dappUrl,
     req,
+    currentNetwork,
     selectedGasFee,
     gasLimit,
-    provider,
-    currentNetwork,
     accountInfo.address,
     accountInfo.isHardwareWallet,
+    provider,
     callback,
-    isFocused,
+    onSuccessCallback,
     closeScreen,
     nativeAsset,
     accountAddress,
-    dispatch,
     switchToWalletWithAddress,
     formattedDappUrl,
     onCancel,

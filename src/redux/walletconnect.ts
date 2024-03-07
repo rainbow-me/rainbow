@@ -31,6 +31,7 @@ import { logger, RainbowError } from '@/logger';
 import { IS_DEV, IS_IOS, IS_TEST } from '@/env';
 import { RainbowNetworks } from '@/networks';
 import { Verify } from '@walletconnect/types';
+import { handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
 
 // -- Variables --------------------------------------- //
 let showRedirectSheetThreshold = 300;
@@ -557,10 +558,7 @@ const listenOnNewMessages =
         const { requests: pendingRequests } = getState().requests;
         const request = !pendingRequests[requestId] ? dispatch(addRequestToApprove(clientId, peerId, requestId, payload, peerMeta)) : null;
         if (request) {
-          Navigation.handleAction(Routes.CONFIRM_REQUEST, {
-            openAutomatically: true,
-            transactionDetails: request,
-          });
+          handleWalletConnectRequest(request);
           InteractionManager.runAfterInteractions(() => {
             analytics.track('Showing Walletconnect signing request', {
               dappName,

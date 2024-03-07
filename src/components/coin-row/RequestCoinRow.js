@@ -9,10 +9,9 @@ import { RowWithMargins } from '../layout';
 import { Emoji, Text } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
-import { useNavigation } from '@/navigation';
 import { removeRequest } from '@/redux/requests';
-import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
+import { handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
 
 const getPercentageOfTimeElapsed = (startDate, endDate) => {
   const originalDifference = differenceInMinutes(endDate, startDate);
@@ -50,7 +49,6 @@ const TopRow = ({ expirationColor, expiresAt }) => {
 const RequestCoinRow = ({ item, ...props }) => {
   const buttonRef = useRef();
   const dispatch = useDispatch();
-  const { navigate } = useNavigation();
   const [expiresAt, setExpiresAt] = useState(null);
   const [expirationColor, setExpirationColor] = useState(null);
   const [percentElapsed, setPercentElapsed] = useState(null);
@@ -74,10 +72,8 @@ const RequestCoinRow = ({ item, ...props }) => {
   }, [dispatch, expiresAt, item.requestId]);
 
   const handlePressOpen = useCallback(() => {
-    navigate(Routes.CONFIRM_REQUEST, {
-      transactionDetails: item,
-    });
-  }, [item, navigate]);
+    handleWalletConnectRequest(item);
+  }, [item]);
 
   useEffect(() => {
     handleExpiredRequests();
