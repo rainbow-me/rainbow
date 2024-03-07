@@ -53,6 +53,8 @@ export function getSimpleHashChainFromNetwork(network: Omit<Network, Network.goe
       return SimpleHashChain.Bsc;
     case Network.zora:
       return SimpleHashChain.Zora;
+    case Network.avalanche:
+      return SimpleHashChain.Avalanche;
     default:
       return undefined;
   }
@@ -81,6 +83,8 @@ export function getNetworkFromSimpleHashChain(chain: SimpleHashChain): Network {
       return Network.zora;
     case SimpleHashChain.Base:
       return Network.base;
+    case SimpleHashChain.Avalanche:
+      return Network.avalanche;
     default:
       /*
        * Throws here because according to TS types, we should NEVER hit this
