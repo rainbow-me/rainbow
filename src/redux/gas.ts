@@ -133,6 +133,9 @@ const getUpdatedGasFeeParams = (
     case Network.bsc:
       nativeTokenPriceUnit = ethereumUtils.getBnbPriceUnit();
       break;
+    case Network.avalanche:
+      nativeTokenPriceUnit = ethereumUtils.getAvaxPriceUnit();
+      break;
     default:
       nativeTokenPriceUnit = ethereumUtils.getEthPriceUnit();
       break;
@@ -346,6 +349,25 @@ export const getBaseGasPrices = async () => {
 
   const BasePriceBumpFactor = 1.05;
   const normalGasPrice = toHex(Math.ceil(Number((baseGasPrice.toString(), BasePriceBumpFactor))));
+
+  const priceData = {
+    fast: normalGasPrice,
+    fastWait: 0.34,
+    normal: normalGasPrice,
+    // 20 secs
+    normalWait: 0.34,
+    urgent: normalGasPrice,
+    urgentWait: 0.34,
+  };
+  return priceData;
+};
+
+export const getAvalancheGasPrices = async () => {
+  const provider = await getProviderForNetwork(Network.avalanche);
+  const baseGasPrice = await provider.getGasPrice();
+
+  const AvalanchePriceBumpFactor = 1.05;
+  const normalGasPrice = toHex(Math.ceil(Number((baseGasPrice.toString(), AvalanchePriceBumpFactor))));
 
   const priceData = {
     fast: normalGasPrice,
