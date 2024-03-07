@@ -6,6 +6,7 @@ import { getUrlForTrustIconFallback } from '@/utils';
 
 export const FastSwapCoinIconImage = React.memo(function FastSwapCoinIconImage({
   address,
+  // children,
   disableShadow,
   network,
   shadowColor,
@@ -18,6 +19,7 @@ export const FastSwapCoinIconImage = React.memo(function FastSwapCoinIconImage({
   shadowColor: string;
   size?: number;
 }) {
+  // const { colors } = theme;
   const imageUrl = getUrlForTrustIconFallback(address, network);
 
   return (
@@ -29,10 +31,24 @@ export const FastSwapCoinIconImage = React.memo(function FastSwapCoinIconImage({
         size ? { height: size, width: size } : {},
       ]}
     >
+      {/* {
+        <View
+          style={[
+            sx.fallbackWrapper,
+            size ? { height: size, width: size } : {},
+          ]}
+        >
+          {children()}
+        </View>
+      } */}
       <ImgixImage
         size={size || 40}
         source={{ uri: imageUrl || '' }}
-        style={[sx.coinIconFallback, size ? { height: size, width: size } : {}]}
+        style={[
+          sx.coinIconFallback,
+          // isLoaded && { backgroundColor: colors.white },
+          size ? { height: size, width: size } : {},
+        ]}
       />
     </View>
   );

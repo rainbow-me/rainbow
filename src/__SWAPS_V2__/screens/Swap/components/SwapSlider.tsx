@@ -17,7 +17,6 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { AnimatedText, Bleed, Box, Column, Columns, Inline, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
-import { IS_IOS } from '@/env';
 import { triggerHapticFeedback } from '@/screens/points/constants';
 import { deviceUtils } from '@/utils';
 
@@ -136,20 +135,12 @@ export const SwapSlider = ({
   });
 
   const onSlide = useAnimatedGestureHandler({
-    onStart: (_, ctx: { startX: number }) => {
+    onStart: (event, ctx: { startX: number }) => {
       ctx.startX = x.value;
       pressProgress.value = withSpring(1, sliderConfig);
       inputMethod.value = 'slider';
-
-      // On Android, for some reason waiting until onActive to set isQuoteStale.value = 1
-      // causes the outputAmount text color to break. It's preferable to set it in
-      // onActive, so we're setting it in onStart for Android only. It's possible that
-      // migrating this handler to the RNGH v2 API will remove the need for this.
-      if (!IS_IOS) isQuoteStale.value = 1;
     },
     onActive: (event, ctx: { startX: number }) => {
-      if (IS_IOS) isQuoteStale.value = 1;
-
       const rawX = ctx.startX + event.translationX || 0;
 
       const calculateOvershoot = (distance: number, maxOverscroll: number): number => {
@@ -164,6 +155,8 @@ export const SwapSlider = ({
 
       if (ctx.startX === width && clamp(rawX, 0, width) >= width * 0.995) {
         isQuoteStale.value = 0;
+      } else if (isQuoteStale.value === 0) {
+        isQuoteStale.value = 1;
       }
 
       x.value = clamp(rawX, 0, width);

@@ -434,7 +434,7 @@ export const walletconnectBottomSheetPreset: BottomSheetNavigationOptions = {
 export const swapSheetPreset: BottomSheetNavigationOptions = {
   backdropColor: 'black',
   backdropOpacity: 0.9,
-  enableContentPanningGesture: IS_ANDROID,
+  enableContentPanningGesture: false,
   backdropPressBehavior: 'none',
   height: '100%',
 };

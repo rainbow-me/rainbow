@@ -3,9 +3,8 @@ import { BlurView } from '@react-native-community/blur';
 import MaskedView from '@react-native-masked-view/masked-view';
 import c from 'chroma-js';
 import React, { ReactNode, useMemo } from 'react';
-import { StyleSheet, Text as RNText, ScrollView, TextInput, ViewStyle, StatusBar, Pressable } from 'react-native';
+import { StyleSheet, Text as RNText, ScrollView, TextInput, ViewStyle } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
-import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
   AnimateStyle,
@@ -104,7 +103,6 @@ import {
 import { useAnimatedSwapStyles, useSwapInputsController, useSwapNavigation, useSwapTextStyles } from './hooks/swapHooks';
 import { inputKeys } from './types';
 import { getHighContrastColor, getTintedBackgroundColor, opacity } from './utils';
-import { IS_ANDROID, IS_IOS } from '@/env';
 
 /** README
  * This prototype is largely driven by Reanimated and Gesture Handler, which
@@ -146,7 +144,7 @@ import { IS_ANDROID, IS_IOS } from '@/env';
 export function SwapScreen() {
   const { accountSymbol, accountColor, accountImage } = useAccountProfile();
   const { isDarkMode } = useColorMode();
-  const { navigate, goBack } = useNavigation();
+  const { navigate } = useNavigation();
   const theme = useTheme();
 
   const inputProgress = useSharedValue(0);
@@ -306,14 +304,7 @@ export function SwapScreen() {
                         maskElement={<FadeMask fadeEdgeInset={2} fadeWidth={8} height={36} side="right" />}
                         style={styles.inputTextMask}
                       >
-                        <AnimatedText
-                          ellipsizeMode="clip"
-                          numberOfLines={1}
-                          size="30pt"
-                          style={inputAmountTextStyle}
-                          text={formattedInputAmount}
-                          weight="bold"
-                        />
+                        <AnimatedText size="30pt" style={inputAmountTextStyle} text={formattedInputAmount} weight="bold" />
                         <Animated.View style={[styles.caretContainer, inputCaretStyle]}>
                           <Box
                             borderRadius={1}
@@ -418,14 +409,7 @@ export function SwapScreen() {
                         maskElement={<FadeMask fadeEdgeInset={2} fadeWidth={8} height={36} side="right" />}
                         style={styles.inputTextMask}
                       >
-                        <AnimatedText
-                          ellipsizeMode="clip"
-                          numberOfLines={1}
-                          size="30pt"
-                          style={outputAmountTextStyle}
-                          text={formattedOutputAmount}
-                          weight="bold"
-                        />
+                        <AnimatedText size="30pt" style={outputAmountTextStyle} text={formattedOutputAmount} weight="bold" />
                         <Animated.View style={[styles.caretContainer, outputCaretStyle]}>
                           <Box
                             borderRadius={1}
@@ -500,7 +484,7 @@ export function SwapScreen() {
               bottom="0px"
               justifyContent="center"
               position="absolute"
-              style={[{ flex: 1, flexDirection: 'column', gap: 16 }, keyboardStyle]}
+              style={[{ flex: 1, flexDirection: 'column', gap: 16, zIndex: -10 }, keyboardStyle]}
               width="full"
             >
               <PanGestureHandler>
@@ -546,9 +530,7 @@ export function SwapScreen() {
                 </Box>
               </PanGestureHandler>
               <Box
-                paddingBottom={{
-                  custom: IS_ANDROID ? getSoftMenuBarHeight() - 24 : safeAreaInsetValues.bottom + 16,
-                }}
+                paddingBottom={{ custom: safeAreaInsetValues.bottom + 16 }}
                 paddingHorizontal="20px"
                 paddingTop={{ custom: 16 - THICK_BORDER_WIDTH }}
                 style={{
@@ -583,8 +565,7 @@ export function SwapScreen() {
             </Box>
           </Box>
         </SwapBackground>
-        <Box as={Animated.View} pointerEvents="box-none" position="absolute" style={focusedSearchStyle} top={{ custom: 0 }} width="full">
-          {IS_ANDROID ? <Pressable onPress={goBack} style={[StyleSheet.absoluteFillObject]} /> : null}
+        <Box as={Animated.View} pointerEvents="box-none" position="absolute" style={focusedSearchStyle} top="0px" width="full">
           <Box
             borderRadius={5}
             height={{ custom: 5 }}
@@ -597,7 +578,7 @@ export function SwapScreen() {
             width={{ custom: 36 }}
           />
           <Navbar
-            hasStatusBarInset={IS_IOS}
+            hasStatusBarInset
             leftComponent={
               <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.8}>
                 {accountImage ? (
@@ -650,7 +631,7 @@ export function SwapScreen() {
                           align="center"
                           color={isDarkMode ? 'label' : 'labelSecondary'}
                           size="icon 17px"
-                          style={{ lineHeight: IS_IOS ? 33 : 17 }}
+                          style={{ lineHeight: 33 }}
                           weight="regular"
                         >
                           􀣌
@@ -662,7 +643,7 @@ export function SwapScreen() {
               </ButtonPressAnimation>
             }
             titleComponent={
-              <Inset bottom={{ custom: IS_IOS ? 5.5 : 14 }}>
+              <Inset bottom={{ custom: 5.5 }}>
                 <Text align="center" color="label" size="20pt" weight="heavy">
                   {i18n.t(i18n.l.swap.modal_types.swap)}
                 </Text>
@@ -708,10 +689,10 @@ const SwapBackground = ({
     <Box
       alignItems="center"
       as={LinearGradient}
-      borderRadius={IS_ANDROID ? 20 : ScreenCornerRadius}
+      borderRadius={ScreenCornerRadius}
       colors={[topColorDarkened, bottomColorDarkened]}
       end={{ x: 0.5, y: 1 }}
-      height={{ custom: deviceHeight + (IS_ANDROID ? 24 : 0) }}
+      height={{ custom: deviceHeight }}
       justifyContent="center"
       paddingTop={{ custom: safeAreaInsetValues.top + (navbarHeight - 12) }}
       start={{ x: 0.5, y: 0 }}
@@ -933,35 +914,28 @@ const FlipButton = ({
             width: 0,
             height: isDarkMode ? 4 : 4,
           },
-          elevation: 8,
           shadowOpacity: isDarkMode ? 0.3 : 0.1,
           shadowRadius: isDarkMode ? 6 : 8,
         }}
       >
         <ButtonPressAnimation scaleTo={0.8} style={{ paddingHorizontal: 20, paddingVertical: 8 }}>
-          {/* TODO: Temp fix - rewrite to actually avoid type errors */}
-          {/* @ts-expect-error The conditional as={} is causing type errors */}
           <Box
             alignItems="center"
-            as={IS_IOS ? AnimatedBlurView : Animated.View}
+            as={AnimatedBlurView}
+            blurAmount={10}
+            blurType={isDarkMode ? undefined : 'light'}
             justifyContent="center"
             style={[
               fetchingStyle,
               styles.flipButton,
               {
-                backgroundColor: IS_ANDROID ? (isDarkMode ? globalColors.blueGrey100 : globalColors.white100) : undefined,
                 borderColor: isDarkMode ? SEPARATOR_COLOR : opacity(globalColors.white100, 0.5),
               },
             ]}
-            // eslint-disable-next-line react/jsx-props-no-spreading
-            {...(IS_IOS && {
-              blurAmount: 10,
-              blurType: isDarkMode ? undefined : 'light',
-            })}
           >
             <IconContainer size={24} opacity={isDarkMode ? 0.6 : 0.8}>
               <Box alignItems="center" justifyContent="center">
-                <Bleed bottom={{ custom: IS_IOS ? 0.5 : 4 }}>
+                <Bleed bottom={{ custom: 0.5 }}>
                   <Text align="center" color="labelTertiary" size="icon 13px" weight="heavy">
                     􀆈
                   </Text>
@@ -1283,7 +1257,7 @@ const SearchInput = ({
                     color: label,
                     fontSize: 17,
                     fontWeight: 'bold',
-                    height: 44,
+                    height: 36,
                     zIndex: 10,
                   }}
                   value={query}
@@ -1600,10 +1574,9 @@ const styles = StyleSheet.create({
   inputTextMask: { alignItems: 'center', flexDirection: 'row', height: 36, pointerEvents: 'box-only' },
   rootViewBackground: {
     backgroundColor: 'transparent',
-    borderRadius: IS_ANDROID ? 20 : ScreenCornerRadius,
+    borderRadius: ScreenCornerRadius,
     flex: 1,
     overflow: 'hidden',
-    marginTop: StatusBar.currentHeight ?? 0,
   },
   solidColorCoinIcon: {
     opacity: 0.4,

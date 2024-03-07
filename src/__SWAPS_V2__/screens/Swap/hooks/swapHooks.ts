@@ -5,7 +5,6 @@ import Animated, {
   interpolate,
   interpolateColor,
   runOnJS,
-  runOnUI,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
@@ -242,20 +241,12 @@ export function useSwapInputsController({
       const inputNativeValue = percentage * inputAssetBalance * inputAssetUsdPrice;
       const outputAmount = (inputNativeValue / outputAssetUsdPrice) * (1 - SWAP_FEE);
       const outputNativeValue = outputAmount * outputAssetUsdPrice;
-
-      const updateWorklet = () => {
-        'worklet';
-        inputValues.modify(values => {
-          return {
-            ...values,
-            outputAmount,
-            outputNativeValue,
-          };
-        });
-        isQuoteStale.value = 0;
+      inputValues.value = {
+        ...inputValues.value,
+        outputAmount,
+        outputNativeValue,
       };
-
-      runOnUI(updateWorklet)();
+      isQuoteStale.value = 0;
     };
 
     if (percentage > 0) {
@@ -283,72 +274,45 @@ export function useSwapInputsController({
         const inputNativeValue = amount * inputAssetUsdPrice;
         const outputAmount = (inputNativeValue / outputAssetUsdPrice) * (1 - SWAP_FEE);
         const outputNativeValue = outputAmount * outputAssetUsdPrice;
-
-        const updatedSliderPosition = clampJS((amount / inputAssetBalance) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
-
-        const updateWorklet = () => {
-          'worklet';
-          inputValues.modify(values => {
-            return {
-              ...values,
-              outputAmount,
-              outputNativeValue,
-            };
-          });
-          sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
-          isQuoteStale.value = 0;
+        inputValues.value = {
+          ...inputValues.value,
+          outputAmount,
+          outputNativeValue,
         };
-
-        runOnUI(updateWorklet)();
+        const updatedSliderPosition = clampJS((amount / inputAssetBalance) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
+        sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
       } else if (inputKey === 'outputAmount') {
         const outputAmount = amount;
         const inputNativeValue = outputAmount * outputAssetUsdPrice * (1 + SWAP_FEE);
         const inputAmount = inputNativeValue / inputAssetUsdPrice;
-
-        const updatedSliderPosition = clampJS((inputAmount / inputAssetBalance) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
-
-        const updateWorklet = () => {
-          'worklet';
-          inputValues.modify(values => {
-            return {
-              ...values,
-              inputAmount,
-              inputNativeValue,
-            };
-          });
-          sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
-          isQuoteStale.value = 0;
+        inputValues.value = {
+          ...inputValues.value,
+          inputAmount,
+          inputNativeValue,
         };
-
-        runOnUI(updateWorklet)();
+        const updatedSliderPosition = clampJS((inputAmount / inputAssetBalance) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
+        sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
       }
+      isQuoteStale.value = 0;
     };
 
     const resetValuesToZero = () => {
       setIsFetching(false);
-
-      const updateWorklet = () => {
-        'worklet';
-        const keysToReset = ['inputAmount', 'inputNativeValue', 'outputAmount', 'outputNativeValue'];
-        const updatedValues = keysToReset.reduce(
-          (acc, key) => {
-            const castedKey = key as keyof typeof inputValues.value;
-            acc[castedKey] = castedKey === inputKey && preserveAmount ? inputValues.value[castedKey] : 0;
-            return acc;
-          },
-          {} as Partial<typeof inputValues.value>
-        );
-        inputValues.modify(values => {
-          return {
-            ...values,
-            ...updatedValues,
-          };
-        });
-        sliderXPosition.value = withSpring(0, snappySpringConfig);
-        isQuoteStale.value = 0;
+      const keysToReset = ['inputAmount', 'inputNativeValue', 'outputAmount', 'outputNativeValue'];
+      const updatedValues = keysToReset.reduce(
+        (acc, key) => {
+          const castedKey = key as keyof typeof inputValues.value;
+          acc[castedKey] = castedKey === inputKey && preserveAmount ? inputValues.value[castedKey] : 0;
+          return acc;
+        },
+        {} as Partial<typeof inputValues.value>
+      );
+      inputValues.value = {
+        ...inputValues.value,
+        ...updatedValues,
       };
-
-      runOnUI(updateWorklet)();
+      sliderXPosition.value = withSpring(0, snappySpringConfig);
+      isQuoteStale.value = 0;
     };
 
     if (amount > 0) {
@@ -373,19 +337,15 @@ export function useSwapInputsController({
       if (previous && current !== previous && typeof inputValues.value[previous.focusedInput] === 'string') {
         const typedValue = inputValues.value[previous.focusedInput].toString();
         if (Number(typedValue) === 0) {
-          inputValues.modify(values => {
-            return {
-              ...values,
-              [previous.focusedInput]: 0,
-            };
-          });
+          inputValues.value = {
+            ...inputValues.value,
+            [previous.focusedInput]: 0,
+          };
         } else {
-          inputValues.modify(values => {
-            return {
-              ...values,
-              [previous.focusedInput]: trimTrailingZeros(typedValue),
-            };
-          });
+          inputValues.value = {
+            ...inputValues.value,
+            [previous.focusedInput]: trimTrailingZeros(typedValue),
+          };
         }
       }
     },
@@ -412,30 +372,24 @@ export function useSwapInputsController({
         const outputAmount = (inputNativeValue / outputAssetUsdPrice) * (1 - SWAP_FEE);
         const outputNativeValue = outputAmount * outputAssetUsdPrice;
 
-        inputValues.modify(values => {
-          return {
-            ...values,
-            inputAmount,
-            inputNativeValue,
-            outputAmount,
-            outputNativeValue,
-          };
-        });
+        inputValues.value = {
+          inputAmount,
+          inputNativeValue,
+          outputAmount,
+          outputNativeValue,
+        };
       } else if (current !== previous) {
         // Handle updating input values based on the input method
         if (inputMethod.value === 'slider' && current.sliderXPosition !== previous.sliderXPosition) {
           // If the slider position changes
           if (percentageToSwap.value === 0) {
             // If the change set the slider position to 0
-            inputValues.modify(values => {
-              return {
-                ...values,
-                inputAmount: 0,
-                inputNativeValue: 0,
-                outputAmount: 0,
-                outputNativeValue: 0,
-              };
-            });
+            inputValues.value = {
+              inputAmount: 0,
+              inputNativeValue: 0,
+              outputAmount: 0,
+              outputNativeValue: 0,
+            };
             isQuoteStale.value = 0;
           } else {
             // If the change set the slider position to > 0
@@ -450,13 +404,11 @@ export function useSwapInputsController({
             );
             const inputNativeValue = Number(inputAmount) * inputAssetUsdPrice;
 
-            inputValues.modify(values => {
-              return {
-                ...values,
-                inputAmount,
-                inputNativeValue,
-              };
-            });
+            inputValues.value = {
+              ...current.values,
+              inputAmount,
+              inputNativeValue,
+            };
           }
         }
         if (inputMethod.value === 'inputAmount' && Number(current.values.inputAmount) !== Number(previous.values.inputAmount)) {
@@ -466,15 +418,12 @@ export function useSwapInputsController({
             const hasDecimal = current.values.inputAmount.toString().includes('.');
 
             sliderXPosition.value = withSpring(0, snappySpringConfig);
-            inputValues.modify(values => {
-              return {
-                ...values,
-                inputAmount: hasDecimal ? current.values.inputAmount : 0,
-                inputNativeValue: 0,
-                outputAmount: 0,
-                outputNativeValue: 0,
-              };
-            });
+            inputValues.value = {
+              inputAmount: hasDecimal ? current.values.inputAmount : 0,
+              inputNativeValue: 0,
+              outputAmount: 0,
+              outputNativeValue: 0,
+            };
             isQuoteStale.value = 0;
 
             if (hasDecimal) {
@@ -487,14 +436,12 @@ export function useSwapInputsController({
             const inputNativeValue = Number(current.values.inputAmount) * inputAssetUsdPrice;
 
             isQuoteStale.value = 1;
-            inputValues.modify(values => {
-              return {
-                ...values,
-                inputNativeValue,
-              };
-            });
+            inputValues.value = {
+              ...current.values,
+              inputNativeValue,
+            };
 
-            runOnJS(onTypedNumber)(Number(current.values.inputAmount), 'inputAmount', true);
+            runOnJS(onTypedNumber)(Number(current.values.inputAmount), 'inputAmount');
           }
         }
         if (inputMethod.value === 'outputAmount' && Number(current.values.outputAmount) !== Number(previous.values.outputAmount)) {
@@ -504,16 +451,12 @@ export function useSwapInputsController({
             const hasDecimal = current.values.outputAmount.toString().includes('.');
 
             sliderXPosition.value = withSpring(0, snappySpringConfig);
-            inputValues.modify(values => {
-              return {
-                ...values,
-                inputAmount: 0,
-                inputNativeValue: 0,
-                outputAmount: hasDecimal ? current.values.outputAmount : 0,
-                outputNativeValue: 0,
-              };
-            });
-
+            inputValues.value = {
+              inputAmount: 0,
+              inputNativeValue: 0,
+              outputAmount: hasDecimal ? current.values.outputAmount : 0,
+              outputNativeValue: 0,
+            };
             isQuoteStale.value = 0;
 
             if (hasDecimal) {
@@ -527,12 +470,10 @@ export function useSwapInputsController({
             const outputNativeValue = outputAmount * outputAssetUsdPrice;
 
             isQuoteStale.value = 1;
-            inputValues.modify(values => {
-              return {
-                ...values,
-                outputNativeValue,
-              };
-            });
+            inputValues.value = {
+              ...current.values,
+              outputNativeValue,
+            };
 
             runOnJS(onTypedNumber)(Number(current.values.outputAmount), 'outputAmount');
           }
