@@ -138,7 +138,13 @@ export const SignTransactionSheet = () => {
   const [simulationScanResult, setSimulationScanResult] = useState<TransactionScanResultType | undefined>(undefined);
   const { params: routeParams } = useRoute<any>();
   const { wallets, walletNames, switchToWalletWithAddress } = useWallets();
-  const { callback, transactionDetails } = routeParams;
+  const {
+    callback,
+    transactionDetails,
+    onSucess: onSucessCallback,
+    onCancel: onCancelCallback,
+    onCloseScreen: onCloseScreenCallback,
+  } = routeParams;
 
   const isMessageRequest = isMessageDisplayType(transactionDetails.payload.method);
 
@@ -147,9 +153,10 @@ export const SignTransactionSheet = () => {
   const label = useForegroundColor('label');
   const surfacePrimary = useBackgroundColor('surfacePrimary');
 
-  const pendingRedirect = useSelector(({ walletconnect }: AppState) => walletconnect.pendingRedirect);
   const walletConnectors = useSelector(({ walletconnect }: AppState) => walletconnect.walletConnectors);
   const walletConnector = walletConnectors[transactionDetails?.peerId];
+
+  // ^ all of this should be handled in the callbacks and not in the component
 
   const [provider, setProvider] = useState<StaticJsonRpcProvider | null>(null);
   const [currentNetwork, setCurrentNetwork] = useState<Network | null>();
@@ -499,34 +506,9 @@ export const SignTransactionSheet = () => {
         stopPollingGasFees();
       }
 
-      let type: WalletconnectResultType = transactionDetails?.method === SEND_TRANSACTION ? 'transaction' : 'sign';
-      if (canceled) {
-        type = `${type}-canceled`;
-      }
-
-      if (pendingRedirect) {
-        InteractionManager.runAfterInteractions(() => {
-          dispatch(walletConnectRemovePendingRedirect(type, transactionDetails?.dappScheme));
-        });
-      }
-
-      if (transactionDetails?.walletConnectV2RequestValues?.onComplete) {
-        InteractionManager.runAfterInteractions(() => {
-          transactionDetails?.walletConnectV2RequestValues.onComplete(type);
-        });
-      }
+      onCloseScreenCallback?.();
     },
-    [
-      accountInfo.isHardwareWallet,
-      goBack,
-      isMessageRequest,
-      transactionDetails?.method,
-      transactionDetails?.walletConnectV2RequestValues,
-      transactionDetails?.dappScheme,
-      pendingRedirect,
-      stopPollingGasFees,
-      dispatch,
-    ]
+    [accountInfo.isHardwareWallet, goBack, isMessageRequest, onCloseScreenCallback, stopPollingGasFees]
   );
 
   const onCancel = useCallback(
@@ -536,21 +518,7 @@ export const SignTransactionSheet = () => {
           callback({ error: error || 'User cancelled the request' });
         }
         setTimeout(async () => {
-          if (transactionDetails?.requestId) {
-            if (transactionDetails?.walletConnectV2RequestValues) {
-              await handleSessionRequestResponse(transactionDetails?.walletConnectV2RequestValues, {
-                result: 'null',
-                error: error || 'User cancelled the request',
-              });
-            } else {
-              await dispatch(
-                walletConnectSendStatus(transactionDetails?.peerId, transactionDetails?.requestId, {
-                  error: error || 'User cancelled the request',
-                })
-              );
-            }
-            dispatch(removeRequest(transactionDetails?.requestId));
-          }
+          onCancelCallback?.(error);
           const rejectionType = transactionDetails?.payload?.method === SEND_TRANSACTION ? 'transaction' : 'signature';
           analytics.track(`Rejected WalletConnect ${rejectionType} request`, {
             isHardwareWallet: accountInfo.isHardwareWallet,
@@ -563,16 +531,7 @@ export const SignTransactionSheet = () => {
         closeScreen(true);
       }
     },
-    [
-      accountInfo.isHardwareWallet,
-      callback,
-      closeScreen,
-      dispatch,
-      transactionDetails?.payload?.method,
-      transactionDetails?.peerId,
-      transactionDetails?.requestId,
-      transactionDetails?.walletConnectV2RequestValues,
-    ]
+    [accountInfo.isHardwareWallet, callback, closeScreen, transactionDetails?.payload?.method]
   );
 
   const handleSignMessage = useCallback(async () => {
@@ -610,17 +569,10 @@ export const SignTransactionSheet = () => {
         isHardwareWallet: accountInfo.isHardwareWallet,
         network: currentNetwork,
       });
-      if (transactionDetails?.requestId) {
-        if (transactionDetails?.walletConnectV2RequestValues && response?.result) {
-          await handleSessionRequestResponse(transactionDetails?.walletConnectV2RequestValues, {
-            result: response.result,
-            error: null,
-          });
-        } else {
-          await dispatch(walletConnectSendStatus(transactionDetails?.peerId, transactionDetails?.requestId, response));
-        }
-        dispatch(removeRequest(transactionDetails?.requestId));
-      }
+
+      onSucessCallback?.(response.result);
+
+      // where is this being used?
       if (callback) {
         callback({ sig: response.result });
       }
@@ -633,15 +585,12 @@ export const SignTransactionSheet = () => {
     transactionDetails?.payload?.method,
     transactionDetails?.dappName,
     transactionDetails?.dappUrl,
-    transactionDetails?.requestId,
-    transactionDetails?.walletConnectV2RequestValues,
-    transactionDetails?.peerId,
     currentNetwork,
     accountInfo.address,
     accountInfo.isHardwareWallet,
+    onSucessCallback,
     callback,
     closeScreen,
-    dispatch,
     onCancel,
   ]);
 
