@@ -364,7 +364,7 @@ export async function restoreCloudBackup({
   backupSelected,
 }: {
   password: BackupPassword;
-  userData: BackupUserData | null;
+  userData: BackupUserData | undefined;
   backupSelected: string | null;
 }): Promise<RestoreCloudBackupResultStatesType> {
   // We support two flows

@@ -1,6 +1,6 @@
 import * as lang from '@/languages';
 import React, { useCallback } from 'react';
-import { Text } from '../text';
+import { Text as RNText } from '../text';
 import WalletAndBackup from '@/assets/WalletsAndBackup.png';
 import { useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
@@ -20,13 +20,28 @@ import { RestoreSheetParams } from '@/screens/RestoreSheet';
 import { Source } from 'react-native-fast-image';
 import { IS_ANDROID } from '@/env';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import useCloudBackups from '@/hooks/useCloudBackups';
+import { Centered } from '../layout';
+import { cloudPlatform } from '@/utils/platform';
+import Spinner from '../Spinner';
+import ActivityIndicator from '../ActivityIndicator';
+import { useTheme } from '@/theme';
 
-const Title = styled(Text).attrs({
+const Title = styled(RNText).attrs({
   align: 'left',
   size: 'big',
   weight: 'heavy',
 })({
   ...margin.object(15, 0, 12),
+});
+
+const LoadingText = styled(RNText).attrs(({ theme: { colors } }: any) => ({
+  color: colors.blueGreyDark,
+  lineHeight: ios ? 'none' : 24,
+  size: 'large',
+  weight: 'semibold',
+}))({
+  marginLeft: 8,
 });
 
 const Masthead = styled(Box).attrs({
@@ -39,11 +54,13 @@ const Masthead = styled(Box).attrs({
 
 export function ChooseBackupStep() {
   const {
-    params: { backups, userData, fromSettings },
+    params: { fromSettings },
   } = useRoute<RouteProp<RestoreSheetParams, 'RestoreSheet'>>();
+  const { colors } = useTheme();
+
+  const { isFetching, backups, userData } = useCloudBackups();
 
   const { top } = useSafeAreaInsets();
-
   const { height: deviceHeight } = useDimensions();
   const { navigate } = useNavigation();
 
@@ -112,55 +129,78 @@ export function ChooseBackupStep() {
             </Stack>
           </Masthead>
 
-          <Stack width="full" space="44px">
-            {mostRecentBackup && (
-              <Menu
-                description={lang.t(lang.l.back_up.cloud.latest_backup, {
-                  date: format(parseTimestampFromFilename(mostRecentBackup.name), "M/d/yy 'at' h:mm a"),
-                })}
-              >
-                <MenuItem
-                  hasSfSymbol
-                  leftComponent={<MenuItem.TextIcon icon="􀣔" isLink />}
-                  onPress={() => onSelectCloudBackup(mostRecentBackup)}
-                  size={52}
-                  width="full"
-                  titleComponent={<MenuItem.Title isLink text={lang.t(lang.l.back_up.cloud.most_recent_backup)} />}
-                />
+          {!isFetching && !cloudBackups.length && (
+            <Stack width="full" space="44px">
+              <Menu header={lang.t(lang.l.back_up.cloud.latest_backup)}>
+                <MenuItem disabled size={52} titleComponent={<MenuItem.Title disabled text={lang.t(lang.l.back_up.cloud.no_backups)} />} />
               </Menu>
-            )}
+            </Stack>
+          )}
 
-            <Menu header={lang.t(lang.l.back_up.cloud.older_backups)}>
-              {cloudBackups.map(
-                backup =>
-                  backup.name !== mostRecentBackup?.name && (
-                    <MenuItem
-                      key={backup.name}
-                      onPress={() => onSelectCloudBackup(backup)}
-                      size={52}
-                      width="full"
-                      titleComponent={
-                        <MenuItem.Title
-                          isLink
-                          text={lang.t(lang.l.back_up.cloud.older_backups_title, {
-                            date: format(parseTimestampFromFilename(backup.name), 'M/d/yy'),
-                            time: format(parseTimestampFromFilename(backup.name), 'p'),
-                          })}
-                        />
-                      }
-                    />
-                  )
+          {!isFetching && cloudBackups.length && (
+            <Stack width="full" space="44px">
+              {mostRecentBackup && (
+                <Menu
+                  description={lang.t(lang.l.back_up.cloud.latest_backup, {
+                    date: format(parseTimestampFromFilename(mostRecentBackup.name), "M/d/yy 'at' h:mm a"),
+                  })}
+                >
+                  <MenuItem
+                    hasSfSymbol
+                    leftComponent={<MenuItem.TextIcon icon="􀣔" isLink />}
+                    onPress={() => onSelectCloudBackup(mostRecentBackup)}
+                    size={52}
+                    width="full"
+                    titleComponent={<MenuItem.Title isLink text={lang.t(lang.l.back_up.cloud.most_recent_backup)} />}
+                  />
+                </Menu>
               )}
 
-              {cloudBackups.length === 1 && (
-                <MenuItem
-                  disabled
-                  size={52}
-                  titleComponent={<MenuItem.Title disabled text={lang.t(lang.l.back_up.cloud.no_older_backups)} />}
-                />
-              )}
-            </Menu>
-          </Stack>
+              <Menu header={lang.t(lang.l.back_up.cloud.older_backups)}>
+                {cloudBackups.map(
+                  backup =>
+                    backup.name !== mostRecentBackup?.name && (
+                      <MenuItem
+                        key={backup.name}
+                        onPress={() => onSelectCloudBackup(backup)}
+                        size={52}
+                        width="full"
+                        titleComponent={
+                          <MenuItem.Title
+                            isLink
+                            text={lang.t(lang.l.back_up.cloud.older_backups_title, {
+                              date: format(parseTimestampFromFilename(backup.name), 'M/d/yy'),
+                              time: format(parseTimestampFromFilename(backup.name), 'p'),
+                            })}
+                          />
+                        }
+                      />
+                    )
+                )}
+
+                {cloudBackups.length === 1 && (
+                  <MenuItem
+                    disabled
+                    size={52}
+                    titleComponent={<MenuItem.Title disabled text={lang.t(lang.l.back_up.cloud.no_older_backups)} />}
+                  />
+                )}
+              </Menu>
+            </Stack>
+          )}
+
+          {isFetching && (
+            <Centered zIndex={2}>
+              {android ? <Spinner color={colors.blueGreyDark} /> : <ActivityIndicator color={colors.blueGreyDark} />}
+              {
+                <LoadingText>
+                  {lang.t(lang.l.back_up.cloud.fetching_backups, {
+                    cloudPlatformName: cloudPlatform,
+                  })}
+                </LoadingText>
+              }
+            </Centered>
+          )}
         </Stack>
       </MenuContainer>
     </Box>

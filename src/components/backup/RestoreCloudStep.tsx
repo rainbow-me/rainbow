@@ -30,6 +30,7 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { RestoreSheetParams } from '@/screens/RestoreSheet';
 import { Source } from 'react-native-fast-image';
 import { useTheme } from '@/theme';
+import useCloudBackups from '@/hooks/useCloudBackups';
 
 const Title = styled(Text).attrs({
   size: 'big',
@@ -76,7 +77,9 @@ type RestoreCloudStepParams = {
 export default function RestoreCloudStep() {
   const { params } = useRoute<RouteProp<RestoreCloudStepParams & RestoreSheetParams, 'RestoreSheet'>>();
 
-  const { userData, selectedBackup } = params;
+  const { userData } = useCloudBackups();
+
+  const { selectedBackup } = params;
 
   const { isDarkMode } = useTheme();
 
