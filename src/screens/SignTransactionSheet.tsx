@@ -539,7 +539,7 @@ export const SignTransactionSheet = () => {
           if (transactionDetails?.requestId) {
             if (transactionDetails?.walletConnectV2RequestValues) {
               await handleSessionRequestResponse(transactionDetails?.walletConnectV2RequestValues, {
-                result: 'null',
+                result: null,
                 error: error || 'User cancelled the request',
               });
             } else {
