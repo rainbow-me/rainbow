@@ -576,10 +576,6 @@ PODS:
     - React-Core
   - react-native-widgetkit (1.0.9):
     - React
-  - react-native-worklets-core (0.2.4):
-    - React
-    - React-callinvoker
-    - React-Core
   - React-NativeModulesApple (0.72.3):
     - hermes-engine
     - React-callinvoker
@@ -809,7 +805,6 @@ PODS:
     - React
     - React-callinvoker
     - React-Core
-    - react-native-worklets-core
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -884,7 +879,6 @@ DEPENDENCIES:
   - react-native-video (from `../node_modules/react-native-video`)
   - react-native-webview (from `../node_modules/react-native-webview`)
   - react-native-widgetkit (from `../node_modules/react-native-widgetkit`)
-  - react-native-worklets-core (from `../node_modules/react-native-worklets-core`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -1102,8 +1096,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-webview"
   react-native-widgetkit:
     :path: "../node_modules/react-native-widgetkit"
-  react-native-worklets-core:
-    :path: "../node_modules/react-native-worklets-core"
   React-NativeModulesApple:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios"
   React-perflogger:
@@ -1308,7 +1300,6 @@ SPEC CHECKSUMS:
   react-native-video: c26780b224543c62d5e1b2a7244a5cd1b50e8253
   react-native-webview: b85dfe0bf95bef83e82fc354d6987c80fed5e7ad
   react-native-widgetkit: efb6680df237463bbe1be3a4d1a1578a1b0bb08f
-  react-native-worklets-core: b4094f51cb2bc649e297206425cb8956f4945e3e
   React-NativeModulesApple: c57f3efe0df288a6532b726ad2d0322a9bf38472
   React-perflogger: 6bd153e776e6beed54c56b0847e1220a3ff92ba5
   React-RCTActionSheet: c0b62af44e610e69d9a2049a682f5dba4e9dff17
@@ -1370,7 +1361,7 @@ SPEC CHECKSUMS:
   TcpSockets: bd31674146c0931a064fc254a59812dfd1a73ae0
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
-  VisionCamera: db57ca079c4f933f1ddd07f2f8fb2d171a826b85
+  VisionCamera: 1910a51e4c6f6b049650086d343090f267b4c260
   Yoga: 8796b55dba14d7004f980b54bcc9833ee45b28ce
 
 PODFILE CHECKSUM: a3ecb670c78cf268470ccf0021176418878b8816
