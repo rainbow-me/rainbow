@@ -54,6 +54,7 @@ import {
   nftSingleOfferSheetPreset,
   walletconnectBottomSheetPreset,
   consoleSheetPreset,
+  swapSheetPreset,
   appIconUnlockSheetPreset,
 } from './effects';
 import { InitialRouteContext } from './initialRoute';
@@ -61,7 +62,7 @@ import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
 import { deviceUtils } from '@/utils';
-import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import useExperimentalFlag, { PROFILES, SWAPS_V2 } from '@/config/experimentalHooks';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
@@ -86,7 +87,9 @@ import { SignTransactionSheet } from '@/screens/SignTransactionSheet';
 import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoSheet';
 import { ConsoleSheet } from '@/screens/points/ConsoleSheet';
 import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileContext';
+import { SwapScreen } from '@/__SWAPS_V2__/screens/Swap/Swap';
 import AppIconUnlockSheet from '@/screens/AppIconUnlockSheet';
+import { useRemoteConfig } from '@/model/remoteConfig';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -147,6 +150,7 @@ function MainOuterNavigator() {
 
 function BSNavigator() {
   const profilesEnabled = useExperimentalFlag(PROFILES);
+  const swapsV2Enabled = useExperimentalFlag(SWAPS_V2);
 
   return (
     <BSStack.Navigator>
@@ -227,6 +231,7 @@ function BSNavigator() {
       <BSStack.Screen component={SignTransactionSheet} name={Routes.CONFIRM_REQUEST} options={walletconnectBottomSheetPreset} />
       <BSStack.Screen component={ConsoleSheet} name={Routes.CONSOLE_SHEET} options={consoleSheetPreset} />
       <BSStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} options={appIconUnlockSheetPreset} />
+      {swapsV2Enabled && <BSStack.Screen component={SwapScreen} name={Routes.SWAP} options={swapSheetPreset} />}
     </BSStack.Navigator>
   );
 }

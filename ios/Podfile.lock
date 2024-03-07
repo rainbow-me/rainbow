@@ -501,6 +501,8 @@ PODS:
     - glog
   - react-native-aes-crypto (2.0.2):
     - React-Core
+  - react-native-animateable-text (0.11.0):
+    - React-Core
   - react-native-ble-plx (2.0.3):
     - MultiplatformBleAdapter (= 0.1.9)
     - React-Core
@@ -553,6 +555,8 @@ PODS:
     - RCTTypeSafety
     - React-Core
     - ReactCommon/turbomodule/core
+  - react-native-screen-corner-radius (0.2.0):
+    - React
   - react-native-skia (0.1.200):
     - React
     - React-callinvoker
@@ -727,7 +731,8 @@ PODS:
     - React-Core
   - RNFS (2.16.6):
     - React
-  - RNGestureHandler (1.10.3):
+  - RNGestureHandler (2.15.0):
+    - RCT-Folly (= 2021.07.22.00)
     - React-Core
   - RNImageCropPicker (0.37.3):
     - React-Core
@@ -850,6 +855,7 @@ DEPENDENCIES:
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - react-native-aes-crypto (from `../node_modules/react-native-aes-crypto`)
+  - react-native-animateable-text (from `../node_modules/react-native-animateable-text`)
   - react-native-ble-plx (from `../node_modules/react-native-ble-plx`)
   - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
   - react-native-branch (from `../node_modules/react-native-branch`)
@@ -871,6 +877,7 @@ DEPENDENCIES:
   - react-native-randombytes (from `../node_modules/react-native-randombytes`)
   - react-native-restart (from `../node_modules/react-native-restart`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
+  - react-native-screen-corner-radius (from `../node_modules/react-native-screen-corner-radius`)
   - "react-native-skia (from `../node_modules/@shopify/react-native-skia`)"
   - react-native-splash-screen (from `../node_modules/react-native-splash-screen`)
   - react-native-text-input-mask (from `../node_modules/react-native-text-input-mask`)
@@ -1038,6 +1045,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/logger"
   react-native-aes-crypto:
     :path: "../node_modules/react-native-aes-crypto"
+  react-native-animateable-text:
+    :path: "../node_modules/react-native-animateable-text"
   react-native-ble-plx:
     :path: "../node_modules/react-native-ble-plx"
   react-native-blur:
@@ -1080,6 +1089,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-restart"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
+  react-native-screen-corner-radius:
+    :path: "../node_modules/react-native-screen-corner-radius"
   react-native-skia:
     :path: "../node_modules/@shopify/react-native-skia"
   react-native-splash-screen:
@@ -1271,6 +1282,7 @@ SPEC CHECKSUMS:
   React-jsinspector: b511447170f561157547bc0bef3f169663860be7
   React-logger: c5b527272d5f22eaa09bb3c3a690fee8f237ae95
   react-native-aes-crypto: d7e87fd02cee7285983c00957a34063dfc4c94b3
+  react-native-animateable-text: 5f5a6e96f6c075aa943ce52ea7fd3fbb3e56d725
   react-native-ble-plx: f10240444452dfb2d2a13a0e4f58d7783e92d76e
   react-native-blur: cfdad7b3c01d725ab62a8a729f42ea463998afa2
   react-native-branch: 960c897d57b9f4912b08b9d06a25284b6e9879da
@@ -1292,6 +1304,7 @@ SPEC CHECKSUMS:
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
   react-native-restart: 733a51ad137f15b0f8dc34c4082e55af7da00979
   react-native-safe-area-context: b8979f5eda6ed5903d4dbc885be3846ea3daa753
+  react-native-screen-corner-radius: d526152dc1b5816bf298cc7093fcf4af853c17c7
   react-native-skia: d0b0aab6bb1f146eb6f379fb671b719deabd20fb
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
   react-native-text-input-mask: 07227297075f9653315f43b0424d596423a01736
@@ -1332,7 +1345,7 @@ SPEC CHECKSUMS:
   RNFBRemoteConfig: 0f1e8d8da3814e153c5f1a8f179da90c61f402ea
   RNFlashList: 25b0e092b4470c84db0386d4f5316dc34123bb6d
   RNFS: 2bd9eb49dc82fa9676382f0585b992c424cd59df
-  RNGestureHandler: a479ebd5ed4221a810967000735517df0d2db211
+  RNGestureHandler: 8c9cd013989564ceedc554d9ebfca84c95a01664
   RNImageCropPicker: 44e2807bc410741f35d4c45b6586aedfe3da39d2
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
   RNKeyboard: 14793d75953d99c6d950090b8e9698b234c5d08c

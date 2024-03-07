@@ -52,7 +52,7 @@ export const EmojiSelector = ({ columns = 7, showSectionTitles = true, showTabs 
   const scrollPosition = useSharedValue(0);
   const nextCategoryOffset = useSharedValue(1);
 
-  const recyclerListView = useRef<ComponentType<any>>(null);
+  const recyclerListView = useRef<ScrollView>(null);
   const currentIndex = useRef(0);
   const blockCategories = useRef(true);
 
@@ -127,7 +127,6 @@ export const EmojiSelector = ({ columns = 7, showSectionTitles = true, showTabs 
   };
 
   const scrollToOffset = (position: number, animated?: boolean) => {
-    // @ts-expect-error
     recyclerListView.current?.scrollTo(position, 0, animated);
   };
 
@@ -230,7 +229,6 @@ export const EmojiSelector = ({ columns = 7, showSectionTitles = true, showTabs 
 
   return (
     <View style={sx.frame} {...other}>
-      {/* @ts-expect-error We use an old version of RNGH, and it doesn't play well with React 18 */}
       <TapGestureHandler onHandlerStateChange={onTapChange}>
         <View style={sx.outerContainer}>
           {!isReady ? <EmojisLoader /> : null}
