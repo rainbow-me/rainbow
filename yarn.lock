@@ -16057,9 +16057,9 @@ react-native-fs@2.16.6:
     base-64 "^0.1.0"
     utf8 "^3.0.0"
 
-"react-native-gesture-handler@git+https://github.com/rainbow-me/react-native-gesture-handler#a8a7fea015f0701fb31cc773df5374e7f5dd6976":
+"react-native-gesture-handler@git+https://github.com/rainbow-me/react-native-gesture-handler#6b3a6bff084f6d46f06b86c18c7e29e7354c3132":
   version "2.15.0"
-  resolved "git+https://github.com/rainbow-me/react-native-gesture-handler#a8a7fea015f0701fb31cc773df5374e7f5dd6976"
+  resolved "git+https://github.com/rainbow-me/react-native-gesture-handler#6b3a6bff084f6d46f06b86c18c7e29e7354c3132"
   dependencies:
     "@egjs/hammerjs" "^2.0.17"
     hoist-non-react-statics "^3.3.0"
