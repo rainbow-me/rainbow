@@ -99,7 +99,7 @@ export default function SelectENSSheet() {
           {isSuccess && (
             <Bleed bottom={{ custom: scrollEnabled ? 34 : 26 }}>
               <View style={{ height: listHeight }}>
-                <FlatList
+                <FlatList<BaseEnsDomainFragment>
                   ItemSeparatorComponent={() => <Box height={{ custom: rowPadding }} />}
                   data={controlledDomains}
                   contentContainerStyle={{

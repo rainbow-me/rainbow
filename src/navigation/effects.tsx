@@ -422,9 +422,18 @@ export const bottomSheetPreset: StackNavigationOptions & BottomSheetNavigationOp
   gestureResponseDistance,
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
+
 export const walletconnectBottomSheetPreset: BottomSheetNavigationOptions = {
   backdropColor: 'black',
   backdropOpacity: 1,
+  enableContentPanningGesture: false,
+  backdropPressBehavior: 'none',
+  height: '100%',
+};
+
+export const swapSheetPreset: BottomSheetNavigationOptions = {
+  backdropColor: 'black',
+  backdropOpacity: 0.9,
   enableContentPanningGesture: false,
   backdropPressBehavior: 'none',
   height: '100%',

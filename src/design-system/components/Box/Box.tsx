@@ -121,7 +121,6 @@ export const Box = forwardRef(function Box(
     marginRight: marginRightProp,
     marginTop: marginTopProp,
     marginVertical: marginVerticalProp,
-    overflow,
     padding: paddingProp,
     paddingBottom: paddingBottomProp,
     paddingHorizontal: paddingHorizontalProp,

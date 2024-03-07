@@ -229,7 +229,6 @@ export const EmojiSelector = ({ columns = 7, showSectionTitles = true, showTabs 
 
   return (
     <View style={sx.frame} {...other}>
-      {/* @ts-expect-error Property 'children' does not exist on type */}
       <TapGestureHandler onHandlerStateChange={onTapChange}>
         <View style={sx.outerContainer}>
           {!isReady ? <EmojisLoader /> : null}
