@@ -1,0 +1,317 @@
+diff --git a/node_modules/react-native-gesture-handler/DrawerLayout/package.json b/node_modules/react-native-gesture-handler/DrawerLayout/package.json
+index 3e0e4a2..2fc1484 100644
+--- a/node_modules/react-native-gesture-handler/DrawerLayout/package.json
++++ b/node_modules/react-native-gesture-handler/DrawerLayout/package.json
+@@ -1,6 +1,59 @@
+ {
+   "main": "../lib/commonjs/components/DrawerLayout",
+   "module": "../lib/module/components/DrawerLayout",
+-  "react-native": "../src/components/DrawerLayout",
+-  "types": "../lib/typescript/components/DrawerLayout.d.ts"
++  "react-native": {
++    "../lib/commonjs/components/DrawerLayout": "../src/components/DrawerLayout",
++    "zlib": "browserify-zlib",
++    "console": "console-browserify",
++    "constants": "constants-browserify",
++    "crypto": "react-native-crypto",
++    "dns": "dns.js",
++    "net": "react-native-tcp",
++    "domain": "domain-browser",
++    "http": "@tradle/react-native-http",
++    "https": "https-browserify",
++    "os": "react-native-os",
++    "path": "path-browserify",
++    "querystring": "querystring-es3",
++    "fs": "react-native-level-fs",
++    "_stream_transform": "readable-stream/transform",
++    "_stream_readable": "readable-stream/readable",
++    "_stream_writable": "readable-stream/writable",
++    "_stream_duplex": "readable-stream/duplex",
++    "_stream_passthrough": "readable-stream/passthrough",
++    "dgram": "react-native-udp",
++    "stream": "stream-browserify",
++    "timers": "timers-browserify",
++    "tty": "tty-browserify",
++    "vm": "vm-browserify",
++    "tls": false
++  },
++  "types": "../lib/typescript/components/DrawerLayout.d.ts",
++  "browser": {
++    "../lib/commonjs/components/DrawerLayout": "../src/components/DrawerLayout",
++    "zlib": "browserify-zlib",
++    "console": "console-browserify",
++    "constants": "constants-browserify",
++    "crypto": "react-native-crypto",
++    "dns": "dns.js",
++    "net": "react-native-tcp",
++    "domain": "domain-browser",
++    "http": "@tradle/react-native-http",
++    "https": "https-browserify",
++    "os": "react-native-os",
++    "path": "path-browserify",
++    "querystring": "querystring-es3",
++    "fs": "react-native-level-fs",
++    "_stream_transform": "readable-stream/transform",
++    "_stream_readable": "readable-stream/readable",
++    "_stream_writable": "readable-stream/writable",
++    "_stream_duplex": "readable-stream/duplex",
++    "_stream_passthrough": "readable-stream/passthrough",
++    "dgram": "react-native-udp",
++    "stream": "stream-browserify",
++    "timers": "timers-browserify",
++    "tty": "tty-browserify",
++    "vm": "vm-browserify",
++    "tls": false
++  }
+ }
+diff --git a/node_modules/react-native-gesture-handler/Swipeable/package.json b/node_modules/react-native-gesture-handler/Swipeable/package.json
+index ed03879..66844b8 100644
+--- a/node_modules/react-native-gesture-handler/Swipeable/package.json
++++ b/node_modules/react-native-gesture-handler/Swipeable/package.json
+@@ -1,6 +1,59 @@
+ {
+   "main": "../lib/commonjs/components/Swipeable",
+   "module": "../lib/module/components/Swipeable",
+-  "react-native": "../src/components/Swipeable",
+-  "types": "../lib/typescript/components/Swipeable.d.ts"
++  "react-native": {
++    "../lib/commonjs/components/Swipeable": "../src/components/Swipeable",
++    "zlib": "browserify-zlib",
++    "console": "console-browserify",
++    "constants": "constants-browserify",
++    "crypto": "react-native-crypto",
++    "dns": "dns.js",
++    "net": "react-native-tcp",
++    "domain": "domain-browser",
++    "http": "@tradle/react-native-http",
++    "https": "https-browserify",
++    "os": "react-native-os",
++    "path": "path-browserify",
++    "querystring": "querystring-es3",
++    "fs": "react-native-level-fs",
++    "_stream_transform": "readable-stream/transform",
++    "_stream_readable": "readable-stream/readable",
++    "_stream_writable": "readable-stream/writable",
++    "_stream_duplex": "readable-stream/duplex",
++    "_stream_passthrough": "readable-stream/passthrough",
++    "dgram": "react-native-udp",
++    "stream": "stream-browserify",
++    "timers": "timers-browserify",
++    "tty": "tty-browserify",
++    "vm": "vm-browserify",
++    "tls": false
++  },
++  "types": "../lib/typescript/components/Swipeable.d.ts",
++  "browser": {
++    "../lib/commonjs/components/Swipeable": "../src/components/Swipeable",
++    "zlib": "browserify-zlib",
++    "console": "console-browserify",
++    "constants": "constants-browserify",
++    "crypto": "react-native-crypto",
++    "dns": "dns.js",
++    "net": "react-native-tcp",
++    "domain": "domain-browser",
++    "http": "@tradle/react-native-http",
++    "https": "https-browserify",
++    "os": "react-native-os",
++    "path": "path-browserify",
++    "querystring": "querystring-es3",
++    "fs": "react-native-level-fs",
++    "_stream_transform": "readable-stream/transform",
++    "_stream_readable": "readable-stream/readable",
++    "_stream_writable": "readable-stream/writable",
++    "_stream_duplex": "readable-stream/duplex",
++    "_stream_passthrough": "readable-stream/passthrough",
++    "dgram": "react-native-udp",
++    "stream": "stream-browserify",
++    "timers": "timers-browserify",
++    "tty": "tty-browserify",
++    "vm": "vm-browserify",
++    "tls": false
++  }
+ }
+diff --git a/node_modules/react-native-gesture-handler/e2e/web-tests/package.json b/node_modules/react-native-gesture-handler/e2e/web-tests/package.json
+index f4cc41f..3b89f7f 100644
+--- a/node_modules/react-native-gesture-handler/e2e/web-tests/package.json
++++ b/node_modules/react-native-gesture-handler/e2e/web-tests/package.json
+@@ -26,5 +26,57 @@
+     "@types/react-native": "~0.69.1",
+     "typescript": "^5.1.3"
+   },
+-  "private": true
++  "private": true,
++  "react-native": {
++    "zlib": "browserify-zlib",
++    "console": "console-browserify",
++    "constants": "constants-browserify",
++    "crypto": "react-native-crypto",
++    "dns": "dns.js",
++    "net": "react-native-tcp",
++    "domain": "domain-browser",
++    "http": "@tradle/react-native-http",
++    "https": "https-browserify",
++    "os": "react-native-os",
++    "path": "path-browserify",
++    "querystring": "querystring-es3",
++    "fs": "react-native-level-fs",
++    "_stream_transform": "readable-stream/transform",
++    "_stream_readable": "readable-stream/readable",
++    "_stream_writable": "readable-stream/writable",
++    "_stream_duplex": "readable-stream/duplex",
++    "_stream_passthrough": "readable-stream/passthrough",
++    "dgram": "react-native-udp",
++    "stream": "stream-browserify",
++    "timers": "timers-browserify",
++    "tty": "tty-browserify",
++    "vm": "vm-browserify",
++    "tls": false
++  },
++  "browser": {
++    "zlib": "browserify-zlib",
++    "console": "console-browserify",
++    "constants": "constants-browserify",
++    "crypto": "react-native-crypto",
++    "dns": "dns.js",
++    "net": "react-native-tcp",
++    "domain": "domain-browser",
++    "http": "@tradle/react-native-http",
++    "https": "https-browserify",
++    "os": "react-native-os",
++    "path": "path-browserify",
++    "querystring": "querystring-es3",
++    "fs": "react-native-level-fs",
++    "_stream_transform": "readable-stream/transform",
++    "_stream_readable": "readable-stream/readable",
++    "_stream_writable": "readable-stream/writable",
++    "_stream_duplex": "readable-stream/duplex",
++    "_stream_passthrough": "readable-stream/passthrough",
++    "dgram": "react-native-udp",
++    "stream": "stream-browserify",
++    "timers": "timers-browserify",
++    "tty": "tty-browserify",
++    "vm": "vm-browserify",
++    "tls": false
++  }
+ }
+diff --git a/node_modules/react-native-gesture-handler/jest-utils/package.json b/node_modules/react-native-gesture-handler/jest-utils/package.json
+index 5e0f521..bac18f7 100644
+--- a/node_modules/react-native-gesture-handler/jest-utils/package.json
++++ b/node_modules/react-native-gesture-handler/jest-utils/package.json
+@@ -1,6 +1,59 @@
+ {
+   "main": "../lib/commonjs/jestUtils/index",
+   "module": "../lib/module/jestUtils/index",
+-  "react-native": "../src/jestUtils/index",
+-  "types": "../lib/typescript/jestUtils/index.d.ts"
++  "react-native": {
++    "../lib/commonjs/jestUtils/index": "../src/jestUtils/index",
++    "zlib": "browserify-zlib",
++    "console": "console-browserify",
++    "constants": "constants-browserify",
++    "crypto": "react-native-crypto",
++    "dns": "dns.js",
++    "net": "react-native-tcp",
++    "domain": "domain-browser",
++    "http": "@tradle/react-native-http",
++    "https": "https-browserify",
++    "os": "react-native-os",
++    "path": "path-browserify",
++    "querystring": "querystring-es3",
++    "fs": "react-native-level-fs",
++    "_stream_transform": "readable-stream/transform",
++    "_stream_readable": "readable-stream/readable",
++    "_stream_writable": "readable-stream/writable",
++    "_stream_duplex": "readable-stream/duplex",
++    "_stream_passthrough": "readable-stream/passthrough",
++    "dgram": "react-native-udp",
++    "stream": "stream-browserify",
++    "timers": "timers-browserify",
++    "tty": "tty-browserify",
++    "vm": "vm-browserify",
++    "tls": false
++  },
++  "types": "../lib/typescript/jestUtils/index.d.ts",
++  "browser": {
++    "../lib/commonjs/jestUtils/index": "../src/jestUtils/index",
++    "zlib": "browserify-zlib",
++    "console": "console-browserify",
++    "constants": "constants-browserify",
++    "crypto": "react-native-crypto",
++    "dns": "dns.js",
++    "net": "react-native-tcp",
++    "domain": "domain-browser",
++    "http": "@tradle/react-native-http",
++    "https": "https-browserify",
++    "os": "react-native-os",
++    "path": "path-browserify",
++    "querystring": "querystring-es3",
++    "fs": "react-native-level-fs",
++    "_stream_transform": "readable-stream/transform",
++    "_stream_readable": "readable-stream/readable",
++    "_stream_writable": "readable-stream/writable",
++    "_stream_duplex": "readable-stream/duplex",
++    "_stream_passthrough": "readable-stream/passthrough",
++    "dgram": "react-native-udp",
++    "stream": "stream-browserify",
++    "timers": "timers-browserify",
++    "tty": "tty-browserify",
++    "vm": "vm-browserify",
++    "tls": false
++  }
+ }
+diff --git a/node_modules/react-native-gesture-handler/src/web/handlers/FlingGestureHandler.ts b/node_modules/react-native-gesture-handler/src/web/handlers/FlingGestureHandler.ts
+index 38a0a7a..4df0424 100644
+--- a/node_modules/react-native-gesture-handler/src/web/handlers/FlingGestureHandler.ts
++++ b/node_modules/react-native-gesture-handler/src/web/handlers/FlingGestureHandler.ts
+@@ -47,6 +47,7 @@ export default class FlingGestureHandler extends GestureHandler {
+ 
+     this.maxNumberOfPointersSimultaneously = 1;
+ 
++    // @ts-expect-errors
+     this.delayTimeout = setTimeout(() => this.fail(), this.maxDurationMs);
+   }
+ 
+diff --git a/node_modules/react-native-gesture-handler/src/web/handlers/LongPressGestureHandler.ts b/node_modules/react-native-gesture-handler/src/web/handlers/LongPressGestureHandler.ts
+index 7707b90..4a9b367 100644
+--- a/node_modules/react-native-gesture-handler/src/web/handlers/LongPressGestureHandler.ts
++++ b/node_modules/react-native-gesture-handler/src/web/handlers/LongPressGestureHandler.ts
+@@ -102,6 +102,7 @@ export default class LongPressGestureHandler extends GestureHandler {
+ 
+   private tryActivate(): void {
+     if (this.minDurationMs > 0) {
++      // @ts-expect-errors
+       this.activationTimeout = setTimeout(() => {
+         this.activate();
+       }, this.minDurationMs);
+diff --git a/node_modules/react-native-gesture-handler/src/web/handlers/PanGestureHandler.ts b/node_modules/react-native-gesture-handler/src/web/handlers/PanGestureHandler.ts
+index 4334740..e90e840 100644
+--- a/node_modules/react-native-gesture-handler/src/web/handlers/PanGestureHandler.ts
++++ b/node_modules/react-native-gesture-handler/src/web/handlers/PanGestureHandler.ts
+@@ -442,6 +442,7 @@ export default class PanGestureHandler extends GestureHandler {
+       this.begin();
+ 
+       if (this.activateAfterLongPress > 0) {
++        // @ts-expect-errors
+         this.activationTimeout = setTimeout(() => {
+           this.activate();
+         }, this.activateAfterLongPress);
+diff --git a/node_modules/react-native-gesture-handler/src/web/handlers/TapGestureHandler.ts b/node_modules/react-native-gesture-handler/src/web/handlers/TapGestureHandler.ts
+index 7aa52c3..53b2287 100644
+--- a/node_modules/react-native-gesture-handler/src/web/handlers/TapGestureHandler.ts
++++ b/node_modules/react-native-gesture-handler/src/web/handlers/TapGestureHandler.ts
+@@ -87,6 +87,7 @@ export default class TapGestureHandler extends GestureHandler {
+   private startTap(): void {
+     this.clearTimeouts();
+ 
++    // @ts-expect-errors
+     this.waitTimeout = setTimeout(() => this.fail(), this.maxDurationMs);
+   }
+ 
+@@ -99,6 +100,7 @@ export default class TapGestureHandler extends GestureHandler {
+     ) {
+       this.activate();
+     } else {
++      // @ts-expect-errors
+       this.delayTimeout = setTimeout(() => this.fail(), this.maxDelayMs);
+     }
+   }
