@@ -79,7 +79,7 @@ export const handleWalletConnectRequest = async (request: WalletconnectRequestDa
     if (request?.requestId) {
       if (request?.walletConnectV2RequestValues) {
         await handleSessionRequestResponse(request?.walletConnectV2RequestValues, {
-          result: 'null',
+          result: null,
           error: error || 'User cancelled the request',
         });
       } else {
