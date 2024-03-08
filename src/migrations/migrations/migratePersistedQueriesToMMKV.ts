@@ -7,8 +7,8 @@ export function migratePersistedQueriesToMMKV(): Migration {
   return {
     name: MigrationName.migratePersistedQueriesToMMKV,
     async migrate() {
-      const queryState = await queryStorage.get(['rainbow.react-query']);
-      const favoritesState = queryState?.clientState?.queries[favoritesQueryKey[1]];
+      const queryState = JSON.parse(await queryStorage.get(['rainbow.react-query']))
+      const favoritesState = queryState?.clientState?.queries?.find(({ queryKey }) => queryKey[1] == favoritesQueryKey[1])
       await queryClient.setQueryData(favoritesQueryKey, favoritesState);
       return;
     },
