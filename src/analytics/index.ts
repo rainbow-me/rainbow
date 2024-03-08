@@ -19,7 +19,7 @@ export class Analytics {
   }
 
   /**
-   * Sends an `identify` event to Segment along with the traits you pass in
+   * Sends an `identify` event along with the traits you pass in
    * here. This uses the `deviceId` as the identifier, and attaches the hashed
    * wallet address as a property, if available.
    */
@@ -33,7 +33,7 @@ export class Analytics {
   }
 
   /**
-   * Sends a `screen` event to Segment.
+   * Sends a `screen` event.
    */
   screen(routeName: string, params: Record<string, any> = {}): void {
     if (this.disabled) return;
@@ -42,7 +42,7 @@ export class Analytics {
   }
 
   /**
-   * Send an event to Segment. Param `event` must exist in
+   * Sends an event. Param `event` must exist in
    * `@/analytics/event`, and if properties are associated with it, they must
    * be defined as part of `EventProperties` in the same file
    */
@@ -65,7 +65,7 @@ export class Analytics {
   }
 
   /**
-   * Set `deviceId` for use as the identifier in Segment. This DOES NOT call
+   * Set `deviceId` for use as the identifier. This DOES NOT call
    * `identify()`, you must do that on your own.
    */
   setDeviceId(deviceId: string) {
@@ -83,14 +83,14 @@ export class Analytics {
   }
 
   /**
-   * Enable Segment tracking. Defaults to enabled.
+   * Enable tracking. Defaults to enabled.
    */
   enable() {
     this.disabled = false;
   }
 
   /**
-   * Disable Segment tracking. Defaults to enabled.
+   * Disable tracking. Defaults to enabled.
    */
   disable() {
     this.disabled = true;

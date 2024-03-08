@@ -344,7 +344,7 @@ function Root() {
 
     initializeApplication()
       .then(() => {
-        logger.debug(`Application initialized with Sentry and Segment`);
+        logger.debug(`Application initialized with Sentry and analytics`);
 
         // init complete, load the rest of the app
         setInitializing(false);

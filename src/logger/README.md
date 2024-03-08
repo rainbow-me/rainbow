@@ -175,7 +175,7 @@ logger.info(message, {
 The `log` level should be used sparingly because these messages will show up as
 separate Issues in Sentry. They also get sent as breadcrumbs for convenience.
 
-Use them a little like Segment event, but one that will only be used by
+Use them a little like an analytics event, but one that will only be used by
 devs. They support the optional second param, `metadata`.
 
 ```typescript
