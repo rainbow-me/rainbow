@@ -11,7 +11,7 @@ export function migratePersistedQueriesToMMKV(): Migration {
       const favoritesState = queryState?.clientState?.queries?.find?.(
         (query: { queryKey: string[] }) => query?.queryKey[1] == favoritesQueryKey[1]
       );
-      await queryClient.setQueryData(favoritesQueryKey, favoritesState);
+      await queryClient.setQueryData(favoritesQueryKey, favoritesState?.state?.data);
       return;
     },
   };
