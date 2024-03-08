@@ -794,16 +794,11 @@ PODS:
   - SDWebImageWebPCoder (0.14.5):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
-  - segment-analytics-react-native (2.15.0):
-    - React-Core
-    - sovran-react-native
   - Sentry (7.11.0):
     - Sentry/Core (= 7.11.0)
   - Sentry/Core (7.11.0)
   - Shimmer (1.0.2)
   - SocketRocket (0.6.1)
-  - sovran-react-native (1.0.4):
-    - React-Core
   - SRSRadialGradient (1.0.10):
     - React
   - SSZipArchive (2.2.3)
@@ -942,9 +937,7 @@ DEPENDENCIES:
   - RNSound (from `../node_modules/react-native-sound`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - RNTextSize (from `../node_modules/react-native-text-size`)
-  - "segment-analytics-react-native (from `../node_modules/@segment/analytics-react-native`)"
   - Shimmer
-  - "sovran-react-native (from `../node_modules/@segment/sovran-react-native`)"
   - SRSRadialGradient (from `../node_modules/react-native-radial-gradient/ios`)
   - swift-vibrant
   - TcpSockets (from `../node_modules/react-native-tcp`)
@@ -1215,10 +1208,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-svg"
   RNTextSize:
     :path: "../node_modules/react-native-text-size"
-  segment-analytics-react-native:
-    :path: "../node_modules/@segment/analytics-react-native"
-  sovran-react-native:
-    :path: "../node_modules/@segment/sovran-react-native"
   SRSRadialGradient:
     :path: "../node_modules/react-native-radial-gradient/ios"
   TcpSockets:
@@ -1379,11 +1368,9 @@ SPEC CHECKSUMS:
   RudderKit: f272f9872183946452ac94cd7bb2244a71e6ca8f
   SDWebImage: a3ba0b8faac7228c3c8eadd1a55c9c9fe5e16457
   SDWebImageWebPCoder: c94f09adbca681822edad9e532ac752db713eabf
-  segment-analytics-react-native: 2b90f606cda9234dd110d117c4ffc918d9ba29bb
   Sentry: 0c5cd63d714187b4a39c331c1f0eb04ba7868341
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
-  sovran-react-native: 791f2f726b4d57ece59676eda58d6da9dc95ad4e
   SRSRadialGradient: e5a34825dff88c9cf773b58bf39ed6a02e59a084
   SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
   swift-vibrant: 3def73c5c281db74f420ec386590d9c1c5b0995c
