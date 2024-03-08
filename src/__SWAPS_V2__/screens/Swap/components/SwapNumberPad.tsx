@@ -53,18 +53,23 @@ export const SwapNumberPad = ({
       inputMethod.value = inputKey;
 
       if (typeof inputValues.value[inputKey] === 'number') {
-        inputValues.value = {
-          ...inputValues.value,
-          [inputKey]: inputKey === 'inputAmount' ? stripCommas(formattedInputValue.value) : stripCommas(formattedOutputValue.value),
-        };
+        inputValues.modify(value => {
+          return {
+            ...value,
+            [inputKey]: inputKey === 'inputAmount' ? stripCommas(formattedInputValue.value) : stripCommas(formattedOutputValue.value),
+          };
+        });
       }
     }
     const currentValue = inputValues.value[inputKey];
     const newValue = currentValue === 0 || currentValue === '0' ? `${number}` : `${currentValue}${number}`;
-    inputValues.value = {
-      ...inputValues.value,
-      [inputKey]: newValue,
-    };
+
+    inputValues.modify(value => {
+      return {
+        ...value,
+        [inputKey]: newValue,
+      };
+    });
   };
 
   const addDecimalPoint = () => {
@@ -75,17 +80,22 @@ export const SwapNumberPad = ({
       if (inputMethod.value !== inputKey) {
         inputMethod.value = inputKey;
 
-        inputValues.value = {
-          ...inputValues.value,
-          [inputKey]: inputKey === 'inputAmount' ? stripCommas(formattedInputValue.value) : stripCommas(formattedOutputValue.value),
-        };
+        inputValues.modify(values => {
+          return {
+            ...values,
+            [inputKey]: inputKey === 'inputAmount' ? stripCommas(formattedInputValue.value) : stripCommas(formattedOutputValue.value),
+          };
+        });
       }
 
       const newValue = `${currentValue}.`;
-      inputValues.value = {
-        ...inputValues.value,
-        [inputKey]: newValue,
-      };
+
+      inputValues.modify(values => {
+        return {
+          ...values,
+          [inputKey]: newValue,
+        };
+      });
     }
   };
 
@@ -95,26 +105,33 @@ export const SwapNumberPad = ({
     if (inputMethod.value !== inputKey) {
       inputMethod.value = inputKey;
 
-      inputValues.value = {
-        ...inputValues.value,
-        [inputKey]: inputKey === 'inputAmount' ? stripCommas(formattedInputValue.value) : stripCommas(formattedOutputValue.value),
-      };
+      inputValues.modify(values => {
+        return {
+          ...values,
+          [inputKey]: inputKey === 'inputAmount' ? stripCommas(formattedInputValue.value) : stripCommas(formattedOutputValue.value),
+        };
+      });
     }
     const currentValue = inputValues.value[inputKey].toString();
     // Handle deletion, ensuring a placeholder zero remains if the entire number is deleted
     const newValue = currentValue.length > 1 ? currentValue.slice(0, -1) : 0;
     if (newValue === 0) {
-      inputValues.value = {
-        inputAmount: 0,
-        inputNativeValue: 0,
-        outputAmount: 0,
-        outputNativeValue: 0,
-      };
+      inputValues.modify(values => {
+        return {
+          ...values,
+          inputAmount: 0,
+          inputNativeValue: 0,
+          outputAmount: 0,
+          outputNativeValue: 0,
+        };
+      });
     } else {
-      inputValues.value = {
-        ...inputValues.value,
-        [inputKey]: newValue,
-      };
+      inputValues.modify(values => {
+        return {
+          ...values,
+          [inputKey]: newValue,
+        };
+      });
     }
   };
 
