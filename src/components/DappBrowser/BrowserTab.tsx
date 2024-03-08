@@ -291,7 +291,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
                   return true;
                 };
               }
-              if (parsedData.payload.method === 'eth_requestAccounts') {
+              if (parsedData.payload.method === 'eth_requestAccounts' || parsedData.payload.method === 'eth_accounts') {
                 callback = async () => {
                   return { result: [accountAddress] };
                 };
