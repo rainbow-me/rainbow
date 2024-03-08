@@ -33,7 +33,7 @@ import { useNavigation } from '@/navigation';
 import { useTheme } from '@/theme';
 import { abbreviations, ethereumUtils, safeAreaInsetValues } from '@/utils';
 import { PanGestureHandler } from 'react-native-gesture-handler';
-import { useIsFocused, useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { metadataPOSTClient } from '@/graphql';
 import {
   TransactionAssetType,
@@ -54,8 +54,7 @@ import {
   greaterThanOrEqualTo,
   omitFlatten,
 } from '@/helpers/utilities';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../redux/store';
+
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
 import { useAccountSettings, useClipboard, useDimensions, useGas, useWallets } from '@/hooks';
@@ -83,9 +82,6 @@ import { parseGasParamsForTransaction } from '@/parsers/gas';
 import { loadWallet, sendTransaction, signPersonalMessage, signTransaction, signTypedDataMessage } from '@/model/wallet';
 
 import { analytics } from '@/analytics';
-import { handleSessionRequestResponse } from '@/walletConnect';
-import { WalletconnectResultType, walletConnectRemovePendingRedirect, walletConnectSendStatus } from '@/redux/walletconnect';
-import { removeRequest } from '@/redux/requests';
 import { maybeSignUri } from '@/handlers/imgix';
 import { RPCMethod } from '@/walletConnect/types';
 import { isAddress } from '@ethersproject/address';
@@ -96,6 +92,8 @@ import { addNewTransaction } from '@/state/pendingTransactions';
 import { getNextNonce } from '@/state/nonces';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
+import { RequestData } from '@/redux/requests';
+import { RequestType } from '@/utils/requestNavigationHandlers';
 
 const COLLAPSED_CARD_HEIGHT = 56;
 const MAX_CARD_HEIGHT = 176;
@@ -129,6 +127,18 @@ const timingConfig = {
   easing: Easing.bezier(0.2, 0, 0, 1),
 };
 
+type SignTransactionSheetParams = {
+  transactionDetails: RequestData;
+  onSuccess: (hash: string) => void;
+  onCancel: (error?: Error) => void;
+  onCloseScreen: (canceled: boolean) => void;
+  network: Network;
+  address: string;
+  requestType: RequestType;
+};
+
+export type SignTransactionSheetRouteProp = RouteProp<{ SignTransactionSheet: SignTransactionSheetParams }, 'SignTransactionSheet'>;
+
 export const SignTransactionSheet = () => {
   const { goBack, navigate } = useNavigation();
   const { colors, isDarkMode } = useTheme();
@@ -136,16 +146,18 @@ export const SignTransactionSheet = () => {
   const [simulationData, setSimulationData] = useState<TransactionSimulationResult | undefined>();
   const [simulationError, setSimulationError] = useState<TransactionErrorType | undefined>(undefined);
   const [simulationScanResult, setSimulationScanResult] = useState<TransactionScanResultType | undefined>(undefined);
-  const { params: routeParams } = useRoute<any>();
+
+  const { params: routeParams } = useRoute<SignTransactionSheetRouteProp>();
   const { wallets, walletNames, switchToWalletWithAddress } = useWallets();
   const {
-    callback,
     transactionDetails,
     onSuccess: onSuccessCallback,
     onCancel: onCancelCallback,
     onCloseScreen: onCloseScreenCallback,
     network: currentNetwork,
     address: currentAddress,
+    // for request type specific handling
+    requestType,
   } = routeParams;
 
   const isMessageRequest = isMessageDisplayType(transactionDetails.payload.method);
@@ -193,12 +205,12 @@ export const SignTransactionSheet = () => {
   const req = transactionDetails?.payload?.params?.[0];
   const request = useMemo(() => {
     return isMessageRequest
-      ? { message: transactionDetails?.displayDetails.request }
+      ? { message: transactionDetails?.displayDetails?.request }
       : {
-          ...transactionDetails?.displayDetails.request,
+          ...transactionDetails?.displayDetails?.request,
           nativeAsset: nativeAsset,
         };
-  }, [isMessageRequest, transactionDetails?.displayDetails.request, nativeAsset]);
+  }, [isMessageRequest, transactionDetails?.displayDetails?.request, nativeAsset]);
 
   const calculateGasLimit = useCallback(async () => {
     calculatingGasLimit.current = true;
@@ -442,7 +454,7 @@ export const SignTransactionSheet = () => {
         stopPollingGasFees();
       }
 
-      onCloseScreenCallback?.();
+      onCloseScreenCallback?.(canceled);
     },
     [accountInfo.isHardwareWallet, goBack, isMessageRequest, onCloseScreenCallback, stopPollingGasFees]
   );
@@ -450,9 +462,6 @@ export const SignTransactionSheet = () => {
   const onCancel = useCallback(
     async (error?: Error) => {
       try {
-        if (callback) {
-          callback({ error: error || 'User cancelled the request' });
-        }
         setTimeout(async () => {
           onCancelCallback?.(error);
           const rejectionType = transactionDetails?.payload?.method === SEND_TRANSACTION ? 'transaction' : 'signature';
@@ -467,7 +476,7 @@ export const SignTransactionSheet = () => {
         closeScreen(true);
       }
     },
-    [accountInfo.isHardwareWallet, callback, closeScreen, onCancelCallback, transactionDetails?.payload?.method]
+    [accountInfo.isHardwareWallet, closeScreen, onCancelCallback, transactionDetails?.payload?.method]
   );
 
   const handleSignMessage = useCallback(async () => {
@@ -502,15 +511,8 @@ export const SignTransactionSheet = () => {
         isHardwareWallet: accountInfo.isHardwareWallet,
         network: currentNetwork,
       });
-      console.log('response', response);
-
-      console.log('pepe: ', !!onSuccessCallback);
       onSuccessCallback?.(response.result);
 
-      // where is this being used?
-      if (callback) {
-        callback({ sig: response.result });
-      }
       closeScreen(false);
     } else {
       await onCancel(response?.error);
@@ -524,7 +526,6 @@ export const SignTransactionSheet = () => {
     accountInfo.address,
     accountInfo.isHardwareWallet,
     onSuccessCallback,
-    callback,
     closeScreen,
     onCancel,
   ]);
@@ -618,9 +619,6 @@ export const SignTransactionSheet = () => {
     if (response?.result) {
       const signResult = response.result as string;
       const sendResult = response.result as Transaction;
-      if (callback) {
-        callback({ result: sendInsteadOfSign ? sendResult.hash : signResult });
-      }
       let txSavedInCurrentWallet = false;
       const displayDetails = transactionDetails.displayDetails;
 
@@ -631,7 +629,7 @@ export const SignTransactionSheet = () => {
           asset: displayDetails?.request?.asset || nativeAsset,
           contract: {
             name: transactionDetails.dappName,
-            iconUrl: transactionDetails.dappIcon,
+            iconUrl: transactionDetails.imageUrl,
           },
           data: sendResult.data,
           from: displayDetails?.request?.from,
@@ -660,7 +658,13 @@ export const SignTransactionSheet = () => {
         network: currentNetwork,
       });
 
-      onSuccessCallback?.(sendResult.hash);
+      if (!sendInsteadOfSign) {
+        onSuccessCallback?.(signResult);
+      } else {
+        if (sendResult?.hash) {
+          onSuccessCallback?.(sendResult.hash);
+        }
+      }
 
       closeScreen(false);
       // When the tx is sent from a different wallet,
@@ -679,7 +683,6 @@ export const SignTransactionSheet = () => {
     } else {
       logger.error(new RainbowError(`WC: Tx failure - ${formattedDappUrl}`), {
         dappName: transactionDetails?.dappName,
-        dappScheme: transactionDetails?.dappScheme,
         dappUrl: transactionDetails?.dappUrl,
         formattedDappUrl,
         rpcMethod: req?.method,
@@ -695,8 +698,7 @@ export const SignTransactionSheet = () => {
     transactionDetails.displayDetails,
     transactionDetails.dappName,
     transactionDetails.dappUrl,
-    transactionDetails.dappIcon,
-    transactionDetails?.dappScheme,
+    transactionDetails.imageUrl,
     req,
     currentNetwork,
     selectedGasFee,
@@ -704,11 +706,10 @@ export const SignTransactionSheet = () => {
     accountInfo.address,
     accountInfo.isHardwareWallet,
     provider,
-    callback,
-    onSuccessCallback,
     closeScreen,
     nativeAsset,
     accountAddress,
+    onSuccessCallback,
     switchToWalletWithAddress,
     formattedDappUrl,
     onCancel,

@@ -24,9 +24,9 @@ import * as lang from '@/languages';
 import store from '@/redux/store';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import WalletTypes from '@/helpers/walletTypes';
-import ethereumUtils from '@/utils/ethereumUtils';
+import ethereumUtils, { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { getRequestDisplayDetails } from '@/parsers/requests';
-import { RequestData, REQUESTS_UPDATE_REQUESTS_TO_APPROVE, removeRequest } from '@/redux/requests';
+import { WalletconnectRequestData, REQUESTS_UPDATE_REQUESTS_TO_APPROVE, removeRequest } from '@/redux/requests';
 import { saveLocalRequests } from '@/handlers/localstorage/walletconnectRequests';
 import { events } from '@/handlers/appEvents';
 import { getFCMToken } from '@/notifications/tokens';
@@ -587,6 +587,11 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
       method: method as RPCMethod,
       params,
     });
+    if (!address) {
+      logger.error(new RainbowError('No Address in the RPC Params'));
+      return;
+    }
+
     const allWallets = store.getState().wallets.wallets;
 
     logger.debug(`WC v2: session_request method is supported`, { method, params, address, message }, logger.DebugContext.walletconnect);
@@ -671,7 +676,7 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
     const dappNetwork = ethereumUtils.getNetworkFromChainId(chainId);
     const displayDetails = getRequestDisplayDetails(event.params.request, nativeCurrency, dappNetwork);
     const peerMeta = session.peer.metadata;
-    const request: RequestData = {
+    const request: WalletconnectRequestData = {
       clientId: session.topic, // I don't think this is used
       peerId: session.topic, // I don't think this is used
       requestId: event.id,
@@ -680,12 +685,13 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
       dappUrl: peerMeta.url || 'Unknown URL',
       displayDetails,
       imageUrl: maybeSignUri(peerMeta.icons[0], { w: 200 }),
+      address,
+      network: getNetworkFromChainId(chainId),
       payload: event.params.request,
       walletConnectV2RequestValues: {
         sessionRequestEvent: event,
-        // @ts-ignore we assign address above
-        address, // required by screen
-        chainId, // required by screen
+        address,
+        chainId,
         onComplete(type: string) {
           if (IS_IOS) {
             Navigation.handleAction(Routes.WALLET_CONNECT_REDIRECT_SHEET, {
