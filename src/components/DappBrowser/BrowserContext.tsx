@@ -31,6 +31,8 @@ interface TabState {
   url: string;
 }
 
+export const RAINBOW_HOME = 'RAINBOW_HOME';
+
 const defaultContext: BrowserContextType = {
   activeTabIndex: 0,
   closeTab: () => {
@@ -59,9 +61,9 @@ const defaultContext: BrowserContextType = {
     return;
   },
   tabStates: [
-    { url: 'https://www.google.com/', canGoBack: false, canGoForward: false },
+    { url: RAINBOW_HOME, canGoBack: false, canGoForward: false },
     {
-      url: 'https://www.rainbowkit.com/',
+      url: 'https://bx-e2e-dapp.vercel.app/',
       canGoBack: false,
       canGoForward: false,
     },
@@ -155,7 +157,7 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
       updatedTabs.push({
         canGoBack: false,
         canGoForward: false,
-        url: 'https://www.google.com',
+        url: RAINBOW_HOME,
       });
       return updatedTabs;
     });

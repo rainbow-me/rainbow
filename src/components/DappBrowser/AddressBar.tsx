@@ -1,11 +1,12 @@
+/* eslint-disable no-nested-ternary */
 import { Input } from '@/components/inputs';
-import { Box, globalColors, useForegroundColor } from '@/design-system';
+import { Box, globalColors, useForegroundColor, Text } from '@/design-system';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { NativeSyntheticEvent, TextInput, TextInputSubmitEditingEventData } from 'react-native';
 import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { ToolbarIcon } from './BrowserToolbar';
 import isValidDomain from 'is-valid-domain';
-import { useBrowserContext } from './BrowserContext';
+import { RAINBOW_HOME, useBrowserContext } from './BrowserContext';
 import { ButtonPressAnimation } from '@/components/animations';
 
 const GOOGLE_SEARCH_URL = 'https://www.google.com/search?q=';
@@ -74,6 +75,8 @@ export const AddressBar = () => {
   }, [activeTabIndex, tabStates]);
 
   const isGoogleSearch = url.startsWith(GOOGLE_SEARCH_URL);
+  const isHome = formattedUrl === RAINBOW_HOME;
+  const inputValue = isHome ? undefined : isFocused && !isGoogleSearch ? url : formattedUrl;
 
   return (
     <Box as={Animated.View} style={[barStyle, { position: 'relative' }]}>
@@ -105,7 +108,6 @@ export const AddressBar = () => {
           onChangeText={setUrl}
           onFocus={() => setIsFocused(true)}
           onSubmitEditing={handleUrlSubmit}
-          placeholderText="Search or enter website name"
           ref={inputRef}
           returnKeyType="go"
           selectTextOnFocus
@@ -122,12 +124,20 @@ export const AddressBar = () => {
             paddingVertical: 10,
             pointerEvents: isFocused ? 'auto' : 'none',
           }}
-          value={isFocused && !isGoogleSearch ? url : formattedUrl}
-        />
+          value={inputValue}
+        >
+          {isHome && (
+            <Text size="20pt" color="labelQuaternary" align="center">
+              Search or enter website name
+            </Text>
+          )}
+        </Input>
       </ButtonPressAnimation>
-      <Box position="absolute" style={{ right: 26, top: 25 }}>
-        <ToolbarIcon color="label" icon="􀅈" onPress={onRefresh} size="icon 17px" />
-      </Box>
+      {!isHome && tabStates[activeTabIndex].url && (
+        <Box position="absolute" style={{ right: 26, top: 25 }}>
+          <ToolbarIcon color="label" icon="􀅈" onPress={onRefresh} size="icon 17px" />
+        </Box>
+      )}
     </Box>
   );
 };

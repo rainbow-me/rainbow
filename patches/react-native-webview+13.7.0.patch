@@ -1,0 +1,89 @@
+diff --git a/node_modules/react-native-webview/android/src/main/java/com/reactnativecommunity/webview/RNCWebView.java b/node_modules/react-native-webview/android/src/main/java/com/reactnativecommunity/webview/RNCWebView.java
+index a9694c6..c66cbf7 100644
+--- a/node_modules/react-native-webview/android/src/main/java/com/reactnativecommunity/webview/RNCWebView.java
++++ b/node_modules/react-native-webview/android/src/main/java/com/reactnativecommunity/webview/RNCWebView.java
+@@ -36,6 +36,10 @@ import com.reactnativecommunity.webview.events.TopMessageEvent;
+ import org.json.JSONException;
+ import org.json.JSONObject;
+ 
++import java.io.InputStream;
++import java.util.Iterator;
++import java.util.Scanner;
++
+ import java.util.List;
+ import java.util.Map;
+ 
+@@ -67,6 +71,8 @@ public class RNCWebView extends WebView implements LifecycleEventListener {
+     protected boolean hasScrollEvent = false;
+     protected boolean nestedScrollEnabled = false;
+     protected ProgressChangedFilter progressChangedFilter;
++    protected JSONObject allowedDomains;
++    protected JSONObject allowedDomainsWithSubdomains;
+ 
+     /**
+      * WebView must be created with an context of the current activity
+@@ -78,6 +84,38 @@ public class RNCWebView extends WebView implements LifecycleEventListener {
+         super(reactContext);
+         this.createCatalystInstance();
+         progressChangedFilter = new ProgressChangedFilter();
++        try {
++           Context context = reactContext.getApplicationContext();
++           InputStream inputStream = context.getResources().openRawResource(R.raw.extras);
++           String jsonString = new Scanner(inputStream).useDelimiter("\\A").next();
++           allowedDomains = new JSONObject(jsonString).getJSONObject("allowedDomains");
++           allowedDomainsWithSubdomains = new JSONObject();
++           Iterator<String> keys = allowedDomains.keys();
++
++           while(keys.hasNext()) {
++               String domain = keys.next();
++               if (allowedDomains.get(domain) instanceof JSONObject) {
++                   JSONObject domainObj = (JSONObject) allowedDomains.get(domain);
++                   if (domainObj.has("subdomains")) {
++                       allowedDomainsWithSubdomains.put(domain, true);
++                   }
++               }
++           }
++       } catch (Exception e) {
++           e.printStackTrace();
++       }
++       allowedDomains = allowedDomains;
++       allowedDomainsWithSubdomains = allowedDomainsWithSubdomains;
++    }
++
++    public static boolean isHostAllowed(JSONObject allowedDomains, JSONObject allowedDomainsWithSubdomains, String host) {
++        boolean exactMatch = allowedDomains.has(host);
++        if (!exactMatch){
++            String[] domainParts = host.split("\\.");
++            String topLevelDomain = domainParts[domainParts.length - 2] + '.' + domainParts[domainParts.length - 1];
++            return allowedDomainsWithSubdomains.has(topLevelDomain);
++        }
++        return true;
+     }
+ 
+     public void setIgnoreErrFailedForThisURL(String url) {
+diff --git a/node_modules/react-native-webview/android/src/main/java/com/reactnativecommunity/webview/RNCWebViewClient.java b/node_modules/react-native-webview/android/src/main/java/com/reactnativecommunity/webview/RNCWebViewClient.java
+index d8af74a..7ad044c 100644
+--- a/node_modules/react-native-webview/android/src/main/java/com/reactnativecommunity/webview/RNCWebViewClient.java
++++ b/node_modules/react-native-webview/android/src/main/java/com/reactnativecommunity/webview/RNCWebViewClient.java
+@@ -3,6 +3,7 @@ package com.reactnativecommunity.webview;
+ import android.annotation.TargetApi;
+ import android.graphics.Bitmap;
+ import android.net.http.SslError;
++import android.net.Uri;
+ import android.os.Build;
+ import android.os.SystemClock;
+ import android.util.Log;
+@@ -88,6 +89,13 @@ public class RNCWebViewClient extends WebViewClient {
+     public boolean shouldOverrideUrlLoading(WebView view, String url) {
+         final RNCWebView rncWebView = (RNCWebView) view;
+         final boolean isJsDebugging = ((ReactContext) view.getContext()).getJavaScriptContextHolder().get() == 0;
++        if(!rncWebView.isHostAllowed(
++           rncWebView.allowedDomains,
++           rncWebView.allowedDomainsWithSubdomains,
++           Uri.parse(url).getHost())
++        ){
++           return true;
++        }
+ 
+         if (!isJsDebugging && rncWebView.mCatalystInstance != null) {
+             final Pair<Double, AtomicReference<RNCWebViewModuleImpl.ShouldOverrideUrlLoadingLock.ShouldOverrideCallbackState>> lock = RNCWebViewModuleImpl.shouldOverrideUrlLoadingLock.getNewLock();

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Box, globalColors, useColorMode } from '@/design-system';
+import { Box, globalColors, useColorMode, Text } from '@/design-system';
+import { Page } from '@/components/layout';
 import { useAccountSettings, useDimensions } from '@/hooks';
 import { AnimatePresence, MotiView } from 'moti';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -10,7 +11,7 @@ import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 import { transformOrigin } from 'react-native-redash';
 import { MMKV } from 'react-native-mmkv';
-import { useBrowserContext } from './BrowserContext';
+import { RAINBOW_HOME, useBrowserContext } from './BrowserContext';
 import { Image, StyleSheet, View, TouchableWithoutFeedback } from 'react-native';
 import { Freeze } from 'react-freeze';
 import { COLLAPSED_WEBVIEW_HEIGHT_UNSCALED, TAB_VIEW_COLUMN_WIDTH, TAB_VIEW_ROW_HEIGHT, WEBVIEW_HEIGHT } from './Dimensions';
@@ -360,6 +361,68 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
     [loadProgress]
   );
 
+  const HomepageComponent = () => (
+    <Box as={Page} flex={1} height="full" width="full" alignItems="center" justifyContent="center">
+      <Text size="20pt" color="label">
+        Dapp Browser Homepage
+      </Text>
+    </Box>
+  );
+
+  const WebviewComponent = () => (
+    <Freeze
+      freeze={!isActiveTab}
+      placeholder={
+        <Box
+          style={[
+            styles.webViewStyle,
+            {
+              backgroundColor: backgroundColor || (colorMode === 'dark' ? '#191A1C' : globalColors.blueGrey10),
+              height: COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
+            },
+          ]}
+        />
+      }
+    >
+      <WebView
+        webviewDebuggingEnabled={true}
+        injectedJavaScriptBeforeContentLoaded={injectedJS}
+        allowsInlineMediaPlayback
+        allowsBackForwardNavigationGestures
+        applicationNameForUserAgent={'Rainbow'}
+        automaticallyAdjustContentInsets
+        automaticallyAdjustsScrollIndicatorInsets
+        containerStyle={{
+          overflow: 'visible',
+        }}
+        contentInset={{
+          bottom: safeAreaInsetValues.bottom + 104,
+        }}
+        decelerationRate={'normal'}
+        injectedJavaScript={getWebsiteBackgroundColor}
+        mediaPlaybackRequiresUserAction
+        onLoadStart={handleOnLoadStart}
+        onLoad={handleOnLoad}
+        onLoadEnd={handleOnLoadEnd}
+        onError={handleOnError}
+        onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
+        onLoadProgress={handleOnLoadProgress}
+        onMessage={handleMessage}
+        onNavigationStateChange={handleNavigationStateChange}
+        ref={webViewRef}
+        source={{ uri: tabStates[tabIndex].url }}
+        style={[
+          styles.webViewStyle,
+          {
+            backgroundColor: backgroundColor || (colorMode === 'dark' ? globalColors.grey100 : globalColors.white100),
+          },
+        ]}
+      ></WebView>
+    </Freeze>
+  );
+
+  const TabContent = tabStates[tabIndex].url === RAINBOW_HOME ? <HomepageComponent /> : <WebviewComponent />;
+
   return (
     <>
       <TouchableWithoutFeedback onPress={handlePress}>
@@ -373,55 +436,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
                 width: '100%',
               }}
             >
-              <Freeze
-                freeze={!isActiveTab}
-                placeholder={
-                  <Box
-                    style={[
-                      styles.webViewStyle,
-                      {
-                        backgroundColor: backgroundColor || (colorMode === 'dark' ? '#191A1C' : globalColors.blueGrey10),
-                        height: COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
-                      },
-                    ]}
-                  />
-                }
-              >
-                <WebView
-                  webviewDebuggingEnabled={true}
-                  injectedJavaScriptBeforeContentLoaded={injectedJS}
-                  allowsInlineMediaPlayback
-                  allowsBackForwardNavigationGestures
-                  applicationNameForUserAgent={'Rainbow'}
-                  automaticallyAdjustContentInsets
-                  automaticallyAdjustsScrollIndicatorInsets
-                  containerStyle={{
-                    overflow: 'visible',
-                  }}
-                  contentInset={{
-                    bottom: safeAreaInsetValues.bottom + 104,
-                  }}
-                  decelerationRate={'normal'}
-                  injectedJavaScript={getWebsiteBackgroundColor}
-                  mediaPlaybackRequiresUserAction
-                  onLoadStart={handleOnLoadStart}
-                  onLoad={handleOnLoad}
-                  onLoadEnd={handleOnLoadEnd}
-                  onError={handleOnError}
-                  onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
-                  onLoadProgress={handleOnLoadProgress}
-                  onMessage={handleMessage}
-                  onNavigationStateChange={handleNavigationStateChange}
-                  ref={webViewRef}
-                  source={{ uri: tabStates[tabIndex].url }}
-                  style={[
-                    styles.webViewStyle,
-                    {
-                      backgroundColor: backgroundColor || (colorMode === 'dark' ? globalColors.grey100 : globalColors.white100),
-                    },
-                  ]}
-                />
-              </Freeze>
+              {TabContent}
             </View>
           </ViewShot>
           <AnimatePresence>
