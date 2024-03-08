@@ -96,8 +96,6 @@ export default function useWalletCloudBackup() {
         }
       }
 
-      console.log({ latestBackup });
-
       // We have the password and we need to add it to an existing backup
       logger.log('password fetched correctly');
 
