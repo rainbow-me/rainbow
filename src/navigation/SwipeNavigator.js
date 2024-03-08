@@ -106,14 +106,15 @@ const TabBar = ({ state, descriptors, navigation, /* position, */ jumpTo }) => {
   const reanimatedPosition = useSharedValue(0);
   const canSwitchRef = useRef(true);
 
-  const tabPositions = useMemo(
-    () => Array.from({ length: NUMBER_OF_TABS }, (_, index) => tabPillStartPosition + tabWidth * index),
+  const tabPositions = useMemo(() => {
+    const inputRange = Array.from({ length: NUMBER_OF_TABS }, (_, index) => index);
+    const outputRange = Array.from({ length: NUMBER_OF_TABS }, (_, index) => tabPillStartPosition + tabWidth * index);
+    return { inputRange, outputRange };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [NUMBER_OF_TABS]
-  );
+  }, [NUMBER_OF_TABS]);
 
   const tabStyle = useAnimatedStyle(() => {
-    const translateX = interpolate(reanimatedPosition.value, [0, 1, 2, 3], tabPositions, 'clamp');
+    const translateX = interpolate(reanimatedPosition.value, tabPositions.inputRange, tabPositions.outputRange, 'clamp');
     return {
       transform: [{ translateX }],
       width: 72,
