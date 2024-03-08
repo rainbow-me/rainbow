@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback, Ref } from 'react';
+import React, { forwardRef, useCallback, useMemo, Ref } from 'react';
 import { useTheme } from '../../theme/ThemeContext';
 import { Input } from '../inputs';
 import { cloudBackupPasswordMinLength } from '@/handlers/cloudBackup';
@@ -7,7 +7,8 @@ import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
 import { Box } from '@/design-system';
-import { TextInput, TextInputProps } from 'react-native';
+import { TextInput, TextInputProps, View } from 'react-native';
+import { IS_IOS } from '@/env';
 
 const Container = styled(Box)({
   width: '100%',
@@ -29,18 +30,25 @@ const PasswordInput = styled(Input).attrs(({ theme: { colors } }: any) => ({
   width: '100%',
 });
 
-const ShadowContainer = styled(ShadowStack).attrs(({ theme: { colors, isDarkMode } }: any) => ({
-  backgroundColor: isDarkMode ? colors.offWhite : colors.white,
-  borderRadius: 16,
-  height: 46,
-  shadows: [
-    [0, 5, 15, colors.shadow, 0.06],
-    [0, 10, 30, colors.shadow, 0.12],
-  ],
-  width: '100%',
-}))({
-  elevation: 15,
-});
+// Use styled-components attrs for dynamic props to ensure they are memoized
+const ShadowContainer = styled(IS_IOS ? ShadowStack : View).attrs(({ theme: { colors, isDarkMode }, deviceWidth }: any) => {
+  const shadows = useMemo(
+    () => [
+      [0, 5, 15, colors.shadow, 0.06],
+      [0, 10, 30, colors.shadow, 0.12],
+    ],
+    [colors.shadow]
+  );
+
+  return {
+    backgroundColor: isDarkMode ? colors.offWhite : colors.white,
+    borderRadius: 16,
+    height: 46,
+    shadows,
+    width: IS_IOS ? '100%' : deviceWidth - 48,
+    elevation: 15,
+  };
+})({});
 
 interface PasswordFieldProps extends TextInputProps {
   password: string;
@@ -53,11 +61,10 @@ const PasswordField = forwardRef<TextInput, PasswordFieldProps>(
   ({ password, returnKeyType = 'done', style, textContentType, ...props }, ref: Ref<TextInput>) => {
     const { width: deviceWidth } = useDimensions();
     const { isDarkMode } = useTheme();
+
     const handleFocus = useCallback(() => {
-      if (typeof ref === 'function') {
-        ref(null);
-      } else if (ref) {
-        ref.current?.focus();
+      if (ref && 'current' in ref && ref.current) {
+        ref.current.focus();
       }
     }, [ref]);
 
