@@ -768,7 +768,6 @@ export async function handleSessionRequestResponse(
 
   const client = await web3WalletClient;
   const { topic, id } = sessionRequestEvent;
-
   if (result) {
     const payload = {
       topic,

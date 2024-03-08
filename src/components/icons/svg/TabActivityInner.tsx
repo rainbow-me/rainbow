@@ -1,8 +1,9 @@
 import React from 'react';
 import { Path } from 'react-native-svg';
 import Svg from '../Svg';
+import { globalColors } from '@/design-system';
 
-const TabActivityInner = ({ colors = undefined, color = colors.white }) => {
+export const TabActivityInner = ({ color = globalColors.grey100 }: { color: string }) => {
   return (
     <Svg height="28" viewBox="0 0 28 28" width="28">
       <Path
@@ -12,5 +13,3 @@ const TabActivityInner = ({ colors = undefined, color = colors.white }) => {
     </Svg>
   );
 };
-
-export default TabActivityInner;

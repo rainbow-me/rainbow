@@ -16,6 +16,7 @@ import { Box, Columns, Stack } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import PointsScreen from '@/screens/points/PointsScreen';
 import WalletScreen from '@/screens/WalletScreen';
+import DappBrowserScreen from '@/screens/dapp-browser/DappBrowserScreen';
 import RecyclerListViewScrollToTopProvider, {
   useRecyclerListViewScrollToTopContext,
 } from '@/navigation/RecyclerListViewScrollToTopContext';
@@ -25,7 +26,7 @@ import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import SectionListScrollToTopProvider, { useSectionListScrollToTopContext } from './SectionListScrollToTopContext';
 import { isUsingButtonNavigation } from '@/helpers/statusBarHelper';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { useExperimentalFlag, POINTS } from '@/config';
+import { useExperimentalFlag, POINTS, DAPP_BROWSER } from '@/config';
 
 const HORIZONTAL_TAB_BAR_INSET = 6;
 
@@ -59,11 +60,12 @@ const TabBar = ({ state, descriptors, navigation, position, jumpTo, lastPress, s
   const { width: deviceWidth } = useDimensions();
   const { colors, isDarkMode } = useTheme();
 
-  const { points_enabled } = useRemoteConfig();
+  const { points_enabled, dapp_browser } = useRemoteConfig();
 
   const showPointsTab = useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
+  const showDappBrowserTab = useExperimentalFlag(DAPP_BROWSER) || dapp_browser;
 
-  const NUMBER_OF_TABS = showPointsTab ? 4 : 3;
+  const NUMBER_OF_TABS = 3 + (showPointsTab ? 1 : 0) + (showDappBrowserTab ? 1 : 0);
   const tabWidth = (deviceWidth - HORIZONTAL_TAB_BAR_INSET * 2) / NUMBER_OF_TABS;
   const tabPillStartPosition = (tabWidth - 72) / 2 + HORIZONTAL_TAB_BAR_INSET;
 
@@ -76,19 +78,21 @@ const TabBar = ({ state, descriptors, navigation, position, jumpTo, lastPress, s
   const pos2 = useSharedValue(tabPillStartPosition + tabWidth);
   const pos3 = useSharedValue(tabPillStartPosition + tabWidth * 2);
   const pos4 = useSharedValue(tabPillStartPosition + tabWidth * 3);
+  const pos5 = useSharedValue(tabPillStartPosition + tabWidth * 4);
 
   useEffect(() => {
     pos1.value = tabPillStartPosition;
     pos2.value = tabPillStartPosition + tabWidth;
     pos3.value = tabPillStartPosition + tabWidth * 2;
     pos4.value = tabPillStartPosition + tabWidth * 3;
-  }, [pos1, pos2, pos3, pos4, tabPillStartPosition, tabWidth]);
+    pos5.value = tabPillStartPosition + tabWidth * 4;
+  }, [pos1, pos2, pos3, pos4, pos5, tabPillStartPosition, tabWidth]);
 
   const tabStyle = useAnimatedStyle(() => {
     const translateX = interpolate(
       reanimatedPosition.value,
-      [0, 1, 2, 3],
-      [pos1.value, pos2.value, pos3.value, pos4.value],
+      [0, 1, 2, 3, 4],
+      [pos1.value, pos2.value, pos3.value, pos4.value, pos5.value],
       Extrapolate.EXTEND
     );
     return {
@@ -307,9 +311,10 @@ export function SwipeNavigator() {
 
   const [lastPress, setLastPress] = useState();
 
-  const { points_enabled } = useRemoteConfig();
+  const { points_enabled, dapp_browser } = useRemoteConfig();
 
   const showPointsTab = useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
+  const showDappBrowserTab = useExperimentalFlag(DAPP_BROWSER) || dapp_browser;
 
   // ////////////////////////////////////////////////////
   // Animations
@@ -348,6 +353,9 @@ export function SwipeNavigator() {
                 }}
               />
               <Swipe.Screen component={DiscoverScreen} name={Routes.DISCOVER_SCREEN} options={{ tabBarIcon: 'tabDiscover' }} />
+              {showDappBrowserTab && (
+                <Swipe.Screen component={DappBrowserScreen} name={Routes.DAPP_BROWSER_SCREEN} options={{ tabBarIcon: 'tabDappBrowser' }} />
+              )}
               <Swipe.Screen component={ProfileScreen} name={Routes.PROFILE_SCREEN} options={{ tabBarIcon: 'tabActivity' }} />
               {showPointsTab && <Swipe.Screen component={PointsScreen} name={Routes.POINTS_SCREEN} options={{ tabBarIcon: 'tabPoints' }} />}
             </Swipe.Navigator>
