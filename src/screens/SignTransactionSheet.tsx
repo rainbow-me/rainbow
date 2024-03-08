@@ -539,7 +539,7 @@ export const SignTransactionSheet = () => {
           if (transactionDetails?.requestId) {
             if (transactionDetails?.walletConnectV2RequestValues) {
               await handleSessionRequestResponse(transactionDetails?.walletConnectV2RequestValues, {
-                result: 'null',
+                result: null,
                 error: error || 'User cancelled the request',
               });
             } else {
@@ -1462,9 +1462,6 @@ const DetailsCard = ({
                 }
               />
             )}
-            {showFunctionRow && <DetailRow detailType="function" value={methodName} />}
-            {!!meta?.to?.sourceCodeStatus && <DetailRow detailType="sourceCodeVerification" value={meta.to.sourceCodeStatus} />}
-            {!!meta?.to?.created && <DetailRow detailType="dateCreated" value={formatDate(meta?.to?.created)} />}
             {showFunctionRow && <DetailRow detailType="function" value={methodName} />}
             {!!meta?.to?.sourceCodeStatus && <DetailRow detailType="sourceCodeVerification" value={meta.to.sourceCodeStatus} />}
             {!!meta?.to?.created && <DetailRow detailType="dateCreated" value={formatDate(meta?.to?.created)} />}

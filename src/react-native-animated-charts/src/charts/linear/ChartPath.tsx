@@ -331,7 +331,7 @@ const ChartPathInner = React.memo(
     });
 
     return (
-      // @ts-expect-error We use an old version of RNGH which doesn't support React 18 types well
+      // @ts-ignore
       <LongPressGestureHandler
         enabled={gestureEnabled}
         maxDist={100000}
@@ -349,11 +349,11 @@ const ChartPathInner = React.memo(
             viewBox={`0 0 ${width} ${height}`}
           >
             <AnimatedPath
-              // @ts-expect-error
               animatedProps={animatedProps}
               stroke={stroke}
               strokeWidth={strokeWidth}
               strokeLinecap="round"
+              // @ts-ignore
               style={pathAnimatedStyles}
               {...props}
             />

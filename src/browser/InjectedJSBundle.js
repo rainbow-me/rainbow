@@ -43667,7 +43667,7 @@
                         ]
                       );
                     case 1:
-                      const n = o.sent();
+                      if ((n = o.sent()).id !== t) return [2];
                       if (n.error) throw n.error;
                       switch (i) {
                         case 'eth_requestAccounts':
