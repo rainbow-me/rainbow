@@ -286,6 +286,11 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
               const genericTopic = parsedData.topic.replace('> ', '');
               console.log('replying...');
               let callback;
+              if (genericTopic === 'rainbow_prefetchDappMetadata') {
+                callback = async () => {
+                  return true;
+                };
+              }
               if (parsedData.payload.method === 'eth_requestAccounts') {
                 callback = async () => {
                   return { result: [accountAddress] };
@@ -302,7 +307,9 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
         }
 
         // eslint-disable-next-line no-empty
-      } catch (e) {}
+      } catch (e) {
+        console.log('Error parsing message', e);
+      }
     },
     [accountAddress, isActiveTab]
   );
@@ -316,20 +323,10 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
     [createMessengers, tabIndex, tabStates]
   );
 
-  const handleOnLoad = useCallback(
-    (event: WebViewEvent) => {
-      // console.log('[BROWSER]: handleOnLoad', { event, tabIndex, url: tabStates[tabIndex].url });
-      if (event.nativeEvent.loading) return;
-      const m = messengers.current.find(m => {
-        return m.url === new URL(tabStates[tabIndex].url).origin && m.tabId === getTabId(tabIndex, tabStates[tabIndex].url);
-      });
-      // if (m) {
-      //   console.log('[BROWSER]: sending hello from app to webview');
-      //   m.send('ping', { message: 'hello' });
-      // }
-    },
-    [tabIndex, tabStates]
-  );
+  const handleOnLoad = useCallback((event: WebViewEvent) => {
+    if (event.nativeEvent.loading) return;
+    // placeholder
+  }, []);
 
   const handleOnLoadEnd = useCallback(() => {
     console.log('[BROWSER]: handleOnLoadEnd', tabStates[tabIndex].url);
@@ -481,9 +478,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     position: 'absolute',
     top: safeAreaInsetValues.top,
-    height: WEBVIEW_HEIGHT,
     width: deviceUtils.dimensions.width,
-    backgroundColor: 'green',
     zIndex: 999999999,
   },
   webViewStyle: {

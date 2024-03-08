@@ -57,8 +57,6 @@ const DappBrowserComponent = () => {
     []
   );
 
-  console.log('injectedJS', injectedJS);
-
   return (
     <SheetGestureBlocker>
       <Box as={Page} height="full" style={styles.rootViewBackground} width="full">
