@@ -283,14 +283,20 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
             const messengerUrlOrigin = new URL(m.url).origin;
             if (messengerUrlOrigin === origin) {
               console.log('[BROWSER]: received message', parsedData);
+              const genericTopic = parsedData.topic.replace('> ', '');
+              console.log('replying...');
+              let callback;
               if (parsedData.payload.method === 'eth_requestAccounts') {
-                console.log('replying...');
-                const genericTopic = parsedData.topic.replace('> ', '');
-                m.reply(genericTopic, async () => {
-                  return [accountAddress];
-                });
-                m.listeners[genericTopic]?.({ data: parsedData });
+                callback = async () => {
+                  return { result: [accountAddress] };
+                };
+              } else if (parsedData.payload.method === 'eth_chainId') {
+                callback = async () => {
+                  return { result: '0x1' };
+                };
               }
+              m.reply(genericTopic, callback);
+              m.listeners[genericTopic]?.({ data: parsedData });
             }
           });
         }
