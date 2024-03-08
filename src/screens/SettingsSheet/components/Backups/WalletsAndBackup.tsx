@@ -87,11 +87,13 @@ const getAccountSectionHeight = (numAccounts: number) => {
 
 export const WalletsAndBackup = () => {
   const { navigate } = useNavigation();
+  const dispatch = useDispatch();
+
   const { wallets } = useWallets();
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
+  const { manageCloudBackups } = useManageCloudBackups();
   const { backups, userData } = useCloudBackups();
-  const dispatch = useDispatch();
 
   const initializeWallet = useInitializeWallet();
 
@@ -99,14 +101,14 @@ export const WalletsAndBackup = () => {
     walletId: undefined, // NOTE: This is not used for backing up All wallets
   });
 
-  const { manageCloudBackups } = useManageCloudBackups();
-
   const walletTypeCount: WalletCountPerType = {
     phrase: 0,
     privateKey: 0,
   };
 
-  const { backupProvider: remoteBackupProvider } = useMemo(() => checkUserDataForBackupProvider(userData), [userData]);
+  console.log('userData inside WalletsAndBackup.tsx ', userData);
+
+  const { backupProvider: remoteBackupProvider } = checkUserDataForBackupProvider(userData);
   const { allBackedUp, backupProvider: localBackupProvider } = useMemo(() => checkWalletsForBackupStatus(wallets), [wallets]);
 
   const backupProvider = useMemo(() => {
@@ -186,7 +188,7 @@ export const WalletsAndBackup = () => {
     [navigate, wallets]
   );
 
-  const renderView = useCallback(() => {
+  const renderView = () => {
     switch (backupProvider) {
       default:
       case undefined: {
@@ -542,20 +544,7 @@ export const WalletsAndBackup = () => {
         );
       }
     }
-  }, [
-    backupProvider,
-    loading,
-    backupAllNonBackedUpWalletsTocloud,
-    sortedWallets,
-    onCreateNewSecretPhrase,
-    navigate,
-    onNavigateToWalletView,
-    allBackedUp,
-    lastBackupDate,
-    onViewCloudBackups,
-    manageCloudBackups,
-    onPressLearnMoreAboutCloudBackups,
-  ]);
+  };
 
   return <MenuContainer>{renderView()}</MenuContainer>;
 };

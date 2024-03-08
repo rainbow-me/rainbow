@@ -9,7 +9,9 @@ export default function useCloudBackups() {
     files: [],
   });
 
-  const [userData, setUserData] = useState<BackupUserData>();
+  const [userData, setUserData] = useState<BackupUserData>({
+    wallets: {},
+  });
 
   const fetchBackups = async () => {
     try {
@@ -44,6 +46,8 @@ export default function useCloudBackups() {
   useEffect(() => {
     fetchBackups();
   }, []);
+
+  console.log('userData inside useCloudBackups.ts', userData);
 
   return {
     isFetching,
