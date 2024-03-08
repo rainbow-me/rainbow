@@ -5,27 +5,14 @@ import { Linking, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChainBadge, DashedWrapper } from '../components/coin-icon';
 import { Centered, Column, ColumnWithMargins, Row, RowWithMargins } from '../components/layout';
-import Routes from '@/navigation/routesNames';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, GradientText, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
 import { DoubleChevron } from '@/components/icons';
-import { AccentColorProvider, Box } from '@/design-system';
-import AppIconGoldDoge from '@/assets/appIconGoldDoge.png';
-import AppIconRainDoge from '@/assets/appIconRainDoge.png';
-import AppIconOptimism from '@/assets/appIconOptimism.png';
-import AppIconPooly from '@/assets/appIconPooly.png';
-import AppIconFiniliar from '@/assets/appIconFiniliar.png';
-import AppIconSmol from '@/assets/appIconSmol.png';
-import AppIconZora from '@/assets/appIconZora.png';
-import AppIconZorb from '@/assets/appIconZorb.png';
-import AppIconPoolboy from '@/assets/appIconPoolboy.png';
-import AppIconAdworld from '@/assets/appIconAdworld.png';
-import TheMergePng from '@/assets/theMerge.png';
+import { Box } from '@/design-system';
 import networkTypes from '@/helpers/networkTypes';
-import { delay, toFixedDecimals } from '@/helpers/utilities';
+import { toFixedDecimals } from '@/helpers/utilities';
 import { useDimensions } from '@/hooks';
-import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding, position } from '@/styles';
 import { ethereumUtils, gasUtils, getTokenMetadata } from '@/utils';
@@ -40,7 +27,6 @@ import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 
 const { GAS_TRENDS } = gasUtils;
-const APP_ICON_SIZE = 64;
 export const ExplainSheetHeight = android ? 454 : 434;
 
 const getBodyTextPropsWithColor = colors =>
@@ -86,188 +72,6 @@ const Gradient = styled(GradientText).attrs({
   weight: 'heavy',
 })({});
 
-const OptimismAppIcon = () => {
-  const { colors } = useTheme();
-  return (
-    <AccentColorProvider color={colors.optimismRed}>
-      <Box
-        as={ImgixImage}
-        source={AppIconOptimism}
-        size={APP_ICON_SIZE}
-        width={{ custom: APP_ICON_SIZE }}
-        height={{ custom: APP_ICON_SIZE }}
-        shadow="18px accent"
-      />
-    </AccentColorProvider>
-  );
-};
-
-const FiniliarAppIcon = () => {
-  const { colors } = useTheme();
-  return (
-    <AccentColorProvider color={colors.finiliarPink}>
-      <Box
-        as={ImgixImage}
-        source={AppIconFiniliar}
-        size={APP_ICON_SIZE}
-        width={{ custom: APP_ICON_SIZE }}
-        height={{ custom: APP_ICON_SIZE }}
-        shadow="18px accent"
-      />
-    </AccentColorProvider>
-  );
-};
-
-const GoldDogeAppIcon = () => {
-  const { colors } = useTheme();
-  return (
-    <AccentColorProvider color={colors.dogeGold}>
-      <Box
-        as={ImgixImage}
-        source={AppIconGoldDoge}
-        size={APP_ICON_SIZE}
-        width={{ custom: APP_ICON_SIZE }}
-        height={{ custom: APP_ICON_SIZE }}
-        shadow="18px accent"
-      />
-    </AccentColorProvider>
-  );
-};
-
-const RainDogeAppIcon = () => {
-  const { colors } = useTheme();
-  return (
-    <AccentColorProvider color={colors.dogeGold}>
-      <Box
-        as={ImgixImage}
-        source={AppIconRainDoge}
-        size={APP_ICON_SIZE}
-        width={{ custom: APP_ICON_SIZE }}
-        height={{ custom: APP_ICON_SIZE }}
-        shadow="18px accent"
-      />
-    </AccentColorProvider>
-  );
-};
-
-const PoolyAppIcon = () => {
-  const { colors } = useTheme();
-  return (
-    <AccentColorProvider color={colors.poolyPurple}>
-      <Box
-        as={ImgixImage}
-        source={AppIconPooly}
-        size={APP_ICON_SIZE}
-        width={{ custom: APP_ICON_SIZE }}
-        height={{ custom: APP_ICON_SIZE }}
-        shadow="18px accent"
-      />
-    </AccentColorProvider>
-  );
-};
-
-const SmolAppIcon = () => {
-  const { colors } = useTheme();
-  return (
-    <AccentColorProvider color={colors.smolPurple}>
-      <Box
-        as={ImgixImage}
-        source={AppIconSmol}
-        size={APP_ICON_SIZE}
-        width={{ custom: APP_ICON_SIZE }}
-        height={{ custom: APP_ICON_SIZE }}
-        shadow="18px accent"
-      />
-    </AccentColorProvider>
-  );
-};
-
-const ZoraAppIcon = () => {
-  const { colors } = useTheme();
-  return (
-    <AccentColorProvider color={colors.rainbowBlue}>
-      <Box
-        as={ImgixImage}
-        source={AppIconZora}
-        size={APP_ICON_SIZE}
-        width={{ custom: APP_ICON_SIZE }}
-        height={{ custom: APP_ICON_SIZE }}
-        shadow="18px accent"
-      />
-    </AccentColorProvider>
-  );
-};
-
-const ZorbAppIcon = () => {
-  const { colors } = useTheme();
-  return (
-    <AccentColorProvider color={colors.zorbPink}>
-      <Box
-        as={ImgixImage}
-        source={AppIconZorb}
-        size={APP_ICON_SIZE}
-        width={{ custom: APP_ICON_SIZE }}
-        height={{ custom: APP_ICON_SIZE }}
-        shadow="18px accent"
-        borderRadius={14}
-      />
-    </AccentColorProvider>
-  );
-};
-
-const PoolboyAppIcon = () => {
-  const { colors } = useTheme();
-  return (
-    <AccentColorProvider color={colors.poolboyPink}>
-      <Box
-        as={ImgixImage}
-        source={AppIconPoolboy}
-        size={APP_ICON_SIZE}
-        width={{ custom: APP_ICON_SIZE }}
-        height={{ custom: APP_ICON_SIZE }}
-        shadow="18px accent"
-        borderRadius={14}
-      />
-    </AccentColorProvider>
-  );
-};
-
-const AdworldAppIcon = () => {
-  const { colors } = useTheme();
-  return (
-    <AccentColorProvider color={colors.adworldRed}>
-      <Box
-        as={ImgixImage}
-        source={AppIconAdworld}
-        size={APP_ICON_SIZE}
-        width={{ custom: APP_ICON_SIZE }}
-        height={{ custom: APP_ICON_SIZE }}
-        shadow="18px accent"
-        borderRadius={14}
-      />
-    </AccentColorProvider>
-  );
-};
-
-const TheMergeIcon = () => {
-  return (
-    <Box
-      style={{
-        marginVertical: 10,
-      }}
-    >
-      <ImgixImage
-        size={50}
-        source={TheMergePng}
-        style={{
-          width: 53,
-          height: 50,
-        }}
-      />
-    </Box>
-  );
-};
-
 const SENDING_FUNDS_TO_CONTRACT = lang.t('explain.sending_to_contract.text');
 
 const FLOOR_PRICE_EXPLAINER = lang.t('explain.floor_price.text');
@@ -310,6 +114,7 @@ const POLYGON_EXPLAINER = lang.t('explain.polygon.text');
 const BSC_EXPLAINER = lang.t('explain.bsc.text');
 
 const BASE_EXPLAINER = lang.t('explain.base.text');
+const AVALANCHE_EXPLAINER = lang.t('explain.avalanche.text');
 
 const ZORA_EXPLAINER = lang.t('explain.zora.text');
 
@@ -346,45 +151,8 @@ const ENS_CONFIGURATION_TITLE = 'What do these options mean?';
 const ENS_CONFIGURATION_EXPLAINER =
   'When sending an ENS name to someone else and making them the new ENS name owner, you may want to configure it for them in advance and save them a future transaction. Rainbow allows you to clear any profile information currently set for the name, configure the ENS name to point to the recipient’s address and make the recipient address the manager of the name.';
 
-const OPTIMISM_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.optimism_text');
-
-const GOLDDOGE_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.golddoge_text');
-
-const RAINDOGE_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.raindoge_text');
-
-const SMOL_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.smol_text');
-
-const ZORA_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.zora_text');
-
-const POOLY_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.pooly_text');
-
-const POOLY_APP_ICON_TITLE = lang.t('explain.icon_unlock.pooly_title');
-
-const FINILIAR_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.finiliar_text');
-
-const FINILIAR_APP_ICON_TITLE = lang.t('explain.icon_unlock.finiliar_title');
-
-const ZORB_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.zorb_text');
-
-const ZORB_APP_ICON_TITLE = lang.t('explain.icon_unlock.zorb_title');
-
-const POOLBOY_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.poolboy_text');
-
-const POOLBOY_APP_ICON_TITLE = lang.t('explain.icon_unlock.poolboy_title');
-
-const ADWORLD_APP_ICON_EXPLAINER = lang.t('explain.icon_unlock.adworld_text');
-
-const ADWORLD_APP_ICON_TITLE = lang.t('explain.icon_unlock.adworld_title');
-
-const navigateToAppIconSettings = async (navigate, goBack) => {
-  goBack();
-  navigate(Routes.SETTINGS_SHEET);
-  await delay(500);
-  navigate(Routes.SETTINGS_SHEET, { screen: 'AppIconSection' });
-};
-
 export const explainers = (params, theme) => {
-  const colors = theme.colors;
+  const colors = theme?.colors;
   return {
     op_rewards_airdrop_timing: {
       emoji: '📦',
@@ -430,126 +198,6 @@ export const explainers = (params, theme) => {
       text: i18n.t(i18n.l.rewards.op.position.text),
       extraHeight: IS_ANDROID ? -110 : -65,
     },
-    optimism_app_icon: {
-      logo: <OptimismAppIcon />,
-      extraHeight: -35,
-      text: OPTIMISM_APP_ICON_EXPLAINER,
-      title: lang.t('explain.icon_unlock.title', { partner: 'Optimism' }),
-      button: {
-        onPress: navigateToAppIconSettings,
-        label: lang.t('explain.icon_unlock.button'),
-        textColor: colors?.optimismRed,
-        bgColor: colors?.optimismRed06,
-      },
-    },
-    finiliar_app_icon: {
-      logo: <FiniliarAppIcon />,
-      extraHeight: -90,
-      text: FINILIAR_APP_ICON_EXPLAINER,
-      title: FINILIAR_APP_ICON_TITLE,
-      button: {
-        onPress: navigateToAppIconSettings,
-        label: lang.t('explain.icon_unlock.button'),
-        textColor: colors?.finiliarPink,
-        bgColor: colors?.finiliarPink06,
-      },
-    },
-    golddoge_app_icon: {
-      logo: <GoldDogeAppIcon />,
-      extraHeight: -65,
-      text: GOLDDOGE_APP_ICON_EXPLAINER,
-      title: lang.t('explain.icon_unlock.title', { partner: 'DOGE' }),
-      button: {
-        onPress: navigateToAppIconSettings,
-        label: lang.t('explain.icon_unlock.button'),
-        textColor: colors?.dogeGold,
-        bgColor: colors?.dogeGold06,
-      },
-    },
-    raindoge_app_icon: {
-      logo: <RainDogeAppIcon />,
-      extraHeight: -65,
-      text: RAINDOGE_APP_ICON_EXPLAINER,
-      title: lang.t('explain.icon_unlock.title', { partner: 'The Doge NFT' }),
-      button: {
-        onPress: navigateToAppIconSettings,
-        label: lang.t('explain.icon_unlock.button'),
-        textColor: colors?.dogeGold,
-        bgColor: colors?.dogeGold06,
-      },
-    },
-    pooly_app_icon: {
-      logo: <PoolyAppIcon />,
-      extraHeight: -90,
-      text: POOLY_APP_ICON_EXPLAINER,
-      title: POOLY_APP_ICON_TITLE,
-      button: {
-        onPress: navigateToAppIconSettings,
-        label: lang.t('explain.icon_unlock.button'),
-        textColor: colors?.poolyPurple,
-        bgColor: colors?.poolyPurple06,
-      },
-    },
-    smol_app_icon: {
-      logo: <SmolAppIcon />,
-      extraHeight: -65,
-      text: SMOL_APP_ICON_EXPLAINER,
-      title: lang.t('explain.icon_unlock.title', { partner: 'SMOL' }),
-      button: {
-        onPress: navigateToAppIconSettings,
-        label: lang.t('explain.icon_unlock.button'),
-        textColor: colors?.smolPurple,
-        bgColor: colors?.smolPurple06,
-      },
-    },
-    zora_app_icon: {
-      logo: <ZoraAppIcon />,
-      extraHeight: -90,
-      text: ZORA_APP_ICON_EXPLAINER,
-      title: lang.t('explain.icon_unlock.title', { partner: 'Zora' }),
-      button: {
-        onPress: navigateToAppIconSettings,
-        label: lang.t('explain.icon_unlock.button'),
-        textColor: colors?.appleBlue,
-        bgColor: colors?.appleBlue06,
-      },
-    },
-    zorb_app_icon: {
-      logo: <ZorbAppIcon />,
-      extraHeight: -65,
-      text: ZORB_APP_ICON_EXPLAINER,
-      title: ZORB_APP_ICON_TITLE,
-      button: {
-        onPress: navigateToAppIconSettings,
-        label: lang.t('explain.icon_unlock.button'),
-        textColor: colors?.zorbPink,
-        bgColor: colors?.zorbPink06,
-      },
-    },
-    poolboy_app_icon: {
-      logo: <PoolboyAppIcon />,
-      extraHeight: -90,
-      text: POOLBOY_APP_ICON_EXPLAINER,
-      title: POOLBOY_APP_ICON_TITLE,
-      button: {
-        onPress: navigateToAppIconSettings,
-        label: lang.t('explain.icon_unlock.button'),
-        textColor: colors?.poolboyPink,
-        bgColor: colors?.poolboyPink06,
-      },
-    },
-    adworld_app_icon: {
-      logo: <AdworldAppIcon />,
-      extraHeight: -90,
-      text: ADWORLD_APP_ICON_EXPLAINER,
-      title: ADWORLD_APP_ICON_TITLE,
-      button: {
-        onPress: navigateToAppIconSettings,
-        label: lang.t('explain.icon_unlock.button'),
-        textColor: colors?.adworldRed,
-        bgColor: colors?.adworldRed06,
-      },
-    },
     output_disabled: {
       extraHeight: -30,
       title: params?.inputToken
@@ -587,7 +235,7 @@ export const explainers = (params, theme) => {
       logo: (
         <RainbowCoinIcon
           size={40}
-          icon={params?.nativeAsset?.icon}
+          icon={params?.nativeAsset?.icon_url}
           symbol={params?.nativeAsset?.symbol}
           network={params?.network?.toLowerCase()}
           colors={params?.nativeAsset?.colors}
@@ -595,9 +243,9 @@ export const explainers = (params, theme) => {
         />
       ),
       extraHeight: 2,
-      text: gasExplainer(params?.network),
+      text: gasExplainer(getNetworkObj(params?.network).name),
       title: lang.t('explain.gas.title', {
-        networkName: params?.network,
+        networkName: getNetworkObj(params?.network).name,
       }),
     },
     ens_primary_name: {
@@ -799,6 +447,19 @@ export const explainers = (params, theme) => {
       text: BASE_EXPLAINER,
       title: lang.t('explain.base.title'),
     },
+    avalanche: {
+      emoji: '⛽️',
+      extraHeight: 144,
+      logo: <ChainBadge network={networkTypes.avalanche} marginBottom={8} position="relative" size="large" />,
+      readMoreLink: buildRainbowLearnUrl({
+        url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+        query: {
+          campaign: 'explain',
+        },
+      }),
+      text: AVALANCHE_EXPLAINER,
+      title: lang.t('explain.avalanche.title'),
+    },
     failed_wc_connection: {
       emoji: '😵',
       extraHeight: -50,
@@ -895,7 +556,7 @@ export const explainers = (params, theme) => {
         <RowWithMargins justify="center" margin={35} marginBottom={10}>
           <RainbowCoinIcon
             size={40}
-            icon={params?.inputCurrency?.icon}
+            icon={params?.inputCurrency?.icon_url}
             symbol={params?.inputCurrency?.symbol}
             network={params?.inputCurrency?.network}
             colors={params?.inputCurrency?.colors}
@@ -951,7 +612,7 @@ export const explainers = (params, theme) => {
         <RowWithMargins justify="center" margin={35} marginBottom={10}>
           <RainbowCoinIcon
             size={40}
-            icon={params?.inputCurrency?.icon}
+            icon={params?.inputCurrency?.icon_url}
             symbol={params?.inputCurrency?.symbol}
             network={params?.inputCurrency?.network}
             colors={params?.inputCurrency?.colors}
@@ -960,7 +621,7 @@ export const explainers = (params, theme) => {
           <DoubleChevron />
           <RainbowCoinIcon
             size={40}
-            icon={params?.outputCurrency?.icon}
+            icon={params?.outputCurrency?.icon_url}
             symbol={params?.outputCurrency?.symbol}
             network={params?.outputCurrency?.network}
             colors={params?.outputCurrency?.colors}
@@ -977,7 +638,7 @@ export const explainers = (params, theme) => {
         <RowWithMargins justify="center" margin={35} marginBottom={10}>
           <RainbowCoinIcon
             size={40}
-            icon={params?.inputCurrency?.icon}
+            icon={params?.inputCurrency?.icon_url}
             symbol={params?.inputCurrency?.symbol}
             network={params?.inputCurrency?.network}
             colors={params?.inputCurrency?.colors}
@@ -986,7 +647,7 @@ export const explainers = (params, theme) => {
           <DoubleChevron />
           <RainbowCoinIcon
             size={40}
-            icon={params?.outputCurrency?.icon}
+            icon={params?.outputCurrency?.icon_url}
             symbol={params?.outputCurrency?.symbol}
             network={params?.outputCurrency?.network}
             colors={params?.outputCurrency?.colors}
@@ -1178,7 +839,7 @@ export const explainers = (params, theme) => {
         >
           <RainbowCoinIcon
             size={30}
-            icon={params?.nativeAsset?.icon}
+            icon={params?.nativeAsset?.icon_url}
             symbol={params?.nativeAsset?.symbol}
             network={params?.nativeAsset?.network}
             colors={params?.nativeAssety?.colors}
@@ -1223,7 +884,7 @@ export const explainers = (params, theme) => {
         >
           <RainbowCoinIcon
             size={30}
-            icon={params?.nativeAsset?.icon}
+            icon={params?.nativeAsset?.icon_url}
             symbol={params?.nativeAsset?.symbol}
             network={params?.nativeAsset?.network}
             colors={params?.nativeAsset?.colors}
@@ -1269,7 +930,7 @@ export const explainers = (params, theme) => {
         >
           <RainbowCoinIcon
             size={30}
-            icon={params?.nativeAsset?.icon}
+            icon={params?.nativeAsset?.icon_url}
             symbol={params?.nativeAsset?.symbol}
             network={params?.nativeAsset?.network}
             colors={params?.nativeAsset?.colors}

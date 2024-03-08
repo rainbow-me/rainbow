@@ -61,6 +61,7 @@ export const proxyRpcEndpoint = (chainId: number, customEndpoint?: string) => {
     base_mainnet_rpc,
     bsc_mainnet_rpc,
     zora_mainnet_rpc,
+    avalanche_mainnet_rpc,
     ethereum_mainnet_rpc,
   } = getRemoteConfig();
   if (rpc_proxy_enabled) {
@@ -85,6 +86,8 @@ export const proxyRpcEndpoint = (chainId: number, customEndpoint?: string) => {
         return bsc_mainnet_rpc;
       case Network.zora:
         return zora_mainnet_rpc;
+      case Network.avalanche:
+        return avalanche_mainnet_rpc;
       case Network.gnosis:
       case Network.mainnet:
       default:
