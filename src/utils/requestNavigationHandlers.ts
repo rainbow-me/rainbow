@@ -4,17 +4,71 @@ import Routes from '@/navigation/routesNames';
 // we should move these types since import from redux is not kosher
 import { RequestData, WalletconnectRequestData, removeRequest } from '@/redux/requests';
 import store from '@/redux/store';
-import { WalletconnectResultType, walletConnectRemovePendingRedirect, walletConnectSendStatus } from '@/redux/walletconnect';
+import {
+  WalletconnectApprovalSheetRouteParams,
+  WalletconnectResultType,
+  walletConnectRemovePendingRedirect,
+  walletConnectSendStatus,
+} from '@/redux/walletconnect';
 import { InteractionManager } from 'react-native';
 import { SEND_TRANSACTION } from './signingMethods';
 import { handleSessionRequestResponse } from '@/walletConnect';
 import ethereumUtils from './ethereumUtils';
 import { getRequestDisplayDetails } from '@/parsers';
+import { RainbowNetworks } from '@/networks';
+import { maybeSignUri } from '@/handlers/imgix';
+import { getActiveRoute } from '@/navigation/Navigation';
 
 export type RequestType = 'walletconnect' | 'browser';
 
 // Dapp Browser
-export const handleDappBrowserRequest = async (request: Omit<RequestData, 'displayDetails'>) => {
+
+export interface DappConnectionData {
+  dappName: string;
+  dappUrl: string;
+  imageUrl: string | undefined;
+}
+
+export const handleDappBrowserConnectionPrompt = (dappData: DappConnectionData): Promise<{ chainId: number; address: string } | Error> => {
+  return new Promise((resolve, reject) => {
+    const chainIds = RainbowNetworks.filter(network => network.enabled && network.networkType !== 'testnet').map(network => network.id);
+    const receivedTimestamp = Date.now();
+    const routeParams: WalletconnectApprovalSheetRouteParams = {
+      receivedTimestamp,
+      meta: {
+        chainIds,
+        dappName: dappData.dappName,
+        dappUrl: dappData.dappUrl,
+        imageUrl: maybeSignUri(dappData.dappUrl),
+        isWalletConnectV2: false,
+        peerId: '',
+        dappScheme: null,
+      },
+      timedOut: false,
+      callback: async (approved, approvedChainId, accountAddress) => {
+        if (approved) {
+          // if approved resolve with (chainId, address)
+          resolve({ chainId: approvedChainId, address: accountAddress });
+        } else {
+          // else reject
+          reject(new Error('Connection not approved'));
+        }
+      },
+    };
+
+    /**
+     * We might see this at any point in the app, so only use `replace`
+     * sometimes if the user is already looking at the approval sheet.
+     */
+    Navigation.handleAction(
+      Routes.WALLET_CONNECT_APPROVAL_SHEET,
+      routeParams,
+      getActiveRoute()?.name === Routes.WALLET_CONNECT_APPROVAL_SHEET
+    );
+  });
+};
+
+export const handleDappBrowserRequest = async (request: Omit<RequestData, 'displayDetails'>): Promise<string | Error> => {
   const nativeCurrency = store.getState().settings.nativeCurrency;
   const displayDetails = getRequestDisplayDetails(request.payload, nativeCurrency, request.network);
 
