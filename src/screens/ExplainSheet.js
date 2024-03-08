@@ -115,6 +115,7 @@ const BSC_EXPLAINER = lang.t('explain.bsc.text');
 
 const BASE_EXPLAINER = lang.t('explain.base.text');
 const AVALANCHE_EXPLAINER = lang.t('explain.avalanche.text');
+const BLAST_EXPLAINER = lang.t('explain.blast.text');
 
 const ZORA_EXPLAINER = lang.t('explain.zora.text');
 
@@ -459,6 +460,19 @@ export const explainers = (params, theme) => {
       }),
       text: AVALANCHE_EXPLAINER,
       title: lang.t('explain.avalanche.title'),
+    },
+    blast: {
+      emoji: '⛽️',
+      extraHeight: 144,
+      logo: <ChainBadge network={networkTypes.blast} marginBottom={8} position="relative" size="large" />,
+      readMoreLink: buildRainbowLearnUrl({
+        url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+        query: {
+          campaign: 'explain',
+        },
+      }),
+      text: BLAST_EXPLAINER,
+      title: lang.t('explain.blast.title'),
     },
     failed_wc_connection: {
       emoji: '😵',
