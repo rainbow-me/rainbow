@@ -182,30 +182,28 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
         const tabBarIcon = options.title as string;
 
         return (
-          options.title !== 'none' && (
-            <Box
-              height="full"
-              key={route.key}
-              justifyContent="flex-start"
-              paddingTop="6px"
-              testID={`tab-bar-icon-${route.name}`}
-              width="full"
+          <Box
+            height="full"
+            key={route.key}
+            justifyContent="flex-start"
+            paddingTop="6px"
+            testID={`tab-bar-icon-${route.name}`}
+            width="full"
+          >
+            <ButtonPressAnimation
+              disallowInterruption
+              minLongPressDuration={300}
+              onLongPress={() => onLongPress(route, tabBarIcon)}
+              onPress={() => onPress(route, index, isFocused, tabBarIcon)}
+              scaleTo={0.75}
             >
-              <ButtonPressAnimation
-                disallowInterruption
-                minLongPressDuration={300}
-                onLongPress={() => onLongPress(route, tabBarIcon)}
-                onPress={() => onPress(route, index, isFocused, tabBarIcon)}
-                scaleTo={0.75}
-              >
-                <Stack alignHorizontal="center">
-                  <Box alignItems="center" borderRadius={20} height="36px" justifyContent="center">
-                    <TabBarIcon accentColor={accentColor} icon={tabBarIcon} index={index} reanimatedPosition={reanimatedPosition} />
-                  </Box>
-                </Stack>
-              </ButtonPressAnimation>
-            </Box>
-          )
+              <Stack alignHorizontal="center">
+                <Box alignItems="center" borderRadius={20} height="36px" justifyContent="center">
+                  <TabBarIcon accentColor={accentColor} icon={tabBarIcon} index={index} reanimatedPosition={reanimatedPosition} />
+                </Box>
+              </Stack>
+            </ButtonPressAnimation>
+          </Box>
         );
       }),
     [accentColor, descriptors, onLongPress, onPress, reanimatedPosition, state.index, state.routes]
