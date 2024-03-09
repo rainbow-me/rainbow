@@ -9,7 +9,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { TabBarIcon } from '@/components/icons/TabBarIcon';
 import { FlexItem } from '@/components/layout';
 import { TestnetToast } from '@/components/toasts';
-import { useExperimentalFlag, POINTS } from '@/config';
+import { useExperimentalFlag, DAPP_BROWSER, POINTS } from '@/config';
 import { Box, Columns, Stack, globalColors } from '@/design-system';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import { web3Provider } from '@/handlers/web3';
@@ -20,6 +20,7 @@ import RecyclerListViewScrollToTopProvider, {
   useRecyclerListViewScrollToTopContext,
 } from '@/navigation/RecyclerListViewScrollToTopContext';
 import WalletScreen from '@/screens/WalletScreen';
+import DappBrowserScreen from '@/screens/dapp-browser/DappBrowserScreen';
 import { discoverOpenSearchFnRef } from '@/screens/discover/components/DiscoverSearchContainer';
 import PointsScreen from '@/screens/points/PointsScreen';
 import { useTheme } from '@/theme';
@@ -60,10 +61,11 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
   const recyclerList = useRecyclerListViewScrollToTopContext();
   const sectionList = useSectionListScrollToTopContext();
 
-  const { points_enabled } = useRemoteConfig();
+  const { dapp_browser, points_enabled } = useRemoteConfig();
+  const showDappBrowserTab = useExperimentalFlag(DAPP_BROWSER) || dapp_browser;
   const showPointsTab = useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
 
-  const numberOfTabs = showPointsTab ? 4 : 3;
+  const numberOfTabs = 3 + (showPointsTab ? 1 : 0) + (showDappBrowserTab ? 1 : 0);
   const tabWidth = (deviceWidth - HORIZONTAL_TAB_BAR_INSET * 2) / numberOfTabs;
   const tabPillStartPosition = (tabWidth - 72) / 2 + HORIZONTAL_TAB_BAR_INSET;
 
@@ -289,7 +291,8 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
 function SwipeNavigatorScreens() {
   const { isCoinListEdited } = useCoinListEdited();
 
-  const { points_enabled } = useRemoteConfig();
+  const { dapp_browser, points_enabled } = useRemoteConfig();
+  const showDappBrowserTab = useExperimentalFlag(DAPP_BROWSER) || dapp_browser;
   const showPointsTab = useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
 
   return (
@@ -315,6 +318,9 @@ function SwipeNavigatorScreens() {
       /> */}
       <Swipe.Screen component={WalletScreen} name={Routes.WALLET_SCREEN} options={{ title: 'tabHome' }} />
       <Swipe.Screen component={DiscoverScreen} name={Routes.DISCOVER_SCREEN} options={{ title: 'tabDiscover' }} />
+      {showDappBrowserTab && (
+        <Swipe.Screen component={DappBrowserScreen} name={Routes.DAPP_BROWSER_SCREEN} options={{ title: 'tabDappBrowser' }} />
+      )}
       <Swipe.Screen component={ProfileScreen} name={Routes.PROFILE_SCREEN} options={{ title: 'tabActivity' }} />
       {showPointsTab && <Swipe.Screen component={PointsScreen} name={Routes.POINTS_SCREEN} options={{ title: 'tabPoints' }} />}
     </Swipe.Navigator>
