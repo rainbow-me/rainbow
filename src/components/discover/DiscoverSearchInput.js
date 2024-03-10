@@ -14,6 +14,7 @@ import { margin, padding } from '@/styles';
 import { deviceUtils, ethereumUtils } from '@/utils';
 import DiscoverSheetContext from '@/screens/discover/DiscoverScreenContext';
 import { getNetworkObj } from '@/networks';
+import { IS_TEST } from '@/env';
 
 export const ExchangeSearchHeight = 40;
 const ExchangeSearchWidth = deviceUtils.dimensions.width - 30;
@@ -139,7 +140,7 @@ const ExchangeSearch = (
 
   const spinnerTimeout = useRef();
   useEffect(() => {
-    if ((isFetching || isSearching) && !isEmpty(searchQuery)) {
+    if (!IS_TEST && (isFetching || isSearching) && !isEmpty(searchQuery)) {
       clearTimeout(spinnerTimeout.current);
       spinnerRotation.value = 0;
       spinnerRotation.value = withRepeat(withTiming(360, rotationConfig), -1, false);

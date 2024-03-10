@@ -97,7 +97,6 @@ describe('Discover Screen Flow', () => {
   it('Should display search results in the correct order', async () => {
     await Helpers.waitAndTap('discover-search-clear-input');
     await Helpers.typeText('discover-search-input', 'bitcoin', true);
-    await Helpers.delay(3000);
     await Helpers.checkIfVisible('favorites-0');
     await Helpers.checkIfVisible('verified-1');
     await Helpers.checkIfExists('profiles-2');
