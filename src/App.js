@@ -357,25 +357,25 @@ function Root() {
   }, [setInitializing]);
 
   return initializing ? null : (
-    <ReduxProvider store={store}>
-      <RecoilRoot>
-        <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
-          <SafeAreaProvider>
-            <MainThemeProvider>
-              <RainbowContextWrapper>
-                <SharedValuesProvider>
-                  <ErrorBoundary>
-                    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ReduxProvider store={store}>
+        <RecoilRoot>
+          <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
+            <SafeAreaProvider>
+              <MainThemeProvider>
+                <RainbowContextWrapper>
+                  <SharedValuesProvider>
+                    <ErrorBoundary>
                       <App />
-                    </GestureHandlerRootView>
-                  </ErrorBoundary>
-                </SharedValuesProvider>
-              </RainbowContextWrapper>
-            </MainThemeProvider>
-          </SafeAreaProvider>
-        </PersistQueryClientProvider>
-      </RecoilRoot>
-    </ReduxProvider>
+                    </ErrorBoundary>
+                  </SharedValuesProvider>
+                </RainbowContextWrapper>
+              </MainThemeProvider>
+            </SafeAreaProvider>
+          </PersistQueryClientProvider>
+        </RecoilRoot>
+      </ReduxProvider>
+    </GestureHandlerRootView>
   );
 }
 
