@@ -96,7 +96,7 @@ export const WalletsAndBackup = () => {
   const initializeWallet = useInitializeWallet();
 
   const { onSubmit, loading } = useCreateBackup({
-    walletId: undefined, // NOTE: This is not used for backing up All wallets
+    walletId: undefined, // NOTE: This is not used when backing up All wallets
   });
 
   const { manageCloudBackups } = useManageCloudBackups();
