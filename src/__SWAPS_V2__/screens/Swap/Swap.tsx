@@ -5,6 +5,7 @@ import c from 'chroma-js';
 import React, { ReactNode, useMemo } from 'react';
 import { StyleSheet, Text as RNText, ScrollView, TextInput, ViewStyle, StatusBar, Pressable } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
+import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
   AnimateStyle,
@@ -485,7 +486,7 @@ export function SwapScreen() {
               bottom="0px"
               justifyContent="center"
               position="absolute"
-              style={[{ flex: 1, flexDirection: 'column', gap: 16, zIndex: -10 }, keyboardStyle]}
+              style={[{ flex: 1, flexDirection: 'column', gap: 16 }, keyboardStyle]}
               width="full"
             >
               <PanGestureHandler>
@@ -531,7 +532,9 @@ export function SwapScreen() {
                 </Box>
               </PanGestureHandler>
               <Box
-                paddingBottom={{ custom: safeAreaInsetValues.bottom + 16 + (IS_ANDROID ? 8 : 0) }}
+                paddingBottom={{
+                  custom: IS_ANDROID ? getSoftMenuBarHeight() - 24 : safeAreaInsetValues.bottom + 16,
+                }}
                 paddingHorizontal="20px"
                 paddingTop={{ custom: 16 - THICK_BORDER_WIDTH }}
                 style={{
@@ -576,11 +579,11 @@ export function SwapScreen() {
               alignSelf: 'center',
               backgroundColor: isDarkMode ? globalColors.white50 : 'rgba(9, 17, 31, 0.28)',
             }}
-            top={{ custom: safeAreaInsetValues.top + 6 + (StatusBar.currentHeight ?? 0) }}
+            top={{ custom: safeAreaInsetValues.top + 6 }}
             width={{ custom: 36 }}
           />
           <Navbar
-            hasStatusBarInset
+            hasStatusBarInset={IS_IOS}
             leftComponent={
               <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.8}>
                 {accountImage ? (
@@ -916,6 +919,7 @@ const FlipButton = ({
             width: 0,
             height: isDarkMode ? 4 : 4,
           },
+          elevation: 8,
           shadowOpacity: isDarkMode ? 0.3 : 0.1,
           shadowRadius: isDarkMode ? 6 : 8,
         }}
@@ -1259,7 +1263,7 @@ const SearchInput = ({
                     color: label,
                     fontSize: 17,
                     fontWeight: 'bold',
-                    height: 36,
+                    height: 44,
                     zIndex: 10,
                   }}
                   value={query}
@@ -1579,7 +1583,7 @@ const styles = StyleSheet.create({
     borderRadius: ScreenCornerRadius,
     flex: 1,
     overflow: 'hidden',
-    paddingTop: StatusBar.currentHeight ?? 0,
+    marginTop: StatusBar.currentHeight ?? 0,
   },
   solidColorCoinIcon: {
     opacity: 0.4,
