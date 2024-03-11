@@ -15,7 +15,7 @@ import { abbreviations } from '@/utils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import * as i18n from '@/languages';
 import MenuHeader from '../MenuHeader';
-import { checkWalletsForBackupStatus, checkUserDataForBackupProvider } from '../../utils';
+import { checkWalletsForBackupStatus } from '../../utils';
 import { Inline, Text, Box, Stack } from '@/design-system';
 import { ContactAvatar } from '@/components/contacts';
 import { useTheme } from '@/theme';
@@ -89,8 +89,7 @@ export const WalletsAndBackup = () => {
   const { navigate } = useNavigation();
   const { wallets } = useWallets();
   const profilesEnabled = useExperimentalFlag(PROFILES);
-
-  const { backups, userData } = useCloudBackups();
+  const { backups } = useCloudBackups();
   const dispatch = useDispatch();
 
   const initializeWallet = useInitializeWallet();
@@ -106,12 +105,7 @@ export const WalletsAndBackup = () => {
     privateKey: 0,
   };
 
-  const { backupProvider: remoteBackupProvider } = useMemo(() => checkUserDataForBackupProvider(userData), [userData]);
-  const { allBackedUp, backupProvider: localBackupProvider } = useMemo(() => checkWalletsForBackupStatus(wallets), [wallets]);
-
-  const backupProvider = useMemo(() => {
-    return remoteBackupProvider ?? localBackupProvider;
-  }, [localBackupProvider, remoteBackupProvider]);
+  const { allBackedUp, backupProvider } = useMemo(() => checkWalletsForBackupStatus(wallets), [wallets]);
 
   const { visibleWallets, lastBackupDate } = useVisibleWallets({ wallets, walletTypeCount });
 
