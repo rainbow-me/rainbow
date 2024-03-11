@@ -5,7 +5,7 @@ import { IS_IOS } from '@/env';
 import { metadataPOSTClient } from '@/graphql';
 import { useAccountAccentColor, useDimensions, useKeyboardHeight, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import { getHeaderHeight } from '@/navigation/SwipeNavigator';
+import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { haptics, watchingAlert } from '@/utils';
 import { delay } from '@/utils/delay';
 import { useFocusEffect } from '@react-navigation/native';
@@ -92,7 +92,7 @@ export default function ReferralContent() {
   const hasKeyboard = IS_IOS ? isKeyboardOpening : isKeyboardVisible;
 
   const contentBottom =
-    (hasKeyboard ? keyboardHeight : getHeaderHeight()) + (deviceHeight - (hasKeyboard ? keyboardHeight : 0) - navbarHeight - 270) / 2;
+    (hasKeyboard ? keyboardHeight : TAB_BAR_HEIGHT) + (deviceHeight - (hasKeyboard ? keyboardHeight : 0) - navbarHeight - 270) / 2;
 
   const contentBottomSharedValue = useSharedValue(contentBottom);
 
@@ -275,7 +275,7 @@ export default function ReferralContent() {
       <Box
         position="absolute"
         bottom={{
-          custom: hasKeyboard ? keyboardHeight + (IS_IOS ? 28 : 42) : getHeaderHeight() + 28,
+          custom: hasKeyboard ? keyboardHeight + (IS_IOS ? 28 : 42) : TAB_BAR_HEIGHT + 28,
         }}
         left={{ custom: 20 }}
       >

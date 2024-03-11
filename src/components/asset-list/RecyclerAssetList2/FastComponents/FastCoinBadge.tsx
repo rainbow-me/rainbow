@@ -14,6 +14,8 @@ import BaseBadge from '@/assets/badges/baseBadge.png';
 import BaseBadgeDark from '@/assets/badges/baseBadgeDark.png';
 import AvalancheBadge from '@/assets/badges/avalancheBadge.png';
 import AvalancheBadgeDark from '@/assets/badges/avalancheBadgeDark.png';
+import BlastBadge from '@/assets/badges/blastBadge.png';
+import BlastBadgeDark from '@/assets/badges/blastBadgeDark.png';
 import { Network } from '@/networks/types';
 
 interface FastChainBadgeProps {
@@ -54,6 +56,10 @@ const AssetIconsByTheme: {
   [Network.avalanche]: {
     dark: AvalancheBadgeDark,
     light: AvalancheBadge,
+  },
+  [Network.blast]: {
+    dark: BlastBadgeDark,
+    light: BlastBadge,
   },
 };
 

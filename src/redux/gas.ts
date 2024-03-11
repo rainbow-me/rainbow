@@ -380,6 +380,24 @@ export const getAvalancheGasPrices = async () => {
   };
   return priceData;
 };
+export const getBlastGasPrices = async () => {
+  const provider = await getProviderForNetwork(Network.blast);
+  const baseGasPrice = await provider.getGasPrice();
+
+  const BlastPriceBumpFactor = 1.05;
+  const normalGasPrice = toHex(Math.ceil(Number((baseGasPrice.toString(), BlastPriceBumpFactor))));
+
+  const priceData = {
+    fast: normalGasPrice,
+    fastWait: 0.34,
+    normal: normalGasPrice,
+    // 20 secs
+    normalWait: 0.34,
+    urgent: normalGasPrice,
+    urgentWait: 0.34,
+  };
+  return priceData;
+};
 
 export const getZoraGasPrices = async () => {
   const provider = await getProviderForNetwork(Network.zora);
