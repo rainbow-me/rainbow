@@ -30,7 +30,6 @@ import { ThemeContextProps, useTheme } from '@/theme';
 import logger from 'logger';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import { WelcomeScreenRainbowButton } from '@/screens/WelcomeScreen/WelcomeScreenRainbowButton';
-import useCloudBackups from '@/hooks/useCloudBackups';
 
 // @ts-expect-error Our implementation of SC complains
 const Container = styled.View({
@@ -73,8 +72,6 @@ export default function WelcomeScreen() {
   const { colors, isDarkMode } = useTheme();
   const { replace, navigate, getState: dangerouslyGetState } = useNavigation();
   const hideSplashScreen = useHideSplashScreen();
-
-  const { backups } = useCloudBackups();
 
   const contentAnimation = useSharedValue(1);
   const colorAnimation = useSharedValue(0);
@@ -187,10 +184,9 @@ export default function WelcomeScreen() {
   const showRestoreSheet = useCallback(() => {
     analytics.track('Tapped "I already have one"');
     navigate(Routes.ADD_WALLET_NAVIGATOR, {
-      backups,
       isFirstWallet: true,
     });
-  }, [navigate, backups]);
+  }, [navigate]);
 
   useAndroidBackHandler(() => {
     return true;

@@ -107,6 +107,8 @@
       "private_key_singluar": "Private Key",
       "backup_deleted_successfully": "Backups Deleted Successfully",
       "cloud": {
+        "no_backups": "No backups found",
+        "fetching_backups": "Retrieving backups from %{cloudPlatformName}",
         "back_up_to_platform": "Back up to %{cloudPlatformName}",
         "restore_from_platform": "Restore from %{cloudPlatformName}",
         "how_would_you_like_to_backup": "How would you like to back up your wallet?",
@@ -748,28 +750,32 @@
         "unhide": "Unhide"
       }
     },
+    "app_icon_unlock_sheet": {
+      "smol_description": "You found Treasure! Because you hold a Smolverse NFT, you've unlocked a Custom Icon!",
+      "smol_title": "You've unlocked\nRainbow 􀆄 SMOL",
+      "optimism_description": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you!",
+      "optimism_title": "You've unlocked\nRainbow 􀆄 Optimism",
+      "zora_description": "A special edition Rainbow Zorb icon that's made for magical pondering.",
+      "zora_title": "You've unlocked\nRainbow 􀆄 Zora",
+      "finiliar_description": "A special edition Rainbow Fini icon that keeps you up to date on the price of gas, rain or shine.",
+      "finiliar_title": "You've unlocked a\nRainbow Fini",
+      "golddoge_description": "A limited edition golden Rainbow app icon in celebration of Kabosu's 17th birthday.",
+      "golddoge_title": "You've unlocked\nRainbow 􀆄 DOGE",
+      "raindoge_description": "A limited edition Rainbow app icon in celebration of Kabosu's 17th birthday.",
+      "raindoge_title": "You've unlocked\nRainbow 􀆄 The Doge NFT",
+      "pooly_description": "A special edition Rainbow Pooly icon for supporters of freedom.",
+      "pooly_title": "You've unlocked a\nRainbow Pooly",
+      "zorb_description": "A special edition Rainbow Zorb:\n100% of what you love, faster and more efficient.",
+      "zorb_title": "You've unlocked\nRainbow Zorb Energy!",
+      "poolboy_description": "A special edition Rainbow x Poolsuite Icon for onchain summer.",
+      "poolboy_title": "You've unlocked the\nRainbow Poolboy!",
+      "adworld_description": "As a Rainbow World Citizen, you can now unlock a special edition\nAdWorld x Rainbow App Icon.",
+      "adworld_title": "Welcome to Rainbow World!",
+      "farcaster_description": "Our most boring app icon ever, inspired by Warpcast's bland minimalism.",
+      "farcaster_title": "You've unlocked\nRainbowcast",
+      "button": "Snag the icon"
+    },
     "explain": {
-      "icon_unlock": {
-        "smol_text": "You found Treasure! Because you hold a Smolverse NFT, you've unlocked a Custom Icon!",
-        "optimism_text": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you!",
-        "zora_text": "A special edition Rainbow Zorb icon that's made for magical pondering.",
-        "finiliar_text": "A special edition Rainbow Fini icon that keeps you up to date on the price of gas, rain or shine.",
-        "finiliar_title": "You've unlocked a\nRainbow Fini",
-        "golddoge_text": "A limited edition golden Rainbow app icon in celebration of Kabosu's 17th birthday.",
-        "raindoge_text": "A limited edition Rainbow app icon in celebration of Kabosu's 17th birthday.",
-        "pooly_text": "A special edition Rainbow Pooly icon for supporters of freedom.",
-        "pooly_title": "You've unlocked a\nRainbow Pooly",
-        "zorb_text": "A special edition Rainbow Zorb:\n100% of what you love, faster and more efficient.",
-        "zorb_title": "You've unlocked\nRainbow Zorb Energy!",
-        "poolboy_text": "A special edition Rainbow x Poolsuite Icon for onchain summer.",
-        "poolboy_title": "You've unlocked the\nRainbow Poolboy!",
-        "adworld_text": "As a Rainbow World Citizen, you can now unlock a special edition\nAdWorld x Rainbow App Icon.",
-        "adworld_title": "Welcome to Rainbow World!",
-        "farcaster_text": "Our most boring app icon ever, inspired by Warpcast's bland minimalism",
-        "farcaster_title": "You've unlocked\nRainbowcast",
-        "title": "You've unlocked\nRainbow 􀆄 %{partner}",
-        "button": "Snag the icon"
-      },
       "output_disabled": {
         "text": "For %{fromNetwork}, Rainbow can't prepare swaps based on the amount of %{outputToken} you'd like to receive. \n\n Try entering the amount of %{inputToken} you’d like to swap instead.",
         "title": "Enter %{inputToken} Instead",
@@ -2364,9 +2370,7 @@
         "add_wallet_sheet": {
           "options": {
             "cloud": {
-              "description_android": "If you previously backed up your wallet on Google Drive, tap here to restore it.",
-              "description_ios_one_wallet": "You have 1 wallet backed up",
-              "description_ios_multiple_wallets": "You have %{walletCount} wallets backed up",
+              "description_restore_sheet": "If you previously backed up to %{cloudPlatform}, tap here to restore it.",
               "description_with_latest_backup_date": "Latest back up %{fromNow} at %{time}",
               "title": "Restore from %{platform}",
               "no_backups": "No backups found",

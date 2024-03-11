@@ -4,6 +4,7 @@ import { fetchAllBackups, fetchUserDataFromCloud, isCloudBackupAvailable, syncCl
 import { RainbowError, logger } from '@/logger';
 
 export default function useCloudBackups() {
+  const [isFetching, setIsFetching] = useState(false);
   const [backups, setBackups] = useState<CloudBackups>({
     files: [],
   });
@@ -12,9 +13,11 @@ export default function useCloudBackups() {
 
   const fetchBackups = async () => {
     try {
+      setIsFetching(true);
       const isAvailable = isCloudBackupAvailable();
       if (!isAvailable) {
         logger.log('Cloud backup is not available');
+        setIsFetching(false);
         return;
       }
 
@@ -35,6 +38,7 @@ export default function useCloudBackups() {
         error: e,
       });
     }
+    setIsFetching(false);
   };
 
   useEffect(() => {
@@ -42,6 +46,7 @@ export default function useCloudBackups() {
   }, []);
 
   return {
+    isFetching,
     backups,
     fetchBackups,
     userData,

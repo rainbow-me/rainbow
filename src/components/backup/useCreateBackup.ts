@@ -72,6 +72,11 @@ export const useCreateBackup = ({ walletId }: UseCreateBackupProps) => {
       setLoading('loading');
 
       if (type === BackupTypes.All) {
+        if (!wallets) {
+          onError('Error loading wallets. Please try again.');
+          setLoading('error');
+          return;
+        }
         backupAllWalletsToCloud({
           wallets: wallets as AllRainbowWallets,
           password,

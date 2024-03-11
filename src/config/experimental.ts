@@ -23,6 +23,7 @@ export const POINTS = 'Points';
 export const REMOTE_PROMO_SHEETS = 'RemotePromoSheets';
 export const REMOTE_CARDS = 'RemoteCards';
 export const POINTS_NOTIFICATIONS_TOGGLE = 'PointsNotificationsToggle';
+export const DAPP_BROWSER = 'Dapp Browser';
 
 /**
  * A developer setting that pushes log lines to an array in-memory so that
@@ -55,6 +56,7 @@ export const defaultConfig: Record<string, ExperimentalValue> = {
   [REMOTE_PROMO_SHEETS]: { settings: true, value: false },
   [REMOTE_CARDS]: { settings: true, value: false },
   [POINTS_NOTIFICATIONS_TOGGLE]: { settings: true, value: false },
+  [DAPP_BROWSER]: { settings: true, value: false },
 };
 
 const storageKey = 'config';
