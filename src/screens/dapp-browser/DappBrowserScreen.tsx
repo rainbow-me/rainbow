@@ -1,6 +1,6 @@
 import { ButtonPressAnimation } from '@/components/animations';
 import { Page } from '@/components/layout';
-import { AccentColorProvider, Bleed, Box, Inline, Inset, Stack, Text } from '@/design-system';
+import { Bleed, Box, ColorModeProvider, Cover, Inline, Inset, Stack, Text } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import { getHeaderHeight } from '@/navigation/SwipeNavigator';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
@@ -8,7 +8,7 @@ import React from 'react';
 import { ScrollView } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { BlurView } from '@react-native-community/blur';
-import { useTheme } from '@/theme';
+import { ImgixImage } from '@/components/images';
 
 const HORIZONTAL_INSET = 24;
 
@@ -18,28 +18,39 @@ const LOGO_SIZE = (deviceUtils.dimensions.width - HORIZONTAL_INSET * 2 - (NUM_LO
 
 const NUM_CARDS = 2;
 const CARD_PADDING = 12;
-const CARD_WIDTH = (deviceUtils.dimensions.width - HORIZONTAL_INSET * 2 - (NUM_CARDS - 1) * CARD_PADDING) / NUM_CARDS;
+const CARD_SIZE = (deviceUtils.dimensions.width - HORIZONTAL_INSET * 2 - (NUM_CARDS - 1) * CARD_PADDING) / NUM_CARDS;
 
 const Card = () => {
-  const { isDarkMode } = useTheme();
+  const bgImageUrl = 'https://nftcalendar.io/storage/uploads/2022/05/06/banner_discord1_05062022181527627565bf3c203.jpeg';
+  const logoImageUrl = 'https://pbs.twimg.com/profile_images/1741494128779886592/RY4V0T2F_400x400.jpg';
 
   return (
     <ButtonPressAnimation>
       <Box
-        as={LinearGradient}
-        colors={['#0078FF', '#3AB8FF']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
+        as={ImgixImage}
+        background="surfacePrimary"
         borderRadius={24}
         shadow="18px"
-        width={{ custom: CARD_WIDTH }}
+        width={{ custom: CARD_SIZE }}
         height={{ custom: 137 }}
-        padding="20px"
         justifyContent="space-between"
-        style={{ borderWidth: 1.33, borderColor: 'rgba(255, 255, 255, 0.12)' }}
-        background="blue"
+        padding="20px"
+        source={{ uri: bgImageUrl }}
+        size={CARD_SIZE}
       >
+        <Cover>
+          <LinearGradient
+            colors={['rgba(0, 0, 0, 0.6)', 'rgba(0, 0, 0, 0.6)', '#000']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            locations={[0, 0.4985, 1]}
+            style={{ width: '100%', height: '100%' }}
+          />
+        </Cover>
         <Box
+          as={ImgixImage}
+          source={{ uri: logoImageUrl }}
+          size={48}
           background="blue"
           shadow="24px"
           width={{ custom: 48 }}
@@ -48,38 +59,67 @@ const Card = () => {
           left={{ custom: -8 }}
           borderRadius={12}
         />
-        <Stack space="10px">
-          <Text size="17pt" weight="heavy" color="label">
-            Rainbowcast
-          </Text>
-          <Text size="13pt" weight="bold" color="labelTertiary">
-            zora.co
-          </Text>
-        </Stack>
-        <AccentColorProvider color="rgba(244, 248, 255, 0.08)">
-          <Box
-            position="absolute"
-            background="accent"
-            top={{ custom: 12 }}
-            right={{ custom: 12 }}
-            height={{ custom: 24 }}
-            width={{ custom: 24 }}
-            borderRadius={32}
-            style={{ flex: 1, overflow: 'hidden' }}
+        <ColorModeProvider value="dark">
+          <Stack space="10px">
+            <Text size="17pt" weight="heavy" color="label">
+              Rainbowcast
+            </Text>
+            <Text size="13pt" weight="bold" color="labelTertiary">
+              zora.co
+            </Text>
+          </Stack>
+        </ColorModeProvider>
+        <Box
+          as={ButtonPressAnimation}
+          position="absolute"
+          background="accent"
+          top={{ custom: 12 }}
+          right={{ custom: 12 }}
+          height={{ custom: 24 }}
+          width={{ custom: 24 }}
+          borderRadius={32}
+          style={{ flex: 1, overflow: 'hidden', backgroundColor: 'rgba(244, 248, 255, 0.08)' }}
+        >
+          <BlurView
+            blurType="chromeMaterialDark"
+            blurAmount={8.5}
+            style={{
+              width: '100%',
+              height: '100%',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
           >
-            <BlurView
-              blurType={isDarkMode ? 'chromeMaterialDark' : 'light'}
-              blurAmount={8.5}
-              style={{
-                width: '100%',
-                height: '100%',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            />
-          </Box>
-        </AccentColorProvider>
+            <Text align="center" weight="heavy" color="labelSecondary" size="13pt">
+              􀍠
+            </Text>
+          </BlurView>
+        </Box>
       </Box>
+    </ButtonPressAnimation>
+  );
+};
+
+const Logo = () => {
+  const imageUrl = 'https://pbs.twimg.com/profile_images/1741494128779886592/RY4V0T2F_400x400.jpg';
+
+  return (
+    <ButtonPressAnimation>
+      <Stack space="12px" alignHorizontal="center">
+        <Box
+          as={ImgixImage}
+          size={LOGO_SIZE}
+          source={{ uri: imageUrl }}
+          width={{ custom: LOGO_SIZE }}
+          height={{ custom: LOGO_SIZE }}
+          borderRadius={15}
+          background="surfacePrimary"
+          shadow="24px"
+        />
+        <Text size="12pt" weight="bold" color="labelSecondary" align="center">
+          Zora
+        </Text>
+      </Stack>
     </ButtonPressAnimation>
   );
 };
@@ -95,7 +135,7 @@ export default function DappBrowserScreen() {
         }}
         contentContainerStyle={{
           paddingBottom: getHeaderHeight() + 32,
-          paddingTop: 100, // change this
+          paddingTop: 87,
           paddingHorizontal: HORIZONTAL_INSET,
         }}
         showsVerticalScrollIndicator
@@ -110,14 +150,14 @@ export default function DappBrowserScreen() {
                 Trending
               </Text>
             </Inline>
-            <Bleed space="20px">
+            <Bleed space="24px">
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                <Inset space="20px">
-                  <Inline space={{ custom: CARD_PADDING }}>
+                <Inset space="24px">
+                  <Box flexDirection="row" gap={CARD_PADDING}>
                     <Card />
                     <Card />
                     <Card />
-                  </Inline>
+                  </Box>
                 </Inset>
               </ScrollView>
             </Bleed>
@@ -131,24 +171,18 @@ export default function DappBrowserScreen() {
                 Favorites
               </Text>
             </Inline>
-            <Bleed space="20px">
+            <Bleed space="24px">
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                <Inset space="20px">
-                  <Inline space={{ custom: LOGO_PADDING }}>
-                    <Box
-                      width={{ custom: LOGO_SIZE }}
-                      height={{ custom: LOGO_SIZE }}
-                      borderRadius={15}
-                      background="blue"
-                      shadow="24px"
-                      style={{ borderWidth: 1.33, borderColor: 'rgba(255, 255, 255, 0.1)' }}
-                    />
-                    <Box width={{ custom: LOGO_SIZE }} height={{ custom: LOGO_SIZE }} borderRadius={15} background="blue" shadow="24px" />
-                    <Box width={{ custom: LOGO_SIZE }} height={{ custom: LOGO_SIZE }} borderRadius={15} background="blue" shadow="24px" />
-                    <Box width={{ custom: LOGO_SIZE }} height={{ custom: LOGO_SIZE }} borderRadius={15} background="blue" shadow="24px" />
-                    <Box width={{ custom: LOGO_SIZE }} height={{ custom: LOGO_SIZE }} borderRadius={15} background="blue" shadow="24px" />
-                    <Box width={{ custom: LOGO_SIZE }} height={{ custom: LOGO_SIZE }} borderRadius={15} background="blue" shadow="24px" />
-                  </Inline>
+                <Inset space="24px">
+                  <Box flexDirection="row" gap={LOGO_PADDING}>
+                    <Logo />
+                    <Logo />
+                    <Logo />
+                    <Logo />
+                    <Logo />
+                    <Logo />
+                    <Logo />
+                  </Box>
                 </Inset>
               </ScrollView>
             </Bleed>
