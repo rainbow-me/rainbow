@@ -141,9 +141,11 @@ export const WalletDiagnosticsSheet = () => {
   }, [navigate]);
 
   const copyUUID = () => {
-    haptics.notificationSuccess();
-    Clipboard.setString(uuid);
-    presentToast();
+    if (uuid) {
+      haptics.notificationSuccess();
+      Clipboard.setString(uuid);
+      presentToast();
+    }
   };
 
   const presentToast = () => {
