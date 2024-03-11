@@ -35,9 +35,13 @@ export default function useManageCloudBackups() {
 
     const getTitleForPlatform = () => {
       if (IS_ANDROID && accountDetails?.email) {
-        return `Manage ${accountDetails.email} Backups`;
+        return i18n.t(i18n.l.settings.manage_backups, {
+          cloudPlatformOrEmail: accountDetails.email,
+        });
       }
-      return `Manage ${cloudPlatform} Backups`;
+      return i18n.t(i18n.l.settings.manage_backups, {
+        cloudPlatformOrEmail: cloudPlatform,
+      });
     };
 
     const removeBackupStateFromAllWallets = async () => {

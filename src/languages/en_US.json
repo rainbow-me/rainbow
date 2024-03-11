@@ -1758,6 +1758,7 @@
       "backup": "Wallets & Backup",
       "delete_backups": "Delete All %{cloudPlatform} Backups",
       "confirm_delete_backups": "Confirm and Delete Backups",
+      "manage_backups": "Manage %{cloudPlatformOrEmail} Backups",
       "confirm_delete_backups_description": "Are you sure you want to delete your %{cloudPlatform} wallet backups?",
       "google_account_used": "Google account used for backups",
       "backup_switch_google_account": "Switch Google Account",
