@@ -9,6 +9,7 @@ import { ScrollView } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { BlurView } from '@react-native-community/blur';
 import { ImgixImage } from '@/components/images';
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 
 const HORIZONTAL_INSET = 24;
 
@@ -24,42 +25,64 @@ const Card = () => {
   const bgImageUrl = 'https://nftcalendar.io/storage/uploads/2022/05/06/banner_discord1_05062022181527627565bf3c203.jpeg';
   const logoImageUrl = 'https://pbs.twimg.com/profile_images/1741494128779886592/RY4V0T2F_400x400.jpg';
 
+  const menuConfig = {
+    menuTitle: '',
+    menuItems: [
+      {
+        actionKey: 'test1',
+        actionTitle: 'Option 1',
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: 'chart.line.uptrend.xyaxis',
+        },
+      },
+      {
+        actionKey: 'test2',
+        actionTitle: 'Option 2',
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: 'plus.forwardslash.minus',
+        },
+      },
+    ],
+  };
+
   return (
-    <ButtonPressAnimation>
-      <Box
-        as={ImgixImage}
-        background="surfacePrimary"
-        borderRadius={24}
-        shadow="18px"
-        width={{ custom: CARD_SIZE }}
-        height={{ custom: 137 }}
-        justifyContent="space-between"
-        padding="20px"
-        source={{ uri: bgImageUrl }}
-        size={CARD_SIZE}
-      >
-        <Cover>
-          <LinearGradient
-            colors={['rgba(0, 0, 0, 0.6)', 'rgba(0, 0, 0, 0.6)', '#000']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 0, y: 1 }}
-            locations={[0, 0.4985, 1]}
-            style={{ width: '100%', height: '100%' }}
-          />
-        </Cover>
+    <ColorModeProvider value="dark">
+      <ButtonPressAnimation>
         <Box
           as={ImgixImage}
-          source={{ uri: logoImageUrl }}
-          size={48}
-          background="blue"
-          shadow="24px"
-          width={{ custom: 48 }}
-          height={{ custom: 48 }}
-          top={{ custom: -8 }}
-          left={{ custom: -8 }}
-          borderRadius={12}
-        />
-        <ColorModeProvider value="dark">
+          background="surfacePrimary"
+          borderRadius={24}
+          shadow="18px"
+          width={{ custom: CARD_SIZE }}
+          height={{ custom: 137 }}
+          justifyContent="space-between"
+          padding="20px"
+          source={{ uri: bgImageUrl }}
+          size={CARD_SIZE}
+        >
+          <Cover>
+            <LinearGradient
+              colors={['rgba(0, 0, 0, 0.6)', 'rgba(0, 0, 0, 0.6)', '#000']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+              locations={[0, 0.4985, 1]}
+              style={{ width: '100%', height: '100%' }}
+            />
+          </Cover>
+          <Box
+            as={ImgixImage}
+            source={{ uri: logoImageUrl }}
+            size={48}
+            background="blue"
+            shadow="24px"
+            width={{ custom: 48 }}
+            height={{ custom: 48 }}
+            top={{ custom: -8 }}
+            left={{ custom: -8 }}
+            borderRadius={12}
+          />
           <Stack space="10px">
             <Text size="17pt" weight="heavy" color="label">
               Rainbowcast
@@ -68,35 +91,36 @@ const Card = () => {
               zora.co
             </Text>
           </Stack>
-        </ColorModeProvider>
-        <Box
-          as={ButtonPressAnimation}
-          position="absolute"
-          background="accent"
-          top={{ custom: 12 }}
-          right={{ custom: 12 }}
-          height={{ custom: 24 }}
-          width={{ custom: 24 }}
-          borderRadius={32}
-          style={{ flex: 1, overflow: 'hidden', backgroundColor: 'rgba(244, 248, 255, 0.08)' }}
-        >
-          <BlurView
-            blurType="chromeMaterialDark"
-            blurAmount={8.5}
-            style={{
-              width: '100%',
-              height: '100%',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
+          <Box
+            position="absolute"
+            top={{ custom: 12 }}
+            right={{ custom: 12 }}
+            height={{ custom: 24 }}
+            width={{ custom: 24 }}
+            borderRadius={32}
+            style={{ flex: 1, overflow: 'hidden', backgroundColor: 'rgba(244, 248, 255, 0.08)' }}
           >
-            <Text align="center" weight="heavy" color="labelSecondary" size="13pt">
-              􀍠
-            </Text>
-          </BlurView>
+            <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={() => {}}>
+              <BlurView
+                blurType="chromeMaterialDark"
+                blurAmount={8.5}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: 'rgba(244, 248, 255, 0.08)',
+                }}
+              >
+                <Text align="center" weight="heavy" color="labelSecondary" size="13pt">
+                  􀍠
+                </Text>
+              </BlurView>
+            </ContextMenuButton>
+          </Box>
         </Box>
-      </Box>
-    </ButtonPressAnimation>
+      </ButtonPressAnimation>
+    </ColorModeProvider>
   );
 };
 
