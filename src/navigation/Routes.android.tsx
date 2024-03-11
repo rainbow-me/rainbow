@@ -226,6 +226,7 @@ function BSNavigator() {
           height: deviceUtils.dimensions.height + CUSTOM_MARGIN_TOP_ANDROID - (StatusBar?.currentHeight || 0),
         }}
       />
+      <BSStack.Screen component={ChangeWalletSheet} name={Routes.CHANGE_WALLET_SHEET} options={bottomSheetPreset} />
       <BSStack.Screen
         name={Routes.TRANSACTION_DETAILS}
         component={TransactionDetails}
