@@ -18,6 +18,7 @@ import {
   ZORA_MAINNET_RPC,
   AVALANCHE_MAINNET_RPC,
   AVALANCHE_MAINNET_RPC_DEV,
+  BLAST_MAINNET_RPC,
 } from 'react-native-dotenv';
 import { RainbowError, logger } from '@/logger';
 import { getNetwork, saveNetwork } from '@/handlers/localstorage/globalSettings';
@@ -42,6 +43,7 @@ interface RainbowConfig extends Record<string, string | boolean | number> {
   zora_mainnet_rpc: string;
   base_mainnet_rpc: string;
   avalanche_mainnet_rpc: string;
+  blast_mainnet_rpc: string;
   swagg_enabled: boolean;
   trace_call_block_number_offset: number;
   profiles_enabled: boolean;
@@ -56,6 +58,7 @@ interface RainbowConfig extends Record<string, string | boolean | number> {
   mainnet_enabled: boolean;
   goerli_enabled: boolean;
   avalanche_enabled: boolean;
+  blast_enabled: boolean;
 
   arbitrum_tx_enabled: boolean;
   base_tx_enabled: boolean;
@@ -67,8 +70,10 @@ interface RainbowConfig extends Record<string, string | boolean | number> {
   mainnet_tx_enabled: boolean;
   goerli_tx_enabled: boolean;
   avalanche_tx_enabled: boolean;
+  blast_tx_enabled: boolean;
 
   base_swaps_enabled: boolean;
+  blast_swaps_enabled: boolean;
   mints_enabled: boolean;
   points_enabled: boolean;
   points_fully_enabled: boolean;
@@ -94,6 +99,7 @@ const DEFAULT_CONFIG: RainbowConfig = {
     base: 200,
     zora: 200,
     avalanche: 200,
+    blast: 200,
   }),
   ethereum_goerli_rpc: __DEV__ ? ETHEREUM_GOERLI_RPC_DEV : ETHEREUM_GOERLI_RPC,
   ethereum_mainnet_rpc: __DEV__ ? ETHEREUM_MAINNET_RPC_DEV : ETHEREUM_MAINNET_RPC,
@@ -107,6 +113,7 @@ const DEFAULT_CONFIG: RainbowConfig = {
   zora_mainnet_rpc: ZORA_MAINNET_RPC,
   base_mainnet_rpc: __DEV__ ? BASE_MAINNET_RPC_DEV : BASE_MAINNET_RPC,
   avalanche_mainnet_rpc: __DEV__ ? AVALANCHE_MAINNET_RPC_DEV : AVALANCHE_MAINNET_RPC,
+  blast_mainnet_rpc: BLAST_MAINNET_RPC,
   swagg_enabled: true,
   trace_call_block_number_offset: 20,
   profiles_enabled: true,
@@ -119,6 +126,7 @@ const DEFAULT_CONFIG: RainbowConfig = {
   base_enabled: true,
   op_chains_enabled: true,
   avalanche_enabled: true,
+  blast_enabled: true,
 
   mainnet_enabled: true,
 
@@ -132,12 +140,14 @@ const DEFAULT_CONFIG: RainbowConfig = {
   zora_tx_enabled: true,
   op_chains_tx_enabled: true,
   avalanche_tx_enabled: true,
+  blast_tx_enabled: true,
 
   mainnet_tx_enabled: true,
 
   goerli_tx_enabled: true,
 
   base_swaps_enabled: false,
+  blast_swaps_enabled: false,
   mints_enabled: true,
   points_enabled: true,
   points_fully_enabled: true,

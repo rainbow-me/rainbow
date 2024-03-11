@@ -28,6 +28,10 @@ import AvalancheBadge from '../../assets/badges/avalancheBadge.png';
 import AvalancheBadgeDark from '../../assets/badges/avalancheBadgeDark.png';
 import AvalancheBadgeLarge from '../../assets/badges/avalancheBadgeLarge.png';
 import AvalancheBadgeLargeDark from '../../assets/badges/avalancheBadgeLargeDark.png';
+import BlastBadge from '../../assets/badges/blastBadge.png';
+import BlastBadgeDark from '../../assets/badges/blastBadgeDark.png';
+import BlastBadgeLarge from '../../assets/badges/blastBadgeLarge.png';
+import BlastBadgeLargeDark from '../../assets/badges/blastBadgeLargeDark.png';
 import { Centered } from '../layout';
 import styled from '@/styled-thing';
 import { position as positions } from '@/styles';
@@ -82,6 +86,8 @@ export default function ChainBadge({
         val = isDarkMode ? BaseBadgeLargeDark : BaseBadgeLarge;
       } else if (network === Network.avalanche) {
         val = isDarkMode ? AvalancheBadgeLargeDark : AvalancheBadgeLarge;
+      } else if (network === Network.blast) {
+        val = isDarkMode ? BlastBadgeLargeDark : BlastBadgeLarge;
       }
     } else {
       if (network === Network.arbitrum) {
@@ -98,6 +104,8 @@ export default function ChainBadge({
         val = isDarkMode ? BaseBadgeDark : BaseBadge;
       } else if (network === Network.avalanche) {
         val = isDarkMode ? AvalancheBadgeDark : AvalancheBadge;
+      } else if (network === Network.blast) {
+        val = isDarkMode ? BlastBadgeDark : BlastBadge;
       }
     }
     return val;
