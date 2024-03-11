@@ -8,6 +8,7 @@ module.exports.transform = function applyRainbowTransform({ src, filename, optio
       'metro-plugin-anisotropic-transform': {
         cyclicDependents: /.+\/node_modules\/react-native\/Libraries\/BatchedBridge\/NativeModules\.js$/,
         globalScopeFilter: {
+          '@react-native-clipboard/clipboard': {},
           'react-native-keychain': {},
           'react-native-video': {},
           'react-native-webview': {
