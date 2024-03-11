@@ -3,7 +3,7 @@ import { BlurView } from '@react-native-community/blur';
 import MaskedView from '@react-native-masked-view/masked-view';
 import c from 'chroma-js';
 import React, { ReactNode, useMemo } from 'react';
-import { StyleSheet, Text as RNText, ScrollView, TextInput, ViewStyle } from 'react-native';
+import { StyleSheet, Text as RNText, ScrollView, TextInput, ViewStyle, StatusBar, Pressable } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
@@ -103,6 +103,7 @@ import {
 import { useAnimatedSwapStyles, useSwapInputsController, useSwapNavigation, useSwapTextStyles } from './hooks/swapHooks';
 import { inputKeys } from './types';
 import { getHighContrastColor, getTintedBackgroundColor, opacity } from './utils';
+import { IS_ANDROID, IS_IOS } from '@/env';
 
 /** README
  * This prototype is largely driven by Reanimated and Gesture Handler, which
@@ -144,7 +145,7 @@ import { getHighContrastColor, getTintedBackgroundColor, opacity } from './utils
 export function SwapScreen() {
   const { accountSymbol, accountColor, accountImage } = useAccountProfile();
   const { isDarkMode } = useColorMode();
-  const { navigate } = useNavigation();
+  const { navigate, goBack } = useNavigation();
   const theme = useTheme();
 
   const inputProgress = useSharedValue(0);
@@ -530,7 +531,7 @@ export function SwapScreen() {
                 </Box>
               </PanGestureHandler>
               <Box
-                paddingBottom={{ custom: safeAreaInsetValues.bottom + 16 }}
+                paddingBottom={{ custom: safeAreaInsetValues.bottom + 16 + (IS_ANDROID ? 8 : 0) }}
                 paddingHorizontal="20px"
                 paddingTop={{ custom: 16 - THICK_BORDER_WIDTH }}
                 style={{
@@ -565,7 +566,8 @@ export function SwapScreen() {
             </Box>
           </Box>
         </SwapBackground>
-        <Box as={Animated.View} pointerEvents="box-none" position="absolute" style={focusedSearchStyle} top="0px" width="full">
+        <Box as={Animated.View} pointerEvents="box-none" position="absolute" style={focusedSearchStyle} top={{ custom: 0 }} width="full">
+          {IS_ANDROID ? <Pressable onPress={goBack} style={[StyleSheet.absoluteFillObject]} /> : null}
           <Box
             borderRadius={5}
             height={{ custom: 5 }}
@@ -574,7 +576,7 @@ export function SwapScreen() {
               alignSelf: 'center',
               backgroundColor: isDarkMode ? globalColors.white50 : 'rgba(9, 17, 31, 0.28)',
             }}
-            top={{ custom: safeAreaInsetValues.top + 6 }}
+            top={{ custom: safeAreaInsetValues.top + 6 + (StatusBar.currentHeight ?? 0) }}
             width={{ custom: 36 }}
           />
           <Navbar
@@ -631,7 +633,7 @@ export function SwapScreen() {
                           align="center"
                           color={isDarkMode ? 'label' : 'labelSecondary'}
                           size="icon 17px"
-                          style={{ lineHeight: 33 }}
+                          style={{ lineHeight: IS_IOS ? 33 : 17 }}
                           weight="regular"
                         >
                           􀣌
@@ -643,7 +645,7 @@ export function SwapScreen() {
               </ButtonPressAnimation>
             }
             titleComponent={
-              <Inset bottom={{ custom: 5.5 }}>
+              <Inset bottom={{ custom: IS_IOS ? 5.5 : 14 }}>
                 <Text align="center" color="label" size="20pt" weight="heavy">
                   {i18n.t(i18n.l.swap.modal_types.swap)}
                 </Text>
@@ -692,7 +694,7 @@ const SwapBackground = ({
       borderRadius={ScreenCornerRadius}
       colors={[topColorDarkened, bottomColorDarkened]}
       end={{ x: 0.5, y: 1 }}
-      height={{ custom: deviceHeight }}
+      height={{ custom: deviceHeight + (IS_ANDROID ? 24 : 0) }}
       justifyContent="center"
       paddingTop={{ custom: safeAreaInsetValues.top + (navbarHeight - 12) }}
       start={{ x: 0.5, y: 0 }}
@@ -1577,6 +1579,7 @@ const styles = StyleSheet.create({
     borderRadius: ScreenCornerRadius,
     flex: 1,
     overflow: 'hidden',
+    paddingTop: StatusBar.currentHeight ?? 0,
   },
   solidColorCoinIcon: {
     opacity: 0.4,
