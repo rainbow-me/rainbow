@@ -694,7 +694,7 @@ const SwapBackground = ({
     <Box
       alignItems="center"
       as={LinearGradient}
-      borderRadius={ScreenCornerRadius}
+      borderRadius={IS_ANDROID ? 20 : ScreenCornerRadius}
       colors={[topColorDarkened, bottomColorDarkened]}
       end={{ x: 0.5, y: 1 }}
       height={{ custom: deviceHeight + (IS_ANDROID ? 24 : 0) }}
@@ -1580,7 +1580,7 @@ const styles = StyleSheet.create({
   inputTextMask: { alignItems: 'center', flexDirection: 'row', height: 36, pointerEvents: 'box-only' },
   rootViewBackground: {
     backgroundColor: 'transparent',
-    borderRadius: ScreenCornerRadius,
+    borderRadius: IS_ANDROID ? 20 : ScreenCornerRadius,
     flex: 1,
     overflow: 'hidden',
     marginTop: StatusBar.currentHeight ?? 0,
