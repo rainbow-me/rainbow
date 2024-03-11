@@ -203,6 +203,7 @@ export const WalletsAndBackup = () => {
                   <MenuHeader.Label
                     text={i18n.t(i18n.l.wallet.back_ups.cloud_backup_description, {
                       link: i18n.t(i18n.l.wallet.back_ups.cloud_backup_link),
+                      cloudPlatform,
                     })}
                     linkText={i18n.t(i18n.l.wallet.back_ups.cloud_backup_link)}
                     onPress={() =>
@@ -310,13 +311,20 @@ export const WalletsAndBackup = () => {
                   labelComponent={
                     allBackedUp ? (
                       <MenuHeader.Label
+                        linkText={i18n.t(i18n.l.wallet.back_ups.cloud_backup_link)}
+                        onPress={() =>
+                          navigate(Routes.LEARN_WEB_VIEW_SCREEN, {
+                            ...backupsCard,
+                            type: 'square',
+                          })
+                        }
                         text={
                           allBackedUp
                             ? i18n.t(i18n.l.wallet.back_ups.backed_up_to_cloud_message, {
                                 cloudPlatform,
                               })
                             : i18n.t(i18n.l.wallet.back_ups.cloud_backup_description, {
-                                link: i18n.t(i18n.l.wallet.back_ups.cloud_backup_link),
+                                cloudPlatform,
                               })
                         }
                       />
@@ -522,7 +530,9 @@ export const WalletsAndBackup = () => {
               <Menu
                 description={
                   <Text color="secondary60 (Deprecated)" size="14px / 19px (Deprecated)" weight="regular">
-                    {i18n.t(i18n.l.wallet.back_ups.cloud_backup_description)}
+                    {i18n.t(i18n.l.wallet.back_ups.cloud_backup_description, {
+                      cloudPlatform,
+                    })}
 
                     <Text onPress={onPressLearnMoreAboutCloudBackups} color="blue" size="14px / 19px (Deprecated)" weight="medium">
                       {' '}
