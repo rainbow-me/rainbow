@@ -756,7 +756,7 @@ export async function handleSessionRequestResponse(
   }: {
     sessionRequestEvent: SignClientTypes.EventArguments['session_request'];
   },
-  { result, error }: { result: string; error: any }
+  { result, error }: { result: string | null; error: any }
 ) {
   logger.info(`WC v2: handleSessionRequestResponse`, {
     success: Boolean(result),
@@ -764,7 +764,6 @@ export async function handleSessionRequestResponse(
 
   const client = await web3WalletClient;
   const { topic, id } = sessionRequestEvent;
-
   if (result) {
     const payload = {
       topic,
