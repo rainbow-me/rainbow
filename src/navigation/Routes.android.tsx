@@ -102,7 +102,6 @@ function MainNavigator() {
     <Stack.Navigator initialRouteName={initialRoute} {...stackNavigationConfig} screenOptions={defaultScreenStackOptions}>
       <Stack.Screen component={SwipeNavigator} name={Routes.SWIPE_LAYOUT} options={expandedPreset} />
       <Stack.Screen component={AvatarBuilder} name={Routes.AVATAR_BUILDER} options={emojiPreset} />
-      <Stack.Screen component={ChangeWalletSheet} name={Routes.CHANGE_WALLET_SHEET} options={expandedPreset} />
       <Stack.Screen component={ConnectedDappsSheet} name={Routes.CONNECTED_DAPPS} options={expandedPreset} />
       <Stack.Screen component={Portal} name={Routes.PORTAL} options={expandedPreset} />
       <Stack.Screen component={PositionSheet} name={Routes.POSITION_SHEET} options={expandedPreset} />
@@ -218,6 +217,7 @@ function BSNavigator() {
           height: deviceUtils.dimensions.height + CUSTOM_MARGIN_TOP_ANDROID - (StatusBar?.currentHeight || 0),
         }}
       />
+      <BSStack.Screen component={ChangeWalletSheet} name={Routes.CHANGE_WALLET_SHEET} options={bottomSheetPreset} />
       <BSStack.Screen
         name={Routes.TRANSACTION_DETAILS}
         component={TransactionDetails}
