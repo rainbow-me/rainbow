@@ -5,6 +5,7 @@ import Animated, {
   interpolate,
   interpolateColor,
   runOnJS,
+  runOnUI,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
@@ -242,14 +243,19 @@ export function useSwapInputsController({
       const outputAmount = (inputNativeValue / outputAssetUsdPrice) * (1 - SWAP_FEE);
       const outputNativeValue = outputAmount * outputAssetUsdPrice;
 
-      inputValues.modify(values => {
-        return {
-          ...values,
-          outputAmount,
-          outputNativeValue,
-        };
-      });
-      isQuoteStale.value = 0;
+      const updateWorklet = () => {
+        'worklet';
+        inputValues.modify(values => {
+          return {
+            ...values,
+            outputAmount,
+            outputNativeValue,
+          };
+        });
+        isQuoteStale.value = 0;
+      };
+
+      runOnUI(updateWorklet)();
     };
 
     if (percentage > 0) {
@@ -277,53 +283,72 @@ export function useSwapInputsController({
         const inputNativeValue = amount * inputAssetUsdPrice;
         const outputAmount = (inputNativeValue / outputAssetUsdPrice) * (1 - SWAP_FEE);
         const outputNativeValue = outputAmount * outputAssetUsdPrice;
-        inputValues.modify(values => {
-          return {
-            ...values,
-            outputAmount,
-            outputNativeValue,
-          };
-        });
+
         const updatedSliderPosition = clampJS((amount / inputAssetBalance) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
-        sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
+
+        const updateWorklet = () => {
+          'worklet';
+          inputValues.modify(values => {
+            return {
+              ...values,
+              outputAmount,
+              outputNativeValue,
+            };
+          });
+          sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
+          isQuoteStale.value = 0;
+        };
+
+        runOnUI(updateWorklet)();
       } else if (inputKey === 'outputAmount') {
         const outputAmount = amount;
         const inputNativeValue = outputAmount * outputAssetUsdPrice * (1 + SWAP_FEE);
         const inputAmount = inputNativeValue / inputAssetUsdPrice;
-        inputValues.modify(values => {
-          return {
-            ...values,
-            inputAmount,
-            inputNativeValue,
-          };
-        });
+
         const updatedSliderPosition = clampJS((inputAmount / inputAssetBalance) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
-        sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
+
+        const updateWorklet = () => {
+          'worklet';
+          inputValues.modify(values => {
+            return {
+              ...values,
+              inputAmount,
+              inputNativeValue,
+            };
+          });
+          sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
+          isQuoteStale.value = 0;
+        };
+
+        runOnUI(updateWorklet)();
       }
-      isQuoteStale.value = 0;
     };
 
     const resetValuesToZero = () => {
       setIsFetching(false);
-      const keysToReset = ['inputAmount', 'inputNativeValue', 'outputAmount', 'outputNativeValue'];
-      const updatedValues = keysToReset.reduce(
-        (acc, key) => {
-          const castedKey = key as keyof typeof inputValues.value;
-          acc[castedKey] = castedKey === inputKey && preserveAmount ? inputValues.value[castedKey] : 0;
-          return acc;
-        },
-        {} as Partial<typeof inputValues.value>
-      );
 
-      inputValues.modify(values => {
-        return {
-          ...values,
-          ...updatedValues,
-        };
-      });
+      const updateWorklet = () => {
+        'worklet';
+        const keysToReset = ['inputAmount', 'inputNativeValue', 'outputAmount', 'outputNativeValue'];
+        const updatedValues = keysToReset.reduce(
+          (acc, key) => {
+            const castedKey = key as keyof typeof inputValues.value;
+            acc[castedKey] = castedKey === inputKey && preserveAmount ? inputValues.value[castedKey] : 0;
+            return acc;
+          },
+          {} as Partial<typeof inputValues.value>
+        );
+        inputValues.modify(values => {
+          return {
+            ...values,
+            ...updatedValues,
+          };
+        });
+        sliderXPosition.value = withSpring(0, snappySpringConfig);
+        isQuoteStale.value = 0;
+      };
 
-      sliderXPosition.value = withSpring(0, snappySpringConfig);
-      isQuoteStale.value = 0;
+      runOnUI(updateWorklet)();
     };
 
     if (amount > 0) {
