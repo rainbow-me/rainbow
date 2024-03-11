@@ -88,19 +88,18 @@ class OldApp extends Component {
     const initialUrl = await Linking.getInitialURL();
 
     // main Branch handler
-    // this.branchListener = await branchListener(url => {
-    //   logger.debug(`Branch: listener called`, {}, logger.DebugContext.deeplinks);
+    this.branchListener = await branchListener(url => {
+      logger.debug(`Branch: listener called`, {}, logger.DebugContext.deeplinks);
 
-    //   try {
-    //     handleDeeplink(url, this.state.initialRoute);
-    //   } catch (e) {
-    //     logger.error(new RainbowError('Error opening deeplink'), {
-    //       message: e.message,
-    //       url,
-    //     });
-    //   }
-    // }
-    // );
+      try {
+        handleDeeplink(url, this.state.initialRoute);
+      } catch (e) {
+        logger.error(new RainbowError('Error opening deeplink'), {
+          message: e.message,
+          url,
+        });
+      }
+    });
 
     // if we have an initial URL, pass it to Branch
     if (initialUrl) {
@@ -158,7 +157,7 @@ class OldApp extends Component {
 
   componentWillUnmount() {
     this.state.eventSubscription.remove();
-    // this.branchListener();
+    this.branchListener();
   }
 
   identifyFlow = async () => {
