@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback, useMemo, Ref } from 'react';
+import React, { forwardRef, useCallback, Ref } from 'react';
 import { useTheme } from '../../theme/ThemeContext';
 import { Input } from '../inputs';
 import { cloudBackupPasswordMinLength } from '@/handlers/cloudBackup';
@@ -32,20 +32,15 @@ const PasswordInput = styled(Input).attrs(({ theme: { colors } }: any) => ({
 
 // Use styled-components attrs for dynamic props to ensure they are memoized
 const ShadowContainer = styled(IS_IOS ? ShadowStack : View).attrs(({ theme: { colors, isDarkMode }, deviceWidth }: any) => {
-  const shadows = useMemo(
-    () => [
-      [0, 5, 15, colors.shadow, 0.06],
-      [0, 10, 30, colors.shadow, 0.12],
-    ],
-    [colors.shadow]
-  );
-
   return {
     backgroundColor: isDarkMode ? colors.offWhite : colors.white,
     borderRadius: 16,
     height: 46,
-    shadows,
-    width: IS_IOS ? '100%' : deviceWidth - 48,
+    shadows: [
+      [0, 5, 15, colors.shadow, 0.06],
+      [0, 10, 30, colors.shadow, 0.12],
+    ],
+    width: '100%',
     elevation: 15,
   };
 })({});
