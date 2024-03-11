@@ -2,7 +2,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { Page } from '@/components/layout';
 import { Bleed, Box, ColorModeProvider, Cover, Inline, Inset, Stack, Text } from '@/design-system';
 import { useNavigation } from '@/navigation';
-import { getHeaderHeight } from '@/navigation/SwipeNavigator';
+import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import React from 'react';
 import { ScrollView } from 'react-native';
@@ -131,10 +131,10 @@ export default function DappBrowserScreen() {
     <Box as={Page} flex={1} height="full" width="full" justifyContent="center">
       <ScrollView
         scrollIndicatorInsets={{
-          bottom: getHeaderHeight() - safeAreaInsetValues.bottom,
+          bottom: TAB_BAR_HEIGHT - safeAreaInsetValues.bottom,
         }}
         contentContainerStyle={{
-          paddingBottom: getHeaderHeight() + 32,
+          paddingBottom: TAB_BAR_HEIGHT + 32,
           paddingTop: 87,
           paddingHorizontal: HORIZONTAL_INSET,
         }}
