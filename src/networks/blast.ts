@@ -38,7 +38,7 @@ export const getBlastNetworkObject = (): NetworkProperties => {
       txHistory: true,
       flashbots: false,
       walletconnect: true,
-      swaps: false,
+      swaps: true,
       nfts: true,
       pools: false,
       txs: blast_tx_enabled,
