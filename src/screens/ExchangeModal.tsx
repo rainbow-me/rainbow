@@ -83,6 +83,7 @@ export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.gnosis]: 200,
   [Network.zora]: 200,
   [Network.avalanche]: 200,
+  [Network.blast]: 200,
 };
 
 export const getDefaultSlippageFromConfig = (network: Network) => {
