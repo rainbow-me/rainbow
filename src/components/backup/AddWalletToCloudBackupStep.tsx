@@ -57,7 +57,7 @@ export default function AddWalletToCloudBackupStep() {
         <Separator color="separatorSecondary" thickness={1} />
       </Bleed>
 
-      <ButtonPressAnimation scaleTo={0.95} onPress={onSubmit}>
+      <ButtonPressAnimation scaleTo={0.95} onPress={() => onSubmit().then(success => success && goBack())}>
         <Box alignItems="center" justifyContent="center" paddingTop={'24px'} paddingBottom={'24px'}>
           <Box alignItems="center" justifyContent="center" width="full">
             <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
