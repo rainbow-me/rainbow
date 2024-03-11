@@ -1,7 +1,7 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { captureException } from '@sentry/react-native';
 import React, { ReactNode, useCallback, useEffect, useState } from 'react';
-import { createdWithBiometricError, getKeyForWallet, identifyWalletType, loadSeedPhraseAndMigrateIfNeeded } from '@/model/wallet';
+import { createdWithBiometricError, identifyWalletType, loadPrivateKey, loadSeedPhraseAndMigrateIfNeeded } from '@/model/wallet';
 import ActivityIndicator from '../ActivityIndicator';
 import Spinner from '../Spinner';
 import { CopyFloatingEmojis } from '../floating-emojis';
@@ -83,12 +83,12 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
   const loadSeed = useCallback(async () => {
     try {
       if (privateKeyAddress) {
-        const privateKeyData = await getKeyForWallet(privateKeyAddress, false);
-        if (privateKeyData === -1 || !privateKeyData?.privateKey) {
+        const privateKeyData = await loadPrivateKey(privateKeyAddress, false);
+        if (privateKeyData === -1 || privateKeyData === -2 || !privateKeyData) {
           setSectionState(SecretDisplayStates.noSeed);
           return;
         }
-        setSeed(privateKeyData?.privateKey);
+        setSeed(privateKeyData);
         setSectionState(SecretDisplayStates.revealed);
         return;
       }
