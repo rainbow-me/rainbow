@@ -3508,6 +3508,11 @@
   resolved "https://registry.yarnpkg.com/@react-native-camera-roll/camera-roll/-/camera-roll-5.7.1.tgz#d275f1611e4e7ba8f2db5c34afa6b7d407f7035d"
   integrity sha512-SQw/YaQmBqFw42SPSgbGBJZ2US9gszs3xIyHRcqCs15TwYqZ2He/HhB32rmW9IPQmtDqjFKko5yS1fYx8dSWJw==
 
+"@react-native-clipboard/clipboard@1.13.2":
+  version "1.13.2"
+  resolved "https://registry.yarnpkg.com/@react-native-clipboard/clipboard/-/clipboard-1.13.2.tgz#28adcfc43ed2addddf79a59198ec1b25087c115e"
+  integrity sha512-uVM55oEGc6a6ZmSATDeTcMm55A/C1km5X47g0xaoF0Zagv7N/8RGvLceA5L/izPwflIy78t7XQeJUcnGSib0nA==
+
 "@react-native-community/blur@4.3.2":
   version "4.3.2"
   resolved "https://registry.yarnpkg.com/@react-native-community/blur/-/blur-4.3.2.tgz#185a2c7dd03ba168cc95069bc4742e9505fd6c6c"
@@ -3676,10 +3681,6 @@
     graceful-fs "^4.1.3"
     prompts "^2.4.0"
     semver "^6.3.0"
-
-"@react-native-community/clipboard@git+https://github.com/rainbow-me/clipboard#01d1c13":
-  version "1.2.3"
-  resolved "git+https://github.com/rainbow-me/clipboard#01d1c1344723d0a4cee94e1fbc199c2e2169905c"
 
 "@react-native-community/netinfo@9.0.0":
   version "9.0.0"

@@ -1,4 +1,4 @@
-import Clipboard from '@react-native-community/clipboard';
+import Clipboard from '@react-native-clipboard/clipboard';
 import lang from 'i18n-js';
 import { debounce } from 'lodash';
 import { useCallback } from 'react';
