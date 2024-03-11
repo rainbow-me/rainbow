@@ -11,7 +11,7 @@ import Planet from '@/assets/planet.png';
 import LinearGradient from 'react-native-linear-gradient';
 import { safeAreaInsetValues } from '@/utils';
 import { ButtonPressAnimation } from '@/components/animations';
-import { getHeaderHeight } from '@/navigation/SwipeNavigator';
+import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { useRecoilState } from 'recoil';
 import * as i18n from '@/languages';
@@ -228,10 +228,10 @@ export default function PointsContent() {
     <Box height="full" background="surfacePrimary" as={Page} flex={1}>
       <ScrollView
         scrollIndicatorInsets={{
-          bottom: getHeaderHeight() - safeAreaInsetValues.bottom,
+          bottom: TAB_BAR_HEIGHT - safeAreaInsetValues.bottom,
         }}
         contentContainerStyle={{
-          paddingBottom: getHeaderHeight() + 32,
+          paddingBottom: TAB_BAR_HEIGHT + 32,
           height: !shouldDisplayError ? undefined : '100%',
         }}
         showsVerticalScrollIndicator={!shouldDisplayError}
