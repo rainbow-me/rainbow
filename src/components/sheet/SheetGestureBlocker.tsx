@@ -13,7 +13,7 @@ export const SheetGestureBlocker = ({
   disabled?: boolean;
   preventScrollViewDismissal?: boolean;
 }) => {
-  return IS_IOS ? (
+  return (
     <PanGestureHandler enabled={!disabled}>
       <View style={{ height: '100%', width: '100%' }}>
         <>
@@ -26,7 +26,5 @@ export const SheetGestureBlocker = ({
         </>
       </View>
     </PanGestureHandler>
-  ) : (
-    <>{children}</>
   );
 };
