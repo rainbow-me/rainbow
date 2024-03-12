@@ -925,19 +925,25 @@ const FlipButton = ({
         }}
       >
         <ButtonPressAnimation scaleTo={0.8} style={{ paddingHorizontal: 20, paddingVertical: 8 }}>
+          {/* TODO: Temp fix - rewrite to actually avoid type errors */}
+          {/* @ts-expect-error The conditional as={} is causing type errors */}
           <Box
             alignItems="center"
-            as={AnimatedBlurView}
-            blurAmount={10}
-            blurType={isDarkMode ? undefined : 'light'}
+            as={IS_IOS ? AnimatedBlurView : Animated.View}
             justifyContent="center"
             style={[
               fetchingStyle,
               styles.flipButton,
               {
+                backgroundColor: IS_ANDROID ? (isDarkMode ? globalColors.blueGrey100 : globalColors.white100) : undefined,
                 borderColor: isDarkMode ? SEPARATOR_COLOR : opacity(globalColors.white100, 0.5),
               },
             ]}
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            {...(IS_IOS && {
+              blurAmount: 10,
+              blurType: isDarkMode ? undefined : 'light',
+            })}
           >
             <IconContainer size={24} opacity={isDarkMode ? 0.6 : 0.8}>
               <Box alignItems="center" justifyContent="center">
