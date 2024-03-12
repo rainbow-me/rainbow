@@ -5,7 +5,7 @@ import { useNavigation } from '@/navigation';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import React from 'react';
-import { ScrollView } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { BlurView } from '@react-native-community/blur';
 import { ImgixImage } from '@/components/images';
@@ -48,79 +48,92 @@ const Card = () => {
   };
 
   return (
-    <ColorModeProvider value="dark">
-      <ButtonPressAnimation>
-        <Box
-          as={ImgixImage}
-          background="surfacePrimary"
-          borderRadius={24}
-          shadow="18px"
-          width={{ custom: CARD_SIZE }}
-          height={{ custom: 137 }}
-          justifyContent="space-between"
-          padding="20px"
-          source={{ uri: bgImageUrl }}
-          size={CARD_SIZE}
-        >
-          <Cover>
-            <LinearGradient
-              colors={['rgba(0, 0, 0, 0.6)', 'rgba(0, 0, 0, 0.6)', '#000']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 0, y: 1 }}
-              locations={[0, 0.4985, 1]}
-              style={{ width: '100%', height: '100%' }}
-            />
-          </Cover>
+    <View style={{ width: CARD_SIZE }}>
+      <ColorModeProvider value="dark">
+        <ButtonPressAnimation overflowMargin={100}>
           <Box
             as={ImgixImage}
-            source={{ uri: logoImageUrl }}
-            size={48}
-            background="blue"
-            shadow="24px"
-            width={{ custom: 48 }}
-            height={{ custom: 48 }}
-            top={{ custom: -8 }}
-            left={{ custom: -8 }}
-            borderRadius={12}
-          />
-          <Stack space="10px">
-            <Text size="17pt" weight="heavy" color="label">
-              Rainbowcast
-            </Text>
-            <Text size="13pt" weight="bold" color="labelTertiary">
-              zora.co
-            </Text>
-          </Stack>
-          <Box
-            position="absolute"
-            top={{ custom: 12 }}
-            right={{ custom: 12 }}
-            height={{ custom: 24 }}
-            width={{ custom: 24 }}
-            borderRadius={32}
-            style={{ flex: 1, overflow: 'hidden', backgroundColor: 'rgba(244, 248, 255, 0.08)' }}
+            background="surfacePrimary"
+            borderRadius={24}
+            shadow="18px"
+            width={{ custom: CARD_SIZE }}
+            height={{ custom: 137 }}
+            justifyContent="space-between"
+            padding="20px"
+            source={{ uri: bgImageUrl }}
+            size={CARD_SIZE}
           >
-            <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={() => {}}>
-              <BlurView
-                blurType="chromeMaterialDark"
-                blurAmount={8.5}
+            <Cover>
+              <LinearGradient
+                colors={['rgba(0, 0, 0, 0.6)', 'rgba(0, 0, 0, 0.6)', '#000']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 0, y: 1 }}
+                locations={[0, 0.4985, 1]}
+                style={{ width: '100%', height: '100%' }}
+              />
+            </Cover>
+            <Box
+              as={ImgixImage}
+              source={{ uri: logoImageUrl }}
+              size={48}
+              background="surfacePrimary"
+              shadow="24px"
+              width={{ custom: 48 }}
+              height={{ custom: 48 }}
+              top={{ custom: -8 }}
+              left={{ custom: -8 }}
+              borderRadius={12}
+            />
+            <Stack space="10px">
+              <Text size="17pt" weight="heavy" color="label">
+                Rainbowcast
+              </Text>
+              <Text size="13pt" weight="bold" color="labelTertiary">
+                zora.co
+              </Text>
+            </Stack>
+            <Box
+              position="absolute"
+              top={{ custom: 12 }}
+              right={{ custom: 12 }}
+              height={{ custom: 24 }}
+              width={{ custom: 24 }}
+              borderRadius={32}
+              style={{ flex: 1, overflow: 'hidden' }}
+            >
+              <Cover>
+                <BlurView
+                  blurType="chromeMaterialDark"
+                  blurAmount={8.5}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    backgroundColor: 'rgba(244, 248, 255, 0.08)',
+                  }}
+                />
+              </Cover>
+              <View
                 style={{
                   width: '100%',
                   height: '100%',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  backgroundColor: 'rgba(244, 248, 255, 0.08)',
                 }}
               >
                 <Text align="center" weight="heavy" color="labelSecondary" size="13pt">
                   􀍠
                 </Text>
-              </BlurView>
-            </ContextMenuButton>
+              </View>
+            </Box>
           </Box>
-        </Box>
-      </ButtonPressAnimation>
-    </ColorModeProvider>
+        </ButtonPressAnimation>
+        <ContextMenuButton
+          menuConfig={menuConfig}
+          onPressMenuItem={() => {}}
+          style={{ top: 12, right: 12, height: 24, width: 24, position: 'absolute' }}
+        />
+      </ColorModeProvider>
+    </View>
   );
 };
 
@@ -128,23 +141,25 @@ const Logo = () => {
   const imageUrl = 'https://pbs.twimg.com/profile_images/1741494128779886592/RY4V0T2F_400x400.jpg';
 
   return (
-    <ButtonPressAnimation>
-      <Stack space="12px" alignHorizontal="center">
-        <Box
-          as={ImgixImage}
-          size={LOGO_SIZE}
-          source={{ uri: imageUrl }}
-          width={{ custom: LOGO_SIZE }}
-          height={{ custom: LOGO_SIZE }}
-          borderRadius={15}
-          background="surfacePrimary"
-          shadow="24px"
-        />
-        <Text size="12pt" weight="bold" color="labelSecondary" align="center">
-          Zora
-        </Text>
-      </Stack>
-    </ButtonPressAnimation>
+    <View style={{ width: LOGO_SIZE }}>
+      <ButtonPressAnimation overflowMargin={100}>
+        <Stack space="12px" alignHorizontal="center">
+          <Box
+            as={ImgixImage}
+            size={LOGO_SIZE}
+            source={{ uri: imageUrl }}
+            width={{ custom: LOGO_SIZE }}
+            height={{ custom: LOGO_SIZE }}
+            borderRadius={15}
+            background="surfacePrimary"
+            shadow="24px"
+          />
+          <Text size="12pt" weight="bold" color="labelSecondary" align="center">
+            Zora
+          </Text>
+        </Stack>
+      </ButtonPressAnimation>
+    </View>
   );
 };
 
