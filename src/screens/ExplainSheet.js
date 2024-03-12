@@ -15,7 +15,7 @@ import { toFixedDecimals } from '@/helpers/utilities';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding, position } from '@/styles';
-import { ethereumUtils, gasUtils, getTokenMetadata } from '@/utils';
+import { ethereumUtils, gasUtils } from '@/utils';
 import { buildRainbowLearnUrl } from '@/utils/buildRainbowUrl';
 import { cloudPlatformAccountName } from '@/utils/platform';
 import { useTheme } from '@/theme';
@@ -846,10 +846,7 @@ export const explainers = (params, theme) => {
         <DashedWrapper
           size={50}
           childXPosition={10}
-          colors={[
-            colors?.networkColors[params?.network],
-            getTokenMetadata(params?.nativeAsset?.mainnet_address)?.color ?? colors?.appleBlue,
-          ]}
+          colors={[colors?.networkColors[params?.network], params?.nativeAsset?.colors?.primary ?? colors?.appleBlue]}
         >
           <RainbowCoinIcon
             size={30}
@@ -891,10 +888,7 @@ export const explainers = (params, theme) => {
         <DashedWrapper
           size={50}
           childXPosition={10}
-          colors={[
-            colors?.networkColors[params?.network],
-            getTokenMetadata(params?.nativeAsset?.mainnet_address)?.color ?? colors?.appleBlue,
-          ]}
+          colors={[colors?.networkColors[params?.network], params?.nativeAsset?.colors?.primary ?? colors?.appleBlue]}
         >
           <RainbowCoinIcon
             size={30}
@@ -937,10 +931,7 @@ export const explainers = (params, theme) => {
         <DashedWrapper
           size={50}
           childXPosition={10}
-          colors={[
-            colors?.networkColors[params?.network],
-            getTokenMetadata(params?.nativeAsset?.mainnet_address)?.color ?? colors?.appleBlue,
-          ]}
+          colors={[colors?.networkColors[params?.network], params?.nativeAsset?.colors?.primary ?? colors?.appleBlue]}
         >
           <RainbowCoinIcon
             size={30}

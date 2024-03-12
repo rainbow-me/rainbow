@@ -34,7 +34,6 @@ import { PerformanceMetrics } from './performance/tracking/types/PerformanceMetr
 import { PersistQueryClientProvider, persistOptions, queryClient } from './react-query';
 import store from './redux/store';
 import { walletConnectLoadState } from './redux/walletconnect';
-import { rainbowTokenList } from './references';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { MainThemeProvider } from './theme/ThemeContext';
 import { ethereumUtils } from './utils';
@@ -113,9 +112,6 @@ class OldApp extends Component {
       logger.info(`Test flight usage - ${isTestFlight}`);
     }
     this.identifyFlow();
-    InteractionManager.runAfterInteractions(() => {
-      rainbowTokenList.update();
-    });
     const eventSub = AppState?.addEventListener('change', this?.handleAppStateChange);
     this.setState({ eventSubscription: eventSub });
     appEvents.on('transactionConfirmed', this.handleTransactionConfirmed);
@@ -171,9 +167,6 @@ class OldApp extends Component {
     // Restore WC connectors when going from BG => FG
     if (this.state.appState === 'background' && nextAppState === 'active') {
       store.dispatch(walletConnectLoadState());
-      InteractionManager.runAfterInteractions(() => {
-        rainbowTokenList.update();
-      });
     }
     this.setState({ appState: nextAppState });
 

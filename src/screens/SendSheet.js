@@ -35,7 +35,6 @@ import {
   useCoinListEditOptions,
   useColorForAsset,
   useContacts,
-  useCurrentNonce,
   useENSProfile,
   useENSRegistrationActionHandler,
   useGas,
@@ -43,14 +42,12 @@ import {
   usePrevious,
   useSendableUniqueTokens,
   useSendSheetInputRefs,
-  useTransactionConfirmation,
   useUserAccounts,
   useWallets,
 } from '@/hooks';
 import { loadWallet, sendTransaction } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import { parseGasParamsForTransaction } from '@/parsers';
-import { rainbowTokenList } from '@/references';
 import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
@@ -90,9 +87,7 @@ const SheetContainer = styled(Column).attrs({
 
 const validateRecipient = toAddress => {
   // Don't allow send to known ERC20 contracts on mainnet
-  if (rainbowTokenList.RAINBOW_TOKEN_LIST[toAddress.toLowerCase()]) {
-    return false;
-  }
+  // TODO: APP-1196
   return true;
 };
 

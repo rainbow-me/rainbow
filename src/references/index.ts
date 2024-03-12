@@ -15,7 +15,6 @@ export { default as timeUnits } from './time-units.json';
 export { default as supportedNativeCurrencies } from './native-currencies.json';
 export { default as shitcoins } from './shitcoins';
 export { default as smartContractMethods } from './smartcontract-methods.json';
-export { rainbowTokenList } from './rainbow-token-list';
 
 export {
   ENSRegistryWithFallbackABI,

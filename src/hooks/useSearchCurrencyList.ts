@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import { getAddress, isAddress } from '@ethersproject/address';
-import { ChainId, EthereumAddress } from '@rainbow-me/swaps';
+import { EthereumAddress } from '@rainbow-me/swaps';
 import { Contract } from '@ethersproject/contracts';
 import { rankings } from 'match-sorter';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -10,7 +10,7 @@ import { RainbowToken, RainbowToken as RT, TokenSearchTokenListId } from '@/enti
 import { tokenSearch } from '@/handlers/tokenSearch';
 import { addHexPrefix, getProviderForNetwork } from '@/handlers/web3';
 import tokenSectionTypes from '@/helpers/tokenSectionTypes';
-import { DAI_ADDRESS, erc20ABI, ETH_ADDRESS, rainbowTokenList, USDC_ADDRESS, WBTC_ADDRESS, WETH_ADDRESS } from '@/references';
+import { erc20ABI } from '@/references';
 import { ethereumUtils, filterList, isLowerCaseMatch, logger } from '@/utils';
 import useSwapCurrencies from '@/hooks/useSwapCurrencies';
 import { Network } from '@/helpers';
@@ -80,7 +80,6 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = MAINNET_CHAI
 
   const { favorites: favoriteAddresses, favoritesMetadata: favoriteMap } = useFavorites();
 
-  const curatedMap = rainbowTokenList.CURATED_TOKENS;
   const unfilteredFavorites = Object.values(favoriteMap);
 
   const [loading, setLoading] = useState(true);
@@ -130,28 +129,6 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = MAINNET_CHAI
     [isFavorite]
   );
 
-  const getCurated = useCallback(() => {
-    const addresses = favoriteAddresses.map(a => a.toLowerCase());
-    return Object.values(curatedMap)
-      .filter(({ address }) => !addresses.includes(address.toLowerCase()))
-      .sort((t1, t2) => {
-        const { address: address1, name: name1 } = t1;
-        const { address: address2, name: name2 } = t2;
-        const mainnetPriorityTokens = [ETH_ADDRESS, WETH_ADDRESS, DAI_ADDRESS, USDC_ADDRESS, WBTC_ADDRESS];
-        const rankA = mainnetPriorityTokens.findIndex(address => address === address1.toLowerCase());
-        const rankB = mainnetPriorityTokens.findIndex(address => address === address2.toLowerCase());
-        const aIsRanked = rankA > -1;
-        const bIsRanked = rankB > -1;
-        if (aIsRanked) {
-          if (bIsRanked) {
-            return rankA > rankB ? -1 : 1;
-          }
-          return -1;
-        }
-        return bIsRanked ? 1 : name1?.localeCompare(name2);
-      });
-  }, [curatedMap, favoriteAddresses]);
-
   const getFavorites = useCallback(async () => {
     return searching
       ? await searchCurrencyList({
@@ -166,10 +143,6 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = MAINNET_CHAI
     async (searchQuery: string, chainId: number): Promise<RT[] | null> => {
       if (searching) {
         if (isAddress(searchQuery)) {
-          const tokenListEntry = rainbowTokenList.RAINBOW_TOKEN_LIST[searchQuery.toLowerCase()];
-          if (tokenListEntry) {
-            return [tokenListEntry];
-          }
           const network = ethereumUtils.getNetworkFromChainId(chainId);
           const provider = await getProviderForNetwork(network);
           const tokenContract = new Contract(searchQuery, erc20ABI, provider);
@@ -428,32 +401,12 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = MAINNET_CHAI
         });
       }
     } else {
-      const curatedAssets = searchChainId === MAINNET_CHAINID && getCurated();
-      if (inputCurrency?.name && isCrosschainSearch && curatedAssets) {
-        bridgeAsset = curatedAssets.find(asset => asset?.name === inputCurrency?.name);
-        if (bridgeAsset) {
-          list.push({
-            color: colors.networkColors[bridgeAsset.network],
-            data: [bridgeAsset],
-            key: 'bridgeAsset',
-            title: lang.t(`exchange.token_sections.${tokenSectionTypes.bridgeTokenSection}`),
-          });
-        }
-      }
       if (unfilteredFavorites?.length) {
         list.push({
           color: colors.yellowFavorite,
           data: abcSort(unfilteredFavorites, 'name'),
           key: 'unfilteredFavorites',
           title: lang.t(`exchange.token_sections.${tokenSectionTypes.favoriteTokenSection}`),
-        });
-      }
-      if (curatedAssets && curatedAssets.length) {
-        list.push({
-          data: curatedAssets,
-          key: 'curated',
-          title: lang.t(`exchange.token_sections.${tokenSectionTypes.verifiedTokenSection}`),
-          useGradientText: !IS_TEST,
         });
       }
     }
@@ -468,7 +421,6 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = MAINNET_CHAI
     colors.yellowFavorite,
     unfilteredFavorites,
     searchChainId,
-    getCurated,
     isFavorite,
     inputCurrency?.name,
     colors.networkColors,
