@@ -52,7 +52,10 @@ const Card = () => {
       <ColorModeProvider value="dark">
         <ButtonPressAnimation overflowMargin={100}>
           <Box
-            as={ImgixImage}
+            as={LinearGradient}
+            colors={['#0078FF', '#3AB8FF']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
             background="surfacePrimary"
             borderRadius={24}
             shadow="18px"
@@ -60,18 +63,22 @@ const Card = () => {
             height={{ custom: 137 }}
             justifyContent="space-between"
             padding="20px"
-            source={{ uri: bgImageUrl }}
-            size={CARD_SIZE}
+            style={{ overflow: 'hidden' }}
           >
-            <Cover>
-              <LinearGradient
-                colors={['rgba(0, 0, 0, 0.6)', 'rgba(0, 0, 0, 0.6)', '#000']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 0, y: 1 }}
-                locations={[0, 0.4985, 1]}
-                style={{ width: '100%', height: '100%' }}
-              />
-            </Cover>
+            {bgImageUrl && (
+              <Cover>
+                <ImgixImage source={{ uri: bgImageUrl }} size={CARD_SIZE} style={{ width: '100%', height: '100%' }} />
+                <Cover>
+                  <LinearGradient
+                    colors={['rgba(0, 0, 0, 0.6)', 'rgba(0, 0, 0, 0.6)', '#000']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 0, y: 1 }}
+                    locations={[0, 0.4985, 1]}
+                    style={{ width: '100%', height: '100%' }}
+                  />
+                </Cover>
+              </Cover>
+            )}
             <Box
               as={ImgixImage}
               source={{ uri: logoImageUrl }}
