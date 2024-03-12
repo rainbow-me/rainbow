@@ -61,7 +61,7 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
     await resetAccountState();
     await dispatch(settingsUpdateNetwork(Network.mainnet));
     InteractionManager.runAfterInteractions(async () => {
-      await loadAccountData(Network.mainnet);
+      await loadAccountData();
       initializeAccountData();
     });
   }, [dispatch, initializeAccountData, loadAccountData, resetAccountState]);

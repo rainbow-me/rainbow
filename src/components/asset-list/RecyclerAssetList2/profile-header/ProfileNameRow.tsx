@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useRecoilState } from 'recoil';
-import Clipboard from '@react-native-community/clipboard';
+import Clipboard from '@react-native-clipboard/clipboard';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Icon } from '@/components/icons';
 import { Bleed, Box, Inline, Inset, Text, useForegroundColor } from '@/design-system';
