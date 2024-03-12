@@ -108,17 +108,17 @@ test('should be able to update active session', async () => {
 });
 
 test('should be able to update active session network', async () => {
-  const { updateActiveSessionChainId } = appSessionsStore.getState();
+  const { updateActiveSessionNetwork } = appSessionsStore.getState();
 
-  updateActiveSessionChainId({ host: UNISWAP_HOST, network: Network.base });
+  updateActiveSessionNetwork({ host: UNISWAP_HOST, network: Network.base });
   const activeSessionAddress = appSessionsStore.getState().appSessions[UNISWAP_HOST].activeSessionAddress;
   expect(appSessionsStore.getState().appSessions[UNISWAP_HOST].sessions[activeSessionAddress]).toStrictEqual(Network.base);
 });
 
 test('should be able to update session network', async () => {
-  const { updateSessionChainId } = appSessionsStore.getState();
+  const { updateSessionNetwork } = appSessionsStore.getState();
 
-  updateSessionChainId({
+  updateSessionNetwork({
     host: UNISWAP_HOST,
     address: ADDRESS_1,
     network: Network.zora,
@@ -149,8 +149,8 @@ test('should be able to check if host has an active session', async () => {
 });
 
 test('should be able to update session chain id', async () => {
-  const { updateSessionChainId } = appSessionsStore.getState();
-  updateSessionChainId({
+  const { updateSessionNetwork } = appSessionsStore.getState();
+  updateSessionNetwork({
     host: UNISWAP_HOST,
     address: ADDRESS_1,
     network: Network.arbitrum,
