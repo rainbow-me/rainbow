@@ -13,6 +13,7 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		152643472B9AD97E004AC9AA /* InjectedJSBundle.js in Resources */ = {isa = PBXBuildFile; fileRef = 152643462B9AD97E004AC9AA /* InjectedJSBundle.js */; };
 		15C398812880EDFF006033AC /* og@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 15C3987D2880EDFF006033AC /* og@3x.png */; };
 		15C398832880EDFF006033AC /* og@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 15C3987F2880EDFF006033AC /* og@2x.png */; };
 		15CF49BC2889AF7C005F92C9 /* optimism@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 15CF49BA2889AF7C005F92C9 /* optimism@3x.png */; };
@@ -190,6 +191,7 @@
 		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Rainbow/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Rainbow/main.m; sourceTree = "<group>"; };
+		152643462B9AD97E004AC9AA /* InjectedJSBundle.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = InjectedJSBundle.js; path = ../src/browser/InjectedJSBundle.js; sourceTree = "<group>"; };
 		157155032418733F009B698B /* RainbowRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RainbowRelease.entitlements; path = Rainbow/RainbowRelease.entitlements; sourceTree = "<group>"; };
 		157155042418734C009B698B /* RainbowDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RainbowDebug.entitlements; path = Rainbow/RainbowDebug.entitlements; sourceTree = "<group>"; };
 		15C3987D2880EDFF006033AC /* og@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "og@3x.png"; sourceTree = "<group>"; };
@@ -404,6 +406,7 @@
 				157155032418733F009B698B /* RainbowRelease.entitlements */,
 				A4D04BA723D12F27008C1DEC /* Button */,
 				3C379D5D20FD1F92009AF81F /* Rainbow.entitlements */,
+				152643462B9AD97E004AC9AA /* InjectedJSBundle.js */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
@@ -867,6 +870,7 @@
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 				B5D7F2F129E8D41E003D6A54 /* finiliar@2x.png in Resources */,
 				B597E7C22B8E9E18004782B6 /* farcaster@3x.png in Resources */,
+				152643472B9AD97E004AC9AA /* InjectedJSBundle.js in Resources */,
 				B54C1D1029358946007560D9 /* golddoge@3x.png in Resources */,
 				AA0B1CBD2B00C5E100EAF77D /* SF-Mono-Bold.otf in Resources */,
 				24979E8920F84250007EB0DA /* GoogleService-Info.plist in Resources */,
