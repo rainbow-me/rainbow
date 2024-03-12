@@ -16,7 +16,7 @@ import { SheetActionButton, SheetActionButtonRow, SheetHandleFixedToTop, SheetKe
 import { Emoji, Text } from '../components/text';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { removeRegistrationByName, saveCommitRegistrationParameters } from '@/redux/ensRegistration';
-import { GasFeeTypes, TransactionStatusTypes } from '@/entities';
+import { GasFeeTypes } from '@/entities';
 import { getFlashbotsProvider, getProviderForNetwork, isL2Network, toHex } from '@/handlers/web3';
 import { greaterThan } from '@/helpers/utilities';
 import { useAccountSettings, useDimensions, useGas, useWallets } from '@/hooks';
@@ -31,7 +31,7 @@ import { gasUtils, safeAreaInsetValues } from '@/utils';
 import logger from '@/utils/logger';
 import { getNetworkObj } from '@/networks';
 import * as i18n from '@/languages';
-import { updateTransaction, usePendingTransactionsStore } from '@/state/pendingTransactions';
+import { updateTransaction } from '@/state/pendingTransactions';
 
 const { CUSTOM, URGENT } = gasUtils;
 
