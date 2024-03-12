@@ -39,7 +39,16 @@ export const QRCodeScanner: React.FC<QRCodeScannerProps> = ({ flashEnabled, isAc
   const cameraUI = (
     <>
       {!device ? (
-        <ErrorText color="red" error={lang.t('wallet.qr.error_mounting_camera')} />
+        <Box style={{ display: 'flex', alignItems: 'center' }}>
+          <ErrorText
+            style={{
+              height: customHeightValue,
+              position: 'absolute',
+            }}
+            color="red"
+            error={lang.t('wallet.qr.error_mounting_camera')}
+          />
+        </Box>
       ) : (
         <Box position="absolute" width="full" height={{ custom: customHeightValue }}>
           <Box as={Animated.View} style={{ opacity: 1 }}>

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { ScrollView, StatusBar, View } from 'react-native';
 import { useIsEmulator } from 'react-native-device-info';
 import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -13,18 +13,21 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { usePagerPosition } from '@/navigation/ScrollPositionContext';
 import styled from '@/styled-thing';
-import { position } from '@/styles';
+import { borders, position } from '@/styles';
 import { useTheme } from '@/theme';
 import { useIsFocused } from '@react-navigation/native';
 import { useIsForeground } from '@/hooks/useIsForeground';
 import { useCameraPermission, useCodeScanner } from 'react-native-vision-camera';
+import { IS_IOS } from '@/env';
+import { deviceUtils } from '@/utils';
+import { SheetHandle } from '@/components/sheet';
 
-const Background = styled(View)({
-  backgroundColor: 'black',
-  height: '100%',
-  position: 'absolute',
-  width: '100%',
-});
+// const Background = styled(View)({
+//   backgroundColor: 'black',
+//   height: '100%',
+//   position: 'absolute',
+//   width: '100%',
+// });
 
 const ScannerContainer = styled(Centered).attrs({
   direction: 'column',
@@ -54,6 +57,11 @@ export default function QRScannerScreen() {
   const [cameraActive, setCameraActive] = useState(true);
   const isActive = isFocused && isForeground && hasPermission;
   const navigation = useNavigation();
+  const deviceHeight = deviceUtils.dimensions.height;
+  const insets = useSafeAreaInsets();
+  const statusBarHeight = StatusBar.currentHeight || 0;
+  const sheetHeight = IS_IOS ? deviceHeight - insets.top : deviceHeight + statusBarHeight;
+  const { isNarrowPhone } = useDimensions();
 
   const [flashEnabled, setFlashEnabled] = useState(false);
 
@@ -129,49 +137,74 @@ export default function QRScannerScreen() {
   });
 
   return (
-    <Box style={{ backgroundColor: colors.trueBlack }}>
-      <Box as={Animated.View} pointerEvents="box-none" style={containerStyle}>
-        <ColorModeProvider value="darkTinted">
-          <Box position="absolute" top={{ custom: topInset }} width="full" style={{ zIndex: 1 }}>
-            <Navbar
-              hasStatusBarInset={false}
-              leftComponent={
-                <Navbar.Item onPress={handleCloseScanner}>
-                  <Box alignItems="center" justifyContent="center" height={{ custom: 36 }} width={{ custom: 36 }}>
-                    <Text align="center" color="label" size="icon 20px" weight="semibold">
-                      􀆄
-                    </Text>
-                  </Box>
-                </Navbar.Item>
-              }
-              rightComponent={
-                <AccentColorProvider color="#FFDA24">
-                  <Navbar.Item onPress={() => setFlashEnabled(!flashEnabled)}>
-                    <Box alignItems="center" justifyContent="center" height={{ custom: 36 }} width={{ custom: 36 }}>
-                      <Text align="center" color={flashEnabled ? 'accent' : 'label'} size="icon 20px" weight="semibold">
-                        {flashEnabled ? '􀞋' : '􀝌'}
-                      </Text>
-                    </Box>
-                  </Navbar.Item>
-                </AccentColorProvider>
-              }
-              title="Scan to Connect"
-            />
-          </Box>
-          <ScannerContainer>
-            <Background />
-            <CameraDimmer cameraVisible={true}>
-              <QRCodeScanner
-                flashEnabled={flashEnabled}
-                codeScanner={codeScanner}
-                hasPermission={hasPermission}
-                requestPermission={requestPermission}
-                isActive={isActive && cameraActive}
-              />
-            </CameraDimmer>
-          </ScannerContainer>
-        </ColorModeProvider>
-        <Box
+    <Box
+      height={{ custom: sheetHeight }}
+      top={{ custom: IS_IOS ? insets.top : statusBarHeight }}
+      style={{
+        ...borders.buildRadiusAsObject('top', 30),
+      }}
+    >
+      <Box
+        position="absolute"
+        flexDirection="row"
+        justifyContent="center"
+        left={{ custom: 0 }}
+        right={{ custom: 0 }}
+        top={{ custom: 9 }}
+        height={{ custom: 80 }}
+        style={{ zIndex: 1 }}
+      >
+        <SheetHandle showBlur={undefined} />
+      </Box>
+      <ScrollView
+        style={{
+          width: '100%',
+          ...borders.buildRadiusAsObject('top', 30),
+          backgroundColor: colors.trueBlack,
+        }}
+      >
+        <Box width="full" paddingTop="52px" paddingHorizontal="20px" paddingBottom={{ custom: isNarrowPhone ? 15 : insets.bottom + 11 }}>
+          <Box as={Animated.View} pointerEvents="box-none" style={containerStyle}>
+            <ColorModeProvider value="darkTinted">
+              <Box position="absolute" top={{ custom: topInset }} width="full" style={{ zIndex: 1 }}>
+                <Navbar
+                  hasStatusBarInset={false}
+                  leftComponent={
+                    <Navbar.Item onPress={handleCloseScanner}>
+                      <Box alignItems="center" justifyContent="center" height={{ custom: 36 }} width={{ custom: 36 }}>
+                        <Text align="center" color="label" size="icon 20px" weight="semibold">
+                          􀆄
+                        </Text>
+                      </Box>
+                    </Navbar.Item>
+                  }
+                  rightComponent={
+                    <AccentColorProvider color="#FFDA24">
+                      <Navbar.Item onPress={() => setFlashEnabled(!flashEnabled)}>
+                        <Box alignItems="center" justifyContent="center" height={{ custom: 36 }} width={{ custom: 36 }}>
+                          <Text align="center" color={flashEnabled ? 'accent' : 'label'} size="icon 20px" weight="semibold">
+                            {flashEnabled ? '􀞋' : '􀝌'}
+                          </Text>
+                        </Box>
+                      </Navbar.Item>
+                    </AccentColorProvider>
+                  }
+                  title="Scan to Connect"
+                />
+              </Box>
+              <ScannerContainer>
+                <CameraDimmer cameraVisible={true}>
+                  <QRCodeScanner
+                    flashEnabled={flashEnabled}
+                    codeScanner={codeScanner}
+                    hasPermission={hasPermission}
+                    requestPermission={requestPermission}
+                    isActive={isActive && cameraActive}
+                  />
+                </CameraDimmer>
+              </ScannerContainer>
+            </ColorModeProvider>
+            {/* <Box
           as={Animated.View}
           pointerEvents="none"
           position="absolute"
@@ -179,13 +212,15 @@ export default function QRScannerScreen() {
             overlayStyle,
             {
               backgroundColor: colors.trueBlack,
-              height: '100%',
+              height: sheetHeight,
               width: '100%',
               zIndex: 100,
             },
           ]}
-        />
-      </Box>
+        /> */}
+          </Box>
+        </Box>
+      </ScrollView>
     </Box>
   );
 }
