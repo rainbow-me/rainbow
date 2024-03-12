@@ -456,6 +456,7 @@ export const SendConfirmationSheet = () => {
 
   return (
     <Container deviceHeight={deviceHeight} height={contentHeight} insets={insets}>
+      {/* @ts-expect-error JavaScript component */}
       {ios && <TouchableBackdrop onPress={goBack} />}
 
       {/* @ts-expect-error JavaScript component */}

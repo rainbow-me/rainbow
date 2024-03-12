@@ -45,7 +45,6 @@ import {
   externalLinkWarningSheetConfig,
   mintsSheetConfig,
   nativeStackDefaultConfig,
-  nativeStackDefaultConfigWithoutStatusBar,
   nftOffersSheetConfig,
   nftSingleOfferSheetConfig,
   pairHardwareWalletNavigatorConfig,
