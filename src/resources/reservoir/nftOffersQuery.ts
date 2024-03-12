@@ -62,7 +62,7 @@ export async function fetchNftOffers({ walletAddress, sortBy = SortCriterion.Top
 }
 
 /**
- * React Query hook that returns the the most profitable `NftOffer` for each NFT owned by the given wallet address.
+ * React Query hook that returns the most profitable `NftOffer` for each NFT owned by the given wallet address.
  * @param walletAddress The wallet address to query for.
  * @param sortBy How the offers should be sorted. Defaults to `SortCriterion.TopBidValue`.
  * @returns an NftOffer[] located at `returnValue.data.nftOffers`.
