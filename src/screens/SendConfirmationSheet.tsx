@@ -55,7 +55,7 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
-import { ethereumUtils, getUniqueTokenType, promiseUtils } from '@/utils';
+import { getUniqueTokenType, promiseUtils } from '@/utils';
 import logger from '@/utils/logger';
 import { getNetworkObj } from '@/networks';
 import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
@@ -456,6 +456,7 @@ export const SendConfirmationSheet = () => {
 
   return (
     <Container deviceHeight={deviceHeight} height={contentHeight} insets={insets}>
+      {/* @ts-expect-error JavaScript component */}
       {ios && <TouchableBackdrop onPress={goBack} />}
 
       {/* @ts-expect-error JavaScript component */}
