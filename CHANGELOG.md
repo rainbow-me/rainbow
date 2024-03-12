@@ -15,6 +15,39 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.18] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.18)
+
+### Added
+
+- Added ability to report NFT as spam to simplehash (#5434)
+- Added fallback icons for contract interactions where we may not have nft images (#5456) 
+- Added support for Avalanche (#5430)
+- Added support for Blast (#5463)
+
+### Changed
+
+- Removed native advanced settings as dev settings is newly preferred (#5416)
+- App icon refactor (#5444)
+- null safety placed on input filed focus (#5446)
+- Points referrals card refactor (#5367)
+- Removed duplicate rows in sign transaction sheet (#5451)
+- Upgrade reanimated (#5200)
+- Bumped dependencies for Wallet Connect (#5400)
+- Disabled and removed Flipper (#5464)
+- Removed rn-worklet-core package (#5465)
+
+### Fixed
+
+- Fixed rainbow animation on home screen (#5440)
+- Fixed crash when tapping network info button on L2 sends (#5429)
+- Fixed identify calls for analytics (#5442)
+- Polished pending transaction details UI (#5441)
+- Fixed ability to save NFT as an image on device (#5447)
+- Increased number of pixel difference needed to qualify as non-gesture mode navigation (#5460)
+- Fixed approval number formatting (#5457)
+- Fixed mint pending label (#5455)
+- Fixed a null response that was impacting dapps using viem/wagmi (#5454)
+
 ## [1.9.17] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.17)
 
 ### Added
