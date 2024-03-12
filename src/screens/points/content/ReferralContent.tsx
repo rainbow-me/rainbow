@@ -21,7 +21,7 @@ import { ActionButton } from '@/screens/points/components/ActionButton';
 import { PointsIconAnimation } from '../components/PointsIconAnimation';
 import { usePointsReferralCode } from '@/resources/points';
 import { analyticsV2 } from '@/analytics';
-import Clipboard from '@react-native-community/clipboard';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 const parseReferralCodeFromLink = (code: string) => {
   if (code.startsWith('https://rainbow.me/points?ref=') || code.startsWith('https://www.rainbow.me/points?ref=')) {

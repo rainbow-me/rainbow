@@ -12,7 +12,7 @@ import {
 // @ts-ignore
 import Restart from 'react-native-restart';
 import { useDispatch } from 'react-redux';
-import Clipboard from '@react-native-community/clipboard';
+import Clipboard from '@react-native-clipboard/clipboard';
 import useAppVersion from '../../../hooks/useAppVersion';
 import NetworkSection from './NetworkSection';
 import Menu from './Menu';
