@@ -306,7 +306,14 @@ export function SwapScreen() {
                         maskElement={<FadeMask fadeEdgeInset={2} fadeWidth={8} height={36} side="right" />}
                         style={styles.inputTextMask}
                       >
-                        <AnimatedText size="30pt" style={inputAmountTextStyle} text={formattedInputAmount} weight="bold" />
+                        <AnimatedText
+                          ellipsizeMode="clip"
+                          numberOfLines={1}
+                          size="30pt"
+                          style={inputAmountTextStyle}
+                          text={formattedInputAmount}
+                          weight="bold"
+                        />
                         <Animated.View style={[styles.caretContainer, inputCaretStyle]}>
                           <Box
                             borderRadius={1}
@@ -411,7 +418,14 @@ export function SwapScreen() {
                         maskElement={<FadeMask fadeEdgeInset={2} fadeWidth={8} height={36} side="right" />}
                         style={styles.inputTextMask}
                       >
-                        <AnimatedText size="30pt" style={outputAmountTextStyle} text={formattedOutputAmount} weight="bold" />
+                        <AnimatedText
+                          ellipsizeMode="clip"
+                          numberOfLines={1}
+                          size="30pt"
+                          style={outputAmountTextStyle}
+                          text={formattedOutputAmount}
+                          weight="bold"
+                        />
                         <Animated.View style={[styles.caretContainer, outputCaretStyle]}>
                           <Box
                             borderRadius={1}
