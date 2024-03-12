@@ -947,7 +947,7 @@ const FlipButton = ({
           >
             <IconContainer size={24} opacity={isDarkMode ? 0.6 : 0.8}>
               <Box alignItems="center" justifyContent="center">
-                <Bleed bottom={{ custom: 0.5 }}>
+                <Bleed bottom={{ custom: IS_IOS ? 0.5 : 4 }}>
                   <Text align="center" color="labelTertiary" size="icon 13px" weight="heavy">
                     􀆈
                   </Text>
