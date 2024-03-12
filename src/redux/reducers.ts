@@ -3,7 +3,7 @@ import { combineReducers } from 'redux';
 import appState from './appState';
 import charts from './charts';
 import contacts from './contacts';
-import data from './data';
+
 import editOptions from './editOptions';
 import ensRegistration from './ensRegistration';
 import explorer from './explorer';
@@ -23,7 +23,6 @@ export default combineReducers({
   appState,
   charts,
   contacts,
-  data,
   editOptions,
   ensRegistration,
   explorer,

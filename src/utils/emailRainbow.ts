@@ -1,7 +1,7 @@
 import { debounce } from 'lodash';
 // @ts-expect-error
 import Mailer from 'react-native-mail';
-import Clipboard from '@react-native-community/clipboard';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 import { Alert } from '@/components/alerts';
 import * as lang from '@/languages';
