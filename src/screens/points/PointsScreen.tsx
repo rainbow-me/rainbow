@@ -88,7 +88,6 @@ export default function PointsScreen() {
             initialRouteName={POINTS_ROUTES.CLAIM_CONTENT}
             screenOptions={{ swipeEnabled: false }}
             tabBarPosition="bottom"
-            tabBar={() => null}
           >
             <Swipe.Screen component={ClaimContent} name={POINTS_ROUTES.CLAIM_CONTENT} />
             <Swipe.Screen component={ReferralContent} name={POINTS_ROUTES.REFERRAL_CONTENT} />
