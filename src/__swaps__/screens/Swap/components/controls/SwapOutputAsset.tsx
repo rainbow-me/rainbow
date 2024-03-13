@@ -7,7 +7,7 @@ import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
 import { useTheme } from '@/theme';
 
-import { GestureHandlerButton } from '../GestureHandlerButton';
+import { GestureHandlerV1Button } from '../GestureHandlerV1Button';
 import { SwapActionButton } from '../SwapActionButton';
 import { SwapCoinIcon } from '../SwapCoinIcon';
 import { FadeMask } from '../FadeMask';
@@ -76,7 +76,7 @@ export function SwapOutputAsset() {
                 )}
               </Box>
             </Column>
-            <GestureHandlerButton
+            <GestureHandlerV1Button
               disableButtonPressWrapper
               onPressStartWorklet={() => {
                 'worklet';
@@ -99,7 +99,7 @@ export function SwapOutputAsset() {
                   />
                 </Animated.View>
               </MaskedView>
-            </GestureHandlerButton>
+            </GestureHandlerV1Button>
             <Column width="content">
               <SwapActionButton
                 color={bottomColor}
