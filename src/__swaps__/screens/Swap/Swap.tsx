@@ -15,6 +15,10 @@ import { useSwapContext } from './providers/swap-provider';
 import { SwapOutputAsset } from './components/controls/SwapOutputAsset';
 import { SwapActions } from './components/controls/SwapActions';
 import { SwapNavbar } from './components/SwapNavbar';
+import Animated from 'react-native-reanimated';
+import { PanGestureHandler } from 'react-native-gesture-handler';
+import { SwapSlider } from './components/SwapSlider';
+import { SwapNumberPad } from './components/SwapNumberPad';
 
 /** README
  * This prototype is largely driven by Reanimated and Gesture Handler, which
@@ -54,7 +58,7 @@ import { SwapNavbar } from './components/SwapNavbar';
  */
 
 export function SwapScreen() {
-  const { topColor, bottomColor, isInputSearchFocused, isOutputSearchFocused } = useSwapContext();
+  const { topColor, bottomColor, isInputSearchFocused, isOutputSearchFocused, AnimatedSwapStyles } = useSwapContext();
 
   return (
     <SheetGestureBlocker disabled={!(isInputSearchFocused || isOutputSearchFocused)}>
@@ -65,7 +69,24 @@ export function SwapScreen() {
             <FlipButton />
             <SwapOutputAsset />
             <ExchangeRateBubble />
-            <SwapActions />
+            <Box
+              alignItems="flex-end"
+              as={Animated.View}
+              bottom="0px"
+              justifyContent="center"
+              position="absolute"
+              style={[{ flex: 1, flexDirection: 'column', gap: 16 }, AnimatedSwapStyles.keyboardStyle]}
+              width="full"
+            >
+              {/* @ts-expect-error */}
+              <PanGestureHandler>
+                <Box alignItems="center" style={{ flex: 1 }} width="full">
+                  <SwapSlider />
+                  <SwapNumberPad />
+                </Box>
+              </PanGestureHandler>
+              <SwapActions />
+            </Box>
           </Box>
         </SwapBackground>
         <SwapNavbar />
