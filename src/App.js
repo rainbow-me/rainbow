@@ -5,7 +5,6 @@ import { AppRegistry, AppState, Dimensions, InteractionManager, Linking, LogBox,
 
 // eslint-disable-next-line import/default
 import codePush from 'react-native-code-push';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import { connect, Provider as ReduxProvider } from 'react-redux';
@@ -359,25 +358,23 @@ function Root() {
   }, [setInitializing]);
 
   return initializing ? null : (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <ReduxProvider store={store}>
-        <RecoilRoot>
-          <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
-            <SafeAreaProvider>
-              <MainThemeProvider>
-                <RainbowContextWrapper>
-                  <SharedValuesProvider>
-                    <ErrorBoundary>
-                      <App />
-                    </ErrorBoundary>
-                  </SharedValuesProvider>
-                </RainbowContextWrapper>
-              </MainThemeProvider>
-            </SafeAreaProvider>
-          </PersistQueryClientProvider>
-        </RecoilRoot>
-      </ReduxProvider>
-    </GestureHandlerRootView>
+    <ReduxProvider store={store}>
+      <RecoilRoot>
+        <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
+          <SafeAreaProvider>
+            <MainThemeProvider>
+              <RainbowContextWrapper>
+                <SharedValuesProvider>
+                  <ErrorBoundary>
+                    <App />
+                  </ErrorBoundary>
+                </SharedValuesProvider>
+              </RainbowContextWrapper>
+            </MainThemeProvider>
+          </SafeAreaProvider>
+        </PersistQueryClientProvider>
+      </RecoilRoot>
+    </ReduxProvider>
   );
 }
 
