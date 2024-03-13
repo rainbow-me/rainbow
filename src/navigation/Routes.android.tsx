@@ -88,7 +88,7 @@ import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoShe
 import { ConsoleSheet } from '@/screens/points/ConsoleSheet';
 import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileContext';
 import AppIconUnlockSheet from '@/screens/AppIconUnlockSheet';
-import SwapsV2 from '@/__swaps__/screens/Swap';
+import SwapsV2 from '@/__swaps__/screens/Swap/Swap';
 import { useRemoteConfig } from '@/model/remoteConfig';
 
 const Stack = createStackNavigator();
