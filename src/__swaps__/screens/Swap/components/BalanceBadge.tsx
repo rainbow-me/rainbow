@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React from 'react';
 import { Bleed, Box, Text, useColorMode } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';

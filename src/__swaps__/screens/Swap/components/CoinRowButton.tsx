@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Box, TextIcon, useColorMode, useForegroundColor } from '@/design-system';

@@ -11,7 +11,6 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { inputKeys, inputMethods } from '../types';
 import { Box, Columns, HitSlop, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { stripCommas } from '../utils';
 import {
@@ -26,45 +25,38 @@ import {
 import { LongPressGestureHandler, LongPressGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 import { ButtonPressAnimation } from '@/components/animations';
 import { colors } from '@/styles';
+import { useSwapContext } from '../providers/swap-provider';
 
 type numberPadCharacter = number | 'backspace' | '.';
 
-export const SwapNumberPad = ({
-  focusedInput,
-  formattedInputValue,
-  formattedOutputValue,
-  inputMethod,
-  inputValues,
-}: {
-  focusedInput: Animated.SharedValue<inputKeys>;
-  formattedInputValue: Readonly<Animated.SharedValue<string>>;
-  formattedOutputValue: Readonly<Animated.SharedValue<string>>;
-  inputMethod: Animated.SharedValue<inputMethods>;
-  inputValues: Animated.SharedValue<{ [key in inputKeys]: number | string }>;
-}) => {
+export const SwapNumberPad = () => {
   const { isDarkMode } = useColorMode();
+  const { focusedInput, SwapInputController } = useSwapContext();
 
   const longPressTimer = useSharedValue(0);
 
   const addNumber = (number?: number) => {
     'worklet';
     const inputKey = focusedInput.value;
-    if (inputMethod.value !== inputKey) {
-      inputMethod.value = inputKey;
+    if (SwapInputController.inputMethod.value !== inputKey) {
+      SwapInputController.inputMethod.value = inputKey;
 
-      if (typeof inputValues.value[inputKey] === 'number') {
-        inputValues.modify(value => {
+      if (typeof SwapInputController.inputValues.value[inputKey] === 'number') {
+        SwapInputController.inputValues.modify(value => {
           return {
             ...value,
-            [inputKey]: inputKey === 'inputAmount' ? stripCommas(formattedInputValue.value) : stripCommas(formattedOutputValue.value),
+            [inputKey]:
+              inputKey === 'inputAmount'
+                ? stripCommas(SwapInputController.formattedInputAmount.value)
+                : stripCommas(SwapInputController.formattedOutputAmount.value),
           };
         });
       }
     }
-    const currentValue = inputValues.value[inputKey];
+    const currentValue = SwapInputController.inputValues.value[inputKey];
     const newValue = currentValue === 0 || currentValue === '0' ? `${number}` : `${currentValue}${number}`;
 
-    inputValues.modify(value => {
+    SwapInputController.inputValues.modify(value => {
       return {
         ...value,
         [inputKey]: newValue,
@@ -75,22 +67,25 @@ export const SwapNumberPad = ({
   const addDecimalPoint = () => {
     'worklet';
     const inputKey = focusedInput.value;
-    const currentValue = inputValues.value[inputKey].toString();
+    const currentValue = SwapInputController.inputValues.value[inputKey].toString();
     if (!currentValue.includes('.')) {
-      if (inputMethod.value !== inputKey) {
-        inputMethod.value = inputKey;
+      if (SwapInputController.inputMethod.value !== inputKey) {
+        SwapInputController.inputMethod.value = inputKey;
 
-        inputValues.modify(values => {
+        SwapInputController.inputValues.modify(values => {
           return {
             ...values,
-            [inputKey]: inputKey === 'inputAmount' ? stripCommas(formattedInputValue.value) : stripCommas(formattedOutputValue.value),
+            [inputKey]:
+              inputKey === 'inputAmount'
+                ? stripCommas(SwapInputController.formattedInputAmount.value)
+                : stripCommas(SwapInputController.formattedOutputAmount.value),
           };
         });
       }
 
       const newValue = `${currentValue}.`;
 
-      inputValues.modify(values => {
+      SwapInputController.inputValues.modify(values => {
         return {
           ...values,
           [inputKey]: newValue,
@@ -102,21 +97,24 @@ export const SwapNumberPad = ({
   const deleteLastCharacter = () => {
     'worklet';
     const inputKey = focusedInput.value;
-    if (inputMethod.value !== inputKey) {
-      inputMethod.value = inputKey;
+    if (SwapInputController.inputMethod.value !== inputKey) {
+      SwapInputController.inputMethod.value = inputKey;
 
-      inputValues.modify(values => {
+      SwapInputController.inputValues.modify(values => {
         return {
           ...values,
-          [inputKey]: inputKey === 'inputAmount' ? stripCommas(formattedInputValue.value) : stripCommas(formattedOutputValue.value),
+          [inputKey]:
+            inputKey === 'inputAmount'
+              ? stripCommas(SwapInputController.formattedInputAmount.value)
+              : stripCommas(SwapInputController.formattedOutputAmount.value),
         };
       });
     }
-    const currentValue = inputValues.value[inputKey].toString();
+    const currentValue = SwapInputController.inputValues.value[inputKey].toString();
     // Handle deletion, ensuring a placeholder zero remains if the entire number is deleted
     const newValue = currentValue.length > 1 ? currentValue.slice(0, -1) : 0;
     if (newValue === 0) {
-      inputValues.modify(values => {
+      SwapInputController.inputValues.modify(values => {
         return {
           ...values,
           inputAmount: 0,
@@ -126,7 +124,7 @@ export const SwapNumberPad = ({
         };
       });
     } else {
-      inputValues.modify(values => {
+      SwapInputController.inputValues.modify(values => {
         return {
           ...values,
           [inputKey]: newValue,
@@ -269,6 +267,7 @@ const NumberPadKey = ({
   }, [isDarkMode]);
 
   return (
+    // @ts-expect-error
     <LongPressGestureHandler
       // This 0.1ms activation delay gives ButtonPressAnimation time to trigger
       // haptic feedback natively before the LongPressGestureHandler takes over

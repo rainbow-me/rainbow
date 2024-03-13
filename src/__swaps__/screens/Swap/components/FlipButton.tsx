@@ -1,7 +1,7 @@
+/* eslint-disable no-nested-ternary */
 import c from 'chroma-js';
 import React from 'react';
-import { ViewStyle } from 'react-native';
-import Animated, { AnimateStyle, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import SwapSpinner from '@/__swaps__/assets/swapSpinner.png';
 import { ButtonPressAnimation } from '@/components/animations';
 import { AnimatedSpinner, spinnerExitConfig } from '@/__swaps__/components/animations/AnimatedSpinner';
@@ -10,21 +10,13 @@ import { colors } from '@/styles';
 import { SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../constants';
 import { opacity } from '../utils';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { styles } from '../Swap';
 import { AnimatedBlurView } from './AnimatedBlurView';
+import { useSwapContext } from '../providers/swap-provider';
+import { StyleSheet } from 'react-native';
 
-export const FlipButton = ({
-  bottomColor,
-  flipButtonStyle,
-  focusedSearchStyle,
-  isFetching,
-}: {
-  bottomColor: string;
-  flipButtonStyle: AnimateStyle<ViewStyle>;
-  focusedSearchStyle: AnimateStyle<ViewStyle>;
-  isFetching: boolean;
-}) => {
+export const FlipButton = () => {
   const { isDarkMode } = useColorMode();
+  const { bottomColor, isFetching, AnimatedSwapStyles } = useSwapContext();
 
   const fetchingStyle = useAnimatedStyle(() => {
     return {
@@ -37,7 +29,7 @@ export const FlipButton = ({
       alignItems="center"
       as={Animated.View}
       justifyContent="center"
-      style={[flipButtonStyle, focusedSearchStyle, { height: 12, width: 28, zIndex: 10 }]}
+      style={[AnimatedSwapStyles.flipButtonStyle, AnimatedSwapStyles.focusedSearchStyle, { height: 12, width: 28, zIndex: 10 }]}
     >
       <Box
         style={{
@@ -90,3 +82,11 @@ export const FlipButton = ({
     </Box>
   );
 };
+
+export const styles = StyleSheet.create({
+  flipButton: {
+    borderRadius: 15,
+    height: 30,
+    width: 30,
+  },
+});

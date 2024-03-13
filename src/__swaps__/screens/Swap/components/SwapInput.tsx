@@ -1,13 +1,9 @@
 import React, { ReactNode, useMemo } from 'react';
 import Animated, { SharedValue } from 'react-native-reanimated';
 import { Box, useColorMode } from '@/design-system';
-import { BASE_INPUT_WIDTH, ETH_COLOR, ETH_COLOR_DARK } from '../constants';
+import { BASE_INPUT_WIDTH, ETH_COLOR, ETH_COLOR_DARK, INPUT_PADDING, THICK_BORDER_WIDTH } from '../constants';
 import { useSwapInputStyles } from '../hooks/useSwapInputStyles';
-import { styles } from '../Swap';
-
-// TODO: Should move the components below to their own files, but some of the
-// wrappers and code in SwapScreen above should be moved out to components, so
-// leaving it all here for now
+import { StyleSheet } from 'react-native';
 
 export const SwapInput = ({
   children,
@@ -45,3 +41,19 @@ export const SwapInput = ({
     </Box>
   );
 };
+
+export const styles = StyleSheet.create({
+  staticInputContainerStyles: {
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.1,
+    shadowRadius: 9,
+  },
+  staticInputStyles: {
+    borderCurve: 'continuous',
+    borderRadius: 30,
+    borderWidth: THICK_BORDER_WIDTH,
+    overflow: 'hidden',
+    padding: INPUT_PADDING,
+    width: BASE_INPUT_WIDTH,
+  },
+});

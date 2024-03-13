@@ -87,6 +87,7 @@ import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileCo
 import AppIconUnlockSheet from '@/screens/AppIconUnlockSheet';
 import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
 import { useRemoteConfig } from '@/model/remoteConfig';
+import { SwapProvider } from '@/__swaps__/screens/Swap/providers/swap-provider';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -141,6 +142,16 @@ function MainOuterNavigator() {
         options={expandedPresetWithSmallGestureResponseDistance}
       />
     </OuterStack.Navigator>
+  );
+}
+
+function SwapNavigator() {
+  return (
+    <SwapProvider>
+      <BSStack.Navigator>
+        <BSStack.Screen component={SwapScreen} name={Routes.SWAP} options={swapSheetPreset} />
+      </BSStack.Navigator>
+    </SwapProvider>
   );
 }
 
@@ -230,7 +241,7 @@ function BSNavigator() {
       <BSStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} options={appIconUnlockSheetPreset} />
 
       <BSStack.Screen component={ChangeWalletSheet} name={Routes.CHANGE_WALLET_SHEET} options={{ ...bottomSheetPreset }} />
-      {swapsV2Enabled && <BSStack.Screen component={SwapScreen} name={Routes.SWAP} options={swapSheetPreset} />}
+      {swapsV2Enabled && <BSStack.Screen component={SwapNavigator} name={Routes.SWAP_NAVIGATOR} options={swapSheetPreset} />}
     </BSStack.Navigator>
   );
 }

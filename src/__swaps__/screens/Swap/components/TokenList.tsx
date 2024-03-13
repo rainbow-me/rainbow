@@ -1,6 +1,6 @@
 import c from 'chroma-js';
 import React, { useMemo } from 'react';
-import { Text as RNText, ScrollView } from 'react-native';
+import { Text as RNText, ScrollView, StyleSheet } from 'react-native';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Bleed, Box, HitSlop, Inline, Separator, Stack, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { useAccountAccentColor, useDimensions } from '@/hooks';
@@ -10,7 +10,6 @@ import { SwapCoinIcon } from './SwapCoinIcon';
 import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../constants';
 import { DAI_ADDRESS, ETH_ADDRESS, USDC_ADDRESS } from '../dummyValues';
 import { opacity } from '../utils';
-import { styles } from '../Swap';
 import { CoinRow } from './CoinRow';
 import { SearchInput } from './SearchInput';
 
@@ -250,3 +249,11 @@ export const TokenList = ({
     </Stack>
   );
 };
+
+export const styles = StyleSheet.create({
+  textIconGlow: {
+    padding: 16,
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 10,
+  },
+});
