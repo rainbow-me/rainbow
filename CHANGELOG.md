@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 ### Added
 
 - Added ability to report NFT as spam to simplehash (#5434)
-- Added fallback icons for contract interactions where we may not have nft images (#5456) 
+- Added fallback icons for contract interactions where we may not have nft images (#5456)
 - Added support for Avalanche (#5430)
 - Added support for Blast (#5463)
 
