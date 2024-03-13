@@ -3,6 +3,7 @@ import { Network } from '@/networks/types';
 import { createQueryKey, queryClient } from '@/react-query';
 import { DAI_ADDRESS, ETH_ADDRESS, SOCKS_ADDRESS, WBTC_ADDRESS, WETH_ADDRESS } from '@/references';
 import { getUniqueId } from '@/utils/ethereumUtils';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQuery } from '@tanstack/react-query';
 import { without } from 'lodash';
 import { externalTokenQueryKey, fetchExternalToken } from './assets/externalAssetsQuery';
@@ -127,9 +128,6 @@ export async function refreshFavorites() {
   return updatedMetadata;
 }
 
-/**
- * Toggles the favorited status of the given `address`.
- */
 export async function toggleFavorite(address: string) {
   const favorites = Object.keys(queryClient.getQueryData(favoritesQueryKey) ?? []);
   const lowercasedAddress = address.toLowerCase();
