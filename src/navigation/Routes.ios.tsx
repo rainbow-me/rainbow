@@ -67,6 +67,7 @@ import {
   walletDiagnosticsSheetConfig,
   positionSheetConfig,
   appIconUnlockSheetConfig,
+  swapConfig,
 } from './config';
 import { addCashSheet, emojiPreset, emojiPresetWallet, overlayExpandedPreset, sheetPreset } from './effects';
 import { InitialRouteContext } from './initialRoute';
@@ -289,7 +290,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={ConsoleSheet} name={Routes.CONSOLE_SHEET} {...consoleSheetConfig} />
       <NativeStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} {...appIconUnlockSheetConfig} />
 
-      {swapsV2Enabled && <NativeStack.Screen component={SwapsV2} name={Routes.SWAP} />}
+      {swapsV2Enabled && <NativeStack.Screen component={SwapsV2} name={Routes.SWAP} {...swapConfig} />}
     </NativeStack.Navigator>
   );
 }

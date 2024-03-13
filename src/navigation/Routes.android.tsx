@@ -55,6 +55,7 @@ import {
   walletconnectBottomSheetPreset,
   consoleSheetPreset,
   appIconUnlockSheetPreset,
+  swapSheetPreset,
 } from './effects';
 import { InitialRouteContext } from './initialRoute';
 import { onNavigationStateChange } from './onNavigationStateChange';
@@ -232,7 +233,7 @@ function BSNavigator() {
       <BSStack.Screen component={ConsoleSheet} name={Routes.CONSOLE_SHEET} options={consoleSheetPreset} />
       <BSStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} options={appIconUnlockSheetPreset} />
 
-      {swapsV2Enabled && <BSStack.Screen component={SwapsV2} name={Routes.SWAP} />}
+      {swapsV2Enabled && <BSStack.Screen component={SwapsV2} name={Routes.SWAP} options={swapSheetPreset} />}
     </BSStack.Navigator>
   );
 }
