@@ -19,6 +19,7 @@ const Routes = {
   CUSTOM_GAS_SHEET: 'CustomGasSheet',
   DAPP_BROWSER_SCREEN: 'DappBrowserScreen',
   DAPP_BROWSER: 'DappBrowser',
+  SWAP: 'Swap',
   DIAGNOSTICS_SHEET: 'DiagnosticsSheet',
   DISCOVER_SCREEN: 'DiscoverScreen',
   ENS_ADDITIONAL_RECORDS_SHEET: 'ENSAdditionalRecordsSheet',
