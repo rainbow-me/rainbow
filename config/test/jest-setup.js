@@ -17,7 +17,7 @@ jest.mock('react-native-device-info', () => ({
   setup: () => null,
 }));
 
-jest.mock('@segment/analytics-react-native', () => ({
+jest.mock('@rudderstack/rudder-sdk-react-native', () => ({
   createClient: jest.fn(),
   identify: jest.fn(),
   reset: jest.fn(),
