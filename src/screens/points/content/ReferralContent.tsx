@@ -91,8 +91,9 @@ export default function ReferralContent() {
 
   const hasKeyboard = IS_IOS ? isKeyboardOpening : isKeyboardVisible;
 
-  const contentBottom =
-    (hasKeyboard ? keyboardHeight : TAB_BAR_HEIGHT) + (deviceHeight - (hasKeyboard ? keyboardHeight : 0) - navbarHeight - 270) / 2;
+  const contentBottom = (deviceHeight - navbarHeight - TAB_BAR_HEIGHT - 88 + (hasKeyboard ? keyboardHeight / 2 : 0)) / 2;
+
+  // const contentBottom = (hasKeyboard ? keyboardHeight : 0) + (deviceHeight - (hasKeyboard ? keyboardHeight : 0) - navbarHeight - 188) / 2;
 
   const contentBottomSharedValue = useSharedValue(contentBottom);
 
@@ -275,7 +276,7 @@ export default function ReferralContent() {
       <Box
         position="absolute"
         bottom={{
-          custom: hasKeyboard ? keyboardHeight + (IS_IOS ? 28 : 42) : TAB_BAR_HEIGHT + 28,
+          custom: hasKeyboard ? keyboardHeight + (IS_IOS ? 0 : 28) : 28 + 28,
         }}
         left={{ custom: 20 }}
       >

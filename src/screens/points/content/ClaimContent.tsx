@@ -3,7 +3,6 @@ import { navbarHeight } from '@/components/navbar/Navbar';
 import { Box, Stack, Text } from '@/design-system';
 import { useAccountAccentColor, useDimensions, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
 import { ActionButton } from '@/screens/points/components/ActionButton';
@@ -12,6 +11,7 @@ import { watchingAlert } from '@/utils';
 import { POINTS_ROUTES } from '../PointsScreen';
 import { analyticsV2 } from '@/analytics';
 import { useFocusEffect } from '@react-navigation/native';
+import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 
 export default function ClaimContent() {
   const { accentColor } = useAccountAccentColor();
@@ -19,7 +19,7 @@ export default function ClaimContent() {
   const { height: deviceHeight } = useDimensions();
   const { isReadOnlyWallet } = useWallets();
 
-  const contentBottom = TAB_BAR_HEIGHT + (deviceHeight - navbarHeight - 218) / 2;
+  const contentBottom = (deviceHeight - navbarHeight - TAB_BAR_HEIGHT - 88) / 2;
 
   useFocusEffect(
     useCallback(() => {
