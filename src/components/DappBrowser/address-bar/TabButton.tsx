@@ -54,7 +54,7 @@ export const TabButton = ({
       </Text>
       <Box
         as={AnimatedBlurView}
-        blurAmount={70}
+        blurAmount={1}
         blurType="dark"
         style={[{ zIndex: -1, elevation: -1, borderRadius: 22 }, position.coverAsObject]}
       />
