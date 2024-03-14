@@ -66,4 +66,8 @@ export type RootStackParamList = {
     ensName: string;
     mode: REGISTRATION_MODES;
   };
+  [Routes.CHECK_IDENTIFIER_SCREEN]: {
+    onSuccess: () => Promise<void>;
+    onFailure: () => Promise<void>;
+  };
 };

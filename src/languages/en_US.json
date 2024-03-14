@@ -425,6 +425,15 @@
         "description": "You can also long press your\naddress above to copy it."
       }
     },
+    "check_identifier": {
+      "title": "We have detected an reinstall or phone migration. Please authenticate to continue.",
+      "error_alert": {
+        "title": "Error checking identifier",
+        "message": "We encountered an error while checking your identifier. Please try again. If the issue persists, please contact support.",
+        "contact_support": "Contact Support",
+        "cancel": "Cancel"
+      }
+    },
     "cloud": {
       "backup_success": "Your wallet has been backed up successfully!"
     },

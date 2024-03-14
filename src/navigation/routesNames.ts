@@ -12,6 +12,7 @@ const Routes = {
   BACKUP_SHEET: 'BackupSheet',
   CHANGE_WALLET_SHEET: 'ChangeWalletSheet',
   CHANGE_WALLET_SHEET_NAVIGATOR: 'ChangeWalletSheetNavigator',
+  CHECK_IDENTIFIER_SCREEN: 'CheckIdentifierScreen',
   CONFIRM_REQUEST: 'ConfirmRequest',
   CONNECTED_DAPPS: 'ConnectedDapps',
   CONSOLE_SHEET: 'ConsoleSheet',

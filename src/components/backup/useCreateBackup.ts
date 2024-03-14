@@ -11,6 +11,7 @@ import { Navigation } from '@/navigation';
 import { InteractionManager } from 'react-native';
 import { DelayedAlert } from '../alerts';
 import { useDispatch } from 'react-redux';
+import { AllRainbowWallets } from '@/model/wallet';
 
 type UseCreateBackupProps = {
   walletId?: string;
@@ -77,7 +78,7 @@ export const useCreateBackup = ({ walletId }: UseCreateBackupProps) => {
           return;
         }
         backupAllWalletsToCloud({
-          wallets,
+          wallets: wallets as AllRainbowWallets,
           password,
           latestBackup,
           onError,
@@ -100,7 +101,7 @@ export const useCreateBackup = ({ walletId }: UseCreateBackupProps) => {
         walletId,
       });
     },
-    [onError, onSuccess, walletCloudBackup, walletId, latestBackup]
+    [onError, onSuccess, walletCloudBackup, wallets, walletId, latestBackup, dispatch]
   );
 
   const getPassword = useCallback(async (): Promise<string | null> => {

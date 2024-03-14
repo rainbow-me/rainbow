@@ -93,6 +93,7 @@ import { MintsSheet } from '@/screens/MintsSheet/MintsSheet';
 import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoSheet';
 import { ConsoleSheet } from '@/screens/points/ConsoleSheet';
 import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileContext';
+import CheckIdentifierScreen from '@/screens/CheckIdentifierScreen';
 import AppIconUnlockSheet from '@/screens/AppIconUnlockSheet';
 import SwapsV2 from '@/__swaps__/screens/Swap';
 import { useRemoteConfig } from '@/model/remoteConfig';
@@ -120,6 +121,11 @@ function MainNavigator() {
   return (
     <Stack.Navigator initialRouteName={initialRoute} {...stackNavigationConfig} screenOptions={defaultScreenStackOptions}>
       <Stack.Screen component={SwipeNavigator} name={Routes.SWIPE_LAYOUT} />
+      <Stack.Screen
+        component={CheckIdentifierScreen}
+        name={Routes.CHECK_IDENTIFIER_SCREEN}
+        options={{ animationEnabled: false, gestureEnabled: false }}
+      />
       <Stack.Screen component={WelcomeScreen} name={Routes.WELCOME_SCREEN} options={{ animationEnabled: false, gestureEnabled: false }} />
       <Stack.Screen component={AvatarBuilder} name={Routes.AVATAR_BUILDER} options={emojiPreset} />
       <Stack.Screen component={AvatarBuilder} name={Routes.AVATAR_BUILDER_WALLET} options={emojiPresetWallet} />
