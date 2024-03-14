@@ -206,7 +206,7 @@ export const AddWalletSheet = () => {
 
         getGoogleAccountUserData().then((accountDetails: GoogleDriveUserData | undefined) => {
           if (accountDetails) {
-            navigate(Routes.RESTORE_SHEET);
+            return navigate(Routes.RESTORE_SHEET);
           }
           Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
         });
