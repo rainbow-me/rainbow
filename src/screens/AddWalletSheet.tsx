@@ -3,7 +3,7 @@ import { AddWalletItem } from '@/components/add-wallet/AddWalletRow';
 import { Box, globalColors, Inset } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import React, { useMemo, useRef } from 'react';
+import React, { useRef } from 'react';
 import * as i18n from '@/languages';
 import { HARDWARE_WALLETS, PROFILES, useExperimentalFlag } from '@/config';
 import { analytics, analyticsV2 } from '@/analytics';
@@ -20,7 +20,13 @@ import ImportSecretPhraseOrPrivateKey from '@/assets/ImportSecretPhraseOrPrivate
 import WatchWalletIcon from '@/assets/watchWallet.png';
 import { captureException } from '@sentry/react-native';
 import { useDispatch } from 'react-redux';
-import { backupUserDataIntoCloud, getGoogleAccountUserData } from '@/handlers/cloudBackup';
+import {
+  backupUserDataIntoCloud,
+  getGoogleAccountUserData,
+  GoogleDriveUserData,
+  login,
+  logoutFromGoogleDrive,
+} from '@/handlers/cloudBackup';
 import showWalletErrorAlert from '@/helpers/support';
 import { cloudPlatform } from '@/utils/platform';
 import { IS_ANDROID } from '@/env';
@@ -195,7 +201,10 @@ export const AddWalletSheet = () => {
     });
     if (IS_ANDROID) {
       try {
-        getGoogleAccountUserData().then(accountDetails => {
+        await logoutFromGoogleDrive();
+        await login();
+
+        getGoogleAccountUserData().then((accountDetails: GoogleDriveUserData | undefined) => {
           if (accountDetails) {
             navigate(Routes.RESTORE_SHEET);
           }
