@@ -10,7 +10,8 @@ import { parseTransaction } from '@/parsers/transactions';
 import { Network } from '@/networks/types';
 import { RainbowError, logger } from '@/logger';
 
-type ConsolidatedTransactionsResult = QueryFunctionResult<typeof consolidatedTransactionsQueryFunction>;
+export type ConsolidatedTransactionsResult = QueryFunctionResult<typeof consolidatedTransactionsQueryFunction>;
+export type PaginatedTransactions = { pages: ConsolidatedTransactionsResult[] };
 
 export type TransactionArgs = {
   hash: string;
@@ -75,8 +76,6 @@ export const transactionFetchQuery = async ({
   network: Network;
   hash: string;
 }) => queryClient.fetchQuery(transactionQueryKey({ address, currency, network, hash }), fetchTransaction);
-
-type PaginatedTransactions = { pages: ConsolidatedTransactionsResult[] };
 
 export function useBackendTransaction({ hash, network }: BackendTransactionArgs) {
   const { accountAddress, nativeCurrency } = useAccountSettings();
