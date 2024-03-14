@@ -483,7 +483,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
           </AnimatePresence>
         </Animated.View>
       </TouchableWithoutFeedback>
-      {isActiveTab && <Box as={Animated.View} background="blue" style={[styles.progressBar, progressBarStyle]} />}
+      {isActiveTab && !tabViewVisible && <Box as={Animated.View} background="blue" style={[styles.progressBar, progressBarStyle]} />}
     </>
   );
 });
