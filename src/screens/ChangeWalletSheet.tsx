@@ -26,6 +26,7 @@ import logger from '@/utils/logger';
 import { useTheme } from '@/theme';
 import { EthereumAddress } from '@/entities';
 import { getNotificationSettingsForWalletWithAddress } from '@/notifications/settings/storage';
+import { Separator } from '@/design-system';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const footerHeight = getExperimetalFlag(HARDWARE_WALLETS) ? 100 : 60;
@@ -388,10 +389,7 @@ export default function ChangeWalletSheet() {
             </Row>
           )}
         </Centered>
-        {showDividers && (
-          // @ts-ignore
-          <Divider color={colors.rowDividerExtraLight} inset={[0, 15]} />
-        )}
+        {showDividers && <Separator color="separatorTertiary" />}
       </Column>
       <WalletList
         accountAddress={currentAddress}

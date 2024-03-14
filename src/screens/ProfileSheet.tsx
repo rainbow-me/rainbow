@@ -74,7 +74,7 @@ export default function ProfileSheet() {
     <AndroidWrapper>
       <ProfileSheetConfigContext.Provider value={{ enableZoomableImages }}>
         <AccentColorProvider color={accentColor}>
-          <Box background="body (Deprecated)" testID="profile-sheet">
+          <Box background="surfacePrimary" testID="profile-sheet">
             <Box style={wrapperStyle}>
               {!isPreview && (!isAddressSuccess || !hasListFetched || !hasFirstTxTimestampFetched) ? (
                 <Stack space="19px (Deprecated)">

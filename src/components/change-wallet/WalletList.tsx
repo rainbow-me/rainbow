@@ -18,7 +18,7 @@ import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { EditWalletContextMenuActions } from '@/screens/ChangeWalletSheet';
 import { HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
-import { Inset, Stack } from '@/design-system';
+import { Box, Inset, Separator, Stack } from '@/design-system';
 
 const listTopPadding = 7.5;
 const rowHeight = 59;
@@ -55,7 +55,6 @@ const EmptyWalletList = styled(EmptyAssetList).attrs({
   pointerEvents: 'none',
 })({
   ...position.coverAsObject,
-  backgroundColor: ({ theme: { colors } }: any) => colors.white,
   paddingTop: listTopPadding,
 });
 
@@ -70,14 +69,6 @@ const WalletFlatList = styled(FlatList).attrs(({ showDividers }: { showDividers:
 }))({
   flex: 1,
   minHeight: 1,
-});
-
-const WalletListDivider = styled(Divider).attrs(({ theme: { colors } }: any) => ({
-  color: colors.rowDividerExtraLight,
-  inset: [0, 15],
-}))({
-  marginBottom: 1,
-  marginTop: -1,
 });
 
 interface Props {
@@ -216,7 +207,7 @@ export default function WalletList({
   return (
     <Container height={height}>
       <Animated.View style={[StyleSheet.absoluteFill, emptyOpacityStyle]}>
-        <EmptyWalletList />
+        <Box as={EmptyWalletList} background="surfacePrimaryElevated" />
       </Animated.View>
       <WalletsContainer style={opacityStyle}>
         <WalletFlatList
@@ -227,7 +218,7 @@ export default function WalletList({
           scrollEnabled={scrollEnabled}
           showDividers={showDividers}
         />
-        {showDividers && <WalletListDivider />}
+        {showDividers && <Separator color="separatorTertiary" />}
         {!watchOnly && (
           <Inset space="20px">
             <Stack space="24px">

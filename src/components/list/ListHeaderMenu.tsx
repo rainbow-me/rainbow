@@ -39,6 +39,7 @@ export function ListHeaderMenu({ menuItems, selectItem, icon, text }: ListHeader
           <Bleed bottom="2px">
             <Box
               alignItems="center"
+              background="surfacePrimaryElevated"
               borderRadius={15}
               height={{ custom: 30 }}
               justifyContent="center"

@@ -9,6 +9,7 @@ import { Centered, Column } from '../layout';
 import SheetHandle from './SheetHandle';
 import { useDimensions } from '@/hooks';
 import { borders } from '@/styles';
+import { Box } from '@/design-system';
 
 const Sheet = ({ borderRadius, children, hideHandle, noInsets, paddingBottom = 7, paddingTop = 6 }) => {
   const { width } = useDimensions();
@@ -19,8 +20,9 @@ const Sheet = ({ borderRadius, children, hideHandle, noInsets, paddingBottom = 7
   return (
     <Column height="100%" justify="end" width={width}>
       <TouchableBackdrop onPress={goBack} />
-      <Column
-        backgroundColor={colors.white}
+      <Box
+        as={Column}
+        background="surfacePrimaryElevated"
         paddingBottom={noInsets ? 0 : insets.bottom}
         style={borders.buildRadiusAsObject('top', borderRadius)}
         width="100%"
@@ -29,7 +31,7 @@ const Sheet = ({ borderRadius, children, hideHandle, noInsets, paddingBottom = 7
           {!hideHandle && <SheetHandle />}
         </Centered>
         {children}
-      </Column>
+      </Box>
     </Column>
   );
 };
