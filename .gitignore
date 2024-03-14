@@ -116,6 +116,3 @@ coverage
 
 # Webpack
 src/browser/InjectedJSBundle.js.LICENSE.txt
-
-# webview
-src/components/DappBrowser/DappBrowserWebview.tsx
