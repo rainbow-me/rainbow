@@ -135,7 +135,7 @@ export function ChooseBackupStep() {
 
           {!isFetching && !cloudBackups.length && (
             <Stack width="full" space="44px">
-              <Menu header={lang.t(lang.l.back_up.cloud.latest_backup)}>
+              <Menu>
                 <MenuItem disabled size={52} titleComponent={<MenuItem.Title disabled text={lang.t(lang.l.back_up.cloud.no_backups)} />} />
               </Menu>
             </Stack>
