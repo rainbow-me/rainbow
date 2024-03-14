@@ -15,7 +15,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import { useNavigation } from '@react-navigation/native';
 import * as i18n from '@/languages';
-import { dataRemovePendingTransaction } from '@/redux/data';
 
 const SIZE = 40;
 
