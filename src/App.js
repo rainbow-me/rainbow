@@ -120,16 +120,10 @@ class OldApp extends Component {
     this.setState({ eventSubscription: eventSub });
     appEvents.on('transactionConfirmed', this.handleTransactionConfirmed);
 
-    await analyticsV2.initializeRudderstack();
-    await this.setupDeeplinking();
-
-    PerformanceTracking.finishMeasuring(PerformanceMetrics.loadRootAppComponent);
-    analyticsV2.track(analyticsV2.event.applicationDidMount);
-
-    /**
-     * This must be saved in the store as early as possible
-     */
-    await saveFCMToken();
+    const p1 = analyticsV2.initializeRudderstack();
+    const p2 = this.setupDeeplinking();
+    const p3 = saveFCMToken();
+    await Promise.all([p1, p2, p3]);
 
     /**
      * Needs to be called AFTER FCM token is loaded
@@ -146,6 +140,9 @@ class OldApp extends Component {
         handleReviewPromptAction(ReviewPromptAction.TimesLaunchedSinceInstall);
       }, 10_000);
     });
+
+    PerformanceTracking.finishMeasuring(PerformanceMetrics.loadRootAppComponent);
+    analyticsV2.track(analyticsV2.event.applicationDidMount);
   }
 
   componentDidUpdate(prevProps) {

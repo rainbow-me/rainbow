@@ -3,7 +3,7 @@ import { REACT_NATIVE_RUDDERSTACK_WRITE_KEY, RUDDERSTACK_DATA_PLANE_URL } from '
 
 import { EventProperties, event } from '@/analytics/event';
 import { UserProperties } from '@/analytics/userProperties';
-import { logger } from '@/logger';
+import { logger, RainbowError } from '@/logger';
 import { device } from '@/storage';
 
 export class Analytics {
@@ -59,9 +59,13 @@ export class Analytics {
   }
 
   async initializeRudderstack() {
-    await rudderClient.setup(REACT_NATIVE_RUDDERSTACK_WRITE_KEY, {
-      dataPlaneUrl: RUDDERSTACK_DATA_PLANE_URL,
-    });
+    try {
+      await rudderClient.setup(REACT_NATIVE_RUDDERSTACK_WRITE_KEY, {
+        dataPlaneUrl: RUDDERSTACK_DATA_PLANE_URL,
+      });
+    } catch (error) {
+      logger.error(new RainbowError('Unable to initialize Rudderstack'), { error });
+    }
   }
 
   /**
