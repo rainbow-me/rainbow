@@ -59,7 +59,7 @@
     "check-translations": "./scripts/check-translations.sh ./src './src/languages/*.json' lang.t",
     "codegen-translations": "node ./scripts/codegen-translations.js",
     "prepare": "husky install",
-    "bundle-inpage": "yarn webpack --config src/browser/webpack.config.js"
+    "bundle-inpage": "yarn webpack --config src/browser/webpack.config.js && cp InjectedJSBundle.js android/app/src/main/res/raw/injected_js_bundle.js"
   },
   "dependencies": {
     "@apollo/client": "3.2.4",

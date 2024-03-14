@@ -15,11 +15,18 @@ import { BrowserToolbar } from './BrowserToolbar';
 import { BrowserTab } from './BrowserTab';
 import { StyleSheet } from 'react-native';
 import { TAB_VIEW_ROW_HEIGHT } from './Dimensions';
+import { IS_ANDROID } from '@/env';
 
 const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 
 const getInjectedJS = async () => {
-  return RNFS.readFile(`${RNFS.MainBundlePath}/InjectedJSBundle.js`, 'utf8');
+  const baseDirectory = IS_ANDROID ? RNFS.DocumentDirectoryPath  : RNFS.MainBundlePath;
+
+  if(IS_ANDROID){
+    return RNFS.readFileRes('injected_js_bundle.js', 'utf8');
+  } else {
+    return RNFS.readFile(`${baseDirectory}/InjectedJSBundle.js`, 'utf8');
+  }
 };
 
 const DappBrowserComponent = () => {
