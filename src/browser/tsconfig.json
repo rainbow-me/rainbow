@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "lib": ["esnext", "dom"],
+    "moduleResolution": "node",
+    "noEmit": false,
+    "strict": true,
+    "target": "esnext",
+    "baseUrl": ".",
+    "paths": {},
+    "resolveJsonModule": true
+  },
+  "globals": [],
+  "exclude": ["../../node_modules"]
+}

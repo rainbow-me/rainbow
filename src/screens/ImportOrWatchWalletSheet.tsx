@@ -8,7 +8,7 @@ import React, { useCallback } from 'react';
 import * as i18n from '@/languages';
 import { ButtonPressAnimation } from '@/components/animations';
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
-import Clipboard from '@react-native-community/clipboard';
+import Clipboard from '@react-native-clipboard/clipboard';
 import { LoadingOverlay } from '@/components/modal';
 
 const TRANSLATIONS = i18n.l.wallet.new.import_or_watch_wallet_sheet;

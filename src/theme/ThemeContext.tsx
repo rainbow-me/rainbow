@@ -1,6 +1,5 @@
 import React, { createContext, PropsWithChildren, useContext, useEffect, useMemo, useState } from 'react';
-import { LayoutAnimation, NativeModules, useColorScheme } from 'react-native';
-import { useDarkMode } from 'react-native-dark-mode';
+import { Appearance, LayoutAnimation, NativeModules, useColorScheme } from 'react-native';
 import { ThemeProvider } from 'styled-components';
 import { Colors, darkModeThemeColors, lightModeThemeColors } from '../styles/colors';
 import currentColors from './currentColors';
@@ -39,9 +38,8 @@ const { RNThemeModule } = NativeModules;
 
 export const MainThemeProvider = (props: PropsWithChildren<Record<string, never>>) => {
   const [colorScheme, setColorScheme] = useState<ThemesType | null>(null);
-
   // looks like one works on Android and another one on iOS. good.
-  const isSystemDarkModeIOS = useDarkMode();
+  const isSystemDarkModeIOS = Appearance.getColorScheme() === 'dark';
   const isSystemDarkModeAndroid = useColorScheme() === 'dark';
   const isSystemDarkMode = ios ? isSystemDarkModeIOS : isSystemDarkModeAndroid;
 
