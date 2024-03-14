@@ -1,22 +1,21 @@
-import { BlurView } from '@react-native-community/blur';
 import React, { useEffect, useState } from 'react';
-import Animated, { useAnimatedKeyboard, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { interpolateColor, useAnimatedKeyboard, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 import RNFS from 'react-native-fs';
 
 import { SheetGestureBlocker } from '@/components/sheet/SheetGestureBlocker';
 import { Page } from '@/components/layout';
-import { Box, ColorModeProvider, globalColors, useForegroundColor } from '@/design-system';
+import { Box, ColorModeProvider, globalColors } from '@/design-system';
 import { useDimensions } from '@/hooks';
 import { safeAreaInsetValues } from '@/utils';
 import { BrowserContextProvider, useBrowserContext } from './BrowserContext';
 import { AddressBar } from './AddressBar';
-import { BrowserToolbar } from './BrowserToolbar';
 import { BrowserTab } from './BrowserTab';
 import { StyleSheet } from 'react-native';
 import { TAB_VIEW_ROW_HEIGHT } from './Dimensions';
+import { useTheme } from '@/theme';
 
-const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
+const AnimatedBox = Animated.createAnimatedComponent(Box);
 
 const getInjectedJS = async () => {
   return RNFS.readFile(`${RNFS.MainBundlePath}/InjectedJSBundle.js`, 'utf8');
@@ -38,8 +37,9 @@ const DappBrowserComponent = () => {
   }, []);
 
   const { scrollViewRef, tabStates, tabViewProgress, tabViewVisible } = useBrowserContext();
+  const { isDarkMode } = useTheme();
+  const [isAddressBarFocused, setIsAddressBarFocused] = useState(false);
   const { width: deviceWidth } = useDimensions();
-  const separatorSecondary = useForegroundColor('separatorSecondary');
   const keyboard = useAnimatedKeyboard();
 
   const backgroundStyle = useAnimatedStyle(
@@ -48,14 +48,31 @@ const DappBrowserComponent = () => {
     }),
     []
   );
+  const animationProgress = useSharedValue(0);
 
-  const bottomBarStyle = useAnimatedStyle(
-    () => ({
-      height: safeAreaInsetValues.bottom + 46 + 58 * (1 - (tabViewProgress?.value ?? 0)),
-      transform: [{ translateY: Math.min(-(keyboard.height.value - 70), -50) }],
-    }),
-    []
-  );
+  useEffect(() => {
+    if (isAddressBarFocused) {
+      animationProgress.value = withTiming(1, { duration: 200 });
+    } else {
+      animationProgress.value = withTiming(0, { duration: 200 });
+    }
+  }, [animationProgress, isAddressBarFocused]);
+
+  const bottomBarStyle = useAnimatedStyle(() => {
+    // Assuming tabViewProgress.value ranges from 0 to 1
+    // You can adjust the inputRange based on the actual range of tabViewProgress.value
+    const backgroundColor = interpolateColor(
+      animationProgress.value ?? 0,
+      [0, 1], // inputRange
+      ['#191A1C', 'transparent']
+    );
+
+    return {
+      height: safeAreaInsetValues.bottom + 58 * (1 - (tabViewProgress?.value ?? 0)),
+      transform: [{ translateY: Math.min(-(keyboard.height.value - 30), -50) }],
+      backgroundColor,
+    };
+  }, [isAddressBarFocused, isDarkMode, tabViewProgress, keyboard.height]);
 
   return (
     <SheetGestureBlocker>
@@ -83,10 +100,8 @@ const DappBrowserComponent = () => {
           ))}
         </Animated.ScrollView>
         <Box
-          as={AnimatedBlurView}
-          blurAmount={25}
-          blurType="chromeMaterialDark"
-          justifyContent="flex-end"
+          as={AnimatedBox}
+          justifyContent="center"
           bottom={{ custom: 0 }}
           paddingBottom={{ custom: safeAreaInsetValues.bottom }}
           pointerEvents="box-none"
@@ -94,9 +109,7 @@ const DappBrowserComponent = () => {
           style={[bottomBarStyle, { zIndex: 10000 }]}
           width={{ custom: deviceWidth }}
         >
-          <AddressBar />
-          <BrowserToolbar />
-          <Box height={{ custom: 0.5 }} position="absolute" style={{ backgroundColor: separatorSecondary }} top="0px" width="full" />
+          <AddressBar setIsAddressBarFocused={setIsAddressBarFocused} />
         </Box>
       </Box>
     </SheetGestureBlocker>
