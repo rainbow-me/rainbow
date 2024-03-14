@@ -16,6 +16,7 @@ export enum MigrationName {
   purgeWcConnectionsWithoutAccounts = 'migration_purgeWcConnectionsWithoutAccounts',
   migratePinnedAndHiddenTokenUniqueIds = 'migration_migratePinnedAndHiddenTokenUniqueIds',
   migrateUnlockableAppIconStorage = 'migration_migrateUnlockableAppIconStorage',
+  migratePersistedQueriesToMMKV = 'migration_migratePersistedQueriesToMMKV',
 }
 
 export type Migration = {

@@ -9,7 +9,7 @@ import { Box, Stack } from '@/design-system';
 import { useTheme } from '@/theme';
 import * as i18n from '@/languages';
 import { ButtonPressAnimation } from '@/components/animations';
-import Clipboard from '@react-native-community/clipboard';
+import Clipboard from '@react-native-clipboard/clipboard';
 import { RainbowTransaction, TransactionStatus } from '@/entities';
 import { swapMetadataStorage } from '@/raps/actions/swap';
 import { SwapMetadata } from '@/raps/common';

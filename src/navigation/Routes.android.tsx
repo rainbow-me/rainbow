@@ -60,7 +60,7 @@ import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
 import { deviceUtils } from '@/utils';
-import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import useExperimentalFlag, { PROFILES, SWAPS_V2 } from '@/config/experimentalHooks';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
@@ -84,6 +84,8 @@ import { ConsoleSheet } from '@/screens/points/ConsoleSheet';
 import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileContext';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import AppIconUnlockSheet from '@/screens/AppIconUnlockSheet';
+import SwapsV2 from '@/__swaps__/screens/Swap';
+import { useRemoteConfig } from '@/model/remoteConfig';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -136,7 +138,9 @@ function MainOuterNavigator() {
 }
 
 function BSNavigator() {
+  const remoteConfig = useRemoteConfig();
   const profilesEnabled = useExperimentalFlag(PROFILES);
+  const swapsV2Enabled = useExperimentalFlag(SWAPS_V2) || remoteConfig.swaps_v2;
 
   return (
     <BSStack.Navigator>
@@ -237,6 +241,8 @@ function BSNavigator() {
       <BSStack.Screen component={SignTransactionSheet} name={Routes.CONFIRM_REQUEST} options={walletconnectBottomSheetPreset} />
       <BSStack.Screen component={ConsoleSheet} name={Routes.CONSOLE_SHEET} options={consoleSheetPreset} />
       <BSStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} options={appIconUnlockSheetPreset} />
+
+      {swapsV2Enabled && <BSStack.Screen component={SwapsV2} name={Routes.SWAP} />}
     </BSStack.Navigator>
   );
 }

@@ -5,7 +5,15 @@ import { endsWith } from 'lodash';
 import { CLOUD_BACKUP_ERRORS, encryptAndSaveDataToCloud, getDataFromCloud } from '@/handlers/cloudBackup';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import WalletTypes from '../helpers/walletTypes';
-import { allWalletsKey, pinKey, privateKeyKey, seedPhraseKey, selectedWalletKey } from '@/utils/keychainConstants';
+import {
+  allWalletsKey,
+  pinKey,
+  privateKeyKey,
+  seedPhraseKey,
+  selectedWalletKey,
+  identifierForVendorKey,
+  addressKey,
+} from '@/utils/keychainConstants';
 import * as keychain from '@/model/keychain';
 import * as kc from '@/keychain';
 import { AllRainbowWallets, allWalletsVersion, createWallet, RainbowWallet } from './wallet';
@@ -19,9 +27,9 @@ import * as i18n from '@/languages';
 import { getUserError } from '@/hooks/useWalletCloudBackup';
 import { cloudPlatform } from '@/utils/platform';
 import { setAllWalletsWithIdsAsBackedUp } from '@/redux/wallets';
-import { identifier } from '@/storage';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { clearAllStorages } from './mmkv';
 
 const { DeviceUUID } = NativeModules;
 const encryptor = new AesEncryptor();
@@ -635,7 +643,9 @@ export async function getDeviceUUID(): Promise<string | null> {
   return new Promise(resolve => {
     DeviceUUID.getUUID((error: unknown, uuid: string[]) => {
       if (error) {
-        console.log('Got error when trying to get uuid from Native side');
+        logger.error(new RainbowError('Received error when trying to get uuid from Native side'), {
+          error,
+        });
         resolve(null);
       } else {
         resolve(uuid[0]);
@@ -666,40 +676,82 @@ export async function checkIdentifierOnLaunch() {
       throw new Error('Unable to retrieve identifier for vendor');
     }
 
-    const currentIdentifier = identifier.get(['identifier']);
-    console.log('CurrentIdentifier: ', currentIdentifier);
-    // if we don't have a current identifier, set it and exit early
-    if (!currentIdentifier) {
-      identifier.set(['identifier'], uuid);
+    const currentIdentifier = await kc.get(identifierForVendorKey);
+    if (currentIdentifier.error) {
+      switch (currentIdentifier.error) {
+        case kc.ErrorType.Unavailable: {
+          logger.debug('Value for current identifier not found, setting it to new UUID...', {
+            uuid,
+            error: currentIdentifier.error,
+          });
+          await kc.set(identifierForVendorKey, uuid);
+          return;
+        }
+
+        case kc.ErrorType.NotAuthenticated: {
+          logger.error(new RainbowError('Not authenticated error while checking identifier on launch'), {
+            error: currentIdentifier.error,
+          });
+          break;
+        }
+
+        case kc.ErrorType.UserCanceled: {
+          logger.error(new RainbowError('User canceled identifier check on launch'), {
+            error: currentIdentifier.error,
+          });
+          break;
+        }
+
+        default:
+          logger.error(new RainbowError('Unknown error while checking identifier on launch'), {
+            error: currentIdentifier.error,
+          });
+          break;
+      }
+
+      throw new Error('Unable to retrieve current identifier');
+    }
+
+    // NOTE: This should never happen, but if we don't have a current identifier, let's set it and exit early
+    if (!currentIdentifier.value) {
+      await kc.set(identifierForVendorKey, uuid);
       return;
     }
 
-    // // if our identifiers match up, we can assume no reinstall/migration
-    // if (currentIdentifier === uuid) {
-    //   return;
-    // }
+    // if our identifiers match up, we can assume no reinstall/migration
+    if (currentIdentifier.value === uuid) {
+      return;
+    }
 
     return new Promise(resolve => {
       Navigation.handleAction(Routes.CHECK_IDENTIFIER_SCREEN, {
-        // Just a reinstall, let's update the identifer and send them back to the app
+        // NOTE: Just a reinstall, let's update the identifer and send them back to the app
         onSuccess: async () => {
-          identifier.set(['identifier'], uuid);
+          await kc.set(identifierForVendorKey, uuid);
           Navigation.handleAction(Routes.WALLET_SCREEN, {});
-          resolve(true); // Resolve the promise here
+          resolve(true);
         },
-        // Detected a phone migration, let's clear the app and send them to the welcome screen
+        // NOTE: Detected a phone migration, let's clear the app and send them to the welcome screen
         onFailure: async () => {
-          // TODO: Is there more we need to wipe here?
-          await kc.clear();
+          await kc.remove(addressKey);
           await AsyncStorage.clear();
+          clearAllStorages();
           Navigation.handleAction(Routes.WELCOME_SCREEN, {});
-          resolve(false); // Resolve with false or another value indicating failure
+          resolve(false);
         },
       });
     });
   } catch (error) {
-    // TODO: LOGGING HERE?
+    console.log(error);
+    logger.error(new RainbowError('Error while checking identifier on launch'), {
+      extra: {
+        error,
+      },
+    });
   }
+
+  // TODO: Should we do something here? Exit the app? Show the user an alert?
+  // For now, let's just return false and let the app continue to load
 
   return false;
 }

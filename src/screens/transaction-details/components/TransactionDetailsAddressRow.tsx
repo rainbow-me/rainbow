@@ -8,7 +8,7 @@ import { Box, Column, Columns, Cover, Stack, Text } from '@/design-system';
 import Animated, { Easing, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { useTiming } from 'react-native-redash';
 import { ButtonPressAnimation } from '@/components/animations';
-import Clipboard from '@react-native-community/clipboard';
+import Clipboard from '@react-native-clipboard/clipboard';
 import { haptics } from '@/utils';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { Contact } from '@/redux/contacts';

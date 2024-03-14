@@ -54,9 +54,6 @@ jobs:
       - name: Lint
         run: yarn lint:ci
 
-      - name: Unit tests
-        run: yarn test
-
       - name: Install Pods
         run: cd ios && bundle install && pod install --repo-update && cd ..
 

@@ -272,7 +272,7 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
               as={RNAnimated.View}
               height={{ custom: navbarHeight }}
               justifyContent="center"
-              style={[walletNameStyle, { alignSelf: 'center', bottom: 2 }]}
+              style={[walletNameStyle, { alignSelf: 'center', bottom: 2, zIndex: -1 }]}
             >
               <ProfileNameRow variant="header" />
             </Box>

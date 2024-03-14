@@ -74,7 +74,7 @@ import { nativeStackConfig } from './nativeStackConfig';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
-import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import useExperimentalFlag, { PROFILES, SWAPS_V2 } from '@/config/experimentalHooks';
 import createNativeStackNavigator from '@/react-native-cool-modals/createNativeStackNavigator';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
@@ -95,6 +95,8 @@ import { ConsoleSheet } from '@/screens/points/ConsoleSheet';
 import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileContext';
 import CheckIdentifierScreen from '@/screens/CheckIdentifierScreen';
 import AppIconUnlockSheet from '@/screens/AppIconUnlockSheet';
+import SwapsV2 from '@/__swaps__/screens/Swap';
+import { useRemoteConfig } from '@/model/remoteConfig';
 
 type StackNavigatorParams = {
   [Routes.SEND_SHEET]: unknown;
@@ -141,8 +143,10 @@ function MainStack() {
 }
 
 function NativeStackNavigator() {
+  const remoteConfig = useRemoteConfig();
   const { colors, isDarkMode } = useTheme();
   const profilesEnabled = useExperimentalFlag(PROFILES);
+  const swapsV2Enabled = useExperimentalFlag(SWAPS_V2) || remoteConfig.swaps_v2;
 
   return (
     <NativeStack.Navigator {...nativeStackConfig}>
@@ -290,6 +294,8 @@ function NativeStackNavigator() {
       <NativeStack.Screen name={Routes.MINTS_SHEET} component={MintsSheet} {...mintsSheetConfig} />
       <NativeStack.Screen component={ConsoleSheet} name={Routes.CONSOLE_SHEET} {...consoleSheetConfig} />
       <NativeStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} {...appIconUnlockSheetConfig} />
+
+      {swapsV2Enabled && <NativeStack.Screen component={SwapsV2} name={Routes.SWAP} />}
     </NativeStack.Navigator>
   );
 }

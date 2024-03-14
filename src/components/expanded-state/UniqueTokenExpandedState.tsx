@@ -254,6 +254,7 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
   const isSupportedOnRainbowWeb = getIsSupportedOnRainbowWeb(asset.network);
 
   const [isRefreshMetadataToastActive, setIsRefreshMetadataToastActive] = useState(false);
+  const [isReportSpamToastActive, setIsReportSpamToastActive] = useState(false);
 
   const activateRefreshMetadataToast = useCallback(() => {
     if (!isRefreshMetadataToastActive) {
@@ -263,6 +264,15 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
       }, 3000);
     }
   }, [isRefreshMetadataToastActive]);
+
+  const activateReportSpamToast = useCallback(() => {
+    if (!isReportSpamToastActive) {
+      setIsReportSpamToastActive(true);
+      setTimeout(() => {
+        setIsReportSpamToastActive(false);
+      }, 3000);
+    }
+  }, [isReportSpamToastActive]);
 
   const {
     collection: { description: familyDescription, external_url: familyLink, slug },
@@ -476,6 +486,7 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
                         isSupportedOnRainbowWeb={isSupportedOnRainbowWeb}
                         rainbowWebUrl={rainbowWebUrl}
                         onRefresh={activateRefreshMetadataToast}
+                        onReport={activateReportSpamToast}
                       />
                     </Stack>
                     <Stack space="15px (Deprecated)">
@@ -671,7 +682,8 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
           isAdded={isShowcaseAsset}
           removeCopy={lang.t('expanded_state.unique_expanded.toast_removed_from_showcase')}
         />
-        <Toast isVisible={isRefreshMetadataToastActive} text="Requesting metadata..." />
+        <Toast isVisible={isRefreshMetadataToastActive} text={lang.t('expanded_state.unique_expanded.refreshing')} />
+        <Toast isVisible={isReportSpamToastActive} text={lang.t('expanded_state.unique_expanded.reported')} />
       </ToastPositionContainer>
     </>
   );
