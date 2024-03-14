@@ -115,4 +115,4 @@ coverage
 .vscode/
 
 # Webpack
-src/browser/InjectedJSBundle.js.LICENSE.txt
+InjectedJSBundle.js.LICENSE.txt
