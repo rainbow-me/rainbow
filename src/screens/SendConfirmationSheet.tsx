@@ -661,7 +661,7 @@ export const SendConfirmationSheet = () => {
           </SendButtonWrapper>
           {isENS && (
             /* @ts-expect-error JavaScript component */
-            <GasSpeedButton currentNetwork={network} theme={isDarkMode ? 'dark' : 'light'} />
+            <GasSpeedButton currentNetwork={network} theme={theme.isDarkMode ? 'dark' : 'light'} />
           )}
         </Column>
       </SlackSheet>

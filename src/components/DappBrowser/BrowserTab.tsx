@@ -18,6 +18,7 @@ import { COLLAPSED_WEBVIEW_HEIGHT_UNSCALED, TAB_VIEW_COLUMN_WIDTH, TAB_VIEW_ROW_
 import RNFS from 'react-native-fs';
 import { WebViewEvent } from 'react-native-webview/lib/WebViewTypes';
 import { appMessenger } from '@/browserMessaging/AppMessenger';
+import DappBrowserWebview from './DappBrowserWebview';
 
 interface BrowserTabProps {
   tabIndex: number;
@@ -384,7 +385,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
         />
       }
     >
-      <WebView
+      <DappBrowserWebview
         webviewDebuggingEnabled={true}
         injectedJavaScriptBeforeContentLoaded={injectedJS}
         allowsInlineMediaPlayback
@@ -417,7 +418,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
             backgroundColor: backgroundColor || (colorMode === 'dark' ? globalColors.grey100 : globalColors.white100),
           },
         ]}
-      ></WebView>
+      ></DappBrowserWebview>
     </Freeze>
   );
 
@@ -482,7 +483,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
           </AnimatePresence>
         </Animated.View>
       </TouchableWithoutFeedback>
-      {isActiveTab && <Box as={Animated.View} background="blue" style={[styles.progressBar, progressBarStyle]} />}
+      {isActiveTab && !tabViewVisible && <Box as={Animated.View} background="blue" style={[styles.progressBar, progressBarStyle]} />}
     </>
   );
 });
