@@ -8,7 +8,7 @@ import { padding } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
 import { Box } from '@/design-system';
 import { TextInput, TextInputProps, View } from 'react-native';
-import { IS_IOS } from '@/env';
+import { IS_IOS, IS_ANDROID } from '@/env';
 
 const Container = styled(Box)({
   width: '100%',
@@ -40,7 +40,7 @@ const ShadowContainer = styled(IS_IOS ? ShadowStack : View).attrs(({ theme: { co
       [0, 5, 15, colors.shadow, 0.06],
       [0, 10, 30, colors.shadow, 0.12],
     ],
-    width: '100%',
+    width: IS_ANDROID ? deviceWidth - 48 : '100%',
     elevation: 15,
   };
 })({});

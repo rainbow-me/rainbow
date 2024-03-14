@@ -1,7 +1,7 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { ContextCircleButton } from '@/components/context-menu';
-import Clipboard from '@react-native-community/clipboard';
+import Clipboard from '@react-native-clipboard/clipboard';
 import { cloudPlatform } from '@/utils/platform';
 import { address as formatAddress } from '@/utils/abbreviations';
 
