@@ -91,7 +91,8 @@
         "no_backups_found": "We couldn't find your previous backup!",
         "cant_get_encrypted_data": "We couldn't access your backup at this time. Please try again later.",
         "missing_pin": "Something went wrong while processing your PIN code. Please try again later.",
-        "generic": "Error while trying to backup. Error code: %{errorCodes}"
+        "generic": "Error while trying to backup. Error code: %{errorCodes}",
+        "no_account_found": "Unable to retrieve backup files. Make sure you're logged in."
       },
       "wrong_pin": "The PIN code you entered was incorrect and we can't make a backup. Please try again with the correct code.",
       "already_backed_up": {

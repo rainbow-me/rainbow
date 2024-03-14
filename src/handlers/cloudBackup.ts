@@ -28,7 +28,7 @@ export function normalizeAndroidBackupFilename(filename: string) {
   return filename.replace(`${REMOTE_BACKUP_WALLET_DIR}/`, '');
 }
 
-export function logoutFromGoogleDrive() {
+export async function logoutFromGoogleDrive() {
   IS_ANDROID && RNCloudFs.logout();
 }
 
@@ -226,5 +226,13 @@ export function isCloudBackupAvailable() {
   if (ios) {
     return RNCloudFs.isAvailable();
   }
+  return true;
+}
+
+export async function login() {
+  if (IS_ANDROID) {
+    return RNCloudFs.loginIfNeeded();
+  }
+
   return true;
 }

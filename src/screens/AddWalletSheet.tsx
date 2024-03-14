@@ -3,7 +3,7 @@ import { AddWalletItem } from '@/components/add-wallet/AddWalletRow';
 import { Box, globalColors, Inset } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import React, { useMemo, useRef } from 'react';
+import React, { useRef } from 'react';
 import * as i18n from '@/languages';
 import { HARDWARE_WALLETS, PROFILES, useExperimentalFlag } from '@/config';
 import { analytics, analyticsV2 } from '@/analytics';
@@ -20,16 +20,19 @@ import ImportSecretPhraseOrPrivateKey from '@/assets/ImportSecretPhraseOrPrivate
 import WatchWalletIcon from '@/assets/watchWallet.png';
 import { captureException } from '@sentry/react-native';
 import { useDispatch } from 'react-redux';
-import { backupUserDataIntoCloud, fetchUserDataFromCloud, logoutFromGoogleDrive } from '@/handlers/cloudBackup';
+import {
+  backupUserDataIntoCloud,
+  getGoogleAccountUserData,
+  GoogleDriveUserData,
+  login,
+  logoutFromGoogleDrive,
+} from '@/handlers/cloudBackup';
 import showWalletErrorAlert from '@/helpers/support';
 import { cloudPlatform } from '@/utils/platform';
-import { IS_ANDROID, IS_IOS } from '@/env';
+import { IS_ANDROID } from '@/env';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useInitializeWallet, useWallets } from '@/hooks';
-import { format, formatDistance } from 'date-fns';
-import { Backup, parseTimestampFromFilename } from '@/model/backup';
-import useCloudBackups from '@/hooks/useCloudBackups';
 
 const TRANSLATIONS = i18n.l.wallet.new.add_wallet_sheet;
 
@@ -197,13 +200,26 @@ export const AddWalletSheet = () => {
       type: 'seed',
     });
     if (IS_ANDROID) {
-      await logoutFromGoogleDrive();
-    }
+      try {
+        await logoutFromGoogleDrive();
+        await login();
 
-    try {
-      navigate(Routes.RESTORE_SHEET);
-    } catch (e) {
-      logger.error(e as RainbowError);
+        getGoogleAccountUserData().then((accountDetails: GoogleDriveUserData | undefined) => {
+          if (accountDetails) {
+            return navigate(Routes.RESTORE_SHEET);
+          }
+          Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
+        });
+      } catch (e) {
+        Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
+        logger.error(e as RainbowError);
+      }
+    } else {
+      try {
+        navigate(Routes.RESTORE_SHEET);
+      } catch (e) {
+        logger.error(e as RainbowError);
+      }
     }
   };
 
