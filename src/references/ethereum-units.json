@@ -1,8 +1,8 @@
 {
   "basic_approval": 55000,
   "basic_swap": 200000,
-  "basic_swap_arbitrum": 3500,
-  "basic_swap_optimism": 1000,
+  "basic_swap_arbitrum": 3500000,
+  "basic_swap_optimism": 1000000,
   "basic_swap_bsc": 600000,
   "basic_swap_polygon": 600000,
   "basic_swap_permit": 400000,
