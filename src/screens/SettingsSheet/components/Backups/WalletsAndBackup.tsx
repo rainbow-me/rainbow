@@ -15,7 +15,7 @@ import { abbreviations } from '@/utils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import * as i18n from '@/languages';
 import MenuHeader from '../MenuHeader';
-import { checkWalletsForBackupStatus, checkUserDataForBackupProvider } from '../../utils';
+import { checkWalletsForBackupStatus } from '../../utils';
 import { Inline, Text, Box, Stack } from '@/design-system';
 import { ContactAvatar } from '@/components/contacts';
 import { useTheme } from '@/theme';
@@ -89,14 +89,13 @@ export const WalletsAndBackup = () => {
   const { navigate } = useNavigation();
   const { wallets } = useWallets();
   const profilesEnabled = useExperimentalFlag(PROFILES);
-
-  const { backups, userData } = useCloudBackups();
+  const { backups } = useCloudBackups();
   const dispatch = useDispatch();
 
   const initializeWallet = useInitializeWallet();
 
   const { onSubmit, loading } = useCreateBackup({
-    walletId: undefined, // NOTE: This is not used for backing up All wallets
+    walletId: undefined, // NOTE: This is not used when backing up All wallets
   });
 
   const { manageCloudBackups } = useManageCloudBackups();
@@ -106,12 +105,7 @@ export const WalletsAndBackup = () => {
     privateKey: 0,
   };
 
-  const { backupProvider: remoteBackupProvider } = useMemo(() => checkUserDataForBackupProvider(userData), [userData]);
-  const { allBackedUp, backupProvider: localBackupProvider } = useMemo(() => checkWalletsForBackupStatus(wallets), [wallets]);
-
-  const backupProvider = useMemo(() => {
-    return remoteBackupProvider ?? localBackupProvider;
-  }, [localBackupProvider, remoteBackupProvider]);
+  const { allBackedUp, backupProvider } = useMemo(() => checkWalletsForBackupStatus(wallets), [wallets]);
 
   const { visibleWallets, lastBackupDate } = useVisibleWallets({ wallets, walletTypeCount });
 
@@ -203,6 +197,7 @@ export const WalletsAndBackup = () => {
                   <MenuHeader.Label
                     text={i18n.t(i18n.l.wallet.back_ups.cloud_backup_description, {
                       link: i18n.t(i18n.l.wallet.back_ups.cloud_backup_link),
+                      cloudPlatform,
                     })}
                     linkText={i18n.t(i18n.l.wallet.back_ups.cloud_backup_link)}
                     onPress={() =>
@@ -310,13 +305,20 @@ export const WalletsAndBackup = () => {
                   labelComponent={
                     allBackedUp ? (
                       <MenuHeader.Label
+                        linkText={i18n.t(i18n.l.wallet.back_ups.cloud_backup_link)}
+                        onPress={() =>
+                          navigate(Routes.LEARN_WEB_VIEW_SCREEN, {
+                            ...backupsCard,
+                            type: 'square',
+                          })
+                        }
                         text={
                           allBackedUp
                             ? i18n.t(i18n.l.wallet.back_ups.backed_up_to_cloud_message, {
                                 cloudPlatform,
                               })
                             : i18n.t(i18n.l.wallet.back_ups.cloud_backup_description, {
-                                link: i18n.t(i18n.l.wallet.back_ups.cloud_backup_link),
+                                cloudPlatform,
                               })
                         }
                       />
@@ -522,7 +524,9 @@ export const WalletsAndBackup = () => {
               <Menu
                 description={
                   <Text color="secondary60 (Deprecated)" size="14px / 19px (Deprecated)" weight="regular">
-                    {i18n.t(i18n.l.wallet.back_ups.cloud_backup_description)}
+                    {i18n.t(i18n.l.wallet.back_ups.cloud_backup_description, {
+                      cloudPlatform,
+                    })}
 
                     <Text onPress={onPressLearnMoreAboutCloudBackups} color="blue" size="14px / 19px (Deprecated)" weight="medium">
                       {' '}

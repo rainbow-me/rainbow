@@ -82,7 +82,7 @@ export async function authenticateWithPIN(): Promise<string | undefined> {
       onSuccess: async (pin: string | undefined) => {
         resolve(pin);
       },
-      validPin,
+      validPin: true,
     });
   });
 }

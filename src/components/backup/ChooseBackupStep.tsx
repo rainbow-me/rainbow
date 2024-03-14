@@ -64,13 +64,17 @@ export function ChooseBackupStep() {
   const { height: deviceHeight } = useDimensions();
   const { navigate } = useNavigation();
 
-  const cloudBackups = backups.files.filter(backup => {
-    if (IS_ANDROID) {
-      return !backup.name.match(/UserData/i);
-    }
+  const cloudBackups = backups.files
+    .filter(backup => {
+      if (IS_ANDROID) {
+        return !backup.name.match(/UserData/i);
+      }
 
-    return backup.isFile && backup.size > 0 && !backup.name.match(/UserData/i);
-  });
+      return backup.isFile && backup.size > 0 && !backup.name.match(/UserData/i);
+    })
+    .sort((a, b) => {
+      return parseTimestampFromFilename(b.name) - parseTimestampFromFilename(a.name);
+    });
 
   const mostRecentBackup = cloudBackups.reduce(
     (prev, current) => {

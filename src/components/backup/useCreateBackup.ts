@@ -135,9 +135,10 @@ export const useCreateBackup = ({ walletId }: UseCreateBackupProps) => {
       const password = await getPassword();
       if (password) {
         onConfirmBackup(password, type);
-        return;
+        return true;
       }
       setLoadingStateWithTimeout('error');
+      return false;
     },
     [getPassword, onConfirmBackup, setLoadingStateWithTimeout]
   );
