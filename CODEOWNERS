@@ -63,6 +63,3 @@ src/App.js  @benisgold @skylarbarrera @jinchung
 metro.config.js @skylarbarrera @benisgold 
 metro.transform.js @skylarbarrera @benisgold 
 react-native.config.js  @skylarbarrera @benisgold
-
-# SWAPS V2
-src/__swaps__ @walmat @dereknelson
