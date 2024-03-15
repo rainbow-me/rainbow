@@ -132,7 +132,8 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
       [isActiveTab ? 1 : TAB_VIEW_COLUMN_WIDTH / deviceWidth, multipleTabsOpen ? TAB_VIEW_COLUMN_WIDTH / deviceWidth : 0.7]
     );
 
-    const topBorderRadius = interpolate(progress, [0, 1], [isActiveTab ? 12 : 30, 30]);
+    // eslint-disable-next-line no-nested-ternary
+    const topBorderRadius = interpolate(progress, [0, 1], [isActiveTab ? (android ? 0 : 12) : 30, 30]);
     const bottomBorderRadius = interpolate(progress, [0, 1], [isActiveTab ? ScreenCornerRadius : 30, 30]);
     const height = interpolate(
       progress,

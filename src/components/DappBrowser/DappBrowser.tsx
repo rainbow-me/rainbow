@@ -57,13 +57,19 @@ const DappBrowserComponent = () => {
           borderRadius={ScreenCornerRadius}
           height="full"
           position="absolute"
-          style={[backgroundStyle, { backgroundColor: globalColors.grey100 }]}
+          style={[
+            backgroundStyle,
+            {
+              backgroundColor: globalColors.grey100,
+              paddingTop: android ? 30 : 0,
+            },
+          ]}
           width="full"
         />
         <Animated.ScrollView
           contentContainerStyle={{
             backgroundColor: globalColors.grey100,
-            height: Math.ceil(tabStates.length / 2) * TAB_VIEW_ROW_HEIGHT + safeAreaInsetValues.bottom + 104,
+            height: Math.ceil(tabStates.length / 2) * TAB_VIEW_ROW_HEIGHT + safeAreaInsetValues.bottom + (android ? 35 : 0) + 104,
             zIndex: 20000,
           }}
           ref={scrollViewRef}
