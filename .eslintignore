@@ -16,3 +16,4 @@ jest.config.js
 __generated__
 coverage
 src/browser
+src/__swaps__/README.md
