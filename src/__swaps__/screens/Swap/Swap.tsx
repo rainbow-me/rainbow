@@ -4,21 +4,16 @@ import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
 import { IS_ANDROID } from '@/env';
 import { Page } from '@/components/layout';
-import { SheetGestureBlocker } from '@/components/sheet/SheetGestureBlocker';
 import { Box } from '@/design-system';
 
+import { SheetGestureBlocker } from './components/SheetGestureBlocker';
 import { SwapBackground } from './components/SwapBackground';
 import { FlipButton } from './components/FlipButton';
 import { ExchangeRateBubble } from './components/ExchangeRateBubble';
 import { SwapInputAsset } from './components/controls/SwapInputAsset';
-import { useSwapContext } from './providers/swap-provider';
 import { SwapOutputAsset } from './components/controls/SwapOutputAsset';
-import { SwapActions } from './components/controls/SwapActions';
 import { SwapNavbar } from './components/SwapNavbar';
-import Animated from 'react-native-reanimated';
-import { PanGestureHandler } from 'react-native-gesture-handler';
-import { SwapSlider } from './components/SwapSlider';
-import { SwapNumberPad } from './components/SwapNumberPad';
+import { SwapAmountInputs } from './components/controls/SwapAmountInputs';
 
 /** README
  * This prototype is largely driven by Reanimated and Gesture Handler, which
@@ -58,35 +53,16 @@ import { SwapNumberPad } from './components/SwapNumberPad';
  */
 
 export function SwapScreen() {
-  const { topColor, bottomColor, isInputSearchFocused, isOutputSearchFocused, AnimatedSwapStyles } = useSwapContext();
-
   return (
-    <SheetGestureBlocker disabled={!(isInputSearchFocused || isOutputSearchFocused)}>
-      <Box as={Page} style={styles.rootViewBackground} testID="feed-screen" width="full">
-        <SwapBackground bottomColor={bottomColor} topColor={topColor}>
+    <SheetGestureBlocker>
+      <Box as={Page} style={styles.rootViewBackground} testID="swap-screen" width="full">
+        <SwapBackground>
           <Box alignItems="center" height="full" paddingTop={{ custom: 29 }} width="full">
             <SwapInputAsset />
             <FlipButton />
             <SwapOutputAsset />
             <ExchangeRateBubble />
-            <Box
-              alignItems="flex-end"
-              as={Animated.View}
-              bottom="0px"
-              justifyContent="center"
-              position="absolute"
-              style={[{ flex: 1, flexDirection: 'column', gap: 16 }, AnimatedSwapStyles.keyboardStyle]}
-              width="full"
-            >
-              {/* @ts-expect-error */}
-              <PanGestureHandler>
-                <Box alignItems="center" style={{ flex: 1 }} width="full">
-                  <SwapSlider />
-                  <SwapNumberPad />
-                </Box>
-              </PanGestureHandler>
-              <SwapActions />
-            </Box>
+            <SwapAmountInputs />
           </Box>
         </SwapBackground>
         <SwapNavbar />
