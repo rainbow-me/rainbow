@@ -581,7 +581,7 @@ export const getBaseFeeTrendParams = (trend: number) => {
     case -1:
       return {
         color: 'green',
-        borderColor: globalColors.greenA10,
+        borderColor: globalColors.green10,
         label: i18n.t('custom_gas.base_trend.falling'),
         symbol: 'arrow.down.forward',
         explainer: i18n.t('explainers.custom_gas.current_base_falling'),
@@ -590,7 +590,7 @@ export const getBaseFeeTrendParams = (trend: number) => {
     case 0:
       return {
         color: 'yellow',
-        borderColor: globalColors.yellowA10,
+        borderColor: globalColors.yellow10,
         label: i18n.t('custom_gas.base_trend.stable'),
         symbol: 'sun.max.fill',
         explainer: i18n.t('explainers.custom_gas.current_base_stable'),
@@ -599,7 +599,7 @@ export const getBaseFeeTrendParams = (trend: number) => {
     case 1:
       return {
         color: 'red',
-        borderColor: globalColors.redA10,
+        borderColor: globalColors.red10,
         label: i18n.t('custom_gas.base_trend.surging'),
         symbol: 'exclamationmark.triangle.fill',
         explainer: i18n.t('explainers.custom_gas.current_base_surging'),
@@ -608,7 +608,7 @@ export const getBaseFeeTrendParams = (trend: number) => {
     case 2:
       return {
         color: 'orange',
-        borderColor: globalColors.orangeA10,
+        borderColor: globalColors.orange10,
         label: i18n.t('custom_gas.base_trend.rising'),
         symbol: 'arrow.up.forward',
         explainer: i18n.t('explainers.custom_gas.current_base_rising'),
