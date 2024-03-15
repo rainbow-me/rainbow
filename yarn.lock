@@ -15804,10 +15804,10 @@ react-native-aes-crypto@rainbow-me/react-native-aes#65c49f7e70266615b2999eaa7db6
   version "2.0.2"
   resolved "https://codeload.github.com/rainbow-me/react-native-aes/tar.gz/65c49f7e70266615b2999eaa7db654d3fe4f2e3b"
 
-react-native-animateable-text@0.11.0:
-  version "0.11.0"
-  resolved "https://registry.yarnpkg.com/react-native-animateable-text/-/react-native-animateable-text-0.11.0.tgz#2a4203104dcfec1aca1f81efb520f8d4823f9e92"
-  integrity sha512-sb5id93W5FE4hW+cilREDGgzkNmcSE0wam52kPAwh7PkE++ppOYBYTqkmWhouszFcDIEdtAG1ZmnzFLqH8hbPA==
+react-native-animateable-text@0.11.1:
+  version "0.11.1"
+  resolved "https://registry.yarnpkg.com/react-native-animateable-text/-/react-native-animateable-text-0.11.1.tgz#5a7f8cf7302157dd49c8f93998f672a6f02169e8"
+  integrity sha512-IybfSDsk+Wiv6aWqt4kZZA+KxmDWHQLq2JIRfTqO1GrsQTIXBCgMAxcO0u4Kw486PxaekXKBRV0wpOIEA7P89g==
   dependencies:
     deprecated-react-native-prop-types "^2.3.0"
     nullthrows "^1.1.1"

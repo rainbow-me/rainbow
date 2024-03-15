@@ -95,7 +95,7 @@ import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoShe
 import { ConsoleSheet } from '@/screens/points/ConsoleSheet';
 import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileContext';
 import AppIconUnlockSheet from '@/screens/AppIconUnlockSheet';
-import { SwapScreen } from '@/__swaps__/screens/Swap/components/controls/SwapAmountInputs';
+import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { SwapProvider } from '@/__swaps__/screens/Swap/providers/swap-provider';
 
