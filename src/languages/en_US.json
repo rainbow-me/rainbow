@@ -112,6 +112,7 @@
         "fetching_backups": "Retrieving backups from %{cloudPlatformName}",
         "back_up_to_platform": "Back up to %{cloudPlatformName}",
         "restore_from_platform": "Restore from %{cloudPlatformName}",
+        "restoration_in_progress": "Restoration in progress",
         "how_would_you_like_to_backup": "How would you like to back up your wallet?",
         "manage_platform_backups": "View %{cloudPlatformName} Backups",
         "cloud_platform_backup_settings": "%{cloudPlatformName} Backup Settings",

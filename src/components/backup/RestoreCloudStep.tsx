@@ -146,18 +146,18 @@ export default function RestoreCloudStep() {
           let filename = selectedBackup.name;
           if (!userData && selectedBackup.name) {
             goBack();
-            logger.info('Updating backup state of wallets');
-            if (IS_ANDROID && filename) {
-              /**
-               * We need to normalize the filename on Android, because sometimes
-               * the filename is returned with the path used for Google Drive storage.
-               * That is with REMOTE_BACKUP_WALLET_DIR included.
-               */
-              filename = normalizeAndroidBackupFilename(filename);
-            }
-
-            logger.info('Done updating backup state');
           }
+
+          if (IS_ANDROID && filename) {
+            /**
+             * We need to normalize the filename on Android, because sometimes
+             * the filename is returned with the path used for Google Drive storage.
+             * That is with REMOTE_BACKUP_WALLET_DIR included.
+             */
+            filename = normalizeAndroidBackupFilename(filename);
+          }
+
+          logger.info('Done updating backup state');
           const walletIdsToUpdate = Object.keys(wallets);
           logger.log('updating backup state of wallets with ids', {
             walletIds: JSON.stringify(walletIdsToUpdate),
@@ -177,7 +177,7 @@ export default function RestoreCloudStep() {
           await Promise.all([p1, p2]);
           await initializeWallet(null, null, null, false, false, null, true, null);
 
-          const operation = dangerouslyGetState().index === 1 ? navigate : replace;
+          const operation = dangerouslyGetState()?.index === 1 ? navigate : replace;
           operation(Routes.SWIPE_LAYOUT, {
             screen: Routes.WALLET_SCREEN,
           });
@@ -253,9 +253,13 @@ export default function RestoreCloudStep() {
               width={deviceWidth - 48}
               disabled={!validPassword || loading}
               type={RainbowButtonTypes.backup}
-              label={`􀎽 ${lang.t(lang.l.back_up.cloud.restore_from_platform, {
-                cloudPlatformName: cloudPlatform,
-              })}`}
+              label={
+                loading
+                  ? `${lang.t(lang.l.back_up.cloud.restoration_in_progress)}`
+                  : `􀎽 ${lang.t(lang.l.back_up.cloud.restore_from_platform, {
+                      cloudPlatformName: cloudPlatform,
+                    })}`
+              }
               onPress={onSubmit}
             />
           )}
