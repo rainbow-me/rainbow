@@ -58,4 +58,3 @@ export const FadeMask = ({
   );
 };
 
-export default FadeMask;

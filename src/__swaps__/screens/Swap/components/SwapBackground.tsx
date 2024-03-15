@@ -47,4 +47,3 @@ export const SwapBackground = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export default SwapBackground;
