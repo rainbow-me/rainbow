@@ -360,29 +360,24 @@ const sanitizeFilename = (filename: string) => {
  */
 export async function restoreCloudBackup({
   password,
-  userData,
-  backupSelected,
+  nameOfSelectedBackupFile,
 }: {
   password: BackupPassword;
-  userData: BackupUserData | undefined;
-  backupSelected: string | null;
+  nameOfSelectedBackupFile: string;
 }): Promise<RestoreCloudBackupResultStatesType> {
-  // We support two flows
-  // Restoring from the welcome screen, which uses the userData to rebuild the wallet
-  // Restoring a specific backup from settings => Backup, which uses only the keys stored.
-
   try {
-    const filename = backupSelected || (userData && findLatestBackUp(userData?.wallets));
+    // 1 - sanitize filename to remove extra things we don't care about
+    const filename = sanitizeFilename(nameOfSelectedBackupFile);
     if (!filename) {
       return RestoreCloudBackupResultStates.failedWhenRestoring;
     }
-    // 2- download that backup
-    // @ts-ignore
-    const data = await getDataFromCloud(password, sanitizeFilename(filename));
+    // 2 - retrieve that backup data
+    const data = await getDataFromCloud(password, filename);
     if (!data) {
       return RestoreCloudBackupResultStates.incorrectPassword;
     }
 
+    // ANDROID ONLY - pin auth if biometrics are disabled
     let userPIN: string | undefined;
     const hasBiometricsEnabled = await kc.getSupportedBiometryType();
     if (IS_ANDROID && !hasBiometricsEnabled) {
@@ -393,41 +388,7 @@ export async function restoreCloudBackup({
       }
     }
 
-    const dataToRestore = {
-      ...data.secrets,
-    };
-
-    let backupToRestoreTiemstamp;
-    if (userData?.wallets) {
-      const firstWalletBackupFile = Object.values(userData.wallets)[0]?.backupFile;
-      if (typeof firstWalletBackupFile === 'string') {
-        backupToRestoreTiemstamp = parseTimestampFromFilename(firstWalletBackupFile);
-      }
-    }
-
-    let restoredSuccessfully = false;
-    if (backupToRestoreTiemstamp === data.createdAt) {
-      // Restore only wallets that were backed up in cloud
-      // or wallets that are read-only
-      const walletsToRestore: AllRainbowWallets = {};
-      Object.values(userData?.wallets ?? {}).forEach(wallet => {
-        if (
-          (wallet.backedUp && wallet.backupDate && wallet.backupFile && wallet.backupType === WalletBackupTypes.cloud) ||
-          wallet.type === WalletTypes.readOnly
-        ) {
-          walletsToRestore[wallet.id] = wallet;
-        }
-      });
-
-      // All wallets
-      dataToRestore[allWalletsKey] = {
-        version: allWalletsVersion,
-        wallets: walletsToRestore,
-      };
-      restoredSuccessfully = await restoreCurrentBackupIntoKeychain(dataToRestore, userPIN);
-    } else {
-      restoredSuccessfully = await restoreSpecificBackupIntoKeychain(dataToRestore, userPIN);
-    }
+    const restoredSuccessfully = await restoreSpecificBackupIntoKeychain({ ...data.secrets }, userPIN);
 
     return restoredSuccessfully ? RestoreCloudBackupResultStates.success : RestoreCloudBackupResultStates.failedWhenRestoring;
   } catch (error) {

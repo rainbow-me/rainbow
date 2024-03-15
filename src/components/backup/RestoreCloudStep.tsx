@@ -128,8 +128,7 @@ export default function RestoreCloudStep() {
 
       const status = await restoreCloudBackup({
         password,
-        userData,
-        backupSelected: selectedBackup.name,
+        nameOfSelectedBackupFile: selectedBackup.name,
       });
 
       if (status === RestoreCloudBackupResultStates.success) {
@@ -144,10 +143,10 @@ export default function RestoreCloudStep() {
 
         InteractionManager.runAfterInteractions(async () => {
           const wallets = await dispatch(walletsLoadState());
+          let filename = selectedBackup.name;
           if (!userData && selectedBackup.name) {
             goBack();
             logger.info('Updating backup state of wallets');
-            let filename = selectedBackup.name;
             if (IS_ANDROID && filename) {
               /**
                * We need to normalize the filename on Android, because sometimes
@@ -156,16 +155,18 @@ export default function RestoreCloudStep() {
                */
               filename = normalizeAndroidBackupFilename(filename);
             }
-            const walletIdsToUpdate = Object.keys(wallets);
-            logger.log('updating backup state of wallets with ids', {
-              walletIds: JSON.stringify(walletIdsToUpdate),
-            });
-            logger.log('backupSelected.name', {
-              fileName: selectedBackup.name,
-            });
-            await dispatch(setAllWalletsWithIdsAsBackedUp(walletIdsToUpdate, walletBackupTypes.cloud, filename, false));
+
             logger.info('Done updating backup state');
           }
+          const walletIdsToUpdate = Object.keys(wallets);
+          logger.log('updating backup state of wallets with ids', {
+            walletIds: JSON.stringify(walletIdsToUpdate),
+          });
+          logger.log('backupSelected.name', {
+            fileName: selectedBackup.name,
+          });
+          await dispatch(setAllWalletsWithIdsAsBackedUp(walletIdsToUpdate, walletBackupTypes.cloud, filename));
+
           const walletKeys = Object.keys(wallets || {});
           const firstWallet =
             // @ts-expect-error TypeScript doesn't play nicely with Redux types here
