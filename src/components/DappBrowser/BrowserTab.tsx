@@ -263,14 +263,11 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
   const [backgroundColor, setBackgroundColor] = useState<string>();
 
   const createMessengers = useCallback((origin: string, tabId: string) => {
-    console.log('creating messengers');
     if (!webViewRef.current) {
-      console.log('no webview ref');
       return;
     }
     const msngr = appMessenger(webViewRef.current, tabId, origin);
     messengers.current.push(msngr);
-    console.log('messengers created', messengers);
   }, []);
 
   const handleMessage = useCallback(
@@ -287,7 +284,6 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
           setBackgroundColor(parsedData.payload);
         } else {
           const { origin } = new URL(event.nativeEvent.url);
-          console.log('messengers', messengers);
           messengers.current.forEach((m: any) => {
             const messengerUrlOrigin = new URL(m.url).origin;
             if (messengerUrlOrigin === origin) {
