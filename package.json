@@ -116,7 +116,7 @@
     "@react-navigation/material-top-tabs": "6.6.2",
     "@react-navigation/native": "6.1.6",
     "@react-navigation/stack": "6.3.16",
-    "@reservoir0x/reservoir-sdk": "1.8.4",
+    "@reservoir0x/reservoir-sdk": "2.0.8",
     "@rudderstack/rudder-sdk-react-native": "1.12.0",
     "@sentry/react-native": "3.4.1",
     "@shopify/flash-list": "1.5.0",

@@ -3695,12 +3695,12 @@
     color "^4.2.3"
     warn-once "^0.1.0"
 
-"@reservoir0x/reservoir-sdk@1.8.4":
-  version "1.8.4"
-  resolved "https://registry.yarnpkg.com/@reservoir0x/reservoir-sdk/-/reservoir-sdk-1.8.4.tgz#f5b0d4ea5924ffea7fd666fcb2ffdd9ac289c919"
-  integrity sha512-7gznkMz8HfpmS04fIs4Q4XgpvAVHTCdIpMxeF+jY4ewazUJRJqpli0VgUHCeEwSG7u33eCcA1xZ5PyZxYhVSog==
+"@reservoir0x/reservoir-sdk@2.0.8":
+  version "2.0.8"
+  resolved "https://registry.yarnpkg.com/@reservoir0x/reservoir-sdk/-/reservoir-sdk-2.0.8.tgz#82cf3a489dfec092a8ad9c42342b340ddb70238d"
+  integrity sha512-k5cfYb44KDF2IlBLSehRRrPzDHmQitd6Apx3+BHyT8K04M2pfQnK1gZo9YcevZHID0Qr96ddfm3nyCUdXWalGg==
   dependencies:
-    axios "^0.27.2"
+    axios "^1.6.7"
 
 "@rnx-kit/align-deps@2.2.4":
   version "2.2.4"
@@ -6227,7 +6227,7 @@ aws4@^1.8.0:
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.12.0.tgz#ce1c9d143389679e253b314241ea9aa5cec980d3"
   integrity sha512-NmWvPnx0F1SfrQbYwOi7OeaNGokp9XhzNioJ/CSBs8Qa4vxug81mhJEAVZwxXuBmYB5KDRfMq/F3RR0BIU7sWg==
 
-axios@1.6.1, axios@^0.26.1, axios@^0.27.2:
+axios@1.6.1, axios@^0.26.1, axios@^1.6.7:
   version "1.6.1"
   resolved "https://registry.yarnpkg.com/axios/-/axios-1.6.1.tgz#76550d644bf0a2d469a01f9244db6753208397d7"
   integrity sha512-vfBmhDpKafglh0EldBEbVuoe7DyAavGSLWhuSm5ZSEKQnHhBf0xAAwybbNH1IkrJNGnS/VG4I5yxig1pCEXE4g==
