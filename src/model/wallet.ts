@@ -948,7 +948,10 @@ export const saveHardwareKey = async (
 export const getPrivateKey = async (address: EthereumAddress): Promise<null | PrivateKeyData | -1> => {
   try {
     const key = `${address}_${privateKeyKey}`;
-    const options = { authenticationPrompt };
+
+    const androidEncryptionPin = IS_ANDROID && !(await kc.getSupportedBiometryType()) ? await authenticateWithPIN() : undefined;
+
+    const options = { authenticationPrompt, androidEncryptionPin };
 
     const pkey = (await keychain.loadObject(key, options)) as PrivateKeyData | -2;
 
@@ -1255,7 +1258,8 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (id: RainbowWallet['id']):
       }
     } else {
       logger.debug('[loadAndMigrate] - Getting seed directly', {}, DebugContext.wallet);
-      const seedData = await getSeedPhrase(id);
+      const androidEncryptionPin = IS_ANDROID && !(await kc.getSupportedBiometryType()) ? await authenticateWithPIN() : undefined;
+      const seedData = await getSeedPhrase(id, { androidEncryptionPin });
       seedPhrase = seedData?.seedphrase ?? null;
 
       if (seedPhrase) {
