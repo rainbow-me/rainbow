@@ -21,28 +21,51 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
+
+      - name: Debug - Print environment variables
+        run: |
+          echo "Printing some environment variables for debugging..."
+          echo "HOME=$HOME"
+          echo "GITHUB_WORKFLOW=$GITHUB_WORKFLOW"
+          echo "CI=$CI"
+      
+      # Debug before setting up environment variables and scripts
+      - name: Debug - Before setting up ENV vars & scripts
+        run: |
+          echo "Before setting up environment..."
+          ls -la
+          printenv | sort
+
       - name: Set up github keys
         run:  echo 'hi 00' && git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null" &&  echo 'hi 0'
 
-      - name: Set up ENV vars & scripts
+     - name: Set up ENV vars & scripts
         run: |
           # read local env vars
-          echo 'hi'
           source ~/.bashrc
-           echo 'hi 1'
           # fetch env vars
           git clone git@github.com:rainbow-me/rainbow-env.git
-           echo '2'
           # unpack dotenv
           mv rainbow-env/dotenv .env && rm -rf rainbow-env 
           # run CI scripts
-           echo 'hi 3'
           eval $CI_SCRIPTS
-           echo 'hi 4'
           # tweak dotenv for e2e 
           sed -i''-e "s/\IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
-           echo 'hi 5'
-      - name: Install deps via Yarn
+
+      # Debug after setting up environment variables and scripts
+      - name: Debug - After setting up ENV vars & scripts
+        run: |
+          echo "After setting up environment..."
+          ls -la
+          printenv | sort
+          echo "Checking if .env file exists and its contents..."
+          if [ -f .env ]; then
+            cat .env
+          else
+            echo ".env file does not exist."
+          fi
+
+     - name: Install deps via Yarn
         run: yarn setup-ci
 
       - name: Check for frozen lockfile
@@ -54,9 +77,21 @@ jobs:
       - name: Lint
         run: yarn lint:ci
 
+      # Debug after installing dependencies
+      - name: Debug - After installing dependencies
+        run: |
+          echo "Dependencies installed. Listing node_modules..."
+          ls -la node_modules/
+
       - name: Install Pods
         run: cd ios && bundle install && pod install --repo-update && cd ..
-
+      
+      # Debug after installing Pods
+      - name: Debug - After installing Pods
+        run: |
+          echo "Pods installed. Listing ios/Pods directory..."
+          ls -la ios/Pods/
+        
       - name: Rebuild detox cache
         run: ./node_modules/.bin/detox clean-framework-cache && ./node_modules/.bin/detox build-framework-cache
 
