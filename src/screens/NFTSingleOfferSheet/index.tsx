@@ -36,7 +36,6 @@ import { loadPrivateKey } from '@/model/wallet';
 import { Execute, getClient } from '@reservoir0x/reservoir-sdk';
 import { privateKeyToAccount } from 'viem/accounts';
 import { createWalletClient, http } from 'viem';
-import { useDispatch } from 'react-redux';
 
 import { RainbowError, logger } from '@/logger';
 import { estimateNFTOfferGas } from '@/handlers/nftOffers';
@@ -88,7 +87,6 @@ export function NFTSingleOfferSheet() {
   const { isReadOnlyWallet } = useWallets();
   const theme = useTheme();
   const { updateTxFee, startPollingGasFees, stopPollingGasFees, isSufficientGas, isValidGas } = useGas();
-  const dispatch = useDispatch();
   const {
     data: { nftsMap },
   } = useLegacyNFTs({ address: accountAddress });
@@ -318,7 +316,7 @@ export function NFTSingleOfferSheet() {
             return;
           }
           step.items?.forEach(item => {
-            if (item.txHashes?.[0] && !txsRef.current.includes(item.txHashes?.[0]) && item.status === 'incomplete') {
+            if (item.txHashes?.[0]?.txHash && !txsRef.current.includes(item.txHashes[0].txHash) && item.status === 'incomplete') {
               let tx: NewTransaction | null = null;
               const asset = {
                 ...nft,
@@ -331,7 +329,7 @@ export function NFTSingleOfferSheet() {
                   status: 'pending',
                   to: item.data?.to,
                   from: item.data?.from,
-                  hash: item.txHashes[0],
+                  hash: item.txHashes[0].txHash,
                   network: offer.network as Network,
                   nonce: item?.txHashes?.length > 1 ? nonce + 1 : nonce,
                   asset: {
@@ -362,7 +360,7 @@ export function NFTSingleOfferSheet() {
                   status: 'pending',
                   to: item.data?.to,
                   from: item.data?.from,
-                  hash: item.txHashes[0],
+                  hash: item.txHashes[0].txHash,
                   network: offer.network as Network,
                   nonce,
                   asset,

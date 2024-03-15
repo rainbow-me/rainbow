@@ -3695,12 +3695,12 @@
     color "^4.2.3"
     warn-once "^0.1.0"
 
-"@reservoir0x/reservoir-sdk@1.8.4":
-  version "1.8.4"
-  resolved "https://registry.yarnpkg.com/@reservoir0x/reservoir-sdk/-/reservoir-sdk-1.8.4.tgz#f5b0d4ea5924ffea7fd666fcb2ffdd9ac289c919"
-  integrity sha512-7gznkMz8HfpmS04fIs4Q4XgpvAVHTCdIpMxeF+jY4ewazUJRJqpli0VgUHCeEwSG7u33eCcA1xZ5PyZxYhVSog==
+"@reservoir0x/reservoir-sdk@2.0.8":
+  version "2.0.8"
+  resolved "https://registry.yarnpkg.com/@reservoir0x/reservoir-sdk/-/reservoir-sdk-2.0.8.tgz#82cf3a489dfec092a8ad9c42342b340ddb70238d"
+  integrity sha512-k5cfYb44KDF2IlBLSehRRrPzDHmQitd6Apx3+BHyT8K04M2pfQnK1gZo9YcevZHID0Qr96ddfm3nyCUdXWalGg==
   dependencies:
-    axios "^0.27.2"
+    axios "^1.6.7"
 
 "@rnx-kit/align-deps@2.2.4":
   version "2.2.4"
@@ -6227,7 +6227,7 @@ aws4@^1.8.0:
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.12.0.tgz#ce1c9d143389679e253b314241ea9aa5cec980d3"
   integrity sha512-NmWvPnx0F1SfrQbYwOi7OeaNGokp9XhzNioJ/CSBs8Qa4vxug81mhJEAVZwxXuBmYB5KDRfMq/F3RR0BIU7sWg==
 
-axios@1.6.1, axios@^0.26.1, axios@^0.27.2:
+axios@1.6.1, axios@^0.26.1, axios@^1.6.7:
   version "1.6.1"
   resolved "https://registry.yarnpkg.com/axios/-/axios-1.6.1.tgz#76550d644bf0a2d469a01f9244db6753208397d7"
   integrity sha512-vfBmhDpKafglh0EldBEbVuoe7DyAavGSLWhuSm5ZSEKQnHhBf0xAAwybbNH1IkrJNGnS/VG4I5yxig1pCEXE4g==
@@ -10193,10 +10193,10 @@ flow-parser@^0.206.0:
   resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.206.0.tgz#f4f794f8026535278393308e01ea72f31000bfef"
   integrity sha512-HVzoK3r6Vsg+lKvlIZzaWNBVai+FXTX1wdYhz/wVlH13tb/gOdLXmlTqy6odmTBhT5UoWUbq0k8263Qhr9d88w==
 
-follow-redirects@1.15.4, follow-redirects@^1.12.1, follow-redirects@^1.15.0:
-  version "1.15.4"
-  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.4.tgz#cdc7d308bf6493126b17ea2191ea0ccf3e535adf"
-  integrity sha512-Cr4D/5wlrb0z9dgERpUL3LrmPKVDsETIJhaCMeDfuFYcqa5bldGV6wBsAN6X/vxlXQtFBMrXdXxdL8CbDTGniw==
+follow-redirects@1.15.6, follow-redirects@^1.12.1, follow-redirects@^1.15.0:
+  version "1.15.6"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.6.tgz#7f815c0cda4249c74ff09e95ef97c23b5fd0399b"
+  integrity sha512-wWN62YITEaOpSK584EZXJafH1AGpO8RVgElfkuXbTOrPX4fIfOyEpW/CsiNd8JdYrAoOvafRTOEnvsO++qCqFA==
 
 for-each@^0.3.3:
   version "0.3.3"
