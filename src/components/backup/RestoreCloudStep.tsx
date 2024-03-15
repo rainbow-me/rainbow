@@ -11,7 +11,6 @@ import { PasswordField } from '../fields';
 import { Text } from '../text';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { cloudBackupPasswordMinLength, isCloudBackupPasswordValid, normalizeAndroidBackupFilename } from '@/handlers/cloudBackup';
-import { removeWalletData } from '@/handlers/localstorage/removeWallet';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { useDimensions, useInitializeWallet, useUserAccounts } from '@/hooks';
 import { useNavigation } from '@/navigation';
@@ -30,7 +29,6 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { RestoreSheetParams } from '@/screens/RestoreSheet';
 import { Source } from 'react-native-fast-image';
 import { useTheme } from '@/theme';
-import useCloudBackups from '@/hooks/useCloudBackups';
 
 const Title = styled(Text).attrs({
   size: 'big',
@@ -77,12 +75,8 @@ type RestoreCloudStepParams = {
 export default function RestoreCloudStep() {
   const { params } = useRoute<RouteProp<RestoreCloudStepParams & RestoreSheetParams, 'RestoreSheet'>>();
 
-  const { userData } = useCloudBackups();
-
   const { selectedBackup } = params;
-
   const { isDarkMode } = useTheme();
-
   const [loading, setLoading] = useState(false);
 
   const dispatch = useDispatch();
@@ -92,7 +86,6 @@ export default function RestoreCloudStep() {
   const [incorrectPassword, setIncorrectPassword] = useState(false);
   const [password, setPassword] = useState('');
   const passwordRef = useRef<TextInput | null>(null);
-  const { userAccounts } = useUserAccounts();
   const initializeWallet = useInitializeWallet();
 
   useEffect(() => {
@@ -135,18 +128,10 @@ export default function RestoreCloudStep() {
         // Store it in the keychain in case it was missing
         await saveBackupPassword(password);
 
-        // Get rid of the old wallets
-        for (let i = 0; i < userAccounts.length; i++) {
-          const account = userAccounts[i];
-          await removeWalletData(account.address);
-        }
-
         InteractionManager.runAfterInteractions(async () => {
           const wallets = await dispatch(walletsLoadState());
           let filename = selectedBackup.name;
-          if (!userData && selectedBackup.name) {
-            goBack();
-          }
+          goBack();
 
           if (IS_ANDROID && filename) {
             /**
@@ -177,10 +162,16 @@ export default function RestoreCloudStep() {
           await Promise.all([p1, p2]);
           await initializeWallet(null, null, null, false, false, null, true, null);
 
-          const operation = dangerouslyGetState()?.index === 1 ? navigate : replace;
-          operation(Routes.SWIPE_LAYOUT, {
-            screen: Routes.WALLET_SCREEN,
-          });
+          const isRestoringFromWelcomeScreen = dangerouslyGetState()?.index === 1;
+          if (isRestoringFromWelcomeScreen) {
+            navigate(Routes.SWIPE_LAYOUT, {
+              screen: Routes.WALLET_SCREEN,
+            });
+          } else {
+            replace(Routes.SWIPE_LAYOUT, {
+              screen: Routes.WALLET_SCREEN,
+            });
+          }
           setLoading(false);
         });
       } else {
@@ -201,7 +192,7 @@ export default function RestoreCloudStep() {
     }
 
     setLoading(false);
-  }, [selectedBackup, dispatch, initializeWallet, goBack, replace, password, userAccounts, userData]);
+  }, [selectedBackup.name, password, dispatch, goBack, initializeWallet, dangerouslyGetState, navigate, replace]);
 
   const onPasswordSubmit = useCallback(() => {
     validPassword && onSubmit();
