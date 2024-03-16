@@ -46268,7 +46268,7 @@
           available: 'undefined' != typeof window,
           name: 'webviewMessenger',
           send: async (t, e, { id: r } = {}) => (
-            window.ReactNativeWebView.postMessage(JSON.stringify({ topic: `> ${t}`, payload: e, id: r }), '*'),
+            window.ReactNativeWebView.postMessage(JSON.stringify({ topic: `> ${t}`, payload: e, id: r })),
             new Promise((e, i) => {
               const n = o => {
                 if (

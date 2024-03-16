@@ -162,7 +162,7 @@ export const messenger = createMessenger({
     // Since the window messenger cannot reply asynchronously, we must include the direction in our message ('> {topic}')...
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    window.ReactNativeWebView.postMessage(JSON.stringify({ topic: `> ${topic}`, payload, id }), '*');
+    window.ReactNativeWebView.postMessage(JSON.stringify({ topic: `> ${topic}`, payload, id }));
     // ... and also set up an event listener to listen for the response ('< {topic}').
     return new Promise((resolve, reject) => {
       const listener = (event: any) => {
