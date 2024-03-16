@@ -8399,7 +8399,7 @@ deprecated-react-native-prop-types@4.1.0:
     invariant "*"
     prop-types "*"
 
-deprecated-react-native-prop-types@^2.2.0:
+deprecated-react-native-prop-types@^2.2.0, deprecated-react-native-prop-types@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/deprecated-react-native-prop-types/-/deprecated-react-native-prop-types-2.3.0.tgz#c10c6ee75ff2b6de94bb127f142b814e6e08d9ab"
   integrity sha512-pWD0voFtNYxrVqvBMYf5gq3NA2GCpfodS1yNynTPc93AYA/KEMGeWDqqeUB6R2Z9ZofVhks2aeJXiuQqKNpesA==
@@ -15797,6 +15797,14 @@ react-native-aes-crypto@rainbow-me/react-native-aes#65c49f7e70266615b2999eaa7db6
   version "2.0.2"
   resolved "https://codeload.github.com/rainbow-me/react-native-aes/tar.gz/65c49f7e70266615b2999eaa7db654d3fe4f2e3b"
 
+react-native-animateable-text@0.11.0:
+  version "0.11.0"
+  resolved "https://registry.yarnpkg.com/react-native-animateable-text/-/react-native-animateable-text-0.11.0.tgz#2a4203104dcfec1aca1f81efb520f8d4823f9e92"
+  integrity sha512-sb5id93W5FE4hW+cilREDGgzkNmcSE0wam52kPAwh7PkE++ppOYBYTqkmWhouszFcDIEdtAG1ZmnzFLqH8hbPA==
+  dependencies:
+    deprecated-react-native-prop-types "^2.3.0"
+    nullthrows "^1.1.1"
+
 react-native-ble-plx@2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/react-native-ble-plx/-/react-native-ble-plx-2.0.3.tgz#b0a746f33389dbf7fd7b158513330d487d5d0fbb"
@@ -18919,10 +18927,10 @@ url@^0.11.0:
     punycode "^1.4.1"
     qs "^6.11.2"
 
-use-debounce@7.0.0:
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/use-debounce/-/use-debounce-7.0.0.tgz#00a67d23d4fe09905e11145a99278da06c01c880"
-  integrity sha512-4fvxEEs7ztdNMh+c497HAgysdq2+Ascem6EaDANGlCIap1JzqfL03Xw8xkYc2lShfXm4uO6PA6V5zcXN7gJdFA==
+use-debounce@10.0.0:
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/use-debounce/-/use-debounce-10.0.0.tgz#5091b18d6c16292605f588bae3c0d2cfae756ff2"
+  integrity sha512-XRjvlvCB46bah9IBXVnq/ACP2lxqXyZj0D9hj4K5OzNroMDpTEBg8Anuh1/UfRTRs7pLhQ+RiNxxwZu9+MVl1A==
 
 use-deep-compare@1.1.0:
   version "1.1.0"
