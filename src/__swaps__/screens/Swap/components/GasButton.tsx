@@ -39,4 +39,3 @@ export const GasButton = ({ accentColor }: { accentColor?: string }) => {
     </ButtonPressAnimation>
   );
 };
-

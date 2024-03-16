@@ -46,4 +46,3 @@ export const SwapBackground = ({ children }: { children: ReactNode }) => {
     </Box>
   );
 };
-
