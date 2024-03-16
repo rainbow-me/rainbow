@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
-import { navbarHeight } from '@/components/navbar/Navbar';
-import { Box, Stack, Text } from '@/design-system';
-import { useAccountAccentColor, useDimensions, useWallets } from '@/hooks';
+import { Box, Row, Rows, Stack, Text } from '@/design-system';
+import { useAccountAccentColor, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
@@ -11,15 +10,11 @@ import { watchingAlert } from '@/utils';
 import { POINTS_ROUTES } from '../PointsScreen';
 import { analyticsV2 } from '@/analytics';
 import { useFocusEffect } from '@react-navigation/native';
-import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 
 export default function ClaimContent() {
   const { accentColor } = useAccountAccentColor();
   const { navigate } = useNavigation();
-  const { height: deviceHeight } = useDimensions();
   const { isReadOnlyWallet } = useWallets();
-
-  const contentBottom = (deviceHeight - navbarHeight - TAB_BAR_HEIGHT - 88) / 2;
 
   useFocusEffect(
     useCallback(() => {
@@ -28,41 +23,38 @@ export default function ClaimContent() {
   );
 
   return (
-    <Box
-      background="surfacePrimary"
-      height="full"
-      alignItems="center"
-      justifyContent="flex-end"
-      paddingHorizontal="60px"
-      paddingBottom={{ custom: 132 }}
-    >
-      <Box position="absolute" bottom={{ custom: contentBottom }}>
-        <Stack space="32px" alignHorizontal="center">
-          <Stack space="20px" alignHorizontal="center">
-            <Stack space="28px" alignHorizontal="center">
-              <PointsIconAnimation />
-              <Text size="22pt" weight="heavy" align="center" color="label">
-                {i18n.t(i18n.l.points.claim.title)}
+    <Box alignItems="center" background="surfacePrimary" paddingBottom="52px" paddingHorizontal="60px" style={{ flex: 1 }}>
+      <Rows>
+        <Box alignItems="center" justifyContent="center" style={{ flex: 1 }}>
+          <Stack space="32px" alignHorizontal="center">
+            <Stack space="20px" alignHorizontal="center">
+              <Stack space="28px" alignHorizontal="center">
+                <PointsIconAnimation />
+                <Text size="22pt" weight="heavy" align="center" color="label">
+                  {i18n.t(i18n.l.points.claim.title)}
+                </Text>
+              </Stack>
+              <Text size="15pt" weight="semibold" align="center" color="labelTertiary">
+                {i18n.t(i18n.l.points.claim.subtitle)}
               </Text>
             </Stack>
-            <Text size="15pt" weight="semibold" align="center" color="labelTertiary">
-              {i18n.t(i18n.l.points.claim.subtitle)}
-            </Text>
+            <ActionButton
+              color={accentColor}
+              label={i18n.t(i18n.l.points.claim.get_started)}
+              onPress={() => (isReadOnlyWallet ? watchingAlert() : navigate(Routes.CONSOLE_SHEET))}
+            />
           </Stack>
+        </Box>
+        <Row height="content">
           <ActionButton
             color={accentColor}
-            label={i18n.t(i18n.l.points.claim.get_started)}
-            onPress={() => (isReadOnlyWallet ? watchingAlert() : navigate(Routes.CONSOLE_SHEET))}
+            label={i18n.t(i18n.l.points.claim.use_referral_code)}
+            onPress={() => (isReadOnlyWallet ? watchingAlert() : navigate(POINTS_ROUTES.REFERRAL_CONTENT))}
+            outline
+            small
           />
-        </Stack>
-      </Box>
-      <ActionButton
-        color={accentColor}
-        label={i18n.t(i18n.l.points.claim.use_referral_code)}
-        onPress={() => (isReadOnlyWallet ? watchingAlert() : navigate(POINTS_ROUTES.REFERRAL_CONTENT))}
-        outline
-        small
-      />
+        </Row>
+      </Rows>
     </Box>
   );
 }
