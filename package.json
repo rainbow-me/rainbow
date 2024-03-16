@@ -59,7 +59,7 @@
     "check-translations": "./scripts/check-translations.sh ./src './src/languages/*.json' lang.t",
     "codegen-translations": "node ./scripts/codegen-translations.js",
     "prepare": "husky install",
-    "bundle-inpage": "yarn webpack --config src/browser/webpack.config.js"
+    "bundle-inpage": "yarn webpack --config src/browser/webpack.config.js && cp InjectedJSBundle.js android/app/src/main/res/raw/injected_js_bundle.js"
   },
   "dependencies": {
     "@apollo/client": "3.2.4",
@@ -247,7 +247,7 @@
     "react-native-quick-md5": "3.0.3",
     "react-native-radial-gradient": "rainbow-me/react-native-radial-gradient#b99ab59d27dba70364ef516bd5193c37657ba95c",
     "react-native-randombytes": "3.5.3",
-    "react-native-reanimated": "3.7.1",
+    "react-native-reanimated": "3.8.0",
     "react-native-redash": "16.3.0",
     "react-native-restart": "0.0.22",
     "react-native-safe-area-context": "4.5.3",
