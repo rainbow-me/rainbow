@@ -268,7 +268,9 @@ export default function ReferralContent() {
                               color: label,
                             }),
                       }}
+                      autoCorrect={false}
                       autoFocus={false}
+                      spellCheck={false}
                       maxLength={7}
                       selectionColor={statusColor}
                       textAlign="left"
