@@ -1,17 +1,16 @@
 import { ButtonPressAnimation } from '@/components/animations';
-import { navbarHeight } from '@/components/navbar/Navbar';
-import { Bleed, Box, Inline, Stack, Text, useForegroundColor, useTextStyle } from '@/design-system';
+import { Bleed, Box, Column, Columns, Inline, Row, Rows, Stack, Text, useForegroundColor, useTextStyle } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { metadataPOSTClient } from '@/graphql';
 import { useAccountAccentColor, useDimensions, useKeyboardHeight, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import { getHeaderHeight } from '@/navigation/SwipeNavigator';
+import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { haptics, watchingAlert } from '@/utils';
 import { delay } from '@/utils/delay';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Keyboard, TextInput } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as i18n from '@/languages';
 import Routes from '@/navigation/routesNames';
@@ -21,7 +20,13 @@ import { ActionButton } from '@/screens/points/components/ActionButton';
 import { PointsIconAnimation } from '../components/PointsIconAnimation';
 import { usePointsReferralCode } from '@/resources/points';
 import { analyticsV2 } from '@/analytics';
-import Clipboard from '@react-native-community/clipboard';
+import Clipboard from '@react-native-clipboard/clipboard';
+
+const keyboardSpringConfig = {
+  damping: 500,
+  mass: 3,
+  stiffness: 1000,
+};
 
 const parseReferralCodeFromLink = (code: string) => {
   if (code.startsWith('https://rainbow.me/points?ref=') || code.startsWith('https://www.rainbow.me/points?ref=')) {
@@ -44,7 +49,7 @@ export default function ReferralContent() {
   const label = useForegroundColor('label');
   const labelQuaternary = useForegroundColor('labelQuaternary');
 
-  const { height: deviceHeight } = useDimensions();
+  const { width: deviceWidth } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
   const { data: externalReferralCode } = usePointsReferralCode();
 
@@ -91,14 +96,14 @@ export default function ReferralContent() {
 
   const hasKeyboard = IS_IOS ? isKeyboardOpening : isKeyboardVisible;
 
-  const contentBottom =
-    (hasKeyboard ? keyboardHeight : getHeaderHeight()) + (deviceHeight - (hasKeyboard ? keyboardHeight : 0) - navbarHeight - 270) / 2;
+  const contentBottom = hasKeyboard ? keyboardHeight - TAB_BAR_HEIGHT + (IS_IOS ? 0 : 16) : 0;
 
   const contentBottomSharedValue = useSharedValue(contentBottom);
 
   useEffect(() => {
-    contentBottomSharedValue.value = withTiming(contentBottom);
-  }, [contentBottom, contentBottomSharedValue]);
+    contentBottomSharedValue.value = withSpring(contentBottom, keyboardSpringConfig);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [contentBottom]);
 
   useFocusEffect(
     useCallback(() => {
@@ -142,7 +147,7 @@ export default function ReferralContent() {
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      bottom: contentBottomSharedValue.value,
+      paddingBottom: contentBottomSharedValue.value,
     };
   });
 
@@ -199,107 +204,132 @@ export default function ReferralContent() {
   );
 
   return (
-    <Box background="surfacePrimary" height="full" justifyContent="flex-end" alignItems="center" paddingBottom={{ custom: 134 }}>
-      <Box as={Animated.View} position="absolute" paddingHorizontal="60px" style={animatedStyle}>
-        <Stack space={{ custom: 16.5 }}>
-          <Stack space="32px" alignHorizontal="center">
-            <Stack space="20px" alignHorizontal="center">
-              <Stack space="28px" alignHorizontal="center">
-                <PointsIconAnimation />
-                <Text size="22pt" weight="heavy" align="center" color="label">
-                  {i18n.t(i18n.l.points.referral.title)}
-                </Text>
+    <Box
+      alignItems="center"
+      background="surfacePrimary"
+      justifyContent="center"
+      paddingBottom="20px"
+      paddingHorizontal="20px"
+      style={{ flex: 1 }}
+    >
+      <Box alignItems="center" as={Animated.View} justifyContent="center" style={animatedStyle} width="full">
+        <Rows>
+          <Box
+            alignItems="center"
+            justifyContent="center"
+            paddingHorizontal={{ custom: 40 }}
+            style={{ flex: 1 }}
+            width={{ custom: deviceWidth }}
+          >
+            <Stack space="16px" alignHorizontal="center">
+              <Stack space="32px" alignHorizontal="center">
+                <Stack space="20px" alignHorizontal="center">
+                  <Stack space="28px" alignHorizontal="center">
+                    <PointsIconAnimation />
+                    <Text size="22pt" weight="heavy" align="center" color="label">
+                      {i18n.t(i18n.l.points.referral.title)}
+                    </Text>
+                  </Stack>
+                  <Text size="15pt" weight="semibold" align="center" color="labelTertiary">
+                    {i18n.t(i18n.l.points.referral.subtitle)}
+                  </Text>
+                </Stack>
+
+                <Box
+                  background="surfacePrimary"
+                  style={{
+                    borderRadius: 18,
+                    borderWidth: 2,
+                    borderColor: statusColor,
+                    height: 48,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    paddingHorizontal: 20,
+                    minWidth: IS_IOS ? 140 : undefined,
+                    shadowOffset: {
+                      width: 0,
+                      height: 13,
+                    },
+                    shadowRadius: 26,
+                    shadowColor: statusColor,
+                    shadowOpacity: 0.1,
+                    elevation: 26,
+                  }}
+                >
+                  <Inline alignVertical="center" space="6px">
+                    <TextInput
+                      ref={textInputRef}
+                      value={referralCodeDisplay}
+                      style={{
+                        height: 48,
+                        ...(IS_IOS
+                          ? inputTextStyle
+                          : {
+                              color: label,
+                            }),
+                      }}
+                      autoCorrect={false}
+                      autoFocus={false}
+                      spellCheck={false}
+                      maxLength={7}
+                      selectionColor={statusColor}
+                      textAlign="left"
+                      autoCapitalize="characters"
+                      placeholder="XXX-XXX"
+                      placeholderTextColor={labelQuaternary}
+                      onChangeText={onChangeText}
+                    />
+                    {status === 'valid' && (
+                      <Bleed horizontal="2px">
+                        <Text weight="heavy" size="17pt" align="center" color={{ custom: accentColor }}>
+                          􀁣
+                        </Text>
+                      </Bleed>
+                    )}
+                  </Inline>
+                </Box>
               </Stack>
-              <Text size="15pt" weight="semibold" align="center" color="labelTertiary">
-                {i18n.t(i18n.l.points.referral.subtitle)}
+              <Text size="13pt" weight="heavy" align="center" color={{ custom: status === 'invalid' ? red : 'transparent' }}>
+                {i18n.t(i18n.l.points.referral.invalid_code)}
               </Text>
             </Stack>
-
-            <Box
-              background="surfacePrimary"
-              style={{
-                borderRadius: 18,
-                borderWidth: 2,
-                borderColor: statusColor,
-                height: 48,
-                alignItems: 'center',
-                justifyContent: 'center',
-                paddingHorizontal: 20,
-                minWidth: IS_IOS ? 140 : undefined,
-                shadowOffset: {
-                  width: 0,
-                  height: 13,
-                },
-                shadowRadius: 26,
-                shadowColor: statusColor,
-                shadowOpacity: 0.1,
-                elevation: 26,
-              }}
-            >
-              <Inline alignVertical="center" space="6px">
-                <TextInput
-                  ref={textInputRef}
-                  value={referralCodeDisplay}
-                  style={{
-                    height: 48,
-                    ...(IS_IOS
-                      ? inputTextStyle
-                      : {
-                          color: label,
-                        }),
-                  }}
-                  autoFocus={false}
-                  maxLength={7}
-                  selectionColor={statusColor}
-                  textAlign="left"
-                  autoCapitalize="characters"
-                  placeholder="XXX-XXX"
-                  placeholderTextColor={labelQuaternary}
-                  onChangeText={onChangeText}
+          </Box>
+          {!hasKeyboard && status === 'valid' ? (
+            <Row height="content">
+              <Box alignItems="center" width="full">
+                <ActionButton
+                  color={accentColor}
+                  label={i18n.t(i18n.l.points.referral.get_started)}
+                  onPress={() => (isReadOnlyWallet ? watchingAlert() : navigate(Routes.CONSOLE_SHEET, { referralCode, deeplinked }))}
                 />
-                {status === 'valid' && (
-                  <Bleed horizontal="2px">
-                    <Text weight="heavy" size="17pt" align="center" color={{ custom: accentColor }}>
-                      􀁣
-                    </Text>
-                  </Bleed>
-                )}
-              </Inline>
-            </Box>
-          </Stack>
-          <Text size="13pt" weight="heavy" align="center" color={{ custom: status === 'invalid' ? red : 'transparent' }}>
-            {i18n.t(i18n.l.points.referral.invalid_code)}
-          </Text>
-        </Stack>
+              </Box>
+            </Row>
+          ) : (
+            <Row height="content">
+              <Box height={{ custom: 28 }} paddingHorizontal="20px" style={{ justifyContent: 'center' }}>
+                <Columns>
+                  <Column width="content">
+                    <ButtonPressAnimation
+                      onPress={() => {
+                        setReferralCodeDisplay('');
+                        setStatus('incomplete');
+                        setDeeplinked(false);
+                        setGoingBack(true);
+                        goBack();
+                      }}
+                    >
+                      <Text color={{ custom: accentColor }} size="20pt" weight="bold">
+                        {`􀆉 ${i18n.t(i18n.l.points.referral.back)}`}
+                      </Text>
+                    </ButtonPressAnimation>
+                  </Column>
+                  <Box />
+                </Columns>
+              </Box>
+            </Row>
+          )}
+        </Rows>
       </Box>
-      <Box
-        position="absolute"
-        bottom={{
-          custom: hasKeyboard ? keyboardHeight + (IS_IOS ? 28 : 42) : getHeaderHeight() + 28,
-        }}
-        left={{ custom: 20 }}
-      >
-        <ButtonPressAnimation
-          onPress={() => {
-            setReferralCodeDisplay('');
-            setStatus('incomplete');
-            setDeeplinked(false);
-            setGoingBack(true);
-            goBack();
-          }}
-        >
-          <Text color={{ custom: accentColor }} size="20pt" weight="bold">
-            {`􀆉 ${i18n.t(i18n.l.points.referral.back)}`}
-          </Text>
-        </ButtonPressAnimation>
-      </Box>
-      {!hasKeyboard && status === 'valid' && (
-        <ActionButton
-          color={accentColor}
-          label={i18n.t(i18n.l.points.referral.get_started)}
-          onPress={() => (isReadOnlyWallet ? watchingAlert() : navigate(Routes.CONSOLE_SHEET, { referralCode, deeplinked }))}
-        />
-      )}
     </Box>
   );
 }

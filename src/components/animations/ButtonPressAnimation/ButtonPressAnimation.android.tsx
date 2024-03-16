@@ -6,7 +6,7 @@ import { createNativeWrapper, NativeViewGestureHandlerGestureEvent, RawButtonPro
 import { PureNativeButton } from 'react-native-gesture-handler/src/components/GestureButtons';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, {
-  AnimateProps,
+  AnimatedProps,
   Easing,
   runOnJS,
   useAnimatedGestureHandler,
@@ -49,7 +49,7 @@ const ZoomableRawButton = requireNativeComponent<
 
 const ZoomableButton = createNativeWrapper(ZoomableRawButton);
 
-const AnimatedRawButton = createNativeWrapper<AnimateProps<PropsWithChildren<RawButtonProps>>>(
+const AnimatedRawButton = createNativeWrapper<AnimatedProps<PropsWithChildren<RawButtonProps>>>(
   Animated.createAnimatedComponent(PureNativeButton),
   {
     shouldActivateOnStart: true,
@@ -129,7 +129,7 @@ const ScaleButton = ({
   return (
     <View style={[sx.overflow, wrapperStyle]} testID={testID}>
       <View style={{ margin: -overflowMargin }}>
-        <AnimatedRawButton hitSlop={-overflowMargin} onGestureEvent={gestureHandler} rippleColor={transparentColor} style={sx.overflow}>
+        <AnimatedRawButton hitSlop={-overflowMargin} onGestureEvent={gestureHandler} rippleColor={transparentColor}>
           <View style={sx.transparentBackground}>
             <View style={{ padding: overflowMargin }}>
               <Animated.View style={[sz, contentContainerStyle]}>{children}</Animated.View>

@@ -51,3 +51,4 @@ class LegacyStorage<Scopes extends unknown[], Schema> extends Storage<Scopes, Sc
  */
 export const legacy = new LegacyStorage<[], Legacy>({ id: 'global' });
 export const zustandStorage = new LegacyStorage<[], Legacy>({ id: 'zustand' });
+export const queryStorage = new LegacyStorage<[], Legacy>({ id: 'rainbow.react-query' });

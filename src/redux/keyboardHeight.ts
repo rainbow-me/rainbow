@@ -40,14 +40,11 @@ interface SetKeyboardHeightFunctionParameter {
   height: number;
   keyboardType: KeyboardType;
 }
-
 // -- Actions --------------------------------------- //
-function getDefaultKeyboardHeight(): number {
+export function getDefaultKeyboardHeight(): number {
   let keyboardHeight = 0;
   switch (deviceUtils.dimensions.height) {
     case 568:
-      keyboardHeight = 216;
-      break;
     case 667:
       keyboardHeight = 216;
       break;
@@ -55,9 +52,8 @@ function getDefaultKeyboardHeight(): number {
       keyboardHeight = 226;
       break;
     case 812:
-      keyboardHeight = 291;
-      break;
     case 844:
+    case 852:
       keyboardHeight = 291;
       break;
     case 896:
