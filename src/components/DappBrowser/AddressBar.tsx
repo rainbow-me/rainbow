@@ -16,6 +16,8 @@ import { AccountIcon } from './address-bar/AccountIcon';
 import { TabButton } from './address-bar/TabButton';
 import { AddressInput } from './address-bar/AddressInput';
 import useDimensions from '@/hooks/useDimensions';
+import { IS_ANDROID, IS_IOS } from '@/env';
+import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 
 const GOOGLE_SEARCH_URL = 'https://www.google.com/search?q=';
 const HTTP = 'http://';
@@ -64,7 +66,7 @@ export const AddressBar = () => {
     );
 
     return {
-      height: safeAreaInsetValues.bottom + (android ? 40 : 0) + 58 * (1 - (tabViewProgress?.value ?? 0)),
+      height: safeAreaInsetValues.bottom + (IS_ANDROID ? 40 : 0) + 58 * (1 - (tabViewProgress?.value ?? 0)),
       transform: [{ translateY: Math.min(-(keyboard.height.value - 30), -50) }],
       backgroundColor,
     };
@@ -140,11 +142,11 @@ export const AddressBar = () => {
     <Box
       as={AnimatedBox}
       justifyContent="center"
-      bottom={{ custom: 0 }}
-      paddingBottom={{ custom: ios ? safeAreaInsetValues.bottom : safeAreaInsetValues.bottom + 30 }}
+      // paddingBottom={{ custom: IS_IOS ? safeAreaInsetValues.bottom : safeAreaInsetValues.bottom + 30 }}
       pointerEvents="box-none"
       position="absolute"
-      style={[bottomBarStyle, { zIndex: 10000 }]}
+      // style={[bottomBarStyle, { zIndex: 10000 }]}
+      style={{ bottom: TAB_BAR_HEIGHT, paddingVertical: 20 }}
       width={{ custom: deviceWidth }}
     >
       <AnimatedBox gap={12} style={[{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }, barStyle]}>

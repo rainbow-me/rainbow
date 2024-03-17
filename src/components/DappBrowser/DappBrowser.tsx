@@ -5,7 +5,7 @@ import RNFS from 'react-native-fs';
 
 import { SheetGestureBlocker } from '@/components/sheet/SheetGestureBlocker';
 import { Page } from '@/components/layout';
-import { Box, ColorModeProvider, globalColors } from '@/design-system';
+import { Box, ColorModeProvider, globalColors, useBackgroundColor } from '@/design-system';
 
 import { safeAreaInsetValues } from '@/utils';
 import { BrowserContextProvider, useBrowserContext } from './BrowserContext';
@@ -49,6 +49,8 @@ const DappBrowserComponent = () => {
     []
   );
 
+  const surfacePrimary = useBackgroundColor('surfacePrimary');
+
   return (
     <SheetGestureBlocker>
       <Box as={Page} height="full" style={styles.rootViewBackground} width="full">
@@ -57,18 +59,18 @@ const DappBrowserComponent = () => {
           borderRadius={ScreenCornerRadius}
           height="full"
           position="absolute"
+          background="surfacePrimary"
           style={[
             backgroundStyle,
             {
-              backgroundColor: globalColors.grey100,
-              paddingTop: android ? 30 : 0,
+              paddingTop: IS_ANDROID ? 30 : 0,
             },
           ]}
           width="full"
         />
         <Animated.ScrollView
           contentContainerStyle={{
-            backgroundColor: globalColors.grey100,
+            backgroundColor: surfacePrimary,
             height: Math.ceil(tabStates.length / 2) * TAB_VIEW_ROW_HEIGHT + safeAreaInsetValues.bottom + (android ? 35 : 0) + 104,
             zIndex: 20000,
           }}
@@ -90,9 +92,7 @@ const DappBrowserComponent = () => {
 export const DappBrowser = () => {
   return (
     <BrowserContextProvider>
-      <ColorModeProvider value="dark">
-        <DappBrowserComponent />
-      </ColorModeProvider>
+      <DappBrowserComponent />
     </BrowserContextProvider>
   );
 };

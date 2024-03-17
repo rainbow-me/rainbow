@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Box, globalColors, useColorMode, Text } from '@/design-system';
+import { Box, globalColors, useColorMode, Text, DebugLayout, Cover, Bleed } from '@/design-system';
 import { Page } from '@/components/layout';
 import { useAccountSettings, useDimensions } from '@/hooks';
 import { AnimatePresence, MotiView } from 'moti';
@@ -20,6 +20,7 @@ import { WebViewEvent } from 'react-native-webview/lib/WebViewTypes';
 import { appMessenger } from '@/browserMessaging/AppMessenger';
 import DappBrowserWebview from './DappBrowserWebview';
 import Homepage from './Homepage';
+import { IS_ANDROID } from '@/env';
 
 interface BrowserTabProps {
   tabIndex: number;
@@ -134,8 +135,9 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
     );
 
     // eslint-disable-next-line no-nested-ternary
-    const topBorderRadius = interpolate(progress, [0, 1], [isActiveTab ? (android ? 0 : 12) : 30, 30]);
-    const bottomBorderRadius = interpolate(progress, [0, 1], [isActiveTab ? ScreenCornerRadius : 30, 30]);
+    const topBorderRadius = interpolate(progress, [0, 1], [isActiveTab ? (IS_ANDROID ? 0 : 16) : 30, 30]);
+    // eslint-disable-next-line no-nested-ternary
+    const bottomBorderRadius = interpolate(progress, [0, 1], [isActiveTab ? (IS_ANDROID ? 0 : 16) : 30, 30]);
     const height = interpolate(
       progress,
       [0, 1],
@@ -147,7 +149,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
       { x: 0, y: -height / 2 }, // setting origin to top center
       [{ translateX: xPositionForTab }, { translateY: yPositionForTab + (isActiveTab ? progress : 1) * 137 }, { scale: scaleValue }]
     );
-
+    console.log(height, WEBVIEW_HEIGHT);
     return {
       borderBottomLeftRadius: bottomBorderRadius,
       borderBottomRightRadius: bottomBorderRadius,
@@ -406,9 +408,10 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
 
   return (
     <>
-      <TouchableWithoutFeedback disabled={isActiveTab} onPress={handlePress}>
-        <Animated.View style={[styles.webViewContainer, webViewStyle]}>
-          <ViewShot options={{ format: 'jpg' }} ref={viewShotRef}>
+      <TouchableWithoutFeedback onPress={handlePress}>
+        <View style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.23, shadowRadius: 2.62 }}>
+          <Animated.View style={[styles.webViewContainer, webViewStyle]}>
+            {/* <ViewShot options={{ format: 'jpg' }} ref={viewShotRef}> */}
             <View
               collapsable={false}
               style={{
@@ -431,52 +434,55 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
                   />
                 }
               >
+                {/* <Box background="blue" shadow="24px" height="full"> */}
                 {TabContent}
+                {/* </Box> */}
               </Freeze>
             </View>
-          </ViewShot>
-          <AnimatePresence>
-            {(!isActiveTab || tabViewVisible) && (
-              <MotiView
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                from={{ opacity: 0 }}
-                pointerEvents="none"
-                style={[
-                  styles.webViewStyle,
-                  {
-                    height: COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
-                    left: 0,
-                    position: 'absolute',
-                    top: 0,
-                    zIndex: 20000,
-                  },
-                ]}
-                transition={{
-                  duration: 300,
-                  easing: Easing.bezier(0.2, 0, 0, 1),
-                  type: 'timing',
-                }}
-              >
-                <Image
-                  height={WEBVIEW_HEIGHT}
-                  onError={e => console.log('Image loading error:', e.nativeEvent.error)}
-                  source={{ uri: screenshot?.uri }}
+            {/* </ViewShot> */}
+            <AnimatePresence>
+              {(!isActiveTab || tabViewVisible) && (
+                <MotiView
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  from={{ opacity: 0 }}
+                  pointerEvents="none"
                   style={[
                     styles.webViewStyle,
                     {
+                      height: COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
                       left: 0,
                       position: 'absolute',
-                      resizeMode: 'contain',
                       top: 0,
+                      zIndex: 20000,
                     },
                   ]}
-                  width={deviceWidth}
-                />
-              </MotiView>
-            )}
-          </AnimatePresence>
-        </Animated.View>
+                  transition={{
+                    duration: 300,
+                    easing: Easing.bezier(0.2, 0, 0, 1),
+                    type: 'timing',
+                  }}
+                >
+                  <Image
+                    height={WEBVIEW_HEIGHT}
+                    onError={e => console.log('Image loading error:', e.nativeEvent.error)}
+                    source={{ uri: screenshot?.uri }}
+                    style={[
+                      styles.webViewStyle,
+                      {
+                        left: 0,
+                        position: 'absolute',
+                        resizeMode: 'contain',
+                        top: 0,
+                      },
+                    ]}
+                    width={deviceWidth}
+                  />
+                </MotiView>
+              )}
+            </AnimatePresence>
+          </Animated.View>
+        </View>
       </TouchableWithoutFeedback>
       {isActiveTab && !tabViewVisible && <Box as={Animated.View} background="blue" style={[styles.progressBar, progressBarStyle]} />}
     </>
@@ -486,8 +492,8 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
 const styles = StyleSheet.create({
   webViewContainer: {
     alignSelf: 'center',
-    overflow: 'hidden',
     position: 'absolute',
+    overflow: 'hidden',
     top: safeAreaInsetValues.top,
     width: deviceUtils.dimensions.width,
     zIndex: 999999999,
@@ -498,6 +504,7 @@ const styles = StyleSheet.create({
     maxHeight: WEBVIEW_HEIGHT,
     minHeight: WEBVIEW_HEIGHT,
     width: deviceUtils.dimensions.width,
+    borderRadius: 16,
   },
   progressBar: {
     height: 2,

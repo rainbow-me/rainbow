@@ -49,90 +49,92 @@ const Card = () => {
 
   return (
     <View style={{ width: CARD_SIZE }}>
-      <ButtonPressAnimation overflowMargin={100}>
-        <Box
-          as={LinearGradient}
-          colors={['#0078FF', '#3AB8FF']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          background="surfacePrimary"
-          borderRadius={24}
-          shadow="18px"
-          width={{ custom: CARD_SIZE }}
-          height={{ custom: 137 }}
-          justifyContent="space-between"
-          padding="20px"
-          style={{ overflow: 'hidden' }}
-        >
-          {bgImageUrl && (
-            <Cover>
-              <ImgixImage source={{ uri: bgImageUrl }} size={CARD_SIZE} style={{ width: '100%', height: '100%' }} />
+      <ColorModeProvider value="dark">
+        <ButtonPressAnimation overflowMargin={100}>
+          <Box
+            as={LinearGradient}
+            colors={['#0078FF', '#3AB8FF']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            background="surfacePrimary"
+            borderRadius={24}
+            shadow="18px"
+            width={{ custom: CARD_SIZE }}
+            height={{ custom: 137 }}
+            justifyContent="space-between"
+            padding="20px"
+            style={{ overflow: 'hidden' }}
+          >
+            {bgImageUrl && (
               <Cover>
-                <LinearGradient
-                  colors={['rgba(0, 0, 0, 0.6)', 'rgba(0, 0, 0, 0.6)', '#000']}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 0, y: 1 }}
-                  locations={[0, 0.4985, 1]}
-                  style={{ width: '100%', height: '100%' }}
+                <ImgixImage source={{ uri: bgImageUrl }} size={CARD_SIZE} style={{ width: '100%', height: '100%' }} />
+                <Cover>
+                  <LinearGradient
+                    colors={['rgba(0, 0, 0, 0.6)', 'rgba(0, 0, 0, 0.6)', '#000']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 0, y: 1 }}
+                    locations={[0, 0.4985, 1]}
+                    style={{ width: '100%', height: '100%' }}
+                  />
+                </Cover>
+              </Cover>
+            )}
+            <Box
+              as={ImgixImage}
+              source={{ uri: logoImageUrl }}
+              size={48}
+              background="surfacePrimary"
+              shadow="24px"
+              width={{ custom: 48 }}
+              height={{ custom: 48 }}
+              top={{ custom: -8 }}
+              left={{ custom: -8 }}
+              borderRadius={12}
+            />
+            <Stack space="10px">
+              <Text size="17pt" weight="heavy" color="label">
+                Rainbowcast
+              </Text>
+              <Text size="13pt" weight="bold" color="labelTertiary">
+                zora.co
+              </Text>
+            </Stack>
+            <Box
+              position="absolute"
+              top={{ custom: 12 }}
+              right={{ custom: 12 }}
+              height={{ custom: 24 }}
+              width={{ custom: 24 }}
+              borderRadius={32}
+              style={{ flex: 1, overflow: 'hidden' }}
+            >
+              <Cover>
+                <BlurView
+                  blurType="chromeMaterialDark"
+                  blurAmount={8.5}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    backgroundColor: 'rgba(244, 248, 255, 0.08)',
+                  }}
                 />
               </Cover>
-            </Cover>
-          )}
-          <Box
-            as={ImgixImage}
-            source={{ uri: logoImageUrl }}
-            size={48}
-            background="surfacePrimary"
-            shadow="24px"
-            width={{ custom: 48 }}
-            height={{ custom: 48 }}
-            top={{ custom: -8 }}
-            left={{ custom: -8 }}
-            borderRadius={12}
-          />
-          <Stack space="10px">
-            <Text size="17pt" weight="heavy" color="label">
-              Rainbowcast
-            </Text>
-            <Text size="13pt" weight="bold" color="labelTertiary">
-              zora.co
-            </Text>
-          </Stack>
-          <Box
-            position="absolute"
-            top={{ custom: 12 }}
-            right={{ custom: 12 }}
-            height={{ custom: 24 }}
-            width={{ custom: 24 }}
-            borderRadius={32}
-            style={{ flex: 1, overflow: 'hidden' }}
-          >
-            <Cover>
-              <BlurView
-                blurType="chromeMaterialDark"
-                blurAmount={8.5}
+              <View
                 style={{
                   width: '100%',
                   height: '100%',
-                  backgroundColor: 'rgba(244, 248, 255, 0.08)',
+                  justifyContent: 'center',
+                  alignItems: 'center',
                 }}
-              />
-            </Cover>
-            <View
-              style={{
-                width: '100%',
-                height: '100%',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <Text align="center" weight="heavy" color="labelSecondary" size="13pt">
-                􀍠
-              </Text>
-            </View>
+              >
+                <Text align="center" weight="heavy" color="labelSecondary" size="13pt">
+                  􀍠
+                </Text>
+              </View>
+            </Box>
           </Box>
-        </Box>
-      </ButtonPressAnimation>
+        </ButtonPressAnimation>
+      </ColorModeProvider>
       <ContextMenuButton
         menuConfig={menuConfig}
         onPressMenuItem={() => {}}
@@ -172,7 +174,7 @@ export default function Homepage() {
   const { navigate } = useNavigation();
 
   return (
-    <Box as={Page} flex={1} height="full" width="full" justifyContent="center">
+    <Box height="full" width="full" justifyContent="center">
       <ScrollView
         scrollIndicatorInsets={{
           bottom: TAB_BAR_HEIGHT - safeAreaInsetValues.bottom,
