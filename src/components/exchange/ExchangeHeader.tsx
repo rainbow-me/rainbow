@@ -12,7 +12,6 @@ export default function ExchangeHeader({ testID, title }: ExchangeHeaderProps) {
     <Box testID={`${testID}-header`}>
       <Inset space="6px">
         <Stack alignHorizontal="center" space="10px">
-          {/* @ts-expect-error - Javascript Component */}
           <SheetHandle />
           {title && (
             <Text color="primary (Deprecated)" align="center" size="20pt" weight="heavy">

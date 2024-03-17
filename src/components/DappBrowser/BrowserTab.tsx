@@ -133,7 +133,8 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
       [isActiveTab ? 1 : TAB_VIEW_COLUMN_WIDTH / deviceWidth, multipleTabsOpen ? TAB_VIEW_COLUMN_WIDTH / deviceWidth : 0.7]
     );
 
-    const topBorderRadius = interpolate(progress, [0, 1], [isActiveTab ? 12 : 30, 30]);
+    // eslint-disable-next-line no-nested-ternary
+    const topBorderRadius = interpolate(progress, [0, 1], [isActiveTab ? (android ? 0 : 12) : 30, 30]);
     const bottomBorderRadius = interpolate(progress, [0, 1], [isActiveTab ? ScreenCornerRadius : 30, 30]);
     const height = interpolate(
       progress,
@@ -263,7 +264,9 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
   const [backgroundColor, setBackgroundColor] = useState<string>();
 
   const createMessengers = useCallback((origin: string, tabId: string) => {
-    if (!webViewRef.current) return;
+    if (!webViewRef.current) {
+      return;
+    }
     const msngr = appMessenger(webViewRef.current, tabId, origin);
     messengers.current.push(msngr);
   }, []);
@@ -293,8 +296,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
                 callback = async () => {
                   return true;
                 };
-              }
-              if (parsedData.payload.method === 'eth_requestAccounts' || parsedData.payload.method === 'eth_accounts') {
+              } else if (parsedData.payload.method === 'eth_requestAccounts' || parsedData.payload.method === 'eth_accounts') {
                 callback = async () => {
                   return { result: [accountAddress] };
                 };
@@ -476,7 +478,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
           </AnimatePresence>
         </Animated.View>
       </TouchableWithoutFeedback>
-      {isActiveTab && <Box as={Animated.View} background="blue" style={[styles.progressBar, progressBarStyle]} />}
+      {isActiveTab && !tabViewVisible && <Box as={Animated.View} background="blue" style={[styles.progressBar, progressBarStyle]} />}
     </>
   );
 });

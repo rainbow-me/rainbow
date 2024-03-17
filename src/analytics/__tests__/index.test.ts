@@ -3,7 +3,7 @@ import { expect, test } from '@jest/globals';
 import { Analytics } from '@/analytics';
 import Routes from '@/navigation/routesNames';
 
-jest.mock('@segment/analytics-react-native', () => ({
+jest.mock('@rudderstack/rudder-sdk-react-native', () => ({
   createClient() {
     return {
       track: jest.fn(),
