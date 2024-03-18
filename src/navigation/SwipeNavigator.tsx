@@ -1,37 +1,38 @@
-import { BlurView } from '@react-native-community/blur';
-import { createMaterialTopTabNavigator, MaterialTopTabNavigationEventMap } from '@react-navigation/material-top-tabs';
-import { MaterialTopTabDescriptorMap } from '@react-navigation/material-top-tabs/lib/typescript/src/types';
-import { NavigationHelpers, ParamListBase, RouteProp } from '@react-navigation/native';
-import React, { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
-import { InteractionManager, View } from 'react-native';
-import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { LIGHT_SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
 import { ButtonPressAnimation } from '@/components/animations';
 import { TabBarIcon } from '@/components/icons/TabBarIcon';
 import { FlexItem } from '@/components/layout';
 import { TestnetToast } from '@/components/toasts';
-import { useExperimentalFlag, DAPP_BROWSER, POINTS } from '@/config';
-import { Box, Columns, Stack, globalColors, useForegroundColor } from '@/design-system';
+import { DAPP_BROWSER, POINTS, useExperimentalFlag } from '@/config';
+import { Box, Columns, globalColors, Stack, useForegroundColor, Text } from '@/design-system';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import { web3Provider } from '@/handlers/web3';
 import { isUsingButtonNavigation } from '@/helpers/statusBarHelper';
-import { useAccountAccentColor, useAccountSettings, useCoinListEdited, useDimensions } from '@/hooks';
+import { useAccountAccentColor, useAccountSettings, useCoinListEdited, useDimensions, usePendingTransactions } from '@/hooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import RecyclerListViewScrollToTopProvider, {
   useRecyclerListViewScrollToTopContext,
 } from '@/navigation/RecyclerListViewScrollToTopContext';
-import WalletScreen from '@/screens/WalletScreen';
 import DappBrowserScreen from '@/screens/dapp-browser/DappBrowserScreen';
 import { discoverOpenSearchFnRef } from '@/screens/discover/components/DiscoverSearchContainer';
 import PointsScreen from '@/screens/points/PointsScreen';
-import { LIGHT_SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
+import WalletScreen from '@/screens/WalletScreen';
 import { useTheme } from '@/theme';
 import { deviceUtils } from '@/utils';
+import { BlurView } from '@react-native-community/blur';
+import { createMaterialTopTabNavigator, MaterialTopTabNavigationEventMap } from '@react-navigation/material-top-tabs';
+import { MaterialTopTabDescriptorMap } from '@react-navigation/material-top-tabs/lib/typescript/src/types';
+import { NavigationHelpers, ParamListBase, RouteProp } from '@react-navigation/native';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { InteractionManager, View } from 'react-native';
+import Animated, { Easing, interpolate, SharedValue, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
-import ProfileScreen from '../screens/ProfileScreen';
+import { AnimatedSpinner } from '@/__swaps__/components/animations/AnimatedSpinner';
 import DiscoverScreen, { discoverScrollToTopFnRef } from '../screens/discover/DiscoverScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+import Routes from './routesNames';
 import { ScrollPositionContext } from './ScrollPositionContext';
 import SectionListScrollToTopProvider, { useSectionListScrollToTopContext } from './SectionListScrollToTopContext';
-import Routes from './routesNames';
 
 export const TAB_BAR_HEIGHT = getTabBarHeight();
 
@@ -197,6 +198,37 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
     [navigation]
   );
 
+  const ActivityTabIcon = ({
+    accentColor,
+    tabBarIcon,
+    index,
+    reanimatedPosition,
+  }: {
+    accentColor: string;
+    tabBarIcon: string;
+    index: number;
+    reanimatedPosition: SharedValue<number>;
+  }) => {
+    const { pendingTransactions } = usePendingTransactions();
+
+    const pendingTransactionsCount = useMemo(() => {
+      return pendingTransactions.length;
+    }, [pendingTransactions]);
+
+    return pendingTransactionsCount > 0 ? (
+      <Box>
+        <AnimatedSpinner isLoading={true} color={accentColor} size={28} />
+        <Box position="absolute" style={{ top: 8, left: 9 }}>
+          <Text color={{ custom: accentColor }} size="17pt" weight="semibold">
+            {pendingTransactionsCount}
+          </Text>
+        </Box>
+      </Box>
+    ) : (
+      <TabBarIcon accentColor={accentColor} icon={tabBarIcon} index={index} reanimatedPosition={reanimatedPosition} />
+    );
+  };
+
   const renderedTabs = useMemo(
     () =>
       state.routes.map((route: { key: string; name: string }, index: number) => {
@@ -225,7 +257,16 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
             >
               <Stack alignHorizontal="center">
                 <Box alignItems="center" borderRadius={20} height="36px" justifyContent="center">
-                  <TabBarIcon accentColor={accentColor} icon={tabBarIcon} index={index} reanimatedPosition={reanimatedPosition} />
+                  {tabBarIcon === 'tabActivity' ? (
+                    <ActivityTabIcon
+                      accentColor={accentColor}
+                      tabBarIcon={tabBarIcon}
+                      index={index}
+                      reanimatedPosition={reanimatedPosition}
+                    />
+                  ) : (
+                    <TabBarIcon accentColor={accentColor} icon={tabBarIcon} index={index} reanimatedPosition={reanimatedPosition} />
+                  )}
                 </Box>
               </Stack>
             </ButtonPressAnimation>
