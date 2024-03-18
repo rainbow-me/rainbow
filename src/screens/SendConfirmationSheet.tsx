@@ -456,6 +456,7 @@ export const SendConfirmationSheet = () => {
 
   return (
     <Container deviceHeight={deviceHeight} height={contentHeight} insets={insets}>
+      {/* @ts-expect-error JavaScript component */}
       {ios && <TouchableBackdrop onPress={goBack} />}
 
       {/* @ts-expect-error JavaScript component */}
@@ -660,7 +661,7 @@ export const SendConfirmationSheet = () => {
           </SendButtonWrapper>
           {isENS && (
             /* @ts-expect-error JavaScript component */
-            <GasSpeedButton currentNetwork={network} theme={isDarkMode ? 'dark' : 'light'} />
+            <GasSpeedButton currentNetwork={network} theme={theme.isDarkMode ? 'dark' : 'light'} />
           )}
         </Column>
       </SlackSheet>

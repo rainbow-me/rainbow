@@ -3,6 +3,7 @@ src/react-native-animated-charts/Example/node_modules/*
 src/react-native-animated-charts/Example/*
 patches/reanimated/*
 ios/*
+android/*
 node_modules/*
 ./node_modules/**
 **/node_modules/*
@@ -15,4 +16,6 @@ jest.config.js
 .detoxrc.js
 __generated__
 coverage
-__SWAPS_V2__/README.md
+src/browser
+src/__swaps__/README.md
+InjectedJSBundle.js

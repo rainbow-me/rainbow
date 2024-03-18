@@ -56,6 +56,7 @@ import {
   consoleSheetPreset,
   swapSheetPreset,
   appIconUnlockSheetPreset,
+  swapSheetPreset,
 } from './effects';
 import { InitialRouteContext } from './initialRoute';
 import { onNavigationStateChange } from './onNavigationStateChange';
@@ -75,9 +76,6 @@ import { CUSTOM_MARGIN_TOP_ANDROID } from '@/screens/SettingsSheet/constants';
 import { Portal } from '@/screens/Portal';
 import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
 import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
-// eslint-disable-next-line eslint-comments/disable-enable-pair
-/* eslint-disable import/no-unresolved */
-// @ts-ignore .android and .ios exports cause errors
 import ShowSecretView from '@/screens/SettingsSheet/components/ShowSecretView';
 import PoapSheet from '@/screens/mints/PoapSheet';
 import { PositionSheet } from '@/screens/positions/PositionSheet';
@@ -89,7 +87,9 @@ import { ConsoleSheet } from '@/screens/points/ConsoleSheet';
 import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileContext';
 import { SwapScreen } from '@/__SWAPS_V2__/screens/Swap/Swap';
 import AppIconUnlockSheet from '@/screens/AppIconUnlockSheet';
+import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
 import { useRemoteConfig } from '@/model/remoteConfig';
+import { SwapProvider } from '@/__swaps__/screens/Swap/providers/swap-provider';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -147,9 +147,20 @@ function MainOuterNavigator() {
   );
 }
 
+function SwapNavigator() {
+  return (
+    <SwapProvider>
+      <BSStack.Navigator>
+        <BSStack.Screen component={SwapScreen} name={Routes.SWAP} options={swapSheetPreset} />
+      </BSStack.Navigator>
+    </SwapProvider>
+  );
+}
+
 function BSNavigator() {
+  const remoteConfig = useRemoteConfig();
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const swapsV2Enabled = useExperimentalFlag(SWAPS_V2);
+  const swapsV2Enabled = useExperimentalFlag(SWAPS_V2) || remoteConfig.swaps_v2;
 
   return (
     <BSStack.Navigator>
@@ -231,7 +242,9 @@ function BSNavigator() {
       <BSStack.Screen component={SignTransactionSheet} name={Routes.CONFIRM_REQUEST} options={walletconnectBottomSheetPreset} />
       <BSStack.Screen component={ConsoleSheet} name={Routes.CONSOLE_SHEET} options={consoleSheetPreset} />
       <BSStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} options={appIconUnlockSheetPreset} />
-      {swapsV2Enabled && <BSStack.Screen component={SwapScreen} name={Routes.SWAP} options={swapSheetPreset} />}
+
+      <BSStack.Screen component={ChangeWalletSheet} name={Routes.CHANGE_WALLET_SHEET} options={{ ...bottomSheetPreset }} />
+      {swapsV2Enabled && <BSStack.Screen component={SwapNavigator} name={Routes.SWAP_NAVIGATOR} options={swapSheetPreset} />}
     </BSStack.Navigator>
   );
 }
