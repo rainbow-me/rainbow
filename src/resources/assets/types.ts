@@ -63,6 +63,13 @@ export interface ParsedAsset {
   mainnet_address?: string;
   network: Network;
   networks?: Record<string, AddysNetworkDetails>;
+  native: {
+    price?: {
+      change: string;
+      amount: number;
+      display: string;
+    };
+  };
   price?: {
     changed_at?: number;
     relative_change_24h?: number;
@@ -73,4 +80,44 @@ export interface ParsedAsset {
   uniqueId: string;
 }
 
+export type SearchAsset = {
+  address: string;
+  chainId: number;
+  colors?: TokenColors;
+  decimals: number;
+  highLiquidity: boolean;
+  icon_url: string;
+  isRainbowCurated: boolean;
+  isNativeAsset: boolean;
+  isVerified: boolean;
+  mainnet_address: string;
+  name: string;
+  networks?: Record<string, AddysNetworkDetails>;
+  network: Network;
+  rainbowMetadataId: number;
+  symbol: string;
+  uniqueId: string;
+};
+
+export interface ParsedUserAsset extends ParsedAsset {
+  balance: {
+    amount: string;
+    display: string;
+  };
+  native: {
+    balance: {
+      amount: string;
+      display: string;
+    };
+    price?: {
+      change: string;
+      amount: number;
+      display: string;
+    };
+  };
+}
+
+export type SearchAssetWithPrice = SearchAsset & ParsedAsset;
+export type ParsedSearchAsset = SearchAsset & ParsedUserAsset;
+export type ParsedAssetsDict = Record<string, ParsedUserAsset>;
 export type RainbowAddressAssets = Record<string, ParsedAddressAsset>;

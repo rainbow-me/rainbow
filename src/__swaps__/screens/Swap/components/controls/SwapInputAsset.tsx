@@ -25,6 +25,7 @@ import {
 import { INPUT_ADDRESS, INPUT_ASSET_BALANCE, INPUT_NETWORK, INPUT_SYMBOL } from '../../dummyValues';
 import { IS_ANDROID } from '@/env';
 import { useSwapContext } from '../../providers/swap-provider';
+import { useSwapAssets } from '../../hooks/useSwapAssets';
 
 export function SwapInputAsset() {
   const { isDarkMode } = useColorMode();
@@ -43,6 +44,9 @@ export function SwapInputAsset() {
     isInputSearchFocused,
     setIsInputSearchFocused,
   } = useSwapContext();
+
+  const { assetToBuy } = useSwapAssets({ bridge: false });
+  console.log({ assetToBuy });
 
   return (
     <SwapInput color={topColor} otherInputProgress={outputProgress} progress={inputProgress}>
