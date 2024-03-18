@@ -26,6 +26,8 @@ import { INPUT_ADDRESS, INPUT_ASSET_BALANCE, INPUT_NETWORK, INPUT_SYMBOL } from 
 import { IS_ANDROID } from '@/env';
 import { useSwapContext } from '../../providers/swap-provider';
 import { useSwapAssets } from '../../hooks/useSwapAssets';
+import { ETH_ADDRESS } from '@/references';
+import { ChainId } from '@rainbow-me/swaps';
 
 export function SwapInputAsset() {
   const { isDarkMode } = useColorMode();
@@ -45,8 +47,10 @@ export function SwapInputAsset() {
     setIsInputSearchFocused,
   } = useSwapContext();
 
-  const { assetToBuy } = useSwapAssets({ bridge: false });
-  console.log({ assetToBuy });
+  const { assetToSell, assetsToSell, setAssetToSell, setAssetToSellFilter } = useSwapAssets({ bridge: false });
+  const mainnetEth = Object.values(assetsToSell).find(asset => asset.address === ETH_ADDRESS && asset.chainId === ChainId.mainnet);
+
+  console.log(mainnetEth);
 
   return (
     <SwapInput color={topColor} otherInputProgress={outputProgress} progress={inputProgress}>
@@ -148,6 +152,9 @@ export function SwapInputAsset() {
           handleFocusSearch={runOnUI(SwapNavigation.handleFocusInputSearch)}
           isFocused={isInputSearchFocused}
           setIsFocused={setIsInputSearchFocused}
+          assets={assetsToSell}
+          onSelectAsset={setAssetToSell}
+          onFilter={setAssetToSellFilter}
         />
       </Box>
     </SwapInput>

@@ -12,6 +12,8 @@ import { DAI_ADDRESS, ETH_ADDRESS, USDC_ADDRESS } from '../dummyValues';
 import { opacity } from '../utils';
 import { CoinRow } from './CoinRow';
 import { SearchInput } from './SearchInput';
+import { ParsedSearchAsset } from '@/resources/assets/types';
+import { Hex } from 'viem';
 
 export const TokenList = ({
   color,
@@ -20,6 +22,9 @@ export const TokenList = ({
   isFocused,
   output,
   setIsFocused,
+  assets,
+  onSelectAsset,
+  onFilter,
 }: {
   color: string;
   handleExitSearch: () => void;
@@ -27,6 +32,9 @@ export const TokenList = ({
   isFocused: boolean;
   output?: boolean;
   setIsFocused: React.Dispatch<React.SetStateAction<boolean>>;
+  assets: ParsedSearchAsset[];
+  onSelectAsset: (asset: ParsedSearchAsset) => void;
+  onFilter: React.Dispatch<React.SetStateAction<string>>;
 }) => {
   const { accentColor: accountColor } = useAccountAccentColor();
   const { isDarkMode } = useColorMode();
@@ -145,6 +153,24 @@ export const TokenList = ({
                 </HitSlop>
               </ButtonPressAnimation>
             </Inline>
+            {/* // TODO: trending tokens */}
+            {/* {assets
+              .filter(asset => asset.trending)
+              .map(asset => {
+                return (
+                  <CoinRow
+                    key={asset.uniqueId}
+                    address={asset.address as Hex}
+                    balance={asset.balance.amount}
+                    name={asset.name}
+                    nativeBalance={asset.native.balance.amount}
+                    isTrending={false}
+                    symbol={asset.symbol}
+                    onPress={() => onSelectAsset(asset)}
+                    output={output}
+                  />
+                );
+              })} */}
             <CoinRow
               address={ETH_ADDRESS}
               balance="7"
@@ -203,46 +229,21 @@ export const TokenList = ({
                 </Text>
               </Inline>
             )}
-            <CoinRow
-              address="0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9"
-              balance="428.25"
-              name="Aave"
-              nativeBalance="$1,400"
-              output={output}
-              symbol="AAVE"
-            />
-            <CoinRow
-              address="0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"
-              balance="0.042819"
-              name="Wrapped Bitcoin"
-              nativeBalance="$1,025"
-              output={output}
-              symbol="WBTC"
-            />
-            <CoinRow
-              address="0xc00e94cb662c3520282e6f5717214004a7f26888"
-              balance="72.2806"
-              name="Compound"
-              nativeBalance="$350.04"
-              output={output}
-              symbol="COMP"
-            />
-            <CoinRow
-              address="0x1f9840a85d5af5bf1d1762f925bdaddc4201f984"
-              balance="62.82"
-              name="Uniswap"
-              nativeBalance="$289.52"
-              output={output}
-              symbol="UNI"
-            />
-            <CoinRow
-              address="0x514910771af9ca656af840dff83e8264ecf986ca"
-              balance="27.259"
-              name="Chainlink"
-              nativeBalance="$87.50"
-              output={output}
-              symbol="LINK"
-            />
+            {assets.map(asset => {
+              return (
+                <CoinRow
+                  key={asset.uniqueId}
+                  address={asset.address as Hex}
+                  balance={asset.balance.amount}
+                  name={asset.name}
+                  nativeBalance={asset.native.balance.amount}
+                  isTrending={false}
+                  symbol={asset.symbol}
+                  onPress={() => onSelectAsset(asset)}
+                  output={output}
+                />
+              );
+            })}
           </Stack>
         </Stack>
       </ScrollView>

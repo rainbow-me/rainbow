@@ -25,6 +25,7 @@ import {
 import { OUTPUT_ADDRESS, OUTPUT_NETWORK, OUTPUT_SYMBOL } from '../../dummyValues';
 import { IS_ANDROID } from '@/env';
 import { useSwapContext } from '../../providers/swap-provider';
+import { ParsedSearchAsset, RainbowAddressAssets } from '@/resources/assets/types';
 
 export function SwapOutputAsset() {
   const { isDarkMode } = useColorMode();
@@ -142,6 +143,9 @@ export function SwapOutputAsset() {
           isFocused={isOutputSearchFocused}
           output
           setIsFocused={setIsOutputSearchFocused}
+          assets={{} as ParsedSearchAsset[]}
+          onSelectAsset={() => {}}
+          onFilter={() => {}}
         />
       </Box>
     </SwapInput>
