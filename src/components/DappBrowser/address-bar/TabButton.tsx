@@ -1,36 +1,29 @@
+import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { opacity } from '@/__swaps__/screens/Swap/utils';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Box, Text, useForegroundColor } from '@/design-system';
+import { Box, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import { IS_IOS } from '@/env';
 import position from '@/styles/position';
 import { BlurView } from '@react-native-community/blur';
 import React, { useCallback, RefObject } from 'react';
 import { TextInput } from 'react-native';
-import Animated, { SharedValue, interpolateColor, useAnimatedStyle } from 'react-native-reanimated';
-
-const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
-
-const AnimatedBox = Animated.createAnimatedComponent(Box);
+import { DappBrowserShadows } from '../DappBrowserShadows';
 
 export const TabButton = ({
-  toggleTabView,
-  isFocused,
   inputRef,
-  animationProgress,
+  isFocused,
+  toggleTabView,
 }: {
-  toggleTabView: () => void;
-  isFocused: boolean;
   inputRef: RefObject<TextInput>;
-  animationProgress: SharedValue<number>;
+  isFocused: boolean;
+  toggleTabView: () => void;
 }) => {
-  const fill = useForegroundColor('fill');
+  const { isDarkMode } = useColorMode();
   const fillSecondary = useForegroundColor('fillSecondary');
+  const separatorSecondary = useForegroundColor('separatorSecondary');
 
-  const tabButtonUnderlay = useAnimatedStyle(() => {
-    const backgroundColor = interpolateColor(animationProgress.value ?? 0, [0, 1], [fill, 'transparent']);
+  const buttonColor = isDarkMode ? fillSecondary : opacity(globalColors.white100, 0.9);
 
-    return {
-      backgroundColor,
-    };
-  });
   const onPress = useCallback(() => {
     if (!isFocused) {
       // open tabs
@@ -42,23 +35,46 @@ export const TabButton = ({
   }, [isFocused, inputRef, toggleTabView]);
 
   return (
-    <Box
-      as={ButtonPressAnimation}
-      onPress={onPress}
-      style={{ height: 44, width: 44, borderRadius: 22, borderWidth: 1, borderColor: fillSecondary }}
-      alignItems="center"
-      justifyContent="center"
-    >
-      <Text size="20pt" color="labelSecondary" align="center">
-        {isFocused ? '􀆈' : '􀐅'}
-      </Text>
+    <DappBrowserShadows>
       <Box
-        as={AnimatedBlurView}
-        blurAmount={1}
-        blurType="dark"
-        style={[{ zIndex: -1, elevation: -1, borderRadius: 22 }, position.coverAsObject]}
-      />
-      <Box as={AnimatedBox} style={[{ borderRadius: 22, zIndex: -1 }, position.coverAsObject, tabButtonUnderlay]} />
-    </Box>
+        as={ButtonPressAnimation}
+        borderRadius={22}
+        onPress={onPress}
+        style={{ height: 44, paddingTop: isFocused ? 1 : undefined, width: 44 }}
+        alignItems="center"
+        justifyContent="center"
+      >
+        <Text align="center" color="labelSecondary" size="icon 17px" weight={isFocused ? 'heavy' : 'bold'}>
+          {isFocused ? '􀆈' : '􀐅'}
+        </Text>
+        {IS_IOS && (
+          <Box
+            as={BlurView}
+            blurAmount={20}
+            blurType={isDarkMode ? 'dark' : 'light'}
+            style={[
+              {
+                zIndex: -1,
+                elevation: -1,
+                borderRadius: 22,
+              },
+              position.coverAsObject,
+            ]}
+          />
+        )}
+        <Box
+          style={[
+            {
+              backgroundColor: buttonColor,
+              borderColor: separatorSecondary,
+              borderRadius: 22,
+              borderWidth: IS_IOS && isDarkMode ? THICK_BORDER_WIDTH : 0,
+              zIndex: -1,
+            },
+            position.coverAsObject,
+          ]}
+        />
+      </Box>
+    </DappBrowserShadows>
   );
 };
