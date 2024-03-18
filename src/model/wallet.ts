@@ -953,9 +953,12 @@ export const getPrivateKey = async (address: EthereumAddress): Promise<null | Pr
 
     const options = { authenticationPrompt, androidEncryptionPin };
 
-    const pkey = (await keychain.loadObject(key, options)) as PrivateKeyData | -2;
+    const { value: pkey, error } = await kc.getObject<PrivateKeyData>(key, {
+      ...options,
+      androidEncryptionPin,
+    });
 
-    if (pkey === -2) {
+    if (error === -2) {
       Alert.alert(lang.t('wallet.authenticate.alert.error'), lang.t('wallet.authenticate.alert.current_authentication_not_secure_enough'));
       return null;
     }

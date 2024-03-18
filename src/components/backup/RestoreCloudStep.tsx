@@ -12,7 +12,7 @@ import { Text } from '../text';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { cloudBackupPasswordMinLength, isCloudBackupPasswordValid, normalizeAndroidBackupFilename } from '@/handlers/cloudBackup';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
-import { useDimensions, useInitializeWallet, useUserAccounts } from '@/hooks';
+import { useDimensions, useInitializeWallet } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { addressSetSelected, setAllWalletsWithIdsAsBackedUp, walletsLoadState, walletsSetSelected } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
@@ -162,16 +162,11 @@ export default function RestoreCloudStep() {
           await Promise.all([p1, p2]);
           await initializeWallet(null, null, null, false, false, null, true, null);
 
-          const isRestoringFromWelcomeScreen = dangerouslyGetState()?.index === 1;
-          if (isRestoringFromWelcomeScreen) {
-            navigate(Routes.SWIPE_LAYOUT, {
-              screen: Routes.WALLET_SCREEN,
-            });
-          } else {
-            replace(Routes.SWIPE_LAYOUT, {
-              screen: Routes.WALLET_SCREEN,
-            });
-          }
+          const operation = dangerouslyGetState()?.index === 1 ? navigate : replace;
+          operation(Routes.SWIPE_LAYOUT, {
+            screen: Routes.WALLET_SCREEN,
+          });
+
           setLoading(false);
         });
       } else {
