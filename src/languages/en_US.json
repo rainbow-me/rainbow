@@ -794,7 +794,7 @@
         "title": "What's Base"
       },
       "avalanche": {
-        "text": "Avalanche is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
+        "text": "Avalanche is a sidechain, a distinct network that runs alongside Ethereum and is compatible with it.\n\nIt allows for cheaper and faster transactions, but unlike Layer 2 networks, Avalanche has its own security and consensus mechanisms that differ from Ethereum.",
         "title": "What's Avalanche"
       },
       "blast": {
@@ -1223,6 +1223,7 @@
         "offer_expired": "Offer Expired",
         "expired": "Expired",
         "hold_to_sell": "Hold to Sell",
+        "selling": "Selling",
         "error": {
           "title": "Error selling NFT",
           "message": "Please contact Rainbow support for assistance."
@@ -1338,7 +1339,8 @@
         "view_weekly_earnings_title": "Counting earned points",
         "view_weekly_earnings_counted": "Weekly earnings counted",
         "view_weekly_earnings_close_button": "Close",
-        "view_weekly_earnings_retroactive_points": "Retroactive points",
+        "view_weekly_earnings_retroactive_points": "Retroactive Points",
+        "view_weekly_earnings_bonus_points": "Bonus Points",
         "view_weekly_earnings_activity": "Your Activity",
         "view_weekly_earnings_referral_activity": "Referral Activity",
         "view_weekly_earnings_total_earnings": "Total",
@@ -2630,6 +2632,11 @@
     "warning": {
       "user_is_offline": "Connection offline, please check your internet connection",
       "user_is_online": "Connected! You're back online"
+    },
+    "dapp_browser": {
+      "address_bar": {
+        "input_placeholder": "Search or enter website"
+      }
     }
   }
 }

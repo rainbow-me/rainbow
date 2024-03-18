@@ -215,6 +215,19 @@ export const consoleSheetConfig = {
   }),
 };
 
+export const swapConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 0.9,
+      cornerRadius: 0,
+      springDamping: 1,
+      topOffset: 0,
+      transitionDuration: 0.3,
+    }),
+  }),
+};
+
 export const signTransactionSheetConfig = {
   options: ({ route }: { route: SignTransactionSheetRouteProp }) => ({
     ...buildCoolModalConfig({

@@ -122,7 +122,7 @@ export function FeaturedMintCard() {
             >
               <Cover>
                 <BlurWrapper>
-                  {!!imageUrl && (
+                  {!!imageUrl && IS_IOS && (
                     <Cover>
                       <ImgixImage
                         resizeMode="cover"
@@ -138,21 +138,31 @@ export function FeaturedMintCard() {
                     </Cover>
                   )}
                   <Cover>
-                    <BlurView
-                      blurAmount={100}
-                      blurType="light"
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                      }}
-                    />
+                    {IS_IOS ? (
+                      <BlurView
+                        blurAmount={100}
+                        blurType="light"
+                        style={{
+                          height: '100%',
+                          width: '100%',
+                        }}
+                      />
+                    ) : (
+                      <View
+                        style={{
+                          backgroundColor: accentColor || globalColors.blueGrey90,
+                          height: '100%',
+                          width: '100%',
+                        }}
+                      />
+                    )}
                   </Cover>
                   <Cover>
                     <View
                       style={{
                         height: '100%',
                         width: '100%',
-                        backgroundColor: `rgba(22, 22, 22, ${ios ? 0.5 : 1})`,
+                        backgroundColor: `rgba(22, 22, 22, ${ios ? 0.5 : 0.8})`,
                       }}
                     />
                   </Cover>

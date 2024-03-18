@@ -751,7 +751,6 @@ export const SignTransactionSheet = () => {
   const expandedCardBottomInset = EXPANDED_CARD_BOTTOM_INSET + (isMessageRequest ? 0 : GAS_BUTTON_SPACE);
 
   return (
-    // This PanGestureHandler blocks sheet dismiss gestures on iOS
     // @ts-expect-error Property 'children' does not exist on type
     <PanGestureHandler enabled={IS_IOS}>
       <Animated.View>

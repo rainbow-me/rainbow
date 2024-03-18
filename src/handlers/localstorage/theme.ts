@@ -20,7 +20,7 @@ export const getColorForThemeAndNavigationStyle = (theme: string) => {
  * @desc get theme
  * @return {String}
  */
-export const getTheme = () => getGlobal(THEME, 'light');
+export const getTheme = () => getGlobal(THEME, 'system');
 
 /**
  * @desc save theme
