@@ -4,7 +4,7 @@ import { TabBarIcon } from '@/components/icons/TabBarIcon';
 import { FlexItem } from '@/components/layout';
 import { TestnetToast } from '@/components/toasts';
 import { DAPP_BROWSER, POINTS, useExperimentalFlag } from '@/config';
-import { Box, Columns, globalColors, Stack, useForegroundColor, Text } from '@/design-system';
+import { Box, Columns, globalColors, Stack, useForegroundColor, Text, AccentColorProvider, Cover, Inset } from '@/design-system';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import { web3Provider } from '@/handlers/web3';
 import { isUsingButtonNavigation } from '@/helpers/statusBarHelper';
@@ -215,14 +215,20 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
       return pendingTransactions.length;
     }, [pendingTransactions]);
 
-    return pendingTransactionsCount > 0 ? (
-      <Box>
+    return true ? (
+      <Box width={{ custom: 32 }} height={{ custom: 32 }} alignItems="center" justifyContent="center">
         <AnimatedSpinner isLoading={true} color={accentColor} size={28} />
-        <Box position="absolute" style={{ top: 8, left: 9 }}>
-          <Text color={{ custom: accentColor }} size="17pt" weight="semibold">
-            {pendingTransactionsCount}
-          </Text>
-        </Box>
+        <Cover>
+          <Box width="full" height="full" padding={{ custom: 7 }}>
+            <AccentColorProvider color={colors.alpha(accentColor, isDarkMode ? 0.25 : 0.1)}>
+              <Box background="accent" alignItems="center" justifyContent="center" borderRadius={25} width="full" height="full">
+                <Text color={{ custom: accentColor }} size="13pt" weight="heavy" align="center">
+                  {5}
+                </Text>
+              </Box>
+            </AccentColorProvider>
+          </Box>
+        </Cover>
       </Box>
     ) : (
       <TabBarIcon accentColor={accentColor} icon={tabBarIcon} index={index} reanimatedPosition={reanimatedPosition} />
