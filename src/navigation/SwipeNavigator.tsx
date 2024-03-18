@@ -215,7 +215,7 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
       return pendingTransactions.length;
     }, [pendingTransactions]);
 
-    return true ? (
+    return pendingTransactionsCount > 0 ? (
       <Box width={{ custom: 32 }} height={{ custom: 32 }} alignItems="center" justifyContent="center">
         <AnimatedSpinner isLoading={true} color={accentColor} size={28} />
         <Cover>
@@ -223,7 +223,7 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
             <AccentColorProvider color={colors.alpha(accentColor, isDarkMode ? 0.25 : 0.1)}>
               <Box background="accent" alignItems="center" justifyContent="center" borderRadius={25} width="full" height="full">
                 <Text color={{ custom: accentColor }} size="13pt" weight="heavy" align="center">
-                  {5}
+                  {pendingTransactionsCount}
                 </Text>
               </Box>
             </AccentColorProvider>
