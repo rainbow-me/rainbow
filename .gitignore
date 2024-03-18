@@ -114,5 +114,8 @@ coverage
 # VSCode
 .vscode/
 
+# Zed
+.zed/
+
 # Webpack
 src/browser/InjectedJSBundle.js.LICENSE.txt
