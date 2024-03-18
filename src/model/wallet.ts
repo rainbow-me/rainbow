@@ -948,14 +948,10 @@ export const saveHardwareKey = async (
 export const getPrivateKey = async (address: EthereumAddress): Promise<null | PrivateKeyData | -1> => {
   try {
     const key = `${address}_${privateKeyKey}`;
-
-    const androidEncryptionPin = IS_ANDROID && !(await kc.getSupportedBiometryType()) ? await authenticateWithPIN() : undefined;
-
-    const options = { authenticationPrompt, androidEncryptionPin };
+    const options = { authenticationPrompt };
 
     const { value: pkey, error } = await kc.getObject<PrivateKeyData>(key, {
       ...options,
-      androidEncryptionPin,
     });
 
     if (error === -2) {

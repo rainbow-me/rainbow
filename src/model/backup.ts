@@ -388,6 +388,7 @@ export async function restoreCloudBackup({
       }
     }
 
+    console.log('userPIN inside of restoreCloudBackup', userPIN);
     const restoredSuccessfully = await restoreSpecificBackupIntoKeychain({ ...data.secrets }, userPIN);
 
     return restoredSuccessfully ? RestoreCloudBackupResultStates.success : RestoreCloudBackupResultStates.failedWhenRestoring;
@@ -421,6 +422,7 @@ async function restoreSpecificBackupIntoKeychain(backedUpData: BackedUpData, use
             backupPIN,
           });
         }
+
         await createWallet({
           seed: processedSeedPhrase,
           overwrite: true,
