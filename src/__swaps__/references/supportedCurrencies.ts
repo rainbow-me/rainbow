@@ -1,4 +1,4 @@
-import * as i18n  from '@/languages';
+import * as i18n from '@/languages';
 
 export const supportedCurrencies = {
   ETH: {

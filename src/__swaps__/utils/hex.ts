@@ -21,14 +21,10 @@ export const isHexStringIgnorePrefix = (value: string): boolean => {
  * @param value The starting string.
  * @return The prefixed string.
  */
-export const addHexPrefix = (value: string): string =>
-  startsWith(value, '0x') ? value : `0x${value}`;
+export const addHexPrefix = (value: string): string => (startsWith(value, '0x') ? value : `0x${value}`);
 
-export const convertStringToHex = (stringToConvert: string): string =>
-  new BigNumber(stringToConvert).toString(16);
+export const convertStringToHex = (stringToConvert: string): string => new BigNumber(stringToConvert).toString(16);
 
-export const toHex = (stringToConvert: string): string =>
-  addHexPrefix(convertStringToHex(stringToConvert));
+export const toHex = (stringToConvert: string): string => addHexPrefix(convertStringToHex(stringToConvert));
 
-export const toHexNoLeadingZeros = (value: string): string =>
-  toHex(value).replace(/^0x0*/, '0x');
+export const toHexNoLeadingZeros = (value: string): string => toHex(value).replace(/^0x0*/, '0x');

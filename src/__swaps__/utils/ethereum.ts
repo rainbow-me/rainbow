@@ -3,16 +3,22 @@ import { Mnemonic, isValidMnemonic } from '@ethersproject/hdnode';
 import { TransactionResponse } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
 import omit from 'lodash/omit';
-import { Address } from 'wagmi';
-
-import { PrivateKey } from '../keychain/IKeychain';
+import { Address } from 'viem';
+import { EthereumPrivateKey } from '@/model/wallet';
 import { ethUnits } from '../references';
-import { EthereumWalletType } from '../types/walletTypes';
 
 import { addHexPrefix, isHexStringIgnorePrefix } from './hex';
 import { divide, multiply } from './numbers';
 
-export type EthereumWalletSeed = PrivateKey | Mnemonic['phrase'];
+export type EthereumWalletSeed = EthereumPrivateKey | Mnemonic['phrase'];
+export enum EthereumWalletType {
+  mnemonic = 'mnemonic',
+  privateKey = 'privateKey',
+  readOnly = 'readOnly',
+  seed = 'seed',
+  ledgerPublicKey = 'ledgerPublicKey',
+  trezorPublicKey = 'trezorPublicKey',
+}
 
 const validTLDs = ['eth', 'xyz', 'luxe', 'kred', 'reverse', 'addr', 'test'];
 export const isENSAddressFormat = (name: string) => {
@@ -31,9 +37,7 @@ export const isValidPrivateKey = (value: string): boolean => {
   return isHexStringIgnorePrefix(value) && addHexPrefix(value).length === 66;
 };
 
-export const identifyWalletType = (
-  walletSeed: EthereumWalletSeed,
-): EthereumWalletType => {
+export const identifyWalletType = (walletSeed: EthereumWalletSeed): EthereumWalletType => {
   if (isValidPrivateKey(walletSeed)) {
     return EthereumWalletType.privateKey;
   }
@@ -54,9 +58,7 @@ export const identifyWalletType = (
  * @param  {String} address
  * @return {Promise<Boolean>}
  */
-export const hasPreviousTransactions = async (
-  address: Address,
-): Promise<boolean> => {
+export const hasPreviousTransactions = async (address: Address): Promise<boolean> => {
   try {
     const url = `https://aha.rainbow.me/?address=${address}`;
     const response = await fetch(url);
@@ -89,9 +91,7 @@ export const toWei = (ether: string): string => {
   return result.toString();
 };
 
-export const normalizeTransactionResponsePayload = (
-  payload: TransactionResponse,
-): TransactionResponse => {
+export const normalizeTransactionResponsePayload = (payload: TransactionResponse): TransactionResponse => {
   // Firefox can't serialize functions
   if (navigator.userAgent.toLowerCase().includes('firefox')) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -114,14 +114,12 @@ export const normalizeTransactionResponsePayload = (
 export const sanitizeTypedData = (data: any) => {
   if (data.types[data.primaryType].length > 0) {
     // Extract all the valid permit types for the primary type
-    const permitPrimaryTypes: string[] = data.types[data.primaryType].map(
-      (type: { name: string; type: string }) => type.name,
-    );
+    const permitPrimaryTypes: string[] = data.types[data.primaryType].map((type: { name: string; type: string }) => type.name);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sanitizedMessage: any = {};
     // Extract all the message keys that matches the valid permit types
-    Object.keys(data.message).forEach((key) => {
+    Object.keys(data.message).forEach(key => {
       if (permitPrimaryTypes.includes(key)) {
         sanitizedMessage[key] = data.message[key];
       }
