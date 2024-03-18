@@ -67,6 +67,7 @@ import {
   walletDiagnosticsSheetConfig,
   positionSheetConfig,
   appIconUnlockSheetConfig,
+  swapConfig,
 } from './config';
 import { addCashSheet, emojiPreset, emojiPresetWallet, overlayExpandedPreset, sheetPreset } from './effects';
 import { InitialRouteContext } from './initialRoute';
@@ -94,8 +95,9 @@ import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoShe
 import { ConsoleSheet } from '@/screens/points/ConsoleSheet';
 import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileContext';
 import AppIconUnlockSheet from '@/screens/AppIconUnlockSheet';
-import SwapsV2 from '@/__swaps__/screens/Swap';
+import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
 import { useRemoteConfig } from '@/model/remoteConfig';
+import { SwapProvider } from '@/__swaps__/screens/Swap/providers/swap-provider';
 
 type StackNavigatorParams = {
   [Routes.SEND_SHEET]: unknown;
@@ -133,6 +135,16 @@ function MainStack() {
     <Stack.Navigator initialRouteName={Routes.MAIN_NAVIGATOR_WRAPPER} {...stackNavigationConfig} screenOptions={defaultScreenStackOptions}>
       <Stack.Screen component={MainNavigator} name={Routes.MAIN_NAVIGATOR_WRAPPER} />
     </Stack.Navigator>
+  );
+}
+
+function SwapsNavigator() {
+  return (
+    <SwapProvider>
+      <NativeStack.Navigator {...nativeStackConfig} initialRouteName={Routes.SWAP}>
+        <NativeStack.Screen component={SwapScreen} name={Routes.SWAP} {...swapConfig} />
+      </NativeStack.Navigator>
+    </SwapProvider>
   );
 }
 
@@ -289,7 +301,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={ConsoleSheet} name={Routes.CONSOLE_SHEET} {...consoleSheetConfig} />
       <NativeStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} {...appIconUnlockSheetConfig} />
 
-      {swapsV2Enabled && <NativeStack.Screen component={SwapsV2} name={Routes.SWAP} />}
+      {swapsV2Enabled && <NativeStack.Screen component={SwapsNavigator} name={Routes.SWAP_NAVIGATOR} {...swapConfig} />}
     </NativeStack.Navigator>
   );
 }

@@ -504,6 +504,8 @@ PODS:
     - glog
   - react-native-aes-crypto (2.0.2):
     - React-Core
+  - react-native-animateable-text (0.11.0):
+    - React-Core
   - react-native-ble-plx (2.0.3):
     - MultiplatformBleAdapter (= 0.1.9)
     - React-Core
@@ -760,7 +762,7 @@ PODS:
     - React-Core
   - RNReactNativeHapticFeedback (1.11.0):
     - React-Core
-  - RNReanimated (3.7.1):
+  - RNReanimated (3.8.0):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - ReactCommon/turbomodule/core
@@ -858,6 +860,7 @@ DEPENDENCIES:
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - react-native-aes-crypto (from `../node_modules/react-native-aes-crypto`)
+  - react-native-animateable-text (from `../node_modules/react-native-animateable-text`)
   - react-native-ble-plx (from `../node_modules/react-native-ble-plx`)
   - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
   - react-native-branch (from `../node_modules/react-native-branch`)
@@ -1050,6 +1053,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/logger"
   react-native-aes-crypto:
     :path: "../node_modules/react-native-aes-crypto"
+  react-native-animateable-text:
+    :path: "../node_modules/react-native-animateable-text"
   react-native-ble-plx:
     :path: "../node_modules/react-native-ble-plx"
   react-native-blur:
@@ -1284,6 +1289,7 @@ SPEC CHECKSUMS:
   React-jsinspector: b511447170f561157547bc0bef3f169663860be7
   React-logger: c5b527272d5f22eaa09bb3c3a690fee8f237ae95
   react-native-aes-crypto: d7e87fd02cee7285983c00957a34063dfc4c94b3
+  react-native-animateable-text: 5f5a6e96f6c075aa943ce52ea7fd3fbb3e56d725
   react-native-ble-plx: f10240444452dfb2d2a13a0e4f58d7783e92d76e
   react-native-blur: cfdad7b3c01d725ab62a8a729f42ea463998afa2
   react-native-branch: 960c897d57b9f4912b08b9d06a25284b6e9879da
@@ -1355,7 +1361,7 @@ SPEC CHECKSUMS:
   RNOS: 31db6fa4a197d179afbba9e6b4d28d450a7f250b
   RNPermissions: 4e3714e18afe7141d000beae3755e5b5fb2f5e05
   RNReactNativeHapticFeedback: 653a8c126a0f5e88ce15ffe280b3ff37e1fbb285
-  RNReanimated: 43675f1f0e704abe8ebf953fd79b00e66302cda2
+  RNReanimated: 5afba582037b0dae040a5f927dec7fdd18e430c3
   RNRudderSdk: b638620627e6cb9f95b54468810ac2ac1f7dc48b
   RNScreens: 6a8a3c6b808aa48dca1780df7b73ea524f602c63
   RNSentry: fbbdcd7213058e3de5fbaa452b25a06a16b4b382

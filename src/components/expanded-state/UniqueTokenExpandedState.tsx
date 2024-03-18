@@ -440,7 +440,6 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
               <Inset bottom={sectionSpace} top={{ custom: 33 }}>
                 <Stack alignHorizontal="center">
                   <Animated.View style={sheetHandleStyle}>
-                    {/* @ts-expect-error JavaScript component */}
                     <SheetHandle color={colors.alpha(colors.whiteLabel, 0.24)} />
                   </Animated.View>
                 </Stack>

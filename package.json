@@ -59,7 +59,7 @@
     "check-translations": "./scripts/check-translations.sh ./src './src/languages/*.json' lang.t",
     "codegen-translations": "node ./scripts/codegen-translations.js",
     "prepare": "husky install",
-    "bundle-inpage": "yarn webpack --config src/browser/webpack.config.js"
+    "bundle-inpage": "yarn webpack --config src/browser/webpack.config.js && cp InjectedJSBundle.js android/app/src/main/res/raw/injected_js_bundle.js"
   },
   "dependencies": {
     "@apollo/client": "3.2.4",
@@ -116,7 +116,7 @@
     "@react-navigation/material-top-tabs": "6.6.2",
     "@react-navigation/native": "6.1.6",
     "@react-navigation/stack": "6.3.16",
-    "@reservoir0x/reservoir-sdk": "1.8.4",
+    "@reservoir0x/reservoir-sdk": "2.0.8",
     "@rudderstack/rudder-sdk-react-native": "1.12.0",
     "@sentry/react-native": "3.4.1",
     "@shopify/flash-list": "1.5.0",
@@ -210,6 +210,7 @@
     "react-native-action-sheet": "2.2.0",
     "react-native-actionsheet": "2.4.2",
     "react-native-aes-crypto": "rainbow-me/react-native-aes#65c49f7e70266615b2999eaa7db654d3fe4f2e3b",
+    "react-native-animateable-text": "0.11.0",
     "react-native-ble-plx": "2.0.3",
     "react-native-bootsplash": "4.3.2",
     "react-native-branch": "5.3.1",
@@ -246,7 +247,7 @@
     "react-native-quick-md5": "3.0.3",
     "react-native-radial-gradient": "rainbow-me/react-native-radial-gradient#b99ab59d27dba70364ef516bd5193c37657ba95c",
     "react-native-randombytes": "3.5.3",
-    "react-native-reanimated": "3.7.1",
+    "react-native-reanimated": "3.8.0",
     "react-native-redash": "16.3.0",
     "react-native-restart": "0.0.22",
     "react-native-safe-area-context": "4.5.3",
@@ -295,7 +296,7 @@
     "url": "0.10.3",
     "url-join": "4.0.1",
     "url-parse": "1.5.10",
-    "use-debounce": "7.0.0",
+    "use-debounce": "10.0.0",
     "use-deep-compare": "1.1.0",
     "use-memo-one": "1.1.1",
     "util": "0.10.4",

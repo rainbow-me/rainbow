@@ -64,7 +64,7 @@ export const AddressBar = () => {
     );
 
     return {
-      height: safeAreaInsetValues.bottom + 58 * (1 - (tabViewProgress?.value ?? 0)),
+      height: safeAreaInsetValues.bottom + (android ? 40 : 0) + 58 * (1 - (tabViewProgress?.value ?? 0)),
       transform: [{ translateY: Math.min(-(keyboard.height.value - 30), -50) }],
       backgroundColor,
     };
@@ -114,6 +114,7 @@ export const AddressBar = () => {
 
   const isGoogleSearch = url.startsWith(GOOGLE_SEARCH_URL);
   const isHome = formattedUrl === RAINBOW_HOME;
+  // eslint-disable-next-line no-nested-ternary
   const inputValue = isHome ? undefined : isFocused && !isGoogleSearch ? url : formattedUrl;
 
   const shouldShowDetails = !isFocused && !isHome;
@@ -140,7 +141,7 @@ export const AddressBar = () => {
       as={AnimatedBox}
       justifyContent="center"
       bottom={{ custom: 0 }}
-      paddingBottom={{ custom: safeAreaInsetValues.bottom }}
+      paddingBottom={{ custom: ios ? safeAreaInsetValues.bottom : safeAreaInsetValues.bottom + 30 }}
       pointerEvents="box-none"
       position="absolute"
       style={[bottomBarStyle, { zIndex: 10000 }]}

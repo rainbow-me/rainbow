@@ -13,9 +13,16 @@ import { AddressBar } from './AddressBar';
 import { BrowserTab } from './BrowserTab';
 import { StyleSheet } from 'react-native';
 import { TAB_VIEW_ROW_HEIGHT } from './Dimensions';
+import { IS_ANDROID } from '@/env';
 
 const getInjectedJS = async () => {
-  return RNFS.readFile(`${RNFS.MainBundlePath}/InjectedJSBundle.js`, 'utf8');
+  const baseDirectory = IS_ANDROID ? RNFS.DocumentDirectoryPath : RNFS.MainBundlePath;
+
+  if (IS_ANDROID) {
+    return RNFS.readFileRes('injected_js_bundle.js', 'utf8');
+  } else {
+    return RNFS.readFile(`${baseDirectory}/InjectedJSBundle.js`, 'utf8');
+  }
 };
 
 const DappBrowserComponent = () => {
@@ -50,13 +57,19 @@ const DappBrowserComponent = () => {
           borderRadius={ScreenCornerRadius}
           height="full"
           position="absolute"
-          style={[backgroundStyle, { backgroundColor: globalColors.grey100 }]}
+          style={[
+            backgroundStyle,
+            {
+              backgroundColor: globalColors.grey100,
+              paddingTop: android ? 30 : 0,
+            },
+          ]}
           width="full"
         />
         <Animated.ScrollView
           contentContainerStyle={{
             backgroundColor: globalColors.grey100,
-            height: Math.ceil(tabStates.length / 2) * TAB_VIEW_ROW_HEIGHT + safeAreaInsetValues.bottom + 104,
+            height: Math.ceil(tabStates.length / 2) * TAB_VIEW_ROW_HEIGHT + safeAreaInsetValues.bottom + (android ? 35 : 0) + 104,
             zIndex: 20000,
           }}
           ref={scrollViewRef}

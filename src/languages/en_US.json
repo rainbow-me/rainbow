@@ -1282,6 +1282,7 @@
         "offer_expired": "Offer Expired",
         "expired": "Expired",
         "hold_to_sell": "Hold to Sell",
+        "selling": "Selling",
         "error": {
           "title": "Error selling NFT",
           "message": "Please contact Rainbow support for assistance."

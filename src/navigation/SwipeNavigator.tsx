@@ -232,17 +232,9 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
   }, [isDarkMode]);
 
   return (
-    <Box style={shadowStyles.outer}>
-      <Box style={shadowStyles.inner}>
-        <Box
-          height={{ custom: TAB_BAR_HEIGHT }}
-          position="absolute"
-          style={{
-            bottom: 0,
-            overflow: 'hidden',
-          }}
-          width="full"
-        >
+    <Box bottom={{ custom: 0 }} height={{ custom: TAB_BAR_HEIGHT }} position="absolute" width="full">
+      <Box style={shadowStyles.outer}>
+        <Box style={shadowStyles.inner}>
           {/* @ts-expect-error The conditional as={} is causing type errors */}
           <Box
             as={IS_IOS ? BlurView : View}

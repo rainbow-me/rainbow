@@ -27,7 +27,7 @@ export interface ThemeContextProps {
 
 export const ThemeContext = createContext<ThemeContextProps>({
   colors: lightModeThemeColors,
-  colorScheme: Themes.LIGHT,
+  colorScheme: Themes.SYSTEM,
   darkScheme: darkModeThemeColors,
   isDarkMode: false,
   lightScheme: lightModeThemeColors,
@@ -52,7 +52,7 @@ export const MainThemeProvider = (props: PropsWithChildren<Record<string, never>
   // Override default with user preferences
   useEffect(() => {
     const loadUserPref = async () => {
-      const userPref = (await getTheme()) ?? Themes.LIGHT;
+      const userPref = (await getTheme()) ?? Themes.SYSTEM;
       const userPrefSystemAdjusted = userPref === Themes.SYSTEM ? (isSystemDarkMode ? 'dark' : 'light') : userPref;
       currentColors.theme = userPrefSystemAdjusted;
       currentColors.themedColors = userPrefSystemAdjusted === Themes.DARK ? darkModeThemeColors : lightModeThemeColors;

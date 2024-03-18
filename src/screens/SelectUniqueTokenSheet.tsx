@@ -35,7 +35,6 @@ export default function SelectUniqueTokenSheet() {
       {...(android && { borderTopRadius: 30 })}
     >
       <Box alignItems="center" justifyContent="center" paddingVertical="10px">
-        {/* @ts-expect-error JavaScript component */}
         <SheetHandle />
       </Box>
       <RecyclerAssetList2
