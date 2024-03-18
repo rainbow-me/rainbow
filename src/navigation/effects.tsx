@@ -444,14 +444,6 @@ export const consoleSheetPreset: BottomSheetNavigationOptions = {
   backdropOpacity: 1,
 };
 
-export const swapSheetPreset: BottomSheetNavigationOptions = {
-  backdropColor: 'black',
-  backdropOpacity: 0.9,
-  enableContentPanningGesture: IS_ANDROID,
-  backdropPressBehavior: 'none',
-  height: '100%',
-};
-
 export const expandedPresetWithSmallGestureResponseDistance: StackNavigationOptions & BottomSheetNavigationOptions = {
   ...expandedPreset,
   gestureResponseDistance: smallGestureResponseDistance,

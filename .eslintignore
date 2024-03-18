@@ -16,4 +16,6 @@ jest.config.js
 .detoxrc.js
 __generated__
 coverage
-__SWAPS_V2__/README.md
+src/browser
+src/__swaps__/README.md
+InjectedJSBundle.js
