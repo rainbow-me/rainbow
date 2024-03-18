@@ -56,7 +56,6 @@ import {
   consoleSheetPreset,
   swapSheetPreset,
   appIconUnlockSheetPreset,
-  swapSheetPreset,
 } from './effects';
 import { InitialRouteContext } from './initialRoute';
 import { onNavigationStateChange } from './onNavigationStateChange';
