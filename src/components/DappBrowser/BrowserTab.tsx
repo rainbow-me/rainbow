@@ -1,14 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Box, globalColors, useColorMode, Text } from '@/design-system';
 import { Page } from '@/components/layout';
-import { useAccountSettings, useDimensions } from '@/hooks';
+import { useAccountAccentColor, useAccountSettings, useDimensions } from '@/hooks';
 import { AnimatePresence, MotiView } from 'moti';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import ViewShot from 'react-native-view-shot';
 import WebView, { WebViewMessageEvent, WebViewNavigation } from 'react-native-webview';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
-import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 import { transformOrigin } from 'react-native-redash';
 import { MMKV } from 'react-native-mmkv';
 import { RAINBOW_HOME, useBrowserContext } from './BrowserContext';
@@ -19,6 +18,9 @@ import RNFS from 'react-native-fs';
 import { WebViewEvent } from 'react-native-webview/lib/WebViewTypes';
 import { appMessenger } from '@/browserMessaging/AppMessenger';
 import DappBrowserWebview from './DappBrowserWebview';
+import { IS_ANDROID, IS_IOS } from '@/env';
+import { DappBrowserShadows } from './DappBrowserShadows';
+import { WebViewBorder } from './WebViewBorder';
 import Homepage from './Homepage';
 
 interface BrowserTabProps {
@@ -91,7 +93,9 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
   } = useBrowserContext();
   const { colorMode } = useColorMode();
   const { width: deviceWidth } = useDimensions();
+  const { accentColor } = useAccountAccentColor();
   const { accountAddress } = useAccountSettings();
+  const { isDarkMode } = useColorMode();
 
   const messengers = useRef<any[]>([]);
 
@@ -134,8 +138,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
     );
 
     // eslint-disable-next-line no-nested-ternary
-    const topBorderRadius = interpolate(progress, [0, 1], [isActiveTab ? (android ? 0 : 12) : 30, 30]);
-    const bottomBorderRadius = interpolate(progress, [0, 1], [isActiveTab ? ScreenCornerRadius : 30, 30]);
+    const borderRadius = interpolate(progress, [0, 1], [isActiveTab ? (IS_ANDROID ? 0 : 16) : 30, 30]);
     const height = interpolate(
       progress,
       [0, 1],
@@ -149,10 +152,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
     );
 
     return {
-      borderBottomLeftRadius: bottomBorderRadius,
-      borderBottomRightRadius: bottomBorderRadius,
-      borderTopLeftRadius: topBorderRadius,
-      borderTopRightRadius: topBorderRadius,
+      borderRadius,
       height,
       opacity,
       // eslint-disable-next-line no-nested-ternary
@@ -366,119 +366,119 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
   );
 
   const WebviewComponent = () => (
-    <DappBrowserWebview
-      webviewDebuggingEnabled={true}
-      injectedJavaScriptBeforeContentLoaded={injectedJS}
-      allowsInlineMediaPlayback
-      allowsBackForwardNavigationGestures
-      applicationNameForUserAgent={'Rainbow'}
-      automaticallyAdjustContentInsets
-      automaticallyAdjustsScrollIndicatorInsets
-      containerStyle={{
-        overflow: 'visible',
-      }}
-      contentInset={{
-        bottom: safeAreaInsetValues.bottom + 104,
-      }}
-      decelerationRate={'normal'}
-      injectedJavaScript={getWebsiteBackgroundColor}
-      mediaPlaybackRequiresUserAction
-      onLoadStart={handleOnLoadStart}
-      onLoad={handleOnLoad}
-      onLoadEnd={handleOnLoadEnd}
-      onError={handleOnError}
-      onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
-      onLoadProgress={handleOnLoadProgress}
-      onMessage={handleMessage}
-      onNavigationStateChange={handleNavigationStateChange}
-      ref={webViewRef}
-      source={{ uri: tabStates[tabIndex].url }}
-      style={[
-        styles.webViewStyle,
-        {
-          backgroundColor: backgroundColor || (colorMode === 'dark' ? globalColors.grey100 : globalColors.white100),
-        },
-      ]}
-    ></DappBrowserWebview>
+    <Freeze
+      freeze={!isActiveTab}
+      placeholder={
+        <Box
+          style={[
+            styles.webViewStyle,
+            {
+              backgroundColor: backgroundColor || (colorMode === 'dark' ? '#191A1C' : globalColors.white100),
+              height: COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
+            },
+          ]}
+        />
+      }
+    >
+      <DappBrowserWebview
+        webviewDebuggingEnabled={true}
+        injectedJavaScriptBeforeContentLoaded={injectedJS}
+        allowsInlineMediaPlayback
+        allowsBackForwardNavigationGestures
+        applicationNameForUserAgent={'Rainbow'}
+        automaticallyAdjustContentInsets
+        automaticallyAdjustsScrollIndicatorInsets
+        decelerationRate={'normal'}
+        injectedJavaScript={getWebsiteBackgroundColor}
+        mediaPlaybackRequiresUserAction
+        onLoadStart={handleOnLoadStart}
+        onLoad={handleOnLoad}
+        onLoadEnd={handleOnLoadEnd}
+        onError={handleOnError}
+        onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
+        onLoadProgress={handleOnLoadProgress}
+        onMessage={handleMessage}
+        onNavigationStateChange={handleNavigationStateChange}
+        ref={webViewRef}
+        source={{ uri: tabStates[tabIndex].url }}
+        style={[
+          styles.webViewStyle,
+          {
+            backgroundColor: backgroundColor || (colorMode === 'dark' ? globalColors.grey100 : globalColors.white100),
+          },
+        ]}
+      />
+    </Freeze>
   );
 
-  const TabContent = tabStates[tabIndex].url === RAINBOW_HOME ? <Homepage /> : <WebviewComponent />;
+  const isOnHomepage = tabStates[tabIndex].url === RAINBOW_HOME;
+  const TabContent = isOnHomepage ? <Homepage /> : <WebviewComponent />;
 
   return (
     <>
-      <TouchableWithoutFeedback disabled={isActiveTab} onPress={handlePress}>
-        <Animated.View style={[styles.webViewContainer, webViewStyle]}>
-          <ViewShot options={{ format: 'jpg' }} ref={viewShotRef}>
-            <View
-              collapsable={false}
-              style={{
-                backgroundColor: backgroundColor || (colorMode === 'dark' ? '#191A1C' : globalColors.white100),
-                height: WEBVIEW_HEIGHT,
-                width: '100%',
-              }}
-            >
-              <Freeze
-                freeze={!isActiveTab}
-                placeholder={
-                  <Box
-                    style={[
-                      styles.webViewStyle,
-                      {
-                        backgroundColor: backgroundColor || (colorMode === 'dark' ? '#191A1C' : globalColors.blueGrey10),
-                        height: COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
-                      },
-                    ]}
-                  />
-                }
-              >
-                {TabContent}
-              </Freeze>
-            </View>
-          </ViewShot>
-          <AnimatePresence>
-            {(!isActiveTab || tabViewVisible) && (
-              <MotiView
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                from={{ opacity: 0 }}
-                pointerEvents="none"
-                style={[
-                  styles.webViewStyle,
-                  {
-                    height: COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
-                    left: 0,
-                    position: 'absolute',
-                    top: 0,
-                    zIndex: 20000,
-                  },
-                ]}
-                transition={{
-                  duration: 300,
-                  easing: Easing.bezier(0.2, 0, 0, 1),
-                  type: 'timing',
+      <DappBrowserShadows type="webview">
+        <TouchableWithoutFeedback onPress={handlePress}>
+          <Animated.View style={[styles.webViewContainer, webViewStyle]}>
+            <ViewShot options={{ format: 'jpg' }} ref={viewShotRef}>
+              <View
+                collapsable={false}
+                style={{
+                  backgroundColor: backgroundColor || (colorMode === 'dark' ? '#191A1C' : globalColors.white100),
+                  height: WEBVIEW_HEIGHT,
+                  width: '100%',
                 }}
               >
-                <Image
-                  height={WEBVIEW_HEIGHT}
-                  onError={e => console.log('Image loading error:', e.nativeEvent.error)}
-                  source={{ uri: screenshot?.uri }}
+                {TabContent}
+              </View>
+            </ViewShot>
+            <AnimatePresence>
+              {(!isActiveTab || tabViewVisible) && (
+                <MotiView
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  from={{ opacity: 0 }}
+                  pointerEvents="none"
                   style={[
                     styles.webViewStyle,
                     {
+                      height: COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
                       left: 0,
                       position: 'absolute',
-                      resizeMode: 'contain',
                       top: 0,
+                      zIndex: 20000,
                     },
                   ]}
-                  width={deviceWidth}
-                />
-              </MotiView>
-            )}
-          </AnimatePresence>
-        </Animated.View>
-      </TouchableWithoutFeedback>
-      {isActiveTab && !tabViewVisible && <Box as={Animated.View} background="blue" style={[styles.progressBar, progressBarStyle]} />}
+                  transition={{
+                    duration: 300,
+                    easing: Easing.bezier(0.2, 0, 0, 1),
+                    type: 'timing',
+                  }}
+                >
+                  <Image
+                    height={WEBVIEW_HEIGHT}
+                    onError={e => console.log('Image loading error:', e.nativeEvent.error)}
+                    source={{ uri: screenshot?.uri }}
+                    style={[
+                      styles.webViewStyle,
+                      {
+                        left: 0,
+                        position: 'absolute',
+                        resizeMode: 'contain',
+                        top: 0,
+                      },
+                    ]}
+                    width={deviceWidth}
+                  />
+                </MotiView>
+              )}
+            </AnimatePresence>
+            <WebViewBorder enabled={IS_IOS && isDarkMode && !isOnHomepage} isActiveTab={isActiveTab} />
+          </Animated.View>
+        </TouchableWithoutFeedback>
+      </DappBrowserShadows>
+      {isActiveTab && !tabViewVisible && (
+        <Box as={Animated.View} style={[styles.progressBar, progressBarStyle, { backgroundColor: accentColor }]} />
+      )}
     </>
   );
 });
@@ -500,8 +500,9 @@ const styles = StyleSheet.create({
     width: deviceUtils.dimensions.width,
   },
   progressBar: {
+    borderRadius: 1,
     height: 2,
-    top: WEBVIEW_HEIGHT - 81,
+    top: WEBVIEW_HEIGHT + safeAreaInsetValues.top + 88 - 2,
     left: 0,
     width: deviceUtils.dimensions.width,
     position: 'absolute',
