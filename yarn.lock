@@ -3305,10 +3305,10 @@
   resolved "https://registry.yarnpkg.com/@pkgr/core/-/core-0.1.1.tgz#1ec17e2edbec25c8306d424ecfbf13c7de1aaa31"
   integrity sha512-cq8o4cWH0ibXh9VGi5P20Tu9XF/0fFXl9EUinr9QfTM7a7p0oTA4iJRCQWppXR1Pg8dSM0UCItCkPwsk9qWWYA==
 
-"@rainbow-me/provider@0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@rainbow-me/provider/-/provider-0.0.4.tgz#e327337318644a87d20b681d3b070fedb7f840ee"
-  integrity sha512-d1ghPNdBVcki3lw58CLjH0MPRmYHZ4OLOntuJKOm1afUvmOkqh8bQizKgWGG/EUoN2cWMDW3mPF+8+6ioKSfeA==
+"@rainbow-me/provider@0.0.7":
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/provider/-/provider-0.0.7.tgz#db2368c3e870d7afad5af63e3675b715e1476693"
+  integrity sha512-NTik6yePCmvnbfGkZobFAabhHp/D3jAjX5/6bium7bz+jxegE8PGRgi99XVG1O5f0S/ES1DZFaKceJHrIWCTww==
   dependencies:
     "@ethersproject/abstract-provider" "5.7.0"
     "@ethersproject/bignumber" "5.7.0"
