@@ -1,4 +1,4 @@
-import { Box } from '@/design-system';
+import { Box, Inline, Inset, Text, TextIcon } from '@/design-system';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { NativeSyntheticEvent, TextInput, TextInputSubmitEditingEventData } from 'react-native';
 import Animated, { Easing, interpolate, useAnimatedKeyboard, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -10,6 +10,7 @@ import { TabButton } from './address-bar/TabButton';
 import { AddressInput } from './address-bar/AddressInput';
 import useDimensions from '@/hooks/useDimensions';
 import { IS_IOS } from '@/env';
+import { ButtonPressAnimation } from '../animations';
 
 const GOOGLE_SEARCH_URL = 'https://www.google.com/search?q=';
 const HTTP = 'http://';
@@ -145,7 +146,35 @@ export const AddressBar = () => {
         pointerEvents="box-none"
         background="surfacePrimary"
         style={[backgroundStyle]}
-      ></Box>
+      >
+        <Inset horizontal="16px" top={{ custom: 100 }}>
+          <Inset horizontal="8px">
+            <Inline alignHorizontal="justify" alignVertical="center">
+              <Inline space="6px" alignVertical="center">
+                <TextIcon color="blue" size="15pt" weight="heavy">
+                  􀐫
+                </TextIcon>
+                <Text weight="heavy" color="label" size="20pt">
+                  Suggested
+                </Text>
+              </Inline>
+              <Box
+                as={ButtonPressAnimation}
+                background="fill"
+                height={{ custom: 32 }}
+                width={{ custom: 32 }}
+                borderRadius={32}
+                alignItems="center"
+                justifyContent="center"
+              >
+                <Text weight="heavy" color="label" size="15pt" align="center">
+                  􀆄
+                </Text>
+              </Box>
+            </Inline>
+          </Inset>
+        </Inset>
+      </Box>
       <Box
         as={Animated.View}
         bottom={{ custom: 0 }}
