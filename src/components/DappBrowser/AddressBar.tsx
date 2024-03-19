@@ -46,8 +46,12 @@ export const AddressBar = () => {
     ],
   }));
 
+  const backgroundStyle = useAnimatedStyle(() => ({
+    opacity: animationProgress.value,
+  }));
+
   const accountIconStyle = useAnimatedStyle(() => ({
-    opacity: withTiming(isFocused ? 0 : 1, timingConfig),
+    opacity: 1 - animationProgress.value,
   }));
 
   useEffect(() => {
@@ -132,44 +136,55 @@ export const AddressBar = () => {
   }, []);
 
   return (
-    <Box
-      as={Animated.View}
-      bottom={{ custom: 0 }}
-      paddingTop="20px"
-      pointerEvents="box-none"
-      position="absolute"
-      style={[bottomBarStyle, { zIndex: 10000 }]}
-      width={{ custom: deviceWidth }}
-    >
+    <>
       <Box
         as={Animated.View}
-        paddingRight="16px"
-        style={[{ alignItems: 'center', flexDirection: 'row', justifyContent: 'center' }, barStyle]}
+        height="full"
         width="full"
+        position="absolute"
+        pointerEvents="box-none"
+        background="surfacePrimary"
+        style={[backgroundStyle]}
+      ></Box>
+      <Box
+        as={Animated.View}
+        bottom={{ custom: 0 }}
+        paddingTop="20px"
+        pointerEvents="box-none"
+        position="absolute"
+        style={[bottomBarStyle, { zIndex: 10000, opacity: 1 }]}
+        width={{ custom: deviceWidth }}
       >
-        <Box as={Animated.View} position="absolute" style={[accountIconStyle, { left: 16, pointerEvents: isFocused ? 'none' : 'auto' }]}>
-          <AccountIcon />
-        </Box>
+        <Box
+          as={Animated.View}
+          paddingRight="16px"
+          style={[{ alignItems: 'center', flexDirection: 'row', justifyContent: 'center' }, barStyle]}
+          width="full"
+        >
+          <Box as={Animated.View} position="absolute" style={[accountIconStyle, { left: 16, pointerEvents: isFocused ? 'none' : 'auto' }]}>
+            <AccountIcon />
+          </Box>
 
-        <Box paddingRight="12px" style={{ flex: 1 }}>
-          <AddressInput
-            onPress={onAddressInputPress}
-            isFocused={isFocused}
-            inputRef={inputRef}
-            inputValue={inputValue}
-            onBlur={onBlur}
-            onFocus={onFocus}
-            onChangeText={onUrlChange}
-            onSubmitEditing={handleUrlSubmit}
-            tabViewProgress={tabViewProgress}
-            shouldShowRefreshButton={!isHome && !!tabStates[activeTabIndex].url && !isFocused}
-            shouldShowMenuButton={shouldShowDetails}
-            onRefresh={onRefresh}
-          />
-        </Box>
+          <Box paddingRight="12px" style={{ flex: 1 }}>
+            <AddressInput
+              onPress={onAddressInputPress}
+              isFocused={isFocused}
+              inputRef={inputRef}
+              inputValue={inputValue}
+              onBlur={onBlur}
+              onFocus={onFocus}
+              onChangeText={onUrlChange}
+              onSubmitEditing={handleUrlSubmit}
+              tabViewProgress={tabViewProgress}
+              shouldShowRefreshButton={!isHome && !!tabStates[activeTabIndex].url && !isFocused}
+              shouldShowMenuButton={shouldShowDetails}
+              onRefresh={onRefresh}
+            />
+          </Box>
 
-        <TabButton toggleTabView={toggleTabView} isFocused={isFocused} inputRef={inputRef} />
+          <TabButton toggleTabView={toggleTabView} isFocused={isFocused} inputRef={inputRef} />
+        </Box>
       </Box>
-    </Box>
+    </>
   );
 };
