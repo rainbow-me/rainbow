@@ -9,6 +9,7 @@ import { AccountIcon } from './address-bar/AccountIcon';
 import { TabButton } from './address-bar/TabButton';
 import { AddressInput } from './address-bar/AddressInput';
 import useDimensions from '@/hooks/useDimensions';
+import { IS_IOS } from '@/env';
 
 const GOOGLE_SEARCH_URL = 'https://www.google.com/search?q=';
 const HTTP = 'http://';
@@ -60,7 +61,7 @@ export const AddressBar = () => {
   const bottomBarStyle = useAnimatedStyle(() => {
     return {
       height: TAB_BAR_HEIGHT + 88,
-      transform: [{ translateY: Math.min(-(keyboard.height.value - 82), 0) }],
+      transform: [{ translateY: Math.min(-(keyboard.height.value - (IS_IOS ? 82 : 46)), 0) }],
     };
   }, [tabViewProgress, keyboard.height]);
 
