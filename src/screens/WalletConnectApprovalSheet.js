@@ -292,7 +292,7 @@ export default function WalletConnectApprovalSheet() {
         },
         watchOnly: true,
       });
-  }, [approvalAccount.address, goBack, type, getState]);
+  }, [approvalAccount.address, goBack, type]);
 
   useEffect(() => {
     const waitingTime = (Date.now() - receivedTimestamp) / 1000;

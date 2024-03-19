@@ -27,6 +27,7 @@ import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from '@/navigation/Hardware
 import { StackNavigationOptions } from '@react-navigation/stack';
 import { PartialNavigatorConfigOptions } from '@/navigation/types';
 import { BottomSheetNavigationOptions } from '@/navigation/bottom-sheet/types';
+import { SignTransactionSheetRouteProp } from '@/screens/SignTransactionSheet';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 
@@ -228,10 +229,10 @@ export const swapConfig = {
 };
 
 export const signTransactionSheetConfig = {
-  options: ({ route: { params = {} } }) => ({
+  options: ({ route }: { route: SignTransactionSheetRouteProp }) => ({
     ...buildCoolModalConfig({
-      ...params,
-      backgroundOpacity: 1,
+      ...route.params,
+      backgroundOpacity: route?.params?.requestType === 'walletconnect' ? 1 : 0.3,
       cornerRadius: 0,
       springDamping: 1,
       topOffset: 0,
