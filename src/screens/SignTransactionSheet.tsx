@@ -185,7 +185,7 @@ export const SignTransactionSheet = () => {
   } = useGas();
 
   const simulationUnavailable = isPersonalSign;
-
+  console.log('test');
   const itemCount = (simulationData?.in?.length || 0) + (simulationData?.out?.length || 0) + (simulationData?.approvals?.length || 0);
 
   const noChanges = !!(simulationData && itemCount === 0) && simulationScanResult === TransactionScanResultType.Ok;
