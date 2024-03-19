@@ -1,6 +1,5 @@
-/* eslint-disable no-undef */
-/* eslint-disable jest/expect-expect */
 import * as Helpers from './helpers';
+import { device } from 'detox';
 
 const RAINBOW_TEST_WALLET = 'rainbowtestwallet.eth';
 

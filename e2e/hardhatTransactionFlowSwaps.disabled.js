@@ -1,6 +1,5 @@
-/* eslint-disable no-undef */
-/* eslint-disable jest/expect-expect */
 import * as Helpers from './helpers';
+import { device } from 'detox';
 
 let connector = null;
 const ios = device.getPlatform() === 'ios';

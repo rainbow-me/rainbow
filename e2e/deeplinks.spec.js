@@ -40,7 +40,6 @@ beforeAll(async () => {
   }
 });
 
-// eslint-disable-next-line jest/no-disabled-tests
 describe.skip('Deeplinks spec', () => {
   it('Should show the welcome screen', async () => {
     await Helpers.checkIfVisible('welcome-screen');

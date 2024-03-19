@@ -1,6 +1,5 @@
-/* eslint-disable no-undef */
-/* eslint-disable jest/expect-expect */
 import * as Helpers from './helpers';
+import { device } from 'detox';
 
 const ios = device.getPlatform() === 'ios';
 const android = device.getPlatform() === 'android';
@@ -8,7 +7,6 @@ const android = device.getPlatform() === 'android';
 // all relevant flows skipped at the moment
 // removing this test from the flow until we fix
 
-// eslint-disable-next-line jest/no-disabled-tests
 describe.skip('Swap Sheet Interaction Flow', () => {
   beforeAll(async () => {
     await Helpers.startHardhat();

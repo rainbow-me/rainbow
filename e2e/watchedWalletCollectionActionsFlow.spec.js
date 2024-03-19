@@ -1,7 +1,5 @@
-/* eslint-disable no-undef */
-/* eslint-disable jest/expect-expect */
-import { exec } from 'child_process';
 import * as Helpers from './helpers';
+import { device, element, by } from 'detox';
 
 describe('Watched showcase and hidden actions flow', () => {
   afterAll(async () => {

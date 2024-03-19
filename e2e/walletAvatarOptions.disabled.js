@@ -1,6 +1,5 @@
-/* eslint-disable no-undef */
-/* eslint-disable jest/expect-expect */
 import * as Helpers from './helpers';
+import { device, element, by } from 'detox';
 
 const WALLET_AVATAR_COORDS = { x: 210, y: 125 };
 const WALLET_ADDRESS_COORDS = { x: 210, y: 185 };
@@ -13,7 +12,6 @@ const EMPTY_WALLET = '0x6791da9CCd95405e73d6a1117d02Dc81c4E58775';
 
 const android = device.getPlatform() === 'android';
 
-// eslint-disable-next-line jest/no-disabled-tests
 describe('Wallet avatar options', () => {
   it('watch wallet without ENS', async () => {
     await Helpers.checkIfVisible('welcome-screen');

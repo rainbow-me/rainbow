@@ -1,11 +1,10 @@
-/* eslint-disable no-undef */
-/* eslint-disable jest/expect-expect */
 import { Contract } from '@ethersproject/contracts';
 import WalletConnect from '@walletconnect/client';
 import { convertUtf8ToHex } from '@walletconnect/legacy-utils';
 import * as Helpers from './helpers';
 import kittiesABI from '@/references/cryptokitties-abi.json';
 import erc20ABI from '@/references/erc20-abi.json';
+import { device } from 'detox';
 
 let connector = null;
 let uri = null;
