@@ -17,7 +17,7 @@ import { safeAreaInsetValues } from '@/utils';
 import { ETH_COLOR, ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '../constants';
 import { OUTPUT_COLOR } from '../dummyValues';
 
-import { getHighContrastColor, opacity } from '../utils';
+import { getHighContrastColor, opacity } from '../utils/swaps';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { useSwapContext } from '../providers/swap-provider';
 

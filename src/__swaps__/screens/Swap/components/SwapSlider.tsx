@@ -33,7 +33,7 @@ import {
   snappySpringConfig,
   springConfig,
 } from '../constants';
-import { clamp, opacity } from '../utils';
+import { clamp, opacity } from '../utils/swaps';
 import { useSwapContext } from '../providers/swap-provider';
 import { SwapCoinIcon } from './SwapCoinIcon';
 import { INPUT_ADDRESS, INPUT_NETWORK, INPUT_SYMBOL } from '../dummyValues';
