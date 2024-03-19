@@ -1,4 +1,4 @@
-import { AssetType, AssetTypes, EthereumAddress } from '@/entities';
+import { AssetType } from '@/entities';
 import { UniqueAsset } from '@/entities/uniqueAssets';
 import {
   SimpleHashNFT,
@@ -22,6 +22,7 @@ import { PixelRatio } from 'react-native';
 import { deviceUtils } from '@/utils';
 import { TokenStandard } from '@/handlers/web3';
 import { handleNFTImages } from '@/utils/handleNFTImages';
+import { RainbowError, logger } from '@/logger';
 
 const ENS_COLLECTION_NAME = 'ENS';
 const SVG_MIME_TYPE = 'image/svg+xml';
@@ -68,7 +69,7 @@ export function getSimpleHashChainFromNetwork(network: Omit<Network, Network.goe
  * @param chain `SimpleHashChain`
  * @returns `Network`
  */
-export function getNetworkFromSimpleHashChain(chain: SimpleHashChain): Network {
+export function getNetworkFromSimpleHashChain(chain: SimpleHashChain): Network | undefined {
   switch (chain) {
     case SimpleHashChain.Ethereum:
     case SimpleHashChain.Gnosis:
@@ -90,11 +91,7 @@ export function getNetworkFromSimpleHashChain(chain: SimpleHashChain): Network {
     case SimpleHashChain.Blast:
       return Network.blast;
     default:
-      /*
-       * Throws here because according to TS types, we should NEVER hit this
-       * default branch in the logic
-       */
-      throw new Error(`getNetworkFromSimpleHashChain received unknown chain: ${chain}`);
+      logger.error(new RainbowError(`getNetworkFromSimpleHashChain received unknown chain: ${chain}`));
   }
 }
 
@@ -108,30 +105,38 @@ export function getNetworkFromSimpleHashChain(chain: SimpleHashChain): Network {
  * @returns filtered array of `ValidatedSimpleHashNFT`s
  */
 export function filterSimpleHashNFTs(nfts: SimpleHashNFT[], polygonAllowlist?: PolygonAllowlist): ValidatedSimpleHashNFT[] {
-  return nfts
-    .filter(nft => {
-      const lowercasedContractAddress = nft.contract_address?.toLowerCase();
-      const network = getNetworkFromSimpleHashChain(nft.chain);
+  return nfts.flatMap(nft => {
+    const {
+      chain,
+      name,
+      collection: { name: collectionName },
+      contract_address,
+      token_id,
+    } = nft;
 
-      const isMissingRequiredFields = !nft.name || !nft.collection?.name || !nft.contract_address || !nft.token_id || !network;
-      const isPolygonAndNotAllowed =
-        polygonAllowlist && nft.chain === SimpleHashChain.Polygon && !polygonAllowlist[lowercasedContractAddress];
-      const isGnosisAndNotPOAP = nft.chain === SimpleHashChain.Gnosis && lowercasedContractAddress !== POAP_NFT_ADDRESS;
+    const lowercasedContractAddress = nft.contract_address?.toLowerCase();
+    const network = getNetworkFromSimpleHashChain(chain);
 
-      if (isMissingRequiredFields || isPolygonAndNotAllowed || isGnosisAndNotPOAP) {
-        return false;
-      }
+    const isMissingRequiredFields = !name || !collectionName || !contract_address || !token_id || !network;
+    const isPolygonAndNotAllowed =
+      polygonAllowlist && nft.chain === SimpleHashChain.Polygon && !polygonAllowlist[lowercasedContractAddress];
+    const isGnosisAndNotPOAP = nft.chain === SimpleHashChain.Gnosis && lowercasedContractAddress !== POAP_NFT_ADDRESS;
 
-      return true;
-    })
-    .map(nft => ({
-      ...nft,
-      name: nft.name!,
-      contract_address: nft.contract_address,
-      chain: getNetworkFromSimpleHashChain(nft.chain),
-      collection: { ...nft.collection, name: nft.collection.name! },
-      token_id: nft.token_id!,
-    }));
+    if (isMissingRequiredFields || isPolygonAndNotAllowed || isGnosisAndNotPOAP) {
+      return [];
+    }
+
+    return [
+      {
+        ...nft,
+        name: name,
+        contract_address: lowercasedContractAddress,
+        chain: network,
+        collection: { ...nft.collection, name: collectionName },
+        token_id: token_id,
+      },
+    ];
+  });
 }
 
 /**
