@@ -263,7 +263,7 @@ export async function delayTime(time) {
     case 'short':
       return await delay(500);
     case 'medium':
-      return await delay(100);
+      return await delay(1_000);
     case 'long':
       return await delay(5_000);
     case 'very-long':
