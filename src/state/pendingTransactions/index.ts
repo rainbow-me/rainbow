@@ -87,3 +87,23 @@ export const addNewTransaction = ({
     currentNonce: transaction.nonce,
   });
 };
+
+export const updateTransaction = ({
+  address,
+  network,
+  transaction,
+}: {
+  address: string;
+  network: Network;
+  transaction: NewTransaction;
+}) => {
+  const { updatePendingTransaction } = pendingTransactionsStore.getState();
+  const { setNonce } = nonceStore.getState();
+  const parsedTransaction = parseNewTransaction(transaction);
+  updatePendingTransaction({ address, pendingTransaction: parsedTransaction });
+  setNonce({
+    address,
+    network,
+    currentNonce: transaction.nonce,
+  });
+};

@@ -677,11 +677,14 @@
         "registrant": "Registrant",
         "resolver": "Resolver",
         "save_to_photos": "Save to Photos",
+        "sell_for_x": "Sell for %{price}",
         "set_primary_name": "Set as my ENS name",
         "share_token_info": "Share %{uniqueTokenName} Info",
         "showcase": "Showcase",
         "toast_added_to_showcase": "Added to showcase",
         "toast_removed_from_showcase": "Removed from showcase",
+        "refreshing": "Refreshing metadata...",
+        "reported": "Reported as spam",
         "twitter": "Twitter",
         "view_all_with_property": "View All with Property",
         "view_collection": "View Collection",
@@ -691,30 +694,37 @@
         "view_on_platform": "View on %{platform}",
         "view_on_web": "View on Web",
         "refresh": "Refresh Metadata",
+        "report": "Report as Spam",
         "hide": "Hide",
         "unhide": "Unhide"
       }
     },
+    "app_icon_unlock_sheet": {
+      "smol_description": "You found Treasure! Because you hold a Smolverse NFT, you've unlocked a Custom Icon!",
+      "smol_title": "You've unlocked\nRainbow 􀆄 SMOL",
+      "optimism_description": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you!",
+      "optimism_title": "You've unlocked\nRainbow 􀆄 Optimism",
+      "zora_description": "A special edition Rainbow Zorb icon that's made for magical pondering.",
+      "zora_title": "You've unlocked\nRainbow 􀆄 Zora",
+      "finiliar_description": "A special edition Rainbow Fini icon that keeps you up to date on the price of gas, rain or shine.",
+      "finiliar_title": "You've unlocked a\nRainbow Fini",
+      "golddoge_description": "A limited edition golden Rainbow app icon in celebration of Kabosu's 17th birthday.",
+      "golddoge_title": "You've unlocked\nRainbow 􀆄 DOGE",
+      "raindoge_description": "A limited edition Rainbow app icon in celebration of Kabosu's 17th birthday.",
+      "raindoge_title": "You've unlocked\nRainbow 􀆄 The Doge NFT",
+      "pooly_description": "A special edition Rainbow Pooly icon for supporters of freedom.",
+      "pooly_title": "You've unlocked a\nRainbow Pooly",
+      "zorb_description": "A special edition Rainbow Zorb:\n100% of what you love, faster and more efficient.",
+      "zorb_title": "You've unlocked\nRainbow Zorb Energy!",
+      "poolboy_description": "A special edition Rainbow x Poolsuite Icon for onchain summer.",
+      "poolboy_title": "You've unlocked the\nRainbow Poolboy!",
+      "adworld_description": "As a Rainbow World Citizen, you can now unlock a special edition\nAdWorld x Rainbow App Icon.",
+      "adworld_title": "Welcome to Rainbow World!",
+      "farcaster_description": "Our most boring app icon ever, inspired by Warpcast's bland minimalism.",
+      "farcaster_title": "You've unlocked\nRainbowcast",
+      "button": "Snag the icon"
+    },
     "explain": {
-      "icon_unlock": {
-        "smol_text": "You found Treasure! Because you hold a Smolverse NFT, you've unlocked a Custom Icon!",
-        "optimism_text": "To celebrate NFTs on Optimism, Rainbow and Optimism teamed up to drop a limited edition App Icon for the Optimistic Explorers like you!",
-        "zora_text": "A special edition Rainbow Zorb icon that's made for magical pondering.",
-        "finiliar_text": "A special edition Rainbow Fini icon that keeps you up to date on the price of gas, rain or shine.",
-        "finiliar_title": "You've unlocked a\nRainbow Fini",
-        "golddoge_text": "A limited edition golden Rainbow app icon in celebration of Kabosu's 17th birthday.",
-        "raindoge_text": "A limited edition Rainbow app icon in celebration of Kabosu's 17th birthday.",
-        "pooly_text": "A special edition Rainbow Pooly icon for supporters of freedom.",
-        "pooly_title": "You've unlocked a\nRainbow Pooly",
-        "zorb_text": "A special edition Rainbow Zorb:\n100% of what you love, faster and more efficient.",
-        "zorb_title": "You've unlocked\nRainbow Zorb Energy!",
-        "poolboy_text": "A special edition Rainbow x Poolsuite Icon for onchain summer.",
-        "poolboy_title": "You've unlocked the\nRainbow Poolboy!",
-        "adworld_text": "As a Rainbow World Citizen, you can now unlock a special edition\nAdWorld x Rainbow App Icon.",
-        "adworld_title": "Welcome to Rainbow World!",
-        "title": "You've unlocked\nRainbow 􀆄 %{partner}",
-        "button": "Snag the icon"
-      },
       "output_disabled": {
         "text": "For %{fromNetwork}, Rainbow can't prepare swaps based on the amount of %{outputToken} you'd like to receive. \n\n Try entering the amount of %{inputToken} you’d like to swap instead.",
         "title": "Enter %{inputToken} Instead",
@@ -782,6 +792,14 @@
       "base": {
         "text": "Base is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
         "title": "What's Base"
+      },
+      "avalanche": {
+        "text": "Avalanche is a sidechain, a distinct network that runs alongside Ethereum and is compatible with it.\n\nIt allows for cheaper and faster transactions, but unlike Layer 2 networks, Avalanche has its own security and consensus mechanisms that differ from Ethereum.",
+        "title": "What's Avalanche"
+      },
+      "blast": {
+        "text": "Blast is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
+        "title": "What's Blast"
       },
       "zora": {
         "text": "Zora is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
@@ -1205,6 +1223,7 @@
         "offer_expired": "Offer Expired",
         "expired": "Expired",
         "hold_to_sell": "Hold to Sell",
+        "selling": "Selling",
         "error": {
           "title": "Error selling NFT",
           "message": "Please contact Rainbow support for assistance."
@@ -1320,7 +1339,8 @@
         "view_weekly_earnings_title": "Counting earned points",
         "view_weekly_earnings_counted": "Weekly earnings counted",
         "view_weekly_earnings_close_button": "Close",
-        "view_weekly_earnings_retroactive_points": "Retroactive points",
+        "view_weekly_earnings_retroactive_points": "Retroactive Points",
+        "view_weekly_earnings_bonus_points": "Bonus Points",
         "view_weekly_earnings_activity": "Your Activity",
         "view_weekly_earnings_referral_activity": "Referral Activity",
         "view_weekly_earnings_total_earnings": "Total",
@@ -1836,9 +1856,14 @@
           "failed": "Burn Failed"
         },
         "cancel": {
-          "pending": "Canceling",
+          "pending": "Cancelling",
           "confirmed": "Cancelled",
           "failed": "Cancel Failed"
+        },
+        "speed_up": {
+          "pending": "Speeding Up",
+          "confirmed": "Sped Up",
+          "failed": "Speed Up Failed"
         },
         "send": {
           "pending": "Sending",
@@ -2607,6 +2632,11 @@
     "warning": {
       "user_is_offline": "Connection offline, please check your internet connection",
       "user_is_online": "Connected! You're back online"
+    },
+    "dapp_browser": {
+      "address_bar": {
+        "input_placeholder": "Search or enter website"
+      }
     }
   }
 }

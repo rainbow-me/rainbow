@@ -15,6 +15,119 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.18] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.18)
+
+### Added
+
+- Added ability to report NFT as spam to simplehash (#5434)
+- Added fallback icons for contract interactions where we may not have nft images (#5456)
+- Added support for Avalanche (#5430)
+- Added support for Blast (#5463)
+
+### Changed
+
+- Removed native advanced settings as dev settings is newly preferred (#5416)
+- App icon refactor (#5444)
+- null safety placed on input filed focus (#5446)
+- Points referrals card refactor (#5367)
+- Removed duplicate rows in sign transaction sheet (#5451)
+- Upgrade reanimated (#5200)
+- Bumped dependencies for Wallet Connect (#5400)
+- Disabled and removed Flipper (#5464)
+- Removed rn-worklet-core package (#5465)
+
+### Fixed
+
+- Fixed rainbow animation on home screen (#5440)
+- Fixed crash when tapping network info button on L2 sends (#5429)
+- Fixed identify calls for analytics (#5442)
+- Polished pending transaction details UI (#5441)
+- Fixed ability to save NFT as an image on device (#5447)
+- Increased number of pixel difference needed to qualify as non-gesture mode navigation (#5460)
+- Fixed approval number formatting (#5457)
+- Fixed mint pending label (#5455)
+- Fixed a null response that was impacting dapps using viem/wagmi (#5454)
+
+## [1.9.17] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.17)
+
+### Added
+
+- added transferTo field in send details (#5384)
+- added accent colors to NFTs (#5412)
+- added translations for points, notification strings and new wallet connect strings (#5412)
+- added sell button to the NFT expanded state if an offer exists (#5428)
+
+### Changed
+
+- removed unused dependencies and updated some (#5417, #5427)
+- transactions refactor (#5369)
+- coin icon refactor (#5418)
+
+### Fixed
+
+- reduced imgix usage to fix NFT issues (#5413)
+
+## [1.9.16] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.16)
+
+### Added
+
+- Added zustand and core pendingTx state (#5383)
+
+### Changed
+
+- Bump prettier from 2.2.1 to 3.2.5 (#5386)
+- updated transaction queries (#5385)
+- migrated nonce management to zustand (#5395)
+- took portfolio off of websocket (#5371)
+- migrate pinned and hidden tokens (#5410)
+
+### Fixed
+
+- bumped eth-sig-util to fix signing issues (#5376)
+- fixed wallet connect issue with incompatible namespaces (#5387)
+- fixed white screen on Zora mints (#5411)
+
+## [1.9.15] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.15)
+
+### Added
+
+- Added ability to get price impact on swap (#5335, #5351, #5354, #5356)
+- Points tweaks for better error handling (#5341, #5362)
+- Added native value to currency rows (#5374)
+- Added rainbow smol NFT address to unlock icon (#5381)
+
+### Changed
+
+- SVG sanitization (#5342)
+- Removed savings code (#5344)
+- Removed swaps generic assets references (#5345)
+- useAsset hooks clean up (#5350)
+- Removed all logic for DPI (#5343)
+- Removed networks from assetType (#5364)
+- Migrated charts to Addys REST API (#5370)
+- Migrated asset prices to Addys REST API (#5357)
+- Disabled frame processor for vision camera to fix Android builds (#5379)
+
+### Fixed
+
+- Fixed an issue where non compatible asset types were being sent on the new balances endpoint (#5349)
+- Fixed an issue where the block explorer link was incorrect on an l2 transaction (#5333)
+- Fixed e2e flakiness (#5346)
+- Fixed zero eth check (#5361)
+- Fixed profiles deeplinks (#5365)
+- Fixed marketing route props for points push notification (#5366)
+- Fixed centralization to arc client selection (#5368)
+- Fixed an overflowing context menu on Android NFT expanded view (#5339)
+- Fixed remote card on points tab not appearing (#5372)
+- Fixed a bug where Tuesday’s would show same day on week end (#5338)
+- Fixed camera component (#5355)
+- Fixed issue where networks weren’t updated properly for selected assets (#5389)
+- Fixed a WC issue where if on a different wallet then connected one then a formatting issue would occur (#5390)
+- Fixed extra spacing on coin row icons (#5391)
+- Fixed an icon not working on points remote card on Android devices (#5392)
+- Added data for curated tokens (#5396)
+- Fixed selecting max bug on native swaps (#5399)
+
 ## [1.9.14] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.14)
 
 ### Added

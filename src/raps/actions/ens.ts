@@ -453,9 +453,7 @@ const ensAction = async (
 
   logger.log(`[${actionName}] response`, tx);
 
-  const nativeAsset = await ethereumUtils.getNetworkNativeAsset(NetworkTypes.mainnet);
   const newTransaction: NewTransaction = {
-    asset: nativeAsset,
     data: tx.data,
     ensCommitRegistrationName: type === ENSRegistrationTransactionType.COMMIT ? name : undefined,
     ensRegistration: true,
@@ -467,7 +465,7 @@ const ensAction = async (
     type: 'contract_interaction',
     contract: {
       name: 'ENS',
-      iconUrl: 'https://ens.domains/images/favicon-32x32.png',
+      iconUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/dapps/ens.domains.png',
     },
     to: tx?.to,
     value: toHex(tx.value),

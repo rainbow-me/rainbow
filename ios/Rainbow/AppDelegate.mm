@@ -15,7 +15,6 @@
 #import <AVFoundation/AVFoundation.h>
 #import <mach/mach.h>
 #import <CodePush/CodePush.h>
-#import <segment_analytics_react_native-Swift.h>
 
 
 @interface RainbowSplashScreenManager : NSObject <RCTBridgeModule>
@@ -163,11 +162,6 @@ sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application{
-  BOOL action = [SettingsBundleHelper checkAndExecuteSettings];
-  if(action){
-    [SentrySDK captureMessage:@"Keychain Wiped!"];
-    RCTTriggerReloadCommandListeners(@"keychain wiped");
-  }
   // delete the badge
   [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
   // delete the notifications from WC

@@ -4,6 +4,7 @@ import { ParsedAddressAsset } from '@/entities';
 import { useTheme } from '@/theme';
 import { ImgixImage } from '@/components/images';
 import ChainBadge from './ChainBadge';
+import RainbowCoinIcon from './RainbowCoinIcon';
 
 export function TwoCoinsIcon({
   size = 45,
@@ -40,24 +41,20 @@ export function TwoCoinsIcon({
             left: -0,
           }}
         >
-          <ImgixImage
-            source={{ uri: under?.icon_url }}
-            style={{ borderRadius: 100, width: underSize, height: underSize }}
+          <RainbowCoinIcon
+            icon={under?.icon_url}
+            theme={theme}
             size={underSize}
+            network={under.network}
+            symbol={under.symbol}
+            ignoreBadge
           />
         </Box>
-        <Box borderRadius={100} style={{ zIndex: 10, position: 'absolute', top: 0, right: 0 }}>
-          <ImgixImage
-            source={{ uri: over?.icon_url }}
-            style={{
-              borderRadius: 100,
-              width: overSize,
-              height: overSize,
-              borderWidth: 2,
-              borderColor: theme.colors.white,
-            }}
-            size={overSize}
-          />
+        <Box
+          borderRadius={100}
+          style={{ zIndex: 10, position: 'absolute', top: 0, right: 0, borderRadius: 99, borderColor: theme.colors.white, borderWidth: 2 }}
+        >
+          <RainbowCoinIcon icon={over?.icon_url} theme={theme} size={overSize} network={over.network} symbol={over.symbol} ignoreBadge />
         </Box>
         {badge && <ChainBadge network={over.network} badgeYPosition={9} badgeXPosition={-7.5} />}
       </Box>

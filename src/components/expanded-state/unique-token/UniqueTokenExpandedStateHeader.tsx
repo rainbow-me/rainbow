@@ -19,7 +19,7 @@ import { position } from '@/styles';
 import { ethereumUtils, magicMemo, showActionSheetWithOptions } from '@/utils';
 import { getFullResUrl } from '@/utils/getFullResUrl';
 import isSVGImage from '@/utils/isSVG';
-import { refreshNFTContractMetadata } from '@/resources/nfts/simplehash';
+import { refreshNFTContractMetadata, reportNFT } from '@/resources/nfts/simplehash';
 import { ContextCircleButton } from '@/components/context-menu';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { MenuActionConfig, MenuConfig } from 'react-native-ios-context-menu';
@@ -33,6 +33,7 @@ const AssetActionsEnum = {
   opensea: 'opensea',
   looksrare: 'looksrare',
   refresh: 'refresh',
+  report: 'report',
 } as const;
 
 const getAssetActions = (network: Network) =>
@@ -93,6 +94,14 @@ const getAssetActions = (network: Network) =>
       icon: {
         iconType: 'SYSTEM',
         iconValue: 'arrow.clockwise',
+      },
+    },
+    [AssetActionsEnum.report]: {
+      actionKey: AssetActionsEnum.report,
+      actionTitle: lang.t('expanded_state.unique_expanded.report'),
+      icon: {
+        iconType: 'SYSTEM',
+        iconValue: 'exclamationmark.triangle',
       },
     },
     [AssetActionsEnum.looksrare]: {
@@ -171,6 +180,7 @@ interface UniqueTokenExpandedStateHeaderProps {
   rainbowWebUrl: string;
   isModificationActionsEnabled?: boolean;
   onRefresh: () => void;
+  onReport: () => void;
 }
 
 const UniqueTokenExpandedStateHeader = ({
@@ -180,6 +190,7 @@ const UniqueTokenExpandedStateHeader = ({
   rainbowWebUrl,
   isModificationActionsEnabled = true,
   onRefresh,
+  onReport,
 }: UniqueTokenExpandedStateHeaderProps) => {
   const { setClipboard } = useClipboard();
   const { width: deviceWidth } = useDimensions();
@@ -258,6 +269,9 @@ const UniqueTokenExpandedStateHeader = ({
       menuItems: [
         {
           ...AssetActions[AssetActionsEnum.refresh],
+        },
+        {
+          ...AssetActions[AssetActionsEnum.report],
         },
         ...(isModificationActionsEnabled
           ? [
@@ -344,7 +358,7 @@ const UniqueTokenExpandedStateHeader = ({
       } else if (actionKey === AssetActionsEnum.copyTokenID) {
         setClipboard(asset.id);
       } else if (actionKey === AssetActionsEnum.download) {
-        saveToCameraRoll(getFullResUrl(asset.image_original_url));
+        saveToCameraRoll(getFullResUrl(asset.image_url));
       } else if (actionKey === AssetActionsEnum.hide) {
         if (isHiddenAsset) {
           removeHiddenToken(asset);
@@ -359,6 +373,8 @@ const UniqueTokenExpandedStateHeader = ({
         goBack();
       } else if (actionKey === AssetActionsEnum.refresh) {
         refreshNFTContractMetadata(asset).then(onRefresh);
+      } else if (actionKey === AssetActionsEnum.report) {
+        reportNFT(asset).then(onReport);
       }
     },
     [
@@ -372,6 +388,7 @@ const UniqueTokenExpandedStateHeader = ({
       isShowcaseAsset,
       removeShowcaseToken,
       onRefresh,
+      onReport,
     ]
   );
 
@@ -498,7 +515,7 @@ const UniqueTokenExpandedStateHeader = ({
                   {asset.familyImage ? (
                     <Bleed vertical="6px">
                       <FamilyImageWrapper>
-                        <FamilyImage source={{ uri: asset.familyImage }} />
+                        <FamilyImage size={30} source={{ uri: asset.familyImage }} />
                       </FamilyImageWrapper>
                     </Bleed>
                   ) : null}

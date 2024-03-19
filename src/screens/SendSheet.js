@@ -66,6 +66,7 @@ import { Wallet } from '@ethersproject/wallet';
 import { getNetworkObj } from '@/networks';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { getNextNonce } from '@/state/nonces';
+import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight;
@@ -96,7 +97,6 @@ const validateRecipient = toAddress => {
 };
 
 export default function SendSheet(props) {
-  const dispatch = useDispatch();
   const { goBack, navigate } = useNavigation();
   const { data: sortedAssets } = useSortedUserAssets();
   const {
@@ -164,8 +164,10 @@ export default function SendSheet(props) {
   const isNft = selected?.type === AssetTypes.nft;
 
   let colorForAsset = useColorForAsset(selected, null, false, true);
+  const nftColor = usePersistentDominantColorFromImage(selected?.lowResUrl) ?? colors.appleBlue;
+
   if (isNft) {
-    colorForAsset = colors.appleBlue;
+    colorForAsset = nftColor;
   }
 
   const uniqueTokenType = isNft ? getUniqueTokenType(selected) : undefined;
@@ -719,8 +721,6 @@ export default function SendSheet(props) {
     if (network === Network.mainnet && !recipientOverride && recipient?.length) {
       setLoadingEnsSuggestions(true);
       debouncedFetchSuggestions(recipient, setEnsSuggestions, setLoadingEnsSuggestions, profilesEnabled);
-    } else {
-      setEnsSuggestions([]);
     }
   }, [network, recipient, recipientOverride, setEnsSuggestions, watchedAccounts, profilesEnabled]);
 
@@ -873,6 +873,7 @@ export default function SendSheet(props) {
             txSpeedRenderer={
               <GasSpeedButton
                 asset={selected}
+                fallbackColor={colorForAsset}
                 currentNetwork={currentNetwork}
                 horizontalPadding={0}
                 marginBottom={17}

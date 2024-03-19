@@ -2,7 +2,7 @@
 /* eslint-disable no-undef */
 import AnimateNumber from '@bankify/react-native-animate-number';
 import lang from 'i18n-js';
-import { isEmpty, isNaN, isNil, upperFirst } from 'lodash';
+import { isEmpty, isNaN, isNil } from 'lodash';
 import makeColorMoreChill from 'make-color-more-chill';
 import { AnimatePresence, MotiView } from 'moti';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -10,7 +10,7 @@ import { InteractionManager, Keyboard } from 'react-native';
 import { Easing } from 'react-native-reanimated';
 import { darkModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
-import { ChainBadge, CoinIcon } from '../coin-icon';
+import { ChainBadge } from '../coin-icon';
 import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
 import { GasSpeedLabelPager } from '.';
@@ -21,7 +21,7 @@ import { add, greaterThan, toFixedDecimals } from '@/helpers/utilities';
 import { getCrossChainTimeEstimate } from '@/utils/crossChainTimeEstimates';
 import { useAccountSettings, useColorForAsset, useGas, usePrevious, useSwapCurrencies } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import { BNB_BSC_ADDRESS, ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@/references';
+import { BNB_BSC_ADDRESS, ETH_ADDRESS, MATIC_MAINNET_ADDRESS, AVAX_AVALANCHE_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, margin, padding } from '@/styles';
@@ -29,6 +29,7 @@ import { ethereumUtils, gasUtils } from '@/utils';
 import { getNetworkObj } from '@/networks';
 import { IS_ANDROID } from '@/env';
 import { ContextMenu } from '../context-menu';
+import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 
 const { GAS_EMOJIS, GAS_ICONS, GasSpeedOrder, CUSTOM, URGENT, NORMAL, FAST, getGasLabel } = gasUtils;
 
@@ -303,9 +304,9 @@ const GasSpeedButton = ({
         type: 'crossChainGas',
       });
     } else {
-      const nativeAsset = await ethereumUtils.getNativeAssetForNetwork(networkName);
+      const nativeAsset = await ethereumUtils.getNativeAssetForNetwork(currentNetwork);
       navigate(Routes.EXPLAIN_SHEET, {
-        network: networkName,
+        network: currentNetwork,
         type: 'gas',
         nativeAsset,
       });
@@ -344,10 +345,13 @@ const GasSpeedButton = ({
         return { mainnet_address: MATIC_MAINNET_ADDRESS, symbol: 'MATIC' };
       case networkTypes.bsc:
         return { mainnet_address: BNB_BSC_ADDRESS, symbol: 'BNB' };
+      case networkTypes.avalanche:
+        return { mainnet_address: AVAX_AVALANCHE_ADDRESS, symbol: 'AVAX' };
       case networkTypes.optimism:
       case networkTypes.arbitrum:
       case networkTypes.zora:
       case networkTypes.base:
+      case networkTypes.blast:
       default:
         return { mainnet_address: ETH_ADDRESS, symbol: 'ETH' };
     }
@@ -501,7 +505,7 @@ const GasSpeedButton = ({
                     }}
                   >
                     {currentNetwork === Network.mainnet ? (
-                      <CoinIcon address={nativeFeeCurrency.address} size={18} symbol={nativeFeeCurrency.symbol} network={currentNetwork} />
+                      <EthCoinIcon size={18} />
                     ) : (
                       <ChainBadge network={currentNetwork} size="gas" position="relative" />
                     )}

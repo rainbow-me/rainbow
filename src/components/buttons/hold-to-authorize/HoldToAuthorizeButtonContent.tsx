@@ -212,9 +212,9 @@ function HoldToAuthorizeButtonContent2({
     }
   }
   return (
-    // @ts-expect-error RNGH props are not compatible with React 18
+    // @ts-expect-error Property 'children' does not exist on type
     <TapGestureHandler enabled={!disabled} onHandlerStateChange={onTapChange}>
-      {/* @ts-expect-error RNGH props are not compatible with React 18 */}
+      {/* @ts-expect-error Property 'children' does not exist on type */}
       <LongPressGestureHandler enabled={enableLongPress} minDurationMs={LONG_PRESS_DURATION_IN_MS} onHandlerStateChange={onLongPressChange}>
         <Animated.View {...props} style={[style, scaleStyle]}>
           {/* Ignoring due to obscure JS error from ShadowStack */}

@@ -138,14 +138,13 @@ export const parseTransaction = async (
 
 export const parseNewTransaction = (tx: NewTransaction): RainbowTransaction => {
   const asset = tx?.changes?.[0]?.asset || tx.asset;
-  const methodName = 'Unknown method';
 
   return {
     ...tx,
     status: 'pending',
     data: tx.data,
     title: `${tx.type}.${tx.status}`,
-    description: asset?.name || methodName,
+    description: asset?.name,
     from: tx.from,
     changes: tx.changes,
     hash: tx.hash,
@@ -190,8 +189,6 @@ const getTransactionFee = (txn: TransactionApiResponse, nativeCurrency: NativeCu
 
 export const getDescription = (asset: ParsedAsset | undefined, type: TransactionType, meta: PaginatedTransactionsApiResponse['meta']) => {
   if (asset?.type === 'nft') return asset.symbol || asset.name;
-  if (type === 'cancel') return 'transactions.cancelled';
-
   return asset?.name || meta.action;
 };
 

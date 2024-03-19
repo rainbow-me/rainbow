@@ -15,7 +15,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import { useNavigation } from '@react-navigation/native';
 import * as i18n from '@/languages';
-import { dataRemovePendingTransaction } from '@/redux/data';
 
 const SIZE = 40;
 
@@ -66,15 +65,6 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
               },
             ]
           : []),
-        {
-          actionKey: 'remove',
-          actionTitle: i18n.t(i18n.l.transaction_details.actions_menu.remove),
-          menuAttributes: ['destructive'],
-          icon: {
-            iconType: 'SYSTEM',
-            iconValue: 'trash',
-          },
-        },
       ],
     }),
     [canBeCancelled, canBeResubmitted]
@@ -98,17 +88,9 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
             type: 'cancel',
           });
           return;
-        case 'remove':
-          if (transaction.hash && transaction.network) {
-            // remove tx
-            dispatch(dataRemovePendingTransaction(transaction.hash, transaction.network));
-            // close tx details sheet
-            goBack();
-          }
-          return;
       }
     },
-    [dispatch, goBack, navigate, transaction]
+    [navigate, transaction]
   );
 
   return (

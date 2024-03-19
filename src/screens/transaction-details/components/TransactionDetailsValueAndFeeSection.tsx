@@ -5,17 +5,17 @@ import { RainbowTransaction, RainbowTransactionFee } from '@/entities/transactio
 import { Box, Stack, globalColors } from '@/design-system';
 import { TransactionDetailsDivider } from '@/screens/transaction-details/components/TransactionDetailsDivider';
 import * as i18n from '@/languages';
+
 import { Network } from '@/networks/types';
+
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { convertAmountAndPriceToNativeDisplay, convertRawAmountToBalance } from '@/helpers/utilities';
 import { useAccountSettings } from '@/hooks';
 import { useTheme } from '@/theme';
-import FastCoinIcon from '@/components/asset-list/RecyclerAssetList2/FastComponents/FastCoinIcon';
-import { View } from 'react-native';
-import { ImgixImage } from '@/components/images';
 import { CardSize } from '@/components/unique-token/CardSize';
+import ImgixImage from '@/components/images/ImgixImage';
+import { View } from 'react-native';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
-import { ETH_ADDRESS } from '@rainbow-me/swaps';
-import { ETH_SYMBOL } from '@/references';
 
 type Props = {
   transaction: RainbowTransaction;
@@ -40,6 +40,9 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({ transact
   ).display;
   const feeValue = fee?.value.display ?? '';
   const feeNativeCurrencyValue = fee?.native?.display ?? '';
+
+  if (!value && !fee) return null;
+
   return (
     <>
       <TransactionDetailsDivider />
@@ -83,18 +86,19 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({ transact
                     {transaction.network !== Network.mainnet && <ChainBadge network={transaction.network} badgeYPosition={10} />}
                   </View>
                 ) : (
-                  <FastCoinIcon
-                    address={assetData?.address || ETH_ADDRESS}
-                    network={transaction.network}
-                    mainnetAddress={assetData?.mainnet_address}
-                    symbol={assetData?.symbol || ETH_SYMBOL}
+                  <RainbowCoinIcon
+                    size={40}
+                    icon={assetData?.icon_url}
+                    network={assetData?.network || Network.mainnet}
+                    symbol={assetData?.symbol || ''}
                     theme={theme}
+                    colors={assetData?.colors}
                   />
                 )
               }
               title={i18n.t(i18n.l.transaction_details.value)}
               value={valueDisplay || ''}
-              secondaryValue={change?.asset?.price?.value ? nativeCurrencyValue : ''}
+              secondaryValue={nativeCurrencyValue}
             />
           )}
           {fee && (

@@ -19,7 +19,7 @@ import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
-import { CoinIcon, abbreviations, ethereumUtils, watchingAlert } from '@/utils';
+import { abbreviations, ethereumUtils, watchingAlert } from '@/utils';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { maybeSignUri } from '@/handlers/imgix';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -48,11 +48,11 @@ import {
   multiply,
 } from '@/helpers/utilities';
 import { RainbowError, logger } from '@/logger';
-import { useDispatch } from 'react-redux';
 import { QuantityButton } from './components/QuantityButton';
 import { estimateGas, getProviderForNetwork } from '@/handlers/web3';
 import { getRainbowFeeAddress } from '@/resources/reservoir/utils';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { getNextNonce } from '@/state/nonces';
@@ -129,7 +129,6 @@ const MintSheet = () => {
   const { nativeCurrency } = useAccountSettings();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate } = useNavigation();
-  const dispatch = useDispatch();
   const { colors, isDarkMode } = useTheme();
   const { isReadOnlyWallet, isHardwareWallet } = useWallets();
   const [insufficientEth, setInsufficientEth] = useState(false);
@@ -253,8 +252,8 @@ const MintSheet = () => {
         transport: http(networkObj.rpc),
       });
       try {
-        await getClient()?.actions.buyToken({
-          items: [{ fillType: 'mint', collection: mintCollection.id!, quantity }],
+        await getClient()?.actions.mintToken({
+          items: [{ collection: mintCollection.id!, quantity }],
           wallet: signer!,
           chainId: networkObj.id,
           precheck: true,
@@ -363,10 +362,9 @@ const MintSheet = () => {
     const feeAddress = getRainbowFeeAddress(currentNetwork);
     const nonce = await getNextNonce({ address: accountAddress, network: currentNetwork });
     try {
-      await getClient()?.actions.buyToken({
+      await getClient()?.actions.mintToken({
         items: [
           {
-            fillType: 'mint',
             collection: mintCollection.id!,
             quantity,
             ...(feeAddress && { referrer: feeAddress }),
@@ -382,7 +380,7 @@ const MintSheet = () => {
               return;
             }
             step.items?.forEach(item => {
-              if (item.txHashes?.[0] && txRef.current !== item.txHashes?.[0] && item.status === 'incomplete') {
+              if (item.txHashes?.[0]?.txHash && txRef.current !== item.txHashes[0].txHash && item.status === 'incomplete') {
                 const asset = {
                   type: 'nft',
                   icon_url: imageUrl,
@@ -391,7 +389,7 @@ const MintSheet = () => {
                   name: mintCollection.name || '',
                   decimals: 18,
                   symbol: 'NFT',
-                  uniqueId: `${mintCollection.id}-${item.txHashes[0]}`,
+                  uniqueId: `${mintCollection.id}-${item.txHashes[0].txHash}`,
                 };
 
                 const paymentAsset = {
@@ -408,7 +406,7 @@ const MintSheet = () => {
                   status: 'pending',
                   to: item.data?.to,
                   from: item.data?.from,
-                  hash: item.txHashes[0],
+                  hash: item.txHashes[0].txHash,
                   network: currentNetwork,
                   nonce,
                   changes: [
@@ -694,14 +692,7 @@ const MintSheet = () => {
                     <Inset vertical={{ custom: -4 }}>
                       <Inline space="4px" alignVertical="center" alignHorizontal="right">
                         {currentNetwork === Network.mainnet ? (
-                          <CoinIcon
-                            address={ETH_ADDRESS}
-                            size={16}
-                            symbol={ETH_SYMBOL}
-                            forceFallback={undefined}
-                            shadowColor={undefined}
-                            style={undefined}
-                          />
+                          <EthCoinIcon size={16} />
                         ) : (
                           <ChainBadge network={currentNetwork} position="relative" size="small" forceDark={true} />
                         )}

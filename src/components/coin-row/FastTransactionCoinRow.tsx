@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ButtonPressAnimation } from '../animations';
-import FastCoinIcon from '../asset-list/RecyclerAssetList2/FastComponents/FastCoinIcon';
 import FastTransactionStatusBadge from './FastTransactionStatusBadge';
 import { Bleed, Box, Inline, Text, globalColors, useForegroundColor } from '@/design-system';
 import { NativeCurrencyKey, RainbowTransaction } from '@/entities';
@@ -12,51 +11,38 @@ import { ImgixImage } from '../images';
 import { CardSize } from '../unique-token/CardSize';
 import { ChainBadge } from '../coin-icon';
 import { Network } from '@/networks/types';
-import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { address } from '@/utils/abbreviations';
-import { Colors } from '@/styles';
 import { TransactionType } from '@/resources/transactions/types';
-import { convertAmountAndPriceToNativeDisplay, convertAmountToBalanceDisplay, greaterThan } from '@/helpers/utilities';
+import {
+  convertAmountAndPriceToNativeDisplay,
+  convertAmountToBalanceDisplay,
+  convertRawAmountToBalance,
+  greaterThan,
+} from '@/helpers/utilities';
 import { TwoCoinsIcon } from '../coin-icon/TwoCoinsIcon';
 import Spinner from '../Spinner';
 import * as lang from '@/languages';
+import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
 
 export const getApprovalLabel = ({ approvalAmount, asset, type }: Pick<RainbowTransaction, 'type' | 'asset' | 'approvalAmount'>) => {
   if (!approvalAmount || !asset) return;
   if (approvalAmount === 'UNLIMITED') return lang.t(lang.l.transactions.approvals.unlimited);
   if (type === 'revoke') return lang.t(lang.l.transactions.approvals.no_allowance);
-  return `${approvalAmount} ${asset.symbol}`;
+  const amountDisplay = convertRawAmountToBalance(
+    approvalAmount,
+    { decimals: asset?.decimals, symbol: asset?.symbol },
+    undefined,
+    true
+  )?.display;
+  return amountDisplay || '';
 };
 
 const approvalTypeValues = (transaction: RainbowTransaction) => {
-  const { asset, approvalAmount, hash, contract } = transaction;
+  const { asset, approvalAmount } = transaction;
 
   if (!asset || !approvalAmount) return;
   transaction.protocol;
   return [transaction.protocol || '', getApprovalLabel(transaction)];
-
-  // return [
-  //   contract?.name ? (
-  //     <Inline key={`app${hash}`} alignVertical="center" space="4px">
-  //       {contract.iconUrl && (
-  //         <Text size="11pt" weight="semibold" color="labelTertiary">
-  //         {'Con Icon'}
-  //       </Text>
-  //       )}
-  //       {contract.name}
-  //     </Inline>
-  //   ) : null,
-  //   label && (
-  //     <Box
-  //       key={`approval${hash}`}
-  //       style={{ borderStyle: 'dashed', borderRadius: 6, borderColor: 'red', borderWidth: 1 }}
-  //     >
-  //       <Text size="11pt" weight="semibold" color="labelTertiary">
-  //         {label}
-  //       </Text>
-  //     </Box>
-  //   ),
-  // ];
 };
 
 const swapTypeValues = (changes: RainbowTransaction['changes']) => {
@@ -188,11 +174,16 @@ const BottomRow = React.memo(function BottomRow({
     tag = transaction.description;
   }
 
+  if (transaction?.type === 'mint') {
+    const inAsset = transaction?.changes?.find(a => a?.direction === 'in')?.asset;
+    description = inAsset?.name || '';
+  }
+
   if (['wrap', 'unwrap', 'swap'].includes(transaction?.type)) {
     const inAsset = transaction?.changes?.find(a => a?.direction === 'in')?.asset;
     const outAsset = transaction?.changes?.find(a => a?.direction === 'out')?.asset;
 
-    if (!!inAsset && !!outAsset) description = `${inAsset?.symbol} 􀄫 ${outAsset?.symbol}`;
+    if (!!inAsset && !!outAsset) description = `${outAsset?.symbol} 􀄫 ${inAsset?.symbol}`;
   }
 
   const nftChangesAmount = transaction.changes
@@ -297,6 +288,25 @@ export const ActivityIcon = ({
     );
   }
 
+  // fallback for contracts that we dont have data for
+  if (transaction?.type === 'contract_interaction') {
+    return (
+      <Box
+        alignItems="center"
+        background="fillSecondary"
+        borderRadius={10}
+        height={{ custom: size }}
+        justifyContent="center"
+        style={{ opacity: theme.isDarkMode ? 0.5 : 0.75 }}
+        width={{ custom: size }}
+      >
+        <Text align="center" color="labelQuaternary" size="icon 16px" weight="bold">
+          􀎭
+        </Text>
+      </Box>
+    );
+  }
+
   if (transaction?.asset?.type === 'nft') {
     return (
       <View
@@ -316,17 +326,35 @@ export const ActivityIcon = ({
             shadowRadius: 9,
           }}
         >
-          <ImgixImage
-            size={CardSize}
-            style={{
-              width: size,
-              height: size,
-              borderRadius: 10,
-            }}
-            source={{
-              uri: transaction.asset.icon_url,
-            }}
-          />
+          {/* @ts-ignore local nft assets have diff types */}
+          {transaction.asset.icon_url || transaction.asset.image_url ? (
+            <ImgixImage
+              size={CardSize}
+              style={{
+                width: size,
+                height: size,
+                borderRadius: 10,
+              }}
+              source={{
+                // @ts-ignore local nft assets have diff types
+                uri: transaction.asset.icon_url || transaction.asset.image_url,
+              }}
+            />
+          ) : (
+            <Box
+              alignItems="center"
+              background="fillSecondary"
+              borderRadius={10}
+              height={{ custom: size }}
+              justifyContent="center"
+              style={{ opacity: theme.isDarkMode ? 0.5 : 0.75 }}
+              width={{ custom: size }}
+            >
+              <Text align="center" color="labelQuaternary" size="icon 16px" weight="bold">
+                􀏆
+              </Text>
+            </Box>
+          )}
         </View>
         {transaction.network !== Network.mainnet && <ChainBadge network={transaction.network} badgeYPosition={0} />}
       </View>
@@ -334,41 +362,16 @@ export const ActivityIcon = ({
   }
 
   return (
-    <FastCoinIcon
-      address={transaction.asset?.address || ETH_ADDRESS}
-      network={transaction.network}
-      mainnetAddress={transaction.asset?.mainnet_address}
-      symbol={transaction.asset?.symbol || ETH_SYMBOL}
-      theme={theme}
-    />
-  );
-};
-
-const ActivityDescription = ({ transaction, colors }: { transaction: RainbowTransaction; colors: Colors }) => {
-  const { type, to, asset } = transaction;
-  let description = transaction.description;
-  let tag: string | undefined;
-  if (type === 'contract_interaction' && to) {
-    description = transaction.contract?.name || address(to, 6, 4);
-    tag = transaction.description;
-  }
-
-  const nftChangesAmount = transaction.changes
-    ?.filter(c => asset?.address === c?.asset.address && c?.asset.type === 'nft')
-    .filter(Boolean).length;
-  if (nftChangesAmount) tag = nftChangesAmount.toString();
-
-  return (
-    <Inline space="4px" alignVertical="center" wrap={false}>
-      <Text size="16px / 22px (Deprecated)" weight="regular" color={{ custom: colors.dark }}>
-        {description}
-      </Text>
-      {tag && (
-        <Text size="16px / 22px (Deprecated)" weight="regular" color={{ custom: colors.dark }}>
-          {tag}
-        </Text>
-      )}
-    </Inline>
+    <View style={sx.iconContainer}>
+      <RainbowCoinIcon
+        size={40}
+        icon={transaction?.asset?.icon_url}
+        network={transaction?.asset?.network || Network.mainnet}
+        symbol={transaction?.asset?.symbol || ''}
+        theme={theme}
+        colors={transaction?.asset?.colors}
+      />
+    </View>
   );
 };
 

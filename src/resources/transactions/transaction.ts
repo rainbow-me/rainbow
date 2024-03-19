@@ -1,4 +1,4 @@
-import { NativeCurrencyKey } from '@/entities';
+import { NativeCurrencyKey, RainbowTransaction } from '@/entities';
 import { createQueryKey, queryClient, QueryFunctionArgs, QueryFunctionResult } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { consolidatedTransactionsQueryFunction, consolidatedTransactionsQueryKey } from './consolidatedTransactions';
@@ -10,7 +10,8 @@ import { parseTransaction } from '@/parsers/transactions';
 import { Network } from '@/networks/types';
 import { RainbowError, logger } from '@/logger';
 
-type ConsolidatedTransactionsResult = QueryFunctionResult<typeof consolidatedTransactionsQueryFunction>;
+export type ConsolidatedTransactionsResult = QueryFunctionResult<typeof consolidatedTransactionsQueryFunction>;
+export type PaginatedTransactions = { pages: ConsolidatedTransactionsResult[] };
 
 export type TransactionArgs = {
   hash: string;
@@ -32,7 +33,7 @@ export const transactionQueryKey = ({ hash, address, currency, network }: Transa
 
 export const fetchTransaction = async ({
   queryKey: [{ address, currency, network, hash }],
-}: QueryFunctionArgs<typeof transactionQueryKey>) => {
+}: QueryFunctionArgs<typeof transactionQueryKey>): Promise<RainbowTransaction | null> => {
   try {
     const chainId = getNetworkObj(network).id;
     const url = `https://addys.p.rainbow.me/v3/${chainId}/${address}/transactions/${hash}`;
@@ -46,8 +47,10 @@ export const fetchTransaction = async ({
         Authorization: `Bearer ${ADDYS_API_KEY}`,
       },
     });
-    const tx = response?.data?.payload?.transaction || [];
-
+    const tx = response?.data?.payload?.transaction || {};
+    if (!tx) {
+      return null;
+    }
     const parsedTx = await parseTransaction(tx, currency);
     if (!parsedTx) throw new Error('Failed to parse transaction');
     return parsedTx;
@@ -55,6 +58,7 @@ export const fetchTransaction = async ({
     logger.error(new RainbowError('fetchTransaction: '), {
       message: (e as Error)?.message,
     });
+    return null;
   }
 };
 
@@ -72,8 +76,6 @@ export const transactionFetchQuery = async ({
   network: Network;
   hash: string;
 }) => queryClient.fetchQuery(transactionQueryKey({ address, currency, network, hash }), fetchTransaction);
-
-type PaginatedTransactions = { pages: ConsolidatedTransactionsResult[] };
 
 export function useBackendTransaction({ hash, network }: BackendTransactionArgs) {
   const { accountAddress, nativeCurrency } = useAccountSettings();
@@ -103,6 +105,7 @@ export function useBackendTransaction({ hash, network }: BackendTransactionArgs)
         if (tx) {
           return tx;
         }
+        return {};
       }
     },
     initialDataUpdatedAt: () => queryClient.getQueryState(paginatedTransactionsKey)?.dataUpdatedAt,
