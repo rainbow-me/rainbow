@@ -361,7 +361,6 @@ export const SignTransactionSheet = () => {
     (async () => {
       if (!isMessageRequest && !nonceForDisplay) {
         try {
-          console.log({ currentAddress, currentNetwork });
           const nonce = await getNextNonce({ address: currentAddress, network: currentNetwork });
           if (nonce || nonce === 0) {
             const nonceAsString = nonce.toString();

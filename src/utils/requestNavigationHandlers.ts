@@ -149,7 +149,6 @@ export const handleWalletConnectRequest = async (request: WalletconnectRequestDa
 
   const onCloseScreen = (canceled: boolean) => {
     let type: WalletconnectResultType = request.payload?.method === SEND_TRANSACTION ? 'transaction' : 'sign';
-    console.log('type');
     if (canceled) {
       type = `${type}-canceled`;
     }
