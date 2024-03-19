@@ -9,7 +9,6 @@ import {
   SimpleHashTrait,
   SimpleHashMarketplace,
 } from '@/resources/nfts/simplehash/types';
-import { Network } from '@/helpers/networkTypes';
 import { ENS_NFT_CONTRACT_ADDRESS, ETH_ADDRESS, POAP_NFT_ADDRESS } from '@/references';
 import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import { NFT, NFTFloorPrice, NFTMarketplace, NFTMarketplaceId, NFTTrait, PolygonAllowlist } from '../types';
@@ -22,7 +21,7 @@ import { PixelRatio } from 'react-native';
 import { deviceUtils } from '@/utils';
 import { TokenStandard } from '@/handlers/web3';
 import { handleNFTImages } from '@/utils/handleNFTImages';
-import { RainbowError, logger } from '@/logger';
+import { RainbowNetworks } from '@/networks';
 
 const ENS_COLLECTION_NAME = 'ENS';
 const SVG_MIME_TYPE = 'image/svg+xml';
@@ -32,68 +31,6 @@ const size = deviceWidth * pixelRatio;
 const MAX_IMAGE_SCALE = 3;
 const FULL_NFT_IMAGE_SIZE = size * MAX_IMAGE_SCALE;
 const GOOGLE_USER_CONTENT_URL = 'https://lh3.googleusercontent.com/';
-
-// same thing here, seems like only difference is we use mainnet instead of ethereum
-/**
- * Returns a `SimpleHashChain` from a given `Network`. Can return undefined if
- * a `Network` has no counterpart in SimpleHash.
- * @param network `Network`
- * @returns `SimpleHashChain` or `undefined`
- */
-export function getSimpleHashChainFromNetwork(network: Omit<Network, Network.goerli>): SimpleHashChain | undefined {
-  switch (network) {
-    case Network.mainnet:
-      return SimpleHashChain.Ethereum;
-    case Network.polygon:
-      return SimpleHashChain.Polygon;
-    case Network.arbitrum:
-      return SimpleHashChain.Arbitrum;
-    case Network.optimism:
-      return SimpleHashChain.Optimism;
-    case Network.bsc:
-      return SimpleHashChain.Bsc;
-    case Network.zora:
-      return SimpleHashChain.Zora;
-    case Network.avalanche:
-      return SimpleHashChain.Avalanche;
-    case Network.blast:
-      return SimpleHashChain.Blast;
-    default:
-      return undefined;
-  }
-}
-
-/**
- * Returns a `Network` from a `SimpleHashChain`. If an invalid value is
- * forcably passed in, it will throw.
- * @param chain `SimpleHashChain`
- * @returns `Network`
- */
-export function getNetworkFromSimpleHashChain(chain: SimpleHashChain): Network | undefined {
-  switch (chain) {
-    case SimpleHashChain.Ethereum:
-    case SimpleHashChain.Gnosis:
-      return Network.mainnet;
-    case SimpleHashChain.Polygon:
-      return Network.polygon;
-    case SimpleHashChain.Arbitrum:
-      return Network.arbitrum;
-    case SimpleHashChain.Optimism:
-      return Network.optimism;
-    case SimpleHashChain.Bsc:
-      return Network.bsc;
-    case SimpleHashChain.Zora:
-      return Network.zora;
-    case SimpleHashChain.Base:
-      return Network.base;
-    case SimpleHashChain.Avalanche:
-      return Network.avalanche;
-    case SimpleHashChain.Blast:
-      return Network.blast;
-    default:
-      logger.error(new RainbowError(`getNetworkFromSimpleHashChain received unknown chain: ${chain}`));
-  }
-}
 
 /**
  * Filters out NFTs that do not have a name, collection name,
@@ -115,7 +52,7 @@ export function filterSimpleHashNFTs(nfts: SimpleHashNFT[], polygonAllowlist?: P
     } = nft;
 
     const lowercasedContractAddress = nft.contract_address?.toLowerCase();
-    const network = getNetworkFromSimpleHashChain(chain);
+    const network = RainbowNetworks.find(network => network.nfts.simplehashNetwork === chain)?.value;
 
     const isMissingRequiredFields = !name || !collectionName || !contract_address || !token_id || !network;
     const isPolygonAndNotAllowed =
