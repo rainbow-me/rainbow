@@ -4,45 +4,17 @@ import * as Helpers from './helpers';
 
 const android = device.getPlatform() === 'android';
 
-beforeAll(async () => {
-  await Helpers.startHardhat();
-});
-
 describe('Send Sheet Interaction Flow Contacts', () => {
-  it('Should show the welcome screen', async () => {
-    await Helpers.checkIfVisible('welcome-screen');
+  beforeAll(async () => {
+    await Helpers.startHardhat();
+  });
+  afterAll(async () => {
+    await device.clearKeychain();
+    await Helpers.killHardhat();
   });
 
-  it('Should show the "Add Wallet Sheet" after tapping on "I already have a wallet"', async () => {
-    await Helpers.waitAndTap('already-have-wallet-button');
-    await Helpers.checkIfExists('add-wallet-sheet');
-  });
-
-  it('show the "Import Sheet" when tapping on "Restore with a recovery phrase or private key"', async () => {
-    await Helpers.waitAndTap('restore-with-key-button');
-    await Helpers.checkIfExists('import-sheet');
-  });
-
-  it('Should show the "Add wallet modal" after tapping import with a valid seed"', async () => {
-    await Helpers.clearField('import-sheet-input');
-    await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
-    await Helpers.checkIfElementHasString('import-sheet-button-label', 'Continue');
-    await Helpers.waitAndTap('import-sheet-button');
-    await Helpers.checkIfVisible('wallet-info-modal');
-  });
-
-  it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
-    await Helpers.disableSynchronization();
-    await Helpers.waitAndTap('wallet-info-submit-button');
-    if (android) {
-      await Helpers.checkIfVisible('pin-authentication-screen');
-      // Set the pin
-      await Helpers.authenticatePin('1234');
-      // Confirm it
-      await Helpers.authenticatePin('1234');
-    }
-    await Helpers.checkIfVisible('wallet-screen', 40000);
-    await Helpers.enableSynchronization();
+  it('Import a wallet and go to welcome', async () => {
+    await Helpers.importWalletFlow();
   });
 
   it('Should send ETH to test wallet"', async () => {
@@ -54,29 +26,6 @@ describe('Send Sheet Interaction Flow Contacts', () => {
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
   });
 
-  // Saving for now in case we want to test iCloud back up sheet
-  // it('Should show the backup sheet', async () => {
-  //   await Helpers.checkIfVisible('backup-sheet');
-  //   await Helpers.waitAndTap('backup-sheet-imported-cancel-button');
-  // });
-  /*
-  it('Should open expanded state', async () => {
-    await Helpers.waitAndTap('balance-coin-row-Ethereum');
-    ;
-
-  it('Should tap through chart timeseries', async () => {
-    await Helpers.waitAndTap('chart-timespan-h');
-    await Helpers.waitAndTap('chart-timespan-d');
-    await Helpers.waitAndTap('chart-timespan-w');
-    await Helpers.waitAndTap('chart-timespan-m');
-    await Helpers.waitAndTap('chart-timespan-y');
-    ;
-
-  it('Should close Expanded State and navigate to wallet screen', async () => {
-    await Helpers.swipe('expanded-state-header', 'down');
-    await Helpers.checkIfVisible('wallet-screen');
-  });
-  */
   it('Should show all wallet sections', async () => {
     await Helpers.swipe('wallet-screen', 'up', 'slow', 0.4);
     await Helpers.checkIfElementByTextIsVisible('Collectibles');
@@ -97,7 +46,6 @@ describe('Send Sheet Interaction Flow Contacts', () => {
     await device.disableSynchronization();
     await Helpers.typeText('send-asset-form-field', 'rainbowwallet.eth\n', false);
     await device.enableSynchronization();
-    // await Helpers.checkIfVisible('add-contact-button')
     await Helpers.checkIfVisible('send-asset-list');
   });
 
@@ -136,7 +84,6 @@ describe('Send Sheet Interaction Flow Contacts', () => {
     await Helpers.clearField('wallet-info-input');
     await Helpers.typeText('wallet-info-input', 'testcoin.eth', true);
     await Helpers.waitAndTap('wallet-info-submit-button');
-    // await Helpers.tapByText('Done');
     await Helpers.checkIfElementByTextIsVisible('testcoin.eth');
   });
 
@@ -156,15 +103,9 @@ describe('Send Sheet Interaction Flow Contacts', () => {
     await Helpers.checkIfVisible('edit-contact-button');
     await Helpers.waitAndTap('edit-contact-button');
     await Helpers.tapByText('Delete Contact');
-    await Helpers.delay(2000);
+    await Helpers.delayTime('medium');
     await Helpers.tapByText('Delete Contact');
-    await Helpers.delay(2000);
+    await Helpers.delayTime('medium');
     await Helpers.checkIfVisible('add-contact-button');
-  });
-
-  afterAll(async () => {
-    // Reset the app state
-    await device.clearKeychain();
-    await Helpers.killHardhat();
   });
 });

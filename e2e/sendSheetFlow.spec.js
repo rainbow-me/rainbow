@@ -2,47 +2,17 @@
 /* eslint-disable jest/expect-expect */
 import * as Helpers from './helpers';
 
-const android = device.getPlatform() === 'android';
-
-beforeAll(async () => {
-  await Helpers.startHardhat();
-});
-
 describe('Send Sheet Interaction Flow', () => {
-  it('Should show the welcome screen', async () => {
-    await Helpers.checkIfVisible('welcome-screen');
+  beforeAll(async () => {
+    await Helpers.startHardhat();
+  });
+  afterAll(async () => {
+    await device.clearKeychain();
+    await Helpers.killHardhat();
   });
 
-  it('Should show the "Add Wallet Sheet" after tapping on "I already have a wallet"', async () => {
-    await Helpers.waitAndTap('already-have-wallet-button');
-    await Helpers.checkIfExists('add-wallet-sheet');
-  });
-
-  it('show the "Import Sheet" when tapping on "Restore with a recovery phrase or private key"', async () => {
-    await Helpers.waitAndTap('restore-with-key-button');
-    await Helpers.checkIfExists('import-sheet');
-  });
-
-  it('Should show the "Add wallet modal" after tapping import with a valid seed"', async () => {
-    await Helpers.clearField('import-sheet-input');
-    await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
-    await Helpers.checkIfElementHasString('import-sheet-button-label', 'Continue');
-    await Helpers.waitAndTap('import-sheet-button');
-    await Helpers.checkIfVisible('wallet-info-modal');
-  });
-
-  it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
-    await Helpers.disableSynchronization();
-    await Helpers.waitAndTap('wallet-info-submit-button');
-    if (android) {
-      await Helpers.checkIfVisible('pin-authentication-screen');
-      // Set the pin
-      await Helpers.authenticatePin('1234');
-      // Confirm it
-      await Helpers.authenticatePin('1234');
-    }
-    await Helpers.checkIfVisible('wallet-screen', 40000);
-    await Helpers.enableSynchronization();
+  it('Import a wallet and go to welcome', async () => {
+    await Helpers.importWalletFlow();
   });
 
   it('Should send ETH to test wallet"', async () => {
@@ -54,29 +24,6 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
   });
 
-  // Saving for now in case we want to test iCloud back up sheet
-  // it('Should show the backup sheet', async () => {
-  //   await Helpers.checkIfVisible('backup-sheet');
-  //   await Helpers.waitAndTap('backup-sheet-imported-cancel-button');
-  // });
-  /*
-  it('Should open expanded state', async () => {
-    await Helpers.waitAndTap('balance-coin-row-Ethereum');
-    ;
-
-  it('Should tap through chart timeseries', async () => {
-    await Helpers.waitAndTap('chart-timespan-h');
-    await Helpers.waitAndTap('chart-timespan-d');
-    await Helpers.waitAndTap('chart-timespan-w');
-    await Helpers.waitAndTap('chart-timespan-m');
-    await Helpers.waitAndTap('chart-timespan-y');
-    ;
-
-  it('Should close Expanded State and navigate to wallet screen', async () => {
-    await Helpers.swipe('expanded-state-header', 'down');
-    await Helpers.checkIfVisible('wallet-screen');
-  });
-  */
   it.skip('Should show all wallet sections', async () => {
     await Helpers.swipe('wallet-screen', 'up');
     await Helpers.checkIfElementByTextIsVisible('Collectibles');
@@ -101,7 +48,6 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.clearField('send-asset-form-field');
     await Helpers.checkIfVisible('send-asset-form-field');
     await Helpers.replaceTextInField('send-asset-form-field', '0xF0f21ab2012731542731df194cfF6c77d29cB31A');
-    // await Helpers.checkIfVisible('add-contact-button');
     await Helpers.checkIfVisible('send-asset-list', 20000);
   });
 
@@ -114,21 +60,8 @@ describe('Send Sheet Interaction Flow', () => {
     await device.disableSynchronization();
     await Helpers.typeText('send-asset-form-field', 'rainbowwallet.eth\n', false);
     await device.enableSynchronization();
-    // await Helpers.checkIfVisible('add-contact-button')
     await Helpers.checkIfVisible('send-asset-list');
   });
-
-  /*
-  it('Should display Asset Form after tapping on savings asset', async () => {
-    await Helpers.checkIfVisible('send-savings-cDAI');
-    await Helpers.waitAndTap('send-savings-cDAI');
-    await Helpers.checkIfVisible('selected-asset-field-input');
-  });
-
-  it('Should go back to Asset List after tapping on savings asset', async () => {
-    await Helpers.waitAndTap('send-asset-form-cDAI-mainnet');
-    await Helpers.checkIfVisible('send-asset-list');
-  });*/
 
   it.skip('Should display Asset Form after tapping on asset', async () => {
     await Helpers.checkIfVisible('send-asset-DAI-mainnet');
@@ -216,10 +149,5 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.typeText('selected-asset-quantity-field-input', '8.1219', true);
     await Helpers.checkIfElementByTextIsVisible('8.12');
     await Helpers.waitAndTap('send-asset-form-ETH-mainnet');
-  });
-  afterAll(async () => {
-    // Reset the app state
-    await device.clearKeychain();
-    await Helpers.killHardhat();
   });
 });

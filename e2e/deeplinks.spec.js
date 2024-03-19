@@ -1,7 +1,6 @@
-/* eslint-disable no-undef */
-/* eslint-disable jest/expect-expect */
 import { exec } from 'child_process';
 import * as Helpers from './helpers';
+import { device } from 'detox';
 
 const RAINBOW_WALLET_ADDRESS = '0x7a3d05c70581bD345fe117c06e45f9669205384f';
 
@@ -37,10 +36,11 @@ beforeAll(async () => {
     // Chrome or the app. Detox is only able to control tapping within the app,
     // so this blocks our tests. The only way we found to bypass this is to
     // uninstall Chrome before.
-    await exec('yarn adb-all shell pm disable-user com.android.chrome');
+    exec('yarn adb-all shell pm disable-user com.android.chrome');
   }
 });
 
+// eslint-disable-next-line jest/no-disabled-tests
 describe.skip('Deeplinks spec', () => {
   it('Should show the welcome screen', async () => {
     await Helpers.checkIfVisible('welcome-screen');

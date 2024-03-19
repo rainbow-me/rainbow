@@ -5,6 +5,9 @@ import * as Helpers from './helpers';
 const android = device.getPlatform() === 'android';
 
 describe('Import from private key flow', () => {
+  afterAll(async () => {
+    await device.clearKeychain();
+  });
   it('without 0x - Should show the welcome screen', async () => {
     await Helpers.checkIfVisible('welcome-screen');
   });
@@ -33,23 +36,10 @@ describe('Import from private key flow', () => {
     await Helpers.waitAndTap('wallet-info-submit-button');
     if (android) {
       await Helpers.checkIfVisible('pin-authentication-screen');
-      // Set the pin
       await Helpers.authenticatePin('1234');
-      // Confirm it
       await Helpers.authenticatePin('1234');
     }
     await Helpers.checkIfVisible('wallet-screen', 40000);
     await Helpers.enableSynchronization();
-  });
-
-  // Saving for now in case we want to test iCloud back up sheet
-  // it('Should show the backup sheet', async () => {
-  //   await Helpers.checkIfVisible('backup-sheet');
-  //   await Helpers.waitAndTap('backup-sheet-imported-cancel-button');
-  // });
-
-  afterAll(async () => {
-    // Reset the app state
-    await device.clearKeychain();
   });
 });

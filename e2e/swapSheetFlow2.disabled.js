@@ -14,6 +14,8 @@ const android = device.getPlatform() === 'android';
 //        part of the addy's REST API migration
 //
 //        marking the test as SKIP for now
+
+// eslint-disable-next-line jest/no-disabled-tests
 describe.skip('Swap Sheet Interaction Flow', () => {
   it('Should show the welcome screen', async () => {
     await Helpers.checkIfVisible('welcome-screen');

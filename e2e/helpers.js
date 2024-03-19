@@ -1,19 +1,42 @@
 import { exec } from 'child_process';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
-import { expect } from 'detox';
+import { expect, device } from 'detox';
 import { parseEther } from '@ethersproject/units';
 
 const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
 
-const DEFAULT_TIMEOUT = 8000;
+const DEFAULT_TIMEOUT = 20_000;
+const android = device.getPlatform() === 'android';
 
 export async function startHardhat() {
-  await exec('yarn hardhat');
+  exec('yarn hardhat');
 }
 
 export async function killHardhat() {
-  await exec('kill $(lsof -t -i:8545)');
+  exec('kill $(lsof -t -i:8545)');
+}
+
+export async function importWalletFlow() {
+  await checkIfVisible('welcome-screen');
+  await waitAndTap('already-have-wallet-button');
+  await checkIfExists('add-wallet-sheet');
+  await waitAndTap('restore-with-key-button');
+  await checkIfExists('import-sheet');
+  await clearField('import-sheet-input');
+  await typeText('import-sheet-input', process.env.TEST_SEEDS, false);
+  await checkIfElementHasString('import-sheet-button-label', 'Continue');
+  await waitAndTap('import-sheet-button');
+  await checkIfVisible('wallet-info-modal');
+  await disableSynchronization();
+  await waitAndTap('wallet-info-submit-button');
+  if (android) {
+    await checkIfVisible('pin-authentication-screen');
+    await authenticatePin('1234');
+    await authenticatePin('1234');
+  }
+  await checkIfVisible('wallet-screen', 40000);
+  await enableSynchronization();
 }
 
 // eslint-disable-next-line eslint-comments/disable-enable-pair
@@ -233,6 +256,19 @@ export function delay(ms) {
       resolve();
     }, ms);
   });
+}
+
+export async function delayTime(time) {
+  switch (time) {
+    case 'short':
+      return await delay(500);
+    case 'medium':
+      return await delay(100);
+    case 'long':
+      return await delay(5_000);
+    case 'very-long':
+      return await delay(10_000);
+  }
 }
 
 export function getProvider() {
