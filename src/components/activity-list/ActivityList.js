@@ -115,7 +115,7 @@ const ActivityList = ({
     } else {
       return (
         <SectionList
-          ListFooterComponent={() => true && <ListFooterComponent label={remainingItemsLabel} onPress={nextPage} />}
+          ListFooterComponent={() => remainingItemsLabel && <ListFooterComponent label={remainingItemsLabel} onPress={nextPage} />}
           ref={handleListRef}
           ListHeaderComponent={header}
           alwaysBounceVertical={false}
