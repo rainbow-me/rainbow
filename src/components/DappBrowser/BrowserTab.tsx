@@ -21,6 +21,7 @@ import DappBrowserWebview from './DappBrowserWebview';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { DappBrowserShadows } from './DappBrowserShadows';
 import { WebViewBorder } from './WebViewBorder';
+import Homepage from './Homepage';
 
 interface BrowserTabProps {
   tabIndex: number;
@@ -364,22 +365,6 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
     [loadProgress]
   );
 
-  const HomepageComponent = () => (
-    <Box
-      as={Page}
-      flex={1}
-      height="full"
-      width="full"
-      alignItems="center"
-      justifyContent="center"
-      style={{ backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD' }}
-    >
-      <Text align="center" size="20pt" color="label" weight="bold">
-        Dapp Browser Homepage
-      </Text>
-    </Box>
-  );
-
   const WebviewComponent = () => (
     <Freeze
       freeze={!isActiveTab}
@@ -427,7 +412,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
   );
 
   const isOnHomepage = tabStates[tabIndex].url === RAINBOW_HOME;
-  const TabContent = isOnHomepage ? <HomepageComponent /> : <WebviewComponent />;
+  const TabContent = isOnHomepage ? <Homepage /> : <WebviewComponent />;
 
   return (
     <>
