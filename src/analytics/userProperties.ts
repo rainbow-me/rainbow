@@ -23,8 +23,8 @@ export interface UserProperties {
   // nft offers
   nftOffersAmount?: number;
   nftOffersUSDValue?: number;
-  nftOffersMedianFloorDifferencePercentage?: number;
-  nftOffersMeanFloorDifferencePercentage?: number;
+  nftOffersMeanOfferVariance?: number;
+  nftOffersMedianOfferVariance?: number;
 
   // mint.fun
   numberOfMints?: number;
