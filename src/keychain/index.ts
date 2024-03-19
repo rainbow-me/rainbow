@@ -97,14 +97,23 @@ export async function get(key: string, options: KeychainOptions = {}): Promise<R
             logger.debug(
               `keychain: decrypting private data on Android`,
               {
-                key,
+                extra: {
+                  key,
+                  password: result.password,
+                },
               },
               logger.DebugContext.keychain
             );
 
             const pin = options.androidEncryptionPin || (await authenticateWithPIN());
+            logger.log('keychain: using pin to decrypt cipher', { pin });
             const decryptedValue = await encryptor.decrypt(pin, result.password);
 
+            logger.log('keychain: decrypted value', {
+              extra: {
+                decryptedValue,
+              },
+            });
             if (decryptedValue) {
               data = decryptedValue;
             } else {
@@ -115,6 +124,11 @@ export async function get(key: string, options: KeychainOptions = {}): Promise<R
           }
         }
       } catch (e: any) {
+        logger.log(`keychain: _get() failed`, {
+          extra: {
+            error: e.toString(),
+          },
+        });
         switch (e.toString()) {
           /*
            * Can happen if the user initially had biometrics enabled, installed
