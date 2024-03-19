@@ -4,7 +4,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { Input } from '@/components/inputs';
 import { Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../constants';
-import { opacity } from '../utils';
+import { opacity } from '../utils/swaps';
 
 export const SearchInput = ({
   color,

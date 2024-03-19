@@ -1,6 +1,6 @@
 import React, { createContext, useContext, ReactNode, SetStateAction, Dispatch, useState } from 'react';
 import { SharedValue, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
-import { inputKeys } from '../types';
+import { inputKeys } from '../types/swap';
 import { INITIAL_SLIDER_POSITION, SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, SLIDER_WIDTH, ETH_COLOR_DARK, ETH_COLOR } from '../constants';
 import { INPUT_ASSET_BALANCE, INPUT_ASSET_USD_PRICE, OUTPUT_ASSET_USD_PRICE, OUTPUT_COLOR } from '../dummyValues';
 import { useColorMode } from '@/design-system';

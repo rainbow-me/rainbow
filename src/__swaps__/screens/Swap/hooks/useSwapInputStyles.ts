@@ -13,7 +13,7 @@ import {
   fadeConfig,
   springConfig,
 } from '../constants';
-import { opacity } from '../utils';
+import { opacity } from '../utils/swaps';
 
 export const useSwapInputStyles = ({
   bottomInput,

@@ -3,7 +3,7 @@ import { useColorMode, Box } from '@/design-system';
 import LinearGradient from 'react-native-linear-gradient';
 import { useDimensions } from '@/hooks';
 import { ETH_COLOR, ETH_COLOR_DARK } from '../constants';
-import { getTintedBackgroundColor } from '../utils';
+import { getTintedBackgroundColor } from '../utils/swaps';
 import { IS_ANDROID } from '@/env';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 import { navbarHeight } from '@/components/navbar/Navbar';

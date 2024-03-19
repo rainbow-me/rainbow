@@ -12,7 +12,7 @@ import { useDebouncedCallback } from 'use-debounce';
 
 import { SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '../constants';
 import { IS_INPUT_STABLECOIN, IS_OUTPUT_STABLECOIN, SWAP_FEE } from '../dummyValues';
-import { inputKeys, inputMethods } from '../types';
+import { inputKeys, inputMethods } from '../types/swap';
 import {
   addCommasToNumber,
   clamp,
@@ -22,7 +22,7 @@ import {
   niceIncrementFormatter,
   trimTrailingZeros,
   valueBasedDecimalFormatter,
-} from '../utils';
+} from '../utils/swaps';
 
 export function useSwapInputsController({
   focusedInput,

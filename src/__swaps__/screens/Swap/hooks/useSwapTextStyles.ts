@@ -21,8 +21,8 @@ import {
   sliderConfig,
   slowFadeConfig,
 } from '../constants';
-import { inputKeys, inputMethods } from '../types';
-import { opacity } from '../utils';
+import { inputKeys, inputMethods } from '../types/swap';
+import { opacity } from '../utils/swaps';
 
 export function useSwapTextStyles({
   bottomColor,
