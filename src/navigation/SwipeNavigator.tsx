@@ -67,20 +67,15 @@ const ActivityTabIcon = React.memo(
     reanimatedPosition: SharedValue<number>;
   }) => {
     const { pendingTransactions } = usePendingTransactions();
-    const { colors, isDarkMode } = useTheme();
 
     return pendingTransactions.length > 0 ? (
       <Box width={{ custom: 32 }} height={{ custom: 32 }} alignItems="center" justifyContent="center">
         <AnimatedSpinner isLoading={true} color={accentColor} size={28} />
         <Cover>
-          <Box width="full" height="full" padding={{ custom: 7 }}>
-            <AccentColorProvider color={colors.alpha(accentColor, isDarkMode ? 0.25 : 0.1)}>
-              <Box background="accent" alignItems="center" justifyContent="center" borderRadius={25} width="full" height="full">
-                <Text color={{ custom: accentColor }} size="13pt" weight="heavy" align="center">
-                  {pendingTransactions.length}
-                </Text>
-              </Box>
-            </AccentColorProvider>
+          <Box width="full" height="full" padding={{ custom: 7 }} alignItems="center" justifyContent="center">
+            <Text color={{ custom: accentColor }} size="13pt" weight="heavy" align="center">
+              {pendingTransactions.length}
+            </Text>
           </Box>
         </Cover>
       </Box>
