@@ -360,9 +360,11 @@ const sanitizeFilename = (filename: string) => {
  */
 export async function restoreCloudBackup({
   password,
+  userData,
   nameOfSelectedBackupFile,
 }: {
   password: BackupPassword;
+  userData: BackupUserData | undefined;
   nameOfSelectedBackupFile: string;
 }): Promise<RestoreCloudBackupResultStatesType> {
   try {
@@ -377,6 +379,10 @@ export async function restoreCloudBackup({
       return RestoreCloudBackupResultStates.incorrectPassword;
     }
 
+    const dataToRestore = {
+      ...data.secrets,
+    };
+
     // ANDROID ONLY - pin auth if biometrics are disabled
     let userPIN: string | undefined;
     const hasBiometricsEnabled = await kc.getSupportedBiometryType();
@@ -388,7 +394,29 @@ export async function restoreCloudBackup({
       }
     }
 
-    const restoredSuccessfully = await restoreSpecificBackupIntoKeychain({ ...data.secrets }, userPIN);
+    let restoredSuccessfully = false;
+    if (userData) {
+      // Restore only wallets that were backed up in cloud
+      // or wallets that are read-only
+      const walletsToRestore: AllRainbowWallets = {};
+      Object.values(userData?.wallets ?? {}).forEach(wallet => {
+        if (
+          (wallet.backedUp && wallet.backupDate && wallet.backupFile && wallet.backupType === WalletBackupTypes.cloud) ||
+          wallet.type === WalletTypes.readOnly
+        ) {
+          walletsToRestore[wallet.id] = wallet;
+        }
+      });
+
+      // All wallets
+      dataToRestore[allWalletsKey] = {
+        version: allWalletsVersion,
+        wallets: walletsToRestore,
+      };
+      restoredSuccessfully = await restoreCurrentBackupIntoKeychain(dataToRestore, userPIN);
+    } else {
+      restoredSuccessfully = await restoreSpecificBackupIntoKeychain(dataToRestore, userPIN);
+    }
 
     return restoredSuccessfully ? RestoreCloudBackupResultStates.success : RestoreCloudBackupResultStates.failedWhenRestoring;
   } catch (error) {
