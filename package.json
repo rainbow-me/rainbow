@@ -219,6 +219,7 @@
     "react-native-cloud-fs": "rainbow-me/react-native-cloud-fs#c4ed2d78a7c401f628248a4e45eaf5bf9319a31a",
     "react-native-code-push": "8.0.2",
     "react-native-crypto": "2.2.0",
+    "react-native-dark-mode": "0.2.2",
     "react-native-device-info": "5.3.1",
     "react-native-dotenv": "2.4.2",
     "react-native-exit-app": "1.1.0",

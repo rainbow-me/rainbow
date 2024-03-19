@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Box, globalColors, useColorMode, Text, TextIcon, DebugLayout } from '@/design-system';
-import { Page } from '@/components/layout';
+import { Box, globalColors, useColorMode, TextIcon } from '@/design-system';
 import { useAccountAccentColor, useAccountSettings, useDimensions } from '@/hooks';
 import { AnimatePresence, MotiView } from 'moti';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -11,7 +10,7 @@ import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { transformOrigin } from 'react-native-redash';
 import { MMKV } from 'react-native-mmkv';
 import { RAINBOW_HOME, useBrowserContext } from './BrowserContext';
-import { Image, StyleSheet, View, TouchableWithoutFeedback, Touchable } from 'react-native';
+import { Image, StyleSheet, View, TouchableWithoutFeedback } from 'react-native';
 import { Freeze } from 'react-freeze';
 import { COLLAPSED_WEBVIEW_HEIGHT_UNSCALED, TAB_VIEW_COLUMN_WIDTH, TAB_VIEW_ROW_HEIGHT, WEBVIEW_HEIGHT } from './Dimensions';
 import RNFS from 'react-native-fs';
