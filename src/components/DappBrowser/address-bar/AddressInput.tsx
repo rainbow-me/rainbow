@@ -50,7 +50,9 @@ export const AddressInput = ({
   const labelQuaternary = useForegroundColor('labelQuaternary');
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
-  const buttonColor = isDarkMode ? fillSecondary : opacity(globalColors.white100, 0.9);
+  const buttonColorIOS = isDarkMode ? fillSecondary : opacity(globalColors.white100, 0.9);
+  const buttonColorAndroid = isDarkMode ? globalColors.blueGrey100 : globalColors.white100;
+  const buttonColor = IS_IOS ? buttonColorIOS : buttonColorAndroid;
 
   const inputStyle = useAnimatedStyle(() => ({
     pointerEvents: (tabViewProgress?.value ?? 0) < 1 ? 'auto' : 'none',
