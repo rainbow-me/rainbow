@@ -21,6 +21,7 @@ import DappBrowserWebview from './DappBrowserWebview';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { DappBrowserShadows } from './DappBrowserShadows';
 import { WebViewBorder } from './WebViewBorder';
+import { handleProviderRequest } from './handleProviderRequest';
 
 interface BrowserTabProps {
   tabIndex: number;
@@ -267,6 +268,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
       return;
     }
     const msngr = appMessenger(webViewRef.current, tabId, origin);
+    handleProviderRequest(msngr);
     messengers.current.push(msngr);
   }, []);
 

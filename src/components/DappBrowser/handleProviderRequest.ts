@@ -12,6 +12,8 @@ import { getProviderForNetwork } from '@/handlers/web3';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { Provider } from '@ethersproject/providers';
 import { UserRejectedRequestError } from 'viem';
+import { convertHexToString } from '@/helpers/utilities';
+import { logger } from '@/logger';
 export type ProviderRequestPayload = RequestArguments & {
   id: number;
   meta?: CallbackOptions;
@@ -215,71 +217,16 @@ export const handleProviderRequest = (messenger: Messenger) => {
       proposedChain: AddEthereumChainProposedChain;
       callbackOptions?: CallbackOptions;
     }): { chainAlreadyAdded: boolean } => {
-      //   const url = callbackOptions?.sender.url || '';
-      //   const host = (isValidUrl(url) && getDappHost(url)) || '';
-      //   const { rainbowChains, addCustomRPC, setActiveRPC } =
-      //     rainbowChainsStore.getState();
-      //   const { addUserChain } = userChainsStore.getState();
-      //   const alreadyAddedChain = Object.keys(rainbowChains).find(
-      //     (id) => Number(id) === Number(proposedChain.chainId),
-      //   );
-      //   if (alreadyAddedChain) {
-      //     const {
-      //       chainId,
-      //       rpcUrls: [rpcUrl],
-      //       nativeCurrency: { name, symbol, decimals },
-      //       blockExplorerUrls: [blockExplorerUrl],
-      //     } = proposedChain;
-      //     const chainObject: Chain = {
-      //       id: Number(chainId),
-      //       nativeCurrency: { name, symbol, decimals },
-      //       name: proposedChain.chainName,
-      //       network: proposedChain.chainName,
-      //       rpcUrls: {
-      //         default: { http: [rpcUrl] },
-      //         public: { http: [rpcUrl] },
-      //       },
-      //       blockExplorers: {
-      //         default: { name: '', url: blockExplorerUrl },
-      //       },
-      //     };
-      //     const rainbowChain = rainbowChains[chainObject.id];
-      //     const alreadyAddedRpcUrl = rainbowChain.chains.find(
-      //       (chain: Chain) =>
-      //         chain.rpcUrls.default.http[0] === rpcUrl &&
-      //         rainbowChain.activeRpcUrl === rpcUrl,
-      //     );
-      //     const activeRpc = rainbowChain.activeRpcUrl === rpcUrl;
-      //     if (!alreadyAddedRpcUrl) {
-      //       addCustomRPC({ chain: chainObject });
-      //       addUserChain({ chainId: chainObject.id });
-      //       setActiveRPC({
-      //         rpcUrl: rpcUrl,
-      //         chainId: chainObject.id,
-      //       });
-      //     }
-
-      //     let rpcStatus;
-      //     if (alreadyAddedRpcUrl) {
-      //       if (activeRpc) {
-      //         rpcStatus = IN_DAPP_NOTIFICATION_STATUS.already_active;
-      //       } else {
-      //         rpcStatus = IN_DAPP_NOTIFICATION_STATUS.already_added;
-      //       }
-      //     } else {
-      //       rpcStatus = IN_DAPP_NOTIFICATION_STATUS.set_as_active;
-      //     }
-
-      //     const extensionUrl = chrome.runtime.getURL('');
-      //     inpageMessenger?.send('rainbow_ethereumChainEvent', {
-      //       chainId: Number(proposedChain.chainId),
-      //       status: rpcStatus,
-      //       extensionUrl,
-      //       host,
-      //     });
-      //   }
-      //   return { chainAlreadyAdded: !!alreadyAddedChain };
-      return { chainAlreadyAdded: true };
+      const { chainId } = proposedChain;
+      const supportedChains = RainbowNetworks.filter(network => network.features.walletconnect).map(network => network.id.toString());
+      const numericChainId = convertHexToString(chainId);
+      if (supportedChains.includes(numericChainId)) {
+        // TODO - Open add / switch ethereum chain
+        return { chainAlreadyAdded: true };
+      } else {
+        logger.info('[DAPPBROWSER]: NOT SUPPORTED CHAIN');
+        return { chainAlreadyAdded: false };
+      }
     },
     checkRateLimit: async ({ id, meta, method }: { id: number; meta: CallbackOptions; method: string }) => {
       const url = meta?.sender.url || '';
@@ -298,26 +245,18 @@ export const handleProviderRequest = (messenger: Messenger) => {
       proposedChain: AddEthereumChainProposedChain;
       callbackOptions?: CallbackOptions;
     }) => {
-      //   const url = callbackOptions?.sender.url || '';
-      //   const host = (isValidUrl(url || '') && getDappHost(url)) || '';
-      //   const extensionUrl = chrome.runtime.getURL('');
-      //   const proposedChainId = Number(proposedChain.chainId);
-      //   const chain = rainbowChainsStore
-      //     .getState()
-      //     .getActiveChain({ chainId: proposedChainId });
-      //   const supportedChainId =
-      //     isCustomChain(proposedChainId) || isSupportedChainId(proposedChainId);
-      //   inpageMessenger?.send('rainbow_ethereumChainEvent', {
+      const { chainId } = proposedChain;
+      const supportedChains = RainbowNetworks.filter(network => network.features.walletconnect).map(network => network.id.toString());
+      const numericChainId = convertHexToString(chainId);
+      const supportedChainId = supportedChains.includes(numericChainId);
+      // TODO SEND NOTIFICATION
+      // inpageMessenger?.send('rainbow_ethereumChainEvent', {
       //     chainId: proposedChainId,
       //     chainName: chain?.name || 'NO NAME',
       //     status: !supportedChainId
       //       ? IN_DAPP_NOTIFICATION_STATUS.unsupported_network
       //       : IN_DAPP_NOTIFICATION_STATUS.no_active_session,
       //     extensionUrl,
-      //     host,
-      //   });
-      //   logger.error(new RainbowError('Chain Id not supported'), {
-      //     proposedChainId,
       //     host,
       //   });
     },
@@ -328,32 +267,26 @@ export const handleProviderRequest = (messenger: Messenger) => {
       proposedChain: AddEthereumChainProposedChain;
       callbackOptions?: CallbackOptions;
     }) => {
-      //   const url = callbackOptions?.sender.url || '';
-      //   const host = (isValidUrl(url || '') && getDappHost(url)) || '';
-      //   const dappName = callbackOptions?.sender.tab?.title || host;
-      //   const extensionUrl = chrome.runtime.getURL('');
-      //   const proposedChainId = Number(proposedChain.chainId);
-      //   const { updateActiveSessionChainId } = appSessionsStore.getState();
-      //   updateActiveSessionChainId({
-      //     chainId: proposedChainId,
-      //     host,
-      //   });
-      //   const chain = rainbowChainsStore
-      //     .getState()
-      //     .getActiveChain({ chainId: proposedChainId });
-      //   inpageMessenger?.send('rainbow_ethereumChainEvent', {
-      //     chainId: proposedChainId,
-      //     chainName: chain?.name,
-      //     status: IN_DAPP_NOTIFICATION_STATUS.success,
-      //     extensionUrl,
-      //     host,
-      //   });
-      //   queueEventTracking(event.dappProviderNetworkSwitched, {
-      //     dappURL: host,
-      //     dappName: dappName,
-      //     chainId: proposedChainId,
-      //   });
-      //   inpageMessenger.send(`chainChanged:${host}`, proposedChainId);
+      const { chainId } = proposedChain;
+      const supportedChains = RainbowNetworks.filter(network => network.features.walletconnect).map(network => network.id.toString());
+      const numericChainId = convertHexToString(chainId);
+      const supportedChainId = supportedChains.includes(numericChainId);
+      if (supportedChainId) {
+        // 1 - update session
+        // TODO
+        // 2 - Send noifification
+        /*
+            inpageMessenger?.send('rainbow_ethereumChainEvent', {
+                chainId: proposedChainId,
+                chainName: chain?.name,
+                status: IN_DAPP_NOTIFICATION_STATUS.success,
+                extensionUrl,
+                host,
+                });
+            */
+        // 3 - send event
+        // inpageMessenger.send(`chainChanged:${host}`, proposedChainId);
+      }
     },
   });
 };
