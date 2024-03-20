@@ -1,11 +1,6 @@
-# This is a basic workflow to help you get started with Actions
-
 name: iOS e2e tests
 
-# Controls when the workflow will run
 on: [pull_request, workflow_dispatch]
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "ios-e2e"
   ios-e2e:
@@ -16,13 +11,11 @@ jobs:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
 
       - name: Set up github keys
-        run:  echo 'hi 00' && git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null" &&  echo 'hi 0'
+        run:  git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
 
       - name: Set up ENV vars & scripts
         run: |
@@ -57,11 +50,11 @@ jobs:
       - name: Remove old Detox artifacts
         run: rm -rf ./artifacts/
 
-      - name: Build the app in Release mode
-        run: ./node_modules/.bin/detox build --configuration ios.sim.release
+      - name: Build the app in debug mode
+        run: ./node_modules/.bin/detox build --configuration ios.sim.debug
 
       - name: Run iOS e2e tests
-        run: ./node_modules/.bin/detox test -R 5 --configuration ios.sim.release --forceExit --bail
+        run: ./node_modules/.bin/detox test -R 5 --configuration ios.sim.debug --forceExit --bail
      
       - name: Upload Test Artifacts
         if: failure()
