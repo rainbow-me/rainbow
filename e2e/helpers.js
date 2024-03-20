@@ -1,23 +1,21 @@
 import { exec } from 'child_process';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
-import { expect } from 'detox';
+import { expect, waitFor, element, by, device } from 'detox';
 import { parseEther } from '@ethersproject/units';
 
 const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
 
-const DEFAULT_TIMEOUT = 8000;
+const DEFAULT_TIMEOUT = 10_000;
 
 export async function startHardhat() {
-  await exec('yarn hardhat');
+  exec('yarn hardhat');
 }
 
 export async function killHardhat() {
-  await exec('kill $(lsof -t -i:8545)');
+  exec('kill $(lsof -t -i:8545)');
 }
 
-// eslint-disable-next-line eslint-comments/disable-enable-pair
-/* eslint-disable no-undef */
 export async function waitAndTap(elementId, timeout) {
   await waitFor(element(by.id(elementId)))
     .toBeVisible()
@@ -108,7 +106,7 @@ export function tapAlertWithButton(text, index) {
   return element(by.label(text)).atIndex(0).tap();
 }
 
-export async function waitAndSwipe(elementId, direction, speed = 'fast', percentage = 0.75, timeout) {
+export async function waitAndSwipe(elementId, direction, timeout, speed = 'fast', percentage = 0.75) {
   await waitFor(element(by.id(elementId)))
     .toBeVisible()
     .withTimeout(timeout || DEFAULT_TIMEOUT);
@@ -127,11 +125,13 @@ export async function swipeUntilVisible(elementId, scrollViewId, direction, pctV
   let stop = false;
   while (!stop) {
     try {
+      // eslint-disable-next-line no-await-in-loop
       await waitFor(element(by.id(elementId)))
         .toBeVisible(pctVisible)
         .withTimeout(500);
       stop = true;
     } catch {
+      // eslint-disable-next-line no-await-in-loop
       await swipe(scrollViewId, direction, 'slow', 0.2);
     }
   }
@@ -208,6 +208,7 @@ export async function authenticatePin(pin) {
   const digits = pin.split('');
   await device.disableSynchronization();
   for (let i = 0; i < digits.length; i++) {
+    // eslint-disable-next-line no-await-in-loop
     await tap(`numpad-button-${digits[i]}`);
   }
   await device.enableSynchronization();

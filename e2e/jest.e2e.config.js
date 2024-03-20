@@ -1,4 +1,5 @@
-/** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
+/* eslint-disable @typescript-eslint/no-var-requires */
+/** @type {import('ts-jest/dist/types').JestConfigWithTsJest} */
 const { pathsToModuleNameMapper } = require('ts-jest');
 const { compilerOptions } = require('../tsconfig');
 
@@ -11,7 +12,7 @@ module.exports = {
   globalTeardown: 'detox/runners/jest/globalTeardown',
   reporters: ['detox/runners/jest/reporter'],
 
-  testTimeout: 240000,
+  testTimeout: 30_000,
   testRegex: '\\.spec\\.[jt]sx?$',
   verbose: true,
   transform: {

@@ -2,7 +2,7 @@
 # debug log
 
 echo " 🤖 Attempting to clean android build..."
-yarn clean:android > /dev/null 2>&1 || true
+# yarn clean:android > /dev/null 2>&1 || true
 echo "Done. "
 
 echo " 🍎  Attempting to clean iOS build..."

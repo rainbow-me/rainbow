@@ -1,11 +1,17 @@
-/* eslint-disable no-undef */
+/* eslint-disable jest/no-disabled-tests */
 /* eslint-disable jest/expect-expect */
 import * as Helpers from './helpers';
+import { device } from 'detox';
 
 const android = device.getPlatform() === 'android';
 
 beforeAll(async () => {
   await Helpers.startHardhat();
+});
+afterAll(async () => {
+  // Reset the app state
+  await device.clearKeychain();
+  await Helpers.killHardhat();
 });
 
 describe('Send Sheet Interaction Flow', () => {
@@ -32,7 +38,6 @@ describe('Send Sheet Interaction Flow', () => {
   });
 
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
-    await Helpers.disableSynchronization();
     await Helpers.waitAndTap('wallet-info-submit-button');
     if (android) {
       await Helpers.checkIfVisible('pin-authentication-screen');
@@ -41,8 +46,7 @@ describe('Send Sheet Interaction Flow', () => {
       // Confirm it
       await Helpers.authenticatePin('1234');
     }
-    await Helpers.checkIfVisible('wallet-screen', 40000);
-    await Helpers.enableSynchronization();
+    await Helpers.checkIfVisible('wallet-screen');
   });
 
   it('Should send ETH to test wallet"', async () => {
@@ -54,29 +58,6 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
   });
 
-  // Saving for now in case we want to test iCloud back up sheet
-  // it('Should show the backup sheet', async () => {
-  //   await Helpers.checkIfVisible('backup-sheet');
-  //   await Helpers.waitAndTap('backup-sheet-imported-cancel-button');
-  // });
-  /*
-  it('Should open expanded state', async () => {
-    await Helpers.waitAndTap('balance-coin-row-Ethereum');
-    ;
-
-  it('Should tap through chart timeseries', async () => {
-    await Helpers.waitAndTap('chart-timespan-h');
-    await Helpers.waitAndTap('chart-timespan-d');
-    await Helpers.waitAndTap('chart-timespan-w');
-    await Helpers.waitAndTap('chart-timespan-m');
-    await Helpers.waitAndTap('chart-timespan-y');
-    ;
-
-  it('Should close Expanded State and navigate to wallet screen', async () => {
-    await Helpers.swipe('expanded-state-header', 'down');
-    await Helpers.checkIfVisible('wallet-screen');
-  });
-  */
   it.skip('Should show all wallet sections', async () => {
     await Helpers.swipe('wallet-screen', 'up');
     await Helpers.checkIfElementByTextIsVisible('Collectibles');
@@ -118,17 +99,16 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('send-asset-list');
   });
 
-  /*
-  it('Should display Asset Form after tapping on savings asset', async () => {
+  it.skip('Should display Asset Form after tapping on savings asset', async () => {
     await Helpers.checkIfVisible('send-savings-cDAI');
     await Helpers.waitAndTap('send-savings-cDAI');
     await Helpers.checkIfVisible('selected-asset-field-input');
   });
 
-  it('Should go back to Asset List after tapping on savings asset', async () => {
+  it.skip('Should go back to Asset List after tapping on savings asset', async () => {
     await Helpers.waitAndTap('send-asset-form-cDAI-mainnet');
     await Helpers.checkIfVisible('send-asset-list');
-  });*/
+  });
 
   it.skip('Should display Asset Form after tapping on asset', async () => {
     await Helpers.checkIfVisible('send-asset-DAI-mainnet');
@@ -216,10 +196,5 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.typeText('selected-asset-quantity-field-input', '8.1219', true);
     await Helpers.checkIfElementByTextIsVisible('8.12');
     await Helpers.waitAndTap('send-asset-form-ETH-mainnet');
-  });
-  afterAll(async () => {
-    // Reset the app state
-    await device.clearKeychain();
-    await Helpers.killHardhat();
   });
 });
