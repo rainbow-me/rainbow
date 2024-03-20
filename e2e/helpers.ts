@@ -1,13 +1,22 @@
+/* eslint-disable no-await-in-loop */
 import { exec } from 'child_process';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
-import { expect, device, element, by, waitFor, timeout, testID } from 'detox';
+import { expect, device, element, by, waitFor } from 'detox';
 import { parseEther } from '@ethersproject/units';
 
 const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
 
 const DEFAULT_TIMEOUT = 20_000;
 const android = device.getPlatform() === 'android';
+
+type Direction = 'up' | 'down' | 'left' | 'right' | 'top' | 'bottom';
+type Speed = 'fast' | 'slow';
+
+interface ProviderFunction {
+  (): JsonRpcProvider;
+  _instance?: JsonRpcProvider;
+}
 
 export async function startHardhat() {
   exec('yarn hardhat');
@@ -39,39 +48,39 @@ export async function importWalletFlow() {
   await enableSynchronization();
 }
 
-export function tap(elementId) {
+export function tap(elementId: string | RegExp) {
   return element(by.id(elementId)).tap();
 }
 
-export async function waitAndTap(elementId, timeout) {
-  await waitFor(element(by.id(elementId)))
-    .toBeVisible()
-    .withTimeout(timeout || DEFAULT_TIMEOUT);
-  await waitFor(element(by.id(testID)))
-    .toBeEnabled()
-    .withTimeout(timeout || DEFAULT_TIMEOUT);
+export async function waitAndTap(elementId: string | RegExp, timeout = DEFAULT_TIMEOUT) {
+  try {
+    await waitFor(element(by.id(elementId)))
+      .toBeVisible()
+      .withTimeout(timeout);
 
-  return tap(elementId);
+    return tap(elementId);
+  } catch (error) {
+    throw new Error(`Error tapping element by id "${elementId}": ${error}`);
+  }
 }
 
-export async function tapByText(text, index) {
-  await waitFor(element(by.text(text)))
-    .toBeVisible()
-    .withTimeout(timeout || DEFAULT_TIMEOUT);
-  await waitFor(element(by.text(text)))
-    .toBeEnabled()
-    .withTimeout(timeout || DEFAULT_TIMEOUT);
+export async function tapByText(text: string | RegExp, index = 0, timeout = DEFAULT_TIMEOUT) {
+  try {
+    await waitFor(element(by.text(text)))
+      .toBeVisible()
+      .withTimeout(timeout);
 
-  return element(by.text(text))
-    .atIndex(index || 0)
-    .tap();
+    await element(by.text(text)).atIndex(index).tap();
+  } catch (error) {
+    throw new Error(`Error tapping element by text "${text}" at index ${index}: ${error}`);
+  }
 }
 
-export function tapAtPoint(elementId, point) {
-  return element(by.id(elementId)).tapAtPoint(point);
+export function tapAtPoint(elementId: string | RegExp, point: Detox.Point2D | undefined) {
+  return element(by.id(elementId)).tap(point);
 }
 
-export function tapItemAtIndex(elementID, index) {
+export function tapItemAtIndex(elementID: string | RegExp, index: number) {
   return element(by.id(elementID))
     .atIndex(index || 0)
     .tap();
@@ -83,62 +92,73 @@ export async function startIosSimulator() {
   }
 }
 
-export async function typeText(elementId, text, focus = true, syncOnAndroid = false) {
-  if (focus) {
-    await tap(elementId);
+export async function typeText(elementId: string | RegExp, text: string | undefined, focus = true, syncOnAndroid = false) {
+  if (text === undefined) {
+    throw new Error(`Cannot type 'undefined' into element with id ${elementId}`);
   }
-  if (device.getPlatform() === 'android' && !syncOnAndroid) {
-    await device.disableSynchronization();
-  }
-  await element(by.id(elementId)).typeText(text);
-  if (device.getPlatform() === 'android' && !syncOnAndroid) {
-    await device.enableSynchronization();
+  try {
+    if (focus) {
+      await tap(elementId);
+    }
+    if (device.getPlatform() === 'android' && !syncOnAndroid) {
+      await device.disableSynchronization();
+    }
+    await element(by.id(elementId)).typeText(text);
+    if (device.getPlatform() === 'android' && !syncOnAndroid) {
+      await device.enableSynchronization();
+    }
+  } catch (error) {
+    throw new Error(`Error typing "${text}" at element with id ${elementId}}: ${error}`);
   }
 }
 
-export async function typeNumbers(elementId, text, submitLabel) {
+export async function typeNumbers(elementId: string | RegExp, text: string, submitLabel: string | RegExp) {
   await element(by.id(elementId)).replaceText(text.replace('\n', ''));
   return element(by.label(submitLabel)).atIndex(0).tap();
 }
 
-export async function typeTextAndHideKeyboard(elementId, text) {
+export async function typeTextAndHideKeyboard(elementId: string, text: string) {
   if (device.getPlatform() === 'android') {
     await clearField(elementId);
   }
   await typeText(elementId, text + '\n');
 }
 
-export async function hideKeyboard(elementId, text) {
+export async function hideKeyboard(elementId: string, text: string) {
   await typeText(elementId, text + '\n');
 }
 
-export async function clearField(elementId) {
+export async function clearField(elementId: string | RegExp) {
   return element(by.id(elementId)).replaceText('');
 }
 
-export async function tapAndLongPress(elementId) {
+export async function tapAndLongPress(elementId: string | RegExp) {
   return element(by.id(elementId)).longPress();
 }
 
-export async function tapAndLongPressByText(text) {
+export async function tapAndLongPressByText(text: string | RegExp) {
   return element(by.text(text)).longPress();
 }
 
-export async function replaceTextInField(elementId, text) {
+export async function replaceTextInField(elementId: string | RegExp, text: string) {
   return element(by.id(elementId)).replaceText(text);
 }
 
-export function tapAlertWithButton(text, index) {
+export function tapAlertWithButton(text: string | RegExp, index = 0) {
   if (device.getPlatform() === 'android') {
-    return element(by.text(text))
-      .atIndex(index || 0)
-      .tap();
+    return element(by.text(text)).atIndex(index).tap();
   }
 
   return element(by.label(text)).atIndex(0).tap();
 }
 
-export async function waitAndSwipe(elementId, direction, speed = 'fast', percentage = 0.75, timeout) {
+export async function waitAndSwipe(
+  elementId: string | RegExp,
+  direction: Direction,
+  timeout: undefined,
+  speed: Speed | undefined = 'fast',
+  percentage = 0.75
+) {
   await waitFor(element(by.id(elementId)))
     .toBeVisible()
     .withTimeout(timeout || DEFAULT_TIMEOUT);
@@ -146,15 +166,21 @@ export async function waitAndSwipe(elementId, direction, speed = 'fast', percent
   await element(by.id(elementId))?.swipe(direction, speed, percentage);
 }
 
-export async function swipe(elementId, direction, speed = 'fast', percentage = 0.75, normalizedStartingPointY = NaN) {
+export async function swipe(
+  elementId: string | RegExp,
+  direction: Direction,
+  speed: Speed = 'fast',
+  percentage = 0.75,
+  normalizedStartingPointY = NaN
+) {
   await element(by.id(elementId))?.swipe(direction, speed, percentage, NaN, normalizedStartingPointY);
 }
 
-export async function scrollTo(scrollviewId, edge) {
+export async function scrollTo(scrollviewId: string | RegExp, edge: Direction) {
   await element(by.id(scrollviewId)).scrollTo(edge);
 }
 
-export async function swipeUntilVisible(elementId, scrollViewId, direction, pctVisible = 75) {
+export async function swipeUntilVisible(elementId: string | RegExp, scrollViewId: string, direction: Direction, pctVisible = 75) {
   let stop = false;
   while (!stop) {
     try {
@@ -168,50 +194,50 @@ export async function swipeUntilVisible(elementId, scrollViewId, direction, pctV
   }
 }
 
-export async function scrollUpTo(elementId, distance, direction) {
+export async function scrollUpTo(elementId: string | RegExp, distance: number, direction: Direction) {
   await element(by.id(elementId)).scroll(distance, direction);
 }
 
-export async function goToURL(inputURL) {
+export async function goToURL(inputURL: string) {
   await device.openURL({ sourceApp: 'me.rainbow', url: inputURL });
 }
 
-export function checkIfVisible(elementId, timeout) {
+export function checkIfVisible(elementId: string | RegExp, timeout = DEFAULT_TIMEOUT) {
   return waitFor(element(by.id(elementId)))
     .toBeVisible()
-    .withTimeout(timeout || DEFAULT_TIMEOUT);
+    .withTimeout(timeout);
 }
 
-export function checkIfNotVisible(elementId, timeout) {
+export function checkIfNotVisible(elementId: string | RegExp, timeout = DEFAULT_TIMEOUT) {
   return waitFor(element(by.id(elementId)))
-    .toBeNotVisible()
-    .withTimeout(timeout || DEFAULT_TIMEOUT);
+    .not.toBeVisible()
+    .withTimeout(timeout);
 }
 
-export function checkIfExists(elementId) {
+export function checkIfExists(elementId: string | RegExp) {
   return expect(element(by.id(elementId))).toExist();
 }
 
-export function checkIfExistsByText(text) {
+export function checkIfExistsByText(text: string | RegExp) {
   return expect(element(by.text(text)).atIndex(0)).toExist();
 }
 
-export function checkIfElementByTextIsVisible(text, timeout) {
+export function checkIfElementByTextIsVisible(text: string | RegExp, timeout = DEFAULT_TIMEOUT) {
   return waitFor(element(by.text(text)))
     .toBeVisible()
-    .withTimeout(timeout || DEFAULT_TIMEOUT);
+    .withTimeout(timeout);
 }
-export function checkIfElementByTextToExist(text, timeout) {
+export function checkIfElementByTextToExist(text: string | RegExp, timeout = DEFAULT_TIMEOUT) {
   return waitFor(element(by.text(text)))
     .toExist()
-    .withTimeout(timeout || DEFAULT_TIMEOUT);
+    .withTimeout(timeout);
 }
 
-export function checkForElementByLabel(text) {
+export function checkForElementByLabel(text: string | RegExp) {
   return expect(element(by.label(text))).toExist();
 }
 
-export function checkIfElementHasString(elementID, text) {
+export function checkIfElementHasString(elementID: string | RegExp, text: string | RegExp) {
   return expect(element(by.id(elementID).and(by.text(text)))).toExist();
 }
 
@@ -220,7 +246,7 @@ export async function relaunchApp() {
   return device.launchApp({ newInstance: true });
 }
 
-export async function checkIfDisabled(elementId) {
+export async function checkIfDisabled(elementId: string | RegExp) {
   // When disabled, attempting to tap on a button
   // throws an exception. Not ideal but that's the
   // only way for now...
@@ -229,13 +255,12 @@ export async function checkIfDisabled(elementId) {
     await element(by.id(elementId)).tap();
     return Promise.reject();
   } catch (e) {
-    // eslint-disable-next-line no-console
     console.log(e);
     return Promise.resolve();
   }
 }
 
-export async function authenticatePin(pin) {
+export async function authenticatePin(pin: string) {
   const digits = pin.split('');
   await device.disableSynchronization();
   for (let i = 0; i < digits.length; i++) {
@@ -258,15 +283,15 @@ export async function enableSynchronization() {
   return true;
 }
 
-export function delay(ms) {
-  return new Promise(resolve => {
+export function delay(ms: number) {
+  return new Promise<void>(resolve => {
     setTimeout(() => {
       resolve();
     }, ms);
   });
 }
 
-export async function delayTime(time) {
+export async function delayTime(time: string) {
   switch (time) {
     case 'short':
       return await delay(500);
@@ -279,12 +304,12 @@ export async function delayTime(time) {
   }
 }
 
-export function getProvider() {
+export const getProvider: ProviderFunction = () => {
   if (!getProvider._instance) {
     getProvider._instance = new JsonRpcProvider('http://127.0.0.1:8545', 'any');
   }
   return getProvider._instance;
-}
+};
 
 export async function sendETHtoTestWallet() {
   const provider = getProvider();
@@ -298,7 +323,7 @@ export async function sendETHtoTestWallet() {
   return true;
 }
 
-export async function openDeeplinkColdStart(url) {
+export async function openDeeplinkColdStart(url: string) {
   await device.terminateApp();
   await device.launchApp({
     launchArgs: { detoxEnableSynchronization: 0 },
@@ -307,7 +332,7 @@ export async function openDeeplinkColdStart(url) {
   });
 }
 
-export async function openDeeplinkFromBackground(url) {
+export async function openDeeplinkFromBackground(url: string) {
   await device.disableSynchronization();
   await device.sendToHome();
   await device.enableSynchronization();

@@ -1,5 +1,5 @@
 import * as Helpers from './helpers';
-import { device, element, by } from 'detox';
+import { device, element, by, expect } from 'detox';
 
 describe('Watched showcase and hidden actions flow', () => {
   afterAll(async () => {
@@ -25,8 +25,8 @@ describe('Watched showcase and hidden actions flow', () => {
   });
 
   it('hides actions for watched wallets', async () => {
-    await expect(element(by.text('Showcase'))).toNotExist();
+    await expect(element(by.text('Showcase'))).not.toExist();
     await Helpers.waitAndTap('unique-token-expanded-state-context-menu-button');
-    await expect(element(by.text('Unhide'))).toNotExist();
+    await expect(element(by.text('Unhide'))).not.toExist();
   });
 });

@@ -38,5 +38,6 @@ module.exports = {
       },
     ],
     'jest/expect-expect': 'off',
+    'jest/no-disabled-tests': 'off',
   },
 };

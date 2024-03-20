@@ -6,7 +6,7 @@ const RAINBOW_WALLET_ADDRESS = '0x7a3d05c70581bD345fe117c06e45f9669205384f';
 
 const android = device.getPlatform() === 'android';
 
-const testEthereumDeeplink = async (url, coldStart = true) => {
+const testEthereumDeeplink = async (url: string, coldStart = true) => {
   coldStart ? await Helpers.openDeeplinkColdStart(url) : await Helpers.openDeeplinkFromBackground(url);
   await Helpers.checkIfVisible('send-sheet-confirm-action-button', 30000);
   // Because we don't have ETH in this wallet
@@ -22,7 +22,7 @@ const testEthereumDeeplink = async (url, coldStart = true) => {
   await Helpers.swipe('send-sheet', 'down');
 };
 
-const escapeUrl = url => {
+const escapeUrl = (url: string) => {
   if (android) {
     return url.replace(/&/g, '\\&');
   } else {
