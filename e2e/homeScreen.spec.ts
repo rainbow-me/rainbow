@@ -1,52 +1,52 @@
-import * as Helpers from './helpers';
 import { device } from 'detox';
+import { cleanApp, importWalletFlow, checkIfVisible, checkIfExists, checkIfExistsByText, swipe, waitAndTap } from './helpers';
 
 const RAINBOW_TEST_WALLET = 'rainbowtestwallet.eth';
 
 describe('Home Screen', () => {
   beforeAll(async () => {
     await device.reloadReactNative();
-    await Helpers.cleanApp();
+    await cleanApp();
   });
   afterAll(async () => {
     await device.clearKeychain();
   });
 
   it('imports wallet', async () => {
-    await Helpers.importWalletFlow();
+    await importWalletFlow();
   });
 
   it('show profile header', async () => {
-    await Helpers.checkIfVisible('avatar-button');
-    await Helpers.checkIfExists(`profile-name-${RAINBOW_TEST_WALLET}`);
-    await Helpers.checkIfExistsByText(RAINBOW_TEST_WALLET);
-    await Helpers.checkIfVisible('balance-text');
-    await Helpers.checkIfVisible('buy-button');
-    await Helpers.checkIfVisible('swap-button');
-    await Helpers.checkIfVisible('send-button');
-    await Helpers.checkIfVisible('receive-button');
+    await checkIfVisible('avatar-button');
+    await checkIfExists(`profile-name-${RAINBOW_TEST_WALLET}`);
+    await checkIfExistsByText(RAINBOW_TEST_WALLET);
+    await checkIfVisible('balance-text');
+    await checkIfVisible('buy-button');
+    await checkIfVisible('swap-button');
+    await checkIfVisible('send-button');
+    await checkIfVisible('receive-button');
   });
 
   it('sticky header shows when scrolling down', async () => {
-    await Helpers.swipe('wallet-screen', 'up', 'slow', 0.4);
-    await Helpers.checkIfExistsByText(RAINBOW_TEST_WALLET);
-    await Helpers.swipe('wallet-screen', 'down', 'slow', 0.4);
+    await swipe('wallet-screen', 'up', 'slow', 0.4);
+    await checkIfExistsByText(RAINBOW_TEST_WALLET);
+    await swipe('wallet-screen', 'down', 'slow', 0.4);
   });
 
   it('tapping "Swap" opens the swap screen', async () => {
-    await Helpers.waitAndTap('swap-button');
-    await Helpers.checkIfExists('exchange-modal-input-selection-button');
-    await Helpers.swipe('exchange-modal-notch', 'down', 'slow');
+    await waitAndTap('swap-button');
+    await checkIfExists('exchange-modal-input-selection-button');
+    await swipe('exchange-modal-notch', 'down', 'slow');
   });
 
   it('tapping "Send" opens the send screen', async () => {
-    await Helpers.waitAndTap('send-button');
-    await Helpers.checkIfVisible('send-asset-form-field');
-    await Helpers.swipe('send-asset-form-field', 'down');
+    await waitAndTap('send-button');
+    await checkIfVisible('send-asset-form-field');
+    await swipe('send-asset-form-field', 'down');
   });
 
   it('tapping "Copy" shows copy address toast', async () => {
-    await Helpers.waitAndTap('receive-button');
-    await Helpers.checkIfVisible('address-copied-toast');
+    await waitAndTap('receive-button');
+    await checkIfVisible('address-copied-toast');
   });
 });

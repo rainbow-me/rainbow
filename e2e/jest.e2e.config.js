@@ -1,4 +1,5 @@
-/** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
+/* eslint-disable @typescript-eslint/no-var-requires */
+/** @type {import('ts-jest/dist/types').JestConfigWithTsJest} */
 const { pathsToModuleNameMapper } = require('ts-jest');
 const { compilerOptions } = require('../tsconfig');
 

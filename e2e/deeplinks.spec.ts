@@ -1,25 +1,40 @@
 import { exec } from 'child_process';
-import * as Helpers from './helpers';
 import { device } from 'detox';
+import {
+  openDeeplinkColdStart,
+  openDeeplinkFromBackground,
+  checkIfVisible,
+  checkIfElementByTextIsVisible,
+  swipe,
+  cleanApp,
+  waitAndTap,
+  checkIfExists,
+  typeText,
+  checkIfElementHasString,
+  disableSynchronization,
+  authenticatePin,
+  enableSynchronization,
+  tapAlertWithButton,
+} from './helpers';
 
 const RAINBOW_WALLET_ADDRESS = '0x7a3d05c70581bD345fe117c06e45f9669205384f';
 
 const android = device.getPlatform() === 'android';
 
 const testEthereumDeeplink = async (url: string, coldStart = true) => {
-  coldStart ? await Helpers.openDeeplinkColdStart(url) : await Helpers.openDeeplinkFromBackground(url);
-  await Helpers.checkIfVisible('send-sheet-confirm-action-button', 30000);
+  coldStart ? await openDeeplinkColdStart(url) : await openDeeplinkFromBackground(url);
+  await checkIfVisible('send-sheet-confirm-action-button', 30000);
   // Because we don't have ETH in this wallet
   try {
-    await Helpers.checkIfElementByTextIsVisible('􀕹 Review', 15000);
+    await checkIfElementByTextIsVisible('􀕹 Review', 15000);
   } catch (e) {
     try {
-      await Helpers.checkIfElementByTextIsVisible('Insufficient ETH', 15000);
+      await checkIfElementByTextIsVisible('Insufficient ETH', 15000);
     } catch (e) {
-      await Helpers.checkIfElementByTextIsVisible('Insufficient Funds', 15000);
+      await checkIfElementByTextIsVisible('Insufficient Funds', 15000);
     }
   }
-  await Helpers.swipe('send-sheet', 'down');
+  await swipe('send-sheet', 'down');
 };
 
 const escapeUrl = (url: string) => {
@@ -39,7 +54,7 @@ beforeAll(async () => {
     exec('yarn adb-all shell pm disable-user com.android.chrome');
   }
   await device.reloadReactNative();
-  await Helpers.cleanApp();
+  await cleanApp();
 });
 afterAll(async () => {
   await device.clearKeychain();
@@ -47,59 +62,59 @@ afterAll(async () => {
 
 describe.skip('Deeplinks spec', () => {
   it('Should show the welcome screen', async () => {
-    await Helpers.checkIfVisible('welcome-screen');
+    await checkIfVisible('welcome-screen');
   });
 
   it('Should show the "Add Wallet Sheet" after tapping on "I already have a wallet"', async () => {
-    await Helpers.waitAndTap('already-have-wallet-button');
-    await Helpers.checkIfExists('add-wallet-sheet');
+    await waitAndTap('already-have-wallet-button');
+    await checkIfExists('add-wallet-sheet');
   });
 
   it('Show the "Import Sheet" when tapping on "Restore with a recovery phrase or private key"', async () => {
-    await Helpers.waitAndTap('restore-with-key-button');
-    await Helpers.checkIfExists('import-sheet');
+    await waitAndTap('restore-with-key-button');
+    await checkIfExists('import-sheet');
   });
 
   it('Should show the "Add wallet modal" after tapping import with a valid private key"', async () => {
-    await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
-    await Helpers.checkIfElementHasString('import-sheet-button-label', 'Continue');
-    await Helpers.waitAndTap('import-sheet-button');
-    await Helpers.checkIfVisible('wallet-info-modal');
+    await typeText('import-sheet-input', process.env.TEST_SEEDS, false);
+    await checkIfElementHasString('import-sheet-button-label', 'Continue');
+    await waitAndTap('import-sheet-button');
+    await checkIfVisible('wallet-info-modal');
   });
 
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
-    await Helpers.disableSynchronization();
-    await Helpers.waitAndTap('wallet-info-submit-button');
+    await disableSynchronization();
+    await waitAndTap('wallet-info-submit-button');
     if (android) {
-      await Helpers.checkIfVisible('pin-authentication-screen');
+      await checkIfVisible('pin-authentication-screen');
       // Set the pin
-      await Helpers.authenticatePin('1234');
+      await authenticatePin('1234');
       // Confirm it
-      await Helpers.authenticatePin('1234');
+      await authenticatePin('1234');
     }
-    await Helpers.checkIfVisible('wallet-screen', 40000);
-    await Helpers.enableSynchronization();
+    await checkIfVisible('wallet-screen', 40000);
+    await enableSynchronization();
   });
 
   it('should reject ethereum urls for assets that are not in the wallet', async () => {
     const url = `ethereum:0xef2e9966eb61bb494e5375d5df8d67b7db8a780d@1/transfer?address=${RAINBOW_WALLET_ADDRESS}&uint256=1e15`;
-    await Helpers.openDeeplinkFromBackground(url);
-    await Helpers.checkIfElementByTextIsVisible('Ooops!', 30000);
-    await Helpers.tapAlertWithButton('OK');
+    await openDeeplinkFromBackground(url);
+    await checkIfElementByTextIsVisible('Ooops!', 30000);
+    await tapAlertWithButton('OK');
   });
 
   it('should show the Profile Sheet for rainbow.me universal links with ENS names', async () => {
-    await Helpers.openDeeplinkFromBackground('https://rainbow.me/profile/rainbowwallet.eth');
-    await Helpers.checkIfVisible('profile-sheet', 30000);
-    await Helpers.checkIfElementByTextIsVisible('rainbowwallet.eth', 30000);
-    await Helpers.swipe('profile-sheet', 'down');
+    await openDeeplinkFromBackground('https://rainbow.me/profile/rainbowwallet.eth');
+    await checkIfVisible('profile-sheet', 30000);
+    await checkIfElementByTextIsVisible('rainbowwallet.eth', 30000);
+    await swipe('profile-sheet', 'down');
   });
 
   it('should show the Profile Sheet for rainbow.me universal links with 0x addresses', async () => {
-    await Helpers.openDeeplinkFromBackground('https://rainbow.me/profile/0xE46aBAf75cFbFF815c0b7FfeD6F02B0760eA27f1');
-    await Helpers.checkIfVisible('profile-sheet', 30000);
-    await Helpers.checkIfElementByTextIsVisible('0xE46aBAf75cFbFF815c0b7FfeD6F02B0760eA27f1', 30000);
-    await Helpers.swipe('profile-sheet', 'down');
+    await openDeeplinkFromBackground('https://rainbow.me/profile/0xE46aBAf75cFbFF815c0b7FfeD6F02B0760eA27f1');
+    await checkIfVisible('profile-sheet', 30000);
+    await checkIfElementByTextIsVisible('0xE46aBAf75cFbFF815c0b7FfeD6F02B0760eA27f1', 30000);
+    await swipe('profile-sheet', 'down');
   });
 
   it.skip('should be able to handle ethereum payments urls for ETH (mainnet)', async () => {
