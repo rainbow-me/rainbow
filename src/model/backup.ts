@@ -1,5 +1,5 @@
 import { captureException } from '@sentry/react-native';
-import { endsWith } from 'lodash';
+import { endsWith, values } from 'lodash';
 import { CLOUD_BACKUP_ERRORS, encryptAndSaveDataToCloud, getDataFromCloud } from '@/handlers/cloudBackup';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import WalletTypes from '../helpers/walletTypes';
@@ -431,25 +431,96 @@ export async function restoreCloudBackup({
 async function restoreSpecificBackupIntoKeychain(backedUpData: BackedUpData, userPin?: string): Promise<boolean> {
   const encryptedBackupPinData = backedUpData[pinKey];
 
+  // TODO: Eventual refactor of `createWallet` needed
+  /**
+   * NOTE: If we import private keys before seed phrases, we won't be able to
+   * import the seed phrase as the account will already exist as a private key
+   *
+   * Quick hack to sort by seed phrases -> private keys so we make sure seed phrases are prioritized.
+   *
+   */
+  const sortedBackupData = Object.keys(backedUpData).sort((a, b) => {
+    if (endsWith(a, seedPhraseKey) && !endsWith(b, privateKeyKey)) {
+      return -1;
+    }
+    if (endsWith(b, seedPhraseKey) && !endsWith(a, privateKeyKey)) {
+      return 1;
+    }
+    return 0;
+  });
+
   try {
     // Re-import all the seeds (and / or pkeys) one by one
-    for (const key of Object.keys(backedUpData)) {
+    for (const key of sortedBackupData) {
       if (endsWith(key, seedPhraseKey)) {
         const valueStr = backedUpData[key];
         const parsedValue = JSON.parse(valueStr);
         // We only need to decrypt from backup since createWallet encrypts itself
         let processedSeedPhrase = parsedValue.seedphrase;
-        if (processedSeedPhrase && processedSeedPhrase.includes('cipher')) {
+
+        /*
+         * Backups that were saved encrypted with PIN to the cloud need to be
+         * decrypted with the backup PIN first, and then if we still need
+         * to store them as encrypted,
+         * we need to re-encrypt them with a new PIN
+         */
+        if (valueStr.includes('cipher')) {
           const backupPIN = await decryptPIN(encryptedBackupPinData);
+
+          console.log('decrypting seedphrase with backupPin', backupPIN);
+
           processedSeedPhrase = await decryptSecretFromBackupPin({
-            secret: parsedValue.seedphrase,
+            secret: valueStr,
             backupPIN,
           });
+
+          if (processedSeedPhrase && typeof processedSeedPhrase.seedphrase !== 'undefined') {
+            processedSeedPhrase = processedSeedPhrase.seedphrase;
+          }
+        }
+
+        console.log({ key, processedSeedPhrase });
+        // We don't want to restore the seedphrase if it's not present, it will just create a new wallet with a new seedphrase
+        if (!processedSeedPhrase) {
+          continue;
         }
 
         await createWallet({
           seed: processedSeedPhrase,
-          overwrite: true,
+          isRestoring: true,
+          userPin,
+        });
+      } else if (endsWith(key, privateKeyKey)) {
+        const valueStr = backedUpData[key];
+        const parsedValue = JSON.parse(valueStr);
+        // We only need to decrypt from backup since createWallet encrypts itself
+        let processedPrivateKey = parsedValue.privateKey;
+
+        /*
+         * Backups that were saved encrypted with PIN to the cloud need to be
+         * decrypted with the backup PIN first, and then if we still need
+         * to store them as encrypted,
+         * we need to re-encrypt them with a new PIN
+         */
+        if (valueStr.includes('cipher')) {
+          const backupPIN = await decryptPIN(encryptedBackupPinData);
+          processedPrivateKey = await decryptSecretFromBackupPin({
+            secret: valueStr,
+            backupPIN,
+          });
+
+          if (processedPrivateKey && typeof processedPrivateKey.privateKey !== 'undefined') {
+            processedPrivateKey = processedPrivateKey.privateKey;
+          }
+        }
+
+        if (!processedPrivateKey) {
+          continue;
+        }
+
+        await createWallet({
+          seed: processedPrivateKey,
+          isRestoring: true,
           userPin,
         });
       }
@@ -547,7 +618,13 @@ async function decryptSecretFromBackupPin({ secret, backupPIN }: { secret?: stri
     const decryptedSecret = await encryptor.decrypt(backupPIN, processedSecret);
 
     if (decryptedSecret) {
-      processedSecret = decryptedSecret;
+      let decryptedSecretToUse = decryptedSecret;
+      try {
+        decryptedSecretToUse = JSON.parse(decryptedSecret);
+      } catch (e) {
+        // noop
+      }
+      processedSecret = decryptedSecretToUse;
     } else {
       logger.error(new RainbowError('Failed to decrypt backed up seed phrase using backup PIN.'));
       return processedSecret;

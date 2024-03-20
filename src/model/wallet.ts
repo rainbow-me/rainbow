@@ -560,6 +560,7 @@ type CreateWalletParams = {
   seed?: null | EthereumSeed;
   color?: null | number;
   name?: null | string;
+  isRestoring?: boolean;
   overwrite?: boolean;
   checkedWallet?: null | EthereumWalletFromSeed;
   image?: null | string;
@@ -572,6 +573,7 @@ export const createWallet = async ({
   seed = null,
   color = null,
   name = null,
+  isRestoring = false,
   overwrite = false,
   checkedWallet = null,
   image = null,
@@ -637,7 +639,9 @@ export const createWallet = async ({
         type === EthereumWalletType.privateKey &&
         (alreadyExistingWallet?.type === EthereumWalletType.seed || alreadyExistingWallet?.type === EthereumWalletType.mnemonic);
       if (!overwrite && alreadyExistingWallet && (isReadOnlyType || isPrivateKeyOverwritingSeedMnemonic)) {
-        setTimeout(() => Alert.alert(lang.t('wallet.new.alert.oops'), lang.t('wallet.new.alert.looks_like_already_imported')), 1);
+        if (!isRestoring) {
+          setTimeout(() => Alert.alert(lang.t('wallet.new.alert.oops'), lang.t('wallet.new.alert.looks_like_already_imported')), 1);
+        }
         logger.debug('[createWallet] - already imported this wallet', {}, DebugContext.wallet);
         return null;
       }
