@@ -4,6 +4,10 @@ import { device } from 'detox';
 const android = device.getPlatform() === 'android';
 
 describe('New Wallet flow', () => {
+  beforeAll(async () => {
+    await device.reloadReactNative();
+    await Helpers.cleanApp();
+  });
   afterAll(async () => {
     await device.clearKeychain();
   });

@@ -4,6 +4,10 @@ import { device } from 'detox';
 const android = device.getPlatform() === 'android';
 
 describe('Import from private key flow', () => {
+  beforeAll(async () => {
+    await device.reloadReactNative();
+    await Helpers.cleanApp();
+  });
   afterAll(async () => {
     await device.clearKeychain();
   });

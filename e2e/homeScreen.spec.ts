@@ -4,6 +4,10 @@ import { device } from 'detox';
 const RAINBOW_TEST_WALLET = 'rainbowtestwallet.eth';
 
 describe('Home Screen', () => {
+  beforeAll(async () => {
+    await device.reloadReactNative();
+    await Helpers.cleanApp();
+  });
   afterAll(async () => {
     await device.clearKeychain();
   });

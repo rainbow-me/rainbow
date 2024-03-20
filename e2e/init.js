@@ -11,12 +11,10 @@ beforeAll(async () => {
     await device.reverseTcpPort(8545); //TODO: WIP for android connecting in dev
 
     // make sure we don't have gesture navigation what might cause collisions
-    await exec('yarn adb-all shell cmd overlay enable com.android.internal.systemui.navbar.threebutton');
+    exec('yarn adb-all shell cmd overlay enable com.android.internal.systemui.navbar.threebutton');
   }
   await device.clearKeychain();
-
-  await device.launchApp();
-
+  await device.launchApp({ newInstance: true, delete: true });
   await device.setURLBlacklist([
     '.*api.thegraph.com.*',
     '.*raw.githubusercontent.com.*',

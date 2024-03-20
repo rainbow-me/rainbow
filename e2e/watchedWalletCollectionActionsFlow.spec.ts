@@ -2,6 +2,10 @@ import * as Helpers from './helpers';
 import { device, element, by, expect } from 'detox';
 
 describe('Watched showcase and hidden actions flow', () => {
+  beforeAll(async () => {
+    await device.reloadReactNative();
+    await Helpers.cleanApp();
+  });
   afterAll(async () => {
     await device.clearKeychain();
     await Helpers.killHardhat();
@@ -25,8 +29,12 @@ describe('Watched showcase and hidden actions flow', () => {
   });
 
   it('hides actions for watched wallets', async () => {
-    await expect(element(by.text('Showcase'))).not.toExist();
+    await waitFor(element(by.text('Showcase')))
+      .not.toExist()
+      .withTimeout(5000);
     await Helpers.waitAndTap('unique-token-expanded-state-context-menu-button');
-    await expect(element(by.text('Unhide'))).not.toExist();
+    await waitFor(element(by.text('Unhide')))
+      .not.toExist()
+      .withTimeout(5000);
   });
 });

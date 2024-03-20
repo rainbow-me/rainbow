@@ -5,6 +5,13 @@ const ios = device.getPlatform() === 'ios';
 const android = device.getPlatform() === 'android';
 
 describe('Discover Screen Flow', () => {
+  beforeAll(async () => {
+    await device.reloadReactNative();
+    await Helpers.cleanApp();
+  });
+  afterAll(async () => {
+    await device.clearKeychain();
+  });
   it('Should show the welcome screen', async () => {
     await Helpers.checkIfVisible('welcome-screen');
   });
@@ -124,10 +131,5 @@ describe('Discover Screen Flow', () => {
 
   it('Should close search and return to Discover Home on pressing Done', async () => {
     await Helpers.waitAndTap('done-button');
-  });
-
-  afterAll(async () => {
-    // Reset the app state
-    await device.clearKeychain();
   });
 });

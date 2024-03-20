@@ -38,6 +38,11 @@ beforeAll(async () => {
     // uninstall Chrome before.
     exec('yarn adb-all shell pm disable-user com.android.chrome');
   }
+  await device.reloadReactNative();
+  await Helpers.cleanApp();
+});
+afterAll(async () => {
+  await device.clearKeychain();
 });
 
 describe.skip('Deeplinks spec', () => {
@@ -133,10 +138,5 @@ describe.skip('Deeplinks spec', () => {
   it.skip('should be able to handle ethereum payments urls for MATIC (polygon)', async () => {
     const url = escapeUrl(`ethereum:payment-${RAINBOW_WALLET_ADDRESS}@137?value=1e15`);
     await testEthereumDeeplink(url, false);
-  });
-
-  afterAll(async () => {
-    // Reset the app state
-    await device.clearKeychain();
   });
 });

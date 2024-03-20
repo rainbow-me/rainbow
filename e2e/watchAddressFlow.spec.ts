@@ -2,8 +2,11 @@ import * as Helpers from './helpers';
 import { device } from 'detox';
 
 describe('Watch address flow', () => {
+  beforeAll(async () => {
+    await device.reloadReactNative();
+    await Helpers.cleanApp();
+  });
   afterAll(async () => {
-    // Reset the app state
     await device.clearKeychain();
   });
 

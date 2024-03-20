@@ -3,6 +3,8 @@ import { device } from 'detox';
 
 describe('Send Sheet Interaction Flow', () => {
   beforeAll(async () => {
+    await device.reloadReactNative();
+    await Helpers.cleanApp();
     await Helpers.startHardhat();
   });
   afterAll(async () => {

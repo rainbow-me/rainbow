@@ -11,7 +11,7 @@ module.exports = {
   globalTeardown: 'detox/runners/jest/globalTeardown',
   reporters: ['detox/runners/jest/reporter'],
 
-  testTimeout: 240000,
+  testTimeout: 200_000,
   testRegex: '\\.spec\\.[jt]sx?$',
   verbose: true,
   transform: {

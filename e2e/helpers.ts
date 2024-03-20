@@ -19,10 +19,12 @@ interface ProviderFunction {
 }
 
 export async function startHardhat() {
+  await delayTime('short');
   exec('yarn hardhat');
 }
 
 export async function killHardhat() {
+  await delayTime('short');
   exec('kill $(lsof -t -i:8545)');
 }
 
@@ -48,8 +50,12 @@ export async function importWalletFlow() {
   await enableSynchronization();
 }
 
-export function tap(elementId: string | RegExp) {
-  return element(by.id(elementId)).tap();
+export async function cleanApp() {
+  jest.resetAllMocks();
+}
+
+export async function tap(elementId: string | RegExp) {
+  return await element(by.id(elementId)).tap();
 }
 
 export async function waitAndTap(elementId: string | RegExp, timeout = DEFAULT_TIMEOUT) {
@@ -58,7 +64,7 @@ export async function waitAndTap(elementId: string | RegExp, timeout = DEFAULT_T
       .toBeVisible()
       .withTimeout(timeout);
 
-    return tap(elementId);
+    return await tap(elementId);
   } catch (error) {
     throw new Error(`Error tapping element by id "${elementId}": ${error}`);
   }
@@ -76,17 +82,18 @@ export async function tapByText(text: string | RegExp, index = 0, timeout = DEFA
   }
 }
 
-export function tapAtPoint(elementId: string | RegExp, point: Detox.Point2D | undefined) {
-  return element(by.id(elementId)).tap(point);
+export async function tapAtPoint(elementId: string | RegExp, point: Detox.Point2D | undefined) {
+  return await element(by.id(elementId)).tap(point);
 }
 
-export function tapItemAtIndex(elementID: string | RegExp, index: number) {
-  return element(by.id(elementID))
+export async function tapItemAtIndex(elementID: string | RegExp, index: number) {
+  return await element(by.id(elementID))
     .atIndex(index || 0)
     .tap();
 }
 
 export async function startIosSimulator() {
+  await delayTime('short');
   if (device.getPlatform() === 'ios') {
     exec('open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/');
   }
@@ -114,7 +121,7 @@ export async function typeText(elementId: string | RegExp, text: string | undefi
 
 export async function typeNumbers(elementId: string | RegExp, text: string, submitLabel: string | RegExp) {
   await element(by.id(elementId)).replaceText(text.replace('\n', ''));
-  return element(by.label(submitLabel)).atIndex(0).tap();
+  return await element(by.label(submitLabel)).atIndex(0).tap();
 }
 
 export async function typeTextAndHideKeyboard(elementId: string, text: string) {
@@ -129,27 +136,27 @@ export async function hideKeyboard(elementId: string, text: string) {
 }
 
 export async function clearField(elementId: string | RegExp) {
-  return element(by.id(elementId)).replaceText('');
+  return await element(by.id(elementId)).replaceText('');
 }
 
 export async function tapAndLongPress(elementId: string | RegExp) {
-  return element(by.id(elementId)).longPress();
+  return await element(by.id(elementId)).longPress();
 }
 
 export async function tapAndLongPressByText(text: string | RegExp) {
-  return element(by.text(text)).longPress();
+  return await element(by.text(text)).longPress();
 }
 
 export async function replaceTextInField(elementId: string | RegExp, text: string) {
-  return element(by.id(elementId)).replaceText(text);
+  return await element(by.id(elementId)).replaceText(text);
 }
 
-export function tapAlertWithButton(text: string | RegExp, index = 0) {
+export async function tapAlertWithButton(text: string | RegExp, index = 0) {
   if (device.getPlatform() === 'android') {
-    return element(by.text(text)).atIndex(index).tap();
+    return await element(by.text(text)).atIndex(index).tap();
   }
 
-  return element(by.label(text)).atIndex(0).tap();
+  return await element(by.label(text)).atIndex(0).tap();
 }
 
 export async function waitAndSwipe(
@@ -202,48 +209,48 @@ export async function goToURL(inputURL: string) {
   await device.openURL({ sourceApp: 'me.rainbow', url: inputURL });
 }
 
-export function checkIfVisible(elementId: string | RegExp, timeout = DEFAULT_TIMEOUT) {
-  return waitFor(element(by.id(elementId)))
+export async function checkIfVisible(elementId: string | RegExp, timeout = DEFAULT_TIMEOUT) {
+  return await waitFor(element(by.id(elementId)))
     .toBeVisible()
     .withTimeout(timeout);
 }
 
-export function checkIfNotVisible(elementId: string | RegExp, timeout = DEFAULT_TIMEOUT) {
-  return waitFor(element(by.id(elementId)))
+export async function checkIfNotVisible(elementId: string | RegExp, timeout = DEFAULT_TIMEOUT) {
+  return await waitFor(element(by.id(elementId)))
     .not.toBeVisible()
     .withTimeout(timeout);
 }
 
-export function checkIfExists(elementId: string | RegExp) {
-  return expect(element(by.id(elementId))).toExist();
+export async function checkIfExists(elementId: string | RegExp) {
+  return await expect(element(by.id(elementId))).toExist();
 }
 
-export function checkIfExistsByText(text: string | RegExp) {
-  return expect(element(by.text(text)).atIndex(0)).toExist();
+export async function checkIfExistsByText(text: string | RegExp) {
+  return await expect(element(by.text(text)).atIndex(0)).toExist();
 }
 
-export function checkIfElementByTextIsVisible(text: string | RegExp, timeout = DEFAULT_TIMEOUT) {
-  return waitFor(element(by.text(text)))
+export async function checkIfElementByTextIsVisible(text: string | RegExp, timeout = DEFAULT_TIMEOUT) {
+  return await waitFor(element(by.text(text)))
     .toBeVisible()
     .withTimeout(timeout);
 }
-export function checkIfElementByTextToExist(text: string | RegExp, timeout = DEFAULT_TIMEOUT) {
-  return waitFor(element(by.text(text)))
+export async function checkIfElementByTextToExist(text: string | RegExp, timeout = DEFAULT_TIMEOUT) {
+  return await waitFor(element(by.text(text)))
     .toExist()
     .withTimeout(timeout);
 }
 
-export function checkForElementByLabel(text: string | RegExp) {
-  return expect(element(by.label(text))).toExist();
+export async function checkForElementByLabel(text: string | RegExp) {
+  return await expect(element(by.label(text))).toExist();
 }
 
-export function checkIfElementHasString(elementID: string | RegExp, text: string | RegExp) {
-  return expect(element(by.id(elementID).and(by.text(text)))).toExist();
+export async function checkIfElementHasString(elementID: string | RegExp, text: string | RegExp) {
+  return await expect(element(by.id(elementID).and(by.text(text)))).toExist();
 }
 
 export async function relaunchApp() {
   await device.terminateApp('me.rainbow');
-  return device.launchApp({ newInstance: true });
+  return await device.launchApp({ newInstance: true });
 }
 
 export async function checkIfDisabled(elementId: string | RegExp) {
@@ -253,10 +260,10 @@ export async function checkIfDisabled(elementId: string | RegExp) {
   // https://github.com/wix/Detox/issues/246
   try {
     await element(by.id(elementId)).tap();
-    return Promise.reject();
+    return await Promise.reject();
   } catch (e) {
     console.log(e);
-    return Promise.resolve();
+    return await Promise.resolve();
   }
 }
 
@@ -267,7 +274,7 @@ export async function authenticatePin(pin: string) {
     await tap(`numpad-button-${digits[i]}`);
   }
   await device.enableSynchronization();
-  return Promise.resolve();
+  return await Promise.resolve();
 }
 
 export async function disableSynchronization() {
@@ -283,8 +290,8 @@ export async function enableSynchronization() {
   return true;
 }
 
-export function delay(ms: number) {
-  return new Promise<void>(resolve => {
+export async function delay(ms: number) {
+  return await new Promise<void>(resolve => {
     setTimeout(() => {
       resolve();
     }, ms);

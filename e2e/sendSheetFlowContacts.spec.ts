@@ -5,6 +5,8 @@ const android = device.getPlatform() === 'android';
 
 describe('Send Sheet Interaction Flow Contacts', () => {
   beforeAll(async () => {
+    await device.reloadReactNative();
+    await Helpers.cleanApp();
     await Helpers.startHardhat();
   });
   afterAll(async () => {
