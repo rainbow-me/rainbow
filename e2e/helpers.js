@@ -1,7 +1,7 @@
 import { exec } from 'child_process';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
-import { expect, device } from 'detox';
+import { expect, device, element, by, waitFor, timeout, testID } from 'detox';
 import { parseEther } from '@ethersproject/units';
 
 const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
@@ -39,21 +39,29 @@ export async function importWalletFlow() {
   await enableSynchronization();
 }
 
-// eslint-disable-next-line eslint-comments/disable-enable-pair
-/* eslint-disable no-undef */
-export async function waitAndTap(elementId, timeout) {
-  await waitFor(element(by.id(elementId)))
-    .toBeVisible()
-    .withTimeout(timeout || DEFAULT_TIMEOUT);
-
-  return element(by.id(elementId)).tap();
-}
-
 export function tap(elementId) {
   return element(by.id(elementId)).tap();
 }
 
-export function tapByText(text, index) {
+export async function waitAndTap(elementId, timeout) {
+  await waitFor(element(by.id(elementId)))
+    .toBeVisible()
+    .withTimeout(timeout || DEFAULT_TIMEOUT);
+  await waitFor(element(by.id(testID)))
+    .toBeEnabled()
+    .withTimeout(timeout || DEFAULT_TIMEOUT);
+
+  return tap(elementId);
+}
+
+export async function tapByText(text, index) {
+  await waitFor(element(by.text(text)))
+    .toBeVisible()
+    .withTimeout(timeout || DEFAULT_TIMEOUT);
+  await waitFor(element(by.text(text)))
+    .toBeEnabled()
+    .withTimeout(timeout || DEFAULT_TIMEOUT);
+
   return element(by.text(text))
     .atIndex(index || 0)
     .tap();
@@ -71,7 +79,7 @@ export function tapItemAtIndex(elementID, index) {
 
 export async function startIosSimulator() {
   if (device.getPlatform() === 'ios') {
-    await exec('open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/');
+    exec('open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/');
   }
 }
 
@@ -79,7 +87,6 @@ export async function typeText(elementId, text, focus = true, syncOnAndroid = fa
   if (focus) {
     await tap(elementId);
   }
-  // this is way faster now
   if (device.getPlatform() === 'android' && !syncOnAndroid) {
     await device.disableSynchronization();
   }
@@ -135,6 +142,7 @@ export async function waitAndSwipe(elementId, direction, speed = 'fast', percent
   await waitFor(element(by.id(elementId)))
     .toBeVisible()
     .withTimeout(timeout || DEFAULT_TIMEOUT);
+
   await element(by.id(elementId))?.swipe(direction, speed, percentage);
 }
 
