@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Box, globalColors, useColorMode, Text } from '@/design-system';
-import { Page } from '@/components/layout';
+import { Box, globalColors, useColorMode, TextIcon, Text } from '@/design-system';
 import { useAccountAccentColor, useAccountSettings, useDimensions } from '@/hooks';
 import { AnimatePresence, MotiView } from 'moti';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -21,7 +20,8 @@ import DappBrowserWebview from './DappBrowserWebview';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { DappBrowserShadows } from './DappBrowserShadows';
 import { WebViewBorder } from './WebViewBorder';
-import { handleProviderRequest } from './handleProviderRequest';
+import Homepage from './Homepage';
+import { ButtonPressAnimation } from '../animations';
 
 interface BrowserTabProps {
   tabIndex: number;
@@ -81,6 +81,7 @@ const getWebsiteBackgroundColor = `
 export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS }: BrowserTabProps) {
   const {
     activeTabIndex,
+    closeTab,
     scrollViewOffset,
     setActiveTabIndex,
     tabStates,
@@ -366,22 +367,6 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
     [loadProgress]
   );
 
-  const HomepageComponent = () => (
-    <Box
-      as={Page}
-      flex={1}
-      height="full"
-      width="full"
-      alignItems="center"
-      justifyContent="center"
-      style={{ backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD' }}
-    >
-      <Text align="center" size="20pt" color="label" weight="bold">
-        Dapp Browser Homepage
-      </Text>
-    </Box>
-  );
-
   const WebviewComponent = () => (
     <Freeze
       freeze={!isActiveTab}
@@ -429,12 +414,12 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
   );
 
   const isOnHomepage = tabStates[tabIndex].url === RAINBOW_HOME;
-  const TabContent = isOnHomepage ? <HomepageComponent /> : <WebviewComponent />;
+  const TabContent = isOnHomepage ? <Homepage /> : <WebviewComponent />;
 
   return (
     <>
       <DappBrowserShadows type="webview">
-        <TouchableWithoutFeedback onPress={handlePress}>
+        <TouchableWithoutFeedback disabled={isOnHomepage && !tabViewVisible} onPress={handlePress}>
           <Animated.View style={[styles.webViewContainer, webViewStyle]}>
             <ViewShot options={{ format: 'jpg' }} ref={viewShotRef}>
               <View
@@ -492,6 +477,20 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
             <WebViewBorder enabled={IS_IOS && isDarkMode && !isOnHomepage} isActiveTab={isActiveTab} />
           </Animated.View>
         </TouchableWithoutFeedback>
+        {tabViewVisible && tabStates.length > 1 && (
+          <Box
+            as={ButtonPressAnimation}
+            onPress={() => closeTab(tabIndex)}
+            position="absolute"
+            top={{ custom: safeAreaInsetValues.top + Math.floor(tabIndex / 2) * TAB_VIEW_ROW_HEIGHT + 8 }}
+            left={{ custom: ((tabIndex % 2) + 1) * TAB_VIEW_COLUMN_WIDTH + (tabIndex % 2) * 20 - 8 }}
+            style={{ zIndex: 99999999999 }}
+          >
+            <TextIcon align="center" size="17pt" weight="bold" color="labelSecondary" containerSize={20} hitSlop={10}>
+              􀀳
+            </TextIcon>
+          </Box>
+        )}
       </DappBrowserShadows>
       {isActiveTab && !tabViewVisible && (
         <Box as={Animated.View} style={[styles.progressBar, progressBarStyle, { backgroundColor: accentColor }]} />
