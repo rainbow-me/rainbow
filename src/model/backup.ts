@@ -1,5 +1,5 @@
 import { captureException } from '@sentry/react-native';
-import { endsWith, values } from 'lodash';
+import { endsWith } from 'lodash';
 import { CLOUD_BACKUP_ERRORS, encryptAndSaveDataToCloud, getDataFromCloud } from '@/handlers/cloudBackup';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import WalletTypes from '../helpers/walletTypes';
@@ -16,7 +16,7 @@ import { authenticateWithPIN, authenticateWithPINAndCreateIfNeeded, decryptPIN }
 import * as i18n from '@/languages';
 import { getUserError } from '@/hooks/useWalletCloudBackup';
 import { cloudPlatform } from '@/utils/platform';
-import { setAllWalletsWithIdsAsBackedUp, setWalletBackedUp } from '@/redux/wallets';
+import { setAllWalletsWithIdsAsBackedUp } from '@/redux/wallets';
 
 const encryptor = new AesEncryptor();
 const PIN_REGEX = /^\d{4}$/;
@@ -467,8 +467,6 @@ async function restoreSpecificBackupIntoKeychain(backedUpData: BackedUpData, use
         if (valueStr.includes('cipher')) {
           const backupPIN = await decryptPIN(encryptedBackupPinData);
 
-          console.log('decrypting seedphrase with backupPin', backupPIN);
-
           processedSeedPhrase = await decryptSecretFromBackupPin({
             secret: valueStr,
             backupPIN,
@@ -479,7 +477,6 @@ async function restoreSpecificBackupIntoKeychain(backedUpData: BackedUpData, use
           }
         }
 
-        console.log({ key, processedSeedPhrase });
         // We don't want to restore the seedphrase if it's not present, it will just create a new wallet with a new seedphrase
         if (!processedSeedPhrase) {
           continue;
