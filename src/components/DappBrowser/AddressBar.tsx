@@ -1,4 +1,4 @@
-import { Box, Inline, Inset, Text, TextIcon } from '@/design-system';
+import { AccentColorProvider, Box, Inline, Inset, Stack, Text, TextIcon, globalColors, useBackgroundColor } from '@/design-system';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { NativeSyntheticEvent, TextInput, TextInputSubmitEditingEventData } from 'react-native';
 import Animated, { Easing, interpolate, useAnimatedKeyboard, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -11,6 +11,9 @@ import { AddressInput } from './address-bar/AddressInput';
 import useDimensions from '@/hooks/useDimensions';
 import { IS_IOS } from '@/env';
 import { ButtonPressAnimation } from '../animations';
+import { ImgixImage } from '../images';
+import { useTheme } from '@/theme';
+import { opacity } from '@/__swaps__/screens/Swap/utils';
 
 const GOOGLE_SEARCH_URL = 'https://www.google.com/search?q=';
 const HTTP = 'http://';
@@ -19,6 +22,33 @@ const HTTPS = 'https://';
 const timingConfig = {
   duration: 500,
   easing: Easing.bezier(0.22, 1, 0.36, 1),
+};
+
+const SearchResult = ({ suggested }: { suggested?: boolean }) => {
+  return (
+    <Box as={ButtonPressAnimation} padding="8px" borderRadius={18} background={suggested ? 'fill' : undefined}>
+      <Inline space="12px" alignVertical="center">
+        <Box
+          as={ImgixImage}
+          source={{ uri: 'https://pbs.twimg.com/profile_images/1741494128779886592/RY4V0T2F_400x400.jpg' }}
+          size={48}
+          background="surfacePrimary"
+          shadow="24px"
+          width={{ custom: 40 }}
+          height={{ custom: 40 }}
+          borderRadius={10}
+        />
+        <Stack space="10px">
+          <Text size="17pt" weight="bold" color="label">
+            Uniswap
+          </Text>
+          <Text size="13pt" weight="bold" color="labelTertiary">
+            app.uniswap.org
+          </Text>
+        </Stack>
+      </Inline>
+    </Box>
+  );
 };
 
 export const AddressBar = () => {
@@ -148,31 +178,54 @@ export const AddressBar = () => {
         style={[backgroundStyle]}
       >
         <Inset horizontal="16px" top={{ custom: 100 }}>
-          <Inset horizontal="8px">
-            <Inline alignHorizontal="justify" alignVertical="center">
-              <Inline space="6px" alignVertical="center">
-                <TextIcon color="blue" size="15pt" weight="heavy">
-                  􀐫
-                </TextIcon>
-                <Text weight="heavy" color="label" size="20pt">
-                  Suggested
-                </Text>
-              </Inline>
-              <Box
-                as={ButtonPressAnimation}
-                background="fill"
-                height={{ custom: 32 }}
-                width={{ custom: 32 }}
-                borderRadius={32}
-                alignItems="center"
-                justifyContent="center"
-              >
-                <Text weight="heavy" color="label" size="15pt" align="center">
-                  􀆄
-                </Text>
-              </Box>
-            </Inline>
-          </Inset>
+          <Stack space="32px">
+            <Stack space="12px">
+              <Inset horizontal="8px">
+                <Inline alignHorizontal="justify" alignVertical="center">
+                  <Inline space="6px" alignVertical="center">
+                    <TextIcon color="blue" size="15pt" weight="heavy">
+                      􀐫
+                    </TextIcon>
+                    <Text weight="heavy" color="label" size="20pt">
+                      Suggested
+                    </Text>
+                  </Inline>
+                  <Box
+                    as={ButtonPressAnimation}
+                    background="fill"
+                    height={{ custom: 32 }}
+                    width={{ custom: 32 }}
+                    borderRadius={32}
+                    alignItems="center"
+                    justifyContent="center"
+                    onPress={() => inputRef?.current?.blur()}
+                  >
+                    <Text weight="heavy" color="label" size="15pt" align="center">
+                      􀆄
+                    </Text>
+                  </Box>
+                </Inline>
+              </Inset>
+              <SearchResult suggested />
+            </Stack>
+            <Stack space="12px">
+              <Inset horizontal="8px">
+                <Inline space="6px" alignVertical="center">
+                  <TextIcon color="labelSecondary" size="15pt" weight="heavy">
+                    􀊫
+                  </TextIcon>
+                  <Text weight="heavy" color="label" size="20pt">
+                    More Results
+                  </Text>
+                </Inline>
+              </Inset>
+              <Stack space="4px">
+                <SearchResult />
+                <SearchResult />
+                <SearchResult />
+              </Stack>
+            </Stack>
+          </Stack>
         </Inset>
       </Box>
       <Box

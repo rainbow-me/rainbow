@@ -417,7 +417,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
   return (
     <>
       <DappBrowserShadows type="webview">
-        <TouchableWithoutFeedback onPress={handlePress}>
+        <TouchableWithoutFeedback disabled={isOnHomepage && !tabViewVisible} onPress={handlePress}>
           <Animated.View style={[styles.webViewContainer, webViewStyle]}>
             <ViewShot options={{ format: 'jpg' }} ref={viewShotRef}>
               <View
