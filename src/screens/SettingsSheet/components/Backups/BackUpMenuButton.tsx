@@ -23,7 +23,6 @@ export const BackUpMenuItem = ({
   const [emojiTrigger, setEmojiTrigger] = useState<null | (() => void)>(null);
 
   useEffect(() => {
-    console.log({ loading });
     if (loading === 'success') {
       for (let i = 0; i < 20; i++) {
         setTimeout(() => {

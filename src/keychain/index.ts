@@ -75,7 +75,6 @@ export async function get(key: string, options: KeychainOptions = {}): Promise<R
     }
 
     let data = cache.getString(key);
-
     if (!data) {
       try {
         const result = await getInternetCredentials(key, options);

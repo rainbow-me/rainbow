@@ -1,7 +1,7 @@
 /* eslint-disable no-promise-executor-return */
 import { useCallback, useState } from 'react';
 import { backupAllWalletsToCloud, getLocalBackupPassword, saveLocalBackupPassword } from '@/model/backup';
-import useCloudBackups from '@/hooks/useCloudBackups';
+import { useCloudBackups } from './CloudBackupProvider';
 import { cloudPlatform } from '@/utils/platform';
 import { analytics } from '@/analytics';
 import { useWalletCloudBackup, useWallets } from '@/hooks';
@@ -100,7 +100,7 @@ export const useCreateBackup = ({ walletId }: UseCreateBackupProps) => {
         walletId,
       });
     },
-    [onError, onSuccess, walletCloudBackup, walletId, latestBackup]
+    [walletId, walletCloudBackup, onError, onSuccess, wallets, latestBackup, dispatch]
   );
 
   const getPassword = useCallback(async (): Promise<string | null> => {
@@ -116,12 +116,10 @@ export const useCreateBackup = ({ walletId }: UseCreateBackupProps) => {
         nativeScreen: true,
         step: walletBackupStepTypes.backup_cloud,
         onSuccess: async (password: string) => {
-          console.log('on success backup password step');
           setPassword(password);
           resolve(password);
         },
         onCancel: async () => {
-          console.log('canceled backup password step');
           resolve(null);
         },
         walletId,

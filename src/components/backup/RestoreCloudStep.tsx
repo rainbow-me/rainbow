@@ -135,8 +135,6 @@ export default function RestoreCloudStep() {
         InteractionManager.runAfterInteractions(async () => {
           const wallets = await dispatch(walletsLoadState());
           let filename = selectedBackup.name;
-          goBack();
-
           if (IS_ANDROID && filename) {
             /**
              * We need to normalize the filename on Android, because sometimes

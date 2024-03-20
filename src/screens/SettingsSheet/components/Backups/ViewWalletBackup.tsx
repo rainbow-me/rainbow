@@ -41,8 +41,8 @@ import { IS_IOS } from '@/env';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { useCreateBackup } from '@/components/backup/useCreateBackup';
 import { BackUpMenuItem } from './BackUpMenuButton';
-import { checkUserDataForBackupProvider, checkWalletsForBackupStatus } from '../../utils';
-import useCloudBackups from '@/hooks/useCloudBackups';
+import { checkWalletsForBackupStatus } from '../../utils';
+import { useCloudBackups } from '@/components/backup/CloudBackupProvider';
 import { WalletCountPerType, useVisibleWallets } from '../../useVisibleWallets';
 import { format } from 'date-fns';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
@@ -134,12 +134,7 @@ const ViewWalletBackup = () => {
 
   const { lastBackupDate } = useVisibleWallets({ wallets, walletTypeCount });
 
-  const { backupProvider: remoteBackupProvider } = useMemo(() => checkUserDataForBackupProvider(userData), [userData]);
-  const { backupProvider: localBackupProvider } = useMemo(() => checkWalletsForBackupStatus(wallets), [wallets]);
-
-  const backupProvider = useMemo(() => {
-    return remoteBackupProvider ?? localBackupProvider;
-  }, [localBackupProvider, remoteBackupProvider]);
+  const { backupProvider } = useMemo(() => checkWalletsForBackupStatus(wallets), [wallets]);
 
   const isSecretPhrase = WalletTypes.mnemonic === wallet?.type;
 

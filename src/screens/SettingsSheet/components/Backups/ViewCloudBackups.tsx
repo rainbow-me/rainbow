@@ -12,7 +12,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { IS_ANDROID } from '@/env';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import useCloudBackups from '@/hooks/useCloudBackups';
+import { useCloudBackups } from '@/components/backup/CloudBackupProvider';
 import { Centered } from '@/components/layout';
 import Spinner from '@/components/Spinner';
 import ActivityIndicator from '@/components/ActivityIndicator';
@@ -56,9 +56,8 @@ const ViewCloudBackups = () => {
         return current;
       }
 
-      const prevTimestamp = parseTimestampFromFilename(prev.name);
-      const currentTimestamp = parseTimestampFromFilename(current.name);
-
+      const prevTimestamp = new Date(prev.lastModified).getTime();
+      const currentTimestamp = new Date(current.lastModified).getTime();
       if (currentTimestamp > prevTimestamp) {
         return current;
       }
@@ -92,7 +91,7 @@ const ViewCloudBackups = () => {
             {mostRecentBackup && (
               <Menu
                 description={i18n.t(i18n.l.back_up.cloud.latest_backup, {
-                  date: format(parseTimestampFromFilename(mostRecentBackup.name), "M/d/yy 'at' h:mm a"),
+                  date: format(new Date(mostRecentBackup.lastModified), "M/d/yy 'at' h:mm a"),
                 })}
               >
                 <MenuItem

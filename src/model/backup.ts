@@ -394,7 +394,6 @@ export async function restoreCloudBackup({
       }
     }
 
-    let restoredSuccessfully = false;
     if (userData) {
       // Restore only wallets that were backed up in cloud
       // or wallets that are read-only
@@ -413,11 +412,9 @@ export async function restoreCloudBackup({
         version: allWalletsVersion,
         wallets: walletsToRestore,
       };
-      restoredSuccessfully = await restoreCurrentBackupIntoKeychain(dataToRestore, userPIN);
-    } else {
-      restoredSuccessfully = await restoreSpecificBackupIntoKeychain(dataToRestore, userPIN);
     }
 
+    const restoredSuccessfully = await restoreSpecificBackupIntoKeychain(dataToRestore, userPIN);
     return restoredSuccessfully ? RestoreCloudBackupResultStates.success : RestoreCloudBackupResultStates.failedWhenRestoring;
   } catch (error) {
     const message = (error as Error).message;

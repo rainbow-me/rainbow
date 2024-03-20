@@ -22,18 +22,20 @@ import { useTheme } from '@/theme';
 import Routes from '@/navigation/routesNames';
 import { backupsCard } from '@/components/cards/utils/constants';
 import { WalletCountPerType, useVisibleWallets } from '../../useVisibleWallets';
-import useCloudBackups from '@/hooks/useCloudBackups';
 import { SETTINGS_BACKUP_ROUTES } from './routes';
 import { RainbowAccount, createWallet } from '@/model/wallet';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { useDispatch } from 'react-redux';
 import { walletsLoadState } from '@/redux/wallets';
 import { RainbowError, logger } from '@/logger';
-import { IS_IOS } from '@/env';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { BackupTypes, useCreateBackup } from '@/components/backup/useCreateBackup';
 import { BackUpMenuItem } from './BackUpMenuButton';
 import { format } from 'date-fns';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
+import { Backup, parseTimestampFromFilename } from '@/model/backup';
+import { useCloudBackups } from '@/components/backup/CloudBackupProvider';
+import { login } from '@/handlers/cloudBackup';
 
 type WalletPillProps = {
   account: RainbowAccount;
@@ -109,6 +111,39 @@ export const WalletsAndBackup = () => {
 
   const { visibleWallets, lastBackupDate } = useVisibleWallets({ wallets, walletTypeCount });
 
+  const cloudBackups = backups.files
+    .filter(backup => {
+      if (IS_ANDROID) {
+        return !backup.name.match(/UserData/i);
+      }
+
+      return backup.isFile && backup.size > 0 && !backup.name.match(/UserData/i);
+    })
+    .sort((a, b) => {
+      return parseTimestampFromFilename(b.name) - parseTimestampFromFilename(a.name);
+    });
+
+  const mostRecentBackup = cloudBackups.reduce(
+    (prev, current) => {
+      if (!current) {
+        return prev;
+      }
+
+      if (!prev) {
+        return current;
+      }
+
+      const prevTimestamp = new Date(prev.lastModified).getTime();
+      const currentTimestamp = new Date(current.lastModified).getTime();
+      if (currentTimestamp > prevTimestamp) {
+        return current;
+      }
+
+      return prev;
+    },
+    undefined as Backup | undefined
+  );
+
   const sortedWallets = useMemo(() => {
     const notBackedUpSecretPhraseWallets = visibleWallets.filter(
       wallet => !wallet.isBackedUp && wallet.type === EthereumWalletType.mnemonic
@@ -128,6 +163,10 @@ export const WalletsAndBackup = () => {
   }, [visibleWallets]);
 
   const backupAllNonBackedUpWalletsTocloud = useCallback(async () => {
+    if (IS_ANDROID) {
+      await login();
+    }
+
     onSubmit(BackupTypes.All);
   }, [onSubmit]);
 
@@ -335,11 +374,15 @@ export const WalletsAndBackup = () => {
 
               <Menu
                 description={
-                  lastBackupDate
+                  mostRecentBackup
                     ? i18n.t(i18n.l.back_up.cloud.latest_backup, {
-                        date: format(lastBackupDate, "M/d/yy 'at' h:mm a"),
+                        date: format(new Date(mostRecentBackup.lastModified), "M/d/yy 'at' h:mm a"),
                       })
-                    : undefined
+                    : lastBackupDate
+                      ? i18n.t(i18n.l.back_up.cloud.latest_backup, {
+                          date: format(lastBackupDate, "M/d/yy 'at' h:mm a"),
+                        })
+                      : undefined
                 }
               >
                 <BackUpMenuItem

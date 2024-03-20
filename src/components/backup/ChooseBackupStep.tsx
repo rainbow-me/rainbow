@@ -86,9 +86,8 @@ export function ChooseBackupStep() {
         return current;
       }
 
-      const prevTimestamp = parseTimestampFromFilename(prev.name);
-      const currentTimestamp = parseTimestampFromFilename(current.name);
-
+      const prevTimestamp = new Date(prev.lastModified).getTime();
+      const currentTimestamp = new Date(current.lastModified).getTime();
       if (currentTimestamp > prevTimestamp) {
         return current;
       }
@@ -146,7 +145,7 @@ export function ChooseBackupStep() {
               {mostRecentBackup && (
                 <Menu
                   description={lang.t(lang.l.back_up.cloud.latest_backup, {
-                    date: format(parseTimestampFromFilename(mostRecentBackup.name), "M/d/yy 'at' h:mm a"),
+                    date: format(new Date(mostRecentBackup.lastModified), "M/d/yy 'at' h:mm a"),
                   })}
                 >
                   <MenuItem

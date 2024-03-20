@@ -950,8 +950,10 @@ export const getPrivateKey = async (address: EthereumAddress): Promise<null | Pr
     const key = `${address}_${privateKeyKey}`;
     const options = { authenticationPrompt };
 
+    const androidEncryptionPin = IS_ANDROID && !(await kc.getSupportedBiometryType()) ? await authenticateWithPIN() : undefined;
     const { value: pkey, error } = await kc.getObject<PrivateKeyData>(key, {
       ...options,
+      androidEncryptionPin,
     });
 
     if (error === -2) {
