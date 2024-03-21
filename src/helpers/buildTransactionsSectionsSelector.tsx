@@ -5,7 +5,7 @@ import { FastTransactionCoinRow, RequestCoinRow } from '../components/coin-row';
 import { thisMonthTimestamp, thisYearTimestamp, todayTimestamp, yesterdayTimestamp } from './transactions';
 import { NativeCurrencyKey, RainbowTransaction, TransactionStatusTypes } from '@/entities';
 import * as i18n from '@/languages';
-import { RequestData } from '@/redux/requests';
+import { WalletconnectRequestData } from '@/redux/requests';
 import { ThemeContextProps } from '@/theme';
 import { Contact } from '@/redux/contacts';
 import { TransactionStatus } from '@/resources/transactions/types';
@@ -63,7 +63,7 @@ export const buildTransactionsSections = ({
 }: {
   accountAddress: string;
   contacts: { [address: string]: Contact };
-  requests: RequestData[];
+  requests: WalletconnectRequestData[];
   theme: ThemeContextProps;
   transactions: RainbowTransaction[];
   nativeCurrency: NativeCurrencyKey;

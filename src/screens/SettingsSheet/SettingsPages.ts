@@ -24,7 +24,7 @@ export const SettingsPages = {
   },
   currency: {
     component: CurrencySection,
-    getTitle: () => lang.t('settings.currency'),
+    getTitle: () => lang.t('settings.currency.title'),
     key: Routes.SETTINGS_SECTION_CURRENCY,
   },
   default: {

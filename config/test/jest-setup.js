@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-// needed to set up global translations
 import '../../src/languages';
 
 global.ios = false;
