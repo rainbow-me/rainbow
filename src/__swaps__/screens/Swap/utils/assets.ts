@@ -34,7 +34,7 @@ const get24HrChange = (priceData?: ZerionAssetPrice) => {
 
 export const getCustomChainIconUrl = (chainId: ChainId, address: AddressOrEth) => {
   if (!chainId || !customChainIdsToAssetNames[chainId]) return '';
-  const baseUrl = 'https://rainbowme-res.cloudinary.com/image/upload/v1693266228/assets/';
+  const baseUrl = 'https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/';
 
   if (address === AddressZero || address === ETH_ADDRESS) {
     return `${baseUrl}${customChainIdsToAssetNames[chainId]}/info/logo.png`;
