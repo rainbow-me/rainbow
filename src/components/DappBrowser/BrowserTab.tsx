@@ -109,8 +109,6 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
 
   const tabId = useMemo(() => `${tabIndex}-${tabStates[tabIndex].url}`, [tabIndex, tabStates]);
 
-  console.info('[BROWSER]: Render BrowserTab', { tabId, isActiveTab, url: webViewRefs.current[tabIndex]?.state });
-
   const webViewStyle = useAnimatedStyle(() => {
     const isActiveTab = activeTabIndex === tabIndex;
     const multipleTabsOpen = tabStates.length > 1;
@@ -323,12 +321,12 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
   }, []);
 
   const handleOnLoadEnd = useCallback(() => {
-    console.info('[BROWSER]: handleOnLoadEnd', tabStates[tabIndex].url);
-  }, [tabIndex, tabStates]);
+    return;
+  }, []);
 
   const handleOnError = useCallback(() => {
-    console.info('[BROWSER]: handleOnError', tabStates[tabIndex].url);
-  }, [tabIndex, tabStates]);
+    return;
+  }, []);
 
   const handleShouldStartLoadWithRequest = useCallback(() => {
     return true;
