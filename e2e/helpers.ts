@@ -55,10 +55,12 @@ export async function cleanApp() {
 }
 
 export async function tap(elementId: string | RegExp) {
+  await delayTime('medium');
   return await element(by.id(elementId)).tap();
 }
 
 export async function waitAndTap(elementId: string | RegExp, timeout = DEFAULT_TIMEOUT) {
+  await delayTime('medium');
   try {
     await waitFor(element(by.id(elementId)))
       .toBeVisible()
@@ -71,6 +73,7 @@ export async function waitAndTap(elementId: string | RegExp, timeout = DEFAULT_T
 }
 
 export async function tapByText(text: string | RegExp, index = 0, timeout = DEFAULT_TIMEOUT) {
+  await delayTime('medium');
   try {
     await waitFor(element(by.text(text)))
       .toBeVisible()
@@ -83,10 +86,12 @@ export async function tapByText(text: string | RegExp, index = 0, timeout = DEFA
 }
 
 export async function tapAtPoint(elementId: string | RegExp, point: Detox.Point2D | undefined) {
+  await delayTime('medium');
   return await element(by.id(elementId)).tap(point);
 }
 
 export async function tapItemAtIndex(elementID: string | RegExp, index: number) {
+  await delayTime('medium');
   return await element(by.id(elementID))
     .atIndex(index || 0)
     .tap();
@@ -103,6 +108,7 @@ export async function typeText(elementId: string | RegExp, text: string | undefi
   if (text === undefined) {
     throw new Error(`Cannot type 'undefined' into element with id ${elementId}`);
   }
+  await delayTime('medium');
   try {
     if (focus) {
       await tap(elementId);
