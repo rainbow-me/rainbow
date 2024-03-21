@@ -24,9 +24,9 @@ export type RequestType = 'walletconnect' | 'browser';
 // Dapp Browser
 
 export interface DappConnectionData {
-  dappName: string;
+  dappName?: string;
   dappUrl: string;
-  imageUrl: string | undefined;
+  imageUrl?: string;
 }
 
 export const handleDappBrowserConnectionPrompt = (dappData: DappConnectionData): Promise<{ chainId: number; address: string } | Error> => {
@@ -37,7 +37,7 @@ export const handleDappBrowserConnectionPrompt = (dappData: DappConnectionData):
       receivedTimestamp,
       meta: {
         chainIds,
-        dappName: dappData.dappName,
+        dappName: dappData?.dappName || dappData.dappUrl,
         dappUrl: dappData.dappUrl,
         imageUrl: maybeSignUri(dappData.dappUrl),
         isWalletConnectV2: false,
@@ -71,6 +71,7 @@ export const handleDappBrowserConnectionPrompt = (dappData: DappConnectionData):
 export const handleDappBrowserRequest = async (request: Omit<RequestData, 'displayDetails'>): Promise<string | Error> => {
   const nativeCurrency = store.getState().settings.nativeCurrency;
   const displayDetails = getRequestDisplayDetails(request.payload, nativeCurrency, request.network);
+  console.log('displayDetails', displayDetails);
 
   const requestWithDetails: RequestData = {
     ...request,

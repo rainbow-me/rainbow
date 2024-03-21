@@ -118,4 +118,4 @@ coverage
 .zed/
 
 # Webpack
-src/browser/InjectedJSBundle.js.LICENSE.txt
+InjectedJSBundle.js.LICENSE.txt

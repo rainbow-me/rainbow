@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Box, globalColors, useColorMode, TextIcon, Text } from '@/design-system';
+import { Box, globalColors, useColorMode, TextIcon } from '@/design-system';
 import { useAccountAccentColor, useAccountSettings, useDimensions } from '@/hooks';
 import { AnimatePresence, MotiView } from 'moti';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -22,6 +22,7 @@ import { DappBrowserShadows } from './DappBrowserShadows';
 import { WebViewBorder } from './WebViewBorder';
 import Homepage from './Homepage';
 import { ButtonPressAnimation } from '../animations';
+import { handleProviderRequestApp } from './handleProviderRequest';
 
 interface BrowserTabProps {
   tabIndex: number;
@@ -98,7 +99,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
   const { accountAddress } = useAccountSettings();
   const { isDarkMode } = useColorMode();
 
-  const messengers = useRef<any[]>([]);
+  const currentMessenger = useRef<any>(null);
 
   const webViewRef = useRef<WebView>(null);
   const viewShotRef = useRef<ViewShot | null>(null);
@@ -264,18 +265,8 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
 
   const [backgroundColor, setBackgroundColor] = useState<string>();
 
-  const createMessengers = useCallback((origin: string, tabId: string) => {
-    if (!webViewRef.current) {
-      return;
-    }
-    const msngr = appMessenger(webViewRef.current, tabId, origin);
-    handleProviderRequest(msngr);
-    messengers.current.push(msngr);
-  }, []);
-
-  const handleMessage = useCallback(
+  const handleOnMessage = useCallback(
     (event: WebViewMessageEvent) => {
-      console.log('App received messsage from the webview', event.nativeEvent.data);
       if (!isActiveTab) return;
       const data = event.nativeEvent.data as any;
       try {
@@ -283,51 +274,50 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
         const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
         if (!parsedData || (!parsedData.topic && !parsedData.payload)) return;
         if (parsedData.topic === 'bg') {
-          console.log('[BROWSER]: received bg color', parsedData.payload);
           setBackgroundColor(parsedData.payload);
         } else {
-          const { origin } = new URL(event.nativeEvent.url);
-          messengers.current.forEach((m: any) => {
-            const messengerUrlOrigin = new URL(m.url).origin;
-            if (messengerUrlOrigin === origin) {
-              console.log('[BROWSER]: received message', parsedData);
-              const genericTopic = parsedData.topic.replace('> ', '');
-              console.log('replying...');
-              let callback;
-              if (genericTopic === 'rainbow_prefetchDappMetadata') {
-                callback = async () => {
-                  return true;
-                };
-              } else if (parsedData.payload.method === 'eth_requestAccounts' || parsedData.payload.method === 'eth_accounts') {
-                callback = async () => {
-                  return { result: [accountAddress] };
-                };
-              } else if (parsedData.payload.method === 'eth_chainId') {
-                callback = async () => {
-                  return { result: '0x1' };
-                };
-              }
-              m.reply(genericTopic, callback);
-              m.listeners[genericTopic]?.({ data: parsedData });
-            }
+          const m = currentMessenger.current;
+          // const messengerUrlOrigin = new URL(m.url).origin;
+          // if (messengerUrlOrigin === origin) {
+          console.log('[BROWSER]: received message', parsedData);
+
+          // We need to do this to simulate the postMessage scenario where there's a listener
+          // that gets triggered when we received the message.
+          // So first we set the listener
+
+          handleProviderRequestApp({
+            messenger: m,
+            data: parsedData,
+            meta: {
+              topic: 'providerRequest',
+              sender: {
+                url: m.url,
+                tab: { id: tabId },
+              },
+              id: parsedData.id,
+            },
           });
         }
 
         // eslint-disable-next-line no-empty
       } catch (e) {
-        console.log('Error parsing message', e);
+        console.error('Error parsing message', e);
       }
     },
-    [accountAddress, isActiveTab]
+    [isActiveTab, tabId]
   );
 
   const handleOnLoadStart = useCallback(
     (event: { nativeEvent: { url: string | URL } }) => {
       const { origin } = new URL(event.nativeEvent.url);
-      messengers.current = [];
-      createMessengers(origin, getTabId(tabIndex, tabStates[tabIndex].url));
+
+      if (!webViewRef.current) {
+        return;
+      }
+      const messenger = appMessenger(webViewRef.current, tabId, origin);
+      currentMessenger.current = messenger;
     },
-    [createMessengers, tabIndex, tabStates]
+    [tabId]
   );
 
   const handleOnLoad = useCallback((event: WebViewEvent) => {
@@ -399,7 +389,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
         onError={handleOnError}
         onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
         onLoadProgress={handleOnLoadProgress}
-        onMessage={handleMessage}
+        onMessage={handleOnMessage}
         onNavigationStateChange={handleNavigationStateChange}
         ref={webViewRef}
         source={{ uri: tabStates[tabIndex].url }}
