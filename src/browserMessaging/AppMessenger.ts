@@ -112,8 +112,9 @@ export const appMessenger = (webViewRef: WebView, tabId: string, url: string) =>
               sender: event.meta.sender as IMessageSender,
               id: event.data.id,
             });
+            console.log('[MESSENGER]: got response from callback: ', response);
           } catch (error_) {
-            console.log('Error while getting response from callback: ', error_);
+            console.error('[MESSENGER]: Error while getting response from callback: ', error_);
             error = error_;
           }
 

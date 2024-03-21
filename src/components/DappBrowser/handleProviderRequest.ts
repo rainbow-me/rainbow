@@ -7,10 +7,10 @@ import {
   handleProviderRequest,
 } from '@rainbow-me/provider';
 
-import { Provider, getNetwork } from '@ethersproject/providers';
+import { Provider } from '@ethersproject/providers';
 
 import { RainbowNetworks, getNetworkObj } from '@/networks';
-import { getProviderForNetwork } from '@/handlers/web3';
+import { getCachedProviderForNetwork } from '@/handlers/web3';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { UserRejectedRequestError } from 'viem';
 import { convertHexToString } from '@/helpers/utilities';
@@ -118,7 +118,7 @@ const messengerProviderRequestFn = async (messenger: Messenger, request: Provide
 
   if (request.method === 'eth_requestAccounts') {
     response = await handleDappBrowserConnectionPrompt({
-      dappName: request.meta?.sender.url || '',
+      dappName: request.meta?.sender.title || '',
       dappUrl: request.meta?.sender.url || '',
     });
 
@@ -133,7 +133,7 @@ const messengerProviderRequestFn = async (messenger: Messenger, request: Provide
     });
   } else {
     response = await handleDappBrowserRequest({
-      dappName: request.meta?.sender.url || '',
+      dappName: request.meta?.sender.title || request.meta?.sender.url || '',
       imageUrl: '',
       address: appSession?.address || '',
       network: appSession?.network || Network.mainnet,
@@ -150,12 +150,13 @@ const messengerProviderRequestFn = async (messenger: Messenger, request: Provide
 
 const isSupportedChainId = (chainId: number) => RainbowNetworks.filter(network => Number(network.id) === chainId).length > 0;
 const getActiveSession = ({ host }: { host: string }): ActiveSession => {
-  const appSession = appSessionsStore.getState().getActiveSession({ host });
-  if (!appSession) return null;
-  return {
-    address: appSession?.address || '',
-    chainId: getChainIdByNetwork(appSession.network),
-  };
+  // const appSession = appSessionsStore.getState().getActiveSession({ host });
+  // if (!appSession) return null;
+  // return {
+  //   address: appSession?.address || '',
+  //   chainId: getChainIdByNetwork(appSession.network),
+  // };
+  return null;
 };
 
 const getChainIdByNetwork = (network: Network) => getNetworkObj(network).id;
@@ -164,7 +165,7 @@ const getChain = (chainId: number) => RainbowNetworks.find(network => Number(net
 
 const getProvider = ({ chainId }: { chainId?: number | undefined }) => {
   const network = getNetworkFromChainId(chainId || 1);
-  return getProviderForNetwork(network) as unknown as Provider;
+  return getCachedProviderForNetwork(network) as unknown as Provider;
 };
 
 const checkRateLimitFn = async (host: string) => {

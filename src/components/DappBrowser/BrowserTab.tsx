@@ -73,9 +73,10 @@ const getInitialScreenshot = (id: string): ScreenshotType | null => {
   return null;
 };
 
-const getWebsiteBackgroundColor = `
+const getWebsiteBackgroundColorAndTitle = `
   const bgColor = window.getComputedStyle(document.body, null).getPropertyValue('background-color');
   window.ReactNativeWebView.postMessage(JSON.stringify({ topic: "bg", payload: bgColor}));
+  window.ReactNativeWebView.postMessage(JSON.stringify({ topic: "title", payload: document.title }));
   true;
   `;
 
@@ -96,8 +97,8 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
   const { colorMode } = useColorMode();
   const { width: deviceWidth } = useDimensions();
   const { accentColor } = useAccountAccentColor();
-  const { accountAddress } = useAccountSettings();
   const { isDarkMode } = useColorMode();
+  const [title, setTitle] = useState('');
 
   const currentMessenger = useRef<any>(null);
 
@@ -275,6 +276,8 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
         if (!parsedData || (!parsedData.topic && !parsedData.payload)) return;
         if (parsedData.topic === 'bg') {
           setBackgroundColor(parsedData.payload);
+        } else if (parsedData.topic === 'title') {
+          setTitle(parsedData.payload);
         } else {
           const m = currentMessenger.current;
           // const messengerUrlOrigin = new URL(m.url).origin;
@@ -293,6 +296,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
               sender: {
                 url: m.url,
                 tab: { id: tabId },
+                title: title || tabStates[tabIndex].url,
               },
               id: parsedData.id,
             },
@@ -304,16 +308,17 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
         console.error('Error parsing message', e);
       }
     },
-    [isActiveTab, tabId]
+    [isActiveTab, tabId, tabIndex, tabStates, title]
   );
 
   const handleOnLoadStart = useCallback(
-    (event: { nativeEvent: { url: string | URL } }) => {
+    (event: { nativeEvent: { url: string | URL; title: string } }) => {
       const { origin } = new URL(event.nativeEvent.url);
 
       if (!webViewRef.current) {
         return;
       }
+
       const messenger = appMessenger(webViewRef.current, tabId, origin);
       currentMessenger.current = messenger;
     },
@@ -381,7 +386,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
         automaticallyAdjustContentInsets
         automaticallyAdjustsScrollIndicatorInsets
         decelerationRate={'normal'}
-        injectedJavaScript={getWebsiteBackgroundColor}
+        injectedJavaScript={getWebsiteBackgroundColorAndTitle}
         mediaPlaybackRequiresUserAction
         onLoadStart={handleOnLoadStart}
         onLoad={handleOnLoad}
