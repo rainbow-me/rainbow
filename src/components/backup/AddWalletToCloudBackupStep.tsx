@@ -11,6 +11,7 @@ import { useWallets } from '@/hooks';
 import { WalletCountPerType, useVisibleWallets } from '@/screens/SettingsSheet/useVisibleWallets';
 import { format } from 'date-fns';
 import { useCreateBackup } from './useCreateBackup';
+import { login } from '@/handlers/cloudBackup';
 
 const imageSize = 72;
 
@@ -28,6 +29,11 @@ export default function AddWalletToCloudBackupStep() {
   const { onSubmit } = useCreateBackup({
     walletId: selectedWallet.id,
   });
+
+  const potentiallyLoginAndSubmit = useCallback(async () => {
+    await login();
+    return onSubmit();
+  }, [onSubmit]);
 
   const onMaybeLater = useCallback(() => goBack(), [goBack]);
 
@@ -57,7 +63,7 @@ export default function AddWalletToCloudBackupStep() {
         <Separator color="separatorSecondary" thickness={1} />
       </Bleed>
 
-      <ButtonPressAnimation scaleTo={0.95} onPress={() => onSubmit().then(success => success && goBack())}>
+      <ButtonPressAnimation scaleTo={0.95} onPress={() => potentiallyLoginAndSubmit().then(success => success && goBack())}>
         <Box alignItems="center" justifyContent="center" paddingTop={'24px'} paddingBottom={'24px'}>
           <Box alignItems="center" justifyContent="center" width="full">
             <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
