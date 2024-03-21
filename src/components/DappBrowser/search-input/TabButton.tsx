@@ -5,8 +5,7 @@ import { Box, Text, globalColors, useColorMode, useForegroundColor } from '@/des
 import { IS_IOS } from '@/env';
 import position from '@/styles/position';
 import { BlurView } from '@react-native-community/blur';
-import React, { useCallback, RefObject } from 'react';
-import { TextInput } from 'react-native';
+import React, { useCallback } from 'react';
 import { DappBrowserShadows } from '../DappBrowserShadows';
 import { useBrowserContext } from '../BrowserContext';
 
