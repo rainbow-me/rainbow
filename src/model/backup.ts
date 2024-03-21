@@ -430,20 +430,22 @@ export async function restoreCloudBackup({
 
 async function restoreSpecificBackupIntoKeychain(backedUpData: BackedUpData, userPin?: string): Promise<boolean> {
   const encryptedBackupPinData = backedUpData[pinKey];
+  const backupPIN = await decryptPIN(encryptedBackupPinData);
 
   // TODO: Eventual refactor of `createWallet` needed
   /**
    * NOTE: If we import private keys before seed phrases, we won't be able to
    * import the seed phrase as the account will already exist as a private key
    *
-   * Quick hack to sort by seed phrases -> private keys so we make sure seed phrases are prioritized.
+   * Quick hack to sort by private keys -> seed phrases so we make sure seed phrases
+   * overwrite private keys if they already exist.
    *
    */
   const sortedBackupData = Object.keys(backedUpData).sort((a, b) => {
-    if (endsWith(a, seedPhraseKey) && !endsWith(b, privateKeyKey)) {
+    if (endsWith(a, privateKeyKey) && !endsWith(b, seedPhraseKey)) {
       return -1;
     }
-    if (endsWith(b, seedPhraseKey) && !endsWith(a, privateKeyKey)) {
+    if (endsWith(b, privateKeyKey) && !endsWith(a, seedPhraseKey)) {
       return 1;
     }
     return 0;
@@ -452,75 +454,61 @@ async function restoreSpecificBackupIntoKeychain(backedUpData: BackedUpData, use
   try {
     // Re-import all the seeds (and / or pkeys) one by one
     for (const key of sortedBackupData) {
-      if (endsWith(key, seedPhraseKey)) {
-        const valueStr = backedUpData[key];
-        const parsedValue = JSON.parse(valueStr);
-        // We only need to decrypt from backup since createWallet encrypts itself
-        let processedSeedPhrase = parsedValue.seedphrase;
+      const theKeyIsASeedPhrase = endsWith(key, seedPhraseKey);
+      const theKeyIsAPrivateKey = endsWith(key, privateKeyKey);
 
-        /*
-         * Backups that were saved encrypted with PIN to the cloud need to be
-         * decrypted with the backup PIN first, and then if we still need
-         * to store them as encrypted,
-         * we need to re-encrypt them with a new PIN
-         */
-        if (valueStr.includes('cipher')) {
-          const backupPIN = await decryptPIN(encryptedBackupPinData);
-
-          processedSeedPhrase = await decryptSecretFromBackupPin({
-            secret: valueStr,
-            backupPIN,
-          });
-
-          if (processedSeedPhrase && typeof processedSeedPhrase.seedphrase !== 'undefined') {
-            processedSeedPhrase = processedSeedPhrase.seedphrase;
-          }
-        }
-
-        // We don't want to restore the seedphrase if it's not present, it will just create a new wallet with a new seedphrase
-        if (!processedSeedPhrase) {
-          continue;
-        }
-
-        await createWallet({
-          seed: processedSeedPhrase,
-          isRestoring: true,
-          userPin,
-        });
-      } else if (endsWith(key, privateKeyKey)) {
-        const valueStr = backedUpData[key];
-        const parsedValue = JSON.parse(valueStr);
-        // We only need to decrypt from backup since createWallet encrypts itself
-        let processedPrivateKey = parsedValue.privateKey;
-
-        /*
-         * Backups that were saved encrypted with PIN to the cloud need to be
-         * decrypted with the backup PIN first, and then if we still need
-         * to store them as encrypted,
-         * we need to re-encrypt them with a new PIN
-         */
-        if (valueStr.includes('cipher')) {
-          const backupPIN = await decryptPIN(encryptedBackupPinData);
-          processedPrivateKey = await decryptSecretFromBackupPin({
-            secret: valueStr,
-            backupPIN,
-          });
-
-          if (processedPrivateKey && typeof processedPrivateKey.privateKey !== 'undefined') {
-            processedPrivateKey = processedPrivateKey.privateKey;
-          }
-        }
-
-        if (!processedPrivateKey) {
-          continue;
-        }
-
-        await createWallet({
-          seed: processedPrivateKey,
-          isRestoring: true,
-          userPin,
-        });
+      // if the entry isn't a pkey or seed phrase let's continue on...
+      if (!theKeyIsASeedPhrase && !theKeyIsAPrivateKey) {
+        continue;
       }
+
+      const valueStr = backedUpData[key];
+      const parsedValue = JSON.parse(valueStr);
+
+      let secretPhraseOrOldAndroidBackupPrivateKey: string | any; // TODO: Strengthen this type
+      /*
+       * Backups that were saved encrypted with PIN to the cloud need to be
+       * decrypted with the backup PIN first, and then if we still need
+       * to store them as encrypted,
+       * we need to re-encrypt them with a new PIN
+       */
+      if (valueStr.includes('cipher')) {
+        // eslint-disable-next-line no-await-in-loop
+        secretPhraseOrOldAndroidBackupPrivateKey = await decryptSecretFromBackupPin({
+          secret: valueStr,
+          backupPIN,
+        });
+
+        if (
+          theKeyIsAPrivateKey &&
+          secretPhraseOrOldAndroidBackupPrivateKey &&
+          typeof secretPhraseOrOldAndroidBackupPrivateKey.privateKey !== 'undefined'
+        ) {
+          secretPhraseOrOldAndroidBackupPrivateKey = secretPhraseOrOldAndroidBackupPrivateKey.privateKey;
+        }
+
+        if (
+          theKeyIsASeedPhrase &&
+          secretPhraseOrOldAndroidBackupPrivateKey &&
+          typeof secretPhraseOrOldAndroidBackupPrivateKey.seedphrase !== 'undefined'
+        ) {
+          secretPhraseOrOldAndroidBackupPrivateKey = secretPhraseOrOldAndroidBackupPrivateKey.seedphrase;
+        }
+      } else if (theKeyIsASeedPhrase) {
+        secretPhraseOrOldAndroidBackupPrivateKey = parsedValue.seedphrase;
+      }
+
+      if (!secretPhraseOrOldAndroidBackupPrivateKey) {
+        continue;
+      }
+
+      // eslint-disable-next-line no-await-in-loop
+      await createWallet({
+        seed: secretPhraseOrOldAndroidBackupPrivateKey,
+        isRestoring: true,
+        overwrite: true,
+        userPin,
+      });
     }
     return true;
   } catch (e) {

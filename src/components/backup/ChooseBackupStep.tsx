@@ -20,7 +20,7 @@ import { RestoreSheetParams } from '@/screens/RestoreSheet';
 import { Source } from 'react-native-fast-image';
 import { IS_ANDROID } from '@/env';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import useCloudBackups from '@/hooks/useCloudBackups';
+import useCloudBackups, { CloudBackupStep } from '@/hooks/useCloudBackups';
 import { Centered } from '../layout';
 import { cloudPlatform } from '@/utils/platform';
 import Spinner from '../Spinner';
@@ -58,7 +58,7 @@ export function ChooseBackupStep() {
   } = useRoute<RouteProp<RestoreSheetParams, 'RestoreSheet'>>();
   const { colors } = useTheme();
 
-  const { isFetching, backups, userData } = useCloudBackups();
+  const { isFetching, backups, userData, step, fetchBackups } = useCloudBackups();
 
   const { top } = useSafeAreaInsets();
   const { height: deviceHeight } = useDimensions();
@@ -132,7 +132,29 @@ export function ChooseBackupStep() {
             </Stack>
           </Masthead>
 
-          {!isFetching && !cloudBackups.length && (
+          {!isFetching && step === CloudBackupStep.FAILED && (
+            <Stack width="full" space="44px">
+              <Menu>
+                <MenuItem
+                  disabled
+                  width="full"
+                  size={60}
+                  titleComponent={<MenuItem.Title disabled text={lang.t(lang.l.back_up.cloud.failed_to_fetch_backups)} />}
+                />
+              </Menu>
+
+              <Menu>
+                <MenuItem
+                  size={52}
+                  width="full"
+                  onPress={fetchBackups}
+                  titleComponent={<MenuItem.Title disabled text={lang.t(lang.l.back_up.cloud.retry)} />}
+                />
+              </Menu>
+            </Stack>
+          )}
+
+          {!isFetching && !cloudBackups.length && step !== CloudBackupStep.FAILED && (
             <Stack width="full" space="44px">
               <Menu>
                 <MenuItem disabled size={52} titleComponent={<MenuItem.Title disabled text={lang.t(lang.l.back_up.cloud.no_backups)} />} />

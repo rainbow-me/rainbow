@@ -109,6 +109,8 @@
       "backup_deleted_successfully": "Backups Deleted Successfully",
       "cloud": {
         "no_backups": "No backups found",
+        "failed_to_fetch_backups": "Failed to fetch backups",
+        "retry": "Retry",
         "fetching_backups": "Retrieving backups from %{cloudPlatformName}",
         "back_up_to_platform": "Back up to %{cloudPlatformName}",
         "restore_from_platform": "Restore from %{cloudPlatformName}",

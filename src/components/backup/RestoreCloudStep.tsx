@@ -189,7 +189,7 @@ export default function RestoreCloudStep() {
     }
 
     setLoading(false);
-  }, [selectedBackup.name, password, dispatch, goBack, initializeWallet, dangerouslyGetState, navigate, replace]);
+  }, [selectedBackup.name, password, userData, dispatch, initializeWallet, dangerouslyGetState, navigate, replace]);
 
   const onPasswordSubmit = useCallback(() => {
     validPassword && onSubmit();
@@ -223,6 +223,7 @@ export default function RestoreCloudStep() {
           <Box gap={12}>
             <PasswordField
               autoFocus
+              editable={!loading}
               isInvalid={isPasswordValid}
               onChange={onPasswordChange}
               onSubmitEditing={onPasswordSubmit}
