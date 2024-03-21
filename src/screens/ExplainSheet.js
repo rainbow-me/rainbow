@@ -114,6 +114,8 @@ const POLYGON_EXPLAINER = lang.t('explain.polygon.text');
 const BSC_EXPLAINER = lang.t('explain.bsc.text');
 
 const BASE_EXPLAINER = lang.t('explain.base.text');
+const AVALANCHE_EXPLAINER = lang.t('explain.avalanche.text');
+const BLAST_EXPLAINER = lang.t('explain.blast.text');
 
 const ZORA_EXPLAINER = lang.t('explain.zora.text');
 
@@ -234,7 +236,7 @@ export const explainers = (params, theme) => {
       logo: (
         <RainbowCoinIcon
           size={40}
-          icon={params?.nativeAsset?.icon}
+          icon={params?.nativeAsset?.icon_url}
           symbol={params?.nativeAsset?.symbol}
           network={params?.network?.toLowerCase()}
           colors={params?.nativeAsset?.colors}
@@ -242,9 +244,9 @@ export const explainers = (params, theme) => {
         />
       ),
       extraHeight: 2,
-      text: gasExplainer(params?.network),
+      text: gasExplainer(getNetworkObj(params?.network).name),
       title: lang.t('explain.gas.title', {
-        networkName: params?.network,
+        networkName: getNetworkObj(params?.network).name,
       }),
     },
     ens_primary_name: {
@@ -446,6 +448,32 @@ export const explainers = (params, theme) => {
       text: BASE_EXPLAINER,
       title: lang.t('explain.base.title'),
     },
+    avalanche: {
+      emoji: '⛽️',
+      extraHeight: 144,
+      logo: <ChainBadge network={networkTypes.avalanche} marginBottom={8} position="relative" size="large" />,
+      readMoreLink: buildRainbowLearnUrl({
+        url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+        query: {
+          campaign: 'explain',
+        },
+      }),
+      text: AVALANCHE_EXPLAINER,
+      title: lang.t('explain.avalanche.title'),
+    },
+    blast: {
+      emoji: '⛽️',
+      extraHeight: 144,
+      logo: <ChainBadge network={networkTypes.blast} marginBottom={8} position="relative" size="large" />,
+      readMoreLink: buildRainbowLearnUrl({
+        url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+        query: {
+          campaign: 'explain',
+        },
+      }),
+      text: BLAST_EXPLAINER,
+      title: lang.t('explain.blast.title'),
+    },
     failed_wc_connection: {
       emoji: '😵',
       extraHeight: -50,
@@ -542,7 +570,7 @@ export const explainers = (params, theme) => {
         <RowWithMargins justify="center" margin={35} marginBottom={10}>
           <RainbowCoinIcon
             size={40}
-            icon={params?.inputCurrency?.icon}
+            icon={params?.inputCurrency?.icon_url}
             symbol={params?.inputCurrency?.symbol}
             network={params?.inputCurrency?.network}
             colors={params?.inputCurrency?.colors}
@@ -598,7 +626,7 @@ export const explainers = (params, theme) => {
         <RowWithMargins justify="center" margin={35} marginBottom={10}>
           <RainbowCoinIcon
             size={40}
-            icon={params?.inputCurrency?.icon}
+            icon={params?.inputCurrency?.icon_url}
             symbol={params?.inputCurrency?.symbol}
             network={params?.inputCurrency?.network}
             colors={params?.inputCurrency?.colors}
@@ -607,7 +635,7 @@ export const explainers = (params, theme) => {
           <DoubleChevron />
           <RainbowCoinIcon
             size={40}
-            icon={params?.outputCurrency?.icon}
+            icon={params?.outputCurrency?.icon_url}
             symbol={params?.outputCurrency?.symbol}
             network={params?.outputCurrency?.network}
             colors={params?.outputCurrency?.colors}
@@ -624,7 +652,7 @@ export const explainers = (params, theme) => {
         <RowWithMargins justify="center" margin={35} marginBottom={10}>
           <RainbowCoinIcon
             size={40}
-            icon={params?.inputCurrency?.icon}
+            icon={params?.inputCurrency?.icon_url}
             symbol={params?.inputCurrency?.symbol}
             network={params?.inputCurrency?.network}
             colors={params?.inputCurrency?.colors}
@@ -633,7 +661,7 @@ export const explainers = (params, theme) => {
           <DoubleChevron />
           <RainbowCoinIcon
             size={40}
-            icon={params?.outputCurrency?.icon}
+            icon={params?.outputCurrency?.icon_url}
             symbol={params?.outputCurrency?.symbol}
             network={params?.outputCurrency?.network}
             colors={params?.outputCurrency?.colors}
@@ -825,7 +853,7 @@ export const explainers = (params, theme) => {
         >
           <RainbowCoinIcon
             size={30}
-            icon={params?.nativeAsset?.icon}
+            icon={params?.nativeAsset?.icon_url}
             symbol={params?.nativeAsset?.symbol}
             network={params?.nativeAsset?.network}
             colors={params?.nativeAssety?.colors}
@@ -870,7 +898,7 @@ export const explainers = (params, theme) => {
         >
           <RainbowCoinIcon
             size={30}
-            icon={params?.nativeAsset?.icon}
+            icon={params?.nativeAsset?.icon_url}
             symbol={params?.nativeAsset?.symbol}
             network={params?.nativeAsset?.network}
             colors={params?.nativeAsset?.colors}
@@ -916,7 +944,7 @@ export const explainers = (params, theme) => {
         >
           <RainbowCoinIcon
             size={30}
-            icon={params?.nativeAsset?.icon}
+            icon={params?.nativeAsset?.icon_url}
             symbol={params?.nativeAsset?.symbol}
             network={params?.nativeAsset?.network}
             colors={params?.nativeAsset?.colors}

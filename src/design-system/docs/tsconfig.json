@@ -17,5 +17,5 @@
   },
   "globals": ["android", "ios", "web"],
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "../../src/**/*.ts", "../../src/**/*.tsx"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "../../src/browser"]
 }

@@ -13,6 +13,8 @@ export enum Network {
   bsc = 'bsc',
   zora = 'zora',
   gnosis = 'gnosis',
+  avalanche = 'avalanche',
+  blast = 'blast',
 }
 
 export type NetworkTypes = 'layer1' | 'layer2' | 'testnet';

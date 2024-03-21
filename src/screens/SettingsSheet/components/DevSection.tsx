@@ -12,7 +12,7 @@ import {
 // @ts-ignore
 import Restart from 'react-native-restart';
 import { useDispatch } from 'react-redux';
-import Clipboard from '@react-native-community/clipboard';
+import Clipboard from '@react-native-clipboard/clipboard';
 import useAppVersion from '../../../hooks/useAppVersion';
 import NetworkSection from './NetworkSection';
 import Menu from './Menu';
@@ -154,20 +154,6 @@ const DevSection = () => {
   };
 
   const codePushVersion = useAppVersion()[1];
-
-  const revertToMainnet = useCallback(async () => {
-    await resetAccountState();
-    await dispatch(settingsUpdateNetwork(Network.mainnet));
-    InteractionManager.runAfterInteractions(async () => {
-      await loadAccountData(Network.mainnet);
-      initializeAccountData();
-    });
-  }, [dispatch, initializeAccountData, loadAccountData, resetAccountState]);
-
-  const toggleTestnetsEnabled = useCallback(async () => {
-    testnetsEnabled && revertToMainnet();
-    await dispatch(settingsChangeTestnetsEnabled(!testnetsEnabled));
-  }, [dispatch, revertToMainnet, settingsChangeTestnetsEnabled, testnetsEnabled]);
 
   const clearAllNotificationSettings = useCallback(async () => {
     // loop through notification settings and unsubscribe all wallets

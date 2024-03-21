@@ -9,6 +9,8 @@ export enum SimpleHashChain {
   Polygon = 'polygon',
   Zora = 'zora',
   Base = 'base',
+  Avalanche = 'avalanche',
+  Blast = 'blast',
 }
 
 /**

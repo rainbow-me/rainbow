@@ -1,8 +1,8 @@
 import React from 'react';
-import { Animated, Dimensions, StatusBar, View } from 'react-native';
+import { Animated, StatusBar, View } from 'react-native';
 import { StackNavigationOptions, TransitionPreset } from '@react-navigation/stack';
 
-import { IS_IOS } from '@/env';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { lightModeThemeColors } from '@/styles';
 import { currentColors as colors } from '@/theme';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
@@ -433,6 +433,14 @@ export const walletconnectBottomSheetPreset: BottomSheetNavigationOptions = {
 export const consoleSheetPreset: BottomSheetNavigationOptions = {
   backdropColor: 'black',
   backdropOpacity: 1,
+};
+
+export const swapSheetPreset: BottomSheetNavigationOptions = {
+  backdropColor: 'black',
+  backdropOpacity: 0.9,
+  enableContentPanningGesture: IS_ANDROID,
+  backdropPressBehavior: 'none',
+  height: '100%',
 };
 
 export const expandedPresetWithSmallGestureResponseDistance: StackNavigationOptions & BottomSheetNavigationOptions = {

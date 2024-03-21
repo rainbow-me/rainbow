@@ -23,6 +23,7 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { IS_TEST } from '@/env';
 import { NotificationToggleContextMenu } from './components/NotificationToggleContextMenu';
+import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 
 export const POINTS_ROUTES = {
   CLAIM_CONTENT: 'ClaimContent',
@@ -30,6 +31,7 @@ export const POINTS_ROUTES = {
 };
 
 const Swipe = createMaterialTopTabNavigator();
+const EmptyTabBar = () => <></>;
 
 export default function PointsScreen() {
   const { accountAddress, accountImage, accountColor, accountSymbol } = useAccountProfile();
@@ -86,9 +88,11 @@ export default function PointsScreen() {
             backBehavior="history"
             initialLayout={deviceUtils.dimensions}
             initialRouteName={POINTS_ROUTES.CLAIM_CONTENT}
-            screenOptions={{ swipeEnabled: false }}
+            sceneContainerStyle={{ overflow: 'visible' }}
+            screenOptions={{ lazy: true, swipeEnabled: false }}
+            style={{ paddingBottom: TAB_BAR_HEIGHT, paddingTop: 44 }}
             tabBarPosition="bottom"
-            tabBar={() => null}
+            tabBar={EmptyTabBar}
           >
             <Swipe.Screen component={ClaimContent} name={POINTS_ROUTES.CLAIM_CONTENT} />
             <Swipe.Screen component={ReferralContent} name={POINTS_ROUTES.REFERRAL_CONTENT} />

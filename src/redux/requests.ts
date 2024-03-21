@@ -7,6 +7,7 @@ import { omitFlatten } from '@/helpers/utilities';
 import { getRequestDisplayDetails } from '@/parsers';
 import { ethereumUtils } from '@/utils';
 import logger from '@/utils/logger';
+import { Network } from '@/networks/types';
 
 // -- Constants --------------------------------------- //
 
@@ -18,10 +19,19 @@ const EXPIRATION_THRESHOLD_IN_MS = 1000 * 60 * 60;
 
 // -- Actions ----------------------------------------- //
 
+export interface RequestData {
+  dappName: string;
+  imageUrl: string | undefined;
+  address: string;
+  network: Network;
+  dappUrl: string;
+  payload: any;
+  displayDetails: RequestDisplayDetails | null | Record<string, never>;
+}
 /**
  * A request stored in state.
  */
-export interface RequestData {
+export interface WalletconnectRequestData extends RequestData {
   /**
    * The WalletConnect client ID for the request.
    */
@@ -38,34 +48,14 @@ export interface RequestData {
   requestId: number;
 
   /**
-   * The name of the dapp the user is connecting to.
-   */
-  dappName: string;
-
-  /**
    * The URL scheme to use for re-opening the dapp, or null.
    */
   dappScheme: string | null;
 
   /**
-   * The URL for the dapp.
-   */
-  dappUrl: string;
-
-  /**
    * The display details loaded for the request.
    */
   displayDetails: RequestDisplayDetails | null | Record<string, never>;
-
-  /**
-   * The image URL for the dapp, or undefined.
-   */
-  imageUrl: string | undefined;
-
-  /**
-   * The payload for the request.
-   */
-  payload: any;
 
   /**
    * Adds additional data to the request and serves as a notice that this
@@ -75,7 +65,7 @@ export interface RequestData {
     sessionRequestEvent: SignClientTypes.EventArguments['session_request'];
     address: string;
     chainId: number;
-    onComplete(type: string): void;
+    onComplete?: (type: string) => void;
   };
 }
 
@@ -99,11 +89,11 @@ interface RequestDisplayDetails {
  */
 interface RequestsState {
   /**
-   * Current requests, as an object mapping request IDs to `RequestData`
+   * Current requests, as an object mapping request IDs to `WalletconnectRequestData`
    * objects.
    */
   requests: {
-    [requestId: number]: RequestData;
+    [requestId: number]: WalletconnectRequestData;
   };
 }
 
@@ -172,6 +162,9 @@ export const addRequestToApprove =
     const walletConnector = walletConnectors[peerId];
     // @ts-expect-error "_chainId" is private.
     const chainId = walletConnector._chainId;
+    const requestNetwork = ethereumUtils.getNetworkFromChainId(Number(chainId));
+    // @ts-expect-error "_accounts" is private.
+    const address = walletConnector._accounts[0];
     const dappNetwork = ethereumUtils.getNetworkFromChainId(Number(chainId));
     const displayDetails = getRequestDisplayDetails(payload, nativeCurrency, dappNetwork);
     const oneHourAgoTs = Date.now() - EXPIRATION_THRESHOLD_IN_MS;
@@ -189,7 +182,9 @@ export const addRequestToApprove =
     const dappUrl = peerMeta?.url || 'Unknown Url';
     const dappScheme = peerMeta?.scheme || null;
 
-    const request: RequestData = {
+    const request: WalletconnectRequestData = {
+      address,
+      network: requestNetwork,
       clientId,
       dappName,
       dappScheme,
@@ -217,7 +212,7 @@ export const addRequestToApprove =
  */
 export const requestsForTopic =
   (topic: string | undefined) =>
-  (dispatch: unknown, getState: AppGetState): RequestData[] => {
+  (dispatch: unknown, getState: AppGetState): WalletconnectRequestData[] => {
     const { requests } = getState().requests;
     return Object.values(requests).filter(({ clientId }) => clientId === topic);
   };

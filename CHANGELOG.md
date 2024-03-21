@@ -15,6 +15,71 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.19] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.19)
+
+### Added
+
+- Added Blast to simplehash (#5492)
+- Initialize new swaps configuration (#5498)
+- Initial swaps work (#5500)
+
+### Changed
+
+- Swipe navigator performance refactor (#5479)
+- Transaction and assets cleanup (#5459)
+- Migrated query persist from AsyncStorage to mmkv (#5404, #5524)
+- Webview refactor (#5499)
+- Replaced Segment (#5474)
+- Low fee's on first estimate (#5503)
+- Upgraded reservoir (#5514)
+- Bump reanimated to v3.8.0 (#5517)
+- Changed default theme from light to system (#5518)
+- Updated logic for wallet connect SignTransactionSheet (#5471)
+
+### Fixed
+
+- Fixed reanimated and RNGH imports (#5480)
+- Fixed layout shift for mints carousel card (#5485)
+- Fixed android clipboard alerts (#5486)
+- Fixed weekly earnings points breakdown (#5469)
+- Fixed tappable area on wallet name (#5496)
+- Fixed null deconstruction for wallet connect (#5493)
+- Fixed dark mode theme which impacted ENS confirmation screen (#5502)
+- Fixed initiating render on NFT offers (#5501)
+
+## [1.9.18] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.18)
+
+### Added
+
+- Added ability to report NFT as spam to simplehash (#5434)
+- Added fallback icons for contract interactions where we may not have nft images (#5456)
+- Added support for Avalanche (#5430)
+- Added support for Blast (#5463)
+
+### Changed
+
+- Removed native advanced settings as dev settings is newly preferred (#5416)
+- App icon refactor (#5444)
+- null safety placed on input filed focus (#5446)
+- Points referrals card refactor (#5367)
+- Removed duplicate rows in sign transaction sheet (#5451)
+- Upgrade reanimated (#5200)
+- Bumped dependencies for Wallet Connect (#5400)
+- Disabled and removed Flipper (#5464)
+- Removed rn-worklet-core package (#5465)
+
+### Fixed
+
+- Fixed rainbow animation on home screen (#5440)
+- Fixed crash when tapping network info button on L2 sends (#5429)
+- Fixed identify calls for analytics (#5442)
+- Polished pending transaction details UI (#5441)
+- Fixed ability to save NFT as an image on device (#5447)
+- Increased number of pixel difference needed to qualify as non-gesture mode navigation (#5460)
+- Fixed approval number formatting (#5457)
+- Fixed mint pending label (#5455)
+- Fixed a null response that was impacting dapps using viem/wagmi (#5454)
+
 ## [1.9.17] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.17)
 
 ### Added

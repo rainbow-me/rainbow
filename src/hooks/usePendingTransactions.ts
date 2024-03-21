@@ -17,5 +17,6 @@ export default function usePendingTransactions() {
 
   return {
     getPendingTransactionByHash,
+    pendingTransactions,
   };
 }
