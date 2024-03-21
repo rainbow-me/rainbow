@@ -1,14 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Box, globalColors, useColorMode, Text } from '@/design-system';
-import { Page } from '@/components/layout';
-import { useAccountSettings, useDimensions } from '@/hooks';
+import { Box, globalColors, useColorMode, TextIcon } from '@/design-system';
+import { useAccountAccentColor, useAccountSettings, useDimensions } from '@/hooks';
 import { AnimatePresence, MotiView } from 'moti';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import ViewShot from 'react-native-view-shot';
 import WebView, { WebViewMessageEvent, WebViewNavigation } from 'react-native-webview';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
-import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 import { transformOrigin } from 'react-native-redash';
 import { MMKV } from 'react-native-mmkv';
 import { RAINBOW_HOME, useBrowserContext } from './BrowserContext';
@@ -19,6 +17,11 @@ import RNFS from 'react-native-fs';
 import { WebViewEvent } from 'react-native-webview/lib/WebViewTypes';
 import { appMessenger } from '@/browserMessaging/AppMessenger';
 import DappBrowserWebview from './DappBrowserWebview';
+import { IS_ANDROID, IS_IOS } from '@/env';
+import { DappBrowserShadows } from './DappBrowserShadows';
+import { WebViewBorder } from './WebViewBorder';
+import Homepage from './Homepage';
+import { ButtonPressAnimation } from '../animations';
 
 interface BrowserTabProps {
   tabIndex: number;
@@ -78,6 +81,7 @@ const getWebsiteBackgroundColor = `
 export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS }: BrowserTabProps) {
   const {
     activeTabIndex,
+    closeTab,
     scrollViewOffset,
     setActiveTabIndex,
     tabStates,
@@ -90,7 +94,9 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
   } = useBrowserContext();
   const { colorMode } = useColorMode();
   const { width: deviceWidth } = useDimensions();
+  const { accentColor } = useAccountAccentColor();
   const { accountAddress } = useAccountSettings();
+  const { isDarkMode } = useColorMode();
 
   const messengers = useRef<any[]>([]);
 
@@ -133,8 +139,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
     );
 
     // eslint-disable-next-line no-nested-ternary
-    const topBorderRadius = interpolate(progress, [0, 1], [isActiveTab ? (android ? 0 : 12) : 30, 30]);
-    const bottomBorderRadius = interpolate(progress, [0, 1], [isActiveTab ? ScreenCornerRadius : 30, 30]);
+    const borderRadius = interpolate(progress, [0, 1], [isActiveTab ? (IS_ANDROID ? 0 : 16) : 30, 30]);
     const height = interpolate(
       progress,
       [0, 1],
@@ -148,10 +153,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
     );
 
     return {
-      borderBottomLeftRadius: bottomBorderRadius,
-      borderBottomRightRadius: bottomBorderRadius,
-      borderTopLeftRadius: topBorderRadius,
-      borderTopRightRadius: topBorderRadius,
+      borderRadius,
       height,
       opacity,
       // eslint-disable-next-line no-nested-ternary
@@ -364,14 +366,6 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
     [loadProgress]
   );
 
-  const HomepageComponent = () => (
-    <Box as={Page} flex={1} height="full" width="full" alignItems="center" justifyContent="center">
-      <Text size="20pt" color="label">
-        Dapp Browser Homepage
-      </Text>
-    </Box>
-  );
-
   const WebviewComponent = () => (
     <Freeze
       freeze={!isActiveTab}
@@ -380,7 +374,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
           style={[
             styles.webViewStyle,
             {
-              backgroundColor: backgroundColor || (colorMode === 'dark' ? '#191A1C' : globalColors.blueGrey10),
+              backgroundColor: backgroundColor || (colorMode === 'dark' ? '#191A1C' : globalColors.white100),
               height: COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
             },
           ]}
@@ -395,12 +389,6 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
         applicationNameForUserAgent={'Rainbow'}
         automaticallyAdjustContentInsets
         automaticallyAdjustsScrollIndicatorInsets
-        containerStyle={{
-          overflow: 'visible',
-        }}
-        contentInset={{
-          bottom: safeAreaInsetValues.bottom + 104,
-        }}
         decelerationRate={'normal'}
         injectedJavaScript={getWebsiteBackgroundColor}
         mediaPlaybackRequiresUserAction
@@ -420,72 +408,92 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
             backgroundColor: backgroundColor || (colorMode === 'dark' ? globalColors.grey100 : globalColors.white100),
           },
         ]}
-      ></DappBrowserWebview>
+      />
     </Freeze>
   );
 
-  const TabContent = tabStates[tabIndex].url === RAINBOW_HOME ? <HomepageComponent /> : <WebviewComponent />;
+  const isOnHomepage = tabStates[tabIndex].url === RAINBOW_HOME;
+  const TabContent = isOnHomepage ? <Homepage /> : <WebviewComponent />;
 
   return (
     <>
-      <TouchableWithoutFeedback onPress={handlePress}>
-        <Animated.View style={[styles.webViewContainer, webViewStyle]}>
-          <ViewShot options={{ format: 'jpg' }} ref={viewShotRef}>
-            <View
-              collapsable={false}
-              style={{
-                backgroundColor: backgroundColor || (colorMode === 'dark' ? '#191A1C' : globalColors.white100),
-                height: WEBVIEW_HEIGHT,
-                width: '100%',
-              }}
-            >
-              {TabContent}
-            </View>
-          </ViewShot>
-          <AnimatePresence>
-            {(!isActiveTab || tabViewVisible) && (
-              <MotiView
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                from={{ opacity: 0 }}
-                pointerEvents="none"
-                style={[
-                  styles.webViewStyle,
-                  {
-                    height: COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
-                    left: 0,
-                    position: 'absolute',
-                    top: 0,
-                    zIndex: 20000,
-                  },
-                ]}
-                transition={{
-                  duration: 300,
-                  easing: Easing.bezier(0.2, 0, 0, 1),
-                  type: 'timing',
+      <DappBrowserShadows type="webview">
+        <TouchableWithoutFeedback disabled={isOnHomepage && !tabViewVisible} onPress={handlePress}>
+          <Animated.View style={[styles.webViewContainer, webViewStyle]}>
+            <ViewShot options={{ format: 'jpg' }} ref={viewShotRef}>
+              <View
+                collapsable={false}
+                style={{
+                  backgroundColor: backgroundColor || (colorMode === 'dark' ? '#191A1C' : globalColors.white100),
+                  height: WEBVIEW_HEIGHT,
+                  width: '100%',
                 }}
               >
-                <Image
-                  height={WEBVIEW_HEIGHT}
-                  onError={e => console.log('Image loading error:', e.nativeEvent.error)}
-                  source={{ uri: screenshot?.uri }}
+                {TabContent}
+              </View>
+            </ViewShot>
+            <AnimatePresence>
+              {(!isActiveTab || tabViewVisible) && (
+                <MotiView
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  from={{ opacity: 0 }}
+                  pointerEvents="none"
                   style={[
                     styles.webViewStyle,
                     {
+                      height: COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
                       left: 0,
                       position: 'absolute',
-                      resizeMode: 'contain',
                       top: 0,
+                      zIndex: 20000,
                     },
                   ]}
-                  width={deviceWidth}
-                />
-              </MotiView>
-            )}
-          </AnimatePresence>
-        </Animated.View>
-      </TouchableWithoutFeedback>
-      {isActiveTab && !tabViewVisible && <Box as={Animated.View} background="blue" style={[styles.progressBar, progressBarStyle]} />}
+                  transition={{
+                    duration: 300,
+                    easing: Easing.bezier(0.2, 0, 0, 1),
+                    type: 'timing',
+                  }}
+                >
+                  <Image
+                    height={WEBVIEW_HEIGHT}
+                    onError={e => console.log('Image loading error:', e.nativeEvent.error)}
+                    source={{ uri: screenshot?.uri }}
+                    style={[
+                      styles.webViewStyle,
+                      {
+                        left: 0,
+                        position: 'absolute',
+                        resizeMode: 'contain',
+                        top: 0,
+                      },
+                    ]}
+                    width={deviceWidth}
+                  />
+                </MotiView>
+              )}
+            </AnimatePresence>
+            <WebViewBorder enabled={IS_IOS && isDarkMode && !isOnHomepage} isActiveTab={isActiveTab} />
+          </Animated.View>
+        </TouchableWithoutFeedback>
+        {tabViewVisible && tabStates.length > 1 && (
+          <Box
+            as={ButtonPressAnimation}
+            onPress={() => closeTab(tabIndex)}
+            position="absolute"
+            top={{ custom: safeAreaInsetValues.top + Math.floor(tabIndex / 2) * TAB_VIEW_ROW_HEIGHT + 8 }}
+            left={{ custom: ((tabIndex % 2) + 1) * TAB_VIEW_COLUMN_WIDTH + (tabIndex % 2) * 20 - 8 }}
+            style={{ zIndex: 99999999999 }}
+          >
+            <TextIcon align="center" size="17pt" weight="bold" color="labelSecondary" containerSize={20} hitSlop={10}>
+              􀀳
+            </TextIcon>
+          </Box>
+        )}
+      </DappBrowserShadows>
+      {isActiveTab && !tabViewVisible && (
+        <Box as={Animated.View} style={[styles.progressBar, progressBarStyle, { backgroundColor: accentColor }]} />
+      )}
     </>
   );
 });
@@ -507,8 +515,9 @@ const styles = StyleSheet.create({
     width: deviceUtils.dimensions.width,
   },
   progressBar: {
+    borderRadius: 1,
     height: 2,
-    top: WEBVIEW_HEIGHT - 81,
+    top: WEBVIEW_HEIGHT + safeAreaInsetValues.top + 88 - 2,
     left: 0,
     width: deviceUtils.dimensions.width,
     position: 'absolute',

@@ -1,4 +1,4 @@
-import { Bleed, Box, Columns, Inline, Text, useForegroundColor } from '@/design-system';
+import { Bleed, Box, Columns, IconContainer, Inline, Text, TextIcon, useForegroundColor } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
 import { TextWeight } from '@/design-system/components/Text/Text';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
@@ -9,6 +9,7 @@ import { Share, TouchableOpacity } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useBrowserContext } from './BrowserContext';
 import { useTheme } from '@/theme';
+import { ButtonPressAnimation } from '../animations';
 
 export const ToolbarTextButton = ({
   color,
@@ -61,43 +62,28 @@ export const ToolbarTextButton = ({
 export const ToolbarIcon = ({
   color,
   disabled,
+  hitSlop = 8,
   icon,
   onPress,
-  size,
-  weight,
+  scaleTo,
+  size = 'icon 17px',
+  weight = 'bold',
 }: {
   color?: TextColor;
   disabled?: boolean;
+  hitSlop?: number;
   icon: string;
   onPress: () => void;
+  scaleTo?: number;
   size?: TextSize;
   weight?: TextWeight;
 }) => {
   return (
-    <TouchableOpacity
-      activeOpacity={0.4}
-      disabled={disabled}
-      hitSlop={{ bottom: 8, left: 0, right: 0, top: 8 }}
-      onPress={onPress}
-      style={{ opacity: disabled ? 0.5 : 1 }}
-    >
-      <Box
-        alignItems="center"
-        height={{ custom: 20 }}
-        justifyContent="center"
-        // style={{ flexGrow: 1 }}
-        // width={{ custom: 24 }}
-      >
-        <Text
-          align="center"
-          color={disabled ? 'labelQuaternary' : color || 'blue'}
-          size={size || 'icon 20px'}
-          weight={weight || 'semibold'}
-        >
-          {icon}
-        </Text>
-      </Box>
-    </TouchableOpacity>
+    <ButtonPressAnimation disabled={disabled} onPress={onPress} scaleTo={scaleTo}>
+      <TextIcon color={disabled ? 'labelQuaternary' : color || 'blue'} containerSize={16} hitSlop={hitSlop} size={size} weight={weight}>
+        {icon}
+      </TextIcon>
+    </ButtonPressAnimation>
   );
 };
 

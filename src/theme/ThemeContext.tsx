@@ -1,5 +1,6 @@
 import React, { createContext, PropsWithChildren, useContext, useEffect, useMemo, useState } from 'react';
-import { Appearance, LayoutAnimation, NativeModules, useColorScheme } from 'react-native';
+import { LayoutAnimation, NativeModules, useColorScheme } from 'react-native';
+import { useDarkMode } from 'react-native-dark-mode';
 import { ThemeProvider } from 'styled-components';
 import { Colors, darkModeThemeColors, lightModeThemeColors } from '../styles/colors';
 import currentColors from './currentColors';
@@ -39,7 +40,7 @@ const { RNThemeModule } = NativeModules;
 export const MainThemeProvider = (props: PropsWithChildren<Record<string, never>>) => {
   const [colorScheme, setColorScheme] = useState<ThemesType | null>(null);
   // looks like one works on Android and another one on iOS. good.
-  const isSystemDarkModeIOS = Appearance.getColorScheme() === 'dark';
+  const isSystemDarkModeIOS = useDarkMode();
   const isSystemDarkModeAndroid = useColorScheme() === 'dark';
   const isSystemDarkMode = ios ? isSystemDarkModeIOS : isSystemDarkModeAndroid;
 
@@ -78,6 +79,7 @@ export const MainThemeProvider = (props: PropsWithChildren<Record<string, never>
       lightScheme: lightModeThemeColors,
       // Overrides the isDarkMode value will cause re-render inside the context.
       setTheme: (scheme: ThemesType) => {
+        // eslint-disable-next-line no-nested-ternary
         const schemeSystemAdjusted = scheme === Themes.SYSTEM ? (isSystemDarkMode ? 'dark' : 'light') : scheme;
         currentColors.theme = schemeSystemAdjusted;
 

@@ -35,9 +35,9 @@ export const AccountIcon = () => {
   return (
     <ButtonPressAnimation onPress={handlePressChangeWallet}>
       {accountInfo?.accountImage ? (
-        <ImageAvatar image={accountInfo.accountImage} size="medium" />
+        <ImageAvatar image={accountInfo.accountImage} size="signing" />
       ) : (
-        <ContactAvatar color={accountInfo.accountColor} size="medium" value={accountInfo.accountSymbol} />
+        <ContactAvatar color={accountInfo.accountColor} size="signing" value={accountInfo.accountSymbol} />
       )}
     </ButtonPressAnimation>
   );
