@@ -1,5 +1,5 @@
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/screens/Swap/utils';
+import { opacity } from '@/__swaps__/screens/Swap/utils/swaps';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
