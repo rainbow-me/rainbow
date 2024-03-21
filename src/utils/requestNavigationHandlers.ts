@@ -71,7 +71,6 @@ export const handleDappBrowserConnectionPrompt = (dappData: DappConnectionData):
 export const handleDappBrowserRequest = async (request: Omit<RequestData, 'displayDetails'>): Promise<string | Error> => {
   const nativeCurrency = store.getState().settings.nativeCurrency;
   const displayDetails = getRequestDisplayDetails(request.payload, nativeCurrency, request.network);
-  console.log('displayDetails', displayDetails);
 
   const requestWithDetails: RequestData = {
     ...request,
