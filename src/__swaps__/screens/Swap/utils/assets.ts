@@ -5,6 +5,7 @@ import { ETH_ADDRESS, SupportedCurrencyKey } from '@/references';
 import {
   AddressOrEth,
   AssetApiResponse,
+  AssetMetadata,
   ParsedAsset,
   ParsedSearchAsset,
   ParsedUserAsset,
@@ -14,7 +15,6 @@ import {
 } from '@/__swaps__/screens/Swap/types/assets';
 import { ChainId, ChainName } from '@/__swaps__/screens/Swap/types/chains';
 
-import { metadataClient } from '@/graphql';
 import * as i18n from '@/languages';
 import { SearchAsset } from '../types/search';
 
@@ -24,10 +24,8 @@ import {
   convertAmountToBalanceDisplay,
   convertAmountToNativeDisplay,
   convertAmountToPercentageDisplay,
-  convertAmountToRawAmount,
   convertRawAmountToDecimalFormat,
 } from './numbers';
-import { Token } from '@/graphql/__generated__/metadata';
 
 const get24HrChange = (priceData?: ZerionAssetPrice) => {
   const twentyFourHrChange = priceData?.relative_change_24h;
@@ -69,6 +67,20 @@ export const getNativeAssetBalance = ({
 
 const isZerionAsset = (asset: ZerionAsset | AssetApiResponse): asset is ZerionAsset => 'implementations' in asset || !('networks' in asset);
 
+const getUniqueIdForAsset = ({ asset }: { asset: ZerionAsset | AssetApiResponse }): UniqueId => {
+  const address = asset.asset_code;
+  const chainName = asset.network ?? ChainName.mainnet;
+  const networks = 'networks' in asset ? asset.networks || {} : {};
+  const chainId = ('chain_id' in asset && asset.chain_id) || chainIdFromChainName(chainName) || Number(Object.keys(networks)[0]);
+
+  // ZerionAsset should be removed when we move fully away from websckets/refraction api
+  const mainnetAddress = isZerionAsset(asset)
+    ? asset.mainnet_address || asset.implementations?.[ChainName.mainnet]?.address || undefined
+    : networks[ChainId.mainnet]?.address;
+
+  return `${mainnetAddress || address}_${chainId}`;
+};
+
 export function parseAsset({ asset, currency }: { asset: ZerionAsset | AssetApiResponse; currency: SupportedCurrencyKey }): ParsedAsset {
   const address = asset.asset_code;
   const chainName = asset.network ?? ChainName.mainnet;
@@ -81,8 +93,7 @@ export function parseAsset({ asset, currency }: { asset: ZerionAsset | AssetApiR
     : networks[ChainId.mainnet]?.address;
 
   const standard = 'interface' in asset ? asset.interface : undefined;
-
-  const uniqueId: UniqueId = `${mainnetAddress || address}_${chainId}`;
+  const uniqueId = getUniqueIdForAsset({ asset });
   const parsedAsset = {
     address,
     uniqueId,
@@ -123,27 +134,35 @@ export function parseAssetMetadata({
   currency,
 }: {
   address: AddressOrEth;
-  asset: Token;
+  asset: AssetMetadata;
   chainId: ChainId;
   currency: SupportedCurrencyKey;
 }): ParsedAsset {
   const mainnetAddress = asset.networks?.[ChainId.mainnet]?.address || address;
-  const uniqueId = `${mainnetAddress || address}_${chainId}`;
+  const uniqueId = getUniqueIdForAsset({
+    asset: {
+      ...asset,
+      asset_code: address,
+      chain_id: chainId,
+      icon_url: '',
+      price: {
+        changed_at: -1,
+        relative_change_24h: asset.price.relativeChange24h,
+        value: asset.price.value,
+      },
+    } as AssetApiResponse,
+  });
   const priceData = {
-    relative_change_24h: asset?.price?.relativeChange24h ?? undefined,
-    value: asset?.price?.value ?? 0,
+    relative_change_24h: asset?.price?.relativeChange24h,
+    value: asset?.price?.value,
   };
   const parsedAsset = {
     address,
     chainId,
     chainName: chainNameFromChainId(chainId),
-    colors: {
-      primary: asset?.colors?.primary,
-      fallback: asset?.colors?.fallback ?? undefined,
-      shadow: asset?.colors?.shadow ?? undefined,
-    },
+    colors: asset?.colors,
     decimals: asset?.decimals,
-    icon_url: asset?.iconUrl ?? undefined,
+    icon_url: asset?.iconUrl,
     isNativeAsset: isNativeAsset(address, chainId),
     mainnetAddress,
     name: asset?.name || i18n.t('tokens_tab.unknown_token'),
@@ -281,6 +300,29 @@ export function filterAsset(asset: ZerionAsset) {
   return shouldFilter;
 }
 
+const assetQueryFragment = (
+  address: AddressOrEth,
+  chainId: ChainId,
+  currency: SupportedCurrencyKey,
+  index: number,
+  withPrice?: boolean
+) => {
+  const priceQuery = withPrice ? 'price { value relativeChange24h }' : '';
+  return `Q${index}: token(address: "${address}", chainID: ${chainId}, currency: "${currency}") {
+      colors {
+        primary
+        fallback
+        shadow
+      }
+      decimals
+      iconUrl
+      name
+      networks
+      symbol
+      ${priceQuery}
+  }`;
+};
+
 export const chunkArray = <TItem>(arr: TItem[], chunkSize: number) => {
   const result = [];
 
@@ -291,57 +333,8 @@ export const chunkArray = <TItem>(arr: TItem[], chunkSize: number) => {
   return result;
 };
 
-export const extractFulfilledValue = <T>(result: PromiseSettledResult<T>): T | undefined =>
-  result.status === 'fulfilled' ? result.value : undefined;
-
-export const fetchAssetWithPrice = async ({
-  parsedAsset,
-  currency,
-}: {
-  parsedAsset: ParsedUserAsset;
-  currency: SupportedCurrencyKey;
-}): Promise<ParsedUserAsset | null> => {
-  const data = await metadataClient.tokenMetadata(
-    {
-      address: parsedAsset.address,
-      chainId: parsedAsset.chainId,
-      currency,
-    },
-    {
-      timeout: 10000,
-    }
-  );
-
-  if (!data.token) {
-    return null;
-  }
-
-  const asset = data.token;
-  const parsedAssetWithPrice = parseAssetMetadata({
-    address: parsedAsset.address,
-    asset,
-    chainId: parsedAsset.chainId,
-    currency,
-  });
-  if (parsedAssetWithPrice?.native.price) {
-    const assetToReturn = {
-      ...parsedAsset,
-      native: {
-        ...parsedAsset.native,
-        price: parsedAssetWithPrice.native.price,
-      },
-      price: {
-        value: parsedAssetWithPrice.native.price.amount,
-      },
-      icon_url: parsedAssetWithPrice.icon_url,
-    } as ParsedAsset;
-
-    return parseUserAssetBalances({
-      asset: assetToReturn,
-      currency,
-      balance: convertAmountToRawAmount(parsedAsset.balance.amount, parsedAsset.decimals),
-      smallBalance: false,
-    });
-  }
-  return null;
+export const createAssetQuery = (addresses: AddressOrEth[], chainId: ChainId, currency: SupportedCurrencyKey, withPrice?: boolean) => {
+  return `{
+        ${addresses.map((a, i) => assetQueryFragment(a, chainId, currency, i, withPrice)).join(',')}
+    }`;
 };
