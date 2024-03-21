@@ -39,7 +39,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 ### Fixed
 
 - Fixed reanimated and RNGH imports (#5480)
-- Fixed layout shift for mints carousel card  (#5485)
+- Fixed layout shift for mints carousel card (#5485)
 - Fixed android clipboard alerts (#5486)
 - Fixed weekly earnings points breakdown (#5469)
 - Fixed tappable area on wallet name (#5496)
