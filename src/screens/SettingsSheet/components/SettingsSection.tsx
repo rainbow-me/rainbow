@@ -281,7 +281,7 @@ const SettingsSection = ({
             onPress={onPressLanguage}
             rightComponent={<MenuItem.Selection>{(lang.supportedLanguages as any)[language].label || ''}</MenuItem.Selection>}
             size={60}
-            titleComponent={<MenuItem.Title text={lang.t(lang.l.settings.langauge)} />}
+            titleComponent={<MenuItem.Title text={lang.t(lang.l.settings.language)} />}
           />
         )}
         <MenuItem
