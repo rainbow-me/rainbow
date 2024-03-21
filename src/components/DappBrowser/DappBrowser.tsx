@@ -8,11 +8,11 @@ import { Box, globalColors, useColorMode } from '@/design-system';
 
 import { safeAreaInsetValues } from '@/utils';
 import { BrowserContextProvider, useBrowserContext } from './BrowserContext';
-import { AddressBar } from './AddressBar';
 import { BrowserTab } from './BrowserTab';
 import { StyleSheet } from 'react-native';
 import { TAB_VIEW_ROW_HEIGHT } from './Dimensions';
 import { IS_ANDROID } from '@/env';
+import { Search } from './search/Search';
 
 const getInjectedJS = async () => {
   const baseDirectory = IS_ANDROID ? RNFS.DocumentDirectoryPath : RNFS.MainBundlePath;
@@ -79,8 +79,7 @@ const DappBrowserComponent = () => {
           <BrowserTab key={index} tabIndex={index} injectedJS={injectedJS} />
         ))}
       </Animated.ScrollView>
-
-      <AddressBar />
+      <Search />
     </Box>
   );
 };

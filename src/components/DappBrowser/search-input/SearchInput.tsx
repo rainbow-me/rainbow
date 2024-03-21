@@ -13,36 +13,34 @@ import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/screens/Swap/utils';
 import { DappBrowserShadows } from '../DappBrowserShadows';
+import { useBrowserContext } from '../BrowserContext';
 
 const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 
-export const AddressInput = ({
-  inputRef,
+export const SearchInput = ({
   inputValue,
   onPress,
   onBlur,
   onFocus,
   onChangeText,
   onSubmitEditing,
-  isFocused,
   tabViewProgress,
   shouldShowMenuButton,
   shouldShowRefreshButton,
   onRefresh,
 }: {
-  inputRef: RefObject<TextInput>;
   inputValue: string | undefined;
   onPress: () => void;
   onBlur: () => void;
   onFocus: () => void;
   onChangeText: (newUrl: string) => void;
   onSubmitEditing: (event: NativeSyntheticEvent<TextInputSubmitEditingEventData>) => void;
-  isFocused: boolean;
   tabViewProgress: SharedValue<number> | undefined;
   shouldShowMenuButton: boolean;
   shouldShowRefreshButton: boolean;
   onRefresh: () => void;
 }) => {
+  const { isSearchInputFocused, searchInputRef } = useBrowserContext();
   const { isDarkMode } = useColorMode();
 
   const fillSecondary = useForegroundColor('fillSecondary');
@@ -63,7 +61,7 @@ export const AddressInput = ({
       <Box as={Animated.View} justifyContent="center" style={inputStyle}>
         <ButtonPressAnimation
           onPress={onPress}
-          pointerEvents={isFocused ? 'auto' : 'box-only'}
+          pointerEvents={isSearchInputFocused ? 'auto' : 'box-only'}
           scaleTo={0.975}
           style={{
             flexDirection: 'row',
@@ -71,7 +69,11 @@ export const AddressInput = ({
         >
           <MaskedView
             maskElement={
-              <FadeMask fadeEdgeInset={isFocused || !inputValue ? 0 : 36} fadeWidth={isFocused || !inputValue ? 0 : 12} height={48} />
+              <FadeMask
+                fadeEdgeInset={isSearchInputFocused || !inputValue ? 0 : 36}
+                fadeWidth={isSearchInputFocused || !inputValue ? 0 : 12}
+                height={48}
+              />
             }
             style={{
               alignItems: 'center',
@@ -92,7 +94,7 @@ export const AddressInput = ({
               onChangeText={onChangeText}
               onFocus={onFocus}
               onSubmitEditing={onSubmitEditing}
-              ref={inputRef}
+              ref={searchInputRef}
               returnKeyType="go"
               selectTextOnFocus
               spellCheck={false}
@@ -106,8 +108,8 @@ export const AddressInput = ({
                 paddingLeft: 16,
                 paddingRight: 8,
                 paddingVertical: 10,
-                pointerEvents: isFocused ? 'auto' : 'none',
-                textAlign: isFocused ? 'left' : 'center',
+                pointerEvents: isSearchInputFocused ? 'auto' : 'none',
+                textAlign: isSearchInputFocused ? 'left' : 'center',
                 elevation: 99,
               }}
               value={inputValue}

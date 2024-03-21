@@ -1,21 +1,24 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import React, { createContext, useCallback, useContext, useRef, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import Animated, { Easing, runOnJS, useAnimatedRef, useScrollViewOffset, useSharedValue, withTiming } from 'react-native-reanimated';
 import WebView from 'react-native-webview';
 import isEqual from 'react-fast-compare';
+import { TextInput } from 'react-native';
 
 interface BrowserContextType {
   activeTabIndex: number;
   closeTab: (tabIndex: number) => void;
   goBack: () => void;
   goForward: () => void;
-  isBrowserInputFocused: boolean;
+  isSearchInputFocused: boolean;
   newTab: () => void;
   onRefresh: () => void;
+  searchInputRef: React.RefObject<TextInput | null>;
+  searchViewProgress: Animated.SharedValue<number> | undefined;
   scrollViewOffset: Animated.SharedValue<number> | undefined;
   scrollViewRef: React.MutableRefObject<Animated.ScrollView | null>;
   setActiveTabIndex: React.Dispatch<React.SetStateAction<number>>;
-  setIsBrowserInputFocused: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsSearchInputFocused: React.Dispatch<React.SetStateAction<boolean>>;
   tabStates: TabState[];
   tabViewProgress: Animated.SharedValue<number> | undefined;
   tabViewFullyVisible: boolean;
@@ -44,7 +47,7 @@ const defaultContext: BrowserContextType = {
   goForward: () => {
     return;
   },
-  isBrowserInputFocused: false,
+  isSearchInputFocused: false,
   newTab: () => {
     return;
   },
@@ -52,12 +55,14 @@ const defaultContext: BrowserContextType = {
   onRefresh: () => {
     return;
   },
+  searchInputRef: { current: null },
+  searchViewProgress: undefined,
   scrollViewOffset: undefined,
   scrollViewRef: { current: null },
   setActiveTabIndex: () => {
     return;
   },
-  setIsBrowserInputFocused: () => {
+  setIsSearchInputFocused: () => {
     return;
   },
   tabStates: [
@@ -92,7 +97,7 @@ const timingConfig = {
 // this is sloppy and causes tons of rerenders, needs to be reworked
 export const BrowserContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [activeTabIndex, setActiveTabIndex] = useState<number>(0);
-  const [isBrowserInputFocused, setIsBrowserInputFocused] = useState<boolean>(false);
+  const [isSearchInputFocused, setIsSearchInputFocused] = useState<boolean>(false);
   const [tabStates, setTabStates] = useState<TabState[]>(defaultContext.tabStates);
   const [tabViewFullyVisible, setTabViewFullyVisible] = useState(false);
   const [tabViewVisible, setTabViewVisible] = useState(false);
@@ -109,11 +114,21 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
     [tabStates]
   );
 
+  const searchInputRef = useRef<TextInput>(null);
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
   const webViewRefs = useRef<WebView[]>([]);
 
+  const searchViewProgress = useSharedValue(0);
   const scrollViewOffset = useScrollViewOffset(scrollViewRef);
   const tabViewProgress = useSharedValue(0);
+
+  useEffect(() => {
+    if (isSearchInputFocused) {
+      searchViewProgress.value = withTiming(1, timingConfig);
+    } else {
+      searchViewProgress.value = withTiming(0, timingConfig);
+    }
+  }, [searchViewProgress, isSearchInputFocused]);
 
   const toggleTabView = useCallback(() => {
     const isVisible = !tabViewVisible;
@@ -192,11 +207,13 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
         closeTab,
         goBack,
         goForward,
-        isBrowserInputFocused,
+        isSearchInputFocused,
         newTab,
         onRefresh,
+        searchViewProgress,
+        searchInputRef,
         setActiveTabIndex,
-        setIsBrowserInputFocused,
+        setIsSearchInputFocused,
         scrollViewOffset,
         scrollViewRef,
         tabStates,
