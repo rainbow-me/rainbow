@@ -355,8 +355,10 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
   );
 
   useEffect(() => {
-    const navigationRoutes = dangerouslyGetState().routes;
+    const navigationRoutes = dangerouslyGetState()?.routes;
     const lastRouteName = navigationRoutes?.[navigationRoutes.length - 1]?.name;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const lastRouteType = navigationRoutes?.[navigationRoutes.length - 1]?.params?.type;
     if (lastRouteName === 'ExplainSheet' && lastRouteType.includes('currentBaseFee')) {
       navigate(Routes.EXPLAIN_SHEET, {

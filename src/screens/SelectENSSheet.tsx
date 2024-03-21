@@ -11,7 +11,7 @@ import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation';
 import { useTheme } from '@/theme';
 import { deviceUtils } from '@/utils';
-import { ListRenderItem } from 'react-native';
+import { ListRenderItem, View } from 'react-native';
 import { BaseEnsDomainFragment } from '@/graphql/__generated__/ens';
 
 export const SelectENSSheetHeight = 400;
@@ -58,10 +58,10 @@ export default function SelectENSSheet() {
     scrollEnabled = true;
   }
 
-  const renderItem: ListRenderItem<{ name: string }> = useCallback(
+  const renderItem: ListRenderItem<BaseEnsDomainFragment> = useCallback(
     ({ item }) => {
       return (
-        <ButtonPressAnimation onPress={() => handleSelectENS(item.name)} scaleTo={0.95}>
+        <ButtonPressAnimation onPress={() => item.name && handleSelectENS(item.name)} scaleTo={0.95}>
           <Inline alignHorizontal="justify" alignVertical="center" wrap={false}>
             <Inline alignVertical="center" wrap={false}>
               <AccentColorProvider color={secondary06}>
@@ -73,11 +73,11 @@ export default function SelectENSSheet() {
                   justifyContent="center"
                   width={{ custom: rowHeight }}
                 >
-                  <ENSAvatar name={item.name} />
+                  <ENSAvatar name={item.name ?? ''} />
                 </Box>
                 <Box paddingLeft="10px">
                   <Text numberOfLines={1} color="primary (Deprecated)" size="16px / 22px (Deprecated)" weight="bold">
-                    {abbreviateEnsForDisplay(item.name, 25)}
+                    {abbreviateEnsForDisplay(item.name ?? '', 25)}
                   </Text>
                 </Box>
               </AccentColorProvider>
@@ -90,7 +90,6 @@ export default function SelectENSSheet() {
   );
 
   return (
-    // @ts-expect-error JavaScript component
     <Sheet>
       <Inset top="6px">
         <Stack space="24px">
@@ -99,22 +98,22 @@ export default function SelectENSSheet() {
           </Heading>
           {isSuccess && (
             <Bleed bottom={{ custom: scrollEnabled ? 34 : 26 }}>
-              <Box
-                ItemSeparatorComponent={() => <Box height={{ custom: rowPadding }} />}
-                as={FlatList}
-                contentContainerStyle={{
-                  paddingBottom: 50,
-                  paddingHorizontal: 19,
-                }}
-                data={controlledDomains}
-                height={{ custom: listHeight }}
-                initialNumToRender={15}
-                keyExtractor={({ domain }: { domain: string }) => domain}
-                maxToRenderPerBatch={10}
-                renderItem={renderItem}
-                scrollEnabled={scrollEnabled}
-                showsVerticalScrollIndicator={false}
-              />
+              <View style={{ height: listHeight }}>
+                <FlatList
+                  ItemSeparatorComponent={() => <Box height={{ custom: rowPadding }} />}
+                  data={controlledDomains}
+                  contentContainerStyle={{
+                    paddingBottom: 50,
+                    paddingHorizontal: 19,
+                  }}
+                  initialNumToRender={15}
+                  keyExtractor={(item, index) => item.name ?? index.toString()}
+                  maxToRenderPerBatch={10}
+                  renderItem={renderItem}
+                  scrollEnabled={scrollEnabled}
+                  showsVerticalScrollIndicator={false}
+                />
+              </View>
             </Bleed>
           )}
         </Stack>

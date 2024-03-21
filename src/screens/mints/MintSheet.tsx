@@ -253,8 +253,8 @@ const MintSheet = () => {
         transport: http(networkObj.rpc),
       });
       try {
-        await getClient()?.actions.buyToken({
-          items: [{ fillType: 'mint', collection: mintCollection.id!, quantity }],
+        await getClient()?.actions.mintToken({
+          items: [{ collection: mintCollection.id!, quantity }],
           wallet: signer!,
           chainId: networkObj.id,
           precheck: true,
@@ -365,10 +365,9 @@ const MintSheet = () => {
     const feeAddress = getRainbowFeeAddress(currentNetwork);
     const nonce = await getNextNonce({ address: accountAddress, network: currentNetwork });
     try {
-      await getClient()?.actions.buyToken({
+      await getClient()?.actions.mintToken({
         items: [
           {
-            fillType: 'mint',
             collection: mintCollection.id!,
             quantity,
             ...(feeAddress && { referrer: feeAddress }),
@@ -384,7 +383,7 @@ const MintSheet = () => {
               return;
             }
             step.items?.forEach(item => {
-              if (item.txHashes?.[0] && txRef.current !== item.txHashes?.[0] && item.status === 'incomplete') {
+              if (item.txHashes?.[0]?.txHash && txRef.current !== item.txHashes[0].txHash && item.status === 'incomplete') {
                 const asset = {
                   type: 'nft',
                   icon_url: imageUrl,
@@ -393,7 +392,7 @@ const MintSheet = () => {
                   name: mintCollection.name || '',
                   decimals: 18,
                   symbol: 'NFT',
-                  uniqueId: `${mintCollection.id}-${item.txHashes[0]}`,
+                  uniqueId: `${mintCollection.id}-${item.txHashes[0].txHash}`,
                 };
 
                 const paymentAsset = {
@@ -410,7 +409,7 @@ const MintSheet = () => {
                   status: 'pending',
                   to: item.data?.to,
                   from: item.data?.from,
-                  hash: item.txHashes[0],
+                  hash: item.txHashes[0].txHash,
                   network: currentNetwork,
                   nonce,
                   changes: [

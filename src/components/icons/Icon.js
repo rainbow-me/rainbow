@@ -67,18 +67,21 @@ import SnapchatIcon from './svg/SnapchatIcon';
 import SpinnerIcon from './svg/SpinnerIcon';
 import StarIcon from './svg/StarIcon';
 import SwapIcon from './svg/SwapIcon';
-import TabActivity from './svg/TabActivity';
-import TabActivityInner from './svg/TabActivityInner';
-import TabActivityInnerFill from './svg/TabActivityInnerFill';
-import TabDiscover from './svg/TabDiscover';
-import TabDiscoverInner from './svg/TabDiscoverInner';
-import TabDiscoverInnerFill from './svg/TabDiscoverInnerFill';
-import TabHome from './svg/TabHome';
-import TabHomeInner from './svg/TabHomeInner';
-import TabHomeInnerFill from './svg/TabHomeInnerFill';
-import TabPoints from './svg/TabPoints';
-import TabPointsInner from './svg/TabPointsInner';
-import TabPointsInnerFill from './svg/TabPointsInnerFill';
+import { TabActivity } from './svg/TabActivity';
+import { TabActivityInner } from './svg/TabActivityInner';
+import { TabActivityInnerFill } from './svg/TabActivityInnerFill';
+import { TabDiscover } from './svg/TabDiscover';
+import { TabDiscoverInner } from './svg/TabDiscoverInner';
+import { TabDiscoverInnerFill } from './svg/TabDiscoverInnerFill';
+import { TabHome } from './svg/TabHome';
+import { TabHomeInner } from './svg/TabHomeInner';
+import { TabHomeInnerFill } from './svg/TabHomeInnerFill';
+import { TabPoints } from './svg/TabPoints';
+import { TabPointsInner } from './svg/TabPointsInner';
+import { TabPointsInnerFill } from './svg/TabPointsInnerFill';
+import { TabDappBrowser } from './svg/TabDappBrowser';
+import { TabDappBrowserInner } from './svg/TabDappBrowserInner';
+import { TabDappBrowserInnerFill } from './svg/TabDappBrowserInnerFill';
 import TelegramIcon from './svg/TelegramIcon';
 import ThreeDotsIcon from './svg/ThreeDotsIcon';
 import TouchIdIcon from './svg/TouchIdIcon';
@@ -172,6 +175,9 @@ const IconTypes = {
   tabPoints: TabPoints,
   tabPointsInner: TabPointsInner,
   tabPointsInnerFill: TabPointsInnerFill,
+  tabDappBrowser: TabDappBrowser,
+  tabDappBrowserInner: TabDappBrowserInner,
+  tabDappBrowserInnerFill: TabDappBrowserInnerFill,
   telegram: TelegramIcon,
   threeDots: ThreeDotsIcon,
   touchid: TouchIdIcon,

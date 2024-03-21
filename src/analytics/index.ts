@@ -1,31 +1,32 @@
-import { createClient, SegmentClient } from '@segment/analytics-react-native';
-import { REACT_APP_SEGMENT_API_WRITE_KEY, LOG_DEBUG } from 'react-native-dotenv';
+import rudderClient from '@rudderstack/rudder-sdk-react-native';
+import { REACT_NATIVE_RUDDERSTACK_WRITE_KEY, RUDDERSTACK_DATA_PLANE_URL, IS_TESTING } from 'react-native-dotenv';
 
 import { EventProperties, event } from '@/analytics/event';
 import { UserProperties } from '@/analytics/userProperties';
-import { logger } from '@/logger';
+import { logger, RainbowError } from '@/logger';
 import { device } from '@/storage';
 
+const isTesting = IS_TESTING === 'true';
+
 export class Analytics {
-  client: SegmentClient;
+  client: any;
   currentWalletAddressHash?: string;
   deviceId?: string;
   event = event;
-  disabled = !!device.get(['doNotTrack']);
+  disabled: boolean;
 
   constructor() {
-    this.client = createClient({
-      debug: (LOG_DEBUG || '').includes(logger.DebugContext.analytics),
-      trackAppLifecycleEvents: true,
-      trackDeepLinks: true,
-      writeKey: REACT_APP_SEGMENT_API_WRITE_KEY,
-    });
-
-    logger.debug(`Segment initialized`);
+    this.client = rudderClient;
+    this.disabled = isTesting || !!device.get(['doNotTrack']);
+    if (isTesting) {
+      logger.debug('Analytics is disabled for testing');
+    } else {
+      logger.debug('Analytics client initialized');
+    }
   }
 
   /**
-   * Sends an `identify` event to Segment along with the traits you pass in
+   * Sends an `identify` event along with the traits you pass in
    * here. This uses the `deviceId` as the identifier, and attaches the hashed
    * wallet address as a property, if available.
    */
@@ -39,7 +40,7 @@ export class Analytics {
   }
 
   /**
-   * Sends a `screen` event to Segment.
+   * Sends a `screen` event.
    */
   screen(routeName: string, params: Record<string, any> = {}): void {
     if (this.disabled) return;
@@ -48,7 +49,7 @@ export class Analytics {
   }
 
   /**
-   * Send an event to Segment. Param `event` must exist in
+   * Sends an event. Param `event` must exist in
    * `@/analytics/event`, and if properties are associated with it, they must
    * be defined as part of `EventProperties` in the same file
    */
@@ -64,8 +65,18 @@ export class Analytics {
     };
   }
 
+  async initializeRudderstack() {
+    try {
+      await rudderClient.setup(REACT_NATIVE_RUDDERSTACK_WRITE_KEY, {
+        dataPlaneUrl: RUDDERSTACK_DATA_PLANE_URL,
+      });
+    } catch (error) {
+      logger.error(new RainbowError('Unable to initialize Rudderstack'), { error });
+    }
+  }
+
   /**
-   * Set `deviceId` for use as the identifier in Segment. This DOES NOT call
+   * Set `deviceId` for use as the identifier. This DOES NOT call
    * `identify()`, you must do that on your own.
    */
   setDeviceId(deviceId: string) {
@@ -83,14 +94,14 @@ export class Analytics {
   }
 
   /**
-   * Enable Segment tracking. Defaults to enabled.
+   * Enable tracking. Defaults to enabled.
    */
   enable() {
     this.disabled = false;
   }
 
   /**
-   * Disable Segment tracking. Defaults to enabled.
+   * Disable tracking. Defaults to enabled.
    */
   disable() {
     this.disabled = true;
@@ -106,9 +117,4 @@ export const analyticsV2 = new Analytics();
 /**
  * @deprecated Use the `analyticsV2` export from this same file
  */
-export const analytics = createClient({
-  debug: false,
-  trackAppLifecycleEvents: true,
-  trackDeepLinks: true,
-  writeKey: REACT_APP_SEGMENT_API_WRITE_KEY,
-});
+export const analytics = rudderClient;

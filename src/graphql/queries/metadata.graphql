@@ -266,6 +266,12 @@ query getPointsDataForWallet($address: String!) {
     }
     user {
       referralCode
+      earnings_by_type {
+        type
+        earnings {
+          total
+        }
+      }
       earnings {
         total
       }
@@ -273,6 +279,10 @@ query getPointsDataForWallet($address: String!) {
         position {
           unranked
           current
+        }
+        referral {
+          total_referees
+          qualified_referees
         }
         last_airdrop {
           position {
@@ -284,6 +294,7 @@ query getPointsDataForWallet($address: String!) {
           }
           differences {
             type
+            group_id
             earnings {
               total
             }
@@ -327,14 +338,14 @@ mutation onboardPoints($address: String!, $signature: String!, $referral: String
     }
     user {
       referralCode
+      earnings_by_type {
+        type
+        earnings {
+          total
+        }
+      }
       earnings {
         total
-      }
-      stats {
-        position {
-          unranked
-          current
-        }
       }
       onboarding {
         earnings {
@@ -350,6 +361,32 @@ mutation onboardPoints($address: String!, $signature: String!, $referral: String
           display_type
           earnings {
             total
+          }
+        }
+      }
+      stats {
+        position {
+          unranked
+          current
+        }
+        referral {
+          total_referees
+          qualified_referees
+        }
+        last_airdrop {
+          position {
+            unranked
+            current
+          }
+          earnings {
+            total
+          }
+          differences {
+            type
+            group_id
+            earnings {
+              total
+            }
           }
         }
       }

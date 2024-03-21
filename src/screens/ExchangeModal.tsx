@@ -5,8 +5,8 @@ import React, { MutableRefObject, useCallback, useEffect, useLayoutEffect, useMe
 import equal from 'react-fast-compare';
 import { EmitterSubscription, InteractionManager, Keyboard, NativeModules, TextInput, View } from 'react-native';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
-import { useDispatch, useSelector } from 'react-redux';
-import { useDebounce } from 'use-debounce/lib';
+import { useDispatch } from 'react-redux';
+import { useDebounce } from 'use-debounce';
 import { useMemoOne } from 'use-memo-one';
 import { dismissingScreenListener } from '../../shim';
 import {
@@ -82,6 +82,8 @@ export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.goerli]: 100,
   [Network.gnosis]: 200,
   [Network.zora]: 200,
+  [Network.avalanche]: 200,
+  [Network.blast]: 200,
 };
 
 export const getDefaultSlippageFromConfig = (network: Network) => {
@@ -535,7 +537,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
   );
 
   const handleSubmit = useCallback(async () => {
-    let amountInUSD = '0';
+    const amountInUSD = '0';
     const NotificationManager = ios ? NativeModules.NotificationManager : null;
     try {
       // Tell iOS we're running a rap (for tracking purposes)

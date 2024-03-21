@@ -11,23 +11,21 @@
     "src/"
   ],
   "license": "ISC",
-  "dependencies": {
-    "d3-scale": "^4.0.2",
-    "d3-shape": "^3.0.1",
-    "react-native-gesture-handler": "^1.7.0",
-    "react-native-haptic-feedback": "^1.10.0",
-    "react-native-reanimated": "^2.0.0-alpha.5",
-    "react-native-redash": "^16.2.2",
-    "react-native-svg": "^12.1.0"
-  },
   "devDependencies": {
     "@types/d3-scale": "^4.0.2",
-    "@types/d3-shape": "^3.0.2",
+    "@types/d3-shape": "^3.1.6",
     "@babel/core": "^7.11.4",
     "@babel/runtime": "^7.11.2"
   },
   "peerDependencies": {
+    "d3-scale": "^4.0.2",
+    "d3-shape": "^3.2.0",
     "react": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "react-native-gesture-handler": "^1.7.0",
+    "react-native-haptic-feedback": "^1.11.0",
+    "react-native-reanimated": "^3.0.0",
+    "react-native-redash": "^16.3.0",
+    "react-native-svg": "^13.9.0"
   }
 }
