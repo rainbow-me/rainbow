@@ -11,7 +11,7 @@ import { ToolbarIcon } from '../BrowserToolbar';
 import { IS_IOS } from '@/env';
 import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/screens/Swap/utils';
+import { opacity } from '@/__swaps__/screens/Swap/utils/swaps';
 import { DappBrowserShadows } from '../DappBrowserShadows';
 
 const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);

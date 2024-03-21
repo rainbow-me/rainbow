@@ -7,7 +7,7 @@ import { safeAreaInsetValues } from '@/utils';
 import { SwapActionButton } from '../../components/SwapActionButton';
 import { GasButton } from '../../components/GasButton';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../../constants';
-import { opacity } from '../../utils';
+import { opacity } from '../../utils/swaps';
 import { IS_ANDROID } from '@/env';
 import { useSwapContext } from '../../providers/swap-provider';
 
