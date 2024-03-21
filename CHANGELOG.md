@@ -15,6 +15,38 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.19] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.19)
+
+### Added
+
+- Added Blast to simplehash (#5492)
+- Initialize new swaps configuration (#5498)
+- Initial swaps work (#5500)
+
+### Changed
+
+- Swipe navigator performance refactor (#5479)
+- Transaction and assets cleanup (#5459)
+- Migrated query persist from AsyncStorage to mmkv (#5404, #5524)
+- Webview refactor (#5499)
+- Replaced Segment (#5474)
+- Low fee's on first estimate (#5503)
+- Upgraded reservoir (#5514)
+- Bump reanimated to v3.8.0 (#5517)
+- Changed default theme from light to system (#5518)
+- Updated logic for wallet connect SignTransactionSheet (#5471)
+
+### Fixed
+
+- Fixed reanimated and RNGH imports (#5480)
+- Fixed layout shift for mints carousel card  (#5485)
+- Fixed android clipboard alerts (#5486)
+- Fixed weekly earnings points breakdown (#5469)
+- Fixed tappable area on wallet name (#5496)
+- Fixed null deconstruction for wallet connect (#5493)
+- Fixed dark mode theme which impacted ENS confirmation screen (#5502)
+- Fixed initiating render on NFT offers (#5501)
+
 ## [1.9.18] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.18)
 
 ### Added
