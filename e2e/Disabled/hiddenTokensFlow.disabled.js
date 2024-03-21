@@ -1,6 +1,5 @@
-/* eslint-disable no-undef */
-/* eslint-disable jest/expect-expect */
-import * as Helpers from './helpers';
+import * as Helpers from '../helpers';
+import { device, element, by, waitFor } from 'detox';
 
 const android = device.getPlatform() === 'android';
 

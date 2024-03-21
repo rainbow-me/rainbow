@@ -1,6 +1,5 @@
-/* eslint-disable no-undef */
-/* eslint-disable jest/expect-expect */
-import * as Helpers from './helpers';
+import * as Helpers from '../helpers';
+import { device } from 'detox';
 
 let connector = null;
 const ios = device.getPlatform() === 'ios';
@@ -80,7 +79,6 @@ describe.skip('Hardhat Transaction Flow', () => {
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
   });
 
-  // eslint-disable-next-line jest/no-disabled-tests
   it.skip('Should deposit DAI (via Compound)', async () => {
     await Helpers.tap('Savings-list-header');
     await Helpers.waitAndTap('savings-list-row-DAI');
@@ -137,7 +135,6 @@ describe.skip('Hardhat Transaction Flow', () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
-  // eslint-disable-next-line jest/no-disabled-tests
   it.skip('Should withdraw DAI (via Compound)', async () => {
     await Helpers.waitAndTap('savings-list-row-DAI');
     await Helpers.waitAndTap('withdraw-action-button');

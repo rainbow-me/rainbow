@@ -1,11 +1,10 @@
-/* eslint-disable no-undef */
-/* eslint-disable jest/expect-expect */
 import { Contract } from '@ethersproject/contracts';
 import WalletConnect from '@walletconnect/client';
 import { convertUtf8ToHex } from '@walletconnect/legacy-utils';
-import * as Helpers from './helpers';
+import * as Helpers from '../helpers';
 import kittiesABI from '@/references/cryptokitties-abi.json';
 import erc20ABI from '@/references/erc20-abi.json';
+import { device } from 'detox';
 
 let connector = null;
 let uri = null;
@@ -45,7 +44,7 @@ beforeAll(async () => {
   await Helpers.startIosSimulator();
 });
 
-describe('Hardhat Transaction Flow', () => {
+describe.skip('Hardhat Transaction Flow', () => {
   it('Should show the welcome screen', async () => {
     await Helpers.checkIfVisible('welcome-screen');
   });
@@ -192,7 +191,6 @@ describe('Hardhat Transaction Flow', () => {
   });
 
   // FIXME: we have converted to V2 - review and re-enable
-  /* Disabling until we can convert this to v2
   if (ios) {
     // TODO important
     it('Should receive the WC connect request and approve it', async () => {
@@ -355,15 +353,11 @@ describe('Hardhat Transaction Flow', () => {
     });
 
     it('Should be able to approve transactions via WC (Send)', async () => {
-      const preSendBalance = await getOnchainBalance(
-        RAINBOW_WALLET_DOT_ETH,
-        ETH_ADDRESS
-      );
+      const preSendBalance = await getOnchainBalance(RAINBOW_WALLET_DOT_ETH, ETH_ADDRESS);
       const result = connector.sendTransaction({
         from: account,
         to: RAINBOW_WALLET_DOT_ETH,
-        value:
-          '0x0000000000000000000000000000000000000000000000000de0b6b3a7640000',
+        value: '0x0000000000000000000000000000000000000000000000000de0b6b3a7640000',
         data: '0x',
       });
       await Helpers.checkIfVisible('wc-request-sheet');
@@ -380,12 +374,8 @@ describe('Hardhat Transaction Flow', () => {
         throw new Error('WC approving tx failed');
       }
 
-      const postSendBalance = await getOnchainBalance(
-        RAINBOW_WALLET_DOT_ETH,
-        ETH_ADDRESS
-      );
-      if (!postSendBalance.gt(preSendBalance))
-        throw new Error('Recepient did not recieve ETH');
+      const postSendBalance = await getOnchainBalance(RAINBOW_WALLET_DOT_ETH, ETH_ADDRESS);
+      if (!postSendBalance.gt(preSendBalance)) throw new Error('Recepient did not recieve ETH');
     });
 
     it('Should show completed send ETH (WC)', async () => {
@@ -396,7 +386,6 @@ describe('Hardhat Transaction Flow', () => {
       }
     });
   }
-  */
 
   afterAll(async () => {
     // Reset the app state

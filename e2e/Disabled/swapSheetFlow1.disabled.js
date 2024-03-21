@@ -1,49 +1,23 @@
-/* eslint-disable no-undef */
-/* eslint-disable jest/expect-expect */
-import * as Helpers from './helpers';
-
-beforeAll(async () => {
-  await Helpers.startHardhat();
-});
+import * as Helpers from '../helpers';
+import { device } from 'detox';
 
 const ios = device.getPlatform() === 'ios';
 const android = device.getPlatform() === 'android';
 
-describe('Swap Sheet Interaction Flow', () => {
-  it('Should show the welcome screen', async () => {
-    await Helpers.checkIfVisible('welcome-screen');
+// all relevant flows skipped at the moment
+// removing this test from the flow until we fix
+
+describe.skip('Swap Sheet Interaction Flow', () => {
+  beforeAll(async () => {
+    await Helpers.startHardhat();
+  });
+  afterAll(async () => {
+    await device.clearKeychain();
+    await Helpers.killHardhat();
   });
 
-  it('Should show the "Add Wallet Sheet" after tapping on "I already have a wallet"', async () => {
-    await Helpers.waitAndTap('already-have-wallet-button');
-    await Helpers.checkIfExists('add-wallet-sheet');
-  });
-
-  it('show the "Import Sheet" when tapping on "Restore with a recovery phrase or private key"', async () => {
-    await Helpers.waitAndTap('restore-with-key-button');
-    await Helpers.checkIfExists('import-sheet');
-  });
-
-  it('Should show the "Add wallet modal" after tapping import with a valid seed"', async () => {
-    await Helpers.clearField('import-sheet-input');
-    await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
-    await Helpers.checkIfElementHasString('import-sheet-button-label', 'Continue');
-    await Helpers.waitAndTap('import-sheet-button');
-    await Helpers.checkIfVisible('wallet-info-modal');
-  });
-
-  it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
-    await Helpers.disableSynchronization();
-    await Helpers.waitAndTap('wallet-info-submit-button');
-    if (android) {
-      await Helpers.checkIfVisible('pin-authentication-screen');
-      // Set the pin
-      await Helpers.authenticatePin('1234');
-      // Confirm it
-      await Helpers.authenticatePin('1234');
-    }
-    await Helpers.checkIfVisible('wallet-screen', 40000);
-    await Helpers.enableSynchronization();
+  it('Import a wallet and go to welcome', async () => {
+    await Helpers.importWalletFlow();
   });
 
   it('Should send ETH to test wallet"', async () => {
@@ -51,8 +25,7 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
-    // need to wait for balances to be fetched
-    await Helpers.delay(10000);
+    await Helpers.delayTime('very-long');
     await Helpers.waitAndTap('dev-button-hardhat');
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
   });
@@ -62,14 +35,13 @@ describe('Swap Sheet Interaction Flow', () => {
   //        part of the addy's REST API migration
   //
   //        marking the test as SKIP for now
-  it.skip('Should go to swap and open review sheet on mainnet swap', async () => {
+  it('Should go to swap and open review sheet on mainnet swap', async () => {
     await Helpers.waitAndTap('swap-button');
     await Helpers.tap('exchange-modal-input-selection-button');
     await Helpers.typeText('currency-select-search-input', 'DAI', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-DAI-mainnet');
     await Helpers.waitAndTap('exchange-modal-input-max');
     await Helpers.tap('exchange-modal-output-selection-button');
-    // await Helpers.typeText('currency-select-search-input', 'ETH', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-mainnet');
     await Helpers.delay(ios ? 2000 : 5000);
     await Helpers.checkIfVisible('exchange-modal-confirm-button');
@@ -85,7 +57,7 @@ describe('Swap Sheet Interaction Flow', () => {
   // FIXME: This test doesn't clear the "currency-select-search-input" when
   // coming back from exchange modal and then fails to actually tap the review
   // button
-  it.skip('Should go to swap and open review sheet on optimism swap', async () => {
+  it('Should go to swap and open review sheet on optimism swap', async () => {
     await Helpers.waitAndTap('swap-button');
     await Helpers.tap('exchange-modal-input-selection-button');
     await Helpers.typeText('currency-select-search-input', 'OP', true);
@@ -108,7 +80,7 @@ describe('Swap Sheet Interaction Flow', () => {
   // FIXME: This test doesn't clear the "currency-select-search-input" when
   // coming back from exchange modal and then fails to actually tap the review
   // button
-  it.skip('Should go to swap and open review sheet on polygon swap', async () => {
+  it('Should go to swap and open review sheet on polygon swap', async () => {
     await Helpers.waitAndTap('swap-button');
     await Helpers.tap('exchange-modal-input-selection-button');
     await Helpers.typeText('currency-select-search-input', 'DAI', true);
@@ -131,7 +103,7 @@ describe('Swap Sheet Interaction Flow', () => {
   // FIXME: This test doesn't clear the "currency-select-search-input" when
   // coming back from exchange modal and then fails to actually tap the review
   // button
-  it.skip('Should go to swap and open review sheet on arbitrum swap', async () => {
+  it('Should go to swap and open review sheet on arbitrum swap', async () => {
     await Helpers.waitAndTap('swap-button');
     await Helpers.tap('exchange-modal-input-selection-button');
     await Helpers.typeText('currency-select-search-input', 'DAI', true);
@@ -152,7 +124,7 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   // FIXME: Dependent on a state from the previous test
-  it.skip('Should display currency selection screen on swap-button press', async () => {
+  it('Should display currency selection screen on swap-button press', async () => {
     await Helpers.checkIfVisible('wallet-screen');
     await Helpers.waitAndTap('swap-button');
     await Helpers.tap('exchange-modal-input-selection-button');
@@ -160,7 +132,7 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   // FIXME: Dependent on a state from the previous test
-  it.skip('Should toggle through token networks and show the respective tokens', async () => {
+  it('Should toggle through token networks and show the respective tokens', async () => {
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH-mainnet');
     await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.tap('exchange-modal-output-selection-button');
@@ -177,7 +149,7 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   // FIXME: Dependent on a state from the previous test
-  it.skip('Should update input value after tapping Max Button', async () => {
+  it('Should update input value after tapping Max Button', async () => {
     await Helpers.typeText('currency-select-search-input', 'BAT', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-BAT-mainnet');
     await Helpers.delay(ios ? 2000 : 5000);
@@ -186,7 +158,7 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   // FIXME: Dependent on a state from the previous test
-  it.skip('Should display Swap Asset List after tapping Input Section Button', async () => {
+  it('Should display Swap Asset List after tapping Input Section Button', async () => {
     await Helpers.waitAndTap('exchange-modal-input-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
     if (android) {
@@ -198,21 +170,21 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   // FIXME: Dependent on a state from the previous test
-  it.skip('Should reset all fields on selection of new input currency', async () => {
+  it('Should reset all fields on selection of new input currency', async () => {
     await Helpers.waitAndTap('exchange-modal-input-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
     await Helpers.waitAndTap('currency-select-list-exchange-coin-row-DAI-mainnet');
   });
 
   // FIXME: Dependent on a state from the previous test
-  it.skip('Should change Currency Select List on search entry', async () => {
+  it('Should change Currency Select List on search entry', async () => {
     await Helpers.waitAndTap('exchange-modal-input-selection-button');
     await Helpers.typeText('currency-select-search-input', 'SOCKS\n', true);
     await Helpers.checkIfNotVisible('currency-select-list-exchange-coin-row-ETH-mainnet');
   });
 
   // FIXME: Dependent on a state from the previous test
-  it.skip('Should reset Currency Select List on clearing search field', async () => {
+  it('Should reset Currency Select List on clearing search field', async () => {
     await Helpers.clearField('currency-select-search-input');
     await Helpers.checkIfVisible('currency-select-list-exchange-coin-row-ETH-mainnet');
     if (android) {
@@ -225,7 +197,7 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   // FIXME: Dependent on a state from the previous test
-  it.skip('Should show Choose Token Button if input & output are same token(ETH)', async () => {
+  it('Should show Choose Token Button if input & output are same token(ETH)', async () => {
     if (!ios) {
       // TODO
       return;
@@ -245,7 +217,7 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   // FIXME: Dependent on a state from the previous test
-  it.skip('Should clear inputs when typing a number in inputs and then clearing it', async () => {
+  it('Should clear inputs when typing a number in inputs and then clearing it', async () => {
     await Helpers.waitAndTap('swap-button');
     await Helpers.tap('exchange-modal-input-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
@@ -277,7 +249,7 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   // FIXME: Dependent on a state from the previous test
-  it.skip('Should clear inputs when typing a number in inputs and then clearing it optimism', async () => {
+  it('Should clear inputs when typing a number in inputs and then clearing it optimism', async () => {
     await Helpers.waitAndTap('swap-button');
     await Helpers.tap('exchange-modal-input-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
@@ -304,7 +276,7 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   // FIXME: Dependent on a state from the previous test
-  it.skip('Should show settings routes picker but not flashbots on Optimism', async () => {
+  it('Should show settings routes picker but not flashbots on Optimism', async () => {
     await Helpers.waitAndTap('exchange-settings-button');
     await Helpers.checkIfVisible('swap-settings-header');
     await Helpers.checkIfVisible('swap-settings-routes-label');
@@ -314,7 +286,7 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   // FIXME: Dependent on a state from the previous test
-  it.skip('Should clear inputs when typing a number in inputs and then clearing it arbitrum', async () => {
+  it('Should clear inputs when typing a number in inputs and then clearing it arbitrum', async () => {
     await Helpers.waitAndTap('swap-button');
     await Helpers.tap('exchange-modal-input-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
@@ -335,7 +307,7 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   // FIXME: Dependent on a state from the previous test
-  it.skip('Should clear inputs when typing a number in inputs and then clearing it polygon', async () => {
+  it('Should clear inputs when typing a number in inputs and then clearing it polygon', async () => {
     await Helpers.waitAndTap('swap-button');
     await Helpers.tap('exchange-modal-input-selection-button');
     await Helpers.checkIfVisible('currency-select-list');
@@ -358,18 +330,12 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   // FIXME: Dependent on a state from the previous test
-  it.skip('Should show settings routes picker but notflashbots on Polygon', async () => {
+  it('Should show settings routes picker but notflashbots on Polygon', async () => {
     await Helpers.waitAndTap('exchange-settings-button');
     await Helpers.checkIfVisible('swap-settings-header');
     await Helpers.checkIfVisible('swap-settings-routes-label');
     await Helpers.checkIfNotVisible('swap-settings-flashbots-label');
     await Helpers.swipe('swap-settings-header', 'down', 'fast');
     await Helpers.swipe('exchange-modal-notch', 'down', 'fast');
-  });
-
-  afterAll(async () => {
-    // Reset the app state
-    await device.clearKeychain();
-    await Helpers.killHardhat();
   });
 });
