@@ -151,7 +151,7 @@ const messengerProviderRequestFn = async (messenger: Messenger, request: Provide
   return response;
 };
 
-const isSupportedChainId = (chainId: number) => RainbowNetworks.filter(network => Number(network.id) === chainId).length > 0;
+const isSupportedChainId = (chainId: number) => !!RainbowNetworks.find(network => Number(network.id) === chainId);
 const getActiveSession = ({ host }: { host: string }): ActiveSession => {
   const appSession = appSessionsStore.getState().getActiveSession({ host });
   if (!appSession) return null;
