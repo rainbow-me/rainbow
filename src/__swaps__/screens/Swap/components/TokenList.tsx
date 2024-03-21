@@ -9,7 +9,7 @@ import { useTheme } from '@/theme';
 import { SwapCoinIcon } from './SwapCoinIcon';
 import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../constants';
 import { DAI_ADDRESS, ETH_ADDRESS, USDC_ADDRESS } from '../dummyValues';
-import { opacity } from '../utils';
+import { opacity } from '../utils/swaps';
 import { CoinRow } from './CoinRow';
 import { SearchInput } from './SearchInput';
 
