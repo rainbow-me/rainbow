@@ -50,11 +50,11 @@ jobs:
       - name: Remove old Detox artifacts
         run: rm -rf ./artifacts/
 
-      - name: Build the app in debug mode
-        run: ./node_modules/.bin/detox build --configuration ios.sim.debug
+      - name: Build the app in release mode
+        run: ./node_modules/.bin/detox build --configuration ios.sim.release
 
       - name: Run iOS e2e tests
-        run: ./node_modules/.bin/detox test -R 5 --configuration ios.sim.debug --forceExit --bail
+        run: ./node_modules/.bin/detox test -R 5 --configuration ios.sim.release --forceExit --bail
      
       - name: Upload Test Artifacts
         if: failure()

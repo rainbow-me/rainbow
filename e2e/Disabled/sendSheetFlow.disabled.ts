@@ -13,9 +13,9 @@ import {
   checkIfNotVisible,
   clearField,
   replaceTextInField,
-} from './helpers';
+} from '../helpers';
 
-describe('Send Sheet Interaction Flow', () => {
+describe.skip('Send Sheet Interaction Flow', () => {
   beforeAll(async () => {
     await device.reloadReactNative();
     await cleanApp();

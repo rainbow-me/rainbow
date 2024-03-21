@@ -15,7 +15,7 @@ import {
   authenticatePin,
   enableSynchronization,
   tapAlertWithButton,
-} from './helpers';
+} from '../helpers';
 
 const RAINBOW_WALLET_ADDRESS = '0x7a3d05c70581bD345fe117c06e45f9669205384f';
 

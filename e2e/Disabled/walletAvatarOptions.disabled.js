@@ -1,4 +1,4 @@
-import * as Helpers from './helpers';
+import * as Helpers from '../helpers';
 import { device, element, by } from 'detox';
 
 const WALLET_AVATAR_COORDS = { x: 210, y: 125 };

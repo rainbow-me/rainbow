@@ -1,6 +1,6 @@
 import { hash } from '@ensdomains/eth-ens-namehash';
 import { Contract } from '@ethersproject/contracts';
-import * as Helpers from './helpers';
+import * as Helpers from '../helpers';
 import registrarABI from '@/references/ens/ENSETHRegistrarController.json';
 import publicResolverABI from '@/references/ens/ENSPublicResolver.json';
 import registryWithFallbackABI from '@/references/ens/ENSRegistryWithFallback.json';
