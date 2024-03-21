@@ -1,11 +1,5 @@
 import { Messenger } from '@/browserMessaging/AppMessenger';
-import {
-  AddEthereumChainProposedChain,
-  IMessageSender,
-  RequestArguments,
-  RequestResponse,
-  handleProviderRequest,
-} from '@rainbow-me/provider';
+import { AddEthereumChainProposedChain, RequestArguments, RequestResponse, handleProviderRequest } from '@rainbow-me/provider';
 
 import { Provider } from '@ethersproject/providers';
 
@@ -19,6 +13,7 @@ import { ActiveSession } from '@rainbow-me/provider/dist/references/appSession';
 import { appSessionsStore } from '@/state/appSessions';
 import { Network } from '@/helpers';
 import { handleDappBrowserConnectionPrompt, handleDappBrowserRequest } from '@/utils/requestNavigationHandlers';
+import { Tab } from '@rainbow-me/provider/dist/references/messengers';
 
 export type ProviderRequestPayload = RequestArguments & {
   id: number;
@@ -72,6 +67,18 @@ const skipRateLimitCheck = (method: string) =>
     'personal_ecRecover',
   ].includes(method) || method.startsWith('wallet_');
 
+export interface IMessageSender {
+  /**
+   * The URL of the page or frame that opened the connection. If the sender is in an iframe, it will be iframe's URL not the URL of the page which hosts it.
+   * @since Chrome 28.
+   */
+  url?: string | undefined;
+  /** The tabs.Tab which opened the connection, if any. This property will only be present when the connection was opened from a tab (including content scripts), and only if the receiver is an extension, not an app. */
+  tab?: Tab | undefined;
+  /** The tabs.Tab which opened the connection, if any. This property will only be present when the connection was opened from a tab (including content scripts), and only if the receiver is an extension, not an app. */
+  title?: string;
+}
+
 export type CallbackOptions = {
   /** The sender of the message. */
   sender: IMessageSender;
@@ -107,11 +114,7 @@ export function createTransport<TPayload, TResponse>({ messenger, topic }: { mes
  * @returns {boolean}
  */
 const messengerProviderRequestFn = async (messenger: Messenger, request: ProviderRequestPayload) => {
-  // TODO OPEN UI POPUP WITH REQUEST
-
-  // openWindowForTabId(Number(request.meta?.sender.tab?.id).toString());
-  console.log('messengerProviderRequestFn', request);
-  const appSession = appSessionsStore.getState().getActiveSession({ host: request.meta?.sender.url || '' });
+  const appSession = appSessionsStore.getState().getActiveSession({ host: getDappHost(request.meta?.sender.url) || '' });
 
   // Wait for response from the popup.
   let response: unknown | null;
@@ -150,13 +153,13 @@ const messengerProviderRequestFn = async (messenger: Messenger, request: Provide
 
 const isSupportedChainId = (chainId: number) => RainbowNetworks.filter(network => Number(network.id) === chainId).length > 0;
 const getActiveSession = ({ host }: { host: string }): ActiveSession => {
-  // const appSession = appSessionsStore.getState().getActiveSession({ host });
-  // if (!appSession) return null;
-  // return {
-  //   address: appSession?.address || '',
-  //   chainId: getChainIdByNetwork(appSession.network),
-  // };
-  return null;
+  const appSession = appSessionsStore.getState().getActiveSession({ host });
+  if (!appSession) return null;
+  return {
+    address: appSession?.address || '',
+    chainId: getChainIdByNetwork(appSession.network),
+  };
+  // return null;
 };
 
 const getChainIdByNetwork = (network: Network) => getNetworkObj(network).id;
@@ -284,6 +287,7 @@ export const handleProviderRequestApp = ({ messenger, data, meta }: { messenger:
     const supportedChains = RainbowNetworks.filter(network => network.features.walletconnect).map(network => network.id.toString());
     const numericChainId = convertHexToString(chainId);
     const supportedChainId = supportedChains.includes(numericChainId);
+    alert('Chain Id not supported');
     console.warn('PROVIDER TODO: TODO SEND NOTIFICATION');
     // TODO SEND NOTIFICATION
     // inpageMessenger?.send('rainbow_ethereumChainEvent', {
@@ -309,21 +313,13 @@ export const handleProviderRequestApp = ({ messenger, data, meta }: { messenger:
     const numericChainId = convertHexToString(chainId);
     const supportedChainId = supportedChains.includes(numericChainId);
     if (supportedChainId) {
+      const host = getDappHost(callbackOptions?.sender.url) || '';
+      const activeSession = getActiveSession({ host });
+      if (activeSession) {
+        appSessionsStore.getState().updateActiveSessionNetwork({ host: host, network: getNetworkFromChainId(Number(numericChainId)) });
+        messenger.send(`chainChanged:${host}`, Number(numericChainId));
+      }
       console.warn('PROVIDER TODO: TODO SEND NOTIFICATION');
-      // 1 - update session
-      // TODO
-      // 2 - Send noifification
-      /*
-          inpageMessenger?.send('rainbow_ethereumChainEvent', {
-              chainId: proposedChainId,
-              chainName: chain?.name,
-              status: IN_DAPP_NOTIFICATION_STATUS.success,
-              extensionUrl,
-              host,
-              });
-          */
-      // 3 - send event
-      // inpageMessenger.send(`chainChanged:${host}`, proposedChainId);
     }
   };
 

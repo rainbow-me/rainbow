@@ -109,7 +109,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
 
   const tabId = useMemo(() => `${tabIndex}-${tabStates[tabIndex].url}`, [tabIndex, tabStates]);
 
-  console.log('[BROWSER]: Render BrowserTab', { tabId, isActiveTab, url: webViewRefs.current[tabIndex]?.state });
+  console.info('[BROWSER]: Render BrowserTab', { tabId, isActiveTab, url: webViewRefs.current[tabIndex]?.state });
 
   const webViewStyle = useAnimatedStyle(() => {
     const isActiveTab = activeTabIndex === tabIndex;
@@ -280,14 +280,6 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
           setTitle(parsedData.payload);
         } else {
           const m = currentMessenger.current;
-          // const messengerUrlOrigin = new URL(m.url).origin;
-          // if (messengerUrlOrigin === origin) {
-          console.log('[BROWSER]: received message', parsedData);
-
-          // We need to do this to simulate the postMessage scenario where there's a listener
-          // that gets triggered when we received the message.
-          // So first we set the listener
-
           handleProviderRequestApp({
             messenger: m,
             data: parsedData,
@@ -331,11 +323,11 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
   }, []);
 
   const handleOnLoadEnd = useCallback(() => {
-    console.log('[BROWSER]: handleOnLoadEnd', tabStates[tabIndex].url);
+    console.info('[BROWSER]: handleOnLoadEnd', tabStates[tabIndex].url);
   }, [tabIndex, tabStates]);
 
   const handleOnError = useCallback(() => {
-    console.log('[BROWSER]: handleOnError', tabStates[tabIndex].url);
+    console.info('[BROWSER]: handleOnError', tabStates[tabIndex].url);
   }, [tabIndex, tabStates]);
 
   const handleShouldStartLoadWithRequest = useCallback(() => {
@@ -453,7 +445,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
                 >
                   <Image
                     height={WEBVIEW_HEIGHT}
-                    onError={e => console.log('Image loading error:', e.nativeEvent.error)}
+                    onError={e => console.error('Image loading error:', e.nativeEvent.error)}
                     source={{ uri: screenshot?.uri }}
                     style={[
                       styles.webViewStyle,

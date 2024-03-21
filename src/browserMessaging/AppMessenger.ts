@@ -106,13 +106,14 @@ export const appMessenger = (webViewRef: WebView, tabId: string, url: string) =>
           let error;
           let response;
           try {
+            console.info('[MESSENGER]: waiting for request: ', { request: event.data.payload });
             response = await callback(event.data.payload, {
               topic: event.data.topic,
               // @ts-ignore
               sender: event.meta.sender as IMessageSender,
               id: event.data.id,
             });
-            console.log('[MESSENGER]: got response from callback: ', response);
+            console.info('[MESSENGER]: got response from callback for request: ', { request: event.data.payload, response });
           } catch (error_) {
             console.error('[MESSENGER]: Error while getting response from callback: ', error_);
             error = error_;
