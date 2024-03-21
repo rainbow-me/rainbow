@@ -8,6 +8,7 @@ import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import AddWalletToCloudBackupStep from '@/components/backup/AddWalletToCloudBackupStep';
 import BackupManuallyStep from './BackupManuallyStep';
 import { getHeightForStep } from '@/navigation/config';
+import { CloudBackupProvider } from './CloudBackupProvider';
 
 type BackupSheetParams = {
   BackupSheet: {
@@ -25,7 +26,11 @@ export default function BackupSheet() {
   const renderStep = useCallback(() => {
     switch (step) {
       case WalletBackupStepTypes.backup_now_to_cloud:
-        return <AddWalletToCloudBackupStep />;
+        return (
+          <CloudBackupProvider>
+            <AddWalletToCloudBackupStep />
+          </CloudBackupProvider>
+        );
       case WalletBackupStepTypes.backup_now_manually:
         return <BackupManuallyStep />;
       case WalletBackupStepTypes.backup_cloud:
