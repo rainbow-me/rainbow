@@ -67,8 +67,6 @@ export const useSwapAssets = ({ bridge }: { bridge: boolean }) => {
     }
   );
 
-  console.log('userAssets', userAssets);
-
   const filteredAssetsToSell = useMemo(() => {
     return debouncedAssetToSellFilter
       ? userAssets.filter(({ name, symbol, address }) =>

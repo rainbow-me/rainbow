@@ -6,12 +6,14 @@ import { Bleed, Box, HitSlop, Inline, Separator, Stack, Text, globalColors, useC
 import { useAccountAccentColor, useDimensions } from '@/hooks';
 import { Network } from '@/networks/types';
 import { useTheme } from '@/theme';
-import { SwapCoinIcon } from './SwapCoinIcon';
-import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../constants';
-import { DAI_ADDRESS, ETH_ADDRESS, USDC_ADDRESS } from '../dummyValues';
-import { opacity } from '../utils/swaps';
-import { CoinRow } from './CoinRow';
-import { SearchInput } from './SearchInput';
+import { SwapCoinIcon } from '../SwapCoinIcon';
+import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../../constants';
+import { DAI_ADDRESS, ETH_ADDRESS, USDC_ADDRESS } from '../../dummyValues';
+import { opacity } from '../../utils/swaps';
+import { CoinRow } from '../CoinRow';
+import { SearchInput } from '../SearchInput';
+import { TokenToSellList } from './TokenToSellList';
+import { TokenToBuyList } from './TokenToBuyList';
 
 export const TokenList = ({
   color,
@@ -127,7 +129,7 @@ export const TokenList = ({
                     </Box>
                   </Bleed>
                   <Text color="label" size="15pt" weight="heavy">
-                    My Tokens
+                    My tokens
                   </Text>
                 </Inline>
               )}
@@ -145,105 +147,9 @@ export const TokenList = ({
                 </HitSlop>
               </ButtonPressAnimation>
             </Inline>
-            <CoinRow
-              address={ETH_ADDRESS}
-              balance="7"
-              isTrending={output}
-              name="Ethereum"
-              nativeBalance="$18,320"
-              output={output}
-              symbol="ETH"
-            />
-            <CoinRow
-              address={USDC_ADDRESS}
-              balance="2,640"
-              isTrending={output}
-              name="USD Coin"
-              nativeBalance="$2,640"
-              output={output}
-              symbol="USDC"
-            />
-            <CoinRow
-              address={DAI_ADDRESS}
-              balance="2,800.02"
-              isTrending={output}
-              name="Dai"
-              nativeBalance="$2,800"
-              output={output}
-              symbol="DAI"
-            />
           </Stack>
-          <Stack space="20px">
-            {output && (
-              <Inline alignVertical="center" space="6px">
-                <Bleed vertical="4px">
-                  <Box alignItems="center" justifyContent="center" width={{ custom: 16 }}>
-                    <Bleed space={isDarkMode ? '16px' : undefined}>
-                      <RNText
-                        style={
-                          isDarkMode
-                            ? [
-                                styles.textIconGlow,
-                                {
-                                  textShadowColor: opacity(blue, 0.28),
-                                },
-                              ]
-                            : undefined
-                        }
-                      >
-                        <Text align="center" color="blue" size="icon 13px" weight="heavy">
-                          􀐫
-                        </Text>
-                      </RNText>
-                    </Bleed>
-                  </Box>
-                </Bleed>
-                <Text color="label" size="15pt" weight="heavy">
-                  Recent
-                </Text>
-              </Inline>
-            )}
-            <CoinRow
-              address="0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9"
-              balance="428.25"
-              name="Aave"
-              nativeBalance="$1,400"
-              output={output}
-              symbol="AAVE"
-            />
-            <CoinRow
-              address="0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"
-              balance="0.042819"
-              name="Wrapped Bitcoin"
-              nativeBalance="$1,025"
-              output={output}
-              symbol="WBTC"
-            />
-            <CoinRow
-              address="0xc00e94cb662c3520282e6f5717214004a7f26888"
-              balance="72.2806"
-              name="Compound"
-              nativeBalance="$350.04"
-              output={output}
-              symbol="COMP"
-            />
-            <CoinRow
-              address="0x1f9840a85d5af5bf1d1762f925bdaddc4201f984"
-              balance="62.82"
-              name="Uniswap"
-              nativeBalance="$289.52"
-              output={output}
-              symbol="UNI"
-            />
-            <CoinRow
-              address="0x514910771af9ca656af840dff83e8264ecf986ca"
-              balance="27.259"
-              name="Chainlink"
-              nativeBalance="$87.50"
-              output={output}
-              symbol="LINK"
-            />
-          </Stack>
+          {!output && <TokenToSellList />}
+          {output && <TokenToBuyList />}
         </Stack>
       </ScrollView>
     </Stack>

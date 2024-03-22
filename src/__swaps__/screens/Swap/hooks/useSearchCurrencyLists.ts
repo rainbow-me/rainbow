@@ -342,6 +342,7 @@ export function useSearchCurrencyLists({
     // }
 
     if (query === '') {
+      console.log({ curatedAssets, outputChainId });
       sections.push({
         data: filterAssetsFromFavoritesBridgeAndAssetToSell(curatedAssets[outputChainId]),
         id: 'verified',

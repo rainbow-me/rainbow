@@ -1,0 +1,63 @@
+import { createStore } from '@/state/internal/createStore';
+import { useStore } from 'zustand';
+import { ParsedSearchAsset } from '../types/assets';
+import { SearchAsset } from '../types/search';
+import { ChainId } from '@/__swaps__/screens/Swap/types/chains';
+import { SortMethod } from '../types/swap';
+
+export interface SwapAssetState {
+  assetToSell: ParsedSearchAsset | SearchAsset | null;
+  assetToBuy: ParsedSearchAsset | SearchAsset | null;
+  outputChainId: ChainId;
+  sortMethod: SortMethod;
+  searchFilter: string;
+  setAssetToSell: (asset: ParsedSearchAsset | SearchAsset) => void;
+  setAssetToBuy: (asset: ParsedSearchAsset | SearchAsset) => void;
+  setOutputChainId: (chainId: ChainId) => void;
+  setSortMethod: (sortMethod: SortMethod) => void;
+  setSearchFilter: (searchFilter: string) => void;
+}
+
+export const swapAssetStore = createStore<SwapAssetState>((set, get) => ({
+  assetToSell: null,
+  assetToBuy: null,
+  outputChainId: ChainId.mainnet,
+  sortMethod: 'token',
+  searchFilter: '',
+
+  setAssetToSell(asset) {
+    const assetToBuy = get().assetToBuy;
+    const prevAssetToSell = get().assetToSell;
+
+    // if the asset to buy is the same as the asset to sell, then clear the asset to buy
+    if (assetToBuy && asset && assetToBuy.address === asset.address && assetToBuy.chainId === asset.chainId) {
+      set({ assetToBuy: prevAssetToSell === undefined ? undefined : prevAssetToSell });
+    }
+
+    set({ assetToSell: asset, outputChainId: asset.chainId });
+  },
+
+  setAssetToBuy(asset) {
+    const currentAsset = get().assetToBuy;
+    // prevent updating the asset to the same asset
+    if (currentAsset?.uniqueId === asset.uniqueId) {
+      return;
+    }
+
+    set({ assetToBuy: asset });
+  },
+
+  setOutputChainId(chainId) {
+    set({ outputChainId: chainId });
+  },
+
+  setSortMethod(sortMethod) {
+    set({ sortMethod });
+  },
+
+  setSearchFilter(searchFilter) {
+    set({ searchFilter });
+  },
+}));
+
+export const useSwapAssetStore = () => useStore(swapAssetStore);

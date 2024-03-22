@@ -31,53 +31,58 @@ export const USER_ASSETS_STALE_INTERVAL = 30000;
 export type UserAssetsArgs = {
   address?: Address;
   currency: SupportedCurrencyKey;
+  testnetMode?: boolean;
 };
 
 type SetUserAssetsArgs = {
   address?: Address;
   currency: SupportedCurrencyKey;
   userAssets?: UserAssetsResult;
+  testnetMode?: boolean;
 };
 
 type SetUserDefaultsArgs = {
   address?: Address;
   currency: SupportedCurrencyKey;
   staleTime: number;
+  testnetMode?: boolean;
 };
 
 type FetchUserAssetsArgs = {
   address?: Address;
   currency: SupportedCurrencyKey;
+  testnetMode?: boolean;
 };
 
 // ///////////////////////////////////////////////
 // Query Key
 
-export const userAssetsQueryKey = ({ address, currency }: UserAssetsArgs) =>
-  createQueryKey('userAssets', { address, currency }, { persisterVersion: 1 });
+export const userAssetsQueryKey = ({ address, currency, testnetMode }: UserAssetsArgs) =>
+  createQueryKey('userAssets', { address, currency, testnetMode }, { persisterVersion: 3 });
 
 type UserAssetsQueryKey = ReturnType<typeof userAssetsQueryKey>;
 
 // ///////////////////////////////////////////////
 // Query Function
 
-export const userAssetsFetchQuery = ({ address, currency }: FetchUserAssetsArgs) => {
-  queryClient.fetchQuery(userAssetsQueryKey({ address, currency }), userAssetsQueryFunction);
+export const userAssetsFetchQuery = ({ address, currency, testnetMode }: FetchUserAssetsArgs) => {
+  queryClient.fetchQuery(userAssetsQueryKey({ address, currency, testnetMode }), userAssetsQueryFunction);
 };
 
-export const userAssetsSetQueryDefaults = ({ address, currency, staleTime }: SetUserDefaultsArgs) => {
-  queryClient.setQueryDefaults(userAssetsQueryKey({ address, currency }), {
+export const userAssetsSetQueryDefaults = ({ address, currency, staleTime, testnetMode }: SetUserDefaultsArgs) => {
+  queryClient.setQueryDefaults(userAssetsQueryKey({ address, currency, testnetMode }), {
     staleTime,
   });
 };
 
-export const userAssetsSetQueryData = ({ address, currency, userAssets }: SetUserAssetsArgs) => {
-  queryClient.setQueryData(userAssetsQueryKey({ address, currency }), userAssets);
+export const userAssetsSetQueryData = ({ address, currency, userAssets, testnetMode }: SetUserAssetsArgs) => {
+  queryClient.setQueryData(userAssetsQueryKey({ address, currency, testnetMode }), userAssets);
 };
 
-async function userAssetsQueryFunction({ queryKey: [{ address, currency }] }: QueryFunctionArgs<typeof userAssetsQueryKey>) {
+async function userAssetsQueryFunction({ queryKey: [{ address, currency, testnetMode }] }: QueryFunctionArgs<typeof userAssetsQueryKey>) {
   const cache = queryClient.getQueryCache();
-  const cachedUserAssets = (cache.find(userAssetsQueryKey({ address, currency }))?.state?.data || {}) as ParsedAssetsDictByChain;
+  const cachedUserAssets = (cache.find(userAssetsQueryKey({ address, currency, testnetMode }))?.state?.data ||
+    {}) as ParsedAssetsDictByChain;
   try {
     const url = `/${SUPPORTED_CHAIN_IDS.join(',')}/${address}/assets`;
     const res = await addysHttp.get<AddressAssetsReceivedMessage>(url, {
@@ -94,6 +99,7 @@ async function userAssetsQueryFunction({ queryKey: [{ address, currency }] }: Qu
         address,
         chainIds: chainIdsWithErrorsInResponse,
         currency,
+        testnetMode,
       });
       if (assets.length && chainIdsInResponse.length) {
         const parsedAssetsDict = await parseUserAssets({
@@ -125,14 +131,17 @@ async function userAssetsQueryFunctionRetryByChain({
   address,
   chainIds,
   currency,
+  testnetMode,
 }: {
   address: Address;
   chainIds: ChainId[];
   currency: SupportedCurrencyKey;
+  testnetMode?: boolean;
 }) {
   try {
     const cache = queryClient.getQueryCache();
-    const cachedUserAssets = (cache.find(userAssetsQueryKey({ address, currency }))?.state?.data as ParsedAssetsDictByChain) || {};
+    const cachedUserAssets =
+      (cache.find(userAssetsQueryKey({ address, currency, testnetMode }))?.state?.data as ParsedAssetsDictByChain) || {};
     const retries = [];
     for (const chainIdWithError of chainIds) {
       retries.push(
@@ -153,7 +162,7 @@ async function userAssetsQueryFunctionRetryByChain({
         cachedUserAssets[values[0].chainId] = parsedAssets;
       }
     }
-    queryClient.setQueryData(userAssetsQueryKey({ address, currency }), cachedUserAssets);
+    queryClient.setQueryData(userAssetsQueryKey({ address, currency, testnetMode }), cachedUserAssets);
   } catch (e) {
     logger.error(new RainbowError('userAssetsQueryFunctionRetryByChain: '), {
       message: (e as Error)?.message,
@@ -197,7 +206,7 @@ export function useUserAssets<TSelectResult = UserAssetsResult>(
   { address, currency }: UserAssetsArgs,
   config: QueryConfigWithSelect<UserAssetsResult, Error, TSelectResult, UserAssetsQueryKey> = {}
 ) {
-  return useQuery(userAssetsQueryKey({ address, currency }), userAssetsQueryFunction, {
+  return useQuery(userAssetsQueryKey({ address, currency, testnetMode: false }), userAssetsQueryFunction, {
     ...config,
     refetchInterval: USER_ASSETS_REFETCH_INTERVAL,
     staleTime: process.env.IS_TESTING === 'true' ? 0 : 1000,

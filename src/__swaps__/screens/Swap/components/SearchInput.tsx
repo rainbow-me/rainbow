@@ -5,6 +5,7 @@ import { Input } from '@/components/inputs';
 import { Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../constants';
 import { opacity } from '../utils/swaps';
+import { useSwapAssetStore } from '../state/assets';
 
 export const SearchInput = ({
   color,
@@ -23,8 +24,9 @@ export const SearchInput = ({
 }) => {
   const { isDarkMode } = useColorMode();
 
+  const { searchFilter, setSearchFilter } = useSwapAssetStore();
+
   const inputRef = React.useRef<TextInput>(null);
-  const [query, setQuery] = React.useState('');
 
   const fillTertiary = useForegroundColor('fillTertiary');
   const label = useForegroundColor('label');
@@ -58,9 +60,10 @@ export const SearchInput = ({
                 <Input
                   onBlur={() => {
                     handleExitSearch();
+                    setSearchFilter('');
                     setIsFocused(false);
                   }}
-                  onChange={(value: string) => setQuery(value)}
+                  onChangeText={setSearchFilter}
                   onFocus={() => {
                     handleFocusSearch();
                     setIsFocused(true);
@@ -77,7 +80,7 @@ export const SearchInput = ({
                     height: 44,
                     zIndex: 10,
                   }}
-                  value={query}
+                  value={searchFilter}
                 />
               </Columns>
             </Box>

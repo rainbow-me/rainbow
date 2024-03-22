@@ -13,7 +13,7 @@ import { SwapCoinIcon } from '../SwapCoinIcon';
 import { FadeMask } from '../FadeMask';
 import { SwapInput } from '../SwapInput';
 import { BalanceBadge } from '../BalanceBadge';
-import { TokenList } from '../TokenList';
+import { TokenList } from '../TokenList/TokenList';
 import {
   BASE_INPUT_WIDTH,
   ETH_COLOR_DARK,
@@ -25,6 +25,8 @@ import {
 import { INPUT_ADDRESS, INPUT_ASSET_BALANCE, INPUT_NETWORK, INPUT_SYMBOL } from '../../dummyValues';
 import { IS_ANDROID } from '@/env';
 import { useSwapContext } from '../../providers/swap-provider';
+import { useSwapAssetStore } from '../../state/assets';
+import { ethereumUtils } from '@/utils';
 
 export function SwapInputAsset() {
   const { isDarkMode } = useColorMode();
@@ -43,6 +45,8 @@ export function SwapInputAsset() {
     isInputSearchFocused,
     setIsInputSearchFocused,
   } = useSwapContext();
+
+  const { assetToSell } = useSwapAssetStore();
 
   return (
     <SwapInput color={topColor} otherInputProgress={outputProgress} progress={inputProgress}>
@@ -65,11 +69,11 @@ export function SwapInputAsset() {
                   />
                 ) : (
                   <SwapCoinIcon
-                    address={INPUT_ADDRESS}
+                    address={assetToSell!.address}
                     large
-                    mainnetAddress={INPUT_ADDRESS}
-                    network={INPUT_NETWORK}
-                    symbol={INPUT_SYMBOL}
+                    mainnetAddress={assetToSell!.mainnetAddress}
+                    network={ethereumUtils.getNetworkFromChainId(assetToSell!.chainId)}
+                    symbol={assetToSell!.symbol}
                     theme={theme}
                   />
                 )}

@@ -13,7 +13,7 @@ import { SwapCoinIcon } from '../SwapCoinIcon';
 import { FadeMask } from '../FadeMask';
 import { SwapInput } from '../SwapInput';
 import { BalanceBadge } from '../BalanceBadge';
-import { TokenList } from '../TokenList';
+import { TokenList } from '../TokenList/TokenList';
 import {
   BASE_INPUT_WIDTH,
   ETH_COLOR_DARK,
