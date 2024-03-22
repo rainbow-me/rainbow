@@ -11,8 +11,7 @@ export { default as tokenGateCheckerAbi } from './token-gate-checker-abi.json';
 export { default as optimismGasOracleAbi } from './optimism-gas-oracle-abi.json';
 export { default as ethUnits } from './ethereum-units.json';
 export { default as timeUnits } from './time-units.json';
-
-export { default as supportedNativeCurrencies } from './native-currencies.json';
+export { supportedCurrencies as supportedNativeCurrencies, type SupportedCurrencyKey, type SupportedCurrency } from './supportedCurrencies';
 export { default as shitcoins } from './shitcoins';
 export { default as smartContractMethods } from './smartcontract-methods.json';
 export { rainbowTokenList } from './rainbow-token-list';
