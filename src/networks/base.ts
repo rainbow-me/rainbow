@@ -57,7 +57,7 @@ export const getBaseNetworkObject = (): NetworkProperties => {
       defaultSlippage: 200,
     },
 
-    nfts: {},
+    nfts: { simplehashNetwork: 'base' },
 
     // design tings
     colors: {

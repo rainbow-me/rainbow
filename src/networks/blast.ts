@@ -60,7 +60,7 @@ export const getBlastNetworkObject = (): NetworkProperties => {
       defaultSlippage: 200,
     },
 
-    nfts: {},
+    nfts: { simplehashNetwork: 'blast' },
 
     // design tings
     colors: {
