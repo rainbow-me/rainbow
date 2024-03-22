@@ -97,7 +97,7 @@
     "@ledgerhq/react-native-hw-transport-ble": "6.27.7",
     "@metamask/eth-sig-util": "7.0.1",
     "@notifee/react-native": "5.6.0",
-    "@rainbow-me/provider": "0.0.4",
+    "@rainbow-me/provider": "0.0.11",
     "@rainbow-me/react-native-animated-number": "0.0.2",
     "@rainbow-me/swaps": "0.10.0",
     "@react-native-async-storage/async-storage": "1.18.2",
@@ -169,7 +169,6 @@
     "ethereumjs-wallet": "1.0.1",
     "events": "3.3.0",
     "fast-text-encoding": "1.0.4",
-    "flatted": "3.2.7",
     "global": "4.4.0",
     "grapheme-splitter": "1.0.4",
     "graphql-request": "5.0.0",
@@ -370,7 +369,8 @@
     "ts-migrate": "0.1.26",
     "typescript": "5.1.6",
     "typescript-coverage-report": "0.6.1",
-    "webpack": "5.90.3"
+    "webpack": "5.90.3",
+    "webpack-cli": "5.1.4"
   },
   "resolutions": {
     "**/async": "2.6.4",
