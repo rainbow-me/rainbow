@@ -1,10 +1,11 @@
 import { NFT_API_KEY, NFT_API_URL } from 'react-native-dotenv';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { Network } from '@/helpers';
-import { SimpleHashChain, SimpleHashListing, SimpleHashNFT, SimpleHashMarketplaceId } from '@/resources/nfts/simplehash/types';
+import { SimpleHashListing, SimpleHashNFT, SimpleHashMarketplaceId } from '@/resources/nfts/simplehash/types';
 import { RainbowNetworks, getNetworkObj } from '@/networks';
 import { UniqueAsset } from '@/entities';
 import { RainbowError, logger } from '@/logger';
+import { getGnosisNetworkObject } from '@/networks/gnosis';
 
 export const START_CURSOR = 'start';
 
@@ -105,7 +106,7 @@ export async function fetchSimpleHashNFTListing(
  * @param nft
  */
 export async function refreshNFTContractMetadata(nft: UniqueAsset) {
-  const chain = nft.isPoap ? SimpleHashChain.Gnosis : getNetworkObj(nft.network).nfts.simplehashNetwork;
+  const chain = (nft.isPoap ? getGnosisNetworkObject() : getNetworkObj(nft.network)).nfts.simplehashNetwork;
 
   if (!chain) {
     logger.error(new RainbowError(`refreshNFTContractMetadata: no SimpleHash chain for network: ${nft.network}`));
@@ -157,7 +158,7 @@ export async function refreshNFTContractMetadata(nft: UniqueAsset) {
  * @param nft
  */
 export async function reportNFT(nft: UniqueAsset) {
-  const chain = nft.isPoap ? SimpleHashChain.Gnosis : getNetworkObj(nft.network).nfts.simplehashNetwork;
+  const chain = (nft.isPoap ? getGnosisNetworkObject() : getNetworkObj(nft.network)).nfts.simplehashNetwork;
 
   if (!chain) {
     logger.error(new RainbowError(`reportNFT: no SimpleHash chain for network: ${nft.network}`));

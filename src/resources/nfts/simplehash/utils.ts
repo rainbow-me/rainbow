@@ -3,7 +3,6 @@ import { UniqueAsset } from '@/entities/uniqueAssets';
 import {
   SimpleHashNFT,
   ValidatedSimpleHashNFT,
-  SimpleHashChain,
   SimpleHashFloorPrice,
   SimpleHashMarketplaceId,
   SimpleHashTrait,
@@ -22,6 +21,8 @@ import { deviceUtils } from '@/utils';
 import { TokenStandard } from '@/handlers/web3';
 import { handleNFTImages } from '@/utils/handleNFTImages';
 import { RainbowNetworks } from '@/networks';
+import { getPolygonNetworkObject } from '@/networks/polygon';
+import { getGnosisNetworkObject } from '@/networks/gnosis';
 
 const ENS_COLLECTION_NAME = 'ENS';
 const SVG_MIME_TYPE = 'image/svg+xml';
@@ -56,8 +57,9 @@ export function filterSimpleHashNFTs(nfts: SimpleHashNFT[], polygonAllowlist?: P
 
     const isMissingRequiredFields = !name || !collectionName || !contract_address || !token_id || !network;
     const isPolygonAndNotAllowed =
-      polygonAllowlist && nft.chain === SimpleHashChain.Polygon && !polygonAllowlist[lowercasedContractAddress];
-    const isGnosisAndNotPOAP = nft.chain === SimpleHashChain.Gnosis && lowercasedContractAddress !== POAP_NFT_ADDRESS;
+      polygonAllowlist && nft.chain === getPolygonNetworkObject().nfts.simplehashNetwork && !polygonAllowlist[lowercasedContractAddress];
+    const isGnosisAndNotPOAP =
+      nft.chain === getGnosisNetworkObject().nfts.simplehashNetwork && lowercasedContractAddress !== POAP_NFT_ADDRESS;
 
     if (isMissingRequiredFields || isPolygonAndNotAllowed || isGnosisAndNotPOAP) {
       return [];
