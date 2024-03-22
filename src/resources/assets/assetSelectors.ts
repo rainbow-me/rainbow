@@ -3,7 +3,6 @@ import isEmpty from 'lodash/isEmpty';
 import isNil from 'lodash/isNil';
 import { ParsedAddressAsset } from '@/entities';
 import { parseAssetsNative } from '@/parsers';
-import { ChainId } from '@rainbow-me/swaps';
 
 const EMPTY_ARRAY: any = [];
 
