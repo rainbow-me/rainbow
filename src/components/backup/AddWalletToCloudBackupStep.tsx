@@ -6,6 +6,7 @@ import WalletsAndBackupIcon from '@/assets/WalletsAndBackup.png';
 import { Source } from 'react-native-fast-image';
 import { cloudPlatform } from '@/utils/platform';
 import { ButtonPressAnimation } from '../animations';
+import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
 import { useWallets } from '@/hooks';
 import { WalletCountPerType, useVisibleWallets } from '@/screens/SettingsSheet/useVisibleWallets';
@@ -28,11 +29,17 @@ export default function AddWalletToCloudBackupStep() {
 
   const { onSubmit } = useCreateBackup({
     walletId: selectedWallet.id,
+    navigateToRoute: {
+      route: Routes.SETTINGS_SHEET,
+      params: {
+        screen: Routes.SETTINGS_SECTION_BACKUP,
+      },
+    },
   });
 
   const potentiallyLoginAndSubmit = useCallback(async () => {
     await login();
-    return onSubmit();
+    return onSubmit({});
   }, [onSubmit]);
 
   const onMaybeLater = useCallback(() => goBack(), [goBack]);

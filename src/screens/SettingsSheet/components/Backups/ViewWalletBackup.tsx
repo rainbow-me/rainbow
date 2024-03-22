@@ -395,7 +395,7 @@ const ViewWalletBackup = () => {
                   cloudPlatformName: cloudPlatform,
                 })}
                 loading={loading}
-                onPress={onSubmit}
+                onPress={() => onSubmit({})}
               />
             </Menu>
           )}
@@ -415,7 +415,7 @@ const ViewWalletBackup = () => {
                   cloudPlatformName: cloudPlatform,
                 })}
                 loading={loading}
-                onPress={onSubmit}
+                onPress={() => onSubmit({})}
               />
             </Menu>
           )}

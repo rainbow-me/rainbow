@@ -7,7 +7,7 @@ import React, { useRef } from 'react';
 import * as i18n from '@/languages';
 import { HARDWARE_WALLETS, PROFILES, useExperimentalFlag } from '@/config';
 import { analytics, analyticsV2 } from '@/analytics';
-import { InteractionManager } from 'react-native';
+import { InteractionManager, Linking } from 'react-native';
 import { createAccountForWallet, walletsLoadState } from '@/redux/wallets';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
 import { createWallet } from '@/model/wallet';
@@ -24,6 +24,7 @@ import {
   backupUserDataIntoCloud,
   getGoogleAccountUserData,
   GoogleDriveUserData,
+  isCloudBackupAvailable,
   login,
   logoutFromGoogleDrive,
 } from '@/handlers/cloudBackup';
@@ -215,11 +216,28 @@ export const AddWalletSheet = () => {
         logger.error(e as RainbowError);
       }
     } else {
-      try {
-        navigate(Routes.RESTORE_SHEET);
-      } catch (e) {
-        logger.error(e as RainbowError);
+      const isAvailable = await isCloudBackupAvailable();
+      if (!isAvailable) {
+        Alert.alert(
+          i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.label),
+          i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.description),
+          [
+            {
+              onPress: () => {
+                Linking.openURL('https://support.apple.com/en-us/HT204025');
+              },
+              text: i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.show_me),
+            },
+            {
+              style: 'cancel',
+              text: i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.no_thanks),
+            },
+          ]
+        );
+        return;
       }
+
+      navigate(Routes.RESTORE_SHEET);
     }
   };
 

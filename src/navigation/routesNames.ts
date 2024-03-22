@@ -98,7 +98,7 @@ const Routes = {
 
   SETTINGS_SECTION: 'SettingsSection',
   SETTINGS_WALLET_NOTIFICATIONS: 'WalletNotificationsSettings',
-  SETTINGS_BACKUP_VIEW: 'WiewWalletBackup',
+  SETTINGS_BACKUP_VIEW: 'ViewWalletBackup',
   SETTINGS_SECTION_APP_ICON: 'AppIconSection',
   SETTINGS_SECTION_BACKUP: 'BackupSection',
   SETTINGS_SECTION_CURRENCY: 'CurrencySection',

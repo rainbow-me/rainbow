@@ -7,13 +7,17 @@ import { analytics } from '@/analytics';
 import { useWalletCloudBackup, useWallets } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
-import { Navigation } from '@/navigation';
+import { Navigation, useNavigation } from '@/navigation';
 import { InteractionManager } from 'react-native';
 import { DelayedAlert } from '../alerts';
 import { useDispatch } from 'react-redux';
 
 type UseCreateBackupProps = {
   walletId?: string;
+  navigateToRoute?: {
+    route: string;
+    params?: any;
+  };
 };
 
 export type useCreateBackupStateType = 'none' | 'loading' | 'success' | 'error';
@@ -23,8 +27,9 @@ export enum BackupTypes {
   All = 'all',
 }
 
-export const useCreateBackup = ({ walletId }: UseCreateBackupProps) => {
+export const useCreateBackup = ({ walletId, navigateToRoute }: UseCreateBackupProps) => {
   const dispatch = useDispatch();
+  const { navigate } = useNavigation();
 
   const { fetchBackups } = useCloudBackups();
   const walletCloudBackup = useWalletCloudBackup();
@@ -66,7 +71,7 @@ export const useCreateBackup = ({ walletId }: UseCreateBackupProps) => {
   );
 
   const onConfirmBackup = useCallback(
-    async (password: string, type: BackupTypes) => {
+    async ({ password, type }: { password: string; type: BackupTypes }) => {
       analytics.track('Tapped "Confirm Backup"');
       setLoading('loading');
 
@@ -99,8 +104,12 @@ export const useCreateBackup = ({ walletId }: UseCreateBackupProps) => {
         password,
         walletId,
       });
+
+      if (navigateToRoute) {
+        navigate(navigateToRoute.route, navigateToRoute.params || {});
+      }
     },
-    [walletId, walletCloudBackup, onError, onSuccess, wallets, latestBackup, dispatch]
+    [walletId, walletCloudBackup, onError, onSuccess, navigateToRoute, wallets, latestBackup, dispatch, navigate]
   );
 
   const getPassword = useCallback(async (): Promise<string | null> => {
@@ -128,10 +137,13 @@ export const useCreateBackup = ({ walletId }: UseCreateBackupProps) => {
   }, [walletId]);
 
   const onSubmit = useCallback(
-    async (type = BackupTypes.Single) => {
+    async ({ type = BackupTypes.Single }: { type?: BackupTypes }) => {
       const password = await getPassword();
       if (password) {
-        onConfirmBackup(password, type);
+        onConfirmBackup({
+          password,
+          type,
+        });
         return true;
       }
       setLoadingStateWithTimeout('error');

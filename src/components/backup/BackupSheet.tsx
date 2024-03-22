@@ -26,11 +26,7 @@ export default function BackupSheet() {
   const renderStep = useCallback(() => {
     switch (step) {
       case WalletBackupStepTypes.backup_now_to_cloud:
-        return (
-          <CloudBackupProvider>
-            <AddWalletToCloudBackupStep />
-          </CloudBackupProvider>
-        );
+        return <AddWalletToCloudBackupStep />;
       case WalletBackupStepTypes.backup_now_manually:
         return <BackupManuallyStep />;
       case WalletBackupStepTypes.backup_cloud:
@@ -44,17 +40,19 @@ export default function BackupSheet() {
   }, [step]);
 
   return (
-    <BackgroundProvider color="surfaceSecondary">
-      {({ backgroundColor }) => (
-        <SimpleSheet
-          testID="backup-sheet"
-          backgroundColor={backgroundColor as string}
-          customHeight={getHeightForStep(step)}
-          scrollEnabled={false}
-        >
-          {renderStep()}
-        </SimpleSheet>
-      )}
-    </BackgroundProvider>
+    <CloudBackupProvider>
+      <BackgroundProvider color="surfaceSecondary">
+        {({ backgroundColor }) => (
+          <SimpleSheet
+            testID="backup-sheet"
+            backgroundColor={backgroundColor as string}
+            customHeight={getHeightForStep(step)}
+            scrollEnabled={false}
+          >
+            {renderStep()}
+          </SimpleSheet>
+        )}
+      </BackgroundProvider>
+    </CloudBackupProvider>
   );
 }

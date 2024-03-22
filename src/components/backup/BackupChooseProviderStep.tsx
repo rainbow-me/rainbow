@@ -1,4 +1,5 @@
 import React from 'react';
+import { useCreateBackup } from '@/components/backup/useCreateBackup';
 import { Bleed, Box, Inline, Inset, Separator, Stack, Text } from '@/design-system';
 import * as lang from '@/languages';
 import { ImgixImage } from '../images';
@@ -11,11 +12,15 @@ import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '../animations';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { SETTINGS_BACKUP_ROUTES } from '@/screens/SettingsSheet/components/Backups/routes';
 import { useWallets } from '@/hooks';
 import walletTypes from '@/helpers/walletTypes';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
+import { IS_ANDROID } from '@/env';
+import { GoogleDriveUserData, getGoogleAccountUserData, isCloudBackupAvailable, login } from '@/handlers/cloudBackup';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import { RainbowError, logger } from '@/logger';
+import { Linking } from 'react-native';
 
 const imageSize = 72;
 
@@ -24,11 +29,59 @@ export default function BackupSheetSectionNoProvider() {
   const { navigate, goBack } = useNavigation();
   const { selectedWallet } = useWallets();
 
+  const { onSubmit, loading } = useCreateBackup({
+    walletId: selectedWallet.id,
+    navigateToRoute: {
+      route: Routes.SETTINGS_SHEET,
+      params: {
+        screen: Routes.SETTINGS_SECTION_BACKUP,
+      },
+    },
+  });
+
   const onCloudBackup = async () => {
-    navigate(Routes.BACKUP_SHEET, {
-      step: walletBackupStepTypes.backup_cloud,
-      isSettingsRoute: true,
-    });
+    if (loading !== 'none') {
+      return;
+    }
+    // NOTE: On Android we need to make sure the user is signed into a Google account before trying to backup
+    // otherwise we'll fake backup and it's confusing...
+    if (IS_ANDROID) {
+      try {
+        await login();
+        getGoogleAccountUserData().then((accountDetails: GoogleDriveUserData | undefined) => {
+          if (!accountDetails) {
+            Alert.alert(lang.t(lang.l.back_up.errors.no_account_found));
+            return;
+          }
+        });
+      } catch (e) {
+        Alert.alert(lang.t(lang.l.back_up.errors.no_account_found));
+        logger.error(e as RainbowError);
+      }
+    } else {
+      const isAvailable = await isCloudBackupAvailable();
+      if (!isAvailable) {
+        Alert.alert(
+          lang.t(lang.l.modal.back_up.alerts.cloud_not_enabled.label),
+          lang.t(lang.l.modal.back_up.alerts.cloud_not_enabled.description),
+          [
+            {
+              onPress: () => {
+                Linking.openURL('https://support.apple.com/en-us/HT204025');
+              },
+              text: lang.t(lang.l.modal.back_up.alerts.cloud_not_enabled.show_me),
+            },
+            {
+              style: 'cancel',
+              text: lang.t(lang.l.modal.back_up.alerts.cloud_not_enabled.no_thanks),
+            },
+          ]
+        );
+        return;
+      }
+    }
+
+    onSubmit({});
   };
 
   const onManualBackup = async () => {
@@ -59,6 +112,7 @@ export default function BackupSheetSectionNoProvider() {
         <Separator color="separatorSecondary" thickness={1} />
       </Bleed>
 
+      {/* replace this with BackUpMenuButton */}
       <ButtonPressAnimation scaleTo={0.95} onPress={onCloudBackup}>
         <Box alignItems="flex-start" justifyContent="flex-start" paddingTop={'24px'} paddingBottom={'36px'} gap={8}>
           <Box justifyContent="center" width="full">

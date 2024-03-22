@@ -167,7 +167,7 @@ export const WalletsAndBackup = () => {
       await login();
     }
 
-    onSubmit(BackupTypes.All);
+    onSubmit({ type: BackupTypes.All });
   }, [onSubmit]);
 
   const onViewCloudBackups = useCallback(async () => {

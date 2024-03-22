@@ -55,7 +55,7 @@ export default function useWalletCloudBackup() {
       onSuccess?: () => void;
       password: string;
       walletId: string;
-    }) => {
+    }): Promise<boolean> => {
       const isAvailable = await isCloudBackupAvailable();
       if (!isAvailable) {
         analytics.track('iCloud not enabled', {
@@ -81,7 +81,7 @@ export default function useWalletCloudBackup() {
             text: lang.t('modal.back_up.alerts.cloud_not_enabled.no_thanks'),
           },
         ]);
-        return;
+        return false;
       }
 
       // For Android devices without biometrics enabled, we need to ask for PIN
@@ -92,7 +92,7 @@ export default function useWalletCloudBackup() {
           userPIN = (await authenticateWithPIN()) ?? undefined;
         } catch (e) {
           onError?.(i18n.t(i18n.l.back_up.wrong_pin));
-          return;
+          return false;
         }
       }
 
@@ -127,7 +127,7 @@ export default function useWalletCloudBackup() {
           error: userError,
           label: cloudPlatform,
         });
-        return null;
+        return false;
       }
 
       try {
@@ -135,6 +135,7 @@ export default function useWalletCloudBackup() {
         await dispatch(setWalletBackedUp(walletId, WalletBackupTypes.cloud, updatedBackupFile));
         logger.log('backup saved everywhere!');
         !!onSuccess && onSuccess();
+        return true;
       } catch (e) {
         logger.sentry('error while trying to save wallet backup state');
         captureException(e);
@@ -145,6 +146,8 @@ export default function useWalletCloudBackup() {
           label: cloudPlatform,
         });
       }
+
+      return false;
     },
     [dispatch, latestBackup, wallets]
   );
