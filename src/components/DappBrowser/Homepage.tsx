@@ -1,6 +1,6 @@
 import { ButtonPressAnimation } from '@/components/animations';
 import { Page } from '@/components/layout';
-import { Bleed, Box, ColorModeProvider, Cover, Inline, Inset, Stack, Text } from '@/design-system';
+import { Bleed, Box, Cover, Inline, Inset, Stack, Text } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
