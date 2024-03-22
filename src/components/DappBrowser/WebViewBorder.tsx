@@ -4,7 +4,7 @@ import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated
 import { Box, Cover, globalColors } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/screens/Swap/utils';
+import { opacity } from '@/__swaps__/screens/Swap/utils/swaps';
 import { useBrowserContext } from './BrowserContext';
 
 export const WebViewBorder = ({ enabled, isActiveTab }: { enabled?: boolean; isActiveTab: boolean }) => {

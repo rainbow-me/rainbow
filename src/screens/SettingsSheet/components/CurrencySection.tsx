@@ -43,49 +43,34 @@ const CurrencySection = () => {
   );
 
   return (
-    <BackgroundProvider color="surfaceSecondary">
-      {({ backgroundColor }) => (
-        <SimpleSheet backgroundColor={backgroundColor as string}>
-          <Inset top="20px" horizontal="20px" bottom="60px">
-            <Inline alignHorizontal="center" alignVertical="center">
-              <Box paddingBottom="12px">
-                <Text size="22pt" weight="heavy" color="label">
-                  {i18n.t(i18n.l.settings.currency)}
-                </Text>
-              </Box>
-            </Inline>
-            <MenuContainer>
-              <Menu>
-                {currencyListItems.map(({ label, emojiName, currency }: any) => (
-                  <MenuItem
-                    key={currency}
-                    leftComponent={
-                      emojiName ? (
-                        <MenuItem.TextIcon icon={(emoji.get('flag_' + emojiName) as string) || ''} isEmoji />
-                      ) : (
-                        <View style={{ marginLeft: 7 }}>
-                          <RainbowCoinIcon
-                            icon={currency === ETH?.symbol ? ETH?.icon_url : WBTC?.icon_url}
-                            size={23}
-                            symbol={currency}
-                            network={Network.mainnet}
-                            theme={theme}
-                          />
-                        </View>
-                      )
-                    }
-                    onPress={() => onSelectCurrency(currency)}
-                    rightComponent={currency === nativeCurrency && <MenuItem.StatusIcon status="selected" />}
-                    size={52}
-                    titleComponent={<MenuItem.Title text={label} />}
+    <MenuContainer>
+      <Menu>
+        {currencyListItems.map(({ label, emojiName, currency }: any) => (
+          <MenuItem
+            key={currency}
+            leftComponent={
+              emojiName ? (
+                <MenuItem.TextIcon icon={(emoji.get('flag_' + emojiName) as string) || ''} isEmoji />
+              ) : (
+                <View style={{ marginLeft: 7 }}>
+                  <RainbowCoinIcon
+                    icon={currency === ETH?.symbol ? ETH?.icon_url : WBTC?.icon_url}
+                    size={23}
+                    symbol={currency}
+                    network={Network.mainnet}
+                    theme={theme}
                   />
-                ))}
-              </Menu>
-            </MenuContainer>
-          </Inset>
-        </SimpleSheet>
-      )}
-    </BackgroundProvider>
+                </View>
+              )
+            }
+            onPress={() => onSelectCurrency(currency)}
+            rightComponent={currency === nativeCurrency && <MenuItem.StatusIcon status="selected" />}
+            size={52}
+            titleComponent={<MenuItem.Title text={label} />}
+          />
+        ))}
+      </Menu>
+    </MenuContainer>
   );
 };
 

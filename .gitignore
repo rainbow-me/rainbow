@@ -79,6 +79,7 @@ src/screens/ExamplePage.js
 
 #e2e output
 e2e/logs/*/*.xml
+artifacts/*
 
 # android playstore credentials
 pc-api-8090318172169087080-31-b8ee34328314.json
@@ -118,4 +119,4 @@ coverage
 .zed/
 
 # Webpack
-src/browser/InjectedJSBundle.js.LICENSE.txt
+InjectedJSBundle.js.LICENSE.txt
