@@ -12,7 +12,7 @@ import { isLowerCaseMatch } from '@/__swaps__/screens/Swap/utils/strings';
 import type { SortMethod } from '@/__swaps__/screens/Swap/types/swap';
 import { useDebounce } from '@/__swaps__/screens/Swap/hooks/useDebounce';
 import { usePrevious } from '@/__swaps__/screens/Swap/hooks/usePrevious';
-// import { useSearchCurrencyLists } from '../useSearchCurrencyLists';
+import { useSearchCurrencyLists } from './useSearchCurrencyLists';
 import { useAccountSettings } from '@/hooks';
 
 const sortBy = (by: SortMethod) => {
@@ -67,6 +67,8 @@ export const useSwapAssets = ({ bridge }: { bridge: boolean }) => {
     }
   );
 
+  console.log('userAssets', userAssets);
+
   const filteredAssetsToSell = useMemo(() => {
     return debouncedAssetToSellFilter
       ? userAssets.filter(({ name, symbol, address }) =>
@@ -78,13 +80,13 @@ export const useSwapAssets = ({ bridge }: { bridge: boolean }) => {
       : userAssets;
   }, [debouncedAssetToSellFilter, userAssets]) as ParsedSearchAsset[];
 
-  // const { results: searchAssetsToBuySections } = useSearchCurrencyLists({
-  //   inputChainId: assetToSell?.chainId,
-  //   outputChainId,
-  //   assetToSell,
-  //   searchQuery: debouncedAssetToBuyFilter,
-  //   bridge,
-  // });
+  const { results: searchAssetsToBuySections } = useSearchCurrencyLists({
+    inputChainId: assetToSell?.chainId,
+    outputChainId,
+    assetToSell,
+    searchQuery: debouncedAssetToBuyFilter,
+    bridge,
+  });
 
   const { data: buyPriceData = [] } = useAssets({
     assetAddresses: assetToBuy ? [assetToBuy?.address] : [],
@@ -151,7 +153,7 @@ export const useSwapAssets = ({ bridge }: { bridge: boolean }) => {
   return {
     assetsToSell: filteredAssetsToSell,
     assetToSellFilter,
-    // assetsToBuy: searchAssetsToBuySections,
+    assetsToBuy: searchAssetsToBuySections,
     assetToBuyFilter,
     sortMethod,
     assetToSell: parsedAssetToSell,
