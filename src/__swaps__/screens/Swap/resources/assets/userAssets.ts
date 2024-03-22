@@ -1,0 +1,205 @@
+import { useQuery } from '@tanstack/react-query';
+import { Address } from 'viem';
+
+import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
+import { SupportedCurrencyKey, SUPPORTED_CHAIN_IDS } from '@/references';
+import { ParsedAssetsDictByChain, ZerionAsset } from '../../types/assets';
+import { ChainId } from '../../types/chains';
+import { AddressAssetsReceivedMessage } from '../../types/refraction';
+import { filterAsset, parseUserAsset } from '@/__swaps__/screens/Swap/utils/assets';
+import { greaterThan } from '@/__swaps__/screens/Swap/utils/numbers';
+import { RainbowError, logger } from '@/logger';
+
+import { fetchUserAssetsByChain } from './userAssetsByChain';
+import { RainbowFetchClient } from '@/rainbow-fetch';
+import { ADDYS_API_KEY } from 'react-native-dotenv';
+
+const addysHttp = new RainbowFetchClient({
+  baseURL: 'https://addys.p.rainbow.me/v3',
+  headers: {
+    Authorization: `Bearer ${ADDYS_API_KEY}`,
+  },
+});
+
+const USER_ASSETS_REFETCH_INTERVAL = 60000;
+const USER_ASSETS_TIMEOUT_DURATION = 20000;
+export const USER_ASSETS_STALE_INTERVAL = 30000;
+
+// ///////////////////////////////////////////////
+// Query Types
+
+export type UserAssetsArgs = {
+  address?: Address;
+  currency: SupportedCurrencyKey;
+};
+
+type SetUserAssetsArgs = {
+  address?: Address;
+  currency: SupportedCurrencyKey;
+  userAssets?: UserAssetsResult;
+};
+
+type SetUserDefaultsArgs = {
+  address?: Address;
+  currency: SupportedCurrencyKey;
+  staleTime: number;
+};
+
+type FetchUserAssetsArgs = {
+  address?: Address;
+  currency: SupportedCurrencyKey;
+};
+
+// ///////////////////////////////////////////////
+// Query Key
+
+export const userAssetsQueryKey = ({ address, currency }: UserAssetsArgs) =>
+  createQueryKey('userAssets', { address, currency }, { persisterVersion: 1 });
+
+type UserAssetsQueryKey = ReturnType<typeof userAssetsQueryKey>;
+
+// ///////////////////////////////////////////////
+// Query Function
+
+export const userAssetsFetchQuery = ({ address, currency }: FetchUserAssetsArgs) => {
+  queryClient.fetchQuery(userAssetsQueryKey({ address, currency }), userAssetsQueryFunction);
+};
+
+export const userAssetsSetQueryDefaults = ({ address, currency, staleTime }: SetUserDefaultsArgs) => {
+  queryClient.setQueryDefaults(userAssetsQueryKey({ address, currency }), {
+    staleTime,
+  });
+};
+
+export const userAssetsSetQueryData = ({ address, currency, userAssets }: SetUserAssetsArgs) => {
+  queryClient.setQueryData(userAssetsQueryKey({ address, currency }), userAssets);
+};
+
+async function userAssetsQueryFunction({ queryKey: [{ address, currency }] }: QueryFunctionArgs<typeof userAssetsQueryKey>) {
+  const cache = queryClient.getQueryCache();
+  const cachedUserAssets = (cache.find(userAssetsQueryKey({ address, currency }))?.state?.data || {}) as ParsedAssetsDictByChain;
+  try {
+    const url = `/${SUPPORTED_CHAIN_IDS.join(',')}/${address}/assets`;
+    const res = await addysHttp.get<AddressAssetsReceivedMessage>(url, {
+      params: {
+        currency: currency.toLowerCase(),
+      },
+      timeout: USER_ASSETS_TIMEOUT_DURATION,
+    });
+    const chainIdsInResponse = res?.data?.meta?.chain_ids || [];
+    const chainIdsWithErrorsInResponse = res?.data?.meta?.chain_ids_with_errors || [];
+    const assets = res?.data?.payload?.assets || [];
+    if (address) {
+      userAssetsQueryFunctionRetryByChain({
+        address,
+        chainIds: chainIdsWithErrorsInResponse,
+        currency,
+      });
+      if (assets.length && chainIdsInResponse.length) {
+        const parsedAssetsDict = await parseUserAssets({
+          assets,
+          chainIds: chainIdsInResponse,
+          currency,
+        });
+
+        for (const missingChainId of chainIdsWithErrorsInResponse) {
+          if (cachedUserAssets[missingChainId]) {
+            parsedAssetsDict[missingChainId] = cachedUserAssets[missingChainId];
+          }
+        }
+        return parsedAssetsDict;
+      }
+    }
+    return cachedUserAssets;
+  } catch (e) {
+    logger.error(new RainbowError('userAssetsQueryFunction: '), {
+      message: (e as Error)?.message,
+    });
+    return cachedUserAssets;
+  }
+}
+
+type UserAssetsResult = QueryFunctionResult<typeof userAssetsQueryFunction>;
+
+async function userAssetsQueryFunctionRetryByChain({
+  address,
+  chainIds,
+  currency,
+}: {
+  address: Address;
+  chainIds: ChainId[];
+  currency: SupportedCurrencyKey;
+}) {
+  try {
+    const cache = queryClient.getQueryCache();
+    const cachedUserAssets = (cache.find(userAssetsQueryKey({ address, currency }))?.state?.data as ParsedAssetsDictByChain) || {};
+    const retries = [];
+    for (const chainIdWithError of chainIds) {
+      retries.push(
+        fetchUserAssetsByChain(
+          {
+            address,
+            chainId: chainIdWithError,
+            currency,
+          },
+          { cacheTime: 0 }
+        )
+      );
+    }
+    const parsedRetries = await Promise.all(retries);
+    for (const parsedAssets of parsedRetries) {
+      const values = Object.values(parsedAssets);
+      if (values[0]) {
+        cachedUserAssets[values[0].chainId] = parsedAssets;
+      }
+    }
+    queryClient.setQueryData(userAssetsQueryKey({ address, currency }), cachedUserAssets);
+  } catch (e) {
+    logger.error(new RainbowError('userAssetsQueryFunctionRetryByChain: '), {
+      message: (e as Error)?.message,
+    });
+  }
+}
+
+export async function parseUserAssets({
+  assets,
+  chainIds,
+  currency,
+}: {
+  assets: {
+    quantity: string;
+    small_balance?: boolean;
+    asset: ZerionAsset;
+  }[];
+  chainIds: ChainId[];
+  currency: SupportedCurrencyKey;
+}) {
+  const parsedAssetsDict = chainIds.reduce((dict, currentChainId) => ({ ...dict, [currentChainId]: {} }), {}) as ParsedAssetsDictByChain;
+  for (const { asset, quantity, small_balance } of assets) {
+    if (!filterAsset(asset) && greaterThan(quantity, 0)) {
+      const parsedAsset = parseUserAsset({
+        asset,
+        currency,
+        balance: quantity,
+        smallBalance: small_balance,
+      });
+      parsedAssetsDict[parsedAsset?.chainId][parsedAsset.uniqueId] = parsedAsset;
+    }
+  }
+
+  return parsedAssetsDict;
+}
+
+// ///////////////////////////////////////////////
+// Query Hook
+
+export function useUserAssets<TSelectResult = UserAssetsResult>(
+  { address, currency }: UserAssetsArgs,
+  config: QueryConfigWithSelect<UserAssetsResult, Error, TSelectResult, UserAssetsQueryKey> = {}
+) {
+  return useQuery(userAssetsQueryKey({ address, currency }), userAssetsQueryFunction, {
+    ...config,
+    refetchInterval: USER_ASSETS_REFETCH_INTERVAL,
+    staleTime: process.env.IS_TESTING === 'true' ? 0 : 1000,
+  });
+}

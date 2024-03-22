@@ -1811,6 +1811,9 @@
       "too_many_signup_request": "Too many signup requests, please try again later"
     },
     "swap": {
+      "aggregators": {
+        "rainbow": "Rainbow"
+      },
       "choose_token": "Choose Token",
       "gas": {
         "custom": "Custom",
