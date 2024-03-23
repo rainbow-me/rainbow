@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Box, globalColors, useColorMode, TextIcon } from '@/design-system';
-import { useAccountAccentColor, useAccountSettings, useDimensions } from '@/hooks';
+import { useAccountAccentColor, useAccountSettings, useDimensions, useEffectDebugger } from '@/hooks';
 import { AnimatePresence, MotiView } from 'moti';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -23,6 +23,7 @@ import { WebViewBorder } from './WebViewBorder';
 import Homepage from './Homepage';
 import { ButtonPressAnimation } from '../animations';
 import { handleProviderRequestApp } from './handleProviderRequest';
+import { logger } from '@/logger';
 
 interface BrowserTabProps {
   tabIndex: number;
@@ -98,7 +99,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
   const { width: deviceWidth } = useDimensions();
   const { accentColor } = useAccountAccentColor();
   const { isDarkMode } = useColorMode();
-  const [title, setTitle] = useState('');
+  const title = useRef<string | null>(null);
 
   const currentMessenger = useRef<any>(null);
 
@@ -262,7 +263,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tabViewFullyVisible]);
 
-  const [backgroundColor, setBackgroundColor] = useState<string>();
+  const backgroundColor = useRef<string>('');
 
   const handleOnMessage = useCallback(
     (event: WebViewMessageEvent) => {
@@ -273,9 +274,9 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
         const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
         if (!parsedData || (!parsedData.topic && !parsedData.payload)) return;
         if (parsedData.topic === 'bg') {
-          setBackgroundColor(parsedData.payload);
+          backgroundColor.current = parsedData.payload;
         } else if (parsedData.topic === 'title') {
-          setTitle(parsedData.payload);
+          title.current = parsedData.payload;
         } else {
           const m = currentMessenger.current;
           handleProviderRequestApp({
@@ -286,7 +287,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
               sender: {
                 url: m.url,
                 tab: { id: tabId },
-                title: title || tabStates[tabIndex].url,
+                title: title.current || tabStates[tabIndex].url,
               },
               id: parsedData.id,
             },
@@ -304,6 +305,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
   const handleOnLoadStart = useCallback(
     (event: { nativeEvent: { url: string | URL; title: string } }) => {
       const { origin } = new URL(event.nativeEvent.url);
+      logger.info('[BROWSERTAB]: onLoadStart', { origin });
 
       if (!webViewRef.current) {
         return;
@@ -360,7 +362,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
           style={[
             styles.webViewStyle,
             {
-              backgroundColor: backgroundColor || (colorMode === 'dark' ? '#191A1C' : globalColors.white100),
+              backgroundColor: backgroundColor.current || (colorMode === 'dark' ? '#191A1C' : globalColors.white100),
               height: COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
             },
           ]}
@@ -391,7 +393,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
         style={[
           styles.webViewStyle,
           {
-            backgroundColor: backgroundColor || (colorMode === 'dark' ? globalColors.grey100 : globalColors.white100),
+            backgroundColor: backgroundColor.current || (colorMode === 'dark' ? globalColors.grey100 : globalColors.white100),
           },
         ]}
       />
@@ -410,7 +412,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
               <View
                 collapsable={false}
                 style={{
-                  backgroundColor: backgroundColor || (colorMode === 'dark' ? '#191A1C' : globalColors.white100),
+                  backgroundColor: backgroundColor.current || (colorMode === 'dark' ? '#191A1C' : globalColors.white100),
                   height: WEBVIEW_HEIGHT,
                   width: '100%',
                 }}
