@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Box, globalColors, useColorMode, TextIcon } from '@/design-system';
-import { useAccountAccentColor, useAccountSettings, useDimensions, useEffectDebugger } from '@/hooks';
+import { useAccountAccentColor, useDimensions } from '@/hooks';
 import { AnimatePresence, MotiView } from 'moti';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -23,7 +23,6 @@ import { WebViewBorder } from './WebViewBorder';
 import Homepage from './Homepage';
 import { ButtonPressAnimation } from '../animations';
 import { handleProviderRequestApp } from './handleProviderRequest';
-import { logger } from '@/logger';
 
 interface BrowserTabProps {
   tabIndex: number;
@@ -305,8 +304,6 @@ export const BrowserTab = React.memo(function BrowserTab({ tabIndex, injectedJS 
   const handleOnLoadStart = useCallback(
     (event: { nativeEvent: { url: string | URL; title: string } }) => {
       const { origin } = new URL(event.nativeEvent.url);
-      logger.info('[BROWSERTAB]: onLoadStart', { origin });
-
       if (!webViewRef.current) {
         return;
       }
