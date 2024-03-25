@@ -10,10 +10,9 @@ import { SearchAsset, TokenSearchAssetKey, TokenSearchListId, TokenSearchThresho
 import { getChainName } from '../utils/chains';
 import { addHexPrefix } from '../utils/hex';
 import { isLowerCaseMatch } from '../utils/strings';
-
+import { isSameAsset } from '../utils/assets';
 import { filterList } from '@/utils';
 
-import { isSameAsset } from './useSwapAssets';
 import { useFavorites } from '@/resources/favorites';
 
 const VERIFIED_ASSETS_PAYLOAD: {

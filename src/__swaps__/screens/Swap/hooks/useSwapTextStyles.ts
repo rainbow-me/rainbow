@@ -34,7 +34,6 @@ export function useSwapTextStyles({
   outputProgress,
   sliderPressProgress,
 }: {
-  bottomColor: string;
   focusedInput: SharedValue<inputKeys>;
   inputMethod: SharedValue<inputMethods>;
   inputProgress: SharedValue<number>;
@@ -42,7 +41,6 @@ export function useSwapTextStyles({
   isQuoteStale: SharedValue<number>;
   outputProgress: SharedValue<number>;
   sliderPressProgress: SharedValue<number>;
-  topColor: string;
 }) {
   const { assetToBuy, assetToSell } = useSwapAssetStore();
   const { isDarkMode } = useColorMode();

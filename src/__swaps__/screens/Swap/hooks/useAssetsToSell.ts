@@ -4,8 +4,7 @@ import { Hex } from 'viem';
 import { selectUserAssetsList, selectUserAssetsListByChainId } from '../resources/_selectors/assets';
 
 import { useUserAssets } from '@/__swaps__/screens/Swap/resources/assets';
-import { ParsedAsset, ParsedAssetsDictByChain, ParsedSearchAsset } from '@/__swaps__/screens/Swap/types/assets';
-import { isLowerCaseMatch } from '@/__swaps__/screens/Swap/utils/strings';
+import { ParsedAssetsDictByChain, ParsedSearchAsset } from '@/__swaps__/screens/Swap/types/assets';
 import type { SortMethod } from '@/__swaps__/screens/Swap/types/swap';
 import { useDebounce } from '@/__swaps__/screens/Swap/hooks/useDebounce';
 import { useAccountSettings } from '@/hooks';
@@ -19,9 +18,6 @@ const sortBy = (by: SortMethod) => {
       return selectUserAssetsListByChainId;
   }
 };
-
-export const isSameAsset = (a1: Pick<ParsedAsset, 'chainId' | 'address'>, a2: Pick<ParsedAsset, 'chainId' | 'address'>) =>
-  +a1.chainId === +a2.chainId && isLowerCaseMatch(a1.address, a2.address);
 
 export const useAssetsToSell = () => {
   const { accountAddress: currentAddress, nativeCurrency: currentCurrency } = useAccountSettings();

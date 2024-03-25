@@ -7,7 +7,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { AnimatedSpinner, spinnerExitConfig } from '@/__swaps__/components/animations/AnimatedSpinner';
 import { Bleed, Box, IconContainer, Text, globalColors, useColorMode } from '@/design-system';
 import { colors } from '@/styles';
-import { SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../constants';
+import { ETH_COLOR, ETH_COLOR_DARK, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../constants';
 import { opacity } from '../utils/swaps';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { AnimatedBlurView } from './AnimatedBlurView';
@@ -18,8 +18,10 @@ import { useSwapAssetStore } from '../state/assets';
 export const FlipButton = () => {
   const { isDarkMode } = useColorMode();
 
-  const { bottomColor, isFetching, AnimatedSwapStyles } = useSwapContext();
+  const { isFetching, AnimatedSwapStyles } = useSwapContext();
   const { assetToBuy, assetToSell, setAssetToBuy, setAssetToSell } = useSwapAssetStore();
+
+  const bottomColor = (assetToBuy?.colors?.primary || assetToBuy?.colors?.fallback) ?? (isDarkMode ? ETH_COLOR_DARK : ETH_COLOR);
 
   const fetchingStyle = useAnimatedStyle(() => {
     return {

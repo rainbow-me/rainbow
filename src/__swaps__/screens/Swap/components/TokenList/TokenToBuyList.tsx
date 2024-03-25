@@ -7,7 +7,7 @@ import { useSwapAssetStore } from '../../state/assets';
 import { isL2Chain } from '../../utils/chains';
 
 export const TokenToBuyList = () => {
-  const { assetToBuy, assetToSell, outputChainId } = useSwapAssetStore();
+  const { outputChainId } = useSwapAssetStore();
   const sections = useAssetsToBuySections();
 
   const isL2 = useMemo(() => outputChainId && isL2Chain(outputChainId), [outputChainId]);

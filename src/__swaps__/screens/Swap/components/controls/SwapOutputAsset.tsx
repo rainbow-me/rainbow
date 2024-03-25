@@ -27,7 +27,8 @@ import { IS_ANDROID } from '@/env';
 import { useSwapContext } from '../../providers/swap-provider';
 import { useSwapAssetStore } from '../../state/assets';
 import { ethereumUtils } from '@/utils';
-import { isSameAsset, useAssetsToSell } from '../../hooks/useAssetsToSell';
+import { isSameAsset } from '../../utils/assets';
+import { useAssetsToSell } from '../../hooks/useAssetsToSell';
 
 export function SwapOutputAsset() {
   const { isDarkMode } = useColorMode();
@@ -50,7 +51,13 @@ export function SwapOutputAsset() {
   const userAssets = useAssetsToSell();
 
   const userBalance = useMemo(() => {
-    const sameAssetInUserAssets = userAssets.find(asset => isSameAsset(asset, assetToBuy));
+    if (!assetToBuy) {
+      return 'No balance';
+    }
+
+    const sameAssetInUserAssets = userAssets.find(asset =>
+      isSameAsset(asset, { address: assetToBuy.address, chainId: assetToBuy.chainId })
+    );
     return sameAssetInUserAssets?.balance?.display ?? 'No balance';
   }, [userAssets, assetToBuy]);
 

@@ -10,8 +10,8 @@ import { ChainId } from '../../types/chains';
 import { BackgroundColor, TextColor } from '@/design-system/color/palettes';
 import { useSwapContext } from '../../providers/swap-provider';
 import { runOnUI } from 'react-native-reanimated';
-import { isSameAsset, useAssetsToSell } from '../../hooks/useAssetsToSell';
-import { parseSearchAsset } from '../../utils/assets';
+import { parseSearchAsset, isSameAsset } from '../../utils/assets';
+import { useAssetsToSell } from '../../hooks/useAssetsToSell';
 
 interface SectionProp {
   backgroundColor?: BackgroundColor;

@@ -1,15 +1,15 @@
 import React, { useCallback } from 'react';
 import { CoinRow } from '../CoinRow';
-import { isSameAsset, useAssetsToSell } from '../../hooks/useAssetsToSell';
+import { useAssetsToSell } from '../../hooks/useAssetsToSell';
 import { ParsedSearchAsset } from '../../types/assets';
 import { useSwapAssetStore } from '../../state/assets';
 import { Stack } from '@/design-system';
 import { runOnUI } from 'react-native-reanimated';
 import { useSwapContext } from '../../providers/swap-provider';
-import { parseSearchAsset } from '../../utils/assets';
+import { parseSearchAsset, isSameAsset } from '../../utils/assets';
 
 export const TokenToSellList = () => {
-  const { SwapNavigation } = useSwapContext();
+  const { SwapNavigation, SwapInputController } = useSwapContext();
   const { setAssetToSell, assetToBuy, setSearchFilter } = useSwapAssetStore();
   const userAssets = useAssetsToSell();
 
@@ -23,6 +23,14 @@ export const TokenToSellList = () => {
       });
 
       setAssetToSell(parsedAset);
+
+      runOnUI(() => {
+        SwapInputController.inputValues.modify(prev => ({
+          ...prev,
+          inputAmount: userAsset?.balance.amount ?? '0', // TODO: Do we want to default to 100% of balance? 50%?
+        }));
+      })();
+
       setSearchFilter('');
       if (!assetToBuy) {
         runOnUI(SwapNavigation.handleFocusOutputSearch)();
@@ -30,7 +38,15 @@ export const TokenToSellList = () => {
         runOnUI(SwapNavigation.handleExitSearch)();
       }
     },
-    [SwapNavigation.handleExitSearch, SwapNavigation.handleFocusOutputSearch, assetToBuy, setAssetToSell, setSearchFilter, userAssets]
+    [
+      SwapInputController.inputValues,
+      SwapNavigation.handleExitSearch,
+      SwapNavigation.handleFocusOutputSearch,
+      assetToBuy,
+      setAssetToSell,
+      setSearchFilter,
+      userAssets,
+    ]
   );
 
   return (

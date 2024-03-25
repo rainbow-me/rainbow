@@ -14,6 +14,7 @@ import { SwapInputAsset } from './components/controls/SwapInputAsset';
 import { SwapOutputAsset } from './components/controls/SwapOutputAsset';
 import { SwapNavbar } from './components/SwapNavbar';
 import { SwapAmountInputs } from './components/controls/SwapAmountInputs';
+import { SwapInputProvider } from './providers/swap-input-provider';
 
 /** README
  * This prototype is largely driven by Reanimated and Gesture Handler, which
@@ -58,9 +59,11 @@ export function SwapScreen() {
       <Box as={Page} style={styles.rootViewBackground} testID="swap-screen" width="full">
         <SwapBackground>
           <Box alignItems="center" height="full" paddingTop={{ custom: 29 }} width="full">
-            <SwapInputAsset />
-            <FlipButton />
-            <SwapOutputAsset />
+            <SwapInputProvider>
+              <SwapInputAsset />
+              <FlipButton />
+              <SwapOutputAsset />
+            </SwapInputProvider>
             <ExchangeRateBubble />
             <SwapAmountInputs />
           </Box>
