@@ -1,24 +1,33 @@
-import React, { useEffect, useState } from 'react';
-import { NativeCurrencyKey, RainbowTransaction } from '@/entities';
+// @refresh reset
 
-import { Bleed, Box, Columns, Cover, Row, Rows, Separator, Stack, Text } from '@/design-system';
+import React, { useEffect, useMemo, useState } from 'react';
+import { NativeCurrencyKey, ParsedAddressAsset, RainbowTransaction } from '@/entities';
+
+import { Bleed, Box, Columns, Cover, Row, Rows, Separator, Stack, Text, TextProps } from '@/design-system';
 
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
-import { ImgixImage } from '@/components/images';
 import RowWithMargins from '@/components/layout/RowWithMargins';
 import { IS_ANDROID } from '@/env';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToBalanceDisplay } from '@/helpers/utilities';
 import { fetchENSAvatar } from '@/hooks/useENSAvatar';
 import { fetchReverseRecord } from '@/handlers/ens';
 
-import { address } from '@/utils/abbreviations';
+import { address, formatAddressForDisplay } from '@/utils/abbreviations';
 import { ContactAvatar } from '@/components/contacts';
-import { profileUtils } from '@/utils';
-import { profile } from 'console';
-import { useENSResolver } from '@/hooks';
+import { isLowerCaseMatch } from '@/utils';
+import { useSelector } from 'react-redux';
+import { AppState } from '@/redux/store';
+import { useContacts, useUserAccounts } from '@/hooks';
+import { useTiming } from 'react-native-redash';
+import Animated, { Easing, SharedValue, interpolate, useAnimatedStyle } from 'react-native-reanimated';
+import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
+import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
+import ImageAvatar from '@/components/contacts/ImageAvatar';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { Network } from '@/networks/types';
 
 const TransactionMastheadHeight = android ? 153 : 135;
 
@@ -46,47 +55,170 @@ function CurrencyTile({
   contactAddress,
   title,
   subtitle,
+  address = '',
+  asset,
+  showAsset,
   image,
   fallback,
+  onAddressCopied,
 }: {
+  asset?: ParsedAddressAsset;
+  showAsset?: boolean;
   contactAddress?: string;
-  title: string;
-  subtitle: string;
-  image: string;
+  title?: string;
+  subtitle?: string;
+  image?: string;
   fallback?: string;
+  address?: string;
+  onAddressCopied: () => void;
 }) {
-  const { colors } = useTheme();
-  const colorForAsset =
-    usePersistentDominantColorFromImage(image) ||
-    colors.avatarColor[profileUtils.addressHashedColorIndex(contactAddress as string) as number] ||
-    colors.appleBlue;
-  const avatarColor = colors.avatarBackgrounds[profileUtils.addressHashedColorIndex(contactAddress as string) || 1];
-  const colorToUse = title.includes('...') ? avatarColor : colorForAsset;
+  const accountAddress = useSelector((state: AppState) => state.settings.accountAddress);
+  const theme = useTheme();
+
+  // @ts-ignore
+  const { contacts } = useContacts();
+
+  const { userAccounts, watchedAccounts } = useUserAccounts();
+  const addressContact = address ? contacts[address] : undefined;
+  const addressAccount = useMemo(() => {
+    if (!address) {
+      return undefined;
+    } else {
+      return (
+        userAccounts.find(account => isLowerCaseMatch(account.address, address)) ??
+        watchedAccounts.find(account => isLowerCaseMatch(account.address, address))
+      );
+    }
+  }, [address]);
+
+  const formattedAddress = formatAddressForDisplay(address, 4, 6);
+  const [fetchedEnsName, setFetchedEnsName] = useState<string | undefined>();
+  const [fetchedEnsImage, setFetchedEnsImage] = useState<string | undefined>();
+  const [imageLoaded, setImageLoaded] = useState(!!addressAccount?.image);
+
+  const accountEmoji = useMemo(() => returnStringFirstEmoji(addressAccount?.label), [addressAccount]);
+  const accountName = useMemo(() => removeFirstEmojiFromString(addressAccount?.label), []);
+  const avatarColor =
+    addressAccount?.color ?? addressContact?.color ?? theme.colors.avatarBackgrounds[addressHashedColorIndex(address) || 1];
+  console.log({ avatarColor });
+  const emoji = accountEmoji || addressHashedEmoji(address);
+
+  const name = accountName || fetchedEnsName || addressContact?.nickname || addressContact?.ens || formattedAddress;
+
+  //i18n - search for 'You'
+  console.log({ accountAddress, address });
+  if (accountAddress?.toLowerCase() === address?.toLowerCase() && !showAsset) {
+    title = 'You';
+  }
+
+  const shouldShowAddress = (!name.includes('...') || name === 'You') && !showAsset;
+  const imageUrl = fetchedEnsImage ?? addressAccount?.image;
+  const ensAvatarSharedValue = useTiming(!!image || (!!imageUrl && imageLoaded), {
+    duration: image || addressAccount?.image ? 0 : 420,
+  });
+
+  useEffect(() => {
+    if (!addressContact?.nickname && !accountName) {
+      fetchReverseRecord(address).then(name => {
+        if (name) {
+          setFetchedEnsName(name);
+        }
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!addressAccount?.image && (fetchedEnsName || addressContact?.ens)) {
+      const ens = fetchedEnsName ?? addressContact?.ens;
+      if (ens) {
+        fetchENSAvatar(ens, { cacheFirst: true }).then(avatar => {
+          if (avatar?.imageUrl) {
+            setFetchedEnsImage(avatar.imageUrl);
+          }
+        });
+      }
+    }
+  }, [fetchedEnsName]);
+
+  console.log({ urlTOuse: showAsset ? asset?.icon_url : fetchedEnsImage });
+  const colorForAsset = usePersistentDominantColorFromImage(showAsset ? asset?.icon_url : imageUrl) || avatarColor;
+
+  const colorToUse = colorForAsset;
+
+  console.log({ colorForAsset, colorToUse, avatarColor });
+
+  const emojiAvatarAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(ensAvatarSharedValue.value, [0, 1], [1, 0]),
+  }));
+  const ensAvatarAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: ensAvatarSharedValue.value,
+  }));
+
+  const onImageLoad = () => {
+    setImageLoaded(true);
+  };
+
   return (
     <Container>
       <Gradient color={colorToUse} />
 
       <Rows alignHorizontal="center" alignVertical="center" space="10px">
         <Row height="content">
-          {!title.includes('...') ? (
-            <ImgixImage source={{ uri: image }} size={40} style={{ width: 40, height: 40, borderRadius: 20 }} />
-          ) : (
-            <ContactAvatar color={colorToUse} size="medium" value={profileUtils.addressHashedEmoji(contactAddress as string)} />
-          )}
+          <Box>
+            {showAsset ? (
+              <RainbowCoinIcon
+                size={40}
+                icon={asset?.icon_url}
+                network={asset?.network || Network.mainnet}
+                symbol={asset?.symbol || ''}
+                theme={theme}
+                colors={asset?.colors}
+              />
+            ) : (
+              <>
+                <Animated.View style={ensAvatarAnimatedStyle}>
+                  {/*add coin icon*/}
+                  <ImageAvatar
+                    image={image || imageUrl}
+                    size="medium"
+                    // @ts-expect-error JS component
+                    onLoad={onImageLoad}
+                  />
+                </Animated.View>
+                <Cover>
+                  <Animated.View style={emojiAvatarAnimatedStyle}>
+                    <ContactAvatar color={colorToUse} size="medium" value={emoji} />
+                  </Animated.View>
+                </Cover>
+              </>
+            )}
+          </Box>
         </Row>
         <Row height="content">
           <Box width="full">
             <Rows space={'10px'}>
               <Row height="content">
-                <Text size="16px / 22px (Deprecated)" color="label" weight="bold" align="center" numberOfLines={1}>
-                  {title}
-                </Text>
+                <Box alignItems="center" justifyContent="center" marginTop={IS_ANDROID ? '-6px' : { custom: 0 }} width="full">
+                  <AnimatedText
+                    size="16px / 22px (Deprecated)"
+                    color="label"
+                    weight="semibold"
+                    align="center"
+                    text={title || name}
+                    loadedText={title || fetchedEnsName}
+                  />
+                </Box>
               </Row>
               <Row height="content">
                 <Box alignItems="center" justifyContent="center" marginTop={IS_ANDROID ? '-6px' : { custom: 0 }} width="full">
-                  <Text size="14px / 19px (Deprecated)" color="labelSecondary" weight="semibold" align="center">
-                    {subtitle}
-                  </Text>
+                  <AnimatedText
+                    size="14px / 19px (Deprecated)"
+                    color="labelSecondary"
+                    weight="semibold"
+                    align="center"
+                    text={shouldShowAddress ? formattedAddress : subtitle || ''}
+                    loadedText={shouldShowAddress ? formattedAddress : subtitle}
+                  />
                 </Box>
               </Row>
             </Rows>
@@ -97,6 +229,39 @@ function CurrencyTile({
   );
 }
 
+type AnimatedTextProps = Omit<TextProps, 'children'> & {
+  text: string;
+  loadedText: string | undefined;
+};
+const AnimatedText = ({ text, loadedText, size, weight, color, align, ...props }: AnimatedTextProps) => {
+  const loadedTextValue = useTiming(!!loadedText, {
+    duration: 420,
+    easing: Easing.linear,
+  });
+  const textStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(loadedTextValue.value, [0, 0.5, 1], [1, 0, 0]),
+  }));
+  const loadedTextStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(loadedTextValue.value, [0, 0.5, 1], [0, 0, 1]),
+  }));
+
+  return (
+    <Box>
+      <Animated.View style={textStyle}>
+        <Text color={color} size={size} weight={weight} align={align} numberOfLines={1}>
+          {text}
+        </Text>
+      </Animated.View>
+      <Cover>
+        <Animated.View style={loadedTextStyle}>
+          <Text color={color} size={size} weight={weight} align={align} numberOfLines={1}>
+            {loadedText}
+          </Text>
+        </Animated.View>
+      </Cover>
+    </Box>
+  );
+};
 const DoubleChevron = () => (
   <Cover alignHorizontal="center" alignVertical="center">
     <RowWithMargins margin={0}>
@@ -112,96 +277,84 @@ const DoubleChevron = () => (
   </Cover>
 );
 
-export default function TransactionMasthead({
-  transaction,
-  nativeCurrency,
-}: {
-  transaction: RainbowTransaction;
-  nativeCurrency: NativeCurrencyKey;
-}) {
-  const [leftTitle, setLeftTitle] = useState(address(transaction?.from || '', 6, 4));
-  const [leftSubtitle, setLeftSubtitle] = useState('');
-  const [rightTitle, setRightTitle] = useState(address(transaction?.to || '', 6, 4));
-  const [rightSubtitle, setRightSubtitle] = useState('');
-  const [rightImage, setRightImage] = useState(transaction?.asset?.icon_url || '');
-  const [leftImage, setLeftImage] = useState(transaction?.asset?.icon_url || '');
+export default function TransactionMasthead({ transaction }: { transaction: RainbowTransaction }) {
+  const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
 
-  useEffect(() => {
-    const fetchAndSetData = async () => {
-      try {
-        if (['wrap', 'unwrap', 'swap'].includes(transaction?.type)) {
-          const inAsset = transaction?.changes?.find(a => a?.direction === 'in')?.asset;
-          const outAsset = transaction?.changes?.find(a => a?.direction === 'out')?.asset;
+  const inputAsset = useMemo(() => {
+    const inAsset = transaction?.changes?.find(a => a?.direction === 'in')?.asset;
+    if (!inAsset) return undefined;
 
-          if (inAsset && outAsset) {
-            setLeftImage(outAsset?.icon_url || '');
-            setRightImage(inAsset?.icon_url || '');
-            const inAssetValueDisplay = convertAmountToBalanceDisplay(inAsset?.balance?.amount || '0', inAsset);
-            const outAssetValueDisplay = convertAmountToBalanceDisplay(outAsset?.balance?.amount || '0', outAsset);
-            const inAssetNativeDisplay = convertAmountAndPriceToNativeDisplay(
-              inAsset?.balance?.amount || '0',
-              inAsset?.price?.value || '0',
-              nativeCurrency
-            )?.display;
-            const outAssetNativeDisplay = convertAmountAndPriceToNativeDisplay(
-              outAsset?.balance?.amount || '0',
-              outAsset?.price?.value || '0',
-              nativeCurrency
-            ).display;
+    console.log('price : ', inAsset?.price?.value);
 
-            setLeftTitle(outAssetValueDisplay);
-            setLeftSubtitle(outAssetNativeDisplay);
-            setRightTitle(inAssetValueDisplay);
-            setRightSubtitle(inAssetNativeDisplay);
-            return;
-          }
-        }
-
-        const fromEns = await fetchReverseRecord(transaction?.from || '');
-        const toEns = await fetchReverseRecord(transaction?.to || '');
-
-        if (fromEns) {
-          setLeftSubtitle(leftTitle);
-          setLeftTitle(fromEns);
-          const fromAvatar = await fetchENSAvatar(fromEns);
-          if (fromAvatar?.imageUrl) {
-            setLeftImage(fromAvatar.imageUrl);
-          }
-        }
-        if (transaction.type === 'contract_interaction' || transaction.type === 'approve') {
-          if (transaction?.contract?.iconUrl) {
-            setRightImage(transaction?.contract?.iconUrl);
-          }
-          if (transaction?.contract?.name) {
-            setRightTitle(transaction?.contract?.name);
-          }
-        }
-
-        if (toEns && transaction.type !== 'contract_interaction') {
-          setRightSubtitle(rightTitle);
-          setRightTitle(toEns);
-          const toAvatar = await fetchENSAvatar(toEns);
-          if (toAvatar?.imageUrl) {
-            setRightImage(toAvatar.imageUrl);
-          }
-        }
-
-        if (transaction.type === 'mint') {
-          const tempTitle = rightTitle;
-          const tempSubtitle = rightSubtitle;
-          setRightTitle(leftTitle);
-          setRightSubtitle(leftSubtitle);
-          setLeftTitle(tempTitle);
-          setLeftSubtitle(tempSubtitle);
-        }
-      } catch (error) {
-        console.error('Failed to fetch transaction details:', error);
-        // Handle errors or set fallback values as needed
-      }
+    return {
+      inAssetValueDisplay: convertAmountToBalanceDisplay(inAsset?.balance?.amount || '0', inAsset),
+      inAssetNativeDisplay: inAsset?.price?.value
+        ? convertAmountAndPriceToNativeDisplay(inAsset?.balance?.amount || '0', inAsset?.price?.value || '0', nativeCurrency)?.display
+        : '-',
+      ...inAsset,
     };
-
-    fetchAndSetData();
   }, []);
+
+  const outputAsset = useMemo(() => {
+    const outAsset = transaction?.changes?.find(a => a?.direction === 'out')?.asset;
+    if (!outAsset) return undefined;
+
+    return {
+      image: outAsset?.icon_url || '',
+      inAssetValueDisplay: convertAmountToBalanceDisplay(outAsset?.balance?.amount || '0', outAsset),
+      inAssetNativeDisplay: outAsset?.price?.value
+        ? convertAmountAndPriceToNativeDisplay(outAsset?.balance?.amount || '0', outAsset?.price?.value || '0', nativeCurrency)?.display
+        : '-',
+      ...outAsset,
+    };
+  }, []);
+
+  const contractImage = transaction?.contract?.iconUrl;
+  const contractName = transaction?.contract?.name;
+  console.log({ contractName, contractImage });
+
+  // if its a mint then we want to show the mint contract first
+  const toAddress = (transaction.type === 'mint' ? transaction?.from : transaction?.to) || undefined;
+  const fromAddress = (transaction.type === 'mint' ? transaction?.to : transaction?.from) || undefined;
+
+  const getRightMasteadData = (): { title?: string; subtitle?: string; image?: string } => {
+    if (transaction.type === 'swap') {
+      return {
+        title: inputAsset?.inAssetValueDisplay,
+        subtitle: inputAsset?.inAssetNativeDisplay,
+      };
+    }
+    if (transaction.type === 'contract_interaction' || transaction.type === 'approve') {
+      return {
+        title: contractName,
+        subtitle: transaction?.from || '',
+        image: contractImage,
+      };
+    }
+
+    return {
+      title: undefined,
+      subtitle: undefined,
+      image: undefined,
+    };
+  };
+
+  const getLeftMasteadData = (): { title?: string; subtitle?: string; image?: string } => {
+    if (transaction.type === 'swap') {
+      return {
+        title: outputAsset?.inAssetValueDisplay,
+        subtitle: outputAsset?.inAssetNativeDisplay,
+      };
+    }
+    return {
+      title: undefined,
+      subtitle: undefined,
+      image: undefined,
+    };
+  };
+
+  const leftMasteadData = getLeftMasteadData();
+  const rightMasteadData = getRightMasteadData();
 
   return (
     <Stack space="19px (Deprecated)">
@@ -210,19 +363,25 @@ export default function TransactionMasthead({
       <Box alignItems="center" width={'full'}>
         <Columns space={{ custom: 9 }}>
           <CurrencyTile
-            contactAddress={transaction?.from as string}
-            title={leftTitle}
-            subtitle={leftSubtitle}
-            image={leftImage}
+            address={fromAddress}
+            title={leftMasteadData?.title}
+            subtitle={leftMasteadData?.subtitle}
+            image={leftMasteadData?.image}
+            asset={outputAsset}
+            showAsset={transaction.type === 'swap' || transaction.type === 'bridge'}
             fallback={transaction?.asset?.symbol}
+            onAddressCopied={() => {}}
           />
 
           <CurrencyTile
-            contactAddress={transaction?.to as string}
-            title={rightTitle}
-            subtitle={rightSubtitle}
-            image={rightImage}
+            address={toAddress}
+            asset={inputAsset}
+            showAsset={transaction.type === 'swap' || transaction.type === 'bridge'}
+            title={rightMasteadData?.title}
+            subtitle={rightMasteadData?.subtitle}
+            image={rightMasteadData?.image}
             fallback={transaction?.asset?.symbol}
+            onAddressCopied={() => {}}
           />
         </Columns>
 
