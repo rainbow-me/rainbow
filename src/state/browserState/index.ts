@@ -1,21 +1,19 @@
 import create from 'zustand';
 
-// Defining the structure of Site and Tab based on the provided requirements
-interface Site {
+export interface Site {
   name: string;
   url: string;
   image: string;
   timestamp: number; // Assuming timestamp is a Unix timestamp for simplicity
 }
 
-interface Tab {
+export interface Tab {
   history: Site[];
   name: string;
   screenshot: string; // Assuming this is a URL or base64 encoded image
   isActive: boolean;
 }
 
-// Defining the state structure for our store
 interface BrowserState {
   tabs: Tab[];
   addTab: (tab: Tab) => void;
