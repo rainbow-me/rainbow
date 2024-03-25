@@ -184,6 +184,17 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
           chainIds,
         }),
       });
+
+      // in case balances are not updated immediately lets refetch a couple seconds later
+      setTimeout(() => {
+        queryClient.refetchQueries({
+          queryKey: consolidatedTransactionsQueryKey({
+            address: accountAddress,
+            currency: nativeCurrency,
+            chainIds,
+          }),
+        });
+      }, 2000);
     }
     setPendingTransactions({
       address: accountAddress,
