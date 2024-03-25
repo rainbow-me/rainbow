@@ -35,7 +35,6 @@ export function SwapOutputAsset() {
   const theme = useTheme();
 
   const {
-    bottomColor,
     outputProgress,
     inputProgress,
     focusedInput,
@@ -48,6 +47,9 @@ export function SwapOutputAsset() {
   } = useSwapContext();
 
   const { assetToBuy } = useSwapAssetStore();
+
+  const bottomColor = (assetToBuy?.colors?.primary || assetToBuy?.colors?.fallback) ?? (isDarkMode ? ETH_COLOR_DARK : ETH_COLOR);
+
   const userAssets = useAssetsToSell();
 
   const userBalance = useMemo(() => {

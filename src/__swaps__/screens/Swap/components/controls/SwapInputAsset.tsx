@@ -16,6 +16,7 @@ import { BalanceBadge } from '../BalanceBadge';
 import { TokenList } from '../TokenList/TokenList';
 import {
   BASE_INPUT_WIDTH,
+  ETH_COLOR,
   ETH_COLOR_DARK,
   ETH_COLOR_DARK_ACCENT,
   INPUT_INNER_WIDTH,
@@ -32,7 +33,6 @@ export function SwapInputAsset() {
   const theme = useTheme();
 
   const {
-    topColor,
     outputProgress,
     inputProgress,
     focusedInput,
@@ -45,6 +45,8 @@ export function SwapInputAsset() {
   } = useSwapContext();
 
   const { assetToSell } = useSwapAssetStore();
+
+  const topColor = (assetToSell?.colors?.primary || assetToSell?.colors?.fallback) ?? (isDarkMode ? ETH_COLOR_DARK : ETH_COLOR);
 
   useEffect(() => {
     runOnUI(() => {
