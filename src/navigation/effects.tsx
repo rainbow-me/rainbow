@@ -467,6 +467,10 @@ export const hardwareWalletTxNavigatorPreset = {
   backdropOpacity: 1,
 };
 
+export const claimPointsSheetPreset = {
+  backdropOpacity: 0.8,
+};
+
 export const sheetPreset = ({ route }: any): StackNavigationOptions & BottomSheetNavigationOptions => {
   const shouldUseNonTransparentOverlay =
     route.params?.type === 'token' ||

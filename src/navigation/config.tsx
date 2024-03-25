@@ -162,6 +162,15 @@ export const nftOffersSheetConfig = {
   }),
 };
 
+export const claimPointsScreenConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 0.8,
+    }),
+  }),
+};
+
 export const nftSingleOfferSheetConfig = {
   options: ({
     route: {

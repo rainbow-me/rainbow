@@ -68,6 +68,7 @@ import {
   positionSheetConfig,
   appIconUnlockSheetConfig,
   swapConfig,
+  claimPointsScreenConfig,
 } from './config';
 import { addCashSheet, emojiPreset, emojiPresetWallet, overlayExpandedPreset, sheetPreset } from './effects';
 import { InitialRouteContext } from './initialRoute';
@@ -98,6 +99,7 @@ import AppIconUnlockSheet from '@/screens/AppIconUnlockSheet';
 import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { SwapProvider } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import ClaimPointsScreen from '@/screens/points/ClaimPointsScreen';
 
 type StackNavigatorParams = {
   [Routes.SEND_SHEET]: unknown;
@@ -300,6 +302,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen name={Routes.MINTS_SHEET} component={MintsSheet} {...mintsSheetConfig} />
       <NativeStack.Screen component={ConsoleSheet} name={Routes.CONSOLE_SHEET} {...consoleSheetConfig} />
       <NativeStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} {...appIconUnlockSheetConfig} />
+      <NativeStack.Screen name={Routes.CLAIM_POINTS_SCREEN} component={ClaimPointsScreen} {...claimPointsScreenConfig} />
 
       {swapsV2Enabled && <NativeStack.Screen component={SwapsNavigator} name={Routes.SWAP_NAVIGATOR} {...swapConfig} />}
     </NativeStack.Navigator>

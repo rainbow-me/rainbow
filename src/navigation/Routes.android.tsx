@@ -56,6 +56,7 @@ import {
   consoleSheetPreset,
   appIconUnlockSheetPreset,
   swapSheetPreset,
+  claimPointsSheetPreset,
 } from './effects';
 import { InitialRouteContext } from './initialRoute';
 import { onNavigationStateChange } from './onNavigationStateChange';
@@ -88,6 +89,7 @@ import AppIconUnlockSheet from '@/screens/AppIconUnlockSheet';
 import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { SwapProvider } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import ClaimPointsScreen from '@/screens/points/ClaimPointsScreen';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -239,7 +241,7 @@ function BSNavigator() {
       <BSStack.Screen component={SignTransactionSheet} name={Routes.CONFIRM_REQUEST} options={walletconnectBottomSheetPreset} />
       <BSStack.Screen component={ConsoleSheet} name={Routes.CONSOLE_SHEET} options={consoleSheetPreset} />
       <BSStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} options={appIconUnlockSheetPreset} />
-
+      <BSStack.Screen component={ClaimPointsScreen} name={Routes.CLAIM_POINTS_SCREEN} options={claimPointsSheetPreset} />
       <BSStack.Screen component={ChangeWalletSheet} name={Routes.CHANGE_WALLET_SHEET} options={{ ...bottomSheetPreset }} />
       {swapsV2Enabled && <BSStack.Screen component={SwapNavigator} name={Routes.SWAP_NAVIGATOR} options={swapSheetPreset} />}
     </BSStack.Navigator>
