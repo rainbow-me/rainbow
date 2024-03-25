@@ -2,7 +2,7 @@ import { Network } from '@/helpers';
 import { RainbowFetchClient } from '../rainbow-fetch';
 
 const rainbowMeteorologyApi = new RainbowFetchClient({
-  baseURL: 'https://metadata.p.rainbow.me',
+  baseURL: 'https://meteorology.api.s.rainbow.me',
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
