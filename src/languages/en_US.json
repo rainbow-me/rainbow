@@ -1259,6 +1259,19 @@
         "get_started": "Get Started",
         "use_referral_code": "Use Referral Code"
       },
+      "find": {
+        "success": {
+          "title": "You found %{numPoints} points!",
+          "description": "Claim your points below to receive them in next week's drop.",
+          "accent_button_title": "Claim Points",
+          "outline_button_title": "Switch Wallets"
+        },
+        "failure": {
+          "title": "Already claimed!",
+          "description": "These points have already been claimed. Find another Rainbow reward!",
+          "outline_button_title": "Okay"
+        }
+      },
       "referral": {
         "title": "Enter your referral code",
         "subtitle": "Enter a referral code below to claim your bonus reward.",
