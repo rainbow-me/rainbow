@@ -1,21 +1,29 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { AccentColorProvider, Box, Text, TextIcon, useForegroundColor } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useNavigation } from '@/navigation';
-import { deviceUtils } from '@/utils';
+import { deviceUtils, watchingAlert } from '@/utils';
 import { PointsIconAnimation } from './components/PointsIconAnimation';
-import { useAccountAccentColor } from '@/hooks';
+import { useAccountAccentColor, useAccountProfile, useWallets } from '@/hooks';
 import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';
+import { useTheme } from '@/theme';
+import Routes from '@/navigation/routesNames';
+import { metadataPOSTClient } from '@/graphql';
 
 export default function ClaimPointsScreen() {
-  const { goBack } = useNavigation();
+  const { accountAddress } = useAccountProfile();
+  const { goBack, navigate } = useNavigation();
+  const { isReadOnlyWallet } = useWallets();
+  const { isDarkMode } = useTheme();
   const { accentColor } = useAccountAccentColor();
   const separatorSecondary = useForegroundColor('separatorSecondary');
-  const isError = true;
+  const isError = false;
   const numPoints = 100;
 
   const TRANSLATIONS = i18n.l.points.find[isError ? 'failure' : 'success'];
+
+  const claimPoints = useCallback(() => metadataPOSTClient.redeemCodeForPoints({ address: accountAddress, redemptionCode: '' }), []);
 
   return (
     <AccentColorProvider color={accentColor}>
@@ -49,11 +57,11 @@ export default function ClaimPointsScreen() {
             <Box
               as={ButtonPressAnimation}
               onPress={goBack}
-              background="fill"
               borderRadius={32}
               width={{ custom: 28 }}
               height={{ custom: 28 }}
               paddingLeft={{ custom: IS_IOS ? 1 : 0 }}
+              style={{ borderWidth: 1, borderColor: separatorSecondary, backgroundColor: isDarkMode ? '#F5F8FF0F' : '#1B1D1F0F' }}
               alignItems="center"
               justifyContent="center"
             >
@@ -73,7 +81,7 @@ export default function ClaimPointsScreen() {
           </Box>
           <Box gap={20}>
             {!isError && (
-              <ButtonPressAnimation overflowMargin={50}>
+              <ButtonPressAnimation overflowMargin={50} onPress={isReadOnlyWallet ? watchingAlert : () => {}}>
                 <Box
                   background="accent"
                   borderRadius={26}
@@ -89,7 +97,7 @@ export default function ClaimPointsScreen() {
                 </Box>
               </ButtonPressAnimation>
             )}
-            <ButtonPressAnimation>
+            <ButtonPressAnimation onPress={isError ? goBack : () => navigate(Routes.CHANGE_WALLET_SHEET)}>
               <Box
                 borderRadius={26}
                 paddingHorizontal="24px"
