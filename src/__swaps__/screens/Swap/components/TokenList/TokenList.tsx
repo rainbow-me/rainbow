@@ -8,9 +8,8 @@ import { Network } from '@/networks/types';
 import { useTheme } from '@/theme';
 import { SwapCoinIcon } from '../SwapCoinIcon';
 import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../../constants';
-import { DAI_ADDRESS, ETH_ADDRESS, USDC_ADDRESS } from '../../dummyValues';
+import { ETH_ADDRESS } from '../../dummyValues';
 import { opacity } from '../../utils/swaps';
-import { CoinRow } from '../CoinRow';
 import { SearchInput } from '../SearchInput';
 import { TokenToSellList } from './TokenToSellList';
 import { TokenToBuyList } from './TokenToBuyList';
@@ -35,7 +34,6 @@ export const TokenList = ({
   const { width: deviceWidth } = useDimensions();
   const theme = useTheme();
 
-  const blue = useForegroundColor('blue');
   const red = useForegroundColor('red');
 
   const accentColor = useMemo(() => {
@@ -136,7 +134,16 @@ export const TokenList = ({
               <ButtonPressAnimation>
                 <HitSlop space="10px">
                   <Inline alignVertical="center" space="6px" wrap={false}>
-                    {output && <SwapCoinIcon address={ETH_ADDRESS} network={Network.mainnet} small symbol="ETH" theme={theme} />}
+                    {output && (
+                      <SwapCoinIcon
+                        mainnetAddress={ETH_ADDRESS}
+                        address={ETH_ADDRESS}
+                        network={Network.mainnet}
+                        small
+                        symbol="ETH"
+                        theme={theme}
+                      />
+                    )}
                     <Text align="right" color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="heavy">
                       {output ? 'Ethereum' : 'All Networks'}
                     </Text>

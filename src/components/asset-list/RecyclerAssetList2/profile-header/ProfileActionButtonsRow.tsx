@@ -19,9 +19,6 @@ import { useRemoteConfig } from '@/model/remoteConfig';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { Network } from '@/networks/types';
-import { useSwapAssetStore } from '@/__swaps__/screens/Swap/state/assets';
-import { useAssetsToSell } from '@/__swaps__/screens/Swap/hooks/useAssetsToSell';
-import { ParsedSearchAsset } from '@/__swaps__/screens/Swap/types/assets';
 
 export const ProfileActionButtonsRowHeight = 80;
 
@@ -173,10 +170,6 @@ function SwapButton() {
   const { accountAddress } = useAccountSettings();
   const remoteConfig = useRemoteConfig();
   const swapsV2Enabled = useExperimentalFlag(SWAPS_V2) || remoteConfig.swaps_v2;
-  const { setAssetToSell } = useSwapAssetStore();
-
-  const userAssets = useAssetsToSell();
-
   const { navigate } = useNavigation();
 
   const handlePress = React.useCallback(async () => {
@@ -187,14 +180,6 @@ function SwapButton() {
 
       android && delayNext();
       if (swapsV2Enabled) {
-        // TODO: This should prefill their largest native asset as the input
-        // and set the amount to max (aka 100%)
-        if (userAssets.length) {
-          const [asset] = userAssets;
-          console.log(asset);
-
-          setAssetToSell(asset as ParsedSearchAsset);
-        }
         navigate(Routes.SWAP_NAVIGATOR);
         return;
       }
@@ -210,7 +195,7 @@ function SwapButton() {
     } else {
       watchingAlert();
     }
-  }, [accountAddress, isReadOnlyWallet, navigate, setAssetToSell, swapsV2Enabled, userAssets]);
+  }, [accountAddress, isReadOnlyWallet, navigate, swapsV2Enabled]);
 
   return (
     <ActionButton icon="􀖅" onPress={handlePress} testID="swap-button">

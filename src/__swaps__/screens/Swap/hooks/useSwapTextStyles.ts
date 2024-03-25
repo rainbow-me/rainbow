@@ -23,9 +23,9 @@ import {
 } from '../constants';
 import { inputKeys, inputMethods } from '../types/swap';
 import { opacity } from '../utils/swaps';
+import { useSwapAssetStore } from '../state/assets';
 
 export function useSwapTextStyles({
-  bottomColor,
   focusedInput,
   inputMethod,
   inputProgress,
@@ -33,7 +33,6 @@ export function useSwapTextStyles({
   isQuoteStale,
   outputProgress,
   sliderPressProgress,
-  topColor,
 }: {
   bottomColor: string;
   focusedInput: SharedValue<inputKeys>;
@@ -45,7 +44,11 @@ export function useSwapTextStyles({
   sliderPressProgress: SharedValue<number>;
   topColor: string;
 }) {
+  const { assetToBuy, assetToSell } = useSwapAssetStore();
   const { isDarkMode } = useColorMode();
+
+  const topColor = (assetToSell?.colors?.primary || assetToSell?.colors?.fallback) ?? ETH_COLOR_DARK;
+  const bottomColor = (assetToBuy?.colors?.primary || assetToBuy?.colors?.fallback) ?? ETH_COLOR_DARK;
 
   const labelSecondary = useForegroundColor('labelSecondary');
   const labelTertiary = useForegroundColor('labelTertiary');

@@ -1,29 +1,37 @@
 import React, { useMemo } from 'react';
-import { Address } from 'viem';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Box, HitSlop, Inline, Stack, Text } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
-import { Network } from '@/networks/types';
 import { useTheme } from '@/theme';
 import { SwapCoinIcon } from './SwapCoinIcon';
 import { CoinRowButton } from './CoinRowButton';
 import { BalancePill } from './BalancePill';
+import { ChainId } from '../types/chains';
+import { ethereumUtils } from '@/utils';
 
 export const CoinRow = ({
   address,
+  mainnetAddress,
+  chainId,
   balance,
   isTrending,
   name,
   nativeBalance,
+  color,
+  iconUrl,
   onPress,
   output,
   symbol,
 }: {
-  address: Address | 'eth';
+  address: string;
+  mainnetAddress: string;
+  chainId: ChainId;
   balance: string;
   isTrending?: boolean;
   name: string;
   nativeBalance: string;
+  color: string | undefined;
+  iconUrl: string | undefined;
   onPress?: () => void;
   output?: boolean;
   symbol: string;
@@ -47,14 +55,23 @@ export const CoinRow = ({
       <HitSlop vertical="10px">
         <Box alignItems="center" flexDirection="row" justifyContent="space-between" width="full">
           <Inline alignVertical="center" space="10px">
-            <SwapCoinIcon address={address} large network={Network.mainnet} symbol={symbol} theme={theme} />
+            <SwapCoinIcon
+              iconUrl={iconUrl}
+              address={address}
+              mainnetAddress={mainnetAddress}
+              large
+              network={ethereumUtils.getNetworkFromChainId(chainId)}
+              symbol={symbol}
+              theme={theme}
+              color={color}
+            />
             <Stack space="10px">
               <Text color="label" size="17pt" weight="semibold">
                 {name}
               </Text>
               <Inline alignVertical="center" space={{ custom: 5 }}>
                 <Text color="labelTertiary" size="13pt" weight="semibold">
-                  {output ? symbol : `${balance} ${symbol}`}
+                  {output ? symbol : `${balance}`}
                 </Text>
                 {isTrending && percentChange && (
                   <Inline alignVertical="center" space={{ custom: 1 }}>

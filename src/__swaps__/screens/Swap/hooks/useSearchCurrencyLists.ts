@@ -277,7 +277,8 @@ export function useSearchCurrencyLists({
           const chainName = getChainName({ chainId });
           const { address, decimals } = assetOnNetworkOverrides;
           // filter out the asset we're selling already
-          if (isSameAsset(assetToSell, { chainId, address }) || !SUPPORTED_CHAINS.some(n => n.id === chainId)) return;
+          if (isSameAsset(assetToSell, { chainId, address }) || !SUPPORTED_CHAINS({ testnetMode: false }).some(n => n.id === chainId))
+            return;
           return {
             ...assetToSell,
             chainId,
@@ -321,10 +322,11 @@ export function useSearchCurrencyLists({
   // the lists below should be filtered by favorite/bridge asset match
   const results = useMemo(() => {
     const sections: AssetToBuySection[] = [];
-    if (bridge) {
-      sections.push({ data: bridgeList || [], id: 'bridge' });
-      return sections;
-    }
+    // TODO: Figure this out
+    // if (bridge) {
+    //   sections.push({ data: bridgeList || [], id: 'bridge' });
+    //   return sections;
+    // }
 
     if (bridgeAsset) {
       sections.push({
@@ -342,7 +344,6 @@ export function useSearchCurrencyLists({
     // }
 
     if (query === '') {
-      console.log({ curatedAssets, outputChainId });
       sections.push({
         data: filterAssetsFromFavoritesBridgeAndAssetToSell(curatedAssets[outputChainId]),
         id: 'verified',

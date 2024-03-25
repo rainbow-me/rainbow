@@ -1,5 +1,5 @@
 import MaskedView from '@react-native-masked-view/masked-view';
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { StyleSheet, StatusBar } from 'react-native';
 import Animated, { runOnUI } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
@@ -16,15 +16,18 @@ import { BalanceBadge } from '../BalanceBadge';
 import { TokenList } from '../TokenList/TokenList';
 import {
   BASE_INPUT_WIDTH,
+  ETH_COLOR,
   ETH_COLOR_DARK,
   ETH_COLOR_DARK_ACCENT,
   INPUT_INNER_WIDTH,
   INPUT_PADDING,
   THICK_BORDER_WIDTH,
 } from '../../constants';
-import { OUTPUT_ADDRESS, OUTPUT_NETWORK, OUTPUT_SYMBOL } from '../../dummyValues';
 import { IS_ANDROID } from '@/env';
 import { useSwapContext } from '../../providers/swap-provider';
+import { useSwapAssetStore } from '../../state/assets';
+import { ethereumUtils } from '@/utils';
+import { isSameAsset, useAssetsToSell } from '../../hooks/useAssetsToSell';
 
 export function SwapOutputAsset() {
   const { isDarkMode } = useColorMode();
@@ -34,7 +37,6 @@ export function SwapOutputAsset() {
     bottomColor,
     outputProgress,
     inputProgress,
-    solidColorCoinIcons,
     focusedInput,
     AnimatedSwapStyles,
     SwapTextStyles,
@@ -44,14 +46,48 @@ export function SwapOutputAsset() {
     setIsOutputSearchFocused,
   } = useSwapContext();
 
+  const { assetToBuy } = useSwapAssetStore();
+  const userAssets = useAssetsToSell();
+
+  const userBalance = useMemo(() => {
+    const sameAssetInUserAssets = userAssets.find(asset => isSameAsset(asset, assetToBuy));
+    return sameAssetInUserAssets?.balance?.display ?? 'No balance';
+  }, [userAssets, assetToBuy]);
+
+  useEffect(() => {
+    runOnUI(() => {
+      if (!assetToBuy?.native?.price?.amount) {
+        return;
+      }
+
+      SwapInputController.inputValues.modify(prev => {
+        const outputNativeAmount = Number(assetToBuy.native.price?.amount) * Number(prev.outputAmount);
+
+        return {
+          ...prev,
+          outputNativeValue: outputNativeAmount,
+        };
+      });
+    })();
+  }, [SwapInputController.inputValues, assetToBuy]);
+
   return (
-    <SwapInput bottomInput color={bottomColor} otherInputProgress={inputProgress} progress={outputProgress}>
+    <SwapInput
+      bottomInput
+      color={
+        (assetToBuy?.colors?.primary ?? assetToBuy?.colors?.fallback) === ETH_COLOR_DARK
+          ? ETH_COLOR_DARK_ACCENT
+          : assetToBuy?.colors?.primary ?? assetToBuy?.colors?.fallback
+      }
+      otherInputProgress={inputProgress}
+      progress={outputProgress}
+    >
       <Box as={Animated.View} style={AnimatedSwapStyles.outputStyle}>
         <Stack space="16px">
           <Columns alignHorizontal="justify" alignVertical="center">
             <Column width="content">
               <Box paddingRight="10px">
-                {solidColorCoinIcons ? (
+                {!assetToBuy ? (
                   <Box
                     borderRadius={18}
                     height={{ custom: 36 }}
@@ -65,12 +101,13 @@ export function SwapOutputAsset() {
                   />
                 ) : (
                   <SwapCoinIcon
-                    address={OUTPUT_ADDRESS}
-                    color={bottomColor}
+                    color={assetToBuy?.colors?.shadow ?? isDarkMode ? ETH_COLOR_DARK : ETH_COLOR}
+                    iconUrl={assetToBuy.icon_url}
+                    address={assetToBuy.address}
                     large
-                    mainnetAddress={OUTPUT_ADDRESS}
-                    network={OUTPUT_NETWORK}
-                    symbol={OUTPUT_SYMBOL}
+                    mainnetAddress={assetToBuy.mainnetAddress}
+                    network={ethereumUtils.getNetworkFromChainId(assetToBuy.chainId)}
+                    symbol={assetToBuy.symbol}
                     theme={theme}
                   />
                 )}
@@ -95,17 +132,29 @@ export function SwapOutputAsset() {
                 <Animated.View style={[styles.caretContainer, SwapTextStyles.outputCaretStyle]}>
                   <Box
                     borderRadius={1}
-                    style={[styles.caret, { backgroundColor: bottomColor === ETH_COLOR_DARK ? ETH_COLOR_DARK_ACCENT : bottomColor }]}
+                    style={[
+                      styles.caret,
+                      {
+                        backgroundColor:
+                          (assetToBuy?.colors?.primary ?? assetToBuy?.colors?.fallback) === ETH_COLOR_DARK
+                            ? ETH_COLOR_DARK_ACCENT
+                            : assetToBuy?.colors?.primary ?? assetToBuy?.colors?.fallback,
+                      },
+                    ]}
                   />
                 </Animated.View>
               </MaskedView>
             </GestureHandlerV1Button>
             <Column width="content">
               <SwapActionButton
-                color={bottomColor}
+                color={
+                  (assetToBuy?.colors?.primary ?? assetToBuy?.colors?.fallback) === ETH_COLOR_DARK
+                    ? ETH_COLOR_DARK_ACCENT
+                    : assetToBuy?.colors?.primary ?? assetToBuy?.colors?.fallback
+                }
                 disableShadow={isDarkMode}
                 hugContent
-                label={OUTPUT_SYMBOL}
+                label={assetToBuy?.symbol ?? ''}
                 onPress={runOnUI(SwapNavigation.handleOutputPress)}
                 rightIcon="􀆏"
                 small
@@ -121,7 +170,7 @@ export function SwapOutputAsset() {
               weight="heavy"
             />
             <Column width="content">
-              <BalanceBadge label="No Balance" />
+              <BalanceBadge label={userBalance} />
             </Column>
           </Columns>
         </Stack>

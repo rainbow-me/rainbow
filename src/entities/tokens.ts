@@ -50,9 +50,9 @@ type RainbowTokenOwnFields = Omit<RainbowToken, keyof Asset>;
 // some fields overlap with the guaranteed `Asset` fields, so the
 // `Partial<RainbowTokenOwnFields>` type is used.
 export interface ParsedAddressAsset extends Asset, Partial<RainbowTokenOwnFields> {
-  balance?: {
-    amount?: string;
-    display?: string;
+  balance: {
+    amount: string;
+    display: string;
   };
   chainId?: number;
   color?: string;

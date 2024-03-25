@@ -158,27 +158,31 @@ export const SUPPORTED_MAINNET_CHAINS: Chain[] = [mainnet, polygon, optimism, ar
   name: ChainNameDisplay[chain.id],
 }));
 
-export const SUPPORTED_CHAINS: Chain[] = [
-  mainnet,
-  polygon,
-  optimism,
-  arbitrum,
-  holesky,
-  base,
-  zora,
-  bsc,
-  goerli,
-  sepolia,
-  optimismSepolia,
-  bscTestnet,
-  polygonMumbai,
-  arbitrumGoerli,
-  arbitrumSepolia,
-  baseSepolia,
-  zoraSepolia,
-  avalanche,
-  avalancheFuji,
-  blast,
-].map(chain => ({ ...chain, name: ChainNameDisplay[chain.id] }));
+export const SUPPORTED_CHAINS = ({ testnetMode = false }: { testnetMode?: boolean }): Chain[] =>
+  [
+    mainnet,
+    polygon,
+    optimism,
+    arbitrum,
+    holesky,
+    base,
+    zora,
+    bsc,
+    goerli,
+    sepolia,
+    optimismSepolia,
+    bscTestnet,
+    polygonMumbai,
+    arbitrumGoerli,
+    arbitrumSepolia,
+    baseSepolia,
+    zoraSepolia,
+    avalanche,
+    avalancheFuji,
+    blast,
+  ]
+    .filter(chain => (testnetMode ? !!chain.testnet : !chain.testnet))
+    .map(chain => ({ ...chain, name: ChainNameDisplay[chain.id] }));
 
-export const SUPPORTED_CHAIN_IDS = SUPPORTED_CHAINS.map(chain => chain.id);
+export const SUPPORTED_CHAIN_IDS = ({ testnetMode = false }: { testnetMode?: boolean }) =>
+  SUPPORTED_CHAINS({ testnetMode }).map(chain => chain.id);

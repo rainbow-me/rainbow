@@ -23,6 +23,10 @@ export const SearchInput = ({
   setIsFocused: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const { isDarkMode } = useColorMode();
+  const { assetToBuy, assetToSell } = useSwapAssetStore();
+
+  const topColor = (assetToSell?.colors?.primary || assetToSell?.colors?.fallback) ?? ETH_COLOR_DARK;
+  const bottomColor = (assetToBuy?.colors?.primary || assetToBuy?.colors?.fallback) ?? ETH_COLOR_DARK;
 
   const { searchFilter, setSearchFilter } = useSwapAssetStore();
 
@@ -105,12 +109,12 @@ export const SearchInput = ({
               justifyContent="center"
               paddingHorizontal={{ custom: 12 - THICK_BORDER_WIDTH }}
               style={{
-                backgroundColor: opacity(color, isDarkMode ? 0.1 : 0.08),
-                borderColor: opacity(color, isDarkMode ? 0.06 : 0.01),
+                backgroundColor: opacity(output ? bottomColor : topColor, isDarkMode ? 0.1 : 0.08),
+                borderColor: opacity(output ? bottomColor : topColor, isDarkMode ? 0.06 : 0.01),
                 borderWidth: THICK_BORDER_WIDTH,
               }}
             >
-              <Text align="center" color={{ custom: color }} size="17pt" weight="heavy">
+              <Text align="center" color={{ custom: output ? bottomColor : topColor }} size="17pt" weight="heavy">
                 {isFocused ? 'Cancel' : 'Close'}
               </Text>
             </Box>

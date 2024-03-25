@@ -34,6 +34,7 @@ export const useAssetsToSell = () => {
     {
       address: currentAddress as Hex,
       currency: currentCurrency,
+      testnetMode: false,
     },
     {
       select: data => {

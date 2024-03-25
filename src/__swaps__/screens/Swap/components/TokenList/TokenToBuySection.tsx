@@ -8,6 +8,10 @@ import { TextStyle } from 'react-native';
 import { AssetToBuySection, AssetToBuySectionId } from '../../hooks/useSearchCurrencyLists';
 import { ChainId } from '../../types/chains';
 import { BackgroundColor, TextColor } from '@/design-system/color/palettes';
+import { useSwapContext } from '../../providers/swap-provider';
+import { runOnUI } from 'react-native-reanimated';
+import { isSameAsset, useAssetsToSell } from '../../hooks/useAssetsToSell';
+import { parseSearchAsset } from '../../utils/assets';
 
 interface SectionProp {
   backgroundColor?: BackgroundColor;
@@ -67,14 +71,26 @@ const bridgeSectionsColorsByChain = {
 };
 
 export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) => {
+  const { SwapNavigation } = useSwapContext();
   const { outputChainId, setAssetToBuy } = useSwapAssetStore();
+  const userAssets = useAssetsToSell();
 
   const handleSelectToken = useCallback(
     (token: SearchAsset) => {
-      setAssetToBuy(token);
-      // TODO: Close the input dropdown and open the output token dropdown
+      const userAsset = userAssets.find(asset => isSameAsset(asset, token));
+      const parsedAset = parseSearchAsset({
+        assetWithPrice: undefined,
+        searchAsset: token,
+        userAsset,
+      });
+
+      setAssetToBuy(parsedAset);
+      runOnUI(() => {
+        SwapNavigation.handleOutputPress();
+        SwapNavigation.handleExitSearch();
+      })();
     },
-    [setAssetToBuy]
+    [SwapNavigation, setAssetToBuy, userAssets]
   );
 
   const { backgroundColor, gradient, symbol, title } = sectionProps[section.id];
@@ -119,6 +135,10 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
         {section.data.map(token => (
           <CoinRow
             key={token.uniqueId}
+            chainId={token.chainId}
+            color={token.colors?.primary ?? token.colors?.fallback}
+            iconUrl={token.icon_url}
+            mainnetAddress={token.mainnetAddress}
             address={token.address}
             balance={''}
             name={token.name}

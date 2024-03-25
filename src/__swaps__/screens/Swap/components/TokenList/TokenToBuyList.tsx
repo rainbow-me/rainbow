@@ -7,7 +7,7 @@ import { useSwapAssetStore } from '../../state/assets';
 import { isL2Chain } from '../../utils/chains';
 
 export const TokenToBuyList = () => {
-  const { outputChainId } = useSwapAssetStore();
+  const { assetToBuy, assetToSell, outputChainId } = useSwapAssetStore();
   const sections = useAssetsToBuySections();
 
   const isL2 = useMemo(() => outputChainId && isL2Chain(outputChainId), [outputChainId]);
@@ -33,7 +33,9 @@ export const TokenToBuyList = () => {
               </Text>
 
               <Text color="labelQuaternary" size="14px / 19px (Deprecated)" weight="regular" align="center">
-                {i18n.t(i18n.l.swap.tokens_input[isL2 ? 'nothing_found_description_l2' : 'nothing_found_description'])}
+                {i18n.t(i18n.l.swap.tokens_input[isL2 ? 'nothing_found_description_l2' : 'nothing_found_description'], {
+                  action: 'swap',
+                })}
               </Text>
             </Stack>
           </Box>

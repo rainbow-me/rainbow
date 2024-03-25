@@ -7,7 +7,6 @@ import { AddressOrEth, AssetMetadata, ParsedAsset, UniqueId } from '../../types/
 import { ChainId } from '../../types/chains';
 import { chunkArray, createAssetQuery, parseAssetMetadata } from '../../utils/assets';
 import { RainbowError, logger } from '@/logger';
-
 export const ASSETS_TIMEOUT_DURATION = 10000;
 const ASSETS_REFETCH_INTERVAL = 60000;
 
@@ -39,11 +38,11 @@ export async function assetsQueryFunction({
   try {
     if (!assetAddresses || !assetAddresses.length) return {};
     const batches = chunkArray([...assetAddresses], 10); // chunking because a full batch would throw 413
-    const batchResults = batches.map(batchedQuery =>
-      requestMetadata(createAssetQuery(batchedQuery, chainId, currency, true), {
-        timeout: ASSETS_TIMEOUT_DURATION,
-      })
-    ) as Promise<Record<string, AssetMetadata>[]>[];
+    const batchQueries = batches.map(batchedQuery => createAssetQuery(batchedQuery, chainId, currency, true), {
+      timeout: ASSETS_TIMEOUT_DURATION,
+    });
+
+    const batchResults = batchQueries.map(query => requestMetadata(query)) as Promise<Record<string, AssetMetadata>[]>[];
     const results = (await Promise.all(batchResults))
       .flat()
       .map(r => Object.values(r))

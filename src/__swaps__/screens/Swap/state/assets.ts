@@ -1,18 +1,17 @@
 import { createStore } from '@/state/internal/createStore';
 import { useStore } from 'zustand';
 import { ParsedSearchAsset } from '../types/assets';
-import { SearchAsset } from '../types/search';
 import { ChainId } from '@/__swaps__/screens/Swap/types/chains';
 import { SortMethod } from '../types/swap';
 
 export interface SwapAssetState {
-  assetToSell: ParsedSearchAsset | SearchAsset | null;
-  assetToBuy: ParsedSearchAsset | SearchAsset | null;
+  assetToSell: ParsedSearchAsset | null;
+  assetToBuy: ParsedSearchAsset | null;
   outputChainId: ChainId;
   sortMethod: SortMethod;
   searchFilter: string;
-  setAssetToSell: (asset: ParsedSearchAsset | SearchAsset) => void;
-  setAssetToBuy: (asset: ParsedSearchAsset | SearchAsset) => void;
+  setAssetToSell: (asset: ParsedSearchAsset) => void;
+  setAssetToBuy: (asset: ParsedSearchAsset) => void;
   setOutputChainId: (chainId: ChainId) => void;
   setSortMethod: (sortMethod: SortMethod) => void;
   setSearchFilter: (searchFilter: string) => void;
@@ -44,7 +43,7 @@ export const swapAssetStore = createStore<SwapAssetState>((set, get) => ({
       return;
     }
 
-    set({ assetToBuy: asset });
+    set({ assetToBuy: asset, outputChainId: asset.chainId });
   },
 
   setOutputChainId(chainId) {
