@@ -1,4 +1,4 @@
-import lang from 'i18n-js';
+import * as lang from '@/languages';
 
 import Routes from '@/navigation/routesNames';
 
@@ -14,7 +14,7 @@ import NotificationsSection from './components/NotificationsSection';
 export const SettingsPages = {
   appIcon: {
     component: AppIconSection,
-    getTitle: () => lang.t('settings.app_icon'),
+    getTitle: () => lang.t(lang.l.settings.app_icon),
     key: Routes.SETTINGS_SECTION_APP_ICON,
   },
   backup: {
@@ -24,37 +24,37 @@ export const SettingsPages = {
   },
   currency: {
     component: CurrencySection,
-    getTitle: () => lang.t('settings.currency'),
+    getTitle: () => lang.t(lang.l.settings.currency.title),
     key: Routes.SETTINGS_SECTION_CURRENCY,
   },
   default: {
     component: null,
-    getTitle: () => lang.t('settings.label'),
+    getTitle: () => lang.t(lang.l.settings.label),
     key: Routes.SETTINGS_SECTION,
   },
   dev: {
     component: DevSection,
-    getTitle: () => lang.t('settings.dev'),
+    getTitle: () => lang.t(lang.l.settings.developer),
     key: Routes.SETTINGS_SECTION_DEV,
   },
   language: {
     component: LanguageSection,
-    getTitle: () => lang.t('settings.language'),
+    getTitle: () => lang.t(lang.l.settings.language),
     key: Routes.SETTINGS_SECTION_LANGUAGE,
   },
   network: {
     component: NetworkSection,
-    getTitle: () => lang.t('settings.network'),
+    getTitle: () => lang.t(lang.l.settings.network),
     key: Routes.SETTINGS_SECTION_NETWORK,
   },
   notifications: {
     component: NotificationsSection,
-    getTitle: () => lang.t('settings.notifications'),
+    getTitle: () => lang.t(lang.l.settings.notifications),
     key: Routes.SETTINGS_SECTION_NOTIFICATIONS,
   },
   privacy: {
     component: PrivacySection,
-    getTitle: () => lang.t('settings.privacy'),
+    getTitle: () => lang.t(lang.l.settings.privacy),
     key: Routes.SETTINGS_SECTION_PRIVACY,
   },
 };

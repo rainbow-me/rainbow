@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Inline, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../constants';
-import { opacity } from '../utils';
+import { opacity } from '../utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
 import Animated from 'react-native-reanimated';
 import { useSwapContext } from '../providers/swap-provider';

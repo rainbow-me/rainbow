@@ -5,7 +5,7 @@ import { Box, TextIcon, useColorMode, useForegroundColor } from '@/design-system
 import { TextWeight } from '@/design-system/components/Text/Text';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../constants';
-import { opacity } from '../utils';
+import { opacity } from '../utils/swaps';
 
 export const CoinRowButton = ({
   icon,

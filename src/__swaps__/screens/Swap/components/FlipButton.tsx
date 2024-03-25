@@ -8,7 +8,7 @@ import { AnimatedSpinner, spinnerExitConfig } from '@/__swaps__/components/anima
 import { Bleed, Box, IconContainer, Text, globalColors, useColorMode } from '@/design-system';
 import { colors } from '@/styles';
 import { SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../constants';
-import { opacity } from '../utils';
+import { opacity } from '../utils/swaps';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { AnimatedBlurView } from './AnimatedBlurView';
 import { useSwapContext } from '../providers/swap-provider';
