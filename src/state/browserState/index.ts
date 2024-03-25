@@ -23,6 +23,7 @@ interface BrowserState {
   editTab: (tabIndex: number, newTabData: Partial<Tab>) => void;
   setActiveTab: (tabIndex: number) => void;
   getActiveTab: () => Tab | undefined;
+  getActiveTabIndex: () => number;
 }
 
 export const useBrowserStateStore = create<BrowserState>((set, get) => ({
@@ -49,10 +50,11 @@ export const useBrowserStateStore = create<BrowserState>((set, get) => ({
       return { tabs: newTabs };
     }),
 
-  editTab: (tabIndex, newTabData) =>
+  editTab: (tabIndex, newTabData) => {
     set(state => ({
       tabs: state.tabs.map((tab, index) => (index === tabIndex ? { ...tab, ...newTabData, timestamp: Date.now() } : tab)),
-    })),
+    }));
+  },
 
   setActiveTab: tabIndex =>
     set(state => ({
@@ -63,4 +65,5 @@ export const useBrowserStateStore = create<BrowserState>((set, get) => ({
     })),
 
   getActiveTab: () => get().tabs.find(tab => tab.isActive),
+  getActiveTabIndex: () => get().tabs.findIndex(tab => tab.isActive),
 }));
