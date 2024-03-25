@@ -28,6 +28,7 @@ import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtil
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { Network } from '@/networks/types';
+import * as lang from '@/languages';
 
 const TransactionMastheadHeight = android ? 153 : 135;
 
@@ -100,18 +101,15 @@ function CurrencyTile({
   const accountName = useMemo(() => removeFirstEmojiFromString(addressAccount?.label), []);
   const avatarColor =
     addressAccount?.color ?? addressContact?.color ?? theme.colors.avatarBackgrounds[addressHashedColorIndex(address) || 1];
-  console.log({ avatarColor });
   const emoji = accountEmoji || addressHashedEmoji(address);
 
   const name = accountName || fetchedEnsName || addressContact?.nickname || addressContact?.ens || formattedAddress;
 
-  //i18n - search for 'You'
-  console.log({ accountAddress, address });
   if (accountAddress?.toLowerCase() === address?.toLowerCase() && !showAsset) {
-    title = 'You';
+    title = lang.t(lang.l.transaction_details.you);
   }
 
-  const shouldShowAddress = (!name.includes('...') || name === 'You') && !showAsset;
+  const shouldShowAddress = (!name.includes('...') || name === lang.t(lang.l.transaction_details.you)) && !showAsset;
   const imageUrl = fetchedEnsImage ?? addressAccount?.image;
   const ensAvatarSharedValue = useTiming(!!image || (!!imageUrl && imageLoaded), {
     duration: image || addressAccount?.image ? 0 : 420,
@@ -140,12 +138,9 @@ function CurrencyTile({
     }
   }, [fetchedEnsName]);
 
-  console.log({ urlTOuse: showAsset ? asset?.icon_url : fetchedEnsImage });
   const colorForAsset = usePersistentDominantColorFromImage(showAsset ? asset?.icon_url : imageUrl) || avatarColor;
 
   const colorToUse = colorForAsset;
-
-  console.log({ colorForAsset, colorToUse, avatarColor });
 
   const emojiAvatarAnimatedStyle = useAnimatedStyle(() => ({
     opacity: interpolate(ensAvatarSharedValue.value, [0, 1], [1, 0]),
@@ -284,8 +279,6 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
     const inAsset = transaction?.changes?.find(a => a?.direction === 'in')?.asset;
     if (!inAsset) return undefined;
 
-    console.log('price : ', inAsset?.price?.value);
-
     return {
       inAssetValueDisplay: convertAmountToBalanceDisplay(inAsset?.balance?.amount || '0', inAsset),
       inAssetNativeDisplay: inAsset?.price?.value
@@ -311,7 +304,6 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
 
   const contractImage = transaction?.contract?.iconUrl;
   const contractName = transaction?.contract?.name;
-  console.log({ contractName, contractImage });
 
   // if its a mint then we want to show the mint contract first
   const toAddress = (transaction.type === 'mint' ? transaction?.from : transaction?.to) || undefined;
