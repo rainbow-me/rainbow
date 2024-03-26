@@ -219,7 +219,7 @@ const GasMenu = ({ showGasOptions, flashbotTransaction, children }) => {
         theme={theme}
       />
     );
-    if (!gasOptionsAvailable || (gasIsNotReady && false)) return pager;
+    if (!gasOptionsAvailable || gasIsNotReady) return pager;
 
     if (IS_ANDROID) {
       return (
