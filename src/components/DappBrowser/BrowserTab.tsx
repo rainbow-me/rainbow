@@ -2,7 +2,7 @@
 import { FasterImageView, ImageOptions } from '@candlefinance/faster-image';
 import { Box, globalColors, useColorMode } from '@/design-system';
 import { useAccountAccentColor, useDimensions } from '@/hooks';
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
   PanGestureHandler,
@@ -198,9 +198,6 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
   const panRef = useRef();
   const tapRef = useRef();
 
-  const defaultBackgroundColor = isDarkMode ? '#191A1C' : globalColors.white100;
-  const backgroundColor = useSharedValue<string>(defaultBackgroundColor);
-
   // ⚠️ TODO
   const gestureScale = useSharedValue(1);
   const gestureX = useSharedValue(0);
@@ -215,14 +212,15 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
   //   gestureY: 0,
   // });
 
-  const tabUrl = useMemo(() => tabStates?.[tabIndex]?.url || RAINBOW_HOME, [tabIndex, tabStates]);
-
-  const isActiveTab = useMemo(() => activeTabIndex === tabIndex, [activeTabIndex, tabIndex]);
-  const multipleTabsOpen = useMemo(() => tabStates?.length > 1, [tabStates?.length]);
-
+  const tabUrl = tabStates?.[tabIndex]?.url;
+  const isActiveTab = activeTabIndex === tabIndex;
+  const multipleTabsOpen = tabStates?.length > 1;
   const isOnHomepage = tabUrl === RAINBOW_HOME;
 
   const screenshotData = useSharedValue<ScreenshotType | undefined>(findTabScreenshot(tabId, tabUrl) || undefined);
+
+  const defaultBackgroundColor = isDarkMode ? '#191A1C' : globalColors.white100;
+  const backgroundColor = useSharedValue<string>(defaultBackgroundColor);
 
   const animatedWebViewBackgroundColorStyle = useAnimatedStyle(() => {
     const homepageColor = isDarkMode ? globalColors.grey100 : '#FBFCFD';

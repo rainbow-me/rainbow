@@ -31,11 +31,10 @@ export const SearchBar = () => {
   const [isFocused, setIsFocused] = useState<boolean>(false);
 
   const keyboardHeight = useKeyboardHeight({ shouldListen: isFocused });
-
   const inputRef = useAnimatedRef<TextInput>();
 
-  const tabId = useMemo(() => tabStates?.[activeTabIndex]?.uniqueId, [activeTabIndex, tabStates]);
-  const url = useMemo(() => tabStates?.[activeTabIndex]?.url, [activeTabIndex, tabStates]);
+  const tabId = tabStates?.[activeTabIndex]?.uniqueId;
+  const url = tabStates?.[activeTabIndex]?.url;
   const isHome = url === RAINBOW_HOME;
   const isGoogleSearch = url?.startsWith(GOOGLE_SEARCH_URL);
 
