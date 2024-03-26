@@ -19,6 +19,7 @@ import { FiatProviderName } from '@/entities/f2c';
 import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
 import { queryClient } from '@/react-query';
 import { pointsReferralCodeQueryKey } from '@/resources/points';
+import { metadataClient } from '@/graphql';
 
 /*
  * You can test these deeplinks with the following command:
@@ -178,13 +179,20 @@ export default async function handleDeeplink(url: string, initialRoute: any = nu
       }
 
       case 'points': {
-        const referralCode = query?.ref;
+        const { ref: referralCode, code: redemptionCode } = query;
         if (referralCode) {
           analyticsV2.track(analyticsV2.event.pointsReferralCodeDeeplinkOpened);
           queryClient.setQueryData(
             pointsReferralCodeQueryKey,
             (referralCode.slice(0, 3) + '-' + referralCode.slice(3, 7)).toLocaleUpperCase()
           );
+        } else if (redemptionCode) {
+          const redemptionCodeInfo = await metadataClient.redemptionCode({ code: redemptionCode });
+          Navigation.handleAction(Routes.CLAIM_POINTS_SCREEN, {
+            redemptionCode,
+            numPoints: redemptionCodeInfo?.redemptionCode?.earnings?.max,
+            error: !!redemptionCodeInfo?.redemptionCode?.error,
+          });
         }
         break;
       }

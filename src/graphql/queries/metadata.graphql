@@ -419,6 +419,23 @@ mutation redeemCodeForPoints($address: String!, $redemptionCode: String!) {
   }
 }
 
+query redemptionCode($code: String!) {
+  redemptionCode(code: $code) {
+    redemption_code {
+      code
+    }
+    earnings {
+      max
+      min
+      type
+    }
+    error {
+      type
+      message
+    }
+  }
+}
+
 fragment TokenAllTimeFragment on TokenAllTime {
   highDate
   highValue

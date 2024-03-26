@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { AccentColorProvider, Box, Text, TextIcon, useForegroundColor } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useNavigation } from '@/navigation';
@@ -10,20 +10,40 @@ import * as i18n from '@/languages';
 import { useTheme } from '@/theme';
 import Routes from '@/navigation/routesNames';
 import { metadataPOSTClient } from '@/graphql';
+import { RouteProp, useRoute } from '@react-navigation/native';
+
+type ClaimPointsScreenParams = {
+  ClaimPointsScreen: {
+    redemptionCode: string;
+    numPoints: number | undefined;
+    error: boolean;
+  };
+};
 
 export default function ClaimPointsScreen() {
+  const {
+    params: { redemptionCode, numPoints, error },
+  } = useRoute<RouteProp<ClaimPointsScreenParams, 'ClaimPointsScreen'>>();
+
   const { accountAddress } = useAccountProfile();
   const { goBack, navigate } = useNavigation();
   const { isReadOnlyWallet } = useWallets();
   const { isDarkMode } = useTheme();
   const { accentColor } = useAccountAccentColor();
   const separatorSecondary = useForegroundColor('separatorSecondary');
-  const isError = false;
-  const numPoints = 100;
+
+  const [isError, setIsError] = useState<boolean>(error || numPoints === undefined);
 
   const TRANSLATIONS = i18n.l.points.find[isError ? 'failure' : 'success'];
 
-  const claimPoints = useCallback(() => metadataPOSTClient.redeemCodeForPoints({ address: accountAddress, redemptionCode: '' }), []);
+  const claimPoints = useCallback(async () => {
+    const redemptionResult = await metadataPOSTClient.redeemCodeForPoints({ address: accountAddress, redemptionCode });
+    if (redemptionResult?.redeemCode?.error) {
+      setIsError(true);
+    } else {
+      goBack();
+    }
+  }, [accountAddress, goBack, redemptionCode]);
 
   return (
     <AccentColorProvider color={accentColor}>
@@ -73,7 +93,7 @@ export default function ClaimPointsScreen() {
           <PointsIconAnimation />
           <Box paddingTop="28px" paddingBottom="32px" gap={20}>
             <Text align="center" color="label" weight="heavy" size="22pt">
-              {i18n.t(TRANSLATIONS.title, { numPoints })}
+              {i18n.t(TRANSLATIONS.title, { numPoints: numPoints ?? 0 })}
             </Text>
             <Text align="center" color="labelTertiary" weight="semibold" size="15pt">
               {i18n.t(TRANSLATIONS.description)}
@@ -81,7 +101,7 @@ export default function ClaimPointsScreen() {
           </Box>
           <Box gap={20}>
             {!isError && (
-              <ButtonPressAnimation overflowMargin={50} onPress={isReadOnlyWallet ? watchingAlert : () => {}}>
+              <ButtonPressAnimation overflowMargin={50} onPress={isReadOnlyWallet ? watchingAlert : claimPoints}>
                 <Box
                   background="accent"
                   borderRadius={26}
