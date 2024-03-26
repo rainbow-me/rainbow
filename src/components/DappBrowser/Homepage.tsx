@@ -12,6 +12,7 @@ import { ImgixImage } from '@/components/images';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Site } from '@/state/browserState';
 import { useFavoriteDappsStore } from '@/state/favoriteDapps';
+import { TrendingSite, trendingDapps } from '@/resources/trendingDapps/trendingDapps';
 
 const HORIZONTAL_INSET = 24;
 
@@ -23,10 +24,8 @@ const NUM_CARDS = 2;
 const CARD_PADDING = 12;
 const CARD_SIZE = (deviceUtils.dimensions.width - HORIZONTAL_INSET * 2 - (NUM_CARDS - 1) * CARD_PADDING) / NUM_CARDS;
 
-const Card = () => {
-  const bgImageUrl = 'https://nftcalendar.io/storage/uploads/2022/05/06/banner_discord1_05062022181527627565bf3c203.jpeg';
-  const logoImageUrl = 'https://pbs.twimg.com/profile_images/1741494128779886592/RY4V0T2F_400x400.jpg';
-
+const Card = ({ site }: { site: TrendingSite }) => {
+  // not sure we need this
   const menuConfig = {
     menuTitle: '',
     menuItems: [
@@ -66,9 +65,9 @@ const Card = () => {
           padding="20px"
           style={{ overflow: 'hidden' }}
         >
-          {bgImageUrl && (
+          {site.screenshot && (
             <Cover>
-              <ImgixImage source={{ uri: bgImageUrl }} size={CARD_SIZE} style={{ width: '100%', height: '100%' }} />
+              <ImgixImage source={{ uri: site.screenshot }} size={CARD_SIZE} style={{ width: '100%', height: '100%' }} />
               <Cover>
                 <LinearGradient
                   colors={['rgba(0, 0, 0, 0.6)', 'rgba(0, 0, 0, 0.6)', '#000']}
@@ -82,7 +81,7 @@ const Card = () => {
           )}
           <Box
             as={ImgixImage}
-            source={{ uri: logoImageUrl }}
+            source={{ uri: site.image }}
             size={48}
             background="surfacePrimary"
             shadow="24px"
@@ -94,10 +93,10 @@ const Card = () => {
           />
           <Stack space="10px">
             <Text size="17pt" weight="heavy" color="label">
-              Rainbowcast
+              {site.name}
             </Text>
             <Text size="13pt" weight="bold" color="labelTertiary">
-              zora.co
+              {site.url}
             </Text>
           </Stack>
           <Box
@@ -199,9 +198,9 @@ export default function Homepage() {
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 <Inset space="24px">
                   <Box flexDirection="row" gap={CARD_PADDING}>
-                    <Card />
-                    <Card />
-                    <Card />
+                    {trendingDapps.map(site => (
+                      <Card key={site.url} site={site} />
+                    ))}
                   </Box>
                 </Inset>
               </ScrollView>
@@ -240,9 +239,9 @@ export default function Homepage() {
               </Text>
             </Inline>
             <Inline space={{ custom: CARD_PADDING }}>
-              <Card />
-              <Card />
-              <Card />
+              {trendingDapps.map(site => (
+                <Card key={site.url} site={site} />
+              ))}
             </Inline>
           </Stack>
         </Stack>
