@@ -26,15 +26,7 @@ import { MaterialTopTabDescriptorMap } from '@react-navigation/material-top-tabs
 import { NavigationHelpers, ParamListBase, RouteProp } from '@react-navigation/native';
 import React, { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
 import { InteractionManager, View } from 'react-native';
-import Animated, {
-  Easing,
-  interpolate,
-  SharedValue,
-  useAnimatedStyle,
-  useSharedValue,
-  withClamp,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { Easing, interpolate, SharedValue, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import { AnimatedSpinner } from '@/__swaps__/components/animations/AnimatedSpinner';
 import DiscoverScreen, { discoverScrollToTopFnRef } from '../screens/discover/DiscoverScreen';
@@ -153,7 +145,7 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
 
   const hideForBrowserTabViewStyle = useAnimatedStyle(() => {
     const progress = tabViewProgress?.value || 0;
-    const opacity = withClamp({ min: 0, max: 1 }, 1 - progress / 75);
+    const opacity = 1 - progress / 75;
     const pointerEvents = opacity < 1 ? 'none' : 'auto';
 
     return {
