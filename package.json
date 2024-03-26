@@ -62,7 +62,6 @@
     "bundle-inpage": "yarn webpack --config src/browser/webpack.config.js && cp InjectedJSBundle.js android/app/src/main/res/raw/injected_js_bundle.js"
   },
   "dependencies": {
-    "@apollo/client": "3.2.4",
     "@bankify/react-native-animate-number": "0.2.1",
     "@bradgarropy/use-countdown": "1.4.1",
     "@capsizecss/core": "3.0.0",
