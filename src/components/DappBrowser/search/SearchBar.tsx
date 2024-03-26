@@ -118,12 +118,6 @@ export const SearchBar = () => {
     [inputRef, onRefresh, tabId, updateActiveTabState, url]
   );
 
-  // const setIsFocusedNextFrame = (value: boolean) => {
-  //   requestAnimationFrame(() => {
-  //     setIsFocused(value);
-  //   });
-  // };
-
   const onAddressInputPressWorklet = () => {
     'worklet';
     isFocusedValue.value = true;
@@ -175,7 +169,6 @@ export const SearchBar = () => {
             inputValue={inputValue}
             onBlur={onBlur}
             onSubmitEditing={handleUrlSubmit}
-            onRefresh={onRefresh}
           />
         </Box>
         <TabButton inputRef={inputRef} isFocused={isFocused} isFocusedValue={isFocusedValue} setIsFocused={setIsFocused} />

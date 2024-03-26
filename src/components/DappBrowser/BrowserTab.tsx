@@ -244,6 +244,8 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
   });
 
   const animatedWebViewHeight = useDerivedValue(() => {
+    // For some reason driving the WebView height with a separate derived
+    // value results in slightly less tearing when the height animates
     const progress = tabViewProgress?.value || 0;
     const isActiveTabAnimated = animatedActiveTabIndex?.value === tabIndex;
 
@@ -253,25 +255,13 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
       [isActiveTabAnimated ? WEBVIEW_HEIGHT : COLLAPSED_WEBVIEW_HEIGHT_UNSCALED, COLLAPSED_WEBVIEW_HEIGHT_UNSCALED],
       'clamp'
     );
-
-    // const tabViewNotVisibleHeight = isActiveTabAnimated ? WEBVIEW_HEIGHT : COLLAPSED_WEBVIEW_HEIGHT_UNSCALED;
-    // const heightForTab = tabViewVisible?.value ? COLLAPSED_WEBVIEW_HEIGHT_UNSCALED : tabViewNotVisibleHeight;
-
-    // return withSpring(heightForTab, SPRING_CONFIGS.browserTabTransition);
-
-    // return tabViewVisible?.value || !isActiveTabAnimated
-    //   ? withSpring(COLLAPSED_WEBVIEW_HEIGHT_UNSCALED, SPRING_CONFIGS.browserTabTransition)
-    //   : withSpring(WEBVIEW_HEIGHT, SPRING_CONFIGS.browserTabTransition);
-
-    // return withClamp(
-    //   { min: COLLAPSED_WEBVIEW_HEIGHT_UNSCALED, max: WEBVIEW_HEIGHT },
-    //   withSpring(heightForTab, SPRING_CONFIGS.browserTabTransition)
-    // );
   });
 
   const animatedWebViewStyle = useAnimatedStyle(() => {
     const progress = tabViewProgress?.value || 0;
     const isActiveTabAnimated = animatedActiveTabIndex?.value === tabIndex;
+
+    const height = animatedWebViewHeight.value;
 
     const scale = interpolate(
       progress,
@@ -288,14 +278,13 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
     const yPositionStart =
       (isActiveTabAnimated ? 0 : Math.floor(tabIndex / 2) * TAB_VIEW_ROW_HEIGHT + extraYPadding) +
       (isActiveTabAnimated ? (1 - progress / 100) * (scrollViewOffset?.value || 0) : 0);
-
     const yPositionEnd =
       (multipleTabsOpen ? Math.floor(tabIndex / 2) * TAB_VIEW_ROW_HEIGHT + extraYPadding : 0) +
       (isActiveTabAnimated ? (1 - progress / 100) * (scrollViewOffset?.value || 0) : 0);
-
     const yPositionForTab = interpolate(progress, [0, 100], [yPositionStart, yPositionEnd]);
 
-    // Determine the border radius for the minimized tab that achieves concentric corners around the close button
+    // Determine the border radius for the minimized tab that
+    // achieves concentric corners around the close button
     const invertedScale = multipleTabsOpen ? INVERTED_MULTI_TAB_SCALE : INVERTED_SINGLE_TAB_SCALE;
     const spaceToXButton = invertedScale * X_BUTTON_PADDING;
     const xButtonBorderRadius = (X_BUTTON_SIZE / 2) * invertedScale;
@@ -311,25 +300,12 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
 
     const opacity = interpolate(progress, [0, 100], [isActiveTabAnimated ? 1 : 0, 1], 'clamp');
 
-    // const height = interpolate(
-    //   progress,
-    //   [0, 100],
-    //   [isActiveTabAnimated ? WEBVIEW_HEIGHT : COLLAPSED_WEBVIEW_HEIGHT_UNSCALED, COLLAPSED_WEBVIEW_HEIGHT_UNSCALED],
-    //   'clamp'
-    // );
-    const height = animatedWebViewHeight.value;
-
     return {
       borderRadius,
       height,
       opacity,
       // eslint-disable-next-line no-nested-ternary
       pointerEvents: tabViewVisible?.value ? 'box-only' : isActiveTabAnimated ? 'auto' : 'none',
-      // ...(IS_IOS && isOnHomepage && !isDarkMode
-      //   ? {
-      //       shadowOpacity: (progress / 100) * 0.1,
-      //     }
-      //   : {}),
       transform: [
         { translateY: multipleTabsOpen ? -height / 2 : 0 },
         { translateX: xPositionForTab + gestureX.value },
@@ -399,8 +375,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
       const fileName = `screenshot-${timestamp}.jpg`;
       try {
         await RNFS.copyFile(tempUri, `${RNFS.DocumentDirectoryPath}/${fileName}`);
-
-        // Build the screenshot object
+        // Once the file is copied, build the screenshot object
         const newScreenshot: ScreenshotType = {
           id: tabId,
           timestamp,
@@ -609,8 +584,8 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
         injectedJavaScript={getWebsiteBackgroundColorAndTitle}
         mediaPlaybackRequiresUserAction
         onLoadStart={handleOnLoadStart}
-        // startInLoadingState
         onLoad={handleOnLoad}
+        // 👇 This prevents an occasional white page flash when loading
         renderLoading={() => (
           <Box
             as={Animated.View}
@@ -811,38 +786,39 @@ const styles = StyleSheet.create({
     width: deviceUtils.dimensions.width,
     zIndex: 999999999,
   },
-  webViewContainerShadowLarge: IS_IOS
-    ? {
-        shadowColor: globalColors.grey100,
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.1,
-        shadowRadius: 12,
-      }
-    : {},
-  webViewContainerShadowLargeDark: IS_IOS
-    ? {
-        shadowColor: globalColors.grey100,
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.3,
-        shadowRadius: 12,
-      }
-    : {},
-  webViewContainerShadowSmall: IS_IOS
-    ? {
-        shadowColor: globalColors.grey100,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.04,
-        shadowRadius: 3,
-      }
-    : {},
-  webViewContainerShadowSmallDark: IS_IOS
-    ? {
-        shadowColor: globalColors.grey100,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 3,
-      }
-    : {},
+  // Need to fix some shadow performance issues - disabling shadows for now
+  // webViewContainerShadowLarge: IS_IOS
+  //   ? {
+  //       shadowColor: globalColors.grey100,
+  //       shadowOffset: { width: 0, height: 8 },
+  //       shadowOpacity: 0.1,
+  //       shadowRadius: 12,
+  //     }
+  //   : {},
+  // webViewContainerShadowLargeDark: IS_IOS
+  //   ? {
+  //       shadowColor: globalColors.grey100,
+  //       shadowOffset: { width: 0, height: 8 },
+  //       shadowOpacity: 0.3,
+  //       shadowRadius: 12,
+  //     }
+  //   : {},
+  // webViewContainerShadowSmall: IS_IOS
+  //   ? {
+  //       shadowColor: globalColors.grey100,
+  //       shadowOffset: { width: 0, height: 2 },
+  //       shadowOpacity: 0.04,
+  //       shadowRadius: 3,
+  //     }
+  //   : {},
+  // webViewContainerShadowSmallDark: IS_IOS
+  //   ? {
+  //       shadowColor: globalColors.grey100,
+  //       shadowOffset: { width: 0, height: 2 },
+  //       shadowOpacity: 0.2,
+  //       shadowRadius: 3,
+  //     }
+  //   : {},
   webViewStyle: {
     borderCurve: 'continuous',
     height: WEBVIEW_HEIGHT,
