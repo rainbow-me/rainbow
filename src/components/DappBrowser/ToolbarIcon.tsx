@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Bleed, Box, Text, TextIcon, useForegroundColor } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
@@ -10,25 +10,32 @@ import { useTheme } from '@/theme';
 export const ToolbarIcon = ({
   color,
   disabled,
-  hitSlop = 4,
   icon,
   onPress,
   scaleTo,
+  side,
   size = 'icon 17px',
   weight = 'bold',
 }: {
   color?: TextColor;
   disabled?: boolean;
-  hitSlop?: number;
   icon: string;
   onPress: () => void;
   scaleTo?: number;
+  side?: 'left' | 'right';
   size?: TextSize;
   weight?: TextWeight;
 }) => {
   return (
-    <ButtonPressAnimation disabled={disabled} onPress={onPress} scaleTo={scaleTo}>
-      <TextIcon color={disabled ? 'labelQuaternary' : color || 'blue'} containerSize={20} hitSlop={hitSlop} size={size} weight={weight}>
+    <ButtonPressAnimation disabled={disabled} onPress={onPress} scaleTo={scaleTo} style={styles.buttonPressWrapper}>
+      <TextIcon
+        color={disabled ? 'labelQuaternary' : color || 'blue'}
+        containerSize={20}
+        size={size}
+        // eslint-disable-next-line no-nested-ternary
+        textStyle={!side ? {} : side === 'left' ? styles.leftSidePadding : styles.rightSidePadding}
+        weight={weight}
+      >
         {icon}
       </TextIcon>
     </ButtonPressAnimation>
@@ -81,3 +88,18 @@ export const ToolbarTextButton = ({
     </TouchableOpacity>
   );
 };
+
+const styles = StyleSheet.create({
+  buttonPressWrapper: {
+    alignItems: 'center',
+    height: 48,
+    justifyContent: 'center',
+    width: 40,
+  },
+  leftSidePadding: {
+    paddingLeft: 4,
+  },
+  rightSidePadding: {
+    paddingRight: 4,
+  },
+});

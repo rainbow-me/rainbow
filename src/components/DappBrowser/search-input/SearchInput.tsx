@@ -242,7 +242,7 @@ export const SearchInput = ({
             width="full"
           />
         </GestureHandlerV1Button>
-        <Box as={Animated.View} position="absolute" style={[toolbarIconStyle, { left: 12 }]}>
+        <Box as={Animated.View} left="0px" position="absolute" style={toolbarIconStyle}>
           <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={onPressMenuItem}>
             <ToolbarIcon
               color="label"
@@ -250,13 +250,14 @@ export const SearchInput = ({
               onPress={() => {
                 return;
               }}
+              side="left"
               size="icon 17px"
               weight="heavy"
             />
           </ContextMenuButton>
         </Box>
-        <Box as={Animated.View} position="absolute" style={[toolbarIconStyle, { right: 12 }]}>
-          <ToolbarIcon color="label" icon="􀅈" onPress={onRefresh} size="icon 17px" weight="heavy" />
+        <Box as={Animated.View} position="absolute" right="0px" style={toolbarIconStyle}>
+          <ToolbarIcon color="label" icon="􀅈" onPress={onRefresh} side="right" size="icon 17px" weight="heavy" />
         </Box>
       </Box>
     </BrowserButtonShadows>

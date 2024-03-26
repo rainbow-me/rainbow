@@ -62,10 +62,10 @@ interface BrowserTabProps {
 }
 
 interface ScreenshotType {
-  id: string;
-  timestamp: number;
-  uri: string;
-  url: string;
+  id: string; // <- the tab uniqueId
+  timestamp: number; // <- time of capture
+  uri: string; // <- screenshot file name = `screenshot-${timestamp}.jpg`
+  url: string; // <- url of the tab
 }
 
 const AnimatedFasterImage = Animated.createAnimatedComponent(FasterImageView);
@@ -786,6 +786,13 @@ const styles = StyleSheet.create({
     width: deviceUtils.dimensions.width,
     zIndex: 999999999,
   },
+  webViewStyle: {
+    borderCurve: 'continuous',
+    height: WEBVIEW_HEIGHT,
+    maxHeight: WEBVIEW_HEIGHT,
+    minHeight: WEBVIEW_HEIGHT,
+    width: deviceUtils.dimensions.width,
+  },
   // Need to fix some shadow performance issues - disabling shadows for now
   // webViewContainerShadowLarge: IS_IOS
   //   ? {
@@ -819,11 +826,4 @@ const styles = StyleSheet.create({
   //       shadowRadius: 3,
   //     }
   //   : {},
-  webViewStyle: {
-    borderCurve: 'continuous',
-    height: WEBVIEW_HEIGHT,
-    maxHeight: WEBVIEW_HEIGHT,
-    minHeight: WEBVIEW_HEIGHT,
-    width: deviceUtils.dimensions.width,
-  },
 });
