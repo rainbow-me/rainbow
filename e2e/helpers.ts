@@ -231,7 +231,7 @@ export async function waitAndSwipe(
 export async function swipe(
   elementId: string | RegExp,
   direction: Direction,
-  speed: 'slow' | 'fast' = 'fast',
+  speed: Speed = 'fast',
   percentage = 0.75,
   normalizedStartingPointY = NaN
 ) {
@@ -242,7 +242,7 @@ export async function swipe(
   }
 }
 
-export async function scrollTo(scrollviewId: string | RegExp, edge: 'top' | 'bottom' | 'left' | 'right') {
+export async function scrollTo(scrollviewId: string | RegExp, edge: Direction) {
   try {
     await element(by.id(scrollviewId)).scrollTo(edge);
   } catch (error) {
