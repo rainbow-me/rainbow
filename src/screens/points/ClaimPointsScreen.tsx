@@ -11,6 +11,7 @@ import { useTheme } from '@/theme';
 import Routes from '@/navigation/routesNames';
 import { metadataPOSTClient } from '@/graphql';
 import { RouteProp, useRoute } from '@react-navigation/native';
+import { analyticsV2 } from '@/analytics';
 
 type ClaimPointsScreenParams = {
   ClaimPointsScreen: {
@@ -41,6 +42,7 @@ export default function ClaimPointsScreen() {
     if (redemptionResult?.redeemCode?.error) {
       setIsError(true);
     } else {
+      analyticsV2.track(analyticsV2.event.pointsClaimPointsScreenClaimedPoints);
       goBack();
     }
   }, [accountAddress, goBack, redemptionCode]);
