@@ -1,4 +1,4 @@
-import React, { RefObject } from 'react';
+import React, { RefObject, useCallback, useMemo } from 'react';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { AnimatedText, Box, Cover, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import Animated, { SharedValue, useAnimatedStyle, useDerivedValue, withSpring, withTiming } from 'react-native-reanimated';
@@ -17,6 +17,11 @@ import { fontWithWidth } from '@/styles';
 import { useBrowserContext } from '../BrowserContext';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedBlurView } from '@/__swaps__/screens/Swap/components/AnimatedBlurView';
+import haptics from '@/utils/haptics';
+import { useFavoriteDappsStore } from '@/state/favoriteDapps';
+import { Site } from '@/state/browserState';
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import { handleShareUrl } from '../utils';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
 
@@ -30,7 +35,6 @@ export const SearchInput = ({
   onSubmitEditing,
   isFocused,
   isFocusedValue,
-  onRefresh,
 }: {
   inputRef: RefObject<TextInput>;
   formattedInputValue: { value: string; tabIndex: number };
@@ -41,9 +45,9 @@ export const SearchInput = ({
   onSubmitEditing: (event: NativeSyntheticEvent<TextInputSubmitEditingEventData>) => void;
   isFocused: boolean;
   isFocusedValue: SharedValue<boolean>;
-  onRefresh: () => void;
 }) => {
-  const { animatedActiveTabIndex, tabViewProgress } = useBrowserContext();
+  const { animatedActiveTabIndex, tabViewProgress, onRefresh } = useBrowserContext();
+  const { isFavorite, addFavorite, removeFavorite } = useFavoriteDappsStore();
   const { isDarkMode } = useColorMode();
 
   const fillSecondary = useForegroundColor('fillSecondary');
@@ -55,6 +59,7 @@ export const SearchInput = ({
   const buttonColorAndroid = isDarkMode ? globalColors.blueGrey100 : globalColors.white100;
   const buttonColor = IS_IOS ? buttonColorIOS : buttonColorAndroid;
 
+  const formattedUrl = formattedInputValue?.value;
   const formattedUrlValue = useDerivedValue(() => {
     return formattedInputValue?.tabIndex !== animatedActiveTabIndex?.value ? '' : formattedInputValue?.value;
   });
@@ -87,6 +92,55 @@ export const SearchInput = ({
         : withSpring(1, SPRING_CONFIGS.keyboardConfig),
     pointerEvents: isHome || isFocusedValue.value || !formattedUrlValue.value ? 'none' : 'auto',
   }));
+
+  const handleFavoritePress = useCallback(() => {
+    if (isFavorite(formattedUrl)) {
+      removeFavorite(formattedUrl);
+    } else {
+      const site: Omit<Site, 'timestamp'> = {
+        name: formattedUrl,
+        url: formattedUrl,
+        image: `${formattedUrl}/favicon.ico`,
+      };
+      addFavorite(site);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formattedUrl]);
+
+  const menuConfig = useMemo(
+    () => ({
+      menuTitle: '',
+      menuItems: [
+        {
+          actionKey: 'favorite',
+          actionTitle: isFavorite(formattedUrl) ? 'Undo Favorite' : 'Favorite',
+          icon: {
+            iconType: 'SYSTEM',
+            iconValue: isFavorite(formattedUrl) ? 'star.slash' : 'star',
+          },
+        },
+        {
+          actionKey: 'share',
+          actionTitle: 'Share',
+          icon: {
+            iconType: 'SYSTEM',
+            iconValue: 'square.and.arrow.up',
+          },
+        },
+      ],
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [isFavorite(formattedUrl)]
+  );
+
+  const onPressMenuItem = async ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: 'share' | 'favorite' } }) => {
+    haptics.selection();
+    if (actionKey === 'favorite') {
+      handleFavoritePress();
+    } else if (inputValue) {
+      handleShareUrl(inputValue);
+    }
+  };
 
   return (
     <BrowserButtonShadows>
@@ -189,15 +243,17 @@ export const SearchInput = ({
           />
         </GestureHandlerV1Button>
         <Box as={Animated.View} position="absolute" style={[toolbarIconStyle, { left: 12 }]}>
-          <ToolbarIcon
-            color="label"
-            icon="􀍡"
-            onPress={() => {
-              return;
-            }}
-            size="icon 17px"
-            weight="heavy"
-          />
+          <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={onPressMenuItem}>
+            <ToolbarIcon
+              color="label"
+              icon="􀍡"
+              onPress={() => {
+                return;
+              }}
+              size="icon 17px"
+              weight="heavy"
+            />
+          </ContextMenuButton>
         </Box>
         <Box as={Animated.View} position="absolute" style={[toolbarIconStyle, { right: 12 }]}>
           <ToolbarIcon color="label" icon="􀅈" onPress={onRefresh} size="icon 17px" weight="heavy" />

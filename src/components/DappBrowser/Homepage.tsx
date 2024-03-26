@@ -12,6 +12,8 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { IS_IOS } from '@/env';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/screens/Swap/utils/swaps';
+import { Site } from '@/state/browserState';
+import { useFavoriteDappsStore } from '@/state/favoriteDapps';
 
 const HORIZONTAL_INSET = 24;
 
@@ -110,18 +112,6 @@ const Card = ({ showMenuButton }: { showMenuButton?: boolean }) => {
                 }}
               />
             </Box>
-            {/* <Box
-              as={ImgixImage}
-              source={{ uri: logoImageUrl }}
-              size={48}
-              background="surfacePrimary"
-              shadow="24px"
-              width={{ custom: 48 }}
-              height={{ custom: 48 }}
-              top={{ custom: -8 }}
-              left={{ custom: -8 }}
-              borderRadius={12}
-            /> */}
             <Stack space="10px">
               <Text size="17pt" weight="heavy" color="label">
                 Rainbow World
@@ -190,9 +180,7 @@ const Card = ({ showMenuButton }: { showMenuButton?: boolean }) => {
   );
 };
 
-const Logo = () => {
-  const imageUrl = 'https://pbs.twimg.com/profile_images/1741494128779886592/RY4V0T2F_400x400.jpg';
-
+const Logo = ({ site }: { site: Omit<Site, 'timestamp'> }) => {
   return (
     <View style={{ width: LOGO_SIZE }}>
       <ButtonPressAnimation overflowMargin={100}>
@@ -201,7 +189,7 @@ const Logo = () => {
             as={ImgixImage}
             enableFasterImage
             size={LOGO_SIZE}
-            source={{ uri: imageUrl }}
+            source={{ uri: site.image }}
             width={{ custom: LOGO_SIZE }}
             height={{ custom: LOGO_SIZE }}
             borderRadius={15}
@@ -209,7 +197,7 @@ const Logo = () => {
             shadow="24px"
           />
           <Text size="12pt" weight="bold" color="labelSecondary" align="center">
-            Zora
+            {site.name}
           </Text>
         </Stack>
       </ButtonPressAnimation>
@@ -220,6 +208,7 @@ const Logo = () => {
 export default function Homepage() {
   const { isDarkMode } = useColorMode();
   const { navigate } = useNavigation();
+  const { favoriteDapps } = useFavoriteDappsStore();
 
   return (
     <Box
@@ -265,31 +254,29 @@ export default function Homepage() {
               </ScrollView>
             </Bleed>
           </Stack>
-          <Stack space="20px">
-            <Inline alignVertical="center" space="6px">
-              <Text color="yellow" size="15pt" align="center" weight="heavy">
-                􀋃
-              </Text>
-              <Text color="label" size="20pt" weight="heavy">
-                Favorites
-              </Text>
-            </Inline>
-            <Bleed space="24px">
-              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                <Inset space="24px">
-                  <Box flexDirection="row" gap={LOGO_PADDING}>
-                    <Logo />
-                    <Logo />
-                    <Logo />
-                    <Logo />
-                    <Logo />
-                    <Logo />
-                    <Logo />
-                  </Box>
-                </Inset>
-              </ScrollView>
-            </Bleed>
-          </Stack>
+          {favoriteDapps?.length > 0 && (
+            <Stack space="20px">
+              <Inline alignVertical="center" space="6px">
+                <Text color="yellow" size="15pt" align="center" weight="heavy">
+                  􀋃
+                </Text>
+                <Text color="label" size="20pt" weight="heavy">
+                  Favorites
+                </Text>
+              </Inline>
+              <Bleed space="24px">
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                  <Inset space="24px">
+                    <Box flexDirection="row" gap={LOGO_PADDING}>
+                      {favoriteDapps.map(dapp => (
+                        <Logo key={dapp.url} site={dapp} />
+                      ))}
+                    </Box>
+                  </Inset>
+                </ScrollView>
+              </Bleed>
+            </Stack>
+          )}
           <Stack space="20px">
             <Inline alignVertical="center" space="6px">
               <Text color="blue" size="15pt" align="center" weight="heavy">
