@@ -8,15 +8,12 @@ import { IS_ANDROID } from '@/env';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { safeAreaInsetValues } from '@/utils';
-import { useSwapAssetStore } from '../state/assets';
+import { useAssetColors } from '../hooks/useAssetColors';
 
 export const SwapBackground = ({ children }: { children: ReactNode }) => {
-  const { assetToBuy, assetToSell } = useSwapAssetStore();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { isDarkMode } = useColorMode();
-
-  const topColor = (assetToSell?.colors?.primary || assetToSell?.colors?.fallback) ?? ETH_COLOR_DARK;
-  const bottomColor = (assetToBuy?.colors?.primary || assetToBuy?.colors?.fallback) ?? ETH_COLOR_DARK;
+  const { topColor, bottomColor } = useAssetColors();
 
   const fallbackColor = isDarkMode ? ETH_COLOR_DARK : ETH_COLOR;
 

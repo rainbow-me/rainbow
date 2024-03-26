@@ -8,7 +8,6 @@ import { useSwapNavigation } from '../hooks/useSwapNavigation';
 import { useSwapInputsController } from '../hooks/useSwapInputsController';
 import { StyleProp, TextStyle } from 'react-native';
 import { useSwapAssetStore } from '../state/assets';
-import { OUTPUT_ASSET_USD_PRICE } from '../dummyValues';
 
 interface SwapContextType {
   inputProgress: SharedValue<number>;
@@ -16,8 +15,6 @@ interface SwapContextType {
   sliderXPosition: SharedValue<number>;
   sliderPressProgress: SharedValue<number>;
   focusedInput: SharedValue<inputKeys>;
-  solidColorCoinIcons: boolean;
-  setSolidColorCoinIcons: Dispatch<SetStateAction<boolean>>;
   isFetching: boolean;
   setIsFetching: Dispatch<SetStateAction<boolean>>;
   isInputSearchFocused: boolean;
@@ -50,26 +47,15 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
   const { assetToBuy, assetToSell } = useSwapAssetStore();
 
-  const [solidColorCoinIcons, setSolidColorCoinIcons] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
   const [isInputSearchFocused, setIsInputSearchFocused] = useState(false);
   const [isOutputSearchFocused, setIsOutputSearchFocused] = useState(false);
 
-  const inputAssetBalance = Number(assetToSell?.balance.amount);
-  const inputAssetUsdPrice = Number(assetToSell?.native.price?.amount);
-  const outputAssetUsdPrice = Number(assetToBuy?.native.price?.amount);
-
-  console.log({
-    inputAssetBalance,
-    inputAssetUsdPrice,
-    outputAssetUsdPrice,
-  });
-
   const SwapInputController = useSwapInputsController({
     focusedInput,
-    inputAssetBalance: Number(assetToSell?.balance.amount),
-    inputAssetUsdPrice: Number(assetToSell?.native.price?.amount),
-    outputAssetUsdPrice: OUTPUT_ASSET_USD_PRICE,
+    inputAssetBalance: assetToSell?.balance.amount ? Number(assetToSell.balance.amount) : 0,
+    inputAssetUsdPrice: assetToSell?.native.price?.amount ? Number(assetToSell?.native.price?.amount) : 0,
+    outputAssetUsdPrice: assetToBuy?.native.price?.amount ? Number(assetToBuy.native.price.amount) : 0,
     setIsFetching,
     sliderXPosition,
   });
@@ -136,8 +122,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         sliderXPosition,
         sliderPressProgress,
         focusedInput,
-        solidColorCoinIcons,
-        setSolidColorCoinIcons,
         isFetching,
         setIsFetching,
         isInputSearchFocused,

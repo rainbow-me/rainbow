@@ -13,6 +13,8 @@ import { RainbowError, logger } from '@/logger';
 import { fetchUserAssetsByChain } from './userAssetsByChain';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { ADDYS_API_KEY } from 'react-native-dotenv';
+import { useAccountSettings } from '@/hooks';
+import { getCachedProviderForNetwork, isHardHat } from '@/handlers/web3';
 
 const addysHttp = new RainbowFetchClient({
   baseURL: 'https://addys.p.rainbow.me/v3',
@@ -203,10 +205,15 @@ export async function parseUserAssets({
 // Query Hook
 
 export function useUserAssets<TSelectResult = UserAssetsResult>(
-  { address, currency, testnetMode = false }: UserAssetsArgs,
+  { address, currency }: UserAssetsArgs,
   config: QueryConfigWithSelect<UserAssetsResult, Error, TSelectResult, UserAssetsQueryKey> = {}
 ) {
-  return useQuery(userAssetsQueryKey({ address, currency, testnetMode }), userAssetsQueryFunction, {
+  const { network: currentNetwork } = useAccountSettings();
+  const provider = getCachedProviderForNetwork(currentNetwork);
+  const providerUrl = provider?.connection?.url;
+  const connectedToHardhat = isHardHat(providerUrl);
+
+  return useQuery(userAssetsQueryKey({ address, currency, testnetMode: connectedToHardhat }), userAssetsQueryFunction, {
     ...config,
     refetchInterval: USER_ASSETS_REFETCH_INTERVAL,
     staleTime: process.env.IS_TESTING === 'true' ? 0 : 1000,

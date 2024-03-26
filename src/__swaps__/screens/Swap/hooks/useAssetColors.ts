@@ -1,0 +1,35 @@
+import { useState, useEffect } from 'react';
+import { useSwapAssetStore } from '../state/assets';
+import { useColorMode } from '@/design-system';
+import { ETH_COLOR, ETH_COLOR_DARK } from '../constants';
+
+interface AssetColors {
+  topColor: string;
+  bottomColor: string;
+  assetToSellShadowColor: string;
+  assetToBuyShadowColor: string;
+}
+
+export const useAssetColors = (): AssetColors => {
+  const { isDarkMode } = useColorMode();
+  const { assetToBuy, assetToSell } = useSwapAssetStore();
+  const [topColor, setTopColor] = useState<string>(isDarkMode ? ETH_COLOR_DARK : ETH_COLOR);
+  const [bottomColor, setBottomColor] = useState<string>(isDarkMode ? ETH_COLOR_DARK : ETH_COLOR);
+  const [assetToSellShadowColor, setAssetToSellShadowColor] = useState<string>(isDarkMode ? ETH_COLOR_DARK : ETH_COLOR);
+  const [assetToBuyShadowColor, setAssetToBuyShadowColor] = useState<string>(isDarkMode ? ETH_COLOR_DARK : ETH_COLOR);
+
+  useEffect(() => {
+    const newTopColor = (assetToSell?.colors?.primary || assetToSell?.colors?.fallback) ?? (isDarkMode ? ETH_COLOR_DARK : ETH_COLOR);
+    const newBottomColor = (assetToBuy?.colors?.primary || assetToBuy?.colors?.fallback) ?? (isDarkMode ? ETH_COLOR_DARK : ETH_COLOR);
+
+    const assetToSellShadow = assetToSell?.colors?.shadow ?? (isDarkMode ? ETH_COLOR_DARK : ETH_COLOR);
+    const assetToBuyShadow = assetToBuy?.colors?.shadow ?? (isDarkMode ? ETH_COLOR_DARK : ETH_COLOR);
+
+    setTopColor(newTopColor);
+    setBottomColor(newBottomColor);
+    setAssetToSellShadowColor(assetToSellShadow);
+    setAssetToBuyShadowColor(assetToBuyShadow);
+  }, [assetToBuy, assetToSell, isDarkMode]);
+
+  return { topColor, bottomColor, assetToSellShadowColor, assetToBuyShadowColor };
+};

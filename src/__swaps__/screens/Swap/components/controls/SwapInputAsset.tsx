@@ -14,23 +14,17 @@ import { FadeMask } from '../FadeMask';
 import { SwapInput } from '../SwapInput';
 import { BalanceBadge } from '../BalanceBadge';
 import { TokenList } from '../TokenList/TokenList';
-import {
-  BASE_INPUT_WIDTH,
-  ETH_COLOR,
-  ETH_COLOR_DARK,
-  ETH_COLOR_DARK_ACCENT,
-  INPUT_INNER_WIDTH,
-  INPUT_PADDING,
-  THICK_BORDER_WIDTH,
-} from '../../constants';
+import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '../../constants';
 import { IS_ANDROID } from '@/env';
 import { useSwapContext } from '../../providers/swap-provider';
 import { useSwapAssetStore } from '../../state/assets';
 import { ethereumUtils } from '@/utils';
+import { useAssetColors } from '../../hooks/useAssetColors';
 
 export function SwapInputAsset() {
   const { isDarkMode } = useColorMode();
   const theme = useTheme();
+  const { topColor, assetToSellShadowColor } = useAssetColors();
 
   const {
     outputProgress,
@@ -45,8 +39,6 @@ export function SwapInputAsset() {
   } = useSwapContext();
 
   const { assetToSell } = useSwapAssetStore();
-
-  const topColor = (assetToSell?.colors?.primary || assetToSell?.colors?.fallback) ?? (isDarkMode ? ETH_COLOR_DARK : ETH_COLOR);
 
   useEffect(() => {
     runOnUI(() => {
@@ -64,15 +56,7 @@ export function SwapInputAsset() {
   }, [SwapInputController.inputValues, assetToSell]);
 
   return (
-    <SwapInput
-      color={
-        (assetToSell?.colors?.primary ?? assetToSell?.colors?.fallback) === ETH_COLOR_DARK
-          ? ETH_COLOR_DARK_ACCENT
-          : assetToSell?.colors?.primary ?? assetToSell?.colors?.fallback
-      }
-      otherInputProgress={outputProgress}
-      progress={inputProgress}
-    >
+    <SwapInput color={topColor} otherInputProgress={outputProgress} progress={inputProgress}>
       <Box as={Animated.View} style={AnimatedSwapStyles.inputStyle}>
         <Stack space="16px">
           <Columns alignHorizontal="justify" alignVertical="center">
@@ -92,7 +76,7 @@ export function SwapInputAsset() {
                   />
                 ) : (
                   <SwapCoinIcon
-                    color={assetToSell?.colors?.shadow ?? ETH_COLOR_DARK}
+                    color={assetToSellShadowColor}
                     iconUrl={assetToSell.icon_url}
                     address={assetToSell.address}
                     large
@@ -126,10 +110,7 @@ export function SwapInputAsset() {
                     style={[
                       styles.caret,
                       {
-                        backgroundColor:
-                          (assetToSell?.colors?.primary ?? assetToSell?.colors?.fallback) === ETH_COLOR_DARK
-                            ? ETH_COLOR_DARK_ACCENT
-                            : assetToSell?.colors?.primary ?? assetToSell?.colors?.fallback,
+                        backgroundColor: topColor,
                       },
                     ]}
                   />
@@ -138,11 +119,7 @@ export function SwapInputAsset() {
             </GestureHandlerV1Button>
             <Column width="content">
               <SwapActionButton
-                color={
-                  (assetToSell?.colors?.primary ?? assetToSell?.colors?.fallback) === ETH_COLOR_DARK
-                    ? ETH_COLOR_DARK_ACCENT
-                    : assetToSell?.colors?.primary ?? assetToSell?.colors?.fallback
-                }
+                color={topColor}
                 disableShadow={isDarkMode}
                 hugContent
                 label={assetToSell?.symbol ?? ''}
@@ -175,11 +152,7 @@ export function SwapInputAsset() {
         width={{ custom: INPUT_INNER_WIDTH }}
       >
         <TokenList
-          color={
-            (assetToSell?.colors?.primary ?? assetToSell?.colors?.fallback) === ETH_COLOR_DARK
-              ? ETH_COLOR_DARK_ACCENT
-              : assetToSell?.colors?.primary ?? assetToSell?.colors?.fallback ?? topColor
-          }
+          color={topColor}
           handleExitSearch={runOnUI(SwapNavigation.handleExitSearch)}
           handleFocusSearch={runOnUI(SwapNavigation.handleFocusInputSearch)}
           isFocused={isInputSearchFocused}

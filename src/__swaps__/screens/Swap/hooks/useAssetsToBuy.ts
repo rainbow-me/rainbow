@@ -4,7 +4,6 @@ import { useSwapAssetStore } from '../state/assets';
 
 export const useAssetsToBuySections = () => {
   const { searchFilter, assetToSell, assetToBuy, outputChainId } = useSwapAssetStore();
-
   const debouncedSearchFilter = useDebounce(searchFilter, 200);
 
   const { results: searchAssetsToBuySections } = useSearchCurrencyLists({

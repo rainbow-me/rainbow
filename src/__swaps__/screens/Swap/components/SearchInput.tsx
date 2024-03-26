@@ -3,9 +3,10 @@ import { TextInput } from 'react-native';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Input } from '@/components/inputs';
 import { Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
-import { ETH_COLOR, ETH_COLOR_DARK, LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../constants';
+import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../constants';
 import { opacity } from '../utils/swaps';
 import { useSwapAssetStore } from '../state/assets';
+import { useAssetColors } from '../hooks/useAssetColors';
 
 export const SearchInput = ({
   color,
@@ -23,11 +24,7 @@ export const SearchInput = ({
   setIsFocused: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const { isDarkMode } = useColorMode();
-  const { assetToBuy, assetToSell } = useSwapAssetStore();
-
-  const topColor = (assetToSell?.colors?.primary || assetToSell?.colors?.fallback) ?? (isDarkMode ? ETH_COLOR_DARK : ETH_COLOR);
-  const bottomColor = (assetToBuy?.colors?.primary || assetToBuy?.colors?.fallback) ?? (isDarkMode ? ETH_COLOR_DARK : ETH_COLOR);
-
+  const { topColor, bottomColor } = useAssetColors();
   const { searchFilter, setSearchFilter } = useSwapAssetStore();
 
   const inputRef = React.useRef<TextInput>(null);

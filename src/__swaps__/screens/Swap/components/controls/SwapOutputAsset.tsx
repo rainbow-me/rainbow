@@ -14,25 +14,23 @@ import { FadeMask } from '../FadeMask';
 import { SwapInput } from '../SwapInput';
 import { BalanceBadge } from '../BalanceBadge';
 import { TokenList } from '../TokenList/TokenList';
-import {
-  BASE_INPUT_WIDTH,
-  ETH_COLOR,
-  ETH_COLOR_DARK,
-  ETH_COLOR_DARK_ACCENT,
-  INPUT_INNER_WIDTH,
-  INPUT_PADDING,
-  THICK_BORDER_WIDTH,
-} from '../../constants';
+import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '../../constants';
 import { IS_ANDROID } from '@/env';
 import { useSwapContext } from '../../providers/swap-provider';
 import { useSwapAssetStore } from '../../state/assets';
 import { ethereumUtils } from '@/utils';
-import { isSameAsset } from '../../utils/assets';
+import { isSameAsset, parseSearchAsset } from '../../utils/assets';
 import { useAssetsToSell } from '../../hooks/useAssetsToSell';
+import { useAssetColors } from '../../hooks/useAssetColors';
+import { useAccountSettings } from '@/hooks';
+import { useAssets } from '../../resources/assets';
 
 export function SwapOutputAsset() {
+  const { nativeCurrency: currentCurrency } = useAccountSettings();
+  const { outputChainId } = useSwapAssetStore();
   const { isDarkMode } = useColorMode();
   const theme = useTheme();
+  const { bottomColor, assetToBuyShadowColor } = useAssetColors();
 
   const {
     outputProgress,
@@ -48,29 +46,37 @@ export function SwapOutputAsset() {
 
   const { assetToBuy } = useSwapAssetStore();
 
-  const bottomColor = (assetToBuy?.colors?.primary || assetToBuy?.colors?.fallback) ?? (isDarkMode ? ETH_COLOR_DARK : ETH_COLOR);
-
   const userAssets = useAssetsToSell();
 
-  const userBalance = useMemo(() => {
-    if (!assetToBuy) {
-      return 'No balance';
-    }
+  const { data: buyPriceData = [] } = useAssets({
+    assetAddresses: assetToBuy ? [assetToBuy?.address] : [],
+    chainId: outputChainId,
+    currency: currentCurrency,
+  });
 
-    const sameAssetInUserAssets = userAssets.find(asset =>
-      isSameAsset(asset, { address: assetToBuy.address, chainId: assetToBuy.chainId })
-    );
-    return sameAssetInUserAssets?.balance?.display ?? 'No balance';
-  }, [userAssets, assetToBuy]);
+  const assetToBuyWithPrice = useMemo(
+    () => Object.values(buyPriceData || {})?.find(asset => asset.uniqueId === assetToBuy?.uniqueId),
+    [assetToBuy, buyPriceData]
+  );
+
+  const parsedAssetToBuy = useMemo(() => {
+    if (!assetToBuy) return null;
+    const userAsset = userAssets.find(userAsset => isSameAsset(userAsset, assetToBuy));
+    return parseSearchAsset({
+      assetWithPrice: assetToBuyWithPrice,
+      searchAsset: assetToBuy,
+      userAsset,
+    });
+  }, [assetToBuy, assetToBuyWithPrice, userAssets]);
 
   useEffect(() => {
     runOnUI(() => {
-      if (!assetToBuy?.native?.price?.amount) {
+      if (!parsedAssetToBuy?.native?.price?.amount) {
         return;
       }
 
       SwapInputController.inputValues.modify(prev => {
-        const outputNativeAmount = Number(assetToBuy.native.price?.amount) * Number(prev.outputAmount);
+        const outputNativeAmount = Number(parsedAssetToBuy.native.price?.amount) * Number(prev.outputAmount);
 
         return {
           ...prev,
@@ -78,19 +84,10 @@ export function SwapOutputAsset() {
         };
       });
     })();
-  }, [SwapInputController.inputValues, assetToBuy]);
+  }, [SwapInputController.inputValues, parsedAssetToBuy]);
 
   return (
-    <SwapInput
-      bottomInput
-      color={
-        (assetToBuy?.colors?.primary ?? assetToBuy?.colors?.fallback) === ETH_COLOR_DARK
-          ? ETH_COLOR_DARK_ACCENT
-          : assetToBuy?.colors?.primary ?? assetToBuy?.colors?.fallback
-      }
-      otherInputProgress={inputProgress}
-      progress={outputProgress}
-    >
+    <SwapInput bottomInput color={bottomColor} otherInputProgress={inputProgress} progress={outputProgress}>
       <Box as={Animated.View} style={AnimatedSwapStyles.outputStyle}>
         <Stack space="16px">
           <Columns alignHorizontal="justify" alignVertical="center">
@@ -110,7 +107,7 @@ export function SwapOutputAsset() {
                   />
                 ) : (
                   <SwapCoinIcon
-                    color={assetToBuy?.colors?.shadow ?? isDarkMode ? ETH_COLOR_DARK : ETH_COLOR}
+                    color={assetToBuyShadowColor}
                     iconUrl={assetToBuy.icon_url}
                     address={assetToBuy.address}
                     large
@@ -144,10 +141,7 @@ export function SwapOutputAsset() {
                     style={[
                       styles.caret,
                       {
-                        backgroundColor:
-                          (assetToBuy?.colors?.primary ?? assetToBuy?.colors?.fallback) === ETH_COLOR_DARK
-                            ? ETH_COLOR_DARK_ACCENT
-                            : assetToBuy?.colors?.primary ?? assetToBuy?.colors?.fallback,
+                        backgroundColor: bottomColor,
                       },
                     ]}
                   />
@@ -156,11 +150,7 @@ export function SwapOutputAsset() {
             </GestureHandlerV1Button>
             <Column width="content">
               <SwapActionButton
-                color={
-                  (assetToBuy?.colors?.primary ?? assetToBuy?.colors?.fallback) === ETH_COLOR_DARK
-                    ? ETH_COLOR_DARK_ACCENT
-                    : assetToBuy?.colors?.primary ?? assetToBuy?.colors?.fallback
-                }
+                color={bottomColor}
                 disableShadow={isDarkMode}
                 hugContent
                 label={assetToBuy?.symbol ?? ''}
@@ -179,7 +169,7 @@ export function SwapOutputAsset() {
               weight="heavy"
             />
             <Column width="content">
-              <BalanceBadge label={userBalance} />
+              <BalanceBadge label={parsedAssetToBuy?.balance.display ?? 'No balance'} />
             </Column>
           </Columns>
         </Stack>

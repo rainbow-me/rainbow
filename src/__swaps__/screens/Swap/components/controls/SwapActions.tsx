@@ -6,20 +6,16 @@ import { safeAreaInsetValues } from '@/utils';
 
 import { SwapActionButton } from '../../components/SwapActionButton';
 import { GasButton } from '../../components/GasButton';
-import { ETH_COLOR, ETH_COLOR_DARK, LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../../constants';
+import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../../constants';
 import { opacity } from '../../utils/swaps';
 import { IS_ANDROID } from '@/env';
 import { useSwapContext } from '../../providers/swap-provider';
-import { useSwapAssetStore } from '../../state/assets';
+import { useAssetColors } from '../../hooks/useAssetColors';
 
 export function SwapActions() {
   const { isDarkMode } = useColorMode();
   const { confirmButtonIcon, confirmButtonIconStyle, confirmButtonLabel } = useSwapContext();
-
-  const { assetToBuy } = useSwapAssetStore();
-
-  const bottomColor = (assetToBuy?.colors?.primary || assetToBuy?.colors?.fallback) ?? (isDarkMode ? ETH_COLOR_DARK : ETH_COLOR);
-
+  const { bottomColor } = useAssetColors();
   return (
     <Box
       paddingBottom={{

@@ -23,7 +23,7 @@ import {
 } from '../constants';
 import { inputKeys, inputMethods } from '../types/swap';
 import { opacity } from '../utils/swaps';
-import { useSwapAssetStore } from '../state/assets';
+import { useAssetColors } from './useAssetColors';
 
 export function useSwapTextStyles({
   focusedInput,
@@ -42,11 +42,8 @@ export function useSwapTextStyles({
   outputProgress: SharedValue<number>;
   sliderPressProgress: SharedValue<number>;
 }) {
-  const { assetToBuy, assetToSell } = useSwapAssetStore();
   const { isDarkMode } = useColorMode();
-
-  const topColor = (assetToSell?.colors?.primary || assetToSell?.colors?.fallback) ?? ETH_COLOR_DARK;
-  const bottomColor = (assetToBuy?.colors?.primary || assetToBuy?.colors?.fallback) ?? ETH_COLOR_DARK;
+  const { topColor, bottomColor } = useAssetColors();
 
   const labelSecondary = useForegroundColor('labelSecondary');
   const labelTertiary = useForegroundColor('labelTertiary');

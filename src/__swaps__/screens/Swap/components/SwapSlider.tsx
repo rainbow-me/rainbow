@@ -21,7 +21,6 @@ import { IS_IOS } from '@/env';
 import { triggerHapticFeedback } from '@/screens/points/constants';
 
 import {
-  ETH_COLOR_DARK,
   SCRUBBER_WIDTH,
   SLIDER_COLLAPSED_HEIGHT,
   SLIDER_HEIGHT,
@@ -41,6 +40,7 @@ import { useTheme } from '@/theme';
 import { useSwapAssetStore } from '../state/assets';
 import { ethereumUtils } from '@/utils';
 import { ChainId } from '../types/chains';
+import { useAssetColors } from '../hooks/useAssetColors';
 
 type SwapSliderProps = {
   dualColor?: boolean;
@@ -60,11 +60,9 @@ export const SwapSlider = ({
   const theme = useTheme();
   const { isDarkMode } = useColorMode();
   const { SwapInputController, sliderXPosition, sliderPressProgress } = useSwapContext();
+  const { topColor, bottomColor, assetToSellShadowColor } = useAssetColors();
 
-  const { assetToBuy, assetToSell } = useSwapAssetStore();
-
-  const topColor = (assetToSell?.colors?.primary || assetToSell?.colors?.fallback) ?? ETH_COLOR_DARK;
-  const bottomColor = (assetToBuy?.colors?.primary || assetToBuy?.colors?.fallback) ?? ETH_COLOR_DARK;
+  const { assetToSell } = useSwapAssetStore();
 
   const panRef = useRef();
   const tapRef = useRef();
@@ -359,8 +357,7 @@ export const SwapSlider = ({
                 <Inline alignVertical="center" space="6px" wrap={false}>
                   <Bleed vertical="4px">
                     <SwapCoinIcon
-                      disableShadow
-                      color={assetToSell?.colors?.shadow ?? ETH_COLOR_DARK}
+                      color={assetToSellShadowColor}
                       iconUrl={assetToSell?.icon_url}
                       address={assetToSell?.address ?? ''}
                       mainnetAddress={assetToSell?.mainnetAddress ?? ''}
