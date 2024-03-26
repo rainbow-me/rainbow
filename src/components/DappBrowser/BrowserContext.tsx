@@ -3,7 +3,8 @@ import React, { createContext, useCallback, useContext, useEffect, useRef, useSt
 import Animated, { Easing, runOnJS, useAnimatedRef, useScrollViewOffset, useSharedValue, withTiming } from 'react-native-reanimated';
 import WebView from 'react-native-webview';
 import isEqual from 'react-fast-compare';
-import { TextInput } from 'react-native';
+import { InteractionManager, TextInput } from 'react-native';
+import { browserStateStore, useBrowserStateStore } from '@/state/browserState';
 
 interface BrowserContextType {
   activeTabIndex: number;
@@ -36,6 +37,8 @@ interface TabState {
 
 export const RAINBOW_HOME = 'RAINBOW_HOME';
 
+const initialTabs = browserStateStore.getState().tabs;
+
 const defaultContext: BrowserContextType = {
   activeTabIndex: 0,
   closeTab: () => {
@@ -65,15 +68,7 @@ const defaultContext: BrowserContextType = {
   setIsSearchInputFocused: () => {
     return;
   },
-  tabStates: [
-    { url: RAINBOW_HOME, canGoBack: false, canGoForward: false },
-    {
-      url: 'https://bx-e2e-dapp.vercel.app/',
-      canGoBack: false,
-      canGoForward: false,
-    },
-    { url: 'https://app.uniswap.org/', canGoBack: false, canGoForward: false },
-  ],
+  tabStates: (initialTabs.length && initialTabs) || [{ url: RAINBOW_HOME, canGoBack: false, canGoForward: false }],
   tabViewFullyVisible: false,
   tabViewVisible: false,
   toggleTabView: () => {
@@ -102,16 +97,21 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
   const [tabViewFullyVisible, setTabViewFullyVisible] = useState(false);
   const [tabViewVisible, setTabViewVisible] = useState(false);
 
+  const browserStateStore = useBrowserStateStore();
+
   const updateActiveTabState = useCallback(
     (tabIndex: number, newState: Partial<TabState>) => {
       if (isEqual(tabStates[tabIndex], newState)) return;
       setTabStates(prevTabStates => {
         const updatedTabs = [...prevTabStates];
         updatedTabs[tabIndex] = { ...updatedTabs[tabIndex], ...newState };
+        InteractionManager.runAfterInteractions(() => {
+          browserStateStore.updateTab(tabIndex, newState);
+        });
         return updatedTabs;
       });
     },
-    [tabStates]
+    [browserStateStore, tabStates]
   );
 
   const searchInputRef = useRef<TextInput>(null);
@@ -150,19 +150,25 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
     (tabIndex: number) => {
       setTabStates(prevTabStates => {
         const updatedTabs = [...prevTabStates];
+        let newActiveTabIndex = tabIndex;
         if (tabIndex === activeTabIndex) {
           if (tabIndex < updatedTabs.length - 1) {
             setActiveTabIndex(tabIndex);
           } else if (tabIndex > 0) {
             setActiveTabIndex(tabIndex - 1);
+            newActiveTabIndex = tabIndex - 1;
           }
         }
         updatedTabs.splice(tabIndex, 1);
         webViewRefs.current.splice(tabIndex, 1);
+        InteractionManager.runAfterInteractions(() => {
+          browserStateStore.deleteTab(tabIndex);
+          browserStateStore.setActiveTab(newActiveTabIndex);
+        });
         return updatedTabs;
       });
     },
-    [activeTabIndex, setActiveTabIndex, setTabStates, webViewRefs]
+    [activeTabIndex, browserStateStore]
   );
 
   const newTab = useCallback(() => {
@@ -174,10 +180,19 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
         canGoForward: false,
         url: RAINBOW_HOME,
       });
+      InteractionManager.runAfterInteractions(() => {
+        browserStateStore.addTab({
+          canGoBack: false,
+          canGoForward: false,
+          url: RAINBOW_HOME,
+          title: 'New Tab',
+          isActive: true,
+        });
+      });
       return updatedTabs;
     });
     toggleTabView();
-  }, [setTabStates, tabStates.length, toggleTabView]);
+  }, [browserStateStore, tabStates.length, toggleTabView]);
 
   const goBack = useCallback(() => {
     const activeWebview = webViewRefs.current[activeTabIndex];

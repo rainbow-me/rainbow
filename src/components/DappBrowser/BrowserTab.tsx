@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Box, globalColors, useColorMode, TextIcon } from '@/design-system';
-import { useAccountAccentColor, useAccountSettings, useDimensions } from '@/hooks';
+import { useAccountAccentColor, useDimensions } from '@/hooks';
 import { AnimatePresence, MotiView } from 'moti';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
