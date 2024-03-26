@@ -6,7 +6,7 @@ import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { BlurView } from '@react-native-community/blur';
 import Input from '@/components/inputs/Input';
 import * as i18n from '@/languages';
-import { NativeSyntheticEvent, TextInputSubmitEditingEventData } from 'react-native';
+import { NativeSyntheticEvent, Share, TextInputSubmitEditingEventData } from 'react-native';
 import { ToolbarIcon } from '../BrowserToolbar';
 import { IS_IOS } from '@/env';
 import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
@@ -15,6 +15,11 @@ import { DappBrowserShadows } from '../DappBrowserShadows';
 import { RAINBOW_HOME, useBrowserContext } from '../BrowserContext';
 import isValidDomain from 'is-valid-domain';
 import { opacity } from '@/__swaps__/screens/Swap/utils/swaps';
+import { useFavoriteDappsStore } from '@/state/favoriteDapps';
+import { Site } from '@/state/browserState';
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import ConditionalWrap from 'conditional-wrap';
+import haptics from '@/utils/haptics';
 
 const GOOGLE_SEARCH_URL = 'https://www.google.com/search?q=';
 const HTTP = 'http://';
@@ -34,6 +39,7 @@ export const SearchInput = () => {
     updateActiveTabState,
     onRefresh,
   } = useBrowserContext();
+  const { isFavorite, addFavorite, removeFavorite } = useFavoriteDappsStore();
   const { isDarkMode } = useColorMode();
 
   const fillSecondary = useForegroundColor('fillSecondary');
@@ -116,6 +122,53 @@ export const SearchInput = () => {
   const onFocus = useCallback(() => {
     setIsSearchInputFocused(true);
   }, [setIsSearchInputFocused]);
+
+  const handleFavoritePress = useCallback(() => {
+    if (isFavorite(formattedUrl)) {
+      removeFavorite(formattedUrl);
+    } else {
+      const site: Omit<Site, 'timestamp'> = {
+        name: formattedUrl,
+        url: formattedUrl,
+        image: `${formattedUrl}/favicon.ico`,
+      };
+      addFavorite(site);
+    }
+  }, [formattedUrl]);
+
+  const menuConfig = useMemo(
+    () => ({
+      menuTitle: '',
+      menuItems: [
+        {
+          actionKey: 'favorite',
+          actionTitle: isFavorite(formattedUrl) ? 'Undo Favorite' : 'Favorite',
+          icon: {
+            iconType: 'SYSTEM',
+            iconValue: isFavorite(formattedUrl) ? 'star.slash' : 'star',
+          },
+        },
+        {
+          actionKey: 'share',
+          actionTitle: 'Share',
+          icon: {
+            iconType: 'SYSTEM',
+            iconValue: 'square.and.arrow.up',
+          },
+        },
+      ],
+    }),
+    [isFavorite(formattedUrl)]
+  );
+
+  const onPressMenuItem = async ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: 'share' | 'favorite' } }) => {
+    haptics.selection();
+    if (actionKey === 'favorite') {
+      handleFavoritePress();
+    } else {
+      await Share.share({ message: url });
+    }
+  };
 
   return (
     <DappBrowserShadows>
@@ -203,15 +256,16 @@ export const SearchInput = () => {
         </ButtonPressAnimation>
         {(isSearchInputFocused || !isOnHomepage) && (
           <Box position="absolute" style={{ left: 14 }}>
-            <ToolbarIcon
-              color="labelTertiary"
-              disabled={isSearchInputFocused}
-              icon={isSearchInputFocused ? '􀊫' : '􀍡'}
-              onPress={() => {
-                return;
-              }}
-              size="icon 17px"
-            />
+            <ConditionalWrap
+              condition={!isSearchInputFocused}
+              wrap={(children: React.ReactNode) => (
+                <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={onPressMenuItem}>
+                  {children}
+                </ContextMenuButton>
+              )}
+            >
+              <ToolbarIcon color="labelTertiary" disabled={isSearchInputFocused} icon={isSearchInputFocused ? '􀊫' : '􀍡'} size="icon 17px" />
+            </ConditionalWrap>
           </Box>
         )}
         {!isSearchInputFocused && !isOnHomepage && (

@@ -73,7 +73,7 @@ export const ToolbarIcon = ({
   disabled?: boolean;
   hitSlop?: number;
   icon: string;
-  onPress: () => void;
+  onPress?: () => void;
   scaleTo?: number;
   size?: TextSize;
   weight?: TextWeight;
