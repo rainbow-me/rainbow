@@ -11,6 +11,7 @@ import { BackgroundColor, TextColor } from '@/design-system/color/palettes';
 import { useSwapContext } from '../../providers/swap-provider';
 import { runOnUI } from 'react-native-reanimated';
 import { parseSearchAsset, isSameAsset } from '../../utils/assets';
+
 import { useAssetsToSell } from '../../hooks/useAssetsToSell';
 
 interface SectionProp {
@@ -71,7 +72,7 @@ const bridgeSectionsColorsByChain = {
 };
 
 export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) => {
-  const { SwapNavigation } = useSwapContext();
+  const { SwapNavigation, SwapInputController } = useSwapContext();
   const { outputChainId, setAssetToBuy } = useSwapAssetStore();
   const userAssets = useAssetsToSell();
 
@@ -85,12 +86,13 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
       });
 
       setAssetToBuy(parsedAset);
+      SwapInputController.onChangedPercentage(1);
       runOnUI(() => {
         SwapNavigation.handleOutputPress();
         SwapNavigation.handleExitSearch();
       })();
     },
-    [SwapNavigation, setAssetToBuy, userAssets]
+    [SwapInputController, SwapNavigation, setAssetToBuy, userAssets]
   );
 
   const { backgroundColor, gradient, symbol, title } = sectionProps[section.id];

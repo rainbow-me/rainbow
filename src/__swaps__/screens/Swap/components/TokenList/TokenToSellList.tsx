@@ -25,9 +25,11 @@ export const TokenToSellList = () => {
 
       setAssetToSell(parsedAset);
 
+      SwapInputController.onChangedPercentage(1);
       runOnUI(() => {
         SwapInputController.inputValues.modify(prev => ({
           ...prev,
+          inputNativeValue: parsedAset.native.balance.amount,
           inputAmount: userAsset?.balance.amount ?? '0', // TODO: Do we want to default to 100% of balance? 50%?
         }));
       })();
@@ -40,7 +42,7 @@ export const TokenToSellList = () => {
       }
     },
     [
-      SwapInputController.inputValues,
+      SwapInputController,
       SwapNavigation.handleExitSearch,
       SwapNavigation.handleFocusOutputSearch,
       assetToBuy,

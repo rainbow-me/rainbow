@@ -8,6 +8,9 @@ import { useSwapNavigation } from '../hooks/useSwapNavigation';
 import { useSwapInputsController } from '../hooks/useSwapInputsController';
 import { StyleProp, TextStyle } from 'react-native';
 import { useSwapAssetStore } from '../state/assets';
+import { useExternalToken } from '../../../../resources/assets/externalAssetsQuery';
+import { ethereumUtils } from '@/utils';
+import { useAccountSettings } from '@/hooks';
 
 interface SwapContextType {
   inputProgress: SharedValue<number>;
@@ -39,13 +42,26 @@ interface SwapProviderProps {
 }
 
 export const SwapProvider = ({ children }: SwapProviderProps) => {
+  const { nativeCurrency: currentCurrency } = useAccountSettings();
+
   const inputProgress = useSharedValue(0);
   const outputProgress = useSharedValue(0);
   const sliderXPosition = useSharedValue(SLIDER_WIDTH * INITIAL_SLIDER_POSITION);
   const sliderPressProgress = useSharedValue(SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT);
   const focusedInput = useSharedValue<inputKeys>('inputAmount');
 
-  const { assetToBuy, assetToSell } = useSwapAssetStore();
+  const { assetToBuy, assetToSell, outputChainId } = useSwapAssetStore();
+
+  const { data: assetToBuyTokenDataWithPrice } = useExternalToken(
+    {
+      address: assetToBuy?.address,
+      network: ethereumUtils.getNetworkFromChainId(outputChainId),
+      currency: currentCurrency,
+    },
+    {
+      staleTime: 5_000,
+    }
+  );
 
   const [isFetching, setIsFetching] = useState(false);
   const [isInputSearchFocused, setIsInputSearchFocused] = useState(false);
@@ -55,7 +71,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     focusedInput,
     inputAssetBalance: assetToSell?.balance.amount ? Number(assetToSell.balance.amount) : 0,
     inputAssetUsdPrice: assetToSell?.native.price?.amount ? Number(assetToSell?.native.price?.amount) : 0,
-    outputAssetUsdPrice: assetToBuy?.native.price?.amount ? Number(assetToBuy.native.price.amount) : 0,
+    outputAssetUsdPrice: assetToBuyTokenDataWithPrice?.native.price?.amount ? Number(assetToBuyTokenDataWithPrice.native.price.amount) : 0,
     setIsFetching,
     sliderXPosition,
   });

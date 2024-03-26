@@ -14,7 +14,7 @@ import { FadeMask } from '../FadeMask';
 import { SwapInput } from '../SwapInput';
 import { BalanceBadge } from '../BalanceBadge';
 import { TokenList } from '../TokenList/TokenList';
-import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '../../constants';
+import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH, INPUT_PADDING, SLIDER_WIDTH, THICK_BORDER_WIDTH } from '../../constants';
 import { IS_ANDROID } from '@/env';
 import { useSwapContext } from '../../providers/swap-provider';
 import { useSwapAssetStore } from '../../state/assets';
@@ -23,7 +23,7 @@ import { isSameAsset, parseSearchAsset } from '../../utils/assets';
 import { useAssetsToSell } from '../../hooks/useAssetsToSell';
 import { useAssetColors } from '../../hooks/useAssetColors';
 import { useAccountSettings } from '@/hooks';
-import { useAssets } from '../../resources/assets';
+import { useExternalToken } from '../../../../../resources/assets/externalAssetsQuery';
 
 export function SwapOutputAsset() {
   const { nativeCurrency: currentCurrency } = useAccountSettings();
@@ -39,6 +39,7 @@ export function SwapOutputAsset() {
     AnimatedSwapStyles,
     SwapTextStyles,
     SwapInputController,
+    sliderXPosition,
     SwapNavigation,
     isOutputSearchFocused,
     setIsOutputSearchFocused,
@@ -48,43 +49,36 @@ export function SwapOutputAsset() {
 
   const userAssets = useAssetsToSell();
 
-  const { data: buyPriceData = [] } = useAssets({
-    assetAddresses: assetToBuy ? [assetToBuy?.address] : [],
-    chainId: outputChainId,
+  const { data: tokenDataWithPrice } = useExternalToken({
+    address: assetToBuy?.address,
+    network: ethereumUtils.getNetworkFromChainId(outputChainId),
     currency: currentCurrency,
   });
-
-  const assetToBuyWithPrice = useMemo(
-    () => Object.values(buyPriceData || {})?.find(asset => asset.uniqueId === assetToBuy?.uniqueId),
-    [assetToBuy, buyPriceData]
-  );
 
   const parsedAssetToBuy = useMemo(() => {
     if (!assetToBuy) return null;
     const userAsset = userAssets.find(userAsset => isSameAsset(userAsset, assetToBuy));
     return parseSearchAsset({
-      assetWithPrice: assetToBuyWithPrice,
+      assetWithPrice: tokenDataWithPrice,
       searchAsset: assetToBuy,
       userAsset,
     });
-  }, [assetToBuy, assetToBuyWithPrice, userAssets]);
+  }, [assetToBuy, tokenDataWithPrice, userAssets]);
 
   useEffect(() => {
     runOnUI(() => {
       if (!parsedAssetToBuy?.native?.price?.amount) {
         return;
       }
-
       SwapInputController.inputValues.modify(prev => {
         const outputNativeAmount = Number(parsedAssetToBuy.native.price?.amount) * Number(prev.outputAmount);
-
         return {
           ...prev,
           outputNativeValue: outputNativeAmount,
         };
       });
     })();
-  }, [SwapInputController.inputValues, parsedAssetToBuy]);
+  }, [SwapInputController.inputValues, SwapInputController.percentageToSwap, parsedAssetToBuy, sliderXPosition]);
 
   return (
     <SwapInput bottomInput color={bottomColor} otherInputProgress={inputProgress} progress={outputProgress}>
