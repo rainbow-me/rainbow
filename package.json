@@ -22,7 +22,7 @@
     "nuke": "./scripts/nuke.sh",
     "detox:android": "detox build -c android.emu.debug && detox test -R 1 -c android.emu.debug --loglevel verbose",
     "detox:android:release": "detox build -c android.emu.release && detox test -R 1 -c android.emu.release",
-    "detox:ios": "detox build -c ios.sim.debug && detox test -R 1 -c ios.sim.debug --bail",
+    "detox:ios": "detox build -c ios.sim.debug | xcpretty --color && detox test -R 1 -c ios.sim.debug --bail",
     "detox:ios:release": "detox build -c ios.sim.release && detox test -R 1 -c ios.sim.release --bail",
     "ds:install": "yarn install --cwd src/design-system/docs",
     "ds": "cd src/design-system/docs && yarn dev",
@@ -533,7 +533,8 @@
       "react-native-storage": false,
       "react-native-storage>opencollective>babel-polyfill>core-js": false,
       "viem>ws>bufferutil": false,
-      "viem>ws>utf-8-validate": false
+      "viem>ws>utf-8-validate": false,
+      "msw": false
     }
   },
   "lint-staged": {
