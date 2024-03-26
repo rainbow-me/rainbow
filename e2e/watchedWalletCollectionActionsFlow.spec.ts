@@ -1,5 +1,16 @@
-import { device, element, by } from 'detox';
-import { tap, cleanApp, killHardhat, waitAndTap, clearField, typeText, checkIfVisible, swipe } from './helpers';
+import { device } from 'detox';
+import {
+  tap,
+  cleanApp,
+  killHardhat,
+  waitAndTap,
+  clearField,
+  typeText,
+  checkIfVisible,
+  swipe,
+  checkIfDoesntExist,
+  delayTime,
+} from './helpers';
 
 describe('Watched showcase and hidden actions flow', () => {
   beforeAll(async () => {
@@ -22,6 +33,8 @@ describe('Watched showcase and hidden actions flow', () => {
   });
 
   it('opens NFT', async () => {
+    // some delay to wait for collectables to fetch
+    await delayTime('very-long');
     await swipe('wallet-screen', 'up', 'slow');
     await tap('token-family-header-ENS');
     await swipe('wallet-screen', 'up', 'slow');
@@ -29,12 +42,8 @@ describe('Watched showcase and hidden actions flow', () => {
   });
 
   it('hides actions for watched wallets', async () => {
-    await waitFor(element(by.text('Showcase')))
-      .not.toExist()
-      .withTimeout(5000);
+    await checkIfDoesntExist('Showcase');
     await waitAndTap('unique-token-expanded-state-context-menu-button');
-    await waitFor(element(by.text('Unhide')))
-      .not.toExist()
-      .withTimeout(5000);
+    await checkIfDoesntExist('Unhide');
   });
 });

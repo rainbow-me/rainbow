@@ -43,14 +43,3 @@ jest.mock('@react-native-async-storage/async-storage', () => require('@react-nat
 jest.mock('react-native-permissions', () => ({
   requestNotifications: jest.fn(),
 }));
-
-jest.mock('axios', () => ({
-  get: jest.fn(() => Promise.resolve({ data: {} })),
-  post: jest.fn(() => Promise.resolve({ data: {} })),
-}));
-
-global.fetch = jest.fn(url =>
-  Promise.resolve({
-    json: () => (url.includes('rainbow.me') ? Promise.resolve({ data: null }) : Promise.reject(new Error('Unknown endpoint'))),
-  })
-);

@@ -64,6 +64,7 @@ describe('Discover Screen Flow', () => {
 
   it('Should search and open expanded state for SOCKS', async () => {
     await typeText('discover-search-input', 'SOCKS\n', true);
+    await delayTime('very-long');
     await checkIfVisible('discover-currency-select-list-exchange-coin-row-SOCKS-mainnet');
     await checkIfNotVisible('discover-currency-select-list-exchange-coin-row-ETH-mainnet');
     await waitAndTap('discover-currency-select-list-exchange-coin-row-SOCKS-mainnet');
