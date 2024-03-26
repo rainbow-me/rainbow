@@ -63,9 +63,8 @@ export function MintsCard() {
             overflow: 'hidden',
           }}
           onPress={() => {
-            // analyticsV2.track(analyticsV2.event.mintsPressedViewAllMintsButton);
-            // navigate(Routes.MINTS_SHEET);
-            navigate(Routes.CLAIM_POINTS_SCREEN);
+            analyticsV2.track(analyticsV2.event.mintsPressedViewAllMintsButton);
+            navigate(Routes.MINTS_SHEET);
           }}
         >
           {/* unfortunately shimmer width must be hardcoded */}
