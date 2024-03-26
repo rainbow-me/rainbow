@@ -1,43 +1,85 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import Animated, { Easing, runOnJS, useAnimatedRef, useScrollViewOffset, useSharedValue, withTiming } from 'react-native-reanimated';
-import WebView from 'react-native-webview';
-import isEqual from 'react-fast-compare';
+import React, { createContext, useCallback, useContext, useRef, useState } from 'react';
 import { TextInput } from 'react-native';
+import isEqual from 'react-fast-compare';
+import { MMKV, useMMKVObject } from 'react-native-mmkv';
+import Animated, {
+  AnimatedRef,
+  SharedValue,
+  runOnJS,
+  runOnUI,
+  useAnimatedRef,
+  useScrollViewOffset,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
+import WebView from 'react-native-webview';
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { generateUniqueId } from './utils';
+
+interface BrowserTabViewProgressContextType {
+  tabViewProgress: SharedValue<number> | undefined;
+}
+
+const DEFAULT_PROGRESS_CONTEXT = {
+  tabViewProgress: undefined,
+};
+
+const BrowserTabViewProgressContext = createContext<BrowserTabViewProgressContextType>(DEFAULT_PROGRESS_CONTEXT);
+
+export const useBrowserTabViewProgressContext = () => useContext(BrowserTabViewProgressContext);
+
+export const BrowserTabViewProgressContextProvider = ({ children }: { children: React.ReactNode }) => {
+  const tabViewProgress = useSharedValue(0);
+
+  return <BrowserTabViewProgressContext.Provider value={{ tabViewProgress }}>{children}</BrowserTabViewProgressContext.Provider>;
+};
 
 interface BrowserContextType {
   activeTabIndex: number;
-  closeTab: (tabIndex: number) => void;
+  animatedActiveTabIndex: SharedValue<number> | undefined;
+  closeTab: (tabId: string) => void;
   goBack: () => void;
   goForward: () => void;
-  isSearchInputFocused: boolean;
   newTab: () => void;
   onRefresh: () => void;
   searchInputRef: React.RefObject<TextInput | null>;
-  searchViewProgress: Animated.SharedValue<number> | undefined;
-  scrollViewOffset: Animated.SharedValue<number> | undefined;
-  scrollViewRef: React.MutableRefObject<Animated.ScrollView | null>;
+  searchViewProgress: SharedValue<number> | undefined;
+  scrollViewOffset: SharedValue<number> | undefined;
+  scrollViewRef: AnimatedRef<Animated.ScrollView>;
   setActiveTabIndex: React.Dispatch<React.SetStateAction<number>>;
-  setIsSearchInputFocused: React.Dispatch<React.SetStateAction<boolean>>;
   tabStates: TabState[];
-  tabViewProgress: Animated.SharedValue<number> | undefined;
-  tabViewFullyVisible: boolean;
-  tabViewVisible: boolean;
-  toggleTabView: () => void;
-  updateActiveTabState: (tabIndex: number, newState: Partial<TabState>) => void;
+  tabViewProgress: SharedValue<number> | undefined;
+  tabViewVisible: SharedValue<boolean> | undefined;
+  toggleTabViewWorklet: (activeIndex?: number) => void;
+  updateActiveTabState: (tabId: string, newState: Partial<TabState>, forceUpdate?: boolean) => void;
   webViewRefs: React.MutableRefObject<(WebView | null)[]>;
 }
 
-interface TabState {
+export interface TabState {
   canGoBack: boolean;
   canGoForward: boolean;
+  uniqueId: string;
   url: string;
 }
 
 export const RAINBOW_HOME = 'RAINBOW_HOME';
 
-const defaultContext: BrowserContextType = {
+const DEFAULT_TAB_STATE: TabState[] = [
+  { canGoBack: false, canGoForward: false, uniqueId: generateUniqueId(), url: RAINBOW_HOME },
+  {
+    canGoBack: false,
+    canGoForward: false,
+    uniqueId: generateUniqueId(),
+    url: 'https://bx-e2e-dapp.vercel.app',
+  },
+  { canGoBack: false, canGoForward: false, uniqueId: generateUniqueId(), url: 'https://app.uniswap.org/swap' },
+  { canGoBack: false, canGoForward: false, uniqueId: generateUniqueId(), url: 'https://meme.market' },
+];
+
+const DEFAULT_BROWSER_CONTEXT: BrowserContextType = {
   activeTabIndex: 0,
+  animatedActiveTabIndex: undefined,
   closeTab: () => {
     return;
   },
@@ -47,36 +89,29 @@ const defaultContext: BrowserContextType = {
   goForward: () => {
     return;
   },
-  isSearchInputFocused: false,
   newTab: () => {
     return;
   },
-  tabViewProgress: undefined,
   onRefresh: () => {
     return;
   },
   searchInputRef: { current: null },
   searchViewProgress: undefined,
   scrollViewOffset: undefined,
+  // @ts-expect-error Explicitly allowing null/undefined on the AnimatedRef causes type issues
   scrollViewRef: { current: null },
   setActiveTabIndex: () => {
     return;
   },
-  setIsSearchInputFocused: () => {
+  tabStates: DEFAULT_TAB_STATE,
+  tabViewProgress: undefined,
+  tabViewVisible: undefined,
+  tabViewVisibleRef: { current: null },
+  toggleTabView: () => {
     return;
   },
-  tabStates: [
-    { url: RAINBOW_HOME, canGoBack: false, canGoForward: false },
-    {
-      url: 'https://bx-e2e-dapp.vercel.app/',
-      canGoBack: false,
-      canGoForward: false,
-    },
-    { url: 'https://app.uniswap.org/', canGoBack: false, canGoForward: false },
-  ],
-  tabViewFullyVisible: false,
-  tabViewVisible: false,
-  toggleTabView: () => {
+  toggleTabViewWorklet: () => {
+    'worklet';
     return;
   },
   updateActiveTabState: () => {
@@ -85,33 +120,33 @@ const defaultContext: BrowserContextType = {
   webViewRefs: { current: [] },
 };
 
-const BrowserContext = createContext<BrowserContextType>(defaultContext);
+const BrowserContext = createContext<BrowserContextType>(DEFAULT_BROWSER_CONTEXT);
 
 export const useBrowserContext = () => useContext(BrowserContext);
 
-const timingConfig = {
-  duration: 500,
-  easing: Easing.bezier(0.22, 1, 0.36, 1),
-};
+const tabStateStore = new MMKV();
 
-// this is sloppy and causes tons of rerenders, needs to be reworked
+const EMPTY_TAB_STATE: TabState[] = [];
+
 export const BrowserContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [activeTabIndex, setActiveTabIndex] = useState<number>(0);
-  const [isSearchInputFocused, setIsSearchInputFocused] = useState<boolean>(false);
-  const [tabStates, setTabStates] = useState<TabState[]>(defaultContext.tabStates);
-  const [tabViewFullyVisible, setTabViewFullyVisible] = useState(false);
-  const [tabViewVisible, setTabViewVisible] = useState(false);
+  const [tabStates, setTabStates] = useMMKVObject<TabState[]>('tabStateStorage', tabStateStore);
 
   const updateActiveTabState = useCallback(
-    (tabIndex: number, newState: Partial<TabState>) => {
-      if (isEqual(tabStates[tabIndex], newState)) return;
-      setTabStates(prevTabStates => {
-        const updatedTabs = [...prevTabStates];
-        updatedTabs[tabIndex] = { ...updatedTabs[tabIndex], ...newState };
-        return updatedTabs;
-      });
+    (tabId: string, newState: Partial<TabState>, forceUpdate?: boolean) => {
+      if (!tabStates) return;
+
+      const tabIndex = tabStates.findIndex(tab => tab.uniqueId === tabId);
+      if (tabIndex === -1) return;
+
+      if (isEqual(tabStates[tabIndex], newState) && !forceUpdate) return;
+
+      const updatedTabs = [...tabStates];
+      updatedTabs[tabIndex] = { ...updatedTabs[tabIndex], ...newState };
+
+      setTabStates(updatedTabs);
     },
-    [tabStates]
+    [setTabStates, tabStates]
   );
 
   const searchInputRef = useRef<TextInput>(null);
@@ -120,75 +155,106 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
 
   const searchViewProgress = useSharedValue(0);
   const scrollViewOffset = useScrollViewOffset(scrollViewRef);
-  const tabViewProgress = useSharedValue(0);
+  const tabViewVisible = useSharedValue(false);
+  const animatedActiveTabIndex = useSharedValue(0);
+  const { tabViewProgress } = useBrowserTabViewProgressContext();
 
-  useEffect(() => {
-    if (isSearchInputFocused) {
-      searchViewProgress.value = withTiming(1, timingConfig);
-    } else {
-      searchViewProgress.value = withTiming(0, timingConfig);
-    }
-  }, [searchViewProgress, isSearchInputFocused]);
+  const toggleTabViewWorklet = useCallback(
+    (activeIndex?: number) => {
+      'worklet';
+      const willTabViewBecomeVisible = !tabViewVisible.value;
+      const tabIndexProvided = activeIndex !== undefined;
 
-  const toggleTabView = useCallback(() => {
-    const isVisible = !tabViewVisible;
-    tabViewProgress.value = isVisible
-      ? withTiming(1, timingConfig, isFinished => {
-          if (isFinished) {
-            runOnJS(setTabViewFullyVisible)(true);
-          }
-        })
-      : withTiming(0, timingConfig);
+      if (tabIndexProvided && !willTabViewBecomeVisible) {
+        animatedActiveTabIndex.value = activeIndex;
+        runOnJS(setActiveTabIndex)(activeIndex);
+      }
+      if (tabViewProgress !== undefined) {
+        tabViewProgress.value = willTabViewBecomeVisible
+          ? withSpring(100, SPRING_CONFIGS.browserTabTransition)
+          : withSpring(0, SPRING_CONFIGS.browserTabTransition);
+      }
 
-    setTabViewVisible(isVisible);
-    if (!isVisible) {
-      setTabViewFullyVisible(false);
-    }
-  }, [tabViewProgress, tabViewVisible]);
-
-  const closeTab = useCallback(
-    (tabIndex: number) => {
-      setTabStates(prevTabStates => {
-        const updatedTabs = [...prevTabStates];
-        if (tabIndex === activeTabIndex) {
-          if (tabIndex < updatedTabs.length - 1) {
-            setActiveTabIndex(tabIndex);
-          } else if (tabIndex > 0) {
-            setActiveTabIndex(tabIndex - 1);
-          }
-        }
-        updatedTabs.splice(tabIndex, 1);
-        webViewRefs.current.splice(tabIndex, 1);
-        return updatedTabs;
-      });
+      tabViewVisible.value = willTabViewBecomeVisible;
     },
-    [activeTabIndex, setActiveTabIndex, setTabStates, webViewRefs]
+    [animatedActiveTabIndex, tabViewProgress, tabViewVisible]
   );
 
   const newTab = useCallback(() => {
-    setActiveTabIndex(tabStates.length);
-    setTabStates(prevTabStates => {
-      const updatedTabs = [...prevTabStates];
+    if (!tabStates) {
+      setTabStates([
+        {
+          canGoBack: false,
+          canGoForward: false,
+          uniqueId: generateUniqueId(),
+          url: RAINBOW_HOME,
+        },
+      ]);
+      runOnUI(toggleTabViewWorklet)(0);
+    } else {
+      const updatedTabs = [...tabStates];
+
       updatedTabs.push({
         canGoBack: false,
         canGoForward: false,
+        uniqueId: generateUniqueId(),
         url: RAINBOW_HOME,
       });
-      return updatedTabs;
-    });
-    toggleTabView();
-  }, [setTabStates, tabStates.length, toggleTabView]);
+
+      setTabStates(updatedTabs);
+      runOnUI(toggleTabViewWorklet)(updatedTabs.length - 1);
+    }
+  }, [setTabStates, tabStates, toggleTabViewWorklet]);
+
+  const closeTab = useCallback(
+    (tabId: string) => {
+      if (!tabStates) return;
+
+      const tabIndex = tabStates.findIndex(tab => tab.uniqueId === tabId);
+      if (tabIndex === -1) return;
+
+      const isActiveTab = tabIndex === activeTabIndex;
+      const isLastTab = tabIndex === tabStates.length - 1;
+      const hasNextTab = tabIndex < tabStates.length - 1;
+
+      let newActiveTabIndex = activeTabIndex;
+
+      if (isActiveTab) {
+        if (isLastTab && tabIndex === 0) {
+          setActiveTabIndex(0);
+          animatedActiveTabIndex.value = 0;
+          setTabStates(EMPTY_TAB_STATE);
+          webViewRefs.current = [];
+          newTab();
+          return;
+        } else if (isLastTab && tabIndex > 0) {
+          newActiveTabIndex = tabIndex - 1;
+        } else if (hasNextTab) {
+          newActiveTabIndex = tabIndex;
+        }
+      } else if (tabIndex < activeTabIndex) {
+        newActiveTabIndex = activeTabIndex - 1;
+      }
+
+      const updatedTabs = [...tabStates.slice(0, tabIndex), ...tabStates.slice(tabIndex + 1)];
+      setTabStates(updatedTabs);
+      setActiveTabIndex(newActiveTabIndex);
+      animatedActiveTabIndex.value = newActiveTabIndex;
+      webViewRefs.current.splice(tabIndex, 1);
+    },
+    [activeTabIndex, animatedActiveTabIndex, newTab, setTabStates, tabStates, webViewRefs]
+  );
 
   const goBack = useCallback(() => {
     const activeWebview = webViewRefs.current[activeTabIndex];
-    if (activeWebview && tabStates[activeTabIndex].canGoBack) {
+    if (activeWebview && tabStates?.[activeTabIndex]?.canGoBack) {
       activeWebview.goBack();
     }
   }, [activeTabIndex, tabStates, webViewRefs]);
 
   const goForward = useCallback(() => {
     const activeWebview = webViewRefs.current[activeTabIndex];
-    if (activeWebview && tabStates[activeTabIndex].canGoForward) {
+    if (activeWebview && tabStates?.[activeTabIndex]?.canGoForward) {
       activeWebview.goForward();
     }
   }, [activeTabIndex, tabStates, webViewRefs]);
@@ -204,23 +270,21 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
     <BrowserContext.Provider
       value={{
         activeTabIndex,
+        animatedActiveTabIndex,
         closeTab,
         goBack,
         goForward,
-        isSearchInputFocused,
         newTab,
         onRefresh,
         searchViewProgress,
         searchInputRef,
         setActiveTabIndex,
-        setIsSearchInputFocused,
         scrollViewOffset,
         scrollViewRef,
-        tabStates,
+        tabStates: tabStates || [],
         tabViewProgress,
-        tabViewFullyVisible,
         tabViewVisible,
-        toggleTabView,
+        toggleTabViewWorklet,
         updateActiveTabState,
         webViewRefs,
       }}

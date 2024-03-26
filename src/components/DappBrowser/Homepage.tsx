@@ -1,15 +1,17 @@
 import { ButtonPressAnimation } from '@/components/animations';
 import { Page } from '@/components/layout';
-import { Bleed, Box, Cover, Inline, Inset, Stack, Text } from '@/design-system';
+import { Bleed, Box, ColorModeProvider, Cover, Inline, Inset, Stack, Text, globalColors, useColorMode } from '@/design-system';
 import { useNavigation } from '@/navigation';
-import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
-import { deviceUtils, safeAreaInsetValues } from '@/utils';
+import { deviceUtils } from '@/utils';
 import React from 'react';
 import { ScrollView, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { BlurView } from '@react-native-community/blur';
 import { ImgixImage } from '@/components/images';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import { IS_IOS } from '@/env';
+import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { opacity } from '@/__swaps__/screens/Swap/utils/swaps';
 
 const HORIZONTAL_INSET = 24;
 
@@ -21,7 +23,9 @@ const NUM_CARDS = 2;
 const CARD_PADDING = 12;
 const CARD_SIZE = (deviceUtils.dimensions.width - HORIZONTAL_INSET * 2 - (NUM_CARDS - 1) * CARD_PADDING) / NUM_CARDS;
 
-const Card = () => {
+const Card = ({ showMenuButton }: { showMenuButton?: boolean }) => {
+  const { isDarkMode } = useColorMode();
+
   const bgImageUrl = 'https://nftcalendar.io/storage/uploads/2022/05/06/banner_discord1_05062022181527627565bf3c203.jpeg';
   const logoImageUrl = 'https://pbs.twimg.com/profile_images/1741494128779886592/RY4V0T2F_400x400.jpg';
 
@@ -48,97 +52,141 @@ const Card = () => {
   };
 
   return (
-    <View style={{ width: CARD_SIZE }}>
-      <ButtonPressAnimation overflowMargin={100}>
+    <ButtonPressAnimation overflowMargin={100} scaleTo={0.9}>
+      <Box
+        background="surfacePrimary"
+        borderRadius={24}
+        shadow="18px"
+        style={{
+          width: CARD_SIZE,
+        }}
+      >
         <Box
           as={LinearGradient}
+          borderRadius={24}
           colors={['#0078FF', '#3AB8FF']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
-          background="surfacePrimary"
-          borderRadius={24}
-          shadow="18px"
           width={{ custom: CARD_SIZE }}
           height={{ custom: 137 }}
           justifyContent="space-between"
           padding="20px"
-          style={{ overflow: 'hidden' }}
         >
-          {bgImageUrl && (
-            <Cover>
-              <ImgixImage source={{ uri: bgImageUrl }} size={CARD_SIZE} style={{ width: '100%', height: '100%' }} />
+          <ColorModeProvider value="dark">
+            {bgImageUrl && (
               <Cover>
-                <LinearGradient
-                  colors={['rgba(0, 0, 0, 0.6)', 'rgba(0, 0, 0, 0.6)', '#000']}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 0, y: 1 }}
-                  locations={[0, 0.4985, 1]}
-                  style={{ width: '100%', height: '100%' }}
-                />
+                <ImgixImage enableFasterImage source={{ uri: bgImageUrl }} size={CARD_SIZE} style={{ width: CARD_SIZE, height: 137 }} />
+                <Cover>
+                  <LinearGradient
+                    colors={['rgba(0, 0, 0, 0.6)', 'rgba(0, 0, 0, 0.6)', '#000']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 0, y: 1 }}
+                    locations={[0, 0.5, 1]}
+                    style={{ width: '100%', height: '100%' }}
+                  />
+                </Cover>
               </Cover>
-            </Cover>
-          )}
-          <Box
-            as={ImgixImage}
-            source={{ uri: logoImageUrl }}
-            size={48}
-            background="surfacePrimary"
-            shadow="24px"
-            width={{ custom: 48 }}
-            height={{ custom: 48 }}
-            top={{ custom: -8 }}
-            left={{ custom: -8 }}
-            borderRadius={12}
-          />
-          <Stack space="10px">
-            <Text size="17pt" weight="heavy" color="label">
-              Rainbowcast
-            </Text>
-            <Text size="13pt" weight="bold" color="labelTertiary">
-              zora.co
-            </Text>
-          </Stack>
-          <Box
-            position="absolute"
-            top={{ custom: 12 }}
-            right={{ custom: 12 }}
-            height={{ custom: 24 }}
-            width={{ custom: 24 }}
-            borderRadius={32}
-            style={{ flex: 1, overflow: 'hidden' }}
-          >
-            <Cover>
-              <BlurView
-                blurType="chromeMaterialDark"
-                blurAmount={8.5}
+            )}
+            <Box
+              height={{ custom: 48 }}
+              left={{ custom: -8 }}
+              style={
+                IS_IOS
+                  ? { shadowColor: globalColors.grey100, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 6 }
+                  : { elevation: 16, shadowColor: globalColors.grey100, shadowOpacity: 1 }
+              }
+              top={{ custom: -8 }}
+              width={{ custom: 48 }}
+            >
+              <ImgixImage
+                enableFasterImage
+                size={48}
+                source={{ uri: logoImageUrl }}
                 style={{
-                  width: '100%',
-                  height: '100%',
-                  backgroundColor: 'rgba(244, 248, 255, 0.08)',
+                  backgroundColor: isDarkMode ? globalColors.grey100 : globalColors.white100,
+                  borderRadius: 12,
+                  height: 48,
+                  width: 48,
                 }}
               />
-            </Cover>
-            <View
-              style={{
-                width: '100%',
-                height: '100%',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <Text align="center" weight="heavy" color="labelSecondary" size="13pt">
-                􀍠
+            </Box>
+            {/* <Box
+              as={ImgixImage}
+              source={{ uri: logoImageUrl }}
+              size={48}
+              background="surfacePrimary"
+              shadow="24px"
+              width={{ custom: 48 }}
+              height={{ custom: 48 }}
+              top={{ custom: -8 }}
+              left={{ custom: -8 }}
+              borderRadius={12}
+            /> */}
+            <Stack space="10px">
+              <Text size="17pt" weight="heavy" color="label">
+                Rainbow World
               </Text>
-            </View>
-          </Box>
+              <Text size="13pt" weight="bold" color="labelTertiary">
+                rainbow.me
+              </Text>
+            </Stack>
+            {showMenuButton && (
+              <ContextMenuButton
+                menuConfig={menuConfig}
+                onPressMenuItem={() => {}}
+                style={{ top: 12, right: 12, height: 24, width: 24, position: 'absolute' }}
+              >
+                <ButtonPressAnimation scaleTo={0.8}>
+                  <Box height={{ custom: 24 }} width={{ custom: 24 }} borderRadius={32} style={{ overflow: 'hidden' }}>
+                    <Cover>
+                      {IS_IOS ? (
+                        <BlurView
+                          blurType="chromeMaterialDark"
+                          blurAmount={10}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            backgroundColor: 'rgba(244, 248, 255, 0.08)',
+                          }}
+                        />
+                      ) : (
+                        <Box background="fill" height="full" width="full" />
+                      )}
+                    </Cover>
+                    <View
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Text align="center" weight="heavy" color="labelSecondary" size="13pt">
+                        􀍠
+                      </Text>
+                    </View>
+                  </Box>
+                </ButtonPressAnimation>
+              </ContextMenuButton>
+            )}
+          </ColorModeProvider>
         </Box>
-      </ButtonPressAnimation>
-      <ContextMenuButton
-        menuConfig={menuConfig}
-        onPressMenuItem={() => {}}
-        style={{ top: 12, right: 12, height: 24, width: 24, position: 'absolute' }}
-      />
-    </View>
+        {IS_IOS && (
+          <Box
+            borderRadius={24}
+            height="full"
+            position="absolute"
+            style={{
+              borderColor: isDarkMode ? opacity(globalColors.white100, 0.1) : opacity(globalColors.grey100, 0.12),
+              borderWidth: THICK_BORDER_WIDTH,
+              overflow: 'hidden',
+              pointerEvents: 'none',
+            }}
+            width="full"
+          />
+        )}
+      </Box>
+    </ButtonPressAnimation>
   );
 };
 
@@ -148,9 +196,10 @@ const Logo = () => {
   return (
     <View style={{ width: LOGO_SIZE }}>
       <ButtonPressAnimation overflowMargin={100}>
-        <Stack space="12px" alignHorizontal="center">
+        <Stack space="10px" alignHorizontal="center">
           <Box
             as={ImgixImage}
+            enableFasterImage
             size={LOGO_SIZE}
             source={{ uri: imageUrl }}
             width={{ custom: LOGO_SIZE }}
@@ -169,16 +218,26 @@ const Logo = () => {
 };
 
 export default function Homepage() {
+  const { isDarkMode } = useColorMode();
   const { navigate } = useNavigation();
 
   return (
-    <Box as={Page} flex={1} height="full" width="full" justifyContent="center">
+    <Box
+      as={Page}
+      flex={1}
+      height="full"
+      width="full"
+      justifyContent="center"
+      style={{ backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD' }}
+    >
       <ScrollView
+        scrollEnabled={false}
         scrollIndicatorInsets={{
-          bottom: TAB_BAR_HEIGHT - safeAreaInsetValues.bottom,
+          bottom: 20,
+          top: 36,
         }}
         contentContainerStyle={{
-          paddingBottom: TAB_BAR_HEIGHT + 120,
+          paddingBottom: 20,
           paddingTop: 40,
           paddingHorizontal: HORIZONTAL_INSET,
         }}
@@ -241,9 +300,9 @@ export default function Homepage() {
               </Text>
             </Inline>
             <Inline space={{ custom: CARD_PADDING }}>
-              <Card />
-              <Card />
-              <Card />
+              <Card showMenuButton />
+              <Card showMenuButton />
+              <Card showMenuButton />
             </Inline>
           </Stack>
         </Stack>
