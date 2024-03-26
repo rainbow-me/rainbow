@@ -232,7 +232,7 @@ export const signTransactionSheetConfig = {
   options: ({ route }: { route: SignTransactionSheetRouteProp }) => ({
     ...buildCoolModalConfig({
       ...route.params,
-      backgroundOpacity: route?.params?.requestType === 'walletconnect' ? 1 : 0.9,
+      backgroundOpacity: route?.params?.requestType === 'walletconnect' ? 1 : 0.4,
       cornerRadius: 0,
       springDamping: 1,
       topOffset: 0,
