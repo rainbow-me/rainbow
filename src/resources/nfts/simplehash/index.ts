@@ -44,7 +44,7 @@ export async function fetchSimpleHashNFTs(
   const chainsParam = RainbowNetworks.filter(network => network.features.nfts)
     .map(network => network.nfts.simplehashNetwork || network.value)
     .join(',');
-  console.log(chainsParam);
+
   const cursorSuffix = createCursorSuffix(cursor);
   const response = await nftApi.get(`/nfts/owners?chains=${chainsParam}&wallet_addresses=${walletAddress}${cursorSuffix}`, {
     headers: {
