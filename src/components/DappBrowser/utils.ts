@@ -31,6 +31,7 @@ export async function handleShareUrl(url: string): Promise<void> {
   } catch (e: any) {
     logger.error(new RainbowError('Error sharing browser URL'), {
       message: e.message,
+      url,
     });
   }
 }
