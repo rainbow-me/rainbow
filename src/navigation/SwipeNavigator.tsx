@@ -314,7 +314,7 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
   }, [isDarkMode]);
 
   return (
-    <Box bottom={{ custom: 0 }} height={{ custom: TAB_BAR_HEIGHT }} position="absolute" width="full">
+    <Box bottom={{ custom: 0 }} height={{ custom: TAB_BAR_HEIGHT }} pointerEvents="box-none" position="absolute" width="full">
       <Box as={Animated.View} style={[shadowStyles.outer, IS_IOS ? dappBrowserTabBarShadowStyle : {}, hideForBrowserTabViewStyle]}>
         <Box as={Animated.View} style={[shadowStyles.inner, IS_IOS ? dappBrowserTabBarShadowStyle : {}]}>
           {/* @ts-expect-error The conditional as={} is causing type errors */}
