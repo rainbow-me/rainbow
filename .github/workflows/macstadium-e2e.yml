@@ -14,17 +14,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.yarn
-            ios/Pods
-            node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-
       - name: Set up github keys
         run:  git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
 
