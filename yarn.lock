@@ -3991,10 +3991,10 @@
   resolved "https://registry.yarnpkg.com/@rnx-kit/align-deps/-/align-deps-2.2.4.tgz#3ed70da68276163ee9b362f1c625ccc4e17d364d"
   integrity sha512-sLbQMBU6LvYesH6AsIHKsN6e90PU1JGyjzvZDXYX8VnxqgjmEkgqHF8/PFAKi0lP+OUzDZk6bmSo3cbhd6OqXg==
 
-"@rudderstack/rudder-sdk-react-native@1.12.0":
-  version "1.12.0"
-  resolved "https://registry.yarnpkg.com/@rudderstack/rudder-sdk-react-native/-/rudder-sdk-react-native-1.12.0.tgz#d7016b542e2c6a81e787b2a17f1f2ffb2da1e207"
-  integrity sha512-9ULPosPVq3T8s2irZVyMx1qELZnderpPMAgdheK166uTz7yxDSR+ASjoZvIPKZhpnm3afvTxFXw9s0Ji0SCtVw==
+"@rudderstack/rudder-sdk-react-native@1.12.1":
+  version "1.12.1"
+  resolved "https://registry.yarnpkg.com/@rudderstack/rudder-sdk-react-native/-/rudder-sdk-react-native-1.12.1.tgz#fc2473db5bbbffab3246fd432227f681fcac8d2f"
+  integrity sha512-efUuKt8KKm6YECyOHaBjmZTGm4MU6H7gQVE7mQenlSmCXFRMwpq+Lh/wxoO4dIsA6t14ANI8LPHlNZN222w4cA==
 
 "@scure/base@^1.1.3", "@scure/base@~1.1.0", "@scure/base@~1.1.2", "@scure/base@~1.1.4":
   version "1.1.5"
