@@ -33,22 +33,22 @@ export const TokenToSellList = () => {
   const handleSelectToken = useCallback(
     (token: ParsedSearchAsset) => {
       const userAsset = userAssets.find(asset => isSameAsset(asset, token));
-      const parsedAset = parseSearchAsset({
+      const parsedAsset = parseSearchAsset({
         assetWithPrice: undefined,
         searchAsset: token,
         userAsset,
       });
 
-      setAssetToSell(parsedAset);
+      setAssetToSell(parsedAsset);
 
       SwapInputController.onChangedPercentage(1);
-      runOnUI(() => {
+      runOnUI((userAsset: ParsedSearchAsset | undefined, parsedAsset: ParsedSearchAsset) => {
         SwapInputController.inputValues.modify(prev => ({
           ...prev,
-          inputNativeValue: parsedAset.native.balance.amount,
+          inputNativeValue: parsedAsset.native.balance.amount,
           inputAmount: userAsset?.balance.amount ?? '0', // TODO: Do we want to default to 100% of balance? 50%?
         }));
-      })();
+      })(userAsset, parsedAsset);
 
       setSearchFilter('');
       if (!assetToBuy) {
