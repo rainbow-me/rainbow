@@ -40,6 +40,15 @@ export const FlipButton = () => {
     if (prevAssetToSell) {
       setAssetToBuy(prevAssetToSell);
     }
+
+    // TODO: Fetch current prices of each asset and update the input and output values on the native thread
+    // runOnUI(() => {
+    //   SwapInputController.inputValues.modify(prev => ({
+    //     ...prev,
+    //     // inputNativeValue: prevAssetToBuy.native.price.amount,
+    //     outputNativeValue: prevAssetToSell.native.price.amount,
+    //   }));
+    // })();
   }, [assetToBuy, assetToSell, setAssetToBuy, setAssetToSell]);
 
   return (
@@ -62,8 +71,6 @@ export const FlipButton = () => {
         }}
       >
         <ButtonPressAnimation onPress={handleSwapAssets} scaleTo={0.8} style={{ paddingHorizontal: 20, paddingVertical: 8 }}>
-          {/* TODO: Temp fix - rewrite to actually avoid type errors */}
-          {/* @ts-expect-error The conditional as={} is causing type errors */}
           <Box
             alignItems="center"
             as={IS_IOS ? AnimatedBlurView : Animated.View}

@@ -18,7 +18,7 @@ export interface SwapAssetState {
 }
 
 export const swapAssetStore = createStore<SwapAssetState>((set, get) => ({
-  assetToSell: null,
+  assetToSell: null, // TODO: Default to their largest balance asset (or ETH mainnet if user has no assets)
   assetToBuy: null,
   outputChainId: ChainId.mainnet,
   sortMethod: 'token',

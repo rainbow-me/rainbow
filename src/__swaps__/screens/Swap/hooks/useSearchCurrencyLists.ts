@@ -161,8 +161,6 @@ export function useSearchCurrencyLists({
       mainnetAddress: favToken.mainnet_address,
     })) as SearchAsset[];
 
-    console.log(unfilteredFavorites);
-
     if (query === '') {
       return unfilteredFavorites;
     } else {
@@ -333,11 +331,11 @@ export function useSearchCurrencyLists({
   // the lists below should be filtered by favorite/bridge asset match
   const results = useMemo(() => {
     const sections: AssetToBuySection[] = [];
-    // TODO: Figure this out
-    // if (bridge) {
-    //   sections.push({ data: bridgeList || [], id: 'bridge' });
-    //   return sections;
-    // }
+    // TODO: Enable this later on when bridging is being tested
+    if (bridge) {
+      sections.push({ data: bridgeList || [], id: 'bridge' });
+      return sections;
+    }
 
     if (bridgeAsset) {
       sections.push({
