@@ -124,7 +124,7 @@ export async function backupAllWalletsToCloud({
 
     const allKeys = await keychain.loadAllKeys();
     if (!allKeys) {
-      onError?.('No keys found. Please try again.'); // TODO: i18n this
+      onError?.(i18n.t(i18n.l.back_up.no_keys_found));
       return;
     }
 
@@ -170,7 +170,7 @@ export async function backupAllWalletsToCloud({
       // if we have a latest backup file, we need to update the updatedAt and add new secrets to the backup file..
       const backup = await getDataFromCloud(password, latestBackup);
       if (!backup) {
-        onError?.('Backup not found. Please try again.'); // TODO: i18n this
+        onError?.(i18n.t(i18n.l.back_up.backup_not_found));
         return;
       }
 

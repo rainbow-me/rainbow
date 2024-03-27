@@ -93,7 +93,7 @@ export async function get(key: string, options: KeychainOptions = {}): Promise<R
            * want to decrypt those here.
            */
           if (IS_ANDROID && result.password.includes('cipher') && !EXEMPT_ENCRYPTED_KEYS.includes(key)) {
-            logger.debug(`keychain: decrypting private data on Android`, logger.DebugContext.keychain);
+            logger.debug(`keychain: decrypting private data on Android`, {}, logger.DebugContext.keychain);
 
             const pin = options.androidEncryptionPin || (await authenticateWithPIN());
             !!pin && logger.log('keychain: using pin to decrypt cipher');
