@@ -20,7 +20,7 @@ export default function useManageCloudBackups() {
         setAccountDetails(accountDetails ?? undefined);
       })
       .catch(error => {
-        logger.error(new RainbowError(`Fetching google account data to display in Backups Section failed`), {
+        logger.error(new RainbowError(`Error Fetching google account data for Backups Section`), {
           error: (error as Error).message,
         });
       });
