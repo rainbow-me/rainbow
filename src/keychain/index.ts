@@ -93,27 +93,14 @@ export async function get(key: string, options: KeychainOptions = {}): Promise<R
            * want to decrypt those here.
            */
           if (IS_ANDROID && result.password.includes('cipher') && !EXEMPT_ENCRYPTED_KEYS.includes(key)) {
-            logger.debug(
-              `keychain: decrypting private data on Android`,
-              {
-                extra: {
-                  key,
-                  password: result.password,
-                },
-              },
-              logger.DebugContext.keychain
-            );
+            logger.debug(`keychain: decrypting private data on Android`, logger.DebugContext.keychain);
 
             const pin = options.androidEncryptionPin || (await authenticateWithPIN());
-            logger.log('keychain: using pin to decrypt cipher', { pin });
+            !!pin && logger.log('keychain: using pin to decrypt cipher');
             const decryptedValue = await encryptor.decrypt(pin, result.password);
 
-            logger.log('keychain: decrypted value', {
-              extra: {
-                decryptedValue,
-              },
-            });
             if (decryptedValue) {
+              logger.log('keychain: decrypted value');
               data = decryptedValue;
             } else {
               logger.error(new RainbowError(`keychain: failed to decrypt private data on Android`));
