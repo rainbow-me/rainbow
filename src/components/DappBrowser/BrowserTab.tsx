@@ -340,17 +340,23 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
   const handleNavigationStateChange = useCallback(
     (navState: WebViewNavigation) => {
       if (navState.url !== tabStates[tabIndex].url) {
-        updateActiveTabState(tabId, {
-          canGoBack: navState.canGoBack,
-          canGoForward: navState.canGoForward,
-          url: navState.url,
-        });
+        updateActiveTabState(
+          {
+            canGoBack: navState.canGoBack,
+            canGoForward: navState.canGoForward,
+            url: navState.url,
+          },
+          tabId
+        );
       } else {
-        updateActiveTabState(tabId, {
-          canGoBack: navState.canGoBack,
-          canGoForward: navState.canGoForward,
-          url: tabStates[tabIndex].url,
-        });
+        updateActiveTabState(
+          {
+            canGoBack: navState.canGoBack,
+            canGoForward: navState.canGoForward,
+            url: tabStates[tabIndex].url,
+          },
+          tabId
+        );
       }
     },
     [tabId, tabIndex, tabStates, updateActiveTabState]

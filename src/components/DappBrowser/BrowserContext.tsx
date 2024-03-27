@@ -52,7 +52,7 @@ interface BrowserContextType {
   tabViewProgress: SharedValue<number> | undefined;
   tabViewVisible: SharedValue<boolean> | undefined;
   toggleTabViewWorklet: (activeIndex?: number) => void;
-  updateActiveTabState: (tabId: string, newState: Partial<TabState>, forceUpdate?: boolean) => void;
+  updateActiveTabState: (newState: Partial<TabState>, tabId?: string) => void;
   webViewRefs: React.MutableRefObject<(WebView | null)[]>;
 }
 
@@ -133,20 +133,20 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
   const [tabStates, setTabStates] = useMMKVObject<TabState[]>('tabStateStorage', tabStateStore);
 
   const updateActiveTabState = useCallback(
-    (tabId: string, newState: Partial<TabState>, forceUpdate?: boolean) => {
+    (newState: Partial<TabState>, tabId?: string) => {
       if (!tabStates) return;
 
-      const tabIndex = tabStates.findIndex(tab => tab.uniqueId === tabId);
+      const tabIndex = tabId ? tabStates.findIndex(tab => tab.uniqueId === tabId) : activeTabIndex;
       if (tabIndex === -1) return;
 
-      if (isEqual(tabStates[tabIndex], newState) && !forceUpdate) return;
+      if (isEqual(tabStates[tabIndex], newState)) return;
 
       const updatedTabs = [...tabStates];
       updatedTabs[tabIndex] = { ...updatedTabs[tabIndex], ...newState };
 
       setTabStates(updatedTabs);
     },
-    [setTabStates, tabStates]
+    [activeTabIndex, setTabStates, tabStates]
   );
 
   const searchInputRef = useRef<TextInput>(null);

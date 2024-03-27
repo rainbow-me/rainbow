@@ -109,7 +109,7 @@ export const SearchBar = () => {
       }
 
       if (newUrl !== url) {
-        updateActiveTabState(tabId, { url: newUrl });
+        updateActiveTabState({ url: newUrl }, tabId);
       } else {
         onRefresh();
       }
