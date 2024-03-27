@@ -248,6 +248,8 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
     const progress = tabViewProgress?.value || 0;
     const isActiveTabAnimated = animatedActiveTabIndex?.value === tabIndex;
 
+    if (!isActiveTabAnimated) return COLLAPSED_WEBVIEW_HEIGHT_UNSCALED;
+
     return interpolate(
       progress,
       [0, 100],
@@ -259,8 +261,6 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
   const animatedWebViewStyle = useAnimatedStyle(() => {
     const progress = tabViewProgress?.value || 0;
     const isActiveTabAnimated = animatedActiveTabIndex?.value === tabIndex;
-
-    const height = animatedWebViewHeight.value;
 
     const scale = interpolate(
       progress,
@@ -301,16 +301,16 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
 
     return {
       borderRadius,
-      height,
+      height: animatedWebViewHeight.value,
       opacity,
       // eslint-disable-next-line no-nested-ternary
       pointerEvents: tabViewVisible?.value ? 'box-only' : isActiveTabAnimated ? 'auto' : 'none',
       transform: [
-        { translateY: multipleTabsOpen ? -height / 2 : 0 },
+        { translateY: multipleTabsOpen ? -animatedWebViewHeight.value / 2 : 0 },
         { translateX: xPositionForTab + gestureX.value },
         { translateY: yPositionForTab + gestureY.value },
         { scale: scale * gestureScale.value },
-        { translateY: multipleTabsOpen ? height / 2 : 0 },
+        { translateY: multipleTabsOpen ? animatedWebViewHeight.value / 2 : 0 },
       ],
     };
   });
@@ -537,9 +537,11 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
 
     return {
       display: animatedIsActiveTab ? 'flex' : 'none',
-      opacity:
-        tabViewVisible?.value || loadProgress.value === 1
-          ? withSpring(0, SPRING_CONFIGS.snappierSpringConfig)
+      // eslint-disable-next-line no-nested-ternary
+      opacity: tabViewVisible?.value
+        ? withSpring(0, SPRING_CONFIGS.snappierSpringConfig)
+        : loadProgress.value === 1
+          ? withTiming(0, TIMING_CONFIGS.slowestFadeConfig)
           : withSpring(1, SPRING_CONFIGS.snappierSpringConfig),
       width: loadProgress.value * deviceWidth,
     };
@@ -554,12 +556,6 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
     },
     [loadProgress]
   );
-
-  // Handles resetting the gesture scale after a tab is closed
-  useEffect(() => {
-    gestureScale.value = 1;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tabIndex]);
 
   const WebviewComponent = () => (
     <Freeze
@@ -593,7 +589,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
           <Box
             as={Animated.View}
             position="absolute"
-            style={[{ height: '100%', flex: 1, width: '100%' }, animatedWebViewBackgroundColorStyle]}
+            style={[{ height: WEBVIEW_HEIGHT, flex: 1 }, animatedWebViewBackgroundColorStyle]}
             width="full"
           />
         )}
