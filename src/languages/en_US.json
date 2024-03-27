@@ -2008,6 +2008,7 @@
       "to": "To",
       "value": "Value",
       "hash": "Tx Hash",
+      "you": "You",
       "network_fee": "Network Fee",
       "hash_copied": "\uDBC0\uDC63 Transaction hash copied",
       "address_copied": "\uDBC0\uDC63 Address copied",
