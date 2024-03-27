@@ -9,7 +9,7 @@ export interface Site {
 }
 
 export interface Tab {
-  history?: Site | undefined[];
+  history?: Site[] | undefined[];
   title: string;
   url: string;
   screenshot?: string; // Assuming this is a URL or base64 encoded image

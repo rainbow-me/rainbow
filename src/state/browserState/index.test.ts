@@ -1,10 +1,11 @@
-import { useBrowserStateStore } from '.';
+import { Site, browserStateStore } from '.';
 
 describe('BrowserStateStore', () => {
   beforeEach(() => {
     // Reset the store to its initial state before each test
-    useBrowserStateStore.setState(
+    browserStateStore.setState(
       {
+        ...browserStateStore.getState(),
         tabs: [],
       },
       true
@@ -12,84 +13,151 @@ describe('BrowserStateStore', () => {
   });
 
   test('should be able to add a tab', () => {
-    const { addTab, tabs } = useBrowserStateStore.getState();
+    const { addTab, tabs } = browserStateStore.getState();
     expect(tabs.length).toBe(0);
     addTab({
-      name: 'Test Tab',
+      title: 'Test Tab',
       isActive: true,
+      canGoBack: false,
+      canGoForward: false,
+      url: 'https://test.com',
       screenshot: 'test_screenshot.png',
       history: [
         {
-          name: 'Test Site',
+          title: 'Test Site',
           url: 'https://test.com',
           image: 'test_image.png',
           timestamp: Date.now(),
-        },
+        } as Site,
       ],
     });
-    expect(useBrowserStateStore.getState().tabs.length).toBe(1);
+    expect(browserStateStore.getState().tabs.length).toBe(1);
   });
 
   test('should place new tabs at the end', () => {
-    const { addTab } = useBrowserStateStore.getState();
-    addTab({ name: 'First Tab', screenshot: '', history: [], isActive: false });
-    addTab({ name: 'Second Tab', screenshot: '', history: [], isActive: false });
-    const tabs = useBrowserStateStore.getState().tabs;
-    expect(tabs[tabs.length - 1].name).toBe('Second Tab');
+    const { addTab } = browserStateStore.getState();
+    addTab({
+      title: 'First Tab',
+      screenshot: '',
+      history: [],
+      isActive: false,
+      url: '',
+      canGoBack: false,
+      canGoForward: false,
+    });
+    addTab({
+      title: 'Second Tab',
+      screenshot: '',
+      history: [],
+      isActive: false,
+      url: '',
+      canGoBack: false,
+      canGoForward: false,
+    });
+    const tabs = browserStateStore.getState().tabs;
+    expect(tabs[tabs.length - 1].title).toBe('Second Tab');
   });
 
   test('should be able to delete a tab', () => {
-    const { addTab, deleteTab, tabs } = useBrowserStateStore.getState();
-    addTab({ name: 'Tab to Delete', screenshot: '', history: [], isActive: false });
-    expect(tabs.length).toBe(1);
+    const { addTab, deleteTab } = browserStateStore.getState();
+    addTab({
+      title: 'Tab to Delete',
+      screenshot: '',
+      history: [],
+      isActive: false,
+      url: '',
+      canGoBack: false,
+      canGoForward: false,
+    });
+    expect(browserStateStore.getState().tabs.length).toBe(1);
     deleteTab(0);
-    expect(useBrowserStateStore.getState().tabs.length).toBe(0);
+    expect(browserStateStore.getState().tabs.length).toBe(0);
   });
 
   test('should handle deleting the active tab', () => {
-    const { addTab, deleteTab, setActiveTab, getActiveTab } = useBrowserStateStore.getState();
-    addTab({ name: 'Active Tab', screenshot: '', history: [], isActive: false });
-    addTab({ name: 'Next Tab', screenshot: '', history: [], isActive: false });
+    const { addTab, deleteTab, setActiveTab, getActiveTab } = browserStateStore.getState();
+    addTab({
+      title: 'Active Tab',
+      screenshot: '',
+      history: [],
+      isActive: false,
+      url: '',
+      canGoBack: false,
+      canGoForward: false,
+    });
+    addTab({
+      title: 'Next Tab',
+      screenshot: '',
+      history: [],
+      isActive: false,
+      url: '',
+      canGoBack: false,
+      canGoForward: false,
+    });
     setActiveTab(0);
-    expect(getActiveTab()?.name).toBe('Active Tab');
+    expect(getActiveTab()?.title).toBe('Active Tab');
     deleteTab(0);
-    expect(getActiveTab()?.name).toBe('Next Tab');
+    expect(getActiveTab()?.title).toBe('Next Tab');
   });
 
-  test('should be able to edit a tab', () => {
-    const { addTab, editTab, tabs } = useBrowserStateStore.getState();
-    addTab({ name: 'Tab to Edit', screenshot: '', history: [], isActive: false });
-    editTab(0, { name: 'Edited Tab' });
-    expect(tabs[0].name).toBe('Edited Tab');
+  test('should be able to update a tab', () => {
+    const { addTab, updateTab } = browserStateStore.getState();
+    addTab({
+      title: 'Tab to update',
+      screenshot: '',
+      history: [],
+      isActive: false,
+      url: '',
+      canGoBack: false,
+      canGoForward: false,
+    });
+    updateTab(0, { title: 'Updated Tab' });
+    expect(browserStateStore.getState().tabs[0].title).toBe('Updated Tab');
   });
 
   test('editing a non-existent tab should do nothing', () => {
-    const { editTab, tabs } = useBrowserStateStore.getState();
-    editTab(999, { name: 'Ghost Tab' }); // Assuming there's no tab at index 999
-    expect(tabs.length).toBe(0); // No tabs should have been added or modified
+    const { updateTab } = browserStateStore.getState();
+    updateTab(999, { title: 'Ghost Tab' }); // Assuming there's no tab at index 999
+    expect(browserStateStore.getState().tabs.length).toBe(0); // No tabs should have been added or modified
   });
 
   test('should be able to set and get the active tab', () => {
-    const { addTab, setActiveTab, getActiveTab } = useBrowserStateStore.getState();
-    addTab({ name: 'First Tab', screenshot: '', history: [], isActive: false });
-    addTab({ name: 'Second Tab', screenshot: '', history: [], isActive: false });
+    const { addTab, setActiveTab, getActiveTab } = browserStateStore.getState();
+    addTab({
+      title: 'First Tab',
+      screenshot: '',
+      history: [],
+      isActive: false,
+      url: '',
+      canGoBack: false,
+      canGoForward: false,
+    });
+    addTab({
+      title: 'Second Tab',
+      screenshot: '',
+      history: [],
+      isActive: false,
+      url: '',
+      canGoBack: false,
+      canGoForward: false,
+    });
     setActiveTab(1);
-    expect(getActiveTab()?.name).toBe('Second Tab');
+    expect(getActiveTab()?.title).toBe('Second Tab');
   });
 
   test('setting an active tab should deactivate others', () => {
-    const { addTab, setActiveTab, tabs } = useBrowserStateStore.getState();
-    addTab({ name: 'First Tab', screenshot: '', history: [], isActive: true });
-    addTab({ name: 'Second Tab', screenshot: '', history: [], isActive: false });
+    const { addTab, setActiveTab } = browserStateStore.getState();
+    addTab({ title: 'First Tab', screenshot: '', history: [], isActive: true, canGoBack: false, canGoForward: false, url: '' });
+    addTab({ title: 'Second Tab', screenshot: '', history: [], isActive: false, canGoBack: false, canGoForward: false, url: '' });
     setActiveTab(1);
-    expect(tabs[0].isActive).toBe(false);
-    expect(tabs[1].isActive).toBe(true);
+    expect(browserStateStore.getState().tabs[0].isActive).toBe(false);
+    expect(browserStateStore.getState().tabs[1].isActive).toBe(true);
   });
 
   test('deleting the only tab should result in no active tabs', () => {
-    const { addTab, deleteTab, tabs } = useBrowserStateStore.getState();
-    addTab({ name: 'Lonely Tab', screenshot: '', history: [], isActive: true });
+    const { addTab, deleteTab } = browserStateStore.getState();
+    addTab({ title: 'Lonely Tab', screenshot: '', history: [], isActive: true, canGoBack: false, canGoForward: false, url: '' });
     deleteTab(0);
-    expect(tabs.find(tab => tab.isActive)).toBe(undefined);
+    expect(browserStateStore.getState().tabs.find(tab => tab.isActive)).toBe(undefined);
   });
 });
