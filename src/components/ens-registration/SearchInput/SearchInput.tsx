@@ -25,7 +25,7 @@ const SearchInput = ({ isLoading, onChangeText, value, variant = 'rainbow', sele
     weight: 'heavy',
   });
 
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<TextInput | null>(null);
   const { handleFocus } = useMagicAutofocus(
     inputRef,
     undefined,

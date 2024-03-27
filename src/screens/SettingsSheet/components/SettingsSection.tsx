@@ -8,8 +8,7 @@ import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
 import AppIconIcon from '@/assets/settingsAppIcon.png';
 import AppIconIconDark from '@/assets/settingsAppIconDark.png';
-import BackupIcon from '@/assets/settingsBackup.png';
-import BackupIconDark from '@/assets/settingsBackupDark.png';
+import WalletsAndBackupIcon from '@/assets/WalletsAndBackup.png';
 import CurrencyIcon from '@/assets/settingsCurrency.png';
 import CurrencyIconDark from '@/assets/settingsCurrencyDark.png';
 import DarkModeIcon from '@/assets/settingsDarkMode.png';
@@ -20,54 +19,18 @@ import NotificationsIcon from '@/assets/settingsNotifications.png';
 import NotificationsIconDark from '@/assets/settingsNotificationsDark.png';
 import PrivacyIcon from '@/assets/settingsPrivacy.png';
 import PrivacyIconDark from '@/assets/settingsPrivacyDark.png';
+import BackupWarningIcon from '@/assets/BackupWarning.png';
+import CloudBackupWarningIcon from '@/assets/CloudBackupWarning.png';
 import useExperimentalFlag, { LANGUAGE_SETTINGS, NOTIFICATIONS } from '@/config/experimentalHooks';
-import WalletTypes from '@/helpers/walletTypes';
 import { useAccountSettings, useSendFeedback, useWallets } from '@/hooks';
 import { Themes, useTheme } from '@/theme';
 import { showActionSheetWithOptions } from '@/utils';
-import { buildRainbowLearnUrl, LearnUTMCampaign } from '@/utils/buildRainbowUrl';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
-
-const SettingsExternalURLs = {
-  rainbowHomepage: 'https://rainbow.me',
-  rainbowLearn: buildRainbowLearnUrl({
-    url: 'https://learn.rainbow.me',
-    query: { campaign: LearnUTMCampaign.Settings },
-  }),
-  review: 'itms-apps://itunes.apple.com/us/app/appName/id1457119021?mt=8&action=write-review',
-  twitterDeepLink: 'twitter://user?screen_name=rainbowdotme',
-  twitterWebUrl: 'https://twitter.com/rainbowdotme',
-};
-
-const capitalizeFirstLetter = (str: string) => {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-};
-
-const checkAllWallets = (wallets: any) => {
-  if (!wallets) return { allBackedUp: false, areBackedUp: false, canBeBackedUp: false };
-  let areBackedUp = true;
-  let canBeBackedUp = false;
-  let allBackedUp = true;
-  Object.keys(wallets).forEach(key => {
-    if (!wallets[key].backedUp && wallets[key].type !== WalletTypes.readOnly && wallets[key].type !== WalletTypes.bluetooth) {
-      allBackedUp = false;
-    }
-
-    if (
-      !wallets[key].backedUp &&
-      wallets[key].type !== WalletTypes.readOnly &&
-      wallets[key].type !== WalletTypes.bluetooth &&
-      !wallets[key].imported
-    ) {
-      areBackedUp = false;
-    }
-    if (wallets[key].type !== WalletTypes.readOnly && wallets[key].type !== WalletTypes.readOnly) {
-      canBeBackedUp = true;
-    }
-  });
-  return { allBackedUp, areBackedUp, canBeBackedUp };
-};
+import { SettingsExternalURLs } from '../constants';
+import { capitalizeFirstLetter, checkWalletsForBackupStatus } from '../utils';
+import walletBackupTypes from '@/helpers/walletBackupTypes';
+import { Box } from '@/design-system';
 
 interface SettingsSectionProps {
   onCloseModal: () => void;
@@ -88,25 +51,25 @@ const SettingsSection = ({
   onPressCurrency,
   onPressDev,
   onPressLanguage,
-  onPressNetwork,
   onPressPrivacy,
   onPressNotifications,
 }: SettingsSectionProps) => {
   const { wallets, isReadOnlyWallet } = useWallets();
-  const { language, nativeCurrency, network, testnetsEnabled } = useAccountSettings();
+  const { language, nativeCurrency } = useAccountSettings();
   const isLanguageSelectionEnabled = useExperimentalFlag(LANGUAGE_SETTINGS);
   const isNotificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
   const { isDarkMode, setTheme, colorScheme } = useTheme();
 
   const onSendFeedback = useSendFeedback();
+  const { backupProvider } = useMemo(() => checkWalletsForBackupStatus(wallets), [wallets]);
 
   const onPressReview = useCallback(async () => {
     if (ios) {
       onCloseModal();
     }
     handleReviewPromptAction(ReviewPromptAction.UserPrompt);
-  }, []);
+  }, [onCloseModal]);
 
   const onPressShare = useCallback(() => {
     Share.share({
@@ -122,7 +85,7 @@ const SettingsSection = ({
 
   const onPressLearn = useCallback(() => Linking.openURL(SettingsExternalURLs.rainbowLearn), []);
 
-  const { allBackedUp, areBackedUp, canBeBackedUp } = useMemo(() => checkAllWallets(wallets), [wallets]);
+  const { allBackedUp, canBeBackedUp } = useMemo(() => checkWalletsForBackupStatus(wallets), [wallets]);
 
   const themeMenuConfig = useMemo(() => {
     return {
@@ -192,15 +155,31 @@ const SettingsSection = ({
     [setTheme]
   );
 
+  const getWalletsAndBackupAlertIcon = useCallback(() => {
+    if (allBackedUp) {
+      return undefined;
+    }
+
+    if (backupProvider === walletBackupTypes.cloud) {
+      return CloudBackupWarningIcon;
+    }
+
+    return BackupWarningIcon;
+  }, [allBackedUp, backupProvider]);
+
   return (
     <MenuContainer testID="settings-menu-container" Footer={<AppVersionStamp />}>
       <Menu>
         {canBeBackedUp && (
           <MenuItem
             hasRightArrow
-            leftComponent={<MenuItem.ImageIcon source={isDarkMode ? BackupIconDark : BackupIcon} />}
+            leftComponent={<MenuItem.ImageIcon source={WalletsAndBackupIcon} />}
             onPress={onPressBackup}
-            rightComponent={<MenuItem.StatusIcon status={allBackedUp ? 'complete' : areBackedUp ? 'incomplete' : 'warning'} />}
+            rightComponent={
+              <Box paddingBottom="2px" paddingRight="8px">
+                <MenuItem.ImageIcon size={44} source={getWalletsAndBackupAlertIcon()} />
+              </Box>
+            }
             size={60}
             testID="backup-section"
             titleComponent={<MenuItem.Title text={lang.t(lang.l.settings.backup)} />}

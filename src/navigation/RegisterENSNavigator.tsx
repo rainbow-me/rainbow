@@ -15,6 +15,7 @@ import { useDimensions, useENSRegistration, useENSRegistrationForm, usePrevious 
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import { deviceUtils } from '@/utils';
+import { IS_ANDROID } from '@/env';
 
 const Swipe = createMaterialTopTabNavigator();
 
@@ -110,9 +111,8 @@ export default function RegisterENSNavigator() {
 
   return (
     <>
-      {/* @ts-expect-error JavaScript component */}
       <SlackSheet
-        additionalTopPadding={android ? StatusBar.currentHeight : false}
+        additionalTopPadding={IS_ANDROID ? !!StatusBar.currentHeight : false}
         contentHeight={contentHeight}
         height="100%"
         ref={sheetRef}

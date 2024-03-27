@@ -776,7 +776,7 @@ PODS:
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - ReactCommon/turbomodule/core
-  - RNRudderSdk (1.12.0):
+  - RNRudderSdk (1.12.1):
     - React
     - Rudder (< 2.0.0, >= 1.24.1)
   - RNScreens (3.23.0):
@@ -1380,7 +1380,7 @@ SPEC CHECKSUMS:
   RNPermissions: 4e3714e18afe7141d000beae3755e5b5fb2f5e05
   RNReactNativeHapticFeedback: 653a8c126a0f5e88ce15ffe280b3ff37e1fbb285
   RNReanimated: 5afba582037b0dae040a5f927dec7fdd18e430c3
-  RNRudderSdk: b638620627e6cb9f95b54468810ac2ac1f7dc48b
+  RNRudderSdk: 805d4b7064714f3295bf5f152d3812cc67f67a93
   RNScreens: 6a8a3c6b808aa48dca1780df7b73ea524f602c63
   RNSentry: fbbdcd7213058e3de5fbaa452b25a06a16b4b382
   RNShare: eaee3dd5a06dad397c7d3b14762007035c5de405

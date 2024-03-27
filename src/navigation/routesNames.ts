@@ -72,6 +72,8 @@ const Routes = {
   RECEIVE_MODAL: 'ReceiveModal',
   REGISTER_ENS_NAVIGATOR: 'RegisterEnsNavigator',
   REMOTE_PROMO_SHEET: 'RemotePromoSheet',
+  CHOOSE_BACKUP_SHEET: 'ChooseBackupSheet',
+  RESTORE_CLOUD_SHEET: 'RestoreCloudSheet',
   RESTORE_SHEET: 'RestoreSheet',
   SELECT_ENS_SHEET: 'SelectENSSheet',
   SELECT_UNIQUE_TOKEN_SHEET: 'SelectUniqueTokenSheet',
@@ -96,8 +98,7 @@ const Routes = {
 
   SETTINGS_SECTION: 'SettingsSection',
   SETTINGS_WALLET_NOTIFICATIONS: 'WalletNotificationsSettings',
-  SETTINGS_BACKUP_VIEW: 'SettingsBackupView',
-  SETTINGS_SHOW_SECRET_VIEW: 'ShowSecretView',
+  SETTINGS_BACKUP_VIEW: 'ViewWalletBackup',
   SETTINGS_SECTION_APP_ICON: 'AppIconSection',
   SETTINGS_SECTION_BACKUP: 'BackupSection',
   SETTINGS_SECTION_CURRENCY: 'CurrencySection',
