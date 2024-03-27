@@ -68,7 +68,7 @@ jobs:
           watchman watch-del '/Users/administrator/actions-runner/_work/rainbow/rainbow' || true
           watchman watch-project '/Users/administrator/actions-runner/_work/rainbow/rainbow'
       - name: Run iOS e2e tests with retry
-        run: ./scripts/run-retry-tests.sh 3
+        run: yarn detox:rerun
      
       - name: Upload Test Artifacts
         if: failure()

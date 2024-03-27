@@ -20,6 +20,7 @@
     "clean:packager": "watchman watch-del-all && rm -rf $TMPDIR/react-* && rm -rf $TMPDIR/metro-* && rm -rf $TMPDIR/haste-map-*",
     "clean:node": "rm -rf node_modules",
     "nuke": "./scripts/nuke.sh",
+    "detox:rerun": "./scripts/run-retry-tests.sh 3",
     "detox:android": "detox build -c android.emu.debug && detox test -R 1 -c android.emu.debug --loglevel verbose",
     "detox:android:release": "detox build -c android.emu.release && detox test -R 1 -c android.emu.release",
     "detox:ios": "detox build -c ios.sim.debug | xcpretty --color && detox test -R 1 -c ios.sim.debug --bail",
