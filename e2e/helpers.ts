@@ -97,12 +97,10 @@ export async function tapAtPoint(elementId: string | RegExp, point: Detox.Point2
   }
 }
 
-export async function tapItemAtIndex(elementID: string | RegExp, index: number) {
+export async function tapItemAtIndex(elementID: string | RegExp, index = 0) {
   try {
     await delayTime('medium');
-    return await element(by.id(elementID))
-      .atIndex(index || 0)
-      .tap();
+    return await element(by.id(elementID)).atIndex(index).tap();
   } catch (error) {
     throw new Error(`Error tapping element by id "${elementID}" at index ${index}: ${error}`);
   }
@@ -213,14 +211,14 @@ export async function tapAlertWithButton(text: string | RegExp, index = 0) {
 export async function waitAndSwipe(
   elementId: string | RegExp,
   direction: Direction,
-  timeout: number | undefined,
-  speed: 'slow' | 'fast' | undefined = 'fast',
+  timeout: number = DEFAULT_TIMEOUT,
+  speed: Speed = 'fast',
   percentage = 0.75
 ) {
   try {
     await waitFor(element(by.id(elementId)))
       .toBeVisible()
-      .withTimeout(timeout || DEFAULT_TIMEOUT);
+      .withTimeout(timeout);
 
     await element(by.id(elementId)).swipe(direction, speed, percentage);
   } catch (error) {
