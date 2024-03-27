@@ -1,4 +1,5 @@
 import { Share } from 'react-native';
+import { RainbowError, logger } from '@/logger';
 import { HTTP, HTTPS } from './constants';
 
 // ---------------------------------------------------------------------------- //
@@ -27,7 +28,9 @@ export const generateUniqueId = (): string => {
 export async function handleShareUrl(url: string): Promise<void> {
   try {
     await Share.share({ message: url });
-  } catch (error) {
-    console.error('Error sharing browser URL', error);
+  } catch (e: any) {
+    logger.error(new RainbowError('Error sharing browser URL'), {
+      message: e.message,
+    });
   }
 }
