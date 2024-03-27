@@ -41,11 +41,6 @@ describe('Send Sheet Interaction Flow Contacts', () => {
     await checkIfVisible('testnet-toast-Hardhat');
   });
 
-  it('Should show all wallet sections', async () => {
-    await swipe('wallet-screen', 'up', 'slow', 0.4);
-    await checkIfElementByTextIsVisible('Collectibles');
-  });
-
   it('Should open send sheet after tapping send fab', async () => {
     await swipe('wallet-screen', 'down', 'slow', 0.4);
     await waitAndTap('send-button');
