@@ -1382,6 +1382,11 @@
   dependencies:
     date-fns "^2.19.0"
 
+"@candlefinance/faster-image@1.3.4":
+  version "1.3.4"
+  resolved "https://registry.yarnpkg.com/@candlefinance/faster-image/-/faster-image-1.3.4.tgz#ebbc314dfb2d7901ebd2664d3f1d3f11555f5ed4"
+  integrity sha512-N19Q4Yd7BWWRiWTKPxzsOXdSuy5mqPVcKJ174Lg/tjoci3h0sGQ0l8vSQX+a0ckvR6Op09pWmAccJ5qeZhK7CA==
+
 "@capsizecss/core@3.0.0":
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@capsizecss/core/-/core-3.0.0.tgz#81b2fb222bd9716d211e4ddd0dc9cc42f71b4f37"
@@ -16855,10 +16860,10 @@ react-native-vision-camera@3.6.4:
   resolved "https://registry.yarnpkg.com/react-native-vision-camera/-/react-native-vision-camera-3.6.4.tgz#ac77238f31779f647d03bce3cd4b5eba61f3df85"
   integrity sha512-DDWb8aB5tE7sM7YuU5f31AuhJVDJS3amZoZMQgHWa8S9h0acp3hY3uyriKzXshj/asYu2UAo5QUUglwl7Mcd1Q==
 
-react-native-webview@13.7.0:
-  version "13.7.0"
-  resolved "https://registry.yarnpkg.com/react-native-webview/-/react-native-webview-13.7.0.tgz#1ba7a1dcc047b7a057ecad86a0ef58f25610100a"
-  integrity sha512-pvAaGDxAGrhv9sxvQgpMyLeZrHxGY314lmvp6YakrzdvRa1ZUkAYMgYL3JnogMV6QIvxuFp1AWO1bJxmWmArUw==
+react-native-webview@13.7.2:
+  version "13.7.2"
+  resolved "https://registry.yarnpkg.com/react-native-webview/-/react-native-webview-13.7.2.tgz#184089170398d02397f5859c021dd69f11fd0313"
+  integrity sha512-KqI8+Y3XNzfuO2qba91AGJ1spvVqEmpvxSpTc0S9DfyeLbRCLRjqhcYIN01nio/KKK0ovNdXmO9GPyJ9+HnVDA==
   dependencies:
     escape-string-regexp "2.0.0"
     invariant "2.2.4"
