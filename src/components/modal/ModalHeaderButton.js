@@ -5,7 +5,7 @@ import { Icon } from '../icons';
 import { Row } from '../layout';
 import { Text as UnstyledText } from '../text';
 import styled from '@/styled-thing';
-import { DebugLayout } from '@/design-system';
+import { IS_ANDROID } from '@/env';
 
 const BackArrow = styled(Icon).attrs(({ theme: { colors } }) => ({
   color: colors.appleBlue,
@@ -40,7 +40,7 @@ const Text = styled(UnstyledText).attrs(({ theme: { colors } }) => ({
 });
 
 const ModalHeaderButton = ({ label, onPress, side }) => (
-  <Container as={ios ? BorderlessButton : Button} onPress={onPress} side={side}>
+  <Container {...(IS_ANDROID ? { borderColor: 'transparent' } : {})} as={ios ? BorderlessButton : Button} onPress={onPress} side={side}>
     <Row>
       {side === 'left' && <BackArrow />}
       <Text side={side}>{label}</Text>

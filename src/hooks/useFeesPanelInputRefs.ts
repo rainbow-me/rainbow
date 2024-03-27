@@ -3,8 +3,8 @@ import { TextInput } from 'react-native';
 import useMagicAutofocus from './useMagicAutofocus';
 
 export default function useFeesPanelInputRefs() {
-  const maxBaseFieldRef = useRef<TextInput>();
-  const minerTipFieldRef = useRef<TextInput>();
+  const maxBaseFieldRef = useRef<TextInput | null>(null);
+  const minerTipFieldRef = useRef<TextInput | null>(null);
 
   const findNextInput = useCallback((currentFocusedInputHandle: any) => {
     const maxBaseInputRefHandle = maxBaseFieldRef.current;
