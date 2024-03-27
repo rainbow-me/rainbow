@@ -1,36 +1,40 @@
-# This is a basic workflow to help you get started with Actions
-
 name: Clear macstadium cache (All instances)
-
-# Controls when the workflow will run
 on: [ workflow_dispatch]
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   clear-cache-ci-1:
     runs-on: ["CI-1"]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/clear-cache
   clear-cache-ci-2:
     runs-on: ["CI-2"]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/clear-cache
   clear-cache-ci-3:
     runs-on: ["CI-3"]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/clear-cache
   clear-cache-ci-4:
     runs-on: ["CI-4"]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/clear-cache
   clear-cache-ci-5:
     runs-on: ["CI-5"]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/clear-cache
+  clear-cache-ci-6:
+    runs-on: ["CI-6"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/clear-cache
+  clear-cache-ci-7:
+    runs-on: ["CI-7"]
+    steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/clear-cache
 
     

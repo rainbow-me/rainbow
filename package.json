@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.9.19-1",
+  "version": "1.9.20-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn postinstall && yarn graphql-codegen",
@@ -62,7 +62,6 @@
     "bundle-inpage": "yarn webpack --config src/browser/webpack.config.js && cp InjectedJSBundle.js android/app/src/main/res/raw/injected_js_bundle.js"
   },
   "dependencies": {
-    "@apollo/client": "3.2.4",
     "@bankify/react-native-animate-number": "0.2.1",
     "@bradgarropy/use-countdown": "1.4.1",
     "@capsizecss/core": "3.0.0",
@@ -97,7 +96,7 @@
     "@ledgerhq/react-native-hw-transport-ble": "6.27.7",
     "@metamask/eth-sig-util": "7.0.1",
     "@notifee/react-native": "5.6.0",
-    "@rainbow-me/provider": "0.0.4",
+    "@rainbow-me/provider": "0.0.11",
     "@rainbow-me/react-native-animated-number": "0.0.2",
     "@rainbow-me/swaps": "0.10.0",
     "@react-native-async-storage/async-storage": "1.18.2",
@@ -125,6 +124,7 @@
     "@tanstack/react-query": "4.2.1",
     "@tanstack/react-query-persist-client": "4.2.1",
     "@tradle/react-native-http": "2.0.1",
+    "@types/detox": "18.1.0",
     "@types/i18n-js": "3.0.3",
     "@types/lodash": "4.14.168",
     "@types/react-redux": "7.1.9",
@@ -168,7 +168,6 @@
     "ethereumjs-wallet": "1.0.1",
     "events": "3.3.0",
     "fast-text-encoding": "1.0.4",
-    "flatted": "3.2.7",
     "global": "4.4.0",
     "grapheme-splitter": "1.0.4",
     "graphql-request": "5.0.0",
@@ -326,7 +325,7 @@
     "@types/d3-scale": "4.0.2",
     "@types/d3-shape": "3.1.6",
     "@types/dedent": "0.7.0",
-    "@types/jest": "29.5.4",
+    "@types/jest": "29.5.12",
     "@types/mocha": "9.0.0",
     "@types/node": "16.11.6",
     "@types/qs": "6.9.7",
@@ -347,7 +346,7 @@
     "babel-plugin-transform-remove-console": "6.9.4",
     "chai": "4.2.0",
     "depcheck": "1.4.7",
-    "detox": "20.13.0",
+    "detox": "20.19.3",
     "dotenv": "8.2.0",
     "eslint": "8.22.0",
     "eslint-config-rainbow": "4.3.0",
@@ -369,7 +368,8 @@
     "ts-migrate": "0.1.26",
     "typescript": "5.1.6",
     "typescript-coverage-report": "0.6.1",
-    "webpack": "5.90.3"
+    "webpack": "5.90.3",
+    "webpack-cli": "5.1.4"
   },
   "resolutions": {
     "**/async": "2.6.4",

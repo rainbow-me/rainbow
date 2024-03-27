@@ -100,31 +100,24 @@ export const appMessenger = (webViewRef: WebView, tabId: string, url: string) =>
       },
       reply<TPayload, TResponse>(topic: string, callback: CallbackFunction<TPayload, TResponse>) {
         const listener = async (event: MessageEvent<SendMessage<TPayload>>) => {
-          console.log('replying', topic, callback, event);
           if (!isValidSend({ message: event.data, topic })) {
-            console.log('invalid send', { message: event.data, topic });
             return;
-          } else {
-            console.log('valid send!');
           }
-
           let error;
           let response;
           try {
-            console.log('calling callback');
             response = await callback(event.data.payload, {
               topic: event.data.topic,
-              sender: event.source as IMessageSender,
+              // @ts-ignore
+              sender: event.meta.sender as IMessageSender,
               id: event.data.id,
             });
-            console.log('callback response', response);
           } catch (error_) {
-            console.log('reply callback error', error_);
+            console.error('[MESSENGER]: Error while getting response from callback: ', error_);
             error = error_;
           }
 
           const repliedTopic = event.data.topic.replace('>', '<');
-          console.log('replying topic', repliedTopic, response);
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           const data = {
@@ -133,11 +126,8 @@ export const appMessenger = (webViewRef: WebView, tabId: string, url: string) =>
             id: event.data.id,
           };
           webViewRef.injectJavaScript(`window.postMessage(${JSON.stringify(data)})`);
-          console.log('sent!');
         };
-        console.log('adding listener', topic);
         listeners[topic] = listener as (event: MessageEvent) => void;
-        console.log(listeners);
 
         return () => {
           delete listeners[topic];
