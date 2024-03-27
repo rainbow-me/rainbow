@@ -43,7 +43,7 @@ import {
 import RNFS from 'react-native-fs';
 import { WebViewEvent } from 'react-native-webview/lib/WebViewTypes';
 import { appMessenger } from '@/browserMessaging/AppMessenger';
-import { IS_ANDROID, IS_IOS } from '@/env';
+import { IS_ANDROID, IS_DEV, IS_IOS } from '@/env';
 import { CloseTabButton, X_BUTTON_PADDING, X_BUTTON_SIZE } from './CloseTabButton';
 import DappBrowserWebview from './DappBrowserWebview';
 import Homepage from './Homepage';
@@ -572,7 +572,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
       }
     >
       <DappBrowserWebview
-        webviewDebuggingEnabled={true}
+        webviewDebuggingEnabled={IS_DEV}
         injectedJavaScriptBeforeContentLoaded={injectedJS}
         allowsInlineMediaPlayback
         allowsBackForwardNavigationGestures
