@@ -41,8 +41,8 @@ export async function fetchSimpleHashNFTs(
   walletAddress: string,
   cursor: string = START_CURSOR
 ): Promise<{ data: SimpleHashNFT[]; nextCursor: string | null }> {
-  const chainsParam = RainbowNetworks.filter(network => network.features.nfts)
-    .map(network => network.nfts.simplehashNetwork || network.value)
+  const chainsParam = RainbowNetworks.filter(network => network.features.nfts && network.nfts.simplehashNetwork)
+    .map(network => network.nfts.simplehashNetwork)
     .join(',');
 
   const cursorSuffix = createCursorSuffix(cursor);
