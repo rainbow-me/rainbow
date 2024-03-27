@@ -1,7 +1,6 @@
 import c from 'chroma-js';
 import { globalColors } from '@/design-system';
 import { SCRUBBER_WIDTH, SLIDER_WIDTH } from '../constants';
-import { Source } from '@rainbow-me/swaps';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -208,14 +207,3 @@ export function niceIncrementFormatter(
 }
 //
 // /---- END worklet utils ----/ //
-
-import Logo0x from '@/__swaps__/assets/aggregators/0x.png';
-import Logo1Inch from '@/__swaps__/assets/aggregators/1inch.png';
-import LogoRainbow from '@/__swaps__/assets/aggregators/rainbow.png';
-import * as i18n from '@/languages';
-
-export const aggregatorInfo = {
-  auto: { logo: LogoRainbow, name: i18n.t(i18n.l.swap.aggregators.rainbow) },
-  [Source.Aggregator0x]: { logo: Logo0x, name: Source.Aggregator0x },
-  [Source.Aggregotor1inch]: { logo: Logo1Inch, name: Source.Aggregotor1inch },
-};

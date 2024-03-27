@@ -3,7 +3,7 @@ import { useSearchCurrencyLists } from './useSearchCurrencyLists';
 import { useSwapAssetStore } from '../state/assets';
 
 export const useAssetsToBuySections = () => {
-  const { searchFilter, assetToSell, assetToBuy, outputChainId } = useSwapAssetStore();
+  const { searchFilter, assetToSell, outputChainId } = useSwapAssetStore();
   const debouncedSearchFilter = useDebounce(searchFilter, 200);
 
   const { results: searchAssetsToBuySections } = useSearchCurrencyLists({
@@ -11,7 +11,7 @@ export const useAssetsToBuySections = () => {
     outputChainId,
     assetToSell,
     searchQuery: debouncedSearchFilter,
-    bridge: (assetToSell && assetToBuy && assetToBuy.chainId !== assetToSell.chainId) ?? false,
+    bridge: outputChainId !== assetToSell?.chainId ?? false,
   });
 
   return searchAssetsToBuySections;

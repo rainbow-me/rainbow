@@ -54,12 +54,13 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
   const { data: assetToBuyTokenDataWithPrice } = useExternalToken(
     {
-      address: assetToBuy?.address,
+      address: assetToBuy?.address as string,
       network: ethereumUtils.getNetworkFromChainId(outputChainId),
       currency: currentCurrency,
     },
     {
       staleTime: 5_000,
+      enabled: !!assetToBuy,
     }
   );
 

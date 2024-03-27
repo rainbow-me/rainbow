@@ -8,6 +8,8 @@ import { CoinRowButton } from './CoinRowButton';
 import { BalancePill } from './BalancePill';
 import { ChainId } from '../types/chains';
 import { ethereumUtils } from '@/utils';
+import { toggleFavorite, useFavorites } from '@/resources/favorites';
+import { ETH_ADDRESS } from '@/references';
 
 export const CoinRow = ({
   address,
@@ -37,6 +39,15 @@ export const CoinRow = ({
   symbol: string;
 }) => {
   const theme = useTheme();
+  const { favoritesMetadata } = useFavorites();
+
+  const favorites = Object.values(favoritesMetadata);
+
+  const isFavorite = (address: string) => {
+    return favorites.find(fav =>
+      fav.address === ETH_ADDRESS ? '0x0000000000000000000000000000000000000000' === address : fav.address === address
+    );
+  };
 
   const percentChange = useMemo(() => {
     if (isTrending) {
@@ -51,7 +62,7 @@ export const CoinRow = ({
   }, [isTrending]);
 
   return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.95}>
+    <ButtonPressAnimation disallowInterruption onPress={onPress} scaleTo={0.95}>
       <HitSlop vertical="10px">
         <Box alignItems="center" flexDirection="row" justifyContent="space-between" width="full">
           <Inline alignVertical="center" space="10px">
@@ -89,7 +100,12 @@ export const CoinRow = ({
           {output ? (
             <Inline space="8px">
               <CoinRowButton icon="􀅳" outline size="icon 14px" />
-              <CoinRowButton icon="􀋃" weight="black" />
+              <CoinRowButton
+                color={isFavorite(address) ? '#FFCB0F' : undefined}
+                onPress={() => toggleFavorite(address)}
+                icon="􀋃"
+                weight="black"
+              />
             </Inline>
           ) : (
             <BalancePill balance={nativeBalance} />

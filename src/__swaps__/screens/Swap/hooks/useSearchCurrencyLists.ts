@@ -2,7 +2,7 @@ import { isAddress } from '@ethersproject/address';
 import { rankings } from 'match-sorter';
 import { useCallback, useMemo } from 'react';
 
-import { SUPPORTED_CHAINS } from '@/references';
+import { ETH_ADDRESS, SUPPORTED_CHAINS } from '@/references';
 import { useTokenSearch } from '../resources/search';
 import { ParsedSearchAsset } from '../types/assets';
 import { ChainId } from '../types/chains';
@@ -154,7 +154,15 @@ export function useSearchCurrencyLists({
   const { favoritesMetadata: favorites } = useFavorites();
 
   const favoritesList = useMemo(() => {
-    const unfilteredFavorites = Object.values(favorites);
+    const unfilteredFavorites = Object.values(favorites).map(favToken => ({
+      ...favToken,
+      chainId: outputChainId,
+      address: favToken.address === ETH_ADDRESS ? '0x0000000000000000000000000000000000000000' : favToken.address,
+      mainnetAddress: favToken.mainnet_address,
+    })) as SearchAsset[];
+
+    console.log(unfilteredFavorites);
+
     if (query === '') {
       return unfilteredFavorites;
     } else {
@@ -163,7 +171,7 @@ export function useSearchCurrencyLists({
         threshold: queryIsAddress ? rankings.CASE_SENSITIVE_EQUAL : rankings.CONTAINS,
       });
     }
-  }, [favorites, keys, query, queryIsAddress]);
+  }, [favorites, keys, outputChainId, query, queryIsAddress]);
 
   // static verified asset lists prefetched to display curated lists
   // we only display crosschain exact matches if located here
@@ -313,7 +321,11 @@ export function useSearchCurrencyLists({
   const filterAssetsFromFavoritesBridgeAndAssetToSell = useCallback(
     (assets?: SearchAsset[]) =>
       filterAssetsFromBridgeAndAssetToSell(assets)?.filter(
-        curatedAsset => !favoritesList?.map(fav => fav.address).includes(curatedAsset.address)
+        curatedAsset =>
+          !(
+            favoritesList?.map(fav => fav.networks[curatedAsset.chainId]?.address).includes(curatedAsset.address) ||
+            favoritesList?.map(fav => fav.networks[ChainId.mainnet]?.address).includes(curatedAsset.address)
+          )
       ) || [],
     [favoritesList, filterAssetsFromBridgeAndAssetToSell]
   );
@@ -334,13 +346,13 @@ export function useSearchCurrencyLists({
       });
     }
 
-    // TODO: Migrate favorites over to SearchAsset type
-    // if (favoritesList?.length) {
-    //   sections.push({
-    //     data: filterAssetsFromBridgeAndAssetToSell(favoritesList),
-    //     id: 'favorites',
-    //   });
-    // }
+    if (favoritesList?.length) {
+      sections.push({
+        // TODO: Refactor favorites to SearchAsset type
+        data: filterAssetsFromBridgeAndAssetToSell(favoritesList),
+        id: 'favorites',
+      });
+    }
 
     if (query === '') {
       sections.push({

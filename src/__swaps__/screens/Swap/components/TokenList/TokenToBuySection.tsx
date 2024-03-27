@@ -7,7 +7,7 @@ import { Box, Inline, Inset, Stack, Text } from '@/design-system';
 import { TextStyle } from 'react-native';
 import { AssetToBuySection, AssetToBuySectionId } from '../../hooks/useSearchCurrencyLists';
 import { ChainId } from '../../types/chains';
-import { BackgroundColor, TextColor } from '@/design-system/color/palettes';
+import { TextColor } from '@/design-system/color/palettes';
 import { useSwapContext } from '../../providers/swap-provider';
 import { runOnUI } from 'react-native-reanimated';
 import { parseSearchAsset, isSameAsset } from '../../utils/assets';
@@ -15,8 +15,6 @@ import { parseSearchAsset, isSameAsset } from '../../utils/assets';
 import { useAssetsToSell } from '../../hooks/useAssetsToSell';
 
 interface SectionProp {
-  backgroundColor?: BackgroundColor;
-  gradient?: React.ReactNode;
   color: TextStyle['color'];
   symbol: string;
   title: string;
@@ -25,38 +23,28 @@ interface SectionProp {
 const sectionProps: { [id in AssetToBuySectionId]: SectionProp } = {
   favorites: {
     title: i18n.t(i18n.l.token_search.section_header.favorites),
-    symbol: 'star.fill',
-    color: 'yellow',
-    gradient: undefined,
-    backgroundColor: undefined,
+    symbol: '􀋃',
+    color: 'rgba(255, 218, 36, 1)',
   },
   bridge: {
     title: i18n.t(i18n.l.token_search.section_header.bridge),
-    symbol: 'shuffle',
+    symbol: '􀊝',
     color: 'label',
-    gradient: undefined,
-    backgroundColor: undefined,
   },
   verified: {
     title: i18n.t(i18n.l.token_search.section_header.verified),
-    symbol: 'checkmark.seal.fill',
-    color: 'labelTertiary',
-    // gradient: rainbowGradient,
-    backgroundColor: undefined,
+    symbol: '􀇻',
+    color: 'rgba(38, 143, 255, 1)',
   },
   unverified: {
     title: i18n.t(i18n.l.token_search.section_header.unverified),
-    symbol: 'exclamationmark.triangle.fill',
-    color: 'labelTertiary',
-    gradient: undefined,
-    backgroundColor: undefined,
+    symbol: '􀇿',
+    color: 'background: rgba(255, 218, 36, 1)',
   },
   other_networks: {
     title: i18n.t(i18n.l.token_search.section_header.on_other_networks),
     symbol: 'network',
     color: 'labelTertiary',
-    gradient: undefined,
-    backgroundColor: undefined,
   },
 };
 
@@ -95,7 +83,7 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
     [SwapInputController, SwapNavigation, setAssetToBuy, userAssets]
   );
 
-  const { backgroundColor, gradient, symbol, title } = sectionProps[section.id];
+  const { symbol, title } = sectionProps[section.id];
 
   const color = useMemo(() => {
     if (section.id !== 'bridge') {
@@ -121,18 +109,14 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
             </Inset>
           </Box>
         ) : null}
-        <Box paddingHorizontal={{ custom: 15 }}>
-          <Box paddingHorizontal={{ custom: 5 }} width="full">
-            <Inline space="4px" alignVertical="center">
-              {/* <Symbol symbol={symbol} color={color} weight="semibold" size={14} gradient={gradient} /> */}
-              <Box background={backgroundColor} style={{ width: 225 }}>
-                <Text size="14px / 19px (Deprecated)" weight="semibold" color={color}>
-                  {title}
-                </Text>
-              </Box>
-            </Inline>
-          </Box>
-        </Box>
+        <Inline space="6px" alignVertical="center">
+          <Text size="14px / 19px (Deprecated)" weight="heavy" color={{ custom: color }}>
+            {symbol}
+          </Text>
+          <Text size="14px / 19px (Deprecated)" weight="heavy" color="label">
+            {title}
+          </Text>
+        </Inline>
 
         {section.data.map(token => (
           <CoinRow
