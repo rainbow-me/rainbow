@@ -51,6 +51,7 @@ import { handleProviderRequestApp } from './handleProviderRequest';
 import { WebViewBorder } from './WebViewBorder';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '../animations/animationConfigs';
 import { FASTER_IMAGE_CONFIG } from './constants';
+import { RainbowError, logger } from '@/logger';
 
 // ⚠️ TODO: Split this file apart into hooks, smaller components
 // useTabScreenshots, useAnimatedWebViewStyles, useWebViewGestures
@@ -84,9 +85,13 @@ const findTabScreenshot = (id: string, url: string): ScreenshotType | null => {
 
     if (!Array.isArray(screenshots)) {
       try {
-        console.error('Screenshot data is malformed — expected array: ', JSON.stringify(screenshots, null, 2));
-      } catch (error) {
-        console.error('Error stringifying malformed screenshot data:', error);
+        logger.error(new RainbowError('Screenshot data is malformed — expected array'), {
+          screenshots: JSON.stringify(screenshots, null, 2),
+        });
+      } catch (e: any) {
+        logger.error(new RainbowError('Screenshot data is malformed — error stringifying'), {
+          message: e.message,
+        });
       }
       return null;
     }
@@ -107,9 +112,6 @@ const findTabScreenshot = (id: string, url: string): ScreenshotType | null => {
 };
 
 export const pruneScreenshots = async (tabStates: TabState[]): Promise<void> => {
-  // HELPER LOG
-  // const startTime = performance.now();
-
   const tabStateMap = tabStates.reduce((acc: Record<string, string>, tab: TabState) => {
     acc[tab.uniqueId] = tab.url;
     return acc;
@@ -141,13 +143,6 @@ export const pruneScreenshots = async (tabStates: TabState[]): Promise<void> => 
   await deletePrunedScreenshotFiles(screenshots, screenshotsToKeep);
 
   tabScreenshotStorage.set('tabScreenshots', JSON.stringify(screenshotsToKeep));
-
-  // HELPER LOG
-  // const endTime = performance.now();
-  // const numberPruned = screenshots.length - screenshotsToKeep.length;
-  // if (numberPruned > 0) {
-  //   console.log(`🗑️  Pruned ${numberPruned} out of ${screenshots.length} screenshots in ${(endTime - startTime).toFixed(2)}ms`);
-  // }
 };
 
 const deletePrunedScreenshotFiles = async (allScreenshots: ScreenshotType[], screenshotsToKeep: ScreenshotType[]): Promise<void> => {
@@ -155,13 +150,19 @@ const deletePrunedScreenshotFiles = async (allScreenshots: ScreenshotType[], scr
     const filesToDelete = allScreenshots.filter(screenshot => !screenshotsToKeep.includes(screenshot));
     const deletePromises = filesToDelete.map(screenshot => {
       const filePath = `${RNFS.DocumentDirectoryPath}/${screenshot.uri}`;
-      return RNFS.unlink(filePath).catch(error => console.error(`Error deleting screenshot file: ${filePath}`, error));
+      return RNFS.unlink(filePath).catch(e => {
+        logger.error(new RainbowError('Error deleting screenshot file'), {
+          message: e.message,
+          filePath,
+          screenshot: JSON.stringify(screenshot, null, 2),
+        });
+      });
     });
     await Promise.all(deletePromises);
-    // HELPER LOG
-    // console.log(`🗑️  Deleted ${filesToDelete.length} screenshot files`);
-  } catch (error) {
-    console.error('Error during file deletion:', error);
+  } catch (e: any) {
+    logger.error(new RainbowError('Screenshot file pruning operation failed to complete'), {
+      message: e.message,
+    });
   }
 };
 
@@ -396,11 +397,15 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
 
         // Set screenshot for display
         screenshotData.value = screenshotWithRNFSPath;
-
-        // HELPER LOG
-        // console.log('📁 Screenshot saved to file system');
-      } catch (error) {
-        console.error('Error saving screenshot to file system:', error);
+      } catch (e: any) {
+        logger.error(new RainbowError('Error saving tab screenshot to file system'), {
+          message: e.message,
+          screenshotData: {
+            tempUri,
+            tabId,
+            url,
+          },
+        });
       }
     },
     [screenshotData]
@@ -414,13 +419,13 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
         captureRef
           .capture()
           .then(uri => {
-            // HELPER LOG
-            // console.log('🖼️  Screenshot captured');
             const timestamp = Date.now();
             saveScreenshotToFileSystem(uri, tabId, timestamp, tabStates[tabIndex].url);
           })
           .catch(error => {
-            console.error('Failed to capture screenshot:', error);
+            logger.error(new RainbowError('Failed to capture tab screenshot'), {
+              error: error.message,
+            });
           });
       }
     }
