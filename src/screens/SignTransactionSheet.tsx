@@ -142,6 +142,7 @@ export type SignTransactionSheetRouteProp = RouteProp<{ SignTransactionSheet: Si
 export const SignTransactionSheet = () => {
   const { goBack, navigate } = useNavigation();
   const { colors, isDarkMode } = useTheme();
+  const { width: deviceWidth } = useDimensions();
   const { accountAddress } = useAccountSettings();
   const [simulationData, setSimulationData] = useState<TransactionSimulationResult | undefined>();
   const [simulationError, setSimulationError] = useState<TransactionErrorType | undefined>(undefined);
@@ -966,6 +967,18 @@ export const SignTransactionSheet = () => {
             )}
           </Box>
         </Inset>
+        {requestType === 'browser' && (
+          <Box
+            style={{
+              zIndex: -1,
+              position: 'absolute',
+              height: expandedCardBottomInset,
+              bottom: 0,
+              width: deviceWidth,
+              backgroundColor: colors.black,
+            }}
+          />
+        )}
       </Animated.View>
     </PanGestureHandler>
   );
