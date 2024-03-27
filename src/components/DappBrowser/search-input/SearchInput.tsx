@@ -151,7 +151,7 @@ export const SearchInput = ({
       ],
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [/* canGoBack, */ isFavorite(formattedUrl)]
+    [/* canGoBack, */ isFavorite(formattedUrl), isGoogleSearch]
   );
 
   const onPressMenuItem = async ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: 'share' | 'favorite' | 'back' } }) => {
