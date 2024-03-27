@@ -21,7 +21,7 @@ import haptics from '@/utils/haptics';
 import { useFavoriteDappsStore } from '@/state/favoriteDapps';
 import { Site } from '@/state/browserState';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { handleShareUrl } from '../utils';
+import { getNameFromFormattedUrl, handleShareUrl } from '../utils';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
 
@@ -29,6 +29,7 @@ export const SearchInput = ({
   inputRef,
   formattedInputValue,
   inputValue,
+  isGoogleSearch,
   isHome,
   onPressWorklet,
   onBlur,
@@ -36,9 +37,11 @@ export const SearchInput = ({
   isFocused,
   isFocusedValue,
 }: {
+  // canGoBack: boolean; // <- re-enable this when canGoBack behavior is fixed
   inputRef: RefObject<TextInput>;
   formattedInputValue: { value: string; tabIndex: number };
   inputValue: string | undefined;
+  isGoogleSearch: boolean;
   isHome: boolean;
   onPressWorklet: () => void;
   onBlur: (event: NativeSyntheticEvent<TextInputFocusEventData>) => void;
@@ -46,7 +49,7 @@ export const SearchInput = ({
   isFocused: boolean;
   isFocusedValue: SharedValue<boolean>;
 }) => {
-  const { animatedActiveTabIndex, tabViewProgress, onRefresh } = useBrowserContext();
+  const { animatedActiveTabIndex, goBack, onRefresh, tabViewProgress } = useBrowserContext();
   const { isFavorite, addFavorite, removeFavorite } = useFavoriteDappsStore();
   const { isDarkMode } = useColorMode();
 
@@ -94,31 +97,28 @@ export const SearchInput = ({
   }));
 
   const handleFavoritePress = useCallback(() => {
-    if (isFavorite(formattedUrl)) {
-      removeFavorite(formattedUrl);
-    } else {
-      const site: Omit<Site, 'timestamp'> = {
-        name: formattedUrl,
-        url: formattedUrl,
-        image: `${formattedUrl}/favicon.ico`,
-      };
-      addFavorite(site);
+    if (inputValue) {
+      if (isFavorite(inputValue)) {
+        removeFavorite(inputValue);
+      } else {
+        const site: Omit<Site, 'timestamp'> = {
+          name: getNameFromFormattedUrl(formattedUrl),
+          url: inputValue,
+          // ⚠️ Removed the favicons for now since they tend to be worse
+          // than having no image. Need to pull in dapp metadata and ideally
+          // grab the website's apple-touch-icon as a fallback if it exists.
+          image: '',
+        };
+        addFavorite(site);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formattedUrl]);
+  }, [formattedUrl, inputValue]);
 
   const menuConfig = useMemo(
     () => ({
       menuTitle: '',
       menuItems: [
-        {
-          actionKey: 'favorite',
-          actionTitle: isFavorite(formattedUrl) ? 'Undo Favorite' : 'Favorite',
-          icon: {
-            iconType: 'SYSTEM',
-            iconValue: isFavorite(formattedUrl) ? 'star.slash' : 'star',
-          },
-        },
         {
           actionKey: 'share',
           actionTitle: 'Share',
@@ -127,16 +127,39 @@ export const SearchInput = ({
             iconValue: 'square.and.arrow.up',
           },
         },
+        !isGoogleSearch
+          ? {
+              actionKey: 'favorite',
+              actionTitle: isFavorite(formattedUrl) ? 'Undo Favorite' : 'Favorite',
+              icon: {
+                iconType: 'SYSTEM',
+                iconValue: isFavorite(formattedUrl) ? 'star.slash' : 'star',
+              },
+            }
+          : {},
+        // ⚠️ TODO: Re-enable this when canGoBack behavior is fixed:
+        // canGoBack
+        //   ? {
+        //       actionKey: 'back',
+        //       actionTitle: 'Back',
+        //       icon: {
+        //         iconType: 'SYSTEM',
+        //         iconValue: 'arrow.uturn.left',
+        //       },
+        //     }
+        //   : {},
       ],
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isFavorite(formattedUrl)]
+    [/* canGoBack, */ isFavorite(formattedUrl)]
   );
 
-  const onPressMenuItem = async ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: 'share' | 'favorite' } }) => {
+  const onPressMenuItem = async ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: 'share' | 'favorite' | 'back' } }) => {
     haptics.selection();
     if (actionKey === 'favorite') {
       handleFavoritePress();
+    } else if (actionKey === 'back') {
+      goBack();
     } else if (inputValue) {
       handleShareUrl(inputValue);
     }

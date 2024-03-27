@@ -162,6 +162,7 @@ export const SearchBar = () => {
             onPressWorklet={onAddressInputPressWorklet}
             isFocused={isFocused}
             isFocusedValue={isFocusedValue}
+            isGoogleSearch={isGoogleSearch}
             inputRef={inputRef}
             isHome={isHome}
             formattedInputValue={formattedInputValue}
