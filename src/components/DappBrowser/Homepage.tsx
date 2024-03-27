@@ -1,7 +1,6 @@
 import { ButtonPressAnimation } from '@/components/animations';
 import { Page } from '@/components/layout';
-import { Bleed, Box, ColorModeProvider, Cover, Inline, Inset, Stack, Text, globalColors, useColorMode } from '@/design-system';
-import { useNavigation } from '@/navigation';
+import { Bleed, Box, ColorModeProvider, Cover, Inline, Inset, Stack, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
 import { deviceUtils } from '@/utils';
 import React from 'react';
 import { ScrollView, View } from 'react-native';
@@ -14,12 +13,17 @@ import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/screens/Swap/utils/swaps';
 import { Site } from '@/state/browserState';
 import { useFavoriteDappsStore } from '@/state/favoriteDapps';
+import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
+import MaskedView from '@react-native-masked-view/masked-view';
+import { useBrowserContext } from './BrowserContext';
+import { WEBVIEW_HEIGHT } from './Dimensions';
 
 const HORIZONTAL_INSET = 24;
 
-const NUM_LOGOS = 5;
-const LOGO_PADDING = 14;
-const LOGO_SIZE = (deviceUtils.dimensions.width - HORIZONTAL_INSET * 2 - (NUM_LOGOS - 1) * LOGO_PADDING) / NUM_LOGOS;
+const NUM_LOGOS = 4;
+const LOGO_SIZE = 64;
+const LOGO_PADDING = (deviceUtils.dimensions.width - NUM_LOGOS * LOGO_SIZE - HORIZONTAL_INSET * 2) / (NUM_LOGOS - 1);
+const LOGO_BORDER_RADIUS = 16;
 
 const NUM_CARDS = 2;
 const CARD_PADDING = 12;
@@ -89,17 +93,7 @@ const Card = ({ showMenuButton }: { showMenuButton?: boolean }) => {
                 </Cover>
               </Cover>
             )}
-            <Box
-              height={{ custom: 48 }}
-              left={{ custom: -8 }}
-              style={
-                IS_IOS
-                  ? { shadowColor: globalColors.grey100, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 6 }
-                  : { elevation: 16, shadowColor: globalColors.grey100, shadowOpacity: 1 }
-              }
-              top={{ custom: -8 }}
-              width={{ custom: 48 }}
-            >
+            <Box height={{ custom: 48 }} left={{ custom: -8 }} top={{ custom: -8 }} width={{ custom: 48 }}>
               <ImgixImage
                 enableFasterImage
                 size={48}
@@ -181,24 +175,72 @@ const Card = ({ showMenuButton }: { showMenuButton?: boolean }) => {
 };
 
 const Logo = ({ site }: { site: Omit<Site, 'timestamp'> }) => {
+  const { updateActiveTabState } = useBrowserContext();
+  const { isDarkMode } = useColorMode();
+
   return (
     <View style={{ width: LOGO_SIZE }}>
-      <ButtonPressAnimation overflowMargin={100}>
-        <Stack space="10px" alignHorizontal="center">
-          <Box
-            as={ImgixImage}
-            enableFasterImage
-            size={LOGO_SIZE}
-            source={{ uri: site.image }}
-            width={{ custom: LOGO_SIZE }}
-            height={{ custom: LOGO_SIZE }}
-            borderRadius={15}
-            background="surfacePrimary"
-            shadow="24px"
-          />
-          <Text size="12pt" weight="bold" color="labelSecondary" align="center">
-            {site.name}
-          </Text>
+      <ButtonPressAnimation
+        // Temporarily using onPressStart due to WebView gesture handlers blocking onPress
+        onPressStart={() => updateActiveTabState({ url: site.url })}
+        overflowMargin={100}
+        useLateHaptic
+      >
+        <Stack alignHorizontal="center">
+          <Box>
+            {IS_IOS && (
+              <Box alignItems="center" height="full" position="absolute" width="full">
+                <TextIcon
+                  color="labelQuaternary"
+                  containerSize={LOGO_SIZE}
+                  opacity={isDarkMode ? 0.4 : 0.6}
+                  size="icon 28px"
+                  weight="black"
+                >
+                  􀎭
+                </TextIcon>
+              </Box>
+            )}
+            <Box
+              as={ImgixImage}
+              enableFasterImage
+              size={LOGO_SIZE}
+              source={{ uri: site.image }}
+              width={{ custom: LOGO_SIZE }}
+              height={{ custom: LOGO_SIZE }}
+              background="fillTertiary"
+              style={{ borderRadius: LOGO_BORDER_RADIUS }}
+            />
+            {IS_IOS && (
+              <Box
+                borderRadius={LOGO_BORDER_RADIUS}
+                height="full"
+                position="absolute"
+                style={{
+                  borderColor: isDarkMode ? opacity(globalColors.white100, 0.04) : opacity(globalColors.grey100, 0.02),
+                  borderWidth: THICK_BORDER_WIDTH,
+                  overflow: 'hidden',
+                  pointerEvents: 'none',
+                }}
+                width="full"
+              />
+            )}
+          </Box>
+          <Bleed bottom="10px" horizontal="8px">
+            <MaskedView maskElement={<FadeMask fadeEdgeInset={0} fadeWidth={10} side="right" />} style={{ width: LOGO_SIZE + 8 * 2 }}>
+              <Text
+                size="13pt"
+                numberOfLines={1}
+                ellipsizeMode="clip"
+                weight="bold"
+                color="labelSecondary"
+                align="center"
+                style={{ paddingVertical: 10 }}
+              >
+                {site.name}
+              </Text>
+            </MaskedView>
+          </Bleed>
         </Stack>
       </ButtonPressAnimation>
     </View>
@@ -207,7 +249,6 @@ const Logo = ({ site }: { site: Omit<Site, 'timestamp'> }) => {
 
 export default function Homepage() {
   const { isDarkMode } = useColorMode();
-  const { navigate } = useNavigation();
   const { favoriteDapps } = useFavoriteDappsStore();
 
   return (
@@ -264,17 +305,16 @@ export default function Homepage() {
                   Favorites
                 </Text>
               </Inline>
-              <Bleed space="24px">
-                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                  <Inset space="24px">
-                    <Box flexDirection="row" gap={LOGO_PADDING}>
-                      {favoriteDapps.map(dapp => (
-                        <Logo key={dapp.url} site={dapp} />
-                      ))}
-                    </Box>
-                  </Inset>
-                </ScrollView>
-              </Bleed>
+              <Box
+                flexDirection="row"
+                flexWrap="wrap"
+                gap={LOGO_PADDING}
+                width={{ custom: deviceUtils.dimensions.width - HORIZONTAL_INSET * 2 }}
+              >
+                {favoriteDapps.map(dapp => (
+                  <Logo key={dapp.url} site={dapp} />
+                ))}
+              </Box>
             </Stack>
           )}
           <Stack space="20px">
