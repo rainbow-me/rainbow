@@ -94,7 +94,6 @@ export function BackupCloudStep() {
 
   const onSuccessAndNavigateBack = useCallback(
     async (password: string) => {
-      console.log({ password, isFromWalletReadyPrompt });
       if (!isFromWalletReadyPrompt) {
         goBack();
       }
