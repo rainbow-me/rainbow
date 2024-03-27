@@ -181,26 +181,18 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
   );
 
   const newTab = useCallback(() => {
+    const newTabToAdd = {
+      canGoBack: false,
+      canGoForward: false,
+      uniqueId: generateUniqueId(),
+      url: RAINBOW_HOME,
+    };
+
     if (!tabStates) {
-      setTabStates([
-        {
-          canGoBack: false,
-          canGoForward: false,
-          uniqueId: generateUniqueId(),
-          url: RAINBOW_HOME,
-        },
-      ]);
+      setTabStates([newTabToAdd]);
       runOnUI(toggleTabViewWorklet)(0);
     } else {
-      const updatedTabs = [...tabStates];
-
-      updatedTabs.push({
-        canGoBack: false,
-        canGoForward: false,
-        uniqueId: generateUniqueId(),
-        url: RAINBOW_HOME,
-      });
-
+      const updatedTabs = [...tabStates, newTabToAdd];
       setTabStates(updatedTabs);
       runOnUI(toggleTabViewWorklet)(updatedTabs.length - 1);
     }
