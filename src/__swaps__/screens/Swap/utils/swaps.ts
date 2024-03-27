@@ -1,6 +1,12 @@
 import c from 'chroma-js';
 import { globalColors } from '@/design-system';
 import { SCRUBBER_WIDTH, SLIDER_WIDTH } from '../constants';
+import { ChainId } from '../types/chains';
+import { getCachedProviderForNetwork, isHardHat } from '@/handlers/web3';
+import { isLowerCaseMatch } from './strings';
+
+import { ETH_ADDRESS, WRAPPED_ASSET } from '@rainbow-me/swaps';
+import { Network } from '@/helpers';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -207,3 +213,45 @@ export function niceIncrementFormatter(
 }
 //
 // /---- END worklet utils ----/ //
+
+export const isUnwrapEth = ({
+  buyTokenAddress,
+  chainId,
+  sellTokenAddress,
+  currentNetwork,
+}: {
+  chainId: ChainId;
+  sellTokenAddress: string;
+  buyTokenAddress: string;
+  currentNetwork: Network;
+}) => {
+  const provider = getCachedProviderForNetwork(currentNetwork);
+  const providerUrl = provider?.connection?.url;
+  const connectedToHardhat = isHardHat(providerUrl);
+
+  return (
+    isLowerCaseMatch(sellTokenAddress, WRAPPED_ASSET[connectedToHardhat ? ChainId.mainnet : chainId]) &&
+    isLowerCaseMatch(buyTokenAddress, ETH_ADDRESS)
+  );
+};
+
+export const isWrapEth = ({
+  buyTokenAddress,
+  chainId,
+  sellTokenAddress,
+  currentNetwork,
+}: {
+  chainId: ChainId;
+  sellTokenAddress: string;
+  buyTokenAddress: string;
+  currentNetwork: Network;
+}) => {
+  const provider = getCachedProviderForNetwork(currentNetwork);
+  const providerUrl = provider?.connection?.url;
+  const connectedToHardhat = isHardHat(providerUrl);
+
+  return (
+    isLowerCaseMatch(sellTokenAddress, ETH_ADDRESS) &&
+    isLowerCaseMatch(buyTokenAddress, WRAPPED_ASSET[connectedToHardhat ? ChainId.mainnet : chainId])
+  );
+};
