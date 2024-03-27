@@ -1,23 +1,16 @@
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/screens/Swap/utils';
+import { opacity } from '@/__swaps__/screens/Swap/utils/swaps';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { Box, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
 import position from '@/styles/position';
 import { BlurView } from '@react-native-community/blur';
-import React, { useCallback, RefObject } from 'react';
-import { TextInput } from 'react-native';
+import React, { useCallback } from 'react';
 import { DappBrowserShadows } from '../DappBrowserShadows';
+import { useBrowserContext } from '../BrowserContext';
 
-export const TabButton = ({
-  inputRef,
-  isFocused,
-  toggleTabView,
-}: {
-  inputRef: RefObject<TextInput>;
-  isFocused: boolean;
-  toggleTabView: () => void;
-}) => {
+export const TabButton = ({ toggleTabView }: { toggleTabView: () => void }) => {
+  const { isSearchInputFocused, searchInputRef } = useBrowserContext();
   const { isDarkMode } = useColorMode();
   const fillSecondary = useForegroundColor('fillSecondary');
   const separatorSecondary = useForegroundColor('separatorSecondary');
@@ -27,14 +20,14 @@ export const TabButton = ({
   const buttonColor = IS_IOS ? buttonColorIOS : buttonColorAndroid;
 
   const onPress = useCallback(() => {
-    if (!isFocused) {
+    if (!isSearchInputFocused) {
       // open tabs
       toggleTabView();
     } else {
       // close keyboard
-      inputRef?.current?.blur();
+      searchInputRef?.current?.blur();
     }
-  }, [isFocused, inputRef, toggleTabView]);
+  }, [isSearchInputFocused, searchInputRef, toggleTabView]);
 
   return (
     <DappBrowserShadows>
@@ -42,12 +35,12 @@ export const TabButton = ({
         as={ButtonPressAnimation}
         borderRadius={22}
         onPress={onPress}
-        style={{ height: 44, paddingTop: isFocused ? 1 : undefined, width: 44 }}
+        style={{ height: 44, paddingTop: isSearchInputFocused ? 1 : undefined, width: 44 }}
         alignItems="center"
         justifyContent="center"
       >
-        <Text align="center" color="labelSecondary" size="icon 17px" weight={isFocused ? 'heavy' : 'bold'}>
-          {isFocused ? '􀆈' : '􀐅'}
+        <Text align="center" color="labelSecondary" size="icon 17px" weight={isSearchInputFocused ? 'heavy' : 'bold'}>
+          {isSearchInputFocused ? '􀆈' : '􀐅'}
         </Text>
         {IS_IOS && (
           <Box

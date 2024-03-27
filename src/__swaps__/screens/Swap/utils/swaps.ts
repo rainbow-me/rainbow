@@ -1,6 +1,6 @@
 import c from 'chroma-js';
 import { globalColors } from '@/design-system';
-import { SCRUBBER_WIDTH, SLIDER_WIDTH } from './constants';
+import { SCRUBBER_WIDTH, SLIDER_WIDTH } from '../constants';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //

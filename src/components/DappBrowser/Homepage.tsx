@@ -1,6 +1,6 @@
 import { ButtonPressAnimation } from '@/components/animations';
 import { Page } from '@/components/layout';
-import { Bleed, Box, ColorModeProvider, Cover, Inline, Inset, Stack, Text } from '@/design-system';
+import { Bleed, Box, Cover, Inline, Inset, Stack, Text } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
@@ -10,6 +10,8 @@ import LinearGradient from 'react-native-linear-gradient';
 import { BlurView } from '@react-native-community/blur';
 import { ImgixImage } from '@/components/images';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import { Site } from '@/state/browserState';
+import { useFavoriteDappsStore } from '@/state/favoriteDapps';
 
 const HORIZONTAL_INSET = 24;
 
@@ -142,9 +144,7 @@ const Card = () => {
   );
 };
 
-const Logo = () => {
-  const imageUrl = 'https://pbs.twimg.com/profile_images/1741494128779886592/RY4V0T2F_400x400.jpg';
-
+const Logo = ({ site }: { site: Omit<Site, 'timestamp'> }) => {
   return (
     <View style={{ width: LOGO_SIZE }}>
       <ButtonPressAnimation overflowMargin={100}>
@@ -152,7 +152,7 @@ const Logo = () => {
           <Box
             as={ImgixImage}
             size={LOGO_SIZE}
-            source={{ uri: imageUrl }}
+            source={{ uri: site.image }}
             width={{ custom: LOGO_SIZE }}
             height={{ custom: LOGO_SIZE }}
             borderRadius={15}
@@ -160,7 +160,7 @@ const Logo = () => {
             shadow="24px"
           />
           <Text size="12pt" weight="bold" color="labelSecondary" align="center">
-            Zora
+            {site.name}
           </Text>
         </Stack>
       </ButtonPressAnimation>
@@ -170,6 +170,7 @@ const Logo = () => {
 
 export default function Homepage() {
   const { navigate } = useNavigation();
+  const { favoriteDapps } = useFavoriteDappsStore();
 
   return (
     <Box as={Page} flex={1} height="full" width="full" justifyContent="center">
@@ -206,31 +207,29 @@ export default function Homepage() {
               </ScrollView>
             </Bleed>
           </Stack>
-          <Stack space="20px">
-            <Inline alignVertical="center" space="6px">
-              <Text color="yellow" size="15pt" align="center" weight="heavy">
-                􀋃
-              </Text>
-              <Text color="label" size="20pt" weight="heavy">
-                Favorites
-              </Text>
-            </Inline>
-            <Bleed space="24px">
-              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                <Inset space="24px">
-                  <Box flexDirection="row" gap={LOGO_PADDING}>
-                    <Logo />
-                    <Logo />
-                    <Logo />
-                    <Logo />
-                    <Logo />
-                    <Logo />
-                    <Logo />
-                  </Box>
-                </Inset>
-              </ScrollView>
-            </Bleed>
-          </Stack>
+          {favoriteDapps?.length > 0 && (
+            <Stack space="20px">
+              <Inline alignVertical="center" space="6px">
+                <Text color="yellow" size="15pt" align="center" weight="heavy">
+                  􀋃
+                </Text>
+                <Text color="label" size="20pt" weight="heavy">
+                  Favorites
+                </Text>
+              </Inline>
+              <Bleed space="24px">
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                  <Inset space="24px">
+                    <Box flexDirection="row" gap={LOGO_PADDING}>
+                      {favoriteDapps.map(dapp => (
+                        <Logo key={dapp.url} site={dapp} />
+                      ))}
+                    </Box>
+                  </Inset>
+                </ScrollView>
+              </Bleed>
+            </Stack>
+          )}
           <Stack space="20px">
             <Inline alignVertical="center" space="6px">
               <Text color="blue" size="15pt" align="center" weight="heavy">
