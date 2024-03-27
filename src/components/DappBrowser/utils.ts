@@ -1,6 +1,8 @@
 import { Share } from 'react-native';
+import { WebViewNavigationEvent } from 'react-native-webview/lib/RNCWebViewNativeComponent';
 import { RainbowError, logger } from '@/logger';
 import { HTTP, HTTPS } from './constants';
+import { TabState } from './BrowserContext';
 
 // ---------------------------------------------------------------------------- //
 // URL validation regex breakdown here: https://mathiasbynens.be/demo/url-regex
@@ -25,6 +27,19 @@ export const generateUniqueId = (): string => {
   return `${timestamp}${randomString}`;
 };
 
+export const getNameFromFormattedUrl = (formattedUrl: string): string => {
+  const parts = formattedUrl.split('.');
+  let name;
+  if (parts.length > 2 && parts[parts.length - 2].length <= 2) {
+    name = parts[parts.length - 3];
+  } else if (parts.length >= 2) {
+    name = parts[parts.length - 2];
+  } else {
+    return formattedUrl;
+  }
+  return name.charAt(0).toUpperCase() + name.slice(1);
+};
+
 export async function handleShareUrl(url: string): Promise<void> {
   try {
     await Share.share({ message: url });
@@ -35,3 +50,49 @@ export async function handleShareUrl(url: string): Promise<void> {
     });
   }
 }
+
+// ---------------------------------------------------------------------------- //
+// 🔍 Navigation state logger
+//
+// Useful for observing WebView navigation events
+// Add to handleNavigationStateChange in BrowserTab to use
+// ---------------------------------------------------------------------------- //
+export const navigationStateLogger = (navState: WebViewNavigationEvent, tabIndex: number, tabStates: TabState[]) => {
+  const emoji = navStateEmojiMap[navState.navigationType];
+  const eventName = navStateEventNameMap[navState.navigationType];
+  const isLoading = navState.loading ? '🔄 YES' : '🙅‍♂️ NO';
+  const didUrlChange = navState.url !== tabStates[tabIndex].url ? '🚨 YES' : '🙅‍♂️ NO';
+
+  return console.log(`
+      ────────────────────────────
+      ${emoji}  NAVIGATION EVENT = ${eventName}
+
+      🌐  navState URL: ${navState.url}
+      📂  tabState URL: ${tabStates[tabIndex].url}
+
+      -  URL changed?  ${didUrlChange}
+      -  loading?  ${isLoading}
+      -  canGoBack?  ${navState.canGoBack ? '✅ YES' : '🙅‍♂️ NO'}
+      ────────────────────────────
+`);
+};
+
+const navStateEmojiMap = {
+  click: '👆',
+  formsubmit: '☑️',
+  backforward: '⬅️ ➡️',
+  reload: '🔄',
+  formresubmit: '☑️☑️',
+  other: '🤷',
+  undefined: '🤷🤷',
+};
+
+const navStateEventNameMap = {
+  click: 'CLICK',
+  formsubmit: 'FORM SUBMIT',
+  backforward: 'BACK FORWARD',
+  reload: 'RELOAD',
+  formresubmit: 'FORM RESUBMIT',
+  other: 'OTHER',
+  undefined: 'UNDEFINED',
+};
