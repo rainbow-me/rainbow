@@ -14,6 +14,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.yarn
+            ios/Pods
+            node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
       - name: Set up github keys
         run:  git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
 
@@ -42,7 +53,7 @@ jobs:
         run: yarn lint:ci
 
       - name: Install Pods
-        run: cd ios && bundle install && pod install --repo-update && cd ..
+        run: yarn install-pods
 
       - name: Rebuild detox cache
         run: ./node_modules/.bin/detox clean-framework-cache && ./node_modules/.bin/detox build-framework-cache
@@ -56,8 +67,8 @@ jobs:
         run: |
           watchman watch-del '/Users/administrator/actions-runner/_work/rainbow/rainbow' || true
           watchman watch-project '/Users/administrator/actions-runner/_work/rainbow/rainbow'
-      - name: Run iOS e2e tests
-        run: ./node_modules/.bin/detox test -R 5 --configuration ios.sim.release --forceExit --bail
+      - name: Run iOS e2e tests with retry
+        run: ./run-retry-tests.sh 3
      
       - name: Upload Test Artifacts
         if: failure()
