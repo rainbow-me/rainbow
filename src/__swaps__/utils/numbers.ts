@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js';
 import currency from 'currency.js';
 import { isNil } from 'lodash';
 
-import { supportedCurrencies } from '../references/supportedCurrencies';
+import { supportedCurrencies } from '@/references/supportedCurrencies';
 
 import { BigNumberish } from './hex';
 

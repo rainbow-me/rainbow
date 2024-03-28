@@ -27,9 +27,9 @@ import { ChainId, ChainNameDisplay } from '../types/chains';
 
 import { AddressOrEth } from '../types/assets';
 
-export { ethUnits } from './ethUnits';
+export { ethUnits } from '@/references';
 export { gasUnits } from './gasUnits';
-export { supportedCurrencies } from './supportedCurrencies';
+export { supportedCurrencies } from '@/references/supportedCurrencies';
 
 export const smartContractMethods = {
   token_transfer: {
@@ -57,8 +57,6 @@ export const smartContractMethods = {
     hash: '0xf242432a',
   },
 };
-
-export type { SupportedCurrency, SupportedCurrencyKey } from './supportedCurrencies';
 
 // mainnet
 export const ETH_ADDRESS = 'eth';
