@@ -56,7 +56,6 @@ export const TransactionDetails = () => {
   return (
     <BackgroundProvider color="surfacePrimaryElevated">
       {({ backgroundColor }) => (
-        // @ts-ignore
         <SlackSheet
           contentHeight={sheetHeight}
           backgroundColor={backgroundColor}
