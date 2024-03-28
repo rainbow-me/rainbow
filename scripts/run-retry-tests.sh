@@ -5,7 +5,7 @@ count=0
 
 until (( count >= max_retries ))
 do
-  ./node_modules/.bin/detox test -R 5 --configuration ios.sim.release --forceExit --bail
+  ./node_modules/.bin/detox test --configuration ios.sim.release --forceExit
   ret_val=$?
   if [ $ret_val -eq 0 ]; then
     exit 0

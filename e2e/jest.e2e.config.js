@@ -5,6 +5,7 @@ const { compilerOptions } = require('../tsconfig');
 
 module.exports = {
   maxWorkers: 1,
+  bail: 1,
   setupFilesAfterEnv: ['./init.js'],
   testEnvironment: './environment',
 
