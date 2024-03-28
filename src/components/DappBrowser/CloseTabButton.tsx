@@ -5,7 +5,7 @@ import { Box, Cover, TextIcon, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { deviceUtils } from '@/utils';
 import { AnimatedBlurView } from '@/__swaps__/screens/Swap/components/AnimatedBlurView';
-import { useBrowserContext } from './BrowserContext';
+import { RAINBOW_HOME, useBrowserContext } from './BrowserContext';
 import { TAB_VIEW_COLUMN_WIDTH } from './Dimensions';
 import { TIMING_CONFIGS } from '../animations/animationConfigs';
 
@@ -28,7 +28,10 @@ export const CloseTabButton = ({ onPress, tabIndex }: { onPress: () => void; tab
   const { animatedActiveTabIndex, tabStates, tabViewProgress, tabViewVisible } = useBrowserContext();
   const { isDarkMode } = useColorMode();
 
-  const multipleTabsOpen = React.useMemo(() => tabStates.length > 1, [tabStates.length]);
+  const multipleTabsOpen = tabStates.length > 1;
+  const tabUrl = tabStates[tabIndex]?.url;
+  const isOnHomepage = tabUrl === RAINBOW_HOME;
+  const isEmptyState = !multipleTabsOpen && isOnHomepage;
   const buttonSize = multipleTabsOpen ? SCALE_ADJUSTED_X_BUTTON_SIZE : SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB;
   const buttonPadding = multipleTabsOpen ? SCALE_ADJUSTED_X_BUTTON_PADDING : SCALE_ADJUSTED_X_BUTTON_PADDING_SINGLE_TAB;
 
@@ -40,13 +43,13 @@ export const CloseTabButton = ({ onPress, tabIndex }: { onPress: () => void; tab
     // entered. This is mainly to avoid showing the close button in the
     // active tab until the tab view animation is near complete.
     const interpolatedOpacity = interpolate(progress, [0, 80, 100], [isActiveTab ? 0 : 1, isActiveTab ? 0 : 1, 1]);
-    const opacity = tabViewVisible?.value || !isActiveTab ? interpolatedOpacity : withTiming(0, TIMING_CONFIGS.fastFadeConfig);
-
+    const opacity =
+      !isEmptyState && (tabViewVisible?.value || !isActiveTab) ? interpolatedOpacity : withTiming(0, TIMING_CONFIGS.fastFadeConfig);
     return { opacity };
   });
 
   const pointerEventsStyle = useAnimatedStyle(() => {
-    const pointerEvents = tabViewVisible?.value ? 'auto' : 'none';
+    const pointerEvents = tabViewVisible?.value && !isEmptyState ? 'auto' : 'none';
     return { pointerEvents };
   });
 
