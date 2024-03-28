@@ -1,6 +1,6 @@
 import path from 'path';
 import { captureException } from '@sentry/react-native';
-import { findKey, isNumber, keys } from 'lodash';
+import { findKey, isEmpty, isNumber, keys } from 'lodash';
 import uniq from 'lodash/uniq';
 import RNFS from 'react-native-fs';
 import { MMKV } from 'react-native-mmkv';
@@ -25,7 +25,6 @@ import {
 } from '../utils/keychainConstants';
 import { hasKey, loadString, publicAccessControlOptions, saveString } from './keychain';
 import { DEFAULT_WALLET_NAME, loadAddress, RainbowAccount, RainbowWallet, saveAddress } from './wallet';
-import { isL2Asset } from '@/handlers/assets';
 import { getAssets, getHiddenCoins, getPinnedCoins, saveHiddenCoins, savePinnedCoins } from '@/handlers/localstorage/accountLocal';
 import { getContacts, saveContacts } from '@/handlers/localstorage/contacts';
 import { resolveNameOrAddress } from '@/handlers/web3';
@@ -38,7 +37,9 @@ import { queryClient } from '@/react-query';
 import { favoritesQueryKey } from '@/resources/favorites';
 import { EthereumAddress, RainbowToken } from '@/entities';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { queryStorage } from '@/storage/legacy';
+import { favoritesStore } from '@/state/favorites/favorites';
+import { ChainId } from '@/__swaps__/screens/Swap/types/chains';
+import { AddressOrEth } from '@/__swaps__/screens/Swap/types/assets';
 
 export default async function runMigrations() {
   // get current version
@@ -638,6 +639,42 @@ export default async function runMigrations() {
   };
 
   migrations.push(v18);
+
+  /**
+   *************** Migration v19 ******************
+    Migrates existing favorites to Zustand `@/state/favorites` per chain
+   */
+  const v19 = async () => {
+    const rqFavorites: Record<EthereumAddress, RainbowToken> | undefined = await queryClient.getQueryData(favoritesQueryKey);
+    if (!rqFavorites || isEmpty(rqFavorites)) {
+      return;
+    }
+    const newFavoritesState: Partial<Record<ChainId, AddressOrEth[]>> = {
+      [ChainId.mainnet]: [],
+    };
+
+    for (const address of Object.keys(rqFavorites)) {
+      newFavoritesState[ChainId.mainnet]?.push(address as AddressOrEth);
+    }
+
+    favoritesStore.setState(prev => {
+      const updatedFavorites = Object.keys(newFavoritesState).reduce<Partial<Record<ChainId, AddressOrEth[]>>>(
+        (acc, key) => {
+          const chainIdKey = key as unknown as ChainId; // Convert key to ChainId safely
+          acc[chainIdKey] = [...(prev.favorites[chainIdKey] || []), ...(newFavoritesState[chainIdKey] || [])];
+          return acc;
+        },
+        { ...prev.favorites }
+      );
+
+      return {
+        ...prev,
+        favorites: updatedFavorites,
+      };
+    });
+  };
+
+  migrations.push(v19);
 
   logger.sentry(`Migrations: ready to run migrations starting on number ${currentVersion}`);
   // await setMigrationVersion(17);
