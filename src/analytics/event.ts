@@ -112,6 +112,7 @@ export const event = {
   pointsReferralCodeDeeplinkOpened: 'Opened points referral code deeplink',
   pointsPointsScreenPressedCopyReferralCodeButton: 'Pressed copy referral code button on points screen',
   pointsPointsScreenPressedShareReferralLinkButton: 'Pressed share referral link button on points screen',
+  pointsClaimPointsScreenClaimedPoints: 'Claimed points from redemption code on claim points modal',
 
   remoteCardPrimaryButtonPressed: 'remote_card.primary_button_pressed',
   remoteCardDismissed: 'remote_card.dismissed',
@@ -429,6 +430,7 @@ export type EventProperties = {
   [event.pointsReferralCodeDeeplinkOpened]: undefined;
   [event.pointsPointsScreenPressedCopyReferralCodeButton]: undefined;
   [event.pointsPointsScreenPressedShareReferralLinkButton]: undefined;
+  [event.pointsClaimPointsScreenClaimedPoints]: undefined;
 
   [event.remoteCardPrimaryButtonPressed]: {
     cardKey: string;
