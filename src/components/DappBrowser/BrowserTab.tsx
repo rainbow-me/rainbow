@@ -217,6 +217,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
   const isActiveTab = activeTabIndex === tabIndex;
   const multipleTabsOpen = tabStates?.length > 1;
   const isOnHomepage = tabUrl === RAINBOW_HOME;
+  const isEmptyState = !multipleTabsOpen && isOnHomepage;
 
   const screenshotData = useSharedValue<ScreenshotType | undefined>(findTabScreenshot(tabId, tabUrl) || undefined);
 
@@ -616,13 +617,13 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
 
   const swipeToCloseTabGestureHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
     onStart: (_, ctx: { startX?: number }) => {
-      if (!tabViewVisible?.value || (!multipleTabsOpen && isOnHomepage)) return;
+      if (!tabViewVisible?.value || isEmptyState) return;
       if (ctx.startX) {
         ctx.startX = undefined;
       }
     },
     onActive: (e, ctx: { startX?: number }) => {
-      if (!tabViewVisible?.value || (!multipleTabsOpen && isOnHomepage)) return;
+      if (!tabViewVisible?.value || isEmptyState) return;
 
       if (ctx.startX === undefined) {
         gestureScale.value = withTiming(1.1, TIMING_CONFIGS.tabPressConfig);
@@ -637,7 +638,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
       gestureX.value = xDelta;
     },
     onEnd: (e, ctx: { startX?: number }) => {
-      if (!tabViewVisible?.value || (!multipleTabsOpen && isOnHomepage)) return;
+      if (!tabViewVisible?.value || isEmptyState) return;
 
       const xDelta = e.absoluteX - (ctx.startX || 0);
       setNativeProps(scrollViewRef, { scrollEnabled: !!tabViewVisible?.value });

@@ -31,6 +31,7 @@ export const CloseTabButton = ({ onPress, tabIndex }: { onPress: () => void; tab
   const multipleTabsOpen = tabStates.length > 1;
   const tabUrl = tabStates[tabIndex]?.url;
   const isOnHomepage = tabUrl === RAINBOW_HOME;
+  const isEmptyState = !multipleTabsOpen && isOnHomepage;
   const buttonSize = multipleTabsOpen ? SCALE_ADJUSTED_X_BUTTON_SIZE : SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB;
   const buttonPadding = multipleTabsOpen ? SCALE_ADJUSTED_X_BUTTON_PADDING : SCALE_ADJUSTED_X_BUTTON_PADDING_SINGLE_TAB;
 
@@ -43,14 +44,12 @@ export const CloseTabButton = ({ onPress, tabIndex }: { onPress: () => void; tab
     // active tab until the tab view animation is near complete.
     const interpolatedOpacity = interpolate(progress, [0, 80, 100], [isActiveTab ? 0 : 1, isActiveTab ? 0 : 1, 1]);
     const opacity =
-      (multipleTabsOpen || !isOnHomepage) && (tabViewVisible?.value || !isActiveTab)
-        ? interpolatedOpacity
-        : withTiming(0, TIMING_CONFIGS.fastFadeConfig);
+      !isEmptyState && (tabViewVisible?.value || !isActiveTab) ? interpolatedOpacity : withTiming(0, TIMING_CONFIGS.fastFadeConfig);
     return { opacity };
   });
 
   const pointerEventsStyle = useAnimatedStyle(() => {
-    const pointerEvents = tabViewVisible?.value && (multipleTabsOpen || !isOnHomepage) ? 'auto' : 'none';
+    const pointerEvents = tabViewVisible?.value && !isEmptyState ? 'auto' : 'none';
     return { pointerEvents };
   });
 
