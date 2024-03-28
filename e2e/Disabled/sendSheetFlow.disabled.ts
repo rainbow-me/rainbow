@@ -1,6 +1,5 @@
 import { device } from 'detox';
 import {
-  cleanApp,
   startHardhat,
   killHardhat,
   importWalletFlow,
@@ -17,7 +16,6 @@ import {
 describe.skip('Send Sheet Interaction Flow', () => {
   beforeAll(async () => {
     await device.reloadReactNative();
-    await cleanApp();
     await startHardhat();
   });
   afterAll(async () => {
