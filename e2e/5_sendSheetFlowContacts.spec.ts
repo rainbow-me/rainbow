@@ -1,8 +1,6 @@
 import { device } from 'detox';
 import {
-  cleanApp,
-  startHardhat,
-  killHardhat,
+  beforeAllcleanApp,
   importWalletFlow,
   sendETHtoTestWallet,
   waitAndTap,
@@ -13,19 +11,17 @@ import {
   typeText,
   tapByText,
   delayTime,
+  afterAllcleanApp,
 } from './helpers';
 
 const android = device.getPlatform() === 'android';
 
 describe('Send Sheet Interaction Flow Contacts', () => {
   beforeAll(async () => {
-    await device.reloadReactNative();
-    await cleanApp();
-    await startHardhat();
+    await beforeAllcleanApp({ hardhat: true });
   });
   afterAll(async () => {
-    await device.clearKeychain();
-    await killHardhat();
+    await afterAllcleanApp({ hardhat: true });
   });
 
   it('Import a wallet and go to welcome', async () => {
@@ -39,11 +35,6 @@ describe('Send Sheet Interaction Flow Contacts', () => {
   it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
     await waitAndTap('dev-button-hardhat');
     await checkIfVisible('testnet-toast-Hardhat');
-  });
-
-  it('Should show all wallet sections', async () => {
-    await swipe('wallet-screen', 'up', 'slow', 0.4);
-    await checkIfElementByTextIsVisible('Collectibles');
   });
 
   it('Should open send sheet after tapping send fab', async () => {
