@@ -13,7 +13,7 @@ import { useRoute } from '@react-navigation/native';
 import { useAccountSettings, useColorForAsset } from '@/hooks';
 import { ContextMenu } from '@/components/context-menu';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { isNil, isEmpty } from 'lodash';
+import { isNil, isEmpty, add } from 'lodash';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { gasUtils } from '@/utils';
@@ -172,10 +172,11 @@ const GasMenu = ({ showGasOptions, flashbotTransaction, children }) => {
   const menuConfig = useMemo(() => {
     const menuOptions = speedOptions.map(gasOption => {
       if (IS_ANDROID) return gasOption;
-      const totalGwei = selectedGas?.gasFee?.amount;
-      const gweiDisplay = totalGwei;
+      // const totalGwei = selectedGas?.gasFee?.amount;
+      // const gweiDisplay = totalGwei;
 
-      // const totalGwei = add(gasFeeParamsBySpeed[gasOption]?.maxBaseFee?.gwei, gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei);
+      const totalGwei = add(gasFeeParamsBySpeed[gasOption]?.maxBaseFee?.gwei, gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei);
+      const gweiDisplay = totalGwei;
       // const estimatedGwei = add(currentBlockParams?.baseFeePerGas?.gwei, gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei);
 
       // const shouldRoundGwei = getNetworkObj(currentNetwork).gas.roundGasDisplay;
