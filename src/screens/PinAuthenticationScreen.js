@@ -201,7 +201,7 @@ const PinAuthenticationScreen = () => {
   const { colors } = useTheme();
 
   return (
-    <Column backgroundColor={colors.white} flex={1} testID="pin-authentication-screen">
+    <Column backgroundColor={colors.white} paddingBottom={48} flex={1} testID="pin-authentication-screen">
       <Centered flex={1}>
         <ColumnWithMargins
           align="center"
