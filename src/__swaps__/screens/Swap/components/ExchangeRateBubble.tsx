@@ -5,12 +5,18 @@ import { opacity } from '../utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
 import Animated from 'react-native-reanimated';
 import { useSwapContext } from '../providers/swap-provider';
+import { useSwapAssetStore } from '../state/assets';
 
 export const ExchangeRateBubble = () => {
   const { isDarkMode } = useColorMode();
   const { AnimatedSwapStyles } = useSwapContext();
+  const { assetToBuy, assetToSell } = useSwapAssetStore();
 
   const fillTertiary = useForegroundColor('fillTertiary');
+
+  // TODO: Do proper exchange rate calculation once we receive the quote
+
+  if (!assetToSell || !assetToBuy) return null;
 
   return (
     <ButtonPressAnimation scaleTo={0.925} style={{ marginTop: 4 }}>
@@ -32,7 +38,7 @@ export const ExchangeRateBubble = () => {
         >
           <Inline alignHorizontal="center" alignVertical="center" space="6px" wrap={false}>
             <Text align="center" color="labelQuaternary" size="13pt" style={{ opacity: isDarkMode ? 0.6 : 0.75 }} weight="heavy">
-              1 ETH
+              1 {assetToSell?.symbol}
             </Text>
             <Box
               borderRadius={10}
@@ -46,7 +52,7 @@ export const ExchangeRateBubble = () => {
               </TextIcon>
             </Box>
             <Text align="center" color="labelQuaternary" size="13pt" style={{ opacity: isDarkMode ? 0.6 : 0.75 }} weight="heavy">
-              1,624.04 USDC
+              1,624.04 {assetToBuy?.symbol}
             </Text>
           </Inline>
         </Box>

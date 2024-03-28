@@ -25,7 +25,7 @@ import { getNetwork, saveNetwork } from '@/handlers/localstorage/globalSettings'
 import { web3SetHttpProvider } from '@/handlers/web3';
 import { delay } from '@/utils/delay';
 
-interface RainbowConfig extends Record<string, string | boolean | number> {
+export interface RainbowConfig extends Record<string, string | boolean | number> {
   arbitrum_mainnet_rpc: string;
   bsc_mainnet_rpc: string;
   data_api_key: string;
@@ -85,7 +85,7 @@ interface RainbowConfig extends Record<string, string | boolean | number> {
   swaps_v2: boolean;
 }
 
-const DEFAULT_CONFIG: RainbowConfig = {
+export const DEFAULT_CONFIG: RainbowConfig = {
   arbitrum_mainnet_rpc: ARBITRUM_MAINNET_RPC,
   data_api_key: DATA_API_KEY,
   data_endpoint: DATA_ENDPOINT || 'wss://api-v4.zerion.io',

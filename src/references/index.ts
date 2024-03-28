@@ -1,5 +1,29 @@
+import { ChainNameDisplay } from '@/__swaps__/screens/Swap/types/chains';
 import { Asset } from '@/entities';
 import { Network } from '@/helpers/networkTypes';
+import {
+  Chain,
+  arbitrum,
+  arbitrumGoerli,
+  arbitrumSepolia,
+  avalanche,
+  avalancheFuji,
+  base,
+  baseSepolia,
+  bsc,
+  bscTestnet,
+  goerli,
+  holesky,
+  mainnet,
+  optimism,
+  optimismSepolia,
+  polygon,
+  polygonMumbai,
+  zora,
+  zoraSepolia,
+  sepolia,
+  blast,
+} from 'viem/chains';
 
 export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';
 export { default as chainAssets } from './chain-assets.json';
@@ -128,3 +152,37 @@ export const AddCashCurrencyInfo: {
 };
 
 export const REFERRER = 'native-app';
+
+export const SUPPORTED_MAINNET_CHAINS: Chain[] = [mainnet, polygon, optimism, arbitrum, base, zora, bsc, avalanche, blast].map(chain => ({
+  ...chain,
+  name: ChainNameDisplay[chain.id],
+}));
+
+export const SUPPORTED_CHAINS = ({ testnetMode = false }: { testnetMode?: boolean }): Chain[] =>
+  [
+    mainnet,
+    polygon,
+    optimism,
+    arbitrum,
+    holesky,
+    base,
+    zora,
+    bsc,
+    goerli,
+    sepolia,
+    optimismSepolia,
+    bscTestnet,
+    polygonMumbai,
+    arbitrumGoerli,
+    arbitrumSepolia,
+    baseSepolia,
+    zoraSepolia,
+    avalanche,
+    avalancheFuji,
+    blast,
+  ]
+    .filter(chain => (testnetMode ? !!chain.testnet : !chain.testnet))
+    .map(chain => ({ ...chain, name: ChainNameDisplay[chain.id] }));
+
+export const SUPPORTED_CHAIN_IDS = ({ testnetMode = false }: { testnetMode?: boolean }) =>
+  SUPPORTED_CHAINS({ testnetMode }).map(chain => chain.id);

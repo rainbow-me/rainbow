@@ -77,7 +77,7 @@ export function useSwapInputsController({
   const formattedInputNativeValue = useDerivedValue(() => {
     if (inputMethod.value === 'slider' && percentageToSwap.value === 0) return '$0.00';
 
-    const nativeValue = `$${inputValues.value.inputNativeValue.toLocaleString('en-US', {
+    const nativeValue = `$${Number(inputValues.value.inputNativeValue).toLocaleString('en-US', {
       useGrouping: true,
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
@@ -99,7 +99,7 @@ export function useSwapInputsController({
   const formattedOutputNativeValue = useDerivedValue(() => {
     if (inputMethod.value === 'slider' && percentageToSwap.value === 0) return '$0.00';
 
-    const nativeValue = `$${inputValues.value.outputNativeValue.toLocaleString('en-US', {
+    const nativeValue = `$${Number(inputValues.value.outputNativeValue).toLocaleString('en-US', {
       useGrouping: true,
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,

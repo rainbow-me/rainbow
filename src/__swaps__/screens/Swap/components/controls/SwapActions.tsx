@@ -10,11 +10,12 @@ import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../.
 import { opacity } from '../../utils/swaps';
 import { IS_ANDROID } from '@/env';
 import { useSwapContext } from '../../providers/swap-provider';
+import { useAssetColors } from '../../hooks/useAssetColors';
 
 export function SwapActions() {
   const { isDarkMode } = useColorMode();
-  const { bottomColor, confirmButtonIcon, confirmButtonIconStyle, confirmButtonLabel } = useSwapContext();
-
+  const { confirmButtonIcon, confirmButtonIconStyle, confirmButtonLabel } = useSwapContext();
+  const { bottomColor } = useAssetColors();
   return (
     <Box
       paddingBottom={{

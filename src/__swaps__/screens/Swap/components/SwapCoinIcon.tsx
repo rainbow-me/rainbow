@@ -4,12 +4,11 @@ import { Image, StyleSheet, View } from 'react-native';
 import EthIcon from '@/assets/eth-icon.png';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { globalColors } from '@/design-system';
-import { useColorForAsset } from '@/hooks';
 import { Network } from '@/networks/types';
 import { borders, fonts } from '@/styles';
 import { ThemeContextProps } from '@/theme';
 import { FallbackIcon as CoinIconTextFallback, isETH } from '@/utils';
-import { FastSwapCoinIconImage } from './FastSwapCoinIconImage';
+import { FastFallbackCoinIconImage } from '@/components/asset-list/RecyclerAssetList2/FastComponents/FastFallbackCoinIconImage';
 
 // TODO: Delete this and replace with RainbowCoinIcon
 // ⚠️ When replacing this component with RainbowCoinIcon, make sure
@@ -61,6 +60,7 @@ function resolveNetworkAndAddress({ address, mainnetAddress, network }: { mainne
 export const SwapCoinIcon = React.memo(function FeedCoinIcon({
   address,
   color,
+  iconUrl,
   disableShadow,
   forceDarkMode,
   large,
@@ -72,6 +72,7 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
 }: {
   address: string;
   color?: string;
+  iconUrl?: string;
   disableShadow?: boolean;
   forceDarkMode?: boolean;
   large?: boolean;
@@ -89,10 +90,7 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
     network,
   });
 
-  const fallbackIconColor = useColorForAsset({
-    address: resolvedAddress,
-  });
-
+  const fallbackIconColor = color ?? colors.purpleUniswap;
   const shadowColor = theme.isDarkMode || forceDarkMode ? colors.shadow : color || fallbackIconColor;
   const eth = isETH(resolvedAddress);
 
@@ -110,16 +108,17 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
           <Image source={EthIcon} style={small ? sx.coinIconFallbackSmall : large ? sx.coinIconFallbackLarge : sx.coinIconFallback} />
         </View>
       ) : (
-        <FastSwapCoinIconImage
-          address={resolvedAddress}
-          disableShadow={small || disableShadow}
+        <FastFallbackCoinIconImage
+          size={small ? 16 : large ? 36 : 32}
+          icon={iconUrl}
           network={resolvedNetwork}
           shadowColor={shadowColor}
-          size={small ? 16 : large ? 36 : 32}
+          symbol={symbol}
+          theme={theme}
         >
           {() => (
             <CoinIconTextFallback
-              color={fallbackIconColor}
+              color={color}
               height={small ? 16 : large ? 36 : 32}
               style={small ? smallFallbackIconStyle : large ? largeFallbackIconStyle : fallbackIconStyle}
               symbol={symbol}
@@ -127,7 +126,7 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
               width={small ? 16 : large ? 36 : 32}
             />
           )}
-        </FastSwapCoinIconImage>
+        </FastFallbackCoinIconImage>
       )}
 
       {network && network !== Network.mainnet && !small && (

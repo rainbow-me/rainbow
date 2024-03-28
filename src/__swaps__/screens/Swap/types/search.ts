@@ -15,9 +15,9 @@ export type SearchAsset = {
   colors?: { primary?: string; fallback?: string };
   decimals: number;
   highLiquidity: boolean;
-  icon_url: string;
+  icon_url?: string;
   isRainbowCurated: boolean;
-  isNativeAsset: boolean;
+  isNativeAsset?: boolean;
   isVerified: boolean;
   mainnetAddress: AddressOrEth;
   name: string;
@@ -27,7 +27,7 @@ export type SearchAsset = {
       decimals: number;
     };
   };
-  rainbowMetadataId: number;
+  rainbowMetadataId?: number;
   symbol: string;
   uniqueId: UniqueId;
 };

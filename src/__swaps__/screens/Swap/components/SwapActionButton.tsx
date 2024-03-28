@@ -119,28 +119,30 @@ export const SwapActionButton = ({
               )}
             </Column>
           )}
-          <Column width="content">
-            {typeof label === 'string' ? (
-              <Text
-                align="center"
-                color={{ custom: outline ? color || fallbackColor : textColor }}
-                numberOfLines={1}
-                size={small ? '17pt' : '20pt'}
-                weight="heavy"
-              >
-                {label}
-              </Text>
-            ) : (
-              <AnimatedText
-                align="center"
-                color={{ custom: outline ? color || fallbackColor : textColor }}
-                numberOfLines={1}
-                size={small ? '17pt' : '20pt'}
-                text={label}
-                weight="heavy"
-              />
-            )}
-          </Column>
+          {typeof label !== 'undefined' && (
+            <Column width="content">
+              {typeof label === 'string' ? (
+                <Text
+                  align="center"
+                  color={{ custom: outline ? color || fallbackColor : textColor }}
+                  numberOfLines={1}
+                  size={small ? '17pt' : '20pt'}
+                  weight="heavy"
+                >
+                  {label}
+                </Text>
+              ) : (
+                <AnimatedText
+                  align="center"
+                  color={{ custom: outline ? color || fallbackColor : textColor }}
+                  numberOfLines={1}
+                  size={small ? '17pt' : '20pt'}
+                  text={label}
+                  weight="heavy"
+                />
+              )}
+            </Column>
+          )}
           {rightIcon && (
             <Column width="content">
               <Text
