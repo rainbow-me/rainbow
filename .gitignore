@@ -92,7 +92,7 @@ ios/Extras.json
 rainbow-scripts
 
 # Patches
-patches/react-native-webview+13.8.2.patch
+patches/react-native-webview*
 
 .eslintcache
 
