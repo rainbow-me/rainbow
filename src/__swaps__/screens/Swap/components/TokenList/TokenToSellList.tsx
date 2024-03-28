@@ -13,12 +13,13 @@ import { parseSearchAsset, isSameAsset } from '../../utils/assets';
 import { opacity } from '../../utils/swaps';
 import { useAccountAccentColor } from '@/hooks';
 import { ButtonPressAnimation } from '@/components/animations';
+import { SLIDER_WIDTH } from '../../constants';
 
 export const TokenToSellList = () => {
   const { accentColor: accountColor } = useAccountAccentColor();
   const { isDarkMode } = useColorMode();
-  const { SwapNavigation, SwapInputController } = useSwapContext();
-  const { setAssetToSell, assetToBuy, setSearchFilter } = useSwapAssetStore();
+  const { SwapNavigation, SwapInputController, sliderXPosition } = useSwapContext();
+  const { setAssetToSell, setSearchFilter } = useSwapAssetStore();
   const userAssets = useAssetsToSell();
 
   const accentColor = useMemo(() => {
@@ -42,30 +43,19 @@ export const TokenToSellList = () => {
       setAssetToSell(parsedAsset);
 
       SwapInputController.onChangedPercentage(1);
+      sliderXPosition.value = SLIDER_WIDTH;
       runOnUI((userAsset: ParsedSearchAsset | undefined, parsedAsset: ParsedSearchAsset) => {
         SwapInputController.inputValues.modify(prev => ({
           ...prev,
           inputNativeValue: parsedAsset.native.balance.amount,
-          inputAmount: userAsset?.balance.amount ?? '0', // TODO: Do we want to default to 100% of balance? 50%?
+          inputAmount: userAsset?.balance.amount ?? '0',
         }));
       })(userAsset, parsedAsset);
 
       setSearchFilter('');
-      if (!assetToBuy) {
-        runOnUI(SwapNavigation.handleFocusOutputSearch)();
-      } else {
-        runOnUI(SwapNavigation.handleExitSearch)();
-      }
+      runOnUI(SwapNavigation.handleOutputPress)();
     },
-    [
-      SwapInputController,
-      SwapNavigation.handleExitSearch,
-      SwapNavigation.handleFocusOutputSearch,
-      assetToBuy,
-      setAssetToSell,
-      setSearchFilter,
-      userAssets,
-    ]
+    [SwapInputController, SwapNavigation.handleOutputPress, setAssetToSell, setSearchFilter, sliderXPosition, userAssets]
   );
 
   const assetsCount = useMemo(

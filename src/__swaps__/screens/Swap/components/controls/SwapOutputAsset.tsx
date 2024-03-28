@@ -24,22 +24,166 @@ import { useAssetsToSell } from '../../hooks/useAssetsToSell';
 import { useAssetColors } from '../../hooks/useAssetColors';
 import { useAccountSettings } from '@/hooks';
 import { useExternalToken } from '../../../../../resources/assets/externalAssetsQuery';
+import { ParsedAsset } from '../../types/assets';
+import BigNumber from 'bignumber.js';
+import { supportedCurrencies } from '@/references/supportedCurrencies';
+
+function SwapOutputAmount() {
+  const { nativeCurrency: currentCurrency } = useAccountSettings();
+  const { assetToBuy, outputChainId } = useSwapAssetStore();
+  const { focusedInput, SwapTextStyles, SwapInputController } = useSwapContext();
+  const { bottomColor } = useAssetColors();
+  const userAssets = useAssetsToSell();
+
+  const { data: tokenDataWithPrice } = useExternalToken(
+    {
+      address: assetToBuy ? assetToBuy?.address : '',
+      network: ethereumUtils.getNetworkFromChainId(outputChainId),
+      currency: currentCurrency,
+    },
+    {
+      enabled: !!assetToBuy,
+    }
+  );
+
+  const parsedAssetToBuy = useMemo(() => {
+    if (!assetToBuy) return null;
+    const userAsset = userAssets.find(userAsset => isSameAsset(userAsset, assetToBuy));
+    return parseSearchAsset({
+      assetWithPrice: tokenDataWithPrice as unknown as ParsedAsset,
+      searchAsset: assetToBuy,
+      userAsset,
+    });
+  }, [assetToBuy, tokenDataWithPrice, userAssets]);
+
+  useEffect(() => {
+    if (!parsedAssetToBuy) return;
+
+    const { decimals } = supportedCurrencies[currentCurrency];
+
+    const outputNativeAmount = new BigNumber(parsedAssetToBuy?.native.price?.amount || 0)
+      .multipliedBy(new BigNumber(parsedAssetToBuy?.balance.amount || 0))
+      .toFormat(decimals);
+
+    runOnUI((outputNativeAmount: string) => {
+      'worklet';
+      SwapInputController.inputValues.modify(prev => {
+        return {
+          ...prev,
+          outputNativeAmount,
+        };
+      });
+    })(outputNativeAmount);
+  }, [parsedAssetToBuy, SwapInputController.inputValues, currentCurrency, SwapInputController]);
+
+  return (
+    <GestureHandlerV1Button
+      disableButtonPressWrapper
+      onPressStartWorklet={() => {
+        'worklet';
+        focusedInput.value = 'outputAmount';
+      }}
+    >
+      <MaskedView maskElement={<FadeMask fadeEdgeInset={2} fadeWidth={8} height={36} side="right" />} style={styles.inputTextMask}>
+        <AnimatedText
+          ellipsizeMode="clip"
+          numberOfLines={1}
+          size="30pt"
+          style={SwapTextStyles.outputAmountTextStyle}
+          text={SwapInputController.formattedOutputAmount}
+          weight="bold"
+        />
+        <Animated.View style={[styles.caretContainer, SwapTextStyles.outputCaretStyle]}>
+          <Box
+            borderRadius={1}
+            style={[
+              styles.caret,
+              {
+                backgroundColor: bottomColor,
+              },
+            ]}
+          />
+        </Animated.View>
+      </MaskedView>
+    </GestureHandlerV1Button>
+  );
+}
+
+function SwapInputIcon() {
+  const { assetToBuy } = useSwapAssetStore();
+  const { topColor, assetToBuyShadowColor } = useAssetColors();
+  const theme = useTheme();
+
+  return (
+    <Box paddingRight="10px">
+      {!assetToBuy ? (
+        <Box
+          borderRadius={18}
+          height={{ custom: 36 }}
+          style={[
+            styles.solidColorCoinIcon,
+            {
+              backgroundColor: topColor,
+            },
+          ]}
+          width={{ custom: 36 }}
+        />
+      ) : (
+        <SwapCoinIcon
+          color={assetToBuyShadowColor}
+          iconUrl={assetToBuy.icon_url}
+          address={assetToBuy.address}
+          large
+          mainnetAddress={assetToBuy.mainnetAddress}
+          network={ethereumUtils.getNetworkFromChainId(assetToBuy.chainId)}
+          symbol={assetToBuy.symbol}
+          theme={theme}
+        />
+      )}
+    </Box>
+  );
+}
+
+function OutputAssetBalanceBadge() {
+  const { nativeCurrency: currentCurrency } = useAccountSettings();
+  const { assetToBuy, outputChainId } = useSwapAssetStore();
+
+  const userAssets = useAssetsToSell();
+
+  const { data: tokenDataWithPrice } = useExternalToken(
+    {
+      address: assetToBuy ? assetToBuy?.address : '',
+      network: ethereumUtils.getNetworkFromChainId(outputChainId),
+      currency: currentCurrency,
+    },
+    {
+      enabled: !!assetToBuy,
+    }
+  );
+
+  const parsedAssetToBuy = useMemo(() => {
+    if (!assetToBuy) return null;
+    const userAsset = userAssets.find(userAsset => isSameAsset(userAsset, assetToBuy));
+    return parseSearchAsset({
+      assetWithPrice: tokenDataWithPrice as unknown as ParsedAsset,
+      searchAsset: assetToBuy,
+      userAsset,
+    });
+  }, [assetToBuy, tokenDataWithPrice, userAssets]);
+
+  return <BalanceBadge label={parsedAssetToBuy?.balance.display ?? 'No balance'} />;
+}
 
 export function SwapOutputAsset() {
-  const { nativeCurrency: currentCurrency } = useAccountSettings();
-  const { outputChainId } = useSwapAssetStore();
   const { isDarkMode } = useColorMode();
-  const theme = useTheme();
-  const { bottomColor, assetToBuyShadowColor } = useAssetColors();
+  const { bottomColor } = useAssetColors();
 
   const {
     outputProgress,
     inputProgress,
-    focusedInput,
     AnimatedSwapStyles,
     SwapTextStyles,
     SwapInputController,
-    sliderXPosition,
     SwapNavigation,
     isOutputSearchFocused,
     setIsOutputSearchFocused,
@@ -47,101 +191,15 @@ export function SwapOutputAsset() {
 
   const { assetToBuy } = useSwapAssetStore();
 
-  const userAssets = useAssetsToSell();
-
-  const { data: tokenDataWithPrice } = useExternalToken({
-    address: assetToBuy?.address,
-    network: ethereumUtils.getNetworkFromChainId(outputChainId),
-    currency: currentCurrency,
-  });
-
-  const parsedAssetToBuy = useMemo(() => {
-    if (!assetToBuy) return null;
-    const userAsset = userAssets.find(userAsset => isSameAsset(userAsset, assetToBuy));
-    return parseSearchAsset({
-      assetWithPrice: tokenDataWithPrice,
-      searchAsset: assetToBuy,
-      userAsset,
-    });
-  }, [assetToBuy, tokenDataWithPrice, userAssets]);
-
-  useEffect(() => {
-    runOnUI(() => {
-      if (!parsedAssetToBuy?.native?.price?.amount) {
-        return;
-      }
-      SwapInputController.inputValues.modify(prev => {
-        const outputNativeAmount = Number(parsedAssetToBuy.native.price?.amount) * Number(prev.outputAmount);
-        return {
-          ...prev,
-          outputNativeValue: outputNativeAmount,
-        };
-      });
-    })();
-  }, [SwapInputController.inputValues, SwapInputController.percentageToSwap, parsedAssetToBuy, sliderXPosition]);
-
   return (
     <SwapInput bottomInput color={bottomColor} otherInputProgress={inputProgress} progress={outputProgress}>
       <Box as={Animated.View} style={AnimatedSwapStyles.outputStyle}>
         <Stack space="16px">
           <Columns alignHorizontal="justify" alignVertical="center">
             <Column width="content">
-              <Box paddingRight="10px">
-                {!assetToBuy ? (
-                  <Box
-                    borderRadius={18}
-                    height={{ custom: 36 }}
-                    style={[
-                      styles.solidColorCoinIcon,
-                      {
-                        backgroundColor: bottomColor,
-                      },
-                    ]}
-                    width={{ custom: 36 }}
-                  />
-                ) : (
-                  <SwapCoinIcon
-                    color={assetToBuyShadowColor}
-                    iconUrl={assetToBuy.icon_url}
-                    address={assetToBuy.address}
-                    large
-                    mainnetAddress={assetToBuy.mainnetAddress}
-                    network={ethereumUtils.getNetworkFromChainId(assetToBuy.chainId)}
-                    symbol={assetToBuy.symbol}
-                    theme={theme}
-                  />
-                )}
-              </Box>
+              <SwapInputIcon />
             </Column>
-            <GestureHandlerV1Button
-              disableButtonPressWrapper
-              onPressStartWorklet={() => {
-                'worklet';
-                focusedInput.value = 'outputAmount';
-              }}
-            >
-              <MaskedView maskElement={<FadeMask fadeEdgeInset={2} fadeWidth={8} height={36} side="right" />} style={styles.inputTextMask}>
-                <AnimatedText
-                  ellipsizeMode="clip"
-                  numberOfLines={1}
-                  size="30pt"
-                  style={SwapTextStyles.outputAmountTextStyle}
-                  text={SwapInputController.formattedOutputAmount}
-                  weight="bold"
-                />
-                <Animated.View style={[styles.caretContainer, SwapTextStyles.outputCaretStyle]}>
-                  <Box
-                    borderRadius={1}
-                    style={[
-                      styles.caret,
-                      {
-                        backgroundColor: bottomColor,
-                      },
-                    ]}
-                  />
-                </Animated.View>
-              </MaskedView>
-            </GestureHandlerV1Button>
+            <SwapOutputAmount />
             <Column width="content">
               <SwapActionButton
                 color={bottomColor}
@@ -163,7 +221,7 @@ export function SwapOutputAsset() {
               weight="heavy"
             />
             <Column width="content">
-              <BalanceBadge label={parsedAssetToBuy?.balance.display ?? 'No balance'} />
+              <OutputAssetBalanceBadge />
             </Column>
           </Columns>
         </Stack>

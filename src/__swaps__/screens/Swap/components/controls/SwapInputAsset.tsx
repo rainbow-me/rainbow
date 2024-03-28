@@ -1,5 +1,5 @@
 import MaskedView from '@react-native-masked-view/masked-view';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { StyleSheet, StatusBar } from 'react-native';
 import Animated, { runOnUI } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
@@ -20,16 +20,144 @@ import { useSwapContext } from '../../providers/swap-provider';
 import { useSwapAssetStore } from '../../state/assets';
 import { ethereumUtils } from '@/utils';
 import { useAssetColors } from '../../hooks/useAssetColors';
+import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
+import { useAccountSettings } from '@/hooks';
+import { ChainId } from '../../types/chains';
+import { useAssetsToSell } from '../../hooks/useAssetsToSell';
+import { isSameAsset, parseSearchAsset } from '../../utils/assets';
+import { ParsedAsset } from '../../types/assets';
+import BigNumber from 'bignumber.js';
+import { supportedCurrencies } from '@/references/supportedCurrencies';
+
+function SwapInputAmount() {
+  const { nativeCurrency: currentCurrency } = useAccountSettings();
+  const { assetToSell } = useSwapAssetStore();
+  const { focusedInput, SwapTextStyles, SwapInputController } = useSwapContext();
+  const { topColor } = useAssetColors();
+  const userAssets = useAssetsToSell();
+
+  const { data: tokenDataWithPrice } = useExternalToken(
+    {
+      address: assetToSell ? assetToSell?.address : '',
+      network: assetToSell
+        ? ethereumUtils.getNetworkFromChainId(Number(assetToSell.chainId))
+        : ethereumUtils.getNetworkFromChainId(ChainId.mainnet),
+      currency: currentCurrency,
+    },
+    {
+      enabled: !!assetToSell,
+      refetchInterval: 5_000,
+    }
+  );
+
+  const parsedAssetToSell = useMemo(() => {
+    if (!assetToSell) return null;
+    const userAsset = userAssets.find(userAsset => isSameAsset(userAsset, assetToSell));
+    return parseSearchAsset({
+      assetWithPrice: tokenDataWithPrice as unknown as ParsedAsset,
+      searchAsset: assetToSell,
+      userAsset,
+    });
+  }, [assetToSell, tokenDataWithPrice, userAssets]);
+
+  useEffect(() => {
+    if (!parsedAssetToSell) return;
+
+    const { decimals } = supportedCurrencies[currentCurrency];
+
+    const inputAmount = new BigNumber(parsedAssetToSell?.balance.amount || 0).toString();
+    const inputNativeAmount = new BigNumber(parsedAssetToSell?.native.price?.amount || 0)
+      .multipliedBy(new BigNumber(parsedAssetToSell?.balance.amount || 0))
+      .toFormat(decimals);
+
+    // TODO: Not sure if this is doing what we want...
+    runOnUI((inputAmount: string, inputNativeAmount: string) => {
+      'worklet';
+      SwapInputController.inputValues.modify(prev => {
+        return {
+          ...prev,
+          inputNativeAmount,
+          inputAmount,
+        };
+      });
+    })(inputAmount, inputNativeAmount);
+  }, [parsedAssetToSell, SwapInputController.inputValues, currentCurrency, SwapInputController]);
+
+  return (
+    <GestureHandlerV1Button
+      disableButtonPressWrapper
+      onPressStartWorklet={() => {
+        'worklet';
+        focusedInput.value = 'inputAmount';
+      }}
+    >
+      <MaskedView maskElement={<FadeMask fadeEdgeInset={2} fadeWidth={8} height={36} side="right" />} style={styles.inputTextMask}>
+        <AnimatedText
+          ellipsizeMode="clip"
+          numberOfLines={1}
+          size="30pt"
+          style={SwapTextStyles.inputAmountTextStyle}
+          text={SwapInputController.formattedInputAmount}
+          weight="bold"
+        />
+        <Animated.View style={[styles.caretContainer, SwapTextStyles.inputCaretStyle]}>
+          <Box
+            borderRadius={1}
+            style={[
+              styles.caret,
+              {
+                backgroundColor: topColor,
+              },
+            ]}
+          />
+        </Animated.View>
+      </MaskedView>
+    </GestureHandlerV1Button>
+  );
+}
+
+function SwapInputIcon() {
+  const { assetToSell } = useSwapAssetStore();
+  const { topColor, assetToSellShadowColor } = useAssetColors();
+  const theme = useTheme();
+
+  return (
+    <Box paddingRight="10px">
+      {!assetToSell ? (
+        <Box
+          borderRadius={18}
+          height={{ custom: 36 }}
+          style={[
+            styles.solidColorCoinIcon,
+            {
+              backgroundColor: topColor,
+            },
+          ]}
+          width={{ custom: 36 }}
+        />
+      ) : (
+        <SwapCoinIcon
+          color={assetToSellShadowColor}
+          iconUrl={assetToSell.icon_url}
+          address={assetToSell.address}
+          large
+          mainnetAddress={assetToSell.mainnetAddress}
+          network={ethereumUtils.getNetworkFromChainId(assetToSell.chainId)}
+          symbol={assetToSell.symbol}
+          theme={theme}
+        />
+      )}
+    </Box>
+  );
+}
 
 export function SwapInputAsset() {
   const { isDarkMode } = useColorMode();
-  const theme = useTheme();
-  const { topColor, assetToSellShadowColor } = useAssetColors();
+  const { topColor } = useAssetColors();
 
   const {
     outputProgress,
     inputProgress,
-    focusedInput,
     AnimatedSwapStyles,
     SwapTextStyles,
     SwapInputController,
@@ -40,83 +168,15 @@ export function SwapInputAsset() {
 
   const { assetToSell } = useSwapAssetStore();
 
-  useEffect(() => {
-    runOnUI(() => {
-      if (!assetToSell?.native?.price?.amount) {
-        return;
-      }
-      SwapInputController.inputValues.modify(prev => {
-        const inputNativeValue = Number(assetToSell.native.price?.amount) * Number(prev.inputAmount);
-        return {
-          ...prev,
-          inputNativeValue,
-        };
-      });
-    })();
-  }, [SwapInputController.inputValues, assetToSell]);
-
   return (
     <SwapInput color={topColor} otherInputProgress={outputProgress} progress={inputProgress}>
       <Box as={Animated.View} style={AnimatedSwapStyles.inputStyle}>
         <Stack space="16px">
           <Columns alignHorizontal="justify" alignVertical="center">
             <Column width="content">
-              <Box paddingRight="10px">
-                {!assetToSell ? (
-                  <Box
-                    borderRadius={18}
-                    height={{ custom: 36 }}
-                    style={[
-                      styles.solidColorCoinIcon,
-                      {
-                        backgroundColor: topColor,
-                      },
-                    ]}
-                    width={{ custom: 36 }}
-                  />
-                ) : (
-                  <SwapCoinIcon
-                    color={assetToSellShadowColor}
-                    iconUrl={assetToSell.icon_url}
-                    address={assetToSell.address}
-                    large
-                    mainnetAddress={assetToSell.mainnetAddress}
-                    network={ethereumUtils.getNetworkFromChainId(assetToSell.chainId)}
-                    symbol={assetToSell.symbol}
-                    theme={theme}
-                  />
-                )}
-              </Box>
+              <SwapInputIcon />
             </Column>
-            <GestureHandlerV1Button
-              disableButtonPressWrapper
-              onPressStartWorklet={() => {
-                'worklet';
-                focusedInput.value = 'inputAmount';
-              }}
-            >
-              <MaskedView maskElement={<FadeMask fadeEdgeInset={2} fadeWidth={8} height={36} side="right" />} style={styles.inputTextMask}>
-                <AnimatedText
-                  ellipsizeMode="clip"
-                  numberOfLines={1}
-                  size="30pt"
-                  style={SwapTextStyles.inputAmountTextStyle}
-                  text={SwapInputController.formattedInputAmount}
-                  weight="bold"
-                />
-                <Animated.View style={[styles.caretContainer, SwapTextStyles.inputCaretStyle]}>
-                  <Box
-                    borderRadius={1}
-                    style={[
-                      styles.caret,
-                      {
-                        backgroundColor: topColor,
-                      },
-                    ]}
-                  />
-                </Animated.View>
-              </MaskedView>
-            </GestureHandlerV1Button>
+            <SwapInputAmount />
             <Column width="content">
               <SwapActionButton
                 color={topColor}
