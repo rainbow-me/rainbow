@@ -2,9 +2,7 @@ name: iOS e2e tests
 
 on: [pull_request, workflow_dispatch]
 jobs:
-  # This workflow contains a single job called "ios-e2e"
   ios-e2e:
-    # The type of runner that the job will run on
     runs-on: ["self-hosted"]
     # Cancel current builds if there's a newer commit on the same branch
     concurrency: 
@@ -55,10 +53,7 @@ jobs:
 
       - name: Build the app in release mode
         run: ./node_modules/.bin/detox build --configuration ios.sim.release
-      - name: Reset Watchman
-        run: |
-          watchman watch-del '/Users/administrator/actions-runner/_work/rainbow/rainbow' || true
-          watchman watch-project '/Users/administrator/actions-runner/_work/rainbow/rainbow'
+     
       - name: Run iOS e2e tests with retry
       # change the '2' here to how many times you want the tests to rerun on failure
         run: ./scripts/run-retry-tests.sh 2
