@@ -57,7 +57,8 @@ jobs:
           watchman watch-del '/Users/administrator/actions-runner/_work/rainbow/rainbow' || true
           watchman watch-project '/Users/administrator/actions-runner/_work/rainbow/rainbow'
       - name: Run iOS e2e tests with retry
-        run: ./scripts/run-retry-tests.sh 3
+      # change the '2' here to how many times you want the tests to rerun on failure
+        run: ./scripts/run-retry-tests.sh 2
      
       - name: Upload Test Artifacts
         if: failure()
