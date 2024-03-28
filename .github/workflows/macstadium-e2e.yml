@@ -16,6 +16,9 @@ jobs:
 
       - name: Set up github keys
         run:  git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
+     
+      - name: clean ios app step
+        run: yarn clean:ios  > /dev/null 2>&1 || true
 
       - name: Set up ENV vars & scripts
         run: |
