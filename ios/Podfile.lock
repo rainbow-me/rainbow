@@ -589,7 +589,7 @@ PODS:
     - React-Core
   - react-native-view-shot (3.8.0):
     - React-Core
-  - react-native-webview (13.7.2):
+  - react-native-webview (13.8.2):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
   - react-native-widgetkit (1.0.9):
@@ -1336,7 +1336,7 @@ SPEC CHECKSUMS:
   react-native-version-number: b415bbec6a13f2df62bf978e85bc0d699462f37f
   react-native-video: c26780b224543c62d5e1b2a7244a5cd1b50e8253
   react-native-view-shot: 6b7ed61d77d88580fed10954d45fad0eb2d47688
-  react-native-webview: 0f7f561c1f64b38bd26577f3ec1fef29b13595ec
+  react-native-webview: 19aba9db98e183484969202c1181a00159b7724b
   react-native-widgetkit: efb6680df237463bbe1be3a4d1a1578a1b0bb08f
   React-NativeModulesApple: c57f3efe0df288a6532b726ad2d0322a9bf38472
   React-perflogger: 6bd153e776e6beed54c56b0847e1220a3ff92ba5
