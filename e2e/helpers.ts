@@ -51,6 +51,9 @@ export async function importWalletFlow() {
 }
 
 export async function beforeAllcleanApp({ hardhat }: { hardhat?: boolean }) {
+  // sometimes i see tests failed from the get-go
+  // giving an extra 15 to let things set up
+  await delayTime('very-long');
   jest.resetAllMocks();
   hardhat && (await startHardhat());
 }
@@ -425,7 +428,7 @@ export async function delayTime(time: string) {
     case 'long':
       return await delay(5_000);
     case 'very-long':
-      return await delay(10_000);
+      return await delay(15_000);
   }
 }
 
