@@ -23,9 +23,9 @@ import {
 } from '../constants';
 import { inputKeys, inputMethods } from '../types/swap';
 import { opacity } from '../utils/swaps';
+import { useAssetColors } from './useAssetColors';
 
 export function useSwapTextStyles({
-  bottomColor,
   focusedInput,
   inputMethod,
   inputProgress,
@@ -33,9 +33,7 @@ export function useSwapTextStyles({
   isQuoteStale,
   outputProgress,
   sliderPressProgress,
-  topColor,
 }: {
-  bottomColor: string;
   focusedInput: SharedValue<inputKeys>;
   inputMethod: SharedValue<inputMethods>;
   inputProgress: SharedValue<number>;
@@ -43,9 +41,9 @@ export function useSwapTextStyles({
   isQuoteStale: SharedValue<number>;
   outputProgress: SharedValue<number>;
   sliderPressProgress: SharedValue<number>;
-  topColor: string;
 }) {
   const { isDarkMode } = useColorMode();
+  const { topColor, bottomColor } = useAssetColors();
 
   const labelSecondary = useForegroundColor('labelSecondary');
   const labelTertiary = useForegroundColor('labelTertiary');

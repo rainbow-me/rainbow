@@ -1,28 +1,58 @@
 /* eslint-disable no-nested-ternary */
 import c from 'chroma-js';
-import React from 'react';
+import React, { useCallback } from 'react';
 import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import SwapSpinner from '@/__swaps__/assets/swapSpinner.png';
 import { ButtonPressAnimation } from '@/components/animations';
 import { AnimatedSpinner, spinnerExitConfig } from '@/__swaps__/components/animations/AnimatedSpinner';
 import { Bleed, Box, IconContainer, Text, globalColors, useColorMode } from '@/design-system';
 import { colors } from '@/styles';
-import { SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../constants';
+import { ETH_COLOR, ETH_COLOR_DARK, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../constants';
 import { opacity } from '../utils/swaps';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { AnimatedBlurView } from './AnimatedBlurView';
 import { useSwapContext } from '../providers/swap-provider';
 import { StyleSheet } from 'react-native';
+import { useSwapAssetStore } from '../state/assets';
 
 export const FlipButton = () => {
   const { isDarkMode } = useColorMode();
-  const { bottomColor, isFetching, AnimatedSwapStyles } = useSwapContext();
+
+  const { isFetching, AnimatedSwapStyles } = useSwapContext();
+  const { assetToBuy, assetToSell, setAssetToBuy, setAssetToSell } = useSwapAssetStore();
+
+  const bottomColor = (assetToBuy?.colors?.primary || assetToBuy?.colors?.fallback) ?? (isDarkMode ? ETH_COLOR_DARK : ETH_COLOR);
 
   const fetchingStyle = useAnimatedStyle(() => {
     return {
       borderWidth: isFetching ? withTiming(2, { duration: 300 }) : withTiming(THICK_BORDER_WIDTH, spinnerExitConfig),
     };
   });
+
+  const handleSwapAssets = useCallback(() => {
+    const prevAssetToSell = assetToSell;
+    const prevAssetToBuy = assetToBuy;
+
+    console.log(JSON.stringify(prevAssetToSell));
+    console.log(JSON.stringify(prevAssetToBuy));
+
+    if (prevAssetToBuy) {
+      setAssetToSell(prevAssetToBuy);
+    }
+
+    if (prevAssetToSell) {
+      setAssetToBuy(prevAssetToSell);
+    }
+
+    // TODO: Fetch current prices of each asset and update the input and output values on the native thread
+    // runOnUI(() => {
+    //   SwapInputController.inputValues.modify(prev => ({
+    //     ...prev,
+    //     // inputNativeValue: prevAssetToBuy.native.price.amount,
+    //     outputNativeValue: prevAssetToSell.native.price.amount,
+    //   }));
+    // })();
+  }, [assetToBuy, assetToSell, setAssetToBuy, setAssetToSell]);
 
   return (
     <Box
@@ -43,7 +73,7 @@ export const FlipButton = () => {
           shadowRadius: isDarkMode ? 6 : 8,
         }}
       >
-        <ButtonPressAnimation scaleTo={0.8} style={{ paddingHorizontal: 20, paddingVertical: 8 }}>
+        <ButtonPressAnimation onPress={handleSwapAssets} scaleTo={0.8} style={{ paddingHorizontal: 20, paddingVertical: 8 }}>
           {/* TODO: Temp fix - rewrite to actually avoid type errors */}
           {/* @ts-expect-error The conditional as={} is causing type errors */}
           <Box

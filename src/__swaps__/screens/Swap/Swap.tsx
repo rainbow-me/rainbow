@@ -4,7 +4,7 @@ import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
 import { IS_ANDROID } from '@/env';
 import { Page } from '@/components/layout';
-import { Box } from '@/design-system';
+import { Box, DebugLayout } from '@/design-system';
 
 import { SheetGestureBlocker } from './components/SheetGestureBlocker';
 import { SwapBackground } from './components/SwapBackground';
@@ -53,6 +53,7 @@ import { SwapAmountInputs } from './components/controls/SwapAmountInputs';
  */
 
 export function SwapScreen() {
+  console.log('rendering swap screen');
   return (
     <SheetGestureBlocker>
       <Box as={Page} style={styles.rootViewBackground} testID="swap-screen" width="full">

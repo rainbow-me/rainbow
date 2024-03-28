@@ -36,8 +36,11 @@ import {
 import { clamp, opacity } from '../utils/swaps';
 import { useSwapContext } from '../providers/swap-provider';
 import { SwapCoinIcon } from './SwapCoinIcon';
-import { INPUT_ADDRESS, INPUT_NETWORK, INPUT_SYMBOL } from '../dummyValues';
 import { useTheme } from '@/theme';
+import { useSwapAssetStore } from '../state/assets';
+import { ethereumUtils } from '@/utils';
+import { ChainId } from '../types/chains';
+import { useAssetColors } from '../hooks/useAssetColors';
 
 type SwapSliderProps = {
   dualColor?: boolean;
@@ -56,7 +59,10 @@ export const SwapSlider = ({
 }: SwapSliderProps) => {
   const theme = useTheme();
   const { isDarkMode } = useColorMode();
-  const { topColor, bottomColor, SwapInputController, sliderXPosition, solidColorCoinIcons, sliderPressProgress } = useSwapContext();
+  const { SwapInputController, sliderXPosition, sliderPressProgress } = useSwapContext();
+  const { topColor, bottomColor, assetToSellShadowColor } = useAssetColors();
+
+  const { assetToSell } = useSwapAssetStore();
 
   const panRef = useRef();
   const tapRef = useRef();
@@ -350,23 +356,16 @@ export const SwapSlider = ({
               <Columns alignHorizontal="justify" alignVertical="center">
                 <Inline alignVertical="center" space="6px" wrap={false}>
                   <Bleed vertical="4px">
-                    {solidColorCoinIcons ? (
-                      <Box
-                        borderRadius={8}
-                        height={{ custom: 16 }}
-                        style={{ backgroundColor: topColor, opacity: 0.4 }}
-                        width={{ custom: 16 }}
-                      />
-                    ) : (
-                      <SwapCoinIcon
-                        address={INPUT_ADDRESS}
-                        mainnetAddress={INPUT_ADDRESS}
-                        network={INPUT_NETWORK}
-                        small
-                        symbol={INPUT_SYMBOL}
-                        theme={theme}
-                      />
-                    )}
+                    <SwapCoinIcon
+                      color={assetToSellShadowColor}
+                      iconUrl={assetToSell?.icon_url}
+                      address={assetToSell?.address ?? ''}
+                      mainnetAddress={assetToSell?.mainnetAddress ?? ''}
+                      network={ethereumUtils.getNetworkFromChainId(Number(assetToSell?.chainId ?? ChainId.mainnet))}
+                      small
+                      symbol={assetToSell?.symbol ?? ''}
+                      theme={theme}
+                    />
                   </Bleed>
                   <Inline alignVertical="bottom" wrap={false}>
                     <Text color={isDarkMode ? 'labelQuaternary' : 'labelTertiary'} size="15pt" style={{ marginRight: 3 }} weight="bold">

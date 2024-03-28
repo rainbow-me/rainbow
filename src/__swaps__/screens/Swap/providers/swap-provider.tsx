@@ -1,14 +1,16 @@
 import React, { createContext, useContext, ReactNode, SetStateAction, Dispatch, useState } from 'react';
 import { SharedValue, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { inputKeys } from '../types/swap';
-import { INITIAL_SLIDER_POSITION, SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, SLIDER_WIDTH, ETH_COLOR_DARK, ETH_COLOR } from '../constants';
-import { INPUT_ASSET_BALANCE, INPUT_ASSET_USD_PRICE, OUTPUT_ASSET_USD_PRICE, OUTPUT_COLOR } from '../dummyValues';
-import { useColorMode } from '@/design-system';
+import { INITIAL_SLIDER_POSITION, SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, SLIDER_WIDTH } from '../constants';
 import { useAnimatedSwapStyles } from '../hooks/useAnimatedSwapStyles';
 import { useSwapTextStyles } from '../hooks/useSwapTextStyles';
 import { useSwapNavigation } from '../hooks/useSwapNavigation';
 import { useSwapInputsController } from '../hooks/useSwapInputsController';
 import { StyleProp, TextStyle } from 'react-native';
+import { useSwapAssetStore } from '../state/assets';
+import { useExternalToken } from '../../../../resources/assets/externalAssetsQuery';
+import { ethereumUtils } from '@/utils';
+import { useAccountSettings } from '@/hooks';
 
 interface SwapContextType {
   inputProgress: SharedValue<number>;
@@ -16,13 +18,6 @@ interface SwapContextType {
   sliderXPosition: SharedValue<number>;
   sliderPressProgress: SharedValue<number>;
   focusedInput: SharedValue<inputKeys>;
-
-  topColor: string;
-  setTopColor: Dispatch<SetStateAction<string>>;
-  bottomColor: string;
-  setBottomColor: Dispatch<SetStateAction<string>>;
-  solidColorCoinIcons: boolean;
-  setSolidColorCoinIcons: Dispatch<SetStateAction<boolean>>;
   isFetching: boolean;
   setIsFetching: Dispatch<SetStateAction<boolean>>;
   isInputSearchFocused: boolean;
@@ -47,25 +42,37 @@ interface SwapProviderProps {
 }
 
 export const SwapProvider = ({ children }: SwapProviderProps) => {
-  const { isDarkMode } = useColorMode();
+  const { nativeCurrency: currentCurrency } = useAccountSettings();
+
   const inputProgress = useSharedValue(0);
   const outputProgress = useSharedValue(0);
   const sliderXPosition = useSharedValue(SLIDER_WIDTH * INITIAL_SLIDER_POSITION);
   const sliderPressProgress = useSharedValue(SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT);
   const focusedInput = useSharedValue<inputKeys>('inputAmount');
 
-  const [topColor, setTopColor] = useState(isDarkMode ? ETH_COLOR_DARK : ETH_COLOR);
-  const [bottomColor, setBottomColor] = useState(OUTPUT_COLOR);
-  const [solidColorCoinIcons, setSolidColorCoinIcons] = useState(false);
+  const { assetToBuy, assetToSell, outputChainId } = useSwapAssetStore();
+
+  const { data: assetToBuyTokenDataWithPrice } = useExternalToken(
+    {
+      address: assetToBuy?.address as string,
+      network: ethereumUtils.getNetworkFromChainId(outputChainId),
+      currency: currentCurrency,
+    },
+    {
+      staleTime: 5_000,
+      enabled: !!assetToBuy,
+    }
+  );
+
   const [isFetching, setIsFetching] = useState(false);
   const [isInputSearchFocused, setIsInputSearchFocused] = useState(false);
   const [isOutputSearchFocused, setIsOutputSearchFocused] = useState(false);
 
   const SwapInputController = useSwapInputsController({
     focusedInput,
-    inputAssetBalance: INPUT_ASSET_BALANCE,
-    inputAssetUsdPrice: INPUT_ASSET_USD_PRICE,
-    outputAssetUsdPrice: OUTPUT_ASSET_USD_PRICE,
+    inputAssetBalance: assetToSell?.balance.amount ? Number(assetToSell.balance.amount) : 0,
+    inputAssetUsdPrice: assetToSell?.native.price?.amount ? Number(assetToSell?.native.price?.amount) : 0,
+    outputAssetUsdPrice: assetToBuyTokenDataWithPrice?.native.price?.amount ? Number(assetToBuyTokenDataWithPrice.native.price.amount) : 0,
     setIsFetching,
     sliderXPosition,
   });
@@ -73,12 +80,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const AnimatedSwapStyles = useAnimatedSwapStyles({ inputProgress, outputProgress });
   const SwapTextStyles = useSwapTextStyles({
     ...SwapInputController,
-    bottomColor,
     focusedInput,
     inputProgress,
     outputProgress,
     sliderPressProgress,
-    topColor,
   });
 
   const SwapNavigation = useSwapNavigation({
@@ -134,12 +139,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         sliderXPosition,
         sliderPressProgress,
         focusedInput,
-        topColor,
-        setTopColor,
-        bottomColor,
-        setBottomColor,
-        solidColorCoinIcons,
-        setSolidColorCoinIcons,
         isFetching,
         setIsFetching,
         isInputSearchFocused,
