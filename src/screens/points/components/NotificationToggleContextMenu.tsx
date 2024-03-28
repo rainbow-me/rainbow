@@ -12,6 +12,7 @@ import { IS_ANDROID } from '@/env';
 import Spinner from '@/components/Spinner';
 import ActivityIndicator from '@/components/ActivityIndicator';
 import * as i18n from '@/languages';
+import { useTheme } from '@/theme';
 
 const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 
@@ -19,6 +20,7 @@ export const NotificationToggleContextMenu = () => {
   const separatorTertiary = useForegroundColor('separatorTertiary');
   const { colorMode } = useColorMode();
   const { isConnected } = useNetInfo();
+  const { isDarkMode } = useTheme();
   const { globalNotificationSettings } = useAllNotificationSettingsFromStorage();
 
   const [topicSubscriptionInProgress, setTopicSubscriptionInProgress] = useState<boolean>(false);
@@ -62,7 +64,7 @@ export const NotificationToggleContextMenu = () => {
   }, [toggleNotifications]);
 
   return (
-    <AccentColorProvider color={separatorTertiary}>
+    <AccentColorProvider color={isDarkMode ? '#F5F8FF0F' : '#1B1D1F0F'}>
       <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={onPressMenuItem}>
         <Box
           background="accent"

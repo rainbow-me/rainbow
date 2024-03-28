@@ -205,7 +205,7 @@ export const backgroundColors: Record<BackgroundColor, BackgroundColorValue | Co
       mode: 'light',
     },
     dark: {
-      color: deprecatedColors.darker,
+      color: globalColors.grey100,
       mode: 'dark',
     },
   },
@@ -215,7 +215,7 @@ export const backgroundColors: Record<BackgroundColor, BackgroundColorValue | Co
       mode: 'light',
     },
     dark: {
-      color: deprecatedColors.darker,
+      color: globalColors.white10,
       mode: 'dark',
     },
   },
@@ -225,7 +225,7 @@ export const backgroundColors: Record<BackgroundColor, BackgroundColorValue | Co
       mode: 'light',
     },
     dark: {
-      color: deprecatedColors.darker,
+      color: globalColors.white10,
       mode: 'dark',
     },
   },
@@ -235,7 +235,7 @@ export const backgroundColors: Record<BackgroundColor, BackgroundColorValue | Co
       mode: 'light',
     },
     dark: {
-      color: deprecatedColors.dark,
+      color: globalColors.blueGrey100,
       mode: 'dark',
     },
   },
