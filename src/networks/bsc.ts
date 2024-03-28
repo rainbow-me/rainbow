@@ -60,7 +60,9 @@ export const getBSCNetworkObject = (): NetworkProperties => {
       defaultSlippage: 200,
     },
 
-    nfts: {},
+    nfts: {
+      simplehashNetwork: 'bsc',
+    },
 
     // design tings
     colors: {

@@ -59,7 +59,7 @@ export const getArbitrumNetworkObject = (): NetworkProperties => {
       defaultSlippage: 200,
     },
 
-    nfts: {},
+    nfts: { simplehashNetwork: 'arbitrum' },
 
     // design tings
     colors: {

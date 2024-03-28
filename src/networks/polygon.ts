@@ -59,7 +59,7 @@ export const getPolygonNetworkObject = (): NetworkProperties => {
       defaultToFastGas: true,
     },
 
-    nfts: {},
+    nfts: { simplehashNetwork: 'polygon' },
 
     // design tings
     colors: {
