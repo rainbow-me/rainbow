@@ -1,8 +1,6 @@
 import { device } from 'detox';
 import {
-  cleanApp,
-  startHardhat,
-  killHardhat,
+  beforeAllcleanApp,
   importWalletFlow,
   sendETHtoTestWallet,
   waitAndTap,
@@ -13,19 +11,17 @@ import {
   typeText,
   tapByText,
   delayTime,
+  afterAllcleanApp,
 } from './helpers';
 
 const android = device.getPlatform() === 'android';
 
 describe('Send Sheet Interaction Flow Contacts', () => {
   beforeAll(async () => {
-    await device.reloadReactNative();
-    await cleanApp();
-    await startHardhat();
+    await beforeAllcleanApp({ hardhat: true });
   });
   afterAll(async () => {
-    await device.clearKeychain();
-    await killHardhat();
+    await afterAllcleanApp({ hardhat: true });
   });
 
   it('Import a wallet and go to welcome', async () => {

@@ -1,7 +1,7 @@
 import { device } from 'detox';
 import {
   tap,
-  cleanApp,
+  beforeAllcleanApp,
   checkIfVisible,
   waitAndTap,
   checkIfExists,
@@ -10,17 +10,17 @@ import {
   checkIfNotVisible,
   delayTime,
   importWalletFlow,
+  afterAllcleanApp,
 } from './helpers';
 
 const ios = device.getPlatform() === 'ios';
 
 describe('Discover Screen Flow', () => {
   beforeAll(async () => {
-    await device.reloadReactNative();
-    await cleanApp();
+    await beforeAllcleanApp({ hardhat: false });
   });
   afterAll(async () => {
-    await device.clearKeychain();
+    await afterAllcleanApp({ hardhat: false });
   });
   it('Should import wallet and go to wallet screen', async () => {
     await importWalletFlow();

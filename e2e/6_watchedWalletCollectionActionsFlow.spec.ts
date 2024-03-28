@@ -1,8 +1,6 @@
-import { device } from 'detox';
 import {
   tap,
-  cleanApp,
-  killHardhat,
+  beforeAllcleanApp,
   waitAndTap,
   clearField,
   typeText,
@@ -10,16 +8,15 @@ import {
   swipe,
   checkIfDoesntExist,
   delayTime,
+  afterAllcleanApp,
 } from './helpers';
 
 describe('Watched showcase and hidden actions flow', () => {
   beforeAll(async () => {
-    await device.reloadReactNative();
-    await cleanApp();
+    await beforeAllcleanApp({ hardhat: false });
   });
   afterAll(async () => {
-    await device.clearKeychain();
-    await killHardhat();
+    await afterAllcleanApp({ hardhat: false });
   });
 
   it('watches a wallet and loads wallet screen', async () => {

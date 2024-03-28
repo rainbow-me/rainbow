@@ -50,8 +50,14 @@ export async function importWalletFlow() {
   await checkIfVisible('wallet-screen');
 }
 
-export async function cleanApp() {
+export async function beforeAllcleanApp({ hardhat }: { hardhat?: boolean }) {
   jest.resetAllMocks();
+  hardhat && (await startHardhat());
+}
+
+export async function afterAllcleanApp({ hardhat }: { hardhat?: boolean }) {
+  await device.clearKeychain();
+  hardhat && (await killHardhat());
 }
 
 export async function tap(elementId: string | RegExp) {

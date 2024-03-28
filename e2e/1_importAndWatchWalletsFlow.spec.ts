@@ -1,6 +1,6 @@
 import { device } from 'detox';
 import {
-  cleanApp,
+  beforeAllcleanApp,
   checkIfVisible,
   waitAndTap,
   checkIfExists,
@@ -8,6 +8,7 @@ import {
   checkIfElementHasString,
   authenticatePin,
   delayTime,
+  afterAllcleanApp,
 } from './helpers';
 import { WALLET_VARS } from './testVariables';
 
@@ -15,11 +16,10 @@ const android = device.getPlatform() === 'android';
 
 describe('Import from private key flow', () => {
   beforeAll(async () => {
-    await device.reloadReactNative();
-    await cleanApp();
+    await beforeAllcleanApp({ hardhat: false });
   });
   afterAll(async () => {
-    await device.clearKeychain();
+    await afterAllcleanApp({ hardhat: false });
   });
   it('with 0x - Should show the welcome screen', async () => {
     await checkIfVisible('welcome-screen');
