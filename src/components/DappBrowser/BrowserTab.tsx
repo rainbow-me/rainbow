@@ -347,7 +347,6 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
       // Set the logo if it's not already set for the current website
       // ⚠️ TODO: Modify this to check against the root domain or subdomain+domain
       if ((isLogoUnset && !isEmpty(logo.current)) || navState.url !== tabStates[tabIndex].url) {
-        console.log('UPDATING THE LOGO: ' + logo.current);
         updateActiveTabState(
           {
             logoUrl: logo.current,
