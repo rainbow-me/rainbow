@@ -36,8 +36,9 @@ export const SearchInput = ({
   onSubmitEditing,
   isFocused,
   isFocusedValue,
+  logoUrl,
+  canGoBack,
 }: {
-  // canGoBack: boolean; // <- re-enable this when canGoBack behavior is fixed
   inputRef: RefObject<TextInput>;
   formattedInputValue: { value: string; tabIndex: number };
   inputValue: string | undefined;
@@ -48,6 +49,8 @@ export const SearchInput = ({
   onSubmitEditing: (event: NativeSyntheticEvent<TextInputSubmitEditingEventData>) => void;
   isFocused: boolean;
   isFocusedValue: SharedValue<boolean>;
+  logoUrl: string | undefined | null;
+  canGoBack: boolean;
 }) => {
   const { animatedActiveTabIndex, goBack, onRefresh, tabViewProgress } = useBrowserContext();
   const { isFavorite, addFavorite, removeFavorite } = useFavoriteDappsStore();
@@ -104,16 +107,13 @@ export const SearchInput = ({
         const site: Omit<Site, 'timestamp'> = {
           name: getNameFromFormattedUrl(formattedUrl),
           url: inputValue,
-          // ⚠️ Removed the favicons for now since they tend to be worse
-          // than having no image. Need to pull in dapp metadata and ideally
-          // grab the website's apple-touch-icon as a fallback if it exists.
-          image: '',
+          image: logoUrl || `https://${formattedUrl}/apple-touch-icon.png`,
         };
         addFavorite(site);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formattedUrl, inputValue]);
+  }, [formattedUrl, inputValue, logoUrl]);
 
   const menuConfig = useMemo(
     () => ({
@@ -137,21 +137,20 @@ export const SearchInput = ({
               },
             }
           : {},
-        // ⚠️ TODO: Re-enable this when canGoBack behavior is fixed:
-        // canGoBack
-        //   ? {
-        //       actionKey: 'back',
-        //       actionTitle: 'Back',
-        //       icon: {
-        //         iconType: 'SYSTEM',
-        //         iconValue: 'arrow.uturn.left',
-        //       },
-        //     }
-        //   : {},
+        canGoBack
+          ? {
+              actionKey: 'back',
+              actionTitle: 'Back',
+              icon: {
+                iconType: 'SYSTEM',
+                iconValue: 'arrow.uturn.left',
+              },
+            }
+          : {},
       ],
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [/* canGoBack, */ isFavorite(formattedUrl), isGoogleSearch]
+    [canGoBack, isFavorite(formattedUrl), isGoogleSearch]
   );
 
   const onPressMenuItem = async ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: 'share' | 'favorite' | 'back' } }) => {
