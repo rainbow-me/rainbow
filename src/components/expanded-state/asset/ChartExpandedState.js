@@ -32,7 +32,7 @@ import styled from '@/styled-thing';
 import { ethereumUtils, safeAreaInsetValues } from '@/utils';
 import AvailableNetworksv2 from '@/components/expanded-state/AvailableNetworksv2';
 import AvailableNetworksv1 from '@/components/expanded-state/AvailableNetworks';
-import { Box } from '@/design-system';
+import { Box, Separator, useBackgroundColor } from '@/design-system';
 import { getNetworkObj } from '@/networks';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { bigNumberFormat } from '@/helpers/bigNumberFormat';
@@ -151,6 +151,8 @@ export default function ChartExpandedState({ asset }) {
     params: { fromDiscover = false },
   } = useRoute();
 
+  const surfacePrimaryElevated = useBackgroundColor('surfacePrimaryElevated');
+
   const [carouselHeight, setCarouselHeight] = useState(defaultCarouselHeight);
   const [additionalContentHeight, setAdditionalContentHeight] = useState(0);
 
@@ -256,6 +258,7 @@ export default function ChartExpandedState({ asset }) {
       additionalTopPadding={android}
       contentHeight={ChartExpandedStateSheetHeight}
       scrollEnabled
+      backgroundColor={surfacePrimaryElevated}
       {...(ios ? { height: '100%' } : { additionalTopPadding: true, contentHeight: screenHeight - 80 })}
     >
       <ChartPathProvider data={throttledData}>
@@ -272,7 +275,7 @@ export default function ChartExpandedState({ asset }) {
           throttledData={throttledData}
         />
       </ChartPathProvider>
-      <SheetDivider />
+      <Separator color="separatorTertiary" />
       {hasBalance && (
         <TokenInfoSection>
           <TokenInfoRow>
