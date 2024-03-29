@@ -38,10 +38,7 @@ export const gasStore = createStore<GasStore>(
         maxPriorityFeePerGas: '0',
         maxFeePerGas: '0',
       },
-      gasFee: {
-        amount: '0',
-        display: '0',
-      },
+      gasFee: {},
     } as GasFeeParams | GasFeeLegacyParams,
     gasFeeParamsBySpeed: {} as GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed,
     customGasModified: false,

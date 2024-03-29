@@ -21,7 +21,7 @@ import { parseGasFeeParamsBySpeed } from '@/__swaps__/utils/gasUtils';
 import { useDerivedValue } from 'react-native-reanimated';
 import { capitalize } from '../utils/strings';
 import { ParsedAddressAsset } from '@/entities';
-import { GasFeeParamsBySpeed, GasSpeed } from '@/__swaps__/types/gas';
+import { GasFeeParamsBySpeed } from '@/__swaps__/types/gas';
 const { GasSpeedOrder, CUSTOM, URGENT, NORMAL, FAST, GAS_ICONS, GAS_EMOJIS } = gasUtils;
 const mockedGasLimit = 21000;
 
@@ -46,7 +46,7 @@ export const GasButton = ({ accentColor }: { accentColor?: string }) => {
     gasFeeBySpeed = parseGasFeeParamsBySpeed({ chainId, data, gasLimit: mockedGasLimit, nativeAsset, currency: nativeCurrency });
   const [showGasOptions, setShowGasOptions] = useState(false);
   const animatedGas = useDerivedValue(() => {
-    return gasFeeBySpeed[selectedGas?.option]?.gasFee?.display ?? '0.01';
+    return gasFeeBySpeed[selectedGas?.option]?.gasFee?.display ?? '$0.01';
   }, [gasFeeBySpeed, selectedGas]);
 
   return (
@@ -66,7 +66,7 @@ export const GasButton = ({ accentColor }: { accentColor?: string }) => {
                 􀙭
               </TextIcon>
               <Text color="label" size="15pt" weight="heavy">
-                {capitalize(gasFeeParamsBySpeed ?? FAST)}
+                {capitalize(gasFeeParamsBySpeed || FAST)}
               </Text>
             </Inline>
             <TextIcon color="labelSecondary" height={10} size="icon 13px" weight="bold" width={12}>
@@ -92,12 +92,9 @@ const GasMenu = ({ flashbotTransaction, children, gasFeeBySpeed }) => {
   const theme = useTheme();
   const { colors } = theme;
   const { navigate } = useNavigation();
-  const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
   const { selectedGas, gasFeeParamsBySpeed, setGasFeeParamsBySpeed, setSelectedGas } = useGasStore();
   const { params } = useRoute();
   const { currentNetwork, asset, fallbackColor } = params || {};
-  const chainId = getNetworkObj(currentNetwork).id;
-  const { data, isLoading } = useMeteorology({ chainId });
   const speedOptions = useMemo(() => {
     return getNetworkObj(currentNetwork).gas.speeds;
   }, [currentNetwork]);
@@ -108,19 +105,7 @@ const GasMenu = ({ flashbotTransaction, children, gasFeeBySpeed }) => {
     shouldOpen: false,
   });
 
-  const price = useMemo(() => {
-    const gasPrice = selectedGas?.gasFee?.display;
-    if (isNil(gasPrice)) return null;
-    return gasPrice
-      .replace(',', '') // In case gas price is > 1k!
-      .replace(nativeCurrencySymbol, '')
-      .trim();
-  }, [nativeCurrencySymbol, selectedGas]);
-
-  const gasIsNotReady = useMemo(
-    () => isNil(price) || isEmpty(gasFeeParamsBySpeed) || isEmpty(selectedGas?.gasFee),
-    [gasFeeParamsBySpeed, price, selectedGas]
-  );
+  const gasIsNotReady = useMemo(() => isEmpty(gasFeeParamsBySpeed) || isEmpty(selectedGas?.gasFee), [gasFeeParamsBySpeed, selectedGas]);
   const openCustomOptionsRef = useRef();
 
   const openCustomGasSheet = useCallback(() => {
@@ -169,7 +154,7 @@ const GasMenu = ({ flashbotTransaction, children, gasFeeBySpeed }) => {
     buttonIndex => {
       switch (buttonIndex) {
         case 0:
-          setGasFeeParamsBySpeed({ gasFeeParamsBySpeed: NORMAL as GasFeeParamsBySpeed });
+          setGasFeeParamsBySpeed({ gasFeeParamsBySpeed: NORMAL });
           break;
         case 1:
           setGasFeeParamsBySpeed({ gasFeeParamsBySpeed: FAST });
@@ -238,16 +223,6 @@ const GasMenu = ({ flashbotTransaction, children, gasFeeBySpeed }) => {
         {children}
       </ContextMenuButton>
     );
-  }, [
-    colors,
-    currentNetwork,
-    gasIsNotReady,
-    gasOptionsAvailable,
-    handlePressMenuItem,
-    menuConfig,
-    rawColorForAsset,
-    showGasOptions,
-    theme,
-  ]);
+  }, [colors, currentNetwork, gasIsNotReady, gasOptionsAvailable, handlePressMenuItem, menuConfig, rawColorForAsset, theme]);
   return <GasSpeedPagerCentered testID="gas-speed-pager">{renderGasSpeedPager}</GasSpeedPagerCentered>;
 };
