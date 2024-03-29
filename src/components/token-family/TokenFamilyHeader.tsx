@@ -6,7 +6,7 @@ import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { useLatestCallback } from '../../hooks';
 import { ButtonPressAnimation } from '../animations';
 import TokenFamilyHeaderIcon from './TokenFamilyHeaderIcon';
-import { Box, Text } from '@/design-system';
+import { Box, Text, useForegroundColor } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import { ThemeContextProps } from '@/theme';
 
@@ -53,8 +53,6 @@ type Props = {
 };
 
 const TokenFamilyHeader = ({ childrenAmount, emoji, familyImage, isOpen, onPress, testID, title, theme }: Props) => {
-  const { colors } = theme;
-
   const toValue = Number(!!isOpen);
 
   const aRef = useRef<{
@@ -121,12 +119,15 @@ const TokenFamilyHeader = ({ childrenAmount, emoji, familyImage, isOpen, onPress
     [animation]
   );
 
+  const label = useForegroundColor('label');
+  const labelSecondary = useForegroundColor('labelSecondary');
+
   return (
     <ButtonPressAnimation onPress={handlePress} scaleTo={1.05} testID={testID}>
-      <Box background="surfacePrimaryElevated" style={[sx.content]}>
+      <Box background="surfacePrimary" style={[sx.content]}>
         <View style={[sx.center, { marginRight: emoji ? 5 : 0 }]}>
           {emoji ? (
-            <Text containsEmoji color="primary (Deprecated)" size="16px / 22px (Deprecated)">
+            <Text containsEmoji color="label" size="16px / 22px (Deprecated)">
               {emoji}
             </Text>
           ) : (
@@ -135,7 +136,7 @@ const TokenFamilyHeader = ({ childrenAmount, emoji, familyImage, isOpen, onPress
         </View>
         <View style={[sx.title, { paddingLeft: 10 }]}>
           <Text
-            color={title === lang.t('button.hidden') ? 'secondary60 (Deprecated)' : 'primary (Deprecated)'}
+            color={title === lang.t('button.hidden') ? 'labelSecondary' : 'label'}
             numberOfLines={1}
             size="18px / 27px (Deprecated)"
             weight="heavy"
@@ -145,11 +146,7 @@ const TokenFamilyHeader = ({ childrenAmount, emoji, familyImage, isOpen, onPress
         </View>
         <View style={[sx.center, sx.amountContainer]}>
           <Animated.View style={amountAnimatedStyles}>
-            <Text
-              align="right"
-              color={title === lang.t('button.hidden') ? 'secondary60 (Deprecated)' : 'primary (Deprecated)'}
-              size="18px / 27px (Deprecated)"
-            >
+            <Text align="right" color={title === lang.t('button.hidden') ? 'labelSecondary' : 'label'} size="18px / 27px (Deprecated)">
               {childrenAmount}
             </Text>
           </Animated.View>
@@ -159,7 +156,7 @@ const TokenFamilyHeader = ({ childrenAmount, emoji, familyImage, isOpen, onPress
               // @ts-expect-error static image source
               source={CaretImageSource}
               style={sx.chevron}
-              tintColor={title === lang.t('button.hidden') ? colors.blueGreyDark60 : colors.dark}
+              tintColor={title === lang.t('button.hidden') ? labelSecondary : label}
             />
           </Animated.View>
         </View>

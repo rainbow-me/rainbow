@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Source } from 'react-native-fast-image';
 import eyeSlash from '../../assets/sf-eye.slash.png';
-import { Text } from '@/design-system';
+import { Text, useBackgroundColor, useForegroundColor } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import { borders } from '@/styles';
 import { ThemeContextProps } from '@/theme';
@@ -30,13 +30,15 @@ const circleStyle = borders.buildCircleAsObject(30);
 
 export default React.memo(function TokenFamilyHeaderIcon({ familyImage, familyName, style, theme }: Props) {
   const { colors } = theme;
+  const labelSecondary = useForegroundColor('labelSecondary');
+  const surfacePrimary = useBackgroundColor('surfacePrimary');
 
   const shadows = useMemo(() => shadowsFactory(colors), [colors]);
 
   if (familyName === i18n.t(i18n.l.account.tab_showcase)) {
     return (
       <View style={sx.trophy}>
-        <Text align="center" containsEmoji color="primary (Deprecated)" size="16px / 22px (Deprecated)">
+        <Text align="center" containsEmoji color="label" size="16px / 22px (Deprecated)">
           🏆
         </Text>
       </View>
@@ -46,7 +48,7 @@ export default React.memo(function TokenFamilyHeaderIcon({ familyImage, familyNa
   if (familyName === 'Selling') {
     return (
       <View style={sx.trophy}>
-        <Text align="center" containsEmoji color="primary (Deprecated)" size="16px / 22px (Deprecated)">
+        <Text align="center" containsEmoji color="label" size="16px / 22px (Deprecated)">
           💸
         </Text>
       </View>
@@ -66,7 +68,7 @@ export default React.memo(function TokenFamilyHeaderIcon({ familyImage, familyNa
           },
         ]}
       >
-        <ImgixImage source={eyeSlash as Source} style={{ height: 17, width: 25 }} tintColor={colors.blueGreyDark60} size={30} />
+        <ImgixImage source={eyeSlash as Source} style={{ height: 17, width: 25 }} tintColor={labelSecondary} size={30} />
       </View>
     );
   }
@@ -79,7 +81,7 @@ export default React.memo(function TokenFamilyHeaderIcon({ familyImage, familyNa
 
   return (
     // @ts-expect-error ShadowStack is not migrated to TS.
-    <ShadowStack {...circleStyle} backgroundColor={colors.white} shadows={shadows} style={style}>
+    <ShadowStack {...circleStyle} backgroundColor={surfacePrimary} shadows={shadows} style={style}>
       {familyImage ? (
         <ImgixImage size={30} source={source} style={circleStyle} />
       ) : (
