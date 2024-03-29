@@ -2,12 +2,10 @@ import React, { useMemo, useState, useCallback, useRef, useEffect } from 'react'
 import { InteractionManager, Keyboard } from 'react-native';
 import { ButtonPressAnimation } from '@/components/animations';
 import { AnimatedText, Inline, Stack, Text, TextIcon } from '@/design-system';
-import { gasStore, useGasStore } from '@/state/gas/gasStore';
+import { useGasStore } from '@/state/gas/gasStore';
 import { Centered } from '@/components/layout';
 import { useTheme } from '@/theme';
 import { IS_ANDROID } from '@/env';
-import { GasSpeedLabelPager } from '@/components/gas';
-import makeColorMoreChill from 'make-color-more-chill';
 import { getNetworkObj } from '@/networks';
 import { useRoute } from '@react-navigation/native';
 import { useAccountSettings, useColorForAsset } from '@/hooks';
@@ -20,26 +18,24 @@ import { ethereumUtils, gasUtils } from '@/utils';
 import styled from '@/styled-thing';
 import { useMeteorology } from '@/__swaps__/utils/meteorology';
 import { parseGasFeeParamsBySpeed } from '@/__swaps__/utils/gasUtils';
-import { toFixedDecimals } from '../../../../helpers/utilities';
 import { useDerivedValue } from 'react-native-reanimated';
 import { capitalize } from '../utils/strings';
-import { current } from 'immer';
-import { ParsedAsset } from '@/__swaps__/types/assets';
 import { ParsedAddressAsset } from '@/entities';
-import { GasFeeParams, GasFeeParamsBySpeed } from '@/__swaps__/types/gas';
+import { GasFeeParamsBySpeed, GasSpeed } from '@/__swaps__/types/gas';
 const { GasSpeedOrder, CUSTOM, URGENT, NORMAL, FAST, GAS_ICONS, GAS_EMOJIS } = gasUtils;
 const mockedGasLimit = 21000;
-const mockedNativeAsset = { address: '0x0000000000000000000000000000000000000000', chainId: 1, decimals: 18, symbol: 'ETH' };
+
 export const GasButton = ({ accentColor }: { accentColor?: string }) => {
   const { params } = useRoute();
-  const { currentNetwork } = params || {};
+  const { currentNetwork } = (params as any) || {};
   const chainId = getNetworkObj(currentNetwork).id;
   const { selectedGas, gasFeeParamsBySpeed } = useGasStore();
   const { data, isLoading } = useMeteorology({ chainId });
   const [nativeAsset, setNativeAsset] = useState<ParsedAddressAsset | undefined>();
+  const { nativeCurrency } = useAccountSettings();
   useEffect(() => {
     const getNativeAsset = async () => {
-      const theNativeAsset = await ethereumUtils.getNativeAssetForNetwork(currentNetwork, '0x0000000000000000000000000000000000000000');
+      const theNativeAsset = await ethereumUtils.getNativeAssetForNetwork(currentNetwork);
       setNativeAsset(theNativeAsset);
     };
     getNativeAsset();
@@ -47,7 +43,7 @@ export const GasButton = ({ accentColor }: { accentColor?: string }) => {
 
   let gasFeeBySpeed = {} as GasFeeParamsBySpeed;
   if (!isLoading && nativeAsset)
-    gasFeeBySpeed = parseGasFeeParamsBySpeed({ chainId, data, gasLimit: mockedGasLimit, nativeAsset, currency: 'USD' });
+    gasFeeBySpeed = parseGasFeeParamsBySpeed({ chainId, data, gasLimit: mockedGasLimit, nativeAsset, currency: nativeCurrency });
   const [showGasOptions, setShowGasOptions] = useState(false);
   const animatedGas = useDerivedValue(() => {
     return gasFeeBySpeed[selectedGas?.option]?.gasFee?.display ?? '0.01';
@@ -92,7 +88,7 @@ const GasSpeedPagerCentered = styled(Centered).attrs(() => ({
   marginRight: 8,
 }))({});
 
-const GasMenu = ({ showGasOptions, flashbotTransaction, children, gasFeeBySpeed }) => {
+const GasMenu = ({ flashbotTransaction, children, gasFeeBySpeed }) => {
   const theme = useTheme();
   const { colors } = theme;
   const { navigate } = useNavigation();
@@ -173,16 +169,16 @@ const GasMenu = ({ showGasOptions, flashbotTransaction, children, gasFeeBySpeed 
     buttonIndex => {
       switch (buttonIndex) {
         case 0:
-          setGasFeeParamsBySpeed(NORMAL);
+          setGasFeeParamsBySpeed({ gasFeeParamsBySpeed: NORMAL as GasFeeParamsBySpeed });
           break;
         case 1:
-          setGasFeeParamsBySpeed(FAST);
+          setGasFeeParamsBySpeed({ gasFeeParamsBySpeed: FAST });
           break;
         case 2:
-          setGasFeeParamsBySpeed(URGENT);
+          setGasFeeParamsBySpeed({ gasFeeParamsBySpeed: URGENT });
           break;
         case 3:
-          setGasFeeParamsBySpeed(CUSTOM);
+          setGasFeeParamsBySpeed({ gasFeeParamsBySpeed: CUSTOM });
       }
     },
     [setGasFeeParamsBySpeed]
@@ -211,7 +207,6 @@ const GasMenu = ({ showGasOptions, flashbotTransaction, children, gasFeeBySpeed 
     };
   }, [selectedGas]);
   const renderGasSpeedPager = useMemo(() => {
-    if (showGasOptions) return;
     if (IS_ANDROID) {
       return (
         <ContextMenu
