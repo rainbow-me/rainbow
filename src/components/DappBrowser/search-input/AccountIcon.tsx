@@ -1,12 +1,13 @@
 import React, { useCallback, useMemo } from 'react';
 import { useAccountSettings, useWallets } from '@/hooks';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@/navigation';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
 import Routes from '@/navigation/routesNames';
 import { ContactAvatar } from '@/components/contacts';
+import { Bleed } from '@/design-system';
 
 export const AccountIcon = () => {
   const { navigate } = useNavigation();
@@ -14,14 +15,8 @@ export const AccountIcon = () => {
   const { wallets, walletNames } = useWallets();
 
   const handlePressChangeWallet = useCallback(() => {
-    navigate(Routes.CHANGE_WALLET_SHEET, {
-      currentAccountAddress: accountAddress,
-      onChangeWallet: address => {
-        // TODO plug in when we have sessions hooked up
-      },
-      watchOnly: true,
-    });
-  }, [accountAddress, navigate]);
+    navigate(Routes.CHANGE_WALLET_SHEET);
+  }, [navigate]);
 
   // TODO: use dapp specifc address
   const accountInfo = useMemo(() => {
@@ -33,12 +28,14 @@ export const AccountIcon = () => {
   }, [wallets, accountAddress, walletNames]);
 
   return (
-    <ButtonPressAnimation onPress={handlePressChangeWallet}>
-      {accountInfo?.accountImage ? (
-        <ImageAvatar image={accountInfo.accountImage} size="signing" />
-      ) : (
-        <ContactAvatar color={accountInfo.accountColor} size="signing" value={accountInfo.accountSymbol} />
-      )}
-    </ButtonPressAnimation>
+    <Bleed space="8px">
+      <ButtonPressAnimation onPress={handlePressChangeWallet} style={{ padding: 8 }}>
+        {accountInfo?.accountImage ? (
+          <ImageAvatar image={accountInfo.accountImage} size="signing" />
+        ) : (
+          <ContactAvatar color={accountInfo.accountColor} size="signing" value={accountInfo.accountSymbol} />
+        )}
+      </ButtonPressAnimation>
+    </Bleed>
   );
 };

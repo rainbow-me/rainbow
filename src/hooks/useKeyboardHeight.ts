@@ -6,13 +6,17 @@ import KeyboardTypes from '@/helpers/keyboardTypes';
 import { setKeyboardHeight } from '@/redux/keyboardHeight';
 import { AppState } from '@/redux/store';
 
+interface UseKeyboardHeightOptions {
+  keyboardType?: keyof typeof KeyboardTypes;
+  shouldListen?: boolean;
+}
+
 const keyboardHeightsSelector = (state: AppState) => state.keyboardHeight.keyboardHeight;
 
-export default function useKeyboardHeight(options = {}) {
+export default function useKeyboardHeight(options: UseKeyboardHeightOptions = {}) {
   // keyboards can different heights depending on whether
   // things like "autofill" or "autocomplete" are enabled on the target input.
-  // @ts-expect-error ts-migrate(2339) FIXME: Property 'keyboardType' does not exist on type '{}... Remove this comment to see the full error message
-  const { keyboardType = KeyboardTypes.default } = options;
+  const { keyboardType = KeyboardTypes.default, shouldListen = true } = options;
   const listenerRef = useRef<EmitterSubscription>();
 
   const dispatch = useDispatch();
@@ -35,21 +39,23 @@ export default function useKeyboardHeight(options = {}) {
         dispatch(
           setKeyboardHeight({
             height: newHeight,
-            keyboardType,
+            keyboardType: keyboardType as keyof typeof KeyboardTypes,
           })
         );
-        (Keyboard as any).scheduleLayoutAnimation(event);
+        Keyboard.scheduleLayoutAnimation(event);
       }
     },
     [dispatch, heightForKeyboardType, isFocused, keyboardType]
   );
 
   useEffect(() => {
-    listenerRef.current = Keyboard.addListener('keyboardDidShow', handleKeyboardDidShow);
-    return () => {
-      listenerRef.current?.remove();
-    };
-  }, [handleKeyboardDidShow]);
+    if (shouldListen) {
+      listenerRef.current = Keyboard.addListener('keyboardDidShow', handleKeyboardDidShow);
+      return () => {
+        listenerRef.current?.remove();
+      };
+    }
+  }, [handleKeyboardDidShow, shouldListen]);
 
   return heightForKeyboardType || cachedKeyboardHeights.default || 0;
 }

@@ -1,4 +1,4 @@
-import { Box, Inline, Inset, Stack, Text, TextIcon } from '@/design-system';
+import { Box, Inline, Inset, Stack, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
 import React from 'react';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '../../../animations';
@@ -7,20 +7,28 @@ import { SearchResult } from './SearchResult';
 
 export const SearchResults = () => {
   const { searchViewProgress, searchInputRef } = useBrowserContext();
+  const { isDarkMode } = useColorMode();
+
   const backgroundStyle = useAnimatedStyle(() => ({
-    opacity: searchViewProgress?.value,
-    pointerEvents: searchViewProgress?.value ? 'box-none' : 'none',
+    opacity: searchViewProgress?.value || 0,
+    pointerEvents: searchViewProgress?.value ? 'auto' : 'none',
   }));
 
   return (
-    <Box as={Animated.View} height="full" width="full" position="absolute" background="surfacePrimary" style={[backgroundStyle]}>
-      <Inset horizontal="16px" top={{ custom: 100 }}>
+    <Box
+      as={Animated.View}
+      height="full"
+      width="full"
+      position="absolute"
+      style={[backgroundStyle, { backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD' }]}
+    >
+      <Inset horizontal="16px" top={{ custom: 90 }}>
         <Stack space="32px">
           <Stack space="12px">
             <Inset horizontal="8px">
               <Inline alignHorizontal="justify" alignVertical="center">
                 <Inline space="6px" alignVertical="center">
-                  <TextIcon color="blue" size="15pt" weight="heavy">
+                  <TextIcon color="blue" size="icon 15px" weight="heavy" width={20}>
                     􀐫
                   </TextIcon>
                   <Text weight="heavy" color="label" size="20pt">
@@ -34,10 +42,11 @@ export const SearchResults = () => {
                   width={{ custom: 32 }}
                   borderRadius={32}
                   alignItems="center"
+                  right={{ custom: -8 }}
                   justifyContent="center"
                   onPress={() => searchInputRef?.current?.blur()}
                 >
-                  <Text weight="heavy" color="label" size="15pt" align="center">
+                  <Text weight="heavy" color="labelSecondary" size="icon 15px" align="center">
                     􀆄
                   </Text>
                 </Box>
@@ -48,7 +57,7 @@ export const SearchResults = () => {
           <Stack space="12px">
             <Inset horizontal="8px">
               <Inline space="6px" alignVertical="center">
-                <TextIcon color="labelSecondary" size="15pt" weight="heavy">
+                <TextIcon color="labelSecondary" size="icon 15px" weight="heavy" width={20}>
                   􀊫
                 </TextIcon>
                 <Text weight="heavy" color="label" size="20pt">

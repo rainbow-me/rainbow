@@ -13,6 +13,8 @@ import store from '@/redux/store';
 import { checkKeychainIntegrity } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
 import { logger } from '@/logger';
+import { checkWalletsForBackupStatus } from '@/screens/SettingsSheet/utils';
+import walletBackupTypes from '@/helpers/walletBackupTypes';
 
 const BACKUP_SHEET_DELAY_MS = 3000;
 
@@ -34,6 +36,9 @@ export const runWalletBackupStatusChecks = () => {
 
   // count how many visible, non-imported and non-readonly wallets are not backed up
   if (!wallets) return;
+
+  const { backupProvider } = checkWalletsForBackupStatus(wallets);
+
   const rainbowWalletsNotBackedUp = Object.values(wallets).filter(wallet => {
     const hasVisibleAccount = wallet.addresses?.find((account: RainbowAccount) => account.visible);
     return (
@@ -50,31 +55,29 @@ export const runWalletBackupStatusChecks = () => {
   logger.debug('there is a rainbow wallet not backed up');
 
   const hasSelectedWallet = rainbowWalletsNotBackedUp.find(notBackedUpWallet => notBackedUpWallet.id === selected!.id);
-
   logger.debug('rainbow wallet not backed up that is selected?', {
     hasSelectedWallet,
   });
 
   // if one of them is selected, show the default BackupSheet
   if (selected && hasSelectedWallet && IS_TESTING !== 'true') {
-    logger.debug('showing default BackupSheet');
-    setTimeout(() => {
-      triggerOnSwipeLayout(() => Navigation.handleAction(Routes.BACKUP_SHEET, { single: true }));
-    }, BACKUP_SHEET_DELAY_MS);
-    return;
-  }
+    let stepType: string = WalletBackupStepTypes.no_provider;
+    if (backupProvider === walletBackupTypes.cloud) {
+      stepType = WalletBackupStepTypes.backup_now_to_cloud;
+    } else if (backupProvider === walletBackupTypes.manual) {
+      stepType = WalletBackupStepTypes.backup_now_manually;
+    }
 
-  // otherwise, show the BackupSheet redirecting to the WalletSelectionList
-  IS_TESTING !== 'true' &&
     setTimeout(() => {
-      logger.debug('showing BackupSheet with existing_user step');
+      logger.debug(`showing ${stepType} backup sheet for selected wallet`);
       triggerOnSwipeLayout(() =>
         Navigation.handleAction(Routes.BACKUP_SHEET, {
-          single: true,
-          step: WalletBackupStepTypes.existing_user,
+          step: stepType,
         })
       );
     }, BACKUP_SHEET_DELAY_MS);
+    return;
+  }
   return;
 };
 
