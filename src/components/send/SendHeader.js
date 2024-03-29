@@ -5,7 +5,6 @@ import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 import { ActivityIndicator, Keyboard } from 'react-native';
 import { useNavigation } from '../../navigation/Navigation';
 import { useTheme } from '../../theme/ThemeContext';
-import Divider from '../Divider';
 import Spinner from '../Spinner';
 import { ButtonPressAnimation } from '../animations';
 import { PasteAddressButton } from '../buttons';
@@ -22,19 +21,7 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { profileUtils, showActionSheetWithOptions } from '@/utils';
-
-const AddressInputContainer = styled(Row).attrs({ align: 'center' })(({ isSmallPhone, theme: { colors }, isTinyPhone }) => ({
-  ...(android
-    ? padding.object(0, 19)
-    : isTinyPhone
-      ? padding.object(23, 15, 10)
-      : isSmallPhone
-        ? padding.object(11, 19, 15)
-        : padding.object(18, 19, 19)),
-  backgroundColor: colors.white,
-  overflow: 'hidden',
-  width: '100%',
-}));
+import { Separator, useBackgroundColor } from '@/design-system';
 
 const AddressFieldLabel = styled(Label).attrs({
   size: 'large',
@@ -185,11 +172,26 @@ export default function SendHeader({
     [onChangeAddressInput]
   );
 
+  const surfacePrimaryElevated = useBackgroundColor('surfacePrimaryElevated');
+
   return (
     <Fragment>
       <SheetHandleFixedToTop />
       {isTinyPhone ? null : <SendSheetTitle>{lang.t('contacts.send_header')}</SendSheetTitle>}
-      <AddressInputContainer isSmallPhone={isSmallPhone} isTinyPhone={isTinyPhone}>
+      <Row
+        style={{
+          ...(android
+            ? padding.object(0, 19)
+            : isTinyPhone
+              ? padding.object(23, 15, 10)
+              : isSmallPhone
+                ? padding.object(11, 19, 15)
+                : padding.object(18, 19, 19)),
+          backgroundColor: surfacePrimaryElevated,
+          overflow: 'hidden',
+          width: '100%',
+        }}
+      >
         <AddressFieldLabel>{lang.t('contacts.to_header')}:</AddressFieldLabel>
         <AddressField
           address={recipient}
@@ -218,8 +220,8 @@ export default function SendHeader({
         )}
         {isValidAddress && !hexAddress && isEmpty(contact?.address) && <LoadingSpinner />}
         {!isValidAddress && <PasteAddressButton onPress={onPressPaste} />}
-      </AddressInputContainer>
-      {hideDivider && !isTinyPhone ? null : <Divider color={colors.rowDividerExtraLight} flex={0} inset={[0, 19]} />}
+      </Row>
+      {hideDivider && !isTinyPhone ? null : <Separator color="separatorTertiary" />}
     </Fragment>
   );
 }

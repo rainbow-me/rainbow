@@ -4,7 +4,6 @@ import lang from 'i18n-js';
 import { isEmpty, isEqual, isString } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, StatusBar, View } from 'react-native';
-import { useDispatch } from 'react-redux';
 import { useDebounce } from 'use-debounce';
 import { GasSpeedButton } from '../components/gas';
 import { Column } from '../components/layout';
@@ -35,7 +34,6 @@ import {
   useCoinListEditOptions,
   useColorForAsset,
   useContacts,
-  useCurrentNonce,
   useENSProfile,
   useENSRegistrationActionHandler,
   useGas,
@@ -43,7 +41,6 @@ import {
   usePrevious,
   useSendableUniqueTokens,
   useSendSheetInputRefs,
-  useTransactionConfirmation,
   useUserAccounts,
   useWallets,
 } from '@/hooks';
@@ -67,6 +64,7 @@ import { getNetworkObj } from '@/networks';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { getNextNonce } from '@/state/nonces';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import { useBackgroundColor } from '@/design-system';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight;
@@ -75,16 +73,6 @@ const Container = styled.View({
   backgroundColor: ({ theme: { colors } }) => colors.transparent,
   flex: 1,
   paddingTop: IS_IOS ? 0 : statusBarHeight,
-  width: '100%',
-});
-
-const SheetContainer = styled(Column).attrs({
-  align: 'center',
-  flex: 1,
-})({
-  ...borders.buildRadiusAsObject('top', IS_IOS ? 0 : 16),
-  backgroundColor: ({ theme: { colors } }) => colors.white,
-  height: sheetHeight,
   width: '100%',
 });
 
@@ -776,9 +764,20 @@ export default function SendSheet(props) {
 
   const isEmptyWallet = !sortedAssets?.length && !sendableUniqueTokens?.length;
 
+  const surfacePrimaryElevated = useBackgroundColor('surfacePrimaryElevated');
+
   return (
     <Container testID="send-sheet">
-      <SheetContainer>
+      <Column
+        style={{
+          align: 'center',
+          flex: 1,
+          ...borders.buildRadiusAsObject('top', IS_IOS ? 0 : 16),
+          backgroundColor: surfacePrimaryElevated,
+          height: sheetHeight,
+          width: '100%',
+        }}
+      >
         <SendHeader
           colorForAsset={colorForAsset}
           contacts={contacts}
@@ -882,7 +881,7 @@ export default function SendSheet(props) {
             }
           />
         )}
-      </SheetContainer>
+      </Column>
     </Container>
   );
 }

@@ -13,6 +13,7 @@ import { useDimensions, useKeyboardHeight } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
+import { Box, useBackgroundColor } from '@/design-system';
 
 const AssetRowShadow = colors => [
   [0, 10, 30, colors.shadow, 0.12],
@@ -24,12 +25,6 @@ const AssetRowGradient = styled(LinearGradient).attrs(({ theme: { colors } }) =>
   end: { x: 0.5, y: 1 },
   start: { x: 0.5, y: 0 },
 }))(position.coverAsObject);
-
-const Container = styled(Column)({
-  ...position.sizeAsObject('100%'),
-  backgroundColor: ({ theme: { colors } }) => colors.white,
-  flex: 1,
-});
 
 const FormContainer = styled(Column).attrs(
   ios
@@ -62,6 +57,7 @@ export default function SendAssetForm({
 }) {
   const { isTinyPhone, width: deviceWidth } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
+  const surfacePrimaryElevated = useBackgroundColor('surfacePrimaryElevated');
   const [showNativeValue, setShowNativeValue] = useState(true);
 
   const isNft = selected.type === AssetTypes.nft;
@@ -84,11 +80,11 @@ export default function SendAssetForm({
   const shadows = useMemo(() => AssetRowShadow(colors), [colors]);
 
   return (
-    <Container>
+    <Box background="surfacePrimaryElevated" style={{ ...position.sizeAsObject('100%'), flex: 1 }}>
       <ButtonPressAnimation onPress={onResetAssetSelection} overflowMargin={30} scaleTo={0.925}>
         <ShadowStack
           alignSelf="center"
-          backgroundColor={colors.white}
+          backgroundColor={surfacePrimaryElevated}
           borderRadius={20}
           height={SendCoinRow.selectedHeight}
           overflow={isTinyPhone ? 'visible' : 'hidden'}
@@ -136,6 +132,6 @@ export default function SendAssetForm({
           </Fragment>
         )}
       </FormContainer>
-    </Container>
+    </Box>
   );
 }

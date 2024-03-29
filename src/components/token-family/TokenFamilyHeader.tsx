@@ -6,7 +6,7 @@ import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { useLatestCallback } from '../../hooks';
 import { ButtonPressAnimation } from '../animations';
 import TokenFamilyHeaderIcon from './TokenFamilyHeaderIcon';
-import { Text } from '@/design-system';
+import { Box, Text } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import { ThemeContextProps } from '@/theme';
 
@@ -123,14 +123,7 @@ const TokenFamilyHeader = ({ childrenAmount, emoji, familyImage, isOpen, onPress
 
   return (
     <ButtonPressAnimation onPress={handlePress} scaleTo={1.05} testID={testID}>
-      <View
-        style={[
-          sx.content,
-          {
-            backgroundColor: colors.white,
-          },
-        ]}
-      >
+      <Box background="surfacePrimaryElevated" style={[sx.content]}>
         <View style={[sx.center, { marginRight: emoji ? 5 : 0 }]}>
           {emoji ? (
             <Text containsEmoji color="primary (Deprecated)" size="16px / 22px (Deprecated)">
@@ -170,7 +163,7 @@ const TokenFamilyHeader = ({ childrenAmount, emoji, familyImage, isOpen, onPress
             />
           </Animated.View>
         </View>
-      </View>
+      </Box>
     </ButtonPressAnimation>
   );
 };

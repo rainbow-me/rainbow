@@ -18,6 +18,8 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
 import { filterList } from '@/utils';
+import { useBackgroundColor } from '@/design-system';
+import { colors } from '@/styles';
 
 const KeyboardArea = styled.View({
   height: ({ keyboardHeight }) => keyboardHeight,
@@ -39,15 +41,6 @@ const SectionTitle = styled(Text).attrs({
   color: ({ theme: { colors } }) => colors.alpha(colors.blueGreyDark, 0.6),
   marginLeft: 19,
   marginTop: android ? 6 : 12,
-});
-
-const SectionWrapper = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
-  colors: [colors.white, colors.alpha(colors.white, 0)],
-  end: { x: 0.5, y: 1 },
-  locations: [0.55, 1],
-  start: { x: 0.5, y: 0 },
-}))({
-  height: 40,
 });
 
 const SendContactFlatList = styled(SectionList).attrs({
@@ -77,6 +70,7 @@ export default function SendContactList({
   const { navigate } = useNavigation();
   const keyboardHeight = useKeyboardHeight();
   const { isDarkMode } = useTheme();
+  const surfacePrimaryElevated = useBackgroundColor('surfacePrimaryElevated');
 
   const contactRefs = useRef({});
   const touchedContact = useRef(undefined);
@@ -199,9 +193,17 @@ export default function SendContactList({
           keyExtractor={(item, index) => index}
           renderItem={renderItemCallback}
           renderSectionHeader={({ section }) => (
-            <SectionWrapper>
+            <LinearGradient
+              colors={[surfacePrimaryElevated, colors.alpha(surfacePrimaryElevated, 0)]}
+              end={{ x: 0.5, y: 1 }}
+              start={{ x: 0.5, y: 0 }}
+              locations={[0.55, 1]}
+              style={{
+                height: 40,
+              }}
+            >
               <SectionTitle>{section.title}</SectionTitle>
-            </SectionWrapper>
+            </LinearGradient>
           )}
           sections={sections}
           testID="send-contact-list"
