@@ -39,6 +39,7 @@ export const SearchBar = () => {
   const isHome = url === RAINBOW_HOME;
   const isGoogleSearch = url?.startsWith(GOOGLE_SEARCH_URL);
   const canGoBack = tabStates?.[activeTabIndex]?.canGoBack;
+  const canGoForward = tabStates?.[activeTabIndex]?.canGoForward;
 
   const formattedInputValue = useMemo(() => {
     if (isHome) {
@@ -162,6 +163,7 @@ export const SearchBar = () => {
         <Box paddingRight="12px" style={{ flex: 1 }}>
           <SearchInput
             canGoBack={canGoBack}
+            canGoForward={canGoForward}
             onPressWorklet={onAddressInputPressWorklet}
             isFocused={isFocused}
             isFocusedValue={isFocusedValue}
