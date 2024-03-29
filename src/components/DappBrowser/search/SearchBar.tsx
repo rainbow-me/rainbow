@@ -35,8 +35,10 @@ export const SearchBar = () => {
 
   const tabId = tabStates?.[activeTabIndex]?.uniqueId;
   const url = tabStates?.[activeTabIndex]?.url;
+  const logoUrl = tabStates?.[activeTabIndex]?.logoUrl;
   const isHome = url === RAINBOW_HOME;
   const isGoogleSearch = url?.startsWith(GOOGLE_SEARCH_URL);
+  const canGoBack = tabStates?.[activeTabIndex]?.canGoBack;
 
   const formattedInputValue = useMemo(() => {
     if (isHome) {
@@ -159,6 +161,7 @@ export const SearchBar = () => {
 
         <Box paddingRight="12px" style={{ flex: 1 }}>
           <SearchInput
+            canGoBack={canGoBack}
             onPressWorklet={onAddressInputPressWorklet}
             isFocused={isFocused}
             isFocusedValue={isFocusedValue}
@@ -169,6 +172,7 @@ export const SearchBar = () => {
             inputValue={inputValue}
             onBlur={onBlur}
             onSubmitEditing={handleUrlSubmit}
+            logoUrl={logoUrl}
           />
         </Box>
         <TabButton inputRef={inputRef} isFocused={isFocused} isFocusedValue={isFocusedValue} setIsFocused={setIsFocused} />

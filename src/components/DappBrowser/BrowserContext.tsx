@@ -41,6 +41,7 @@ interface BrowserContextType {
   closeTab: (tabId: string) => void;
   goBack: () => void;
   goForward: () => void;
+  loadProgress: SharedValue<number> | undefined;
   newTab: () => void;
   onRefresh: () => void;
   searchInputRef: React.RefObject<TextInput | null>;
@@ -61,6 +62,7 @@ export interface TabState {
   canGoForward: boolean;
   uniqueId: string;
   url: string;
+  logoUrl?: string | null;
 }
 
 export const RAINBOW_HOME = 'RAINBOW_HOME';
@@ -153,6 +155,7 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
   const webViewRefs = useRef<WebView[]>([]);
 
+  const loadProgress = useSharedValue(0);
   const searchViewProgress = useSharedValue(0);
   const scrollViewOffset = useScrollViewOffset(scrollViewRef);
   const tabViewVisible = useSharedValue(false);
@@ -266,6 +269,7 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
         closeTab,
         goBack,
         goForward,
+        loadProgress,
         newTab,
         onRefresh,
         searchViewProgress,

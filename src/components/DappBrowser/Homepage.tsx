@@ -17,17 +17,20 @@ import { TrendingSite, trendingDapps } from '@/resources/trendingDapps/trendingD
 import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { useBrowserContext } from './BrowserContext';
+import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
+import { isEmpty } from 'lodash';
 
-const HORIZONTAL_INSET = 24;
+const HORIZONTAL_PAGE_INSET = 24;
 
-const NUM_LOGOS = 4;
+const LOGOS_PER_ROW = 4;
 const LOGO_SIZE = 64;
-const LOGO_PADDING = (deviceUtils.dimensions.width - NUM_LOGOS * LOGO_SIZE - HORIZONTAL_INSET * 2) / (NUM_LOGOS - 1);
+const LOGO_PADDING = (deviceUtils.dimensions.width - LOGOS_PER_ROW * LOGO_SIZE - HORIZONTAL_PAGE_INSET * 2) / (LOGOS_PER_ROW - 1);
 const LOGO_BORDER_RADIUS = 16;
+const LOGO_LABEL_SPILLOVER = 12;
 
 const NUM_CARDS = 2;
 const CARD_PADDING = 12;
-const CARD_SIZE = (deviceUtils.dimensions.width - HORIZONTAL_INSET * 2 - (NUM_CARDS - 1) * CARD_PADDING) / NUM_CARDS;
+const CARD_SIZE = (deviceUtils.dimensions.width - HORIZONTAL_PAGE_INSET * 2 - (NUM_CARDS - 1) * CARD_PADDING) / NUM_CARDS;
 
 const Card = ({ site, showMenuButton }: { showMenuButton?: boolean; site: TrendingSite }) => {
   const { isDarkMode } = useColorMode();
@@ -182,15 +185,10 @@ const Logo = ({ site }: { site: Omit<Site, 'timestamp'> }) => {
 
   return (
     <View style={{ width: LOGO_SIZE }}>
-      <ButtonPressAnimation
-        // Temporarily using onPressStart due to WebView gesture handlers blocking onPress
-        onPressStart={() => updateActiveTabState({ url: site.url })}
-        overflowMargin={100}
-        useLateHaptic
-      >
+      <GestureHandlerV1Button onPressJS={() => updateActiveTabState({ url: site.url })}>
         <Stack alignHorizontal="center">
           <Box>
-            {IS_IOS && (
+            {IS_IOS && !isEmpty(site.image) && (
               <Box alignItems="center" height="full" position="absolute" width="full">
                 <TextIcon
                   color="labelQuaternary"
@@ -229,7 +227,10 @@ const Logo = ({ site }: { site: Omit<Site, 'timestamp'> }) => {
             )}
           </Box>
           <Bleed bottom="10px" horizontal="8px">
-            <MaskedView maskElement={<FadeMask fadeEdgeInset={0} fadeWidth={10} side="right" />} style={{ width: LOGO_SIZE + 8 * 2 }}>
+            <MaskedView
+              maskElement={<FadeMask fadeEdgeInset={0} fadeWidth={12} side="right" />}
+              style={{ width: LOGO_SIZE + LOGO_LABEL_SPILLOVER * 2 }}
+            >
               <Text
                 size="13pt"
                 numberOfLines={1}
@@ -244,7 +245,7 @@ const Logo = ({ site }: { site: Omit<Site, 'timestamp'> }) => {
             </MaskedView>
           </Bleed>
         </Stack>
-      </ButtonPressAnimation>
+      </GestureHandlerV1Button>
     </View>
   );
 };
@@ -271,7 +272,7 @@ export default function Homepage() {
         contentContainerStyle={{
           paddingBottom: 20,
           paddingTop: 40,
-          paddingHorizontal: HORIZONTAL_INSET,
+          paddingHorizontal: HORIZONTAL_PAGE_INSET,
         }}
         showsVerticalScrollIndicator
       >
@@ -311,7 +312,7 @@ export default function Homepage() {
                 flexDirection="row"
                 flexWrap="wrap"
                 gap={LOGO_PADDING}
-                width={{ custom: deviceUtils.dimensions.width - HORIZONTAL_INSET * 2 }}
+                width={{ custom: deviceUtils.dimensions.width - HORIZONTAL_PAGE_INSET * 2 }}
               >
                 {favoriteDapps.map(dapp => (
                   <Logo key={dapp.url} site={dapp} />
