@@ -230,9 +230,10 @@ export const SearchInput = ({
                   numberOfLines={1}
                   size="17pt"
                   style={[{ alignSelf: 'center', paddingHorizontal: isHome ? 0 : 40 }, hideFormattedUrlWhenTabChanges]}
-                  text={formattedUrlValue}
                   weight="bold"
-                />
+                >
+                  {formattedUrlValue}
+                </AnimatedText>
               </Box>
             </Cover>
           </MaskedView>
