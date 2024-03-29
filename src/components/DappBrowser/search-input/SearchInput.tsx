@@ -38,6 +38,7 @@ export const SearchInput = ({
   isFocusedValue,
   logoUrl,
   canGoBack,
+  canGoForward,
 }: {
   inputRef: RefObject<TextInput>;
   formattedInputValue: { value: string; tabIndex: number };
@@ -51,8 +52,9 @@ export const SearchInput = ({
   isFocusedValue: SharedValue<boolean>;
   logoUrl: string | undefined | null;
   canGoBack: boolean;
+  canGoForward: boolean;
 }) => {
-  const { animatedActiveTabIndex, goBack, onRefresh, tabViewProgress } = useBrowserContext();
+  const { animatedActiveTabIndex, goBack, goForward, onRefresh, tabViewProgress } = useBrowserContext();
   const { isFavorite, addFavorite, removeFavorite } = useFavoriteDappsStore();
   const { isDarkMode } = useColorMode();
 
@@ -137,28 +139,48 @@ export const SearchInput = ({
               },
             }
           : {},
+        canGoForward
+          ? {
+              actionKey: 'forward',
+              actionTitle: 'Forward',
+              icon: {
+                iconType: 'SYSTEM',
+                // iconValue: 'arrow.uturn.right',
+                // iconValue: 'arrow.right',
+                iconValue: 'arrowshape.forward',
+              },
+            }
+          : {},
         canGoBack
           ? {
               actionKey: 'back',
               actionTitle: 'Back',
               icon: {
                 iconType: 'SYSTEM',
-                iconValue: 'arrow.uturn.left',
+                // iconValue: 'arrow.uturn.left',
+                // iconValue: 'arrow.left',
+                iconValue: 'arrowshape.backward',
               },
             }
           : {},
       ],
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [canGoBack, isFavorite(formattedUrl), isGoogleSearch]
+    [canGoBack, canGoForward, isFavorite(formattedUrl), isGoogleSearch]
   );
 
-  const onPressMenuItem = async ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: 'share' | 'favorite' | 'back' } }) => {
+  const onPressMenuItem = async ({
+    nativeEvent: { actionKey },
+  }: {
+    nativeEvent: { actionKey: 'share' | 'favorite' | 'back' | 'forward' };
+  }) => {
     haptics.selection();
     if (actionKey === 'favorite') {
       handleFavoritePress();
     } else if (actionKey === 'back') {
       goBack();
+    } else if (actionKey === 'forward') {
+      goForward();
     } else if (inputValue) {
       handleShareUrl(inputValue);
     }
