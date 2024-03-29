@@ -97,7 +97,7 @@ const GasMenu = ({ showGasOptions, flashbotTransaction, children, gasFeeBySpeed 
   const { colors } = theme;
   const { navigate } = useNavigation();
   const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
-  const { selectedGas, gasFeeParamsBySpeed, setGasFeeParamsBySpeed, setSelectedGas } = gasStore.getState();
+  const { selectedGas, gasFeeParamsBySpeed, setGasFeeParamsBySpeed, setSelectedGas } = useGasStore();
   const { params } = useRoute();
   const { currentNetwork, asset, fallbackColor } = params || {};
   const chainId = getNetworkObj(currentNetwork).id;
@@ -210,7 +210,6 @@ const GasMenu = ({ showGasOptions, flashbotTransaction, children, gasFeeBySpeed 
       menuTitle: '',
     };
   }, [selectedGas]);
-  // }, [currentBlockParams?.baseFeePerGas?.gwei, currentNetwork, gasFeeParamsBySpeed, selectedGasFeeOption, speedOptions, isL2]);
   const renderGasSpeedPager = useMemo(() => {
     if (showGasOptions) return;
     if (IS_ANDROID) {
