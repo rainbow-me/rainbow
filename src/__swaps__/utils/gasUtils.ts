@@ -8,7 +8,8 @@ import BigNumber from 'bignumber.js';
 import { globalColors } from '@/design-system';
 
 import * as i18n from '@/languages';
-import { OVM_GAS_PRICE_ORACLE, SupportedCurrencyKey, gasUnits, supportedCurrencies } from '../references';
+import { OVM_GAS_PRICE_ORACLE, gasUnits, supportedCurrencies } from '../references';
+
 import { MeteorologyLegacyResponse, MeteorologyResponse } from './meteorology';
 import { ParsedAsset } from '../types/assets';
 import { ChainId } from '../types/chains';
@@ -28,7 +29,7 @@ import {
   multiply,
 } from './numbers';
 import { getMinimalTimeUnitStringForMs } from './time';
-import { optimismGasOracleAbi } from '@/references';
+import { optimismGasOracleAbi, SupportedCurrencyKey, supportedNativeCurrencies } from '@/references';
 
 export const FLASHBOTS_MIN_TIP = 6;
 
