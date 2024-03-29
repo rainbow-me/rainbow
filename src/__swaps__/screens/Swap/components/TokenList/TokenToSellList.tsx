@@ -38,9 +38,6 @@ export const TokenToSellList = () => {
         userAsset,
       });
 
-      // update zustand store with the selected token
-      // setAssetToSell(parsedAsset);
-
       // we need to update the inputNativeValue to the user balance / native value
       runOnUI((parsedAsset: ParsedSearchAsset) => {
         SwapInputController.inputValues.modify(prev => ({
@@ -54,11 +51,11 @@ export const TokenToSellList = () => {
           inputChainId: parsedAsset.chainId,
           inputAddress: parsedAsset.address,
         }));
-      })(parsedAsset);
 
-      runOnUI(SwapNavigation.handleOutputPress)();
+        SwapNavigation.handleOutputPress();
+      })(parsedAsset);
     },
-    [SwapInputController, SwapNavigation.handleOutputPress, isDarkMode, userAssets]
+    [SwapInputController.inputValues, SwapNavigation, isDarkMode, userAssets]
   );
 
   const assetsCount = useMemo(

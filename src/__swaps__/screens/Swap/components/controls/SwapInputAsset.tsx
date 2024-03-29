@@ -1,7 +1,7 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import React, { useEffect, useMemo } from 'react';
 import { StyleSheet, StatusBar } from 'react-native';
-import Animated, { runOnUI } from 'react-native-reanimated';
+import Animated, { runOnUI, useDerivedValue } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
 import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
@@ -31,14 +31,17 @@ import { supportedCurrencies } from '@/references/supportedCurrencies';
 function SwapInputActionButton() {
   const { isDarkMode } = useColorMode();
   const { SwapNavigation, SwapInputController } = useSwapContext();
-  const { assetToSell } = useSwapAssetStore();
+
+  const label = useDerivedValue(() => {
+    return SwapInputController.inputValues.value.inputSymbol.toString() ?? '';
+  });
 
   return (
     <SwapActionButton
-      color={SwapInputController.inputValues.value.inputTokenColor}
+      color={SwapInputController.inputValues.value.inputTokenColor.toString()}
       disableShadow={isDarkMode}
       hugContent
-      label={assetToSell?.symbol ?? ''}
+      label={label}
       onPress={runOnUI(SwapNavigation.handleInputPress)}
       rightIcon={'􀆏'}
       small
@@ -96,6 +99,10 @@ function SwapInputAmount() {
     })(inputNativeAmount);
   }, [parsedAssetToSell, SwapInputController.inputValues, currentCurrency, SwapInputController]);
 
+  const backgroundColor = useDerivedValue(() => {
+    return SwapInputController.inputValues.value.inputTokenColor.toString();
+  });
+
   return (
     <GestureHandlerV1Button
       disableButtonPressWrapper
@@ -120,7 +127,7 @@ function SwapInputAmount() {
             style={[
               styles.caret,
               {
-                backgroundColor: SwapInputController.inputValues.value.inputTokenColor.toString(),
+                backgroundColor: backgroundColor.value,
               },
             ]}
           />

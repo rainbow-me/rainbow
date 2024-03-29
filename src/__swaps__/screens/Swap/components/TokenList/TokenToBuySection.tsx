@@ -81,7 +81,7 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
         SwapNavigation.handleExitSearch();
       })();
     },
-    [SwapInputController, SwapNavigation, setAssetToBuy, userAssets]
+    [SwapInputController, SwapNavigation, userAssets]
   );
 
   const { symbol, title } = sectionProps[section.id];
