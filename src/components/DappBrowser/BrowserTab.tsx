@@ -355,7 +355,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
         );
       }
 
-      // To prevent infinite redirect loops, we we only update the URL if both of these are true:
+      // To prevent infinite redirect loops, we only update the URL if both of these are true:
       //
       // 1) the URL is different from the current URL
       // 2) the navigationType !== 'other', which gets triggered repeatedly in certain cases programatically
