@@ -5,7 +5,7 @@ import CheckmarkCircledIcon from '../../../components/icons/svg/CheckmarkCircled
 import WarningIcon from '../../../components/icons/svg/WarningIcon';
 import Chevron from '@/assets/chevronUpDown.png';
 import Caret from '@/assets/family-dropdown-arrow.png';
-import { Box, Inline, Stack, Text } from '@/design-system';
+import { Box, Inline, Stack, Text, useForegroundColor } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import { useTheme } from '@/theme';
 import { ImageSourcePropType } from 'react-native';
@@ -42,15 +42,7 @@ interface TextIconProps {
 const TextIcon = ({ colorOverride, icon, disabled, isLink, isEmoji = false }: TextIconProps) => (
   <Box paddingLeft={{ custom: isEmoji ? 7 : 0 }}>
     <Text
-      color={
-        colorOverride
-          ? { custom: colorOverride }
-          : disabled
-            ? 'secondary60 (Deprecated)'
-            : isLink
-              ? 'action (Deprecated)'
-              : 'primary (Deprecated)'
-      }
+      color={colorOverride ? { custom: colorOverride } : disabled ? 'labelSecondary' : isLink ? 'action (Deprecated)' : 'label'}
       containsEmoji
       size="18px / 27px (Deprecated)"
       weight="semibold"
@@ -65,7 +57,7 @@ interface SelectionProps {
 }
 
 const Selection = ({ children }: SelectionProps) => (
-  <Text color="secondary60 (Deprecated)" size="18px / 27px (Deprecated)" weight="semibold">
+  <Text color="labelSecondary" size="18px / 27px (Deprecated)" weight="semibold">
     {children}
   </Text>
 );
@@ -114,15 +106,7 @@ interface TitleProps {
 
 const Title = ({ text, weight = 'semibold', disabled, isLink, customColor }: TitleProps) => (
   <Text
-    color={
-      disabled
-        ? 'secondary60 (Deprecated)'
-        : customColor
-          ? { custom: customColor }
-          : isLink
-            ? 'action (Deprecated)'
-            : 'primary (Deprecated)'
-    }
+    color={disabled ? 'labelSecondary' : customColor ? { custom: customColor } : isLink ? 'action (Deprecated)' : 'label'}
     containsEmoji
     size="18px / 27px (Deprecated)"
     weight={weight}
@@ -142,7 +126,7 @@ const Label = ({ text, warn, color }: LabelProps) => {
   const { colors } = useTheme();
   return (
     <Text
-      color={color ? { custom: color } : warn ? { custom: colors.orangeLight } : 'secondary60 (Deprecated)'}
+      color={color ? { custom: color } : warn ? { custom: colors.orangeLight } : 'labelSecondary'}
       size="14px / 19px (Deprecated)"
       weight="medium"
     >
@@ -180,7 +164,7 @@ const MenuItem = ({
   width,
   testID,
 }: MenuItemProps) => {
-  const { colors } = useTheme();
+  const labelSecondary = useForegroundColor('labelSecondary');
 
   const Item = () => (
     <Box
@@ -221,7 +205,7 @@ const MenuItem = ({
                 as={ImgixImage}
                 height={{ custom: 16 }}
                 source={Caret as Source}
-                tintColor={colors.blueGreyDark60}
+                tintColor={labelSecondary}
                 width={{ custom: 7 }}
                 size={30}
               />
@@ -231,7 +215,7 @@ const MenuItem = ({
                 as={ImgixImage}
                 height={{ custom: 17 }}
                 source={Chevron as Source}
-                tintColor={colors.blueGreyDark60}
+                tintColor={labelSecondary}
                 width={{ custom: 16 }}
                 size={30}
               />

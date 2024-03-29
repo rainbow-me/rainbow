@@ -69,7 +69,7 @@ const WalletPill = ({ account }: WalletPillProps) => {
       ) : (
         <ContactAvatar alignSelf="center" color={account.color} marginRight={4} size="smaller" value={accountImage} />
       )}
-      <Text color={'secondary (Deprecated)'} size="11pt" weight="semibold">
+      <Text color={'labelSecondary'} size="11pt" weight="semibold">
         {label.endsWith('.eth')
           ? abbreviations.abbreviateEnsForDisplay(label, 8, 4) ?? ''
           : abbreviations.address(account.address, 3, 5) ?? ''}

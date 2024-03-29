@@ -613,12 +613,12 @@ const SettingsTitle = ({ children }: React.PropsWithChildren) => {
   );
 };
 
-export const settingsOptions = (colors: any, isSettingsRoute = true): StackNavigationOptions => ({
+export const settingsOptions = (backgroundColor: string, isSettingsRoute = true): StackNavigationOptions => ({
   ...headerConfigOptions,
   headerTitleAlign: 'center',
   cardShadowEnabled: false,
   cardStyle: {
-    backgroundColor: colors.cardBackdrop,
+    backgroundColor: backgroundColor,
     overflow: 'visible',
   },
   gestureEnabled: true,
@@ -627,7 +627,7 @@ export const settingsOptions = (colors: any, isSettingsRoute = true): StackNavig
   ...(isSettingsRoute
     ? {
         headerStyle: {
-          backgroundColor: colors.cardBackdrop,
+          backgroundColor: backgroundColor,
           elevation: 0,
           height: 60,
           shadowColor: 'transparent',
@@ -636,7 +636,7 @@ export const settingsOptions = (colors: any, isSettingsRoute = true): StackNavig
       }
     : {
         headerStyle: {
-          backgroundColor: colors.transparent,
+          backgroundColor: 'transparent',
           height: 0,
         },
         headerBackImage: () => <></>,

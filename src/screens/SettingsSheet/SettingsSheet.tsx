@@ -5,7 +5,7 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import { InteractionManager } from 'react-native';
 import ModalHeaderButton from '../../components/modal/ModalHeaderButton';
 import { useTheme } from '@/theme';
-import { BackgroundProvider } from '@/design-system';
+import { BackgroundProvider, useBackgroundColor } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import { SettingsPages } from './SettingsPages';
 import { settingsCardStyleInterpolator } from './settingsCardStyleInterpolator';
@@ -31,6 +31,7 @@ export function SettingsSheet() {
   const { top } = useSafeAreaInsets();
   const { params } = useRoute<any>();
   const { colors } = useTheme();
+  const surfacePrimaryElevated = useBackgroundColor('surfacePrimaryElevated');
 
   const sectionOnPressFactory = (section: any) => () => {
     navigate(section.key, params);
@@ -49,7 +50,7 @@ export function SettingsSheet() {
     }
   }, [navigate, params]);
 
-  const memoSettingsOptions = useMemo(() => settingsOptions(colors), [colors]);
+  const memoSettingsOptions = useMemo(() => settingsOptions(surfacePrimaryElevated), [surfacePrimaryElevated]);
 
   return (
     <CloudBackupProvider>
