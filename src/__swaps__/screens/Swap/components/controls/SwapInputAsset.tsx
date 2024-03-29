@@ -152,7 +152,7 @@ function SwapInputIcon() {
       ) : (
         <SwapCoinIcon
           color={SwapInputController.topColor.value}
-          iconUrl={assetToSell.icon_url}
+          iconUrl={SwapInputController.assetToSellIconUrl.value}
           address={assetToSell.address}
           large
           mainnetAddress={assetToSell.mainnetAddress}

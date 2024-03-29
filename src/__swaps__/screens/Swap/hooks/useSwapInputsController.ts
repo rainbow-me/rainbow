@@ -63,8 +63,16 @@ export function useSwapInputsController({
     return assetToSell.value?.symbol ?? '';
   });
 
+  const assetToSellIconUrl = useDerivedValue(() => {
+    return assetToSell.value?.icon_url ?? '';
+  });
+
   const assetToBuySymbol = useDerivedValue(() => {
     return assetToBuy.value?.symbol ?? '';
+  });
+
+  const assetToBuyIconUrl = useDerivedValue(() => {
+    return assetToBuy.value?.icon_url ?? '';
   });
 
   const topColorShadow = useDerivedValue(() => {
@@ -480,7 +488,9 @@ export function useSwapInputsController({
     assetToSell,
     assetToBuy,
     assetToSellSymbol,
+    assetToSellIconUrl,
     assetToBuySymbol,
+    assetToBuyIconUrl,
     topColor,
     bottomColor,
     topColorShadow,

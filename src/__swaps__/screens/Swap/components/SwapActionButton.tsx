@@ -2,7 +2,7 @@
 import c from 'chroma-js';
 import React, { useMemo } from 'react';
 import { StyleProp, StyleSheet, TextStyle } from 'react-native';
-import Animated, { SharedValue, useDerivedValue } from 'react-native-reanimated';
+import Animated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 
 import { ButtonPressAnimation } from '@/components/animations';
 import { AnimatedText, Box, Column, Columns, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
@@ -23,7 +23,7 @@ export const SwapActionButton = ({
   scaleTo,
   small,
 }: {
-  color?: string | Readonly<SharedValue<string | undefined>>;
+  color?: Readonly<SharedValue<string | undefined>>;
   borderRadius?: number;
   disableShadow?: boolean;
   hugContent?: boolean;
@@ -42,30 +42,43 @@ export const SwapActionButton = ({
   const fallbackColor = useForegroundColor('blue');
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
-  const colorValue = typeof color === 'string' ? color : color?.value ?? fallbackColor;
-
   const textColor = useMemo(() => {
-    if (!colorValue) return globalColors.white100;
+    if (!color) return globalColors.white100;
 
-    const contrastWithWhite = c.contrast(colorValue, globalColors.white100);
+    const contrastWithWhite = c.contrast(color.value || fallbackColor, globalColors.white100);
     if (contrastWithWhite < (isDarkMode ? 2.6 : 2)) {
       return globalColors.grey100;
     } else {
       return globalColors.white100;
     }
-  }, [colorValue, isDarkMode]);
+  }, [color, fallbackColor, isDarkMode]);
 
   const secondaryTextColor = useMemo(() => {
-    if (!colorValue) return colors.alpha(globalColors.white100, 0.76);
-    const contrastWithWhite = c.contrast(colorValue, globalColors.white100);
+    if (!color) return colors.alpha(globalColors.white100, 0.76);
+    const contrastWithWhite = c.contrast(color.value || fallbackColor, globalColors.white100);
 
     if (contrastWithWhite < (isDarkMode ? 2.6 : 2)) {
       return colors.alpha(globalColors.grey100, 0.76);
     } else {
       return colors.alpha(globalColors.white100, isDarkMode ? 0.76 : 0.8);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [colorValue, isDarkMode]);
+  }, [color, colors, fallbackColor, isDarkMode]);
+
+  const buttonWrapperStyles = useAnimatedStyle(() => {
+    return {
+      backgroundColor: outline ? 'transparent' : color?.value || fallbackColor,
+      borderColor: outline ? separatorSecondary : undefined,
+      borderRadius: borderRadius ?? 24,
+      height: small ? 36 : 48,
+      shadowColor: disableShadow || outline ? 'transparent' : color?.value || fallbackColor,
+      shadowOffset: {
+        width: 0,
+        height: isDarkMode ? 13 : small ? 6 : 10,
+      },
+      shadowOpacity: isDarkMode ? 0.2 : small ? 0.2 : 0.36,
+      shadowRadius: isDarkMode ? 26 : small ? 9 : 15,
+    };
+  });
 
   return (
     <ButtonPressAnimation
@@ -79,23 +92,7 @@ export const SwapActionButton = ({
         paddingHorizontal={{ custom: small ? 14 : 20 - (outline ? 2 : 0) }}
         paddingLeft={small && icon ? '10px' : undefined}
         paddingRight={small && rightIcon ? '10px' : undefined}
-        style={[
-          feedActionButtonStyles.button,
-          outline && feedActionButtonStyles.outlineButton,
-          {
-            backgroundColor: outline ? 'transparent' : colorValue || fallbackColor,
-            borderColor: outline ? separatorSecondary : undefined,
-            borderRadius: borderRadius ?? 24,
-            height: small ? 36 : 48,
-            shadowColor: disableShadow || outline ? 'transparent' : colorValue || fallbackColor,
-            shadowOffset: {
-              width: 0,
-              height: isDarkMode ? 13 : small ? 6 : 10,
-            },
-            shadowOpacity: isDarkMode ? 0.2 : small ? 0.2 : 0.36,
-            shadowRadius: isDarkMode ? 26 : small ? 9 : 15,
-          },
-        ]}
+        style={[feedActionButtonStyles.button, outline && feedActionButtonStyles.outlineButton, buttonWrapperStyles]}
       >
         <Columns alignHorizontal="center" alignVertical="center" space="6px">
           {icon && (
@@ -103,7 +100,7 @@ export const SwapActionButton = ({
               {typeof icon === 'string' ? (
                 <Text
                   align="center"
-                  color={{ custom: outline ? colorValue || fallbackColor : textColor }}
+                  color={{ custom: outline ? color?.value ?? fallbackColor : textColor }}
                   size={small ? '15pt' : '17pt'}
                   weight="heavy"
                 >
@@ -112,7 +109,7 @@ export const SwapActionButton = ({
               ) : (
                 <AnimatedText
                   align="center"
-                  color={{ custom: outline ? colorValue || fallbackColor : textColor }}
+                  color={{ custom: outline ? color?.value ?? fallbackColor : textColor }}
                   size={small ? '15pt' : '17pt'}
                   style={iconStyle}
                   text={icon}
@@ -126,7 +123,7 @@ export const SwapActionButton = ({
               {typeof label === 'string' ? (
                 <Text
                   align="center"
-                  color={{ custom: outline ? colorValue || fallbackColor : textColor }}
+                  color={{ custom: outline ? color?.value ?? fallbackColor : textColor }}
                   numberOfLines={1}
                   size={small ? '17pt' : '20pt'}
                   weight="heavy"
@@ -136,7 +133,7 @@ export const SwapActionButton = ({
               ) : (
                 <AnimatedText
                   align="center"
-                  color={{ custom: outline ? colorValue || fallbackColor : textColor }}
+                  color={{ custom: outline ? color?.value ?? fallbackColor : textColor }}
                   numberOfLines={1}
                   size={small ? '17pt' : '20pt'}
                   text={label}
@@ -150,7 +147,7 @@ export const SwapActionButton = ({
               <Text
                 align="center"
                 color={{
-                  custom: outline ? colors.alpha(colorValue || fallbackColor, 0.76) : secondaryTextColor,
+                  custom: outline ? colors.alpha(color?.value ?? fallbackColor, 0.76) : secondaryTextColor,
                 }}
                 size={small ? '15pt' : '17pt'}
                 weight="bold"
