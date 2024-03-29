@@ -5,7 +5,6 @@ import * as i18n from '@/languages';
 import { CoinRow } from '../CoinRow';
 import { useAssetsToSell } from '../../hooks/useAssetsToSell';
 import { ParsedSearchAsset } from '../../types/assets';
-import { useSwapAssetStore } from '../../state/assets';
 import { Box, Stack, Text, Inline, Bleed, useColorMode, globalColors, HitSlop } from '@/design-system';
 import { runOnUI } from 'react-native-reanimated';
 import { useSwapContext } from '../../providers/swap-provider';
@@ -13,13 +12,12 @@ import { parseSearchAsset, isSameAsset } from '../../utils/assets';
 import { opacity } from '../../utils/swaps';
 import { useAccountAccentColor } from '@/hooks';
 import { ButtonPressAnimation } from '@/components/animations';
-import { SLIDER_WIDTH } from '../../constants';
+import { ETH_COLOR, ETH_COLOR_DARK } from '../../constants';
 
 export const TokenToSellList = () => {
   const { accentColor: accountColor } = useAccountAccentColor();
   const { isDarkMode } = useColorMode();
-  const { SwapNavigation, SwapInputController, sliderXPosition } = useSwapContext();
-  const { setAssetToSell, setSearchFilter } = useSwapAssetStore();
+  const { SwapNavigation, SwapInputController } = useSwapContext();
   const userAssets = useAssetsToSell();
 
   const accentColor = useMemo(() => {
@@ -40,22 +38,27 @@ export const TokenToSellList = () => {
         userAsset,
       });
 
-      setAssetToSell(parsedAsset);
+      // update zustand store with the selected token
+      // setAssetToSell(parsedAsset);
 
-      SwapInputController.onChangedPercentage(1);
-      sliderXPosition.value = SLIDER_WIDTH;
-      runOnUI((userAsset: ParsedSearchAsset | undefined, parsedAsset: ParsedSearchAsset) => {
+      // we need to update the inputNativeValue to the user balance / native value
+      runOnUI((parsedAsset: ParsedSearchAsset) => {
         SwapInputController.inputValues.modify(prev => ({
           ...prev,
           inputNativeValue: parsedAsset.native.balance.amount,
-          inputAmount: userAsset?.balance.amount ?? '0',
+          inputUserBalance: parsedAsset.balance.amount ?? '0',
+          inputSymbol: parsedAsset.symbol,
+          inputIconUrl: parsedAsset.icon_url,
+          inputTokenColor: parsedAsset.colors?.primary ?? parsedAsset.colors?.fallback ?? (isDarkMode ? ETH_COLOR_DARK : ETH_COLOR),
+          inputTokenShadowColor: parsedAsset.colors?.shadow ?? (isDarkMode ? ETH_COLOR_DARK : ETH_COLOR),
+          inputChainId: parsedAsset.chainId,
+          inputAddress: parsedAsset.address,
         }));
-      })(userAsset, parsedAsset);
+      })(parsedAsset);
 
-      setSearchFilter('');
       runOnUI(SwapNavigation.handleOutputPress)();
     },
-    [SwapInputController, SwapNavigation.handleOutputPress, setAssetToSell, setSearchFilter, sliderXPosition, userAssets]
+    [SwapInputController, SwapNavigation.handleOutputPress, isDarkMode, userAssets]
   );
 
   const assetsCount = useMemo(

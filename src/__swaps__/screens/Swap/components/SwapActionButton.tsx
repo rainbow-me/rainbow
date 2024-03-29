@@ -2,7 +2,7 @@
 import c from 'chroma-js';
 import React, { useMemo } from 'react';
 import { StyleProp, StyleSheet, TextStyle } from 'react-native';
-import { SharedValue } from 'react-native-reanimated';
+import Animated, { SharedValue } from 'react-native-reanimated';
 
 import { ButtonPressAnimation } from '@/components/animations';
 import { AnimatedText, Box, Column, Columns, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
@@ -23,7 +23,7 @@ export const SwapActionButton = ({
   scaleTo,
   small,
 }: {
-  color?: string;
+  color?: string | number;
   borderRadius?: number;
   disableShadow?: boolean;
   hugContent?: boolean;
@@ -45,7 +45,7 @@ export const SwapActionButton = ({
 
   const textColor = useMemo(() => {
     if (!color) return globalColors.white100;
-    const contrastWithWhite = c.contrast(color, globalColors.white100);
+    const contrastWithWhite = c.contrast(color.toString(), globalColors.white100);
 
     if (contrastWithWhite < (isDarkMode ? 2.6 : 2)) {
       return globalColors.grey100;
@@ -56,7 +56,7 @@ export const SwapActionButton = ({
 
   const secondaryTextColor = useMemo(() => {
     if (!color) return colors.alpha(globalColors.white100, 0.76);
-    const contrastWithWhite = c.contrast(color, globalColors.white100);
+    const contrastWithWhite = c.contrast(color.toString(), globalColors.white100);
 
     if (contrastWithWhite < (isDarkMode ? 2.6 : 2)) {
       return colors.alpha(globalColors.grey100, 0.76);
@@ -74,6 +74,7 @@ export const SwapActionButton = ({
       style={hugContent && feedActionButtonStyles.buttonWrapper}
     >
       <Box
+        as={Animated.View}
         paddingHorizontal={{ custom: small ? 14 : 20 - (outline ? 2 : 0) }}
         paddingLeft={small && icon ? '10px' : undefined}
         paddingRight={small && rightIcon ? '10px' : undefined}
@@ -81,11 +82,11 @@ export const SwapActionButton = ({
           feedActionButtonStyles.button,
           outline && feedActionButtonStyles.outlineButton,
           {
-            backgroundColor: outline ? 'transparent' : color || fallbackColor,
+            backgroundColor: outline ? 'transparent' : color?.toString() || fallbackColor,
             borderColor: outline ? separatorSecondary : undefined,
             borderRadius: borderRadius ?? 24,
             height: small ? 36 : 48,
-            shadowColor: disableShadow || outline ? 'transparent' : color || fallbackColor,
+            shadowColor: disableShadow || outline ? 'transparent' : color?.toString() || fallbackColor,
             shadowOffset: {
               width: 0,
               height: isDarkMode ? 13 : small ? 6 : 10,
@@ -101,7 +102,7 @@ export const SwapActionButton = ({
               {typeof icon === 'string' ? (
                 <Text
                   align="center"
-                  color={{ custom: outline ? color || fallbackColor : textColor }}
+                  color={{ custom: outline ? color?.toString() || fallbackColor : textColor }}
                   size={small ? '15pt' : '17pt'}
                   weight="heavy"
                 >
@@ -110,7 +111,7 @@ export const SwapActionButton = ({
               ) : (
                 <AnimatedText
                   align="center"
-                  color={{ custom: outline ? color || fallbackColor : textColor }}
+                  color={{ custom: outline ? color?.toString() || fallbackColor : textColor }}
                   size={small ? '15pt' : '17pt'}
                   style={iconStyle}
                   text={icon}
@@ -124,7 +125,7 @@ export const SwapActionButton = ({
               {typeof label === 'string' ? (
                 <Text
                   align="center"
-                  color={{ custom: outline ? color || fallbackColor : textColor }}
+                  color={{ custom: outline ? color?.toString() || fallbackColor : textColor }}
                   numberOfLines={1}
                   size={small ? '17pt' : '20pt'}
                   weight="heavy"
@@ -134,7 +135,7 @@ export const SwapActionButton = ({
               ) : (
                 <AnimatedText
                   align="center"
-                  color={{ custom: outline ? color || fallbackColor : textColor }}
+                  color={{ custom: outline ? color?.toString() || fallbackColor : textColor }}
                   numberOfLines={1}
                   size={small ? '17pt' : '20pt'}
                   text={label}
@@ -148,7 +149,7 @@ export const SwapActionButton = ({
               <Text
                 align="center"
                 color={{
-                  custom: outline ? colors.alpha(color || fallbackColor, 0.76) : secondaryTextColor,
+                  custom: outline ? colors.alpha(color?.toString() || fallbackColor, 0.76) : secondaryTextColor,
                 }}
                 size={small ? '15pt' : '17pt'}
                 weight="bold"

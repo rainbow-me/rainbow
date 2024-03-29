@@ -22,26 +22,30 @@ export const useSwapInputStyles = ({
   progress,
 }: {
   bottomInput: boolean | undefined;
-  color: string;
+  color: string | number;
   otherInputProgress: Animated.SharedValue<number>;
   progress: Animated.SharedValue<number>;
 }) => {
   const { isDarkMode } = useColorMode();
 
-  const { bgColor, expandedBgColor, strokeColor, expandedStrokeColor, mixedShadowColor } = useMemo(() => {
-    const bgColor = isDarkMode ? opacity(color, 0.08) : opacity(globalColors.white100, 0.8);
-    const expandedBgColor = isDarkMode ? bgColor : opacity(globalColors.white100, 0.8);
-    const strokeColor = isDarkMode ? opacity(color === ETH_COLOR_DARK ? ETH_COLOR_DARK_ACCENT : color, 0.06) : globalColors.white100;
-    const expandedStrokeColor = isDarkMode ? opacity(color, 0.1) : globalColors.white100;
-    const mixedShadowColor = isDarkMode ? 'transparent' : c.mix(color, globalColors.grey100, 0.84).hex();
+  const bgColor = useMemo(() => {
+    return isDarkMode ? opacity(color.toString(), 0.08) : opacity(globalColors.white100, 0.8);
+  }, [color, isDarkMode]);
 
-    return {
-      bgColor,
-      expandedBgColor,
-      strokeColor,
-      expandedStrokeColor,
-      mixedShadowColor,
-    };
+  const expandedBgColor = useMemo(() => {
+    return isDarkMode ? bgColor : opacity(globalColors.white100, 0.8);
+  }, [bgColor, isDarkMode]);
+
+  const strokeColor = useMemo(() => {
+    return isDarkMode ? opacity(color === ETH_COLOR_DARK ? ETH_COLOR_DARK_ACCENT : color.toString(), 0.06) : globalColors.white100;
+  }, [color, isDarkMode]);
+
+  const expandedStrokeColor = useMemo(() => {
+    return isDarkMode ? opacity(color.toString(), 0.1) : globalColors.white100;
+  }, [color, isDarkMode]);
+
+  const mixedShadowColor = useMemo(() => {
+    return isDarkMode ? 'transparent' : c.mix(color.toString(), globalColors.grey100, 0.84).hex();
   }, [color, isDarkMode]);
 
   const containerStyle = useAnimatedStyle(() => {

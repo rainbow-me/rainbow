@@ -41,6 +41,8 @@ export const useAssetsToSell = () => {
         }, {} as ParsedAssetsDictByChain);
         return sortBy(sortMethod)(filteredAssetsDictByChain);
       },
+      cacheTime: Infinity,
+      staleTime: Infinity,
     }
   );
 

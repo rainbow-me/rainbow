@@ -38,8 +38,13 @@ export const swapAssetStore = createStore<SwapAssetState>((set, get) => ({
 
   setAssetToBuy(asset) {
     const currentAsset = get().assetToBuy;
+    const currentAssetToSell = get().assetToSell;
     // prevent updating the asset to the same asset
     if (currentAsset?.uniqueId === asset.uniqueId) {
+      return;
+    }
+
+    if (currentAssetToSell && asset && currentAssetToSell.address === asset.address && currentAssetToSell.chainId === asset.chainId) {
       return;
     }
 

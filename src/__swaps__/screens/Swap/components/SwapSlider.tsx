@@ -40,7 +40,6 @@ import { useTheme } from '@/theme';
 import { useSwapAssetStore } from '../state/assets';
 import { ethereumUtils } from '@/utils';
 import { ChainId } from '../types/chains';
-import { useAssetColors } from '../hooks/useAssetColors';
 
 type SwapSliderProps = {
   dualColor?: boolean;
@@ -60,7 +59,6 @@ export const SwapSlider = ({
   const theme = useTheme();
   const { isDarkMode } = useColorMode();
   const { SwapInputController, sliderXPosition, sliderPressProgress } = useSwapContext();
-  const { topColor, bottomColor, assetToSellShadowColor } = useAssetColors();
 
   const { assetToSell } = useSwapAssetStore();
 
@@ -84,12 +82,25 @@ export const SwapSlider = ({
 
   const { inactiveColorLeft, activeColorLeft, inactiveColorRight, activeColorRight } = useMemo(
     () => ({
-      inactiveColorLeft: opacity(dualColor ? bottomColor : topColor, 0.9),
-      activeColorLeft: dualColor ? bottomColor : topColor,
-      inactiveColorRight: dualColor ? opacity(topColor, 0.9) : separatorSecondary,
-      activeColorRight: dualColor ? topColor : fillSecondary,
+      inactiveColorLeft: opacity(
+        dualColor
+          ? SwapInputController.inputValues.value.outputTokenColor.toString()
+          : SwapInputController.inputValues.value.inputTokenColor.toString(),
+        0.9
+      ),
+      activeColorLeft: dualColor
+        ? SwapInputController.inputValues.value.outputTokenColor.toString()
+        : SwapInputController.inputValues.value.inputTokenColor.toString(),
+      inactiveColorRight: dualColor ? opacity(SwapInputController.inputValues.value.inputTokenColor.toString(), 0.9) : separatorSecondary,
+      activeColorRight: dualColor ? SwapInputController.inputValues.value.inputTokenColor.toString() : fillSecondary,
     }),
-    [bottomColor, dualColor, fillSecondary, separatorSecondary, topColor]
+    [
+      SwapInputController.inputValues.value.inputTokenColor,
+      SwapInputController.inputValues.value.outputTokenColor,
+      dualColor,
+      fillSecondary,
+      separatorSecondary,
+    ]
   );
 
   // This is the percentage of the slider from the left
@@ -357,7 +368,7 @@ export const SwapSlider = ({
                 <Inline alignVertical="center" space="6px" wrap={false}>
                   <Bleed vertical="4px">
                     <SwapCoinIcon
-                      color={assetToSellShadowColor}
+                      color={SwapInputController.inputValues.value.inputTokenShadowColor.toString()}
                       iconUrl={assetToSell?.icon_url}
                       address={assetToSell?.address ?? ''}
                       mainnetAddress={assetToSell?.mainnetAddress ?? ''}
@@ -387,7 +398,12 @@ export const SwapSlider = ({
                       }, 10);
                     }}
                   >
-                    <Text align="center" color={{ custom: bottomColor }} size="15pt" weight="heavy">
+                    <Text
+                      align="center"
+                      color={{ custom: SwapInputController.inputValues.value.outputTokenColor.toString() }}
+                      size="15pt"
+                      weight="heavy"
+                    >
                       Max
                     </Text>
                   </TouchableOpacity>

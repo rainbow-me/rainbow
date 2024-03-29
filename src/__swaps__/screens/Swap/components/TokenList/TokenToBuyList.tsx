@@ -5,20 +5,17 @@ import { useAssetsToBuySections } from '../../hooks/useAssetsToBuy';
 import { TokenToBuySection } from './TokenToBuySection';
 import { Bleed, Box, HitSlop, Inline, Stack, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { useSwapAssetStore } from '../../state/assets';
-import { isL2Chain } from '../../utils/chains';
+import { chainNameFromChainId, isL2Chain } from '../../utils/chains';
 import { opacity } from '../../utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
-import { SwapCoinIcon } from '../SwapCoinIcon';
-import { ETH_ADDRESS } from '../../dummyValues';
-import { Network } from '@/helpers';
-import { useTheme } from '@/theme';
+import { ethereumUtils } from '@/utils';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
 
 export const TokenToBuyList = () => {
   const { isDarkMode } = useColorMode();
   const { outputChainId } = useSwapAssetStore();
   const sections = useAssetsToBuySections();
   const red = useForegroundColor('red');
-  const theme = useTheme();
 
   const isL2 = useMemo(() => outputChainId && isL2Chain(outputChainId), [outputChainId]);
 
@@ -59,16 +56,15 @@ export const TokenToBuyList = () => {
           <ButtonPressAnimation>
             <HitSlop space="10px">
               <Inline alignVertical="center" space="6px" wrap={false}>
-                <SwapCoinIcon
-                  mainnetAddress={ETH_ADDRESS}
-                  address={ETH_ADDRESS}
-                  network={Network.mainnet}
-                  small
-                  symbol="ETH"
-                  theme={theme}
-                />
-                <Text align="right" color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="heavy">
-                  Ethereum
+                <ChainImage chain={ethereumUtils.getNetworkFromChainId(outputChainId)} size={16} />
+                <Text
+                  align="right"
+                  color={isDarkMode ? 'labelSecondary' : 'label'}
+                  size="15pt"
+                  weight="heavy"
+                  style={{ textTransform: 'capitalize' }}
+                >
+                  {outputChainId === 1 ? 'ethereum' : chainNameFromChainId(outputChainId)}
                 </Text>
                 <Text align="center" color={isDarkMode ? 'labelTertiary' : 'labelSecondary'} size="icon 13px" weight="bold">
                   􀆏

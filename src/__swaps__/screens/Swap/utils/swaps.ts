@@ -1,6 +1,9 @@
 import c from 'chroma-js';
 import { globalColors } from '@/design-system';
 import { SCRUBBER_WIDTH, SLIDER_WIDTH } from '../constants';
+import { chainNameFromChainId } from './chains';
+import { ChainId, ChainName } from '../types/chains';
+import { RainbowConfig } from '@/model/remoteConfig';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -207,3 +210,43 @@ export function niceIncrementFormatter(
 }
 //
 // /---- END worklet utils ----/ //
+
+export const DEFAULT_SLIPPAGE_BIPS = {
+  [ChainId.mainnet]: 100,
+  [ChainId.polygon]: 200,
+  [ChainId.bsc]: 200,
+  [ChainId.optimism]: 200,
+  [ChainId.base]: 200,
+  [ChainId.zora]: 200,
+  [ChainId.arbitrum]: 200,
+  [ChainId.avalanche]: 200,
+};
+
+export const DEFAULT_SLIPPAGE = {
+  [ChainId.mainnet]: '1',
+  [ChainId.polygon]: '2',
+  [ChainId.bsc]: '2',
+  [ChainId.optimism]: '2',
+  [ChainId.base]: '2',
+  [ChainId.zora]: '2',
+  [ChainId.arbitrum]: '2',
+  [ChainId.avalanche]: '2',
+};
+
+const slippageInBipsToString = (slippageInBips: number) => (slippageInBips / 100).toString();
+
+export const getDefaultSlippage = (chainId: ChainId, config: RainbowConfig) => {
+  const chainName = chainNameFromChainId(chainId) as
+    | ChainName.mainnet
+    | ChainName.optimism
+    | ChainName.polygon
+    | ChainName.arbitrum
+    | ChainName.base
+    | ChainName.zora
+    | ChainName.bsc
+    | ChainName.avalanche;
+  return slippageInBipsToString(
+    // NOTE: JSON.parse doesn't type the result as a Record<ChainName, number>
+    (config.default_slippage_bips as unknown as Record<ChainName, number>)[chainName] || DEFAULT_SLIPPAGE_BIPS[chainId]
+  );
+};

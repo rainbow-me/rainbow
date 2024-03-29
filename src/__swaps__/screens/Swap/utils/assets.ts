@@ -278,6 +278,7 @@ export const parseSearchAsset = ({
   userAsset?: ParsedUserAsset;
 }): ParsedSearchAsset => ({
   ...searchAsset,
+  isNativeAsset: isNativeAsset(searchAsset.address, searchAsset.chainId),
   address: searchAsset.address,
   chainId: searchAsset.chainId,
   chainName: chainNameFromChainId(searchAsset.chainId),

@@ -57,6 +57,7 @@ const bridgeSectionsColorsByChain = {
   [ChainId.zora]: 'zora' as TextStyle['color'],
   [ChainId.bsc]: 'bsc' as TextStyle['color'],
   [ChainId.avalanche]: 'avalanche' as TextStyle['color'],
+  [ChainId.blast]: 'blast' as TextStyle['color'],
 };
 
 export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) => {
@@ -73,7 +74,7 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
         userAsset,
       });
 
-      setAssetToBuy(parsedAset);
+      // setAssetToBuy(parsedAset);
       SwapInputController.onChangedPercentage(1);
       runOnUI(() => {
         SwapNavigation.handleOutputPress();
@@ -110,7 +111,7 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
           </Box>
         ) : null}
         <Inline space="6px" alignVertical="center">
-          <Text size="14px / 19px (Deprecated)" weight="heavy" color={{ custom: color }}>
+          <Text size="14px / 19px (Deprecated)" weight="heavy" color={section.id === 'bridge' ? color : { custom: color }}>
             {symbol}
           </Text>
           <Text size="14px / 19px (Deprecated)" weight="heavy" color="label">

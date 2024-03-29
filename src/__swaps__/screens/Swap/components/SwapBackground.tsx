@@ -1,4 +1,4 @@
-import React, { ReactNode, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useColorMode, Box } from '@/design-system';
 import LinearGradient from 'react-native-linear-gradient';
 import { useDimensions } from '@/hooks';
@@ -10,7 +10,7 @@ import { navbarHeight } from '@/components/navbar/Navbar';
 import { safeAreaInsetValues } from '@/utils';
 import { useAssetColors } from '../hooks/useAssetColors';
 
-export const SwapBackground = ({ children }: { children: ReactNode }) => {
+export const SwapBackground = () => {
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { isDarkMode } = useColorMode();
   const { topColor, bottomColor } = useAssetColors();
@@ -39,10 +39,8 @@ export const SwapBackground = ({ children }: { children: ReactNode }) => {
       justifyContent="center"
       paddingTop={{ custom: safeAreaInsetValues.top + (navbarHeight - 12) }}
       start={{ x: 0.5, y: 0 }}
-      style={{ backgroundColor: topColor }}
+      style={{ backgroundColor: topColor, position: 'absolute', zIndex: -10 }}
       width={{ custom: deviceWidth }}
-    >
-      {children}
-    </Box>
+    />
   );
 };

@@ -46,7 +46,6 @@ export function useAnimatedSwapStyles({
   const inputTokenListStyle = useAnimatedStyle(() => {
     return {
       opacity: withTiming(interpolate(inputProgress.value, [0, 1], [0, 1], 'clamp'), fadeConfig),
-      display: inputProgress.value >= 1 ? 'flex' : 'none',
       pointerEvents: inputProgress.value === 0 ? 'none' : 'auto',
     };
   });
@@ -75,7 +74,6 @@ export function useAnimatedSwapStyles({
   const outputTokenListStyle = useAnimatedStyle(() => {
     return {
       opacity: withTiming(interpolate(outputProgress.value, [0, 1], [0, 1], 'clamp'), fadeConfig),
-      display: outputProgress.value >= 1 ? 'flex' : 'none',
       pointerEvents: outputProgress.value === 0 ? 'none' : 'auto',
     };
   });

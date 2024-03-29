@@ -1,58 +1,94 @@
 import React, { useCallback, useMemo, useRef } from 'react';
-import Animated, {
-  SharedValue,
-  runOnJS,
-  runOnUI,
-  useAnimatedReaction,
-  useDerivedValue,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
+import { SharedValue, runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
 
-import { SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '../constants';
-import { IS_INPUT_STABLECOIN, IS_OUTPUT_STABLECOIN, SWAP_FEE } from '../dummyValues';
-import { inputKeys, inputMethods } from '../types/swap';
+import { ETH_COLOR, ETH_COLOR_DARK, SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '../constants';
+import { ETH_ADDRESS, IS_INPUT_STABLECOIN, IS_OUTPUT_STABLECOIN, SWAP_FEE } from '../dummyValues';
+import { inputKeys, inputMethods, settingsKeys } from '../types/swap';
 import {
   addCommasToNumber,
   clamp,
   clampJS,
   countDecimalPlaces,
   findNiceIncrement,
+  getDefaultSlippage,
   niceIncrementFormatter,
   trimTrailingZeros,
   valueBasedDecimalFormatter,
 } from '../utils/swaps';
+import { useColorMode } from '@/design-system';
+import { ChainId } from '../types/chains';
+import { useRemoteConfig } from '@/model/remoteConfig';
 
 export function useSwapInputsController({
   focusedInput,
-  inputAssetBalance,
-  inputAssetUsdPrice,
-  outputAssetUsdPrice,
-  setIsFetching,
+  isFetching,
   sliderXPosition,
 }: {
-  focusedInput: Animated.SharedValue<inputKeys>;
-  inputAssetBalance: number;
-  inputAssetUsdPrice: number;
-  outputAssetUsdPrice: number;
-  setIsFetching: React.Dispatch<React.SetStateAction<boolean>>;
+  focusedInput: SharedValue<inputKeys>;
+  isFetching: SharedValue<boolean>;
   sliderXPosition: SharedValue<number>;
 }) {
+  const config = useRemoteConfig();
+  const { isDarkMode } = useColorMode();
   const inputValues = useSharedValue<{ [key in inputKeys]: number | string }>({
+    // inputs
     inputAmount: 0,
     inputNativeValue: 0,
+    inputUserBalance: 0,
+    inputSymbol: '',
+    inputIconUrl: '',
+    inputChainId: ChainId.mainnet,
+    inputTokenColor: isDarkMode ? ETH_COLOR_DARK : ETH_COLOR,
+    inputTokenShadowColor: isDarkMode ? ETH_COLOR_DARK : ETH_COLOR,
+    inputAddress: ETH_ADDRESS,
+
+    // outputs
     outputAmount: 0,
     outputNativeValue: 0,
+    outputUserBalance: 0,
+    outputSymbol: '',
+    outputIconUrl: '',
+    outputChainId: ChainId.mainnet,
+    outputTokenColor: isDarkMode ? ETH_COLOR_DARK : ETH_COLOR,
+    outputTokenShadowColor: isDarkMode ? ETH_COLOR_DARK : ETH_COLOR,
+    outputAddress: '',
   });
+
+  const settingsValues = useSharedValue<{ [key in settingsKeys]: number | string | boolean }>({
+    swapFee: SWAP_FEE, // TODO: Replace this
+    slippage: getDefaultSlippage(ChainId.mainnet, config),
+    flashbots: false,
+  });
+
   const inputMethod = useSharedValue<inputMethods>('slider');
   const isQuoteStale = useSharedValue(0);
+
+  const isBridging = useDerivedValue(() => {
+    return inputValues.value.inputChainId !== inputValues.value.outputChainId;
+  });
 
   const percentageToSwap = useDerivedValue(() => {
     return Math.round(clamp((sliderXPosition.value - SCRUBBER_WIDTH / SLIDER_WIDTH) / SLIDER_WIDTH, 0, 1) * 100) / 100;
   });
 
-  const niceIncrement = useMemo(() => findNiceIncrement(inputAssetBalance), [inputAssetBalance]);
+  const inputAssetUserBalance = useMemo(() => {
+    return inputValues.value.inputUserBalance;
+  }, [inputValues.value.inputUserBalance]);
+
+  const inputAssetNativeValue = useMemo(() => {
+    return inputValues.value.inputNativeValue;
+  }, [inputValues.value.inputNativeValue]);
+
+  const outputAssetUserBalance = useMemo(() => {
+    return inputValues.value.outputUserBalance;
+  }, [inputValues.value.outputUserBalance]);
+
+  const outputAssetNativeValue = useMemo(() => {
+    return inputValues.value.outputNativeValue;
+  }, [inputValues.value.outputNativeValue]);
+
+  const niceIncrement = useMemo(() => findNiceIncrement(Number(inputAssetUserBalance)), [inputAssetUserBalance]);
   const incrementDecimalPlaces = useMemo(() => countDecimalPlaces(niceIncrement), [niceIncrement]);
 
   const formattedInputAmount = useDerivedValue(() => {
@@ -61,13 +97,13 @@ export function useSwapInputsController({
       return addCommasToNumber(inputValues.value.inputAmount);
     }
     if (inputMethod.value === 'outputAmount') {
-      return valueBasedDecimalFormatter(inputValues.value.inputAmount, inputAssetUsdPrice, 'up', -1, IS_INPUT_STABLECOIN, false);
+      return valueBasedDecimalFormatter(inputValues.value.inputAmount, Number(inputAssetNativeValue), 'up', -1, IS_INPUT_STABLECOIN, false);
     }
 
     return niceIncrementFormatter(
       incrementDecimalPlaces,
-      inputAssetBalance,
-      inputAssetUsdPrice,
+      Number(inputAssetUserBalance),
+      Number(inputAssetNativeValue),
       niceIncrement,
       percentageToSwap.value,
       sliderXPosition.value
@@ -93,7 +129,14 @@ export function useSwapInputsController({
       return addCommasToNumber(inputValues.value.outputAmount);
     }
 
-    return valueBasedDecimalFormatter(inputValues.value.outputAmount, outputAssetUsdPrice, 'down', -1, IS_OUTPUT_STABLECOIN, false);
+    return valueBasedDecimalFormatter(
+      inputValues.value.outputAmount,
+      Number(outputAssetNativeValue),
+      'down',
+      -1,
+      IS_OUTPUT_STABLECOIN,
+      false
+    );
   });
 
   const formattedOutputNativeValue = useDerivedValue(() => {
@@ -120,10 +163,12 @@ export function useSwapInputsController({
     resetTimers();
 
     const updateValues = () => {
-      setIsFetching(false);
-      const inputNativeValue = percentage * inputAssetBalance * inputAssetUsdPrice;
-      const outputAmount = (inputNativeValue / outputAssetUsdPrice) * (1 - SWAP_FEE);
-      const outputNativeValue = outputAmount * outputAssetUsdPrice;
+      isFetching.value = true;
+      const inputAssetBalance = Number(inputAssetUserBalance);
+      const inputNativePrice = Number(inputAssetNativeValue);
+      const inputNativeValue = percentage * inputAssetBalance * inputNativePrice;
+      const outputAmount = (inputNativeValue / Number(outputAssetNativeValue)) * (1 - Number(settingsValues.value.swapFee));
+      const outputNativeValue = outputAmount * Number(outputAssetNativeValue);
 
       const updateWorklet = () => {
         'worklet';
@@ -142,12 +187,12 @@ export function useSwapInputsController({
 
     if (percentage > 0) {
       if (setStale) isQuoteStale.value = 1;
-      setIsFetching(true);
+      isFetching.value = true;
       spinnerTimer.current = setTimeout(() => {
         animationFrameId.current = requestAnimationFrame(updateValues);
       }, 600);
     } else {
-      setIsFetching(false);
+      isFetching.value = false;
       isQuoteStale.value = 0;
     }
 
@@ -160,13 +205,13 @@ export function useSwapInputsController({
     resetTimers();
 
     const updateValues = () => {
-      setIsFetching(false);
+      isFetching.value = false;
       if (inputKey === 'inputAmount') {
-        const inputNativeValue = amount * inputAssetUsdPrice;
-        const outputAmount = (inputNativeValue / outputAssetUsdPrice) * (1 - SWAP_FEE);
-        const outputNativeValue = outputAmount * outputAssetUsdPrice;
+        const inputNativeValue = amount * Number(inputAssetNativeValue);
+        const outputAmount = (inputNativeValue / Number(outputAssetNativeValue)) * (1 - Number(settingsValues.value.swapFee));
+        const outputNativeValue = outputAmount * Number(outputAssetNativeValue);
 
-        const updatedSliderPosition = clampJS((amount / inputAssetBalance) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
+        const updatedSliderPosition = clampJS((amount / Number(inputAssetUserBalance)) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
 
         const updateWorklet = () => {
           'worklet';
@@ -184,10 +229,10 @@ export function useSwapInputsController({
         runOnUI(updateWorklet)();
       } else if (inputKey === 'outputAmount') {
         const outputAmount = amount;
-        const inputNativeValue = outputAmount * outputAssetUsdPrice * (1 + SWAP_FEE);
-        const inputAmount = inputNativeValue / inputAssetUsdPrice;
+        const inputNativeValue = outputAmount * Number(outputAssetNativeValue) * (1 + Number(settingsValues.value.swapFee));
+        const inputAmount = inputNativeValue / Number(inputAssetNativeValue);
 
-        const updatedSliderPosition = clampJS((inputAmount / inputAssetBalance) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
+        const updatedSliderPosition = clampJS((inputAmount / Number(inputAssetNativeValue)) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
 
         const updateWorklet = () => {
           'worklet';
@@ -207,7 +252,7 @@ export function useSwapInputsController({
     };
 
     const resetValuesToZero = () => {
-      setIsFetching(false);
+      isFetching.value = false;
 
       const updateWorklet = () => {
         'worklet';
@@ -235,7 +280,7 @@ export function useSwapInputsController({
 
     if (amount > 0) {
       if (setStale) isQuoteStale.value = 1;
-      setIsFetching(true);
+      isFetching.value = true;
       spinnerTimer.current = setTimeout(() => {
         animationFrameId.current = requestAnimationFrame(updateValues);
       }, 600);
@@ -283,16 +328,16 @@ export function useSwapInputsController({
         // because we will likely set a percentage-based default input value
         const inputAmount = niceIncrementFormatter(
           incrementDecimalPlaces,
-          inputAssetBalance,
-          inputAssetUsdPrice,
+          Number(inputAssetUserBalance),
+          Number(inputAssetNativeValue),
           niceIncrement,
           percentageToSwap.value,
           sliderXPosition.value,
           true
         );
-        const inputNativeValue = Number(inputAmount) * inputAssetUsdPrice;
-        const outputAmount = (inputNativeValue / outputAssetUsdPrice) * (1 - SWAP_FEE);
-        const outputNativeValue = outputAmount * outputAssetUsdPrice;
+        const inputNativeValue = Number(inputAmount) * Number(inputAssetNativeValue);
+        const outputAmount = (inputNativeValue / Number(outputAssetNativeValue)) * (1 - Number(settingsValues.value.swapFee));
+        const outputNativeValue = outputAmount * Number(outputAssetNativeValue);
 
         inputValues.modify(values => {
           return {
@@ -323,14 +368,14 @@ export function useSwapInputsController({
             // If the change set the slider position to > 0
             const inputAmount = niceIncrementFormatter(
               incrementDecimalPlaces,
-              inputAssetBalance,
-              inputAssetUsdPrice,
+              Number(inputAssetUserBalance),
+              Number(inputAssetNativeValue),
               niceIncrement,
               percentageToSwap.value,
               sliderXPosition.value,
               true
             );
-            const inputNativeValue = Number(inputAmount) * inputAssetUsdPrice;
+            const inputNativeValue = Number(inputAmount) * Number(inputAssetNativeValue);
 
             inputValues.modify(values => {
               return {
@@ -366,7 +411,7 @@ export function useSwapInputsController({
             }
           } else {
             // If the input amount was set to a non-zero value
-            const inputNativeValue = Number(current.values.inputAmount) * inputAssetUsdPrice;
+            const inputNativeValue = Number(current.values.inputAmount) * Number(inputAssetNativeValue);
 
             isQuoteStale.value = 1;
             inputValues.modify(values => {
@@ -406,7 +451,7 @@ export function useSwapInputsController({
           } else if (Number(current.values.outputAmount) > 0) {
             // If the output amount was set to a non-zero value
             const outputAmount = Number(current.values.outputAmount);
-            const outputNativeValue = outputAmount * outputAssetUsdPrice;
+            const outputNativeValue = outputAmount * Number(outputAssetNativeValue);
 
             isQuoteStale.value = 1;
             inputValues.modify(values => {
@@ -431,8 +476,11 @@ export function useSwapInputsController({
     formattedOutputNativeValue,
     inputMethod,
     inputValues,
+    settingsValues,
+    outputAssetUserBalance,
     isQuoteStale,
     onChangedPercentage,
     percentageToSwap,
+    isBridging,
   };
 }

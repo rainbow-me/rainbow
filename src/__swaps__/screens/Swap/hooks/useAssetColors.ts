@@ -28,6 +28,7 @@ const extractColorValueForColors = ({ colors, isDarkMode }: { colors?: Colors; i
   return isDarkMode ? ETH_COLOR_DARK : ETH_COLOR;
 };
 
+// NOTE: This hook is not used anymore and you should use the SwapInputController inputTokenColor and outputTokenColor instead
 export const useAssetColors = (): AssetColors => {
   const { isDarkMode } = useColorMode();
   const { assetToBuy, assetToSell } = useSwapAssetStore();

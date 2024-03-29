@@ -23,7 +23,6 @@ import {
 } from '../constants';
 import { inputKeys, inputMethods } from '../types/swap';
 import { opacity } from '../utils/swaps';
-import { useAssetColors } from './useAssetColors';
 
 export function useSwapTextStyles({
   focusedInput,
@@ -43,7 +42,9 @@ export function useSwapTextStyles({
   sliderPressProgress: SharedValue<number>;
 }) {
   const { isDarkMode } = useColorMode();
-  const { topColor, bottomColor } = useAssetColors();
+
+  const topColor = inputValues.value.inputTokenColor.toString();
+  const bottomColor = inputValues.value.outputTokenColor.toString();
 
   const labelSecondary = useForegroundColor('labelSecondary');
   const labelTertiary = useForegroundColor('labelTertiary');

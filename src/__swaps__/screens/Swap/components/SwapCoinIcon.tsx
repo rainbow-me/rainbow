@@ -9,6 +9,7 @@ import { borders, fonts } from '@/styles';
 import { ThemeContextProps } from '@/theme';
 import { FallbackIcon as CoinIconTextFallback, isETH } from '@/utils';
 import { FastFallbackCoinIconImage } from '@/components/asset-list/RecyclerAssetList2/FastComponents/FastFallbackCoinIconImage';
+import Animated from 'react-native-reanimated';
 
 // TODO: Delete this and replace with RainbowCoinIcon
 // ⚠️ When replacing this component with RainbowCoinIcon, make sure
@@ -97,7 +98,7 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
   return (
     <View style={small ? sx.containerSmall : large ? sx.containerLarge : sx.container}>
       {eth ? (
-        <View
+        <Animated.View
           style={[
             sx.reactCoinIconContainer,
             small ? sx.coinIconFallbackSmall : large ? sx.coinIconFallbackLarge : sx.coinIconFallback,
@@ -106,7 +107,7 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
           ]}
         >
           <Image source={EthIcon} style={small ? sx.coinIconFallbackSmall : large ? sx.coinIconFallbackLarge : sx.coinIconFallback} />
-        </View>
+        </Animated.View>
       ) : (
         <FastFallbackCoinIconImage
           size={small ? 16 : large ? 36 : 32}

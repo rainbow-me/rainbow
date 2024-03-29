@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useDebounce } from '@/__swaps__/screens/Swap/hooks/useDebounce';
 import { useSearchCurrencyLists } from './useSearchCurrencyLists';
 import { useSwapAssetStore } from '../state/assets';
@@ -14,5 +15,5 @@ export const useAssetsToBuySections = () => {
     bridge: outputChainId !== assetToSell?.chainId ?? false,
   });
 
-  return searchAssetsToBuySections;
+  return useMemo(() => searchAssetsToBuySections, [searchAssetsToBuySections]);
 };

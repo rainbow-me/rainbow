@@ -4,7 +4,7 @@ import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
 import { IS_ANDROID } from '@/env';
 import { Page } from '@/components/layout';
-import { Box, DebugLayout } from '@/design-system';
+import { Box } from '@/design-system';
 
 import { SheetGestureBlocker } from './components/SheetGestureBlocker';
 import { SwapBackground } from './components/SwapBackground';
@@ -14,6 +14,8 @@ import { SwapInputAsset } from './components/controls/SwapInputAsset';
 import { SwapOutputAsset } from './components/controls/SwapOutputAsset';
 import { SwapNavbar } from './components/SwapNavbar';
 import { SwapAmountInputs } from './components/controls/SwapAmountInputs';
+import { deviceUtils, safeAreaInsetValues } from '@/utils';
+import { navbarHeight } from '@/components/navbar/Navbar';
 
 /** README
  * This prototype is largely driven by Reanimated and Gesture Handler, which
@@ -53,19 +55,17 @@ import { SwapAmountInputs } from './components/controls/SwapAmountInputs';
  */
 
 export function SwapScreen() {
-  console.log('rendering swap screen');
   return (
     <SheetGestureBlocker>
       <Box as={Page} style={styles.rootViewBackground} testID="swap-screen" width="full">
-        <SwapBackground>
-          <Box alignItems="center" height="full" paddingTop={{ custom: 29 }} width="full">
-            <SwapInputAsset />
-            <FlipButton />
-            <SwapOutputAsset />
-            <ExchangeRateBubble />
-            <SwapAmountInputs />
-          </Box>
-        </SwapBackground>
+        <SwapBackground />
+        <Box alignItems="center" height="full" paddingTop={{ custom: safeAreaInsetValues.top + (navbarHeight - 12) + 29 }} width="full">
+          <SwapInputAsset />
+          <FlipButton />
+          <SwapOutputAsset />
+          <ExchangeRateBubble />
+          <SwapAmountInputs />
+        </Box>
         <SwapNavbar />
       </Box>
     </SheetGestureBlocker>
@@ -74,7 +74,6 @@ export function SwapScreen() {
 
 export const styles = StyleSheet.create({
   rootViewBackground: {
-    backgroundColor: 'transparent',
     borderRadius: IS_ANDROID ? 20 : ScreenCornerRadius,
     flex: 1,
     overflow: 'hidden',

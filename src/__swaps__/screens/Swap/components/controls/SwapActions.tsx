@@ -10,22 +10,22 @@ import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../.
 import { opacity } from '../../utils/swaps';
 import { IS_ANDROID } from '@/env';
 import { useSwapContext } from '../../providers/swap-provider';
-import { useAssetColors } from '../../hooks/useAssetColors';
+import Animated from 'react-native-reanimated';
 
 export function SwapActions() {
   const { isDarkMode } = useColorMode();
-  const { confirmButtonIcon, confirmButtonIconStyle, confirmButtonLabel } = useSwapContext();
-  const { bottomColor } = useAssetColors();
+  const { confirmButtonIcon, confirmButtonIconStyle, confirmButtonLabel, SwapInputController } = useSwapContext();
   return (
     <Box
+      as={Animated.View}
       paddingBottom={{
         custom: IS_ANDROID ? getSoftMenuBarHeight() - 24 : safeAreaInsetValues.bottom + 16,
       }}
       paddingHorizontal="20px"
       paddingTop={{ custom: 16 - THICK_BORDER_WIDTH }}
       style={{
-        backgroundColor: opacity(bottomColor, 0.03),
-        borderTopColor: opacity(bottomColor, 0.04),
+        backgroundColor: opacity(SwapInputController.inputValues.value.outputTokenColor.toString(), 0.03),
+        borderTopColor: opacity(SwapInputController.inputValues.value.outputTokenColor.toString(), 0.04),
         borderTopWidth: THICK_BORDER_WIDTH,
       }}
       width="full"
@@ -40,7 +40,7 @@ export function SwapActions() {
           </Box>
         </Column>
         <SwapActionButton
-          color={bottomColor}
+          color={SwapInputController.inputValues.value.outputTokenColor.toString()}
           icon={confirmButtonIcon}
           iconStyle={confirmButtonIconStyle}
           label={confirmButtonLabel}

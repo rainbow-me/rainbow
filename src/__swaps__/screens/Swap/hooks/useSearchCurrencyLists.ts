@@ -244,12 +244,14 @@ export function useSearchCurrencyLists({
     const bridgeAsset = curatedAssets?.find(asset =>
       isLowerCaseMatch(asset.mainnetAddress, assetToSell?.[assetToSell?.chainId === ChainId.mainnet ? 'address' : 'mainnetAddress'])
     );
+
     const filteredBridgeAsset = filterBridgeAsset({
       asset: bridgeAsset,
       filter: query,
     })
       ? bridgeAsset
       : null;
+
     return outputChainId === assetToSell?.chainId ? null : filteredBridgeAsset;
   }, [assetToSell, getCuratedAssets, outputChainId, query]);
 

@@ -1,13 +1,13 @@
 /* eslint-disable no-nested-ternary */
 import c from 'chroma-js';
 import React, { useCallback } from 'react';
-import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import Animated, { runOnUI, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import SwapSpinner from '@/__swaps__/assets/swapSpinner.png';
 import { ButtonPressAnimation } from '@/components/animations';
 import { AnimatedSpinner, spinnerExitConfig } from '@/__swaps__/components/animations/AnimatedSpinner';
 import { Bleed, Box, IconContainer, Text, globalColors, useColorMode } from '@/design-system';
 import { colors } from '@/styles';
-import { ETH_COLOR, ETH_COLOR_DARK, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../constants';
+import { SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../constants';
 import { opacity } from '../utils/swaps';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { AnimatedBlurView } from './AnimatedBlurView';
@@ -18,10 +18,8 @@ import { useSwapAssetStore } from '../state/assets';
 export const FlipButton = () => {
   const { isDarkMode } = useColorMode();
 
-  const { isFetching, AnimatedSwapStyles } = useSwapContext();
+  const { isFetching, AnimatedSwapStyles, SwapNavigation, SwapInputController, outputProgress } = useSwapContext();
   const { assetToBuy, assetToSell, setAssetToBuy, setAssetToSell } = useSwapAssetStore();
-
-  const bottomColor = (assetToBuy?.colors?.primary || assetToBuy?.colors?.fallback) ?? (isDarkMode ? ETH_COLOR_DARK : ETH_COLOR);
 
   const fetchingStyle = useAnimatedStyle(() => {
     return {
@@ -33,9 +31,6 @@ export const FlipButton = () => {
     const prevAssetToSell = assetToSell;
     const prevAssetToBuy = assetToBuy;
 
-    console.log(JSON.stringify(prevAssetToSell));
-    console.log(JSON.stringify(prevAssetToBuy));
-
     if (prevAssetToBuy) {
       setAssetToSell(prevAssetToBuy);
     }
@@ -44,15 +39,12 @@ export const FlipButton = () => {
       setAssetToBuy(prevAssetToSell);
     }
 
-    // TODO: Fetch current prices of each asset and update the input and output values on the native thread
-    // runOnUI(() => {
-    //   SwapInputController.inputValues.modify(prev => ({
-    //     ...prev,
-    //     // inputNativeValue: prevAssetToBuy.native.price.amount,
-    //     outputNativeValue: prevAssetToSell.native.price.amount,
-    //   }));
-    // })();
-  }, [assetToBuy, assetToSell, setAssetToBuy, setAssetToSell]);
+    runOnUI(() => {
+      if (outputProgress.value === 1) {
+        SwapNavigation.handleOutputPress();
+      }
+    })();
+  }, [SwapNavigation, assetToBuy, assetToSell, outputProgress.value, setAssetToBuy, setAssetToSell]);
 
   return (
     <Box
@@ -62,8 +54,11 @@ export const FlipButton = () => {
       style={[AnimatedSwapStyles.flipButtonStyle, AnimatedSwapStyles.focusedSearchStyle, { height: 12, width: 28, zIndex: 10 }]}
     >
       <Box
+        as={Animated.View}
         style={{
-          shadowColor: isDarkMode ? globalColors.grey100 : c.mix(bottomColor, colors.dark, 0.84).hex(),
+          shadowColor: isDarkMode
+            ? globalColors.grey100
+            : c.mix(SwapInputController.inputValues.value.outputTokenColor.toString(), colors.dark, 0.84).hex(),
           shadowOffset: {
             width: 0,
             height: isDarkMode ? 4 : 4,
@@ -107,7 +102,13 @@ export const FlipButton = () => {
         </ButtonPressAnimation>
       </Box>
       <Box pointerEvents="none" position="absolute">
-        <AnimatedSpinner color={bottomColor} isLoading={isFetching} scaleInFrom={1} size={32} src={SwapSpinner} />
+        <AnimatedSpinner
+          color={SwapInputController.inputValues.value.outputTokenColor.toString()}
+          isLoading={isFetching}
+          scaleInFrom={1}
+          size={32}
+          src={SwapSpinner}
+        />
       </Box>
     </Box>
   );

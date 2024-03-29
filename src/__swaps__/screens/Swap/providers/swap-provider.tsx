@@ -1,4 +1,4 @@
-import React, { createContext, useContext, ReactNode, SetStateAction, Dispatch, useState } from 'react';
+import React, { createContext, useContext, ReactNode } from 'react';
 import { SharedValue, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { inputKeys } from '../types/swap';
 import { INITIAL_SLIDER_POSITION, SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, SLIDER_WIDTH } from '../constants';
@@ -7,10 +7,6 @@ import { useSwapTextStyles } from '../hooks/useSwapTextStyles';
 import { useSwapNavigation } from '../hooks/useSwapNavigation';
 import { useSwapInputsController } from '../hooks/useSwapInputsController';
 import { StyleProp, TextStyle } from 'react-native';
-import { useSwapAssetStore } from '../state/assets';
-import { useExternalToken } from '../../../../resources/assets/externalAssetsQuery';
-import { ethereumUtils } from '@/utils';
-import { useAccountSettings } from '@/hooks';
 
 interface SwapContextType {
   inputProgress: SharedValue<number>;
@@ -18,13 +14,7 @@ interface SwapContextType {
   sliderXPosition: SharedValue<number>;
   sliderPressProgress: SharedValue<number>;
   focusedInput: SharedValue<inputKeys>;
-  isFetching: boolean;
-  setIsFetching: Dispatch<SetStateAction<boolean>>;
-  isInputSearchFocused: boolean;
-  setIsInputSearchFocused: Dispatch<SetStateAction<boolean>>;
-  isOutputSearchFocused: boolean;
-  setIsOutputSearchFocused: Dispatch<SetStateAction<boolean>>;
-
+  isFetching: SharedValue<boolean>;
   SwapInputController: ReturnType<typeof useSwapInputsController>;
   AnimatedSwapStyles: ReturnType<typeof useAnimatedSwapStyles>;
   SwapTextStyles: ReturnType<typeof useSwapTextStyles>;
@@ -42,38 +32,16 @@ interface SwapProviderProps {
 }
 
 export const SwapProvider = ({ children }: SwapProviderProps) => {
-  const { nativeCurrency: currentCurrency } = useAccountSettings();
-
+  const isFetching = useSharedValue(false);
   const inputProgress = useSharedValue(0);
   const outputProgress = useSharedValue(0);
   const sliderXPosition = useSharedValue(SLIDER_WIDTH * INITIAL_SLIDER_POSITION);
   const sliderPressProgress = useSharedValue(SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT);
   const focusedInput = useSharedValue<inputKeys>('inputAmount');
 
-  const { assetToBuy, assetToSell, outputChainId } = useSwapAssetStore();
-
-  const { data: assetToBuyTokenDataWithPrice } = useExternalToken(
-    {
-      address: assetToBuy?.address as string,
-      network: ethereumUtils.getNetworkFromChainId(outputChainId),
-      currency: currentCurrency,
-    },
-    {
-      staleTime: 5_000,
-      enabled: !!assetToBuy,
-    }
-  );
-
-  const [isFetching, setIsFetching] = useState(false);
-  const [isInputSearchFocused, setIsInputSearchFocused] = useState(false);
-  const [isOutputSearchFocused, setIsOutputSearchFocused] = useState(false);
-
   const SwapInputController = useSwapInputsController({
     focusedInput,
-    inputAssetBalance: assetToSell?.balance.amount ? Number(assetToSell.balance.amount) : 0,
-    inputAssetUsdPrice: assetToSell?.native.price?.amount ? Number(assetToSell?.native.price?.amount) : 0,
-    outputAssetUsdPrice: assetToBuyTokenDataWithPrice?.native.price?.amount ? Number(assetToBuyTokenDataWithPrice.native.price.amount) : 0,
-    setIsFetching,
+    isFetching,
     sliderXPosition,
   });
 
@@ -95,34 +63,34 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     const isInputZero = Number(SwapInputController.inputValues.value.inputAmount) === 0;
     const isOutputZero = Number(SwapInputController.inputValues.value.outputAmount) === 0;
 
-    if (SwapInputController.inputMethod.value !== 'slider' && (isInputZero || isOutputZero) && !isFetching) {
+    if (SwapInputController.inputMethod.value !== 'slider' && (isInputZero || isOutputZero) && !isFetching.value) {
       return '';
     } else if (SwapInputController.inputMethod.value === 'slider' && SwapInputController.percentageToSwap.value === 0) {
       return '';
     } else {
       return '􀕹';
     }
-  }, [isFetching]);
+  });
 
   const confirmButtonLabel = useDerivedValue(() => {
     const isInputZero = Number(SwapInputController.inputValues.value.inputAmount) === 0;
     const isOutputZero = Number(SwapInputController.inputValues.value.outputAmount) === 0;
 
-    if (SwapInputController.inputMethod.value !== 'slider' && (isInputZero || isOutputZero) && !isFetching) {
+    if (SwapInputController.inputMethod.value !== 'slider' && (isInputZero || isOutputZero) && !isFetching.value) {
       return 'Enter Amount';
     } else if (SwapInputController.inputMethod.value === 'slider' && SwapInputController.percentageToSwap.value === 0) {
       return 'Enter Amount';
     } else {
       return 'Review';
     }
-  }, [isFetching]);
+  });
 
   const confirmButtonIconStyle = useAnimatedStyle(() => {
     const isInputZero = Number(SwapInputController.inputValues.value.inputAmount) === 0;
     const isOutputZero = Number(SwapInputController.inputValues.value.outputAmount) === 0;
 
     const sliderCondition = SwapInputController.inputMethod.value === 'slider' && SwapInputController.percentageToSwap.value === 0;
-    const inputCondition = SwapInputController.inputMethod.value !== 'slider' && (isInputZero || isOutputZero) && !isFetching;
+    const inputCondition = SwapInputController.inputMethod.value !== 'slider' && (isInputZero || isOutputZero) && !isFetching.value;
 
     const shouldHide = sliderCondition || inputCondition;
 
@@ -130,6 +98,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       display: shouldHide ? 'none' : 'flex',
     };
   });
+
+  console.log('re-rendered swap provider');
 
   return (
     <SwapContext.Provider
@@ -140,11 +110,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         sliderPressProgress,
         focusedInput,
         isFetching,
-        setIsFetching,
-        isInputSearchFocused,
-        setIsInputSearchFocused,
-        isOutputSearchFocused,
-        setIsOutputSearchFocused,
         SwapInputController,
         AnimatedSwapStyles,
         SwapTextStyles,
