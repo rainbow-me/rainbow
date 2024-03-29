@@ -45,6 +45,6 @@ const styles = StyleSheet.create({
     width: deviceUtils.dimensions.width,
     pointerEvents: 'none',
     position: 'absolute',
-    zIndex: 9999999999,
+    zIndex: 10000,
   },
 });
