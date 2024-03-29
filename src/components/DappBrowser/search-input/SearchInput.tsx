@@ -145,8 +145,6 @@ export const SearchInput = ({
               actionTitle: 'Forward',
               icon: {
                 iconType: 'SYSTEM',
-                // iconValue: 'arrow.uturn.right',
-                // iconValue: 'arrow.right',
                 iconValue: 'arrowshape.forward',
               },
             }
@@ -157,8 +155,6 @@ export const SearchInput = ({
               actionTitle: 'Back',
               icon: {
                 iconType: 'SYSTEM',
-                // iconValue: 'arrow.uturn.left',
-                // iconValue: 'arrow.left',
                 iconValue: 'arrowshape.backward',
               },
             }
