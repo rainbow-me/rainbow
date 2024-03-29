@@ -23,7 +23,7 @@ import { capitalize } from '../utils/strings';
 import { ParsedAddressAsset } from '@/entities';
 import { GasFeeParamsBySpeed } from '@/__swaps__/types/gas';
 const { GasSpeedOrder, CUSTOM, URGENT, NORMAL, FAST, GAS_ICONS, GAS_EMOJIS } = gasUtils;
-const mockedGasLimit = 21000;
+const mockedGasLimit = '21000';
 
 export const GasButton = ({ accentColor }: { accentColor?: string }) => {
   const { params } = useRoute();
@@ -88,13 +88,13 @@ const GasSpeedPagerCentered = styled(Centered).attrs(() => ({
   marginRight: 8,
 }))({});
 
-const GasMenu = ({ flashbotTransaction, children, gasFeeBySpeed }) => {
+const GasMenu = ({ children, gasFeeBySpeed }) => {
   const theme = useTheme();
   const { colors } = theme;
   const { navigate } = useNavigation();
   const { selectedGas, gasFeeParamsBySpeed, setGasFeeParamsBySpeed, setSelectedGas } = useGasStore();
   const { params } = useRoute();
-  const { currentNetwork, asset, fallbackColor } = params || {};
+  const { currentNetwork, asset, fallbackColor, flashbotTransaction } = (params as any) || {};
   const speedOptions = useMemo(() => {
     return getNetworkObj(currentNetwork).gas.speeds;
   }, [currentNetwork]);
@@ -154,16 +154,16 @@ const GasMenu = ({ flashbotTransaction, children, gasFeeBySpeed }) => {
     buttonIndex => {
       switch (buttonIndex) {
         case 0:
-          setGasFeeParamsBySpeed({ gasFeeParamsBySpeed: NORMAL });
+          setGasFeeParamsBySpeed({ gasFeeParamsBySpeed: gasFeeBySpeed[NORMAL] });
           break;
         case 1:
-          setGasFeeParamsBySpeed({ gasFeeParamsBySpeed: FAST });
+          setGasFeeParamsBySpeed({ gasFeeParamsBySpeed: gasFeeBySpeed[FAST] });
           break;
         case 2:
-          setGasFeeParamsBySpeed({ gasFeeParamsBySpeed: URGENT });
+          setGasFeeParamsBySpeed({ gasFeeParamsBySpeed: gasFeeBySpeed[URGENT] });
           break;
         case 3:
-          setGasFeeParamsBySpeed({ gasFeeParamsBySpeed: CUSTOM });
+          setGasFeeParamsBySpeed({ gasFeeParamsBySpeed: gasFeeBySpeed[CUSTOM] });
       }
     },
     [setGasFeeParamsBySpeed]
