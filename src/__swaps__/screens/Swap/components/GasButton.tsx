@@ -42,23 +42,27 @@ export const GasButton = ({ accentColor }: { accentColor?: string }) => {
     getNativeAsset();
   }, [currentNetwork, setNativeAsset]);
 
-  let gasFeeBySpeed: GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed | {} = useMemo(() =>{
+  let gasFeeBySpeed: GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed | any = useMemo(() => {
     if (!isLoading) {
-      return parseGasFeeParamsBySpeed({ chainId, data: data!, gasLimit: mockedGasLimit, nativeAsset: nativeAsset as unknown as ParsedAsset, currency: nativeCurrency });
+      return parseGasFeeParamsBySpeed({
+        chainId,
+        data: data!,
+        gasLimit: mockedGasLimit,
+        nativeAsset: nativeAsset as unknown as ParsedAsset,
+        currency: nativeCurrency,
+      });
     }
-    return {}
-
+    return {};
   }, [isLoading, nativeAsset]);
-  
+
   const [showGasOptions, setShowGasOptions] = useState(false);
   const animatedGas = useDerivedValue(() => {
     return gasFeeBySpeed[selectedGas?.option]?.gasFee?.display ?? '$0.01';
   }, [gasFeeBySpeed, selectedGas]);
 
-    useEffect(()=>{
-      console.log({isLoading, data, nativeAsset})
-
-      },[isLoading, data, nativeAsset])
+  useEffect(() => {
+    console.log({ isLoading, data, nativeAsset });
+  }, [isLoading, data, nativeAsset]);
   return (
     <ButtonPressAnimation onPress={() => setShowGasOptions(!showGasOptions)}>
       <GasMenu gasFeeBySpeed={gasFeeBySpeed} flashbotTransaction={false}>
@@ -99,14 +103,22 @@ const GasSpeedPagerCentered = styled(Centered).attrs(() => ({
   marginRight: 8,
 }))({});
 
-const GasMenu = ({ flashbotTransaction, children, gasFeeBySpeed }: {flashbotTransaction: boolean, children: ReactNode, gasFeeBySpeed: GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed}) => {
+const GasMenu = ({
+  flashbotTransaction,
+  children,
+  gasFeeBySpeed,
+}: {
+  flashbotTransaction: boolean;
+  children: ReactNode;
+  gasFeeBySpeed: GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed;
+}) => {
   const theme = useTheme();
   const { colors } = theme;
   const { navigate } = useNavigation();
   const { selectedGas, gasFeeParamsBySpeed, setGasFeeParamsBySpeed, setSelectedGas } = useGasStore();
   const { params } = useRoute();
   // this needs to be moved up or out shouldnt need asset just the color
-  const { currentNetwork, asset, fallbackColor } = params || {};
+  const { currentNetwork, asset, fallbackColor } = (params as any) || {};
   const speedOptions = useMemo(() => {
     return getNetworkObj(currentNetwork).gas.speeds as GasSpeed[];
   }, [currentNetwork]);
@@ -117,8 +129,12 @@ const GasMenu = ({ flashbotTransaction, children, gasFeeBySpeed }: {flashbotTran
     shouldOpen: false,
   });
 
-  const gasIsNotReady: boolean = useMemo(() => isEmpty(gasFeeParamsBySpeed) || isEmpty(selectedGas?.gasFee), [gasFeeParamsBySpeed, selectedGas]);
-  const openCustomOptionsRef = useRef();
+  const gasIsNotReady: boolean = useMemo(
+    () => isEmpty(gasFeeParamsBySpeed) || isEmpty(selectedGas?.gasFee),
+    [gasFeeParamsBySpeed, selectedGas]
+  );
+
+  const openCustomOptionsRef = useRef<((focusTo: any) => void) | null>(null);
 
   const openCustomGasSheet = useCallback(() => {
     if (gasIsNotReady && !__DEV__) return;
@@ -127,14 +143,14 @@ const GasMenu = ({ flashbotTransaction, children, gasFeeBySpeed }: {flashbotTran
       fallbackColor,
       flashbotTransaction,
       focusTo: shouldOpenCustomGasSheet.focusTo,
-      openCustomOptions: focusTo => openCustomOptionsRef?.current?.(focusTo),
+      openCustomOptions: (focusTo: any) => openCustomOptionsRef.current?.(focusTo),
       speeds: GasSpeedOrder,
       type: 'custom_gas',
     });
   }, [gasIsNotReady, navigate, asset, shouldOpenCustomGasSheet.focusTo, flashbotTransaction, fallbackColor]);
 
   const handlePressSpeedOption = useCallback(
-   ( selectedGasSpeed:  GasSpeed) => {
+    (selectedGasSpeed: GasSpeed) => {
       if (selectedGasSpeed === CUSTOM) {
         if (ios) {
           InteractionManager.runAfterInteractions(() => {
@@ -165,16 +181,16 @@ const GasMenu = ({ flashbotTransaction, children, gasFeeBySpeed }: {flashbotTran
     (buttonIndex: number) => {
       switch (buttonIndex) {
         case 0:
-          setSelectedGas({selectedGas: gasFeeParamsBySpeed[GasSpeed.NORMAL]});
+          setSelectedGas({ selectedGas: gasFeeParamsBySpeed[GasSpeed.NORMAL] });
           break;
         case 1:
-          setSelectedGas({selectedGas: gasFeeParamsBySpeed[GasSpeed.FAST]});
+          setSelectedGas({ selectedGas: gasFeeParamsBySpeed[GasSpeed.FAST] });
           break;
         case 2:
-          setSelectedGas({selectedGas: gasFeeParamsBySpeed[GasSpeed.URGENT]});
+          setSelectedGas({ selectedGas: gasFeeParamsBySpeed[GasSpeed.URGENT] });
           break;
         case 3:
-          setSelectedGas({selectedGas: gasFeeParamsBySpeed[GasSpeed.CUSTOM]});
+          setSelectedGas({ selectedGas: gasFeeParamsBySpeed[GasSpeed.CUSTOM] });
       }
     },
     [setGasFeeParamsBySpeed]
