@@ -17,7 +17,32 @@ export interface GasStore {
 
 export const gasStore = createStore<GasStore>(
   (set, get) => ({
-    selectedGas: {} as GasFeeParams | GasFeeLegacyParams,
+    selectedGas: {
+      maxBaseFee: {
+        amount: '0',
+        display: '0.01',
+        gwei: '0',
+      },
+      maxPriorityFeePerGas: {
+        amount: '0',
+        display: '0',
+        gwei: '0',
+      },
+      option: GasSpeed.FAST,
+      estimatedTime: {
+        amount: 12,
+        display: '~ 12 sec',
+      },
+      display: 'Fast',
+      transactionGasParams: {
+        maxPriorityFeePerGas: '0',
+        maxFeePerGas: '0',
+      },
+      gasFee: {
+        amount: '0',
+        display: '0',
+      },
+    } as GasFeeParams | GasFeeLegacyParams,
     gasFeeParamsBySpeed: {} as GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed,
     customGasModified: false,
     setSelectedGas: ({ selectedGas }) => {
