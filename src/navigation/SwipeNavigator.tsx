@@ -5,7 +5,7 @@ import { TabBarIcon } from '@/components/icons/TabBarIcon';
 import { FlexItem } from '@/components/layout';
 import { TestnetToast } from '@/components/toasts';
 import { DAPP_BROWSER, POINTS, useExperimentalFlag } from '@/config';
-import { Box, Columns, globalColors, Stack, useForegroundColor, Text, Cover } from '@/design-system';
+import { Box, Columns, globalColors, Stack, useForegroundColor, Text, Cover, useBackgroundColor } from '@/design-system';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import { web3Provider } from '@/handlers/web3';
 import { isUsingButtonNavigation } from '@/helpers/statusBarHelper';
@@ -411,9 +411,10 @@ function SwipeNavigatorScreens() {
 export function SwipeNavigator() {
   const { network } = useAccountSettings();
   const { colors } = useTheme();
+  const surfacePrimaryElevated = useBackgroundColor('surfacePrimaryElevated');
 
   return (
-    <FlexItem backgroundColor={colors.white}>
+    <FlexItem backgroundColor={surfacePrimaryElevated}>
       <BrowserTabViewProgressContextProvider>
         <SectionListScrollToTopProvider>
           <RecyclerListViewScrollToTopProvider>
