@@ -1,5 +1,5 @@
 import React, { forwardRef, ReactNode, useMemo } from 'react';
-import { View } from 'react-native';
+import { View, ViewStyle } from 'react-native';
 import { useForegroundColor, useForegroundColors } from '../../color/useForegroundColor';
 import { useColorMode } from '../../color/ColorMode';
 import { Shadow, shadows } from '../../layout/shadow';
@@ -56,7 +56,12 @@ export type BoxProps = {
   right?: PositionSpace;
   top?: PositionSpace;
   width?: Width;
-  overflow?: 'hidden' | 'visible' | 'scroll';
+  backgroundColor?: string;
+  shadowColor?: string;
+  elevation?: number;
+  shadowOpacity?: number;
+  shadowRadius?: number;
+  overflow?: 'visible' | 'hidden' | 'scroll' | 'auto';
 } & (
   | {
       borderBottomRadius?: number;
@@ -170,6 +175,7 @@ export const Box = forwardRef(function Box(
       alignItems,
       borderBottomLeftRadius: borderBottomLeftRadius ?? borderBottomRadius ?? borderLeftRadius ?? borderRadius,
       borderBottomRightRadius: borderBottomRightRadius ?? borderBottomRadius ?? borderRightRadius ?? borderRadius,
+      borderCurve: 'continuous' as ViewStyle['borderCurve'],
       borderTopLeftRadius: borderTopLeftRadius ?? borderTopRadius ?? borderLeftRadius ?? borderRadius,
       borderTopRightRadius: borderTopRightRadius ?? borderTopRadius ?? borderRightRadius ?? borderRadius,
       bottom,
@@ -178,7 +184,7 @@ export const Box = forwardRef(function Box(
       flexGrow,
       flexShrink,
       flexWrap,
-      height,
+      height: height as ViewStyle['height'],
       justifyContent,
       left,
       margin,
@@ -198,7 +204,7 @@ export const Box = forwardRef(function Box(
       position,
       right,
       top,
-      width,
+      width: width as ViewStyle['width'],
     };
   }, [
     alignItems,
@@ -240,16 +246,9 @@ export const Box = forwardRef(function Box(
     width,
   ]);
 
-  const style = useMemo(() => {
-    const stylesArray = [styles, styleProp];
-
-    // We flatten the styles array in case it's passed to Animated.View.
-    // This won't be needed with v2.3+ of react-native-reanimated.
-    return Component === View ? stylesArray : stylesArray.flat();
-  }, [styles, styleProp, Component]);
+  const style = useMemo(() => [styles, styleProp], [styles, styleProp]);
 
   return background ? (
-    // @ts-ignore
     <BackgroundProvider color={background} style={style}>
       {({ backgroundColor, backgroundStyle }) => (
         <ApplyShadow backgroundColor={backgroundColor} shadows={shadows}>
@@ -260,7 +259,6 @@ export const Box = forwardRef(function Box(
       )}
     </BackgroundProvider>
   ) : (
-    // @ts-ignore
     <Component style={style} {...restProps} ref={ref}>
       {children}
     </Component>

@@ -15,7 +15,7 @@
   "basic_tx": 21000,
   "basic_transfer": 50000,
   "arbitrum_basic_tx": 735000,
-  "default_l1_gas_fee_optimism_swap": "1064760511747856",
+  "default_l1_gas_fee_optimism_swap": "0001064760511747",
   "weth_wrap": 30000,
   "weth_unwrap": 40000,
   "noether": 0,
@@ -45,6 +45,6 @@
   "mether": 1000000000000000000000000,
   "gether": 1000000000000000000000000000,
   "tether": 1000000000000000000000000000000,
-  "mainnet_nft_offer_gas_fee_fallback": 600000,
+  "mainnet_nft_offer_gas_fee_fallback": 300000,
   "l2_nft_offer_gas_fee_fallback": 2000000
 }

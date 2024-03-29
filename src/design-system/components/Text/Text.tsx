@@ -1,5 +1,5 @@
 import React, { ElementRef, forwardRef, ReactNode, useMemo } from 'react';
-import { Text as NativeText } from 'react-native';
+import { Text as NativeText, StyleProp, TextStyle } from 'react-native';
 import { TextColor } from '../../color/palettes';
 import { CustomColor } from '../../color/useForegroundColor';
 import { createLineHeightFixNode } from '../../typography/createLineHeightFixNode';
@@ -24,6 +24,7 @@ export type TextProps = {
   testID?: string;
   uppercase?: boolean;
   weight?: TextWeight;
+  onPress?: () => void;
 } & (
   | {
       containsEmoji: true;
@@ -31,7 +32,7 @@ export type TextProps = {
     }
   | { containsEmoji?: false; children: ReactNode }
 ) & {
-    style?: Record<string, unknown>;
+    style?: StyleProp<TextStyle>;
   };
 export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(function Text(
   {
@@ -46,6 +47,7 @@ export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(functio
     testID,
     uppercase,
     weight,
+    onPress,
     style,
   },
   ref
@@ -84,6 +86,7 @@ export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(functio
       ref={ref}
       style={[textStyle, style || {}]}
       testID={testID}
+      onPress={onPress}
     >
       {ios && containsEmojiProp && nodeIsString(children) ? renderStringWithEmoji(children) : children}
       {lineHeightFixNode}

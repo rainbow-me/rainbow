@@ -64,7 +64,6 @@ export const ImportOrWatchWalletSheet = () => {
         >
           <Input
             autoCorrect={false}
-            autoCompleteType={false}
             autoFocus={false}
             autoCapitalize="none"
             textContentType="none"
@@ -84,9 +83,8 @@ export const ImportOrWatchWalletSheet = () => {
             selectionColor={globalColors.purple60}
             scrollEnabled={false}
             spellCheck={false}
-            width={232}
             returnKeyType="done"
-            style={textStyle}
+            style={[textStyle, { width: 232 }]}
             testID="import-sheet-input"
             value={seedPhrase}
           />

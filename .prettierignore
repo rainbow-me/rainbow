@@ -10,4 +10,4 @@ rainbow-scripts
 .vscode
 __generated__
 coverage
-src/browser/InjectedJSBundle.js
+InjectedJSBundle.js

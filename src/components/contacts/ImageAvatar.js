@@ -6,6 +6,7 @@ import { borders } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
 import { IS_ANDROID } from '@/env';
 import { useAccountAccentColor } from '@/hooks';
+import { useColorMode } from '@/design-system';
 
 const buildSmallShadows = (color, colors) => [
   [0, 3, 5, colors.shadow, 0.14],
@@ -14,8 +15,12 @@ const buildSmallShadows = (color, colors) => [
 
 const sizeConfigs = (accentColor, colors, isDarkMode) => ({
   header: {
-    dimensions: 34,
+    dimensions: 36,
     textSize: 'large',
+    shadow: [
+      [0, 4, 12, !isDarkMode && accentColor ? accentColor : colors.shadow, isDarkMode ? 0.16 : 0.2],
+      [0, 2, 6, colors.trueBlack, 0.02],
+    ],
   },
   large: {
     dimensions: 60,
@@ -55,6 +60,11 @@ const sizeConfigs = (accentColor, colors, isDarkMode) => ({
     dimensions: 20,
     textSize: 'small',
   },
+  smaller_shadowless: {
+    dimensions: 20,
+    textSize: 'small',
+    shadow: [[0, 0, 0, colors.shadow, 0]],
+  },
   smedium: {
     dimensions: 36,
     shadow: [[0, 4, IS_ANDROID ? 5 : 12, colors.shadow, 0.4]],
@@ -84,13 +94,12 @@ const Avatar = styled(ImgixImage)(({ dimensions }) => ({
 
 const ImageAvatar = ({ image, size = 'medium', onLoad = undefined, ...props }) => {
   const { accentColor } = useAccountAccentColor();
-  const { colors, isDarkMode } = useTheme();
+  const { isDarkMode } = useColorMode();
+  const { colors } = useTheme();
+
   const { dimensions, shadow } = useMemo(() => sizeConfigs(accentColor, colors, isDarkMode)[size], [accentColor, colors, isDarkMode, size]);
 
-  const shadows = useMemo(
-    () => (size === 'header' || size === 'smaller' ? buildSmallShadows(colors.shadow, colors) : shadow),
-    [shadow, size, colors]
-  );
+  const shadows = useMemo(() => (size === 'smaller' ? buildSmallShadows(colors.shadow, colors) : shadow), [shadow, size, colors]);
 
   return (
     <ShadowStack {...props} {...borders.buildCircleAsObject(dimensions)} backgroundColor={colors.white} shadows={shadows}>

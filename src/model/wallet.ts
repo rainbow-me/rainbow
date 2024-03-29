@@ -134,7 +134,7 @@ export interface RainbowWallet {
   type: EthereumWalletType;
   backedUp?: boolean;
   backupFile?: string | null;
-  backupDate?: string;
+  backupDate?: number;
   backupType?: string;
   damaged?: boolean;
   deviceId?: string;
@@ -144,12 +144,12 @@ export interface AllRainbowWallets {
   [key: string]: RainbowWallet;
 }
 
-interface AllRainbowWalletsData {
+export interface AllRainbowWalletsData {
   wallets: AllRainbowWallets;
   version: string;
 }
 
-interface RainbowSelectedWalletData {
+export interface RainbowSelectedWalletData {
   wallet: RainbowWallet;
 }
 
@@ -560,6 +560,7 @@ type CreateWalletParams = {
   seed?: null | EthereumSeed;
   color?: null | number;
   name?: null | string;
+  isRestoring?: boolean;
   overwrite?: boolean;
   checkedWallet?: null | EthereumWalletFromSeed;
   image?: null | string;
@@ -572,6 +573,7 @@ export const createWallet = async ({
   seed = null,
   color = null,
   name = null,
+  isRestoring = false,
   overwrite = false,
   checkedWallet = null,
   image = null,
@@ -637,7 +639,9 @@ export const createWallet = async ({
         type === EthereumWalletType.privateKey &&
         (alreadyExistingWallet?.type === EthereumWalletType.seed || alreadyExistingWallet?.type === EthereumWalletType.mnemonic);
       if (!overwrite && alreadyExistingWallet && (isReadOnlyType || isPrivateKeyOverwritingSeedMnemonic)) {
-        setTimeout(() => Alert.alert(lang.t('wallet.new.alert.oops'), lang.t('wallet.new.alert.looks_like_already_imported')), 1);
+        if (!isRestoring) {
+          setTimeout(() => Alert.alert(lang.t('wallet.new.alert.oops'), lang.t('wallet.new.alert.looks_like_already_imported')), 1);
+        }
         logger.debug('[createWallet] - already imported this wallet', {}, DebugContext.wallet);
         return null;
       }
@@ -950,9 +954,13 @@ export const getPrivateKey = async (address: EthereumAddress): Promise<null | Pr
     const key = `${address}_${privateKeyKey}`;
     const options = { authenticationPrompt };
 
-    const pkey = (await keychain.loadObject(key, options)) as PrivateKeyData | -2;
+    const androidEncryptionPin = IS_ANDROID && !(await kc.getSupportedBiometryType()) ? await authenticateWithPIN() : undefined;
+    const { value: pkey, error } = await kc.getObject<PrivateKeyData>(key, {
+      ...options,
+      androidEncryptionPin,
+    });
 
-    if (pkey === -2) {
+    if (error === -2) {
       Alert.alert(lang.t('wallet.authenticate.alert.error'), lang.t('wallet.authenticate.alert.current_authentication_not_secure_enough'));
       return null;
     }
@@ -1255,7 +1263,8 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (id: RainbowWallet['id']):
       }
     } else {
       logger.debug('[loadAndMigrate] - Getting seed directly', {}, DebugContext.wallet);
-      const seedData = await getSeedPhrase(id);
+      const androidEncryptionPin = IS_ANDROID && !(await kc.getSupportedBiometryType()) ? await authenticateWithPIN() : undefined;
+      const seedData = await getSeedPhrase(id, { androidEncryptionPin });
       seedPhrase = seedData?.seedphrase ?? null;
 
       if (seedPhrase) {

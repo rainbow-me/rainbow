@@ -11,7 +11,7 @@ import { useDimensions } from '@/hooks';
 import { borders } from '@/styles';
 import { Box } from '@/design-system';
 
-const Sheet = ({ borderRadius, children, hideHandle, noInsets, paddingBottom = 7, paddingTop = 6 }) => {
+const Sheet = ({ borderRadius, children, hideHandle, noInsets = false, paddingBottom = 7, paddingTop = 6 }) => {
   const { width } = useDimensions();
   const { goBack } = useNavigation();
   const insets = useSafeAreaInsets();

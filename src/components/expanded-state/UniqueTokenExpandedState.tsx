@@ -423,7 +423,6 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
           </BackgroundImage>
         </BlurWrapper>
       )}
-      {/* @ts-expect-error JavaScript component */}
       <SlackSheet
         backgroundColor={isDarkMode ? `rgba(22, 22, 22, ${ios ? 0.4 : 1})` : `rgba(26, 26, 26, ${ios ? 0.4 : 1})`}
         bottomInset={42}
@@ -441,7 +440,6 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
               <Inset bottom={sectionSpace} top={{ custom: 33 }}>
                 <Stack alignHorizontal="center">
                   <Animated.View style={sheetHandleStyle}>
-                    {/* @ts-expect-error JavaScript component */}
                     <SheetHandle color={colors.alpha(colors.whiteLabel, 0.24)} />
                   </Animated.View>
                 </Stack>

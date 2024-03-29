@@ -130,6 +130,7 @@ const SheetActionButton: React.FC<Props> = ({
       onPress={disabled ? () => undefined : onPress}
       overflowMargin={30}
       radiusAndroid={borderRadius}
+      borderRadius={borderRadius}
       scaleTo={disabled ? 1 : scaleTo}
       size={size}
       testID={`${testID}-action-button`}

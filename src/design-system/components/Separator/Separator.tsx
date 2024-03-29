@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { SeparatorColor } from '../../color/palettes';
-import { useForegroundColor } from '../../color/useForegroundColor';
+import { CustomColor, useForegroundColor } from '../../color/useForegroundColor';
 
 export interface SeparatorProps {
-  color: SeparatorColor;
+  color: SeparatorColor | CustomColor;
   direction?: 'horizontal' | 'vertical';
   thickness?: number;
 }

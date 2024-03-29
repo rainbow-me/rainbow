@@ -33,7 +33,8 @@ font.lineHeight = {
 };
 
 font.size = {
-  micro: 9,
+  micro: 8,
+  xtiny: 9.5,
   tiny: 11,
   smaller: 12,
   small: 13,
