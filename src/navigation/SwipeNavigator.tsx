@@ -410,7 +410,6 @@ function SwipeNavigatorScreens() {
 
 export function SwipeNavigator() {
   const { network } = useAccountSettings();
-  const { colors } = useTheme();
   const surfacePrimaryElevated = useBackgroundColor('surfacePrimaryElevated');
 
   return (
