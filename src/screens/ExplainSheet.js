@@ -9,7 +9,7 @@ import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, GradientText, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
 import { DoubleChevron } from '@/components/icons';
-import { Box } from '@/design-system';
+import { Box, useBackgroundColor } from '@/design-system';
 import networkTypes from '@/helpers/networkTypes';
 import { toFixedDecimals } from '@/helpers/utilities';
 import { useDimensions } from '@/hooks';
@@ -982,6 +982,7 @@ const ExplainSheet = () => {
   const { params } = useRoute();
   const type = params.type;
 
+  const surfacePrimaryElevated = useBackgroundColor('surfacePrimaryElevated');
   const theme = useTheme();
   const { goBack, navigate } = useNavigation();
   const renderBaseFeeIndicator = useMemo(() => {
@@ -1078,7 +1079,7 @@ const ExplainSheet = () => {
 
   return (
     <Container deviceHeight={deviceHeight} height={sheetHeight} insets={insets}>
-      <SlackSheet additionalTopPadding={android} contentHeight={sheetHeight} scrollEnabled={false}>
+      <SlackSheet additionalTopPadding={android} backgroundColor={surfacePrimaryElevated} contentHeight={sheetHeight} scrollEnabled={false}>
         <Centered direction="column" height={sheetHeight} testID={`explain-sheet-${type}`} width="100%">
           <ColumnWithMargins
             margin={15}
