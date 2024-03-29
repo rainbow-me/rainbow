@@ -24,8 +24,8 @@ export function SwapActions() {
       paddingHorizontal="20px"
       paddingTop={{ custom: 16 - THICK_BORDER_WIDTH }}
       style={{
-        backgroundColor: opacity(SwapInputController.inputValues.value.outputTokenColor.toString(), 0.03),
-        borderTopColor: opacity(SwapInputController.inputValues.value.outputTokenColor.toString(), 0.04),
+        backgroundColor: opacity(SwapInputController.bottomColor.value, 0.03),
+        borderTopColor: opacity(SwapInputController.bottomColor.value, 0.04),
         borderTopWidth: THICK_BORDER_WIDTH,
       }}
       width="full"
@@ -40,7 +40,7 @@ export function SwapActions() {
           </Box>
         </Column>
         <SwapActionButton
-          color={SwapInputController.inputValues.value.outputTokenColor.toString()}
+          color={SwapInputController.bottomColor.value}
           icon={confirmButtonIcon}
           iconStyle={confirmButtonIconStyle}
           label={confirmButtonLabel}

@@ -1,7 +1,7 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import React, { useEffect, useMemo } from 'react';
 import { StyleSheet, StatusBar } from 'react-native';
-import Animated, { runOnUI, useDerivedValue } from 'react-native-reanimated';
+import Animated, { runOnUI } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
 import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
@@ -32,16 +32,12 @@ function SwapInputActionButton() {
   const { isDarkMode } = useColorMode();
   const { SwapNavigation, SwapInputController } = useSwapContext();
 
-  const label = useDerivedValue(() => {
-    return SwapInputController.inputValues.value.inputSymbol.toString() ?? '';
-  });
-
   return (
     <SwapActionButton
-      color={SwapInputController.inputValues.value.inputTokenColor.toString()}
+      color={SwapInputController.topColor}
       disableShadow={isDarkMode}
       hugContent
-      label={label}
+      label={SwapInputController.assetToSellSymbol}
       onPress={runOnUI(SwapNavigation.handleInputPress)}
       rightIcon={'􀆏'}
       small
@@ -99,10 +95,6 @@ function SwapInputAmount() {
     })(inputNativeAmount);
   }, [parsedAssetToSell, SwapInputController.inputValues, currentCurrency, SwapInputController]);
 
-  const backgroundColor = useDerivedValue(() => {
-    return SwapInputController.inputValues.value.inputTokenColor.toString();
-  });
-
   return (
     <GestureHandlerV1Button
       disableButtonPressWrapper
@@ -127,7 +119,7 @@ function SwapInputAmount() {
             style={[
               styles.caret,
               {
-                backgroundColor: backgroundColor.value,
+                backgroundColor: SwapInputController.topColor.value,
               },
             ]}
           />
@@ -152,14 +144,14 @@ function SwapInputIcon() {
           style={[
             styles.solidColorCoinIcon,
             {
-              backgroundColor: SwapInputController.inputValues.value.inputTokenColor.toString(),
+              backgroundColor: SwapInputController.topColor.value,
             },
           ]}
           width={{ custom: 36 }}
         />
       ) : (
         <SwapCoinIcon
-          color={SwapInputController.inputValues.value.inputTokenShadowColor.toString()}
+          color={SwapInputController.topColor.value}
           iconUrl={assetToSell.icon_url}
           address={assetToSell.address}
           large
@@ -209,7 +201,7 @@ export function SwapInputAsset() {
   console.log('rendering input asset');
 
   return (
-    <SwapInput color={SwapInputController.inputValues.value.inputTokenColor} otherInputProgress={outputProgress} progress={inputProgress}>
+    <SwapInput color={SwapInputController.topColor.value} otherInputProgress={outputProgress} progress={inputProgress}>
       <Box as={Animated.View} style={AnimatedSwapStyles.inputStyle}>
         <Stack space="16px">
           <Columns alignHorizontal="justify" alignVertical="center">
@@ -244,7 +236,7 @@ export function SwapInputAsset() {
         width={{ custom: INPUT_INNER_WIDTH }}
       >
         <TokenList
-          color={SwapInputController.inputValues.value.inputTokenColor.toString()}
+          color={SwapInputController.topColor.value}
           handleExitSearch={runOnUI(SwapNavigation.handleExitSearch)}
           handleFocusSearch={runOnUI(SwapNavigation.handleFocusInputSearch)}
         />

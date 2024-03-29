@@ -1,4 +1,3 @@
-import c from 'chroma-js';
 import React from 'react';
 import { StyleSheet, Text as RNText, Pressable } from 'react-native';
 import Animated from 'react-native-reanimated';

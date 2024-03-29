@@ -13,13 +13,11 @@ import { IS_ANDROID, IS_IOS } from '@/env';
 import { AnimatedBlurView } from './AnimatedBlurView';
 import { useSwapContext } from '../providers/swap-provider';
 import { StyleSheet } from 'react-native';
-import { useSwapAssetStore } from '../state/assets';
 
 export const FlipButton = () => {
   const { isDarkMode } = useColorMode();
 
   const { isFetching, AnimatedSwapStyles, SwapNavigation, SwapInputController, outputProgress } = useSwapContext();
-  const { assetToBuy, assetToSell, setAssetToBuy, setAssetToSell } = useSwapAssetStore();
 
   const fetchingStyle = useAnimatedStyle(() => {
     return {
@@ -28,15 +26,15 @@ export const FlipButton = () => {
   });
 
   const handleSwapAssets = useCallback(() => {
-    const prevAssetToSell = assetToSell;
-    const prevAssetToBuy = assetToBuy;
+    const prevAssetToSell = SwapInputController.assetToSell.value;
+    const prevAssetToBuy = SwapInputController.assetToBuy.value;
 
     if (prevAssetToBuy) {
-      setAssetToSell(prevAssetToBuy);
+      SwapInputController.assetToSell.value = prevAssetToBuy;
     }
 
     if (prevAssetToSell) {
-      setAssetToBuy(prevAssetToSell);
+      SwapInputController.assetToBuy.value = prevAssetToSell;
     }
 
     runOnUI(() => {
@@ -44,7 +42,7 @@ export const FlipButton = () => {
         SwapNavigation.handleOutputPress();
       }
     })();
-  }, [SwapNavigation, assetToBuy, assetToSell, outputProgress.value, setAssetToBuy, setAssetToSell]);
+  }, [SwapInputController.assetToBuy, SwapInputController.assetToSell, SwapNavigation, outputProgress.value]);
 
   return (
     <Box
@@ -56,9 +54,7 @@ export const FlipButton = () => {
       <Box
         as={Animated.View}
         style={{
-          shadowColor: isDarkMode
-            ? globalColors.grey100
-            : c.mix(SwapInputController.inputValues.value.outputTokenColor.toString(), colors.dark, 0.84).hex(),
+          shadowColor: isDarkMode ? globalColors.grey100 : c.mix(SwapInputController.bottomColor.value, colors.dark, 0.84).hex(),
           shadowOffset: {
             width: 0,
             height: isDarkMode ? 4 : 4,
@@ -102,13 +98,7 @@ export const FlipButton = () => {
         </ButtonPressAnimation>
       </Box>
       <Box pointerEvents="none" position="absolute">
-        <AnimatedSpinner
-          color={SwapInputController.inputValues.value.outputTokenColor.toString()}
-          isLoading={isFetching}
-          scaleInFrom={1}
-          size={32}
-          src={SwapSpinner}
-        />
+        <AnimatedSpinner color={SwapInputController.bottomColor.value} isLoading={isFetching} scaleInFrom={1} size={32} src={SwapSpinner} />
       </Box>
     </Box>
   );

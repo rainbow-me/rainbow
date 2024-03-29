@@ -30,14 +30,13 @@ import { supportedCurrencies } from '@/references/supportedCurrencies';
 function SwapOutputActionButton() {
   const { isDarkMode } = useColorMode();
   const { SwapNavigation, SwapInputController } = useSwapContext();
-  const { assetToBuy } = useSwapAssetStore();
 
   return (
     <SwapActionButton
-      color={SwapInputController.inputValues.value.outputTokenColor}
+      color={SwapInputController.bottomColor}
       disableShadow={isDarkMode}
       hugContent
-      label={assetToBuy?.symbol ?? ''}
+      label={SwapInputController.assetToBuySymbol}
       onPress={runOnUI(SwapNavigation.handleOutputPress)}
       rightIcon={'􀆏'}
       small
@@ -111,11 +110,12 @@ function SwapOutputAmount() {
         />
         <Animated.View style={[styles.caretContainer, SwapTextStyles.outputCaretStyle]}>
           <Box
+            as={Animated.View}
             borderRadius={1}
             style={[
               styles.caret,
               {
-                backgroundColor: SwapInputController.inputValues.value.outputTokenColor.toString(),
+                backgroundColor: SwapInputController.bottomColor.value,
               },
             ]}
           />
@@ -134,19 +134,20 @@ function SwapInputIcon() {
     <Box paddingRight="10px">
       {!assetToBuy ? (
         <Box
+          as={Animated.View}
           borderRadius={18}
           height={{ custom: 36 }}
           style={[
             styles.solidColorCoinIcon,
             {
-              backgroundColor: SwapInputController.inputValues.value.outputTokenColor.toString(),
+              backgroundColor: SwapInputController.bottomColor.value,
             },
           ]}
           width={{ custom: 36 }}
         />
       ) : (
         <SwapCoinIcon
-          color={SwapInputController.inputValues.value.outputTokenShadowColor.toString()}
+          color={SwapInputController.bottomColor.value}
           iconUrl={assetToBuy.icon_url}
           address={assetToBuy.address}
           large
@@ -194,12 +195,7 @@ export function SwapOutputAsset() {
   const { outputProgress, inputProgress, AnimatedSwapStyles, SwapTextStyles, SwapInputController, SwapNavigation } = useSwapContext();
 
   return (
-    <SwapInput
-      bottomInput
-      color={SwapInputController.inputValues.value.outputTokenColor}
-      otherInputProgress={inputProgress}
-      progress={outputProgress}
-    >
+    <SwapInput bottomInput color={SwapInputController.bottomColor.value} otherInputProgress={inputProgress} progress={outputProgress}>
       <Box as={Animated.View} style={AnimatedSwapStyles.outputStyle}>
         <Stack space="16px">
           <Columns alignHorizontal="justify" alignVertical="center">
@@ -235,7 +231,7 @@ export function SwapOutputAsset() {
         width={{ custom: INPUT_INNER_WIDTH }}
       >
         <TokenList
-          color={SwapInputController.inputValues.value.outputTokenColor.toString()}
+          color={SwapInputController.bottomColor.value}
           handleExitSearch={runOnUI(SwapNavigation.handleExitSearch)}
           handleFocusSearch={runOnUI(SwapNavigation.handleFocusOutputSearch)}
           output

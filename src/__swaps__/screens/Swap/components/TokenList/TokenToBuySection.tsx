@@ -62,21 +62,20 @@ const bridgeSectionsColorsByChain = {
 
 export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) => {
   const { SwapNavigation, SwapInputController } = useSwapContext();
-  const { outputChainId, setAssetToBuy } = useSwapAssetStore();
+  const { outputChainId } = useSwapAssetStore();
   const userAssets = useAssetsToSell();
 
   const handleSelectToken = useCallback(
     (token: SearchAsset) => {
       const userAsset = userAssets.find(asset => isSameAsset(asset, token));
-      const parsedAset = parseSearchAsset({
+      const parsedAsset = parseSearchAsset({
         assetWithPrice: undefined,
         searchAsset: token,
         userAsset,
       });
 
-      // setAssetToBuy(parsedAset);
-      SwapInputController.onChangedPercentage(1);
       runOnUI(() => {
+        SwapInputController.assetToBuy.value = parsedAsset;
         SwapNavigation.handleOutputPress();
         SwapNavigation.handleExitSearch();
       })();

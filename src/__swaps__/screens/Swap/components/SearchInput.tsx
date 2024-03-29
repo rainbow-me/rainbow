@@ -112,15 +112,11 @@ export const SearchInput = ({
               paddingHorizontal={{ custom: 12 - THICK_BORDER_WIDTH }}
               style={{
                 backgroundColor: opacity(
-                  output
-                    ? SwapInputController.inputValues.value.outputTokenColor.toString()
-                    : SwapInputController.inputValues.value.inputTokenColor.toString(),
+                  output ? SwapInputController.bottomColor.value : SwapInputController.topColor.value,
                   isDarkMode ? 0.1 : 0.08
                 ),
                 borderColor: opacity(
-                  output
-                    ? SwapInputController.inputValues.value.outputTokenColor.toString()
-                    : SwapInputController.inputValues.value.inputTokenColor.toString(),
+                  output ? SwapInputController.bottomColor.value : SwapInputController.topColor.value,
                   isDarkMode ? 0.06 : 0.01
                 ),
                 borderWidth: THICK_BORDER_WIDTH,
@@ -130,9 +126,7 @@ export const SearchInput = ({
                 text={btnText}
                 align="center"
                 color={{
-                  custom: output
-                    ? SwapInputController.inputValues.value.outputTokenColor.toString()
-                    : SwapInputController.inputValues.value.inputTokenColor.toString(),
+                  custom: output ? SwapInputController.bottomColor.value : SwapInputController.topColor.value,
                 }}
                 size="17pt"
                 weight="heavy"

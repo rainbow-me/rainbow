@@ -82,25 +82,12 @@ export const SwapSlider = ({
 
   const { inactiveColorLeft, activeColorLeft, inactiveColorRight, activeColorRight } = useMemo(
     () => ({
-      inactiveColorLeft: opacity(
-        dualColor
-          ? SwapInputController.inputValues.value.outputTokenColor.toString()
-          : SwapInputController.inputValues.value.inputTokenColor.toString(),
-        0.9
-      ),
-      activeColorLeft: dualColor
-        ? SwapInputController.inputValues.value.outputTokenColor.toString()
-        : SwapInputController.inputValues.value.inputTokenColor.toString(),
-      inactiveColorRight: dualColor ? opacity(SwapInputController.inputValues.value.inputTokenColor.toString(), 0.9) : separatorSecondary,
-      activeColorRight: dualColor ? SwapInputController.inputValues.value.inputTokenColor.toString() : fillSecondary,
+      inactiveColorLeft: opacity(dualColor ? SwapInputController.bottomColor.value : SwapInputController.topColor.value, 0.9),
+      activeColorLeft: dualColor ? SwapInputController.bottomColor.value : SwapInputController.topColor.value,
+      inactiveColorRight: dualColor ? opacity(SwapInputController.topColor.value, 0.9) : separatorSecondary,
+      activeColorRight: dualColor ? SwapInputController.topColor.value : fillSecondary,
     }),
-    [
-      SwapInputController.inputValues.value.inputTokenColor,
-      SwapInputController.inputValues.value.outputTokenColor,
-      dualColor,
-      fillSecondary,
-      separatorSecondary,
-    ]
+    [SwapInputController.bottomColor.value, SwapInputController.topColor.value, dualColor, fillSecondary, separatorSecondary]
   );
 
   // This is the percentage of the slider from the left
@@ -356,6 +343,10 @@ export const SwapSlider = ({
     };
   });
 
+  const maxText = useDerivedValue(() => {
+    return 'Max';
+  });
+
   return (
     // @ts-expect-error
     <PanGestureHandler activeOffsetX={[0, 0]} activeOffsetY={[0, 0]} onGestureEvent={onSlide} simultaneousHandlers={[tapRef]}>
@@ -368,7 +359,7 @@ export const SwapSlider = ({
                 <Inline alignVertical="center" space="6px" wrap={false}>
                   <Bleed vertical="4px">
                     <SwapCoinIcon
-                      color={SwapInputController.inputValues.value.inputTokenShadowColor.toString()}
+                      color={SwapInputController.topColorShadow.value}
                       iconUrl={assetToSell?.icon_url}
                       address={assetToSell?.address ?? ''}
                       mainnetAddress={assetToSell?.mainnetAddress ?? ''}
@@ -398,14 +389,13 @@ export const SwapSlider = ({
                       }, 10);
                     }}
                   >
-                    <Text
+                    <AnimatedText
                       align="center"
-                      color={{ custom: SwapInputController.inputValues.value.outputTokenColor.toString() }}
+                      color={{ custom: SwapInputController.bottomColor.value }}
                       size="15pt"
                       weight="heavy"
-                    >
-                      Max
-                    </Text>
+                      text={maxText}
+                    />
                   </TouchableOpacity>
                 </Column>
               </Columns>

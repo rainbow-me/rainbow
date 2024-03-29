@@ -1,6 +1,6 @@
 import c from 'chroma-js';
 import { globalColors } from '@/design-system';
-import { SCRUBBER_WIDTH, SLIDER_WIDTH } from '../constants';
+import { ETH_COLOR, ETH_COLOR_DARK, SCRUBBER_WIDTH, SLIDER_WIDTH } from '../constants';
 import { chainNameFromChainId } from './chains';
 import { ChainId, ChainName } from '../types/chains';
 import { RainbowConfig } from '@/model/remoteConfig';
@@ -249,4 +249,24 @@ export const getDefaultSlippage = (chainId: ChainId, config: RainbowConfig) => {
     // NOTE: JSON.parse doesn't type the result as a Record<ChainName, number>
     (config.default_slippage_bips as unknown as Record<ChainName, number>)[chainName] || DEFAULT_SLIPPAGE_BIPS[chainId]
   );
+};
+
+export type Colors = {
+  primary?: string;
+  fallback?: string;
+  shadow?: string;
+};
+
+export const extractColorValueForColors = ({ colors, isDarkMode }: { colors?: Colors; isDarkMode: boolean }): string => {
+  'worklet';
+
+  if (colors?.primary) {
+    return colors.primary;
+  }
+
+  if (colors?.fallback) {
+    return colors.fallback;
+  }
+
+  return isDarkMode ? ETH_COLOR_DARK : ETH_COLOR;
 };

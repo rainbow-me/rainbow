@@ -12,7 +12,6 @@ import { parseSearchAsset, isSameAsset } from '../../utils/assets';
 import { opacity } from '../../utils/swaps';
 import { useAccountAccentColor } from '@/hooks';
 import { ButtonPressAnimation } from '@/components/animations';
-import { ETH_COLOR, ETH_COLOR_DARK } from '../../constants';
 
 export const TokenToSellList = () => {
   const { accentColor: accountColor } = useAccountAccentColor();
@@ -38,24 +37,13 @@ export const TokenToSellList = () => {
         userAsset,
       });
 
-      // we need to update the inputNativeValue to the user balance / native value
+      // TODO: we need to update the inputNativeValue to the user balance / native value
       runOnUI((parsedAsset: ParsedSearchAsset) => {
-        SwapInputController.inputValues.modify(prev => ({
-          ...prev,
-          inputNativeValue: parsedAsset.native.balance.amount,
-          inputUserBalance: parsedAsset.balance.amount ?? '0',
-          inputSymbol: parsedAsset.symbol,
-          inputIconUrl: parsedAsset.icon_url,
-          inputTokenColor: parsedAsset.colors?.primary ?? parsedAsset.colors?.fallback ?? (isDarkMode ? ETH_COLOR_DARK : ETH_COLOR),
-          inputTokenShadowColor: parsedAsset.colors?.shadow ?? (isDarkMode ? ETH_COLOR_DARK : ETH_COLOR),
-          inputChainId: parsedAsset.chainId,
-          inputAddress: parsedAsset.address,
-        }));
-
+        SwapInputController.assetToSell.value = parsedAsset;
         SwapNavigation.handleOutputPress();
       })(parsedAsset);
     },
-    [SwapInputController.inputValues, SwapNavigation, isDarkMode, userAssets]
+    [SwapInputController.assetToSell, SwapNavigation, userAssets]
   );
 
   const assetsCount = useMemo(
