@@ -1,8 +1,8 @@
-import React, { useMemo, useState, useCallback, useRef } from 'react';
+import React, { useMemo, useState, useCallback, useRef, useEffect } from 'react';
 import { InteractionManager, Keyboard } from 'react-native';
 import { ButtonPressAnimation } from '@/components/animations';
-import { Inline, Stack, Text, TextIcon } from '@/design-system';
-import { gasStore } from '@/state/gas/gasStore';
+import { AnimatedText, Inline, Stack, Text, TextIcon } from '@/design-system';
+import { gasStore, useGasStore } from '@/state/gas/gasStore';
 import { Centered } from '@/components/layout';
 import { useTheme } from '@/theme';
 import { IS_ANDROID } from '@/env';
@@ -16,21 +16,46 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { isNil, isEmpty, add } from 'lodash';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { gasUtils } from '@/utils';
+import { ethereumUtils, gasUtils } from '@/utils';
 import styled from '@/styled-thing';
 import { useMeteorology } from '@/__swaps__/utils/meteorology';
 import { parseGasFeeParamsBySpeed } from '@/__swaps__/utils/gasUtils';
+import { toFixedDecimals } from '../../../../helpers/utilities';
+import { useDerivedValue } from 'react-native-reanimated';
+import { capitalize } from '../utils/strings';
+import { current } from 'immer';
+import { ParsedAsset } from '@/__swaps__/types/assets';
+import { ParsedAddressAsset } from '@/entities';
+import { GasFeeParams, GasFeeParamsBySpeed } from '@/__swaps__/types/gas';
 const { GasSpeedOrder, CUSTOM, URGENT, NORMAL, FAST, GAS_ICONS, GAS_EMOJIS } = gasUtils;
-
 const mockedGasLimit = 21000;
 const mockedNativeAsset = { address: '0x0000000000000000000000000000000000000000', chainId: 1, decimals: 18, symbol: 'ETH' };
-
 export const GasButton = ({ accentColor }: { accentColor?: string }) => {
-  const { selectedGas } = gasStore.getState();
+  const { params } = useRoute();
+  const { currentNetwork } = params || {};
+  const chainId = getNetworkObj(currentNetwork).id;
+  const { selectedGas, gasFeeParamsBySpeed } = useGasStore();
+  const { data, isLoading } = useMeteorology({ chainId });
+  const [nativeAsset, setNativeAsset] = useState<ParsedAddressAsset | undefined>();
+  useEffect(() => {
+    const getNativeAsset = async () => {
+      const theNativeAsset = await ethereumUtils.getNativeAssetForNetwork(currentNetwork, '0x0000000000000000000000000000000000000000');
+      setNativeAsset(theNativeAsset);
+    };
+    getNativeAsset();
+  }, [currentNetwork, setNativeAsset]);
+
+  let gasFeeBySpeed = {} as GasFeeParamsBySpeed;
+  if (!isLoading && nativeAsset)
+    gasFeeBySpeed = parseGasFeeParamsBySpeed({ chainId, data, gasLimit: mockedGasLimit, nativeAsset, currency: 'USD' });
   const [showGasOptions, setShowGasOptions] = useState(false);
+  const animatedGas = useDerivedValue(() => {
+    return gasFeeBySpeed[selectedGas?.option]?.gasFee?.display ?? '0.01';
+  }, [gasFeeBySpeed, selectedGas]);
+
   return (
     <ButtonPressAnimation onPress={() => setShowGasOptions(!showGasOptions)}>
-      <GasMenu>
+      <GasMenu gasFeeBySpeed={gasFeeBySpeed}>
         <Stack space="12px">
           <Inline alignVertical="center" space={{ custom: 5 }}>
             <Inline alignVertical="center" space="4px">
@@ -45,7 +70,7 @@ export const GasButton = ({ accentColor }: { accentColor?: string }) => {
                 􀙭
               </TextIcon>
               <Text color="label" size="15pt" weight="heavy">
-                {selectedGas?.display}
+                {capitalize(gasFeeParamsBySpeed ?? FAST)}
               </Text>
             </Inline>
             <TextIcon color="labelSecondary" height={10} size="icon 13px" weight="bold" width={12}>
@@ -56,9 +81,7 @@ export const GasButton = ({ accentColor }: { accentColor?: string }) => {
             <TextIcon color="labelQuaternary" height={10} size="icon 11px" weight="heavy" width={16}>
               􀵟
             </TextIcon>
-            <Text color="labelTertiary" size="15pt" weight="bold">
-              {selectedGas?.gasFee?.display}
-            </Text>
+            <AnimatedText color="labelTertiary" size="15pt" weight="bold" text={animatedGas} />
           </Inline>
         </Stack>
       </GasMenu>
@@ -69,7 +92,7 @@ const GasSpeedPagerCentered = styled(Centered).attrs(() => ({
   marginRight: 8,
 }))({});
 
-const GasMenu = ({ showGasOptions, flashbotTransaction, children }) => {
+const GasMenu = ({ showGasOptions, flashbotTransaction, children, gasFeeBySpeed }) => {
   const theme = useTheme();
   const { colors } = theme;
   const { navigate } = useNavigation();
@@ -78,6 +101,7 @@ const GasMenu = ({ showGasOptions, flashbotTransaction, children }) => {
   const { params } = useRoute();
   const { currentNetwork, asset, fallbackColor } = params || {};
   const chainId = getNetworkObj(currentNetwork).id;
+  const { data, isLoading } = useMeteorology({ chainId });
   const speedOptions = useMemo(() => {
     return getNetworkObj(currentNetwork).gas.speeds;
   }, [currentNetwork]);
@@ -88,10 +112,6 @@ const GasMenu = ({ showGasOptions, flashbotTransaction, children }) => {
     shouldOpen: false,
   });
 
-  const { data, isLoading } = useMeteorology({ chainId });
-  let gasFeeBySpeed = {};
-  if (!isLoading)
-    gasFeeBySpeed = parseGasFeeParamsBySpeed({ chainId, data, gasLimit: mockedGasLimit, nativeAsset: mockedNativeAsset, currency: 'USD' });
   const price = useMemo(() => {
     const gasPrice = selectedGas?.gasFee?.display;
     if (isNil(gasPrice)) return null;
@@ -138,8 +158,7 @@ const GasMenu = ({ showGasOptions, flashbotTransaction, children }) => {
       }
       setGasFeeParamsBySpeed({ gasFeeParamsBySpeed });
       // todo - replace with actual gas
-      const gasFee = { amount: '0', display: '0', gwei: 1 };
-      setSelectedGas({ maxBaseFee: gasFee, option: gasFeeParamsBySpeed, estimatedTime: { amount: 0, display: '10s' } });
+      setSelectedGas({ selectedGas: gasFeeBySpeed[gasFeeParamsBySpeed] });
     },
     [setGasFeeParamsBySpeed, openCustomGasSheet]
   );
@@ -174,23 +193,12 @@ const GasMenu = ({ showGasOptions, flashbotTransaction, children }) => {
       if (IS_ANDROID) return gasOption;
       // const totalGwei = selectedGas?.gasFee?.amount;
       // const gweiDisplay = totalGwei;
+      const { display } = gasFeeBySpeed[gasOption] ?? {};
 
-      const totalGwei = add(gasFeeParamsBySpeed[gasOption]?.maxBaseFee?.gwei, gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei);
-      const gweiDisplay = totalGwei;
-      // const estimatedGwei = add(currentBlockParams?.baseFeePerGas?.gwei, gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei);
-
-      // const shouldRoundGwei = getNetworkObj(currentNetwork).gas.roundGasDisplay;
-      // const gweiDisplay = !shouldRoundGwei
-      //   ? gasFeeParamsBySpeed[gasOption]?.gasPrice?.display
-      //   : gasOption === 'custom' && selectedGasFeeOption !== 'custom'
-      //     ? ''
-      //     : greaterThan(estimatedGwei, totalGwei)
-      //       ? `${toFixedDecimals(totalGwei, isL2 ? 4 : 0)} Gwei`
-      //       : `${toFixedDecimals(estimatedGwei, isL2 ? 4 : 0)}–${toFixedDecimals(totalGwei, isL2 ? 4 : 0)} Gwei`;
       return {
         actionKey: gasOption,
-        actionTitle: android ? `${GAS_EMOJIS[gasOption]}  ` : gasOption, //+ getGasLabel(gasOption),
-        discoverabilityTitle: gweiDisplay,
+        actionTitle: android ? `${GAS_EMOJIS[gasOption]}  ` : capitalize(gasOption || ''),
+        discoverabilityTitle: display,
         icon: {
           iconType: 'ASSET',
           iconValue: GAS_ICONS[gasOption],
@@ -205,23 +213,6 @@ const GasMenu = ({ showGasOptions, flashbotTransaction, children }) => {
   // }, [currentBlockParams?.baseFeePerGas?.gwei, currentNetwork, gasFeeParamsBySpeed, selectedGasFeeOption, speedOptions, isL2]);
   const renderGasSpeedPager = useMemo(() => {
     if (showGasOptions) return;
-    const pager = (
-      <GasSpeedLabelPager
-        colorForAsset={
-          gasOptionsAvailable
-            ? makeColorMoreChill(rawColorForAsset || colors.appleBlue, colors.shadowBlack)
-            : colors.alpha(colors.blueGreyDark, 0.12)
-        }
-        currentNetwork={currentNetwork}
-        dropdownEnabled={gasOptionsAvailable}
-        label={selectedGas?.display}
-        showGasOptions={showGasOptions}
-        showPager
-        theme={theme}
-      />
-    );
-    if (!gasOptionsAvailable || gasIsNotReady) return pager;
-
     if (IS_ANDROID) {
       return (
         <ContextMenu
