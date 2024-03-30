@@ -2,8 +2,8 @@
 import { FasterImageView, ImageOptions } from '@candlefinance/faster-image';
 import { Box, globalColors, useColorMode } from '@/design-system';
 import { useDimensions } from '@/hooks';
-import React, { useCallback, useEffect, useRef } from 'react';
-import { ImageStyle, StyleProp, StyleSheet, View } from 'react-native';
+import React, { useCallback, useLayoutEffect, useRef } from 'react';
+import { StyleSheet, View } from 'react-native';
 import {
   PanGestureHandler,
   PanGestureHandlerGestureEvent,
@@ -11,8 +11,6 @@ import {
   TapGestureHandlerGestureEvent,
 } from 'react-native-gesture-handler';
 import Animated, {
-  AnimatedStyle,
-  SharedValue,
   convertToRGBA,
   dispatchCommand,
   interpolate,
@@ -184,6 +182,7 @@ const getWebsiteBackgroundColorAndTitle = `
 export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, injectedJS }: BrowserTabProps) {
   const {
     activeTabIndex,
+    activeTabRef,
     animatedActiveTabIndex,
     closeTab,
     loadProgress,
@@ -357,20 +356,24 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
 
       // To prevent infinite redirect loops, we only update the URL if both of these are true:
       //
-      // 1) the URL is different from the current URL
+      // 1) the WebView's URL is different from the tabStates URL
       // 2) the navigationType !== 'other', which gets triggered repeatedly in certain cases programatically
       //
       // This has the consequence of the tabStates page URL not always being updated when navigating within
       // single-page apps, which we'll need to figure out a solution for, but it's an okay workaround for now.
       //
-      // Additionally, the canGoBack/canGoForward states are often overwritten by the non-user-initiated
-      // navigation events, so if the navigationType === 'other', we only update the canGoBack/canGoForward
-      // state if either one is true, which isn't perfect but works reasonably well.
+      // It has the benefit though of allowing navigation within single-page apps without triggering reloads
+      // due to the WebView's URL being altered (which happens when its source prop is updated).
+      //
+      // Additionally, the canGoBack/canGoForward states can become out of sync with the actual WebView state
+      // if they aren't set according to the logic below. There's likely a cleaner way to structure it, but
+      // this avoids setting back/forward states under the wrong conditions or more than once per event.
       //
       // To observe what's actually going on, you can import the navigationStateLogger helper and add it here.
 
       if (navState.url !== tabStates[tabIndex].url) {
         if (navState.navigationType !== 'other') {
+          // If the URL DID ✅ change and navigationType !== 'other', we update the full tab state
           updateActiveTabState(
             {
               canGoBack: navState.canGoBack,
@@ -379,7 +382,8 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
             },
             tabId
           );
-        } else if (navState.canGoBack || navState.canGoForward) {
+        } else {
+          // If the URL DID ✅ change and navigationType === 'other', we update only canGoBack and canGoForward
           updateActiveTabState(
             {
               canGoBack: navState.canGoBack,
@@ -388,14 +392,26 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
             tabId
           );
         }
+      } else {
+        // If the URL DID NOT ❌ change, we update only canGoBack and canGoForward
+        // This handles WebView reloads and cases where the WebView navigation state legitimately resets
+        updateActiveTabState(
+          {
+            canGoBack: navState.canGoBack,
+            canGoForward: navState.canGoForward,
+          },
+          tabId
+        );
       }
     },
     [isLogoUnset, tabId, logo, tabIndex, tabStates, updateActiveTabState]
   );
 
-  useEffect(() => {
+  // useLayoutEffect seems to more reliably assign the ref correctly
+  useLayoutEffect(() => {
     if (webViewRef.current !== null && isActiveTab) {
       webViewRefs.current[tabIndex] = webViewRef.current;
+      activeTabRef.current = webViewRef.current;
     }
 
     const currentWebviewRef = webViewRefs.current;
@@ -404,7 +420,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
       currentWebviewRef[tabIndex] = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isActiveTab, tabIndex]);
+  }, [isActiveTab, isOnHomepage, tabId, tabIndex, webViewRefs]);
 
   const saveScreenshotToFileSystem = useCallback(
     async (tempUri: string, tabId: string, timestamp: number, url: string) => {
@@ -449,7 +465,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
   );
 
   const captureAndSaveScreenshot = useCallback(() => {
-    if (viewShotRef.current && webViewRefs.current[tabIndex]) {
+    if (viewShotRef.current && webViewRef.current) {
       const captureRef = viewShotRef.current;
 
       if (captureRef && captureRef?.capture) {
@@ -466,7 +482,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
           });
       }
     }
-  }, [saveScreenshotToFileSystem, tabId, tabIndex, tabStates, viewShotRef, webViewRefs]);
+  }, [saveScreenshotToFileSystem, tabId, tabIndex, tabStates, viewShotRef]);
 
   const screenshotSource = useDerivedValue(() => {
     return {
@@ -480,11 +496,11 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
     const screenshotExists = !!screenshotData.value?.uri;
     const screenshotMatchesTabIdAndUrl = screenshotData.value?.id === tabId && screenshotData.value?.url === tabStates[tabIndex].url;
 
-    // This is to handle the case where a webview that wasn't previously the active tab
+    // This is to handle the case where a WebView that wasn't previously the active tab
     // is made active from the tab view. Because its freeze state is driven by JS state,
     // it doesn't unfreeze immediately, so this condition allows some time for the tab to
     // become unfrozen before the screenshot is hidden, in most cases hiding the flash of
-    // the frozen empty webview that occurs if the screenshot is hidden immediately.
+    // the frozen empty WebView that occurs if the screenshot is hidden immediately.
     const isActiveTabButMaybeStillFrozen = animatedIsActiveTab && (tabViewProgress?.value || 0) > 50 && !tabViewVisible?.value;
 
     const oneMinuteAgo = Date.now() - 1000 * 60;
