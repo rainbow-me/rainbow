@@ -617,13 +617,13 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
 
   const swipeToCloseTabGestureHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
     onStart: (_, ctx: { startX?: number }) => {
-      if (!tabViewVisible?.value || isEmptyState) return;
+      if (!tabViewVisible?.value) return;
       if (ctx.startX) {
         ctx.startX = undefined;
       }
     },
     onActive: (e, ctx: { startX?: number }) => {
-      if (!tabViewVisible?.value || isEmptyState) return;
+      if (!tabViewVisible?.value) return;
 
       if (ctx.startX === undefined) {
         gestureScale.value = withTiming(1.1, TIMING_CONFIGS.tabPressConfig);
@@ -638,12 +638,15 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
       gestureX.value = xDelta;
     },
     onEnd: (e, ctx: { startX?: number }) => {
-      if (!tabViewVisible?.value || isEmptyState) return;
-
       const xDelta = e.absoluteX - (ctx.startX || 0);
       setNativeProps(scrollViewRef, { scrollEnabled: !!tabViewVisible?.value });
 
-      if ((xDelta < -(TAB_VIEW_COLUMN_WIDTH / 2 + 20) && e.velocityX <= 0) || e.velocityX < -500) {
+      const isBeyondDismissThreshold = xDelta < -(TAB_VIEW_COLUMN_WIDTH / 2 + 20) && e.velocityX <= 0;
+      const isFastLeftwardSwipe = e.velocityX < -500;
+
+      const shouldDismiss = !!tabViewVisible?.value && !isEmptyState && (isBeyondDismissThreshold || isFastLeftwardSwipe);
+
+      if (shouldDismiss) {
         const xDestination = -Math.min(Math.max(deviceWidth * 1.25, Math.abs(e.velocityX * 0.3)), 1000);
         gestureX.value = withTiming(xDestination, TIMING_CONFIGS.tabPressConfig, () => {
           runOnJS(closeTab)(tabId);
