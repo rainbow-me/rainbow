@@ -22,7 +22,7 @@ export const WebViewBorder = ({ enabled, tabIndex }: { enabled?: boolean; tabInd
   });
 
   return enabled ? (
-    <Cover pointerEvents="box-none">
+    <Cover pointerEvents="box-none" style={styles.zIndexStyle}>
       <Box as={Animated.View} height={{ custom: WEBVIEW_HEIGHT }} style={[styles.webViewBorderStyle, webViewBorderStyle]} width="full" />
     </Cover>
   ) : null;
@@ -37,5 +37,8 @@ const styles = StyleSheet.create({
     borderWidth: THICK_BORDER_WIDTH,
     overflow: 'hidden',
     pointerEvents: 'none',
+  },
+  zIndexStyle: {
+    zIndex: 30000,
   },
 });
