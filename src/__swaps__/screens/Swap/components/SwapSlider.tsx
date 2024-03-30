@@ -33,7 +33,7 @@ import {
   snappySpringConfig,
   springConfig,
 } from '../constants';
-import { clamp, opacity } from '../utils/swaps';
+import { clamp, opacity, opacityWorklet } from '../utils/swaps';
 import { useSwapContext } from '../providers/swap-provider';
 import { SwapCoinIcon } from './SwapCoinIcon';
 import { useTheme } from '@/theme';
@@ -82,7 +82,7 @@ export const SwapSlider = ({
 
   const { inactiveColorLeft, activeColorLeft, inactiveColorRight, activeColorRight } = useMemo(
     () => ({
-      inactiveColorLeft: opacity(dualColor ? SwapInputController.bottomColor.value : SwapInputController.topColor.value, 0.9),
+      inactiveColorLeft: opacityWorklet(dualColor ? SwapInputController.bottomColor.value : SwapInputController.topColor.value, 0.9),
       activeColorLeft: dualColor ? SwapInputController.bottomColor.value : SwapInputController.topColor.value,
       inactiveColorRight: dualColor ? opacity(SwapInputController.topColor.value, 0.9) : separatorSecondary,
       activeColorRight: dualColor ? SwapInputController.topColor.value : fillSecondary,

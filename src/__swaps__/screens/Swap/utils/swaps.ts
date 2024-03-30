@@ -4,6 +4,7 @@ import { ETH_COLOR, ETH_COLOR_DARK, SCRUBBER_WIDTH, SLIDER_WIDTH } from '../cons
 import { chainNameFromChainId } from './chains';
 import { ChainId, ChainName } from '../types/chains';
 import { RainbowConfig } from '@/model/remoteConfig';
+import { convertToRGBA, isColor } from 'react-native-reanimated';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -208,6 +209,18 @@ export function niceIncrementFormatter(
 
   return formattedAmount;
 }
+
+export const opacityWorklet = (color: string, opacity: number) => {
+  'worklet';
+
+  if (isColor(color)) {
+    const rgbaColor = convertToRGBA(color);
+    return `rgba(${rgbaColor[0] * 255}, ${rgbaColor[1] * 255}, ${rgbaColor[2] * 255}, ${opacity})`;
+  } else {
+    return color;
+  }
+};
+
 //
 // /---- END worklet utils ----/ //
 

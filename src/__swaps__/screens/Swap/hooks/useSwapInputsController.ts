@@ -45,7 +45,6 @@ export function useSwapInputsController({
   const isQuoteStale = useSharedValue(0);
 
   const topColor = useDerivedValue(() => {
-    console.log('changing color');
     return extractColorValueForColors({
       colors: assetToSell.value?.colors,
       isDarkMode,

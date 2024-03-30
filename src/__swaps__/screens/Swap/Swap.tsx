@@ -14,7 +14,7 @@ import { SwapInputAsset } from './components/controls/SwapInputAsset';
 import { SwapOutputAsset } from './components/controls/SwapOutputAsset';
 import { SwapNavbar } from './components/SwapNavbar';
 import { SwapAmountInputs } from './components/controls/SwapAmountInputs';
-import { deviceUtils, safeAreaInsetValues } from '@/utils';
+import { safeAreaInsetValues } from '@/utils';
 import { navbarHeight } from '@/components/navbar/Navbar';
 
 /** README

@@ -1,7 +1,7 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import React, { useEffect, useMemo } from 'react';
 import { StyleSheet, StatusBar } from 'react-native';
-import Animated, { runOnUI } from 'react-native-reanimated';
+import Animated, { runOnUI, useAnimatedStyle } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
 import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
@@ -134,6 +134,12 @@ function SwapInputIcon() {
   const { assetToSell } = useSwapAssetStore();
   const theme = useTheme();
 
+  const boxStyles = useAnimatedStyle(() => {
+    return {
+      backgroundColor: SwapInputController.topColor.value,
+    };
+  });
+
   return (
     <Box paddingRight="10px">
       {!assetToSell ? (
@@ -141,12 +147,7 @@ function SwapInputIcon() {
           as={Animated.View}
           borderRadius={18}
           height={{ custom: 36 }}
-          style={[
-            styles.solidColorCoinIcon,
-            {
-              backgroundColor: SwapInputController.topColor.value,
-            },
-          ]}
+          style={[styles.solidColorCoinIcon, boxStyles]}
           width={{ custom: 36 }}
         />
       ) : (

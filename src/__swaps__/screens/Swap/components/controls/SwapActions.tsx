@@ -7,14 +7,23 @@ import { safeAreaInsetValues } from '@/utils';
 import { SwapActionButton } from '../../components/SwapActionButton';
 import { GasButton } from '../../components/GasButton';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../../constants';
-import { opacity } from '../../utils/swaps';
+import { opacityWorklet } from '../../utils/swaps';
 import { IS_ANDROID } from '@/env';
 import { useSwapContext } from '../../providers/swap-provider';
-import Animated from 'react-native-reanimated';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
 export function SwapActions() {
   const { isDarkMode } = useColorMode();
   const { confirmButtonIcon, confirmButtonIconStyle, confirmButtonLabel, SwapInputController } = useSwapContext();
+
+  const wrapperStyles = useAnimatedStyle(() => {
+    return {
+      backgroundColor: opacityWorklet(SwapInputController.bottomColor.value, 0.03),
+      borderTopColor: opacityWorklet(SwapInputController.bottomColor.value, 0.04),
+      borderTopWidth: THICK_BORDER_WIDTH,
+    };
+  });
+
   return (
     <Box
       as={Animated.View}
@@ -23,11 +32,7 @@ export function SwapActions() {
       }}
       paddingHorizontal="20px"
       paddingTop={{ custom: 16 - THICK_BORDER_WIDTH }}
-      style={{
-        backgroundColor: opacity(SwapInputController.bottomColor.value, 0.03),
-        borderTopColor: opacity(SwapInputController.bottomColor.value, 0.04),
-        borderTopWidth: THICK_BORDER_WIDTH,
-      }}
+      style={wrapperStyles}
       width="full"
     >
       <Columns alignVertical="center" space="12px">
@@ -40,7 +45,7 @@ export function SwapActions() {
           </Box>
         </Column>
         <SwapActionButton
-          color={SwapInputController.bottomColor.value}
+          color={SwapInputController.bottomColor}
           icon={confirmButtonIcon}
           iconStyle={confirmButtonIconStyle}
           label={confirmButtonLabel}
