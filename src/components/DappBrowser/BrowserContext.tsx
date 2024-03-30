@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import React, { createContext, useCallback, useContext, useLayoutEffect, useRef, useState } from 'react';
+import React, { createContext, useCallback, useContext, useRef, useState } from 'react';
 import { TextInput } from 'react-native';
 import isEqual from 'react-fast-compare';
 import { MMKV, useMMKVObject } from 'react-native-mmkv';
@@ -55,7 +55,6 @@ interface BrowserContextType {
   tabViewVisible: SharedValue<boolean> | undefined;
   toggleTabViewWorklet: (activeIndex?: number) => void;
   updateActiveTabState: (newState: Partial<TabState>, tabId?: string) => void;
-  webViewRefs: React.MutableRefObject<(WebView | null)[]>;
 }
 
 export interface TabState {
@@ -121,7 +120,6 @@ const DEFAULT_BROWSER_CONTEXT: BrowserContextType = {
   updateActiveTabState: () => {
     return;
   },
-  webViewRefs: { current: [] },
 };
 
 const BrowserContext = createContext<BrowserContextType>(DEFAULT_BROWSER_CONTEXT);
@@ -155,7 +153,6 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
 
   const searchInputRef = useRef<TextInput>(null);
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
-  const webViewRefs = useRef<WebView[]>([]);
   const activeTabRef = useRef<WebView | null>(null);
 
   const loadProgress = useSharedValue(0);
@@ -222,7 +219,6 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
           setActiveTabIndex(0);
           animatedActiveTabIndex.value = 0;
           setTabStates(EMPTY_TAB_STATE);
-          webViewRefs.current = [];
           newTab();
           return;
         } else if (isLastTab && tabIndex > 0) {
@@ -238,9 +234,8 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
       setTabStates(updatedTabs);
       setActiveTabIndex(newActiveTabIndex);
       animatedActiveTabIndex.value = newActiveTabIndex;
-      webViewRefs.current.splice(tabIndex, 1);
     },
-    [activeTabIndex, animatedActiveTabIndex, newTab, setTabStates, tabStates, webViewRefs]
+    [activeTabIndex, animatedActiveTabIndex, newTab, setTabStates, tabStates]
   );
 
   const goBack = useCallback(() => {
@@ -260,14 +255,6 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
       activeTabRef.current.reload();
     }
   }, [activeTabRef]);
-
-  // useLayoutEffect seems to more reliably assign the ref correctly
-  useLayoutEffect(() => {
-    if (activeTabRef.current !== webViewRefs.current?.[activeTabIndex]) {
-      activeTabRef.current = webViewRefs.current?.[activeTabIndex] || null;
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTabIndex, webViewRefs]);
 
   return (
     <BrowserContext.Provider
@@ -291,7 +278,6 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
         tabViewVisible,
         toggleTabViewWorklet,
         updateActiveTabState,
-        webViewRefs,
       }}
     >
       {children}
