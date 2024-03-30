@@ -225,6 +225,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
   const isActiveTab = activeTabIndex === tabIndex;
   const multipleTabsOpen = tabStates?.length > 1;
   const isOnHomepage = tabUrl === RAINBOW_HOME;
+  const isEmptyState = !multipleTabsOpen && isOnHomepage;
   const isLogoUnset = tabStates[tabIndex]?.logoUrl === undefined;
 
   const screenshotData = useSharedValue<ScreenshotType | undefined>(findTabScreenshot(tabId, tabUrl) || undefined);
@@ -624,12 +625,15 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
       gestureX.value = xDelta;
     },
     onEnd: (e, ctx: { startX?: number }) => {
-      if (!tabViewVisible?.value) return;
-
       const xDelta = e.absoluteX - (ctx.startX || 0);
       setNativeProps(scrollViewRef, { scrollEnabled: !!tabViewVisible?.value });
 
-      if ((xDelta < -(TAB_VIEW_COLUMN_WIDTH / 2 + 20) && e.velocityX <= 0) || e.velocityX < -500) {
+      const isBeyondDismissThreshold = xDelta < -(TAB_VIEW_COLUMN_WIDTH / 2 + 20) && e.velocityX <= 0;
+      const isFastLeftwardSwipe = e.velocityX < -500;
+
+      const shouldDismiss = !!tabViewVisible?.value && !isEmptyState && (isBeyondDismissThreshold || isFastLeftwardSwipe);
+
+      if (shouldDismiss) {
         const xDestination = -Math.min(Math.max(deviceWidth * 1.25, Math.abs(e.velocityX * 0.3)), 1000);
         gestureX.value = withTiming(xDestination, TIMING_CONFIGS.tabPressConfig, () => {
           runOnJS(closeTab)(tabId);
