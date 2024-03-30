@@ -102,6 +102,7 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
   const sectionList = useSectionListScrollToTopContext();
 
   const separatorSecondary = useForegroundColor('separatorSecondary');
+  const surfacePrimary = useBackgroundColor('surfacePrimary');
 
   const { dapp_browser, points_enabled } = useRemoteConfig();
   const showDappBrowserTab = useExperimentalFlag(DAPP_BROWSER) || dapp_browser;
@@ -332,7 +333,7 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
               height="full"
               position="absolute"
               style={{
-                backgroundColor: isDarkMode ? colors.alpha('#191A1C', IS_IOS ? 0.7 : 1) : colors.alpha(colors.white, IS_IOS ? 0.7 : 1),
+                backgroundColor: colors.alpha(surfacePrimary, IS_IOS ? 0.7 : 1),
               }}
               width="full"
             />
