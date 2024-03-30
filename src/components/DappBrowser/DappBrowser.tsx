@@ -14,6 +14,7 @@ import { TAB_VIEW_ROW_HEIGHT } from './Dimensions';
 import { Search } from './search/Search';
 import { TabViewToolbar } from './TabViewToolbar';
 import { SheetGestureBlocker } from '../sheet/SheetGestureBlocker';
+import { ProgressBar } from './ProgressBar';
 
 const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 
@@ -95,6 +96,7 @@ const DappBrowserComponent = () => {
             <BrowserTab key={tabStates[index].uniqueId} tabId={tabStates[index].uniqueId} tabIndex={index} injectedJS={injectedJS} />
           ))}
         </AnimatedScrollView>
+        <ProgressBar />
         <TabViewToolbar />
         <Search />
       </Box>

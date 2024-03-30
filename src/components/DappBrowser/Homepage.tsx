@@ -13,27 +13,27 @@ import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/screens/Swap/utils/swaps';
 import { Site } from '@/state/browserState';
 import { useFavoriteDappsStore } from '@/state/favoriteDapps';
+import { TrendingSite, trendingDapps } from '@/resources/trendingDapps/trendingDapps';
 import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { useBrowserContext } from './BrowserContext';
-import { WEBVIEW_HEIGHT } from './Dimensions';
+import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
+import { isEmpty } from 'lodash';
 
-const HORIZONTAL_INSET = 24;
+const HORIZONTAL_PAGE_INSET = 24;
 
-const NUM_LOGOS = 4;
+const LOGOS_PER_ROW = 4;
 const LOGO_SIZE = 64;
-const LOGO_PADDING = (deviceUtils.dimensions.width - NUM_LOGOS * LOGO_SIZE - HORIZONTAL_INSET * 2) / (NUM_LOGOS - 1);
+const LOGO_PADDING = (deviceUtils.dimensions.width - LOGOS_PER_ROW * LOGO_SIZE - HORIZONTAL_PAGE_INSET * 2) / (LOGOS_PER_ROW - 1);
 const LOGO_BORDER_RADIUS = 16;
+const LOGO_LABEL_SPILLOVER = 12;
 
 const NUM_CARDS = 2;
 const CARD_PADDING = 12;
-const CARD_SIZE = (deviceUtils.dimensions.width - HORIZONTAL_INSET * 2 - (NUM_CARDS - 1) * CARD_PADDING) / NUM_CARDS;
+const CARD_SIZE = (deviceUtils.dimensions.width - HORIZONTAL_PAGE_INSET * 2 - (NUM_CARDS - 1) * CARD_PADDING) / NUM_CARDS;
 
-const Card = ({ showMenuButton }: { showMenuButton?: boolean }) => {
+const Card = ({ site, showMenuButton }: { showMenuButton?: boolean; site: TrendingSite }) => {
   const { isDarkMode } = useColorMode();
-
-  const bgImageUrl = 'https://nftcalendar.io/storage/uploads/2022/05/06/banner_discord1_05062022181527627565bf3c203.jpeg';
-  const logoImageUrl = 'https://pbs.twimg.com/profile_images/1741494128779886592/RY4V0T2F_400x400.jpg';
 
   const menuConfig = {
     menuTitle: '',
@@ -79,9 +79,14 @@ const Card = ({ showMenuButton }: { showMenuButton?: boolean }) => {
           padding="20px"
         >
           <ColorModeProvider value="dark">
-            {bgImageUrl && (
+            {site.screenshot && (
               <Cover>
-                <ImgixImage enableFasterImage source={{ uri: bgImageUrl }} size={CARD_SIZE} style={{ width: CARD_SIZE, height: 137 }} />
+                <ImgixImage
+                  enableFasterImage
+                  source={{ uri: site.screenshot }}
+                  size={CARD_SIZE}
+                  style={{ width: CARD_SIZE, height: 137 }}
+                />
                 <Cover>
                   <LinearGradient
                     colors={['rgba(0, 0, 0, 0.6)', 'rgba(0, 0, 0, 0.6)', '#000']}
@@ -97,7 +102,7 @@ const Card = ({ showMenuButton }: { showMenuButton?: boolean }) => {
               <ImgixImage
                 enableFasterImage
                 size={48}
-                source={{ uri: logoImageUrl }}
+                source={{ uri: site.image }}
                 style={{
                   backgroundColor: isDarkMode ? globalColors.grey100 : globalColors.white100,
                   borderRadius: 12,
@@ -108,10 +113,10 @@ const Card = ({ showMenuButton }: { showMenuButton?: boolean }) => {
             </Box>
             <Stack space="10px">
               <Text size="17pt" weight="heavy" color="label">
-                Rainbow World
+                {site.name}
               </Text>
               <Text size="13pt" weight="bold" color="labelTertiary">
-                rainbow.me
+                {site.url}
               </Text>
             </Stack>
             {showMenuButton && (
@@ -180,15 +185,10 @@ const Logo = ({ site }: { site: Omit<Site, 'timestamp'> }) => {
 
   return (
     <View style={{ width: LOGO_SIZE }}>
-      <ButtonPressAnimation
-        // Temporarily using onPressStart due to WebView gesture handlers blocking onPress
-        onPressStart={() => updateActiveTabState({ url: site.url })}
-        overflowMargin={100}
-        useLateHaptic
-      >
+      <GestureHandlerV1Button onPressJS={() => updateActiveTabState({ url: site.url })}>
         <Stack alignHorizontal="center">
           <Box>
-            {IS_IOS && (
+            {IS_IOS && !isEmpty(site.image) && (
               <Box alignItems="center" height="full" position="absolute" width="full">
                 <TextIcon
                   color="labelQuaternary"
@@ -227,7 +227,10 @@ const Logo = ({ site }: { site: Omit<Site, 'timestamp'> }) => {
             )}
           </Box>
           <Bleed bottom="10px" horizontal="8px">
-            <MaskedView maskElement={<FadeMask fadeEdgeInset={0} fadeWidth={10} side="right" />} style={{ width: LOGO_SIZE + 8 * 2 }}>
+            <MaskedView
+              maskElement={<FadeMask fadeEdgeInset={0} fadeWidth={12} side="right" />}
+              style={{ width: LOGO_SIZE + LOGO_LABEL_SPILLOVER * 2 }}
+            >
               <Text
                 size="13pt"
                 numberOfLines={1}
@@ -242,7 +245,7 @@ const Logo = ({ site }: { site: Omit<Site, 'timestamp'> }) => {
             </MaskedView>
           </Bleed>
         </Stack>
-      </ButtonPressAnimation>
+      </GestureHandlerV1Button>
     </View>
   );
 };
@@ -269,7 +272,7 @@ export default function Homepage() {
         contentContainerStyle={{
           paddingBottom: 20,
           paddingTop: 40,
-          paddingHorizontal: HORIZONTAL_INSET,
+          paddingHorizontal: HORIZONTAL_PAGE_INSET,
         }}
         showsVerticalScrollIndicator
       >
@@ -287,9 +290,9 @@ export default function Homepage() {
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 <Inset space="24px">
                   <Box flexDirection="row" gap={CARD_PADDING}>
-                    <Card />
-                    <Card />
-                    <Card />
+                    {trendingDapps.map(site => (
+                      <Card key={site.url} site={site} />
+                    ))}
                   </Box>
                 </Inset>
               </ScrollView>
@@ -309,7 +312,7 @@ export default function Homepage() {
                 flexDirection="row"
                 flexWrap="wrap"
                 gap={LOGO_PADDING}
-                width={{ custom: deviceUtils.dimensions.width - HORIZONTAL_INSET * 2 }}
+                width={{ custom: deviceUtils.dimensions.width - HORIZONTAL_PAGE_INSET * 2 }}
               >
                 {favoriteDapps.map(dapp => (
                   <Logo key={dapp.url} site={dapp} />
@@ -327,9 +330,9 @@ export default function Homepage() {
               </Text>
             </Inline>
             <Inline space={{ custom: CARD_PADDING }}>
-              <Card showMenuButton />
-              <Card showMenuButton />
-              <Card showMenuButton />
+              {trendingDapps.map(site => (
+                <Card key={site.url} site={site} showMenuButton />
+              ))}
             </Inline>
           </Stack>
         </Stack>
