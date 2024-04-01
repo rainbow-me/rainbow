@@ -6,8 +6,7 @@ import Routes from '@/navigation/routesNames';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import { settingsOptions, sharedCoolModalTopOffset } from '@/navigation/config';
-import { useTheme } from '@/theme';
-import { BackgroundProvider } from '@/design-system';
+import { BackgroundProvider, useBackgroundColor } from '@/design-system';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { useDimensions } from '@/hooks';
 import { IS_ANDROID } from '@/env';
@@ -25,12 +24,12 @@ export function RestoreSheet() {
   const { top } = useSafeAreaInsets();
   const { height: deviceHeight } = useDimensions();
   const { params: { fromSettings = false } = {} } = useRoute<RouteProp<RestoreSheetParams, 'RestoreSheet'>>();
+  const surfacePrimaryElevated = useBackgroundColor('surfacePrimaryElevated');
 
-  const { colors } = useTheme();
-  const memoSettingsOptions = useMemo(() => settingsOptions(colors, fromSettings), [colors, fromSettings]);
+  const memoSettingsOptions = useMemo(() => settingsOptions(surfacePrimaryElevated, fromSettings), [fromSettings]);
 
   return (
-    <BackgroundProvider color="surfaceSecondary">
+    <BackgroundProvider color="surfacePrimaryElevated">
       {({ backgroundColor }) => (
         <SimpleSheet
           backgroundColor={backgroundColor as string}
