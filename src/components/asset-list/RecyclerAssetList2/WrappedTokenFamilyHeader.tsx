@@ -27,6 +27,7 @@ export default React.memo(function WrappedTokenFamilyHeader({ name, total, image
       familyImage={image}
       isOpen={isFamilyOpen}
       onPress={handleToggle}
+      onWalletScreen
       testID={testID}
       theme={theme}
       title={name}

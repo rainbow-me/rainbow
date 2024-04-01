@@ -50,9 +50,20 @@ type Props = {
   testID?: string;
   title: string;
   theme: ThemeContextProps;
+  onWalletScreen?: boolean;
 };
 
-const TokenFamilyHeader = ({ childrenAmount, emoji, familyImage, isOpen, onPress, testID, title, theme }: Props) => {
+const TokenFamilyHeader = ({
+  childrenAmount,
+  emoji,
+  familyImage,
+  isOpen,
+  onPress,
+  onWalletScreen = false,
+  testID,
+  title,
+  theme,
+}: Props) => {
   const toValue = Number(!!isOpen);
 
   const aRef = useRef<{
@@ -124,7 +135,7 @@ const TokenFamilyHeader = ({ childrenAmount, emoji, familyImage, isOpen, onPress
 
   return (
     <ButtonPressAnimation onPress={handlePress} scaleTo={1.05} testID={testID}>
-      <Box background="surfacePrimary" style={[sx.content]}>
+      <Box background={onWalletScreen ? 'surfacePrimary' : 'surfacePrimaryElevated'} style={[sx.content]}>
         <View style={[sx.center, { marginRight: emoji ? 5 : 0 }]}>
           {emoji ? (
             <Text containsEmoji color="label" size="16px / 22px (Deprecated)">
