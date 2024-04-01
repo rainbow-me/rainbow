@@ -14,7 +14,7 @@ type FloatingPanelProps = {
 const FloatingPanel = ({ borderRadius = 18, overflow = 'hidden', paddingBottom, style, testID, ...props }: FloatingPanelProps) => {
   return (
     <Box
-      background="body (Deprecated)"
+      background="surfacePrimaryElevated"
       borderRadius={borderRadius}
       paddingBottom={paddingBottom}
       style={[style, { overflow, zIndex: 1 }]}

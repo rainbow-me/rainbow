@@ -4,6 +4,7 @@ import { PlaceholderText } from '../../text';
 import { useMagicAutofocus } from '@/hooks';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth } from '@/styles';
+import { useForegroundColor } from '@/design-system';
 
 const NameInput = styled(Input).attrs({
   align: 'center',
@@ -23,6 +24,7 @@ const NameInput = styled(Input).attrs({
 function ProfileNameInput({ onChange, placeholder, testID, value, ...props }, ref) {
   const { handleFocus } = useMagicAutofocus(ref);
   const placeholderRef = useRef(null);
+  const label = useForegroundColor('label');
 
   const handleChange = useCallback(
     ({ nativeEvent: { text } }) => {
@@ -46,7 +48,15 @@ function ProfileNameInput({ onChange, placeholder, testID, value, ...props }, re
   return (
     <Fragment>
       <PlaceholderText ref={placeholderRef} weight="heavy" />
-      <NameInput {...props} onChange={handleChange} onFocus={handleFocus} ref={ref} testID={testID} value={value} />
+      <NameInput
+        {...props}
+        onChange={handleChange}
+        onFocus={handleFocus}
+        style={{ color: label }}
+        ref={ref}
+        testID={testID}
+        value={value}
+      />
     </Fragment>
   );
 }

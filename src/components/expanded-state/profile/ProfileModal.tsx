@@ -1,7 +1,6 @@
 import lang from 'i18n-js';
 import React, { useCallback, useRef } from 'react';
 import { View } from 'react-native';
-import Divider from '../../Divider';
 import { ButtonPressAnimation } from '../../animations';
 import { BiometricButtonContent } from '../../buttons';
 import CopyTooltip from '../../copy-tooltip';
@@ -13,15 +12,15 @@ import ProfileNameInput from './ProfileNameInput';
 import styled from '@/styled-thing';
 import { margin, padding, position } from '@/styles';
 import { useTheme } from '@/theme';
+import { Separator, useForegroundColor } from '@/design-system';
 
-const ProfileAddressText = styled(TruncatedAddress).attrs(({ theme: { colors } }: any) => ({
+const ProfileAddressText = styled(TruncatedAddress).attrs({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.6),
   firstSectionLength: 4,
   size: 'large',
   truncationLength: 4,
   weight: 'bold',
-}))({
+})({
   ...margin.object(android ? 0 : 6, 0, android ? 0 : 5),
   width: '100%',
 });
@@ -42,19 +41,6 @@ const ProfileButtonText = styled(Text).attrs({
   align: 'center',
   size: 'larger',
 })({});
-
-const ProfileDivider = styled(Divider).attrs(({ theme: { colors } }: any) => ({
-  borderRadius: 1,
-  color: colors.rowDividerLight,
-  inset: false,
-}))({});
-
-const Container = styled(ProfileModalContainer).attrs({
-  dividerRenderer: ProfileDivider,
-})({
-  ...padding.object(24, 19, 0),
-  width: '100%',
-});
 
 type ProfileModalProps = {
   address: string;
@@ -88,10 +74,16 @@ const ProfileModal = ({
   const { colors, isDarkMode } = useTheme();
   const inputRef = useRef<any>(null);
 
+  const labelSecondary = useForegroundColor('labelSecondary');
+
   const handleTriggerFocusInput = useCallback(() => inputRef.current?.focus(), [inputRef]);
 
   return (
-    <Container>
+    <ProfileModalContainer
+      dividerRenderer={() => <Separator color="separatorSecondary" />}
+      style={{ ...padding.object(24, 19, 0), width: '100%' }}
+      onPressBackdrop={undefined}
+    >
       <Centered direction="column" paddingBottom={android ? 15 : 30} testID="wallet-info-modal" width="100%">
         {toggleAvatar &&
           (imageAvatar ? (
@@ -130,17 +122,17 @@ const ProfileModal = ({
             textToCopy={address}
             tooltipText={lang.t('wallet.settings.copy_address_capitalized')}
           >
-            <ProfileAddressText address={address} />
+            <ProfileAddressText address={address} color={labelSecondary} />
           </CopyTooltip>
         )}
       </Centered>
-      <ColumnWithDividers dividerRenderer={ProfileDivider} width="100%">
+      <ColumnWithDividers dividerRenderer={() => <Separator color="separatorSecondary" />} width="100%">
         <ProfileButton onPress={handleSubmit}>
           <BiometricButtonContent label={submitButtonText} showIcon={toggleSubmitButtonIcon} testID="wallet-info-submit-button" />
         </ProfileButton>
         <ProfileButton onPress={handleCancel}>
           <ProfileButtonText
-            color={colors.alpha(colors.blueGreyDark, 0.6)}
+            color={labelSecondary}
             letterSpacing="roundedMedium"
             testID="wallet-info-cancel-button"
             weight="medium"
@@ -150,7 +142,7 @@ const ProfileModal = ({
           </ProfileButtonText>
         </ProfileButton>
       </ColumnWithDividers>
-    </Container>
+    </ProfileModalContainer>
   );
 };
 
