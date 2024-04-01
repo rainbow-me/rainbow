@@ -30,6 +30,7 @@ import { ThemeContextProps, useTheme } from '@/theme';
 import logger from 'logger';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import { WelcomeScreenRainbowButton } from '@/screens/WelcomeScreen/WelcomeScreenRainbowButton';
+import { useBackgroundColor, useForegroundColor } from '@/design-system';
 
 // @ts-expect-error Our implementation of SC complains
 const Container = styled.View({
@@ -69,9 +70,13 @@ const animationColors = ['rgb(255,73,74)', 'rgb(255,170,0)', 'rgb(0,163,217)', '
 
 export default function WelcomeScreen() {
   const insets = useSafeAreaInsets();
-  const { colors, isDarkMode } = useTheme();
+  const { colors } = useTheme();
   const { replace, navigate, getState: dangerouslyGetState } = useNavigation();
   const hideSplashScreen = useHideSplashScreen();
+
+  const surfacePrimaryElevated = useBackgroundColor('surfacePrimaryElevated');
+  const label = useForegroundColor('label');
+  const labelTertiary = useForegroundColor('labelTertiary');
 
   const contentAnimation = useSharedValue(1);
   const colorAnimation = useSharedValue(0);
@@ -157,7 +162,7 @@ export default function WelcomeScreen() {
   }));
 
   const createWalletButtonAnimatedStyle = useAnimatedStyle(() => ({
-    backgroundColor: isDarkMode ? colors.blueGreyDarkLight : colors.dark,
+    backgroundColor: surfacePrimaryElevated,
     borderColor: calculatedColor.value,
     borderWidth: ios ? 0 : 3,
     width: 230 + (ios ? 0 : 6),
@@ -215,7 +220,7 @@ export default function WelcomeScreen() {
             style={createWalletButtonAnimatedStyle}
             testID="new-wallet-button"
             text={lang.t('wallet.new.get_new_wallet')}
-            textColor={isDarkMode ? colors.dark : colors.white}
+            textColor={label}
           />
         </ButtonWrapper>
         <ButtonWrapper>
@@ -225,15 +230,15 @@ export default function WelcomeScreen() {
             height={56}
             onPress={showRestoreSheet}
             shadowStyle={sx.existingWalletShadow}
-            style={[sx.existingWallet, { backgroundColor: colors.blueGreyDarkLight }]}
+            style={[sx.existingWallet, { backgroundColor: surfacePrimaryElevated }]}
             testID="already-have-wallet-button"
             text={lang.t('wallet.new.already_have_wallet')}
-            textColor={colors.alpha(colors.blueGreyDark, 0.8)}
+            textColor={label}
           />
         </ButtonWrapper>
       </ContentWrapper>
       <TermsOfUse bottomInset={insets.bottom}>
-        <Text align="center" color={colors.alpha(colors.blueGreyDark, 0.5)} lineHeight="loose" size="smedium" weight="semibold">
+        <Text align="center" color={labelTertiary} lineHeight="loose" size="smedium" weight="semibold">
           {lang.t('wallet.new.terms')}
           <Text color={colors.paleBlue} lineHeight="loose" onPress={handlePressTerms} size="smedium" suppressHighlighting weight="semibold">
             {lang.t('wallet.new.terms_link')}
