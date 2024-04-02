@@ -10,7 +10,7 @@ import { ChainId } from '../../types/chains';
 import { TextColor } from '@/design-system/color/palettes';
 import { useSwapContext } from '../../providers/swap-provider';
 import Animated, { runOnUI } from 'react-native-reanimated';
-import { parseSearchAsset, isSameAsset } from '../../utils/assets';
+import { parseSearchAsset, isSameAsset, isSameAssetWorklet } from '../../utils/assets';
 
 import { useAssetsToSell } from '../../hooks/useAssetsToSell';
 import { ListEmpty } from './ListEmpty';
@@ -77,8 +77,14 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
 
       runOnUI(() => {
         SwapInputController.assetToBuy.value = parsedAsset;
-        SwapNavigation.handleOutputPress();
-        SwapNavigation.handleExitSearch();
+        if (SwapInputController.assetToSell.value && isSameAssetWorklet(SwapInputController.assetToSell.value, parsedAsset)) {
+          SwapInputController.assetToSell.value = null;
+          SwapNavigation.handleInputPress();
+          SwapNavigation.handleExitSearch();
+        } else {
+          SwapNavigation.handleOutputPress();
+          SwapNavigation.handleExitSearch();
+        }
       })();
     },
     [SwapInputController, SwapNavigation, userAssets]

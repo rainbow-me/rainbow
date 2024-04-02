@@ -1,10 +1,10 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { Hex } from 'viem';
 
 import { selectUserAssetsList, selectUserAssetsListByChainId } from '../resources/_selectors/assets';
 
 import { useUserAssets } from '@/__swaps__/screens/Swap/resources/assets';
-import { ParsedAssetsDictByChain, ParsedUserAsset } from '@/__swaps__/screens/Swap/types/assets';
+import { ParsedAssetsDictByChain, ParsedSearchAsset } from '@/__swaps__/screens/Swap/types/assets';
 import type { SortMethod } from '@/__swaps__/screens/Swap/types/swap';
 import { useAccountSettings } from '@/hooks';
 import { useSwapAssetStore } from '../state/assets';
@@ -26,7 +26,7 @@ export const useAssetsToSell = () => {
   const { accountAddress: currentAddress, nativeCurrency: currentCurrency } = useAccountSettings();
   const { sortMethod } = useSwapAssetStore();
 
-  const [currentAssets, setCurrentAssets] = useState<ParsedUserAsset[]>([]);
+  const [currentAssets, setCurrentAssets] = useState<ParsedSearchAsset[]>([]);
 
   const { data: userAssets = [] } = useUserAssets(
     {
@@ -53,9 +53,9 @@ export const useAssetsToSell = () => {
       ? setCurrentAssets(
           userAssets.filter(({ name, symbol, address }) =>
             [name, symbol, address].reduce((res, param) => res || param.toLowerCase().startsWith(query.toLowerCase()), false)
-          )
+          ) as ParsedSearchAsset[]
         )
-      : setCurrentAssets(userAssets);
+      : setCurrentAssets(userAssets as ParsedSearchAsset[]);
   }, 200);
 
   useAnimatedReaction(

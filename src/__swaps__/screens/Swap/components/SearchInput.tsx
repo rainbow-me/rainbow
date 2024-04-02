@@ -5,7 +5,7 @@ import { Input } from '@/components/inputs';
 import { AnimatedText, Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../constants';
 import { opacity, opacityWorklet } from '../utils/swaps';
-import Animated, { runOnJS, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { useSwapContext } from '../providers/swap-provider';
 
 export const SearchInput = ({
@@ -102,6 +102,7 @@ export const SearchInput = ({
                     height: 44,
                     zIndex: 10,
                   }}
+                  value={SwapInputController.searchQuery.value}
                 />
               </Columns>
             </Box>

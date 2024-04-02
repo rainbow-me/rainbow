@@ -21,7 +21,7 @@ import {
   fadeConfig,
   springConfig,
 } from '../constants';
-import { opacity, opacityWorklet } from '../utils/swaps';
+import { opacityWorklet } from '../utils/swaps';
 
 export const useSwapInputStyles = ({
   bottomInput,
@@ -35,8 +35,6 @@ export const useSwapInputStyles = ({
   progress: Animated.SharedValue<number>;
 }) => {
   const { isDarkMode } = useColorMode();
-
-  console.log({ color });
 
   const bgColor = useDerivedValue(() => {
     return isDarkMode ? opacityWorklet(color.value.toString(), 0.08) : opacityWorklet(globalColors.white100, 0.8);

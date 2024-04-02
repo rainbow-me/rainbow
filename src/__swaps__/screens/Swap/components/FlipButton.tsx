@@ -26,18 +26,22 @@ export const FlipButton = () => {
   });
 
   const handleSwapAssets = useCallback(() => {
-    const prevAssetToSell = SwapInputController.assetToSell.value;
-    const prevAssetToBuy = SwapInputController.assetToBuy.value;
-
-    if (prevAssetToBuy) {
-      SwapInputController.assetToSell.value = prevAssetToBuy;
-    }
-
-    if (prevAssetToSell) {
-      SwapInputController.assetToBuy.value = prevAssetToSell;
-    }
-
     runOnUI(() => {
+      const prevAssetToSell = SwapInputController.assetToSell.value;
+      const prevAssetToBuy = SwapInputController.assetToBuy.value;
+
+      if (prevAssetToBuy) {
+        SwapInputController.assetToSell.value = prevAssetToBuy;
+      } else {
+        SwapInputController.assetToSell.value = null;
+      }
+
+      if (prevAssetToSell) {
+        SwapInputController.assetToBuy.value = prevAssetToSell;
+      } else {
+        SwapInputController.assetToBuy.value = null;
+      }
+
       if (outputProgress.value === 1) {
         SwapNavigation.handleOutputPress();
       }

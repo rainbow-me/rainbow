@@ -14,6 +14,7 @@ import { isSameAsset } from '../utils/assets';
 import { filterList } from '@/utils';
 
 import { useFavorites } from '@/resources/favorites';
+import { SharedValue } from 'react-native-reanimated';
 
 const VERIFIED_ASSETS_PAYLOAD: {
   keys: TokenSearchAssetKey[];
@@ -46,16 +47,16 @@ export function useSearchCurrencyLists({
   searchQuery,
   bridge,
 }: {
-  assetToSell: SearchAsset | ParsedSearchAsset | null;
+  assetToSell: SharedValue<SearchAsset | ParsedSearchAsset | null>;
   // should be provided when swap input currency is selected
   inputChainId?: ChainId;
   // target chain id of current search
   outputChainId: ChainId;
-  searchQuery?: string;
+  searchQuery?: SharedValue<string>;
   // only show same asset on multiple chains
-  bridge?: boolean;
+  bridge?: SharedValue<boolean>;
 }) {
-  const query = searchQuery?.toLowerCase() || '';
+  const query = searchQuery?.value.toLowerCase() || '';
   const enableUnverifiedSearch = query.trim().length > 2;
 
   const isCrosschainSearch = useMemo(() => {
@@ -242,7 +243,10 @@ export function useSearchCurrencyLists({
   const bridgeAsset = useMemo(() => {
     const curatedAssets = getCuratedAssets(outputChainId);
     const bridgeAsset = curatedAssets?.find(asset =>
-      isLowerCaseMatch(asset.mainnetAddress, assetToSell?.[assetToSell?.chainId === ChainId.mainnet ? 'address' : 'mainnetAddress'])
+      isLowerCaseMatch(
+        asset.mainnetAddress,
+        assetToSell.value?.[assetToSell.value?.chainId === ChainId.mainnet ? 'address' : 'mainnetAddress']
+      )
     );
 
     const filteredBridgeAsset = filterBridgeAsset({
@@ -252,7 +256,7 @@ export function useSearchCurrencyLists({
       ? bridgeAsset
       : null;
 
-    return outputChainId === assetToSell?.chainId ? null : filteredBridgeAsset;
+    return outputChainId === assetToSell.value?.chainId ? null : filteredBridgeAsset;
   }, [assetToSell, getCuratedAssets, outputChainId, query]);
 
   const loading = useMemo(() => {
@@ -276,18 +280,18 @@ export function useSearchCurrencyLists({
   );
 
   const bridgeList = (
-    bridge && assetToSell?.networks
-      ? Object.entries(assetToSell.networks).map(([_chainId, assetOnNetworkOverrides]) => {
-          if (!assetOnNetworkOverrides) return;
+    bridge && assetToSell.value?.networks
+      ? Object.entries(assetToSell.value.networks).map(([_chainId, assetOnNetworkOverrides]) => {
+          if (!assetOnNetworkOverrides || !assetToSell.value) return;
           const chainId = +_chainId as unknown as ChainId; // Object.entries messes the type
 
           const chainName = getChainName({ chainId });
           const { address, decimals } = assetOnNetworkOverrides;
           // filter out the asset we're selling already
-          if (isSameAsset(assetToSell, { chainId, address }) || !SUPPORTED_CHAINS({ testnetMode: false }).some(n => n.id === chainId))
+          if (isSameAsset(assetToSell.value, { chainId, address }) || !SUPPORTED_CHAINS({ testnetMode: false }).some(n => n.id === chainId))
             return;
           return {
-            ...assetToSell,
+            ...assetToSell.value,
             chainId,
             chainName: chainName,
             uniqueId: `${address}-${chainId}`,
@@ -313,9 +317,10 @@ export function useSearchCurrencyLists({
     (assets?: SearchAsset[]) =>
       assets?.filter(
         curatedAsset =>
-          !isLowerCaseMatch(curatedAsset?.address, bridgeAsset?.address) && !isLowerCaseMatch(curatedAsset?.address, assetToSell?.address)
+          !isLowerCaseMatch(curatedAsset?.address, bridgeAsset?.address) &&
+          !isLowerCaseMatch(curatedAsset?.address, assetToSell.value?.address)
       ) || [],
-    [assetToSell?.address, bridgeAsset?.address]
+    [assetToSell.value?.address, bridgeAsset?.address]
   );
 
   const filterAssetsFromFavoritesBridgeAndAssetToSell = useCallback(

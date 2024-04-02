@@ -7,7 +7,7 @@ import { ParsedSearchAsset } from '../../types/assets';
 import { Box, Stack, Text, Inline, Bleed, useColorMode, globalColors, HitSlop } from '@/design-system';
 import Animated, { runOnUI } from 'react-native-reanimated';
 import { useSwapContext } from '../../providers/swap-provider';
-import { parseSearchAsset, isSameAsset } from '../../utils/assets';
+import { parseSearchAsset, isSameAsset, isSameAssetWorklet } from '../../utils/assets';
 import { opacity } from '../../utils/swaps';
 import { useAccountAccentColor } from '@/hooks';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -16,7 +16,7 @@ import { ListEmpty } from './ListEmpty';
 export const TokenToSellList = () => {
   const { accentColor: accountColor } = useAccountAccentColor();
   const { isDarkMode } = useColorMode();
-  const { SwapNavigation, SwapInputController } = useSwapContext();
+  const { SwapNavigation, SwapInputController, inputProgress } = useSwapContext();
   const userAssets = useAssetsToSell();
 
   const accentColor = useMemo(() => {
@@ -37,10 +37,15 @@ export const TokenToSellList = () => {
         userAsset,
       });
 
-      // TODO: we need to update the inputNativeValue to the user balance / native value
       runOnUI((parsedAsset: ParsedSearchAsset) => {
+        if (SwapInputController.assetToBuy.value && isSameAssetWorklet(SwapInputController.assetToBuy.value, parsedAsset)) {
+          SwapInputController.assetToBuy.value = null;
+        }
+
         SwapInputController.assetToSell.value = parsedAsset;
         SwapInputController.outputChainId.value = parsedAsset.chainId;
+
+        // TODO: we need to update the inputNativeValue to the user balance / native value
         // SwapInputController.inputValues.modify(prev => ({
         //   ...prev,
         //   inputNativeValue: parsedAsset.balance.display,
