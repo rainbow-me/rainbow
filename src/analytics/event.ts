@@ -3,7 +3,7 @@ import { CardType } from '@/components/cards/GenericCard';
 import { LearnCategory } from '@/components/cards/utils/types';
 import { FiatProviderName } from '@/entities/f2c';
 import { Network } from '@/networks/types';
-import { RequestType } from '@/utils/requestNavigationHandlers';
+import { RequestSource } from '@/utils/requestNavigationHandlers';
 
 /**
  * All events, used by `analytics.track()`
@@ -453,18 +453,18 @@ export type EventProperties = {
   };
   [event.txRequestShownSheet]: {
     requestType: 'transaction' | 'signature';
-    source: RequestType;
+    source: RequestSource;
   };
   [event.txRequestApprove]: {
     requestType: 'transaction' | 'signature';
-    source: RequestType;
+    source: RequestSource;
     dappName: string;
     dappUrl: string;
     isHardwareWallet: boolean;
     network: Network;
   };
   [event.txRequestReject]: {
-    source: RequestType;
+    source: RequestSource;
     requestType: 'transaction' | 'signature';
     isHardwareWallet: boolean;
   };

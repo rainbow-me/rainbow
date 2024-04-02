@@ -93,7 +93,7 @@ import { getNextNonce } from '@/state/nonces';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { RequestData } from '@/redux/requests';
-import { RequestType } from '@/utils/requestNavigationHandlers';
+import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { event } from '@/analytics/event';
 
 const COLLAPSED_CARD_HEIGHT = 56;
@@ -135,7 +135,7 @@ type SignTransactionSheetParams = {
   onCloseScreen: (canceled: boolean) => void;
   network: Network;
   address: string;
-  requestType: RequestType;
+  source: RequestSource;
 };
 
 export type SignTransactionSheetRouteProp = RouteProp<{ SignTransactionSheet: SignTransactionSheetParams }, 'SignTransactionSheet'>;
@@ -159,7 +159,7 @@ export const SignTransactionSheet = () => {
     network: currentNetwork,
     address: currentAddress,
     // for request type specific handling
-    requestType,
+    source,
   } = routeParams;
 
   const isMessageRequest = isMessageDisplayType(transactionDetails.payload.method);
@@ -273,7 +273,7 @@ export const SignTransactionSheet = () => {
         } else {
           setMethodName(i18n.t(i18n.l.wallet.message_signing.request));
         }
-        analyticsV2.track(event.txRequestShownSheet), { requestType };
+        analyticsV2.track(event.txRequestShownSheet), { source };
       }
     });
   }, [isMessageRequest, currentNetwork, startPollingGasFees, fetchMethodName, transactionDetails?.payload?.params]);
@@ -468,7 +468,7 @@ export const SignTransactionSheet = () => {
           const rejectionType = transactionDetails?.payload?.method === SEND_TRANSACTION ? 'transaction' : 'signature';
 
           analyticsV2.track(event.txRequestReject, {
-            source: requestType,
+            source,
             requestType: rejectionType,
             isHardwareWallet: accountInfo.isHardwareWallet,
           });
@@ -510,7 +510,7 @@ export const SignTransactionSheet = () => {
 
     if (response?.result) {
       analyticsV2.track(event.txRequestApprove, {
-        source: requestType,
+        source,
         requestType: 'signature',
         dappName: transactionDetails?.dappName,
         dappUrl: transactionDetails?.dappUrl,
@@ -658,7 +658,7 @@ export const SignTransactionSheet = () => {
         }
       }
       analyticsV2.track(event.txRequestApprove, {
-        source: requestType,
+        source,
         requestType: 'transaction',
         dappName: transactionDetails.dappName,
         dappUrl: transactionDetails.dappUrl,
@@ -975,7 +975,7 @@ export const SignTransactionSheet = () => {
             )}
           </Box>
         </Inset>
-        {requestType === 'browser' && (
+        {source === 'browser' && (
           <Box
             style={{
               zIndex: -1,
