@@ -4,6 +4,7 @@ import { JsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { expect, device, element, by, waitFor } from 'detox';
 import { parseEther } from '@ethersproject/units';
+import { blackList } from './init';
 
 const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
 
@@ -362,6 +363,15 @@ export async function checkIfElementHasString(elementID: string | RegExp, text: 
   }
 }
 
+export async function relaunchAppWithBlacklist(url?: string, freshLaunch = false) {
+  try {
+    await device.launchApp({ newInstance: true, delete: freshLaunch, url });
+    await device.setURLBlacklist(blackList);
+  } catch (error) {
+    throw new Error(`Error relaunching app: ${error}`);
+  }
+}
+
 export async function relaunchApp() {
   try {
     await device.terminateApp('me.rainbow');
@@ -464,8 +474,25 @@ export async function openDeeplinkFromBackground(url: string) {
   await device.disableSynchronization();
   await device.sendToHome();
   await device.enableSynchronization();
-  await device.launchApp({
-    newInstance: false,
-    url,
-  });
+  await relaunchAppWithBlacklist(url);
 }
+
+export const testEthereumDeeplink = async (url: string, coldStart = true) => {
+  coldStart ? await openDeeplinkColdStart(url) : await openDeeplinkFromBackground(url);
+  await checkIfVisible('send-sheet-confirm-action-button');
+  const possibleTexts = ['􀕹 Review', 'Insufficient ETH', 'Insufficient Funds'];
+  let elementFound = false;
+  for (const text of possibleTexts) {
+    try {
+      await checkIfElementByTextIsVisible(text);
+      elementFound = true;
+      break;
+    } catch (e) {
+      console.log(`Element with text "${text}" not found.`, e);
+    }
+  }
+  if (!elementFound) {
+    throw new Error('None of the expected texts were found.');
+  }
+  await swipe('send-sheet', 'down');
+};
