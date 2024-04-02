@@ -7,12 +7,16 @@ import { opacity } from '@/__swaps__/screens/Swap/utils/swaps';
 import { useBrowserContext } from './BrowserContext';
 import { WEBVIEW_HEIGHT } from './Dimensions';
 
-export const WebViewBorder = ({ enabled, tabIndex }: { enabled?: boolean; tabIndex: number }) => {
-  const { animatedActiveTabIndex, tabViewProgress } = useBrowserContext();
+export const WebViewBorder = ({ enabled, tabId, tabIndex }: { enabled?: boolean; tabId: string; tabIndex: number }) => {
+  const { animatedActiveTabIndex, currentlyOpenTabIds, tabViewProgress } = useBrowserContext();
 
   const webViewBorderStyle = useAnimatedStyle(() => {
     const progress = tabViewProgress?.value || 0;
-    const borderRadius = interpolate(progress, [0, 100], [animatedActiveTabIndex?.value === tabIndex ? 16 : 30, 30], 'clamp');
+    const rawAnimatedTabIndex = currentlyOpenTabIds?.value.indexOf(tabId);
+    const animatedTabIndex = rawAnimatedTabIndex === -1 ? tabIndex : rawAnimatedTabIndex ?? tabIndex;
+    const animatedIsActiveTab = animatedActiveTabIndex?.value === animatedTabIndex;
+
+    const borderRadius = interpolate(progress, [0, 100], [animatedIsActiveTab ? 16 : 30, 30], 'clamp');
     const opacity = 1 - progress / 100;
 
     return {
