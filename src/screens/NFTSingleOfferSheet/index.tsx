@@ -437,7 +437,7 @@ export function NFTSingleOfferSheet() {
   }
 
   return (
-    <BackgroundProvider color="surfaceSecondary">
+    <BackgroundProvider color="surfacePrimaryElevated">
       {({ backgroundColor }) => (
         <SimpleSheet backgroundColor={backgroundColor as string}>
           <View onLayout={e => setHeight(e.nativeEvent.layout.height)}>

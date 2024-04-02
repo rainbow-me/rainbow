@@ -50,7 +50,7 @@ export function MintsSheet() {
 
   return (
     <>
-      <BackgroundProvider color="surfaceSecondaryElevated">
+      <BackgroundProvider color="surfacePrimaryElevated">
         {({ backgroundColor }) => (
           <SimpleSheet backgroundColor={backgroundColor as string}>
             <Inset top="20px" bottom={{ custom: IS_IOS ? 110 : 150 }}>

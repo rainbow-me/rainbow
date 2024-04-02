@@ -304,7 +304,7 @@ export const AddWalletSheet = () => {
   };
 
   return (
-    <Box height="full" width="full" background="surfaceSecondary" testID="add-wallet-sheet">
+    <Box height="full" width="full" background="surfacePrimaryElevated" testID="add-wallet-sheet">
       <Inset horizontal="28px" top="36px">
         <AddWalletList
           totalHorizontalInset={24}

@@ -22,7 +22,7 @@ export const AddWalletNavigator = () => {
   const [scrollEnabled, setScrollEnabled] = useState(false);
 
   return (
-    <BackgroundProvider color="surfaceSecondary">
+    <BackgroundProvider color="surfacePrimaryElevated">
       {({ backgroundColor }) => (
         <SimpleSheet backgroundColor={backgroundColor as string} useAdditionalTopPadding scrollEnabled={scrollEnabled}>
           <Swipe.Navigator

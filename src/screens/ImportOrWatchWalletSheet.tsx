@@ -41,7 +41,7 @@ export const ImportOrWatchWalletSheet = () => {
 
   return (
     <>
-      <Box height="full" background="surfaceSecondary">
+      <Box height="full" background="surfacePrimaryElevated">
         <Box alignItems="center" justifyContent="space-between" paddingTop={{ custom: 38 }} paddingHorizontal="20px" testID="import-sheet">
           <Stack space="20px">
             <Text align="center" color="label" size="26pt" weight="bold">

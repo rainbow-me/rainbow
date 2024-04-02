@@ -41,7 +41,7 @@ export default function BackupSheet() {
 
   return (
     <CloudBackupProvider>
-      <BackgroundProvider color="surfaceSecondary">
+      <BackgroundProvider color="surfacePrimaryElevated">
         {({ backgroundColor }) => (
           <SimpleSheet
             testID="backup-sheet"

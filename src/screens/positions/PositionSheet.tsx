@@ -51,7 +51,7 @@ export const PositionSheet: React.FC = () => {
   }, [position.dapp.url, position.type]);
 
   return (
-    <BackgroundProvider color="surfaceSecondary">
+    <BackgroundProvider color="surfacePrimaryElevated">
       {({ backgroundColor }) => (
         <SlackSheet
           backgroundColor={backgroundColor}

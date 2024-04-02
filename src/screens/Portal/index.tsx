@@ -29,7 +29,7 @@ export function Portal() {
 
   return (
     <SimpleSheet backgroundColor="white" scrollEnabled={false}>
-      <Box paddingVertical="44px" paddingHorizontal="32px" height="full" background="surfaceSecondary">
+      <Box paddingVertical="44px" paddingHorizontal="32px" height="full" background="surfacePrimaryElevated">
         {params.children({})}
       </Box>
     </SimpleSheet>

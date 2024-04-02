@@ -48,7 +48,7 @@ export const RewardsSheet: React.FC = () => {
   );
 
   return (
-    <BackgroundProvider color="surfaceSecondary">
+    <BackgroundProvider color="surfacePrimaryElevated">
       {({ backgroundColor }) => (
         // @ts-expect-error JS component
         <DynamicHeightSheet

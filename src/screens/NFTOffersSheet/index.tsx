@@ -49,7 +49,7 @@ export const NFTOffersSheet = () => {
   const totalValue = convertAmountToNativeDisplay(totalUSDValue, 'USD');
 
   return (
-    <BackgroundProvider color="surfaceSecondary">
+    <BackgroundProvider color="surfacePrimaryElevated">
       {({ backgroundColor }) => (
         <SimpleSheet backgroundColor={backgroundColor as string}>
           <Inset top="20px" horizontal="20px" bottom="52px">
@@ -60,7 +60,7 @@ export const NFTOffersSheet = () => {
                     {accountImage ? (
                       <Box
                         as={ImgixImage}
-                        background="surfaceSecondary"
+                        background="surfacePrimaryElevated"
                         width={{ custom: PROFILE_AVATAR_SIZE }}
                         height={{ custom: PROFILE_AVATAR_SIZE }}
                         size={PROFILE_AVATAR_SIZE}
@@ -71,7 +71,7 @@ export const NFTOffersSheet = () => {
                     ) : (
                       <Box
                         as={ContactAvatar}
-                        background="surfaceSecondary"
+                        background="surfacePrimaryElevated"
                         shadow="12px accent"
                         color={accountColor}
                         size="small_shadowless"

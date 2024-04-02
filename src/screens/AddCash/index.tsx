@@ -40,7 +40,7 @@ export function AddCashSheet() {
     accountAddress: settings.accountAddress,
   }));
   const borderColor = useForegroundColor('separatorTertiary');
-  const skeletonColor = useBackgroundColor('surfaceSecondaryElevated');
+  const skeletonColor = useBackgroundColor('surfaceSecondary');
   const sheetHeight = IS_IOS ? deviceHeight - insets.top : deviceHeight + statusBarHeight;
 
   const {
@@ -82,7 +82,7 @@ export function AddCashSheet() {
 
   return (
     <Box
-      background="surfaceSecondary"
+      background="surfacePrimaryElevated"
       height={{ custom: sheetHeight }}
       top={{ custom: IS_IOS ? insets.top : statusBarHeight }}
       width="full"

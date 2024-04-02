@@ -110,7 +110,7 @@ export const HardwareWalletTxNavigator = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
-    <BackgroundProvider color="surfaceSecondary">
+    <BackgroundProvider color="surfacePrimaryElevated">
       {({ backgroundColor }) => (
         <SimpleSheet
           backgroundColor={backgroundColor as string}

@@ -54,7 +54,7 @@ export function SettingsSheet() {
 
   return (
     <CloudBackupProvider>
-      <BackgroundProvider color="surfaceSecondary">
+      <BackgroundProvider color="surfacePrimaryElevated">
         {({ backgroundColor }) => (
           <SimpleSheet
             testID="settings-sheet"
