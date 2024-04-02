@@ -1,5 +1,7 @@
 import { colors } from '@/styles';
 import * as i18n from '@/languages';
+import { convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { NativeCurrencyKey } from '@/entities';
 
 const CUSTOM = 'custom';
 const URGENT = 'urgent';
@@ -66,6 +68,11 @@ const getGasLabel = (speed: string) => {
   }
 };
 
+const getGasFallback = (nativeCurrency: NativeCurrencyKey) => {
+  const fallbackPrice = '0.01';
+  return convertAmountToNativeDisplay(fallbackPrice, nativeCurrency);
+};
+
 const FLASHBOTS_MIN_TIP = 6;
 
 export default {
@@ -73,6 +80,7 @@ export default {
   FAST,
   FLASHBOTS_MIN_TIP,
   getGasLabel,
+  getGasFallback,
   GAS_EMOJIS,
   GAS_ICONS,
   GAS_TRENDS,

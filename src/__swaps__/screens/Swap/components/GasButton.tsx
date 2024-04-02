@@ -24,7 +24,7 @@ import { ParsedAddressAsset } from '@/entities';
 import { GasFeeLegacyParamsBySpeed, GasFeeParamsBySpeed, GasSpeed } from '@/__swaps__/types/gas';
 import { ParsedAsset } from '@/__swaps__/types/assets';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
-const { GasSpeedOrder, CUSTOM, GAS_ICONS, GAS_EMOJIS, getGasLabel } = gasUtils;
+const { GasSpeedOrder, CUSTOM, GAS_ICONS, GAS_EMOJIS, getGasLabel, getGasFallback } = gasUtils;
 const mockedGasLimit = '21000';
 
 export const GasButton = ({ accentColor }: { accentColor?: string }) => {
@@ -55,11 +55,10 @@ export const GasButton = ({ accentColor }: { accentColor?: string }) => {
     }
     return {};
   }, [isLoading, nativeAsset]);
-
+  const gasFallback = getGasFallback(nativeCurrency);
   const [showGasOptions, setShowGasOptions] = useState(false);
   const animatedGas = useDerivedValue(() => {
-    const fallbackPrice = '0.01';
-    return gasFeeBySpeed[selectedGas?.option]?.gasFee?.display ?? convertAmountToNativeDisplay(fallbackPrice, nativeCurrency);
+    return gasFeeBySpeed[selectedGas?.option]?.gasFee?.display ?? gasFallback;
   }, [gasFeeBySpeed, selectedGas]);
 
   return (

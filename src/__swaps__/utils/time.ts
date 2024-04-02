@@ -2,7 +2,7 @@ import parseMilliseconds from 'parse-ms';
 
 import * as i18n from '@/languages';
 
-const buildLocalizedTimeUnitString = ({ plural, short, unit }: { plural?: boolean; short: boolean; unit: string }) => {
+export const buildLocalizedTimeUnitString = ({ plural, short, unit }: { plural?: boolean; short: boolean; unit: string }) => {
   const length = short ? 'short' : 'long';
   const plurality = plural ? 'plural' : 'singular';
 
