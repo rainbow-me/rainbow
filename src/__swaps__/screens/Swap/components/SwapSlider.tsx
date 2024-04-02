@@ -347,6 +347,12 @@ export const SwapSlider = ({
     return 'Max';
   });
 
+  const maxTextColor = useAnimatedStyle(() => {
+    return {
+      color: SwapInputController.bottomColor.value,
+    };
+  });
+
   return (
     // @ts-expect-error
     <PanGestureHandler activeOffsetX={[0, 0]} activeOffsetY={[0, 0]} onGestureEvent={onSlide} simultaneousHandlers={[tapRef]}>
@@ -389,13 +395,7 @@ export const SwapSlider = ({
                       }, 10);
                     }}
                   >
-                    <AnimatedText
-                      align="center"
-                      color={{ custom: SwapInputController.bottomColor.value }}
-                      size="15pt"
-                      weight="heavy"
-                      text={maxText}
-                    />
+                    <AnimatedText align="center" style={maxTextColor} size="15pt" weight="heavy" text={maxText} />
                   </TouchableOpacity>
                 </Column>
               </Columns>

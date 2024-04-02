@@ -9,10 +9,11 @@ import { AssetToBuySection, AssetToBuySectionId } from '../../hooks/useSearchCur
 import { ChainId } from '../../types/chains';
 import { TextColor } from '@/design-system/color/palettes';
 import { useSwapContext } from '../../providers/swap-provider';
-import { runOnUI } from 'react-native-reanimated';
+import Animated, { runOnUI } from 'react-native-reanimated';
 import { parseSearchAsset, isSameAsset } from '../../utils/assets';
 
 import { useAssetsToSell } from '../../hooks/useAssetsToSell';
+import { ListEmpty } from './ListEmpty';
 
 interface SectionProp {
   color: TextStyle['color'];
@@ -95,7 +96,7 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
   if (!section.data.length) return null;
 
   return (
-    <Box key={section.id} testID={`${section.id}-token-to-buy-section`}>
+    <Box paddingHorizontal={'20px'} key={section.id} testID={`${section.id}-token-to-buy-section`}>
       <Stack space="20px">
         {section.id === 'other_networks' ? (
           <Box borderRadius={12} height={{ custom: 52 }}>
@@ -118,22 +119,26 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
           </Text>
         </Inline>
 
-        {section.data.map(token => (
-          <CoinRow
-            key={token.uniqueId}
-            chainId={token.chainId}
-            color={token.colors?.primary ?? token.colors?.fallback}
-            iconUrl={token.icon_url}
-            mainnetAddress={token.mainnetAddress}
-            address={token.address}
-            balance={''}
-            name={token.name}
-            onPress={() => handleSelectToken(token)}
-            nativeBalance={''}
-            output
-            symbol={token.symbol}
-          />
-        ))}
+        <Animated.FlatList
+          data={section.data}
+          ListEmptyComponent={<ListEmpty />}
+          renderItem={({ item }) => (
+            <CoinRow
+              key={item.uniqueId}
+              chainId={item.chainId}
+              color={item.colors?.primary ?? item.colors?.fallback}
+              iconUrl={item.icon_url}
+              address={item.address}
+              mainnetAddress={item.mainnetAddress}
+              balance={''}
+              name={item.name}
+              onPress={() => handleSelectToken(item)}
+              nativeBalance={''}
+              output={false}
+              symbol={item.symbol}
+            />
+          )}
+        />
       </Stack>
     </Box>
   );

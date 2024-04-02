@@ -34,6 +34,7 @@ export function useSwapInputsController({
   const assetToSell = useSharedValue<ParsedSearchAsset | null>(null);
   const assetToBuy = useSharedValue<ParsedSearchAsset | null>(null);
   const outputChainId = useSharedValue<ChainId | null>(ChainId.mainnet);
+  const searchQuery = useSharedValue('');
 
   const inputValues = useSharedValue<{ [key in inputKeys]: number | string }>({
     inputAmount: 0,
@@ -484,6 +485,7 @@ export function useSwapInputsController({
     formattedOutputNativeValue,
     inputMethod,
     inputValues,
+    searchQuery,
     assetToSell,
     assetToBuy,
     assetToSellSymbol,

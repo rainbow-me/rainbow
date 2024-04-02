@@ -64,7 +64,14 @@ export const CoinRow = ({
   return (
     <ButtonPressAnimation disallowInterruption onPress={onPress} scaleTo={0.95}>
       <HitSlop vertical="10px">
-        <Box alignItems="center" flexDirection="row" justifyContent="space-between" width="full">
+        <Box
+          alignItems="center"
+          paddingVertical={'10px'}
+          paddingHorizontal={'20px'}
+          flexDirection="row"
+          justifyContent="space-between"
+          width="full"
+        >
           <Inline alignVertical="center" space="10px">
             <SwapCoinIcon
               iconUrl={iconUrl}

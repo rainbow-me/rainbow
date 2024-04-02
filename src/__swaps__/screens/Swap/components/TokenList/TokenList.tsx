@@ -40,7 +40,6 @@ export const TokenList = ({
         style={{
           alignSelf: 'center',
           height: EXPANDED_INPUT_HEIGHT - 77,
-          paddingHorizontal: 20,
           width: deviceWidth - 24,
         }}
       >

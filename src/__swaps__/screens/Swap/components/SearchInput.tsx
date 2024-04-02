@@ -4,29 +4,23 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { Input } from '@/components/inputs';
 import { AnimatedText, Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../constants';
-import { opacity } from '../utils/swaps';
-import { useSwapAssetStore } from '../state/assets';
-import Animated, { useDerivedValue } from 'react-native-reanimated';
+import { opacity, opacityWorklet } from '../utils/swaps';
+import Animated, { runOnJS, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { useSwapContext } from '../providers/swap-provider';
 
 export const SearchInput = ({
   color,
   handleExitSearch,
   handleFocusSearch,
-  // isFocused,
   output,
-  // setIsFocused,
 }: {
   color: string;
   handleExitSearch: () => void;
   handleFocusSearch: () => void;
-  // isFocused?: boolean;
   output?: boolean;
-  // setIsFocused: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const { inputProgress, outputProgress, SwapInputController } = useSwapContext();
   const { isDarkMode } = useColorMode();
-  const { searchFilter, setSearchFilter } = useSwapAssetStore();
 
   const inputRef = React.useRef<TextInput>(null);
 
@@ -40,6 +34,26 @@ export const SearchInput = ({
     }
 
     return 'Close';
+  });
+
+  const btnWrapperStyles = useAnimatedStyle(() => {
+    return {
+      backgroundColor: opacityWorklet(
+        output ? SwapInputController.bottomColor.value : SwapInputController.topColor.value,
+        isDarkMode ? 0.1 : 0.08
+      ),
+      borderColor: opacityWorklet(
+        output ? SwapInputController.bottomColor.value : SwapInputController.topColor.value,
+        isDarkMode ? 0.06 : 0.01
+      ),
+      borderWidth: THICK_BORDER_WIDTH,
+    };
+  });
+
+  const btnTextStyles = useAnimatedStyle(() => {
+    return {
+      color: output ? SwapInputController.bottomColor.value : SwapInputController.topColor.value,
+    };
   });
 
   return (
@@ -70,13 +84,11 @@ export const SearchInput = ({
                 <Input
                   onBlur={() => {
                     handleExitSearch();
-                    setSearchFilter('');
-                    // setIsFocused(false);
+                    SwapInputController.searchQuery.value = '';
                   }}
-                  // onChangeText={setSearchFilter}
+                  onChange={e => (SwapInputController.searchQuery.value = e.nativeEvent.text)}
                   onFocus={() => {
                     handleFocusSearch();
-                    // setIsFocused(true);
                   }}
                   placeholder={output ? 'Find a token to buy' : 'Search your tokens'}
                   placeholderTextColor={isDarkMode ? opacity(labelQuaternary, 0.3) : labelQuaternary}
@@ -110,27 +122,9 @@ export const SearchInput = ({
               height={{ custom: 36 }}
               justifyContent="center"
               paddingHorizontal={{ custom: 12 - THICK_BORDER_WIDTH }}
-              style={{
-                backgroundColor: opacity(
-                  output ? SwapInputController.bottomColor.value : SwapInputController.topColor.value,
-                  isDarkMode ? 0.1 : 0.08
-                ),
-                borderColor: opacity(
-                  output ? SwapInputController.bottomColor.value : SwapInputController.topColor.value,
-                  isDarkMode ? 0.06 : 0.01
-                ),
-                borderWidth: THICK_BORDER_WIDTH,
-              }}
+              style={btnWrapperStyles}
             >
-              <AnimatedText
-                text={btnText}
-                align="center"
-                color={{
-                  custom: output ? SwapInputController.bottomColor.value : SwapInputController.topColor.value,
-                }}
-                size="17pt"
-                weight="heavy"
-              />
+              <AnimatedText text={btnText} align="center" style={btnTextStyles} size="17pt" weight="heavy" />
             </Box>
           </ButtonPressAnimation>
         </Column>

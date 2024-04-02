@@ -1,7 +1,7 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import React, { useEffect, useMemo } from 'react';
 import { StyleSheet, StatusBar } from 'react-native';
-import Animated, { runOnUI } from 'react-native-reanimated';
+import Animated, { runOnUI, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
 import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
@@ -19,7 +19,7 @@ import { IS_ANDROID } from '@/env';
 import { useSwapContext } from '../../providers/swap-provider';
 import { useSwapAssetStore } from '../../state/assets';
 import { ethereumUtils } from '@/utils';
-import { isSameAsset, parseSearchAsset } from '../../utils/assets';
+import { isSameAsset, isSameAssetWorklet, parseSearchAsset } from '../../utils/assets';
 import { useAssetsToSell } from '../../hooks/useAssetsToSell';
 import { useAccountSettings } from '@/hooks';
 import { useExternalToken } from '../../../../../resources/assets/externalAssetsQuery';
@@ -91,6 +91,12 @@ function SwapOutputAmount() {
     })(outputNativeAmount);
   }, [parsedAssetToBuy, SwapInputController.inputValues, currentCurrency, SwapInputController]);
 
+  const caretStyles = useAnimatedStyle(() => {
+    return {
+      backgroundColor: SwapInputController.bottomColor.value,
+    };
+  });
+
   return (
     <GestureHandlerV1Button
       disableButtonPressWrapper
@@ -109,16 +115,7 @@ function SwapOutputAmount() {
           weight="bold"
         />
         <Animated.View style={[styles.caretContainer, SwapTextStyles.outputCaretStyle]}>
-          <Box
-            as={Animated.View}
-            borderRadius={1}
-            style={[
-              styles.caret,
-              {
-                backgroundColor: SwapInputController.bottomColor.value,
-              },
-            ]}
-          />
+          <Box as={Animated.View} borderRadius={1} style={[styles.caret, caretStyles]} />
         </Animated.View>
       </MaskedView>
     </GestureHandlerV1Button>
@@ -127,33 +124,33 @@ function SwapOutputAmount() {
 
 function SwapInputIcon() {
   const { SwapInputController } = useSwapContext();
-  const { assetToBuy } = useSwapAssetStore();
   const theme = useTheme();
+
+  const iconStyles = useAnimatedStyle(() => {
+    return {
+      backgroundColor: SwapInputController.bottomColor.value,
+    };
+  });
 
   return (
     <Box paddingRight="10px">
-      {!assetToBuy ? (
+      {!SwapInputController.assetToBuy.value ? (
         <Box
           as={Animated.View}
           borderRadius={18}
           height={{ custom: 36 }}
-          style={[
-            styles.solidColorCoinIcon,
-            {
-              backgroundColor: SwapInputController.bottomColor.value,
-            },
-          ]}
+          style={[styles.solidColorCoinIcon, iconStyles]}
           width={{ custom: 36 }}
         />
       ) : (
         <SwapCoinIcon
           color={SwapInputController.bottomColor.value}
-          iconUrl={assetToBuy.icon_url}
-          address={assetToBuy.address}
+          iconUrl={SwapInputController.assetToBuy.value.icon_url}
+          address={SwapInputController.assetToBuy.value.address}
           large
-          mainnetAddress={assetToBuy.mainnetAddress}
-          network={ethereumUtils.getNetworkFromChainId(assetToBuy.chainId)}
-          symbol={assetToBuy.symbol}
+          mainnetAddress={SwapInputController.assetToBuy.value.mainnetAddress}
+          network={ethereumUtils.getNetworkFromChainId(SwapInputController.assetToBuy.value.chainId)}
+          symbol={SwapInputController.assetToBuy.value.symbol}
           theme={theme}
         />
       )}
@@ -162,40 +159,25 @@ function SwapInputIcon() {
 }
 
 function OutputAssetBalanceBadge() {
-  const { nativeCurrency: currentCurrency } = useAccountSettings();
-  const { assetToBuy, outputChainId } = useSwapAssetStore();
+  const { SwapInputController } = useSwapContext();
 
   const userAssets = useAssetsToSell();
 
-  const { data: tokenDataWithPrice } = useExternalToken(
-    {
-      address: assetToBuy ? assetToBuy?.address : '',
-      network: ethereumUtils.getNetworkFromChainId(outputChainId),
-      currency: currentCurrency,
-    },
-    {
-      enabled: !!assetToBuy,
-    }
-  );
+  const label = useDerivedValue(() => {
+    const assetToBuy = SwapInputController.assetToBuy.value;
+    if (!assetToBuy) return 'No balance';
+    const userAsset = userAssets.find(userAsset => isSameAssetWorklet(userAsset, assetToBuy));
+    return userAsset?.balance.display ?? 'No balance';
+  });
 
-  const parsedAssetToBuy = useMemo(() => {
-    if (!assetToBuy) return null;
-    const userAsset = userAssets.find(userAsset => isSameAsset(userAsset, assetToBuy));
-    return parseSearchAsset({
-      assetWithPrice: tokenDataWithPrice as unknown as ParsedAsset,
-      searchAsset: assetToBuy,
-      userAsset,
-    });
-  }, [assetToBuy, tokenDataWithPrice, userAssets]);
-
-  return <BalanceBadge label={parsedAssetToBuy?.balance.display ?? 'No balance'} />;
+  return <BalanceBadge label={label} />;
 }
 
 export function SwapOutputAsset() {
   const { outputProgress, inputProgress, AnimatedSwapStyles, SwapTextStyles, SwapInputController, SwapNavigation } = useSwapContext();
 
   return (
-    <SwapInput bottomInput color={SwapInputController.bottomColor.value} otherInputProgress={inputProgress} progress={outputProgress}>
+    <SwapInput bottomInput color={SwapInputController.bottomColor} otherInputProgress={inputProgress} progress={outputProgress}>
       <Box as={Animated.View} style={AnimatedSwapStyles.outputStyle}>
         <Stack space="16px">
           <Columns alignHorizontal="justify" alignVertical="center">

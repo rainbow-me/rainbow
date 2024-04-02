@@ -26,10 +26,15 @@ import {
   convertAmountToPercentageDisplay,
   convertRawAmountToDecimalFormat,
 } from './numbers';
-import { isLowerCaseMatch } from './strings';
+import { isLowerCaseMatch, isLowerCaseMatchWorklet } from './strings';
 
 export const isSameAsset = (a1: Pick<ParsedAsset, 'chainId' | 'address'>, a2: Pick<ParsedAsset, 'chainId' | 'address'>) =>
   +a1.chainId === +a2.chainId && isLowerCaseMatch(a1.address, a2.address);
+
+export const isSameAssetWorklet = (a1: Pick<ParsedAsset, 'chainId' | 'address'>, a2: Pick<ParsedAsset, 'chainId' | 'address'>) => {
+  'worklet';
+  return +a1.chainId === +a2.chainId && isLowerCaseMatchWorklet(a1.address, a2.address);
+};
 
 const get24HrChange = (priceData?: ZerionAssetPrice) => {
   const twentyFourHrChange = priceData?.relative_change_24h;

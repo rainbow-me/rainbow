@@ -1,29 +1,48 @@
 import { Text as RNText, StyleSheet } from 'react-native';
-import * as i18n from '@/languages';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useAssetsToBuySections } from '../../hooks/useAssetsToBuy';
 import { TokenToBuySection } from './TokenToBuySection';
-import { Bleed, Box, HitSlop, Inline, Stack, Text, useColorMode, useForegroundColor } from '@/design-system';
-import { useSwapAssetStore } from '../../state/assets';
-import { chainNameFromChainId, isL2Chain } from '../../utils/chains';
+import { AnimatedText, Bleed, Box, HitSlop, Inline, Stack, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { chainNameFromChainIdWorklet, isL2Chain } from '../../utils/chains';
 import { opacity } from '../../utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ethereumUtils } from '@/utils';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
+import { ChainId } from '../../types/chains';
+import { useSwapContext } from '../../providers/swap-provider';
+import { useDerivedValue } from 'react-native-reanimated';
+import { ListEmpty } from './ListEmpty';
 
 export const TokenToBuyList = () => {
   const { isDarkMode } = useColorMode();
-  const { outputChainId } = useSwapAssetStore();
+  const { SwapInputController } = useSwapContext();
   const sections = useAssetsToBuySections();
   const red = useForegroundColor('red');
 
-  const isL2 = useMemo(() => outputChainId && isL2Chain(outputChainId), [outputChainId]);
+  const isL2 = useMemo(
+    () => SwapInputController.outputChainId.value && isL2Chain(SwapInputController.outputChainId.value),
+    [SwapInputController.outputChainId.value]
+  );
 
   const assetsCount = useMemo(() => sections?.reduce((count, section) => count + section.data.length, 0), [sections]);
 
+  const switchToRandomChain = useCallback(() => {
+    const chainIdValues = Object.values(ChainId).filter(value => typeof value === 'number');
+    const randomChainId = chainIdValues[Math.floor(Math.random() * chainIdValues.length)];
+    console.log({ randomChainId });
+    SwapInputController.outputChainId.value = randomChainId as ChainId;
+  }, [SwapInputController]);
+
+  const chainName = useDerivedValue(() => {
+    if (SwapInputController.outputChainId.value === 1) {
+      return 'ethereum';
+    }
+    return chainNameFromChainIdWorklet(SwapInputController.outputChainId.value ?? ChainId.mainnet);
+  });
+
   return (
     <Stack space="32px">
-      <Stack space="20px">
+      <Box paddingHorizontal="20px">
         <Inline alignHorizontal="justify" alignVertical="center">
           <Inline alignVertical="center" space="6px">
             <Bleed vertical="4px">
@@ -52,20 +71,21 @@ export const TokenToBuyList = () => {
               Filter by Network
             </Text>
           </Inline>
-          {/* TODO: Add dropdown menu for network selection. Should set `outputChainId` */}
-          <ButtonPressAnimation>
+          <ButtonPressAnimation onPress={switchToRandomChain}>
             <HitSlop space="10px">
               <Inline alignVertical="center" space="6px" wrap={false}>
-                <ChainImage chain={ethereumUtils.getNetworkFromChainId(outputChainId)} size={16} />
-                <Text
+                <ChainImage
+                  chain={ethereumUtils.getNetworkFromChainId(SwapInputController.outputChainId.value ?? ChainId.mainnet)}
+                  size={16}
+                />
+                <AnimatedText
                   align="right"
                   color={isDarkMode ? 'labelSecondary' : 'label'}
                   size="15pt"
                   weight="heavy"
                   style={{ textTransform: 'capitalize' }}
-                >
-                  {outputChainId === 1 ? 'ethereum' : chainNameFromChainId(outputChainId)}
-                </Text>
+                  text={chainName}
+                />
                 <Text align="center" color={isDarkMode ? 'labelTertiary' : 'labelSecondary'} size="icon 13px" weight="bold">
                   􀆏
                 </Text>
@@ -73,32 +93,12 @@ export const TokenToBuyList = () => {
             </HitSlop>
           </ButtonPressAnimation>
         </Inline>
-      </Stack>
+      </Box>
       {sections.map(section => (
         <TokenToBuySection key={section.id} section={section} />
       ))}
 
-      {!assetsCount && (
-        <Box alignItems="center" style={{ paddingTop: 91 }}>
-          <Box paddingHorizontal="44px">
-            <Stack space="16px">
-              <Text color="label" size="26pt" weight="bold" align="center">
-                {'👻'}
-              </Text>
-
-              <Text color="labelTertiary" size="20pt" weight="semibold" align="center">
-                {i18n.t(i18n.l.swap.tokens_input.nothing_found)}
-              </Text>
-
-              <Text color="labelQuaternary" size="14px / 19px (Deprecated)" weight="regular" align="center">
-                {i18n.t(i18n.l.swap.tokens_input[isL2 ? 'nothing_found_description_l2' : 'nothing_found_description'], {
-                  action: 'swap',
-                })}
-              </Text>
-            </Stack>
-          </Box>
-        </Box>
-      )}
+      {!assetsCount && <ListEmpty isL2={isL2} />}
     </Stack>
   );
 };
