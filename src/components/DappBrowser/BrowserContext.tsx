@@ -313,7 +313,7 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
         }
       }
 
-      if (newActiveIndex !== undefined && !(!tabViewVisible.value && newActiveIndex < 0)) {
+      if (newActiveIndex !== undefined && (tabViewVisible.value || newActiveIndex >= 0)) {
         animatedActiveTabIndex.value = newActiveIndex;
       } else {
         const currentActiveIndex = tabViewVisible?.value ? Math.abs(animatedActiveTabIndex.value) : animatedActiveTabIndex.value;
