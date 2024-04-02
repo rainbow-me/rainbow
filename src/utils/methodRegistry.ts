@@ -2,27 +2,20 @@ import { Contract } from '@ethersproject/contracts';
 import { web3Provider } from '../handlers/web3';
 import namesOverrides from '../references/method-names-overrides.json';
 import methodRegistryABI from '../references/method-registry-abi.json';
-import { metadataClient } from '@/apollo/client';
-import { CONTRACT_FUNCTION } from '@/apollo/queries';
+import { metadataClient } from '@/graphql';
 
 const METHOD_REGISTRY_ADDRESS = '0x44691B39d1a75dC4E0A0346CBB15E310e6ED1E86';
 
 export const methodRegistryLookupAndParse = async (methodSignatureBytes: any, chainId: number) => {
   let signature = '';
 
-  const response = await metadataClient.queryWithTimeout(
-    {
-      query: CONTRACT_FUNCTION,
-      variables: {
-        chainID: chainId,
-        hex: methodSignatureBytes,
-      },
-    },
-    800
-  );
+  const data = await metadataClient.getContractFunction({
+    chainID: chainId,
+    hex: methodSignatureBytes,
+  });
 
-  if (response?.data?.contractFunction?.text) {
-    signature = response.data.contractFunction.text;
+  if (data?.contractFunction?.text) {
+    signature = data.contractFunction.text;
   } else {
     const registry = new Contract(METHOD_REGISTRY_ADDRESS, methodRegistryABI, web3Provider);
 

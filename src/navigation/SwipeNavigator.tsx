@@ -1,10 +1,11 @@
 import { LIGHT_SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
+import { BrowserTabViewProgressContextProvider, useBrowserTabViewProgressContext } from '@/components/DappBrowser/BrowserContext';
 import { ButtonPressAnimation } from '@/components/animations';
 import { TabBarIcon } from '@/components/icons/TabBarIcon';
 import { FlexItem } from '@/components/layout';
 import { TestnetToast } from '@/components/toasts';
 import { DAPP_BROWSER, POINTS, useExperimentalFlag } from '@/config';
-import { Box, Columns, globalColors, Stack, useForegroundColor, Text, AccentColorProvider, Cover, Inset } from '@/design-system';
+import { Box, Columns, globalColors, Stack, useForegroundColor, Text, Cover } from '@/design-system';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import { web3Provider } from '@/handlers/web3';
 import { isUsingButtonNavigation } from '@/helpers/statusBarHelper';
@@ -23,7 +24,7 @@ import { BlurView } from '@react-native-community/blur';
 import { createMaterialTopTabNavigator, MaterialTopTabNavigationEventMap } from '@react-navigation/material-top-tabs';
 import { MaterialTopTabDescriptorMap } from '@react-navigation/material-top-tabs/lib/typescript/src/types';
 import { NavigationHelpers, ParamListBase, RouteProp } from '@react-navigation/native';
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
 import { InteractionManager, View } from 'react-native';
 import Animated, { Easing, interpolate, SharedValue, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
@@ -94,6 +95,7 @@ interface TabBarProps {
 
 const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
   const { accentColor } = useAccountAccentColor();
+  const { tabViewProgress } = useBrowserTabViewProgressContext();
   const { width: deviceWidth } = useDimensions();
   const { colors, isDarkMode } = useTheme();
   const recyclerList = useRecyclerListViewScrollToTopContext();
@@ -136,10 +138,24 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
     };
   });
 
-  const dappBrowserTabBarShadowStyle = useAnimatedStyle(() => {
+  const dappBrowserTabBarShadowStyle = useAnimatedStyle(() => ({
+    shadowOpacity:
+      showDappBrowserTab && reanimatedPosition.value === 2 ? withTiming(0, fadeConfig) : withTiming(isDarkMode ? 0.2 : 0.04, fadeConfig),
+  }));
+
+  const hideForBrowserTabViewStyle = useAnimatedStyle(() => {
+    const progress = tabViewProgress?.value || 0;
+    const opacity = 1 - progress / 75;
+    const pointerEvents = opacity < 1 ? 'none' : 'auto';
+
     return {
-      shadowOpacity:
-        showDappBrowserTab && reanimatedPosition.value === 2 ? withTiming(0, fadeConfig) : withTiming(isDarkMode ? 0.2 : 0.04, fadeConfig),
+      opacity,
+      pointerEvents,
+      transform: [
+        {
+          translateY: interpolate(progress, [0, 100], [0, 28]),
+        },
+      ],
     };
   });
 
@@ -298,8 +314,8 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
   }, [isDarkMode]);
 
   return (
-    <Box bottom={{ custom: 0 }} height={{ custom: TAB_BAR_HEIGHT }} position="absolute" width="full">
-      <Box as={Animated.View} style={[shadowStyles.outer, IS_IOS ? dappBrowserTabBarShadowStyle : {}]}>
+    <Box bottom={{ custom: 0 }} height={{ custom: TAB_BAR_HEIGHT }} pointerEvents="box-none" position="absolute" width="full">
+      <Box as={Animated.View} style={[shadowStyles.outer, IS_IOS ? dappBrowserTabBarShadowStyle : {}, hideForBrowserTabViewStyle]}>
         <Box as={Animated.View} style={[shadowStyles.inner, IS_IOS ? dappBrowserTabBarShadowStyle : {}]}>
           {/* @ts-expect-error The conditional as={} is causing type errors */}
           <Box
@@ -398,14 +414,16 @@ export function SwipeNavigator() {
 
   return (
     <FlexItem backgroundColor={colors.white}>
-      <SectionListScrollToTopProvider>
-        <RecyclerListViewScrollToTopProvider>
-          {/* @ts-expect-error JS component */}
-          <ScrollPositionContext.Provider>
-            <SwipeNavigatorScreens />
-          </ScrollPositionContext.Provider>
-        </RecyclerListViewScrollToTopProvider>
-      </SectionListScrollToTopProvider>
+      <BrowserTabViewProgressContextProvider>
+        <SectionListScrollToTopProvider>
+          <RecyclerListViewScrollToTopProvider>
+            {/* @ts-expect-error JS component */}
+            <ScrollPositionContext.Provider>
+              <SwipeNavigatorScreens />
+            </ScrollPositionContext.Provider>
+          </RecyclerListViewScrollToTopProvider>
+        </SectionListScrollToTopProvider>
+      </BrowserTabViewProgressContextProvider>
 
       <TestnetToast network={network} web3Provider={web3Provider} />
     </FlexItem>

@@ -1,16 +1,28 @@
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/screens/Swap/utils/swaps';
-import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { Box, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import { Bleed, Box, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
 import position from '@/styles/position';
 import { BlurView } from '@react-native-community/blur';
-import React, { useCallback } from 'react';
-import { DappBrowserShadows } from '../DappBrowserShadows';
+import React from 'react';
+import { TextInput } from 'react-native';
+import { BrowserButtonShadows } from '../DappBrowserShadows';
+import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
+import { AnimatedRef, SharedValue, dispatchCommand, runOnJS } from 'react-native-reanimated';
 import { useBrowserContext } from '../BrowserContext';
 
-export const TabButton = ({ toggleTabView }: { toggleTabView: () => void }) => {
-  const { isSearchInputFocused, searchInputRef } = useBrowserContext();
+export const TabButton = ({
+  inputRef,
+  isFocused,
+  isFocusedValue,
+  setIsFocused,
+}: {
+  inputRef: AnimatedRef<TextInput>;
+  isFocused: boolean;
+  isFocusedValue: SharedValue<boolean>;
+  setIsFocused: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
+  const { toggleTabViewWorklet } = useBrowserContext();
   const { isDarkMode } = useColorMode();
   const fillSecondary = useForegroundColor('fillSecondary');
   const separatorSecondary = useForegroundColor('separatorSecondary');
@@ -19,57 +31,59 @@ export const TabButton = ({ toggleTabView }: { toggleTabView: () => void }) => {
   const buttonColorAndroid = isDarkMode ? globalColors.blueGrey100 : globalColors.white100;
   const buttonColor = IS_IOS ? buttonColorIOS : buttonColorAndroid;
 
-  const onPress = useCallback(() => {
-    if (!isSearchInputFocused) {
-      // open tabs
-      toggleTabView();
+  const onPress = () => {
+    'worklet';
+    if (!isFocusedValue.value) {
+      toggleTabViewWorklet();
     } else {
-      // close keyboard
-      searchInputRef?.current?.blur();
+      runOnJS(setIsFocused)(false);
+      dispatchCommand(inputRef, 'blur');
     }
-  }, [isSearchInputFocused, searchInputRef, toggleTabView]);
+  };
 
   return (
-    <DappBrowserShadows>
-      <Box
-        as={ButtonPressAnimation}
-        borderRadius={22}
-        onPress={onPress}
-        style={{ height: 44, paddingTop: isSearchInputFocused ? 1 : undefined, width: 44 }}
-        alignItems="center"
-        justifyContent="center"
-      >
-        <Text align="center" color="labelSecondary" size="icon 17px" weight={isSearchInputFocused ? 'heavy' : 'bold'}>
-          {isSearchInputFocused ? '􀆈' : '􀐅'}
-        </Text>
-        {IS_IOS && (
+    <BrowserButtonShadows>
+      <Bleed space="8px">
+        <GestureHandlerV1Button onPressWorklet={onPress} style={{ padding: 8 }}>
           <Box
-            as={BlurView}
-            blurAmount={20}
-            blurType={isDarkMode ? 'dark' : 'light'}
-            style={[
-              {
-                zIndex: -1,
-                elevation: -1,
-                borderRadius: 22,
-              },
-              position.coverAsObject,
-            ]}
-          />
-        )}
-        <Box
-          style={[
-            {
-              backgroundColor: buttonColor,
-              borderColor: separatorSecondary,
-              borderRadius: 22,
-              borderWidth: IS_IOS && isDarkMode ? THICK_BORDER_WIDTH : 0,
-              zIndex: -1,
-            },
-            position.coverAsObject,
-          ]}
-        />
-      </Box>
-    </DappBrowserShadows>
+            borderRadius={22}
+            style={{ height: 44, paddingTop: isFocused ? 1 : undefined, width: 44 }}
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Text align="center" color={isFocused ? 'labelSecondary' : 'label'} size="icon 17px" weight="heavy">
+              {isFocused ? '􀆈' : '􀐅'}
+            </Text>
+            {IS_IOS && (
+              <Box
+                as={BlurView}
+                blurAmount={20}
+                blurType={isDarkMode ? 'dark' : 'light'}
+                style={[
+                  {
+                    zIndex: -1,
+                    elevation: -1,
+                    borderRadius: 22,
+                  },
+                  position.coverAsObject,
+                ]}
+              />
+            )}
+            <Box
+              style={[
+                {
+                  backgroundColor: buttonColor,
+                  borderColor: separatorSecondary,
+                  borderRadius: 22,
+                  borderWidth: IS_IOS && isDarkMode ? THICK_BORDER_WIDTH : 0,
+                  zIndex: -1,
+                },
+                position.coverAsObject,
+              ]}
+            />
+          </Box>
+        </GestureHandlerV1Button>
+      </Bleed>
+    </BrowserButtonShadows>
   );
 };

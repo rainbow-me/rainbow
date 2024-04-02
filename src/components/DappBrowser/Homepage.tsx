@@ -1,29 +1,39 @@
 import { ButtonPressAnimation } from '@/components/animations';
 import { Page } from '@/components/layout';
-import { Bleed, Box, Cover, Inline, Inset, Stack, Text } from '@/design-system';
-import { useNavigation } from '@/navigation';
-import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
-import { deviceUtils, safeAreaInsetValues } from '@/utils';
+import { Bleed, Box, ColorModeProvider, Cover, Inline, Inset, Stack, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
+import { deviceUtils } from '@/utils';
 import React from 'react';
 import { ScrollView, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { BlurView } from '@react-native-community/blur';
 import { ImgixImage } from '@/components/images';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import { IS_IOS } from '@/env';
+import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { opacity } from '@/__swaps__/screens/Swap/utils/swaps';
+import { Site } from '@/state/browserState';
+import { useFavoriteDappsStore } from '@/state/favoriteDapps';
+import { TrendingSite, trendingDapps } from '@/resources/trendingDapps/trendingDapps';
+import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
+import MaskedView from '@react-native-masked-view/masked-view';
+import { useBrowserContext } from './BrowserContext';
+import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
+import { isEmpty } from 'lodash';
 
-const HORIZONTAL_INSET = 24;
+const HORIZONTAL_PAGE_INSET = 24;
 
-const NUM_LOGOS = 5;
-const LOGO_PADDING = 14;
-const LOGO_SIZE = (deviceUtils.dimensions.width - HORIZONTAL_INSET * 2 - (NUM_LOGOS - 1) * LOGO_PADDING) / NUM_LOGOS;
+const LOGOS_PER_ROW = 4;
+const LOGO_SIZE = 64;
+const LOGO_PADDING = (deviceUtils.dimensions.width - LOGOS_PER_ROW * LOGO_SIZE - HORIZONTAL_PAGE_INSET * 2) / (LOGOS_PER_ROW - 1);
+const LOGO_BORDER_RADIUS = 16;
+const LOGO_LABEL_SPILLOVER = 12;
 
 const NUM_CARDS = 2;
 const CARD_PADDING = 12;
-const CARD_SIZE = (deviceUtils.dimensions.width - HORIZONTAL_INSET * 2 - (NUM_CARDS - 1) * CARD_PADDING) / NUM_CARDS;
+const CARD_SIZE = (deviceUtils.dimensions.width - HORIZONTAL_PAGE_INSET * 2 - (NUM_CARDS - 1) * CARD_PADDING) / NUM_CARDS;
 
-const Card = () => {
-  const bgImageUrl = 'https://nftcalendar.io/storage/uploads/2022/05/06/banner_discord1_05062022181527627565bf3c203.jpeg';
-  const logoImageUrl = 'https://pbs.twimg.com/profile_images/1741494128779886592/RY4V0T2F_400x400.jpg';
+const Card = ({ site, showMenuButton }: { showMenuButton?: boolean; site: TrendingSite }) => {
+  const { isDarkMode } = useColorMode();
 
   const menuConfig = {
     menuTitle: '',
@@ -48,139 +58,221 @@ const Card = () => {
   };
 
   return (
-    <View style={{ width: CARD_SIZE }}>
-      <ButtonPressAnimation overflowMargin={100}>
+    <ButtonPressAnimation overflowMargin={100} scaleTo={0.9}>
+      <Box
+        background="surfacePrimary"
+        borderRadius={24}
+        shadow="18px"
+        style={{
+          width: CARD_SIZE,
+        }}
+      >
         <Box
           as={LinearGradient}
+          borderRadius={24}
           colors={['#0078FF', '#3AB8FF']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
-          background="surfacePrimary"
-          borderRadius={24}
-          shadow="18px"
           width={{ custom: CARD_SIZE }}
           height={{ custom: 137 }}
           justifyContent="space-between"
           padding="20px"
-          style={{ overflow: 'hidden' }}
         >
-          {bgImageUrl && (
-            <Cover>
-              <ImgixImage source={{ uri: bgImageUrl }} size={CARD_SIZE} style={{ width: '100%', height: '100%' }} />
+          <ColorModeProvider value="dark">
+            {site.screenshot && (
               <Cover>
-                <LinearGradient
-                  colors={['rgba(0, 0, 0, 0.6)', 'rgba(0, 0, 0, 0.6)', '#000']}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 0, y: 1 }}
-                  locations={[0, 0.4985, 1]}
-                  style={{ width: '100%', height: '100%' }}
+                <ImgixImage
+                  enableFasterImage
+                  source={{ uri: site.screenshot }}
+                  size={CARD_SIZE}
+                  style={{ width: CARD_SIZE, height: 137 }}
                 />
+                <Cover>
+                  <LinearGradient
+                    colors={['rgba(0, 0, 0, 0.6)', 'rgba(0, 0, 0, 0.6)', '#000']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 0, y: 1 }}
+                    locations={[0, 0.5, 1]}
+                    style={{ width: '100%', height: '100%' }}
+                  />
+                </Cover>
               </Cover>
-            </Cover>
-          )}
-          <Box
-            as={ImgixImage}
-            source={{ uri: logoImageUrl }}
-            size={48}
-            background="surfacePrimary"
-            shadow="24px"
-            width={{ custom: 48 }}
-            height={{ custom: 48 }}
-            top={{ custom: -8 }}
-            left={{ custom: -8 }}
-            borderRadius={12}
-          />
-          <Stack space="10px">
-            <Text size="17pt" weight="heavy" color="label">
-              Rainbowcast
-            </Text>
-            <Text size="13pt" weight="bold" color="labelTertiary">
-              zora.co
-            </Text>
-          </Stack>
-          <Box
-            position="absolute"
-            top={{ custom: 12 }}
-            right={{ custom: 12 }}
-            height={{ custom: 24 }}
-            width={{ custom: 24 }}
-            borderRadius={32}
-            style={{ flex: 1, overflow: 'hidden' }}
-          >
-            <Cover>
-              <BlurView
-                blurType="chromeMaterialDark"
-                blurAmount={8.5}
+            )}
+            <Box height={{ custom: 48 }} left={{ custom: -8 }} top={{ custom: -8 }} width={{ custom: 48 }}>
+              <ImgixImage
+                enableFasterImage
+                size={48}
+                source={{ uri: site.image }}
                 style={{
-                  width: '100%',
-                  height: '100%',
-                  backgroundColor: 'rgba(244, 248, 255, 0.08)',
+                  backgroundColor: isDarkMode ? globalColors.grey100 : globalColors.white100,
+                  borderRadius: 12,
+                  height: 48,
+                  width: 48,
                 }}
               />
-            </Cover>
-            <View
-              style={{
-                width: '100%',
-                height: '100%',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <Text align="center" weight="heavy" color="labelSecondary" size="13pt">
-                􀍠
+            </Box>
+            <Stack space="10px">
+              <Text size="17pt" weight="heavy" color="label">
+                {site.name}
               </Text>
-            </View>
-          </Box>
+              <Text size="13pt" weight="bold" color="labelTertiary">
+                {site.url}
+              </Text>
+            </Stack>
+            {showMenuButton && (
+              <ContextMenuButton
+                menuConfig={menuConfig}
+                onPressMenuItem={() => {}}
+                style={{ top: 12, right: 12, height: 24, width: 24, position: 'absolute' }}
+              >
+                <ButtonPressAnimation scaleTo={0.8}>
+                  <Box height={{ custom: 24 }} width={{ custom: 24 }} borderRadius={32} style={{ overflow: 'hidden' }}>
+                    <Cover>
+                      {IS_IOS ? (
+                        <BlurView
+                          blurType="chromeMaterialDark"
+                          blurAmount={10}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            backgroundColor: 'rgba(244, 248, 255, 0.08)',
+                          }}
+                        />
+                      ) : (
+                        <Box background="fill" height="full" width="full" />
+                      )}
+                    </Cover>
+                    <View
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Text align="center" weight="heavy" color="labelSecondary" size="13pt">
+                        􀍠
+                      </Text>
+                    </View>
+                  </Box>
+                </ButtonPressAnimation>
+              </ContextMenuButton>
+            )}
+          </ColorModeProvider>
         </Box>
-      </ButtonPressAnimation>
-      <ContextMenuButton
-        menuConfig={menuConfig}
-        onPressMenuItem={() => {}}
-        style={{ top: 12, right: 12, height: 24, width: 24, position: 'absolute' }}
-      />
-    </View>
+        {IS_IOS && (
+          <Box
+            borderRadius={24}
+            height="full"
+            position="absolute"
+            style={{
+              borderColor: isDarkMode ? opacity(globalColors.white100, 0.1) : opacity(globalColors.grey100, 0.12),
+              borderWidth: THICK_BORDER_WIDTH,
+              overflow: 'hidden',
+              pointerEvents: 'none',
+            }}
+            width="full"
+          />
+        )}
+      </Box>
+    </ButtonPressAnimation>
   );
 };
 
-const Logo = () => {
-  const imageUrl = 'https://pbs.twimg.com/profile_images/1741494128779886592/RY4V0T2F_400x400.jpg';
+const Logo = ({ site }: { site: Omit<Site, 'timestamp'> }) => {
+  const { updateActiveTabState } = useBrowserContext();
+  const { isDarkMode } = useColorMode();
 
   return (
     <View style={{ width: LOGO_SIZE }}>
-      <ButtonPressAnimation overflowMargin={100}>
-        <Stack space="12px" alignHorizontal="center">
-          <Box
-            as={ImgixImage}
-            size={LOGO_SIZE}
-            source={{ uri: imageUrl }}
-            width={{ custom: LOGO_SIZE }}
-            height={{ custom: LOGO_SIZE }}
-            borderRadius={15}
-            background="surfacePrimary"
-            shadow="24px"
-          />
-          <Text size="12pt" weight="bold" color="labelSecondary" align="center">
-            Zora
-          </Text>
+      <GestureHandlerV1Button onPressJS={() => updateActiveTabState({ url: site.url })}>
+        <Stack alignHorizontal="center">
+          <Box>
+            {IS_IOS && !isEmpty(site.image) && (
+              <Box alignItems="center" height="full" position="absolute" width="full">
+                <TextIcon
+                  color="labelQuaternary"
+                  containerSize={LOGO_SIZE}
+                  opacity={isDarkMode ? 0.4 : 0.6}
+                  size="icon 28px"
+                  weight="black"
+                >
+                  􀎭
+                </TextIcon>
+              </Box>
+            )}
+            <Box
+              as={ImgixImage}
+              enableFasterImage
+              size={LOGO_SIZE}
+              source={{ uri: site.image }}
+              width={{ custom: LOGO_SIZE }}
+              height={{ custom: LOGO_SIZE }}
+              background="fillTertiary"
+              style={{ borderRadius: LOGO_BORDER_RADIUS }}
+            />
+            {IS_IOS && (
+              <Box
+                borderRadius={LOGO_BORDER_RADIUS}
+                height="full"
+                position="absolute"
+                style={{
+                  borderColor: isDarkMode ? opacity(globalColors.white100, 0.04) : opacity(globalColors.grey100, 0.02),
+                  borderWidth: THICK_BORDER_WIDTH,
+                  overflow: 'hidden',
+                  pointerEvents: 'none',
+                }}
+                width="full"
+              />
+            )}
+          </Box>
+          <Bleed bottom="10px" horizontal="8px">
+            <MaskedView
+              maskElement={<FadeMask fadeEdgeInset={0} fadeWidth={12} side="right" />}
+              style={{ width: LOGO_SIZE + LOGO_LABEL_SPILLOVER * 2 }}
+            >
+              <Text
+                size="13pt"
+                numberOfLines={1}
+                ellipsizeMode="clip"
+                weight="bold"
+                color="labelSecondary"
+                align="center"
+                style={{ paddingVertical: 10 }}
+              >
+                {site.name}
+              </Text>
+            </MaskedView>
+          </Bleed>
         </Stack>
-      </ButtonPressAnimation>
+      </GestureHandlerV1Button>
     </View>
   );
 };
 
 export default function Homepage() {
-  const { navigate } = useNavigation();
+  const { isDarkMode } = useColorMode();
+  const { favoriteDapps } = useFavoriteDappsStore();
 
   return (
-    <Box as={Page} flex={1} height="full" width="full" justifyContent="center">
+    <Box
+      as={Page}
+      flex={1}
+      height="full"
+      width="full"
+      justifyContent="center"
+      style={{ backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD' }}
+    >
       <ScrollView
+        scrollEnabled={false}
         scrollIndicatorInsets={{
-          bottom: TAB_BAR_HEIGHT - safeAreaInsetValues.bottom,
+          bottom: 20,
+          top: 36,
         }}
         contentContainerStyle={{
-          paddingBottom: TAB_BAR_HEIGHT + 120,
+          paddingBottom: 20,
           paddingTop: 40,
-          paddingHorizontal: HORIZONTAL_INSET,
+          paddingHorizontal: HORIZONTAL_PAGE_INSET,
         }}
         showsVerticalScrollIndicator
       >
@@ -198,39 +290,36 @@ export default function Homepage() {
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 <Inset space="24px">
                   <Box flexDirection="row" gap={CARD_PADDING}>
-                    <Card />
-                    <Card />
-                    <Card />
+                    {trendingDapps.map(site => (
+                      <Card key={site.url} site={site} />
+                    ))}
                   </Box>
                 </Inset>
               </ScrollView>
             </Bleed>
           </Stack>
-          <Stack space="20px">
-            <Inline alignVertical="center" space="6px">
-              <Text color="yellow" size="15pt" align="center" weight="heavy">
-                􀋃
-              </Text>
-              <Text color="label" size="20pt" weight="heavy">
-                Favorites
-              </Text>
-            </Inline>
-            <Bleed space="24px">
-              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                <Inset space="24px">
-                  <Box flexDirection="row" gap={LOGO_PADDING}>
-                    <Logo />
-                    <Logo />
-                    <Logo />
-                    <Logo />
-                    <Logo />
-                    <Logo />
-                    <Logo />
-                  </Box>
-                </Inset>
-              </ScrollView>
-            </Bleed>
-          </Stack>
+          {favoriteDapps?.length > 0 && (
+            <Stack space="20px">
+              <Inline alignVertical="center" space="6px">
+                <Text color="yellow" size="15pt" align="center" weight="heavy">
+                  􀋃
+                </Text>
+                <Text color="label" size="20pt" weight="heavy">
+                  Favorites
+                </Text>
+              </Inline>
+              <Box
+                flexDirection="row"
+                flexWrap="wrap"
+                gap={LOGO_PADDING}
+                width={{ custom: deviceUtils.dimensions.width - HORIZONTAL_PAGE_INSET * 2 }}
+              >
+                {favoriteDapps.map(dapp => (
+                  <Logo key={dapp.url} site={dapp} />
+                ))}
+              </Box>
+            </Stack>
+          )}
           <Stack space="20px">
             <Inline alignVertical="center" space="6px">
               <Text color="blue" size="15pt" align="center" weight="heavy">
@@ -241,9 +330,9 @@ export default function Homepage() {
               </Text>
             </Inline>
             <Inline space={{ custom: CARD_PADDING }}>
-              <Card />
-              <Card />
-              <Card />
+              {trendingDapps.map(site => (
+                <Card key={site.url} site={site} showMenuButton />
+              ))}
             </Inline>
           </Stack>
         </Stack>

@@ -3,7 +3,7 @@ import {
   ChainId,
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATOR,
   PermitSupportedTokenList,
-  RAINBOW_ROUTER_CONTRACT_ADDRESS,
+  getRainbowRouterContractAddress,
   WRAPPED_ASSET,
 } from '@rainbow-me/swaps';
 import { assetNeedsUnlocking, estimateApprove } from './actions';
@@ -41,7 +41,7 @@ export const estimateUnlockAndSwap = async (swapParameters: SwapActionParameters
       accountAddress,
       inputAmount,
       inputCurrency,
-      RAINBOW_ROUTER_CONTRACT_ADDRESS,
+      getRainbowRouterContractAddress(chainId),
       chainId
     );
   }
@@ -50,7 +50,7 @@ export const estimateUnlockAndSwap = async (swapParameters: SwapActionParameters
   let swapGasLimit;
 
   if (swapAssetNeedsUnlocking) {
-    unlockGasLimit = await estimateApprove(accountAddress, inputCurrency.address, RAINBOW_ROUTER_CONTRACT_ADDRESS, chainId);
+    unlockGasLimit = await estimateApprove(accountAddress, inputCurrency.address, getRainbowRouterContractAddress(chainId), chainId);
     gasLimits = gasLimits.concat(unlockGasLimit);
   }
 
@@ -88,7 +88,7 @@ export const createUnlockAndSwapRap = async (swapParameters: SwapActionParameter
       accountAddress,
       inputAmount,
       inputCurrency,
-      RAINBOW_ROUTER_CONTRACT_ADDRESS,
+      getRainbowRouterContractAddress(chainId),
       chainId
     );
   }
@@ -100,7 +100,7 @@ export const createUnlockAndSwapRap = async (swapParameters: SwapActionParameter
       amount: inputAmount,
       assetToUnlock: inputCurrency,
       chainId,
-      contractAddress: RAINBOW_ROUTER_CONTRACT_ADDRESS,
+      contractAddress: getRainbowRouterContractAddress(chainId),
     });
     actions = actions.concat(unlock);
   }
