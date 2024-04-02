@@ -193,7 +193,6 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
     tabViewVisible,
     toggleTabViewWorklet,
     updateActiveTabState,
-    webViewRefs,
   } = useBrowserContext();
   const { isDarkMode } = useColorMode();
   const { width: deviceWidth } = useDimensions();
@@ -411,17 +410,10 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
   // useLayoutEffect seems to more reliably assign the ref correctly
   useLayoutEffect(() => {
     if (webViewRef.current !== null && isActiveTab) {
-      webViewRefs.current[tabIndex] = webViewRef.current;
       activeTabRef.current = webViewRef.current;
     }
-
-    const currentWebviewRef = webViewRefs.current;
-
-    return () => {
-      currentWebviewRef[tabIndex] = null;
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isActiveTab, isOnHomepage, tabId, tabIndex, webViewRefs]);
+  }, [isActiveTab, isOnHomepage, tabId]);
 
   const saveScreenshotToFileSystem = useCallback(
     async (tempUri: string, tabId: string, timestamp: number, url: string) => {
