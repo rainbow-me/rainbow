@@ -352,10 +352,10 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
       tabOperationQueue.value.some(operation => operation.type === 'newTab') ||
       currentlyOpenTabIds.value.some(tabId => !tabIdsInStates.has(tabId));
 
-    // This check is mainly to guard against an edge case that happens when the new tab button is pressed
-    // just after the last tab is closed, but before a new blank tab has opened programatically, which
-    // results in two tabs being created when the user most certainly only wanted one.
-    if (!isNewTabOperationPending && tabViewVisible.value) {
+    // The first check is mainly to guard against an edge case that happens when the new tab button is
+    // pressed just after the last tab is closed, but before a new blank tab has opened programatically,
+    // which results in two tabs being created when the user most certainly only wanted one.
+    if (!isNewTabOperationPending && (tabViewVisible.value || currentlyOpenTabIds.value.length === 0)) {
       const tabIdForNewTab = generateUniqueIdWorklet();
       const newActiveIndex = currentlyOpenTabIds.value.length - 1;
 
@@ -398,21 +398,6 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
       const isNewTabOperationPending =
         tabOperationQueue.value.some(operation => operation.type === 'newTab') ||
         currentlyOpenTabIds.value.some(tabId => !tabIdsInStates.has(tabId));
-
-      // // To ensure a negative index isn't applied when a subsequent action or operation has made it invalid,
-      // // we check that the tab view is still visible and that there is no pending new tab operation. These
-      // // checks could likely be consolidated and guarded against in processOperationQueueWorklet(), and may
-      // // be overkill, but possibly help prevent some edge cases.
-      // const isNewTabOperationPending = tabOperationQueue.value.some(operation => operation.type === 'newTab');
-      // if (!isNewTabOperationPending) {
-      //   const tabIdsInTabStates = new Set(tabStates?.map(tab => tab.uniqueId));
-      //   for (const tabId of currentlyOpenTabIds.value) {
-      //     if (!tabIdsInTabStates.has(tabId)) {
-      //       isNewTabOperationPending = true;
-      //       break;
-      //     }
-      //   }
-      // }
 
       if (!isNewTabOperationPending && tabViewVisible.value) {
         // To avoid unfreezing a WebView every time a tab is closed, we set the active tab index to the
