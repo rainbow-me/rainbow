@@ -42,6 +42,9 @@ export const FlipButton = () => {
         SwapInputController.assetToBuy.value = null;
       }
 
+      // TODO: if !prevAssetToBuy => focus assetToSell input
+      // TODO: if !prevAssetToSell => focus assetToBuy input
+
       if (outputProgress.value === 1) {
         SwapNavigation.handleOutputPress();
       }
