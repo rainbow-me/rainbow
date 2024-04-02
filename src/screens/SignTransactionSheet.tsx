@@ -81,7 +81,7 @@ import Routes from '@/navigation/routesNames';
 import { parseGasParamsForTransaction } from '@/parsers/gas';
 import { loadWallet, sendTransaction, signPersonalMessage, signTransaction, signTypedDataMessage } from '@/model/wallet';
 
-import { analytics } from '@/analytics';
+import { analytics, analyticsV2 } from '@/analytics';
 import { maybeSignUri } from '@/handlers/imgix';
 import { RPCMethod } from '@/walletConnect/types';
 import { isAddress } from '@ethersproject/address';
@@ -94,6 +94,7 @@ import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { RequestData } from '@/redux/requests';
 import { RequestType } from '@/utils/requestNavigationHandlers';
+import { event } from '@/analytics/event';
 
 const COLLAPSED_CARD_HEIGHT = 56;
 const MAX_CARD_HEIGHT = 176;
@@ -272,7 +273,7 @@ export const SignTransactionSheet = () => {
         } else {
           setMethodName(i18n.t(i18n.l.wallet.message_signing.request));
         }
-        analytics.track('Shown Walletconnect signing request');
+        analyticsV2.track(event.txRequestShownSheet), { requestType };
       }
     });
   }, [isMessageRequest, currentNetwork, startPollingGasFees, fetchMethodName, transactionDetails?.payload?.params]);
@@ -465,7 +466,10 @@ export const SignTransactionSheet = () => {
         setTimeout(async () => {
           onCancelCallback?.(error);
           const rejectionType = transactionDetails?.payload?.method === SEND_TRANSACTION ? 'transaction' : 'signature';
-          analytics.track(`Rejected WalletConnect ${rejectionType} request`, {
+
+          analyticsV2.track(event.txRequestReject, {
+            source: requestType,
+            requestType: rejectionType,
             isHardwareWallet: accountInfo.isHardwareWallet,
           });
 
@@ -505,7 +509,9 @@ export const SignTransactionSheet = () => {
     }
 
     if (response?.result) {
-      analytics.track('Approved WalletConnect signature request', {
+      analyticsV2.track(event.txRequestApprove, {
+        source: requestType,
+        requestType: 'signature',
         dappName: transactionDetails?.dappName,
         dappUrl: transactionDetails?.dappUrl,
         isHardwareWallet: accountInfo.isHardwareWallet,
@@ -651,7 +657,9 @@ export const SignTransactionSheet = () => {
           txSavedInCurrentWallet = true;
         }
       }
-      analytics.track('Approved WalletConnect transaction request', {
+      analyticsV2.track(event.txRequestApprove, {
+        source: requestType,
+        requestType: 'transaction',
         dappName: transactionDetails.dappName,
         dappUrl: transactionDetails.dappUrl,
         isHardwareWallet: accountInfo.isHardwareWallet,
