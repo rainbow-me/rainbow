@@ -29,7 +29,7 @@ export const AccountIcon = () => {
 
   return (
     <Bleed space="8px">
-      <ButtonPressAnimation onPress={handlePressChangeWallet} style={{ padding: 8 }}>
+      <ButtonPressAnimation onPress={handlePressChangeWallet} style={{ padding: 8 }} overflowMargin={50}>
         {accountInfo?.accountImage ? (
           <ImageAvatar image={accountInfo.accountImage} size="signing" />
         ) : (
