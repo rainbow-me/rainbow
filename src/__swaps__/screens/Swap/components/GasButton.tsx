@@ -23,7 +23,8 @@ import { capitalize } from '../utils/strings';
 import { ParsedAddressAsset } from '@/entities';
 import { GasFeeLegacyParamsBySpeed, GasFeeParamsBySpeed, GasSpeed } from '@/__swaps__/types/gas';
 import { ParsedAsset } from '@/__swaps__/types/assets';
-const { GasSpeedOrder, CUSTOM, GAS_ICONS, GAS_EMOJIS } = gasUtils;
+import { convertAmountToNativeDisplay } from '@/helpers/utilities';
+const { GasSpeedOrder, CUSTOM, GAS_ICONS, GAS_EMOJIS, getGasLabel } = gasUtils;
 const mockedGasLimit = '21000';
 
 export const GasButton = ({ accentColor }: { accentColor?: string }) => {
@@ -57,12 +58,10 @@ export const GasButton = ({ accentColor }: { accentColor?: string }) => {
 
   const [showGasOptions, setShowGasOptions] = useState(false);
   const animatedGas = useDerivedValue(() => {
-    return gasFeeBySpeed[selectedGas?.option]?.gasFee?.display ?? '$0.01';
+    const fallbackPrice = '0.01';
+    return gasFeeBySpeed[selectedGas?.option]?.gasFee?.display ?? convertAmountToNativeDisplay(fallbackPrice, nativeCurrency);
   }, [gasFeeBySpeed, selectedGas]);
 
-  useEffect(() => {
-    console.log({ isLoading, data, nativeAsset });
-  }, [isLoading, data, nativeAsset]);
   return (
     <ButtonPressAnimation onPress={() => setShowGasOptions(!showGasOptions)}>
       <GasMenu gasFeeBySpeed={gasFeeBySpeed} flashbotTransaction={false}>
@@ -80,8 +79,7 @@ export const GasButton = ({ accentColor }: { accentColor?: string }) => {
                 􀙭
               </TextIcon>
               <Text color="label" size="15pt" weight="heavy">
-                {/* this needs i18n */}
-                {capitalize(selectedGas?.option || GasSpeed.FAST)}
+                {getGasLabel(selectedGas?.option || GasSpeed.FAST)}
               </Text>
             </Inline>
             <TextIcon color="labelSecondary" height={10} size="icon 13px" weight="bold" width={12}>
@@ -100,7 +98,7 @@ export const GasButton = ({ accentColor }: { accentColor?: string }) => {
   );
 };
 const GasSpeedPagerCentered = styled(Centered).attrs(() => ({
-  marginRight: 8,
+  marginHorizontal: 8,
 }))({});
 
 const GasMenu = ({
@@ -199,13 +197,11 @@ const GasMenu = ({
   const menuConfig = useMemo(() => {
     const menuOptions = speedOptions.map((gasOption: GasSpeed) => {
       if (IS_ANDROID) return gasOption;
-      // const totalGwei = selectedGas?.gasFee?.amount;
-      // const gweiDisplay = totalGwei;
       const { display } = gasFeeBySpeed[gasOption] ?? {};
 
       return {
         actionKey: gasOption,
-        actionTitle: android ? `${GAS_EMOJIS[gasOption]}  ` : capitalize(gasOption || ''),
+        actionTitle: android ? `${GAS_EMOJIS[gasOption]}  ` : getGasLabel(gasOption || ''),
         discoverabilityTitle: display,
         icon: {
           iconType: 'ASSET',
