@@ -1,4 +1,5 @@
 import create from 'zustand';
+import { HTTPS } from '@/components/DappBrowser/constants';
 import { createStore } from '../internal/createStore';
 
 // need to combine types here
@@ -15,22 +16,28 @@ interface FavoriteDappsStore {
   isFavorite: (url: string) => boolean;
 }
 
+const standardizeUrl = (url: string) => (/^https?:\/\//.test(url) ? url : `${HTTPS}${url}`);
+
 export const favoriteDappsStore = createStore<FavoriteDappsStore>(
   (set, get) => ({
     favoriteDapps: [],
     addFavorite: site => {
       const { favoriteDapps } = get();
-      if (!favoriteDapps.some(dapp => dapp.url === site.url)) {
-        set({ favoriteDapps: [...favoriteDapps, site] });
+      const standardizedUrl = standardizeUrl(site.url);
+
+      if (!favoriteDapps.some(dapp => dapp.url === standardizedUrl)) {
+        set({ favoriteDapps: [...favoriteDapps, { ...site, url: standardizedUrl }] });
       }
     },
     removeFavorite: url => {
       const { favoriteDapps } = get();
-      set({ favoriteDapps: favoriteDapps.filter(dapp => dapp.url !== url) });
+      const standardizedUrl = standardizeUrl(url);
+      set({ favoriteDapps: favoriteDapps.filter(dapp => dapp.url !== standardizedUrl) });
     },
     isFavorite: url => {
       const { favoriteDapps } = get();
-      return favoriteDapps.some(dapp => dapp.url === url);
+      const standardizedUrl = standardizeUrl(url);
+      return favoriteDapps.some(dapp => dapp.url === standardizedUrl);
     },
   }),
   {

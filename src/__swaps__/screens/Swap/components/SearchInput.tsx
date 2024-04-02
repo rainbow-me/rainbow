@@ -60,7 +60,7 @@ export const SearchInput = ({
                     handleExitSearch();
                     setIsFocused(false);
                   }}
-                  onChange={(value: string) => setQuery(value)}
+                  onChange={e => setQuery(e.nativeEvent.text)}
                   onFocus={() => {
                     handleFocusSearch();
                     setIsFocused(true);

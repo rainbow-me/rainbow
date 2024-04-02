@@ -1,10 +1,9 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useContext } from 'react';
-import { StatusBar } from 'react-native';
 import { AddCashSheet } from '../screens/AddCash';
 import AvatarBuilder from '../screens/AvatarBuilder';
-import BackupSheet from '../screens/BackupSheet';
+import BackupSheet from '../components/backup/BackupSheet';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
 import ConnectedDappsSheet from '../screens/ConnectedDappsSheet';
 import ENSAdditionalRecordsSheet from '../screens/ENSAdditionalRecordsSheet';
@@ -34,9 +33,9 @@ import { createBottomSheetNavigator } from './bottom-sheet';
 import {
   closeKeyboardOnClose,
   defaultScreenStackOptions,
-  restoreSheetConfig,
   stackNavigationConfig,
   learnWebViewScreenConfig,
+  backupSheetSizes,
 } from './config';
 import {
   addWalletNavigatorPreset,
@@ -70,12 +69,12 @@ import { TransactionDetails } from '@/screens/transaction-details/TransactionDet
 import { AddWalletNavigator } from './AddWalletNavigator';
 import { HardwareWalletTxNavigator } from './HardwareWalletTxNavigator';
 import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
-import { SettingsSheet } from '@/screens/SettingsSheet';
+import { SettingsSheet } from '@/screens/SettingsSheet/SettingsSheet';
 import { CUSTOM_MARGIN_TOP_ANDROID } from '@/screens/SettingsSheet/constants';
 import { Portal } from '@/screens/Portal';
 import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
 import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
-import ShowSecretView from '@/screens/SettingsSheet/components/ShowSecretView';
+import ShowSecretView from '@/screens/SettingsSheet/components/Backups/ShowSecretView';
 import PoapSheet from '@/screens/mints/PoapSheet';
 import { PositionSheet } from '@/screens/positions/PositionSheet';
 import MintSheet from '@/screens/mints/MintSheet';
@@ -84,6 +83,7 @@ import { SignTransactionSheet } from '@/screens/SignTransactionSheet';
 import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoSheet';
 import { ConsoleSheet } from '@/screens/points/ConsoleSheet';
 import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileContext';
+import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import AppIconUnlockSheet from '@/screens/AppIconUnlockSheet';
 import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
 import { useRemoteConfig } from '@/model/remoteConfig';
@@ -116,15 +116,9 @@ function MainNavigator() {
 
       <Stack.Screen component={WalletConnectRedirectSheet} name={Routes.WALLET_CONNECT_REDIRECT_SHEET} options={wcPromptPreset} />
       <Stack.Screen component={AddCashSheet} name={Routes.ADD_CASH_SHEET} options={addCashSheet} />
-      <Stack.Screen component={BackupSheet} name={Routes.BACKUP_SHEET} options={expandedPreset} />
-      <Stack.Screen component={RestoreSheet} name={Routes.RESTORE_SHEET} {...restoreSheetConfig} options={bottomSheetPreset} />
+      <Stack.Screen component={RestoreSheet} name={Routes.RESTORE_SHEET} options={bottomSheetPreset} />
       <Stack.Screen component={WelcomeScreen} name={Routes.WELCOME_SCREEN} options={{ animationEnabled: false, gestureEnabled: false }} />
-      <Stack.Screen
-        component={ShowSecretView}
-        name="ShowSecretView"
-        // @ts-ignore
-        options={bottomSheetPreset}
-      />
+      <Stack.Screen component={ShowSecretView} name="ShowSecretView" options={bottomSheetPreset} />
       <Stack.Screen component={WalletConnectApprovalSheet} name={Routes.WALLET_CONNECT_APPROVAL_SHEET} options={bottomSheetPreset} />
     </Stack.Navigator>
   );
@@ -135,7 +129,6 @@ function MainOuterNavigator() {
   return (
     <OuterStack.Navigator initialRouteName={Routes.MAIN_NAVIGATOR} {...stackNavigationConfig} screenOptions={defaultScreenStackOptions}>
       <OuterStack.Screen component={MainNavigator} name={Routes.MAIN_NAVIGATOR} />
-      <OuterStack.Screen component={BackupSheet} name={Routes.BACKUP_SCREEN} options={expandedPreset} />
       <OuterStack.Screen
         component={SendSheet}
         name={Routes.SEND_SHEET_NAVIGATOR}
@@ -217,13 +210,33 @@ function BSNavigator() {
           backdropOpacity: 1,
         }}
       />
+      <BSStack.Screen
+        component={BackupSheet}
+        name={Routes.BACKUP_SHEET}
+        options={route => {
+          const { params: { step } = {} as any } = route.route;
+
+          let heightForStep = backupSheetSizes.short;
+          if (
+            step === walletBackupStepTypes.backup_cloud ||
+            step === walletBackupStepTypes.backup_manual ||
+            step === walletBackupStepTypes.restore_from_backup
+          ) {
+            heightForStep = backupSheetSizes.long;
+          } else if (step === walletBackupStepTypes.no_provider) {
+            heightForStep = backupSheetSizes.medium;
+          }
+
+          return { ...bottomSheetPreset, height: heightForStep };
+        }}
+      />
       <BSStack.Screen component={WalletDiagnosticsSheet} name={Routes.DIAGNOSTICS_SHEET} options={{ ...bottomSheetPreset }} />
       <BSStack.Screen
         component={SettingsSheet}
         name={Routes.SETTINGS_SHEET}
         options={{
           ...bottomSheetPreset,
-          height: deviceUtils.dimensions.height + CUSTOM_MARGIN_TOP_ANDROID - (StatusBar?.currentHeight || 0),
+          height: deviceUtils.dimensions.height - CUSTOM_MARGIN_TOP_ANDROID,
         }}
       />
       <BSStack.Screen
