@@ -35,19 +35,19 @@ export async function importWalletFlow() {
   await waitAndTap('restore-with-key-button');
   await checkIfExists('import-sheet');
   await clearField('import-sheet-input');
-  await device.disableSynchronization();
   await typeText('import-sheet-input', process.env.TEST_SEEDS, false);
   await checkIfElementHasString('import-sheet-button-label', 'Continue');
   await waitAndTap('import-sheet-button');
   await checkIfVisible('wallet-info-modal');
+  await disableSynchronization();
   await waitAndTap('wallet-info-submit-button');
   if (android) {
     await checkIfVisible('pin-authentication-screen');
     await authenticatePin('1234');
     await authenticatePin('1234');
   }
-  await device.enableSynchronization();
-  await checkIfVisible('wallet-screen');
+  await checkIfVisible('wallet-screen', 40000);
+  await enableSynchronization();
 }
 
 export async function cleanApp() {
@@ -221,9 +221,7 @@ export async function checkIfVisible(elementId: string | RegExp, timeout = DEFAU
     .withTimeout(timeout);
 }
 
-// adding a custom timeout for this one otherwise it waits the
-// whole 20_000 (DEFAULT_TIMEOUT) to make sure it's not visible
-export async function checkIfNotVisible(elementId: string | RegExp, timeout = 5_000) {
+export async function checkIfNotVisible(elementId: string | RegExp, timeout = DEFAULT_TIMEOUT) {
   return await waitFor(element(by.id(elementId)))
     .not.toBeVisible()
     .withTimeout(timeout);

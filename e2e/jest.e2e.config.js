@@ -14,7 +14,7 @@ module.exports = {
 
   testTimeout: 200_000,
   testRegex: '\\.spec\\.[jt]sx?$',
-  verbose: false,
+  verbose: true,
   transform: {
     '\\.[jt]sx?$': 'ts-jest',
   },
