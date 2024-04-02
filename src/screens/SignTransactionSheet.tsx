@@ -81,7 +81,7 @@ import Routes from '@/navigation/routesNames';
 import { parseGasParamsForTransaction } from '@/parsers/gas';
 import { loadWallet, sendTransaction, signPersonalMessage, signTransaction, signTypedDataMessage } from '@/model/wallet';
 
-import { analytics, analyticsV2 } from '@/analytics';
+import { analyticsV2 as analytics } from '@/analytics';
 import { maybeSignUri } from '@/handlers/imgix';
 import { RPCMethod } from '@/walletConnect/types';
 import { isAddress } from '@ethersproject/address';
@@ -273,7 +273,7 @@ export const SignTransactionSheet = () => {
         } else {
           setMethodName(i18n.t(i18n.l.wallet.message_signing.request));
         }
-        analyticsV2.track(event.txRequestShownSheet), { source };
+        analytics.track(event.txRequestShownSheet), { source };
       }
     });
   }, [isMessageRequest, currentNetwork, startPollingGasFees, fetchMethodName, transactionDetails?.payload?.params]);
@@ -467,7 +467,7 @@ export const SignTransactionSheet = () => {
           onCancelCallback?.(error);
           const rejectionType = transactionDetails?.payload?.method === SEND_TRANSACTION ? 'transaction' : 'signature';
 
-          analyticsV2.track(event.txRequestReject, {
+          analytics.track(event.txRequestReject, {
             source,
             requestType: rejectionType,
             isHardwareWallet: accountInfo.isHardwareWallet,
@@ -509,7 +509,7 @@ export const SignTransactionSheet = () => {
     }
 
     if (response?.result) {
-      analyticsV2.track(event.txRequestApprove, {
+      analytics.track(event.txRequestApprove, {
         source,
         requestType: 'signature',
         dappName: transactionDetails?.dappName,
@@ -657,7 +657,7 @@ export const SignTransactionSheet = () => {
           txSavedInCurrentWallet = true;
         }
       }
-      analyticsV2.track(event.txRequestApprove, {
+      analytics.track(event.txRequestApprove, {
         source,
         requestType: 'transaction',
         dappName: transactionDetails.dappName,
