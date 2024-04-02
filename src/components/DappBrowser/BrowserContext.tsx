@@ -205,8 +205,6 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
         }
       }
 
-      // consoleLogWorklet('toggleTabViewWorklet END, updated index: ' + animatedActiveTabIndex.value);
-
       if (tabViewProgress !== undefined) {
         tabViewProgress.value = willTabViewBecomeVisible
           ? withSpring(100, SPRING_CONFIGS.browserTabTransition)
@@ -240,12 +238,13 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
     (updatedTabStates: TabState[], shouldToggleTabView?: boolean, indexToMakeActive?: number) => {
       setTabStates(updatedTabStates);
 
-      shouldBlockOperationQueue.value = false;
       if (shouldToggleTabView) {
         runOnUI(toggleTabViewWorklet)(indexToMakeActive);
       } else if (indexToMakeActive !== undefined) {
         runOnJS(setActiveTabIndex)(indexToMakeActive);
       }
+
+      shouldBlockOperationQueue.value = false;
     },
     [setTabStates, shouldBlockOperationQueue, toggleTabViewWorklet]
   );

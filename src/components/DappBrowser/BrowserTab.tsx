@@ -773,7 +773,6 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
           {/* @ts-expect-error Property 'children' does not exist on type */}
           <PanGestureHandler
             activeOffsetX={[-10, 10]}
-            // enabled={false}
             failOffsetY={[-10, 10]}
             maxPointers={1}
             onGestureEvent={swipeToCloseTabGestureHandler}
