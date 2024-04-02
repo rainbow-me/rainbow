@@ -127,7 +127,7 @@ export function parseAsset({ asset, currency }: { asset: ZerionAsset | AssetApiR
     ...('networks' in asset && { networks: asset.networks }),
     ...('bridging' in asset && {
       bridging: {
-        isBridgeable: asset.bridging.bridgeable,
+        isBridgeable: !!asset.bridging.bridgeable,
         networks: asset.bridging.networks,
       },
     }),
