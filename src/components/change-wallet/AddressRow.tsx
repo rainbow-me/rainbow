@@ -22,6 +22,7 @@ import { EditWalletContextMenuActions } from '@/screens/ChangeWalletSheet';
 import { toChecksumAddress } from '@/handlers/web3';
 import { IS_IOS, IS_ANDROID } from '@/env';
 import { ContextMenu } from '../context-menu';
+import { useForegroundColor } from '@/design-system';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
 const NOOP = () => undefined;
@@ -122,6 +123,8 @@ export default function AddressRow({ contextMenuActions, data, editMode, onPress
   const { address, balance, color: accountColor, ens, image: accountImage, isSelected, isReadOnly, isLedger, label, walletId } = data;
 
   const { colors, isDarkMode } = useTheme();
+  const labelColor = useForegroundColor('label');
+  const labelTertiary = useForegroundColor('labelTertiary');
 
   let cleanedUpBalance = balance;
   if (balance === '0.00') {
@@ -241,10 +244,10 @@ export default function AddressRow({ contextMenuActions, data, editMode, onPress
               <ContactAvatar color={accountColor} marginRight={10} size="medium" value={emoji} />
             )}
             <ColumnWithMargins margin={IS_ANDROID ? -6 : 3}>
-              <StyledTruncatedText color={colors.dark} testID={`change-wallet-address-row-label-${walletName}`}>
+              <StyledTruncatedText color={labelColor} testID={`change-wallet-address-row-label-${walletName}`}>
                 {walletName}
               </StyledTruncatedText>
-              <StyledBottomRowText color={colors.alpha(colors.blueGreyDark, 0.5)}>{cleanedUpBalance || 0} ETH</StyledBottomRowText>
+              <StyledBottomRowText color={labelTertiary}>{cleanedUpBalance || 0} ETH</StyledBottomRowText>
             </ColumnWithMargins>
           </Row>
           <Column style={sx.rightContent}>
@@ -254,7 +257,7 @@ export default function AddressRow({ contextMenuActions, data, editMode, onPress
                 // @ts-expect-error JavaScript component
                 marginRight={editMode || isSelected ? -9 : 19}
               >
-                <ReadOnlyText color={colors.alpha(colors.blueGreyDark, 0.5)}>{lang.t('wallet.change_wallet.watching')}</ReadOnlyText>
+                <ReadOnlyText color={labelTertiary}>{lang.t('wallet.change_wallet.watching')}</ReadOnlyText>
               </LinearGradient>
             )}
             {isLedger && (
@@ -263,7 +266,7 @@ export default function AddressRow({ contextMenuActions, data, editMode, onPress
                 // @ts-expect-error JavaScript component
                 marginRight={editMode || isSelected ? -9 : 19}
               >
-                <ReadOnlyText color={colors.alpha(colors.blueGreyDark, 0.5)}>{lang.t('wallet.change_wallet.ledger')}</ReadOnlyText>
+                <ReadOnlyText color={labelTertiary}>{lang.t('wallet.change_wallet.ledger')}</ReadOnlyText>
               </LinearGradient>
             )}
             {!editMode && isSelected && (
