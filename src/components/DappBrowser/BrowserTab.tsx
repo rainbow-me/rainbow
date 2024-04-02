@@ -289,8 +289,8 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
     if (isColor(backgroundColor.value)) {
       const rgbaColor = convertToRGBA(backgroundColor.value);
 
-      if (rgbaColor[3] < 1) {
-        return { backgroundColor: `rgba(${rgbaColor[0]}, ${rgbaColor[1]}, ${rgbaColor[2]}, 1)` };
+      if (rgbaColor[3] < 1 && rgbaColor[3] !== 0) {
+        return { backgroundColor: `rgba(${rgbaColor[0] * 255}, ${rgbaColor[1] * 255}, ${rgbaColor[2] * 255}, 1)` };
       } else {
         return { backgroundColor: backgroundColor.value };
       }
