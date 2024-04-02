@@ -36,7 +36,7 @@ describe('Import from private key flow', () => {
   });
 
   it('with 0x - Should show the "Add wallet modal" after tapping import with a valid private key"', async () => {
-    process.env.DEV_PKEY && (await typeText('import-sheet-input', process.env.DEV_PKEY.substring(2), false));
+    await typeText('import-sheet-input', process.env.DEV_PKEY, false);
     await checkIfElementHasString('import-sheet-button-label', 'Continue');
     await waitAndTap('import-sheet-button');
     await checkIfVisible('wallet-info-modal');
@@ -45,7 +45,7 @@ describe('Import from private key flow', () => {
   it('with 0x - Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
     await disableSynchronization();
     await checkIfVisible('wallet-info-input');
-    await typeText('wallet-info-input', 'TKEY', false);
+    await typeText('wallet-info-input', 'PKEY', false);
     await waitAndTap('wallet-info-submit-button');
     if (android) {
       await checkIfVisible('pin-authentication-screen');
