@@ -27,13 +27,13 @@ const SCALE_ADJUSTED_X_BUTTON_PADDING_SINGLE_TAB = X_BUTTON_PADDING * SINGLE_TAB
 const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
 
 export const CloseTabButton = ({
+  animatedMultipleTabsOpen,
   multipleTabsOpen,
-  multipleTabsOpenBoolean,
   tabId,
   tabIndex,
 }: {
-  multipleTabsOpen: SharedValue<number>;
-  multipleTabsOpenBoolean: SharedValue<boolean>;
+  animatedMultipleTabsOpen: SharedValue<number>;
+  multipleTabsOpen: SharedValue<boolean>;
   tabId: string;
   tabIndex: number;
 }) => {
@@ -56,8 +56,8 @@ export const CloseTabButton = ({
   });
 
   const containerStyle = useAnimatedStyle(() => {
-    const buttonPadding = multipleTabsOpenBoolean.value ? SCALE_ADJUSTED_X_BUTTON_PADDING : SCALE_ADJUSTED_X_BUTTON_PADDING_SINGLE_TAB;
-    const buttonSize = multipleTabsOpenBoolean.value ? SCALE_ADJUSTED_X_BUTTON_SIZE : SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB;
+    const buttonPadding = multipleTabsOpen.value ? SCALE_ADJUSTED_X_BUTTON_PADDING : SCALE_ADJUSTED_X_BUTTON_PADDING_SINGLE_TAB;
+    const buttonSize = multipleTabsOpen.value ? SCALE_ADJUSTED_X_BUTTON_SIZE : SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB;
     const pointerEvents = tabViewVisible?.value ? 'auto' : 'none';
     return {
       height: buttonSize,
@@ -70,21 +70,21 @@ export const CloseTabButton = ({
 
   const multipleTabsStyle = useAnimatedStyle(() => {
     return {
-      opacity: interpolate(multipleTabsOpen.value, [0, 0.9, 1], [0, 0, 1], 'clamp'),
-      pointerEvents: multipleTabsOpenBoolean.value ? 'auto' : 'none',
+      opacity: interpolate(animatedMultipleTabsOpen.value, [0, 0.9, 1], [0, 0, 1], 'clamp'),
+      pointerEvents: multipleTabsOpen.value ? 'auto' : 'none',
     };
   });
 
   const singleTabStyle = useAnimatedStyle(() => {
     return {
-      opacity: interpolate(multipleTabsOpen.value, [0, 0.1, 1], [1, 0, 0], 'clamp'),
+      opacity: interpolate(animatedMultipleTabsOpen.value, [0, 0.1, 1], [1, 0, 0], 'clamp'),
       // opacity: multipleTabsOpenBoolean.value ? 0 : withTiming(1, TIMING_CONFIGS.tabPressConfig),
-      pointerEvents: multipleTabsOpenBoolean.value ? 'none' : 'auto',
+      pointerEvents: multipleTabsOpen.value ? 'none' : 'auto',
     };
   });
 
   const hitSlopProp = useDerivedValue(() => {
-    const buttonPadding = multipleTabsOpenBoolean.value ? SCALE_ADJUSTED_X_BUTTON_PADDING : SCALE_ADJUSTED_X_BUTTON_PADDING_SINGLE_TAB;
+    const buttonPadding = multipleTabsOpen.value ? SCALE_ADJUSTED_X_BUTTON_PADDING : SCALE_ADJUSTED_X_BUTTON_PADDING_SINGLE_TAB;
     return withTiming(buttonPadding, TIMING_CONFIGS.tabPressConfig);
   });
 

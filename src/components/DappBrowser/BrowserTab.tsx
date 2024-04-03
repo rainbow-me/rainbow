@@ -247,37 +247,28 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
     return withTiming(Math.floor(animatedTabIndex.value / 2) * TAB_VIEW_ROW_HEIGHT, TIMING_CONFIGS.tabPressConfig);
   });
 
-  const animatedMultipleTabsOpen = useDerivedValue(() => {
-    const isLastOrSecondToLastTabAndExiting = currentlyOpenTabIds?.value?.indexOf(tabId) === -1 && currentlyOpenTabIds.value.length === 1;
-    // The following check is a little convoluted but its purpose is to prevent jarring visual shifts when the
-    // tab view transitions from having a single tab to multiple tabs. When a second tab is created, it takes
-    // a moment for tabStates to catch up to currentlyOpenTabIds, and this check prevents the single tab from
-    // shifting due to currentlyOpenTabIds updating before the new tab component is rendered via tabStates.
+  const multipleTabsOpen = useDerivedValue(() => {
+    // The purpose of the following checks is to prevent jarring visual shifts when the tab view transitions
+    // from having a single tab to multiple tabs. When a second tab is created, it takes a moment for
+    // tabStates to catch up to currentlyOpenTabIds, and this check prevents the single tab from shifting
+    // due to currentlyOpenTabIds updating before the new tab component is rendered via tabStates.
+    const isFirstTab = currentlyOpenTabIds?.value.indexOf(tabId) === 0;
+    const shouldTwoTabsExist = currentlyOpenTabIds?.value.length === 2;
+
     const isTransitioningFromSingleToMultipleTabs =
-      currentlyOpenTabIds?.value.indexOf(tabId) === 0 &&
-      currentlyOpenTabIds?.value.length === 2 &&
+      isFirstTab &&
+      shouldTwoTabsExist &&
       (tabStates?.length === 1 || (tabStates?.length === 2 && currentlyOpenTabIds?.value[1] !== tabStates?.[1]?.uniqueId));
 
-    return withTiming(
-      (currentlyOpenTabIds?.value && currentlyOpenTabIds?.value.length > 1 && !isTransitioningFromSingleToMultipleTabs) ||
-        isLastOrSecondToLastTabAndExiting
-        ? 1
-        : 0,
-      TIMING_CONFIGS.tabPressConfig
-    );
+    const multipleTabsExist = !!(currentlyOpenTabIds?.value && currentlyOpenTabIds?.value.length > 1);
+    const isLastOrSecondToLastTabAndExiting = currentlyOpenTabIds?.value?.indexOf(tabId) === -1 && currentlyOpenTabIds.value.length === 1;
+    const multipleTabsOpen = (multipleTabsExist && !isTransitioningFromSingleToMultipleTabs) || isLastOrSecondToLastTabAndExiting;
+
+    return multipleTabsOpen;
   });
 
-  const animatedMultipleTabsOpenBoolean = useDerivedValue(() => {
-    const isLastOrSecondToLastTabAndExiting = currentlyOpenTabIds?.value?.indexOf(tabId) === -1 && currentlyOpenTabIds.value.length === 1;
-    const isTransitioningFromSingleToMultipleTabs =
-      currentlyOpenTabIds?.value.indexOf(tabId) === 0 &&
-      currentlyOpenTabIds?.value.length === 2 &&
-      (tabStates?.length === 1 || (tabStates?.length === 2 && currentlyOpenTabIds?.value[1] !== tabStates?.[1]?.uniqueId));
-
-    return !!(
-      (currentlyOpenTabIds?.value && currentlyOpenTabIds?.value.length > 1 && !isTransitioningFromSingleToMultipleTabs) ||
-      isLastOrSecondToLastTabAndExiting
-    );
+  const animatedMultipleTabsOpen = useDerivedValue(() => {
+    return withTiming(multipleTabsOpen.value ? 1 : 0, TIMING_CONFIGS.tabPressConfig);
   });
 
   const animatedWebViewBackgroundColorStyle = useAnimatedStyle(() => {
