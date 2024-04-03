@@ -241,7 +241,7 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
       if (shouldToggleTabView) {
         runOnUI(toggleTabViewWorklet)(indexToMakeActive);
       } else if (indexToMakeActive !== undefined) {
-        runOnJS(setActiveTabIndex)(indexToMakeActive);
+        setActiveTabIndex(indexToMakeActive);
       }
 
       shouldBlockOperationQueue.value = false;
@@ -329,7 +329,7 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
       runOnJS(setTabStatesThenUnblockQueue)(
         newTabStates,
         shouldToggleTabView,
-        // If a new tab was created, the new tab will be the last tab and it should be made active now
+        // If a new tab was created, the new tab will be the last tab and it should be made active now.
         // We've already set the animatedActiveTabIndex to the correct index above, but the JS-side
         // activeTabIndex still needs to be set, so we pass it along to setTabStatesThenUnblockQueue().
         newActiveIndex
