@@ -1,7 +1,7 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import React, { useEffect, useMemo } from 'react';
 import { StyleSheet, StatusBar } from 'react-native';
-import Animated, { runOnUI, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
+import Animated, { runOnUI, useDerivedValue } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
 import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
@@ -47,7 +47,7 @@ function SwapOutputActionButton() {
 function SwapOutputAmount() {
   const { nativeCurrency: currentCurrency } = useAccountSettings();
   const { assetToBuy, outputChainId } = useSwapAssetStore();
-  const { focusedInput, SwapTextStyles, SwapInputController } = useSwapContext();
+  const { focusedInput, SwapTextStyles, SwapInputController, AnimatedSwapStyles } = useSwapContext();
   const userAssets = useAssetsToSell();
 
   const { data: tokenDataWithPrice } = useExternalToken(
@@ -91,12 +91,6 @@ function SwapOutputAmount() {
     })(outputNativeAmount);
   }, [parsedAssetToBuy, SwapInputController.inputValues, currentCurrency, SwapInputController]);
 
-  const caretStyles = useAnimatedStyle(() => {
-    return {
-      backgroundColor: SwapInputController.bottomColor.value,
-    };
-  });
-
   return (
     <GestureHandlerV1Button
       disableButtonPressWrapper
@@ -115,7 +109,7 @@ function SwapOutputAmount() {
           weight="bold"
         />
         <Animated.View style={[styles.caretContainer, SwapTextStyles.outputCaretStyle]}>
-          <Box as={Animated.View} borderRadius={1} style={[styles.caret, caretStyles]} />
+          <Box as={Animated.View} borderRadius={1} style={[styles.caret, AnimatedSwapStyles.assetToBuyCaretStyle]} />
         </Animated.View>
       </MaskedView>
     </GestureHandlerV1Button>
@@ -123,14 +117,8 @@ function SwapOutputAmount() {
 }
 
 function SwapInputIcon() {
-  const { SwapInputController } = useSwapContext();
+  const { SwapInputController, AnimatedSwapStyles } = useSwapContext();
   const theme = useTheme();
-
-  const iconStyles = useAnimatedStyle(() => {
-    return {
-      backgroundColor: SwapInputController.bottomColor.value,
-    };
-  });
 
   return (
     <Box paddingRight="10px">
@@ -139,7 +127,7 @@ function SwapInputIcon() {
           as={Animated.View}
           borderRadius={18}
           height={{ custom: 36 }}
-          style={[styles.solidColorCoinIcon, iconStyles]}
+          style={[styles.solidColorCoinIcon, AnimatedSwapStyles.assetToBuyIconStyle]}
           width={{ custom: 36 }}
         />
       ) : (

@@ -7,16 +7,19 @@ import { ParsedSearchAsset } from '../../types/assets';
 import { Box, Stack, Text, Inline, Bleed, useColorMode, globalColors, HitSlop } from '@/design-system';
 import Animated, { runOnUI } from 'react-native-reanimated';
 import { useSwapContext } from '../../providers/swap-provider';
-import { parseSearchAsset, isSameAsset, isSameAssetWorklet } from '../../utils/assets';
+import { parseSearchAsset, isSameAsset } from '../../utils/assets';
 import { opacity } from '../../utils/swaps';
 import { useAccountAccentColor } from '@/hooks';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ListEmpty } from './ListEmpty';
+import { FlashList } from '@shopify/flash-list';
+
+const AnimatedFlashListComponent = Animated.createAnimatedComponent(FlashList<ParsedSearchAsset>);
 
 export const TokenToSellList = () => {
   const { accentColor: accountColor } = useAccountAccentColor();
   const { isDarkMode } = useColorMode();
-  const { SwapNavigation, SwapInputController, inputProgress } = useSwapContext();
+  const { SwapInputController } = useSwapContext();
   const userAssets = useAssetsToSell();
 
   const accentColor = useMemo(() => {
@@ -37,24 +40,12 @@ export const TokenToSellList = () => {
         userAsset,
       });
 
-      runOnUI((parsedAsset: ParsedSearchAsset) => {
-        if (SwapInputController.assetToBuy.value && isSameAssetWorklet(SwapInputController.assetToBuy.value, parsedAsset)) {
-          SwapInputController.assetToBuy.value = null;
-        }
-
-        SwapInputController.assetToSell.value = parsedAsset;
-        SwapInputController.outputChainId.value = parsedAsset.chainId;
-
-        // TODO: we need to update the inputNativeValue to the user balance / native value
-        // SwapInputController.inputValues.modify(prev => ({
-        //   ...prev,
-        //   inputNativeValue: parsedAsset.balance.display,
-        // }));
-        SwapNavigation.handleOutputPress();
-      })(parsedAsset);
+      runOnUI(SwapInputController.onSetAssetToSell)(parsedAsset);
     },
-    [SwapInputController.assetToSell, SwapInputController.outputChainId, SwapNavigation, userAssets]
+    [SwapInputController.onSetAssetToSell, userAssets]
   );
+
+  console.log('rendering token to sell list');
 
   return (
     <Stack space="20px">
@@ -101,10 +92,10 @@ export const TokenToSellList = () => {
           </ButtonPressAnimation>
         </Inline>
       </Box>
-      <Animated.FlatList
+      <AnimatedFlashListComponent
         data={userAssets}
         ListEmptyComponent={<ListEmpty />}
-        initialNumToRender={10}
+        keyExtractor={item => item.uniqueId}
         renderItem={({ item }) => (
           <CoinRow
             key={item.uniqueId}

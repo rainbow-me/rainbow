@@ -160,10 +160,12 @@ export function valueBasedDecimalFormatter(
     roundedAmount = Math.round(amount * factor) / factor;
   }
 
+  console.log({ decimalPlaces });
+
   // Format the number to add separators and trim trailing zeros
   const numberFormatter = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: 0,
-    maximumFractionDigits: decimalPlaces, // Allow up to the required precision
+    maximumFractionDigits: !isNaN(decimalPlaces) ? decimalPlaces : 2, // Allow up to the required precision
     useGrouping: true,
   });
 

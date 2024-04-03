@@ -10,7 +10,7 @@ import { ethereumUtils } from '@/utils';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ChainId } from '../../types/chains';
 import { useSwapContext } from '../../providers/swap-provider';
-import { useDerivedValue } from 'react-native-reanimated';
+import { useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
 import { ListEmpty } from './ListEmpty';
 
 export const TokenToBuyList = () => {
@@ -18,6 +18,12 @@ export const TokenToBuyList = () => {
   const { SwapInputController } = useSwapContext();
   const sections = useAssetsToBuySections();
   const red = useForegroundColor('red');
+
+  const chainName = useSharedValue(
+    SwapInputController.outputChainId.value === ChainId.mainnet
+      ? 'ethereum'
+      : chainNameFromChainIdWorklet(SwapInputController.outputChainId.value)
+  );
 
   const isL2 = useMemo(
     () => SwapInputController.outputChainId.value && isL2Chain(SwapInputController.outputChainId.value),
@@ -29,16 +35,17 @@ export const TokenToBuyList = () => {
   const switchToRandomChain = useCallback(() => {
     const chainIdValues = Object.values(ChainId).filter(value => typeof value === 'number');
     const randomChainId = chainIdValues[Math.floor(Math.random() * chainIdValues.length)];
-    console.log({ randomChainId });
     SwapInputController.outputChainId.value = randomChainId as ChainId;
   }, [SwapInputController]);
 
-  const chainName = useDerivedValue(() => {
-    if (SwapInputController.outputChainId.value === 1) {
-      return 'ethereum';
+  useAnimatedReaction(
+    () => SwapInputController.outputChainId.value,
+    current => {
+      chainName.value = current === ChainId.mainnet ? 'ethereum' : chainNameFromChainIdWorklet(current);
     }
-    return chainNameFromChainIdWorklet(SwapInputController.outputChainId.value ?? ChainId.mainnet);
-  });
+  );
+
+  console.log('rendering token to buy list');
 
   return (
     <Stack space="32px">

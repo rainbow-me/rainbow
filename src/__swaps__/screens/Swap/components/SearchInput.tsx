@@ -4,9 +4,11 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { Input } from '@/components/inputs';
 import { AnimatedText, Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../constants';
-import { opacity, opacityWorklet } from '../utils/swaps';
-import Animated, { useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
+import { opacity } from '../utils/swaps';
+import Animated, { runOnUI, useAnimatedRef, useDerivedValue } from 'react-native-reanimated';
 import { useSwapContext } from '../providers/swap-provider';
+
+const AnimatedInput = Animated.createAnimatedComponent(Input);
 
 export const SearchInput = ({
   color,
@@ -19,10 +21,10 @@ export const SearchInput = ({
   handleFocusSearch: () => void;
   output?: boolean;
 }) => {
-  const { inputProgress, outputProgress, SwapInputController } = useSwapContext();
+  const { inputProgress, outputProgress, SwapInputController, AnimatedSwapStyles } = useSwapContext();
   const { isDarkMode } = useColorMode();
 
-  const inputRef = React.useRef<TextInput>(null);
+  const inputRef = useAnimatedRef<TextInput>();
 
   const fillTertiary = useForegroundColor('fillTertiary');
   const label = useForegroundColor('label');
@@ -34,26 +36,6 @@ export const SearchInput = ({
     }
 
     return 'Close';
-  });
-
-  const btnWrapperStyles = useAnimatedStyle(() => {
-    return {
-      backgroundColor: opacityWorklet(
-        output ? SwapInputController.bottomColor.value : SwapInputController.topColor.value,
-        isDarkMode ? 0.1 : 0.08
-      ),
-      borderColor: opacityWorklet(
-        output ? SwapInputController.bottomColor.value : SwapInputController.topColor.value,
-        isDarkMode ? 0.06 : 0.01
-      ),
-      borderWidth: THICK_BORDER_WIDTH,
-    };
-  });
-
-  const btnTextStyles = useAnimatedStyle(() => {
-    return {
-      color: output ? SwapInputController.bottomColor.value : SwapInputController.topColor.value,
-    };
   });
 
   return (
@@ -81,12 +63,19 @@ export const SearchInput = ({
                     </Text>
                   </Box>
                 </Column>
-                <Input
-                  onBlur={() => {
-                    handleExitSearch();
-                    SwapInputController.searchQuery.value = '';
+                <AnimatedInput
+                  onChange={e => {
+                    // TODO: Can we do this faster?
+                    runOnUI((text: string) => {
+                      SwapInputController.searchQuery.value = text;
+                    })(e.nativeEvent.text);
                   }}
-                  onChange={e => (SwapInputController.searchQuery.value = e.nativeEvent.text)}
+                  onBlur={() => {
+                    runOnUI(() => {
+                      SwapInputController.searchQuery.value = '';
+                    })();
+                    handleExitSearch();
+                  }}
                   onFocus={() => {
                     handleFocusSearch();
                   }}
@@ -102,7 +91,6 @@ export const SearchInput = ({
                     height: 44,
                     zIndex: 10,
                   }}
-                  value={SwapInputController.searchQuery.value}
                 />
               </Columns>
             </Box>
@@ -123,9 +111,17 @@ export const SearchInput = ({
               height={{ custom: 36 }}
               justifyContent="center"
               paddingHorizontal={{ custom: 12 - THICK_BORDER_WIDTH }}
-              style={btnWrapperStyles}
+              style={
+                output ? AnimatedSwapStyles.searchOutputAssetButtonWrapperStyle : AnimatedSwapStyles.searchInputAssetButtonWrapperStyle
+              }
             >
-              <AnimatedText text={btnText} align="center" style={btnTextStyles} size="17pt" weight="heavy" />
+              <AnimatedText
+                text={btnText}
+                align="center"
+                style={output ? AnimatedSwapStyles.searchOutputAssetButtonStyle : AnimatedSwapStyles.searchInputAssetButtonStyle}
+                size="17pt"
+                weight="heavy"
+              />
             </Box>
           </ButtonPressAnimation>
         </Column>

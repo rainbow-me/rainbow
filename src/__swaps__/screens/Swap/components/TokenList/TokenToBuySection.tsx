@@ -10,10 +10,11 @@ import { ChainId } from '../../types/chains';
 import { TextColor } from '@/design-system/color/palettes';
 import { useSwapContext } from '../../providers/swap-provider';
 import Animated, { runOnUI } from 'react-native-reanimated';
-import { parseSearchAsset, isSameAsset, isSameAssetWorklet } from '../../utils/assets';
+import { parseSearchAsset, isSameAsset } from '../../utils/assets';
 
 import { useAssetsToSell } from '../../hooks/useAssetsToSell';
 import { ListEmpty } from './ListEmpty';
+import { FlashList } from '@shopify/flash-list';
 
 interface SectionProp {
   color: TextStyle['color'];
@@ -61,8 +62,10 @@ const bridgeSectionsColorsByChain = {
   [ChainId.blast]: 'blast' as TextStyle['color'],
 };
 
+const AnimatedFlashListComponent = Animated.createAnimatedComponent(FlashList<SearchAsset>);
+
 export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) => {
-  const { SwapNavigation, SwapInputController } = useSwapContext();
+  const { SwapInputController } = useSwapContext();
   const { outputChainId } = useSwapAssetStore();
   const userAssets = useAssetsToSell();
 
@@ -75,19 +78,9 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
         userAsset,
       });
 
-      runOnUI(() => {
-        SwapInputController.assetToBuy.value = parsedAsset;
-        if (SwapInputController.assetToSell.value && isSameAssetWorklet(SwapInputController.assetToSell.value, parsedAsset)) {
-          SwapInputController.assetToSell.value = null;
-          SwapNavigation.handleInputPress();
-          SwapNavigation.handleExitSearch();
-        } else {
-          SwapNavigation.handleOutputPress();
-          SwapNavigation.handleExitSearch();
-        }
-      })();
+      runOnUI(SwapInputController.onSetAssetToBuy)(parsedAsset);
     },
-    [SwapInputController, SwapNavigation, userAssets]
+    [SwapInputController, userAssets]
   );
 
   const { symbol, title } = sectionProps[section.id];
@@ -125,9 +118,10 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
           </Text>
         </Inline>
 
-        <Animated.FlatList
+        <AnimatedFlashListComponent
           data={section.data}
           ListEmptyComponent={<ListEmpty />}
+          keyExtractor={item => item.uniqueId}
           renderItem={({ item }) => (
             <CoinRow
               key={item.uniqueId}
@@ -140,7 +134,7 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
               name={item.name}
               onPress={() => handleSelectToken(item)}
               nativeBalance={''}
-              output={false}
+              output
               symbol={item.symbol}
             />
           )}

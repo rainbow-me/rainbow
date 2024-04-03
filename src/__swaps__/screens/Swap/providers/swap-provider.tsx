@@ -39,24 +39,27 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const sliderPressProgress = useSharedValue(SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT);
   const focusedInput = useSharedValue<inputKeys>('inputAmount');
 
+  const SwapNavigation = useSwapNavigation({
+    inputProgress,
+    outputProgress,
+  });
+
   const SwapInputController = useSwapInputsController({
+    ...SwapNavigation,
     focusedInput,
     isFetching,
     sliderXPosition,
+    inputProgress,
+    outputProgress,
   });
 
-  const AnimatedSwapStyles = useAnimatedSwapStyles({ inputProgress, outputProgress });
+  const AnimatedSwapStyles = useAnimatedSwapStyles({ SwapInputController, inputProgress, outputProgress, isFetching });
   const SwapTextStyles = useSwapTextStyles({
     ...SwapInputController,
     focusedInput,
     inputProgress,
     outputProgress,
     sliderPressProgress,
-  });
-
-  const SwapNavigation = useSwapNavigation({
-    inputProgress,
-    outputProgress,
   });
 
   const confirmButtonIcon = useDerivedValue(() => {
