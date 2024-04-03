@@ -62,7 +62,7 @@ const getNetworkNativeAsset = (network: Network): ParsedAddressAsset | undefined
   return getAccountAsset(nativeAssetUniqueId);
 };
 
-export const getNativeAssetForNetwork = async (network: Network, address: EthereumAddress): Promise<ParsedAddressAsset | undefined> => {
+export const getNativeAssetForNetwork = async (network: Network, address?: EthereumAddress): Promise<ParsedAddressAsset | undefined> => {
   const networkNativeAsset = getNetworkNativeAsset(network);
   const { accountAddress, nativeCurrency } = store.getState().settings;
   const differentWallet = address?.toLowerCase() !== accountAddress?.toLowerCase();
