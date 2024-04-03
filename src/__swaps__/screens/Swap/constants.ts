@@ -29,7 +29,7 @@ export const INPUT_INNER_WIDTH = BASE_INPUT_WIDTH - THICK_BORDER_WIDTH * 2;
 export const SLIDER_HEIGHT = 16;
 export const SLIDER_COLLAPSED_HEIGHT = 10;
 export const SLIDER_WIDTH = deviceUtils.dimensions.width - 40;
-export const INITIAL_SLIDER_POSITION = 0;
+export const INITIAL_SLIDER_POSITION = 0.5;
 export const SCRUBBER_WIDTH = 16;
 
 export const SEPARATOR_COLOR = 'rgba(245, 248, 255, 0.03)';

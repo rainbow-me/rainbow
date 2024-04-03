@@ -56,7 +56,7 @@ export const useAssetsToSell = () => {
           ) as ParsedSearchAsset[]
         )
       : setCurrentAssets(userAssets as ParsedSearchAsset[]);
-  }, 200);
+  }, 50);
 
   useAnimatedReaction(
     () => SwapInputController.searchQuery.value,

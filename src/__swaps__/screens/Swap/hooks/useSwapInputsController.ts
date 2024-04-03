@@ -318,6 +318,11 @@ export function useSwapInputsController({
     };
   }, 400);
 
+  const onChangeSearchQuery = (text: string) => {
+    'worklet';
+    searchQuery.value = text;
+  };
+
   const onSetAssetToSell = (parsedAsset: ParsedSearchAsset) => {
     'worklet';
     // if the user has an asset to buy selected and the asset to sell is the same, we need to clear the asset to buy
@@ -330,7 +335,12 @@ export function useSwapInputsController({
       outputChainId.value = parsedAsset.chainId;
     }
 
-    // TODO: we need to update the inputNativeValue to the user balance / native value
+    inputValues.modify(values => {
+      return {
+        ...values,
+        inputNativeValue: Number(values.inputAmount) * Number(assetToSell.value?.native.price?.amount),
+      };
+    });
 
     // if the user doesn't have an asset to buy selected, let's open that list
     if (!assetToBuy.value) {
@@ -586,5 +596,6 @@ export function useSwapInputsController({
     onSetAssetToSell,
     onSetAssetToBuy,
     onSwapAssets,
+    onChangeSearchQuery,
   };
 }

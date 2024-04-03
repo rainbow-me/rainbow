@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { TextInput } from 'react-native';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Input } from '@/components/inputs';
@@ -38,6 +38,10 @@ export const SearchInput = ({
     return 'Close';
   });
 
+  const initialValue = useMemo(() => {
+    return SwapInputController.searchQuery.value;
+  }, [SwapInputController.searchQuery.value]);
+
   return (
     <Box width="full">
       <Columns alignHorizontal="justify" alignVertical="center" space="20px">
@@ -65,15 +69,9 @@ export const SearchInput = ({
                 </Column>
                 <AnimatedInput
                   onChange={e => {
-                    // TODO: Can we do this faster?
-                    runOnUI((text: string) => {
-                      SwapInputController.searchQuery.value = text;
-                    })(e.nativeEvent.text);
+                    runOnUI(SwapInputController.onChangeSearchQuery)(e.nativeEvent.text);
                   }}
                   onBlur={() => {
-                    runOnUI(() => {
-                      SwapInputController.searchQuery.value = '';
-                    })();
                     handleExitSearch();
                   }}
                   onFocus={() => {
@@ -91,6 +89,7 @@ export const SearchInput = ({
                     height: 44,
                     zIndex: 10,
                   }}
+                  defaultValue={initialValue}
                 />
               </Columns>
             </Box>
