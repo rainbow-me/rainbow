@@ -15,6 +15,7 @@ import { parseSearchAsset, isSameAsset } from '../../utils/assets';
 import { useAssetsToSell } from '../../hooks/useAssetsToSell';
 import { ListEmpty } from './ListEmpty';
 import { FlashList } from '@shopify/flash-list';
+import { TokenColors } from '@/graphql/__generated__/metadata';
 
 interface SectionProp {
   color: TextStyle['color'];
@@ -129,7 +130,7 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
             <CoinRow
               key={item.uniqueId}
               chainId={item.chainId}
-              color={item.colors?.primary ?? item.colors?.fallback}
+              colors={item.colors as TokenColors}
               iconUrl={item.icon_url}
               address={item.address}
               mainnetAddress={item.mainnetAddress}

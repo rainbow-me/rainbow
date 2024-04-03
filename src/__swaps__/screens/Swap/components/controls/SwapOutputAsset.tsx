@@ -1,7 +1,7 @@
 import MaskedView from '@react-native-masked-view/masked-view';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, StatusBar } from 'react-native';
-import Animated, { runOnUI, useDerivedValue } from 'react-native-reanimated';
+import Animated, { runOnJS, runOnUI, useAnimatedReaction, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
 import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
@@ -9,7 +9,7 @@ import { useTheme } from '@/theme';
 
 import { GestureHandlerV1Button } from '../GestureHandlerV1Button';
 import { SwapActionButton } from '../SwapActionButton';
-import { AnimatedSwapCoinIcon, SwapCoinIcon } from '../SwapCoinIcon';
+import { AnimatedSwapCoinIcon } from '../SwapCoinIcon';
 import { FadeMask } from '../FadeMask';
 import { SwapInput } from '../SwapInput';
 import { BalanceBadge } from '../BalanceBadge';
@@ -121,6 +121,13 @@ function SwapOutputAmount() {
 function SwapInputIcon() {
   const { SwapInputController, AnimatedSwapStyles } = useSwapContext();
   const theme = useTheme();
+  const [showPlaceholder, setShowPlaceholder] = useState(true);
+
+  const boxStyles = useAnimatedStyle(() => {
+    return {
+      backgroundColor: SwapInputController.bottomColor.value,
+    };
+  });
 
   const colors = useDerivedValue(() => {
     return SwapInputController.assetToBuy?.value?.colors as TokenColors;
@@ -134,14 +141,23 @@ function SwapInputIcon() {
     return SwapInputController.assetToBuy?.value?.symbol || '';
   });
 
+  useAnimatedReaction(
+    () => SwapInputController.assetToBuy?.value,
+    (current, prev) => {
+      if (current !== null && prev == null) {
+        runOnJS(setShowPlaceholder)(false);
+      }
+    }
+  );
+
   return (
     <Box paddingRight="10px">
-      {!SwapInputController.assetToBuy.value ? (
+      {showPlaceholder ? (
         <Box
           as={Animated.View}
           borderRadius={18}
           height={{ custom: 36 }}
-          style={[styles.solidColorCoinIcon, AnimatedSwapStyles.assetToBuyIconStyle]}
+          style={[styles.solidColorCoinIcon, boxStyles]}
           width={{ custom: 36 }}
         />
       ) : (

@@ -1,7 +1,7 @@
 import MaskedView from '@react-native-masked-view/masked-view';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, StatusBar } from 'react-native';
-import Animated, { runOnUI, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
+import Animated, { runOnJS, runOnUI, useAnimatedReaction, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
 import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
@@ -123,8 +123,10 @@ function SwapInputAmount() {
 }
 
 function SwapInputIcon() {
-  const { SwapInputController, AnimatedSwapStyles } = useSwapContext();
+  const { SwapInputController } = useSwapContext();
   const theme = useTheme();
+
+  const [showPlaceholder, setShowPlaceholder] = useState(true);
 
   const boxStyles = useAnimatedStyle(() => {
     return {
@@ -144,9 +146,18 @@ function SwapInputIcon() {
     return SwapInputController.assetToSell?.value?.symbol || '';
   });
 
+  useAnimatedReaction(
+    () => SwapInputController.assetToSell?.value,
+    (current, prev) => {
+      if (current !== null && prev == null) {
+        runOnJS(setShowPlaceholder)(false);
+      }
+    }
+  );
+
   return (
     <Box paddingRight="10px">
-      {!SwapInputController?.assetToSell?.value ? (
+      {showPlaceholder ? (
         <Box
           as={Animated.View}
           borderRadius={18}
