@@ -196,7 +196,7 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
         // Note: The code that sets this negative index can be found in closeTabWorklet().
         const indexToMakeActive = Math.abs(animatedActiveTabIndex.value);
 
-        if (indexToMakeActive >= 0 && indexToMakeActive < currentlyOpenTabIds.value.length) {
+        if (indexToMakeActive < currentlyOpenTabIds.value.length) {
           animatedActiveTabIndex.value = indexToMakeActive;
           runOnJS(setActiveTabIndex)(indexToMakeActive);
         } else {
@@ -266,9 +266,9 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
       for (let i = 0; i < currentQueue.length; i++) {
         const operation = currentQueue[i];
         if (operation.type === 'closeTab') {
-          const index = newTabStates.findIndex(tab => tab.uniqueId === operation.tabId);
-          if (index !== -1) {
-            newTabStates.splice(index, 1);
+          const indexToClose = newTabStates.findIndex(tab => tab.uniqueId === operation.tabId);
+          if (indexToClose !== -1) {
+            newTabStates.splice(indexToClose, 1);
             // Check to ensure we are setting a valid active tab index
             if (operation.newActiveIndex === undefined) {
               newActiveIndex = undefined;
@@ -283,30 +283,33 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
                 newActiveIndex = -(currentlyOpenTabIds.value.length - 1);
               }
             }
-            // Remove the operation from the queue after processing
-            currentQueue.splice(i, 1);
+          } else {
+            // ⚠️ TODO: Add logging here to report any time a tab close operation was registered for a
+            // nonexistent tab (should never happen)
           }
+          // Remove the operation from the queue after processing
+          currentQueue.splice(i, 1);
         }
       }
       // Then process newTab operations from oldest to newest
       for (let i = 0; i < currentQueue.length; i++) {
         const operation = currentQueue[i];
         if (operation.type === 'newTab') {
-          const newTab = {
-            canGoBack: false,
-            canGoForward: false,
-            uniqueId: operation.tabId,
-            url: RAINBOW_HOME,
-          };
-          newTabStates.push(newTab);
-          shouldToggleTabView = true;
-          // Check to ensure we are setting a valid active tab index
+          // Check to ensure the tabId exists in currentlyOpenTabIds before creating the tab
           const indexForNewTab = currentlyOpenTabIds.value.findIndex(tabId => tabId === operation.tabId);
           if (indexForNewTab !== -1) {
+            const newTab = {
+              canGoBack: false,
+              canGoForward: false,
+              uniqueId: operation.tabId,
+              url: RAINBOW_HOME,
+            };
+            newTabStates.push(newTab);
+            shouldToggleTabView = true;
             newActiveIndex = indexForNewTab;
           } else {
-            // Make the last tab active if the requested index is not found
-            newActiveIndex = currentlyOpenTabIds.value.length - 1;
+            // ⚠️ TODO: Add logging here to report any time a new tab operation is given a nonexistent
+            // tabId (should never happen)
           }
           // Remove the operation from the queue after processing
           currentQueue.splice(i, 1);
