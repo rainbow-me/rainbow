@@ -975,7 +975,7 @@ export const SignTransactionSheet = () => {
               height: expandedCardBottomInset,
               bottom: 0,
               width: deviceWidth,
-              backgroundColor: colors.black,
+              backgroundColor: isDarkMode ? '#191A1C' : surfacePrimary,
             }}
           />
         )}
