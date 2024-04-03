@@ -75,7 +75,6 @@ export async function get(key: string, options: KeychainOptions = {}): Promise<R
     }
 
     let data = cache.getString(key);
-
     if (!data) {
       try {
         const result = await getInternetCredentials(key, options);
@@ -94,18 +93,14 @@ export async function get(key: string, options: KeychainOptions = {}): Promise<R
            * want to decrypt those here.
            */
           if (IS_ANDROID && result.password.includes('cipher') && !EXEMPT_ENCRYPTED_KEYS.includes(key)) {
-            logger.debug(
-              `keychain: decrypting private data on Android`,
-              {
-                key,
-              },
-              logger.DebugContext.keychain
-            );
+            logger.debug(`keychain: decrypting private data on Android`, {}, logger.DebugContext.keychain);
 
             const pin = options.androidEncryptionPin || (await authenticateWithPIN());
+            !!pin && logger.log('keychain: using pin to decrypt cipher');
             const decryptedValue = await encryptor.decrypt(pin, result.password);
 
             if (decryptedValue) {
+              logger.log('keychain: decrypted value');
               data = decryptedValue;
             } else {
               logger.error(new RainbowError(`keychain: failed to decrypt private data on Android`));
@@ -115,6 +110,11 @@ export async function get(key: string, options: KeychainOptions = {}): Promise<R
           }
         }
       } catch (e: any) {
+        logger.log(`keychain: _get() failed`, {
+          extra: {
+            error: e.toString(),
+          },
+        });
         switch (e.toString()) {
           /*
            * Can happen if the user initially had biometrics enabled, installed

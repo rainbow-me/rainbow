@@ -510,7 +510,6 @@ const MintSheet = () => {
           </BackgroundImage>
         </BlurWrapper>
       )}
-      {/* @ts-expect-error JavaScript component */}
       <SlackSheet
         backgroundColor={isDarkMode ? `rgba(22, 22, 22, ${ios ? 0.4 : 1})` : `rgba(26, 26, 26, ${ios ? 0.4 : 1})`}
         {...(IS_IOS ? { height: '100%' } : {})}

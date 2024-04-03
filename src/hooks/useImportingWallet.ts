@@ -30,19 +30,14 @@ import { deriveAccountFromWalletInput } from '@/utils/wallet';
 import { logger as Logger, RainbowError } from '@/logger';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
+import { checkWalletsForBackupStatus } from '@/screens/SettingsSheet/utils';
+import walletBackupTypes from '@/helpers/walletBackupTypes';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();
   const { selectedWallet, wallets } = useWallets();
 
-  const {
-    getParent: dangerouslyGetParent,
-    navigate,
-    goBack,
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'replace' does not exist on type '{ dispa... Remove this comment to see the full error message
-    replace,
-    setParams,
-  } = useNavigation();
+  const { getParent: dangerouslyGetParent, navigate, replace, setParams } = useNavigation();
   const initializeWallet = useInitializeWallet();
   const isWalletEthZero = useIsWalletEthZero();
   const [isImporting, setImporting] = useState(false);
@@ -59,7 +54,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
 
   const inputRef = useRef<TextInput>(null);
 
-  // @ts-expect-error ts-migrate(2554) FIXME: Expected 2-4 arguments, but got 1.
   const { handleFocus } = useMagicAutofocus(inputRef);
 
   const isSecretValid = useMemo(() => {
@@ -308,10 +302,18 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
                         isValidBluetoothDeviceId(input)
                       )
                     ) {
+                      const { backupProvider } = checkWalletsForBackupStatus(wallets);
+
+                      let stepType: string = WalletBackupStepTypes.no_provider;
+                      if (backupProvider === walletBackupTypes.cloud) {
+                        stepType = WalletBackupStepTypes.backup_now_to_cloud;
+                      } else if (backupProvider === walletBackupTypes.manual) {
+                        stepType = WalletBackupStepTypes.backup_now_manually;
+                      }
+
                       IS_TESTING !== 'true' &&
                         Navigation.handleAction(Routes.BACKUP_SHEET, {
-                          single: true,
-                          step: WalletBackupStepTypes.imported,
+                          step: stepType,
                         });
                     }
                   }, 1000);

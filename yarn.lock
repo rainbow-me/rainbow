@@ -1382,6 +1382,11 @@
   dependencies:
     date-fns "^2.19.0"
 
+"@candlefinance/faster-image@1.3.4":
+  version "1.3.4"
+  resolved "https://registry.yarnpkg.com/@candlefinance/faster-image/-/faster-image-1.3.4.tgz#ebbc314dfb2d7901ebd2664d3f1d3f11555f5ed4"
+  integrity sha512-N19Q4Yd7BWWRiWTKPxzsOXdSuy5mqPVcKJ174Lg/tjoci3h0sGQ0l8vSQX+a0ckvR6Op09pWmAccJ5qeZhK7CA==
+
 "@capsizecss/core@3.0.0":
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@capsizecss/core/-/core-3.0.0.tgz#81b2fb222bd9716d211e4ddd0dc9cc42f71b4f37"
@@ -3315,10 +3320,10 @@
   dependencies:
     react-merge-refs "^1.0.0"
 
-"@rainbow-me/swaps@0.10.0":
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/@rainbow-me/swaps/-/swaps-0.10.0.tgz#d1d2a67e751feb1fddf1206de5b0b4d514fedf2d"
-  integrity sha512-hBh9fhTWzqgDPIhi+R2ZzTGww0yIGnNZaHasEtpByRuHsxGWoljfbu3Eq/Sdi5pxpQiEnJPqmsLWfga+I54RmQ==
+"@rainbow-me/swaps@0.12.0":
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/swaps/-/swaps-0.12.0.tgz#0b52c304e4f4616993bc1943a590fc285cc3eef6"
+  integrity sha512-Ag26PvCHc4HvpJqUli6ojYx6slHPjSvlhmyvPhmia3vM21Zx1+o2/HxzzQh7Hu5Lig8vlJy5+0M0CcpsmFLJHA==
   dependencies:
     "@ethereumjs/util" "9.0.0"
     "@ethersproject/abi" "5.7.0"
@@ -3992,10 +3997,10 @@
   resolved "https://registry.yarnpkg.com/@rnx-kit/align-deps/-/align-deps-2.2.4.tgz#3ed70da68276163ee9b362f1c625ccc4e17d364d"
   integrity sha512-sLbQMBU6LvYesH6AsIHKsN6e90PU1JGyjzvZDXYX8VnxqgjmEkgqHF8/PFAKi0lP+OUzDZk6bmSo3cbhd6OqXg==
 
-"@rudderstack/rudder-sdk-react-native@1.12.0":
-  version "1.12.0"
-  resolved "https://registry.yarnpkg.com/@rudderstack/rudder-sdk-react-native/-/rudder-sdk-react-native-1.12.0.tgz#d7016b542e2c6a81e787b2a17f1f2ffb2da1e207"
-  integrity sha512-9ULPosPVq3T8s2irZVyMx1qELZnderpPMAgdheK166uTz7yxDSR+ASjoZvIPKZhpnm3afvTxFXw9s0Ji0SCtVw==
+"@rudderstack/rudder-sdk-react-native@1.12.1":
+  version "1.12.1"
+  resolved "https://registry.yarnpkg.com/@rudderstack/rudder-sdk-react-native/-/rudder-sdk-react-native-1.12.1.tgz#fc2473db5bbbffab3246fd432227f681fcac8d2f"
+  integrity sha512-efUuKt8KKm6YECyOHaBjmZTGm4MU6H7gQVE7mQenlSmCXFRMwpq+Lh/wxoO4dIsA6t14ANI8LPHlNZN222w4cA==
 
 "@scure/base@^1.1.3", "@scure/base@~1.1.0", "@scure/base@~1.1.2", "@scure/base@~1.1.4":
   version "1.1.6"
@@ -16928,10 +16933,10 @@ react-native-vision-camera@3.6.4:
   resolved "https://registry.yarnpkg.com/react-native-vision-camera/-/react-native-vision-camera-3.6.4.tgz#ac77238f31779f647d03bce3cd4b5eba61f3df85"
   integrity sha512-DDWb8aB5tE7sM7YuU5f31AuhJVDJS3amZoZMQgHWa8S9h0acp3hY3uyriKzXshj/asYu2UAo5QUUglwl7Mcd1Q==
 
-react-native-webview@13.7.0:
-  version "13.7.0"
-  resolved "https://registry.yarnpkg.com/react-native-webview/-/react-native-webview-13.7.0.tgz#1ba7a1dcc047b7a057ecad86a0ef58f25610100a"
-  integrity sha512-pvAaGDxAGrhv9sxvQgpMyLeZrHxGY314lmvp6YakrzdvRa1ZUkAYMgYL3JnogMV6QIvxuFp1AWO1bJxmWmArUw==
+react-native-webview@13.8.2:
+  version "13.8.2"
+  resolved "https://registry.yarnpkg.com/react-native-webview/-/react-native-webview-13.8.2.tgz#a9f82b0312b1f54a45a7ebe40222fff72e7aeab5"
+  integrity sha512-4qBb04XPiLdfAbpU0x7RsMX4iIrggIvBVfJq4yqQhQwY+uJARJaOAZw9+KfA0/kNYQGKHSKQakXLAqQulUrlvQ==
   dependencies:
     escape-string-regexp "2.0.0"
     invariant "2.2.4"

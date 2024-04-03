@@ -1,6 +1,5 @@
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { IS_TEST } from '@/env';
 import useUpdateEmoji from '../../../src/hooks/useUpdateEmoji';
 import ProfileModal from './profile/ProfileModal';
 import { analytics } from '@/analytics';
@@ -11,9 +10,17 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
 import { profileUtils } from '@/utils';
-import { delay } from '@rainbow-me/helpers/utilities';
 
-export default function WalletProfileState({ actionType, address, isNewProfile, onCancel, onCloseModal, profile, forceColor }) {
+export default function WalletProfileState({
+  actionType,
+  address,
+  isNewProfile,
+  onCancel,
+  onCloseModal,
+  profile,
+  forceColor,
+  isFromSettings = true,
+}) {
   const [webProfile, setWebProfile] = useState(null);
   const { goBack, navigate } = useNavigation();
   const { getWebProfile } = useUpdateEmoji();
@@ -32,10 +39,10 @@ export default function WalletProfileState({ actionType, address, isNewProfile, 
     onCancel?.();
     goBack();
     analytics.track('Tapped "Cancel" on Wallet Profile modal');
-    if (actionType === 'Create') {
+    if (actionType === 'Create' && !isFromSettings) {
       navigate(Routes.CHANGE_WALLET_SHEET);
     }
-  }, [actionType, goBack, navigate, onCancel]);
+  }, [actionType, goBack, navigate, onCancel, isFromSettings]);
 
   const handleSubmit = useCallback(async () => {
     analytics.track('Tapped "Submit" on Wallet Profile modal');
@@ -46,7 +53,7 @@ export default function WalletProfileState({ actionType, address, isNewProfile, 
     });
     const callback = async () => {
       goBack();
-      if (actionType === 'Create' && isNewProfile) {
+      if (actionType === 'Create' && isNewProfile && !isFromSettings) {
         navigate(Routes.CHANGE_WALLET_SHEET);
       }
     };
@@ -56,7 +63,7 @@ export default function WalletProfileState({ actionType, address, isNewProfile, 
     } else {
       setCallbackAfterObtainingSeedsFromKeychainOrError(callback);
     }
-  }, [actionType, nameColor, goBack, isNewProfile, nameEmoji, navigate, onCloseModal, profileImage, value]);
+  }, [actionType, nameColor, goBack, isNewProfile, nameEmoji, navigate, onCloseModal, profileImage, value, isFromSettings]);
 
   useEffect(() => {
     const getProfile = async () => {

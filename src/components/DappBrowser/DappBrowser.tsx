@@ -1,18 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
+import { StyleSheet } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
+import Animated, { interpolateColor, useAnimatedProps, useAnimatedStyle } from 'react-native-reanimated';
 import RNFS from 'react-native-fs';
 
 import { Page } from '@/components/layout';
 import { Box, globalColors, useColorMode } from '@/design-system';
-
+import { IS_ANDROID } from '@/env';
 import { safeAreaInsetValues } from '@/utils';
 import { BrowserContextProvider, useBrowserContext } from './BrowserContext';
-import { BrowserTab } from './BrowserTab';
-import { StyleSheet } from 'react-native';
+import { BrowserTab, pruneScreenshots } from './BrowserTab';
 import { TAB_VIEW_ROW_HEIGHT } from './Dimensions';
-import { IS_ANDROID } from '@/env';
 import { Search } from './search/Search';
+import { TabViewToolbar } from './TabViewToolbar';
+import { SheetGestureBlocker } from '../sheet/SheetGestureBlocker';
+import { ProgressBar } from './ProgressBar';
+
+const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 
 const getInjectedJS = async () => {
   const baseDirectory = IS_ANDROID ? RNFS.DocumentDirectoryPath : RNFS.MainBundlePath;
@@ -42,45 +46,61 @@ const DappBrowserComponent = () => {
 
   const { scrollViewRef, tabStates, tabViewProgress, tabViewVisible } = useBrowserContext();
 
-  const backgroundStyle = useAnimatedStyle(
-    () => ({
-      opacity: tabViewProgress?.value ?? 0,
-    }),
-    []
-  );
+  useEffect(() => {
+    pruneScreenshots(tabStates);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const backgroundStyle = useAnimatedStyle(() => {
+    const progress = tabViewProgress?.value ?? 0;
+
+    return {
+      backgroundColor: interpolateColor(
+        progress,
+        [0, 100],
+        [isDarkMode ? globalColors.grey100 : '#FBFCFD', isDarkMode ? '#0A0A0A' : '#FBFCFD']
+      ),
+    };
+  });
+
+  const scrollEnabledProp = useAnimatedProps(() => ({
+    scrollEnabled: tabViewVisible?.value,
+  }));
 
   return (
-    <Box as={Page} height="full" style={isDarkMode ? styles.rootViewBackground : styles.rootViewBackgroundLight} width="full">
-      <Box
-        as={Animated.View}
-        borderRadius={ScreenCornerRadius}
-        height="full"
-        position="absolute"
-        style={[
-          backgroundStyle,
-          {
-            backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD',
-            paddingTop: android ? 30 : 0,
-          },
-        ]}
-        width="full"
-      />
-      <Animated.ScrollView
-        contentContainerStyle={{
-          backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD',
-          height: Math.ceil(tabStates.length / 2) * TAB_VIEW_ROW_HEIGHT + safeAreaInsetValues.bottom + (android ? 35 : 0) + 104,
-          zIndex: 20000,
-        }}
-        ref={scrollViewRef}
-        scrollEnabled={tabViewVisible}
-        showsVerticalScrollIndicator={false}
-      >
-        {tabStates.map((tab, index) => (
-          <BrowserTab key={index} tabIndex={index} injectedJS={injectedJS} />
-        ))}
-      </Animated.ScrollView>
-      <Search />
-    </Box>
+    <SheetGestureBlocker>
+      <Box as={Page} height="full" style={isDarkMode ? styles.rootViewBackground : styles.rootViewBackgroundLight} width="full">
+        <Box
+          as={Animated.View}
+          height="full"
+          position="absolute"
+          style={[
+            backgroundStyle,
+            {
+              paddingTop: android ? 30 : 0,
+            },
+          ]}
+          width="full"
+        />
+        <AnimatedScrollView
+          animatedProps={scrollEnabledProp}
+          contentContainerStyle={{
+            height: Math.ceil(tabStates.length / 2) * TAB_VIEW_ROW_HEIGHT + safeAreaInsetValues.bottom + (android ? 35 : 0) + 165 + 28,
+            zIndex: 20000,
+          }}
+          ref={scrollViewRef}
+          scrollEventThrottle={16}
+          showsVerticalScrollIndicator={false}
+        >
+          {tabStates.map((_, index) => (
+            <BrowserTab key={tabStates[index].uniqueId} tabId={tabStates[index].uniqueId} tabIndex={index} injectedJS={injectedJS} />
+          ))}
+        </AnimatedScrollView>
+        <ProgressBar />
+        <TabViewToolbar />
+        <Search />
+      </Box>
+    </SheetGestureBlocker>
   );
 };
 

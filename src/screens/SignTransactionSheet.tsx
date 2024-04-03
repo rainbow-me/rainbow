@@ -31,7 +31,7 @@ import { NewTransaction, ParsedAddressAsset } from '@/entities';
 import { useNavigation } from '@/navigation';
 
 import { useTheme } from '@/theme';
-import { abbreviations, ethereumUtils, safeAreaInsetValues } from '@/utils';
+import { abbreviations, deviceUtils, ethereumUtils, safeAreaInsetValues } from '@/utils';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { metadataPOSTClient } from '@/graphql';
@@ -142,6 +142,7 @@ export type SignTransactionSheetRouteProp = RouteProp<{ SignTransactionSheet: Si
 export const SignTransactionSheet = () => {
   const { goBack, navigate } = useNavigation();
   const { colors, isDarkMode } = useTheme();
+  const { width: deviceWidth } = useDimensions();
   const { accountAddress } = useAccountSettings();
   const [simulationData, setSimulationData] = useState<TransactionSimulationResult | undefined>();
   const [simulationError, setSimulationError] = useState<TransactionErrorType | undefined>(undefined);
@@ -947,8 +948,19 @@ export const SignTransactionSheet = () => {
               )}
             </Box>
 
+            {requestType === 'browser' && (
+              <Box
+                height={{ custom: 160 }}
+                position="absolute"
+                style={{ bottom: -24, zIndex: 0, backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD' }}
+                width={{ custom: deviceUtils.dimensions.width }}
+              >
+                <Box height="full" width="full" style={{ backgroundColor: 'rgba(0, 0, 0, 0.7)' }} />
+              </Box>
+            )}
+
             {!isMessageRequest && (
-              <Box alignItems="center" justifyContent="center" style={{ height: 30, zIndex: -1 }}>
+              <Box alignItems="center" justifyContent="center" style={{ height: 30, zIndex: 1 }}>
                 <GasSpeedButton
                   marginTop={0}
                   horizontalPadding={20}

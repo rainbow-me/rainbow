@@ -24,7 +24,7 @@ type Props = {
 };
 
 export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props> = ({ transaction, hideIcon }) => {
-  const { minedAt, status, from } = transaction;
+  const { minedAt, status, type, from } = transaction;
   const dispatch = useDispatch();
   const { navigate, goBack } = useNavigation();
   const accountAddress = useSelector((state: AppState) => state.settings.accountAddress);
@@ -112,7 +112,7 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
       </Box>
       <Box paddingBottom="24px">
         <Stack alignHorizontal="center" space="16px">
-          {status && !hideIcon && (
+          {type && !hideIcon && (
             <Box borderRadius={30} style={{ overflow: 'hidden' }}>
               <RadialGradient
                 style={{
@@ -131,10 +131,12 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
               </RadialGradient>
             </Box>
           )}
+
           <Stack alignHorizontal="center" space="24px">
-            {status && (
+            {type && (
               <Text size="22pt" weight="heavy" color={color}>
-                {capitalize(status)}
+                {/* @ts-ignore */}
+                {i18n.t(i18n.l.transactions.type[transaction?.title])}
               </Text>
             )}
             {date && (
