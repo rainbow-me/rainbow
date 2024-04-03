@@ -95,7 +95,7 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
   if (!section.data.length) return null;
 
   return (
-    <Box paddingHorizontal={'20px'} key={section.id} testID={`${section.id}-token-to-buy-section`}>
+    <Box key={section.id} testID={`${section.id}-token-to-buy-section`}>
       <Stack space="20px">
         {section.id === 'other_networks' ? (
           <Box borderRadius={12} height={{ custom: 52 }}>
@@ -109,14 +109,16 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
             </Inset>
           </Box>
         ) : null}
-        <Inline space="6px" alignVertical="center">
-          <Text size="14px / 19px (Deprecated)" weight="heavy" color={section.id === 'bridge' ? color : { custom: color }}>
-            {symbol}
-          </Text>
-          <Text size="14px / 19px (Deprecated)" weight="heavy" color="label">
-            {title}
-          </Text>
-        </Inline>
+        <Box paddingHorizontal={'20px'}>
+          <Inline space="6px" alignVertical="center">
+            <Text size="14px / 19px (Deprecated)" weight="heavy" color={section.id === 'bridge' ? color : { custom: color }}>
+              {symbol}
+            </Text>
+            <Text size="14px / 19px (Deprecated)" weight="heavy" color="label">
+              {title}
+            </Text>
+          </Inline>
+        </Box>
 
         {/* TODO: fix this from causing the UI to be completely slow... */}
         <AnimatedFlashListComponent

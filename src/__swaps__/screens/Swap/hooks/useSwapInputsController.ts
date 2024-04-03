@@ -369,16 +369,18 @@ export function useSwapInputsController({
     const prevAssetToSell = assetToSell.value;
     const prevAssetToBuy = assetToBuy.value;
 
-    if (prevAssetToBuy) {
-      assetToSell.value = prevAssetToBuy;
-    } else {
-      assetToSell.value = null;
-    }
-
     if (prevAssetToSell) {
       assetToBuy.value = prevAssetToSell;
+      outputChainId.value = prevAssetToSell.chainId;
     } else {
       assetToBuy.value = null;
+    }
+
+    if (prevAssetToBuy) {
+      assetToSell.value = prevAssetToBuy;
+      outputChainId.value = prevAssetToBuy.chainId;
+    } else {
+      assetToSell.value = null;
     }
 
     // TODO: if !prevAssetToBuy => focus assetToSell input
