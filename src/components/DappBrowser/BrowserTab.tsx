@@ -656,12 +656,16 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
       setNativeProps(scrollViewRef, { scrollEnabled: false });
     },
     onEnd: (e, ctx: { startX?: number }) => {
-      if (!tabViewVisible?.value) return;
-
       const xDelta = e.absoluteX - (ctx.startX || 0);
       setNativeProps(scrollViewRef, { scrollEnabled: !!tabViewVisible?.value });
 
-      if ((xDelta < -(TAB_VIEW_COLUMN_WIDTH / 2 + 20) && e.velocityX <= 0) || e.velocityX < -500) {
+      const isBeyondDismissThreshold = xDelta < -(TAB_VIEW_COLUMN_WIDTH / 2 + 20) && e.velocityX <= 0;
+      const isFastLeftwardSwipe = e.velocityX < -500;
+      const isEmptyState = !multipleTabsOpen.value && isOnHomepage;
+
+      const shouldDismiss = !!tabViewVisible?.value && !isEmptyState && (isBeyondDismissThreshold || isFastLeftwardSwipe);
+
+      if (shouldDismiss) {
         const xDestination = -Math.min(Math.max(deviceWidth, deviceWidth + Math.abs(e.velocityX * 0.2)), 1200);
         // Store the tab's index before modifying currentlyOpenTabIds, so we can pass it along to closeTabWorklet()
         const storedTabIndex = currentlyOpenTabIds?.value.indexOf(tabId) ?? tabIndex;
@@ -787,7 +791,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
                           automaticallyAdjustContentInsets
                           automaticallyAdjustsScrollIndicatorInsets={false}
                           decelerationRate={'normal'}
-                          injectedJavaScript={getWebsiteMetadata}
+                          injectedJavaScript={getWebsiteBackgroundColorAndTitle}
                           mediaPlaybackRequiresUserAction
                           onLoadStart={handleOnLoadStart}
                           onLoad={handleOnLoad}
@@ -811,6 +815,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
                 <WebViewBorder animatedTabIndex={animatedTabIndex} enabled={IS_IOS && isDarkMode && !isOnHomepage} />
                 <CloseTabButton
                   animatedMultipleTabsOpen={animatedMultipleTabsOpen}
+                  isOnHomepage={isOnHomepage}
                   multipleTabsOpen={multipleTabsOpen}
                   tabId={tabId}
                   tabIndex={tabIndex}

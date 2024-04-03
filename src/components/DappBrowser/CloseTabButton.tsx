@@ -5,9 +5,9 @@ import { Box, Cover, TextIcon, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { deviceUtils } from '@/utils';
 import { AnimatedBlurView } from '@/__swaps__/screens/Swap/components/AnimatedBlurView';
+import { TIMING_CONFIGS } from '../animations/animationConfigs';
 import { useBrowserContext } from './BrowserContext';
 import { TAB_VIEW_COLUMN_WIDTH } from './Dimensions';
-import { TIMING_CONFIGS } from '../animations/animationConfigs';
 
 // ⚠️ TODO: Fix close button press detection — currently being blocked
 // by the gesture handlers within the BrowserTab component.
@@ -28,11 +28,13 @@ const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpaci
 
 export const CloseTabButton = ({
   animatedMultipleTabsOpen,
+  isOnHomepage,
   multipleTabsOpen,
   tabId,
   tabIndex,
 }: {
   animatedMultipleTabsOpen: SharedValue<number>;
+  isOnHomepage: boolean;
   multipleTabsOpen: SharedValue<boolean>;
   tabId: string;
   tabIndex: number;
@@ -58,9 +60,14 @@ export const CloseTabButton = ({
   const containerStyle = useAnimatedStyle(() => {
     const buttonPadding = multipleTabsOpen.value ? SCALE_ADJUSTED_X_BUTTON_PADDING : SCALE_ADJUSTED_X_BUTTON_PADDING_SINGLE_TAB;
     const buttonSize = multipleTabsOpen.value ? SCALE_ADJUSTED_X_BUTTON_SIZE : SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB;
-    const pointerEvents = tabViewVisible?.value ? 'auto' : 'none';
+
+    const isEmptyState = isOnHomepage && !multipleTabsOpen.value;
+    const opacity = isEmptyState ? withTiming(0, TIMING_CONFIGS.tabPressConfig) : withTiming(1, TIMING_CONFIGS.tabPressConfig);
+    const pointerEvents = tabViewVisible?.value && !isEmptyState ? 'auto' : 'none';
+
     return {
       height: buttonSize,
+      opacity,
       pointerEvents,
       right: buttonPadding,
       top: buttonPadding,
@@ -78,7 +85,6 @@ export const CloseTabButton = ({
   const singleTabStyle = useAnimatedStyle(() => {
     return {
       opacity: interpolate(animatedMultipleTabsOpen.value, [0, 0.1, 1], [1, 0, 0], 'clamp'),
-      // opacity: multipleTabsOpenBoolean.value ? 0 : withTiming(1, TIMING_CONFIGS.tabPressConfig),
       pointerEvents: multipleTabsOpen.value ? 'none' : 'auto',
     };
   });
