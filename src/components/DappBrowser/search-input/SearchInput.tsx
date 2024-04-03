@@ -36,8 +36,10 @@ export const SearchInput = ({
   onSubmitEditing,
   isFocused,
   isFocusedValue,
+  logoUrl,
+  canGoBack,
+  canGoForward,
 }: {
-  // canGoBack: boolean; // <- re-enable this when canGoBack behavior is fixed
   inputRef: RefObject<TextInput>;
   formattedInputValue: { value: string; tabIndex: number };
   inputValue: string | undefined;
@@ -48,8 +50,11 @@ export const SearchInput = ({
   onSubmitEditing: (event: NativeSyntheticEvent<TextInputSubmitEditingEventData>) => void;
   isFocused: boolean;
   isFocusedValue: SharedValue<boolean>;
+  logoUrl: string | undefined | null;
+  canGoBack: boolean;
+  canGoForward: boolean;
 }) => {
-  const { animatedActiveTabIndex, goBack, onRefresh, tabViewProgress } = useBrowserContext();
+  const { animatedActiveTabIndex, goBack, goForward, onRefresh, tabViewProgress } = useBrowserContext();
   const { isFavorite, addFavorite, removeFavorite } = useFavoriteDappsStore();
   const { isDarkMode } = useColorMode();
 
@@ -104,16 +109,13 @@ export const SearchInput = ({
         const site: Omit<Site, 'timestamp'> = {
           name: getNameFromFormattedUrl(formattedUrl),
           url: inputValue,
-          // ⚠️ Removed the favicons for now since they tend to be worse
-          // than having no image. Need to pull in dapp metadata and ideally
-          // grab the website's apple-touch-icon as a fallback if it exists.
-          image: '',
+          image: logoUrl || `https://${formattedUrl}/apple-touch-icon.png`,
         };
         addFavorite(site);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formattedUrl, inputValue]);
+  }, [formattedUrl, inputValue, logoUrl]);
 
   const menuConfig = useMemo(
     () => ({
@@ -137,29 +139,44 @@ export const SearchInput = ({
               },
             }
           : {},
-        // ⚠️ TODO: Re-enable this when canGoBack behavior is fixed:
-        // canGoBack
-        //   ? {
-        //       actionKey: 'back',
-        //       actionTitle: 'Back',
-        //       icon: {
-        //         iconType: 'SYSTEM',
-        //         iconValue: 'arrow.uturn.left',
-        //       },
-        //     }
-        //   : {},
+        canGoForward
+          ? {
+              actionKey: 'forward',
+              actionTitle: 'Forward',
+              icon: {
+                iconType: 'SYSTEM',
+                iconValue: 'arrowshape.forward',
+              },
+            }
+          : {},
+        canGoBack
+          ? {
+              actionKey: 'back',
+              actionTitle: 'Back',
+              icon: {
+                iconType: 'SYSTEM',
+                iconValue: 'arrowshape.backward',
+              },
+            }
+          : {},
       ],
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [/* canGoBack, */ isFavorite(formattedUrl), isGoogleSearch]
+    [canGoBack, canGoForward, isFavorite(formattedUrl), isGoogleSearch]
   );
 
-  const onPressMenuItem = async ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: 'share' | 'favorite' | 'back' } }) => {
+  const onPressMenuItem = async ({
+    nativeEvent: { actionKey },
+  }: {
+    nativeEvent: { actionKey: 'share' | 'favorite' | 'back' | 'forward' };
+  }) => {
     haptics.selection();
     if (actionKey === 'favorite') {
       handleFavoritePress();
     } else if (actionKey === 'back') {
       goBack();
+    } else if (actionKey === 'forward') {
+      goForward();
     } else if (inputValue) {
       handleShareUrl(inputValue);
     }
@@ -231,9 +248,10 @@ export const SearchInput = ({
                   numberOfLines={1}
                   size="17pt"
                   style={[{ alignSelf: 'center', paddingHorizontal: isHome ? 0 : 40 }, hideFormattedUrlWhenTabChanges]}
-                  text={formattedUrlValue}
                   weight="bold"
-                />
+                >
+                  {formattedUrlValue}
+                </AnimatedText>
               </Box>
             </Cover>
           </MaskedView>

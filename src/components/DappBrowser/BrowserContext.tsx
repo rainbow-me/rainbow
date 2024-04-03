@@ -37,10 +37,12 @@ export const BrowserTabViewProgressContextProvider = ({ children }: { children: 
 
 interface BrowserContextType {
   activeTabIndex: number;
+  activeTabRef: React.MutableRefObject<WebView | null>;
   animatedActiveTabIndex: SharedValue<number> | undefined;
   closeTab: (tabId: string) => void;
   goBack: () => void;
   goForward: () => void;
+  loadProgress: SharedValue<number> | undefined;
   newTab: () => void;
   onRefresh: () => void;
   searchInputRef: React.RefObject<TextInput | null>;
@@ -53,7 +55,6 @@ interface BrowserContextType {
   tabViewVisible: SharedValue<boolean> | undefined;
   toggleTabViewWorklet: (activeIndex?: number) => void;
   updateActiveTabState: (newState: Partial<TabState>, tabId?: string) => void;
-  webViewRefs: React.MutableRefObject<(WebView | null)[]>;
 }
 
 export interface TabState {
@@ -61,6 +62,7 @@ export interface TabState {
   canGoForward: boolean;
   uniqueId: string;
   url: string;
+  logoUrl?: string | null;
 }
 
 export const RAINBOW_HOME = 'RAINBOW_HOME';
@@ -79,6 +81,7 @@ const DEFAULT_TAB_STATE: TabState[] = [
 
 const DEFAULT_BROWSER_CONTEXT: BrowserContextType = {
   activeTabIndex: 0,
+  activeTabRef: { current: null },
   animatedActiveTabIndex: undefined,
   closeTab: () => {
     return;
@@ -117,7 +120,6 @@ const DEFAULT_BROWSER_CONTEXT: BrowserContextType = {
   updateActiveTabState: () => {
     return;
   },
-  webViewRefs: { current: [] },
 };
 
 const BrowserContext = createContext<BrowserContextType>(DEFAULT_BROWSER_CONTEXT);
@@ -151,8 +153,9 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
 
   const searchInputRef = useRef<TextInput>(null);
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
-  const webViewRefs = useRef<WebView[]>([]);
+  const activeTabRef = useRef<WebView | null>(null);
 
+  const loadProgress = useSharedValue(0);
   const searchViewProgress = useSharedValue(0);
   const scrollViewOffset = useScrollViewOffset(scrollViewRef);
   const tabViewVisible = useSharedValue(false);
@@ -216,7 +219,6 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
           setActiveTabIndex(0);
           animatedActiveTabIndex.value = 0;
           setTabStates(EMPTY_TAB_STATE);
-          webViewRefs.current = [];
           newTab();
           return;
         } else if (isLastTab && tabIndex > 0) {
@@ -232,40 +234,38 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
       setTabStates(updatedTabs);
       setActiveTabIndex(newActiveTabIndex);
       animatedActiveTabIndex.value = newActiveTabIndex;
-      webViewRefs.current.splice(tabIndex, 1);
     },
-    [activeTabIndex, animatedActiveTabIndex, newTab, setTabStates, tabStates, webViewRefs]
+    [activeTabIndex, animatedActiveTabIndex, newTab, setTabStates, tabStates]
   );
 
   const goBack = useCallback(() => {
-    const activeWebview = webViewRefs.current[activeTabIndex];
-    if (activeWebview && tabStates?.[activeTabIndex]?.canGoBack) {
-      activeWebview.goBack();
+    if (activeTabRef.current && tabStates?.[activeTabIndex]?.canGoBack) {
+      activeTabRef.current.goBack();
     }
-  }, [activeTabIndex, tabStates, webViewRefs]);
+  }, [activeTabIndex, activeTabRef, tabStates]);
 
   const goForward = useCallback(() => {
-    const activeWebview = webViewRefs.current[activeTabIndex];
-    if (activeWebview && tabStates?.[activeTabIndex]?.canGoForward) {
-      activeWebview.goForward();
+    if (activeTabRef.current && tabStates?.[activeTabIndex]?.canGoForward) {
+      activeTabRef.current.goForward();
     }
-  }, [activeTabIndex, tabStates, webViewRefs]);
+  }, [activeTabIndex, activeTabRef, tabStates]);
 
   const onRefresh = useCallback(() => {
-    const activeWebview = webViewRefs.current[activeTabIndex];
-    if (activeWebview) {
-      activeWebview.reload();
+    if (activeTabRef.current) {
+      activeTabRef.current.reload();
     }
-  }, [activeTabIndex, webViewRefs]);
+  }, [activeTabRef]);
 
   return (
     <BrowserContext.Provider
       value={{
         activeTabIndex,
+        activeTabRef,
         animatedActiveTabIndex,
         closeTab,
         goBack,
         goForward,
+        loadProgress,
         newTab,
         onRefresh,
         searchViewProgress,
@@ -278,7 +278,6 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
         tabViewVisible,
         toggleTabViewWorklet,
         updateActiveTabState,
-        webViewRefs,
       }}
     >
       {children}
