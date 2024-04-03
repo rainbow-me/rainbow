@@ -1,20 +1,18 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { SharedValue, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { Box, Cover, globalColors } from '@/design-system';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/screens/Swap/utils/swaps';
 import { useBrowserContext } from './BrowserContext';
 import { WEBVIEW_HEIGHT } from './Dimensions';
 
-export const WebViewBorder = ({ enabled, tabId, tabIndex }: { enabled?: boolean; tabId: string; tabIndex: number }) => {
-  const { animatedActiveTabIndex, currentlyOpenTabIds, tabViewProgress } = useBrowserContext();
+export const WebViewBorder = ({ animatedTabIndex, enabled }: { animatedTabIndex: SharedValue<number>; enabled?: boolean }) => {
+  const { animatedActiveTabIndex, tabViewProgress } = useBrowserContext();
 
   const webViewBorderStyle = useAnimatedStyle(() => {
     const progress = tabViewProgress?.value || 0;
-    const rawAnimatedTabIndex = currentlyOpenTabIds?.value.indexOf(tabId);
-    const animatedTabIndex = rawAnimatedTabIndex === -1 ? tabIndex : rawAnimatedTabIndex ?? tabIndex;
-    const animatedIsActiveTab = animatedActiveTabIndex?.value === animatedTabIndex;
+    const animatedIsActiveTab = animatedActiveTabIndex?.value === animatedTabIndex.value;
 
     const borderRadius = interpolate(progress, [0, 100], [animatedIsActiveTab ? 16 : 30, 30], 'clamp');
     const opacity = 1 - progress / 100;

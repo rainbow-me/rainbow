@@ -31,6 +31,7 @@ import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { MMKV } from 'react-native-mmkv';
 import { RAINBOW_HOME, TabState, useBrowserContext } from './BrowserContext';
 import { Freeze } from 'react-freeze';
+import { MotiView } from 'moti';
 import {
   COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
   INVERTED_MULTI_TAB_SCALE,
@@ -771,52 +772,54 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
             simultaneousHandlers={scrollViewRef}
             waitFor={tapRef}
           >
-            <Animated.View style={[styles.webViewContainer, animatedWebViewStyle, animatedWebViewBackgroundColorStyle]}>
-              <ViewShot options={{ format: 'jpg' }} ref={viewShotRef}>
-                <View collapsable={false} style={{ height: WEBVIEW_HEIGHT, width: '100%' }}>
-                  {isOnHomepage ? (
-                    <Homepage />
-                  ) : (
-                    <Freeze freeze={!isActiveTab}>
-                      <DappBrowserWebview
-                        webviewDebuggingEnabled={IS_DEV}
-                        injectedJavaScriptBeforeContentLoaded={injectedJS}
-                        allowsInlineMediaPlayback
-                        fraudulentWebsiteWarningEnabled
-                        allowsBackForwardNavigationGestures
-                        applicationNameForUserAgent={'Rainbow'}
-                        automaticallyAdjustContentInsets
-                        automaticallyAdjustsScrollIndicatorInsets={false}
-                        decelerationRate={'normal'}
-                        injectedJavaScript={getWebsiteBackgroundColorAndTitle}
-                        mediaPlaybackRequiresUserAction
-                        onLoadStart={handleOnLoadStart}
-                        onLoad={handleOnLoad}
-                        // 👇 This prevents the WebView from hiding its content on load/reload
-                        renderLoading={() => <></>}
-                        onLoadEnd={handleOnLoadEnd}
-                        onError={handleOnError}
-                        onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
-                        onLoadProgress={handleOnLoadProgress}
-                        onMessage={handleOnMessage}
-                        onNavigationStateChange={handleNavigationStateChange}
-                        ref={webViewRef}
-                        source={{ uri: tabUrl || RAINBOW_HOME }}
-                        style={styles.webViewStyle}
-                      />
-                    </Freeze>
-                  )}
-                </View>
-              </ViewShot>
-              <AnimatedFasterImage source={screenshotSource} style={[styles.screenshotContainerStyle, animatedScreenshotStyle]} />
-              <WebViewBorder enabled={IS_IOS && isDarkMode && !isOnHomepage} tabId={tabId} tabIndex={tabIndex} />
-              <CloseTabButton
-                multipleTabsOpen={animatedMultipleTabsOpen}
-                multipleTabsOpenBoolean={animatedMultipleTabsOpenBoolean}
-                tabId={tabId}
-                tabIndex={tabIndex}
-              />
-            </Animated.View>
+            <MotiView animate={{ opacity: 1 }} from={{ opacity: 0 }} transition={{ type: 'timing', ...TIMING_CONFIGS.slowFadeConfig }}>
+              <Animated.View style={[styles.webViewContainer, animatedWebViewStyle, animatedWebViewBackgroundColorStyle]}>
+                <ViewShot options={{ format: 'jpg' }} ref={viewShotRef}>
+                  <View collapsable={false} style={{ height: WEBVIEW_HEIGHT, width: '100%' }}>
+                    {isOnHomepage ? (
+                      <Homepage />
+                    ) : (
+                      <Freeze freeze={!isActiveTab}>
+                        <DappBrowserWebview
+                          webviewDebuggingEnabled={IS_DEV}
+                          injectedJavaScriptBeforeContentLoaded={injectedJS}
+                          allowsInlineMediaPlayback
+                          fraudulentWebsiteWarningEnabled
+                          allowsBackForwardNavigationGestures
+                          applicationNameForUserAgent={'Rainbow'}
+                          automaticallyAdjustContentInsets
+                          automaticallyAdjustsScrollIndicatorInsets={false}
+                          decelerationRate={'normal'}
+                          injectedJavaScript={getWebsiteMetadata}
+                          mediaPlaybackRequiresUserAction
+                          onLoadStart={handleOnLoadStart}
+                          onLoad={handleOnLoad}
+                          // 👇 This prevents the WebView from hiding its content on load/reload
+                          renderLoading={() => <></>}
+                          onLoadEnd={handleOnLoadEnd}
+                          onError={handleOnError}
+                          onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
+                          onLoadProgress={handleOnLoadProgress}
+                          onMessage={handleOnMessage}
+                          onNavigationStateChange={handleNavigationStateChange}
+                          ref={webViewRef}
+                          source={{ uri: tabUrl || RAINBOW_HOME }}
+                          style={styles.webViewStyle}
+                        />
+                      </Freeze>
+                    )}
+                  </View>
+                </ViewShot>
+                <AnimatedFasterImage source={screenshotSource} style={[styles.screenshotContainerStyle, animatedScreenshotStyle]} />
+                <WebViewBorder animatedTabIndex={animatedTabIndex} enabled={IS_IOS && isDarkMode && !isOnHomepage} />
+                <CloseTabButton
+                  animatedMultipleTabsOpen={animatedMultipleTabsOpen}
+                  multipleTabsOpen={multipleTabsOpen}
+                  tabId={tabId}
+                  tabIndex={tabIndex}
+                />
+              </Animated.View>
+            </MotiView>
           </PanGestureHandler>
         </Animated.View>
       </TapGestureHandler>
