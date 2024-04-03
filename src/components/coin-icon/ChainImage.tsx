@@ -11,6 +11,8 @@ import EthereumBadge from '../../assets/badges/ethereum.png';
 import OptimismBadge from '../../assets/badges/optimism.png';
 import PolygonBadge from '../../assets/badges/polygon.png';
 import ZoraBadge from '../../assets/badges/zora.png';
+import AvalancheBadge from '@/assets/badges/avalancheBadge.png';
+import BlastBadge from '@/assets/badges/blastBadge.png';
 
 export function ChainImage({ chain, size = 20 }: { chain: Network | null | undefined; size?: number }) {
   const source = useMemo(() => {
@@ -29,6 +31,10 @@ export function ChainImage({ chain, size = 20 }: { chain: Network | null | undef
       val = IS_IOS ? { uri: 'polygon' } : PolygonBadge;
     } else if (chain === Network.zora) {
       val = IS_IOS ? { uri: 'zora' } : ZoraBadge;
+    } else if (chain === Network.avalanche) {
+      val = IS_IOS ? { uri: 'avalanche' } : AvalancheBadge;
+    } else if (chain === Network.blast) {
+      val = IS_IOS ? { uri: 'blast' } : BlastBadge;
     }
     return val;
   }, [chain]);

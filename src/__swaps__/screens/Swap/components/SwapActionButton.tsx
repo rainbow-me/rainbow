@@ -1,12 +1,18 @@
 /* eslint-disable no-nested-ternary */
 import c from 'chroma-js';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { StyleProp, StyleSheet, TextStyle } from 'react-native';
-import { SharedValue } from 'react-native-reanimated';
+import Animated, {
+  DerivedValue,
+  runOnJS,
+  useAnimatedReaction,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+} from 'react-native-reanimated';
 
 import { ButtonPressAnimation } from '@/components/animations';
-import { AnimatedText, Box, Column, Columns, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
-import { useTheme } from '@/theme';
+import { AnimatedText, Box, Column, Columns, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 
 export const SwapActionButton = ({
   color,
@@ -23,13 +29,13 @@ export const SwapActionButton = ({
   scaleTo,
   small,
 }: {
-  color?: string;
+  color?: DerivedValue<string | undefined>;
   borderRadius?: number;
   disableShadow?: boolean;
   hugContent?: boolean;
-  icon?: string | Readonly<SharedValue<string | undefined>>;
+  icon?: string | DerivedValue<string | undefined>;
   iconStyle?: StyleProp<TextStyle>;
-  label: string | Readonly<SharedValue<string | undefined>>;
+  label: string | DerivedValue<string | undefined>;
   onLongPress?: () => void;
   onPress?: () => void;
   outline?: boolean;
@@ -38,33 +44,75 @@ export const SwapActionButton = ({
   small?: boolean;
 }) => {
   const { isDarkMode } = useColorMode();
-  const { colors } = useTheme();
-
   const fallbackColor = useForegroundColor('blue');
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
-  const textColor = useMemo(() => {
-    if (!color) return globalColors.white100;
-    const contrastWithWhite = c.contrast(color, globalColors.white100);
+  const textColorValue = useSharedValue(globalColors.white100);
 
+  const textColor = (color: string) => {
+    const contrastWithWhite = c.contrast(color || fallbackColor, globalColors.white100);
     if (contrastWithWhite < (isDarkMode ? 2.6 : 2)) {
-      return globalColors.grey100;
+      textColorValue.value = globalColors.grey100;
     } else {
-      return globalColors.white100;
+      textColorValue.value = globalColors.white100;
     }
-  }, [color, isDarkMode]);
+  };
 
-  const secondaryTextColor = useMemo(() => {
-    if (!color) return colors.alpha(globalColors.white100, 0.76);
-    const contrastWithWhite = c.contrast(color, globalColors.white100);
-
-    if (contrastWithWhite < (isDarkMode ? 2.6 : 2)) {
-      return colors.alpha(globalColors.grey100, 0.76);
-    } else {
-      return colors.alpha(globalColors.white100, isDarkMode ? 0.76 : 0.8);
+  useAnimatedReaction(
+    () => color?.value,
+    (current, previous) => {
+      if (previous && current !== previous && current !== undefined) {
+        runOnJS(textColor)(current);
+      }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [color, isDarkMode]);
+  );
+
+  const textStyles = useAnimatedStyle(() => {
+    return {
+      color: textColorValue.value,
+    };
+  });
+
+  const secondaryTextStyles = useAnimatedStyle(() => {
+    let opacity = isDarkMode ? 0.76 : 0.8;
+    if (textColorValue.value === globalColors.grey100) {
+      opacity = 0.76;
+    }
+
+    return {
+      opacity,
+    };
+  });
+
+  const buttonWrapperStyles = useAnimatedStyle(() => {
+    return {
+      backgroundColor: outline ? 'transparent' : color?.value || fallbackColor,
+      borderColor: outline ? separatorSecondary : undefined,
+      borderRadius: borderRadius ?? 24,
+      height: small ? 36 : 48,
+      shadowColor: disableShadow || outline ? 'transparent' : color?.value || fallbackColor,
+      shadowOffset: {
+        width: 0,
+        height: isDarkMode ? 13 : small ? 6 : 10,
+      },
+      shadowOpacity: isDarkMode ? 0.2 : small ? 0.2 : 0.36,
+      shadowRadius: isDarkMode ? 26 : small ? 9 : 15,
+    };
+  });
+
+  const iconValue = useDerivedValue(() => {
+    if (typeof icon === 'string') return icon;
+    return icon?.value || '';
+  });
+
+  const labelValue = useDerivedValue(() => {
+    if (typeof label === 'string') return label;
+    return label?.value || '';
+  });
+
+  const rightIconValue = useDerivedValue(() => {
+    return rightIcon;
+  });
 
   return (
     <ButtonPressAnimation
@@ -74,85 +122,39 @@ export const SwapActionButton = ({
       style={hugContent && feedActionButtonStyles.buttonWrapper}
     >
       <Box
+        as={Animated.View}
         paddingHorizontal={{ custom: small ? 14 : 20 - (outline ? 2 : 0) }}
         paddingLeft={small && icon ? '10px' : undefined}
         paddingRight={small && rightIcon ? '10px' : undefined}
-        style={[
-          feedActionButtonStyles.button,
-          outline && feedActionButtonStyles.outlineButton,
-          {
-            backgroundColor: outline ? 'transparent' : color || fallbackColor,
-            borderColor: outline ? separatorSecondary : undefined,
-            borderRadius: borderRadius ?? 24,
-            height: small ? 36 : 48,
-            shadowColor: disableShadow || outline ? 'transparent' : color || fallbackColor,
-            shadowOffset: {
-              width: 0,
-              height: isDarkMode ? 13 : small ? 6 : 10,
-            },
-            shadowOpacity: isDarkMode ? 0.2 : small ? 0.2 : 0.36,
-            shadowRadius: isDarkMode ? 26 : small ? 9 : 15,
-          },
-        ]}
+        style={[feedActionButtonStyles.button, outline && feedActionButtonStyles.outlineButton, buttonWrapperStyles]}
       >
         <Columns alignHorizontal="center" alignVertical="center" space="6px">
           {icon && (
             <Column width="content">
-              {typeof icon === 'string' ? (
-                <Text
-                  align="center"
-                  color={{ custom: outline ? color || fallbackColor : textColor }}
-                  size={small ? '15pt' : '17pt'}
-                  weight="heavy"
-                >
-                  {icon}
-                </Text>
-              ) : (
-                <AnimatedText
-                  align="center"
-                  color={{ custom: outline ? color || fallbackColor : textColor }}
-                  size={small ? '15pt' : '17pt'}
-                  style={iconStyle}
-                  text={icon}
-                  weight="heavy"
-                />
-              )}
+              <AnimatedText align="center" size={small ? '15pt' : '17pt'} style={[iconStyle, textStyles]} text={iconValue} weight="heavy" />
             </Column>
           )}
-          <Column width="content">
-            {typeof label === 'string' ? (
-              <Text
-                align="center"
-                color={{ custom: outline ? color || fallbackColor : textColor }}
-                numberOfLines={1}
-                size={small ? '17pt' : '20pt'}
-                weight="heavy"
-              >
-                {label}
-              </Text>
-            ) : (
+          {typeof label !== 'undefined' && (
+            <Column width="content">
               <AnimatedText
                 align="center"
-                color={{ custom: outline ? color || fallbackColor : textColor }}
+                style={textStyles}
                 numberOfLines={1}
                 size={small ? '17pt' : '20pt'}
-                text={label}
+                text={labelValue}
                 weight="heavy"
               />
-            )}
-          </Column>
+            </Column>
+          )}
           {rightIcon && (
             <Column width="content">
-              <Text
+              <AnimatedText
                 align="center"
-                color={{
-                  custom: outline ? colors.alpha(color || fallbackColor, 0.76) : secondaryTextColor,
-                }}
+                style={[textStyles, secondaryTextStyles]}
                 size={small ? '15pt' : '17pt'}
+                text={rightIconValue}
                 weight="bold"
-              >
-                {rightIcon}
-              </Text>
+              />
             </Column>
           )}
         </Columns>

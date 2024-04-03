@@ -120,6 +120,11 @@ export function chainNameFromChainId(chainId: ChainId): ChainName {
   return chainIdToNameMapping[chainId];
 }
 
+export function chainNameFromChainIdWorklet(chainId: ChainId): ChainName {
+  'worklet';
+  return chainIdToNameMapping[chainId];
+}
+
 export const chainIdToUse = (connectedToHardhat: boolean, connectedToHardhatOp: boolean, activeSessionChainId: number) => {
   if (connectedToHardhat) {
     return ChainId.hardhat;

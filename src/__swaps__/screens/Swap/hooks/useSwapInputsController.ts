@@ -1,44 +1,56 @@
-import React, { useCallback, useMemo, useRef } from 'react';
-import Animated, {
-  SharedValue,
-  runOnJS,
-  runOnUI,
-  useAnimatedReaction,
-  useDerivedValue,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
+import { useCallback, useMemo, useRef } from 'react';
+import { SharedValue, runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
 
-import { SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '../constants';
-import { IS_INPUT_STABLECOIN, IS_OUTPUT_STABLECOIN, SWAP_FEE } from '../dummyValues';
+import { ETH_COLOR, ETH_COLOR_DARK, SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '../constants';
+import { SWAP_FEE } from '../dummyValues';
 import { inputKeys, inputMethods } from '../types/swap';
 import {
   addCommasToNumber,
   clamp,
   clampJS,
   countDecimalPlaces,
+  extractColorValueForColors,
   findNiceIncrement,
   niceIncrementFormatter,
   trimTrailingZeros,
   valueBasedDecimalFormatter,
 } from '../utils/swaps';
+import { ChainId } from '../types/chains';
+import { ParsedSearchAsset } from '../types/assets';
+import { useColorMode } from '@/design-system';
+import { isSameAssetWorklet } from '../utils/assets';
 
 export function useSwapInputsController({
   focusedInput,
-  inputAssetBalance,
-  inputAssetUsdPrice,
-  outputAssetUsdPrice,
-  setIsFetching,
+  isFetching,
   sliderXPosition,
+  handleExitSearch,
+  handleFocusInputSearch,
+  handleFocusOutputSearch,
+  handleInputPress,
+  handleOutputPress,
+  inputProgress,
+  outputProgress,
 }: {
-  focusedInput: Animated.SharedValue<inputKeys>;
-  inputAssetBalance: number;
-  inputAssetUsdPrice: number;
-  outputAssetUsdPrice: number;
-  setIsFetching: React.Dispatch<React.SetStateAction<boolean>>;
+  focusedInput: SharedValue<inputKeys>;
+  isFetching: SharedValue<boolean>;
   sliderXPosition: SharedValue<number>;
+  handleExitSearch: () => void;
+  handleFocusInputSearch: () => void;
+  handleFocusOutputSearch: () => void;
+  handleInputPress: () => void;
+  handleOutputPress: () => void;
+  inputProgress: SharedValue<number>;
+  outputProgress: SharedValue<number>;
 }) {
+  const { isDarkMode } = useColorMode();
+
+  const assetToSell = useSharedValue<ParsedSearchAsset | null>(null);
+  const assetToBuy = useSharedValue<ParsedSearchAsset | null>(null);
+  const outputChainId = useSharedValue<ChainId>(ChainId.mainnet);
+  const searchQuery = useSharedValue('');
+
   const inputValues = useSharedValue<{ [key in inputKeys]: number | string }>({
     inputAmount: 0,
     inputNativeValue: 0,
@@ -48,11 +60,49 @@ export function useSwapInputsController({
   const inputMethod = useSharedValue<inputMethods>('slider');
   const isQuoteStale = useSharedValue(0);
 
+  const topColor = useDerivedValue(() => {
+    return extractColorValueForColors({
+      colors: assetToSell.value?.colors,
+      isDarkMode,
+    });
+  });
+
+  const bottomColor = useDerivedValue(() => {
+    return extractColorValueForColors({
+      colors: assetToBuy.value?.colors,
+      isDarkMode,
+    });
+  });
+
+  const assetToSellSymbol = useDerivedValue(() => {
+    return assetToSell.value?.symbol ?? '';
+  });
+
+  const assetToSellIconUrl = useDerivedValue(() => {
+    return assetToSell.value?.icon_url ?? '';
+  });
+
+  const assetToBuySymbol = useDerivedValue(() => {
+    return assetToBuy.value?.symbol ?? '';
+  });
+
+  const assetToBuyIconUrl = useDerivedValue(() => {
+    return assetToBuy.value?.icon_url ?? '';
+  });
+
+  const topColorShadow = useDerivedValue(() => {
+    return assetToSell.value?.colors?.shadow ?? (isDarkMode ? ETH_COLOR_DARK : ETH_COLOR);
+  });
+
+  const bottomColorShadow = useDerivedValue(() => {
+    return assetToBuy.value?.colors?.shadow ?? (isDarkMode ? ETH_COLOR_DARK : ETH_COLOR);
+  });
+
   const percentageToSwap = useDerivedValue(() => {
     return Math.round(clamp((sliderXPosition.value - SCRUBBER_WIDTH / SLIDER_WIDTH) / SLIDER_WIDTH, 0, 1) * 100) / 100;
   });
 
-  const niceIncrement = useMemo(() => findNiceIncrement(inputAssetBalance), [inputAssetBalance]);
+  const niceIncrement = useMemo(() => findNiceIncrement(Number(assetToSell.value?.balance.amount)), [assetToSell]);
   const incrementDecimalPlaces = useMemo(() => countDecimalPlaces(niceIncrement), [niceIncrement]);
 
   const formattedInputAmount = useDerivedValue(() => {
@@ -61,13 +111,20 @@ export function useSwapInputsController({
       return addCommasToNumber(inputValues.value.inputAmount);
     }
     if (inputMethod.value === 'outputAmount') {
-      return valueBasedDecimalFormatter(inputValues.value.inputAmount, inputAssetUsdPrice, 'up', -1, IS_INPUT_STABLECOIN, false);
+      return valueBasedDecimalFormatter(
+        inputValues.value.inputAmount,
+        Number(assetToSell.value?.native.price?.amount),
+        'up',
+        -1,
+        assetToSell.value?.type === 'stablecoin' ?? false,
+        false
+      );
     }
 
     return niceIncrementFormatter(
       incrementDecimalPlaces,
-      inputAssetBalance,
-      inputAssetUsdPrice,
+      Number(assetToSell.value?.balance.amount),
+      Number(assetToSell.value?.native.price?.amount),
       niceIncrement,
       percentageToSwap.value,
       sliderXPosition.value
@@ -75,7 +132,7 @@ export function useSwapInputsController({
   });
 
   const formattedInputNativeValue = useDerivedValue(() => {
-    if (inputMethod.value === 'slider' && percentageToSwap.value === 0) return '$0.00';
+    if (inputMethod.value === 'slider' && percentageToSwap.value === 0 && !inputValues.value.inputNativeValue) return '$0.00';
 
     const nativeValue = `$${inputValues.value.inputNativeValue.toLocaleString('en-US', {
       useGrouping: true,
@@ -93,11 +150,18 @@ export function useSwapInputsController({
       return addCommasToNumber(inputValues.value.outputAmount);
     }
 
-    return valueBasedDecimalFormatter(inputValues.value.outputAmount, outputAssetUsdPrice, 'down', -1, IS_OUTPUT_STABLECOIN, false);
+    return valueBasedDecimalFormatter(
+      inputValues.value.outputAmount,
+      Number(assetToBuy.value?.native.price?.amount),
+      'down',
+      -1,
+      assetToBuy.value?.type === 'stablecoin' ?? false,
+      false
+    );
   });
 
   const formattedOutputNativeValue = useDerivedValue(() => {
-    if (inputMethod.value === 'slider' && percentageToSwap.value === 0) return '$0.00';
+    if (inputMethod.value === 'slider' && percentageToSwap.value === 0 && !inputValues.value.outputNativeValue) return '$0.00';
 
     const nativeValue = `$${inputValues.value.outputNativeValue.toLocaleString('en-US', {
       useGrouping: true,
@@ -120,10 +184,12 @@ export function useSwapInputsController({
     resetTimers();
 
     const updateValues = () => {
-      setIsFetching(false);
-      const inputNativeValue = percentage * inputAssetBalance * inputAssetUsdPrice;
-      const outputAmount = (inputNativeValue / outputAssetUsdPrice) * (1 - SWAP_FEE);
-      const outputNativeValue = outputAmount * outputAssetUsdPrice;
+      isFetching.value = false;
+      if (!assetToSell.value || !assetToBuy.value) return;
+
+      const inputNativeValue = percentage * Number(assetToSell.value.balance.amount) * Number(assetToSell.value.native.price?.amount);
+      const outputAmount = (inputNativeValue / Number(assetToBuy.value?.native.price?.amount)) * (1 - SWAP_FEE);
+      const outputNativeValue = outputAmount * Number(assetToBuy.value?.native.price?.amount);
 
       const updateWorklet = () => {
         'worklet';
@@ -142,12 +208,12 @@ export function useSwapInputsController({
 
     if (percentage > 0) {
       if (setStale) isQuoteStale.value = 1;
-      setIsFetching(true);
+      isFetching.value = true;
       spinnerTimer.current = setTimeout(() => {
         animationFrameId.current = requestAnimationFrame(updateValues);
       }, 600);
     } else {
-      setIsFetching(false);
+      isFetching.value = false;
       isQuoteStale.value = 0;
     }
 
@@ -160,13 +226,15 @@ export function useSwapInputsController({
     resetTimers();
 
     const updateValues = () => {
-      setIsFetching(false);
+      isFetching.value = false;
       if (inputKey === 'inputAmount') {
-        const inputNativeValue = amount * inputAssetUsdPrice;
-        const outputAmount = (inputNativeValue / outputAssetUsdPrice) * (1 - SWAP_FEE);
-        const outputNativeValue = outputAmount * outputAssetUsdPrice;
+        if (!assetToSell.value || !assetToBuy.value) return;
 
-        const updatedSliderPosition = clampJS((amount / inputAssetBalance) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
+        const inputNativeValue = amount * Number(assetToSell.value.native.price?.amount);
+        const outputAmount = (inputNativeValue / Number(assetToBuy.value.native.price?.amount)) * (1 - SWAP_FEE);
+        const outputNativeValue = outputAmount * Number(assetToBuy.value.native.price?.amount);
+
+        const updatedSliderPosition = clampJS((amount / Number(assetToSell.value.balance.amount)) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
 
         const updateWorklet = () => {
           'worklet';
@@ -183,11 +251,13 @@ export function useSwapInputsController({
 
         runOnUI(updateWorklet)();
       } else if (inputKey === 'outputAmount') {
-        const outputAmount = amount;
-        const inputNativeValue = outputAmount * outputAssetUsdPrice * (1 + SWAP_FEE);
-        const inputAmount = inputNativeValue / inputAssetUsdPrice;
+        if (!assetToSell.value || !assetToBuy.value) return;
 
-        const updatedSliderPosition = clampJS((inputAmount / inputAssetBalance) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
+        const outputAmount = amount;
+        const inputNativeValue = outputAmount * Number(assetToBuy.value.native.price?.amount) * (1 + SWAP_FEE);
+        const inputAmount = inputNativeValue / Number(assetToSell.value.native.price?.amount);
+
+        const updatedSliderPosition = clampJS((inputAmount / Number(assetToSell.value.balance.amount)) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
 
         const updateWorklet = () => {
           'worklet';
@@ -207,7 +277,7 @@ export function useSwapInputsController({
     };
 
     const resetValuesToZero = () => {
-      setIsFetching(false);
+      isFetching.value = false;
 
       const updateWorklet = () => {
         'worklet';
@@ -235,7 +305,7 @@ export function useSwapInputsController({
 
     if (amount > 0) {
       if (setStale) isQuoteStale.value = 1;
-      setIsFetching(true);
+      isFetching.value = true;
       spinnerTimer.current = setTimeout(() => {
         animationFrameId.current = requestAnimationFrame(updateValues);
       }, 600);
@@ -247,6 +317,79 @@ export function useSwapInputsController({
       resetTimers();
     };
   }, 400);
+
+  const onChangeSearchQuery = (text: string) => {
+    'worklet';
+    searchQuery.value = text;
+  };
+
+  const onSetAssetToSell = (parsedAsset: ParsedSearchAsset) => {
+    'worklet';
+    // if the user has an asset to buy selected and the asset to sell is the same, we need to clear the asset to buy
+    if (assetToBuy.value && isSameAssetWorklet(assetToBuy.value, parsedAsset)) {
+      assetToBuy.value = null;
+    }
+
+    assetToSell.value = parsedAsset;
+    if (!assetToBuy.value) {
+      outputChainId.value = parsedAsset.chainId;
+    }
+
+    inputValues.modify(values => {
+      return {
+        ...values,
+        inputNativeValue: Number(values.inputAmount) * Number(assetToSell.value?.native.price?.amount),
+      };
+    });
+
+    // if the user doesn't have an asset to buy selected, let's open that list
+    if (!assetToBuy.value) {
+      handleOutputPress();
+    } else {
+      handleInputPress();
+    }
+  };
+
+  const onSetAssetToBuy = (parsedAsset: ParsedSearchAsset) => {
+    'worklet';
+    assetToBuy.value = parsedAsset;
+    if (assetToSell.value && isSameAssetWorklet(assetToSell.value, parsedAsset)) {
+      assetToSell.value = null;
+      handleInputPress();
+      handleExitSearch();
+    } else {
+      handleOutputPress();
+      handleExitSearch();
+    }
+  };
+
+  const onSwapAssets = () => {
+    'worklet';
+
+    const prevAssetToSell = assetToSell.value;
+    const prevAssetToBuy = assetToBuy.value;
+
+    if (prevAssetToSell) {
+      assetToBuy.value = prevAssetToSell;
+      outputChainId.value = prevAssetToSell.chainId;
+    } else {
+      assetToBuy.value = null;
+    }
+
+    if (prevAssetToBuy) {
+      assetToSell.value = prevAssetToBuy;
+      outputChainId.value = prevAssetToBuy.chainId;
+    } else {
+      assetToSell.value = null;
+    }
+
+    // TODO: if !prevAssetToBuy => focus assetToSell input
+    // TODO: if !prevAssetToSell => focus assetToBuy input
+
+    if (outputProgress.value === 1) {
+      handleOutputPress();
+    }
+  };
 
   // This handles cleaning up typed amounts when the input focus changes
   useAnimatedReaction(
@@ -281,18 +424,20 @@ export function useSwapInputsController({
       if (!previous) {
         // Handle setting of initial values using niceIncrementFormatter,
         // because we will likely set a percentage-based default input value
+        if (!assetToSell.value || !assetToBuy.value) return;
+
         const inputAmount = niceIncrementFormatter(
           incrementDecimalPlaces,
-          inputAssetBalance,
-          inputAssetUsdPrice,
+          Number(assetToSell.value.balance.amount),
+          Number(assetToSell.value.native.price?.amount),
           niceIncrement,
           percentageToSwap.value,
           sliderXPosition.value,
           true
         );
-        const inputNativeValue = Number(inputAmount) * inputAssetUsdPrice;
-        const outputAmount = (inputNativeValue / outputAssetUsdPrice) * (1 - SWAP_FEE);
-        const outputNativeValue = outputAmount * outputAssetUsdPrice;
+        const inputNativeValue = Number(inputAmount) * Number(assetToSell.value.native.price?.amount);
+        const outputAmount = (inputNativeValue / Number(assetToBuy.value.native.price?.amount)) * (1 - SWAP_FEE);
+        const outputNativeValue = outputAmount * Number(assetToBuy.value.native.price?.amount);
 
         inputValues.modify(values => {
           return {
@@ -320,17 +465,18 @@ export function useSwapInputsController({
             });
             isQuoteStale.value = 0;
           } else {
+            if (!assetToSell.value) return;
             // If the change set the slider position to > 0
             const inputAmount = niceIncrementFormatter(
               incrementDecimalPlaces,
-              inputAssetBalance,
-              inputAssetUsdPrice,
+              Number(assetToSell.value.balance.amount),
+              Number(assetToSell.value.native.price?.amount),
               niceIncrement,
               percentageToSwap.value,
               sliderXPosition.value,
               true
             );
-            const inputNativeValue = Number(inputAmount) * inputAssetUsdPrice;
+            const inputNativeValue = Number(inputAmount) * Number(assetToSell.value.native.price?.amount);
 
             inputValues.modify(values => {
               return {
@@ -365,8 +511,9 @@ export function useSwapInputsController({
               runOnJS(onTypedNumber)(0, 'inputAmount');
             }
           } else {
+            if (!assetToSell.value) return;
             // If the input amount was set to a non-zero value
-            const inputNativeValue = Number(current.values.inputAmount) * inputAssetUsdPrice;
+            const inputNativeValue = Number(current.values.inputAmount) * Number(assetToSell.value.native.price?.amount);
 
             isQuoteStale.value = 1;
             inputValues.modify(values => {
@@ -405,8 +552,10 @@ export function useSwapInputsController({
             }
           } else if (Number(current.values.outputAmount) > 0) {
             // If the output amount was set to a non-zero value
+            if (!assetToBuy.value) return;
+
             const outputAmount = Number(current.values.outputAmount);
-            const outputNativeValue = outputAmount * outputAssetUsdPrice;
+            const outputNativeValue = outputAmount * Number(assetToBuy.value.native.price?.amount);
 
             isQuoteStale.value = 1;
             inputValues.modify(values => {
@@ -431,8 +580,24 @@ export function useSwapInputsController({
     formattedOutputNativeValue,
     inputMethod,
     inputValues,
+    searchQuery,
+    assetToSell,
+    assetToBuy,
+    assetToSellSymbol,
+    assetToSellIconUrl,
+    assetToBuySymbol,
+    assetToBuyIconUrl,
+    topColor,
+    bottomColor,
+    topColorShadow,
+    bottomColorShadow,
+    outputChainId,
     isQuoteStale,
     onChangedPercentage,
     percentageToSwap,
+    onSetAssetToSell,
+    onSetAssetToBuy,
+    onSwapAssets,
+    onChangeSearchQuery,
   };
 }
