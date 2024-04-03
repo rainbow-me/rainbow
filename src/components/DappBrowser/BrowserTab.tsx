@@ -12,7 +12,6 @@ import {
 } from 'react-native-gesture-handler';
 import Animated, {
   convertToRGBA,
-  dispatchCommand,
   interpolate,
   isColor,
   runOnJS,
@@ -652,11 +651,9 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
         ctx.startX = e.absoluteX;
       }
 
-      setNativeProps(scrollViewRef, { scrollEnabled: false });
-      dispatchCommand(scrollViewRef, 'scrollTo', [0, scrollViewOffset?.value, true]);
-
       const xDelta = e.absoluteX - ctx.startX;
       gestureX.value = xDelta;
+      setNativeProps(scrollViewRef, { scrollEnabled: false });
     },
     onEnd: (e, ctx: { startX?: number }) => {
       if (!tabViewVisible?.value) return;
