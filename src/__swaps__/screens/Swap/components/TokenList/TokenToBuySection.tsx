@@ -118,10 +118,11 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
           </Text>
         </Inline>
 
-        <AnimatedFlashListComponent
+        {/* TODO: fix this from causing the UI to be completely slow... */}
+        {/* <AnimatedFlashListComponent
           data={section.data}
           ListEmptyComponent={<ListEmpty />}
-          keyExtractor={item => item.uniqueId}
+          keyExtractor={item => `${item.uniqueId}-${section.id}`}
           renderItem={({ item }) => (
             <CoinRow
               key={item.uniqueId}
@@ -138,7 +139,7 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
               symbol={item.symbol}
             />
           )}
-        />
+        /> */}
       </Stack>
     </Box>
   );

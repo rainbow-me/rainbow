@@ -1,6 +1,6 @@
 import c from 'chroma-js';
 import { globalColors } from '@/design-system';
-import { ETH_COLOR, ETH_COLOR_DARK, SCRUBBER_WIDTH, SLIDER_WIDTH } from '../constants';
+import { ETH_COLOR, ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT, SCRUBBER_WIDTH, SLIDER_WIDTH } from '../constants';
 import { chainNameFromChainId } from './chains';
 import { ChainId, ChainName } from '../types/chains';
 import { RainbowConfig } from '@/model/remoteConfig';
@@ -283,5 +283,5 @@ export const extractColorValueForColors = ({ colors, isDarkMode }: { colors?: Co
     return colors.fallback;
   }
 
-  return isDarkMode ? ETH_COLOR_DARK : ETH_COLOR;
+  return isDarkMode ? ETH_COLOR_DARK_ACCENT : ETH_COLOR;
 };

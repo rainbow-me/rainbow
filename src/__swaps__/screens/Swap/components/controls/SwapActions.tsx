@@ -15,8 +15,6 @@ export function SwapActions() {
   const { isDarkMode } = useColorMode();
   const { confirmButtonIcon, confirmButtonIconStyle, confirmButtonLabel, SwapInputController, AnimatedSwapStyles } = useSwapContext();
 
-  console.log('rendering swap actions');
-
   return (
     <Box
       as={Animated.View}

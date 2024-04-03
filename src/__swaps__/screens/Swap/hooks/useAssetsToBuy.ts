@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useSearchCurrencyLists } from './useSearchCurrencyLists';
 import { useSwapContext } from '../providers/swap-provider';
 
@@ -10,5 +11,5 @@ export const useAssetsToBuySections = () => {
     searchQuery: SwapInputController.searchQuery,
   });
 
-  return searchAssetsToBuySections;
+  return useMemo(() => searchAssetsToBuySections, [searchAssetsToBuySections]);
 };

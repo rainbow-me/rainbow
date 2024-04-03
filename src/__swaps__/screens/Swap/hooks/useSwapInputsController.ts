@@ -326,13 +326,17 @@ export function useSwapInputsController({
     }
 
     assetToSell.value = parsedAsset;
-    outputChainId.value = parsedAsset.chainId;
+    if (!assetToBuy.value) {
+      outputChainId.value = parsedAsset.chainId;
+    }
 
     // TODO: we need to update the inputNativeValue to the user balance / native value
 
     // if the user doesn't have an asset to buy selected, let's open that list
     if (!assetToBuy.value) {
       handleOutputPress();
+    } else {
+      handleInputPress();
     }
   };
 

@@ -45,8 +45,6 @@ export const TokenToSellList = () => {
     [SwapInputController.onSetAssetToSell, userAssets]
   );
 
-  console.log('rendering token to sell list');
-
   return (
     <Stack space="20px">
       <Box paddingHorizontal={'20px'}>

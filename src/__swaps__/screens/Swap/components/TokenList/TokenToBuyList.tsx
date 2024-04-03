@@ -45,8 +45,6 @@ export const TokenToBuyList = () => {
     }
   );
 
-  console.log('rendering token to buy list');
-
   return (
     <Stack space="32px">
       <Box paddingHorizontal="20px">
