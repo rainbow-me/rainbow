@@ -10,16 +10,17 @@ import { ChainId } from '../types/chains';
 import { ethereumUtils } from '@/utils';
 import { toggleFavorite, useFavorites } from '@/resources/favorites';
 import { ETH_ADDRESS } from '@/references';
+import { TokenColors } from '@/graphql/__generated__/metadata';
 
 export const CoinRow = ({
   address,
   mainnetAddress,
+  colors,
   chainId,
   balance,
   isTrending,
   name,
   nativeBalance,
-  color,
   iconUrl,
   onPress,
   output,
@@ -32,7 +33,7 @@ export const CoinRow = ({
   isTrending?: boolean;
   name: string;
   nativeBalance: string;
-  color: string | undefined;
+  colors: TokenColors;
   iconUrl: string | undefined;
   onPress?: () => void;
   output?: boolean;
@@ -73,16 +74,7 @@ export const CoinRow = ({
           width="full"
         >
           <Inline alignVertical="center" space="10px">
-            <SwapCoinIcon
-              iconUrl={iconUrl}
-              address={address}
-              mainnetAddress={mainnetAddress}
-              large
-              network={ethereumUtils.getNetworkFromChainId(chainId)}
-              symbol={symbol}
-              theme={theme}
-              color={color}
-            />
+            <SwapCoinIcon iconUrl={iconUrl} large chainId={chainId} symbol={symbol} theme={theme} colors={colors} />
             <Stack space="10px">
               <Text color="label" size="17pt" weight="semibold">
                 {name}

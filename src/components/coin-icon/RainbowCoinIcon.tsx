@@ -30,6 +30,7 @@ export default React.memo(function RainbowCoinIcon({
   theme,
   colors,
   ignoreBadge,
+  fallbackColor,
   badgeXPosition,
   badgeYPosition,
 }: {
@@ -38,12 +39,13 @@ export default React.memo(function RainbowCoinIcon({
   network: Network;
   symbol: string;
   theme: ThemeContextProps;
+  fallbackColor?: string;
   colors?: TokenColors;
   ignoreBadge?: boolean;
   badgeXPosition?: number;
   badgeYPosition?: number;
 }) {
-  const fallbackIconColor = colors?.primary || colors?.fallback || theme.colors.purpleUniswap;
+  const fallbackIconColor = colors?.primary || colors?.fallback || fallbackColor || theme.colors.purpleUniswap;
 
   const shadowColor = theme.isDarkMode ? theme.colors.shadow : colors?.primary || colors?.fallback || theme.colors.shadow;
 

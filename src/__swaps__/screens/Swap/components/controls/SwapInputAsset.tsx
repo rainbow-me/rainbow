@@ -1,7 +1,7 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import React, { useEffect, useMemo } from 'react';
 import { StyleSheet, StatusBar } from 'react-native';
-import Animated, { runOnUI, useDerivedValue } from 'react-native-reanimated';
+import Animated, { runOnUI, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
 import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
@@ -9,7 +9,7 @@ import { useTheme } from '@/theme';
 
 import { GestureHandlerV1Button } from '../GestureHandlerV1Button';
 import { SwapActionButton } from '../SwapActionButton';
-import { SwapCoinIcon } from '../SwapCoinIcon';
+import { AnimatedSwapCoinIcon } from '../SwapCoinIcon';
 import { FadeMask } from '../FadeMask';
 import { SwapInput } from '../SwapInput';
 import { BalanceBadge } from '../BalanceBadge';
@@ -27,6 +27,8 @@ import { isSameAsset, isSameAssetWorklet, parseSearchAsset } from '../../utils/a
 import { ParsedAsset } from '../../types/assets';
 import BigNumber from 'bignumber.js';
 import { supportedCurrencies } from '@/references/supportedCurrencies';
+import { TokenColors } from '@/graphql/__generated__/metadata';
+import { fallbackColors } from 'make-color-more-chill';
 
 function SwapInputActionButton() {
   const { isDarkMode } = useColorMode();
@@ -124,25 +126,42 @@ function SwapInputIcon() {
   const { SwapInputController, AnimatedSwapStyles } = useSwapContext();
   const theme = useTheme();
 
+  const boxStyles = useAnimatedStyle(() => {
+    return {
+      backgroundColor: SwapInputController.topColor.value,
+    };
+  });
+
+  const colors = useDerivedValue(() => {
+    return SwapInputController.assetToSell?.value?.colors as TokenColors;
+  });
+
+  const chainId = useDerivedValue(() => {
+    return SwapInputController.assetToSell?.value?.chainId || ChainId.mainnet;
+  });
+
+  const symbol = useDerivedValue(() => {
+    return SwapInputController.assetToSell?.value?.symbol || '';
+  });
+
   return (
     <Box paddingRight="10px">
-      {!SwapInputController.assetToSell.value ? (
+      {!SwapInputController?.assetToSell?.value ? (
         <Box
           as={Animated.View}
           borderRadius={18}
           height={{ custom: 36 }}
-          style={[styles.solidColorCoinIcon, AnimatedSwapStyles.assetToSellIconStyle]}
+          style={[styles.solidColorCoinIcon, boxStyles]}
           width={{ custom: 36 }}
         />
       ) : (
-        <SwapCoinIcon
-          color={SwapInputController.topColor.value}
-          iconUrl={SwapInputController.assetToSell.value.icon_url}
-          address={SwapInputController.assetToSell.value.address}
+        <AnimatedSwapCoinIcon
+          colors={colors}
+          chainId={chainId}
+          symbol={symbol}
+          iconUrl={SwapInputController.assetToSellIconUrl}
+          fallbackColor={SwapInputController.topColor}
           large
-          mainnetAddress={SwapInputController.assetToSell.value.mainnetAddress}
-          network={ethereumUtils.getNetworkFromChainId(SwapInputController.assetToSell.value.chainId)}
-          symbol={SwapInputController.assetToSell.value.symbol}
           theme={theme}
         />
       )}

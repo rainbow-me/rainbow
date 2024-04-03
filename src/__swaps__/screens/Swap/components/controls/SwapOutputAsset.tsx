@@ -9,7 +9,7 @@ import { useTheme } from '@/theme';
 
 import { GestureHandlerV1Button } from '../GestureHandlerV1Button';
 import { SwapActionButton } from '../SwapActionButton';
-import { SwapCoinIcon } from '../SwapCoinIcon';
+import { AnimatedSwapCoinIcon, SwapCoinIcon } from '../SwapCoinIcon';
 import { FadeMask } from '../FadeMask';
 import { SwapInput } from '../SwapInput';
 import { BalanceBadge } from '../BalanceBadge';
@@ -26,6 +26,8 @@ import { useExternalToken } from '../../../../../resources/assets/externalAssets
 import { ParsedAsset } from '../../types/assets';
 import BigNumber from 'bignumber.js';
 import { supportedCurrencies } from '@/references/supportedCurrencies';
+import { TokenColors } from '@/graphql/__generated__/metadata';
+import { ChainId } from '../../types/chains';
 
 function SwapOutputActionButton() {
   const { isDarkMode } = useColorMode();
@@ -120,6 +122,18 @@ function SwapInputIcon() {
   const { SwapInputController, AnimatedSwapStyles } = useSwapContext();
   const theme = useTheme();
 
+  const colors = useDerivedValue(() => {
+    return SwapInputController.assetToBuy?.value?.colors as TokenColors;
+  });
+
+  const chainId = useDerivedValue(() => {
+    return SwapInputController.assetToBuy?.value?.chainId || ChainId.mainnet;
+  });
+
+  const symbol = useDerivedValue(() => {
+    return SwapInputController.assetToBuy?.value?.symbol || '';
+  });
+
   return (
     <Box paddingRight="10px">
       {!SwapInputController.assetToBuy.value ? (
@@ -131,14 +145,13 @@ function SwapInputIcon() {
           width={{ custom: 36 }}
         />
       ) : (
-        <SwapCoinIcon
-          color={SwapInputController.bottomColor.value}
-          iconUrl={SwapInputController.assetToBuy.value.icon_url}
-          address={SwapInputController.assetToBuy.value.address}
+        <AnimatedSwapCoinIcon
+          colors={colors}
+          chainId={chainId}
+          symbol={symbol}
+          iconUrl={SwapInputController.assetToBuyIconUrl}
+          fallbackColor={SwapInputController.bottomColor}
           large
-          mainnetAddress={SwapInputController.assetToBuy.value.mainnetAddress}
-          network={ethereumUtils.getNetworkFromChainId(SwapInputController.assetToBuy.value.chainId)}
-          symbol={SwapInputController.assetToBuy.value.symbol}
           theme={theme}
         />
       )}

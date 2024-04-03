@@ -35,11 +35,12 @@ import {
 } from '../constants';
 import { clamp, opacity, opacityWorklet } from '../utils/swaps';
 import { useSwapContext } from '../providers/swap-provider';
-import { SwapCoinIcon } from './SwapCoinIcon';
+import { AnimatedSwapCoinIcon, SwapCoinIcon } from './SwapCoinIcon';
 import { useTheme } from '@/theme';
 import { useSwapAssetStore } from '../state/assets';
 import { ethereumUtils } from '@/utils';
 import { ChainId } from '../types/chains';
+import { TokenColors } from '@/graphql/__generated__/metadata';
 
 type SwapSliderProps = {
   dualColor?: boolean;
@@ -59,8 +60,6 @@ export const SwapSlider = ({
   const theme = useTheme();
   const { isDarkMode } = useColorMode();
   const { SwapInputController, sliderXPosition, sliderPressProgress } = useSwapContext();
-
-  const { assetToSell } = useSwapAssetStore();
 
   const panRef = useRef();
   const tapRef = useRef();
@@ -353,6 +352,18 @@ export const SwapSlider = ({
     };
   });
 
+  const colors = useDerivedValue(() => {
+    return SwapInputController.assetToSell?.value?.colors as TokenColors;
+  });
+
+  const chainId = useDerivedValue(() => {
+    return SwapInputController.assetToSell?.value?.chainId || ChainId.mainnet;
+  });
+
+  const symbol = useDerivedValue(() => {
+    return SwapInputController.assetToSell?.value?.symbol || '';
+  });
+
   return (
     // @ts-expect-error
     <PanGestureHandler activeOffsetX={[0, 0]} activeOffsetY={[0, 0]} onGestureEvent={onSlide} simultaneousHandlers={[tapRef]}>
@@ -364,14 +375,14 @@ export const SwapSlider = ({
               <Columns alignHorizontal="justify" alignVertical="center">
                 <Inline alignVertical="center" space="6px" wrap={false}>
                   <Bleed vertical="4px">
-                    <SwapCoinIcon
-                      color={SwapInputController.topColorShadow.value}
-                      iconUrl={assetToSell?.icon_url}
-                      address={assetToSell?.address ?? ''}
-                      mainnetAddress={assetToSell?.mainnetAddress ?? ''}
-                      network={ethereumUtils.getNetworkFromChainId(Number(assetToSell?.chainId ?? ChainId.mainnet))}
+                    <AnimatedSwapCoinIcon
+                      colors={colors}
+                      iconUrl={SwapInputController.assetToSellIconUrl}
+                      fallbackColor={SwapInputController.topColor}
+                      chainId={chainId}
                       small
-                      symbol={assetToSell?.symbol ?? ''}
+                      ignoreBadge
+                      symbol={symbol}
                       theme={theme}
                     />
                   </Bleed>
