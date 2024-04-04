@@ -762,7 +762,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
 
       {/* @ts-expect-error Property 'children' does not exist on type */}
       <TapGestureHandler shouldCancelWhenOutside maxDeltaX={10} maxDeltaY={10} onGestureEvent={pressTabGestureHandler} ref={tapRef}>
-        <Animated.View entering={FadeIn.duration(180)} style={zIndexAnimatedStyle}>
+        <Animated.View entering={FadeIn.duration(160)} style={zIndexAnimatedStyle}>
           {/* @ts-expect-error Property 'children' does not exist on type */}
           <PanGestureHandler
             activeOffsetX={[-10, 10]}
