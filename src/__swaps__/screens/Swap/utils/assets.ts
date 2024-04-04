@@ -26,6 +26,15 @@ import {
   convertAmountToPercentageDisplay,
   convertRawAmountToDecimalFormat,
 } from './numbers';
+import { isLowerCaseMatch, isLowerCaseMatchWorklet } from './strings';
+
+export const isSameAsset = (a1: Pick<ParsedAsset, 'chainId' | 'address'>, a2: Pick<ParsedAsset, 'chainId' | 'address'>) =>
+  +a1.chainId === +a2.chainId && isLowerCaseMatch(a1.address, a2.address);
+
+export const isSameAssetWorklet = (a1: Pick<ParsedAsset, 'chainId' | 'address'>, a2: Pick<ParsedAsset, 'chainId' | 'address'>) => {
+  'worklet';
+  return +a1.chainId === +a2.chainId && isLowerCaseMatchWorklet(a1.address, a2.address);
+};
 
 const get24HrChange = (priceData?: ZerionAssetPrice) => {
   const twentyFourHrChange = priceData?.relative_change_24h;
@@ -118,7 +127,7 @@ export function parseAsset({ asset, currency }: { asset: ZerionAsset | AssetApiR
     ...('networks' in asset && { networks: asset.networks }),
     ...('bridging' in asset && {
       bridging: {
-        isBridgeable: asset.bridging.bridgeable,
+        isBridgeable: !!asset.bridging.bridgeable,
         networks: asset.bridging.networks,
       },
     }),
@@ -274,6 +283,7 @@ export const parseSearchAsset = ({
   userAsset?: ParsedUserAsset;
 }): ParsedSearchAsset => ({
   ...searchAsset,
+  isNativeAsset: isNativeAsset(searchAsset.address, searchAsset.chainId),
   address: searchAsset.address,
   chainId: searchAsset.chainId,
   chainName: chainNameFromChainId(searchAsset.chainId),

@@ -68,10 +68,11 @@ const ActivityTabIcon = React.memo(
     reanimatedPosition: SharedValue<number>;
   }) => {
     const { pendingTransactions } = usePendingTransactions();
+    const isLoading = useSharedValue(true);
 
     return pendingTransactions.length > 0 ? (
       <Box width={{ custom: 32 }} height={{ custom: 32 }} alignItems="center" justifyContent="center">
-        <AnimatedSpinner isLoading={true} color={accentColor} size={28} />
+        <AnimatedSpinner isLoading={isLoading} color={accentColor} size={28} />
         <Cover>
           <Box width="full" height="full" padding={{ custom: 7 }} alignItems="center" justifyContent="center">
             <Text color={{ custom: accentColor }} size="13pt" weight="heavy" align="center">

@@ -92,7 +92,7 @@ export function getFetchRequester(config: Config) {
         operationName,
       });
     }
-    const { data } = await rainbowFetch(requestUrl, requestOptions);
+    const { data } = await rainbowFetch<{ data: TResponse }>(requestUrl, requestOptions);
 
     return data.data;
   };
