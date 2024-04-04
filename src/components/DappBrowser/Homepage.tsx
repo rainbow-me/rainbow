@@ -93,7 +93,7 @@ const Card = ({ site, showMenuButton }: { showMenuButton?: boolean; site: Trendi
                     start={{ x: 0, y: 0 }}
                     end={{ x: 0, y: 1 }}
                     locations={[0, 0.5, 1]}
-                    style={{ width: '100%', height: '100%' }}
+                    style={{ width: '100%', height: '100%', borderRadius: 24 }}
                   />
                 </Cover>
               </Cover>
