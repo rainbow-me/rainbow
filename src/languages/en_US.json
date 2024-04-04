@@ -564,6 +564,7 @@
       "price_impact": {
         "losing_prefix": "Losing",
         "small_market": "Small Market",
+        "no_data": "Price impact unknown",
         "label": "Possible loss"
       },
       "source": {
