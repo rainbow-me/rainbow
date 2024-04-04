@@ -4,6 +4,8 @@ import create from 'zustand';
 import { GasFeeLegacyParams, GasFeeLegacyParamsBySpeed, GasFeeParams, GasFeeParamsBySpeed, GasSpeed } from '../../__swaps__/types/gas';
 
 import { createStore } from '../internal/createStore';
+import { buildLocalizedTimeUnitString } from '@/__swaps__/utils/time';
+import { gasUtils } from '@/utils';
 
 export interface GasStore {
   selectedGas: GasFeeParams | GasFeeLegacyParams;
@@ -31,9 +33,9 @@ export const gasStore = createStore<GasStore>(
       option: GasSpeed.FAST,
       estimatedTime: {
         amount: 12,
-        display: '~ 12 sec',
+        display: buildLocalizedTimeUnitString({ plural: true, short: true, unit: '12' }),
       },
-      display: 'Fast',
+      display: gasUtils.getGasLabel(gasUtils.FAST),
       transactionGasParams: {
         maxPriorityFeePerGas: '0',
         maxFeePerGas: '0',

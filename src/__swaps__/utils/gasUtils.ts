@@ -583,36 +583,36 @@ export const getBaseFeeTrendParams = (trend: number) => {
       return {
         color: 'green',
         borderColor: globalColors.green10,
-        label: i18n.t('custom_gas.base_trend.falling'),
+        label: i18n.t('gas.card.falling'),
         symbol: 'arrow.down.forward',
-        explainer: i18n.t('explainers.custom_gas.current_base_falling'),
+        explainer: i18n.t('explain.base_fee.text_falling'),
         emoji: '📉',
       };
     case 0:
       return {
         color: 'yellow',
         borderColor: globalColors.yellow10,
-        label: i18n.t('custom_gas.base_trend.stable'),
+        label: i18n.t('gas.card.stable'),
         symbol: 'sun.max.fill',
-        explainer: i18n.t('explainers.custom_gas.current_base_stable'),
+        explainer: i18n.t('explain.base_fee.text_stable'),
         emoji: '🌞',
       };
     case 1:
       return {
         color: 'red',
         borderColor: globalColors.red10,
-        label: i18n.t('custom_gas.base_trend.surging'),
+        label: i18n.t('gas.card.surging'),
         symbol: 'exclamationmark.triangle.fill',
-        explainer: i18n.t('explainers.custom_gas.current_base_surging'),
+        explainer: i18n.t('explain.base_fee.text_surging'),
         emoji: '🎢',
       };
     case 2:
       return {
         color: 'orange',
         borderColor: globalColors.orange10,
-        label: i18n.t('custom_gas.base_trend.rising'),
+        label: i18n.t('gas.card.rising'),
         symbol: 'arrow.up.forward',
-        explainer: i18n.t('explainers.custom_gas.current_base_rising'),
+        explainer: i18n.t('explain.base_fee.text_rising'),
         emoji: '🥵',
       };
     default:

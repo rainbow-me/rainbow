@@ -31,7 +31,7 @@ import { NewTransaction, ParsedAddressAsset } from '@/entities';
 import { useNavigation } from '@/navigation';
 
 import { useTheme } from '@/theme';
-import { abbreviations, ethereumUtils, safeAreaInsetValues } from '@/utils';
+import { abbreviations, deviceUtils, ethereumUtils, safeAreaInsetValues } from '@/utils';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { metadataPOSTClient } from '@/graphql';
@@ -46,6 +46,7 @@ import {
 import { Network } from '@/networks/types';
 import { ETH_ADDRESS } from '@/references';
 import {
+  convertAmountToNativeDisplay,
   convertHexToString,
   convertRawAmountToBalance,
   delay,
@@ -142,7 +143,8 @@ export type SignTransactionSheetRouteProp = RouteProp<{ SignTransactionSheet: Si
 export const SignTransactionSheet = () => {
   const { goBack, navigate } = useNavigation();
   const { colors, isDarkMode } = useTheme();
-  const { accountAddress } = useAccountSettings();
+  const { width: deviceWidth } = useDimensions();
+  const { accountAddress, nativeCurrency } = useAccountSettings();
   const [simulationData, setSimulationData] = useState<TransactionSimulationResult | undefined>();
   const [simulationError, setSimulationError] = useState<TransactionErrorType | undefined>(undefined);
   const [simulationScanResult, setSimulationScanResult] = useState<TransactionScanResultType | undefined>(undefined);
@@ -406,6 +408,7 @@ export const SignTransactionSheet = () => {
           // TX Signing
           simulationData = await metadataPOSTClient.simulateTransactions({
             chainId: chainId,
+            currency: nativeCurrency?.toLowerCase(),
             transactions: [
               {
                 from: req?.from,
@@ -947,8 +950,19 @@ export const SignTransactionSheet = () => {
               )}
             </Box>
 
+            {requestType === 'browser' && (
+              <Box
+                height={{ custom: 160 }}
+                position="absolute"
+                style={{ bottom: -24, zIndex: 0, backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD' }}
+                width={{ custom: deviceUtils.dimensions.width }}
+              >
+                <Box height="full" width="full" style={{ backgroundColor: 'rgba(0, 0, 0, 0.7)' }} />
+              </Box>
+            )}
+
             {!isMessageRequest && (
-              <Box alignItems="center" justifyContent="center" style={{ height: 30, zIndex: -1 }}>
+              <Box alignItems="center" justifyContent="center" style={{ height: 30, zIndex: 1 }}>
                 <GasSpeedButton
                   marginTop={0}
                   horizontalPadding={20}
@@ -1483,9 +1497,9 @@ const SimulatedEventRow = ({
     assetCode = ETH_ADDRESS;
   }
   const showUSD = (eventType === 'send' || eventType === 'receive') && !!price;
-  const formattedPrice = `$${price?.toLocaleString?.('en-US', {
-    maximumFractionDigits: 2,
-  })}`;
+
+  const formattedPrice = price && convertAmountToNativeDisplay(price, nativeCurrency);
+
   return (
     <Box justifyContent="center" height={{ custom: CARD_ROW_HEIGHT }} width="full">
       <Inline alignHorizontal="justify" alignVertical="center" space="20px" wrap={false}>

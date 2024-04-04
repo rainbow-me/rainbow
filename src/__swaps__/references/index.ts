@@ -151,8 +151,6 @@ export const NATIVE_ASSETS_MAP_PER_CHAIN: Record<ChainId, AddressOrEth> = {
 
 export const OVM_GAS_PRICE_ORACLE = '0x420000000000000000000000000000000000000F';
 
-export const REFERRER = 'browser-extension';
-
 export const LEGACY_CHAINS_FOR_HW = [ChainId.optimism, ChainId.arbitrum, ChainId.zora, ChainId.base];
 
 export const SUPPORTED_MAINNET_CHAINS: Chain[] = [mainnet, polygon, optimism, arbitrum, base, zora, bsc].map(chain => ({

@@ -2,7 +2,6 @@ import { BigNumberish } from '@ethersproject/bignumber';
 import { Provider } from '@ethersproject/providers';
 import { serialize } from '@ethersproject/transactions';
 import { RainbowAddressAssets } from '@/resources/assets/types';
-import { ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS } from '@rainbow-me/swaps';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { queryClient } from '@/react-query';
@@ -21,7 +20,6 @@ import {
   LegacySelectedGasFee,
   NewTransaction,
   ParsedAddressAsset,
-  RainbowToken,
   RainbowTransaction,
   SelectedGasFee,
 } from '@/entities';
@@ -33,13 +31,9 @@ import { Navigation } from '@/navigation';
 import { parseAssetNative } from '@/parsers';
 import store from '@/redux/store';
 import {
-  ARBITRUM_ETH_ADDRESS,
   ETH_ADDRESS,
   ethUnits,
   MATIC_MAINNET_ADDRESS,
-  MATIC_POLYGON_ADDRESS,
-  BNB_BSC_ADDRESS,
-  OPTIMISM_ETH_ADDRESS,
   optimismGasOracleAbi,
   OVM_GAS_PRICE_ORACLE,
   BNB_MAINNET_ADDRESS,
