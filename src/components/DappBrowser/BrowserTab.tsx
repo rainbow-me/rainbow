@@ -38,6 +38,7 @@ import {
   TAB_VIEW_COLUMN_WIDTH,
   TAB_VIEW_ROW_HEIGHT,
   TAB_VIEW_TAB_HEIGHT,
+  TOP_INSET,
   WEBVIEW_HEIGHT,
 } from './Dimensions';
 import RNFS from 'react-native-fs';
@@ -53,6 +54,7 @@ import { SPRING_CONFIGS, TIMING_CONFIGS } from '../animations/animationConfigs';
 import { FASTER_IMAGE_CONFIG } from './constants';
 import { RainbowError, logger } from '@/logger';
 import { isEmpty } from 'lodash';
+import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 
 // ⚠️ TODO: Split this file apart into hooks, smaller components
 // useTabScreenshots, useAnimatedWebViewStyles, useWebViewGestures
@@ -780,7 +782,7 @@ const styles = StyleSheet.create({
     height: WEBVIEW_HEIGHT,
     overflow: 'hidden',
     position: 'absolute',
-    top: safeAreaInsetValues.top,
+    top: TOP_INSET,
     width: deviceUtils.dimensions.width,
     zIndex: 999999999,
   },
