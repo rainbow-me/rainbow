@@ -790,7 +790,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
                         automaticallyAdjustContentInsets
                         automaticallyAdjustsScrollIndicatorInsets={false}
                         decelerationRate={'normal'}
-                        injectedJavaScript={getWebsiteMetadata}
+                        injectedJavaScript={getWebsiteBackgroundColorAndTitle}
                         mediaPlaybackRequiresUserAction
                         onLoadStart={handleOnLoadStart}
                         onLoad={handleOnLoad}
