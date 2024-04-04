@@ -1,5 +1,5 @@
 import React from 'react';
-import { Animated, StyleSheet } from 'react-native';
+import { Animated, StyleSheet, TextStyle } from 'react-native';
 import { borders, fonts } from '@/styles';
 import { ThemeContextProps } from '@/theme';
 import { FallbackIcon as CoinIconTextFallback } from '@/utils';
@@ -12,15 +12,15 @@ import { ImageOptions } from '@candlefinance/faster-image';
 import { AnimatedChainBadge } from '../asset-list/RecyclerAssetList2/FastComponents/AnimatedCoinBadge';
 import { ChainId } from '@/__swaps__/screens/Swap/types/chains';
 
-const fallbackTextStyles = {
+const fallbackTextStyles: TextStyle = {
   fontFamily: fonts.family.SFProRounded,
-  fontWeight: fonts.weight.bold,
+  fontWeight: fonts.weight.bold as any,
   letterSpacing: fonts.letterSpacing.roundedTight,
   marginBottom: 0.5,
   textAlign: 'center',
 };
 
-const fallbackIconStyle = (size: number) => ({
+const fallbackIconStyle = (size: number): TextStyle => ({
   ...borders.buildCircleAsObject(size),
   position: 'absolute',
 });
@@ -79,7 +79,7 @@ export default function AnimatedRainbowCoinIcon({
       <AnimatedCoinIconImage source={source} shadowColor={shadowColor.value} symbol={tokenSymbol.value} theme={theme} size={size}>
         {() => (
           <CoinIconTextFallback
-            color={fallbackIconColor.value}
+            color={fallbackIconColor}
             height={size}
             style={fallbackIconStyle(size)}
             symbol={tokenSymbol.value}

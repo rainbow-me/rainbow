@@ -13,6 +13,7 @@ import { useAccountAccentColor } from '@/hooks';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ListEmpty } from './ListEmpty';
 import { FlashList } from '@shopify/flash-list';
+import { TokenColors } from '@/graphql/__generated__/metadata';
 
 const AnimatedFlashListComponent = Animated.createAnimatedComponent(FlashList<ParsedSearchAsset>);
 
@@ -98,10 +99,9 @@ export const TokenToSellList = () => {
           <CoinRow
             key={item.uniqueId}
             chainId={item.chainId}
-            color={item.colors?.primary ?? item.colors?.fallback}
+            colors={item.colors as TokenColors}
             iconUrl={item.icon_url}
             address={item.address}
-            mainnetAddress={item.mainnetAddress}
             balance={item.balance.display}
             name={item.name}
             onPress={() => handleSelectToken(item)}

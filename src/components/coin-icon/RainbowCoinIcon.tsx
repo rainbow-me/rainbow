@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
 import { Network } from '@/networks/types';
 import { borders, fonts } from '@/styles';
 import { ThemeContextProps } from '@/theme';
@@ -9,15 +9,15 @@ import { FastFallbackCoinIconImage } from '../asset-list/RecyclerAssetList2/Fast
 import { FastChainBadge } from '../asset-list/RecyclerAssetList2/FastComponents/FastCoinBadge';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 
-const fallbackTextStyles = {
+const fallbackTextStyles: TextStyle = {
   fontFamily: fonts.family.SFProRounded,
-  fontWeight: fonts.weight.bold,
+  fontWeight: fonts.weight.bold as any,
   letterSpacing: fonts.letterSpacing.roundedTight,
   marginBottom: 0.5,
   textAlign: 'center',
 };
 
-const fallbackIconStyle = (size: number) => ({
+const fallbackIconStyle = (size: number): ViewStyle => ({
   ...borders.buildCircleAsObject(size),
   position: 'absolute',
 });
