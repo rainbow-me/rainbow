@@ -22,6 +22,7 @@ export const usePasswordValidation = (password: string, confirmPassword: string)
       newLabel = lang.t('back_up.cloud.password.minimum_characters', {
         minimumLength: cloudBackupPasswordMinLength,
       });
+      passwordIsValid = false;
     } else if (
       isCloudBackupPasswordValid(password) &&
       isCloudBackupPasswordValid(confirmPassword) &&
@@ -30,6 +31,7 @@ export const usePasswordValidation = (password: string, confirmPassword: string)
     ) {
       newLabel = lang.t(lang.l.back_up.cloud.password.passwords_dont_match);
       setLabelColor(colors.red);
+      passwordIsValid = false;
     }
 
     setValidPassword(passwordIsValid);
