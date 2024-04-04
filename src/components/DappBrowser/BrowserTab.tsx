@@ -44,7 +44,7 @@ import RNFS from 'react-native-fs';
 import { WebViewEvent } from 'react-native-webview/lib/WebViewTypes';
 import { appMessenger } from '@/browserMessaging/AppMessenger';
 import { IS_ANDROID, IS_DEV, IS_IOS } from '@/env';
-import { CloseTabButton, X_BUTTON_PADDING, X_BUTTON_SIZE } from './CloseTabButton';
+import CloseTabButton, { X_BUTTON_PADDING, X_BUTTON_SIZE } from './CloseTabButton';
 import DappBrowserWebview from './DappBrowserWebview';
 import Homepage from './Homepage';
 import { handleProviderRequestApp } from './handleProviderRequest';
@@ -205,6 +205,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
 
   const panRef = useRef();
   const tapRef = useRef();
+  const tapCloseRef = useRef();
 
   // ⚠️ TODO
   const gestureScale = useSharedValue(1);
@@ -267,6 +268,8 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
     );
   });
 
+  const animatedTabIndex = useDerivedValue(() => tabIndex);
+
   const animatedWebViewStyle = useAnimatedStyle(() => {
     const progress = tabViewProgress?.value || 0;
     const animatedIsActiveTab = animatedActiveTabIndex?.value === tabIndex;
@@ -307,13 +310,11 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
     );
 
     const opacity = interpolate(progress, [0, 100], [animatedIsActiveTab ? 1 : 0, 1], 'clamp');
-
+    // eslint-disable-next-line no-nested-ternary
     return {
       borderRadius,
       height: animatedWebViewHeight.value,
       opacity,
-      // eslint-disable-next-line no-nested-ternary
-      pointerEvents: tabViewVisible?.value ? 'box-only' : animatedIsActiveTab ? 'auto' : 'none',
       transform: [
         { translateY: multipleTabsOpen ? -animatedWebViewHeight.value / 2 : 0 },
         { translateX: xPositionForTab + gestureX.value },
@@ -650,6 +651,11 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
       }
     },
   });
+  const pressCloseTabGestureHandler = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>({
+    onActive: () => {
+      closeTab(tabId);
+    },
+  });
 
   useAnimatedReaction(
     () => tabViewProgress?.value,
@@ -685,7 +691,14 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
       {/* <WebViewShadows gestureScale={gestureScale} isOnHomepage={isOnHomepage} tabIndex={tabIndex}> */}
 
       {/* @ts-expect-error Property 'children' does not exist on type */}
-      <TapGestureHandler shouldCancelWhenOutside maxDeltaX={10} maxDeltaY={10} onGestureEvent={pressTabGestureHandler} ref={tapRef}>
+      <TapGestureHandler
+        shouldCancelWhenOutside
+        maxDeltaX={10}
+        maxDeltaY={10}
+        onGestureEvent={pressTabGestureHandler}
+        ref={tapRef}
+        waitFor={tapCloseRef}
+      >
         <Animated.View style={zIndexAnimatedStyle}>
           {/* @ts-expect-error Property 'children' does not exist on type */}
           <PanGestureHandler
@@ -695,7 +708,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
             onGestureEvent={swipeToCloseTabGestureHandler}
             ref={panRef}
             simultaneousHandlers={scrollViewRef}
-            waitFor={tapRef}
+            waitFor={[tapRef]}
           >
             <Animated.View style={[styles.webViewContainer, animatedWebViewStyle, animatedWebViewBackgroundColorStyle]}>
               <ViewShot options={{ format: 'jpg' }} ref={viewShotRef}>
@@ -742,8 +755,14 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
                 </View>
               </ViewShot>
               <AnimatedFasterImage source={screenshotSource} style={[styles.screenshotContainerStyle, animatedScreenshotStyle]} />
-              <WebViewBorder enabled={IS_IOS && isDarkMode && !isOnHomepage} tabIndex={tabIndex} />
-              <CloseTabButton onPress={() => closeTab(tabId)} tabIndex={tabIndex} />
+              <WebViewBorder enabled={IS_IOS && isDarkMode && !isOnHomepage} animatedTabIndex={animatedTabIndex} />
+              <CloseTabButton
+                onPress={() => {
+                  closeTab(tabId);
+                }}
+                tabIndex={tabIndex}
+                ref={tapCloseRef}
+              />
             </Animated.View>
           </PanGestureHandler>
         </Animated.View>
