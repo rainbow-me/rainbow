@@ -168,7 +168,6 @@ export default function RestoreCloudStep() {
             fileName: selectedBackup.name,
           });
 
-          console.log(JSON.stringify(walletIdsToUpdate, null, 2));
           await dispatch(setAllWalletsWithIdsAsBackedUp(walletIdsToUpdate, walletBackupTypes.cloud, filename));
           // end mark
 
