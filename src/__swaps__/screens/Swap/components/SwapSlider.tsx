@@ -37,8 +37,6 @@ import { clamp, opacity, opacityWorklet } from '../utils/swaps';
 import { useSwapContext } from '../providers/swap-provider';
 import { AnimatedSwapCoinIcon, SwapCoinIcon } from './SwapCoinIcon';
 import { useTheme } from '@/theme';
-import { useSwapAssetStore } from '../state/assets';
-import { ethereumUtils } from '@/utils';
 import { ChainId } from '../types/chains';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 

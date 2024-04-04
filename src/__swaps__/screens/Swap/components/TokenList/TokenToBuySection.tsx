@@ -133,7 +133,6 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
               colors={item.colors as TokenColors}
               iconUrl={item.icon_url}
               address={item.address}
-              mainnetAddress={item.mainnetAddress}
               balance={''}
               name={item.name}
               onPress={() => handleSelectToken(item)}

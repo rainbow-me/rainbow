@@ -14,7 +14,6 @@ import { TokenColors } from '@/graphql/__generated__/metadata';
 
 export const CoinRow = ({
   address,
-  mainnetAddress,
   colors,
   chainId,
   balance,
@@ -27,7 +26,6 @@ export const CoinRow = ({
   symbol,
 }: {
   address: string;
-  mainnetAddress: string;
   chainId: ChainId;
   balance: string;
   isTrending?: boolean;

@@ -1,11 +1,9 @@
 /* eslint-disable no-nested-ternary */
 import React from 'react';
-import { StyleSheet } from 'react-native';
-import { globalColors } from '@/design-system';
 
 import { ThemeContextProps } from '@/theme';
 import { ethereumUtils } from '@/utils';
-import { DerivedValue, StyleProps, useAnimatedReaction, useDerivedValue } from 'react-native-reanimated';
+import { DerivedValue, StyleProps } from 'react-native-reanimated';
 import AnimatedRainbowCoinIcon from '@/components/coin-icon/AnimatedRainbowCoinIcon';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { ChainId } from '../types/chains';

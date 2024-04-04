@@ -28,7 +28,6 @@ import { ParsedAsset } from '../../types/assets';
 import BigNumber from 'bignumber.js';
 import { supportedCurrencies } from '@/references/supportedCurrencies';
 import { TokenColors } from '@/graphql/__generated__/metadata';
-import { fallbackColors } from 'make-color-more-chill';
 
 function SwapInputActionButton() {
   const { isDarkMode } = useColorMode();
