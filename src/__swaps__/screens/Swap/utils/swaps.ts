@@ -1,6 +1,10 @@
 import c from 'chroma-js';
 import { globalColors } from '@/design-system';
-import { SCRUBBER_WIDTH, SLIDER_WIDTH } from '../constants';
+import { ETH_COLOR, ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT, SCRUBBER_WIDTH, SLIDER_WIDTH } from '../constants';
+import { chainNameFromChainId } from './chains';
+import { ChainId, ChainName } from '../types/chains';
+import { RainbowConfig } from '@/model/remoteConfig';
+import { convertToRGBA, isColor } from 'react-native-reanimated';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -156,10 +160,12 @@ export function valueBasedDecimalFormatter(
     roundedAmount = Math.round(amount * factor) / factor;
   }
 
+  console.log({ decimalPlaces });
+
   // Format the number to add separators and trim trailing zeros
   const numberFormatter = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: 0,
-    maximumFractionDigits: decimalPlaces, // Allow up to the required precision
+    maximumFractionDigits: !isNaN(decimalPlaces) ? decimalPlaces : 2, // Allow up to the required precision
     useGrouping: true,
   });
 
@@ -205,5 +211,77 @@ export function niceIncrementFormatter(
 
   return formattedAmount;
 }
+
+export const opacityWorklet = (color: string, opacity: number) => {
+  'worklet';
+
+  if (isColor(color)) {
+    const rgbaColor = convertToRGBA(color);
+    return `rgba(${rgbaColor[0] * 255}, ${rgbaColor[1] * 255}, ${rgbaColor[2] * 255}, ${opacity})`;
+  } else {
+    return color;
+  }
+};
+
 //
 // /---- END worklet utils ----/ //
+
+export const DEFAULT_SLIPPAGE_BIPS = {
+  [ChainId.mainnet]: 100,
+  [ChainId.polygon]: 200,
+  [ChainId.bsc]: 200,
+  [ChainId.optimism]: 200,
+  [ChainId.base]: 200,
+  [ChainId.zora]: 200,
+  [ChainId.arbitrum]: 200,
+  [ChainId.avalanche]: 200,
+};
+
+export const DEFAULT_SLIPPAGE = {
+  [ChainId.mainnet]: '1',
+  [ChainId.polygon]: '2',
+  [ChainId.bsc]: '2',
+  [ChainId.optimism]: '2',
+  [ChainId.base]: '2',
+  [ChainId.zora]: '2',
+  [ChainId.arbitrum]: '2',
+  [ChainId.avalanche]: '2',
+};
+
+const slippageInBipsToString = (slippageInBips: number) => (slippageInBips / 100).toString();
+
+export const getDefaultSlippage = (chainId: ChainId, config: RainbowConfig) => {
+  const chainName = chainNameFromChainId(chainId) as
+    | ChainName.mainnet
+    | ChainName.optimism
+    | ChainName.polygon
+    | ChainName.arbitrum
+    | ChainName.base
+    | ChainName.zora
+    | ChainName.bsc
+    | ChainName.avalanche;
+  return slippageInBipsToString(
+    // NOTE: JSON.parse doesn't type the result as a Record<ChainName, number>
+    (config.default_slippage_bips as unknown as Record<ChainName, number>)[chainName] || DEFAULT_SLIPPAGE_BIPS[chainId]
+  );
+};
+
+export type Colors = {
+  primary?: string;
+  fallback?: string;
+  shadow?: string;
+};
+
+export const extractColorValueForColors = ({ colors, isDarkMode }: { colors?: Colors; isDarkMode: boolean }): string => {
+  'worklet';
+
+  if (colors?.primary) {
+    return colors.primary;
+  }
+
+  if (colors?.fallback) {
+    return colors.fallback;
+  }
+
+  return isDarkMode ? ETH_COLOR_DARK_ACCENT : ETH_COLOR;
+};
