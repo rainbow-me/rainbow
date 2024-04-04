@@ -17,6 +17,7 @@ import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/screens/Swap/utils/swaps';
 import { useBrowserContext } from './BrowserContext';
 import { BrowserButtonShadows } from './DappBrowserShadows';
+import { debounce } from 'lodash';
 
 export const TabViewToolbar = () => {
   const { width: deviceWidth } = useDimensions();
@@ -62,7 +63,7 @@ export const TabViewToolbar = () => {
 const NewTabButton = () => {
   const { newTab } = useBrowserContext();
 
-  return <BaseButton onPress={newTab} icon="􀅼" iconColor="label" iconSize="icon 20px" width={44} />;
+  return <BaseButton onPress={debounce(newTab, 300)} icon="􀅼" iconColor="label" iconSize="icon 20px" width={44} />;
 };
 
 const DoneButton = () => {
