@@ -12,25 +12,86 @@ import {
   countDecimalPlaces,
   extractColorValueForColors,
   findNiceIncrement,
+  isUnwrapEth,
+  isWrapEth,
   niceIncrementFormatter,
   trimTrailingZeros,
   valueBasedDecimalFormatter,
 } from '../utils/swaps';
-import { ChainId } from '../types/chains';
+import { ChainId, ChainName } from '../types/chains';
 import { ParsedSearchAsset } from '../types/assets';
 import { useColorMode } from '@/design-system';
 import { isSameAssetWorklet } from '../utils/assets';
+import {
+  CrosschainQuote,
+  ETH_ADDRESS,
+  Quote,
+  QuoteError,
+  QuoteParams,
+  Source,
+  SwapType,
+  getCrosschainQuote,
+  getQuote,
+} from '@rainbow-me/swaps';
+import { chainNameFromChainIdWorklet } from '../utils/chains';
+import { RainbowConfig, useRemoteConfig } from '@/model/remoteConfig';
+import { useAccountSettings } from '@/hooks';
+import { convertAmountToRawAmount } from '../utils/numbers';
+
+export const DEFAULT_SLIPPAGE_BIPS = {
+  [ChainId.mainnet]: 100,
+  [ChainId.polygon]: 200,
+  [ChainId.bsc]: 200,
+  [ChainId.optimism]: 200,
+  [ChainId.base]: 200,
+  [ChainId.zora]: 200,
+  [ChainId.arbitrum]: 200,
+  [ChainId.avalanche]: 200,
+  [ChainId.blast]: 200,
+};
+
+export const DEFAULT_SLIPPAGE = {
+  [ChainId.mainnet]: '1',
+  [ChainId.polygon]: '2',
+  [ChainId.bsc]: '2',
+  [ChainId.optimism]: '2',
+  [ChainId.base]: '2',
+  [ChainId.zora]: '2',
+  [ChainId.arbitrum]: '2',
+  [ChainId.avalanche]: '2',
+  [ChainId.blast]: '2',
+};
+
+const slippageInBipsToString = (slippageInBips: number) => {
+  'worklet';
+  return (slippageInBips / 100).toString();
+};
+
+export const getDefaultSlippage = (chainId: ChainId, config: RainbowConfig) => {
+  'worklet';
+
+  const chainName = chainNameFromChainIdWorklet(chainId) as
+    | ChainName.mainnet
+    | ChainName.optimism
+    | ChainName.polygon
+    | ChainName.arbitrum
+    | ChainName.base
+    | ChainName.zora
+    | ChainName.bsc
+    | ChainName.avalanche
+    | ChainName.blast;
+  return slippageInBipsToString(
+    (config.default_slippage_bips as unknown as { [key: string]: number })[chainName] || DEFAULT_SLIPPAGE_BIPS[chainId]
+  );
+};
 
 export function useSwapInputsController({
   focusedInput,
   isFetching,
   sliderXPosition,
   handleExitSearch,
-  handleFocusInputSearch,
-  handleFocusOutputSearch,
   handleInputPress,
   handleOutputPress,
-  inputProgress,
   outputProgress,
 }: {
   focusedInput: SharedValue<inputKeys>;
@@ -44,12 +105,19 @@ export function useSwapInputsController({
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
 }) {
+  const { accountAddress: currentAddress } = useAccountSettings();
+  const config = useRemoteConfig();
   const { isDarkMode } = useColorMode();
-
   const assetToSell = useSharedValue<ParsedSearchAsset | null>(null);
   const assetToBuy = useSharedValue<ParsedSearchAsset | null>(null);
   const outputChainId = useSharedValue<ChainId>(ChainId.mainnet);
   const searchQuery = useSharedValue('');
+
+  const quote = useSharedValue<Quote | CrosschainQuote | QuoteError | null>(null);
+  const swapFee = useSharedValue<number | string>(0);
+  const source = useSharedValue<Source | 'auto'>('auto');
+  const slippage = useSharedValue<string>(getDefaultSlippage(assetToSell.value?.chainId || ChainId.mainnet, config));
+  const flashbots = useSharedValue<boolean>(false);
 
   const inputValues = useSharedValue<{ [key in inputKeys]: number | string }>({
     inputAmount: 0,
@@ -225,54 +293,188 @@ export function useSwapInputsController({
   const onTypedNumber = useDebouncedCallback((amount: number, inputKey: inputKeys, preserveAmount = true, setStale = true) => {
     resetTimers();
 
-    const updateValues = () => {
+    const updateValues = async () => {
       isFetching.value = false;
       if (inputKey === 'inputAmount') {
         if (!assetToSell.value || !assetToBuy.value) return;
 
-        const inputNativeValue = amount * Number(assetToSell.value.native.price?.amount);
-        const outputAmount = (inputNativeValue / Number(assetToBuy.value.native.price?.amount)) * (1 - SWAP_FEE);
-        const outputNativeValue = outputAmount * Number(assetToBuy.value.native.price?.amount);
+        const isCrosschainSwap = assetToSell.value.chainId !== assetToBuy.value.chainId;
+
+        const quoteParams: QuoteParams = {
+          source: source.value === 'auto' ? undefined : source.value,
+          chainId: assetToSell.value.chainId,
+          fromAddress: currentAddress,
+          sellTokenAddress: assetToSell.value.isNativeAsset ? ETH_ADDRESS : assetToSell.value.address,
+          buyTokenAddress: assetToBuy.value.isNativeAsset ? ETH_ADDRESS : assetToBuy.value.address,
+          sellAmount: convertAmountToRawAmount(amount, assetToSell.value.decimals),
+          buyAmount: undefined,
+          slippage: Number(slippage.value),
+          refuel: false,
+          swapType: isCrosschainSwap ? SwapType.crossChain : SwapType.normal,
+          toChainId: isCrosschainSwap ? assetToBuy.value.chainId : assetToSell.value.chainId,
+        };
+
+        const response = (isCrosschainSwap ? await getCrosschainQuote(quoteParams) : await getQuote(quoteParams)) as
+          | Quote
+          | CrosschainQuote
+          | QuoteError;
+
+        console.log(JSON.stringify(response, null, 2));
 
         const updatedSliderPosition = clampJS((amount / Number(assetToSell.value.balance.amount)) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
 
-        const updateWorklet = () => {
+        const updateWorklet = (quote: Quote | CrosschainQuote, isWrapOrUnwrapEth: boolean) => {
           'worklet';
+          if (quote.source) {
+            source.value = quote.source;
+          }
+
+          // TODO: Convert to string value
+          // example: "fee": "3672850000000000",
+          swapFee.value = quote.fee.toString();
+
+          /**
+           * Example same-chain quote response:
+           * {
+              "sellTokenAddress": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+              "buyTokenAddress": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+              "allowanceTarget": "0x111111125421ca6dc452d289314280a0f8842a65",
+              "to": "0x111111125421ca6dc452d289314280a0f8842a65",
+              "data": "0xa76dfc3b0000000000000000000000000000000000000000000000000000000052f486f620000000000000000000000088e6a0c2ddd26feeb64f039a2c41296fcb3f5640520b7e0f",
+              "sellAmount": "432100000000000000",
+              "sellAmountMinusFees": "428427150000000000",
+              "sellAmountDisplay": "432100000000000000",
+              "sellAmountInEth": "432100000000000000",
+              "buyAmount": "1420160252",
+              "buyAmountMinusFees": "1420160252",
+              "buyAmountDisplay": "1420160252",
+              "buyAmountInEth": "425500044622854831",
+              "tradeAmountUSD": 1421.699741,
+              "value": "432100000000000000",
+              "gasPrice": "44052114330",
+              "source": "1inch",
+              "protocols": [
+                {
+                  "name": "UNISWAP_V3",
+                  "part": 100
+                }
+              ],
+              "fee": "3672850000000000",
+              "feeInEth": "3672850000000000",
+              "feePercentageBasisPoints": "8500000000000000",
+              "tradeType": "exact_input",
+              "from": "0x278dB415b3c969e789e1Ec9e80e1e001A5dcee82",
+              "defaultGasLimit": "350000",
+              "swapType": "normal",
+              "txTarget": "0x00000000009726632680fb29d3f7a9734e3010e2",
+              "chainId": 1
+            }
+           */
+
+          // TODO: Need to convert big number to native value properly here...
+          swapFee.value = isWrapOrUnwrapEth ? '0' : quote.feeInEth.toString();
+
           inputValues.modify(values => {
             return {
               ...values,
-              outputAmount,
-              outputNativeValue,
+              outputAmount: isWrapOrUnwrapEth ? quote.buyAmount : quote.buyAmountDisplay,
+              outputNativeValue: quote.tradeAmountUSD.toFixed(2),
             };
           });
+          // TODO: Bring back in slider position change
           sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
           isQuoteStale.value = 0;
         };
 
-        runOnUI(updateWorklet)();
+        quote.value = response;
+
+        if (!response || (response as QuoteError)?.error) return;
+
+        const data = response as Quote | CrosschainQuote;
+
+        const isWrapOrUnwrapEth =
+          isWrapEth({
+            buyTokenAddress: data.buyTokenAddress,
+            sellTokenAddress: data.sellTokenAddress,
+            chainId: assetToSell.value.chainId,
+          }) ||
+          isUnwrapEth({
+            buyTokenAddress: data.buyTokenAddress,
+            sellTokenAddress: data.sellTokenAddress,
+            chainId: assetToSell.value.chainId,
+          });
+
+        runOnUI(updateWorklet)(data, isWrapOrUnwrapEth);
       } else if (inputKey === 'outputAmount') {
         if (!assetToSell.value || !assetToBuy.value) return;
 
-        const outputAmount = amount;
-        const inputNativeValue = outputAmount * Number(assetToBuy.value.native.price?.amount) * (1 + SWAP_FEE);
-        const inputAmount = inputNativeValue / Number(assetToSell.value.native.price?.amount);
+        const isCrosschainSwap = assetToSell.value.chainId !== assetToBuy.value.chainId;
 
-        const updatedSliderPosition = clampJS((inputAmount / Number(assetToSell.value.balance.amount)) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
+        const quoteParams: QuoteParams = {
+          source: source.value === 'auto' ? undefined : source.value,
+          chainId: assetToSell.value.chainId,
+          fromAddress: currentAddress,
+          sellTokenAddress: assetToSell.value.isNativeAsset ? ETH_ADDRESS : assetToSell.value.address,
+          buyTokenAddress: assetToBuy.value.isNativeAsset ? ETH_ADDRESS : assetToBuy.value.address,
+          sellAmount: undefined,
+          buyAmount: convertAmountToRawAmount(amount, assetToBuy.value.decimals),
+          slippage: Number(slippage.value),
+          refuel: false,
+          swapType: isCrosschainSwap ? SwapType.crossChain : SwapType.normal,
+          toChainId: isCrosschainSwap ? assetToBuy.value.chainId : assetToSell.value.chainId,
+        };
 
-        const updateWorklet = () => {
+        const response = (isCrosschainSwap ? await getCrosschainQuote(quoteParams) : await getQuote(quoteParams)) as
+          | Quote
+          | CrosschainQuote
+          | QuoteError;
+
+        console.log(JSON.stringify(response, null, 2));
+
+        // TODO: Bring back in slider position change
+        // const updatedSliderPosition = clampJS((inputAmount / Number(assetToSell.value.balance.amount)) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
+
+        const updateWorklet = (quote: Quote | CrosschainQuote, isWrapOrUnwrapEth: boolean) => {
           'worklet';
+          if (quote.source) {
+            source.value = quote.source;
+          }
+
+          // TODO: Convert to string value
+          // example: "fee": "3672850000000000",
+          swapFee.value = isWrapOrUnwrapEth ? '0' : quote.feeInEth.toString();
+
           inputValues.modify(values => {
             return {
               ...values,
-              inputAmount,
-              inputNativeValue,
+              inputAmount: isWrapOrUnwrapEth ? quote.sellAmount : quote.sellAmountDisplay,
+              inputNativeValue: quote.tradeAmountUSD.toFixed(2),
             };
           });
-          sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
+          // TODO: Bring back in slider position change
+          // sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
           isQuoteStale.value = 0;
         };
 
-        runOnUI(updateWorklet)();
+        quote.value = response;
+
+        if (!response || (response as QuoteError)?.error) return;
+
+        const data = response as Quote | CrosschainQuote;
+
+        const isWrapOrUnwrapEth =
+          isWrapEth({
+            buyTokenAddress: data.buyTokenAddress,
+            sellTokenAddress: data.sellTokenAddress,
+            chainId: assetToSell.value.chainId,
+          }) ||
+          isUnwrapEth({
+            buyTokenAddress: data.buyTokenAddress,
+            sellTokenAddress: data.sellTokenAddress,
+            chainId: assetToSell.value.chainId,
+          });
+
+        runOnUI(updateWorklet)(data, isWrapOrUnwrapEth);
       }
     };
 
@@ -385,6 +587,8 @@ export function useSwapInputsController({
 
     // TODO: if !prevAssetToBuy => focus assetToSell input
     // TODO: if !prevAssetToSell => focus assetToBuy input
+
+    // TODO: Need to refetch the quote here too
 
     if (outputProgress.value === 1) {
       handleOutputPress();
@@ -573,6 +777,17 @@ export function useSwapInputsController({
     []
   );
 
+  useAnimatedReaction(
+    () => ({
+      assetToSellChainId: assetToSell.value?.chainId || ChainId.mainnet,
+    }),
+    (current, previous) => {
+      if (current.assetToSellChainId !== previous?.assetToSellChainId) {
+        slippage.value = getDefaultSlippage(current.assetToSellChainId, config);
+      }
+    }
+  );
+
   return {
     formattedInputAmount,
     formattedInputNativeValue,
@@ -587,6 +802,9 @@ export function useSwapInputsController({
     assetToSellIconUrl,
     assetToBuySymbol,
     assetToBuyIconUrl,
+    source,
+    slippage,
+    flashbots,
     topColor,
     bottomColor,
     topColorShadow,

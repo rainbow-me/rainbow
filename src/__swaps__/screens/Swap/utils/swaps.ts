@@ -1,10 +1,15 @@
 import c from 'chroma-js';
+import * as i18n from '@/languages';
 import { globalColors } from '@/design-system';
-import { ETH_COLOR, ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT, SCRUBBER_WIDTH, SLIDER_WIDTH } from '../constants';
+import { ETH_COLOR, ETH_COLOR_DARK_ACCENT, SCRUBBER_WIDTH, SLIDER_WIDTH } from '../constants';
 import { chainNameFromChainId } from './chains';
 import { ChainId, ChainName } from '../types/chains';
 import { RainbowConfig } from '@/model/remoteConfig';
 import { convertToRGBA, isColor } from 'react-native-reanimated';
+import { CrosschainQuote, ETH_ADDRESS, Quote, WRAPPED_ASSET } from '@rainbow-me/swaps';
+import { isLowerCaseMatch } from './strings';
+import { getCachedProviderForNetwork, isHardHat } from '@/handlers/web3';
+import { Network } from '@/helpers';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -284,4 +289,62 @@ export const extractColorValueForColors = ({ colors, isDarkMode }: { colors?: Co
   }
 
   return isDarkMode ? ETH_COLOR_DARK_ACCENT : ETH_COLOR;
+};
+
+export const getQuoteServiceTime = ({ quote }: { quote: Quote | CrosschainQuote }) =>
+  (quote as CrosschainQuote)?.routes?.[0]?.serviceTime || 0;
+
+export const getCrossChainTimeEstimate = ({
+  serviceTime,
+}: {
+  serviceTime?: number;
+}): {
+  isLongWait: boolean;
+  timeEstimate?: number;
+  timeEstimateDisplay: string;
+} => {
+  let isLongWait = false;
+  let timeEstimateDisplay;
+  const timeEstimate = serviceTime;
+
+  const minutes = Math.floor((timeEstimate || 0) / 60);
+  const hours = Math.floor(minutes / 60);
+
+  if (hours >= 1) {
+    isLongWait = true;
+    timeEstimateDisplay = `>${hours} ${i18n.t(i18n.l.time.hours.long[hours === 1 ? 'singular' : 'plural'])}`;
+  } else if (minutes >= 1) {
+    timeEstimateDisplay = `~${minutes} ${i18n.t(i18n.l.time.minutes.short[minutes === 1 ? 'singular' : 'plural'])}`;
+  } else {
+    timeEstimateDisplay = `~${timeEstimate} ${i18n.t(i18n.l.time.seconds.short[timeEstimate === 1 ? 'singular' : 'plural'])}`;
+  }
+
+  return {
+    isLongWait,
+    timeEstimate,
+    timeEstimateDisplay,
+  };
+};
+export const isUnwrapEth = ({
+  buyTokenAddress,
+  chainId,
+  sellTokenAddress,
+}: {
+  chainId: ChainId;
+  sellTokenAddress: string;
+  buyTokenAddress: string;
+}) => {
+  return isLowerCaseMatch(sellTokenAddress, WRAPPED_ASSET[chainId]) && isLowerCaseMatch(buyTokenAddress, ETH_ADDRESS);
+};
+
+export const isWrapEth = ({
+  buyTokenAddress,
+  chainId,
+  sellTokenAddress,
+}: {
+  chainId: ChainId;
+  sellTokenAddress: string;
+  buyTokenAddress: string;
+}) => {
+  return isLowerCaseMatch(sellTokenAddress, ETH_ADDRESS) && isLowerCaseMatch(buyTokenAddress, WRAPPED_ASSET[chainId]);
 };
