@@ -204,9 +204,6 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
   const webViewRef = useRef<WebView>(null);
   const viewShotRef = useRef<ViewShot | null>(null);
 
-  const panRef = useRef();
-  const tapRef = useRef();
-
   // ⚠️ TODO
   const gestureScale = useSharedValue(1);
   const gestureX = useSharedValue(0);
@@ -355,7 +352,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
       height: animatedWebViewHeight.value,
       opacity,
       // eslint-disable-next-line no-nested-ternary
-      pointerEvents: tabViewVisible?.value ? 'box-only' : animatedIsActiveTab ? 'auto' : 'none',
+      pointerEvents: tabViewVisible?.value ? 'auto' : animatedIsActiveTab ? 'auto' : 'none',
       transform: [
         { translateY: animatedMultipleTabsOpen.value * (-animatedWebViewHeight.value / 2) },
         { translateX: xPositionForTab + gestureX.value },
@@ -369,6 +366,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
   const zIndexAnimatedStyle = useAnimatedStyle(() => {
     const progress = tabViewProgress?.value || 0;
     const animatedIsActiveTab = animatedActiveTabIndex?.value === animatedTabIndex.value;
+    const wasCloseButtonPressed = gestureScale.value === 1 && gestureX.value < 0;
 
     const scaleDiff = 0.7 - TAB_VIEW_COLUMN_WIDTH / deviceWidth;
     const scaleWeighting =
@@ -379,7 +377,8 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
         [animatedIsActiveTab ? 1 : TAB_VIEW_COLUMN_WIDTH / deviceWidth, 0.7 - scaleDiff * animatedMultipleTabsOpen.value],
         'clamp'
       );
-    const zIndex = scaleWeighting * (animatedIsActiveTab || gestureScale.value > 1 ? 9999 : 1);
+
+    const zIndex = scaleWeighting * (animatedIsActiveTab || gestureScale.value > 1 ? 9999 : 1) + (wasCloseButtonPressed ? 9999 : 0);
 
     return { zIndex };
   });
@@ -678,9 +677,9 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
           return value;
         });
         gestureX.value = withTiming(xDestination, TIMING_CONFIGS.tabPressConfig, () => {
-          // Ensure the tab remains hidden after being swiped off screen, until the tab close operation completes
+          // Ensure the tab remains hidden after being swiped off screen (until the tab is destroyed)
           gestureScale.value = 0;
-          // Once this animation completes, we know the tab is off screen and can be safely destroyed
+          // Because the animation is complete we know the tab is off screen and can be safely destroyed
           closeTabWorklet(tabId, storedTabIndex);
         });
 
@@ -761,7 +760,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
       {/* <WebViewShadows gestureScale={gestureScale} isOnHomepage={isOnHomepage} tabIndex={tabIndex}> */}
 
       {/* @ts-expect-error Property 'children' does not exist on type */}
-      <TapGestureHandler shouldCancelWhenOutside maxDeltaX={10} maxDeltaY={10} onGestureEvent={pressTabGestureHandler} ref={tapRef}>
+      <TapGestureHandler maxDeltaX={10} maxDeltaY={10} onGestureEvent={pressTabGestureHandler} shouldCancelWhenOutside>
         <Animated.View entering={FadeIn.duration(160)} style={zIndexAnimatedStyle}>
           {/* @ts-expect-error Property 'children' does not exist on type */}
           <PanGestureHandler
@@ -769,9 +768,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
             failOffsetY={[-10, 10]}
             maxPointers={1}
             onGestureEvent={swipeToCloseTabGestureHandler}
-            ref={panRef}
             simultaneousHandlers={scrollViewRef}
-            waitFor={tapRef}
           >
             <Animated.View style={[styles.webViewContainer, animatedWebViewStyle, animatedWebViewBackgroundColorStyle]}>
               <ViewShot options={{ format: 'jpg' }} ref={viewShotRef}>
@@ -814,6 +811,8 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
               <WebViewBorder animatedTabIndex={animatedTabIndex} enabled={IS_IOS && isDarkMode && !isOnHomepage} />
               <CloseTabButton
                 animatedMultipleTabsOpen={animatedMultipleTabsOpen}
+                gestureX={gestureX}
+                gestureY={gestureY}
                 isOnHomepage={isOnHomepage}
                 multipleTabsOpen={multipleTabsOpen}
                 tabId={tabId}
