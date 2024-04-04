@@ -142,7 +142,6 @@ export const SearchBar = () => {
 
   return (
     <Box
-      onLayout={e => console.log(e.nativeEvent.layout.height)}
       as={Animated.View}
       bottom={{ custom: 0 }}
       paddingTop="20px"
