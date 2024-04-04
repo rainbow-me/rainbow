@@ -347,11 +347,11 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
 
     const opacity = interpolate(progress, [0, 100], [animatedIsActiveTab ? 1 : 0, 1], 'clamp');
 
+    // eslint-disable-next-line no-nested-ternary
     return {
       borderRadius,
       height: animatedWebViewHeight.value,
       opacity,
-      // eslint-disable-next-line no-nested-ternary
       pointerEvents: tabViewVisible?.value ? 'auto' : animatedIsActiveTab ? 'auto' : 'none',
       transform: [
         { translateY: animatedMultipleTabsOpen.value * (-animatedWebViewHeight.value / 2) },
