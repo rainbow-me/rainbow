@@ -105,7 +105,7 @@ const Card = ({ site, showMenuButton }: { showMenuButton?: boolean; site: Trendi
                 source={{ uri: site.image }}
                 style={{
                   backgroundColor: isDarkMode ? globalColors.grey100 : globalColors.white100,
-                  borderRadius: 12,
+                  borderRadius: IS_IOS ? 12 : 36,
                   height: 48,
                   width: 48,
                 }}
