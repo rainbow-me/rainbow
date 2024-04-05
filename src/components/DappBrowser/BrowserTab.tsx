@@ -27,7 +27,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import ViewShot from 'react-native-view-shot';
 import WebView, { WebViewMessageEvent, WebViewNavigation } from 'react-native-webview';
-import { deviceUtils, safeAreaInsetValues } from '@/utils';
+import { deviceUtils } from '@/utils';
 import { MMKV } from 'react-native-mmkv';
 import { RAINBOW_HOME, TabState, useBrowserContext } from './BrowserContext';
 import { Freeze } from 'react-freeze';
@@ -38,6 +38,7 @@ import {
   TAB_VIEW_COLUMN_WIDTH,
   TAB_VIEW_ROW_HEIGHT,
   TAB_VIEW_TAB_HEIGHT,
+  TOP_INSET,
   WEBVIEW_HEIGHT,
 } from './Dimensions';
 import RNFS from 'react-native-fs';
@@ -802,7 +803,10 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
                   )}
                 </View>
               </ViewShot>
-              <AnimatedFasterImage source={screenshotSource} style={[styles.screenshotContainerStyle, animatedScreenshotStyle]} />
+              <AnimatedFasterImage
+                source={IS_IOS ? screenshotSource : screenshotSource.value}
+                style={[styles.screenshotContainerStyle, animatedScreenshotStyle]}
+              />
               <WebViewBorder animatedTabIndex={animatedTabIndex} enabled={IS_IOS && isDarkMode && !isOnHomepage} />
               <CloseTabButton
                 animatedMultipleTabsOpen={animatedMultipleTabsOpen}
@@ -846,7 +850,7 @@ const styles = StyleSheet.create({
     height: WEBVIEW_HEIGHT,
     overflow: 'hidden',
     position: 'absolute',
-    top: safeAreaInsetValues.top,
+    top: TOP_INSET,
     width: deviceUtils.dimensions.width,
   },
   webViewStyle: {
