@@ -36,7 +36,9 @@ import {
 import { chainNameFromChainIdWorklet } from '../utils/chains';
 import { RainbowConfig, useRemoteConfig } from '@/model/remoteConfig';
 import { useAccountSettings } from '@/hooks';
-import { convertAmountToRawAmount } from '../utils/numbers';
+import { convertAmountToRawAmount, convertRawAmountToBalance, convertRawAmountToNativeDisplay } from '../utils/numbers';
+import ethereumUtils, { getNativeAssetForNetwork } from '@/utils/ethereumUtils';
+import { fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [ChainId.mainnet]: 100,
@@ -105,7 +107,7 @@ export function useSwapInputsController({
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
 }) {
-  const { accountAddress: currentAddress } = useAccountSettings();
+  const { accountAddress: currentAddress, nativeCurrency: currentCurrency } = useAccountSettings();
   const config = useRemoteConfig();
   const { isDarkMode } = useColorMode();
   const assetToSell = useSharedValue<ParsedSearchAsset | null>(null);
@@ -114,10 +116,17 @@ export function useSwapInputsController({
   const searchQuery = useSharedValue('');
 
   const quote = useSharedValue<Quote | CrosschainQuote | QuoteError | null>(null);
-  const swapFee = useSharedValue<number | string>(0);
+  const fee = useSharedValue<number | string>(0);
   const source = useSharedValue<Source | 'auto'>('auto');
   const slippage = useSharedValue<string>(getDefaultSlippage(assetToSell.value?.chainId || ChainId.mainnet, config));
   const flashbots = useSharedValue<boolean>(false);
+
+  const sellNativeAsset = useSharedValue(
+    getNativeAssetForNetwork(ethereumUtils.getNetworkFromChainId(assetToSell.value?.chainId || ChainId.mainnet))
+  );
+  const buyNativeAsset = useSharedValue(
+    getNativeAssetForNetwork(ethereumUtils.getNetworkFromChainId(assetToBuy.value?.chainId || ChainId.mainnet))
+  );
 
   const inputValues = useSharedValue<{ [key in inputKeys]: number | string }>({
     inputAmount: 0,
@@ -294,11 +303,13 @@ export function useSwapInputsController({
     resetTimers();
 
     const updateValues = async () => {
-      isFetching.value = false;
+      isFetching.value = true;
       if (inputKey === 'inputAmount') {
         if (!assetToSell.value || !assetToBuy.value) return;
 
         const isCrosschainSwap = assetToSell.value.chainId !== assetToBuy.value.chainId;
+
+        console.log({ isCrosschainSwap });
 
         const quoteParams: QuoteParams = {
           source: source.value === 'auto' ? undefined : source.value,
@@ -314,83 +325,70 @@ export function useSwapInputsController({
           toChainId: isCrosschainSwap ? assetToBuy.value.chainId : assetToSell.value.chainId,
         };
 
-        const response = (isCrosschainSwap ? await getCrosschainQuote(quoteParams) : await getQuote(quoteParams)) as
+        console.log(quoteParams);
+
+        const quoteResponse = (isCrosschainSwap ? await getCrosschainQuote(quoteParams) : await getQuote(quoteParams)) as
           | Quote
           | CrosschainQuote
           | QuoteError;
 
-        console.log(JSON.stringify(response, null, 2));
+        const assetToBuyWithPriceData = await fetchExternalToken({
+          address: assetToBuy.value.address,
+          network: ethereumUtils.getNetworkFromChainId(assetToBuy.value.chainId),
+          currency: currentCurrency,
+        });
 
-        const updatedSliderPosition = clampJS((amount / Number(assetToSell.value.balance.amount)) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
+        const assetToSellWithPriceData = await fetchExternalToken({
+          address: assetToSell.value.address,
+          network: ethereumUtils.getNetworkFromChainId(assetToSell.value.chainId),
+          currency: currentCurrency,
+        });
 
-        const updateWorklet = (quote: Quote | CrosschainQuote, isWrapOrUnwrapEth: boolean) => {
+        console.log(JSON.stringify(quoteResponse, null, 2));
+
+        // const updatedSliderPosition = clampJS((amount / Number(assetToSell.value.balance.amount)) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
+
+        const updateWorklet = ({
+          quote,
+          inputNativeValue,
+          outputAmount,
+          outputNativeValue,
+          isWrapOrUnwrapEth,
+        }: {
+          quote: Quote | CrosschainQuote;
+          inputNativeValue: string;
+          outputAmount: string;
+          outputNativeValue: string;
+          isWrapOrUnwrapEth: boolean;
+        }) => {
           'worklet';
           if (quote.source) {
             source.value = quote.source;
           }
 
-          // TODO: Convert to string value
-          // example: "fee": "3672850000000000",
-          swapFee.value = quote.fee.toString();
-
-          /**
-           * Example same-chain quote response:
-           * {
-              "sellTokenAddress": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-              "buyTokenAddress": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-              "allowanceTarget": "0x111111125421ca6dc452d289314280a0f8842a65",
-              "to": "0x111111125421ca6dc452d289314280a0f8842a65",
-              "data": "0xa76dfc3b0000000000000000000000000000000000000000000000000000000052f486f620000000000000000000000088e6a0c2ddd26feeb64f039a2c41296fcb3f5640520b7e0f",
-              "sellAmount": "432100000000000000",
-              "sellAmountMinusFees": "428427150000000000",
-              "sellAmountDisplay": "432100000000000000",
-              "sellAmountInEth": "432100000000000000",
-              "buyAmount": "1420160252",
-              "buyAmountMinusFees": "1420160252",
-              "buyAmountDisplay": "1420160252",
-              "buyAmountInEth": "425500044622854831",
-              "tradeAmountUSD": 1421.699741,
-              "value": "432100000000000000",
-              "gasPrice": "44052114330",
-              "source": "1inch",
-              "protocols": [
-                {
-                  "name": "UNISWAP_V3",
-                  "part": 100
-                }
-              ],
-              "fee": "3672850000000000",
-              "feeInEth": "3672850000000000",
-              "feePercentageBasisPoints": "8500000000000000",
-              "tradeType": "exact_input",
-              "from": "0x278dB415b3c969e789e1Ec9e80e1e001A5dcee82",
-              "defaultGasLimit": "350000",
-              "swapType": "normal",
-              "txTarget": "0x00000000009726632680fb29d3f7a9734e3010e2",
-              "chainId": 1
-            }
-           */
-
           // TODO: Need to convert big number to native value properly here...
-          swapFee.value = isWrapOrUnwrapEth ? '0' : quote.feeInEth.toString();
+          // example: "fee": "3672850000000000",
+          fee.value = isWrapOrUnwrapEth ? '0' : quote.feeInEth.toString();
 
           inputValues.modify(values => {
             return {
               ...values,
-              outputAmount: isWrapOrUnwrapEth ? quote.buyAmount : quote.buyAmountDisplay,
-              outputNativeValue: quote.tradeAmountUSD.toFixed(2),
+              outputAmount,
+              outputNativeValue,
+              inputNativeValue,
             };
           });
           // TODO: Bring back in slider position change
-          sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
+          // sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
           isQuoteStale.value = 0;
         };
 
-        quote.value = response;
+        quote.value = quoteResponse;
+        isFetching.value = false;
 
-        if (!response || (response as QuoteError)?.error) return;
+        if (!quoteResponse || (quoteResponse as QuoteError)?.error) return;
 
-        const data = response as Quote | CrosschainQuote;
+        const data = quoteResponse as Quote | CrosschainQuote;
 
         const isWrapOrUnwrapEth =
           isWrapEth({
@@ -404,7 +402,34 @@ export function useSwapInputsController({
             chainId: assetToSell.value.chainId,
           });
 
-        runOnUI(updateWorklet)(data, isWrapOrUnwrapEth);
+        const outputAmount = convertRawAmountToBalance(data.buyAmount.toString(), { decimals: assetToBuy.value.decimals || 18 }).amount;
+        const outputNativeValue =
+          !data.buyAmount || !assetToBuyWithPriceData?.price.value
+            ? '0.00'
+            : convertRawAmountToNativeDisplay(
+                data.buyAmount.toString(),
+                assetToBuy.value.decimals || 18,
+                assetToBuyWithPriceData.price.value,
+                currentCurrency
+              ).display.slice(1);
+
+        const inputNativeValue =
+          !data.sellAmount || !assetToSellWithPriceData?.price.value
+            ? '0.00'
+            : convertRawAmountToNativeDisplay(
+                data.sellAmount.toString(),
+                assetToSell.value.decimals || 18,
+                assetToSellWithPriceData.price.value,
+                currentCurrency
+              ).display.slice(1);
+
+        runOnUI(updateWorklet)({
+          quote: data,
+          outputAmount,
+          outputNativeValue,
+          inputNativeValue,
+          isWrapOrUnwrapEth,
+        });
       } else if (inputKey === 'outputAmount') {
         if (!assetToSell.value || !assetToBuy.value) return;
 
@@ -424,31 +449,56 @@ export function useSwapInputsController({
           toChainId: isCrosschainSwap ? assetToBuy.value.chainId : assetToSell.value.chainId,
         };
 
-        const response = (isCrosschainSwap ? await getCrosschainQuote(quoteParams) : await getQuote(quoteParams)) as
+        const quoteResponse = (isCrosschainSwap ? await getCrosschainQuote(quoteParams) : await getQuote(quoteParams)) as
           | Quote
           | CrosschainQuote
           | QuoteError;
 
-        console.log(JSON.stringify(response, null, 2));
+        const assetToBuyWithPriceData = await fetchExternalToken({
+          address: assetToBuy.value.address,
+          network: ethereumUtils.getNetworkFromChainId(assetToBuy.value.chainId),
+          currency: currentCurrency,
+        });
+
+        const assetToSellWithPriceData = await fetchExternalToken({
+          address: assetToSell.value.address,
+          network: ethereumUtils.getNetworkFromChainId(assetToSell.value.chainId),
+          currency: currentCurrency,
+        });
+
+        console.log(JSON.stringify(quoteResponse, null, 2));
 
         // TODO: Bring back in slider position change
         // const updatedSliderPosition = clampJS((inputAmount / Number(assetToSell.value.balance.amount)) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
 
-        const updateWorklet = (quote: Quote | CrosschainQuote, isWrapOrUnwrapEth: boolean) => {
+        const updateWorklet = ({
+          quote,
+          inputAmount,
+          inputNativeValue,
+          outputNativeValue,
+          isWrapOrUnwrapEth,
+        }: {
+          quote: Quote | CrosschainQuote;
+          inputAmount: string;
+          inputNativeValue: string;
+          outputNativeValue: string;
+          isWrapOrUnwrapEth: boolean;
+        }) => {
           'worklet';
           if (quote.source) {
             source.value = quote.source;
           }
 
-          // TODO: Convert to string value
+          // TODO: Need to convert big number to native value properly here...
           // example: "fee": "3672850000000000",
-          swapFee.value = isWrapOrUnwrapEth ? '0' : quote.feeInEth.toString();
+          fee.value = isWrapOrUnwrapEth ? '0' : quote.feeInEth.toString();
 
           inputValues.modify(values => {
             return {
               ...values,
-              inputAmount: isWrapOrUnwrapEth ? quote.sellAmount : quote.sellAmountDisplay,
-              inputNativeValue: quote.tradeAmountUSD.toFixed(2),
+              inputAmount,
+              inputNativeValue,
+              outputNativeValue,
             };
           });
           // TODO: Bring back in slider position change
@@ -456,11 +506,12 @@ export function useSwapInputsController({
           isQuoteStale.value = 0;
         };
 
-        quote.value = response;
+        quote.value = quoteResponse;
+        isFetching.value = false;
 
-        if (!response || (response as QuoteError)?.error) return;
+        if (!quoteResponse || (quoteResponse as QuoteError)?.error) return;
 
-        const data = response as Quote | CrosschainQuote;
+        const data = quoteResponse as Quote | CrosschainQuote;
 
         const isWrapOrUnwrapEth =
           isWrapEth({
@@ -474,7 +525,34 @@ export function useSwapInputsController({
             chainId: assetToSell.value.chainId,
           });
 
-        runOnUI(updateWorklet)(data, isWrapOrUnwrapEth);
+        const inputAmount = convertRawAmountToBalance(data.sellAmount.toString(), { decimals: assetToSell.value.decimals || 18 }).amount;
+        const inputNativeValue =
+          !data.sellAmount || !assetToSellWithPriceData?.price.value
+            ? '0.00'
+            : convertRawAmountToNativeDisplay(
+                data.sellAmount.toString(),
+                assetToSell.value.decimals || 18,
+                assetToSellWithPriceData.price.value,
+                currentCurrency
+              ).display.slice(1);
+
+        const outputNativeValue =
+          !data.buyAmount || !assetToBuyWithPriceData?.price.value
+            ? '0.00'
+            : convertRawAmountToNativeDisplay(
+                data.buyAmount.toString(),
+                assetToBuy.value.decimals || 18,
+                assetToBuyWithPriceData.price.value,
+                currentCurrency
+              ).display.slice(1);
+
+        runOnUI(updateWorklet)({
+          quote: data,
+          inputAmount,
+          inputNativeValue,
+          outputNativeValue,
+          isWrapOrUnwrapEth,
+        });
       }
     };
 
@@ -780,10 +858,17 @@ export function useSwapInputsController({
   useAnimatedReaction(
     () => ({
       assetToSellChainId: assetToSell.value?.chainId || ChainId.mainnet,
+      assetToBuyChainId: assetToBuy.value?.chainId || ChainId.mainnet,
     }),
     (current, previous) => {
       if (current.assetToSellChainId !== previous?.assetToSellChainId) {
         slippage.value = getDefaultSlippage(current.assetToSellChainId, config);
+        // TODO: Convert this to a worklet func
+        // sellNativeAsset.value = runOnJS(getNativeAssetForNetwork)(ethereumUtils.getNetworkFromChainId(current.assetToSellChainId));
+      }
+
+      if (current.assetToBuyChainId !== previous?.assetToBuyChainId) {
+        // buyNativeAsset.value = getNativeAssetForNetwork(ethereumUtils.getNetworkFromChainId(current.assetToBuyChainId));
       }
     }
   );
