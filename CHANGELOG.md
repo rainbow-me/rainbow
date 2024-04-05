@@ -15,6 +15,30 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.20] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.20)
+
+### Added
+
+- Added pending transaction indicator on nav bar (#5529)
+- Swaps v2 revamp work (#5536, #5538)
+- Added wallet connect v2 sessions data to state dump (#5382)
+
+### Changed
+
+- e2e cleanup (#5540)
+- NFT offers/mints gas estimation improvements (#5448)
+- Removed Apollo client in favor of @/graphql (#5555)
+- Refetch balances after a transaction is confirmed (#5551)
+- Hide favorites on non mainnet assets (#5565)
+- Updated transaction details sheet (#5535)
+- Bump Rudderstack version to v1.12.12 (#5556)
+- Backups v2 (#5310)
+
+### Fixed
+
+- Fixed a crash that happened when tapping settings button on develop (#5544)
+- Fixed token metadata issues for searching by contract address in discover (#5563)
+
 ## [1.9.19] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.19)
 
 ### Added

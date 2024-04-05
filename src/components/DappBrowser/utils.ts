@@ -27,6 +27,13 @@ export const generateUniqueId = (): string => {
   return `${timestamp}${randomString}`;
 };
 
+export function generateUniqueIdWorklet(): string {
+  'worklet';
+  const timestamp = Date.now().toString(36);
+  const randomString = Math.random().toString(36).slice(2, 7);
+  return `${timestamp}${randomString}`;
+}
+
 export const getNameFromFormattedUrl = (formattedUrl: string): string => {
   const parts = formattedUrl.split('.');
   let name;
