@@ -810,7 +810,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
                   )}
                 </View>
               </ViewShot>
-              <AnimatedFasterImage source={screenshotSource.value} style={[styles.screenshotContainerStyle, animatedScreenshotStyle]} />
+              <AnimatedFasterImage source={screenshotSource} style={[styles.screenshotContainerStyle, animatedScreenshotStyle]} />
               <WebViewBorder animatedTabIndex={animatedTabIndex} enabled={IS_IOS && isDarkMode && !isOnHomepage} />
               <CloseTabButton
                 animatedMultipleTabsOpen={animatedMultipleTabsOpen}
