@@ -228,7 +228,6 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
       ? currentlyOpenTabIds?.value.length - 1
       : currentlyOpenTabIds?.value.indexOf(tabId)) ?? 0
   );
-
   const screenshotData = useSharedValue<ScreenshotType | undefined>(findTabScreenshot(tabId, tabUrl) || undefined);
 
   const defaultBackgroundColor = isDarkMode ? '#191A1C' : globalColors.white100;
@@ -581,7 +580,6 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
             },
           });
         }
-
         // eslint-disable-next-line no-empty
       } catch (e) {
         console.error('Error parsing message', e);
@@ -852,6 +850,7 @@ const styles = StyleSheet.create({
     width: deviceUtils.dimensions.width,
   },
   webViewStyle: {
+    backgroundColor: 'transparent',
     borderCurve: 'continuous',
     height: WEBVIEW_HEIGHT,
     maxHeight: WEBVIEW_HEIGHT,
