@@ -253,7 +253,6 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
       } else if (indexToMakeActive !== undefined) {
         setActiveTabIndex(indexToMakeActive);
       }
-
       shouldBlockOperationQueue.value = false;
     },
     [setTabStates, shouldBlockOperationQueue, toggleTabViewWorklet]
@@ -464,12 +463,12 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
         activeTabRef,
         animatedActiveTabIndex,
         closeTabWorklet,
-        currentlyOpenTabIds,
         getActiveTabState,
         goBack,
         goForward,
         loadProgress,
         newTabWorklet,
+        currentlyOpenTabIds,
         onRefresh,
         searchViewProgress,
         searchInputRef,

@@ -8,9 +8,15 @@ import { useBrowserContext } from './BrowserContext';
 import { WEBVIEW_HEIGHT } from './Dimensions';
 
 export const WebViewBorder = ({ animatedTabIndex, enabled }: { animatedTabIndex: SharedValue<number>; enabled?: boolean }) => {
-  const { animatedActiveTabIndex, tabViewProgress } = useBrowserContext();
+  const { animatedActiveTabIndex, tabViewProgress, tabViewVisible } = useBrowserContext();
 
   const webViewBorderStyle = useAnimatedStyle(() => {
+    if (!enabled) {
+      return {
+        pointerEvents: tabViewVisible?.value ? 'auto' : 'none',
+      };
+    }
+
     const progress = tabViewProgress?.value || 0;
     const animatedIsActiveTab = animatedActiveTabIndex?.value === animatedTabIndex.value;
 
@@ -20,14 +26,20 @@ export const WebViewBorder = ({ animatedTabIndex, enabled }: { animatedTabIndex:
     return {
       borderRadius,
       opacity,
+      pointerEvents: tabViewVisible?.value ? 'auto' : 'none',
     };
   });
 
-  return enabled ? (
+  return (
     <Cover pointerEvents="box-none" style={styles.zIndexStyle}>
-      <Box as={Animated.View} height={{ custom: WEBVIEW_HEIGHT }} style={[styles.webViewBorderStyle, webViewBorderStyle]} width="full" />
+      <Box
+        as={Animated.View}
+        height={{ custom: WEBVIEW_HEIGHT }}
+        style={[enabled ? styles.webViewBorderStyle : {}, webViewBorderStyle]}
+        width="full"
+      />
     </Cover>
-  ) : null;
+  );
 };
 
 const styles = StyleSheet.create({
@@ -38,7 +50,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: THICK_BORDER_WIDTH,
     overflow: 'hidden',
-    pointerEvents: 'none',
   },
   zIndexStyle: {
     zIndex: 30000,
