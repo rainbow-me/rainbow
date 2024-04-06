@@ -17,6 +17,7 @@ import { deviceUtils } from '@/utils';
 import { IS_ANDROID } from '@/env';
 import { useSelector } from 'react-redux';
 import { getCrosschainSwapServiceTime } from '@/handlers/swap';
+import { useGasStore } from '@/state/gas/gasStore';
 
 const FOOTER_HEIGHT = 120;
 const CONTENT_HEIGHT = 310;
@@ -36,6 +37,7 @@ const FeesPanelTabswrapper = styled(Column)(margin.object(19, 0, 24, 0));
 export default function CustomGasState({ asset }) {
   const { setParams } = useNavigation();
   const { params: { longFormHeight, speeds, openCustomOptions, fallbackColor } = {} } = useRoute();
+  // const { selectedGasFee } = useGasStore()
   const { colors } = useTheme();
   const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
