@@ -9,7 +9,7 @@ import { debounce, isEmpty, sortBy } from 'lodash';
 import { fetchENSAvatar, prefetchENSAvatar } from '../hooks/useENSAvatar';
 import { prefetchENSCover } from '../hooks/useENSCover';
 import { prefetchENSRecords } from '../hooks/useENSRecords';
-import { ENSActionParameters, RapActionTypes } from '../raps-OLD/common';
+import { ENSActionParameters, RapActionType } from '../raps/references';
 import { getENSData, getNameFromLabelhash, saveENSData } from './localstorage/ens';
 import { estimateGasWithPadding, getProviderForNetwork, TokenStandard } from './web3';
 import { ENSRegistrationRecords, Records, UniqueAsset } from '@/entities';
@@ -26,7 +26,6 @@ import { prefetchENSAddress } from '@/resources/ens/ensAddressQuery';
 import { ENS_MARQUEE_QUERY_KEY } from '@/resources/metadata/ensMarqueeQuery';
 import { queryClient } from '@/react-query';
 import { EnsMarqueeAccount } from '@/graphql/__generated__/metadata';
-import { getEnsMarqueeFallback } from '@/components/ens-registration/IntroMarquee/IntroMarquee';
 import { MimeType, handleNFTImages } from '@/utils/handleNFTImages';
 
 const DUMMY_RECORDS = {
@@ -888,13 +887,13 @@ export const getTransactionTypeForRecords = (registrationRecords: ENSRegistratio
 export const getRapActionTypeForTxType = (txType: ENSRegistrationTransactionType) => {
   switch (txType) {
     case ENSRegistrationTransactionType.MULTICALL:
-      return RapActionTypes.multicallENS;
+      return RapActionType.multicallENS;
     case ENSRegistrationTransactionType.SET_ADDR:
-      return RapActionTypes.setAddrENS;
+      return RapActionType.setAddrENS;
     case ENSRegistrationTransactionType.SET_TEXT:
-      return RapActionTypes.setTextENS;
+      return RapActionType.setTextENS;
     case ENSRegistrationTransactionType.SET_CONTENTHASH:
-      return RapActionTypes.setContenthashENS;
+      return RapActionType.setContenthashENS;
     default:
       return null;
   }

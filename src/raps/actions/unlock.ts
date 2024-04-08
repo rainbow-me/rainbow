@@ -3,7 +3,7 @@ import { MaxUint256 } from '@ethersproject/constants';
 import { Contract, PopulatedTransaction } from '@ethersproject/contracts';
 import { parseUnits } from '@ethersproject/units';
 import { getProviderForNetwork } from '@/handlers/web3';
-import { Address, erc20Abi, erc721Abi, getContract, createWalletClient, http, Hex } from 'viem';
+import { Address, erc20Abi, erc721Abi } from 'viem';
 
 import { ChainId } from '@/__swaps__/types/chains';
 import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
@@ -16,13 +16,13 @@ import { ETH_ADDRESS } from '../../references';
 import { gasUnits } from '@/__swaps__/references';
 import { gasStore } from '@/state/gas/gasStore';
 import { ParsedAsset } from '@/__swaps__/types/assets';
-import { toBigNumber } from '@/__swaps__/utils/numbers';
 import { convertAmountToRawAmount, greaterThan } from '@/helpers/utilities';
 import { ActionProps, RapActionResult } from '../references';
 
 import { overrideWithFastSpeedIfNeeded } from './../utils';
 import { ethereumUtils } from '@/utils';
-import { getNetworkObj } from '@/networks';
+import { toHex } from '@/__swaps__/utils/hex';
+import { TokenColors } from '@/graphql/__generated__/metadata';
 
 export const getAssetRawAllowance = async ({
   owner,
@@ -183,7 +183,6 @@ export const populateRevokeApproval = async ({
 };
 
 export const executeApprove = async ({
-  chainId,
   gasLimit,
   gasParams,
   nonce,
@@ -199,39 +198,15 @@ export const executeApprove = async ({
   tokenAddress: Address;
   wallet: Signer;
 }) => {
-  const address = await wallet.getAddress();
-  const network = ethereumUtils.getNetworkFromChainId(chainId);
-  const networkObj = getNetworkObj(network);
-  const client = createWalletClient({
-    account: address as Hex,
-    chain: networkObj,
-    transport: http(networkObj.rpc),
-  });
-
-  const tokenContract = getContract({
-    address: tokenAddress,
-    abi: erc20Abi,
-    client,
-  });
-
-  const { gasPrice, maxFeePerGas, maxPriorityFeePerGas } = gasParams;
-
-  const gasPriceBigInt = toBigNumber(gasPrice)?.toBigInt();
-  const maxFeePerGasBigInt = toBigNumber(maxFeePerGas)?.toBigInt();
-  const maxPriorityFeePerGasBigInt = toBigNumber(maxPriorityFeePerGas)?.toBigInt();
-
-  if (!gasPriceBigInt || !maxFeePerGasBigInt || !maxPriorityFeePerGasBigInt) {
-    throw new RainbowError('unlock: error executeApprove');
-  }
-
-  // TODO: Allow user to edit this spend amount
-  // TODO: Fix this...
-  return tokenContract.write.approve([spender, MaxUint256.toBigInt()], {
-    nonce,
-    gasLimit: toBigNumber(gasLimit),
-    gasPrice: gasPriceBigInt,
-    maxFeePerGas: maxFeePerGasBigInt, // TODO: Viem types are screwed up for this?
-    maxPriorityFeePerGas: maxPriorityFeePerGasBigInt, // TODO: Viem types are screwed up for this?
+  const exchange = new Contract(tokenAddress, erc20Abi, wallet);
+  return exchange.approve(spender, MaxUint256, {
+    gasLimit: toHex(gasLimit) || undefined,
+    // In case it's an L2 with legacy gas price like arbitrum
+    gasPrice: gasParams.gasPrice,
+    // EIP-1559 like networks
+    maxFeePerGas: gasParams.maxFeePerGas,
+    maxPriorityFeePerGas: gasParams.maxPriorityFeePerGas,
+    nonce: nonce ? toHex(nonce.toString()) : undefined,
   });
 };
 
@@ -288,7 +263,11 @@ export const unlock = async ({ baseNonce, index, parameters, wallet }: ActionPro
   if (!approval) throw new RainbowError('unlock: error executeApprove');
 
   const transaction = {
-    asset: assetToUnlock,
+    asset: {
+      ...assetToUnlock,
+      network: ethereumUtils.getNetworkFromChainId(assetToUnlock.chainId),
+      colors: assetToUnlock.colors as TokenColors,
+    },
     data: approval.data,
     value: approval.value?.toString(),
     changes: [],

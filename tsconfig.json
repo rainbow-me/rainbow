@@ -30,7 +30,7 @@
       "@rainbow-me/navigation/*": ["src/navigation/*"],
       "@rainbow-me/networkTypes": ["./src/helpers/networkTypes"],
       "@rainbow-me/parsers": ["src/parsers"],
-      "@rainbow-me/raps": ["src/raps-OLD"],
+      "@rainbow-me/raps": ["src/raps"],
       "@rainbow-me/react-query": ["./src/react-query"],
       "@rainbow-me/react-query/*": ["./src/react-query/*"],
       "@rainbow-me/redux": ["src/redux"],
@@ -54,5 +54,15 @@
     "resolveJsonModule": true
   },
   "globals": ["useTheme", "ios", "android", "web", "__DEV__", "IS_DEV"],
-  "exclude": ["ios", "src/browser", "android", "patches/reanimated", "node_modules", "babel.config.js", "metro.config.js", "jest.config.js"]
+  "exclude": [
+    "ios",
+    "src/browser",
+    "src/raps-DEPRECATED",
+    "android",
+    "patches/reanimated",
+    "node_modules",
+    "babel.config.js",
+    "metro.config.js",
+    "jest.config.js"
+  ]
 }

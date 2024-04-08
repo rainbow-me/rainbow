@@ -1,13 +1,12 @@
 import { BigNumberish } from '@ethersproject/bignumber';
 import { ProtocolType } from '../protocolTypes';
-// import { ParsedAddressAsset } from '../tokens';
+import { ParsedAddressAsset } from '../tokens';
 import { EthereumAddress } from '../wallet';
 import { Network } from '@/helpers/networkTypes';
 import { AddCashCurrencyAsset } from '@/references';
 import { ChainId, SwapType } from '@rainbow-me/swaps';
-import { SwapMetadata } from '@/raps-OLD/common';
+import { SwapMetadata } from '@/raps/references';
 import { UniqueAsset } from '../uniqueAssets';
-import { ParsedAsset } from '@/__swaps__/types/assets';
 import { TransactionStatus, TransactionType } from '@/resources/transactions/types';
 
 export type TransactionDirection = 'in' | 'out' | 'self';
@@ -15,7 +14,7 @@ export type TransactionDirection = 'in' | 'out' | 'self';
 export interface RainbowTransaction {
   address?: string;
   asset?:
-    | (ParsedAsset & {
+    | (ParsedAddressAsset & {
         asset_contract?: {
           address?: string;
         };
@@ -27,7 +26,7 @@ export interface RainbowTransaction {
   } | null;
   changes?: Array<
     | {
-        asset: ParsedAsset;
+        asset: ParsedAddressAsset;
         direction: TransactionDirection;
         address_from?: string;
         address_to?: string;

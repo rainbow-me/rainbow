@@ -23,6 +23,7 @@ import {
   overrideWithFastSpeedIfNeeded,
 } from '../utils';
 import { ethereumUtils } from '@/utils';
+import { TokenColors } from '@/graphql/__generated__/metadata';
 
 const getCrosschainSwapDefaultGasLimit = (quote: CrosschainQuote) => quote?.routes?.[0]?.userTxs?.[0]?.gasFees?.gasLimit;
 
@@ -157,7 +158,11 @@ export const crosschainSwap = async ({
   const transaction = {
     data: parameters.quote.data,
     value: parameters.quote.value?.toString(),
-    asset: parameters.assetToBuy,
+    asset: {
+      ...parameters.assetToBuy,
+      network: ethereumUtils.getNetworkFromChainId(parameters.assetToBuy.chainId),
+      colors: parameters.assetToBuy.colors as TokenColors,
+    },
     changes: [
       {
         direction: 'out',
@@ -166,6 +171,7 @@ export const crosschainSwap = async ({
         asset: {
           ...parameters.assetToSell,
           network: ethereumUtils.getNetworkFromChainId(parameters.assetToSell.chainId),
+          colors: parameters.assetToSell.colors as TokenColors,
         },
         value: quote.sellAmount.toString(),
       },
@@ -176,6 +182,7 @@ export const crosschainSwap = async ({
         asset: {
           ...parameters.assetToBuy,
           network: ethereumUtils.getNetworkFromChainId(parameters.assetToBuy.chainId),
+          colors: parameters.assetToBuy.colors as TokenColors,
         },
         value: quote.buyAmount.toString(),
       },

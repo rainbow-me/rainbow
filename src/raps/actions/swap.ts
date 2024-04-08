@@ -44,6 +44,8 @@ import {
 } from '../utils';
 
 import { populateApprove } from './unlock';
+import { TokenColors } from '@/graphql/__generated__/metadata';
+import { swapMetadataStorage } from '../common';
 
 const WRAP_GAS_PADDING = 1.002;
 
@@ -289,7 +291,13 @@ export const swap = async ({ currentRap, wallet, index, parameters, baseNonce }:
     from: swap.from as Address,
     to: swap.to as Address,
     value: quote.value?.toString(),
-    asset: parameters.assetToBuy,
+    // TODO: MARK - Replace this once we migrate network => chainId
+    // asset: parameters.assetToBuy,
+    asset: {
+      ...parameters.assetToBuy,
+      network: ethereumUtils.getNetworkFromChainId(parameters.assetToBuy.chainId),
+      colors: parameters.assetToBuy.colors as TokenColors,
+    },
     changes: [
       {
         direction: 'out',
@@ -298,6 +306,7 @@ export const swap = async ({ currentRap, wallet, index, parameters, baseNonce }:
         asset: {
           ...parameters.assetToSell,
           network: ethereumUtils.getNetworkFromChainId(parameters.assetToSell.chainId),
+          colors: parameters.assetToSell.colors as TokenColors,
         },
         value: quote.sellAmount.toString(),
       },
@@ -308,6 +317,7 @@ export const swap = async ({ currentRap, wallet, index, parameters, baseNonce }:
         asset: {
           ...parameters.assetToBuy,
           network: ethereumUtils.getNetworkFromChainId(parameters.assetToBuy.chainId),
+          colors: parameters.assetToSell.colors as TokenColors,
         },
         value: quote.buyAmount.toString(),
       },
@@ -325,6 +335,10 @@ export const swap = async ({ currentRap, wallet, index, parameters, baseNonce }:
 
   // TODO: MARK - Replace this once we migrate network => chainId
   const network = ethereumUtils.getNetworkFromChainId(parameters.chainId);
+
+  if (parameters.meta && swap.hash) {
+    swapMetadataStorage.set(swap.hash.toLowerCase(), JSON.stringify({ type: 'swap', data: parameters.meta }));
+  }
 
   addNewTransaction({
     address: parameters.quote.from as Address,

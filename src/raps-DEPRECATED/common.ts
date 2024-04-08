@@ -11,7 +11,7 @@ import {
   createSetNameENSRap,
   createSetRecordsENSRap,
   createTransferENSRap,
-} from './registerENS';
+} from '../raps/registerENS';
 import { createUnlockAndSwapRap, estimateUnlockAndSwap } from './unlockAndSwap';
 import { analytics } from '@/analytics';
 import { Asset, EthereumAddress, Records, SwappableAsset } from '@/entities';
