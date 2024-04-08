@@ -30,7 +30,7 @@
       "@rainbow-me/navigation/*": ["src/navigation/*"],
       "@rainbow-me/networkTypes": ["./src/helpers/networkTypes"],
       "@rainbow-me/parsers": ["src/parsers"],
-      "@rainbow-me/raps": ["src/raps"],
+      "@rainbow-me/raps": ["src/raps-OLD"],
       "@rainbow-me/react-query": ["./src/react-query"],
       "@rainbow-me/react-query/*": ["./src/react-query/*"],
       "@rainbow-me/redux": ["src/redux"],

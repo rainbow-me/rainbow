@@ -48,14 +48,14 @@ import {
 } from '@/hooks';
 import { loadWallet } from '@/model/wallet';
 import { useNavigation } from '@/navigation';
-import { executeRap, getSwapRapEstimationByType, getSwapRapTypeByExchangeType } from '@/raps';
+import { executeRap, getSwapRapEstimationByType, getSwapRapTypeByExchangeType } from '@/raps-OLD';
 import { swapClearState, SwapModalField, TypeSpecificParameters, updateSwapSlippage, updateSwapTypeDetails } from '@/redux/swap';
 import { ethUnits } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils, gasUtils } from '@/utils';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import logger from '@/utils/logger';
-import { CrosschainSwapActionParameters, SwapActionParameters } from '@/raps/common';
+import { CrosschainSwapActionParameters, SwapActionParameters } from '@/raps-OLD/common';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
 import store from '@/redux/store';
