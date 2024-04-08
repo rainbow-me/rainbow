@@ -48,14 +48,13 @@ import {
 } from '@/hooks';
 import { loadWallet } from '@/model/wallet';
 import { useNavigation } from '@/navigation';
-import { executeRap, getSwapRapEstimationByType, getSwapRapTypeByExchangeType } from '@/raps';
+import { walletExecuteRap } from '@/raps/execute';
 import { swapClearState, SwapModalField, TypeSpecificParameters, updateSwapSlippage, updateSwapTypeDetails } from '@/redux/swap';
 import { ethUnits } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils, gasUtils } from '@/utils';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import logger from '@/utils/logger';
-import { CrosschainSwapActionParameters, SwapActionParameters } from '@/raps/common';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
 import store from '@/redux/store';
@@ -71,6 +70,12 @@ import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
 import { SwapPriceImpactType } from '@/hooks/usePriceImpactDetails';
 import { getNextNonce } from '@/state/nonces';
+import { getChainName } from '@/__swaps__/screens/Swap/utils/chains';
+import { ChainName } from '@/__swaps__/types/chains';
+import { AddressOrEth, ParsedAsset } from '@/__swaps__/types/assets';
+import { TokenColors } from '@/graphql/__generated__/metadata';
+import { estimateSwapGasLimit } from '@/raps/actions';
+import { estimateCrosschainSwapGasLimit } from '@/raps/actions/crosschainSwap';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -289,16 +294,12 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
   const updateGasLimit = useCallback(async () => {
     try {
       const provider = await getProviderForNetwork(currentNetwork);
-      const swapParams: SwapActionParameters | CrosschainSwapActionParameters = {
-        chainId,
-        inputAmount: inputAmount!,
-        outputAmount: outputAmount!,
-        provider,
-        tradeDetails: tradeDetails!,
-      };
 
-      const rapType = getSwapRapTypeByExchangeType(isCrosschainSwap);
-      const gasLimit = await getSwapRapEstimationByType(rapType, swapParams);
+      const quote = isCrosschainSwap ? (tradeDetails as CrosschainQuote) : (tradeDetails as Quote);
+      const gasLimit = await (isCrosschainSwap ? estimateCrosschainSwapGasLimit : estimateSwapGasLimit)({
+        chainId,
+        quote: quote as any, // this is a temporary fix until we have the correct type coersion here
+      });
       if (gasLimit) {
         if (getNetworkObj(currentNetwork).gas?.OptimismTxFee) {
           if (tradeDetails) {
@@ -323,7 +324,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
     } catch (error) {
       updateTxFee(defaultGasLimit, null);
     }
-  }, [chainId, currentNetwork, defaultGasLimit, inputAmount, isCrosschainSwap, outputAmount, tradeDetails, type, updateTxFee]);
+  }, [chainId, currentNetwork, defaultGasLimit, isCrosschainSwap, tradeDetails, updateTxFee]);
 
   useEffect(() => {
     if (tradeDetails && !equal(tradeDetails, lastTradeDetails)) {
@@ -393,7 +394,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
   });
 
   const submit = useCallback(
-    async (amountInUSD: any) => {
+    async (amountInUSD: any): Promise<boolean> => {
       setIsAuthorizing(true);
       const NotificationManager = ios ? NativeModules.NotificationManager : null;
       try {
@@ -403,6 +404,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
         if (!wallet) {
           setIsAuthorizing(false);
           logger.sentry(`aborting ${type} due to missing wallet`);
+          Alert.alert('Unable to determine wallet address');
           return false;
         }
 
@@ -414,52 +416,68 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
           wallet = new Wallet(wallet.privateKey, flashbotsProvider);
         }
 
-        let isSucessful = false;
-        const callback = (success = false, errorMessage: string | null = null) => {
-          isSucessful = success;
-          setIsAuthorizing(false);
-          if (success) {
-            setParams({ focused: false });
-            navigate(Routes.PROFILE_SCREEN);
-          } else if (errorMessage) {
-            if (wallet instanceof Wallet) {
-              Alert.alert(errorMessage);
-            } else {
-              setHardwareTXError(true);
-            }
-          }
-        };
+        if (!inputAmount || !outputAmount) {
+          logger.log('[exchange - handle submit] inputAmount or outputAmount is missing');
+          Alert.alert('Input amount or output amount is missing');
+          return false;
+        }
+
+        if (!tradeDetails) {
+          logger.log('[exchange - handle submit] tradeDetails is missing');
+          Alert.alert('Missing trade details for swap');
+          return false;
+        }
+
         logger.log('[exchange - handle submit] rap');
-        const nonce = await getNextNonce({ address: accountAddress, network: currentNetwork });
+        const currentNonce = await getNextNonce({ address: accountAddress, network: currentNetwork });
         const { independentField, independentValue, slippageInBips, source } = store.getState().swap;
-        const swapParameters = {
+
+        const transformedAssetToSell = {
+          ...inputCurrency,
+          chainName: getChainName({ chainId: inputCurrency.chainId! }) as ChainName,
+          address: inputCurrency.address as AddressOrEth,
+          chainId: inputCurrency.chainId!,
+          colors: inputCurrency.colors as TokenColors,
+        } as ParsedAsset;
+
+        const transformedAssetToBuy = {
+          ...outputCurrency,
+          chainName: getChainName({ chainId: outputCurrency.chainId! }) as ChainName,
+          address: outputCurrency.address as AddressOrEth,
+          chainId: outputCurrency.chainId!,
+          colors: outputCurrency.colors as TokenColors,
+        } as ParsedAsset;
+
+        const { nonce, errorMessage } = await walletExecuteRap(wallet, isCrosschainSwap ? 'crosschainSwap' : 'swap', {
           chainId,
           flashbots,
-          inputAmount: inputAmount!,
-          outputAmount: outputAmount!,
-          nonce,
-          tradeDetails: {
-            ...tradeDetails,
-            fromChainId: ethereumUtils.getChainIdFromNetwork(inputCurrency?.network),
-            toChainId: ethereumUtils.getChainIdFromNetwork(outputCurrency?.network),
-          } as Quote | CrosschainQuote,
+          nonce: currentNonce,
+          assetToSell: transformedAssetToSell,
+          assetToBuy: transformedAssetToBuy,
+          sellAmount: inputAmount,
+          quote: tradeDetails,
+          amount: inputAmount,
           meta: {
-            flashbots,
-            inputAsset: inputCurrency,
-            outputAsset: outputCurrency,
+            inputAsset: transformedAssetToSell,
+            outputAsset: transformedAssetToBuy,
             independentField: independentField as SwapModalField,
             independentValue: independentValue as string,
             slippage: slippageInBips,
             route: source,
           },
-        };
+        });
 
-        const rapType = getSwapRapTypeByExchangeType(isCrosschainSwap);
-        await executeRap(wallet, rapType, swapParameters, callback);
-
+        setIsAuthorizing(false);
         // if the transaction was not successful, we need to bubble that up to the caller
-        if (!isSucessful) {
-          loggr.debug('[ExchangeModal] transaction was not successful');
+        if (errorMessage) {
+          loggr.debug('[ExchangeModal] transaction was not successful', {
+            errorMessage,
+          });
+          if (wallet instanceof Wallet) {
+            Alert.alert(errorMessage);
+          } else {
+            setHardwareTXError(true);
+          }
           return false;
         }
 
@@ -496,6 +514,9 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
             handleReviewPromptAction(ReviewPromptAction.Swap);
           }
         }, 500);
+
+        setParams({ focused: false });
+        navigate(Routes.PROFILE_SCREEN);
 
         return true;
       } catch (error) {

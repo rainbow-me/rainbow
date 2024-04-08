@@ -3,6 +3,7 @@ import { AnyAction } from 'redux';
 import { SwappableAsset } from '@/entities';
 import { ExchangeModalTypes } from '@/helpers';
 import { AppDispatch, AppGetState } from '@/redux/store';
+import { Source } from '@/raps/references';
 
 export interface SwapAmount {
   display: string | null;
@@ -13,12 +14,6 @@ export enum SwapModalField {
   input = 'inputAmount',
   native = 'nativeAmount',
   output = 'outputAmount',
-}
-
-export enum Source {
-  AggregatorRainbow = 'rainbow',
-  Aggregator0x = '0x',
-  Aggregator1inch = '1inch',
 }
 
 export interface TypeSpecificParameters {
