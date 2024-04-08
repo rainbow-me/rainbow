@@ -358,7 +358,7 @@ export async function estimateGasWithPadding(
   contractCallEstimateGas: Contract['estimateGas'][string] | null = null,
   callArguments: any[] | null = null,
   provider: StaticJsonRpcProvider | null = null,
-  paddingFactor: number = 1.1
+  paddingFactor = 1.1
 ): Promise<string | null> {
   try {
     const p = provider || web3Provider;
@@ -776,7 +776,7 @@ export const estimateGasLimit = async (
     recipient: string;
     amount: number;
   },
-  addPadding: boolean = false,
+  addPadding = false,
   provider: StaticJsonRpcProvider | null = null,
   network: Network = Network.mainnet
 ): Promise<string | null> => {

@@ -29,7 +29,7 @@ export const PoolValue = ({ type, value, simple, ...props }) => {
   const { nativeCurrency } = useAccountSettings();
 
   if (type === 'annualized_fees') {
-    let percent = parseFloat(value);
+    const percent = parseFloat(value);
     if (!percent || percent === 0) {
       formattedValue = '0%';
     }
@@ -42,7 +42,7 @@ export const PoolValue = ({ type, value, simple, ...props }) => {
       formattedValue = '< 0.0001%';
     }
 
-    let fixedPercent = percent.toFixed(2);
+    const fixedPercent = percent.toFixed(2);
     if (fixedPercent === '0.00') {
       formattedValue = '0%';
     }

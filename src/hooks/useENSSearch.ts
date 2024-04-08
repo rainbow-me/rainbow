@@ -8,7 +8,7 @@ import { Network } from '@/helpers/networkTypes';
 import { timeUnits } from '@/references';
 import { ethereumUtils, validateENS } from '@/utils';
 
-const formatTime = (timestamp: string, abbreviated: boolean = true) => {
+const formatTime = (timestamp: string, abbreviated = true) => {
   const style = abbreviated ? 'MMM d, y' : 'MMMM d, y';
   return format(new Date(Number(timestamp) * 1000), style);
 };

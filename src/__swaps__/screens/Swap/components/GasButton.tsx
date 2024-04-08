@@ -43,7 +43,7 @@ export const GasButton = ({ accentColor }: { accentColor?: string }) => {
     getNativeAsset();
   }, [currentNetwork, setNativeAsset]);
 
-  let gasFeeBySpeed: GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed | any = useMemo(() => {
+  const gasFeeBySpeed: GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed | any = useMemo(() => {
     if (!isLoading) {
       return parseGasFeeParamsBySpeed({
         chainId,

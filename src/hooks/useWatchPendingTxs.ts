@@ -14,7 +14,7 @@ import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { useNonceStore } from '@/state/nonces';
 
 export const useWatchPendingTransactions = ({ address }: { address: string }) => {
-  //const { swapRefreshAssets } = useSwapRefreshAssets();
+  // const { swapRefreshAssets } = useSwapRefreshAssets();
 
   const { pendingTransactions: storePendingTransactions, setPendingTransactions } = usePendingTransactionsStore();
   const { setNonce } = useNonceStore();
@@ -27,7 +27,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
     (tx: RainbowTransaction) => {
       if (tx.type === 'swap') {
         // update swap assets
-        //swapRefreshAssets(tx.nonce);
+        // swapRefreshAssets(tx.nonce);
       } else {
         // fetch assets again
         fetchUserAssets({

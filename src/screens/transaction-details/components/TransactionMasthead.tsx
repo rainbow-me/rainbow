@@ -172,7 +172,7 @@ function CurrencyTile({
             ) : (
               <>
                 <Animated.View style={ensAvatarAnimatedStyle}>
-                  {/*add coin icon*/}
+                  {/* add coin icon*/}
                   <ImageAvatar
                     image={image || imageUrl}
                     size="medium"

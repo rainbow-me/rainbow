@@ -5,7 +5,7 @@ import { Image } from 'react-native-image-crop-picker';
 import { useRecoilValue } from 'recoil';
 import { avatarMetadataAtom } from '../components/ens-registration/RegistrationAvatar/RegistrationAvatar';
 import { coverMetadataAtom } from '../components/ens-registration/RegistrationCover/RegistrationCover';
-import { ENSActionParameters, RapActionType } from '@/raps/references';
+import { ENSActionParameters, ENSRapActionType } from '@/raps/common';
 import usePendingTransactions from './usePendingTransactions';
 import { useAccountSettings, useENSRegistration, useWalletENSAvatar, useWallets } from '.';
 import { Records, RegistrationParameters } from '@/entities';
@@ -15,13 +15,13 @@ import { uploadImage } from '@/handlers/pinata';
 import { getProviderForNetwork } from '@/handlers/web3';
 import { ENS_DOMAIN, generateSalt, getRentPrice, REGISTRATION_STEPS } from '@/helpers/ens';
 import { loadWallet } from '@/model/wallet';
-import { walletExecuteRap } from '@/raps/execute';
 import { timeUnits } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { labelhash, logger } from '@/utils';
 import { getNextNonce } from '@/state/nonces';
 import { Network } from '@/networks/types';
 import { Hex } from 'viem';
+import { executeENSRap } from '@/raps/actions/ens';
 
 const NOOP = () => null;
 
@@ -111,9 +111,7 @@ export default function useENSRegistrationActionHandler(
         salt,
       };
 
-      await walletExecuteRap(wallet, RapActionType.commitENS, {});
-
-      await executeRap(wallet, RapActionType.commitENS, commitEnsRegistrationParameters, () => {
+      await executeENSRap(wallet, ENSRapActionType.commitENS, commitEnsRegistrationParameters, () => {
         if (isHardwareWallet) {
           goBack();
         }
@@ -169,7 +167,7 @@ export default function useENSRegistrationActionHandler(
         setReverseRecord: sendReverseRecord,
       };
 
-      await executeRap(wallet, RapActionType.registerENS, registerEnsRegistrationParameters, callback);
+      await executeENSRap(wallet, ENSRapActionType.registerENS, registerEnsRegistrationParameters, callback);
 
       updateAvatarsOnNextBlock.current = true;
     },
@@ -196,7 +194,7 @@ export default function useENSRegistrationActionHandler(
         rentPrice: rentPrice.toString(),
       };
 
-      await executeRap(wallet, RapActionType.renewENS, registerEnsRegistrationParameters, callback);
+      await executeENSRap(wallet, ENSRapActionType.renewENS, registerEnsRegistrationParameters, callback);
     },
     [accountAddress, duration, registrationParameters]
   );
@@ -220,7 +218,7 @@ export default function useENSRegistrationActionHandler(
         ownerAddress: accountAddress,
       };
 
-      await executeRap(wallet, RapActionType.setNameENS, registerEnsRegistrationParameters, callback);
+      await executeENSRap(wallet, ENSRapActionType.setNameENS, registerEnsRegistrationParameters, callback);
     },
     [accountAddress, registrationParameters]
   );
@@ -251,7 +249,7 @@ export default function useENSRegistrationActionHandler(
         setReverseRecord: sendReverseRecord,
       };
 
-      await executeRap(wallet, RapActionType.setRecordsENS, setRecordsEnsRegistrationParameters, callback);
+      await executeENSRap(wallet, ENSRapActionType.setRecordsENS, setRecordsEnsRegistrationParameters, callback);
 
       updateAvatarsOnNextBlock.current = true;
     },
@@ -288,7 +286,7 @@ export default function useENSRegistrationActionHandler(
         transferControl,
       };
 
-      const { nonce: newNonce } = await executeRap(wallet, RapActionType.transferENS, transferEnsParameters, callback);
+      const { nonce: newNonce } = await executeENSRap(wallet, ENSRapActionType.transferENS, transferEnsParameters, callback);
 
       return { nonce: newNonce };
     },

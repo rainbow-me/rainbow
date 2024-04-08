@@ -3,15 +3,15 @@ import React, { useCallback } from 'react';
 import { StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 
 const BottomSheetBackground = () => {
-  //#region hooks
+  // #region hooks
   const { close } = useBottomSheet();
-  //#endregion
+  // #endregion
 
-  //#region callbacks
+  // #region callbacks
   const handleOnPress = useCallback(() => {
     close();
   }, [close]);
-  //#endregion
+  // #endregion
 
   return (
     <TouchableWithoutFeedback onPress={handleOnPress} style={styles.container}>

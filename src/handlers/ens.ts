@@ -9,7 +9,7 @@ import { debounce, isEmpty, sortBy } from 'lodash';
 import { fetchENSAvatar, prefetchENSAvatar } from '../hooks/useENSAvatar';
 import { prefetchENSCover } from '../hooks/useENSCover';
 import { prefetchENSRecords } from '../hooks/useENSRecords';
-import { ENSActionParameters, RapActionType } from '../raps/references';
+import { ENSActionParameters, ENSRapActionType } from '@/raps/common';
 import { getENSData, getNameFromLabelhash, saveENSData } from './localstorage/ens';
 import { estimateGasWithPadding, getProviderForNetwork, TokenStandard } from './web3';
 import { ENSRegistrationRecords, Records, UniqueAsset } from '@/entities';
@@ -887,13 +887,13 @@ export const getTransactionTypeForRecords = (registrationRecords: ENSRegistratio
 export const getRapActionTypeForTxType = (txType: ENSRegistrationTransactionType) => {
   switch (txType) {
     case ENSRegistrationTransactionType.MULTICALL:
-      return RapActionType.multicallENS;
+      return ENSRapActionType.multicallENS;
     case ENSRegistrationTransactionType.SET_ADDR:
-      return RapActionType.setAddrENS;
+      return ENSRapActionType.setAddrENS;
     case ENSRegistrationTransactionType.SET_TEXT:
-      return RapActionType.setTextENS;
+      return ENSRapActionType.setTextENS;
     case ENSRegistrationTransactionType.SET_CONTENTHASH:
-      return RapActionType.setContenthashENS;
+      return ENSRapActionType.setContenthashENS;
     default:
       return null;
   }

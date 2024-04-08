@@ -1,4 +1,4 @@
-/*global storage*/
+/* global storage*/
 import { legacy } from '@/storage/legacy';
 import { logger, RainbowError } from '@/logger';
 

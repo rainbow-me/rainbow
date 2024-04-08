@@ -191,7 +191,7 @@ export default function WalletConnectApprovalSheet() {
   const isScam = metadata?.status === DAppStatus.Scam;
 
   // disabling Verified for now
-  const isVerified = false; //metadata?.status === DAppStatus.Verified;
+  const isVerified = false; // metadata?.status === DAppStatus.Verified;
 
   const accentColor = isScam ? colors.red : colors.appleBlue;
 
