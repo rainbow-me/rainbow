@@ -795,6 +795,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
                         onLoadProgress={handleOnLoadProgress}
                         onMessage={handleOnMessage}
                         onNavigationStateChange={handleNavigationStateChange}
+                        originWhitelist={['*']}
                         ref={webViewRef}
                         source={{ uri: tabUrl || RAINBOW_HOME }}
                         style={styles.webViewStyle}
