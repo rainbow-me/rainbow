@@ -46,6 +46,7 @@ import {
 import { populateApprove } from './unlock';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { swapMetadataStorage } from '../common';
+import { ParsedAsset } from '@/resources/assets/types';
 
 const WRAP_GAS_PADDING = 1.002;
 
@@ -297,7 +298,7 @@ export const swap = async ({ currentRap, wallet, index, parameters, baseNonce }:
       ...parameters.assetToBuy,
       network: ethereumUtils.getNetworkFromChainId(parameters.assetToBuy.chainId),
       colors: parameters.assetToBuy.colors as TokenColors,
-    },
+    } as ParsedAsset,
     changes: [
       {
         direction: 'out',

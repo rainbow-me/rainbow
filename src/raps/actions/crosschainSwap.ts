@@ -24,6 +24,7 @@ import {
 } from '../utils';
 import { ethereumUtils } from '@/utils';
 import { TokenColors } from '@/graphql/__generated__/metadata';
+import { ParsedAsset } from '@/resources/assets/types';
 
 const getCrosschainSwapDefaultGasLimit = (quote: CrosschainQuote) => quote?.routes?.[0]?.userTxs?.[0]?.gasFees?.gasLimit;
 
@@ -162,7 +163,7 @@ export const crosschainSwap = async ({
       ...parameters.assetToBuy,
       network: ethereumUtils.getNetworkFromChainId(parameters.assetToBuy.chainId),
       colors: parameters.assetToBuy.colors as TokenColors,
-    },
+    } as ParsedAsset,
     changes: [
       {
         direction: 'out',

@@ -15,7 +15,7 @@ import { RainbowError, logger } from '@/logger';
 import { ETH_ADDRESS } from '../../references';
 import { gasUnits } from '@/__swaps__/references';
 import { gasStore } from '@/state/gas/gasStore';
-import { ParsedAsset } from '@/__swaps__/types/assets';
+import { ParsedAsset as SwapsParsedAsset } from '@/__swaps__/types/assets';
 import { convertAmountToRawAmount, greaterThan } from '@/helpers/utilities';
 import { ActionProps, RapActionResult } from '../references';
 
@@ -23,6 +23,7 @@ import { overrideWithFastSpeedIfNeeded } from './../utils';
 import { ethereumUtils } from '@/utils';
 import { toHex } from '@/__swaps__/utils/hex';
 import { TokenColors } from '@/graphql/__generated__/metadata';
+import { ParsedAsset } from '@/resources/assets/types';
 
 export const getAssetRawAllowance = async ({
   owner,
@@ -58,7 +59,7 @@ export const assetNeedsUnlocking = async ({
 }: {
   owner: Address;
   amount: string;
-  assetToUnlock: ParsedAsset;
+  assetToUnlock: SwapsParsedAsset;
   spender: Address;
   chainId: ChainId;
 }) => {
@@ -267,7 +268,7 @@ export const unlock = async ({ baseNonce, index, parameters, wallet }: ActionPro
       ...assetToUnlock,
       network: ethereumUtils.getNetworkFromChainId(assetToUnlock.chainId),
       colors: assetToUnlock.colors as TokenColors,
-    },
+    } as ParsedAsset,
     data: approval.data,
     value: approval.value?.toString(),
     changes: [],

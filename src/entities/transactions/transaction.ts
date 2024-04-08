@@ -7,6 +7,7 @@ import { AddCashCurrencyAsset } from '@/references';
 import { ChainId, SwapType } from '@rainbow-me/swaps';
 import { SwapMetadata } from '@/raps/references';
 import { UniqueAsset } from '../uniqueAssets';
+import { ParsedAsset } from '@/resources/assets/types';
 import { TransactionStatus, TransactionType } from '@/resources/transactions/types';
 
 export type TransactionDirection = 'in' | 'out' | 'self';
@@ -14,7 +15,7 @@ export type TransactionDirection = 'in' | 'out' | 'self';
 export interface RainbowTransaction {
   address?: string;
   asset?:
-    | (ParsedAddressAsset & {
+    | (ParsedAsset & {
         asset_contract?: {
           address?: string;
         };
