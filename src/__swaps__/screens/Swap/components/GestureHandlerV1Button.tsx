@@ -55,17 +55,20 @@ type GestureHandlerButtonProps = {
  * };
  * ```
  */
-export function GestureHandlerV1Button({
-  children,
-  disableButtonPressWrapper = false,
-  disabled = false,
-  onPressJS,
-  onPressStartWorklet,
-  onPressWorklet,
-  pointerEvents = 'box-only',
-  scaleTo = 0.86,
-  style,
-}: GestureHandlerButtonProps) {
+export const GestureHandlerV1Button = React.forwardRef(function GestureHandlerV1Button(
+  {
+    children,
+    disableButtonPressWrapper = false,
+    disabled = false,
+    onPressJS,
+    onPressStartWorklet,
+    onPressWorklet,
+    pointerEvents = 'box-only',
+    scaleTo = 0.86,
+    style,
+  }: GestureHandlerButtonProps,
+  forwardedRef: React.LegacyRef<any> | undefined
+) {
   const pressHandler = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>({
     onStart: () => {
       if (onPressStartWorklet) onPressStartWorklet();
@@ -86,11 +89,11 @@ export function GestureHandlerV1Button({
       )}
     >
       {/* @ts-expect-error Property 'children' does not exist on type */}
-      <TapGestureHandler enabled={!disabled} onGestureEvent={pressHandler}>
+      <TapGestureHandler enabled={!disabled} onGestureEvent={pressHandler} ref={forwardedRef}>
         <Animated.View accessible accessibilityRole="button" pointerEvents={pointerEvents} style={style}>
           {children}
         </Animated.View>
       </TapGestureHandler>
     </ConditionalWrap>
   );
-}
+});

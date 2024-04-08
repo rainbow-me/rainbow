@@ -1877,6 +1877,22 @@
       "too_many_signup_request": "Too many signup requests, please try again later"
     },
     "swap": {
+      "aggregators": {
+        "rainbow": "Rainbow"
+      },
+      "tokens_input": {
+        "tokens": "Tokens",
+        "sort": "Sort",
+        "available": "available",
+        "token_balance": "Token Balance",
+        "networks": "Networks",
+        "filter_by_network": "Filter by Network",
+        "switch_networks": "Switch Networks",
+        "nothing_found": "Nothing found",
+        "nothing_found_description": "Some tokens don't have enough liquidity to perform a successful %{action}.",
+        "nothing_found_description_l2": "Some tokens don't have enough layer 2 liquidity to perform a successful %{action}.",
+        "output_quotes_disabled": "Output quotes disabled"
+      },
       "choose_token": "Choose Token",
       "gas": {
         "custom": "Custom",
@@ -1916,6 +1932,15 @@
           "message": "Setting a higher gas price is recommended to avoid issues.",
           "title": "Low gas price–transaction might get stuck!"
         }
+      }
+    },
+    "token_search": {
+      "section_header": {
+        "favorites": "Favorites",
+        "bridge": "Bridge",
+        "verified": "Verified",
+        "unverified": "Unverified",
+        "on_other_networks": "On other networks"
       }
     },
     "transactions": {
@@ -2627,6 +2652,7 @@
       },
       "menu_options": {
         "disconnect": "Disconnect",
+        "connect": "Connect",
         "switch_wallet": "Switch Wallet",
         "switch_network": "Switch Network",
         "available_networks": "Available Networks"
