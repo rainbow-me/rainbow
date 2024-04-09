@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import Animated, { interpolateColor, useAnimatedProps, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { interpolateColor, runOnJS, useAnimatedProps, useAnimatedReaction, useAnimatedStyle } from 'react-native-reanimated';
 import RNFS from 'react-native-fs';
 
 import { Page } from '@/components/layout';
@@ -15,6 +15,7 @@ import { Search } from './search/Search';
 import { TabViewToolbar } from './TabViewToolbar';
 import { SheetGestureBlocker } from '../sheet/SheetGestureBlocker';
 import { ProgressBar } from './ProgressBar';
+import { RouteProp, useRoute } from '@react-navigation/native';
 
 const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 
@@ -28,9 +29,32 @@ const getInjectedJS = async () => {
   }
 };
 
+export type DappBrowserParams = {
+  url: string;
+};
+
+type RouteParams = {
+  DappBrowserParams: DappBrowserParams;
+};
+
 const DappBrowserComponent = () => {
   const { isDarkMode } = useColorMode();
   const [injectedJS, setInjectedJS] = useState<string | ''>('');
+
+  const { scrollViewRef, tabStates, tabViewProgress, tabViewVisible, newTabWorklet, toggleTabViewWorklet } = useBrowserContext();
+
+  const route = useRoute<RouteProp<RouteParams, 'DappBrowserParams'>>();
+
+  useAnimatedReaction(
+    () => route.params?.url,
+    (current, previous) => {
+      if (current !== previous && route.params?.url) {
+        newTabWorklet(current);
+        toggleTabViewWorklet();
+      }
+    },
+    [newTabWorklet, route.params?.url]
+  );
 
   useEffect(() => {
     const loadInjectedJS = async () => {
@@ -43,8 +67,6 @@ const DappBrowserComponent = () => {
     };
     loadInjectedJS();
   }, []);
-
-  const { scrollViewRef, tabStates, tabViewProgress, tabViewVisible } = useBrowserContext();
 
   useEffect(() => {
     pruneScreenshots(tabStates);
