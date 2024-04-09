@@ -847,6 +847,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
                   isHighPriceImpact={
                     !confirmButtonProps.disabled && !confirmButtonProps.loading && debouncedIsHighPriceImpact && isSufficientBalance
                   }
+                  outputCurrencySymbol={outputCurrency?.symbol}
                   onFlipCurrencies={loading ? NOOP : flipCurrencies}
                   onPressImpactWarning={navigateToSwapDetailsModal}
                   onPressSettings={navigateToSwapSettingsSheet}
