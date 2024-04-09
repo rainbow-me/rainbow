@@ -770,7 +770,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
               <ViewShot options={{ format: 'jpg' }} ref={viewShotRef}>
                 <View collapsable={false} style={{ height: WEBVIEW_HEIGHT, width: '100%' }}>
                   {isOnHomepage ? (
-                    <Homepage tabId={tabId} />
+                    <Homepage />
                   ) : (
                     <Freeze freeze={!isActiveTab}>
                       <DappBrowserWebview

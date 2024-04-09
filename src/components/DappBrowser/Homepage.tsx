@@ -33,7 +33,7 @@ const NUM_CARDS = 2;
 const CARD_PADDING = 12;
 const CARD_SIZE = (deviceUtils.dimensions.width - HORIZONTAL_PAGE_INSET * 2 - (NUM_CARDS - 1) * CARD_PADDING) / NUM_CARDS;
 
-const Card = ({ site, showMenuButton, tabId }: { showMenuButton?: boolean; site: TrendingSite; tabId: string }) => {
+const Card = ({ site, showMenuButton }: { showMenuButton?: boolean; site: TrendingSite }) => {
   const { isDarkMode } = useColorMode();
   const { updateActiveTabState } = useBrowserContext();
 
@@ -59,12 +59,8 @@ const Card = ({ site, showMenuButton, tabId }: { showMenuButton?: boolean; site:
     ],
   };
 
-  const handleOnPress = useCallback(() => {
-    updateActiveTabState({ url: normalizeUrl(site.url) }, tabId);
-  }, [site.url, tabId, updateActiveTabState]);
-
   return (
-    <ButtonPressAnimation onPress={handleOnPress} overflowMargin={100} scaleTo={0.9}>
+    <GestureHandlerV1Button onPressJS={() => updateActiveTabState({ url: normalizeUrl(site.url) })} scaleTo={0.9}>
       <Box
         background="surfacePrimary"
         borderRadius={24}
@@ -180,7 +176,7 @@ const Card = ({ site, showMenuButton, tabId }: { showMenuButton?: boolean; site:
           />
         )}
       </Box>
-    </ButtonPressAnimation>
+    </GestureHandlerV1Button>
   );
 };
 
@@ -190,7 +186,7 @@ const Logo = ({ site }: { site: Omit<Site, 'timestamp'> }) => {
 
   return (
     <View style={{ width: LOGO_SIZE }}>
-      <GestureHandlerV1Button onPressJS={() => updateActiveTabState({ url: site.url })}>
+      <GestureHandlerV1Button onPressJS={() => updateActiveTabState({ url: normalizeUrl(site.url) })}>
         <Stack alignHorizontal="center">
           <Box>
             {IS_IOS && !isEmpty(site.image) && (
@@ -255,7 +251,7 @@ const Logo = ({ site }: { site: Omit<Site, 'timestamp'> }) => {
   );
 };
 
-export default function Homepage({ tabId }: { tabId: string }) {
+export default function Homepage() {
   const { isDarkMode } = useColorMode();
   const { favoriteDapps } = useFavoriteDappsStore();
 
@@ -296,7 +292,7 @@ export default function Homepage({ tabId }: { tabId: string }) {
                 <Inset space="24px">
                   <Box flexDirection="row" gap={CARD_PADDING}>
                     {trendingDapps.map(site => (
-                      <Card key={site.url} site={site} tabId={tabId} />
+                      <Card key={site.url} site={site} />
                     ))}
                   </Box>
                 </Inset>
@@ -336,7 +332,7 @@ export default function Homepage({ tabId }: { tabId: string }) {
             </Inline>
             <Inline space={{ custom: CARD_PADDING }}>
               {trendingDapps.map(site => (
-                <Card key={site.url} site={site} showMenuButton tabId={tabId} />
+                <Card key={site.url} site={site} showMenuButton />
               ))}
             </Inline>
           </Stack>
