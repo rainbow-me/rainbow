@@ -18,6 +18,8 @@ import { IS_ANDROID } from '@/env';
 import { useSelector } from 'react-redux';
 import { getCrosschainSwapServiceTime } from '@/handlers/swap';
 import { useGasStore } from '@/state/gas/gasStore';
+import { useMeteorology } from '@/__swaps__/utils/meteorology';
+import { getNetworkObj } from '@/networks';
 
 const FOOTER_HEIGHT = 120;
 const CONTENT_HEIGHT = 310;
@@ -36,13 +38,15 @@ const FeesPanelTabswrapper = styled(Column)(margin.object(19, 0, 24, 0));
 
 export default function CustomGasState({ asset }) {
   const { setParams } = useNavigation();
-  const { params: { longFormHeight, speeds, openCustomOptions, fallbackColor } = {} } = useRoute();
-  // const { selectedGasFee } = useGasStore()
+  const { params: { longFormHeight, speeds, openCustomOptions, fallbackColor, currentNetwork } = {} } = useRoute();
+  const chainId = getNetworkObj(currentNetwork).id;
+  const { selectedGasFee } = useGasStore();
+  const { data } = useMeteorology({ chainId });
+  const currentGasTrend = data?.data?.baseFeeTrend ?? 0;
   const { colors } = useTheme();
   const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
   const colorForAsset = useColorForAsset(asset || {}, fallbackColor, false, true);
-  const { selectedGasFee, currentBlockParams, txNetwork } = useGas();
   const [canGoBack, setCanGoBack] = useState(true);
   const { tradeDetails } = useSelector(state => state.swap);
 
@@ -52,8 +56,6 @@ export default function CustomGasState({ asset }) {
   const sheetHeightWithoutKeyboard = CONTENT_HEIGHT + FOOTER_HEIGHT + (IS_ANDROID ? 20 + getSoftMenuBarHeight() : 0);
 
   const sheetHeightWithKeyboard = sheetHeightWithoutKeyboard + keyboardHeight + (deviceUtils.isSmallPhone ? 30 : 0);
-
-  const currentGasTrend = useMemo(() => getTrendKey(currentBlockParams?.trend), [currentBlockParams?.trend]);
 
   useEffect(() => {
     setParams({ longFormHeight: sheetHeightWithKeyboard });
@@ -95,7 +97,7 @@ export default function CustomGasState({ asset }) {
         <GasSpeedButton
           asset={asset}
           canGoBack={canGoBack}
-          currentNetwork={txNetwork}
+          currentNetwork={currentNetwork}
           showGasOptions
           testID="swap-details-gas"
           theme="dark"

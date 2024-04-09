@@ -135,6 +135,7 @@ const GasMenu = ({
 
   const openCustomGasSheet = useCallback(() => {
     if (gasIsNotReady && !__DEV__) return;
+    setSelectedGas({ selectedGas: gasFeeParamsBySpeed[GasSpeed.CUSTOM] });
     navigate(Routes.CUSTOM_GAS_SHEET, {
       asset,
       fallbackColor,
