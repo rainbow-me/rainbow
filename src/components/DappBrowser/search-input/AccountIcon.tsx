@@ -198,7 +198,9 @@ export const AccountIcon = () => {
       if (actionKey === 'connect') {
         if (!isConnected) {
           const url = getActiveTabState()?.url;
-          const name = getDappHost(url);
+
+          // @ts-expect-error
+          const name: string = activeTabRef.current.title || getDappHost(url);
 
           const response = await handleDappBrowserConnectionPrompt({
             dappName: name || '',
