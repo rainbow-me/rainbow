@@ -2,7 +2,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { Page } from '@/components/layout';
 import { Bleed, Box, ColorModeProvider, Cover, Inline, Inset, Stack, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
 import { deviceUtils } from '@/utils';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { ScrollView, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { BlurView } from '@react-native-community/blur';
@@ -19,6 +19,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import { useBrowserContext } from './BrowserContext';
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { isEmpty } from 'lodash';
+import { normalizeUrl } from './utils';
 
 const HORIZONTAL_PAGE_INSET = 24;
 
@@ -32,8 +33,9 @@ const NUM_CARDS = 2;
 const CARD_PADDING = 12;
 const CARD_SIZE = (deviceUtils.dimensions.width - HORIZONTAL_PAGE_INSET * 2 - (NUM_CARDS - 1) * CARD_PADDING) / NUM_CARDS;
 
-const Card = ({ site, showMenuButton }: { showMenuButton?: boolean; site: TrendingSite }) => {
+const Card = ({ site, showMenuButton, tabId }: { showMenuButton?: boolean; site: TrendingSite; tabId: string }) => {
   const { isDarkMode } = useColorMode();
+  const { updateActiveTabState } = useBrowserContext();
 
   const menuConfig = {
     menuTitle: '',
@@ -57,8 +59,12 @@ const Card = ({ site, showMenuButton }: { showMenuButton?: boolean; site: Trendi
     ],
   };
 
+  const handleOnPress = useCallback(() => {
+    updateActiveTabState({ url: normalizeUrl(site.url) }, tabId);
+  }, [site.url, tabId, updateActiveTabState]);
+
   return (
-    <ButtonPressAnimation overflowMargin={100} scaleTo={0.9}>
+    <ButtonPressAnimation onPress={handleOnPress} overflowMargin={100} scaleTo={0.9}>
       <Box
         background="surfacePrimary"
         borderRadius={24}
@@ -169,7 +175,6 @@ const Card = ({ site, showMenuButton }: { showMenuButton?: boolean; site: Trendi
               borderColor: isDarkMode ? opacity(globalColors.white100, 0.1) : opacity(globalColors.grey100, 0.12),
               borderWidth: THICK_BORDER_WIDTH,
               overflow: 'hidden',
-              pointerEvents: 'none',
             }}
             width="full"
           />
@@ -250,7 +255,7 @@ const Logo = ({ site }: { site: Omit<Site, 'timestamp'> }) => {
   );
 };
 
-export default function Homepage() {
+export default function Homepage({ tabId }: { tabId: string }) {
   const { isDarkMode } = useColorMode();
   const { favoriteDapps } = useFavoriteDappsStore();
 
@@ -291,7 +296,7 @@ export default function Homepage() {
                 <Inset space="24px">
                   <Box flexDirection="row" gap={CARD_PADDING}>
                     {trendingDapps.map(site => (
-                      <Card key={site.url} site={site} />
+                      <Card key={site.url} site={site} tabId={tabId} />
                     ))}
                   </Box>
                 </Inset>
@@ -331,7 +336,7 @@ export default function Homepage() {
             </Inline>
             <Inline space={{ custom: CARD_PADDING }}>
               {trendingDapps.map(site => (
-                <Card key={site.url} site={site} showMenuButton />
+                <Card key={site.url} site={site} showMenuButton tabId={tabId} />
               ))}
             </Inline>
           </Stack>

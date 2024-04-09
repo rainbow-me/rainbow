@@ -79,17 +79,7 @@ interface TabOperation {
 
 export const RAINBOW_HOME = 'RAINBOW_HOME';
 
-const DEFAULT_TAB_STATE: TabState[] = [
-  { canGoBack: false, canGoForward: false, uniqueId: generateUniqueId(), url: RAINBOW_HOME },
-  {
-    canGoBack: false,
-    canGoForward: false,
-    uniqueId: generateUniqueId(),
-    url: 'https://bx-e2e-dapp.vercel.app',
-  },
-  { canGoBack: false, canGoForward: false, uniqueId: generateUniqueId(), url: 'https://app.uniswap.org/swap' },
-  { canGoBack: false, canGoForward: false, uniqueId: generateUniqueId(), url: 'https://meme.market' },
-];
+const DEFAULT_TAB_STATE: TabState[] = [{ canGoBack: false, canGoForward: false, uniqueId: generateUniqueId(), url: RAINBOW_HOME }];
 
 const DEFAULT_BROWSER_CONTEXT: BrowserContextType = {
   activeTabIndex: 0,
@@ -146,7 +136,7 @@ const tabStateStore = new MMKV();
 
 export const BrowserContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [activeTabIndex, setActiveTabIndex] = useState<number>(0);
-  const [tabStates, setTabStates] = useMMKVObject<TabState[]>('tabStateStorage', tabStateStore);
+  const [tabStates = DEFAULT_BROWSER_CONTEXT.tabStates, setTabStates] = useMMKVObject<TabState[]>('tabStateStorage', tabStateStore);
 
   const updateActiveTabState = useCallback(
     (newState: Partial<TabState>, tabId?: string) => {
@@ -167,7 +157,6 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
 
   const getActiveTabState = useCallback(() => {
     if (!tabStates) return;
-
     return tabStates[activeTabIndex];
   }, [activeTabIndex, tabStates]);
 
