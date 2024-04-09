@@ -15,11 +15,31 @@ import { RainbowNetworks, getNetworkObj } from '@/networks';
 import store from '@/redux/store';
 import { showActionSheetWithOptions } from '@/utils';
 import * as i18n from '@/languages';
-import { appSessionsStore, useAppSessionsStore } from '@/state/appSessions';
+import { useAppSessionsStore } from '@/state/appSessions';
 import { useBrowserContext } from '../BrowserContext';
 import { getDappHost } from '../handleProviderRequest';
 import { Address, toHex } from 'viem';
 import { getMainnetNetworkObject } from '@/networks/mainnet';
+
+interface MenuItemIcon {
+  iconType: 'ASSET' | 'SYSTEM';
+  iconValue: string;
+}
+
+interface BaseMenuItem {
+  actionKey?: string;
+  actionTitle?: string;
+  icon?: MenuItemIcon;
+  menuAttributes?: string[];
+  menuState?: 'on' | 'off';
+}
+
+interface MenuItemWithSubmenu extends BaseMenuItem {
+  menuItems: MenuItem[];
+  menuTitle: string;
+}
+
+type MenuItem = BaseMenuItem | MenuItemWithSubmenu;
 
 const androidNetworkActions = () => {
   const { testnetsEnabled } = store.getState().settings;
@@ -30,7 +50,7 @@ const androidNetworkActions = () => {
 
 export const NETWORK_MENU_ACTION_KEY_FILTER = 'switch-to-network-';
 
-export const networksMenuItems = () => {
+export const networksMenuItems = (currentNetwork?: Network): MenuItem[] => {
   const { testnetsEnabled } = store.getState().settings;
   return RainbowNetworks.filter(
     ({ features, networkType }) => features.walletconnect && (testnetsEnabled || networkType !== 'testnet')
@@ -41,49 +61,57 @@ export const networksMenuItems = () => {
       iconType: 'ASSET',
       iconValue: `${network.networkType === 'layer2' ? `${network.value}BadgeNoShadow` : 'ethereumBadge'}`,
     },
+    menuState: currentNetwork && currentNetwork === network.value ? 'on' : 'off',
   }));
 };
 
-const networksAvailable = networksMenuItems();
-
-export const changeConnectionMenuItems = ({ isConnected }: { isConnected: boolean }) => {
-  const baseOptions = [
+export const changeConnectionMenuItems = ({
+  isConnected,
+  currentNetwork,
+}: {
+  isConnected: boolean;
+  currentNetwork?: Network;
+}): MenuItem[] => {
+  let baseOptions: MenuItem[] = [
     {
       actionKey: 'connect',
       actionTitle: !isConnected ? i18n.t(i18n.l.walletconnect.menu_options.connect) : i18n.t(i18n.l.walletconnect.menu_options.disconnect),
       icon: {
         iconType: 'SYSTEM',
-        iconValue: 'xmark.square',
+        iconValue: !isConnected ? 'bolt' : 'xmark.square',
       },
       ...(isConnected && { menuAttributes: ['destructive'] }),
     },
-    {
-      actionKey: 'switch-account',
-      actionTitle: i18n.t(i18n.l.walletconnect.menu_options.switch_wallet),
-      icon: {
-        iconType: 'SYSTEM',
-        iconValue: isConnected ? 'rectangle.stack.person.crop' : 'bolt',
-      },
-    },
   ];
-
-  if (networksAvailable.length > 1) {
-    return [
+  if (isConnected) {
+    baseOptions = [
       ...baseOptions,
       {
+        actionKey: 'switch-account',
+        actionTitle: i18n.t(i18n.l.walletconnect.menu_options.switch_wallet),
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: 'rectangle.stack.person.crop',
+        },
+      },
+    ];
+    const networksAvailable = networksMenuItems(currentNetwork);
+    if (networksAvailable.length > 1) {
+      baseOptions.push({
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'network',
         },
-        menuItems: networksMenuItems(),
+        menuItems: networksAvailable,
         menuTitle: i18n.t(i18n.l.walletconnect.menu_options.switch_network),
-      },
-    ];
+      });
+    }
   }
+
   return baseOptions;
 };
 
-export const androidShowNetworksActionSheet = (callback: any) => {
+export const androidShowNetworksActionSheet = (callback: (network: { chainId: number; network: string }) => void) => {
   showActionSheetWithOptions(
     {
       options: androidNetworkActions(),
@@ -107,6 +135,7 @@ export const AccountIcon = () => {
   const [isConnected, setIsConnected] = useState(false);
   const { getActiveTabState, activeTabIndex, activeTabRef } = useBrowserContext();
   const [currentAddress, setCurrentAddress] = useState<string>(accountAddress);
+  const [currentNetwork, setCurrentNetwork] = useState<Network>();
 
   const appSessions = useAppSessionsStore();
 
@@ -126,6 +155,10 @@ export const AccountIcon = () => {
         setIsConnected(true);
       } else {
         setCurrentAddress(accountAddress);
+      }
+
+      if (currentSession?.network) {
+        setCurrentNetwork(currentSession?.network);
       }
     }
   }, [accountAddress, activeTabHost, activeTabIndex, currentSession, getActiveTabState]);
@@ -156,8 +189,8 @@ export const AccountIcon = () => {
   }, [wallets, currentAddress, walletNames]);
 
   const menuItems = useMemo(() => {
-    return changeConnectionMenuItems({ isConnected });
-  }, [isConnected]);
+    return changeConnectionMenuItems({ isConnected, currentNetwork });
+  }, [currentNetwork, isConnected]);
 
   const handleOnPressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: string } }) => {
