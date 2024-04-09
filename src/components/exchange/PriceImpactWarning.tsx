@@ -5,6 +5,7 @@ import Animated from 'react-native-reanimated';
 import { ButtonPressAnimation } from '../animations';
 import { Box, ColorModeProvider, Inline, Text } from '@/design-system';
 import { position } from '@/styles';
+import { NO_PRICE_DATA_PERCENTAGE } from '@/hooks/usePriceImpactDetails';
 
 interface PriceImpactWarningProps extends ViewProps {
   onPress: () => void;
@@ -15,8 +16,6 @@ interface PriceImpactWarningProps extends ViewProps {
   outputCurrencySymbol?: string | null;
   style?: StyleProp<ViewStyle>;
 }
-
-const NO_PRICE_DATA_PERCENTAGE = '100.00%';
 
 export default function PriceImpactWarning({
   onPress,
