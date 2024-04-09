@@ -19,7 +19,8 @@ import { useAppSessionsStore } from '@/state/appSessions';
 import { useBrowserContext } from '../BrowserContext';
 import { getDappHost } from '../handleProviderRequest';
 import { Address, toHex } from 'viem';
-import { getMainnetNetworkObject } from '@/networks/mainnet';
+import { handleDappBrowserConnectionPrompt } from '@/utils/requestNavigationHandlers';
+import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 
 interface MenuItemIcon {
   iconType: 'ASSET' | 'SYSTEM';
@@ -193,25 +194,35 @@ export const AccountIcon = () => {
   }, [currentNetwork, isConnected]);
 
   const handleOnPressMenuItem = useCallback(
-    ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: string } }) => {
+    async ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: string } }) => {
       if (actionKey === 'connect') {
         if (!isConnected) {
           const url = getActiveTabState()?.url;
-          const mainnet = getMainnetNetworkObject();
-          appSessions.addSession({
-            host: getDappHost(url) || '',
-            // @ts-ignore
-            address: currentAddress,
-            // @ts-ignore
-            network: mainnet,
-            // @ts-ignore
-            url: url || '',
-          });
-          setIsConnected(true);
+          const name = getDappHost(url);
 
-          activeTabRef.current?.injectJavaScript(
-            `window.ethereum.emit('accountsChanged', ['${currentAddress}']); window.ethereum.emit('connect', { address: '${currentAddress}', chainId: '${toHex(mainnet.id)}' }); true;`
-          );
+          const response = await handleDappBrowserConnectionPrompt({
+            dappName: name || '',
+            dappUrl: url || '',
+          });
+          if (!(response instanceof Error)) {
+            appSessions.addSession({
+              host: getDappHost(url) || '',
+              // @ts-ignore
+              address: response.address,
+              // @ts-ignore
+              network: getNetworkFromChainId(response.chainId),
+              // @ts-ignore
+              url: url || '',
+            });
+
+            setIsConnected(true);
+
+            activeTabRef.current?.injectJavaScript(
+              `window.ethereum.emit('accountsChanged', ['${currentAddress}']); window.ethereum.emit('connect', { address: '${currentAddress}', chainId: '${toHex(response.chainId)}' }); true;`
+            );
+          } else {
+            console.log('error: !!!!!!!!! ', response);
+          }
         } else {
           const activeTabHost = getDappHost(getActiveTabState()?.url);
           if (activeTabHost) {
