@@ -15,9 +15,11 @@ import { RainbowNetworks, getNetworkObj } from '@/networks';
 import store from '@/redux/store';
 import { showActionSheetWithOptions } from '@/utils';
 import * as i18n from '@/languages';
-import { appSessionsStore } from '@/state/appSessions';
+import { appSessionsStore, useAppSessionsStore } from '@/state/appSessions';
 import { useBrowserContext } from '../BrowserContext';
 import { getDappHost } from '../handleProviderRequest';
+import { Address, toHex } from 'viem';
+import { getMainnetNetworkObject } from '@/networks/mainnet';
 
 const androidNetworkActions = () => {
   const { testnetsEnabled } = store.getState().settings;
@@ -48,7 +50,7 @@ export const changeConnectionMenuItems = ({ isConnected }: { isConnected: boolea
   const baseOptions = [
     {
       actionKey: 'connect',
-      actionTitle: !isConnected ? 'Connect' : i18n.t(i18n.l.walletconnect.menu_options.disconnect),
+      actionTitle: !isConnected ? i18n.t(i18n.l.walletconnect.menu_options.connect) : i18n.t(i18n.l.walletconnect.menu_options.disconnect),
       icon: {
         iconType: 'SYSTEM',
         iconValue: 'xmark.square',
@@ -103,21 +105,30 @@ export const AccountIcon = () => {
   const { accountAddress } = useAccountSettings();
   const { wallets, walletNames } = useWallets();
   const [isConnected, setIsConnected] = useState(false);
-  const { getActiveTabState, activeTabIndex } = useBrowserContext();
+  const { getActiveTabState, activeTabIndex, activeTabRef } = useBrowserContext();
   const [currentAddress, setCurrentAddress] = useState<string>(accountAddress);
+
+  const appSessions = useAppSessionsStore();
+
+  const currentSession = appSessions.getActiveSession({ host: getDappHost(getActiveTabState()?.url) });
+  const activeTabHost = getDappHost(getActiveTabState()?.url);
 
   // listens to the current active tab and sets the account
   useEffect(() => {
-    const activeTabHost = getDappHost(getActiveTabState()?.url);
     if (activeTabHost) {
-      const session = appSessionsStore.getState().getActiveSession({ host: activeTabHost });
-      if (session?.address) {
-        setCurrentAddress(session?.address);
+      if (!currentSession) {
+        setIsConnected(false);
+        return;
+      }
+
+      if (currentSession?.address) {
+        setCurrentAddress(currentSession?.address);
+        setIsConnected(true);
       } else {
         setCurrentAddress(accountAddress);
       }
     }
-  }, [accountAddress, activeTabIndex, getActiveTabState]);
+  }, [accountAddress, activeTabHost, activeTabIndex, currentSession, getActiveTabState]);
 
   const handlePressChangeWallet = useCallback(() => {
     navigate(Routes.CHANGE_WALLET_SHEET, {
@@ -126,13 +137,14 @@ export const AccountIcon = () => {
       onChangeWallet(address: string) {
         const activeTabHost = getDappHost(getActiveTabState()?.url);
         if (activeTabHost) {
-          appSessionsStore.getState().updateActiveSession({ host: activeTabHost, address: address as `0x${string}` });
+          appSessions.updateActiveSession({ host: activeTabHost, address: address as `0x${string}` });
           setCurrentAddress(address);
           // need to emit these events to the dapp
+          activeTabRef.current?.injectJavaScript(`window.ethereum.emit('accountsChanged', ['${address}']); true;`);
         }
       },
     });
-  }, [currentAddress, getActiveTabState, navigate]);
+  }, [activeTabRef, appSessions, currentAddress, getActiveTabState, navigate]);
 
   // TODO: use dapp specifc address
   const accountInfo = useMemo(() => {
@@ -150,37 +162,52 @@ export const AccountIcon = () => {
   const handleOnPressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: string } }) => {
       if (actionKey === 'connect') {
-        // not sure how to check this atm
-        setIsConnected(!isConnected);
+        if (!isConnected) {
+          const url = getActiveTabState()?.url;
+          const mainnet = getMainnetNetworkObject();
+          appSessions.addSession({
+            host: getDappHost(url) || '',
+            // @ts-ignore
+            address: currentAddress,
+            // @ts-ignore
+            network: mainnet,
+            // @ts-ignore
+            url: url || '',
+          });
+          setIsConnected(true);
+
+          activeTabRef.current?.injectJavaScript(
+            `window.ethereum.emit('accountsChanged', ['${currentAddress}']); window.ethereum.emit('connect', { address: '${currentAddress}', chainId: '${toHex(mainnet.id)}' }); true;`
+          );
+        } else {
+          const activeTabHost = getDappHost(getActiveTabState()?.url);
+          if (activeTabHost) {
+            appSessions.removeSession({ host: activeTabHost, address: currentAddress as Address });
+            setIsConnected(false);
+            activeTabRef.current?.injectJavaScript(
+              `window.ethereum.emit('accountsChanged', []); window.ethereum.emit('disconnect', []); true;`
+            );
+          }
+        }
       } else if (actionKey === 'switch-account') {
         handlePressChangeWallet();
       } else if (actionKey.indexOf(NETWORK_MENU_ACTION_KEY_FILTER) !== -1) {
         const networkValue = actionKey.replace(NETWORK_MENU_ACTION_KEY_FILTER, '');
         const network = networkValue as Network;
         const activeTabHost = getDappHost(getActiveTabState()?.url);
-        if (activeTabHost) appSessionsStore.getState().updateActiveSessionNetwork({ host: activeTabHost, network });
+        if (activeTabHost) {
+          appSessions.updateActiveSessionNetwork({ host: activeTabHost, network });
+          const chainId = RainbowNetworks.find(({ value }) => value === network)?.id as number;
+          activeTabRef.current?.injectJavaScript(`window.ethereum.emit('chainChanged', ${toHex(chainId)}); true;`);
+        }
       }
     },
-    [getActiveTabState, handlePressChangeWallet, isConnected]
+    [activeTabRef, appSessions, currentAddress, getActiveTabState, handlePressChangeWallet, isConnected]
   );
-
-  // const onPressAndroid = useCallback(() => {
-  //   const networkActions = androidNetworkMenuItems();
-  //   showActionSheetWithOptions(
-  //     {
-  //       options: networkActions,
-  //       showSeparators: true,
-  //     },
-  //     idx => {
-  //       if (idx !== undefined) {
-  //         setCurrentChainId(ethereumUtils.getChainIdFromNetwork(networkActions[idx]));
-  //       }
-  //     }
-  //   );
-  // }, [setCurrentChainId]);
 
   return (
     <Bleed space="8px">
+      {/* // eslint-disable-next-line @typescript-eslint/no-empty-function */}
       <ContextMenuButton menuItems={menuItems} menuTitle="" onPressAndroid={() => {}} testID={''} onPressMenuItem={handleOnPressMenuItem}>
         {accountInfo?.accountImage ? (
           <ImageAvatar image={accountInfo.accountImage} size="signing" />
