@@ -1382,10 +1382,10 @@
   dependencies:
     date-fns "^2.19.0"
 
-"@candlefinance/faster-image@1.3.4":
-  version "1.3.4"
-  resolved "https://registry.yarnpkg.com/@candlefinance/faster-image/-/faster-image-1.3.4.tgz#ebbc314dfb2d7901ebd2664d3f1d3f11555f5ed4"
-  integrity sha512-N19Q4Yd7BWWRiWTKPxzsOXdSuy5mqPVcKJ174Lg/tjoci3h0sGQ0l8vSQX+a0ckvR6Op09pWmAccJ5qeZhK7CA==
+"@candlefinance/faster-image@1.4.3":
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/@candlefinance/faster-image/-/faster-image-1.4.3.tgz#f6f80da43d4bcfbd27c8b1391c196b591885911a"
+  integrity sha512-CmQuJhgM3+R8ZNlEB8tFt+0r3Ei0OnX5aLnT6rLCDM1KobHAfbIXF1W0WlanlGudfitsdLx+qrX9oolOf+9enA==
 
 "@capsizecss/core@3.0.0":
   version "3.0.0"
@@ -3320,10 +3320,10 @@
   dependencies:
     react-merge-refs "^1.0.0"
 
-"@rainbow-me/swaps@0.12.0":
-  version "0.12.0"
-  resolved "https://registry.yarnpkg.com/@rainbow-me/swaps/-/swaps-0.12.0.tgz#0b52c304e4f4616993bc1943a590fc285cc3eef6"
-  integrity sha512-Ag26PvCHc4HvpJqUli6ojYx6slHPjSvlhmyvPhmia3vM21Zx1+o2/HxzzQh7Hu5Lig8vlJy5+0M0CcpsmFLJHA==
+"@rainbow-me/swaps@0.13.0":
+  version "0.13.0"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/swaps/-/swaps-0.13.0.tgz#f590e9df6f07cccdebdc99e46c4b02752e97d469"
+  integrity sha512-n33j4AGMzJ38sqPd3IEvKUk1hcQoSzRplwNgskMsneLOlOXihxtj46QMerK7HY17K4RhhAUeYCLxs6o+BRULqw==
   dependencies:
     "@ethereumjs/util" "9.0.0"
     "@ethersproject/abi" "5.7.0"

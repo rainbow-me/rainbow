@@ -1,7 +1,9 @@
+import { IS_IOS } from '@/env';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
 
-export const WEBVIEW_HEIGHT = deviceUtils.dimensions.height - safeAreaInsetValues.top - TAB_BAR_HEIGHT - 88;
+export const TOP_INSET = IS_IOS ? safeAreaInsetValues.top : 40;
+export const WEBVIEW_HEIGHT = deviceUtils.dimensions.height - TOP_INSET - TAB_BAR_HEIGHT - 88;
 export const COLLAPSED_WEBVIEW_ASPECT_RATIO = 4 / 3;
 export const COLLAPSED_WEBVIEW_HEIGHT_UNSCALED = Math.min(WEBVIEW_HEIGHT, deviceUtils.dimensions.width * COLLAPSED_WEBVIEW_ASPECT_RATIO);
 
