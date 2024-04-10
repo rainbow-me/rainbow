@@ -26,6 +26,7 @@ import { SearchResult } from './SearchResult';
 import { useDapps } from '@/resources/metadata/dapps';
 import { GetdAppsQuery } from '@/graphql/__generated__/metadata';
 import { filterList } from '@/utils';
+import { rankings } from 'match-sorter';
 
 export const Search = () => {
   const { width: deviceWidth } = useDimensions();
@@ -143,7 +144,11 @@ export const Search = () => {
   const search = useCallback(
     (query: string) => {
       if (!query) return setSearchResults([]);
-      const filteredDapps = filterList(dappsData?.dApps ?? [], query.toLowerCase(), ['name', 'url']).slice(0, 3);
+      const filteredDapps = filterList(dappsData?.dApps ?? [], query.toLowerCase(), ['name', 'url'], {
+        threshold: rankings.CONTAINS,
+      })
+        .sort((a, b) => +(b?.status === 'VERIFIED') - +(a?.status === 'VERIFIED'))
+        .slice(0, 3);
       setSearchResults(filteredDapps);
     },
     [dappsData?.dApps]
