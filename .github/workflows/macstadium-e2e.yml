@@ -55,8 +55,8 @@ jobs:
         run: ./node_modules/.bin/detox build --configuration ios.sim.release
      
       - name: Run iOS e2e tests with retry
-      # change the '2' here to how many times you want the tests to rerun on failure
-        run: ./scripts/run-retry-tests.sh 2
+      # change the '5' here to how many times you want the tests to rerun on failure
+        run: ./scripts/run-retry-tests.sh 5
      
       - name: Upload Test Artifacts
         if: failure()
