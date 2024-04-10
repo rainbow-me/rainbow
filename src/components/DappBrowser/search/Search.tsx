@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { NativeSyntheticEvent, TextInput, TextInputSubmitEditingEventData } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { NativeSyntheticEvent, TextInput, TextInputChangeEventData, TextInputSubmitEditingEventData } from 'react-native';
 import Animated, {
   dispatchCommand,
   interpolate,
@@ -20,13 +20,12 @@ import { GOOGLE_SEARCH_URL, HTTP, HTTPS } from '../constants';
 import { AccountIcon } from '../search-input/AccountIcon';
 import { SearchInput } from '../search-input/SearchInput';
 import { TabButton } from '../search-input/TabButton';
-import { isValidURL } from '../utils';
+import { formatUrl, isValidURL, normalizeUrl } from '../utils';
 import { ButtonPressAnimation } from '@/components/animations';
 import { SearchResult } from './SearchResult';
 import { useDapps } from '@/resources/metadata/dapps';
 import { GetdAppsQuery } from '@/graphql/__generated__/metadata';
 import { filterList } from '@/utils';
-import { normalizeUrl } from '../utils';
 
 export const Search = () => {
   const { width: deviceWidth } = useDimensions();
@@ -38,6 +37,7 @@ export const Search = () => {
   const isFocusedValue = useSharedValue(false);
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const [searchResults, setSearchResults] = useState<GetdAppsQuery['dApps']>([]);
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const keyboardHeight = useKeyboardHeight({ shouldListen: isFocused });
   const inputRef = useAnimatedRef<TextInput>();
@@ -54,23 +54,8 @@ export const Search = () => {
     if (isHome) {
       return { value: i18n.t(i18n.l.dapp_browser.address_bar.input_placeholder), tabIndex: activeTabIndex };
     }
-
-    let formattedValue = '';
-    try {
-      const { hostname, pathname, search } = new URL(url);
-      if (hostname === 'www.google.com' && pathname === '/search') {
-        const params = new URLSearchParams(search);
-        formattedValue = params.get('q') || '';
-      } else {
-        formattedValue = hostname.startsWith('www.') ? hostname.slice(4) : hostname;
-      }
-    } catch {
-      if (!isGoogleSearch) {
-        formattedValue = url;
-      }
-    }
-    return { value: formattedValue, tabIndex: activeTabIndex };
-  }, [activeTabIndex, isGoogleSearch, isHome, url]);
+    return { value: formatUrl(url), tabIndex: activeTabIndex };
+  }, [activeTabIndex, isHome, url]);
 
   const urlWithoutTrailingSlash = url?.endsWith('/') ? url.slice(0, -1) : url;
   // eslint-disable-next-line no-nested-ternary
@@ -145,7 +130,7 @@ export const Search = () => {
   };
 
   const onBlur = useCallback(() => {
-    setSearchResults([]);
+    setSearchQuery('');
     if (isFocused) {
       setIsFocused(false);
     }
@@ -171,6 +156,16 @@ export const Search = () => {
     },
     [inputRef, updateActiveTabState]
   );
+
+  const onChange = useCallback((event: NativeSyntheticEvent<TextInputChangeEventData>) => {
+    setSearchQuery(event.nativeEvent.text);
+  }, []);
+
+  useEffect(() => {
+    if (isFocused) {
+      search(searchQuery);
+    }
+  }, [isFocused, search, searchQuery]);
 
   return (
     <>
@@ -280,7 +275,8 @@ export const Search = () => {
               onBlur={onBlur}
               onSubmitEditing={handleUrlSubmit}
               logoUrl={logoUrl}
-              search={search}
+              searchValue={searchQuery}
+              onChange={onChange}
             />
           </Box>
           <TabButton inputRef={inputRef} isFocused={isFocused} isFocusedValue={isFocusedValue} setIsFocused={setIsFocused} />

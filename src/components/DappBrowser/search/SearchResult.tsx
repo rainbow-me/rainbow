@@ -2,6 +2,7 @@ import React from 'react';
 import { ImgixImage } from '@/components/images';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
+import { formatUrl } from '../utils';
 
 export const SearchResult = ({
   iconUrl,
@@ -42,7 +43,7 @@ export const SearchResult = ({
             {name}
           </Text>
           <Text size="13pt" weight="bold" color="labelTertiary">
-            {url}
+            {formatUrl(url)}
           </Text>
         </Stack>
       </Inline>
