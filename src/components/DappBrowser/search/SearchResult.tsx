@@ -3,6 +3,8 @@ import { ImgixImage } from '@/components/images';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import { formatUrl } from '../utils';
+import GoogleSearchIcon from '@/assets/googleSearchIcon.png';
+import { Source } from 'react-native-fast-image';
 
 export const SearchResult = ({
   iconUrl,
@@ -30,7 +32,7 @@ export const SearchResult = ({
         <Box
           as={ImgixImage}
           source={{ uri: iconUrl }}
-          size={48}
+          size={40}
           background="surfacePrimary"
           shadow="24px"
           enableFasterImage
@@ -44,6 +46,40 @@ export const SearchResult = ({
           </Text>
           <Text size="13pt" weight="bold" color="labelTertiary">
             {formatUrl(url)}
+          </Text>
+        </Stack>
+      </Inline>
+    </Box>
+  );
+};
+
+export const GoogleSearchResult = ({ query, onPress }: { query: string; onPress: (query: string) => void }) => {
+  return (
+    <Box
+      as={ButtonPressAnimation}
+      padding="8px"
+      borderRadius={18}
+      scaleTo={0.95}
+      onPress={() => onPress(`https://www.google.com/search?q=${query}`)}
+    >
+      <Inline space="12px" alignVertical="center">
+        <Box
+          alignItems="center"
+          justifyContent="center"
+          background="surfacePrimaryElevated"
+          shadow="24px"
+          width={{ custom: 40 }}
+          height={{ custom: 40 }}
+          borderRadius={10}
+        >
+          <ImgixImage source={GoogleSearchIcon as Source} style={{ width: 30, height: 30 }} size={30} />
+        </Box>
+        <Stack space="10px">
+          <Text size="17pt" weight="bold" color="label">
+            {`Search "${query}"`}
+          </Text>
+          <Text size="13pt" weight="bold" color="labelTertiary">
+            Google
           </Text>
         </Stack>
       </Inline>

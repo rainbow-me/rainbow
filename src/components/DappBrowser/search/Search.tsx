@@ -22,7 +22,7 @@ import { SearchInput } from '../search-input/SearchInput';
 import { TabButton } from '../search-input/TabButton';
 import { formatUrl, isValidURL, normalizeUrl } from '../utils';
 import { ButtonPressAnimation } from '@/components/animations';
-import { SearchResult } from './SearchResult';
+import { GoogleSearchResult, SearchResult } from './SearchResult';
 import { useDapps } from '@/resources/metadata/dapps';
 import { GetdAppsQuery } from '@/graphql/__generated__/metadata';
 import { filterList } from '@/utils';
@@ -131,7 +131,8 @@ export const Search = () => {
   };
 
   const onBlur = useCallback(() => {
-    setSearchQuery('');
+    setSearchResults([]);
+    setSearchQuery(inputValue ?? '');
     if (isFocused) {
       setIsFocused(false);
     }
@@ -139,11 +140,11 @@ export const Search = () => {
       searchViewProgress.value = withSpring(0, SPRING_CONFIGS.snappierSpringConfig);
     }
     isFocusedValue.value = false;
-  }, [isFocused, isFocusedValue, searchViewProgress]);
+  }, [inputValue, isFocused, isFocusedValue, searchViewProgress]);
 
   const search = useCallback(
     (query: string) => {
-      if (!query) return setSearchResults([]);
+      if (!query || query === inputValue) return setSearchResults([]);
       const filteredDapps = filterList(dappsData?.dApps ?? [], query, ['name', 'url'], {
         threshold: rankings.CONTAINS,
       })
@@ -151,7 +152,7 @@ export const Search = () => {
         .slice(0, 3);
       setSearchResults(filteredDapps);
     },
-    [dappsData?.dApps]
+    [dappsData?.dApps, inputValue]
   );
 
   const onPressSearchResult = useCallback(
@@ -230,6 +231,7 @@ export const Search = () => {
                     </Inline>
                   </Inset>
                   <Stack space="4px">
+                    <GoogleSearchResult query={searchQuery} onPress={onPressSearchResult} />
                     {searchResults.map(dapp => (
                       <SearchResult
                         iconUrl={dapp!.iconURL}
