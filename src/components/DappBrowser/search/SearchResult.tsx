@@ -3,9 +3,28 @@ import { ImgixImage } from '@/components/images';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 
-export const SearchResult = ({ iconUrl, name, suggested, url }: { iconUrl: string; name: string; suggested?: boolean; url: string }) => {
+export const SearchResult = ({
+  iconUrl,
+  name,
+  onPress,
+  suggested,
+  url,
+}: {
+  iconUrl: string;
+  name: string;
+  onPress: (url: string) => void;
+  suggested?: boolean;
+  url: string;
+}) => {
   return (
-    <Box as={ButtonPressAnimation} padding="8px" borderRadius={18} background={suggested ? 'fill' : undefined} scaleTo={0.95}>
+    <Box
+      as={ButtonPressAnimation}
+      padding="8px"
+      borderRadius={18}
+      background={suggested ? 'fill' : undefined}
+      scaleTo={0.95}
+      onPress={() => onPress(url)}
+    >
       <Inline space="12px" alignVertical="center">
         <Box
           as={ImgixImage}

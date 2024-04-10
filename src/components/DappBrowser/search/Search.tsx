@@ -26,6 +26,7 @@ import { SearchResult } from './SearchResult';
 import { useDapps } from '@/resources/metadata/dapps';
 import { GetdAppsQuery } from '@/graphql/__generated__/metadata';
 import { filterList } from '@/utils';
+import { normalizeUrl } from '../utils';
 
 export const Search = () => {
   const { width: deviceWidth } = useDimensions();
@@ -163,6 +164,14 @@ export const Search = () => {
     [dappsData?.dApps]
   );
 
+  const onPressSearchResult = useCallback(
+    (url: string) => {
+      updateActiveTabState({ url: normalizeUrl(url) });
+      inputRef.current?.blur();
+    },
+    [inputRef, updateActiveTabState]
+  );
+
   return (
     <>
       <Box
@@ -222,7 +231,13 @@ export const Search = () => {
                   </Inset>
                   <Stack space="4px">
                     {searchResults.map(dapp => (
-                      <SearchResult iconUrl={dapp!.iconURL} key={dapp!.url} name={dapp!.name} url={dapp!.url} />
+                      <SearchResult
+                        iconUrl={dapp!.iconURL}
+                        key={dapp!.url}
+                        name={dapp!.name}
+                        onPress={onPressSearchResult}
+                        url={dapp!.url}
+                      />
                     ))}
                   </Stack>
                 </Stack>
