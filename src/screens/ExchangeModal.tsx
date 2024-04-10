@@ -681,9 +681,9 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
       android && Keyboard.dismiss();
       const lastFocusedInputHandleTemporary = lastFocusedInputHandle.current;
       android && (lastFocusedInputHandle.current = null);
-      inputFieldRef?.current?.blur();
-      outputFieldRef?.current?.blur();
-      nativeFieldRef?.current?.blur();
+      inputFieldRef?.current?.blur?.();
+      outputFieldRef?.current?.blur?.();
+      nativeFieldRef?.current?.blur?.();
       const internalNavigate = () => {
         IS_ANDROID && keyboardListenerSubscription.current?.remove();
         setParams({ focused: false });
@@ -847,6 +847,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
                   isHighPriceImpact={
                     !confirmButtonProps.disabled && !confirmButtonProps.loading && debouncedIsHighPriceImpact && isSufficientBalance
                   }
+                  outputCurrencySymbol={outputCurrency?.symbol}
                   onFlipCurrencies={loading ? NOOP : flipCurrencies}
                   onPressImpactWarning={navigateToSwapDetailsModal}
                   onPressSettings={navigateToSwapSettingsSheet}

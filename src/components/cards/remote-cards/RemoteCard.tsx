@@ -97,10 +97,16 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ card = {} as TrimmedCard
       analyticsV2.track(analyticsV2.event.remoteCardDismissed, {
         cardKey: cardKey ?? 'unknown-backend-driven-card',
       });
+
+      const isLastCard = cards.length === 1;
+
       dismissCard(card.sys.id);
       if (carouselRef?.current) {
         const currentCardIdx = cards.findIndex(c => c.cardKey === cardKey);
         if (currentCardIdx === -1) return;
+
+        // check if this is the last card and don't scroll if so
+        if (isLastCard) return;
 
         carouselRef.current.scrollToIndex({
           index: currentCardIdx,

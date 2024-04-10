@@ -1,16 +1,31 @@
 import React from 'react';
-import { Box, Inline, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
+import { AnimatedText, Box, Inline, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../constants';
-import { opacity } from '../utils';
+import { opacity } from '../utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
-import Animated from 'react-native-reanimated';
+import Animated, { useDerivedValue } from 'react-native-reanimated';
 import { useSwapContext } from '../providers/swap-provider';
 
 export const ExchangeRateBubble = () => {
   const { isDarkMode } = useColorMode();
-  const { AnimatedSwapStyles } = useSwapContext();
+  const { AnimatedSwapStyles, SwapInputController } = useSwapContext();
 
   const fillTertiary = useForegroundColor('fillTertiary');
+
+  const assetToSellLabel = useDerivedValue(() => {
+    if (!SwapInputController?.assetToSell.value) return '';
+    return `1 ${SwapInputController?.assetToSell.value?.symbol}`;
+  });
+
+  const assetToBuyLabel = useDerivedValue(() => {
+    if (!SwapInputController.assetToBuy.value) return '';
+    return `1,624.04 ${SwapInputController.assetToBuy.value?.symbol}`;
+  });
+
+  // TODO: Do proper exchange rate calculation once we receive the quote
+
+  // TODO: This doesn't work when assets change, figure out why...
+  if (!assetToSellLabel.value || !assetToBuyLabel.value) return null;
 
   return (
     <ButtonPressAnimation scaleTo={0.925} style={{ marginTop: 4 }}>
@@ -31,9 +46,14 @@ export const ExchangeRateBubble = () => {
           style={{ borderColor: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR, borderWidth: THICK_BORDER_WIDTH }}
         >
           <Inline alignHorizontal="center" alignVertical="center" space="6px" wrap={false}>
-            <Text align="center" color="labelQuaternary" size="13pt" style={{ opacity: isDarkMode ? 0.6 : 0.75 }} weight="heavy">
-              1 ETH
-            </Text>
+            <AnimatedText
+              align="center"
+              color="labelQuaternary"
+              size="13pt"
+              style={{ opacity: isDarkMode ? 0.6 : 0.75 }}
+              weight="heavy"
+              text={assetToSellLabel}
+            />
             <Box
               borderRadius={10}
               height={{ custom: 20 }}
@@ -45,9 +65,14 @@ export const ExchangeRateBubble = () => {
                 􀄭
               </TextIcon>
             </Box>
-            <Text align="center" color="labelQuaternary" size="13pt" style={{ opacity: isDarkMode ? 0.6 : 0.75 }} weight="heavy">
-              1,624.04 USDC
-            </Text>
+            <AnimatedText
+              align="center"
+              color="labelQuaternary"
+              size="13pt"
+              style={{ opacity: isDarkMode ? 0.6 : 0.75 }}
+              weight="heavy"
+              text={assetToBuyLabel}
+            />
           </Inline>
         </Box>
       </Box>

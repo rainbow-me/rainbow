@@ -14,6 +14,8 @@ import { SwapInputAsset } from './components/controls/SwapInputAsset';
 import { SwapOutputAsset } from './components/controls/SwapOutputAsset';
 import { SwapNavbar } from './components/SwapNavbar';
 import { SwapAmountInputs } from './components/controls/SwapAmountInputs';
+import { safeAreaInsetValues } from '@/utils';
+import { navbarHeight } from '@/components/navbar/Navbar';
 
 /** README
  * This prototype is largely driven by Reanimated and Gesture Handler, which
@@ -56,15 +58,14 @@ export function SwapScreen() {
   return (
     <SheetGestureBlocker>
       <Box as={Page} style={styles.rootViewBackground} testID="swap-screen" width="full">
-        <SwapBackground>
-          <Box alignItems="center" height="full" paddingTop={{ custom: 29 }} width="full">
-            <SwapInputAsset />
-            <FlipButton />
-            <SwapOutputAsset />
-            <ExchangeRateBubble />
-            <SwapAmountInputs />
-          </Box>
-        </SwapBackground>
+        <SwapBackground />
+        <Box alignItems="center" height="full" paddingTop={{ custom: safeAreaInsetValues.top + (navbarHeight - 12) + 29 }} width="full">
+          <SwapInputAsset />
+          <FlipButton />
+          <SwapOutputAsset />
+          <ExchangeRateBubble />
+          <SwapAmountInputs />
+        </Box>
         <SwapNavbar />
       </Box>
     </SheetGestureBlocker>
@@ -73,7 +74,6 @@ export function SwapScreen() {
 
 export const styles = StyleSheet.create({
   rootViewBackground: {
-    backgroundColor: 'transparent',
     borderRadius: IS_ANDROID ? 20 : ScreenCornerRadius,
     flex: 1,
     overflow: 'hidden',

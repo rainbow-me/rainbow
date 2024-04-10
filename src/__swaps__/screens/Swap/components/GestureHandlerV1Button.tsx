@@ -1,15 +1,16 @@
+import ConditionalWrap from 'conditional-wrap';
 import React from 'react';
 import { StyleProp, ViewProps, ViewStyle } from 'react-native';
 import { TapGestureHandler, TapGestureHandlerGestureEvent } from 'react-native-gesture-handler';
-import Animated, { useAnimatedGestureHandler } from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedGestureHandler } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
-import ConditionalWrap from 'conditional-wrap';
 import { IS_IOS } from '@/env';
 
 type GestureHandlerButtonProps = {
   children: React.ReactNode;
   disableButtonPressWrapper?: boolean;
   disabled?: boolean;
+  onPressJS?: () => void;
   onPressStartWorklet?: () => void;
   onPressWorklet?: () => void;
   pointerEvents?: ViewProps['pointerEvents'];
@@ -18,13 +19,19 @@ type GestureHandlerButtonProps = {
 };
 
 /**
- * @description This button runs its press functions directly on the UI thread,
- * which is useful when working with Reanimated, as it allows for the instant
- * manipulation of shared values without any dependence on the JS thread.
+ * @description This button can execute press functions directly on the UI thread,
+ * which is useful when working with Reanimated, as it allows for instantly
+ * manipulating shared values without any dependence on the JS thread.
  *
  * 👉 Intended for use with react-native-gesture-handler v1
  *
- * Its onPress props accept worklets, which need to be tagged with `'worklet';`
+ * ———
+ *
+ * 🔵 `onPressWorklet`
+ * -
+ * 🔵 `onPressStartWorklet`
+ * -
+ * - To execute code on the UI thread, pass a function tagged with `'worklet';`
  * like so:
  *
  * ```
@@ -33,45 +40,60 @@ type GestureHandlerButtonProps = {
  *    opacity.value = withTiming(1);
  *  };
  * ```
+ * ———
+ *
+ * 🟢 `onPressJS`
+ * -
+ * - If you need to simultaneously execute code on the JS thread, rather than
+ * using runOnJS within your worklet, you can pass a function via `onPressJS`:
+ *
+ * ```
+ * const [fromJSThread, setFromJSThread] = useState(false);
+ *
+ * const onPressJS = () => {
+ *   setFromJSThread(true);
+ * };
+ * ```
  */
-export function GestureHandlerV1Button({
-  children,
-  disableButtonPressWrapper = false,
-  disabled = false,
-  onPressStartWorklet,
-  onPressWorklet,
-  pointerEvents = 'box-only',
-  scaleTo = 0.86,
-  style,
-}: GestureHandlerButtonProps) {
+export const GestureHandlerV1Button = React.forwardRef(function GestureHandlerV1Button(
+  {
+    children,
+    disableButtonPressWrapper = false,
+    disabled = false,
+    onPressJS,
+    onPressStartWorklet,
+    onPressWorklet,
+    pointerEvents = 'box-only',
+    scaleTo = 0.86,
+    style,
+  }: GestureHandlerButtonProps,
+  forwardedRef: React.LegacyRef<any> | undefined
+) {
   const pressHandler = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>({
     onStart: () => {
       if (onPressStartWorklet) onPressStartWorklet();
     },
     onActive: () => {
       if (onPressWorklet) onPressWorklet();
+      if (onPressJS) runOnJS(onPressJS)();
     },
   });
 
   return (
     <ConditionalWrap
-      condition={IS_IOS}
+      condition={IS_IOS && !disableButtonPressWrapper}
       wrap={children => (
-        <ButtonPressAnimation
-          disabled={disabled}
-          scaleTo={disableButtonPressWrapper ? 1 : scaleTo}
-          useLateHaptic={disableButtonPressWrapper}
-        >
+        <ButtonPressAnimation scaleTo={disabled ? 1 : scaleTo} useLateHaptic={disabled}>
           {children}
         </ButtonPressAnimation>
       )}
     >
       {/* @ts-expect-error Property 'children' does not exist on type */}
-      <TapGestureHandler onGestureEvent={pressHandler}>
+      <TapGestureHandler enabled={!disabled} onGestureEvent={pressHandler} ref={forwardedRef}>
         <Animated.View accessible accessibilityRole="button" pointerEvents={pointerEvents} style={style}>
           {children}
         </Animated.View>
       </TapGestureHandler>
     </ConditionalWrap>
   );
-}
+});
