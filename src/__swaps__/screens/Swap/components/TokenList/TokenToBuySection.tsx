@@ -78,7 +78,7 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
         userAsset,
       });
 
-      runOnUI(SwapInputController.onSetAssetToBuy)(parsedAsset);
+      SwapInputController.onSetAssetToBuy(parsedAsset);
     },
     [SwapInputController, userAssets]
   );

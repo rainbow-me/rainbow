@@ -334,12 +334,30 @@ export function useSwapInputsController({
       toChainId: isCrosschainSwap ? assetToBuy.value.chainId : assetToSell.value.chainId,
     };
 
+    const updateQuoteAndSource = (data: Quote | CrosschainQuote | QuoteError) => {
+      'worklet';
+
+      // NOTE: Update quote regardless so we can display an error if necessary
+      quote.value = data;
+
+      if (!data || (data as QuoteError)?.error) {
+        return;
+      }
+
+      const newData = data as Quote | CrosschainQuote;
+      if (newData.source) {
+        source.value = newData.source;
+      }
+    };
+
     const quoteResponse = (
       quoteParams.swapType === SwapType.crossChain ? await getCrosschainQuote(quoteParams) : await getQuote(quoteParams)
     ) as Quote | CrosschainQuote | QuoteError;
 
+    runOnUI(updateQuoteAndSource)(quoteResponse);
+
     if (!quoteResponse || (quoteResponse as QuoteError)?.error) {
-      return null; // Handle error or no quote found
+      return null;
     }
 
     const data = quoteResponse as Quote | CrosschainQuote;
@@ -421,12 +439,6 @@ export function useSwapInputsController({
     isWrapOrUnwrapEth: boolean;
   }) => {
     'worklet';
-    quote.value = data;
-
-    if (data.source) {
-      source.value = data.source;
-    }
-
     // TODO: Need to convert big number to native value properly here...
     // example: "fee": "3672850000000000",
     fee.value = isWrapOrUnwrapEth ? '0' : data.feeInEth.toString();
@@ -474,32 +486,37 @@ export function useSwapInputsController({
 
     if (amount > 0) {
       if (setStale) isQuoteStale.value = 1;
-      isFetching.value = true;
 
-      if (quoteRefetchTimer.current) {
-        clearInterval(quoteRefetchTimer.current);
+      if (inputKey === 'inputAmount') {
+        inputValues.value.inputAmount = amount;
+      } else if (inputKey === 'outputAmount') {
+        inputValues.value.outputAmount = amount;
       }
 
-      quoteRefetchTimer.current = setInterval(async () => {
-        if (isFetching.value) return;
-        isFetching.value = true;
+      // if (quoteRefetchTimer.current) {
+      //   clearInterval(quoteRefetchTimer.current);
+      // }
 
-        if (inputKey === 'inputAmount') {
-          handleInputAmountLogic(Number(inputValues.value.inputAmount));
-        } else if (inputKey === 'outputAmount') {
-          handleOutputAmountLogic(Number(inputValues.value.outputAmount));
-        }
-      }, QUOTE_REFETCH_INTERVAL);
+      // quoteRefetchTimer.current = setInterval(async () => {
+      //   if (isFetching.value) return;
+      //   isFetching.value = true;
 
-      spinnerTimer.current = setTimeout(() => {
-        animationFrameId.current = requestAnimationFrame(async () => {
-          if (inputKey === 'inputAmount') {
-            await handleInputAmountLogic(amount);
-          } else if (inputKey === 'outputAmount') {
-            await handleOutputAmountLogic(amount);
-          }
-        });
-      }, 600);
+      //   if (inputKey === 'inputAmount') {
+      //     handleInputAmountLogic(Number(inputValues.value.inputAmount));
+      //   } else if (inputKey === 'outputAmount') {
+      //     handleOutputAmountLogic(Number(inputValues.value.outputAmount));
+      //   }
+      // }, QUOTE_REFETCH_INTERVAL);
+
+      // spinnerTimer.current = setTimeout(() => {
+      //   animationFrameId.current = requestAnimationFrame(async () => {
+      //     if (inputKey === 'inputAmount') {
+      //       await handleInputAmountLogic(amount);
+      //     } else if (inputKey === 'outputAmount') {
+      //       await handleOutputAmountLogic(amount);
+      //     }
+      //   });
+      // }, 600);
     } else {
       const resetValuesToZero = () => {
         isFetching.value = false;
@@ -620,11 +637,13 @@ export function useSwapInputsController({
     }
 
     const initialAmount = sliderXPosition.value * Number(assetToSell.value.balance.amount);
+
+    console.log(initialAmount);
+
     inputValues.modify(values => {
       return {
         ...values,
         inputAmount: values.inputAmount || initialAmount,
-        inputNativeValue: Number(values.inputAmount) * Number(assetToSell.value?.native.price?.amount),
       };
     });
 
@@ -637,55 +656,83 @@ export function useSwapInputsController({
   };
 
   const onSetAssetToBuy = (parsedAsset: ParsedSearchAsset) => {
-    'worklet';
-    assetToBuy.value = parsedAsset;
-    if (assetToSell.value && isSameAssetWorklet(assetToSell.value, parsedAsset)) {
-      assetToSell.value = null;
-      handleInputPress();
-      handleExitSearch();
-    } else {
-      handleOutputPress();
-      handleExitSearch();
-    }
+    const updateValues = () => {
+      'worklet';
+      assetToBuy.value = parsedAsset;
+      if (assetToSell.value && isSameAssetWorklet(assetToSell.value, parsedAsset)) {
+        assetToSell.value = null;
+        handleInputPress();
+        handleExitSearch();
+      } else {
+        handleOutputPress();
+        handleExitSearch();
+      }
+    };
 
+    runOnUI(updateValues)();
+
+    const inputAmount = Number(inputValues.value.inputAmount);
     // TODO: Trigger a quote refetch here.
-    // if (assetToSell.value) {
-    // }
+    if (assetToSell.value && assetToSellPrice.value) {
+      if (inputAmount > 0) {
+        isFetching.value = true;
+        isQuoteStale.value = 1;
+
+        console.log({
+          inputAmount,
+          inputValues: inputValues.value,
+          assetToSellPrice: assetToSellPrice.value,
+        });
+
+        spinnerTimer.current = setTimeout(() => {
+          animationFrameId.current = requestAnimationFrame(async () => {
+            await handleInputAmountLogic(inputAmount);
+          });
+        }, 600);
+      }
+    }
   };
 
   const onSwapAssets = () => {
-    'worklet';
+    const swapValues = () => {
+      'worklet';
 
-    const prevAssetToSell = assetToSell.value;
-    const prevAssetToBuy = assetToBuy.value;
+      const prevAssetToSell = assetToSell.value;
+      const prevAssetToBuy = assetToBuy.value;
 
-    if (prevAssetToSell) {
-      assetToBuy.value = prevAssetToSell;
-      outputChainId.value = prevAssetToSell.chainId;
+      if (prevAssetToSell) {
+        assetToBuy.value = prevAssetToSell;
+        outputChainId.value = prevAssetToSell.chainId;
+      } else {
+        assetToBuy.value = null;
+      }
 
-      // TODO: Need to call this here to fetch quote when swapping to a new assetToSell
-      // spinnerTimer.current = setTimeout(() => {
-      //   animationFrameId.current = requestAnimationFrame(async () => {
-      //     await handleInputAmountLogic(Number(inputValues.value.inputAmount));
+      if (prevAssetToBuy) {
+        assetToSell.value = prevAssetToBuy;
+        outputChainId.value = prevAssetToBuy.chainId;
+      } else {
+        assetToSell.value = null;
+      }
 
-      //   });
-      // }, 600);
-    } else {
-      assetToBuy.value = null;
-    }
+      // TODO: if !prevAssetToBuy => focus assetToSell input
+      // TODO: if !prevAssetToSell => focus assetToBuy input
 
-    if (prevAssetToBuy) {
-      assetToSell.value = prevAssetToBuy;
-      outputChainId.value = prevAssetToBuy.chainId;
-    } else {
-      assetToSell.value = null;
-    }
+      if (outputProgress.value === 1) {
+        handleOutputPress();
+      }
+    };
 
-    // TODO: if !prevAssetToBuy => focus assetToSell input
-    // TODO: if !prevAssetToSell => focus assetToBuy input
+    runOnUI(swapValues)();
 
-    if (outputProgress.value === 1) {
-      handleOutputPress();
+    const inputAmount = Number(inputValues.value.inputAmount);
+    if (inputAmount > 0) {
+      isFetching.value = true;
+      isQuoteStale.value = 1;
+      spinnerTimer.current = setTimeout(() => {
+        animationFrameId.current = requestAnimationFrame(async () => {
+          await handleInputAmountLogic(inputAmount);
+        });
+      }, 600);
     }
   };
 
@@ -722,20 +769,20 @@ export function useSwapInputsController({
       if (!previous) {
         // Handle setting of initial values using niceIncrementFormatter,
         // because we will likely set a percentage-based default input value
-        if (!assetToSell.value || !assetToBuy.value) return;
+        if (!assetToSell.value || !assetToBuy.value || !assetToSellPrice.value || !assetToBuyPrice.value) return;
 
         const inputAmount = niceIncrementFormatter(
           incrementDecimalPlaces,
           Number(assetToSell.value.balance.amount),
-          Number(assetToSell.value.native.price?.amount),
+          assetToSellPrice.value,
           niceIncrement,
           percentageToSwap.value,
           sliderXPosition.value,
           true
         );
-        const inputNativeValue = Number(inputAmount) * Number(assetToSell.value.native.price?.amount);
-        const outputAmount = (inputNativeValue / Number(assetToBuy.value.native.price?.amount)) * (1 - SWAP_FEE);
-        const outputNativeValue = outputAmount * Number(assetToBuy.value.native.price?.amount);
+        const inputNativeValue = Number(inputAmount) * assetToSellPrice.value;
+        const outputAmount = (inputNativeValue / assetToBuyPrice.value) * (1 - SWAP_FEE); // TODO: Implement swap fee
+        const outputNativeValue = outputAmount * assetToBuyPrice.value;
 
         inputValues.modify(values => {
           return {
@@ -763,18 +810,18 @@ export function useSwapInputsController({
             });
             isQuoteStale.value = 0;
           } else {
-            if (!assetToSell.value) return;
+            if (!assetToSell.value || !assetToSellPrice.value) return;
             // If the change set the slider position to > 0
             const inputAmount = niceIncrementFormatter(
               incrementDecimalPlaces,
               Number(assetToSell.value.balance.amount),
-              Number(assetToSell.value.native.price?.amount),
+              assetToSellPrice.value,
               niceIncrement,
               percentageToSwap.value,
               sliderXPosition.value,
               true
             );
-            const inputNativeValue = Number(inputAmount) * Number(assetToSell.value.native.price?.amount);
+            const inputNativeValue = Number(inputAmount) * assetToSellPrice.value;
 
             inputValues.modify(values => {
               return {
@@ -809,9 +856,9 @@ export function useSwapInputsController({
               runOnJS(onTypedNumber)(0, 'inputAmount');
             }
           } else {
-            if (!assetToSell.value) return;
+            if (!assetToSell.value || !assetToSellPrice.value) return;
             // If the input amount was set to a non-zero value
-            const inputNativeValue = Number(current.values.inputAmount) * Number(assetToSell.value.native.price?.amount);
+            const inputNativeValue = Number(current.values.inputAmount) * assetToSellPrice.value;
 
             isQuoteStale.value = 1;
             inputValues.modify(values => {
@@ -850,10 +897,10 @@ export function useSwapInputsController({
             }
           } else if (Number(current.values.outputAmount) > 0) {
             // If the output amount was set to a non-zero value
-            if (!assetToBuy.value) return;
+            if (!assetToBuy.value || !assetToBuyPrice.value) return;
 
             const outputAmount = Number(current.values.outputAmount);
-            const outputNativeValue = outputAmount * Number(assetToBuy.value.native.price?.amount);
+            const outputNativeValue = outputAmount * assetToBuyPrice.value;
 
             isQuoteStale.value = 1;
             inputValues.modify(values => {
@@ -884,22 +931,20 @@ export function useSwapInputsController({
   );
 
   const fetchAssetPrice = async (asset: ParsedSearchAsset | null, assetType: 'assetToSell' | 'assetToBuy') => {
-    if (!asset) {
-      switch (assetType) {
-        case 'assetToSell':
-          if (assetToSellPriceRefetchTimer.current) {
-            clearInterval(assetToSellPriceRefetchTimer.current);
-          }
-          break;
-        case 'assetToBuy':
-          if (assetToBuyPriceRefetchTimer.current) {
-            clearInterval(assetToBuyPriceRefetchTimer.current);
-          }
-          break;
-      }
-
-      return;
+    switch (assetType) {
+      case 'assetToSell':
+        if (assetToSellPriceRefetchTimer.current) {
+          clearInterval(assetToSellPriceRefetchTimer.current);
+        }
+        break;
+      case 'assetToBuy':
+        if (assetToBuyPriceRefetchTimer.current) {
+          clearInterval(assetToBuyPriceRefetchTimer.current);
+        }
+        break;
     }
+
+    if (!asset) return;
 
     const assetWithPriceData = await fetchExternalToken({
       address: asset.address,
@@ -912,7 +957,13 @@ export function useSwapInputsController({
     switch (assetType) {
       case 'assetToSell':
         runOnUI((asset: FormattedExternalAsset) => {
-          assetToSellPrice.value = Number(asset.price.value);
+          if (asset.price.value) {
+            assetToSellPrice.value = Number(asset.price.value);
+          } else if (asset.native.price.amount) {
+            assetToSellPrice.value = Number(asset.native.price.amount);
+          }
+
+          inputValues.value.inputNativeValue = Number(inputValues.value.inputAmount) * assetToSellPrice.value;
         })(assetWithPriceData);
 
         if (assetToSellPriceRefetchTimer.current) {
@@ -926,7 +977,13 @@ export function useSwapInputsController({
         break;
       case 'assetToBuy':
         runOnUI((asset: FormattedExternalAsset) => {
-          assetToBuyPrice.value = Number(asset.price.value);
+          if (asset.price.value) {
+            assetToBuyPrice.value = Number(asset.price.value);
+          } else if (asset.native.price.amount) {
+            assetToBuyPrice.value = Number(asset.native.price.amount);
+          }
+
+          inputValues.value.outputNativeValue = Number(inputValues.value.outputAmount) * assetToBuyPrice.value;
         })(assetWithPriceData);
 
         if (assetToBuyPriceRefetchTimer.current) {
