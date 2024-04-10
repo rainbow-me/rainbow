@@ -1,5 +1,4 @@
 import { KeyOption, matchSorter, MatchSorterOptions } from 'match-sorter';
-import { matchSorterWorklet } from './matchSorter';
 
 export const filterList = <T>(list: T[], searchQuery: string, keys?: KeyOption<T>[], options?: MatchSorterOptions<T>) =>
   matchSorter(list, searchQuery, {
@@ -9,7 +8,7 @@ export const filterList = <T>(list: T[], searchQuery: string, keys?: KeyOption<T
 
 export const filterListWorklet = <T>(list: T[], searchQuery: string, keys?: KeyOption<T>[], options?: MatchSorterOptions<T>) => {
   'worklet';
-  return matchSorterWorklet(list, searchQuery, {
+  return matchSorter(list, searchQuery, {
     keys,
     ...options,
   });
