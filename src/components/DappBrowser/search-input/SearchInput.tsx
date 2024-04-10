@@ -1,7 +1,7 @@
 import React, { RefObject, useCallback, useMemo } from 'react';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { AnimatedText, Box, Cover, globalColors, useColorMode, useForegroundColor } from '@/design-system';
-import Animated, { SharedValue, useAnimatedStyle, useDerivedValue, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, { SharedValue, runOnUI, useAnimatedStyle, useDerivedValue, withSpring, withTiming } from 'react-native-reanimated';
 import Input from '@/components/inputs/Input';
 import * as i18n from '@/languages';
 import { NativeSyntheticEvent, StyleSheet, TextInput, TextInputFocusEventData, TextInputSubmitEditingEventData } from 'react-native';
@@ -39,6 +39,7 @@ export const SearchInput = ({
   logoUrl,
   canGoBack,
   canGoForward,
+  search,
 }: {
   inputRef: RefObject<TextInput>;
   formattedInputValue: { value: string; tabIndex: number };
@@ -53,6 +54,7 @@ export const SearchInput = ({
   logoUrl: string | undefined | null;
   canGoBack: boolean;
   canGoForward: boolean;
+  search: (query: string) => void;
 }) => {
   const { animatedActiveTabIndex, goBack, goForward, onRefresh, tabViewProgress } = useBrowserContext();
   const { isFavorite, addFavorite, removeFavorite } = useFavoriteDappsStore();
@@ -223,6 +225,7 @@ export const SearchInput = ({
               placeholder={i18n.t(i18n.l.dapp_browser.address_bar.input_placeholder)}
               placeholderTextColor={labelQuaternary}
               onBlur={onBlur}
+              onChange={e => search(e.nativeEvent.text)}
               onSubmitEditing={onSubmitEditing}
               ref={inputRef}
               returnKeyType="go"
