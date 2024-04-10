@@ -13,6 +13,7 @@ import { useAccountAccentColor } from '@/hooks';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ListEmpty } from './ListEmpty';
 import { FlashList } from '@shopify/flash-list';
+import { assets } from '../../types/swap';
 
 const AnimatedFlashListComponent = Animated.createAnimatedComponent(FlashList<ParsedSearchAsset>);
 
@@ -40,9 +41,9 @@ export const TokenToSellList = () => {
         userAsset,
       });
 
-      runOnUI(SwapInputController.onSetAssetToSell)(parsedAsset);
+      runOnUI(SwapInputController.onSelectAsset)(parsedAsset, assets.assetToSell);
     },
-    [SwapInputController.onSetAssetToSell, userAssets]
+    [SwapInputController.onSelectAsset, userAssets]
   );
 
   return (

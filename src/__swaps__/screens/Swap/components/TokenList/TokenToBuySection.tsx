@@ -15,6 +15,7 @@ import { parseSearchAsset, isSameAsset } from '../../utils/assets';
 import { useAssetsToSell } from '../../hooks/useAssetsToSell';
 import { ListEmpty } from './ListEmpty';
 import { FlashList } from '@shopify/flash-list';
+import { assets } from '../../types/swap';
 
 interface SectionProp {
   color: TextStyle['color'];
@@ -78,9 +79,9 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
         userAsset,
       });
 
-      SwapInputController.onSetAssetToBuy(parsedAsset);
+      runOnUI(SwapInputController.onSelectAsset)(parsedAsset, assets.assetToBuy);
     },
-    [SwapInputController, userAssets]
+    [SwapInputController.onSelectAsset, userAssets]
   );
 
   const { symbol, title } = sectionProps[section.id];

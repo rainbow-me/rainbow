@@ -20,8 +20,8 @@ export const FlipButton = () => {
   const { isFetching, AnimatedSwapStyles, SwapInputController } = useSwapContext();
 
   const handleSwapAssets = useCallback(() => {
-    SwapInputController.onSwapAssets();
-  }, [SwapInputController]);
+    runOnUI(SwapInputController.onSwapAssets)();
+  }, [SwapInputController.onSwapAssets]);
 
   return (
     <Box
