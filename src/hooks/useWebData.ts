@@ -85,6 +85,10 @@ export default function useWebData() {
 
   const getWebProfile = useCallback(async (address: string) => {
     const response = address && (await getPreference('profile', address));
+    if (!response) {
+      return null;
+    }
+
     return response?.profile;
   }, []);
 
@@ -92,14 +96,13 @@ export default function useWebData() {
     async (assetIds: any) => {
       if (!webDataEnabled) return;
       const response = await getPreference('showcase', accountAddress);
-      // If the showcase is populated, just updated it
-      if (response?.ids?.length > 0) {
-        setPreference(PreferenceActionType.update, 'showcase', accountAddress, assetIds);
-      } else {
-        // Initialize showcase and profiles
+      if (!response || !response.showcase.ids.length) {
         await initWebData(assetIds);
         logger.log('showcase initialized!');
+        return;
       }
+
+      setPreference(PreferenceActionType.update, 'showcase', accountAddress, assetIds);
     },
     [accountAddress, initWebData, webDataEnabled]
   );
@@ -107,14 +110,13 @@ export default function useWebData() {
   const updateWebHidden = useCallback(
     async (assetIds: any) => {
       const response = await getPreference('hidden', accountAddress);
-      // If the showcase is populated, just updated it
-      if (response?.ids?.length > 0) {
-        setPreference(PreferenceActionType.update, 'hidden', accountAddress, assetIds);
-      } else {
+      if (!response || !response.hidden.ids.length) {
         await setPreference(PreferenceActionType.init, 'hidden', accountAddress, assetIds);
-
         logger.log('hidden initialized!');
+        return;
       }
+
+      setPreference(PreferenceActionType.update, 'hidden', accountAddress, assetIds);
     },
     [accountAddress]
   );
@@ -126,14 +128,13 @@ export default function useWebData() {
         // If webdata is enabled
         if (webDataEnabled) {
           const response = await getPreference('showcase', accountAddress);
-          // If the showcase is populated, nothing to do
-          if (response?.ids?.length > 0) {
-            logger.log('showcase already initialized. skipping');
-          } else {
-            // Initialize
+          if (!response || !response.showcase.ids.length) {
             await initWebData(showcaseTokens);
             logger.log('showcase initialized!');
+            return;
           }
+
+          logger.log('showcase already initialized. skipping');
         }
       }
     } catch (e) {
