@@ -1,15 +1,22 @@
-import { device } from 'detox';
-import { cleanApp, importWalletFlow, checkIfVisible, checkIfExists, checkIfExistsByText, swipe, waitAndTap } from './helpers';
+import {
+  beforeAllcleanApp,
+  importWalletFlow,
+  checkIfVisible,
+  checkIfExists,
+  checkIfExistsByText,
+  swipe,
+  waitAndTap,
+  afterAllcleanApp,
+} from './helpers';
 
 const RAINBOW_TEST_WALLET = 'rainbowtestwallet.eth';
 
 describe('Home Screen', () => {
   beforeAll(async () => {
-    await device.reloadReactNative();
-    await cleanApp();
+    await beforeAllcleanApp({ hardhat: false });
   });
   afterAll(async () => {
-    await device.clearKeychain();
+    await afterAllcleanApp({ hardhat: false });
   });
 
   it('imports wallet', async () => {

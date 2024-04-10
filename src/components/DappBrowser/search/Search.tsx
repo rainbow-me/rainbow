@@ -144,7 +144,7 @@ export const Search = () => {
   const search = useCallback(
     (query: string) => {
       if (!query) return setSearchResults([]);
-      const filteredDapps = filterList(dappsData?.dApps ?? [], query.toLowerCase(), ['name', 'url'], {
+      const filteredDapps = filterList(dappsData?.dApps ?? [], query, ['name', 'url'], {
         threshold: rankings.CONTAINS,
       })
         .sort((a, b) => +(b?.status === 'VERIFIED') - +(a?.status === 'VERIFIED'))

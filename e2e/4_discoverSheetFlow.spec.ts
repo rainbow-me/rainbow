@@ -1,66 +1,29 @@
 import { device } from 'detox';
 import {
   tap,
-  cleanApp,
+  beforeAllcleanApp,
   checkIfVisible,
   waitAndTap,
   checkIfExists,
-  clearField,
   typeText,
-  checkIfElementHasString,
-  disableSynchronization,
-  authenticatePin,
-  enableSynchronization,
   swipe,
   checkIfNotVisible,
   delayTime,
+  importWalletFlow,
+  afterAllcleanApp,
 } from './helpers';
 
 const ios = device.getPlatform() === 'ios';
-const android = device.getPlatform() === 'android';
 
 describe('Discover Screen Flow', () => {
   beforeAll(async () => {
-    await device.reloadReactNative();
-    await cleanApp();
+    await beforeAllcleanApp({ hardhat: false });
   });
   afterAll(async () => {
-    await device.clearKeychain();
+    await afterAllcleanApp({ hardhat: false });
   });
-  it('Should show the welcome screen', async () => {
-    await checkIfVisible('welcome-screen');
-  });
-
-  it('Should show the "Add Wallet Sheet" after tapping on "I already have a wallet"', async () => {
-    await waitAndTap('already-have-wallet-button');
-    await checkIfExists('add-wallet-sheet');
-  });
-
-  it('show the "Import Sheet" when tapping on "Restore with a recovery phrase or private key"', async () => {
-    await waitAndTap('restore-with-key-button');
-    await checkIfExists('import-sheet');
-  });
-
-  it('Should show the "Add wallet modal" after tapping import with a valid seed"', async () => {
-    await clearField('import-sheet-input');
-    await typeText('import-sheet-input', process.env.TEST_SEEDS, false);
-    await checkIfElementHasString('import-sheet-button-label', 'Continue');
-    await waitAndTap('import-sheet-button');
-    await checkIfVisible('wallet-info-modal');
-  });
-
-  it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
-    await disableSynchronization();
-    await waitAndTap('wallet-info-submit-button');
-    if (android) {
-      await checkIfVisible('pin-authentication-screen');
-      // Set the pin
-      await authenticatePin('1234');
-      // Confirm it
-      await authenticatePin('1234');
-    }
-    await checkIfVisible('wallet-screen', 40000);
-    await enableSynchronization();
+  it('Should import wallet and go to wallet screen', async () => {
+    await importWalletFlow();
   });
 
   it('Should navigate to Discover screen after swiping left', async () => {
@@ -101,6 +64,7 @@ describe('Discover Screen Flow', () => {
 
   it('Should search and open expanded state for SOCKS', async () => {
     await typeText('discover-search-input', 'SOCKS\n', true);
+    await delayTime('very-long');
     await checkIfVisible('discover-currency-select-list-exchange-coin-row-SOCKS-mainnet');
     await checkIfNotVisible('discover-currency-select-list-exchange-coin-row-ETH-mainnet');
     await waitAndTap('discover-currency-select-list-exchange-coin-row-SOCKS-mainnet');
