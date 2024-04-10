@@ -46,7 +46,7 @@ interface BrowserContextType {
   goBack: () => void;
   goForward: () => void;
   loadProgress: SharedValue<number> | undefined;
-  newTabWorklet: () => void;
+  newTabWorklet: (url?: string) => void;
   onRefresh: () => void;
   searchInputRef: React.RefObject<TextInput | null>;
   searchViewProgress: SharedValue<number> | undefined;
@@ -74,6 +74,7 @@ interface TabOperation {
   type: TabOperationType;
   tabId: string;
   newActiveIndex: number | undefined;
+  url?: string;
 }
 
 export const RAINBOW_HOME = 'RAINBOW_HOME';
@@ -107,7 +108,7 @@ const DEFAULT_BROWSER_CONTEXT: BrowserContextType = {
   goForward: () => {
     return;
   },
-  newTabWorklet: () => {
+  newTabWorklet: (url?: string) => {
     return;
   },
   onRefresh: () => {
@@ -311,7 +312,7 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
               canGoBack: false,
               canGoForward: false,
               uniqueId: operation.tabId,
-              url: RAINBOW_HOME,
+              url: operation.url || RAINBOW_HOME,
             };
             newTabStates.push(newTab);
             shouldToggleTabView = true;
@@ -357,27 +358,30 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
     tabViewVisible,
   ]);
 
-  const newTabWorklet = useCallback(() => {
-    'worklet';
-    const tabIdsInStates = new Set(tabStates?.map(state => state.uniqueId));
-    const isNewTabOperationPending =
-      tabOperationQueue.value.some(operation => operation.type === 'newTab') ||
-      currentlyOpenTabIds.value.some(tabId => !tabIdsInStates.has(tabId));
+  const newTabWorklet = useCallback(
+    (url?: string) => {
+      'worklet';
+      const tabIdsInStates = new Set(tabStates?.map(state => state.uniqueId));
+      const isNewTabOperationPending =
+        tabOperationQueue.value.some(operation => operation.type === 'newTab') ||
+        currentlyOpenTabIds.value.some(tabId => !tabIdsInStates.has(tabId));
 
-    // The first check is mainly to guard against an edge case that happens when the new tab button is
-    // pressed just after the last tab is closed, but before a new blank tab has opened programatically,
-    // which results in two tabs being created when the user most certainly only wanted one.
-    if (!isNewTabOperationPending && (tabViewVisible.value || currentlyOpenTabIds.value.length === 0)) {
-      const tabIdForNewTab = generateUniqueIdWorklet();
-      const newActiveIndex = currentlyOpenTabIds.value.length - 1;
+      // The first check is mainly to guard against an edge case that happens when the new tab button is
+      // pressed just after the last tab is closed, but before a new blank tab has opened programatically,
+      // which results in two tabs being created when the user most certainly only wanted one.
+      if (url || (!isNewTabOperationPending && (tabViewVisible.value || currentlyOpenTabIds.value.length === 0))) {
+        const tabIdForNewTab = generateUniqueIdWorklet();
+        const newActiveIndex = currentlyOpenTabIds.value.length - 1;
 
-      currentlyOpenTabIds.modify(value => {
-        value.push(tabIdForNewTab);
-        return value;
-      });
-      requestTabOperationsWorklet({ type: 'newTab', tabId: tabIdForNewTab, newActiveIndex });
-    }
-  }, [currentlyOpenTabIds, requestTabOperationsWorklet, tabOperationQueue, tabStates, tabViewVisible]);
+        currentlyOpenTabIds.modify(value => {
+          value.push(tabIdForNewTab);
+          return value;
+        });
+        requestTabOperationsWorklet({ type: 'newTab', tabId: tabIdForNewTab, newActiveIndex, url });
+      }
+    },
+    [currentlyOpenTabIds, requestTabOperationsWorklet, tabOperationQueue, tabStates, tabViewVisible]
+  );
 
   const closeTabWorklet = useCallback(
     (tabId: string, tabIndex: number) => {
