@@ -44,7 +44,6 @@ const DappBrowserComponent = () => {
   const { scrollViewRef, tabStates, tabViewProgress, tabViewVisible, newTabWorklet, toggleTabViewWorklet, getActiveTabState } =
     useBrowserContext();
 
-
   const route = useRoute<RouteProp<RouteParams, 'DappBrowserParams'>>();
 
   useAnimatedReaction(
