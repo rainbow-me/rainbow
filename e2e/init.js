@@ -22,5 +22,10 @@ beforeAll(async () => {
     '.*api.coingecko.com.*',
     '.*rainbow.imgix.net.*',
     '.*infura.io.*',
+    '.*rainbow.me.*',
+    '.*rainbowjiumask.dataplane.rudderstack.com*',
+    '.*rainbowme-res.cloudinary.com*',
+    '.*rainbow-proxy-rpc.rainbowdotme.workers.*',
+    '.*localhost:8081/assets/src/assets*.',
   ]);
 });

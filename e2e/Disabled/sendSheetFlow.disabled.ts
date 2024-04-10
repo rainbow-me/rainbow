@@ -1,13 +1,11 @@
 import { device } from 'detox';
 import {
-  cleanApp,
   startHardhat,
   killHardhat,
   importWalletFlow,
   sendETHtoTestWallet,
   waitAndTap,
   checkIfVisible,
-  swipe,
   checkIfElementByTextIsVisible,
   typeText,
   checkIfNotVisible,
@@ -18,7 +16,6 @@ import {
 describe.skip('Send Sheet Interaction Flow', () => {
   beforeAll(async () => {
     await device.reloadReactNative();
-    await cleanApp();
     await startHardhat();
   });
   afterAll(async () => {
@@ -37,12 +34,6 @@ describe.skip('Send Sheet Interaction Flow', () => {
   it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
     await waitAndTap('dev-button-hardhat');
     await checkIfVisible('testnet-toast-Hardhat');
-  });
-
-  it.skip('Should show all wallet sections', async () => {
-    await swipe('wallet-screen', 'up');
-    await checkIfElementByTextIsVisible('Collectibles');
-    await swipe('wallet-screen', 'down', 'slow', 0.4);
   });
 
   it('Should open send sheet after tapping send button', async () => {
@@ -78,32 +69,32 @@ describe.skip('Send Sheet Interaction Flow', () => {
     await checkIfVisible('send-asset-list');
   });
 
-  it.skip('Should display Asset Form after tapping on asset', async () => {
+  it('Should display Asset Form after tapping on asset', async () => {
     await checkIfVisible('send-asset-DAI-mainnet');
     await waitAndTap('send-asset-DAI-mainnet');
     await checkIfVisible('selected-asset-field-input');
   });
 
-  it.skip('Should display max button on asset input focus', async () => {
+  it('Should display max button on asset input focus', async () => {
     await checkIfVisible('selected-asset-field-input');
     await waitAndTap('selected-asset-field-input');
     await checkIfElementByTextIsVisible('Max');
   });
 
-  it.skip('Should display max button on asset quantity input focus', async () => {
+  it('Should display max button on asset quantity input focus', async () => {
     await checkIfVisible('selected-asset-quantity-field-input');
     await waitAndTap('selected-asset-quantity-field-input');
     await checkIfElementByTextIsVisible('Max');
   });
 
-  it.skip('Should display Insufficient Funds button if exceeds asset balance', async () => {
+  it('Should display Insufficient Funds button if exceeds asset balance', async () => {
     await checkIfVisible('selected-asset-field-input');
     await waitAndTap('selected-asset-field-input');
     await typeText('selected-asset-field-input', '9999', false);
     await checkIfElementByTextIsVisible('Insufficient Funds');
   });
 
-  it.skip('Should prepend a 0 to quantity field on input of .', async () => {
+  it('Should prepend a 0 to quantity field on input of .', async () => {
     await waitAndTap('send-asset-form-DAI-mainnet');
     await waitAndTap('send-asset-DAI-mainnet');
     await checkIfVisible('selected-asset-quantity-field-input');
@@ -112,7 +103,7 @@ describe.skip('Send Sheet Interaction Flow', () => {
     await checkIfElementByTextIsVisible('0.');
   });
 
-  it.skip('Should only show a max of 2 decimals in quantity field', async () => {
+  it('Should only show a max of 2 decimals in quantity field', async () => {
     await waitAndTap('send-asset-form-DAI-mainnet');
     await waitAndTap('send-asset-ETH-mainnet');
     await checkIfVisible('selected-asset-quantity-field-input');
