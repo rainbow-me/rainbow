@@ -3,11 +3,11 @@ import { StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
 import { Network } from '@/networks/types';
 import { borders, fonts } from '@/styles';
 import { ThemeContextProps } from '@/theme';
-import { FallbackIcon as CoinIconTextFallback } from '@/utils';
 
 import { FastFallbackCoinIconImage } from '../asset-list/RecyclerAssetList2/FastComponents/FastFallbackCoinIconImage';
 import { FastChainBadge } from '../asset-list/RecyclerAssetList2/FastComponents/FastCoinBadge';
 import { TokenColors } from '@/graphql/__generated__/metadata';
+import FallbackIcon from './FallbackIcon';
 
 const fallbackTextStyles: TextStyle = {
   fontFamily: fonts.family.SFProRounded,
@@ -53,7 +53,7 @@ export default React.memo(function RainbowCoinIcon({
     <View style={sx.container}>
       <FastFallbackCoinIconImage network={network} icon={icon} shadowColor={shadowColor} symbol={symbol} theme={theme} size={size}>
         {() => (
-          <CoinIconTextFallback
+          <FallbackIcon
             color={fallbackIconColor}
             height={size}
             style={fallbackIconStyle(size)}

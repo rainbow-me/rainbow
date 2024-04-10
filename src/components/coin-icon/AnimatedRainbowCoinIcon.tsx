@@ -2,7 +2,6 @@ import React from 'react';
 import { Animated, StyleSheet, TextStyle } from 'react-native';
 import { borders, fonts } from '@/styles';
 import { ThemeContextProps } from '@/theme';
-import { FallbackIcon as CoinIconTextFallback } from '@/utils';
 
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { AnimatedCoinIconImage } from '../asset-list/RecyclerAssetList2/FastComponents/AnimatedCoinIconImage';
@@ -11,6 +10,7 @@ import { FASTER_IMAGE_CONFIG } from '../DappBrowser/constants';
 import { ImageOptions } from '@candlefinance/faster-image';
 import { AnimatedChainBadge } from '../asset-list/RecyclerAssetList2/FastComponents/AnimatedCoinBadge';
 import { ChainId } from '@/__swaps__/screens/Swap/types/chains';
+import AnimatedFallbackIcon from './AnimatedFallbackIcon';
 
 const fallbackTextStyles: TextStyle = {
   fontFamily: fonts.family.SFProRounded,
@@ -61,7 +61,7 @@ export default function AnimatedRainbowCoinIcon({
   });
 
   const fallbackIconColor = useDerivedValue(() => {
-    return colors?.value?.primary || colors?.value?.fallback || fallbackColor?.value;
+    return colors?.value?.primary || colors?.value?.fallback || fallbackColor?.value || '';
   });
 
   const shadowColor = useDerivedValue(() => {
@@ -78,11 +78,11 @@ export default function AnimatedRainbowCoinIcon({
     <Animated.View style={[sx.container, style]}>
       <AnimatedCoinIconImage source={source} shadowColor={shadowColor.value} symbol={tokenSymbol.value} theme={theme} size={size}>
         {() => (
-          <CoinIconTextFallback
+          <AnimatedFallbackIcon
             color={fallbackIconColor}
             height={size}
             style={fallbackIconStyle(size)}
-            symbol={tokenSymbol.value}
+            symbol={tokenSymbol}
             textStyles={fallbackTextStyles}
             width={size}
           />

@@ -7,9 +7,10 @@ import { Text } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import { borders } from '@/styles';
 import { ThemeContextProps } from '@/theme';
-import { FallbackIcon, initials } from '@/utils';
+import { initials } from '@/utils';
 import ShadowStack from '@/react-native-shadow-stack';
 import * as i18n from '@/languages';
+import FallbackIcon from '../coin-icon/FallbackIcon';
 
 type Props = {
   familyName: string;
@@ -80,12 +81,7 @@ export default React.memo(function TokenFamilyHeaderIcon({ familyImage, familyNa
   return (
     // @ts-expect-error ShadowStack is not migrated to TS.
     <ShadowStack {...circleStyle} backgroundColor={colors.white} shadows={shadows} style={style}>
-      {familyImage ? (
-        <ImgixImage size={30} source={source} style={circleStyle} />
-      ) : (
-        // @ts-expect-error FallbackIcon is not migrated to TS.
-        <FallbackIcon {...circleStyle} symbol={symbol} />
-      )}
+      {familyImage ? <ImgixImage size={30} source={source} style={circleStyle} /> : <FallbackIcon {...circleStyle} symbol={symbol} />}
     </ShadowStack>
   );
 });
