@@ -315,7 +315,7 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
               url: operation.newTabUrl || RAINBOW_HOME,
             };
             newTabStates.push(newTab);
-            shouldToggleTabView = true;
+            if (tabViewVisible?.value) shouldToggleTabView = true;
             newActiveIndex = indexForNewTab;
           } else {
             // ⚠️ TODO: Add logging here to report any time a new tab operation is given a nonexistent

@@ -42,7 +42,7 @@ const DappBrowserComponent = () => {
   const { isDarkMode } = useColorMode();
   const [injectedJS, setInjectedJS] = useState<string | ''>('');
 
-  const { scrollViewRef, tabStates, tabViewProgress, tabViewVisible, newTabWorklet, toggleTabViewWorklet } = useBrowserContext();
+  const { currentlyOpenTabIds, newTabWorklet, scrollViewRef, tabStates, tabViewProgress, tabViewVisible } = useBrowserContext();
 
   const route = useRoute<RouteProp<RouteParams, 'DappBrowserParams'>>();
 
@@ -51,7 +51,6 @@ const DappBrowserComponent = () => {
     (current, previous) => {
       if (current !== previous && route.params?.url) {
         newTabWorklet(current);
-        toggleTabViewWorklet();
       }
     },
     [newTabWorklet, route.params?.url]
