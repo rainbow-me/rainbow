@@ -662,7 +662,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
       if (shouldDismiss) {
         const xDestination = -Math.min(Math.max(deviceWidth, deviceWidth + Math.abs(e.velocityX * 0.2)), 1200);
         // Store the tab's index before modifying currentlyOpenTabIds, so we can pass it along to closeTabWorklet()
-        const storedTabIndex = currentlyOpenTabIds?.value.indexOf(tabId) ?? tabIndex;
+        const storedTabIndex = animatedTabIndex.value;
         // Remove the tab from currentlyOpenTabIds as soon as the swipe-to-close gesture is confirmed
         currentlyOpenTabIds?.modify(value => {
           const index = value.indexOf(tabId);
@@ -678,8 +678,8 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
           closeTabWorklet(tabId, storedTabIndex);
         });
 
-        // In the event the last or second-to-last tab is closed, we animate its Y position to align with the
-        // vertical center of the single remaining tab as this tab exits and the remaining tab scales up.
+        // In the event two tabs are open when this one is closed, we animate its Y position to align it
+        // vertically with the remaining tab as this tab exits and the remaining tab scales up.
         const isLastOrSecondToLastTabAndExiting =
           currentlyOpenTabIds?.value?.indexOf(tabId) === -1 && currentlyOpenTabIds.value.length === 1;
         if (isLastOrSecondToLastTabAndExiting) {
@@ -849,12 +849,13 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
               <WebViewBorder animatedTabIndex={animatedTabIndex} enabled={IS_IOS && isDarkMode && !isOnHomepage} />
               <CloseTabButton
                 animatedMultipleTabsOpen={animatedMultipleTabsOpen}
+                animatedTabIndex={animatedTabIndex}
+                gestureScale={gestureScale}
                 gestureX={gestureX}
                 gestureY={gestureY}
                 isOnHomepage={isOnHomepage}
                 multipleTabsOpen={multipleTabsOpen}
                 tabId={tabId}
-                tabIndex={tabIndex}
               />
             </Animated.View>
           </PanGestureHandler>
