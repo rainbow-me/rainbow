@@ -1,7 +1,7 @@
-import { ParsedAssetsDict, ParsedAssetsDictByChain, ParsedUserAsset, UniqueId } from '../../types/assets';
-import { ChainId } from '../../types/chains';
-import { deriveAddressAndChainWithUniqueId } from '../../utils/address';
-import { add } from '../../utils/numbers';
+import { ParsedAssetsDict, ParsedAssetsDictByChain, ParsedUserAsset, UniqueId } from '@/__swaps__/types/assets';
+import { ChainId } from '@/__swaps__/types/chains';
+import { deriveAddressAndChainWithUniqueId } from '@/__swaps__/utils/address';
+import { add } from '@/__swaps__/utils/numbers';
 
 // selectors
 export function selectUserAssetsList(assets: ParsedAssetsDictByChain) {

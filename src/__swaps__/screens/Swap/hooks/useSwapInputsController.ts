@@ -2,9 +2,9 @@ import { useCallback, useMemo, useRef } from 'react';
 import { SharedValue, runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
 
-import { ETH_COLOR, ETH_COLOR_DARK, SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '../constants';
-import { SWAP_FEE } from '../dummyValues';
-import { inputKeys, inputMethods } from '../types/swap';
+import { ETH_COLOR, ETH_COLOR_DARK, SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '@/__swaps__/screens/Swap/constants';
+import { SWAP_FEE } from '@/__swaps__/screens/Swap/dummyValues';
+import { inputKeys, inputMethods } from '@/__swaps__/types/swap';
 import {
   addCommasToNumber,
   clamp,
@@ -15,11 +15,11 @@ import {
   niceIncrementFormatter,
   trimTrailingZeros,
   valueBasedDecimalFormatter,
-} from '../utils/swaps';
-import { ChainId } from '../types/chains';
-import { ParsedSearchAsset } from '../types/assets';
+} from '@/__swaps__/utils/swaps';
+import { ChainId } from '@/__swaps__/types/chains';
+import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { useColorMode } from '@/design-system';
-import { isSameAssetWorklet } from '../utils/assets';
+import { isSameAssetWorklet } from '@/__swaps__/utils/assets';
 
 export function useSwapInputsController({
   focusedInput,

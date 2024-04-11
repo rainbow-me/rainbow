@@ -8,15 +8,15 @@ import BigNumber from 'bignumber.js';
 import { globalColors } from '@/design-system';
 
 import * as i18n from '@/languages';
-import { OVM_GAS_PRICE_ORACLE, gasUnits, supportedCurrencies } from '../references';
+import { OVM_GAS_PRICE_ORACLE, gasUnits, supportedNativeCurrencies, optimismGasOracleAbi, SupportedCurrencyKey } from '@/references';
 
-import { MeteorologyLegacyResponse, MeteorologyResponse } from './meteorology';
-import { ParsedAsset } from '../types/assets';
-import { ChainId } from '../types/chains';
-import { BlocksToConfirmation, GasFeeLegacyParams, GasFeeParam, GasFeeParams, GasSpeed } from '../types/gas';
+import { MeteorologyLegacyResponse, MeteorologyResponse } from '@/__swaps__/utils/meteorology';
+import { ParsedAsset } from '@/__swaps__/types/assets';
+import { ChainId } from '@/__swaps__/types/chains';
+import { BlocksToConfirmation, GasFeeLegacyParams, GasFeeParam, GasFeeParams, GasSpeed } from '@/__swaps__/types/gas';
 
-import { gweiToWei, weiToGwei } from './ethereum';
-import { addHexPrefix, convertStringToHex, toHex } from './hex';
+import { gweiToWei, weiToGwei } from '@/__swaps__/utils/ethereum';
+import { addHexPrefix, convertStringToHex, toHex } from '@/__swaps__/utils/hex';
 import {
   add,
   addBuffer,
@@ -27,9 +27,8 @@ import {
   greaterThan,
   lessThan,
   multiply,
-} from './numbers';
-import { getMinimalTimeUnitStringForMs } from './time';
-import { optimismGasOracleAbi, SupportedCurrencyKey, supportedNativeCurrencies } from '@/references';
+} from '@/__swaps__/utils/numbers';
+import { getMinimalTimeUnitStringForMs } from '@/__swaps__/utils/time';
 
 export const FLASHBOTS_MIN_TIP = 6;
 
@@ -145,7 +144,7 @@ export const parseCustomGasFeeParams = ({
 
   const feeAmount = add(maxBaseFee.amount, maxPriorityFeePerGas.amount);
   const totalWei = multiply(gasLimit, feeAmount);
-  const nativeTotalWei = convertRawAmountToBalance(totalWei, supportedCurrencies[nativeAsset?.symbol as SupportedCurrencyKey]).amount;
+  const nativeTotalWei = convertRawAmountToBalance(totalWei, supportedNativeCurrencies[nativeAsset?.symbol as SupportedCurrencyKey]).amount;
   const nativeDisplay = convertAmountAndPriceToNativeDisplayWithThreshold(nativeTotalWei || 0, nativeAsset?.price?.value || 0, currency);
   const gasFee = { amount: totalWei, display: nativeDisplay.display };
 
@@ -217,7 +216,7 @@ export const parseGasFeeParams = ({
 
   const feeAmount = add(maxBaseFee.amount, maxPriorityFeePerGas.amount);
   const totalWei = add(multiply(gasLimit, feeAmount), optimismL1SecurityFee || 0);
-  const nativeTotalWei = convertRawAmountToBalance(totalWei, supportedCurrencies[nativeAsset?.symbol as SupportedCurrencyKey]).amount;
+  const nativeTotalWei = convertRawAmountToBalance(totalWei, supportedNativeCurrencies[nativeAsset?.symbol as SupportedCurrencyKey]).amount;
   const nativeDisplay = nativeAsset?.price?.value
     ? convertAmountAndPriceToNativeDisplayWithThreshold(nativeTotalWei, nativeAsset?.price?.value, currency)
     : convertRawAmountToBalance(totalWei, {
@@ -271,7 +270,7 @@ export const parseGasFeeLegacyParams = ({
   const amount = gasPrice.amount;
   const totalWei = add(multiply(gasLimit, amount), optimismL1SecurityFee || 0);
 
-  const nativeTotalWei = convertRawAmountToBalance(totalWei, supportedCurrencies[nativeAsset?.symbol as SupportedCurrencyKey]).amount;
+  const nativeTotalWei = convertRawAmountToBalance(totalWei, supportedNativeCurrencies[nativeAsset?.symbol as SupportedCurrencyKey]).amount;
 
   const nativeDisplay = nativeAsset?.price?.value
     ? convertAmountAndPriceToNativeDisplayWithThreshold(nativeTotalWei, nativeAsset?.price?.value, currency)
@@ -442,7 +441,6 @@ export const meteorologySupportsChain = (chainId: ChainId) =>
   [
     ChainId.bsc,
     ChainId.sepolia,
-    ChainId.goerli,
     ChainId.holesky,
     ChainId.mainnet,
     ChainId.polygon,
@@ -453,16 +451,7 @@ export const meteorologySupportsChain = (chainId: ChainId) =>
   ].includes(chainId);
 
 export const meteorologySupportsType2ForChain = (chainId: ChainId) =>
-  [
-    ChainId.mainnet,
-    ChainId.sepolia,
-    ChainId.goerli,
-    ChainId.holesky,
-    ChainId.base,
-    ChainId.arbitrum,
-    ChainId.optimism,
-    ChainId.zora,
-  ].includes(chainId);
+  [ChainId.mainnet, ChainId.sepolia, ChainId.holesky, ChainId.base, ChainId.arbitrum, ChainId.optimism, ChainId.zora].includes(chainId);
 
 export const chainNeedsL1SecurityFee = (chainId: ChainId) => [ChainId.base, ChainId.optimism, ChainId.zora].includes(chainId);
 

@@ -1,15 +1,16 @@
 import React from 'react';
-import { useColorMode } from '@/design-system';
+import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import LinearGradient from 'react-native-linear-gradient';
-import { useDimensions } from '@/hooks';
-import { ETH_COLOR, ETH_COLOR_DARK } from '../constants';
-import { getTintedBackgroundColor } from '../utils/swaps';
-import { IS_ANDROID } from '@/env';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
+
+import { useColorMode } from '@/design-system';
+import { useDimensions } from '@/hooks';
+import { ETH_COLOR, ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
+import { getTintedBackgroundColor } from '@/__swaps__/utils/swaps';
+import { IS_ANDROID } from '@/env';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { safeAreaInsetValues } from '@/utils';
-import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
-import { useSwapContext } from '../providers/swap-provider';
+import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 

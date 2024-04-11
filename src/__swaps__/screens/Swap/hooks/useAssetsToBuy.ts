@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { useSearchCurrencyLists } from './useSearchCurrencyLists';
-import { useSwapContext } from '../providers/swap-provider';
+import { useSearchCurrencyLists } from '@/__swaps__/screens/Swap/hooks/useSearchCurrencyLists';
+import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 
 export const useAssetsToBuySections = () => {
   const { SwapInputController } = useSwapContext();

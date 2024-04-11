@@ -9,7 +9,7 @@ import { ToolbarIcon } from '../ToolbarIcon';
 import { IS_IOS } from '@/env';
 import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/screens/Swap/utils/swaps';
+import { opacity } from '@/__swaps__/utils/swaps';
 import { BrowserButtonShadows } from '../DappBrowserShadows';
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import font from '@/styles/fonts';
@@ -43,7 +43,7 @@ export const SearchInput = ({
   onChange,
 }: {
   inputRef: RefObject<TextInput>;
-  formattedInputValue: { value: string; tabIndex: number };
+  formattedInputValue: { url: string; tabIndex: number };
   inputValue: string | undefined;
   searchValue: string;
   isGoogleSearch: boolean;
@@ -71,9 +71,9 @@ export const SearchInput = ({
   const buttonColorAndroid = isDarkMode ? globalColors.blueGrey100 : globalColors.white100;
   const buttonColor = IS_IOS ? buttonColorIOS : buttonColorAndroid;
 
-  const formattedUrl = formattedInputValue?.value;
+  const formattedUrl = formattedInputValue?.url;
   const formattedUrlValue = useDerivedValue(() => {
-    return formattedInputValue?.tabIndex !== animatedActiveTabIndex?.value ? '' : formattedInputValue?.value;
+    return formattedInputValue?.tabIndex !== animatedActiveTabIndex?.value ? '' : formattedInputValue?.url;
   });
 
   const pointerEventsStyle = useAnimatedStyle(() => ({

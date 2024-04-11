@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { QueryConfig, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
-import { ChainId } from '../types/chains';
+import { ChainId } from '@/__swaps__/types/chains';
 import { rainbowMeteorologyGetData } from '@/handlers/gasFees';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 
