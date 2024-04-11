@@ -59,7 +59,7 @@ export const getDegenNetworkObject = (): NetworkProperties => {
       defaultSlippage: 200,
     },
 
-    nfts: {},
+    nfts: { simplehashNetwork: 'degen' },
 
     // design tings
     colors: {

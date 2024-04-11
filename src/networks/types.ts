@@ -72,7 +72,7 @@ export interface NetworkProperties extends Chain {
   };
 
   nfts: {
-    simplehashNetwork?: string;
+    simplehashNetwork: string | null;
   };
 
   // design tings

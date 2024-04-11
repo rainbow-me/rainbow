@@ -49,7 +49,6 @@ interface BrowserContextType {
   loadProgress: SharedValue<number> | undefined;
   newTabWorklet: (newTabUrl?: string) => void;
   onRefresh: () => void;
-  searchInputRef: React.RefObject<TextInput | null>;
   searchViewProgress: SharedValue<number> | undefined;
   scrollViewOffset: SharedValue<number> | undefined;
   scrollViewRef: AnimatedRef<Animated.ScrollView>;
@@ -117,7 +116,6 @@ const DEFAULT_BROWSER_CONTEXT: BrowserContextType = {
   onRefresh: () => {
     return;
   },
-  searchInputRef: { current: null },
   searchViewProgress: undefined,
   scrollViewOffset: undefined,
   // @ts-expect-error Explicitly allowing null/undefined on the AnimatedRef causes type issues
@@ -173,7 +171,6 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
     return tabStates[activeTabIndex];
   }, [activeTabIndex, tabStates]);
 
-  const searchInputRef = useRef<TextInput>(null);
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
   const activeTabRef = useRef<WebView | null>(null);
 
@@ -496,7 +493,6 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
         newTabWorklet,
         onRefresh,
         searchViewProgress,
-        searchInputRef,
         setActiveTabIndex,
         scrollViewOffset,
         scrollViewRef,
