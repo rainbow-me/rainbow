@@ -41,7 +41,7 @@ export const SearchInput = ({
   canGoForward,
 }: {
   inputRef: RefObject<TextInput>;
-  formattedInputValue: { value: string; tabIndex: number };
+  formattedInputValue: { url: string; tabIndex: number };
   inputValue: string | undefined;
   isGoogleSearch: boolean;
   isHome: boolean;
@@ -67,9 +67,9 @@ export const SearchInput = ({
   const buttonColorAndroid = isDarkMode ? globalColors.blueGrey100 : globalColors.white100;
   const buttonColor = IS_IOS ? buttonColorIOS : buttonColorAndroid;
 
-  const formattedUrl = formattedInputValue?.value;
+  const formattedUrl = formattedInputValue?.url;
   const formattedUrlValue = useDerivedValue(() => {
-    return formattedInputValue?.tabIndex !== animatedActiveTabIndex?.value ? '' : formattedInputValue?.value;
+    return formattedInputValue?.tabIndex !== animatedActiveTabIndex?.value ? '' : formattedInputValue?.url;
   });
 
   const pointerEventsStyle = useAnimatedStyle(() => ({

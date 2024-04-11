@@ -43,7 +43,7 @@ export const SearchBar = () => {
 
   const formattedInputValue = useMemo(() => {
     if (isHome) {
-      return { value: i18n.t(i18n.l.dapp_browser.address_bar.input_placeholder), tabIndex: activeTabIndex };
+      return { url: i18n.t(i18n.l.dapp_browser.address_bar.input_placeholder), tabIndex: activeTabIndex };
     }
 
     let formattedValue = '';
@@ -60,12 +60,12 @@ export const SearchBar = () => {
         formattedValue = url;
       }
     }
-    return { value: formattedValue, tabIndex: activeTabIndex };
+    return { url: formattedValue, tabIndex: activeTabIndex };
   }, [activeTabIndex, isGoogleSearch, isHome, url]);
 
   const urlWithoutTrailingSlash = url?.endsWith('/') ? url.slice(0, -1) : url;
   // eslint-disable-next-line no-nested-ternary
-  const inputValue = isHome ? undefined : isGoogleSearch ? formattedInputValue.value : urlWithoutTrailingSlash;
+  const inputValue = isHome ? undefined : isGoogleSearch ? formattedInputValue.url : urlWithoutTrailingSlash;
 
   const barStyle = useAnimatedStyle(() => {
     const progress = tabViewProgress?.value ?? 0;
