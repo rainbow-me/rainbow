@@ -1,12 +1,12 @@
 import React, { useMemo } from 'react';
 import { TextInput } from 'react-native';
+import Animated, { runOnUI, useAnimatedRef, useDerivedValue } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Input } from '@/components/inputs';
 import { AnimatedText, Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
-import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../constants';
-import { opacity } from '../utils/swaps';
-import Animated, { runOnUI, useAnimatedRef, useDerivedValue } from 'react-native-reanimated';
-import { useSwapContext } from '../providers/swap-provider';
+import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { opacity } from '@/__swaps__/utils/swaps';
+import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
 

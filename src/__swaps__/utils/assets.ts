@@ -12,21 +12,21 @@ import {
   UniqueId,
   ZerionAsset,
   ZerionAssetPrice,
-} from '@/__swaps__/screens/Swap/types/assets';
-import { ChainId, ChainName } from '@/__swaps__/screens/Swap/types/chains';
+} from '@/__swaps__/types/assets';
+import { ChainId, ChainName } from '@/__swaps__/types/chains';
 
 import * as i18n from '@/languages';
-import { SearchAsset } from '../types/search';
+import { SearchAsset } from '@/__swaps__/types/search';
 
-import { chainIdFromChainName, chainNameFromChainId, customChainIdsToAssetNames, isNativeAsset } from './chains';
+import { chainIdFromChainName, chainNameFromChainId, customChainIdsToAssetNames, isNativeAsset } from '@/__swaps__/utils/chains';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToBalanceDisplay,
   convertAmountToNativeDisplay,
   convertAmountToPercentageDisplay,
   convertRawAmountToDecimalFormat,
-} from './numbers';
-import { isLowerCaseMatch, isLowerCaseMatchWorklet } from './strings';
+} from '@/__swaps__/utils/numbers';
+import { isLowerCaseMatch, isLowerCaseMatchWorklet } from '@/__swaps__/utils/strings';
 
 export const isSameAsset = (a1: Pick<ParsedAsset, 'chainId' | 'address'>, a2: Pick<ParsedAsset, 'chainId' | 'address'>) =>
   +a1.chainId === +a2.chainId && isLowerCaseMatch(a1.address, a2.address);
@@ -159,6 +159,10 @@ export function parseAssetMetadata({
         relative_change_24h: asset.price.relativeChange24h,
         value: asset.price.value,
       },
+      bridging: {
+        bridgeable: false,
+        networks: {},
+      },
     } as AssetApiResponse,
   });
   const priceData = {
@@ -174,7 +178,7 @@ export function parseAssetMetadata({
     icon_url: asset?.iconUrl,
     isNativeAsset: isNativeAsset(address, chainId),
     mainnetAddress,
-    name: asset?.name || i18n.t('tokens_tab.unknown_token'),
+    name: asset?.name || i18n.t(i18n.l.tokens_tab.unknown_token),
     native: {
       price: getNativeAssetPrice({
         currency,

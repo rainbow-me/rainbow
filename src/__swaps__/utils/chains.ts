@@ -1,13 +1,11 @@
-import { AddressZero } from '@ethersproject/constants';
 import { celo, fantom, harmonyOne, moonbeam } from 'viem/chains';
+import { NATIVE_ASSETS_PER_CHAIN } from '@/references';
 
-import { ChainId, ChainName, ChainNameDisplay, chainIdToNameMapping, chainNameToIdMapping } from '@/__swaps__/screens/Swap/types/chains';
+import { ChainId, ChainName, ChainNameDisplay, chainIdToNameMapping, chainNameToIdMapping } from '@/__swaps__/types/chains';
 
-import { AddressOrEth } from '../types/assets';
+import { AddressOrEth } from '@/__swaps__/types/assets';
 
-import { isLowerCaseMatch } from './strings';
-import { ETH_ADDRESS } from '@/references';
-import { Address } from 'viem';
+import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -48,32 +46,6 @@ export const customChainIdsToAssetNames: Record<ChainId, string> = {
   534352: 'scroll',
   100: 'xdai',
   324: 'zksync',
-};
-
-export const NATIVE_ASSETS_PER_CHAIN: Record<ChainId, AddressOrEth> = {
-  [ChainId.mainnet]: ETH_ADDRESS as Address,
-  [ChainId.hardhat]: AddressZero as Address,
-  [ChainId.goerli]: AddressZero as Address,
-  [ChainId.sepolia]: AddressZero as Address,
-  [ChainId.holesky]: AddressZero as Address,
-  [ChainId.arbitrum]: AddressZero as Address,
-  [ChainId.arbitrumGoerli]: AddressZero as Address,
-  [ChainId.arbitrumSepolia]: AddressZero as Address,
-  [ChainId.bsc]: AddressZero as Address,
-  [ChainId.bscTestnet]: AddressZero as Address,
-  [ChainId.optimism]: AddressZero as Address,
-  [ChainId.hardhatOptimism]: AddressZero as Address,
-  [ChainId.optimismSepolia]: AddressZero as Address,
-  [ChainId.rari]: AddressZero as Address,
-  [ChainId.base]: AddressZero as Address,
-  [ChainId.baseSepolia]: AddressZero as Address,
-  [ChainId.zora]: AddressZero as Address,
-  [ChainId.zoraSepolia]: AddressZero as Address,
-  [ChainId.polygon]: AddressZero as Address,
-  [ChainId.polygonMumbai]: AddressZero as Address,
-  [ChainId.avalanche]: AddressZero as Address,
-  [ChainId.avalancheFuji]: AddressZero as Address,
-  [ChainId.blast]: AddressZero as Address,
 };
 
 export const getChainName = ({ chainId }: { chainId: number }) => {
@@ -139,8 +111,6 @@ export const deriveChainIdByHostname = (hostname: string) => {
   switch (hostname) {
     case 'etherscan.io':
       return ChainId.mainnet;
-    case 'goerli.etherscan.io':
-      return ChainId.goerli;
     case 'arbiscan.io':
       return ChainId.arbitrum;
     case 'explorer-mumbai.maticvigil.com':

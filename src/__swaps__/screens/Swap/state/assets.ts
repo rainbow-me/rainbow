@@ -1,8 +1,8 @@
-import { createStore } from '@/state/internal/createStore';
 import { useStore } from 'zustand';
-import { ParsedSearchAsset } from '../types/assets';
-import { ChainId } from '@/__swaps__/screens/Swap/types/chains';
-import { SortMethod } from '../types/swap';
+import { createStore } from '@/state/internal/createStore';
+import { ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { ChainId } from '@/__swaps__/types/chains';
+import { SortMethod } from '@/__swaps__/types/swap';
 
 export interface SwapAssetState {
   assetToSell: ParsedSearchAsset | null;

@@ -1,10 +1,16 @@
 import { SharedValue, interpolate, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
-
-import { BASE_INPUT_HEIGHT, EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT, THICK_BORDER_WIDTH, fadeConfig, springConfig } from '../constants';
-import { opacityWorklet } from '../utils/swaps';
-import { useSwapInputsController } from './useSwapInputsController';
-import { spinnerExitConfig } from '@/__swaps__/components/animations/AnimatedSpinner';
 import { useColorMode } from '@/design-system';
+import {
+  BASE_INPUT_HEIGHT,
+  EXPANDED_INPUT_HEIGHT,
+  FOCUSED_INPUT_HEIGHT,
+  THICK_BORDER_WIDTH,
+  fadeConfig,
+  springConfig,
+} from '@/__swaps__/screens/Swap/constants';
+import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
+import { spinnerExitConfig } from '@/__swaps__/components/animations/AnimatedSpinner';
 
 export function useAnimatedSwapStyles({
   SwapInputController,
