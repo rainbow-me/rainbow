@@ -4,6 +4,20 @@ import { device } from 'detox';
 
 require('dotenv').config({ path: '.env' });
 
+export const blacklist = [
+  '.*api.thegraph.com.*',
+  '.*raw.githubusercontent.com.*',
+  '.*api.coingecko.com.*',
+  '.*rainbow.imgix.net.*',
+  '.*infura.io.*',
+  '.*rainbow.me.*',
+  '.*rainbowjiumask.dataplane.rudderstack.com*',
+  '.*rainbowme-res.cloudinary.com*',
+  '.*rainbow-proxy-rpc.rainbowdotme.workers.*',
+  '.*localhost:8081/assets/src/assets*.',
+  '.*wcpush.p.rainbow.me/clients*',
+];
+
 beforeAll(async () => {
   if (device.getPlatform() === 'android') {
     // connecting to metro
@@ -16,16 +30,5 @@ beforeAll(async () => {
   }
   await device.clearKeychain();
   await device.launchApp({ newInstance: true, delete: true });
-  await device.setURLBlacklist([
-    '.*api.thegraph.com.*',
-    '.*raw.githubusercontent.com.*',
-    '.*api.coingecko.com.*',
-    '.*rainbow.imgix.net.*',
-    '.*infura.io.*',
-    '.*rainbow.me.*',
-    '.*rainbowjiumask.dataplane.rudderstack.com*',
-    '.*rainbowme-res.cloudinary.com*',
-    '.*rainbow-proxy-rpc.rainbowdotme.workers.*',
-    '.*localhost:8081/assets/src/assets*.',
-  ]);
+  await device.setURLBlacklist(blacklist);
 });
