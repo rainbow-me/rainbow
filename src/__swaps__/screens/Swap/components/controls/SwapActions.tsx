@@ -8,7 +8,7 @@ import { SwapActionButton } from '../../components/SwapActionButton';
 import { GasButton } from '../../components/GasButton';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../../constants';
 import { IS_ANDROID } from '@/env';
-import { useSwapContext } from '../../providers/swap-provider';
+import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import Animated from 'react-native-reanimated';
 
 export function SwapActions() {

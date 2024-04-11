@@ -1,15 +1,14 @@
 import { device } from 'detox';
-import { cleanApp, checkIfVisible, waitAndTap, authenticatePin, delayTime } from './helpers';
+import { beforeAllcleanApp, checkIfVisible, waitAndTap, authenticatePin, delayTime, afterAllcleanApp } from './helpers';
 
 const android = device.getPlatform() === 'android';
 
 describe('New Wallet flow', () => {
   beforeAll(async () => {
-    await device.reloadReactNative();
-    await cleanApp();
+    await beforeAllcleanApp({ hardhat: false });
   });
   afterAll(async () => {
-    await device.clearKeychain();
+    await afterAllcleanApp({ hardhat: false });
   });
 
   it('should show the welcome screen', async () => {

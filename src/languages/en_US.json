@@ -2185,6 +2185,9 @@
       "copied": "Copied \"%{copiedText}\"",
       "invalid_paste": "You can't paste that here"
     },
+    "tokens_tab": {
+      "unknown_token": "Unknown Token"
+    },
     "hardware_wallets": {
       "pair_your_nano": "Pair your Nano X",
       "connect_your_ledger": "Connect your Ledger Nano X to Rainbow through Bluetooth. If this is your first time, Rainbow will ask for Bluetooth access.",

@@ -452,6 +452,10 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
   useLayoutEffect(() => {
     if (webViewRef.current !== null && isActiveTab) {
       activeTabRef.current = webViewRef.current;
+      if (title.current) {
+        // @ts-expect-error
+        activeTabRef.current.title = title.current;
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTabRef, isActiveTab, isOnHomepage, tabId]);

@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import Animated, { SharedValue, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { Box, Cover, globalColors } from '@/design-system';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/screens/Swap/utils/swaps';
+import { opacity } from '@/__swaps__/utils/swaps';
 import { useBrowserContext } from './BrowserContext';
 import { WEBVIEW_HEIGHT } from './Dimensions';
 

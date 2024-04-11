@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useCallback, useRef, useEffect, ReactNode } from 'react';
-import { InteractionManager, Keyboard } from 'react-native';
+import { InteractionManager } from 'react-native';
 import { ButtonPressAnimation } from '@/components/animations';
 import { AnimatedText, Inline, Stack, Text, TextIcon } from '@/design-system';
 import { useGasStore } from '@/state/gas/gasStore';
@@ -11,7 +11,7 @@ import { useRoute } from '@react-navigation/native';
 import { useAccountSettings, useColorForAsset } from '@/hooks';
 import { ContextMenu } from '@/components/context-menu';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { isNil, isEmpty, add } from 'lodash';
+import { isEmpty } from 'lodash';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils, gasUtils } from '@/utils';
@@ -19,11 +19,9 @@ import styled from '@/styled-thing';
 import { useMeteorology } from '@/__swaps__/utils/meteorology';
 import { parseGasFeeParamsBySpeed } from '@/__swaps__/utils/gasUtils';
 import { useDerivedValue } from 'react-native-reanimated';
-import { capitalize } from '../utils/strings';
 import { ParsedAddressAsset } from '@/entities';
 import { GasFeeLegacyParamsBySpeed, GasFeeParamsBySpeed, GasSpeed } from '@/__swaps__/types/gas';
 import { ParsedAsset } from '@/__swaps__/types/assets';
-import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 const { GasSpeedOrder, CUSTOM, GAS_ICONS, GAS_EMOJIS, getGasLabel, getGasFallback } = gasUtils;
 const mockedGasLimit = '21000';
 

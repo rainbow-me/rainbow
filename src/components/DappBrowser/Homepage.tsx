@@ -2,7 +2,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { Page } from '@/components/layout';
 import { Bleed, Box, ColorModeProvider, Cover, Inline, Inset, Stack, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
 import { deviceUtils } from '@/utils';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { ScrollView, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { BlurView } from '@react-native-community/blur';
@@ -10,7 +10,7 @@ import { ImgixImage } from '@/components/images';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { IS_IOS } from '@/env';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/screens/Swap/utils/swaps';
+import { opacity } from '@/__swaps__/utils/swaps';
 import { Site } from '@/state/browserState';
 import { useFavoriteDappsStore } from '@/state/favoriteDapps';
 import { TrendingSite, trendingDapps } from '@/resources/trendingDapps/trendingDapps';
@@ -19,6 +19,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import { useBrowserContext } from './BrowserContext';
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { isEmpty } from 'lodash';
+import { normalizeUrl } from './utils';
 
 const HORIZONTAL_PAGE_INSET = 24;
 
@@ -34,6 +35,7 @@ const CARD_SIZE = (deviceUtils.dimensions.width - HORIZONTAL_PAGE_INSET * 2 - (N
 
 const Card = ({ site, showMenuButton }: { showMenuButton?: boolean; site: TrendingSite }) => {
   const { isDarkMode } = useColorMode();
+  const { updateActiveTabState } = useBrowserContext();
 
   const menuConfig = {
     menuTitle: '',
@@ -58,7 +60,7 @@ const Card = ({ site, showMenuButton }: { showMenuButton?: boolean; site: Trendi
   };
 
   return (
-    <ButtonPressAnimation overflowMargin={100} scaleTo={0.9}>
+    <GestureHandlerV1Button onPressJS={() => updateActiveTabState({ url: normalizeUrl(site.url) })} scaleTo={0.9}>
       <Box
         background="surfacePrimary"
         borderRadius={24}
@@ -169,13 +171,12 @@ const Card = ({ site, showMenuButton }: { showMenuButton?: boolean; site: Trendi
               borderColor: isDarkMode ? opacity(globalColors.white100, 0.1) : opacity(globalColors.grey100, 0.12),
               borderWidth: THICK_BORDER_WIDTH,
               overflow: 'hidden',
-              pointerEvents: 'none',
             }}
             width="full"
           />
         )}
       </Box>
-    </ButtonPressAnimation>
+    </GestureHandlerV1Button>
   );
 };
 
@@ -185,7 +186,7 @@ const Logo = ({ site }: { site: Omit<Site, 'timestamp'> }) => {
 
   return (
     <View style={{ width: LOGO_SIZE }}>
-      <GestureHandlerV1Button onPressJS={() => updateActiveTabState({ url: site.url })}>
+      <GestureHandlerV1Button onPressJS={() => updateActiveTabState({ url: normalizeUrl(site.url) })}>
         <Stack alignHorizontal="center">
           <Box>
             {IS_IOS && !isEmpty(site.image) && (

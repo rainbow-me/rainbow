@@ -21,6 +21,16 @@ export function isValidURL(url: string): boolean {
   return urlPattern.test(urlForValidation);
 }
 
+export const normalizeUrl = (url: string): string => {
+  if (!url) {
+    return '';
+  }
+  if (!url.startsWith(HTTP) && !url.startsWith(HTTPS)) {
+    return HTTPS + url;
+  }
+  return url;
+};
+
 export const generateUniqueId = (): string => {
   const timestamp = Date.now().toString(36);
   const randomString = Math.random().toString(36).slice(2, 7);
