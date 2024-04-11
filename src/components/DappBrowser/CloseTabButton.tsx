@@ -27,34 +27,36 @@ const SCALE_ADJUSTED_X_BUTTON_PADDING_SINGLE_TAB = X_BUTTON_PADDING * SINGLE_TAB
 
 export const CloseTabButton = ({
   animatedMultipleTabsOpen,
+  animatedTabIndex,
+  gestureScale,
   gestureX,
   gestureY,
   isOnHomepage,
   multipleTabsOpen,
   tabId,
-  tabIndex,
 }: {
   animatedMultipleTabsOpen: SharedValue<number>;
+  animatedTabIndex: SharedValue<number>;
+  gestureScale: SharedValue<number>;
   gestureX: SharedValue<number>;
   gestureY: SharedValue<number>;
   isOnHomepage: boolean;
   multipleTabsOpen: SharedValue<boolean>;
   tabId: string;
-  tabIndex: number;
 }) => {
   const { animatedActiveTabIndex, closeTabWorklet, currentlyOpenTabIds, tabViewProgress, tabViewVisible } = useBrowserContext();
   const { isDarkMode } = useColorMode();
 
   const closeButtonStyle = useAnimatedStyle(() => {
     const progress = tabViewProgress?.value || 0;
-    const rawAnimatedTabIndex = currentlyOpenTabIds?.value.indexOf(tabId);
-    const animatedTabIndex = rawAnimatedTabIndex === -1 ? tabIndex : rawAnimatedTabIndex ?? tabIndex;
-    const animatedIsActiveTab = animatedActiveTabIndex?.value === animatedTabIndex;
+    const animatedIsActiveTab = animatedActiveTabIndex?.value === animatedTabIndex.value;
+
     // Switch to using progress-based interpolation when the tab view is
     // entered. This is mainly to avoid showing the close button in the
     // active tab until the tab view animation is near complete.
     const interpolatedOpacity = interpolate(progress, [0, 80, 100], [animatedIsActiveTab ? 0 : 1, animatedIsActiveTab ? 0 : 1, 1]);
     const opacity = tabViewVisible?.value || !animatedIsActiveTab ? interpolatedOpacity : withTiming(0, TIMING_CONFIGS.fastFadeConfig);
+
     return { opacity };
   });
 
@@ -67,12 +69,12 @@ export const CloseTabButton = ({
     const pointerEvents = tabViewVisible?.value && !isEmptyState ? 'auto' : 'none';
 
     return {
-      height: buttonSize,
+      height: buttonSize + buttonPadding * 2,
       opacity,
       pointerEvents,
-      right: buttonPadding,
-      top: buttonPadding,
-      width: buttonSize,
+      right: 0,
+      top: 0,
+      width: buttonSize + buttonPadding * 2,
     };
   });
 
@@ -92,12 +94,14 @@ export const CloseTabButton = ({
 
   const closeTab = useCallback(() => {
     'worklet';
-    const storedTabIndex = currentlyOpenTabIds?.value.indexOf(tabId) ?? tabIndex;
+    // Store the tab's index before modifying currentlyOpenTabIds, so we can pass it along to closeTabWorklet()
+    const storedTabIndex = animatedTabIndex.value;
 
     const isOnlyOneTabOpen = (currentlyOpenTabIds?.value.length || 0) === 1;
     const isTabInLeftColumn = storedTabIndex % 2 === 0 && !isOnlyOneTabOpen;
     const xDestination = isTabInLeftColumn ? -deviceUtils.dimensions.width / 1.5 : -deviceUtils.dimensions.width;
 
+    // Remove the tab from currentlyOpenTabIds as soon as the tab close is initiated
     currentlyOpenTabIds?.modify(value => {
       const index = value.indexOf(tabId);
       if (index !== -1) {
@@ -105,24 +109,32 @@ export const CloseTabButton = ({
       }
       return value;
     });
+
     gestureX.value = withTiming(xDestination, TIMING_CONFIGS.tabPressConfig, () => {
+      // Ensure the tab remains hidden after being swiped off screen (until the tab is destroyed)
+      gestureScale.value = 0;
       // Because the animation is complete we know the tab is off screen and can be safely destroyed
       closeTabWorklet(tabId, storedTabIndex);
     });
 
-    // In the event the last or second-to-last tab is closed, we animate its Y position to align with the
-    // vertical center of the single remaining tab as this tab exits and the remaining tab scales up.
+    // In the event two tabs are open when this one is closed, we animate its Y position to align it
+    // vertically with the remaining tab as this tab exits and the remaining tab scales up.
     const isLastOrSecondToLastTabAndExiting = currentlyOpenTabIds?.value?.indexOf(tabId) === -1 && currentlyOpenTabIds.value.length === 1;
     if (isLastOrSecondToLastTabAndExiting) {
       const existingYTranslation = gestureY.value;
       const scaleDiff = 0.7 - TAB_VIEW_COLUMN_WIDTH / deviceUtils.dimensions.width;
       gestureY.value = withTiming(existingYTranslation + scaleDiff * COLLAPSED_WEBVIEW_HEIGHT_UNSCALED, TIMING_CONFIGS.tabPressConfig);
     }
-  }, [closeTabWorklet, currentlyOpenTabIds, gestureX, gestureY, tabId, tabIndex]);
+  }, [animatedTabIndex, closeTabWorklet, currentlyOpenTabIds, gestureScale, gestureX, gestureY, tabId]);
 
   return (
     <Animated.View style={[styles.containerStyle, containerStyle]}>
-      <GestureHandlerV1Button disableButtonPressWrapper onPressWorklet={closeTab} pointerEvents="auto">
+      <GestureHandlerV1Button
+        disableButtonPressWrapper
+        onPressWorklet={closeTab}
+        pointerEvents="auto"
+        style={styles.buttonPressWrapperStyle}
+      >
         <Box as={Animated.View} position="absolute" style={singleTabStyle}>
           {IS_IOS ? (
             <Box
@@ -205,6 +217,12 @@ const XIcon = ({ buttonSize, multipleTabsOpen }: { buttonSize: number; multipleT
 };
 
 const styles = StyleSheet.create({
+  buttonPressWrapperStyle: {
+    alignItems: 'center',
+    height: '100%',
+    justifyContent: 'center',
+    width: '100%',
+  },
   closeButtonStyle: {
     alignItems: 'center',
     justifyContent: 'center',

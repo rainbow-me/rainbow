@@ -15,8 +15,8 @@ import { IS_IOS } from '@/env';
 import { useKeyboardHeight, useDimensions } from '@/hooks';
 import * as i18n from '@/languages';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
-import { RAINBOW_HOME, useBrowserContext } from '../BrowserContext';
-import { GOOGLE_SEARCH_URL, HTTP, HTTPS } from '../constants';
+import { useBrowserContext } from '../BrowserContext';
+import { GOOGLE_SEARCH_URL, HTTP, HTTPS, RAINBOW_HOME } from '../constants';
 import { AccountIcon } from '../search-input/AccountIcon';
 import { SearchInput } from '../search-input/SearchInput';
 import { TabButton } from '../search-input/TabButton';
@@ -43,7 +43,7 @@ export const SearchBar = () => {
 
   const formattedInputValue = useMemo(() => {
     if (isHome) {
-      return { value: i18n.t(i18n.l.dapp_browser.address_bar.input_placeholder), tabIndex: activeTabIndex };
+      return { url: i18n.t(i18n.l.dapp_browser.address_bar.input_placeholder), tabIndex: activeTabIndex };
     }
 
     let formattedValue = '';
@@ -60,12 +60,12 @@ export const SearchBar = () => {
         formattedValue = url;
       }
     }
-    return { value: formattedValue, tabIndex: activeTabIndex };
+    return { url: formattedValue, tabIndex: activeTabIndex };
   }, [activeTabIndex, isGoogleSearch, isHome, url]);
 
   const urlWithoutTrailingSlash = url?.endsWith('/') ? url.slice(0, -1) : url;
   // eslint-disable-next-line no-nested-ternary
-  const inputValue = isHome ? undefined : isGoogleSearch ? formattedInputValue.value : urlWithoutTrailingSlash;
+  const inputValue = isHome ? undefined : isGoogleSearch ? formattedInputValue.url : urlWithoutTrailingSlash;
 
   const barStyle = useAnimatedStyle(() => {
     const progress = tabViewProgress?.value ?? 0;
@@ -156,7 +156,7 @@ export const SearchBar = () => {
         style={[{ alignItems: 'center', flexDirection: 'row', justifyContent: 'center' }, barStyle]}
         width="full"
       >
-        <Box as={Animated.View} position="absolute" style={[accountIconStyle, { left: 16 }]}>
+        <Box as={Animated.View} position="absolute" style={[accountIconStyle, { left: 24 }]}>
           <AccountIcon />
         </Box>
 
