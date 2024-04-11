@@ -13,7 +13,7 @@ import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/screens/Swap/utils/swaps';
 import { Site } from '@/state/browserState';
 import { useFavoriteDappsStore } from '@/state/favoriteDapps';
-import { TrendingSite, trendingDapps } from '@/resources/trendingDapps/trendingDapps';
+import { TrendingSite, recentDapps, trendingDapps } from '@/resources/trendingDapps/trendingDapps';
 import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { useBrowserContext } from './BrowserContext';
@@ -335,7 +335,7 @@ export default function Homepage() {
               </Text>
             </Inline>
             <Inline space={{ custom: CARD_PADDING }}>
-              {[trendingDapps[trendingDapps.length - 4], trendingDapps[trendingDapps.length - 2]].map(site => (
+              {recentDapps.map(site => (
                 <Card key={site.url} site={site} showMenuButton />
               ))}
             </Inline>

@@ -19,6 +19,12 @@ export const trendingDapps: TrendingSite[] = [
     screenshot: 'https://rainbowme-res.cloudinary.com/image/upload/v1694735726/dapps/Party.app.png',
   },
   {
+    name: 'OpenSea',
+    url: 'opensea.io',
+    image: 'https://pbs.twimg.com/profile_images/1760855147662458880/COJ9xiFz_400x400.png',
+    screenshot: 'https://pbs.twimg.com/profile_banners/946213559213555712/1708655559/1500x500',
+  },
+  {
     name: 'BasePaint',
     url: 'basepaint.xyz',
     image: 'https://pbs.twimg.com/profile_images/1704878803611447296/6HniqSfx_400x400.jpg',
@@ -42,10 +48,31 @@ export const trendingDapps: TrendingSite[] = [
     image: 'https://rainbowme-res.cloudinary.com/image/upload/v1694734011/dapps/mirror.xyz.jpg',
     screenshot: 'https://rainbowme-res.cloudinary.com/image/upload/v1694734011/dapps/mirror.xyz.jpg',
   },
+];
+
+export const recentDapps: TrendingSite[] = [
   {
-    name: 'Opensea',
-    url: 'opensea.io',
-    image: 'https://rainbowme-res.cloudinary.com/image/upload/v1688068601/dapps/ingested_opensea.io.png',
-    screenshot: 'https://rainbowme-res.cloudinary.com/image/upload/v1688068601/dapps/ingested_opensea.io.png',
+    name: 'BasePaint',
+    url: 'basepaint.xyz',
+    image: 'https://pbs.twimg.com/profile_images/1704878803611447296/6HniqSfx_400x400.jpg',
+    screenshot: 'https://i.seadn.io/s/raw/files/7c38b0c9b5903d08817102466e9fff27.png?auto=format&dpr=1&w=600',
+  },
+  {
+    name: 'Blur',
+    url: 'blur.io',
+    image: 'https://pbs.twimg.com/profile_images/1518705644450291713/X2FLVDdn_400x400.jpg',
+    screenshot: 'https://pbs.twimg.com/profile_banners/1481340056426143744/1646076761/1500x500',
+  },
+  {
+    name: 'Uniswap',
+    url: 'app.uniswap.org',
+    image: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/dapps/uniswap.org.png',
+    screenshot: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/dapps/uniswap.org.png',
+  },
+  {
+    name: 'Mirror',
+    url: 'mirror.xyz',
+    image: 'https://rainbowme-res.cloudinary.com/image/upload/v1694734011/dapps/mirror.xyz.jpg',
+    screenshot: 'https://rainbowme-res.cloudinary.com/image/upload/v1694734011/dapps/mirror.xyz.jpg',
   },
 ];
