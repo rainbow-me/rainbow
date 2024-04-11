@@ -22,8 +22,8 @@ const sortBy = (by: SortMethod) => {
 export const useAssetsToSell = () => {
   const { SwapInputController } = useSwapContext();
   const { accountAddress: currentAddress, nativeCurrency: currentCurrency } = useAccountSettings();
-  // const { sortMethod } = useSwapAssetStore();
 
+  // TODO: Actually implement sortMethod here
   const sortMethod = useSharedValue(SortMethod.token);
 
   const [currentAssets, setCurrentAssets] = useState<ParsedSearchAsset[]>([]);

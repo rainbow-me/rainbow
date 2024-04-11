@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import { SharedValue, runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
 
@@ -312,12 +312,10 @@ export function useSwapInputsController({
       if (setStale) isQuoteStale.value = 1;
       isFetching.value = true;
 
-      const amount = percentage * Number(assetToSell.value?.balance.amount);
-      spinnerTimer.current = setTimeout(() => {
-        animationFrameId.current = requestAnimationFrame(async () => {
-          await handleInputAmountLogic(amount);
-        });
-      }, 600);
+      animationFrameId.current = requestAnimationFrame(async () => {
+        const amount = percentage * Number(assetToSell.value?.balance.amount);
+        await handleInputAmountLogic(amount);
+      });
     } else {
       isFetching.value = false;
       isQuoteStale.value = 0;
@@ -588,6 +586,8 @@ export function useSwapInputsController({
     const updateData = await fetchAndUpdateQuote(amount, true);
     const updatedSliderPosition = clampJS((amount / Number(assetToSell.value?.balance.amount)) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
 
+    console.log(JSON.stringify(updateData, null, 2));
+
     if (updateData) {
       runOnUI(updateQuoteWorklet)({ ...updateData, updatedSliderPosition, isInputAmount: true });
     }
@@ -694,11 +694,6 @@ export function useSwapInputsController({
       initialNativeValue = initialAmount * assetToSell.value.price.value;
     }
 
-    console.log({
-      initialAmount,
-      initialNativeValue,
-    });
-
     inputValues.modify(values => {
       return {
         ...values,
@@ -738,17 +733,9 @@ export function useSwapInputsController({
         isFetching.value = true;
         isQuoteStale.value = 1;
 
-        console.log({
-          inputAmount,
-          inputValues: inputValues.value,
-          assetToSellPrice: assetToSellPrice.value,
+        animationFrameId.current = requestAnimationFrame(async () => {
+          await handleInputAmountLogic(inputAmount);
         });
-
-        spinnerTimer.current = setTimeout(() => {
-          animationFrameId.current = requestAnimationFrame(async () => {
-            await handleInputAmountLogic(inputAmount);
-          });
-        }, 600);
       }
     }
   };
@@ -767,9 +754,13 @@ export function useSwapInputsController({
         assetToBuy.value = prevAssetToSell;
         assetToBuyPrice.value = prevAssetToSellPrice;
         outputChainId.value = prevAssetToSell.chainId;
+        inputValues.value.outputAmount = 0;
+        inputValues.value.outputNativeValue = 0;
       } else {
         assetToBuy.value = null;
         assetToBuyPrice.value = 0;
+        inputValues.value.outputAmount = 0;
+        inputValues.value.outputNativeValue = 0;
       }
 
       if (prevAssetToBuy) {
@@ -788,7 +779,16 @@ export function useSwapInputsController({
         handleOutputPress();
       }
 
-      // TODO: Trigger a refetc
+      const inputAmount = Number(inputValues.value.inputAmount);
+      if (inputAmount > 0) {
+        isFetching.value = true;
+        isQuoteStale.value = 1;
+
+        // TODO: This doesn't work quite right...
+        animationFrameId.current = requestAnimationFrame(async () => {
+          runOnJS(handleInputAmountLogic)(inputAmount);
+        });
+      }
     };
 
     runOnUI(swapValues)();
