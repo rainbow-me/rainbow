@@ -156,7 +156,7 @@ export const SearchBar = () => {
         style={[{ alignItems: 'center', flexDirection: 'row', justifyContent: 'center' }, barStyle]}
         width="full"
       >
-        <Box as={Animated.View} position="absolute" style={[accountIconStyle, { left: 16 }]}>
+        <Box as={Animated.View} position="absolute" style={[accountIconStyle, { left: 24 }]}>
           <AccountIcon />
         </Box>
 
