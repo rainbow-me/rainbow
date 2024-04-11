@@ -13,6 +13,7 @@ import {
 import Animated, {
   FadeIn,
   convertToRGBA,
+  dispatchCommand,
   interpolate,
   isColor,
   runOnJS,
@@ -27,7 +28,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import ViewShot from 'react-native-view-shot';
 import WebView, { WebViewMessageEvent, WebViewNavigation } from 'react-native-webview';
-import { deviceUtils } from '@/utils';
+import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { MMKV } from 'react-native-mmkv';
 import { TabState, useBrowserContext } from './BrowserContext';
 import { Freeze } from 'react-freeze';
@@ -709,25 +710,64 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
 
       // Note: Using the JS-side isActiveTab because this should be in sync with the WebView freeze state,
       // which is driven by isActiveTab. This should allow screenshots slightly more time to capture.
-      if (isActiveTab && changesDetected && !isOnHomepage && !isTabBeingClosed) {
+      if (isActiveTab && changesDetected && !isTabBeingClosed) {
         // ⚠️ TODO: Need to rewrite the enterTabViewAnimationIsComplete condition, because it assumes the
         // tab animation will overshoot and rebound. If the animation config is changed, it's possible the
         // screenshot condition won't be met.
         const enterTabViewAnimationIsComplete = tabViewVisible?.value === true && (previous || 0) > 100 && (current || 0) <= 100;
         const isPageLoaded = (loadProgress?.value || 0) > 0.2;
 
-        if (!enterTabViewAnimationIsComplete || !isPageLoaded) return;
+        if (enterTabViewAnimationIsComplete && isPageLoaded && !isOnHomepage) {
+          const previousScreenshotExists = !!screenshotData.value?.uri;
+          const tabIdChanged = screenshotData.value?.id !== tabId;
+          const urlChanged = screenshotData.value?.url !== tabUrl;
+          const oneMinuteAgo = Date.now() - 1000 * 60;
+          const isScreenshotStale = screenshotData.value && screenshotData.value?.timestamp < oneMinuteAgo;
 
-        const previousScreenshotExists = !!screenshotData.value?.uri;
-        const tabIdChanged = screenshotData.value?.id !== tabId;
-        const urlChanged = screenshotData.value?.url !== tabUrl;
-        const oneMinuteAgo = Date.now() - 1000 * 60;
-        const isScreenshotStale = screenshotData.value && screenshotData.value?.timestamp < oneMinuteAgo;
+          const shouldCaptureScreenshot = !previousScreenshotExists || tabIdChanged || urlChanged || isScreenshotStale;
 
-        const shouldCaptureScreenshot = !previousScreenshotExists || tabIdChanged || urlChanged || isScreenshotStale;
+          if (shouldCaptureScreenshot) {
+            runOnJS(captureAndSaveScreenshot)();
+          }
+        }
 
-        if (shouldCaptureScreenshot) {
-          runOnJS(captureAndSaveScreenshot)();
+        // If necessary, invisibly scroll to the currently active tab when the tab view is fully closed
+        const isScrollViewScrollable = (currentlyOpenTabIds?.value.length || 0) > 4;
+        const exitTabViewAnimationIsComplete =
+          isScrollViewScrollable && tabViewVisible?.value === false && current === 0 && previous && previous !== 0;
+
+        if (exitTabViewAnimationIsComplete && isScrollViewScrollable) {
+          consoleLogWorklet('SCROLLING TAB INTO POSITION');
+
+          const currentTabRow = Math.floor(animatedTabIndex.value / 2);
+          const scrollViewHeight =
+            Math.ceil((currentlyOpenTabIds?.value.length || 0) / 2) * TAB_VIEW_ROW_HEIGHT +
+            safeAreaInsetValues.bottom +
+            165 +
+            28 +
+            (IS_IOS ? 0 : 35);
+
+          const screenHeight = deviceUtils.dimensions.height;
+          const halfScreenHeight = screenHeight / 2;
+          const tabCenterPosition = currentTabRow * TAB_VIEW_ROW_HEIGHT + (currentTabRow - 1) * 28 + TAB_VIEW_ROW_HEIGHT / 2 + 37;
+
+          let scrollPositionToCenterCurrentTab;
+
+          if (scrollViewHeight <= screenHeight) {
+            // No need to scroll if all tabs fit on the screen
+            scrollPositionToCenterCurrentTab = 0;
+          } else if (tabCenterPosition <= halfScreenHeight) {
+            // Scroll to top if the tab is too near to the top of the scroll view to be centered
+            scrollPositionToCenterCurrentTab = 0;
+          } else if (tabCenterPosition + halfScreenHeight >= scrollViewHeight) {
+            // Scroll to bottom if the tab is too near to the end of the scroll view to be centered
+            scrollPositionToCenterCurrentTab = scrollViewHeight - screenHeight;
+          } else {
+            // Otherwise, vertically center the tab on the screen
+            scrollPositionToCenterCurrentTab = tabCenterPosition - halfScreenHeight;
+          }
+
+          dispatchCommand(scrollViewRef, 'scrollTo', [0, scrollPositionToCenterCurrentTab, false]);
         }
       }
     }
