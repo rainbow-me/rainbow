@@ -1,4 +1,4 @@
-import { ChainId } from '../types/chains';
+import { ChainId } from '../__swaps__/types/chains';
 
 export const gasUnits = {
   basic_approval: '55000',

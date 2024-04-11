@@ -1,12 +1,12 @@
 import React, { createContext, useContext, ReactNode } from 'react';
-import { SharedValue, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
-import { inputKeys } from '../types/swap';
-import { INITIAL_SLIDER_POSITION, SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, SLIDER_WIDTH } from '../constants';
-import { useAnimatedSwapStyles } from '../hooks/useAnimatedSwapStyles';
-import { useSwapTextStyles } from '../hooks/useSwapTextStyles';
-import { useSwapNavigation } from '../hooks/useSwapNavigation';
-import { useSwapInputsController } from '../hooks/useSwapInputsController';
 import { StyleProp, TextStyle } from 'react-native';
+import { SharedValue, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import { inputKeys } from '@/__swaps__/types/swap';
+import { INITIAL_SLIDER_POSITION, SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { useAnimatedSwapStyles } from '@/__swaps__/screens/Swap/hooks/useAnimatedSwapStyles';
+import { useSwapTextStyles } from '@/__swaps__/screens/Swap/hooks/useSwapTextStyles';
+import { useSwapNavigation } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
+import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
 
 interface SwapContextType {
   inputProgress: SharedValue<number>;

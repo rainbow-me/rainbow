@@ -3,11 +3,10 @@ import BigNumber from 'bignumber.js';
 import currency from 'currency.js';
 import { isNil } from 'lodash';
 
-import { supportedCurrencies } from '@/references/supportedCurrencies';
+import { supportedNativeCurrencies } from '@/references';
+import { BigNumberish } from '@/__swaps__/utils/hex';
 
-import { BigNumberish } from './hex';
-
-type nativeCurrencyType = typeof supportedCurrencies;
+type nativeCurrencyType = typeof supportedNativeCurrencies;
 
 export const toBigNumber = (v?: string | number | BigNumber) => (v ? EthersBigNumber.from(v) : undefined);
 
@@ -277,7 +276,7 @@ export const convertAmountToNativeDisplay = (
   buffer?: number,
   skipDecimals?: boolean
 ) => {
-  const nativeSelected = supportedCurrencies?.[nativeCurrency];
+  const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
   const { decimals } = nativeSelected;
   const display = handleSignificantDecimals(value, decimals, buffer, skipDecimals);
   if (nativeSelected.alignment === 'left') {
@@ -287,7 +286,7 @@ export const convertAmountToNativeDisplay = (
 };
 
 export const convertAmountToNativeDisplayWithThreshold = (value: BigNumberish, nativeCurrency: keyof nativeCurrencyType) => {
-  const nativeSelected = supportedCurrencies?.[nativeCurrency];
+  const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
   const display = handleSignificantDecimalsWithThreshold(value, nativeSelected.decimals, nativeSelected.decimals < 4 ? '0.01' : '0.0001');
   if (nativeSelected.alignment === 'left') {
     return `${nativeSelected.symbol}${display}`;

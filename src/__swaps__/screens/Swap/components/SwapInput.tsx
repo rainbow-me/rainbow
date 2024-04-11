@@ -1,8 +1,8 @@
 import React, { ReactNode } from 'react';
 import Animated, { DerivedValue, SharedValue } from 'react-native-reanimated';
 import { Box } from '@/design-system';
-import { BASE_INPUT_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '../constants';
-import { useSwapInputStyles } from '../hooks/useSwapInputStyles';
+import { BASE_INPUT_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { useSwapInputStyles } from '@/__swaps__/screens/Swap/hooks/useSwapInputStyles';
 import { StyleSheet } from 'react-native';
 
 export const SwapInput = ({

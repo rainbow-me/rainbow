@@ -1,7 +1,7 @@
 import { getDefaultKeyboardHeight } from '@/redux/keyboardHeight';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { Easing } from 'react-native-reanimated';
-import { SearchAsset } from './types/search';
+import { SearchAsset } from '@/__swaps__/types/search';
 
 // /---- 🔒 Constants 🔒 ----/ //
 //

@@ -20,9 +20,9 @@ import {
   pulsingConfig,
   sliderConfig,
   slowFadeConfig,
-} from '../constants';
-import { inputKeys, inputMethods } from '../types/swap';
-import { opacity } from '../utils/swaps';
+} from '@/__swaps__/screens/Swap/constants';
+import { inputKeys, inputMethods } from '@/__swaps__/types/swap';
+import { opacity } from '@/__swaps__/utils/swaps';
 
 export function useSwapTextStyles({
   focusedInput,
