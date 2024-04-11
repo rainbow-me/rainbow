@@ -564,7 +564,9 @@
       "price_impact": {
         "losing_prefix": "Losing",
         "small_market": "Small Market",
-        "label": "Possible loss"
+        "no_data": "Market Value Unknown",
+        "label": "Possible loss",
+        "no_data_subtitle": "If you decide to continue, be sure that you are satisfied with the quoted amount"
       },
       "source": {
         "rainbow": "Auto",
@@ -2183,6 +2185,9 @@
       "copied": "Copied \"%{copiedText}\"",
       "invalid_paste": "You can't paste that here"
     },
+    "tokens_tab": {
+      "unknown_token": "Unknown Token"
+    },
     "hardware_wallets": {
       "pair_your_nano": "Pair your Nano X",
       "connect_your_ledger": "Connect your Ledger Nano X to Rainbow through Bluetooth. If this is your first time, Rainbow will ask for Bluetooth access.",
@@ -2652,6 +2657,7 @@
       },
       "menu_options": {
         "disconnect": "Disconnect",
+        "connect": "Connect",
         "switch_wallet": "Switch Wallet",
         "switch_network": "Switch Network",
         "available_networks": "Available Networks"

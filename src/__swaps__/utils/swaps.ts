@@ -1,15 +1,14 @@
 import c from 'chroma-js';
+import { convertToRGBA, isColor } from 'react-native-reanimated';
+
 import * as i18n from '@/languages';
 import { globalColors } from '@/design-system';
-import { ETH_COLOR, ETH_COLOR_DARK_ACCENT, SCRUBBER_WIDTH, SLIDER_WIDTH } from '../constants';
-import { chainNameFromChainId } from './chains';
-import { ChainId, ChainName } from '../types/chains';
+import { ETH_COLOR, ETH_COLOR_DARK_ACCENT, SCRUBBER_WIDTH, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { chainNameFromChainId } from '@/__swaps__/utils/chains';
+import { ChainId, ChainName } from '@/__swaps__/types/chains';
 import { RainbowConfig } from '@/model/remoteConfig';
-import { convertToRGBA, isColor } from 'react-native-reanimated';
 import { CrosschainQuote, ETH_ADDRESS, Quote, WRAPPED_ASSET } from '@rainbow-me/swaps';
-import { isLowerCaseMatch } from './strings';
-import { getCachedProviderForNetwork, isHardHat } from '@/handlers/web3';
-import { Network } from '@/helpers';
+import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -164,8 +163,6 @@ export function valueBasedDecimalFormatter(
     // Default to normal rounding if no rounding mode is specified
     roundedAmount = Math.round(amount * factor) / factor;
   }
-
-  console.log({ decimalPlaces });
 
   // Format the number to add separators and trim trailing zeros
   const numberFormatter = new Intl.NumberFormat('en-US', {

@@ -14,7 +14,7 @@ import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { position } from '@/styles';
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/screens/Swap/utils/swaps';
+import { opacity } from '@/__swaps__/utils/swaps';
 import { useBrowserContext } from './BrowserContext';
 import { BrowserButtonShadows } from './DappBrowserShadows';
 
@@ -60,9 +60,9 @@ export const TabViewToolbar = () => {
 };
 
 const NewTabButton = () => {
-  const { newTab } = useBrowserContext();
+  const { newTabWorklet } = useBrowserContext();
 
-  return <BaseButton onPress={newTab} icon="􀅼" iconColor="label" iconSize="icon 20px" width={44} />;
+  return <BaseButton onPressWorklet={newTabWorklet} icon="􀅼" iconColor="label" iconSize="icon 20px" width={44} />;
 };
 
 const DoneButton = () => {
@@ -117,7 +117,7 @@ const BaseButton = ({
           <Box
             borderRadius={22}
             paddingHorizontal={width ? undefined : paddingHorizontal}
-            style={{ height: 44, width }}
+            style={{ borderCurve: 'continuous', height: 44, overflow: 'hidden', width }}
             alignItems="center"
             justifyContent="center"
           >
@@ -133,9 +133,11 @@ const BaseButton = ({
                 blurType={isDarkMode ? 'dark' : 'light'}
                 style={[
                   {
-                    zIndex: -1,
-                    elevation: -1,
+                    borderCurve: 'continuous',
                     borderRadius: 22,
+                    elevation: -1,
+                    overflow: 'hidden',
+                    zIndex: -1,
                   },
                   position.coverAsObject,
                 ]}
@@ -146,8 +148,10 @@ const BaseButton = ({
                 {
                   backgroundColor: buttonColor,
                   borderColor: separatorSecondary,
+                  borderCurve: 'continuous',
                   borderRadius: 22,
                   borderWidth: IS_IOS && isDarkMode ? THICK_BORDER_WIDTH : 0,
+                  overflow: 'hidden',
                   zIndex: -1,
                 },
                 position.coverAsObject,

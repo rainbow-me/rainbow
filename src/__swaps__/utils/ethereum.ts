@@ -5,10 +5,10 @@ import { parseEther } from '@ethersproject/units';
 import omit from 'lodash/omit';
 import { Address } from 'viem';
 import { EthereumPrivateKey } from '@/model/wallet';
-import { ethUnits } from '../references';
+import { ethUnits } from '@/references';
 
-import { addHexPrefix, isHexStringIgnorePrefix } from './hex';
-import { divide, multiply } from './numbers';
+import { addHexPrefix, isHexStringIgnorePrefix } from '@/__swaps__/utils/hex';
+import { divide, multiply } from '@/__swaps__/utils/numbers';
 
 export type EthereumWalletSeed = EthereumPrivateKey | Mnemonic['phrase'];
 export enum EthereumWalletType {

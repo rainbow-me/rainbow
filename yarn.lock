@@ -1382,10 +1382,10 @@
   dependencies:
     date-fns "^2.19.0"
 
-"@candlefinance/faster-image@1.3.4":
-  version "1.3.4"
-  resolved "https://registry.yarnpkg.com/@candlefinance/faster-image/-/faster-image-1.3.4.tgz#ebbc314dfb2d7901ebd2664d3f1d3f11555f5ed4"
-  integrity sha512-N19Q4Yd7BWWRiWTKPxzsOXdSuy5mqPVcKJ174Lg/tjoci3h0sGQ0l8vSQX+a0ckvR6Op09pWmAccJ5qeZhK7CA==
+"@candlefinance/faster-image@1.4.3":
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/@candlefinance/faster-image/-/faster-image-1.4.3.tgz#f6f80da43d4bcfbd27c8b1391c196b591885911a"
+  integrity sha512-CmQuJhgM3+R8ZNlEB8tFt+0r3Ei0OnX5aLnT6rLCDM1KobHAfbIXF1W0WlanlGudfitsdLx+qrX9oolOf+9enA==
 
 "@capsizecss/core@3.0.0":
   version "3.0.0"
@@ -14566,6 +14566,11 @@ minipass@^3.0.0, minipass@^3.1.1, minipass@^3.1.6:
   dependencies:
     yallist "^4.0.0"
 
+minipass@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/minipass/-/minipass-5.0.0.tgz#3e9788ffb90b694a5d0ec94479a45b5d8738133d"
+  integrity sha512-3FnjYuehv9k6ovOEbyOswadCDPX1piCfhV8ncmYtHOjuPwylVWsghTLo7rabjC3Rx5xD4HDx8Wm1xnMF7S5qFQ==
+
 minizlib@^2.1.1, minizlib@^2.1.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/minizlib/-/minizlib-2.1.2.tgz#e90d3466ba209b932451508a11ce3d3632145931"
@@ -18915,14 +18920,14 @@ tapable@^2.1.1, tapable@^2.2.0:
   resolved "https://registry.yarnpkg.com/tapable/-/tapable-2.2.1.tgz#1967a73ef4060a82f12ab96af86d52fdb76eeca0"
   integrity sha512-GNzQvQTOIP6RyTfE2Qxb8ZVlNmw0n88vp1szwWRimP02mnTsx3Wtn5qRdqY9w2XduFNUgvOwhNnQsjwCp+kqaQ==
 
-tar@6.1.11, tar@^4.0.2, tar@^6.1.11, tar@^6.1.2:
-  version "6.1.11"
-  resolved "https://registry.yarnpkg.com/tar/-/tar-6.1.11.tgz#6760a38f003afa1b2ffd0ffe9e9abbd0eab3d621"
-  integrity sha512-an/KZQzQUkZCkuoAA64hM92X0Urb6VpRhAFllDzz44U2mcD5scmT3zBc4VgVpkugF580+DQn8eAFSyoQt0tznA==
+tar@6.2.1, tar@^4.0.2, tar@^6.1.11, tar@^6.1.2:
+  version "6.2.1"
+  resolved "https://registry.yarnpkg.com/tar/-/tar-6.2.1.tgz#717549c541bc3c2af15751bea94b1dd068d4b03a"
+  integrity sha512-DZ4yORTwrbTj/7MZYq2w+/ZFdI6OZ/f9SFHR+71gIVUZhOQPHzVCLpvRnPgyaMpfWxxk/4ONva3GQSyNIKRv6A==
   dependencies:
     chownr "^2.0.0"
     fs-minipass "^2.0.0"
-    minipass "^3.0.0"
+    minipass "^5.0.0"
     minizlib "^2.1.1"
     mkdirp "^1.0.3"
     yallist "^4.0.0"

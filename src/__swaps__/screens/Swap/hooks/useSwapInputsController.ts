@@ -2,9 +2,9 @@ import { useCallback, useMemo, useRef } from 'react';
 import { SharedValue, runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
 
-import { ETH_COLOR, ETH_COLOR_DARK, SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '../constants';
-import { SWAP_FEE } from '../dummyValues';
-import { inputKeys, inputMethods } from '../types/swap';
+import { ETH_COLOR, ETH_COLOR_DARK, SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '@/__swaps__/screens/Swap/constants';
+import { SWAP_FEE } from '@/__swaps__/screens/Swap/dummyValues';
+import { inputKeys, inputMethods } from '@/__swaps__/types/swap';
 import {
   addCommasToNumber,
   clamp,
@@ -17,11 +17,11 @@ import {
   niceIncrementFormatter,
   trimTrailingZeros,
   valueBasedDecimalFormatter,
-} from '../utils/swaps';
-import { ChainId, ChainName } from '../types/chains';
-import { ParsedSearchAsset } from '../types/assets';
+} from '@/__swaps__/utils/swaps';
+import { ChainId, ChainName } from '@/__swaps__/types/chains';
+import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { useColorMode } from '@/design-system';
-import { isSameAssetWorklet } from '../utils/assets';
+import { isSameAssetWorklet } from '@/__swaps__/utils/assets';
 import {
   CrosschainQuote,
   ETH_ADDRESS,
@@ -33,10 +33,10 @@ import {
   getCrosschainQuote,
   getQuote,
 } from '@rainbow-me/swaps';
-import { chainNameFromChainIdWorklet } from '../utils/chains';
+import { chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { RainbowConfig, useRemoteConfig } from '@/model/remoteConfig';
 import { useAccountSettings } from '@/hooks';
-import { convertAmountToRawAmount, convertRawAmountToBalance, convertRawAmountToNativeDisplay } from '../utils/numbers';
+import { convertAmountToRawAmount, convertRawAmountToBalance, convertRawAmountToNativeDisplay } from '@/__swaps__/utils/numbers';
 import ethereumUtils from '@/utils/ethereumUtils';
 import { FormattedExternalAsset, fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
 

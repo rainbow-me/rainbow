@@ -11,13 +11,13 @@ PODS:
     - React-Core
     - SSZipArchive (~> 2.2.2)
   - DoubleConversion (1.1.6)
-  - FasterImage (1.3.4):
-    - FasterImage/Nuke (= 1.3.4)
-    - FasterImage/NukeUI (= 1.3.4)
+  - FasterImage (1.4.3):
+    - FasterImage/Nuke (= 1.4.3)
+    - FasterImage/NukeUI (= 1.4.3)
     - React-Core
-  - FasterImage/Nuke (1.3.4):
+  - FasterImage/Nuke (1.4.3):
     - React-Core
-  - FasterImage/NukeUI (1.3.4):
+  - FasterImage/NukeUI (1.4.3):
     - React-Core
   - FBLazyVector (0.72.3)
   - FBReactNativeSpec (0.72.3):
@@ -1253,7 +1253,7 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   CodePush: 9eddecce05cd10491e2673b259c85885a462be33
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
-  FasterImage: 283258273b862374eb2ede3ef9576149fd83deb3
+  FasterImage: 60d0750ddbcefff0070c4c17309c2d1d6cc650f0
   FBLazyVector: 4cce221dd782d3ff7c4172167bba09d58af67ccb
   FBReactNativeSpec: c6bd9e179757b3c0ecf815864fae8032377903ef
   Firebase: 07150e75d142fb9399f6777fa56a187b17f833a0

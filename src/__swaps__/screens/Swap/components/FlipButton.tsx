@@ -7,11 +7,11 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { AnimatedSpinner } from '@/__swaps__/components/animations/AnimatedSpinner';
 import { Bleed, Box, IconContainer, Text, globalColors, useColorMode } from '@/design-system';
 import { colors } from '@/styles';
-import { SEPARATOR_COLOR } from '../constants';
-import { opacity } from '../utils/swaps';
+import { SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
+import { opacity } from '@/__swaps__/utils/swaps';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { AnimatedBlurView } from './AnimatedBlurView';
-import { useSwapContext } from '../providers/swap-provider';
+import { AnimatedBlurView } from '@/__swaps__/screens/Swap/components/AnimatedBlurView';
+import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { StyleSheet } from 'react-native';
 
 export const FlipButton = () => {

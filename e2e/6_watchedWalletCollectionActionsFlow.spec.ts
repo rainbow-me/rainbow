@@ -1,14 +1,22 @@
-import { device, element, by } from 'detox';
-import { tap, cleanApp, killHardhat, waitAndTap, clearField, typeText, checkIfVisible, swipe } from './helpers';
+import {
+  tap,
+  beforeAllcleanApp,
+  waitAndTap,
+  clearField,
+  typeText,
+  checkIfVisible,
+  swipe,
+  checkIfDoesntExist,
+  delayTime,
+  afterAllcleanApp,
+} from './helpers';
 
 describe('Watched showcase and hidden actions flow', () => {
   beforeAll(async () => {
-    await device.reloadReactNative();
-    await cleanApp();
+    await beforeAllcleanApp({ hardhat: false });
   });
   afterAll(async () => {
-    await device.clearKeychain();
-    await killHardhat();
+    await afterAllcleanApp({ hardhat: false });
   });
 
   it('watches a wallet and loads wallet screen', async () => {
@@ -22,6 +30,8 @@ describe('Watched showcase and hidden actions flow', () => {
   });
 
   it('opens NFT', async () => {
+    // some delay to wait for collectables to fetch
+    await delayTime('very-long');
     await swipe('wallet-screen', 'up', 'slow');
     await tap('token-family-header-ENS');
     await swipe('wallet-screen', 'up', 'slow');
@@ -29,12 +39,8 @@ describe('Watched showcase and hidden actions flow', () => {
   });
 
   it('hides actions for watched wallets', async () => {
-    await waitFor(element(by.text('Showcase')))
-      .not.toExist()
-      .withTimeout(5000);
+    await checkIfDoesntExist('Showcase');
     await waitAndTap('unique-token-expanded-state-context-menu-button');
-    await waitFor(element(by.text('Unhide')))
-      .not.toExist()
-      .withTimeout(5000);
+    await checkIfDoesntExist('Unhide');
   });
 });

@@ -12,7 +12,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { Box, Columns, HitSlop, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
-import { stripCommas } from '../utils/swaps';
+import { stripCommas } from '@/__swaps__/utils/swaps';
 import {
   CUSTOM_KEYBOARD_HEIGHT,
   LIGHT_SEPARATOR_COLOR,
@@ -21,11 +21,11 @@ import {
   SEPARATOR_COLOR,
   THICK_BORDER_WIDTH,
   buttonPressConfig,
-} from '../constants';
+} from '@/__swaps__/screens/Swap/constants';
 import { LongPressGestureHandler, LongPressGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 import { ButtonPressAnimation } from '@/components/animations';
 import { colors } from '@/styles';
-import { useSwapContext } from '../providers/swap-provider';
+import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 
 type numberPadCharacter = number | 'backspace' | '.';
 

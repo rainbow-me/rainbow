@@ -21,6 +21,7 @@ interface ExchangeDetailsRowProps {
   priceImpactColor?: string;
   priceImpactNativeAmount?: string | null;
   priceImpactPercentDisplay?: string | null;
+  outputCurrencySymbol?: string | null;
   type: string;
 }
 
@@ -32,6 +33,7 @@ export default function ExchangeDetailsRow({
   priceImpactColor,
   priceImpactNativeAmount,
   priceImpactPercentDisplay,
+  outputCurrencySymbol,
   type,
 }: ExchangeDetailsRowProps) {
   const detailsRowOpacity = useSharedValue(1);
@@ -83,6 +85,7 @@ export default function ExchangeDetailsRow({
         priceImpactColor={priceImpactColor}
         priceImpactNativeAmount={priceImpactNativeAmount}
         priceImpactPercentDisplay={priceImpactPercentDisplay}
+        outputCurrencySymbol={outputCurrencySymbol}
         style={priceImpactAnimatedStyle}
       />
       <Box
