@@ -1,7 +1,7 @@
 /* eslint-disable no-nested-ternary */
 import c from 'chroma-js';
 import React, { useCallback } from 'react';
-import Animated, { runOnUI } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import SwapSpinner from '@/__swaps__/assets/swapSpinner.png';
 import { ButtonPressAnimation } from '@/components/animations';
 import { AnimatedSpinner } from '@/__swaps__/components/animations/AnimatedSpinner';
@@ -23,6 +23,19 @@ export const FlipButton = () => {
     SwapInputController.onSwapAssets();
   }, [SwapInputController]);
 
+  const flipButtonInnerStyles = useAnimatedStyle(() => {
+    return {
+      shadowColor: isDarkMode ? globalColors.grey100 : c.mix(SwapInputController.bottomColor.value, colors.dark, 0.84).hex(),
+      shadowOffset: {
+        width: 0,
+        height: isDarkMode ? 4 : 4,
+      },
+      elevation: 8,
+      shadowOpacity: isDarkMode ? 0.3 : 0.1,
+      shadowRadius: isDarkMode ? 6 : 8,
+    };
+  });
+
   return (
     <Box
       alignItems="center"
@@ -30,19 +43,7 @@ export const FlipButton = () => {
       justifyContent="center"
       style={[AnimatedSwapStyles.flipButtonStyle, AnimatedSwapStyles.focusedSearchStyle, { height: 12, width: 28, zIndex: 10 }]}
     >
-      <Box
-        as={Animated.View}
-        style={{
-          shadowColor: isDarkMode ? globalColors.grey100 : c.mix(SwapInputController.bottomColor.value, colors.dark, 0.84).hex(),
-          shadowOffset: {
-            width: 0,
-            height: isDarkMode ? 4 : 4,
-          },
-          elevation: 8,
-          shadowOpacity: isDarkMode ? 0.3 : 0.1,
-          shadowRadius: isDarkMode ? 6 : 8,
-        }}
-      >
+      <Box as={Animated.View} style={flipButtonInnerStyles}>
         <ButtonPressAnimation onPress={handleSwapAssets} scaleTo={0.8} style={{ paddingHorizontal: 20, paddingVertical: 8 }}>
           {/* TODO: Temp fix - rewrite to actually avoid type errors */}
           {/* @ts-expect-error The conditional as={} is causing type errors */}

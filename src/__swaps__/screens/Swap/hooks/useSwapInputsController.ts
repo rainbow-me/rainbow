@@ -182,8 +182,23 @@ export function useSwapInputsController({
   const niceIncrement = useMemo(() => findNiceIncrement(Number(assetToSell.value?.balance.amount)), [assetToSell]);
   const incrementDecimalPlaces = useMemo(() => countDecimalPlaces(niceIncrement), [niceIncrement]);
 
+  const priceForAsset = (asset: ParsedSearchAsset | null) => {
+    'worklet';
+
+    if (!asset) return 0;
+
+    if (assetToSell.value) {
+      return assetToSellPrice.value;
+    } else if (asset.price?.value) {
+      return asset.price.value;
+    } else if (asset.native.price?.amount) {
+      return asset.native.price.amount;
+    }
+    return 0;
+  };
+
   const formattedInputAmount = useDerivedValue(() => {
-    const price = (assetToSellPrice.value || assetToSell.value?.price?.value || assetToSell.value?.native.price?.amount) ?? 0;
+    const price = priceForAsset(assetToSell.value);
     const balance = Number(assetToSell.value?.balance.amount);
     if (
       (inputMethod.value === 'slider' && percentageToSwap.value === 0) ||
@@ -228,7 +243,6 @@ export function useSwapInputsController({
 
   const formattedOutputAmount = useDerivedValue(() => {
     const price = (assetToBuyPrice.value || assetToBuy.value?.price?.value || assetToBuy.value?.native.price?.amount) ?? 0;
-    const balance = Number(assetToBuy.value?.balance.amount);
 
     if (
       (inputMethod.value === 'slider' && percentageToSwap.value === 0) ||
@@ -282,14 +296,16 @@ export function useSwapInputsController({
   const onChangedPercentage = useDebouncedCallback((percentage: number, setStale = true) => {
     resetTimers();
 
+    console.log({ percentage });
+
     if (percentage > 0) {
       if (setStale) isQuoteStale.value = 1;
       isFetching.value = true;
 
-      inputValues.value.inputAmount = percentage * Number(assetToSell.value?.balance.amount);
+      const amount = percentage * Number(assetToSell.value?.balance.amount);
       spinnerTimer.current = setTimeout(() => {
         animationFrameId.current = requestAnimationFrame(async () => {
-          await handleInputAmountLogic(Number(inputValues.value.inputAmount));
+          await handleInputAmountLogic(amount);
         });
       }, 600);
     } else {
@@ -301,6 +317,116 @@ export function useSwapInputsController({
       resetTimers();
     };
   }, 200);
+
+  // Refactored onTypedNumber function
+  const onTypedNumber = useDebouncedCallback(async (amount: number, inputKey: inputKeys, preserveAmount = true, setStale = true) => {
+    resetTimers();
+
+    if (amount > 0) {
+      if (setStale) isQuoteStale.value = 1;
+
+      if (inputKey === 'inputAmount') {
+        inputValues.value.inputAmount = amount;
+        await handleInputAmountLogic(amount);
+      } else if (inputKey === 'outputAmount') {
+        inputValues.value.outputAmount = amount;
+        await handleOutputAmountLogic(amount);
+      }
+    } else {
+      const resetValuesToZero = () => {
+        isFetching.value = false;
+
+        const updateWorklet = () => {
+          'worklet';
+          const keysToReset = ['inputAmount', 'inputNativeValue', 'outputAmount', 'outputNativeValue'];
+          const updatedValues = keysToReset.reduce(
+            (acc, key) => {
+              const castedKey = key as keyof typeof inputValues.value;
+              acc[castedKey] = castedKey === inputKey && preserveAmount ? inputValues.value[castedKey] : 0;
+              return acc;
+            },
+            {} as Partial<typeof inputValues.value>
+          );
+          inputValues.modify(values => {
+            return {
+              ...values,
+              ...updatedValues,
+            };
+          });
+          sliderXPosition.value = withSpring(0, snappySpringConfig);
+          isQuoteStale.value = 0;
+        };
+
+        runOnUI(updateWorklet)();
+      };
+
+      animationFrameId.current = requestAnimationFrame(resetValuesToZero);
+    }
+
+    return () => {
+      resetTimers();
+    };
+  }, 400);
+
+  const fetchAssetPrices = async ({
+    assetToSell,
+    assetToBuy,
+  }: {
+    assetToSell: ParsedSearchAsset | null;
+    assetToBuy: ParsedSearchAsset | null;
+  }) => {
+    const fetchPriceForAsset = async (asset: ParsedSearchAsset | null, assetType: 'assetToSell' | 'assetToBuy') => {
+      if (!asset) return;
+
+      const assetWithPriceData = await fetchExternalToken({
+        address: asset.address,
+        network: ethereumUtils.getNetworkFromChainId(asset.chainId),
+        currency: currentCurrency,
+      });
+
+      if (!assetWithPriceData) return;
+
+      switch (assetType) {
+        case 'assetToSell':
+          runOnUI((asset: FormattedExternalAsset) => {
+            if (asset.price.value) {
+              assetToSellPrice.value = Number(asset.price.value);
+            } else if (asset.native.price.amount) {
+              assetToSellPrice.value = Number(asset.native.price.amount);
+            }
+
+            inputValues.value.inputNativeValue = Number(inputValues.value.inputAmount) * assetToSellPrice.value;
+          })(assetWithPriceData);
+          break;
+        case 'assetToBuy':
+          runOnUI((asset: FormattedExternalAsset) => {
+            if (asset.price.value) {
+              assetToBuyPrice.value = Number(asset.price.value);
+            } else if (asset.native.price.amount) {
+              assetToBuyPrice.value = Number(asset.native.price.amount);
+            }
+
+            inputValues.value.outputNativeValue = Number(inputValues.value.outputAmount) * assetToBuyPrice.value;
+          })(assetWithPriceData);
+          break;
+      }
+    };
+
+    const fetchPrices = async () => {
+      const promises = ['assetToSell', 'assetToBuy'].map(assetType => {
+        return fetchPriceForAsset(assetType === 'assetToSell' ? assetToSell : assetToBuy, assetType as 'assetToSell' | 'assetToBuy');
+      });
+
+      Promise.allSettled(promises);
+    };
+
+    if (pricesRefetchTimer.current) {
+      clearInterval(pricesRefetchTimer.current);
+    }
+
+    pricesRefetchTimer.current = setInterval(fetchPrices, PRICE_REFETCH_INTERVAL);
+    return fetchPrices();
+  };
 
   // Shared function to fetch quote and update values
   const fetchAndUpdateQuote = async (amount: number, isInputAmount: boolean) => {
@@ -407,7 +533,7 @@ export function useSwapInputsController({
     };
   };
 
-  const updateWorklet = ({
+  const updateQuoteWorklet = ({
     data,
     updatedSliderPosition,
     inputAmount,
@@ -442,7 +568,7 @@ export function useSwapInputsController({
         outputNativeValue,
       };
     });
-    if (updatedSliderPosition) {
+    if (inputMethod.value !== 'slider' && updatedSliderPosition) {
       sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
     }
     isQuoteStale.value = 0;
@@ -455,7 +581,7 @@ export function useSwapInputsController({
     const updatedSliderPosition = clampJS((amount / Number(assetToSell.value?.balance.amount)) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
 
     if (updateData) {
-      runOnUI(updateWorklet)({ ...updateData, updatedSliderPosition, isInputAmount: true });
+      runOnUI(updateQuoteWorklet)({ ...updateData, updatedSliderPosition, isInputAmount: true });
     }
   };
 
@@ -464,59 +590,9 @@ export function useSwapInputsController({
     const updateData = await fetchAndUpdateQuote(amount, false);
 
     if (updateData) {
-      runOnUI(updateWorklet)({ ...updateData, isInputAmount: false });
+      runOnUI(updateQuoteWorklet)({ ...updateData, isInputAmount: false });
     }
   };
-
-  // Refactored onTypedNumber function
-  const onTypedNumber = useDebouncedCallback(async (amount: number, inputKey: inputKeys, preserveAmount = true, setStale = true) => {
-    resetTimers();
-
-    if (amount > 0) {
-      if (setStale) isQuoteStale.value = 1;
-
-      if (inputKey === 'inputAmount') {
-        inputValues.value.inputAmount = amount;
-        await handleInputAmountLogic(amount);
-      } else if (inputKey === 'outputAmount') {
-        inputValues.value.outputAmount = amount;
-        await handleOutputAmountLogic(amount);
-      }
-    } else {
-      const resetValuesToZero = () => {
-        isFetching.value = false;
-
-        const updateWorklet = () => {
-          'worklet';
-          const keysToReset = ['inputAmount', 'inputNativeValue', 'outputAmount', 'outputNativeValue'];
-          const updatedValues = keysToReset.reduce(
-            (acc, key) => {
-              const castedKey = key as keyof typeof inputValues.value;
-              acc[castedKey] = castedKey === inputKey && preserveAmount ? inputValues.value[castedKey] : 0;
-              return acc;
-            },
-            {} as Partial<typeof inputValues.value>
-          );
-          inputValues.modify(values => {
-            return {
-              ...values,
-              ...updatedValues,
-            };
-          });
-          sliderXPosition.value = withSpring(0, snappySpringConfig);
-          isQuoteStale.value = 0;
-        };
-
-        runOnUI(updateWorklet)();
-      };
-
-      animationFrameId.current = requestAnimationFrame(resetValuesToZero);
-    }
-
-    return () => {
-      resetTimers();
-    };
-  }, 400);
 
   const onExecuteSwap = async () => {
     if (!assetToSell.value || !assetToBuy.value || !quote.value) return;
@@ -698,20 +774,11 @@ export function useSwapInputsController({
       if (outputProgress.value === 1) {
         handleOutputPress();
       }
+
+      // TODO: Trigger a refetc
     };
 
     runOnUI(swapValues)();
-
-    const inputAmount = Number(inputValues.value.inputAmount);
-    if (inputAmount > 0) {
-      isFetching.value = true;
-      isQuoteStale.value = 1;
-      spinnerTimer.current = setTimeout(() => {
-        animationFrameId.current = requestAnimationFrame(async () => {
-          await handleInputAmountLogic(inputAmount);
-        });
-      }, 600);
-    }
   };
 
   // This handles cleaning up typed amounts when the input focus changes
@@ -907,66 +974,6 @@ export function useSwapInputsController({
       }
     }
   );
-
-  const fetchAssetPrices = async ({
-    assetToSell,
-    assetToBuy,
-  }: {
-    assetToSell: ParsedSearchAsset | null;
-    assetToBuy: ParsedSearchAsset | null;
-  }) => {
-    const fetchPriceForAsset = async (asset: ParsedSearchAsset | null, assetType: 'assetToSell' | 'assetToBuy') => {
-      if (!asset) return;
-
-      const assetWithPriceData = await fetchExternalToken({
-        address: asset.address,
-        network: ethereumUtils.getNetworkFromChainId(asset.chainId),
-        currency: currentCurrency,
-      });
-
-      if (!assetWithPriceData) return;
-
-      switch (assetType) {
-        case 'assetToSell':
-          runOnUI((asset: FormattedExternalAsset) => {
-            if (asset.price.value) {
-              assetToSellPrice.value = Number(asset.price.value);
-            } else if (asset.native.price.amount) {
-              assetToSellPrice.value = Number(asset.native.price.amount);
-            }
-
-            inputValues.value.inputNativeValue = Number(inputValues.value.inputAmount) * assetToSellPrice.value;
-          })(assetWithPriceData);
-          break;
-        case 'assetToBuy':
-          runOnUI((asset: FormattedExternalAsset) => {
-            if (asset.price.value) {
-              assetToBuyPrice.value = Number(asset.price.value);
-            } else if (asset.native.price.amount) {
-              assetToBuyPrice.value = Number(asset.native.price.amount);
-            }
-
-            inputValues.value.outputNativeValue = Number(inputValues.value.outputAmount) * assetToBuyPrice.value;
-          })(assetWithPriceData);
-          break;
-      }
-    };
-
-    const fetchPrices = async () => {
-      const promises = ['assetToSell', 'assetToBuy'].map(assetType => {
-        return fetchPriceForAsset(assetType === 'assetToSell' ? assetToSell : assetToBuy, assetType as 'assetToSell' | 'assetToBuy');
-      });
-
-      Promise.allSettled(promises);
-    };
-
-    if (pricesRefetchTimer.current) {
-      clearInterval(pricesRefetchTimer.current);
-    }
-
-    pricesRefetchTimer.current = setInterval(fetchPrices, PRICE_REFETCH_INTERVAL);
-    return fetchPrices();
-  };
 
   // NOTE: refetches asset prices when the assets change
   useAnimatedReaction(
