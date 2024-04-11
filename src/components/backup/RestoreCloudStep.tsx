@@ -169,7 +169,6 @@ export default function RestoreCloudStep() {
           });
 
           await dispatch(setAllWalletsWithIdsAsBackedUp(walletIdsToUpdate, walletBackupTypes.cloud, filename));
-          // end mark
 
           const oldCloudIds: string[] = [];
           const oldManualIds: string[] = [];
