@@ -1,4 +1,4 @@
-import { AssetType, AssetTypes, EthereumAddress } from '@/entities';
+import { AssetType } from '@/entities';
 import { UniqueAsset } from '@/entities/uniqueAssets';
 import {
   SimpleHashNFT,
@@ -57,6 +57,8 @@ export function getSimpleHashChainFromNetwork(network: Omit<Network, Network.goe
       return SimpleHashChain.Avalanche;
     case Network.blast:
       return SimpleHashChain.Blast;
+    case Network.degen:
+      return SimpleHashChain.Degen;
     default:
       return undefined;
   }
@@ -89,6 +91,8 @@ export function getNetworkFromSimpleHashChain(chain: SimpleHashChain): Network {
       return Network.avalanche;
     case SimpleHashChain.Blast:
       return Network.blast;
+    case SimpleHashChain.Degen:
+      return Network.degen;
     default:
       /*
        * Throws here because according to TS types, we should NEVER hit this

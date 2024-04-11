@@ -64,7 +64,6 @@ export default function CurrencyTile({
   const { nativeCurrency } = useAccountSettings();
   const colorForAsset = useColorForAsset(asset);
   const theme = useTheme();
-  const { address, mainnet_address, symbol, network } = asset;
   const isOther = (inputAsExact && type === 'output') || (!inputAsExact && type === 'input');
 
   const priceDisplay = priceValue ? convertAmountToNativeDisplay(priceValue, nativeCurrency) : '-';
@@ -96,7 +95,7 @@ export default function CurrencyTile({
                       </NativePriceText>
                     </Column>
                     <Column alignHorizontal="center" width="content">
-                      <NativePriceText>{symbol}</NativePriceText>
+                      <NativePriceText>{asset?.symbol}</NativePriceText>
                     </Column>
                   </Columns>
                 </Row>

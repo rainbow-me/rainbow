@@ -11,6 +11,7 @@ export enum SimpleHashChain {
   Base = 'base',
   Avalanche = 'avalanche',
   Blast = 'blast',
+  Degen = 'degen',
 }
 
 /**

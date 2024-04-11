@@ -32,6 +32,10 @@ import BlastBadge from '../../assets/badges/blastBadge.png';
 import BlastBadgeDark from '../../assets/badges/blastBadgeDark.png';
 import BlastBadgeLarge from '../../assets/badges/blastBadgeLarge.png';
 import BlastBadgeLargeDark from '../../assets/badges/blastBadgeLargeDark.png';
+import DegenBadge from '../../assets/badges/degenBadge.png';
+import DegenBadgeDark from '../../assets/badges/degenBadgeDark.png';
+import DegenBadgeLarge from '../../assets/badges/degenBadgeLarge.png';
+import DegenBadgeLargeDark from '../../assets/badges/degenBadgeLargeDark.png';
 import { Centered } from '../layout';
 import styled from '@/styled-thing';
 import { position as positions } from '@/styles';
@@ -88,6 +92,8 @@ export default function ChainBadge({
         val = isDarkMode ? AvalancheBadgeLargeDark : AvalancheBadgeLarge;
       } else if (network === Network.blast) {
         val = isDarkMode ? BlastBadgeLargeDark : BlastBadgeLarge;
+      } else if (network === Network.degen) {
+        val = isDarkMode ? DegenBadgeLargeDark : DegenBadgeLarge;
       }
     } else {
       if (network === Network.arbitrum) {
@@ -106,6 +112,8 @@ export default function ChainBadge({
         val = isDarkMode ? AvalancheBadgeDark : AvalancheBadge;
       } else if (network === Network.blast) {
         val = isDarkMode ? BlastBadgeDark : BlastBadge;
+      } else if (network === Network.degen) {
+        val = isDarkMode ? DegenBadgeDark : DegenBadge;
       }
     }
     return val;
