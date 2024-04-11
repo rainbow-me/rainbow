@@ -40,7 +40,7 @@ import { convertAmountToRawAmount, convertRawAmountToBalance, convertRawAmountTo
 import ethereumUtils from '@/utils/ethereumUtils';
 import { FormattedExternalAsset, fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
 
-const QUOTE_REFETCH_INTERVAL = 10_000;
+const QUOTE_REFETCH_INTERVAL = 5_000;
 const PRICE_REFETCH_INTERVAL = 10_000;
 
 export const DEFAULT_SLIPPAGE_BIPS = {
@@ -182,13 +182,15 @@ export function useSwapInputsController({
   const niceIncrement = useMemo(() => findNiceIncrement(Number(assetToSell.value?.balance.amount)), [assetToSell]);
   const incrementDecimalPlaces = useMemo(() => countDecimalPlaces(niceIncrement), [niceIncrement]);
 
-  const priceForAsset = (asset: ParsedSearchAsset | null) => {
+  const priceForAsset = (asset: ParsedSearchAsset | null, assetType: 'assetToSell' | 'assetToBuy') => {
     'worklet';
 
     if (!asset) return 0;
 
-    if (assetToSell.value) {
+    if (assetType === 'assetToSell' && assetToSellPrice.value) {
       return assetToSellPrice.value;
+    } else if (assetType === 'assetToBuy' && assetToBuyPrice.value) {
+      return assetToBuyPrice.value;
     } else if (asset.price?.value) {
       return asset.price.value;
     } else if (asset.native.price?.amount) {
@@ -198,7 +200,7 @@ export function useSwapInputsController({
   };
 
   const formattedInputAmount = useDerivedValue(() => {
-    const price = priceForAsset(assetToSell.value);
+    const price = priceForAsset(assetToSell.value, 'assetToSell');
     const balance = Number(assetToSell.value?.balance.amount);
     if (
       (inputMethod.value === 'slider' && percentageToSwap.value === 0) ||
@@ -242,7 +244,7 @@ export function useSwapInputsController({
   });
 
   const formattedOutputAmount = useDerivedValue(() => {
-    const price = (assetToBuyPrice.value || assetToBuy.value?.price?.value || assetToBuy.value?.native.price?.amount) ?? 0;
+    const price = priceForAsset(assetToBuy.value, 'assetToBuy');
 
     if (
       (inputMethod.value === 'slider' && percentageToSwap.value === 0) ||
@@ -686,6 +688,11 @@ export function useSwapInputsController({
       initialNativeValue = initialAmount * assetToSell.value.price.value;
     }
 
+    console.log({
+      initialAmount,
+      initialNativeValue,
+    });
+
     inputValues.modify(values => {
       return {
         ...values,
@@ -809,25 +816,36 @@ export function useSwapInputsController({
 
   // This handles the updating of input values based on the input method
   useAnimatedReaction(
-    () => ({ sliderXPosition: sliderXPosition.value, values: inputValues.value }),
+    () => ({
+      sliderXPosition: sliderXPosition.value,
+      values: inputValues.value,
+      assetToSell: assetToSell.value,
+      assetToBuy: assetToBuy.value,
+    }),
     (current, previous) => {
       if (!previous) {
         // Handle setting of initial values using niceIncrementFormatter,
         // because we will likely set a percentage-based default input value
-        if (!assetToSell.value || !assetToBuy.value || !assetToSellPrice.value || !assetToBuyPrice.value) return;
+        if (!current.assetToSell || !current.assetToBuy) return;
+
+        const balance = Number(current.assetToSell.balance.amount);
+        const sellAssetPrice = priceForAsset(current.assetToSell, 'assetToSell');
+        const buyAssetPrice = priceForAsset(current.assetToBuy, 'assetToBuy');
+
+        if (!sellAssetPrice || !buyAssetPrice) return;
 
         const inputAmount = niceIncrementFormatter(
           incrementDecimalPlaces,
-          Number(assetToSell.value.balance.amount),
-          assetToSellPrice.value,
+          balance,
+          sellAssetPrice,
           niceIncrement,
           percentageToSwap.value,
           sliderXPosition.value,
           true
         );
-        const inputNativeValue = Number(inputAmount) * assetToSellPrice.value;
-        const outputAmount = (inputNativeValue / assetToBuyPrice.value) * (1 - SWAP_FEE); // TODO: Implement swap fee
-        const outputNativeValue = outputAmount * assetToBuyPrice.value;
+        const inputNativeValue = Number(inputAmount) * sellAssetPrice;
+        const outputAmount = (inputNativeValue / buyAssetPrice) * (1 - SWAP_FEE); // TODO: Implement swap fee
+        const outputNativeValue = outputAmount * buyAssetPrice;
 
         inputValues.modify(values => {
           return {
@@ -855,18 +873,33 @@ export function useSwapInputsController({
             });
             isQuoteStale.value = 0;
           } else {
-            if (!assetToSell.value || !assetToSellPrice.value) return;
+            if (!current.assetToSell) return;
+
+            const sellAssetPrice = priceForAsset(current.assetToSell, 'assetToSell');
+            const balance = Number(current.assetToSell.balance.amount);
+
+            console.log({
+              balance,
+              sellAssetPrice,
+              incrementDecimalPlaces,
+              niceIncrement,
+              percentage: percentageToSwap.value,
+              slider: sliderXPosition.value,
+            });
+
             // If the change set the slider position to > 0
             const inputAmount = niceIncrementFormatter(
               incrementDecimalPlaces,
-              Number(assetToSell.value.balance.amount),
-              assetToSellPrice.value,
+              balance,
+              sellAssetPrice,
               niceIncrement,
               percentageToSwap.value,
               sliderXPosition.value,
               true
             );
-            const inputNativeValue = Number(inputAmount) * assetToSellPrice.value;
+            const inputNativeValue = Number(inputAmount) * sellAssetPrice;
+
+            console.log({ inputAmount, inputNativeValue });
 
             inputValues.modify(values => {
               return {
@@ -901,7 +934,7 @@ export function useSwapInputsController({
               runOnJS(onTypedNumber)(0, 'inputAmount');
             }
           } else {
-            if (!assetToSell.value || !assetToSellPrice.value) return;
+            if (!current.assetToSell || !assetToSellPrice.value) return;
             // If the input amount was set to a non-zero value
             const inputNativeValue = Number(current.values.inputAmount) * assetToSellPrice.value;
 
