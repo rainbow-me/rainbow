@@ -118,6 +118,7 @@ export function useSwapInputsController({
   const outputChainId = useSharedValue<ChainId>(ChainId.mainnet);
   const searchQuery = useSharedValue('');
 
+  // NOTE: Setting to -1 to indicate that the price needs to be re-fetched
   const assetToSellPrice = useSharedValue<number>(0);
   const assetToBuyPrice = useSharedValue<number>(0);
 
@@ -182,20 +183,25 @@ export function useSwapInputsController({
   const incrementDecimalPlaces = useMemo(() => countDecimalPlaces(niceIncrement), [niceIncrement]);
 
   const formattedInputAmount = useDerivedValue(() => {
+    const price = (assetToSellPrice.value || assetToSell.value?.price?.value || assetToSell.value?.native.price?.amount) ?? 0;
+    const balance = Number(assetToSell.value?.balance.amount);
     if (
       (inputMethod.value === 'slider' && percentageToSwap.value === 0) ||
       !inputValues.value.inputAmount ||
-      !assetToSellPrice.value ||
-      !assetToSell.value
-    )
+      !assetToSell.value ||
+      !price
+    ) {
       return '0';
+    }
+
     if (inputMethod.value === 'inputAmount' || typeof inputValues.value.inputAmount === 'string') {
       return addCommasToNumber(inputValues.value.inputAmount);
     }
+
     if (inputMethod.value === 'outputAmount') {
       return valueBasedDecimalFormatter(
         inputValues.value.inputAmount,
-        assetToSellPrice.value,
+        price,
         'up',
         -1,
         assetToSell.value?.type === 'stablecoin' ?? false,
@@ -203,14 +209,7 @@ export function useSwapInputsController({
       );
     }
 
-    return niceIncrementFormatter(
-      incrementDecimalPlaces,
-      Number(assetToSell.value?.balance.amount),
-      Number(assetToSell.value?.native.price?.amount),
-      niceIncrement,
-      percentageToSwap.value,
-      sliderXPosition.value
-    );
+    return niceIncrementFormatter(incrementDecimalPlaces, balance, price, niceIncrement, percentageToSwap.value, sliderXPosition.value);
   });
 
   const formattedInputNativeValue = useDerivedValue(() => {
@@ -228,13 +227,17 @@ export function useSwapInputsController({
   });
 
   const formattedOutputAmount = useDerivedValue(() => {
+    const price = (assetToBuyPrice.value || assetToBuy.value?.price?.value || assetToBuy.value?.native.price?.amount) ?? 0;
+    const balance = Number(assetToBuy.value?.balance.amount);
+
     if (
       (inputMethod.value === 'slider' && percentageToSwap.value === 0) ||
       !inputValues.value.outputAmount ||
       !assetToBuy.value ||
-      !assetToBuyPrice.value
-    )
+      !price
+    ) {
       return '0';
+    }
 
     if (inputMethod.value === 'outputAmount' || typeof inputValues.value.outputAmount === 'string') {
       return addCommasToNumber(inputValues.value.outputAmount);
@@ -242,7 +245,7 @@ export function useSwapInputsController({
 
     return valueBasedDecimalFormatter(
       inputValues.value.outputAmount,
-      assetToBuyPrice.value,
+      price,
       'down',
       -1,
       assetToBuy.value?.type === 'stablecoin' ?? false,
@@ -267,8 +270,7 @@ export function useSwapInputsController({
   const spinnerTimer = useRef<NodeJS.Timeout | null>(null);
   const animationFrameId = useRef<number | null>(null);
 
-  const assetToSellPriceRefetchTimer = useRef<NodeJS.Timeout | null>(null);
-  const assetToBuyPriceRefetchTimer = useRef<NodeJS.Timeout | null>(null);
+  const pricesRefetchTimer = useRef<NodeJS.Timeout | null>(null);
   const quoteRefetchTimer = useRef<NodeJS.Timeout | null>(null);
 
   const resetTimers = useCallback(() => {
@@ -283,20 +285,6 @@ export function useSwapInputsController({
     if (percentage > 0) {
       if (setStale) isQuoteStale.value = 1;
       isFetching.value = true;
-
-      if (quoteRefetchTimer.current) {
-        clearInterval(quoteRefetchTimer.current);
-      }
-
-      quoteRefetchTimer.current = setInterval(async () => {
-        if (isFetching.value) return;
-        isFetching.value = true;
-
-        console.log('refetching quote');
-
-        inputValues.value.inputAmount = percentage * Number(assetToSell.value?.balance.amount);
-        await handleInputAmountLogic(percentage * Number(assetToSell.value?.balance.amount));
-      }, QUOTE_REFETCH_INTERVAL);
 
       inputValues.value.inputAmount = percentage * Number(assetToSell.value?.balance.amount);
       spinnerTimer.current = setTimeout(() => {
@@ -489,34 +477,11 @@ export function useSwapInputsController({
 
       if (inputKey === 'inputAmount') {
         inputValues.value.inputAmount = amount;
+        await handleInputAmountLogic(amount);
       } else if (inputKey === 'outputAmount') {
         inputValues.value.outputAmount = amount;
+        await handleOutputAmountLogic(amount);
       }
-
-      // if (quoteRefetchTimer.current) {
-      //   clearInterval(quoteRefetchTimer.current);
-      // }
-
-      // quoteRefetchTimer.current = setInterval(async () => {
-      //   if (isFetching.value) return;
-      //   isFetching.value = true;
-
-      //   if (inputKey === 'inputAmount') {
-      //     handleInputAmountLogic(Number(inputValues.value.inputAmount));
-      //   } else if (inputKey === 'outputAmount') {
-      //     handleOutputAmountLogic(Number(inputValues.value.outputAmount));
-      //   }
-      // }, QUOTE_REFETCH_INTERVAL);
-
-      // spinnerTimer.current = setTimeout(() => {
-      //   animationFrameId.current = requestAnimationFrame(async () => {
-      //     if (inputKey === 'inputAmount') {
-      //       await handleInputAmountLogic(amount);
-      //     } else if (inputKey === 'outputAmount') {
-      //       await handleOutputAmountLogic(amount);
-      //     }
-      //   });
-      // }, 600);
     } else {
       const resetValuesToZero = () => {
         isFetching.value = false;
@@ -629,21 +594,27 @@ export function useSwapInputsController({
     // if the user has an asset to buy selected and the asset to sell is the same, we need to clear the asset to buy
     if (assetToBuy.value && isSameAssetWorklet(assetToBuy.value, parsedAsset)) {
       assetToBuy.value = null;
+      assetToBuyPrice.value = 0;
     }
 
     assetToSell.value = parsedAsset;
+    assetToSellPrice.value = 0;
     if (!assetToBuy.value) {
       outputChainId.value = parsedAsset.chainId;
     }
 
-    const initialAmount = sliderXPosition.value * Number(assetToSell.value.balance.amount);
-
-    console.log(initialAmount);
+    let initialAmount = 0;
+    let initialNativeValue = 0;
+    if (assetToSell.value.price?.value) {
+      initialAmount = percentageToSwap.value * Number(assetToSell.value.balance.amount);
+      initialNativeValue = initialAmount * assetToSell.value.price.value;
+    }
 
     inputValues.modify(values => {
       return {
         ...values,
-        inputAmount: values.inputAmount || initialAmount,
+        inputAmount: initialAmount,
+        inputNativeValue: initialNativeValue,
       };
     });
 
@@ -700,18 +671,25 @@ export function useSwapInputsController({
       const prevAssetToSell = assetToSell.value;
       const prevAssetToBuy = assetToBuy.value;
 
+      const prevAssetToSellPrice = assetToSellPrice.value;
+      const prevAssetToBuyPrice = assetToBuyPrice.value;
+
       if (prevAssetToSell) {
         assetToBuy.value = prevAssetToSell;
+        assetToBuyPrice.value = prevAssetToSellPrice;
         outputChainId.value = prevAssetToSell.chainId;
       } else {
         assetToBuy.value = null;
+        assetToBuyPrice.value = 0;
       }
 
       if (prevAssetToBuy) {
         assetToSell.value = prevAssetToBuy;
+        assetToSellPrice.value = prevAssetToBuyPrice;
         outputChainId.value = prevAssetToBuy.chainId;
       } else {
         assetToSell.value = null;
+        assetToSellPrice.value = 0;
       }
 
       // TODO: if !prevAssetToBuy => focus assetToSell input
@@ -930,72 +908,64 @@ export function useSwapInputsController({
     }
   );
 
-  const fetchAssetPrice = async (asset: ParsedSearchAsset | null, assetType: 'assetToSell' | 'assetToBuy') => {
-    switch (assetType) {
-      case 'assetToSell':
-        if (assetToSellPriceRefetchTimer.current) {
-          clearInterval(assetToSellPriceRefetchTimer.current);
-        }
-        break;
-      case 'assetToBuy':
-        if (assetToBuyPriceRefetchTimer.current) {
-          clearInterval(assetToBuyPriceRefetchTimer.current);
-        }
-        break;
+  const fetchAssetPrices = async ({
+    assetToSell,
+    assetToBuy,
+  }: {
+    assetToSell: ParsedSearchAsset | null;
+    assetToBuy: ParsedSearchAsset | null;
+  }) => {
+    const fetchPriceForAsset = async (asset: ParsedSearchAsset | null, assetType: 'assetToSell' | 'assetToBuy') => {
+      if (!asset) return;
+
+      const assetWithPriceData = await fetchExternalToken({
+        address: asset.address,
+        network: ethereumUtils.getNetworkFromChainId(asset.chainId),
+        currency: currentCurrency,
+      });
+
+      if (!assetWithPriceData) return;
+
+      switch (assetType) {
+        case 'assetToSell':
+          runOnUI((asset: FormattedExternalAsset) => {
+            if (asset.price.value) {
+              assetToSellPrice.value = Number(asset.price.value);
+            } else if (asset.native.price.amount) {
+              assetToSellPrice.value = Number(asset.native.price.amount);
+            }
+
+            inputValues.value.inputNativeValue = Number(inputValues.value.inputAmount) * assetToSellPrice.value;
+          })(assetWithPriceData);
+          break;
+        case 'assetToBuy':
+          runOnUI((asset: FormattedExternalAsset) => {
+            if (asset.price.value) {
+              assetToBuyPrice.value = Number(asset.price.value);
+            } else if (asset.native.price.amount) {
+              assetToBuyPrice.value = Number(asset.native.price.amount);
+            }
+
+            inputValues.value.outputNativeValue = Number(inputValues.value.outputAmount) * assetToBuyPrice.value;
+          })(assetWithPriceData);
+          break;
+      }
+    };
+
+    const fetchPrices = async () => {
+      const promises = ['assetToSell', 'assetToBuy'].map(assetType => {
+        return fetchPriceForAsset(assetType === 'assetToSell' ? assetToSell : assetToBuy, assetType as 'assetToSell' | 'assetToBuy');
+      });
+
+      Promise.allSettled(promises);
+    };
+
+    if (pricesRefetchTimer.current) {
+      clearInterval(pricesRefetchTimer.current);
     }
 
-    if (!asset) return;
-
-    const assetWithPriceData = await fetchExternalToken({
-      address: asset.address,
-      network: ethereumUtils.getNetworkFromChainId(asset.chainId),
-      currency: currentCurrency,
-    });
-
-    if (!assetWithPriceData) return;
-
-    switch (assetType) {
-      case 'assetToSell':
-        runOnUI((asset: FormattedExternalAsset) => {
-          if (asset.price.value) {
-            assetToSellPrice.value = Number(asset.price.value);
-          } else if (asset.native.price.amount) {
-            assetToSellPrice.value = Number(asset.native.price.amount);
-          }
-
-          inputValues.value.inputNativeValue = Number(inputValues.value.inputAmount) * assetToSellPrice.value;
-        })(assetWithPriceData);
-
-        if (assetToSellPriceRefetchTimer.current) {
-          clearInterval(assetToSellPriceRefetchTimer.current);
-        }
-
-        assetToSellPriceRefetchTimer.current = setInterval(() => {
-          console.log('refetching asset to sell price');
-          fetchAssetPrice(assetToSell.value, 'assetToSell');
-        }, PRICE_REFETCH_INTERVAL);
-        break;
-      case 'assetToBuy':
-        runOnUI((asset: FormattedExternalAsset) => {
-          if (asset.price.value) {
-            assetToBuyPrice.value = Number(asset.price.value);
-          } else if (asset.native.price.amount) {
-            assetToBuyPrice.value = Number(asset.native.price.amount);
-          }
-
-          inputValues.value.outputNativeValue = Number(inputValues.value.outputAmount) * assetToBuyPrice.value;
-        })(assetWithPriceData);
-
-        if (assetToBuyPriceRefetchTimer.current) {
-          clearInterval(assetToBuyPriceRefetchTimer.current);
-        }
-
-        assetToBuyPriceRefetchTimer.current = setInterval(() => {
-          console.log('refetching asset to buy price');
-          fetchAssetPrice(assetToBuy.value, 'assetToBuy');
-        }, PRICE_REFETCH_INTERVAL);
-        break;
-    }
+    pricesRefetchTimer.current = setInterval(fetchPrices, PRICE_REFETCH_INTERVAL);
+    return fetchPrices();
   };
 
   // NOTE: refetches asset prices when the assets change
@@ -1005,12 +975,11 @@ export function useSwapInputsController({
       assetToSell: assetToSell.value,
     }),
     (current, previous) => {
-      if (previous?.assetToSell !== current.assetToSell) {
-        runOnJS(fetchAssetPrice)(current.assetToSell, 'assetToSell');
-      }
-
-      if (previous?.assetToBuy !== current.assetToBuy) {
-        runOnJS(fetchAssetPrice)(current.assetToBuy, 'assetToBuy');
+      if (previous?.assetToSell !== current.assetToSell || previous?.assetToBuy !== current.assetToBuy) {
+        runOnJS(fetchAssetPrices)({
+          assetToSell: current.assetToSell,
+          assetToBuy: current.assetToBuy,
+        });
       }
     }
   );
