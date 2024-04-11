@@ -113,9 +113,6 @@ class OldApp extends Component {
       logger.info(`Test flight usage - ${isTestFlight}`);
     }
     this.identifyFlow();
-    InteractionManager.runAfterInteractions(() => {
-      rainbowTokenList.update();
-    });
     const eventSub = AppState?.addEventListener('change', this?.handleAppStateChange);
     this.setState({ eventSubscription: eventSub });
     appEvents.on('transactionConfirmed', this.handleTransactionConfirmed);
@@ -169,9 +166,6 @@ class OldApp extends Component {
     // Restore WC connectors when going from BG => FG
     if (this.state.appState === 'background' && nextAppState === 'active') {
       store.dispatch(walletConnectLoadState());
-      InteractionManager.runAfterInteractions(() => {
-        rainbowTokenList.update();
-      });
     }
     this.setState({ appState: nextAppState });
 
