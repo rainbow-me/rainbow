@@ -406,6 +406,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
             {
               canGoBack: navState.canGoBack,
               canGoForward: navState.canGoForward,
+              logoUrl: logo.current,
               url: navState.url,
             },
             tabId
@@ -416,6 +417,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
             {
               canGoBack: navState.canGoBack,
               canGoForward: navState.canGoForward,
+              logoUrl: logo.current,
             },
             tabId
           );
@@ -427,6 +429,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
           {
             canGoBack: navState.canGoBack,
             canGoForward: navState.canGoForward,
+            logoUrl: logo.current,
           },
           tabId
         );
