@@ -31,7 +31,7 @@ export const GasButton = ({ accentColor }: { accentColor?: string }) => {
   const { params } = useRoute();
   const { currentNetwork } = (params as any) || {};
   const chainId = getNetworkObj(currentNetwork).id;
-  const { selectedGas } = useGasStore();
+  const { selectedGas, setSelectedGas, gasFeeParamsBySpeed } = useGasStore();
   const { data, isLoading } = useMeteorology({ chainId });
   const [nativeAsset, setNativeAsset] = useState<ParsedAddressAsset | undefined>();
   const { nativeCurrency } = useAccountSettings();
@@ -55,6 +55,13 @@ export const GasButton = ({ accentColor }: { accentColor?: string }) => {
     }
     return {};
   }, [isLoading, nativeAsset]);
+  // this effect should only ever run once, as selectedGas will be persisted
+  // useEffect(() => {
+  //   if (isLoading || isEmpty(gasFeeParamsBySpeed[GasSpeed.FAST])) return;
+  //   if (selectedGas?.isDefault && !isEmpty(gasFeeParamsBySpeed)) {
+  //     setSelectedGas({ selectedGas: gasFeeParamsBySpeed[GasSpeed.FAST] });
+  //   }
+  // }, [isLoading, selectedGas, gasFeeBySpeed, setSelectedGas])
   const gasFallback = getGasFallback(nativeCurrency);
   const [showGasOptions, setShowGasOptions] = useState(false);
   const animatedGas = useDerivedValue(() => {
@@ -164,6 +171,7 @@ const GasMenu = ({
           return;
         }
       }
+      console.log('gasfeebyspeed', gasFeeBySpeed[selectedGasSpeed]);
       setSelectedGas({ selectedGas: gasFeeBySpeed[selectedGasSpeed] });
     },
     [setSelectedGas, openCustomGasSheet]
