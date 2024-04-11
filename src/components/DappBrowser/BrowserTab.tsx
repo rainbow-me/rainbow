@@ -516,7 +516,11 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
   });
 
   const animatedScreenshotStyle = useAnimatedStyle(() => {
-    const animatedIsActiveTab = animatedActiveTabIndex?.value === tabIndex;
+    // Note: We use isActiveTab throughout this animated style over animatedIsActiveTab
+    // because the displaying of the screenshot should be synced to the WebView freeze
+    // state, which is driven by the slower JS-side isActiveTab. This prevents the
+    // screenshot from disappearing before the WebView is unfrozen.
+
     const screenshotExists = !!screenshotData.value?.uri;
     const screenshotMatchesTabIdAndUrl = screenshotData.value?.id === tabId && screenshotData.value?.url === tabStates[tabIndex].url;
 
@@ -525,17 +529,16 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
     // it doesn't unfreeze immediately, so this condition allows some time for the tab to
     // become unfrozen before the screenshot is hidden, in most cases hiding the flash of
     // the frozen empty WebView that occurs if the screenshot is hidden immediately.
-    const isActiveTabButMaybeStillFrozen = animatedIsActiveTab && (tabViewProgress?.value || 0) > 50 && !tabViewVisible?.value;
+    const isActiveTabButMaybeStillFrozen = isActiveTab && (tabViewProgress?.value || 0) > 75 && !tabViewVisible?.value;
 
     const oneMinuteAgo = Date.now() - 1000 * 60;
-    const isScreenshotStale = screenshotData.value && screenshotData.value?.timestamp < oneMinuteAgo;
-    const shouldWaitForNewScreenshot =
-      isScreenshotStale && animatedIsActiveTab && !!tabViewVisible?.value && !isActiveTabButMaybeStillFrozen;
+    const isScreenshotStale = !!(screenshotData.value && screenshotData.value?.timestamp < oneMinuteAgo);
+    const shouldWaitForNewScreenshot = isScreenshotStale && !!tabViewVisible?.value && isActiveTab && !isActiveTabButMaybeStillFrozen;
 
     const shouldDisplay =
       screenshotExists &&
       screenshotMatchesTabIdAndUrl &&
-      (!animatedIsActiveTab || !!tabViewVisible?.value || isActiveTabButMaybeStillFrozen) &&
+      (!isActiveTab || !!tabViewVisible?.value || isActiveTabButMaybeStillFrozen) &&
       !shouldWaitForNewScreenshot;
 
     return {
