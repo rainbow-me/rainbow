@@ -1503,7 +1503,6 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks",
 					"$(SRCROOT)/../node_modules/react-native-tooltip/ToolTipMenu",
-					"$(SRCROOT)/../node_modules/react-native-code-push/ios/**",
 					"$(SRCROOT)/../node_modules/@ledgerhq/react-native-passcode-auth",
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 					"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS/**",
@@ -1566,7 +1565,6 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks",
 					"$(SRCROOT)/../node_modules/react-native-tooltip/ToolTipMenu",
-					"$(SRCROOT)/../node_modules/react-native-code-push/ios/**",
 					"$(SRCROOT)/../node_modules/@ledgerhq/react-native-passcode-auth",
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 					"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS/**",
@@ -1675,7 +1673,6 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks",
 					"$(SRCROOT)/../node_modules/react-native-tooltip/ToolTipMenu",
-					"$(SRCROOT)/../node_modules/react-native-code-push/ios/**",
 					"$(SRCROOT)/../node_modules/@ledgerhq/react-native-passcode-auth",
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 				);
@@ -1784,7 +1781,6 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks",
 					"$(SRCROOT)/../node_modules/react-native-tooltip/ToolTipMenu",
-					"$(SRCROOT)/../node_modules/react-native-code-push/ios/**",
 					"$(SRCROOT)/../node_modules/@ledgerhq/react-native-passcode-auth",
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 				);

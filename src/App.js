@@ -3,8 +3,6 @@ import * as Sentry from '@sentry/react-native';
 import React, { Component } from 'react';
 import { AppRegistry, AppState, Dimensions, InteractionManager, Linking, LogBox, View } from 'react-native';
 
-// eslint-disable-next-line import/default
-import codePush from 'react-native-code-push';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import { connect, Provider as ReduxProvider } from 'react-redux';
@@ -34,7 +32,6 @@ import { PerformanceMetrics } from './performance/tracking/types/PerformanceMetr
 import { PersistQueryClientProvider, persistOptions, queryClient } from './react-query';
 import store from './redux/store';
 import { walletConnectLoadState } from './redux/walletconnect';
-import { rainbowTokenList } from './references';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { MainThemeProvider } from './theme/ThemeContext';
 import { ethereumUtils } from './utils';
@@ -371,7 +368,6 @@ function Root() {
 }
 
 const RootWithSentry = Sentry.wrap(Root);
-const RootWithCodePush = codePush(RootWithSentry);
 
 const PlaygroundWithReduxStore = () => (
   <ReduxProvider store={store}>
@@ -379,4 +375,4 @@ const PlaygroundWithReduxStore = () => (
   </ReduxProvider>
 );
 
-AppRegistry.registerComponent('Rainbow', () => (designSystemPlaygroundEnabled ? PlaygroundWithReduxStore : RootWithCodePush));
+AppRegistry.registerComponent('Rainbow', () => (designSystemPlaygroundEnabled ? PlaygroundWithReduxStore : RootWithSentry));
