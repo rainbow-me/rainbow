@@ -231,7 +231,7 @@ export const Search = () => {
                   </Stack>
                 </Stack>
               )}
-              {searchQuery.length && basicSearchResults?.length && (
+              {searchQuery.length && (
                 <Stack space="12px">
                   <Inset horizontal="8px">
                     <Inline space="6px" alignVertical="center">
@@ -245,7 +245,7 @@ export const Search = () => {
                   </Inset>
                   <Stack space="4px">
                     <GoogleSearchResult query={searchQuery} onPress={onPressSearchResult} />
-                    {basicSearchResults.map(dapp => (
+                    {basicSearchResults?.map(dapp => (
                       <SearchResult
                         iconUrl={dapp!.iconURL}
                         key={dapp!.url}
