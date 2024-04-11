@@ -46,14 +46,14 @@ import RNFS from 'react-native-fs';
 import { WebViewEvent } from 'react-native-webview/lib/WebViewTypes';
 import { appMessenger } from '@/browserMessaging/AppMessenger';
 import { IS_ANDROID, IS_DEV, IS_IOS } from '@/env';
+import { RainbowError, logger } from '@/logger';
 import { CloseTabButton, X_BUTTON_PADDING, X_BUTTON_SIZE } from './CloseTabButton';
 import DappBrowserWebview from './DappBrowserWebview';
 import Homepage from './Homepage';
 import { handleProviderRequestApp } from './handleProviderRequest';
 import { WebViewBorder } from './WebViewBorder';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '../animations/animationConfigs';
-import { RainbowError, logger } from '@/logger';
-import { FASTER_IMAGE_CONFIG, RAINBOW_HOME } from './constants';
+import { TAB_SCREENSHOT_FASTER_IMAGE_CONFIG, RAINBOW_HOME } from './constants';
 import { getWebsiteMetadata } from './scripts';
 
 // ⚠️ TODO: Split this file apart into hooks, smaller components
@@ -335,11 +335,11 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
 
     const opacity = interpolate(progress, [0, 100], [animatedIsActiveTab ? 1 : 0, 1], 'clamp');
 
-    // eslint-disable-next-line no-nested-ternary
     return {
       borderRadius,
       height: animatedWebViewHeight.value,
       opacity,
+      // eslint-disable-next-line no-nested-ternary
       pointerEvents: tabViewVisible?.value ? 'auto' : animatedIsActiveTab ? 'auto' : 'none',
       transform: [
         { translateY: animatedMultipleTabsOpen.value * (-animatedWebViewHeight.value / 2) },
@@ -443,7 +443,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
     if (webViewRef.current !== null && isActiveTab) {
       activeTabRef.current = webViewRef.current;
       if (title.current) {
-        // @ts-expect-error
+        // @ts-expect-error Property 'title' does not exist on type 'WebView<{}>'
         activeTabRef.current.title = title.current;
       }
     }
@@ -510,7 +510,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
 
   const screenshotSource = useDerivedValue(() => {
     return {
-      ...FASTER_IMAGE_CONFIG,
+      ...TAB_SCREENSHOT_FASTER_IMAGE_CONFIG,
       url: screenshotData.value?.uri ? `file://${screenshotData.value?.uri}` : '',
     } as ImageOptions;
   });
@@ -740,8 +740,6 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
           isScrollViewScrollable && tabViewVisible?.value === false && current === 0 && previous && previous !== 0;
 
         if (exitTabViewAnimationIsComplete && isScrollViewScrollable) {
-          consoleLogWorklet('SCROLLING TAB INTO POSITION');
-
           const currentTabRow = Math.floor(animatedTabIndex.value / 2);
           const scrollViewHeight =
             Math.ceil((currentlyOpenTabIds?.value.length || 0) / 2) * TAB_VIEW_ROW_HEIGHT +
@@ -825,7 +823,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
                         mediaPlaybackRequiresUserAction
                         onLoadStart={handleOnLoadStart}
                         onLoad={handleOnLoad}
-                        // 👇 This prevents the WebView from hiding its content on load/reload
+                        // 👇 This eliminates a white flash and prevents the WebView from hiding its content on load/reload
                         renderLoading={() => <></>}
                         onLoadEnd={handleOnLoadEnd}
                         onError={handleOnError}
