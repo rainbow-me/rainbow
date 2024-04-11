@@ -37,7 +37,8 @@ export const Search = () => {
 
   const isFocusedValue = useSharedValue(false);
   const [isFocused, setIsFocused] = useState<boolean>(false);
-  const [searchResults, setSearchResults] = useState<GetdAppsQuery['dApps']>([]);
+  const [basicSearchResults, setBasicSearchResults] = useState<GetdAppsQuery['dApps']>([]);
+  const [suggestedSearchResults, setSuggestedSearchResults] = useState<GetdAppsQuery['dApps']>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   const keyboardHeight = useKeyboardHeight({ shouldListen: isFocused });
@@ -131,7 +132,7 @@ export const Search = () => {
   };
 
   const onBlur = useCallback(() => {
-    setSearchResults([]);
+    setBasicSearchResults([]);
     setSearchQuery(inputValue ?? '');
     if (isFocused) {
       setIsFocused(false);
@@ -144,13 +145,12 @@ export const Search = () => {
 
   const search = useCallback(
     (query: string) => {
-      if (!query || query === inputValue) return setSearchResults([]);
+      if (!query || query === inputValue) return setBasicSearchResults([]);
       const filteredDapps = filterList(dappsData?.dApps ?? [], query, ['name', 'url'], {
         threshold: rankings.CONTAINS,
-      })
-        .sort((a, b) => +(b?.status === 'VERIFIED') - +(a?.status === 'VERIFIED'))
-        .slice(0, 3);
-      setSearchResults(filteredDapps);
+      }).sort((a, b) => +(b?.status === 'VERIFIED') - +(a?.status === 'VERIFIED'));
+      setBasicSearchResults(filteredDapps.slice(1, 3));
+      setSuggestedSearchResults(filteredDapps.slice(0, 1));
     },
     [dappsData?.dApps, inputValue]
   );
@@ -203,22 +203,35 @@ export const Search = () => {
           </Box>
           <Inset top={{ custom: 9 }}>
             <Stack space="32px">
-              {/* <Stack space="12px">
-                <Inset horizontal="8px" bottom={{ custom: 9 }}>
-                  <Inline alignHorizontal="justify" alignVertical="center">
-                    <Inline space="6px" alignVertical="center">
-                      <TextIcon color="blue" size="icon 15px" weight="heavy" width={20}>
-                        􀐫
-                      </TextIcon>
-                      <Text weight="heavy" color="label" size="20pt">
-                        Suggested
-                      </Text>
+              {searchQuery.length && suggestedSearchResults?.length && (
+                <Stack space="12px">
+                  <Inset horizontal="8px" bottom={{ custom: 9 }}>
+                    <Inline alignHorizontal="justify" alignVertical="center">
+                      <Inline space="6px" alignVertical="center">
+                        <TextIcon color="blue" size="icon 15px" weight="heavy" width={20}>
+                          􀐫
+                        </TextIcon>
+                        <Text weight="heavy" color="label" size="20pt">
+                          Suggested
+                        </Text>
+                      </Inline>
                     </Inline>
-                  </Inline>
-                </Inset>
-                <SearchResult suggested />
-              </Stack> */}
-              {!!searchResults?.length && (
+                  </Inset>
+                  <Stack space="4px">
+                    {suggestedSearchResults.map(dapp => (
+                      <SearchResult
+                        suggested
+                        iconUrl={dapp!.iconURL}
+                        key={dapp!.url}
+                        name={dapp!.name}
+                        onPress={onPressSearchResult}
+                        url={dapp!.url}
+                      />
+                    ))}
+                  </Stack>
+                </Stack>
+              )}
+              {searchQuery.length && basicSearchResults?.length && (
                 <Stack space="12px">
                   <Inset horizontal="8px">
                     <Inline space="6px" alignVertical="center">
@@ -232,7 +245,7 @@ export const Search = () => {
                   </Inset>
                   <Stack space="4px">
                     <GoogleSearchResult query={searchQuery} onPress={onPressSearchResult} />
-                    {searchResults.map(dapp => (
+                    {basicSearchResults.map(dapp => (
                       <SearchResult
                         iconUrl={dapp!.iconURL}
                         key={dapp!.url}
