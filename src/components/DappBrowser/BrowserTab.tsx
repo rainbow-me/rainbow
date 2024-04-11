@@ -52,8 +52,8 @@ import { handleProviderRequestApp } from './handleProviderRequest';
 import { WebViewBorder } from './WebViewBorder';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '../animations/animationConfigs';
 import { RainbowError, logger } from '@/logger';
-import { isEmpty } from 'lodash';
 import { FASTER_IMAGE_CONFIG, RAINBOW_HOME } from './constants';
+import { getWebsiteMetadata } from './scripts';
 
 // ⚠️ TODO: Split this file apart into hooks, smaller components
 // useTabScreenshots, useAnimatedWebViewStyles, useWebViewGestures
@@ -168,18 +168,6 @@ const deletePrunedScreenshotFiles = async (allScreenshots: ScreenshotType[], scr
   }
 };
 
-const getWebsiteBackgroundColorAndTitle = `
-  const bgColor = window.getComputedStyle(document.body, null).getPropertyValue('background-color');
-  let appleTouchIconHref = document.querySelector("link[rel='apple-touch-icon']")?.getAttribute('href');
-  if (appleTouchIconHref && !appleTouchIconHref.startsWith('http')) {
-    appleTouchIconHref = window.location.origin + appleTouchIconHref;
-  }
-  window.ReactNativeWebView.postMessage(JSON.stringify({ topic: "bg", payload: bgColor}));
-  window.ReactNativeWebView.postMessage(JSON.stringify({ topic: "title", payload: document.title }));
-  window.ReactNativeWebView.postMessage(JSON.stringify({ topic: "logo", payload: appleTouchIconHref }));
-  true;
-  `;
-
 export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, injectedJS }: BrowserTabProps) {
   const {
     activeTabIndex,
@@ -222,7 +210,6 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
   const tabUrl = tabStates?.[tabIndex]?.url;
   const isActiveTab = activeTabIndex === tabIndex;
   const isOnHomepage = tabUrl === RAINBOW_HOME;
-  const isLogoUnset = tabStates[tabIndex]?.logoUrl === undefined;
 
   const animatedTabIndex = useSharedValue(
     (currentlyOpenTabIds?.value.indexOf(tabId) === -1
@@ -384,9 +371,8 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
 
   const handleNavigationStateChange = useCallback(
     (navState: WebViewNavigation) => {
-      // Set the logo if it's not already set for the current website
-      // ⚠️ TODO: Modify this to check against the root domain or subdomain+domain
-      if ((isLogoUnset && !isEmpty(logo.current)) || navState.url !== tabStates[tabIndex].url) {
+      // Set the logo if it's not already set to the current website's logo
+      if (tabStates[tabIndex].logoUrl !== logo.current) {
         updateActiveTabState(
           {
             logoUrl: logo.current,
@@ -445,7 +431,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
         );
       }
     },
-    [isLogoUnset, tabId, logo, tabIndex, tabStates, updateActiveTabState]
+    [logo, tabId, tabIndex, tabStates, updateActiveTabState]
   );
 
   // useLayoutEffect seems to more reliably assign the ref correctly
@@ -561,14 +547,19 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
         // validate message and parse data
         const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
         if (!parsedData || (!parsedData.topic && !parsedData.payload)) return;
-        if (parsedData.topic === 'bg') {
-          if (typeof parsedData.payload === 'string') {
-            backgroundColor.value = parsedData.payload;
+
+        if (parsedData.topic === 'websiteMetadata') {
+          const { bgColor, logoUrl, pageTitle } = parsedData.payload;
+
+          if (bgColor && typeof bgColor === 'string') {
+            backgroundColor.value = bgColor;
           }
-        } else if (parsedData.topic === 'title') {
-          title.current = parsedData.payload;
-        } else if (parsedData.topic === 'logo') {
-          logo.current = parsedData.payload;
+          if (logoUrl && typeof logoUrl === 'string') {
+            logo.current = logoUrl;
+          }
+          if (pageTitle && typeof pageTitle === 'string') {
+            title.current = pageTitle;
+          }
         } else {
           const m = currentMessenger.current;
           handleProviderRequestApp({
@@ -787,7 +778,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
                         automaticallyAdjustContentInsets
                         automaticallyAdjustsScrollIndicatorInsets={false}
                         decelerationRate={'normal'}
-                        injectedJavaScript={getWebsiteBackgroundColorAndTitle}
+                        injectedJavaScript={getWebsiteMetadata}
                         mediaPlaybackRequiresUserAction
                         onLoadStart={handleOnLoadStart}
                         onLoad={handleOnLoad}
