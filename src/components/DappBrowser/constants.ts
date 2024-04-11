@@ -3,6 +3,7 @@ import { ImageOptions } from '@candlefinance/faster-image';
 export const GOOGLE_SEARCH_URL = 'https://www.google.com/search?q=';
 export const HTTP = 'http://';
 export const HTTPS = 'https://';
+export const RAINBOW_HOME = 'RAINBOW_HOME';
 
 const BLANK_BASE64_PIXEL = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
 

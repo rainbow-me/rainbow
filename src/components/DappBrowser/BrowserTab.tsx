@@ -29,7 +29,7 @@ import ViewShot from 'react-native-view-shot';
 import WebView, { WebViewMessageEvent, WebViewNavigation } from 'react-native-webview';
 import { deviceUtils } from '@/utils';
 import { MMKV } from 'react-native-mmkv';
-import { RAINBOW_HOME, TabState, useBrowserContext } from './BrowserContext';
+import { TabState, useBrowserContext } from './BrowserContext';
 import { Freeze } from 'react-freeze';
 import {
   COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
@@ -51,9 +51,9 @@ import Homepage from './Homepage';
 import { handleProviderRequestApp } from './handleProviderRequest';
 import { WebViewBorder } from './WebViewBorder';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '../animations/animationConfigs';
-import { FASTER_IMAGE_CONFIG } from './constants';
 import { RainbowError, logger } from '@/logger';
 import { isEmpty } from 'lodash';
+import { FASTER_IMAGE_CONFIG, RAINBOW_HOME } from './constants';
 
 // ⚠️ TODO: Split this file apart into hooks, smaller components
 // useTabScreenshots, useAnimatedWebViewStyles, useWebViewGestures

@@ -15,6 +15,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import WebView from 'react-native-webview';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { RAINBOW_HOME } from './constants';
 import { generateUniqueId, generateUniqueIdWorklet } from './utils';
 
 interface BrowserTabViewProgressContextType {
@@ -77,7 +78,6 @@ interface BaseTabOperation {
   url?: string;
 }
 
-export const RAINBOW_HOME = 'RAINBOW_HOME';
 interface CloseTabOperation extends BaseTabOperation {
   type: 'closeTab';
 }
