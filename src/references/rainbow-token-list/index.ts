@@ -127,7 +127,6 @@ class RainbowTokenList extends EventEmitter {
     logger.debug('Token list data replaced');
   }
 
-
   get CURATED_TOKENS() {
     return this.#derivedData.CURATED_TOKENS;
   }
