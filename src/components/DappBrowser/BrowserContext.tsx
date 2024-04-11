@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 import React, { createContext, useCallback, useContext, useRef, useState } from 'react';
 import { TextInput } from 'react-native';
 import isEqual from 'react-fast-compare';
@@ -40,13 +39,14 @@ interface BrowserContextType {
   activeTabIndex: number;
   activeTabRef: React.MutableRefObject<WebView | null>;
   animatedActiveTabIndex: SharedValue<number> | undefined;
+  closeAllTabsWorklet: () => void;
   closeTabWorklet: (tabId: string, tabIndex: number) => void;
   currentlyOpenTabIds: SharedValue<string[]> | undefined;
   getActiveTabState: () => TabState | undefined;
   goBack: () => void;
   goForward: () => void;
   loadProgress: SharedValue<number> | undefined;
-  newTabWorklet: (url?: string) => void;
+  newTabWorklet: (newTabUrl?: string) => void;
   onRefresh: () => void;
   searchInputRef: React.RefObject<TextInput | null>;
   searchViewProgress: SharedValue<number> | undefined;
@@ -70,7 +70,7 @@ export interface TabState {
 
 type TabOperationType = 'newTab' | 'closeTab';
 
-interface TabOperation {
+interface BaseTabOperation {
   type: TabOperationType;
   tabId: string;
   newActiveIndex: number | undefined;
@@ -78,6 +78,16 @@ interface TabOperation {
 }
 
 export const RAINBOW_HOME = 'RAINBOW_HOME';
+interface CloseTabOperation extends BaseTabOperation {
+  type: 'closeTab';
+}
+
+interface NewTabOperation extends BaseTabOperation {
+  type: 'newTab';
+  newTabUrl?: string;
+}
+
+type TabOperation = CloseTabOperation | NewTabOperation;
 
 const DEFAULT_TAB_STATE: TabState[] = [{ canGoBack: false, canGoForward: false, uniqueId: generateUniqueId(), url: RAINBOW_HOME }];
 
@@ -85,6 +95,9 @@ const DEFAULT_BROWSER_CONTEXT: BrowserContextType = {
   activeTabIndex: 0,
   activeTabRef: { current: null },
   animatedActiveTabIndex: undefined,
+  closeAllTabsWorklet: () => {
+    return;
+  },
   closeTabWorklet: () => {
     return;
   },
@@ -98,7 +111,7 @@ const DEFAULT_BROWSER_CONTEXT: BrowserContextType = {
   goForward: () => {
     return;
   },
-  newTabWorklet: (url?: string) => {
+  newTabWorklet: () => {
     return;
   },
   onRefresh: () => {
@@ -243,6 +256,7 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
       } else if (indexToMakeActive !== undefined) {
         setActiveTabIndex(indexToMakeActive);
       }
+
       shouldBlockOperationQueue.value = false;
     },
     [setTabStates, shouldBlockOperationQueue, toggleTabViewWorklet]
@@ -282,9 +296,6 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
                 newActiveIndex = -(currentlyOpenTabIds.value.length - 1);
               }
             }
-          } else {
-            // ⚠️ TODO: Add logging here to report any time a tab close operation was registered for a
-            // nonexistent tab (should never happen)
           }
           // Remove the operation from the queue after processing
           currentQueue.splice(i, 1);
@@ -301,7 +312,7 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
               canGoBack: false,
               canGoForward: false,
               uniqueId: operation.tabId,
-              url: operation.url || RAINBOW_HOME,
+              url: operation.newTabUrl || RAINBOW_HOME,
             };
             newTabStates.push(newTab);
             shouldToggleTabView = true;
@@ -315,6 +326,7 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
         }
       }
 
+      // Double check to ensure the newActiveIndex is valid
       if (newActiveIndex !== undefined && (tabViewVisible.value || newActiveIndex >= 0)) {
         animatedActiveTabIndex.value = newActiveIndex;
       } else {
@@ -356,7 +368,7 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
   ]);
 
   const newTabWorklet = useCallback(
-    (url?: string) => {
+    (newTabUrl?: string) => {
       'worklet';
       const tabIdsInStates = new Set(tabStates?.map(state => state.uniqueId));
       const isNewTabOperationPending =
@@ -366,7 +378,7 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
       // The first check is mainly to guard against an edge case that happens when the new tab button is
       // pressed just after the last tab is closed, but before a new blank tab has opened programatically,
       // which results in two tabs being created when the user most certainly only wanted one.
-      if (url || (!isNewTabOperationPending && (tabViewVisible.value || currentlyOpenTabIds.value.length === 0))) {
+      if (newTabUrl || (!isNewTabOperationPending && (tabViewVisible.value || currentlyOpenTabIds.value.length === 0))) {
         const tabIdForNewTab = generateUniqueIdWorklet();
         const newActiveIndex = currentlyOpenTabIds.value.length - 1;
 
@@ -374,11 +386,22 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
           value.push(tabIdForNewTab);
           return value;
         });
-        requestTabOperationsWorklet({ type: 'newTab', tabId: tabIdForNewTab, newActiveIndex, url });
+        requestTabOperationsWorklet({ type: 'newTab', tabId: tabIdForNewTab, newActiveIndex, newTabUrl });
       }
     },
     [currentlyOpenTabIds, requestTabOperationsWorklet, tabOperationQueue, tabStates, tabViewVisible]
   );
+
+  const closeAllTabsWorklet = useCallback(() => {
+    'worklet';
+    const tabsToClose: TabOperation[] = currentlyOpenTabIds.value.map(tabId => ({ type: 'closeTab', tabId, newActiveIndex: undefined }));
+    currentlyOpenTabIds.modify(value => {
+      value.splice(0, value.length);
+      return value;
+    });
+    requestTabOperationsWorklet(tabsToClose);
+    newTabWorklet();
+  }, [currentlyOpenTabIds, newTabWorklet, requestTabOperationsWorklet]);
 
   const closeTabWorklet = useCallback(
     (tabId: string, tabIndex: number) => {
@@ -463,13 +486,14 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
         activeTabIndex,
         activeTabRef,
         animatedActiveTabIndex,
+        closeAllTabsWorklet,
         closeTabWorklet,
+        currentlyOpenTabIds,
         getActiveTabState,
         goBack,
         goForward,
         loadProgress,
         newTabWorklet,
-        currentlyOpenTabIds,
         onRefresh,
         searchViewProgress,
         searchInputRef,
