@@ -325,6 +325,14 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
         animatedActiveTabIndex.value = indexToSet;
       }
 
+      // Remove any remaining tabs that exist in tabStates but not in currentlyOpenTabIds. This covers
+      // cases where tabStates hasn't yet been updated between tab close operations.
+      for (let i = newTabStates.length - 1; i >= 0; i--) {
+        if (!currentlyOpenTabIds.value.includes(newTabStates[i].uniqueId)) {
+          newTabStates.splice(i, 1);
+        }
+      }
+
       runOnJS(setTabStatesThenUnblockQueue)(
         newTabStates,
         shouldToggleTabView,
