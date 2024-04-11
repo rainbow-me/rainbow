@@ -179,8 +179,11 @@ export function useSwapInputsController({
     return Math.round(clamp((sliderXPosition.value - SCRUBBER_WIDTH / SLIDER_WIDTH) / SLIDER_WIDTH, 0, 1) * 100) / 100;
   });
 
-  const niceIncrement = useMemo(() => findNiceIncrement(Number(assetToSell.value?.balance.amount)), [assetToSell]);
-  const incrementDecimalPlaces = useMemo(() => countDecimalPlaces(niceIncrement), [niceIncrement]);
+  const niceIncrement = useDerivedValue(() => {
+    if (!assetToSell.value?.balance.amount) return 0;
+    return findNiceIncrement(Number(assetToSell.value?.balance.amount));
+  });
+  const incrementDecimalPlaces = useDerivedValue(() => countDecimalPlaces(niceIncrement.value));
 
   const priceForAsset = (asset: ParsedSearchAsset | null, assetType: 'assetToSell' | 'assetToBuy') => {
     'worklet';
@@ -226,7 +229,14 @@ export function useSwapInputsController({
       );
     }
 
-    return niceIncrementFormatter(incrementDecimalPlaces, balance, price, niceIncrement, percentageToSwap.value, sliderXPosition.value);
+    return niceIncrementFormatter(
+      incrementDecimalPlaces.value,
+      balance,
+      price,
+      niceIncrement.value,
+      percentageToSwap.value,
+      sliderXPosition.value
+    );
   });
 
   const formattedInputNativeValue = useDerivedValue(() => {
@@ -297,8 +307,6 @@ export function useSwapInputsController({
 
   const onChangedPercentage = useDebouncedCallback((percentage: number, setStale = true) => {
     resetTimers();
-
-    console.log({ percentage });
 
     if (percentage > 0) {
       if (setStale) isQuoteStale.value = 1;
@@ -558,8 +566,6 @@ export function useSwapInputsController({
     // TODO: Need to convert big number to native value properly here...
     // example: "fee": "3672850000000000",
     fee.value = isWrapOrUnwrapEth ? '0' : data.feeInEth.toString();
-
-    console.log({ inputAmount, inputNativeValue, outputAmount, outputNativeValue });
 
     inputValues.modify(values => {
       return {
@@ -835,10 +841,10 @@ export function useSwapInputsController({
         if (!sellAssetPrice || !buyAssetPrice) return;
 
         const inputAmount = niceIncrementFormatter(
-          incrementDecimalPlaces,
+          incrementDecimalPlaces.value,
           balance,
           sellAssetPrice,
-          niceIncrement,
+          niceIncrement.value,
           percentageToSwap.value,
           sliderXPosition.value,
           true
@@ -878,28 +884,17 @@ export function useSwapInputsController({
             const sellAssetPrice = priceForAsset(current.assetToSell, 'assetToSell');
             const balance = Number(current.assetToSell.balance.amount);
 
-            console.log({
-              balance,
-              sellAssetPrice,
-              incrementDecimalPlaces,
-              niceIncrement,
-              percentage: percentageToSwap.value,
-              slider: sliderXPosition.value,
-            });
-
             // If the change set the slider position to > 0
             const inputAmount = niceIncrementFormatter(
-              incrementDecimalPlaces,
+              incrementDecimalPlaces.value,
               balance,
               sellAssetPrice,
-              niceIncrement,
+              niceIncrement.value,
               percentageToSwap.value,
               sliderXPosition.value,
               true
             );
             const inputNativeValue = Number(inputAmount) * sellAssetPrice;
-
-            console.log({ inputAmount, inputNativeValue });
 
             inputValues.modify(values => {
               return {

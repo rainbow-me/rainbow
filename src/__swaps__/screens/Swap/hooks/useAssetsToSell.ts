@@ -1,21 +1,20 @@
 import { useState } from 'react';
 import { Hex } from 'viem';
-import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
+import { runOnJS, useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
 
 import { selectUserAssetsList, selectUserAssetsListByChainId } from '@/__swaps__/screens/Swap/resources/_selectors/assets';
 import { useUserAssets } from '@/__swaps__/screens/Swap/resources/assets';
 import { ParsedAssetsDictByChain, ParsedSearchAsset } from '@/__swaps__/types/assets';
-import type { SortMethod } from '@/__swaps__/types/swap';
+import { SortMethod } from '@/__swaps__/types/swap';
 import { useAccountSettings } from '@/hooks';
-import { useSwapAssetStore } from '@/__swaps__/screens/Swap/state/assets';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 
 const sortBy = (by: SortMethod) => {
   switch (by) {
-    case 'token':
+    case SortMethod.token:
       return selectUserAssetsList;
-    case 'chain':
+    case SortMethod.chain:
       return selectUserAssetsListByChainId;
   }
 };
@@ -23,7 +22,9 @@ const sortBy = (by: SortMethod) => {
 export const useAssetsToSell = () => {
   const { SwapInputController } = useSwapContext();
   const { accountAddress: currentAddress, nativeCurrency: currentCurrency } = useAccountSettings();
-  const { sortMethod } = useSwapAssetStore();
+  // const { sortMethod } = useSwapAssetStore();
+
+  const sortMethod = useSharedValue(SortMethod.token);
 
   const [currentAssets, setCurrentAssets] = useState<ParsedSearchAsset[]>([]);
 
@@ -40,7 +41,7 @@ export const useAssetsToSell = () => {
           acc[chainKey] = data[chainKey];
           return acc;
         }, {} as ParsedAssetsDictByChain);
-        return sortBy(sortMethod)(filteredAssetsDictByChain);
+        return sortBy(sortMethod.value)(filteredAssetsDictByChain);
       },
       cacheTime: Infinity,
       staleTime: Infinity,

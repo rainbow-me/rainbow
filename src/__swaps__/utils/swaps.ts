@@ -51,6 +51,8 @@ export const clampJS = (value: number, lowerBound: number, upperBound: number) =
 };
 
 export const countDecimalPlaces = (number: number): number => {
+  'worklet';
+
   const numAsString = number.toString();
 
   if (numAsString.includes('.')) {
@@ -63,6 +65,8 @@ export const countDecimalPlaces = (number: number): number => {
 };
 
 export const findNiceIncrement = (availableBalance: number): number => {
+  'worklet';
+
   // We'll use one of these factors to adjust the base increment
   // These factors are chosen to:
   // a) Produce user-friendly amounts to swap (e.g., 0.1, 0.2, 0.3, 0.4…)
