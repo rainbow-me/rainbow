@@ -38,6 +38,7 @@ import {
   OVM_GAS_PRICE_ORACLE,
   BNB_MAINNET_ADDRESS,
   AVAX_AVALANCHE_ADDRESS,
+  DEGEN_CHAIN_DEGEN_ADDRESS,
 } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { logger, RainbowError } from '@/logger';
@@ -169,9 +170,9 @@ export const useNativeAssetForNetwork = (network: Network) => {
   let address = getNetworkObj(network).nativeCurrency?.mainnetAddress || ETH_ADDRESS;
   let theNetwork = Network.mainnet;
   const { nativeCurrency } = store.getState().settings;
-  if (network === Network.avalanche) {
+  if (network === Network.avalanche || network === Network.degen) {
     address = getNetworkObj(network).nativeCurrency?.address;
-    theNetwork = Network.avalanche;
+    theNetwork = network;
   }
   const { data: nativeAsset } = useExternalToken({
     address,
@@ -190,6 +191,8 @@ const getPriceOfNativeAssetForNetwork = (network: Network) => {
     return getBnbPriceUnit();
   } else if (network === Network.avalanche) {
     return getAvaxPriceUnit();
+  } else if (network === Network.degen) {
+    return getDegenPriceUnit();
   }
   return getEthPriceUnit();
 };
@@ -199,6 +202,7 @@ const getEthPriceUnit = () => getAssetPrice();
 const getMaticPriceUnit = () => getAssetPrice(MATIC_MAINNET_ADDRESS);
 const getBnbPriceUnit = () => getAssetPrice(BNB_MAINNET_ADDRESS);
 const getAvaxPriceUnit = () => getAssetPrice(getUniqueId(AVAX_AVALANCHE_ADDRESS, Network.avalanche));
+const getDegenPriceUnit = () => getAssetPrice(getUniqueId(DEGEN_CHAIN_DEGEN_ADDRESS, Network.degen));
 
 const getBalanceAmount = (
   selectedGasFee: SelectedGasFee | LegacySelectedGasFee,
@@ -545,6 +549,7 @@ export default {
   getMaticPriceUnit,
   getBnbPriceUnit,
   getAvaxPriceUnit,
+  getDegenPriceUnit,
   getNativeAssetForNetwork,
   getNetworkFromChainId,
   getNetworkNameFromChainId,
