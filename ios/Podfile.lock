@@ -528,7 +528,7 @@ PODS:
     - React-Core
   - react-native-cloud-fs (2.6.1):
     - React
-  - react-native-compat (2.12.2):
+  - react-native-compat (2.11.2):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
   - react-native-get-random-values (1.5.0):
@@ -1313,7 +1313,7 @@ SPEC CHECKSUMS:
   react-native-cameraroll: aff50ec1df9d054626dceca9336e6644e153d32f
   react-native-change-icon: ea9bb7255b09e89f41cbf282df16eade91ab1833
   react-native-cloud-fs: e7103d1f693c57b481f820fa5e6b6b0522a5a31e
-  react-native-compat: c741279b875109d2d9fc8da22e80c00ef91311a6
+  react-native-compat: e31d4e4ba7db54f2649c4b34b9b594029b51b5e2
   react-native-get-random-values: 1404bd5cc0ab0e287f75ee1c489555688fc65f89
   react-native-ios-context-menu: e529171ba760a1af7f2ef0729f5a7f4d226171c5
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
