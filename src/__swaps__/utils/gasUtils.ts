@@ -34,6 +34,7 @@ import { getNetworkObj } from '@/networks';
 import { useAccountSettings } from '@/hooks';
 import { ParsedAddressAsset } from '@/entities';
 import { ethereumUtils } from '@/utils';
+import { useSwapContext } from '../screens/Swap/providers/swap-provider';
 
 export const FLASHBOTS_MIN_TIP = 6;
 
@@ -628,8 +629,10 @@ const mockedGasLimit = '21000';
 export const useMeteorologyReport = () => {
   const { params } = useRoute();
   const { currentNetwork } = (params as any) || {};
-  const chainId = getNetworkObj(currentNetwork).id;
-  const { data, isLoading } = useMeteorology({ chainId });
+  const { SwapInputController } = useSwapContext();
+  SwapInputController;
+  // const chainId = getNetworkObj(currentNetwork).id;
+  const { data, isLoading } = useMeteorology({ chainId: SwapInputController.outputChainId });
   const [nativeAsset, setNativeAsset] = useState<ParsedAddressAsset | undefined>();
   const { nativeCurrency } = useAccountSettings();
   useEffect(() => {
@@ -652,6 +655,5 @@ export const useMeteorologyReport = () => {
     }
     return {};
   }, [isLoading, nativeAsset]);
-  // console.log('gasFeeparams', gasFeeParamsBySpeed)
   return { gasFeeParamsBySpeed };
 };
