@@ -308,12 +308,12 @@ export function useSwapInputsController({
   const onChangedPercentage = useDebouncedCallback((percentage: number, setStale = true) => {
     resetTimers();
 
-    if (percentage > 0) {
-      if (setStale) isQuoteStale.value = 1;
+    const amount = percentage * Number(assetToSell.value?.balance.amount);
+    if (amount > 0) {
       isFetching.value = true;
 
+      if (setStale) isQuoteStale.value = 1;
       animationFrameId.current = requestAnimationFrame(async () => {
-        const amount = percentage * Number(assetToSell.value?.balance.amount);
         await handleInputAmountLogic(amount);
       });
     } else {
@@ -455,6 +455,8 @@ export function useSwapInputsController({
       swapType: isCrosschainSwap ? SwapType.crossChain : SwapType.normal,
       toChainId: isCrosschainSwap ? assetToBuy.value.chainId : assetToSell.value.chainId,
     };
+
+    console.log(JSON.stringify(quoteParams, null, 2));
 
     const updateQuoteAndSource = (data: Quote | CrosschainQuote | QuoteError) => {
       'worklet';
@@ -767,9 +769,61 @@ export function useSwapInputsController({
         assetToSell.value = prevAssetToBuy;
         assetToSellPrice.value = prevAssetToBuyPrice;
         outputChainId.value = prevAssetToBuy.chainId;
+
+        const balance = Number(assetToSell.value.balance.amount);
+        const price = priceForAsset(assetToSell.value, 'assetToSell');
+
+        if (!balance || !price) {
+          inputValues.modify(values => {
+            return {
+              ...values,
+              inputAmount: 0,
+              inputNativeValue: 0,
+              outputAmount: 0,
+              outputNativeValue: 0,
+            };
+          });
+          return;
+        }
+
+        const inputAmount = niceIncrementFormatter(
+          incrementDecimalPlaces.value,
+          balance,
+          price,
+          niceIncrement.value,
+          percentageToSwap.value,
+          sliderXPosition.value,
+          true
+        );
+        const inputNativeValue = Number(inputAmount) * price;
+        inputValues.modify(values => {
+          return {
+            ...values,
+            inputAmount,
+            inputNativeValue,
+          };
+        });
+
+        if (Number(inputAmount) > 0) {
+          isFetching.value = true;
+          isQuoteStale.value = 1;
+
+          animationFrameId.current = requestAnimationFrame(async () => {
+            runOnJS(handleInputAmountLogic)(Number(inputAmount));
+          });
+        }
       } else {
         assetToSell.value = null;
         assetToSellPrice.value = 0;
+        inputValues.modify(values => {
+          return {
+            ...values,
+            inputAmount: 0,
+            inputNativeValue: 0,
+            outputAmount: 0,
+            outputNativeValue: 0,
+          };
+        });
       }
 
       // TODO: if !prevAssetToBuy => focus assetToSell input
@@ -777,17 +831,6 @@ export function useSwapInputsController({
 
       if (outputProgress.value === 1) {
         handleOutputPress();
-      }
-
-      const inputAmount = Number(inputValues.value.inputAmount);
-      if (inputAmount > 0) {
-        isFetching.value = true;
-        isQuoteStale.value = 1;
-
-        // TODO: This doesn't work quite right...
-        animationFrameId.current = requestAnimationFrame(async () => {
-          runOnJS(handleInputAmountLogic)(inputAmount);
-        });
       }
     };
 
@@ -883,6 +926,19 @@ export function useSwapInputsController({
 
             const sellAssetPrice = priceForAsset(current.assetToSell, 'assetToSell');
             const balance = Number(current.assetToSell.balance.amount);
+
+            if (!balance || !sellAssetPrice) {
+              inputValues.modify(values => {
+                return {
+                  ...values,
+                  inputAmount: 0,
+                  inputNativeValue: 0,
+                  outputAmount: 0,
+                  outputNativeValue: 0,
+                };
+              });
+              return;
+            }
 
             // If the change set the slider position to > 0
             const inputAmount = niceIncrementFormatter(
