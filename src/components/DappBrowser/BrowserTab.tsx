@@ -55,6 +55,8 @@ import { WebViewBorder } from './WebViewBorder';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '../animations/animationConfigs';
 import { TAB_SCREENSHOT_FASTER_IMAGE_CONFIG, RAINBOW_HOME } from './constants';
 import { getWebsiteMetadata } from './scripts';
+import { useBrowserHistoryStore } from '@/state/browserHistory';
+import { normalizeUrlForRecents } from './utils';
 
 // ⚠️ TODO: Split this file apart into hooks, smaller components
 // useTabScreenshots, useAnimatedWebViewStyles, useWebViewGestures
@@ -187,6 +189,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
   } = useBrowserContext();
   const { isDarkMode } = useColorMode();
   const { width: deviceWidth } = useDimensions();
+  const { addRecent } = useBrowserHistoryStore();
 
   const currentMessenger = useRef<any>(null);
   const title = useRef<string | null>(null);
@@ -567,6 +570,13 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
           if (pageTitle && typeof pageTitle === 'string') {
             title.current = pageTitle;
           }
+
+          addRecent({
+            url: normalizeUrlForRecents(tabStates[tabIndex].url),
+            name: pageTitle,
+            image: logoUrl,
+            timestamp: Date.now(),
+          });
         } else {
           const m = currentMessenger.current;
           handleProviderRequestApp({
@@ -588,7 +598,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
         console.error('Error parsing message', e);
       }
     },
-    [isActiveTab, tabId, tabIndex, tabStates, title, backgroundColor]
+    [isActiveTab, addRecent, tabStates, tabIndex, backgroundColor, tabId]
   );
 
   const handleOnLoadStart = useCallback(

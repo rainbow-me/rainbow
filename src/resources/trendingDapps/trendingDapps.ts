@@ -2,7 +2,7 @@ export type TrendingSite = {
   name: string;
   url: string;
   image: string;
-  screenshot: string;
+  screenshot?: string;
 };
 
 export const trendingDapps: TrendingSite[] = [
@@ -41,33 +41,6 @@ export const trendingDapps: TrendingSite[] = [
     url: 'app.aave.com',
     image: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/dapps/aave.com.png',
     screenshot: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/dapps/aave.com.png',
-  },
-  {
-    name: 'Mirror',
-    url: 'mirror.xyz',
-    image: 'https://rainbowme-res.cloudinary.com/image/upload/v1694734011/dapps/mirror.xyz.jpg',
-    screenshot: 'https://rainbowme-res.cloudinary.com/image/upload/v1694734011/dapps/mirror.xyz.jpg',
-  },
-];
-
-export const recentDapps: TrendingSite[] = [
-  {
-    name: 'BasePaint',
-    url: 'basepaint.xyz',
-    image: 'https://pbs.twimg.com/profile_images/1704878803611447296/6HniqSfx_400x400.jpg',
-    screenshot: 'https://i.seadn.io/s/raw/files/7c38b0c9b5903d08817102466e9fff27.png?auto=format&dpr=1&w=600',
-  },
-  {
-    name: 'Blur',
-    url: 'blur.io',
-    image: 'https://pbs.twimg.com/profile_images/1518705644450291713/X2FLVDdn_400x400.jpg',
-    screenshot: 'https://pbs.twimg.com/profile_banners/1481340056426143744/1646076761/1500x500',
-  },
-  {
-    name: 'Uniswap',
-    url: 'app.uniswap.org',
-    image: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/dapps/uniswap.org.png',
-    screenshot: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/dapps/uniswap.org.png',
   },
   {
     name: 'Mirror',
