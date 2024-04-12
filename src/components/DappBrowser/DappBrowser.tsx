@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import Animated, { interpolateColor, runOnJS, useAnimatedProps, useAnimatedReaction, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { interpolateColor, useAnimatedProps, useAnimatedReaction, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import RNFS from 'react-native-fs';
 
 import { Page } from '@/components/layout';
 import { Box, globalColors, useColorMode } from '@/design-system';
 import { IS_ANDROID } from '@/env';
-import { safeAreaInsetValues } from '@/utils';
+import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { BrowserContextProvider, useBrowserContext } from './BrowserContext';
 import { BrowserTab, pruneScreenshots } from './BrowserTab';
 import { TAB_VIEW_ROW_HEIGHT } from './Dimensions';
@@ -16,6 +16,7 @@ import { TabViewToolbar } from './TabViewToolbar';
 import { SheetGestureBlocker } from '../sheet/SheetGestureBlocker';
 import { ProgressBar } from './ProgressBar';
 import { RouteProp, useRoute } from '@react-navigation/native';
+import { TIMING_CONFIGS } from '../animations/animationConfigs';
 
 const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 
@@ -41,7 +42,7 @@ const DappBrowserComponent = () => {
   const { isDarkMode } = useColorMode();
   const [injectedJS, setInjectedJS] = useState<string | ''>('');
 
-  const { scrollViewRef, tabStates, tabViewProgress, tabViewVisible, newTabWorklet, toggleTabViewWorklet } = useBrowserContext();
+  const { currentlyOpenTabIds, newTabWorklet, scrollViewRef, tabStates, tabViewProgress, tabViewVisible } = useBrowserContext();
 
   const route = useRoute<RouteProp<RouteParams, 'DappBrowserParams'>>();
 
@@ -50,7 +51,6 @@ const DappBrowserComponent = () => {
     (current, previous) => {
       if (current !== previous && route.params?.url) {
         newTabWorklet(current);
-        toggleTabViewWorklet();
       }
     },
     [newTabWorklet, route.params?.url]
@@ -85,6 +85,20 @@ const DappBrowserComponent = () => {
     };
   });
 
+  const scrollViewHeightStyle = useAnimatedStyle(() => {
+    const height = Math.max(
+      Math.ceil((currentlyOpenTabIds?.value.length || 0) / 2) * TAB_VIEW_ROW_HEIGHT +
+        safeAreaInsetValues.bottom +
+        165 +
+        28 +
+        (IS_ANDROID ? 35 : 0),
+      deviceUtils.dimensions.height
+    );
+    // Using paddingBottom on a nested container instead of height because the height of the ScrollView
+    // seemingly cannot be directly animated. This works because the tabs are all positioned absolutely.
+    return { paddingBottom: withTiming(height, TIMING_CONFIGS.tabPressConfig) };
+  });
+
   const scrollEnabledProp = useAnimatedProps(() => ({
     scrollEnabled: tabViewVisible?.value,
   }));
@@ -99,24 +113,22 @@ const DappBrowserComponent = () => {
           style={[
             backgroundStyle,
             {
-              paddingTop: android ? 30 : 0,
+              paddingTop: IS_ANDROID ? 30 : 0,
             },
           ]}
           width="full"
         />
         <AnimatedScrollView
           animatedProps={scrollEnabledProp}
-          contentContainerStyle={{
-            height: Math.ceil(tabStates.length / 2) * TAB_VIEW_ROW_HEIGHT + safeAreaInsetValues.bottom + (android ? 35 : 0) + 165 + 28,
-            zIndex: 20000,
-          }}
           ref={scrollViewRef}
           scrollEventThrottle={16}
           showsVerticalScrollIndicator={false}
         >
-          {tabStates.map((_, index) => (
-            <BrowserTab key={tabStates[index].uniqueId} tabId={tabStates[index].uniqueId} tabIndex={index} injectedJS={injectedJS} />
-          ))}
+          <Animated.View style={scrollViewHeightStyle}>
+            {tabStates.map((_, index) => (
+              <BrowserTab key={tabStates[index].uniqueId} tabId={tabStates[index].uniqueId} tabIndex={index} injectedJS={injectedJS} />
+            ))}
+          </Animated.View>
         </AnimatedScrollView>
         <ProgressBar />
         <TabViewToolbar />

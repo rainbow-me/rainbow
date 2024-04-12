@@ -4,7 +4,7 @@ import { AnimatedText, Box, Cover, globalColors, useColorMode, useForegroundColo
 import Animated, { SharedValue, useAnimatedStyle, useDerivedValue, withSpring, withTiming } from 'react-native-reanimated';
 import Input from '@/components/inputs/Input';
 import * as i18n from '@/languages';
-import { NativeSyntheticEvent, StyleSheet, TextInput, TextInputFocusEventData, TextInputSubmitEditingEventData } from 'react-native';
+import { NativeSyntheticEvent, StyleSheet, TextInput, TextInputChangeEventData, TextInputSubmitEditingEventData } from 'react-native';
 import { ToolbarIcon } from '../ToolbarIcon';
 import { IS_IOS } from '@/env';
 import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
@@ -29,6 +29,7 @@ export const SearchInput = ({
   inputRef,
   formattedInputValue,
   inputValue,
+  searchValue,
   isGoogleSearch,
   isHome,
   onPressWorklet,
@@ -39,20 +40,23 @@ export const SearchInput = ({
   logoUrl,
   canGoBack,
   canGoForward,
+  onChange,
 }: {
   inputRef: RefObject<TextInput>;
-  formattedInputValue: { value: string; tabIndex: number };
+  formattedInputValue: { url: string; tabIndex: number };
   inputValue: string | undefined;
+  searchValue: string;
   isGoogleSearch: boolean;
   isHome: boolean;
   onPressWorklet: () => void;
-  onBlur: (event: NativeSyntheticEvent<TextInputFocusEventData>) => void;
+  onBlur: () => void;
   onSubmitEditing: (event: NativeSyntheticEvent<TextInputSubmitEditingEventData>) => void;
   isFocused: boolean;
   isFocusedValue: SharedValue<boolean>;
   logoUrl: string | undefined | null;
   canGoBack: boolean;
   canGoForward: boolean;
+  onChange: (event: NativeSyntheticEvent<TextInputChangeEventData>) => void;
 }) => {
   const { animatedActiveTabIndex, goBack, goForward, onRefresh, tabViewProgress } = useBrowserContext();
   const { isFavorite, addFavorite, removeFavorite } = useFavoriteDappsStore();
@@ -67,9 +71,9 @@ export const SearchInput = ({
   const buttonColorAndroid = isDarkMode ? globalColors.blueGrey100 : globalColors.white100;
   const buttonColor = IS_IOS ? buttonColorIOS : buttonColorAndroid;
 
-  const formattedUrl = formattedInputValue?.value;
+  const formattedUrl = formattedInputValue?.url;
   const formattedUrlValue = useDerivedValue(() => {
-    return formattedInputValue?.tabIndex !== animatedActiveTabIndex?.value ? '' : formattedInputValue?.value;
+    return formattedInputValue?.tabIndex !== animatedActiveTabIndex?.value ? '' : formattedInputValue?.url;
   });
 
   const pointerEventsStyle = useAnimatedStyle(() => ({
@@ -223,6 +227,7 @@ export const SearchInput = ({
               placeholder={i18n.t(i18n.l.dapp_browser.address_bar.input_placeholder)}
               placeholderTextColor={labelQuaternary}
               onBlur={onBlur}
+              onChange={onChange}
               onSubmitEditing={onSubmitEditing}
               ref={inputRef}
               returnKeyType="go"
@@ -237,6 +242,7 @@ export const SearchInput = ({
               ]}
               textAlign="left"
               textAlignVertical="center"
+              value={searchValue}
               defaultValue={inputValue}
             />
             <Cover alignHorizontal="center" alignVertical="center" pointerEvents="none">

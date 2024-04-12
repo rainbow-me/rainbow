@@ -28,10 +28,16 @@ import Routes from '@/navigation/routesNames';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { SETTINGS_BACKUP_ROUTES } from './routes';
 import { analyticsV2 } from '@/analytics';
-import { InteractionManager } from 'react-native';
+import { InteractionManager, Linking } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { createAccountForWallet, walletsLoadState } from '@/redux/wallets';
-import { backupUserDataIntoCloud } from '@/handlers/cloudBackup';
+import {
+  GoogleDriveUserData,
+  backupUserDataIntoCloud,
+  getGoogleAccountUserData,
+  isCloudBackupAvailable,
+  login,
+} from '@/handlers/cloudBackup';
 import { logger, RainbowError } from '@/logger';
 import { captureException } from '@sentry/react-native';
 import { RainbowAccount, createWallet } from '@/model/wallet';
@@ -47,6 +53,7 @@ import { WalletCountPerType, useVisibleWallets } from '../../useVisibleWallets';
 import { format } from 'date-fns';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { Backup, parseTimestampFromFilename } from '@/model/backup';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 
 type ViewWalletBackupParams = {
   ViewWalletBackup: { walletId: string; title: string; imported?: boolean };
@@ -179,6 +186,47 @@ const ViewWalletBackup = () => {
   const { onSubmit, loading } = useCreateBackup({
     walletId,
   });
+
+  const backupWalletsToCloud = useCallback(async () => {
+    if (IS_ANDROID) {
+      try {
+        await login();
+
+        getGoogleAccountUserData().then((accountDetails: GoogleDriveUserData | undefined) => {
+          if (accountDetails) {
+            return onSubmit({});
+          }
+          Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
+        });
+      } catch (e) {
+        Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
+        logger.error(e as RainbowError);
+      }
+    } else {
+      const isAvailable = await isCloudBackupAvailable();
+      if (!isAvailable) {
+        Alert.alert(
+          i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.label),
+          i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.description),
+          [
+            {
+              onPress: () => {
+                Linking.openURL('https://support.apple.com/en-us/HT204025');
+              },
+              text: i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.show_me),
+            },
+            {
+              style: 'cancel',
+              text: i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.no_thanks),
+            },
+          ]
+        );
+        return;
+      }
+    }
+
+    onSubmit({});
+  }, [onSubmit]);
 
   const onNavigateToSecretWarning = useCallback(() => {
     navigate(SETTINGS_BACKUP_ROUTES.SECRET_WARNING, {
@@ -395,7 +443,7 @@ const ViewWalletBackup = () => {
                   cloudPlatformName: cloudPlatform,
                 })}
                 loading={loading}
-                onPress={() => onSubmit({})}
+                onPress={backupWalletsToCloud}
               />
             </Menu>
           )}
@@ -415,7 +463,7 @@ const ViewWalletBackup = () => {
                   cloudPlatformName: cloudPlatform,
                 })}
                 loading={loading}
-                onPress={() => onSubmit({})}
+                onPress={backupWalletsToCloud}
               />
             </Menu>
           )}
