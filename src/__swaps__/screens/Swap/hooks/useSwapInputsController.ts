@@ -180,7 +180,7 @@ export function useSwapInputsController({
   });
 
   const niceIncrement = useDerivedValue(() => {
-    if (!assetToSell.value?.balance.amount) return 0;
+    if (!assetToSell.value?.balance.amount) return 0.1;
     return findNiceIncrement(Number(assetToSell.value?.balance.amount));
   });
   const incrementDecimalPlaces = useDerivedValue(() => countDecimalPlaces(niceIncrement.value));
@@ -786,11 +786,18 @@ export function useSwapInputsController({
           return;
         }
 
+        const getNiceIncrement = () => {
+          if (!prevAssetToBuy) return 0.1;
+          return findNiceIncrement(Number(prevAssetToBuy.balance.amount));
+        };
+
+        const niceIncrement = getNiceIncrement();
+        const decimalPlaces = countDecimalPlaces(niceIncrement);
         const inputAmount = niceIncrementFormatter(
-          incrementDecimalPlaces.value,
+          decimalPlaces,
           balance,
           price,
-          niceIncrement.value,
+          niceIncrement,
           percentageToSwap.value,
           sliderXPosition.value,
           true
@@ -804,7 +811,7 @@ export function useSwapInputsController({
           };
         });
 
-        if (Number(inputAmount) > 0) {
+        if (Number(inputAmount) > 0 && assetToBuy.value) {
           isFetching.value = true;
           isQuoteStale.value = 1;
 
