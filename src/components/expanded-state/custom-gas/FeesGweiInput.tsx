@@ -115,7 +115,7 @@ export default function FeesGweiInput({
   }, [onLongPress]);
 
   const onInputPress = useCallback(() => {
-    inputRef?.current?.focus();
+    inputRef?.current?.focus?.();
     onPress?.();
   }, [inputRef, onPress]);
 
