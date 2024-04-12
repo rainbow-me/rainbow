@@ -16,12 +16,11 @@ import { Text } from '../text';
 import { GasSpeedLabelPager } from '.';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { isL2Network } from '@/handlers/web3';
-import networkTypes, { Network } from '@/helpers/networkTypes';
+import { Network } from '@/helpers/networkTypes';
 import { add, greaterThan, toFixedDecimals } from '@/helpers/utilities';
 import { getCrossChainTimeEstimate } from '@/utils/crossChainTimeEstimates';
 import { useAccountSettings, useColorForAsset, useGas, usePrevious, useSwapCurrencies } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import { BNB_BSC_ADDRESS, ETH_ADDRESS, MATIC_MAINNET_ADDRESS, AVAX_AVALANCHE_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, margin, padding } from '@/styles';
@@ -339,24 +338,6 @@ const GasSpeedButton = ({
     },
     [handlePressSpeedOption]
   );
-
-  const nativeFeeCurrency = useMemo(() => {
-    switch (currentNetwork) {
-      case networkTypes.polygon:
-        return { mainnet_address: MATIC_MAINNET_ADDRESS, symbol: 'MATIC' };
-      case networkTypes.bsc:
-        return { mainnet_address: BNB_BSC_ADDRESS, symbol: 'BNB' };
-      case networkTypes.avalanche:
-        return { mainnet_address: AVAX_AVALANCHE_ADDRESS, symbol: 'AVAX' };
-      case networkTypes.optimism:
-      case networkTypes.arbitrum:
-      case networkTypes.zora:
-      case networkTypes.base:
-      case networkTypes.blast:
-      default:
-        return { mainnet_address: ETH_ADDRESS, symbol: 'ETH' };
-    }
-  }, [currentNetwork]);
 
   const speedOptions = useMemo(() => {
     if (speeds) return speeds;

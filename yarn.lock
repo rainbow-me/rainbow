@@ -3320,10 +3320,10 @@
   dependencies:
     react-merge-refs "^1.0.0"
 
-"@rainbow-me/swaps@0.13.0":
-  version "0.13.0"
-  resolved "https://registry.yarnpkg.com/@rainbow-me/swaps/-/swaps-0.13.0.tgz#f590e9df6f07cccdebdc99e46c4b02752e97d469"
-  integrity sha512-n33j4AGMzJ38sqPd3IEvKUk1hcQoSzRplwNgskMsneLOlOXihxtj46QMerK7HY17K4RhhAUeYCLxs6o+BRULqw==
+"@rainbow-me/swaps@0.15.0":
+  version "0.15.0"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/swaps/-/swaps-0.15.0.tgz#7250c18b9daa280d9b4bf31269e3f2edab779a9d"
+  integrity sha512-mh/JmwmcALoBuoQ4WeW1wEyxF3hZThsYzjAae5zxQThgpfjORwD591XvNFhgPoJHR9pW9afMD7Ylp9Y4cfovtA==
   dependencies:
     "@ethereumjs/util" "9.0.0"
     "@ethersproject/abi" "5.7.0"
@@ -19886,10 +19886,10 @@ viem@1.21.4, viem@^1.1.4:
     isows "1.0.3"
     ws "8.13.0"
 
-viem@2.7.20:
-  version "2.7.20"
-  resolved "https://registry.yarnpkg.com/viem/-/viem-2.7.20.tgz#c0d517c3ce5a19b963d624b378d706bd3c45efc6"
-  integrity sha512-S31a24LWEjqXAjw1A+3/xALo+4eiYKklAjLtlLdPhA0cp+Kv6GcgruNVTktP8pKIGNYvpyQ+HA9PJyUhVXPdDw==
+viem@2.9.16:
+  version "2.9.16"
+  resolved "https://registry.yarnpkg.com/viem/-/viem-2.9.16.tgz#2127871db1908a70798eddb820024b5f0ddc9152"
+  integrity sha512-FQRfN4G7uKEUs5DYvVrH/kZmTkwcSDpTBxnadpwG1EEP8nHm57WDpSaGN7PwSPVgJ6rMo5MENT5hgnqaNTlb2w==
   dependencies:
     "@adraffy/ens-normalize" "1.10.0"
     "@noble/curves" "1.2.0"
