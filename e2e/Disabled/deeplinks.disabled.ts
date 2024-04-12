@@ -6,7 +6,6 @@ import {
   checkIfVisible,
   checkIfElementByTextIsVisible,
   swipe,
-  cleanApp,
   waitAndTap,
   checkIfExists,
   typeText,
@@ -54,7 +53,6 @@ beforeAll(async () => {
     exec('yarn adb-all shell pm disable-user com.android.chrome');
   }
   await device.reloadReactNative();
-  await cleanApp();
 });
 afterAll(async () => {
   await device.clearKeychain();

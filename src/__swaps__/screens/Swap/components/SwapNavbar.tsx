@@ -13,11 +13,11 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { safeAreaInsetValues } from '@/utils';
 
-import { THICK_BORDER_WIDTH } from '../constants';
+import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 
-import { opacity } from '../utils/swaps';
+import { opacity } from '@/__swaps__/utils/swaps';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { useSwapContext } from '../providers/swap-provider';
+import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 
 export function SwapNavbar() {
   const { accountSymbol, accountColor, accountImage } = useAccountProfile();

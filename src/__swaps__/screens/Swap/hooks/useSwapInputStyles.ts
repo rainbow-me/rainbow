@@ -20,8 +20,8 @@ import {
   FOCUSED_INPUT_HEIGHT,
   fadeConfig,
   springConfig,
-} from '../constants';
-import { opacityWorklet } from '../utils/swaps';
+} from '@/__swaps__/screens/Swap/constants';
+import { opacityWorklet } from '@/__swaps__/utils/swaps';
 
 export const useSwapInputStyles = ({
   bottomInput,

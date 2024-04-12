@@ -111,6 +111,25 @@ query getdApp($shortName: String!, $url: String!, $status: Boolean!) {
   }
 }
 
+query getdApps {
+  dApps {
+    name
+    shortName
+    description
+    url
+    iconURL
+    colors {
+      primary
+      fallback
+      shadow
+    }
+    status
+    report {
+      url
+    }
+  }
+}
+
 fragment asset on TransactionSimulationAsset {
   assetCode
   decimals

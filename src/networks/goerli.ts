@@ -59,7 +59,9 @@ export const getGoerliNetworkObject = (): NetworkProperties => {
       defaultToFastGas: true,
     },
 
-    nfts: {},
+    nfts: {
+      simplehashNetwork: 'ethereum-goerli',
+    },
 
     // design tings
     colors: {

@@ -3,11 +3,11 @@ import Animated from 'react-native-reanimated';
 import { StyleSheet } from 'react-native';
 import { Separator, Stack } from '@/design-system';
 import { useDimensions } from '@/hooks';
-import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../../constants';
-import { SearchInput } from '../SearchInput';
-import { TokenToSellList } from './TokenToSellList';
-import { TokenToBuyList } from './TokenToBuyList';
-import { useSwapContext } from '../../providers/swap-provider';
+import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '@/__swaps__/screens/Swap/constants';
+import { SearchInput } from '@/__swaps__/screens/Swap/components/SearchInput';
+import { TokenToSellList } from '@/__swaps__/screens/Swap/components/TokenList/TokenToSellList';
+import { TokenToBuyList } from '@/__swaps__/screens/Swap/components/TokenList/TokenToBuyList';
+import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 
 export const TokenList = ({
   color,

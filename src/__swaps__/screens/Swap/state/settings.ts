@@ -1,8 +1,8 @@
 import { createStore } from '@/state/internal/createStore';
 import { Source } from '@rainbow-me/swaps';
 import { useStore } from 'zustand';
-import { ChainId, ChainName } from '../types/chains';
-import { chainNameFromChainId } from '../utils/chains';
+import { ChainId, ChainName } from '@/__swaps__/types/chains';
+import { chainNameFromChainId } from '@/__swaps__/utils/chains';
 import { RainbowConfig } from '@/model/remoteConfig';
 
 export interface SwapSettingsState {

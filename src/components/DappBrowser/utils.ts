@@ -21,6 +21,36 @@ export function isValidURL(url: string): boolean {
   return urlPattern.test(urlForValidation);
 }
 
+export const normalizeUrl = (url: string): string => {
+  if (!url) {
+    return '';
+  }
+  if (!url.startsWith(HTTP) && !url.startsWith(HTTPS)) {
+    return HTTPS + url;
+  }
+  return url;
+};
+
+export const formatUrl = (url: string): string => {
+  let formattedValue = '';
+  let isGoogleSearch = false;
+  try {
+    const { hostname, pathname, search } = new URL(url);
+    isGoogleSearch = hostname === 'www.google.com' && pathname === '/search';
+    if (isGoogleSearch) {
+      const params = new URLSearchParams(search);
+      formattedValue = params.get('q') || '';
+    } else {
+      formattedValue = hostname.startsWith('www.') ? hostname.slice(4) : hostname;
+    }
+  } catch {
+    if (!isGoogleSearch) {
+      formattedValue = url;
+    }
+  }
+  return formattedValue;
+};
+
 export const generateUniqueId = (): string => {
   const timestamp = Date.now().toString(36);
   const randomString = Math.random().toString(36).slice(2, 7);
