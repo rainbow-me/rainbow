@@ -379,7 +379,7 @@ export const explainers = (params, theme) => {
       extraHeight: 150,
       logo: <ChainBadge network={networkTypes.optimism} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
-        url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+        url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
           campaign: 'explain',
         },
@@ -392,7 +392,7 @@ export const explainers = (params, theme) => {
       extraHeight: 144,
       logo: <ChainBadge network={networkTypes.arbitrum} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
-        url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+        url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
           campaign: 'explain',
         },
@@ -405,7 +405,7 @@ export const explainers = (params, theme) => {
       extraHeight: 120,
       logo: <ChainBadge network={networkTypes.polygon} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
-        url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+        url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
           campaign: 'explain',
         },
@@ -418,7 +418,7 @@ export const explainers = (params, theme) => {
       extraHeight: IS_ANDROID ? 120 : 160,
       logo: <ChainBadge network={networkTypes.bsc} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
-        url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+        url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
           campaign: 'explain',
         },
@@ -431,7 +431,7 @@ export const explainers = (params, theme) => {
       extraHeight: 144,
       logo: <ChainBadge network={networkTypes.zora} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
-        url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+        url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
           campaign: 'explain',
         },
@@ -444,7 +444,7 @@ export const explainers = (params, theme) => {
       extraHeight: 144,
       logo: <ChainBadge network={networkTypes.base} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
-        url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+        url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
           campaign: 'explain',
         },
@@ -457,7 +457,7 @@ export const explainers = (params, theme) => {
       extraHeight: 144,
       logo: <ChainBadge network={networkTypes.avalanche} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
-        url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+        url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
           campaign: 'explain',
         },
@@ -470,7 +470,7 @@ export const explainers = (params, theme) => {
       extraHeight: 144,
       logo: <ChainBadge network={networkTypes.degen} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
-        url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+        url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
           campaign: 'explain',
         },
@@ -483,7 +483,7 @@ export const explainers = (params, theme) => {
       extraHeight: 144,
       logo: <ChainBadge network={networkTypes.blast} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
-        url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+        url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
           campaign: 'explain',
         },
@@ -754,7 +754,7 @@ export const explainers = (params, theme) => {
             onPress={() =>
               Linking.openURL(
                 buildRainbowLearnUrl({
-                  url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+                  url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
                   query: {
                     campaign: 'explain',
                   },
