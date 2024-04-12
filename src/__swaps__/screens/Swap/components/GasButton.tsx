@@ -29,8 +29,8 @@ export const GasButton = ({ accentColor }: { accentColor?: string }) => {
   const { params } = useRoute();
   const { currentNetwork } = (params as any) || {};
   const chainId = getNetworkObj(currentNetwork).id;
-  const { selectedGas, setSelectedGas, gasFeeParamsBySpeed } = useGasStore();
-  const { data, isLoading } = useMeteorology({ chainId });
+  const { selectedGas, setSelectedGas } = useGasStore();
+  const { data, isLoading, isFetched } = useMeteorology({ chainId });
   const [nativeAsset, setNativeAsset] = useState<ParsedAddressAsset | undefined>();
   const { nativeCurrency } = useAccountSettings();
   useEffect(() => {
@@ -41,7 +41,7 @@ export const GasButton = ({ accentColor }: { accentColor?: string }) => {
     getNativeAsset();
   }, [currentNetwork, setNativeAsset]);
 
-  let gasFeeBySpeed: GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed | any = useMemo(() => {
+  let gasFeeParamsBySpeed: GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed | any = useMemo(() => {
     if (!isLoading) {
       return parseGasFeeParamsBySpeed({
         chainId,
@@ -53,22 +53,15 @@ export const GasButton = ({ accentColor }: { accentColor?: string }) => {
     }
     return {};
   }, [isLoading, nativeAsset]);
-  // this effect should only ever run once, as selectedGas will be persisted
-  // useEffect(() => {
-  //   if (isLoading || isEmpty(gasFeeParamsBySpeed[GasSpeed.FAST])) return;
-  //   if (selectedGas?.isDefault && !isEmpty(gasFeeParamsBySpeed)) {
-  //     setSelectedGas({ selectedGas: gasFeeParamsBySpeed[GasSpeed.FAST] });
-  //   }
-  // }, [isLoading, selectedGas, gasFeeBySpeed, setSelectedGas])
   const gasFallback = getGasFallback(nativeCurrency);
   const [showGasOptions, setShowGasOptions] = useState(false);
   const animatedGas = useDerivedValue(() => {
-    return gasFeeBySpeed[selectedGas?.option]?.gasFee?.display ?? gasFallback;
-  }, [gasFeeBySpeed, selectedGas]);
+    return gasFeeParamsBySpeed[selectedGas?.option]?.gasFee?.display ?? gasFallback;
+  }, [gasFeeParamsBySpeed, selectedGas]);
 
   return (
     <ButtonPressAnimation onPress={() => setShowGasOptions(!showGasOptions)}>
-      <GasMenu gasFeeBySpeed={gasFeeBySpeed} flashbotTransaction={false}>
+      <GasMenu gasFeeParamsBySpeed={gasFeeParamsBySpeed} flashbotTransaction={false}>
         <Stack space="12px">
           <Inline alignVertical="center" space={{ custom: 5 }}>
             <Inline alignVertical="center" space="4px">
@@ -108,16 +101,16 @@ const GasSpeedPagerCentered = styled(Centered).attrs(() => ({
 const GasMenu = ({
   flashbotTransaction,
   children,
-  gasFeeBySpeed,
+  gasFeeParamsBySpeed,
 }: {
   flashbotTransaction: boolean;
   children: ReactNode;
-  gasFeeBySpeed: GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed;
+  gasFeeParamsBySpeed: GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed;
 }) => {
   const theme = useTheme();
   const { colors } = theme;
   const { navigate } = useNavigation();
-  const { selectedGas, gasFeeParamsBySpeed, setGasFeeParamsBySpeed, setSelectedGas } = useGasStore();
+  const { selectedGas, setGasFeeParamsBySpeed, setSelectedGas } = useGasStore();
   const { params } = useRoute();
   // this needs to be moved up or out shouldnt need asset just the color
   const { currentNetwork, asset, fallbackColor } = (params as any) || {};
@@ -169,8 +162,7 @@ const GasMenu = ({
           return;
         }
       }
-      console.log('gasfeebyspeed', gasFeeBySpeed[selectedGasSpeed]);
-      setSelectedGas({ selectedGas: gasFeeBySpeed[selectedGasSpeed] });
+      setSelectedGas({ selectedGas: gasFeeParamsBySpeed[selectedGasSpeed] });
     },
     [setSelectedGas, openCustomGasSheet]
   );
@@ -203,7 +195,7 @@ const GasMenu = ({
   const menuConfig = useMemo(() => {
     const menuOptions = speedOptions.map((gasOption: GasSpeed) => {
       if (IS_ANDROID) return gasOption;
-      const { display } = gasFeeBySpeed[gasOption] ?? {};
+      const { display } = gasFeeParamsBySpeed[gasOption] ?? {};
 
       return {
         actionKey: gasOption,
