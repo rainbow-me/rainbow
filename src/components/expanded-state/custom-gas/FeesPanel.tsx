@@ -18,6 +18,8 @@ import { Box, Inline, Inset, Row, Rows, Text } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { getNetworkObj } from '@/networks';
 import { useGasStore } from '@/state/gas/gasStore';
+import { useMeteorologyReport } from '@/__swaps__/utils/gasUtils';
+import { GasSpeed } from '@/__swaps__/types/gas';
 
 const MAX_TEXT_WIDTH = 210;
 const { CUSTOM, GAS_TRENDS, NORMAL, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;
@@ -50,7 +52,11 @@ type AlertInfo = {
 
 export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack, validateGasParams, openCustomOptions }: FeesPanelProps) {
   const { selectedGasFee, currentBlockParams, customGasFeeModifiedByUser, updateToCustomGasFee, txNetwork } = useGas();
-  const { selectedGas, gasFeeParamsBySpeed } = useGasStore();
+  const { selectedGas } = useGasStore();
+  const { gasFeeParamsBySpeed } = useMeteorologyReport();
+  useEffect(() => {
+    console.log('first gasFeeParamsBySpeed', gasFeeParamsBySpeed);
+  }, []);
 
   const { navigate, getState: dangerouslyGetState } = useNavigation();
   const { colors } = useTheme();
@@ -105,7 +111,7 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
 
   const { maxFee, currentBaseFee, maxBaseFee, maxPriorityFee } = useMemo(() => {
     const maxFee = selectedGas?.gasFee?.display;
-    const currentBaseFee = currentBlockParams?.baseFeePerGas?.gwei;
+    const currentBaseFee = gasFeeParamsBySpeed[GasSpeed.FAST]?.maxPriorityFeePerGas?.gwei;
     const maxBaseFee = selectedOptionIsCustom ? customMaxBaseFee : toFixedDecimals(selectedGas?.maxBaseFee?.gwei || 0, isL2 ? 3 : 0);
 
     const maxPriorityFee = selectedOptionIsCustom ? customMaxPriorityFee : selectedGas?.maxPriorityFeePerGas?.gwei;

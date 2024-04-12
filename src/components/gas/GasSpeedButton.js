@@ -29,6 +29,7 @@ import { getNetworkObj } from '@/networks';
 import { IS_ANDROID } from '@/env';
 import { ContextMenu } from '../context-menu';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
+import { useGasStore } from '@/state/gas/gasStore';
 
 const { GAS_EMOJIS, GAS_ICONS, GasSpeedOrder, CUSTOM, URGENT, NORMAL, FAST, getGasLabel } = gasUtils;
 
@@ -146,7 +147,8 @@ const GasSpeedButton = ({
 
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
-  const { gasFeeParamsBySpeed, updateGasFeeOption, selectedGasFee, selectedGasFeeOption, currentBlockParams } = useGas();
+  const { gasFeeParamsBySpeed, updateGasFeeOption, selectedGasFeeOption, currentBlockParams } = useGas();
+  const { selectedGas } = useGasStore();
 
   const [gasPriceReady, setGasPriceReady] = useState(false);
   const [shouldOpenCustomGasSheet, setShouldOpenCustomGasSheet] = useState({
@@ -160,20 +162,20 @@ const GasSpeedButton = ({
   // (and leave the number only!)
   // which gets added later in the formatGasPrice function
   const price = useMemo(() => {
-    const gasPrice = selectedGasFee?.gasFee?.estimatedFee?.native?.value?.display;
+    const gasPrice = selectedGas?.gasFee?.display;
     if (isNil(gasPrice)) return null;
     return gasPrice
       .replace(',', '') // In case gas price is > 1k!
       .replace(nativeCurrencySymbol, '')
       .trim();
-  }, [nativeCurrencySymbol, selectedGasFee]);
+  }, [nativeCurrencySymbol, selectedGas]);
 
   const isL2 = useMemo(() => isL2Network(currentNetwork), [currentNetwork]);
   const isLegacyGasNetwork = getNetworkObj(currentNetwork).gas.gasType === 'legacy';
 
   const gasIsNotReady = useMemo(
-    () => isNil(price) || isEmpty(gasFeeParamsBySpeed) || isEmpty(selectedGasFee?.gasFee),
-    [gasFeeParamsBySpeed, price, selectedGasFee]
+    () => isNil(price) || isEmpty(gasFeeParamsBySpeed) || isEmpty(selectedGas?.gasFee),
+    [gasFeeParamsBySpeed, price, selectedGas]
   );
 
   const formatGasPrice = useCallback(
@@ -269,29 +271,29 @@ const GasSpeedButton = ({
     [updateGasFeeOption, openCustomGasSheet]
   );
 
+  // may be good to delete pending quote/tx integration
   const formatTransactionTime = useCallback(() => {
-    if (!gasPriceReady || !selectedGasFee?.estimatedTime?.display) return '';
+    if (!gasPriceReady || !selectedGas?.estimatedTime?.display) return '';
     // override time estimate for cross chain swaps
     if (crossChainServiceTime) {
       const { isLongWait, timeEstimateDisplay } = getCrossChainTimeEstimate({
         serviceTime: crossChainServiceTime,
         // eip1559 gas time is in seconds, legacy is in milliseconds
-        gasTimeInSeconds: isLegacyGasNetwork ? selectedGasFee?.estimatedTime?.amount / 1000 : selectedGasFee?.estimatedTime?.amount,
+        gasTimeInSeconds: isLegacyGasNetwork ? selectedGas?.estimatedTime?.amount / 1000 : selectedGas?.estimatedTime?.amount,
       });
       setIsLongWait(isLongWait);
       return timeEstimateDisplay;
     }
 
-    const estimatedTime = (selectedGasFee?.estimatedTime?.display || '').split(' ');
+    const estimatedTime = (selectedGas?.estimatedTime?.display || '').split(' ');
     const [estimatedTimeValue = 0, estimatedTimeUnit = 'min'] = estimatedTime;
     const time = parseFloat(estimatedTimeValue).toFixed(0);
-
     const timeSymbol = estimatedTimeUnit === 'hr' ? '>' : '~';
     if (!estimatedTime || (time === '0' && estimatedTimeUnit === 'min')) {
       return '';
     }
     return `${timeSymbol}${time} ${estimatedTimeUnit}`;
-  }, [crossChainServiceTime, currentNetwork, gasPriceReady, selectedGasFee?.estimatedTime?.amount, selectedGasFee?.estimatedTime?.display]);
+  }, [crossChainServiceTime, currentNetwork, gasPriceReady, selectedGas?.estimatedTime?.amount, selectedGas?.estimatedTime?.display]);
 
   const openGasHelper = useCallback(async () => {
     Keyboard.dismiss();
@@ -508,7 +510,7 @@ const GasSpeedButton = ({
                 <Text letterSpacing="one" size="lmedium" weight="heavy">
                   {' '}
                 </Text>
-                <TransactionTimeLabel formatter={formatTransactionTime} theme={theme} isLongWait={isLongWait} />
+                <TransactionTimeLabel formatter={() => selectedGas?.estimatedTime?.display} theme={theme} isLongWait={isLongWait} />
               </Text>
             </TextContainer>
           </Row>

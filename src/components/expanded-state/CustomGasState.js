@@ -41,7 +41,7 @@ export default function CustomGasState({ asset }) {
   const { params: { longFormHeight, speeds, openCustomOptions, fallbackColor, currentNetwork } = {} } = useRoute();
   const chainId = getNetworkObj(currentNetwork).id;
   const { selectedGasFee } = useGasStore();
-  const { data } = useMeteorology({ chainId });
+  const { data, isLoading } = useMeteorology({ chainId });
   const currentGasTrend = data?.data?.baseFeeTrend ?? 0;
   const { colors } = useTheme();
   const { height: deviceHeight } = useDimensions();
@@ -100,6 +100,7 @@ export default function CustomGasState({ asset }) {
           theme="dark"
           validateGasParams={validateGasParams}
           marginTop={19}
+          loading={isLoading}
           crossChainServiceTime={getCrosschainSwapServiceTime(tradeDetails)}
         />
       </Column>
