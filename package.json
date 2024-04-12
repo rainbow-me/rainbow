@@ -437,7 +437,8 @@
     "**/@babel/traverse": "7.23.2",
     "**/browserify-sign": "4.2.2",
     "**/axios": "1.6.1",
-    "**/ip": "1.1.9"
+    "**/ip": "1.1.9",
+    "**/phin": "3.7.1"
   },
   "react-native": {
     "@tanstack/query-async-storage-persister": "@tanstack/query-async-storage-persister/build/esm/index",
