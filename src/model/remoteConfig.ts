@@ -191,6 +191,8 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
         key === 'zora_tx_enabled' ||
         key === 'base_tx_enabled' ||
         key === 'degen_tx_enabled' ||
+        key === 'blast_tx_enabled' ||
+        key === 'avalanche_tx_enabled' ||
         key === 'op_chains_tx_enabled' ||
         key === 'goerli_tx_enabled' ||
         key === 'mainnet_enabled' ||
@@ -201,6 +203,8 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
         key === 'zora_enabled' ||
         key === 'base_enabled' ||
         key === 'degen_enabled' ||
+        key === 'blast_enabled' ||
+        key === 'avalanche_enabled' ||
         key === 'op_chains_enabled' ||
         key === 'goerli_enabled' ||
         key === 'base_swaps_enabled' ||
