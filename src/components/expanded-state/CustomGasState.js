@@ -89,9 +89,6 @@ export default function CustomGasState({ asset }) {
           />
         </FeesPanelWrapper>
         <Divider color={colors.rowDividerExtraLight} inset={[0, 24]} />
-        <FeesPanelTabswrapper>
-          <FeesPanelTabs colorForAsset={colorForAsset} speeds={speeds} />
-        </FeesPanelTabswrapper>
       </FloatingPanel>
       <Column>
         <GasSpeedButton
