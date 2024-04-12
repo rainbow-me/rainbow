@@ -418,7 +418,10 @@ export async function onSessionProposal(proposal: Web3WalletTypes.SessionProposa
     const supportedChainIds = chainIds.filter(isSupportedChain);
 
     const peerMeta = proposer.metadata;
-    const dappName = peerMeta.name || lang.t(lang.l.walletconnect.unknown_dapp);
+    const metadata = await fetchDappMetadata({ url: peerMeta.url, status: true });
+
+    const dappName = metadata?.appName || peerMeta.name || lang.t(lang.l.walletconnect.unknown_dapp);
+    const dappImage = metadata?.appLogo || peerMeta?.icons?.[0];
 
     const routeParams: WalletconnectApprovalSheetRouteParams = {
       receivedTimestamp,
@@ -427,7 +430,7 @@ export async function onSessionProposal(proposal: Web3WalletTypes.SessionProposa
         dappName,
         dappScheme: 'unused in WC v2', // only used for deeplinks from WC v1
         dappUrl: peerMeta.url || lang.t(lang.l.walletconnect.unknown_url),
-        imageUrl: maybeSignUri(peerMeta?.icons?.[0], { w: 200 }),
+        imageUrl: maybeSignUri(dappImage, { w: 200 }),
         peerId: proposer.publicKey,
         isWalletConnectV2: true,
       },
@@ -676,15 +679,21 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
     const dappNetwork = ethereumUtils.getNetworkFromChainId(chainId);
     const displayDetails = getRequestDisplayDetails(event.params.request, nativeCurrency, dappNetwork);
     const peerMeta = session.peer.metadata;
+
+    const metadata = await fetchDappMetadata({ url: peerMeta.url, status: true });
+
+    const dappName = metadata?.appName || peerMeta.name || lang.t(lang.l.walletconnect.unknown_url);
+    const dappImage = metadata?.appLogo || peerMeta?.icons?.[0];
+
     const request: WalletconnectRequestData = {
       clientId: session.topic, // I don't think this is used
       peerId: session.topic, // I don't think this is used
       requestId: event.id,
-      dappName: peerMeta.name || 'Unknown Dapp',
+      dappName,
       dappScheme: 'unused in WC v2', // only used for deeplinks from WC v1
       dappUrl: peerMeta.url || 'Unknown URL',
       displayDetails,
-      imageUrl: maybeSignUri(peerMeta.icons[0], { w: 200 }),
+      imageUrl: maybeSignUri(dappImage, { w: 200 }),
       address,
       network: getNetworkFromChainId(chainId),
       payload: event.params.request,
