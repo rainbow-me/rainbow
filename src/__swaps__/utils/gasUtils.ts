@@ -1,19 +1,20 @@
+import { useEffect, useState, useMemo } from 'react';
 import { Block, Provider, TransactionRequest } from '@ethersproject/abstract-provider';
 import { getAddress } from '@ethersproject/address';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { Contract, ContractInterface } from '@ethersproject/contracts';
 import { serialize } from '@ethersproject/transactions';
 import BigNumber from 'bignumber.js';
-
+import { GasFeeLegacyParamsBySpeed, GasFeeParamsBySpeed } from '@/__swaps__/types/gas';
 import { globalColors } from '@/design-system';
-
 import * as i18n from '@/languages';
 import { OVM_GAS_PRICE_ORACLE, gasUnits, supportedNativeCurrencies, optimismGasOracleAbi, SupportedCurrencyKey } from '@/references';
 
-import { MeteorologyLegacyResponse, MeteorologyResponse } from '@/__swaps__/utils/meteorology';
-import { ParsedAsset } from '@/__swaps__/types/assets';
-import { ChainId } from '@/__swaps__/types/chains';
-import { BlocksToConfirmation, GasFeeLegacyParams, GasFeeParam, GasFeeParams, GasSpeed } from '@/__swaps__/types/gas';
+import { MeteorologyLegacyResponse, MeteorologyResponse, useMeteorology } from './meteorology';
+import { useRoute } from '@react-navigation/native';
+import { ParsedAsset } from '../types/assets';
+import { ChainId } from '../types/chains';
+import { BlocksToConfirmation, GasFeeLegacyParams, GasFeeParam, GasFeeParams, GasSpeed } from '../types/gas';
 
 import { gweiToWei, weiToGwei } from '@/__swaps__/utils/ethereum';
 import { addHexPrefix, convertStringToHex, toHex } from '@/__swaps__/utils/hex';
@@ -27,8 +28,12 @@ import {
   greaterThan,
   lessThan,
   multiply,
-} from '@/__swaps__/utils/numbers';
-import { getMinimalTimeUnitStringForMs } from '@/__swaps__/utils/time';
+} from './numbers';
+import { getMinimalTimeUnitStringForMs } from './time';
+import { getNetworkObj } from '@/networks';
+import { useAccountSettings } from '@/hooks';
+import { ParsedAddressAsset } from '@/entities';
+import { ethereumUtils } from '@/utils';
 
 export const FLASHBOTS_MIN_TIP = 6;
 
@@ -617,3 +622,36 @@ export const getBaseFeeTrendParams = (trend: number) => {
 };
 
 export const chainShouldUseDefaultTxSpeed = (chainId: ChainId) => chainId === ChainId.mainnet || chainId === ChainId.polygon;
+
+const mockedGasLimit = '21000';
+
+export const useMeteorologyReport = () => {
+  const { params } = useRoute();
+  const { currentNetwork } = (params as any) || {};
+  const chainId = getNetworkObj(currentNetwork).id;
+  const { data, isLoading } = useMeteorology({ chainId });
+  const [nativeAsset, setNativeAsset] = useState<ParsedAddressAsset | undefined>();
+  const { nativeCurrency } = useAccountSettings();
+  useEffect(() => {
+    const getNativeAsset = async () => {
+      const theNativeAsset = await ethereumUtils.getNativeAssetForNetwork(currentNetwork);
+      setNativeAsset(theNativeAsset);
+    };
+    getNativeAsset();
+  }, [currentNetwork, setNativeAsset]);
+
+  let gasFeeParamsBySpeed: GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed | any = useMemo(() => {
+    if (!isLoading) {
+      return parseGasFeeParamsBySpeed({
+        chainId,
+        data: data!,
+        gasLimit: mockedGasLimit,
+        nativeAsset: nativeAsset as unknown as ParsedAsset,
+        currency: nativeCurrency,
+      });
+    }
+    return {};
+  }, [isLoading, nativeAsset]);
+  // console.log('gasFeeparams', gasFeeParamsBySpeed)
+  return { gasFeeParamsBySpeed };
+};
