@@ -132,7 +132,7 @@ const Card = ({ site, showMenuButton }: { showMenuButton?: boolean; site: Trendi
                   {site.name}
                 </Text>
                 <Text size="13pt" weight="bold" color="labelTertiary" numberOfLines={1}>
-                  {site.url.startsWith('http:') || site.url.startsWith('https') ? getDappHost(site.url) : site.url}
+                  {site.url.startsWith('http:') || site.url.startsWith('https:') ? getDappHost(site.url) : site.url}
                 </Text>
               </Stack>
             </ColorModeProvider>
