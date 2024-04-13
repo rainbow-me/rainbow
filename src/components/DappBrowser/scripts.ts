@@ -27,7 +27,15 @@ export const getWebsiteMetadata = `
 
   let logoUrl;
   if (highestResIcon.href) {
-    logoUrl = highestResIcon.href.startsWith('http') ? highestResIcon.href : window.location.origin + highestResIcon.href;
+    const cleanOrigin = window.location.origin.endsWith('/') ? window.location.origin : window.location.origin + '/';
+    let cleanHref = highestResIcon.href;
+    if(!(highestResIcon.href.startsWith('http:') || highestResIcon.href.startsWith('https:'))){
+      cleanHref = cleanHref.startsWith('/') ? cleanHref.substring(1) : cleanHref;
+      logoUrl = cleanOrigin + cleanHref;
+    } else {
+      logoUrl = cleanHref;
+    }
+    
   } else {
     logoUrl = undefined;
   }
