@@ -1,7 +1,4 @@
 import React, { createContext, useCallback, useContext, useRef, useState } from 'react';
-import { TextInput } from 'react-native';
-import isEqual from 'react-fast-compare';
-import { MMKV, useMMKVObject } from 'react-native-mmkv';
 import Animated, {
   AnimatedRef,
   SharedValue,
@@ -16,7 +13,8 @@ import Animated, {
 import WebView from 'react-native-webview';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { RAINBOW_HOME } from './constants';
-import { generateUniqueId, generateUniqueIdWorklet } from './utils';
+import { generateUniqueIdWorklet } from './utils';
+import { useBrowserStateStore } from '@/state/browser';
 
 interface BrowserTabViewProgressContextType {
   tabViewProgress: SharedValue<number> | undefined;
@@ -37,13 +35,11 @@ export const BrowserTabViewProgressContextProvider = ({ children }: { children: 
 };
 
 interface BrowserContextType {
-  activeTabIndex: number;
   activeTabRef: React.MutableRefObject<WebView | null>;
   animatedActiveTabIndex: SharedValue<number> | undefined;
   closeAllTabsWorklet: () => void;
   closeTabWorklet: (tabId: string, tabIndex: number) => void;
   currentlyOpenTabIds: SharedValue<string[]> | undefined;
-  getActiveTabState: () => TabState | undefined;
   goBack: () => void;
   goForward: () => void;
   loadProgress: SharedValue<number> | undefined;
@@ -57,7 +53,6 @@ interface BrowserContextType {
   tabViewProgress: SharedValue<number> | undefined;
   tabViewVisible: SharedValue<boolean> | undefined;
   toggleTabViewWorklet: (activeIndex?: number) => void;
-  updateActiveTabState: (newState: Partial<TabState>, tabId?: string) => void;
 }
 
 export interface TabState {
@@ -88,10 +83,7 @@ interface NewTabOperation extends BaseTabOperation {
 
 type TabOperation = CloseTabOperation | NewTabOperation;
 
-const DEFAULT_TAB_STATE: TabState[] = [{ canGoBack: false, canGoForward: false, uniqueId: generateUniqueId(), url: RAINBOW_HOME }];
-
 const DEFAULT_BROWSER_CONTEXT: BrowserContextType = {
-  activeTabIndex: 0,
   activeTabRef: { current: null },
   animatedActiveTabIndex: undefined,
   closeAllTabsWorklet: () => {
@@ -101,9 +93,6 @@ const DEFAULT_BROWSER_CONTEXT: BrowserContextType = {
     return;
   },
   currentlyOpenTabIds: undefined,
-  getActiveTabState: () => {
-    return undefined;
-  },
   goBack: () => {
     return;
   },
@@ -120,10 +109,6 @@ const DEFAULT_BROWSER_CONTEXT: BrowserContextType = {
   scrollViewOffset: undefined,
   // @ts-expect-error Explicitly allowing null/undefined on the AnimatedRef causes type issues
   scrollViewRef: { current: null },
-  setActiveTabIndex: () => {
-    return;
-  },
-  tabStates: DEFAULT_TAB_STATE,
   tabViewProgress: undefined,
   tabViewVisible: undefined,
   tabViewVisibleRef: { current: null },
@@ -134,42 +119,15 @@ const DEFAULT_BROWSER_CONTEXT: BrowserContextType = {
     'worklet';
     return;
   },
-  updateActiveTabState: () => {
-    return;
-  },
 };
 
 const BrowserContext = createContext<BrowserContextType>(DEFAULT_BROWSER_CONTEXT);
 
 export const useBrowserContext = () => useContext(BrowserContext);
 
-const tabStateStore = new MMKV();
-
 export const BrowserContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [activeTabIndex, setActiveTabIndex] = useState<number>(0);
-  const [tabStates = DEFAULT_BROWSER_CONTEXT.tabStates, setTabStates] = useMMKVObject<TabState[]>('tabStateStorage', tabStateStore);
-
-  const updateActiveTabState = useCallback(
-    (newState: Partial<TabState>, tabId?: string) => {
-      if (!tabStates) return;
-
-      const tabIndex = tabId ? tabStates?.findIndex(tab => tab.uniqueId === tabId) : activeTabIndex;
-      if (tabIndex === -1) return;
-
-      if (isEqual(tabStates[tabIndex], newState)) return;
-
-      const updatedTabs = [...tabStates];
-      updatedTabs[tabIndex] = { ...updatedTabs[tabIndex], ...newState };
-
-      setTabStates(updatedTabs);
-    },
-    [activeTabIndex, setTabStates, tabStates]
-  );
-
-  const getActiveTabState = useCallback(() => {
-    if (!tabStates) return;
-    return tabStates[activeTabIndex];
-  }, [activeTabIndex, tabStates]);
+  const { tabStates, updateTabStates } = useBrowserStateStore();
 
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
   const activeTabRef = useRef<WebView | null>(null);
@@ -246,7 +204,7 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
 
   const setTabStatesThenUnblockQueue = useCallback(
     (updatedTabStates: TabState[], shouldToggleTabView?: boolean, indexToMakeActive?: number) => {
-      setTabStates(updatedTabStates);
+      updateTabStates(updatedTabStates);
 
       if (shouldToggleTabView) {
         runOnUI(toggleTabViewWorklet)(indexToMakeActive);
@@ -256,7 +214,7 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
 
       shouldBlockOperationQueue.value = false;
     },
-    [setTabStates, shouldBlockOperationQueue, toggleTabViewWorklet]
+    [shouldBlockOperationQueue, toggleTabViewWorklet, updateTabStates]
   );
 
   const processOperationQueueWorklet = useCallback(() => {
@@ -480,13 +438,11 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
   return (
     <BrowserContext.Provider
       value={{
-        activeTabIndex,
         activeTabRef,
         animatedActiveTabIndex,
         closeAllTabsWorklet,
         closeTabWorklet,
         currentlyOpenTabIds,
-        getActiveTabState,
         goBack,
         goForward,
         loadProgress,
@@ -500,7 +456,6 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
         tabViewProgress,
         tabViewVisible,
         toggleTabViewWorklet,
-        updateActiveTabState,
       }}
     >
       {children}

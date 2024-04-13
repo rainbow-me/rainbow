@@ -29,8 +29,7 @@ import Animated, {
 import ViewShot from 'react-native-view-shot';
 import WebView, { WebViewMessageEvent, WebViewNavigation } from 'react-native-webview';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
-import { MMKV } from 'react-native-mmkv';
-import { TabState, useBrowserContext } from './BrowserContext';
+import { useBrowserContext } from './BrowserContext';
 import { Freeze } from 'react-freeze';
 import {
   COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
@@ -57,6 +56,8 @@ import { TAB_SCREENSHOT_FASTER_IMAGE_CONFIG, RAINBOW_HOME } from './constants';
 import { getWebsiteMetadata } from './scripts';
 import { useBrowserHistoryStore } from '@/state/browserHistory';
 import { normalizeUrlForRecents } from './utils';
+import { useBrowserStateStore } from '@/state/browser';
+import { ScreenshotType, findTabScreenshot, getStoredScreenshots, tabScreenshotStorage } from './screenshots';
 
 // ⚠️ TODO: Split this file apart into hooks, smaller components
 // useTabScreenshots, useAnimatedWebViewStyles, useWebViewGestures
@@ -67,113 +68,11 @@ interface BrowserTabProps {
   injectedJS: string;
 }
 
-interface ScreenshotType {
-  id: string; // <- the tab uniqueId
-  timestamp: number; // <- time of capture
-  uri: string; // <- screenshot file name = `screenshot-${timestamp}.jpg`
-  url: string; // <- url of the tab
-}
-
 const AnimatedFasterImage = Animated.createAnimatedComponent(FasterImageView);
 
-const tabScreenshotStorage = new MMKV();
-
-const getStoredScreenshots = (): ScreenshotType[] => {
-  const persistedScreenshots = tabScreenshotStorage.getString('tabScreenshots');
-  return persistedScreenshots ? (JSON.parse(persistedScreenshots) as ScreenshotType[]) : [];
-};
-
-const findTabScreenshot = (id: string, url: string): ScreenshotType | null => {
-  const persistedData = tabScreenshotStorage.getString('tabScreenshots');
-  if (persistedData) {
-    const screenshots = JSON.parse(persistedData);
-
-    if (!Array.isArray(screenshots)) {
-      try {
-        logger.error(new RainbowError('Screenshot data is malformed — expected array'), {
-          screenshots: JSON.stringify(screenshots, null, 2),
-        });
-      } catch (e: any) {
-        logger.error(new RainbowError('Screenshot data is malformed — error stringifying'), {
-          message: e.message,
-        });
-      }
-      return null;
-    }
-
-    const matchingScreenshots = screenshots.filter(screenshot => screenshot.id === id);
-    const screenshotsWithMatchingUrl = matchingScreenshots.filter(screenshot => screenshot.url === url);
-
-    if (screenshotsWithMatchingUrl.length > 0) {
-      const mostRecentScreenshot = screenshotsWithMatchingUrl.reduce((a, b) => (a.timestamp > b.timestamp ? a : b));
-      return {
-        ...mostRecentScreenshot,
-        uri: `${RNFS.DocumentDirectoryPath}/${mostRecentScreenshot.uri}`,
-      };
-    }
-  }
-
-  return null;
-};
-
-export const pruneScreenshots = async (tabStates: TabState[]): Promise<void> => {
-  const tabStateMap = tabStates.reduce((acc: Record<string, string>, tab: TabState) => {
-    acc[tab.uniqueId] = tab.url;
-    return acc;
-  }, {});
-
-  const persistedData = tabScreenshotStorage.getString('tabScreenshots');
-  if (!persistedData) return;
-
-  const screenshots: ScreenshotType[] = JSON.parse(persistedData) || [];
-  const screenshotsGroupedByTabId: Record<string, ScreenshotType[]> = screenshots.reduce(
-    (acc: Record<string, ScreenshotType[]>, screenshot: ScreenshotType) => {
-      if (tabStateMap[screenshot.id]) {
-        if (!acc[screenshot.id]) acc[screenshot.id] = [];
-        acc[screenshot.id].push(screenshot);
-      }
-      return acc;
-    },
-    {}
-  );
-
-  const screenshotsToKeep: ScreenshotType[] = Object.values(screenshotsGroupedByTabId)
-    .map((group: ScreenshotType[]) => {
-      return group.reduce((mostRecent: ScreenshotType, current: ScreenshotType) => {
-        return new Date(mostRecent.timestamp) > new Date(current.timestamp) ? mostRecent : current;
-      });
-    })
-    .filter((screenshot: ScreenshotType) => tabStateMap[screenshot.id] === screenshot.url);
-
-  await deletePrunedScreenshotFiles(screenshots, screenshotsToKeep);
-
-  tabScreenshotStorage.set('tabScreenshots', JSON.stringify(screenshotsToKeep));
-};
-
-const deletePrunedScreenshotFiles = async (allScreenshots: ScreenshotType[], screenshotsToKeep: ScreenshotType[]): Promise<void> => {
-  try {
-    const filesToDelete = allScreenshots.filter(screenshot => !screenshotsToKeep.includes(screenshot));
-    const deletePromises = filesToDelete.map(screenshot => {
-      const filePath = `${RNFS.DocumentDirectoryPath}/${screenshot.uri}`;
-      return RNFS.unlink(filePath).catch(e => {
-        logger.error(new RainbowError('Error deleting screenshot file'), {
-          message: e.message,
-          filePath,
-          screenshot: JSON.stringify(screenshot, null, 2),
-        });
-      });
-    });
-    await Promise.all(deletePromises);
-  } catch (e: any) {
-    logger.error(new RainbowError('Screenshot file pruning operation failed to complete'), {
-      message: e.message,
-    });
-  }
-};
-
 export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, injectedJS }: BrowserTabProps) {
+  const { activeTabIndex, updateActiveTabState } = useBrowserStateStore();
   const {
-    activeTabIndex,
     activeTabRef,
     animatedActiveTabIndex,
     closeTabWorklet,
@@ -185,7 +84,6 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
     tabViewProgress,
     tabViewVisible,
     toggleTabViewWorklet,
-    updateActiveTabState,
   } = useBrowserContext();
   const { isDarkMode } = useColorMode();
   const { width: deviceWidth } = useDimensions();

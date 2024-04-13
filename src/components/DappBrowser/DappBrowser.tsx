@@ -9,7 +9,7 @@ import { Box, globalColors, useColorMode } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { BrowserContextProvider, useBrowserContext } from './BrowserContext';
-import { BrowserTab, pruneScreenshots } from './BrowserTab';
+import { BrowserTab } from './BrowserTab';
 import { TAB_VIEW_ROW_HEIGHT } from './Dimensions';
 import { Search } from './search/Search';
 import { TabViewToolbar } from './TabViewToolbar';
@@ -17,6 +17,7 @@ import { SheetGestureBlocker } from '../sheet/SheetGestureBlocker';
 import { ProgressBar } from './ProgressBar';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { TIMING_CONFIGS } from '../animations/animationConfigs';
+import { pruneScreenshots } from './screenshots';
 
 const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 

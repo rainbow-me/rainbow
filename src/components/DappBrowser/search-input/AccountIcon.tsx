@@ -21,6 +21,7 @@ import { getDappHost } from '../handleProviderRequest';
 import { Address, toHex } from 'viem';
 import { handleDappBrowserConnectionPrompt } from '@/utils/requestNavigationHandlers';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
+import { useBrowserStateStore } from '@/state/browser';
 
 interface MenuItemIcon {
   iconType: 'ASSET' | 'SYSTEM';
@@ -134,7 +135,8 @@ export const AccountIcon = () => {
   const { accountAddress } = useAccountSettings();
   const { wallets, walletNames } = useWallets();
   const [isConnected, setIsConnected] = useState(false);
-  const { getActiveTabState, activeTabIndex, activeTabRef } = useBrowserContext();
+  const { activeTabRef } = useBrowserContext();
+  const { activeTabIndex, getActiveTabState } = useBrowserStateStore();
   const [currentAddress, setCurrentAddress] = useState<string>(accountAddress);
   const [currentNetwork, setCurrentNetwork] = useState<Network>();
 

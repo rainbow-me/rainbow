@@ -15,12 +15,12 @@ import { useFavoriteDappsStore } from '@/state/favoriteDapps';
 import { TrendingSite, trendingDapps } from '@/resources/trendingDapps/trendingDapps';
 import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
 import MaskedView from '@react-native-masked-view/masked-view';
-import { useBrowserContext } from './BrowserContext';
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { normalizeUrl } from './utils';
 import { Site, useBrowserHistoryStore } from '@/state/browserHistory';
 import { getDappHost } from './handleProviderRequest';
 import { uniqBy } from 'lodash';
+import { useBrowserStateStore } from '@/state/browser';
 
 const HORIZONTAL_PAGE_INSET = 24;
 const MAX_RECENTS_TO_DISPLAY = 10;
@@ -36,7 +36,7 @@ const CARD_PADDING = 12;
 const CARD_SIZE = (deviceUtils.dimensions.width - HORIZONTAL_PAGE_INSET * 2 - (NUM_CARDS - 1) * CARD_PADDING) / NUM_CARDS;
 
 const Card = ({ site, showMenuButton }: { showMenuButton?: boolean; site: TrendingSite }) => {
-  const { updateActiveTabState } = useBrowserContext();
+  const { updateActiveTabState } = useBrowserStateStore();
   const { isDarkMode } = useColorMode();
 
   const menuConfig = {
@@ -193,7 +193,7 @@ const Card = ({ site, showMenuButton }: { showMenuButton?: boolean; site: Trendi
 };
 
 const Logo = ({ site }: { site: Omit<Site, 'timestamp'> }) => {
-  const { updateActiveTabState } = useBrowserContext();
+  const { updateActiveTabState } = useBrowserStateStore();
   const { isDarkMode } = useColorMode();
 
   return (

@@ -27,12 +27,13 @@ import { useDapps } from '@/resources/metadata/dapps';
 import { GetdAppsQuery } from '@/graphql/__generated__/metadata';
 import { filterList } from '@/utils';
 import { rankings } from 'match-sorter';
+import { useBrowserStateStore } from '@/state/browser';
 
 export const Search = () => {
   const { width: deviceWidth } = useDimensions();
   const { isDarkMode } = useColorMode();
-  const { activeTabIndex, onRefresh, searchViewProgress, tabStates, tabViewProgress, tabViewVisible, updateActiveTabState } =
-    useBrowserContext();
+  const { onRefresh, searchViewProgress, tabStates, tabViewProgress, tabViewVisible } = useBrowserContext();
+  const { activeTabIndex, updateActiveTabState } = useBrowserStateStore();
   const { data: dappsData } = useDapps();
 
   const isFocusedValue = useSharedValue(false);
