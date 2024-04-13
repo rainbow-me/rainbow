@@ -24,7 +24,7 @@ export interface TabState {
 interface BrowserStateStore {
   activeTabIndex: number;
   getActiveTabState: () => TabState | undefined;
-  setActiveTabIndex: React.Dispatch<React.SetStateAction<number>>;
+  setActiveTabIndex: (newIndex: number) => void;
   tabStates: TabState[];
   updateTabStates: (newState: TabState[]) => void;
   updateActiveTabState: (newState: Partial<TabState>, tabId?: string) => void;
@@ -39,8 +39,8 @@ export const browserStateStore = createStore<BrowserStateStore>((set, get) => ({
     if (!tabStates) return;
     return tabStates[activeTabIndex];
   },
-  setActiveTabIndex: () => {
-    return;
+  setActiveTabIndex: (newIndex: number) => {
+    set({ activeTabIndex: newIndex });
   },
   tabStates: DEFAULT_TAB_STATE,
   updateTabStates: (newState: TabState[]) => {
