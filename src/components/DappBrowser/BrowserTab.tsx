@@ -69,14 +69,14 @@ interface BrowserTabProps {
   injectedJS: string;
   activeTabIndex: number;
   activeTabRef: React.MutableRefObject<WebView | null>;
-  animatedActiveTabIndex: Animated.SharedValue<number>;
+  animatedActiveTabIndex: SharedValue<number>;
   closeTabWorklet(tabId: string, tabIndex: number): void;
   currentlyOpenTabIds: SharedValue<string[]>;
   tabStates: TabState[];
   tabViewProgress: SharedValue<number> | undefined;
   tabViewVisible: SharedValue<boolean> | undefined;
-  toggleTabViewWorklet(tabIndex: number): void;
-  updateActiveTabState(updates: Partial<TabState>, tabId: string): void;
+  toggleTabViewWorklet(tabIndex?: number): void;
+  updateActiveTabState(updates: Partial<TabState>, tabId: string | undefined): void;
 }
 
 interface ScreenshotType {
@@ -829,7 +829,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
               <ViewShot options={{ format: 'jpg' }} ref={viewShotRef}>
                 <View collapsable={false} style={{ height: WEBVIEW_HEIGHT, width: '100%' }}>
                   {isOnHomepage ? (
-                    <Homepage />
+                    <Homepage updateActiveTabState={updateActiveTabState} />
                   ) : (
                     <Freeze freeze={!isActiveTab}>
                       <DappBrowserWebview
@@ -867,7 +867,13 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
                 source={IS_IOS ? screenshotSource : screenshotSource.value}
                 style={[styles.screenshotContainerStyle, animatedScreenshotStyle]}
               />
-              <WebViewBorder animatedTabIndex={animatedTabIndex} enabled={IS_IOS && isDarkMode && !isOnHomepage} />
+              <WebViewBorder
+                animatedTabIndex={animatedTabIndex}
+                enabled={IS_IOS && isDarkMode && !isOnHomepage}
+                tabViewProgress={tabViewProgress}
+                tabViewVisible={tabViewVisible}
+                animatedActiveTabIndex={animatedActiveTabIndex}
+              />
               <CloseTabButton
                 animatedMultipleTabsOpen={animatedMultipleTabsOpen}
                 animatedTabIndex={animatedTabIndex}
@@ -877,6 +883,11 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
                 isOnHomepage={isOnHomepage}
                 multipleTabsOpen={multipleTabsOpen}
                 tabId={tabId}
+                animatedActiveTabIndex={animatedActiveTabIndex}
+                closeTabWorklet={closeTabWorklet}
+                currentlyOpenTabIds={currentlyOpenTabIds}
+                tabViewProgress={tabViewProgress}
+                tabViewVisible={tabViewVisible}
               />
             </Animated.View>
           </PanGestureHandler>

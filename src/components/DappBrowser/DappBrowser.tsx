@@ -50,10 +50,14 @@ const DappBrowserComponent = () => {
     currentlyOpenTabIds,
     tabViewProgress,
     activeTabIndex,
+    onRefresh,
     animatedActiveTabIndex,
     closeTabWorklet,
     toggleTabViewWorklet,
     updateActiveTabState,
+    getActiveTabState,
+    goBack,
+    goForward,
   } = useBrowserState({ activeTabRef });
 
   const { isDarkMode } = useColorMode();
@@ -162,9 +166,27 @@ const DappBrowserComponent = () => {
             ))}
           </Animated.View>
         </AnimatedScrollView>
-        <ProgressBar />
-        <TabViewToolbar />
-        <Search />
+        <ProgressBar tabViewVisible={tabViewVisible} />
+        <TabViewToolbar
+          tabViewVisible={tabViewVisible}
+          tabViewProgress={tabViewProgress}
+          newTabWorklet={newTabWorklet}
+          toggleTabViewWorklet={toggleTabViewWorklet}
+        />
+        <Search
+          tabViewVisible={tabViewVisible}
+          tabViewProgress={tabViewProgress}
+          activeTabIndex={activeTabIndex}
+          onRefresh={onRefresh}
+          tabStates={tabStates}
+          updateActiveTabState={updateActiveTabState}
+          activeTabRef={activeTabRef}
+          getActiveTabState={getActiveTabState}
+          goBack={goBack}
+          goForward={goForward}
+          animatedActiveTabIndex={animatedActiveTabIndex}
+          toggleTabViewWorklet={toggleTabViewWorklet}
+        />
       </Box>
     </SheetGestureBlocker>
   );

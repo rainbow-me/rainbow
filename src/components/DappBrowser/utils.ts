@@ -2,7 +2,7 @@ import { Share } from 'react-native';
 import { WebViewNavigationEvent } from 'react-native-webview/lib/RNCWebViewNativeComponent';
 import { RainbowError, logger } from '@/logger';
 import { HTTP, HTTPS } from './constants';
-import { TabState } from './BrowserContext';
+import { TabState } from './useBrowserState';
 
 // ---------------------------------------------------------------------------- //
 // URL validation regex breakdown here: https://mathiasbynens.be/demo/url-regex

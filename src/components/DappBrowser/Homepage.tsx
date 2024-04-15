@@ -15,12 +15,12 @@ import { useFavoriteDappsStore } from '@/state/favoriteDapps';
 import { TrendingSite, trendingDapps } from '@/resources/trendingDapps/trendingDapps';
 import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
 import MaskedView from '@react-native-masked-view/masked-view';
-import { useBrowserContext } from './BrowserContext';
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { normalizeUrl } from './utils';
 import { Site, useBrowserHistoryStore } from '@/state/browserHistory';
 import { getDappHost } from './handleProviderRequest';
 import { uniqBy } from 'lodash';
+import { TabState } from './useBrowserState';
 
 const HORIZONTAL_PAGE_INSET = 24;
 const MAX_RECENTS_TO_DISPLAY = 10;
@@ -35,8 +35,15 @@ const NUM_CARDS = 2;
 const CARD_PADDING = 12;
 const CARD_SIZE = (deviceUtils.dimensions.width - HORIZONTAL_PAGE_INSET * 2 - (NUM_CARDS - 1) * CARD_PADDING) / NUM_CARDS;
 
-const Card = ({ site, showMenuButton }: { showMenuButton?: boolean; site: TrendingSite }) => {
-  const { updateActiveTabState } = useBrowserContext();
+const Card = ({
+  site,
+  showMenuButton,
+  updateActiveTabState,
+}: {
+  showMenuButton?: boolean;
+  site: TrendingSite;
+  updateActiveTabState: (newState: Partial<TabState>, tabId?: string | undefined) => void;
+}) => {
   const { isDarkMode } = useColorMode();
 
   const menuConfig = {
@@ -192,8 +199,13 @@ const Card = ({ site, showMenuButton }: { showMenuButton?: boolean; site: Trendi
   );
 };
 
-const Logo = ({ site }: { site: Omit<Site, 'timestamp'> }) => {
-  const { updateActiveTabState } = useBrowserContext();
+const Logo = ({
+  site,
+  updateActiveTabState,
+}: {
+  site: Omit<Site, 'timestamp'>;
+  updateActiveTabState: (newState: Partial<TabState>, tabId?: string | undefined) => void;
+}) => {
   const { isDarkMode } = useColorMode();
 
   return (
@@ -264,7 +276,11 @@ const Logo = ({ site }: { site: Omit<Site, 'timestamp'> }) => {
   );
 };
 
-export default function Homepage() {
+export default function Homepage({
+  updateActiveTabState,
+}: {
+  updateActiveTabState: (newState: Partial<TabState>, tabId?: string | undefined) => void;
+}) {
   const { isDarkMode } = useColorMode();
   const { favoriteDapps } = useFavoriteDappsStore();
   const { getRecent } = useBrowserHistoryStore();
@@ -313,7 +329,7 @@ export default function Homepage() {
                 <Inset space="24px">
                   <Box flexDirection="row" gap={CARD_PADDING}>
                     {trendingDapps.map(site => (
-                      <Card key={site.url} site={site} />
+                      <Card key={site.url} site={site} updateActiveTabState={updateActiveTabState} />
                     ))}
                   </Box>
                 </Inset>
@@ -337,7 +353,7 @@ export default function Homepage() {
                 width={{ custom: deviceUtils.dimensions.width - HORIZONTAL_PAGE_INSET * 2 }}
               >
                 {favoriteDapps.map(dapp => (
-                  <Logo key={`${dapp.url}-${dapp.name}`} site={dapp} />
+                  <Logo key={`${dapp.url}-${dapp.name}`} site={dapp} updateActiveTabState={updateActiveTabState} />
                 ))}
               </Box>
             </Stack>
@@ -354,7 +370,7 @@ export default function Homepage() {
               </Inline>
               <Inline space={{ custom: CARD_PADDING }}>
                 {recent.map(site => (
-                  <Card key={site.url} site={site} showMenuButton />
+                  <Card key={site.url} site={site} showMenuButton updateActiveTabState={updateActiveTabState} />
                 ))}
               </Inline>
             </Stack>
