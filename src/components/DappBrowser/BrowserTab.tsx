@@ -12,6 +12,7 @@ import {
 } from 'react-native-gesture-handler';
 import Animated, {
   FadeIn,
+  SharedValue,
   convertToRGBA,
   dispatchCommand,
   interpolate,
@@ -30,7 +31,6 @@ import ViewShot from 'react-native-view-shot';
 import WebView, { WebViewMessageEvent, WebViewNavigation } from 'react-native-webview';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { MMKV } from 'react-native-mmkv';
-import { TabState, useBrowserContext } from './BrowserContext';
 import { Freeze } from 'react-freeze';
 import {
   COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
@@ -57,6 +57,8 @@ import { TAB_SCREENSHOT_FASTER_IMAGE_CONFIG, RAINBOW_HOME } from './constants';
 import { getWebsiteMetadata } from './scripts';
 import { useBrowserHistoryStore } from '@/state/browserHistory';
 import { normalizeUrlForRecents } from './utils';
+import { TabState } from './useBrowserState';
+import { useBrowserContext } from './BrowserContext';
 
 // ⚠️ TODO: Split this file apart into hooks, smaller components
 // useTabScreenshots, useAnimatedWebViewStyles, useWebViewGestures
@@ -65,6 +67,16 @@ interface BrowserTabProps {
   tabId: string;
   tabIndex: number;
   injectedJS: string;
+  activeTabIndex: number;
+  activeTabRef: React.MutableRefObject<WebView | null>;
+  animatedActiveTabIndex: Animated.SharedValue<number>;
+  closeTabWorklet(tabId: string, tabIndex: number): void;
+  currentlyOpenTabIds: SharedValue<string[]>;
+  tabStates: TabState[];
+  tabViewProgress: SharedValue<number> | undefined;
+  tabViewVisible: SharedValue<boolean> | undefined;
+  toggleTabViewWorklet(tabIndex: number): void;
+  updateActiveTabState(updates: Partial<TabState>, tabId: string): void;
 }
 
 interface ScreenshotType {
@@ -171,22 +183,20 @@ const deletePrunedScreenshotFiles = async (allScreenshots: ScreenshotType[], scr
   }
 };
 
-export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, injectedJS }: BrowserTabProps) {
+export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, injectedJS, ...props }: BrowserTabProps) {
   const {
     activeTabIndex,
     activeTabRef,
     animatedActiveTabIndex,
     closeTabWorklet,
     currentlyOpenTabIds,
-    loadProgress,
-    scrollViewRef,
-    scrollViewOffset,
     tabStates,
-    tabViewProgress,
     tabViewVisible,
     toggleTabViewWorklet,
     updateActiveTabState,
-  } = useBrowserContext();
+    tabViewProgress,
+  } = props;
+  const { scrollViewRef, scrollViewOffset, loadProgress } = useBrowserContext();
   const { isDarkMode } = useColorMode();
   const { width: deviceWidth } = useDimensions();
   const { addRecent } = useBrowserHistoryStore();

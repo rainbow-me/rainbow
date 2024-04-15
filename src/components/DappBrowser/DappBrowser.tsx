@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Animated, { interpolateColor, useAnimatedProps, useAnimatedReaction, useAnimatedStyle, withTiming } from 'react-native-reanimated';
@@ -17,6 +17,8 @@ import { SheetGestureBlocker } from '../sheet/SheetGestureBlocker';
 import { ProgressBar } from './ProgressBar';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { TIMING_CONFIGS } from '../animations/animationConfigs';
+import { useBrowserState } from './useBrowserState';
+import WebView from 'react-native-webview';
 
 const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 
@@ -39,10 +41,25 @@ type RouteParams = {
 };
 
 const DappBrowserComponent = () => {
+  const activeTabRef = useRef<WebView | null>(null);
+
+  const {
+    tabViewVisible,
+    newTabWorklet,
+    tabStates,
+    currentlyOpenTabIds,
+    tabViewProgress,
+    activeTabIndex,
+    animatedActiveTabIndex,
+    closeTabWorklet,
+    toggleTabViewWorklet,
+    updateActiveTabState,
+  } = useBrowserState({ activeTabRef });
+
   const { isDarkMode } = useColorMode();
   const [injectedJS, setInjectedJS] = useState<string | ''>('');
 
-  const { currentlyOpenTabIds, newTabWorklet, scrollViewRef, tabStates, tabViewProgress, tabViewVisible } = useBrowserContext();
+  const { scrollViewRef } = useBrowserContext();
 
   const route = useRoute<RouteProp<RouteParams, 'DappBrowserParams'>>();
 
@@ -126,7 +143,22 @@ const DappBrowserComponent = () => {
         >
           <Animated.View style={scrollViewHeightStyle}>
             {tabStates.map((_, index) => (
-              <BrowserTab key={tabStates[index].uniqueId} tabId={tabStates[index].uniqueId} tabIndex={index} injectedJS={injectedJS} />
+              <BrowserTab
+                key={tabStates[index].uniqueId}
+                tabId={tabStates[index].uniqueId}
+                tabIndex={index}
+                injectedJS={injectedJS}
+                activeTabIndex={activeTabIndex}
+                activeTabRef={activeTabRef}
+                animatedActiveTabIndex={animatedActiveTabIndex}
+                closeTabWorklet={closeTabWorklet}
+                currentlyOpenTabIds={currentlyOpenTabIds}
+                tabStates={tabStates}
+                tabViewProgress={tabViewProgress}
+                tabViewVisible={tabViewVisible}
+                toggleTabViewWorklet={toggleTabViewWorklet}
+                updateActiveTabState={updateActiveTabState}
+              />
             ))}
           </Animated.View>
         </AnimatedScrollView>
