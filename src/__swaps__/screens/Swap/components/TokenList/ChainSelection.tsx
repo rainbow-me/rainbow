@@ -1,10 +1,11 @@
 /* eslint-disable react/jsx-props-no-spreading */
+import c from 'chroma-js';
 import { Text as RNText, StyleSheet } from 'react-native';
 import Animated, { useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
 import React, { useCallback, useMemo } from 'react';
 
 import { SUPPORTED_CHAINS } from '@/references';
-import { AnimatedText, Bleed, Box, HitSlop, Inline, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { AnimatedText, Bleed, Box, HitSlop, Inline, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { chainNameFromChainId, chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -14,22 +15,36 @@ import { ChainId } from '@/__swaps__/types/chains';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ContextMenuButton } from '@/components/context-menu';
 import { IS_ANDROID } from '@/env';
+import { useAccountAccentColor } from '@/hooks';
 
 type ChainSelectionProps = {
+  allText?: string;
   output: boolean;
 };
 
-export const ChainSelection = ({ output }: ChainSelectionProps) => {
+export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
   const { isDarkMode } = useColorMode();
+  const { accentColor: accountColor } = useAccountAccentColor();
   const { SwapInputController } = useSwapContext();
   const red = useForegroundColor('red');
+
+  const accentColor = useMemo(() => {
+    if (c.contrast(accountColor, isDarkMode ? '#191A1C' : globalColors.white100) < (isDarkMode ? 2.125 : 1.5)) {
+      const shiftedColor = isDarkMode ? c(accountColor).brighten(1).saturate(0.5).css() : c(accountColor).darken(0.5).saturate(0.5).css();
+      return shiftedColor;
+    } else {
+      return accountColor;
+    }
+  }, [accountColor, isDarkMode]);
 
   // const propToUse = output ? SwapInputController.outputChainId : SwapInputController.
 
   const chainName = useSharedValue(
-    SwapInputController.outputChainId.value === ChainId.mainnet
-      ? 'ethereum'
-      : chainNameFromChainIdWorklet(SwapInputController.outputChainId.value)
+    !output
+      ? allText
+      : SwapInputController.outputChainId.value === ChainId.mainnet
+        ? 'ethereum'
+        : chainNameFromChainIdWorklet(SwapInputController.outputChainId.value)
   );
 
   // const switchToRandomChain = useCallback(() => {
@@ -39,9 +54,13 @@ export const ChainSelection = ({ output }: ChainSelectionProps) => {
   // }, [SwapInputController]);
 
   useAnimatedReaction(
-    () => SwapInputController.outputChainId.value,
+    () => ({
+      outputChainId: SwapInputController.outputChainId.value,
+    }),
     current => {
-      chainName.value = current === ChainId.mainnet ? 'ethereum' : chainNameFromChainIdWorklet(current);
+      if (output) {
+        chainName.value = current.outputChainId === ChainId.mainnet ? 'ethereum' : chainNameFromChainIdWorklet(current.outputChainId);
+      }
     }
   );
 
@@ -84,33 +103,63 @@ export const ChainSelection = ({ output }: ChainSelectionProps) => {
   return (
     <Box as={Animated.View} paddingHorizontal="20px">
       <Inline alignHorizontal="justify" alignVertical="center">
-        <Inline alignVertical="center" space="6px">
-          <Bleed vertical="4px">
-            <Box alignItems="center" justifyContent="center" marginBottom={{ custom: -0.5 }} width={{ custom: 16 }}>
-              <Bleed space={isDarkMode ? '16px' : undefined}>
-                <RNText
-                  style={
-                    isDarkMode
-                      ? [
-                          styles.textIconGlow,
-                          {
-                            textShadowColor: opacity(red, 0.28),
-                          },
-                        ]
-                      : undefined
-                  }
-                >
-                  <Text align="center" color="labelSecondary" size="icon 13px" weight="heavy">
-                    􀆪
-                  </Text>
-                </RNText>
-              </Bleed>
-            </Box>
-          </Bleed>
-          <Text color="labelSecondary" size="15pt" weight="heavy">
-            Filter by Network
-          </Text>
-        </Inline>
+        {output ? (
+          <Inline alignVertical="center" space="6px">
+            <Bleed vertical="4px">
+              <Box alignItems="center" justifyContent="center" marginBottom={{ custom: -0.5 }} width={{ custom: 16 }}>
+                <Bleed space={isDarkMode ? '16px' : undefined}>
+                  <RNText
+                    style={
+                      isDarkMode
+                        ? [
+                            styles.textIconGlow,
+                            {
+                              textShadowColor: opacity(red, 0.28),
+                            },
+                          ]
+                        : undefined
+                    }
+                  >
+                    <Text align="center" color="labelSecondary" size="icon 13px" weight="heavy">
+                      􀆪
+                    </Text>
+                  </RNText>
+                </Bleed>
+              </Box>
+            </Bleed>
+            <Text color="labelSecondary" size="15pt" weight="heavy">
+              Filter by Network
+            </Text>
+          </Inline>
+        ) : (
+          <Inline alignVertical="center" space="6px">
+            <Bleed vertical="4px">
+              <Box alignItems="center" justifyContent="center" width={{ custom: 18 }}>
+                <Bleed space={isDarkMode ? '16px' : undefined}>
+                  <RNText
+                    style={
+                      isDarkMode
+                        ? [
+                            styles.textIconGlow,
+                            {
+                              textShadowColor: opacity(accentColor, 0.2),
+                            },
+                          ]
+                        : undefined
+                    }
+                  >
+                    <Text align="center" color={{ custom: accentColor }} size="icon 13px" weight="black">
+                      􀣽
+                    </Text>
+                  </RNText>
+                </Bleed>
+              </Box>
+            </Bleed>
+            <Text color="label" size="15pt" weight="heavy">
+              My tokens
+            </Text>
+          </Inline>
+        )}
 
         <ContextMenuButton
           menuItems={menuConfig.menuItems}
@@ -121,10 +170,12 @@ export const ChainSelection = ({ output }: ChainSelectionProps) => {
         >
           <HitSlop space="10px">
             <Inline alignVertical="center" space="6px" wrap={false}>
-              <ChainImage
-                chain={ethereumUtils.getNetworkFromChainId(SwapInputController.outputChainId.value ?? ChainId.mainnet)}
-                size={16}
-              />
+              {output && (
+                <ChainImage
+                  chain={ethereumUtils.getNetworkFromChainId(SwapInputController.outputChainId.value ?? ChainId.mainnet)}
+                  size={16}
+                />
+              )}
               <AnimatedText
                 align="right"
                 color={isDarkMode ? 'labelSecondary' : 'label'}
