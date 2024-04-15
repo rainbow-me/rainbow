@@ -1,10 +1,7 @@
 import { EventEmitter } from 'events';
 import { captureException } from '@sentry/react-native';
 import { keyBy } from 'lodash';
-// @ts-ignore
-import { RAINBOW_LEAN_TOKEN_LIST_URL } from 'react-native-dotenv';
 import { MMKV } from 'react-native-mmkv';
-import { rainbowFetch } from '../../rainbow-fetch';
 import { ETH_ADDRESS } from '../index';
 import RAINBOW_TOKEN_LIST_DATA from './rainbow-token-list.json';
 import { RainbowToken } from '@/entities';
@@ -20,7 +17,6 @@ export const RB_TOKEN_LIST_CACHE = 'lrb-token-list';
 export const RB_TOKEN_LIST_ETAG = 'lrb-token-list-etag';
 
 type TokenListData = typeof RAINBOW_TOKEN_LIST_DATA;
-type ETagData = { etag: string | null };
 
 const ethWithAddress: RainbowToken = {
   address: ETH_ADDRESS,
@@ -98,57 +94,9 @@ function writeJson<T>(key: string, data: T) {
   }
 }
 
-async function getTokenListUpdate(currentTokenListData: TokenListData): Promise<{
-  newTokenList?: TokenListData;
-  status?: Response['status'];
-}> {
-  const etagData = readJson<ETagData>(RB_TOKEN_LIST_ETAG);
-  const etag = etagData?.etag;
-  const commonHeaders = {
-    Accept: 'application/json',
-  };
-
-  try {
-    const { data, status, headers } = await rainbowFetch(RAINBOW_LEAN_TOKEN_LIST_URL, {
-      headers: etag ? { ...commonHeaders, 'If-None-Match': etag } : { ...commonHeaders },
-      method: 'get',
-    });
-    const currentDate = new Date(currentTokenListData?.timestamp);
-    const freshDate = new Date((data as TokenListData)?.timestamp);
-
-    if (freshDate > currentDate) {
-      writeJson<TokenListData>(RB_TOKEN_LIST_CACHE, data as TokenListData);
-
-      if ((headers as Headers).get('etag')) {
-        writeJson<ETagData>(RB_TOKEN_LIST_ETAG, {
-          etag: (headers as Headers).get('etag'),
-        });
-      }
-
-      return { newTokenList: data as TokenListData, status };
-    } else {
-      return { newTokenList: undefined, status };
-    }
-  } catch (error) {
-    // @ts-ignore
-    if (error?.response?.status !== 304) {
-      // Log errors that are not 304 no change errors
-      logger.sentry('Error fetching token list');
-      logger.error(error);
-      captureException(error);
-    }
-    return {
-      newTokenList: undefined,
-      // @ts-ignore
-      status: error?.response?.status,
-    };
-  }
-}
-
 class RainbowTokenList extends EventEmitter {
   #tokenListDataStorage = RAINBOW_TOKEN_LIST_DATA;
   #derivedData = generateDerivedData(RAINBOW_TOKEN_LIST_DATA);
-  #updateJob: Promise<void> | null = null;
 
   constructor() {
     super();
@@ -177,41 +125,6 @@ class RainbowTokenList extends EventEmitter {
     this.#derivedData = generateDerivedData(RAINBOW_TOKEN_LIST_DATA);
     this.emit('update');
     logger.debug('Token list data replaced');
-  }
-
-  update() {
-    // deduplicate calls to update.
-    if (!this.#updateJob) {
-      this.#updateJob = this._updateJob();
-    }
-
-    return this.#updateJob;
-  }
-
-  async _updateJob(): Promise<void> {
-    try {
-      logger.debug('Token list checking for update');
-      const { newTokenList, status } = await getTokenListUpdate(this._tokenListData);
-
-      newTokenList
-        ? logger.debug(`Token list update: new update loaded, generated on ${newTokenList?.timestamp}`)
-        : status === 304
-          ? logger.debug(`Token list update: no change since last update, skipping update.`)
-          : logger.debug(
-              `Token list update: Token list did not update. (Status: ${status}, CurrentListDate: ${this._tokenListData?.timestamp})`
-            );
-
-      if (newTokenList) {
-        this._tokenListData = newTokenList;
-      }
-    } catch (error) {
-      logger.sentry(`Token list update error: ${(error as Error).message}`);
-      logger.error(error);
-      captureException(error);
-    } finally {
-      this.#updateJob = null;
-      logger.debug('Token list completed update check.');
-    }
   }
 
   get CURATED_TOKENS() {

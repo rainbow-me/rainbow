@@ -1,8 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import lang from 'i18n-js';
 import React, { useCallback, useContext, useState } from 'react';
-import { InteractionManager, Switch } from 'react-native';
-import codePush from 'react-native-code-push';
 import {
   // @ts-ignore
   HARDHAT_URL_ANDROID,
@@ -13,8 +11,6 @@ import {
 import Restart from 'react-native-restart';
 import { useDispatch } from 'react-redux';
 import Clipboard from '@react-native-clipboard/clipboard';
-import useAppVersion from '../../../hooks/useAppVersion';
-import NetworkSection from './NetworkSection';
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
@@ -23,8 +19,8 @@ import { deleteAllBackups } from '@/handlers/cloudBackup';
 import { web3SetHttpProvider } from '@/handlers/web3';
 import { RainbowContext } from '@/helpers/RainbowContext';
 import isTestFlight from '@/helpers/isTestFlight';
-import networkTypes, { Network } from '@/helpers/networkTypes';
-import { useAccountSettings, useInitializeAccountData, useLoadAccountData, useResetAccountState, useWallets } from '@/hooks';
+import networkTypes from '@/helpers/networkTypes';
+import { useWallets } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { wipeKeychain } from '@/model/keychain';
 import { clearAllStorages } from '@/model/mmkv';
@@ -45,7 +41,6 @@ import { IS_DEV } from '@/env';
 import { getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded } from '@/helpers/signingWallet';
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
 import { defaultConfig, getExperimetalFlag, LOG_PUSH } from '@/config';
-import { settingsUpdateNetwork } from '@/redux/settings';
 import { serialize } from '@/logger/logDump';
 import { isAuthenticated } from '@/utils/authentication';
 
@@ -58,12 +53,9 @@ const DevSection = () => {
   const { navigate } = useNavigation();
   const { config, setConfig } = useContext(RainbowContext) as any;
   const { wallets } = useWallets();
-  const { accountAddress, testnetsEnabled, settingsChangeTestnetsEnabled } = useAccountSettings();
   const { walletNotificationSettings } = useAllNotificationSettingsFromStorage();
   const dispatch = useDispatch();
-  const resetAccountState = useResetAccountState();
-  const loadAccountData = useLoadAccountData();
-  const initializeAccountData = useInitializeAccountData();
+
   const [loadingStates, setLoadingStates] = useState({
     clearLocalStorage: false,
     clearAsyncStorage: false,
@@ -92,24 +84,6 @@ const DevSection = () => {
     navigate(Routes.PROFILE_SCREEN);
     dispatch(explorerInit());
   }, [dispatch, navigate]);
-
-  const syncCodepush = useCallback(async () => {
-    const isUpdate = !!(await codePush.checkForUpdate());
-    if (!isUpdate) {
-      Alert.alert(lang.t('developer_settings.no_update'));
-    } else {
-      // dismissing not to fuck up native nav structure
-      navigate(Routes.PROFILE_SCREEN);
-      Alert.alert(lang.t('developer_settings.installing_update'));
-
-      const result = await codePush.sync({
-        installMode: codePush.InstallMode.IMMEDIATE,
-      });
-
-      const resultString = Object.entries(codePush.SyncStatus).find(e => e[1] === result)?.[0];
-      if (resultString) Alert.alert(resultString);
-    }
-  }, [navigate]);
 
   const checkAlert = useCallback(async () => {
     try {
@@ -152,8 +126,6 @@ const DevSection = () => {
   const throwRenderError = () => {
     setErrorObj({ error: 'this throws render error' });
   };
-
-  const codePushVersion = useAppVersion()[1];
 
   const clearAllNotificationSettings = useCallback(async () => {
     // loop through notification settings and unsubscribe all wallets
@@ -353,13 +325,6 @@ const DevSection = () => {
               size={52}
               testID="alert-section"
               titleComponent={<MenuItem.Title text={lang.t('developer_settings.alert')} />}
-            />
-            <MenuItem
-              leftComponent={<MenuItem.TextIcon icon="⏩" isEmoji />}
-              onPress={syncCodepush}
-              rightComponent={<MenuItem.Selection>{codePushVersion}</MenuItem.Selection>}
-              size={52}
-              titleComponent={<MenuItem.Title text={lang.t('developer_settings.sync_codepush')} />}
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="🗺️" isEmoji />}

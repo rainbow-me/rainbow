@@ -3,7 +3,14 @@ import lang from 'i18n-js';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import { SwapModalField } from '@/redux/swap';
-import { WETH_ADDRESS, WMATIC_POLYGON_ADDRESS, WBNB_BSC_ADDRESS, WETH_ARBITRUM_ADDRESS, WETH_ZORA_ADDRESS } from '@/references';
+import {
+  WETH_ADDRESS,
+  WDEGEN_DEGEN_CHAIN_ADDRESS,
+  WMATIC_POLYGON_ADDRESS,
+  WBNB_BSC_ADDRESS,
+  WETH_ARBITRUM_ADDRESS,
+  WETH_ZORA_ADDRESS,
+} from '@/references';
 import { fromWei, updatePrecisionToDisplay } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
 import { computeSlippageAdjustedAmounts, Field } from '@/handlers/swap';
@@ -40,7 +47,10 @@ export default function useSwapAdjustedAmounts(tradeDetails: Quote) {
     (tradeDetails.sellTokenAddress === ETH_ADDRESS && tradeDetails.buyTokenAddress === WETH_ARBITRUM_ADDRESS) ||
     // zora eth <-> weth swap
     (tradeDetails.buyTokenAddress === ETH_ADDRESS && tradeDetails.sellTokenAddress === WETH_ZORA_ADDRESS) ||
-    (tradeDetails.sellTokenAddress === ETH_ADDRESS && tradeDetails.buyTokenAddress === WETH_ZORA_ADDRESS)
+    (tradeDetails.sellTokenAddress === ETH_ADDRESS && tradeDetails.buyTokenAddress === WETH_ZORA_ADDRESS) ||
+    // degen <-> wdegen swap
+    (tradeDetails.buyTokenAddress === ETH_ADDRESS && tradeDetails.sellTokenAddress === WDEGEN_DEGEN_CHAIN_ADDRESS) ||
+    (tradeDetails.sellTokenAddress === ETH_ADDRESS && tradeDetails.buyTokenAddress === WDEGEN_DEGEN_CHAIN_ADDRESS)
   ) {
     amountReceivedSold = fromWei(amountReceivedSold.toString());
   }

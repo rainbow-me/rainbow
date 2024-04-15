@@ -15,6 +15,7 @@ export enum Network {
   gnosis = 'gnosis',
   avalanche = 'avalanche',
   blast = 'blast',
+  degen = 'degen',
 }
 
 export type NetworkTypes = 'layer1' | 'layer2' | 'testnet';

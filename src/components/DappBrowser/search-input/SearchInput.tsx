@@ -19,9 +19,9 @@ import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animatio
 import { AnimatedBlurView } from '@/__swaps__/screens/Swap/components/AnimatedBlurView';
 import haptics from '@/utils/haptics';
 import { useFavoriteDappsStore } from '@/state/favoriteDapps';
-import { Site } from '@/state/browserState';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { getNameFromFormattedUrl, handleShareUrl } from '../utils';
+import { Site } from '@/state/browserHistory';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
 
