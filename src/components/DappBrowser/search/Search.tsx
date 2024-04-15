@@ -33,7 +33,7 @@ export const Search = () => {
   const { isDarkMode } = useColorMode();
   const { activeTabIndex, onRefresh, searchViewProgress, tabStates, tabViewProgress, tabViewVisible, updateActiveTabState } =
     useBrowserContext();
-  const { data: dappsData } = useDapps();
+  const { dapps, dappsTrie } = useDapps();
 
   const isFocusedValue = useSharedValue(false);
   const [isFocused, setIsFocused] = useState<boolean>(false);
@@ -145,16 +145,21 @@ export const Search = () => {
 
   const search = useCallback(
     (query: string) => {
-      if (!query || query === inputValue) return setBasicSearchResults([]);
-      const filteredDapps = filterList(dappsData?.dApps ?? [], query, ['name', 'url'], {
-        threshold: rankings.CONTAINS,
-      }).sort((a, b) => +(b?.status === 'VERIFIED') - +(a?.status === 'VERIFIED'));
+      if (!query || query === inputValue) {
+        setSuggestedSearchResults([]);
+        setBasicSearchResults([]);
+        return;
+      }
+      // const filteredDapps = filterList(dappsWithTokens, query, ['tokens'], {
+      //   threshold: rankings.STARTS_WITH,
+      // }).sort((a, b) => +(b?.status === 'VERIFIED') - +(a?.status === 'VERIFIED'));
+      const filteredDapps = dappsTrie.search(query).sort((a, b) => +(b?.status === 'VERIFIED') - +(a?.status === 'VERIFIED'));
       setBasicSearchResults(filteredDapps.slice(1, 3));
       setSuggestedSearchResults(filteredDapps.slice(0, 1));
     },
-    [dappsData?.dApps, inputValue]
+    [dappsTrie, inputValue]
   );
-
+  // console.log(basicSearchResults?.map(dapp => dapp!.url));
   const onPressSearchResult = useCallback(
     (url: string) => {
       updateActiveTabState({ url: normalizeUrl(url) });
