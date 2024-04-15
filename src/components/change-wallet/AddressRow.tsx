@@ -128,7 +128,10 @@ export default function AddressRow({ contextMenuActions, data, editMode, onPress
   const { colors, isDarkMode } = useTheme();
 
   const cleanedUpBalance = useMemo(() => {
-    if (balance && balance !== 0) {
+    if (balance) {
+      if (balance === 0) {
+        return lang.t('wallet.change_wallet.no_balance');
+      }
       return convertAmountToNativeDisplay(balance, nativeCurrency);
     } else {
       return '-';
