@@ -129,12 +129,9 @@ export default function AddressRow({ contextMenuActions, data, editMode, onPress
 
   const cleanedUpBalance = useMemo(() => {
     if (balance) {
-      if (balance === 0) {
-        return lang.t('wallet.change_wallet.no_balance');
-      }
       return convertAmountToNativeDisplay(balance, nativeCurrency);
     } else {
-      return '-';
+      return lang.t('wallet.change_wallet.no_balance');
     }
   }, [balance, nativeCurrency]);
 
