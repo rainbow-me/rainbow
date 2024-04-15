@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { AnimatedText, Box, Inline, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity, priceForAsset } from '@/__swaps__/utils/swaps';
+import { opacity, priceForAsset, valueBasedDecimalFormatter } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 
@@ -81,18 +81,31 @@ export const ExchangeRateBubble = () => {
         switch (exchangeRateIndex) {
           // 1 assetToSell => x assetToBuy
           case 0: {
-            // TODO: Make the decimal points pretty on the rate conversion
-            const rate = assetToSellPrice.value / assetToBuyPrice.value;
+            const formattedRate = valueBasedDecimalFormatter(
+              assetToSellPrice.value / assetToBuyPrice.value,
+              assetToBuyPrice.value,
+              'up',
+              -1,
+              current.assetToBuy?.type === 'stablecoin' ?? false,
+              false
+            );
+
             fromAssetText.value = `1 ${assetToSellSymbol.value}`;
-            toAssetText.value = `${rate} ${assetToBuySymbol.value}`;
+            toAssetText.value = `${formattedRate} ${assetToBuySymbol.value}`;
             break;
           }
           // 1 assetToBuy => x assetToSell
           case 1: {
-            // TODO: Make the decimal points pretty on the rate conversion
-            const rate = assetToBuyPrice.value / assetToSellPrice.value;
+            const formattedRate = valueBasedDecimalFormatter(
+              assetToBuyPrice.value / assetToSellPrice.value,
+              assetToSellPrice.value,
+              'up',
+              -1,
+              current.assetToSell?.type === 'stablecoin' ?? false,
+              false
+            );
             fromAssetText.value = `1 ${assetToBuySymbol.value}`;
-            toAssetText.value = `${rate} ${assetToSellSymbol.value}`;
+            toAssetText.value = `${formattedRate} ${assetToSellSymbol.value}`;
             break;
           }
           // assetToSell => native currency
