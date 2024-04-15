@@ -5,6 +5,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { ETH_COLOR, ETH_COLOR_DARK, SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '@/__swaps__/screens/Swap/constants';
 import { SWAP_FEE } from '@/__swaps__/screens/Swap/dummyValues';
 import { inputKeys, inputMethods } from '@/__swaps__/types/swap';
+import { logger } from '@/logger';
 import {
   addCommasToNumber,
   clamp,
@@ -442,7 +443,9 @@ export function useSwapInputsController({
       fromAddress: currentAddress,
       sellTokenAddress: assetToSell.value.isNativeAsset ? ETH_ADDRESS : assetToSell.value.address,
       buyTokenAddress: assetToBuy.value.isNativeAsset ? ETH_ADDRESS : assetToBuy.value.address,
+      // TODO: Sometimes decimals are present here which messes with the quote
       sellAmount: isInputAmount ? convertAmountToRawAmount(amount, assetToSell.value.decimals) : undefined,
+      // TODO: Sometimes decimals are present here which messes with the quote
       buyAmount: isInputAmount ? undefined : convertAmountToRawAmount(amount, assetToBuy.value.decimals),
       slippage: Number(slippage.value),
       refuel: false,
@@ -450,31 +453,15 @@ export function useSwapInputsController({
       toChainId: isCrosschainSwap ? assetToBuy.value.chainId : assetToSell.value.chainId,
     };
 
-    console.log(JSON.stringify(quoteParams, null, 2));
-
-    const updateQuoteAndSource = (data: Quote | CrosschainQuote | QuoteError) => {
-      'worklet';
-
-      // NOTE: Update quote regardless so we can display an error if necessary
-      quote.value = data;
-
-      if (!data || (data as QuoteError)?.error) {
-        return;
-      }
-
-      const newData = data as Quote | CrosschainQuote;
-      if (newData.source) {
-        source.value = newData.source;
-      }
-    };
+    logger.debug(`[useSwapInputsController] quoteParams`, { quoteParams });
 
     const quoteResponse = (
       quoteParams.swapType === SwapType.crossChain ? await getCrosschainQuote(quoteParams) : await getQuote(quoteParams)
     ) as Quote | CrosschainQuote | QuoteError;
 
-    runOnUI(updateQuoteAndSource)(quoteResponse);
-
+    // todo - show quote error
     if (!quoteResponse || (quoteResponse as QuoteError)?.error) {
+      logger.debug(`[useSwapInputsController] quote error`, { error: quoteResponse });
       return null;
     }
 
@@ -560,6 +547,7 @@ export function useSwapInputsController({
     // TODO: Need to convert big number to native value properly here...
     // example: "fee": "3672850000000000",
     fee.value = isWrapOrUnwrapEth ? '0' : data.feeInEth.toString();
+    quote.value = data;
 
     inputValues.modify(values => {
       return {
@@ -581,9 +569,6 @@ export function useSwapInputsController({
   const handleInputAmountLogic = async (amount: number) => {
     const updateData = await fetchAndUpdateQuote(amount, true);
     const updatedSliderPosition = clampJS((amount / Number(assetToSell.value?.balance.amount)) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
-
-    console.log(JSON.stringify(updateData, null, 2));
-
     if (updateData) {
       runOnUI(updateQuoteWorklet)({ ...updateData, updatedSliderPosition, isInputAmount: true });
     }
@@ -592,7 +577,6 @@ export function useSwapInputsController({
   // Function to handle outputAmount logic
   const handleOutputAmountLogic = async (amount: number) => {
     const updateData = await fetchAndUpdateQuote(amount, false);
-
     if (updateData) {
       runOnUI(updateQuoteWorklet)({ ...updateData, isInputAmount: false });
     }

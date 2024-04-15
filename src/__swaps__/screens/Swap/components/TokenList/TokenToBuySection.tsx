@@ -98,7 +98,7 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
 
   return (
     <Box key={section.id} testID={`${section.id}-token-to-buy-section`}>
-      <Stack space="20px">
+      <Stack space="8px">
         {section.id === 'other_networks' ? (
           <Box borderRadius={12} height={{ custom: 52 }}>
             <Inset horizontal="20px" vertical="8px">
