@@ -164,6 +164,7 @@ export default function WalletConnectApprovalSheet() {
   });
 
   const type = params?.type || WalletConnectApprovalSheetType.connect;
+  const source = params?.source;
 
   /**
    * CAN BE UNDEFINED if we navigated here with no data. This is how we show a
@@ -190,8 +191,8 @@ export default function WalletConnectApprovalSheet() {
 
   const isScam = metadata?.status === DAppStatus.Scam;
 
-  // disabling Verified for now
-  const isVerified = false; //metadata?.status === DAppStatus.Verified;
+  // we can only safely mark a dapp as verified if the source is the browser
+  const isVerified = metadata?.status === DAppStatus.Verified && source === 'browser';
 
   const accentColor = isScam ? colors.red : colors.appleBlue;
 
