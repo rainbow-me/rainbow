@@ -2368,6 +2368,7 @@
       "balance_title": "Balance",
       "buy": "Buy",
       "change_wallet": {
+        "no_balance": "No balance",
         "balance_eth": "%{balanceEth} ETH",
         "watching": "Watching",
         "ledger": "Ledger"
