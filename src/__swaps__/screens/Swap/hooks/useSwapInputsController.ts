@@ -15,6 +15,7 @@ import {
   isUnwrapEth,
   isWrapEth,
   niceIncrementFormatter,
+  priceForAsset,
   trimTrailingZeros,
   valueBasedDecimalFormatter,
 } from '@/__swaps__/utils/swaps';
@@ -185,25 +186,13 @@ export function useSwapInputsController({
   });
   const incrementDecimalPlaces = useDerivedValue(() => countDecimalPlaces(niceIncrement.value));
 
-  const priceForAsset = (asset: ParsedSearchAsset | null, assetType: 'assetToSell' | 'assetToBuy') => {
-    'worklet';
-
-    if (!asset) return 0;
-
-    if (assetType === 'assetToSell' && assetToSellPrice.value) {
-      return assetToSellPrice.value;
-    } else if (assetType === 'assetToBuy' && assetToBuyPrice.value) {
-      return assetToBuyPrice.value;
-    } else if (asset.price?.value) {
-      return asset.price.value;
-    } else if (asset.native.price?.amount) {
-      return asset.native.price.amount;
-    }
-    return 0;
-  };
-
   const formattedInputAmount = useDerivedValue(() => {
-    const price = priceForAsset(assetToSell.value, 'assetToSell');
+    const price = priceForAsset({
+      asset: assetToSell.value,
+      assetType: 'assetToSell',
+      assetToSellPrice: assetToSellPrice,
+      assetToBuyPrice: assetToBuyPrice,
+    });
     const balance = Number(assetToSell.value?.balance.amount);
     if (
       (inputMethod.value === 'slider' && percentageToSwap.value === 0) ||
@@ -254,7 +243,12 @@ export function useSwapInputsController({
   });
 
   const formattedOutputAmount = useDerivedValue(() => {
-    const price = priceForAsset(assetToBuy.value, 'assetToBuy');
+    const price = priceForAsset({
+      asset: assetToBuy.value,
+      assetType: 'assetToBuy',
+      assetToSellPrice: assetToSellPrice,
+      assetToBuyPrice: assetToBuyPrice,
+    });
 
     if (
       (inputMethod.value === 'slider' && percentageToSwap.value === 0) ||
@@ -771,7 +765,12 @@ export function useSwapInputsController({
         outputChainId.value = prevAssetToBuy.chainId;
 
         const balance = Number(assetToSell.value.balance.amount);
-        const price = priceForAsset(assetToSell.value, 'assetToSell');
+        const price = priceForAsset({
+          asset: assetToSell.value,
+          assetType: 'assetToSell',
+          assetToSellPrice: assetToSellPrice,
+          assetToBuyPrice: assetToBuyPrice,
+        });
 
         if (!balance || !price) {
           inputValues.modify(values => {
@@ -885,8 +884,18 @@ export function useSwapInputsController({
         if (!current.assetToSell || !current.assetToBuy) return;
 
         const balance = Number(current.assetToSell.balance.amount);
-        const sellAssetPrice = priceForAsset(current.assetToSell, 'assetToSell');
-        const buyAssetPrice = priceForAsset(current.assetToBuy, 'assetToBuy');
+        const sellAssetPrice = priceForAsset({
+          asset: current.assetToSell,
+          assetType: 'assetToSell',
+          assetToSellPrice: assetToSellPrice,
+          assetToBuyPrice: assetToBuyPrice,
+        });
+        const buyAssetPrice = priceForAsset({
+          asset: current.assetToBuy,
+          assetType: 'assetToBuy',
+          assetToSellPrice: assetToSellPrice,
+          assetToBuyPrice: assetToBuyPrice,
+        });
 
         if (!sellAssetPrice || !buyAssetPrice) return;
 
@@ -931,7 +940,12 @@ export function useSwapInputsController({
           } else {
             if (!current.assetToSell) return;
 
-            const sellAssetPrice = priceForAsset(current.assetToSell, 'assetToSell');
+            const sellAssetPrice = priceForAsset({
+              asset: current.assetToSell,
+              assetType: 'assetToSell',
+              assetToSellPrice: assetToSellPrice,
+              assetToBuyPrice: assetToBuyPrice,
+            });
             const balance = Number(current.assetToSell.balance.amount);
 
             if (!balance || !sellAssetPrice) {
@@ -1091,7 +1105,9 @@ export function useSwapInputsController({
     inputValues,
     searchQuery,
     assetToSell,
+    assetToSellPrice,
     assetToBuy,
+    assetToBuyPrice,
     assetToSellSymbol,
     assetToSellIconUrl,
     assetToBuySymbol,
@@ -1112,5 +1128,6 @@ export function useSwapInputsController({
     onSwapAssets,
     onChangeSearchQuery,
     onExecuteSwap,
+    fetchAssetPrices,
   };
 }

@@ -1,5 +1,5 @@
 import c from 'chroma-js';
-import { convertToRGBA, isColor } from 'react-native-reanimated';
+import { SharedValue, convertToRGBA, isColor } from 'react-native-reanimated';
 
 import * as i18n from '@/languages';
 import { globalColors } from '@/design-system';
@@ -9,6 +9,7 @@ import { ChainId, ChainName } from '@/__swaps__/types/chains';
 import { RainbowConfig } from '@/model/remoteConfig';
 import { CrosschainQuote, ETH_ADDRESS, Quote, WRAPPED_ASSET } from '@rainbow-me/swaps';
 import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
+import { ParsedSearchAsset } from '../types/assets';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -348,4 +349,31 @@ export const isWrapEth = ({
   buyTokenAddress: string;
 }) => {
   return isLowerCaseMatch(sellTokenAddress, ETH_ADDRESS) && isLowerCaseMatch(buyTokenAddress, WRAPPED_ASSET[chainId]);
+};
+
+export const priceForAsset = ({
+  asset,
+  assetType,
+  assetToSellPrice,
+  assetToBuyPrice,
+}: {
+  asset: ParsedSearchAsset | null;
+  assetType: 'assetToSell' | 'assetToBuy';
+  assetToSellPrice: SharedValue<number>;
+  assetToBuyPrice: SharedValue<number>;
+}) => {
+  'worklet';
+
+  if (!asset) return 0;
+
+  if (assetType === 'assetToSell' && assetToSellPrice.value) {
+    return assetToSellPrice.value;
+  } else if (assetType === 'assetToBuy' && assetToBuyPrice.value) {
+    return assetToBuyPrice.value;
+  } else if (asset.price?.value) {
+    return asset.price.value;
+  } else if (asset.native.price?.amount) {
+    return asset.native.price.amount;
+  }
+  return 0;
 };
