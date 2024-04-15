@@ -81,7 +81,7 @@ export const ExchangeRateBubble = () => {
         switch (exchangeRateIndex) {
           // 1 assetToSell => x assetToBuy
           case 0: {
-            // divide assetToSell price buy assetToBuy price
+            // TODO: Make the decimal points pretty on the rate conversion
             const rate = assetToSellPrice.value / assetToBuyPrice.value;
             fromAssetText.value = `1 ${assetToSellSymbol.value}`;
             toAssetText.value = `${rate} ${assetToBuySymbol.value}`;
@@ -89,6 +89,7 @@ export const ExchangeRateBubble = () => {
           }
           // 1 assetToBuy => x assetToSell
           case 1: {
+            // TODO: Make the decimal points pretty on the rate conversion
             const rate = assetToBuyPrice.value / assetToSellPrice.value;
             fromAssetText.value = `1 ${assetToBuySymbol.value}`;
             toAssetText.value = `${rate} ${assetToSellSymbol.value}`;
