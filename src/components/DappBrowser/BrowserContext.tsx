@@ -1,5 +1,6 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useCallback, useContext, useRef } from 'react';
 import Animated, { AnimatedRef, SharedValue, useAnimatedRef, useScrollViewOffset, useSharedValue } from 'react-native-reanimated';
+import WebView from 'react-native-webview';
 
 interface BrowserTabViewProgressContextType {
   tabViewProgress: SharedValue<number> | undefined;
@@ -24,6 +25,10 @@ interface BrowserContextType {
   searchViewProgress: SharedValue<number> | undefined;
   scrollViewOffset: SharedValue<number> | undefined;
   scrollViewRef: AnimatedRef<Animated.ScrollView>;
+  goBack: () => void;
+  goForward: () => void;
+  onRefresh: () => void;
+  activeTabRef: React.MutableRefObject<WebView | null>;
 }
 
 const DEFAULT_BROWSER_CONTEXT: BrowserContextType = {
@@ -32,6 +37,10 @@ const DEFAULT_BROWSER_CONTEXT: BrowserContextType = {
   scrollViewOffset: undefined,
   // @ts-expect-error Explicitly allowing null/undefined on the AnimatedRef causes type issues
   scrollViewRef: { current: null },
+  activeTabRef: { current: null },
+  goBack: () => {},
+  goForward: () => {},
+  onRefresh: () => {},
 };
 
 const BrowserContext = createContext<BrowserContextType>(DEFAULT_BROWSER_CONTEXT);
@@ -44,6 +53,25 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
   const loadProgress = useSharedValue(0);
   const searchViewProgress = useSharedValue(0);
   const scrollViewOffset = useScrollViewOffset(scrollViewRef);
+  const activeTabRef = useRef<WebView | null>(null);
+
+  const goBack = useCallback(() => {
+    if (activeTabRef.current) {
+      activeTabRef.current.goBack();
+    }
+  }, [activeTabRef]);
+
+  const goForward = useCallback(() => {
+    if (activeTabRef.current) {
+      activeTabRef.current.goForward();
+    }
+  }, [activeTabRef]);
+
+  const onRefresh = useCallback(() => {
+    if (activeTabRef.current) {
+      activeTabRef.current.reload();
+    }
+  }, [activeTabRef]);
 
   // We use the currentlyOpenTabIds shared value as an always-up-to-date source of truth for which
   // tabs are open at any given moment, inclusive of any pending tab operations. This ensures that
@@ -53,10 +81,14 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
   return (
     <BrowserContext.Provider
       value={{
+        activeTabRef,
         loadProgress,
         searchViewProgress,
         scrollViewOffset,
         scrollViewRef,
+        goBack,
+        goForward,
+        onRefresh,
       }}
     >
       {children}

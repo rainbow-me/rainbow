@@ -21,6 +21,7 @@ import { useFavoriteDappsStore } from '@/state/favoriteDapps';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { getNameFromFormattedUrl, handleShareUrl } from '../utils';
 import { Site } from '@/state/browserHistory';
+import { useBrowserContext } from '../BrowserContext';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
 
@@ -41,9 +42,6 @@ export const SearchInput = ({
   canGoForward,
   onChange,
   animatedActiveTabIndex,
-  goBack,
-  goForward,
-  onRefresh,
   tabViewProgress,
 }: {
   inputRef: RefObject<TextInput>;
@@ -62,13 +60,11 @@ export const SearchInput = ({
   canGoForward: boolean;
   onChange: (event: NativeSyntheticEvent<TextInputChangeEventData>) => void;
   animatedActiveTabIndex: SharedValue<number> | undefined;
-  goBack: () => void;
-  goForward: () => void;
-  onRefresh: () => void;
   tabViewProgress: SharedValue<number> | undefined;
 }) => {
   const { isFavorite, addFavorite, removeFavorite } = useFavoriteDappsStore();
   const { isDarkMode } = useColorMode();
+  const { goBack, goForward, onRefresh } = useBrowserContext();
 
   const fillSecondary = useForegroundColor('fillSecondary');
   const label = useForegroundColor('label');

@@ -28,36 +28,28 @@ import { useDapps } from '@/resources/metadata/dapps';
 import { GetdAppsQuery } from '@/graphql/__generated__/metadata';
 import { filterList } from '@/utils';
 import { rankings } from 'match-sorter';
-import { TabState } from '../useBrowserState';
-import WebView from 'react-native-webview';
+import { TabState } from '../types';
 
 export const Search = ({
   activeTabIndex,
-  onRefresh,
   tabStates,
   tabViewProgress,
   tabViewVisible,
   updateActiveTabState,
   getActiveTabState,
-  activeTabRef,
   animatedActiveTabIndex,
-  goBack,
-  goForward,
   toggleTabViewWorklet,
 }: {
   activeTabIndex: number;
   tabViewProgress: SharedValue<number> | undefined;
-  onRefresh: () => void;
   tabStates: TabState[];
   tabViewVisible: SharedValue<boolean> | undefined;
   updateActiveTabState: (newState: Partial<TabState>, tabId?: string | undefined) => void;
   getActiveTabState: () => TabState | undefined;
-  activeTabRef: React.MutableRefObject<WebView | null>;
   animatedActiveTabIndex: SharedValue<number> | undefined;
-  goBack: () => void;
-  goForward: () => void;
   toggleTabViewWorklet(tabIndex?: number): void;
 }) => {
+  const { onRefresh } = useBrowserContext();
   const { width: deviceWidth } = useDimensions();
   const { isDarkMode } = useColorMode();
   const { searchViewProgress } = useBrowserContext();
@@ -305,7 +297,7 @@ export const Search = ({
           width="full"
         >
           <Box as={Animated.View} position="absolute" style={[accountIconStyle, { left: 24 }]}>
-            <AccountIcon getActiveTabState={getActiveTabState} activeTabIndex={activeTabIndex} activeTabRef={activeTabRef} />
+            <AccountIcon getActiveTabState={getActiveTabState} activeTabIndex={activeTabIndex} />
           </Box>
 
           <Box paddingRight="12px" style={{ flex: 1 }}>
@@ -326,9 +318,6 @@ export const Search = ({
               searchValue={searchQuery}
               onChange={onChange}
               animatedActiveTabIndex={animatedActiveTabIndex}
-              goBack={goBack}
-              goForward={goForward}
-              onRefresh={onRefresh}
               tabViewProgress={tabViewProgress}
             />
           </Box>

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Animated, { interpolateColor, useAnimatedProps, useAnimatedReaction, useAnimatedStyle, withTiming } from 'react-native-reanimated';
@@ -9,7 +9,7 @@ import { Box, globalColors, useColorMode } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { BrowserContextProvider, useBrowserContext } from './BrowserContext';
-import { BrowserTab, pruneScreenshots } from './BrowserTab';
+import { BrowserTab } from './BrowserTab';
 import { TAB_VIEW_ROW_HEIGHT } from './Dimensions';
 import { Search } from './search/Search';
 import { TabViewToolbar } from './TabViewToolbar';
@@ -18,7 +18,7 @@ import { ProgressBar } from './ProgressBar';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { TIMING_CONFIGS } from '../animations/animationConfigs';
 import { useBrowserState } from './useBrowserState';
-import WebView from 'react-native-webview';
+import { pruneScreenshots } from './screenshots';
 
 const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 
@@ -41,7 +41,7 @@ type RouteParams = {
 };
 
 const DappBrowserComponent = () => {
-  const activeTabRef = useRef<WebView | null>(null);
+  console.log('DappBrowserComponent :: RENDER');
 
   const {
     tabViewVisible,
@@ -50,20 +50,17 @@ const DappBrowserComponent = () => {
     currentlyOpenTabIds,
     tabViewProgress,
     activeTabIndex,
-    onRefresh,
     animatedActiveTabIndex,
     closeTabWorklet,
     toggleTabViewWorklet,
     updateActiveTabState,
     getActiveTabState,
-    goBack,
-    goForward,
-  } = useBrowserState({ activeTabRef });
+  } = useBrowserState();
 
   const { isDarkMode } = useColorMode();
   const [injectedJS, setInjectedJS] = useState<string | ''>('');
 
-  const { scrollViewRef } = useBrowserContext();
+  const { scrollViewRef, activeTabRef } = useBrowserContext();
 
   const route = useRoute<RouteProp<RouteParams, 'DappBrowserParams'>>();
 
@@ -177,13 +174,9 @@ const DappBrowserComponent = () => {
           tabViewVisible={tabViewVisible}
           tabViewProgress={tabViewProgress}
           activeTabIndex={activeTabIndex}
-          onRefresh={onRefresh}
           tabStates={tabStates}
           updateActiveTabState={updateActiveTabState}
-          activeTabRef={activeTabRef}
           getActiveTabState={getActiveTabState}
-          goBack={goBack}
-          goForward={goForward}
           animatedActiveTabIndex={animatedActiveTabIndex}
           toggleTabViewWorklet={toggleTabViewWorklet}
         />
@@ -193,6 +186,7 @@ const DappBrowserComponent = () => {
 };
 
 export const DappBrowser = () => {
+  console.log('DappBrowser :: RENDER');
   return (
     <BrowserContextProvider>
       <DappBrowserComponent />

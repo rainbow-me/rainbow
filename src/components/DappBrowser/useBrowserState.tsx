@@ -3,44 +3,16 @@ import { MMKV, useMMKVObject } from 'react-native-mmkv';
 import { RAINBOW_HOME } from './constants';
 import { generateUniqueId, generateUniqueIdWorklet } from './utils';
 import isEqual from 'react-fast-compare';
-import WebView from 'react-native-webview';
 import { runOnJS, runOnUI, useAnimatedReaction, useSharedValue, withSpring } from 'react-native-reanimated';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useBrowserTabViewProgressContext } from './BrowserContext';
+import { TabOperation, TabState } from './types';
 
 const tabStateStore = new MMKV();
 
 const DEFAULT_TAB_STATE: TabState[] = [{ canGoBack: false, canGoForward: false, uniqueId: generateUniqueId(), url: RAINBOW_HOME }];
 
-export interface TabState {
-  canGoBack: boolean;
-  canGoForward: boolean;
-  uniqueId: string;
-  url: string;
-  logoUrl?: string | null;
-}
-
-type TabOperationType = 'newTab' | 'closeTab';
-
-interface BaseTabOperation {
-  type: TabOperationType;
-  tabId: string;
-  newActiveIndex: number | undefined;
-  url?: string;
-}
-
-interface CloseTabOperation extends BaseTabOperation {
-  type: 'closeTab';
-}
-
-interface NewTabOperation extends BaseTabOperation {
-  type: 'newTab';
-  newTabUrl?: string;
-}
-
-type TabOperation = CloseTabOperation | NewTabOperation;
-
-export function useBrowserState({ activeTabRef }: { activeTabRef: React.MutableRefObject<WebView | null> }) {
+export function useBrowserState() {
   console.log('useBrowserState :: hook called');
 
   const [activeTabIndex, setActiveTabIndex] = useState<number>(0);
@@ -73,18 +45,6 @@ export function useBrowserState({ activeTabRef }: { activeTabRef: React.MutableR
     if (!tabStates) return;
     return tabStates[activeTabIndex];
   }, [activeTabIndex, tabStates]);
-
-  const goBack = useCallback(() => {
-    if (activeTabRef.current && tabStates?.[activeTabIndex]?.canGoBack) {
-      activeTabRef.current.goBack();
-    }
-  }, [activeTabIndex, activeTabRef, tabStates]);
-
-  const goForward = useCallback(() => {
-    if (activeTabRef.current && tabStates?.[activeTabIndex]?.canGoForward) {
-      activeTabRef.current.goForward();
-    }
-  }, [activeTabIndex, activeTabRef, tabStates]);
 
   const requestTabOperationsWorklet = useCallback(
     (operations: TabOperation | TabOperation[]) => {
@@ -186,12 +146,6 @@ export function useBrowserState({ activeTabRef }: { activeTabRef: React.MutableR
     },
     [animatedActiveTabIndex, currentlyOpenTabIds, newTabWorklet, requestTabOperationsWorklet, tabOperationQueue, tabStates, tabViewVisible]
   );
-
-  const onRefresh = useCallback(() => {
-    if (activeTabRef.current) {
-      activeTabRef.current.reload();
-    }
-  }, [activeTabRef]);
 
   const toggleTabViewWorklet = useCallback(
     (activeIndex?: number) => {
@@ -370,9 +324,6 @@ export function useBrowserState({ activeTabRef }: { activeTabRef: React.MutableR
     tabStates,
     updateActiveTabState,
     getActiveTabState,
-    goBack,
-    goForward,
-    onRefresh,
     setActiveTabIndex,
     newTabWorklet,
     closeTabWorklet,

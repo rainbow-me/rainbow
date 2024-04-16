@@ -21,8 +21,7 @@ import { getDappHost } from '../handleProviderRequest';
 import { Address, toHex } from 'viem';
 import { handleDappBrowserConnectionPrompt } from '@/utils/requestNavigationHandlers';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
-import { TabState } from '../useBrowserState';
-import WebView from 'react-native-webview';
+import { TabState } from '../types';
 
 interface MenuItemIcon {
   iconType: 'ASSET' | 'SYSTEM';
@@ -133,13 +132,12 @@ export const androidShowNetworksActionSheet = (callback: (network: { chainId: nu
 
 export const AccountIcon = ({
   activeTabIndex,
-  activeTabRef,
   getActiveTabState,
 }: {
   activeTabIndex: number;
   getActiveTabState: () => TabState | undefined;
-  activeTabRef: React.MutableRefObject<WebView | null>;
 }) => {
+  const { activeTabRef } = useBrowserContext();
   const { navigate } = useNavigation();
   const { accountAddress } = useAccountSettings();
   const { wallets, walletNames } = useWallets();

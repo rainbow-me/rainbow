@@ -20,7 +20,7 @@ import { normalizeUrl } from './utils';
 import { Site, useBrowserHistoryStore } from '@/state/browserHistory';
 import { getDappHost } from './handleProviderRequest';
 import { uniqBy } from 'lodash';
-import { TabState } from './useBrowserState';
+import { TabState } from './types';
 
 const HORIZONTAL_PAGE_INSET = 24;
 const MAX_RECENTS_TO_DISPLAY = 10;
