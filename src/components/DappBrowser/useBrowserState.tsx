@@ -24,8 +24,6 @@ export function useBrowserState() {
   const animatedActiveTabIndex = useSharedValue(defaultActiveTabIndex);
   const { tabViewProgress } = useBrowserTabViewProgressContext();
 
-  const tabIdsMemo = useMemo(() => tabStates?.map(tab => tab.uniqueId), [tabStates]);
-
   useEffect(() => {
     // We can wait till the animation completes
     setTimeout(() => {
@@ -76,7 +74,7 @@ export function useBrowserState() {
   const newTabWorklet = useCallback(
     (newTabUrl?: string) => {
       'worklet';
-      const tabIdsInStates = new Set(tabIdsMemo);
+      const tabIdsInStates = new Set(tabStates?.map(tab => tab.uniqueId));
       const isNewTabOperationPending =
         tabOperationQueue.value.some(operation => operation.type === 'newTab') ||
         currentlyOpenTabIds.value.some(tabId => !tabIdsInStates.has(tabId));
@@ -95,7 +93,7 @@ export function useBrowserState() {
         requestTabOperationsWorklet({ type: 'newTab', tabId: tabIdForNewTab, newActiveIndex, newTabUrl });
       }
     },
-    [currentlyOpenTabIds, requestTabOperationsWorklet, tabIdsMemo, tabOperationQueue.value, tabViewVisible.value]
+    [currentlyOpenTabIds, requestTabOperationsWorklet, tabStates, tabOperationQueue.value, tabViewVisible.value]
   );
 
   const closeAllTabsWorklet = useCallback(() => {
