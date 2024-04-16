@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 
 import { Box, Column, Columns, Separator, globalColors, useColorMode } from '@/design-system';
@@ -9,10 +9,18 @@ import { GasButton } from '../../components/GasButton';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../../constants';
 import { IS_ANDROID } from '@/env';
 import { useSwapContext, NavigationSteps } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import Animated, { runOnUI, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, {
+  runOnJS,
+  runOnUI,
+  useAnimatedGestureHandler,
+  useAnimatedReaction,
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
 import { StyleSheet } from 'react-native';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { ReviewPanel } from '../ReviewPanel';
+import { PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 
 export function SwapActions() {
   const { isDarkMode } = useColorMode();
@@ -26,6 +34,53 @@ export function SwapActions() {
     reviewProgress,
   } = useSwapContext();
 
+  const gestureY = useSharedValue(0);
+  const [enabled, setEnabled] = useState(false);
+
+  const swipeToCloseTabGestureHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
+    onStart: (_, ctx: { startY?: number }) => {
+      if (ctx.startY) {
+        ctx.startY = undefined;
+      }
+    },
+    onActive: (e, ctx: { startY?: number }) => {
+      if (ctx.startY === undefined) {
+        ctx.startY = e.absoluteY;
+      }
+
+      const yDelta = e.absoluteY - ctx.startY;
+      console.log({ yDelta });
+      gestureY.value = yDelta;
+    },
+    onEnd: (e, ctx: { startY?: number }) => {
+      const yDelta = e.absoluteY - (ctx.startY || 0);
+      console.log(yDelta, e.velocityY);
+
+      const isBeyondDismissThreshold = yDelta > 80;
+      if (isBeyondDismissThreshold) {
+        SwapNavigation.handleDismissReview();
+      }
+      gestureY.value = 0;
+    },
+  });
+
+  useAnimatedReaction(
+    () => ({
+      reviewProgress: reviewProgress.value,
+    }),
+    ({ reviewProgress }) => {
+      if (reviewProgress === NavigationSteps.SHOW_REVIEW) {
+        runOnJS(setEnabled)(true);
+      }
+    }
+  );
+
+  const gestureHandlerStyles = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateY: gestureY.value > 0 ? gestureY.value : 0 }],
+    };
+  });
+
   const columnStyles = useAnimatedStyle(() => {
     return {
       display: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 'none' : 'flex',
@@ -33,36 +88,39 @@ export function SwapActions() {
   });
 
   return (
-    <Box
-      as={Animated.View}
-      paddingBottom={{
-        custom: IS_ANDROID ? getSoftMenuBarHeight() - 24 : safeAreaInsetValues.bottom + 16,
-      }}
-      paddingHorizontal="20px"
-      style={AnimatedSwapStyles.swapActionWrapperStyle}
-      width="full"
-      zIndex={11}
-    >
-      <ReviewPanel />
-      <Columns alignVertical="center" space="12px">
-        <Column style={columnStyles} width="content">
-          <GasButton />
-        </Column>
-        <Column style={columnStyles} width="content">
-          <Box height={{ custom: 32 }}>
-            <Separator color={{ custom: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR }} direction="vertical" thickness={1} />
-          </Box>
-        </Column>
-        <SwapActionButton
-          onPress={() => runOnUI(SwapNavigation.handleShowReview)()}
-          color={SwapInputController.bottomColor}
-          icon={confirmButtonIcon}
-          iconStyle={confirmButtonIconStyle}
-          label={confirmButtonLabel}
-          scaleTo={0.9}
-        />
-      </Columns>
-    </Box>
+    // @ts-expect-error Property 'children' does not exist on type
+    <PanGestureHandler maxPointers={1} onGestureEvent={swipeToCloseTabGestureHandler} enabled={enabled}>
+      <Box
+        as={Animated.View}
+        paddingBottom={{
+          custom: IS_ANDROID ? getSoftMenuBarHeight() - 24 : safeAreaInsetValues.bottom + 16,
+        }}
+        paddingHorizontal="20px"
+        style={[AnimatedSwapStyles.swapActionWrapperStyle, gestureHandlerStyles]}
+        width="full"
+        zIndex={11}
+      >
+        <ReviewPanel />
+        <Columns alignVertical="center" space="12px">
+          <Column style={columnStyles} width="content">
+            <GasButton />
+          </Column>
+          <Column style={columnStyles} width="content">
+            <Box height={{ custom: 32 }}>
+              <Separator color={{ custom: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR }} direction="vertical" thickness={1} />
+            </Box>
+          </Column>
+          <SwapActionButton
+            onPress={() => runOnUI(SwapNavigation.handleShowReview)()}
+            color={SwapInputController.bottomColor}
+            icon={confirmButtonIcon}
+            iconStyle={confirmButtonIconStyle}
+            label={confirmButtonLabel}
+            scaleTo={0.9}
+          />
+        </Columns>
+      </Box>
+    </PanGestureHandler>
   );
 }
 
