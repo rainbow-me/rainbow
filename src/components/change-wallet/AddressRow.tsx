@@ -25,6 +25,7 @@ import { ContextMenu } from '../context-menu';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
+import { useForegroundColor } from '@/design-system';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
 const NOOP = () => undefined;
@@ -126,6 +127,8 @@ export default function AddressRow({ contextMenuActions, data, editMode, onPress
   const { address, balance, color: accountColor, ens, image: accountImage, isSelected, isReadOnly, isLedger, label, walletId } = data;
 
   const { colors, isDarkMode } = useTheme();
+
+  const labelQuaternary = useForegroundColor('labelQuaternary');
 
   const cleanedUpBalance = useMemo(() => {
     if (balance) {
@@ -251,7 +254,7 @@ export default function AddressRow({ contextMenuActions, data, editMode, onPress
               <StyledTruncatedText color={colors.dark} testID={`change-wallet-address-row-label-${walletName}`}>
                 {walletName}
               </StyledTruncatedText>
-              <StyledBottomRowText color={colors.alpha(colors.blueGreyDark, 0.5)}>{cleanedUpBalance}</StyledBottomRowText>
+              <StyledBottomRowText color={labelQuaternary}>{cleanedUpBalance}</StyledBottomRowText>
             </ColumnWithMargins>
           </Row>
           <Column style={sx.rightContent}>
