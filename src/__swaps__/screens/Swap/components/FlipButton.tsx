@@ -1,14 +1,14 @@
 /* eslint-disable no-nested-ternary */
 import c from 'chroma-js';
 import React, { useCallback } from 'react';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import SwapSpinner from '@/__swaps__/assets/swapSpinner.png';
 import { ButtonPressAnimation } from '@/components/animations';
 import { AnimatedSpinner } from '@/__swaps__/components/animations/AnimatedSpinner';
 import { Bleed, Box, IconContainer, Text, globalColors, useColorMode } from '@/design-system';
 import { colors } from '@/styles';
 import { SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { getMixedColor, opacity } from '@/__swaps__/utils/swaps';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { AnimatedBlurView } from '@/__swaps__/screens/Swap/components/AnimatedBlurView';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
@@ -19,13 +19,32 @@ export const FlipButton = () => {
 
   const { isFetching, AnimatedSwapStyles, SwapInputController } = useSwapContext();
 
+  const shadowColor = useSharedValue(
+    isDarkMode ? globalColors.grey100 : c.mix(SwapInputController.bottomColor.value, colors.dark, 0.84).hex()
+  );
+
   const handleSwapAssets = useCallback(() => {
     SwapInputController.onSwapAssets();
   }, [SwapInputController]);
 
+  const getBottomColor = ({ bottomColor }: { bottomColor: string }) => {
+    shadowColor.value = getMixedColor(bottomColor, colors.dark, 0.84);
+  };
+
+  useAnimatedReaction(
+    () => ({
+      bottomColor: SwapInputController.bottomColor.value,
+    }),
+    (current, previous) => {
+      if (previous && current !== previous && current !== undefined) {
+        runOnJS(getBottomColor)(current);
+      }
+    }
+  );
+
   const flipButtonInnerStyles = useAnimatedStyle(() => {
     return {
-      shadowColor: isDarkMode ? globalColors.grey100 : c.mix(SwapInputController.bottomColor.value, colors.dark, 0.84).hex(),
+      shadowColor: shadowColor.value,
       shadowOffset: {
         width: 0,
         height: isDarkMode ? 4 : 4,

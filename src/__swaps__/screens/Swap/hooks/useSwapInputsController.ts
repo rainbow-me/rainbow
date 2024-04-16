@@ -14,6 +14,7 @@ import {
   extractColorValueForColors,
   findNiceIncrement,
   getDefaultSlippage,
+  getDefaultSlippageWorklet,
   isUnwrapEth,
   isWrapEth,
   niceIncrementFormatter,
@@ -1012,7 +1013,7 @@ export function useSwapInputsController({
     }),
     (current, previous) => {
       if (current.assetToSellChainId !== previous?.assetToSellChainId) {
-        slippage.value = getDefaultSlippage(current.assetToSellChainId, config);
+        slippage.value = getDefaultSlippageWorklet(current.assetToSellChainId, config);
       }
     }
   );

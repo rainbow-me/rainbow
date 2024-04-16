@@ -36,6 +36,10 @@ export const getHighContrastColor = (color: string, isDarkMode: boolean) => {
   return color;
 };
 
+export const getMixedColor = (color1: string, color2: string, ratio: number) => {
+  return c.mix(color1, color2, ratio).hex();
+};
+
 export const getTintedBackgroundColor = (color: string, isDarkMode: boolean): string => {
   return c
     .mix(color, isDarkMode ? globalColors.grey100 : globalColors.white100, isDarkMode ? 0.9875 : 0.94)
@@ -280,7 +284,7 @@ export const getDefaultSlippageWorklet = (chainId: ChainId, config: RainbowConfi
     | ChainName.bsc
     | ChainName.avalanche
     | ChainName.blast;
-  return slippageInBipsToString(
+  return slippageInBipsToStringWorklet(
     (config.default_slippage_bips as unknown as { [key: string]: number })[chainName] || DEFAULT_SLIPPAGE_BIPS[chainId]
   );
 };
