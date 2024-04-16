@@ -25,6 +25,8 @@ export const TokenList = ({
 
   const isFocused = output ? outputProgress.value === 2 : inputProgress.value === 2;
 
+  console.log({ isFocused, output });
+
   return (
     <Stack>
       <Stack space="20px">

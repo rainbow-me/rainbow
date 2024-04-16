@@ -1,5 +1,6 @@
+/* eslint-disable no-nested-ternary */
 import { SharedValue, interpolate, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
-import { useColorMode } from '@/design-system';
+import { globalColors, useColorMode } from '@/design-system';
 import {
   BASE_INPUT_HEIGHT,
   EXPANDED_INPUT_HEIGHT,
@@ -11,16 +12,23 @@ import {
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
 import { spinnerExitConfig } from '@/__swaps__/components/animations/AnimatedSpinner';
+import { NavigationSteps } from './useSwapNavigation';
+import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
+import { IS_ANDROID } from '@/env';
+import { safeAreaInsetValues } from '@/utils';
+import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 
 export function useAnimatedSwapStyles({
   SwapInputController,
   inputProgress,
   outputProgress,
+  reviewProgress,
   isFetching,
 }: {
   SwapInputController: ReturnType<typeof useSwapInputsController>;
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
+  reviewProgress: SharedValue<number>;
   isFetching: SharedValue<boolean>;
 }) {
   const { isDarkMode } = useColorMode();
@@ -96,9 +104,27 @@ export function useAnimatedSwapStyles({
 
   const swapActionWrapperStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: opacityWorklet(SwapInputController.bottomColor.value, 0.03),
-      borderTopColor: opacityWorklet(SwapInputController.bottomColor.value, 0.04),
+      position: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 'absolute' : 'relative',
+      bottom: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 0 : undefined,
+      height: withSpring(
+        reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 407.68 + safeAreaInsetValues.bottom + 16 : 114,
+        springConfig
+      ),
+      borderTopLeftRadius: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? (IS_ANDROID ? 20 : 40) : 0,
+      borderTopRightRadius: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? (IS_ANDROID ? 20 : 40) : 0,
+      borderWidth: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? THICK_BORDER_WIDTH : 0,
+      borderColor: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? opacityWorklet(globalColors.darkGrey, 0.2) : undefined,
+      backgroundColor:
+        reviewProgress.value === NavigationSteps.SHOW_REVIEW ? '#191A1C' : opacityWorklet(SwapInputController.bottomColor.value, 0.03),
+      borderTopColor:
+        reviewProgress.value === NavigationSteps.SHOW_REVIEW
+          ? opacityWorklet(globalColors.darkGrey, 0.2)
+          : opacityWorklet(SwapInputController.bottomColor.value, 0.04),
       borderTopWidth: THICK_BORDER_WIDTH,
+      borderCurve: 'continuous',
+      paddingBottom: IS_ANDROID ? getSoftMenuBarHeight() - 24 : safeAreaInsetValues.bottom + 16,
+      paddingTop: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 28 : 16 - THICK_BORDER_WIDTH,
+      marginHorizontal: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 12 : 0,
     };
   });
 

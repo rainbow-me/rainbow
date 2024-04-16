@@ -1,19 +1,36 @@
 import React from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 
-import { Box, Column, Columns, Separator, useColorMode } from '@/design-system';
+import { Box, Column, Columns, Separator, globalColors, useColorMode } from '@/design-system';
 import { safeAreaInsetValues } from '@/utils';
 
 import { SwapActionButton } from '../../components/SwapActionButton';
 import { GasButton } from '../../components/GasButton';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../../constants';
 import { IS_ANDROID } from '@/env';
-import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import Animated from 'react-native-reanimated';
+import { useSwapContext, NavigationSteps } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import Animated, { runOnUI, useAnimatedStyle } from 'react-native-reanimated';
+import { StyleSheet } from 'react-native';
+import { opacity } from '@/__swaps__/utils/swaps';
+import { ReviewPanel } from '../ReviewPanel';
 
 export function SwapActions() {
   const { isDarkMode } = useColorMode();
-  const { confirmButtonIcon, confirmButtonIconStyle, confirmButtonLabel, SwapInputController, AnimatedSwapStyles } = useSwapContext();
+  const {
+    confirmButtonIcon,
+    confirmButtonIconStyle,
+    confirmButtonLabel,
+    SwapInputController,
+    AnimatedSwapStyles,
+    SwapNavigation,
+    reviewProgress,
+  } = useSwapContext();
+
+  const columnStyles = useAnimatedStyle(() => {
+    return {
+      display: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 'none' : 'flex',
+    };
+  });
 
   return (
     <Box
@@ -22,20 +39,22 @@ export function SwapActions() {
         custom: IS_ANDROID ? getSoftMenuBarHeight() - 24 : safeAreaInsetValues.bottom + 16,
       }}
       paddingHorizontal="20px"
-      paddingTop={{ custom: 16 - THICK_BORDER_WIDTH }}
       style={AnimatedSwapStyles.swapActionWrapperStyle}
       width="full"
+      zIndex={11}
     >
+      <ReviewPanel />
       <Columns alignVertical="center" space="12px">
-        <Column width="content">
+        <Column style={columnStyles} width="content">
           <GasButton />
         </Column>
-        <Column width="content">
+        <Column style={columnStyles} width="content">
           <Box height={{ custom: 32 }}>
             <Separator color={{ custom: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR }} direction="vertical" thickness={1} />
           </Box>
         </Column>
         <SwapActionButton
+          onPress={() => runOnUI(SwapNavigation.handleShowReview)()}
           color={SwapInputController.bottomColor}
           icon={confirmButtonIcon}
           iconStyle={confirmButtonIconStyle}
@@ -46,3 +65,19 @@ export function SwapActions() {
     </Box>
   );
 }
+
+export const styles = StyleSheet.create({
+  reviewViewBackground: {
+    margin: 12,
+    flex: 1,
+  },
+  reviewMainBackground: {
+    borderRadius: 40,
+    borderColor: opacity(globalColors.darkGrey, 0.2),
+    borderCurve: 'continuous',
+    borderWidth: 1.33,
+    gap: 24,
+    padding: 24,
+    overflow: 'hidden',
+  },
+});
