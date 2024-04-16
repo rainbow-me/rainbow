@@ -88,6 +88,18 @@ export async function handleShareUrl(url: string): Promise<void> {
   }
 }
 
+export function normalizeUrlForRecents(url: string): string {
+  if (url.includes('?')) {
+    return url;
+  } else {
+    if (url.endsWith('/')) {
+      return url;
+    } else {
+      return url + '/';
+    }
+  }
+}
+
 // ---------------------------------------------------------------------------- //
 // 🔍 Navigation state logger
 //

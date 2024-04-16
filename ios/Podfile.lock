@@ -1,15 +1,9 @@
 PODS:
-  - Base64 (1.1.2)
   - boost (1.76.0)
   - Branch (1.40.2)
   - BVLinearGradient (2.8.3):
     - React-Core
   - CocoaAsyncSocket (7.6.5)
-  - CodePush (8.0.2):
-    - Base64 (~> 1.1)
-    - JWT (~> 3.0.0-beta.12)
-    - React-Core
-    - SSZipArchive (~> 2.2.2)
   - DoubleConversion (1.1.6)
   - FasterImage (1.4.3):
     - FasterImage/Nuke (= 1.4.3)
@@ -170,8 +164,6 @@ PODS:
   - hermes-engine (0.72.3):
     - hermes-engine/Pre-built (= 0.72.3)
   - hermes-engine/Pre-built (0.72.3)
-  - JWT (3.0.0-beta.14):
-    - Base64 (~> 1.1.2)
   - libevent (2.1.12)
   - libwebp (1.3.2):
     - libwebp/demux (= 1.3.2)
@@ -813,7 +805,6 @@ PODS:
   - SocketRocket (0.6.1)
   - SRSRadialGradient (1.0.10):
     - React
-  - SSZipArchive (2.2.3)
   - swift-vibrant (1.0.0)
   - TcpSockets (3.3.2):
     - CocoaAsyncSocket
@@ -830,7 +821,6 @@ PODS:
 DEPENDENCIES:
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
   - BVLinearGradient (from `../node_modules/react-native-linear-gradient`)
-  - CodePush (from `../node_modules/react-native-code-push`)
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - "FasterImage (from `../node_modules/@candlefinance/faster-image`)"
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
@@ -962,7 +952,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - Base64
     - Branch
     - CocoaAsyncSocket
     - Firebase
@@ -981,7 +970,6 @@ SPEC REPOS:
     - GoogleAppMeasurement
     - GoogleDataTransport
     - GoogleUtilities
-    - JWT
     - libevent
     - libwebp
     - MetricsReporter
@@ -1000,7 +988,6 @@ SPEC REPOS:
     - Sentry
     - Shimmer
     - SocketRocket
-    - SSZipArchive
     - swift-vibrant
     - TOCropViewController
 
@@ -1009,8 +996,6 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/boost.podspec"
   BVLinearGradient:
     :path: "../node_modules/react-native-linear-gradient"
-  CodePush:
-    :path: "../node_modules/react-native-code-push"
   DoubleConversion:
     :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
   FasterImage:
@@ -1246,12 +1231,10 @@ CHECKOUT OPTIONS:
     :git: https://github.com/rainbow-me/PanModal
 
 SPEC CHECKSUMS:
-  Base64: cecfb41a004124895a7bcee567a89bae5a89d49b
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
   Branch: d99436c6f3d5b2529ba948d273e47e732830f207
   BVLinearGradient: 880f91a7854faff2df62518f0281afb1c60d49a3
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
-  CodePush: 9eddecce05cd10491e2673b259c85885a462be33
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   FasterImage: 60d0750ddbcefff0070c4c17309c2d1d6cc650f0
   FBLazyVector: 4cce221dd782d3ff7c4172167bba09d58af67ccb
@@ -1274,7 +1257,6 @@ SPEC CHECKSUMS:
   GoogleDataTransport: 57c22343ab29bc686febbf7cbb13bad167c2d8fe
   GoogleUtilities: 0759d1a57ebb953965c2dfe0ba4c82e95ccc2e34
   hermes-engine: 10fbd3f62405c41ea07e71973ea61e1878d07322
-  JWT: ef71dfb03e1f842081e64dc42eef0e164f35d251
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
   MetricsReporter: 99596ee5003c69949ed2f50acc34aee83c42f843
@@ -1396,7 +1378,6 @@ SPEC CHECKSUMS:
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   SRSRadialGradient: e5a34825dff88c9cf773b58bf39ed6a02e59a084
-  SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
   swift-vibrant: 3def73c5c281db74f420ec386590d9c1c5b0995c
   TcpSockets: bd31674146c0931a064fc254a59812dfd1a73ae0
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
