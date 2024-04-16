@@ -4,7 +4,7 @@ import { SharedValue, convertToRGBA, isColor } from 'react-native-reanimated';
 import * as i18n from '@/languages';
 import { globalColors } from '@/design-system';
 import { ETH_COLOR, ETH_COLOR_DARK_ACCENT, SCRUBBER_WIDTH, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { chainNameFromChainId } from '@/__swaps__/utils/chains';
+import { chainNameFromChainId, chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { ChainId, ChainName } from '@/__swaps__/types/chains';
 import { RainbowConfig } from '@/model/remoteConfig';
 import { CrosschainQuote, ETH_ADDRESS, Quote, WRAPPED_ASSET } from '@rainbow-me/swaps';
@@ -244,18 +244,12 @@ export const DEFAULT_SLIPPAGE_BIPS = {
   [ChainId.avalanche]: 200,
 };
 
-export const DEFAULT_SLIPPAGE = {
-  [ChainId.mainnet]: '1',
-  [ChainId.polygon]: '2',
-  [ChainId.bsc]: '2',
-  [ChainId.optimism]: '2',
-  [ChainId.base]: '2',
-  [ChainId.zora]: '2',
-  [ChainId.arbitrum]: '2',
-  [ChainId.avalanche]: '2',
-};
+export const slippageInBipsToString = (slippageInBips: number) => (slippageInBips / 100).toString();
 
-const slippageInBipsToString = (slippageInBips: number) => (slippageInBips / 100).toString();
+export const slippageInBipsToStringWorklet = (slippageInBips: number) => {
+  'worklet';
+  return (slippageInBips / 100).toString();
+};
 
 export const getDefaultSlippage = (chainId: ChainId, config: RainbowConfig) => {
   const chainName = chainNameFromChainId(chainId) as
@@ -270,6 +264,24 @@ export const getDefaultSlippage = (chainId: ChainId, config: RainbowConfig) => {
   return slippageInBipsToString(
     // NOTE: JSON.parse doesn't type the result as a Record<ChainName, number>
     (config.default_slippage_bips as unknown as Record<ChainName, number>)[chainName] || DEFAULT_SLIPPAGE_BIPS[chainId]
+  );
+};
+
+export const getDefaultSlippageWorklet = (chainId: ChainId, config: RainbowConfig) => {
+  'worklet';
+
+  const chainName = chainNameFromChainIdWorklet(chainId) as
+    | ChainName.mainnet
+    | ChainName.optimism
+    | ChainName.polygon
+    | ChainName.arbitrum
+    | ChainName.base
+    | ChainName.zora
+    | ChainName.bsc
+    | ChainName.avalanche
+    | ChainName.blast;
+  return slippageInBipsToString(
+    (config.default_slippage_bips as unknown as { [key: string]: number })[chainName] || DEFAULT_SLIPPAGE_BIPS[chainId]
   );
 };
 

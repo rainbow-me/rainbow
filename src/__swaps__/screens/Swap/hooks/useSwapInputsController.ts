@@ -13,6 +13,7 @@ import {
   countDecimalPlaces,
   extractColorValueForColors,
   findNiceIncrement,
+  getDefaultSlippage,
   isUnwrapEth,
   isWrapEth,
   niceIncrementFormatter,
@@ -20,7 +21,7 @@ import {
   trimTrailingZeros,
   valueBasedDecimalFormatter,
 } from '@/__swaps__/utils/swaps';
-import { ChainId, ChainName } from '@/__swaps__/types/chains';
+import { ChainId } from '@/__swaps__/types/chains';
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { useColorMode } from '@/design-system';
 import { isSameAssetWorklet } from '@/__swaps__/utils/assets';
@@ -35,8 +36,7 @@ import {
   getCrosschainQuote,
   getQuote,
 } from '@rainbow-me/swaps';
-import { chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
-import { RainbowConfig, useRemoteConfig } from '@/model/remoteConfig';
+import { useRemoteConfig } from '@/model/remoteConfig';
 import { useAccountSettings } from '@/hooks';
 import { convertAmountToRawAmount, convertRawAmountToBalance, convertRawAmountToNativeDisplay } from '@/__swaps__/utils/numbers';
 import ethereumUtils from '@/utils/ethereumUtils';
@@ -44,53 +44,6 @@ import { FormattedExternalAsset, fetchExternalToken } from '@/resources/assets/e
 
 const QUOTE_REFETCH_INTERVAL = 5_000;
 const PRICE_REFETCH_INTERVAL = 10_000;
-
-export const DEFAULT_SLIPPAGE_BIPS = {
-  [ChainId.mainnet]: 100,
-  [ChainId.polygon]: 200,
-  [ChainId.bsc]: 200,
-  [ChainId.optimism]: 200,
-  [ChainId.base]: 200,
-  [ChainId.zora]: 200,
-  [ChainId.arbitrum]: 200,
-  [ChainId.avalanche]: 200,
-  [ChainId.blast]: 200,
-};
-
-export const DEFAULT_SLIPPAGE = {
-  [ChainId.mainnet]: '1',
-  [ChainId.polygon]: '2',
-  [ChainId.bsc]: '2',
-  [ChainId.optimism]: '2',
-  [ChainId.base]: '2',
-  [ChainId.zora]: '2',
-  [ChainId.arbitrum]: '2',
-  [ChainId.avalanche]: '2',
-  [ChainId.blast]: '2',
-};
-
-const slippageInBipsToString = (slippageInBips: number) => {
-  'worklet';
-  return (slippageInBips / 100).toString();
-};
-
-export const getDefaultSlippage = (chainId: ChainId, config: RainbowConfig) => {
-  'worklet';
-
-  const chainName = chainNameFromChainIdWorklet(chainId) as
-    | ChainName.mainnet
-    | ChainName.optimism
-    | ChainName.polygon
-    | ChainName.arbitrum
-    | ChainName.base
-    | ChainName.zora
-    | ChainName.bsc
-    | ChainName.avalanche
-    | ChainName.blast;
-  return slippageInBipsToString(
-    (config.default_slippage_bips as unknown as { [key: string]: number })[chainName] || DEFAULT_SLIPPAGE_BIPS[chainId]
-  );
-};
 
 export function useSwapInputsController({
   focusedInput,
