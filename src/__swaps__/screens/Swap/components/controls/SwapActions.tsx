@@ -49,12 +49,10 @@ export function SwapActions() {
       }
 
       const yDelta = e.absoluteY - ctx.startY;
-      console.log({ yDelta });
       gestureY.value = yDelta;
     },
     onEnd: (e, ctx: { startY?: number }) => {
       const yDelta = e.absoluteY - (ctx.startY || 0);
-      console.log(yDelta, e.velocityY);
 
       const isBeyondDismissThreshold = yDelta > 80;
       if (isBeyondDismissThreshold) {
