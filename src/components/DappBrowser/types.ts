@@ -1,3 +1,4 @@
+import React from 'react';
 import { SharedValue } from 'react-native-reanimated';
 import WebView from 'react-native-webview';
 
@@ -30,15 +31,16 @@ export interface NewTabOperation extends BaseTabOperation {
 export type TabOperation = CloseTabOperation | NewTabOperation;
 
 export interface BrowserTabProps {
-  tabId: string;
+  nextTabId: string;
+  tabsCount: number;
   tabIndex: number;
-  injectedJS: string;
+  injectedJS: React.MutableRefObject<string | null>;
   activeTabIndex: number;
   activeTabRef: React.MutableRefObject<WebView | null>;
   animatedActiveTabIndex: SharedValue<number>;
   closeTabWorklet(tabId: string, tabIndex: number): void;
   currentlyOpenTabIds: SharedValue<string[]>;
-  tabStates: TabState[];
+  activeTab: TabState;
   tabViewProgress: SharedValue<number> | undefined;
   tabViewVisible: SharedValue<boolean> | undefined;
   toggleTabViewWorklet(tabIndex?: number): void;

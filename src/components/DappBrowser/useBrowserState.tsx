@@ -14,8 +14,6 @@ const DEFAULT_TAB_STATE: TabState[] = [{ canGoBack: false, canGoForward: false, 
 
 const defaultActiveTabIndex = tabStateStore.getNumber('activeTabIndex') || 0;
 
-console.log('defaultActiveTabIndex', defaultActiveTabIndex);
-
 export function useBrowserState() {
   const [activeTabIndex, setActiveTabIndex] = useState<number>(defaultActiveTabIndex);
   const [tabStates = DEFAULT_TAB_STATE, setTabStates] = useMMKVObject<TabState[]>('tabStateStorage', tabStateStore);
@@ -27,10 +25,10 @@ export function useBrowserState() {
   const { tabViewProgress } = useBrowserTabViewProgressContext();
 
   useEffect(() => {
+    // We can wait till the animation completes
     setTimeout(() => {
       tabStateStore.set('activeTabIndex', activeTabIndex);
-      console.log('active tab index persisted', activeTabIndex);
-    }, 1);
+    }, 500);
   }, [activeTabIndex]);
 
   const updateActiveTabState = useCallback(

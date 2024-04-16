@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { InteractionManager, StyleSheet } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Animated, { interpolateColor, useAnimatedProps, useAnimatedReaction, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import RNFS from 'react-native-fs';
@@ -41,8 +41,6 @@ type RouteParams = {
 };
 
 const DappBrowserComponent = () => {
-  console.log('DappBrowserComponent :: RENDER');
-
   const {
     tabViewVisible,
     newTabWorklet,
@@ -58,7 +56,7 @@ const DappBrowserComponent = () => {
   } = useBrowserState();
 
   const { isDarkMode } = useColorMode();
-  const [injectedJS, setInjectedJS] = useState<string | ''>('');
+  const injectedJS = useRef('');
 
   const { scrollViewRef, activeTabRef } = useBrowserContext();
 
@@ -77,8 +75,7 @@ const DappBrowserComponent = () => {
   useEffect(() => {
     const loadInjectedJS = async () => {
       try {
-        const jsToInject = await getInjectedJS();
-        setInjectedJS(jsToInject);
+        injectedJS.current = await getInjectedJS();
       } catch (e) {
         console.log('error', e);
       }
@@ -87,7 +84,10 @@ const DappBrowserComponent = () => {
   }, []);
 
   useEffect(() => {
-    pruneScreenshots(tabStates);
+    // Delay prunning screenshots until after the tab states have been updated
+    InteractionManager.runAfterInteractions(() => {
+      pruneScreenshots(tabStates);
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -121,6 +121,8 @@ const DappBrowserComponent = () => {
     scrollEnabled: tabViewVisible?.value,
   }));
 
+  console.log('DappBrowserComponent :: RENDER');
+
   return (
     <SheetGestureBlocker>
       <Box as={Page} height="full" style={isDarkMode ? styles.rootViewBackground : styles.rootViewBackgroundLight} width="full">
@@ -145,8 +147,8 @@ const DappBrowserComponent = () => {
           <Animated.View style={scrollViewHeightStyle}>
             {tabStates.map((_, index) => (
               <BrowserTab
+                tabsCount={tabStates.length}
                 key={tabStates[index].uniqueId}
-                tabId={tabStates[index].uniqueId}
                 tabIndex={index}
                 injectedJS={injectedJS}
                 activeTabIndex={activeTabIndex}
@@ -154,11 +156,12 @@ const DappBrowserComponent = () => {
                 animatedActiveTabIndex={animatedActiveTabIndex}
                 closeTabWorklet={closeTabWorklet}
                 currentlyOpenTabIds={currentlyOpenTabIds}
-                tabStates={tabStates}
+                activeTab={tabStates[index]}
                 tabViewProgress={tabViewProgress}
                 tabViewVisible={tabViewVisible}
                 toggleTabViewWorklet={toggleTabViewWorklet}
                 updateActiveTabState={updateActiveTabState}
+                nextTabId={tabStates?.[1]?.uniqueId}
               />
             ))}
           </Animated.View>

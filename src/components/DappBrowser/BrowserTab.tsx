@@ -64,7 +64,8 @@ import { findTabeScreenshot, saveScreenshot } from './screenshots';
 
 const AnimatedFasterImage = Animated.createAnimatedComponent(FasterImageView);
 
-export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, injectedJS, ...props }: BrowserTabProps) {
+export const BrowserTab = React.memo(function BrowserTab({ activeTab, tabIndex, injectedJS, ...props }: BrowserTabProps) {
+  const { uniqueId: tabId } = activeTab;
   console.log('BrowserTab :: RENDER', tabId);
   const {
     activeTabIndex,
@@ -72,11 +73,12 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
     animatedActiveTabIndex,
     closeTabWorklet,
     currentlyOpenTabIds,
-    tabStates,
     tabViewVisible,
     toggleTabViewWorklet,
     updateActiveTabState,
     tabViewProgress,
+    tabsCount,
+    nextTabId,
   } = props;
   const { scrollViewRef, scrollViewOffset, loadProgress } = useBrowserContext();
   const { isDarkMode } = useColorMode();
@@ -103,7 +105,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
   //   gestureY: 0,
   // });
 
-  const tabUrl = tabStates?.[tabIndex]?.url;
+  const tabUrl = activeTab.url;
   const isActiveTab = activeTabIndex === tabIndex;
   const isOnHomepage = tabUrl === RAINBOW_HOME;
 
@@ -137,9 +139,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
     const shouldTwoTabsExist = currentlyOpenTabIds?.value.length === 2;
 
     const isTransitioningFromSingleToMultipleTabs =
-      isFirstTab &&
-      shouldTwoTabsExist &&
-      (tabStates?.length === 1 || (tabStates?.length === 2 && currentlyOpenTabIds?.value[1] !== tabStates?.[1]?.uniqueId));
+      isFirstTab && shouldTwoTabsExist && (tabsCount === 1 || (tabsCount === 2 && currentlyOpenTabIds?.value[1] !== nextTabId));
 
     const multipleTabsExist = !!(currentlyOpenTabIds?.value && currentlyOpenTabIds?.value.length > 1);
     const isLastOrSecondToLastTabAndExiting = currentlyOpenTabIds?.value?.indexOf(tabId) === -1 && currentlyOpenTabIds.value.length === 1;
@@ -268,7 +268,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
   const handleNavigationStateChange = useCallback(
     (navState: WebViewNavigation) => {
       // Set the logo if it's not already set to the current website's logo
-      if (tabStates[tabIndex].logoUrl !== logo.current) {
+      if (activeTab.logoUrl !== logo.current) {
         updateActiveTabState(
           {
             logoUrl: logo.current,
@@ -294,7 +294,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
       //
       // To observe what's actually going on, you can import the navigationStateLogger helper and add it here.
 
-      if (navState.url !== tabStates[tabIndex].url) {
+      if (navState.url !== activeTab.url) {
         if (navState.navigationType !== 'other') {
           // If the URL DID ✅ change and navigationType !== 'other', we update the full tab state
           updateActiveTabState(
@@ -330,7 +330,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
         );
       }
     },
-    [logo, tabId, tabIndex, tabStates, updateActiveTabState]
+    [activeTab.logoUrl, activeTab.url, tabId, updateActiveTabState]
   );
 
   // useLayoutEffect seems to more reliably assign the ref correctly
@@ -363,7 +363,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
           .capture()
           .then(uri => {
             const timestamp = Date.now();
-            saveScreenshotToFileSystem(uri, tabId, timestamp, tabStates[tabIndex].url);
+            saveScreenshotToFileSystem(uri, tabId, timestamp, activeTab.url);
           })
           .catch(error => {
             logger.error(new RainbowError('Failed to capture tab screenshot'), {
@@ -372,7 +372,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
           });
       }
     }
-  }, [saveScreenshotToFileSystem, tabId, tabIndex, tabStates, viewShotRef]);
+  }, [activeTab.url, saveScreenshotToFileSystem, tabId]);
 
   const screenshotSource = useDerivedValue(() => {
     return {
@@ -388,7 +388,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
     // screenshot from disappearing before the WebView is unfrozen.
 
     const screenshotExists = !!screenshotData.value?.uri;
-    const screenshotMatchesTabIdAndUrl = screenshotData.value?.id === tabId && screenshotData.value?.url === tabStates[tabIndex].url;
+    const screenshotMatchesTabIdAndUrl = screenshotData.value?.id === tabId && screenshotData.value?.url === activeTab.url;
 
     // This is to handle the case where a WebView that wasn't previously the active tab
     // is made active from the tab view. Because its freeze state is driven by JS state,
@@ -435,7 +435,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
           }
 
           addRecent({
-            url: normalizeUrlForRecents(tabStates[tabIndex].url),
+            url: normalizeUrlForRecents(activeTab.url),
             name: pageTitle,
             image: logoUrl,
             timestamp: Date.now(),
@@ -450,7 +450,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
               sender: {
                 url: m.url,
                 tab: { id: tabId },
-                title: title.current || tabStates[tabIndex].url,
+                title: title.current || activeTab.url,
               },
               id: parsedData.id,
             },
@@ -461,7 +461,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
         console.error('Error parsing message', e);
       }
     },
-    [isActiveTab, addRecent, tabStates, tabIndex, backgroundColor, tabId]
+    [isActiveTab, addRecent, activeTab.url, backgroundColor, tabId]
   );
 
   const handleOnLoadStart = useCallback(
@@ -687,7 +687,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
                     <Freeze freeze={!isActiveTab}>
                       <DappBrowserWebview
                         webviewDebuggingEnabled={IS_DEV}
-                        injectedJavaScriptBeforeContentLoaded={injectedJS}
+                        injectedJavaScriptBeforeContentLoaded={injectedJS.current || ''}
                         allowsInlineMediaPlayback
                         fraudulentWebsiteWarningEnabled
                         allowsBackForwardNavigationGestures
