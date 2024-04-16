@@ -1,0 +1,248 @@
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { NativeSyntheticEvent, TextInput, TextInputChangeEventData, TextInputSubmitEditingEventData, View } from 'react-native';
+import Animated, {
+  AnimatedRef,
+  SharedValue,
+  dispatchCommand,
+  interpolate,
+  runOnJS,
+  useAnimatedProps,
+  useAnimatedReaction,
+  useAnimatedRef,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { Box, Inline, Inset, Stack, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
+import { IS_IOS } from '@/env';
+import { useKeyboardHeight, useDimensions } from '@/hooks';
+import * as i18n from '@/languages';
+import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
+import { useBrowserContext } from '../BrowserContext';
+import { GOOGLE_SEARCH_URL, HTTP, HTTPS, RAINBOW_HOME } from '../constants';
+import { AccountIcon } from '../search-input/AccountIcon';
+import { SearchInput } from '../search-input/SearchInput';
+import { TabButton } from '../search-input/TabButton';
+import { formatUrl, isValidURL, normalizeUrl } from '../utils';
+import { ButtonPressAnimation } from '@/components/animations';
+import { GoogleSearchResult, SearchResult } from './SearchResult';
+import { useDapps } from '@/resources/metadata/dapps';
+import { GetdAppsQuery } from '@/graphql/__generated__/metadata';
+import { filterList } from '@/utils';
+import { rankings } from 'match-sorter';
+
+export const AnimatedText = Animated.createAnimatedComponent(Text);
+export const AnimatedSearchResult = Animated.createAnimatedComponent(SearchResult);
+
+export const SearchResults = ({ inputRef, searchQuery }: { inputRef: AnimatedRef<TextInput>; searchQuery: SharedValue<string> }) => {
+  const { width: deviceWidth } = useDimensions();
+  const { isDarkMode } = useColorMode();
+  const { activeTabIndex, onRefresh, searchViewProgress, tabStates, tabViewProgress, tabViewVisible, updateActiveTabState } =
+    useBrowserContext();
+  const { dapps, dappsNameTrie, dappsUrlTrie } = useDapps();
+
+  const isFocusedValue = useSharedValue(false);
+  const testValue = useSharedValue('');
+  const [isFocused, setIsFocused] = useState<boolean>(false);
+  const [basicSearchResults, setBasicSearchResults] = useState<GetdAppsQuery['dApps']>([]);
+  const [suggestedSearchResults, setSuggestedSearchResults] = useState<GetdAppsQuery['dApps']>([]);
+  const searchResults = useSharedValue([]);
+
+  const keyboardHeight = useKeyboardHeight({ shouldListen: isFocused });
+
+  const tabId = tabStates?.[activeTabIndex]?.uniqueId;
+  const url = tabStates?.[activeTabIndex]?.url;
+  const logoUrl = tabStates?.[activeTabIndex]?.logoUrl;
+  const isHome = url === RAINBOW_HOME;
+  const isGoogleSearch = url?.startsWith(GOOGLE_SEARCH_URL);
+  const canGoBack = tabStates?.[activeTabIndex]?.canGoBack;
+  const canGoForward = tabStates?.[activeTabIndex]?.canGoForward;
+
+  const formattedInputValue = useMemo(() => {
+    if (isHome) {
+      return { url: i18n.t(i18n.l.dapp_browser.address_bar.input_placeholder), tabIndex: activeTabIndex };
+    }
+    return { url: formatUrl(url), tabIndex: activeTabIndex };
+  }, [activeTabIndex, isHome, url]);
+
+  const urlWithoutTrailingSlash = url?.endsWith('/') ? url.slice(0, -1) : url;
+  // eslint-disable-next-line no-nested-ternary
+  const inputValue = isHome ? undefined : isGoogleSearch ? formattedInputValue.url : urlWithoutTrailingSlash;
+
+  const backgroundStyle = useAnimatedStyle(() => ({
+    opacity: searchViewProgress?.value || 0,
+    pointerEvents: searchViewProgress?.value ? 'auto' : 'none',
+  }));
+
+  const search = useCallback(
+    (query: string) => {
+      'worklet';
+
+      const normalizedQuery = query.toLowerCase();
+      // if (!query || query === inputValue) {
+      //   setSuggestedSearchResults([]);
+      //   setBasicSearchResults([]);
+      //   return;
+      // }
+      const filteredDapps = dapps
+        .sort((a, b) => +(b?.status === 'VERIFIED') - +(a?.status === 'VERIFIED'))
+        .map(dapp => {
+          let relevance = 0;
+          const queryTokens = normalizedQuery.split(' ').filter(Boolean);
+          const normalizedDappName = dapp!.name.toLowerCase();
+          const dappNameTokens = normalizedDappName.split(' ').filter(Boolean);
+          const dappUrlTokens = dapp!.url
+            .toLowerCase()
+            .replace(/(^\w+:|^)\/\//, '')
+            .split(/\/|\?|&|=|\./)
+            .filter(Boolean);
+
+          const checkSet = new Set([...dappNameTokens, ...dappUrlTokens]);
+          if (normalizedDappName.startsWith(normalizedQuery)) {
+            relevance = 4;
+          } else if (dappNameTokens.some((token, index) => index !== 0 && token.startsWith(normalizedQuery))) {
+            relevance = 3;
+          } else if (dappUrlTokens.some(token => token.startsWith(normalizedQuery))) {
+            relevance = 2;
+          } else if (
+            queryTokens.every(token => {
+              for (const item of checkSet) {
+                if (item.includes(token)) {
+                  checkSet.delete(item);
+                  return true;
+                }
+              }
+              return false;
+            })
+          ) {
+            relevance = 1;
+          }
+          return { ...dapp, relevance };
+        })
+        .filter(dapp => dapp.relevance > 0)
+        .sort((a, b) => b.relevance - a.relevance);
+
+      return filteredDapps;
+      // const filteredDapps = filterList(dappsWithTokens, query, ['tokens'], {
+      //   threshold: rankings.STARTS_WITH,
+      // }).sort((a, b) => +(b?.status === 'VERIFIED') - +(a?.status === 'VERIFIED'));
+      // const nameSearch = dappsNameTrie.search(query).sort((a, b) => +(b?.status === 'VERIFIED') - +(a?.status === 'VERIFIED'));
+      // const urlSearch = dappsUrlTrie.search(query).sort((a, b) => +(b?.status === 'VERIFIED') - +(a?.status === 'VERIFIED'));
+      // const filteredDapps = [...nameSearch, ...urlSearch];
+      // setBasicSearchResults(filteredDapps.slice(1, 3));
+      // setSuggestedSearchResults(filteredDapps.slice(0, 1));
+    },
+    [dapps]
+  );
+  // console.log(basicSearchResults?.map(dapp => dapp!.url));
+  const onPressSearchResult = useCallback(
+    (url: string) => {
+      updateActiveTabState({ url: normalizeUrl(url) });
+      inputRef.current?.blur();
+    },
+    [inputRef, updateActiveTabState]
+  );
+
+  useAnimatedReaction(
+    () => searchQuery.value,
+    (result, previous) => {
+      testValue.value = result;
+      if (result !== previous) {
+        searchResults.value = search(result);
+        console.log(searchResults.value.length);
+      }
+    }
+  );
+
+  return (
+    <Box
+      as={Animated.View}
+      height="full"
+      width="full"
+      position="absolute"
+      style={[backgroundStyle, { backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD' }]}
+    >
+      <Inset horizontal="16px" top={{ custom: 80 }}>
+        <Box
+          as={ButtonPressAnimation}
+          background="fill"
+          height={{ custom: 32 }}
+          width={{ custom: 32 }}
+          borderRadius={32}
+          alignItems="center"
+          right={{ custom: 0 }}
+          top={{ custom: 0 }}
+          style={{ zIndex: 1000 }}
+          justifyContent="center"
+          position="absolute"
+          onPress={() => inputRef?.current?.blur()}
+        >
+          <Text weight="heavy" color="labelSecondary" size="icon 15px" align="center">
+            􀆄
+          </Text>
+        </Box>
+        <Inset top={{ custom: 9 }}>
+          <Stack space="32px">
+            {/* {searchQuery.length && suggestedSearchResults?.length && (
+              <Stack space="12px">
+                <Inset horizontal="8px" bottom={{ custom: 9 }}>
+                  <Inline alignHorizontal="justify" alignVertical="center">
+                    <Inline space="6px" alignVertical="center">
+                      <TextIcon color="blue" size="icon 15px" weight="heavy" width={20}>
+                        􀐫
+                      </TextIcon>
+                      <Text weight="heavy" color="label" size="20pt">
+                        Suggested
+                      </Text>
+                    </Inline>
+                  </Inline>
+                </Inset>
+                <Stack space="4px">
+                  {suggestedSearchResults.map(dapp => (
+                    <SearchResult
+                      suggested
+                      iconUrl={dapp!.iconURL}
+                      key={dapp!.url}
+                      name={dapp!.name}
+                      onPress={onPressSearchResult}
+                      url={dapp!.url}
+                    />
+                  ))}
+                </Stack>
+              </Stack>
+            )} */}
+            {/* {searchQuery.length && ( */}
+            <Stack space="12px">
+              <Inset horizontal="8px">
+                <Inline space="6px" alignVertical="center">
+                  <TextIcon color="labelSecondary" size="icon 15px" weight="heavy" width={20}>
+                    􀊫
+                  </TextIcon>
+                  <Text weight="heavy" color="label" size="20pt">
+                    More Results
+                  </Text>
+                </Inline>
+              </Inset>
+              <Stack space="4px">
+                <AnimatedText color="label" weight="heavy" size="30pt">
+                  {searchResults.value[0]?.name}
+                </AnimatedText>
+
+                {/* <GoogleSearchResult query={searchQuery} onPress={onPressSearchResult} /> */}
+                {/* {searchResults.value?.map(dapp => (
+                  // <SearchResult iconUrl={dapp!.iconURL} key={dapp!.url} name={dapp!.name} onPress={onPressSearchResult} url={dapp!.url} />
+                  <AnimatedText key={dapp!.url} color="label" weight="heavy" size="30pt">
+                    {dapp!.name || 'No results'}
+                  </AnimatedText>
+                ))} */}
+              </Stack>
+            </Stack>
+            {/* )} */}
+          </Stack>
+        </Inset>
+      </Inset>
+    </Box>
+  );
+};

@@ -29,7 +29,7 @@ export const SearchInput = ({
   inputRef,
   formattedInputValue,
   inputValue,
-  searchValue,
+  searchQuery,
   isGoogleSearch,
   isHome,
   onPressWorklet,
@@ -45,7 +45,7 @@ export const SearchInput = ({
   inputRef: RefObject<TextInput>;
   formattedInputValue: { url: string; tabIndex: number };
   inputValue: string | undefined;
-  searchValue: string;
+  searchQuery: SharedValue<string>;
   isGoogleSearch: boolean;
   isHome: boolean;
   onPressWorklet: () => void;
@@ -242,7 +242,7 @@ export const SearchInput = ({
               ]}
               textAlign="left"
               textAlignVertical="center"
-              value={searchValue}
+              value={searchQuery}
               defaultValue={inputValue}
             />
             <Cover alignHorizontal="center" alignVertical="center" pointerEvents="none">

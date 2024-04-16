@@ -13,13 +13,11 @@ export function useDapps() {
     staleTime: 1000 * 60 * 5,
   });
 
-  const dappsTrie = useMemo(() => {
+  const dappsUrlTrie = useMemo(() => {
     const trie = new Trie();
     query.data?.dApps?.forEach(dapp => {
       const cleanUrl = dapp!.url.replace(/(^\w+:|^)\/\//, '');
-      const urlTokens = cleanUrl.split(/\/|\?|&|=|\./);
-      const nameTokens = dapp!.name.split(' ');
-      const tokens = [...nameTokens, ...urlTokens];
+      const tokens = cleanUrl.split(/\/|\?|&|=|\./);
       tokens.forEach(token => {
         trie.insert(token.toLowerCase(), dapp, dapp!.url);
       });
@@ -27,5 +25,16 @@ export function useDapps() {
     return trie;
   }, [query.data?.dApps]);
 
-  return { dapps: query.data?.dApps || [], dappsTrie };
+  const dappsNameTrie = useMemo(() => {
+    const trie = new Trie();
+    query.data?.dApps?.forEach(dapp => {
+      const tokens = dapp!.name.split(' ');
+      tokens.forEach(token => {
+        trie.insert(token.toLowerCase(), dapp, dapp!.url);
+      });
+    });
+    return trie;
+  }, [query.data?.dApps]);
+
+  return { dapps: query.data?.dApps || [], dappsUrlTrie, dappsNameTrie };
 }
