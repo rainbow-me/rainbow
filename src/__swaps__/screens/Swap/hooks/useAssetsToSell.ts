@@ -1,20 +1,20 @@
-import { useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Hex } from 'viem';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
 
 import { selectUserAssetsList, selectUserAssetsListByChainId } from '@/__swaps__/screens/Swap/resources/_selectors/assets';
 import { useUserAssets } from '@/__swaps__/screens/Swap/resources/assets';
-import { ParsedAssetsDictByChain, ParsedSearchAsset, UserAssetFilter } from '@/__swaps__/types/assets';
+import { ParsedAssetsDictByChain, ParsedSearchAsset, ParsedUserAsset, UserAssetFilter } from '@/__swaps__/types/assets';
 import { useAccountSettings } from '@/hooks';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 
-const sortBy = (by: UserAssetFilter, assets: ParsedAssetsDictByChain) => {
-  if (by === 'all') {
+const sortBy = (userAssetFilter: UserAssetFilter, assets: ParsedAssetsDictByChain) => {
+  if (userAssetFilter === 'all') {
     return () => selectUserAssetsList(assets);
   }
 
-  return () => selectUserAssetsListByChainId(by, assets);
+  return () => selectUserAssetsListByChainId(userAssetFilter, assets);
 };
 
 export const useAssetsToSell = () => {
@@ -23,15 +23,6 @@ export const useAssetsToSell = () => {
 
   const [currentAssets, setCurrentAssets] = useState<ParsedSearchAsset[]>([]);
   const sortMethod = useRef(userAssetFilter.value);
-
-  useAnimatedReaction(
-    () => userAssetFilter.value,
-    (current, previous) => {
-      if (previous !== current) {
-        sortMethod.current = current;
-      }
-    }
-  );
 
   const { data: userAssets = [] } = useUserAssets(
     {
@@ -52,6 +43,34 @@ export const useAssetsToSell = () => {
       staleTime: Infinity,
     }
   );
+
+  const updateSortMethodAndCurrentAssets = useCallback(({ filter, assets }: { filter: UserAssetFilter; assets: ParsedUserAsset[] }) => {
+    sortMethod.current = filter;
+
+    if (filter === 'all') {
+      setCurrentAssets(assets as ParsedSearchAsset[]);
+    } else {
+      const assetsByChainId = assets.filter(asset => asset.chainId === Number(filter));
+      setCurrentAssets(assetsByChainId as ParsedSearchAsset[]);
+    }
+  }, []);
+
+  useAnimatedReaction(
+    () => ({
+      filter: userAssetFilter.value,
+      assets: userAssets,
+    }),
+    (current, previous) => {
+      if (previous?.filter !== current.filter || previous?.assets !== current.assets) {
+        runOnJS(updateSortMethodAndCurrentAssets)({
+          filter: current.filter,
+          assets: current.assets,
+        });
+      }
+    }
+  );
+
+  console.log(userAssets.length);
 
   const filteredAssetsToSell = useDebouncedCallback((query: string) => {
     return query

@@ -11,7 +11,7 @@ import { chainNameFromChainId, chainNameFromChainIdWorklet } from '@/__swaps__/u
 import { opacity } from '@/__swaps__/utils/swaps';
 import { ethereumUtils, showActionSheetWithOptions } from '@/utils';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId, ChainName } from '@/__swaps__/types/chains';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ContextMenuButton } from '@/components/context-menu';
 import { useAccountAccentColor } from '@/hooks';
@@ -41,20 +41,24 @@ export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
   const propToSet = output ? SwapInputController.outputChainId : userAssetFilter;
 
   const chainName = useSharedValue(
-    propToSet.value === 'all'
-      ? allText
-      : propToSet.value === ChainId.mainnet
-        ? 'ethereum'
-        : chainNameFromChainIdWorklet(SwapInputController.outputChainId.value)
+    propToSet.value === 'all' ? allText : propToSet.value === ChainId.mainnet ? 'ethereum' : chainNameFromChainIdWorklet(propToSet.value)
   );
 
   useAnimatedReaction(
     () => ({
       outputChainId: SwapInputController.outputChainId.value,
+      userAssetFilter: userAssetFilter.value,
     }),
     current => {
       if (output) {
         chainName.value = current.outputChainId === ChainId.mainnet ? 'ethereum' : chainNameFromChainIdWorklet(current.outputChainId);
+      } else {
+        chainName.value =
+          current.userAssetFilter === 'all'
+            ? allText
+            : current.userAssetFilter === ChainId.mainnet
+              ? 'ethereum'
+              : chainNameFromChainIdWorklet(current.userAssetFilter);
       }
     }
   );
@@ -73,25 +77,40 @@ export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
   );
 
   const menuConfig = useMemo(() => {
-    return {
-      menuItems: SUPPORTED_CHAINS({ testnetMode: false }).map(chain => {
-        // const network = ethereumUtils.getNetworkFromChainId(chain.id);
-        return {
-          actionKey: `${chain.id}`,
-          actionTitle: chainNameFromChainId(chain.id),
+    const supportedChains = SUPPORTED_CHAINS({ testnetMode: false }).map(chain => {
+      const network = ethereumUtils.getNetworkFromChainId(chain.id);
+      return {
+        actionKey: `${chain.id}`,
+        actionTitle: chainNameFromChainId(chain.id),
+        icon: {
+          iconType: 'ASSET',
+          iconValue: ``,
+        },
+      };
+    });
 
-          // TODO: Assets here
-          // icon: {
-          //   iconType: 'ASSET',
-          //   iconValue: `${network.networkType === 'layer2' ? `${network}BadgeNoShadow` : 'ethereumBadge'}`,
-          // },
-        };
-      }),
+    if (!output) {
+      supportedChains.unshift({
+        actionKey: 'all',
+        actionTitle: 'All Networks' as ChainName,
+        icon: {
+          iconType: 'icon',
+          iconValue: '􀆪',
+        },
+      });
+    }
+
+    return {
+      menuItems: supportedChains,
     };
-  }, []);
+  }, [output]);
 
   const onShowActionSheet = useCallback(() => {
     const chainTitles = menuConfig.menuItems.map(chain => chain.actionTitle);
+
+    if (!output) {
+      chainTitles.unshift('All Networks' as ChainName);
+    }
 
     showActionSheetWithOptions(
       {
@@ -104,7 +123,7 @@ export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
         });
       }
     );
-  }, [handleSelectChain, menuConfig.menuItems]);
+  }, [handleSelectChain, menuConfig.menuItems, output]);
 
   return (
     <Box as={Animated.View} paddingHorizontal="20px">
