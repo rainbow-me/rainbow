@@ -19,8 +19,6 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { TIMING_CONFIGS } from '../animations/animationConfigs';
 import { useBrowserState } from './useBrowserState';
 import { pruneScreenshots } from './screenshots';
-import { ta } from 'date-fns/locale';
-import { url } from 'inspector';
 
 const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 
@@ -123,7 +121,7 @@ const DappBrowserComponent = () => {
     scrollEnabled: tabViewVisible?.value,
   }));
 
-  console.log('DappBrowserComponent :: RENDER', { tabViewVisible: tabViewVisible?.value });
+  console.log('DappBrowserComponent :: RENDER');
 
   return (
     <SheetGestureBlocker>
@@ -151,16 +149,14 @@ const DappBrowserComponent = () => {
               const props =
                 activeTabIndex === index
                   ? {
+                      activeTab: tabStates[index],
                       tabId: tabStates[index].uniqueId,
                       tabsCount: tabStates.length,
-                      tabIndex: index,
                       injectedJS,
-                      activeTabIndex,
                       activeTabRef,
                       animatedActiveTabIndex,
                       closeTabWorklet,
                       currentlyOpenTabIds,
-                      activeTab: tabStates[index],
                       tabViewProgress,
                       tabViewVisible,
                       toggleTabViewWorklet,
@@ -171,9 +167,7 @@ const DappBrowserComponent = () => {
                   : {
                       tabId: tabStates[index].uniqueId,
                       tabsCount: tabStates.length,
-                      tabIndex: index,
                       injectedJS,
-                      activeTabIndex,
                       activeTabRef,
                       animatedActiveTabIndex,
                       closeTabWorklet,

@@ -324,7 +324,7 @@ export function useBrowserState() {
     }
   );
 
-  console.log('useBrowserState :: hook called', { defaultActiveTabIndex, activeTabIndex });
+  console.log('useBrowserState :: hook called');
 
   return {
     activeTabIndex,

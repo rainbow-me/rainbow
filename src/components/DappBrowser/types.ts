@@ -31,17 +31,15 @@ export interface NewTabOperation extends BaseTabOperation {
 export type TabOperation = CloseTabOperation | NewTabOperation;
 
 export interface BrowserTabProps {
+  activeTab?: TabState;
   tabId: string;
   nextTabId: string;
   tabsCount: number;
-  tabIndex: number;
   injectedJS: React.MutableRefObject<string | null>;
-  activeTabIndex: number;
   activeTabRef: React.MutableRefObject<WebView | null>;
   animatedActiveTabIndex: SharedValue<number>;
   closeTabWorklet?(tabId: string, tabIndex: number): void;
   currentlyOpenTabIds: SharedValue<string[]>;
-  activeTab?: TabState;
   tabViewProgress: SharedValue<number> | undefined;
   tabViewVisible: SharedValue<boolean> | undefined;
   toggleTabViewWorklet(tabIndex?: number): void;

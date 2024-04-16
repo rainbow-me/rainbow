@@ -67,9 +67,7 @@ const AnimatedFasterImage = Animated.createAnimatedComponent(FasterImageView);
 export const BrowserTab = React.memo(function BrowserTab({
   tabId,
   activeTab,
-  tabIndex,
   injectedJS,
-  activeTabIndex,
   activeTabRef,
   animatedActiveTabIndex,
   closeTabWorklet,
@@ -108,7 +106,6 @@ export const BrowserTab = React.memo(function BrowserTab({
   // });
 
   const tabUrl = url;
-  const isActiveTab = activeTabIndex === tabIndex;
   const isOnHomepage = tabUrl === RAINBOW_HOME;
 
   const animatedTabIndex = useSharedValue(
@@ -337,7 +334,7 @@ export const BrowserTab = React.memo(function BrowserTab({
 
   // useLayoutEffect seems to more reliably assign the ref correctly
   useLayoutEffect(() => {
-    if (webViewRef.current !== null && isActiveTab) {
+    if (webViewRef.current !== null && activeTab) {
       activeTabRef.current = webViewRef.current;
       if (title.current) {
         // @ts-expect-error Property 'title' does not exist on type 'WebView<{}>'
@@ -345,7 +342,7 @@ export const BrowserTab = React.memo(function BrowserTab({
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTabRef, isActiveTab, isOnHomepage, tabId]);
+  }, [activeTabRef, activeTab, isOnHomepage, tabId]);
 
   const saveScreenshotToFileSystem = useCallback(
     async (tempUri: string, tabId: string, timestamp: number, url: string) => {
@@ -397,16 +394,16 @@ export const BrowserTab = React.memo(function BrowserTab({
     // it doesn't unfreeze immediately, so this condition allows some time for the tab to
     // become unfrozen before the screenshot is hidden, in most cases hiding the flash of
     // the frozen empty WebView that occurs if the screenshot is hidden immediately.
-    const isActiveTabButMaybeStillFrozen = isActiveTab && (tabViewProgress?.value || 0) > 75 && !tabViewVisible?.value;
+    const isActiveTabButMaybeStillFrozen = activeTab && (tabViewProgress?.value || 0) > 75 && !tabViewVisible?.value;
 
     const oneMinuteAgo = Date.now() - 1000 * 60;
     const isScreenshotStale = !!(screenshotData.value && screenshotData.value?.timestamp < oneMinuteAgo);
-    const shouldWaitForNewScreenshot = isScreenshotStale && !!tabViewVisible?.value && isActiveTab && !isActiveTabButMaybeStillFrozen;
+    const shouldWaitForNewScreenshot = isScreenshotStale && !!tabViewVisible?.value && activeTab && !isActiveTabButMaybeStillFrozen;
 
     const shouldDisplay =
       screenshotExists &&
       screenshotMatchesTabIdAndUrl &&
-      (!isActiveTab || !!tabViewVisible?.value || isActiveTabButMaybeStillFrozen) &&
+      (!activeTab || !!tabViewVisible?.value || isActiveTabButMaybeStillFrozen) &&
       !shouldWaitForNewScreenshot;
 
     return {
@@ -591,7 +588,7 @@ export const BrowserTab = React.memo(function BrowserTab({
 
       // Note: Using the JS-side isActiveTab because this should be in sync with the WebView freeze state,
       // which is driven by isActiveTab?. This should allow screenshots slightly more time to capture.
-      if (isActiveTab && changesDetected && !isTabBeingClosed) {
+      if (activeTab && changesDetected && !isTabBeingClosed) {
         // ⚠️ TODO: Need to rewrite the enterTabViewAnimationIsComplete condition, because it assumes the
         // tab animation will overshoot and rebound. If the animation config is changed, it's possible the
         // screenshot condition won't be met.
@@ -667,10 +664,9 @@ export const BrowserTab = React.memo(function BrowserTab({
   console.log('BrowserTab :: RENDER', tabId);
 
   // useEffectDebugger(() => true, [
+  //   tabId,
   //   activeTab,
-  //   tabIndex,
   //   injectedJS,
-  //   activeTabIndex,
   //   activeTabRef,
   //   animatedActiveTabIndex,
   //   closeTabWorklet,
@@ -705,7 +701,7 @@ export const BrowserTab = React.memo(function BrowserTab({
                   {isOnHomepage && updateActiveTabState ? (
                     <Homepage updateActiveTabState={updateActiveTabState} />
                   ) : (
-                    <Freeze freeze={!isActiveTab}>
+                    <Freeze freeze={!activeTab}>
                       <DappBrowserWebview
                         webviewDebuggingEnabled={IS_DEV}
                         injectedJavaScriptBeforeContentLoaded={injectedJS.current || ''}
