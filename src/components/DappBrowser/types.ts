@@ -31,6 +31,7 @@ export interface NewTabOperation extends BaseTabOperation {
 export type TabOperation = CloseTabOperation | NewTabOperation;
 
 export interface BrowserTabProps {
+  tabId: string;
   nextTabId: string;
   tabsCount: number;
   tabIndex: number;
@@ -38,13 +39,14 @@ export interface BrowserTabProps {
   activeTabIndex: number;
   activeTabRef: React.MutableRefObject<WebView | null>;
   animatedActiveTabIndex: SharedValue<number>;
-  closeTabWorklet(tabId: string, tabIndex: number): void;
+  closeTabWorklet?(tabId: string, tabIndex: number): void;
   currentlyOpenTabIds: SharedValue<string[]>;
-  activeTab: TabState;
+  activeTab?: TabState;
   tabViewProgress: SharedValue<number> | undefined;
   tabViewVisible: SharedValue<boolean> | undefined;
   toggleTabViewWorklet(tabIndex?: number): void;
-  updateActiveTabState(updates: Partial<TabState>, tabId: string | undefined): void;
+  updateActiveTabState?(updates: Partial<TabState>, tabId: string | undefined): void;
+  url: string;
 }
 
 export interface ScreenshotType {

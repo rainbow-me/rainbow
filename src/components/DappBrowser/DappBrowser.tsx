@@ -19,6 +19,8 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { TIMING_CONFIGS } from '../animations/animationConfigs';
 import { useBrowserState } from './useBrowserState';
 import { pruneScreenshots } from './screenshots';
+import { ta } from 'date-fns/locale';
+import { url } from 'inspector';
 
 const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 
@@ -121,7 +123,7 @@ const DappBrowserComponent = () => {
     scrollEnabled: tabViewVisible?.value,
   }));
 
-  console.log('DappBrowserComponent :: RENDER');
+  console.log('DappBrowserComponent :: RENDER', { tabViewVisible: tabViewVisible?.value });
 
   return (
     <SheetGestureBlocker>
@@ -145,25 +147,52 @@ const DappBrowserComponent = () => {
           showsVerticalScrollIndicator={false}
         >
           <Animated.View style={scrollViewHeightStyle}>
-            {tabStates.map((_, index) => (
-              <BrowserTab
-                tabsCount={tabStates.length}
-                key={tabStates[index].uniqueId}
-                tabIndex={index}
-                injectedJS={injectedJS}
-                activeTabIndex={activeTabIndex}
-                activeTabRef={activeTabRef}
-                animatedActiveTabIndex={animatedActiveTabIndex}
-                closeTabWorklet={closeTabWorklet}
-                currentlyOpenTabIds={currentlyOpenTabIds}
-                activeTab={tabStates[index]}
-                tabViewProgress={tabViewProgress}
-                tabViewVisible={tabViewVisible}
-                toggleTabViewWorklet={toggleTabViewWorklet}
-                updateActiveTabState={updateActiveTabState}
-                nextTabId={tabStates?.[1]?.uniqueId}
-              />
-            ))}
+            {tabStates.map((_, index) => {
+              const props =
+                activeTabIndex === index
+                  ? {
+                      tabId: tabStates[index].uniqueId,
+                      tabsCount: tabStates.length,
+                      tabIndex: index,
+                      injectedJS,
+                      activeTabIndex,
+                      activeTabRef,
+                      animatedActiveTabIndex,
+                      closeTabWorklet,
+                      currentlyOpenTabIds,
+                      activeTab: tabStates[index],
+                      tabViewProgress,
+                      tabViewVisible,
+                      toggleTabViewWorklet,
+                      updateActiveTabState,
+                      nextTabId: tabStates?.[1]?.uniqueId,
+                      url: tabStates[index].url,
+                    }
+                  : {
+                      tabId: tabStates[index].uniqueId,
+                      tabsCount: tabStates.length,
+                      tabIndex: index,
+                      injectedJS,
+                      activeTabIndex,
+                      activeTabRef,
+                      animatedActiveTabIndex,
+                      closeTabWorklet,
+                      currentlyOpenTabIds,
+                      tabViewProgress,
+                      tabViewVisible,
+                      toggleTabViewWorklet,
+                      nextTabId: tabStates?.[1]?.uniqueId,
+                      url: tabStates[index].url,
+                    };
+
+              return (
+                <BrowserTab
+                  key={tabStates[index].uniqueId}
+                  // eslint-disable-next-line react/jsx-props-no-spreading
+                  {...props}
+                />
+              );
+            })}
           </Animated.View>
         </AnimatedScrollView>
         <ProgressBar tabViewVisible={tabViewVisible} />

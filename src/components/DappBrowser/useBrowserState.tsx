@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { MMKV, useMMKVObject } from 'react-native-mmkv';
 import { RAINBOW_HOME } from './constants';
 import { generateUniqueId, generateUniqueIdWorklet } from './utils';
@@ -23,6 +23,8 @@ export function useBrowserState() {
   const tabViewVisible = useSharedValue(false);
   const animatedActiveTabIndex = useSharedValue(defaultActiveTabIndex);
   const { tabViewProgress } = useBrowserTabViewProgressContext();
+
+  const tabIdsMemo = useMemo(() => tabStates?.map(tab => tab.uniqueId), [tabStates]);
 
   useEffect(() => {
     // We can wait till the animation completes
@@ -74,7 +76,7 @@ export function useBrowserState() {
   const newTabWorklet = useCallback(
     (newTabUrl?: string) => {
       'worklet';
-      const tabIdsInStates = new Set(tabStates?.map(state => state.uniqueId));
+      const tabIdsInStates = new Set(tabIdsMemo);
       const isNewTabOperationPending =
         tabOperationQueue.value.some(operation => operation.type === 'newTab') ||
         currentlyOpenTabIds.value.some(tabId => !tabIdsInStates.has(tabId));
@@ -93,7 +95,7 @@ export function useBrowserState() {
         requestTabOperationsWorklet({ type: 'newTab', tabId: tabIdForNewTab, newActiveIndex, newTabUrl });
       }
     },
-    [currentlyOpenTabIds, requestTabOperationsWorklet, tabOperationQueue.value, tabStates, tabViewVisible.value]
+    [currentlyOpenTabIds, requestTabOperationsWorklet, tabIdsMemo, tabOperationQueue.value, tabViewVisible.value]
   );
 
   const closeAllTabsWorklet = useCallback(() => {

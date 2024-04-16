@@ -50,7 +50,7 @@ export const CloseTabButton = ({
   animatedActiveTabIndex: SharedValue<number> | undefined;
   tabViewProgress: SharedValue<number> | undefined;
   tabViewVisible: SharedValue<boolean> | undefined;
-  closeTabWorklet: (tabId: string, tabIndex: number) => void;
+  closeTabWorklet?: (tabId: string, tabIndex: number) => void;
   currentlyOpenTabIds: SharedValue<string[]>;
 }) => {
   const { isDarkMode } = useColorMode();
@@ -122,7 +122,7 @@ export const CloseTabButton = ({
       // Ensure the tab remains hidden after being swiped off screen (until the tab is destroyed)
       gestureScale.value = 0;
       // Because the animation is complete we know the tab is off screen and can be safely destroyed
-      closeTabWorklet(tabId, storedTabIndex);
+      closeTabWorklet?.(tabId, storedTabIndex);
     });
 
     // In the event two tabs are open when this one is closed, we animate its Y position to align it

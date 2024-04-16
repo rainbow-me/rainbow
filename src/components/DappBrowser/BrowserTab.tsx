@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FasterImageView, ImageOptions } from '@candlefinance/faster-image';
 import { globalColors, useColorMode } from '@/design-system';
-import { useDimensions } from '@/hooks';
+import { useDimensions, useEffectDebugger } from '@/hooks';
 import React, { useCallback, useLayoutEffect, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
@@ -64,22 +64,24 @@ import { findTabeScreenshot, saveScreenshot } from './screenshots';
 
 const AnimatedFasterImage = Animated.createAnimatedComponent(FasterImageView);
 
-export const BrowserTab = React.memo(function BrowserTab({ activeTab, tabIndex, injectedJS, ...props }: BrowserTabProps) {
-  const { uniqueId: tabId } = activeTab;
-  console.log('BrowserTab :: RENDER', tabId);
-  const {
-    activeTabIndex,
-    activeTabRef,
-    animatedActiveTabIndex,
-    closeTabWorklet,
-    currentlyOpenTabIds,
-    tabViewVisible,
-    toggleTabViewWorklet,
-    updateActiveTabState,
-    tabViewProgress,
-    tabsCount,
-    nextTabId,
-  } = props;
+export const BrowserTab = React.memo(function BrowserTab({
+  tabId,
+  activeTab,
+  tabIndex,
+  injectedJS,
+  activeTabIndex,
+  activeTabRef,
+  animatedActiveTabIndex,
+  closeTabWorklet,
+  currentlyOpenTabIds,
+  tabViewVisible,
+  toggleTabViewWorklet,
+  updateActiveTabState,
+  tabViewProgress,
+  tabsCount,
+  nextTabId,
+  url,
+}: BrowserTabProps) {
   const { scrollViewRef, scrollViewOffset, loadProgress } = useBrowserContext();
   const { isDarkMode } = useColorMode();
   const { width: deviceWidth } = useDimensions();
@@ -105,7 +107,7 @@ export const BrowserTab = React.memo(function BrowserTab({ activeTab, tabIndex, 
   //   gestureY: 0,
   // });
 
-  const tabUrl = activeTab.url;
+  const tabUrl = url;
   const isActiveTab = activeTabIndex === tabIndex;
   const isOnHomepage = tabUrl === RAINBOW_HOME;
 
@@ -268,8 +270,8 @@ export const BrowserTab = React.memo(function BrowserTab({ activeTab, tabIndex, 
   const handleNavigationStateChange = useCallback(
     (navState: WebViewNavigation) => {
       // Set the logo if it's not already set to the current website's logo
-      if (activeTab.logoUrl !== logo.current) {
-        updateActiveTabState(
+      if (activeTab?.logoUrl !== logo.current) {
+        updateActiveTabState?.(
           {
             logoUrl: logo.current,
           },
@@ -294,10 +296,10 @@ export const BrowserTab = React.memo(function BrowserTab({ activeTab, tabIndex, 
       //
       // To observe what's actually going on, you can import the navigationStateLogger helper and add it here.
 
-      if (navState.url !== activeTab.url) {
+      if (navState.url !== url) {
         if (navState.navigationType !== 'other') {
           // If the URL DID ✅ change and navigationType !== 'other', we update the full tab state
-          updateActiveTabState(
+          updateActiveTabState?.(
             {
               canGoBack: navState.canGoBack,
               canGoForward: navState.canGoForward,
@@ -308,7 +310,7 @@ export const BrowserTab = React.memo(function BrowserTab({ activeTab, tabIndex, 
           );
         } else {
           // If the URL DID ✅ change and navigationType === 'other', we update only canGoBack and canGoForward
-          updateActiveTabState(
+          updateActiveTabState?.(
             {
               canGoBack: navState.canGoBack,
               canGoForward: navState.canGoForward,
@@ -320,7 +322,7 @@ export const BrowserTab = React.memo(function BrowserTab({ activeTab, tabIndex, 
       } else {
         // If the URL DID NOT ❌ change, we update only canGoBack and canGoForward
         // This handles WebView reloads and cases where the WebView navigation state legitimately resets
-        updateActiveTabState(
+        updateActiveTabState?.(
           {
             canGoBack: navState.canGoBack,
             canGoForward: navState.canGoForward,
@@ -330,7 +332,7 @@ export const BrowserTab = React.memo(function BrowserTab({ activeTab, tabIndex, 
         );
       }
     },
-    [activeTab.logoUrl, activeTab.url, tabId, updateActiveTabState]
+    [activeTab?.logoUrl, url, tabId, updateActiveTabState]
   );
 
   // useLayoutEffect seems to more reliably assign the ref correctly
@@ -355,7 +357,7 @@ export const BrowserTab = React.memo(function BrowserTab({ activeTab, tabIndex, 
   );
 
   const captureAndSaveScreenshot = useCallback(() => {
-    if (viewShotRef.current && webViewRef.current) {
+    if (viewShotRef.current && webViewRef.current && url) {
       const captureRef = viewShotRef.current;
 
       if (captureRef && captureRef?.capture) {
@@ -363,7 +365,7 @@ export const BrowserTab = React.memo(function BrowserTab({ activeTab, tabIndex, 
           .capture()
           .then(uri => {
             const timestamp = Date.now();
-            saveScreenshotToFileSystem(uri, tabId, timestamp, activeTab.url);
+            saveScreenshotToFileSystem(uri, tabId, timestamp, url);
           })
           .catch(error => {
             logger.error(new RainbowError('Failed to capture tab screenshot'), {
@@ -372,7 +374,7 @@ export const BrowserTab = React.memo(function BrowserTab({ activeTab, tabIndex, 
           });
       }
     }
-  }, [activeTab.url, saveScreenshotToFileSystem, tabId]);
+  }, [url, saveScreenshotToFileSystem, tabId]);
 
   const screenshotSource = useDerivedValue(() => {
     return {
@@ -384,11 +386,11 @@ export const BrowserTab = React.memo(function BrowserTab({ activeTab, tabIndex, 
   const animatedScreenshotStyle = useAnimatedStyle(() => {
     // Note: We use isActiveTab throughout this animated style over animatedIsActiveTab
     // because the displaying of the screenshot should be synced to the WebView freeze
-    // state, which is driven by the slower JS-side isActiveTab. This prevents the
+    // state, which is driven by the slower JS-side isActiveTab?. This prevents the
     // screenshot from disappearing before the WebView is unfrozen.
 
     const screenshotExists = !!screenshotData.value?.uri;
-    const screenshotMatchesTabIdAndUrl = screenshotData.value?.id === tabId && screenshotData.value?.url === activeTab.url;
+    const screenshotMatchesTabIdAndUrl = screenshotData.value?.id === tabId && screenshotData.value?.url === url;
 
     // This is to handle the case where a WebView that wasn't previously the active tab
     // is made active from the tab view. Because its freeze state is driven by JS state,
@@ -414,7 +416,7 @@ export const BrowserTab = React.memo(function BrowserTab({ activeTab, tabIndex, 
 
   const handleOnMessage = useCallback(
     (event: WebViewMessageEvent) => {
-      if (!isActiveTab) return;
+      if (!activeTab) return;
       const data = event.nativeEvent.data as any;
       try {
         // validate message and parse data
@@ -435,7 +437,7 @@ export const BrowserTab = React.memo(function BrowserTab({ activeTab, tabIndex, 
           }
 
           addRecent({
-            url: normalizeUrlForRecents(activeTab.url),
+            url: normalizeUrlForRecents(url),
             name: pageTitle,
             image: logoUrl,
             timestamp: Date.now(),
@@ -450,7 +452,7 @@ export const BrowserTab = React.memo(function BrowserTab({ activeTab, tabIndex, 
               sender: {
                 url: m.url,
                 tab: { id: tabId },
-                title: title.current || activeTab.url,
+                title: title.current || url,
               },
               id: parsedData.id,
             },
@@ -461,7 +463,7 @@ export const BrowserTab = React.memo(function BrowserTab({ activeTab, tabIndex, 
         console.error('Error parsing message', e);
       }
     },
-    [isActiveTab, addRecent, activeTab.url, backgroundColor, tabId]
+    [activeTab, addRecent, backgroundColor, tabId, url]
   );
 
   const handleOnLoadStart = useCallback(
@@ -551,7 +553,7 @@ export const BrowserTab = React.memo(function BrowserTab({ activeTab, tabIndex, 
           // Ensure the tab remains hidden after being swiped off screen (until the tab is destroyed)
           gestureScale.value = 0;
           // Because the animation is complete we know the tab is off screen and can be safely destroyed
-          closeTabWorklet(tabId, storedTabIndex);
+          closeTabWorklet?.(tabId, storedTabIndex);
         });
 
         // In the event two tabs are open when this one is closed, we animate its Y position to align it
@@ -588,7 +590,7 @@ export const BrowserTab = React.memo(function BrowserTab({ activeTab, tabIndex, 
       const isTabBeingClosed = currentlyOpenTabIds?.value?.indexOf(tabId) === -1;
 
       // Note: Using the JS-side isActiveTab because this should be in sync with the WebView freeze state,
-      // which is driven by isActiveTab. This should allow screenshots slightly more time to capture.
+      // which is driven by isActiveTab?. This should allow screenshots slightly more time to capture.
       if (isActiveTab && changesDetected && !isTabBeingClosed) {
         // ⚠️ TODO: Need to rewrite the enterTabViewAnimationIsComplete condition, because it assumes the
         // tab animation will overshoot and rebound. If the animation config is changed, it's possible the
@@ -662,6 +664,25 @@ export const BrowserTab = React.memo(function BrowserTab({ activeTab, tabIndex, 
     }
   );
 
+  console.log('BrowserTab :: RENDER', tabId);
+
+  // useEffectDebugger(() => true, [
+  //   activeTab,
+  //   tabIndex,
+  //   injectedJS,
+  //   activeTabIndex,
+  //   activeTabRef,
+  //   animatedActiveTabIndex,
+  //   closeTabWorklet,
+  //   currentlyOpenTabIds,
+  //   tabViewVisible,
+  //   toggleTabViewWorklet,
+  //   updateActiveTabState,
+  //   tabViewProgress,
+  //   tabsCount,
+  //   nextTabId,
+  // ], 'useEffectDebugger::BrowserTab::' + tabId);
+
   return (
     <>
       {/* Need to fix some shadow performance issues - disabling shadows for now */}
@@ -681,7 +702,7 @@ export const BrowserTab = React.memo(function BrowserTab({ activeTab, tabIndex, 
             <Animated.View style={[styles.webViewContainer, animatedWebViewStyle, animatedWebViewBackgroundColorStyle]}>
               <ViewShot options={{ format: 'jpg' }} ref={viewShotRef}>
                 <View collapsable={false} style={{ height: WEBVIEW_HEIGHT, width: '100%' }}>
-                  {isOnHomepage ? (
+                  {isOnHomepage && updateActiveTabState ? (
                     <Homepage updateActiveTabState={updateActiveTabState} />
                   ) : (
                     <Freeze freeze={!isActiveTab}>
