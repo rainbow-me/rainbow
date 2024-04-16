@@ -3,31 +3,31 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, StatusBar } from 'react-native';
 import Animated, { runOnJS, runOnUI, useAnimatedReaction, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
+import BigNumber from 'bignumber.js';
 
 import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
 import { useTheme } from '@/theme';
 
-import { GestureHandlerV1Button } from '../GestureHandlerV1Button';
-import { SwapActionButton } from '../SwapActionButton';
-import { AnimatedSwapCoinIcon } from '../SwapCoinIcon';
-import { FadeMask } from '../FadeMask';
-import { SwapInput } from '../SwapInput';
-import { BalanceBadge } from '../BalanceBadge';
-import { TokenList } from '../TokenList/TokenList';
-import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '../../constants';
+import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
+import { SwapActionButton } from '@/__swaps__/screens/Swap/components/SwapActionButton';
+import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
+import { SwapInput } from '@/__swaps__/screens/Swap/components/SwapInput';
+import { BalanceBadge } from '@/__swaps__/screens/Swap/components/BalanceBadge';
+import { TokenList } from '@/__swaps__/screens/Swap/components/TokenList/TokenList';
+import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { IS_ANDROID } from '@/env';
-import { useSwapContext } from '../../providers/swap-provider';
-import { useSwapAssetStore } from '../../state/assets';
+import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { useSwapAssetStore } from '@/__swaps__/screens/Swap/state/assets';
 import { ethereumUtils } from '@/utils';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { useAccountSettings } from '@/hooks';
-import { ChainId } from '../../types/chains';
-import { useAssetsToSell } from '../../hooks/useAssetsToSell';
-import { isSameAsset, isSameAssetWorklet, parseSearchAsset } from '../../utils/assets';
-import { ParsedAsset } from '../../types/assets';
-import BigNumber from 'bignumber.js';
+import { ChainId } from '@/__swaps__/types/chains';
+import { useAssetsToSell } from '@/__swaps__/screens/Swap/hooks/useAssetsToSell';
+import { isSameAsset, isSameAssetWorklet, parseSearchAsset } from '@/__swaps__/utils/assets';
+import { ParsedAsset } from '@/__swaps__/types/assets';
 import { supportedCurrencies } from '@/references/supportedCurrencies';
 import { TokenColors } from '@/graphql/__generated__/metadata';
+import { AnimatedSwapCoinIcon } from '../SwapCoinIcon';
 
 function SwapInputActionButton() {
   const { isDarkMode } = useColorMode();

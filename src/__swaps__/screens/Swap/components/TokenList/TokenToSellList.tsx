@@ -1,17 +1,17 @@
 import c from 'chroma-js';
 import React, { useCallback, useMemo } from 'react';
 import { Text as RNText, StyleSheet } from 'react-native';
-import { CoinRow } from '../CoinRow';
-import { useAssetsToSell } from '../../hooks/useAssetsToSell';
-import { ParsedSearchAsset } from '../../types/assets';
+import { CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
+import { useAssetsToSell } from '@/__swaps__/screens/Swap/hooks/useAssetsToSell';
+import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { Box, Stack, Text, Inline, Bleed, useColorMode, globalColors, HitSlop } from '@/design-system';
 import Animated, { runOnUI } from 'react-native-reanimated';
-import { useSwapContext } from '../../providers/swap-provider';
-import { parseSearchAsset, isSameAsset } from '../../utils/assets';
-import { opacity } from '../../utils/swaps';
+import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { parseSearchAsset, isSameAsset } from '@/__swaps__/utils/assets';
+import { opacity } from '@/__swaps__/utils/swaps';
 import { useAccountAccentColor } from '@/hooks';
 import { ButtonPressAnimation } from '@/components/animations';
-import { ListEmpty } from './ListEmpty';
+import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
 import { FlashList } from '@shopify/flash-list';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 

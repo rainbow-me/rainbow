@@ -57,7 +57,7 @@ export const getAvalancheNetworkObject = (): NetworkProperties => {
       defaultSlippage: 200,
     },
 
-    nfts: {},
+    nfts: { simplehashNetwork: 'avalanche' },
 
     // design tings
     colors: {

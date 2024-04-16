@@ -23,6 +23,11 @@ export const isHexStringIgnorePrefix = (value: string): boolean => {
  */
 export const addHexPrefix = (value: string): string => (startsWith(value, '0x') ? value : `0x${value}`);
 
+export const addHexPrefixWorklet = (value: string): string => {
+  'worklet';
+  return startsWith(value, '0x') ? value : `0x${value}`;
+};
+
 export const convertStringToHex = (stringToConvert: string): string => new BigNumber(stringToConvert).toString(16);
 
 export const toHex = (stringToConvert: string): string => addHexPrefix(convertStringToHex(stringToConvert));

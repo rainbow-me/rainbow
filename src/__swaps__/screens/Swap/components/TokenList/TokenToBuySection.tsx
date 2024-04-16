@@ -1,21 +1,22 @@
-import * as i18n from '@/languages';
 import React, { useCallback, useMemo } from 'react';
-import { CoinRow } from '../CoinRow';
-import { useSwapAssetStore } from '../../state/assets';
-import { SearchAsset } from '../../types/search';
-import { Box, Inline, Inset, Stack, Text } from '@/design-system';
 import { TextStyle } from 'react-native';
-import { AssetToBuySection, AssetToBuySectionId } from '../../hooks/useSearchCurrencyLists';
-import { ChainId } from '../../types/chains';
-import { TextColor } from '@/design-system/color/palettes';
-import { useSwapContext } from '../../providers/swap-provider';
 import Animated, { runOnUI } from 'react-native-reanimated';
-import { parseSearchAsset, isSameAsset } from '../../utils/assets';
-
-import { useAssetsToSell } from '../../hooks/useAssetsToSell';
-import { ListEmpty } from './ListEmpty';
 import { FlashList } from '@shopify/flash-list';
 import { TokenColors } from '@/graphql/__generated__/metadata';
+
+import * as i18n from '@/languages';
+import { CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
+import { useSwapAssetStore } from '@/__swaps__/screens/Swap/state/assets';
+import { SearchAsset } from '@/__swaps__/types/search';
+import { Box, Inline, Inset, Stack, Text } from '@/design-system';
+import { AssetToBuySection, AssetToBuySectionId } from '@/__swaps__/screens/Swap/hooks/useSearchCurrencyLists';
+import { ChainId } from '@/__swaps__/types/chains';
+import { TextColor } from '@/design-system/color/palettes';
+import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { parseSearchAsset, isSameAsset } from '@/__swaps__/utils/assets';
+
+import { useAssetsToSell } from '@/__swaps__/screens/Swap/hooks/useAssetsToSell';
+import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
 
 interface SectionProp {
   color: TextStyle['color'];

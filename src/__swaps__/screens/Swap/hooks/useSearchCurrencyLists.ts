@@ -1,17 +1,17 @@
 import { rankings } from 'match-sorter';
 import { useCallback, useMemo, useState } from 'react';
+import { SharedValue, runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 
 import { ETH_ADDRESS } from '@/references';
-import { useTokenSearch } from '../resources/search';
-import { ParsedSearchAsset } from '../types/assets';
-import { ChainId } from '../types/chains';
-import { SearchAsset, TokenSearchAssetKey, TokenSearchListId, TokenSearchThreshold } from '../types/search';
-import { addHexPrefix } from '../utils/hex';
-import { isLowerCaseMatch } from '../utils/strings';
+import { useTokenSearch } from '@/__swaps__/screens/Swap/resources/search';
+import { ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { ChainId } from '@/__swaps__/types/chains';
+import { SearchAsset, TokenSearchAssetKey, TokenSearchListId, TokenSearchThreshold } from '@/__swaps__/types/search';
+import { addHexPrefix } from '@/__swaps__/utils/hex';
+import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
 import { filterList } from '@/utils';
 
 import { useFavorites } from '@/resources/favorites';
-import { SharedValue, runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { isAddress } from '@ethersproject/address';
 
 const VERIFIED_ASSETS_PAYLOAD: {
