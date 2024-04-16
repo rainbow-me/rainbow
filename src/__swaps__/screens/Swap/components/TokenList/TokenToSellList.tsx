@@ -36,7 +36,7 @@ export const TokenToSellList = () => {
       <ChainSelection allText="All Networks" output={false} />
 
       <AnimatedFlashListComponent
-        data={userAssets}
+        data={userAssets.slice(0, 20)}
         ListEmptyComponent={<ListEmpty />}
         keyExtractor={item => item.uniqueId}
         renderItem={({ item }) => (

@@ -21,7 +21,7 @@ export const TokenToBuyList = () => {
   const assetsCount = useMemo(() => sections?.reduce((count, section) => count + section.data.length, 0), [sections]);
 
   return (
-    <Stack space="32px">
+    <Stack space="24px">
       <ChainSelection output />
       {sections.map(section => (
         <TokenToBuySection key={section.id} section={section} />
