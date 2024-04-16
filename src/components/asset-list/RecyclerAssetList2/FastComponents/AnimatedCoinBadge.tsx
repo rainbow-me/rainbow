@@ -17,7 +17,7 @@ import AvalancheBadgeDark from '@/assets/badges/avalancheBadgeDark.png';
 import BlastBadge from '@/assets/badges/blastBadge.png';
 import BlastBadgeDark from '@/assets/badges/blastBadgeDark.png';
 import { DerivedValue, runOnJS, useAnimatedReaction } from 'react-native-reanimated';
-import { ChainId } from '@/__swaps__/screens/Swap/types/chains';
+import { ChainId } from '@/__swaps__/types/chains';
 
 interface AnimatedCoinBadgeProps {
   chainId: DerivedValue<ChainId>;

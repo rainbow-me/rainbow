@@ -6,8 +6,9 @@ import { ethereumUtils } from '@/utils';
 import { DerivedValue, StyleProps } from 'react-native-reanimated';
 import AnimatedRainbowCoinIcon from '@/components/coin-icon/AnimatedRainbowCoinIcon';
 import { TokenColors } from '@/graphql/__generated__/metadata';
-import { ChainId } from '../types/chains';
+
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { ChainId } from '@/__swaps__/types/chains';
 
 export const SwapCoinIcon = React.memo(function FeedCoinIcon({
   colors,

@@ -81,7 +81,11 @@ export default React.memo(function TokenFamilyHeaderIcon({ familyImage, familyNa
   return (
     // @ts-expect-error ShadowStack is not migrated to TS.
     <ShadowStack {...circleStyle} backgroundColor={colors.white} shadows={shadows} style={style}>
-      {familyImage ? <ImgixImage size={30} source={source} style={circleStyle} /> : <FallbackIcon {...circleStyle} symbol={symbol} />}
+      {familyImage ? (
+        <ImgixImage size={30} source={source} style={circleStyle} />
+      ) : (
+        <FallbackIcon {...circleStyle} symbol={symbol} height={30} width={30} />
+      )}
     </ShadowStack>
   );
 });

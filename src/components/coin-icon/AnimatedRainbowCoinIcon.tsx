@@ -6,11 +6,12 @@ import { ThemeContextProps } from '@/theme';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { AnimatedCoinIconImage } from '../asset-list/RecyclerAssetList2/FastComponents/AnimatedCoinIconImage';
 import { DerivedValue, StyleProps, useDerivedValue } from 'react-native-reanimated';
-import { FASTER_IMAGE_CONFIG } from '../DappBrowser/constants';
+
 import { ImageOptions } from '@candlefinance/faster-image';
 import { AnimatedChainBadge } from '../asset-list/RecyclerAssetList2/FastComponents/AnimatedCoinBadge';
-import { ChainId } from '@/__swaps__/screens/Swap/types/chains';
+
 import AnimatedFallbackIcon from './AnimatedFallbackIcon';
+import { ChainId } from '@/__swaps__/types/chains';
 
 const fallbackTextStyles: TextStyle = {
   fontFamily: fonts.family.SFProRounded,
@@ -52,7 +53,6 @@ export default function AnimatedRainbowCoinIcon({
 }) {
   const source = useDerivedValue(() => {
     return {
-      ...FASTER_IMAGE_CONFIG,
       url: icon.value,
     } as ImageOptions;
   });
