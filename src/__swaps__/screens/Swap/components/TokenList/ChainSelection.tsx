@@ -1,21 +1,22 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable react/jsx-props-no-spreading */
 import c from 'chroma-js';
 import { Text as RNText, StyleSheet } from 'react-native';
-import Animated, { useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
+import Animated, { SharedValue, runOnUI, useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
 import React, { useCallback, useMemo } from 'react';
 
 import { SUPPORTED_CHAINS } from '@/references';
 import { AnimatedText, Bleed, Box, HitSlop, Inline, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { chainNameFromChainId, chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { opacity } from '@/__swaps__/utils/swaps';
-import { ButtonPressAnimation } from '@/components/animations';
 import { ethereumUtils, showActionSheetWithOptions } from '@/utils';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ChainId } from '@/__swaps__/types/chains';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ContextMenuButton } from '@/components/context-menu';
-import { IS_ANDROID } from '@/env';
 import { useAccountAccentColor } from '@/hooks';
+import { UserAssetFilter } from '@/__swaps__/types/assets';
+import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 
 type ChainSelectionProps = {
   allText?: string;
@@ -25,7 +26,7 @@ type ChainSelectionProps = {
 export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
   const { isDarkMode } = useColorMode();
   const { accentColor: accountColor } = useAccountAccentColor();
-  const { SwapInputController } = useSwapContext();
+  const { SwapInputController, userAssetFilter } = useSwapContext();
   const red = useForegroundColor('red');
 
   const accentColor = useMemo(() => {
@@ -37,21 +38,15 @@ export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
     }
   }, [accountColor, isDarkMode]);
 
-  // const propToUse = output ? SwapInputController.outputChainId : SwapInputController.
+  const propToSet = output ? SwapInputController.outputChainId : userAssetFilter;
 
   const chainName = useSharedValue(
-    !output
+    propToSet.value === 'all'
       ? allText
-      : SwapInputController.outputChainId.value === ChainId.mainnet
+      : propToSet.value === ChainId.mainnet
         ? 'ethereum'
         : chainNameFromChainIdWorklet(SwapInputController.outputChainId.value)
   );
-
-  // const switchToRandomChain = useCallback(() => {
-  //   const chainIdValues = Object.values(ChainId).filter(value => typeof value === 'number');
-  //   const randomChainId = chainIdValues[Math.floor(Math.random() * chainIdValues.length)];
-  //   SwapInputController.outputChainId.value = randomChainId as ChainId;
-  // }, [SwapInputController]);
 
   useAnimatedReaction(
     () => ({
@@ -64,16 +59,25 @@ export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
     }
   );
 
-  const handleSelectChain = useCallback(({ nativeEvent: { actionKey } }: any) => {
-    console.log('actionKey', actionKey);
-  }, []);
+  const handleSelectChain = useCallback(
+    ({ nativeEvent: { actionKey } }: Omit<OnPressMenuItemEventObject, 'isUsingActionSheetFallback'>) => {
+      runOnUI((set: SharedValue<ChainId | UserAssetFilter>) => {
+        if (actionKey === 'all') {
+          set.value = 'all';
+        } else {
+          set.value = Number(actionKey) as ChainId;
+        }
+      })(propToSet);
+    },
+    [propToSet]
+  );
 
   const menuConfig = useMemo(() => {
     return {
       menuItems: SUPPORTED_CHAINS({ testnetMode: false }).map(chain => {
         // const network = ethereumUtils.getNetworkFromChainId(chain.id);
         return {
-          actionKey: chain.id,
+          actionKey: `${chain.id}`,
           actionTitle: chainNameFromChainId(chain.id),
 
           // TODO: Assets here
@@ -95,7 +99,9 @@ export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
         showSeparators: true,
       },
       (index: number) => {
-        handleSelectChain({ nativeEvent: { actionKey: menuConfig.menuItems[index].actionKey } });
+        handleSelectChain({
+          nativeEvent: { actionKey: menuConfig.menuItems[index].actionKey, actionTitle: '' },
+        });
       }
     );
   }, [handleSelectChain, menuConfig.menuItems]);

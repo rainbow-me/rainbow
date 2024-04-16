@@ -1,32 +1,37 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Hex } from 'viem';
-import { runOnJS, useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
+import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
 
 import { selectUserAssetsList, selectUserAssetsListByChainId } from '@/__swaps__/screens/Swap/resources/_selectors/assets';
 import { useUserAssets } from '@/__swaps__/screens/Swap/resources/assets';
-import { ParsedAssetsDictByChain, ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { SortMethod } from '@/__swaps__/types/swap';
+import { ParsedAssetsDictByChain, ParsedSearchAsset, UserAssetFilter } from '@/__swaps__/types/assets';
 import { useAccountSettings } from '@/hooks';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 
-const sortBy = (by: SortMethod) => {
-  switch (by) {
-    case SortMethod.token:
-      return selectUserAssetsList;
-    case SortMethod.chain:
-      return selectUserAssetsListByChainId;
+const sortBy = (by: UserAssetFilter, assets: ParsedAssetsDictByChain) => {
+  if (by === 'all') {
+    return () => selectUserAssetsList(assets);
   }
+
+  return () => selectUserAssetsListByChainId(by, assets);
 };
 
 export const useAssetsToSell = () => {
-  const { SwapInputController } = useSwapContext();
+  const { SwapInputController, userAssetFilter } = useSwapContext();
   const { accountAddress: currentAddress, nativeCurrency: currentCurrency } = useAccountSettings();
 
-  // TODO: Actually implement sortMethod here
-  const sortMethod = useSharedValue(SortMethod.token);
-
   const [currentAssets, setCurrentAssets] = useState<ParsedSearchAsset[]>([]);
+  const sortMethod = useRef(userAssetFilter.value);
+
+  useAnimatedReaction(
+    () => userAssetFilter.value,
+    (current, previous) => {
+      if (previous !== current) {
+        sortMethod.current = current;
+      }
+    }
+  );
 
   const { data: userAssets = [] } = useUserAssets(
     {
@@ -41,7 +46,7 @@ export const useAssetsToSell = () => {
           acc[chainKey] = data[chainKey];
           return acc;
         }, {} as ParsedAssetsDictByChain);
-        return sortBy(sortMethod.value)(filteredAssetsDictByChain);
+        return sortBy(sortMethod.current, filteredAssetsDictByChain)();
       },
       cacheTime: Infinity,
       staleTime: Infinity,

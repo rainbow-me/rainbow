@@ -6,6 +6,8 @@ import { SearchAsset } from '@/__swaps__/types/search';
 
 export type AddressOrEth = Address | typeof ETH_ADDRESS;
 
+export type UserAssetFilter = 'all' | ChainId;
+
 export interface ParsedAsset {
   address: AddressOrEth;
   chainId: ChainId;
