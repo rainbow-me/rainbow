@@ -41,7 +41,6 @@ import {
   TOP_INSET,
   WEBVIEW_HEIGHT,
 } from './Dimensions';
-import RNFS from 'react-native-fs';
 import { WebViewEvent } from 'react-native-webview/lib/WebViewTypes';
 import { appMessenger } from '@/browserMessaging/AppMessenger';
 import { IS_ANDROID, IS_DEV, IS_IOS } from '@/env';
@@ -58,7 +57,7 @@ import { useBrowserHistoryStore } from '@/state/browserHistory';
 import { normalizeUrlForRecents } from './utils';
 import { useBrowserContext } from './BrowserContext';
 import { BrowserTabProps, ScreenshotType } from './types';
-import { findTabeScreenshot, getStoredScreenshots, saveScreenshot } from './screenshots';
+import { findTabeScreenshot, saveScreenshot } from './screenshots';
 
 // ⚠️ TODO: Split this file apart into hooks, smaller components
 // useTabScreenshots, useAnimatedWebViewStyles, useWebViewGestures
@@ -66,6 +65,7 @@ import { findTabeScreenshot, getStoredScreenshots, saveScreenshot } from './scre
 const AnimatedFasterImage = Animated.createAnimatedComponent(FasterImageView);
 
 export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, injectedJS, ...props }: BrowserTabProps) {
+  console.log('BrowserTab :: RENDER', tabId);
   const {
     activeTabIndex,
     activeTabRef,

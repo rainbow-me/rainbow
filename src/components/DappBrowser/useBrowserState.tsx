@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { MMKV, useMMKVObject } from 'react-native-mmkv';
 import { RAINBOW_HOME } from './constants';
 import { generateUniqueId, generateUniqueIdWorklet } from './utils';
@@ -12,17 +12,26 @@ const tabStateStore = new MMKV();
 
 const DEFAULT_TAB_STATE: TabState[] = [{ canGoBack: false, canGoForward: false, uniqueId: generateUniqueId(), url: RAINBOW_HOME }];
 
-export function useBrowserState() {
-  console.log('useBrowserState :: hook called');
+const defaultActiveTabIndex = tabStateStore.getNumber('activeTabIndex') || 0;
 
-  const [activeTabIndex, setActiveTabIndex] = useState<number>(0);
+console.log('defaultActiveTabIndex', defaultActiveTabIndex);
+
+export function useBrowserState() {
+  const [activeTabIndex, setActiveTabIndex] = useState<number>(defaultActiveTabIndex);
   const [tabStates = DEFAULT_TAB_STATE, setTabStates] = useMMKVObject<TabState[]>('tabStateStorage', tabStateStore);
   const tabOperationQueue = useSharedValue<TabOperation[]>([]);
   const shouldBlockOperationQueue = useSharedValue(false);
   const currentlyOpenTabIds = useSharedValue(tabStates?.map(tab => tab.uniqueId) || []);
   const tabViewVisible = useSharedValue(false);
-  const animatedActiveTabIndex = useSharedValue(0);
+  const animatedActiveTabIndex = useSharedValue(defaultActiveTabIndex);
   const { tabViewProgress } = useBrowserTabViewProgressContext();
+
+  useEffect(() => {
+    setTimeout(() => {
+      tabStateStore.set('activeTabIndex', activeTabIndex);
+      console.log('active tab index persisted', activeTabIndex);
+    }, 1);
+  }, [activeTabIndex]);
 
   const updateActiveTabState = useCallback(
     (newState: Partial<TabState>, tabId?: string) => {
@@ -314,6 +323,8 @@ export function useBrowserState() {
       }
     }
   );
+
+  console.log('useBrowserState :: hook called', { defaultActiveTabIndex, activeTabIndex });
 
   return {
     activeTabIndex,
