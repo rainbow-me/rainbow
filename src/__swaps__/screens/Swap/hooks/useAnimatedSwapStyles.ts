@@ -13,7 +13,6 @@ import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
 import { spinnerExitConfig } from '@/__swaps__/components/animations/AnimatedSpinner';
 import { NavigationSteps } from './useSwapNavigation';
-import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 import { IS_ANDROID } from '@/env';
 import { safeAreaInsetValues } from '@/utils';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
@@ -115,7 +114,11 @@ export function useAnimatedSwapStyles({
       borderWidth: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? THICK_BORDER_WIDTH : 0,
       borderColor: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? opacityWorklet(globalColors.darkGrey, 0.2) : undefined,
       backgroundColor:
-        reviewProgress.value === NavigationSteps.SHOW_REVIEW ? '#191A1C' : opacityWorklet(SwapInputController.bottomColor.value, 0.03),
+        reviewProgress.value === NavigationSteps.SHOW_REVIEW
+          ? isDarkMode
+            ? '#191A1C'
+            : globalColors.white100
+          : opacityWorklet(SwapInputController.bottomColor.value, 0.03),
       borderTopColor:
         reviewProgress.value === NavigationSteps.SHOW_REVIEW
           ? opacityWorklet(globalColors.darkGrey, 0.2)

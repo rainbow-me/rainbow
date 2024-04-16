@@ -9,13 +9,10 @@ import Animated, {
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
-  withTiming,
 } from 'react-native-reanimated';
 
 import { ButtonPressAnimation } from '@/components/animations';
 import { AnimatedText, Box, Column, Columns, globalColors, useColorMode, useForegroundColor } from '@/design-system';
-import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
-import { fadeConfig } from '../constants';
 
 export const SwapActionButton = ({
   color,
