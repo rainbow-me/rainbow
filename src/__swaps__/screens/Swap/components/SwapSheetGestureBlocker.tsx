@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import { Box } from '@/design-system';
@@ -6,7 +6,7 @@ import { IS_IOS } from '@/env';
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 
-export const SheetGestureBlocker = ({
+export const SwapSheetGestureBlocker = ({
   children,
   preventScrollViewDismissal = true,
 }: {

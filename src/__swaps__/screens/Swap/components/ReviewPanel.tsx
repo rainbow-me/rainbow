@@ -1,7 +1,14 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 
-import { AnimatedText, Box, Inline, Separator, Stack, Text, useColorMode } from '@/design-system';
-import Animated, { useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
+import { AnimatedText, Box, Inline, Separator, Stack, Text, globalColors, useColorMode } from '@/design-system';
+import Animated, {
+  runOnJS,
+  useAnimatedReaction,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { fadeConfig } from '../constants';
 import { ethereumUtils } from '@/utils';
@@ -10,15 +17,35 @@ import { ChainId } from '@/__swaps__/types/chains';
 import { chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { AnimatedSwitch } from './AnimatedSwitch';
 import { GasButton } from './GasButton';
+import { ButtonPressAnimation } from '@/components/animations';
+
+const SLIPPAGE_STEP = 0.5;
 
 export function ReviewPanel() {
   const { isDarkMode } = useColorMode();
   const { reviewProgress, SwapInputController } = useSwapContext();
 
-  const chainName = useSharedValue(
+  const chainName = useDerivedValue(() =>
     SwapInputController.outputChainId.value === ChainId.mainnet
       ? 'ethereum'
       : chainNameFromChainIdWorklet(SwapInputController.outputChainId.value)
+  );
+
+  const slippageText = useDerivedValue(() => `${SwapInputController.slippage.value}%`);
+
+  const [chain, setChain] = useState(ethereumUtils.getNetworkFromChainId(SwapInputController.outputChainId.value ?? ChainId.mainnet));
+
+  const updateChainFromNetwork = useCallback((chainId: ChainId) => {
+    setChain(ethereumUtils.getNetworkFromChainId(chainId));
+  }, []);
+
+  useAnimatedReaction(
+    () => SwapInputController.outputChainId.value,
+    (current, previous) => {
+      if (!previous || previous !== current) {
+        runOnJS(updateChainFromNetwork)(current);
+      }
+    }
   );
 
   const minimumReceived = useDerivedValue(() => {
@@ -29,13 +56,21 @@ export function ReviewPanel() {
     return '$2.70';
   });
 
-  // TODO: This will come from SwapInputController
-  const flashbots = useSharedValue(true);
+  const flashbots = useDerivedValue(() => SwapInputController.flashbots.value);
+
+  const onSetSlippage = useCallback(
+    (operation: 'increment' | 'decrement') => {
+      'worklet';
+      const value = operation === 'increment' ? SLIPPAGE_STEP : -SLIPPAGE_STEP;
+      SwapInputController.slippage.value = `${Math.max(0.5, Number(SwapInputController.slippage.value) + value)}`;
+    },
+    [SwapInputController.slippage]
+  );
 
   const onSetFlashbots = useCallback(() => {
     'worklet';
-    flashbots.value = !flashbots.value;
-  }, [flashbots]);
+    SwapInputController.flashbots.value = !SwapInputController.flashbots.value;
+  }, [SwapInputController.flashbots]);
 
   // TODO: Comes from gas store
   const estimatedGasFee = useSharedValue('$2.25');
@@ -68,10 +103,7 @@ export function ReviewPanel() {
             </Inline>
 
             <Inline alignVertical="center" horizontalSpace="6px">
-              <ChainImage
-                chain={ethereumUtils.getNetworkFromChainId(SwapInputController.outputChainId.value ?? ChainId.mainnet)}
-                size={16}
-              />
+              <ChainImage chain={chain} size={16} />
               <AnimatedText
                 align="right"
                 color={isDarkMode ? 'labelSecondary' : 'label'}
@@ -140,7 +172,7 @@ export function ReviewPanel() {
           </Inline>
 
           <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
-            <Inline horizontalSpace="12px">
+            <Inline alignHorizontal="left" horizontalSpace="12px">
               <Text color="labelTertiary" weight="bold" size="13pt">
                 􀘩
               </Text>
@@ -153,6 +185,54 @@ export function ReviewPanel() {
                 </Text>
               </Inline>
             </Inline>
+
+            <Inline wrap={false} horizontalSpace="8px" alignVertical="center">
+              <ButtonPressAnimation onPress={() => onSetSlippage('decrement')}>
+                <Box
+                  style={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    borderWidth: 1,
+                    borderColor: isDarkMode ? globalColors.white10 : globalColors.grey100,
+                  }}
+                  height={{ custom: 16 }}
+                  width={{ custom: 20 }}
+                  borderRadius={100}
+                  background="fillSecondary" // TODO: 12% opacity
+                  paddingVertical="1px (Deprecated)"
+                  gap={10}
+                >
+                  {/* TODO: 56% opacity */}
+                  <Text weight="black" size="icon 10px" color="labelTertiary">
+                    􀅽
+                  </Text>
+                </Box>
+              </ButtonPressAnimation>
+
+              <AnimatedText size="15pt" weight="bold" color="labelSecondary" text={slippageText} />
+
+              <ButtonPressAnimation onPress={() => onSetSlippage('increment')}>
+                <Box
+                  style={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    borderWidth: 1,
+                    borderColor: isDarkMode ? globalColors.white10 : globalColors.grey100,
+                  }}
+                  height={{ custom: 16 }}
+                  width={{ custom: 20 }}
+                  borderRadius={100}
+                  background="fillSecondary" // TODO: 12% opacity
+                  paddingVertical="1px (Deprecated)"
+                  gap={10}
+                >
+                  {/* TODO: 56% opacity */}
+                  <Text weight="black" size="icon 10px" color="labelTertiary">
+                    􀅼
+                  </Text>
+                </Box>
+              </ButtonPressAnimation>
+            </Inline>
           </Inline>
 
           <Separator color="separatorSecondary" />
@@ -160,10 +240,7 @@ export function ReviewPanel() {
           <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
             <Stack space="6px">
               <Inline alignVertical="center" horizontalSpace="6px">
-                <ChainImage
-                  chain={ethereumUtils.getNetworkFromChainId(SwapInputController.outputChainId.value ?? ChainId.mainnet)}
-                  size={16}
-                />
+                <ChainImage chain={chain} size={16} />
                 <Inline horizontalSpace="4px">
                   <AnimatedText align="left" color={'label'} size="15pt" weight="heavy" text={estimatedGasFee} />
                   <AnimatedText align="right" color={'labelTertiary'} size="15pt" weight="bold" text={estimatedArrivalTime} />
