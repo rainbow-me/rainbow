@@ -143,6 +143,13 @@ function SwapNavigator() {
     <SwapProvider>
       <BSStack.Navigator>
         <BSStack.Screen component={SwapScreen} name={Routes.SWAP} options={swapSheetPreset} />
+        <BSStack.Screen
+          component={ExpandedAssetSheet}
+          name={Routes.CUSTOM_GAS_SHEET}
+          options={{
+            backdropOpacity: 1,
+          }}
+        />
       </BSStack.Navigator>
     </SwapProvider>
   );

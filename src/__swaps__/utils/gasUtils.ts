@@ -35,6 +35,8 @@ import { useAccountSettings } from '@/hooks';
 import { ParsedAddressAsset } from '@/entities';
 import { ethereumUtils } from '@/utils';
 import { useSwapContext } from '../screens/Swap/providers/swap-provider';
+import { useAnimatedReaction, runOnJS } from 'react-native-reanimated';
+import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 
 export const FLASHBOTS_MIN_TIP = 6;
 
@@ -625,14 +627,22 @@ export const getBaseFeeTrendParams = (trend: number) => {
 export const chainShouldUseDefaultTxSpeed = (chainId: ChainId) => chainId === ChainId.mainnet || chainId === ChainId.polygon;
 
 const mockedGasLimit = '21000';
-
+const mainnetChainId = 1;
 export const useMeteorologyReport = () => {
-  const { params } = useRoute();
-  const { currentNetwork } = (params as any) || {};
   const { SwapInputController } = useSwapContext();
-  SwapInputController;
-  // const chainId = getNetworkObj(currentNetwork).id;
-  const { data, isLoading } = useMeteorology({ chainId: SwapInputController.outputChainId });
+  const [chainId, setChainId] = useState(mainnetChainId);
+  const currentNetwork = useMemo(() => {
+    return getNetworkFromChainId(chainId);
+  }, [chainId]);
+  useAnimatedReaction(
+    () => SwapInputController.outputChainId.value,
+    (current, previous) => {
+      if (previous !== current) {
+        runOnJS(setChainId)(current);
+      }
+    }
+  );
+  const { data, isLoading } = useMeteorology({ chainId });
   const [nativeAsset, setNativeAsset] = useState<ParsedAddressAsset | undefined>();
   const { nativeCurrency } = useAccountSettings();
   useEffect(() => {
@@ -654,6 +664,6 @@ export const useMeteorologyReport = () => {
       });
     }
     return {};
-  }, [isLoading, nativeAsset]);
-  return { gasFeeParamsBySpeed };
+  }, [isLoading, nativeAsset, chainId]);
+  return { gasFeeParamsBySpeed, nativeAsset };
 };

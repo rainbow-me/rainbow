@@ -143,6 +143,7 @@ function SwapsNavigator() {
     <SwapProvider>
       <NativeStack.Navigator {...nativeStackConfig} initialRouteName={Routes.SWAP}>
         <NativeStack.Screen component={SwapScreen} name={Routes.SWAP} {...swapConfig} />
+        <NativeStack.Screen component={ExpandedAssetSheet} name={Routes.CUSTOM_GAS_SHEET} {...customGasSheetConfig} />
       </NativeStack.Navigator>
     </SwapProvider>
   );

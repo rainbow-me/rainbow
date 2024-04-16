@@ -17,7 +17,7 @@ import Routes from '@/navigation/routesNames';
 import { ethereumUtils, gasUtils } from '@/utils';
 import styled from '@/styled-thing';
 import { useMeteorology } from '@/__swaps__/utils/meteorology';
-import { parseGasFeeParamsBySpeed } from '@/__swaps__/utils/gasUtils';
+import { parseGasFeeParamsBySpeed, useMeteorologyReport } from '@/__swaps__/utils/gasUtils';
 import { useDerivedValue } from 'react-native-reanimated';
 import { ParsedAddressAsset } from '@/entities';
 import { GasFeeLegacyParamsBySpeed, GasFeeParamsBySpeed, GasSpeed } from '@/__swaps__/types/gas';
@@ -27,32 +27,10 @@ const mockedGasLimit = '21000';
 
 export const GasButton = ({ accentColor }: { accentColor?: string }) => {
   const { params } = useRoute();
-  const { currentNetwork } = (params as any) || {};
-  const chainId = getNetworkObj(currentNetwork).id;
   const { selectedGas, setSelectedGas } = useGasStore();
-  const { data, isLoading, isFetched } = useMeteorology({ chainId });
-  const [nativeAsset, setNativeAsset] = useState<ParsedAddressAsset | undefined>();
   const { nativeCurrency } = useAccountSettings();
-  useEffect(() => {
-    const getNativeAsset = async () => {
-      const theNativeAsset = await ethereumUtils.getNativeAssetForNetwork(currentNetwork);
-      setNativeAsset(theNativeAsset);
-    };
-    getNativeAsset();
-  }, [currentNetwork, setNativeAsset]);
+  const { gasFeeParamsBySpeed } = useMeteorologyReport();
 
-  let gasFeeParamsBySpeed: GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed | any = useMemo(() => {
-    if (!isLoading) {
-      return parseGasFeeParamsBySpeed({
-        chainId,
-        data: data!,
-        gasLimit: mockedGasLimit,
-        nativeAsset: nativeAsset as unknown as ParsedAsset,
-        currency: nativeCurrency,
-      });
-    }
-    return {};
-  }, [isLoading, nativeAsset]);
   const gasFallback = getGasFallback(nativeCurrency);
   const [showGasOptions, setShowGasOptions] = useState(false);
   const animatedGas = useDerivedValue(() => {
