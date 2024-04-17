@@ -5,7 +5,7 @@ import { AnimatedText, Box, Inline, Text, useForegroundColor } from '@/design-sy
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { SwapWarningType } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 
-export const PriceImpactWarning = () => {
+export const SwapWarning = () => {
   const { AnimatedSwapStyles, SwapWarning } = useSwapContext();
 
   const red = useForegroundColor('red');
@@ -30,7 +30,7 @@ export const PriceImpactWarning = () => {
       justifyContent="center"
       paddingHorizontal="24px"
       paddingVertical="12px"
-      style={[AnimatedSwapStyles.hideWhenInputsExpandedOrNoPriceImpact, { alignSelf: 'center' }]}
+      style={[AnimatedSwapStyles.hideWhenInputsExpandedOrNoPriceImpact, { alignSelf: 'center', position: 'absolute', top: 12 }]}
     >
       <Box as={Animated.View} alignItems="center" height={{ custom: 33 }} gap={6} justifyContent="center" paddingHorizontal="10px">
         <Inline alignHorizontal="center" alignVertical="center" horizontalSpace="4px" wrap={false}>

@@ -50,6 +50,7 @@ export function useAnimatedSwapStyles({
 
   const hideWhenInputsExpandedOrNoPriceImpact = useAnimatedStyle(() => {
     return {
+      height: SwapWarning.value?.type === SwapWarningType.none ? 'auto' : 0,
       opacity:
         SwapWarning.value?.type === SwapWarningType.none || inputProgress.value > 0 || outputProgress.value > 0
           ? withTiming(0, fadeConfig)
@@ -61,6 +62,7 @@ export function useAnimatedSwapStyles({
 
   const hideWhenInputsExpandedOrPriceImpact = useAnimatedStyle(() => {
     return {
+      height: SwapWarning.value?.type !== SwapWarningType.none ? 0 : 'auto',
       opacity:
         SwapWarning.value?.type !== SwapWarningType.none || inputProgress.value > 0 || outputProgress.value > 0
           ? withTiming(0, fadeConfig)
