@@ -149,7 +149,7 @@ export const ExchangeRateBubble = () => {
         justifyContent="center"
         paddingHorizontal="24px"
         paddingVertical="12px"
-        style={[AnimatedSwapStyles.hideWhenInputsExpanded, { alignSelf: 'center' }]}
+        style={[AnimatedSwapStyles.hideWhenInputsExpanded, AnimatedSwapStyles.hideWhenPriceImpactWarningIsPresent, { alignSelf: 'center' }]}
       >
         <Box
           as={Animated.View}

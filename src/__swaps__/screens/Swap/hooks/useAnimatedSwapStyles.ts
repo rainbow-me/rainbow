@@ -10,15 +10,18 @@ import {
 } from '@/__swaps__/screens/Swap/constants';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
+import { SwapPriceImpactType, usePriceImpactWarning } from '@/__swaps__/screens/Swap/hooks/usePriceImpactWarning';
 import { spinnerExitConfig } from '@/__swaps__/components/animations/AnimatedSpinner';
 
 export function useAnimatedSwapStyles({
   SwapInputController,
+  PriceImpactWarning,
   inputProgress,
   outputProgress,
   isFetching,
 }: {
   SwapInputController: ReturnType<typeof useSwapInputsController>;
+  PriceImpactWarning: ReturnType<typeof usePriceImpactWarning>;
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
   isFetching: SharedValue<boolean>;
@@ -42,6 +45,20 @@ export function useAnimatedSwapStyles({
     return {
       opacity: inputProgress.value === 2 || outputProgress.value === 2 ? withTiming(0, fadeConfig) : withTiming(1, fadeConfig),
       pointerEvents: inputProgress.value === 2 || outputProgress.value === 2 ? 'none' : 'auto',
+    };
+  });
+
+  const hideWhenPriceWarningIsNotPresent = useAnimatedStyle(() => {
+    return {
+      opacity: PriceImpactWarning.value?.type === SwapPriceImpactType.none ? withTiming(0, fadeConfig) : withTiming(1, fadeConfig),
+      pointerEvents: PriceImpactWarning.value?.type === SwapPriceImpactType.none ? 'none' : 'auto',
+    };
+  });
+
+  const hideWhenPriceImpactWarningIsPresent = useAnimatedStyle(() => {
+    return {
+      opacity: PriceImpactWarning.value?.type !== SwapPriceImpactType.none ? withTiming(0, fadeConfig) : withTiming(1, fadeConfig),
+      pointerEvents: PriceImpactWarning.value?.type !== SwapPriceImpactType.none ? 'none' : 'auto',
     };
   });
 
@@ -164,6 +181,8 @@ export function useAnimatedSwapStyles({
     flipButtonStyle,
     focusedSearchStyle,
     hideWhenInputsExpanded,
+    hideWhenPriceImpactWarningIsPresent,
+    hideWhenPriceWarningIsNotPresent,
     inputStyle,
     inputTokenListStyle,
     keyboardStyle,
