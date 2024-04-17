@@ -3,6 +3,8 @@ platform :ios, '13.0'
 
 pod 'Firebase', :modular_headers => true
 pod 'FirebaseCore', :modular_headers => true
+pod 'FirebaseRemoteConfig', :modular_headers => true
+pod 'FirebaseABTesting', :modular_headers => true
 pod 'FirebaseCoreExtension', :modular_headers => true
 pod 'FirebaseInstallations', :modular_headers => true
 pod 'GoogleDataTransport', :modular_headers => true
@@ -25,7 +27,7 @@ target 'SelectTokenIntent' do
 end
 
 target 'ImageNotification' do
-  pod 'Firebase/Messaging', '~> 10.12.0', :modular_headers => true
+  pod 'Firebase/Messaging', :modular_headers => true
 end
 
 target 'Rainbow' do
