@@ -82,6 +82,7 @@ export const BrowserTab = React.memo(
     tabsCount,
     nextTabId,
     url,
+    goToUrl,
   }: BrowserTabProps) {
     const { scrollViewRef, scrollViewOffset, loadProgress } = useBrowserContext();
     const { isDarkMode } = useColorMode();
@@ -708,8 +709,8 @@ export const BrowserTab = React.memo(
               <Animated.View style={[styles.webViewContainer, animatedWebViewStyle, animatedWebViewBackgroundColorStyle]}>
                 <ViewShot options={{ format: 'jpg' }} ref={viewShotRef}>
                   <View collapsable={false} style={{ height: WEBVIEW_HEIGHT, width: '100%' }}>
-                    {isOnHomepage && updateActiveTabState ? (
-                      <Homepage updateActiveTabState={updateActiveTabState} />
+                    {isOnHomepage ? (
+                      <Homepage goToUrl={goToUrl} />
                     ) : (
                       <Freeze freeze={!isActiveTab}>
                         <DappBrowserWebview

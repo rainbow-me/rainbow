@@ -46,6 +46,7 @@ export interface BrowserTabProps {
   toggleTabViewWorklet(tabIndex?: number): void;
   updateActiveTabState?(updates: Partial<TabState>, tabId: string | undefined): void;
   url: string;
+  goToUrl: (url: string) => void;
 }
 
 export interface ScreenshotType {

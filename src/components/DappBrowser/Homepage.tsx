@@ -20,7 +20,6 @@ import { normalizeUrl } from './utils';
 import { Site, useBrowserHistoryStore } from '@/state/browserHistory';
 import { getDappHost } from './handleProviderRequest';
 import { uniqBy } from 'lodash';
-import { TabState } from './types';
 
 const HORIZONTAL_PAGE_INSET = 24;
 const MAX_RECENTS_TO_DISPLAY = 10;
@@ -35,15 +34,7 @@ const NUM_CARDS = 2;
 const CARD_PADDING = 12;
 const CARD_SIZE = (deviceUtils.dimensions.width - HORIZONTAL_PAGE_INSET * 2 - (NUM_CARDS - 1) * CARD_PADDING) / NUM_CARDS;
 
-const Card = ({
-  site,
-  showMenuButton,
-  updateActiveTabState,
-}: {
-  showMenuButton?: boolean;
-  site: TrendingSite;
-  updateActiveTabState: (newState: Partial<TabState>, tabId?: string | undefined) => void;
-}) => {
+const Card = ({ site, showMenuButton, goToUrl }: { showMenuButton?: boolean; site: TrendingSite; goToUrl: (url: string) => void }) => {
   const { isDarkMode } = useColorMode();
 
   const menuConfig = {
@@ -81,7 +72,7 @@ const Card = ({
 
   return (
     <Box>
-      <GestureHandlerV1Button onPressJS={() => updateActiveTabState({ url: normalizeUrl(site.url) })} scaleTo={0.94}>
+      <GestureHandlerV1Button onPressJS={() => goToUrl(normalizeUrl(site.url))} scaleTo={0.94}>
         <Box
           background="surfacePrimary"
           borderRadius={24}
@@ -199,18 +190,12 @@ const Card = ({
   );
 };
 
-const Logo = ({
-  site,
-  updateActiveTabState,
-}: {
-  site: Omit<Site, 'timestamp'>;
-  updateActiveTabState: (newState: Partial<TabState>, tabId?: string | undefined) => void;
-}) => {
+const Logo = ({ site, goToUrl }: { site: Omit<Site, 'timestamp'>; goToUrl: (url: string) => void }) => {
   const { isDarkMode } = useColorMode();
 
   return (
     <View style={{ width: LOGO_SIZE }}>
-      <GestureHandlerV1Button onPressJS={() => updateActiveTabState({ url: normalizeUrl(site.url) })}>
+      <GestureHandlerV1Button onPressJS={() => goToUrl(normalizeUrl(site.url))}>
         <Stack alignHorizontal="center">
           <Box>
             {IS_IOS && !site.image && (
@@ -276,11 +261,7 @@ const Logo = ({
   );
 };
 
-export default function Homepage({
-  updateActiveTabState,
-}: {
-  updateActiveTabState: (newState: Partial<TabState>, tabId?: string | undefined) => void;
-}) {
+export default function Homepage({ goToUrl }: { goToUrl: (url: string) => void }) {
   const { isDarkMode } = useColorMode();
   const { favoriteDapps } = useFavoriteDappsStore();
   const { getRecent } = useBrowserHistoryStore();
@@ -329,7 +310,7 @@ export default function Homepage({
                 <Inset space="24px">
                   <Box flexDirection="row" gap={CARD_PADDING}>
                     {trendingDapps.map(site => (
-                      <Card key={site.url} site={site} updateActiveTabState={updateActiveTabState} />
+                      <Card key={site.url} site={site} goToUrl={goToUrl} />
                     ))}
                   </Box>
                 </Inset>
@@ -353,7 +334,7 @@ export default function Homepage({
                 width={{ custom: deviceUtils.dimensions.width - HORIZONTAL_PAGE_INSET * 2 }}
               >
                 {favoriteDapps.map(dapp => (
-                  <Logo key={`${dapp.url}-${dapp.name}`} site={dapp} updateActiveTabState={updateActiveTabState} />
+                  <Logo key={`${dapp.url}-${dapp.name}`} site={dapp} goToUrl={goToUrl} />
                 ))}
               </Box>
             </Stack>
@@ -370,7 +351,7 @@ export default function Homepage({
               </Inline>
               <Inline space={{ custom: CARD_PADDING }}>
                 {recent.map(site => (
-                  <Card key={site.url} site={site} showMenuButton updateActiveTabState={updateActiveTabState} />
+                  <Card key={site.url} site={site} showMenuButton goToUrl={goToUrl} />
                 ))}
               </Inline>
             </Stack>

@@ -53,6 +53,7 @@ const DappBrowserComponent = () => {
     toggleTabViewWorklet,
     updateActiveTabState,
     getActiveTabState,
+    goToUrl,
   } = useBrowserState();
 
   const { isDarkMode } = useColorMode();
@@ -163,6 +164,7 @@ const DappBrowserComponent = () => {
                 updateActiveTabState={index === activeTabIndex ? updateActiveTabState : undefined}
                 nextTabId={tabStates?.[1]?.uniqueId}
                 url={tabStates[index].url}
+                goToUrl={url => goToUrl(url, index)}
               />
             ))}
           </Animated.View>

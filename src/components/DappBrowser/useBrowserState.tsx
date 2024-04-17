@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { MMKV, useMMKVObject } from 'react-native-mmkv';
 import { RAINBOW_HOME } from './constants';
 import { generateUniqueId, generateUniqueIdWorklet } from './utils';
@@ -30,6 +30,16 @@ export function useBrowserState() {
       tabStateStore.set('activeTabIndex', activeTabIndex);
     }, 500);
   }, [activeTabIndex]);
+
+  const goToUrl = useCallback(
+    (url: string, tabIndex: number) => {
+      if (!tabStates) return;
+      const updatedTabStates = [...tabStates];
+      updatedTabStates[tabIndex] = { ...updatedTabStates[tabIndex], url };
+      setTabStates(updatedTabStates);
+    },
+    [setTabStates, tabStates]
+  );
 
   const updateActiveTabState = useCallback(
     (newState: Partial<TabState>, tabId?: string) => {
@@ -338,5 +348,6 @@ export function useBrowserState() {
     closeTabWorklet,
     closeAllTabsWorklet,
     toggleTabViewWorklet,
+    goToUrl,
   };
 }
