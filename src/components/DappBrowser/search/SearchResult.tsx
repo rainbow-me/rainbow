@@ -1,69 +1,79 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { ImgixImage } from '@/components/images';
-import { Box, Inline, Stack, Text } from '@/design-system';
+import { AnimatedText, Box, Inline, Stack, Text } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
-import { formatUrl } from '../utils';
+import { formatUrl, formatUrlWorklet } from '../utils';
 import GoogleSearchIcon from '@/assets/googleSearchIcon.png';
 import { Source } from 'react-native-fast-image';
+import { GetdAppsQuery } from '@/graphql/__generated__/metadata';
+import Animated, { SharedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
+import { FasterImageView, ImageOptions } from '@candlefinance/faster-image';
 
-export const SearchResult = React.forwardRef(
-  ({
-    iconUrl,
-    name,
-    onPress,
-    suggested,
-    url,
-  }: {
-    iconUrl: string;
-    name: string;
-    onPress: (url: string) => void;
-    suggested?: boolean;
-    url: string;
-  }) => {
-    return (
+const AnimatedFasterImage = Animated.createAnimatedComponent(FasterImageView);
+
+export const SearchResult = ({
+  index,
+  searchResults,
+  navigateToUrl,
+}: {
+  index: number;
+  searchResults: SharedValue<any[]>;
+  navigateToUrl: (url: string) => void;
+}) => {
+  const name: SharedValue<string | undefined> = useDerivedValue(() => searchResults.value[index]?.name);
+  const url: SharedValue<string | undefined> = useDerivedValue(() => searchResults.value[index]?.url);
+  const formattedUrl: SharedValue<string | undefined> = useDerivedValue(() => url.value && formatUrlWorklet(url.value));
+  const iconImageOpts: SharedValue<ImageOptions> = useDerivedValue(() => ({ url: searchResults.value[index]?.iconURL, borderRadius: 10 }));
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      display: searchResults.value[index] ? 'flex' : 'none',
+    };
+  });
+
+  const onPress = useCallback(() => url.value && navigateToUrl(url.value), [navigateToUrl, url.value]);
+
+  return (
+    <Animated.View style={animatedStyle}>
       <Box
         as={ButtonPressAnimation}
         padding="8px"
         borderRadius={18}
-        background={suggested ? 'fill' : undefined}
+        background={index === 0 ? 'fill' : undefined}
         scaleTo={0.95}
-        onPress={() => onPress(url)}
+        onPress={onPress}
       >
         <Inline space="12px" alignVertical="center">
-          <Box
-            as={ImgixImage}
-            source={{ uri: iconUrl }}
-            size={40}
-            background="surfacePrimary"
-            shadow="24px"
-            enableFasterImage
-            width={{ custom: 40 }}
-            height={{ custom: 40 }}
-            style={{ borderRadius: 10 }}
-          />
+          <Box background="surfacePrimary" shadow="24px" width={{ custom: 40 }} height={{ custom: 40 }} borderRadius={10}>
+            <AnimatedFasterImage source={iconImageOpts} style={{ width: '100%', height: '100%' }} />
+          </Box>
           <Stack space="10px">
-            <Text size="17pt" weight="bold" color="label">
+            <AnimatedText size="17pt" weight="bold" color="label">
               {name}
-            </Text>
-            <Text size="13pt" weight="bold" color="labelTertiary">
-              {formatUrl(url)}
-            </Text>
+            </AnimatedText>
+            <AnimatedText size="13pt" weight="bold" color="labelTertiary">
+              {formattedUrl}
+            </AnimatedText>
           </Stack>
         </Inline>
       </Box>
-    );
-  }
-);
+    </Animated.View>
+  );
+};
 
-export const GoogleSearchResult = ({ query, onPress }: { query: string; onPress: (query: string) => void }) => {
+export const GoogleSearchResult = ({
+  searchQuery,
+  navigateToUrl,
+}: {
+  searchQuery: SharedValue<string>;
+  navigateToUrl: (url: string) => void;
+}) => {
+  const onPress = useCallback(() => navigateToUrl(`https://www.google.com/search?q=${searchQuery}`), []);
+
+  const animatedText = useDerivedValue(() => `Search "${searchQuery.value}"`);
+
   return (
-    <Box
-      as={ButtonPressAnimation}
-      padding="8px"
-      borderRadius={18}
-      scaleTo={0.95}
-      onPress={() => onPress(`https://www.google.com/search?q=${query}`)}
-    >
+    <Box as={ButtonPressAnimation} padding="8px" borderRadius={18} scaleTo={0.95} onPress={onPress}>
       <Inline space="12px" alignVertical="center">
         <Box
           alignItems="center"
@@ -77,9 +87,9 @@ export const GoogleSearchResult = ({ query, onPress }: { query: string; onPress:
           <ImgixImage source={GoogleSearchIcon as Source} style={{ width: 30, height: 30 }} size={30} />
         </Box>
         <Stack space="10px">
-          <Text size="17pt" weight="bold" color="label">
-            {`Search "${query}"`}
-          </Text>
+          <AnimatedText size="17pt" weight="bold" color="label">
+            {animatedText}
+          </AnimatedText>
           <Text size="13pt" weight="bold" color="labelTertiary">
             Google
           </Text>

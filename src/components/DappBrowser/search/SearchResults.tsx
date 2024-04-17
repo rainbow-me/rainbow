@@ -10,12 +10,13 @@ import Animated, {
   useAnimatedReaction,
   useAnimatedRef,
   useAnimatedStyle,
+  useDerivedValue,
   useSharedValue,
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { Box, Inline, Inset, Stack, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
+import { AnimatedText, Box, Inline, Inset, Stack, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { useKeyboardHeight, useDimensions } from '@/hooks';
 import * as i18n from '@/languages';
@@ -29,12 +30,76 @@ import { formatUrl, isValidURL, normalizeUrl } from '../utils';
 import { ButtonPressAnimation } from '@/components/animations';
 import { GoogleSearchResult, SearchResult } from './SearchResult';
 import { useDapps } from '@/resources/metadata/dapps';
-import { GetdAppsQuery } from '@/graphql/__generated__/metadata';
+import { DAppStatus, GetdAppsQuery } from '@/graphql/__generated__/metadata';
 import { filterList } from '@/utils';
 import { rankings } from 'match-sorter';
 
-export const AnimatedText = Animated.createAnimatedComponent(Text);
-export const AnimatedSearchResult = Animated.createAnimatedComponent(SearchResult);
+const search = (query: string, dapps: any) => {
+  'worklet';
+  if (!query || !dapps || !dapps.length) return [];
+
+  const normalizedQuery = query.toLowerCase();
+  // if (!query || query === inputValue) {
+  //   setSuggestedSearchResults([]);
+  //   setBasicSearchResults([]);
+  //   return;
+  // }
+  const filteredDapps = dapps
+    .map(dapp => {
+      if (dapp.status === 'SCAM') {
+        return { ...dapp, relevance: 0 };
+      }
+
+      let relevance = dapp.status === 'VERIFIED' ? 0.5 : 0;
+      const queryTokens = normalizedQuery.split(' ').filter(Boolean);
+      const normalizedDappName = dapp!.name.toLowerCase();
+      const dappNameTokens = normalizedDappName.split(' ').filter(Boolean);
+      const dappUrlTokens = dapp!.url
+        .toLowerCase()
+        .replace(/(^\w+:|^)\/\//, '')
+        .split(/\/|\?|&|=|\./)
+        .filter(Boolean);
+
+      const checkSet = new Set([...dappNameTokens, ...dappUrlTokens]);
+      if (normalizedDappName.startsWith(normalizedQuery)) {
+        relevance = 4;
+      } else if (dappNameTokens.some((token, index) => index !== 0 && token.startsWith(normalizedQuery))) {
+        relevance = 3;
+      } else if (dappUrlTokens.some(token => token.startsWith(normalizedQuery))) {
+        relevance = 2;
+      } else if (
+        queryTokens.every(token => {
+          for (const item of checkSet) {
+            if (item.includes(token)) {
+              checkSet.delete(item);
+              return true;
+            }
+          }
+          return false;
+        })
+      ) {
+        relevance = 1;
+      }
+
+      return { ...dapp, relevance };
+    })
+    .filter(dapp => dapp.relevance > 0.5)
+    .sort((a, b) => b.relevance - a.relevance);
+  console.log(filteredDapps.length);
+  console.log('HI');
+  return filteredDapps ?? [];
+  // const filteredDapps = filterList(dappsWithTokens, query, ['tokens'], {
+  //   threshold: rankings.STARTS_WITH,
+  // }).sort((a, b) => +(b?.status === 'VERIFIED') - +(a?.status === 'VERIFIED'));
+  // const nameSearch = dappsNameTrie.search(query).sort((a, b) => +(b?.status === 'VERIFIED') - +(a?.status === 'VERIFIED'));
+  // const urlSearch = dappsUrlTrie.search(query).sort((a, b) => +(b?.status === 'VERIFIED') - +(a?.status === 'VERIFIED'));
+  // const filteredDapps = [...nameSearch, ...urlSearch];
+  // setBasicSearchResults(filteredDapps.slice(1, 3));
+  // setSuggestedSearchResults(filteredDapps.slice(0, 1));
+};
+
+// export const AnimatedText = Animated.createAnimatedComponent(Text);
+// export const AnimatedSearchResult = Animated.createAnimatedComponent(SearchResult);
 
 export const SearchResults = ({ inputRef, searchQuery }: { inputRef: AnimatedRef<TextInput>; searchQuery: SharedValue<string> }) => {
   const { width: deviceWidth } = useDimensions();
@@ -76,68 +141,7 @@ export const SearchResults = ({ inputRef, searchQuery }: { inputRef: AnimatedRef
     pointerEvents: searchViewProgress?.value ? 'auto' : 'none',
   }));
 
-  const search = useCallback(
-    (query: string) => {
-      'worklet';
-
-      const normalizedQuery = query.toLowerCase();
-      // if (!query || query === inputValue) {
-      //   setSuggestedSearchResults([]);
-      //   setBasicSearchResults([]);
-      //   return;
-      // }
-      const filteredDapps = dapps
-        .sort((a, b) => +(b?.status === 'VERIFIED') - +(a?.status === 'VERIFIED'))
-        .map(dapp => {
-          let relevance = 0;
-          const queryTokens = normalizedQuery.split(' ').filter(Boolean);
-          const normalizedDappName = dapp!.name.toLowerCase();
-          const dappNameTokens = normalizedDappName.split(' ').filter(Boolean);
-          const dappUrlTokens = dapp!.url
-            .toLowerCase()
-            .replace(/(^\w+:|^)\/\//, '')
-            .split(/\/|\?|&|=|\./)
-            .filter(Boolean);
-
-          const checkSet = new Set([...dappNameTokens, ...dappUrlTokens]);
-          if (normalizedDappName.startsWith(normalizedQuery)) {
-            relevance = 4;
-          } else if (dappNameTokens.some((token, index) => index !== 0 && token.startsWith(normalizedQuery))) {
-            relevance = 3;
-          } else if (dappUrlTokens.some(token => token.startsWith(normalizedQuery))) {
-            relevance = 2;
-          } else if (
-            queryTokens.every(token => {
-              for (const item of checkSet) {
-                if (item.includes(token)) {
-                  checkSet.delete(item);
-                  return true;
-                }
-              }
-              return false;
-            })
-          ) {
-            relevance = 1;
-          }
-          return { ...dapp, relevance };
-        })
-        .filter(dapp => dapp.relevance > 0)
-        .sort((a, b) => b.relevance - a.relevance);
-
-      return filteredDapps;
-      // const filteredDapps = filterList(dappsWithTokens, query, ['tokens'], {
-      //   threshold: rankings.STARTS_WITH,
-      // }).sort((a, b) => +(b?.status === 'VERIFIED') - +(a?.status === 'VERIFIED'));
-      // const nameSearch = dappsNameTrie.search(query).sort((a, b) => +(b?.status === 'VERIFIED') - +(a?.status === 'VERIFIED'));
-      // const urlSearch = dappsUrlTrie.search(query).sort((a, b) => +(b?.status === 'VERIFIED') - +(a?.status === 'VERIFIED'));
-      // const filteredDapps = [...nameSearch, ...urlSearch];
-      // setBasicSearchResults(filteredDapps.slice(1, 3));
-      // setSuggestedSearchResults(filteredDapps.slice(0, 1));
-    },
-    [dapps]
-  );
-  // console.log(basicSearchResults?.map(dapp => dapp!.url));
-  const onPressSearchResult = useCallback(
+  const navigateToUrl = useCallback(
     (url: string) => {
       updateActiveTabState({ url: normalizeUrl(url) });
       inputRef.current?.blur();
@@ -148,13 +152,28 @@ export const SearchResults = ({ inputRef, searchQuery }: { inputRef: AnimatedRef
   useAnimatedReaction(
     () => searchQuery.value,
     (result, previous) => {
-      testValue.value = result;
       if (result !== previous) {
-        searchResults.value = search(result);
-        console.log(searchResults.value.length);
+        searchResults.modify(value => {
+          const results = search(result, dapps).slice(0, 6);
+          value.splice(0, value.length);
+          value.push(...results);
+          return value;
+        });
       }
     }
   );
+
+  const allResultsAnimatedStyle = useAnimatedStyle(() => ({
+    display: searchQuery.value ? 'flex' : 'none',
+  }));
+
+  const suggestedGoogleSearchAnimatedStyle = useAnimatedStyle(() => ({
+    display: searchResults.value.length ? 'none' : 'flex',
+  }));
+
+  const otherGoogleSearchAnimatedStyle = useAnimatedStyle(() => ({
+    display: searchResults.value.length ? 'flex' : 'none',
+  }));
 
   return (
     <Box
@@ -183,11 +202,12 @@ export const SearchResults = ({ inputRef, searchQuery }: { inputRef: AnimatedRef
             􀆄
           </Text>
         </Box>
-        <Inset top={{ custom: 9 }}>
-          <Stack space="32px">
-            {/* {searchQuery.length && suggestedSearchResults?.length && (
+        <Animated.View style={allResultsAnimatedStyle}>
+          <Inset>
+            <Stack space="32px">
+              {/* {searchQuery.length && suggestedSearchResults?.length && ( */}
               <Stack space="12px">
-                <Inset horizontal="8px" bottom={{ custom: 9 }}>
+                <Inset horizontal="8px" vertical="9px">
                   <Inline alignHorizontal="justify" alignVertical="center">
                     <Inline space="6px" alignVertical="center">
                       <TextIcon color="blue" size="icon 15px" weight="heavy" width={20}>
@@ -199,49 +219,46 @@ export const SearchResults = ({ inputRef, searchQuery }: { inputRef: AnimatedRef
                     </Inline>
                   </Inline>
                 </Inset>
-                <Stack space="4px">
-                  {suggestedSearchResults.map(dapp => (
-                    <SearchResult
-                      suggested
-                      iconUrl={dapp!.iconURL}
-                      key={dapp!.url}
-                      name={dapp!.name}
-                      onPress={onPressSearchResult}
-                      url={dapp!.url}
-                    />
-                  ))}
-                </Stack>
+                <SearchResult index={0} searchResults={searchResults} navigateToUrl={navigateToUrl} />
+                {/* <Animated.View style={suggestedGoogleSearchAnimatedStyle}>
+                  <GoogleSearchResult searchQuery={searchQuery} navigateToUrl={navigateToUrl} />
+                </Animated.View> */}
               </Stack>
-            )} */}
-            {/* {searchQuery.length && ( */}
-            <Stack space="12px">
-              <Inset horizontal="8px">
-                <Inline space="6px" alignVertical="center">
-                  <TextIcon color="labelSecondary" size="icon 15px" weight="heavy" width={20}>
-                    􀊫
-                  </TextIcon>
-                  <Text weight="heavy" color="label" size="20pt">
-                    More Results
-                  </Text>
-                </Inline>
-              </Inset>
-              <Stack space="4px">
-                <AnimatedText color="label" weight="heavy" size="30pt">
-                  {searchResults.value[0]?.name}
-                </AnimatedText>
+              <Stack space="12px">
+                <Inset horizontal="8px">
+                  <Inline space="6px" alignVertical="center">
+                    <TextIcon color="labelSecondary" size="icon 15px" weight="heavy" width={20}>
+                      􀊫
+                    </TextIcon>
+                    <Text weight="heavy" color="label" size="20pt">
+                      More Results
+                    </Text>
+                  </Inline>
+                </Inset>
+                <Stack space="4px">
+                  <GoogleSearchResult searchQuery={searchQuery} navigateToUrl={navigateToUrl} />
+                  <SearchResult index={1} searchResults={searchResults} navigateToUrl={navigateToUrl} />
+                  <SearchResult index={2} searchResults={searchResults} navigateToUrl={navigateToUrl} />
+                  <SearchResult index={3} searchResults={searchResults} navigateToUrl={navigateToUrl} />
+                  <SearchResult index={4} searchResults={searchResults} navigateToUrl={navigateToUrl} />
+                  <SearchResult index={5} searchResults={searchResults} navigateToUrl={navigateToUrl} />
+                  {/* <AnimatedText color="label" weight="heavy" size="30pt">
+                  {derivedValue}
+                </AnimatedText> */}
 
-                {/* <GoogleSearchResult query={searchQuery} onPress={onPressSearchResult} /> */}
-                {/* {searchResults.value?.map(dapp => (
+                  {/* <GoogleSearchResult query={searchQuery} onPress={onPressSearchResult} /> */}
+                  {/* {searchResults.value?.map(dapp => (
                   // <SearchResult iconUrl={dapp!.iconURL} key={dapp!.url} name={dapp!.name} onPress={onPressSearchResult} url={dapp!.url} />
                   <AnimatedText key={dapp!.url} color="label" weight="heavy" size="30pt">
-                    {dapp!.name || 'No results'}
+                    {derivedValue}
                   </AnimatedText>
                 ))} */}
+                </Stack>
               </Stack>
+              {/* )} */}
             </Stack>
-            {/* )} */}
-          </Stack>
-        </Inset>
+          </Inset>
+        </Animated.View>
       </Inset>
     </Box>
   );
