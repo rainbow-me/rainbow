@@ -21,6 +21,7 @@ import { StyleSheet } from 'react-native';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { ReviewPanel } from '../ReviewPanel';
 import { PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
+import { useSwapActionsGestureHandler } from './useSwapActionsGestureHandler';
 
 export function SwapActions() {
   const { isDarkMode } = useColorMode();
@@ -34,33 +35,8 @@ export function SwapActions() {
     reviewProgress,
   } = useSwapContext();
 
-  const gestureY = useSharedValue(0);
+  const { swipeToDismissGestureHandler, gestureY } = useSwapActionsGestureHandler();
   const [enabled, setEnabled] = useState(false);
-
-  const swipeToCloseTabGestureHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
-    onStart: (_, ctx: { startY?: number }) => {
-      if (ctx.startY) {
-        ctx.startY = undefined;
-      }
-    },
-    onActive: (e, ctx: { startY?: number }) => {
-      if (ctx.startY === undefined) {
-        ctx.startY = e.absoluteY;
-      }
-
-      const yDelta = e.absoluteY - ctx.startY;
-      gestureY.value = yDelta;
-    },
-    onEnd: (e, ctx: { startY?: number }) => {
-      const yDelta = e.absoluteY - (ctx.startY || 0);
-
-      const isBeyondDismissThreshold = yDelta > 80;
-      if (isBeyondDismissThreshold) {
-        SwapNavigation.handleDismissReview();
-      }
-      gestureY.value = 0;
-    },
-  });
 
   useAnimatedReaction(
     () => ({
@@ -87,7 +63,7 @@ export function SwapActions() {
 
   return (
     // @ts-expect-error Property 'children' does not exist on type
-    <PanGestureHandler maxPointers={1} onGestureEvent={swipeToCloseTabGestureHandler} enabled={enabled}>
+    <PanGestureHandler maxPointers={1} onGestureEvent={swipeToDismissGestureHandler} enabled={enabled}>
       <Box
         as={Animated.View}
         paddingBottom={{

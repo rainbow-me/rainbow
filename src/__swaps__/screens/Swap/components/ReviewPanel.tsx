@@ -33,14 +33,16 @@ export function ReviewPanel() {
 
   const slippageText = useDerivedValue(() => `${SwapInputController.slippage.value}%`);
 
-  const [chain, setChain] = useState(ethereumUtils.getNetworkFromChainId(SwapInputController.outputChainId.value ?? ChainId.mainnet));
+  const [chain, setChain] = useState(
+    ethereumUtils.getNetworkFromChainId(SwapInputController.assetToSell.value?.chainId ?? ChainId.mainnet)
+  );
 
   const updateChainFromNetwork = useCallback((chainId: ChainId) => {
     setChain(ethereumUtils.getNetworkFromChainId(chainId));
   }, []);
 
   useAnimatedReaction(
-    () => SwapInputController.outputChainId.value,
+    () => SwapInputController.assetToSell.value?.chainId ?? ChainId.mainnet,
     (current, previous) => {
       if (!previous || previous !== current) {
         runOnJS(updateChainFromNetwork)(current);
@@ -49,7 +51,10 @@ export function ReviewPanel() {
   );
 
   const minimumReceived = useDerivedValue(() => {
-    return `0.1231 ETH`;
+    if (!SwapInputController.inputValues.value.outputAmount || !SwapInputController.assetToBuy.value) {
+      return 'Unknown';
+    }
+    return `${SwapInputController.inputValues.value.outputAmount} ${SwapInputController.assetToBuy.value.symbol}`;
   });
 
   const rainbowFee = useDerivedValue(() => {
