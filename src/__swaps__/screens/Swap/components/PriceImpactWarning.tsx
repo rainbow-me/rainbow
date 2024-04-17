@@ -1,4 +1,5 @@
 import React from 'react';
+import * as i18n from '@/languages';
 import Animated, { useDerivedValue } from 'react-native-reanimated';
 import { AnimatedText, Box, Inline, Text, TextIcon, useForegroundColor } from '@/design-system';
 import { opacity } from '@/__swaps__/utils/swaps';
@@ -9,7 +10,9 @@ export const PriceImpactWarning = () => {
 
   const warningText = useDerivedValue(() => {
     if (!PriceImpactWarning.value) return '';
-    return `You're losing ${PriceImpactWarning.value?.impactDisplay}`;
+    return i18n.t(i18n.l.exchange.price_impact.you_are_losing, {
+      impactDisplay: PriceImpactWarning.value?.impactDisplay,
+    });
   });
 
   const fillTertiary = useForegroundColor('fillTertiary');
@@ -39,9 +42,8 @@ export const PriceImpactWarning = () => {
           <AnimatedText align="center" color="orange" size="15pt" weight="heavy" text={warningText} />
         </Inline>
 
-        {/* TODO: Make this i18n */}
         <Text color="labelQuaternary" size="13pt" weight="bold">
-          Small market –– try a smaller amount
+          {i18n.t(i18n.l.exchange.price_impact.smal_market_try_smaller_amount)}
         </Text>
       </Box>
     </Box>
