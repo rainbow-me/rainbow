@@ -85,9 +85,15 @@ export const usePriceImpactWarning = ({ SwapInputController, isFetching, sliderX
       sliderXPosition: sliderXPosition.value,
     }),
     (current, previous) => {
+      if (!current.inputNativeValue || !current.outputNativeValue) {
+        priceImpact.value = { impactDisplay: '', type: SwapPriceImpactType.none };
+        return;
+      }
+
       // NOTE: While the user is scrubbing the slider, we don't want to show the price impact warning.
       if (previous?.sliderXPosition && previous?.sliderXPosition !== current.sliderXPosition) {
         priceImpact.value = { impactDisplay: '', type: SwapPriceImpactType.none };
+        return;
       }
 
       if (previous?.inputNativeValue !== current.inputNativeValue || previous?.outputNativeValue !== current.outputNativeValue) {
