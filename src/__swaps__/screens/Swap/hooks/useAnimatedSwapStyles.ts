@@ -48,24 +48,29 @@ export function useAnimatedSwapStyles({
     };
   });
 
-  const hideWhenPriceWarningIsNotPresent = useAnimatedStyle(() => {
+  const hideWhenInputsExpandedOrNoPriceImpact = useAnimatedStyle(() => {
     return {
-      opacity: PriceImpactWarning.value?.type === SwapPriceImpactType.none ? withTiming(0, fadeConfig) : withTiming(1, fadeConfig),
-      pointerEvents: PriceImpactWarning.value?.type === SwapPriceImpactType.none ? 'none' : 'auto',
+      opacity:
+        PriceImpactWarning.value?.type === SwapPriceImpactType.none || inputProgress.value > 0 || outputProgress.value > 0
+          ? withTiming(0, fadeConfig)
+          : withTiming(1, fadeConfig),
+      pointerEvents:
+        PriceImpactWarning.value?.type === SwapPriceImpactType.none || inputProgress.value > 0 || outputProgress.value > 0
+          ? 'none'
+          : 'auto',
     };
   });
 
-  const hideWhenPriceImpactWarningIsPresent = useAnimatedStyle(() => {
+  const hideWhenInputsExpandedOrPriceImpact = useAnimatedStyle(() => {
     return {
-      opacity: PriceImpactWarning.value?.type !== SwapPriceImpactType.none ? withTiming(0, fadeConfig) : withTiming(1, fadeConfig),
-      pointerEvents: PriceImpactWarning.value?.type !== SwapPriceImpactType.none ? 'none' : 'auto',
-    };
-  });
-
-  const hideWhenInputsExpanded = useAnimatedStyle(() => {
-    return {
-      opacity: inputProgress.value > 0 || outputProgress.value > 0 ? withTiming(0, fadeConfig) : withTiming(1, fadeConfig),
-      pointerEvents: inputProgress.value > 0 || outputProgress.value > 0 ? 'none' : 'auto',
+      opacity:
+        PriceImpactWarning.value?.type !== SwapPriceImpactType.none || inputProgress.value > 0 || outputProgress.value > 0
+          ? withTiming(0, fadeConfig)
+          : withTiming(1, fadeConfig),
+      pointerEvents:
+        PriceImpactWarning.value?.type !== SwapPriceImpactType.none || inputProgress.value > 0 || outputProgress.value > 0
+          ? 'none'
+          : 'auto',
     };
   });
 
@@ -180,9 +185,8 @@ export function useAnimatedSwapStyles({
   return {
     flipButtonStyle,
     focusedSearchStyle,
-    hideWhenInputsExpanded,
-    hideWhenPriceImpactWarningIsPresent,
-    hideWhenPriceWarningIsNotPresent,
+    hideWhenInputsExpandedOrPriceImpact,
+    hideWhenInputsExpandedOrNoPriceImpact,
     inputStyle,
     inputTokenListStyle,
     keyboardStyle,

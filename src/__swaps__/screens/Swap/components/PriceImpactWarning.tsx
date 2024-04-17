@@ -1,23 +1,19 @@
 import React from 'react';
 import * as i18n from '@/languages';
 import Animated, { useDerivedValue } from 'react-native-reanimated';
-import { AnimatedText, Box, Inline, Text, TextIcon, useForegroundColor } from '@/design-system';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { AnimatedText, Box, Inline, Text, TextIcon } from '@/design-system';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { SwapPriceImpactType } from '@/hooks/usePriceImpactDetails';
+import { SwapPriceImpactType } from '@/__swaps__/screens/Swap/hooks/usePriceImpactWarning';
 
 export const PriceImpactWarning = () => {
   const { AnimatedSwapStyles, PriceImpactWarning } = useSwapContext();
 
-  // TODO: i18n is not liking this...
+  const warningPrefix = i18n.t(i18n.l.exchange.price_impact.you_are_losing);
+
   const warningText = useDerivedValue(() => {
     if (PriceImpactWarning.value.type === SwapPriceImpactType.none) return '';
-    return i18n.t(i18n.l.exchange.price_impact.you_are_losing, {
-      impactDisplay: PriceImpactWarning.value.impactDisplay,
-    });
+    return `${warningPrefix} ${PriceImpactWarning.value.impactDisplay}`;
   });
-
-  const fillTertiary = useForegroundColor('fillTertiary');
 
   return (
     <Box
@@ -26,17 +22,11 @@ export const PriceImpactWarning = () => {
       justifyContent="center"
       paddingHorizontal="24px"
       paddingVertical="12px"
-      style={[AnimatedSwapStyles.hideWhenInputsExpanded, AnimatedSwapStyles.hideWhenPriceWarningIsNotPresent, { alignSelf: 'center' }]}
+      style={[AnimatedSwapStyles.hideWhenInputsExpandedOrNoPriceImpact, { alignSelf: 'center' }]}
     >
       <Box as={Animated.View} alignItems="center" height={{ custom: 33 }} gap={6} justifyContent="center" paddingHorizontal="10px">
         <Inline alignHorizontal="center" alignVertical="center" horizontalSpace="4px" wrap={false}>
-          <Box
-            borderRadius={10}
-            height={{ custom: 20 }}
-            paddingTop={{ custom: 0.25 }}
-            style={{ backgroundColor: opacity(fillTertiary, 0.04) }}
-            width={{ custom: 20 }}
-          >
+          <Box borderRadius={10} height={{ custom: 20 }} paddingTop={{ custom: 0.25 }} width={{ custom: 20 }}>
             <TextIcon color="orange" containerSize={20} size="15pt" weight="heavy">
               􀇿
             </TextIcon>

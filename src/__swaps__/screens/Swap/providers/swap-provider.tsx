@@ -58,6 +58,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
   const PriceImpactWarning = usePriceImpactWarning({
     SwapInputController,
+    sliderXPosition,
     isFetching,
   });
 

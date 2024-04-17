@@ -9,7 +9,6 @@ import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider
 export const ExchangeRateBubble = () => {
   const { isDarkMode } = useColorMode();
   const { AnimatedSwapStyles, SwapInputController } = useSwapContext();
-
   const [exchangeRateIndex, setExchangeRateIndex] = useState<number>(0);
 
   const assetToSellPrice = useSharedValue(0);
@@ -149,7 +148,7 @@ export const ExchangeRateBubble = () => {
         justifyContent="center"
         paddingHorizontal="24px"
         paddingVertical="12px"
-        style={[AnimatedSwapStyles.hideWhenInputsExpanded, AnimatedSwapStyles.hideWhenPriceImpactWarningIsPresent, { alignSelf: 'center' }]}
+        style={[AnimatedSwapStyles.hideWhenInputsExpandedOrPriceImpact, { alignSelf: 'center' }]}
       >
         <Box
           as={Animated.View}

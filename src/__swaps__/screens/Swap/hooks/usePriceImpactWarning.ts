@@ -21,10 +21,11 @@ export interface SwapPriceImpact {
 
 type UsePriceImpactWarningProps = {
   SwapInputController: ReturnType<typeof useSwapInputsController>;
+  sliderXPosition: SharedValue<number>;
   isFetching: SharedValue<boolean>;
 };
 
-export const usePriceImpactWarning = ({ SwapInputController, isFetching }: UsePriceImpactWarningProps) => {
+export const usePriceImpactWarning = ({ SwapInputController, isFetching, sliderXPosition }: UsePriceImpactWarningProps) => {
   const { nativeCurrency: currentCurrency } = useAccountSettings();
 
   const priceImpact = useSharedValue<SwapPriceImpact>({
@@ -81,8 +82,14 @@ export const usePriceImpactWarning = ({ SwapInputController, isFetching }: UsePr
       inputNativeValue: SwapInputController.inputValues.value.inputNativeValue,
       outputNativeValue: SwapInputController.inputValues.value.outputNativeValue,
       isFetching: isFetching.value,
+      sliderXPosition: sliderXPosition.value,
     }),
     (current, previous) => {
+      // NOTE: While the user is scrubbing the slider, we don't want to show the price impact warning.
+      if (previous?.sliderXPosition && previous?.sliderXPosition !== current.sliderXPosition) {
+        priceImpact.value = { impactDisplay: '', type: SwapPriceImpactType.none };
+      }
+
       if (previous?.inputNativeValue !== current.inputNativeValue || previous?.outputNativeValue !== current.outputNativeValue) {
         if (!current.inputNativeValue || !current.outputNativeValue) {
           priceImpact.value = { impactDisplay: '', type: SwapPriceImpactType.none };
