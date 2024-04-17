@@ -8,7 +8,7 @@ import { useAnimatedSwapStyles } from '@/__swaps__/screens/Swap/hooks/useAnimate
 import { useSwapTextStyles } from '@/__swaps__/screens/Swap/hooks/useSwapTextStyles';
 import { useSwapNavigation } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
 import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
-import { usePriceImpactWarning } from '@/__swaps__/screens/Swap/hooks/usePriceImpactWarning';
+import { useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 
 interface SwapContextType {
   inputProgress: SharedValue<number>;
@@ -21,7 +21,7 @@ interface SwapContextType {
   AnimatedSwapStyles: ReturnType<typeof useAnimatedSwapStyles>;
   SwapTextStyles: ReturnType<typeof useSwapTextStyles>;
   SwapNavigation: ReturnType<typeof useSwapNavigation>;
-  PriceImpactWarning: ReturnType<typeof usePriceImpactWarning>;
+  SwapWarning: ReturnType<typeof useSwapWarning>;
 
   confirmButtonIcon: Readonly<SharedValue<string>>;
   confirmButtonLabel: Readonly<SharedValue<string>>;
@@ -56,13 +56,13 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     outputProgress,
   });
 
-  const PriceImpactWarning = usePriceImpactWarning({
+  const SwapWarning = useSwapWarning({
     SwapInputController,
     sliderXPosition,
     isFetching,
   });
 
-  const AnimatedSwapStyles = useAnimatedSwapStyles({ SwapInputController, PriceImpactWarning, inputProgress, outputProgress, isFetching });
+  const AnimatedSwapStyles = useAnimatedSwapStyles({ SwapInputController, SwapWarning, inputProgress, outputProgress, isFetching });
   const SwapTextStyles = useSwapTextStyles({
     ...SwapInputController,
     focusedInput,
@@ -126,7 +126,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         AnimatedSwapStyles,
         SwapTextStyles,
         SwapNavigation,
-        PriceImpactWarning,
+        SwapWarning,
         confirmButtonIcon,
         confirmButtonLabel,
         confirmButtonIconStyle,
