@@ -108,6 +108,9 @@ export default function WelcomeScreen() {
         })
       );
 
+      // We need to disable looping animations
+      // There's no way to disable sync yet
+      // See https://stackoverflow.com/questions/47391019/animated-button-block-the-detox
       createWalletButtonAnimation.value = withDelay(
         initialDuration,
         withTiming(1.02, { duration: 1000 }, () => {
@@ -133,10 +136,9 @@ export default function WelcomeScreen() {
     initialize();
 
     return () => {
-      // Reset all animations to their initial state
       createWalletButtonAnimation.value = 1;
       contentAnimation.value = 1;
-      colorAnimation.value = 0; // Ensure this is reset if it was running
+      colorAnimation.value = 0;
     };
   }, [colorAnimation, contentAnimation, createWalletButtonAnimation, hideSplashScreen, shouldAnimateRainbows]);
 
