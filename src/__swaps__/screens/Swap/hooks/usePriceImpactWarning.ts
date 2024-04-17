@@ -27,7 +27,10 @@ type UsePriceImpactWarningProps = {
 export const usePriceImpactWarning = ({ SwapInputController, isFetching }: UsePriceImpactWarningProps) => {
   const { nativeCurrency: currentCurrency } = useAccountSettings();
 
-  const priceImpact = useSharedValue<SwapPriceImpact | undefined>(undefined);
+  const priceImpact = useSharedValue<SwapPriceImpact>({
+    type: SwapPriceImpactType.none,
+    impactDisplay: '',
+  });
 
   const calculatePriceImpact = useCallback(
     ({

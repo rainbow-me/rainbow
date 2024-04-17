@@ -4,14 +4,16 @@ import Animated, { useDerivedValue } from 'react-native-reanimated';
 import { AnimatedText, Box, Inline, Text, TextIcon, useForegroundColor } from '@/design-system';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { SwapPriceImpactType } from '@/hooks/usePriceImpactDetails';
 
 export const PriceImpactWarning = () => {
   const { AnimatedSwapStyles, PriceImpactWarning } = useSwapContext();
 
+  // TODO: i18n is not liking this...
   const warningText = useDerivedValue(() => {
-    if (!PriceImpactWarning.value) return '';
+    if (PriceImpactWarning.value.type === SwapPriceImpactType.none) return '';
     return i18n.t(i18n.l.exchange.price_impact.you_are_losing, {
-      impactDisplay: PriceImpactWarning.value?.impactDisplay,
+      impactDisplay: PriceImpactWarning.value.impactDisplay,
     });
   });
 
