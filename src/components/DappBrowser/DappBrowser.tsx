@@ -104,7 +104,7 @@ const DappBrowserComponent = () => {
   }));
 
   return (
-    <SheetGestureBlocker>
+    <SheetGestureBlocker preventScrollViewDismissal>
       <Box as={Page} height="full" style={isDarkMode ? styles.rootViewBackground : styles.rootViewBackgroundLight} width="full">
         <Box
           as={Animated.View}

@@ -45,7 +45,7 @@ import {
 import RNFS from 'react-native-fs';
 import { WebViewEvent } from 'react-native-webview/lib/WebViewTypes';
 import { appMessenger } from '@/browserMessaging/AppMessenger';
-import { IS_ANDROID, IS_DEV, IS_IOS } from '@/env';
+import { IS_DEV, IS_IOS } from '@/env';
 import { RainbowError, logger } from '@/logger';
 import { CloseTabButton, X_BUTTON_PADDING, X_BUTTON_SIZE } from './CloseTabButton';
 import DappBrowserWebview from './DappBrowserWebview';
@@ -196,6 +196,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
   const logo = useRef<string | null>(null);
   const webViewRef = useRef<WebView>(null);
   const viewShotRef = useRef<ViewShot | null>(null);
+  const [enableTaps, setEnableTap] = React.useState(tabViewVisible?.value);
 
   // ⚠️ TODO
   const gestureScale = useSharedValue(1);
@@ -332,7 +333,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
       progress,
       [0, 100],
       // eslint-disable-next-line no-nested-ternary
-      [animatedIsActiveTab ? (IS_ANDROID ? 0 : 16) : tabViewBorderRadius, tabViewBorderRadius],
+      [animatedIsActiveTab ? 16 : tabViewBorderRadius, tabViewBorderRadius],
       'clamp'
     );
 
@@ -370,7 +371,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
       );
     const zIndex = scaleWeighting * (animatedIsActiveTab || gestureScale.value > 1 ? 9999 : 1) + (wasCloseButtonPressed ? 9999 : 0);
 
-    return { zIndex };
+    return { zIndex, elevation: zIndex };
   });
 
   const handleNavigationStateChange = useCallback(
@@ -711,6 +712,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
 
   const pressTabGestureHandler = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>({
     onActive: () => {
+      console.log('hi');
       if (tabViewVisible?.value) {
         toggleTabViewWorklet(animatedTabIndex.value);
       }
@@ -798,6 +800,14 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
       }
     }
   );
+  useAnimatedReaction(
+    () => tabViewVisible?.value,
+    val => {
+      console.log('tabViewVisible', val);
+      runOnJS(setEnableTap)(val);
+    },
+    [tabViewVisible]
+  );
 
   return (
     <>
@@ -805,71 +815,60 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
       {/* <WebViewShadows gestureScale={gestureScale} isOnHomepage={isOnHomepage} tabIndex={tabIndex}> */}
 
       {/* @ts-expect-error Property 'children' does not exist on type */}
-      <TapGestureHandler maxDeltaX={10} maxDeltaY={10} onGestureEvent={pressTabGestureHandler} shouldCancelWhenOutside>
-        <Animated.View entering={FadeIn.duration(160)} style={zIndexAnimatedStyle}>
-          {/* @ts-expect-error Property 'children' does not exist on type */}
-          <PanGestureHandler
-            activeOffsetX={[-10, 10]}
-            failOffsetY={[-10, 10]}
-            maxPointers={1}
-            onGestureEvent={swipeToCloseTabGestureHandler}
-            simultaneousHandlers={scrollViewRef}
-          >
-            <Animated.View style={[styles.webViewContainer, animatedWebViewStyle, animatedWebViewBackgroundColorStyle]}>
-              <ViewShot options={{ format: 'jpg' }} ref={viewShotRef}>
-                <View collapsable={false} style={{ height: WEBVIEW_HEIGHT, width: '100%' }}>
-                  {isOnHomepage ? (
-                    <Homepage />
-                  ) : (
-                    <Freeze freeze={!isActiveTab}>
-                      <DappBrowserWebview
-                        webviewDebuggingEnabled={IS_DEV}
-                        injectedJavaScriptBeforeContentLoaded={injectedJS}
-                        allowsInlineMediaPlayback
-                        fraudulentWebsiteWarningEnabled
-                        allowsBackForwardNavigationGestures
-                        applicationNameForUserAgent={'Rainbow'}
-                        automaticallyAdjustContentInsets
-                        automaticallyAdjustsScrollIndicatorInsets={false}
-                        decelerationRate={'normal'}
-                        injectedJavaScript={getWebsiteMetadata}
-                        mediaPlaybackRequiresUserAction
-                        onLoadStart={handleOnLoadStart}
-                        onLoad={handleOnLoad}
-                        // 👇 This eliminates a white flash and prevents the WebView from hiding its content on load/reload
-                        renderLoading={() => <></>}
-                        onLoadEnd={handleOnLoadEnd}
-                        onError={handleOnError}
-                        onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
-                        onLoadProgress={handleOnLoadProgress}
-                        onMessage={handleOnMessage}
-                        onNavigationStateChange={handleNavigationStateChange}
-                        originWhitelist={['*']}
-                        ref={webViewRef}
-                        source={{ uri: tabUrl || RAINBOW_HOME }}
-                        style={styles.webViewStyle}
-                      />
-                    </Freeze>
-                  )}
-                </View>
-              </ViewShot>
-              <AnimatedFasterImage
-                source={IS_IOS ? screenshotSource : screenshotSource.value}
-                style={[styles.screenshotContainerStyle, animatedScreenshotStyle]}
-              />
-              <WebViewBorder animatedTabIndex={animatedTabIndex} enabled={IS_IOS && isDarkMode && !isOnHomepage} />
-              <CloseTabButton
-                animatedMultipleTabsOpen={animatedMultipleTabsOpen}
-                animatedTabIndex={animatedTabIndex}
-                gestureScale={gestureScale}
-                gestureX={gestureX}
-                gestureY={gestureY}
-                isOnHomepage={isOnHomepage}
-                multipleTabsOpen={multipleTabsOpen}
-                tabId={tabId}
-              />
-            </Animated.View>
-          </PanGestureHandler>
+      <TapGestureHandler enabled={enableTaps} maxDeltaX={10} maxDeltaY={10} onGestureEvent={pressTabGestureHandler} shouldCancelWhenOutside>
+        <Animated.View style={[styles.webViewContainer, animatedWebViewStyle, animatedWebViewBackgroundColorStyle]}>
+          <ViewShot options={{ format: 'jpg' }} ref={viewShotRef}>
+            <View collapsable={false} style={{ height: WEBVIEW_HEIGHT, width: '100%' }}>
+              {isOnHomepage ? (
+                <Homepage />
+              ) : (
+                <Freeze freeze={!isActiveTab}>
+                  <DappBrowserWebview
+                    webviewDebuggingEnabled={IS_DEV}
+                    injectedJavaScriptBeforeContentLoaded={injectedJS}
+                    allowsInlineMediaPlayback
+                    fraudulentWebsiteWarningEnabled
+                    allowsBackForwardNavigationGestures
+                    applicationNameForUserAgent={'Rainbow'}
+                    automaticallyAdjustContentInsets
+                    automaticallyAdjustsScrollIndicatorInsets={false}
+                    decelerationRate={'normal'}
+                    injectedJavaScript={getWebsiteMetadata}
+                    mediaPlaybackRequiresUserAction
+                    onLoadStart={handleOnLoadStart}
+                    onLoad={handleOnLoad}
+                    // 👇 This eliminates a white flash and prevents the WebView from hiding its content on load/reload
+                    renderLoading={() => <></>}
+                    onLoadEnd={handleOnLoadEnd}
+                    onError={handleOnError}
+                    onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
+                    onLoadProgress={handleOnLoadProgress}
+                    onMessage={handleOnMessage}
+                    onNavigationStateChange={handleNavigationStateChange}
+                    originWhitelist={['*']}
+                    ref={webViewRef}
+                    source={{ uri: tabUrl || RAINBOW_HOME }}
+                    style={styles.webViewStyle}
+                  />
+                </Freeze>
+              )}
+            </View>
+          </ViewShot>
+          <AnimatedFasterImage
+            source={IS_IOS ? screenshotSource : screenshotSource.value}
+            style={[styles.screenshotContainerStyle, animatedScreenshotStyle]}
+          />
+          <WebViewBorder animatedTabIndex={animatedTabIndex} enabled={IS_IOS && isDarkMode && !isOnHomepage} />
+          <CloseTabButton
+            animatedMultipleTabsOpen={animatedMultipleTabsOpen}
+            animatedTabIndex={animatedTabIndex}
+            gestureScale={gestureScale}
+            gestureX={gestureX}
+            gestureY={gestureY}
+            isOnHomepage={isOnHomepage}
+            multipleTabsOpen={multipleTabsOpen}
+            tabId={tabId}
+          />
         </Animated.View>
       </TapGestureHandler>
 
