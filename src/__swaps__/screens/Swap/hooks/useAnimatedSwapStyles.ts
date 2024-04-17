@@ -51,22 +51,26 @@ export function useAnimatedSwapStyles({
   const hideWhenInputsExpandedOrNoPriceImpact = useAnimatedStyle(() => {
     return {
       opacity:
-        SwapWarning.value?.type === SwapWarningType.none || inputProgress.value > 0 || outputProgress.value > 0
+        SwapWarning.swapWarning.value.type === SwapWarningType.none || inputProgress.value > 0 || outputProgress.value > 0
           ? withTiming(0, fadeConfig)
           : withTiming(1, fadeConfig),
       pointerEvents:
-        SwapWarning.value?.type === SwapWarningType.none || inputProgress.value > 0 || outputProgress.value > 0 ? 'none' : 'auto',
+        SwapWarning.swapWarning.value.type === SwapWarningType.none || inputProgress.value > 0 || outputProgress.value > 0
+          ? 'none'
+          : 'auto',
     };
   });
 
   const hideWhenInputsExpandedOrPriceImpact = useAnimatedStyle(() => {
     return {
       opacity:
-        SwapWarning.value?.type !== SwapWarningType.none || inputProgress.value > 0 || outputProgress.value > 0
+        SwapWarning.swapWarning.value.type !== SwapWarningType.none || inputProgress.value > 0 || outputProgress.value > 0
           ? withTiming(0, fadeConfig)
           : withTiming(1, fadeConfig),
       pointerEvents:
-        SwapWarning.value?.type !== SwapWarningType.none || inputProgress.value > 0 || outputProgress.value > 0 ? 'none' : 'auto',
+        SwapWarning.swapWarning.value.type !== SwapWarningType.none || inputProgress.value > 0 || outputProgress.value > 0
+          ? 'none'
+          : 'auto',
     };
   });
 

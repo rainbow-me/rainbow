@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import * as i18n from '@/languages';
 import { useAccountSettings } from '@/hooks';
 import { SharedValue, runOnJS, runOnUI, useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
 import { convertAmountToNativeDisplay, divide, greaterThanOrEqualTo, subtract } from '@/__swaps__/utils/numbers';
@@ -23,6 +24,12 @@ export interface SwapWarning {
   display: string;
 }
 
+export interface SwapTimeEstimate {
+  isLongWait: boolean;
+  timeEstimate?: number;
+  timeEstimateDisplay: string;
+}
+
 type UsePriceImpactWarningProps = {
   SwapInputController: ReturnType<typeof useSwapInputsController>;
   sliderXPosition: SharedValue<number>;
@@ -31,6 +38,8 @@ type UsePriceImpactWarningProps = {
 
 export const useSwapWarning = ({ SwapInputController, isFetching, sliderXPosition }: UsePriceImpactWarningProps) => {
   const { nativeCurrency: currentCurrency } = useAccountSettings();
+
+  const timeEstimate = useSharedValue<SwapTimeEstimate | null>(null);
 
   const swapWarning = useSharedValue<SwapWarning>({
     type: SwapWarningType.none,
@@ -69,7 +78,12 @@ export const useSwapWarning = ({ SwapInputController, isFetching, sliderXPositio
        * if those are not present, we want to show the long wait warning
        * if there is no price impact at all, we want to show none
        */
-      if (!isFetching && greaterThanOrEqualTo(impact, severePriceImpactThreshold)) {
+      if (!isFetching && !(quote as QuoteError).error && (!inputNativeValue || !outputNativeValue)) {
+        runOnUI(updateWarning)({
+          type: SwapWarningType.unknown,
+          display: i18n.t(i18n.l.exchange.price_impact.unknown_price.title),
+        });
+      } else if (!isFetching && greaterThanOrEqualTo(impact, severePriceImpactThreshold)) {
         runOnUI(updateWarning)({
           type: SwapWarningType.severe,
           display,
@@ -83,16 +97,17 @@ export const useSwapWarning = ({ SwapInputController, isFetching, sliderXPositio
         const serviceTime = getQuoteServiceTime({
           quote: quote as CrosschainQuote,
         });
-        const timeEstimate = serviceTime
+
+        const estimatedTimeOfArrival = serviceTime
           ? getCrossChainTimeEstimate({
               serviceTime,
             })
           : null;
-
-        if (timeEstimate?.isLongWait) {
+        timeEstimate.value = estimatedTimeOfArrival;
+        if (estimatedTimeOfArrival?.isLongWait) {
           runOnUI(updateWarning)({
             type: SwapWarningType.long_wait,
-            display: timeEstimate.timeEstimateDisplay,
+            display: estimatedTimeOfArrival.timeEstimateDisplay,
           });
           return;
         }
@@ -103,7 +118,7 @@ export const useSwapWarning = ({ SwapInputController, isFetching, sliderXPositio
         });
       }
     },
-    [currentCurrency, swapWarning]
+    [currentCurrency, swapWarning, timeEstimate]
   );
 
   useAnimatedReaction(
@@ -136,5 +151,5 @@ export const useSwapWarning = ({ SwapInputController, isFetching, sliderXPositio
     }
   );
 
-  return swapWarning;
+  return { swapWarning, timeEstimate };
 };

@@ -1,7 +1,7 @@
 import React from 'react';
 import * as i18n from '@/languages';
 import Animated, { useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
-import { AnimatedText, Box, Inline, Text, useForegroundColor } from '@/design-system';
+import { AnimatedText, Box, Inline, useForegroundColor } from '@/design-system';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { SwapWarningType } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 
@@ -11,17 +11,48 @@ export const SwapWarning = () => {
   const red = useForegroundColor('red');
   const orange = useForegroundColor('orange');
 
-  const warningPrefix = i18n.t(i18n.l.exchange.price_impact.you_are_losing);
-  const warningText = useDerivedValue(() => {
-    if (SwapWarning.value.type === SwapWarningType.none) return '';
-    return `􀇿 ${warningPrefix} ${SwapWarning.value.display}`;
+  const colorMap = {
+    [SwapWarningType.severe]: red,
+    [SwapWarningType.unknown]: red,
+    [SwapWarningType.long_wait]: orange,
+    [SwapWarningType.none]: orange,
+    [SwapWarningType.high]: orange,
+  };
+
+  const warningMessages = {
+    [SwapWarningType.none]: {
+      title: '',
+      subtext: '',
+    },
+    [SwapWarningType.high]: {
+      title: `􀇿 ${i18n.t(i18n.l.exchange.price_impact.you_are_losing)} ${SwapWarning.swapWarning.value.display}`,
+      subtext: i18n.t(i18n.l.exchange.price_impact.small_market_try_smaller_amount),
+    },
+    [SwapWarningType.unknown]: {
+      title: `􀇿 ${SwapWarning.swapWarning.value.display}`,
+      subtext: i18n.t(i18n.l.exchange.price_impact.unknown_price.description),
+    },
+    [SwapWarningType.severe]: {
+      title: `􀇿 ${i18n.t(i18n.l.exchange.price_impact.you_are_losing)} ${SwapWarning.swapWarning.value.display}`,
+      subtext: i18n.t(i18n.l.exchange.price_impact.small_market_try_smaller_amount),
+    },
+    [SwapWarningType.long_wait]: {
+      title: `􀇿 ${i18n.t(i18n.l.exchange.price_impact.long_wait.title)}`,
+      subtext: `${i18n.t(i18n.l.exchange.price_impact.long_wait.description)} ${SwapWarning.swapWarning.value.display}`,
+    },
+  };
+
+  const warningTitle = useDerivedValue(() => {
+    return warningMessages[SwapWarning.swapWarning.value.type].title;
   });
 
-  const warningStyles = useAnimatedStyle(() => {
-    return {
-      color: SwapWarning.value.type === SwapWarningType.severe ? red : orange,
-    };
+  const warningSubtext = useDerivedValue(() => {
+    return warningMessages[SwapWarning.swapWarning.value.type].subtext;
   });
+
+  const warningStyles = useAnimatedStyle(() => ({
+    color: colorMap[SwapWarning.swapWarning.value.type],
+  }));
 
   return (
     <Box
@@ -34,12 +65,9 @@ export const SwapWarning = () => {
     >
       <Box as={Animated.View} alignItems="center" height={{ custom: 33 }} gap={6} justifyContent="center" paddingHorizontal="10px">
         <Inline alignHorizontal="center" alignVertical="center" horizontalSpace="4px" wrap={false}>
-          <AnimatedText style={warningStyles} align="center" size="15pt" weight="heavy" text={warningText} />
+          <AnimatedText style={warningStyles} align="center" size="15pt" weight="heavy" text={warningTitle} />
         </Inline>
-
-        <Text color="labelQuaternary" size="13pt" weight="bold">
-          {i18n.t(i18n.l.exchange.price_impact.smal_market_try_smaller_amount)}
-        </Text>
+        <AnimatedText color="labelQuaternary" align="center" size="13pt" weight="bold" text={warningSubtext} />
       </Box>
     </Box>
   );
