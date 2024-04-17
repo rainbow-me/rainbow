@@ -1,7 +1,7 @@
 import { MaxUint256 } from '@ethersproject/constants';
 import { Contract } from '@ethersproject/contracts';
 import { Signer } from '@ethersproject/abstract-signer';
-import { ALLOWS_PERMIT, PermitSupportedTokenList, RAINBOW_ROUTER_CONTRACT_ADDRESS } from '@rainbow-me/swaps';
+import { ALLOWS_PERMIT, PermitSupportedTokenList, getRainbowRouterContractAddress } from '@rainbow-me/swaps';
 import { captureException } from '@sentry/react-native';
 import { isNull } from 'lodash';
 import { alwaysRequireApprove } from '../../config/debug';
@@ -120,7 +120,7 @@ const unlock = async (
       assetAddress,
       contractAddress,
     });
-    const contractAllowsPermit = contractAddress === RAINBOW_ROUTER_CONTRACT_ADDRESS;
+    const contractAllowsPermit = contractAddress === getRainbowRouterContractAddress(chainId);
     gasLimit = await estimateApprove(accountAddress, assetAddress, contractAddress, chainId, contractAllowsPermit);
   } catch (e) {
     logger.sentry(`[${actionName}] Error estimating gas`);

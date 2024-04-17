@@ -39,7 +39,6 @@ apply plugin: "com.facebook.react"
 
 
 apply from: "../../node_modules/@sentry/react-native/sentry.gradle"
-apply from: "../../node_modules/react-native-code-push/android/codepush.gradle"
 
 react {
 	    /* Folders */
@@ -146,14 +145,11 @@ android {
 
     namespace 'me.rainbow'
     defaultConfig {
-        // https://github.com/microsoft/react-native-code-push/issues/1961#issuecomment-710698621
-        resValue 'string', "CODE_PUSH_APK_BUILD_TIME", String.format("\"%d\"", System.currentTimeMillis())
-        resValue 'string', "CodePushDeploymentKey", env.get('CODE_PUSH_DEPLOYMENT_KEY_ANDROID')
         applicationId "me.rainbow"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 207
-        versionName "1.9.19"
+        versionCode 209
+        versionName "1.9.21"
         missingDimensionStrategy 'react-native-camera', 'general'
         renderscriptTargetApi 23
         renderscriptSupportModeEnabled true

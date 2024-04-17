@@ -16,7 +16,7 @@ type RouteParams = {
 
 export const AddWalletNavigator = () => {
   const {
-    params: { isFirstWallet, type, userData },
+    params: { isFirstWallet, type },
   } = useRoute<RouteProp<RouteParams, 'AddWalletNavigatorParams'>>();
 
   const [scrollEnabled, setScrollEnabled] = useState(false);
@@ -24,7 +24,7 @@ export const AddWalletNavigator = () => {
   return (
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (
-        <SimpleSheet backgroundColor={backgroundColor as string} scrollEnabled={scrollEnabled}>
+        <SimpleSheet backgroundColor={backgroundColor as string} useAdditionalTopPadding scrollEnabled={scrollEnabled}>
           <Swipe.Navigator
             initialLayout={deviceUtils.dimensions}
             initialRouteName={Routes.ADD_WALLET_SHEET}
@@ -33,7 +33,7 @@ export const AddWalletNavigator = () => {
           >
             <Swipe.Screen
               component={AddWalletSheet}
-              initialParams={{ isFirstWallet, userData }}
+              initialParams={{ isFirstWallet }}
               name={Routes.ADD_WALLET_SHEET}
               listeners={{
                 focus: () => {

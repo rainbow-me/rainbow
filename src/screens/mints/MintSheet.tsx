@@ -26,7 +26,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { ReservoirCollection } from '@/graphql/__generated__/arcDev';
 import { format } from 'date-fns';
-import { NewTransaction, RainbowTransaction } from '@/entities';
+import { NewTransaction } from '@/entities';
 import * as i18n from '@/languages';
 import { analyticsV2 } from '@/analytics';
 import { event } from '@/analytics/event';
@@ -48,15 +48,15 @@ import {
   multiply,
 } from '@/helpers/utilities';
 import { RainbowError, logger } from '@/logger';
-import { useDispatch } from 'react-redux';
 import { QuantityButton } from './components/QuantityButton';
-import { estimateGas, getProviderForNetwork } from '@/handlers/web3';
 import { getRainbowFeeAddress } from '@/resources/reservoir/utils';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { getNextNonce } from '@/state/nonces';
+import { metadataPOSTClient } from '@/graphql';
+import { Transaction } from '@/graphql/__generated__/metadataPOST';
 
 const NFT_IMAGE_HEIGHT = 250;
 // inset * 2 -> 28 *2
@@ -130,7 +130,6 @@ const MintSheet = () => {
   const { nativeCurrency } = useAccountSettings();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate } = useNavigation();
-  const dispatch = useDispatch();
   const { colors, isDarkMode } = useTheme();
   const { isReadOnlyWallet, isHardwareWallet } = useWallets();
   const [insufficientEth, setInsufficientEth] = useState(false);
@@ -140,6 +139,7 @@ const MintSheet = () => {
   const [ensName, setENSName] = useState<string>('');
   const [mintStatus, setMintStatus] = useState<'none' | 'minting' | 'minted' | 'error'>('none');
   const txRef = useRef<string>();
+  const [isGasReady, setIsGasReady] = useState<boolean>(false);
 
   const { data: ensAvatar } = useENSAvatar(ensName, {
     enabled: Boolean(ensName),
@@ -247,48 +247,49 @@ const MintSheet = () => {
   useEffect(() => {
     const estimateMintGas = async () => {
       const networkObj = getNetworkObj(currentNetwork);
-      const provider = await getProviderForNetwork(currentNetwork);
       const signer = createWalletClient({
         account: accountAddress,
         chain: networkObj,
         transport: http(networkObj.rpc),
       });
       try {
-        await getClient()?.actions.buyToken({
-          items: [{ fillType: 'mint', collection: mintCollection.id!, quantity }],
+        await getClient()?.actions.mintToken({
+          items: [{ collection: mintCollection.id!, quantity }],
           wallet: signer!,
           chainId: networkObj.id,
           precheck: true,
           onProgress: async (steps: Execute['steps']) => {
+            const txs: Transaction[] = [];
             steps.forEach(step => {
               if (step.error) {
                 logger.error(new RainbowError(`NFT Mints: Gas Step Error: ${step.error}`));
                 return;
               }
-              step.items?.forEach(async item => {
-                // could add safety here if unable to calc gas limit
-                const tx = {
-                  to: item.data?.to,
-                  from: item.data?.from,
-                  data: item.data?.data,
-                  value: item.data?.value,
-                };
-                const gas = await estimateGas(tx, provider);
-                let l1GasFeeOptimism = null;
-                // add l1Fee for OP Chains
-                if (getNetworkObj(currentNetwork).gas.OptimismTxFee) {
-                  l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(tx as RainbowTransaction, provider);
-                }
-                if (gas) {
-                  setGasError(false);
-                  if (l1GasFeeOptimism) {
-                    updateTxFee(gas, null, l1GasFeeOptimism);
-                  } else {
-                    updateTxFee(gas, null);
-                  }
+              step.items?.forEach(item => {
+                if (item?.data?.to && item?.data?.from && item?.data?.data) {
+                  txs.push({
+                    to: item.data?.to,
+                    from: item.data?.from,
+                    data: item.data?.data,
+                    value: item.data?.value ?? '0x0',
+                  });
                 }
               });
             });
+            const txSimEstimate = parseInt(
+              (
+                await metadataPOSTClient.simulateTransactions({
+                  chainId: networkObj.id,
+                  transactions: txs,
+                })
+              )?.simulateTransactions?.[0]?.gas?.estimate ?? '0x0',
+              16
+            );
+            if (txSimEstimate) {
+              setGasError(false);
+              updateTxFee(txSimEstimate, null);
+              setIsGasReady(true);
+            }
           },
         });
       } catch (e) {
@@ -364,10 +365,9 @@ const MintSheet = () => {
     const feeAddress = getRainbowFeeAddress(currentNetwork);
     const nonce = await getNextNonce({ address: accountAddress, network: currentNetwork });
     try {
-      await getClient()?.actions.buyToken({
+      await getClient()?.actions.mintToken({
         items: [
           {
-            fillType: 'mint',
             collection: mintCollection.id!,
             quantity,
             ...(feeAddress && { referrer: feeAddress }),
@@ -383,7 +383,7 @@ const MintSheet = () => {
               return;
             }
             step.items?.forEach(item => {
-              if (item.txHashes?.[0] && txRef.current !== item.txHashes?.[0] && item.status === 'incomplete') {
+              if (item.txHashes?.[0]?.txHash && txRef.current !== item.txHashes[0].txHash && item.status === 'incomplete') {
                 const asset = {
                   type: 'nft',
                   icon_url: imageUrl,
@@ -392,7 +392,7 @@ const MintSheet = () => {
                   name: mintCollection.name || '',
                   decimals: 18,
                   symbol: 'NFT',
-                  uniqueId: `${mintCollection.id}-${item.txHashes[0]}`,
+                  uniqueId: `${mintCollection.id}-${item.txHashes[0].txHash}`,
                 };
 
                 const paymentAsset = {
@@ -409,7 +409,7 @@ const MintSheet = () => {
                   status: 'pending',
                   to: item.data?.to,
                   from: item.data?.from,
-                  hash: item.txHashes[0],
+                  hash: item.txHashes[0].txHash,
                   network: currentNetwork,
                   nonce,
                   changes: [
@@ -510,7 +510,6 @@ const MintSheet = () => {
           </BackgroundImage>
         </BlurWrapper>
       )}
-      {/* @ts-expect-error JavaScript component */}
       <SlackSheet
         backgroundColor={isDarkMode ? `rgba(22, 22, 22, ${ios ? 0.4 : 1})` : `rgba(26, 26, 26, ${ios ? 0.4 : 1})`}
         {...(IS_IOS ? { height: '100%' } : {})}
@@ -632,6 +631,7 @@ const MintSheet = () => {
                       horizontalPadding={0}
                       currentNetwork={currentNetwork}
                       theme={'dark'}
+                      loading={!isGasReady}
                       marginBottom={0}
                     />
                   </Box>

@@ -13,8 +13,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@rainbow-me/apollo": ["./src/apollo"],
-      "@rainbow-me/apollo/*": ["./src/apollo/*"],
+      "@/swaps": ["./src/__swaps__"],
       "@rainbow-me/assets": ["./src/assets"],
       "@rainbow-me/config": ["./src/config"],
       "@rainbow-me/config/*": ["./src/config/*"],

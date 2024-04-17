@@ -19,13 +19,14 @@ import {
   AVALANCHE_MAINNET_RPC,
   AVALANCHE_MAINNET_RPC_DEV,
   BLAST_MAINNET_RPC,
+  DEGEN_MAINNET_RPC,
 } from 'react-native-dotenv';
 import { RainbowError, logger } from '@/logger';
 import { getNetwork, saveNetwork } from '@/handlers/localstorage/globalSettings';
 import { web3SetHttpProvider } from '@/handlers/web3';
 import { delay } from '@/utils/delay';
 
-interface RainbowConfig extends Record<string, string | boolean | number> {
+export interface RainbowConfig extends Record<string, string | boolean | number> {
   arbitrum_mainnet_rpc: string;
   bsc_mainnet_rpc: string;
   data_api_key: string;
@@ -43,6 +44,7 @@ interface RainbowConfig extends Record<string, string | boolean | number> {
   zora_mainnet_rpc: string;
   base_mainnet_rpc: string;
   avalanche_mainnet_rpc: string;
+  degen_mainnet_rpc: string;
   blast_mainnet_rpc: string;
   swagg_enabled: boolean;
   trace_call_block_number_offset: number;
@@ -58,6 +60,7 @@ interface RainbowConfig extends Record<string, string | boolean | number> {
   mainnet_enabled: boolean;
   goerli_enabled: boolean;
   avalanche_enabled: boolean;
+  degen_enabled: boolean;
   blast_enabled: boolean;
 
   arbitrum_tx_enabled: boolean;
@@ -70,6 +73,7 @@ interface RainbowConfig extends Record<string, string | boolean | number> {
   mainnet_tx_enabled: boolean;
   goerli_tx_enabled: boolean;
   avalanche_tx_enabled: boolean;
+  degen_tx_enabled: boolean;
   blast_tx_enabled: boolean;
 
   base_swaps_enabled: boolean;
@@ -82,9 +86,10 @@ interface RainbowConfig extends Record<string, string | boolean | number> {
   remote_promo_enabled: boolean;
   points_notifications_toggle: boolean;
   dapp_browser: boolean;
+  swaps_v2: boolean;
 }
 
-const DEFAULT_CONFIG: RainbowConfig = {
+export const DEFAULT_CONFIG: RainbowConfig = {
   arbitrum_mainnet_rpc: ARBITRUM_MAINNET_RPC,
   data_api_key: DATA_API_KEY,
   data_endpoint: DATA_ENDPOINT || 'wss://api-v4.zerion.io',
@@ -99,6 +104,7 @@ const DEFAULT_CONFIG: RainbowConfig = {
     zora: 200,
     avalanche: 200,
     blast: 200,
+    degen: 200,
   }),
   ethereum_goerli_rpc: __DEV__ ? ETHEREUM_GOERLI_RPC_DEV : ETHEREUM_GOERLI_RPC,
   ethereum_mainnet_rpc: __DEV__ ? ETHEREUM_MAINNET_RPC_DEV : ETHEREUM_MAINNET_RPC,
@@ -112,6 +118,7 @@ const DEFAULT_CONFIG: RainbowConfig = {
   zora_mainnet_rpc: ZORA_MAINNET_RPC,
   base_mainnet_rpc: __DEV__ ? BASE_MAINNET_RPC_DEV : BASE_MAINNET_RPC,
   avalanche_mainnet_rpc: __DEV__ ? AVALANCHE_MAINNET_RPC_DEV : AVALANCHE_MAINNET_RPC,
+  degen_mainnet_rpc: DEGEN_MAINNET_RPC,
   blast_mainnet_rpc: BLAST_MAINNET_RPC,
   swagg_enabled: true,
   trace_call_block_number_offset: 20,
@@ -126,6 +133,7 @@ const DEFAULT_CONFIG: RainbowConfig = {
   op_chains_enabled: true,
   avalanche_enabled: true,
   blast_enabled: true,
+  degen_enabled: true,
 
   mainnet_enabled: true,
 
@@ -139,6 +147,7 @@ const DEFAULT_CONFIG: RainbowConfig = {
   zora_tx_enabled: true,
   op_chains_tx_enabled: true,
   avalanche_tx_enabled: true,
+  degen_tx_enabled: true,
   blast_tx_enabled: true,
 
   mainnet_tx_enabled: true,
@@ -155,6 +164,7 @@ const DEFAULT_CONFIG: RainbowConfig = {
   remote_promo_enabled: false,
   points_notifications_toggle: true,
   dapp_browser: false,
+  swaps_v2: false,
 };
 
 export async function fetchRemoteConfig(): Promise<RainbowConfig> {
@@ -180,6 +190,9 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
         key === 'optimism_tx_enabled' ||
         key === 'zora_tx_enabled' ||
         key === 'base_tx_enabled' ||
+        key === 'degen_tx_enabled' ||
+        key === 'blast_tx_enabled' ||
+        key === 'avalanche_tx_enabled' ||
         key === 'op_chains_tx_enabled' ||
         key === 'goerli_tx_enabled' ||
         key === 'mainnet_enabled' ||
@@ -189,6 +202,9 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
         key === 'optimism_enabled' ||
         key === 'zora_enabled' ||
         key === 'base_enabled' ||
+        key === 'degen_enabled' ||
+        key === 'blast_enabled' ||
+        key === 'avalanche_enabled' ||
         key === 'op_chains_enabled' ||
         key === 'goerli_enabled' ||
         key === 'base_swaps_enabled' ||
@@ -199,7 +215,8 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
         key === 'remote_promo_enabled' ||
         key === 'remote_cards_enabled' ||
         key === 'points_notifications_toggle' ||
-        key === 'dapp_browser'
+        key === 'dapp_browser' ||
+        key === 'swaps_v2'
       ) {
         config[key] = entry.asBoolean();
       } else {

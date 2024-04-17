@@ -33,8 +33,10 @@ export type RootStackParamList = {
   };
   [Routes.BACKUP_SHEET]: {
     nativeScreen: boolean;
-    stemp: string;
+    step: string;
     walletId: string;
+    onSuccess: (password: string) => Promise<void>;
+    onCancel: () => Promise<void>;
   };
   [Routes.BACKUP_SCREEN]: {
     nativeScreen: boolean;

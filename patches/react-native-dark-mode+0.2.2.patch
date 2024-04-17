@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-native-dark-mode/android/build.gradle b/node_modules/react-native-dark-mode/android/build.gradle
+index 11c2a43..7b13d85 100644
+--- a/node_modules/react-native-dark-mode/android/build.gradle
++++ b/node_modules/react-native-dark-mode/android/build.gradle
+@@ -20,7 +20,7 @@ buildscript {
+ }
+ 
+ apply plugin: 'com.android.library'
+-apply plugin: 'maven'
++// apply plugin: 'maven'
+ 
+ // Matches values in recent template from React Native 0.59 / 0.60
+ // https://github.com/facebook/react-native/blob/0.59-stable/template/android/build.gradle#L5-L9

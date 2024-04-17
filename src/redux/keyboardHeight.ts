@@ -1,7 +1,7 @@
 import produce from 'immer';
 import { Dispatch } from 'redux';
 import { getKeyboardHeight as loadKeyboardHeights, setKeyboardHeight as saveKeyboardHeight } from '@/handlers/localstorage/globalSettings';
-import { KeyboardType } from '@/helpers/keyboardTypes';
+import KeyboardTypes, { KeyboardType } from '@/helpers/keyboardTypes';
 import { AppGetState } from '@/redux/store';
 import { deviceUtils } from '@/utils';
 
@@ -32,22 +32,19 @@ interface KeyboardHeightLoadAction {
 
 interface KeyboardHeightSaveAction {
   type: typeof SAVE;
-  keyboardType: KeyboardType;
+  keyboardType: keyof typeof KeyboardTypes;
   height: number;
 }
 
 interface SetKeyboardHeightFunctionParameter {
   height: number;
-  keyboardType: KeyboardType;
+  keyboardType: keyof typeof KeyboardTypes;
 }
-
 // -- Actions --------------------------------------- //
-function getDefaultKeyboardHeight(): number {
+export function getDefaultKeyboardHeight(): number {
   let keyboardHeight = 0;
   switch (deviceUtils.dimensions.height) {
     case 568:
-      keyboardHeight = 216;
-      break;
     case 667:
       keyboardHeight = 216;
       break;
@@ -55,9 +52,8 @@ function getDefaultKeyboardHeight(): number {
       keyboardHeight = 226;
       break;
     case 812:
-      keyboardHeight = 291;
-      break;
     case 844:
+    case 852:
       keyboardHeight = 291;
       break;
     case 896:

@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     borderCurve: 'continuous',
     borderRadius: 28,
     borderWidth: 1.5,
-    height: 525,
+    height: 580,
     gap: 45,
     paddingHorizontal: 30,
     paddingTop: 45,

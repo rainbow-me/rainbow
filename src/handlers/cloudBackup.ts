@@ -6,6 +6,7 @@ import RNFS from 'react-native-fs';
 import AesEncryptor from '../handlers/aesEncryption';
 import { logger, RainbowError } from '@/logger';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import { CloudBackups } from '@/model/backup';
 const REMOTE_BACKUP_WALLET_DIR = 'rainbow.me/wallet-backups';
 const USERDATA_FILE = 'UserData.json';
 const encryptor = new AesEncryptor();
@@ -27,7 +28,7 @@ export function normalizeAndroidBackupFilename(filename: string) {
   return filename.replace(`${REMOTE_BACKUP_WALLET_DIR}/`, '');
 }
 
-export function logoutFromGoogleDrive() {
+export async function logoutFromGoogleDrive() {
   IS_ANDROID && RNCloudFs.logout();
 }
 
@@ -60,7 +61,7 @@ export async function deleteAllBackups() {
   );
 }
 
-export async function fetchAllBackups() {
+export async function fetchAllBackups(): Promise<CloudBackups> {
   if (android) {
     await RNCloudFs.loginIfNeeded();
   }
@@ -145,7 +146,7 @@ export function syncCloud() {
   return true;
 }
 
-export async function getDataFromCloud(backupPassword: any, filename = null) {
+export async function getDataFromCloud(backupPassword: any, filename: string | null = null) {
   if (IS_ANDROID) {
     await RNCloudFs.loginIfNeeded();
   }
@@ -211,7 +212,7 @@ export async function backupUserDataIntoCloud(data: any) {
 export async function fetchUserDataFromCloud() {
   const filename = USERDATA_FILE;
   const password = RAINBOW_MASTER_KEY;
-  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '"UserData.json"' is not assignab... Remove this comment to see the full error message
+
   return getDataFromCloud(password, filename);
 }
 
@@ -225,5 +226,13 @@ export function isCloudBackupAvailable() {
   if (ios) {
     return RNCloudFs.isAvailable();
   }
+  return true;
+}
+
+export async function login() {
+  if (IS_ANDROID) {
+    return RNCloudFs.loginIfNeeded();
+  }
+
   return true;
 }

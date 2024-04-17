@@ -98,23 +98,27 @@ export function useNFTOffers({ walletAddress }: { walletAddress: string }) {
     const offerVarianceArray = nftOffers.map(offer => offer.floorDifferencePercentage / 100);
     offerVarianceArray.sort((a, b) => a - b);
 
-    // calculate median offer variance
+    // calculate median floor difference percentage
     const middleIndex = Math.floor(offerVarianceArray.length / 2);
-    let medianVariance;
-    if (offerVarianceArray.length % 2 === 0) {
-      medianVariance = (offerVarianceArray[middleIndex - 1] + offerVarianceArray[middleIndex]) / 2;
-    } else {
-      medianVariance = offerVarianceArray[middleIndex];
+    let medianFloorDifferencePercentage;
+    if (offerVarianceArray.length) {
+      if (offerVarianceArray.length % 2 === 0) {
+        medianFloorDifferencePercentage = (offerVarianceArray[middleIndex - 1] + offerVarianceArray[middleIndex]) / 2;
+      } else {
+        medianFloorDifferencePercentage = offerVarianceArray[middleIndex];
+      }
     }
 
-    // calculate mean offer variance
-    const meanVariance = offerVarianceArray.reduce((acc, cur) => acc + cur, 0) / offerVarianceArray.length;
+    // calculate mean floor difference percentage
+    const meanFloorDifferencePercentage = offerVarianceArray.length
+      ? offerVarianceArray.reduce((acc, cur) => acc + cur, 0) / offerVarianceArray.length
+      : undefined;
 
     analyticsV2.identify({
       nftOffersAmount: nftOffers.length,
       nftOffersUSDValue: totalUSDValue,
-      nftOffersMedianOfferVariance: medianVariance,
-      nftOffersMeanOfferVariance: meanVariance,
+      nftOffersMedianOfferVariance: medianFloorDifferencePercentage,
+      nftOffersMeanOfferVariance: meanFloorDifferencePercentage,
     });
   }, [query.data?.nftOffers]);
 

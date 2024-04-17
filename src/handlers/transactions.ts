@@ -1,8 +1,7 @@
 import { Contract } from '@ethersproject/contracts';
 import { isEmpty } from 'lodash';
 import { web3Provider } from './web3';
-import { metadataClient } from '@/apollo/client';
-import { CONTRACT_FUNCTION } from '@/apollo/queries';
+import { metadataClient } from '@/graphql';
 import { RainbowTransaction, TransactionStatus, ZerionTransaction } from '@/entities';
 import store from '@/redux/store';
 import { transactionSignaturesDataAddNewSignature } from '@/redux/transactionSignatures';
@@ -50,18 +49,13 @@ export const getTransactionMethodName = async (transaction: ZerionTransaction) =
     let signature = signatures[bytes] || '';
     if (signature) return signature;
     try {
-      const response = await metadataClient.queryWithTimeout(
-        {
-          query: CONTRACT_FUNCTION,
-          variables: {
-            chainID: 1,
-            hex: bytes,
-          },
-        },
-        800
-      );
-      if (!isEmpty(response?.data?.contractFunction?.text)) {
-        signature = response.data.contractFunction.text;
+      const data = await metadataClient.getContractFunction({
+        chainID: 1,
+        hex: bytes,
+      });
+
+      if (data.contractFunction && !isEmpty(data?.contractFunction?.text)) {
+        signature = data.contractFunction.text;
       }
       // eslint-disable-next-line no-empty
     } catch (e) {}

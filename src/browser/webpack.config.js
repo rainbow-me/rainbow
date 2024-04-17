@@ -8,7 +8,7 @@ module.exports = {
   // Webpack output configuration
   output: {
     filename: 'InjectedJSBundle.js',
-    path: path.resolve('./src/browser'),
+    path: path.resolve('./'),
   },
   // Resolve TypeScript
   resolve: {

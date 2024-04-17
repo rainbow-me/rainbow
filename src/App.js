@@ -3,8 +3,6 @@ import * as Sentry from '@sentry/react-native';
 import React, { Component } from 'react';
 import { AppRegistry, AppState, Dimensions, InteractionManager, Linking, LogBox, View } from 'react-native';
 
-// eslint-disable-next-line import/default
-import codePush from 'react-native-code-push';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import { connect, Provider as ReduxProvider } from 'react-redux';
@@ -34,7 +32,6 @@ import { PerformanceMetrics } from './performance/tracking/types/PerformanceMetr
 import { PersistQueryClientProvider, persistOptions, queryClient } from './react-query';
 import store from './redux/store';
 import { walletConnectLoadState } from './redux/walletconnect';
-import { rainbowTokenList } from './references';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { MainThemeProvider } from './theme/ThemeContext';
 import { ethereumUtils } from './utils';
@@ -113,22 +110,14 @@ class OldApp extends Component {
       logger.info(`Test flight usage - ${isTestFlight}`);
     }
     this.identifyFlow();
-    InteractionManager.runAfterInteractions(() => {
-      rainbowTokenList.update();
-    });
     const eventSub = AppState?.addEventListener('change', this?.handleAppStateChange);
     this.setState({ eventSubscription: eventSub });
     appEvents.on('transactionConfirmed', this.handleTransactionConfirmed);
 
-    await this.setupDeeplinking();
-
-    PerformanceTracking.finishMeasuring(PerformanceMetrics.loadRootAppComponent);
-    analyticsV2.track(analyticsV2.event.applicationDidMount);
-
-    /**
-     * This must be saved in the store as early as possible
-     */
-    await saveFCMToken();
+    const p1 = analyticsV2.initializeRudderstack();
+    const p2 = this.setupDeeplinking();
+    const p3 = saveFCMToken();
+    await Promise.all([p1, p2, p3]);
 
     /**
      * Needs to be called AFTER FCM token is loaded
@@ -145,6 +134,9 @@ class OldApp extends Component {
         handleReviewPromptAction(ReviewPromptAction.TimesLaunchedSinceInstall);
       }, 10_000);
     });
+
+    PerformanceTracking.finishMeasuring(PerformanceMetrics.loadRootAppComponent);
+    analyticsV2.track(analyticsV2.event.applicationDidMount);
   }
 
   componentDidUpdate(prevProps) {
@@ -171,9 +163,6 @@ class OldApp extends Component {
     // Restore WC connectors when going from BG => FG
     if (this.state.appState === 'background' && nextAppState === 'active') {
       store.dispatch(walletConnectLoadState());
-      InteractionManager.runAfterInteractions(() => {
-        rainbowTokenList.update();
-      });
     }
     this.setState({ appState: nextAppState });
 
@@ -343,7 +332,7 @@ function Root() {
 
     initializeApplication()
       .then(() => {
-        logger.debug(`Application initialized with Sentry and Segment`);
+        logger.debug(`Application initialized with Sentry and analytics`);
 
         // init complete, load the rest of the app
         setInitializing(false);
@@ -379,7 +368,6 @@ function Root() {
 }
 
 const RootWithSentry = Sentry.wrap(Root);
-const RootWithCodePush = codePush(RootWithSentry);
 
 const PlaygroundWithReduxStore = () => (
   <ReduxProvider store={store}>
@@ -387,4 +375,4 @@ const PlaygroundWithReduxStore = () => (
   </ReduxProvider>
 );
 
-AppRegistry.registerComponent('Rainbow', () => (designSystemPlaygroundEnabled ? PlaygroundWithReduxStore : RootWithCodePush));
+AppRegistry.registerComponent('Rainbow', () => (designSystemPlaygroundEnabled ? PlaygroundWithReduxStore : RootWithSentry));

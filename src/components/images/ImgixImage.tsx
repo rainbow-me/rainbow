@@ -1,7 +1,9 @@
+import { FasterImageView, ImageOptions } from '@candlefinance/faster-image';
 import * as React from 'react';
+import { StyleSheet } from 'react-native';
 import FastImage, { FastImageProps, Source } from 'react-native-fast-image';
-
 import { maybeSignSource } from '../../handlers/imgix';
+import { TAB_SCREENSHOT_FASTER_IMAGE_CONFIG } from '../DappBrowser/constants';
 
 export type ImgixImageProps = FastImageProps & {
   readonly Component?: React.ElementType;
@@ -16,13 +18,15 @@ type HiddenImgixImageProps = {
   retryOnError?: boolean;
   size: number;
   fm?: string;
+  enableFasterImage?: boolean;
+  fasterImageConfig?: Omit<ImageOptions, 'borderRadius' | 'url'>;
 };
 type MergedImgixImageProps = ImgixImageProps & HiddenImgixImageProps;
 
 // ImgixImage must be a class Component to support Animated.createAnimatedComponent.
 class ImgixImage extends React.PureComponent<MergedImgixImageProps, ImgixImageProps & { retryCount: number }> {
   static getDerivedStateFromProps(props: MergedImgixImageProps) {
-    const { source, size, fm } = props;
+    const { resizeMode, source, size, style, fm, enableFasterImage, fasterImageConfig } = props;
     const options = {
       ...(fm && { fm: fm }),
       ...(size && {
@@ -31,9 +35,33 @@ class ImgixImage extends React.PureComponent<MergedImgixImageProps, ImgixImagePr
       }),
     };
 
+    const shouldUseFasterImage = enableFasterImage || fasterImageConfig;
+    const fasterImageStyle = shouldUseFasterImage ? StyleSheet.flatten(style) : undefined;
+
     return {
-      retryCount: 0,
-      source: !!source && typeof source === 'object' ? maybeSignSource(source, options) : source,
+      ...(shouldUseFasterImage
+        ? {
+            source: {
+              base64Placeholder: TAB_SCREENSHOT_FASTER_IMAGE_CONFIG.base64Placeholder,
+              cachePolicy: 'discWithCacheControl',
+              resizeMode: resizeMode && resizeMode !== 'stretch' ? resizeMode : 'cover',
+              showActivityIndicator: false,
+              transitionDuration: 0.175,
+              ...fasterImageConfig,
+              borderRadius: fasterImageStyle?.borderRadius,
+              url: !!source && typeof source === 'object' ? maybeSignSource(source, options)?.uri : source,
+            },
+            style: [
+              {
+                borderCurve: 'continuous',
+                height: fasterImageStyle?.height || size || '100%',
+                overflow: 'hidden',
+                width: fasterImageStyle?.width || size || '100%',
+              },
+              fasterImageStyle,
+            ],
+          }
+        : { retryCount: 0, source: !!source && typeof source === 'object' ? maybeSignSource(source, options) : source }),
     };
   }
 
@@ -57,8 +85,19 @@ class ImgixImage extends React.PureComponent<MergedImgixImageProps, ImgixImagePr
     // Use the local state as the signing source, as opposed to the prop directly.
     // (The source prop may point to an untrusted URL.)
     const { retryCount, source } = this.state;
-    const Component = maybeComponent || FastImage;
-    return <Component {...props} key={`${JSON.stringify(source)}-${retryCount}`} onError={this.handleError} source={source} />;
+
+    const shouldUseFasterImage = props.enableFasterImage || props.fasterImageConfig;
+
+    const Component = maybeComponent || (shouldUseFasterImage ? FasterImageView : FastImage);
+
+    const conditionalProps = shouldUseFasterImage
+      ? { onError: this.props.onError, onLoad: undefined, onSuccess: this.props.onLoad }
+      : {
+          key: `${typeof source === 'object' && source.uri ? source.uri : JSON.stringify(source)}-${retryCount}`,
+          onError: this.handleError,
+        };
+
+    return <Component {...props} {...conditionalProps} source={source} />;
   }
 }
 

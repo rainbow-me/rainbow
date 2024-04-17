@@ -55,7 +55,7 @@ const FloatingEmojis = ({
               : emojisArray.length === 1
                 ? emojisArray[0]
                 : emojisArray[getEmoji(emojisArray)],
-          x: x ? x - getRandomNumber(-20, 20) : getRandomNumber(...range) + '%',
+          x: x ? x - getRandomNumber(-20, 20) : getRandomNumber(...range),
           y: y || 0,
         };
         return [...existingEmojis, newEmoji];

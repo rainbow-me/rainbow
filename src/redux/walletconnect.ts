@@ -16,7 +16,7 @@ import { sendRpcCall } from '../handlers/web3';
 import WalletTypes from '../helpers/walletTypes';
 import { Navigation } from '../navigation';
 import { isSigningMethod } from '../utils/signingMethods';
-import { addRequestToApprove, RequestData } from './requests';
+import { addRequestToApprove, WalletconnectRequestData } from './requests';
 import { AppGetState, AppState as StoreAppState } from './store';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
@@ -31,6 +31,7 @@ import { logger, RainbowError } from '@/logger';
 import { IS_DEV, IS_IOS, IS_TEST } from '@/env';
 import { RainbowNetworks } from '@/networks';
 import { Verify } from '@walletconnect/types';
+import { handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
 
 // -- Variables --------------------------------------- //
 let showRedirectSheetThreshold = 300;
@@ -133,10 +134,10 @@ export interface WalletconnectApprovalSheetRouteParams {
     approved: boolean,
     chainId: number,
     accountAddress: string,
-    peerId: RequestData['peerId'],
-    dappScheme: RequestData['dappScheme'],
-    dappName: RequestData['dappName'],
-    dappUrl: RequestData['dappUrl']
+    peerId: WalletconnectRequestData['peerId'],
+    dappScheme: WalletconnectRequestData['dappScheme'],
+    dappName: WalletconnectRequestData['dappName'],
+    dappUrl: WalletconnectRequestData['dappUrl']
   ) => Promise<unknown>;
   receivedTimestamp: number;
   meta?: {
@@ -148,7 +149,7 @@ export interface WalletconnectApprovalSheetRouteParams {
      */
     chainIds: number[];
     isWalletConnectV2?: boolean;
-  } & Pick<RequestData, 'dappName' | 'dappScheme' | 'dappUrl' | 'imageUrl' | 'peerId'>;
+  } & Pick<WalletconnectRequestData, 'dappName' | 'dappScheme' | 'dappUrl' | 'imageUrl' | 'peerId'>;
   timeout?: ReturnType<typeof setTimeout> | null;
   timedOut?: boolean;
   failureExplainSheetVariant?: string;
@@ -557,10 +558,7 @@ const listenOnNewMessages =
         const { requests: pendingRequests } = getState().requests;
         const request = !pendingRequests[requestId] ? dispatch(addRequestToApprove(clientId, peerId, requestId, payload, peerMeta)) : null;
         if (request) {
-          Navigation.handleAction(Routes.CONFIRM_REQUEST, {
-            openAutomatically: true,
-            transactionDetails: request,
-          });
+          handleWalletConnectRequest(request);
           InteractionManager.runAfterInteractions(() => {
             analytics.track('Showing Walletconnect signing request', {
               dappName,
@@ -741,7 +739,7 @@ export const removeWalletConnector =
  * @param chainId The chain ID to use.
  */
 export const walletConnectUpdateSessionConnectorByDappUrl =
-  (dappUrl: RequestData['dappUrl'], accountAddress: string, chainId: number) =>
+  (dappUrl: WalletconnectRequestData['dappUrl'], accountAddress: string, chainId: number) =>
   (dispatch: Dispatch<WalletconnectUpdateConnectorsAction>, getState: AppGetState) => {
     const { walletConnectors } = getState().walletconnect;
     const connectors = pickBy(walletConnectors, connector => {
@@ -774,7 +772,7 @@ export const walletConnectApproveSession =
   (
     peerId: string,
     callback: WalletconnectRequestCallback | undefined,
-    dappScheme: RequestData['dappScheme'],
+    dappScheme: WalletconnectRequestData['dappScheme'],
     chainId: number,
     accountAddress: string
   ) =>

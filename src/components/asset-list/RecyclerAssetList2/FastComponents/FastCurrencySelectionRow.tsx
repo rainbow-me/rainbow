@@ -177,6 +177,7 @@ export default React.memo(function FastCurrencySelectionRow({
         <View style={sx.fav}>
           {isInfoButtonVisible && <Info contextMenuProps={contextMenuProps} showFavoriteButton={showFavoriteButton} theme={theme} />}
           {showFavoriteButton &&
+            network === Network.mainnet &&
             (ios ? (
               // @ts-ignore
               <FloatingEmojis

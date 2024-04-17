@@ -9,12 +9,12 @@ import {
   getWrappedAssetMethod,
   PermitSupportedTokenList,
   Quote,
-  RAINBOW_ROUTER_CONTRACT_ADDRESS,
+  getRainbowRouterContractAddress,
   WRAPPED_ASSET,
 } from '@rainbow-me/swaps';
 import { Contract } from '@ethersproject/contracts';
 import { MaxUint256 } from '@ethersproject/constants';
-import { mapKeys, mapValues } from 'lodash';
+import { get, mapKeys, mapValues } from 'lodash';
 import { IS_TESTING } from 'react-native-dotenv';
 import { Token } from '../entities/tokens';
 import { estimateGasWithPadding, getProviderForNetwork, toHexNoLeadingZeros } from './web3';
@@ -104,7 +104,8 @@ export const getDefaultGasLimitForTrade = (tradeDetails: Quote, chainId: ChainId
 export const getStateDiff = async (provider: StaticJsonRpcProvider, tradeDetails: Quote): Promise<any> => {
   const tokenAddress = tradeDetails.sellTokenAddress;
   const fromAddr = tradeDetails.from;
-  const toAddr = RAINBOW_ROUTER_CONTRACT_ADDRESS;
+  const chainId = (await provider.getNetwork()).chainId;
+  const toAddr = getRainbowRouterContractAddress(chainId);
   const tokenContract = new Contract(tokenAddress, erc20ABI, provider);
   const { number: blockNumber } = await (provider.getBlock as () => Promise<Block>)();
 
@@ -161,7 +162,7 @@ export const getSwapGasLimitWithFakeApproval = async (
           from: tradeDetails.from,
           gas: toHexNoLeadingZeros(gas),
           gasPrice: toHexNoLeadingZeros(`100000000000`),
-          to: (tradeDetails as CrosschainQuote)?.allowanceTarget || RAINBOW_ROUTER_CONTRACT_ADDRESS,
+          to: (tradeDetails as CrosschainQuote)?.allowanceTarget || getRainbowRouterContractAddress(chainId),
           value: '0x0', // 100 gwei
         },
         'latest',

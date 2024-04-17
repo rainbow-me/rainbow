@@ -39,7 +39,7 @@ export function enable() {
 
 export default function useMagicAutofocus(
   defaultAutofocusInputRef: any,
-  customTriggerFocusCallback: any,
+  customTriggerFocusCallback?: any,
   shouldFocusOnNavigateOnAndroid = false,
   showAfterInteractions = false
 ) {

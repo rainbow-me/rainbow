@@ -14,7 +14,7 @@ export const SheetGestureBlocker = ({
   preventScrollViewDismissal?: boolean;
 }) => {
   return IS_IOS ? (
-    // @ts-expect-error Property 'children' does not exist on type
+    // @ts-expect-error
     <PanGestureHandler enabled={!disabled}>
       <View style={{ height: '100%', width: '100%' }}>
         <>

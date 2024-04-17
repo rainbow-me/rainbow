@@ -111,6 +111,25 @@ query getdApp($shortName: String!, $url: String!, $status: Boolean!) {
   }
 }
 
+query getdApps {
+  dApps {
+    name
+    shortName
+    description
+    url
+    iconURL
+    colors {
+      primary
+      fallback
+      shadow
+    }
+    status
+    report {
+      url
+    }
+  }
+}
+
 fragment asset on TransactionSimulationAsset {
   assetCode
   decimals
@@ -157,14 +176,21 @@ fragment simulationError on TransactionError {
   type
 }
 
-query simulateTransactions($chainId: Int!, $transactions: [Transaction!], $domain: String!) {
-  simulateTransactions(chainID: $chainId, transactions: $transactions, domain: $domain) {
+query simulateTransactions($chainId: Int!, $transactions: [Transaction!], $domain: String, $currency: String) {
+  simulateTransactions(chainID: $chainId, transactions: $transactions, domain: $domain, currency: $currency) {
     error {
       ...simulationError
     }
     scanning {
       result
       description
+    }
+    gas {
+      used
+      estimate
+    }
+    report {
+      url
     }
     simulation {
       in {
@@ -287,6 +313,7 @@ query getPointsDataForWallet($address: String!) {
           }
           differences {
             type
+            group_id
             earnings {
               total
             }
@@ -375,6 +402,7 @@ mutation onboardPoints($address: String!, $signature: String!, $referral: String
           }
           differences {
             type
+            group_id
             earnings {
               total
             }

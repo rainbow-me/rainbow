@@ -184,6 +184,7 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = MAINNET_CHAI
 
             return [
               {
+                address,
                 decimals,
                 favorite: false,
                 highLiquidity: false,

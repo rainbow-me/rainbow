@@ -26,7 +26,7 @@ type GweiStepButtonProps = {
 type FeesGweiInputProps = {
   buttonColor: string;
   editable: boolean;
-  inputRef: React.MutableRefObject<TextInput | undefined>;
+  inputRef: React.MutableRefObject<TextInput | null>;
   value: string;
   minusAction: () => void;
   onChange: (text: string) => void;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Keyboard } from 'react-native';
+import { Keyboard, StatusBar } from 'react-native';
 
 import { useTheme } from '@/theme/ThemeContext';
 import colors from '@/theme/currentColors';
@@ -11,7 +11,6 @@ import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { getNetworkObj } from '@/networks';
 import { getPositionSheetHeight } from '@/screens/positions/PositionSheet';
 
-import BackButton from '@/components/header/BackButton';
 import { Icon } from '@/components/icons';
 import { SheetHandleFixedToTopHeight } from '@/components/sheet';
 import { Text } from '@/components/text';
@@ -27,6 +26,9 @@ import { HARDWARE_WALLET_TX_NAVIGATOR_SHEET_HEIGHT } from '@/navigation/Hardware
 import { StackNavigationOptions } from '@react-navigation/stack';
 import { PartialNavigatorConfigOptions } from '@/navigation/types';
 import { BottomSheetNavigationOptions } from '@/navigation/bottom-sheet/types';
+import { Box } from '@/design-system';
+import { IS_ANDROID } from '@/env';
+import { SignTransactionSheetRouteProp } from '@/screens/SignTransactionSheet';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 
@@ -84,9 +86,28 @@ const buildCoolModalConfig = (params: any): CoolModalConfigOptions => ({
   transitionDuration: params.transitionDuration || 0.35,
 });
 
-const backupSheetSizes = {
-  long: deviceUtils.dimensions.height + safeAreaInsetValues.bottom + sharedCoolModalTopOffset + SheetHandleFixedToTopHeight,
-  short: 394,
+export const backupSheetSizes = {
+  long: IS_ANDROID
+    ? deviceUtils.dimensions.height - safeAreaInsetValues.top
+    : deviceUtils.dimensions.height + safeAreaInsetValues.bottom + sharedCoolModalTopOffset + SheetHandleFixedToTopHeight,
+  medium: 550,
+  short: 424,
+  shorter: 364,
+};
+
+export const getHeightForStep = (step: string) => {
+  switch (step) {
+    case WalletBackupStepTypes.backup_cloud:
+    case WalletBackupStepTypes.backup_manual:
+    case WalletBackupStepTypes.restore_from_backup:
+      return backupSheetSizes.long;
+    case WalletBackupStepTypes.no_provider:
+      return backupSheetSizes.medium;
+    case WalletBackupStepTypes.backup_now_manually:
+      return backupSheetSizes.shorter;
+    default:
+      return backupSheetSizes.short;
+  }
 };
 
 export const backupSheetConfig: PartialNavigatorConfigOptions = {
@@ -95,18 +116,7 @@ export const backupSheetConfig: PartialNavigatorConfigOptions = {
       params: any;
     };
 
-    let heightForStep = backupSheetSizes.short;
-    if (step === WalletBackupStepTypes.cloud || step === WalletBackupStepTypes.manual) {
-      heightForStep = backupSheetSizes.long;
-    } else if (
-      // on the "existing_user" step, our "description" text is 1 extra line of text
-      // vertically, so we want to increase the sheet height by 1 lineHeight here
-      step === WalletBackupStepTypes.existing_user
-    ) {
-      // TODO: measure this text programatically
-      heightForStep = backupSheetSizes.short + fonts.lineHeight.looser;
-    }
-
+    const heightForStep = getHeightForStep(step);
     if (longFormHeight !== heightForStep) {
       navigation.setParams({
         longFormHeight: heightForStep,
@@ -214,11 +224,24 @@ export const consoleSheetConfig = {
   }),
 };
 
-export const signTransactionSheetConfig = {
+export const swapConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
-      backgroundOpacity: 1,
+      backgroundOpacity: 0.9,
+      cornerRadius: 0,
+      springDamping: 1,
+      topOffset: 0,
+      transitionDuration: 0.3,
+    }),
+  }),
+};
+
+export const signTransactionSheetConfig = {
+  options: ({ route }: { route: SignTransactionSheetRouteProp }) => ({
+    ...buildCoolModalConfig({
+      ...route.params,
+      backgroundOpacity: route?.params?.source === 'walletconnect' ? 1 : 0.7,
       cornerRadius: 0,
       springDamping: 1,
       topOffset: 0,
@@ -463,7 +486,7 @@ export const restoreSheetConfig: PartialNavigatorConfigOptions = {
   options: ({ route: { params: { longFormHeight, ...params } = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
-      longFormHeight,
+      height: backupSheetSizes.long,
     }),
   }),
 };
@@ -545,7 +568,7 @@ const BackArrow = styled(Icon).attrs({
 })({
   marginLeft: 15,
   marginRight: 5,
-  marginTop: android ? 2 : 0.5,
+  marginTop: android ? 12 : 0.5,
 });
 
 const BackImage = () => <BackArrow />;
@@ -553,9 +576,8 @@ const BackImage = () => <BackArrow />;
 const headerConfigOptions = {
   headerBackTitleStyle: {
     fontFamily: fonts.family.SFProRounded,
-    // @ts-ignore
-    fontSize: parseFloat(fonts.size.large),
-    fontWeight: fonts.weight.medium,
+    fontSize: Number(fonts.size.large),
+    fontWeight: fonts.weight.medium as any,
     letterSpacing: fonts.letterSpacing.roundedMedium,
   },
   headerLeftContainerStyle: {
@@ -571,54 +593,53 @@ const headerConfigOptions = {
     headerTitleAlign: 'center',
   }),
   headerTitleStyle: {
-    color: colors.themedColors?.dark,
+    color: colors.themedColors?.dark ?? 'black',
     fontFamily: fonts.family.SFProRounded,
-    // @ts-ignore
-    fontSize: parseFloat(fonts.size.large),
-    fontWeight: fonts.weight.heavy,
+    fontSize: Number(fonts.size.large),
+    fontWeight: fonts.weight.heavy as any,
     letterSpacing: fonts.letterSpacing.roundedMedium,
   },
 };
-
-// @ts-expect-error Styled Thing types are incomplete
-const EmptyButtonPlaceholder = styled.View({
-  flex: 1,
-});
 
 const SettingsTitle = ({ children }: React.PropsWithChildren) => {
   const { colors } = useTheme();
 
   return (
-    <Text align="center" color={colors.dark} letterSpacing="roundedMedium" size="large" weight="bold">
-      {children}
-    </Text>
+    <Box paddingTop={IS_ANDROID ? '8px' : undefined}>
+      <Text align="center" color={colors.dark} letterSpacing="roundedMedium" size="large" weight="heavy">
+        {children}
+      </Text>
+    </Box>
   );
 };
 
-export const settingsOptions = (colors: any) => ({
+export const settingsOptions = (colors: any, isSettingsRoute = true): StackNavigationOptions => ({
   ...headerConfigOptions,
+  headerTitleAlign: 'center',
   cardShadowEnabled: false,
   cardStyle: {
     backgroundColor: colors.cardBackdrop,
     overflow: 'visible',
   },
-  gestureEnabled: ios,
-  ...(ios && { headerBackImage: BackImage }),
+  gestureEnabled: true,
   headerBackTitle: ' ',
   headerStatusBarHeight: 0,
-  headerStyle: {
-    backgroundColor: ios ? colors.cardBackdrop : 'transparent',
-    elevation: 0,
-    height: 60,
-    shadowColor: 'transparent',
-  },
-  headerTitleStyle: {
-    ...headerConfigOptions.headerTitleStyle,
-    color: colors.dark,
-  },
-  ...(android && {
-    headerLeft: (props: any) => <BackButton {...props} textChevron />,
-    headerRight: () => <EmptyButtonPlaceholder />,
-    headerTitle: (props: any) => <SettingsTitle {...props} />,
-  }),
+  ...(isSettingsRoute
+    ? {
+        headerStyle: {
+          backgroundColor: colors.cardBackdrop,
+          elevation: 0,
+          height: 60,
+          shadowColor: 'transparent',
+        },
+        headerBackImage: BackImage,
+      }
+    : {
+        headerStyle: {
+          backgroundColor: colors.transparent,
+          height: 0,
+        },
+        headerBackImage: () => <></>,
+      }),
+  headerTitle: (props: any) => <SettingsTitle {...props} />,
 });

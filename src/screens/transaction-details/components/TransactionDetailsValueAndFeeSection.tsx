@@ -32,12 +32,10 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({ transact
   const change = transaction?.changes?.[0];
 
   const value = change?.value || transaction.balance?.display;
-  const valueDisplay = convertRawAmountToBalance(value || '', assetData!).display || '';
-  const nativeCurrencyValue = convertAmountAndPriceToNativeDisplay(
-    change?.asset?.balance?.amount || '',
-    change?.asset?.price?.value || '',
-    nativeCurrency
-  ).display;
+  const valueDisplay = value ? convertRawAmountToBalance(value || '', assetData!).display : '';
+  const nativeCurrencyValue = change?.asset?.price?.value
+    ? convertAmountAndPriceToNativeDisplay(change?.asset?.balance?.amount || '', change?.asset?.price?.value || '', nativeCurrency).display
+    : '';
   const feeValue = fee?.value.display ?? '';
   const feeNativeCurrencyValue = fee?.native?.display ?? '';
 

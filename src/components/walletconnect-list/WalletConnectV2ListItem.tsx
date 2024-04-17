@@ -60,7 +60,8 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
   const { dappName, dappUrl, dappLogo, address, chainIds } = React.useMemo(() => {
     const { namespaces, requiredNamespaces, peer } = session;
     const { metadata } = peer;
-    const { chains } = requiredNamespaces.eip155;
+    const chains = requiredNamespaces?.eip155?.chains || [];
+
     const eip155Account = namespaces.eip155?.accounts?.[0] || undefined;
 
     if (!eip155Account) {

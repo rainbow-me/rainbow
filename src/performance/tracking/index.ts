@@ -102,7 +102,7 @@ function clearMeasure(metric: PerformanceMetricsType) {
 
 /**
  * Function decorator, that tracks performance of a function using performance.now() calls
- * and logs the result with segment.
+ * and logs the result with analytics.
  * @param fn Function which performance will be measured
  * @param metric What you're measuring, the name of the metric
  * @param additionalParams Any additional context you want to add to your log

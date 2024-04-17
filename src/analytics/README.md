@@ -1,6 +1,6 @@
 # `@/analytics`
 
-Our Segment wrapper.
+Our analytics wrapper.
 
 ```typescript
 import { analyticsV2 } from '@/analytics';

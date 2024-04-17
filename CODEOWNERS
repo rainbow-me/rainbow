@@ -63,3 +63,9 @@ src/App.js  @benisgold @skylarbarrera @jinchung
 metro.config.js @skylarbarrera @benisgold 
 metro.transform.js @skylarbarrera @benisgold 
 react-native.config.js  @skylarbarrera @benisgold
+
+# DAPP BROWSER
+src/browser @brunobar79 @skylarbarrera @benisgold
+src/screens/dapp-browser @brunobar79 @skylarbarrera @benisgold
+src/components/DappBrowser @brunobar79 @skylarbarrera @benisgold
+

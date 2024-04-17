@@ -30,12 +30,15 @@ export function onDidPop() {
 }
 
 export function useNavigation() {
-  const { navigate: oldNavigate, ...rest } = oldUseNavigation();
+  const { navigate: oldNavigate, replace: oldReplace, ...rest } = oldUseNavigation();
 
   const handleNavigate = useCallbackOne((...args) => navigate(oldNavigate, ...args), [oldNavigate]);
 
+  const handleReplace = useCallbackOne((...args) => navigate(oldReplace, ...args), [oldReplace]);
+
   return {
     navigate: handleNavigate,
+    replace: handleReplace,
     ...rest,
   };
 }

@@ -193,6 +193,7 @@ const useSwapCurrencyList = (searchQuery: string, searchChainId = MAINNET_CHAINI
             const uniqueId = `${address}_${network}`;
             return [
               {
+                address,
                 decimals,
                 favorite: false,
                 highLiquidity: false,

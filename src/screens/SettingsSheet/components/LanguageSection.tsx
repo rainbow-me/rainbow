@@ -31,36 +31,19 @@ const LanguageSection = () => {
   );
 
   return (
-    <BackgroundProvider color="surfaceSecondary">
-      {({ backgroundColor }) => (
-        <SimpleSheet backgroundColor={backgroundColor as string}>
-          <Inset top="20px" horizontal="20px" bottom="60px">
-            <Inline alignHorizontal="center" alignVertical="center">
-              <Box paddingBottom="12px">
-                <Text size="22pt" weight="heavy" color="label">
-                  {lang.t('settings.language')}
-                </Text>
-              </Box>
-            </Inline>
-            <Box>
-              <MenuContainer>
-                <Menu>
-                  {languageListItems.map(({ name, code }: any) => (
-                    <MenuItem
-                      key={code}
-                      onPress={() => onSelectLanguage(code)}
-                      rightComponent={code === language && <MenuItem.StatusIcon status="selected" />}
-                      size={52}
-                      titleComponent={<MenuItem.Title text={name} />}
-                    />
-                  ))}
-                </Menu>
-              </MenuContainer>
-            </Box>
-          </Inset>
-        </SimpleSheet>
-      )}
-    </BackgroundProvider>
+    <MenuContainer>
+      <Menu>
+        {languageListItems.map(({ name, code }: any) => (
+          <MenuItem
+            key={code}
+            onPress={() => onSelectLanguage(code)}
+            rightComponent={code === language && <MenuItem.StatusIcon status="selected" />}
+            size={52}
+            titleComponent={<MenuItem.Title text={name} />}
+          />
+        ))}
+      </Menu>
+    </MenuContainer>
   );
 };
 

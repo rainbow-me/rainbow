@@ -58,6 +58,7 @@ import { useTheme } from '@/theme';
 import { getUniqueTokenType, promiseUtils } from '@/utils';
 import logger from '@/utils/logger';
 import { getNetworkObj } from '@/networks';
+import { IS_ANDROID } from '@/env';
 import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 
@@ -189,7 +190,7 @@ export const SendConfirmationSheet = () => {
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
   useEffect(() => {
-    android && Keyboard.dismiss();
+    IS_ANDROID && Keyboard.dismiss();
   }, []);
 
   const {
@@ -459,8 +460,7 @@ export const SendConfirmationSheet = () => {
       {/* @ts-expect-error JavaScript component */}
       {ios && <TouchableBackdrop onPress={goBack} />}
 
-      {/* @ts-expect-error JavaScript component */}
-      <SlackSheet additionalTopPadding={android} contentHeight={contentHeight} scrollEnabled={false}>
+      <SlackSheet additionalTopPadding={IS_ANDROID} contentHeight={contentHeight} scrollEnabled={false}>
         <SheetTitle>{lang.t('wallet.transaction.sending_title')}</SheetTitle>
         <Column height={contentHeight}>
           <Column padding={24}>
@@ -661,7 +661,7 @@ export const SendConfirmationSheet = () => {
           </SendButtonWrapper>
           {isENS && (
             /* @ts-expect-error JavaScript component */
-            <GasSpeedButton currentNetwork={network} theme={isDarkMode ? 'dark' : 'light'} />
+            <GasSpeedButton currentNetwork={network} theme={theme.isDarkMode ? 'dark' : 'light'} />
           )}
         </Column>
       </SlackSheet>

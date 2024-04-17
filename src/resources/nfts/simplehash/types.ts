@@ -1,17 +1,5 @@
 import { Network } from '@/helpers';
 
-export enum SimpleHashChain {
-  Arbitrum = 'arbitrum',
-  Bsc = 'bsc',
-  Ethereum = 'ethereum',
-  Gnosis = 'gnosis',
-  Optimism = 'optimism',
-  Polygon = 'polygon',
-  Zora = 'zora',
-  Base = 'base',
-  Avalanche = 'avalanche',
-}
-
 /**
  * @see https://docs.simplehash.com/reference/sale-model
  */
@@ -99,7 +87,7 @@ type SimpleHashCollection = {
  */
 export type SimpleHashNFT = {
   nft_id: string;
-  chain: SimpleHashChain;
+  chain: string;
   contract_address: string;
   token_id: string | null;
   name: string | null;
