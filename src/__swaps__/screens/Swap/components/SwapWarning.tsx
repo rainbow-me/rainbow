@@ -30,7 +30,7 @@ export const SwapWarning = () => {
       justifyContent="center"
       paddingHorizontal="24px"
       paddingVertical="12px"
-      style={[AnimatedSwapStyles.hideWhenInputsExpandedOrNoPriceImpact, { alignSelf: 'center', position: 'absolute', top: 12 }]}
+      style={[AnimatedSwapStyles.hideWhenInputsExpandedOrNoPriceImpact, { alignSelf: 'center', position: 'absolute', top: 8 }]}
     >
       <Box as={Animated.View} alignItems="center" height={{ custom: 33 }} gap={6} justifyContent="center" paddingHorizontal="10px">
         <Inline alignHorizontal="center" alignVertical="center" horizontalSpace="4px" wrap={false}>
