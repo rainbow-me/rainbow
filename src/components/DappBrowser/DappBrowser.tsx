@@ -145,48 +145,26 @@ const DappBrowserComponent = () => {
           showsVerticalScrollIndicator={false}
         >
           <Animated.View style={scrollViewHeightStyle}>
-            {tabStates.map((_, index) => {
-              const props =
-                activeTabIndex === index
-                  ? {
-                      activeTab: tabStates[index],
-                      tabId: tabStates[index].uniqueId,
-                      tabsCount: tabStates.length,
-                      injectedJS,
-                      activeTabRef,
-                      animatedActiveTabIndex,
-                      closeTabWorklet,
-                      currentlyOpenTabIds,
-                      tabViewProgress,
-                      tabViewVisible,
-                      toggleTabViewWorklet,
-                      updateActiveTabState,
-                      nextTabId: tabStates?.[1]?.uniqueId,
-                      url: tabStates[index].url,
-                    }
-                  : {
-                      tabId: tabStates[index].uniqueId,
-                      tabsCount: tabStates.length,
-                      injectedJS,
-                      activeTabRef,
-                      animatedActiveTabIndex,
-                      closeTabWorklet,
-                      currentlyOpenTabIds,
-                      tabViewProgress,
-                      tabViewVisible,
-                      toggleTabViewWorklet,
-                      nextTabId: tabStates?.[1]?.uniqueId,
-                      url: tabStates[index].url,
-                    };
-
-              return (
-                <BrowserTab
-                  key={tabStates[index].uniqueId}
-                  // eslint-disable-next-line react/jsx-props-no-spreading
-                  {...props}
-                />
-              );
-            })}
+            {tabStates.map((_, index) => (
+              <BrowserTab
+                key={tabStates[index].uniqueId}
+                tabState={tabStates[index]}
+                isActiveTab={index === activeTabIndex}
+                tabId={tabStates[index].uniqueId}
+                tabsCount={tabStates.length}
+                injectedJS={injectedJS}
+                activeTabRef={activeTabRef}
+                animatedActiveTabIndex={animatedActiveTabIndex}
+                closeTabWorklet={closeTabWorklet}
+                currentlyOpenTabIds={currentlyOpenTabIds}
+                tabViewProgress={tabViewProgress}
+                tabViewVisible={tabViewVisible}
+                toggleTabViewWorklet={toggleTabViewWorklet}
+                updateActiveTabState={index === activeTabIndex ? updateActiveTabState : undefined}
+                nextTabId={tabStates?.[1]?.uniqueId}
+                url={tabStates[index].url}
+              />
+            ))}
           </Animated.View>
         </AnimatedScrollView>
         <ProgressBar tabViewVisible={tabViewVisible} />

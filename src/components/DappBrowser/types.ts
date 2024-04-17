@@ -31,7 +31,8 @@ export interface NewTabOperation extends BaseTabOperation {
 export type TabOperation = CloseTabOperation | NewTabOperation;
 
 export interface BrowserTabProps {
-  activeTab?: TabState;
+  tabState: TabState;
+  isActiveTab: boolean;
   tabId: string;
   nextTabId: string;
   tabsCount: number;
