@@ -16,6 +16,7 @@ import { SwapInputAsset } from '@/__swaps__/screens/Swap/components/controls/Swa
 import { SwapOutputAsset } from '@/__swaps__/screens/Swap/components/controls/SwapOutputAsset';
 import { SwapNavbar } from '@/__swaps__/screens/Swap/components/SwapNavbar';
 import { SwapAmountInputs } from '@/__swaps__/screens/Swap/components/controls/SwapAmountInputs';
+import { SwapActions } from '@/__swaps__/screens/Swap/components/controls/SwapActions';
 
 /** README
  * This prototype is largely driven by Reanimated and Gesture Handler, which
@@ -64,7 +65,10 @@ export function SwapScreen() {
           <FlipButton />
           <SwapOutputAsset />
           <ExchangeRateBubble />
-          <SwapAmountInputs />
+          <Box width="full" position="absolute" bottom="0px">
+            <SwapAmountInputs />
+            <SwapActions />
+          </Box>
         </Box>
         <SwapNavbar />
       </Box>

@@ -6,21 +6,14 @@ import { safeAreaInsetValues } from '@/utils';
 
 import { SwapActionButton } from '../../components/SwapActionButton';
 import { GasButton } from '../../components/GasButton';
-import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../../constants';
+import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, springConfig } from '../../constants';
 import { IS_ANDROID } from '@/env';
 import { useSwapContext, NavigationSteps } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import Animated, {
-  runOnJS,
-  runOnUI,
-  useAnimatedGestureHandler,
-  useAnimatedReaction,
-  useAnimatedStyle,
-  useSharedValue,
-} from 'react-native-reanimated';
+import Animated, { runOnJS, runOnUI, useAnimatedReaction, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { StyleSheet } from 'react-native';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { ReviewPanel } from '../ReviewPanel';
-import { PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
+import { PanGestureHandler } from 'react-native-gesture-handler';
 import { useSwapActionsGestureHandler } from './useSwapActionsGestureHandler';
 
 export function SwapActions() {
@@ -51,7 +44,7 @@ export function SwapActions() {
 
   const gestureHandlerStyles = useAnimatedStyle(() => {
     return {
-      transform: [{ translateY: gestureY.value > 0 ? gestureY.value : 0 }],
+      transform: [{ translateY: gestureY.value > 0 ? withSpring(gestureY.value, springConfig) : withSpring(0, springConfig) }],
     };
   });
 
@@ -70,7 +63,7 @@ export function SwapActions() {
           custom: IS_ANDROID ? getSoftMenuBarHeight() - 24 : safeAreaInsetValues.bottom + 16,
         }}
         paddingHorizontal="20px"
-        style={[AnimatedSwapStyles.swapActionWrapperStyle, gestureHandlerStyles]}
+        style={[AnimatedSwapStyles.swapActionWrapperStyle, AnimatedSwapStyles.keyboardStyle, gestureHandlerStyles]}
         width="full"
         zIndex={11}
       >

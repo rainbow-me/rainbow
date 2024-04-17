@@ -90,7 +90,6 @@ export function ReviewPanel() {
 
   return (
     <Box as={Animated.View} zIndex={11} style={styles} testID="review-panel" width="full">
-      {/* header */}
       <Stack alignHorizontal="center" space="28px">
         <Text weight="heavy" color="label" size="20pt">
           Review

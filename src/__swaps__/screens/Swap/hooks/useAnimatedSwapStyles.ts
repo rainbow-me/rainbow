@@ -127,7 +127,6 @@ export function useAnimatedSwapStyles({
       borderCurve: 'continuous',
       paddingBottom: IS_ANDROID ? getSoftMenuBarHeight() - 24 : safeAreaInsetValues.bottom + 16,
       paddingTop: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 28 : 16 - THICK_BORDER_WIDTH,
-      marginHorizontal: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 12 : 0,
     };
   });
 
@@ -173,6 +172,13 @@ export function useAnimatedSwapStyles({
     };
   });
 
+  const hideWhileReviewing = useAnimatedStyle(() => {
+    return {
+      opacity: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? withTiming(0, fadeConfig) : withTiming(1, fadeConfig),
+      pointerEvents: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 'none' : 'auto',
+    };
+  });
+
   const searchInputAssetButtonWrapperStyle = useAnimatedStyle(() => {
     return {
       backgroundColor: opacityWorklet(SwapInputController.topColor.value, isDarkMode ? 0.1 : 0.08),
@@ -203,6 +209,7 @@ export function useAnimatedSwapStyles({
     assetToSellCaretStyle,
     assetToBuyIconStyle,
     assetToBuyCaretStyle,
+    hideWhileReviewing,
     flipButtonFetchingStyle,
     searchInputAssetButtonStyle,
     searchOutputAssetButtonStyle,
