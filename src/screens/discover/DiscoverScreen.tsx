@@ -65,7 +65,7 @@ export default function DiscoverScreen() {
         <Navbar
           hasStatusBarInset
           leftComponent={
-            <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.8}>
+            <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.8} overflowMargin={50}>
               {accountImage ? (
                 <ImageAvatar image={accountImage} marginRight={10} size="header" />
               ) : (

@@ -32,12 +32,14 @@ import {
   snappierSpringConfig,
   snappySpringConfig,
   springConfig,
-} from '../constants';
-import { clamp, opacity } from '../utils/swaps';
-import { useSwapContext } from '../providers/swap-provider';
-import { SwapCoinIcon } from './SwapCoinIcon';
-import { INPUT_ADDRESS, INPUT_NETWORK, INPUT_SYMBOL } from '../dummyValues';
+} from '@/__swaps__/screens/Swap/constants';
+import { clamp, opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { SwapCoinIcon } from '@/__swaps__/screens/Swap/components/SwapCoinIcon';
 import { useTheme } from '@/theme';
+import { useSwapAssetStore } from '@/__swaps__/screens/Swap/state/assets';
+import { ethereumUtils } from '@/utils';
+import { ChainId } from '@/__swaps__/types/chains';
 
 type SwapSliderProps = {
   dualColor?: boolean;
@@ -56,7 +58,9 @@ export const SwapSlider = ({
 }: SwapSliderProps) => {
   const theme = useTheme();
   const { isDarkMode } = useColorMode();
-  const { topColor, bottomColor, SwapInputController, sliderXPosition, solidColorCoinIcons, sliderPressProgress } = useSwapContext();
+  const { SwapInputController, sliderXPosition, sliderPressProgress } = useSwapContext();
+
+  const { assetToSell } = useSwapAssetStore();
 
   const panRef = useRef();
   const tapRef = useRef();
@@ -78,12 +82,12 @@ export const SwapSlider = ({
 
   const { inactiveColorLeft, activeColorLeft, inactiveColorRight, activeColorRight } = useMemo(
     () => ({
-      inactiveColorLeft: opacity(dualColor ? bottomColor : topColor, 0.9),
-      activeColorLeft: dualColor ? bottomColor : topColor,
-      inactiveColorRight: dualColor ? opacity(topColor, 0.9) : separatorSecondary,
-      activeColorRight: dualColor ? topColor : fillSecondary,
+      inactiveColorLeft: opacityWorklet(dualColor ? SwapInputController.bottomColor.value : SwapInputController.topColor.value, 0.9),
+      activeColorLeft: dualColor ? SwapInputController.bottomColor.value : SwapInputController.topColor.value,
+      inactiveColorRight: dualColor ? opacity(SwapInputController.topColor.value, 0.9) : separatorSecondary,
+      activeColorRight: dualColor ? SwapInputController.topColor.value : fillSecondary,
     }),
-    [bottomColor, dualColor, fillSecondary, separatorSecondary, topColor]
+    [SwapInputController.bottomColor.value, SwapInputController.topColor.value, dualColor, fillSecondary, separatorSecondary]
   );
 
   // This is the percentage of the slider from the left
@@ -339,6 +343,16 @@ export const SwapSlider = ({
     };
   });
 
+  const maxText = useDerivedValue(() => {
+    return 'Max';
+  });
+
+  const maxTextColor = useAnimatedStyle(() => {
+    return {
+      color: SwapInputController.bottomColor.value,
+    };
+  });
+
   return (
     // @ts-expect-error
     <PanGestureHandler activeOffsetX={[0, 0]} activeOffsetY={[0, 0]} onGestureEvent={onSlide} simultaneousHandlers={[tapRef]}>
@@ -350,23 +364,16 @@ export const SwapSlider = ({
               <Columns alignHorizontal="justify" alignVertical="center">
                 <Inline alignVertical="center" space="6px" wrap={false}>
                   <Bleed vertical="4px">
-                    {solidColorCoinIcons ? (
-                      <Box
-                        borderRadius={8}
-                        height={{ custom: 16 }}
-                        style={{ backgroundColor: topColor, opacity: 0.4 }}
-                        width={{ custom: 16 }}
-                      />
-                    ) : (
-                      <SwapCoinIcon
-                        address={INPUT_ADDRESS}
-                        mainnetAddress={INPUT_ADDRESS}
-                        network={INPUT_NETWORK}
-                        small
-                        symbol={INPUT_SYMBOL}
-                        theme={theme}
-                      />
-                    )}
+                    <SwapCoinIcon
+                      color={SwapInputController.topColorShadow.value}
+                      iconUrl={assetToSell?.icon_url}
+                      address={assetToSell?.address ?? ''}
+                      mainnetAddress={assetToSell?.mainnetAddress ?? ''}
+                      network={ethereumUtils.getNetworkFromChainId(Number(assetToSell?.chainId ?? ChainId.mainnet))}
+                      small
+                      symbol={assetToSell?.symbol ?? ''}
+                      theme={theme}
+                    />
                   </Bleed>
                   <Inline alignVertical="bottom" wrap={false}>
                     <Text color={isDarkMode ? 'labelQuaternary' : 'labelTertiary'} size="15pt" style={{ marginRight: 3 }} weight="bold">
@@ -388,9 +395,7 @@ export const SwapSlider = ({
                       }, 10);
                     }}
                   >
-                    <Text align="center" color={{ custom: bottomColor }} size="15pt" weight="heavy">
-                      Max
-                    </Text>
+                    <AnimatedText align="center" style={maxTextColor} size="15pt" weight="heavy" text={maxText} />
                   </TouchableOpacity>
                 </Column>
               </Columns>

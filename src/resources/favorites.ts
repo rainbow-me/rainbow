@@ -3,7 +3,6 @@ import { Network } from '@/networks/types';
 import { createQueryKey, queryClient } from '@/react-query';
 import { DAI_ADDRESS, ETH_ADDRESS, SOCKS_ADDRESS, WBTC_ADDRESS, WETH_ADDRESS } from '@/references';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQuery } from '@tanstack/react-query';
 import { without } from 'lodash';
 import { externalTokenQueryKey, fetchExternalToken } from './assets/externalAssetsQuery';
@@ -67,16 +66,16 @@ const DEFAULT: Record<EthereumAddress, RainbowToken> = {
 /**
  * Returns a map of the given `addresses` to their corresponding `RainbowToken` metadata.
  */
-async function fetchMetadata(addresses: string[]) {
+async function fetchMetadata(addresses: string[], network = Network.mainnet) {
   const favoritesMetadata: Record<EthereumAddress, RainbowToken> = {};
   const newFavoritesMeta: Record<EthereumAddress, RainbowToken> = {};
 
   // Map addresses to an array of promises returned by fetchExternalToken
   const fetchPromises = addresses.map(async address => {
-    const externalAsset = await fetchExternalToken({ address, network: Network.mainnet, currency: NativeCurrencyKeys.USD });
+    const externalAsset = await fetchExternalToken({ address, network, currency: NativeCurrencyKeys.USD });
     await queryClient.fetchQuery(
-      externalTokenQueryKey({ address, network: Network.mainnet, currency: NativeCurrencyKeys.USD }),
-      async () => fetchExternalToken({ address, network: Network.mainnet, currency: NativeCurrencyKeys.USD }),
+      externalTokenQueryKey({ address, network, currency: NativeCurrencyKeys.USD }),
+      async () => fetchExternalToken({ address, network, currency: NativeCurrencyKeys.USD }),
       {
         staleTime: Infinity,
       }
@@ -86,7 +85,7 @@ async function fetchMetadata(addresses: string[]) {
     if (externalAsset) {
       newFavoritesMeta[address] = {
         ...externalAsset,
-        network: Network.mainnet,
+        network,
         address: externalAsset?.networks['1'].address,
         uniqueId: getUniqueId(externalAsset?.networks['1'].address, Network.mainnet),
         isVerified: true,
@@ -138,6 +137,9 @@ export async function toggleFavorite(address: string) {
     updatedFavorites = [...favorites, lowercasedAddress];
   }
   const metadata = await fetchMetadata(updatedFavorites);
+
+  console.log(metadata);
+
   queryClient.setQueryData(favoritesQueryKey, metadata);
 }
 

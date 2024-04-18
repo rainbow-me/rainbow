@@ -196,6 +196,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
     bsc: '#F0B90B',
     zora: '#2B5DF0',
     avalanche: '#E84142',
+    degen: '#A36EFD',
     blast: '#25292E',
   };
 
@@ -337,6 +338,7 @@ const getColorsByTheme = (darkMode?: boolean) => {
       bsc: '#F0B90B',
       zora: '#6183F0',
       avalanche: '#FF5D5E',
+      degen: '#A36EFD',
       blast: '#FCFC03',
     };
   }

@@ -31,7 +31,7 @@ import { NewTransaction, ParsedAddressAsset } from '@/entities';
 import { useNavigation } from '@/navigation';
 
 import { useTheme } from '@/theme';
-import { abbreviations, ethereumUtils, safeAreaInsetValues } from '@/utils';
+import { abbreviations, deviceUtils, ethereumUtils, safeAreaInsetValues } from '@/utils';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { metadataPOSTClient } from '@/graphql';
@@ -46,6 +46,7 @@ import {
 import { Network } from '@/networks/types';
 import { ETH_ADDRESS } from '@/references';
 import {
+  convertAmountToNativeDisplay,
   convertHexToString,
   convertRawAmountToBalance,
   delay,
@@ -81,7 +82,7 @@ import Routes from '@/navigation/routesNames';
 import { parseGasParamsForTransaction } from '@/parsers/gas';
 import { loadWallet, sendTransaction, signPersonalMessage, signTransaction, signTypedDataMessage } from '@/model/wallet';
 
-import { analytics } from '@/analytics';
+import { analyticsV2 as analytics } from '@/analytics';
 import { maybeSignUri } from '@/handlers/imgix';
 import { RPCMethod } from '@/walletConnect/types';
 import { isAddress } from '@ethersproject/address';
@@ -93,7 +94,8 @@ import { getNextNonce } from '@/state/nonces';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { RequestData } from '@/redux/requests';
-import { RequestType } from '@/utils/requestNavigationHandlers';
+import { RequestSource } from '@/utils/requestNavigationHandlers';
+import { event } from '@/analytics/event';
 
 const COLLAPSED_CARD_HEIGHT = 56;
 const MAX_CARD_HEIGHT = 176;
@@ -134,7 +136,7 @@ type SignTransactionSheetParams = {
   onCloseScreen: (canceled: boolean) => void;
   network: Network;
   address: string;
-  requestType: RequestType;
+  source: RequestSource;
 };
 
 export type SignTransactionSheetRouteProp = RouteProp<{ SignTransactionSheet: SignTransactionSheetParams }, 'SignTransactionSheet'>;
@@ -143,7 +145,7 @@ export const SignTransactionSheet = () => {
   const { goBack, navigate } = useNavigation();
   const { colors, isDarkMode } = useTheme();
   const { width: deviceWidth } = useDimensions();
-  const { accountAddress } = useAccountSettings();
+  const { accountAddress, nativeCurrency } = useAccountSettings();
   const [simulationData, setSimulationData] = useState<TransactionSimulationResult | undefined>();
   const [simulationError, setSimulationError] = useState<TransactionErrorType | undefined>(undefined);
   const [simulationScanResult, setSimulationScanResult] = useState<TransactionScanResultType | undefined>(undefined);
@@ -158,7 +160,7 @@ export const SignTransactionSheet = () => {
     network: currentNetwork,
     address: currentAddress,
     // for request type specific handling
-    requestType,
+    source,
   } = routeParams;
 
   const isMessageRequest = isMessageDisplayType(transactionDetails.payload.method);
@@ -272,7 +274,7 @@ export const SignTransactionSheet = () => {
         } else {
           setMethodName(i18n.t(i18n.l.wallet.message_signing.request));
         }
-        analytics.track('Shown Walletconnect signing request');
+        analytics.track(event.txRequestShownSheet), { source };
       }
     });
   }, [isMessageRequest, currentNetwork, startPollingGasFees, fetchMethodName, transactionDetails?.payload?.params]);
@@ -407,6 +409,7 @@ export const SignTransactionSheet = () => {
           // TX Signing
           simulationData = await metadataPOSTClient.simulateTransactions({
             chainId: chainId,
+            currency: nativeCurrency?.toLowerCase(),
             transactions: [
               {
                 from: req?.from,
@@ -465,7 +468,10 @@ export const SignTransactionSheet = () => {
         setTimeout(async () => {
           onCancelCallback?.(error);
           const rejectionType = transactionDetails?.payload?.method === SEND_TRANSACTION ? 'transaction' : 'signature';
-          analytics.track(`Rejected WalletConnect ${rejectionType} request`, {
+
+          analytics.track(event.txRequestReject, {
+            source,
+            requestType: rejectionType,
             isHardwareWallet: accountInfo.isHardwareWallet,
           });
 
@@ -505,7 +511,9 @@ export const SignTransactionSheet = () => {
     }
 
     if (response?.result) {
-      analytics.track('Approved WalletConnect signature request', {
+      analytics.track(event.txRequestApprove, {
+        source,
+        requestType: 'signature',
         dappName: transactionDetails?.dappName,
         dappUrl: transactionDetails?.dappUrl,
         isHardwareWallet: accountInfo.isHardwareWallet,
@@ -651,7 +659,9 @@ export const SignTransactionSheet = () => {
           txSavedInCurrentWallet = true;
         }
       }
-      analytics.track('Approved WalletConnect transaction request', {
+      analytics.track(event.txRequestApprove, {
+        source,
+        requestType: 'transaction',
         dappName: transactionDetails.dappName,
         dappUrl: transactionDetails.dappUrl,
         isHardwareWallet: accountInfo.isHardwareWallet,
@@ -948,8 +958,19 @@ export const SignTransactionSheet = () => {
               )}
             </Box>
 
+            {source === 'browser' && (
+              <Box
+                height={{ custom: 160 }}
+                position="absolute"
+                style={{ bottom: -24, zIndex: 0, backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD' }}
+                width={{ custom: deviceUtils.dimensions.width }}
+              >
+                <Box height="full" width="full" style={{ backgroundColor: 'rgba(0, 0, 0, 0.7)' }} />
+              </Box>
+            )}
+
             {!isMessageRequest && (
-              <Box alignItems="center" justifyContent="center" style={{ height: 30, zIndex: -1 }}>
+              <Box alignItems="center" justifyContent="center" style={{ height: 30, zIndex: 1 }}>
                 <GasSpeedButton
                   marginTop={0}
                   horizontalPadding={20}
@@ -967,18 +988,6 @@ export const SignTransactionSheet = () => {
             )}
           </Box>
         </Inset>
-        {requestType === 'browser' && (
-          <Box
-            style={{
-              zIndex: -1,
-              position: 'absolute',
-              height: expandedCardBottomInset,
-              bottom: 0,
-              width: deviceWidth,
-              backgroundColor: colors.black,
-            }}
-          />
-        )}
       </Animated.View>
     </PanGestureHandler>
   );
@@ -1496,9 +1505,9 @@ const SimulatedEventRow = ({
     assetCode = ETH_ADDRESS;
   }
   const showUSD = (eventType === 'send' || eventType === 'receive') && !!price;
-  const formattedPrice = `$${price?.toLocaleString?.('en-US', {
-    maximumFractionDigits: 2,
-  })}`;
+
+  const formattedPrice = price && convertAmountToNativeDisplay(price, nativeCurrency);
+
   return (
     <Box justifyContent="center" height={{ custom: CARD_ROW_HEIGHT }} width="full">
       <Inline alignHorizontal="justify" alignVertical="center" space="20px" wrap={false}>

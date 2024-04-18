@@ -1,14 +1,30 @@
 import { SharedValue, interpolate, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
-
-import { BASE_INPUT_HEIGHT, EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT, fadeConfig, springConfig } from '../constants';
+import { useColorMode } from '@/design-system';
+import {
+  BASE_INPUT_HEIGHT,
+  EXPANDED_INPUT_HEIGHT,
+  FOCUSED_INPUT_HEIGHT,
+  THICK_BORDER_WIDTH,
+  fadeConfig,
+  springConfig,
+} from '@/__swaps__/screens/Swap/constants';
+import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
+import { spinnerExitConfig } from '@/__swaps__/components/animations/AnimatedSpinner';
 
 export function useAnimatedSwapStyles({
+  SwapInputController,
   inputProgress,
   outputProgress,
+  isFetching,
 }: {
+  SwapInputController: ReturnType<typeof useSwapInputsController>;
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
+  isFetching: SharedValue<boolean>;
 }) {
+  const { isDarkMode } = useColorMode();
+
   const flipButtonStyle = useAnimatedStyle(() => {
     return {
       transform: [
@@ -78,6 +94,72 @@ export function useAnimatedSwapStyles({
     };
   });
 
+  const swapActionWrapperStyle = useAnimatedStyle(() => {
+    return {
+      backgroundColor: opacityWorklet(SwapInputController.bottomColor.value, 0.03),
+      borderTopColor: opacityWorklet(SwapInputController.bottomColor.value, 0.04),
+      borderTopWidth: THICK_BORDER_WIDTH,
+    };
+  });
+
+  const assetToSellIconStyle = useAnimatedStyle(() => {
+    return {
+      backgroundColor: SwapInputController.topColor.value,
+    };
+  });
+
+  const assetToSellCaretStyle = useAnimatedStyle(() => {
+    return {
+      backgroundColor: SwapInputController.topColor.value,
+    };
+  });
+
+  const assetToBuyIconStyle = useAnimatedStyle(() => {
+    return {
+      backgroundColor: SwapInputController.bottomColor.value,
+    };
+  });
+
+  const assetToBuyCaretStyle = useAnimatedStyle(() => {
+    return {
+      backgroundColor: SwapInputController.bottomColor.value,
+    };
+  });
+
+  const flipButtonFetchingStyle = useAnimatedStyle(() => {
+    return {
+      borderWidth: isFetching ? withTiming(2, { duration: 300 }) : withTiming(THICK_BORDER_WIDTH, spinnerExitConfig),
+    };
+  });
+
+  const searchInputAssetButtonStyle = useAnimatedStyle(() => {
+    return {
+      color: SwapInputController.topColor.value,
+    };
+  });
+
+  const searchOutputAssetButtonStyle = useAnimatedStyle(() => {
+    return {
+      color: SwapInputController.bottomColor.value,
+    };
+  });
+
+  const searchInputAssetButtonWrapperStyle = useAnimatedStyle(() => {
+    return {
+      backgroundColor: opacityWorklet(SwapInputController.topColor.value, isDarkMode ? 0.1 : 0.08),
+      borderColor: opacityWorklet(SwapInputController.topColor.value, isDarkMode ? 0.06 : 0.01),
+      borderWidth: THICK_BORDER_WIDTH,
+    };
+  });
+
+  const searchOutputAssetButtonWrapperStyle = useAnimatedStyle(() => {
+    return {
+      backgroundColor: opacityWorklet(SwapInputController.bottomColor.value, isDarkMode ? 0.1 : 0.08),
+      borderColor: opacityWorklet(SwapInputController.bottomColor.value, isDarkMode ? 0.06 : 0.01),
+      borderWidth: THICK_BORDER_WIDTH,
+    };
+  });
+
   return {
     flipButtonStyle,
     focusedSearchStyle,
@@ -87,5 +169,15 @@ export function useAnimatedSwapStyles({
     keyboardStyle,
     outputStyle,
     outputTokenListStyle,
+    swapActionWrapperStyle,
+    assetToSellIconStyle,
+    assetToSellCaretStyle,
+    assetToBuyIconStyle,
+    assetToBuyCaretStyle,
+    flipButtonFetchingStyle,
+    searchInputAssetButtonStyle,
+    searchOutputAssetButtonStyle,
+    searchInputAssetButtonWrapperStyle,
+    searchOutputAssetButtonWrapperStyle,
   };
 }

@@ -4,12 +4,12 @@ import { AnimatedText, Box, Cover, globalColors, useColorMode, useForegroundColo
 import Animated, { SharedValue, useAnimatedStyle, useDerivedValue, withSpring, withTiming } from 'react-native-reanimated';
 import Input from '@/components/inputs/Input';
 import * as i18n from '@/languages';
-import { NativeSyntheticEvent, StyleSheet, TextInput, TextInputFocusEventData, TextInputSubmitEditingEventData } from 'react-native';
+import { NativeSyntheticEvent, StyleSheet, TextInput, TextInputChangeEventData, TextInputSubmitEditingEventData } from 'react-native';
 import { ToolbarIcon } from '../ToolbarIcon';
 import { IS_IOS } from '@/env';
 import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/screens/Swap/utils/swaps';
+import { opacity } from '@/__swaps__/utils/swaps';
 import { BrowserButtonShadows } from '../DappBrowserShadows';
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import font from '@/styles/fonts';
@@ -19,9 +19,9 @@ import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animatio
 import { AnimatedBlurView } from '@/__swaps__/screens/Swap/components/AnimatedBlurView';
 import haptics from '@/utils/haptics';
 import { useFavoriteDappsStore } from '@/state/favoriteDapps';
-import { Site } from '@/state/browserState';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { getNameFromFormattedUrl, handleShareUrl } from '../utils';
+import { Site } from '@/state/browserHistory';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
 
@@ -29,6 +29,7 @@ export const SearchInput = ({
   inputRef,
   formattedInputValue,
   inputValue,
+  searchValue,
   isGoogleSearch,
   isHome,
   onPressWorklet,
@@ -36,20 +37,28 @@ export const SearchInput = ({
   onSubmitEditing,
   isFocused,
   isFocusedValue,
+  logoUrl,
+  canGoBack,
+  canGoForward,
+  onChange,
 }: {
-  // canGoBack: boolean; // <- re-enable this when canGoBack behavior is fixed
   inputRef: RefObject<TextInput>;
-  formattedInputValue: { value: string; tabIndex: number };
+  formattedInputValue: { url: string; tabIndex: number };
   inputValue: string | undefined;
+  searchValue: string;
   isGoogleSearch: boolean;
   isHome: boolean;
   onPressWorklet: () => void;
-  onBlur: (event: NativeSyntheticEvent<TextInputFocusEventData>) => void;
+  onBlur: () => void;
   onSubmitEditing: (event: NativeSyntheticEvent<TextInputSubmitEditingEventData>) => void;
   isFocused: boolean;
   isFocusedValue: SharedValue<boolean>;
+  logoUrl: string | undefined | null;
+  canGoBack: boolean;
+  canGoForward: boolean;
+  onChange: (event: NativeSyntheticEvent<TextInputChangeEventData>) => void;
 }) => {
-  const { animatedActiveTabIndex, goBack, onRefresh, tabViewProgress } = useBrowserContext();
+  const { animatedActiveTabIndex, goBack, goForward, onRefresh, tabViewProgress } = useBrowserContext();
   const { isFavorite, addFavorite, removeFavorite } = useFavoriteDappsStore();
   const { isDarkMode } = useColorMode();
 
@@ -62,9 +71,9 @@ export const SearchInput = ({
   const buttonColorAndroid = isDarkMode ? globalColors.blueGrey100 : globalColors.white100;
   const buttonColor = IS_IOS ? buttonColorIOS : buttonColorAndroid;
 
-  const formattedUrl = formattedInputValue?.value;
+  const formattedUrl = formattedInputValue?.url;
   const formattedUrlValue = useDerivedValue(() => {
-    return formattedInputValue?.tabIndex !== animatedActiveTabIndex?.value ? '' : formattedInputValue?.value;
+    return formattedInputValue?.tabIndex !== animatedActiveTabIndex?.value ? '' : formattedInputValue?.url;
   });
 
   const pointerEventsStyle = useAnimatedStyle(() => ({
@@ -104,16 +113,13 @@ export const SearchInput = ({
         const site: Omit<Site, 'timestamp'> = {
           name: getNameFromFormattedUrl(formattedUrl),
           url: inputValue,
-          // ⚠️ Removed the favicons for now since they tend to be worse
-          // than having no image. Need to pull in dapp metadata and ideally
-          // grab the website's apple-touch-icon as a fallback if it exists.
-          image: '',
+          image: logoUrl || `https://${formattedUrl}/apple-touch-icon.png`,
         };
         addFavorite(site);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formattedUrl, inputValue]);
+  }, [formattedUrl, inputValue, logoUrl]);
 
   const menuConfig = useMemo(
     () => ({
@@ -137,29 +143,44 @@ export const SearchInput = ({
               },
             }
           : {},
-        // ⚠️ TODO: Re-enable this when canGoBack behavior is fixed:
-        // canGoBack
-        //   ? {
-        //       actionKey: 'back',
-        //       actionTitle: 'Back',
-        //       icon: {
-        //         iconType: 'SYSTEM',
-        //         iconValue: 'arrow.uturn.left',
-        //       },
-        //     }
-        //   : {},
+        canGoForward
+          ? {
+              actionKey: 'forward',
+              actionTitle: 'Forward',
+              icon: {
+                iconType: 'SYSTEM',
+                iconValue: 'arrowshape.forward',
+              },
+            }
+          : {},
+        canGoBack
+          ? {
+              actionKey: 'back',
+              actionTitle: 'Back',
+              icon: {
+                iconType: 'SYSTEM',
+                iconValue: 'arrowshape.backward',
+              },
+            }
+          : {},
       ],
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [/* canGoBack, */ isFavorite(formattedUrl), isGoogleSearch]
+    [canGoBack, canGoForward, isFavorite(formattedUrl), isGoogleSearch]
   );
 
-  const onPressMenuItem = async ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: 'share' | 'favorite' | 'back' } }) => {
+  const onPressMenuItem = async ({
+    nativeEvent: { actionKey },
+  }: {
+    nativeEvent: { actionKey: 'share' | 'favorite' | 'back' | 'forward' };
+  }) => {
     haptics.selection();
     if (actionKey === 'favorite') {
       handleFavoritePress();
     } else if (actionKey === 'back') {
       goBack();
+    } else if (actionKey === 'forward') {
+      goForward();
     } else if (inputValue) {
       handleShareUrl(inputValue);
     }
@@ -206,6 +227,7 @@ export const SearchInput = ({
               placeholder={i18n.t(i18n.l.dapp_browser.address_bar.input_placeholder)}
               placeholderTextColor={labelQuaternary}
               onBlur={onBlur}
+              onChange={onChange}
               onSubmitEditing={onSubmitEditing}
               ref={inputRef}
               returnKeyType="go"
@@ -220,6 +242,7 @@ export const SearchInput = ({
               ]}
               textAlign="left"
               textAlignVertical="center"
+              value={searchValue}
               defaultValue={inputValue}
             />
             <Cover alignHorizontal="center" alignVertical="center" pointerEvents="none">
@@ -231,9 +254,10 @@ export const SearchInput = ({
                   numberOfLines={1}
                   size="17pt"
                   style={[{ alignSelf: 'center', paddingHorizontal: isHome ? 0 : 40 }, hideFormattedUrlWhenTabChanges]}
-                  text={formattedUrlValue}
                   weight="bold"
-                />
+                >
+                  {formattedUrlValue}
+                </AnimatedText>
               </Box>
             </Cover>
           </MaskedView>

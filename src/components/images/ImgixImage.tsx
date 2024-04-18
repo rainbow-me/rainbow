@@ -3,7 +3,7 @@ import * as React from 'react';
 import { StyleSheet } from 'react-native';
 import FastImage, { FastImageProps, Source } from 'react-native-fast-image';
 import { maybeSignSource } from '../../handlers/imgix';
-import { FASTER_IMAGE_CONFIG } from '../DappBrowser/constants';
+import { TAB_SCREENSHOT_FASTER_IMAGE_CONFIG } from '../DappBrowser/constants';
 
 export type ImgixImageProps = FastImageProps & {
   readonly Component?: React.ElementType;
@@ -42,17 +42,23 @@ class ImgixImage extends React.PureComponent<MergedImgixImageProps, ImgixImagePr
       ...(shouldUseFasterImage
         ? {
             source: {
-              base64Placeholder: FASTER_IMAGE_CONFIG.base64Placeholder,
+              base64Placeholder: TAB_SCREENSHOT_FASTER_IMAGE_CONFIG.base64Placeholder,
               cachePolicy: 'discWithCacheControl',
               resizeMode: resizeMode && resizeMode !== 'stretch' ? resizeMode : 'cover',
-              transitionDuration: 0,
+              showActivityIndicator: false,
+              transitionDuration: 0.175,
               ...fasterImageConfig,
               borderRadius: fasterImageStyle?.borderRadius,
               url: !!source && typeof source === 'object' ? maybeSignSource(source, options)?.uri : source,
             },
             style: [
+              {
+                borderCurve: 'continuous',
+                height: fasterImageStyle?.height || size || '100%',
+                overflow: 'hidden',
+                width: fasterImageStyle?.width || size || '100%',
+              },
               fasterImageStyle,
-              { height: fasterImageStyle?.height || size || '100%', width: fasterImageStyle?.width || size || '100%' },
             ],
           }
         : { retryCount: 0, source: !!source && typeof source === 'object' ? maybeSignSource(source, options) : source }),
@@ -83,6 +89,7 @@ class ImgixImage extends React.PureComponent<MergedImgixImageProps, ImgixImagePr
     const shouldUseFasterImage = props.enableFasterImage || props.fasterImageConfig;
 
     const Component = maybeComponent || (shouldUseFasterImage ? FasterImageView : FastImage);
+
     const conditionalProps = shouldUseFasterImage
       ? { onError: this.props.onError, onLoad: undefined, onSuccess: this.props.onLoad }
       : {

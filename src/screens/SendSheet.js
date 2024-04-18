@@ -607,7 +607,8 @@ export default function SendSheet(props) {
     if (isValid) {
       toAddress = await resolveNameOrAddress(recipient);
     }
-    const validRecipient = validateRecipient(toAddress);
+    const tokenAddress = selected?.address;
+    const validRecipient = validateRecipient(toAddress, tokenAddress);
     assetInputRef?.current?.blur();
     nativeCurrencyInputRef?.current?.blur();
     if (!validRecipient) {

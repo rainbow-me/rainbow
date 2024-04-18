@@ -1,4 +1,3 @@
-import c from 'chroma-js';
 import React from 'react';
 import { StyleSheet, Text as RNText, Pressable } from 'react-native';
 import Animated from 'react-native-reanimated';
@@ -14,26 +13,18 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { safeAreaInsetValues } from '@/utils';
 
-import { ETH_COLOR, ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '../constants';
-import { OUTPUT_COLOR } from '../dummyValues';
+import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 
-import { getHighContrastColor, opacity } from '../utils/swaps';
+import { opacity } from '@/__swaps__/utils/swaps';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { useSwapContext } from '../providers/swap-provider';
+import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 
 export function SwapNavbar() {
   const { accountSymbol, accountColor, accountImage } = useAccountProfile();
   const { isDarkMode } = useColorMode();
   const { navigate, goBack } = useNavigation();
 
-  const {
-    solidColorCoinIcons,
-    AnimatedSwapStyles,
-
-    setBottomColor,
-    setSolidColorCoinIcons,
-    setTopColor,
-  } = useSwapContext();
+  const { AnimatedSwapStyles } = useSwapContext();
 
   const separatorSecondary = useForegroundColor('separatorSecondary');
   const separatorTertiary = useForegroundColor('separatorTertiary');
@@ -77,24 +68,8 @@ export function SwapNavbar() {
         rightComponent={
           // TODO: This is temporarily hooked up to shuffle input/output colors
           <ButtonPressAnimation
-            onLongPress={() => {
-              setBottomColor(OUTPUT_COLOR);
-              setTopColor(isDarkMode ? ETH_COLOR_DARK : ETH_COLOR);
-
-              if (solidColorCoinIcons) {
-                setSolidColorCoinIcons(false);
-              }
-            }}
             onPress={() => {
-              const randomBottomColor = c.random().hex();
-              const randomTopColor = c.random().hex();
-
-              setBottomColor(getHighContrastColor(randomBottomColor, isDarkMode));
-              setTopColor(getHighContrastColor(randomTopColor, isDarkMode));
-
-              if (!solidColorCoinIcons) {
-                setSolidColorCoinIcons(true);
-              }
+              // TODO: implement navigation to settings sheet
             }}
             scaleTo={0.8}
           >

@@ -149,6 +149,7 @@ export default function SwapDetailsState({ confirmButtonProps, restoreFocusOnSwa
         />
         <SwapDetailsSlippageMessage
           isHighPriceImpact={priceImpact.type !== SwapPriceImpactType.none}
+          outputCurrencySymbol={outputCurrency?.symbol}
           onLayout={setSlippageMessageHeight}
           priceImpactColor={priceImpact.color}
           priceImpactNativeAmount={priceImpact.impactDisplay}

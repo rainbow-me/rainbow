@@ -448,7 +448,16 @@ export type ForegroundColor =
   | 'secondary60 (Deprecated)'
   | 'secondary70 (Deprecated)'
   | 'secondary80 (Deprecated)'
-  | 'swap (Deprecated)';
+  | 'swap (Deprecated)'
+  | 'mainnet'
+  | 'arbitrum'
+  | 'optimism'
+  | 'polygon'
+  | 'base'
+  | 'zora'
+  | 'bsc'
+  | 'avalanche'
+  | 'blast';
 
 function selectBackgroundAsForeground(backgroundName: BackgroundColor): string | ContextualColorValue<string> {
   const bg = backgroundColors[backgroundName];
@@ -626,6 +635,42 @@ export const foregroundColors: Record<ForegroundColor, string | ContextualColorV
     light: '#25292E',
   },
   'swap (Deprecated)': deprecatedColors.swapPurple,
+  'mainnet': {
+    light: '#6D6D6D',
+    dark: '#999BA1',
+  },
+  'arbitrum': {
+    light: '#1690E4',
+    dark: '#52B8FF',
+  },
+  'optimism': {
+    light: '#FF4040',
+    dark: '#FF8A8A',
+  },
+  'polygon': {
+    light: '#8247E5',
+    dark: '#BE97FF',
+  },
+  'base': {
+    light: '#0052FF',
+    dark: '#3979FF',
+  },
+  'zora': {
+    light: '#2B5DF0',
+    dark: '#6183F0',
+  },
+  'bsc': {
+    light: '#EBAF09',
+    dark: '#FFDA66',
+  },
+  'avalanche': {
+    light: '#EBAF09',
+    dark: '#FF5D5E',
+  },
+  'blast': {
+    light: '#FCFC06',
+    dark: '#FCFC06',
+  },
 };
 
 /**
@@ -716,7 +761,16 @@ export const textColors = selectForegroundColors(
   'secondary50 (Deprecated)',
   'secondary60 (Deprecated)',
   'secondary70 (Deprecated)',
-  'secondary80 (Deprecated)'
+  'secondary80 (Deprecated)',
+  'mainnet',
+  'arbitrum',
+  'optimism',
+  'polygon',
+  'base',
+  'zora',
+  'bsc',
+  'avalanche',
+  'blast'
 );
 export type TextColor = (typeof textColors)[number];
 

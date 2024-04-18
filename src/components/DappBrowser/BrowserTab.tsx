@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FasterImageView, ImageOptions } from '@candlefinance/faster-image';
-import { Box, globalColors, useColorMode } from '@/design-system';
-import { useAccountAccentColor, useDimensions } from '@/hooks';
-import React, { useCallback, useEffect, useRef } from 'react';
+import { globalColors, useColorMode } from '@/design-system';
+import { useDimensions } from '@/hooks';
+import React, { useCallback, useLayoutEffect, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
   PanGestureHandler,
@@ -11,6 +11,7 @@ import {
   TapGestureHandlerGestureEvent,
 } from 'react-native-gesture-handler';
 import Animated, {
+  FadeIn,
   convertToRGBA,
   dispatchCommand,
   interpolate,
@@ -29,7 +30,7 @@ import ViewShot from 'react-native-view-shot';
 import WebView, { WebViewMessageEvent, WebViewNavigation } from 'react-native-webview';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { MMKV } from 'react-native-mmkv';
-import { RAINBOW_HOME, TabState, useBrowserContext } from './BrowserContext';
+import { TabState, useBrowserContext } from './BrowserContext';
 import { Freeze } from 'react-freeze';
 import {
   COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
@@ -38,20 +39,24 @@ import {
   TAB_VIEW_COLUMN_WIDTH,
   TAB_VIEW_ROW_HEIGHT,
   TAB_VIEW_TAB_HEIGHT,
+  TOP_INSET,
   WEBVIEW_HEIGHT,
 } from './Dimensions';
 import RNFS from 'react-native-fs';
 import { WebViewEvent } from 'react-native-webview/lib/WebViewTypes';
 import { appMessenger } from '@/browserMessaging/AppMessenger';
 import { IS_ANDROID, IS_DEV, IS_IOS } from '@/env';
+import { RainbowError, logger } from '@/logger';
 import { CloseTabButton, X_BUTTON_PADDING, X_BUTTON_SIZE } from './CloseTabButton';
 import DappBrowserWebview from './DappBrowserWebview';
 import Homepage from './Homepage';
 import { handleProviderRequestApp } from './handleProviderRequest';
 import { WebViewBorder } from './WebViewBorder';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '../animations/animationConfigs';
-import { FASTER_IMAGE_CONFIG } from './constants';
-import { RainbowError, logger } from '@/logger';
+import { TAB_SCREENSHOT_FASTER_IMAGE_CONFIG, RAINBOW_HOME } from './constants';
+import { getWebsiteMetadata } from './scripts';
+import { useBrowserHistoryStore } from '@/state/browserHistory';
+import { normalizeUrlForRecents } from './utils';
 
 // ⚠️ TODO: Split this file apart into hooks, smaller components
 // useTabScreenshots, useAnimatedWebViewStyles, useWebViewGestures
@@ -166,18 +171,14 @@ const deletePrunedScreenshotFiles = async (allScreenshots: ScreenshotType[], scr
   }
 };
 
-const getWebsiteBackgroundColorAndTitle = `
-  const bgColor = window.getComputedStyle(document.body, null).getPropertyValue('background-color');
-  window.ReactNativeWebView.postMessage(JSON.stringify({ topic: "bg", payload: bgColor}));
-  window.ReactNativeWebView.postMessage(JSON.stringify({ topic: "title", payload: document.title }));
-  true;
-  `;
-
 export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, injectedJS }: BrowserTabProps) {
   const {
     activeTabIndex,
+    activeTabRef,
     animatedActiveTabIndex,
-    closeTab,
+    closeTabWorklet,
+    currentlyOpenTabIds,
+    loadProgress,
     scrollViewRef,
     scrollViewOffset,
     tabStates,
@@ -185,19 +186,16 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
     tabViewVisible,
     toggleTabViewWorklet,
     updateActiveTabState,
-    webViewRefs,
   } = useBrowserContext();
-  const { accentColor } = useAccountAccentColor();
   const { isDarkMode } = useColorMode();
   const { width: deviceWidth } = useDimensions();
+  const { addRecent } = useBrowserHistoryStore();
 
   const currentMessenger = useRef<any>(null);
   const title = useRef<string | null>(null);
+  const logo = useRef<string | null>(null);
   const webViewRef = useRef<WebView>(null);
   const viewShotRef = useRef<ViewShot | null>(null);
-
-  const panRef = useRef();
-  const tapRef = useRef();
 
   // ⚠️ TODO
   const gestureScale = useSharedValue(1);
@@ -215,25 +213,63 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
 
   const tabUrl = tabStates?.[tabIndex]?.url;
   const isActiveTab = activeTabIndex === tabIndex;
-  const multipleTabsOpen = tabStates?.length > 1;
   const isOnHomepage = tabUrl === RAINBOW_HOME;
 
+  const animatedTabIndex = useSharedValue(
+    (currentlyOpenTabIds?.value.indexOf(tabId) === -1
+      ? currentlyOpenTabIds?.value.length - 1
+      : currentlyOpenTabIds?.value.indexOf(tabId)) ?? 0
+  );
   const screenshotData = useSharedValue<ScreenshotType | undefined>(findTabScreenshot(tabId, tabUrl) || undefined);
 
   const defaultBackgroundColor = isDarkMode ? '#191A1C' : globalColors.white100;
   const backgroundColor = useSharedValue<string>(defaultBackgroundColor);
+
+  const animatedTabXPosition = useDerivedValue(() => {
+    return withTiming(
+      (animatedTabIndex.value % 2) * (TAB_VIEW_COLUMN_WIDTH + 20) - (TAB_VIEW_COLUMN_WIDTH + 20) / 2,
+      TIMING_CONFIGS.tabPressConfig
+    );
+  });
+
+  const animatedTabYPosition = useDerivedValue(() => {
+    return withTiming(Math.floor(animatedTabIndex.value / 2) * TAB_VIEW_ROW_HEIGHT, TIMING_CONFIGS.tabPressConfig);
+  });
+
+  const multipleTabsOpen = useDerivedValue(() => {
+    // The purpose of the following checks is to prevent jarring visual shifts when the tab view transitions
+    // from having a single tab to multiple tabs. When a second tab is created, it takes a moment for
+    // tabStates to catch up to currentlyOpenTabIds, and this check prevents the single tab from shifting
+    // due to currentlyOpenTabIds updating before the new tab component is rendered via tabStates.
+    const isFirstTab = currentlyOpenTabIds?.value.indexOf(tabId) === 0;
+    const shouldTwoTabsExist = currentlyOpenTabIds?.value.length === 2;
+
+    const isTransitioningFromSingleToMultipleTabs =
+      isFirstTab &&
+      shouldTwoTabsExist &&
+      (tabStates?.length === 1 || (tabStates?.length === 2 && currentlyOpenTabIds?.value[1] !== tabStates?.[1]?.uniqueId));
+
+    const multipleTabsExist = !!(currentlyOpenTabIds?.value && currentlyOpenTabIds?.value.length > 1);
+    const isLastOrSecondToLastTabAndExiting = currentlyOpenTabIds?.value?.indexOf(tabId) === -1 && currentlyOpenTabIds.value.length === 1;
+    const multipleTabsOpen = (multipleTabsExist && !isTransitioningFromSingleToMultipleTabs) || isLastOrSecondToLastTabAndExiting;
+
+    return multipleTabsOpen;
+  });
+
+  const animatedMultipleTabsOpen = useDerivedValue(() => {
+    return withTiming(multipleTabsOpen.value ? 1 : 0, TIMING_CONFIGS.tabPressConfig);
+  });
 
   const animatedWebViewBackgroundColorStyle = useAnimatedStyle(() => {
     const homepageColor = isDarkMode ? globalColors.grey100 : '#FBFCFD';
 
     if (isOnHomepage) return { backgroundColor: homepageColor };
     if (!backgroundColor.value) return { backgroundColor: defaultBackgroundColor };
-
     if (isColor(backgroundColor.value)) {
       const rgbaColor = convertToRGBA(backgroundColor.value);
 
-      if (rgbaColor[3] < 1) {
-        return { backgroundColor: `rgba(${rgbaColor[0]}, ${rgbaColor[1]}, ${rgbaColor[2]}, 1)` };
+      if (rgbaColor[3] < 1 && rgbaColor[3] !== 0) {
+        return { backgroundColor: `rgba(${rgbaColor[0] * 255}, ${rgbaColor[1] * 255}, ${rgbaColor[2] * 255}, 1)` };
       } else {
         return { backgroundColor: backgroundColor.value };
       }
@@ -245,46 +281,49 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
   const animatedWebViewHeight = useDerivedValue(() => {
     // For some reason driving the WebView height with a separate derived
     // value results in slightly less tearing when the height animates
-    const progress = tabViewProgress?.value || 0;
-    const isActiveTabAnimated = animatedActiveTabIndex?.value === tabIndex;
+    const animatedIsActiveTab = animatedActiveTabIndex?.value === animatedTabIndex.value;
+    if (!animatedIsActiveTab) return COLLAPSED_WEBVIEW_HEIGHT_UNSCALED;
 
-    if (!isActiveTabAnimated) return COLLAPSED_WEBVIEW_HEIGHT_UNSCALED;
+    const progress = tabViewProgress?.value || 0;
 
     return interpolate(
       progress,
       [0, 100],
-      [isActiveTabAnimated ? WEBVIEW_HEIGHT : COLLAPSED_WEBVIEW_HEIGHT_UNSCALED, COLLAPSED_WEBVIEW_HEIGHT_UNSCALED],
+      [animatedIsActiveTab ? WEBVIEW_HEIGHT : COLLAPSED_WEBVIEW_HEIGHT_UNSCALED, COLLAPSED_WEBVIEW_HEIGHT_UNSCALED],
       'clamp'
     );
   });
 
   const animatedWebViewStyle = useAnimatedStyle(() => {
     const progress = tabViewProgress?.value || 0;
-    const isActiveTabAnimated = animatedActiveTabIndex?.value === tabIndex;
+    const animatedIsActiveTab = animatedActiveTabIndex?.value === animatedTabIndex.value;
+    const isTabBeingClosed = currentlyOpenTabIds?.value?.indexOf(tabId) === -1;
 
+    const scaleDiff = 0.7 - TAB_VIEW_COLUMN_WIDTH / deviceWidth;
     const scale = interpolate(
       progress,
       [0, 100],
-      [isActiveTabAnimated ? 1 : TAB_VIEW_COLUMN_WIDTH / deviceWidth, multipleTabsOpen ? TAB_VIEW_COLUMN_WIDTH / deviceWidth : 0.7]
+      [animatedIsActiveTab && !isTabBeingClosed ? 1 : TAB_VIEW_COLUMN_WIDTH / deviceWidth, 0.7 - scaleDiff * animatedMultipleTabsOpen.value]
     );
 
-    const xPositionStart = isActiveTabAnimated ? 0 : (tabIndex % 2) * (TAB_VIEW_COLUMN_WIDTH + 20) - (TAB_VIEW_COLUMN_WIDTH + 20) / 2;
-    const xPositionEnd = multipleTabsOpen ? (tabIndex % 2) * (TAB_VIEW_COLUMN_WIDTH + 20) - (TAB_VIEW_COLUMN_WIDTH + 20) / 2 : 0;
+    const xPositionStart = animatedIsActiveTab ? 0 : animatedTabXPosition.value;
+    const xPositionEnd = animatedMultipleTabsOpen.value * animatedTabXPosition.value;
     const xPositionForTab = interpolate(progress, [0, 100], [xPositionStart, xPositionEnd]);
 
     const extraYPadding = 20;
 
     const yPositionStart =
-      (isActiveTabAnimated ? 0 : Math.floor(tabIndex / 2) * TAB_VIEW_ROW_HEIGHT + extraYPadding) +
-      (isActiveTabAnimated ? (1 - progress / 100) * (scrollViewOffset?.value || 0) : 0);
+      (animatedIsActiveTab ? 0 : animatedTabYPosition.value + extraYPadding) +
+      (animatedIsActiveTab ? (1 - progress / 100) * (scrollViewOffset?.value || 0) : 0);
     const yPositionEnd =
-      (multipleTabsOpen ? Math.floor(tabIndex / 2) * TAB_VIEW_ROW_HEIGHT + extraYPadding : 0) +
-      (isActiveTabAnimated ? (1 - progress / 100) * (scrollViewOffset?.value || 0) : 0);
+      (animatedTabYPosition.value + extraYPadding) * animatedMultipleTabsOpen.value +
+      (animatedIsActiveTab ? (1 - progress / 100) * (scrollViewOffset?.value || 0) : 0);
     const yPositionForTab = interpolate(progress, [0, 100], [yPositionStart, yPositionEnd]);
 
     // Determine the border radius for the minimized tab that
     // achieves concentric corners around the close button
-    const invertedScale = multipleTabsOpen ? INVERTED_MULTI_TAB_SCALE : INVERTED_SINGLE_TAB_SCALE;
+    const invertedScaleDiff = INVERTED_SINGLE_TAB_SCALE - INVERTED_MULTI_TAB_SCALE;
+    const invertedScale = INVERTED_SINGLE_TAB_SCALE - invertedScaleDiff * animatedMultipleTabsOpen.value;
     const spaceToXButton = invertedScale * X_BUTTON_PADDING;
     const xButtonBorderRadius = (X_BUTTON_SIZE / 2) * invertedScale;
     const tabViewBorderRadius = xButtonBorderRadius + spaceToXButton;
@@ -293,87 +332,126 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
       progress,
       [0, 100],
       // eslint-disable-next-line no-nested-ternary
-      [isActiveTabAnimated ? (IS_ANDROID ? 0 : 16) : tabViewBorderRadius, tabViewBorderRadius],
+      [animatedIsActiveTab ? (IS_ANDROID ? 0 : 16) : tabViewBorderRadius, tabViewBorderRadius],
       'clamp'
     );
 
-    const opacity = interpolate(progress, [0, 100], [isActiveTabAnimated ? 1 : 0, 1], 'clamp');
+    const opacity = interpolate(progress, [0, 100], [animatedIsActiveTab ? 1 : 0, 1], 'clamp');
 
     return {
       borderRadius,
       height: animatedWebViewHeight.value,
       opacity,
       // eslint-disable-next-line no-nested-ternary
-      pointerEvents: tabViewVisible?.value ? 'box-only' : isActiveTabAnimated ? 'auto' : 'none',
+      pointerEvents: tabViewVisible?.value ? 'auto' : animatedIsActiveTab ? 'auto' : 'none',
       transform: [
-        { translateY: multipleTabsOpen ? -animatedWebViewHeight.value / 2 : 0 },
+        { translateY: animatedMultipleTabsOpen.value * (-animatedWebViewHeight.value / 2) },
         { translateX: xPositionForTab + gestureX.value },
         { translateY: yPositionForTab + gestureY.value },
         { scale: scale * gestureScale.value },
-        { translateY: multipleTabsOpen ? animatedWebViewHeight.value / 2 : 0 },
+        { translateY: animatedMultipleTabsOpen.value * (animatedWebViewHeight.value / 2) },
       ],
     };
   });
 
   const zIndexAnimatedStyle = useAnimatedStyle(() => {
     const progress = tabViewProgress?.value || 0;
-    const isActiveTabAnimated = animatedActiveTabIndex?.value === tabIndex;
+    const animatedIsActiveTab = animatedActiveTabIndex?.value === animatedTabIndex.value;
+    const wasCloseButtonPressed = gestureScale.value === 1 && gestureX.value < 0;
 
+    const scaleDiff = 0.7 - TAB_VIEW_COLUMN_WIDTH / deviceWidth;
     const scaleWeighting =
       gestureScale.value *
       interpolate(
         progress,
         [0, 100],
-        [isActiveTabAnimated ? 1 : TAB_VIEW_COLUMN_WIDTH / deviceWidth, multipleTabsOpen ? TAB_VIEW_COLUMN_WIDTH / deviceWidth : 0.7],
+        [animatedIsActiveTab ? 1 : TAB_VIEW_COLUMN_WIDTH / deviceWidth, 0.7 - scaleDiff * animatedMultipleTabsOpen.value],
         'clamp'
       );
-    const zIndex = scaleWeighting * (isActiveTabAnimated || gestureScale.value > 1 ? 9999 : 1);
+    const zIndex = scaleWeighting * (animatedIsActiveTab || gestureScale.value > 1 ? 9999 : 1) + (wasCloseButtonPressed ? 9999 : 0);
 
     return { zIndex };
   });
 
-  const pointerEventsStyle = useAnimatedStyle(() => ({
-    // eslint-disable-next-line no-nested-ternary
-    pointerEvents: tabViewVisible?.value ? 'box-only' : 'none',
-  }));
-
   const handleNavigationStateChange = useCallback(
     (navState: WebViewNavigation) => {
-      if (navState.url !== tabStates[tabIndex].url) {
+      // Set the logo if it's not already set to the current website's logo
+      if (tabStates[tabIndex].logoUrl !== logo.current) {
         updateActiveTabState(
           {
-            canGoBack: navState.canGoBack,
-            canGoForward: navState.canGoForward,
-            url: navState.url,
+            logoUrl: logo.current,
           },
           tabId
         );
+      }
+
+      // To prevent infinite redirect loops, we only update the URL if both of these are true:
+      //
+      // 1) the WebView's URL is different from the tabStates URL
+      // 2) the navigationType !== 'other', which gets triggered repeatedly in certain cases programatically
+      //
+      // This has the consequence of the tabStates page URL not always being updated when navigating within
+      // single-page apps, which we'll need to figure out a solution for, but it's an okay workaround for now.
+      //
+      // It has the benefit though of allowing navigation within single-page apps without triggering reloads
+      // due to the WebView's URL being altered (which happens when its source prop is updated).
+      //
+      // Additionally, the canGoBack/canGoForward states can become out of sync with the actual WebView state
+      // if they aren't set according to the logic below. There's likely a cleaner way to structure it, but
+      // this avoids setting back/forward states under the wrong conditions or more than once per event.
+      //
+      // To observe what's actually going on, you can import the navigationStateLogger helper and add it here.
+
+      if (navState.url !== tabStates[tabIndex].url) {
+        if (navState.navigationType !== 'other') {
+          // If the URL DID ✅ change and navigationType !== 'other', we update the full tab state
+          updateActiveTabState(
+            {
+              canGoBack: navState.canGoBack,
+              canGoForward: navState.canGoForward,
+              logoUrl: logo.current,
+              url: navState.url,
+            },
+            tabId
+          );
+        } else {
+          // If the URL DID ✅ change and navigationType === 'other', we update only canGoBack and canGoForward
+          updateActiveTabState(
+            {
+              canGoBack: navState.canGoBack,
+              canGoForward: navState.canGoForward,
+              logoUrl: logo.current,
+            },
+            tabId
+          );
+        }
       } else {
+        // If the URL DID NOT ❌ change, we update only canGoBack and canGoForward
+        // This handles WebView reloads and cases where the WebView navigation state legitimately resets
         updateActiveTabState(
           {
             canGoBack: navState.canGoBack,
             canGoForward: navState.canGoForward,
-            url: tabStates[tabIndex].url,
+            logoUrl: logo.current,
           },
           tabId
         );
       }
     },
-    [tabId, tabIndex, tabStates, updateActiveTabState]
+    [logo, tabId, tabIndex, tabStates, updateActiveTabState]
   );
 
-  useEffect(() => {
-    if (webViewRef.current !== null) {
-      webViewRefs.current[tabIndex] = webViewRef.current;
+  // useLayoutEffect seems to more reliably assign the ref correctly
+  useLayoutEffect(() => {
+    if (webViewRef.current !== null && isActiveTab) {
+      activeTabRef.current = webViewRef.current;
+      if (title.current) {
+        // @ts-expect-error Property 'title' does not exist on type 'WebView<{}>'
+        activeTabRef.current.title = title.current;
+      }
     }
-
-    const currentWebviewRef = webViewRefs.current;
-
-    return () => {
-      currentWebviewRef[tabIndex] = null;
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tabIndex, webViewRef.current, webViewRefs]);
+  }, [activeTabRef, isActiveTab, isOnHomepage, tabId]);
 
   const saveScreenshotToFileSystem = useCallback(
     async (tempUri: string, tabId: string, timestamp: number, url: string) => {
@@ -387,20 +465,16 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
           uri: fileName,
           url,
         };
-
         // Retrieve existing screenshots and merge in the new one
         const existingScreenshots = getStoredScreenshots();
         const updatedScreenshots = [...existingScreenshots, newScreenshot];
-
         // Update MMKV store with the new screenshot
         tabScreenshotStorage.set('tabScreenshots', JSON.stringify(updatedScreenshots));
-
         // Determine current RNFS document directory
         const screenshotWithRNFSPath: ScreenshotType = {
           ...newScreenshot,
           uri: `${RNFS.DocumentDirectoryPath}/${newScreenshot.uri}`,
         };
-
         // Set screenshot for display
         screenshotData.value = screenshotWithRNFSPath;
       } catch (e: any) {
@@ -418,7 +492,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
   );
 
   const captureAndSaveScreenshot = useCallback(() => {
-    if (viewShotRef.current && webViewRefs.current[tabIndex]) {
+    if (viewShotRef.current && webViewRef.current) {
       const captureRef = viewShotRef.current;
 
       if (captureRef && captureRef?.capture) {
@@ -435,30 +509,39 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
           });
       }
     }
-  }, [saveScreenshotToFileSystem, tabId, tabIndex, tabStates, viewShotRef, webViewRefs]);
+  }, [saveScreenshotToFileSystem, tabId, tabIndex, tabStates, viewShotRef]);
 
   const screenshotSource = useDerivedValue(() => {
     return {
-      ...FASTER_IMAGE_CONFIG,
+      ...TAB_SCREENSHOT_FASTER_IMAGE_CONFIG,
       url: screenshotData.value?.uri ? `file://${screenshotData.value?.uri}` : '',
     } as ImageOptions;
   });
 
   const animatedScreenshotStyle = useAnimatedStyle(() => {
-    const animatedIsActiveTab = animatedActiveTabIndex?.value === tabIndex;
+    // Note: We use isActiveTab throughout this animated style over animatedIsActiveTab
+    // because the displaying of the screenshot should be synced to the WebView freeze
+    // state, which is driven by the slower JS-side isActiveTab. This prevents the
+    // screenshot from disappearing before the WebView is unfrozen.
+
     const screenshotExists = !!screenshotData.value?.uri;
-    const screenshotMatchesTabId = screenshotData.value?.id === tabId;
-    const screenshotMatchesTabUrl = screenshotData.value?.url === tabUrl;
+    const screenshotMatchesTabIdAndUrl = screenshotData.value?.id === tabId && screenshotData.value?.url === tabStates[tabIndex].url;
+
+    // This is to handle the case where a WebView that wasn't previously the active tab
+    // is made active from the tab view. Because its freeze state is driven by JS state,
+    // it doesn't unfreeze immediately, so this condition allows some time for the tab to
+    // become unfrozen before the screenshot is hidden, in most cases hiding the flash of
+    // the frozen empty WebView that occurs if the screenshot is hidden immediately.
+    const isActiveTabButMaybeStillFrozen = isActiveTab && (tabViewProgress?.value || 0) > 75 && !tabViewVisible?.value;
 
     const oneMinuteAgo = Date.now() - 1000 * 60;
-    const isScreenshotStale = screenshotData.value && screenshotData.value?.timestamp < oneMinuteAgo;
-    const shouldWaitForNewScreenshot = isScreenshotStale && animatedIsActiveTab;
+    const isScreenshotStale = !!(screenshotData.value && screenshotData.value?.timestamp < oneMinuteAgo);
+    const shouldWaitForNewScreenshot = isScreenshotStale && !!tabViewVisible?.value && isActiveTab && !isActiveTabButMaybeStillFrozen;
 
     const shouldDisplay =
       screenshotExists &&
-      screenshotMatchesTabId &&
-      screenshotMatchesTabUrl &&
-      (!animatedIsActiveTab || !!tabViewVisible?.value) &&
+      screenshotMatchesTabIdAndUrl &&
+      (!isActiveTab || !!tabViewVisible?.value || isActiveTabButMaybeStillFrozen) &&
       !shouldWaitForNewScreenshot;
 
     return {
@@ -474,12 +557,26 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
         // validate message and parse data
         const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
         if (!parsedData || (!parsedData.topic && !parsedData.payload)) return;
-        if (parsedData.topic === 'bg') {
-          if (typeof parsedData.payload === 'string') {
-            backgroundColor.value = parsedData.payload;
+
+        if (parsedData.topic === 'websiteMetadata') {
+          const { bgColor, logoUrl, pageTitle } = parsedData.payload;
+
+          if (bgColor && typeof bgColor === 'string') {
+            backgroundColor.value = bgColor;
           }
-        } else if (parsedData.topic === 'title') {
-          title.current = parsedData.payload;
+          if (logoUrl && typeof logoUrl === 'string') {
+            logo.current = logoUrl;
+          }
+          if (pageTitle && typeof pageTitle === 'string') {
+            title.current = pageTitle;
+          }
+
+          addRecent({
+            url: normalizeUrlForRecents(tabStates[tabIndex].url),
+            name: pageTitle,
+            image: logoUrl,
+            timestamp: Date.now(),
+          });
         } else {
           const m = currentMessenger.current;
           handleProviderRequestApp({
@@ -496,13 +593,12 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
             },
           });
         }
-
         // eslint-disable-next-line no-empty
       } catch (e) {
         console.error('Error parsing message', e);
       }
     },
-    [isActiveTab, tabId, tabIndex, tabStates, title, backgroundColor]
+    [isActiveTab, addRecent, tabStates, tabIndex, backgroundColor, tabId]
   );
 
   const handleOnLoadStart = useCallback(
@@ -536,23 +632,6 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
     return true;
   }, []);
 
-  const loadProgress = useSharedValue(0);
-
-  const progressBarStyle = useAnimatedStyle(() => {
-    const animatedIsActiveTab = animatedActiveTabIndex?.value === tabIndex;
-
-    return {
-      display: animatedIsActiveTab ? 'flex' : 'none',
-      // eslint-disable-next-line no-nested-ternary
-      opacity: tabViewVisible?.value
-        ? withSpring(0, SPRING_CONFIGS.snappierSpringConfig)
-        : loadProgress.value === 1
-          ? withTiming(0, TIMING_CONFIGS.slowestFadeConfig)
-          : withSpring(1, SPRING_CONFIGS.snappierSpringConfig),
-      width: loadProgress.value * deviceWidth,
-    };
-  });
-
   const handleOnLoadProgress = useCallback(
     ({ nativeEvent: { progress } }: { nativeEvent: { progress: number } }) => {
       if (loadProgress) {
@@ -562,57 +641,6 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
     },
     [loadProgress]
   );
-
-  const WebviewComponent = () => (
-    <Freeze
-      freeze={!isActiveTab}
-      placeholder={
-        <Box
-          style={[
-            styles.webViewStyle,
-            {
-              height: WEBVIEW_HEIGHT,
-            },
-          ]}
-        />
-      }
-    >
-      <DappBrowserWebview
-        webviewDebuggingEnabled={IS_DEV}
-        injectedJavaScriptBeforeContentLoaded={injectedJS}
-        allowsInlineMediaPlayback
-        allowsBackForwardNavigationGestures
-        applicationNameForUserAgent={'Rainbow'}
-        automaticallyAdjustContentInsets
-        automaticallyAdjustsScrollIndicatorInsets={false}
-        decelerationRate={'normal'}
-        injectedJavaScript={getWebsiteBackgroundColorAndTitle}
-        mediaPlaybackRequiresUserAction
-        onLoadStart={handleOnLoadStart}
-        onLoad={handleOnLoad}
-        // 👇 This prevents an occasional white page flash when loading
-        renderLoading={() => (
-          <Box
-            as={Animated.View}
-            position="absolute"
-            style={[{ height: WEBVIEW_HEIGHT, flex: 1 }, animatedWebViewBackgroundColorStyle]}
-            width="full"
-          />
-        )}
-        onLoadEnd={handleOnLoadEnd}
-        onError={handleOnError}
-        onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
-        onLoadProgress={handleOnLoadProgress}
-        onMessage={handleOnMessage}
-        onNavigationStateChange={handleNavigationStateChange}
-        ref={webViewRef}
-        source={{ uri: tabUrl || RAINBOW_HOME }}
-        style={[styles.webViewStyle, styles.transparentBackground]}
-      />
-    </Freeze>
-  );
-
-  const TabContent = isOnHomepage ? <Homepage /> : <WebviewComponent />;
 
   const swipeToCloseTabGestureHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
     onStart: (_, ctx: { startX?: number }) => {
@@ -626,31 +654,52 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
 
       if (ctx.startX === undefined) {
         gestureScale.value = withTiming(1.1, TIMING_CONFIGS.tabPressConfig);
-        gestureY.value = withTiming(-0.05 * (multipleTabsOpen ? TAB_VIEW_TAB_HEIGHT : 0), TIMING_CONFIGS.tabPressConfig);
+        gestureY.value = withTiming(-0.05 * (animatedMultipleTabsOpen.value * TAB_VIEW_TAB_HEIGHT), TIMING_CONFIGS.tabPressConfig);
         ctx.startX = e.absoluteX;
       }
 
-      setNativeProps(scrollViewRef, { scrollEnabled: false });
-      dispatchCommand(scrollViewRef, 'scrollTo', [0, scrollViewOffset?.value, true]);
-
       const xDelta = e.absoluteX - ctx.startX;
       gestureX.value = xDelta;
+      setNativeProps(scrollViewRef, { scrollEnabled: false });
     },
     onEnd: (e, ctx: { startX?: number }) => {
-      if (!tabViewVisible?.value) return;
-
       const xDelta = e.absoluteX - (ctx.startX || 0);
       setNativeProps(scrollViewRef, { scrollEnabled: !!tabViewVisible?.value });
 
-      if ((xDelta < -(TAB_VIEW_COLUMN_WIDTH / 2 + 20) && e.velocityX <= 0) || e.velocityX < -500) {
-        const xDestination = -Math.min(Math.max(deviceWidth * 1.25, Math.abs(e.velocityX * 0.3)), 1000);
-        gestureX.value = withTiming(xDestination, TIMING_CONFIGS.tabPressConfig, () => {
-          runOnJS(closeTab)(tabId);
-          gestureScale.value = 0;
-          gestureX.value = 0;
-          gestureY.value = 0;
-          ctx.startX = undefined;
+      const isBeyondDismissThreshold = xDelta < -(TAB_VIEW_COLUMN_WIDTH / 2 + 20) && e.velocityX <= 0;
+      const isFastLeftwardSwipe = e.velocityX < -500;
+      const isEmptyState = !multipleTabsOpen.value && isOnHomepage;
+
+      const shouldDismiss = !!tabViewVisible?.value && !isEmptyState && (isBeyondDismissThreshold || isFastLeftwardSwipe);
+
+      if (shouldDismiss) {
+        const xDestination = -Math.min(Math.max(deviceWidth, deviceWidth + Math.abs(e.velocityX * 0.2)), 1200);
+        // Store the tab's index before modifying currentlyOpenTabIds, so we can pass it along to closeTabWorklet()
+        const storedTabIndex = animatedTabIndex.value;
+        // Remove the tab from currentlyOpenTabIds as soon as the swipe-to-close gesture is confirmed
+        currentlyOpenTabIds?.modify(value => {
+          const index = value.indexOf(tabId);
+          if (index !== -1) {
+            value.splice(index, 1);
+          }
+          return value;
         });
+        gestureX.value = withTiming(xDestination, TIMING_CONFIGS.tabPressConfig, () => {
+          // Ensure the tab remains hidden after being swiped off screen (until the tab is destroyed)
+          gestureScale.value = 0;
+          // Because the animation is complete we know the tab is off screen and can be safely destroyed
+          closeTabWorklet(tabId, storedTabIndex);
+        });
+
+        // In the event two tabs are open when this one is closed, we animate its Y position to align it
+        // vertically with the remaining tab as this tab exits and the remaining tab scales up.
+        const isLastOrSecondToLastTabAndExiting =
+          currentlyOpenTabIds?.value?.indexOf(tabId) === -1 && currentlyOpenTabIds.value.length === 1;
+        if (isLastOrSecondToLastTabAndExiting) {
+          const existingYTranslation = gestureY.value;
+          const scaleDiff = 0.7 - TAB_VIEW_COLUMN_WIDTH / deviceWidth;
+          gestureY.value = withTiming(existingYTranslation + scaleDiff * COLLAPSED_WEBVIEW_HEIGHT_UNSCALED, TIMING_CONFIGS.tabPressConfig);
+        }
       } else {
         gestureScale.value = withTiming(1, TIMING_CONFIGS.tabPressConfig);
         gestureX.value = withTiming(0, TIMING_CONFIGS.tabPressConfig);
@@ -663,7 +712,7 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
   const pressTabGestureHandler = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>({
     onActive: () => {
       if (tabViewVisible?.value) {
-        toggleTabViewWorklet(tabIndex);
+        toggleTabViewWorklet(animatedTabIndex.value);
       }
     },
   });
@@ -673,25 +722,79 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
     (current, previous) => {
       // Monitor changes in tabViewProgress and trigger tab screenshot capture if necessary
       const changesDetected = previous && current !== previous;
-      const isActiveTab = animatedActiveTabIndex?.value === tabIndex;
+      const isTabBeingClosed = currentlyOpenTabIds?.value?.indexOf(tabId) === -1;
 
-      if (isActiveTab && changesDetected && !isOnHomepage) {
+      // Note: Using the JS-side isActiveTab because this should be in sync with the WebView freeze state,
+      // which is driven by isActiveTab. This should allow screenshots slightly more time to capture.
+      if (isActiveTab && changesDetected && !isTabBeingClosed) {
+        // ⚠️ TODO: Need to rewrite the enterTabViewAnimationIsComplete condition, because it assumes the
+        // tab animation will overshoot and rebound. If the animation config is changed, it's possible the
+        // screenshot condition won't be met.
         const enterTabViewAnimationIsComplete = tabViewVisible?.value === true && (previous || 0) > 100 && (current || 0) <= 100;
-        const isPageLoaded = loadProgress.value > 0.2;
+        const isPageLoaded = (loadProgress?.value || 0) > 0.2;
 
-        if (!enterTabViewAnimationIsComplete || !isPageLoaded) return;
+        if (enterTabViewAnimationIsComplete && isPageLoaded && !isOnHomepage) {
+          const previousScreenshotExists = !!screenshotData.value?.uri;
+          const tabIdChanged = screenshotData.value?.id !== tabId;
+          const urlChanged = screenshotData.value?.url !== tabUrl;
+          const oneMinuteAgo = Date.now() - 1000 * 60;
+          const isScreenshotStale = screenshotData.value && screenshotData.value?.timestamp < oneMinuteAgo;
 
-        const previousScreenshotExists = !!screenshotData.value?.uri;
-        const tabIdChanged = screenshotData.value?.id !== tabId;
-        const urlChanged = screenshotData.value?.url !== tabUrl;
-        const oneMinuteAgo = Date.now() - 1000 * 60;
-        const isScreenshotStale = screenshotData.value && screenshotData.value?.timestamp < oneMinuteAgo;
+          const shouldCaptureScreenshot = !previousScreenshotExists || tabIdChanged || urlChanged || isScreenshotStale;
 
-        const shouldCaptureScreenshot = !previousScreenshotExists || tabIdChanged || urlChanged || isScreenshotStale;
-
-        if (shouldCaptureScreenshot) {
-          runOnJS(captureAndSaveScreenshot)();
+          if (shouldCaptureScreenshot) {
+            runOnJS(captureAndSaveScreenshot)();
+          }
         }
+
+        // If necessary, invisibly scroll to the currently active tab when the tab view is fully closed
+        const isScrollViewScrollable = (currentlyOpenTabIds?.value.length || 0) > 4;
+        const exitTabViewAnimationIsComplete =
+          isScrollViewScrollable && tabViewVisible?.value === false && current === 0 && previous && previous !== 0;
+
+        if (exitTabViewAnimationIsComplete && isScrollViewScrollable) {
+          const currentTabRow = Math.floor(animatedTabIndex.value / 2);
+          const scrollViewHeight =
+            Math.ceil((currentlyOpenTabIds?.value.length || 0) / 2) * TAB_VIEW_ROW_HEIGHT +
+            safeAreaInsetValues.bottom +
+            165 +
+            28 +
+            (IS_IOS ? 0 : 35);
+
+          const screenHeight = deviceUtils.dimensions.height;
+          const halfScreenHeight = screenHeight / 2;
+          const tabCenterPosition = currentTabRow * TAB_VIEW_ROW_HEIGHT + (currentTabRow - 1) * 28 + TAB_VIEW_ROW_HEIGHT / 2 + 37;
+
+          let scrollPositionToCenterCurrentTab;
+
+          if (scrollViewHeight <= screenHeight) {
+            // No need to scroll if all tabs fit on the screen
+            scrollPositionToCenterCurrentTab = 0;
+          } else if (tabCenterPosition <= halfScreenHeight) {
+            // Scroll to top if the tab is too near to the top of the scroll view to be centered
+            scrollPositionToCenterCurrentTab = 0;
+          } else if (tabCenterPosition + halfScreenHeight >= scrollViewHeight) {
+            // Scroll to bottom if the tab is too near to the end of the scroll view to be centered
+            scrollPositionToCenterCurrentTab = scrollViewHeight - screenHeight;
+          } else {
+            // Otherwise, vertically center the tab on the screen
+            scrollPositionToCenterCurrentTab = tabCenterPosition - halfScreenHeight;
+          }
+
+          dispatchCommand(scrollViewRef, 'scrollTo', [0, scrollPositionToCenterCurrentTab, false]);
+        }
+      }
+    }
+  );
+
+  useAnimatedReaction(
+    () => ({ currentlyOpenTabIds: currentlyOpenTabIds?.value }),
+    current => {
+      const currentIndex = current.currentlyOpenTabIds?.indexOf(tabId) ?? -1;
+      // This allows us to give the tab its previous animated index when it's being closed, so that the close
+      // animation is allowed to complete with the X and Y coordinates it had based on its last real index.
+      if (currentIndex >= 0) {
+        animatedTabIndex.value = currentIndex;
       }
     }
   );
@@ -702,42 +805,69 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
       {/* <WebViewShadows gestureScale={gestureScale} isOnHomepage={isOnHomepage} tabIndex={tabIndex}> */}
 
       {/* @ts-expect-error Property 'children' does not exist on type */}
-      <TapGestureHandler shouldCancelWhenOutside maxDeltaX={10} maxDeltaY={10} onGestureEvent={pressTabGestureHandler} ref={tapRef}>
-        <Animated.View style={zIndexAnimatedStyle}>
+      <TapGestureHandler maxDeltaX={10} maxDeltaY={10} onGestureEvent={pressTabGestureHandler} shouldCancelWhenOutside>
+        <Animated.View entering={FadeIn.duration(160)} style={zIndexAnimatedStyle}>
           {/* @ts-expect-error Property 'children' does not exist on type */}
           <PanGestureHandler
             activeOffsetX={[-10, 10]}
             failOffsetY={[-10, 10]}
             maxPointers={1}
             onGestureEvent={swipeToCloseTabGestureHandler}
-            ref={panRef}
             simultaneousHandlers={scrollViewRef}
-            waitFor={tapRef}
           >
             <Animated.View style={[styles.webViewContainer, animatedWebViewStyle, animatedWebViewBackgroundColorStyle]}>
               <ViewShot options={{ format: 'jpg' }} ref={viewShotRef}>
                 <View collapsable={false} style={{ height: WEBVIEW_HEIGHT, width: '100%' }}>
-                  {TabContent}
+                  {isOnHomepage ? (
+                    <Homepage />
+                  ) : (
+                    <Freeze freeze={!isActiveTab}>
+                      <DappBrowserWebview
+                        webviewDebuggingEnabled={IS_DEV}
+                        injectedJavaScriptBeforeContentLoaded={injectedJS}
+                        allowsInlineMediaPlayback
+                        fraudulentWebsiteWarningEnabled
+                        allowsBackForwardNavigationGestures
+                        applicationNameForUserAgent={'Rainbow'}
+                        automaticallyAdjustContentInsets
+                        automaticallyAdjustsScrollIndicatorInsets={false}
+                        decelerationRate={'normal'}
+                        injectedJavaScript={getWebsiteMetadata}
+                        mediaPlaybackRequiresUserAction
+                        onLoadStart={handleOnLoadStart}
+                        onLoad={handleOnLoad}
+                        // 👇 This eliminates a white flash and prevents the WebView from hiding its content on load/reload
+                        renderLoading={() => <></>}
+                        onLoadEnd={handleOnLoadEnd}
+                        onError={handleOnError}
+                        onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
+                        onLoadProgress={handleOnLoadProgress}
+                        onMessage={handleOnMessage}
+                        onNavigationStateChange={handleNavigationStateChange}
+                        originWhitelist={['*']}
+                        ref={webViewRef}
+                        source={{ uri: tabUrl || RAINBOW_HOME }}
+                        style={styles.webViewStyle}
+                      />
+                    </Freeze>
+                  )}
                 </View>
               </ViewShot>
-              <Box
-                as={Animated.View}
-                style={[
-                  styles.webViewStyle,
-                  pointerEventsStyle,
-                  {
-                    height: WEBVIEW_HEIGHT,
-                    left: 0,
-                    position: 'absolute',
-                    top: 0,
-                    zIndex: 20000,
-                  },
-                ]}
-              >
-                <AnimatedFasterImage source={screenshotSource} style={[styles.screenshotContainerStyle, animatedScreenshotStyle]} />
-              </Box>
-              <WebViewBorder enabled={IS_IOS && isDarkMode && !isOnHomepage} tabIndex={tabIndex} />
-              <CloseTabButton onPress={() => closeTab(tabId)} tabIndex={tabIndex} />
+              <AnimatedFasterImage
+                source={IS_IOS ? screenshotSource : screenshotSource.value}
+                style={[styles.screenshotContainerStyle, animatedScreenshotStyle]}
+              />
+              <WebViewBorder animatedTabIndex={animatedTabIndex} enabled={IS_IOS && isDarkMode && !isOnHomepage} />
+              <CloseTabButton
+                animatedMultipleTabsOpen={animatedMultipleTabsOpen}
+                animatedTabIndex={animatedTabIndex}
+                gestureScale={gestureScale}
+                gestureX={gestureX}
+                gestureY={gestureY}
+                isOnHomepage={isOnHomepage}
+                multipleTabsOpen={multipleTabsOpen}
+                tabId={tabId}
+              />
             </Animated.View>
           </PanGestureHandler>
         </Animated.View>
@@ -745,31 +875,17 @@ export const BrowserTab = React.memo(function BrowserTab({ tabId, tabIndex, inje
 
       {/* Need to fix some shadow performance issues - disabling shadows for now */}
       {/* </WebViewShadows> */}
-
-      <Box as={Animated.View} style={[styles.progressBar, styles.centerAlign]}>
-        <Box
-          as={Animated.View}
-          style={[progressBarStyle, { backgroundColor: accentColor }, styles.progressBar, { position: 'relative', top: 0 }]}
-        />
-      </Box>
     </>
   );
 });
 
 const styles = StyleSheet.create({
+  backupScreenshotStyleOverrides: {
+    zIndex: -1,
+  },
   centerAlign: {
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  progressBar: {
-    borderRadius: 1,
-    height: 2,
-    top: WEBVIEW_HEIGHT + safeAreaInsetValues.top + 88 - 2,
-    left: 0,
-    width: deviceUtils.dimensions.width,
-    pointerEvents: 'none',
-    position: 'absolute',
-    zIndex: 9999999999,
   },
   screenshotContainerStyle: {
     height: WEBVIEW_HEIGHT,
@@ -778,20 +894,18 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     top: 0,
     width: deviceUtils.dimensions.width,
-  },
-  transparentBackground: {
-    backgroundColor: 'transparent',
+    zIndex: 20000,
   },
   webViewContainer: {
     alignSelf: 'center',
     height: WEBVIEW_HEIGHT,
     overflow: 'hidden',
     position: 'absolute',
-    top: safeAreaInsetValues.top,
+    top: TOP_INSET,
     width: deviceUtils.dimensions.width,
-    zIndex: 999999999,
   },
   webViewStyle: {
+    backgroundColor: 'transparent',
     borderCurve: 'continuous',
     height: WEBVIEW_HEIGHT,
     maxHeight: WEBVIEW_HEIGHT,

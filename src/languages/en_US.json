@@ -564,7 +564,9 @@
       "price_impact": {
         "losing_prefix": "Losing",
         "small_market": "Small Market",
-        "label": "Possible loss"
+        "no_data": "Market Value Unknown",
+        "label": "Possible loss",
+        "no_data_subtitle": "If you decide to continue, be sure that you are satisfied with the quoted amount"
       },
       "source": {
         "rainbow": "Auto",
@@ -854,15 +856,19 @@
       },
       "base": {
         "text": "Base is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
-        "title": "What's Base"
+        "title": "What's Base?"
       },
       "avalanche": {
         "text": "Avalanche is a sidechain, a distinct network that runs alongside Ethereum and is compatible with it.\n\nIt allows for cheaper and faster transactions, but unlike Layer 2 networks, Avalanche has its own security and consensus mechanisms that differ from Ethereum.",
         "title": "What's Avalanche"
       },
+      "degen": {
+        "text": "Degen Chain is a Layer 3 network that runs on top of Arbitrum and Ethereum, offering incredibly fast and cheap transactions denominated in the Farcaster community token $degen.",
+        "title": "What's Degen Chain?"
+      },
       "blast": {
         "text": "Blast is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
-        "title": "What's Blast"
+        "title": "What's Blast?"
       },
       "zora": {
         "text": "Zora is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
@@ -1877,6 +1883,22 @@
       "too_many_signup_request": "Too many signup requests, please try again later"
     },
     "swap": {
+      "aggregators": {
+        "rainbow": "Rainbow"
+      },
+      "tokens_input": {
+        "tokens": "Tokens",
+        "sort": "Sort",
+        "available": "available",
+        "token_balance": "Token Balance",
+        "networks": "Networks",
+        "filter_by_network": "Filter by Network",
+        "switch_networks": "Switch Networks",
+        "nothing_found": "Nothing found",
+        "nothing_found_description": "Some tokens don't have enough liquidity to perform a successful %{action}.",
+        "nothing_found_description_l2": "Some tokens don't have enough layer 2 liquidity to perform a successful %{action}.",
+        "output_quotes_disabled": "Output quotes disabled"
+      },
       "choose_token": "Choose Token",
       "gas": {
         "custom": "Custom",
@@ -1916,6 +1938,15 @@
           "message": "Setting a higher gas price is recommended to avoid issues.",
           "title": "Low gas price–transaction might get stuck!"
         }
+      }
+    },
+    "token_search": {
+      "section_header": {
+        "favorites": "Favorites",
+        "bridge": "Bridge",
+        "verified": "Verified",
+        "unverified": "Unverified",
+        "on_other_networks": "On other networks"
       }
     },
     "transactions": {
@@ -2157,6 +2188,9 @@
     "toasts": {
       "copied": "Copied \"%{copiedText}\"",
       "invalid_paste": "You can't paste that here"
+    },
+    "tokens_tab": {
+      "unknown_token": "Unknown Token"
     },
     "hardware_wallets": {
       "pair_your_nano": "Pair your Nano X",
@@ -2543,7 +2577,7 @@
           "insufficient_funds": "Oh no! The gas price changed and you no longer have enough funds for this transaction. Please try again with a lower amount.",
           "generic": "Oh no! There was a problem submitting the transaction. Please try again."
         },
-        "complete_checks": "Complete checks",
+        "complete_check": "Complete check",
         "ens_configuration_options": "ENS configuration options",
         "confirm": "Confirm transaction",
         "max": "Max",
@@ -2627,6 +2661,7 @@
       },
       "menu_options": {
         "disconnect": "Disconnect",
+        "connect": "Connect",
         "switch_wallet": "Switch Wallet",
         "switch_network": "Switch Network",
         "available_networks": "Available Networks"

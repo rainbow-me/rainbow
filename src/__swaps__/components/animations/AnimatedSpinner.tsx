@@ -1,5 +1,13 @@
 import React from 'react';
-import Animated, { Easing, useAnimatedReaction, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
+import Animated, {
+  Easing,
+  SharedValue,
+  useAnimatedReaction,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from 'react-native-reanimated';
 import { useForegroundColor } from '@/design-system';
 import styled from '@/styled-thing';
 import { ImgixImage } from '@/components/images';
@@ -27,6 +35,7 @@ const StyledSpinner = styled(ImgixImage).attrs(({ color, size, src }: { color: s
   width: ({ size }: { size?: number }) => size,
 });
 
+// TODO: We should also accept a regular boolean as a state variable
 export const AnimatedSpinner = ({
   isLoading,
   color,
@@ -34,7 +43,7 @@ export const AnimatedSpinner = ({
   size = 28,
   src = Spinner,
 }: {
-  isLoading: boolean;
+  isLoading: SharedValue<boolean>;
   color?: string;
   scaleInFrom?: number;
   size?: number;
@@ -46,7 +55,7 @@ export const AnimatedSpinner = ({
   const spinnerScale = useSharedValue(0);
 
   useAnimatedReaction(
-    () => isLoading,
+    () => isLoading.value,
     (isLoadingCurrent, isLoadingPrevious) => {
       if (isLoadingCurrent !== isLoadingPrevious) {
         if (isLoadingCurrent) {

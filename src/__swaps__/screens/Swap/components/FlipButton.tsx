@@ -1,26 +1,57 @@
 /* eslint-disable no-nested-ternary */
 import c from 'chroma-js';
-import React from 'react';
-import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import React, { useCallback } from 'react';
+import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import SwapSpinner from '@/__swaps__/assets/swapSpinner.png';
 import { ButtonPressAnimation } from '@/components/animations';
-import { AnimatedSpinner, spinnerExitConfig } from '@/__swaps__/components/animations/AnimatedSpinner';
+import { AnimatedSpinner } from '@/__swaps__/components/animations/AnimatedSpinner';
 import { Bleed, Box, IconContainer, Text, globalColors, useColorMode } from '@/design-system';
 import { colors } from '@/styles';
-import { SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../constants';
-import { opacity } from '../utils/swaps';
+import { SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
+import { getMixedColor, opacity } from '@/__swaps__/utils/swaps';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { AnimatedBlurView } from './AnimatedBlurView';
-import { useSwapContext } from '../providers/swap-provider';
+import { AnimatedBlurView } from '@/__swaps__/screens/Swap/components/AnimatedBlurView';
+import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { StyleSheet } from 'react-native';
 
 export const FlipButton = () => {
   const { isDarkMode } = useColorMode();
-  const { bottomColor, isFetching, AnimatedSwapStyles } = useSwapContext();
 
-  const fetchingStyle = useAnimatedStyle(() => {
+  const { isFetching, AnimatedSwapStyles, SwapInputController } = useSwapContext();
+
+  const shadowColor = useSharedValue(
+    isDarkMode ? globalColors.grey100 : c.mix(SwapInputController.bottomColor.value, colors.dark, 0.84).hex()
+  );
+
+  const handleSwapAssets = useCallback(() => {
+    SwapInputController.onSwapAssets();
+  }, [SwapInputController]);
+
+  const getBottomColor = ({ bottomColor }: { bottomColor: string }) => {
+    shadowColor.value = getMixedColor(bottomColor, colors.dark, 0.84);
+  };
+
+  useAnimatedReaction(
+    () => ({
+      bottomColor: SwapInputController.bottomColor.value,
+    }),
+    (current, previous) => {
+      if (previous && current !== previous && current !== undefined) {
+        runOnJS(getBottomColor)(current);
+      }
+    }
+  );
+
+  const flipButtonInnerStyles = useAnimatedStyle(() => {
     return {
-      borderWidth: isFetching ? withTiming(2, { duration: 300 }) : withTiming(THICK_BORDER_WIDTH, spinnerExitConfig),
+      shadowColor: shadowColor.value,
+      shadowOffset: {
+        width: 0,
+        height: isDarkMode ? 4 : 4,
+      },
+      elevation: 8,
+      shadowOpacity: isDarkMode ? 0.3 : 0.1,
+      shadowRadius: isDarkMode ? 6 : 8,
     };
   });
 
@@ -31,19 +62,8 @@ export const FlipButton = () => {
       justifyContent="center"
       style={[AnimatedSwapStyles.flipButtonStyle, AnimatedSwapStyles.focusedSearchStyle, { height: 12, width: 28, zIndex: 10 }]}
     >
-      <Box
-        style={{
-          shadowColor: isDarkMode ? globalColors.grey100 : c.mix(bottomColor, colors.dark, 0.84).hex(),
-          shadowOffset: {
-            width: 0,
-            height: isDarkMode ? 4 : 4,
-          },
-          elevation: 8,
-          shadowOpacity: isDarkMode ? 0.3 : 0.1,
-          shadowRadius: isDarkMode ? 6 : 8,
-        }}
-      >
-        <ButtonPressAnimation scaleTo={0.8} style={{ paddingHorizontal: 20, paddingVertical: 8 }}>
+      <Box as={Animated.View} style={flipButtonInnerStyles}>
+        <ButtonPressAnimation onPress={handleSwapAssets} scaleTo={0.8} style={{ paddingHorizontal: 20, paddingVertical: 8 }}>
           {/* TODO: Temp fix - rewrite to actually avoid type errors */}
           {/* @ts-expect-error The conditional as={} is causing type errors */}
           <Box
@@ -51,7 +71,7 @@ export const FlipButton = () => {
             as={IS_IOS ? AnimatedBlurView : Animated.View}
             justifyContent="center"
             style={[
-              fetchingStyle,
+              AnimatedSwapStyles.flipButtonFetchingStyle,
               styles.flipButton,
               {
                 backgroundColor: IS_ANDROID ? (isDarkMode ? globalColors.blueGrey100 : globalColors.white100) : undefined,
@@ -77,7 +97,7 @@ export const FlipButton = () => {
         </ButtonPressAnimation>
       </Box>
       <Box pointerEvents="none" position="absolute">
-        <AnimatedSpinner color={bottomColor} isLoading={isFetching} scaleInFrom={1} size={32} src={SwapSpinner} />
+        <AnimatedSpinner color={SwapInputController.bottomColor.value} isLoading={isFetching} scaleInFrom={1} size={32} src={SwapSpinner} />
       </Box>
     </Box>
   );

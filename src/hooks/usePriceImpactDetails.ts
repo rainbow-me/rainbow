@@ -25,6 +25,7 @@ export enum SwapPriceImpactType {
 
 const PriceImpactWarningThreshold = 0.05;
 const SeverePriceImpactThreshold = 0.1;
+export const NO_PRICE_DATA_PERCENTAGE = '100.00%';
 
 export default function usePriceImpactDetails(
   inputCurrency: SwappableAsset | null,

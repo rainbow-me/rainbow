@@ -1,8 +1,8 @@
-import React, { ReactNode, useMemo } from 'react';
-import Animated, { SharedValue } from 'react-native-reanimated';
-import { Box, useColorMode } from '@/design-system';
-import { BASE_INPUT_WIDTH, ETH_COLOR, ETH_COLOR_DARK, INPUT_PADDING, THICK_BORDER_WIDTH } from '../constants';
-import { useSwapInputStyles } from '../hooks/useSwapInputStyles';
+import React, { ReactNode } from 'react';
+import Animated, { DerivedValue, SharedValue } from 'react-native-reanimated';
+import { Box } from '@/design-system';
+import { BASE_INPUT_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { useSwapInputStyles } from '@/__swaps__/screens/Swap/hooks/useSwapInputStyles';
 import { StyleSheet } from 'react-native';
 
 export const SwapInput = ({
@@ -13,18 +13,14 @@ export const SwapInput = ({
   progress,
 }: {
   children?: ReactNode;
-  color: string | undefined;
+  color: DerivedValue<string | number>;
   bottomInput?: boolean;
   otherInputProgress: SharedValue<number>;
   progress: SharedValue<number>;
 }) => {
-  const { isDarkMode } = useColorMode();
-
-  const colorWithFallback = useMemo(() => color || (isDarkMode ? ETH_COLOR_DARK : ETH_COLOR), [color, isDarkMode]);
-
   const { inputStyle, containerStyle, mixedShadowColor } = useSwapInputStyles({
     bottomInput,
-    color: colorWithFallback,
+    color,
     otherInputProgress,
     progress,
   });

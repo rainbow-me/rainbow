@@ -4,16 +4,18 @@ import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
 import { IS_ANDROID } from '@/env';
 import { Page } from '@/components/layout';
+import { navbarHeight } from '@/components/navbar/Navbar';
 import { Box } from '@/design-system';
+import { safeAreaInsetValues } from '@/utils';
 
-import { SheetGestureBlocker } from './components/SheetGestureBlocker';
-import { SwapBackground } from './components/SwapBackground';
-import { FlipButton } from './components/FlipButton';
-import { ExchangeRateBubble } from './components/ExchangeRateBubble';
-import { SwapInputAsset } from './components/controls/SwapInputAsset';
-import { SwapOutputAsset } from './components/controls/SwapOutputAsset';
-import { SwapNavbar } from './components/SwapNavbar';
-import { SwapAmountInputs } from './components/controls/SwapAmountInputs';
+import { SheetGestureBlocker } from '@/__swaps__/screens/Swap/components/SheetGestureBlocker';
+import { SwapBackground } from '@/__swaps__/screens/Swap/components/SwapBackground';
+import { FlipButton } from '@/__swaps__/screens/Swap/components/FlipButton';
+import { ExchangeRateBubble } from '@/__swaps__/screens/Swap/components/ExchangeRateBubble';
+import { SwapInputAsset } from '@/__swaps__/screens/Swap/components/controls/SwapInputAsset';
+import { SwapOutputAsset } from '@/__swaps__/screens/Swap/components/controls/SwapOutputAsset';
+import { SwapNavbar } from '@/__swaps__/screens/Swap/components/SwapNavbar';
+import { SwapAmountInputs } from '@/__swaps__/screens/Swap/components/controls/SwapAmountInputs';
 
 /** README
  * This prototype is largely driven by Reanimated and Gesture Handler, which
@@ -56,15 +58,14 @@ export function SwapScreen() {
   return (
     <SheetGestureBlocker>
       <Box as={Page} style={styles.rootViewBackground} testID="swap-screen" width="full">
-        <SwapBackground>
-          <Box alignItems="center" height="full" paddingTop={{ custom: 29 }} width="full">
-            <SwapInputAsset />
-            <FlipButton />
-            <SwapOutputAsset />
-            <ExchangeRateBubble />
-            <SwapAmountInputs />
-          </Box>
-        </SwapBackground>
+        <SwapBackground />
+        <Box alignItems="center" height="full" paddingTop={{ custom: safeAreaInsetValues.top + (navbarHeight - 12) + 29 }} width="full">
+          <SwapInputAsset />
+          <FlipButton />
+          <SwapOutputAsset />
+          <ExchangeRateBubble />
+          <SwapAmountInputs />
+        </Box>
         <SwapNavbar />
       </Box>
     </SheetGestureBlocker>
@@ -73,7 +74,6 @@ export function SwapScreen() {
 
 export const styles = StyleSheet.create({
   rootViewBackground: {
-    backgroundColor: 'transparent',
     borderRadius: IS_ANDROID ? 20 : ScreenCornerRadius,
     flex: 1,
     overflow: 'hidden',

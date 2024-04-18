@@ -1,14 +1,13 @@
-import React, { createContext, useContext, ReactNode, SetStateAction, Dispatch, useState } from 'react';
-import { SharedValue, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
-import { inputKeys } from '../types/swap';
-import { INITIAL_SLIDER_POSITION, SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, SLIDER_WIDTH, ETH_COLOR_DARK, ETH_COLOR } from '../constants';
-import { INPUT_ASSET_BALANCE, INPUT_ASSET_USD_PRICE, OUTPUT_ASSET_USD_PRICE, OUTPUT_COLOR } from '../dummyValues';
-import { useColorMode } from '@/design-system';
-import { useAnimatedSwapStyles } from '../hooks/useAnimatedSwapStyles';
-import { useSwapTextStyles } from '../hooks/useSwapTextStyles';
-import { useSwapNavigation } from '../hooks/useSwapNavigation';
-import { useSwapInputsController } from '../hooks/useSwapInputsController';
+// @refresh
+import React, { createContext, useContext, ReactNode } from 'react';
 import { StyleProp, TextStyle } from 'react-native';
+import { SharedValue, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import { inputKeys } from '@/__swaps__/types/swap';
+import { INITIAL_SLIDER_POSITION, SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { useAnimatedSwapStyles } from '@/__swaps__/screens/Swap/hooks/useAnimatedSwapStyles';
+import { useSwapTextStyles } from '@/__swaps__/screens/Swap/hooks/useSwapTextStyles';
+import { useSwapNavigation } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
+import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
 
 interface SwapContextType {
   inputProgress: SharedValue<number>;
@@ -16,20 +15,7 @@ interface SwapContextType {
   sliderXPosition: SharedValue<number>;
   sliderPressProgress: SharedValue<number>;
   focusedInput: SharedValue<inputKeys>;
-
-  topColor: string;
-  setTopColor: Dispatch<SetStateAction<string>>;
-  bottomColor: string;
-  setBottomColor: Dispatch<SetStateAction<string>>;
-  solidColorCoinIcons: boolean;
-  setSolidColorCoinIcons: Dispatch<SetStateAction<boolean>>;
-  isFetching: boolean;
-  setIsFetching: Dispatch<SetStateAction<boolean>>;
-  isInputSearchFocused: boolean;
-  setIsInputSearchFocused: Dispatch<SetStateAction<boolean>>;
-  isOutputSearchFocused: boolean;
-  setIsOutputSearchFocused: Dispatch<SetStateAction<boolean>>;
-
+  isFetching: SharedValue<boolean>;
   SwapInputController: ReturnType<typeof useSwapInputsController>;
   AnimatedSwapStyles: ReturnType<typeof useAnimatedSwapStyles>;
   SwapTextStyles: ReturnType<typeof useSwapTextStyles>;
@@ -47,77 +33,68 @@ interface SwapProviderProps {
 }
 
 export const SwapProvider = ({ children }: SwapProviderProps) => {
-  const { isDarkMode } = useColorMode();
+  const isFetching = useSharedValue(false);
   const inputProgress = useSharedValue(0);
   const outputProgress = useSharedValue(0);
   const sliderXPosition = useSharedValue(SLIDER_WIDTH * INITIAL_SLIDER_POSITION);
   const sliderPressProgress = useSharedValue(SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT);
   const focusedInput = useSharedValue<inputKeys>('inputAmount');
 
-  const [topColor, setTopColor] = useState(isDarkMode ? ETH_COLOR_DARK : ETH_COLOR);
-  const [bottomColor, setBottomColor] = useState(OUTPUT_COLOR);
-  const [solidColorCoinIcons, setSolidColorCoinIcons] = useState(false);
-  const [isFetching, setIsFetching] = useState(false);
-  const [isInputSearchFocused, setIsInputSearchFocused] = useState(false);
-  const [isOutputSearchFocused, setIsOutputSearchFocused] = useState(false);
-
-  const SwapInputController = useSwapInputsController({
-    focusedInput,
-    inputAssetBalance: INPUT_ASSET_BALANCE,
-    inputAssetUsdPrice: INPUT_ASSET_USD_PRICE,
-    outputAssetUsdPrice: OUTPUT_ASSET_USD_PRICE,
-    setIsFetching,
-    sliderXPosition,
+  const SwapNavigation = useSwapNavigation({
+    inputProgress,
+    outputProgress,
   });
 
-  const AnimatedSwapStyles = useAnimatedSwapStyles({ inputProgress, outputProgress });
+  const SwapInputController = useSwapInputsController({
+    ...SwapNavigation,
+    focusedInput,
+    isFetching,
+    sliderXPosition,
+    inputProgress,
+    outputProgress,
+  });
+
+  const AnimatedSwapStyles = useAnimatedSwapStyles({ SwapInputController, inputProgress, outputProgress, isFetching });
   const SwapTextStyles = useSwapTextStyles({
     ...SwapInputController,
-    bottomColor,
     focusedInput,
     inputProgress,
     outputProgress,
     sliderPressProgress,
-    topColor,
-  });
-
-  const SwapNavigation = useSwapNavigation({
-    inputProgress,
-    outputProgress,
   });
 
   const confirmButtonIcon = useDerivedValue(() => {
     const isInputZero = Number(SwapInputController.inputValues.value.inputAmount) === 0;
     const isOutputZero = Number(SwapInputController.inputValues.value.outputAmount) === 0;
 
-    if (SwapInputController.inputMethod.value !== 'slider' && (isInputZero || isOutputZero) && !isFetching) {
+    if (SwapInputController.inputMethod.value !== 'slider' && (isInputZero || isOutputZero) && !isFetching.value) {
       return '';
     } else if (SwapInputController.inputMethod.value === 'slider' && SwapInputController.percentageToSwap.value === 0) {
       return '';
     } else {
       return '􀕹';
     }
-  }, [isFetching]);
+  });
 
   const confirmButtonLabel = useDerivedValue(() => {
     const isInputZero = Number(SwapInputController.inputValues.value.inputAmount) === 0;
     const isOutputZero = Number(SwapInputController.inputValues.value.outputAmount) === 0;
 
-    if (SwapInputController.inputMethod.value !== 'slider' && (isInputZero || isOutputZero) && !isFetching) {
+    if (SwapInputController.inputMethod.value !== 'slider' && (isInputZero || isOutputZero) && !isFetching.value) {
       return 'Enter Amount';
     } else if (SwapInputController.inputMethod.value === 'slider' && SwapInputController.percentageToSwap.value === 0) {
       return 'Enter Amount';
     } else {
       return 'Review';
     }
-  }, [isFetching]);
+  });
 
   const confirmButtonIconStyle = useAnimatedStyle(() => {
     const isInputZero = Number(SwapInputController.inputValues.value.inputAmount) === 0;
     const isOutputZero = Number(SwapInputController.inputValues.value.outputAmount) === 0;
 
     const sliderCondition = SwapInputController.inputMethod.value === 'slider' && SwapInputController.percentageToSwap.value === 0;
-    const inputCondition = SwapInputController.inputMethod.value !== 'slider' && (isInputZero || isOutputZero) && !isFetching;
+    const inputCondition = SwapInputController.inputMethod.value !== 'slider' && (isInputZero || isOutputZero) && !isFetching.value;
 
     const shouldHide = sliderCondition || inputCondition;
 
@@ -125,6 +102,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       display: shouldHide ? 'none' : 'flex',
     };
   });
+
+  console.log('re-rendered swap provider');
 
   return (
     <SwapContext.Provider
@@ -134,18 +113,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         sliderXPosition,
         sliderPressProgress,
         focusedInput,
-        topColor,
-        setTopColor,
-        bottomColor,
-        setBottomColor,
-        solidColorCoinIcons,
-        setSolidColorCoinIcons,
         isFetching,
-        setIsFetching,
-        isInputSearchFocused,
-        setIsInputSearchFocused,
-        isOutputSearchFocused,
-        setIsOutputSearchFocused,
         SwapInputController,
         AnimatedSwapStyles,
         SwapTextStyles,

@@ -2,6 +2,8 @@ import { UnlockableAppIconKey, unlockableAppIcons } from '@/appIcons/appIcons';
 import { CardType } from '@/components/cards/GenericCard';
 import { LearnCategory } from '@/components/cards/utils/types';
 import { FiatProviderName } from '@/entities/f2c';
+import { Network } from '@/networks/types';
+import { RequestSource } from '@/utils/requestNavigationHandlers';
 
 /**
  * All events, used by `analytics.track()`
@@ -118,6 +120,10 @@ export const event = {
 
   appIconUnlockSheetViewed: 'app_icon_unlock_sheet.viewed',
   appIconUnlockSheetCTAPressed: 'app_icon_unlock_sheet.cta_pressed',
+
+  txRequestShownSheet: 'request.sheet.show',
+  txRequestReject: 'request.rejected',
+  txRequestApprove: 'request.approved',
 } as const;
 
 /**
@@ -444,5 +450,22 @@ export type EventProperties = {
   };
   [event.appIconUnlockSheetCTAPressed]: {
     appIcon: UnlockableAppIconKey;
+  };
+  [event.txRequestShownSheet]: {
+    requestType: 'transaction' | 'signature';
+    source: RequestSource;
+  };
+  [event.txRequestApprove]: {
+    requestType: 'transaction' | 'signature';
+    source: RequestSource;
+    dappName: string;
+    dappUrl: string;
+    isHardwareWallet: boolean;
+    network: Network;
+  };
+  [event.txRequestReject]: {
+    source: RequestSource;
+    requestType: 'transaction' | 'signature';
+    isHardwareWallet: boolean;
   };
 };

@@ -1,34 +1,46 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { TextInput } from 'react-native';
+import Animated, { runOnUI, useAnimatedRef, useDerivedValue } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Input } from '@/components/inputs';
-import { Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
-import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../constants';
-import { opacity } from '../utils/swaps';
+import { AnimatedText, Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { opacity } from '@/__swaps__/utils/swaps';
+import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+
+const AnimatedInput = Animated.createAnimatedComponent(Input);
 
 export const SearchInput = ({
   color,
   handleExitSearch,
   handleFocusSearch,
-  isFocused,
   output,
-  setIsFocused,
 }: {
   color: string;
   handleExitSearch: () => void;
   handleFocusSearch: () => void;
-  isFocused?: boolean;
   output?: boolean;
-  setIsFocused: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
+  const { inputProgress, outputProgress, SwapInputController, AnimatedSwapStyles } = useSwapContext();
   const { isDarkMode } = useColorMode();
 
-  const inputRef = React.useRef<TextInput>(null);
-  const [query, setQuery] = React.useState('');
+  const inputRef = useAnimatedRef<TextInput>();
 
   const fillTertiary = useForegroundColor('fillTertiary');
   const label = useForegroundColor('label');
   const labelQuaternary = useForegroundColor('labelQuaternary');
+
+  const btnText = useDerivedValue(() => {
+    if ((inputProgress.value === 2 && !output) || (outputProgress.value === 2 && output)) {
+      return 'Cancel';
+    }
+
+    return 'Close';
+  });
+
+  const initialValue = useMemo(() => {
+    return SwapInputController.searchQuery.value;
+  }, [SwapInputController.searchQuery.value]);
 
   return (
     <Box width="full">
@@ -55,15 +67,15 @@ export const SearchInput = ({
                     </Text>
                   </Box>
                 </Column>
-                <Input
+                <AnimatedInput
+                  onChange={e => {
+                    runOnUI(SwapInputController.onChangeSearchQuery)(e.nativeEvent.text);
+                  }}
                   onBlur={() => {
                     handleExitSearch();
-                    setIsFocused(false);
                   }}
-                  onChange={e => setQuery(e.nativeEvent.text)}
                   onFocus={() => {
                     handleFocusSearch();
-                    setIsFocused(true);
                   }}
                   placeholder={output ? 'Find a token to buy' : 'Search your tokens'}
                   placeholderTextColor={isDarkMode ? opacity(labelQuaternary, 0.3) : labelQuaternary}
@@ -77,7 +89,7 @@ export const SearchInput = ({
                     height: 44,
                     zIndex: 10,
                   }}
-                  value={query}
+                  defaultValue={initialValue}
                 />
               </Columns>
             </Box>
@@ -86,30 +98,29 @@ export const SearchInput = ({
         <Column width="content">
           <ButtonPressAnimation
             onPress={() => {
-              if (!isFocused) {
-                handleExitSearch();
-              } else {
-                inputRef.current?.blur();
-                setIsFocused(false);
-              }
+              handleExitSearch();
+              inputRef.current?.blur();
             }}
             scaleTo={0.8}
           >
             <Box
+              as={Animated.View}
               alignItems="center"
               borderRadius={18}
               height={{ custom: 36 }}
               justifyContent="center"
               paddingHorizontal={{ custom: 12 - THICK_BORDER_WIDTH }}
-              style={{
-                backgroundColor: opacity(color, isDarkMode ? 0.1 : 0.08),
-                borderColor: opacity(color, isDarkMode ? 0.06 : 0.01),
-                borderWidth: THICK_BORDER_WIDTH,
-              }}
+              style={
+                output ? AnimatedSwapStyles.searchOutputAssetButtonWrapperStyle : AnimatedSwapStyles.searchInputAssetButtonWrapperStyle
+              }
             >
-              <Text align="center" color={{ custom: color }} size="17pt" weight="heavy">
-                {isFocused ? 'Cancel' : 'Close'}
-              </Text>
+              <AnimatedText
+                text={btnText}
+                align="center"
+                style={output ? AnimatedSwapStyles.searchOutputAssetButtonStyle : AnimatedSwapStyles.searchInputAssetButtonStyle}
+                size="17pt"
+                weight="heavy"
+              />
             </Box>
           </ButtonPressAnimation>
         </Column>

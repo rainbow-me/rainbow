@@ -1,6 +1,14 @@
 import c from 'chroma-js';
 import { useMemo } from 'react';
-import Animated, { interpolate, interpolateColor, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, {
+  DerivedValue,
+  interpolate,
+  interpolateColor,
+  useAnimatedStyle,
+  useDerivedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 
 import { globalColors, useColorMode } from '@/design-system';
 
@@ -12,8 +20,8 @@ import {
   FOCUSED_INPUT_HEIGHT,
   fadeConfig,
   springConfig,
-} from '../constants';
-import { opacity } from '../utils/swaps';
+} from '@/__swaps__/screens/Swap/constants';
+import { opacityWorklet } from '@/__swaps__/utils/swaps';
 
 export const useSwapInputStyles = ({
   bottomInput,
@@ -22,26 +30,32 @@ export const useSwapInputStyles = ({
   progress,
 }: {
   bottomInput: boolean | undefined;
-  color: string;
+  color: DerivedValue<string | number>;
   otherInputProgress: Animated.SharedValue<number>;
   progress: Animated.SharedValue<number>;
 }) => {
   const { isDarkMode } = useColorMode();
 
-  const { bgColor, expandedBgColor, strokeColor, expandedStrokeColor, mixedShadowColor } = useMemo(() => {
-    const bgColor = isDarkMode ? opacity(color, 0.08) : opacity(globalColors.white100, 0.8);
-    const expandedBgColor = isDarkMode ? bgColor : opacity(globalColors.white100, 0.8);
-    const strokeColor = isDarkMode ? opacity(color === ETH_COLOR_DARK ? ETH_COLOR_DARK_ACCENT : color, 0.06) : globalColors.white100;
-    const expandedStrokeColor = isDarkMode ? opacity(color, 0.1) : globalColors.white100;
-    const mixedShadowColor = isDarkMode ? 'transparent' : c.mix(color, globalColors.grey100, 0.84).hex();
+  const bgColor = useDerivedValue(() => {
+    return isDarkMode ? opacityWorklet(color.value.toString(), 0.08) : opacityWorklet(globalColors.white100, 0.8);
+  }, [color, isDarkMode]);
 
-    return {
-      bgColor,
-      expandedBgColor,
-      strokeColor,
-      expandedStrokeColor,
-      mixedShadowColor,
-    };
+  const expandedBgColor = useDerivedValue(() => {
+    return isDarkMode ? bgColor.value : opacityWorklet(globalColors.white100, 0.8);
+  }, [bgColor, isDarkMode]);
+
+  const strokeColor = useDerivedValue(() => {
+    return isDarkMode
+      ? opacityWorklet(color.value === ETH_COLOR_DARK ? ETH_COLOR_DARK_ACCENT : color.value.toString(), 0.06)
+      : globalColors.white100;
+  }, [color, isDarkMode]);
+
+  const expandedStrokeColor = useDerivedValue(() => {
+    return isDarkMode ? opacityWorklet(color.value.toString(), 0.1) : globalColors.white100;
+  }, [color, isDarkMode]);
+
+  const mixedShadowColor = useMemo(() => {
+    return isDarkMode ? 'transparent' : c.mix(color.value.toString(), globalColors.grey100, 0.84).hex();
   }, [color, isDarkMode]);
 
   const containerStyle = useAnimatedStyle(() => {
@@ -69,8 +83,8 @@ export const useSwapInputStyles = ({
 
   const inputStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: withTiming(interpolateColor(progress.value, [0, 1], [bgColor, expandedBgColor]), fadeConfig),
-      borderColor: withTiming(interpolateColor(progress.value, [0, 1], [strokeColor, expandedStrokeColor]), fadeConfig),
+      backgroundColor: withTiming(interpolateColor(progress.value, [0, 1], [bgColor.value, expandedBgColor.value]), fadeConfig),
+      borderColor: withTiming(interpolateColor(progress.value, [0, 1], [strokeColor.value, expandedStrokeColor.value]), fadeConfig),
       height: withSpring(
         interpolate(progress.value, [0, 1, 2], [BASE_INPUT_HEIGHT, EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT], 'clamp'),
         springConfig
