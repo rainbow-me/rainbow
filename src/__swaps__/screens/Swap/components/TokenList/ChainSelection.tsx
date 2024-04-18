@@ -17,6 +17,7 @@ import { ContextMenuButton } from '@/components/context-menu';
 import { useAccountAccentColor } from '@/hooks';
 import { UserAssetFilter } from '@/__swaps__/types/assets';
 import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
+import { Network } from '@/helpers';
 
 type ChainSelectionProps = {
   allText?: string;
@@ -79,12 +80,30 @@ export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
   const menuConfig = useMemo(() => {
     const supportedChains = SUPPORTED_CHAINS({ testnetMode: false }).map(chain => {
       const network = ethereumUtils.getNetworkFromChainId(chain.id);
+
+      const getIconValueForNetwork = (network: Network) => {
+        let name = network;
+        if (network === 'mainnet') {
+          name = 'ethereum' as Network;
+        }
+
+        return `${name}Badge${isDarkMode ? 'Dark' : ''}`;
+      };
+
+      const getActionTitleForChain = (chainId: ChainId) => {
+        if (chainId === ChainId.mainnet) {
+          return 'Ethereum';
+        }
+
+        return chainNameFromChainId(chainId).charAt(0).toUpperCase() + chainNameFromChainId(chainId).slice(1);
+      };
+
       return {
         actionKey: `${chain.id}`,
-        actionTitle: chainNameFromChainId(chain.id),
+        actionTitle: getActionTitleForChain(chain.id),
         icon: {
           iconType: 'ASSET',
-          iconValue: ``,
+          iconValue: getIconValueForNetwork(network),
         },
       };
     });
