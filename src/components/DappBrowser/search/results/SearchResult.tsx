@@ -7,6 +7,7 @@ import { Source } from 'react-native-fast-image';
 import Animated, { SharedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { FasterImageView, ImageOptions } from '@candlefinance/faster-image';
 import { Dapp } from '@/resources/metadata/dapps';
+import { useSearchContext } from '../SearchContext';
 
 const AnimatedFasterImage = Animated.createAnimatedComponent(FasterImageView);
 
@@ -64,16 +65,11 @@ export const SearchResult = ({
   );
 };
 
-export const GoogleSearchResult = ({
-  searchQuery,
-  navigateToUrl,
-}: {
-  searchQuery: SharedValue<string>;
-  navigateToUrl: (url: string) => void;
-}) => {
+export const GoogleSearchResult = ({ navigateToUrl }: { navigateToUrl: (url: string) => void }) => {
+  const { searchQuery } = useSearchContext();
   const onPress = useCallback(() => navigateToUrl(`https://www.google.com/search?q=${searchQuery}`), [navigateToUrl, searchQuery]);
 
-  const animatedText = useDerivedValue(() => `Search "${searchQuery.value}"`);
+  const animatedText = useDerivedValue(() => `Search "${searchQuery?.value}"`);
 
   return (
     <Box as={ButtonPressAnimation} padding="8px" borderRadius={18} scaleTo={0.95} onPress={onPress}>

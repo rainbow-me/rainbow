@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import { TextInput } from 'react-native';
-import Animated, { AnimatedRef, SharedValue, interpolate, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import React from 'react';
+import Animated, { interpolate, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box } from '@/design-system';
 import { IS_IOS } from '@/env';
@@ -10,22 +9,14 @@ import { useBrowserContext } from '../../BrowserContext';
 import { AccountIcon } from './AccountIcon';
 import { SearchInput } from './SearchInput';
 import { TabButton } from './TabButton';
+import { useSearchContext } from '../SearchContext';
 
 export const SEARCH_BAR_HEIGHT = 88;
 
-export const SearchBar = ({
-  inputRef,
-  searchQuery,
-  isFocused,
-  setIsFocused,
-}: {
-  inputRef: AnimatedRef<TextInput>;
-  searchQuery: SharedValue<string>;
-  isFocused: boolean;
-  setIsFocused: React.Dispatch<React.SetStateAction<boolean>>;
-}) => {
+export const SearchBar = () => {
   const { width: deviceWidth } = useDimensions();
   const { tabViewProgress, tabViewVisible } = useBrowserContext();
+  const { inputRef, isFocused, setIsFocused } = useSearchContext();
 
   const isFocusedValue = useSharedValue(false);
 
@@ -84,13 +75,7 @@ export const SearchBar = ({
         </Box>
 
         <Box paddingRight="12px" style={{ flex: 1 }}>
-          <SearchInput
-            isFocused={isFocused}
-            setIsFocused={setIsFocused}
-            isFocusedValue={isFocusedValue}
-            inputRef={inputRef}
-            searchQuery={searchQuery}
-          />
+          <SearchInput isFocusedValue={isFocusedValue} />
         </Box>
         <TabButton inputRef={inputRef} isFocused={isFocused} isFocusedValue={isFocusedValue} setIsFocused={setIsFocused} />
       </Box>

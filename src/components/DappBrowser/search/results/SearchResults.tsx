@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
-import { ScrollView, TextInput } from 'react-native';
-import Animated, { AnimatedRef, SharedValue, useAnimatedReaction, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import { ScrollView } from 'react-native';
+import Animated, { useAnimatedReaction, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { Box, Inline, Inset, Stack, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
 import { useBrowserContext } from '../../BrowserContext';
 import { normalizeUrl } from '../../utils';
@@ -9,6 +9,7 @@ import { GoogleSearchResult, SearchResult } from './SearchResult';
 import { Dapp, useDapps } from '@/resources/metadata/dapps';
 import { useKeyboardHeight } from '@/hooks';
 import { SEARCH_BAR_HEIGHT } from '../bar/SearchBar';
+import { useSearchContext } from '../SearchContext';
 
 const search = (query: string, dapps: Dapp[]) => {
   'worklet';
@@ -58,17 +59,10 @@ const search = (query: string, dapps: Dapp[]) => {
   return filteredDapps;
 };
 
-export const SearchResults = ({
-  inputRef,
-  searchQuery,
-  isFocused,
-}: {
-  inputRef: AnimatedRef<TextInput>;
-  searchQuery: SharedValue<string>;
-  isFocused: boolean;
-}) => {
+export const SearchResults = () => {
   const { isDarkMode } = useColorMode();
   const { searchViewProgress, updateActiveTabState } = useBrowserContext();
+  const { isFocused, inputRef, searchQuery } = useSearchContext();
   const { dapps } = useDapps();
   const keyboardHeight = useKeyboardHeight({ shouldListen: isFocused });
 
@@ -92,7 +86,7 @@ export const SearchResults = ({
   }, [inputRef]);
 
   useAnimatedReaction(
-    () => searchQuery.value,
+    () => searchQuery?.value ?? '',
     (result, previous) => {
       if (result !== previous) {
         searchResults.modify(value => {
@@ -106,7 +100,7 @@ export const SearchResults = ({
   );
 
   const allResultsAnimatedStyle = useAnimatedStyle(() => ({
-    display: searchQuery.value ? 'flex' : 'none',
+    display: searchQuery?.value ? 'flex' : 'none',
   }));
 
   const moreResultsAnimatedStyle = useAnimatedStyle(() => ({
@@ -170,7 +164,7 @@ export const SearchResults = ({
                 <Box>
                   <SearchResult index={0} searchResults={searchResults} navigateToUrl={navigateToUrl} />
                   <Animated.View style={suggestedGoogleSearchAnimatedStyle}>
-                    <GoogleSearchResult searchQuery={searchQuery} navigateToUrl={navigateToUrl} />
+                    <GoogleSearchResult navigateToUrl={navigateToUrl} />
                   </Animated.View>
                 </Box>
               </Box>
@@ -187,7 +181,7 @@ export const SearchResults = ({
                     </Inline>
                   </Inset>
                   <Box gap={4}>
-                    <GoogleSearchResult searchQuery={searchQuery} navigateToUrl={navigateToUrl} />
+                    <GoogleSearchResult navigateToUrl={navigateToUrl} />
                     <SearchResult index={1} searchResults={searchResults} navigateToUrl={navigateToUrl} />
                     <SearchResult index={2} searchResults={searchResults} navigateToUrl={navigateToUrl} />
                     <SearchResult index={3} searchResults={searchResults} navigateToUrl={navigateToUrl} />

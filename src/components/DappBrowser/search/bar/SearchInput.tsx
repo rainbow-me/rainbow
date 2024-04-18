@@ -2,7 +2,6 @@ import React, { useCallback, useMemo } from 'react';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { AnimatedText, Box, Cover, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import Animated, {
-  AnimatedRef,
   SharedValue,
   dispatchCommand,
   runOnJS,
@@ -13,7 +12,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import Input from '@/components/inputs/Input';
 import * as i18n from '@/languages';
-import { NativeSyntheticEvent, StyleSheet, TextInput, TextInputChangeEventData, TextInputSubmitEditingEventData } from 'react-native';
+import { NativeSyntheticEvent, StyleSheet, TextInputChangeEventData, TextInputSubmitEditingEventData } from 'react-native';
 import { ToolbarIcon } from '../../ToolbarIcon';
 import { IS_IOS } from '@/env';
 import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
@@ -32,22 +31,11 @@ import { Site } from '@/state/browserState';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { formatUrl, getNameFromFormattedUrl, handleShareUrl, isValidURL } from '../../utils';
 import { GOOGLE_SEARCH_URL, HTTP, HTTPS, RAINBOW_HOME } from '../../constants';
+import { useSearchContext } from '../SearchContext';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
 
-export const SearchInput = ({
-  inputRef,
-  searchQuery,
-  isFocused,
-  setIsFocused,
-  isFocusedValue,
-}: {
-  inputRef: AnimatedRef<TextInput>;
-  searchQuery: SharedValue<string>;
-  isFocused: boolean;
-  setIsFocused: React.Dispatch<React.SetStateAction<boolean>>;
-  isFocusedValue: SharedValue<boolean>;
-}) => {
+export const SearchInput = ({ isFocusedValue }: { isFocusedValue: SharedValue<boolean> }) => {
   const {
     activeTabIndex,
     animatedActiveTabIndex,
@@ -59,6 +47,7 @@ export const SearchInput = ({
     tabViewProgress,
     updateActiveTabState,
   } = useBrowserContext();
+  const { inputRef, isFocused, setIsFocused, searchQuery } = useSearchContext();
   const { isFavorite, addFavorite, removeFavorite } = useFavoriteDappsStore();
   const { isDarkMode } = useColorMode();
 
@@ -249,7 +238,7 @@ export const SearchInput = ({
 
   const onChange = useCallback(
     (event: NativeSyntheticEvent<TextInputChangeEventData>) => {
-      searchQuery.value = event.nativeEvent.text;
+      if (searchQuery) searchQuery.value = event.nativeEvent.text;
     },
     [searchQuery]
   );
