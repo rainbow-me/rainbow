@@ -18,12 +18,18 @@ export const X_BUTTON_PADDING = 6;
 const INVERTED_WEBVIEW_SCALE = deviceUtils.dimensions.width / TAB_VIEW_COLUMN_WIDTH;
 const SINGLE_TAB_INVERTED_WEBVIEW_SCALE = 10 / 7;
 
-const SCALE_ADJUSTED_X_BUTTON_SIZE = X_BUTTON_SIZE * INVERTED_WEBVIEW_SCALE;
-const SCALE_ADJUSTED_X_BUTTON_PADDING = X_BUTTON_PADDING * INVERTED_WEBVIEW_SCALE;
+export const SCALE_ADJUSTED_X_BUTTON_SIZE = X_BUTTON_SIZE * INVERTED_WEBVIEW_SCALE;
+export const SCALE_ADJUSTED_X_BUTTON_PADDING = X_BUTTON_PADDING * INVERTED_WEBVIEW_SCALE;
 
-const SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB = X_BUTTON_SIZE * SINGLE_TAB_INVERTED_WEBVIEW_SCALE;
-const SCALE_ADJUSTED_X_BUTTON_PADDING_SINGLE_TAB = X_BUTTON_PADDING * SINGLE_TAB_INVERTED_WEBVIEW_SCALE;
+export const SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB = X_BUTTON_SIZE * SINGLE_TAB_INVERTED_WEBVIEW_SCALE;
+export const SCALE_ADJUSTED_X_BUTTON_PADDING_SINGLE_TAB = X_BUTTON_PADDING * SINGLE_TAB_INVERTED_WEBVIEW_SCALE;
 
+export const getCloseTabButtonHeight = ({ animatedMultipleTabsOpen }: { animatedMultipleTabsOpen: 0 | 1 }) => {
+  'worklet';
+  return animatedMultipleTabsOpen
+    ? SCALE_ADJUSTED_X_BUTTON_SIZE + SCALE_ADJUSTED_X_BUTTON_PADDING
+    : SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB + SCALE_ADJUSTED_X_BUTTON_PADDING_SINGLE_TAB;
+};
 export const CloseTabButton = ({
   animatedMultipleTabsOpen,
   animatedTabIndex,
@@ -234,6 +240,7 @@ const XIcon = ({ buttonSize, multipleTabsOpen }: { buttonSize: number; multipleT
 
 const styles = StyleSheet.create({
   buttonPressWrapperStyle: {
+    zIndex: 99999999999,
     alignItems: 'center',
     height: '100%',
     justifyContent: 'center',

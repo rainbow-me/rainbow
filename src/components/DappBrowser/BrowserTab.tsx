@@ -39,9 +39,9 @@ import {
 } from './Dimensions';
 import { WebViewEvent } from 'react-native-webview/lib/WebViewTypes';
 import { appMessenger } from '@/browserMessaging/AppMessenger';
-import { IS_ANDROID, IS_DEV, IS_IOS } from '@/env';
+import { IS_DEV, IS_IOS } from '@/env';
 import { RainbowError, logger } from '@/logger';
-import { CloseTabButton, X_BUTTON_PADDING, X_BUTTON_SIZE } from './CloseTabButton';
+import { CloseTabButton, X_BUTTON_PADDING, X_BUTTON_SIZE, getCloseTabButtonHeight } from './CloseTabButton';
 import DappBrowserWebview from './DappBrowserWebview';
 import Homepage from './Homepage';
 import { handleProviderRequestApp } from './handleProviderRequest';
@@ -252,14 +252,19 @@ export const BrowserTab = React.memo(
       // For some reason driving the WebView height with a separate derived
       // value results in slightly less tearing when the height animates
       const animatedIsActiveTab = animatedActiveTabIndex?.value === animatedTabIndex.value;
-      if (!animatedIsActiveTab) return COLLAPSED_WEBVIEW_HEIGHT_UNSCALED;
+      const closeButtonHeight = getCloseTabButtonHeight({ animatedMultipleTabsOpen: animatedMultipleTabsOpen.value });
+
+      if (!animatedIsActiveTab) return COLLAPSED_WEBVIEW_HEIGHT_UNSCALED - closeButtonHeight;
 
       const progress = tabViewProgress?.value || 0;
 
       return interpolate(
         progress,
         [0, 100],
-        [animatedIsActiveTab ? 0 : COLLAPSED_WEBVIEW_HEIGHT_UNSCALED, COLLAPSED_WEBVIEW_HEIGHT_UNSCALED],
+        [
+          animatedIsActiveTab ? 0 : COLLAPSED_WEBVIEW_HEIGHT_UNSCALED - closeButtonHeight,
+          COLLAPSED_WEBVIEW_HEIGHT_UNSCALED - closeButtonHeight,
+        ],
         'clamp'
       );
     });
@@ -310,12 +315,12 @@ export const BrowserTab = React.memo(
       );
 
       const opacity = interpolate(progress, [0, 100], [animatedIsActiveTab ? 1 : 0, 1], 'clamp');
+      const closeButtonHeight = getCloseTabButtonHeight({ animatedMultipleTabsOpen: animatedMultipleTabsOpen.value });
 
       return {
         borderRadius,
         // we're giving some room so users can stil press the cancel button on android
-        height: animatedGestureHandlerHeight.value - (IS_IOS ? 0 : 40),
-        ...(IS_ANDROID && { top: 80 }),
+        height: animatedGestureHandlerHeight.value,
 
         opacity,
         // eslint-disable-next-line no-nested-ternary
@@ -326,6 +331,7 @@ export const BrowserTab = React.memo(
           { translateY: yPositionForTab + gestureY.value },
           { scale: scale * gestureScale.value },
           { translateY: animatedMultipleTabsOpen.value * (animatedGestureHandlerHeight.value / 2) },
+          { translateY: closeButtonHeight },
         ],
       };
     });
@@ -833,7 +839,13 @@ export const BrowserTab = React.memo(
 
         <Animated.View style={[styles.webViewContainer, animatedGestureHandlerStyle, reverseZIndexAnimatedStyle]}>
           {/* @ts-expect-error Property 'children' does not exist on type */}
-          <TapGestureHandler ref={doubleTap} maxDeltaX={10} maxDeltaY={10} onHandlerStateChange={handleTap} shouldCancelWhenOutside>
+          <TapGestureHandler
+            ref={tapGestureHandlerRef}
+            maxDeltaX={10}
+            maxDeltaY={10}
+            onHandlerStateChange={handleTap}
+            shouldCancelWhenOutside
+          >
             <Animated.View style={{ width: '100%', height: '100%' }}>
               {/* @ts-expect-error Property 'children' does not exist on type */}
               <PanGestureHandler
