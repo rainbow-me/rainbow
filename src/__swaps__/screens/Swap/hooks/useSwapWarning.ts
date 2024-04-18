@@ -17,6 +17,12 @@ export enum SwapWarningType {
   high = 'high',
   severe = 'severe',
   long_wait = 'long_wait',
+
+  // quote errors
+  no_quote_available = 501,
+  insufficient_liquidity = 502,
+  fee_on_transfer = 503,
+  no_route_found = 504,
 }
 
 export interface SwapWarning {
@@ -74,16 +80,53 @@ export const useSwapWarning = ({ SwapInputController, isFetching, sliderXPositio
       /**
        * ORDER IS IMPORTANT HERE
        *
-       * We want to show severe/high price impact warnings if they exists
+       * We want to show quote errors first if they exist, then
+       * we want to show severe/high price impact warnings if they exists
        * if those are not present, we want to show the long wait warning
-       * if there is no price impact at all, we want to show none
+       * if there is no warnings at all, we want to show none
        */
+      if (!isFetching && (quote as QuoteError).error) {
+        const quoteError = quote as QuoteError;
+
+        switch (quoteError.error_code) {
+          default:
+          case SwapWarningType.no_quote_available: {
+            runOnUI(updateWarning)({
+              type: SwapWarningType.no_quote_available,
+              display: i18n.t(i18n.l.exchange.quote_errors.no_quote_available),
+            });
+            break;
+          }
+          case SwapWarningType.insufficient_liquidity: {
+            runOnUI(updateWarning)({
+              type: SwapWarningType.insufficient_liquidity,
+              display: i18n.t(i18n.l.exchange.quote_errors.insufficient_liquidity),
+            });
+            break;
+          }
+          case SwapWarningType.fee_on_transfer: {
+            runOnUI(updateWarning)({
+              type: SwapWarningType.fee_on_transfer,
+              display: i18n.t(i18n.l.exchange.quote_errors.fee_on_transfer),
+            });
+            break;
+          }
+          case SwapWarningType.no_route_found: {
+            runOnUI(updateWarning)({
+              type: SwapWarningType.no_route_found,
+              display: i18n.t(i18n.l.exchange.quote_errors.no_route_found),
+            });
+            break;
+          }
+        }
+      }
       if (!isFetching && !(quote as QuoteError).error && (!inputNativeValue || !outputNativeValue)) {
         runOnUI(updateWarning)({
           type: SwapWarningType.unknown,
           display: i18n.t(i18n.l.exchange.price_impact.unknown_price.title),
         });
       } else if (!isFetching && greaterThanOrEqualTo(impact, severePriceImpactThreshold)) {
+        console.log(impact, display);
         runOnUI(updateWarning)({
           type: SwapWarningType.severe,
           display,

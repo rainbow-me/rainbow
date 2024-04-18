@@ -17,41 +17,74 @@ export const SwapWarning = () => {
     [SwapWarningType.long_wait]: orange,
     [SwapWarningType.none]: orange,
     [SwapWarningType.high]: orange,
+
+    // swap quote errors
+    [SwapWarningType.no_quote_available]: orange,
+    [SwapWarningType.insufficient_liquidity]: orange,
+    [SwapWarningType.fee_on_transfer]: orange,
+    [SwapWarningType.no_route_found]: orange,
   };
 
-  const warningMessages = {
+  const warningMessagesPrefix: Record<SwapWarningType, { title: string; subtext: string; addDisplayToTitle?: boolean }> = {
     [SwapWarningType.none]: {
       title: '',
       subtext: '',
     },
     [SwapWarningType.high]: {
-      title: `􀇿 ${i18n.t(i18n.l.exchange.price_impact.you_are_losing)} ${SwapWarning.swapWarning.value.display}`,
+      title: `􀇿 ${i18n.t(i18n.l.exchange.price_impact.you_are_losing)}`,
       subtext: i18n.t(i18n.l.exchange.price_impact.small_market_try_smaller_amount),
+      addDisplayToTitle: true,
     },
     [SwapWarningType.unknown]: {
       title: `􀇿 ${SwapWarning.swapWarning.value.display}`,
       subtext: i18n.t(i18n.l.exchange.price_impact.unknown_price.description),
     },
     [SwapWarningType.severe]: {
-      title: `􀇿 ${i18n.t(i18n.l.exchange.price_impact.you_are_losing)} ${SwapWarning.swapWarning.value.display}`,
+      title: `􀇿 ${i18n.t(i18n.l.exchange.price_impact.you_are_losing)}`,
       subtext: i18n.t(i18n.l.exchange.price_impact.small_market_try_smaller_amount),
+      addDisplayToTitle: true,
     },
     [SwapWarningType.long_wait]: {
       title: `􀇿 ${i18n.t(i18n.l.exchange.price_impact.long_wait.title)}`,
-      subtext: `${i18n.t(i18n.l.exchange.price_impact.long_wait.description)} ${SwapWarning.swapWarning.value.display}`,
+      subtext: `${i18n.t(i18n.l.exchange.price_impact.long_wait.description)}`,
+      addDisplayToTitle: true,
+    },
+
+    // swap quote errors
+    [SwapWarningType.no_quote_available]: {
+      title: `􀇿 ${i18n.t(i18n.l.exchange.quote_errors.no_quote_available)}`,
+      subtext: '',
+    },
+    [SwapWarningType.insufficient_liquidity]: {
+      title: `􀇿 ${i18n.t(i18n.l.exchange.quote_errors.insufficient_liquidity)}`,
+      subtext: '',
+    },
+    [SwapWarningType.fee_on_transfer]: {
+      title: `􀇿 ${i18n.t(i18n.l.exchange.quote_errors.fee_on_transfer)}`,
+      subtext: '',
+    },
+    [SwapWarningType.no_route_found]: {
+      title: `􀇿 ${i18n.t(i18n.l.exchange.quote_errors.no_route_found)}`,
+      subtext: '',
     },
   };
 
   const warningTitle = useDerivedValue(() => {
-    return warningMessages[SwapWarning.swapWarning.value.type].title;
+    const potentialTitle = warningMessagesPrefix[SwapWarning.swapWarning.value.type].title;
+    const addDisplayToTitle = warningMessagesPrefix[SwapWarning.swapWarning.value.type].addDisplayToTitle;
+    return addDisplayToTitle ? `${potentialTitle} ${SwapWarning.swapWarning.value.display}` : potentialTitle;
   });
 
   const warningSubtext = useDerivedValue(() => {
-    return warningMessages[SwapWarning.swapWarning.value.type].subtext;
+    return warningMessagesPrefix[SwapWarning.swapWarning.value.type].subtext;
   });
 
   const warningStyles = useAnimatedStyle(() => ({
     color: colorMap[SwapWarning.swapWarning.value.type],
+  }));
+
+  const warningSubtextStyles = useAnimatedStyle(() => ({
+    display: warningSubtext.value.trim() !== '' ? 'flex' : 'none',
   }));
 
   return (
@@ -67,7 +100,7 @@ export const SwapWarning = () => {
         <Inline alignHorizontal="center" alignVertical="center" horizontalSpace="4px" wrap={false}>
           <AnimatedText style={warningStyles} align="center" size="15pt" weight="heavy" text={warningTitle} />
         </Inline>
-        <AnimatedText color="labelQuaternary" align="center" size="13pt" weight="bold" text={warningSubtext} />
+        <AnimatedText style={warningSubtextStyles} color="labelQuaternary" align="center" size="13pt" weight="bold" text={warningSubtext} />
       </Box>
     </Box>
   );
