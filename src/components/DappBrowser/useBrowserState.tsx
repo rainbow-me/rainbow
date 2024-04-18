@@ -331,8 +331,6 @@ export function useBrowserState() {
     }
   );
 
-  console.log('useBrowserState :: hook called');
-
   return {
     activeTabIndex,
     tabViewProgress,

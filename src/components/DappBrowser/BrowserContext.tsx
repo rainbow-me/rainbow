@@ -48,7 +48,6 @@ const BrowserContext = createContext<BrowserContextType>(DEFAULT_BROWSER_CONTEXT
 export const useBrowserContext = () => useContext(BrowserContext);
 
 export const BrowserContextProvider = ({ children }: { children: React.ReactNode }) => {
-  console.log('BrowserContextProvider :: RENDER');
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
   const loadProgress = useSharedValue(0);
   const searchViewProgress = useSharedValue(0);

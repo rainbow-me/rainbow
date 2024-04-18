@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FasterImageView, ImageOptions } from '@candlefinance/faster-image';
 import { globalColors, useColorMode } from '@/design-system';
-import { useDimensions, useEffectDebugger } from '@/hooks';
+import { useDimensions } from '@/hooks';
 import React, { useCallback, useLayoutEffect, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
@@ -671,30 +671,6 @@ export const BrowserTab = React.memo(
         }
       }
     );
-
-    console.log('BrowserTab :: RENDER', { tabId, tabsCount });
-
-    // useEffectDebugger(
-    //   () => true,
-    //   [
-    //     tabId,
-    //     tabState,
-    //     injectedJS,
-    //     isActiveTab,
-    //     activeTabRef,
-    //     animatedActiveTabIndex,
-    //     closeTabWorklet,
-    //     currentlyOpenTabIds,
-    //     tabViewVisible,
-    //     toggleTabViewWorklet,
-    //     updateActiveTabState,
-    //     tabViewProgress,
-    //     tabsCount,
-    //     nextTabId,
-    //     goToUrl,
-    //   ],
-    //   'useEffectDebugger::BrowserTab::' + tabId
-    // );
 
     return (
       <>

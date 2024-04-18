@@ -122,8 +122,6 @@ const DappBrowserComponent = () => {
     scrollEnabled: tabViewVisible?.value,
   }));
 
-  console.log('DappBrowserComponent :: RENDER');
-
   return (
     <SheetGestureBlocker>
       <Box as={Page} height="full" style={isDarkMode ? styles.rootViewBackground : styles.rootViewBackgroundLight} width="full">
@@ -191,7 +189,6 @@ const DappBrowserComponent = () => {
 };
 
 export const DappBrowser = () => {
-  console.log('DappBrowser :: RENDER');
   return (
     <BrowserContextProvider>
       <DappBrowserComponent />
