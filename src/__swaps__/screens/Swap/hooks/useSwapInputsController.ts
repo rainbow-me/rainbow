@@ -413,6 +413,9 @@ export function useSwapInputsController({
       quoteParams.swapType === SwapType.crossChain ? await getCrosschainQuote(quoteParams) : await getQuote(quoteParams)
     ) as Quote | CrosschainQuote | QuoteError;
 
+    quote.value = quoteResponse;
+    logger.debug(`[useSwapInputsController] quote response`, { quoteResponse });
+
     // todo - show quote error
     if (!quoteResponse || (quoteResponse as QuoteError)?.error) {
       logger.debug(`[useSwapInputsController] quote error`, { error: quoteResponse });
@@ -501,7 +504,6 @@ export function useSwapInputsController({
     // TODO: Need to convert big number to native value properly here...
     // example: "fee": "3672850000000000",
     fee.value = isWrapOrUnwrapEth ? '0' : data.feeInEth.toString();
-    quote.value = data;
 
     inputValues.modify(values => {
       return {
@@ -1050,6 +1052,7 @@ export function useSwapInputsController({
     assetToSellIconUrl,
     assetToBuySymbol,
     assetToBuyIconUrl,
+    quote,
     source,
     slippage,
     flashbots,
