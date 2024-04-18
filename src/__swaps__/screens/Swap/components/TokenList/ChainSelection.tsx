@@ -1,13 +1,18 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable react/jsx-props-no-spreading */
 import c from 'chroma-js';
+import * as i18n from '@/languages';
 import { Text as RNText, StyleSheet } from 'react-native';
 import Animated, { SharedValue, runOnUI, useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
 import React, { useCallback, useMemo } from 'react';
 
 import { SUPPORTED_CHAINS } from '@/references';
 import { AnimatedText, Bleed, Box, HitSlop, Inline, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
-import { chainNameFromChainId, chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
+import {
+  chainNameForChainIdWithMainnetSubstitution,
+  chainNameForChainIdWithMainnetSubstitutionWorklet,
+  chainNameFromChainIdWorklet,
+} from '@/__swaps__/utils/chains';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { ethereumUtils, showActionSheetWithOptions } from '@/utils';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
@@ -17,7 +22,6 @@ import { ContextMenuButton } from '@/components/context-menu';
 import { useAccountAccentColor } from '@/hooks';
 import { UserAssetFilter } from '@/__swaps__/types/assets';
 import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
-import { Network } from '@/helpers';
 
 type ChainSelectionProps = {
   allText?: string;
@@ -52,14 +56,10 @@ export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
     }),
     current => {
       if (output) {
-        chainName.value = current.outputChainId === ChainId.mainnet ? 'ethereum' : chainNameFromChainIdWorklet(current.outputChainId);
+        chainName.value = chainNameForChainIdWithMainnetSubstitutionWorklet(current.outputChainId);
       } else {
         chainName.value =
-          current.userAssetFilter === 'all'
-            ? allText
-            : current.userAssetFilter === ChainId.mainnet
-              ? 'ethereum'
-              : chainNameFromChainIdWorklet(current.userAssetFilter);
+          current.userAssetFilter === 'all' ? allText : chainNameForChainIdWithMainnetSubstitutionWorklet(current.userAssetFilter);
       }
     }
   );
@@ -79,31 +79,14 @@ export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
 
   const menuConfig = useMemo(() => {
     const supportedChains = SUPPORTED_CHAINS({ testnetMode: false }).map(chain => {
-      const network = ethereumUtils.getNetworkFromChainId(chain.id);
-
-      const getIconValueForNetwork = (network: Network) => {
-        let name = network;
-        if (network === 'mainnet') {
-          name = 'ethereum' as Network;
-        }
-
-        return `${name}Badge${isDarkMode ? 'Dark' : ''}`;
-      };
-
-      const getActionTitleForChain = (chainId: ChainId) => {
-        if (chainId === ChainId.mainnet) {
-          return 'Ethereum';
-        }
-
-        return chainNameFromChainId(chainId).charAt(0).toUpperCase() + chainNameFromChainId(chainId).slice(1);
-      };
+      const title = chainNameForChainIdWithMainnetSubstitution(chain.id);
 
       return {
         actionKey: `${chain.id}`,
-        actionTitle: getActionTitleForChain(chain.id),
+        actionTitle: title.charAt(0).toUpperCase() + title.slice(1),
         icon: {
           iconType: 'ASSET',
-          iconValue: getIconValueForNetwork(network),
+          iconValue: `${title}Badge${isDarkMode ? 'Dark' : ''}`,
         },
       };
     });
@@ -111,7 +94,7 @@ export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
     if (!output) {
       supportedChains.unshift({
         actionKey: 'all',
-        actionTitle: 'All Networks' as ChainName,
+        actionTitle: i18n.t(i18n.l.exchange.all_networks) as ChainName,
         icon: {
           iconType: 'icon',
           iconValue: '􀆪',
@@ -122,13 +105,13 @@ export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
     return {
       menuItems: supportedChains,
     };
-  }, [output]);
+  }, [isDarkMode, output]);
 
   const onShowActionSheet = useCallback(() => {
     const chainTitles = menuConfig.menuItems.map(chain => chain.actionTitle);
 
     if (!output) {
-      chainTitles.unshift('All Networks' as ChainName);
+      chainTitles.unshift(i18n.t(i18n.l.exchange.all_networks) as ChainName);
     }
 
     showActionSheetWithOptions(
@@ -172,7 +155,7 @@ export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
               </Box>
             </Bleed>
             <Text color="labelSecondary" size="15pt" weight="heavy">
-              Filter by Network
+              {i18n.t(i18n.l.exchange.filter_by_network)}
             </Text>
           </Inline>
         ) : (
@@ -200,7 +183,7 @@ export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
               </Box>
             </Bleed>
             <Text color="label" size="15pt" weight="heavy">
-              My tokens
+              {i18n.t(i18n.l.exchange.my_tokens)}
             </Text>
           </Inline>
         )}

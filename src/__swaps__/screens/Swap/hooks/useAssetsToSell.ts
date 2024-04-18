@@ -70,8 +70,6 @@ export const useAssetsToSell = () => {
     }
   );
 
-  console.log(userAssets.length);
-
   const filteredAssetsToSell = useDebouncedCallback((query: string) => {
     return query
       ? setCurrentAssets(
