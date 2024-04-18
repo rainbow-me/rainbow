@@ -19,10 +19,10 @@ export const SwapWarning = () => {
     [SwapWarningType.high]: orange,
 
     // swap quote errors
-    [SwapWarningType.no_quote_available]: orange,
-    [SwapWarningType.insufficient_liquidity]: orange,
-    [SwapWarningType.fee_on_transfer]: orange,
-    [SwapWarningType.no_route_found]: orange,
+    [SwapWarningType.no_quote_available]: red,
+    [SwapWarningType.insufficient_liquidity]: red,
+    [SwapWarningType.fee_on_transfer]: red,
+    [SwapWarningType.no_route_found]: red,
   };
 
   const warningMessagesPrefix: Record<SwapWarningType, { title: string; subtext: string; addDisplayToTitle?: boolean }> = {
