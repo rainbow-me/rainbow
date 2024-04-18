@@ -58,7 +58,7 @@ import { useBrowserHistoryStore } from '@/state/browserHistory';
 import { normalizeUrlForRecents } from './utils';
 import { useBrowserContext } from './BrowserContext';
 import { BrowserTabProps, ScreenshotType } from './types';
-import { findTabeScreenshot, saveScreenshot } from './screenshots';
+import { findTabScreenshot, saveScreenshot } from './screenshots';
 
 // ⚠️ TODO: Split this file apart into hooks, smaller components
 // useTabScreenshots, useAnimatedWebViewStyles, useWebViewGestures
@@ -116,7 +116,7 @@ export const BrowserTab = React.memo(
         ? currentlyOpenTabIds?.value.length - 1
         : currentlyOpenTabIds?.value.indexOf(tabId)) ?? 0
     );
-    const screenshotData = useSharedValue<ScreenshotType | undefined>(findTabeScreenshot(tabId, tabUrl) || undefined);
+    const screenshotData = useSharedValue<ScreenshotType | undefined>(findTabScreenshot(tabId, tabUrl) || undefined);
 
     const defaultBackgroundColor = isDarkMode ? '#191A1C' : globalColors.white100;
     const backgroundColor = useSharedValue<string>(defaultBackgroundColor);

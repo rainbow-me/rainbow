@@ -10,7 +10,7 @@ export const getStoredScreenshots = (): ScreenshotType[] => {
   return persistedScreenshots ? (JSON.parse(persistedScreenshots) as ScreenshotType[]) : [];
 };
 
-export const findTabeScreenshot = (id: string, url: string): ScreenshotType | null => {
+export const findTabScreenshot = (id: string, url: string): ScreenshotType | null => {
   const persistedData = tabScreenshotStorage.getString('tabScreenshots');
   if (persistedData) {
     const screenshots = JSON.parse(persistedData);
