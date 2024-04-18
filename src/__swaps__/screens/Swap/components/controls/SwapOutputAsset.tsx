@@ -1,5 +1,5 @@
 import MaskedView from '@react-native-masked-view/masked-view';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, StatusBar } from 'react-native';
 import Animated, { runOnJS, runOnUI, useAnimatedReaction, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
@@ -17,13 +17,8 @@ import { TokenList } from '@/__swaps__/screens/Swap/components/TokenList/TokenLi
 import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { IS_ANDROID } from '@/env';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { ethereumUtils } from '@/utils';
 import { isSameAssetWorklet } from '@/__swaps__/utils/assets';
 import { useAssetsToSell } from '@/__swaps__/screens/Swap/hooks/useAssetsToSell';
-import { useAccountSettings } from '@/hooks';
-import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
-import { ParsedAsset } from '@/__swaps__/types/assets';
-import { supportedCurrencies } from '@/references/supportedCurrencies';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { ChainId } from '@/__swaps__/types/chains';
 

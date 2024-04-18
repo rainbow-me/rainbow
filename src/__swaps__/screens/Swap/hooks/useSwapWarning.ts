@@ -66,7 +66,6 @@ export const useSwapWarning = ({ SwapInputController, isFetching, sliderXPositio
     }) => {
       const updateWarning = (values: SwapWarning) => {
         'worklet';
-
         swapWarning.modify(prev => ({
           ...prev,
           ...values,
@@ -112,6 +111,7 @@ export const useSwapWarning = ({ SwapInputController, isFetching, sliderXPositio
             break;
           }
           case SwapWarningType.no_route_found: {
+            console.log('here');
             runOnUI(updateWarning)({
               type: SwapWarningType.no_route_found,
               display: i18n.t(i18n.l.exchange.quote_errors.no_route_found),
@@ -119,14 +119,12 @@ export const useSwapWarning = ({ SwapInputController, isFetching, sliderXPositio
             break;
           }
         }
-      }
-      if (!isFetching && !(quote as QuoteError).error && (!inputNativeValue || !outputNativeValue)) {
+      } else if (!isFetching && !(quote as QuoteError).error && (!inputNativeValue || !outputNativeValue)) {
         runOnUI(updateWarning)({
           type: SwapWarningType.unknown,
           display: i18n.t(i18n.l.exchange.price_impact.unknown_price.title),
         });
       } else if (!isFetching && greaterThanOrEqualTo(impact, severePriceImpactThreshold)) {
-        console.log(impact, display);
         runOnUI(updateWarning)({
           type: SwapWarningType.severe,
           display,
@@ -177,13 +175,18 @@ export const useSwapWarning = ({ SwapInputController, isFetching, sliderXPositio
         swapWarning.value = { display: '', type: SwapWarningType.none };
         return;
       }
+
       // NOTE: While the user is scrubbing the slider, we don't want to show the price impact warning.
       if (previous?.sliderXPosition && previous?.sliderXPosition !== current.sliderXPosition) {
         swapWarning.value = { display: '', type: SwapWarningType.none };
         return;
       }
 
-      if (previous?.inputNativeValue !== current.inputNativeValue || previous?.outputNativeValue !== current.outputNativeValue) {
+      if (
+        previous?.quote !== current.quote ||
+        previous?.inputNativeValue !== current.inputNativeValue ||
+        previous?.outputNativeValue !== current.outputNativeValue
+      ) {
         runOnJS(getWarning)({
           inputNativeValue: current.inputNativeValue,
           outputNativeValue: current.outputNativeValue,
