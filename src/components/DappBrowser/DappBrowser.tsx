@@ -163,7 +163,6 @@ const DappBrowserComponent = () => {
                 toggleTabViewWorklet={toggleTabViewWorklet}
                 updateActiveTabState={index === activeTabIndex ? updateActiveTabState : undefined}
                 nextTabId={tabStates?.[1]?.uniqueId}
-                url={tabStates[index].url}
                 goToUrl={url => goToUrl(url, index)}
               />
             ))}

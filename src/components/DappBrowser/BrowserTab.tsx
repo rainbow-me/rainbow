@@ -81,7 +81,6 @@ export const BrowserTab = React.memo(
     tabViewProgress,
     tabsCount,
     nextTabId,
-    url,
     goToUrl,
   }: BrowserTabProps) {
     const { scrollViewRef, scrollViewOffset, loadProgress } = useBrowserContext();
@@ -108,7 +107,7 @@ export const BrowserTab = React.memo(
     //   gestureX: 0,
     //   gestureY: 0,
     // });
-
+    const { url } = tabState;
     const tabUrl = url;
     const isOnHomepage = tabUrl === RAINBOW_HOME;
 
@@ -673,22 +672,27 @@ export const BrowserTab = React.memo(
 
     console.log('BrowserTab :: RENDER', tabId);
 
-    // useEffectDebugger(() => true, [
-    //   tabId,
-    //   tabState,
-    //   isActiveTab,
-    //   injectedJS,
-    //   activeTabRef,
-    //   animatedActiveTabIndex,
-    //   closeTabWorklet,
-    //   currentlyOpenTabIds,
-    //   tabViewVisible,
-    //   toggleTabViewWorklet,
-    //   updateActiveTabState,
-    //   tabViewProgress,
-    //   tabsCount,
-    //   nextTabId,
-    // ], 'useEffectDebugger::BrowserTab::' + tabId);
+    // useEffectDebugger(
+    //   () => true,
+    //   [
+    //     tabId,
+    //     tabState,
+    //     injectedJS,
+    //     isActiveTab,
+    //     activeTabRef,
+    //     animatedActiveTabIndex,
+    //     closeTabWorklet,
+    //     currentlyOpenTabIds,
+    //     tabViewVisible,
+    //     toggleTabViewWorklet,
+    //     updateActiveTabState,
+    //     tabViewProgress,
+    //     tabsCount,
+    //     nextTabId,
+    //     goToUrl,
+    //   ],
+    //   'useEffectDebugger::BrowserTab::' + tabId
+    // );
 
     return (
       <>
@@ -781,7 +785,8 @@ export const BrowserTab = React.memo(
     );
   },
   (prevProps: BrowserTabProps, nextProps: BrowserTabProps) => {
-    if (isEqual(prevProps.tabState, nextProps.tabState)) {
+    const urlDidntChange = prevProps.tabState.url === nextProps.tabState.url;
+    if (isEqual(prevProps.tabState, nextProps.tabState) || !nextProps.isActiveTab || urlDidntChange) {
       // console.log('closeTabWorklet changed but we are returning true');
       return true;
     }
