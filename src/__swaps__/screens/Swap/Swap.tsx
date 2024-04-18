@@ -65,7 +65,6 @@ export function SwapScreen() {
           <SwapInputAsset />
           <FlipButton />
           <SwapOutputAsset />
-          <ExchangeRateBubble />
           <Box width="full" position="absolute" bottom="0px">
             <SwapAmountInputs />
             <SwapActions />
