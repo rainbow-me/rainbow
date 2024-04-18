@@ -65,7 +65,14 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     isFetching,
   });
 
-  const AnimatedSwapStyles = useAnimatedSwapStyles({ SwapInputController, SwapWarning, inputProgress, outputProgress, reviewProgress, isFetching });
+  const AnimatedSwapStyles = useAnimatedSwapStyles({
+    SwapInputController,
+    SwapWarning,
+    inputProgress,
+    outputProgress,
+    reviewProgress,
+    isFetching,
+  });
   const SwapTextStyles = useSwapTextStyles({
     ...SwapInputController,
     focusedInput,
