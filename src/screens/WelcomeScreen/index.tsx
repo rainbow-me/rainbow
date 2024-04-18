@@ -84,9 +84,16 @@ export default function WelcomeScreen() {
 
   useEffect(() => {
     const initialize = async () => {
+      if (IS_TEST) {
+        logger.log('Skipping animations because IS_TEST is true');
+        contentAnimation.value = 1;
+        createWalletButtonAnimation.value = 1;
+        colorAnimation.value = 0;
+        return;
+      }
+
       hideSplashScreen();
       shouldAnimateRainbows.value = true;
-
       const initialDuration = 120;
 
       contentAnimation.value = withSequence(
@@ -104,31 +111,26 @@ export default function WelcomeScreen() {
       // We need to disable looping animations
       // There's no way to disable sync yet
       // See https://stackoverflow.com/questions/47391019/animated-button-block-the-detox
-      if (!IS_TEST) {
-        createWalletButtonAnimation.value = withDelay(
-          initialDuration,
-          withTiming(1.02, { duration: 1000 }, () => {
-            createWalletButtonAnimation.value = withRepeat(
-              withTiming(0.98, {
-                duration: 1000,
-              }),
-              -1,
-              true
-            );
-          })
-        );
-        colorAnimation.value = withRepeat(
-          withTiming(5, {
-            duration: 2500,
-            easing: Easing.linear,
-          }),
-          -1
-        );
-      }
+      createWalletButtonAnimation.value = withDelay(
+        initialDuration,
+        withTiming(1.02, { duration: 1000 }, () => {
+          createWalletButtonAnimation.value = withRepeat(
+            withTiming(0.98, {
+              duration: 1000,
+            }),
+            -1,
+            true
+          );
+        })
+      );
 
-      if (IS_TEST) {
-        logger.log('Disabled loop animations in WelcomeScreen due to .env var IS_TESTING === "true"');
-      }
+      colorAnimation.value = withRepeat(
+        withTiming(5, {
+          duration: 2500,
+          easing: Easing.linear,
+        }),
+        -1
+      );
     };
 
     initialize();
@@ -136,21 +138,28 @@ export default function WelcomeScreen() {
     return () => {
       createWalletButtonAnimation.value = 1;
       contentAnimation.value = 1;
+      colorAnimation.value = 0;
     };
   }, [colorAnimation, contentAnimation, createWalletButtonAnimation, hideSplashScreen, shouldAnimateRainbows]);
 
-  const buttonStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: createWalletButtonAnimation.value }],
-    zIndex: 10,
-  }));
+  const buttonStyle = useAnimatedStyle(() => {
+    if (IS_TEST) {
+      return { transform: [{ scale: 1 }], zIndex: 10 };
+    }
+    return {
+      transform: [{ scale: createWalletButtonAnimation.value }],
+      zIndex: 10,
+    };
+  }, []);
 
-  const contentStyle = useAnimatedStyle(() => ({
-    transform: [
-      {
-        scale: contentAnimation.value,
-      },
-    ],
-  }));
+  const contentStyle = useAnimatedStyle(() => {
+    if (IS_TEST) {
+      return { transform: [{ scale: 1 }] };
+    }
+    return {
+      transform: [{ scale: contentAnimation.value }],
+    };
+  }, []);
 
   const textStyle = useAnimatedStyle(() => ({
     backgroundColor: calculatedColor.value,
