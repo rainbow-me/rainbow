@@ -2577,7 +2577,7 @@
           "insufficient_funds": "Oh no! The gas price changed and you no longer have enough funds for this transaction. Please try again with a lower amount.",
           "generic": "Oh no! There was a problem submitting the transaction. Please try again."
         },
-        "complete_checks": "Complete checks",
+        "complete_check": "Complete check",
         "ens_configuration_options": "ENS configuration options",
         "confirm": "Confirm transaction",
         "max": "Max",
