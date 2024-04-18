@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { NativeSyntheticEvent, TextInput, TextInputChangeEventData, TextInputSubmitEditingEventData } from 'react-native';
 import Animated, {
+  SharedValue,
   dispatchCommand,
   interpolate,
   runOnJS,
@@ -27,12 +28,31 @@ import { useDapps } from '@/resources/metadata/dapps';
 import { GetdAppsQuery } from '@/graphql/__generated__/metadata';
 import { filterList } from '@/utils';
 import { rankings } from 'match-sorter';
+import { TabState } from '../types';
 
-export const Search = () => {
+export const Search = ({
+  activeTabIndex,
+  tabStates,
+  tabViewProgress,
+  tabViewVisible,
+  updateActiveTabState,
+  getActiveTabState,
+  animatedActiveTabIndex,
+  toggleTabViewWorklet,
+}: {
+  activeTabIndex: number;
+  tabViewProgress: SharedValue<number> | undefined;
+  tabStates: TabState[];
+  tabViewVisible: SharedValue<boolean> | undefined;
+  updateActiveTabState: (newState: Partial<TabState>, tabId?: string | undefined) => void;
+  getActiveTabState: () => TabState | undefined;
+  animatedActiveTabIndex: SharedValue<number> | undefined;
+  toggleTabViewWorklet(tabIndex?: number): void;
+}) => {
+  const { onRefresh } = useBrowserContext();
   const { width: deviceWidth } = useDimensions();
   const { isDarkMode } = useColorMode();
-  const { activeTabIndex, onRefresh, searchViewProgress, tabStates, tabViewProgress, tabViewVisible, updateActiveTabState } =
-    useBrowserContext();
+  const { searchViewProgress } = useBrowserContext();
   const { data: dappsData } = useDapps();
 
   const isFocusedValue = useSharedValue(false);
@@ -277,7 +297,7 @@ export const Search = () => {
           width="full"
         >
           <Box as={Animated.View} position="absolute" style={[accountIconStyle, { left: 24 }]}>
-            <AccountIcon />
+            <AccountIcon getActiveTabState={getActiveTabState} activeTabIndex={activeTabIndex} />
           </Box>
 
           <Box paddingRight="12px" style={{ flex: 1 }}>
@@ -297,9 +317,17 @@ export const Search = () => {
               logoUrl={logoUrl}
               searchValue={searchQuery}
               onChange={onChange}
+              animatedActiveTabIndex={animatedActiveTabIndex}
+              tabViewProgress={tabViewProgress}
             />
           </Box>
-          <TabButton inputRef={inputRef} isFocused={isFocused} isFocusedValue={isFocusedValue} setIsFocused={setIsFocused} />
+          <TabButton
+            inputRef={inputRef}
+            isFocused={isFocused}
+            isFocusedValue={isFocusedValue}
+            setIsFocused={setIsFocused}
+            toggleTabViewWorklet={toggleTabViewWorklet}
+          />
         </Box>
       </Box>
     </>
