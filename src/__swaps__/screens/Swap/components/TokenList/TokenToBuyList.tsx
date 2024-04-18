@@ -1,17 +1,18 @@
 import { Text as RNText, StyleSheet } from 'react-native';
+import { useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
 import React, { useCallback, useMemo } from 'react';
-import { useAssetsToBuySections } from '../../hooks/useAssetsToBuy';
-import { TokenToBuySection } from './TokenToBuySection';
+
+import { useAssetsToBuySections } from '@/__swaps__/screens/Swap/hooks/useAssetsToBuy';
+import { TokenToBuySection } from '@/__swaps__/screens/Swap/components/TokenList/TokenToBuySection';
 import { AnimatedText, Bleed, Box, HitSlop, Inline, Stack, Text, useColorMode, useForegroundColor } from '@/design-system';
-import { chainNameFromChainIdWorklet, isL2Chain } from '../../utils/chains';
-import { opacity } from '../../utils/swaps';
+import { chainNameFromChainIdWorklet, isL2Chain } from '@/__swaps__/utils/chains';
+import { opacity } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ethereumUtils } from '@/utils';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { ChainId } from '../../types/chains';
-import { useSwapContext } from '../../providers/swap-provider';
-import { useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
-import { ListEmpty } from './ListEmpty';
+import { ChainId } from '@/__swaps__/types/chains';
+import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
 
 export const TokenToBuyList = () => {
   const { isDarkMode } = useColorMode();
@@ -46,7 +47,7 @@ export const TokenToBuyList = () => {
   );
 
   return (
-    <Stack space="32px">
+    <Stack space="24px">
       <Box paddingHorizontal="20px">
         <Inline alignHorizontal="justify" alignVertical="center">
           <Inline alignVertical="center" space="6px">

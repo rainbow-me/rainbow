@@ -15,6 +15,34 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.21] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.21)
+
+### Added
+
+- Added support for other native currencies in transaction simulation sheet (#5585)
+- implement gas estimations for swaps v2 (#5526)
+- Add token search logic and ability to select assets for swaps v2 (#5547)
+- Added warning for when price impact is unknown (#5597)
+- Added a warning when user attempts to send to contract address (#5586)
+- Added support for Degen chain (#5621)
+
+### Changed
+
+- Updated audit for dependencies (#5594, #5615, #5624)
+- Bumped swaps SDK (#5583)
+- Improved type checking and error handling on web preferences (#5607)
+- Updated e2e test suite (#5558)
+- Updated transaction request analytic events (#5589)
+- Cleaned up file imports and duplicate types for swaps v2 (#5619)
+- Improved Wallet Connect flow and added performance tracking (#5616)
+
+### Fixed
+
+- Fixed an issue with scrolltoindex firing on the last card dismissal (#5606)
+- Fixed a bug where some NFTs won’t show up in wallet (#5537)
+- Fixed an bug where non backed up wallets would show as backed up under certain conditions (#5593)
+- Fixed dapp metadata issues regarding Zora mints (#5584)
+
 ## [1.9.20] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.20)
 
 ### Added

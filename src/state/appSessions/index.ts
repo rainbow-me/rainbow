@@ -43,7 +43,7 @@ export const appSessionsStore = createStore<AppSessionsStore<AppSession>>(
       const appSessions = get().appSessions;
       const activeSessionAddress = appSessions[host]?.activeSessionAddress;
       const sessions = appSessions[host]?.sessions;
-      return activeSessionAddress
+      return activeSessionAddress && sessions
         ? {
             address: activeSessionAddress,
             network: sessions[activeSessionAddress],

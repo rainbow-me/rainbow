@@ -14,8 +14,8 @@ const tokenSearchHttp = new RainbowFetchClient({
 
 import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
 import { BNB_MAINNET_ADDRESS, ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@/references';
-import { ChainId } from '../../types/chains';
-import { SearchAsset, TokenSearchAssetKey, TokenSearchListId, TokenSearchThreshold } from '../../types/search';
+import { ChainId } from '@/__swaps__/types/chains';
+import { SearchAsset, TokenSearchAssetKey, TokenSearchListId, TokenSearchThreshold } from '@/__swaps__/types/search';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 
 // ///////////////////////////////////////////////

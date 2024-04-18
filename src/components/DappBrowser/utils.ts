@@ -2,7 +2,7 @@ import { Share } from 'react-native';
 import { WebViewNavigationEvent } from 'react-native-webview/lib/RNCWebViewNativeComponent';
 import { RainbowError, logger } from '@/logger';
 import { HTTP, HTTPS } from './constants';
-import { TabState } from './BrowserContext';
+import { TabState } from './types';
 
 // ---------------------------------------------------------------------------- //
 // URL validation regex breakdown here: https://mathiasbynens.be/demo/url-regex
@@ -29,6 +29,26 @@ export const normalizeUrl = (url: string): string => {
     return HTTPS + url;
   }
   return url;
+};
+
+export const formatUrl = (url: string): string => {
+  let formattedValue = '';
+  let isGoogleSearch = false;
+  try {
+    const { hostname, pathname, search } = new URL(url);
+    isGoogleSearch = hostname === 'www.google.com' && pathname === '/search';
+    if (isGoogleSearch) {
+      const params = new URLSearchParams(search);
+      formattedValue = params.get('q') || '';
+    } else {
+      formattedValue = hostname.startsWith('www.') ? hostname.slice(4) : hostname;
+    }
+  } catch {
+    if (!isGoogleSearch) {
+      formattedValue = url;
+    }
+  }
+  return formattedValue;
 };
 
 export const generateUniqueId = (): string => {
@@ -65,6 +85,18 @@ export async function handleShareUrl(url: string): Promise<void> {
       message: e.message,
       url,
     });
+  }
+}
+
+export function normalizeUrlForRecents(url: string): string {
+  if (url.includes('?')) {
+    return url;
+  } else {
+    if (url.endsWith('/')) {
+      return url;
+    } else {
+      return url + '/';
+    }
   }
 }
 

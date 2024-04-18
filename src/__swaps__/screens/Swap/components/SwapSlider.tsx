@@ -32,14 +32,14 @@ import {
   snappierSpringConfig,
   snappySpringConfig,
   springConfig,
-} from '../constants';
-import { clamp, opacity, opacityWorklet } from '../utils/swaps';
-import { useSwapContext } from '../providers/swap-provider';
-import { SwapCoinIcon } from './SwapCoinIcon';
+} from '@/__swaps__/screens/Swap/constants';
+import { clamp, opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { SwapCoinIcon } from '@/__swaps__/screens/Swap/components/SwapCoinIcon';
 import { useTheme } from '@/theme';
-import { useSwapAssetStore } from '../state/assets';
+import { useSwapAssetStore } from '@/__swaps__/screens/Swap/state/assets';
 import { ethereumUtils } from '@/utils';
-import { ChainId } from '../types/chains';
+import { ChainId } from '@/__swaps__/types/chains';
 
 type SwapSliderProps = {
   dualColor?: boolean;

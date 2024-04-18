@@ -1,7 +1,7 @@
 import { BlurView } from '@react-native-community/blur';
 import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
-import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { SharedValue, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Bleed, Box, BoxProps, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
@@ -14,13 +14,21 @@ import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { position } from '@/styles';
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/screens/Swap/utils/swaps';
-import { useBrowserContext } from './BrowserContext';
+import { opacity } from '@/__swaps__/utils/swaps';
 import { BrowserButtonShadows } from './DappBrowserShadows';
 
-export const TabViewToolbar = () => {
+export const TabViewToolbar = ({
+  tabViewProgress,
+  tabViewVisible,
+  newTabWorklet,
+  toggleTabViewWorklet,
+}: {
+  tabViewProgress: SharedValue<number> | undefined;
+  tabViewVisible: SharedValue<boolean>;
+  newTabWorklet: (newTabUrl?: string | undefined) => void;
+  toggleTabViewWorklet: (activeIndex?: number | undefined) => void;
+}) => {
   const { width: deviceWidth } = useDimensions();
-  const { tabViewProgress, tabViewVisible } = useBrowserContext();
 
   const barStyle = useAnimatedStyle(() => {
     const progress = tabViewProgress?.value || 0;
@@ -52,22 +60,18 @@ export const TabViewToolbar = () => {
         style={[{ alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' }, barStyle]}
         width="full"
       >
-        <NewTabButton />
-        <DoneButton />
+        <NewTabButton newTabWorklet={newTabWorklet} />
+        <DoneButton toggleTabViewWorklet={toggleTabViewWorklet} />
       </Box>
     </Box>
   );
 };
 
-const NewTabButton = () => {
-  const { newTabWorklet } = useBrowserContext();
-
+const NewTabButton = ({ newTabWorklet }: { newTabWorklet: (newTabUrl?: string | undefined) => void }) => {
   return <BaseButton onPressWorklet={newTabWorklet} icon="􀅼" iconColor="label" iconSize="icon 20px" width={44} />;
 };
 
-const DoneButton = () => {
-  const { toggleTabViewWorklet } = useBrowserContext();
-
+const DoneButton = ({ toggleTabViewWorklet }: { toggleTabViewWorklet: (activeIndex?: number | undefined) => void }) => {
   return (
     <BaseButton onPressWorklet={toggleTabViewWorklet} paddingHorizontal="20px">
       <Text align="center" color="label" size="20pt" weight="heavy">

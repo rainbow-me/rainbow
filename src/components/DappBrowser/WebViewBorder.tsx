@@ -3,13 +3,22 @@ import { StyleSheet } from 'react-native';
 import Animated, { SharedValue, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { Box, Cover, globalColors } from '@/design-system';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/screens/Swap/utils/swaps';
-import { useBrowserContext } from './BrowserContext';
+import { opacity } from '@/__swaps__/utils/swaps';
 import { WEBVIEW_HEIGHT } from './Dimensions';
 
-export const WebViewBorder = ({ animatedTabIndex, enabled }: { animatedTabIndex: SharedValue<number>; enabled?: boolean }) => {
-  const { animatedActiveTabIndex, tabViewProgress, tabViewVisible } = useBrowserContext();
-
+export const WebViewBorder = ({
+  animatedTabIndex,
+  enabled,
+  animatedActiveTabIndex,
+  tabViewProgress,
+  tabViewVisible,
+}: {
+  animatedTabIndex: SharedValue<number>;
+  enabled?: boolean;
+  animatedActiveTabIndex: SharedValue<number> | undefined;
+  tabViewProgress: SharedValue<number> | undefined;
+  tabViewVisible: SharedValue<boolean> | undefined;
+}) => {
   const webViewBorderStyle = useAnimatedStyle(() => {
     if (!enabled) {
       return {

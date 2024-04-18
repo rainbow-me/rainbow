@@ -1,18 +1,20 @@
 import { rankings } from 'match-sorter';
 import { useCallback, useMemo, useState } from 'react';
+import { SharedValue, runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 
 import { ETH_ADDRESS } from '@/references';
-import { useTokenSearch } from '../resources/search';
-import { ParsedSearchAsset } from '../types/assets';
-import { ChainId } from '../types/chains';
-import { SearchAsset, TokenSearchAssetKey, TokenSearchListId, TokenSearchThreshold } from '../types/search';
-import { addHexPrefix } from '../utils/hex';
-import { isLowerCaseMatch } from '../utils/strings';
+import { useTokenSearch } from '@/__swaps__/screens/Swap/resources/search';
+import { ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { ChainId } from '@/__swaps__/types/chains';
+import { SearchAsset, TokenSearchAssetKey, TokenSearchListId, TokenSearchThreshold } from '@/__swaps__/types/search';
+import { addHexPrefix } from '@/__swaps__/utils/hex';
+import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
 import { filterList } from '@/utils';
 
 import { useFavorites } from '@/resources/favorites';
-import { SharedValue, runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { isAddress } from '@ethersproject/address';
+import { RainbowToken } from '@/entities';
+import { AddressZero } from '@ethersproject/constants';
 
 const VERIFIED_ASSETS_PAYLOAD: {
   keys: TokenSearchAssetKey[];
@@ -87,6 +89,7 @@ export function useSearchCurrencyLists({
   );
 
   const isCrosschainSearch = useMemo(() => {
+    console.log(inputChainId, toChainId);
     return inputChainId && inputChainId !== toChainId;
   }, [inputChainId, toChainId]);
 
@@ -182,12 +185,29 @@ export function useSearchCurrencyLists({
   const { favoritesMetadata: favorites } = useFavorites();
 
   const favoritesList = useMemo(() => {
-    const unfilteredFavorites = Object.values(favorites).map(favToken => ({
-      ...favToken,
-      chainId: toChainId,
-      address: favToken.address === ETH_ADDRESS ? '0x0000000000000000000000000000000000000000' : favToken.address,
-      mainnetAddress: favToken.mainnet_address,
-    })) as SearchAsset[];
+    const getAddressForChainId = (chainId: ChainId, token: RainbowToken) => {
+      if (chainId === ChainId.mainnet) {
+        if (token.address === ETH_ADDRESS) {
+          return AddressZero;
+        }
+        return token.mainnet_address ?? token.address;
+      }
+
+      if (token.networks[chainId]) {
+        return token.networks[chainId].address;
+      }
+
+      return token.address;
+    };
+
+    const unfilteredFavorites = Object.values(favorites)
+      .filter(token => token.networks[toChainId])
+      .map(favToken => ({
+        ...favToken,
+        chainId: toChainId,
+        address: getAddressForChainId(toChainId, favToken),
+        mainnetAddress: favToken.mainnet_address,
+      })) as SearchAsset[];
 
     if (query === '') {
       return unfilteredFavorites;
