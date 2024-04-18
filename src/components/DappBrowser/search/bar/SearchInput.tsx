@@ -218,6 +218,9 @@ export const SearchInput = ({ isFocusedValue }: { isFocusedValue: SharedValue<bo
 
   const onPressWorklet = () => {
     'worklet';
+    if (searchQuery) {
+      searchQuery.value = url === RAINBOW_HOME ? '' : url;
+    }
     isFocusedValue.value = true;
     if (searchViewProgress !== undefined) {
       searchViewProgress.value = withSpring(1, SPRING_CONFIGS.snappierSpringConfig);
@@ -227,6 +230,9 @@ export const SearchInput = ({ isFocusedValue }: { isFocusedValue: SharedValue<bo
   };
 
   const onBlur = useCallback(() => {
+    // if (searchQuery) {
+    //   searchQuery.value = '';
+    // }
     if (isFocused) {
       setIsFocused(false);
     }

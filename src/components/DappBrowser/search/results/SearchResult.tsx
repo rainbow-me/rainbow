@@ -8,6 +8,7 @@ import Animated, { SharedValue, useAnimatedStyle, useDerivedValue } from 'react-
 import { FasterImageView, ImageOptions } from '@candlefinance/faster-image';
 import { Dapp } from '@/resources/metadata/dapps';
 import { useSearchContext } from '../SearchContext';
+import { useDimensions } from '@/hooks';
 
 const AnimatedFasterImage = Animated.createAnimatedComponent(FasterImageView);
 
@@ -20,6 +21,8 @@ export const SearchResult = ({
   searchResults: SharedValue<Dapp[]>;
   navigateToUrl: (url: string) => void;
 }) => {
+  const { width: deviceWidth } = useDimensions();
+
   const dapp: SharedValue<Dapp | undefined> = useDerivedValue(() => searchResults.value[index]);
   const name: SharedValue<string | undefined> = useDerivedValue(() => dapp.value?.name);
   const url: SharedValue<string | undefined> = useDerivedValue(() => dapp.value?.url);
@@ -51,14 +54,16 @@ export const SearchResult = ({
           <Box background="surfacePrimary" shadow="24px" width={{ custom: 40 }} height={{ custom: 40 }} style={{ borderRadius: 10 }}>
             <AnimatedFasterImage source={iconImageOpts} style={{ width: '100%', height: '100%' }} />
           </Box>
-          <Stack space="10px">
-            <AnimatedText size="17pt" weight="bold" color="label" numberOfLines={1}>
-              {name}
-            </AnimatedText>
-            <AnimatedText size="13pt" weight="bold" color="labelTertiary" numberOfLines={1}>
-              {urlDisplay}
-            </AnimatedText>
-          </Stack>
+          <Box width={{ custom: deviceWidth - 100 }}>
+            <Stack space="10px">
+              <AnimatedText size="17pt" weight="bold" color="label" numberOfLines={1}>
+                {name}
+              </AnimatedText>
+              <AnimatedText size="13pt" weight="bold" color="labelTertiary" numberOfLines={1}>
+                {urlDisplay}
+              </AnimatedText>
+            </Stack>
+          </Box>
         </Inline>
       </Box>
     </Animated.View>
@@ -67,9 +72,14 @@ export const SearchResult = ({
 
 export const GoogleSearchResult = ({ navigateToUrl }: { navigateToUrl: (url: string) => void }) => {
   const { searchQuery } = useSearchContext();
-  const onPress = useCallback(() => navigateToUrl(`https://www.google.com/search?q=${searchQuery}`), [navigateToUrl, searchQuery]);
+  const { width: deviceWidth } = useDimensions();
 
   const animatedText = useDerivedValue(() => `Search "${searchQuery?.value}"`);
+
+  const onPress = useCallback(
+    () => searchQuery && navigateToUrl(`https://www.google.com/search?q=${encodeURIComponent(searchQuery.value)}`),
+    [navigateToUrl, searchQuery]
+  );
 
   return (
     <Box as={ButtonPressAnimation} padding="8px" borderRadius={18} scaleTo={0.95} onPress={onPress}>
@@ -85,14 +95,16 @@ export const GoogleSearchResult = ({ navigateToUrl }: { navigateToUrl: (url: str
         >
           <ImgixImage source={GoogleSearchIcon as Source} style={{ width: 30, height: 30 }} size={30} />
         </Box>
-        <Stack space="10px">
-          <AnimatedText size="17pt" weight="bold" color="label" numberOfLines={1}>
-            {animatedText}
-          </AnimatedText>
-          <Text size="13pt" weight="bold" color="labelTertiary">
-            Google
-          </Text>
-        </Stack>
+        <Box width={{ custom: deviceWidth - 100 }}>
+          <Stack space="10px">
+            <AnimatedText size="17pt" weight="bold" color="label" numberOfLines={1}>
+              {animatedText}
+            </AnimatedText>
+            <Text size="13pt" weight="bold" color="labelTertiary">
+              Google
+            </Text>
+          </Stack>
+        </Box>
       </Inline>
     </Box>
   );
