@@ -149,6 +149,10 @@ export const SearchResults = ({ inputRef, searchQuery }: { inputRef: AnimatedRef
     [inputRef, updateActiveTabState]
   );
 
+  const onPressX = useCallback(() => {
+    inputRef?.current?.blur();
+  }, [inputRef]);
+
   useAnimatedReaction(
     () => searchQuery.value,
     (result, previous) => {
@@ -167,12 +171,12 @@ export const SearchResults = ({ inputRef, searchQuery }: { inputRef: AnimatedRef
     display: searchQuery.value ? 'flex' : 'none',
   }));
 
-  const suggestedGoogleSearchAnimatedStyle = useAnimatedStyle(() => ({
-    display: searchResults.value.length ? 'none' : 'flex',
+  const moreResultsAnimatedStyle = useAnimatedStyle(() => ({
+    display: searchResults.value.length ? 'flex' : 'none',
   }));
 
-  const otherGoogleSearchAnimatedStyle = useAnimatedStyle(() => ({
-    display: searchResults.value.length ? 'flex' : 'none',
+  const suggestedGoogleSearchAnimatedStyle = useAnimatedStyle(() => ({
+    display: searchResults.value.length ? 'none' : 'flex',
   }));
 
   return (
@@ -196,7 +200,7 @@ export const SearchResults = ({ inputRef, searchQuery }: { inputRef: AnimatedRef
           style={{ zIndex: 1000 }}
           justifyContent="center"
           position="absolute"
-          onPress={() => inputRef?.current?.blur()}
+          onPress={onPressX}
         >
           <Text weight="heavy" color="labelSecondary" size="icon 15px" align="center">
             􀆄
@@ -205,8 +209,7 @@ export const SearchResults = ({ inputRef, searchQuery }: { inputRef: AnimatedRef
         <Animated.View style={allResultsAnimatedStyle}>
           <Inset>
             <Stack space="32px">
-              {/* {searchQuery.length && suggestedSearchResults?.length && ( */}
-              <Stack space="12px">
+              <Box gap={12}>
                 <Inset horizontal="8px" vertical={{ custom: 9 }}>
                   <Inline alignHorizontal="justify" alignVertical="center">
                     <Inline space="6px" alignVertical="center">
@@ -219,34 +222,37 @@ export const SearchResults = ({ inputRef, searchQuery }: { inputRef: AnimatedRef
                     </Inline>
                   </Inline>
                 </Inset>
-                <SearchResult index={0} searchResults={searchResults} navigateToUrl={navigateToUrl} />
-                <Animated.View style={suggestedGoogleSearchAnimatedStyle}>
-                  <GoogleSearchResult searchQuery={searchQuery} navigateToUrl={navigateToUrl} />
-                </Animated.View>
-              </Stack>
-              <Stack space="12px">
-                <Inset horizontal="8px">
-                  <Inline space="6px" alignVertical="center">
-                    <TextIcon color="labelSecondary" size="icon 15px" weight="heavy" width={20}>
-                      􀊫
-                    </TextIcon>
-                    <Text weight="heavy" color="label" size="20pt">
-                      More Results
-                    </Text>
-                  </Inline>
-                </Inset>
-                <Stack space="4px">
+                <Box>
+                  <SearchResult index={0} searchResults={searchResults} navigateToUrl={navigateToUrl} />
                   <Animated.View style={suggestedGoogleSearchAnimatedStyle}>
                     <GoogleSearchResult searchQuery={searchQuery} navigateToUrl={navigateToUrl} />
                   </Animated.View>
-                  <SearchResult index={1} searchResults={searchResults} navigateToUrl={navigateToUrl} />
-                  <SearchResult index={2} searchResults={searchResults} navigateToUrl={navigateToUrl} />
-                  <SearchResult index={3} searchResults={searchResults} navigateToUrl={navigateToUrl} />
-                  <SearchResult index={4} searchResults={searchResults} navigateToUrl={navigateToUrl} />
-                  <SearchResult index={5} searchResults={searchResults} navigateToUrl={navigateToUrl} />
+                </Box>
+              </Box>
+              <Animated.View style={moreResultsAnimatedStyle}>
+                <Stack space="12px">
+                  <Inset horizontal="8px">
+                    <Inline space="6px" alignVertical="center">
+                      <TextIcon color="labelSecondary" size="icon 15px" weight="heavy" width={20}>
+                        􀊫
+                      </TextIcon>
+                      <Text weight="heavy" color="label" size="20pt">
+                        More Results
+                      </Text>
+                    </Inline>
+                  </Inset>
+                  <Box gap={4}>
+                    <Animated.View style={suggestedGoogleSearchAnimatedStyle}>
+                      <GoogleSearchResult searchQuery={searchQuery} navigateToUrl={navigateToUrl} />
+                    </Animated.View>
+                    <SearchResult index={1} searchResults={searchResults} navigateToUrl={navigateToUrl} />
+                    <SearchResult index={2} searchResults={searchResults} navigateToUrl={navigateToUrl} />
+                    <SearchResult index={3} searchResults={searchResults} navigateToUrl={navigateToUrl} />
+                    <SearchResult index={4} searchResults={searchResults} navigateToUrl={navigateToUrl} />
+                    <SearchResult index={5} searchResults={searchResults} navigateToUrl={navigateToUrl} />
+                  </Box>
                 </Stack>
-              </Stack>
-              {/* )} */}
+              </Animated.View>
             </Stack>
           </Inset>
         </Animated.View>
