@@ -24,12 +24,6 @@ export const SCALE_ADJUSTED_X_BUTTON_PADDING = X_BUTTON_PADDING * INVERTED_WEBVI
 export const SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB = X_BUTTON_SIZE * SINGLE_TAB_INVERTED_WEBVIEW_SCALE;
 export const SCALE_ADJUSTED_X_BUTTON_PADDING_SINGLE_TAB = X_BUTTON_PADDING * SINGLE_TAB_INVERTED_WEBVIEW_SCALE;
 
-export const getCloseTabButtonHeight = ({ animatedMultipleTabsOpen }: { animatedMultipleTabsOpen: 0 | 1 }) => {
-  'worklet';
-  return animatedMultipleTabsOpen
-    ? SCALE_ADJUSTED_X_BUTTON_SIZE + SCALE_ADJUSTED_X_BUTTON_PADDING
-    : SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB + SCALE_ADJUSTED_X_BUTTON_PADDING_SINGLE_TAB;
-};
 export const CloseTabButton = ({
   animatedMultipleTabsOpen,
   animatedTabIndex,

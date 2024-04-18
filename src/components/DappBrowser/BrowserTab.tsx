@@ -41,7 +41,7 @@ import { WebViewEvent } from 'react-native-webview/lib/WebViewTypes';
 import { appMessenger } from '@/browserMessaging/AppMessenger';
 import { IS_DEV, IS_IOS } from '@/env';
 import { RainbowError, logger } from '@/logger';
-import { CloseTabButton, X_BUTTON_PADDING, X_BUTTON_SIZE, getCloseTabButtonHeight } from './CloseTabButton';
+import { CloseTabButton, X_BUTTON_PADDING, X_BUTTON_SIZE } from './CloseTabButton';
 import DappBrowserWebview from './DappBrowserWebview';
 import Homepage from './Homepage';
 import { handleProviderRequestApp } from './handleProviderRequest';
@@ -248,94 +248,6 @@ export const BrowserTab = React.memo(
       };
     });
 
-    const animatedGestureHandlerHeight = useDerivedValue(() => {
-      // For some reason driving the WebView height with a separate derived
-      // value results in slightly less tearing when the height animates
-      const animatedIsActiveTab = animatedActiveTabIndex?.value === animatedTabIndex.value;
-      const closeButtonHeight = getCloseTabButtonHeight({ animatedMultipleTabsOpen: animatedMultipleTabsOpen.value });
-
-      if (!animatedIsActiveTab) return COLLAPSED_WEBVIEW_HEIGHT_UNSCALED - closeButtonHeight;
-
-      const progress = tabViewProgress?.value || 0;
-
-      return interpolate(
-        progress,
-        [0, 100],
-        [
-          animatedIsActiveTab ? 0 : COLLAPSED_WEBVIEW_HEIGHT_UNSCALED - closeButtonHeight,
-          COLLAPSED_WEBVIEW_HEIGHT_UNSCALED - closeButtonHeight,
-        ],
-        'clamp'
-      );
-    });
-
-    const animatedGestureHandlerStyle = useAnimatedStyle(() => {
-      const progress = tabViewProgress?.value || 0;
-      const animatedIsActiveTab = animatedActiveTabIndex?.value === animatedTabIndex.value;
-      const isTabBeingClosed = currentlyOpenTabIds?.value?.indexOf(tabId) === -1;
-
-      const scaleDiff = 0.7 - TAB_VIEW_COLUMN_WIDTH / deviceWidth;
-      const scale = interpolate(
-        progress,
-        [0, 100],
-        [
-          animatedIsActiveTab && !isTabBeingClosed ? 1 : TAB_VIEW_COLUMN_WIDTH / deviceWidth,
-          0.7 - scaleDiff * animatedMultipleTabsOpen.value,
-        ]
-      );
-
-      const xPositionStart = animatedIsActiveTab ? 0 : animatedTabXPosition.value;
-      const xPositionEnd = animatedMultipleTabsOpen.value * animatedTabXPosition.value;
-      const xPositionForTab = interpolate(progress, [0, 100], [xPositionStart, xPositionEnd]);
-
-      const extraYPadding = 20;
-
-      const yPositionStart =
-        (animatedIsActiveTab ? 0 : animatedTabYPosition.value + extraYPadding) +
-        (animatedIsActiveTab ? (1 - progress / 100) * (scrollViewOffset?.value || 0) : 0);
-      const yPositionEnd =
-        (animatedTabYPosition.value + extraYPadding) * animatedMultipleTabsOpen.value +
-        (animatedIsActiveTab ? (1 - progress / 100) * (scrollViewOffset?.value || 0) : 0);
-      const yPositionForTab = interpolate(progress, [0, 100], [yPositionStart, yPositionEnd]);
-
-      // Determine the border radius for the minimized tab that
-      // achieves concentric corners around the close button
-      const invertedScaleDiff = INVERTED_SINGLE_TAB_SCALE - INVERTED_MULTI_TAB_SCALE;
-      const invertedScale = INVERTED_SINGLE_TAB_SCALE - invertedScaleDiff * animatedMultipleTabsOpen.value;
-      const spaceToXButton = invertedScale * X_BUTTON_PADDING;
-      const xButtonBorderRadius = (X_BUTTON_SIZE / 2) * invertedScale;
-      const tabViewBorderRadius = xButtonBorderRadius + spaceToXButton;
-
-      const borderRadius = interpolate(
-        progress,
-        [0, 100],
-        // eslint-disable-next-line no-nested-ternary
-        [animatedIsActiveTab ? 16 : tabViewBorderRadius, tabViewBorderRadius],
-        'clamp'
-      );
-
-      const opacity = interpolate(progress, [0, 100], [animatedIsActiveTab ? 1 : 0, 1], 'clamp');
-      const closeButtonHeight = getCloseTabButtonHeight({ animatedMultipleTabsOpen: animatedMultipleTabsOpen.value });
-
-      return {
-        borderRadius,
-        // we're giving some room so users can stil press the cancel button on android
-        height: animatedGestureHandlerHeight.value,
-
-        opacity,
-        // eslint-disable-next-line no-nested-ternary
-        pointerEvents: tabViewVisible?.value ? 'auto' : animatedIsActiveTab ? 'auto' : 'none',
-        transform: [
-          { translateY: animatedMultipleTabsOpen.value * (-animatedGestureHandlerHeight.value / 2) },
-          { translateX: xPositionForTab + gestureX.value },
-          { translateY: yPositionForTab + gestureY.value },
-          { scale: scale * gestureScale.value },
-          { translateY: animatedMultipleTabsOpen.value * (animatedGestureHandlerHeight.value / 2) },
-          { translateY: closeButtonHeight },
-        ],
-      };
-    });
-
     const zIndexAnimatedStyle = useAnimatedStyle(() => {
       const progress = tabViewProgress?.value || 0;
       const animatedIsActiveTab = animatedActiveTabIndex?.value === animatedTabIndex.value;
@@ -355,7 +267,7 @@ export const BrowserTab = React.memo(
       return { zIndex };
     });
 
-    const reverseZIndexAnimatedStyle = useAnimatedStyle(() => {
+    const animatedGestureHandlerStyle = useAnimatedStyle(() => {
       const progress = tabViewProgress?.value || 0;
 
       const zIndex = interpolate(progress, [100, 0], [9999, -10], 'clamp');
@@ -820,24 +732,9 @@ export const BrowserTab = React.memo(
             tabViewVisible={tabViewVisible}
             animatedActiveTabIndex={animatedActiveTabIndex}
           />
-          <CloseTabButton
-            animatedMultipleTabsOpen={animatedMultipleTabsOpen}
-            animatedTabIndex={animatedTabIndex}
-            gestureScale={gestureScale}
-            gestureX={gestureX}
-            gestureY={gestureY}
-            isOnHomepage={isOnHomepage}
-            multipleTabsOpen={multipleTabsOpen}
-            tabId={tabId}
-            animatedActiveTabIndex={animatedActiveTabIndex}
-            closeTabWorklet={closeTabWorklet}
-            currentlyOpenTabIds={currentlyOpenTabIds}
-            tabViewProgress={tabViewProgress}
-            tabViewVisible={tabViewVisible}
-          />
         </Animated.View>
 
-        <Animated.View style={[styles.webViewContainer, animatedGestureHandlerStyle, reverseZIndexAnimatedStyle]}>
+        <Animated.View style={[styles.webViewContainer, animatedWebViewStyle, animatedGestureHandlerStyle]}>
           {/* @ts-expect-error Property 'children' does not exist on type */}
           <TapGestureHandler
             ref={tapGestureHandlerRef}
@@ -856,7 +753,23 @@ export const BrowserTab = React.memo(
                 simultaneousHandlers={scrollViewRef}
                 waitFor={tapGestureHandlerRef}
               >
-                <Animated.View style={{ width: '100%', height: '100%' }} />
+                <Animated.View style={{ width: '100%', height: '100%' }}>
+                  <CloseTabButton
+                    animatedMultipleTabsOpen={animatedMultipleTabsOpen}
+                    animatedTabIndex={animatedTabIndex}
+                    gestureScale={gestureScale}
+                    gestureX={gestureX}
+                    gestureY={gestureY}
+                    isOnHomepage={isOnHomepage}
+                    multipleTabsOpen={multipleTabsOpen}
+                    tabId={tabId}
+                    animatedActiveTabIndex={animatedActiveTabIndex}
+                    closeTabWorklet={closeTabWorklet}
+                    currentlyOpenTabIds={currentlyOpenTabIds}
+                    tabViewProgress={tabViewProgress}
+                    tabViewVisible={tabViewVisible}
+                  />
+                </Animated.View>
               </PanGestureHandler>
             </Animated.View>
           </TapGestureHandler>
