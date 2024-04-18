@@ -207,7 +207,7 @@ export const SearchResults = ({ inputRef, searchQuery }: { inputRef: AnimatedRef
             <Stack space="32px">
               {/* {searchQuery.length && suggestedSearchResults?.length && ( */}
               <Stack space="12px">
-                <Inset horizontal="8px" vertical="9px">
+                <Inset horizontal="8px" vertical={{ custom: 9 }}>
                   <Inline alignHorizontal="justify" alignVertical="center">
                     <Inline space="6px" alignVertical="center">
                       <TextIcon color="blue" size="icon 15px" weight="heavy" width={20}>
@@ -220,9 +220,9 @@ export const SearchResults = ({ inputRef, searchQuery }: { inputRef: AnimatedRef
                   </Inline>
                 </Inset>
                 <SearchResult index={0} searchResults={searchResults} navigateToUrl={navigateToUrl} />
-                {/* <Animated.View style={suggestedGoogleSearchAnimatedStyle}>
+                <Animated.View style={suggestedGoogleSearchAnimatedStyle}>
                   <GoogleSearchResult searchQuery={searchQuery} navigateToUrl={navigateToUrl} />
-                </Animated.View> */}
+                </Animated.View>
               </Stack>
               <Stack space="12px">
                 <Inset horizontal="8px">
@@ -236,23 +236,14 @@ export const SearchResults = ({ inputRef, searchQuery }: { inputRef: AnimatedRef
                   </Inline>
                 </Inset>
                 <Stack space="4px">
-                  <GoogleSearchResult searchQuery={searchQuery} navigateToUrl={navigateToUrl} />
+                  <Animated.View style={suggestedGoogleSearchAnimatedStyle}>
+                    <GoogleSearchResult searchQuery={searchQuery} navigateToUrl={navigateToUrl} />
+                  </Animated.View>
                   <SearchResult index={1} searchResults={searchResults} navigateToUrl={navigateToUrl} />
                   <SearchResult index={2} searchResults={searchResults} navigateToUrl={navigateToUrl} />
                   <SearchResult index={3} searchResults={searchResults} navigateToUrl={navigateToUrl} />
                   <SearchResult index={4} searchResults={searchResults} navigateToUrl={navigateToUrl} />
                   <SearchResult index={5} searchResults={searchResults} navigateToUrl={navigateToUrl} />
-                  {/* <AnimatedText color="label" weight="heavy" size="30pt">
-                  {derivedValue}
-                </AnimatedText> */}
-
-                  {/* <GoogleSearchResult query={searchQuery} onPress={onPressSearchResult} /> */}
-                  {/* {searchResults.value?.map(dapp => (
-                  // <SearchResult iconUrl={dapp!.iconURL} key={dapp!.url} name={dapp!.name} onPress={onPressSearchResult} url={dapp!.url} />
-                  <AnimatedText key={dapp!.url} color="label" weight="heavy" size="30pt">
-                    {derivedValue}
-                  </AnimatedText>
-                ))} */}
                 </Stack>
               </Stack>
               {/* )} */}
