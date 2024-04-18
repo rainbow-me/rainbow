@@ -2,7 +2,6 @@ import React from 'react';
 import Animated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import { Box, globalColors, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
-import { useBrowserContext } from './BrowserContext';
 import { StyleSheet } from 'react-native';
 
 export const BrowserButtonShadows = ({ children }: { children: React.ReactNode }) => {
@@ -38,13 +37,16 @@ export const WebViewShadows = ({
   gestureScale,
   isOnHomepage,
   tabIndex,
+  animatedActiveTabIndex,
+  tabViewProgress,
 }: {
   children: React.ReactNode;
   gestureScale: SharedValue<number>;
   isOnHomepage: boolean;
   tabIndex: number;
+  animatedActiveTabIndex: SharedValue<number> | undefined;
+  tabViewProgress: SharedValue<number> | undefined;
 }) => {
-  const { animatedActiveTabIndex, tabViewProgress } = useBrowserContext();
   const { isDarkMode } = useColorMode();
 
   const innerShadowOpacityOverride = useAnimatedStyle(() => {
