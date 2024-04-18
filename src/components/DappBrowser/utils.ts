@@ -51,58 +51,6 @@ export const formatUrl = (url: string): string => {
   return formattedValue;
 };
 
-function decodeURIComponentWorklet(query: string): string {
-  'worklet';
-  if (!query) return '';
-
-  // Decode percent-encoded characters manually
-  return query.replace(/\+/g, ' ').replace(/%([0-9A-Fa-f]{2})/g, (_, p1) => String.fromCharCode(parseInt(p1, 16)));
-}
-
-export const formatUrlWorklet = (url: string) => {
-  'worklet';
-  let formattedValue = '';
-  let isGoogleSearch = false;
-
-  // Using a regex to extract the hostname from the URL:
-  // :// matches the protocol separator
-  // ([^\/]+) captures one or more characters that are not a forward slash
-  // This part gets the domain name including subdomains (e.g., www.google.com)
-  const hostnameMatch = url.match(/:\/\/([^/]+)/);
-  const hostname = hostnameMatch ? hostnameMatch[1] : '';
-
-  // Check if the URL is for a Google search:
-  // This regex extracts the path:
-  // :\/\/[^\/]+ matches the protocol and domain
-  // (\/[^?]+) captures the pathname starting with '/' up to the first '?' (query start)
-  const pathnameMatch = url.match(/:\/\/[^/]+(\/[^?]+)/);
-  const pathname = pathnameMatch ? pathnameMatch[1] : '/';
-
-  // Determine if the hostname and pathname match Google's search URL
-  isGoogleSearch = hostname === 'www.google.com' && pathname === '/search';
-
-  if (isGoogleSearch) {
-    // Extract the search parameters:
-    // \? matches the start of the query parameters
-    // ([^#]+) captures all characters up to a '#' indicating the start of the fragment
-    const searchParamsMatch = url.match(/\?([^#]+)/);
-    const searchParams = searchParamsMatch ? searchParamsMatch[1] : '';
-
-    // Find the 'q' parameter among the search parameters:
-    // split('&') divides the parameters
-    // find(param => param.startsWith('q=')) locates the parameter that starts with 'q='
-    const qParamMatch = searchParams.split('&').find((param: string) => param.startsWith('q='));
-    formattedValue = qParamMatch ? decodeURIComponentWorklet(qParamMatch.split('=')[1]) : '';
-  } else {
-    // Format the hostname by removing 'www.' if it's present:
-    // startsWith('www.') checks if the hostname begins with 'www.'
-    // slice(4) removes the first 4 characters ('www.') from the hostname
-    formattedValue = hostname.startsWith('www.') ? hostname.slice(4) : hostname;
-  }
-
-  return formattedValue;
-};
-
 export const generateUniqueId = (): string => {
   const timestamp = Date.now().toString(36);
   const randomString = Math.random().toString(36).slice(2, 7);

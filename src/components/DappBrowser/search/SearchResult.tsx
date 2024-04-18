@@ -2,12 +2,11 @@ import React, { useCallback } from 'react';
 import { ImgixImage } from '@/components/images';
 import { AnimatedText, Box, Inline, Stack, Text } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
-import { formatUrl, formatUrlWorklet } from '../utils';
 import GoogleSearchIcon from '@/assets/googleSearchIcon.png';
 import { Source } from 'react-native-fast-image';
-import { GetdAppsQuery } from '@/graphql/__generated__/metadata';
 import Animated, { SharedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { FasterImageView, ImageOptions } from '@candlefinance/faster-image';
+import { Dapp } from '@/resources/metadata/dapps';
 
 const AnimatedFasterImage = Animated.createAnimatedComponent(FasterImageView);
 
@@ -17,13 +16,14 @@ export const SearchResult = ({
   navigateToUrl,
 }: {
   index: number;
-  searchResults: SharedValue<any[]>;
+  searchResults: SharedValue<Dapp[]>;
   navigateToUrl: (url: string) => void;
 }) => {
-  const name: SharedValue<string | undefined> = useDerivedValue(() => searchResults.value[index]?.name);
-  const url: SharedValue<string | undefined> = useDerivedValue(() => searchResults.value[index]?.url);
-  const formattedUrl: SharedValue<string | undefined> = useDerivedValue(() => url.value && formatUrlWorklet(url.value));
-  const iconImageOpts: SharedValue<ImageOptions> = useDerivedValue(() => ({ url: searchResults.value[index]?.iconURL, borderRadius: 10 }));
+  const dapp: SharedValue<Dapp | undefined> = useDerivedValue(() => searchResults.value[index]);
+  const name: SharedValue<string | undefined> = useDerivedValue(() => dapp.value?.name);
+  const url: SharedValue<string | undefined> = useDerivedValue(() => dapp.value?.url);
+  const urlDisplay: SharedValue<string | undefined> = useDerivedValue(() => dapp.value?.urlDisplay);
+  const iconImageOpts: SharedValue<ImageOptions> = useDerivedValue(() => ({ url: dapp.value?.iconUrl ?? '', borderRadius: 10 }));
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -44,7 +44,7 @@ export const SearchResult = ({
         onPress={onPress}
       >
         <Inline space="12px" alignVertical="center">
-          <Box background="surfacePrimary" shadow="24px" width={{ custom: 40 }} height={{ custom: 40 }} borderRadius={10}>
+          <Box background="surfacePrimary" shadow="24px" width={{ custom: 40 }} height={{ custom: 40 }} style={{ borderRadius: 10 }}>
             <AnimatedFasterImage source={iconImageOpts} style={{ width: '100%', height: '100%' }} />
           </Box>
           <Stack space="10px">
@@ -52,7 +52,7 @@ export const SearchResult = ({
               {name}
             </AnimatedText>
             <AnimatedText size="13pt" weight="bold" color="labelTertiary">
-              {formattedUrl}
+              {urlDisplay}
             </AnimatedText>
           </Stack>
         </Inline>
@@ -68,7 +68,7 @@ export const GoogleSearchResult = ({
   searchQuery: SharedValue<string>;
   navigateToUrl: (url: string) => void;
 }) => {
-  const onPress = useCallback(() => navigateToUrl(`https://www.google.com/search?q=${searchQuery}`), []);
+  const onPress = useCallback(() => navigateToUrl(`https://www.google.com/search?q=${searchQuery}`), [navigateToUrl, searchQuery]);
 
   const animatedText = useDerivedValue(() => `Search "${searchQuery.value}"`);
 

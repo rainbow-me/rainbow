@@ -1,49 +1,19 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { NativeSyntheticEvent, TextInput, TextInputChangeEventData, TextInputSubmitEditingEventData, View } from 'react-native';
-import Animated, {
-  AnimatedRef,
-  SharedValue,
-  dispatchCommand,
-  interpolate,
-  runOnJS,
-  useAnimatedProps,
-  useAnimatedReaction,
-  useAnimatedRef,
-  useAnimatedStyle,
-  useDerivedValue,
-  useSharedValue,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated';
-import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { AnimatedText, Box, Inline, Inset, Stack, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
-import { IS_IOS } from '@/env';
-import { useKeyboardHeight, useDimensions } from '@/hooks';
-import * as i18n from '@/languages';
-import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
+import React, { useCallback } from 'react';
+import { TextInput } from 'react-native';
+import Animated, { AnimatedRef, SharedValue, useAnimatedReaction, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import { Box, Inline, Inset, Stack, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
 import { useBrowserContext } from '../BrowserContext';
-import { GOOGLE_SEARCH_URL, HTTP, HTTPS, RAINBOW_HOME } from '../constants';
-import { AccountIcon } from '../search-input/AccountIcon';
-import { SearchInput } from '../search-input/SearchInput';
-import { TabButton } from '../search-input/TabButton';
-import { formatUrl, isValidURL, normalizeUrl } from '../utils';
+import { normalizeUrl } from '../utils';
 import { ButtonPressAnimation } from '@/components/animations';
 import { GoogleSearchResult, SearchResult } from './SearchResult';
-import { useDapps } from '@/resources/metadata/dapps';
-import { DAppStatus, GetdAppsQuery } from '@/graphql/__generated__/metadata';
-import { filterList } from '@/utils';
-import { rankings } from 'match-sorter';
+import { Dapp, useDapps } from '@/resources/metadata/dapps';
 
-const search = (query: string, dapps: any) => {
+const search = (query: string, dapps: Dapp[]) => {
   'worklet';
   if (!query || !dapps || !dapps.length) return [];
 
   const normalizedQuery = query.toLowerCase();
-  // if (!query || query === inputValue) {
-  //   setSuggestedSearchResults([]);
-  //   setBasicSearchResults([]);
-  //   return;
-  // }
+
   const filteredDapps = dapps
     .map(dapp => {
       if (dapp.status === 'SCAM') {
@@ -52,20 +22,16 @@ const search = (query: string, dapps: any) => {
 
       let relevance = dapp.status === 'VERIFIED' ? 0.5 : 0;
       const queryTokens = normalizedQuery.split(' ').filter(Boolean);
-      const normalizedDappName = dapp!.name.toLowerCase();
-      const dappNameTokens = normalizedDappName.split(' ').filter(Boolean);
-      const dappUrlTokens = dapp!.url
-        .toLowerCase()
-        .replace(/(^\w+:|^)\/\//, '')
-        .split(/\/|\?|&|=|\./)
-        .filter(Boolean);
+      const name = dapp.search.normalizedName;
+      const nameTokens = dapp.search.normalizedNameTokens;
+      const urlTokens = dapp.search.normalizedUrlTokens;
 
-      const checkSet = new Set([...dappNameTokens, ...dappUrlTokens]);
-      if (normalizedDappName.startsWith(normalizedQuery)) {
+      const checkSet = new Set([...nameTokens, ...urlTokens]);
+      if (name.startsWith(normalizedQuery)) {
         relevance = 4;
-      } else if (dappNameTokens.some((token, index) => index !== 0 && token.startsWith(normalizedQuery))) {
+      } else if (nameTokens.some((token, index) => index !== 0 && token.startsWith(normalizedQuery))) {
         relevance = 3;
-      } else if (dappUrlTokens.some(token => token.startsWith(normalizedQuery))) {
+      } else if (urlTokens.some(token => token.startsWith(normalizedQuery))) {
         relevance = 2;
       } else if (
         queryTokens.every(token => {
@@ -85,56 +51,16 @@ const search = (query: string, dapps: any) => {
     })
     .filter(dapp => dapp.relevance > 0.5)
     .sort((a, b) => b.relevance - a.relevance);
-  console.log(filteredDapps.length);
-  console.log('HI');
-  return filteredDapps ?? [];
-  // const filteredDapps = filterList(dappsWithTokens, query, ['tokens'], {
-  //   threshold: rankings.STARTS_WITH,
-  // }).sort((a, b) => +(b?.status === 'VERIFIED') - +(a?.status === 'VERIFIED'));
-  // const nameSearch = dappsNameTrie.search(query).sort((a, b) => +(b?.status === 'VERIFIED') - +(a?.status === 'VERIFIED'));
-  // const urlSearch = dappsUrlTrie.search(query).sort((a, b) => +(b?.status === 'VERIFIED') - +(a?.status === 'VERIFIED'));
-  // const filteredDapps = [...nameSearch, ...urlSearch];
-  // setBasicSearchResults(filteredDapps.slice(1, 3));
-  // setSuggestedSearchResults(filteredDapps.slice(0, 1));
+
+  return filteredDapps;
 };
 
-// export const AnimatedText = Animated.createAnimatedComponent(Text);
-// export const AnimatedSearchResult = Animated.createAnimatedComponent(SearchResult);
-
 export const SearchResults = ({ inputRef, searchQuery }: { inputRef: AnimatedRef<TextInput>; searchQuery: SharedValue<string> }) => {
-  const { width: deviceWidth } = useDimensions();
   const { isDarkMode } = useColorMode();
-  const { activeTabIndex, onRefresh, searchViewProgress, tabStates, tabViewProgress, tabViewVisible, updateActiveTabState } =
-    useBrowserContext();
-  const { dapps, dappsNameTrie, dappsUrlTrie } = useDapps();
+  const { searchViewProgress, updateActiveTabState } = useBrowserContext();
+  const { dapps } = useDapps();
 
-  const isFocusedValue = useSharedValue(false);
-  const testValue = useSharedValue('');
-  const [isFocused, setIsFocused] = useState<boolean>(false);
-  const [basicSearchResults, setBasicSearchResults] = useState<GetdAppsQuery['dApps']>([]);
-  const [suggestedSearchResults, setSuggestedSearchResults] = useState<GetdAppsQuery['dApps']>([]);
-  const searchResults = useSharedValue([]);
-
-  const keyboardHeight = useKeyboardHeight({ shouldListen: isFocused });
-
-  const tabId = tabStates?.[activeTabIndex]?.uniqueId;
-  const url = tabStates?.[activeTabIndex]?.url;
-  const logoUrl = tabStates?.[activeTabIndex]?.logoUrl;
-  const isHome = url === RAINBOW_HOME;
-  const isGoogleSearch = url?.startsWith(GOOGLE_SEARCH_URL);
-  const canGoBack = tabStates?.[activeTabIndex]?.canGoBack;
-  const canGoForward = tabStates?.[activeTabIndex]?.canGoForward;
-
-  const formattedInputValue = useMemo(() => {
-    if (isHome) {
-      return { url: i18n.t(i18n.l.dapp_browser.address_bar.input_placeholder), tabIndex: activeTabIndex };
-    }
-    return { url: formatUrl(url), tabIndex: activeTabIndex };
-  }, [activeTabIndex, isHome, url]);
-
-  const urlWithoutTrailingSlash = url?.endsWith('/') ? url.slice(0, -1) : url;
-  // eslint-disable-next-line no-nested-ternary
-  const inputValue = isHome ? undefined : isGoogleSearch ? formattedInputValue.url : urlWithoutTrailingSlash;
+  const searchResults = useSharedValue<Dapp[]>([]);
 
   const backgroundStyle = useAnimatedStyle(() => ({
     opacity: searchViewProgress?.value || 0,
@@ -242,9 +168,7 @@ export const SearchResults = ({ inputRef, searchQuery }: { inputRef: AnimatedRef
                     </Inline>
                   </Inset>
                   <Box gap={4}>
-                    <Animated.View style={suggestedGoogleSearchAnimatedStyle}>
-                      <GoogleSearchResult searchQuery={searchQuery} navigateToUrl={navigateToUrl} />
-                    </Animated.View>
+                    <GoogleSearchResult searchQuery={searchQuery} navigateToUrl={navigateToUrl} />
                     <SearchResult index={1} searchResults={searchResults} navigateToUrl={navigateToUrl} />
                     <SearchResult index={2} searchResults={searchResults} navigateToUrl={navigateToUrl} />
                     <SearchResult index={3} searchResults={searchResults} navigateToUrl={navigateToUrl} />
