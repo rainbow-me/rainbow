@@ -764,7 +764,7 @@ export const BrowserTab = React.memo(
   },
   (prevProps: BrowserTabProps, nextProps: BrowserTabProps) => {
     // Need to re-render if the tab count or next tab id changes otherwise we're out of sync
-    const tabCountChanged = prevProps.tabsCount !== nextProps.tabsCount;
+    const tabCountChanged = prevProps.tabsCount !== nextProps.tabsCount && nextProps.tabsCount <= 2;
     const nextTabIdChanged = prevProps.nextTabId !== nextProps.nextTabId;
     if (tabCountChanged || nextTabIdChanged) return false;
     // we can skip re-renders if the tab state is the same or at leats the URL didn't change
