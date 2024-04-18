@@ -561,9 +561,25 @@
         "nothing_here": "Nothing here!",
         "nothing_to_send": "Nothing to send"
       },
+      "quote_errors": {
+        "no_quote_available": "No quote available",
+        "insufficient_liquidity": "Insufficient liquidity",
+        "fee_on_transfer": "Fee on Transfer Token",
+        "no_route_found": "No route found"
+      },
       "price_impact": {
+        "long_wait": {
+          "title": "Long wait",
+          "description": "Approx."
+        },
+        "unknown_price": {
+          "title": "%{symbol} Market Value Unknown",
+          "description": "If you decide to continue, be sure that you are satisfied receiving the quoted amount."
+        },
         "losing_prefix": "Losing",
         "small_market": "Small Market",
+        "small_market_try_smaller_amount": "Small market — try a smaller amount",
+        "you_are_losing": "You're losing",
         "no_data": "Market Value Unknown",
         "label": "Possible loss",
         "no_data_subtitle": "If you decide to continue, be sure that you are satisfied with the quoted amount"

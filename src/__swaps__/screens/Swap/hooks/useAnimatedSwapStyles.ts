@@ -10,15 +10,18 @@ import {
 } from '@/__swaps__/screens/Swap/constants';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
+import { SwapWarningType, useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 import { spinnerExitConfig } from '@/__swaps__/components/animations/AnimatedSpinner';
 
 export function useAnimatedSwapStyles({
   SwapInputController,
+  SwapWarning,
   inputProgress,
   outputProgress,
   isFetching,
 }: {
   SwapInputController: ReturnType<typeof useSwapInputsController>;
+  SwapWarning: ReturnType<typeof useSwapWarning>;
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
   isFetching: SharedValue<boolean>;
@@ -45,10 +48,29 @@ export function useAnimatedSwapStyles({
     };
   });
 
-  const hideWhenInputsExpanded = useAnimatedStyle(() => {
+  const hideWhenInputsExpandedOrNoPriceImpact = useAnimatedStyle(() => {
     return {
-      opacity: inputProgress.value > 0 || outputProgress.value > 0 ? withTiming(0, fadeConfig) : withTiming(1, fadeConfig),
-      pointerEvents: inputProgress.value > 0 || outputProgress.value > 0 ? 'none' : 'auto',
+      opacity:
+        SwapWarning.swapWarning.value.type === SwapWarningType.none || inputProgress.value > 0 || outputProgress.value > 0
+          ? withTiming(0, fadeConfig)
+          : withTiming(1, fadeConfig),
+      pointerEvents:
+        SwapWarning.swapWarning.value.type === SwapWarningType.none || inputProgress.value > 0 || outputProgress.value > 0
+          ? 'none'
+          : 'auto',
+    };
+  });
+
+  const hideWhenInputsExpandedOrPriceImpact = useAnimatedStyle(() => {
+    return {
+      opacity:
+        SwapWarning.swapWarning.value.type !== SwapWarningType.none || inputProgress.value > 0 || outputProgress.value > 0
+          ? withTiming(0, fadeConfig)
+          : withTiming(1, fadeConfig),
+      pointerEvents:
+        SwapWarning.swapWarning.value.type !== SwapWarningType.none || inputProgress.value > 0 || outputProgress.value > 0
+          ? 'none'
+          : 'auto',
     };
   });
 
@@ -163,7 +185,8 @@ export function useAnimatedSwapStyles({
   return {
     flipButtonStyle,
     focusedSearchStyle,
-    hideWhenInputsExpanded,
+    hideWhenInputsExpandedOrPriceImpact,
+    hideWhenInputsExpandedOrNoPriceImpact,
     inputStyle,
     inputTokenListStyle,
     keyboardStyle,
