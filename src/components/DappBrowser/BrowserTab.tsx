@@ -137,6 +137,8 @@ export const BrowserTab = React.memo(
       // from having a single tab to multiple tabs. When a second tab is created, it takes a moment for
       // tabStates to catch up to currentlyOpenTabIds, and this check prevents the single tab from shifting
       // due to currentlyOpenTabIds updating before the new tab component is rendered via tabStates.
+      if ((currentlyOpenTabIds?.value?.length ?? 0) > 2) return true;
+
       const isFirstTab = currentlyOpenTabIds?.value.indexOf(tabId) === 0;
       const shouldTwoTabsExist = currentlyOpenTabIds?.value.length === 2;
 
@@ -670,7 +672,7 @@ export const BrowserTab = React.memo(
       }
     );
 
-    console.log('BrowserTab :: RENDER', tabId);
+    console.log('BrowserTab :: RENDER', { tabId, tabsCount });
 
     // useEffectDebugger(
     //   () => true,
@@ -785,9 +787,13 @@ export const BrowserTab = React.memo(
     );
   },
   (prevProps: BrowserTabProps, nextProps: BrowserTabProps) => {
+    // Need to re-render if the tab count or next tab id changes otherwise we're out of sync
+    const tabCountChanged = prevProps.tabsCount !== nextProps.tabsCount;
+    const nextTabIdChanged = prevProps.nextTabId !== nextProps.nextTabId;
+    if (tabCountChanged || nextTabIdChanged) return false;
+    // we can skip re-renders if the tab state is the same or at leats the URL didn't change
     const urlDidntChange = prevProps.tabState.url === nextProps.tabState.url;
-    if (isEqual(prevProps.tabState, nextProps.tabState) || !nextProps.isActiveTab || urlDidntChange) {
-      // console.log('closeTabWorklet changed but we are returning true');
+    if (isEqual(prevProps.tabState, nextProps.tabState) || urlDidntChange) {
       return true;
     }
     return false;
