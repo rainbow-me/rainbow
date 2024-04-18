@@ -6,10 +6,10 @@ import position from '@/styles/position';
 import { BlurView } from '@react-native-community/blur';
 import React from 'react';
 import { TextInput } from 'react-native';
-import { BrowserButtonShadows } from '../DappBrowserShadows';
+import { BrowserButtonShadows } from '../../DappBrowserShadows';
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { AnimatedRef, SharedValue, dispatchCommand, runOnJS } from 'react-native-reanimated';
-import { useBrowserContext } from '../BrowserContext';
+import { useBrowserContext } from '../../BrowserContext';
 
 export const TabButton = ({
   inputRef,

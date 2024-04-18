@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { NativeSyntheticEvent, TextInput, TextInputChangeEventData, TextInputSubmitEditingEventData } from 'react-native';
 import Animated, {
   AnimatedRef,
@@ -6,36 +6,27 @@ import Animated, {
   dispatchCommand,
   interpolate,
   runOnJS,
-  useAnimatedRef,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { Box, Inline, Inset, Stack, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
+import { Box } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { useKeyboardHeight, useDimensions } from '@/hooks';
 import * as i18n from '@/languages';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
-import { useBrowserContext } from '../BrowserContext';
-import { GOOGLE_SEARCH_URL, HTTP, HTTPS, RAINBOW_HOME } from '../constants';
-import { AccountIcon } from '../search-input/AccountIcon';
-import { SearchInput } from '../search-input/SearchInput';
-import { TabButton } from '../search-input/TabButton';
-import { formatUrl, isValidURL, normalizeUrl } from '../utils';
-import { ButtonPressAnimation } from '@/components/animations';
-import { GoogleSearchResult, SearchResult } from './SearchResult';
-import { useDapps } from '@/resources/metadata/dapps';
-import { GetdAppsQuery } from '@/graphql/__generated__/metadata';
-import { filterList } from '@/utils';
-import { rankings } from 'match-sorter';
+import { useBrowserContext } from '../../BrowserContext';
+import { GOOGLE_SEARCH_URL, HTTP, HTTPS, RAINBOW_HOME } from '../../constants';
+import { AccountIcon } from './AccountIcon';
+import { SearchInput } from './SearchInput';
+import { TabButton } from './TabButton';
+import { formatUrl, isValidURL } from '../../utils';
 
 export const SearchBar = ({ inputRef, searchQuery }: { inputRef: AnimatedRef<TextInput>; searchQuery: SharedValue<string> }) => {
   const { width: deviceWidth } = useDimensions();
-  const { isDarkMode } = useColorMode();
   const { activeTabIndex, onRefresh, searchViewProgress, tabStates, tabViewProgress, tabViewVisible, updateActiveTabState } =
     useBrowserContext();
-  const { dapps, dappsNameTrie, dappsUrlTrie } = useDapps();
 
   const isFocusedValue = useSharedValue(false);
   const [isFocused, setIsFocused] = useState<boolean>(false);

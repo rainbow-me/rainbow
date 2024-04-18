@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { SearchResults } from './SearchResults';
-import { SearchBar } from './SearchBar';
+import { SearchResults } from './results/SearchResults';
+import { SearchBar } from './bar/SearchBar';
 import { useAnimatedRef, useSharedValue } from 'react-native-reanimated';
 import { TextInput } from 'react-native';
 

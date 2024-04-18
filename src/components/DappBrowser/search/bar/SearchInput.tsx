@@ -5,23 +5,23 @@ import Animated, { SharedValue, useAnimatedStyle, useDerivedValue, withSpring, w
 import Input from '@/components/inputs/Input';
 import * as i18n from '@/languages';
 import { NativeSyntheticEvent, StyleSheet, TextInput, TextInputChangeEventData, TextInputSubmitEditingEventData } from 'react-native';
-import { ToolbarIcon } from '../ToolbarIcon';
+import { ToolbarIcon } from '../../ToolbarIcon';
 import { IS_IOS } from '@/env';
 import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/utils/swaps';
-import { BrowserButtonShadows } from '../DappBrowserShadows';
+import { BrowserButtonShadows } from '../../DappBrowserShadows';
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import font from '@/styles/fonts';
 import { fontWithWidth } from '@/styles';
-import { useBrowserContext } from '../BrowserContext';
+import { useBrowserContext } from '../../BrowserContext';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedBlurView } from '@/__swaps__/screens/Swap/components/AnimatedBlurView';
 import haptics from '@/utils/haptics';
 import { useFavoriteDappsStore } from '@/state/favoriteDapps';
 import { Site } from '@/state/browserState';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { getNameFromFormattedUrl, handleShareUrl } from '../utils';
+import { getNameFromFormattedUrl, handleShareUrl } from '../../utils';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
 

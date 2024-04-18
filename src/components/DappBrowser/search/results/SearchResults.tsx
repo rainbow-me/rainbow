@@ -2,8 +2,8 @@ import React, { useCallback } from 'react';
 import { TextInput } from 'react-native';
 import Animated, { AnimatedRef, SharedValue, useAnimatedReaction, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { Box, Inline, Inset, Stack, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
-import { useBrowserContext } from '../BrowserContext';
-import { normalizeUrl } from '../utils';
+import { useBrowserContext } from '../../BrowserContext';
+import { normalizeUrl } from '../../utils';
 import { ButtonPressAnimation } from '@/components/animations';
 import { GoogleSearchResult, SearchResult } from './SearchResult';
 import { Dapp, useDapps } from '@/resources/metadata/dapps';
@@ -21,6 +21,7 @@ const search = (query: string, dapps: Dapp[]) => {
       }
 
       let relevance = dapp.status === 'VERIFIED' ? 0.5 : 0;
+
       const queryTokens = normalizedQuery.split(' ').filter(Boolean);
       const name = dapp.search.normalizedName;
       const nameTokens = dapp.search.normalizedNameTokens;
