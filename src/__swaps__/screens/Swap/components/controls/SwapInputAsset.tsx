@@ -3,7 +3,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, StatusBar } from 'react-native';
 import Animated, { runOnJS, runOnUI, useAnimatedReaction, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
-import BigNumber from 'bignumber.js';
 
 import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
 import { useTheme } from '@/theme';
@@ -17,11 +16,7 @@ import { TokenList } from '@/__swaps__/screens/Swap/components/TokenList/TokenLi
 import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { IS_ANDROID } from '@/env';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { useSwapAssetStore } from '@/__swaps__/screens/Swap/state/assets';
 import { ethereumUtils } from '@/utils';
-import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
-import { useAccountSettings } from '@/hooks';
-import { ChainId } from '@/__swaps__/types/chains';
 import { useAssetsToSell } from '@/__swaps__/screens/Swap/hooks/useAssetsToSell';
 import { isSameAsset, isSameAssetWorklet, parseSearchAsset } from '@/__swaps__/utils/assets';
 import { ParsedAsset } from '@/__swaps__/types/assets';
@@ -47,54 +42,7 @@ function SwapInputActionButton() {
 }
 
 function SwapInputAmount() {
-  const { nativeCurrency: currentCurrency } = useAccountSettings();
-  const { assetToSell } = useSwapAssetStore();
   const { focusedInput, SwapTextStyles, SwapInputController, AnimatedSwapStyles } = useSwapContext();
-  const userAssets = useAssetsToSell();
-
-  const { data: tokenDataWithPrice } = useExternalToken(
-    {
-      address: assetToSell ? assetToSell?.address : '',
-      network: assetToSell
-        ? ethereumUtils.getNetworkFromChainId(Number(assetToSell.chainId))
-        : ethereumUtils.getNetworkFromChainId(ChainId.mainnet),
-      currency: currentCurrency,
-    },
-    {
-      enabled: !!assetToSell,
-      refetchInterval: 5_000,
-    }
-  );
-
-  const parsedAssetToSell = useMemo(() => {
-    if (!assetToSell) return null;
-    const userAsset = userAssets.find(userAsset => isSameAsset(userAsset, assetToSell));
-    return parseSearchAsset({
-      assetWithPrice: tokenDataWithPrice as unknown as ParsedAsset,
-      searchAsset: assetToSell,
-      userAsset,
-    });
-  }, [assetToSell, tokenDataWithPrice, userAssets]);
-
-  useEffect(() => {
-    if (!parsedAssetToSell) return;
-
-    const { decimals } = supportedCurrencies[currentCurrency];
-
-    const inputNativeAmount = new BigNumber(parsedAssetToSell?.native.price?.amount || 0)
-      .multipliedBy(new BigNumber(parsedAssetToSell?.balance.amount || 0))
-      .toFormat(decimals);
-
-    runOnUI((inputNativeAmount: string) => {
-      'worklet';
-      SwapInputController.inputValues.modify(prev => {
-        return {
-          ...prev,
-          inputNativeAmount,
-        };
-      });
-    })(inputNativeAmount);
-  }, [parsedAssetToSell, SwapInputController.inputValues, currentCurrency, SwapInputController]);
 
   return (
     <GestureHandlerV1Button

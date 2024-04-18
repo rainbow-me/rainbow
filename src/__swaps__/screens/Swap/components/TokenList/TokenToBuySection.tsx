@@ -1,14 +1,13 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { TextStyle } from 'react-native';
-import Animated, { runOnUI } from 'react-native-reanimated';
+import Animated, { useDerivedValue } from 'react-native-reanimated';
 import { FlashList } from '@shopify/flash-list';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 
 import * as i18n from '@/languages';
 import { CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
-import { useSwapAssetStore } from '@/__swaps__/screens/Swap/state/assets';
 import { SearchAsset } from '@/__swaps__/types/search';
-import { Box, Inline, Inset, Stack, Text } from '@/design-system';
+import { AnimatedText, Box, Inline, Inset, Stack, Text } from '@/design-system';
 import { AssetToBuySection, AssetToBuySectionId } from '@/__swaps__/screens/Swap/hooks/useSearchCurrencyLists';
 import { ChainId } from '@/__swaps__/types/chains';
 import { TextColor } from '@/design-system/color/palettes';
@@ -68,7 +67,6 @@ const AnimatedFlashListComponent = Animated.createAnimatedComponent(FlashList<Se
 
 export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) => {
   const { SwapInputController } = useSwapContext();
-  const { outputChainId } = useSwapAssetStore();
   const userAssets = useAssetsToSell();
 
   const handleSelectToken = useCallback(
@@ -80,25 +78,28 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
         userAsset,
       });
 
-      runOnUI(SwapInputController.onSetAssetToBuy)(parsedAsset);
+      SwapInputController.onSetAssetToBuy(parsedAsset);
     },
     [SwapInputController, userAssets]
   );
 
   const { symbol, title } = sectionProps[section.id];
 
-  const color = useMemo(() => {
+  const symbolValue = useDerivedValue(() => symbol);
+
+  const color = useDerivedValue(() => {
     if (section.id !== 'bridge') {
       return sectionProps[section.id].color as TextColor;
     }
-    return bridgeSectionsColorsByChain[outputChainId || ChainId.mainnet] as TextColor;
-  }, [section.id, outputChainId]);
+
+    return bridgeSectionsColorsByChain[SwapInputController.outputChainId.value || ChainId.mainnet] as TextColor;
+  });
 
   if (!section.data.length) return null;
 
   return (
     <Box key={section.id} testID={`${section.id}-token-to-buy-section`}>
-      <Stack space="20px">
+      <Stack space="8px">
         {section.id === 'other_networks' ? (
           <Box borderRadius={12} height={{ custom: 52 }}>
             <Inset horizontal="20px" vertical="8px">
@@ -113,9 +114,12 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
         ) : null}
         <Box paddingHorizontal={'20px'}>
           <Inline space="6px" alignVertical="center">
-            <Text size="14px / 19px (Deprecated)" weight="heavy" color={section.id === 'bridge' ? color : { custom: color }}>
-              {symbol}
-            </Text>
+            <AnimatedText
+              size="14px / 19px (Deprecated)"
+              weight="heavy"
+              color={section.id === 'bridge' ? color.value : { custom: color.value }}
+              text={symbolValue}
+            />
             <Text size="14px / 19px (Deprecated)" weight="heavy" color="label">
               {title}
             </Text>

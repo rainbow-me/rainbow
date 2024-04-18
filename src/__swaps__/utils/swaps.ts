@@ -1,10 +1,15 @@
 import c from 'chroma-js';
-import { convertToRGBA, isColor } from 'react-native-reanimated';
+import { SharedValue, convertToRGBA, isColor } from 'react-native-reanimated';
+
+import * as i18n from '@/languages';
 import { globalColors } from '@/design-system';
 import { ETH_COLOR, ETH_COLOR_DARK_ACCENT, SCRUBBER_WIDTH, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { chainNameFromChainId } from '@/__swaps__/utils/chains';
+import { chainNameFromChainId, chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { ChainId, ChainName } from '@/__swaps__/types/chains';
 import { RainbowConfig } from '@/model/remoteConfig';
+import { CrosschainQuote, ETH_ADDRESS, Quote, WRAPPED_ASSET } from '@rainbow-me/swaps';
+import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
+import { ParsedSearchAsset } from '../types/assets';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -31,6 +36,10 @@ export const getHighContrastColor = (color: string, isDarkMode: boolean) => {
   return color;
 };
 
+export const getMixedColor = (color1: string, color2: string, ratio: number) => {
+  return c.mix(color1, color2, ratio).hex();
+};
+
 export const getTintedBackgroundColor = (color: string, isDarkMode: boolean): string => {
   return c
     .mix(color, isDarkMode ? globalColors.grey100 : globalColors.white100, isDarkMode ? 0.9875 : 0.94)
@@ -47,6 +56,8 @@ export const clampJS = (value: number, lowerBound: number, upperBound: number) =
 };
 
 export const countDecimalPlaces = (number: number): number => {
+  'worklet';
+
   const numAsString = number.toString();
 
   if (numAsString.includes('.')) {
@@ -59,6 +70,8 @@ export const countDecimalPlaces = (number: number): number => {
 };
 
 export const findNiceIncrement = (availableBalance: number): number => {
+  'worklet';
+
   // We'll use one of these factors to adjust the base increment
   // These factors are chosen to:
   // a) Produce user-friendly amounts to swap (e.g., 0.1, 0.2, 0.3, 0.4…)
@@ -235,18 +248,12 @@ export const DEFAULT_SLIPPAGE_BIPS = {
   [ChainId.avalanche]: 200,
 };
 
-export const DEFAULT_SLIPPAGE = {
-  [ChainId.mainnet]: '1',
-  [ChainId.polygon]: '2',
-  [ChainId.bsc]: '2',
-  [ChainId.optimism]: '2',
-  [ChainId.base]: '2',
-  [ChainId.zora]: '2',
-  [ChainId.arbitrum]: '2',
-  [ChainId.avalanche]: '2',
-};
+export const slippageInBipsToString = (slippageInBips: number) => (slippageInBips / 100).toString();
 
-const slippageInBipsToString = (slippageInBips: number) => (slippageInBips / 100).toString();
+export const slippageInBipsToStringWorklet = (slippageInBips: number) => {
+  'worklet';
+  return (slippageInBips / 100).toString();
+};
 
 export const getDefaultSlippage = (chainId: ChainId, config: RainbowConfig) => {
   const chainName = chainNameFromChainId(chainId) as
@@ -261,6 +268,24 @@ export const getDefaultSlippage = (chainId: ChainId, config: RainbowConfig) => {
   return slippageInBipsToString(
     // NOTE: JSON.parse doesn't type the result as a Record<ChainName, number>
     (config.default_slippage_bips as unknown as Record<ChainName, number>)[chainName] || DEFAULT_SLIPPAGE_BIPS[chainId]
+  );
+};
+
+export const getDefaultSlippageWorklet = (chainId: ChainId, config: RainbowConfig) => {
+  'worklet';
+
+  const chainName = chainNameFromChainIdWorklet(chainId) as
+    | ChainName.mainnet
+    | ChainName.optimism
+    | ChainName.polygon
+    | ChainName.arbitrum
+    | ChainName.base
+    | ChainName.zora
+    | ChainName.bsc
+    | ChainName.avalanche
+    | ChainName.blast;
+  return slippageInBipsToStringWorklet(
+    (config.default_slippage_bips as unknown as { [key: string]: number })[chainName] || DEFAULT_SLIPPAGE_BIPS[chainId]
   );
 };
 
@@ -282,4 +307,89 @@ export const extractColorValueForColors = ({ colors, isDarkMode }: { colors?: Co
   }
 
   return isDarkMode ? ETH_COLOR_DARK_ACCENT : ETH_COLOR;
+};
+
+export const getQuoteServiceTime = ({ quote }: { quote: Quote | CrosschainQuote }) =>
+  (quote as CrosschainQuote)?.routes?.[0]?.serviceTime || 0;
+
+export const getCrossChainTimeEstimate = ({
+  serviceTime,
+}: {
+  serviceTime?: number;
+}): {
+  isLongWait: boolean;
+  timeEstimate?: number;
+  timeEstimateDisplay: string;
+} => {
+  let isLongWait = false;
+  let timeEstimateDisplay;
+  const timeEstimate = serviceTime;
+
+  const minutes = Math.floor((timeEstimate || 0) / 60);
+  const hours = Math.floor(minutes / 60);
+
+  if (hours >= 1) {
+    isLongWait = true;
+    timeEstimateDisplay = `>${hours} ${i18n.t(i18n.l.time.hours.long[hours === 1 ? 'singular' : 'plural'])}`;
+  } else if (minutes >= 1) {
+    timeEstimateDisplay = `~${minutes} ${i18n.t(i18n.l.time.minutes.short[minutes === 1 ? 'singular' : 'plural'])}`;
+  } else {
+    timeEstimateDisplay = `~${timeEstimate} ${i18n.t(i18n.l.time.seconds.short[timeEstimate === 1 ? 'singular' : 'plural'])}`;
+  }
+
+  return {
+    isLongWait,
+    timeEstimate,
+    timeEstimateDisplay,
+  };
+};
+export const isUnwrapEth = ({
+  buyTokenAddress,
+  chainId,
+  sellTokenAddress,
+}: {
+  chainId: ChainId;
+  sellTokenAddress: string;
+  buyTokenAddress: string;
+}) => {
+  return isLowerCaseMatch(sellTokenAddress, WRAPPED_ASSET[chainId]) && isLowerCaseMatch(buyTokenAddress, ETH_ADDRESS);
+};
+
+export const isWrapEth = ({
+  buyTokenAddress,
+  chainId,
+  sellTokenAddress,
+}: {
+  chainId: ChainId;
+  sellTokenAddress: string;
+  buyTokenAddress: string;
+}) => {
+  return isLowerCaseMatch(sellTokenAddress, ETH_ADDRESS) && isLowerCaseMatch(buyTokenAddress, WRAPPED_ASSET[chainId]);
+};
+
+export const priceForAsset = ({
+  asset,
+  assetType,
+  assetToSellPrice,
+  assetToBuyPrice,
+}: {
+  asset: ParsedSearchAsset | null;
+  assetType: 'assetToSell' | 'assetToBuy';
+  assetToSellPrice: SharedValue<number>;
+  assetToBuyPrice: SharedValue<number>;
+}) => {
+  'worklet';
+
+  if (!asset) return 0;
+
+  if (assetType === 'assetToSell' && assetToSellPrice.value) {
+    return assetToSellPrice.value;
+  } else if (assetType === 'assetToBuy' && assetToBuyPrice.value) {
+    return assetToBuyPrice.value;
+  } else if (asset.price?.value) {
+    return asset.price.value;
+  } else if (asset.native.price?.amount) {
+    return asset.native.price.amount;
+  }
+  return 0;
 };

@@ -92,7 +92,7 @@ export const TokenToSellList = () => {
         </Inline>
       </Box>
       <AnimatedFlashListComponent
-        data={userAssets}
+        data={userAssets.slice(0, 20)}
         ListEmptyComponent={<ListEmpty />}
         keyExtractor={item => item.uniqueId}
         renderItem={({ item }) => (
