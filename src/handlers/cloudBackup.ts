@@ -115,7 +115,7 @@ export async function encryptAndSaveDataToCloud(data: any, password: any, filena
     );
 
     if (!exists) {
-      logger.info('Backup doesnt exist after completion');
+      logger.info('Backup doesn't exist after completion');
       const error = new Error(CLOUD_BACKUP_ERRORS.INTEGRITY_CHECK_FAILED);
       logger.error(new RainbowError(error.message));
       throw error;

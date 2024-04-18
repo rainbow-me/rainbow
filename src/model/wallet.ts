@@ -1141,7 +1141,7 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
     const seedphrase = await oldLoadSeedPhrase();
 
     if (!seedphrase) {
-      logger.debug('[migrateSecrets] - old seed doesnt exist!', {}, DebugContext.wallet);
+      logger.debug('[migrateSecrets] - old seed doesn't exist!', {}, DebugContext.wallet);
       // Save the migration flag to prevent this flow in the future
       await keychain.saveString(oldSeedPhraseMigratedKey, 'true', keychain.publicAccessControlOptions);
       logger.debug('[migrateSecrets] - marking secrets as migrated', {}, DebugContext.wallet);

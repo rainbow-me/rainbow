@@ -113,7 +113,7 @@ const ContactAvatar = ({ color, size = 'medium', value, ...props }) => {
   const backgroundColor =
     typeof color === 'number'
       ? // sometimes the color is gonna be missing so we fallback to white
-        // otherwise there will be only shadows without the the placeholder "circle"
+        // otherwise there will be only shadows without the placeholder "circle"
         colors.avatarBackgrounds[color] ?? colors.white
       : color;
 

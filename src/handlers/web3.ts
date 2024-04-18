@@ -196,7 +196,7 @@ export const isTestnetNetwork = (network: Network): boolean => {
   return getNetworkObj(network as Network).networkType === 'testnet';
 };
 
-// shoudl figure out better way to include this in networks
+// should figure out better way to include this in networks
 export const getFlashbotsProvider = async () => {
   return new StaticJsonRpcProvider(
     proxyRpcEndpoint(

@@ -252,7 +252,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
       isDismissing.current = true;
     };
     const unsubscribe = (dangerouslyGetParent()?.getParent()?.addListener || addListener)(
-      // @ts-expect-error - Not sure if this is even triggered as React Navigation apparently doesnt emit this event.
+      // @ts-expect-error - Not sure if this is even triggered as React Navigation apparently doesn't emit this event.
       'transitionEnd',
       // @ts-expect-error - Can't find any docs around this closing prop being sent is this a private API?
       ({ data: { closing } }) => {
