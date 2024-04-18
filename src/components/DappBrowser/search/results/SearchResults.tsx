@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { TextInput } from 'react-native';
+import { ScrollView, TextInput } from 'react-native';
 import Animated, { AnimatedRef, SharedValue, useAnimatedReaction, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { Box, Inline, Inset, Stack, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
 import { useBrowserContext } from '../../BrowserContext';
@@ -7,6 +7,8 @@ import { normalizeUrl } from '../../utils';
 import { ButtonPressAnimation } from '@/components/animations';
 import { GoogleSearchResult, SearchResult } from './SearchResult';
 import { Dapp, useDapps } from '@/resources/metadata/dapps';
+import { useKeyboardHeight } from '@/hooks';
+import { SEARCH_BAR_HEIGHT } from '../bar/SearchBar';
 
 const search = (query: string, dapps: Dapp[]) => {
   'worklet';
@@ -56,10 +58,19 @@ const search = (query: string, dapps: Dapp[]) => {
   return filteredDapps;
 };
 
-export const SearchResults = ({ inputRef, searchQuery }: { inputRef: AnimatedRef<TextInput>; searchQuery: SharedValue<string> }) => {
+export const SearchResults = ({
+  inputRef,
+  searchQuery,
+  isFocused,
+}: {
+  inputRef: AnimatedRef<TextInput>;
+  searchQuery: SharedValue<string>;
+  isFocused: boolean;
+}) => {
   const { isDarkMode } = useColorMode();
   const { searchViewProgress, updateActiveTabState } = useBrowserContext();
   const { dapps } = useDapps();
+  const keyboardHeight = useKeyboardHeight({ shouldListen: isFocused });
 
   const searchResults = useSharedValue<Dapp[]>([]);
 
@@ -112,28 +123,35 @@ export const SearchResults = ({ inputRef, searchQuery }: { inputRef: AnimatedRef
       height="full"
       width="full"
       position="absolute"
-      style={[backgroundStyle, { backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD' }]}
+      style={[
+        backgroundStyle,
+        {
+          backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD',
+          paddingTop: 80,
+          paddingBottom: keyboardHeight,
+        },
+      ]}
     >
-      <Inset horizontal="16px" top={{ custom: 80 }}>
-        <Box
-          as={ButtonPressAnimation}
-          background="fill"
-          height={{ custom: 32 }}
-          width={{ custom: 32 }}
-          borderRadius={32}
-          alignItems="center"
-          right={{ custom: 0 }}
-          top={{ custom: 0 }}
-          style={{ zIndex: 1000 }}
-          justifyContent="center"
-          position="absolute"
-          onPress={onPressX}
-        >
-          <Text weight="heavy" color="labelSecondary" size="icon 15px" align="center">
-            􀆄
-          </Text>
-        </Box>
-        <Animated.View style={allResultsAnimatedStyle}>
+      <Box
+        as={ButtonPressAnimation}
+        background="fill"
+        height={{ custom: 32 }}
+        width={{ custom: 32 }}
+        borderRadius={32}
+        alignItems="center"
+        right={{ custom: 16 }}
+        top={{ custom: 80 }}
+        style={{ zIndex: 1000 }}
+        justifyContent="center"
+        position="absolute"
+        onPress={onPressX}
+      >
+        <Text weight="heavy" color="labelSecondary" size="icon 15px" align="center">
+          􀆄
+        </Text>
+      </Box>
+      <Animated.View style={allResultsAnimatedStyle}>
+        <ScrollView style={{ paddingHorizontal: 16 }} contentContainerStyle={{ paddingBottom: SEARCH_BAR_HEIGHT }}>
           <Inset>
             <Stack space="32px">
               <Box gap={12}>
@@ -180,8 +198,8 @@ export const SearchResults = ({ inputRef, searchQuery }: { inputRef: AnimatedRef
               </Animated.View>
             </Stack>
           </Inset>
-        </Animated.View>
-      </Inset>
+        </ScrollView>
+      </Animated.View>
     </Box>
   );
 };

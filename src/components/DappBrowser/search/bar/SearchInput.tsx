@@ -1,7 +1,16 @@
-import React, { RefObject, useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { AnimatedText, Box, Cover, globalColors, useColorMode, useForegroundColor } from '@/design-system';
-import Animated, { SharedValue, useAnimatedStyle, useDerivedValue, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, {
+  AnimatedRef,
+  SharedValue,
+  dispatchCommand,
+  runOnJS,
+  useAnimatedStyle,
+  useDerivedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import Input from '@/components/inputs/Input';
 import * as i18n from '@/languages';
 import { NativeSyntheticEvent, StyleSheet, TextInput, TextInputChangeEventData, TextInputSubmitEditingEventData } from 'react-native';
@@ -21,44 +30,35 @@ import haptics from '@/utils/haptics';
 import { useFavoriteDappsStore } from '@/state/favoriteDapps';
 import { Site } from '@/state/browserState';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { getNameFromFormattedUrl, handleShareUrl } from '../../utils';
+import { formatUrl, getNameFromFormattedUrl, handleShareUrl, isValidURL } from '../../utils';
+import { GOOGLE_SEARCH_URL, HTTP, HTTPS, RAINBOW_HOME } from '../../constants';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
 
 export const SearchInput = ({
   inputRef,
-  formattedInputValue,
-  inputValue,
   searchQuery,
-  isGoogleSearch,
-  isHome,
-  onPressWorklet,
-  onBlur,
-  onSubmitEditing,
   isFocused,
+  setIsFocused,
   isFocusedValue,
-  logoUrl,
-  canGoBack,
-  canGoForward,
-  onChange,
 }: {
-  inputRef: RefObject<TextInput>;
-  formattedInputValue: { url: string; tabIndex: number };
-  inputValue: string | undefined;
+  inputRef: AnimatedRef<TextInput>;
   searchQuery: SharedValue<string>;
-  isGoogleSearch: boolean;
-  isHome: boolean;
-  onPressWorklet: () => void;
-  onBlur: () => void;
-  onSubmitEditing: (event: NativeSyntheticEvent<TextInputSubmitEditingEventData>) => void;
   isFocused: boolean;
+  setIsFocused: React.Dispatch<React.SetStateAction<boolean>>;
   isFocusedValue: SharedValue<boolean>;
-  logoUrl: string | undefined | null;
-  canGoBack: boolean;
-  canGoForward: boolean;
-  onChange: (event: NativeSyntheticEvent<TextInputChangeEventData>) => void;
 }) => {
-  const { animatedActiveTabIndex, goBack, goForward, onRefresh, tabViewProgress } = useBrowserContext();
+  const {
+    activeTabIndex,
+    animatedActiveTabIndex,
+    goBack,
+    goForward,
+    onRefresh,
+    searchViewProgress,
+    tabStates,
+    tabViewProgress,
+    updateActiveTabState,
+  } = useBrowserContext();
   const { isFavorite, addFavorite, removeFavorite } = useFavoriteDappsStore();
   const { isDarkMode } = useColorMode();
 
@@ -67,9 +67,29 @@ export const SearchInput = ({
   const labelQuaternary = useForegroundColor('labelQuaternary');
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
+  const activeTab = tabStates?.[activeTabIndex];
+  const tabId = activeTab?.uniqueId;
+  const url = activeTab?.url;
+  const logoUrl = activeTab?.logoUrl;
+  const isHome = url === RAINBOW_HOME;
+  const isGoogleSearch = url?.startsWith(GOOGLE_SEARCH_URL);
+  const canGoBack = activeTab?.canGoBack;
+  const canGoForward = activeTab?.canGoForward;
+
   const buttonColorIOS = isDarkMode ? fillSecondary : opacity(globalColors.white100, 0.9);
   const buttonColorAndroid = isDarkMode ? globalColors.blueGrey100 : globalColors.white100;
   const buttonColor = IS_IOS ? buttonColorIOS : buttonColorAndroid;
+
+  const formattedInputValue = useMemo(() => {
+    if (isHome) {
+      return { url: i18n.t(i18n.l.dapp_browser.address_bar.input_placeholder), tabIndex: activeTabIndex };
+    }
+    return { url: formatUrl(url), tabIndex: activeTabIndex };
+  }, [activeTabIndex, isHome, url]);
+
+  const urlWithoutTrailingSlash = url?.endsWith('/') ? url.slice(0, -1) : url;
+  // eslint-disable-next-line no-nested-ternary
+  const inputValue = isHome ? undefined : isGoogleSearch ? formattedInputValue.url : urlWithoutTrailingSlash;
 
   const formattedUrl = formattedInputValue?.url;
   const formattedUrlValue = useDerivedValue(() => {
@@ -185,6 +205,54 @@ export const SearchInput = ({
       handleShareUrl(inputValue);
     }
   };
+
+  const onSubmitEditing = useCallback(
+    (event: NativeSyntheticEvent<TextInputSubmitEditingEventData>) => {
+      inputRef.current?.blur();
+
+      let newUrl = event.nativeEvent.text;
+
+      if (!isValidURL(newUrl)) {
+        newUrl = GOOGLE_SEARCH_URL + newUrl;
+      } else if (!newUrl.startsWith(HTTP) && !newUrl.startsWith(HTTPS)) {
+        newUrl = HTTPS + newUrl;
+      }
+
+      if (newUrl !== url) {
+        updateActiveTabState({ url: newUrl }, tabId);
+      } else {
+        onRefresh();
+      }
+    },
+    [inputRef, onRefresh, tabId, updateActiveTabState, url]
+  );
+
+  const onPressWorklet = () => {
+    'worklet';
+    isFocusedValue.value = true;
+    if (searchViewProgress !== undefined) {
+      searchViewProgress.value = withSpring(1, SPRING_CONFIGS.snappierSpringConfig);
+    }
+    runOnJS(setIsFocused)(true);
+    dispatchCommand(inputRef, 'focus');
+  };
+
+  const onBlur = useCallback(() => {
+    if (isFocused) {
+      setIsFocused(false);
+    }
+    if (searchViewProgress !== undefined) {
+      searchViewProgress.value = withSpring(0, SPRING_CONFIGS.snappierSpringConfig);
+    }
+    isFocusedValue.value = false;
+  }, [isFocused, isFocusedValue, searchViewProgress, setIsFocused]);
+
+  const onChange = useCallback(
+    (event: NativeSyntheticEvent<TextInputChangeEventData>) => {
+      searchQuery.value = event.nativeEvent.text;
+    },
+    [searchQuery]
+  );
 
   return (
     <BrowserButtonShadows>

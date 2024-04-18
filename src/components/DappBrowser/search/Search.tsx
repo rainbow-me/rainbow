@@ -7,11 +7,12 @@ import { TextInput } from 'react-native';
 export const Search = () => {
   const searchQuery = useSharedValue<string>('');
   const inputRef = useAnimatedRef<TextInput>();
+  const [isFocused, setIsFocused] = useState<boolean>(false);
 
   return (
     <>
-      <SearchResults inputRef={inputRef} searchQuery={searchQuery} />
-      <SearchBar inputRef={inputRef} searchQuery={searchQuery} />
+      <SearchResults inputRef={inputRef} searchQuery={searchQuery} isFocused={isFocused} />
+      <SearchBar inputRef={inputRef} searchQuery={searchQuery} isFocused={isFocused} setIsFocused={setIsFocused} />
     </>
   );
 };
