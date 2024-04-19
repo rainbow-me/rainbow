@@ -657,6 +657,12 @@ export function useSwapInputsController({
     if (!assetToBuy.value) {
       handleOutputPress();
     } else {
+      if (initialAmount > 0) {
+        isFetching.value = true;
+        isQuoteStale.value = 1;
+
+        runOnJS(handleInputAmountLogic)(initialAmount);
+      }
       handleInputPress();
     }
   };
@@ -678,7 +684,6 @@ export function useSwapInputsController({
     runOnUI(updateValues)();
 
     const inputAmount = Number(inputValues.value.inputAmount);
-    // TODO: Trigger a quote refetch here.
     if (assetToSell.value && assetToSellPrice.value) {
       if (inputAmount > 0) {
         isFetching.value = true;
