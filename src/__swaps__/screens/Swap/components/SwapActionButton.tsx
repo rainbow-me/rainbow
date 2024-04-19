@@ -1,7 +1,7 @@
 /* eslint-disable no-nested-ternary */
 import c from 'chroma-js';
 import React from 'react';
-import { StyleProp, StyleSheet, TextStyle } from 'react-native';
+import { StyleProp, StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import Animated, {
   DerivedValue,
   runOnJS,
@@ -28,6 +28,7 @@ export const SwapActionButton = ({
   rightIcon,
   scaleTo,
   small,
+  style,
 }: {
   color?: DerivedValue<string | undefined>;
   borderRadius?: number;
@@ -42,6 +43,7 @@ export const SwapActionButton = ({
   rightIcon?: string;
   scaleTo?: number;
   small?: boolean;
+  style?: ViewStyle;
 }) => {
   const { isDarkMode } = useColorMode();
   const fallbackColor = useForegroundColor('blue');
@@ -119,7 +121,10 @@ export const SwapActionButton = ({
       onLongPress={onLongPress}
       onPress={onPress}
       scaleTo={scaleTo || (hugContent ? undefined : 0.925)}
-      style={hugContent && feedActionButtonStyles.buttonWrapper}
+      style={{
+        ...(hugContent && feedActionButtonStyles.buttonWrapper),
+        ...(style || {}),
+      }}
     >
       <Box
         as={Animated.View}

@@ -12,31 +12,48 @@ export const enum NavigationSteps {
 export function useSwapNavigation({
   inputProgress,
   outputProgress,
-  reviewProgress,
+  configProgress,
 }: {
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
-  reviewProgress: SharedValue<number>;
+  configProgress: SharedValue<number>;
 }) {
   const handleShowReview = useCallback(() => {
     'worklet';
-    if (reviewProgress.value !== NavigationSteps.SHOW_REVIEW) {
+    if (configProgress.value !== NavigationSteps.SHOW_REVIEW) {
       inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
       outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
-      reviewProgress.value = NavigationSteps.SHOW_REVIEW;
+      configProgress.value = NavigationSteps.SHOW_REVIEW;
     }
-  }, [inputProgress, outputProgress, reviewProgress]);
+  }, [inputProgress, outputProgress, configProgress]);
 
   const handleDismissReview = useCallback(() => {
     'worklet';
-    if (reviewProgress.value === NavigationSteps.SHOW_REVIEW) {
-      reviewProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+    if (configProgress.value === NavigationSteps.SHOW_REVIEW) {
+      configProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
     }
-  }, [reviewProgress]);
+  }, [configProgress]);
+
+  const handleShowGas = useCallback(() => {
+    'worklet';
+    if (configProgress.value !== NavigationSteps.SHOW_GAS) {
+      inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+      outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+      configProgress.value = NavigationSteps.SHOW_GAS;
+    }
+  }, [inputProgress, outputProgress, configProgress]);
+
+  const handleDismissGas = useCallback(() => {
+    'worklet';
+    if (configProgress.value === NavigationSteps.SHOW_GAS) {
+      configProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+    }
+  }, [configProgress]);
 
   const handleExitSearch = useCallback(() => {
     'worklet';
     handleDismissReview();
+    handleDismissGas();
 
     if (inputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED) {
       inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
@@ -50,29 +67,32 @@ export function useSwapNavigation({
     if (outputProgress.value === NavigationSteps.SEARCH_FOCUSED) {
       outputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
     }
-  }, [handleDismissReview, inputProgress, outputProgress]);
+  }, [handleDismissReview, handleDismissGas, inputProgress, outputProgress]);
 
   const handleFocusInputSearch = useCallback(() => {
     'worklet';
     handleDismissReview();
+    handleDismissGas();
 
     if (inputProgress.value !== NavigationSteps.SEARCH_FOCUSED) {
       inputProgress.value = NavigationSteps.SEARCH_FOCUSED;
     }
-  }, [handleDismissReview, inputProgress]);
+  }, [handleDismissReview, handleDismissGas, inputProgress]);
 
   const handleFocusOutputSearch = useCallback(() => {
     'worklet';
     handleDismissReview();
+    handleDismissGas();
 
     if (outputProgress.value !== NavigationSteps.SEARCH_FOCUSED) {
       outputProgress.value = NavigationSteps.SEARCH_FOCUSED;
     }
-  }, [handleDismissReview, outputProgress]);
+  }, [handleDismissReview, handleDismissGas, outputProgress]);
 
   const handleInputPress = useCallback(() => {
     'worklet';
     handleDismissReview();
+    handleDismissGas();
 
     if (inputProgress.value === NavigationSteps.INPUT_ELEMENT_FOCUSED) {
       inputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
@@ -80,11 +100,12 @@ export function useSwapNavigation({
     } else {
       inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
     }
-  }, [handleDismissReview, inputProgress, outputProgress]);
+  }, [handleDismissReview, handleDismissGas, inputProgress, outputProgress]);
 
   const handleOutputPress = useCallback(() => {
     'worklet';
     handleDismissReview();
+    handleDismissGas();
 
     if (outputProgress.value === NavigationSteps.INPUT_ELEMENT_FOCUSED) {
       outputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
@@ -92,7 +113,7 @@ export function useSwapNavigation({
     } else {
       outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
     }
-  }, [handleDismissReview, inputProgress, outputProgress]);
+  }, [handleDismissReview, handleDismissGas, inputProgress, outputProgress]);
 
   return {
     handleExitSearch,
@@ -102,5 +123,7 @@ export function useSwapNavigation({
     handleOutputPress,
     handleShowReview,
     handleDismissReview,
+    handleShowGas,
+    handleDismissGas,
   };
 }

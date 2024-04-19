@@ -9,21 +9,21 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
-import { fadeConfig } from '../constants';
+import { NavigationSteps, useSwapContext } from '../../providers/swap-provider';
+import { fadeConfig } from '../../constants';
 import { ethereumUtils } from '@/utils';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ChainId } from '@/__swaps__/types/chains';
 import { chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
-import { AnimatedSwitch } from './AnimatedSwitch';
-import { GasButton } from './GasButton';
+import { AnimatedSwitch } from '../AnimatedSwitch';
+import { GasButton } from '../GasButton';
 import { ButtonPressAnimation } from '@/components/animations';
 
 const SLIPPAGE_STEP = 0.5;
 
 export function ReviewPanel() {
   const { isDarkMode } = useColorMode();
-  const { reviewProgress, SwapInputController } = useSwapContext();
+  const { configProgress, SwapInputController } = useSwapContext();
 
   const chainName = useDerivedValue(() =>
     SwapInputController.outputChainId.value === ChainId.mainnet
@@ -83,13 +83,15 @@ export function ReviewPanel() {
 
   const styles = useAnimatedStyle(() => {
     return {
-      opacity: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? withTiming(1, fadeConfig) : withTiming(0, fadeConfig),
+      display: configProgress.value !== NavigationSteps.SHOW_REVIEW ? 'none' : 'flex',
+      pointerEvents: configProgress.value !== NavigationSteps.SHOW_REVIEW ? 'none' : 'auto',
+      opacity: configProgress.value === NavigationSteps.SHOW_REVIEW ? withTiming(1, fadeConfig) : withTiming(0, fadeConfig),
       flex: 1,
     };
   });
 
   return (
-    <Box as={Animated.View} zIndex={11} style={styles} testID="review-panel" width="full">
+    <Box as={Animated.View} zIndex={12} style={styles} testID="review-panel" width="full">
       <Stack alignHorizontal="center" space="28px">
         <Text weight="heavy" color="label" size="20pt">
           Review

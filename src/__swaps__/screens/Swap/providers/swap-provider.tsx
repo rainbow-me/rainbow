@@ -13,7 +13,7 @@ import { useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 interface SwapContextType {
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
-  reviewProgress: SharedValue<number>;
+  configProgress: SharedValue<number>;
   sliderXPosition: SharedValue<number>;
   sliderPressProgress: SharedValue<number>;
   focusedInput: SharedValue<inputKeys>;
@@ -39,7 +39,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const isFetching = useSharedValue(false);
   const inputProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
   const outputProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
-  const reviewProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
+  const configProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
   const sliderXPosition = useSharedValue(SLIDER_WIDTH * INITIAL_SLIDER_POSITION);
   const sliderPressProgress = useSharedValue(SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT);
   const focusedInput = useSharedValue<inputKeys>('inputAmount');
@@ -47,7 +47,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const SwapNavigation = useSwapNavigation({
     inputProgress,
     outputProgress,
-    reviewProgress,
+    configProgress,
   });
 
   const SwapInputController = useSwapInputsController({
@@ -70,7 +70,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     SwapWarning,
     inputProgress,
     outputProgress,
-    reviewProgress,
+    configProgress,
     isFetching,
   });
   const SwapTextStyles = useSwapTextStyles({
@@ -82,7 +82,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   });
 
   const confirmButtonIcon = useDerivedValue(() => {
-    const isReviewing = reviewProgress.value === NavigationSteps.SHOW_REVIEW;
+    const isReviewing = configProgress.value === NavigationSteps.SHOW_REVIEW;
     if (isReviewing) {
       return '􀎽';
     }
@@ -100,7 +100,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   });
 
   const confirmButtonLabel = useDerivedValue(() => {
-    const isReviewing = reviewProgress.value === NavigationSteps.SHOW_REVIEW;
+    const isReviewing = configProgress.value === NavigationSteps.SHOW_REVIEW;
     if (isReviewing) {
       return 'Hold to Swap';
     }
@@ -138,7 +138,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       value={{
         inputProgress,
         outputProgress,
-        reviewProgress,
+        configProgress,
         sliderXPosition,
         sliderPressProgress,
         focusedInput,

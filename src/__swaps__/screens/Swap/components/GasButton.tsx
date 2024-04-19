@@ -18,17 +18,19 @@ import { ethereumUtils, gasUtils } from '@/utils';
 import styled from '@/styled-thing';
 import { useMeteorology } from '@/__swaps__/utils/meteorology';
 import { parseGasFeeParamsBySpeed } from '@/__swaps__/utils/gasUtils';
-import Animated, { useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
+import Animated, { runOnUI, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { ParsedAddressAsset } from '@/entities';
 import { GasFeeLegacyParamsBySpeed, GasFeeParamsBySpeed, GasSpeed } from '@/__swaps__/types/gas';
 import { ParsedAsset } from '@/__swaps__/types/assets';
 import { ETH_COLOR, ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '../constants';
+import { useSwapContext } from '../providers/swap-provider';
 
 const { GasSpeedOrder, CUSTOM, GAS_ICONS, GAS_EMOJIS, getGasLabel, getGasFallback } = gasUtils;
 const mockedGasLimit = '21000';
 
 export const GasButton = ({ accentColor, isReviewing = false }: { accentColor?: string; isReviewing?: boolean }) => {
   const { isDarkMode } = useColorMode();
+  const { SwapNavigation } = useSwapContext();
   const { params } = useRoute();
   const { currentNetwork } = (params as any) || {};
   const chainId = getNetworkObj(currentNetwork).id;
@@ -132,37 +134,37 @@ export const GasButton = ({ accentColor, isReviewing = false }: { accentColor?: 
   }
 
   return (
-    <ButtonPressAnimation onPress={() => setShowGasOptions(!showGasOptions)}>
-      <GasMenu gasFeeBySpeed={gasFeeBySpeed} flashbotTransaction={false}>
-        <Stack space="12px">
-          <Inline alignVertical="center" space={{ custom: 5 }}>
-            <Inline alignVertical="center" space="4px">
-              <TextIcon
-                color={accentColor ? { custom: accentColor } : 'red'}
-                height={10}
-                size="icon 12px"
-                textStyle={{ marginTop: -1.5 }}
-                width={16}
-                weight="bold"
-              >
-                􀙭
-              </TextIcon>
-              <Text color="label" size="15pt" weight="heavy">
-                {getGasLabel(selectedGas?.option || GasSpeed.FAST)}
-              </Text>
-            </Inline>
-            <TextIcon color="labelSecondary" height={10} size="icon 13px" weight="bold" width={12}>
-              􀆏
-            </TextIcon>
-          </Inline>
+    <ButtonPressAnimation onPress={() => runOnUI(SwapNavigation.handleShowGas)()}>
+      {/* <GasMenu gasFeeBySpeed={gasFeeBySpeed} flashbotTransaction={false}> */}
+      <Stack space="12px">
+        <Inline alignVertical="center" space={{ custom: 5 }}>
           <Inline alignVertical="center" space="4px">
-            <TextIcon color="labelQuaternary" height={10} size="icon 11px" weight="heavy" width={16}>
-              􀵟
+            <TextIcon
+              color={accentColor ? { custom: accentColor } : 'red'}
+              height={10}
+              size="icon 12px"
+              textStyle={{ marginTop: -1.5 }}
+              width={16}
+              weight="bold"
+            >
+              􀙭
             </TextIcon>
-            <AnimatedText color="labelTertiary" size="15pt" weight="bold" text={animatedGas} />
+            <Text color="label" size="15pt" weight="heavy">
+              {getGasLabel(selectedGas?.option || GasSpeed.FAST)}
+            </Text>
           </Inline>
-        </Stack>
-      </GasMenu>
+          <TextIcon color="labelSecondary" height={10} size="icon 13px" weight="bold" width={12}>
+            􀆏
+          </TextIcon>
+        </Inline>
+        <Inline alignVertical="center" space="4px">
+          <TextIcon color="labelQuaternary" height={10} size="icon 11px" weight="heavy" width={16}>
+            􀵟
+          </TextIcon>
+          <AnimatedText color="labelTertiary" size="15pt" weight="bold" text={animatedGas} />
+        </Inline>
+      </Stack>
+      {/* </GasMenu> */}
     </ButtonPressAnimation>
   );
 };

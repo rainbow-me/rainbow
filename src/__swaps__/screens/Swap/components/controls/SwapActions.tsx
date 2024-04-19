@@ -12,9 +12,10 @@ import { useSwapContext, NavigationSteps } from '@/__swaps__/screens/Swap/provid
 import Animated, { runOnJS, runOnUI, useAnimatedReaction, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { StyleSheet } from 'react-native';
 import { opacity } from '@/__swaps__/utils/swaps';
-import { ReviewPanel } from '../ReviewPanel';
+import { ReviewPanel } from '../panels/ReviewPanel';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import { useSwapActionsGestureHandler } from './useSwapActionsGestureHandler';
+import { GasPanel } from '../panels/GasPanel';
 
 export function SwapActions() {
   const { isDarkMode } = useColorMode();
@@ -25,7 +26,7 @@ export function SwapActions() {
     SwapInputController,
     AnimatedSwapStyles,
     SwapNavigation,
-    reviewProgress,
+    configProgress,
   } = useSwapContext();
 
   const { swipeToDismissGestureHandler, gestureY } = useSwapActionsGestureHandler();
@@ -33,11 +34,13 @@ export function SwapActions() {
 
   useAnimatedReaction(
     () => ({
-      reviewProgress: reviewProgress.value,
+      configProgress: configProgress.value,
     }),
-    ({ reviewProgress }) => {
-      if (reviewProgress === NavigationSteps.SHOW_REVIEW) {
+    ({ configProgress }) => {
+      if (configProgress === NavigationSteps.SHOW_REVIEW || configProgress === NavigationSteps.SHOW_GAS) {
         runOnJS(setEnabled)(true);
+      } else {
+        runOnJS(setEnabled)(false);
       }
     }
   );
@@ -48,9 +51,15 @@ export function SwapActions() {
     };
   });
 
-  const columnStyles = useAnimatedStyle(() => {
+  const hiddenColumnStyles = useAnimatedStyle(() => {
     return {
-      display: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 'none' : 'flex',
+      display: configProgress.value === NavigationSteps.SHOW_REVIEW || configProgress.value === NavigationSteps.SHOW_GAS ? 'none' : 'flex',
+    };
+  });
+
+  const gasColumnStyles = useAnimatedStyle(() => {
+    return {
+      display: configProgress.value === NavigationSteps.SHOW_REVIEW ? 'none' : 'flex',
     };
   });
 
@@ -65,14 +74,15 @@ export function SwapActions() {
         paddingHorizontal="20px"
         style={[AnimatedSwapStyles.swapActionWrapperStyle, AnimatedSwapStyles.keyboardStyle, gestureHandlerStyles]}
         width="full"
-        zIndex={11}
+        zIndex={10}
       >
         <ReviewPanel />
+        <GasPanel />
         <Columns alignVertical="center" space="12px">
-          <Column style={columnStyles} width="content">
+          <Column style={gasColumnStyles} width="content">
             <GasButton />
           </Column>
-          <Column style={columnStyles} width="content">
+          <Column style={hiddenColumnStyles} width="content">
             <Box height={{ custom: 32 }}>
               <Separator color={{ custom: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR }} direction="vertical" thickness={1} />
             </Box>

@@ -59,7 +59,7 @@ export const SwapSlider = ({
 }: SwapSliderProps) => {
   const theme = useTheme();
   const { isDarkMode } = useColorMode();
-  const { SwapInputController, sliderXPosition, sliderPressProgress } = useSwapContext();
+  const { SwapInputController, AnimatedSwapStyles, sliderXPosition, sliderPressProgress } = useSwapContext();
 
   const { assetToSell } = useSwapAssetStore();
 
@@ -369,7 +369,7 @@ export const SwapSlider = ({
   return (
     // @ts-expect-error
     <PanGestureHandler activeOffsetX={[0, 0]} activeOffsetY={[0, 0]} onGestureEvent={onSlide} simultaneousHandlers={[tapRef]}>
-      <Animated.View>
+      <Animated.View style={AnimatedSwapStyles.hideWhileReviewingOrConfiguringGas}>
         {/* @ts-expect-error */}
         <TapGestureHandler onGestureEvent={onPressDown} simultaneousHandlers={[panRef]}>
           <Animated.View style={{ gap: 14, paddingBottom: 20, paddingHorizontal: 20, paddingTop: 16 }}>

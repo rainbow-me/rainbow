@@ -23,14 +23,14 @@ export function useAnimatedSwapStyles({
   SwapWarning,
   inputProgress,
   outputProgress,
-  reviewProgress,
+  configProgress,
   isFetching,
 }: {
   SwapInputController: ReturnType<typeof useSwapInputsController>;
   SwapWarning: ReturnType<typeof useSwapWarning>;
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
-  reviewProgress: SharedValue<number>;
+  configProgress: SharedValue<NavigationSteps>;
   isFetching: SharedValue<boolean>;
 }) {
   const { isDarkMode } = useColorMode();
@@ -124,31 +124,34 @@ export function useAnimatedSwapStyles({
   });
 
   const swapActionWrapperStyle = useAnimatedStyle(() => {
+    const isReviewingOrConfiguringGas =
+      configProgress.value === NavigationSteps.SHOW_REVIEW || configProgress.value === NavigationSteps.SHOW_GAS;
+
+    const heightForPanel: { [key in NavigationSteps]: number } = {
+      [NavigationSteps.INPUT_ELEMENT_FOCUSED]: 114,
+      [NavigationSteps.SEARCH_FOCUSED]: 114,
+      [NavigationSteps.TOKEN_LIST_FOCUSED]: 114,
+      [NavigationSteps.SHOW_REVIEW]: 407.68 + safeAreaInsetValues.bottom + 16,
+      [NavigationSteps.SHOW_GAS]: 407.68 + safeAreaInsetValues.bottom + 16,
+    };
+
     return {
-      position: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 'absolute' : 'relative',
-      bottom: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 0 : undefined,
-      height: withSpring(
-        reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 407.68 + safeAreaInsetValues.bottom + 16 : 114,
-        springConfig
-      ),
-      borderTopLeftRadius: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? (IS_ANDROID ? 20 : 40) : 0,
-      borderTopRightRadius: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? (IS_ANDROID ? 20 : 40) : 0,
-      borderWidth: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? THICK_BORDER_WIDTH : 0,
-      borderColor: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? opacityWorklet(globalColors.darkGrey, 0.2) : undefined,
-      backgroundColor:
-        reviewProgress.value === NavigationSteps.SHOW_REVIEW
-          ? isDarkMode
-            ? '#191A1C'
-            : globalColors.white100
-          : opacityWorklet(SwapInputController.bottomColor.value, 0.03),
-      borderTopColor:
-        reviewProgress.value === NavigationSteps.SHOW_REVIEW
-          ? opacityWorklet(globalColors.darkGrey, 0.2)
-          : opacityWorklet(SwapInputController.bottomColor.value, 0.04),
+      position: isReviewingOrConfiguringGas ? 'absolute' : 'relative',
+      bottom: isReviewingOrConfiguringGas ? 0 : undefined,
+      height: withSpring(heightForPanel[configProgress.value], springConfig),
+      borderTopLeftRadius: isReviewingOrConfiguringGas ? (IS_ANDROID ? 20 : 40) : 0,
+      borderTopRightRadius: isReviewingOrConfiguringGas ? (IS_ANDROID ? 20 : 40) : 0,
+      borderWidth: isReviewingOrConfiguringGas ? THICK_BORDER_WIDTH : 0,
+      borderColor: isReviewingOrConfiguringGas ? opacityWorklet(globalColors.darkGrey, 0.2) : undefined,
+      // TODO: Add mix here to mix bottom color with bg color for review / gas panels
+      backgroundColor: opacityWorklet(SwapInputController.bottomColor.value, 0.03),
+      borderTopColor: isReviewingOrConfiguringGas
+        ? opacityWorklet(globalColors.darkGrey, 0.2)
+        : opacityWorklet(SwapInputController.bottomColor.value, 0.04),
       borderTopWidth: THICK_BORDER_WIDTH,
       borderCurve: 'continuous',
       paddingBottom: IS_ANDROID ? getSoftMenuBarHeight() - 24 : safeAreaInsetValues.bottom + 16,
-      paddingTop: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 28 : 16 - THICK_BORDER_WIDTH,
+      paddingTop: isReviewingOrConfiguringGas ? 28 : 16 - THICK_BORDER_WIDTH,
     };
   });
 
@@ -194,10 +197,14 @@ export function useAnimatedSwapStyles({
     };
   });
 
-  const hideWhileReviewing = useAnimatedStyle(() => {
+  const hideWhileReviewingOrConfiguringGas = useAnimatedStyle(() => {
     return {
-      opacity: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? withTiming(0, fadeConfig) : withTiming(1, fadeConfig),
-      pointerEvents: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 'none' : 'auto',
+      opacity:
+        configProgress.value === NavigationSteps.SHOW_REVIEW || configProgress.value === NavigationSteps.SHOW_GAS
+          ? withTiming(0, fadeConfig)
+          : withTiming(1, fadeConfig),
+      pointerEvents:
+        configProgress.value === NavigationSteps.SHOW_REVIEW || configProgress.value === NavigationSteps.SHOW_GAS ? 'none' : 'auto',
     };
   });
 
@@ -232,7 +239,7 @@ export function useAnimatedSwapStyles({
     assetToSellCaretStyle,
     assetToBuyIconStyle,
     assetToBuyCaretStyle,
-    hideWhileReviewing,
+    hideWhileReviewingOrConfiguringGas,
     flipButtonFetchingStyle,
     searchInputAssetButtonStyle,
     searchOutputAssetButtonStyle,

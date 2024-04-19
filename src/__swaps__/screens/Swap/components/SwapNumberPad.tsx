@@ -32,7 +32,7 @@ type numberPadCharacter = number | 'backspace' | '.';
 
 export const SwapNumberPad = () => {
   const { isDarkMode } = useColorMode();
-  const { focusedInput, SwapInputController, reviewProgress } = useSwapContext();
+  const { focusedInput, SwapInputController, configProgress } = useSwapContext();
 
   const longPressTimer = useSharedValue(0);
 
@@ -136,7 +136,10 @@ export const SwapNumberPad = () => {
 
   const numpadContainerStyles = useAnimatedStyle(() => {
     return {
-      opacity: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? withTiming(0, fadeConfig) : withTiming(1, fadeConfig),
+      opacity:
+        configProgress.value === NavigationSteps.SHOW_REVIEW || configProgress.value === NavigationSteps.SHOW_GAS
+          ? withTiming(0, fadeConfig)
+          : withTiming(1, fadeConfig),
     };
   });
 
