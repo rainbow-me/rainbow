@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { SharedValue } from 'react-native-reanimated';
+import { SharedValue, useSharedValue } from 'react-native-reanimated';
 
 export const enum NavigationSteps {
   INPUT_ELEMENT_FOCUSED = 0,
@@ -18,6 +18,8 @@ export function useSwapNavigation({
   outputProgress: SharedValue<number>;
   configProgress: SharedValue<number>;
 }) {
+  const navigateBackToReview = useSharedValue(false);
+
   const handleShowReview = useCallback(() => {
     'worklet';
     if (configProgress.value !== NavigationSteps.SHOW_REVIEW) {
@@ -34,14 +36,22 @@ export function useSwapNavigation({
     }
   }, [configProgress]);
 
-  const handleShowGas = useCallback(() => {
-    'worklet';
-    if (configProgress.value !== NavigationSteps.SHOW_GAS) {
-      inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
-      outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
-      configProgress.value = NavigationSteps.SHOW_GAS;
-    }
-  }, [inputProgress, outputProgress, configProgress]);
+  const handleShowGas = useCallback(
+    (backToReview = false) => {
+      'worklet';
+
+      if (backToReview) {
+        navigateBackToReview.value = true;
+      }
+
+      if (configProgress.value !== NavigationSteps.SHOW_GAS) {
+        inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+        outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+        configProgress.value = NavigationSteps.SHOW_GAS;
+      }
+    },
+    [configProgress, navigateBackToReview, inputProgress, outputProgress]
+  );
 
   const handleDismissGas = useCallback(() => {
     'worklet';
@@ -120,7 +130,13 @@ export function useSwapNavigation({
 
     if (configProgress.value === NavigationSteps.SHOW_GAS) {
       // TODO: Handle saving gas configuration
-      handleDismissGas();
+      // TODO: Handle setting gas to custom here
+      if (navigateBackToReview.value) {
+        navigateBackToReview.value = false;
+        handleShowReview();
+      } else {
+        handleDismissGas();
+      }
       return;
     } else if (configProgress.value === NavigationSteps.SHOW_REVIEW) {
       // TODO: Handle executing swap

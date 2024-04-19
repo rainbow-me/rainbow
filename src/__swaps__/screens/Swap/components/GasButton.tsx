@@ -25,7 +25,7 @@ import { ParsedAsset } from '@/__swaps__/types/assets';
 import { ETH_COLOR, ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '../constants';
 import { useSwapContext } from '../providers/swap-provider';
 
-const { GasSpeedOrder, CUSTOM, GAS_ICONS, GAS_EMOJIS, getGasLabel, getGasFallback } = gasUtils;
+const { CUSTOM, GAS_ICONS, GAS_EMOJIS, getGasLabel, getGasFallback } = gasUtils;
 const mockedGasLimit = '21000';
 
 export const GasButton = ({ accentColor, isReviewing = false }: { accentColor?: string; isReviewing?: boolean }) => {
@@ -88,7 +88,7 @@ export const GasButton = ({ accentColor, isReviewing = false }: { accentColor?: 
   if (isReviewing) {
     return (
       <Inline alignVertical="center" wrap={false}>
-        <GasMenu gasFeeBySpeed={gasFeeBySpeed} flashbotTransaction={false}>
+        <GasMenu isReviewing={isReviewing} gasFeeBySpeed={gasFeeBySpeed} flashbotTransaction={false}>
           <ButtonPressAnimation onPress={() => setShowGasOptions(!showGasOptions)}>
             <Box as={Animated.View} style={buttonWrapperStyles}>
               <Inline alignVertical="center" space="4px">
@@ -113,7 +113,7 @@ export const GasButton = ({ accentColor, isReviewing = false }: { accentColor?: 
           </ButtonPressAnimation>
         </GasMenu>
 
-        <ButtonPressAnimation onPress={() => setShowCustomGasSheet(prev => !prev)}>
+        <ButtonPressAnimation onPress={() => runOnUI(SwapNavigation.handleShowGas)(true)}>
           <Box
             style={{
               paddingHorizontal: 7,
@@ -174,10 +174,12 @@ const GasSpeedPagerCentered = styled(Centered).attrs(() => ({
 
 const GasMenu = ({
   flashbotTransaction,
+  isReviewing,
   children,
   gasFeeBySpeed,
 }: {
   flashbotTransaction: boolean;
+  isReviewing: boolean;
   children: ReactNode;
   gasFeeBySpeed: GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed;
 }) => {
@@ -202,12 +204,12 @@ const GasMenu = ({
   const handlePressSpeedOption = useCallback(
     (selectedGasSpeed: GasSpeed) => {
       if (selectedGasSpeed === CUSTOM) {
-        runOnUI(SwapNavigation.handleShowGas)();
+        runOnUI(SwapNavigation.handleShowGas)(isReviewing);
       } else {
         setSelectedGas({ selectedGas: gasFeeBySpeed[selectedGasSpeed] });
       }
     },
-    [SwapNavigation.handleShowGas, gasFeeBySpeed, setSelectedGas]
+    [SwapNavigation.handleShowGas, gasFeeBySpeed, isReviewing, setSelectedGas]
   );
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }: any) => {
