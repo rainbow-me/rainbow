@@ -21,6 +21,7 @@ import { getDappHost } from '../handleProviderRequest';
 import { Address, toHex } from 'viem';
 import { handleDappBrowserConnectionPrompt } from '@/utils/requestNavigationHandlers';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
+import { getDappMetadata } from '@/resources/metadata/dapp';
 import { TabState } from '../types';
 
 interface MenuItemIcon {
@@ -206,12 +207,15 @@ export const AccountIcon = ({
         if (!isConnected) {
           const url = getActiveTabState()?.url;
 
+          const dappData = await getDappMetadata({ url: getDappHost(url) });
+
           // @ts-expect-error
-          const name: string = activeTabRef.current.title || getDappHost(url);
+          const name: string = dappData?.appName || activeTabRef.current.title || dappData?.appHost;
 
           const response = await handleDappBrowserConnectionPrompt({
             dappName: name || '',
             dappUrl: url || '',
+            imageUrl: dappData?.appLogo,
           });
           if (!(response instanceof Error)) {
             appSessions.addSession({

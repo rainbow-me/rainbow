@@ -39,11 +39,12 @@ export const handleDappBrowserConnectionPrompt = (dappData: DappConnectionData):
         chainIds,
         dappName: dappData?.dappName || dappData.dappUrl,
         dappUrl: dappData.dappUrl,
-        imageUrl: maybeSignUri(dappData.dappUrl),
+        imageUrl: maybeSignUri(dappData.imageUrl),
         isWalletConnectV2: false,
         peerId: '',
         dappScheme: null,
       },
+      source: 'browser',
       timedOut: false,
       callback: async (approved, approvedChainId, accountAddress) => {
         if (approved) {
