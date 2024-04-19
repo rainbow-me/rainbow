@@ -6,7 +6,7 @@ import { useBrowserContext } from '../../BrowserContext';
 import { normalizeUrl } from '../../utils';
 import { ButtonPressAnimation } from '@/components/animations';
 import { GoogleSearchResult, SearchResult } from './SearchResult';
-import { Dapp, useDapps, useDappsContext } from '@/resources/metadata/dapps';
+import { Dapp, useDappsContext } from '@/resources/metadata/dapps';
 import { useKeyboardHeight } from '@/hooks';
 import { SEARCH_BAR_HEIGHT } from '../bar/SearchBar';
 import { useSearchContext } from '../SearchContext';

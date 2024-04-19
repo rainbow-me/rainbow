@@ -41,16 +41,16 @@ export const TabButton = () => {
   const animatedBoxStyle = useAnimatedStyle(() => ({ paddingTop: isFocused?.value ? 1 : undefined }));
 
   const animatedText = useDerivedValue(() => (isFocused?.value ? '􀆈' : '􀐅'));
-  const animatedTextProps = useAnimatedProps(() => ({ color: isFocused?.value ? 'labelSecondary' : 'label' }));
+  const animatedTextProps = useAnimatedProps(() => ({ color: (isFocused?.value ? 'labelSecondary' : 'label') as TextColor }));
 
   return (
     <BrowserButtonShadows>
       <Bleed space="8px">
         <GestureHandlerV1Button onPressWorklet={onPress} style={{ padding: 8 }}>
           <AnimatedBox borderRadius={22} style={[animatedBoxStyle, { height: 44, width: 44 }]} alignItems="center" justifyContent="center">
-            <AnimatedText align="center" color="label" size="icon 17px" weight="heavy">
+            <SuperAnimatedText align="center" animatedProps={animatedTextProps} size="icon 17px" weight="heavy">
               {animatedText}
-            </AnimatedText>
+            </SuperAnimatedText>
             {IS_IOS && (
               <Box
                 as={BlurView}

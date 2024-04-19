@@ -36,7 +36,7 @@ import { useSearchContext } from '../SearchContext';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
 const AnimatedGestureHandlerV1Button = Animated.createAnimatedComponent(GestureHandlerV1Button);
-const AnimatedFadeMask = Animated.createAnimatedComponent(React.forwardRef(FadeMask));
+// const AnimatedFadeMask = Animated.createAnimatedComponent(FadeMask);
 
 export const SearchInput = () => {
   const {
@@ -279,7 +279,8 @@ export const SearchInput = () => {
           ]}
         >
           <MaskedView
-            maskElement={<AnimatedFadeMask animatedProps={animatedFadeMaskProps} height={48} side="right" />}
+            maskElement={<FadeMask height={48} side="right" />}
+            // maskElement={<AnimatedFadeMask height={48} side="right" />}
             style={{
               alignItems: 'center',
               flex: 1,
