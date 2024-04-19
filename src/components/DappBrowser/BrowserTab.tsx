@@ -93,6 +93,7 @@ export const BrowserTab = React.memo(
     const logo = useRef<string | null>(null);
     const webViewRef = useRef<WebView>(null);
     const viewShotRef = useRef<ViewShot | null>(null);
+    const urlRef = useRef<string | null>(null);
 
     // ⚠️ TODO
     const gestureScale = useSharedValue(1);
@@ -274,16 +275,7 @@ export const BrowserTab = React.memo(
 
     const handleNavigationStateChange = useCallback(
       (navState: WebViewNavigation) => {
-        // Set the logo if it's not already set to the current website's logo
-        if (tabState.logoUrl !== logo.current) {
-          updateActiveTabState?.(
-            {
-              logoUrl: logo.current,
-            },
-            tabId
-          );
-        }
-
+        // navigationStateLogger(navState, tabState);
         // To prevent infinite redirect loops, we only update the URL if both of these are true:
         //
         // 1) the WebView's URL is different from the tabStates URL
@@ -300,44 +292,47 @@ export const BrowserTab = React.memo(
         // this avoids setting back/forward states under the wrong conditions or more than once per event.
         //
         // To observe what's actually going on, you can import the navigationStateLogger helper and add it here.
+        const isRedirect = navState.navigationType === 'other' && navState.loading;
+        const isNavigationEventRelevant = navState.navigationType !== undefined;
+        if (isNavigationEventRelevant && !isRedirect) {
+          const newState: {
+            canGoBack?: boolean;
+            canGoForward?: boolean;
+            logoUrl?: string;
+            url?: string;
+          } = {};
 
-        if (navState.url !== url) {
-          if (navState.navigationType !== 'other') {
-            // If the URL DID ✅ change and navigationType !== 'other', we update the full tab state
-            updateActiveTabState?.(
-              {
-                canGoBack: navState.canGoBack,
-                canGoForward: navState.canGoForward,
-                logoUrl: logo.current,
-                url: navState.url,
-              },
-              tabId
-            );
-          } else {
-            // If the URL DID ✅ change and navigationType === 'other', we update only canGoBack and canGoForward
-            updateActiveTabState?.(
-              {
-                canGoBack: navState.canGoBack,
-                canGoForward: navState.canGoForward,
-                logoUrl: logo.current,
-              },
-              tabId
-            );
+          // detected url change
+          if (tabState.url !== navState.url && navState.url !== urlRef.current) {
+            newState.url = navState.url;
+            urlRef.current = navState.url;
+          }
+          // detected nav change (go back)
+          if (tabState.canGoBack !== navState.canGoBack) {
+            newState.canGoBack = navState.canGoBack;
+          }
+
+          // detected nav change (go fwd)
+          if (tabState.canGoForward !== navState.canGoForward) {
+            newState.canGoForward = navState.canGoForward;
+          }
+
+          // detected logo change
+          if (logo.current && tabState.logoUrl !== logo.current) {
+            console.log('detected logo change', { before: tabState.logoUrl, after: logo.current });
+            newState.logoUrl = logo.current;
+          }
+
+          if (Object.keys(newState).length > 0) {
+            // apply pending updates all at once
+            updateActiveTabState?.(newState, tabId);
           }
         } else {
-          // If the URL DID NOT ❌ change, we update only canGoBack and canGoForward
-          // This handles WebView reloads and cases where the WebView navigation state legitimately resets
-          updateActiveTabState?.(
-            {
-              canGoBack: navState.canGoBack,
-              canGoForward: navState.canGoForward,
-              logoUrl: logo.current,
-            },
-            tabId
-          );
+          console.log('💧 navigationType is undefined, not updating tab state', { navigationType: navState.navigationType });
         }
+        return;
       },
-      [tabState.logoUrl, url, tabId, updateActiveTabState]
+      [tabId, tabState, updateActiveTabState]
     );
 
     // useLayoutEffect seems to more reliably assign the ref correctly
@@ -490,9 +485,45 @@ export const BrowserTab = React.memo(
       // placeholder
     }, []);
 
-    const handleOnLoadEnd = useCallback(() => {
-      return;
-    }, []);
+    const handleOnLoadEnd = useCallback(
+      (event: WebViewEvent) => {
+        const newState: {
+          canGoBack?: boolean;
+          canGoForward?: boolean;
+          logoUrl?: string;
+          url?: string;
+        } = {};
+
+        // detected url change
+        if (tabState.url !== event.nativeEvent.url && event.nativeEvent.url !== urlRef.current) {
+          newState.url = event.nativeEvent.url;
+          urlRef.current = event.nativeEvent.url;
+          console.log('detected url change', { before: tabState.url, after: event.nativeEvent.url });
+        }
+        // detected nav change (go back)
+        if (tabState.canGoBack !== event.nativeEvent.canGoBack) {
+          newState.canGoBack = event.nativeEvent.canGoBack;
+          console.log('detected nav change (canGoBack)', { before: tabState.canGoBack, after: event.nativeEvent.canGoBack });
+        }
+        // detected nav change (go fwd)
+        if (tabState.canGoForward !== event.nativeEvent.canGoForward) {
+          console.log('detected nav change (canGoForward)', { before: tabState.canGoForward, after: event.nativeEvent.canGoForward });
+          newState.canGoForward = event.nativeEvent.canGoForward;
+        }
+        // detected logo change
+        if (logo.current && tabState.logoUrl !== logo.current) {
+          console.log('detected logo change', { before: tabState.logoUrl, after: logo.current });
+          newState.logoUrl = logo.current;
+        }
+
+        if (Object.keys(newState).length > 0) {
+          // apply pending updates all at once
+          updateActiveTabState?.(newState, tabId);
+        }
+        return;
+      },
+      [tabId, tabState, updateActiveTabState]
+    );
 
     const handleOnError = useCallback(() => {
       return;
