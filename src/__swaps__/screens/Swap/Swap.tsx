@@ -8,7 +8,7 @@ import { navbarHeight } from '@/components/navbar/Navbar';
 import { Box } from '@/design-system';
 import { safeAreaInsetValues } from '@/utils';
 
-import { SheetGestureBlocker } from '@/__swaps__/screens/Swap/components/SheetGestureBlocker';
+import { SwapSheetGestureBlocker } from '@/__swaps__/screens/Swap/components/SwapSheetGestureBlocker';
 import { SwapBackground } from '@/__swaps__/screens/Swap/components/SwapBackground';
 import { FlipButton } from '@/__swaps__/screens/Swap/components/FlipButton';
 import { ExchangeRateBubble } from '@/__swaps__/screens/Swap/components/ExchangeRateBubble';
@@ -16,6 +16,8 @@ import { SwapInputAsset } from '@/__swaps__/screens/Swap/components/controls/Swa
 import { SwapOutputAsset } from '@/__swaps__/screens/Swap/components/controls/SwapOutputAsset';
 import { SwapNavbar } from '@/__swaps__/screens/Swap/components/SwapNavbar';
 import { SwapAmountInputs } from '@/__swaps__/screens/Swap/components/controls/SwapAmountInputs';
+import { SwapActions } from '@/__swaps__/screens/Swap/components/controls/SwapActions';
+import { SwapWarning } from './components/SwapWarning';
 
 /** README
  * This prototype is largely driven by Reanimated and Gesture Handler, which
@@ -56,19 +58,26 @@ import { SwapAmountInputs } from '@/__swaps__/screens/Swap/components/controls/S
 
 export function SwapScreen() {
   return (
-    <SheetGestureBlocker>
+    <SwapSheetGestureBlocker>
       <Box as={Page} style={styles.rootViewBackground} testID="swap-screen" width="full">
         <SwapBackground />
         <Box alignItems="center" height="full" paddingTop={{ custom: safeAreaInsetValues.top + (navbarHeight - 12) + 29 }} width="full">
           <SwapInputAsset />
           <FlipButton />
           <SwapOutputAsset />
-          <ExchangeRateBubble />
+          <Box width="full" position="absolute" bottom="0px">
+            <SwapAmountInputs />
+            <SwapActions />
+          </Box>
+          <Box alignItems="center" justifyContent="center" style={{ position: 'relative' }}>
+            <ExchangeRateBubble />
+            <SwapWarning />
+          </Box>
           <SwapAmountInputs />
         </Box>
         <SwapNavbar />
       </Box>
-    </SheetGestureBlocker>
+    </SwapSheetGestureBlocker>
   );
 }
 

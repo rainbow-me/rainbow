@@ -110,6 +110,8 @@ export const globalColors = {
   blueGrey80: '#5F6670',
   blueGrey90: '#3C4047',
   blueGrey100: '#242529',
+
+  darkGrey: '#9CA6B1',
 };
 
 export const deprecatedColors = {
