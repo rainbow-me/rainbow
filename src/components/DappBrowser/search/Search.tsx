@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { SearchResults } from './results/SearchResults';
 import { SearchBar } from './bar/SearchBar';
-import { useAnimatedRef, useSharedValue } from 'react-native-reanimated';
-import { TextInput } from 'react-native';
 import { SearchContextProvider } from './SearchContext';
+import { DappsContextProvider } from '@/resources/metadata/dapps';
 
 export const Search = () => (
   <SearchContextProvider>
-    <SearchResults />
+    <DappsContextProvider>
+      <SearchResults />
+    </DappsContextProvider>
     <SearchBar />
   </SearchContextProvider>
 );

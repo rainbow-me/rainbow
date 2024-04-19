@@ -16,15 +16,13 @@ export const SEARCH_BAR_HEIGHT = 88;
 export const SearchBar = () => {
   const { width: deviceWidth } = useDimensions();
   const { tabViewProgress, tabViewVisible } = useBrowserContext();
-  const { inputRef, isFocused, setIsFocused } = useSearchContext();
+  const { isFocused } = useSearchContext();
 
-  const isFocusedValue = useSharedValue(false);
-
-  const keyboardHeight = useKeyboardHeight({ shouldListen: isFocused });
+  const keyboardHeight = useKeyboardHeight({ shouldListen: true });
 
   const accountIconStyle = useAnimatedStyle(() => ({
-    opacity: withSpring(isFocusedValue.value ? 0 : 1, SPRING_CONFIGS.keyboardConfig),
-    pointerEvents: isFocusedValue.value ? 'none' : 'auto',
+    opacity: withSpring(isFocused?.value ? 0 : 1, SPRING_CONFIGS.keyboardConfig),
+    pointerEvents: isFocused?.value ? 'none' : 'auto',
   }));
 
   const barStyle = useAnimatedStyle(() => {
@@ -32,7 +30,7 @@ export const SearchBar = () => {
 
     return {
       opacity: 1 - progress / 75,
-      paddingLeft: withSpring(isFocusedValue.value ? 16 : 72, SPRING_CONFIGS.keyboardConfig),
+      paddingLeft: withSpring(isFocused?.value ? 16 : 72, SPRING_CONFIGS.keyboardConfig),
       pointerEvents: tabViewVisible?.value ? 'none' : 'auto',
       transform: [
         {
@@ -43,7 +41,7 @@ export const SearchBar = () => {
   });
 
   const bottomBarStyle = useAnimatedStyle(() => {
-    const translateY = isFocusedValue.value ? -(keyboardHeight - (IS_IOS ? 82 : 46)) : 0;
+    const translateY = isFocused?.value ? -(keyboardHeight - (IS_IOS ? 82 : 46)) : 0;
 
     return {
       transform: [
@@ -75,9 +73,9 @@ export const SearchBar = () => {
         </Box>
 
         <Box paddingRight="12px" style={{ flex: 1 }}>
-          <SearchInput isFocusedValue={isFocusedValue} />
+          <SearchInput />
         </Box>
-        <TabButton inputRef={inputRef} isFocused={isFocused} isFocusedValue={isFocusedValue} setIsFocused={setIsFocused} />
+        <TabButton />
       </Box>
     </Box>
   );

@@ -1,28 +1,23 @@
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/utils/swaps';
-import { Bleed, Box, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import { AnimatedText, Bleed, Box, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
 import position from '@/styles/position';
 import { BlurView } from '@react-native-community/blur';
 import React from 'react';
-import { TextInput } from 'react-native';
 import { BrowserButtonShadows } from '../../DappBrowserShadows';
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
-import { AnimatedRef, SharedValue, dispatchCommand, runOnJS } from 'react-native-reanimated';
+import Animated, { dispatchCommand, useAnimatedProps, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { useBrowserContext } from '../../BrowserContext';
+import { useSearchContext } from '../SearchContext';
+import { TextColor } from '@/design-system/color/palettes';
 
-export const TabButton = ({
-  inputRef,
-  isFocused,
-  isFocusedValue,
-  setIsFocused,
-}: {
-  inputRef: AnimatedRef<TextInput>;
-  isFocused: boolean;
-  isFocusedValue: SharedValue<boolean>;
-  setIsFocused: React.Dispatch<React.SetStateAction<boolean>>;
-}) => {
+const AnimatedBox = Animated.createAnimatedComponent(Box);
+const SuperAnimatedText = Animated.createAnimatedComponent(AnimatedText);
+
+export const TabButton = () => {
   const { toggleTabViewWorklet } = useBrowserContext();
+  const { inputRef, isFocused } = useSearchContext();
   const { isDarkMode } = useColorMode();
   const fillSecondary = useForegroundColor('fillSecondary');
   const separatorSecondary = useForegroundColor('separatorSecondary');
@@ -33,27 +28,29 @@ export const TabButton = ({
 
   const onPress = () => {
     'worklet';
-    if (!isFocusedValue.value) {
-      toggleTabViewWorklet();
-    } else {
-      runOnJS(setIsFocused)(false);
-      dispatchCommand(inputRef, 'blur');
+    if (isFocused) {
+      if (!isFocused.value) {
+        toggleTabViewWorklet();
+      } else {
+        isFocused.value = false;
+        dispatchCommand(inputRef, 'blur');
+      }
     }
   };
+
+  const animatedBoxStyle = useAnimatedStyle(() => ({ paddingTop: isFocused?.value ? 1 : undefined }));
+
+  const animatedText = useDerivedValue(() => (isFocused?.value ? '􀆈' : '􀐅'));
+  const animatedTextProps = useAnimatedProps(() => ({ color: isFocused?.value ? 'labelSecondary' : 'label' }));
 
   return (
     <BrowserButtonShadows>
       <Bleed space="8px">
         <GestureHandlerV1Button onPressWorklet={onPress} style={{ padding: 8 }}>
-          <Box
-            borderRadius={22}
-            style={{ height: 44, paddingTop: isFocused ? 1 : undefined, width: 44 }}
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Text align="center" color={isFocused ? 'labelSecondary' : 'label'} size="icon 17px" weight="heavy">
-              {isFocused ? '􀆈' : '􀐅'}
-            </Text>
+          <AnimatedBox borderRadius={22} style={[animatedBoxStyle, { height: 44, width: 44 }]} alignItems="center" justifyContent="center">
+            <AnimatedText align="center" color="label" size="icon 17px" weight="heavy">
+              {animatedText}
+            </AnimatedText>
             {IS_IOS && (
               <Box
                 as={BlurView}
@@ -81,7 +78,7 @@ export const TabButton = ({
                 position.coverAsObject,
               ]}
             />
-          </Box>
+          </AnimatedBox>
         </GestureHandlerV1Button>
       </Bleed>
     </BrowserButtonShadows>

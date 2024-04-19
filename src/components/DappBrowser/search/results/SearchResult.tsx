@@ -12,18 +12,11 @@ import { useDimensions } from '@/hooks';
 
 const AnimatedFasterImage = Animated.createAnimatedComponent(FasterImageView);
 
-export const SearchResult = ({
-  index,
-  searchResults,
-  navigateToUrl,
-}: {
-  index: number;
-  searchResults: SharedValue<Dapp[]>;
-  navigateToUrl: (url: string) => void;
-}) => {
+export const SearchResult = ({ index, navigateToUrl }: { index: number; navigateToUrl: (url: string) => void }) => {
+  const { searchResults } = useSearchContext();
   const { width: deviceWidth } = useDimensions();
 
-  const dapp: SharedValue<Dapp | undefined> = useDerivedValue(() => searchResults.value[index]);
+  const dapp: SharedValue<Dapp | undefined> = useDerivedValue(() => searchResults?.value[index]);
   const name: SharedValue<string | undefined> = useDerivedValue(() => dapp.value?.name);
   const url: SharedValue<string | undefined> = useDerivedValue(() => dapp.value?.url);
   const urlDisplay: SharedValue<string | undefined> = useDerivedValue(() => dapp.value?.urlDisplay);
@@ -31,7 +24,7 @@ export const SearchResult = ({
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      display: searchResults.value[index] ? 'flex' : 'none',
+      display: dapp.value ? 'flex' : 'none',
     };
   });
 

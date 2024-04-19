@@ -1,34 +1,21 @@
-import React, { createContext, useCallback, useContext, useRef, useState } from 'react';
+import React, { createContext, useContext } from 'react';
 import { TextInput } from 'react-native';
-import isEqual from 'react-fast-compare';
-import { MMKV, useMMKVObject } from 'react-native-mmkv';
-import Animated, {
-  AnimatedRef,
-  SharedValue,
-  runOnJS,
-  runOnUI,
-  useAnimatedReaction,
-  useAnimatedRef,
-  useScrollViewOffset,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
+import { AnimatedRef, SharedValue, useAnimatedRef, useSharedValue } from 'react-native-reanimated';
+import { Dapp } from '@/resources/metadata/dapps';
 
 interface SearchContextType {
   searchQuery: SharedValue<string> | undefined;
+  searchResults: SharedValue<Dapp[]> | undefined;
   inputRef: AnimatedRef<TextInput>;
-  isFocused: boolean;
-  setIsFocused: React.Dispatch<React.SetStateAction<boolean>>;
+  isFocused: SharedValue<boolean> | undefined;
 }
 
 const DEFAULT_SEARCH_CONTEXT: SearchContextType = {
   searchQuery: undefined,
+  searchResults: undefined,
   // @ts-expect-error Explicitly allowing null/undefined on the AnimatedRef causes type issues
   inputRef: { current: null },
-  isFocused: false,
-  setIsFocused: () => {
-    return;
-  },
+  isFocused: undefined,
 };
 
 const SearchContext = createContext<SearchContextType>(DEFAULT_SEARCH_CONTEXT);
@@ -37,16 +24,17 @@ export const useSearchContext = () => useContext(SearchContext);
 
 export const SearchContextProvider = ({ children }: { children: React.ReactNode }) => {
   const searchQuery = useSharedValue<string>('');
+  const searchResults = useSharedValue<Dapp[]>([]);
   const inputRef = useAnimatedRef<TextInput>();
-  const [isFocused, setIsFocused] = useState<boolean>(false);
+  const isFocused = useSharedValue<boolean>(false);
 
   return (
     <SearchContext.Provider
       value={{
         searchQuery,
+        searchResults,
         inputRef,
         isFocused,
-        setIsFocused,
       }}
     >
       {children}

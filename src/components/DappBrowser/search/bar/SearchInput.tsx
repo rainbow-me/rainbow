@@ -5,6 +5,7 @@ import Animated, {
   SharedValue,
   dispatchCommand,
   runOnJS,
+  useAnimatedProps,
   useAnimatedStyle,
   useDerivedValue,
   withSpring,
@@ -34,8 +35,10 @@ import { GOOGLE_SEARCH_URL, HTTP, HTTPS, RAINBOW_HOME } from '../../constants';
 import { useSearchContext } from '../SearchContext';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
+const AnimatedGestureHandlerV1Button = Animated.createAnimatedComponent(GestureHandlerV1Button);
+const AnimatedFadeMask = Animated.createAnimatedComponent(React.forwardRef(FadeMask));
 
-export const SearchInput = ({ isFocusedValue }: { isFocusedValue: SharedValue<boolean> }) => {
+export const SearchInput = () => {
   const {
     activeTabIndex,
     animatedActiveTabIndex,
@@ -47,7 +50,7 @@ export const SearchInput = ({ isFocusedValue }: { isFocusedValue: SharedValue<bo
     tabViewProgress,
     updateActiveTabState,
   } = useBrowserContext();
-  const { inputRef, isFocused, setIsFocused, searchQuery } = useSearchContext();
+  const { inputRef, isFocused, searchQuery, searchResults } = useSearchContext();
   const { isFavorite, addFavorite, removeFavorite } = useFavoriteDappsStore();
   const { isDarkMode } = useColorMode();
 
@@ -90,16 +93,16 @@ export const SearchInput = ({ isFocusedValue }: { isFocusedValue: SharedValue<bo
   }));
 
   const buttonWrapperStyle = useAnimatedStyle(() => ({
-    pointerEvents: isFocusedValue.value ? 'auto' : 'box-only',
+    pointerEvents: isFocused?.value ? 'auto' : 'box-only',
   }));
 
   const inputStyle = useAnimatedStyle(() => ({
-    opacity: isFocusedValue.value ? withSpring(1, SPRING_CONFIGS.keyboardConfig) : withTiming(0, TIMING_CONFIGS.fadeConfig),
-    pointerEvents: isFocusedValue.value ? 'auto' : 'none',
+    opacity: isFocused?.value ? withSpring(1, SPRING_CONFIGS.keyboardConfig) : withTiming(0, TIMING_CONFIGS.fadeConfig),
+    pointerEvents: isFocused?.value ? 'auto' : 'none',
   }));
 
   const formattedInputStyle = useAnimatedStyle(() => ({
-    opacity: isFocusedValue.value ? withTiming(0, TIMING_CONFIGS.fadeConfig) : withSpring(1, SPRING_CONFIGS.keyboardConfig),
+    opacity: isFocused?.value ? withTiming(0, TIMING_CONFIGS.fadeConfig) : withSpring(1, SPRING_CONFIGS.keyboardConfig),
   }));
 
   const hideFormattedUrlWhenTabChanges = useAnimatedStyle(() => ({
@@ -108,10 +111,10 @@ export const SearchInput = ({ isFocusedValue }: { isFocusedValue: SharedValue<bo
 
   const toolbarIconStyle = useAnimatedStyle(() => ({
     opacity:
-      isHome || isFocusedValue.value || !formattedUrlValue.value
+      isHome || isFocused?.value || !formattedUrlValue.value
         ? withTiming(0, TIMING_CONFIGS.fadeConfig)
         : withSpring(1, SPRING_CONFIGS.keyboardConfig),
-    pointerEvents: isHome || isFocusedValue.value || !formattedUrlValue.value ? 'none' : 'auto',
+    pointerEvents: isHome || isFocused?.value || !formattedUrlValue.value ? 'none' : 'auto',
   }));
 
   const handleFavoritePress = useCallback(() => {
@@ -199,7 +202,7 @@ export const SearchInput = ({ isFocusedValue }: { isFocusedValue: SharedValue<bo
     (event: NativeSyntheticEvent<TextInputSubmitEditingEventData>) => {
       inputRef.current?.blur();
 
-      let newUrl = event.nativeEvent.text;
+      let newUrl = searchResults?.value?.[0]?.url ?? event.nativeEvent.text;
 
       if (!isValidURL(newUrl)) {
         newUrl = GOOGLE_SEARCH_URL + newUrl;
@@ -213,34 +216,35 @@ export const SearchInput = ({ isFocusedValue }: { isFocusedValue: SharedValue<bo
         onRefresh();
       }
     },
-    [inputRef, onRefresh, tabId, updateActiveTabState, url]
+    [inputRef, onRefresh, searchResults, tabId, updateActiveTabState, url]
   );
 
   const onPressWorklet = () => {
     'worklet';
+    console.log('???');
     if (searchQuery) {
       searchQuery.value = url === RAINBOW_HOME ? '' : url;
     }
-    isFocusedValue.value = true;
+    if (isFocused) {
+      isFocused.value = true;
+    }
     if (searchViewProgress !== undefined) {
       searchViewProgress.value = withSpring(1, SPRING_CONFIGS.snappierSpringConfig);
     }
-    runOnJS(setIsFocused)(true);
     dispatchCommand(inputRef, 'focus');
   };
 
   const onBlur = useCallback(() => {
     // if (searchQuery) {
-    //   searchQuery.value = '';
+    //   searchQuery.value = '';\
     // }
-    if (isFocused) {
-      setIsFocused(false);
-    }
     if (searchViewProgress !== undefined) {
       searchViewProgress.value = withSpring(0, SPRING_CONFIGS.snappierSpringConfig);
     }
-    isFocusedValue.value = false;
-  }, [isFocused, isFocusedValue, searchViewProgress, setIsFocused]);
+    if (isFocused) {
+      isFocused.value ??= false;
+    }
+  }, [isFocused, searchViewProgress]);
 
   const onChange = useCallback(
     (event: NativeSyntheticEvent<TextInputChangeEventData>) => {
@@ -249,11 +253,20 @@ export const SearchInput = ({ isFocusedValue }: { isFocusedValue: SharedValue<bo
     [searchQuery]
   );
 
+  const animatedGestureHandlerV1ButtonProps = useAnimatedProps(() => ({
+    disabled: isFocused?.value,
+  }));
+
+  const animatedFadeMaskProps = useAnimatedProps(() => ({
+    fadeEdgeInset: isFocused?.value || !inputValue ? 0 : 36,
+    fadeWidth: isFocused?.value || !inputValue ? 0 : 12,
+  }));
+
   return (
     <BrowserButtonShadows>
       <Box as={Animated.View} justifyContent="center" style={pointerEventsStyle}>
-        <GestureHandlerV1Button
-          disabled={isFocused}
+        <AnimatedGestureHandlerV1Button
+          animatedProps={animatedGestureHandlerV1ButtonProps}
           onPressWorklet={onPressWorklet}
           scaleTo={0.965}
           style={[
@@ -266,14 +279,7 @@ export const SearchInput = ({ isFocusedValue }: { isFocusedValue: SharedValue<bo
           ]}
         >
           <MaskedView
-            maskElement={
-              <FadeMask
-                fadeEdgeInset={isFocused || !inputValue ? 0 : 36}
-                fadeWidth={isFocused || !inputValue ? 0 : 12}
-                height={48}
-                side="right"
-              />
-            }
+            maskElement={<AnimatedFadeMask animatedProps={animatedFadeMaskProps} height={48} side="right" />}
             style={{
               alignItems: 'center',
               flex: 1,
@@ -351,7 +357,7 @@ export const SearchInput = ({ isFocusedValue }: { isFocusedValue: SharedValue<bo
             ]}
             width="full"
           />
-        </GestureHandlerV1Button>
+        </AnimatedGestureHandlerV1Button>
         <Box as={Animated.View} left="0px" position="absolute" style={toolbarIconStyle}>
           <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={onPressMenuItem}>
             <ToolbarIcon

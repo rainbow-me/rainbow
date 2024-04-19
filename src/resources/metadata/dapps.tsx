@@ -2,6 +2,7 @@ import { formatUrl } from '@/components/DappBrowser/utils';
 import { metadataClient } from '@/graphql';
 import { createQueryKey } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
+import React, { createContext, useContext } from 'react';
 
 export type Dapp = {
   name: string;
@@ -27,6 +28,7 @@ export type Dapp = {
 const QUERY_KEY = createQueryKey('dApps', {}, { persisterVersion: 1 });
 
 export function useDapps(): { dapps: Dapp[] } {
+  console.log('useDapps');
   const query = useQuery<Dapp[]>(
     QUERY_KEY,
     async () => {
@@ -63,3 +65,20 @@ export function useDapps(): { dapps: Dapp[] } {
   );
   return { dapps: query.data ?? [] };
 }
+
+interface DappsContextType {
+  dapps: Dapp[];
+}
+
+const DEFAULT_DAPPS_CONTEXT: DappsContextType = {
+  dapps: [],
+};
+
+const DappsContext = createContext<DappsContextType>(DEFAULT_DAPPS_CONTEXT);
+
+export const useDappsContext = () => useContext(DappsContext);
+
+export const DappsContextProvider = ({ children }: { children: React.ReactNode }) => {
+  const { dapps } = useDapps();
+  return <DappsContext.Provider value={{ dapps }}>{children}</DappsContext.Provider>;
+};

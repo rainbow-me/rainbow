@@ -1,12 +1,12 @@
 import React, { useCallback } from 'react';
 import { ScrollView } from 'react-native';
-import Animated, { useAnimatedReaction, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import Animated, { useAnimatedReaction, useAnimatedStyle } from 'react-native-reanimated';
 import { Box, Inline, Inset, Stack, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
 import { useBrowserContext } from '../../BrowserContext';
 import { normalizeUrl } from '../../utils';
 import { ButtonPressAnimation } from '@/components/animations';
 import { GoogleSearchResult, SearchResult } from './SearchResult';
-import { Dapp, useDapps } from '@/resources/metadata/dapps';
+import { Dapp, useDapps, useDappsContext } from '@/resources/metadata/dapps';
 import { useKeyboardHeight } from '@/hooks';
 import { SEARCH_BAR_HEIGHT } from '../bar/SearchBar';
 import { useSearchContext } from '../SearchContext';
@@ -62,11 +62,10 @@ const search = (query: string, dapps: Dapp[]) => {
 export const SearchResults = () => {
   const { isDarkMode } = useColorMode();
   const { searchViewProgress, updateActiveTabState } = useBrowserContext();
-  const { isFocused, inputRef, searchQuery } = useSearchContext();
-  const { dapps } = useDapps();
-  const keyboardHeight = useKeyboardHeight({ shouldListen: isFocused });
+  const { isFocused, inputRef, searchQuery, searchResults } = useSearchContext();
+  const { dapps } = useDappsContext();
 
-  const searchResults = useSharedValue<Dapp[]>([]);
+  const keyboardHeight = useKeyboardHeight({ shouldListen: true });
 
   const backgroundStyle = useAnimatedStyle(() => ({
     opacity: searchViewProgress?.value || 0,
@@ -89,7 +88,7 @@ export const SearchResults = () => {
     () => searchQuery?.value ?? '',
     (result, previous) => {
       if (result !== previous) {
-        searchResults.modify(value => {
+        searchResults?.modify(value => {
           const results = search(result, dapps).slice(0, 6);
           value.splice(0, value.length);
           value.push(...results);
@@ -104,11 +103,11 @@ export const SearchResults = () => {
   }));
 
   const moreResultsAnimatedStyle = useAnimatedStyle(() => ({
-    display: searchResults.value.length ? 'flex' : 'none',
+    display: searchResults?.value.length ? 'flex' : 'none',
   }));
 
   const suggestedGoogleSearchAnimatedStyle = useAnimatedStyle(() => ({
-    display: searchResults.value.length ? 'none' : 'flex',
+    display: searchResults?.value.length ? 'none' : 'flex',
   }));
 
   return (
@@ -162,7 +161,7 @@ export const SearchResults = () => {
                   </Inline>
                 </Inset>
                 <Box>
-                  <SearchResult index={0} searchResults={searchResults} navigateToUrl={navigateToUrl} />
+                  <SearchResult index={0} navigateToUrl={navigateToUrl} />
                   <Animated.View style={suggestedGoogleSearchAnimatedStyle}>
                     <GoogleSearchResult navigateToUrl={navigateToUrl} />
                   </Animated.View>
@@ -182,11 +181,11 @@ export const SearchResults = () => {
                   </Inset>
                   <Box gap={4}>
                     <GoogleSearchResult navigateToUrl={navigateToUrl} />
-                    <SearchResult index={1} searchResults={searchResults} navigateToUrl={navigateToUrl} />
-                    <SearchResult index={2} searchResults={searchResults} navigateToUrl={navigateToUrl} />
-                    <SearchResult index={3} searchResults={searchResults} navigateToUrl={navigateToUrl} />
-                    <SearchResult index={4} searchResults={searchResults} navigateToUrl={navigateToUrl} />
-                    <SearchResult index={5} searchResults={searchResults} navigateToUrl={navigateToUrl} />
+                    <SearchResult index={1} navigateToUrl={navigateToUrl} />
+                    <SearchResult index={2} navigateToUrl={navigateToUrl} />
+                    <SearchResult index={3} navigateToUrl={navigateToUrl} />
+                    <SearchResult index={4} navigateToUrl={navigateToUrl} />
+                    <SearchResult index={5} navigateToUrl={navigateToUrl} />
                   </Box>
                 </Stack>
               </Animated.View>
