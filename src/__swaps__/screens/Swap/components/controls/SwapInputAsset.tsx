@@ -17,9 +17,9 @@ import { TokenList } from '@/__swaps__/screens/Swap/components/TokenList/TokenLi
 import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { IS_ANDROID } from '@/env';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { ethereumUtils } from '@/utils';
 import { useAssetsToSell } from '@/__swaps__/screens/Swap/hooks/useAssetsToSell';
 import { isSameAssetWorklet } from '@/__swaps__/utils/assets';
+import { ethereumUtils } from '@/utils';
 
 function SwapInputActionButton() {
   const { isDarkMode } = useColorMode();
