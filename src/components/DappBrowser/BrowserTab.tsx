@@ -319,7 +319,6 @@ export const BrowserTab = React.memo(
 
           // detected logo change
           if (logo.current && tabState.logoUrl !== logo.current) {
-            console.log('detected logo change', { before: tabState.logoUrl, after: logo.current });
             newState.logoUrl = logo.current;
           }
 
