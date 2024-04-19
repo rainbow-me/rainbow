@@ -6,13 +6,14 @@ import { inputKeys } from '@/__swaps__/types/swap';
 import { INITIAL_SLIDER_POSITION, SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { useAnimatedSwapStyles } from '@/__swaps__/screens/Swap/hooks/useAnimatedSwapStyles';
 import { useSwapTextStyles } from '@/__swaps__/screens/Swap/hooks/useSwapTextStyles';
-import { useSwapNavigation } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
+import { useSwapNavigation, NavigationSteps } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
 import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
 import { useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 
 interface SwapContextType {
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
+  reviewProgress: SharedValue<number>;
   sliderXPosition: SharedValue<number>;
   sliderPressProgress: SharedValue<number>;
   focusedInput: SharedValue<inputKeys>;
@@ -36,8 +37,9 @@ interface SwapProviderProps {
 
 export const SwapProvider = ({ children }: SwapProviderProps) => {
   const isFetching = useSharedValue(false);
-  const inputProgress = useSharedValue(0);
-  const outputProgress = useSharedValue(0);
+  const inputProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
+  const outputProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
+  const reviewProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
   const sliderXPosition = useSharedValue(SLIDER_WIDTH * INITIAL_SLIDER_POSITION);
   const sliderPressProgress = useSharedValue(SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT);
   const focusedInput = useSharedValue<inputKeys>('inputAmount');
@@ -45,6 +47,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const SwapNavigation = useSwapNavigation({
     inputProgress,
     outputProgress,
+    reviewProgress,
   });
 
   const SwapInputController = useSwapInputsController({
@@ -62,7 +65,14 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     isFetching,
   });
 
-  const AnimatedSwapStyles = useAnimatedSwapStyles({ SwapInputController, SwapWarning, inputProgress, outputProgress, isFetching });
+  const AnimatedSwapStyles = useAnimatedSwapStyles({
+    SwapInputController,
+    SwapWarning,
+    inputProgress,
+    outputProgress,
+    reviewProgress,
+    isFetching,
+  });
   const SwapTextStyles = useSwapTextStyles({
     ...SwapInputController,
     focusedInput,
@@ -72,6 +82,11 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   });
 
   const confirmButtonIcon = useDerivedValue(() => {
+    const isReviewing = reviewProgress.value === NavigationSteps.SHOW_REVIEW;
+    if (isReviewing) {
+      return '􀎽';
+    }
+
     const isInputZero = Number(SwapInputController.inputValues.value.inputAmount) === 0;
     const isOutputZero = Number(SwapInputController.inputValues.value.outputAmount) === 0;
 
@@ -85,6 +100,11 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   });
 
   const confirmButtonLabel = useDerivedValue(() => {
+    const isReviewing = reviewProgress.value === NavigationSteps.SHOW_REVIEW;
+    if (isReviewing) {
+      return 'Hold to Swap';
+    }
+
     const isInputZero = Number(SwapInputController.inputValues.value.inputAmount) === 0;
     const isOutputZero = Number(SwapInputController.inputValues.value.outputAmount) === 0;
 
@@ -118,6 +138,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       value={{
         inputProgress,
         outputProgress,
+        reviewProgress,
         sliderXPosition,
         sliderPressProgress,
         focusedInput,
@@ -144,3 +165,5 @@ export const useSwapContext = () => {
   }
   return context;
 };
+
+export { NavigationSteps };

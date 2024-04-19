@@ -12,7 +12,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { Box, Columns, HitSlop, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
-import { stripCommas } from '@/__swaps__/utils/swaps';
+import { opacity, stripCommas } from '@/__swaps__/utils/swaps';
 import {
   CUSTOM_KEYBOARD_HEIGHT,
   LIGHT_SEPARATOR_COLOR,
@@ -21,17 +21,18 @@ import {
   SEPARATOR_COLOR,
   THICK_BORDER_WIDTH,
   buttonPressConfig,
+  fadeConfig,
 } from '@/__swaps__/screens/Swap/constants';
 import { LongPressGestureHandler, LongPressGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 import { ButtonPressAnimation } from '@/components/animations';
 import { colors } from '@/styles';
-import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 
 type numberPadCharacter = number | 'backspace' | '.';
 
 export const SwapNumberPad = () => {
   const { isDarkMode } = useColorMode();
-  const { focusedInput, SwapInputController } = useSwapContext();
+  const { focusedInput, SwapInputController, reviewProgress } = useSwapContext();
 
   const longPressTimer = useSharedValue(0);
 
@@ -133,8 +134,14 @@ export const SwapNumberPad = () => {
     }
   };
 
+  const numpadContainerStyles = useAnimatedStyle(() => {
+    return {
+      opacity: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? withTiming(0, fadeConfig) : withTiming(1, fadeConfig),
+    };
+  });
+
   return (
-    <Box height={{ custom: CUSTOM_KEYBOARD_HEIGHT }} paddingHorizontal="6px" width="full">
+    <Box as={Animated.View} style={numpadContainerStyles} height={{ custom: CUSTOM_KEYBOARD_HEIGHT }} paddingHorizontal="6px" width="full">
       <Box style={{ gap: 6 }} width="full">
         <Separator
           color={{

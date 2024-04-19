@@ -1027,7 +1027,10 @@ export function useSwapInputsController({
       assetToSell: assetToSell.value,
     }),
     (current, previous) => {
-      if (previous?.assetToSell !== current.assetToSell || previous?.assetToBuy !== current.assetToBuy) {
+      if (
+        (current.assetToBuy || current.assetToSell) &&
+        (previous?.assetToSell !== current.assetToSell || previous?.assetToBuy !== current.assetToBuy)
+      ) {
         runOnJS(fetchAssetPrices)({
           assetToSell: current.assetToSell,
           assetToBuy: current.assetToBuy,
