@@ -145,9 +145,6 @@ export function useAnimatedSwapStyles({
         reviewProgress.value === NavigationSteps.SHOW_REVIEW
           ? opacityWorklet(globalColors.darkGrey, 0.2)
           : opacityWorklet(SwapInputController.bottomColor.value, 0.04),
-      borderTopWidth: THICK_BORDER_WIDTH,
-      borderCurve: 'continuous',
-      paddingBottom: IS_ANDROID ? getSoftMenuBarHeight() - 24 : safeAreaInsetValues.bottom + 16,
       paddingTop: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 28 : 16 - THICK_BORDER_WIDTH,
     };
   });
