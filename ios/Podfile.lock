@@ -1394,8 +1394,8 @@ SPEC CHECKSUMS:
   RSCrashReporter: 6b8376ac729b0289ebe0908553e5f56d8171f313
   Rudder: 2cb1d3feabeb46cf0b34921e99d464cd8a5dbc5f
   RudderKit: f272f9872183946452ac94cd7bb2244a71e6ca8f
-  SDWebImage: a3ba0b8faac7228c3c8eadd1a55c9c9fe5e16457
-  SDWebImageWebPCoder: c94f09adbca681822edad9e532ac752db713eabf
+  SDWebImage: 2d6d229046fea284d62e36bfb8ebe8287dfc5b10
+  SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   Sentry: 2f6baed15a3f8056b875fc903dc3dcb2903117f4
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
