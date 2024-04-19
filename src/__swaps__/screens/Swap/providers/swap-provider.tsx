@@ -8,9 +8,11 @@ import { useAnimatedSwapStyles } from '@/__swaps__/screens/Swap/hooks/useAnimate
 import { useSwapTextStyles } from '@/__swaps__/screens/Swap/hooks/useSwapTextStyles';
 import { useSwapNavigation, NavigationSteps } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
 import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
+import { UserAssetFilter } from '@/__swaps__/types/assets';
 import { useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 
 interface SwapContextType {
+  userAssetFilter: SharedValue<UserAssetFilter>;
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
   configProgress: SharedValue<number>;
@@ -43,6 +45,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const sliderXPosition = useSharedValue(SLIDER_WIDTH * INITIAL_SLIDER_POSITION);
   const sliderPressProgress = useSharedValue(SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT);
   const focusedInput = useSharedValue<inputKeys>('inputAmount');
+
+  const userAssetFilter = useSharedValue<UserAssetFilter>('all');
 
   const SwapNavigation = useSwapNavigation({
     inputProgress,
@@ -136,6 +140,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   return (
     <SwapContext.Provider
       value={{
+        userAssetFilter,
         inputProgress,
         outputProgress,
         configProgress,

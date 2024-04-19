@@ -19,24 +19,12 @@ export function selectUserAssetsDictByChain(assets: ParsedAssetsDictByChain) {
   return assets;
 }
 
-export function selectUserAssetsListByChainId(assets: ParsedAssetsDictByChain) {
-  const assetsByNetwork = [
-    assets?.[ChainId.mainnet],
-    assets?.[ChainId.optimism],
-    assets?.[ChainId.polygon],
-    assets?.[ChainId.arbitrum],
-    assets?.[ChainId.base],
-    assets?.[ChainId.zora],
-    assets?.[ChainId.bsc],
-    assets?.[ChainId.avalanche],
-  ].flat();
-  return assetsByNetwork
-    .map(chainAssets =>
-      Object.values(chainAssets).sort(
-        (a: ParsedUserAsset, b: ParsedUserAsset) => parseFloat(b?.native?.balance?.amount) - parseFloat(a?.native?.balance?.amount)
-      )
-    )
-    .flat();
+export function selectUserAssetsListByChainId(chainId: ChainId, assets: ParsedAssetsDictByChain) {
+  const assetsForChain = assets?.[chainId];
+  if (!assetsForChain) return [];
+  return Object.values(assetsForChain).sort(
+    (a: ParsedUserAsset, b: ParsedUserAsset) => parseFloat(b?.native?.balance?.amount) - parseFloat(a?.native?.balance?.amount)
+  );
 }
 
 export function selectUserAssetAddressMapByChainId(assets: ParsedAssetsDictByChain) {

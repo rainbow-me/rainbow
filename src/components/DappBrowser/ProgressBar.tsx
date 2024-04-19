@@ -4,10 +4,11 @@ import Animated, { SharedValue, useAnimatedStyle, withSpring, withTiming } from 
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box } from '@/design-system';
 import { useAccountAccentColor } from '@/hooks';
-import { deviceUtils, safeAreaInsetValues } from '@/utils';
+import { deviceUtils } from '@/utils';
 import { useBrowserContext } from './BrowserContext';
-import { WEBVIEW_HEIGHT } from './Dimensions';
+import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 
+const ProgressBarTopPosition = TAB_BAR_HEIGHT;
 export const ProgressBar = ({ tabViewVisible }: { tabViewVisible: SharedValue<boolean> }) => {
   const { accentColor } = useAccountAccentColor();
   const { loadProgress } = useBrowserContext();
@@ -23,7 +24,7 @@ export const ProgressBar = ({ tabViewVisible }: { tabViewVisible: SharedValue<bo
   }));
 
   return (
-    <Box as={Animated.View} style={[styles.progressBar, styles.centerAlign]}>
+    <Box as={Animated.View} style={[styles.progressBar, styles.centerAlign, { bottom: ProgressBarTopPosition }]}>
       <Box
         as={Animated.View}
         style={[progressBarStyle, { backgroundColor: accentColor }, styles.progressBar, { position: 'relative', top: 0 }]}
@@ -40,7 +41,6 @@ const styles = StyleSheet.create({
   progressBar: {
     borderRadius: 1,
     height: 2,
-    top: WEBVIEW_HEIGHT + safeAreaInsetValues.top + 88 - 2,
     left: 0,
     width: deviceUtils.dimensions.width,
     pointerEvents: 'none',

@@ -117,6 +117,6 @@ export const styles = StyleSheet.create({
   swapActionsWrapper: {
     borderTopWidth: THICK_BORDER_WIDTH,
     borderCurve: 'continuous',
-    paddingBottom: IS_ANDROID ? getSoftMenuBarHeight() - 32 : safeAreaInsetValues.bottom + 16,
+    paddingBottom: IS_ANDROID ? getSoftMenuBarHeight() - 24 : safeAreaInsetValues.bottom + 16,
   },
 });

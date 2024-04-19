@@ -146,7 +146,6 @@ export function useAnimatedSwapStyles({
       borderTopRightRadius: isReviewingOrConfiguringGas ? (IS_ANDROID ? 20 : 40) : 0,
       borderWidth: isReviewingOrConfiguringGas ? THICK_BORDER_WIDTH : 0,
       borderColor: isReviewingOrConfiguringGas ? opacityWorklet(globalColors.darkGrey, 0.2) : undefined,
-      // TODO: Add mix here to mix bottom color with bg color for review / gas panels
       backgroundColor: opacityWorklet(SwapInputController.bottomColor.value, 0.03),
       borderTopColor: isReviewingOrConfiguringGas
         ? opacityWorklet(globalColors.darkGrey, 0.2)

@@ -1,69 +1,23 @@
-import { Contract } from '@ethersproject/contracts';
-import { useQuery } from '@tanstack/react-query';
-import { isEmpty, keys } from 'lodash';
-import { useCallback } from 'react';
-import { saveWalletBalances, WALLET_BALANCES_FROM_STORAGE } from '@/handlers/localstorage/walletBalances';
-import { web3Provider } from '@/handlers/web3';
 import { AllRainbowWallets } from '@/model/wallet';
-import { queryClient } from '@/react-query';
-import { balanceCheckerContractAbi } from '@/references';
-import { fromWei, handleSignificantDecimals } from '@/helpers/utilities';
-import logger from '@/utils/logger';
-import { useSelector } from 'react-redux';
-import { AppState } from '@/redux/store';
-import { getNetworkObj } from '@/networks';
-
-const ETH_ADDRESS = '0x0000000000000000000000000000000000000000';
+import { useMemo } from 'react';
+import { Address } from 'viem';
+import useAccountSettings from './useAccountSettings';
+import { useAddysSummary } from '@/resources/summary/summary';
 
 const useWalletBalances = (wallets: AllRainbowWallets) => {
-  const network = useSelector((state: AppState) => state.settings.network);
+  const { nativeCurrency } = useAccountSettings();
 
-  const fetchBalances = useCallback(async () => {
-    const walletBalances: { [address: string]: string } = {};
+  const walletAddresses: Address[] = useMemo(
+    () => Object.values(wallets).flatMap(wallet => wallet.addresses.map(account => account.address as Address)),
+    [wallets]
+  );
 
-    // Get list of addresses to get balances for
-    Object.values(wallets).forEach((wallet: any) => {
-      wallet.addresses.forEach((account: any) => {
-        walletBalances[account.address] = '0.00';
-      });
-    });
+  const { data, isLoading } = useAddysSummary({ addresses: walletAddresses, currency: nativeCurrency });
 
-    try {
-      // Check all the ETH balances at once
-      const balanceCheckerContract = new Contract(getNetworkObj(network).balanceCheckerAddress, balanceCheckerContractAbi, web3Provider);
-
-      const balances = await balanceCheckerContract.balances(keys(walletBalances), [ETH_ADDRESS]);
-
-      Object.keys(walletBalances).forEach((address, index) => {
-        const amountInETH = fromWei(balances[index].toString());
-        const formattedBalance = handleSignificantDecimals(amountInETH, 4);
-        walletBalances[address] = formattedBalance;
-      });
-      saveWalletBalances(walletBalances);
-    } catch (e) {
-      logger.log('Error fetching ETH balances in batch', e);
-    }
-
-    return walletBalances;
-  }, [network, wallets]);
-
-  const { data } = useQuery(['walletBalances'], fetchBalances, {
-    enabled: !isEmpty(wallets),
-  });
-
-  const resultFromStorage = queryClient.getQueryData<{
-    [address: string]: string;
-  }>([WALLET_BALANCES_FROM_STORAGE]);
-
-  if (isEmpty(data) && !isEmpty(resultFromStorage)) {
-    return resultFromStorage;
-  }
-
-  if (isEmpty(data)) {
-    return {};
-  }
-
-  return data;
+  return {
+    balances: data?.data?.addresses,
+    isLoading,
+  };
 };
 
 export default useWalletBalances;

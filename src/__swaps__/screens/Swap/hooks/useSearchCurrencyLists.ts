@@ -89,7 +89,6 @@ export function useSearchCurrencyLists({
   );
 
   const isCrosschainSearch = useMemo(() => {
-    console.log(inputChainId, toChainId);
     return inputChainId && inputChainId !== toChainId;
   }, [inputChainId, toChainId]);
 
@@ -190,14 +189,10 @@ export function useSearchCurrencyLists({
         if (token.address === ETH_ADDRESS) {
           return AddressZero;
         }
-        return token.mainnet_address ?? token.address;
+        return token.address;
       }
 
-      if (token.networks[chainId]) {
-        return token.networks[chainId].address;
-      }
-
-      return token.address;
+      return token.networks[chainId].address;
     };
 
     const unfilteredFavorites = Object.values(favorites)
