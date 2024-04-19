@@ -118,7 +118,7 @@ export const useSwapWarning = ({ SwapInputController, isFetching, sliderXPositio
             break;
           }
         }
-      } else if (!isFetching && !(quote as QuoteError).error && (!inputNativeValue || !outputNativeValue)) {
+      } else if (!isFetching && !(quote as QuoteError)?.error && (!inputNativeValue || !outputNativeValue)) {
         runOnUI(updateWarning)({
           type: SwapWarningType.unknown,
           display: i18n.t(i18n.l.exchange.price_impact.unknown_price.title),
