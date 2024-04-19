@@ -15,7 +15,6 @@ import { useFavoriteDappsStore } from '@/state/favoriteDapps';
 import { TrendingSite, trendingDapps } from '@/resources/trendingDapps/trendingDapps';
 import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
 import MaskedView from '@react-native-masked-view/masked-view';
-import { useBrowserContext } from './BrowserContext';
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { normalizeUrl } from './utils';
 import { Site, useBrowserHistoryStore } from '@/state/browserHistory';
@@ -35,8 +34,7 @@ const NUM_CARDS = 2;
 const CARD_PADDING = 12;
 const CARD_SIZE = (deviceUtils.dimensions.width - HORIZONTAL_PAGE_INSET * 2 - (NUM_CARDS - 1) * CARD_PADDING) / NUM_CARDS;
 
-const Card = ({ site, showMenuButton }: { showMenuButton?: boolean; site: TrendingSite }) => {
-  const { updateActiveTabState } = useBrowserContext();
+const Card = ({ site, showMenuButton, goToUrl }: { showMenuButton?: boolean; site: TrendingSite; goToUrl: (url: string) => void }) => {
   const { isDarkMode } = useColorMode();
 
   const menuConfig = {
@@ -74,7 +72,7 @@ const Card = ({ site, showMenuButton }: { showMenuButton?: boolean; site: Trendi
 
   return (
     <Box>
-      <GestureHandlerV1Button onPressJS={() => updateActiveTabState({ url: normalizeUrl(site.url) })} scaleTo={0.94}>
+      <GestureHandlerV1Button onPressJS={() => goToUrl(normalizeUrl(site.url))} scaleTo={0.94}>
         <Box
           background="surfacePrimary"
           borderRadius={24}
@@ -192,13 +190,12 @@ const Card = ({ site, showMenuButton }: { showMenuButton?: boolean; site: Trendi
   );
 };
 
-const Logo = ({ site }: { site: Omit<Site, 'timestamp'> }) => {
-  const { updateActiveTabState } = useBrowserContext();
+const Logo = ({ site, goToUrl }: { site: Omit<Site, 'timestamp'>; goToUrl: (url: string) => void }) => {
   const { isDarkMode } = useColorMode();
 
   return (
     <View style={{ width: LOGO_SIZE }}>
-      <GestureHandlerV1Button onPressJS={() => updateActiveTabState({ url: normalizeUrl(site.url) })}>
+      <GestureHandlerV1Button onPressJS={() => goToUrl(normalizeUrl(site.url))}>
         <Stack alignHorizontal="center">
           <Box>
             {IS_IOS && !site.image && (
@@ -264,7 +261,7 @@ const Logo = ({ site }: { site: Omit<Site, 'timestamp'> }) => {
   );
 };
 
-export default function Homepage() {
+export default function Homepage({ goToUrl }: { goToUrl: (url: string) => void }) {
   const { isDarkMode } = useColorMode();
   const { favoriteDapps } = useFavoriteDappsStore();
   const { getRecent } = useBrowserHistoryStore();
@@ -313,7 +310,7 @@ export default function Homepage() {
                 <Inset space="24px">
                   <Box flexDirection="row" gap={CARD_PADDING}>
                     {trendingDapps.map(site => (
-                      <Card key={site.url} site={site} />
+                      <Card key={site.url} site={site} goToUrl={goToUrl} />
                     ))}
                   </Box>
                 </Inset>
@@ -337,7 +334,7 @@ export default function Homepage() {
                 width={{ custom: deviceUtils.dimensions.width - HORIZONTAL_PAGE_INSET * 2 }}
               >
                 {favoriteDapps.map(dapp => (
-                  <Logo key={`${dapp.url}-${dapp.name}`} site={dapp} />
+                  <Logo key={`${dapp.url}-${dapp.name}`} site={dapp} goToUrl={goToUrl} />
                 ))}
               </Box>
             </Stack>
@@ -354,7 +351,7 @@ export default function Homepage() {
               </Inline>
               <Inline space={{ custom: CARD_PADDING }}>
                 {recent.map(site => (
-                  <Card key={site.url} site={site} showMenuButton />
+                  <Card key={site.url} site={site} showMenuButton goToUrl={goToUrl} />
                 ))}
               </Inline>
             </Stack>

@@ -1,63 +1,98 @@
 import { useCallback } from 'react';
 import { SharedValue } from 'react-native-reanimated';
 
+export const enum NavigationSteps {
+  INPUT_ELEMENT_FOCUSED = 0,
+  TOKEN_LIST_FOCUSED = 1,
+  SEARCH_FOCUSED = 2,
+  SHOW_GAS = 3,
+  SHOW_REVIEW = 4,
+}
+
 export function useSwapNavigation({
   inputProgress,
   outputProgress,
+  reviewProgress,
 }: {
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
+  reviewProgress: SharedValue<number>;
 }) {
-  // TODO: This can all be simplified
+  const handleShowReview = useCallback(() => {
+    'worklet';
+    if (reviewProgress.value !== NavigationSteps.SHOW_REVIEW) {
+      inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+      outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+      reviewProgress.value = NavigationSteps.SHOW_REVIEW;
+    }
+  }, [inputProgress, outputProgress, reviewProgress]);
+
+  const handleDismissReview = useCallback(() => {
+    'worklet';
+    if (reviewProgress.value === NavigationSteps.SHOW_REVIEW) {
+      reviewProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+    }
+  }, [reviewProgress]);
+
   const handleExitSearch = useCallback(() => {
     'worklet';
-    if (inputProgress.value === 1) {
-      inputProgress.value = 0;
+    handleDismissReview();
+
+    if (inputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED) {
+      inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
     }
-    if (outputProgress.value === 1) {
-      outputProgress.value = 0;
+    if (outputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED) {
+      outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
     }
-    if (inputProgress.value === 2) {
-      inputProgress.value = 1;
+    if (inputProgress.value === NavigationSteps.SEARCH_FOCUSED) {
+      inputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
     }
-    if (outputProgress.value === 2) {
-      outputProgress.value = 1;
+    if (outputProgress.value === NavigationSteps.SEARCH_FOCUSED) {
+      outputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
     }
-  }, [inputProgress, outputProgress]);
+  }, [handleDismissReview, inputProgress, outputProgress]);
 
   const handleFocusInputSearch = useCallback(() => {
     'worklet';
-    if (inputProgress.value !== 2) {
-      inputProgress.value = 2;
+    handleDismissReview();
+
+    if (inputProgress.value !== NavigationSteps.SEARCH_FOCUSED) {
+      inputProgress.value = NavigationSteps.SEARCH_FOCUSED;
     }
-  }, [inputProgress]);
+  }, [handleDismissReview, inputProgress]);
 
   const handleFocusOutputSearch = useCallback(() => {
     'worklet';
-    if (outputProgress.value !== 2) {
-      outputProgress.value = 2;
+    handleDismissReview();
+
+    if (outputProgress.value !== NavigationSteps.SEARCH_FOCUSED) {
+      outputProgress.value = NavigationSteps.SEARCH_FOCUSED;
     }
-  }, [outputProgress]);
+  }, [handleDismissReview, outputProgress]);
 
   const handleInputPress = useCallback(() => {
     'worklet';
-    if (inputProgress.value === 0) {
-      inputProgress.value = 1;
-      outputProgress.value = 0;
+    handleDismissReview();
+
+    if (inputProgress.value === NavigationSteps.INPUT_ELEMENT_FOCUSED) {
+      inputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
+      outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
     } else {
-      inputProgress.value = 0;
+      inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
     }
-  }, [inputProgress, outputProgress]);
+  }, [handleDismissReview, inputProgress, outputProgress]);
 
   const handleOutputPress = useCallback(() => {
     'worklet';
-    if (outputProgress.value === 0) {
-      outputProgress.value = 1;
-      inputProgress.value = 0;
+    handleDismissReview();
+
+    if (outputProgress.value === NavigationSteps.INPUT_ELEMENT_FOCUSED) {
+      outputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
+      inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
     } else {
-      outputProgress.value = 0;
+      outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
     }
-  }, [inputProgress, outputProgress]);
+  }, [handleDismissReview, inputProgress, outputProgress]);
 
   return {
     handleExitSearch,
@@ -65,5 +100,7 @@ export function useSwapNavigation({
     handleFocusOutputSearch,
     handleInputPress,
     handleOutputPress,
+    handleShowReview,
+    handleDismissReview,
   };
 }

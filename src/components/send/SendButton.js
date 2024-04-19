@@ -39,7 +39,7 @@ export default function SendButton({
       isAuthorizing={isAuthorizing}
       label={
         disabled && requiresChecks
-          ? `􀄨 ${lang.t('wallet.transaction.complete_checks')}`
+          ? `􀄨 ${lang.t('wallet.transaction.complete_check')}`
           : insufficientEth
             ? lang.t('button.confirm_exchange.insufficient_funds')
             : lang.t('button.hold_to_send')

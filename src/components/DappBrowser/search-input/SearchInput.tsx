@@ -14,7 +14,6 @@ import { BrowserButtonShadows } from '../DappBrowserShadows';
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import font from '@/styles/fonts';
 import { fontWithWidth } from '@/styles';
-import { useBrowserContext } from '../BrowserContext';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedBlurView } from '@/__swaps__/screens/Swap/components/AnimatedBlurView';
 import haptics from '@/utils/haptics';
@@ -22,6 +21,7 @@ import { useFavoriteDappsStore } from '@/state/favoriteDapps';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { getNameFromFormattedUrl, handleShareUrl } from '../utils';
 import { Site } from '@/state/browserHistory';
+import { useBrowserContext } from '../BrowserContext';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
 
@@ -41,6 +41,8 @@ export const SearchInput = ({
   canGoBack,
   canGoForward,
   onChange,
+  animatedActiveTabIndex,
+  tabViewProgress,
 }: {
   inputRef: RefObject<TextInput>;
   formattedInputValue: { url: string; tabIndex: number };
@@ -57,10 +59,12 @@ export const SearchInput = ({
   canGoBack: boolean;
   canGoForward: boolean;
   onChange: (event: NativeSyntheticEvent<TextInputChangeEventData>) => void;
+  animatedActiveTabIndex: SharedValue<number> | undefined;
+  tabViewProgress: SharedValue<number> | undefined;
 }) => {
-  const { animatedActiveTabIndex, goBack, goForward, onRefresh, tabViewProgress } = useBrowserContext();
   const { isFavorite, addFavorite, removeFavorite } = useFavoriteDappsStore();
   const { isDarkMode } = useColorMode();
+  const { goBack, goForward, onRefresh } = useBrowserContext();
 
   const fillSecondary = useForegroundColor('fillSecondary');
   const label = useForegroundColor('label');

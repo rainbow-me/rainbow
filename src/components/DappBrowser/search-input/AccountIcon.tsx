@@ -22,6 +22,7 @@ import { Address, toHex } from 'viem';
 import { handleDappBrowserConnectionPrompt } from '@/utils/requestNavigationHandlers';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { getDappMetadata } from '@/resources/metadata/dapp';
+import { TabState } from '../types';
 
 interface MenuItemIcon {
   iconType: 'ASSET' | 'SYSTEM';
@@ -130,12 +131,18 @@ export const androidShowNetworksActionSheet = (callback: (network: { chainId: nu
   );
 };
 
-export const AccountIcon = () => {
+export const AccountIcon = ({
+  activeTabIndex,
+  getActiveTabState,
+}: {
+  activeTabIndex: number;
+  getActiveTabState: () => TabState | undefined;
+}) => {
+  const { activeTabRef } = useBrowserContext();
   const { navigate } = useNavigation();
   const { accountAddress } = useAccountSettings();
   const { wallets, walletNames } = useWallets();
   const [isConnected, setIsConnected] = useState(false);
-  const { getActiveTabState, activeTabIndex, activeTabRef } = useBrowserContext();
   const [currentAddress, setCurrentAddress] = useState<string>(accountAddress);
   const [currentNetwork, setCurrentNetwork] = useState<Network>();
 
