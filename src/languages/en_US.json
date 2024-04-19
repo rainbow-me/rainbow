@@ -543,6 +543,9 @@
         "view_on": "View on %{blockExplorerName}",
         "view_on_etherscan": "View on Etherscan"
       },
+      "all_networks": "All Networks",
+      "filter_by_network": "Filter by Network",
+      "my_tokens": "My Tokens",
       "flip": "Flip",
       "max": "Max",
       "movers": {
