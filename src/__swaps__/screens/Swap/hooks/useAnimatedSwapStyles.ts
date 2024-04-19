@@ -135,7 +135,7 @@ export function useAnimatedSwapStyles({
       [NavigationSteps.SEARCH_FOCUSED]: BOTTOM_ACTION_BAR_HEIGHT,
       [NavigationSteps.TOKEN_LIST_FOCUSED]: BOTTOM_ACTION_BAR_HEIGHT,
       [NavigationSteps.SHOW_REVIEW]: 407.68 + insetBottom,
-      [NavigationSteps.SHOW_GAS]: 407.68 + insetBottom,
+      [NavigationSteps.SHOW_GAS]: 308 + insetBottom,
     };
 
     return {
