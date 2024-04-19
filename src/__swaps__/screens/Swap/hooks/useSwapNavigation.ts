@@ -115,6 +115,22 @@ export function useSwapNavigation({
     }
   }, [handleDismissReview, handleDismissGas, inputProgress, outputProgress]);
 
+  const handleSwapAction = useCallback(() => {
+    'worklet';
+
+    if (configProgress.value === NavigationSteps.SHOW_GAS) {
+      // TODO: Handle saving gas configuration
+      handleDismissGas();
+      return;
+    } else if (configProgress.value === NavigationSteps.SHOW_REVIEW) {
+      // TODO: Handle executing swap
+      handleDismissReview();
+      return;
+    } else {
+      handleShowReview();
+    }
+  }, []);
+
   return {
     handleExitSearch,
     handleFocusInputSearch,
@@ -125,5 +141,6 @@ export function useSwapNavigation({
     handleDismissReview,
     handleShowGas,
     handleDismissGas,
+    handleSwapAction,
   };
 }

@@ -6,6 +6,8 @@ import {
   BOTTOM_ACTION_BAR_HEIGHT,
   EXPANDED_INPUT_HEIGHT,
   FOCUSED_INPUT_HEIGHT,
+  GAS_SHEET_HEIGHT,
+  REVIEW_SHEET_HEIGHT,
   THICK_BORDER_WIDTH,
   fadeConfig,
   springConfig,
@@ -134,8 +136,8 @@ export function useAnimatedSwapStyles({
       [NavigationSteps.INPUT_ELEMENT_FOCUSED]: BOTTOM_ACTION_BAR_HEIGHT,
       [NavigationSteps.SEARCH_FOCUSED]: BOTTOM_ACTION_BAR_HEIGHT,
       [NavigationSteps.TOKEN_LIST_FOCUSED]: BOTTOM_ACTION_BAR_HEIGHT,
-      [NavigationSteps.SHOW_REVIEW]: 407.68 + insetBottom,
-      [NavigationSteps.SHOW_GAS]: 308 + insetBottom,
+      [NavigationSteps.SHOW_REVIEW]: REVIEW_SHEET_HEIGHT + insetBottom,
+      [NavigationSteps.SHOW_GAS]: GAS_SHEET_HEIGHT + insetBottom,
     };
 
     return {

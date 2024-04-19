@@ -164,7 +164,7 @@ export function GasPanel() {
                   </Box>
                 </ButtonPressAnimation>
 
-                <AnimatedText size="15pt" weight="bold" color="labelSecondary" text={maxBaseFee} />
+                <AnimatedText size="15pt" weight="bold" color="labelSecondary" text={minerTip} />
 
                 <ButtonPressAnimation onPress={() => onSetSlippage('increment')}>
                   <Box

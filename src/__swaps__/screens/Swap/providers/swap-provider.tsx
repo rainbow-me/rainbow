@@ -86,9 +86,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   });
 
   const confirmButtonIcon = useDerivedValue(() => {
-    const isReviewing = configProgress.value === NavigationSteps.SHOW_REVIEW;
-    if (isReviewing) {
+    if (configProgress.value === NavigationSteps.SHOW_REVIEW) {
       return '􀎽';
+    } else if (configProgress.value === NavigationSteps.SHOW_GAS) {
+      return '􀆅';
     }
 
     const isInputZero = Number(SwapInputController.inputValues.value.inputAmount) === 0;
@@ -104,9 +105,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   });
 
   const confirmButtonLabel = useDerivedValue(() => {
-    const isReviewing = configProgress.value === NavigationSteps.SHOW_REVIEW;
-    if (isReviewing) {
+    if (configProgress.value === NavigationSteps.SHOW_REVIEW) {
       return 'Hold to Swap';
+    } else if (configProgress.value === NavigationSteps.SHOW_GAS) {
+      return 'Save';
     }
 
     const isInputZero = Number(SwapInputController.inputValues.value.inputAmount) === 0;
@@ -114,7 +116,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
     if (SwapInputController.inputMethod.value !== 'slider' && (isInputZero || isOutputZero) && !isFetching.value) {
       return 'Enter Amount';
-    } else if (SwapInputController.inputMethod.value === 'slider' && SwapInputController.percentageToSwap.value === 0) {
+    } else if (
+      SwapInputController.inputMethod.value === 'slider' &&
+      (SwapInputController.percentageToSwap.value === 0 || isInputZero || isOutputZero)
+    ) {
       return 'Enter Amount';
     } else {
       return 'Review';
@@ -125,7 +130,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     const isInputZero = Number(SwapInputController.inputValues.value.inputAmount) === 0;
     const isOutputZero = Number(SwapInputController.inputValues.value.outputAmount) === 0;
 
-    const sliderCondition = SwapInputController.inputMethod.value === 'slider' && SwapInputController.percentageToSwap.value === 0;
+    const sliderCondition =
+      SwapInputController.inputMethod.value === 'slider' &&
+      (SwapInputController.percentageToSwap.value === 0 || isInputZero || isOutputZero);
     const inputCondition = SwapInputController.inputMethod.value !== 'slider' && (isInputZero || isOutputZero) && !isFetching.value;
 
     const shouldHide = sliderCondition || inputCondition;
