@@ -106,11 +106,7 @@ const DappBrowserComponent = () => {
 
   const scrollViewHeightStyle = useAnimatedStyle(() => {
     const height = Math.max(
-      Math.ceil((currentlyOpenTabIds?.value.length || 0) / 2) * TAB_VIEW_ROW_HEIGHT +
-        safeAreaInsetValues.bottom +
-        165 +
-        28 +
-        (IS_ANDROID ? 35 : 0),
+      Math.ceil((currentlyOpenTabIds?.value.length || 0) / 2) * TAB_VIEW_ROW_HEIGHT + safeAreaInsetValues.bottom + 165 + 28,
       deviceUtils.dimensions.height
     );
     // Using paddingBottom on a nested container instead of height because the height of the ScrollView
@@ -123,20 +119,9 @@ const DappBrowserComponent = () => {
   }));
 
   return (
-    <SheetGestureBlocker>
+    <SheetGestureBlocker preventScrollViewDismissal>
       <Box as={Page} height="full" style={isDarkMode ? styles.rootViewBackground : styles.rootViewBackgroundLight} width="full">
-        <Box
-          as={Animated.View}
-          height="full"
-          position="absolute"
-          style={[
-            backgroundStyle,
-            {
-              paddingTop: IS_ANDROID ? 30 : 0,
-            },
-          ]}
-          width="full"
-        />
+        <Box as={Animated.View} height="full" position="absolute" style={[backgroundStyle]} width="full" />
         <AnimatedScrollView
           animatedProps={scrollEnabledProp}
           ref={scrollViewRef}

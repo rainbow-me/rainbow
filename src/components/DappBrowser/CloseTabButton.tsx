@@ -163,11 +163,15 @@ export const CloseTabButton = ({
           ) : (
             <Box
               as={Animated.View}
-              background="fillTertiary"
+              background="fill"
               style={[
                 styles.closeButtonStyle,
                 closeButtonStyle,
-                { height: SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB, width: SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB },
+                {
+                  height: SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB,
+                  width: SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB,
+                  borderRadius: SCALE_ADJUSTED_X_BUTTON_SIZE / 2,
+                },
               ]}
             >
               <XIcon buttonSize={SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB} multipleTabsOpen={false} />
@@ -194,11 +198,15 @@ export const CloseTabButton = ({
           ) : (
             <Box
               as={Animated.View}
-              background="fillTertiary"
+              background="surfaceSecondary"
               style={[
                 styles.closeButtonStyle,
                 closeButtonStyle,
-                { height: SCALE_ADJUSTED_X_BUTTON_SIZE, width: SCALE_ADJUSTED_X_BUTTON_SIZE },
+                {
+                  height: SCALE_ADJUSTED_X_BUTTON_SIZE,
+                  width: SCALE_ADJUSTED_X_BUTTON_SIZE,
+                  borderRadius: SCALE_ADJUSTED_X_BUTTON_SIZE / 2,
+                },
               ]}
             >
               <XIcon buttonSize={SCALE_ADJUSTED_X_BUTTON_SIZE} multipleTabsOpen={true} />
@@ -226,6 +234,7 @@ const XIcon = ({ buttonSize, multipleTabsOpen }: { buttonSize: number; multipleT
 
 const styles = StyleSheet.create({
   buttonPressWrapperStyle: {
+    zIndex: 99999999999,
     alignItems: 'center',
     height: '100%',
     justifyContent: 'center',
