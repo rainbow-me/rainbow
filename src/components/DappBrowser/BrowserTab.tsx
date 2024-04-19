@@ -498,21 +498,17 @@ export const BrowserTab = React.memo(
         if (tabState.url !== event.nativeEvent.url && event.nativeEvent.url !== urlRef.current) {
           newState.url = event.nativeEvent.url;
           urlRef.current = event.nativeEvent.url;
-          console.log('detected url change', { before: tabState.url, after: event.nativeEvent.url });
         }
         // detected nav change (go back)
         if (tabState.canGoBack !== event.nativeEvent.canGoBack) {
           newState.canGoBack = event.nativeEvent.canGoBack;
-          console.log('detected nav change (canGoBack)', { before: tabState.canGoBack, after: event.nativeEvent.canGoBack });
         }
         // detected nav change (go fwd)
         if (tabState.canGoForward !== event.nativeEvent.canGoForward) {
-          console.log('detected nav change (canGoForward)', { before: tabState.canGoForward, after: event.nativeEvent.canGoForward });
           newState.canGoForward = event.nativeEvent.canGoForward;
         }
         // detected logo change
         if (logo.current && tabState.logoUrl !== logo.current) {
-          console.log('detected logo change', { before: tabState.logoUrl, after: logo.current });
           newState.logoUrl = logo.current;
         }
 
