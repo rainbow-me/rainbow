@@ -2,7 +2,7 @@ import { Share } from 'react-native';
 import { WebViewNavigationEvent } from 'react-native-webview/lib/RNCWebViewNativeComponent';
 import { RainbowError, logger } from '@/logger';
 import { HTTP, HTTPS } from './constants';
-import { TabState } from './BrowserContext';
+import { TabState } from './types';
 
 // ---------------------------------------------------------------------------- //
 // URL validation regex breakdown here: https://mathiasbynens.be/demo/url-regex
@@ -85,6 +85,18 @@ export async function handleShareUrl(url: string): Promise<void> {
       message: e.message,
       url,
     });
+  }
+}
+
+export function normalizeUrlForRecents(url: string): string {
+  if (url.includes('?')) {
+    return url;
+  } else {
+    if (url.endsWith('/')) {
+      return url;
+    } else {
+      return url + '/';
+    }
   }
 }
 

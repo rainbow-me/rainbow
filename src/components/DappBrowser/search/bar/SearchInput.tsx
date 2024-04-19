@@ -4,7 +4,6 @@ import { AnimatedText, Box, Cover, globalColors, useColorMode, useForegroundColo
 import Animated, {
   SharedValue,
   dispatchCommand,
-  runOnJS,
   useAnimatedProps,
   useAnimatedStyle,
   useDerivedValue,
@@ -28,31 +27,35 @@ import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animatio
 import { AnimatedBlurView } from '@/__swaps__/screens/Swap/components/AnimatedBlurView';
 import haptics from '@/utils/haptics';
 import { useFavoriteDappsStore } from '@/state/favoriteDapps';
-import { Site } from '@/state/browserState';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { formatUrl, getNameFromFormattedUrl, handleShareUrl, isValidURL } from '../../utils';
 import { GOOGLE_SEARCH_URL, HTTP, HTTPS, RAINBOW_HOME } from '../../constants';
 import { useSearchContext } from '../SearchContext';
+import { TabState } from '../../types';
+import { Site } from '@/state/browserHistory';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
 const AnimatedGestureHandlerV1Button = Animated.createAnimatedComponent(GestureHandlerV1Button);
 // const AnimatedFadeMask = Animated.createAnimatedComponent(FadeMask);
 
-export const SearchInput = () => {
-  const {
-    activeTabIndex,
-    animatedActiveTabIndex,
-    goBack,
-    goForward,
-    onRefresh,
-    searchViewProgress,
-    tabStates,
-    tabViewProgress,
-    updateActiveTabState,
-  } = useBrowserContext();
+export const SearchInput = ({
+  activeTabIndex,
+  animatedActiveTabIndex,
+  tabViewProgress,
+  tabStates,
+  updateActiveTabState,
+}: {
+  activeTabIndex: number;
+  animatedActiveTabIndex: SharedValue<number> | undefined;
+  tabViewProgress: SharedValue<number> | undefined;
+  tabStates: TabState[];
+  updateActiveTabState: (newState: Partial<TabState>, tabId?: string | undefined) => void;
+}) => {
+  const { searchViewProgress } = useBrowserContext();
   const { inputRef, isFocused, searchQuery, searchResults } = useSearchContext();
   const { isFavorite, addFavorite, removeFavorite } = useFavoriteDappsStore();
   const { isDarkMode } = useColorMode();
+  const { goBack, goForward, onRefresh } = useBrowserContext();
 
   const fillSecondary = useForegroundColor('fillSecondary');
   const label = useForegroundColor('label');

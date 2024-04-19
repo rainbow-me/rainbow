@@ -7,7 +7,6 @@ import { deviceUtils } from '@/utils';
 import { AnimatedBlurView } from '@/__swaps__/screens/Swap/components/AnimatedBlurView';
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { TIMING_CONFIGS } from '../animations/animationConfigs';
-import { useBrowserContext } from './BrowserContext';
 import { COLLAPSED_WEBVIEW_HEIGHT_UNSCALED, TAB_VIEW_COLUMN_WIDTH } from './Dimensions';
 
 // ⚠️ TODO: Fix close button press detection — currently being blocked
@@ -34,6 +33,11 @@ export const CloseTabButton = ({
   isOnHomepage,
   multipleTabsOpen,
   tabId,
+  animatedActiveTabIndex,
+  tabViewProgress,
+  tabViewVisible,
+  closeTabWorklet,
+  currentlyOpenTabIds,
 }: {
   animatedMultipleTabsOpen: SharedValue<number>;
   animatedTabIndex: SharedValue<number>;
@@ -43,8 +47,12 @@ export const CloseTabButton = ({
   isOnHomepage: boolean;
   multipleTabsOpen: SharedValue<boolean>;
   tabId: string;
+  animatedActiveTabIndex: SharedValue<number> | undefined;
+  tabViewProgress: SharedValue<number> | undefined;
+  tabViewVisible: SharedValue<boolean> | undefined;
+  closeTabWorklet?: (tabId: string, tabIndex: number) => void;
+  currentlyOpenTabIds: SharedValue<string[]>;
 }) => {
-  const { animatedActiveTabIndex, closeTabWorklet, currentlyOpenTabIds, tabViewProgress, tabViewVisible } = useBrowserContext();
   const { isDarkMode } = useColorMode();
 
   const closeButtonStyle = useAnimatedStyle(() => {
@@ -114,7 +122,7 @@ export const CloseTabButton = ({
       // Ensure the tab remains hidden after being swiped off screen (until the tab is destroyed)
       gestureScale.value = 0;
       // Because the animation is complete we know the tab is off screen and can be safely destroyed
-      closeTabWorklet(tabId, storedTabIndex);
+      closeTabWorklet?.(tabId, storedTabIndex);
     });
 
     // In the event two tabs are open when this one is closed, we animate its Y position to align it

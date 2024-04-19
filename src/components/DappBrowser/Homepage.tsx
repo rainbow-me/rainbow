@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Page } from '@/components/layout';
 import { Bleed, Box, ColorModeProvider, Cover, Inline, Inset, Stack, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
@@ -11,16 +11,18 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { IS_IOS } from '@/env';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/utils/swaps';
-import { Site } from '@/state/browserState';
 import { useFavoriteDappsStore } from '@/state/favoriteDapps';
-import { TrendingSite, recentDapps, trendingDapps } from '@/resources/trendingDapps/trendingDapps';
+import { TrendingSite, trendingDapps } from '@/resources/trendingDapps/trendingDapps';
 import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
 import MaskedView from '@react-native-masked-view/masked-view';
-import { useBrowserContext } from './BrowserContext';
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { normalizeUrl } from './utils';
+import { Site, useBrowserHistoryStore } from '@/state/browserHistory';
+import { getDappHost } from './handleProviderRequest';
+import { uniqBy } from 'lodash';
 
 const HORIZONTAL_PAGE_INSET = 24;
+const MAX_RECENTS_TO_DISPLAY = 10;
 
 const LOGOS_PER_ROW = 4;
 const LOGO_SIZE = 64;
@@ -32,8 +34,7 @@ const NUM_CARDS = 2;
 const CARD_PADDING = 12;
 const CARD_SIZE = (deviceUtils.dimensions.width - HORIZONTAL_PAGE_INSET * 2 - (NUM_CARDS - 1) * CARD_PADDING) / NUM_CARDS;
 
-const Card = ({ site, showMenuButton }: { showMenuButton?: boolean; site: TrendingSite }) => {
-  const { updateActiveTabState } = useBrowserContext();
+const Card = ({ site, showMenuButton, goToUrl }: { showMenuButton?: boolean; site: TrendingSite; goToUrl: (url: string) => void }) => {
   const { isDarkMode } = useColorMode();
 
   const menuConfig = {
@@ -58,9 +59,20 @@ const Card = ({ site, showMenuButton }: { showMenuButton?: boolean; site: Trendi
     ],
   };
 
+  const dappIconUrl = useMemo(() => {
+    const dappUrl = site.url;
+    const iconUrl = site.image;
+    const host = getDappHost(dappUrl);
+    const overrideFound = trendingDapps.find(dapp => dapp.url === host);
+    if (overrideFound?.image) {
+      return overrideFound.image;
+    }
+    return iconUrl;
+  }, [site.image, site.url]);
+
   return (
     <Box>
-      <GestureHandlerV1Button onPressJS={() => updateActiveTabState({ url: normalizeUrl(site.url) })} scaleTo={0.94}>
+      <GestureHandlerV1Button onPressJS={() => goToUrl(normalizeUrl(site.url))} scaleTo={0.94}>
         <Box
           background="surfacePrimary"
           borderRadius={24}
@@ -81,11 +93,11 @@ const Card = ({ site, showMenuButton }: { showMenuButton?: boolean; site: Trendi
             padding="20px"
           >
             <ColorModeProvider value="dark">
-              {site.screenshot && (
+              {(site.screenshot || dappIconUrl) && (
                 <Cover>
                   <ImgixImage
                     enableFasterImage
-                    source={{ uri: site.screenshot }}
+                    source={{ uri: site.screenshot || dappIconUrl }}
                     size={CARD_SIZE}
                     style={{ width: CARD_SIZE, height: 137 }}
                   />
@@ -104,7 +116,7 @@ const Card = ({ site, showMenuButton }: { showMenuButton?: boolean; site: Trendi
                 <ImgixImage
                   enableFasterImage
                   size={48}
-                  source={{ uri: site.image }}
+                  source={{ uri: dappIconUrl }}
                   style={{
                     backgroundColor: isDarkMode ? globalColors.grey100 : globalColors.white100,
                     borderRadius: IS_IOS ? 12 : 36,
@@ -114,11 +126,11 @@ const Card = ({ site, showMenuButton }: { showMenuButton?: boolean; site: Trendi
                 />
               </Box>
               <Stack space="10px">
-                <Text size="17pt" weight="heavy" color="label">
+                <Text size="17pt" weight="heavy" color="label" numberOfLines={2}>
                   {site.name}
                 </Text>
-                <Text size="13pt" weight="bold" color="labelTertiary">
-                  {site.url}
+                <Text size="13pt" weight="bold" color="labelTertiary" numberOfLines={1}>
+                  {site.url.startsWith('http:') || site.url.startsWith('https:') ? getDappHost(site.url) : site.url}
                 </Text>
               </Stack>
             </ColorModeProvider>
@@ -178,13 +190,12 @@ const Card = ({ site, showMenuButton }: { showMenuButton?: boolean; site: Trendi
   );
 };
 
-const Logo = ({ site }: { site: Omit<Site, 'timestamp'> }) => {
-  const { updateActiveTabState } = useBrowserContext();
+const Logo = ({ site, goToUrl }: { site: Omit<Site, 'timestamp'>; goToUrl: (url: string) => void }) => {
   const { isDarkMode } = useColorMode();
 
   return (
     <View style={{ width: LOGO_SIZE }}>
-      <GestureHandlerV1Button onPressJS={() => updateActiveTabState({ url: normalizeUrl(site.url) })}>
+      <GestureHandlerV1Button onPressJS={() => goToUrl(normalizeUrl(site.url))}>
         <Stack alignHorizontal="center">
           <Box>
             {IS_IOS && !site.image && (
@@ -250,9 +261,12 @@ const Logo = ({ site }: { site: Omit<Site, 'timestamp'> }) => {
   );
 };
 
-export default function Homepage() {
+export default function Homepage({ goToUrl }: { goToUrl: (url: string) => void }) {
   const { isDarkMode } = useColorMode();
   const { favoriteDapps } = useFavoriteDappsStore();
+  const { getRecent } = useBrowserHistoryStore();
+
+  const recent = uniqBy(getRecent(), 'url').slice(0, MAX_RECENTS_TO_DISPLAY);
 
   return (
     <Box
@@ -296,7 +310,7 @@ export default function Homepage() {
                 <Inset space="24px">
                   <Box flexDirection="row" gap={CARD_PADDING}>
                     {trendingDapps.map(site => (
-                      <Card key={site.url} site={site} />
+                      <Card key={site.url} site={site} goToUrl={goToUrl} />
                     ))}
                   </Box>
                 </Inset>
@@ -320,26 +334,28 @@ export default function Homepage() {
                 width={{ custom: deviceUtils.dimensions.width - HORIZONTAL_PAGE_INSET * 2 }}
               >
                 {favoriteDapps.map(dapp => (
-                  <Logo key={`${dapp.url}-${dapp.name}`} site={dapp} />
+                  <Logo key={`${dapp.url}-${dapp.name}`} site={dapp} goToUrl={goToUrl} />
                 ))}
               </Box>
             </Stack>
           )}
-          <Stack space="20px">
-            <Inline alignVertical="center" space="6px">
-              <Text color="blue" size="15pt" align="center" weight="heavy">
-                􀐫
-              </Text>
-              <Text color="label" size="20pt" weight="heavy">
-                Recents
-              </Text>
-            </Inline>
-            <Inline space={{ custom: CARD_PADDING }}>
-              {recentDapps.map(site => (
-                <Card key={site.url} site={site} showMenuButton />
-              ))}
-            </Inline>
-          </Stack>
+          {recent.length > 0 && (
+            <Stack space="20px">
+              <Inline alignVertical="center" space="6px">
+                <Text color="blue" size="15pt" align="center" weight="heavy">
+                  􀐫
+                </Text>
+                <Text color="label" size="20pt" weight="heavy">
+                  Recents
+                </Text>
+              </Inline>
+              <Inline space={{ custom: CARD_PADDING }}>
+                {recent.map(site => (
+                  <Card key={site.url} site={site} showMenuButton goToUrl={goToUrl} />
+                ))}
+              </Inline>
+            </Stack>
+          )}
         </Stack>
       </ScrollView>
     </Box>

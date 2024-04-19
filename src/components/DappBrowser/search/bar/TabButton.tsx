@@ -8,15 +8,13 @@ import React from 'react';
 import { BrowserButtonShadows } from '../../DappBrowserShadows';
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import Animated, { dispatchCommand, useAnimatedProps, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
-import { useBrowserContext } from '../../BrowserContext';
 import { useSearchContext } from '../SearchContext';
 import { TextColor } from '@/design-system/color/palettes';
 
 const AnimatedBox = Animated.createAnimatedComponent(Box);
 const SuperAnimatedText = Animated.createAnimatedComponent(AnimatedText);
 
-export const TabButton = () => {
-  const { toggleTabViewWorklet } = useBrowserContext();
+export const TabButton = ({ toggleTabViewWorklet }: { toggleTabViewWorklet(tabIndex?: number): void }) => {
   const { inputRef, isFocused } = useSearchContext();
   const { isDarkMode } = useColorMode();
   const fillSecondary = useForegroundColor('fillSecondary');

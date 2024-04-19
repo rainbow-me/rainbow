@@ -1,6 +1,7 @@
 import { LOG_LEVEL, LOG_DEBUG } from 'react-native-dotenv';
 import format from 'date-fns/format';
 import * as Sentry from '@sentry/react-native';
+import { SeverityLevel } from '@sentry/types';
 
 import * as env from '@/env';
 import { DebugContext } from '@/logger/debugContext';
@@ -14,6 +15,7 @@ export enum LogLevel {
   Log = 'log',
   Warn = 'warn',
   Error = 'error',
+  Fatal = 'fatal',
 }
 
 type Transport = (level: LogLevel, message: string | RainbowError, metadata: Metadata) => void;
@@ -54,6 +56,7 @@ const enabledLogLevels: {
   [LogLevel.Log]: [LogLevel.Log, LogLevel.Warn, LogLevel.Error],
   [LogLevel.Warn]: [LogLevel.Warn, LogLevel.Error],
   [LogLevel.Error]: [LogLevel.Error],
+  [LogLevel.Fatal]: [LogLevel.Fatal],
 };
 
 /**
@@ -101,6 +104,7 @@ export const consoleTransport: Transport = (level, message, metadata) => {
     [LogLevel.Log]: colors.default,
     [LogLevel.Warn]: colors.yellow,
     [LogLevel.Error]: colors.red,
+    [LogLevel.Fatal]: colors.red,
   }[level];
   // needed for stacktrace formatting
   const log = level === LogLevel.Error ? console.error : console.log;
@@ -117,19 +121,22 @@ export const consoleTransport: Transport = (level, message, metadata) => {
   log(`${timestamp} ${withColor(color)(`[${level.toUpperCase()}]`)} ${message.toString()}${extra}`);
 };
 
-export const sentryTransport: Transport = (level, message, { type, tags, ...metadata }) => {
+export const sentryTransport: Transport = (level: LogLevel, message, { type, tags, ...metadata }) => {
+  const severityMap: { [key in LogLevel]: SeverityLevel } = {
+    [LogLevel.Debug]: 'debug',
+    [LogLevel.Info]: 'info',
+    [LogLevel.Log]: 'log',
+    [LogLevel.Warn]: 'warning',
+    [LogLevel.Error]: 'error',
+    [LogLevel.Fatal]: 'fatal',
+  };
+
+  const severity = severityMap[level];
+
   /**
    * If a string, report a breadcrumb
    */
   if (typeof message === 'string') {
-    const severity = {
-      [LogLevel.Debug]: Sentry.Severity.Debug,
-      [LogLevel.Info]: Sentry.Severity.Info,
-      [LogLevel.Log]: Sentry.Severity.Log, // Sentry value here is undefined
-      [LogLevel.Warn]: Sentry.Severity.Warning,
-      [LogLevel.Error]: Sentry.Severity.Error,
-    }[level];
-
     Sentry.addBreadcrumb({
       message,
       data: metadata,
@@ -153,7 +160,7 @@ export const sentryTransport: Transport = (level, message, { type, tags, ...meta
      */
     if (level === LogLevel.Warn) {
       Sentry.captureMessage(message, {
-        level: Sentry.Severity.Warning,
+        level: severity,
         tags,
         extra: metadata,
       });

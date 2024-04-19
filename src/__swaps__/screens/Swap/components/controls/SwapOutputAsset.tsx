@@ -1,9 +1,8 @@
 import MaskedView from '@react-native-masked-view/masked-view';
-import React, { useEffect, useMemo } from 'react';
+import React from 'react';
 import { StyleSheet, StatusBar } from 'react-native';
 import Animated, { runOnUI, useDerivedValue } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
-import BigNumber from 'bignumber.js';
 
 import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
 import { useTheme } from '@/theme';
@@ -18,14 +17,9 @@ import { TokenList } from '@/__swaps__/screens/Swap/components/TokenList/TokenLi
 import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { IS_ANDROID } from '@/env';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { useSwapAssetStore } from '@/__swaps__/screens/Swap/state/assets';
 import { ethereumUtils } from '@/utils';
-import { isSameAsset, isSameAssetWorklet, parseSearchAsset } from '@/__swaps__/utils/assets';
+import { isSameAssetWorklet } from '@/__swaps__/utils/assets';
 import { useAssetsToSell } from '@/__swaps__/screens/Swap/hooks/useAssetsToSell';
-import { useAccountSettings } from '@/hooks';
-import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
-import { ParsedAsset } from '@/__swaps__/types/assets';
-import { supportedCurrencies } from '@/references/supportedCurrencies';
 
 function SwapOutputActionButton() {
   const { isDarkMode } = useColorMode();
@@ -45,51 +39,7 @@ function SwapOutputActionButton() {
 }
 
 function SwapOutputAmount() {
-  const { nativeCurrency: currentCurrency } = useAccountSettings();
-  const { assetToBuy, outputChainId } = useSwapAssetStore();
   const { focusedInput, SwapTextStyles, SwapInputController, AnimatedSwapStyles } = useSwapContext();
-  const userAssets = useAssetsToSell();
-
-  const { data: tokenDataWithPrice } = useExternalToken(
-    {
-      address: assetToBuy ? assetToBuy?.address : '',
-      network: ethereumUtils.getNetworkFromChainId(outputChainId),
-      currency: currentCurrency,
-    },
-    {
-      enabled: !!assetToBuy,
-    }
-  );
-
-  const parsedAssetToBuy = useMemo(() => {
-    if (!assetToBuy) return null;
-    const userAsset = userAssets.find(userAsset => isSameAsset(userAsset, assetToBuy));
-    return parseSearchAsset({
-      assetWithPrice: tokenDataWithPrice as unknown as ParsedAsset,
-      searchAsset: assetToBuy,
-      userAsset,
-    });
-  }, [assetToBuy, tokenDataWithPrice, userAssets]);
-
-  useEffect(() => {
-    if (!parsedAssetToBuy) return;
-
-    const { decimals } = supportedCurrencies[currentCurrency];
-
-    const outputNativeAmount = new BigNumber(parsedAssetToBuy?.native.price?.amount || 0)
-      .multipliedBy(new BigNumber(parsedAssetToBuy?.balance.amount || 0))
-      .toFormat(decimals);
-
-    runOnUI((outputNativeAmount: string) => {
-      'worklet';
-      SwapInputController.inputValues.modify(prev => {
-        return {
-          ...prev,
-          outputNativeAmount,
-        };
-      });
-    })(outputNativeAmount);
-  }, [parsedAssetToBuy, SwapInputController.inputValues, currentCurrency, SwapInputController]);
 
   return (
     <GestureHandlerV1Button

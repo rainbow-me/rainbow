@@ -10,6 +10,7 @@ import { Dapp, useDappsContext } from '@/resources/metadata/dapps';
 import { useKeyboardHeight } from '@/hooks';
 import { SEARCH_BAR_HEIGHT } from '../bar/SearchBar';
 import { useSearchContext } from '../SearchContext';
+import { TabState } from '../../types';
 
 const search = (query: string, dapps: Dapp[]) => {
   'worklet';
@@ -59,9 +60,13 @@ const search = (query: string, dapps: Dapp[]) => {
   return filteredDapps;
 };
 
-export const SearchResults = () => {
+export const SearchResults = ({
+  updateActiveTabState,
+}: {
+  updateActiveTabState: (newState: Partial<TabState>, tabId?: string | undefined) => void;
+}) => {
   const { isDarkMode } = useColorMode();
-  const { searchViewProgress, updateActiveTabState } = useBrowserContext();
+  const { searchViewProgress } = useBrowserContext();
   const { isFocused, inputRef, searchQuery, searchResults } = useSearchContext();
   const { dapps } = useDappsContext();
 

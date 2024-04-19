@@ -4,9 +4,14 @@ import Animated from 'react-native-reanimated';
 
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { Box } from '@/design-system';
-import { SwapActions } from '@/__swaps__/screens/Swap/components/controls/SwapActions';
 import { SwapNumberPad } from '@/__swaps__/screens/Swap/components/SwapNumberPad';
 import { SwapSlider } from '@/__swaps__/screens/Swap/components/SwapSlider';
+import { IS_ANDROID } from '@/env';
+import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
+import { safeAreaInsetValues } from '@/utils';
+
+const BOTTOM_OFFSET = IS_ANDROID ? getSoftMenuBarHeight() - 24 : safeAreaInsetValues.bottom + 16;
+const HEIGHT_OF_BOTTOM_TAB = 64;
 
 export function SwapAmountInputs() {
   const { AnimatedSwapStyles } = useSwapContext();
@@ -15,10 +20,10 @@ export function SwapAmountInputs() {
     <Box
       alignItems="flex-end"
       as={Animated.View}
-      bottom="0px"
+      bottom={{ custom: BOTTOM_OFFSET + HEIGHT_OF_BOTTOM_TAB + 16 }}
       justifyContent="center"
       position="absolute"
-      style={[{ flex: 1, flexDirection: 'column', gap: 16 }, AnimatedSwapStyles.keyboardStyle]}
+      style={[{ flex: 1, flexDirection: 'column', gap: 16 }, AnimatedSwapStyles.keyboardStyle, AnimatedSwapStyles.hideWhileReviewing]}
       width="full"
     >
       {/* @ts-expect-error */}
@@ -28,7 +33,6 @@ export function SwapAmountInputs() {
           <SwapNumberPad />
         </Box>
       </PanGestureHandler>
-      <SwapActions />
     </Box>
   );
 }

@@ -1,21 +1,38 @@
 import React from 'react';
-import Animated, { interpolate, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, { SharedValue, interpolate, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { useKeyboardHeight, useDimensions } from '@/hooks';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
-import { useBrowserContext } from '../../BrowserContext';
 import { AccountIcon } from './AccountIcon';
 import { SearchInput } from './SearchInput';
 import { TabButton } from './TabButton';
 import { useSearchContext } from '../SearchContext';
+import { TabState } from '../../types';
 
 export const SEARCH_BAR_HEIGHT = 88;
 
-export const SearchBar = () => {
+export const SearchBar = ({
+  activeTabIndex,
+  getActiveTabState,
+  animatedActiveTabIndex,
+  toggleTabViewWorklet,
+  tabViewVisible,
+  tabViewProgress,
+  tabStates,
+  updateActiveTabState,
+}: {
+  activeTabIndex: number;
+  getActiveTabState: () => TabState | undefined;
+  animatedActiveTabIndex: SharedValue<number> | undefined;
+  toggleTabViewWorklet(tabIndex?: number): void;
+  tabViewVisible: SharedValue<boolean> | undefined;
+  tabViewProgress: SharedValue<number> | undefined;
+  tabStates: TabState[];
+  updateActiveTabState: (newState: Partial<TabState>, tabId?: string | undefined) => void;
+}) => {
   const { width: deviceWidth } = useDimensions();
-  const { tabViewProgress, tabViewVisible } = useBrowserContext();
   const { isFocused } = useSearchContext();
 
   const keyboardHeight = useKeyboardHeight({ shouldListen: true });
@@ -69,13 +86,19 @@ export const SearchBar = () => {
         width="full"
       >
         <Box as={Animated.View} position="absolute" style={[accountIconStyle, { left: 24 }]}>
-          <AccountIcon />
+          <AccountIcon activeTabIndex={activeTabIndex} getActiveTabState={getActiveTabState} />
         </Box>
 
         <Box paddingRight="12px" style={{ flex: 1 }}>
-          <SearchInput />
+          <SearchInput
+            activeTabIndex={activeTabIndex}
+            animatedActiveTabIndex={animatedActiveTabIndex}
+            tabViewProgress={tabViewProgress}
+            tabStates={tabStates}
+            updateActiveTabState={updateActiveTabState}
+          />
         </Box>
-        <TabButton />
+        <TabButton toggleTabViewWorklet={toggleTabViewWorklet} />
       </Box>
     </Box>
   );

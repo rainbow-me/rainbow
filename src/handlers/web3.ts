@@ -64,6 +64,7 @@ export const proxyRpcEndpoint = (chainId: number, customEndpoint?: string) => {
     avalanche_mainnet_rpc,
     ethereum_mainnet_rpc,
     blast_mainnet_rpc,
+    degen_mainnet_rpc,
   } = getRemoteConfig();
   if (rpc_proxy_enabled) {
     return `${RPC_PROXY_BASE_URL}/${chainId}/${RPC_PROXY_API_KEY}${
@@ -91,6 +92,8 @@ export const proxyRpcEndpoint = (chainId: number, customEndpoint?: string) => {
         return avalanche_mainnet_rpc;
       case Network.blast:
         return blast_mainnet_rpc;
+      case Network.degen:
+        return degen_mainnet_rpc;
       case Network.gnosis:
       case Network.mainnet:
       default:

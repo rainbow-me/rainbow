@@ -47,7 +47,7 @@ export const TokenToBuyList = () => {
   );
 
   return (
-    <Stack space="32px">
+    <Stack space="24px">
       <Box paddingHorizontal="20px">
         <Inline alignHorizontal="justify" alignVertical="center">
           <Inline alignVertical="center" space="6px">

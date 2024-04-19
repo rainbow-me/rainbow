@@ -6,7 +6,7 @@ import Animated, { runOnJS, useAnimatedGestureHandler } from 'react-native-reani
 import { ButtonPressAnimation } from '@/components/animations';
 import { IS_IOS } from '@/env';
 
-type GestureHandlerButtonProps = {
+export type GestureHandlerButtonProps = {
   children: React.ReactNode;
   disableButtonPressWrapper?: boolean;
   disabled?: boolean;
