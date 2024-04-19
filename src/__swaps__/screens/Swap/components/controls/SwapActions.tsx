@@ -6,7 +6,7 @@ import { safeAreaInsetValues } from '@/utils';
 
 import { SwapActionButton } from '../../components/SwapActionButton';
 import { GasButton } from '../../components/GasButton';
-import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, springConfig } from '../../constants';
+import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH, springConfig } from '../../constants';
 import { IS_ANDROID } from '@/env';
 import { useSwapContext, NavigationSteps } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import Animated, { runOnJS, runOnUI, useAnimatedReaction, useAnimatedStyle, withSpring } from 'react-native-reanimated';
@@ -57,29 +57,28 @@ export function SwapActions() {
     };
   });
 
-  const gasColumnStyles = useAnimatedStyle(() => {
-    return {
-      display: configProgress.value === NavigationSteps.SHOW_REVIEW ? 'none' : 'flex',
-    };
-  });
-
   return (
     // @ts-expect-error Property 'children' does not exist on type
     <PanGestureHandler maxPointers={1} onGestureEvent={swipeToDismissGestureHandler} enabled={enabled}>
       <Box
         as={Animated.View}
         paddingBottom={{
-          custom: IS_ANDROID ? getSoftMenuBarHeight() - 24 : safeAreaInsetValues.bottom + 16,
+          custom: IS_ANDROID ? getSoftMenuBarHeight() - 32 : safeAreaInsetValues.bottom + 16,
         }}
         paddingHorizontal="20px"
-        style={[AnimatedSwapStyles.swapActionWrapperStyle, AnimatedSwapStyles.keyboardStyle, gestureHandlerStyles]}
+        style={[
+          AnimatedSwapStyles.swapActionWrapperStyle,
+          AnimatedSwapStyles.keyboardStyle,
+          gestureHandlerStyles,
+          styles.swapActionsWrapper,
+        ]}
         width="full"
-        zIndex={10}
+        zIndex={15}
       >
         <ReviewPanel />
         <GasPanel />
         <Columns alignVertical="center" space="12px">
-          <Column style={gasColumnStyles} width="content">
+          <Column style={hiddenColumnStyles} width="content">
             <GasButton />
           </Column>
           <Column style={hiddenColumnStyles} width="content">
@@ -114,5 +113,10 @@ export const styles = StyleSheet.create({
     gap: 24,
     padding: 24,
     overflow: 'hidden',
+  },
+  swapActionsWrapper: {
+    borderTopWidth: THICK_BORDER_WIDTH,
+    borderCurve: 'continuous',
+    paddingBottom: IS_ANDROID ? getSoftMenuBarHeight() - 32 : safeAreaInsetValues.bottom + 16,
   },
 });

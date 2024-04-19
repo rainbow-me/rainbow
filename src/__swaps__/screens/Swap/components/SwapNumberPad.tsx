@@ -11,7 +11,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { Box, Columns, HitSlop, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { Bleed, Box, Columns, HitSlop, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { opacity, stripCommas } from '@/__swaps__/utils/swaps';
 import {
   CUSTOM_KEYBOARD_HEIGHT,
@@ -146,12 +146,14 @@ export const SwapNumberPad = () => {
   return (
     <Box as={Animated.View} style={numpadContainerStyles} height={{ custom: CUSTOM_KEYBOARD_HEIGHT }} paddingHorizontal="6px" width="full">
       <Box style={{ gap: 6 }} width="full">
-        <Separator
-          color={{
-            custom: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR,
-          }}
-          thickness={1}
-        />
+        <Bleed horizontal="6px">
+          <Separator
+            color={{
+              custom: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR,
+            }}
+            thickness={1}
+          />
+        </Bleed>
         <Columns space="6px">
           <NumberPadKey char={1} onPressWorklet={addNumber} />
           <NumberPadKey char={2} onPressWorklet={addNumber} />

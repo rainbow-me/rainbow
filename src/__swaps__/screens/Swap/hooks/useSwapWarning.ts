@@ -85,7 +85,7 @@ export const useSwapWarning = ({ SwapInputController, isFetching, sliderXPositio
        * if those are not present, we want to show the long wait warning
        * if there is no warnings at all, we want to show none
        */
-      if (!isFetching && (quote as QuoteError).error) {
+      if (!isFetching && (quote as QuoteError)?.error) {
         const quoteError = quote as QuoteError;
 
         switch (quoteError.error_code) {
@@ -120,7 +120,7 @@ export const useSwapWarning = ({ SwapInputController, isFetching, sliderXPositio
           }
         }
       }
-      if (!isFetching && !(quote as QuoteError).error && (!inputNativeValue || !outputNativeValue)) {
+      if (!isFetching && !(quote as QuoteError)?.error && (!inputNativeValue || !outputNativeValue)) {
         runOnUI(updateWarning)({
           type: SwapWarningType.unknown,
           display: i18n.t(i18n.l.exchange.price_impact.unknown_price.title),
@@ -136,7 +136,7 @@ export const useSwapWarning = ({ SwapInputController, isFetching, sliderXPositio
           type: SwapWarningType.high,
           display,
         });
-      } else if (!(quote as QuoteError).error) {
+      } else if (!(quote as QuoteError)?.error) {
         const serviceTime = getQuoteServiceTime({
           quote: quote as CrosschainQuote,
         });

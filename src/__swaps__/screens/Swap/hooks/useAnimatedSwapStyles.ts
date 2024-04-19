@@ -3,6 +3,7 @@ import { SharedValue, interpolate, useAnimatedStyle, withSpring, withTiming } fr
 import { globalColors, useColorMode } from '@/design-system';
 import {
   BASE_INPUT_HEIGHT,
+  BOTTOM_ACTION_BAR_HEIGHT,
   EXPANDED_INPUT_HEIGHT,
   FOCUSED_INPUT_HEIGHT,
   THICK_BORDER_WIDTH,
@@ -34,6 +35,8 @@ export function useAnimatedSwapStyles({
   isFetching: SharedValue<boolean>;
 }) {
   const { isDarkMode } = useColorMode();
+
+  const insetBottom = IS_ANDROID ? getSoftMenuBarHeight() - 24 : safeAreaInsetValues.bottom + 16;
 
   const flipButtonStyle = useAnimatedStyle(() => {
     return {
@@ -128,11 +131,11 @@ export function useAnimatedSwapStyles({
       configProgress.value === NavigationSteps.SHOW_REVIEW || configProgress.value === NavigationSteps.SHOW_GAS;
 
     const heightForPanel: { [key in NavigationSteps]: number } = {
-      [NavigationSteps.INPUT_ELEMENT_FOCUSED]: 114,
-      [NavigationSteps.SEARCH_FOCUSED]: 114,
-      [NavigationSteps.TOKEN_LIST_FOCUSED]: 114,
-      [NavigationSteps.SHOW_REVIEW]: 407.68 + safeAreaInsetValues.bottom + 16,
-      [NavigationSteps.SHOW_GAS]: 407.68 + safeAreaInsetValues.bottom + 16,
+      [NavigationSteps.INPUT_ELEMENT_FOCUSED]: BOTTOM_ACTION_BAR_HEIGHT,
+      [NavigationSteps.SEARCH_FOCUSED]: BOTTOM_ACTION_BAR_HEIGHT,
+      [NavigationSteps.TOKEN_LIST_FOCUSED]: BOTTOM_ACTION_BAR_HEIGHT,
+      [NavigationSteps.SHOW_REVIEW]: 407.68 + insetBottom,
+      [NavigationSteps.SHOW_GAS]: 407.68 + insetBottom,
     };
 
     return {
@@ -148,9 +151,6 @@ export function useAnimatedSwapStyles({
       borderTopColor: isReviewingOrConfiguringGas
         ? opacityWorklet(globalColors.darkGrey, 0.2)
         : opacityWorklet(SwapInputController.bottomColor.value, 0.04),
-      borderTopWidth: THICK_BORDER_WIDTH,
-      borderCurve: 'continuous',
-      paddingBottom: IS_ANDROID ? getSoftMenuBarHeight() - 24 : safeAreaInsetValues.bottom + 16,
       paddingTop: isReviewingOrConfiguringGas ? 28 : 16 - THICK_BORDER_WIDTH,
     };
   });

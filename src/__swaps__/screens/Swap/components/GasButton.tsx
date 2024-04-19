@@ -134,37 +134,37 @@ export const GasButton = ({ accentColor, isReviewing = false }: { accentColor?: 
   }
 
   return (
-    <ButtonPressAnimation onPress={() => runOnUI(SwapNavigation.handleShowGas)()}>
-      {/* <GasMenu gasFeeBySpeed={gasFeeBySpeed} flashbotTransaction={false}> */}
-      <Stack space="12px">
-        <Inline alignVertical="center" space={{ custom: 5 }}>
-          <Inline alignVertical="center" space="4px">
-            <TextIcon
-              color={accentColor ? { custom: accentColor } : 'red'}
-              height={10}
-              size="icon 12px"
-              textStyle={{ marginTop: -1.5 }}
-              width={16}
-              weight="bold"
-            >
-              􀙭
+    <ButtonPressAnimation onPress={() => setShowGasOptions(prev => !prev)}>
+      <GasMenu gasFeeBySpeed={gasFeeBySpeed} flashbotTransaction={false}>
+        <Stack space="12px">
+          <Inline alignVertical="center" space={{ custom: 5 }}>
+            <Inline alignVertical="center" space="4px">
+              <TextIcon
+                color={accentColor ? { custom: accentColor } : 'red'}
+                height={10}
+                size="icon 12px"
+                textStyle={{ marginTop: -1.5 }}
+                width={16}
+                weight="bold"
+              >
+                􀙭
+              </TextIcon>
+              <Text color="label" size="15pt" weight="heavy">
+                {getGasLabel(selectedGas?.option || GasSpeed.FAST)}
+              </Text>
+            </Inline>
+            <TextIcon color="labelSecondary" height={10} size="icon 13px" weight="bold" width={12}>
+              􀆏
             </TextIcon>
-            <Text color="label" size="15pt" weight="heavy">
-              {getGasLabel(selectedGas?.option || GasSpeed.FAST)}
-            </Text>
           </Inline>
-          <TextIcon color="labelSecondary" height={10} size="icon 13px" weight="bold" width={12}>
-            􀆏
-          </TextIcon>
-        </Inline>
-        <Inline alignVertical="center" space="4px">
-          <TextIcon color="labelQuaternary" height={10} size="icon 11px" weight="heavy" width={16}>
-            􀵟
-          </TextIcon>
-          <AnimatedText color="labelTertiary" size="15pt" weight="bold" text={animatedGas} />
-        </Inline>
-      </Stack>
-      {/* </GasMenu> */}
+          <Inline alignVertical="center" space="4px">
+            <TextIcon color="labelQuaternary" height={10} size="icon 11px" weight="heavy" width={16}>
+              􀵟
+            </TextIcon>
+            <AnimatedText color="labelTertiary" size="15pt" weight="bold" text={animatedGas} />
+          </Inline>
+        </Stack>
+      </GasMenu>
     </ButtonPressAnimation>
   );
 };
@@ -181,9 +181,9 @@ const GasMenu = ({
   children: ReactNode;
   gasFeeBySpeed: GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed;
 }) => {
+  const { SwapNavigation } = useSwapContext();
   const theme = useTheme();
   const { colors } = theme;
-  const { navigate } = useNavigation();
   const { selectedGas, gasFeeParamsBySpeed, setGasFeeParamsBySpeed, setSelectedGas } = useGasStore();
   const { params } = useRoute();
   // this needs to be moved up or out shouldnt need asset just the color
@@ -193,51 +193,21 @@ const GasMenu = ({
   }, [currentNetwork]);
   const gasOptionsAvailable = useMemo(() => speedOptions.length > 1, [speedOptions.length]);
   const rawColorForAsset = useColorForAsset(asset || {}, fallbackColor, false, true);
-  const [shouldOpenCustomGasSheet, setShouldOpenCustomGasSheet] = useState({
-    focusTo: null,
-    shouldOpen: false,
-  });
 
   const gasIsNotReady: boolean = useMemo(
     () => isEmpty(gasFeeParamsBySpeed) || isEmpty(selectedGas?.gasFee),
     [gasFeeParamsBySpeed, selectedGas]
   );
 
-  const openCustomOptionsRef = useRef<((focusTo: any) => void) | null>(null);
-
-  const openCustomGasSheet = useCallback(() => {
-    if (gasIsNotReady && !__DEV__) return;
-    navigate(Routes.CUSTOM_GAS_SHEET, {
-      asset,
-      fallbackColor,
-      flashbotTransaction,
-      focusTo: shouldOpenCustomGasSheet.focusTo,
-      openCustomOptions: (focusTo: any) => openCustomOptionsRef.current?.(focusTo),
-      speeds: GasSpeedOrder,
-      type: 'custom_gas',
-    });
-  }, [gasIsNotReady, navigate, asset, shouldOpenCustomGasSheet.focusTo, flashbotTransaction, fallbackColor]);
-
   const handlePressSpeedOption = useCallback(
     (selectedGasSpeed: GasSpeed) => {
       if (selectedGasSpeed === CUSTOM) {
-        if (ios) {
-          InteractionManager.runAfterInteractions(() => {
-            setShouldOpenCustomGasSheet({
-              focusTo: null,
-              shouldOpen: true,
-            });
-            openCustomGasSheet();
-          });
-        } else {
-          openCustomGasSheet();
-          setTimeout(() => setGasFeeParamsBySpeed({ gasFeeParamsBySpeed }), 500);
-          return;
-        }
+        runOnUI(SwapNavigation.handleShowGas)();
+      } else {
+        setSelectedGas({ selectedGas: gasFeeBySpeed[selectedGasSpeed] });
       }
-      setSelectedGas({ selectedGas: gasFeeBySpeed[selectedGasSpeed] });
     },
-    [setSelectedGas, openCustomGasSheet]
+    [SwapNavigation.handleShowGas, gasFeeBySpeed, setSelectedGas]
   );
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }: any) => {

@@ -18,6 +18,8 @@ import { SwapNavbar } from '@/__swaps__/screens/Swap/components/SwapNavbar';
 import { SwapAmountInputs } from '@/__swaps__/screens/Swap/components/controls/SwapAmountInputs';
 import { SwapActions } from '@/__swaps__/screens/Swap/components/controls/SwapActions';
 import { SwapWarning } from './components/SwapWarning';
+import Animated from 'react-native-reanimated';
+import { useSwapContext } from './providers/swap-provider';
 
 /** README
  * This prototype is largely driven by Reanimated and Gesture Handler, which
@@ -57,6 +59,7 @@ import { SwapWarning } from './components/SwapWarning';
  */
 
 export function SwapScreen() {
+  const { AnimatedSwapStyles } = useSwapContext();
   return (
     <SwapSheetGestureBlocker>
       <Box as={Page} style={styles.rootViewBackground} testID="swap-screen" width="full">
@@ -69,7 +72,12 @@ export function SwapScreen() {
             <SwapAmountInputs />
             <SwapActions />
           </Box>
-          <Box alignItems="center" justifyContent="center" style={{ position: 'relative' }}>
+          <Box
+            as={Animated.View}
+            alignItems="center"
+            justifyContent="center"
+            style={[styles.swapWarningAndExchangeWrapper, AnimatedSwapStyles.hideWhileReviewingOrConfiguringGas]}
+          >
             <ExchangeRateBubble />
             <SwapWarning />
           </Box>
@@ -87,5 +95,8 @@ export const styles = StyleSheet.create({
     flex: 1,
     overflow: 'hidden',
     marginTop: StatusBar.currentHeight ?? 0,
+  },
+  swapWarningAndExchangeWrapper: {
+    position: 'relative',
   },
 });
