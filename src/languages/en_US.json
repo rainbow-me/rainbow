@@ -2788,6 +2788,10 @@
     "dapp_browser": {
       "address_bar": {
         "input_placeholder": "Search or enter website"
+      },
+      "error": {
+        "title": "Something went wrong",
+        "default_msg": "There was an error loading the page. Please try again."
       }
     }
   }

@@ -54,6 +54,7 @@ import { normalizeUrlForRecents } from './utils';
 import { useBrowserContext } from './BrowserContext';
 import { BrowserTabProps, ScreenshotType } from './types';
 import { findTabScreenshot, saveScreenshot } from './screenshots';
+import { ErrorPage } from './ErrorPage';
 
 // ⚠️ TODO: Split this file apart into hooks, smaller components
 // useTabScreenshots, useAnimatedWebViewStyles, useWebViewGestures
@@ -706,6 +707,7 @@ export const BrowserTab = React.memo(
                     onLoad={handleOnLoad}
                     // 👇 This eliminates a white flash and prevents the WebView from hiding its content on load/reload
                     renderLoading={() => <></>}
+                    renderError={() => <ErrorPage />}
                     onLoadEnd={handleOnLoadEnd}
                     onError={handleOnError}
                     onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
