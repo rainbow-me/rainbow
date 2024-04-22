@@ -2,9 +2,7 @@ name: iOS e2e tests
 
 on: [pull_request, workflow_dispatch]
 jobs:
-  # This workflow contains a single job called "ios-e2e"
   ios-e2e:
-    # The type of runner that the job will run on
     runs-on: ["self-hosted"]
     # Cancel current builds if there's a newer commit on the same branch
     concurrency: 
@@ -16,6 +14,9 @@ jobs:
 
       - name: Set up github keys
         run:  git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
+     
+      - name: clean ios app step
+        run: yarn clean:ios  > /dev/null 2>&1 || true
 
       - name: Set up ENV vars & scripts
         run: |
@@ -42,7 +43,7 @@ jobs:
         run: yarn lint:ci
 
       - name: Install Pods
-        run: cd ios && bundle install && pod install --repo-update && cd ..
+        run: yarn install-pods
 
       - name: Rebuild detox cache
         run: ./node_modules/.bin/detox clean-framework-cache && ./node_modules/.bin/detox build-framework-cache
@@ -52,9 +53,10 @@ jobs:
 
       - name: Build the app in release mode
         run: ./node_modules/.bin/detox build --configuration ios.sim.release
-
-      - name: Run iOS e2e tests
-        run: ./node_modules/.bin/detox test -R 5 --configuration ios.sim.release --forceExit --bail
+     
+      - name: Run iOS e2e tests with retry
+      # change the '5' here to how many times you want the tests to rerun on failure
+        run: ./scripts/run-retry-tests.sh 5
      
       - name: Upload Test Artifacts
         if: failure()

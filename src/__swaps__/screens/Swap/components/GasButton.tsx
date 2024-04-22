@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useCallback, useRef, useEffect, ReactNode } from 'react';
-import { InteractionManager, Keyboard } from 'react-native';
+import { InteractionManager } from 'react-native';
 import { ButtonPressAnimation } from '@/components/animations';
-import { AnimatedText, Inline, Stack, Text, TextIcon } from '@/design-system';
+import { AnimatedText, Box, Inline, Stack, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { useGasStore } from '@/state/gas/gasStore';
 import { Centered } from '@/components/layout';
 import { useTheme } from '@/theme';
@@ -11,23 +11,24 @@ import { useRoute } from '@react-navigation/native';
 import { useAccountSettings, useColorForAsset } from '@/hooks';
 import { ContextMenu } from '@/components/context-menu';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { isNil, isEmpty, add } from 'lodash';
+import { isEmpty } from 'lodash';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils, gasUtils } from '@/utils';
 import styled from '@/styled-thing';
 import { useMeteorology } from '@/__swaps__/utils/meteorology';
 import { parseGasFeeParamsBySpeed } from '@/__swaps__/utils/gasUtils';
-import { useDerivedValue } from 'react-native-reanimated';
-import { capitalize } from '../utils/strings';
+import Animated, { useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { ParsedAddressAsset } from '@/entities';
 import { GasFeeLegacyParamsBySpeed, GasFeeParamsBySpeed, GasSpeed } from '@/__swaps__/types/gas';
 import { ParsedAsset } from '@/__swaps__/types/assets';
-import { convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { ETH_COLOR, ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '../constants';
+
 const { GasSpeedOrder, CUSTOM, GAS_ICONS, GAS_EMOJIS, getGasLabel, getGasFallback } = gasUtils;
 const mockedGasLimit = '21000';
 
-export const GasButton = ({ accentColor }: { accentColor?: string }) => {
+export const GasButton = ({ accentColor, isReviewing = false }: { accentColor?: string; isReviewing?: boolean }) => {
+  const { isDarkMode } = useColorMode();
   const { params } = useRoute();
   const { currentNetwork } = (params as any) || {};
   const chainId = getNetworkObj(currentNetwork).id;
@@ -35,6 +36,9 @@ export const GasButton = ({ accentColor }: { accentColor?: string }) => {
   const { data, isLoading } = useMeteorology({ chainId });
   const [nativeAsset, setNativeAsset] = useState<ParsedAddressAsset | undefined>();
   const { nativeCurrency } = useAccountSettings();
+
+  const separatatorSecondary = useForegroundColor('separatorSecondary');
+
   useEffect(() => {
     const getNativeAsset = async () => {
       const theNativeAsset = await ethereumUtils.getNativeAssetForNetwork(currentNetwork);
@@ -43,7 +47,7 @@ export const GasButton = ({ accentColor }: { accentColor?: string }) => {
     getNativeAsset();
   }, [currentNetwork, setNativeAsset]);
 
-  let gasFeeBySpeed: GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed | any = useMemo(() => {
+  const gasFeeBySpeed: GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed | any = useMemo(() => {
     if (!isLoading) {
       return parseGasFeeParamsBySpeed({
         chainId,
@@ -57,9 +61,75 @@ export const GasButton = ({ accentColor }: { accentColor?: string }) => {
   }, [isLoading, nativeAsset]);
   const gasFallback = getGasFallback(nativeCurrency);
   const [showGasOptions, setShowGasOptions] = useState(false);
+  // TODO: Move this navigation state inside of SwapNavigation
+  const [showCustomGasSheet, setShowCustomGasSheet] = useState(false);
   const animatedGas = useDerivedValue(() => {
     return gasFeeBySpeed[selectedGas?.option]?.gasFee?.display ?? gasFallback;
   }, [gasFeeBySpeed, selectedGas]);
+
+  const buttonWrapperStyles = useAnimatedStyle(() => {
+    return {
+      display: 'flex',
+      flexDirection: 'row',
+      backgroundColor: 'transparent',
+      borderWidth: 2,
+      borderColor: isDarkMode ? ETH_COLOR_DARK : ETH_COLOR,
+      borderRadius: 15,
+      paddingHorizontal: 10,
+      paddingVertical: 6,
+      gap: 5,
+      alignItems: 'center',
+      justifyContent: 'center',
+    };
+  });
+
+  if (isReviewing) {
+    return (
+      <Inline alignVertical="center" wrap={false}>
+        <GasMenu gasFeeBySpeed={gasFeeBySpeed} flashbotTransaction={false}>
+          <ButtonPressAnimation onPress={() => setShowGasOptions(!showGasOptions)}>
+            <Box as={Animated.View} style={buttonWrapperStyles}>
+              <Inline alignVertical="center" space="4px">
+                <TextIcon
+                  color={accentColor ? { custom: accentColor } : 'red'}
+                  height={10}
+                  size="icon 12px"
+                  textStyle={{ marginTop: -1.5 }}
+                  width={16}
+                  weight="bold"
+                >
+                  􀙭
+                </TextIcon>
+                <Text color="label" size="15pt" weight="heavy">
+                  {getGasLabel(selectedGas?.option || GasSpeed.FAST)}
+                </Text>
+              </Inline>
+              <TextIcon color="labelSecondary" height={10} size="icon 13px" weight="bold" width={12}>
+                􀆏
+              </TextIcon>
+            </Box>
+          </ButtonPressAnimation>
+        </GasMenu>
+
+        <ButtonPressAnimation onPress={() => setShowCustomGasSheet(prev => !prev)}>
+          <Box
+            style={{
+              paddingHorizontal: 7,
+              paddingVertical: 6,
+              gap: 10,
+              borderRadius: 15,
+              borderWidth: THICK_BORDER_WIDTH,
+              borderColor: separatatorSecondary,
+            }}
+          >
+            <Text weight="heavy" size="15pt" color="label">
+              􀌆
+            </Text>
+          </Box>
+        </ButtonPressAnimation>
+      </Inline>
+    );
+  }
 
   return (
     <ButtonPressAnimation onPress={() => setShowGasOptions(!showGasOptions)}>

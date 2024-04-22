@@ -1,18 +1,18 @@
 import { useQuery } from '@tanstack/react-query';
 import { Address } from 'viem';
+import { ADDYS_API_KEY } from 'react-native-dotenv';
 
 import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
 import { SupportedCurrencyKey, SUPPORTED_CHAIN_IDS } from '@/references';
-import { ParsedAssetsDictByChain, ZerionAsset } from '../../types/assets';
-import { ChainId } from '../../types/chains';
-import { AddressAssetsReceivedMessage } from '../../types/refraction';
-import { filterAsset, parseUserAsset } from '@/__swaps__/screens/Swap/utils/assets';
-import { greaterThan } from '@/__swaps__/screens/Swap/utils/numbers';
+import { ParsedAssetsDictByChain, ZerionAsset } from '@/__swaps__/types/assets';
+import { ChainId } from '@/__swaps__/types/chains';
+import { AddressAssetsReceivedMessage } from '@/__swaps__/types/refraction';
+import { filterAsset, parseUserAsset } from '@/__swaps__/utils/assets';
+import { greaterThan } from '@/__swaps__/utils/numbers';
 import { RainbowError, logger } from '@/logger';
 
 import { fetchUserAssetsByChain } from './userAssetsByChain';
 import { RainbowFetchClient } from '@/rainbow-fetch';
-import { ADDYS_API_KEY } from 'react-native-dotenv';
 import { useAccountSettings } from '@/hooks';
 import { getCachedProviderForNetwork, isHardHat } from '@/handlers/web3';
 

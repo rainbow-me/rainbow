@@ -543,6 +543,9 @@
         "view_on": "View on %{blockExplorerName}",
         "view_on_etherscan": "View on Etherscan"
       },
+      "all_networks": "All Networks",
+      "filter_by_network": "Filter by Network",
+      "my_tokens": "My Tokens",
       "flip": "Flip",
       "max": "Max",
       "movers": {
@@ -561,10 +564,28 @@
         "nothing_here": "Nothing here!",
         "nothing_to_send": "Nothing to send"
       },
+      "quote_errors": {
+        "no_quote_available": "No quote available",
+        "insufficient_liquidity": "Insufficient liquidity",
+        "fee_on_transfer": "Fee on Transfer Token",
+        "no_route_found": "No route found"
+      },
       "price_impact": {
+        "long_wait": {
+          "title": "Long wait",
+          "description": "Approx."
+        },
+        "unknown_price": {
+          "title": "%{symbol} Market Value Unknown",
+          "description": "If you decide to continue, be sure that you are satisfied receiving the quoted amount."
+        },
         "losing_prefix": "Losing",
         "small_market": "Small Market",
-        "label": "Possible loss"
+        "small_market_try_smaller_amount": "Small market — try a smaller amount",
+        "you_are_losing": "You're losing",
+        "no_data": "Market Value Unknown",
+        "label": "Possible loss",
+        "no_data_subtitle": "If you decide to continue, be sure that you are satisfied with the quoted amount"
       },
       "source": {
         "rainbow": "Auto",
@@ -854,15 +875,19 @@
       },
       "base": {
         "text": "Base is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
-        "title": "What's Base"
+        "title": "What's Base?"
       },
       "avalanche": {
         "text": "Avalanche is a sidechain, a distinct network that runs alongside Ethereum and is compatible with it.\n\nIt allows for cheaper and faster transactions, but unlike Layer 2 networks, Avalanche has its own security and consensus mechanisms that differ from Ethereum.",
         "title": "What's Avalanche"
       },
+      "degen": {
+        "text": "Degen Chain is a Layer 3 network that runs on top of Arbitrum and Ethereum, offering incredibly fast and cheap transactions denominated in the Farcaster community token $degen.",
+        "title": "What's Degen Chain?"
+      },
       "blast": {
         "text": "Blast is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
-        "title": "What's Blast"
+        "title": "What's Blast?"
       },
       "zora": {
         "text": "Zora is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
@@ -2183,6 +2208,9 @@
       "copied": "Copied \"%{copiedText}\"",
       "invalid_paste": "You can't paste that here"
     },
+    "tokens_tab": {
+      "unknown_token": "Unknown Token"
+    },
     "hardware_wallets": {
       "pair_your_nano": "Pair your Nano X",
       "connect_your_ledger": "Connect your Ledger Nano X to Rainbow through Bluetooth. If this is your first time, Rainbow will ask for Bluetooth access.",
@@ -2359,6 +2387,7 @@
       "balance_title": "Balance",
       "buy": "Buy",
       "change_wallet": {
+        "no_balance": "No Balance",
         "balance_eth": "%{balanceEth} ETH",
         "watching": "Watching",
         "ledger": "Ledger"
@@ -2568,7 +2597,7 @@
           "insufficient_funds": "Oh no! The gas price changed and you no longer have enough funds for this transaction. Please try again with a lower amount.",
           "generic": "Oh no! There was a problem submitting the transaction. Please try again."
         },
-        "complete_checks": "Complete checks",
+        "complete_check": "Complete check",
         "ens_configuration_options": "ENS configuration options",
         "confirm": "Confirm transaction",
         "max": "Max",

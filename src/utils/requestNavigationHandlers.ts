@@ -19,7 +19,7 @@ import { RainbowNetworks } from '@/networks';
 import { maybeSignUri } from '@/handlers/imgix';
 import { getActiveRoute } from '@/navigation/Navigation';
 
-export type RequestType = 'walletconnect' | 'browser';
+export type RequestSource = 'walletconnect' | 'browser';
 
 // Dapp Browser
 
@@ -39,11 +39,12 @@ export const handleDappBrowserConnectionPrompt = (dappData: DappConnectionData):
         chainIds,
         dappName: dappData?.dappName || dappData.dappUrl,
         dappUrl: dappData.dappUrl,
-        imageUrl: maybeSignUri(dappData.dappUrl),
+        imageUrl: maybeSignUri(dappData.imageUrl),
         isWalletConnectV2: false,
         peerId: '',
         dappScheme: null,
       },
+      source: 'browser',
       timedOut: false,
       callback: async (approved, approvedChainId, accountAddress) => {
         if (approved) {
@@ -102,7 +103,7 @@ export const handleDappBrowserRequest = async (request: Omit<RequestData, 'displ
       onCloseScreen,
       network: request.network,
       address: request.address,
-      requestType: 'browser',
+      source: 'browser',
     });
   });
 };
@@ -172,6 +173,6 @@ export const handleWalletConnectRequest = async (request: WalletconnectRequestDa
     onCloseScreen,
     network,
     address,
-    requestType: 'walletconnect',
+    source: 'walletconnect',
   });
 };

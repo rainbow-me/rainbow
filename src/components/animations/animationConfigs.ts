@@ -26,8 +26,9 @@ const timingAnimations = createTimingConfigs({
   fadeConfig: { duration: 200, easing: Easing.bezier(0.22, 1, 0.36, 1) },
   fastFadeConfig: { duration: 100, easing: Easing.bezier(0.22, 1, 0.36, 1) },
   slowFadeConfig: { duration: 300, easing: Easing.bezier(0.22, 1, 0.36, 1) },
+  slowerFadeConfig: { duration: 400, easing: Easing.bezier(0.22, 1, 0.36, 1) },
   slowestFadeConfig: { duration: 500, easing: Easing.bezier(0.22, 1, 0.36, 1) },
-  tabPressConfig: { duration: 750, easing: Easing.bezier(0.22, 1, 0.36, 1) },
+  tabPressConfig: { duration: 800, easing: Easing.bezier(0.22, 1, 0.36, 1) },
 });
 
 export const TIMING_CONFIGS: Record<keyof typeof timingAnimations, WithTimingConfig> = timingAnimations;

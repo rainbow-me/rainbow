@@ -60,7 +60,7 @@ export const FastFallbackCoinIconImage = React.memo(function FastFallbackCoinIco
   );
 
   return (
-    <View style={[sx.coinIconContainer, sx.withShadow, { shadowColor, height: size, width: size }]}>
+    <View style={[sx.coinIconContainer, sx.withShadow, { shadowColor, height: size, width: size, borderRadius: size / 2 }]}>
       {shouldShowImage && (
         <ImageWithCachedMetadata
           cache={ImgixImage.cacheControl.immutable}
@@ -68,7 +68,11 @@ export const FastFallbackCoinIconImage = React.memo(function FastFallbackCoinIco
           onError={onError}
           onLoad={onLoad}
           size={size}
-          style={[sx.coinIconFallback, isLoaded && { backgroundColor: colors.white }, { height: size, width: size }]}
+          style={[
+            sx.coinIconFallback,
+            isLoaded && { backgroundColor: colors.white },
+            { height: size, width: size, borderRadius: size / 2 },
+          ]}
         />
       )}
 
@@ -80,12 +84,10 @@ export const FastFallbackCoinIconImage = React.memo(function FastFallbackCoinIco
 const sx = StyleSheet.create({
   coinIconContainer: {
     alignItems: 'center',
-    borderRadius: 20,
     justifyContent: 'center',
     overflow: 'visible',
   },
   coinIconFallback: {
-    borderRadius: 20,
     overflow: 'hidden',
   },
   fallbackWrapper: {

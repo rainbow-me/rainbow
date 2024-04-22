@@ -89,6 +89,7 @@ export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.zora]: 200,
   [Network.avalanche]: 200,
   [Network.blast]: 200,
+  [Network.degen]: 200,
 };
 
 export const getDefaultSlippageFromConfig = (network: Network) => {
@@ -702,9 +703,9 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
       android && Keyboard.dismiss();
       const lastFocusedInputHandleTemporary = lastFocusedInputHandle.current;
       android && (lastFocusedInputHandle.current = null);
-      inputFieldRef?.current?.blur();
-      outputFieldRef?.current?.blur();
-      nativeFieldRef?.current?.blur();
+      inputFieldRef?.current?.blur?.();
+      outputFieldRef?.current?.blur?.();
+      nativeFieldRef?.current?.blur?.();
       const internalNavigate = () => {
         IS_ANDROID && keyboardListenerSubscription.current?.remove();
         setParams({ focused: false });
@@ -868,6 +869,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
                   isHighPriceImpact={
                     !confirmButtonProps.disabled && !confirmButtonProps.loading && debouncedIsHighPriceImpact && isSufficientBalance
                   }
+                  outputCurrencySymbol={outputCurrency?.symbol}
                   onFlipCurrencies={loading ? NOOP : flipCurrencies}
                   onPressImpactWarning={navigateToSwapDetailsModal}
                   onPressSettings={navigateToSwapSettingsSheet}

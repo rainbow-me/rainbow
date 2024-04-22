@@ -1,4 +1,5 @@
-import React, { useCallback, useMemo, useRef } from 'react';
+/* eslint-disable no-nested-ternary */
+import React, { useCallback, useRef } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { PanGestureHandler, TapGestureHandler, TapGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 import Animated, {
@@ -32,14 +33,14 @@ import {
   snappierSpringConfig,
   snappySpringConfig,
   springConfig,
-} from '../constants';
-import { clamp, opacity, opacityWorklet } from '../utils/swaps';
-import { useSwapContext } from '../providers/swap-provider';
-import { SwapCoinIcon } from './SwapCoinIcon';
+} from '@/__swaps__/screens/Swap/constants';
+import { clamp, opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { SwapCoinIcon } from '@/__swaps__/screens/Swap/components/SwapCoinIcon';
 import { useTheme } from '@/theme';
-import { useSwapAssetStore } from '../state/assets';
+import { useSwapAssetStore } from '@/__swaps__/screens/Swap/state/assets';
 import { ethereumUtils } from '@/utils';
-import { ChainId } from '../types/chains';
+import { ChainId } from '@/__swaps__/types/chains';
 
 type SwapSliderProps = {
   dualColor?: boolean;
@@ -80,15 +81,22 @@ export const SwapSlider = ({
     [SwapInputController]
   );
 
-  const { inactiveColorLeft, activeColorLeft, inactiveColorRight, activeColorRight } = useMemo(
-    () => ({
-      inactiveColorLeft: opacityWorklet(dualColor ? SwapInputController.bottomColor.value : SwapInputController.topColor.value, 0.9),
-      activeColorLeft: dualColor ? SwapInputController.bottomColor.value : SwapInputController.topColor.value,
-      inactiveColorRight: dualColor ? opacity(SwapInputController.topColor.value, 0.9) : separatorSecondary,
-      activeColorRight: dualColor ? SwapInputController.topColor.value : fillSecondary,
-    }),
-    [SwapInputController.bottomColor.value, SwapInputController.topColor.value, dualColor, fillSecondary, separatorSecondary]
-  );
+  const colors = useDerivedValue(() => ({
+    inactiveColorLeft: opacityWorklet(dualColor ? SwapInputController.bottomColor.value : SwapInputController.topColor.value, 0.9),
+    activeColorLeft: dualColor ? SwapInputController.bottomColor.value : SwapInputController.topColor.value,
+    inactiveColorRight: dualColor ? opacityWorklet(SwapInputController.topColor.value, 0.9) : separatorSecondary,
+    activeColorRight: dualColor ? SwapInputController.topColor.value : fillSecondary,
+  }));
+
+  // const { inactiveColorLeft, activeColorLeft, inactiveColorRight, activeColorRight } = useMemo(
+  //   () => ({
+  //     inactiveColorLeft: opacityWorklet(dualColor ? SwapInputController.bottomColor.value : SwapInputController.topColor.value, 0.9),
+  //     activeColorLeft: dualColor ? SwapInputController.bottomColor.value : SwapInputController.topColor.value,
+  //     inactiveColorRight: dualColor ? opacityWorklet(SwapInputController.topColor.value, 0.9) : separatorSecondary,
+  //     activeColorRight: dualColor ? SwapInputController.topColor.value : fillSecondary,
+  //   }),
+  //   [SwapInputController.bottomColor.value, SwapInputController.topColor.value, dualColor, fillSecondary, separatorSecondary]
+  // );
 
   // This is the percentage of the slider from the left
   const xPercentage = useDerivedValue(() => {
@@ -284,7 +292,11 @@ export const SwapSlider = ({
 
     return {
       backgroundColor: withSpring(
-        interpolateColor(sliderPressProgress.value, [collapsedPercentage, 1], [inactiveColorLeft, activeColorLeft]),
+        interpolateColor(
+          sliderPressProgress.value,
+          [collapsedPercentage, 1],
+          [colors.value.inactiveColorLeft, colors.value.activeColorLeft]
+        ),
         springConfig
       ),
       borderWidth: interpolate(
@@ -295,7 +307,7 @@ export const SwapSlider = ({
       ),
       width: `${uiXPercentage.value * 100}%`,
     };
-  }, [activeColorLeft, inactiveColorLeft]);
+  });
 
   const rightBarContainerStyle = useAnimatedStyle(() => {
     return {
@@ -305,9 +317,10 @@ export const SwapSlider = ({
         [THICK_BORDER_WIDTH, THICK_BORDER_WIDTH, 0, 0],
         'clamp'
       ),
+      backgroundColor: colors.value.inactiveColorRight,
       width: `${(1 - uiXPercentage.value - SCRUBBER_WIDTH / width) * 100}%`,
     };
-  }, [activeColorRight, inactiveColorRight]);
+  });
 
   const pulsingOpacity = useDerivedValue(() => {
     return SwapInputController.isQuoteStale.value === 1
@@ -438,8 +451,6 @@ export const SwapSlider = ({
                   styles.sliderBox,
                   rightBarContainerStyle,
                   {
-                    backgroundColor: inactiveColorRight,
-                    // eslint-disable-next-line no-nested-ternary
                     borderColor: dualColor ? separatorSecondary : isDarkMode ? 'rgba(245, 248, 255, 0.015)' : 'rgba(26, 28, 31, 0.005)',
                   },
                 ]}

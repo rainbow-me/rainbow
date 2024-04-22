@@ -58,7 +58,7 @@ export const getOptimismNetworkObject = (): NetworkProperties => {
       defaultSlippage: 200,
     },
 
-    nfts: {},
+    nfts: { simplehashNetwork: 'optimism' },
 
     // design tings
     colors: {

@@ -23,7 +23,6 @@ import me.rainbow.NativeModules.RNReview.RNReviewPackage;
 import me.rainbow.NativeModules.RNStartTime.RNStartTimePackage;
 import me.rainbow.NativeModules.RNTextAnimatorPackage.RNTextAnimatorPackage;
 import me.rainbow.NativeModules.RNZoomableButton.RNZoomableButtonPackage;
-import com.microsoft.codepush.react.CodePush;
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactNativeHost;
 import me.rainbow.BuildConfig;
@@ -40,11 +39,6 @@ public class MainApplication extends Application implements ReactApplication {
         @Override
         public boolean getUseDeveloperSupport() {
           return BuildConfig.DEBUG;
-        }
-
-        @Override
-        protected String getJSBundleFile() {
-          return CodePush.getJSBundleFile();
         }
 
         @Override

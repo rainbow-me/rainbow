@@ -1,7 +1,7 @@
 import { getDefaultKeyboardHeight } from '@/redux/keyboardHeight';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { Easing } from 'react-native-reanimated';
-import { SearchAsset } from './types/search';
+import { SearchAsset } from '@/__swaps__/types/search';
 
 // /---- 🔒 Constants 🔒 ----/ //
 //
@@ -14,6 +14,7 @@ export const NATIVE_KEYBOARD_HEIGHT = getDefaultKeyboardHeight();
 
 export const BASE_INPUT_HEIGHT = 104;
 export const BASE_INPUT_WIDTH = deviceUtils.dimensions.width - 24;
+export const EXPANDED_REVIEW_SECTION = 408.67;
 export const EXPANDED_INPUT_HEIGHT =
   deviceUtils.dimensions.height -
   safeAreaInsetValues.top -

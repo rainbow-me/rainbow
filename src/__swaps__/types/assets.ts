@@ -1,13 +1,13 @@
-import { Address } from 'viem';
-import { ChainId, ChainName } from './chains';
+import type { Address } from 'viem';
 
-export const ETH_ADDRESS = 'eth';
+import { ETH_ADDRESS } from '@/references';
+import { ChainId, ChainName } from '@/__swaps__/types/chains';
+import { SearchAsset } from '@/__swaps__/types/search';
+
 export type AddressOrEth = Address | typeof ETH_ADDRESS;
 
-export interface ZerionAssetPrice {
-  value: number;
-  relative_change_24h?: number;
-}
+export type UserAssetFilter = 'all' | ChainId;
+
 export interface ParsedAsset {
   address: AddressOrEth;
   chainId: ChainId;
@@ -41,8 +41,90 @@ export interface ParsedAsset {
     networks: { [id in ChainId]?: { bridgeable: boolean } };
   };
 }
-export type UniqueId = `${Address}_${ChainId}`;
+
+export interface ParsedUserAsset extends ParsedAsset {
+  balance: {
+    amount: string;
+    display: string;
+  };
+  native: {
+    balance: {
+      amount: string;
+      display: string;
+    };
+    price?: {
+      change: string;
+      amount: number;
+      display: string;
+    };
+  };
+}
+
+export type SearchAssetWithPrice = SearchAsset & ParsedAsset;
+export type ParsedSearchAsset = SearchAsset & ParsedUserAsset;
+
+export type ParsedAssetsDict = Record<UniqueId, ParsedUserAsset>;
+
+export type ParsedAssetsDictByChain = Record<ChainId | number, ParsedAssetsDict>;
+
+export interface ZerionAssetPrice {
+  value: number;
+  relative_change_24h?: number;
+}
+
+export type AssetApiResponse = {
+  asset_code: AddressOrEth;
+  bridging: {
+    bridgeable: boolean;
+    networks: { [id in ChainId]?: { bridgeable: boolean } };
+  };
+  decimals: number;
+  icon_url: string;
+  name: string;
+  chain_id: number;
+  price?: {
+    value: number;
+    changed_at: number;
+    relative_change_24h: number;
+  };
+  symbol: string;
+  colors?: { primary?: string; fallback?: string; shadow?: string };
+  network?: ChainName;
+  networks?: {
+    [chainId in ChainId]?: {
+      address: chainId extends ChainId.mainnet ? AddressOrEth : Address;
+      decimals: number;
+    };
+  };
+  type?: AssetType;
+  interface?: 'erc-721' | 'erc-1155';
+};
+
 type AssetType = ProtocolType | 'nft';
+
+export interface ZerionAsset {
+  asset_code: AddressOrEth;
+  colors?: {
+    primary: string;
+    fallback: string;
+  };
+  implementations?: Record<string, { address: Address | null; decimals: number }>;
+  mainnet_address?: AddressOrEth;
+  name: string;
+  symbol: string;
+  decimals: number;
+  type?: AssetType;
+  icon_url?: string;
+  is_displayable?: boolean;
+  is_verified?: boolean;
+  price?: ZerionAssetPrice;
+  network?: ChainName;
+  bridging: {
+    bridgeable: boolean;
+    networks: { [id in ChainId]?: { bridgeable: boolean } };
+  };
+}
+
 // protocols https://github.com/rainbow-me/go-utils-lib/blob/master/pkg/enums/token_type.go#L44
 export type ProtocolType =
   | 'aave-v2'
@@ -70,27 +152,33 @@ export type ProtocolType =
   | 'pickle'
   | 'yearn-v3'
   | 'venus'
-  | 'sushiswap';
+  | 'sushiswap'
+  | 'native'
+  | 'wrappedNative'
+  | 'stablecoin';
 
-export type AssetApiResponse = {
-  asset_code: AddressOrEth;
+export type AssetMetadata = {
+  circulatingSupply: number;
+  colors?: { primary: string; fallback?: string; shadow?: string };
   decimals: number;
-  icon_url: string;
+  description: string;
+  fullyDilutedValuation: number;
+  iconUrl: string;
+  marketCap: number;
   name: string;
-  price?: {
-    value: number;
-    changed_at: number;
-    relative_change_24h: number;
-  };
-  symbol: string;
-  colors?: { primary?: string; fallback?: string; shadow?: string };
-  network?: ChainName;
   networks?: {
     [chainId in ChainId]?: {
       address: chainId extends ChainId.mainnet ? AddressOrEth : Address;
       decimals: number;
     };
   };
-  type?: AssetType;
-  interface?: 'erc-721' | 'erc-1155';
+  price: {
+    value: number;
+    relativeChange24h: number;
+  };
+  symbol: string;
+  totalSupply: number;
+  volume1d: number;
 };
+
+export type UniqueId = `${Address}_${ChainId}`;
