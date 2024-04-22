@@ -5,7 +5,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { ETH_COLOR, ETH_COLOR_DARK, SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '@/__swaps__/screens/Swap/constants';
 import { SWAP_FEE } from '@/__swaps__/screens/Swap/dummyValues';
 import { inputKeys, inputMethods } from '@/__swaps__/types/swap';
-import { logger } from '@/logger';
+import { RainbowError, logger } from '@/logger';
 import {
   addCommasToNumber,
   clamp,
@@ -32,10 +32,14 @@ import {
   Quote,
   QuoteError,
   QuoteParams,
+  Slippage,
+  SlippageError,
+  SlippageParams,
   Source,
   SwapType,
   getCrosschainQuote,
   getQuote,
+  getSlippage,
 } from '@rainbow-me/swaps';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useAccountSettings } from '@/hooks';
@@ -410,8 +414,10 @@ export function useSwapInputsController({
 
     const quoteParams: QuoteParams = {
       source: source.value === 'auto' ? undefined : source.value,
-      chainId: assetToSell.value.chainId,
+      swapType: isCrosschainSwap ? SwapType.crossChain : SwapType.normal,
       fromAddress: currentAddress,
+      chainId: assetToSell.value.chainId,
+      toChainId: isCrosschainSwap ? assetToBuy.value.chainId : assetToSell.value.chainId,
       sellTokenAddress: assetToSell.value.isNativeAsset ? ETH_ADDRESS : assetToSell.value.address,
       buyTokenAddress: assetToBuy.value.isNativeAsset ? ETH_ADDRESS : assetToBuy.value.address,
       // TODO: Sometimes decimals are present here which messes with the quote
@@ -420,8 +426,6 @@ export function useSwapInputsController({
       buyAmount: isInputAmount ? undefined : convertAmountToRawAmount(amount, assetToBuy.value.decimals),
       slippage: Number(slippage.value),
       refuel: false,
-      swapType: isCrosschainSwap ? SwapType.crossChain : SwapType.normal,
-      toChainId: isCrosschainSwap ? assetToBuy.value.chainId : assetToSell.value.chainId,
     };
 
     logger.debug(`[useSwapInputsController] quoteParams`, { quoteParams });
@@ -554,11 +558,74 @@ export function useSwapInputsController({
   };
 
   const onExecuteSwap = async () => {
-    if (!assetToSell.value || !assetToBuy.value || !quote.value) return;
+    const quoteData = quote.value as Quote | CrosschainQuote;
+    /**
+     * NOTE: Before executing a swap, we want to check several things:
+     * 1. assetToSell && assetToBuy addresses match the quote values
+     * 2. outputNative matches quote value
+     * 3. buyAmount > 0 (should we check this? because we can have missing price data)
+     */
+    const failedConditions: string[] = [];
+    // Ensure assetToSell and assetToBuy are not null or undefined before proceeding
+    if (!assetToBuy.value || !assetToSell.value) {
+      logger.debug('[onExecuteSwap]: Missing assetToSell or assetToBuy');
+      return;
+    }
+    if ((quote.value as QuoteError)?.error) failedConditions.push('quote error');
+    if (quoteData.buyAmountMinusFees.toString() === '0') failedConditions.push('buyAmountMinusFees is 0');
+    if (quoteData.buyTokenAddress !== assetToBuy.value.address) failedConditions.push('buyTokenAddress mismatch');
+    if (quoteData.sellTokenAddress !== assetToSell.value.address) failedConditions.push('sellTokenAddress mismatch');
 
-    // console.log('executing swap');
-    // const isCrosschainSwap =
-    //   assetToSell.value.chainId !== assetToBuy.value.chainId;
+    if (failedConditions.length > 0) {
+      logger.debug(`[onExecuteSwap]: Not executing swap due to failed conditions: ${failedConditions.join(', ')}`);
+      return;
+    }
+
+    const isCrosschainSwap = assetToSell.value.chainId !== assetToBuy.value.chainId;
+    const slippageParams: SlippageParams = {
+      chainId: assetToSell.value.chainId,
+      toChainId: isCrosschainSwap ? assetToBuy.value.chainId : assetToSell.value.chainId,
+      sellTokenAddress: assetToSell.value.isNativeAsset ? ETH_ADDRESS : assetToSell.value.address,
+      buyTokenAddress: assetToBuy.value.isNativeAsset ? ETH_ADDRESS : assetToBuy.value.address,
+      sellAmount: quoteData.sellAmount,
+      buyAmount: quoteData.buyAmountMinusFees,
+    };
+
+    let slippageToUse = slippage.value;
+
+    const defaultSlippage = getDefaultSlippage(assetToSell.value?.chainId || ChainId.mainnet, config);
+    // NOTE: if slippage === default slippage, update the slippage because we can assume that the user wanted the default slippage if they haven't adjusted it.
+    if (slippage.value === defaultSlippage) {
+      try {
+        const backendSlippage = await getSlippage(slippageParams);
+        if (!backendSlippage) {
+          throw new RainbowError('[useSwapInputsController] Error fetching slippage', {
+            cause: 'Slippage not found',
+          });
+        }
+
+        if ((backendSlippage as SlippageError)?.error) {
+          throw new RainbowError('[useSwapInputsController] Error fetching slippage', {
+            cause: backendSlippage as SlippageError,
+          });
+        }
+
+        const percentage = (backendSlippage as Slippage).slippagePercent;
+        slippageToUse = `${percentage}`;
+      } catch (e) {
+        if (e instanceof RainbowError) {
+          logger.error(e);
+        } else {
+          logger.error(
+            new RainbowError('[useSwapInputsController] Error fetching slippage', {
+              cause: JSON.stringify(e),
+            })
+          );
+        }
+      }
+    }
+
+    logger.debug(`[onExecuteSwap] slippageToUse`, { slippageToUse });
     // const flashbotsEnabled =
     //   assetToSell.value.chainId === ChainId.mainnet ? flashbots.value : false;
     // const rapType = getSwapRapTypeByExchangeType(isCrosschainSwap);
