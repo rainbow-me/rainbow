@@ -460,7 +460,7 @@ export function useSwapInputsController({
     );
     const outputNativeValue =
       !data.buyAmountMinusFees || !assetToBuyPrice.value
-        ? 0
+        ? '0'
         : convertRawAmountToNativeDisplay(
             data.buyAmountMinusFees.toString(),
             assetToBuy.value.decimals || 18,
@@ -478,7 +478,7 @@ export function useSwapInputsController({
     );
     const inputNativeValue =
       !data.sellAmount || !assetToSellPrice.value
-        ? 0
+        ? '0'
         : convertRawAmountToNativeDisplay(
             data.sellAmount.toString(),
             assetToSell.value.decimals || 18,
