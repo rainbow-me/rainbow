@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from 'react';
+import * as i18n from '@/languages';
 
 import { AnimatedText, Box, Inline, Separator, Stack, Text, globalColors, useColorMode } from '@/design-system';
 import Animated, {
@@ -33,7 +34,7 @@ const RainbowFee = () => {
   const { SwapInputController } = useSwapContext();
   const { nativeCurrency: currentCurrency } = useAccountSettings();
 
-  const rainbowFee = useSharedValue('Unknown');
+  const rainbowFee = useSharedValue(i18n.t(i18n.l.swap.unknown));
 
   const [nativeChainId, setNativeChainId] = useState(SwapInputController.assetToSell.value?.chainId ?? ChainId.mainnet);
   const nativeAsset = useNativeAssetForNetwork(ethereumUtils.getNetworkFromChainId(nativeChainId));
@@ -101,6 +102,8 @@ export function ReviewPanel() {
   const { isDarkMode } = useColorMode();
   const { reviewProgress, SwapInputController } = useSwapContext();
 
+  const unknown = i18n.t(i18n.l.swap.unknown);
+
   const chainName = useDerivedValue(() =>
     SwapInputController.outputChainId.value === ChainId.mainnet
       ? 'ethereum'
@@ -115,7 +118,7 @@ export function ReviewPanel() {
 
   const minimumReceived = useDerivedValue(() => {
     if (!SwapInputController.inputValues.value.outputAmount || !SwapInputController.assetToBuy.value) {
-      return 'Unknown';
+      return unknown;
     }
     return `${SwapInputController.inputValues.value.outputAmount} ${SwapInputController.assetToBuy.value.symbol}`;
   });
