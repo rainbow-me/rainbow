@@ -13,6 +13,7 @@ type SimpleSheetProps = {
   scrollEnabled?: boolean;
   useAdditionalTopPadding?: boolean;
   testID?: string;
+  allowDismiss?: boolean;
 };
 
 export const SimpleSheet = ({
@@ -23,6 +24,7 @@ export const SimpleSheet = ({
   scrollEnabled = true,
   testID,
   useAdditionalTopPadding = false,
+  allowDismiss = true,
 }: SimpleSheetProps) => {
   const { height: deviceHeight } = useDimensions();
   const fullSheetHeight = deviceHeight - safeAreaInsetValues.top;
@@ -36,6 +38,7 @@ export const SimpleSheet = ({
       scrollEnabled={scrollEnabled}
       backgroundColor={backgroundColor}
       onDismiss={onDismiss}
+      allowDismiss={allowDismiss}
       testID={testID}
     >
       <ScrollView

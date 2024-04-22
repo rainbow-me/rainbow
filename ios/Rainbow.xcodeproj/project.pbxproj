@@ -131,6 +131,7 @@
 		C1EB01312731B68400830E70 /* TokenDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1EB012E2731B68400830E70 /* TokenDetails.swift */; };
 		C72F456C99A646399192517D /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 98AED33BAB4247CEBEF8464D /* libz.tbd */; };
 		C85BADF4CAE1A2FA1D99C521 /* libPods-Rainbow.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13F1E920F312479DF774F1FB /* libPods-Rainbow.a */; };
+		C97EAD8D2BD6C6DF00322D53 /* RCTDeviceUUID.m in Sources */ = {isa = PBXBuildFile; fileRef = C97EAD8B2BD6C6DF00322D53 /* RCTDeviceUUID.m */; };
 		ED2971652150620600B7C4FE /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED2971642150620600B7C4FE /* JavaScriptCore.framework */; };
 /* End PBXBuildFile section */
 
@@ -319,6 +320,8 @@
 		C1C61A81272CBDA100E5C0B3 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		C1C61A902731A05700E5C0B3 /* RainbowTokenList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RainbowTokenList.swift; sourceTree = "<group>"; };
 		C1EB012E2731B68400830E70 /* TokenDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenDetails.swift; sourceTree = "<group>"; };
+		C97EAD8B2BD6C6DF00322D53 /* RCTDeviceUUID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTDeviceUUID.m; sourceTree = "<group>"; };
+		C97EAD8C2BD6C6DF00322D53 /* RCTDeviceUUID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTDeviceUUID.h; sourceTree = "<group>"; };
 		CBE43422951BC4BC1A49163C /* Pods-SelectTokenIntent.localrelease.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SelectTokenIntent.localrelease.xcconfig"; path = "Target Support Files/Pods-SelectTokenIntent/Pods-SelectTokenIntent.localrelease.xcconfig"; sourceTree = "<group>"; };
 		D755E71324B04FEE9C691D14 /* libRNFirebase.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNFirebase.a; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
@@ -562,6 +565,8 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				C97EAD8C2BD6C6DF00322D53 /* RCTDeviceUUID.h */,
+				C97EAD8B2BD6C6DF00322D53 /* RCTDeviceUUID.m */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1162,6 +1167,7 @@
 				C18FCD32273C62230079CE28 /* PriceWidgetView.swift in Sources */,
 				15E531D5242B28EF00797B89 /* UIImageViewWithPersistentAnimations.swift in Sources */,
 				C18FCD3B273C64CF0079CE28 /* UIImage.swift in Sources */,
+				C97EAD8D2BD6C6DF00322D53 /* RCTDeviceUUID.m in Sources */,
 				A4277D9F23CBD1910042BAF4 /* Extensions.swift in Sources */,
 				A4D04BAC23D12FD5008C1DEC /* ButtonManager.m in Sources */,
 				C18FCD3C273C64D10079CE28 /* TokenDetails.swift in Sources */,

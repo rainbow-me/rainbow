@@ -68,6 +68,7 @@ import {
   positionSheetConfig,
   appIconUnlockSheetConfig,
   swapConfig,
+  checkIdentifierSheetConfig,
 } from './config';
 import { addCashSheet, emojiPreset, emojiPresetWallet, overlayExpandedPreset, sheetPreset } from './effects';
 import { InitialRouteContext } from './initialRoute';
@@ -98,6 +99,7 @@ import AppIconUnlockSheet from '@/screens/AppIconUnlockSheet';
 import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { SwapProvider } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import CheckIdentifierScreen from '@/screens/CheckIdentifierScreen';
 
 type StackNavigatorParams = {
   [Routes.SEND_SHEET]: unknown;
@@ -233,6 +235,7 @@ function NativeStackNavigator() {
           transitionDuration: 0.25,
         }}
       />
+      <NativeStack.Screen component={CheckIdentifierScreen} name={Routes.CHECK_IDENTIFIER_SCREEN} {...checkIdentifierSheetConfig} />
       <NativeStack.Screen component={BackupSheet} name={Routes.BACKUP_SHEET} {...backupSheetConfig} />
       <NativeStack.Screen
         component={ModalScreen}

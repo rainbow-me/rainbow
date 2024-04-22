@@ -105,9 +105,30 @@ export const getHeightForStep = (step: string) => {
       return backupSheetSizes.medium;
     case WalletBackupStepTypes.backup_now_manually:
       return backupSheetSizes.shorter;
+    case WalletBackupStepTypes.check_identifier:
     default:
       return backupSheetSizes.short;
   }
+};
+
+export const checkIdentifierSheetConfig: PartialNavigatorConfigOptions = {
+  options: ({ navigation, route }) => {
+    const { params: { longFormHeight, step, ...params } = {} } = route as {
+      params: any;
+    };
+
+    const heightForStep = getHeightForStep(step);
+    if (longFormHeight !== heightForStep) {
+      navigation.setParams({
+        longFormHeight: heightForStep,
+      });
+    }
+
+    return buildCoolModalConfig({
+      ...params,
+      longFormHeight: heightForStep,
+    });
+  },
 };
 
 export const backupSheetConfig: PartialNavigatorConfigOptions = {

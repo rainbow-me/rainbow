@@ -431,6 +431,18 @@
         "description": "You can also long press your\naddress above to copy it."
       }
     },
+    "check_identifier": {
+      "title": "Restore your wallet",
+      "description": "It looks like you may have switched devices or reinstalled Rainbow. To use your wallet, restore from a backup or reimport your secret recovery phrase.",
+      "action": "Restore",
+      "dismiss": "Dismiss",
+      "error_alert": {
+        "title": "Error checking identifier",
+        "message": "We encountered an error while checking your identifier. Please try again. If the issue persists, please contact support.",
+        "contact_support": "Contact Support",
+        "cancel": "Cancel"
+      }
+    },
     "cloud": {
       "backup_success": "Your wallet has been backed up successfully!"
     },

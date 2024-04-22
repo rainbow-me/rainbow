@@ -57,6 +57,7 @@ import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { RemotePromoSheetProvider } from '@/components/remote-promo-sheet/RemotePromoSheetProvider';
 import { RemoteCardProvider } from '@/components/cards/remote-cards';
 import { initializeRemoteConfig } from '@/model/remoteConfig';
+import { checkIdentifierOnLaunch } from './model/backup';
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -109,6 +110,7 @@ class OldApp extends Component {
     if (!__DEV__ && isTestFlight) {
       logger.info(`Test flight usage - ${isTestFlight}`);
     }
+
     this.identifyFlow();
     const eventSub = AppState?.addEventListener('change', this?.handleAppStateChange);
     this.setState({ eventSubscription: eventSub });
@@ -117,7 +119,8 @@ class OldApp extends Component {
     const p1 = analyticsV2.initializeRudderstack();
     const p2 = this.setupDeeplinking();
     const p3 = saveFCMToken();
-    await Promise.all([p1, p2, p3]);
+    const p4 = checkIdentifierOnLaunch();
+    await Promise.all([p1, p2, p3, p4]);
 
     /**
      * Needs to be called AFTER FCM token is loaded
