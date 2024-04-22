@@ -451,7 +451,9 @@ export function useSwapInputsController({
             assetToBuy.value.decimals || 18,
             assetToBuyPrice.value,
             currentCurrency
-          ).display.slice(1);
+          )
+            .display.slice(1)
+            .toString();
 
     const inputAmount = valueBasedDecimalFormatter(
       Number(convertRawAmountToBalance(data.sellAmount.toString(), { decimals: assetToSell.value.decimals || 18 }).amount),
@@ -469,13 +471,15 @@ export function useSwapInputsController({
             assetToSell.value.decimals || 18,
             assetToSellPrice.value,
             currentCurrency
-          ).display.slice(1);
+          )
+            .display.slice(1)
+            .toString();
 
     return {
       data,
-      inputAmount,
+      inputAmount: inputAmount.toString(),
       inputNativeValue,
-      outputAmount,
+      outputAmount: outputAmount.toString(),
       outputNativeValue,
       isWrapOrUnwrapEth,
     };
@@ -540,6 +544,68 @@ export function useSwapInputsController({
 
   const onExecuteSwap = async () => {
     if (!assetToSell.value || !assetToBuy.value || !quote.value) return;
+
+    // console.log('executing swap');
+    // const isCrosschainSwap =
+    //   assetToSell.value.chainId !== assetToBuy.value.chainId;
+    // const flashbotsEnabled =
+    //   assetToSell.value.chainId === ChainId.mainnet ? flashbots.value : false;
+    // const rapType = getSwapRapTypeByExchangeType(isCrosschainSwap);
+
+    // console.log({ isCrosschainSwap, flashbotsEnabled, rapType });
+
+    // const data = quote.value as Quote | CrosschainQuote;
+    // const currentNetwork = ethereumUtils.getNetworkFromChainId(assetToSell.value.chainId);
+    // const nonce = await getNextNonce({ address: currentAddress, network: currentNetwork });
+    // const provider = await getProviderForNetwork(currentNetwork);
+    // const wallet = await loadWallet(currentAddress, false, provider);
+
+    // console.log({
+    //   currentNetwork,
+    //   nonce,
+    //   provider,
+    //   wallet,
+    // });
+
+    // if (!wallet) {
+    //   // TODO: Handle error
+    //   return;
+    // }
+
+    // const swapParameters: SwapActionParameters = {
+    //   chainId: assetToSell.value.chainId,
+    //   flashbots: flashbotsEnabled,
+    //   inputAmount: data.sellAmount.toString(),
+    //   outputAmount: data.buyAmount.toString(),
+    //   provider,
+    //   nonce,
+    //   tradeDetails: data,
+    //   meta: {
+    //     flashbots: flashbotsEnabled,
+    //     inputAsset: {
+    //       ...assetToSell.value,
+    //       network: ethereumUtils.getNetworkFromChainId(assetToSell.value.chainId),
+    //     } as SwappableAsset,
+    //     outputAsset: {
+    //       ...assetToBuy.value,
+    //       network: ethereumUtils.getNetworkFromChainId(assetToBuy.value.chainId),
+    //     } as SwappableAsset,
+    //     independentField: 'inputAmount' as SwapModalField,
+    //     independentValue: '' as string,
+    //     slippage: Number(slippage.value),
+    //     route: data.source as Source,
+    //     selectedGas: selectedGas as GasFeeParams,
+    //     gasFeeParamsBySpeed: gasFeeParamsBySpeed as GasFeeParamsBySpeed,
+    //   },
+    // };
+
+    // console.log(JSON.stringify(swapParameters, null, 2));
+
+    // try {
+    //   await executeRap(wallet, rapType, swapParameters, onSwapResponse);
+    // } catch (error) {
+    //   console.log(error);
+    // }
   };
 
   const onChangeSearchQuery = (text: string) => {
