@@ -183,6 +183,7 @@ export const AccountIcon = ({
           // need to emit these events to the dapp
           activeTabRef.current?.injectJavaScript(`window.ethereum.emit('accountsChanged', ['${address}']); true;`);
         }
+        navigate(Routes.DAPP_BROWSER_SCREEN);
       },
     });
   }, [activeTabRef, appSessions, currentAddress, getActiveTabState, navigate]);

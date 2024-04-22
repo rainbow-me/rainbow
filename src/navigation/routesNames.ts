@@ -18,7 +18,6 @@ const Routes = {
   CURRENCY_SELECT_SCREEN: 'CurrencySelectScreen',
   CUSTOM_GAS_SHEET: 'CustomGasSheet',
   DAPP_BROWSER_SCREEN: 'DappBrowserScreen',
-  DAPP_BROWSER: 'DappBrowser',
   SWAP_NAVIGATOR: 'SwapNavigator',
   SWAP: 'Swap',
   SWAP_REVIEW: 'SwapReview',
