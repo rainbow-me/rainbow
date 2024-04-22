@@ -5,19 +5,19 @@ import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { ALLOWS_PERMIT, CrosschainQuote, Quote, getQuoteExecutionDetails, getRainbowRouterContractAddress } from '@rainbow-me/swaps';
 import { mainnet } from 'viem/chains';
 import { Chain, erc20Abi } from 'viem';
-
+import { Network } from '@/helpers';
 import {
-  GasFeeLegacyParams,
-  GasFeeLegacyParamsBySpeed,
-  GasFeeParams,
   GasFeeParamsBySpeed,
-  TransactionGasParams,
-  TransactionLegacyGasParams,
-} from '@/__swaps__/types/gas';
+  LegacyGasFeeParamsBySpeed,
+  LegacyTransactionGasParamAmounts,
+  TransactionGasParamAmounts,
+  LegacyGasFeeParams,
+} from '@/entities';
+import { ethereumUtils, gasUtils } from '@/utils';
+import { add, greaterThan, multiply } from '@/helpers/utilities';
 import { ChainId } from '@/__swaps__/types/chains';
-import { gasUnits } from '@/__swaps__/references';
+import { gasUnits } from '@/references';
 import { toHexNoLeadingZeros } from '@/handlers/web3';
-import { greaterThan, multiply } from '@/helpers/utilities';
 
 export const CHAIN_IDS_WITH_TRACE_SUPPORT: ChainId[] = [mainnet.id];
 export const SWAP_GAS_PADDING = 1.1;
@@ -26,43 +26,34 @@ const GAS_LIMIT_INCREMENT = 50000;
 const EXTRA_GAS_PADDING = 1.5;
 const TRACE_CALL_BLOCK_NUMBER_OFFSET = 20;
 
-/**
- * If gas price is not defined, override with fast speed
- */
 export const overrideWithFastSpeedIfNeeded = ({
-  selectedGas,
+  gasParams,
   chainId,
   gasFeeParamsBySpeed,
 }: {
-  selectedGas: GasFeeParams | GasFeeLegacyParams;
-  chainId: ChainId;
-  gasFeeParamsBySpeed: GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed;
-}) => {
-  const gasParams = selectedGas.transactionGasParams;
-  // approvals should always use fast gas or custom (whatever is faster)
-  if (chainId === ChainId.mainnet) {
-    const transactionGasParams = gasParams as TransactionGasParams;
-    if (!transactionGasParams.maxFeePerGas || !transactionGasParams.maxPriorityFeePerGas) {
-      const fastTransactionGasParams = gasFeeParamsBySpeed?.fast?.transactionGasParams as TransactionGasParams;
-
-      if (greaterThan(fastTransactionGasParams.maxFeePerGas, transactionGasParams?.maxFeePerGas || 0)) {
-        (gasParams as TransactionGasParams).maxFeePerGas = fastTransactionGasParams.maxFeePerGas;
-      }
-      if (greaterThan(fastTransactionGasParams.maxPriorityFeePerGas, transactionGasParams?.maxPriorityFeePerGas || 0)) {
-        (gasParams as TransactionGasParams).maxPriorityFeePerGas = fastTransactionGasParams.maxPriorityFeePerGas;
-      }
-    }
-  } else if (chainId === ChainId.polygon) {
-    const transactionGasParams = gasParams as TransactionLegacyGasParams;
-    if (!transactionGasParams.gasPrice) {
-      const fastGasPrice = (gasFeeParamsBySpeed?.fast?.transactionGasParams as TransactionLegacyGasParams).gasPrice;
-
-      if (greaterThan(fastGasPrice, transactionGasParams?.gasPrice || 0)) {
-        (gasParams as TransactionLegacyGasParams).gasPrice = fastGasPrice;
-      }
-    }
+  gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts;
+  chainId: number;
+  gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
+}): TransactionGasParamAmounts | LegacyTransactionGasParamAmounts => {
+  if (chainId !== ethereumUtils.getChainIdFromNetwork(Network.mainnet)) {
+    return gasParams;
   }
-  return gasParams;
+  const transactionGasParams = gasParams as TransactionGasParamAmounts;
+  const txnGasFeeParamsBySpeed = gasFeeParamsBySpeed as GasFeeParamsBySpeed;
+
+  const fastMaxPriorityFeePerGas = txnGasFeeParamsBySpeed?.[gasUtils.FAST]?.maxPriorityFeePerGas?.amount;
+
+  const fastMaxFeePerGas = add(txnGasFeeParamsBySpeed?.[gasUtils.FAST]?.maxBaseFee?.amount, fastMaxPriorityFeePerGas);
+
+  if (greaterThan(fastMaxFeePerGas, transactionGasParams?.maxFeePerGas || 0)) {
+    transactionGasParams.maxFeePerGas = fastMaxFeePerGas;
+  }
+
+  if (greaterThan(fastMaxPriorityFeePerGas, transactionGasParams?.maxPriorityFeePerGas || 0)) {
+    transactionGasParams.maxPriorityFeePerGas = fastMaxPriorityFeePerGas;
+  }
+
+  return transactionGasParams;
 };
 
 const getStateDiff = async (provider: Provider, quote: Quote | CrosschainQuote): Promise<unknown> => {

@@ -3,15 +3,14 @@ import { CrosschainQuote, fillCrosschainQuote } from '@rainbow-me/swaps';
 import { Address } from 'viem';
 import { getProviderForNetwork, estimateGasWithPadding } from '@/handlers/web3';
 
-import { REFERRER } from '@/references';
-import { gasUnits } from '@/__swaps__/references';
+import { REFERRER, gasUnits } from '@/references';
 import { ChainId } from '@/__swaps__/types/chains';
 import { NewTransaction } from '@/entities/transactions';
 import { TxHash } from '@/resources/transactions/types';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, logger } from '@/logger';
 
-import { gasStore } from '@/state/gas/gasStore';
+import store from '@/redux/store';
 import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
 import { toHex } from '@/__swaps__/utils/hex';
 import { ActionProps, RapActionResult } from '../references';
@@ -25,6 +24,8 @@ import {
 import { ethereumUtils } from '@/utils';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { ParsedAsset } from '@/resources/assets/types';
+import { parseGasParamAmounts } from '@/parsers';
+import { GasState } from '@/redux/gas';
 
 const getCrosschainSwapDefaultGasLimit = (quote: CrosschainQuote) => quote?.routes?.[0]?.userTxs?.[0]?.gasFees?.gasLimit;
 
@@ -107,12 +108,11 @@ export const crosschainSwap = async ({
   baseNonce,
 }: ActionProps<'crosschainSwap'>): Promise<RapActionResult> => {
   const { quote, chainId, requiresApprove } = parameters;
-  const { selectedGas, gasFeeParamsBySpeed } = gasStore.getState();
-
-  let gasParams = selectedGas.transactionGasParams;
+  const { gasFeeParamsBySpeed, selectedGasFee } = store.getState().gas as GasState;
+  let gasParams = parseGasParamAmounts(selectedGasFee);
   if (currentRap.actions.length - 1 > index) {
     gasParams = overrideWithFastSpeedIfNeeded({
-      selectedGas,
+      gasParams,
       chainId,
       gasFeeParamsBySpeed,
     });

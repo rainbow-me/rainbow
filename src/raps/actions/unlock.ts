@@ -12,9 +12,8 @@ import { TxHash } from '@/resources/transactions/types';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, logger } from '@/logger';
 
-import { ETH_ADDRESS } from '../../references';
-import { gasUnits } from '@/__swaps__/references';
-import { gasStore } from '@/state/gas/gasStore';
+import { ETH_ADDRESS, gasUnits } from '@/references';
+// import { gasStore } from '@/state/gas/gasStore';
 import { ParsedAsset as SwapsParsedAsset } from '@/__swaps__/types/assets';
 import { convertAmountToRawAmount, greaterThan } from '@/helpers/utilities';
 import { ActionProps, RapActionResult } from '../references';
@@ -24,6 +23,9 @@ import { ethereumUtils } from '@/utils';
 import { toHex } from '@/__swaps__/utils/hex';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { ParsedAsset } from '@/resources/assets/types';
+import { GasState } from '@/redux/gas';
+import store from '@/redux/store';
+import { parseGasParamAmounts } from '@/parsers';
 
 export const getAssetRawAllowance = async ({
   owner,
@@ -212,8 +214,7 @@ export const executeApprove = async ({
 };
 
 export const unlock = async ({ baseNonce, index, parameters, wallet }: ActionProps<'unlock'>): Promise<RapActionResult> => {
-  const { selectedGas, gasFeeParamsBySpeed } = gasStore.getState();
-
+  const { gasFeeParamsBySpeed, selectedGasFee } = store.getState().gas as GasState;
   const { assetToUnlock, contractAddress, chainId } = parameters;
 
   const { address: assetAddress } = assetToUnlock;
@@ -235,10 +236,11 @@ export const unlock = async ({ baseNonce, index, parameters, wallet }: ActionPro
     throw e;
   }
 
-  const gasParams = overrideWithFastSpeedIfNeeded({
+  let gasParams = parseGasParamAmounts(selectedGasFee);
+  gasParams = overrideWithFastSpeedIfNeeded({
+    gasParams,
     chainId,
     gasFeeParamsBySpeed,
-    selectedGas,
   });
 
   const nonce = baseNonce ? baseNonce + index : undefined;

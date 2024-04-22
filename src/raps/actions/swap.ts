@@ -17,20 +17,19 @@ import {
 import { getProviderForNetwork, estimateGasWithPadding } from '@/handlers/web3';
 import { Address } from 'viem';
 
+import store from '@/redux/store';
 import { metadataPOSTClient } from '@/graphql';
 import { ChainId } from '@/__swaps__/types/chains';
 import { NewTransaction } from '@/entities/transactions';
 import { TxHash } from '@/resources/transactions/types';
 import { add } from '@/helpers/utilities';
-import { isLowerCaseMatch } from '@/__swaps__/screens/Swap/utils/strings';
+import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
 import { isUnwrapNative, isWrapNative } from '@/handlers/swap';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, logger } from '@/logger';
 import { ethereumUtils } from '@/utils';
 
-import { gasUnits } from '@/__swaps__/references';
-import { gasStore } from '@/state/gas/gasStore';
-import { REFERRER } from '../../references';
+import { gasUnits, REFERRER } from '@/references';
 import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
 import { toHex } from '@/__swaps__/utils/hex';
 import { ActionProps, RapActionResult } from '../references';
@@ -47,6 +46,8 @@ import { populateApprove } from './unlock';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { swapMetadataStorage } from '../common';
 import { ParsedAsset } from '@/resources/assets/types';
+import { GasState } from '@/redux/gas';
+import { parseGasParamAmounts } from '@/parsers';
 
 const WRAP_GAS_PADDING = 1.002;
 
@@ -235,22 +236,21 @@ export const executeSwap = async ({
 };
 
 export const swap = async ({ currentRap, wallet, index, parameters, baseNonce }: ActionProps<'swap'>): Promise<RapActionResult> => {
-  const { selectedGas, gasFeeParamsBySpeed } = gasStore.getState();
+  const { gasFeeParamsBySpeed, selectedGasFee } = store.getState().gas as GasState;
+  let gasParams = parseGasParamAmounts(selectedGasFee);
 
   const { quote, permit, chainId, requiresApprove } = parameters;
-  let gasParams = selectedGas.transactionGasParams;
   // if swap isn't the last action, use fast gas or custom (whatever is faster)
 
   if (currentRap.actions.length - 1 > index) {
     gasParams = overrideWithFastSpeedIfNeeded({
-      selectedGas,
+      gasParams,
       chainId,
       gasFeeParamsBySpeed,
     });
   }
 
   let gasLimit;
-
   try {
     gasLimit = await estimateSwapGasLimit({
       chainId,
