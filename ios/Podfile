@@ -65,7 +65,7 @@ target 'Rainbow' do
   pod 'SRSRadialGradient', :path => '../node_modules/react-native-radial-gradient/ios'
   pod 'react-native-palette-full', :path => '../node_modules/react-native-palette-full'
   pod 'react-native-ble-plx', :path => '../node_modules/react-native-ble-plx'
-  pod 'Plaid', '~> 4.4.0'
+  pod 'TOCropViewController', '2.7.3'
 
   use_native_modules!
 

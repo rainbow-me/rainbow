@@ -825,7 +825,7 @@ PODS:
   - TcpSockets (3.3.2):
     - CocoaAsyncSocket
     - React
-  - TOCropViewController (2.7.2)
+  - TOCropViewController (2.7.3)
   - ToolTipMenu (5.2.1):
     - React
   - VisionCamera (3.6.4):
@@ -860,7 +860,6 @@ DEPENDENCIES:
   - Permission-Camera (from `../node_modules/react-native-permissions/ios/Camera`)
   - Permission-FaceID (from `../node_modules/react-native-permissions/ios/FaceID`)
   - Permission-Notifications (from `../node_modules/react-native-permissions/ios/Notifications`)
-  - Plaid (~> 4.4.0)
   - Rainbow-Internals (from `./Internals`)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
@@ -964,6 +963,7 @@ DEPENDENCIES:
   - SRSRadialGradient (from `../node_modules/react-native-radial-gradient/ios`)
   - swift-vibrant
   - TcpSockets (from `../node_modules/react-native-tcp`)
+  - TOCropViewController (= 2.7.3)
   - ToolTipMenu (from `../node_modules/react-native-tooltip`)
   - VisionCamera (from `../node_modules/react-native-vision-camera`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
@@ -1402,11 +1402,11 @@ SPEC CHECKSUMS:
   SRSRadialGradient: e5a34825dff88c9cf773b58bf39ed6a02e59a084
   swift-vibrant: 3def73c5c281db74f420ec386590d9c1c5b0995c
   TcpSockets: bd31674146c0931a064fc254a59812dfd1a73ae0
-  TOCropViewController: bf38459e9da6efe414de22087ebd5c530640f4bd
+  TOCropViewController: b9b2905938c0424f289ea2d9964993044913fac6
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
   VisionCamera: 1910a51e4c6f6b049650086d343090f267b4c260
   Yoga: 8796b55dba14d7004f980b54bcc9833ee45b28ce
 
-PODFILE CHECKSUM: adc288b69ce40dd0ba45e1e7e31db7f0eb1d1f89
+PODFILE CHECKSUM: e5362d24eefcd29c7be1cb477c3dbf0e712787ec
 
 COCOAPODS: 1.12.1
