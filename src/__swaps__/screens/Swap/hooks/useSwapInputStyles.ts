@@ -12,6 +12,7 @@ import Animated, {
 
 import { globalColors, useColorMode } from '@/design-system';
 
+import { NavigationSteps } from './useSwapNavigation';
 import {
   BASE_INPUT_HEIGHT,
   ETH_COLOR_DARK,
@@ -60,7 +61,7 @@ export const useSwapInputStyles = ({
 
   const containerStyle = useAnimatedStyle(() => {
     const getContainerStyleTranslateY = (progress: Animated.SharedValue<number>, bottomInput: boolean | undefined) => {
-      if (progress.value === 2) {
+      if (progress.value === NavigationSteps.SEARCH_FOCUSED) {
         if (bottomInput) {
           return withSpring(-191, springConfig);
         } else {
@@ -72,7 +73,7 @@ export const useSwapInputStyles = ({
     };
 
     return {
-      opacity: otherInputProgress.value === 2 ? withTiming(0, fadeConfig) : withTiming(1, fadeConfig),
+      opacity: otherInputProgress.value === NavigationSteps.SEARCH_FOCUSED ? withTiming(0, fadeConfig) : withTiming(1, fadeConfig),
       transform: [
         {
           translateY: getContainerStyleTranslateY(progress, bottomInput),

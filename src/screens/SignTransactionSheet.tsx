@@ -533,6 +533,7 @@ export const SignTransactionSheet = () => {
     currentNetwork,
     accountInfo.address,
     accountInfo.isHardwareWallet,
+    source,
     onSuccessCallback,
     closeScreen,
     onCancel,
@@ -716,6 +717,7 @@ export const SignTransactionSheet = () => {
     accountInfo.address,
     accountInfo.isHardwareWallet,
     provider,
+    source,
     closeScreen,
     nativeAsset,
     accountAddress,
@@ -818,7 +820,7 @@ export const SignTransactionSheet = () => {
                         >
                           {transactionDetails.dappName}
                         </Text>
-                        {false && <VerifiedBadge />}
+                        {source === 'browser' && <VerifiedBadge />}
                       </Inline>
                       <Text color="labelTertiary" size="15pt" weight="bold">
                         {isMessageRequest

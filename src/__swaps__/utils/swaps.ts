@@ -246,6 +246,7 @@ export const DEFAULT_SLIPPAGE_BIPS = {
   [ChainId.zora]: 200,
   [ChainId.arbitrum]: 200,
   [ChainId.avalanche]: 200,
+  [ChainId.blast]: 200,
 };
 
 export const slippageInBipsToString = (slippageInBips: number) => (slippageInBips / 100).toString();

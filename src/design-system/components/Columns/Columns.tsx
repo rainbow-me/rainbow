@@ -1,14 +1,17 @@
+/* eslint-disable no-nested-ternary */
 import React, { Children, ReactNode } from 'react';
 import flattenChildren from 'react-flatten-children';
 import { AlignHorizontal, alignHorizontalToFlexAlign, AlignVertical, alignVerticalToFlexAlign } from '../../layout/alignment';
 import { negateSpace, Space } from '../../layout/space';
 import { Box, BoxProps } from '../Box/Box';
+import Animated, { AnimatedStyle } from 'react-native-reanimated';
 
 type Width = Exclude<NonNullable<BoxProps['width']>, 'full'>;
 
 export interface ColumnProps {
   width?: Width | 'content';
   children?: ReactNode;
+  style?: AnimatedStyle;
 }
 
 /**
@@ -39,22 +42,25 @@ const getColumnProps = (node: NonNullable<ReactNode>): ColumnProps | null =>
 
 interface PrivateColumnProps extends ColumnProps {
   space?: Space;
-  alignVertical: AlignVertical | undefined;
+  alignVertical?: AlignVertical | undefined;
+  style?: AnimatedStyle;
 }
 
 // This is the component that's rendered instead of the Column component that
 // consumers have access to. The public Column component is essentially used
 // as a mechanism for providing access to this component's props without
 // leaking private implementation detail.
-function PrivateColumn({ space, width, alignVertical, children }: PrivateColumnProps) {
+function PrivateColumn({ space, width, alignVertical, children, style }: PrivateColumnProps) {
   return (
     <Box
+      as={Animated.View}
       flexBasis={width ? undefined : 0}
       flexGrow={width ? 0 : 1}
       flexShrink={width ? 0 : 1}
       justifyContent={alignVertical ? alignVerticalToFlexAlign[alignVertical] : undefined}
       paddingRight={space}
       width={width !== 'content' ? width : undefined}
+      style={style}
     >
       {children}
     </Box>
@@ -91,7 +97,6 @@ export function Columns({ children, alignHorizontal, alignVertical, space }: Col
     >
       {Children.map(flattenChildren(children), child => {
         const columnProps = getColumnProps(child);
-
         return columnProps ? (
           <PrivateColumn {...columnProps} alignVertical={alignVertical} space={space} />
         ) : (

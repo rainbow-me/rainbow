@@ -389,6 +389,23 @@ export function useSwapInputsController({
   const fetchAndUpdateQuote = async (amount: number, isInputAmount: boolean) => {
     if (!assetToSell.value || !assetToBuy.value) return;
 
+    const updateQuoteWithResponse = async (quoteResponse: Quote | CrosschainQuote | QuoteError) => {
+      'worklet';
+      quote.value = quoteResponse;
+
+      if ((quoteResponse as QuoteError)?.error) {
+        inputValues.modify(prev => {
+          return {
+            ...prev,
+            outputAmount: 0,
+            outputNativeValue: 0,
+          };
+        });
+        isQuoteStale.value = 0;
+        isFetching.value = false;
+      }
+    };
+
     const isCrosschainSwap = assetToSell.value.chainId !== assetToBuy.value.chainId;
 
     const quoteParams: QuoteParams = {
@@ -413,10 +430,8 @@ export function useSwapInputsController({
       quoteParams.swapType === SwapType.crossChain ? await getCrosschainQuote(quoteParams) : await getQuote(quoteParams)
     ) as Quote | CrosschainQuote | QuoteError;
 
-    quote.value = quoteResponse;
+    runOnUI(updateQuoteWithResponse)(quoteResponse);
     logger.debug(`[useSwapInputsController] quote response`, { quoteResponse });
-
-    // todo - show quote error
     if (!quoteResponse || (quoteResponse as QuoteError)?.error) {
       logger.debug(`[useSwapInputsController] quote error`, { error: quoteResponse });
       return null;
@@ -445,7 +460,7 @@ export function useSwapInputsController({
     );
     const outputNativeValue =
       !data.buyAmountMinusFees || !assetToBuyPrice.value
-        ? '0.00'
+        ? '0'
         : convertRawAmountToNativeDisplay(
             data.buyAmountMinusFees.toString(),
             assetToBuy.value.decimals || 18,
@@ -463,7 +478,7 @@ export function useSwapInputsController({
     );
     const inputNativeValue =
       !data.sellAmount || !assetToSellPrice.value
-        ? '0.00'
+        ? '0'
         : convertRawAmountToNativeDisplay(
             data.sellAmount.toString(),
             assetToSell.value.decimals || 18,
@@ -642,6 +657,12 @@ export function useSwapInputsController({
     if (!assetToBuy.value) {
       handleOutputPress();
     } else {
+      if (initialAmount > 0) {
+        isFetching.value = true;
+        isQuoteStale.value = 1;
+
+        runOnJS(handleInputAmountLogic)(initialAmount);
+      }
       handleInputPress();
     }
   };
@@ -663,7 +684,6 @@ export function useSwapInputsController({
     runOnUI(updateValues)();
 
     const inputAmount = Number(inputValues.value.inputAmount);
-    // TODO: Trigger a quote refetch here.
     if (assetToSell.value && assetToSellPrice.value) {
       if (inputAmount > 0) {
         isFetching.value = true;
@@ -685,6 +705,9 @@ export function useSwapInputsController({
 
       const prevAssetToSellPrice = assetToSellPrice.value;
       const prevAssetToBuyPrice = assetToBuyPrice.value;
+
+      // reset the quote no matter what
+      quote.value = null;
 
       if (prevAssetToSell) {
         assetToBuy.value = prevAssetToSell;
@@ -1027,7 +1050,10 @@ export function useSwapInputsController({
       assetToSell: assetToSell.value,
     }),
     (current, previous) => {
-      if (previous?.assetToSell !== current.assetToSell || previous?.assetToBuy !== current.assetToBuy) {
+      if (
+        (current.assetToBuy || current.assetToSell) &&
+        (previous?.assetToSell !== current.assetToSell || previous?.assetToBuy !== current.assetToBuy)
+      ) {
         runOnJS(fetchAssetPrices)({
           assetToSell: current.assetToSell,
           assetToBuy: current.assetToBuy,

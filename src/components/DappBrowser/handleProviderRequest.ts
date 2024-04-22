@@ -14,6 +14,7 @@ import { appSessionsStore } from '@/state/appSessions';
 import { Network } from '@/helpers';
 import { handleDappBrowserConnectionPrompt, handleDappBrowserRequest } from '@/utils/requestNavigationHandlers';
 import { Tab } from '@rainbow-me/provider/dist/references/messengers';
+import { getDappMetadata } from '@/resources/metadata/dapp';
 
 export type ProviderRequestPayload = RequestArguments & {
   id: number;
@@ -120,8 +121,10 @@ const messengerProviderRequestFn = async (messenger: Messenger, request: Provide
   let response: unknown | null;
 
   if (request.method === 'eth_requestAccounts') {
+    const dappData = await getDappMetadata({ url: getDappHost(request.meta?.sender.url) });
+
     response = await handleDappBrowserConnectionPrompt({
-      dappName: request.meta?.sender.title || '',
+      dappName: dappData?.appName || request.meta?.sender.title || '',
       dappUrl: request.meta?.sender.url || '',
     });
 
@@ -135,9 +138,11 @@ const messengerProviderRequestFn = async (messenger: Messenger, request: Provide
       url: request.meta?.sender.url || '',
     });
   } else {
+    const dappData = await getDappMetadata({ url: getDappHost(request.meta?.sender.url) });
+
     response = await handleDappBrowserRequest({
-      dappName: request.meta?.sender.title || request.meta?.sender.url || '',
-      imageUrl: '',
+      dappName: dappData?.appName || request.meta?.sender.title || request.meta?.sender.url || '',
+      imageUrl: dappData?.appLogo || '',
       address: appSession?.address || '',
       network: appSession?.network || Network.mainnet,
       dappUrl: request.meta?.sender.url || '',
