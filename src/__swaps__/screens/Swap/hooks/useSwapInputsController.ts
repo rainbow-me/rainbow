@@ -564,6 +564,7 @@ export function useSwapInputsController({
      * 1. assetToSell && assetToBuy addresses match the quote values
      * 2. outputNative matches quote value
      * 3. buyAmount > 0 (should we check this? because we can have missing price data)
+     * 4. both chainId and toChain match the quote data
      */
     const failedConditions: string[] = [];
     // Ensure assetToSell and assetToBuy are not null or undefined before proceeding
@@ -575,6 +576,10 @@ export function useSwapInputsController({
     if (quoteData.buyAmountMinusFees.toString() === '0') failedConditions.push('buyAmountMinusFees is 0');
     if (quoteData.buyTokenAddress !== assetToBuy.value.address) failedConditions.push('buyTokenAddress mismatch');
     if (quoteData.sellTokenAddress !== assetToSell.value.address) failedConditions.push('sellTokenAddress mismatch');
+    if (quoteData.swapType === SwapType.normal && quoteData.chainId !== assetToSell.value.chainId)
+      failedConditions.push('chainId mismatch for swapType normal');
+    if (quoteData.swapType === SwapType.crossChain && quoteData.chainId === assetToSell.value.chainId)
+      failedConditions.push('chainId mismatch for swapType crossChain');
 
     if (failedConditions.length > 0) {
       logger.debug(`[onExecuteSwap]: Not executing swap due to failed conditions: ${failedConditions.join(', ')}`);
