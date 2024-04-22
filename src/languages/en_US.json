@@ -2788,6 +2788,11 @@
     "dapp_browser": {
       "address_bar": {
         "input_placeholder": "Search or enter website"
+      },
+      "no_wc_needed": {
+        "title": "Ooops!",
+        "description": "Seems like you're trying to connect to this dapp via WalletConnect. This is no longer necessary with Rainbow's in-app browser. Go back and choose \"MetaMask\" and everything should work just fine.",
+        "cta": "Got it"
       }
     }
   }
