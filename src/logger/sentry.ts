@@ -13,8 +13,9 @@ import isTestFlight from '@/helpers/isTestFlight';
  */
 export const sentryRoutingInstrumentation = IS_PROD ? new Sentry.ReactNavigationInstrumentation() : undefined;
 
-export const defaultOptions = {
+export const defaultOptions: Sentry.ReactNativeOptions = {
   dsn: SENTRY_ENDPOINT,
+  sendDefaultPii: true,
   enableAutoSessionTracking: true,
   environment: isTestFlight ? 'Testflight' : SENTRY_ENVIRONMENT,
   integrations: [
