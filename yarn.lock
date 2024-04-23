@@ -3320,10 +3320,10 @@
   dependencies:
     react-merge-refs "^1.0.0"
 
-"@rainbow-me/swaps@0.16.0":
-  version "0.16.0"
-  resolved "https://registry.yarnpkg.com/@rainbow-me/swaps/-/swaps-0.16.0.tgz#3c90bcf162e11434348d839eeec75549bb7ba333"
-  integrity sha512-OfVBXfN55J/YKvj8tCnjP+d6t0N5jLtbTw51dpMMQKvrLo1AHrjrqAldf8v5lSsu0kQhPZWd5fJb6bLxy+Iq/A==
+"@rainbow-me/swaps@0.17.0":
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/swaps/-/swaps-0.17.0.tgz#4db1c3807b1dd040c863dbd34de5f73c0489891b"
+  integrity sha512-iXGSfbs7fopZyFI5nUe4e6LO6z1ZnSY3SPH8tJXYxRpHOUgl9b27r46rLvDTKBFgrng9MQMeXzJkm0EMgisvzA==
   dependencies:
     "@ethereumjs/util" "9.0.0"
     "@ethersproject/abi" "5.7.0"
