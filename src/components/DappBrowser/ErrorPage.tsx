@@ -44,7 +44,7 @@ export const ErrorPage = () => {
           </Text>
         </Centered>
         <Box padding={'12px'}>
-          <BodyText color={colors.dark}>{lang.t('dapp_browser.error.default_msg')}</BodyText>
+          <BodyText color={colors.dark}>{lang.t(lang.l.dapp_browser.error.default_msg)}</BodyText>
         </Box>
       </Box>
     </View>
