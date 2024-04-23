@@ -1939,6 +1939,7 @@
         "withdraw": "Withdraw",
         "withdraw_symbol": "Withdraw %{symbol}"
       },
+      "unknown": "Unknown",
       "warning": {
         "cost": {
           "are_you_sure_title": "Are you sure?",
