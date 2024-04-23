@@ -4,6 +4,7 @@ const { pathsToModuleNameMapper } = require('ts-jest');
 const { compilerOptions } = require('../tsconfig');
 
 module.exports = {
+  preset: 'ts-jest',
   maxWorkers: 1,
   bail: 1,
   setupFilesAfterEnv: ['./init.js'],
@@ -14,7 +15,7 @@ module.exports = {
   reporters: ['detox/runners/jest/reporter'],
 
   testTimeout: 300_000,
-  testRegex: '\\.spec\\.[jt]sx?$',
+  testMatch: ['<rootDir>/*.spec.ts'],
   verbose: false,
   transform: {
     '\\.[jt]sx?$': 'ts-jest',

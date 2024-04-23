@@ -5,7 +5,7 @@ class CustomDetoxEnvironment extends DetoxCircusEnvironment {
   constructor(config, context) {
     super(config, context);
     this.launchAppTimeout = 120_000;
-    this.initTimeout = 360_000;
+    this.initTimeout = 60_000;
   }
 }
 module.exports = CustomDetoxEnvironment;

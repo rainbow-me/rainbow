@@ -15,17 +15,13 @@ beforeAll(async () => {
     exec('yarn adb-all shell cmd overlay enable com.android.internal.systemui.navbar.threebutton');
   }
   await device.clearKeychain();
-  await device.launchApp({ newInstance: true, delete: true });
-  await device.setURLBlacklist([
-    '.*api.thegraph.com.*',
-    '.*raw.githubusercontent.com.*',
-    '.*api.coingecko.com.*',
-    '.*rainbow.imgix.net.*',
-    '.*infura.io.*',
-    '.*rainbow.me.*',
-    '.*rainbowjiumask.dataplane.rudderstack.com*',
-    '.*rainbowme-res.cloudinary.com*',
-    '.*rainbow-proxy-rpc.rainbowdotme.workers.*',
-    '.*localhost:8081/assets/src/assets*.',
-  ]);
+
+  await device.launchApp({
+    newInstance: true,
+    delete: true,
+    launchArgs: {
+      detoxURLBlacklistRegex:
+        '\\(".*api\\.thegraph\\.com.*",".*githubusercontent\\.com.*",".*coingecko\\.com.*",".*imgix\\.net.*",".*infura\\.io.*",".*rainbow\\.me.*",".*rudderstack\\.com.*",".*cloudinary\\.com.*",".*workers\\.dev.*",".*localhost.*",".*sentry\\.io.*",".*rudderlabs\\.com.*",".*nftp\\.me.*",".*clients3\\.google\\.com.*"\\)',
+    },
+  });
 });
