@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { SharedValue, runOnUI, useSharedValue } from 'react-native-reanimated';
+import { SharedValue, useSharedValue } from 'react-native-reanimated';
 import { useCustomGas } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 
 export const enum NavigationSteps {
