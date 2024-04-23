@@ -6,19 +6,19 @@ import { deepEqualWorklet, shallowEqualWorklet } from '@/worklets/comparisons';
 type SetStateType<T, D> = D extends 'sharedToState' ? (value: T) => void : never;
 
 interface SyncParams<T, D extends 'sharedToState' | 'stateToShared'> {
+  compareDepth?: 'shallow' | 'deep';
+  setState: SetStateType<T, D>;
   sharedValue: { value: T };
   state: T;
-  setState: SetStateType<T, D>;
   syncDirection: D;
-  compareDepth?: 'shallow' | 'deep';
 }
 
 export function useSyncSharedValue<T, D extends 'sharedToState' | 'stateToShared'>({
+  compareDepth = 'shallow',
+  setState,
   sharedValue,
   state,
-  setState,
   syncDirection,
-  compareDepth = 'shallow',
 }: SyncParams<T, D>) {
   useAnimatedReaction(
     () => {
