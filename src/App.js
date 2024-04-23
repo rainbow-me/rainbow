@@ -124,17 +124,6 @@ class OldApp extends Component {
      */
     initWalletConnectListeners();
 
-    /**
-     * Launch the review prompt after the app is launched
-     * This is to avoid the review prompt showing up when the app is
-     * launched and not shown yet.
-     */
-    InteractionManager.runAfterInteractions(() => {
-      setTimeout(() => {
-        handleReviewPromptAction(ReviewPromptAction.TimesLaunchedSinceInstall);
-      }, 10_000);
-    });
-
     PerformanceTracking.finishMeasuring(PerformanceMetrics.loadRootAppComponent);
     analyticsV2.track(analyticsV2.event.applicationDidMount);
   }
@@ -154,6 +143,15 @@ class OldApp extends Component {
 
   identifyFlow = async () => {
     const address = await loadAddress();
+
+    if (address) {
+      InteractionManager.runAfterInteractions(() => {
+        setTimeout(() => {
+          handleReviewPromptAction(ReviewPromptAction.TimesLaunchedSinceInstall);
+        }, 10_000);
+      });
+    }
+
     const initialRoute = address ? Routes.SWIPE_LAYOUT : Routes.WELCOME_SCREEN;
     this.setState({ initialRoute });
     PerformanceContextMap.set('initialRoute', initialRoute);
