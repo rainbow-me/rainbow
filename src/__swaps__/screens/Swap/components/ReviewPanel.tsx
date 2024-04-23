@@ -85,7 +85,8 @@ const RainbowFee = () => {
         previous.currentCurrency !== current.currentCurrency ||
         (previous.quote !== current.quote && (current.quote as Quote | CrosschainQuote)?.feeInEth)
       ) {
-        const feeInEth = (current.quote as Quote | CrosschainQuote).feeInEth.toString();
+        const feeInEth = (current.quote as Quote | CrosschainQuote)?.feeInEth?.toString();
+        if (!feeInEth) return;
         runOnJS(updateRainbowFee)({
           feeInEth,
           nativeAsset: current.nativeAsset,
