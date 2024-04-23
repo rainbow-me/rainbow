@@ -693,7 +693,7 @@ export const BrowserTab = React.memo(
                 <Freeze freeze={!isActiveTab}>
                   <DappBrowserWebview
                     webviewDebuggingEnabled={IS_DEV}
-                    injectedJavaScriptBeforeContentLoaded={injectedJS.current || ''}
+                    injectedJavaScriptBeforeContentLoaded={injectedJS || ''}
                     allowsInlineMediaPlayback
                     fraudulentWebsiteWarningEnabled
                     allowsBackForwardNavigationGestures
