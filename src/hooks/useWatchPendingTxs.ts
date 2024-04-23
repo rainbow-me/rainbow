@@ -16,8 +16,12 @@ import { useNonceStore } from '@/state/nonces';
 export const useWatchPendingTransactions = ({ address }: { address: string }) => {
   //const { swapRefreshAssets } = useSwapRefreshAssets();
 
-  const { pendingTransactions: storePendingTransactions, setPendingTransactions } = usePendingTransactionsStore();
-  const { setNonce } = useNonceStore();
+  const { storePendingTransactions, setPendingTransactions } = usePendingTransactionsStore(state => ({
+    storePendingTransactions: state.pendingTransactions,
+    setPendingTransactions: state.setPendingTransactions,
+  }));
+
+  const setNonce = useNonceStore(state => state.setNonce);
 
   const pendingTransactions = useMemo(() => storePendingTransactions[address] || [], [address, storePendingTransactions]);
 
