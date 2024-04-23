@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { useAnimatedReaction, runOnJS } from 'react-native-reanimated';
+import { SharedValue, runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { deepEqualWorklet, shallowEqualWorklet } from '@/worklets/comparisons';
 
 type SetStateType<T, D> = D extends 'sharedToState' ? (value: T) => void : never;
@@ -8,7 +8,7 @@ type SetStateType<T, D> = D extends 'sharedToState' ? (value: T) => void : never
 interface SyncParams<T, D extends 'sharedToState' | 'stateToShared'> {
   compareDepth?: 'shallow' | 'deep';
   setState: SetStateType<T, D>;
-  sharedValue: { value: T };
+  sharedValue: SharedValue<T>;
   state: T;
   syncDirection: D;
 }
