@@ -358,7 +358,6 @@ export function useSearchCurrencyLists({
     }
 
     if (favoritesList?.length) {
-      console.log(filterAssetsFromBridgeAndAssetToSell(favoritesList));
       sections.push({
         // TODO: Refactor favorites to SearchAsset type
         data: filterAssetsFromBridgeAndAssetToSell(favoritesList),
