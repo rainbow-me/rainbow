@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
-import { SharedValue, useSharedValue } from 'react-native-reanimated';
+import { SharedValue, runOnUI, useSharedValue } from 'react-native-reanimated';
+import { useCustomGas } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 
 export const enum NavigationSteps {
   INPUT_ELEMENT_FOCUSED = 0,
@@ -10,10 +11,12 @@ export const enum NavigationSteps {
 }
 
 export function useSwapNavigation({
+  SwapCustomGas,
   inputProgress,
   outputProgress,
   configProgress,
 }: {
+  SwapCustomGas: ReturnType<typeof useCustomGas>;
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
   configProgress: SharedValue<number>;
@@ -129,8 +132,8 @@ export function useSwapNavigation({
     'worklet';
 
     if (configProgress.value === NavigationSteps.SHOW_GAS) {
-      // TODO: Handle saving gas configuration
-      // TODO: Handle setting gas to custom here
+      SwapCustomGas.onSaveCustomGas();
+
       if (navigateBackToReview.value) {
         navigateBackToReview.value = false;
         handleShowReview();
@@ -145,7 +148,7 @@ export function useSwapNavigation({
     } else {
       handleShowReview();
     }
-  }, []);
+  }, [SwapCustomGas, configProgress.value, handleDismissGas, handleDismissReview, handleShowReview, navigateBackToReview]);
 
   return {
     handleExitSearch,

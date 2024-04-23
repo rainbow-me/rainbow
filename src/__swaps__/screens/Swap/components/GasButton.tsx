@@ -1,12 +1,12 @@
 import React, { useMemo, useState, useCallback, useEffect, ReactNode } from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
 import { AnimatedText, Box, Inline, Stack, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
-import { useGasStore } from '@/state/gas/gasStore';
+// import { useGasStore } from '@/state/gas/gasStore';
 import { Centered } from '@/components/layout';
 import { IS_ANDROID } from '@/env';
 import { getNetworkObj } from '@/networks';
 import { useRoute } from '@react-navigation/native';
-import { useAccountSettings } from '@/hooks';
+import { useAccountSettings, useGas } from '@/hooks';
 import { ContextMenu } from '@/components/context-menu';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { ethereumUtils, gasUtils } from '@/utils';
@@ -20,7 +20,7 @@ import { ParsedAsset } from '@/__swaps__/types/assets';
 import { ETH_COLOR, ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '../constants';
 import { useSwapContext } from '../providers/swap-provider';
 
-const { CUSTOM, GAS_ICONS, GAS_EMOJIS, getGasLabel, getGasFallback } = gasUtils;
+const { CUSTOM, GAS_ICONS, GAS_EMOJIS, getGasLabel } = gasUtils;
 const mockedGasLimit = '21000';
 
 export const GasButton = ({ accentColor, isReviewing = false }: { accentColor?: string; isReviewing?: boolean }) => {
@@ -29,7 +29,7 @@ export const GasButton = ({ accentColor, isReviewing = false }: { accentColor?: 
   const { params } = useRoute();
   const { currentNetwork } = (params as any) || {};
   const chainId = getNetworkObj(currentNetwork).id;
-  const { selectedGas } = useGasStore();
+  const { selectedGasFee, gasFeeParamsBySpeed } = useGas();
   const { data, isLoading } = useMeteorology({ chainId });
   const [nativeAsset, setNativeAsset] = useState<ParsedAddressAsset | undefined>();
   const { nativeCurrency } = useAccountSettings();
@@ -56,11 +56,10 @@ export const GasButton = ({ accentColor, isReviewing = false }: { accentColor?: 
     }
     return {};
   }, [chainId, data, isLoading, nativeAsset, nativeCurrency]);
-  const gasFallback = getGasFallback(nativeCurrency);
   const [showGasOptions, setShowGasOptions] = useState(false);
   const animatedGas = useDerivedValue(() => {
-    return gasFeeBySpeed[selectedGas?.option]?.gasFee?.display ?? gasFallback;
-  }, [gasFeeBySpeed, selectedGas]);
+    return gasFeeParamsBySpeed?.[selectedGasFee?.option ?? GasSpeed.FAST]?.estimatedTime?.display;
+  }, [gasFeeBySpeed, selectedGasFee]);
 
   const buttonWrapperStyles = useAnimatedStyle(() => {
     return {
@@ -96,7 +95,7 @@ export const GasButton = ({ accentColor, isReviewing = false }: { accentColor?: 
                   􀙭
                 </TextIcon>
                 <Text color="label" size="15pt" weight="heavy">
-                  {getGasLabel(selectedGas?.option || GasSpeed.FAST)}
+                  {getGasLabel(selectedGasFee?.option || GasSpeed.FAST)}
                 </Text>
               </Inline>
               <TextIcon color="labelSecondary" height={10} size="icon 13px" weight="bold" width={12}>
@@ -143,7 +142,7 @@ export const GasButton = ({ accentColor, isReviewing = false }: { accentColor?: 
                 􀙭
               </TextIcon>
               <Text color="label" size="15pt" weight="heavy">
-                {getGasLabel(selectedGas?.option || GasSpeed.FAST)}
+                {getGasLabel(selectedGasFee?.option || GasSpeed.FAST)}
               </Text>
             </Inline>
             <TextIcon color="labelSecondary" height={10} size="icon 13px" weight="bold" width={12}>
@@ -175,7 +174,7 @@ const GasMenu = ({
   gasFeeBySpeed: GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed;
 }) => {
   const { SwapNavigation } = useSwapContext();
-  const { gasFeeParamsBySpeed, setSelectedGas } = useGasStore();
+  const { selectedGasFee, gasFeeParamsBySpeed, updateGasFeeOption } = useGas();
   const { params } = useRoute();
   // this needs to be moved up or out shouldnt need asset just the color
   const { currentNetwork } = (params as any) || {};
@@ -188,10 +187,10 @@ const GasMenu = ({
       if (selectedGasSpeed === CUSTOM) {
         runOnUI(SwapNavigation.handleShowGas)(isReviewing);
       } else {
-        setSelectedGas({ selectedGas: gasFeeBySpeed[selectedGasSpeed] });
+        updateGasFeeOption(selectedGasSpeed);
       }
     },
-    [SwapNavigation.handleShowGas, gasFeeBySpeed, isReviewing, setSelectedGas]
+    [SwapNavigation.handleShowGas, isReviewing, updateGasFeeOption]
   );
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }: any) => {
@@ -200,28 +199,8 @@ const GasMenu = ({
     [handlePressSpeedOption]
   );
 
-  const handlePressActionSheet = useCallback(
-    (buttonIndex: number) => {
-      switch (buttonIndex) {
-        case 0:
-          setSelectedGas({ selectedGas: gasFeeParamsBySpeed[GasSpeed.NORMAL] });
-          break;
-        case 1:
-          setSelectedGas({ selectedGas: gasFeeParamsBySpeed[GasSpeed.FAST] });
-          break;
-        case 2:
-          setSelectedGas({ selectedGas: gasFeeParamsBySpeed[GasSpeed.URGENT] });
-          break;
-        case 3:
-          setSelectedGas({ selectedGas: gasFeeParamsBySpeed[GasSpeed.CUSTOM] });
-      }
-    },
-    [gasFeeParamsBySpeed, setSelectedGas]
-  );
-
   const menuConfig = useMemo(() => {
     const menuOptions = speedOptions.map((gasOption: GasSpeed) => {
-      if (IS_ANDROID) return gasOption;
       const { display } = gasFeeBySpeed[gasOption] ?? {};
 
       return {
@@ -247,7 +226,7 @@ const GasMenu = ({
           enableContextMenu
           isAnchoredToRight
           isMenuPrimaryAction
-          onPressActionSheet={handlePressActionSheet}
+          onPressActionSheet={(index: number) => handlePressMenuItem({ nativeEvent: { actionKey: menuConfig.menuItems[index].actionKey } })}
           options={menuConfig.menuItems}
           useActionSheetFallback={false}
           wrapNativeComponent={false}
@@ -271,6 +250,6 @@ const GasMenu = ({
         {children}
       </ContextMenuButton>
     );
-  }, [children, handlePressActionSheet, handlePressMenuItem, menuConfig]);
+  }, [children, handlePressMenuItem, menuConfig]);
   return <GasSpeedPagerCentered testID="gas-speed-pager">{renderGasSpeedPager}</GasSpeedPagerCentered>;
 };

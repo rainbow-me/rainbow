@@ -10,6 +10,7 @@ import { useSwapNavigation, NavigationSteps } from '@/__swaps__/screens/Swap/hoo
 import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
 import { UserAssetFilter } from '@/__swaps__/types/assets';
 import { useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
+import { useCustomGas } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 
 interface SwapContextType {
   userAssetFilter: SharedValue<UserAssetFilter>;
@@ -25,6 +26,7 @@ interface SwapContextType {
   SwapTextStyles: ReturnType<typeof useSwapTextStyles>;
   SwapNavigation: ReturnType<typeof useSwapNavigation>;
   SwapWarning: ReturnType<typeof useSwapWarning>;
+  SwapCustomGas: ReturnType<typeof useCustomGas>;
 
   confirmButtonIcon: Readonly<SharedValue<string>>;
   confirmButtonLabel: Readonly<SharedValue<string>>;
@@ -48,7 +50,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
   const userAssetFilter = useSharedValue<UserAssetFilter>('all');
 
+  const SwapCustomGas = useCustomGas();
+
   const SwapNavigation = useSwapNavigation({
+    SwapCustomGas,
     inputProgress,
     outputProgress,
     configProgress,
@@ -159,6 +164,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         AnimatedSwapStyles,
         SwapTextStyles,
         SwapNavigation,
+        SwapCustomGas,
         SwapWarning,
         confirmButtonIcon,
         confirmButtonLabel,

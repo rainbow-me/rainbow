@@ -1,33 +1,30 @@
-import React, { useCallback } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import Animated, { useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
 
 import { AnimatedText, Box, Inline, Separator, Stack, Text, globalColors, useColorMode } from '@/design-system';
-import Animated, { useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
-import { NavigationSteps, useSwapContext } from '../../providers/swap-provider';
-import { fadeConfig } from '../../constants';
+import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { fadeConfig } from '@/__swaps__/screens/Swap/constants';
 import { ButtonPressAnimation } from '@/components/animations';
-
-const SLIPPAGE_STEP = 0.5;
+import { CUSTOM_GAS_FIELDS } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
+import { useSelector } from 'react-redux';
+import { useColorForAsset, useDimensions, useGas, useKeyboardHeight } from '@/hooks';
+import { useTheme } from '@/theme';
+import { useNavigation } from '@/navigation';
+import { useIsFocused, useRoute } from '@react-navigation/native';
+import { getTrendKey } from '@/helpers/gas';
+import { IS_ANDROID } from '@/env';
+import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
+import { deviceUtils } from '@/utils';
 
 export function GasPanel() {
   const { isDarkMode } = useColorMode();
-  const { configProgress, SwapInputController } = useSwapContext();
+  const { configProgress, SwapCustomGas } = useSwapContext();
+  const { selectedGasFee, currentBlockParams, txNetwork } = useGas();
 
-  const baseFee = useSharedValue(`15`);
-  const currentBaseFee = useDerivedValue(() => `${baseFee.value} gwei`);
-  const maxBaseFee = useSharedValue(`23`);
-  const minerTip = useSharedValue(`1`);
+  const currentBaseFee = useDerivedValue(() => `${SwapCustomGas.currentBaseFee.value} gwei`);
   const maxTransactionFee = useDerivedValue(() => {
     return '$3.33';
   });
-
-  const onSetSlippage = useCallback(
-    (operation: 'increment' | 'decrement') => {
-      'worklet';
-      const value = operation === 'increment' ? SLIPPAGE_STEP : -SLIPPAGE_STEP;
-      SwapInputController.slippage.value = `${Math.max(0.5, Number(SwapInputController.slippage.value) + value)}`;
-    },
-    [SwapInputController.slippage]
-  );
 
   const styles = useAnimatedStyle(() => {
     return {
@@ -37,6 +34,10 @@ export function GasPanel() {
       flex: 1,
     };
   });
+
+  const currentGasTrend = useMemo(() => getTrendKey(currentBlockParams?.trend), [currentBlockParams?.trend]);
+
+  console.log(selectedGasFee, currentBlockParams, currentGasTrend);
 
   return (
     <Box as={Animated.View} zIndex={12} style={styles} testID="review-panel" width="full">
@@ -78,7 +79,7 @@ export function GasPanel() {
 
             <Inline wrap={false} alignVertical="center" horizontalSpace="6px">
               <Inline wrap={false} horizontalSpace="8px" alignVertical="center">
-                <ButtonPressAnimation onPress={() => onSetSlippage('decrement')}>
+                <ButtonPressAnimation onPress={() => SwapCustomGas.onUpdateField(CUSTOM_GAS_FIELDS.MAX_BASE_FEE, 'decrement')}>
                   <Box
                     style={{
                       justifyContent: 'center',
@@ -100,9 +101,9 @@ export function GasPanel() {
                   </Box>
                 </ButtonPressAnimation>
 
-                <AnimatedText size="15pt" weight="bold" color="labelSecondary" text={maxBaseFee} />
+                <AnimatedText size="15pt" weight="bold" color="labelSecondary" text={SwapCustomGas.maxBaseFee} />
 
-                <ButtonPressAnimation onPress={() => onSetSlippage('increment')}>
+                <ButtonPressAnimation onPress={() => SwapCustomGas.onUpdateField(CUSTOM_GAS_FIELDS.MAX_BASE_FEE, 'increment')}>
                   <Box
                     style={{
                       justifyContent: 'center',
@@ -142,7 +143,7 @@ export function GasPanel() {
 
             <Inline wrap={false} alignVertical="center" horizontalSpace="6px">
               <Inline wrap={false} horizontalSpace="8px" alignVertical="center">
-                <ButtonPressAnimation onPress={() => onSetSlippage('decrement')}>
+                <ButtonPressAnimation onPress={() => SwapCustomGas.onUpdateField(CUSTOM_GAS_FIELDS.MINER_TIP, 'decrement')}>
                   <Box
                     style={{
                       justifyContent: 'center',
@@ -164,9 +165,9 @@ export function GasPanel() {
                   </Box>
                 </ButtonPressAnimation>
 
-                <AnimatedText size="15pt" weight="bold" color="labelSecondary" text={minerTip} />
+                <AnimatedText size="15pt" weight="bold" color="labelSecondary" text={SwapCustomGas.minerTip} />
 
-                <ButtonPressAnimation onPress={() => onSetSlippage('increment')}>
+                <ButtonPressAnimation onPress={() => SwapCustomGas.onUpdateField(CUSTOM_GAS_FIELDS.MINER_TIP, 'increment')}>
                   <Box
                     style={{
                       justifyContent: 'center',
