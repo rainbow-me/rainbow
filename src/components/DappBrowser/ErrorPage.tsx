@@ -1,4 +1,4 @@
-import lang from 'i18n-js';
+import * as lang from '@/languages';
 import React from 'react';
 import { Centered } from '../layout';
 import { Text } from '../text';
