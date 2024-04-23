@@ -1,10 +1,9 @@
-import lang from 'i18n-js';
-import React, { useCallback, useEffect } from 'react';
+import * as lang from '@/languages';
+import React, { useCallback } from 'react';
 import { Centered } from '../components/layout';
 import { Sheet, SheetActionButton } from '../components/sheet';
 import { Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
-import { useAppState } from '@/hooks';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
 import { Colors } from '../styles/colors';
@@ -39,14 +38,14 @@ const WalletConnectRedirectSheet = () => {
         </Text>
         <Centered marginTop={9}>
           <Text color={colors.dark} size="big" weight="bold">
-            {lang.t('dapp_browser.no_wc_needed.title')}
+            {lang.t(lang.l.dapp_browser.no_wc_needed.title)}
           </Text>
         </Centered>
         <Box padding={'12px'}>
-          <BodyText color={colors.dark}>{lang.t('dapp_browser.no_wc_needed.description')}</BodyText>
+          <BodyText color={colors.dark}>{lang.t(lang.l.dapp_browser.no_wc_needed.description)}</BodyText>
           <Box>
             <SheetActionButton
-              label={lang.t('dapp_browser.no_wc_needed.cta')}
+              label={lang.t(lang.l.dapp_browser.no_wc_needed.cta)}
               newShadows
               onPress={handleOnPress}
               size="big"

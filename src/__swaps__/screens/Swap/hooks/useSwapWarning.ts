@@ -118,22 +118,22 @@ export const useSwapWarning = ({ SwapInputController, isFetching, sliderXPositio
             break;
           }
         }
-      } else if (!isFetching && !(quote as QuoteError)?.error && (!inputNativeValue || !outputNativeValue)) {
+      } else if (!isFetching && !!quote && !(quote as QuoteError)?.error && (!inputNativeValue || !outputNativeValue)) {
         runOnUI(updateWarning)({
           type: SwapWarningType.unknown,
           display: i18n.t(i18n.l.exchange.price_impact.unknown_price.title),
         });
-      } else if (!isFetching && greaterThanOrEqualTo(impact, severePriceImpactThreshold)) {
+      } else if (!isFetching && !!quote && greaterThanOrEqualTo(impact, severePriceImpactThreshold)) {
         runOnUI(updateWarning)({
           type: SwapWarningType.severe,
           display,
         });
-      } else if (!isFetching && greaterThanOrEqualTo(impact, highPriceImpactThreshold)) {
+      } else if (!isFetching && !!quote && greaterThanOrEqualTo(impact, highPriceImpactThreshold)) {
         runOnUI(updateWarning)({
           type: SwapWarningType.high,
           display,
         });
-      } else if (!(quote as QuoteError)?.error) {
+      } else if (!!quote && !(quote as QuoteError)?.error) {
         const serviceTime = getQuoteServiceTime({
           quote: quote as CrosschainQuote,
         });
@@ -194,7 +194,7 @@ export const useSwapWarning = ({ SwapInputController, isFetching, sliderXPositio
       }
 
       if (
-        previous?.quote !== current.quote ||
+        (current.quote && previous?.quote !== current.quote) ||
         previous?.inputNativeValue !== current.inputNativeValue ||
         previous?.outputNativeValue !== current.outputNativeValue
       ) {
