@@ -70,7 +70,7 @@ import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
 import { SwapPriceImpactType } from '@/hooks/usePriceImpactDetails';
 import { getNextNonce } from '@/state/nonces';
-import { getChainName } from '@/__swaps__/screens/Swap/utils/chains';
+import { getChainName } from '@/__swaps__/utils/chains';
 import { ChainName } from '@/__swaps__/types/chains';
 import { AddressOrEth, ParsedAsset } from '@/__swaps__/types/assets';
 import { TokenColors } from '@/graphql/__generated__/metadata';
