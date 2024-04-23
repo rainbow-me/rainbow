@@ -40,7 +40,7 @@ export const ErrorPage = () => {
         </Text>
         <Centered marginTop={9}>
           <Text color={colors.dark} size="big" weight="bold">
-            {lang.t('dapp_browser.error.title')}
+            {lang.t(lang.l.dapp_browser.error.title)}
           </Text>
         </Centered>
         <Box padding={'12px'}>
