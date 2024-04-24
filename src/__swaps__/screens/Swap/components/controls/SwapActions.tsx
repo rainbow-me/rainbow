@@ -5,7 +5,7 @@ import { Box, Column, Columns, Separator, globalColors, useColorMode } from '@/d
 import { safeAreaInsetValues } from '@/utils';
 
 import { SwapActionButton } from '../../components/SwapActionButton';
-import { GasButton } from '../../components/GasButton';
+import { GasButton } from '@/__swaps__/screens/Swap/components/GasButton';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH, springConfig } from '../../constants';
 import { IS_ANDROID } from '@/env';
 import { useSwapContext, NavigationSteps } from '@/__swaps__/screens/Swap/providers/swap-provider';

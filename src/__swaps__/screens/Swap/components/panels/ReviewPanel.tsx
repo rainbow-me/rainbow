@@ -18,7 +18,7 @@ import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ChainId } from '@/__swaps__/types/chains';
 import { chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { AnimatedSwitch } from '../AnimatedSwitch';
-import { GasButton } from '../GasButton';
+import { GasButton } from '@/__swaps__/screens/Swap/components/GasButton';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { convertRawAmountToNativeDisplay } from '@/__swaps__/utils/numbers';

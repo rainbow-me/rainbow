@@ -161,5 +161,6 @@ export function useSwapNavigation({
     handleShowGas,
     handleDismissGas,
     handleSwapAction,
+    navigateBackToReview,
   };
 }
