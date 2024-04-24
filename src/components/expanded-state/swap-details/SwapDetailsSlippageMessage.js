@@ -55,8 +55,8 @@ export default function SwapDetailsSlippageMessage({
       ) : (
         <Container>
           <Row align="center">
-            <Text weight="bold" size="17pt" color={{ custom: priceImpactColor }}>{`􀇿 `}</Text>
-            <Text weight="bold" size="17pt" color="primary (Deprecated)">
+            <Text weight="bold" size="bmedium" color={{ custom: priceImpactColor }}>{`􀇿 `}</Text>
+            <Text weight="bold" size="bmedium" color="primary (Deprecated)">
               {impactMsg}
             </Text>
           </Row>
