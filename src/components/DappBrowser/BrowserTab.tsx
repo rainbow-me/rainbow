@@ -731,6 +731,7 @@ export const BrowserTab = React.memo(
                     ref={webViewRef}
                     source={{ uri: tabUrl || RAINBOW_HOME }}
                     style={styles.webViewStyle}
+                    pullToRefreshEnabled={true}
                   />
                 </Freeze>
               )}
