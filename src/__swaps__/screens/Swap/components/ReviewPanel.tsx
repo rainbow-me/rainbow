@@ -20,7 +20,6 @@ import { chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { AnimatedSwitch } from './AnimatedSwitch';
 import { GasButton } from './GasButton';
 import { ButtonPressAnimation } from '@/components/animations';
-import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
 import { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { convertRawAmountToNativeDisplay } from '@/__swaps__/utils/numbers';
 import { useAccountSettings } from '@/hooks';
@@ -40,11 +39,11 @@ const RainbowFee = () => {
   const nativeAsset = useNativeAssetForNetwork(ethereumUtils.getNetworkFromChainId(nativeChainId));
 
   const updateRainbowFee = ({
-    feeInEth,
+    fee,
     nativeAsset,
     currentCurrency,
   }: {
-    feeInEth: string;
+    fee: string | number;
     nativeAsset: FormattedExternalAsset | null | undefined;
     currentCurrency: keyof typeof supportedNativeCurrencies;
   }) => {
@@ -54,7 +53,7 @@ const RainbowFee = () => {
     };
 
     const { display } = convertRawAmountToNativeDisplay(
-      feeInEth,
+      fee,
       nativeAsset?.decimals || 18,
       nativeAsset?.price?.value || '0',
       currentCurrency
@@ -74,7 +73,7 @@ const RainbowFee = () => {
 
   useAnimatedReaction(
     () => ({
-      quote: SwapInputController.quote.value,
+      fee: SwapInputController.fee.value,
       nativeAsset,
       currentCurrency,
     }),
@@ -83,11 +82,10 @@ const RainbowFee = () => {
         !previous ||
         previous.nativeAsset !== current.nativeAsset ||
         previous.currentCurrency !== current.currentCurrency ||
-        (previous.quote !== current.quote && (current.quote as Quote | CrosschainQuote)?.feeInEth)
+        previous.fee !== current.fee
       ) {
-        const feeInEth = (current.quote as Quote | CrosschainQuote).feeInEth.toString();
         runOnJS(updateRainbowFee)({
-          feeInEth,
+          fee: current.fee,
           nativeAsset: current.nativeAsset,
           currentCurrency: current.currentCurrency,
         });

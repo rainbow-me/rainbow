@@ -1150,6 +1150,7 @@ export function useSwapInputsController({
     assetToSellIconUrl,
     assetToBuySymbol,
     assetToBuyIconUrl,
+    fee,
     quote,
     source,
     slippage,
