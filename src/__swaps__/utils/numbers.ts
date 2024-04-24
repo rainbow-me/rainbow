@@ -138,6 +138,12 @@ export const convertStringToNumber = (value: BigNumberish) => new BigNumber(valu
 
 export const lessThan = (numberOne: BigNumberish, numberTwo: BigNumberish): boolean => new BigNumber(numberOne).lt(numberTwo);
 
+export const lessThanWorklet = (numberOne: BigNumberish, numberTwo: BigNumberish): boolean => {
+  'worklet';
+
+  return new BigNumber(numberOne).lt(numberTwo);
+};
+
 export const lessOrEqualThan = (numberOne: BigNumberish, numberTwo: BigNumberish): boolean =>
   new BigNumber(numberOne).lt(numberTwo) || new BigNumber(numberOne).eq(numberTwo);
 
@@ -149,6 +155,21 @@ export const handleSignificantDecimalsWithThreshold = (value: BigNumberish, deci
 export const handleSignificantDecimals = (value: BigNumberish, decimals: number, buffer = 3, skipDecimals = false): string => {
   let dec;
   if (lessThan(new BigNumber(value).abs(), 1)) {
+    dec = new BigNumber(value).toFixed()?.slice?.(2).search(/[^0]/g) + buffer;
+    dec = Math.min(decimals, 8);
+  } else {
+    dec = Math.min(decimals, buffer);
+  }
+  const result = new BigNumber(new BigNumber(value).toFixed(dec)).toFixed();
+  const resultBN = new BigNumber(result);
+  return resultBN.dp() <= 2 ? resultBN.toFormat(skipDecimals ? 0 : 2) : resultBN.toFormat();
+};
+
+export const handleSignificantDecimalsWorklet = (value: BigNumberish, decimals: number, buffer = 3, skipDecimals = false): string => {
+  'worklet';
+
+  let dec;
+  if (lessThanWorklet(new BigNumber(value).abs(), 1)) {
     dec = new BigNumber(value).toFixed()?.slice?.(2).search(/[^0]/g) + buffer;
     dec = Math.min(decimals, 8);
   } else {
@@ -171,6 +192,15 @@ export const handleSignificantDecimalsAsNumber = (value: BigNumberish, decimals:
 export const convertAmountToNativeAmount = (amount: BigNumberish, priceUnit: BigNumberish): string => multiply(amount, priceUnit);
 
 /**
+ * @desc convert from asset BigNumber amount to native price BigNumber amount
+ */
+export const convertAmountToNativeAmountWorklet = (amount: BigNumberish, priceUnit: BigNumberish): string => {
+  'worklet';
+
+  return multiply(amount, priceUnit);
+};
+
+/**
  * @desc convert from amount to display formatted string
  */
 export const convertAmountAndPriceToNativeDisplay = (
@@ -182,6 +212,26 @@ export const convertAmountAndPriceToNativeDisplay = (
 ): { amount: string; display: string } => {
   const nativeBalanceRaw = convertAmountToNativeAmount(amount, priceUnit);
   const nativeDisplay = convertAmountToNativeDisplay(nativeBalanceRaw, nativeCurrency, buffer, skipDecimals);
+  return {
+    amount: nativeBalanceRaw,
+    display: nativeDisplay,
+  };
+};
+
+/**
+ * @desc convert from amount to display formatted string
+ */
+export const convertAmountAndPriceToNativeDisplayWorklet = (
+  amount: BigNumberish,
+  priceUnit: BigNumberish,
+  nativeCurrency: keyof nativeCurrencyType,
+  buffer?: number,
+  skipDecimals = false
+): { amount: string; display: string } => {
+  'worklet';
+
+  const nativeBalanceRaw = convertAmountToNativeAmountWorklet(amount, priceUnit);
+  const nativeDisplay = convertAmountToNativeDisplayWorklet(nativeBalanceRaw, nativeCurrency, buffer, skipDecimals);
   return {
     amount: nativeBalanceRaw,
     display: nativeDisplay,
@@ -213,6 +263,23 @@ export const convertRawAmountToNativeDisplay = (
 ) => {
   const assetBalance = convertRawAmountToDecimalFormat(rawAmount, assetDecimals);
   const ret = convertAmountAndPriceToNativeDisplay(assetBalance, priceUnit, nativeCurrency, buffer);
+  return ret;
+};
+
+/**
+ * @desc convert from raw amount to display formatted string
+ */
+export const convertRawAmountToNativeDisplayWorklet = (
+  rawAmount: BigNumberish,
+  assetDecimals: number,
+  priceUnit: BigNumberish,
+  nativeCurrency: keyof nativeCurrencyType,
+  buffer?: number
+) => {
+  'worklet';
+
+  const assetBalance = convertRawAmountToDecimalFormatWorklet(rawAmount, assetDecimals);
+  const ret = convertAmountAndPriceToNativeDisplayWorklet(assetBalance, priceUnit, nativeCurrency, buffer);
   return ret;
 };
 
@@ -285,6 +352,26 @@ export const convertAmountToNativeDisplay = (
   return `${display} ${nativeSelected.symbol}`;
 };
 
+/**
+ * @desc convert from amount value to display formatted string
+ */
+export const convertAmountToNativeDisplayWorklet = (
+  value: BigNumberish,
+  nativeCurrency: keyof nativeCurrencyType,
+  buffer?: number,
+  skipDecimals?: boolean
+) => {
+  'worklet';
+
+  const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
+  const { decimals } = nativeSelected;
+  const display = handleSignificantDecimalsWorklet(value, decimals, buffer, skipDecimals);
+  if (nativeSelected.alignment === 'left') {
+    return `${nativeSelected.symbol}${display}`;
+  }
+  return `${display} ${nativeSelected.symbol}`;
+};
+
 export const convertAmountToNativeDisplayWithThreshold = (value: BigNumberish, nativeCurrency: keyof nativeCurrencyType) => {
   const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
   const display = handleSignificantDecimalsWithThreshold(value, nativeSelected.decimals, nativeSelected.decimals < 4 ? '0.01' : '0.0001');
@@ -299,6 +386,14 @@ export const convertAmountToNativeDisplayWithThreshold = (value: BigNumberish, n
  */
 export const convertRawAmountToDecimalFormat = (value: BigNumberish, decimals = 18): string =>
   new BigNumber(value).dividedBy(new BigNumber(10).pow(decimals)).toFixed();
+
+/**
+ * @desc convert from raw amount to decimal format
+ */
+export const convertRawAmountToDecimalFormatWorklet = (value: BigNumberish, decimals = 18): string => {
+  'worklet';
+  return new BigNumber(value).dividedBy(new BigNumber(10).pow(decimals)).toFixed();
+};
 
 /**
  * @desc convert from decimal format to raw amount

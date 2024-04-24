@@ -95,12 +95,15 @@ const Card = ({ site, showMenuButton, goToUrl }: { showMenuButton?: boolean; sit
             <ColorModeProvider value="dark">
               {(site.screenshot || dappIconUrl) && (
                 <Cover>
-                  <ImgixImage
-                    enableFasterImage
-                    source={{ uri: site.screenshot || dappIconUrl }}
-                    size={CARD_SIZE}
-                    style={{ width: CARD_SIZE, height: 137 }}
-                  />
+                  <Cover style={{ overflow: 'hidden', borderRadius: 24 }}>
+                    <ImgixImage
+                      enableFasterImage
+                      source={{ uri: site.screenshot || dappIconUrl }}
+                      size={CARD_SIZE}
+                      style={{ width: '100%', height: '100%' }}
+                    />
+                  </Cover>
+
                   <Cover>
                     <LinearGradient
                       colors={['rgba(0, 0, 0, 0.6)', 'rgba(0, 0, 0, 0.6)', '#000']}
