@@ -23,26 +23,36 @@ import { Text, Box, Inline, Stack, TextIcon, useForegroundColor } from '@/design
 import { THICK_BORDER_WIDTH } from '../constants';
 import { ChainId } from '@/__swaps__/types/chains';
 import { GasSpeed } from '@/__swaps__/types/gas';
-import { StyleSheet } from 'react-native';
+import { InteractionManager, StyleSheet } from 'react-native';
+import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 
 const { GAS_EMOJIS, GAS_ICONS, CUSTOM, getGasLabel } = gasUtils;
 
 export const GasButton = ({ isReviewing = false, loading = false }) => {
   const separatatorSecondary = useForegroundColor('separatorSecondary');
 
+  const { selectedGasFee, gasFeeParamsBySpeed, startPollingGasFees, stopPollingGasFees, updateDefaultGasLimit, updateTxFee } = useGas();
   const { SwapInputController, SwapNavigation } = useSwapContext();
   const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
 
+  const [flashbots, setFlasbots] = useState<boolean>(false);
   const [asset, setAsset] = useState<ParsedSearchAsset | null>(null);
   const [chainId, setChainId] = useState<ChainId>(ChainId.mainnet);
+  const [quote, setQuote] = useState<Quote | CrosschainQuote | QuoteError | null>(null);
 
-  const prevAsset = usePrevious(asset);
+  useSyncSharedValue({
+    setState: setQuote,
+    state: quote,
+    sharedValue: SwapInputController.quote,
+    syncDirection: 'sharedToState',
+  });
 
-  useEffect(() => {
-    if (asset && prevAsset?.address !== asset?.address && prevAsset?.chainId !== asset?.chainId) {
-      setChainId(asset.chainId);
-    }
-  }, [asset, prevAsset?.address, prevAsset?.chainId]);
+  useSyncSharedValue({
+    setState: setFlasbots,
+    state: flashbots,
+    sharedValue: SwapInputController.flashbots,
+    syncDirection: 'sharedToState',
+  });
 
   // NOTE: keep this local state in sync with asset to buy
   useSyncSharedValue<ParsedSearchAsset | null, 'sharedToState'>({
@@ -52,7 +62,87 @@ export const GasButton = ({ isReviewing = false, loading = false }) => {
     sharedValue: SwapInputController.assetToBuy,
   });
 
-  const { selectedGasFee } = useGas();
+  const prevAsset = usePrevious(asset);
+  const prevGasFeesParamsBySpeed = usePrevious(gasFeeParamsBySpeed);
+  // const prevTxNetwork = usePrevious(txNetwork);
+
+  // const updateGasLimit = useCallback(async () => {
+  //   // TODO: recalculate gas limit when quote changes
+  //   // try {
+  //   //   const currentNetwork = ethereumUtils.getNetworkFromChainId(chainId);
+  //   //   const provider = await getProviderForNetwork(currentNetwork);
+  //   //   const swapParams: SwapActionParameters | CrosschainSwapActionParameters = {
+  //   //     chainId,
+  //   //     inputAmount: inputAmount!,
+  //   //     outputAmount: outputAmount!,
+  //   //     provider,
+  //   //     tradeDetails: tradeDetails!,
+  //   //   };
+  //   //   const rapType = getSwapRapTypeByExchangeType(isCrosschainSwap);
+  //   //   const gasLimit = await getSwapRapEstimationByType(rapType, swapParams);
+  //   //   if (gasLimit) {
+  //   //     if (getNetworkObj(currentNetwork).gas?.OptimismTxFee) {
+  //   //       if (tradeDetails) {
+  //   //         const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
+  //   //           // @ts-ignore
+  //   //           {
+  //   //             data: quote.data,
+  //   //             from: quote.from,
+  //   //             to: quote.to ?? null,
+  //   //             value: quote.value,
+  //   //           },
+  //   //           provider
+  //   //         );
+  //   //         updateTxFee(gasLimit, null, l1GasFeeOptimism);
+  //   //       } else {
+  //   //         updateTxFee(gasLimit, null, ethUnits.default_l1_gas_fee_optimism_swap);
+  //   //       }
+  //   //     } else {
+  //   //       updateTxFee(gasLimit, null);
+  //   //     }
+  //   //   }
+  //   // } catch (error) {
+  //   //   updateTxFee(ethereumUtils.getBasicSwapGasLimit(chainId), null);
+  //   // }
+  // }, []);
+
+  // useEffect(() => {
+  //   if (
+  //     !isGasReady ||
+  //     (!prevTxNetwork && txNetwork !== prevTxNetwork) ||
+  //     (!isEmpty(gasFeeParamsBySpeed) && !isEqual(gasFeeParamsBySpeed, prevGasFeesParamsBySpeed))
+  //   ) {
+  //     updateGasLimit();
+  //   }
+  // }, [gasFeeParamsBySpeed, isGasReady, prevGasFeesParamsBySpeed, prevTxNetwork, txNetwork, updateGasLimit]);
+
+  useEffect(() => {
+    if (asset && prevAsset?.address !== asset?.address && prevAsset?.chainId !== asset?.chainId) {
+      setChainId(asset.chainId);
+    }
+  }, [asset, flashbots, prevAsset?.address, prevAsset?.chainId]);
+
+  useEffect(() => {
+    if (isEmpty(prevGasFeesParamsBySpeed) && !isEmpty(gasFeeParamsBySpeed)) {
+      const defaultLimit = ethereumUtils.getBasicSwapGasLimit(chainId);
+
+      updateTxFee(defaultLimit, null);
+    }
+  }, [chainId, gasFeeParamsBySpeed, prevGasFeesParamsBySpeed, updateTxFee]);
+
+  useEffect(() => {
+    const defaultLimit = ethereumUtils.getBasicSwapGasLimit(chainId);
+    updateDefaultGasLimit(defaultLimit);
+    InteractionManager.runAfterInteractions(() => {
+      // Start polling in the current network
+      const network = ethereumUtils.getNetworkFromChainId(chainId);
+      const swapSupportsFlashbots = getNetworkObj(network).features.flashbots;
+      startPollingGasFees(network, swapSupportsFlashbots && flashbots);
+    });
+    return () => {
+      stopPollingGasFees();
+    };
+  }, [startPollingGasFees, stopPollingGasFees, updateDefaultGasLimit, flashbots, chainId]);
 
   // Because of the animated number component
   // we need to trim the native currency symbol
@@ -314,9 +404,11 @@ const GasContextMenu = ({ chainId, price, children }: { chainId: ChainId; price:
       const totalGwei = add(gasFeeParamsBySpeed[gasOption]?.maxBaseFee?.gwei, gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei);
       const estimatedGwei = add(currentBlockParams?.baseFeePerGas?.gwei, gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei);
 
+      console.log(gasFeeParamsBySpeed[gasOption]);
+
       const shouldRoundGwei = getNetworkObj(network).gas.roundGasDisplay;
       const gweiDisplay = !shouldRoundGwei
-        ? gasFeeParamsBySpeed[gasOption]?.gasPrice?.display
+        ? gasFeeParamsBySpeed[gasOption]?.gasPrice?.amount
         : gasOption === 'custom' && selectedGasFeeOption !== 'custom'
           ? ''
           : greaterThan(estimatedGwei, totalGwei)

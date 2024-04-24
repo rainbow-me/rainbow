@@ -22,8 +22,6 @@ export function useSyncSharedValue<T, D extends 'sharedToState' | 'stateToShared
 }: SyncParams<T, D>) {
   useAnimatedReaction(
     () => {
-      if (!sharedValue?.value) return;
-
       if (typeof sharedValue.value === 'object' && sharedValue.value !== null && typeof state === 'object' && state !== null) {
         const isEqual =
           compareDepth === 'deep'
