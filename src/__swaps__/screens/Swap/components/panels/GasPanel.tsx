@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo } from 'react';
 import Animated, { useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
 
 import { AnimatedText, Box, Inline, Separator, Stack, Text, globalColors, useColorMode } from '@/design-system';
@@ -6,20 +6,13 @@ import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/provid
 import { fadeConfig } from '@/__swaps__/screens/Swap/constants';
 import { ButtonPressAnimation } from '@/components/animations';
 import { CUSTOM_GAS_FIELDS } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
-import { useSelector } from 'react-redux';
-import { useColorForAsset, useDimensions, useGas, useKeyboardHeight } from '@/hooks';
-import { useTheme } from '@/theme';
-import { useNavigation } from '@/navigation';
-import { useIsFocused, useRoute } from '@react-navigation/native';
+import { useGas } from '@/hooks';
 import { getTrendKey } from '@/helpers/gas';
-import { IS_ANDROID } from '@/env';
-import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
-import { deviceUtils } from '@/utils';
 
 export function GasPanel() {
   const { isDarkMode } = useColorMode();
   const { configProgress, SwapCustomGas } = useSwapContext();
-  const { selectedGasFee, currentBlockParams, txNetwork } = useGas();
+  const { currentBlockParams } = useGas();
 
   const currentBaseFee = useDerivedValue(() => `${SwapCustomGas.currentBaseFee.value} gwei`);
   const maxTransactionFee = useDerivedValue(() => {
@@ -37,7 +30,7 @@ export function GasPanel() {
 
   const currentGasTrend = useMemo(() => getTrendKey(currentBlockParams?.trend), [currentBlockParams?.trend]);
 
-  console.log(selectedGasFee, currentBlockParams, currentGasTrend);
+  console.log(currentBlockParams, currentGasTrend);
 
   return (
     <Box as={Animated.View} zIndex={12} style={styles} testID="review-panel" width="full">
