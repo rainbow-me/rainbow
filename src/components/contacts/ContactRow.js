@@ -11,10 +11,12 @@ import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { fetchReverseRecord } from '@/handlers/ens';
 import { ENS_DOMAIN } from '@/helpers/ens';
 import { isENSAddressFormat, isValidDomainFormat } from '@/helpers/validators';
-import { useContacts, useDimensions, useENSAvatar } from '@/hooks';
+import { useAccountSettings, useContacts, useDimensions, useENSAvatar } from '@/hooks';
 import styled from '@/styled-thing';
 import { margin } from '@/styles';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
+import * as i18n from '@/languages';
+import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 
 const ContactAddress = styled(TruncatedAddress).attrs(({ theme: { colors }, lite }) => ({
   align: 'left',
@@ -56,13 +58,17 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const { width: deviceWidth } = useDimensions();
   const { onAddOrUpdateContacts } = useContacts();
+  const { nativeCurrency } = useAccountSettings();
   const { colors } = useTheme();
   const { accountType, balance, ens, image, label, network, onPress, showcaseItem, testID } = props;
 
-  let cleanedUpBalance = balance;
-  if (balance === '0.00') {
-    cleanedUpBalance = '0';
-  }
+  const cleanedUpBalance = useMemo(() => {
+    if (balance) {
+      return convertAmountToNativeDisplay(balance, nativeCurrency);
+    } else {
+      return i18n.t(i18n.l.wallet.change_wallet.no_balance);
+    }
+  }, [balance, nativeCurrency]);
 
   // show avatar for contact rows that are accounts, not contacts
   const avatar = accountType !== 'contacts' ? returnStringFirstEmoji(label) || profileUtils.addressHashedEmoji(address) : null;
@@ -135,7 +141,7 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
                 </ContactName>
               )}
               <BottomRowText color={colors.alpha(colors.blueGreyDark, 0.5)} letterSpacing="roundedMedium" weight="medium">
-                {cleanedUpBalance || 0} ETH
+                {cleanedUpBalance}
               </BottomRowText>
             </Fragment>
           ) : (
