@@ -10,6 +10,8 @@ export interface TabState {
   logoUrl?: string | null;
 }
 
+export type TabId = string;
+
 export type TabOperationType = 'newTab' | 'closeTab';
 
 export interface BaseTabOperation {
