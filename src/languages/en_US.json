@@ -1012,6 +1012,7 @@
       }
     },
     "gas": {
+      "gas_settings": "Gas Settings",
       "card": {
         "falling": "Falling",
         "rising": "Rising",

@@ -30,31 +30,33 @@ export function useCustomGas() {
   const minerTip = useSharedValue<string>('1');
 
   const onUpdateField = useCallback(
-    (field: CUSTOM_GAS_FIELDS, operation: 'increment' | 'decrement') => {
+    (field: CUSTOM_GAS_FIELDS, operation: 'increment' | 'decrement', step = 1) => {
       'worklet';
 
       switch (field) {
         case CUSTOM_GAS_FIELDS.MAX_BASE_FEE: {
           const text = maxBaseFee.value;
 
-          if (greaterThan(0, Number(text))) {
+          if (operation === 'decrement' && greaterThan(1, Number(text) - step)) {
+            maxBaseFee.value = String(1);
             return;
           }
 
           const maxBaseFeeNumber = Number(text);
-          maxBaseFee.value = operation === 'increment' ? String(maxBaseFeeNumber + 1) : String(maxBaseFeeNumber - 1);
+          maxBaseFee.value = operation === 'increment' ? String(maxBaseFeeNumber + step) : String(maxBaseFeeNumber - step);
           break;
         }
 
         case CUSTOM_GAS_FIELDS.MINER_TIP: {
           const text = minerTip.value;
 
-          if (greaterThan(0, Number(text))) {
+          if (operation === 'decrement' && greaterThan(1, Number(text) - step)) {
+            maxBaseFee.value = String(1);
             return;
           }
 
           const minerTipNumber = Number(text);
-          minerTip.value = operation === 'increment' ? String(minerTipNumber + 1) : String(minerTipNumber - 1);
+          minerTip.value = operation === 'increment' ? String(minerTipNumber + step) : String(minerTipNumber - step);
           break;
         }
       }
