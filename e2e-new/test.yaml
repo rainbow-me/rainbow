@@ -1,0 +1,52 @@
+# flow.yaml
+
+appId: me.rainbow
+jsEngine: graaljs
+---
+- runScript:
+    file: ./start-msw.js
+
+- launchApp:
+    appId: me.rainbow
+    clearState: true 
+    clearKeychain: true 
+    permissions: { all: deny }
+
+- assertVisible: 
+    id: welcome-screen
+
+- tapOn:
+    id: already-have-wallet-button
+
+- assertVisible: 
+    id: add-wallet-sheet
+
+- tapOn:
+    id: restore-with-key-button
+
+- assertVisible:
+    id: import-sheet
+
+- tapOn:
+    id: import-sheet-input
+
+- inputText: 'test test test test test test test test test test test junk'
+
+- assertVisible:
+    id: import-sheet-button
+    enabled: true
+
+- tapOn: 
+    id: import-sheet-button
+
+- assertVisible:
+    id: wallet-info-modal
+
+- tapOn: 
+    id: wallet-info-submit-button
+    enabled: true
+
+- extendedWaitUntil:
+    visible: 
+        id: wallet-screen
+    timeout: 60_000 # long import times for the test wallet
