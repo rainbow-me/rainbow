@@ -16,7 +16,7 @@ const browserStorage = new MMKV({ id: BROWSER_STORAGE_ID });
 const lazyPersist = debounce(
   (key: string, value: StorageValue<BrowserState>) => {
     try {
-      const serializedValue = serializeState(value.state, value.version ?? BROWSER_STORAGE_VERSION);
+      const serializedValue = serializeBrowserState(value.state, value.version ?? BROWSER_STORAGE_VERSION);
       browserStorage.set(key, serializedValue);
     } catch (error) {
       logger.error(new RainbowError('Failed to serialize persisted browser data'), { error });
@@ -26,7 +26,7 @@ const lazyPersist = debounce(
   { leading: false, trailing: true, maxWait: PERSIST_RATE_LIMIT_MS }
 );
 
-function serializeState(state: BrowserState, version: number): string {
+function serializeBrowserState(state: BrowserState, version: number): string {
   try {
     return JSON.stringify({
       state: {
