@@ -311,7 +311,7 @@ export const recieveModalSheetConfig: PartialNavigatorConfigOptions = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
-      backgroundOpacity: 0,
+      backgroundOpacity: 1,
       scrollEnabled: false,
       springDamping: 1,
     }),
