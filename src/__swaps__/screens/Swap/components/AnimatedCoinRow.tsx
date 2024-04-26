@@ -22,6 +22,11 @@ import Animated, {
 import { SearchAsset } from '@/__swaps__/types/search';
 import { View } from 'react-native';
 import { AddressZero } from '@ethersproject/constants';
+import { AnimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
+import { Network } from '@/networks/types';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { TokenColors } from '@/graphql/__generated__/metadata';
+import AnimatedRainbowCoinIcon from '@/components/coin-icon/AnimatedRainbowCoinIcon';
 
 export const AnimatedCoinRow = ({
   sectionData,
@@ -45,10 +50,19 @@ export const AnimatedCoinRow = ({
   //   );
   // };
 
-  const asset: Readonly<SharedValue<SearchAsset | undefined>> = useDerivedValue(() => sectionData.value?.[index], [sectionData, index]);
-  const name: Readonly<SharedValue<string | undefined>> = useDerivedValue(() => asset.value?.name, [asset]);
-  const symbol: Readonly<SharedValue<string | undefined>> = useDerivedValue(() => asset.value?.symbol, [asset]);
-  const address: Readonly<SharedValue<string | undefined>> = useDerivedValue(() => asset.value?.address, [asset]);
+  const asset: Readonly<SharedValue<SearchAsset | undefined>> = useDerivedValue(() => sectionData.value?.[index]);
+  const name: Readonly<SharedValue<string | undefined>> = useDerivedValue(() => asset.value?.name);
+  const symbol: Readonly<SharedValue<string | undefined>> = useDerivedValue(() => asset.value?.symbol);
+  const address: Readonly<SharedValue<string | undefined>> = useDerivedValue(() => asset.value?.address);
+  const iconUrl: Readonly<SharedValue<string | undefined>> = useDerivedValue(() => asset.value?.icon_url);
+  const chainId: Readonly<SharedValue<ChainId | undefined>> = useDerivedValue(() => asset.value?.chainId);
+  const network: Readonly<SharedValue<Network | undefined>> = useDerivedValue(
+    () => chainId.value && ethereumUtils.getNetworkFromChainId(chainId.value)
+  );
+  const color: Readonly<SharedValue<string | undefined>> = useDerivedValue(
+    () => asset.value?.colors?.primary ?? asset.value?.colors?.fallback
+  );
+  const mainnetAddress: Readonly<SharedValue<string | undefined>> = useDerivedValue(() => asset.value?.mainnetAddress);
 
   const isFavorited: SharedValue<boolean> = useSharedValue(address.value ? isFavorite(address.value) : false);
 
@@ -114,16 +128,16 @@ export const AnimatedCoinRow = ({
             width="full"
           >
             <Inline alignVertical="center" space="10px">
-              {/* <SwapCoinIcon
-              iconUrl={iconUrl}
-              address={address}
-              mainnetAddress={mainnetAddress}
-              large
-              network={ethereumUtils.getNetworkFromChainId(chainId)}
-              symbol={symbol}
-              theme={theme}
-              color={color}
-            /> */}
+              <AnimatedSwapCoinIcon
+                iconUrl={iconUrl}
+                address={address}
+                mainnetAddress={mainnetAddress}
+                large
+                network={network}
+                symbol={symbol}
+                theme={theme}
+                color={color}
+              />
               <Stack space="10px">
                 <AnimatedText color="label" size="17pt" weight="semibold">
                   {name}
