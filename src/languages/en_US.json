@@ -2788,8 +2788,8 @@
       "control_panel": {
         "connected": "Connected",
         "not_connected": "Not Connected",
-        "switch_wallet":"Switch Wallet",
-        "switch_network":"Switch Network",
+        "switch_wallet": "Switch Wallet",
+        "switch_network": "Switch Network",
         "disconnect": "Disconnect",
         "connect": "Connect",
         "swap": "Swap",
