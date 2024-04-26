@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Box, HitSlop, Inline, Stack, Text } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
@@ -8,7 +8,7 @@ import { CoinRowButton } from '@/__swaps__/screens/Swap/components/CoinRowButton
 import { BalancePill } from '@/__swaps__/screens/Swap/components/BalancePill';
 import { ChainId } from '@/__swaps__/types/chains';
 import { ethereumUtils } from '@/utils';
-import { toggleFavorite, useFavorites } from '@/resources/favorites';
+import { isFavorite, toggleFavorite, useFavorites } from '@/resources/favorites';
 import { ETH_ADDRESS } from '@/references';
 
 export const CoinRow = ({
@@ -39,15 +39,15 @@ export const CoinRow = ({
   symbol: string;
 }) => {
   const theme = useTheme();
-  const { favoritesMetadata } = useFavorites();
+  // const { favoritesMetadata } = useFavorites();
+  // console.log('🚨🚨🚨🚨🚨🚨 coin row render 🚨🚨🚨🚨🚨🚨');
+  // const favorites = Object.values(favoritesMetadata);
 
-  const favorites = Object.values(favoritesMetadata);
-
-  const isFavorite = (address: string) => {
-    return favorites.find(fav =>
-      fav.address === ETH_ADDRESS ? '0x0000000000000000000000000000000000000000' === address : fav.address === address
-    );
-  };
+  // const isFavorite = (address: string) => {
+  //   return favorites.find(fav =>
+  //     fav.address === ETH_ADDRESS ? '0x0000000000000000000000000000000000000000' === address : fav.address === address
+  //   );
+  // };
 
   const percentChange = useMemo(() => {
     if (isTrending) {

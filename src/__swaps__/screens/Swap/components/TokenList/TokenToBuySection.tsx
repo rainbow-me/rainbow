@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { TextStyle } from 'react-native';
-import Animated, { useDerivedValue } from 'react-native-reanimated';
+import Animated, { useDerivedValue, SharedValue, useAnimatedStyle, useAnimatedProps } from 'react-native-reanimated';
 import { FlashList } from '@shopify/flash-list';
 
 import * as i18n from '@/languages';
@@ -12,9 +12,13 @@ import { ChainId } from '@/__swaps__/types/chains';
 import { TextColor } from '@/design-system/color/palettes';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { parseSearchAsset, isSameAsset } from '@/__swaps__/utils/assets';
+import { useFavorites } from '@/resources/favorites';
 
 import { useAssetsToSell } from '@/__swaps__/screens/Swap/hooks/useAssetsToSell';
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
+import { ETH_ADDRESS } from '@/references';
+import { AnimatedCoinRow } from '../AnimatedCoinRow';
+import { useAssetsToSellSV } from '../../hooks/useAssetsToSellSV';
 
 interface SectionProp {
   color: TextStyle['color'];
@@ -64,42 +68,46 @@ const bridgeSectionsColorsByChain = {
 
 const AnimatedFlashListComponent = Animated.createAnimatedComponent(FlashList<SearchAsset>);
 
-export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) => {
+export const TokenToBuySection = React.memo(({ sections, index }: { sections: SharedValue<AssetToBuySection[]>; index: number }) => {
   const { SwapInputController } = useSwapContext();
-  const userAssets = useAssetsToSell();
+  const userAssets = useAssetsToSellSV();
+  console.log('token buy section render');
+  const section = useDerivedValue(() => sections.value[index]);
+  const sectionData = useDerivedValue(() => section.value?.data);
+  const sectionId = useDerivedValue(() => section.value?.id);
+  const sectionSymbol = useDerivedValue(() => sectionProps[sectionId.value]?.symbol);
+  const sectionTitle = useDerivedValue(() => sectionProps[sectionId.value]?.title);
 
   const handleSelectToken = useCallback(
     (token: SearchAsset) => {
-      const userAsset = userAssets.find(asset => isSameAsset(asset, token));
+      const userAsset = userAssets.value.find(asset => isSameAsset(asset, token));
       const parsedAsset = parseSearchAsset({
         assetWithPrice: undefined,
         searchAsset: token,
         userAsset,
       });
-
       SwapInputController.onSetAssetToBuy(parsedAsset);
     },
-    [SwapInputController, userAssets]
+    [SwapInputController, userAssets.value]
   );
 
-  const { symbol, title } = sectionProps[section.id];
-
-  const symbolValue = useDerivedValue(() => symbol);
-
   const color = useDerivedValue(() => {
-    if (section.id !== 'bridge') {
-      return sectionProps[section.id].color as TextColor;
+    if (sectionId.value !== 'bridge') {
+      return sectionProps[sectionId.value]?.color as TextColor | undefined;
     }
 
     return bridgeSectionsColorsByChain[SwapInputController.outputChainId.value || ChainId.mainnet] as TextColor;
   });
 
-  if (!section.data.length) return null;
+  const animatedStyle = useAnimatedStyle(() => ({ display: section.value ? 'flex' : 'none' }));
+  const animatedProps = useAnimatedProps(() => ({ testId: `${sectionId.value}-token-to-buy-section` }));
+
+  // if (!section.data.length) return null;
 
   return (
-    <Box key={section.id} testID={`${section.id}-token-to-buy-section`}>
+    <Animated.View style={animatedStyle} animatedProps={animatedProps}>
       <Stack space="8px">
-        {section.id === 'other_networks' ? (
+        {'section.id' === 'other_networks' ? (
           <Box borderRadius={12} height={{ custom: 52 }}>
             <Inset horizontal="20px" vertical="8px">
               <Inline space="8px" alignVertical="center">
@@ -116,38 +124,46 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
             <AnimatedText
               size="14px / 19px (Deprecated)"
               weight="heavy"
-              color={section.id === 'bridge' ? color.value : { custom: color.value }}
-              text={symbolValue}
-            />
-            <Text size="14px / 19px (Deprecated)" weight="heavy" color="label">
-              {title}
-            </Text>
+              // color={'section.id' === 'bridge' ? color.value : { custom: color.value }}
+              color="label"
+            >
+              {sectionSymbol}
+            </AnimatedText>
+            <AnimatedText size="14px / 19px (Deprecated)" weight="heavy" color="label">
+              {sectionTitle}
+            </AnimatedText>
           </Inline>
         </Box>
 
         {/* TODO: fix this from causing the UI to be completely slow... */}
-        <AnimatedFlashListComponent
-          data={section.data.slice(0, 5)}
+        {/* <AnimatedFlashListComponent
+          data={new Array(5)}
           ListEmptyComponent={<ListEmpty />}
-          keyExtractor={item => `${item.uniqueId}-${section.id}`}
-          renderItem={({ item }) => (
-            <CoinRow
-              key={item.uniqueId}
-              chainId={item.chainId}
-              color={item.colors?.primary ?? item.colors?.fallback}
-              iconUrl={item.icon_url}
-              address={item.address}
-              mainnetAddress={item.mainnetAddress}
-              balance={''}
-              name={item.name}
-              onPress={() => handleSelectToken(item)}
-              nativeBalance={''}
-              output
-              symbol={item.symbol}
-            />
+          keyExtractor={(item, index) => `${index}`}
+          renderItem={({ item, index }) => (
+            <AnimatedCoinRow sectionData={sectionData} index={index} onPress={handleSelectToken} />
+            // <CoinRow
+            //   key={item.uniqueId}
+            //   chainId={item.chainId}
+            //   color={item.colors?.primary ?? item.colors?.fallback}
+            //   iconUrl={item.icon_url}
+            //   address={item.address}
+            //   mainnetAddress={item.mainnetAddress}
+            //   balance={''}
+            //   name={item.name}
+            //   onPress={() => handleSelectToken(item)}
+            //   nativeBalance={''}
+            //   output
+            //   symbol={item.symbol}
+            // />
           )}
-        />
+        /> */}
+        <AnimatedCoinRow sectionData={sectionData} index={0} onPress={handleSelectToken} output />
+        <AnimatedCoinRow sectionData={sectionData} index={1} onPress={handleSelectToken} output />
+        <AnimatedCoinRow sectionData={sectionData} index={2} onPress={handleSelectToken} output />
+        <AnimatedCoinRow sectionData={sectionData} index={3} onPress={handleSelectToken} output />
+        <AnimatedCoinRow sectionData={sectionData} index={4} onPress={handleSelectToken} output />
       </Stack>
-    </Box>
+    </Animated.View>
   );
-};
+});

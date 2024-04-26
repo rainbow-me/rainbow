@@ -17,17 +17,20 @@ export const TokenToBuyList = () => {
     () => SwapInputController.outputChainId.value && isL2Chain(SwapInputController.outputChainId.value),
     [SwapInputController.outputChainId.value]
   );
-
-  const assetsCount = useMemo(() => sections?.reduce((count, section) => count + section.data.length, 0), [sections]);
+  console.log('token buy list render');
+  // const assetsCount = useMemo(() => sections?.reduce((count, section) => count + section.data.length, 0), [sections]);
 
   return (
     <Stack space="32px">
       <ChainSelection output />
-      {sections.map(section => (
-        <TokenToBuySection key={section.id} section={section} />
-      ))}
+      <TokenToBuySection index={0} sections={sections} />
+      <TokenToBuySection index={1} sections={sections} />
+      <TokenToBuySection index={2} sections={sections} />
+      <TokenToBuySection index={3} sections={sections} />
+      <TokenToBuySection index={4} sections={sections} />
+      <TokenToBuySection index={5} sections={sections} />
 
-      {!assetsCount && <ListEmpty isL2={isL2} />}
+      {!true && <ListEmpty isL2={isL2} />}
     </Stack>
   );
 };

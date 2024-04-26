@@ -24,7 +24,7 @@ export const TokenList = ({
   const { width: deviceWidth } = useDimensions();
 
   const isFocused = output ? outputProgress.value === 2 : inputProgress.value === 2;
-
+  console.log('token list render');
   return (
     <Stack>
       <Stack space="20px">

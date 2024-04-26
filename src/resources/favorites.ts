@@ -127,20 +127,29 @@ export async function refreshFavorites() {
   return updatedMetadata;
 }
 
-export async function toggleFavorite(address: string) {
+export async function toggleFavorite(address: string): Promise<boolean> {
   const favorites = Object.keys(queryClient.getQueryData(favoritesQueryKey) ?? []);
   const lowercasedAddress = address.toLowerCase();
   let updatedFavorites;
+  let isFavorite;
   if (favorites.includes(lowercasedAddress)) {
     updatedFavorites = without(favorites, lowercasedAddress);
+    isFavorite = false;
   } else {
     updatedFavorites = [...favorites, lowercasedAddress];
+    isFavorite = true;
   }
+
   const metadata = await fetchMetadata(updatedFavorites);
 
-  console.log(metadata);
-
   queryClient.setQueryData(favoritesQueryKey, metadata);
+  return isFavorite;
+}
+
+export function isFavorite(address: string) {
+  const favorites = Object.keys(queryClient.getQueryData(favoritesQueryKey) ?? []);
+  const lowercasedAddress = address.toLowerCase();
+  return favorites.includes(lowercasedAddress);
 }
 
 /**
