@@ -82,8 +82,7 @@ export const ControlPanel = () => {
   const updateActiveSessionNetwork = useAppSessionsStore(state => state.updateActiveSessionNetwork);
   const addSession = useAppSessionsStore(state => state.addSession);
   const removeSession = useAppSessionsStore(state => state.removeSession);
-  const getActiveSession = useAppSessionsStore(state => state.getActiveSession);
-  const currentSession = getActiveSession({ host: activeTabHost });
+  const currentSession = useAppSessionsStore(state => state.getActiveSession({ host: activeTabHost }));
 
   // listens to the current active tab and sets the account
   useEffect(() => {
