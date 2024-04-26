@@ -67,8 +67,6 @@ export const pruneScreenshots = async (tabStateMap: Map<TabId, TabData>): Promis
     })
     .filter((screenshot: ScreenshotType) => tabStateMap.get(screenshot.id as TabId)?.url === screenshot.url);
 
-  console.log('screenshots to prune', screenshots);
-  console.log('screenshots to keep', screenshotsToKeep);
   await deletePrunedScreenshotFiles(screenshots, screenshotsToKeep);
 
   tabScreenshotStorage.set('tabScreenshots', JSON.stringify(screenshotsToKeep));
