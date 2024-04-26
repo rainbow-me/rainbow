@@ -25,28 +25,25 @@ export const SimpleSheet = ({
   useAdditionalTopPadding = false,
 }: SimpleSheetProps) => {
   const { height: deviceHeight } = useDimensions();
-
-  const additionalTopPadding = useAdditionalTopPadding ? safeAreaInsetValues.top : 0;
-
-  const calculatedCustomHeight = customHeight ?? deviceHeight - safeAreaInsetValues.top;
-
+  const fullSheetHeight = deviceHeight - safeAreaInsetValues.top;
   return (
     <SlackSheet
-      additionalTopPadding={additionalTopPadding}
-      contentHeight={calculatedCustomHeight}
+      additionalTopPadding={IS_ANDROID && (!customHeight || useAdditionalTopPadding) ? StatusBar.currentHeight : false}
+      contentHeight={customHeight ?? deviceHeight}
       height="100%"
+      removeTopPadding
       scrollEnabled={scrollEnabled}
       backgroundColor={backgroundColor}
       onDismiss={onDismiss}
-      testID={testID}
     >
       <ScrollView
         scrollEnabled={scrollEnabled}
         style={{
+          top: 0,
           backgroundColor: backgroundColor,
         }}
         contentContainerStyle={{
-          minHeight: calculatedCustomHeight,
+          minHeight: customHeight ?? fullSheetHeight,
         }}
       >
         {children}
