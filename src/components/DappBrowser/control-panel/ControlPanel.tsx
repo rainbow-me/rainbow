@@ -167,20 +167,6 @@ export const ControlPanel = () => {
   const selectedNetworkId = useSharedValue(currentNetwork?.toString() || RainbowNetworks[0].value);
   const selectedWalletId = useSharedValue(selectedWallet?.uniqueId || accountAddress);
 
-  console.log(
-    JSON.stringify(
-      {
-        selectedNetworkId: selectedNetworkId.value,
-        selectedWalletId: selectedWalletId.value,
-        isConnected,
-        currentAddress,
-        currentNetwork,
-      },
-      null,
-      2
-    )
-  );
-
   const handleSwitchWallet = useCallback(
     (selectedItemId: string) => {
       const address = selectedItemId;
