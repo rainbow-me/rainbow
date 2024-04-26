@@ -6,7 +6,7 @@ import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
 import Routes from '@/navigation/routesNames';
 import { ContactAvatar } from '@/components/contacts';
-import { Bleed } from '@/design-system';
+import { Bleed, Box } from '@/design-system';
 import { Network } from '@/networks/types';
 
 import { useAppSessionsStore } from '@/state/appSessions';
@@ -14,6 +14,7 @@ import { getDappHost } from '../handleProviderRequest';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { useBrowserContext } from '../BrowserContext';
+import { colors } from '@/styles';
 
 export const AccountIcon = React.memo(function AccountIcon() {
   const { navigate } = useNavigation();
@@ -58,12 +59,24 @@ export const AccountIcon = React.memo(function AccountIcon() {
   }, [wallets, currentAddress, walletNames]);
 
   const handleOnPress = useCallback(() => {
+    console.log({
+      currentAddress,
+      currentNetwork,
+      isConnected,
+      activeTabUrl,
+    });
     navigate(Routes.DAPP_BROWSER_CONTROL_PANEL, {
       currentAddress,
       currentNetwork,
       isConnected,
       activeTabUrl,
       activeTabRef,
+      onConnect: () => {
+        setIsConnected(true);
+      },
+      onDisconnect: () => {
+        setIsConnected(false);
+      },
     });
   }, [activeTabRef, activeTabUrl, currentAddress, currentNetwork, isConnected, navigate]);
 
@@ -76,6 +89,18 @@ export const AccountIcon = React.memo(function AccountIcon() {
           <ContactAvatar color={accountInfo.accountColor} size="signing" value={accountInfo.accountSymbol} />
         )}
       </ButtonPressAnimation>
+      {isConnected && (
+        <Box
+          style={{
+            width: 7,
+            height: 7,
+            borderRadius: 300,
+            backgroundColor: colors.green,
+            top: -4,
+            right: -35,
+          }}
+        />
+      )}
     </Bleed>
   );
 });

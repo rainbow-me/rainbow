@@ -47,7 +47,7 @@ import { addressHashedEmoji } from '@/utils/profileUtils';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 import { TOP_INSET } from '../Dimensions';
 import { formatUrl } from '../utils';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { Address, toHex } from 'viem';
 import { RainbowNetworks } from '@/networks';
 import * as i18n from '@/languages';
@@ -72,6 +72,8 @@ type ControlPanelParams = {
     currentNetwork: Network;
     isConnected: boolean;
     activeTabRef: React.MutableRefObject<WebView | null>;
+    onConnect: () => void;
+    onDisconnect: () => void;
   };
 };
 
@@ -79,11 +81,17 @@ export const ControlPanel = () => {
   const { goBack, goToPage, ref } = usePagerNavigation();
   const { accountAddress } = useAccountSettings();
   const {
-    params: { currentAddress, currentNetwork, isConnected, activeTabRef },
+    params: { currentAddress, currentNetwork, isConnected, activeTabRef, onConnect, onDisconnect },
   } = useRoute<RouteProp<ControlPanelParams, 'ControlPanel'>>();
-
+  const { setParams } = useNavigation();
   const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
+  const activeTabUrl = useBrowserStore(state => state.getActiveTabUrl());
+  const activeTabHost = getDappHost(activeTabUrl as string);
+  const updateActiveSession = useAppSessionsStore(state => state.updateActiveSession);
+  const updateActiveSessionNetwork = useAppSessionsStore(state => state.updateActiveSessionNetwork);
+  const addSession = useAppSessionsStore(state => state.addSession);
+  const removeSession = useAppSessionsStore(state => state.removeSession);
 
   const allWalletItems = useMemo(() => {
     const items: ControlPanelMenuItemProps[] = [];
@@ -139,13 +147,6 @@ export const ControlPanel = () => {
   const selectedNetworkId = useSharedValue(selectedNetwork?.uniqueId || 'mainnet');
   const selectedWalletId = useSharedValue(selectedWallet?.uniqueId || accountAddress);
 
-  const activeTabUrl = useBrowserStore(state => state.getActiveTabUrl());
-  const activeTabHost = getDappHost(activeTabUrl as string);
-  const updateActiveSession = useAppSessionsStore(state => state.updateActiveSession);
-  const updateActiveSessionNetwork = useAppSessionsStore(state => state.updateActiveSessionNetwork);
-  const addSession = useAppSessionsStore(state => state.addSession);
-  const removeSession = useAppSessionsStore(state => state.removeSession);
-
   const handleSwitchWallet = useCallback(
     (selectedItemId: string) => {
       const address = selectedItemId;
@@ -180,13 +181,14 @@ export const ControlPanel = () => {
       dappUrl: activeTabUrl || '' || '',
     });
     if (!(response instanceof Error)) {
+      const connectedToNetwork = getNetworkFromChainId(response.chainId);
       addSession({
         host: activeTabHost || '',
         // @ts-ignore
         address: response.address,
-        network: getNetworkFromChainId(response.chainId),
+        network: connectedToNetwork,
         // @ts-ignore
-        url: url || '',
+        url: activeTabUrl || '',
       });
 
       const selectedAddress = selectedWalletId.value;
@@ -194,6 +196,8 @@ export const ControlPanel = () => {
       activeTabRef.current?.injectJavaScript(
         `window.ethereum.emit('accountsChanged', ['${selectedAddress}']); window.ethereum.emit('connect', { address: '${selectedAddress}', chainId: '${toHex(response.chainId)}' }); true;`
       );
+      onConnect();
+      setParams({ isConnected: true, currentNetwork: connectedToNetwork });
     } else {
       logger.error(new RainbowError('Dapp browser connection prompt error'), {
         response,
@@ -201,7 +205,7 @@ export const ControlPanel = () => {
         dappUrl: activeTabUrl,
       });
     }
-  }, [activeTabRef, activeTabUrl, addSession, selectedWalletId]);
+  }, [activeTabRef, activeTabUrl, addSession, onConnect, selectedWalletId.value, setParams]);
 
   const handleDisconnect = useCallback(() => {
     const selectedAddress = selectedWalletId.value;
@@ -210,8 +214,10 @@ export const ControlPanel = () => {
     if (activeTabHost) {
       removeSession({ host: activeTabHost, address: selectedAddress as Address });
       activeTabRef.current?.injectJavaScript(`window.ethereum.emit('accountsChanged', []); window.ethereum.emit('disconnect', []); true;`);
+      onDisconnect();
+      setParams({ isConnected: false });
     }
-  }, [activeTabRef, activeTabUrl, removeSession, selectedWalletId.value]);
+  }, [activeTabRef, activeTabUrl, onDisconnect, removeSession, selectedWalletId.value, setParams]);
 
   return (
     <>
@@ -404,7 +410,7 @@ const HomePanel = ({
               />
               <ConnectButton
                 animatedAccentColor={animatedAccentColor}
-                initialIsConnected={isConnected}
+                isConnected={isConnected}
                 onConnect={onConnect}
                 onDisconnect={onDisconnect}
               />
@@ -768,31 +774,30 @@ const ControlPanelButton = React.memo(function ControlPanelButton({
 
 const ConnectButton = React.memo(function ControlPanelButton({
   // animatedAccentColor,
-  initialIsConnected,
+  isConnected,
   onConnect,
   onDisconnect,
 }: {
   animatedAccentColor: SharedValue<string | undefined>;
-  initialIsConnected: boolean;
+  isConnected: boolean;
   onConnect?: () => void;
   onDisconnect?: () => void;
 }) {
   const green = useForegroundColor('green');
   const red = useForegroundColor('red');
 
-  const isConnected = useSharedValue(initialIsConnected);
   const buttonColor = useDerivedValue(() => {
-    return withTiming(isConnected.value ? red : green, TIMING_CONFIGS.slowerFadeConfig);
+    return withTiming(isConnected ? red : green, TIMING_CONFIGS.slowerFadeConfig);
     // if (!isConnected.value || !animatedAccentColor.value)
     //   return withTiming(isConnected.value ? red : green, TIMING_CONFIGS.slowerFadeConfig);
     // return animatedAccentColor.value;
   });
 
   const buttonIcon = useDerivedValue(() => {
-    return isConnected.value ? '􀋪' : '􀋦';
+    return isConnected ? '􀋪' : '􀋦';
   });
   const buttonLabel = useDerivedValue(() => {
-    return isConnected.value ? 'Disconnect' : 'Connect';
+    return isConnected ? 'Disconnect' : 'Connect';
   });
 
   const buttonBackground = useAnimatedStyle(() => {
@@ -810,13 +815,11 @@ const ConnectButton = React.memo(function ControlPanelButton({
 
   const handlePress = useCallback(() => {
     'worklet';
-    if (isConnected.value) {
-      isConnected.value = false;
+    if (isConnected) {
       if (onDisconnect) {
         runOnJS(onDisconnect)();
       }
     } else {
-      isConnected.value = true;
       if (onConnect) {
         runOnJS(onConnect)();
       }
