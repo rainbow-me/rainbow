@@ -26,6 +26,7 @@ export const SimpleSheet = ({
 }: SimpleSheetProps) => {
   const { height: deviceHeight } = useDimensions();
   const fullSheetHeight = deviceHeight - safeAreaInsetValues.top;
+
   return (
     <SlackSheet
       additionalTopPadding={IS_ANDROID && (!customHeight || useAdditionalTopPadding) ? StatusBar.currentHeight : false}
@@ -35,6 +36,7 @@ export const SimpleSheet = ({
       scrollEnabled={scrollEnabled}
       backgroundColor={backgroundColor}
       onDismiss={onDismiss}
+      testID={testID}
     >
       <ScrollView
         scrollEnabled={scrollEnabled}
