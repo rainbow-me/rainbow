@@ -13,7 +13,6 @@ import Animated, {
 } from 'react-native-reanimated';
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { ChainId } from '@/__swaps__/types/chains';
 import { opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
@@ -51,6 +50,13 @@ import { addressHashedEmoji } from '@/utils/profileUtils';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 import { TOP_INSET } from '../Dimensions';
 import { formatUrl } from '../utils';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { Address } from 'viem';
+import { RainbowNetworks, getNetworkObj } from '@/networks';
+import * as i18n from '@/languages';
+import { convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { useSelector } from 'react-redux';
+import store, { AppState } from '@/redux/store';
 
 const PAGES = {
   HOME: 'home',
@@ -58,12 +64,77 @@ const PAGES = {
   SWITCH_NETWORK: 'switch-network',
 };
 
+type ControlPanelParams = {
+  ControlPanel: {
+    currentAddress: Address;
+    currentNetwork: Network;
+    isConnected: boolean;
+  };
+};
+
 export const ControlPanel = () => {
   const { goBack, goToPage, ref } = usePagerNavigation();
+  const { accountAddress } = useAccountSettings();
+  const {
+    params: { currentAddress, currentNetwork, isConnected },
+  } = useRoute<RouteProp<ControlPanelParams, 'ControlPanel'>>();
 
-  const animatedAccentColor = useSharedValue(PLACEHOLDER_WALLET_ITEMS[0].color);
-  const selectedNetworkId = useSharedValue(PLACEHOLDER_CHAIN_ITEMS[0].uniqueId);
-  const selectedWalletId = useSharedValue(PLACEHOLDER_WALLET_ITEMS[0].uniqueId);
+  const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
+  const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
+
+  const allWalletItems = useMemo(() => {
+    const items: ControlPanelMenuItemProps[] = [];
+    Object.keys(walletsWithBalancesAndNames).forEach(key => {
+      const wallet = walletsWithBalancesAndNames[key];
+      const filteredAccounts = wallet.addresses.filter(account => account.visible);
+      filteredAccounts.forEach(account => {
+        const walletBalance = account.balance === '0.00' ? '0' : account.balance;
+        const nativeCurrencyBalance = convertAmountToNativeDisplay(walletBalance || '0', nativeCurrency);
+
+        const item = {
+          IconComponent: account.image ? (
+            <ListAvatar url={account.image || ''} />
+          ) : (
+            <ListEmojiAvatar address={account.address} color={account.color} label={account.label} />
+          ),
+          label: account.label,
+          secondaryLabel: nativeCurrencyBalance,
+          uniqueId: account.address,
+          color: colors.avatarBackgrounds[account.color],
+          selected: account.address === currentAddress,
+        };
+
+        items.push(item);
+      });
+    });
+
+    return items;
+  }, [walletsWithBalancesAndNames, currentAddress, nativeCurrency]);
+
+  const { testnetsEnabled } = store.getState().settings;
+
+  const allNetworkItems = useMemo(() => {
+    return RainbowNetworks.filter(({ networkType }) => testnetsEnabled || networkType !== 'testnet').map(network => {
+      return {
+        IconComponent: <ChainImage chain={network.value} size={36} />,
+        label: network.name,
+        secondaryLabel: i18n.t(
+          isConnected && network.value === currentNetwork
+            ? i18n.l.dapp_browser.control_panel.connected
+            : i18n.l.dapp_browser.control_panel.not_connected
+        ),
+        uniqueId: network.value,
+        selected: network.value === currentNetwork,
+      };
+    });
+  }, [currentNetwork, isConnected, testnetsEnabled]);
+
+  const selectedWallet = allWalletItems.find(item => item.selected);
+  const selectedNetwork = allNetworkItems.find(item => item.selected);
+
+  const animatedAccentColor = useSharedValue(selectedWallet?.color || globalColors.blue10);
+  const selectedNetworkId = useSharedValue(selectedNetwork?.uniqueId || 'mainnet');
+  const selectedWalletId = useSharedValue(selectedWallet?.uniqueId || accountAddress);
 
   return (
     <>
@@ -77,6 +148,8 @@ export const ControlPanel = () => {
                 goToPage={goToPage}
                 selectedNetworkId={selectedNetworkId}
                 selectedWalletId={selectedWalletId}
+                allWalletItems={allWalletItems}
+                allNetworkItems={allNetworkItems}
               />
             }
             id={PAGES.HOME}
@@ -90,7 +163,12 @@ export const ControlPanel = () => {
             />
             <SmoothPager.Page
               component={
-                <SwitchNetworkPanel animatedAccentColor={animatedAccentColor} goBack={goBack} selectedNetworkId={selectedNetworkId} />
+                <SwitchNetworkPanel
+                  allNetworkItems={allNetworkItems}
+                  animatedAccentColor={animatedAccentColor}
+                  goBack={goBack}
+                  selectedNetworkId={selectedNetworkId}
+                />
               }
               id={PAGES.SWITCH_NETWORK}
             />
@@ -139,15 +217,19 @@ const HomePanel = ({
   goToPage,
   selectedNetworkId,
   selectedWalletId,
+  allWalletItems,
+  allNetworkItems,
 }: {
   animatedAccentColor: SharedValue<string | undefined>;
   goToPage: (pageId: string) => void;
   selectedNetworkId: SharedValue<string>;
   selectedWalletId: SharedValue<string>;
+  allWalletItems: ControlPanelMenuItemProps[];
+  allNetworkItems: ControlPanelMenuItemProps[];
 }) => {
   const [selectedItems, setSelectedStates] = useState({
-    selectedWalletId: PLACEHOLDER_WALLET_ITEMS[0].uniqueId,
-    selectedNetworkId: PLACEHOLDER_CHAIN_ITEMS[0].uniqueId,
+    selectedWalletId: selectedWalletId.value || allWalletItems[0].uniqueId,
+    selectedNetworkId: selectedNetworkId.value || allNetworkItems[0].uniqueId,
   });
 
   useAnimatedReaction(
@@ -163,15 +245,13 @@ const HomePanel = ({
   );
 
   const actionButtonList = useMemo(() => {
-    const walletIcon = PLACEHOLDER_WALLET_ITEMS.find(item => item.uniqueId === selectedItems.selectedWalletId)?.IconComponent || <></>;
-    const walletLabel = PLACEHOLDER_WALLET_ITEMS.find(item => item.uniqueId === selectedItems.selectedWalletId)?.label || '';
-    const walletSecondaryLabel =
-      PLACEHOLDER_WALLET_ITEMS.find(item => item.uniqueId === selectedItems.selectedWalletId)?.secondaryLabel || '';
+    const walletIcon = allWalletItems.find(item => item.uniqueId === selectedItems.selectedWalletId)?.IconComponent || <></>;
+    const walletLabel = allWalletItems.find(item => item.uniqueId === selectedItems.selectedWalletId)?.label || '';
+    const walletSecondaryLabel = allWalletItems.find(item => item.uniqueId === selectedItems.selectedWalletId)?.secondaryLabel || '';
 
     const networkIcon = <ChainImage chain={getNetworkFromChainId(Number(selectedItems.selectedNetworkId))} size={36} />;
-    const networkLabel = PLACEHOLDER_CHAIN_ITEMS.find(item => item.uniqueId === selectedItems.selectedNetworkId)?.label || '';
-    const networkSecondaryLabel =
-      PLACEHOLDER_CHAIN_ITEMS.find(item => item.uniqueId === selectedItems.selectedNetworkId)?.secondaryLabel || '';
+    const networkLabel = allNetworkItems.find(item => item.uniqueId === selectedItems.selectedNetworkId)?.label || '';
+    const networkSecondaryLabel = allNetworkItems.find(item => item.uniqueId === selectedItems.selectedNetworkId)?.secondaryLabel || '';
 
     return (
       <Stack space="12px">
@@ -195,7 +275,7 @@ const HomePanel = ({
         />
       </Stack>
     );
-  }, [animatedAccentColor, goToPage, selectedItems.selectedNetworkId, selectedItems.selectedWalletId]);
+  }, [allNetworkItems, allWalletItems, animatedAccentColor, goToPage, selectedItems.selectedNetworkId, selectedItems.selectedWalletId]);
 
   return (
     <Panel height={334}>
@@ -336,16 +416,18 @@ const SwitchNetworkPanel = ({
   animatedAccentColor,
   goBack,
   selectedNetworkId,
+  allNetworkItems,
 }: {
   animatedAccentColor: SharedValue<string | undefined>;
   goBack: () => void;
   selectedNetworkId: SharedValue<string>;
+  allNetworkItems: ControlPanelMenuItemProps[];
 }) => {
   return (
     <ListPanel
       animatedAccentColor={animatedAccentColor}
       goBack={goBack}
-      items={PLACEHOLDER_CHAIN_ITEMS}
+      items={allNetworkItems}
       pageTitle="Switch Network"
       selectedItemId={selectedNetworkId}
     />
@@ -440,10 +522,11 @@ interface ControlPanelMenuItemProps {
   animatedAccentColor?: SharedValue<string | undefined>;
   label: string;
   labelColor?: TextColor;
+  color?: string;
   onPress?: () => void;
   secondaryLabel?: string;
   secondaryLabelColor?: TextColor;
-  // selected?: boolean;
+  selected?: boolean;
   selectedItemId?: SharedValue<string>;
   uniqueId: string;
   variant?: 'homePanel';
@@ -878,77 +961,3 @@ const controlPanelStyles = StyleSheet.create({
     backgroundColor: globalColors.white100,
   },
 });
-
-const PLACEHOLDER_CHAIN_ITEMS = [
-  {
-    IconComponent: <ChainImage chain={Network.base} size={36} />,
-    label: 'Base',
-    secondaryLabel: '$1,977.08',
-    uniqueId: `${ChainId.base}`,
-  },
-  {
-    IconComponent: <ChainImage chain={Network.mainnet} size={36} />,
-    label: 'Ethereum',
-    secondaryLabel: '$1,500.56',
-    uniqueId: `${ChainId.mainnet}`,
-  },
-  {
-    IconComponent: <ChainImage chain={Network.optimism} size={36} />,
-    label: 'Optimism',
-    secondaryLabel: '$420.52',
-    uniqueId: `${ChainId.optimism}`,
-  },
-  {
-    IconComponent: <ChainImage chain={Network.blast} size={36} />,
-    label: 'Blast',
-    secondaryLabel: '$1,240.16',
-    uniqueId: `${ChainId.blast}`,
-  },
-  {
-    IconComponent: <ChainImage chain={Network.zora} size={36} />,
-    label: 'Zora',
-    secondaryLabel: '$720.10',
-    uniqueId: `${ChainId.zora}`,
-  },
-];
-
-const PLACEHOLDER_WALLET_ITEMS = [
-  {
-    IconComponent: (
-      <ListAvatar url="https://lh3.googleusercontent.com/CtQeWROprYWCnbGW0Rbcf27IPo-X5bUdztwBUldp-fnpvIsbf4ZpU79Ty2e7Sjl6hI9xgf_6d7ZW5QGuF4Ex6nYmoG0XrLs3hQw=s250" />
-    ),
-    color: '#FEBD01',
-    label: 'maximillian.eth',
-    secondaryLabel: '$16,858.42',
-    selected: true,
-    uniqueId: '0x26C50C986E4006759248b644856178bdD43D4caa',
-  },
-  {
-    IconComponent: <ListAvatar url="https://zora.co/api/avatar/timmmy.eth?size=180" />,
-    color: '#D85341',
-    label: 'timmmy.eth',
-    secondaryLabel: '$2,420.52',
-    uniqueId: '0x1234',
-  },
-  {
-    IconComponent: <ListAvatar url="https://pbs.twimg.com/profile_images/1557391177665708032/FSuv7Zpo_400x400.png" />,
-    color: '#3D7EFF',
-    label: 'rainbow.eth',
-    secondaryLabel: '$1,960.26',
-    uniqueId: '0x12345',
-  },
-  {
-    IconComponent: <ListAvatar url="https://zora.co/api/avatar/jacob.eth?size=180" />,
-    color: '#268FFF',
-    label: 'jacob.eth',
-    secondaryLabel: '$8,240.02',
-    uniqueId: '0x123456',
-  },
-  {
-    IconComponent: <ListAvatar url="https://zora.co/api/avatar/callil.eth?size=180" />,
-    color: '#8FFF57',
-    label: 'callil.eth',
-    secondaryLabel: '$4,921.02',
-    uniqueId: '0x1234567',
-  },
-];

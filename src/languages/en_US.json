@@ -2784,6 +2784,10 @@
     "dapp_browser": {
       "address_bar": {
         "input_placeholder": "Search or enter website"
+      },
+      "control_panel": {
+        "connected": "Connected",
+        "not_connected": "Not Connected"
       }
     }
   }
