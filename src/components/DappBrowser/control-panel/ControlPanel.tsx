@@ -96,7 +96,6 @@ export const ControlPanel = () => {
   const updateActiveSessionNetwork = useAppSessionsStore(state => state.updateActiveSessionNetwork);
   const addSession = useAppSessionsStore(state => state.addSession);
   const removeSession = useAppSessionsStore(state => state.removeSession);
-
   const getActiveSession = useAppSessionsStore(state => state.getActiveSession);
   const currentSession = getActiveSession({ host: activeTabHost });
 
@@ -169,31 +168,28 @@ export const ControlPanel = () => {
   }, [currentNetwork, isConnected, testnetsEnabled]);
 
   const selectedWallet = allWalletItems.find(item => item.selected);
-  const selectedNetwork = allNetworkItems.find(item => item.selected);
 
   const animatedAccentColor = useSharedValue(selectedWallet?.color || globalColors.blue10);
-  const selectedNetworkId = useSharedValue(selectedNetwork?.uniqueId || 'mainnet');
+  const selectedNetworkId = useSharedValue(currentNetwork?.toString() || RainbowNetworks[0].value);
   const selectedWalletId = useSharedValue(selectedWallet?.uniqueId || accountAddress);
 
   const handleSwitchWallet = useCallback(
     (selectedItemId: string) => {
       const address = selectedItemId;
-      if (activeTabHost) {
-        updateActiveSession({ host: activeTabHost, address: address as `0x${string}` });
-        // need to emit these events to the dapp
-        activeTabRef.current?.injectJavaScript(`window.ethereum.emit('accountsChanged', ['${address}']); true;`);
-      }
+      updateActiveSession({ host: activeTabHost, address: address as `0x${string}` });
+      // need to emit these events to the dapp
+      activeTabRef.current?.injectJavaScript(`window.ethereum.emit('accountsChanged', ['${address}']); true;`);
+      setCurrentAddress(address);
     },
     [activeTabHost, activeTabRef, updateActiveSession]
   );
 
   const handleNetworkSwitch = useCallback(
     (selectedItemId: string) => {
-      if (activeTabHost) {
-        updateActiveSessionNetwork({ host: activeTabHost, network: selectedItemId as Network });
-        const chainId = RainbowNetworks.find(({ value }) => value === (selectedItemId as Network))?.id as number;
-        activeTabRef.current?.injectJavaScript(`window.ethereum.emit('chainChanged', ${toHex(chainId)}); true;`);
-      }
+      updateActiveSessionNetwork({ host: activeTabHost, network: selectedItemId as Network });
+      const chainId = RainbowNetworks.find(({ value }) => value === (selectedItemId as Network))?.id as number;
+      activeTabRef.current?.injectJavaScript(`window.ethereum.emit('chainChanged', ${toHex(chainId)}); true;`);
+      setCurrentNetwork(selectedItemId as Network);
     },
     [activeTabHost, activeTabRef, updateActiveSessionNetwork]
   );
@@ -355,8 +351,8 @@ const HomePanel = ({
   onDisconnect: () => void;
 }) => {
   const [selectedItems, setSelectedStates] = useState({
-    selectedWalletId: selectedWalletId.value || allWalletItems[0].uniqueId,
-    selectedNetworkId: selectedNetworkId.value || allNetworkItems[0].uniqueId,
+    selectedWalletId: selectedWalletId.value,
+    selectedNetworkId: selectedNetworkId.value,
   });
 
   useAnimatedReaction(
@@ -376,9 +372,10 @@ const HomePanel = ({
     const walletLabel = allWalletItems.find(item => item.uniqueId === selectedItems.selectedWalletId)?.label || '';
     const walletSecondaryLabel = allWalletItems.find(item => item.uniqueId === selectedItems.selectedWalletId)?.secondaryLabel || '';
 
-    const networkIcon = <ChainImage chain={getNetworkFromChainId(Number(selectedItems.selectedNetworkId))} size={36} />;
-    const networkLabel = allNetworkItems.find(item => item.uniqueId === selectedItems.selectedNetworkId)?.label || '';
-    const networkSecondaryLabel = allNetworkItems.find(item => item.uniqueId === selectedItems.selectedNetworkId)?.secondaryLabel || '';
+    const network = allNetworkItems.find(item => item.uniqueId === selectedItems.selectedNetworkId);
+    const networkIcon = <ChainImage chain={(network?.uniqueId as Network) || 'mainnet'} size={36} />;
+    const networkLabel = network?.label || '';
+    const networkSecondaryLabel = network?.secondaryLabel || '';
 
     return (
       <Stack space="12px">
@@ -504,6 +501,13 @@ const SwitchWalletPanel = ({
   allWalletItems: ControlPanelMenuItemProps[];
   onWalletSwitch: (selectedItemId: string) => void;
 }) => {
+  const handleOnSelect = useCallback(
+    (selectedItemId: string) => {
+      onWalletSwitch(selectedItemId);
+      goBack();
+    },
+    [goBack, onWalletSwitch]
+  );
   return (
     <ListPanel
       animatedAccentColor={animatedAccentColor}
@@ -511,7 +515,7 @@ const SwitchWalletPanel = ({
       items={allWalletItems}
       pageTitle={i18n.t(i18n.l.dapp_browser.control_panel.switch_wallet)}
       selectedItemId={selectedWalletId}
-      onSelect={onWalletSwitch}
+      onSelect={handleOnSelect}
     />
   );
 };
@@ -529,6 +533,13 @@ const SwitchNetworkPanel = ({
   allNetworkItems: ControlPanelMenuItemProps[];
   onNetworkSwitch: (selectedItemId: string) => void;
 }) => {
+  const handleOnSelect = useCallback(
+    (selectedItemId: string) => {
+      onNetworkSwitch(selectedItemId);
+      goBack();
+    },
+    [goBack, onNetworkSwitch]
+  );
   return (
     <ListPanel
       animatedAccentColor={animatedAccentColor}
@@ -536,7 +547,7 @@ const SwitchNetworkPanel = ({
       items={allNetworkItems}
       pageTitle={i18n.t(i18n.l.dapp_browser.control_panel.switch_network)}
       selectedItemId={selectedNetworkId}
-      onSelect={onNetworkSwitch}
+      onSelect={handleOnSelect}
     />
   );
 };
@@ -576,7 +587,7 @@ const ListPanel = ({
                 {...item}
                 animatedAccentColor={animatedAccentColor}
                 key={item.uniqueId}
-                onPress={() => onSelect(selectedItemId.value)}
+                onPress={() => onSelect(item.uniqueId)}
                 selectedItemId={selectedItemId}
               />
             ))}
