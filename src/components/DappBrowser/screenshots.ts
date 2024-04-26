@@ -1,5 +1,5 @@
 import { RainbowError, logger } from '@/logger';
-import { ScreenshotType, TabState } from './types';
+import { ScreenshotType, TabData, TabId } from './types';
 import { MMKV } from 'react-native-mmkv';
 import RNFS from 'react-native-fs';
 
@@ -43,19 +43,14 @@ export const findTabScreenshot = (id: string, url: string): ScreenshotType | nul
   return null;
 };
 
-export const pruneScreenshots = async (tabStates: TabState[]): Promise<void> => {
-  const tabStateMap = tabStates.reduce((acc: Record<string, string>, tab: TabState) => {
-    acc[tab.uniqueId] = tab.url;
-    return acc;
-  }, {});
-
+export const pruneScreenshots = async (tabStateMap: Map<TabId, TabData>): Promise<void> => {
   const persistedData = tabScreenshotStorage.getString('tabScreenshots');
   if (!persistedData) return;
 
   const screenshots: ScreenshotType[] = JSON.parse(persistedData) || [];
   const screenshotsGroupedByTabId: Record<string, ScreenshotType[]> = screenshots.reduce(
     (acc: Record<string, ScreenshotType[]>, screenshot: ScreenshotType) => {
-      if (tabStateMap[screenshot.id]) {
+      if (tabStateMap.get(screenshot.id as TabId)) {
         if (!acc[screenshot.id]) acc[screenshot.id] = [];
         acc[screenshot.id].push(screenshot);
       }
@@ -70,8 +65,10 @@ export const pruneScreenshots = async (tabStates: TabState[]): Promise<void> => 
         return new Date(mostRecent.timestamp) > new Date(current.timestamp) ? mostRecent : current;
       });
     })
-    .filter((screenshot: ScreenshotType) => tabStateMap[screenshot.id] === screenshot.url);
+    .filter((screenshot: ScreenshotType) => tabStateMap.get(screenshot.id as TabId)?.url === screenshot.url);
 
+  console.log('screenshots to prune', screenshots);
+  console.log('screenshots to keep', screenshotsToKeep);
   await deletePrunedScreenshotFiles(screenshots, screenshotsToKeep);
 
   tabScreenshotStorage.set('tabScreenshots', JSON.stringify(screenshotsToKeep));

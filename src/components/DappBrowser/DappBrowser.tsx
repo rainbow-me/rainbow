@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { /* InteractionManager, */ StyleSheet } from 'react-native';
+import { InteractionManager, StyleSheet } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Animated, {
   interpolateColor,
@@ -25,7 +25,7 @@ import { ProgressBar } from './ProgressBar';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { TIMING_CONFIGS } from '../animations/animationConfigs';
 import { BrowserWorkletsContextProvider, useBrowserWorkletsContext } from './BrowserWorkletsContext';
-// import { pruneScreenshots } from './screenshots';
+import { pruneScreenshots } from './screenshots';
 import { BrowserGestureBlocker } from './components/BrowserGestureBlocker';
 import { useBrowserHistoryStore } from '@/state/browserHistory';
 import { useBrowserStore } from '@/state/browser/browserStore';
@@ -56,6 +56,8 @@ const DappBrowserComponent = () => {
   const injectedJS = useRef('');
   const route = useRoute<RouteProp<RouteParams, 'DappBrowserParams'>>();
 
+  const tabsData = useBrowserStore(state => state.getTabsData());
+
   useAnimatedReaction(
     () => route.params?.url,
     (current, previous) => {
@@ -77,14 +79,13 @@ const DappBrowserComponent = () => {
     loadInjectedJS();
   }, []);
 
-  // ⚠️ TODO: Update screenshot pruning to accommodate the new state structure
-  // useEffect(() => {
-  //   // Delay pruning screenshots until after the tab states have been updated
-  //   InteractionManager.runAfterInteractions(() => {
-  //     pruneScreenshots(tabStates);
-  //   });
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
+  useEffect(() => {
+    // Delay pruning screenshots until after the tab states have been updated
+    InteractionManager.runAfterInteractions(() => {
+      pruneScreenshots(tabsData);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
