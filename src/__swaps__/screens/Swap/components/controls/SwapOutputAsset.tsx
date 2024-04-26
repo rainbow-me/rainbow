@@ -1,7 +1,7 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import React from 'react';
 import { StyleSheet, StatusBar } from 'react-native';
-import Animated, { runOnUI, useDerivedValue } from 'react-native-reanimated';
+import Animated, { useDerivedValue } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
 import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
@@ -31,7 +31,7 @@ function SwapOutputActionButton() {
       disableShadow={isDarkMode}
       hugContent
       label={SwapInputController.assetToBuySymbol}
-      onPress={runOnUI(SwapNavigation.handleOutputPress)}
+      onPress={SwapNavigation.handleOutputPress}
       rightIcon={'􀆏'}
       small
     />
@@ -152,8 +152,8 @@ export function SwapOutputAsset() {
       >
         <TokenList
           color={SwapInputController.bottomColor.value}
-          handleExitSearch={runOnUI(SwapNavigation.handleExitSearch)}
-          handleFocusSearch={runOnUI(SwapNavigation.handleFocusOutputSearch)}
+          handleExitSearch={SwapNavigation.handleExitSearch}
+          handleFocusSearch={SwapNavigation.handleFocusOutputSearch}
           output
         />
       </Box>

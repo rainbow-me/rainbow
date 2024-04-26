@@ -691,11 +691,6 @@ export function useSwapInputsController({
     // }
   };
 
-  const onChangeSearchQuery = (text: string) => {
-    'worklet';
-    searchQuery.value = text;
-  };
-
   const onSetAssetToSell = (parsedAsset: ParsedSearchAsset) => {
     'worklet';
     // if the user has an asset to buy selected and the asset to sell is the same, we need to clear the asset to buy
@@ -1166,7 +1161,6 @@ export function useSwapInputsController({
     onSetAssetToSell,
     onSetAssetToBuy,
     onSwapAssets,
-    onChangeSearchQuery,
     onExecuteSwap,
     fetchAssetPrices,
   };

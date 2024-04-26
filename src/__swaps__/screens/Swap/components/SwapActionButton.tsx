@@ -11,8 +11,8 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 
-import { ButtonPressAnimation } from '@/components/animations';
 import { AnimatedText, Box, Column, Columns, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import { GestureHandlerV1Button } from './GestureHandlerV1Button';
 
 export const SwapActionButton = ({
   color,
@@ -22,7 +22,6 @@ export const SwapActionButton = ({
   icon,
   iconStyle,
   label,
-  onLongPress,
   onPress,
   outline,
   rightIcon,
@@ -36,7 +35,6 @@ export const SwapActionButton = ({
   icon?: string | DerivedValue<string | undefined>;
   iconStyle?: StyleProp<TextStyle>;
   label: string | DerivedValue<string | undefined>;
-  onLongPress?: () => void;
   onPress?: () => void;
   outline?: boolean;
   rightIcon?: string;
@@ -115,9 +113,8 @@ export const SwapActionButton = ({
   });
 
   return (
-    <ButtonPressAnimation
-      onLongPress={onLongPress}
-      onPress={onPress}
+    <GestureHandlerV1Button
+      onPressWorklet={onPress}
       scaleTo={scaleTo || (hugContent ? undefined : 0.925)}
       style={hugContent && feedActionButtonStyles.buttonWrapper}
     >
@@ -159,7 +156,7 @@ export const SwapActionButton = ({
           )}
         </Columns>
       </Box>
-    </ButtonPressAnimation>
+    </GestureHandlerV1Button>
   );
 };
 

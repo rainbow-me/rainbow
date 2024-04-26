@@ -106,7 +106,7 @@ export const TokenToBuySection = React.memo(({ sections, index }: { sections: Sh
 
   return (
     <Animated.View style={animatedStyle} animatedProps={animatedProps}>
-      <Stack space="8px">
+      <Box gap={8}>
         {'section.id' === 'other_networks' ? (
           <Box borderRadius={12} height={{ custom: 52 }}>
             <Inset horizontal="20px" vertical="8px">
@@ -163,7 +163,7 @@ export const TokenToBuySection = React.memo(({ sections, index }: { sections: Sh
         <AnimatedCoinRow sectionData={sectionData} index={2} onPress={handleSelectToken} output />
         <AnimatedCoinRow sectionData={sectionData} index={3} onPress={handleSelectToken} output />
         <AnimatedCoinRow sectionData={sectionData} index={4} onPress={handleSelectToken} output />
-      </Stack>
+      </Box>
     </Animated.View>
   );
 });

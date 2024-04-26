@@ -1,12 +1,12 @@
 import React, { useMemo } from 'react';
 import { TextInput } from 'react-native';
-import Animated, { runOnUI, useAnimatedRef, useDerivedValue } from 'react-native-reanimated';
-import { ButtonPressAnimation } from '@/components/animations';
+import Animated, { useAnimatedRef, useDerivedValue } from 'react-native-reanimated';
 import { Input } from '@/components/inputs';
 import { AnimatedText, Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { GestureHandlerV1Button } from './GestureHandlerV1Button';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
 
@@ -42,6 +42,12 @@ export const SearchInput = ({
     return SwapInputController.searchQuery.value;
   }, [SwapInputController.searchQuery.value]);
 
+  const onPressWorklet = () => {
+    'worklet';
+    handleExitSearch();
+    inputRef.current?.blur();
+  };
+
   return (
     <Box width="full">
       <Columns alignHorizontal="justify" alignVertical="center" space="20px">
@@ -69,7 +75,7 @@ export const SearchInput = ({
                 </Column>
                 <AnimatedInput
                   onChange={e => {
-                    runOnUI(SwapInputController.onChangeSearchQuery)(e.nativeEvent.text);
+                    SwapInputController.searchQuery.value = e.nativeEvent.text;
                   }}
                   onBlur={() => {
                     handleExitSearch();
@@ -96,13 +102,7 @@ export const SearchInput = ({
           </Bleed>
         </Box>
         <Column width="content">
-          <ButtonPressAnimation
-            onPress={() => {
-              handleExitSearch();
-              inputRef.current?.blur();
-            }}
-            scaleTo={0.8}
-          >
+          <GestureHandlerV1Button onPressWorklet={onPressWorklet} scaleTo={0.8}>
             <Box
               as={Animated.View}
               alignItems="center"
@@ -122,7 +122,7 @@ export const SearchInput = ({
                 weight="heavy"
               />
             </Box>
-          </ButtonPressAnimation>
+          </GestureHandlerV1Button>
         </Column>
       </Columns>
     </Box>

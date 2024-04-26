@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 
 import { useAssetsToBuySections } from '@/__swaps__/screens/Swap/hooks/useAssetsToBuy';
 import { TokenToBuySection } from '@/__swaps__/screens/Swap/components/TokenList/TokenToBuySection';
-import { Stack } from '@/design-system';
+import { Box, Stack } from '@/design-system';
 import { isL2Chain } from '@/__swaps__/utils/chains';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
@@ -21,7 +21,7 @@ export const TokenToBuyList = () => {
   // const assetsCount = useMemo(() => sections?.reduce((count, section) => count + section.data.length, 0), [sections]);
 
   return (
-    <Stack space="32px">
+    <Box gap={32}>
       <ChainSelection output />
       <TokenToBuySection index={0} sections={sections} />
       <TokenToBuySection index={1} sections={sections} />
@@ -31,7 +31,7 @@ export const TokenToBuyList = () => {
       <TokenToBuySection index={5} sections={sections} />
 
       {!true && <ListEmpty isL2={isL2} />}
-    </Stack>
+    </Box>
   );
 };
 
