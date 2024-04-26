@@ -2,9 +2,9 @@ import { convertToRGBA, processColor } from 'react-native-reanimated';
 import { globalColors } from '@/design-system';
 
 // Helper function to convert RGB component to its luminance contribution
-function luminanceComponent(x: number) {
+function luminanceComponent(x: number): number {
   'worklet';
-  const normalizedX = x / 255;
+  const normalizedX = x * 255;
   return normalizedX <= 0.03928 ? normalizedX / 12.92 : Math.pow((normalizedX + 0.055) / 1.055, 2.4);
 }
 
