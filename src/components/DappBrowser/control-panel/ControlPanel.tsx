@@ -59,7 +59,6 @@ import { handleDappBrowserConnectionPrompt } from '@/utils/requestNavigationHand
 import { useAppSessionsStore } from '@/state/appSessions';
 import { RainbowError, logger } from '@/logger';
 import WebView from 'react-native-webview';
-import { set } from 'lodash';
 
 const PAGES = {
   HOME: 'home',
@@ -69,12 +68,7 @@ const PAGES = {
 
 type ControlPanelParams = {
   ControlPanel: {
-    currentAddress: Address;
-    currentNetwork: Network;
-    isConnected: boolean;
     activeTabRef: React.MutableRefObject<WebView | null>;
-    onConnect: () => void;
-    onDisconnect: () => void;
   };
 };
 
@@ -86,7 +80,7 @@ export const ControlPanel = () => {
   } = useRoute<RouteProp<ControlPanelParams, 'ControlPanel'>>();
   const [isConnected, setIsConnected] = useState(false);
   const [currentAddress, setCurrentAddress] = useState<string>(accountAddress);
-  const [currentNetwork, setCurrentNetwork] = useState<Network>();
+  const [currentNetwork, setCurrentNetwork] = useState<Network>(RainbowNetworks[0].value);
 
   const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
@@ -173,6 +167,20 @@ export const ControlPanel = () => {
   const selectedNetworkId = useSharedValue(currentNetwork?.toString() || RainbowNetworks[0].value);
   const selectedWalletId = useSharedValue(selectedWallet?.uniqueId || accountAddress);
 
+  console.log(
+    JSON.stringify(
+      {
+        selectedNetworkId: selectedNetworkId.value,
+        selectedWalletId: selectedWalletId.value,
+        isConnected,
+        currentAddress,
+        currentNetwork,
+      },
+      null,
+      2
+    )
+  );
+
   const handleSwitchWallet = useCallback(
     (selectedItemId: string) => {
       const address = selectedItemId;
@@ -204,6 +212,7 @@ export const ControlPanel = () => {
       dappName: name || '',
       dappUrl: activeTabUrl || '' || '',
     });
+
     if (!(response instanceof Error)) {
       const connectedToNetwork = getNetworkFromChainId(response.chainId);
       addSession({
@@ -253,8 +262,8 @@ export const ControlPanel = () => {
               <HomePanel
                 animatedAccentColor={animatedAccentColor}
                 goToPage={goToPage}
-                selectedNetworkId={selectedNetworkId}
-                selectedWalletId={selectedWalletId}
+                selectedNetwork={currentNetwork}
+                selectedWallet={currentAddress}
                 allWalletItems={allWalletItems}
                 allNetworkItems={allNetworkItems}
                 isConnected={isConnected}
@@ -332,8 +341,8 @@ const AccentColorSetter = ({ animatedAccentColor }: { animatedAccentColor: Share
 const HomePanel = ({
   animatedAccentColor,
   goToPage,
-  selectedNetworkId,
-  selectedWalletId,
+  selectedNetwork,
+  selectedWallet,
   allWalletItems,
   allNetworkItems,
   isConnected,
@@ -342,37 +351,20 @@ const HomePanel = ({
 }: {
   animatedAccentColor: SharedValue<string | undefined>;
   goToPage: (pageId: string) => void;
-  selectedNetworkId: SharedValue<string>;
-  selectedWalletId: SharedValue<string>;
+  selectedNetwork: string;
+  selectedWallet: string;
   allWalletItems: ControlPanelMenuItemProps[];
   allNetworkItems: ControlPanelMenuItemProps[];
   isConnected: boolean;
   onConnect: () => void;
   onDisconnect: () => void;
 }) => {
-  const [selectedItems, setSelectedStates] = useState({
-    selectedWalletId: selectedWalletId.value,
-    selectedNetworkId: selectedNetworkId.value,
-  });
-
-  useAnimatedReaction(
-    () => ({ selectedWalletId: selectedWalletId.value, selectedNetworkId: selectedNetworkId.value }),
-    (current, previous) => {
-      const didSelectedWalletChange = previous?.selectedWalletId && current.selectedWalletId !== previous.selectedWalletId;
-      const didSelectedNetworkChange = previous?.selectedNetworkId && current.selectedNetworkId !== previous.selectedNetworkId;
-
-      if (didSelectedWalletChange || didSelectedNetworkChange) {
-        runOnJS(setSelectedStates)(current);
-      }
-    }
-  );
-
   const actionButtonList = useMemo(() => {
-    const walletIcon = allWalletItems.find(item => item.uniqueId === selectedItems.selectedWalletId)?.IconComponent || <></>;
-    const walletLabel = allWalletItems.find(item => item.uniqueId === selectedItems.selectedWalletId)?.label || '';
-    const walletSecondaryLabel = allWalletItems.find(item => item.uniqueId === selectedItems.selectedWalletId)?.secondaryLabel || '';
+    const walletIcon = allWalletItems.find(item => item.uniqueId === selectedWallet)?.IconComponent || <></>;
+    const walletLabel = allWalletItems.find(item => item.uniqueId === selectedWallet)?.label || '';
+    const walletSecondaryLabel = allWalletItems.find(item => item.uniqueId === selectedWallet)?.secondaryLabel || '';
 
-    const network = allNetworkItems.find(item => item.uniqueId === selectedItems.selectedNetworkId);
+    const network = allNetworkItems.find(item => item.uniqueId === selectedNetwork);
     const networkIcon = <ChainImage chain={(network?.uniqueId as Network) || 'mainnet'} size={36} />;
     const networkLabel = network?.label || '';
     const networkSecondaryLabel = network?.secondaryLabel || '';
@@ -399,7 +391,7 @@ const HomePanel = ({
         />
       </Stack>
     );
-  }, [allNetworkItems, allWalletItems, animatedAccentColor, goToPage, selectedItems.selectedNetworkId, selectedItems.selectedWalletId]);
+  }, [allNetworkItems, allWalletItems, animatedAccentColor, goToPage, selectedNetwork, selectedWallet]);
 
   return (
     <Panel height={334}>
