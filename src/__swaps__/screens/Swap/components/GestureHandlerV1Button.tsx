@@ -7,6 +7,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { IS_IOS } from '@/env';
 
 type GestureHandlerButtonProps = {
+  buttonPressWrapperStyleIOS?: StyleProp<ViewStyle>;
   children: React.ReactNode;
   disableButtonPressWrapper?: boolean;
   disabled?: boolean;
@@ -57,6 +58,7 @@ type GestureHandlerButtonProps = {
  */
 export const GestureHandlerV1Button = React.forwardRef(function GestureHandlerV1Button(
   {
+    buttonPressWrapperStyleIOS,
     children,
     disableButtonPressWrapper = false,
     disabled = false,
@@ -67,7 +69,7 @@ export const GestureHandlerV1Button = React.forwardRef(function GestureHandlerV1
     scaleTo = 0.86,
     style,
   }: GestureHandlerButtonProps,
-  forwardedRef: React.LegacyRef<any> | undefined
+  forwardedRef: React.LegacyRef<unknown> | undefined
 ) {
   const pressHandler = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>({
     onStart: () => {
@@ -83,7 +85,7 @@ export const GestureHandlerV1Button = React.forwardRef(function GestureHandlerV1
     <ConditionalWrap
       condition={IS_IOS && !disableButtonPressWrapper}
       wrap={children => (
-        <ButtonPressAnimation scaleTo={disabled ? 1 : scaleTo} useLateHaptic={disabled}>
+        <ButtonPressAnimation scaleTo={disabled ? 1 : scaleTo} style={buttonPressWrapperStyleIOS} useLateHaptic={disabled}>
           {children}
         </ButtonPressAnimation>
       )}

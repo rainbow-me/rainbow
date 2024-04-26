@@ -78,8 +78,8 @@ function deserializeBrowserState(serializedState: string): { state: BrowserState
   return {
     state: {
       ...state,
-      // The stored tab index may be negative here in the event a tab was closed and then the app was quit.
-      // See BrowserWorkletsContext -> closeTabWorklet for details.
+      // The stored tab index may be negative here in the event that a tab was closed and then the app
+      // was quit. For more details on this, see BrowserWorkletsContext.tsx -> closeTabWorklet.
       activeTabIndex: Math.abs(state.activeTabIndex),
       tabsData,
     },

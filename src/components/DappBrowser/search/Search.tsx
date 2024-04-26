@@ -1,102 +1,73 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { NativeSyntheticEvent, TextInput, TextInputChangeEventData, TextInputSubmitEditingEventData } from 'react-native';
+import { ButtonPressAnimation } from '@/components/animations';
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { Box, Inline, Inset, Stack, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
+import { IS_IOS } from '@/env';
+// import { GetdAppsQuery } from '@/graphql/__generated__/metadata';
+import { useKeyboardHeight } from '@/hooks';
+import * as i18n from '@/languages';
+import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
+// import { useDapps } from '@/resources/metadata/dapps';
+// import { filterList } from '@/utils';
+// import { rankings } from 'match-sorter';
+import React, { useCallback, useState } from 'react';
+import { NativeSyntheticEvent, StyleSheet, TextInput, TextInputChangeEventData, TextInputSubmitEditingEventData, View } from 'react-native';
 import Animated, {
   SharedValue,
   dispatchCommand,
   interpolate,
   runOnJS,
+  runOnUI,
   useAnimatedRef,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { Box, Inline, Inset, Stack, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
-import { IS_IOS } from '@/env';
-import { useKeyboardHeight, useDimensions } from '@/hooks';
-import * as i18n from '@/languages';
-import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { useBrowserContext } from '../BrowserContext';
 import { GOOGLE_SEARCH_URL, HTTP, HTTPS, RAINBOW_HOME } from '../constants';
 import { AccountIcon } from '../search-input/AccountIcon';
 import { SearchInput } from '../search-input/SearchInput';
 import { TabButton } from '../search-input/TabButton';
-import { formatUrl, isValidURL, normalizeUrl } from '../utils';
-import { ButtonPressAnimation } from '@/components/animations';
-import { GoogleSearchResult, SearchResult } from './SearchResult';
-import { useDapps } from '@/resources/metadata/dapps';
-import { GetdAppsQuery } from '@/graphql/__generated__/metadata';
-import { filterList } from '@/utils';
-import { rankings } from 'match-sorter';
-import { TabState } from '../types';
+import { isValidURLWorklet } from '../utils';
+// import { GoogleSearchResult, SearchResult } from './SearchResult';
+import { useBrowserStore } from '@/state/browser/browserStore';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { useBrowserWorkletsContext } from '../BrowserWorkletsContext';
 
-export const Search = ({
-  activeTabIndex,
-  tabStates,
-  tabViewProgress,
-  tabViewVisible,
-  updateActiveTabState,
-  getActiveTabState,
-  animatedActiveTabIndex,
-  toggleTabViewWorklet,
-}: {
-  activeTabIndex: number;
-  tabViewProgress: SharedValue<number> | undefined;
-  tabStates: TabState[];
-  tabViewVisible: SharedValue<boolean> | undefined;
-  updateActiveTabState: (newState: Partial<TabState>, tabId?: string | undefined) => void;
-  getActiveTabState: () => TabState | undefined;
-  animatedActiveTabIndex: SharedValue<number> | undefined;
-  toggleTabViewWorklet(tabIndex?: number): void;
-}) => {
-  const { onRefresh } = useBrowserContext();
-  const { width: deviceWidth } = useDimensions();
+export const Search = React.memo(function Search() {
+  const { animatedActiveTabIndex, currentlyOpenTabIds, searchViewProgress, tabViewProgress, tabViewVisible } = useBrowserContext();
+  const { toggleTabViewWorklet, updateTabUrlWorklet } = useBrowserWorkletsContext();
+
   const { isDarkMode } = useColorMode();
-  const { searchViewProgress } = useBrowserContext();
-  const { data: dappsData } = useDapps();
+
+  const goToPage = useBrowserStore(state => state.goToPage);
 
   const isFocusedValue = useSharedValue(false);
   const [isFocused, setIsFocused] = useState<boolean>(false);
-  const [basicSearchResults, setBasicSearchResults] = useState<GetdAppsQuery['dApps']>([]);
-  const [suggestedSearchResults, setSuggestedSearchResults] = useState<GetdAppsQuery['dApps']>([]);
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  // const [basicSearchResults, setBasicSearchResults] = useState<GetdAppsQuery['dApps']>([]);
+  // const [suggestedSearchResults, setSuggestedSearchResults] = useState<GetdAppsQuery['dApps']>([]);
+  // const [searchQuery, setSearchQuery] = useState<string>('');
 
   const keyboardHeight = useKeyboardHeight({ shouldListen: isFocused });
   const inputRef = useAnimatedRef<TextInput>();
 
-  const tabId = tabStates?.[activeTabIndex]?.uniqueId;
-  const url = tabStates?.[activeTabIndex]?.url;
-  const logoUrl = tabStates?.[activeTabIndex]?.logoUrl;
-  const isHome = url === RAINBOW_HOME;
-  const isGoogleSearch = url?.startsWith(GOOGLE_SEARCH_URL);
-  const canGoBack = tabStates?.[activeTabIndex]?.canGoBack;
-  const canGoForward = tabStates?.[activeTabIndex]?.canGoForward;
-
-  const formattedInputValue = useMemo(() => {
-    if (isHome) {
-      return { url: i18n.t(i18n.l.dapp_browser.address_bar.input_placeholder), tabIndex: activeTabIndex };
-    }
-    return { url: formatUrl(url), tabIndex: activeTabIndex };
-  }, [activeTabIndex, isHome, url]);
-
-  const urlWithoutTrailingSlash = url?.endsWith('/') ? url.slice(0, -1) : url;
-  // eslint-disable-next-line no-nested-ternary
-  const inputValue = isHome ? undefined : isGoogleSearch ? formattedInputValue.url : urlWithoutTrailingSlash;
-
   const barStyle = useAnimatedStyle(() => {
-    const progress = tabViewProgress?.value ?? 0;
-
+    const opacity = 1 - tabViewProgress.value / 75;
     return {
-      opacity: 1 - progress / 75,
-      paddingLeft: withSpring(isFocusedValue.value ? 16 : 72, SPRING_CONFIGS.keyboardConfig),
-      pointerEvents: tabViewVisible?.value ? 'none' : 'auto',
-      transform: [
-        {
-          scale: interpolate(progress, [0, 100], [1, 0.95]),
-        },
-      ],
+      display: opacity <= 0 ? 'none' : 'flex',
+      opacity,
+      pointerEvents: tabViewVisible.value ? 'none' : 'auto',
+      transform: [{ scale: interpolate(tabViewProgress.value, [0, 100], [1, 0.95]) }],
     };
   });
+
+  const expensiveBarStyles = useAnimatedStyle(() => ({
+    paddingLeft: withSpring(isFocusedValue.value ? 16 : 72, SPRING_CONFIGS.keyboardConfig),
+    pointerEvents: tabViewVisible?.value ? 'none' : 'auto',
+  }));
+
+  // const displayNoneInTabView = useAnimatedStyle(() => ({
+  //   display: (tabViewProgress?.value ?? 0) >= 50 ? 'none' : 'flex',
+  // }));
 
   const accountIconStyle = useAnimatedStyle(() => ({
     opacity: withSpring(isFocusedValue.value ? 0 : 1, SPRING_CONFIGS.keyboardConfig),
@@ -116,32 +87,30 @@ export const Search = ({
   });
 
   const backgroundStyle = useAnimatedStyle(() => ({
-    opacity: searchViewProgress?.value || 0,
-    pointerEvents: searchViewProgress?.value ? 'auto' : 'none',
+    opacity: searchViewProgress.value,
+    pointerEvents: searchViewProgress.value ? 'auto' : 'none',
+    zIndex: searchViewProgress.value ? 1 : -1,
   }));
 
   const handleUrlSubmit = useCallback(
-    (event: NativeSyntheticEvent<TextInputSubmitEditingEventData>) => {
-      inputRef.current?.blur();
+    (currentUrl: string | undefined, updatedUrl: string) => {
+      'worklet';
+      let newUrl = updatedUrl;
 
-      let newUrl = event.nativeEvent.text;
-
-      if (!isValidURL(newUrl)) {
+      if (!isValidURLWorklet(newUrl)) {
         newUrl = GOOGLE_SEARCH_URL + newUrl;
       } else if (!newUrl.startsWith(HTTP) && !newUrl.startsWith(HTTPS)) {
         newUrl = HTTPS + newUrl;
       }
+      const tabId = currentlyOpenTabIds.value[Math.abs(animatedActiveTabIndex.value)];
 
-      if (newUrl !== url) {
-        updateActiveTabState({ url: newUrl }, tabId);
-      } else {
-        onRefresh();
-      }
+      runOnJS(goToPage)(newUrl);
+      updateTabUrlWorklet(newUrl, tabId);
     },
-    [inputRef, onRefresh, tabId, updateActiveTabState, url]
+    [animatedActiveTabIndex, currentlyOpenTabIds, goToPage, updateTabUrlWorklet]
   );
 
-  const onAddressInputPressWorklet = () => {
+  const onAddressInputPressWorklet = useCallback(() => {
     'worklet';
     isFocusedValue.value = true;
     if (searchViewProgress !== undefined) {
@@ -149,60 +118,23 @@ export const Search = ({
     }
     runOnJS(setIsFocused)(true);
     dispatchCommand(inputRef, 'focus');
-  };
+  }, [inputRef, isFocusedValue, searchViewProgress]);
 
   const onBlur = useCallback(() => {
-    setBasicSearchResults([]);
-    setSearchQuery(inputValue ?? '');
-    if (isFocused) {
-      setIsFocused(false);
-    }
+    'worklet';
+    // setBasicSearchResults([]);
+    // setSearchQuery(inputValue ?? '');
+    runOnJS(setIsFocused)(false);
     if (searchViewProgress !== undefined) {
       searchViewProgress.value = withSpring(0, SPRING_CONFIGS.snappierSpringConfig);
     }
     isFocusedValue.value = false;
-  }, [inputValue, isFocused, isFocusedValue, searchViewProgress]);
-
-  const search = useCallback(
-    (query: string) => {
-      if (!query || query === inputValue) return setBasicSearchResults([]);
-      const filteredDapps = filterList(dappsData?.dApps ?? [], query, ['name', 'url'], {
-        threshold: rankings.CONTAINS,
-      }).sort((a, b) => +(b?.status === 'VERIFIED') - +(a?.status === 'VERIFIED'));
-      setBasicSearchResults(filteredDapps.slice(1, 3));
-      setSuggestedSearchResults(filteredDapps.slice(0, 1));
-    },
-    [dappsData?.dApps, inputValue]
-  );
-
-  const onPressSearchResult = useCallback(
-    (url: string) => {
-      updateActiveTabState({ url: normalizeUrl(url) });
-      inputRef.current?.blur();
-    },
-    [inputRef, updateActiveTabState]
-  );
-
-  const onChange = useCallback((event: NativeSyntheticEvent<TextInputChangeEventData>) => {
-    setSearchQuery(event.nativeEvent.text);
-  }, []);
-
-  useEffect(() => {
-    if (isFocused) {
-      search(searchQuery);
-    }
-  }, [isFocused, search, searchQuery]);
+  }, [isFocusedValue, searchViewProgress]);
 
   return (
     <>
-      <Box
-        as={Animated.View}
-        height="full"
-        width="full"
-        position="absolute"
-        style={[backgroundStyle, { backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD' }]}
-      >
-        <Inset horizontal="16px" top={{ custom: 80 }}>
+      <Animated.View style={[backgroundStyle, styles.searchBackground, { backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD' }]}>
+        {/* <Inset horizontal="16px" top={{ custom: 80 }}>
           <Box
             as={ButtonPressAnimation}
             background="fill"
@@ -279,48 +211,28 @@ export const Search = ({
               )}
             </Stack>
           </Inset>
-        </Inset>
-      </Box>
-      <Box
-        as={Animated.View}
-        bottom={{ custom: 0 }}
-        paddingTop="20px"
-        pointerEvents="box-none"
-        position="absolute"
-        style={[bottomBarStyle, { height: TAB_BAR_HEIGHT + 88, zIndex: 10000 }]}
-        width={{ custom: deviceWidth }}
-      >
-        <Box
-          as={Animated.View}
-          paddingRight="16px"
-          style={[{ alignItems: 'center', flexDirection: 'row', justifyContent: 'center' }, barStyle]}
-          width="full"
-        >
-          <Box as={Animated.View} position="absolute" style={[accountIconStyle, { left: 24 }]}>
-            <AccountIcon getActiveTabState={getActiveTabState} activeTabIndex={activeTabIndex} />
-          </Box>
+        </Inset> */}
+      </Animated.View>
+      <Animated.View style={[bottomBarStyle, styles.bottomBarStyle]}>
+        <Animated.View style={[styles.barStyle, barStyle, expensiveBarStyles]}>
+          <Animated.View style={[accountIconStyle, styles.accountIcon]}>
+            <AccountIcon />
+          </Animated.View>
 
-          <Box paddingRight="12px" style={{ flex: 1 }}>
+          <View style={styles.searchInputContainer}>
             <SearchInput
-              canGoBack={canGoBack}
-              canGoForward={canGoForward}
+              canGoBack={true}
+              canGoForward={true}
               onPressWorklet={onAddressInputPressWorklet}
               isFocused={isFocused}
               isFocusedValue={isFocusedValue}
-              isGoogleSearch={isGoogleSearch}
+              isGoogleSearch={false}
               inputRef={inputRef}
-              isHome={isHome}
-              formattedInputValue={formattedInputValue}
-              inputValue={inputValue}
+              isHome={false}
               onBlur={onBlur}
               onSubmitEditing={handleUrlSubmit}
-              logoUrl={logoUrl}
-              searchValue={searchQuery}
-              onChange={onChange}
-              animatedActiveTabIndex={animatedActiveTabIndex}
-              tabViewProgress={tabViewProgress}
             />
-          </Box>
+          </View>
           <TabButton
             inputRef={inputRef}
             isFocused={isFocused}
@@ -328,8 +240,37 @@ export const Search = ({
             setIsFocused={setIsFocused}
             toggleTabViewWorklet={toggleTabViewWorklet}
           />
-        </Box>
-      </Box>
+        </Animated.View>
+      </Animated.View>
     </>
   );
-};
+});
+
+const styles = StyleSheet.create({
+  accountIcon: { left: 24, position: 'absolute' },
+  barStyle: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingRight: 16,
+    width: '100%',
+  },
+  bottomBarStyle: {
+    bottom: 0,
+    height: TAB_BAR_HEIGHT + 88,
+    paddingTop: 20,
+    pointerEvents: 'box-none',
+    position: 'absolute',
+    width: DEVICE_WIDTH,
+    zIndex: 10000,
+  },
+  searchBackground: {
+    height: '100%',
+    position: 'absolute',
+    width: '100%',
+  },
+  searchInputContainer: {
+    flex: 1,
+    paddingRight: 12,
+  },
+});

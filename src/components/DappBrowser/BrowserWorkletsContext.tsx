@@ -1,67 +1,39 @@
-import { useCallback, useEffect, useState } from 'react';
-import { MMKV, useMMKVObject } from 'react-native-mmkv';
-import { RAINBOW_HOME } from './constants';
-import { generateUniqueId, generateUniqueIdWorklet } from './utils';
-import isEqual from 'react-fast-compare';
-import { runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
+import React, { createContext, useCallback, useContext } from 'react';
+import { runOnJS, useAnimatedReaction, useSharedValue, withSpring } from 'react-native-reanimated';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { useBrowserTabViewProgressContext } from './BrowserContext';
-import { TabOperation, TabState } from './types';
+import { useBrowserStore } from '@/state/browser/browserStore';
+import { useBrowserContext, useBrowserTabViewProgressContext } from './BrowserContext';
+import { TabOperation } from './types';
+import { generateUniqueIdWorklet, normalizeUrlWorklet } from './utils';
+import { deepEqualWorklet } from '@/worklets/comparisons';
 
-const tabStateStore = new MMKV();
+interface BrowserWorkletsContextType {
+  closeAllTabsWorklet: () => void;
+  closeTabWorklet: (tabId: string, tabIndex: number) => void;
+  newTabWorklet: (newTabUrl?: string) => void;
+  toggleTabViewWorklet: (activeIndex?: number) => void;
+  updateTabUrlWorklet: (url: string, tabId?: string) => void;
+}
 
-const DEFAULT_TAB_STATE: TabState[] = [{ canGoBack: false, canGoForward: false, uniqueId: generateUniqueId(), url: RAINBOW_HOME }];
+export const BrowserWorkletsContext = createContext<BrowserWorkletsContextType | undefined>(undefined);
 
-const defaultActiveTabIndex = tabStateStore.getNumber('activeTabIndex') || 0;
+export const useBrowserWorkletsContext = () => {
+  const context = useContext(BrowserWorkletsContext);
+  if (!context) {
+    throw new Error('useBrowserWorkletsContext must be used within DappBrowser');
+  }
+  return context;
+};
 
-export function useBrowserState() {
-  const [activeTabIndex, setActiveTabIndex] = useState<number>(defaultActiveTabIndex);
-  const [tabStates = DEFAULT_TAB_STATE, setTabStates] = useMMKVObject<TabState[]>('tabStateStorage', tabStateStore);
-  const tabOperationQueue = useSharedValue<TabOperation[]>([]);
-  const shouldBlockOperationQueue = useSharedValue(false);
-  const currentlyOpenTabIds = useSharedValue(tabStates?.map(tab => tab.uniqueId) || []);
-  const tabViewVisible = useSharedValue(false);
-  const animatedActiveTabIndex = useSharedValue(defaultActiveTabIndex);
+export const BrowserWorkletsContextProvider = ({ children }: { children: React.ReactNode }) => {
+  const { animatedActiveTabIndex, animatedTabUrls, currentlyBeingClosedTabIds, currentlyOpenTabIds, tabViewVisible } = useBrowserContext();
   const { tabViewProgress } = useBrowserTabViewProgressContext();
 
-  useEffect(() => {
-    // We can wait till the animation completes
-    setTimeout(() => {
-      tabStateStore.set('activeTabIndex', activeTabIndex);
-    }, 500);
-  }, [activeTabIndex]);
+  const shouldBlockOperationQueue = useSharedValue(false);
+  const tabOperationQueue = useSharedValue<TabOperation[]>([]);
 
-  const goToUrl = useCallback(
-    (url: string, tabIndex: number) => {
-      if (!tabStates) return;
-      const updatedTabStates = [...tabStates];
-      updatedTabStates[tabIndex] = { ...updatedTabStates[tabIndex], url };
-      setTabStates(updatedTabStates);
-    },
-    [setTabStates, tabStates]
-  );
-
-  const updateActiveTabState = useCallback(
-    (newState: Partial<TabState>, tabId?: string) => {
-      if (!tabStates) return;
-
-      const tabIndex = tabId ? tabStates?.findIndex(tab => tab.uniqueId === tabId) : activeTabIndex;
-      if (tabIndex === -1) return;
-
-      if (isEqual(tabStates[tabIndex], newState)) return;
-
-      const updatedTabs = [...tabStates];
-      updatedTabs[tabIndex] = { ...updatedTabs[tabIndex], ...newState };
-
-      setTabStates(updatedTabs);
-    },
-    [activeTabIndex, setTabStates, tabStates]
-  );
-
-  const getActiveTabState = useCallback(() => {
-    if (!tabStates) return;
-    return tabStates[activeTabIndex];
-  }, [activeTabIndex, tabStates]);
+  const setActiveTabIndex = useBrowserStore(state => state.setActiveTabIndex);
+  const silentlySetPersistedTabUrls = useBrowserStore(state => state.silentlySetPersistedTabUrls);
 
   const requestTabOperationsWorklet = useCallback(
     (operations: TabOperation | TabOperation[]) => {
@@ -81,22 +53,10 @@ export function useBrowserState() {
     [tabOperationQueue]
   );
 
-  const isNewTabOperationPending = useDerivedValue(() => {
-    const tabIdsInStates = new Set(tabStates?.map(state => state.uniqueId));
-    const isNewTabOperationPending =
-      tabOperationQueue.value.some(operation => operation.type === 'newTab') ||
-      currentlyOpenTabIds.value.some(tabId => !tabIdsInStates.has(tabId));
-
-    return isNewTabOperationPending;
-  });
-
   const newTabWorklet = useCallback(
     (newTabUrl?: string) => {
       'worklet';
-      // isNewTabOperationPending mainly guards against an edge case that happens when the new tab button is
-      // pressed just after the last tab is closed, but before a new blank tab has opened programatically,
-      // which results in two tabs being created when the user most certainly only wanted one.
-      if (newTabUrl || (!isNewTabOperationPending.value && (tabViewVisible.value || currentlyOpenTabIds.value.length === 0))) {
+      if (newTabUrl || tabViewVisible.value || currentlyOpenTabIds.value.length === 0) {
         const tabIdForNewTab = generateUniqueIdWorklet();
         const newActiveIndex = currentlyOpenTabIds.value.length - 1;
 
@@ -107,13 +67,12 @@ export function useBrowserState() {
         requestTabOperationsWorklet({ type: 'newTab', tabId: tabIdForNewTab, newActiveIndex, newTabUrl });
       }
     },
-    [currentlyOpenTabIds, isNewTabOperationPending, requestTabOperationsWorklet, tabViewVisible]
+    [currentlyOpenTabIds, requestTabOperationsWorklet, tabViewVisible]
   );
 
   const closeTabWorklet = useCallback(
     (tabId: string, tabIndex: number) => {
       'worklet';
-
       // Note: The closed tab is removed from currentlyOpenTabIds ahead of time in BrowserTab as soon
       // as the tab is swiped away, so that any operations applied between the time the swipe gesture
       // is released and the time the tab is actually closed are aware of the pending deletion of the
@@ -137,7 +96,7 @@ export function useBrowserState() {
         newActiveIndex = currentActiveIndex - 1;
       }
 
-      if (!isNewTabOperationPending.value && tabViewVisible.value) {
+      if (tabViewVisible.value) {
         // To avoid unfreezing a WebView every time a tab is closed, we set the active tab index to the
         // negative index of the tab that should become active if the tab view is exited via the "Done"
         // button. Then in toggleTabViewWorklet(), if no new active index is provided and the active tab
@@ -149,7 +108,7 @@ export function useBrowserState() {
 
       requestTabOperationsWorklet({ type: 'closeTab', tabId, newActiveIndex });
     },
-    [animatedActiveTabIndex, currentlyOpenTabIds, isNewTabOperationPending, newTabWorklet, requestTabOperationsWorklet, tabViewVisible]
+    [animatedActiveTabIndex, currentlyOpenTabIds, newTabWorklet, requestTabOperationsWorklet, tabViewVisible]
   );
 
   const closeAllTabsWorklet = useCallback(() => {
@@ -196,24 +155,14 @@ export function useBrowserState() {
 
       tabViewVisible.value = willTabViewBecomeVisible;
     },
-    [animatedActiveTabIndex, currentlyOpenTabIds, tabViewProgress, tabViewVisible]
+    [animatedActiveTabIndex, currentlyOpenTabIds, setActiveTabIndex, tabViewProgress, tabViewVisible]
   );
 
-  const setTabStatesThenUnblockQueue = useCallback(
-    (updatedTabStates: TabState[], shouldToggleTabView?: boolean, indexToMakeActive?: number) => {
-      setTabStates(updatedTabStates);
-
-      if (shouldToggleTabView) {
-        runOnUI(toggleTabViewWorklet)(indexToMakeActive);
-      } else if (indexToMakeActive !== undefined) {
-        setActiveTabIndex(indexToMakeActive);
-      }
-
-      shouldBlockOperationQueue.value = false;
-    },
-    [setTabStates, shouldBlockOperationQueue, toggleTabViewWorklet]
-  );
-
+  // ⚠️ TODO: This function is no longer responsible for orchestrating the creation or deletion of tabs.
+  // Its scope is now limited to a): ensuring the setting of a valid active tab index, particularly when
+  // many tabs are closed or opened in quick succession, and b): ensuring the tab view is exited after
+  // new tabs are created. This logic can be simplified and consolidated due to useSyncSharedValue now
+  // handling the creation and deletion of tabs. For details, see DappBrowser.tsx -> TabViewContent.
   const processOperationQueueWorklet = useCallback(() => {
     'worklet';
     if (shouldBlockOperationQueue.value || tabOperationQueue.value.length === 0) {
@@ -226,55 +175,42 @@ export function useBrowserState() {
     let newActiveIndex: number | undefined = animatedActiveTabIndex.value;
 
     tabOperationQueue.modify(currentQueue => {
-      const newTabStates = tabStates || [];
       // Process closeTab operations from oldest to newest
       for (let i = 0; i < currentQueue.length; i++) {
         const operation = currentQueue[i];
         if (operation.type === 'closeTab') {
-          const indexToClose = newTabStates.findIndex(tab => tab.uniqueId === operation.tabId);
-          if (indexToClose !== -1) {
-            newTabStates.splice(indexToClose, 1);
-            // Check to ensure we are setting a valid active tab index
-            if (operation.newActiveIndex === undefined) {
-              newActiveIndex = undefined;
+          if (operation.newActiveIndex === undefined) {
+            newActiveIndex = undefined;
+          } else {
+            const requestedNewActiveIndex = Math.abs(operation.newActiveIndex);
+            const isRequestedIndexValid = requestedNewActiveIndex >= 0 && requestedNewActiveIndex < currentlyOpenTabIds.value.length;
+            if (isRequestedIndexValid) {
+              newActiveIndex = operation.newActiveIndex;
             } else {
-              const requestedNewActiveIndex = Math.abs(operation.newActiveIndex);
-              const isRequestedIndexValid = requestedNewActiveIndex >= 0 && requestedNewActiveIndex < currentlyOpenTabIds.value.length;
-              if (isRequestedIndexValid) {
-                newActiveIndex = operation.newActiveIndex;
-              } else {
-                // Make the last tab active if the requested index is not found
-                // (Negative to avoid immediately making the tab active - see notes in closeTabWorklet())
-                newActiveIndex = -(currentlyOpenTabIds.value.length - 1);
-              }
+              // Make the last tab active if the requested index is not found
+              // (Negative to avoid immediately making the tab active - see notes in closeTabWorklet())
+              newActiveIndex = -(currentlyOpenTabIds.value.length - 1);
             }
           }
           // Remove the operation from the queue after processing
           currentQueue.splice(i, 1);
+          // // Shift the index because we removed an item from the queue
+          // i = i - 1;
         }
       }
       // Then process newTab operations from oldest to newest
       for (let i = 0; i < currentQueue.length; i++) {
         const operation = currentQueue[i];
         if (operation.type === 'newTab') {
-          // Check to ensure the tabId exists in currentlyOpenTabIds before creating the tab
           const indexForNewTab = currentlyOpenTabIds.value.findIndex(tabId => tabId === operation.tabId);
           if (indexForNewTab !== -1) {
-            const newTab = {
-              canGoBack: false,
-              canGoForward: false,
-              uniqueId: operation.tabId,
-              url: operation.newTabUrl || RAINBOW_HOME,
-            };
-            newTabStates.push(newTab);
-            if (tabViewVisible?.value) shouldToggleTabView = true;
+            if (tabViewVisible.value) shouldToggleTabView = true;
             newActiveIndex = indexForNewTab;
-          } else {
-            // ⚠️ TODO: Add logging here to report any time a new tab operation is given a nonexistent
-            // tabId (should never happen)
           }
           // Remove the operation from the queue after processing
           currentQueue.splice(i, 1);
+          // // Shift the index because we removed an item from the queue
+          // i = i - 1;
         }
       }
 
@@ -282,69 +218,80 @@ export function useBrowserState() {
       if (newActiveIndex !== undefined && (tabViewVisible.value || newActiveIndex >= 0)) {
         animatedActiveTabIndex.value = newActiveIndex;
       } else {
-        const currentActiveIndex = tabViewVisible?.value ? Math.abs(animatedActiveTabIndex.value) : animatedActiveTabIndex.value;
+        const currentActiveIndex = tabViewVisible.value ? Math.abs(animatedActiveTabIndex.value) : animatedActiveTabIndex.value;
         const isCurrentIndexValid = currentActiveIndex >= 0 && currentActiveIndex < currentlyOpenTabIds.value.length;
         const indexToSet = isCurrentIndexValid ? animatedActiveTabIndex.value : currentlyOpenTabIds.value.length - 1;
         newActiveIndex = indexToSet;
         animatedActiveTabIndex.value = indexToSet;
       }
 
-      // Remove any remaining tabs that exist in tabStates but not in currentlyOpenTabIds. This covers
-      // cases where tabStates hasn't yet been updated between tab close operations.
-      for (let i = newTabStates.length - 1; i >= 0; i--) {
-        if (!currentlyOpenTabIds.value.includes(newTabStates[i].uniqueId)) {
-          newTabStates.splice(i, 1);
-        }
-      }
-
-      runOnJS(setTabStatesThenUnblockQueue)(
-        newTabStates,
-        shouldToggleTabView,
-        // If a new tab was created, the new tab will be the last tab and it should be made active now.
-        // We've already set the animatedActiveTabIndex to the correct index above, but the JS-side
-        // activeTabIndex still needs to be set, so we pass it along to setTabStatesThenUnblockQueue().
-        newActiveIndex
-      );
-
       // Return the remaining queue after processing, which should be empty
       return currentQueue;
     });
+
+    if (shouldToggleTabView) {
+      toggleTabViewWorklet(newActiveIndex);
+    } else if (newActiveIndex !== undefined) {
+      runOnJS(setActiveTabIndex)(newActiveIndex);
+    }
+
+    shouldBlockOperationQueue.value = false;
   }, [
     animatedActiveTabIndex,
     currentlyOpenTabIds,
-    setTabStatesThenUnblockQueue,
+    setActiveTabIndex,
     shouldBlockOperationQueue,
     tabOperationQueue,
-    tabStates,
     tabViewVisible,
+    toggleTabViewWorklet,
   ]);
+
+  const updateTabUrlWorklet = useCallback(
+    (url: string, tabId?: string) => {
+      'worklet';
+      const tabIdToUse = tabId || currentlyOpenTabIds.value[animatedActiveTabIndex.value];
+      animatedTabUrls.modify(urls => ({ ...urls, [tabIdToUse]: normalizeUrlWorklet(url) }));
+    },
+    [animatedActiveTabIndex, animatedTabUrls, currentlyOpenTabIds]
+  );
+
+  useAnimatedReaction(
+    () => animatedTabUrls.value,
+    (current, previous) => {
+      if (previous && !deepEqualWorklet(current, previous)) {
+        // Prune any URLs belonging to tabs that have been closed
+        animatedTabUrls.modify(urls => {
+          Object.keys(urls).forEach(tabId => {
+            if (!currentlyOpenTabIds.value.includes(tabId)) {
+              delete urls[tabId];
+            }
+          });
+          return urls;
+        });
+        // Ensures the most up-to-date tab URLs are persisted without triggering any side effects
+        runOnJS(silentlySetPersistedTabUrls)(animatedTabUrls.value);
+      }
+    }
+  );
 
   useAnimatedReaction(
     () => ({
+      areTabCloseAnimationsRunning: currentlyBeingClosedTabIds.value.length > 0,
       operations: tabOperationQueue.value,
       shouldBlock: shouldBlockOperationQueue.value,
     }),
     (current, previous) => {
-      if (previous && current !== previous && current.operations.length > 0) {
+      if (previous && current !== previous && current.operations.length > 0 && !current.areTabCloseAnimationsRunning) {
         processOperationQueueWorklet();
       }
     }
   );
 
-  return {
-    activeTabIndex,
-    tabViewProgress,
-    animatedActiveTabIndex,
-    tabViewVisible,
-    currentlyOpenTabIds,
-    tabStates,
-    updateActiveTabState,
-    getActiveTabState,
-    setActiveTabIndex,
-    newTabWorklet,
-    closeTabWorklet,
-    closeAllTabsWorklet,
-    toggleTabViewWorklet,
-    goToUrl,
-  };
-}
+  return (
+    <BrowserWorkletsContext.Provider
+      value={{ closeAllTabsWorklet, closeTabWorklet, newTabWorklet, toggleTabViewWorklet, updateTabUrlWorklet }}
+    >
+      {children}
+    </BrowserWorkletsContext.Provider>
+  );
+};

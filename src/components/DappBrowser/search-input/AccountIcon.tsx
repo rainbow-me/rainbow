@@ -21,7 +21,8 @@ import { getDappHost } from '../handleProviderRequest';
 import { Address, toHex } from 'viem';
 import { handleDappBrowserConnectionPrompt } from '@/utils/requestNavigationHandlers';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
-import { TabState } from '../types';
+import { ButtonPressAnimation } from '@/components/animations';
+import { SharedValue, runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 
 interface MenuItemIcon {
   iconType: 'ASSET' | 'SYSTEM';
@@ -130,62 +131,66 @@ export const androidShowNetworksActionSheet = (callback: (network: { chainId: nu
   );
 };
 
-export const AccountIcon = ({
-  activeTabIndex,
-  getActiveTabState,
-}: {
-  activeTabIndex: number;
-  getActiveTabState: () => TabState | undefined;
-}) => {
+// ⚠️ TODO: Delete these and hook up the AccountIcon to browserStore and the new architecture
+const getActiveTabState = () => {
+  return { url: '' };
+};
+const currentNetwork = Network.base;
+
+export const AccountIcon = React.memo(function AccountIcon() {
   const { activeTabRef } = useBrowserContext();
   const { navigate } = useNavigation();
   const { accountAddress } = useAccountSettings();
   const { wallets, walletNames } = useWallets();
   const [isConnected, setIsConnected] = useState(false);
   const [currentAddress, setCurrentAddress] = useState<string>(accountAddress);
-  const [currentNetwork, setCurrentNetwork] = useState<Network>();
+  // const [currentNetwork, setCurrentNetwork] = useState<Network>();
 
-  const appSessions = useAppSessionsStore();
+  // const activeTabHost = getDappHost(getActiveTabState()?.url);
+  // const getActiveSession = useAppSessionsStore(state => state.getActiveSession);
+  // const currentSession = getActiveSession({ host: activeTabHost });
 
-  const currentSession = appSessions.getActiveSession({ host: getDappHost(getActiveTabState()?.url) });
-  const activeTabHost = getDappHost(getActiveTabState()?.url);
+  // const updateActiveSession = useAppSessionsStore(state => state.updateActiveSession);
+  const addSession = useAppSessionsStore(state => state.addSession);
+  const removeSession = useAppSessionsStore(state => state.removeSession);
+  const updateActiveSessionNetwork = useAppSessionsStore(state => state.updateActiveSessionNetwork);
 
   // listens to the current active tab and sets the account
-  useEffect(() => {
-    if (activeTabHost) {
-      if (!currentSession) {
-        setIsConnected(false);
-        return;
-      }
+  // useEffect(() => {
+  //   if (activeTabHost) {
+  //     if (!currentSession) {
+  //       setIsConnected(false);
+  //       return;
+  //     }
 
-      if (currentSession?.address) {
-        setCurrentAddress(currentSession?.address);
-        setIsConnected(true);
-      } else {
-        setCurrentAddress(accountAddress);
-      }
+  //     if (currentSession?.address) {
+  //       setCurrentAddress(currentSession?.address);
+  //       setIsConnected(true);
+  //     } else {
+  //       setCurrentAddress(accountAddress);
+  //     }
 
-      if (currentSession?.network) {
-        setCurrentNetwork(currentSession?.network);
-      }
-    }
-  }, [accountAddress, activeTabHost, activeTabIndex, currentSession, getActiveTabState]);
+  //     if (currentSession?.network) {
+  //       setCurrentNetwork(currentSession?.network);
+  //     }
+  //   }
+  // }, [accountAddress, activeTabHost, currentSession]);
 
   const handlePressChangeWallet = useCallback(() => {
     navigate(Routes.CHANGE_WALLET_SHEET, {
       currentAccountAddress: currentAddress,
       watchOnly: true,
       onChangeWallet(address: string) {
-        const activeTabHost = getDappHost(getActiveTabState()?.url);
-        if (activeTabHost) {
-          appSessions.updateActiveSession({ host: activeTabHost, address: address as `0x${string}` });
-          setCurrentAddress(address);
-          // need to emit these events to the dapp
-          activeTabRef.current?.injectJavaScript(`window.ethereum.emit('accountsChanged', ['${address}']); true;`);
-        }
+        // const activeTabHost = getDappHost(getActiveTabState()?.url);
+        // if (activeTabHost) {
+        // updateActiveSession({ host: activeTabHost, address: address as `0x${string}` });
+        setCurrentAddress(address);
+        // need to emit these events to the dapp
+        activeTabRef.current?.injectJavaScript(`window.ethereum.emit('accountsChanged', ['${address}']); true;`);
+        // }
       },
     });
-  }, [activeTabRef, appSessions, currentAddress, getActiveTabState, navigate]);
+  }, [activeTabRef, currentAddress, navigate]);
 
   // TODO: use dapp specifc address
   const accountInfo = useMemo(() => {
@@ -214,7 +219,7 @@ export const AccountIcon = ({
             dappUrl: url || '',
           });
           if (!(response instanceof Error)) {
-            appSessions.addSession({
+            addSession({
               host: getDappHost(url) || '',
               // @ts-ignore
               address: response.address,
@@ -235,7 +240,7 @@ export const AccountIcon = ({
         } else {
           const activeTabHost = getDappHost(getActiveTabState()?.url);
           if (activeTabHost) {
-            appSessions.removeSession({ host: activeTabHost, address: currentAddress as Address });
+            removeSession({ host: activeTabHost, address: currentAddress as Address });
             setIsConnected(false);
             activeTabRef.current?.injectJavaScript(
               `window.ethereum.emit('accountsChanged', []); window.ethereum.emit('disconnect', []); true;`
@@ -249,25 +254,27 @@ export const AccountIcon = ({
         const network = networkValue as Network;
         const activeTabHost = getDappHost(getActiveTabState()?.url);
         if (activeTabHost) {
-          appSessions.updateActiveSessionNetwork({ host: activeTabHost, network });
+          updateActiveSessionNetwork({ host: activeTabHost, network });
           const chainId = RainbowNetworks.find(({ value }) => value === network)?.id as number;
           activeTabRef.current?.injectJavaScript(`window.ethereum.emit('chainChanged', ${toHex(chainId)}); true;`);
         }
       }
     },
-    [activeTabRef, appSessions, currentAddress, getActiveTabState, handlePressChangeWallet, isConnected]
+    [activeTabRef, addSession, removeSession, updateActiveSessionNetwork, currentAddress, handlePressChangeWallet, isConnected]
   );
 
   return (
     <Bleed space="8px">
       {/* // eslint-disable-next-line @typescript-eslint/no-empty-function */}
-      <ContextMenuButton menuItems={menuItems} menuTitle="" onPressAndroid={() => {}} testID={''} onPressMenuItem={handleOnPressMenuItem}>
+      {/* <ContextMenuButton menuItems={menuItems} menuTitle="" onPressAndroid={() => {}} testID={''} onPressMenuItem={handleOnPressMenuItem}> */}
+      <ButtonPressAnimation onPress={() => navigate(Routes.DAPP_BROWSER_CONTROL_PANEL)} scaleTo={0.8}>
         {accountInfo?.accountImage ? (
           <ImageAvatar image={accountInfo.accountImage} size="signing" />
         ) : (
           <ContactAvatar color={accountInfo.accountColor} size="signing" value={accountInfo.accountSymbol} />
         )}
-      </ContextMenuButton>
+      </ButtonPressAnimation>
+      {/* </ContextMenuButton> */}
     </Bleed>
   );
-};
+});

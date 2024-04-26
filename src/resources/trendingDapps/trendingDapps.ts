@@ -36,16 +36,4 @@ export const trendingDapps: TrendingSite[] = [
     image: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/dapps/uniswap.org.png',
     screenshot: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/dapps/uniswap.org.png',
   },
-  {
-    name: 'Aave',
-    url: 'app.aave.com',
-    image: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/dapps/aave.com.png',
-    screenshot: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/dapps/aave.com.png',
-  },
-  {
-    name: 'Mirror',
-    url: 'mirror.xyz',
-    image: 'https://rainbowme-res.cloudinary.com/image/upload/v1694734011/dapps/mirror.xyz.jpg',
-    screenshot: 'https://rainbowme-res.cloudinary.com/image/upload/v1694734011/dapps/mirror.xyz.jpg',
-  },
 ];

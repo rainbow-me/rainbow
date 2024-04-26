@@ -10,7 +10,7 @@ import { BrowserButtonShadows } from '../DappBrowserShadows';
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { AnimatedRef, SharedValue, dispatchCommand, runOnJS } from 'react-native-reanimated';
 
-export const TabButton = ({
+export const TabButton = React.memo(function TabButton({
   inputRef,
   isFocused,
   isFocusedValue,
@@ -22,7 +22,7 @@ export const TabButton = ({
   isFocusedValue: SharedValue<boolean>;
   setIsFocused: React.Dispatch<React.SetStateAction<boolean>>;
   toggleTabViewWorklet(tabIndex?: number): void;
-}) => {
+}) {
   const { isDarkMode } = useColorMode();
   const fillSecondary = useForegroundColor('fillSecondary');
   const separatorSecondary = useForegroundColor('separatorSecondary');
@@ -86,4 +86,4 @@ export const TabButton = ({
       </Bleed>
     </BrowserButtonShadows>
   );
-};
+});

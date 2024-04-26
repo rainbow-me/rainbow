@@ -2,7 +2,6 @@ import { Share } from 'react-native';
 import { WebViewNavigationEvent } from 'react-native-webview/lib/RNCWebViewNativeComponent';
 import { RainbowError, logger } from '@/logger';
 import { HTTP, HTTPS } from './constants';
-import { TabState } from './types';
 
 // ---------------------------------------------------------------------------- //
 // URL validation regex breakdown here: https://mathiasbynens.be/demo/url-regex
@@ -21,14 +20,42 @@ export function isValidURL(url: string): boolean {
   return urlPattern.test(urlForValidation);
 }
 
+export function isValidURLWorklet(url: string): boolean {
+  'worklet';
+  let urlForValidation = url.trim();
+  if (!urlForValidation.startsWith(HTTP) && !urlForValidation.startsWith(HTTPS)) {
+    urlForValidation = HTTPS + urlForValidation;
+  }
+  return urlPattern.test(urlForValidation);
+}
+
 export const normalizeUrl = (url: string): string => {
   if (!url) {
     return '';
   }
-  if (!url.startsWith(HTTP) && !url.startsWith(HTTPS)) {
-    return HTTPS + url;
+  let normalizedUrl = url;
+  if (!normalizedUrl.startsWith(HTTP) && !normalizedUrl.startsWith(HTTPS)) {
+    normalizedUrl = HTTPS + normalizedUrl;
   }
-  return url;
+  if (!normalizedUrl.endsWith('/') && !normalizedUrl.includes('?')) {
+    normalizedUrl += '/';
+  }
+  return normalizedUrl;
+};
+
+export const normalizeUrlWorklet = (url: string): string => {
+  'worklet';
+  if (!url) {
+    return '';
+  }
+  let normalizedUrl = url;
+  if (!normalizedUrl.startsWith(HTTP) && !normalizedUrl.startsWith(HTTPS)) {
+    normalizedUrl = HTTPS + normalizedUrl;
+  }
+  if (!normalizedUrl.endsWith('/') && !normalizedUrl.includes('?')) {
+    normalizedUrl += '/';
+  }
+  return normalizedUrl;
 };
 
 export const formatUrl = (url: string): string => {
@@ -106,18 +133,18 @@ export function normalizeUrlForRecents(url: string): string {
 // Useful for observing WebView navigation events
 // Add to handleNavigationStateChange in BrowserTab to use
 // ---------------------------------------------------------------------------- //
-export const navigationStateLogger = (navState: WebViewNavigationEvent, tabIndex: number, tabStates: TabState[]) => {
+export const navigationStateLogger = (navState: WebViewNavigationEvent, tabIndex: number, tabUrl: string | undefined) => {
   const emoji = navStateEmojiMap[navState.navigationType];
   const eventName = navStateEventNameMap[navState.navigationType];
   const isLoading = navState.loading ? '🔄 YES' : '🙅‍♂️ NO';
-  const didUrlChange = navState.url !== tabStates[tabIndex].url ? '🚨 YES' : '🙅‍♂️ NO';
+  const didUrlChange = navState.url !== tabUrl ? '🚨 YES' : '🙅‍♂️ NO';
 
   return console.log(`
       ────────────────────────────
       ${emoji}  NAVIGATION EVENT = ${eventName}
 
       🌐  navState URL: ${navState.url}
-      📂  tabState URL: ${tabStates[tabIndex].url}
+      📂  tabState URL: ${tabUrl}
 
       -  URL changed?  ${didUrlChange}
       -  loading?  ${isLoading}

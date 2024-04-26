@@ -1382,10 +1382,10 @@
   dependencies:
     date-fns "^2.19.0"
 
-"@candlefinance/faster-image@1.4.3":
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/@candlefinance/faster-image/-/faster-image-1.4.3.tgz#f6f80da43d4bcfbd27c8b1391c196b591885911a"
-  integrity sha512-CmQuJhgM3+R8ZNlEB8tFt+0r3Ei0OnX5aLnT6rLCDM1KobHAfbIXF1W0WlanlGudfitsdLx+qrX9oolOf+9enA==
+"@candlefinance/faster-image@1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@candlefinance/faster-image/-/faster-image-1.5.0.tgz#83f1e307d19883acfa3d1844effcd9e0ff64b879"
+  integrity sha512-PZ/6VeWXzzsQmtK8PyIDP/itHcEQNkV+deUK+yZDaBlB9MOFaS+Hb5wpgkqOcbu7mbMoVY1HzwyFgMObsunwvw==
 
 "@capsizecss/core@3.0.0":
   version "3.0.0"
@@ -16246,6 +16246,11 @@ react-fast-compare@2.0.4:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/react-fast-compare/-/react-fast-compare-2.0.4.tgz#e84b4d455b0fec113e0402c329352715196f81f9"
   integrity sha512-suNP+J1VU1MWFKcyt7RtjiSWUjvidmQSlqu+eHslq+342xCbGTYmC0mEhPCOHxlW0CywylOC1u2DFAT+bv4dBw==
+
+react-fast-memo@2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/react-fast-memo/-/react-fast-memo-2.0.1.tgz#2e071efe9747877dfd00f3e921b7e954ff427de5"
+  integrity sha512-tYtcgP3qOacOFV+MAN+v3wXxJx1VD6nwVjh5ZwuGixD6i3nBvdHIVVKiNUk80VGaY1GHDhUg2M5gGD/cV4XFyA==
 
 react-flatten-children@1.1.2:
   version "1.1.2"

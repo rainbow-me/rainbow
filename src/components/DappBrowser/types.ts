@@ -1,24 +1,16 @@
 import React from 'react';
-import { SharedValue } from 'react-native-reanimated';
-import WebView from 'react-native-webview';
-
-export interface TabState {
-  canGoBack: boolean;
-  canGoForward: boolean;
-  uniqueId: string;
-  url: string;
-  logoUrl?: string | null;
-}
+import { Site } from '@/state/browserHistory';
 
 export type TabId = string;
+
+export type AnimatedTabUrls = Record<TabId, string>;
 
 export type TabOperationType = 'newTab' | 'closeTab';
 
 export interface BaseTabOperation {
-  type: TabOperationType;
-  tabId: string;
   newActiveIndex: number | undefined;
-  url?: string;
+  tabId: string;
+  type: TabOperationType;
 }
 
 export interface CloseTabOperation extends BaseTabOperation {
@@ -26,28 +18,17 @@ export interface CloseTabOperation extends BaseTabOperation {
 }
 
 export interface NewTabOperation extends BaseTabOperation {
-  type: 'newTab';
   newTabUrl?: string;
+  type: 'newTab';
 }
 
 export type TabOperation = CloseTabOperation | NewTabOperation;
 
 export interface BrowserTabProps {
-  tabState: TabState;
-  isActiveTab: boolean;
-  tabId: string;
-  nextTabId: string;
-  tabsCount: number;
+  addRecent: (site: Site) => void;
   injectedJS: React.MutableRefObject<string | null>;
-  activeTabRef: React.MutableRefObject<WebView | null>;
-  animatedActiveTabIndex: SharedValue<number>;
-  closeTabWorklet?(tabId: string, tabIndex: number): void;
-  currentlyOpenTabIds: SharedValue<string[]>;
-  tabViewProgress: SharedValue<number> | undefined;
-  tabViewVisible: SharedValue<boolean> | undefined;
-  toggleTabViewWorklet(tabIndex?: number): void;
-  updateActiveTabState?(updates: Partial<TabState>, tabId: string | undefined): void;
-  goToUrl: (url: string) => void;
+  setLogo: (logoUrl: string, tabId: string) => void;
+  tabId: string;
 }
 
 export interface ScreenshotType {

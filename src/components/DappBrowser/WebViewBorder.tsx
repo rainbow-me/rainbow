@@ -1,55 +1,50 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, { SharedValue, interpolate, useAnimatedStyle } from 'react-native-reanimated';
-import { Box, Cover, globalColors } from '@/design-system';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/utils/swaps';
+import { Cover, globalColors } from '@/design-system';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { WEBVIEW_HEIGHT } from './Dimensions';
 
-export const WebViewBorder = ({
+export const WebViewBorder = React.memo(function WebViewBorder({
   animatedTabIndex,
-  enabled,
   animatedActiveTabIndex,
+  enabled,
   tabViewProgress,
   tabViewVisible,
 }: {
   animatedTabIndex: SharedValue<number>;
+  animatedActiveTabIndex: SharedValue<number>;
   enabled?: boolean;
-  animatedActiveTabIndex: SharedValue<number> | undefined;
-  tabViewProgress: SharedValue<number> | undefined;
-  tabViewVisible: SharedValue<boolean> | undefined;
-}) => {
+  tabViewProgress: SharedValue<number>;
+  tabViewVisible: SharedValue<boolean>;
+}) {
   const webViewBorderStyle = useAnimatedStyle(() => {
     if (!enabled) {
       return {
-        pointerEvents: tabViewVisible?.value ? 'auto' : 'none',
+        pointerEvents: tabViewVisible.value ? 'auto' : 'none',
       };
     }
 
-    const progress = tabViewProgress?.value || 0;
-    const animatedIsActiveTab = animatedActiveTabIndex?.value === animatedTabIndex.value;
+    const animatedIsActiveTab = animatedActiveTabIndex.value === animatedTabIndex.value;
 
-    const borderRadius = interpolate(progress, [0, 100], [animatedIsActiveTab ? 16 : 30, 30], 'clamp');
-    const opacity = 1 - progress / 100;
+    const borderRadius = interpolate(tabViewProgress.value, [0, 100], [animatedIsActiveTab ? 16 : 30, 30], 'clamp');
+    const opacity = 1 - tabViewProgress.value / 100;
 
     return {
       borderRadius,
       opacity,
-      pointerEvents: tabViewVisible?.value ? 'auto' : 'none',
+      pointerEvents: tabViewVisible.value ? 'auto' : 'none',
     };
   });
 
   return (
     <Cover pointerEvents="box-none" style={styles.zIndexStyle}>
-      <Box
-        as={Animated.View}
-        height={{ custom: WEBVIEW_HEIGHT }}
-        style={[enabled ? styles.webViewBorderStyle : {}, webViewBorderStyle]}
-        width="full"
-      />
+      <Animated.View style={[enabled ? styles.webViewBorderStyle : {}, webViewBorderStyle]} />
     </Cover>
   );
-};
+});
 
 const styles = StyleSheet.create({
   webViewBorderStyle: {
@@ -58,7 +53,9 @@ const styles = StyleSheet.create({
     borderCurve: 'continuous',
     borderRadius: 16,
     borderWidth: THICK_BORDER_WIDTH,
+    height: WEBVIEW_HEIGHT,
     overflow: 'hidden',
+    width: DEVICE_WIDTH,
   },
   zIndexStyle: {
     zIndex: 30000,

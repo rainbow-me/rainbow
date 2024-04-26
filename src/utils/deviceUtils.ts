@@ -34,4 +34,7 @@ const deviceUtils = (function () {
   };
 })();
 
+export const DEVICE_WIDTH = deviceUtils.dimensions.width;
+export const DEVICE_HEIGHT = deviceUtils.dimensions.height;
+
 export default deviceUtils;

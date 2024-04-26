@@ -1,4 +1,5 @@
 import { ImageOptions } from '@candlefinance/faster-image';
+import { CaptureOptions } from 'react-native-view-shot';
 
 export const GOOGLE_SEARCH_URL = 'https://www.google.com/search?q=';
 export const HTTP = 'http://';
@@ -17,3 +18,5 @@ export const TAB_SCREENSHOT_FASTER_IMAGE_CONFIG: Partial<ImageOptions> = {
   showActivityIndicator: false,
   transitionDuration: 0,
 };
+
+export const TAB_SCREENSHOT_FILE_FORMAT: CaptureOptions = { format: 'jpg' };
