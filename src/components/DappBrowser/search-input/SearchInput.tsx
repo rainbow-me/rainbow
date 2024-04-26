@@ -264,13 +264,15 @@ const AddressBar = React.memo(function AddressBar({
     paddingHorizontal: formattedUrlValue.value === SEARCH_PLACEHOLDER_TEXT ? 0 : 40,
   }));
 
-  const textProps = useAnimatedProps(() => {
-    const tabId = currentlyOpenTabIds.value[Math.abs(animatedActiveTabIndex.value)];
-    const currentTabUrl = animatedTabUrls.value[tabId] || RAINBOW_HOME;
-    return {
-      // This allows for the input to be reset to the correct URL or search query on input blur
-      text: isFocusedValue.value ? undefined : formatUrlForSearchInput(currentTabUrl),
-    };
+  const searchInputValue = useAnimatedProps(() => {
+    const activeTabId = currentlyOpenTabIds.value[Math.abs(animatedActiveTabIndex.value)];
+    const activeTabUrl = animatedTabUrls.value[activeTabId] || undefined;
+    const urlOrSearchQuery = formatUrlForSearchInput(activeTabUrl);
+
+    // Removing the value when the input is focused allows the input to be reset to the correct value on blur
+    const url = isFocusedValue.value ? undefined : urlOrSearchQuery;
+
+    return { text: url };
   });
 
   const updateUrl = useCallback(
@@ -324,7 +326,7 @@ const AddressBar = React.memo(function AddressBar({
         textAlign="left"
         textAlignVertical="center"
         // @ts-expect-error — 'text' is the only way to set the value of the input with a shared value
-        animatedProps={textProps}
+        animatedProps={searchInputValue}
       />
       {/* <MaskedView
         maskElement={
