@@ -1,5 +1,5 @@
 import chroma from 'chroma-js';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import Animated, {
   SharedValue,
@@ -47,7 +47,7 @@ import { addressHashedEmoji } from '@/utils/profileUtils';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 import { TOP_INSET } from '../Dimensions';
 import { formatUrl } from '../utils';
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { Address, toHex } from 'viem';
 import { RainbowNetworks } from '@/networks';
 import * as i18n from '@/languages';
@@ -59,6 +59,7 @@ import { handleDappBrowserConnectionPrompt } from '@/utils/requestNavigationHand
 import { useAppSessionsStore } from '@/state/appSessions';
 import { RainbowError, logger } from '@/logger';
 import WebView from 'react-native-webview';
+import { set } from 'lodash';
 
 const PAGES = {
   HOME: 'home',
@@ -81,9 +82,12 @@ export const ControlPanel = () => {
   const { goBack, goToPage, ref } = usePagerNavigation();
   const { accountAddress } = useAccountSettings();
   const {
-    params: { currentAddress, currentNetwork, isConnected, activeTabRef, onConnect, onDisconnect },
+    params: { activeTabRef },
   } = useRoute<RouteProp<ControlPanelParams, 'ControlPanel'>>();
-  const { setParams } = useNavigation();
+  const [isConnected, setIsConnected] = useState(false);
+  const [currentAddress, setCurrentAddress] = useState<string>(accountAddress);
+  const [currentNetwork, setCurrentNetwork] = useState<Network>();
+
   const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
   const activeTabUrl = useBrowserStore(state => state.getActiveTabUrl());
@@ -92,6 +96,30 @@ export const ControlPanel = () => {
   const updateActiveSessionNetwork = useAppSessionsStore(state => state.updateActiveSessionNetwork);
   const addSession = useAppSessionsStore(state => state.addSession);
   const removeSession = useAppSessionsStore(state => state.removeSession);
+
+  const getActiveSession = useAppSessionsStore(state => state.getActiveSession);
+  const currentSession = getActiveSession({ host: activeTabHost });
+
+  // listens to the current active tab and sets the account
+  useEffect(() => {
+    if (activeTabHost) {
+      if (!currentSession) {
+        setIsConnected(false);
+        return;
+      }
+
+      if (currentSession?.address) {
+        setCurrentAddress(currentSession?.address);
+        setIsConnected(true);
+      } else {
+        setCurrentAddress(accountAddress);
+      }
+
+      if (currentSession?.network) {
+        setCurrentNetwork(currentSession?.network);
+      }
+    }
+  }, [accountAddress, activeTabHost, currentSession]);
 
   const allWalletItems = useMemo(() => {
     const items: ControlPanelMenuItemProps[] = [];
@@ -196,8 +224,9 @@ export const ControlPanel = () => {
       activeTabRef.current?.injectJavaScript(
         `window.ethereum.emit('accountsChanged', ['${selectedAddress}']); window.ethereum.emit('connect', { address: '${selectedAddress}', chainId: '${toHex(response.chainId)}' }); true;`
       );
-      onConnect();
-      setParams({ isConnected: true, currentNetwork: connectedToNetwork });
+      setIsConnected(true);
+      setCurrentAddress(selectedAddress);
+      setCurrentNetwork(connectedToNetwork);
     } else {
       logger.error(new RainbowError('Dapp browser connection prompt error'), {
         response,
@@ -205,7 +234,7 @@ export const ControlPanel = () => {
         dappUrl: activeTabUrl,
       });
     }
-  }, [activeTabRef, activeTabUrl, addSession, onConnect, selectedWalletId.value, setParams]);
+  }, [activeTabRef, activeTabUrl, addSession, selectedWalletId.value]);
 
   const handleDisconnect = useCallback(() => {
     const selectedAddress = selectedWalletId.value;
@@ -214,10 +243,9 @@ export const ControlPanel = () => {
     if (activeTabHost) {
       removeSession({ host: activeTabHost, address: selectedAddress as Address });
       activeTabRef.current?.injectJavaScript(`window.ethereum.emit('accountsChanged', []); window.ethereum.emit('disconnect', []); true;`);
-      onDisconnect();
-      setParams({ isConnected: false });
+      setIsConnected(false);
     }
-  }, [activeTabRef, activeTabUrl, onDisconnect, removeSession, selectedWalletId.value, setParams]);
+  }, [activeTabRef, activeTabUrl, removeSession, selectedWalletId.value]);
 
   return (
     <>

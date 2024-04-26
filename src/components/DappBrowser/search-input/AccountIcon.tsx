@@ -6,23 +6,19 @@ import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
 import Routes from '@/navigation/routesNames';
 import { ContactAvatar } from '@/components/contacts';
-import { Bleed, Box } from '@/design-system';
-import { Network } from '@/networks/types';
+import { Bleed } from '@/design-system';
 
 import { useAppSessionsStore } from '@/state/appSessions';
 import { getDappHost } from '../handleProviderRequest';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { useBrowserContext } from '../BrowserContext';
-import { colors } from '@/styles';
 
 export const AccountIcon = React.memo(function AccountIcon() {
   const { navigate } = useNavigation();
   const { accountAddress } = useAccountSettings();
   const { wallets, walletNames } = useWallets();
-  const [isConnected, setIsConnected] = useState(false);
   const [currentAddress, setCurrentAddress] = useState<string>(accountAddress);
-  const [currentNetwork, setCurrentNetwork] = useState<Network>();
   const activeTabUrl = useBrowserStore.getState().getActiveTabUrl();
   const activeTabHost = useMemo(() => getDappHost(activeTabUrl), [activeTabUrl]);
   const getActiveSession = useAppSessionsStore(state => state.getActiveSession);
@@ -33,19 +29,13 @@ export const AccountIcon = React.memo(function AccountIcon() {
   useEffect(() => {
     if (activeTabHost) {
       if (!currentSession) {
-        setIsConnected(false);
         return;
       }
 
       if (currentSession?.address) {
         setCurrentAddress(currentSession?.address);
-        setIsConnected(true);
       } else {
         setCurrentAddress(accountAddress);
-      }
-
-      if (currentSession?.network) {
-        setCurrentNetwork(currentSession?.network);
       }
     }
   }, [accountAddress, activeTabHost, currentSession]);
@@ -59,26 +49,10 @@ export const AccountIcon = React.memo(function AccountIcon() {
   }, [wallets, currentAddress, walletNames]);
 
   const handleOnPress = useCallback(() => {
-    console.log({
-      currentAddress,
-      currentNetwork,
-      isConnected,
-      activeTabUrl,
-    });
     navigate(Routes.DAPP_BROWSER_CONTROL_PANEL, {
-      currentAddress,
-      currentNetwork,
-      isConnected,
-      activeTabUrl,
       activeTabRef,
-      onConnect: () => {
-        setIsConnected(true);
-      },
-      onDisconnect: () => {
-        setIsConnected(false);
-      },
     });
-  }, [activeTabRef, activeTabUrl, currentAddress, currentNetwork, isConnected, navigate]);
+  }, [activeTabRef, navigate]);
 
   return (
     <Bleed space="8px">
@@ -89,18 +63,6 @@ export const AccountIcon = React.memo(function AccountIcon() {
           <ContactAvatar color={accountInfo.accountColor} size="signing" value={accountInfo.accountSymbol} />
         )}
       </ButtonPressAnimation>
-      {isConnected && (
-        <Box
-          style={{
-            width: 7,
-            height: 7,
-            borderRadius: 300,
-            backgroundColor: colors.green,
-            top: -4,
-            right: -35,
-          }}
-        />
-      )}
     </Bleed>
   );
 });
