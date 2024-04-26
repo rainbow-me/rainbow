@@ -49,6 +49,7 @@ import { address } from '@/utils/abbreviations';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { TOP_INSET } from '../Dimensions';
+import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 
 const PAGES = {
   HOME: 'home',
@@ -234,14 +235,6 @@ const HomePanel = ({
                   return;
                 }}
               />
-              {/* <ControlPanelButton
-                  animatedAccentColor={animatedAccentColor}
-                  icon="􀋦"
-                  label="Connect"
-                  onPress={() => {
-                    return;
-                  }}
-                /> */}
               <ConnectButton animatedAccentColor={animatedAccentColor} initialIsConnected={false} />
               <ControlPanelButton
                 animatedAccentColor={animatedAccentColor}
@@ -251,13 +244,6 @@ const HomePanel = ({
                   return;
                 }}
               />
-              {/* <ControlPanelButton
-                icon="􀒂"
-                label="Like"
-                onPress={() => {
-                  return;
-                }}
-              /> */}
             </Inline>
           </Box>
           {actionButtonList}
@@ -601,20 +587,15 @@ const ControlPanelButton = React.memo(function ControlPanelButton({
   label: string;
   onPress: () => void;
 }) {
-  const backgroundStyle = useAnimatedStyle(() => {
-    return {
-      backgroundColor: animatedAccentColor?.value,
-    };
-  });
+  const backgroundColor = useAnimatedStyle(() => ({ backgroundColor: animatedAccentColor?.value }));
+  const buttonTextColor = useAnimatedStyle(() => ({ color: getHighContrastTextColorWorklet(animatedAccentColor?.value) }));
 
   return (
     <ButtonPressAnimation onPress={onPress} style={controlPanelStyles.buttonContainer} scaleTo={0.82}>
       <HitSlop horizontal="16px" vertical="10px">
         <Stack alignHorizontal="center" space="10px">
-          <Box as={Animated.View} background="accent" style={[controlPanelStyles.button, backgroundStyle]}>
-            <Text align="center" color="label" size="icon 20px" weight="heavy">
-              {icon}
-            </Text>
+          <Box as={Animated.View} background="accent" style={[controlPanelStyles.button, backgroundColor]}>
+            <AnimatedText align="center" color="label" size="icon 20px" staticText={icon} style={buttonTextColor} weight="heavy" />
           </Box>
           <Bleed horizontal="20px">
             <Text align="center" color="labelQuaternary" numberOfLines={1} size="12pt" weight="bold">
