@@ -172,7 +172,7 @@ const TabViewContent = React.memo(function TabViewContent({ injectedJS }: { inje
     setState: setTabIds,
     sharedValue: currentlyOpenTabIds,
     state: tabIds,
-    syncDirection: 'sharedToState',
+    syncDirection: 'sharedValueToState',
   });
 
   return (

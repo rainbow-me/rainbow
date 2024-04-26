@@ -12,13 +12,13 @@ interface BaseSyncParams<T> {
 interface SharedToStateParams<T> extends BaseSyncParams<T> {
   setState: (value: T) => void;
   sharedValue: DerivedValue<T | undefined> | SharedValue<T | undefined>;
-  syncDirection: 'sharedToState';
+  syncDirection: 'sharedValueToState';
 }
 
 interface StateToSharedParams<T> extends BaseSyncParams<T> {
   setState?: never;
   sharedValue: SharedValue<T | undefined>;
-  syncDirection: 'stateToShared';
+  syncDirection: 'stateToSharedValue';
 }
 
 type SyncParams<T> = SharedToStateParams<T> | StateToSharedParams<T>;
@@ -40,9 +40,9 @@ export function useSyncSharedValue<T>({ compareDepth = 'shallow', pauseSync, set
     },
     shouldSync => {
       if (shouldSync) {
-        if (syncDirection === 'sharedToState' && sharedValue.value) {
+        if (syncDirection === 'sharedValueToState' && sharedValue.value) {
           runOnJS(setState)(sharedValue.value);
-        } else if (syncDirection === 'stateToShared') {
+        } else if (syncDirection === 'stateToSharedValue') {
           sharedValue.value = state;
         }
       }

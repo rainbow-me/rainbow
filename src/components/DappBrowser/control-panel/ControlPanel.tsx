@@ -126,7 +126,7 @@ const AccentColorSetter = ({ animatedAccentColor }: { animatedAccentColor: Share
   useSyncSharedValue({
     sharedValue: animatedAccentColor,
     state: highContrastAccentColor,
-    syncDirection: 'stateToShared',
+    syncDirection: 'stateToSharedValue',
   });
 
   return null;
