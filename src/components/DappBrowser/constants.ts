@@ -5,6 +5,8 @@ export const HTTP = 'http://';
 export const HTTPS = 'https://';
 export const RAINBOW_HOME = 'RAINBOW_HOME';
 
+export const DEFAULT_TAB_URL = RAINBOW_HOME;
+
 const BLANK_BASE64_PIXEL = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
 
 export const TAB_SCREENSHOT_FASTER_IMAGE_CONFIG: Partial<ImageOptions> = {
