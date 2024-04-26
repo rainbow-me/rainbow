@@ -1,15 +1,7 @@
 import chroma from 'chroma-js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
-import Animated, {
-  SharedValue,
-  runOnJS,
-  useAnimatedReaction,
-  useAnimatedStyle,
-  useDerivedValue,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { SharedValue, runOnJS, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
@@ -146,7 +138,9 @@ export const ControlPanel = () => {
   const { testnetsEnabled } = store.getState().settings;
 
   const allNetworkItems = useMemo(() => {
-    return RainbowNetworks.filter(({ networkType }) => testnetsEnabled || networkType !== 'testnet').map(network => {
+    return RainbowNetworks.filter(
+      ({ networkType, features: { walletconnect } }) => walletconnect && (testnetsEnabled || networkType !== 'testnet')
+    ).map(network => {
       return {
         IconComponent: <ChainImage chain={network.value} size={36} />,
         label: network.name,
