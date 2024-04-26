@@ -2787,7 +2787,14 @@
       },
       "control_panel": {
         "connected": "Connected",
-        "not_connected": "Not Connected"
+        "not_connected": "Not Connected",
+        "switch_wallet":"Switch Wallet",
+        "switch_network":"Switch Network",
+        "disconnect": "Disconnect",
+        "connect": "Connect",
+        "swap": "Swap",
+        "bridge": "Bridge",
+        "more": "More"
       }
     }
   }

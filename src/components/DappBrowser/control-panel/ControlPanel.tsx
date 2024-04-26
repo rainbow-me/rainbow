@@ -1,5 +1,4 @@
 import chroma from 'chroma-js';
-import { isEmpty } from 'lodash';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import Animated, {
@@ -36,27 +35,30 @@ import {
 } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
-import networkTypes from '@/helpers/networkTypes';
+import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { useAccountAccentColor, useAccountSettings, useWalletsWithBalancesAndNames } from '@/hooks';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { Network } from '@/networks/types';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { colors } from '@/styles';
 import { deviceUtils } from '@/utils';
-import { address } from '@/utils/abbreviations';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 import { TOP_INSET } from '../Dimensions';
 import { formatUrl } from '../utils';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { Address } from 'viem';
-import { RainbowNetworks, getNetworkObj } from '@/networks';
+import { Address, toHex } from 'viem';
+import { RainbowNetworks } from '@/networks';
 import * as i18n from '@/languages';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { useSelector } from 'react-redux';
 import store, { AppState } from '@/redux/store';
+import { getDappHost } from '@/utils/connectedApps';
+import { handleDappBrowserConnectionPrompt } from '@/utils/requestNavigationHandlers';
+import { useAppSessionsStore } from '@/state/appSessions';
+import { RainbowError, logger } from '@/logger';
+import WebView from 'react-native-webview';
 
 const PAGES = {
   HOME: 'home',
@@ -69,6 +71,7 @@ type ControlPanelParams = {
     currentAddress: Address;
     currentNetwork: Network;
     isConnected: boolean;
+    activeTabRef: React.MutableRefObject<WebView | null>;
   };
 };
 
@@ -76,7 +79,7 @@ export const ControlPanel = () => {
   const { goBack, goToPage, ref } = usePagerNavigation();
   const { accountAddress } = useAccountSettings();
   const {
-    params: { currentAddress, currentNetwork, isConnected },
+    params: { currentAddress, currentNetwork, isConnected, activeTabRef },
   } = useRoute<RouteProp<ControlPanelParams, 'ControlPanel'>>();
 
   const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
@@ -136,6 +139,80 @@ export const ControlPanel = () => {
   const selectedNetworkId = useSharedValue(selectedNetwork?.uniqueId || 'mainnet');
   const selectedWalletId = useSharedValue(selectedWallet?.uniqueId || accountAddress);
 
+  const activeTabUrl = useBrowserStore(state => state.getActiveTabUrl());
+  const activeTabHost = getDappHost(activeTabUrl as string);
+  const updateActiveSession = useAppSessionsStore(state => state.updateActiveSession);
+  const updateActiveSessionNetwork = useAppSessionsStore(state => state.updateActiveSessionNetwork);
+  const addSession = useAppSessionsStore(state => state.addSession);
+  const removeSession = useAppSessionsStore(state => state.removeSession);
+
+  const handleSwitchWallet = useCallback(
+    (selectedItemId: string) => {
+      const address = selectedItemId;
+      if (activeTabHost) {
+        updateActiveSession({ host: activeTabHost, address: address as `0x${string}` });
+        // need to emit these events to the dapp
+        activeTabRef.current?.injectJavaScript(`window.ethereum.emit('accountsChanged', ['${address}']); true;`);
+      }
+    },
+    [activeTabHost, activeTabRef, updateActiveSession]
+  );
+
+  const handleNetworkSwitch = useCallback(
+    (selectedItemId: string) => {
+      if (activeTabHost) {
+        updateActiveSessionNetwork({ host: activeTabHost, network: selectedItemId as Network });
+        const chainId = RainbowNetworks.find(({ value }) => value === (selectedItemId as Network))?.id as number;
+        activeTabRef.current?.injectJavaScript(`window.ethereum.emit('chainChanged', ${toHex(chainId)}); true;`);
+      }
+    },
+    [activeTabHost, activeTabRef, updateActiveSessionNetwork]
+  );
+
+  const handleConnect = useCallback(async () => {
+    const activeTabHost = getDappHost(activeTabUrl as string);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    const name: string = activeTabRef.current?.title || activeTabHost;
+
+    const response = await handleDappBrowserConnectionPrompt({
+      dappName: name || '',
+      dappUrl: activeTabUrl || '' || '',
+    });
+    if (!(response instanceof Error)) {
+      addSession({
+        host: activeTabHost || '',
+        // @ts-ignore
+        address: response.address,
+        network: getNetworkFromChainId(response.chainId),
+        // @ts-ignore
+        url: url || '',
+      });
+
+      const selectedAddress = selectedWalletId.value;
+
+      activeTabRef.current?.injectJavaScript(
+        `window.ethereum.emit('accountsChanged', ['${selectedAddress}']); window.ethereum.emit('connect', { address: '${selectedAddress}', chainId: '${toHex(response.chainId)}' }); true;`
+      );
+    } else {
+      logger.error(new RainbowError('Dapp browser connection prompt error'), {
+        response,
+        dappName: name,
+        dappUrl: activeTabUrl,
+      });
+    }
+  }, [activeTabRef, activeTabUrl, addSession, selectedWalletId]);
+
+  const handleDisconnect = useCallback(() => {
+    const selectedAddress = selectedWalletId.value;
+
+    const activeTabHost = getDappHost(activeTabUrl as string);
+    if (activeTabHost) {
+      removeSession({ host: activeTabHost, address: selectedAddress as Address });
+      activeTabRef.current?.injectJavaScript(`window.ethereum.emit('accountsChanged', []); window.ethereum.emit('disconnect', []); true;`);
+    }
+  }, [activeTabRef, activeTabUrl, removeSession, selectedWalletId.value]);
+
   return (
     <>
       <AccentColorSetter animatedAccentColor={animatedAccentColor} />
@@ -150,6 +227,9 @@ export const ControlPanel = () => {
                 selectedWalletId={selectedWalletId}
                 allWalletItems={allWalletItems}
                 allNetworkItems={allNetworkItems}
+                isConnected={isConnected}
+                onConnect={handleConnect}
+                onDisconnect={handleDisconnect}
               />
             }
             id={PAGES.HOME}
@@ -157,7 +237,13 @@ export const ControlPanel = () => {
           <SmoothPager.Group>
             <SmoothPager.Page
               component={
-                <SwitchWalletPanel animatedAccentColor={animatedAccentColor} goBack={goBack} selectedWalletId={selectedWalletId} />
+                <SwitchWalletPanel
+                  allWalletItems={allWalletItems}
+                  animatedAccentColor={animatedAccentColor}
+                  goBack={goBack}
+                  selectedWalletId={selectedWalletId}
+                  onWalletSwitch={handleSwitchWallet}
+                />
               }
               id={PAGES.SWITCH_WALLET}
             />
@@ -168,6 +254,7 @@ export const ControlPanel = () => {
                   animatedAccentColor={animatedAccentColor}
                   goBack={goBack}
                   selectedNetworkId={selectedNetworkId}
+                  onNetworkSwitch={handleNetworkSwitch}
                 />
               }
               id={PAGES.SWITCH_NETWORK}
@@ -219,6 +306,9 @@ const HomePanel = ({
   selectedWalletId,
   allWalletItems,
   allNetworkItems,
+  isConnected,
+  onConnect,
+  onDisconnect,
 }: {
   animatedAccentColor: SharedValue<string | undefined>;
   goToPage: (pageId: string) => void;
@@ -226,6 +316,9 @@ const HomePanel = ({
   selectedWalletId: SharedValue<string>;
   allWalletItems: ControlPanelMenuItemProps[];
   allNetworkItems: ControlPanelMenuItemProps[];
+  isConnected: boolean;
+  onConnect: () => void;
+  onDisconnect: () => void;
 }) => {
   const [selectedItems, setSelectedStates] = useState({
     selectedWalletId: selectedWalletId.value || allWalletItems[0].uniqueId,
@@ -296,7 +389,7 @@ const HomePanel = ({
               <ControlPanelButton
                 animatedAccentColor={animatedAccentColor}
                 icon="􀖅"
-                label="Swap"
+                label={i18n.t(i18n.l.dapp_browser.control_panel.swap)}
                 onPress={() => {
                   return;
                 }}
@@ -304,16 +397,21 @@ const HomePanel = ({
               <ControlPanelButton
                 animatedAccentColor={animatedAccentColor}
                 icon="􀄹"
-                label="Bridge"
+                label={i18n.t(i18n.l.dapp_browser.control_panel.bridge)}
                 onPress={() => {
                   return;
                 }}
               />
-              <ConnectButton animatedAccentColor={animatedAccentColor} initialIsConnected={false} />
+              <ConnectButton
+                animatedAccentColor={animatedAccentColor}
+                initialIsConnected={isConnected}
+                onConnect={onConnect}
+                onDisconnect={onDisconnect}
+              />
               <ControlPanelButton
                 animatedAccentColor={animatedAccentColor}
                 icon="􀍡"
-                label="More"
+                label={i18n.t(i18n.l.dapp_browser.control_panel.more)}
                 onPress={() => {
                   return;
                 }}
@@ -363,51 +461,23 @@ const SwitchWalletPanel = ({
   animatedAccentColor,
   goBack,
   selectedWalletId,
+  allWalletItems,
+  onWalletSwitch,
 }: {
   animatedAccentColor: SharedValue<string | undefined>;
   goBack: () => void;
   selectedWalletId: SharedValue<string>;
+  allWalletItems: ControlPanelMenuItemProps[];
+  onWalletSwitch: (selectedItemId: string) => void;
 }) => {
-  const { network } = useAccountSettings();
-  const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
-
-  const memoizedItems = useMemo(() => {
-    if (isEmpty(walletsWithBalancesAndNames)) return;
-    const items: ControlPanelMenuItemProps[] = [];
-
-    Object.values(walletsWithBalancesAndNames).forEach(wallet => {
-      const filteredAccounts = wallet.addresses.filter(account => account.visible);
-      filteredAccounts.forEach(account => {
-        const rawWalletName =
-          network !== networkTypes.mainnet && account.ens === account.label ? address(account.address, 6, 4) : account.label;
-        const walletName = removeFirstEmojiFromString(rawWalletName);
-        const walletBalance = account.balance === '0.00' ? '0' : account.balance;
-
-        const item: ControlPanelMenuItemProps = {
-          IconComponent: account.image ? (
-            <ListAvatar url={account.image || ''} />
-          ) : (
-            <ListEmojiAvatar address={account.address} color={account.color} label={account.label} />
-          ),
-          label: walletName,
-          secondaryLabel: `${walletBalance} ETH`,
-          uniqueId: account.address,
-        };
-
-        items.push(item);
-      });
-    });
-
-    return items || [];
-  }, [network, walletsWithBalancesAndNames]);
-
   return (
     <ListPanel
       animatedAccentColor={animatedAccentColor}
       goBack={goBack}
-      items={memoizedItems}
-      pageTitle="Switch Wallet"
+      items={allWalletItems}
+      pageTitle={i18n.t(i18n.l.dapp_browser.control_panel.switch_wallet)}
       selectedItemId={selectedWalletId}
+      onSelect={onWalletSwitch}
     />
   );
 };
@@ -417,19 +487,22 @@ const SwitchNetworkPanel = ({
   goBack,
   selectedNetworkId,
   allNetworkItems,
+  onNetworkSwitch,
 }: {
   animatedAccentColor: SharedValue<string | undefined>;
   goBack: () => void;
   selectedNetworkId: SharedValue<string>;
   allNetworkItems: ControlPanelMenuItemProps[];
+  onNetworkSwitch: (selectedItemId: string) => void;
 }) => {
   return (
     <ListPanel
       animatedAccentColor={animatedAccentColor}
       goBack={goBack}
       items={allNetworkItems}
-      pageTitle="Switch Network"
+      pageTitle={i18n.t(i18n.l.dapp_browser.control_panel.switch_network)}
       selectedItemId={selectedNetworkId}
+      onSelect={onNetworkSwitch}
     />
   );
 };
@@ -442,12 +515,14 @@ const ListPanel = ({
   items,
   pageTitle,
   selectedItemId,
+  onSelect,
 }: {
   animatedAccentColor: SharedValue<string | undefined>;
   goBack: () => void;
   items?: ControlPanelMenuItemProps[];
   pageTitle: string;
   selectedItemId: SharedValue<string>;
+  onSelect: (selectedItemId: string) => void;
 }) => {
   const memoizedItems = useMemo(() => items, [items]);
 
@@ -467,7 +542,7 @@ const ListPanel = ({
                 {...item}
                 animatedAccentColor={animatedAccentColor}
                 key={item.uniqueId}
-                onPress={goBack}
+                onPress={() => onSelect(selectedItemId.value)}
                 selectedItemId={selectedItemId}
               />
             ))}
