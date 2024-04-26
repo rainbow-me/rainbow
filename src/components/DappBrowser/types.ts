@@ -28,6 +28,7 @@ export interface BrowserTabProps {
   addRecent: (site: Site) => void;
   injectedJS: React.MutableRefObject<string | null>;
   setLogo: (logoUrl: string, tabId: string) => void;
+  setTitle: (title: string, tabId: string) => void;
   tabId: string;
 }
 

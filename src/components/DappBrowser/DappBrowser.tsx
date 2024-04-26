@@ -163,6 +163,7 @@ const TabViewContent = React.memo(function TabViewContent({ injectedJS }: { inje
   const tabIds = useBrowserStore(state => state.getTabIds());
   const setTabIds = useBrowserStore(state => state.setTabIds);
   const setLogo = useBrowserStore(state => state.setLogo);
+  const setTitle = useBrowserStore(state => state.setTitle);
   const addRecent = useBrowserHistoryStore(state => state.addRecent);
 
   const areTabCloseAnimationsRunning = useDerivedValue(() => currentlyBeingClosedTabIds.value.length > 0);
@@ -178,7 +179,7 @@ const TabViewContent = React.memo(function TabViewContent({ injectedJS }: { inje
   return (
     <>
       {tabIds.map(tabId => (
-        <BrowserTab addRecent={addRecent} injectedJS={injectedJS} key={tabId} setLogo={setLogo} tabId={tabId} />
+        <BrowserTab addRecent={addRecent} injectedJS={injectedJS} key={tabId} setLogo={setLogo} setTitle={setTitle} tabId={tabId} />
       ))}
     </>
   );

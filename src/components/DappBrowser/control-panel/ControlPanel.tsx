@@ -42,14 +42,15 @@ import networkTypes from '@/helpers/networkTypes';
 import { useAccountAccentColor, useAccountSettings, useWalletsWithBalancesAndNames } from '@/hooks';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { Network } from '@/networks/types';
-// import { useBrowserStore } from '@/state/browser/browserStore';
+import { useBrowserStore } from '@/state/browser/browserStore';
 import { colors } from '@/styles';
 import { deviceUtils } from '@/utils';
 import { address } from '@/utils/abbreviations';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
-import { TOP_INSET } from '../Dimensions';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
+import { TOP_INSET } from '../Dimensions';
+import { formatUrl } from '../utils';
 
 const PAGES = {
   HOME: 'home',
@@ -206,14 +207,7 @@ const HomePanel = ({
                 <HomePanelLogo />
               </Column>
               <Column>
-                <Stack space="12px">
-                  <Text color="label" size="20pt" weight="heavy">
-                    Speedtracer
-                  </Text>
-                  <Text color="labelTertiary" size="15pt" weight="bold">
-                    speedtracer.xyz
-                  </Text>
-                </Stack>
+                <HomePanelTitleSection />
               </Column>
             </Columns>
           </Box>
@@ -253,31 +247,37 @@ const HomePanel = ({
   );
 };
 
-const HomePanelLogo = () => {
-  // const logoUrl = useBrowserStore(state => state.getActiveTabLogo());
-  // const activeTabId = useBrowserStore(state => state.activeTabId);
-  // const url = useBrowserStore(state => state.getTabData(activeTabId)?.logoUrl);
-  // const logoUrl = useBrowserStore(state => state.getTabData(state.tabIds[state.activeTabIndex]).logoUrl);
+const HomePanelLogo = React.memo(function HomePanelLogo() {
+  const logoUrl = useBrowserStore(state => state.getActiveTabLogo());
   return (
-    <>
-      {/* <Text color="blue" size="20pt" weight="heavy">
-        {url}
-      </Text> */}
-      <Box
-        as={ImgixImage}
-        enableFasterImage
-        fm="png"
-        size={44}
-        source={{ uri: 'https://speedtracer.xyz/apple-touch-icon.png' }}
-        // source={{ uri: url || '' }}
-        width={{ custom: 44 }}
-        height={{ custom: 44 }}
-        background="fillTertiary"
-        style={{ borderRadius: 12 }}
-      />
-    </>
+    <Box
+      as={ImgixImage}
+      enableFasterImage
+      fm="png"
+      size={44}
+      source={{ uri: logoUrl || '' }}
+      width={{ custom: 44 }}
+      height={{ custom: 44 }}
+      background="fillTertiary"
+      style={{ borderRadius: 12 }}
+    />
   );
-};
+});
+
+const HomePanelTitleSection = React.memo(function HomePanelTitleSection() {
+  const activeTabUrl = useBrowserStore(state => state.getActiveTabUrl());
+  const activeTabTitle = useBrowserStore(state => state.getActiveTabTitle());
+  return (
+    <Stack space="12px">
+      <Text color="label" numberOfLines={1} size="20pt" weight="heavy">
+        {activeTabTitle}
+      </Text>
+      <Text color="labelTertiary" size="15pt" weight="bold">
+        {formatUrl(activeTabUrl || '', false)}
+      </Text>
+    </Stack>
+  );
+});
 
 const SwitchWalletPanel = ({
   animatedAccentColor,

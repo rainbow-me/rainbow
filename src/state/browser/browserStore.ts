@@ -109,7 +109,7 @@ const INITIAL_STATE = {
   tabsData: INITIAL_TABS_DATA,
 };
 
-type TabData = { logoUrl?: string; url: string };
+type TabData = { logoUrl?: string; title?: string; url?: string };
 
 interface BrowserStore {
   activeTabIndex: number;
@@ -119,7 +119,9 @@ interface BrowserStore {
   getActiveTabId: () => TabId;
   getActiveTabIndex: () => number;
   getActiveTabLogo: () => string | undefined;
-  getTabData: (tabId: TabId) => TabData;
+  getActiveTabTitle: () => string | undefined;
+  getActiveTabUrl: () => string | undefined;
+  getTabData: (tabId: TabId) => TabData | undefined;
   getTabIds: () => TabId[];
   getTabsData: () => Map<TabId, TabData>;
   goToPage: (url: string, tabId?: TabId) => void;
@@ -127,6 +129,7 @@ interface BrowserStore {
   setActiveTabIndex: (index: number) => void;
   setLogo: (logoUrl: string, tabId: TabId) => void;
   setTabIds: (tabIds: TabId[]) => void;
+  setTitle: (title: string, tabId: TabId) => void;
   silentlySetPersistedTabUrls: (persistedTabUrls: Record<TabId, string>) => void;
 }
 
@@ -142,7 +145,11 @@ export const useBrowserStore = create<BrowserStore>()(
 
         getActiveTabIndex: () => get().activeTabIndex,
 
-        getActiveTabLogo: () => get().tabsData.get(get().tabIds[get().activeTabIndex])?.logoUrl,
+        getActiveTabLogo: () => get().tabsData.get(get().getActiveTabId())?.logoUrl,
+
+        getActiveTabTitle: () => get().tabsData.get(get().getActiveTabId())?.title,
+
+        getActiveTabUrl: () => get().persistedTabUrls[get().getActiveTabId()],
 
         getTabData: (tabId: string) => get().tabsData.get(tabId) || { url: DEFAULT_TAB_URL },
 
@@ -172,10 +179,10 @@ export const useBrowserStore = create<BrowserStore>()(
             return state;
           }),
 
-        setLogo: (tabId: string, logoUrl: string) =>
+        setLogo: (logoUrl: string, tabId: string) =>
           set(state => {
             const existingTabData = state.tabsData.get(tabId);
-            if (existingTabData && existingTabData.logoUrl !== logoUrl) {
+            if (existingTabData?.logoUrl !== logoUrl) {
               const updatedTabData = { ...existingTabData, logoUrl };
               const newTabsData = new Map(state.tabsData);
               newTabsData.set(tabId, updatedTabData);
@@ -191,6 +198,18 @@ export const useBrowserStore = create<BrowserStore>()(
             const newTabsData = new Map(state.tabsData);
             addedTabIds.forEach(id => newTabsData.set(id, { url: DEFAULT_TAB_URL }));
             return { tabIds: [...existingTabIds, ...addedTabIds], tabsData: newTabsData };
+          }),
+
+        setTitle: (title: string, tabId: string) =>
+          set(state => {
+            const existingTabData = state.tabsData.get(tabId);
+            if (existingTabData?.title !== title) {
+              const updatedTabData = { ...existingTabData, title };
+              const newTabsData = new Map(state.tabsData);
+              newTabsData.set(tabId, updatedTabData);
+              return { tabsData: newTabsData };
+            }
+            return state;
           }),
 
         silentlySetPersistedTabUrls: (persistedTabUrls: Record<TabId, string>) =>

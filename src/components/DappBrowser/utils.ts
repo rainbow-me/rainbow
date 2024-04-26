@@ -58,20 +58,20 @@ export const normalizeUrlWorklet = (url: string): string => {
   return normalizedUrl;
 };
 
-export const formatUrl = (url: string): string => {
+export const formatUrl = (url: string, formatSearches = true): string => {
   let formattedValue = '';
   let isGoogleSearch = false;
   try {
     const { hostname, pathname, search } = new URL(url);
     isGoogleSearch = hostname === 'www.google.com' && pathname === '/search';
-    if (isGoogleSearch) {
+    if (isGoogleSearch && formatSearches) {
       const params = new URLSearchParams(search);
       formattedValue = params.get('q') || '';
     } else {
       formattedValue = hostname.startsWith('www.') ? hostname.slice(4) : hostname;
     }
   } catch {
-    if (!isGoogleSearch) {
+    if (!isGoogleSearch || !formatSearches) {
       formattedValue = url;
     }
   }

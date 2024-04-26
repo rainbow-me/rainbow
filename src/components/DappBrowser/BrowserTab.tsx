@@ -66,7 +66,7 @@ import { useBrowserWorkletsContext } from './BrowserWorkletsContext';
 
 const AnimatedFasterImage = Animated.createAnimatedComponent(FasterImageView);
 
-export const BrowserTab = React.memo(function BrowserTab({ addRecent, injectedJS, setLogo, tabId }: BrowserTabProps) {
+export const BrowserTab = React.memo(function BrowserTab({ addRecent, injectedJS, setLogo, setTitle, tabId }: BrowserTabProps) {
   const {
     activeTabRef,
     animatedActiveTabIndex,
@@ -114,11 +114,13 @@ export const BrowserTab = React.memo(function BrowserTab({ addRecent, injectedJS
       if (rgbaColor[3] > 0.2 && rgbaColor[3] < 1) {
         // If the color is semi transparent
         return `rgba(${rgbaColor[0] * 255}, ${rgbaColor[1] * 255}, ${rgbaColor[2] * 255}, 1)`;
-      }
-      if (rgbaColor[3] === 0) {
+      } else if (rgbaColor[3] === 0) {
         // If the color is fully transparent
         return backgroundColor.value;
-      }
+      } else if (rgbaColor[3] === 1) {
+        // If the color is fully opaque
+        return backgroundColor.value;
+      } else return defaultBackgroundColor;
     } else {
       // If the color is not a valid color
       return defaultBackgroundColor;
@@ -413,6 +415,7 @@ export const BrowserTab = React.memo(function BrowserTab({ addRecent, injectedJS
           }
           if (pageTitle && typeof pageTitle === 'string') {
             title.current = pageTitle;
+            setTitle(pageTitle, tabId);
           }
 
           addRecent({
@@ -442,7 +445,7 @@ export const BrowserTab = React.memo(function BrowserTab({ addRecent, injectedJS
         console.error('Error parsing message', e);
       }
     },
-    [addRecent, backgroundColor, isActiveTab, setLogo, tabId, tabUrl]
+    [addRecent, backgroundColor, isActiveTab, setLogo, setTitle, tabId, tabUrl]
   );
 
   const handleOnLoadStart = useCallback(
