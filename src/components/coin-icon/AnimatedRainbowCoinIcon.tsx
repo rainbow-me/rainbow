@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Network } from '@/networks/types';
 import { borders, fonts } from '@/styles';
 import { ThemeContextProps } from '@/theme';
 import { FallbackIcon as CoinIconTextFallback } from '@/utils';
-import { uuid4 } from '@/browser/utils';
 
 import { FastFallbackCoinIconImage } from '../asset-list/RecyclerAssetList2/FastComponents/FastFallbackCoinIconImage';
 import { FastChainBadge } from '../asset-list/RecyclerAssetList2/FastComponents/FastCoinBadge';
@@ -42,46 +41,17 @@ export default React.memo(function RainbowCoinIcon({
   colors?: DerivedValue<TokenColors | undefined>;
   ignoreBadge?: boolean;
 }) {
-  const [iconValue, setIconValue] = useState(icon?.value);
-  const [networkValue, setNetworkValue] = useState(network.value);
-  const [sybmolValue, setSymbolValue] = useState(symbol.value);
-  const [colorsValue, setColorsValue] = useState(colors?.value);
-  const iconListenerId = uuid4();
-  const networkListenerId = uuid4();
-  const symbolListenerId = uuid4();
-  const colorsListenerId = uuid4();
+  const fallbackIconColor = useDerivedValue(() => colors?.value?.primary || colors?.value?.fallback || theme.colors.purpleUniswap);
 
-  useEffect(() => {
-    icon?.addListener(iconListenerId, (value: string | undefined) => {
-      setIconValue(value);
-    });
-    network.addListener(networkListenerId, (value: Network | undefined) => {
-      setIconValue(value);
-    });
-    symbol.addListener(symbolListenerId, (value: string | undefined) => {
-      setIconValue(value);
-    });
-    colors?.addListener(colorsListenerId, (value: TokenColors | undefined) => {
-      setColorsValue(value);
-    });
-
-    return () => {
-      icon?.removeListener(iconListenerId);
-      network.removeListener(iconListenerId);
-      symbol.removeListener(iconListenerId);
-      colors?.removeListener(iconListenerId);
-    };
-  }, [colors, colorsListenerId, icon, iconListenerId, network, networkListenerId, symbol, symbolListenerId]);
-
-  const fallbackIconColor = colorsValue?.primary || colorsValue?.fallback || theme.colors.purpleUniswap;
-
-  const shadowColor = theme.isDarkMode ? theme.colors.shadow : colorsValue?.primary || colorsValue?.fallback || theme.colors.shadow;
+  const shadowColor = useDerivedValue(() =>
+    theme.isDarkMode ? theme.colors.shadow : colors?.value?.primary || colors?.value?.fallback || theme.colors.shadow
+  );
 
   const shouldDisplayImage = useDerivedValue(() => !!icon?.value);
 
   return (
     <View style={sx.container}>
-      <FastFallbackCoinIconImage icon={icon} shadowColor={shadowColor} shouldDisplay={shouldDisplayImage} theme={theme} size={size}>
+      <AnimatedFastFallbackCoinIconImage icon={icon} shadowColor={shadowColor} shouldDisplay={shouldDisplayImage} theme={theme} size={size}>
         {() => (
           // <CoinIconTextFallback
           //   color={fallbackIconColor}
@@ -93,7 +63,7 @@ export default React.memo(function RainbowCoinIcon({
           // />
           <></>
         )}
-      </FastFallbackCoinIconImage>
+      </AnimatedFastFallbackCoinIconImage>
 
       {/* {!ignoreBadge && network && <FastChainBadge network={network} theme={theme} />} */}
     </View>

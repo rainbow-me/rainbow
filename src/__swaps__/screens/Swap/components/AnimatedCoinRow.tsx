@@ -1,32 +1,21 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
-import { AnimatedText, Box, HitSlop, Inline, Stack, Text } from '@/design-system';
+import { AnimatedText, Box, HitSlop, Inline } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
-import { useTheme } from '@/theme';
-import { SwapCoinIcon } from '@/__swaps__/screens/Swap/components/SwapCoinIcon';
 import { CoinRowButton } from '@/__swaps__/screens/Swap/components/CoinRowButton';
 import { BalancePill } from '@/__swaps__/screens/Swap/components/BalancePill';
-import { ChainId } from '@/__swaps__/types/chains';
-import { ethereumUtils } from '@/utils';
-import { isFavorite, toggleFavorite, useFavorites } from '@/resources/favorites';
+import { isFavorite, toggleFavorite } from '@/resources/favorites';
 import { ETH_ADDRESS } from '@/references';
 import Animated, {
   SharedValue,
   runOnJS,
-  useAnimatedProps,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
 } from 'react-native-reanimated';
 import { SearchAsset } from '@/__swaps__/types/search';
-import { View } from 'react-native';
 import { AddressZero } from '@ethersproject/constants';
-import { AnimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
-import { Network } from '@/networks/types';
-import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { TokenColors } from '@/graphql/__generated__/metadata';
-import AnimatedRainbowCoinIcon from '@/components/coin-icon/AnimatedRainbowCoinIcon';
 
 export const AnimatedCoinRow = ({
   sectionData,
@@ -39,30 +28,10 @@ export const AnimatedCoinRow = ({
   onPress: (asset: SearchAsset) => void;
   output?: boolean;
 }) => {
-  const theme = useTheme();
-  // const { favoritesMetadata } = useFavorites();
-  // console.log('🚨🚨🚨🚨🚨🚨 coin row render 🚨🚨🚨🚨🚨🚨');
-  // const favorites = Object.values(favoritesMetadata);
-
-  // const isFavorite = (address: string) => {
-  //   return favorites.find(fav =>
-  //     fav.address === ETH_ADDRESS ? '0x0000000000000000000000000000000000000000' === address : fav.address === address
-  //   );
-  // };
-
   const asset: Readonly<SharedValue<SearchAsset | undefined>> = useDerivedValue(() => sectionData.value?.[index]);
   const name: Readonly<SharedValue<string | undefined>> = useDerivedValue(() => asset.value?.name);
   const symbol: Readonly<SharedValue<string | undefined>> = useDerivedValue(() => asset.value?.symbol);
   const address: Readonly<SharedValue<string | undefined>> = useDerivedValue(() => asset.value?.address);
-  const iconUrl: Readonly<SharedValue<string | undefined>> = useDerivedValue(() => asset.value?.icon_url);
-  const chainId: Readonly<SharedValue<ChainId | undefined>> = useDerivedValue(() => asset.value?.chainId);
-  const network: Readonly<SharedValue<Network | undefined>> = useDerivedValue(
-    () => chainId.value && ethereumUtils.getNetworkFromChainId(chainId.value)
-  );
-  const color: Readonly<SharedValue<string | undefined>> = useDerivedValue(
-    () => asset.value?.colors?.primary ?? asset.value?.colors?.fallback
-  );
-  const mainnetAddress: Readonly<SharedValue<string | undefined>> = useDerivedValue(() => asset.value?.mainnetAddress);
 
   const isFavorited: SharedValue<boolean> = useSharedValue(address.value ? isFavorite(address.value) : false);
 
@@ -90,6 +59,7 @@ export const AnimatedCoinRow = ({
   });
 
   const isTrending = false;
+  const balance = '';
 
   const percentChange = useDerivedValue(() => {
     if (isTrending) {
@@ -109,43 +79,41 @@ export const AnimatedCoinRow = ({
   const percentChangeContainerAnimatedStyle = useAnimatedStyle(() => ({ display: percentChange.value ? 'flex' : 'none' }));
   const percentChangeAnimatedStyle = useAnimatedStyle(() => ({ color: percentChangeColor.value }));
 
+  const subtitle = useDerivedValue(() => (output ? symbol.value : balance));
+
   const animatedStyle = useAnimatedStyle(() => ({ display: asset.value ? 'flex' : 'none' }));
-  const favoriteButtonColor = useDerivedValue(() => {
-    console.log(isFavorited.value);
-    return isFavorited.value ? '#FFCB0F' : undefined;
-  });
+  const favoriteButtonColor = useDerivedValue(() => (isFavorited.value ? '#FFCB0F' : undefined));
 
   return (
-    <Animated.View style={animatedStyle}>
+    <Animated.View style={animatedStyle} onLayout={e => console.log(e.nativeEvent.layout.height)}>
       <ButtonPressAnimation disallowInterruption onPress={() => asset.value && onPress(asset.value)} scaleTo={0.95}>
         <HitSlop vertical="10px">
           <Box
             alignItems="center"
-            paddingVertical={'10px'}
-            paddingHorizontal={'20px'}
+            paddingVertical="10px"
+            paddingHorizontal="20px"
             flexDirection="row"
             justifyContent="space-between"
             width="full"
           >
             <Inline alignVertical="center" space="10px">
-              <AnimatedSwapCoinIcon
-                iconUrl={iconUrl}
-                address={address}
-                mainnetAddress={mainnetAddress}
-                large
-                network={network}
-                symbol={symbol}
-                theme={theme}
-                color={color}
-              />
-              <Stack space="10px">
+              {/* <SwapCoinIcon
+              iconUrl={iconUrl}
+              address={address}
+              mainnetAddress={mainnetAddress}
+              large
+              network={ethereumUtils.getNetworkFromChainId(chainId)}
+              symbol={symbol}
+              theme={theme}
+              color={color}
+            /> */}
+              <Box gap={10}>
                 <AnimatedText color="label" size="17pt" weight="semibold">
                   {name}
                 </AnimatedText>
                 <Inline alignVertical="center" space={{ custom: 5 }}>
                   <AnimatedText color="labelTertiary" size="13pt" weight="semibold">
-                    {/* {output ? symbol : `${balance}`} */}
-                    {symbol}
+                    {subtitle}
                   </AnimatedText>
                   <Animated.View style={percentChangeContainerAnimatedStyle}>
                     <Inline alignVertical="center" space={{ custom: 1 }}>
@@ -158,7 +126,7 @@ export const AnimatedCoinRow = ({
                     </Inline>
                   </Animated.View>
                 </Inline>
-              </Stack>
+              </Box>
             </Inline>
             {output ? (
               <Inline space="8px">
@@ -174,7 +142,7 @@ export const AnimatedCoinRow = ({
                 />
               </Inline>
             ) : (
-              <BalancePill balance={''} />
+              <BalancePill balance={balance} />
             )}
           </Box>
         </HitSlop>

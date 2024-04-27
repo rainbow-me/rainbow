@@ -1,5 +1,5 @@
-import React, { useCallback } from 'react';
-import { StyleSheet } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { ImageWithCachedMetadata, ImgixImage } from '@/components/images';
 import { ThemeContextProps } from '@/theme';
 import Animated, {
@@ -10,8 +10,10 @@ import Animated, {
   useDerivedValue,
   useSharedValue,
 } from 'react-native-reanimated';
+import { FasterImageView } from '@candlefinance/faster-image';
 
 const AnimatedImageWithCachedMetadata = Animated.createAnimatedComponent(ImageWithCachedMetadata);
+const AnimatedFasterImage = Animated.createAnimatedComponent(FasterImageView);
 
 const ImageState = {
   ERROR: 'ERROR',
@@ -38,82 +40,57 @@ export const AnimatedFastFallbackCoinIconImage = React.memo(function FastFallbac
 }) {
   const { colors } = theme;
 
-  const key = useDerivedValue(() => `${icon?.value}`);
+  const key = `${icon?.value}`;
 
-  const cacheStatus = useSharedValue(imagesCache[key.value]);
+  const [cacheStatus, setCacheStatus] = useState(imagesCache[key]);
 
-  useAnimatedReaction(
-    () => key.value,
-    (current, previous) => {
-      if (current !== previous) {
-        cacheStatus.value = imagesCache[current];
-      }
-    }
-  );
+  const shouldShowImage = cacheStatus !== ImageState.NOT_FOUND;
+  const isLoaded = cacheStatus === ImageState.LOADED;
 
-  const shouldShowImage = useDerivedValue(() => cacheStatus.value !== ImageState.NOT_FOUND);
-  const isLoaded = useDerivedValue(() => cacheStatus.value === ImageState.LOADED);
+  const opts = useDerivedValue(() => ({ url: icon?.value ?? '' }));
 
   const onLoad = useCallback(() => {
-    if (isLoaded.value) {
+    if (isLoaded) {
       return;
     }
-    imagesCache[key.value] = ImageState.LOADED;
-    cacheStatus.value = ImageState.LOADED;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    imagesCache[key] = ImageState.LOADED;
+    setCacheStatus(ImageState.LOADED);
+  }, [key, isLoaded]);
 
   const onError = useCallback(
     // @ts-expect-error passed to an untyped JS component
     err => {
       const newError = err?.nativeEvent?.message?.includes('404') ? ImageState.NOT_FOUND : ImageState.ERROR;
 
-      if (cacheStatus.value === newError) {
+      if (cacheStatus === newError) {
         return;
       }
 
-      imagesCache[key.value] = newError;
-      cacheStatus.value = newError;
+      imagesCache[key] = newError;
+      setCacheStatus(newError);
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [cacheStatus, key]
   );
 
-  const containerAnimatedStyle = useAnimatedStyle(() => ({
-    display: shouldDisplay.value ? 'flex' : 'none',
-    shadowColor: shadowColor.value,
-  }));
-
-  const imageAnimatedStyle = useAnimatedStyle(() => ({
-    display: true ? 'flex' : 'none',
-    backgroundColor: isLoaded.value ? colors.white : undefined,
-  }));
-
-  const childrenAnimatedStyle = useAnimatedStyle(() => ({ display: isLoaded.value ? 'flex' : 'none' }));
-
-  const animatedProps = useAnimatedProps(() => {
-    console.log('hello');
-    console.log(icon?.value);
-    return {
-      imageUrl: icon?.value,
-    };
-  });
-
   return (
-    <Animated.View
-      style={[sx.coinIconContainer, sx.withShadow, containerAnimatedStyle, { height: size, width: size, borderRadius: size / 2 }]}
-    >
-      <AnimatedImageWithCachedMetadata
-        cache={ImgixImage.cacheControl.immutable}
-        animatedProps={animatedProps}
-        onError={onError}
-        onLoad={onLoad}
-        size={size}
-        style={[sx.coinIconFallback, imageAnimatedStyle, { height: size, width: size, borderRadius: size / 2 }]}
-      />
+    <View style={[sx.coinIconContainer, sx.withShadow, { height: size, width: size, borderRadius: size / 2 }]}>
+      {shouldShowImage && (
+        <AnimatedFasterImage
+          // cache={ImgixImage.cacheControl.immutable}
+          source={opts}
+          onError={onError}
+          onSuccess={onLoad}
+          // size={size}
+          style={[
+            sx.coinIconFallback,
+            isLoaded && { backgroundColor: colors.white },
+            { height: size, width: size, borderRadius: size / 2 },
+          ]}
+        />
+      )}
 
-      <Animated.View style={[sx.fallbackWrapper, childrenAnimatedStyle]}>{children()}</Animated.View>
-    </Animated.View>
+      {!isLoaded && <View style={sx.fallbackWrapper}>{children()}</View>}
+    </View>
   );
 });
 
