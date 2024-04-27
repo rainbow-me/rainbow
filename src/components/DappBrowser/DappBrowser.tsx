@@ -56,8 +56,6 @@ const DappBrowserComponent = () => {
   const injectedJS = useRef('');
   const route = useRoute<RouteProp<RouteParams, 'DappBrowserParams'>>();
 
-  const tabsData = useBrowserStore(state => state.getTabsData());
-
   useAnimatedReaction(
     () => route.params?.url,
     (current, previous) => {
@@ -82,7 +80,7 @@ const DappBrowserComponent = () => {
   useEffect(() => {
     // Delay pruning screenshots until after the tab states have been updated
     InteractionManager.runAfterInteractions(() => {
-      pruneScreenshots(tabsData);
+      pruneScreenshots(useBrowserStore.getState().tabsData);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
