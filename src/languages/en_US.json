@@ -2784,6 +2784,17 @@
     "dapp_browser": {
       "address_bar": {
         "input_placeholder": "Search or enter website"
+      },
+      "control_panel": {
+        "connected": "Connected",
+        "not_connected": "Not Connected",
+        "switch_wallet": "Switch Wallet",
+        "switch_network": "Switch Network",
+        "disconnect": "Disconnect",
+        "connect": "Connect",
+        "swap": "Swap",
+        "bridge": "Bridge",
+        "more": "More"
       }
     }
   }

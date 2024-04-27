@@ -1,19 +1,9 @@
 import chroma from 'chroma-js';
-import { isEmpty } from 'lodash';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
-import Animated, {
-  SharedValue,
-  runOnJS,
-  useAnimatedReaction,
-  useAnimatedStyle,
-  useDerivedValue,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { SharedValue, runOnJS, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { ChainId } from '@/__swaps__/types/chains';
 import { opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
@@ -37,20 +27,30 @@ import {
 } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
-import networkTypes from '@/helpers/networkTypes';
+import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { useAccountAccentColor, useAccountSettings, useWalletsWithBalancesAndNames } from '@/hooks';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { Network } from '@/networks/types';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { colors } from '@/styles';
 import { deviceUtils } from '@/utils';
-import { address } from '@/utils/abbreviations';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 import { TOP_INSET } from '../Dimensions';
 import { formatUrl } from '../utils';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { Address, toHex } from 'viem';
+import { RainbowNetworks } from '@/networks';
+import * as i18n from '@/languages';
+import { convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { useSelector } from 'react-redux';
+import store, { AppState } from '@/redux/store';
+import { getDappHost } from '@/utils/connectedApps';
+import { handleDappBrowserConnectionPrompt } from '@/utils/requestNavigationHandlers';
+import { useAppSessionsStore } from '@/state/appSessions';
+import { RainbowError, logger } from '@/logger';
+import WebView from 'react-native-webview';
 
 const PAGES = {
   HOME: 'home',
@@ -58,12 +58,178 @@ const PAGES = {
   SWITCH_NETWORK: 'switch-network',
 };
 
+type ControlPanelParams = {
+  ControlPanel: {
+    activeTabRef: React.MutableRefObject<WebView | null>;
+  };
+};
+
 export const ControlPanel = () => {
   const { goBack, goToPage, ref } = usePagerNavigation();
+  const { accountAddress } = useAccountSettings();
+  const {
+    params: { activeTabRef },
+  } = useRoute<RouteProp<ControlPanelParams, 'ControlPanel'>>();
+  const [isConnected, setIsConnected] = useState(false);
+  const [currentAddress, setCurrentAddress] = useState<string>(accountAddress);
+  const [currentNetwork, setCurrentNetwork] = useState<Network>(RainbowNetworks[0].value);
 
-  const animatedAccentColor = useSharedValue(PLACEHOLDER_WALLET_ITEMS[0].color);
-  const selectedNetworkId = useSharedValue(PLACEHOLDER_CHAIN_ITEMS[0].uniqueId);
-  const selectedWalletId = useSharedValue(PLACEHOLDER_WALLET_ITEMS[0].uniqueId);
+  const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
+  const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
+  const activeTabUrl = useBrowserStore(state => state.getActiveTabUrl());
+  const activeTabHost = getDappHost(activeTabUrl as string);
+  const updateActiveSession = useAppSessionsStore(state => state.updateActiveSession);
+  const updateActiveSessionNetwork = useAppSessionsStore(state => state.updateActiveSessionNetwork);
+  const addSession = useAppSessionsStore(state => state.addSession);
+  const removeSession = useAppSessionsStore(state => state.removeSession);
+  const currentSession = useAppSessionsStore(state => state.getActiveSession({ host: activeTabHost }));
+
+  // listens to the current active tab and sets the account
+  useEffect(() => {
+    if (activeTabHost) {
+      if (!currentSession) {
+        setIsConnected(false);
+        return;
+      }
+
+      if (currentSession?.address) {
+        setCurrentAddress(currentSession?.address);
+        setIsConnected(true);
+      } else {
+        setCurrentAddress(accountAddress);
+      }
+
+      if (currentSession?.network) {
+        setCurrentNetwork(currentSession?.network);
+      }
+    }
+  }, [accountAddress, activeTabHost, currentSession]);
+
+  const allWalletItems = useMemo(() => {
+    const items: ControlPanelMenuItemProps[] = [];
+    Object.keys(walletsWithBalancesAndNames).forEach(key => {
+      const wallet = walletsWithBalancesAndNames[key];
+      const filteredAccounts = wallet.addresses.filter(account => account.visible);
+      filteredAccounts.forEach(account => {
+        const walletBalance = account.balance === '0.00' ? '0' : account.balance;
+        const nativeCurrencyBalance = convertAmountToNativeDisplay(walletBalance || '0', nativeCurrency);
+
+        const item = {
+          IconComponent: account.image ? (
+            <ListAvatar url={account.image || ''} />
+          ) : (
+            <ListEmojiAvatar address={account.address} color={account.color} label={account.label} />
+          ),
+          label: account.label,
+          secondaryLabel: nativeCurrencyBalance,
+          uniqueId: account.address,
+          color: colors.avatarBackgrounds[account.color],
+          selected: account.address === currentAddress,
+        };
+
+        items.push(item);
+      });
+    });
+
+    return items;
+  }, [walletsWithBalancesAndNames, currentAddress, nativeCurrency]);
+
+  const { testnetsEnabled } = store.getState().settings;
+
+  const allNetworkItems = useMemo(() => {
+    return RainbowNetworks.filter(
+      ({ networkType, features: { walletconnect } }) => walletconnect && (testnetsEnabled || networkType !== 'testnet')
+    ).map(network => {
+      return {
+        IconComponent: <ChainImage chain={network.value} size={36} />,
+        label: network.name,
+        secondaryLabel: i18n.t(
+          isConnected && network.value === currentNetwork
+            ? i18n.l.dapp_browser.control_panel.connected
+            : i18n.l.dapp_browser.control_panel.not_connected
+        ),
+        uniqueId: network.value,
+        selected: network.value === currentNetwork,
+      };
+    });
+  }, [currentNetwork, isConnected, testnetsEnabled]);
+
+  const selectedWallet = allWalletItems.find(item => item.selected);
+
+  const animatedAccentColor = useSharedValue(selectedWallet?.color || globalColors.blue10);
+  const selectedNetworkId = useSharedValue(currentNetwork?.toString() || RainbowNetworks[0].value);
+  const selectedWalletId = useSharedValue(selectedWallet?.uniqueId || accountAddress);
+
+  const handleSwitchWallet = useCallback(
+    (selectedItemId: string) => {
+      const address = selectedItemId;
+      updateActiveSession({ host: activeTabHost, address: address as `0x${string}` });
+      // need to emit these events to the dapp
+      activeTabRef.current?.injectJavaScript(`window.ethereum.emit('accountsChanged', ['${address}']); true;`);
+      setCurrentAddress(address);
+    },
+    [activeTabHost, activeTabRef, updateActiveSession]
+  );
+
+  const handleNetworkSwitch = useCallback(
+    (selectedItemId: string) => {
+      updateActiveSessionNetwork({ host: activeTabHost, network: selectedItemId as Network });
+      const chainId = RainbowNetworks.find(({ value }) => value === (selectedItemId as Network))?.id as number;
+      activeTabRef.current?.injectJavaScript(`window.ethereum.emit('chainChanged', ${toHex(chainId)}); true;`);
+      setCurrentNetwork(selectedItemId as Network);
+    },
+    [activeTabHost, activeTabRef, updateActiveSessionNetwork]
+  );
+
+  const handleConnect = useCallback(async () => {
+    const activeTabHost = getDappHost(activeTabUrl as string);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    const name: string = activeTabRef.current?.title || activeTabHost;
+
+    const response = await handleDappBrowserConnectionPrompt({
+      dappName: name || '',
+      dappUrl: activeTabUrl || '' || '',
+    });
+
+    if (!(response instanceof Error)) {
+      const connectedToNetwork = getNetworkFromChainId(response.chainId);
+      addSession({
+        host: activeTabHost || '',
+        // @ts-ignore
+        address: response.address,
+        network: connectedToNetwork,
+        // @ts-ignore
+        url: activeTabUrl || '',
+      });
+
+      const selectedAddress = selectedWalletId.value;
+
+      activeTabRef.current?.injectJavaScript(
+        `window.ethereum.emit('accountsChanged', ['${selectedAddress}']); window.ethereum.emit('connect', { address: '${selectedAddress}', chainId: '${toHex(response.chainId)}' }); true;`
+      );
+      setIsConnected(true);
+      setCurrentAddress(selectedAddress);
+      setCurrentNetwork(connectedToNetwork);
+    } else {
+      logger.error(new RainbowError('Dapp browser connection prompt error'), {
+        response,
+        dappName: name,
+        dappUrl: activeTabUrl,
+      });
+    }
+  }, [activeTabRef, activeTabUrl, addSession, selectedWalletId.value]);
+
+  const handleDisconnect = useCallback(() => {
+    const selectedAddress = selectedWalletId.value;
+
+    const activeTabHost = getDappHost(activeTabUrl as string);
+    if (activeTabHost) {
+      removeSession({ host: activeTabHost, address: selectedAddress as Address });
+      activeTabRef.current?.injectJavaScript(`window.ethereum.emit('accountsChanged', []); window.ethereum.emit('disconnect', []); true;`);
+      setIsConnected(false);
+    }
+  }, [activeTabRef, activeTabUrl, removeSession, selectedWalletId.value]);
 
   return (
     <>
@@ -75,8 +241,13 @@ export const ControlPanel = () => {
               <HomePanel
                 animatedAccentColor={animatedAccentColor}
                 goToPage={goToPage}
-                selectedNetworkId={selectedNetworkId}
-                selectedWalletId={selectedWalletId}
+                selectedNetwork={currentNetwork}
+                selectedWallet={currentAddress}
+                allWalletItems={allWalletItems}
+                allNetworkItems={allNetworkItems}
+                isConnected={isConnected}
+                onConnect={handleConnect}
+                onDisconnect={handleDisconnect}
               />
             }
             id={PAGES.HOME}
@@ -84,13 +255,25 @@ export const ControlPanel = () => {
           <SmoothPager.Group>
             <SmoothPager.Page
               component={
-                <SwitchWalletPanel animatedAccentColor={animatedAccentColor} goBack={goBack} selectedWalletId={selectedWalletId} />
+                <SwitchWalletPanel
+                  allWalletItems={allWalletItems}
+                  animatedAccentColor={animatedAccentColor}
+                  goBack={goBack}
+                  selectedWalletId={selectedWalletId}
+                  onWalletSwitch={handleSwitchWallet}
+                />
               }
               id={PAGES.SWITCH_WALLET}
             />
             <SmoothPager.Page
               component={
-                <SwitchNetworkPanel animatedAccentColor={animatedAccentColor} goBack={goBack} selectedNetworkId={selectedNetworkId} />
+                <SwitchNetworkPanel
+                  allNetworkItems={allNetworkItems}
+                  animatedAccentColor={animatedAccentColor}
+                  goBack={goBack}
+                  selectedNetworkId={selectedNetworkId}
+                  onNetworkSwitch={handleNetworkSwitch}
+                />
               }
               id={PAGES.SWITCH_NETWORK}
             />
@@ -137,41 +320,33 @@ const AccentColorSetter = ({ animatedAccentColor }: { animatedAccentColor: Share
 const HomePanel = ({
   animatedAccentColor,
   goToPage,
-  selectedNetworkId,
-  selectedWalletId,
+  selectedNetwork,
+  selectedWallet,
+  allWalletItems,
+  allNetworkItems,
+  isConnected,
+  onConnect,
+  onDisconnect,
 }: {
   animatedAccentColor: SharedValue<string | undefined>;
   goToPage: (pageId: string) => void;
-  selectedNetworkId: SharedValue<string>;
-  selectedWalletId: SharedValue<string>;
+  selectedNetwork: string;
+  selectedWallet: string;
+  allWalletItems: ControlPanelMenuItemProps[];
+  allNetworkItems: ControlPanelMenuItemProps[];
+  isConnected: boolean;
+  onConnect: () => void;
+  onDisconnect: () => void;
 }) => {
-  const [selectedItems, setSelectedStates] = useState({
-    selectedWalletId: PLACEHOLDER_WALLET_ITEMS[0].uniqueId,
-    selectedNetworkId: PLACEHOLDER_CHAIN_ITEMS[0].uniqueId,
-  });
-
-  useAnimatedReaction(
-    () => ({ selectedWalletId: selectedWalletId.value, selectedNetworkId: selectedNetworkId.value }),
-    (current, previous) => {
-      const didSelectedWalletChange = previous?.selectedWalletId && current.selectedWalletId !== previous.selectedWalletId;
-      const didSelectedNetworkChange = previous?.selectedNetworkId && current.selectedNetworkId !== previous.selectedNetworkId;
-
-      if (didSelectedWalletChange || didSelectedNetworkChange) {
-        runOnJS(setSelectedStates)(current);
-      }
-    }
-  );
-
   const actionButtonList = useMemo(() => {
-    const walletIcon = PLACEHOLDER_WALLET_ITEMS.find(item => item.uniqueId === selectedItems.selectedWalletId)?.IconComponent || <></>;
-    const walletLabel = PLACEHOLDER_WALLET_ITEMS.find(item => item.uniqueId === selectedItems.selectedWalletId)?.label || '';
-    const walletSecondaryLabel =
-      PLACEHOLDER_WALLET_ITEMS.find(item => item.uniqueId === selectedItems.selectedWalletId)?.secondaryLabel || '';
+    const walletIcon = allWalletItems.find(item => item.uniqueId === selectedWallet)?.IconComponent || <></>;
+    const walletLabel = allWalletItems.find(item => item.uniqueId === selectedWallet)?.label || '';
+    const walletSecondaryLabel = allWalletItems.find(item => item.uniqueId === selectedWallet)?.secondaryLabel || '';
 
-    const networkIcon = <ChainImage chain={getNetworkFromChainId(Number(selectedItems.selectedNetworkId))} size={36} />;
-    const networkLabel = PLACEHOLDER_CHAIN_ITEMS.find(item => item.uniqueId === selectedItems.selectedNetworkId)?.label || '';
-    const networkSecondaryLabel =
-      PLACEHOLDER_CHAIN_ITEMS.find(item => item.uniqueId === selectedItems.selectedNetworkId)?.secondaryLabel || '';
+    const network = allNetworkItems.find(item => item.uniqueId === selectedNetwork);
+    const networkIcon = <ChainImage chain={(network?.uniqueId as Network) || 'mainnet'} size={36} />;
+    const networkLabel = network?.label || '';
+    const networkSecondaryLabel = network?.secondaryLabel || '';
 
     return (
       <Stack space="12px">
@@ -195,7 +370,7 @@ const HomePanel = ({
         />
       </Stack>
     );
-  }, [animatedAccentColor, goToPage, selectedItems.selectedNetworkId, selectedItems.selectedWalletId]);
+  }, [allNetworkItems, allWalletItems, animatedAccentColor, goToPage, selectedNetwork, selectedWallet]);
 
   return (
     <Panel height={334}>
@@ -216,7 +391,7 @@ const HomePanel = ({
               <ControlPanelButton
                 animatedAccentColor={animatedAccentColor}
                 icon="􀖅"
-                label="Swap"
+                label={i18n.t(i18n.l.dapp_browser.control_panel.swap)}
                 onPress={() => {
                   return;
                 }}
@@ -224,16 +399,21 @@ const HomePanel = ({
               <ControlPanelButton
                 animatedAccentColor={animatedAccentColor}
                 icon="􀄹"
-                label="Bridge"
+                label={i18n.t(i18n.l.dapp_browser.control_panel.bridge)}
                 onPress={() => {
                   return;
                 }}
               />
-              <ConnectButton animatedAccentColor={animatedAccentColor} initialIsConnected={false} />
+              <ConnectButton
+                animatedAccentColor={animatedAccentColor}
+                isConnected={isConnected}
+                onConnect={onConnect}
+                onDisconnect={onDisconnect}
+              />
               <ControlPanelButton
                 animatedAccentColor={animatedAccentColor}
                 icon="􀍡"
-                label="More"
+                label={i18n.t(i18n.l.dapp_browser.control_panel.more)}
                 onPress={() => {
                   return;
                 }}
@@ -283,51 +463,30 @@ const SwitchWalletPanel = ({
   animatedAccentColor,
   goBack,
   selectedWalletId,
+  allWalletItems,
+  onWalletSwitch,
 }: {
   animatedAccentColor: SharedValue<string | undefined>;
   goBack: () => void;
   selectedWalletId: SharedValue<string>;
+  allWalletItems: ControlPanelMenuItemProps[];
+  onWalletSwitch: (selectedItemId: string) => void;
 }) => {
-  const { network } = useAccountSettings();
-  const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
-
-  const memoizedItems = useMemo(() => {
-    if (isEmpty(walletsWithBalancesAndNames)) return;
-    const items: ControlPanelMenuItemProps[] = [];
-
-    Object.values(walletsWithBalancesAndNames).forEach(wallet => {
-      const filteredAccounts = wallet.addresses.filter(account => account.visible);
-      filteredAccounts.forEach(account => {
-        const rawWalletName =
-          network !== networkTypes.mainnet && account.ens === account.label ? address(account.address, 6, 4) : account.label;
-        const walletName = removeFirstEmojiFromString(rawWalletName);
-        const walletBalance = account.balance === '0.00' ? '0' : account.balance;
-
-        const item: ControlPanelMenuItemProps = {
-          IconComponent: account.image ? (
-            <ListAvatar url={account.image || ''} />
-          ) : (
-            <ListEmojiAvatar address={account.address} color={account.color} label={account.label} />
-          ),
-          label: walletName,
-          secondaryLabel: `${walletBalance} ETH`,
-          uniqueId: account.address,
-        };
-
-        items.push(item);
-      });
-    });
-
-    return items || [];
-  }, [network, walletsWithBalancesAndNames]);
-
+  const handleOnSelect = useCallback(
+    (selectedItemId: string) => {
+      onWalletSwitch(selectedItemId);
+      goBack();
+    },
+    [goBack, onWalletSwitch]
+  );
   return (
     <ListPanel
       animatedAccentColor={animatedAccentColor}
       goBack={goBack}
-      items={memoizedItems}
-      pageTitle="Switch Wallet"
+      items={allWalletItems}
+      pageTitle={i18n.t(i18n.l.dapp_browser.control_panel.switch_wallet)}
       selectedItemId={selectedWalletId}
+      onSelect={handleOnSelect}
     />
   );
 };
@@ -336,18 +495,30 @@ const SwitchNetworkPanel = ({
   animatedAccentColor,
   goBack,
   selectedNetworkId,
+  allNetworkItems,
+  onNetworkSwitch,
 }: {
   animatedAccentColor: SharedValue<string | undefined>;
   goBack: () => void;
   selectedNetworkId: SharedValue<string>;
+  allNetworkItems: ControlPanelMenuItemProps[];
+  onNetworkSwitch: (selectedItemId: string) => void;
 }) => {
+  const handleOnSelect = useCallback(
+    (selectedItemId: string) => {
+      onNetworkSwitch(selectedItemId);
+      goBack();
+    },
+    [goBack, onNetworkSwitch]
+  );
   return (
     <ListPanel
       animatedAccentColor={animatedAccentColor}
       goBack={goBack}
-      items={PLACEHOLDER_CHAIN_ITEMS}
-      pageTitle="Switch Network"
+      items={allNetworkItems}
+      pageTitle={i18n.t(i18n.l.dapp_browser.control_panel.switch_network)}
       selectedItemId={selectedNetworkId}
+      onSelect={handleOnSelect}
     />
   );
 };
@@ -360,12 +531,14 @@ const ListPanel = ({
   items,
   pageTitle,
   selectedItemId,
+  onSelect,
 }: {
   animatedAccentColor: SharedValue<string | undefined>;
   goBack: () => void;
   items?: ControlPanelMenuItemProps[];
   pageTitle: string;
   selectedItemId: SharedValue<string>;
+  onSelect: (selectedItemId: string) => void;
 }) => {
   const memoizedItems = useMemo(() => items, [items]);
 
@@ -385,7 +558,7 @@ const ListPanel = ({
                 {...item}
                 animatedAccentColor={animatedAccentColor}
                 key={item.uniqueId}
-                onPress={goBack}
+                onPress={() => onSelect(item.uniqueId)}
                 selectedItemId={selectedItemId}
               />
             ))}
@@ -440,10 +613,11 @@ interface ControlPanelMenuItemProps {
   animatedAccentColor?: SharedValue<string | undefined>;
   label: string;
   labelColor?: TextColor;
+  color?: string;
   onPress?: () => void;
   secondaryLabel?: string;
   secondaryLabelColor?: TextColor;
-  // selected?: boolean;
+  selected?: boolean;
   selectedItemId?: SharedValue<string>;
   uniqueId: string;
   variant?: 'homePanel';
@@ -610,31 +784,30 @@ const ControlPanelButton = React.memo(function ControlPanelButton({
 
 const ConnectButton = React.memo(function ControlPanelButton({
   // animatedAccentColor,
-  initialIsConnected,
+  isConnected,
   onConnect,
   onDisconnect,
 }: {
   animatedAccentColor: SharedValue<string | undefined>;
-  initialIsConnected: boolean;
+  isConnected: boolean;
   onConnect?: () => void;
   onDisconnect?: () => void;
 }) {
   const green = useForegroundColor('green');
   const red = useForegroundColor('red');
 
-  const isConnected = useSharedValue(initialIsConnected);
   const buttonColor = useDerivedValue(() => {
-    return withTiming(isConnected.value ? red : green, TIMING_CONFIGS.slowerFadeConfig);
+    return withTiming(isConnected ? red : green, TIMING_CONFIGS.slowerFadeConfig);
     // if (!isConnected.value || !animatedAccentColor.value)
     //   return withTiming(isConnected.value ? red : green, TIMING_CONFIGS.slowerFadeConfig);
     // return animatedAccentColor.value;
   });
 
   const buttonIcon = useDerivedValue(() => {
-    return isConnected.value ? '􀋪' : '􀋦';
+    return isConnected ? '􀋪' : '􀋦';
   });
   const buttonLabel = useDerivedValue(() => {
-    return isConnected.value ? 'Disconnect' : 'Connect';
+    return isConnected ? 'Disconnect' : 'Connect';
   });
 
   const buttonBackground = useAnimatedStyle(() => {
@@ -652,13 +825,11 @@ const ConnectButton = React.memo(function ControlPanelButton({
 
   const handlePress = useCallback(() => {
     'worklet';
-    if (isConnected.value) {
-      isConnected.value = false;
+    if (isConnected) {
       if (onDisconnect) {
         runOnJS(onDisconnect)();
       }
     } else {
-      isConnected.value = true;
       if (onConnect) {
         runOnJS(onConnect)();
       }
@@ -878,77 +1049,3 @@ const controlPanelStyles = StyleSheet.create({
     backgroundColor: globalColors.white100,
   },
 });
-
-const PLACEHOLDER_CHAIN_ITEMS = [
-  {
-    IconComponent: <ChainImage chain={Network.base} size={36} />,
-    label: 'Base',
-    secondaryLabel: '$1,977.08',
-    uniqueId: `${ChainId.base}`,
-  },
-  {
-    IconComponent: <ChainImage chain={Network.mainnet} size={36} />,
-    label: 'Ethereum',
-    secondaryLabel: '$1,500.56',
-    uniqueId: `${ChainId.mainnet}`,
-  },
-  {
-    IconComponent: <ChainImage chain={Network.optimism} size={36} />,
-    label: 'Optimism',
-    secondaryLabel: '$420.52',
-    uniqueId: `${ChainId.optimism}`,
-  },
-  {
-    IconComponent: <ChainImage chain={Network.blast} size={36} />,
-    label: 'Blast',
-    secondaryLabel: '$1,240.16',
-    uniqueId: `${ChainId.blast}`,
-  },
-  {
-    IconComponent: <ChainImage chain={Network.zora} size={36} />,
-    label: 'Zora',
-    secondaryLabel: '$720.10',
-    uniqueId: `${ChainId.zora}`,
-  },
-];
-
-const PLACEHOLDER_WALLET_ITEMS = [
-  {
-    IconComponent: (
-      <ListAvatar url="https://lh3.googleusercontent.com/CtQeWROprYWCnbGW0Rbcf27IPo-X5bUdztwBUldp-fnpvIsbf4ZpU79Ty2e7Sjl6hI9xgf_6d7ZW5QGuF4Ex6nYmoG0XrLs3hQw=s250" />
-    ),
-    color: '#FEBD01',
-    label: 'maximillian.eth',
-    secondaryLabel: '$16,858.42',
-    selected: true,
-    uniqueId: '0x26C50C986E4006759248b644856178bdD43D4caa',
-  },
-  {
-    IconComponent: <ListAvatar url="https://zora.co/api/avatar/timmmy.eth?size=180" />,
-    color: '#D85341',
-    label: 'timmmy.eth',
-    secondaryLabel: '$2,420.52',
-    uniqueId: '0x1234',
-  },
-  {
-    IconComponent: <ListAvatar url="https://pbs.twimg.com/profile_images/1557391177665708032/FSuv7Zpo_400x400.png" />,
-    color: '#3D7EFF',
-    label: 'rainbow.eth',
-    secondaryLabel: '$1,960.26',
-    uniqueId: '0x12345',
-  },
-  {
-    IconComponent: <ListAvatar url="https://zora.co/api/avatar/jacob.eth?size=180" />,
-    color: '#268FFF',
-    label: 'jacob.eth',
-    secondaryLabel: '$8,240.02',
-    uniqueId: '0x123456',
-  },
-  {
-    IconComponent: <ListAvatar url="https://zora.co/api/avatar/callil.eth?size=180" />,
-    color: '#8FFF57',
-    label: 'callil.eth',
-    secondaryLabel: '$4,921.02',
-    uniqueId: '0x1234567',
-  },
-];

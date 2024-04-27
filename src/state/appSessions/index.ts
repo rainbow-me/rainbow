@@ -36,19 +36,33 @@ export interface AppSessionsStore<T extends AppSession> {
   clearSessions: () => void;
 }
 
+const cachedSelectors: Record<string, ActiveSession> = {};
+
 export const appSessionsStore = createStore<AppSessionsStore<AppSession>>(
   (set, get) => ({
     appSessions: {},
+    cachedSelectors: {},
     getActiveSession: ({ host }) => {
       const appSessions = get().appSessions;
-      const activeSessionAddress = appSessions[host]?.activeSessionAddress;
-      const sessions = appSessions[host]?.sessions;
-      return activeSessionAddress && sessions
-        ? {
-            address: activeSessionAddress,
-            network: sessions[activeSessionAddress],
-          }
-        : null;
+      const sessionInfo = appSessions[host];
+      const activeSessionAddress = sessionInfo?.activeSessionAddress;
+      const sessions = sessionInfo?.sessions;
+
+      const cacheKey = `${host}-${activeSessionAddress}`;
+      if (cachedSelectors[cacheKey]) {
+        return cachedSelectors[cacheKey];
+      }
+
+      if (activeSessionAddress && sessions) {
+        const result = {
+          address: activeSessionAddress,
+          network: sessions[activeSessionAddress],
+        };
+        cachedSelectors[cacheKey] = result;
+        return result;
+      }
+
+      return null;
     },
     removeAddressSessions: ({ address }) => {
       const appSessions = get().appSessions;
