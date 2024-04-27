@@ -2,6 +2,7 @@ import React from 'react';
 import { Site } from '@/state/browserHistory';
 
 export type TabId = string;
+export type TabData = { logoUrl?: string; title?: string; url?: string };
 
 export type AnimatedTabUrls = Record<TabId, string>;
 

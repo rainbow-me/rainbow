@@ -3,7 +3,7 @@ import { MMKV } from 'react-native-mmkv';
 import { create } from 'zustand';
 import { PersistStorage, StorageValue, persist, subscribeWithSelector } from 'zustand/middleware';
 import { DEFAULT_TAB_URL } from '@/components/DappBrowser/constants';
-import { TabId } from '@/components/DappBrowser/types';
+import { TabData, TabId } from '@/components/DappBrowser/types';
 import { generateUniqueId, normalizeUrl } from '@/components/DappBrowser/utils';
 import { RainbowError, logger } from '@/logger';
 
@@ -108,8 +108,6 @@ const INITIAL_STATE = {
   tabIds: INITIAL_TAB_IDS,
   tabsData: INITIAL_TABS_DATA,
 };
-
-type TabData = { logoUrl?: string; title?: string; url?: string };
 
 interface BrowserStore {
   activeTabIndex: number;
