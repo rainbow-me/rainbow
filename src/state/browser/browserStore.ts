@@ -102,26 +102,16 @@ const INITIAL_TAB_IDS = [generateUniqueId()];
 const INITIAL_TABS_DATA = new Map([[INITIAL_TAB_IDS[0], { url: DEFAULT_TAB_URL }]]);
 const INITIAL_PERSISTED_TAB_URLS: Record<TabId, string> = { [INITIAL_TAB_IDS[0]]: DEFAULT_TAB_URL };
 
-const INITIAL_STATE = {
-  activeTabIndex: INITIAL_ACTIVE_TAB_INDEX,
-  persistedTabUrls: INITIAL_PERSISTED_TAB_URLS,
-  tabIds: INITIAL_TAB_IDS,
-  tabsData: INITIAL_TABS_DATA,
-};
-
 interface BrowserStore {
   activeTabIndex: number;
   persistedTabUrls: Record<TabId, string>;
   tabIds: TabId[];
   tabsData: Map<TabId, TabData>;
   getActiveTabId: () => TabId;
-  getActiveTabIndex: () => number;
   getActiveTabLogo: () => string | undefined;
   getActiveTabTitle: () => string | undefined;
   getActiveTabUrl: () => string | undefined;
   getTabData: (tabId: TabId) => TabData | undefined;
-  getTabIds: () => TabId[];
-  getTabsData: () => Map<TabId, TabData>;
   goToPage: (url: string, tabId?: TabId) => void;
   isTabActive: (tabId: TabId) => boolean;
   setActiveTabIndex: (index: number) => void;
@@ -137,11 +127,12 @@ export const useBrowserStore = create<BrowserStore>()(
   subscribeWithSelector(
     persist(
       (set, get) => ({
-        ...INITIAL_STATE,
+        activeTabIndex: INITIAL_ACTIVE_TAB_INDEX,
+        persistedTabUrls: INITIAL_PERSISTED_TAB_URLS,
+        tabIds: INITIAL_TAB_IDS,
+        tabsData: INITIAL_TABS_DATA,
 
         getActiveTabId: () => get().tabIds[get().activeTabIndex],
-
-        getActiveTabIndex: () => get().activeTabIndex,
 
         getActiveTabLogo: () => get().tabsData.get(get().getActiveTabId())?.logoUrl,
 
@@ -150,10 +141,6 @@ export const useBrowserStore = create<BrowserStore>()(
         getActiveTabUrl: () => get().persistedTabUrls[get().getActiveTabId()],
 
         getTabData: (tabId: string) => get().tabsData.get(tabId) || { url: DEFAULT_TAB_URL },
-
-        getTabIds: () => get().tabIds,
-
-        getTabsData: () => get().tabsData,
 
         goToPage: (url: string, tabId?: string) =>
           set(state => {

@@ -2,6 +2,7 @@ import { RainbowError, logger } from '@/logger';
 import { ScreenshotType, TabData, TabId } from './types';
 import { MMKV } from 'react-native-mmkv';
 import RNFS from 'react-native-fs';
+import { RAINBOW_HOME } from './constants';
 
 export const tabScreenshotStorage = new MMKV();
 
@@ -10,7 +11,9 @@ export const getStoredScreenshots = (): ScreenshotType[] => {
   return persistedScreenshots ? (JSON.parse(persistedScreenshots) as ScreenshotType[]) : [];
 };
 
-export const findTabScreenshot = (id: string, url: string): ScreenshotType | null => {
+export const findTabScreenshot = (id: string, url?: string): ScreenshotType | null => {
+  if (!url || url === RAINBOW_HOME) return null;
+
   const persistedData = tabScreenshotStorage.getString('tabScreenshots');
   if (persistedData) {
     const screenshots = JSON.parse(persistedData);

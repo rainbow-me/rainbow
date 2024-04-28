@@ -1,7 +1,7 @@
 import { Share } from 'react-native';
 import { WebViewNavigationEvent } from 'react-native-webview/lib/RNCWebViewNativeComponent';
 import { RainbowError, logger } from '@/logger';
-import { HTTP, HTTPS } from './constants';
+import { HTTP, HTTPS, RAINBOW_HOME } from './constants';
 
 // ---------------------------------------------------------------------------- //
 // URL validation regex breakdown here: https://mathiasbynens.be/demo/url-regex
@@ -58,21 +58,31 @@ export const normalizeUrlWorklet = (url: string): string => {
   return normalizedUrl;
 };
 
-export const formatUrl = (url: string, formatSearches = true): string => {
-  let formattedValue = '';
+export const formatUrl = (url: string, formatSearches = true, prettifyUrl = true, trimTrailingSlash = false): string => {
+  if (!url || url === RAINBOW_HOME) return '';
+
+  let formattedValue = url;
   let isGoogleSearch = false;
   try {
     const { hostname, pathname, search } = new URL(url);
     isGoogleSearch = hostname === 'www.google.com' && pathname === '/search';
+
     if (isGoogleSearch && formatSearches) {
       const params = new URLSearchParams(search);
       formattedValue = params.get('q') || '';
-    } else {
+    } else if (prettifyUrl) {
       formattedValue = hostname.startsWith('www.') ? hostname.slice(4) : hostname;
+    }
+    if (trimTrailingSlash) {
+      formattedValue = formattedValue.endsWith('/') ? formattedValue.slice(0, -1) : formattedValue;
     }
   } catch {
     if (!isGoogleSearch || !formatSearches) {
-      formattedValue = url;
+      if (trimTrailingSlash) {
+        formattedValue = url.endsWith('/') ? url.slice(0, -1) : url;
+      } else {
+        formattedValue = url;
+      }
     }
   }
   return formattedValue;

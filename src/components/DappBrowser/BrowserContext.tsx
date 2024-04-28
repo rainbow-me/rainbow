@@ -11,12 +11,14 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import ViewShot from 'react-native-view-shot';
 import WebView from 'react-native-webview';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useBrowserStore } from '@/state/browser/browserStore';
-import { AnimatedTabUrls } from './types';
 import { COLLAPSED_WEBVIEW_HEIGHT_UNSCALED, WEBVIEW_HEIGHT } from './Dimensions';
 import { BrowserWorkletsContext } from './BrowserWorkletsContext';
+import { RAINBOW_HOME } from './constants';
+import { AnimatedScreenshotData, AnimatedTabUrls } from './types';
 
 interface BrowserTabViewProgressContextType {
   tabViewProgress: SharedValue<number>;
@@ -38,10 +40,16 @@ export const BrowserTabViewProgressContextProvider = ({ children }: { children: 
   return <BrowserTabViewProgressContext.Provider value={{ tabViewProgress }}>{children}</BrowserTabViewProgressContext.Provider>;
 };
 
+interface ActiveTabRef extends WebView {
+  title?: string;
+}
+
 interface BrowserContextType {
-  activeTabRef: React.MutableRefObject<WebView | null>;
+  activeTabInfo: DerivedValue<{ isGoogleSearch: boolean; isOnHomepage: boolean; tabId: string; url: string }>;
+  activeTabRef: React.MutableRefObject<ActiveTabRef | null>;
   animatedActiveTabIndex: SharedValue<number>;
   animatedMultipleTabsOpen: DerivedValue<number>;
+  animatedScreenshotData: SharedValue<AnimatedScreenshotData>;
   animatedTabUrls: SharedValue<AnimatedTabUrls>;
   animatedWebViewHeight: DerivedValue<number>;
   currentlyBeingClosedTabIds: SharedValue<string[]>;
@@ -53,6 +61,7 @@ interface BrowserContextType {
   searchViewProgress: SharedValue<number>;
   tabViewProgress: SharedValue<number>;
   tabViewVisible: SharedValue<boolean>;
+  screenshotCaptureRef: React.MutableRefObject<ViewShot | null>;
   goBack: () => void;
   goForward: () => void;
   goToUrl: (url: string, tabId?: string) => void;
@@ -74,23 +83,38 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
   const workletsContext = useContext(BrowserWorkletsContext);
 
   const animatedActiveTabIndex = useSharedValue(useBrowserStore.getState().activeTabIndex);
+  const animatedScreenshotData = useSharedValue<AnimatedScreenshotData>({});
   const animatedTabUrls = useSharedValue<AnimatedTabUrls>(useBrowserStore.getState().persistedTabUrls);
-  const currentlyBeingClosedTabIds = useSharedValue<string[]>([]);
 
   // We use the currentlyOpenTabIds shared value as an always-up-to-date source of truth for which tabs
   // are open at any given moment, inclusive of any pending tab operations. This gives us real-time access
   // to the most up-to-date tab layout. It's kept in sync with the zustand store by useSyncSharedValue.
   const currentlyOpenTabIds = useSharedValue(useBrowserStore.getState().tabIds);
+  const currentlyBeingClosedTabIds = useSharedValue<string[]>([]);
 
   const loadProgress = useSharedValue(0);
   const searchViewProgress = useSharedValue(0);
   const tabViewVisible = useSharedValue(false);
 
-  const activeTabRef = useRef<WebView | null>(null);
+  const activeTabRef = useRef<ActiveTabRef | null>(null);
+  const screenshotCaptureRef = useRef<ViewShot | null>(null);
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
   const scrollViewOffset = useScrollViewOffset(scrollViewRef);
 
   const goToPage = useBrowserStore(state => state.goToPage);
+
+  const activeTabInfo = useDerivedValue(() => {
+    const activeTabId = currentlyOpenTabIds.value[animatedActiveTabIndex.value];
+    const url = animatedTabUrls.value[activeTabId] || RAINBOW_HOME;
+    const isGoogleSearch = url.includes('google.com/search');
+    const isOnHomepage = url === RAINBOW_HOME;
+    return {
+      isGoogleSearch,
+      isOnHomepage,
+      tabId: activeTabId,
+      url,
+    };
+  });
 
   const multipleTabsOpen = useDerivedValue(() => {
     return currentlyOpenTabIds.value.length > 1;
@@ -98,11 +122,11 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
 
   const animatedMultipleTabsOpen = useDerivedValue(() => {
     return withTiming(multipleTabsOpen.value ? 1 : 0, TIMING_CONFIGS.tabPressConfig);
-  }, [multipleTabsOpen.value]);
+  });
 
   const animatedWebViewHeight = useDerivedValue(() => {
     return interpolate(tabViewProgress.value, [0, 100], [WEBVIEW_HEIGHT, COLLAPSED_WEBVIEW_HEIGHT_UNSCALED], 'clamp');
-  }, [tabViewProgress.value]);
+  });
 
   const goBack = useCallback(() => {
     if (activeTabRef.current) {
@@ -135,15 +159,18 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
   return (
     <BrowserContext.Provider
       value={{
+        activeTabInfo,
         activeTabRef,
         animatedActiveTabIndex,
         animatedMultipleTabsOpen,
+        animatedScreenshotData,
         animatedTabUrls,
         animatedWebViewHeight,
         currentlyBeingClosedTabIds,
         currentlyOpenTabIds,
         loadProgress,
         multipleTabsOpen,
+        screenshotCaptureRef,
         scrollViewOffset,
         scrollViewRef,
         searchViewProgress,

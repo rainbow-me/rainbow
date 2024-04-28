@@ -11,8 +11,8 @@ import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { useFavoriteDappsStore } from '@/state/favoriteDapps';
 import { TrendingSite, trendingDapps } from '@/resources/trendingDapps/trendingDapps';
-import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
-import MaskedView from '@react-native-masked-view/masked-view';
+// import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
+// import MaskedView from '@react-native-masked-view/masked-view';
 import { Site, useBrowserHistoryStore } from '@/state/browserHistory';
 import { getDappHost } from './handleProviderRequest';
 import { uniqBy } from 'lodash';
@@ -46,13 +46,11 @@ export const Homepage = React.memo(function Homepage() {
         contentContainerStyle={styles.scrollViewContainer}
         showsVerticalScrollIndicator={false}
       >
-        {/* <Animated.View entering={FadeIn.duration(160)}> */}
         <Stack space="44px">
           <Trending goToUrl={goToUrl} />
           <Favorites goToUrl={goToUrl} />
           <Recents goToUrl={goToUrl} />
         </Stack>
-        {/* </Animated.View> */}
       </ScrollView>
     </View>
   );
@@ -347,10 +345,11 @@ export const Logo = React.memo(function Logo({ goToUrl, site }: { goToUrl: (url:
             )}
           </Box>
           <Bleed bottom="10px" horizontal="8px">
-            <MaskedView
+            {/* <MaskedView
               maskElement={<FadeMask fadeEdgeInset={0} fadeWidth={12} side="right" />}
               style={{ width: LOGO_SIZE + LOGO_LABEL_SPILLOVER * 2 }}
-            >
+            > */}
+            <Box width={{ custom: LOGO_SIZE + LOGO_LABEL_SPILLOVER * 2 }}>
               <Text
                 size="13pt"
                 numberOfLines={1}
@@ -362,7 +361,8 @@ export const Logo = React.memo(function Logo({ goToUrl, site }: { goToUrl: (url:
               >
                 {site.name}
               </Text>
-            </MaskedView>
+            </Box>
+            {/* </MaskedView> */}
           </Bleed>
         </Stack>
       </ButtonPressAnimation>

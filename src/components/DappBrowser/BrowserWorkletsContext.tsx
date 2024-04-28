@@ -3,7 +3,7 @@ import { runOnJS, useAnimatedReaction, useSharedValue, withSpring } from 'react-
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { useBrowserContext, useBrowserTabViewProgressContext } from './BrowserContext';
-import { TabOperation } from './types';
+import { ScreenshotType, TabOperation } from './types';
 import { generateUniqueIdWorklet, normalizeUrlWorklet } from './utils';
 import { deepEqualWorklet } from '@/worklets/comparisons';
 
@@ -11,6 +11,7 @@ interface BrowserWorkletsContextType {
   closeAllTabsWorklet: () => void;
   closeTabWorklet: (tabId: string, tabIndex: number) => void;
   newTabWorklet: (newTabUrl?: string) => void;
+  setScreenshotDataWorklet: (screenshotData: ScreenshotType) => void;
   toggleTabViewWorklet: (activeIndex?: number) => void;
   updateTabUrlWorklet: (url: string, tabId?: string) => void;
 }
@@ -26,7 +27,14 @@ export const useBrowserWorkletsContext = () => {
 };
 
 export const BrowserWorkletsContextProvider = ({ children }: { children: React.ReactNode }) => {
-  const { animatedActiveTabIndex, animatedTabUrls, currentlyBeingClosedTabIds, currentlyOpenTabIds, tabViewVisible } = useBrowserContext();
+  const {
+    animatedActiveTabIndex,
+    animatedScreenshotData,
+    animatedTabUrls,
+    currentlyBeingClosedTabIds,
+    currentlyOpenTabIds,
+    tabViewVisible,
+  } = useBrowserContext();
   const { tabViewProgress } = useBrowserTabViewProgressContext();
 
   const shouldBlockOperationQueue = useSharedValue(false);
@@ -147,11 +155,9 @@ export const BrowserWorkletsContextProvider = ({ children }: { children: React.R
         }
       }
 
-      if (tabViewProgress !== undefined) {
-        tabViewProgress.value = willTabViewBecomeVisible
-          ? withSpring(100, SPRING_CONFIGS.browserTabTransition)
-          : withSpring(0, SPRING_CONFIGS.browserTabTransition);
-      }
+      tabViewProgress.value = willTabViewBecomeVisible
+        ? withSpring(100, SPRING_CONFIGS.browserTabTransition)
+        : withSpring(0, SPRING_CONFIGS.browserTabTransition);
 
       tabViewVisible.value = willTabViewBecomeVisible;
     },
@@ -246,6 +252,14 @@ export const BrowserWorkletsContextProvider = ({ children }: { children: React.R
     toggleTabViewWorklet,
   ]);
 
+  const setScreenshotDataWorklet = useCallback(
+    (screenshotData: ScreenshotType) => {
+      'worklet';
+      animatedScreenshotData.modify(existingData => ({ ...existingData, [screenshotData.id]: screenshotData }));
+    },
+    [animatedScreenshotData]
+  );
+
   const updateTabUrlWorklet = useCallback(
     (url: string, tabId?: string) => {
       'worklet';
@@ -289,7 +303,7 @@ export const BrowserWorkletsContextProvider = ({ children }: { children: React.R
 
   return (
     <BrowserWorkletsContext.Provider
-      value={{ closeAllTabsWorklet, closeTabWorklet, newTabWorklet, toggleTabViewWorklet, updateTabUrlWorklet }}
+      value={{ closeAllTabsWorklet, closeTabWorklet, newTabWorklet, setScreenshotDataWorklet, toggleTabViewWorklet, updateTabUrlWorklet }}
     >
       {children}
     </BrowserWorkletsContext.Provider>

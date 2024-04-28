@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
-import MaskedView from '@react-native-masked-view/masked-view';
-import { AnimatedText, Bleed, Box, Cover, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import { NativeSyntheticEvent, StyleSheet, TextInput, TextInputSubmitEditingEventData, View } from 'react-native';
+// import MaskedView from '@react-native-masked-view/masked-view';
+import { AnimatedText, Box, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import Animated, {
   AnimatedRef,
   AnimatedStyle,
@@ -14,38 +15,32 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import Input from '@/components/inputs/Input';
-import * as i18n from '@/languages';
-import { NativeSyntheticEvent, StyleSheet, TextInput, TextInputSubmitEditingEventData, View } from 'react-native';
-import { ToolbarIcon } from '../ToolbarIcon';
-import { IS_IOS } from '@/env';
-import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/utils/swaps';
-import { BrowserButtonShadows } from '../DappBrowserShadows';
-import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
-import font from '@/styles/fonts';
-import { fontWithWidth } from '@/styles';
+import { AnimatedBlurView } from '@/components/AnimatedComponents/AnimatedBlurView';
+import { AnimatedInput } from '@/components/AnimatedComponents/AnimatedInput';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { AnimatedBlurView } from '@/__swaps__/screens/Swap/components/AnimatedBlurView';
-import haptics from '@/utils/haptics';
-import { useFavoriteDappsStore } from '@/state/favoriteDapps';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { getNameFromFormattedUrl, handleShareUrl } from '../utils';
+import { IS_IOS } from '@/env';
+import * as i18n from '@/languages';
+import { fontWithWidth } from '@/styles';
+import font from '@/styles/fonts';
 import { Site } from '@/state/browserHistory';
-import { useBrowserContext } from '../BrowserContext';
-import { RAINBOW_HOME } from '../constants';
 import { useBrowserStore } from '@/state/browser/browserStore';
-
-Animated.addWhitelistedNativeProps({ text: true });
-const AnimatedInput = Animated.createAnimatedComponent(Input);
+import { useFavoriteDappsStore } from '@/state/favoriteDapps';
+import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
+import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+// import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
+import { opacity } from '@/__swaps__/utils/swaps';
+import haptics from '@/utils/haptics';
+import { useBrowserContext } from '../BrowserContext';
+import { BrowserButtonShadows } from '../DappBrowserShadows';
+import { ToolbarIcon } from '../ToolbarIcon';
+import { RAINBOW_HOME } from '../constants';
+import { getNameFromFormattedUrl, handleShareUrl } from '../utils';
 
 const SEARCH_PLACEHOLDER_TEXT = i18n.t(i18n.l.dapp_browser.address_bar.input_placeholder);
 
 export const SearchInput = React.memo(function SearchInput({
   inputRef,
-  isGoogleSearch,
-  isHome,
   onPressWorklet,
   onBlur,
   onSubmitEditing,
@@ -55,8 +50,6 @@ export const SearchInput = React.memo(function SearchInput({
   canGoForward,
 }: {
   inputRef: AnimatedRef<TextInput>;
-  isGoogleSearch: boolean;
-  isHome: boolean;
   onPressWorklet: () => void;
   onBlur: () => void;
   onSubmitEditing: (currentUrl: string | undefined, updatedUrl: string) => void;
@@ -65,20 +58,13 @@ export const SearchInput = React.memo(function SearchInput({
   canGoBack: boolean;
   canGoForward: boolean;
 }) {
-  const { animatedActiveTabIndex, animatedTabUrls, currentlyOpenTabIds, goBack, goForward, onRefresh, tabViewProgress } =
-    useBrowserContext();
+  const { activeTabInfo, goBack, goForward, onRefresh, tabViewProgress } = useBrowserContext();
 
   const addFavorite = useFavoriteDappsStore(state => state.addFavorite);
-  // const currentUrl = animatedTabUrls.value[currentlyOpenTabIds.value[Math.abs(animatedActiveTabIndex.value)]];
   const removeFavorite = useFavoriteDappsStore(state => state.removeFavorite);
 
-  const logoUrl = useBrowserStore(state => state.getActiveTabLogo());
-
   const formattedUrlValue = useDerivedValue(() => {
-    const tabIndex = Math.abs(animatedActiveTabIndex.value);
-    const tabId = currentlyOpenTabIds.value[tabIndex];
-    const url = animatedTabUrls.value[tabId];
-
+    const url = activeTabInfo.value.url;
     if (!url || url === RAINBOW_HOME) return SEARCH_PLACEHOLDER_TEXT;
 
     return formatUrlForSearchInput(url, true);
@@ -88,13 +74,18 @@ export const SearchInput = React.memo(function SearchInput({
     pointerEvents: tabViewProgress.value / 100 < 1 ? 'auto' : 'none',
   }));
 
-  const toolbarIconStyle = useAnimatedStyle(() => ({
-    opacity:
-      isHome || isFocusedValue.value || formattedUrlValue.value === SEARCH_PLACEHOLDER_TEXT
-        ? withTiming(0, TIMING_CONFIGS.fadeConfig)
-        : withSpring(1, SPRING_CONFIGS.keyboardConfig),
-    pointerEvents: isHome || isFocusedValue.value || !formattedUrlValue.value ? 'none' : 'auto',
-  }));
+  const toolbarIconStyle = useAnimatedStyle(() => {
+    const url = activeTabInfo.value.url;
+    const isHome = !url || url === RAINBOW_HOME;
+
+    return {
+      opacity:
+        isHome || isFocusedValue.value || formattedUrlValue.value === SEARCH_PLACEHOLDER_TEXT
+          ? withTiming(0, TIMING_CONFIGS.fadeConfig)
+          : withSpring(1, SPRING_CONFIGS.keyboardConfig),
+      pointerEvents: isHome || isFocusedValue.value || !formattedUrlValue.value ? 'none' : 'auto',
+    };
+  });
 
   const isFavorite = useFavoriteDappsStore(state => state.isFavorite(formattedUrlValue.value));
 
@@ -108,12 +99,12 @@ export const SearchInput = React.memo(function SearchInput({
         const site: Omit<Site, 'timestamp'> = {
           name: getNameFromFormattedUrl(formattedUrlValue.value),
           url: url,
-          image: logoUrl || `https://${formattedUrlValue.value}/apple-touch-icon.png`,
+          image: useBrowserStore.getState().getActiveTabLogo() || `https://${formattedUrlValue.value}/apple-touch-icon.png`,
         };
         addFavorite(site);
       }
     }
-  }, [addFavorite, formattedUrlValue, isFavorite, logoUrl, removeFavorite]);
+  }, [addFavorite, formattedUrlValue, isFavorite, removeFavorite]);
 
   const menuConfig = useMemo(
     () => ({
@@ -127,7 +118,7 @@ export const SearchInput = React.memo(function SearchInput({
             iconValue: 'square.and.arrow.up',
           },
         },
-        !isGoogleSearch
+        !activeTabInfo.value.isGoogleSearch
           ? {
               actionKey: 'favorite',
               actionTitle: isFavorite ? 'Undo Favorite' : 'Favorite',
@@ -160,7 +151,7 @@ export const SearchInput = React.memo(function SearchInput({
       ],
     }),
 
-    [canGoBack, canGoForward, isFavorite, isGoogleSearch]
+    [activeTabInfo, canGoBack, canGoForward, isFavorite]
   );
 
   const onPressMenuItem = async ({
@@ -176,7 +167,7 @@ export const SearchInput = React.memo(function SearchInput({
     } else if (actionKey === 'forward') {
       goForward();
     } else {
-      const url = animatedTabUrls.value[currentlyOpenTabIds.value[Math.abs(animatedActiveTabIndex.value)]];
+      const url = activeTabInfo.value.url;
       if (url) handleShareUrl(url);
     }
   };
@@ -235,7 +226,7 @@ const AddressBar = React.memo(function AddressBar({
   onSubmitEditing: (currentUrl: string | undefined, updatedUrl: string) => void;
   pointerEventsStyle: AnimatedStyle;
 }) {
-  const { animatedActiveTabIndex, animatedTabUrls, currentlyOpenTabIds } = useBrowserContext();
+  const { activeTabInfo } = useBrowserContext();
   const { isDarkMode } = useColorMode();
 
   const fillSecondary = useForegroundColor('fillSecondary');
@@ -265,26 +256,22 @@ const AddressBar = React.memo(function AddressBar({
   }));
 
   const searchInputValue = useAnimatedProps(() => {
-    const activeTabId = currentlyOpenTabIds.value[Math.abs(animatedActiveTabIndex.value)];
-    const activeTabUrl = animatedTabUrls.value[activeTabId] || undefined;
-    const urlOrSearchQuery = formatUrlForSearchInput(activeTabUrl);
+    const urlOrSearchQuery = formatUrlForSearchInput(activeTabInfo.value.url);
 
     // Removing the value when the input is focused allows the input to be reset to the correct value on blur
     const url = isFocusedValue.value ? undefined : urlOrSearchQuery;
 
-    return { text: url };
+    return { defaultValue: urlOrSearchQuery, text: url };
   });
 
   const updateUrl = useCallback(
     (newUrl: string) => {
       'worklet';
-      const tabId = currentlyOpenTabIds.value[Math.abs(animatedActiveTabIndex.value)];
-      const currentTabUrl = animatedTabUrls.value[tabId];
       if (newUrl) {
-        onSubmitEditing(currentTabUrl, newUrl);
+        onSubmitEditing(activeTabInfo.value.url, newUrl);
       }
     },
-    [animatedActiveTabIndex, animatedTabUrls, currentlyOpenTabIds, onSubmitEditing]
+    [activeTabInfo, onSubmitEditing]
   );
 
   const handlePressGo = useCallback(
@@ -325,7 +312,6 @@ const AddressBar = React.memo(function AddressBar({
         ]}
         textAlign="left"
         textAlignVertical="center"
-        // @ts-expect-error — 'text' is the only way to set the value of the input with a shared value
         animatedProps={searchInputValue}
       />
       {/* <MaskedView
@@ -406,7 +392,7 @@ function extractQueryParam(url: string, param: string) {
 
 function formatUrlForSearchInput(url: string | undefined, prettifyUrl?: boolean) {
   'worklet';
-  if (!url || url === '') return '';
+  if (!url || url === '' || url === RAINBOW_HOME) return '';
 
   const isGoogleSearch = url.includes('google.com/search');
   let formattedUrl = url;

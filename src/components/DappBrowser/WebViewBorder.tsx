@@ -5,21 +5,18 @@ import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { Cover, globalColors } from '@/design-system';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { WEBVIEW_HEIGHT } from './Dimensions';
+import { WEBVIEW_HEIGHT, ZOOMED_TAB_BORDER_RADIUS } from './Dimensions';
+import { useBrowserContext } from './BrowserContext';
 
 export const WebViewBorder = React.memo(function WebViewBorder({
   animatedTabIndex,
-  animatedActiveTabIndex,
   enabled,
-  tabViewProgress,
-  tabViewVisible,
 }: {
   animatedTabIndex: SharedValue<number>;
-  animatedActiveTabIndex: SharedValue<number>;
   enabled?: boolean;
-  tabViewProgress: SharedValue<number>;
-  tabViewVisible: SharedValue<boolean>;
 }) {
+  const { animatedActiveTabIndex, tabViewProgress, tabViewVisible } = useBrowserContext();
+
   const webViewBorderStyle = useAnimatedStyle(() => {
     if (!enabled) {
       return {
@@ -29,7 +26,7 @@ export const WebViewBorder = React.memo(function WebViewBorder({
 
     const animatedIsActiveTab = animatedActiveTabIndex.value === animatedTabIndex.value;
 
-    const borderRadius = interpolate(tabViewProgress.value, [0, 100], [animatedIsActiveTab ? 16 : 30, 30], 'clamp');
+    const borderRadius = interpolate(tabViewProgress.value, [0, 100], [animatedIsActiveTab ? ZOOMED_TAB_BORDER_RADIUS : 30, 30], 'clamp');
     const opacity = 1 - tabViewProgress.value / 100;
 
     return {

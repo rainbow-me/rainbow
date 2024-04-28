@@ -54,3 +54,67 @@ export const getWebsiteMetadata = `
   window.ReactNativeWebView.postMessage(JSON.stringify(websiteMetadata));
   true;
   `;
+
+export const freezeWebsite = `(function() {
+    // Pause media elements
+    var mediaElements = document.querySelectorAll('video, audio');
+    mediaElements.forEach(function(element) {
+      element.pause();
+    });
+  
+    // Suspend expensive animations and transitions
+    var animatedElements = document.querySelectorAll('*[style*="animation"], *[style*="transition"]');
+    animatedElements.forEach(function(element) {
+      element.style.animationPlayState = 'paused';
+      element.style.transitionProperty = 'none';
+    });
+  
+    // Disable expensive CSS properties
+    var expensiveElements = document.querySelectorAll('*[style*="filter"], *[style*="transform"], *[style*="opacity"], *[style*="box-shadow"]');
+    expensiveElements.forEach(function(element) {
+      element.style.filter = 'none';
+      element.style.transform = 'none';
+      element.style.opacity = '1';
+      element.style.boxShadow = 'none';
+    });
+  
+    // Suspend expensive JavaScript operations
+    var originalSetTimeout = window.setTimeout;
+    var originalSetInterval = window.setInterval;
+    var originalRequestAnimationFrame = window.requestAnimationFrame;
+    window.setTimeout = function() {};
+    window.setInterval = function() {};
+    window.requestAnimationFrame = function() {};
+    window.__originalSetTimeout = originalSetTimeout;
+    window.__originalSetInterval = originalSetInterval;
+    window.__originalRequestAnimationFrame = originalRequestAnimationFrame;
+  })();`;
+
+export const unfreezeWebsite = `(function() {
+    // Resume media elements
+    var mediaElements = document.querySelectorAll('video, audio');
+    mediaElements.forEach(function(element) {
+      element.play();
+    });
+  
+    // Resume animations and transitions
+    var animatedElements = document.querySelectorAll('*[style*="animation"], *[style*="transition"]');
+    animatedElements.forEach(function(element) {
+      element.style.animationPlayState = 'running';
+      element.style.transitionProperty = '';
+    });
+  
+    // Restore expensive CSS properties
+    var expensiveElements = document.querySelectorAll('*[style*="filter"], *[style*="transform"], *[style*="opacity"], *[style*="box-shadow"]');
+    expensiveElements.forEach(function(element) {
+      element.style.filter = '';
+      element.style.transform = '';
+      element.style.opacity = '';
+      element.style.boxShadow = '';
+    });
+  
+    // Resume expensive JavaScript operations
+    window.setTimeout = window.__originalSetTimeout;
+    window.setInterval = window.__originalSetInterval;
+    window.requestAnimationFrame = window.__originalRequestAnimationFrame;
+  })();`;

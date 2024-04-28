@@ -1,29 +1,27 @@
-import { ButtonPressAnimation } from '@/components/animations';
+// import { ButtonPressAnimation } from '@/components/animations';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { Box, Inline, Inset, Stack, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
+import { globalColors, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
 // import { GetdAppsQuery } from '@/graphql/__generated__/metadata';
 import { useKeyboardHeight } from '@/hooks';
-import * as i18n from '@/languages';
+// import * as i18n from '@/languages';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 // import { useDapps } from '@/resources/metadata/dapps';
 // import { filterList } from '@/utils';
 // import { rankings } from 'match-sorter';
 import React, { useCallback, useState } from 'react';
-import { NativeSyntheticEvent, StyleSheet, TextInput, TextInputChangeEventData, TextInputSubmitEditingEventData, View } from 'react-native';
+import { StyleSheet, TextInput, View } from 'react-native';
 import Animated, {
-  SharedValue,
   dispatchCommand,
   interpolate,
   runOnJS,
-  runOnUI,
   useAnimatedRef,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
 import { useBrowserContext } from '../BrowserContext';
-import { GOOGLE_SEARCH_URL, HTTP, HTTPS, RAINBOW_HOME } from '../constants';
+import { GOOGLE_SEARCH_URL, HTTP, HTTPS } from '../constants';
 import { AccountIcon } from '../search-input/AccountIcon';
 import { SearchInput } from '../search-input/SearchInput';
 import { TabButton } from '../search-input/TabButton';
@@ -113,9 +111,7 @@ export const Search = React.memo(function Search() {
   const onAddressInputPressWorklet = useCallback(() => {
     'worklet';
     isFocusedValue.value = true;
-    if (searchViewProgress !== undefined) {
-      searchViewProgress.value = withSpring(1, SPRING_CONFIGS.snappierSpringConfig);
-    }
+    searchViewProgress.value = withSpring(1, SPRING_CONFIGS.snappierSpringConfig);
     runOnJS(setIsFocused)(true);
     dispatchCommand(inputRef, 'focus');
   }, [inputRef, isFocusedValue, searchViewProgress]);
@@ -125,9 +121,7 @@ export const Search = React.memo(function Search() {
     // setBasicSearchResults([]);
     // setSearchQuery(inputValue ?? '');
     runOnJS(setIsFocused)(false);
-    if (searchViewProgress !== undefined) {
-      searchViewProgress.value = withSpring(0, SPRING_CONFIGS.snappierSpringConfig);
-    }
+    searchViewProgress.value = withSpring(0, SPRING_CONFIGS.snappierSpringConfig);
     isFocusedValue.value = false;
   }, [isFocusedValue, searchViewProgress]);
 
@@ -215,8 +209,9 @@ export const Search = React.memo(function Search() {
       </Animated.View>
       <Animated.View style={[bottomBarStyle, styles.bottomBarStyle]}>
         <Animated.View style={[styles.barStyle, barStyle, expensiveBarStyles]}>
-          <Animated.View style={[accountIconStyle, styles.accountIcon]}>
+          <Animated.View style={[accountIconStyle, styles.controlPanelButton /* , styles.accountIcon */]}>
             <AccountIcon />
+            {/* <ControlPanelButton /> */}
           </Animated.View>
 
           <View style={styles.searchInputContainer}>
@@ -226,9 +221,7 @@ export const Search = React.memo(function Search() {
               onPressWorklet={onAddressInputPressWorklet}
               isFocused={isFocused}
               isFocusedValue={isFocusedValue}
-              isGoogleSearch={false}
               inputRef={inputRef}
-              isHome={false}
               onBlur={onBlur}
               onSubmitEditing={handleUrlSubmit}
             />

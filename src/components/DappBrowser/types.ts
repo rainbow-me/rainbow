@@ -1,9 +1,9 @@
-import React from 'react';
 import { Site } from '@/state/browserHistory';
 
 export type TabId = string;
 export type TabData = { logoUrl?: string; title?: string; url?: string };
 
+export type AnimatedScreenshotData = Record<TabId, ScreenshotType | undefined>;
 export type AnimatedTabUrls = Record<TabId, string>;
 
 export type TabOperationType = 'newTab' | 'closeTab';
@@ -27,7 +27,7 @@ export type TabOperation = CloseTabOperation | NewTabOperation;
 
 export interface BrowserTabProps {
   addRecent: (site: Site) => void;
-  injectedJS: React.MutableRefObject<string | null>;
+  injectedJS: string;
   setLogo: (logoUrl: string, tabId: string) => void;
   setTitle: (title: string, tabId: string) => void;
   tabId: string;

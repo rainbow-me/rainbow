@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { InteractionManager, StyleSheet } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import RNFS from 'react-native-fs';
 import Animated, {
   interpolateColor,
   useAnimatedProps,
@@ -9,38 +9,26 @@ import Animated, {
   useDerivedValue,
   withTiming,
 } from 'react-native-reanimated';
-import RNFS from 'react-native-fs';
-
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Page } from '@/components/layout';
 import { Box, globalColors, useColorMode } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
+import { useBrowserStore } from '@/state/browser/browserStore';
+import { useBrowserHistoryStore } from '@/state/browserHistory';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
+import { AnimatedScrollView } from '../AnimatedComponents/AnimatedScrollView';
 import { BrowserContextProvider, useBrowserContext } from './BrowserContext';
 import { BrowserTab } from './BrowserTab';
-import { TAB_VIEW_ROW_HEIGHT } from './Dimensions';
-import { Search } from './search/Search';
-import { TabViewToolbar } from './TabViewToolbar';
-import { ProgressBar } from './ProgressBar';
-import { RouteProp, useRoute } from '@react-navigation/native';
-import { TIMING_CONFIGS } from '../animations/animationConfigs';
 import { BrowserWorkletsContextProvider, useBrowserWorkletsContext } from './BrowserWorkletsContext';
-import { pruneScreenshots } from './screenshots';
+import { TAB_VIEW_ROW_HEIGHT } from './Dimensions';
+import { ProgressBar } from './ProgressBar';
+import { TabViewToolbar } from './TabViewToolbar';
 import { BrowserGestureBlocker } from './components/BrowserGestureBlocker';
-import { useBrowserHistoryStore } from '@/state/browserHistory';
-import { useBrowserStore } from '@/state/browser/browserStore';
-
-const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
-
-const getInjectedJS = async () => {
-  const baseDirectory = IS_ANDROID ? RNFS.DocumentDirectoryPath : RNFS.MainBundlePath;
-
-  if (IS_ANDROID) {
-    return RNFS.readFileRes('injected_js_bundle.js', 'utf8');
-  } else {
-    return RNFS.readFile(`${baseDirectory}/InjectedJSBundle.js`, 'utf8');
-  }
-};
+import { useScreenshotAndScrollTriggers } from './hooks/useScreenshotAndScrollTriggers';
+import { pruneScreenshots } from './screenshots';
+import { Search } from './search/Search';
 
 export type DappBrowserParams = {
   url: string;
@@ -50,57 +38,8 @@ type RouteParams = {
   DappBrowserParams: DappBrowserParams;
 };
 
-const DappBrowserComponent = () => {
-  const { newTabWorklet } = useBrowserWorkletsContext();
-
-  const injectedJS = useRef('');
-  const route = useRoute<RouteProp<RouteParams, 'DappBrowserParams'>>();
-
-  useAnimatedReaction(
-    () => route.params?.url,
-    (current, previous) => {
-      if (current !== previous && route.params?.url) {
-        newTabWorklet(current);
-      }
-    },
-    [newTabWorklet, route.params?.url]
-  );
-
-  useEffect(() => {
-    const loadInjectedJS = async () => {
-      try {
-        injectedJS.current = await getInjectedJS();
-      } catch (e) {
-        console.log('error', e);
-      }
-    };
-    loadInjectedJS();
-  }, []);
-
-  useEffect(() => {
-    // Delay pruning screenshots until after the tab states have been updated
-    InteractionManager.runAfterInteractions(() => {
-      pruneScreenshots(useBrowserStore.getState().tabsData);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  return (
-    <>
-      <TabViewBackground />
-      <TabViewScrollView>
-        <TabViewContent injectedJS={injectedJS} />
-      </TabViewScrollView>
-      <ProgressBar />
-      <TabViewToolbar />
-      <Search />
-    </>
-  );
-};
-
 export const DappBrowser = () => {
   const { isDarkMode } = useColorMode();
-
   return (
     <BrowserGestureBlocker>
       <Box as={Page} height="full" style={isDarkMode ? styles.rootViewBackground : styles.rootViewBackgroundLight} width="full">
@@ -114,15 +53,59 @@ export const DappBrowser = () => {
   );
 };
 
+const DappBrowserComponent = () => {
+  useScreenshotAndScrollTriggers();
+  useScreenshotPruner();
+
+  return (
+    <>
+      <NewTabTrigger />
+      <TabViewBackground />
+      <TabViewScrollView>
+        <TabViewContent />
+      </TabViewScrollView>
+      <ProgressBar />
+      <TabViewToolbar />
+      <Search />
+    </>
+  );
+};
+
+const NewTabTrigger = () => {
+  const { newTabWorklet } = useBrowserWorkletsContext();
+  const route = useRoute<RouteProp<RouteParams, 'DappBrowserParams'>>();
+
+  useAnimatedReaction(
+    () => route.params?.url,
+    (current, previous) => {
+      if (current !== previous && route.params?.url) {
+        newTabWorklet(current);
+      }
+    },
+    [newTabWorklet, route.params?.url]
+  );
+
+  return null;
+};
+
+function useScreenshotPruner() {
+  useEffect(() => {
+    // Delay pruning screenshots until after the tab states have been updated
+    InteractionManager.runAfterInteractions(() => {
+      pruneScreenshots(useBrowserStore.getState().tabsData);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+}
+
 const TabViewBackground = () => {
   const { tabViewProgress } = useBrowserContext();
   const { isDarkMode } = useColorMode();
 
   const backgroundStyle = useAnimatedStyle(() => {
-    const progress = tabViewProgress.value;
     return {
       backgroundColor: interpolateColor(
-        progress,
+        tabViewProgress.value,
         [0, 100],
         [isDarkMode ? globalColors.grey100 : '#FBFCFD', isDarkMode ? '#0A0A0A' : '#FBFCFD']
       ),
@@ -156,14 +139,15 @@ const TabViewScrollView = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-const TabViewContent = React.memo(function TabViewContent({ injectedJS }: { injectedJS: React.MutableRefObject<string | null> }) {
+const TabViewContent = React.memo(function TabViewContent() {
   const { currentlyBeingClosedTabIds, currentlyOpenTabIds } = useBrowserContext();
+  const { injectedJS } = useInjectJSBundle();
 
-  const tabIds = useBrowserStore(state => state.getTabIds());
-  const setTabIds = useBrowserStore(state => state.setTabIds);
-  const setLogo = useBrowserStore(state => state.setLogo);
-  const setTitle = useBrowserStore(state => state.setTitle);
+  const tabIds = useBrowserStore(state => state.tabIds);
   const addRecent = useBrowserHistoryStore(state => state.addRecent);
+  const setLogo = useBrowserStore(state => state.setLogo);
+  const setTabIds = useBrowserStore(state => state.setTabIds);
+  const setTitle = useBrowserStore(state => state.setTitle);
 
   const areTabCloseAnimationsRunning = useDerivedValue(() => currentlyBeingClosedTabIds.value.length > 0);
 
@@ -177,12 +161,40 @@ const TabViewContent = React.memo(function TabViewContent({ injectedJS }: { inje
 
   return (
     <>
-      {tabIds.map(tabId => (
-        <BrowserTab addRecent={addRecent} injectedJS={injectedJS} key={tabId} setLogo={setLogo} setTitle={setTitle} tabId={tabId} />
-      ))}
+      {injectedJS &&
+        tabIds.map(tabId => (
+          <BrowserTab addRecent={addRecent} injectedJS={injectedJS} key={tabId} setLogo={setLogo} setTitle={setTitle} tabId={tabId} />
+        ))}
     </>
   );
 });
+
+const getInjectedJS = async () => {
+  const baseDirectory = IS_ANDROID ? RNFS.DocumentDirectoryPath : RNFS.MainBundlePath;
+
+  if (IS_ANDROID) {
+    return RNFS.readFileRes('injected_js_bundle.js', 'utf8');
+  } else {
+    return RNFS.readFile(`${baseDirectory}/InjectedJSBundle.js`, 'utf8');
+  }
+};
+
+function useInjectJSBundle() {
+  const [injectedJS, setInjectedJS] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    const loadInjectedJS = async () => {
+      try {
+        setInjectedJS(await getInjectedJS());
+      } catch (e) {
+        console.log('error', e);
+      }
+    };
+    loadInjectedJS();
+  }, []);
+
+  return { injectedJS };
+}
 
 const styles = StyleSheet.create({
   rootViewBackground: {

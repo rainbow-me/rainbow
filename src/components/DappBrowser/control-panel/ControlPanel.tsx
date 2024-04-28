@@ -1,6 +1,6 @@
 import chroma from 'chroma-js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import Animated, { SharedValue, runOnJS, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
@@ -51,6 +51,7 @@ import { handleDappBrowserConnectionPrompt } from '@/utils/requestNavigationHand
 import { useAppSessionsStore } from '@/state/appSessions';
 import { RainbowError, logger } from '@/logger';
 import WebView from 'react-native-webview';
+import { useNavigation } from '@/navigation';
 
 const PAGES = {
   HOME: 'home',
@@ -77,7 +78,7 @@ export const ControlPanel = () => {
   const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
   const activeTabUrl = useBrowserStore(state => state.getActiveTabUrl());
-  const activeTabHost = getDappHost(activeTabUrl as string);
+  const activeTabHost = getDappHost(activeTabUrl || '');
   const updateActiveSession = useAppSessionsStore(state => state.updateActiveSession);
   const updateActiveSessionNetwork = useAppSessionsStore(state => state.updateActiveSessionNetwork);
   const addSession = useAppSessionsStore(state => state.addSession);
@@ -182,9 +183,8 @@ export const ControlPanel = () => {
   );
 
   const handleConnect = useCallback(async () => {
-    const activeTabHost = getDappHost(activeTabUrl as string);
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
+    const activeTabHost = getDappHost(activeTabUrl || '');
+    // @ts-expect-error Property 'title' does not exist on type 'WebView<{}>'
     const name: string = activeTabRef.current?.title || activeTabHost;
 
     const response = await handleDappBrowserConnectionPrompt({
@@ -196,10 +196,9 @@ export const ControlPanel = () => {
       const connectedToNetwork = getNetworkFromChainId(response.chainId);
       addSession({
         host: activeTabHost || '',
-        // @ts-ignore
+        // @ts-expect-error Type 'string' is not assignable to type '`0x${string}`'
         address: response.address,
         network: connectedToNetwork,
-        // @ts-ignore
         url: activeTabUrl || '',
       });
 
@@ -280,9 +279,19 @@ export const ControlPanel = () => {
           </SmoothPager.Group>
         </SmoothPager>
       </Box>
+      <TapToDismiss />
     </>
   );
 };
+
+const TapToDismiss = React.memo(function TapToDismiss() {
+  const { goBack } = useNavigation();
+  return (
+    <TouchableWithoutFeedback onPress={goBack}>
+      <View style={controlPanelStyles.cover} />
+    </TouchableWithoutFeedback>
+  );
+});
 
 const getHighContrastAccentColor = (accentColor: string, isDarkMode: boolean) => {
   const contrast = chroma.contrast(accentColor, isDarkMode ? '#191A1C' : globalColors.white100);
@@ -911,6 +920,11 @@ const controlPanelStyles = StyleSheet.create({
     padding: 16,
     textShadowOffset: { height: 0, width: 0 },
     textShadowRadius: 16,
+  },
+  cover: {
+    height: '100%',
+    position: 'absolute',
+    width: '100%',
   },
   homePanel: {
     height: '100%',
