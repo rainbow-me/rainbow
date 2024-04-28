@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { isEqual } from 'lodash';
 import React, { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
 import { Freeze } from 'react-freeze';
 import { StyleSheet, View } from 'react-native';
@@ -21,7 +22,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import ViewShot from 'react-native-view-shot';
-import WebView, { WebViewMessageEvent, WebViewNavigation } from 'react-native-webview';
+import WebView, { WebViewMessageEvent, WebViewNavigation, WebViewProps } from 'react-native-webview';
 import { WebViewEvent } from 'react-native-webview/lib/WebViewTypes';
 import { appMessenger } from '@/browserMessaging/AppMessenger';
 import { useColorMode } from '@/design-system';
@@ -38,13 +39,20 @@ import DappBrowserWebview from './DappBrowserWebview';
 import { COLLAPSED_WEBVIEW_HEIGHT_UNSCALED, TAB_VIEW_COLUMN_WIDTH, TOP_INSET, WEBVIEW_HEIGHT } from './Dimensions';
 import { Homepage } from './Homepage';
 import { WebViewBorder } from './WebViewBorder';
-import { RAINBOW_HOME, DEFAULT_TAB_URL, TAB_SCREENSHOT_FILE_FORMAT, TAB_SCREENSHOT_FASTER_IMAGE_CONFIG } from './constants';
+import {
+  RAINBOW_HOME,
+  DEFAULT_TAB_URL,
+  TAB_SCREENSHOT_FILE_FORMAT,
+  TAB_SCREENSHOT_FASTER_IMAGE_CONFIG,
+  SAFARI_USER_AGENT,
+  USER_AGENT_APPLICATION_NAME,
+} from './constants';
 import { handleProviderRequestApp } from './handleProviderRequest';
 import { useAnimatedTab } from './hooks/useAnimatedTab';
 import { useTabScreenshotProvider } from './hooks/useTabScreenshotProvider';
+import { freezeWebsite, getWebsiteMetadata, unfreezeWebsite } from './scripts';
 import { BrowserTabProps, ScreenshotType } from './types';
 import { normalizeUrlForRecents } from './utils';
-import { freezeWebsite, unfreezeWebsite } from './scripts';
 
 export const BrowserTab = React.memo(function BrowserTab({ addRecent, injectedJS, setLogo, setTitle, tabId }: BrowserTabProps) {
   const { isDarkMode } = useColorMode();
@@ -381,7 +389,7 @@ const FreezableWebViewComponent = ({
 
   return (
     <Freeze freeze={!isActiveTab}>
-      <DappBrowserWebview
+      <TabWebView
         injectedJavaScriptBeforeContentLoaded={injectedJS}
         onError={handleOnError}
         onLoad={handleOnLoad}
@@ -393,13 +401,44 @@ const FreezableWebViewComponent = ({
         onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
         ref={webViewRef}
         source={{ uri: tabUrl }}
-        style={styles.webViewStyle}
       />
     </Freeze>
   );
 };
 
 const FreezableWebView = React.memo(React.forwardRef(FreezableWebViewComponent));
+
+const TabWebViewComponent = (props: WebViewProps, ref: React.Ref<WebView>) => {
+  return (
+    <DappBrowserWebview
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      {...props}
+      allowsBackForwardNavigationGestures
+      allowsInlineMediaPlayback
+      applicationNameForUserAgent={USER_AGENT_APPLICATION_NAME}
+      automaticallyAdjustContentInsets
+      automaticallyAdjustsScrollIndicatorInsets={false}
+      decelerationRate="normal"
+      fraudulentWebsiteWarningEnabled
+      injectedJavaScript={getWebsiteMetadata}
+      mediaPlaybackRequiresUserAction
+      originWhitelist={['*']}
+      ref={ref}
+      renderLoading={() => <></>}
+      style={styles.webViewStyle}
+      userAgent={SAFARI_USER_AGENT}
+      webviewDebuggingEnabled={IS_DEV}
+    />
+  );
+};
+
+const TabWebView = React.memo(React.forwardRef(TabWebViewComponent), (prevProps: WebViewProps, nextProps: WebViewProps) => {
+  // Get an array of prop names excluding `injectedJavaScriptBeforeContentLoaded`
+  const propNames = Object.keys(prevProps).filter(key => key !== 'injectedJavaScriptBeforeContentLoaded');
+
+  // Compare the filtered props using isEqual from lodash with proper type handling
+  return propNames.every(key => isEqual(prevProps[key as keyof WebViewProps], nextProps[key as keyof WebViewProps]));
+});
 
 interface TabGestureHandlerProps {
   animatedTabIndex: SharedValue<number>;
