@@ -1,29 +1,79 @@
+// ⚠️ TODO: Ensure this background color logic isn't too slow
 export const getWebsiteMetadata = `
-  const bgColor = window.getComputedStyle(document.body, null).getPropertyValue('background-color') || undefined;
+  requestAnimationFrame(() => {
+    function getActualBackgroundColor() {
+      if (document.readyState !== 'interactive' && document.readyState !== 'complete' && !document.styleSheets.length) return undefined;
 
-  const icons = Array.from(document.querySelectorAll("link[rel='apple-touch-icon'], link[rel='shortcut icon'], link[rel='icon'], link[rel='icon'][type='image/svg+xml']"));
-  let highestResIcon = { href: undefined, size: 0 };
+      const darkModeQuery = '(prefers-color-scheme: dark)';
+      const isDarkMode = window.matchMedia(darkModeQuery).matches;
 
-  for (const icon of icons) {
-    const iconHref = icon.getAttribute('href');
-    if (icon.type === 'image/svg+xml') {
-      highestResIcon = { href: iconHref, size: 1000 };
-      break;
-    } else {
-      const sizeAttribute = icon.getAttribute('sizes');
-      if (sizeAttribute) {
-        const size = Math.max(...sizeAttribute.split('x').map(num => parseInt(num, 10)));
-        if (size > highestResIcon.size) {
-          highestResIcon = { href: iconHref, size: size };
-          if (size >= 180) break;
+      if (isDarkMode) {
+        const darkModeColor = window.getComputedStyle(document.documentElement).getPropertyValue('--background-color-dark');
+        if (darkModeColor) {
+          return darkModeColor;
         }
-      } else if (icon.rel === 'apple-touch-icon') {
-        highestResIcon = { href: iconHref, size: 180 };
-      } else if (iconHref && !highestResIcon.href) {
-        highestResIcon = { href: iconHref, size: 0 };
+      } else {
+        const lightModeColor = window.getComputedStyle(document.documentElement).getPropertyValue('--background-color-light');
+        if (lightModeColor) {
+          return lightModeColor;
+        }
+      }
+
+      const traverseElement = (element, depth = 0) => {
+        const bgColor = window.getComputedStyle(element).backgroundColor;
+        if (bgColor !== 'rgba(0, 0, 0, 0)' && bgColor !== 'transparent') {
+          return bgColor;
+        }
+        if (depth >= 3) {
+          return null;
+        }
+        for (let i = 0; i < element.children.length; i++) {
+          const childColor = traverseElement(element.children[i], depth + 1);
+          if (childColor) {
+            return childColor;
+          }
+        }
+        return null;
+      };
+
+      const htmlColor = window.getComputedStyle(document.documentElement).backgroundColor;
+      if (htmlColor && htmlColor !== 'rgba(0, 0, 0, 0)' && htmlColor !== 'transparent') {
+        return htmlColor;
+      }
+      const bodyColor = window.getComputedStyle(document.body).backgroundColor;
+      if (bodyColor && bodyColor !== 'rgba(0, 0, 0, 0)' && bodyColor !== 'transparent') {
+        return bodyColor;
+      }
+
+      const traversedColor = traverseElement(document.documentElement) || traverseElement(document.body);
+      return traversedColor || '#FFFFFF';
+    }
+
+    const bgColor = getActualBackgroundColor();
+
+    const icons = Array.from(document.querySelectorAll("link[rel='apple-touch-icon'], link[rel='shortcut icon'], link[rel='icon'], link[rel='icon'][type='image/svg+xml']"));
+    let highestResIcon = { href: undefined, size: 0 };
+
+    for (const icon of icons) {
+      const iconHref = icon.getAttribute('href');
+      if (icon.type === 'image/svg+xml') {
+        highestResIcon = { href: iconHref, size: 1000 };
+        break;
+      } else {
+        const sizeAttribute = icon.getAttribute('sizes');
+        if (sizeAttribute) {
+          const size = Math.max(...sizeAttribute.split('x').map(num => parseInt(num, 10)));
+          if (size > highestResIcon.size) {
+            highestResIcon = { href: iconHref, size: size };
+            if (size >= 180) break;
+          }
+        } else if (icon.rel === 'apple-touch-icon') {
+          highestResIcon = { href: iconHref, size: 180 };
+        } else if (iconHref && !highestResIcon.href) {
+          highestResIcon = { href: iconHref, size: 0 };
+        }
       }
     }
-  }
 
   let logoUrl;
   if (highestResIcon.href) {
@@ -53,6 +103,7 @@ export const getWebsiteMetadata = `
 
   window.ReactNativeWebView.postMessage(JSON.stringify(websiteMetadata));
   true;
+  });
   `;
 
 export const freezeWebsite = `(function() {
