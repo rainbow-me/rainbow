@@ -10,6 +10,7 @@ import { RainbowConfig } from '@/model/remoteConfig';
 import { CrosschainQuote, ETH_ADDRESS, Quote, WRAPPED_ASSET } from '@rainbow-me/swaps';
 import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
 import { ParsedSearchAsset } from '../types/assets';
+import { TokenColors } from '@/graphql/__generated__/metadata';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -290,13 +291,19 @@ export const getDefaultSlippageWorklet = (chainId: ChainId, config: RainbowConfi
   );
 };
 
-export type Colors = {
-  primary?: string;
-  fallback?: string;
-  shadow?: string;
+export const extractColorValueForColors = ({ colors, isDarkMode }: { colors?: TokenColors; isDarkMode: boolean }): string => {
+  if (colors?.primary) {
+    return colors.primary;
+  }
+
+  if (colors?.fallback) {
+    return colors.fallback;
+  }
+
+  return isDarkMode ? ETH_COLOR_DARK_ACCENT : ETH_COLOR;
 };
 
-export const extractColorValueForColors = ({ colors, isDarkMode }: { colors?: Colors; isDarkMode: boolean }): string => {
+export const extractColorValueForColorsWorklet = ({ colors, isDarkMode }: { colors?: Colors; isDarkMode: boolean }): string => {
   'worklet';
 
   if (colors?.primary) {
