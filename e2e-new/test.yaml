@@ -1,19 +1,17 @@
 # flow.yaml
 
 appId: me.rainbow
-jsEngine: graaljs
 ---
-- runScript:
-    file: ./start-msw.js
-
 - launchApp:
     appId: me.rainbow
     clearState: true
     clearKeychain: true
     permissions: { all: deny }
 
-- assertVisible:
-    id: welcome-screen
+- extendedWaitUntil:
+    visible:
+      id: welcome-screen
+    timeout: 60_000 # wait for bundle
 
 - tapOn:
     id: already-have-wallet-button
