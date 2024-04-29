@@ -8,17 +8,17 @@ jsEngine: graaljs
 
 - launchApp:
     appId: me.rainbow
-    clearState: true 
-    clearKeychain: true 
+    clearState: true
+    clearKeychain: true
     permissions: { all: deny }
 
-- assertVisible: 
+- assertVisible:
     id: welcome-screen
 
 - tapOn:
     id: already-have-wallet-button
 
-- assertVisible: 
+- assertVisible:
     id: add-wallet-sheet
 
 - tapOn:
@@ -36,17 +36,17 @@ jsEngine: graaljs
     id: import-sheet-button
     enabled: true
 
-- tapOn: 
+- tapOn:
     id: import-sheet-button
 
 - assertVisible:
     id: wallet-info-modal
 
-- tapOn: 
+- tapOn:
     id: wallet-info-submit-button
     enabled: true
 
 - extendedWaitUntil:
-    visible: 
-        id: wallet-screen
+    visible:
+      id: wallet-screen
     timeout: 60_000 # long import times for the test wallet
