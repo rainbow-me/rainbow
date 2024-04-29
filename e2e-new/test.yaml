@@ -9,7 +9,7 @@ appId: me.rainbow
     permissions: { all: deny }
 
 - runScript:
-    file: /helpers/sleep.js # 30 sec wait to launch
+    file: helpers/sleep.js # 30 sec wait to launch
 
 - assertVisible:
     id: welcome-screen
@@ -46,7 +46,7 @@ appId: me.rainbow
     enabled: true
 
 - runScript:
-    file: /helpers/sleep.js # 30 sec wait to import
+    file: helpers/sleep.js # 30 sec wait to import
 
 - assertVisible:
     id: wallet-screen
