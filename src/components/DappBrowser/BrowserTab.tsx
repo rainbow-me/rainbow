@@ -50,7 +50,7 @@ import {
 import { handleProviderRequestApp } from './handleProviderRequest';
 import { useAnimatedTab } from './hooks/useAnimatedTab';
 import { useTabScreenshotProvider } from './hooks/useTabScreenshotProvider';
-import { freezeWebsite, getWebsiteMetadata, unfreezeWebsite } from './scripts';
+import { getWebsiteMetadata } from './scripts';
 import { BrowserTabProps, ScreenshotType } from './types';
 import { normalizeUrlForRecents } from './utils';
 
@@ -378,15 +378,21 @@ const FreezableWebViewComponent = ({
     }
   }, [isActiveTab, screenshotCaptureRef, viewShotRef]);
 
-  useEffect(() => {
-    if (webViewRef?.current) {
-      if (isActiveTab) {
-        webViewRef.current.injectJavaScript(freezeWebsite);
-      } else {
-        webViewRef.current.injectJavaScript(unfreezeWebsite);
-      }
-    }
-  }, [isActiveTab, webViewRef]);
+  // ⚠️ TODO: These scripts likely make sense in some form, but the current implementations cause the WebView
+  // to stop triggering navigation state change events, and it's possible they break things on certain websites.
+  // We need to figure out what we can safely freeze (media playback, etc.) and then re-enable them.
+
+  // useEffect(() => {
+  //   if (webViewRef?.current) {
+  //     if (isActiveTab) {
+  //       webViewRef.current.injectJavaScript(freezeWebsite);
+  //     } else {
+  //       webViewRef.current.injectJavaScript(unfreezeWebsite);
+  //     }
+  //   }
+  // }, [isActiveTab, webViewRef]);
+
+  // END TODO
 
   return (
     <Freeze freeze={!isActiveTab}>
