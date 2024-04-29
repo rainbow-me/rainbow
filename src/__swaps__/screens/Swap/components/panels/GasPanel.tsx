@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import Animated, { useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import * as i18n from '@/languages';
 
 import { AnimatedText, Box, Inline, Separator, Stack, Text, globalColors, useColorMode } from '@/design-system';
@@ -10,7 +10,6 @@ import { CUSTOM_GAS_FIELDS } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { useGas } from '@/hooks';
 import { getTrendKey } from '@/helpers/gas';
 import { gasUtils } from '@/utils';
-import { toFixedDecimals } from '@/helpers/utilities';
 import { useNavigation } from '@/navigation';
 import { Keyboard } from 'react-native';
 import Routes from '@/navigation/routesNames';
@@ -20,7 +19,7 @@ import { IS_ANDROID } from '@/env';
 import { TextColor } from '@/design-system/color/palettes';
 import { CustomColor } from '@/design-system/color/useForegroundColor';
 
-const { CUSTOM, GAS_TRENDS, NORMAL, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;
+const { CUSTOM } = gasUtils;
 
 const MINER_TIP_TYPE = 'minerTip';
 const MAX_BASE_FEE_TYPE = 'maxBaseFee';
@@ -33,17 +32,12 @@ type AlertInfo = {
 } | null;
 
 export function GasPanel() {
-  const { selectedGasFee, currentBlockParams, customGasFeeModifiedByUser, gasFeeParamsBySpeed, updateToCustomGasFee, txNetwork } = useGas();
+  const { selectedGasFee, currentBlockParams } = useGas();
 
   const { isDarkMode } = useColorMode();
   const { configProgress, SwapCustomGas } = useSwapContext();
   const { navigate } = useNavigation();
   const { colors } = useTheme();
-
-  const currentBaseFee = useDerivedValue(() => `${SwapCustomGas.currentBaseFee.value} gwei`);
-  const maxTransactionFee = useDerivedValue(() => {
-    return '$3.33';
-  });
 
   const styles = useAnimatedStyle(() => {
     return {
@@ -58,19 +52,17 @@ export function GasPanel() {
   const trendType = 'currentBaseFee' + upperFirst(currentGasTrend);
   const selectedOptionIsCustom = useMemo(() => selectedGasFee?.option === CUSTOM, [selectedGasFee?.option]);
 
-  console.log(currentGasTrend);
-
   // TODO: L2 check for the currentBaseFee
   const openGasHelper = useCallback(
     (type: string) => {
       Keyboard.dismiss();
       navigate(Routes.EXPLAIN_SHEET, {
-        currentBaseFee: toFixedDecimals(currentBaseFee.value, 0),
+        currentBaseFee: currentBlockParams?.baseFeePerGas?.display,
         currentGasTrend,
         type,
       });
     },
-    [currentBaseFee, currentGasTrend, navigate]
+    [navigate, currentBlockParams, currentGasTrend]
   );
 
   const renderRowLabel = (label: string, type: string, error?: AlertInfo, warning?: AlertInfo) => {
@@ -130,7 +122,7 @@ export function GasPanel() {
               size="15pt"
               weight="heavy"
               style={{ textTransform: 'capitalize' }}
-              text={currentBaseFee}
+              text={SwapCustomGas.currentBaseFee}
             />
           </Inline>
 
@@ -187,7 +179,7 @@ export function GasPanel() {
                 </ButtonPressAnimation>
               </Inline>
               <Text align="right" color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="heavy">
-                gwei
+                Gwei
               </Text>
             </Inline>
           </Inline>
@@ -198,7 +190,7 @@ export function GasPanel() {
 
             <Inline wrap={false} alignVertical="center" horizontalSpace="6px">
               <Inline wrap={false} horizontalSpace="8px" alignVertical="center">
-                <ButtonPressAnimation onPress={() => SwapCustomGas.onUpdateField(CUSTOM_GAS_FIELDS.MINER_TIP, 'decrement')}>
+                <ButtonPressAnimation onPress={() => SwapCustomGas.onUpdateField(CUSTOM_GAS_FIELDS.PRIORITY_FEE, 'decrement')}>
                   <Box
                     style={{
                       justifyContent: 'center',
@@ -220,9 +212,9 @@ export function GasPanel() {
                   </Box>
                 </ButtonPressAnimation>
 
-                <AnimatedText size="15pt" weight="bold" color="labelSecondary" text={SwapCustomGas.minerTip} />
+                <AnimatedText size="15pt" weight="bold" color="labelSecondary" text={SwapCustomGas.priorityFee} />
 
-                <ButtonPressAnimation onPress={() => SwapCustomGas.onUpdateField(CUSTOM_GAS_FIELDS.MINER_TIP, 'increment')}>
+                <ButtonPressAnimation onPress={() => SwapCustomGas.onUpdateField(CUSTOM_GAS_FIELDS.PRIORITY_FEE, 'increment')}>
                   <Box
                     style={{
                       justifyContent: 'center',
@@ -245,7 +237,7 @@ export function GasPanel() {
                 </ButtonPressAnimation>
               </Inline>
               <Text align="right" color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="heavy">
-                gwei
+                Gwei
               </Text>
             </Inline>
           </Inline>
@@ -270,7 +262,7 @@ export function GasPanel() {
                 color={isDarkMode ? 'labelSecondary' : 'label'}
                 size="15pt"
                 weight="heavy"
-                text={maxTransactionFee}
+                text={SwapCustomGas.maxTransactionFee}
               />
             </Inline>
           </Inline>

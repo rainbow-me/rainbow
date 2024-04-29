@@ -210,7 +210,7 @@ export const GasButton = ({ isReviewing = false, loading = false }) => {
           <Box as={Animated.View} style={[styles.buttonWrapperStaticStyles, buttonWrapperStyles]}>
             <Inline alignVertical="center" space="4px">
               <TextIcon color={'red'} height={10} size="icon 12px" textStyle={{ marginTop: -1.5 }} width={16} weight="bold">
-                􀙭
+                {GAS_EMOJIS[selectedGasFee?.option || GasSpeed.FAST]}
               </TextIcon>
               <Text color="label" size="15pt" weight="heavy">
                 {getGasLabel(selectedGasFee?.option || GasSpeed.FAST)}
@@ -247,9 +247,9 @@ export const GasButton = ({ isReviewing = false, loading = false }) => {
       <Stack space="12px">
         <Inline alignVertical="center" space={{ custom: 5 }}>
           <Inline alignVertical="center" space="4px">
-            <TextIcon color={'red'} height={10} size="icon 12px" textStyle={{ marginTop: -1.5 }} width={16} weight="bold">
-              􀙭
-            </TextIcon>
+            <Text color="label" size="12pt" weight="bold">
+              {GAS_EMOJIS[selectedGasFee?.option || GasSpeed.FAST]}
+            </Text>
             <Text color="label" size="15pt" weight="heavy">
               {getGasLabel(selectedGasFee?.option || GasSpeed.FAST)}
             </Text>
@@ -274,92 +274,6 @@ export const GasButton = ({ isReviewing = false, loading = false }) => {
       </Stack>
     </GasContextMenu>
   );
-  //   <Container horizontalPadding={horizontalPadding} marginBottom={marginBottom} marginTop={marginTop} testID={testID}>
-  //     <Row justify="space-between">
-  //       <ButtonPressAnimation scaleTo={0.9} testID="estimated-fee-label" disallowInterruption={false}>
-  //         <Row>
-  //           <NativeCoinIconWrapper>
-  //             <AnimatePresence>
-  //               {!!network && (
-  //                 <MotiView
-  //                   animate={{ opacity: 1 }}
-  //                   from={{ opacity: 0 }}
-  //                   transition={{
-  //                     duration: 300,
-  //                     easing: Easing.bezier(0.2, 0, 0, 1),
-  //                     type: 'timing',
-  //                   }}
-  //                 >
-  //                   {network === Network.mainnet ? (
-  //                     <EthCoinIcon size={18} />
-  //                   ) : (
-  //                     <ChainBadge network={network} size="gas" position="relative" />
-  //                   )}
-  //                 </MotiView>
-  //               )}
-  //             </AnimatePresence>
-  //           </NativeCoinIconWrapper>
-  //           <TextContainer>
-  //             <Text>
-  //               <AnimateNumber
-  //                 formatter={formatGasPrice}
-  //                 interval={6}
-  //                 renderContent={renderGasPriceText}
-  //                 steps={6}
-  //                 timing="linear"
-  //                 value={price}
-  //               />
-  //               <Text letterSpacing="one" size="lmedium" weight="heavy">
-  //                 {' '}
-  //               </Text>
-  //               <TransactionTimeLabel formatter={formatTransactionTime} theme={theme} isLongWait={isLongWait} />
-  //             </Text>
-  //           </TextContainer>
-  //         </Row>
-  //         <Row justify="space-between">
-  //           <Label
-  //             color={theme === 'dark' ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6) : colors.alpha(colors.blueGreyDark, 0.6)}
-  //             size="smedium"
-  //             weight="bold"
-  //           >
-  //             {lang.t('swap.gas.estimated_fee')}{' '}
-  //             <Label
-  //               color={theme === 'dark' ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.25) : colors.alpha(colors.blueGreyDark, 0.25)}
-  //               size="smedium"
-  //               weight="bold"
-  //             >
-  //               􀅵
-  //             </Label>
-  //           </Label>
-  //         </Row>
-  //       </ButtonPressAnimation>
-  //       <Centered>
-  //         <GasSpeedPagerCentered testID="gas-speed-pager">{renderGasSpeedPager}</GasSpeedPagerCentered>
-
-  //         <Centered>
-  //           {!isLegacyGasNetwork && (
-  //             <ButtonPressAnimation onPress={() => runOnUI(SwapNavigation.handleShowGas)(true)}>
-  //               <Box
-  //                 style={{
-  //                   paddingHorizontal: 7,
-  //                   paddingVertical: 6,
-  //                   gap: 10,
-  //                   borderRadius: 15,
-  //                   borderWidth: THICK_BORDER_WIDTH,
-  //                   borderColor: separatatorSecondary,
-  //                 }}
-  //               >
-  //                 <Text weight="heavy" size="15pt" color="label">
-  //                   􀌆
-  //                 </Text>
-  //               </Box>
-  //             </ButtonPressAnimation>
-  //           )}
-  //         </Centered>
-  //       </Centered>
-  //     </Row>
-  //   </Container>
-  // );
 };
 
 const GasContextMenu = ({ chainId, price, children }: { chainId: ChainId; price: string | null; children: React.ReactNode }) => {
@@ -382,12 +296,20 @@ const GasContextMenu = ({ chainId, price, children }: { chainId: ChainId; price:
   const handlePressSpeedOption = useCallback(
     (selectedSpeed: string) => {
       if (selectedSpeed === CUSTOM) {
-        runOnUI(SwapNavigation.handleShowGas)();
-      } else {
-        updateGasFeeOption(selectedSpeed);
+        const currentBaseFee = currentBlockParams?.baseFeePerGas?.display;
+        const maxBaseFee = gasFeeParamsBySpeed?.[CUSTOM]?.maxBaseFee?.gwei;
+        const priorityFee = gasFeeParamsBySpeed?.[CUSTOM]?.maxPriorityFeePerGas?.gwei;
+
+        runOnUI(SwapNavigation.handleShowGas)({
+          currentBaseFee,
+          maxBaseFee,
+          priorityFee,
+        });
       }
+
+      updateGasFeeOption(selectedSpeed);
     },
-    [SwapNavigation.handleShowGas, updateGasFeeOption]
+    [SwapNavigation.handleShowGas, currentBlockParams?.baseFeePerGas?.display, gasFeeParamsBySpeed, updateGasFeeOption]
   );
 
   const handlePressMenuItem = useCallback(
@@ -403,8 +325,6 @@ const GasContextMenu = ({ chainId, price, children }: { chainId: ChainId; price:
 
       const totalGwei = add(gasFeeParamsBySpeed[gasOption]?.maxBaseFee?.gwei, gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei);
       const estimatedGwei = add(currentBlockParams?.baseFeePerGas?.gwei, gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei);
-
-      console.log(gasFeeParamsBySpeed[gasOption]);
 
       const shouldRoundGwei = getNetworkObj(network).gas.roundGasDisplay;
       const gweiDisplay = !shouldRoundGwei

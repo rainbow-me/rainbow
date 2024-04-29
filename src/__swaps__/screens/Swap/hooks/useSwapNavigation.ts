@@ -40,8 +40,29 @@ export function useSwapNavigation({
   }, [configProgress]);
 
   const handleShowGas = useCallback(
-    (backToReview = false) => {
+    ({
+      currentBaseFee,
+      maxBaseFee,
+      priorityFee,
+      backToReview = false,
+    }: {
+      currentBaseFee: string;
+      maxBaseFee: string;
+      priorityFee: string;
+      backToReview?: boolean;
+    }) => {
       'worklet';
+      if (currentBaseFee) {
+        SwapCustomGas.currentBaseFee.value = currentBaseFee;
+      }
+
+      if (maxBaseFee) {
+        SwapCustomGas.maxBaseFee.value = maxBaseFee;
+      }
+
+      if (priorityFee) {
+        SwapCustomGas.priorityFee.value = priorityFee;
+      }
 
       if (backToReview) {
         navigateBackToReview.value = true;
@@ -53,7 +74,15 @@ export function useSwapNavigation({
         configProgress.value = NavigationSteps.SHOW_GAS;
       }
     },
-    [configProgress, navigateBackToReview, inputProgress, outputProgress]
+    [
+      configProgress,
+      SwapCustomGas.currentBaseFee,
+      SwapCustomGas.maxBaseFee,
+      SwapCustomGas.priorityFee,
+      navigateBackToReview,
+      inputProgress,
+      outputProgress,
+    ]
   );
 
   const handleDismissGas = useCallback(() => {
