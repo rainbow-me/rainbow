@@ -46,18 +46,18 @@ export const findTabScreenshot = (id: string, url?: string): ScreenshotType | nu
   return null;
 };
 
-export const pruneScreenshots = async (tabStateMap: Map<TabId, TabData>): Promise<void> => {
+export const pruneScreenshots = async (tabsData: Map<TabId, TabData>): Promise<void> => {
   const persistedData = tabScreenshotStorage.getString('tabScreenshots');
   if (!persistedData) return;
 
   const screenshots: ScreenshotType[] = JSON.parse(persistedData);
-  const activeTabIds = new Set(tabStateMap.keys());
+  const activeTabIds = new Set(tabsData.keys());
 
   const screenshotsToKeep: Map<string, ScreenshotType> = new Map();
   const screenshotsToDelete: ScreenshotType[] = [];
 
   screenshots.forEach(screenshot => {
-    const tabData = tabStateMap.get(screenshot.id);
+    const tabData = tabsData.get(screenshot.id);
     if (tabData && tabData.url === screenshot.url) {
       const existing = screenshotsToKeep.get(screenshot.id);
       if (!existing || existing.timestamp < screenshot.timestamp) {
