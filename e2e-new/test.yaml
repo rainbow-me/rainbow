@@ -8,10 +8,11 @@ appId: me.rainbow
     clearKeychain: true
     permissions: { all: deny }
 
-- extendedWaitUntil:
-    visible:
-      id: welcome-screen
-    timeout: 60_000 # wait for bundle sometimes
+- runScript:
+    file: /helpers/sleep.js # 30 sec wait to launch
+
+- assertVisible:
+    id: welcome-screen
 
 - tapOn:
     id: already-have-wallet-button
@@ -44,7 +45,8 @@ appId: me.rainbow
     id: wallet-info-submit-button
     enabled: true
 
-- extendedWaitUntil:
-    visible:
-      id: wallet-screen
-    timeout: 120_000 # long import times for the test wallet
+- runScript:
+    file: /helpers/sleep.js # 30 sec wait to import
+
+- assertVisible:
+    id: wallet-screen
