@@ -50,11 +50,9 @@ export const pruneScreenshots = async (tabStateMap: Map<TabId, TabData>): Promis
   const persistedData = tabScreenshotStorage.getString('tabScreenshots');
   if (!persistedData) return;
 
-  const screenshotsInStore: ScreenshotType[] = JSON.parse(persistedData);
-  logger.info(`Total screenshots in store: ${screenshotsInStore.length}`);
   const screenshots: ScreenshotType[] = JSON.parse(persistedData);
-
   const activeTabIds = new Set(tabStateMap.keys());
+
   const screenshotsToKeep: Map<string, ScreenshotType> = new Map();
   const screenshotsToDelete: ScreenshotType[] = [];
 
