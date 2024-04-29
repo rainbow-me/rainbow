@@ -1,13 +1,10 @@
-function sleep(ms) {
-  return new Promise(resolve => {
-    setTimeout(resolve, ms);
-  });
+/* eslint-disable no-empty */
+/* eslint-disable no-undef */
+function sleep(timeInSeconds) {
+  console.log(`starting timeout of ${timeInSeconds} seconds`);
+  const t = new Date().getTime() + timeInSeconds * 1000;
+  while (new Date().getTime() <= t) {}
+  console.log('timeout finished');
 }
 
-async function process() {
-  console.log('Sleep for 30 seconds');
-  await sleep(30_000);
-  console.log('Resuming Tests');
-}
-
-process();
+sleep(seconds);
