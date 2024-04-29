@@ -52,6 +52,7 @@ jobs:
         run: ./node_modules/.bin/detox build --configuration ios.sim.release
      
       - name: Run e2e tests (3 retries)
+        timeout-minutes: 10 
         run: |
           i=0
           while [ $i -le 2 ]; do

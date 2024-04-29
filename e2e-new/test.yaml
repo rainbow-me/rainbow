@@ -11,7 +11,7 @@ appId: me.rainbow
 - extendedWaitUntil:
     visible:
       id: welcome-screen
-    timeout: 60_000 # wait for bundle
+    timeout: 60_000 # wait for bundle sometimes
 
 - tapOn:
     id: already-have-wallet-button
@@ -28,7 +28,7 @@ appId: me.rainbow
 - tapOn:
     id: import-sheet-input
 
-- inputText: 'test test test test test test test test test test test junk'
+- inputText: '0x30cf0b4e692056ce62de7b9a9eb40e97feaf1ee191ac22b33346fae13ae2e61b' # empty wallet pkey
 
 - assertVisible:
     id: import-sheet-button
@@ -47,4 +47,4 @@ appId: me.rainbow
 - extendedWaitUntil:
     visible:
       id: wallet-screen
-    timeout: 60_000 # long import times for the test wallet
+    timeout: 120_000 # long import times for the test wallet
