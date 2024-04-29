@@ -1,5 +1,5 @@
-import { MMKV } from 'react-native-mmkv';
 import RNFS from 'react-native-fs';
+import { MMKV } from 'react-native-mmkv';
 import { RainbowError, logger } from '@/logger';
 import { RAINBOW_HOME } from './constants';
 import { ScreenshotType, TabData, TabId } from './types';
