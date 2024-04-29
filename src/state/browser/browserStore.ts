@@ -60,12 +60,18 @@ function deserializeBrowserState(serializedState: string): { state: BrowserState
     throw error;
   }
 
-  const persistedTabUrls = state.persistedTabUrls || {};
+  // Remove entries from tabsData that don't have a corresponding tabId in tabIds
+  const tabIdsSet = new Set(state.tabIds);
+  for (const tabId of tabsData.keys()) {
+    if (!tabIdsSet.has(tabId)) {
+      tabsData.delete(tabId);
+    }
+  }
 
   // Restore persisted tab URLs if any exist
-  state.tabIds.forEach((tabId: TabId) => {
-    const persistedUrl = persistedTabUrls[tabId];
-    if (persistedUrl) {
+  const persistedTabUrlsSet = new Set(Object.entries(state.persistedTabUrls || {}));
+  for (const [tabId, persistedUrl] of persistedTabUrlsSet) {
+    if (tabIdsSet.has(tabId)) {
       const tabData = tabsData.get(tabId);
       if (tabData) {
         tabData.url = persistedUrl;
@@ -73,7 +79,7 @@ function deserializeBrowserState(serializedState: string): { state: BrowserState
         logger.warn(`No tabData found for tabId ${tabId} during URL restoration`);
       }
     }
-  });
+  }
 
   return {
     state: {

@@ -121,7 +121,7 @@ export const BrowserTab = React.memo(function BrowserTab({ addRecent, injectedJS
  * This component gets the tab's `screenshotData` and its `animatedScreenshotStyle` via `useTabScreenshotProvider`,
  * which accesses the active state of the tab internally. This component isolates the resulting re-renders that
  * occur when the tab becomes active or inactive, and shields the `TabScreenshot` component and the screenshot
- * itself from unnecessarily re-rendering.
+ * itself from unnecessarily re-rendering, since the props it passes down are stable.
  */
 const TabScreenshotContainer = ({ tabId }: { tabId: string }) => {
   const { animatedScreenshotStyle, screenshotData } = useTabScreenshotProvider({ tabId });
@@ -139,13 +139,14 @@ const TabScreenshot = React.memo(function TabScreenshot({
     return {
       source: {
         ...TAB_SCREENSHOT_FASTER_IMAGE_CONFIG,
-        url: screenshotData.value?.uri ? `file://${screenshotData.value?.uri}` : '',
+        url: screenshotData.value?.uri ? `file://${screenshotData.value.uri}` : '',
       },
     };
   });
 
   return (
-    // @ts-expect-error: Doesn't pick up the source prop via animatedProps
+    // ⚠️ TODO: This works but we should figure out how to type this correctly
+    // @ts-expect-error: Doesn't pick up that its getting a source prop via animatedProps
     <AnimatedFasterImage animatedProps={animatedProps} style={[styles.screenshotContainerStyle, animatedStyle]} />
   );
 });

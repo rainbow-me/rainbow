@@ -11,7 +11,7 @@ import { RAINBOW_HOME } from '../constants';
 import { saveScreenshot } from '../screenshots';
 
 /**
- * `useScreenshotAndScrollTriggers`:
+ * ### `useScreenshotAndScrollTriggers`:
  * This hook coordinates with the browser context to:
  * - Capture screenshots of the active tab upon entering the tab view.
  * - Automatically adjust the scroll position of the tab view to vertically center the active
@@ -71,59 +71,64 @@ export function useScreenshotAndScrollTriggers() {
       const isTabBeingClosed = currentlyOpenTabIds.value.indexOf(activeTabInfo.value.tabId) === -1;
 
       if (changesDetected && !isTabBeingClosed) {
-        // Trigger screenshot capture within the active tab once the tab view is fully entered, if necessary
+        // 📸 Trigger screenshot capture within the active tab once the tab view is fully entered, if necessary
         const tabId = activeTabInfo.value.tabId;
-        const screenshotData = animatedScreenshotData.value[tabId];
-        const enterTabViewAnimationIsComplete = tabViewVisible.value === true && previous > 100 && current <= 100;
-        const isPageLoaded = loadProgress.value > 0.2;
-        const isHomepage = animatedTabUrls.value[tabId] === RAINBOW_HOME || !animatedTabUrls.value[tabId];
+        const tabUrl = animatedTabUrls.value[tabId] || RAINBOW_HOME;
+        const isHomepage = tabUrl === RAINBOW_HOME || !tabUrl;
 
-        if (enterTabViewAnimationIsComplete && !isHomepage && isPageLoaded && animatedTabUrls.value[tabId]) {
-          const previousScreenshotExists = !!screenshotData?.uri;
-          const tabIdChanged = screenshotData?.id !== tabId;
-          const urlChanged = screenshotData?.url !== animatedTabUrls.value[tabId];
-          const oneMinuteAgo = Date.now() - 1000 * 60;
-          const isScreenshotStale = screenshotData && screenshotData?.timestamp < oneMinuteAgo;
+        if (!isHomepage) {
+          const screenshotData = animatedScreenshotData.value[tabId];
+          const enterTabViewAnimationIsComplete = tabViewVisible.value === true && previous > 100 && current <= 100;
+          const isPageLoaded = loadProgress.value > 0.2;
 
-          const shouldCaptureScreenshot = !previousScreenshotExists || tabIdChanged || urlChanged || isScreenshotStale;
+          if (enterTabViewAnimationIsComplete && !isHomepage && isPageLoaded && tabUrl) {
+            const previousScreenshotExists = !!screenshotData?.uri;
+            const urlChanged = screenshotData?.url !== tabUrl;
+            const oneMinuteAgo = Date.now() - 1000 * 60;
+            const isScreenshotStale = screenshotData && screenshotData?.timestamp < oneMinuteAgo;
 
-          if (shouldCaptureScreenshot) {
-            runOnJS(captureAndSaveScreenshot)(animatedTabUrls.value[tabId] || RAINBOW_HOME, tabId);
+            const shouldCaptureScreenshot = !previousScreenshotExists || urlChanged || isScreenshotStale;
+
+            if (shouldCaptureScreenshot) {
+              runOnJS(captureAndSaveScreenshot)(tabUrl, tabId);
+            }
           }
         }
-      }
+        // 📸 END screenshot capture logic
 
-      // Invisibly scroll the tab view to vertically center the active tab once the tab view is fully exited
-      if (changesDetected && !isTabBeingClosed) {
+        // 🪄 Invisibly scroll the tab view to vertically center the active tab once the tab view is fully exited
         const isScrollViewScrollable = currentlyOpenTabIds.value.length > 4;
         const exitTabViewAnimationIsComplete =
           isScrollViewScrollable && tabViewVisible.value === false && current === 0 && previous && previous !== 0;
 
-        if (exitTabViewAnimationIsComplete && isScrollViewScrollable) {
+        if (isScrollViewScrollable && exitTabViewAnimationIsComplete) {
           const scrollTo = calculateScrollPositionToCenterTab(animatedActiveTabIndex.value, currentlyOpenTabIds.value.length);
           dispatchCommand(scrollViewRef, 'scrollTo', [0, scrollTo, false]);
         }
+        // 🪄 END scroll logic
       }
     }
   );
 }
 
 const SCREEN_HEIGHT = DEVICE_HEIGHT;
-const HALF_SCREEN_HEIGHT = SCREEN_HEIGHT / 2;
+const HALF_SCREEN_HEIGHT = DEVICE_HEIGHT / 2;
 
 function calculateScrollPositionToCenterTab(activeTabIndex: number, numberOfOpenTabs: number): number {
   'worklet';
 
-  const currentTabRow = Math.floor(activeTabIndex / 2);
   const scrollViewHeight =
     Math.ceil(numberOfOpenTabs / 2) * TAB_VIEW_ROW_HEIGHT + safeAreaInsetValues.bottom + 165 + 28 + (IS_IOS ? 0 : 35);
-
-  const tabCenterPosition = currentTabRow * TAB_VIEW_ROW_HEIGHT + (currentTabRow - 1) * 28 + TAB_VIEW_ROW_HEIGHT / 2 + 37;
 
   if (scrollViewHeight <= SCREEN_HEIGHT) {
     // No need to scroll if all tabs fit on the screen
     return 0;
-  } else if (tabCenterPosition <= HALF_SCREEN_HEIGHT) {
+  }
+
+  const currentTabRow = Math.floor(activeTabIndex / 2);
+  const tabCenterPosition = currentTabRow * TAB_VIEW_ROW_HEIGHT + (currentTabRow - 1) * 28 + TAB_VIEW_ROW_HEIGHT / 2 + 37;
+
+  if (tabCenterPosition <= HALF_SCREEN_HEIGHT) {
     // Scroll to top if the tab is too near to the top of the scroll view to be centered
     return 0;
   } else if (tabCenterPosition + HALF_SCREEN_HEIGHT >= scrollViewHeight) {
