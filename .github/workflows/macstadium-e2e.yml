@@ -20,15 +20,10 @@ jobs:
 
       - name: Set up ENV vars & scripts
         run: |
-          # read local env vars
           source ~/.bashrc
-          # fetch env vars
           git clone git@github.com:rainbow-me/rainbow-env.git
-          # unpack dotenv
           mv rainbow-env/dotenv .env && rm -rf rainbow-env 
-          # run CI scripts
           eval $CI_SCRIPTS
-          # tweak dotenv for e2e 
           sed -i''-e "s/\IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
       - name: Install deps via Yarn
         run: yarn setup-ci
@@ -45,18 +40,28 @@ jobs:
       - name: Install Pods
         run: yarn install-pods
 
-      - name: Rebuild detox cache
-        run: ./node_modules/.bin/detox clean-framework-cache && ./node_modules/.bin/detox build-framework-cache
+      - name: Installing Maestro
+        run: curl -Ls "https://get.maestro.mobile.dev" | bash
 
-      - name: Remove old Detox artifacts
-        run: rm -rf ./artifacts/
+      - name: Installing Maestro dependencies
+        run: |
+          brew tap facebook/fb
+          brew install facebook/fb/idb-companion
 
       - name: Build the app in release mode
         run: ./node_modules/.bin/detox build --configuration ios.sim.release
      
-      - name: Run iOS e2e tests with retry
-      # change the '5' here to how many times you want the tests to rerun on failure
-        run: ./scripts/run-retry-tests.sh 5
+      - name: Run e2e tests (3 retries)
+        run: |
+          i=0
+          while [ $i -le 2 ]; do
+          $HOME/.maestro/bin/maestro test /e2e-new/test.yaml && break
+          let i=i+1
+          if [ $i -eq 3 ]; then
+            echo "Failed after 3 attempts"
+            exit 1
+          fi
+          done
      
       - name: Upload Test Artifacts
         if: failure()
