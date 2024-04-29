@@ -1,8 +1,10 @@
 import React, { useCallback, useState } from 'react';
+import * as i18n from '@/languages';
 
 import { AnimatedText, Box, Inline, Separator, Stack, Text, globalColors, useColorMode } from '@/design-system';
 import Animated, {
   runOnJS,
+  runOnUI,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
@@ -18,12 +20,87 @@ import { chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { AnimatedSwitch } from './AnimatedSwitch';
 import { GasButton } from './GasButton';
 import { ButtonPressAnimation } from '@/components/animations';
+import { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
+import { convertRawAmountToNativeDisplay } from '@/__swaps__/utils/numbers';
+import { useAccountSettings } from '@/hooks';
+import { FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
+import { supportedNativeCurrencies } from '@/references';
 
 const SLIPPAGE_STEP = 0.5;
+
+const RainbowFee = () => {
+  const { isDarkMode } = useColorMode();
+  const { SwapInputController } = useSwapContext();
+  const { nativeCurrency: currentCurrency } = useAccountSettings();
+
+  const rainbowFee = useSharedValue(i18n.t(i18n.l.swap.unknown));
+
+  const [nativeChainId, setNativeChainId] = useState(SwapInputController.assetToSell.value?.chainId ?? ChainId.mainnet);
+  const nativeAsset = useNativeAssetForNetwork(ethereumUtils.getNetworkFromChainId(nativeChainId));
+
+  const updateRainbowFee = ({
+    fee,
+    nativeAsset,
+    currentCurrency,
+  }: {
+    fee: string | number;
+    nativeAsset: FormattedExternalAsset | null | undefined;
+    currentCurrency: keyof typeof supportedNativeCurrencies;
+  }) => {
+    const updateFee = (value: string) => {
+      'worklet';
+      rainbowFee.value = value;
+    };
+
+    const { display } = convertRawAmountToNativeDisplay(
+      fee,
+      nativeAsset?.decimals || 18,
+      nativeAsset?.price?.value || '0',
+      currentCurrency
+    );
+
+    runOnUI(updateFee)(display);
+  };
+
+  useAnimatedReaction(
+    () => SwapInputController.assetToSell.value?.chainId ?? ChainId.mainnet,
+    (current, previous) => {
+      if (!previous || previous !== current) {
+        runOnJS(setNativeChainId)(current);
+      }
+    }
+  );
+
+  useAnimatedReaction(
+    () => ({
+      fee: SwapInputController.fee.value,
+      nativeAsset,
+      currentCurrency,
+    }),
+    (current, previous) => {
+      if (
+        !previous ||
+        previous.nativeAsset !== current.nativeAsset ||
+        previous.currentCurrency !== current.currentCurrency ||
+        previous.fee !== current.fee
+      ) {
+        runOnJS(updateRainbowFee)({
+          fee: current.fee,
+          nativeAsset: current.nativeAsset,
+          currentCurrency: current.currentCurrency,
+        });
+      }
+    }
+  );
+
+  return <AnimatedText align="right" color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="heavy" text={rainbowFee} />;
+};
 
 export function ReviewPanel() {
   const { isDarkMode } = useColorMode();
   const { reviewProgress, SwapInputController } = useSwapContext();
+
+  const unknown = i18n.t(i18n.l.swap.unknown);
 
   const chainName = useDerivedValue(() =>
     SwapInputController.outputChainId.value === ChainId.mainnet
@@ -37,6 +114,15 @@ export function ReviewPanel() {
     ethereumUtils.getNetworkFromChainId(SwapInputController.assetToSell.value?.chainId ?? ChainId.mainnet)
   );
 
+  const minimumReceived = useDerivedValue(() => {
+    if (!SwapInputController.inputValues.value.outputAmount || !SwapInputController.assetToBuy.value) {
+      return unknown;
+    }
+    return `${SwapInputController.inputValues.value.outputAmount} ${SwapInputController.assetToBuy.value.symbol}`;
+  });
+
+  const flashbots = useDerivedValue(() => SwapInputController.flashbots.value);
+
   const updateChainFromNetwork = useCallback((chainId: ChainId) => {
     setChain(ethereumUtils.getNetworkFromChainId(chainId));
   }, []);
@@ -49,19 +135,6 @@ export function ReviewPanel() {
       }
     }
   );
-
-  const minimumReceived = useDerivedValue(() => {
-    if (!SwapInputController.inputValues.value.outputAmount || !SwapInputController.assetToBuy.value) {
-      return 'Unknown';
-    }
-    return `${SwapInputController.inputValues.value.outputAmount} ${SwapInputController.assetToBuy.value.symbol}`;
-  });
-
-  const rainbowFee = useDerivedValue(() => {
-    return '$2.70';
-  });
-
-  const flashbots = useDerivedValue(() => SwapInputController.flashbots.value);
 
   const onSetSlippage = useCallback(
     (operation: 'increment' | 'decrement') => {
@@ -151,7 +224,7 @@ export function ReviewPanel() {
             </Inline>
 
             <Inline horizontalSpace="6px">
-              <AnimatedText align="right" color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="heavy" text={rainbowFee} />
+              <RainbowFee />
             </Inline>
           </Inline>
 

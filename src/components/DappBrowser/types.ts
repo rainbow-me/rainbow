@@ -10,6 +10,8 @@ export interface TabState {
   logoUrl?: string | null;
 }
 
+export type TabId = string;
+
 export type TabOperationType = 'newTab' | 'closeTab';
 
 export interface BaseTabOperation {
@@ -36,7 +38,7 @@ export interface BrowserTabProps {
   tabId: string;
   nextTabId: string;
   tabsCount: number;
-  injectedJS: React.MutableRefObject<string | null>;
+  injectedJS: string;
   activeTabRef: React.MutableRefObject<WebView | null>;
   animatedActiveTabIndex: SharedValue<number>;
   closeTabWorklet?(tabId: string, tabIndex: number): void;

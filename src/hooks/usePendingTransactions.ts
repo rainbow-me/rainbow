@@ -6,7 +6,7 @@ import useAccountSettings from './useAccountSettings';
 
 export default function usePendingTransactions() {
   const { accountAddress } = useAccountSettings();
-  const { pendingTransactions: storePendingTransactions } = usePendingTransactionsStore();
+  const storePendingTransactions = usePendingTransactionsStore(state => state.pendingTransactions);
 
   const pendingTransactions = useMemo(() => storePendingTransactions[accountAddress] || [], [accountAddress, storePendingTransactions]);
   const getPendingTransactionByHash = useCallback(
