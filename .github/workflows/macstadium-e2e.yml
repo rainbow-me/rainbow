@@ -55,7 +55,7 @@ jobs:
         run: |
           i=0
           while [ $i -le 2 ]; do
-          $HOME/.maestro/bin/maestro test /e2e-new/test.yaml && break
+          $HOME/.maestro/bin/maestro test e2e-new/test.yaml && break
           let i=i+1
           if [ $i -eq 3 ]; then
             echo "Failed after 3 attempts"
