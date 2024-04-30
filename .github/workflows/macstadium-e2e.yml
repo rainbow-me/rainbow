@@ -77,6 +77,8 @@ jobs:
           APP_PATH: './ios/temp_build/Build/Products/Release-iphonesimulator/Rainbow.app'
       
         run: |
+          echo "Shutting down any running simulators..."
+          xcrun simctl shutdown all || true
           echo "Launching iOS Simulator"
           xcrun simctl boot "iPhone 15 Pro"
           echo "Installing app on Simulator"
@@ -94,6 +96,13 @@ jobs:
             exit 1
           fi
           done
+
+      - name: Cleanup Derived Data
+        if: always()
+        run: |
+          echo "Cleaning up derived data..."
+          rm -rf ios/temp_build
+          echo "Cleanup complete."
 
       - name: Shutdown and clean up simulator
         if: always()
