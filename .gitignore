@@ -13,6 +13,7 @@ ios/release.xcconfig
 ios/localrelease.xcconfig
 ios/staging.xcconfig
 ios/Frameworks/GoogleService-Info.plist
+ios/temp_build
 
 # Xcode
 #
