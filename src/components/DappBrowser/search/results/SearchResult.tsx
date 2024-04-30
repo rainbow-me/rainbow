@@ -1,17 +1,17 @@
 import React, { useCallback } from 'react';
-import { ImgixImage } from '@/components/images';
-import { AnimatedText, Box, Inline, Stack, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
-import { ButtonPressAnimation } from '@/components/animations';
-import GoogleSearchIcon from '@/assets/googleSearchIcon.png';
+import { StyleSheet } from 'react-native';
 import { Source } from 'react-native-fast-image';
 import Animated, { SharedValue, useAnimatedProps, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
-import { Dapp } from '@/resources/metadata/dapps';
-import { useSearchContext } from '../SearchContext';
-import { useDimensions } from '@/hooks';
+import GoogleSearchIcon from '@/assets/googleSearchIcon.png';
 import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFasterImage';
-import { TAB_SCREENSHOT_FASTER_IMAGE_CONFIG } from '../../constants';
-import { StyleSheet } from 'react-native';
+import { ButtonPressAnimation } from '@/components/animations';
+import { ImgixImage } from '@/components/images';
+import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
+import { AnimatedText, Box, Inline, Stack, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import { useDimensions } from '@/hooks';
+import { Dapp } from '@/resources/metadata/dapps';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { useSearchContext } from '../SearchContext';
 
 export const SearchResult = ({ index, goToUrl }: { index: number; goToUrl: (url: string) => void }) => {
   const { searchResults } = useSearchContext();
@@ -26,8 +26,7 @@ export const SearchResult = ({ index, goToUrl }: { index: number; goToUrl: (url:
   const animatedIconSource = useAnimatedProps(() => {
     return {
       source: {
-        ...TAB_SCREENSHOT_FASTER_IMAGE_CONFIG,
-        transitionDuration: 0.175,
+        ...DEFAULT_FASTER_IMAGE_CONFIG,
         url: dapp.value?.iconUrl ?? '',
       },
     };
