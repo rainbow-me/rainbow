@@ -40,7 +40,7 @@ export function useSyncSharedValue<T>({ compareDepth = 'shallow', pauseSync, set
     },
     shouldSync => {
       if (shouldSync) {
-        if (syncDirection === 'sharedValueToState' && sharedValue.value) {
+        if (syncDirection === 'sharedValueToState' && sharedValue.value !== undefined) {
           runOnJS(setState)(sharedValue.value);
         } else if (syncDirection === 'stateToSharedValue') {
           sharedValue.value = state;
