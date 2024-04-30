@@ -280,84 +280,13 @@ const FreezableWebViewComponent = ({
 
   const handleNavigationStateChange = useCallback(
     (navState: WebViewNavigation) => {
-      // // Set the logo if it's not already set to the current website's logo
-      // if (tabState.logoUrl !== logo.current) {
-      //   updateActiveTabState?.(
-      //     {
-      //       logoUrl: logo.current,
-      //     },
-      //     tabId
-      //   );
-      // }
-
       if (navState.url) {
         runOnUI(updateTabUrlWorklet)(navState.url, tabId);
+        // ⚠️ TODO: Reintegrate canGoBack/canGoForward - we can just set it here now, reliably, because this
+        // function no longer modifies the same URL state that's passed to the WebView's source prop.
       }
-
-      // ⚠️ TODO: Reintegrate canGoBack/canGoForward and figure out what we still need here
-
-      // To prevent infinite redirect loops, we only update the URL if both of these are true:
-      //
-      // 1) the WebView's URL is different from the tabStates URL
-      // 2) the navigationType !== 'other', which gets triggered repeatedly in certain cases programatically
-      //
-      // This has the consequence of the tabStates page URL not always being updated when navigating within
-      // single-page apps, which we'll need to figure out a solution for, but it's an okay workaround for now.
-      //
-      // It has the benefit though of allowing navigation within single-page apps without triggering reloads
-      // due to the WebView's URL being altered (which happens when its source prop is updated).
-      //
-      // Additionally, the canGoBack/canGoForward states can become out of sync with the actual WebView state
-      // if they aren't set according to the logic below. There's likely a cleaner way to structure it, but
-      // this avoids setting back/forward states under the wrong conditions or more than once per event.
-      //
-      // To observe what's actually going on, you can import the navigationStateLogger helper and add it here.
-
-      // example:
-      // sv.modify((value) => {
-      //   'worklet';
-      //   value.push(1000); // ✅
-      //   return value;
-      // });
-
-      // if (navState.url !== tabUrl) {
-      // if (animatedTabUrl) animatedTabUrl.value = navState.url;
-      //   if (navState.navigationType !== 'other') {
-      //     // If the URL DID ✅ change and navigationType !== 'other', we update the full tab state
-      //     updateActiveTabState?.(
-      //       {
-      //         canGoBack: navState.canGoBack,
-      //         canGoForward: navState.canGoForward,
-      //         logoUrl: logo.current,
-      //         // url: navState.url,
-      //       },
-      //       tabId
-      //     );
-      //   } else {
-      //     // If the URL DID ✅ change and navigationType === 'other', we update only canGoBack and canGoForward
-      //     updateActiveTabState?.(
-      //       {
-      //         canGoBack: navState.canGoBack,
-      //         canGoForward: navState.canGoForward,
-      //         logoUrl: logo.current,
-      //       },
-      //       tabId
-      //     );
-      //   }
-      // } else {
-      //   // If the URL DID NOT ❌ change, we update only canGoBack and canGoForward
-      //   // This handles WebView reloads and cases where the WebView navigation state legitimately resets
-      //   updateActiveTabState?.(
-      //     {
-      //       canGoBack: navState.canGoBack,
-      //       canGoForward: navState.canGoForward,
-      //       logoUrl: logo.current,
-      //     },
-      //     tabId
-      //   );
-      // }
     },
-    [/* tabUrl, updateActiveTabState, */ tabId, updateTabUrlWorklet]
+    [tabId, updateTabUrlWorklet]
   );
 
   // useLayoutEffect seems to more reliably assign the WebView ref correctly
