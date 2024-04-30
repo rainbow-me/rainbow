@@ -31,7 +31,8 @@ export const AnimatedCoinRow = ({
   const asset: Readonly<SharedValue<SearchAsset | undefined>> = useDerivedValue(() => sectionData.value?.[index]);
   const name: Readonly<SharedValue<string | undefined>> = useDerivedValue(() => asset.value?.name);
   const symbol: Readonly<SharedValue<string | undefined>> = useDerivedValue(() => asset.value?.symbol);
-  const address: Readonly<SharedValue<string | undefined>> = useDerivedValue(() => asset.value?.address);
+  const balance: Readonly<SharedValue<string | undefined>> = useDerivedValue(() => asset.value?.balance?.display);
+  const nativeBalance: Readonly<SharedValue<string | undefined>> = useDerivedValue(() => asset.value?.native?.balance?.display);
 
   const isFavorited: SharedValue<boolean> = useSharedValue(address.value ? isFavorite(address.value) : false);
 
@@ -59,7 +60,6 @@ export const AnimatedCoinRow = ({
   });
 
   const isTrending = false;
-  const balance = '';
 
   const percentChange = useDerivedValue(() => {
     if (isTrending) {
@@ -79,7 +79,7 @@ export const AnimatedCoinRow = ({
   const percentChangeContainerAnimatedStyle = useAnimatedStyle(() => ({ display: percentChange.value ? 'flex' : 'none' }));
   const percentChangeAnimatedStyle = useAnimatedStyle(() => ({ color: percentChangeColor.value }));
 
-  const subtitle = useDerivedValue(() => (output ? symbol.value : balance));
+  const subtitle = useDerivedValue(() => (output ? symbol.value : balance.value));
 
   const animatedStyle = useAnimatedStyle(() => ({ display: asset.value ? 'flex' : 'none' }));
   const favoriteButtonColor = useDerivedValue(() => (isFavorited.value ? '#FFCB0F' : undefined));
@@ -142,7 +142,7 @@ export const AnimatedCoinRow = ({
                 />
               </Inline>
             ) : (
-              <BalancePill balance={balance} />
+              <BalancePill balance={'hi'} />
             )}
           </Box>
         </HitSlop>

@@ -3,11 +3,12 @@ import React, { useMemo } from 'react';
 
 import { useAssetsToBuySections } from '@/__swaps__/screens/Swap/hooks/useAssetsToBuy';
 import { TokenToBuySection } from '@/__swaps__/screens/Swap/components/TokenList/TokenToBuySection';
-import { Box, Stack } from '@/design-system';
+import { Box } from '@/design-system';
 import { isL2Chain } from '@/__swaps__/utils/chains';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
 import { ChainSelection } from './ChainSelection';
+import Animated, { useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 
 export const TokenToBuyList = () => {
   const { SwapInputController } = useSwapContext();
@@ -17,8 +18,9 @@ export const TokenToBuyList = () => {
     () => SwapInputController.outputChainId.value && isL2Chain(SwapInputController.outputChainId.value),
     [SwapInputController.outputChainId.value]
   );
-  console.log('token buy list render');
-  // const assetsCount = useMemo(() => sections?.reduce((count, section) => count + section.data.length, 0), [sections]);
+
+  const assetsCount = useDerivedValue(() => sections.value?.reduce((count, section) => count + section.data.length, 0));
+  const emptyAnimatedStyle = useAnimatedStyle(() => ({ display: assetsCount.value === 0 ? 'none' : 'flex' }));
 
   return (
     <Box gap={32}>
@@ -29,8 +31,9 @@ export const TokenToBuyList = () => {
       <TokenToBuySection index={3} sections={sections} />
       <TokenToBuySection index={4} sections={sections} />
       <TokenToBuySection index={5} sections={sections} />
-
-      {!true && <ListEmpty isL2={isL2} />}
+      <Animated.View style={emptyAnimatedStyle}>
+        <ListEmpty isL2={isL2} />
+      </Animated.View>
     </Box>
   );
 };

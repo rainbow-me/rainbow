@@ -3,23 +3,25 @@ import { StyleSheet } from 'react-native';
 import { CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
 import { useAssetsToSell } from '@/__swaps__/screens/Swap/hooks/useAssetsToSell';
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { Stack } from '@/design-system';
+import { Box, Stack } from '@/design-system';
 import Animated, { runOnUI } from 'react-native-reanimated';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { parseSearchAsset, isSameAsset } from '@/__swaps__/utils/assets';
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
 import { FlashList } from '@shopify/flash-list';
 import { ChainSelection } from './ChainSelection';
+import { useAssetsToSellSV } from '../../hooks/useAssetsToSellSV';
+import { AnimatedCoinRow } from '../AnimatedCoinRow';
 
 const AnimatedFlashListComponent = Animated.createAnimatedComponent(FlashList<ParsedSearchAsset>);
 
 export const TokenToSellList = () => {
   const { SwapInputController } = useSwapContext();
-  const userAssets = useAssetsToSell();
+  const sectionData = useAssetsToSellSV();
 
   const handleSelectToken = useCallback(
     (token: ParsedSearchAsset) => {
-      const userAsset = userAssets.find(asset => isSameAsset(asset, token));
+      const userAsset = sectionData.value.find(asset => isSameAsset(asset, token));
       const parsedAsset = parseSearchAsset({
         assetWithPrice: undefined,
         searchAsset: token,
@@ -28,14 +30,34 @@ export const TokenToSellList = () => {
 
       runOnUI(SwapInputController.onSetAssetToSell)(parsedAsset);
     },
-    [SwapInputController.onSetAssetToSell, userAssets]
+    [SwapInputController.onSetAssetToSell, sectionData]
   );
 
   return (
-    <Stack space="20px">
+    <Box gap={20}>
       <ChainSelection allText="All Networks" output={false} />
-
-      <AnimatedFlashListComponent
+      <AnimatedCoinRow sectionData={sectionData} index={0} onPress={handleSelectToken} />
+      <AnimatedCoinRow sectionData={sectionData} index={1} onPress={handleSelectToken} />
+      <AnimatedCoinRow sectionData={sectionData} index={2} onPress={handleSelectToken} />
+      <AnimatedCoinRow sectionData={sectionData} index={3} onPress={handleSelectToken} />
+      <AnimatedCoinRow sectionData={sectionData} index={4} onPress={handleSelectToken} />
+      <AnimatedCoinRow sectionData={sectionData} index={5} onPress={handleSelectToken} />
+      <AnimatedCoinRow sectionData={sectionData} index={6} onPress={handleSelectToken} />
+      <AnimatedCoinRow sectionData={sectionData} index={7} onPress={handleSelectToken} />
+      <AnimatedCoinRow sectionData={sectionData} index={8} onPress={handleSelectToken} />
+      <AnimatedCoinRow sectionData={sectionData} index={9} onPress={handleSelectToken} />
+      <AnimatedCoinRow sectionData={sectionData} index={10} onPress={handleSelectToken} />
+      <AnimatedCoinRow sectionData={sectionData} index={11} onPress={handleSelectToken} />
+      <AnimatedCoinRow sectionData={sectionData} index={12} onPress={handleSelectToken} />
+      <AnimatedCoinRow sectionData={sectionData} index={13} onPress={handleSelectToken} />
+      <AnimatedCoinRow sectionData={sectionData} index={14} onPress={handleSelectToken} />
+      <AnimatedCoinRow sectionData={sectionData} index={15} onPress={handleSelectToken} />
+      <AnimatedCoinRow sectionData={sectionData} index={16} onPress={handleSelectToken} />
+      <AnimatedCoinRow sectionData={sectionData} index={17} onPress={handleSelectToken} />
+      <AnimatedCoinRow sectionData={sectionData} index={18} onPress={handleSelectToken} />
+      <AnimatedCoinRow sectionData={sectionData} index={19} onPress={handleSelectToken} />
+      <AnimatedCoinRow sectionData={sectionData} index={20} onPress={handleSelectToken} />
+      {/* <AnimatedFlashListComponent
         data={userAssets.slice(0, 20)}
         ListEmptyComponent={<ListEmpty />}
         keyExtractor={item => item.uniqueId}
@@ -55,8 +77,8 @@ export const TokenToSellList = () => {
             symbol={item.symbol}
           />
         )}
-      />
-    </Stack>
+      /> */}
+    </Box>
   );
 };
 
