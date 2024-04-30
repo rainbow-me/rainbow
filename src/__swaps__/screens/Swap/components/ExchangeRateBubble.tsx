@@ -141,7 +141,7 @@ export const ExchangeRateBubble = () => {
   });
 
   return (
-    <ButtonPressAnimation onPress={() => setExchangeRateIndex((exchangeRateIndex + 1) % 4)} scaleTo={0.925} style={{ marginTop: 4 }}>
+    <ButtonPressAnimation onPress={() => setExchangeRateIndex((exchangeRateIndex + 1) % 4)} scaleTo={0.925}>
       <Box
         as={Animated.View}
         alignItems="center"

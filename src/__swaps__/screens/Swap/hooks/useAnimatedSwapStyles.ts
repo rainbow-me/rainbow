@@ -1,5 +1,6 @@
+/* eslint-disable no-nested-ternary */
 import { SharedValue, interpolate, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
-import { useColorMode } from '@/design-system';
+import { globalColors, useColorMode } from '@/design-system';
 import {
   BASE_INPUT_HEIGHT,
   EXPANDED_INPUT_HEIGHT,
@@ -12,18 +13,24 @@ import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
 import { SwapWarningType, useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 import { spinnerExitConfig } from '@/__swaps__/components/animations/AnimatedSpinner';
+import { NavigationSteps } from './useSwapNavigation';
+import { IS_ANDROID } from '@/env';
+import { safeAreaInsetValues } from '@/utils';
+import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 
 export function useAnimatedSwapStyles({
   SwapInputController,
   SwapWarning,
   inputProgress,
   outputProgress,
+  reviewProgress,
   isFetching,
 }: {
   SwapInputController: ReturnType<typeof useSwapInputsController>;
   SwapWarning: ReturnType<typeof useSwapWarning>;
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
+  reviewProgress: SharedValue<number>;
   isFetching: SharedValue<boolean>;
 }) {
   const { isDarkMode } = useColorMode();
@@ -118,9 +125,27 @@ export function useAnimatedSwapStyles({
 
   const swapActionWrapperStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: opacityWorklet(SwapInputController.bottomColor.value, 0.03),
-      borderTopColor: opacityWorklet(SwapInputController.bottomColor.value, 0.04),
-      borderTopWidth: THICK_BORDER_WIDTH,
+      position: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 'absolute' : 'relative',
+      bottom: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 0 : undefined,
+      height: withSpring(
+        reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 407.68 + safeAreaInsetValues.bottom + 16 : 114,
+        springConfig
+      ),
+      borderTopLeftRadius: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? (IS_ANDROID ? 20 : 40) : 0,
+      borderTopRightRadius: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? (IS_ANDROID ? 20 : 40) : 0,
+      borderWidth: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? THICK_BORDER_WIDTH : 0,
+      borderColor: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? opacityWorklet(globalColors.darkGrey, 0.2) : undefined,
+      backgroundColor:
+        reviewProgress.value === NavigationSteps.SHOW_REVIEW
+          ? isDarkMode
+            ? '#191A1C'
+            : globalColors.white100
+          : opacityWorklet(SwapInputController.bottomColor.value, 0.03),
+      borderTopColor:
+        reviewProgress.value === NavigationSteps.SHOW_REVIEW
+          ? opacityWorklet(globalColors.darkGrey, 0.2)
+          : opacityWorklet(SwapInputController.bottomColor.value, 0.04),
+      paddingTop: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 28 : 16 - THICK_BORDER_WIDTH,
     };
   });
 
@@ -166,6 +191,13 @@ export function useAnimatedSwapStyles({
     };
   });
 
+  const hideWhileReviewing = useAnimatedStyle(() => {
+    return {
+      opacity: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? withTiming(0, fadeConfig) : withTiming(1, fadeConfig),
+      pointerEvents: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 'none' : 'auto',
+    };
+  });
+
   const searchInputAssetButtonWrapperStyle = useAnimatedStyle(() => {
     return {
       backgroundColor: opacityWorklet(SwapInputController.topColor.value, isDarkMode ? 0.1 : 0.08),
@@ -197,6 +229,7 @@ export function useAnimatedSwapStyles({
     assetToSellCaretStyle,
     assetToBuyIconStyle,
     assetToBuyCaretStyle,
+    hideWhileReviewing,
     flipButtonFetchingStyle,
     searchInputAssetButtonStyle,
     searchOutputAssetButtonStyle,

@@ -22,6 +22,10 @@ import { EditWalletContextMenuActions } from '@/screens/ChangeWalletSheet';
 import { toChecksumAddress } from '@/handlers/web3';
 import { IS_IOS, IS_ANDROID } from '@/env';
 import { ContextMenu } from '../context-menu';
+import { convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { useSelector } from 'react-redux';
+import { AppState } from '@/redux/store';
+import { useForegroundColor } from '@/design-system';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
 const NOOP = () => undefined;
@@ -117,16 +121,22 @@ interface AddressRowProps {
 }
 
 export default function AddressRow({ contextMenuActions, data, editMode, onPress }: AddressRowProps) {
+  const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
   const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
   const { address, balance, color: accountColor, ens, image: accountImage, isSelected, isReadOnly, isLedger, label, walletId } = data;
 
   const { colors, isDarkMode } = useTheme();
 
-  let cleanedUpBalance = balance;
-  if (balance === '0.00') {
-    cleanedUpBalance = '0';
-  }
+  const labelQuaternary = useForegroundColor('labelQuaternary');
+
+  const cleanedUpBalance = useMemo(() => {
+    if (balance) {
+      return convertAmountToNativeDisplay(balance, nativeCurrency);
+    } else {
+      return lang.t('wallet.change_wallet.no_balance');
+    }
+  }, [balance, nativeCurrency]);
 
   const cleanedUpLabel = useMemo(() => removeFirstEmojiFromString(label), [label]);
 
@@ -244,7 +254,7 @@ export default function AddressRow({ contextMenuActions, data, editMode, onPress
               <StyledTruncatedText color={colors.dark} testID={`change-wallet-address-row-label-${walletName}`}>
                 {walletName}
               </StyledTruncatedText>
-              <StyledBottomRowText color={colors.alpha(colors.blueGreyDark, 0.5)}>{cleanedUpBalance || 0} ETH</StyledBottomRowText>
+              <StyledBottomRowText color={labelQuaternary}>{cleanedUpBalance}</StyledBottomRowText>
             </ColumnWithMargins>
           </Row>
           <Column style={sx.rightContent}>

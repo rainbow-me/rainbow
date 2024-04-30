@@ -88,6 +88,22 @@ export function chainIdFromChainName(chainName: ChainName) {
   return chainNameToIdMapping[chainName];
 }
 
+export function chainNameForChainIdWithMainnetSubstitution(chainId: ChainId) {
+  if (chainId === ChainId.mainnet) {
+    return 'ethereum';
+  }
+  return chainIdToNameMapping[chainId];
+}
+
+export function chainNameForChainIdWithMainnetSubstitutionWorklet(chainId: ChainId) {
+  'worklet';
+
+  if (chainId === ChainId.mainnet) {
+    return 'ethereum';
+  }
+  return chainIdToNameMapping[chainId];
+}
+
 export function chainNameFromChainId(chainId: ChainId): ChainName {
   return chainIdToNameMapping[chainId];
 }

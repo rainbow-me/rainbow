@@ -90,6 +90,7 @@ const Routes = {
   SWAP_SETTINGS_SHEET: 'SwapSettingsSheet',
   SWIPE_LAYOUT: 'SwipeLayout',
   TRANSACTION_DETAILS: 'TransactionDetails',
+  NO_NEED_WC_SHEET: 'NoNeedWCSheet',
   WALLET_CONNECT_APPROVAL_SHEET: 'WalletConnectApprovalSheet',
   WALLET_CONNECT_REDIRECT_SHEET: 'WalletConnectRedirectSheet',
   WALLET_NOTIFICATIONS_SETTINGS: 'WalletNotificationsSettings',

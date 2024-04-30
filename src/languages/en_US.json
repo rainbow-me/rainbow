@@ -543,6 +543,9 @@
         "view_on": "View on %{blockExplorerName}",
         "view_on_etherscan": "View on Etherscan"
       },
+      "all_networks": "All Networks",
+      "filter_by_network": "Filter by Network",
+      "my_tokens": "My Tokens",
       "flip": "Flip",
       "max": "Max",
       "movers": {
@@ -1936,6 +1939,7 @@
         "withdraw": "Withdraw",
         "withdraw_symbol": "Withdraw %{symbol}"
       },
+      "unknown": "Unknown",
       "warning": {
         "cost": {
           "are_you_sure_title": "Are you sure?",
@@ -2384,6 +2388,7 @@
       "balance_title": "Balance",
       "buy": "Buy",
       "change_wallet": {
+        "no_balance": "No Balance",
         "balance_eth": "%{balanceEth} ETH",
         "watching": "Watching",
         "ledger": "Ledger"
@@ -2795,6 +2800,15 @@
         "swap": "Swap",
         "bridge": "Bridge",
         "more": "More"
+      },
+      "error": {
+        "title": "Something went wrong",
+        "default_msg": "There was an error loading the page. Please try again."
+      },
+      "no_wc_needed": {
+        "title": "Ooops!",
+        "description": "Seems like you're trying to connect to this dapp via WalletConnect. This is no longer necessary with Rainbow's in-app browser. Go back and choose \"MetaMask\" and everything should work just fine.",
+        "cta": "Got it"
       }
     }
   }

@@ -6,7 +6,7 @@ import Animated, { AnimatedStyle, runOnJS, useAnimatedGestureHandler } from 'rea
 import { ButtonPressAnimation } from '@/components/animations';
 import { IS_IOS } from '@/env';
 
-type GestureHandlerButtonProps = {
+export type GestureHandlerButtonProps = {
   buttonPressWrapperStyleIOS?: StyleProp<ViewStyle>;
   children: React.ReactNode;
   disableButtonPressWrapper?: boolean;
