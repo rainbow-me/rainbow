@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { AnimatedStyle, useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
+import { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { useBrowserContext } from '../BrowserContext';
@@ -16,7 +16,7 @@ export function useTabScreenshotProvider({ tabId }: { tabId: string }) {
     return screenshotData ? screenshotData : initialScreenshotData || undefined;
   });
 
-  const animatedScreenshotStyle: AnimatedStyle = useAnimatedStyle(() => {
+  const animatedScreenshotStyle = useAnimatedStyle(() => {
     const screenshotExists = !!screenshotData.value?.uri;
     const screenshotMatchesTabIdAndUrl = screenshotData.value?.id === tabId && screenshotData.value?.url === animatedTabUrls.value[tabId];
     const animatedIsActiveTab = activeTabInfo.value.tabId === tabId;

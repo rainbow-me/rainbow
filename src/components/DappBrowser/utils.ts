@@ -9,7 +9,7 @@ import { HTTP, HTTPS, RAINBOW_HOME } from './constants';
 // This is the @diegoperini version, which is a bit long but accurate
 // Details on its validation logic: https://gist.github.com/dperini/729294
 // ---------------------------------------------------------------------------- //
-const urlPattern =
+const URL_PATTERN_REGEX =
   /^(?:(?:(?:https?):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z0-9\u00a1-\uffff][a-z0-9\u00a1-\uffff_-]{0,62})?[a-z0-9\u00a1-\uffff]\.)+(?:[a-z\u00a1-\uffff]{2,}\.?))(?::\d{2,5})?(?:[/?#]\S*)?$/i;
 
 export function isValidURL(url: string): boolean {
@@ -17,7 +17,7 @@ export function isValidURL(url: string): boolean {
   if (!urlForValidation.startsWith(HTTP) && !urlForValidation.startsWith(HTTPS)) {
     urlForValidation = HTTPS + urlForValidation;
   }
-  return urlPattern.test(urlForValidation);
+  return URL_PATTERN_REGEX.test(urlForValidation);
 }
 
 export function isValidURLWorklet(url: string): boolean {
@@ -26,7 +26,7 @@ export function isValidURLWorklet(url: string): boolean {
   if (!urlForValidation.startsWith(HTTP) && !urlForValidation.startsWith(HTTPS)) {
     urlForValidation = HTTPS + urlForValidation;
   }
-  return urlPattern.test(urlForValidation);
+  return URL_PATTERN_REGEX.test(urlForValidation);
 }
 
 export const normalizeUrl = (url: string): string => {
@@ -117,6 +117,7 @@ export const getNameFromFormattedUrl = (formattedUrl: string): string => {
 export async function handleShareUrl(url: string): Promise<void> {
   try {
     await Share.share({ message: url });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
     logger.error(new RainbowError('Error sharing browser URL'), {
       message: e.message,

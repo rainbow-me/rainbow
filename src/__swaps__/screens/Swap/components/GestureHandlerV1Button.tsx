@@ -2,7 +2,7 @@ import ConditionalWrap from 'conditional-wrap';
 import React from 'react';
 import { StyleProp, ViewProps, ViewStyle } from 'react-native';
 import { TapGestureHandler, TapGestureHandlerGestureEvent } from 'react-native-gesture-handler';
-import Animated, { runOnJS, useAnimatedGestureHandler } from 'react-native-reanimated';
+import Animated, { AnimatedStyle, runOnJS, useAnimatedGestureHandler } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
 import { IS_IOS } from '@/env';
 
@@ -16,7 +16,7 @@ type GestureHandlerButtonProps = {
   onPressWorklet?: () => void;
   pointerEvents?: ViewProps['pointerEvents'];
   scaleTo?: number;
-  style?: StyleProp<ViewStyle>;
+  style?: StyleProp<ViewStyle> | AnimatedStyle;
 };
 
 /**

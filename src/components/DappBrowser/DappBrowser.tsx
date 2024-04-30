@@ -29,6 +29,7 @@ import { BrowserGestureBlocker } from './components/BrowserGestureBlocker';
 import { useScreenshotAndScrollTriggers } from './hooks/useScreenshotAndScrollTriggers';
 import { pruneScreenshots } from './screenshots';
 import { Search } from './search/Search';
+import { SearchContextProvider } from './search/SearchContext';
 
 export type DappBrowserParams = {
   url: string;
@@ -66,7 +67,9 @@ const DappBrowserComponent = () => {
       </TabViewScrollView>
       <ProgressBar />
       <TabViewToolbar />
-      <Search />
+      <SearchContextProvider>
+        <Search />
+      </SearchContextProvider>
     </>
   );
 };

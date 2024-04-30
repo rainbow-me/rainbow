@@ -1,21 +1,15 @@
-// import { ButtonPressAnimation } from '@/components/animations';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { globalColors, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
-// import { GetdAppsQuery } from '@/graphql/__generated__/metadata';
 import { useKeyboardHeight } from '@/hooks';
-// import * as i18n from '@/languages';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
-// import { useDapps } from '@/resources/metadata/dapps';
-// import { filterList } from '@/utils';
-// import { rankings } from 'match-sorter';
 import React, { useCallback, useState } from 'react';
-import { StyleSheet, TextInput, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Animated, {
+  SharedValue,
   dispatchCommand,
   interpolate,
   runOnJS,
-  useAnimatedRef,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -25,28 +19,25 @@ import { GOOGLE_SEARCH_URL, HTTP, HTTPS } from '../constants';
 import { AccountIcon } from '../search-input/AccountIcon';
 import { SearchInput } from '../search-input/SearchInput';
 import { TabButton } from '../search-input/TabButton';
-import { isValidURLWorklet } from '../utils';
-// import { GoogleSearchResult, SearchResult } from './SearchResult';
+import { isValidURL, isValidURLWorklet } from '../utils';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { useBrowserWorkletsContext } from '../BrowserWorkletsContext';
+import { SearchResults } from './results/SearchResults';
+import { useSearchContext } from './SearchContext';
+import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
+import { DappsContextProvider } from '@/resources/metadata/dapps';
 
 export const Search = React.memo(function Search() {
-  const { animatedActiveTabIndex, currentlyOpenTabIds, searchViewProgress, tabViewProgress, tabViewVisible } = useBrowserContext();
+  const { animatedActiveTabIndex, currentlyOpenTabIds, goToUrl, searchViewProgress, tabViewProgress, tabViewVisible } = useBrowserContext();
   const { toggleTabViewWorklet, updateTabUrlWorklet } = useBrowserWorkletsContext();
+  const { inputRef, keyboardHeight, searchQuery, searchResults } = useSearchContext();
 
   const { isDarkMode } = useColorMode();
 
   const goToPage = useBrowserStore(state => state.goToPage);
 
   const isFocusedValue = useSharedValue(false);
-  const [isFocused, setIsFocused] = useState<boolean>(false);
-  // const [basicSearchResults, setBasicSearchResults] = useState<GetdAppsQuery['dApps']>([]);
-  // const [suggestedSearchResults, setSuggestedSearchResults] = useState<GetdAppsQuery['dApps']>([]);
-  // const [searchQuery, setSearchQuery] = useState<string>('');
-
-  const keyboardHeight = useKeyboardHeight({ shouldListen: isFocused });
-  const inputRef = useAnimatedRef<TextInput>();
 
   const barStyle = useAnimatedStyle(() => {
     const opacity = 1 - tabViewProgress.value / 75;
@@ -63,17 +54,13 @@ export const Search = React.memo(function Search() {
     pointerEvents: tabViewVisible?.value ? 'none' : 'auto',
   }));
 
-  // const displayNoneInTabView = useAnimatedStyle(() => ({
-  //   display: (tabViewProgress?.value ?? 0) >= 50 ? 'none' : 'flex',
-  // }));
-
   const accountIconStyle = useAnimatedStyle(() => ({
     opacity: withSpring(isFocusedValue.value ? 0 : 1, SPRING_CONFIGS.keyboardConfig),
     pointerEvents: isFocusedValue.value ? 'none' : 'auto',
   }));
 
   const bottomBarStyle = useAnimatedStyle(() => {
-    const translateY = isFocusedValue.value ? -(keyboardHeight - (IS_IOS ? 82 : 46)) : 0;
+    const translateY = isFocusedValue.value ? -(keyboardHeight.value - (IS_IOS ? 82 : 46)) : 0;
 
     return {
       transform: [
@@ -86,14 +73,36 @@ export const Search = React.memo(function Search() {
 
   const backgroundStyle = useAnimatedStyle(() => ({
     opacity: searchViewProgress.value,
-    pointerEvents: searchViewProgress.value ? 'auto' : 'none',
+    pointerEvents: isFocusedValue.value ? 'auto' : 'none',
     zIndex: searchViewProgress.value ? 1 : -1,
   }));
 
+  // ⚠️ TODO: Consolidate these duplicate functions
   const handleUrlSubmit = useCallback(
-    (currentUrl: string | undefined, updatedUrl: string) => {
+    (updatedUrl: string) => {
+      let newUrl = updatedUrl;
+
+      if (!isValidURL(newUrl)) {
+        newUrl = GOOGLE_SEARCH_URL + newUrl;
+      } else if (!newUrl.startsWith(HTTP) && !newUrl.startsWith(HTTPS)) {
+        newUrl = HTTPS + newUrl;
+      }
+
+      inputRef.current?.blur();
+      goToUrl(newUrl);
+    },
+    [goToUrl, inputRef]
+  );
+
+  // ⚠️ TODO: Consolidate these duplicate functions
+  const handleUrlSubmitWorklet = useCallback(
+    (updatedUrl: string) => {
       'worklet';
       let newUrl = updatedUrl;
+
+      if (searchResults.value.length > 0 && searchResults.value[0].url) {
+        newUrl = searchResults.value[0].url;
+      }
 
       if (!isValidURLWorklet(newUrl)) {
         newUrl = GOOGLE_SEARCH_URL + newUrl;
@@ -105,113 +114,35 @@ export const Search = React.memo(function Search() {
       runOnJS(goToPage)(newUrl);
       updateTabUrlWorklet(newUrl, tabId);
     },
-    [animatedActiveTabIndex, currentlyOpenTabIds, goToPage, updateTabUrlWorklet]
+    [animatedActiveTabIndex, currentlyOpenTabIds, goToPage, searchResults, updateTabUrlWorklet]
   );
 
   const onAddressInputPressWorklet = useCallback(() => {
     'worklet';
     isFocusedValue.value = true;
     searchViewProgress.value = withSpring(1, SPRING_CONFIGS.snappierSpringConfig);
-    runOnJS(setIsFocused)(true);
     dispatchCommand(inputRef, 'focus');
   }, [inputRef, isFocusedValue, searchViewProgress]);
 
   const onBlur = useCallback(() => {
     'worklet';
-    // setBasicSearchResults([]);
-    // setSearchQuery(inputValue ?? '');
-    runOnJS(setIsFocused)(false);
     searchViewProgress.value = withSpring(0, SPRING_CONFIGS.snappierSpringConfig);
     isFocusedValue.value = false;
-  }, [isFocusedValue, searchViewProgress]);
+    searchQuery.value = '';
+  }, [isFocusedValue, searchQuery, searchViewProgress]);
 
   return (
     <>
+      <KeyboardHeightSetter isFocused={isFocusedValue} />
       <Animated.View style={[backgroundStyle, styles.searchBackground, { backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD' }]}>
-        {/* <Inset horizontal="16px" top={{ custom: 80 }}>
-          <Box
-            as={ButtonPressAnimation}
-            background="fill"
-            height={{ custom: 32 }}
-            width={{ custom: 32 }}
-            borderRadius={32}
-            alignItems="center"
-            right={{ custom: 0 }}
-            top={{ custom: 0 }}
-            style={{ zIndex: 1000 }}
-            justifyContent="center"
-            position="absolute"
-            onPress={() => inputRef?.current?.blur()}
-          >
-            <Text weight="heavy" color="labelSecondary" size="icon 15px" align="center">
-              􀆄
-            </Text>
-          </Box>
-          <Inset top={{ custom: 9 }}>
-            <Stack space="32px">
-              {searchQuery.length && suggestedSearchResults?.length && (
-                <Stack space="12px">
-                  <Inset horizontal="8px" bottom={{ custom: 9 }}>
-                    <Inline alignHorizontal="justify" alignVertical="center">
-                      <Inline space="6px" alignVertical="center">
-                        <TextIcon color="blue" size="icon 15px" weight="heavy" width={20}>
-                          􀐫
-                        </TextIcon>
-                        <Text weight="heavy" color="label" size="20pt">
-                          Suggested
-                        </Text>
-                      </Inline>
-                    </Inline>
-                  </Inset>
-                  <Stack space="4px">
-                    {suggestedSearchResults.map(dapp => (
-                      <SearchResult
-                        suggested
-                        iconUrl={dapp!.iconURL}
-                        key={dapp!.url}
-                        name={dapp!.name}
-                        onPress={onPressSearchResult}
-                        url={dapp!.url}
-                      />
-                    ))}
-                  </Stack>
-                </Stack>
-              )}
-              {searchQuery.length && basicSearchResults?.length && (
-                <Stack space="12px">
-                  <Inset horizontal="8px">
-                    <Inline space="6px" alignVertical="center">
-                      <TextIcon color="labelSecondary" size="icon 15px" weight="heavy" width={20}>
-                        􀊫
-                      </TextIcon>
-                      <Text weight="heavy" color="label" size="20pt">
-                        More Results
-                      </Text>
-                    </Inline>
-                  </Inset>
-                  <Stack space="4px">
-                    <GoogleSearchResult query={searchQuery} onPress={onPressSearchResult} />
-                    {basicSearchResults.map(dapp => (
-                      <SearchResult
-                        iconUrl={dapp!.iconURL}
-                        key={dapp!.url}
-                        name={dapp!.name}
-                        onPress={onPressSearchResult}
-                        url={dapp!.url}
-                      />
-                    ))}
-                  </Stack>
-                </Stack>
-              )}
-            </Stack>
-          </Inset>
-        </Inset> */}
+        <DappsContextProvider>
+          <SearchResults goToUrl={handleUrlSubmit} isFocused={isFocusedValue} />
+        </DappsContextProvider>
       </Animated.View>
       <Animated.View style={[bottomBarStyle, styles.bottomBarStyle]}>
         <Animated.View style={[styles.barStyle, barStyle, expensiveBarStyles]}>
-          <Animated.View style={[accountIconStyle, styles.controlPanelButton /* , styles.accountIcon */]}>
+          <Animated.View style={[accountIconStyle, styles.accountIcon]}>
             <AccountIcon />
-            {/* <ControlPanelButton /> */}
           </Animated.View>
 
           <View style={styles.searchInputContainer}>
@@ -219,25 +150,40 @@ export const Search = React.memo(function Search() {
               canGoBack={true}
               canGoForward={true}
               onPressWorklet={onAddressInputPressWorklet}
-              isFocused={isFocused}
               isFocusedValue={isFocusedValue}
               inputRef={inputRef}
               onBlur={onBlur}
-              onSubmitEditing={handleUrlSubmit}
+              onSubmitEditing={handleUrlSubmitWorklet}
             />
           </View>
-          <TabButton
-            inputRef={inputRef}
-            isFocused={isFocused}
-            isFocusedValue={isFocusedValue}
-            setIsFocused={setIsFocused}
-            toggleTabViewWorklet={toggleTabViewWorklet}
-          />
+          <TabButton inputRef={inputRef} isFocusedValue={isFocusedValue} toggleTabViewWorklet={toggleTabViewWorklet} />
         </Animated.View>
       </Animated.View>
     </>
   );
 });
+
+const KeyboardHeightSetter = ({ isFocused }: { isFocused: SharedValue<boolean> }) => {
+  const { keyboardHeight } = useSearchContext();
+  const [isFocusedState, setIsFocusedState] = useState(false);
+
+  useSyncSharedValue({
+    setState: setIsFocusedState,
+    sharedValue: isFocused,
+    state: isFocusedState,
+    syncDirection: 'sharedValueToState',
+  });
+
+  const trueKeyboardHeight = useKeyboardHeight({ shouldListen: isFocusedState });
+
+  useSyncSharedValue({
+    sharedValue: keyboardHeight,
+    state: trueKeyboardHeight,
+    syncDirection: 'stateToSharedValue',
+  });
+
+  return null;
+};
 
 const styles = StyleSheet.create({
   accountIcon: { left: 24, position: 'absolute' },

@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
-import { NativeSyntheticEvent, StyleSheet, TextInput, TextInputSubmitEditingEventData, View } from 'react-native';
-// import MaskedView from '@react-native-masked-view/masked-view';
+import { NativeSyntheticEvent, StyleSheet, TextInput, TextInputChangeEventData, TextInputSubmitEditingEventData, View } from 'react-native';
+import MaskedView from '@react-native-masked-view/masked-view';
 import { AnimatedText, Box, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import Animated, {
   AnimatedRef,
@@ -28,7 +28,7 @@ import { useBrowserStore } from '@/state/browser/browserStore';
 import { useFavoriteDappsStore } from '@/state/favoriteDapps';
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-// import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
+import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
 import { opacity } from '@/__swaps__/utils/swaps';
 import haptics from '@/utils/haptics';
 import { useBrowserContext } from '../BrowserContext';
@@ -36,27 +36,27 @@ import { BrowserButtonShadows } from '../DappBrowserShadows';
 import { ToolbarIcon } from '../ToolbarIcon';
 import { RAINBOW_HOME } from '../constants';
 import { getNameFromFormattedUrl, handleShareUrl } from '../utils';
+import { useSearchContext } from '../search/SearchContext';
 
+export const SEARCH_BAR_HEIGHT = 48;
 const SEARCH_PLACEHOLDER_TEXT = i18n.t(i18n.l.dapp_browser.address_bar.input_placeholder);
 
 export const SearchInput = React.memo(function SearchInput({
-  inputRef,
-  onPressWorklet,
-  onBlur,
-  onSubmitEditing,
-  isFocused,
-  isFocusedValue,
   canGoBack,
   canGoForward,
+  inputRef,
+  isFocusedValue,
+  onBlur,
+  onPressWorklet,
+  onSubmitEditing,
 }: {
-  inputRef: AnimatedRef<TextInput>;
-  onPressWorklet: () => void;
-  onBlur: () => void;
-  onSubmitEditing: (currentUrl: string | undefined, updatedUrl: string) => void;
-  isFocused: boolean;
-  isFocusedValue: SharedValue<boolean>;
   canGoBack: boolean;
   canGoForward: boolean;
+  inputRef: AnimatedRef<TextInput>;
+  isFocusedValue: SharedValue<boolean>;
+  onBlur: () => void;
+  onPressWorklet: () => void;
+  onSubmitEditing: (newUrl: string) => void;
 }) {
   const { activeTabInfo, goBack, goForward, onRefresh, tabViewProgress } = useBrowserContext();
 
@@ -90,7 +90,6 @@ export const SearchInput = React.memo(function SearchInput({
   const isFavorite = useFavoriteDappsStore(state => state.isFavorite(formattedUrlValue.value));
 
   const handleFavoritePress = useCallback(() => {
-    // const url = animatedTabUrls.value[currentlyOpenTabIds.value[Math.abs(animatedActiveTabIndex.value)]];
     const url = formattedUrlValue.value;
     if (url) {
       if (isFavorite) {
@@ -179,7 +178,6 @@ export const SearchInput = React.memo(function SearchInput({
           formattedUrlValue={formattedUrlValue}
           isFocusedValue={isFocusedValue}
           inputRef={inputRef}
-          isFocused={isFocused}
           onBlur={onBlur}
           onPressWorklet={onPressWorklet}
           onSubmitEditing={onSubmitEditing}
@@ -211,7 +209,6 @@ const AddressBar = React.memo(function AddressBar({
   formattedUrlValue,
   isFocusedValue,
   inputRef,
-  isFocused,
   onBlur,
   onPressWorklet,
   onSubmitEditing,
@@ -220,13 +217,13 @@ const AddressBar = React.memo(function AddressBar({
   formattedUrlValue: DerivedValue<string>;
   isFocusedValue: SharedValue<boolean>;
   inputRef: AnimatedRef<TextInput>;
-  isFocused: boolean;
   onBlur: () => void;
   onPressWorklet: () => void;
-  onSubmitEditing: (currentUrl: string | undefined, updatedUrl: string) => void;
+  onSubmitEditing: (newUrl: string) => void;
   pointerEventsStyle: AnimatedStyle;
 }) {
   const { activeTabInfo } = useBrowserContext();
+  const { searchQuery } = useSearchContext();
   const { isDarkMode } = useColorMode();
 
   const fillSecondary = useForegroundColor('fillSecondary');
@@ -237,8 +234,12 @@ const AddressBar = React.memo(function AddressBar({
   const buttonColorAndroid = isDarkMode ? globalColors.blueGrey100 : globalColors.white100;
   const buttonColor = IS_IOS ? buttonColorIOS : buttonColorAndroid;
 
-  const buttonWrapperStyle = useAnimatedStyle(() => ({
-    pointerEvents: isFocusedValue.value ? 'auto' : 'box-only',
+  const animatedButtonWrapperStyle = useAnimatedStyle(() => ({
+    pointerEvents: isFocusedValue.value ? 'none' : 'auto',
+  }));
+
+  const animatedInputContentWrapperStyle = useAnimatedStyle(() => ({
+    pointerEvents: isFocusedValue.value ? 'auto' : 'none',
   }));
 
   const inputStyle = useAnimatedStyle(() => ({
@@ -247,12 +248,13 @@ const AddressBar = React.memo(function AddressBar({
   }));
 
   const formattedInputStyle = useAnimatedStyle(() => ({
+    display: activeTabInfo.value.url === RAINBOW_HOME ? 'none' : 'flex',
     opacity: isFocusedValue.value ? withTiming(0, TIMING_CONFIGS.fadeConfig) : withSpring(1, SPRING_CONFIGS.keyboardConfig),
   }));
 
-  const formattedInputTextStyle = useAnimatedStyle(() => ({
-    color: formattedUrlValue.value === SEARCH_PLACEHOLDER_TEXT ? labelQuaternary : label,
-    paddingHorizontal: formattedUrlValue.value === SEARCH_PLACEHOLDER_TEXT ? 0 : 40,
+  const searchPlaceholderStyle = useAnimatedStyle(() => ({
+    display: activeTabInfo.value.url === RAINBOW_HOME ? 'flex' : 'none',
+    opacity: isFocusedValue.value ? withTiming(0, TIMING_CONFIGS.fadeConfig) : withSpring(1, SPRING_CONFIGS.keyboardConfig),
   }));
 
   const searchInputValue = useAnimatedProps(() => {
@@ -268,10 +270,10 @@ const AddressBar = React.memo(function AddressBar({
     (newUrl: string) => {
       'worklet';
       if (newUrl) {
-        onSubmitEditing(activeTabInfo.value.url, newUrl);
+        onSubmitEditing(newUrl);
       }
     },
-    [activeTabInfo, onSubmitEditing]
+    [onSubmitEditing]
   );
 
   const handlePressGo = useCallback(
@@ -284,82 +286,101 @@ const AddressBar = React.memo(function AddressBar({
     [inputRef, updateUrl]
   );
 
+  const onSearchQueryChange = useCallback(
+    (event: NativeSyntheticEvent<TextInputChangeEventData>) => {
+      searchQuery.value = event.nativeEvent.text;
+    },
+    [searchQuery]
+  );
+
   return (
-    <GestureHandlerV1Button
-      disabled={isFocused}
-      onPressWorklet={onPressWorklet}
-      scaleTo={0.965}
-      style={[buttonWrapperStyle, styles.buttonWrapper]}
-    >
-      <AnimatedInput
-        clearButtonMode="while-editing"
-        enablesReturnKeyAutomatically
-        keyboardType="web-search"
-        placeholder={i18n.t(i18n.l.dapp_browser.address_bar.input_placeholder)}
-        placeholderTextColor={labelQuaternary}
-        onBlur={onBlur}
-        onSubmitEditing={handlePressGo}
-        ref={inputRef}
-        returnKeyType="go"
-        selectTextOnFocus
-        spellCheck={false}
-        style={[
-          inputStyle,
-          styles.input,
-          {
-            color: label,
-          },
-        ]}
-        textAlign="left"
-        textAlignVertical="center"
-        animatedProps={searchInputValue}
-      />
-      {/* <MaskedView
-        maskElement={
-          <FadeMask
-            fadeEdgeInset={isFocused || formattedUrlValue.value === SEARCH_PLACEHOLDER_TEXT ? 0 : 36}
-            fadeWidth={isFocused || formattedUrlValue.value === SEARCH_PLACEHOLDER_TEXT ? 0 : 12}
-            height={48}
-            side="right"
-          />
-        }
-        style={styles.fadeMaskStyle}
-      > */}
-      <View style={styles.fadeMaskStyle}>
-        <Animated.View style={[formattedInputStyle, styles.formattedInputTextContainer]}>
-          <AnimatedText
-            align="center"
-            ellipsizeMode="clip"
-            numberOfLines={1}
-            size="17pt"
-            style={[styles.formattedInputText, formattedInputTextStyle]}
-            weight="bold"
+    <View style={styles.inputContainer}>
+      <Animated.View style={[styles.gestureHandlerButton, animatedButtonWrapperStyle]}>
+        <GestureHandlerV1Button
+          buttonPressWrapperStyleIOS={styles.gestureHandlerButton}
+          onPressWorklet={onPressWorklet}
+          scaleTo={0.965}
+          style={styles.gestureHandlerButton}
+        >
+          <MaskedView
+            maskElement={<FadeMask fadeEdgeInset={36} fadeWidth={12} height={SEARCH_BAR_HEIGHT} side="right" />}
+            style={styles.fadeMaskStyle}
           >
-            {formattedUrlValue}
-          </AnimatedText>
-        </Animated.View>
-      </View>
-      {/* </MaskedView> */}
-      {IS_IOS && (
-        <Box
-          as={AnimatedBlurView}
-          blurAmount={20}
-          blurType={isDarkMode ? 'dark' : 'light'}
-          style={[styles.blurViewStyle, pointerEventsStyle]}
+            <Animated.View style={[formattedInputStyle, styles.formattedInputTextContainer]}>
+              <AnimatedText
+                align="center"
+                color="label"
+                ellipsizeMode="clip"
+                numberOfLines={1}
+                size="17pt"
+                style={styles.formattedInputText}
+                weight="bold"
+              >
+                {formattedUrlValue}
+              </AnimatedText>
+            </Animated.View>
+          </MaskedView>
+          <Animated.View style={[searchPlaceholderStyle, styles.fadeMaskStyle, styles.formattedInputTextContainer]}>
+            <AnimatedText
+              align="center"
+              color="labelQuaternary"
+              ellipsizeMode="clip"
+              numberOfLines={1}
+              size="17pt"
+              style={styles.formattedInputText}
+              weight="bold"
+            >
+              {formattedUrlValue}
+            </AnimatedText>
+          </Animated.View>
+          {IS_IOS && (
+            <Box
+              as={AnimatedBlurView}
+              blurAmount={20}
+              blurType={isDarkMode ? 'dark' : 'light'}
+              style={[styles.blurViewStyle, pointerEventsStyle]}
+            />
+          )}
+          <Animated.View
+            style={[
+              {
+                backgroundColor: buttonColor,
+                borderColor: separatorSecondary,
+                borderWidth: IS_IOS && isDarkMode ? THICK_BORDER_WIDTH : 0,
+              },
+              styles.inputBorderStyle,
+              pointerEventsStyle,
+            ]}
+          />
+        </GestureHandlerV1Button>
+      </Animated.View>
+      <Animated.View style={[styles.inputContentWrapper, animatedInputContentWrapperStyle]}>
+        <AnimatedInput
+          animatedProps={searchInputValue}
+          clearButtonMode="while-editing"
+          enablesReturnKeyAutomatically
+          keyboardType="web-search"
+          onBlur={onBlur}
+          onChange={onSearchQueryChange}
+          onSubmitEditing={handlePressGo}
+          placeholder={i18n.t(i18n.l.dapp_browser.address_bar.input_placeholder)}
+          placeholderTextColor={labelQuaternary}
+          ref={inputRef}
+          returnKeyType="go"
+          selectTextOnFocus
+          spellCheck={false}
+          style={[
+            inputStyle,
+            styles.input,
+            {
+              color: label,
+            },
+          ]}
+          textAlign="left"
+          textAlignVertical="center"
         />
-      )}
-      <Animated.View
-        style={[
-          {
-            backgroundColor: buttonColor,
-            borderColor: separatorSecondary,
-            borderWidth: IS_IOS && isDarkMode ? THICK_BORDER_WIDTH : 0,
-          },
-          styles.inputBorderStyle,
-          pointerEventsStyle,
-        ]}
-      />
-    </GestureHandlerV1Button>
+      </Animated.View>
+    </View>
   );
 });
 
@@ -410,18 +431,20 @@ function formatUrlForSearchInput(url: string | undefined, prettifyUrl?: boolean)
 }
 
 const styles = StyleSheet.create({
-  blurViewStyle: { borderCurve: 'continuous', borderRadius: 18, height: 48, position: 'absolute', width: '100%' },
-  buttonWrapper: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
+  blurViewStyle: {
+    borderCurve: 'continuous',
+    borderRadius: 18,
+    height: SEARCH_BAR_HEIGHT,
+    position: 'absolute',
+    width: '100%',
   },
   fadeMaskStyle: {
     alignItems: 'center',
     flex: 1,
     flexDirection: 'row',
-    height: 48,
+    height: SEARCH_BAR_HEIGHT,
     justifyContent: 'center',
+    pointerEvents: 'none',
     position: 'absolute',
     width: '100%',
     zIndex: 99,
@@ -435,25 +458,40 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: '100%',
   },
+  gestureHandlerButton: {
+    height: SEARCH_BAR_HEIGHT,
+    width: '100%',
+  },
   input: {
     flex: 1,
     fontSize: 20,
-    height: IS_IOS ? 48 : 60,
+    height: IS_IOS ? SEARCH_BAR_HEIGHT : 60,
     letterSpacing: 0.36,
     lineHeight: IS_IOS ? undefined : 24,
     marginRight: 7,
     paddingLeft: 16,
     paddingRight: 9,
     paddingVertical: 10,
-    width: '100%',
     zIndex: 100,
     ...fontWithWidth(font.weight.semibold),
   },
   inputBorderStyle: {
     borderCurve: 'continuous',
     borderRadius: 18,
-    height: 48,
+    height: SEARCH_BAR_HEIGHT,
     overflow: 'hidden',
+    position: 'absolute',
+    width: '100%',
+  },
+  inputContainer: {
+    alignItems: 'center',
+    height: SEARCH_BAR_HEIGHT,
+    justifyContent: 'center',
+    pointerEvents: 'box-none',
+    width: '100%',
+  },
+  inputContentWrapper: {
+    height: SEARCH_BAR_HEIGHT,
     position: 'absolute',
     width: '100%',
   },
