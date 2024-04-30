@@ -1,12 +1,13 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { TextInput } from 'react-native';
-import Animated, { runOnUI, useAnimatedRef, useDerivedValue } from 'react-native-reanimated';
+import Animated, { useAnimatedRef, useDerivedValue } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Input } from '@/components/inputs';
 import { AnimatedText, Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { swapSearchStore } from '@/state/swaps/search';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
 
@@ -21,7 +22,7 @@ export const SearchInput = ({
   handleFocusSearch: () => void;
   output?: boolean;
 }) => {
-  const { inputProgress, outputProgress, SwapInputController, AnimatedSwapStyles } = useSwapContext();
+  const { inputProgress, outputProgress, AnimatedSwapStyles } = useSwapContext();
   const { isDarkMode } = useColorMode();
 
   const inputRef = useAnimatedRef<TextInput>();
@@ -38,9 +39,13 @@ export const SearchInput = ({
     return 'Close';
   });
 
+  const onChangeSearchQuery = useCallback((query: string) => {
+    swapSearchStore.setState({ query });
+  }, []);
+
   const initialValue = useMemo(() => {
-    return SwapInputController.searchQuery.value;
-  }, [SwapInputController.searchQuery.value]);
+    return swapSearchStore.getState().query;
+  }, []);
 
   return (
     <Box width="full">
@@ -69,9 +74,10 @@ export const SearchInput = ({
                 </Column>
                 <AnimatedInput
                   onChange={e => {
-                    runOnUI(SwapInputController.onChangeSearchQuery)(e.nativeEvent.text);
+                    onChangeSearchQuery(e.nativeEvent.text);
                   }}
                   onBlur={() => {
+                    onChangeSearchQuery('');
                     handleExitSearch();
                   }}
                   onFocus={() => {

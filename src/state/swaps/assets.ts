@@ -10,7 +10,7 @@ export interface SwapAssetsState {
   assetToBuyPrice: number;
 
   setAssetToSell: (asset: ParsedSearchAsset) => void;
-  setAssetToBuy: (asset: ParsedSearchAsset) => void;
+  setAssetToBuy: (asset: ParsedSearchAsset) => Promise<void>;
   setAssetToSellPrice: (price: number) => void;
   setAssetToBuyPrice: (price: number) => void;
 }
@@ -36,7 +36,7 @@ export const swapAssetStore = createStore<SwapAssetsState>((set, get) => ({
 
     set({ assetToSell: asset, assetToSellPrice: 0 });
   },
-  setAssetToBuy: (asset: ParsedSearchAsset) => {
+  setAssetToBuy: async (asset: ParsedSearchAsset) => {
     const currentAssetToBuy = get().assetToBuy;
     // Do nothing if the user is trying to set the same asset as what's already set
     if (currentAssetToBuy && isSameAsset(asset, currentAssetToBuy)) {

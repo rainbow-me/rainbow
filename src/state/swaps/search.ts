@@ -1,4 +1,4 @@
-import { useStore } from 'zustand';
+import { create } from 'zustand';
 import { createStore } from '@/state/internal/createStore';
 
 export interface SwapSearchState {
@@ -11,4 +11,4 @@ export const swapSearchStore = createStore<SwapSearchState>(set => ({
   setQuery: query => set({ query }),
 }));
 
-export const useSwapSearchStore = () => useStore(swapSearchStore);
+export const useSwapSearchStore = create(swapSearchStore);

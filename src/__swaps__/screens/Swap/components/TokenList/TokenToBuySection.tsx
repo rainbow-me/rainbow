@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { TextStyle } from 'react-native';
-import Animated, { useDerivedValue } from 'react-native-reanimated';
+import Animated, { runOnUI, useDerivedValue } from 'react-native-reanimated';
 import { FlashList } from '@shopify/flash-list';
 
 import * as i18n from '@/languages';
@@ -15,6 +15,8 @@ import { parseSearchAsset, isSameAsset } from '@/__swaps__/utils/assets';
 
 import { useAssetsToSell } from '@/__swaps__/screens/Swap/hooks/useAssetsToSell';
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
+import { swapAssetStore } from '@/state/swaps/assets';
+import { useSwapSortByStore } from '@/state/swaps/sortBy';
 
 interface SectionProp {
   color: TextStyle['color'];
@@ -65,8 +67,10 @@ const bridgeSectionsColorsByChain = {
 const AnimatedFlashListComponent = Animated.createAnimatedComponent(FlashList<SearchAsset>);
 
 export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) => {
-  const { SwapInputController } = useSwapContext();
+  const { SwapNavigation } = useSwapContext();
   const userAssets = useAssetsToSell();
+
+  const outputChainId = useSwapSortByStore(state => state.outputChainId);
 
   const handleSelectToken = useCallback(
     (token: SearchAsset) => {
@@ -77,9 +81,18 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
         userAsset,
       });
 
-      SwapInputController.onSetAssetToBuy(parsedAsset);
+      swapAssetStore.setState({
+        assetToBuy: parsedAsset,
+      });
+
+      const assetToSell = swapAssetStore.getState().assetToSell;
+      if (!assetToSell) {
+        runOnUI(SwapNavigation.handleInputPress)();
+      } else {
+        runOnUI(SwapNavigation.handleOutputPress)();
+      }
     },
-    [SwapInputController, userAssets]
+    [SwapNavigation.handleInputPress, SwapNavigation.handleOutputPress, userAssets]
   );
 
   const { symbol, title } = sectionProps[section.id];
@@ -91,7 +104,7 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
       return sectionProps[section.id].color as TextColor;
     }
 
-    return bridgeSectionsColorsByChain[SwapInputController.outputChainId.value || ChainId.mainnet] as TextColor;
+    return bridgeSectionsColorsByChain[outputChainId || ChainId.mainnet] as TextColor;
   });
 
   if (!section.data.length) return null;
@@ -125,14 +138,13 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
           </Inline>
         </Box>
 
-        {/* TODO: fix this from causing the UI to be completely slow... */}
         <AnimatedFlashListComponent
+          // {/* TODO: this is a hacky fix until we can figure out why these lists render really slowly... */}
           data={section.data.slice(0, 5)}
           ListEmptyComponent={<ListEmpty />}
           keyExtractor={item => `${item.uniqueId}-${section.id}`}
           renderItem={({ item }) => (
             <CoinRow
-              key={item.uniqueId}
               chainId={item.chainId}
               color={item.colors?.primary ?? item.colors?.fallback}
               iconUrl={item.icon_url}

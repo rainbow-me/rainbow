@@ -1,5 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { PanGestureHandler, TapGestureHandler, TapGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 import Animated, {
@@ -34,13 +34,13 @@ import {
   snappySpringConfig,
   springConfig,
 } from '@/__swaps__/screens/Swap/constants';
-import { clamp, opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { clamp, extractColorValueForColors, opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { SwapCoinIcon } from '@/__swaps__/screens/Swap/components/SwapCoinIcon';
 import { useTheme } from '@/theme';
-import { useSwapAssetStore } from '@/__swaps__/screens/Swap/state/assets';
+import { useSwapAssets } from '@/state/swaps/assets';
 import { ethereumUtils } from '@/utils';
-import { ChainId } from '@/__swaps__/types/chains';
+import { TokenColors } from '@/graphql/__generated__/metadata';
 
 type SwapSliderProps = {
   dualColor?: boolean;
@@ -61,7 +61,20 @@ export const SwapSlider = ({
   const { isDarkMode } = useColorMode();
   const { SwapInputController, sliderXPosition, sliderPressProgress } = useSwapContext();
 
-  const { assetToSell } = useSwapAssetStore();
+  const assetToSellIconUrl = useSwapAssets(state => state.assetToSell?.icon_url);
+  const assetToSellChainId = useSwapAssets(state => state.assetToSell?.chainId);
+  const assetToSellSymbol = useSwapAssets(state => state.assetToSell?.symbol);
+  const assetToSellAddress = useSwapAssets(state => state.assetToSell?.address);
+  const assetToSellMainnetAddress = useSwapAssets(state => state.assetToSell?.mainnetAddress);
+
+  const assetToSellColors = useSwapAssets(state => state.assetToSell?.colors);
+
+  const assetToSellColor = useMemo(() => {
+    return extractColorValueForColors({
+      colors: assetToSellColors as TokenColors,
+      isDarkMode,
+    });
+  }, [assetToSellColors, isDarkMode]);
 
   const panRef = useRef();
   const tapRef = useRef();
@@ -377,14 +390,15 @@ export const SwapSlider = ({
               <Columns alignHorizontal="justify" alignVertical="center">
                 <Inline alignVertical="center" space="6px" wrap={false}>
                   <Bleed vertical="4px">
+                    {/* TODO: Move this into a separate component */}
                     <SwapCoinIcon
-                      color={SwapInputController.topColorShadow.value}
-                      iconUrl={assetToSell?.icon_url}
-                      address={assetToSell?.address ?? ''}
-                      mainnetAddress={assetToSell?.mainnetAddress ?? ''}
-                      network={ethereumUtils.getNetworkFromChainId(Number(assetToSell?.chainId ?? ChainId.mainnet))}
+                      color={assetToSellColor}
+                      iconUrl={assetToSellIconUrl}
+                      address={assetToSellAddress ?? ''}
+                      mainnetAddress={assetToSellMainnetAddress ?? ''}
+                      network={ethereumUtils.getNetworkFromChainId(Number(assetToSellChainId))}
                       small
-                      symbol={assetToSell?.symbol ?? ''}
+                      symbol={assetToSellSymbol ?? ''}
                       theme={theme}
                     />
                   </Bleed>

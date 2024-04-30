@@ -1,5 +1,5 @@
 import MaskedView from '@react-native-masked-view/masked-view';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, StatusBar } from 'react-native';
 import Animated, { runOnUI, useDerivedValue } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
@@ -20,6 +20,10 @@ import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider
 import { useAssetsToSell } from '@/__swaps__/screens/Swap/hooks/useAssetsToSell';
 import { isSameAssetWorklet } from '@/__swaps__/utils/assets';
 import { ethereumUtils } from '@/utils';
+import { useSwapAssets } from '@/state/swaps/assets';
+import { ChainId } from '@/__swaps__/types/chains';
+import { extractColorValueForColors } from '@/__swaps__/utils/swaps';
+import { TokenColors } from '@/graphql/__generated__/metadata';
 
 function SwapInputActionButton() {
   const { isDarkMode } = useColorMode();
@@ -67,31 +71,36 @@ function SwapInputAmount() {
 }
 
 function SwapInputIcon() {
-  const { SwapInputController, AnimatedSwapStyles } = useSwapContext();
+  const { isDarkMode } = useColorMode();
+
+  const assetToSellIconUrl = useSwapAssets(state => state.assetToSell?.icon_url);
+  const assetToSellChainId = useSwapAssets(state => state.assetToSell?.chainId);
+  const assetToSellSymbol = useSwapAssets(state => state.assetToSell?.symbol);
+  const assetToSellAddress = useSwapAssets(state => state.assetToSell?.address);
+  const assetToSellMainnetAddress = useSwapAssets(state => state.assetToSell?.mainnetAddress);
+
+  const assetToSellColors = useSwapAssets(state => state.assetToSell?.colors);
+
+  const assetToSellColor = useMemo(() => {
+    return extractColorValueForColors({
+      colors: assetToSellColors as TokenColors,
+      isDarkMode,
+    });
+  }, [assetToSellColors, isDarkMode]);
   const theme = useTheme();
 
   return (
     <Box paddingRight="10px">
-      {!SwapInputController.assetToSell.value ? (
-        <Box
-          as={Animated.View}
-          borderRadius={18}
-          height={{ custom: 36 }}
-          style={[styles.solidColorCoinIcon, AnimatedSwapStyles.assetToSellIconStyle]}
-          width={{ custom: 36 }}
-        />
-      ) : (
-        <SwapCoinIcon
-          color={SwapInputController.topColor.value}
-          iconUrl={SwapInputController.assetToSell.value.icon_url}
-          address={SwapInputController.assetToSell.value.address}
-          large
-          mainnetAddress={SwapInputController.assetToSell.value.mainnetAddress}
-          network={ethereumUtils.getNetworkFromChainId(SwapInputController.assetToSell.value.chainId)}
-          symbol={SwapInputController.assetToSell.value.symbol}
-          theme={theme}
-        />
-      )}
+      <SwapCoinIcon
+        color={assetToSellColor}
+        iconUrl={assetToSellIconUrl}
+        address={assetToSellAddress ?? ''}
+        large
+        mainnetAddress={assetToSellMainnetAddress ?? ''}
+        network={ethereumUtils.getNetworkFromChainId(assetToSellChainId ?? ChainId.mainnet)}
+        symbol={assetToSellSymbol ?? ''}
+        theme={theme}
+      />
     </Box>
   );
 }

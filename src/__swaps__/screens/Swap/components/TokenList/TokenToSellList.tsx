@@ -5,16 +5,17 @@ import { useAssetsToSell } from '@/__swaps__/screens/Swap/hooks/useAssetsToSell'
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { Stack } from '@/design-system';
 import Animated, { runOnUI } from 'react-native-reanimated';
-import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { parseSearchAsset, isSameAsset } from '@/__swaps__/utils/assets';
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
 import { FlashList } from '@shopify/flash-list';
 import { ChainSelection } from './ChainSelection';
+import { swapAssetStore } from '@/state/swaps/assets';
+import { useSwapContext } from '../../providers/swap-provider';
 
 const AnimatedFlashListComponent = Animated.createAnimatedComponent(FlashList<ParsedSearchAsset>);
 
 export const TokenToSellList = () => {
-  const { SwapInputController } = useSwapContext();
+  const { SwapNavigation } = useSwapContext();
   const userAssets = useAssetsToSell();
 
   const handleSelectToken = useCallback(
@@ -26,9 +27,18 @@ export const TokenToSellList = () => {
         userAsset,
       });
 
-      runOnUI(SwapInputController.onSetAssetToSell)(parsedAsset);
+      swapAssetStore.setState({
+        assetToSell: parsedAsset,
+      });
+
+      const assetToBuy = swapAssetStore.getState().assetToBuy;
+      if (!assetToBuy) {
+        runOnUI(SwapNavigation.handleOutputPress)();
+      } else {
+        runOnUI(SwapNavigation.handleInputPress)();
+      }
     },
-    [SwapInputController.onSetAssetToSell, userAssets]
+    [SwapNavigation.handleInputPress, SwapNavigation.handleOutputPress, userAssets]
   );
 
   return (
@@ -36,12 +46,11 @@ export const TokenToSellList = () => {
       <ChainSelection allText="All Networks" output={false} />
 
       <AnimatedFlashListComponent
-        data={userAssets.slice(0, 20)}
+        data={userAssets}
         ListEmptyComponent={<ListEmpty />}
         keyExtractor={item => item.uniqueId}
         renderItem={({ item }) => (
           <CoinRow
-            key={item.uniqueId}
             chainId={item.chainId}
             color={item.colors?.primary ?? item.colors?.fallback}
             iconUrl={item.icon_url}

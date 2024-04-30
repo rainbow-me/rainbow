@@ -1,5 +1,5 @@
 import { createStore } from '../internal/createStore';
-import { useStore } from 'zustand';
+import { create } from 'zustand';
 import { CrosschainQuote, Quote, QuoteError, QuoteParams, SwapType, getCrosschainQuote, getQuote } from '@rainbow-me/swaps';
 import { RainbowError, logger } from '@/logger';
 
@@ -46,7 +46,7 @@ export const swapQuoteStore = createStore<SwapQuoteStore>(set => ({
   clearQuote: () => set({ quote: null }),
 }));
 
-export const useSwapSearchStore = () => useStore(swapQuoteStore);
+export const useSwapSearchStore = create(swapQuoteStore);
 
 export const pollSwapQuote = (quoteParams: QuoteParams) => {
   const { getQuote, pollRef, setPollRef } = swapQuoteStore.getState();

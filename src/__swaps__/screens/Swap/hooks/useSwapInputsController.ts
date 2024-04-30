@@ -11,7 +11,7 @@ import {
   clamp,
   clampJS,
   countDecimalPlaces,
-  extractColorValueForColors,
+  extractColorValueForColorsWorklet,
   findNiceIncrement,
   getDefaultSlippage,
   getDefaultSlippageWorklet,
@@ -98,14 +98,14 @@ export function useSwapInputsController({
   const isQuoteStale = useSharedValue(0);
 
   const topColor = useDerivedValue(() => {
-    return extractColorValueForColors({
+    return extractColorValueForColorsWorklet({
       colors: assetToSell.value?.colors,
       isDarkMode,
     });
   });
 
   const bottomColor = useDerivedValue(() => {
-    return extractColorValueForColors({
+    return extractColorValueForColorsWorklet({
       colors: assetToBuy.value?.colors,
       isDarkMode,
     });

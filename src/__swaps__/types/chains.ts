@@ -87,6 +87,24 @@ export const chainPolygonAmoy: Chain = {
   testnet: true,
 };
 
+export const chainDegen: Chain = {
+  id: 666666666,
+  name: 'Degen Chain',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'Degen',
+    symbol: 'DEGEN',
+  },
+  rpcUrls: {
+    public: { http: ['https://rpc.degen.tips'] },
+    default: { http: ['https://rpc.degen.tips'] },
+  },
+  blockExplorers: {
+    default: { name: 'Degen Explorer', url: 'https://explorer.degen.tips/' },
+  },
+  testnet: false,
+};
+
 export enum ChainName {
   arbitrum = 'arbitrum',
   arbitrumNova = 'arbitrum-nova',
@@ -98,6 +116,7 @@ export enum ChainName {
   blastSepolia = 'blast-sepolia',
   bsc = 'bsc',
   celo = 'celo',
+  degen = 'degen',
   gnosis = 'gnosis',
   linea = 'linea',
   manta = 'manta',
@@ -133,6 +152,7 @@ export enum ChainId {
   bsc = chain.bsc.id,
   bscTestnet = chain.bscTestnet.id,
   celo = chain.celo.id,
+  degen = chainDegen.id,
   gnosis = chain.gnosis.id,
   hardhat = HARDHAT_CHAIN_ID,
   hardhatOptimism = chainHardhatOptimism.id,

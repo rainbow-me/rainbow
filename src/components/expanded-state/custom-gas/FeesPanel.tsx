@@ -271,7 +271,7 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
 
       setCustomFees({
         customMaxBaseFee: text,
-        customMaxPriorityFee: selectedGasFee.gasFeeParams.maxPriorityFeePerGas.gwei,
+        customMaxPriorityFee: selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.gwei,
       });
 
       const newGasParams = {
@@ -287,7 +287,7 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
     (text: string) => {
       const maxPriorityFeePerGas = parseGasFeeParam(gweiToWei(text || 0));
 
-      if (greaterThan(0, maxPriorityFeePerGas.amount)) return;
+      if (greaterThan(0, maxPriorityFeePerGas?.amount)) return;
 
       setCustomFees({
         customMaxBaseFee: selectedGasFee?.gasFeeParams?.maxBaseFee?.gwei,
