@@ -108,64 +108,54 @@ export const getWebsiteMetadata = `
 
 export const freezeWebsite = `(function() {
     // Pause media elements
-    var mediaElements = document.querySelectorAll('video, audio');
+    var mediaElements = document.querySelectorAll('video:not([paused]), audio:not([paused])');
     mediaElements.forEach(function(element) {
+      element.setAttribute('data-frozen-playback-state', element.paused ? 'paused' : 'playing');
+      element.setAttribute('data-frozen', 'true');
       element.pause();
     });
   
     // Suspend expensive animations and transitions
     var animatedElements = document.querySelectorAll('*[style*="animation"], *[style*="transition"]');
     animatedElements.forEach(function(element) {
+      element.setAttribute('data-frozen-animation-play-state', element.style.animationPlayState);
+      element.setAttribute('data-frozen-transition-property', element.style.transitionProperty);
       element.style.animationPlayState = 'paused';
       element.style.transitionProperty = 'none';
     });
-  
-    // Disable expensive CSS properties
-    var expensiveElements = document.querySelectorAll('*[style*="filter"], *[style*="transform"], *[style*="opacity"], *[style*="box-shadow"]');
-    expensiveElements.forEach(function(element) {
-      element.style.filter = 'none';
-      element.style.transform = 'none';
-      element.style.opacity = '1';
-      element.style.boxShadow = 'none';
+
+    // Suspend keyframe animations
+    var keyframeAnimatedElements = document.querySelectorAll('*[style*="animation-name"]');
+    keyframeAnimatedElements.forEach(function(element) {
+      element.setAttribute('data-frozen-animation-name', element.style.animationName);
+      element.style.animationName = 'none';
     });
-  
-    // Suspend expensive JavaScript operations
-    var originalSetTimeout = window.setTimeout;
-    var originalSetInterval = window.setInterval;
-    var originalRequestAnimationFrame = window.requestAnimationFrame;
-    window.setTimeout = function() {};
-    window.setInterval = function() {};
-    window.requestAnimationFrame = function() {};
-    window.__originalSetTimeout = originalSetTimeout;
-    window.__originalSetInterval = originalSetInterval;
-    window.__originalRequestAnimationFrame = originalRequestAnimationFrame;
   })();`;
 
 export const unfreezeWebsite = `(function() {
     // Resume media elements
-    var mediaElements = document.querySelectorAll('video, audio');
-    mediaElements.forEach(function(element) {
-      element.play();
+    var pausedMediaElements = document.querySelectorAll('video[data-frozen="true"], audio[data-frozen="true"]');
+    pausedMediaElements.forEach(function(element) {
+      if (element.getAttribute('data-frozen-playback-state') === 'playing') {
+        element.play();
+      }
+      element.removeAttribute('data-frozen');
+      element.removeAttribute('data-frozen-playback-state');
     });
-  
+
     // Resume animations and transitions
     var animatedElements = document.querySelectorAll('*[style*="animation"], *[style*="transition"]');
     animatedElements.forEach(function(element) {
-      element.style.animationPlayState = 'running';
-      element.style.transitionProperty = '';
+      element.style.animationPlayState = element.getAttribute('data-frozen-animation-play-state') || 'running';
+      element.style.transitionProperty = element.getAttribute('data-frozen-transition-property') || '';
+      element.removeAttribute('data-frozen-animation-play-state');
+      element.removeAttribute('data-frozen-transition-property');
     });
-  
-    // Restore expensive CSS properties
-    var expensiveElements = document.querySelectorAll('*[style*="filter"], *[style*="transform"], *[style*="opacity"], *[style*="box-shadow"]');
-    expensiveElements.forEach(function(element) {
-      element.style.filter = '';
-      element.style.transform = '';
-      element.style.opacity = '';
-      element.style.boxShadow = '';
+
+    // Resume keyframe animations
+    var keyframeAnimatedElements = document.querySelectorAll('*[style*="animation-name"]');
+    keyframeAnimatedElements.forEach(function(element) {
+      element.style.animationName = element.getAttribute('data-frozen-animation-name') || '';
+      element.removeAttribute('data-frozen-animation-name');
     });
-  
-    // Resume expensive JavaScript operations
-    window.setTimeout = window.__originalSetTimeout;
-    window.setInterval = window.__originalSetInterval;
-    window.requestAnimationFrame = window.__originalRequestAnimationFrame;
   })();`;

@@ -50,7 +50,7 @@ import {
 import { handleProviderRequestApp } from './handleProviderRequest';
 import { useAnimatedTab } from './hooks/useAnimatedTab';
 import { useTabScreenshotProvider } from './hooks/useTabScreenshotProvider';
-import { getWebsiteMetadata } from './scripts';
+import { freezeWebsite, getWebsiteMetadata, unfreezeWebsite } from './scripts';
 import { BrowserTabProps, ScreenshotType } from './types';
 import { normalizeUrlForRecents } from './utils';
 
@@ -145,7 +145,7 @@ const TabScreenshot = React.memo(function TabScreenshot({
   });
 
   return (
-    // ⚠️ TODO: This works but we should figure out how to type this correctly
+    // ⚠️ TODO: This works but we should figure out how to type this correctly to avoid this error
     // @ts-expect-error: Doesn't pick up that its getting a source prop via animatedProps
     <AnimatedFasterImage animatedProps={animatedProps} style={[styles.screenshotContainerStyle, animatedStyle]} />
   );
@@ -171,9 +171,9 @@ const FreezableWebViewComponent = ({
   const { activeTabRef, animatedActiveTabIndex, currentlyOpenTabIds, loadProgress, screenshotCaptureRef } = useBrowserContext();
   const { updateTabUrlWorklet } = useBrowserWorkletsContext();
 
-  const currentMessenger = useRef<any>(null);
-  const logo = useRef<string | null>(null);
-  const title = useRef<string | null>(null);
+  const currentMessengerRef = useRef<any>(null);
+  const logoRef = useRef<string | null>(null);
+  const titleRef = useRef<string | null>(null);
   const webViewRef = useRef<WebView>(null);
 
   const isActiveTab = useBrowserStore(state => state.isTabActive(tabId));
@@ -197,11 +197,11 @@ const FreezableWebViewComponent = ({
             backgroundColor.value = bgColor;
           }
           if (logoUrl && typeof logoUrl === 'string') {
-            logo.current = logoUrl;
+            logoRef.current = logoUrl;
             setLogo(logoUrl, tabId);
           }
           if (pageTitle && typeof pageTitle === 'string') {
-            title.current = pageTitle;
+            titleRef.current = pageTitle;
             setTitle(pageTitle, tabId);
           }
 
@@ -212,7 +212,7 @@ const FreezableWebViewComponent = ({
             timestamp: Date.now(),
           });
         } else {
-          const m = currentMessenger.current;
+          const m = currentMessengerRef.current;
           handleProviderRequestApp({
             messenger: m,
             data: parsedData,
@@ -221,7 +221,7 @@ const FreezableWebViewComponent = ({
               sender: {
                 url: m.url,
                 tab: { id: tabId },
-                title: title.current || tabUrl,
+                title: titleRef.current || tabUrl,
               },
               id: parsedData.id,
             },
@@ -245,7 +245,7 @@ const FreezableWebViewComponent = ({
         }
 
         const messenger = appMessenger(webViewRef.current, tabId, origin);
-        currentMessenger.current = messenger;
+        currentMessengerRef.current = messenger;
       }
     },
     [webViewRef, tabId]
@@ -294,8 +294,8 @@ const FreezableWebViewComponent = ({
     if (isActiveTab) {
       if (webViewRef?.current) {
         activeTabRef.current = webViewRef.current;
-        if (title.current) {
-          activeTabRef.current.title = title.current;
+        if (titleRef.current) {
+          activeTabRef.current.title = titleRef.current;
         }
       }
     }
@@ -307,21 +307,15 @@ const FreezableWebViewComponent = ({
     }
   }, [isActiveTab, screenshotCaptureRef, viewShotRef]);
 
-  // ⚠️ TODO: These scripts likely make sense in some form, but the current implementations cause the WebView
-  // to stop triggering navigation state change events, and it's possible they break things on certain websites.
-  // We need to figure out what we can safely freeze (media playback, etc.) and then re-enable them.
-
-  // useEffect(() => {
-  //   if (webViewRef?.current) {
-  //     if (isActiveTab) {
-  //       webViewRef.current.injectJavaScript(freezeWebsite);
-  //     } else {
-  //       webViewRef.current.injectJavaScript(unfreezeWebsite);
-  //     }
-  //   }
-  // }, [isActiveTab, webViewRef]);
-
-  // END TODO
+  useEffect(() => {
+    if (webViewRef?.current) {
+      if (isActiveTab) {
+        webViewRef.current.injectJavaScript(unfreezeWebsite);
+      } else {
+        webViewRef.current.injectJavaScript(freezeWebsite);
+      }
+    }
+  }, [isActiveTab, webViewRef]);
 
   return (
     <Freeze freeze={!isActiveTab}>
