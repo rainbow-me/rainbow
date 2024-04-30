@@ -58,7 +58,7 @@ export const SearchInput = React.memo(function SearchInput({
   onPressWorklet: () => void;
   onSubmitEditing: (newUrl: string) => void;
 }) {
-  const { activeTabInfo, goBack, goForward, onRefresh, tabViewProgress } = useBrowserContext();
+  const { activeTabInfo, goBack, goForward, refreshPage, tabViewProgress } = useBrowserContext();
 
   const addFavorite = useFavoriteDappsStore(state => state.addFavorite);
   const removeFavorite = useFavoriteDappsStore(state => state.removeFavorite);
@@ -198,7 +198,7 @@ export const SearchInput = React.memo(function SearchInput({
           </ContextMenuButton>
         </Box>
         <Box as={Animated.View} position="absolute" right="0px" style={toolbarIconStyle}>
-          <ToolbarIcon color="label" icon="􀅈" onPress={onRefresh} side="right" size="icon 17px" weight="heavy" />
+          <ToolbarIcon color="label" icon="􀅈" onPress={refreshPage} side="right" size="icon 17px" weight="heavy" />
         </Box>
       </Box>
     </BrowserButtonShadows>

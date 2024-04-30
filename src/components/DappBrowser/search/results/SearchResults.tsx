@@ -120,8 +120,8 @@ export const SearchResults = React.memo(function SearchResults({
     height: DEVICE_HEIGHT - keyboardHeight.value,
     opacity: searchQuery.value ? 0 : searchViewProgress.value * 0.6,
     transform: [
-      { scale: withSpring(isFocused.value ? 1 : 0.75, SPRING_CONFIGS.snappySpringConfig) },
-      { translateY: withSpring(isFocused.value ? 0 : 100, SPRING_CONFIGS.snappySpringConfig) },
+      { scale: withSpring(isFocused.value ? 1 : 0.8, SPRING_CONFIGS.snappySpringConfig) },
+      { translateY: withSpring(isFocused.value ? 0 : 80, SPRING_CONFIGS.snappySpringConfig) },
     ],
   }));
 

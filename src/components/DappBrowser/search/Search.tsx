@@ -181,7 +181,10 @@ const KeyboardHeightSetter = ({ isFocused }: { isFocused: SharedValue<boolean> }
 };
 
 const styles = StyleSheet.create({
-  accountIcon: { left: 24, position: 'absolute' },
+  accountIcon: {
+    left: 24,
+    position: 'absolute',
+  },
   barStyle: {
     alignItems: 'center',
     flexDirection: 'row',

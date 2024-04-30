@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { isEqual } from 'lodash';
 import React, { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
 import { Freeze } from 'react-freeze';
 import { StyleSheet, View } from 'react-native';
@@ -57,7 +56,7 @@ import { freezeWebsite, getWebsiteMetadata, unfreezeWebsite } from './scripts';
 import { BrowserTabProps, ScreenshotType } from './types';
 import { normalizeUrlForRecents } from './utils';
 
-export const BrowserTab = React.memo(function BrowserTab({ addRecent, injectedJS, setLogo, setTitle, tabId }: BrowserTabProps) {
+export const BrowserTab = React.memo(function BrowserTab({ addRecent, setLogo, setTitle, tabId }: BrowserTabProps) {
   const { isDarkMode } = useColorMode();
   const isOnHomepage = useBrowserStore(state => state.getTabData?.(tabId)?.url === RAINBOW_HOME);
   const viewShotRef = useRef<ViewShot | null>(null);
@@ -91,7 +90,6 @@ export const BrowserTab = React.memo(function BrowserTab({ addRecent, injectedJS
                   <FreezableWebView
                     addRecent={addRecent}
                     backgroundColor={backgroundColor}
-                    injectedJS={injectedJS}
                     setLogo={setLogo}
                     setTitle={setTitle}
                     tabId={tabId}
@@ -157,7 +155,6 @@ const TabScreenshot = React.memo(function TabScreenshot({
 const FreezableWebViewComponent = ({
   addRecent,
   backgroundColor,
-  injectedJS,
   setLogo,
   setTitle,
   tabId,
@@ -165,7 +162,6 @@ const FreezableWebViewComponent = ({
 }: {
   addRecent: (recent: Site) => void;
   backgroundColor: SharedValue<string>;
-  injectedJS: string;
   setLogo: (logoUrl: string, tabId: string) => void;
   setTitle: (title: string, tabId: string) => void;
   tabId: string;
@@ -334,7 +330,6 @@ const FreezableWebViewComponent = ({
   return (
     <Freeze freeze={!isActiveTab}>
       <TabWebView
-        injectedJavaScriptBeforeContentLoaded={injectedJS}
         onError={handleOnError}
         onLoad={handleOnLoad}
         onLoadStart={handleOnLoadStart}
@@ -377,13 +372,7 @@ const TabWebViewComponent = (props: WebViewProps, ref: React.Ref<WebView>) => {
   );
 };
 
-const TabWebView = React.memo(React.forwardRef(TabWebViewComponent), (prevProps: WebViewProps, nextProps: WebViewProps) => {
-  // Get an array of prop names excluding `injectedJavaScriptBeforeContentLoaded`
-  const propNames = Object.keys(prevProps).filter(key => key !== 'injectedJavaScriptBeforeContentLoaded');
-
-  // Compare the filtered props using isEqual from lodash with proper type handling
-  return propNames.every(key => isEqual(prevProps[key as keyof WebViewProps], nextProps[key as keyof WebViewProps]));
-});
+const TabWebView = React.memo(React.forwardRef(TabWebViewComponent));
 
 interface TabGestureHandlerProps {
   animatedTabIndex: SharedValue<number>;

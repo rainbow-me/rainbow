@@ -27,7 +27,6 @@ export type TabOperation = CloseTabOperation | NewTabOperation;
 
 export interface BrowserTabProps {
   addRecent: (site: Site) => void;
-  injectedJS: string;
   setLogo: (logoUrl: string, tabId: string) => void;
   setTitle: (title: string, tabId: string) => void;
   tabId: string;

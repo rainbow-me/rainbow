@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { InteractionManager, StyleSheet } from 'react-native';
-import RNFS from 'react-native-fs';
 import Animated, {
   interpolateColor,
   useAnimatedProps,
@@ -144,7 +143,6 @@ const TabViewScrollView = ({ children }: { children: React.ReactNode }) => {
 
 const TabViewContent = React.memo(function TabViewContent() {
   const { currentlyBeingClosedTabIds, currentlyOpenTabIds } = useBrowserContext();
-  const { injectedJS } = useInjectJSBundle();
 
   const tabIds = useBrowserStore(state => state.tabIds);
   const addRecent = useBrowserHistoryStore(state => state.addRecent);
@@ -164,40 +162,12 @@ const TabViewContent = React.memo(function TabViewContent() {
 
   return (
     <>
-      {injectedJS &&
-        tabIds.map(tabId => (
-          <BrowserTab addRecent={addRecent} injectedJS={injectedJS} key={tabId} setLogo={setLogo} setTitle={setTitle} tabId={tabId} />
-        ))}
+      {tabIds.map(tabId => (
+        <BrowserTab addRecent={addRecent} key={tabId} setLogo={setLogo} setTitle={setTitle} tabId={tabId} />
+      ))}
     </>
   );
 });
-
-const getInjectedJS = async () => {
-  const baseDirectory = IS_ANDROID ? RNFS.DocumentDirectoryPath : RNFS.MainBundlePath;
-
-  if (IS_ANDROID) {
-    return RNFS.readFileRes('injected_js_bundle.js', 'utf8');
-  } else {
-    return RNFS.readFile(`${baseDirectory}/InjectedJSBundle.js`, 'utf8');
-  }
-};
-
-function useInjectJSBundle() {
-  const [injectedJS, setInjectedJS] = useState<string | undefined>(undefined);
-
-  useEffect(() => {
-    const loadInjectedJS = async () => {
-      try {
-        setInjectedJS(await getInjectedJS());
-      } catch (e) {
-        console.log('error', e);
-      }
-    };
-    loadInjectedJS();
-  }, []);
-
-  return { injectedJS };
-}
 
 const styles = StyleSheet.create({
   rootViewBackground: {
