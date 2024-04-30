@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { SharedValue, runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
 
@@ -19,12 +19,11 @@ import { useSwapAssets } from '@/state/swaps/assets';
 
 export function useSwapInputsController({
   focusedInput,
-  setIsFetching,
+  isFetching,
   sliderXPosition,
 }: {
   focusedInput: SharedValue<inputKeys>;
   isFetching: SharedValue<boolean>;
-  setIsFetching: React.Dispatch<React.SetStateAction<boolean>>;
   sliderXPosition: SharedValue<number>;
 }) {
   const inputValues = useSharedValue<{ [key in inputKeys]: number | string }>({
@@ -37,9 +36,9 @@ export function useSwapInputsController({
   const isQuoteStale = useSharedValue(0);
 
   const inputAssetBalance = useSwapAssets(state => state.assetToSell?.balance.amount) ?? '0';
-  const inputAssetNativePrice = useSwapAssets(state => state.assetToSell?.native.price?.amount) ?? '0';
+  const inputAssetNativePrice = useSwapAssets(state => state.assetToSellPrice) ?? '0';
   const inputAssetStablecoin = useSwapAssets(state => state.assetToSell?.type === 'stablecoin');
-  const outputAssetNativePrice = useSwapAssets(state => state.assetToBuy?.native.price?.amount) ?? '0';
+  const outputAssetNativePrice = useSwapAssets(state => state.assetToBuyPrice) ?? '0';
   const outputAssetStablecoin = useSwapAssets(state => state.assetToBuy?.type === 'stablecoin');
 
   const percentageToSwap = useDerivedValue(() => {
@@ -52,11 +51,18 @@ export function useSwapInputsController({
   const formattedInputAmount = useDerivedValue(() => {
     if (inputMethod.value === 'slider' && percentageToSwap.value === 0) return '0';
     if (inputMethod.value === 'inputAmount' || typeof inputValues.value.inputAmount === 'string') {
+      if (Number(inputValues.value.inputAmount) === 0) return '0';
+
       return addCommasToNumber(inputValues.value.inputAmount);
     }
+
     if (inputMethod.value === 'outputAmount') {
+      if (!Number(inputAssetBalance) || Number(inputValues.value.inputAmount) === 0) return '0';
+
       return valueBasedDecimalFormatter(inputValues.value.inputAmount, Number(inputAssetBalance), 'up', -1, inputAssetStablecoin, false);
     }
+
+    if (!Number(inputAssetBalance) || !Number(inputAssetNativePrice)) return '0';
 
     return niceIncrementFormatter(
       incrementDecimalPlaces,
@@ -69,7 +75,12 @@ export function useSwapInputsController({
   });
 
   const formattedInputNativeValue = useDerivedValue(() => {
-    if (inputMethod.value === 'slider' && percentageToSwap.value === 0) return '$0.00';
+    if (
+      (inputMethod.value === 'slider' && percentageToSwap.value === 0) ||
+      Number(inputValues.value.inputNativeValue) === 0 ||
+      Number.isNaN(inputValues.value.inputNativeValue)
+    )
+      return '$0.00';
 
     const nativeValue = `$${inputValues.value.inputNativeValue.toLocaleString('en-US', {
       useGrouping: true,
@@ -84,8 +95,12 @@ export function useSwapInputsController({
     if (inputMethod.value === 'slider' && percentageToSwap.value === 0) return '0';
 
     if (inputMethod.value === 'outputAmount' || typeof inputValues.value.outputAmount === 'string') {
+      if (Number(inputValues.value.outputAmount) === 0) return '0';
+
       return addCommasToNumber(inputValues.value.outputAmount);
     }
+
+    if (Number(inputValues.value.outputAmount) === 0 || !Number(outputAssetNativePrice)) return '0';
 
     return valueBasedDecimalFormatter(
       inputValues.value.outputAmount,
@@ -98,7 +113,12 @@ export function useSwapInputsController({
   });
 
   const formattedOutputNativeValue = useDerivedValue(() => {
-    if (inputMethod.value === 'slider' && percentageToSwap.value === 0) return '$0.00';
+    if (
+      (inputMethod.value === 'slider' && percentageToSwap.value === 0) ||
+      Number(inputValues.value.outputNativeValue) === 0 ||
+      Number.isNaN(inputValues.value.outputNativeValue)
+    )
+      return '$0.00';
 
     const nativeValue = `$${inputValues.value.outputNativeValue.toLocaleString('en-US', {
       useGrouping: true,
@@ -121,7 +141,7 @@ export function useSwapInputsController({
     resetTimers();
 
     const updateValues = () => {
-      setIsFetching(false);
+      isFetching.value = false;
       const inputNativeValue = percentage * Number(inputAssetBalance) * Number(inputAssetNativePrice);
       const outputAmount = (inputNativeValue / Number(outputAssetNativePrice)) * (1 - SWAP_FEE);
       const outputNativeValue = outputAmount * Number(outputAssetNativePrice);
@@ -143,12 +163,12 @@ export function useSwapInputsController({
 
     if (percentage > 0) {
       if (setStale) isQuoteStale.value = 1;
-      setIsFetching(true);
+      isFetching.value = true;
       spinnerTimer.current = setTimeout(() => {
         animationFrameId.current = requestAnimationFrame(updateValues);
       }, 600);
     } else {
-      setIsFetching(false);
+      isFetching.value = false;
       isQuoteStale.value = 0;
     }
 
@@ -161,7 +181,7 @@ export function useSwapInputsController({
     resetTimers();
 
     const updateValues = () => {
-      setIsFetching(false);
+      isFetching.value = false;
       if (inputKey === 'inputAmount') {
         const inputNativeValue = amount * Number(inputAssetNativePrice);
         const outputAmount = (inputNativeValue / Number(outputAssetNativePrice)) * (1 - SWAP_FEE);
@@ -208,7 +228,7 @@ export function useSwapInputsController({
     };
 
     const resetValuesToZero = () => {
-      setIsFetching(false);
+      isFetching.value = false;
 
       const updateWorklet = () => {
         'worklet';
@@ -236,7 +256,7 @@ export function useSwapInputsController({
 
     if (amount > 0) {
       if (setStale) isQuoteStale.value = 1;
-      setIsFetching(true);
+      isFetching.value = true;
       spinnerTimer.current = setTimeout(() => {
         animationFrameId.current = requestAnimationFrame(updateValues);
       }, 600);

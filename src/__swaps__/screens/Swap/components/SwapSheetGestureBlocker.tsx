@@ -13,27 +13,29 @@ export const SwapSheetGestureBlocker = ({
   children: React.ReactNode;
   preventScrollViewDismissal?: boolean;
 }) => {
-  const { reviewProgress, inputProgress, outputProgress } = useSwapContext();
-  const [enabled, setEnabled] = useState<boolean>(false);
+  // const { reviewProgress, inputProgress, outputProgress } = useSwapContext();
+  // // const [enabled, setEnabled] = useState<boolean>(false);
 
-  useAnimatedReaction(
-    () => ({
-      reviewProgress: reviewProgress.value,
-      inputProgress: inputProgress.value,
-      outputProgress: outputProgress.value,
-    }),
-    current => {
-      runOnJS(setEnabled)(
-        current.reviewProgress === NavigationSteps.SHOW_REVIEW ||
-          current.inputProgress !== NavigationSteps.INPUT_ELEMENT_FOCUSED ||
-          current.outputProgress !== NavigationSteps.INPUT_ELEMENT_FOCUSED
-      );
-    }
-  );
+  // useAnimatedReaction(
+  //   () => ({
+  //     reviewProgress: reviewProgress.value,
+  //     inputProgress: inputProgress.value,
+  //     outputProgress: outputProgress.value,
+  //   }),
+  //   current => {
+  //     runOnJS(setEnabled)(
+  //       current.reviewProgress === NavigationSteps.SHOW_REVIEW ||
+  //         current.inputProgress !== NavigationSteps.INPUT_ELEMENT_FOCUSED ||
+  //         current.outputProgress !== NavigationSteps.INPUT_ELEMENT_FOCUSED
+  //     );
+  //   }
+  // );
+
+  console.log('re-rendering SwapSheetGestureBlocker');
 
   return IS_IOS ? (
     // @ts-expect-error
-    <PanGestureHandler enabled={enabled}>
+    <PanGestureHandler enabled={false}>
       <View style={{ height: '100%', width: '100%' }}>
         <>
           {children}

@@ -20,16 +20,20 @@ export const TokenToSellList = () => {
 
   const handleSelectToken = useCallback(
     (token: ParsedSearchAsset) => {
-      const userAsset = userAssets.find(asset => isSameAsset(asset, token));
-      const parsedAsset = parseSearchAsset({
-        assetWithPrice: undefined,
-        searchAsset: token,
-        userAsset,
-      });
+      const currentAsset = swapAssetStore.getState().assetToSell;
+      if (currentAsset && !isSameAsset(currentAsset, token)) {
+        const userAsset = userAssets.find(asset => isSameAsset(asset, token));
+        const parsedAsset = parseSearchAsset({
+          assetWithPrice: undefined,
+          searchAsset: token,
+          userAsset,
+        });
 
-      swapAssetStore.setState({
-        assetToSell: parsedAsset,
-      });
+        swapAssetStore.setState({
+          assetToSell: parsedAsset,
+          assetToSellPrice: parsedAsset.native.price?.amount ?? 0,
+        });
+      }
 
       const assetToBuy = swapAssetStore.getState().assetToBuy;
       if (!assetToBuy) {

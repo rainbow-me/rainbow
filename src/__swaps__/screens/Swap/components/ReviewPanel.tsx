@@ -25,7 +25,7 @@ import { convertRawAmountToNativeDisplay } from '@/__swaps__/utils/numbers';
 import { useAccountSettings } from '@/hooks';
 import { FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
 import { supportedNativeCurrencies } from '@/references';
-import { swapAssetStore, useSwapAssets } from '@/state/swaps/assets';
+import { useSwapAssets } from '@/state/swaps/assets';
 import { useSwapQuoteStore } from '@/state/swaps/quote';
 import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
 import { swapSettingsStore, useSwapSettings } from '@/state/swaps/settings';
@@ -102,9 +102,8 @@ export function ReviewPanel() {
   const unknown = i18n.t(i18n.l.swap.unknown);
   const outputChainId = useSwapAssets(state => state.assetToBuy?.chainId) ?? ChainId.mainnet;
   const outputAssetSymbol = useSwapAssets(state => state.assetToBuy?.symbol);
-  const slippage = useSwapSettings(state => state.slippage_in_bips);
+  const slippage = useSwapSettings(state => state.slippage);
   const chainName = useMemo(() => (outputChainId === ChainId.mainnet ? 'ethereum' : chainNameFromChainId(outputChainId)), [outputChainId]);
-
   const slippageText = useDerivedValue(() => `${slippage}%`);
 
   const minimumReceived = useDerivedValue(() => {
@@ -118,10 +117,10 @@ export function ReviewPanel() {
 
   const onSetSlippage = useCallback((operation: 'increment' | 'decrement') => {
     const value = operation === 'increment' ? SLIPPAGE_STEP : -SLIPPAGE_STEP;
-    const currentValue = swapSettingsStore.getState().slippage_in_bips;
+    const currentValue = swapSettingsStore.getState().slippage;
 
     swapSettingsStore.setState({
-      slippage_in_bips: Math.max(0.5, currentValue + value),
+      slippage: Math.max(0.5, Number(currentValue) + value).toString(),
     });
   }, []);
 

@@ -2,7 +2,7 @@
 import React from 'react';
 
 import { AnimatedText, Box, Inline, globalColors, useColorMode, useForegroundColor } from '@/design-system';
-import Animated, { useAnimatedStyle, useDerivedValue, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, { runOnJS, runOnUI, useAnimatedStyle, useDerivedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { fadeConfig, springConfig } from '../constants';
 import { opacityWorklet } from '@/__swaps__/utils/swaps';
 import { GestureHandlerButtonProps, GestureHandlerV1Button } from './GestureHandlerV1Button';
@@ -55,7 +55,7 @@ export function AnimatedSwitch({ onToggle, value, activeLabel, inactiveLabel, ..
 
   if (labelItem.value) {
     return (
-      <GestureHandlerV1Button onPressWorklet={onToggle} {...props}>
+      <GestureHandlerV1Button onPressJS={onToggle} {...props}>
         <Inline alignVertical="center" horizontalSpace="6px">
           <AnimatedText align="right" color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="heavy" text={labelItem} />
           <Box as={Animated.View} style={[styles.containerStyles, containerStyles]}>
@@ -67,7 +67,7 @@ export function AnimatedSwitch({ onToggle, value, activeLabel, inactiveLabel, ..
   }
 
   return (
-    <GestureHandlerV1Button onPressWorklet={onToggle} style={[styles.containerStyles, containerStyles]} {...props}>
+    <GestureHandlerV1Button onPressJS={onToggle} style={[styles.containerStyles, containerStyles]} {...props}>
       <Box as={Animated.View} style={[styles.circleStyles, circleStyles]} />
     </GestureHandlerV1Button>
   );

@@ -37,7 +37,9 @@ export const swapAssetStore = createStore<SwapAssetsState>((set, get) => ({
       set({ assetToBuy: null, assetToBuyPrice: 0 });
     }
 
-    set({ assetToSell: asset, assetToSellPrice: 0 });
+    console.log(JSON.stringify(asset, null, 2));
+
+    set({ assetToSell: asset, assetToSellPrice: asset.native.price?.amount ?? 0 });
   },
   setAssetToBuy: async (asset: ParsedSearchAsset) => {
     const currentAssetToBuy = get().assetToBuy;

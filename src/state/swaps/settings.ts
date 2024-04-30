@@ -1,27 +1,28 @@
 import { createStore } from '../internal/createStore';
 import create from 'zustand';
 import { Source } from '@rainbow-me/swaps';
-import { DEFAULT_SLIPPAGE_BIPS } from '@/__swaps__/utils/swaps';
+import { getDefaultSlippage } from '@/__swaps__/utils/swaps';
 import { ChainId } from '@/__swaps__/types/chains';
+import { DEFAULT_CONFIG } from '@/model/remoteConfig';
 
 export interface SwapSettingsState {
   flashbots: boolean;
-  slippage_in_bips: number;
+  slippage: string;
   source: Source | 'auto';
 
   setFlashbots: (flashbots: boolean) => void;
-  setSlippageInBips: (slippage_in_bips: number) => void;
+  setSlippage: (slippage: string) => void;
   setSource: (source: Source) => void;
 }
 
 export const swapSettingsStore = createStore<SwapSettingsState>(
   set => ({
     flashbots: false,
-    slippage_in_bips: DEFAULT_SLIPPAGE_BIPS[ChainId.mainnet],
+    slippage: getDefaultSlippage(ChainId.mainnet, DEFAULT_CONFIG),
     source: 'auto',
 
     setFlashbots: (flashbots: boolean) => set({ flashbots }),
-    setSlippageInBips: (slippage_in_bips: number) => set({ slippage_in_bips }),
+    setSlippage: (slippage: string) => set({ slippage }),
     setSource: (source: Source) => set({ source }),
   }),
   {
