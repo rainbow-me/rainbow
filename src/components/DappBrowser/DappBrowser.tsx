@@ -56,23 +56,11 @@ const DappBrowserComponent = () => {
     goToUrl,
   } = useBrowserState();
 
-  const [injectedJS, setInjectedJS] = useState<string>('');
   const { isDarkMode } = useColorMode();
 
   const { scrollViewRef, activeTabRef } = useBrowserContext();
 
   const route = useRoute<RouteProp<RouteParams, 'DappBrowserParams'>>();
-
-  useEffect(() => {
-    const loadInjectedJS = async () => {
-      try {
-        setInjectedJS(await getInjectedJS());
-      } catch (e) {
-        console.log('error', e);
-      }
-    };
-    loadInjectedJS();
-  }, []);
 
   useAnimatedReaction(
     () => route.params?.url,
@@ -129,27 +117,25 @@ const DappBrowserComponent = () => {
           showsVerticalScrollIndicator={false}
         >
           <Animated.View style={scrollViewHeightStyle}>
-            {injectedJS &&
-              tabStates.map((_, index) => (
-                <BrowserTab
-                  key={tabStates[index].uniqueId}
-                  tabState={tabStates[index]}
-                  isActiveTab={index === activeTabIndex}
-                  tabId={tabStates[index].uniqueId}
-                  tabsCount={tabStates.length}
-                  injectedJS={injectedJS}
-                  activeTabRef={activeTabRef}
-                  animatedActiveTabIndex={animatedActiveTabIndex}
-                  closeTabWorklet={closeTabWorklet}
-                  currentlyOpenTabIds={currentlyOpenTabIds}
-                  tabViewProgress={tabViewProgress}
-                  tabViewVisible={tabViewVisible}
-                  toggleTabViewWorklet={toggleTabViewWorklet}
-                  updateActiveTabState={index === activeTabIndex ? updateActiveTabState : undefined}
-                  nextTabId={tabStates?.[1]?.uniqueId}
-                  goToUrl={url => goToUrl(url, index)}
-                />
-              ))}
+            {tabStates.map((_, index) => (
+              <BrowserTab
+                key={tabStates[index].uniqueId}
+                tabState={tabStates[index]}
+                isActiveTab={index === activeTabIndex}
+                tabId={tabStates[index].uniqueId}
+                tabsCount={tabStates.length}
+                activeTabRef={activeTabRef}
+                animatedActiveTabIndex={animatedActiveTabIndex}
+                closeTabWorklet={closeTabWorklet}
+                currentlyOpenTabIds={currentlyOpenTabIds}
+                tabViewProgress={tabViewProgress}
+                tabViewVisible={tabViewVisible}
+                toggleTabViewWorklet={toggleTabViewWorklet}
+                updateActiveTabState={index === activeTabIndex ? updateActiveTabState : undefined}
+                nextTabId={tabStates?.[1]?.uniqueId}
+                goToUrl={url => goToUrl(url, index)}
+              />
+            ))}
           </Animated.View>
         </AnimatedScrollView>
         <ProgressBar tabViewVisible={tabViewVisible} />
