@@ -20,7 +20,6 @@ import { AccountIcon } from '../search-input/AccountIcon';
 import { SearchInput } from '../search-input/SearchInput';
 import { TabButton } from '../search-input/TabButton';
 import { isValidURL, isValidURLWorklet } from '../utils';
-import { useBrowserStore } from '@/state/browser/browserStore';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { useBrowserWorkletsContext } from '../BrowserWorkletsContext';
 import { SearchResults } from './results/SearchResults';
@@ -29,13 +28,11 @@ import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { DappsContextProvider } from '@/resources/metadata/dapps';
 
 export const Search = React.memo(function Search() {
-  const { animatedActiveTabIndex, currentlyOpenTabIds, goToUrl, searchViewProgress, tabViewProgress, tabViewVisible } = useBrowserContext();
-  const { toggleTabViewWorklet, updateTabUrlWorklet } = useBrowserWorkletsContext();
+  const { goToUrl, searchViewProgress, tabViewProgress, tabViewVisible } = useBrowserContext();
+  const { toggleTabViewWorklet } = useBrowserWorkletsContext();
   const { inputRef, keyboardHeight, searchQuery, searchResults } = useSearchContext();
 
   const { isDarkMode } = useColorMode();
-
-  const goToPage = useBrowserStore(state => state.goToPage);
 
   const isFocusedValue = useSharedValue(false);
 
@@ -109,12 +106,10 @@ export const Search = React.memo(function Search() {
       } else if (!newUrl.startsWith(HTTP) && !newUrl.startsWith(HTTPS)) {
         newUrl = HTTPS + newUrl;
       }
-      const tabId = currentlyOpenTabIds.value[Math.abs(animatedActiveTabIndex.value)];
 
-      runOnJS(goToPage)(newUrl);
-      updateTabUrlWorklet(newUrl, tabId);
+      runOnJS(goToUrl)(newUrl);
     },
-    [animatedActiveTabIndex, currentlyOpenTabIds, goToPage, searchResults, updateTabUrlWorklet]
+    [goToUrl, searchResults]
   );
 
   const onAddressInputPressWorklet = useCallback(() => {

@@ -266,6 +266,7 @@ const AddressBar = React.memo(function AddressBar({
     return { defaultValue: urlOrSearchQuery, text: url };
   });
 
+  // ⚠️ TODO: Refactor
   const updateUrl = useCallback(
     (newUrl: string) => {
       'worklet';
@@ -276,6 +277,7 @@ const AddressBar = React.memo(function AddressBar({
     [onSubmitEditing]
   );
 
+  // ⚠️ TODO: Refactor
   const handlePressGo = useCallback(
     (event: NativeSyntheticEvent<TextInputSubmitEditingEventData>) => {
       dispatchCommand(inputRef, 'blur');
@@ -327,7 +329,7 @@ const AddressBar = React.memo(function AddressBar({
               ellipsizeMode="clip"
               numberOfLines={1}
               size="17pt"
-              style={styles.formattedInputText}
+              style={styles.placeholderText}
               weight="bold"
             >
               {formattedUrlValue}
@@ -440,7 +442,6 @@ const styles = StyleSheet.create({
   },
   fadeMaskStyle: {
     alignItems: 'center',
-    flex: 1,
     flexDirection: 'row',
     height: SEARCH_BAR_HEIGHT,
     justifyContent: 'center',
@@ -451,6 +452,7 @@ const styles = StyleSheet.create({
   },
   formattedInputText: {
     alignSelf: 'center',
+    paddingHorizontal: 40,
   },
   formattedInputTextContainer: {
     alignItems: 'center',
@@ -494,5 +496,8 @@ const styles = StyleSheet.create({
     height: SEARCH_BAR_HEIGHT,
     position: 'absolute',
     width: '100%',
+  },
+  placeholderText: {
+    alignSelf: 'center',
   },
 });

@@ -19,6 +19,7 @@ import { COLLAPSED_WEBVIEW_HEIGHT_UNSCALED, WEBVIEW_HEIGHT } from './Dimensions'
 import { BrowserWorkletsContext } from './BrowserWorkletsContext';
 import { RAINBOW_HOME } from './constants';
 import { AnimatedScreenshotData, AnimatedTabUrls } from './types';
+import { normalizeUrlWorklet } from './utils';
 
 interface BrowserTabViewProgressContextType {
   tabViewProgress: SharedValue<number>;
@@ -148,12 +149,16 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
 
   const goToUrl = useCallback(
     (url: string, tabId?: string) => {
-      goToPage(url);
+      if (normalizeUrlWorklet(url) === normalizeUrlWorklet(activeTabInfo.value.url)) {
+        onRefresh();
+      } else {
+        goToPage(url);
+      }
       if (workletsContext) {
         runOnUI(workletsContext.updateTabUrlWorklet)(url, tabId);
       }
     },
-    [goToPage, workletsContext]
+    [activeTabInfo, goToPage, onRefresh, workletsContext]
   );
 
   return (
