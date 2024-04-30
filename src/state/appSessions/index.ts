@@ -143,6 +143,11 @@ export const appSessionsStore = createStore<AppSessionsStore<AppSession>>(
     updateActiveSession: ({ host, address }) => {
       const appSessions = get().appSessions;
       const appSession = appSessions[host];
+      if (!appSession) return;
+      const cacheKey = `${host}-${address}`;
+      if (cachedSelectors[cacheKey]) {
+        delete cachedSelectors[cacheKey];
+      }
       set({
         appSessions: {
           ...appSessions,
@@ -156,6 +161,11 @@ export const appSessionsStore = createStore<AppSessionsStore<AppSession>>(
     updateActiveSessionNetwork: ({ host, network }) => {
       const appSessions = get().appSessions;
       const appSession = appSessions[host];
+      if (!appSession) return;
+      const cacheKey = `${host}-${appSession.activeSessionAddress}`;
+      if (cachedSelectors[cacheKey]) {
+        delete cachedSelectors[cacheKey];
+      }
       set({
         appSessions: {
           ...appSessions,
@@ -172,6 +182,11 @@ export const appSessionsStore = createStore<AppSessionsStore<AppSession>>(
     updateSessionNetwork: ({ host, address, network }) => {
       const appSessions = get().appSessions;
       const appSession = appSessions[host];
+      if (!appSession) return;
+      const cacheKey = `${host}-${address}`;
+      if (cachedSelectors[cacheKey]) {
+        delete cachedSelectors[cacheKey];
+      }
       set({
         appSessions: {
           ...appSessions,
