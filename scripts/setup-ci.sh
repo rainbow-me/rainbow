@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# fail if any commands fails
+# fail if any commands failsx
 set -e
 # debug log
 set -x

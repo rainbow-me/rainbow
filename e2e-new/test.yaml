@@ -8,10 +8,10 @@ appId: me.rainbow
     clearKeychain: true
     permissions: { all: deny }
 
-- runScript: # 20 sec wait
+- runScript: # 10 sec wait
     file: helpers/sleep.js
     env:
-      seconds: 20 # adjust wait time here
+      seconds: 10 # adjust wait time here
 
 - assertVisible:
     id: welcome-screen
@@ -47,10 +47,10 @@ appId: me.rainbow
     id: wallet-info-submit-button
     enabled: true
 
-- runScript: # 120 sec wait
+- runScript: # 10 sec wait
     file: helpers/sleep.js
     env:
-      seconds: 120 # adjust wait time here
+      seconds: 10 # adjust wait time here
 
 - assertVisible:
     text: '0x36...a62F'

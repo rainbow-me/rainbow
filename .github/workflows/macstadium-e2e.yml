@@ -3,6 +3,8 @@ name: iOS e2e tests
 on: [pull_request, workflow_dispatch]
 jobs:
   ios-e2e:
+    name: iOS e2e
+    timeout-minutes: 25
     runs-on: ["self-hosted"]
     # Cancel current builds if there's a newer commit on the same branch
     concurrency: 
@@ -25,6 +27,7 @@ jobs:
           mv rainbow-env/dotenv .env && rm -rf rainbow-env 
           eval $CI_SCRIPTS
           sed -i''-e "s/\IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
+      
       - name: Install deps via Yarn
         run: yarn setup-ci
 
@@ -48,9 +51,27 @@ jobs:
           brew tap facebook/fb
           brew install facebook/fb/idb-companion
 
-      - name: Build the app in release mode
-        run: ./node_modules/.bin/detox build --configuration ios.sim.release
-     
+      - name: Build app for simulator
+        working-directory: ios
+        run: |
+          xcrun xcodebuild \
+            -project "Rainbow.xcodeproj" \
+            -scheme "Rainbow" \
+            -configuration "Release" \
+            -sdk "iphonesimulator" \
+            -destination "platform=iOS Simulator,name=iPhone 15 Pro" \
+            -derivedDataPath "../build_output"
+      
+      - name: Setup e2e tests
+        env:
+          APP_PATH: './build_output/Build/Products/Release-iphonesimulator/Rainbow.app'
+      
+        run: |
+          echo "Launching iOS Simulator"
+          xcrun simctl boot "iPhone 15 Pro"
+          echo "Installing app on Simulator"
+          xcrun simctl install booted "${{ env.APP_PATH }}"
+              
       - name: Run e2e tests (3 retries)
         timeout-minutes: 10 
         run: |
