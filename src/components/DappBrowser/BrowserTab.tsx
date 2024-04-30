@@ -25,7 +25,7 @@ import WebView, { WebViewMessageEvent, WebViewNavigation, WebViewProps } from 'r
 import { WebViewEvent } from 'react-native-webview/lib/WebViewTypes';
 import { appMessenger } from '@/browserMessaging/AppMessenger';
 import { useColorMode } from '@/design-system';
-import { IS_IOS } from '@/env';
+import { IS_DEV, IS_IOS } from '@/env';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useBrowserStore } from '@/state/browser/browserStore';
@@ -46,7 +46,7 @@ import {
   DEFAULT_TAB_URL,
   TAB_SCREENSHOT_FILE_FORMAT,
   TAB_SCREENSHOT_FASTER_IMAGE_CONFIG,
-  SAFARI_USER_AGENT,
+  USER_AGENT,
   USER_AGENT_APPLICATION_NAME,
 } from './constants';
 import { handleProviderRequestApp } from './handleProviderRequest';
@@ -366,7 +366,7 @@ const TabWebViewComponent = (props: WebViewProps, ref: React.Ref<WebView>) => {
       renderError={() => <ErrorPage />}
       renderLoading={() => <></>}
       style={styles.webViewStyle}
-      userAgent={SAFARI_USER_AGENT}
+      userAgent={USER_AGENT[IS_IOS ? 'IOS' : 'ANDROID']}
       webviewDebuggingEnabled={IS_DEV}
     />
   );
