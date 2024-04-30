@@ -112,7 +112,7 @@ export const ControlPanel = () => {
       const wallet = walletsWithBalancesAndNames[key];
       const filteredAccounts = wallet.addresses.filter(account => account.visible);
       filteredAccounts.forEach(account => {
-        const walletBalance = account.balance === '0.00' ? '0' : account.balance;
+        const walletBalance = Number(account.balance) === 0 ? 0 : account.balance;
         const nativeCurrencyBalance = convertAmountToNativeDisplay(walletBalance || '0', nativeCurrency);
 
         const item = {
@@ -122,7 +122,7 @@ export const ControlPanel = () => {
             <ListEmojiAvatar address={account.address} color={account.color} label={account.label} />
           ),
           label: account.label,
-          secondaryLabel: nativeCurrencyBalance,
+          secondaryLabel: !walletBalance ? i18n.t(i18n.l.wallet.change_wallet.no_balance) : nativeCurrencyBalance,
           uniqueId: account.address,
           color: colors.avatarBackgrounds[account.color],
           selected: account.address === currentAddress,
