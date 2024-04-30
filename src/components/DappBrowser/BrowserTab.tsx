@@ -27,6 +27,8 @@ import { WebViewEvent } from 'react-native-webview/lib/WebViewTypes';
 import { appMessenger } from '@/browserMessaging/AppMessenger';
 import { useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { Site } from '@/state/browserHistory';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -181,10 +183,11 @@ const FreezableWebViewComponent = ({
   const isOnHomepage = tabUrl === RAINBOW_HOME;
 
   const handleOnMessage = useCallback(
-    (event: WebViewMessageEvent) => {
+    (event: Partial<WebViewMessageEvent>) => {
       const animatedIsActiveTab = currentlyOpenTabIds.value.indexOf(tabId) === animatedActiveTabIndex.value;
       if (!animatedIsActiveTab) return;
-      const data = event.nativeEvent.data as any;
+
+      const data = event.nativeEvent?.data as any;
       try {
         // validate message and parse data
         const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
@@ -204,7 +207,6 @@ const FreezableWebViewComponent = ({
             titleRef.current = pageTitle;
             setTitle(pageTitle, tabId);
           }
-
           addRecent({
             url: normalizeUrlForRecents(tabUrl),
             name: pageTitle,
@@ -264,9 +266,20 @@ const FreezableWebViewComponent = ({
     return;
   }, []);
 
-  const handleShouldStartLoadWithRequest = useCallback(() => {
-    return true;
-  }, []);
+  const handleShouldStartLoadWithRequest = useCallback(
+    (request: { url: string }) => {
+      if (request.url.startsWith('rainbow://wc') || request.url.startsWith('https://rnbwappdotcom.app.link/')) {
+        Navigation.handleAction(Routes.NO_NEED_WC_SHEET, {
+          cb: () => {
+            activeTabRef.current?.reload();
+          },
+        });
+        return false;
+      }
+      return true;
+    },
+    [activeTabRef]
+  );
 
   const handleOnLoadProgress = useCallback(
     ({ nativeEvent: { progress } }: { nativeEvent: { progress: number } }) => {
