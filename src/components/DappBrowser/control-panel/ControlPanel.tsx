@@ -112,7 +112,7 @@ export const ControlPanel = () => {
       const wallet = walletsWithBalancesAndNames[key];
       const filteredAccounts = wallet.addresses.filter(account => account.visible);
       filteredAccounts.forEach(account => {
-        const walletBalance = Number(account.balance) === 0 ? 0 : account.balance;
+        const walletBalance = Number(account.balance) ? account.balance : 0;
         const nativeCurrencyBalance = convertAmountToNativeDisplay(walletBalance || '0', nativeCurrency);
 
         const item = {
