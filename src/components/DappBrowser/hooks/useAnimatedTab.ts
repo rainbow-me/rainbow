@@ -132,7 +132,7 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
       borderRadius,
       height: animatedIsActiveTab ? animatedWebViewHeight.value : COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
       // eslint-disable-next-line no-nested-ternary
-      pointerEvents: tabViewVisible.value ? 'auto' : animatedIsActiveTab ? 'auto' : 'none',
+      pointerEvents: isTabBeingClosed ? 'none' : tabViewVisible.value ? 'auto' : animatedIsActiveTab ? 'auto' : 'none',
     };
   });
 
