@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 
 import { Box, Column, Columns, Separator, globalColors, useColorMode } from '@/design-system';
@@ -11,22 +11,26 @@ import { IS_ANDROID } from '@/env';
 import { useSwapContext, NavigationSteps } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import Animated, { runOnJS, runOnUI, useAnimatedReaction, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { StyleSheet } from 'react-native';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { extractColorValueForColors, opacity } from '@/__swaps__/utils/swaps';
 import { ReviewPanel } from '../ReviewPanel';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import { useSwapActionsGestureHandler } from './useSwapActionsGestureHandler';
+import { useSwapAssets } from '@/state/swaps/assets';
+import { TokenColors } from '@/graphql/__generated__/metadata';
 
 export function SwapActions() {
   const { isDarkMode } = useColorMode();
-  const {
-    confirmButtonIcon,
-    confirmButtonIconStyle,
-    confirmButtonLabel,
-    SwapInputController,
-    AnimatedSwapStyles,
-    SwapNavigation,
-    reviewProgress,
-  } = useSwapContext();
+  const { confirmButtonIcon, confirmButtonIconStyle, confirmButtonLabel, AnimatedSwapStyles, SwapNavigation, reviewProgress } =
+    useSwapContext();
+
+  const assetToBuyColors = useSwapAssets(state => state.assetToBuy?.colors);
+
+  const assetToBuyColor = useMemo(() => {
+    return extractColorValueForColors({
+      colors: assetToBuyColors as TokenColors,
+      isDarkMode,
+    });
+  }, [assetToBuyColors, isDarkMode]);
 
   const { swipeToDismissGestureHandler, gestureY } = useSwapActionsGestureHandler();
   const [enabled, setEnabled] = useState(false);
@@ -84,7 +88,7 @@ export function SwapActions() {
           </Column>
           <SwapActionButton
             onPress={() => runOnUI(SwapNavigation.handleShowReview)()}
-            color={SwapInputController.bottomColor}
+            color={assetToBuyColor}
             icon={confirmButtonIcon}
             iconStyle={confirmButtonIconStyle}
             label={confirmButtonLabel}

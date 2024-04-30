@@ -1,7 +1,6 @@
 import c from 'chroma-js';
 import { useMemo } from 'react';
 import Animated, {
-  DerivedValue,
   interpolate,
   interpolateColor,
   useAnimatedStyle,
@@ -31,14 +30,14 @@ export const useSwapInputStyles = ({
   progress,
 }: {
   bottomInput: boolean | undefined;
-  color: DerivedValue<string | number>;
+  color: string;
   otherInputProgress: Animated.SharedValue<number>;
   progress: Animated.SharedValue<number>;
 }) => {
   const { isDarkMode } = useColorMode();
 
   const bgColor = useDerivedValue(() => {
-    return isDarkMode ? opacityWorklet(color.value.toString(), 0.08) : opacityWorklet(globalColors.white100, 0.8);
+    return isDarkMode ? opacityWorklet(color, 0.08) : opacityWorklet(globalColors.white100, 0.8);
   }, [color, isDarkMode]);
 
   const expandedBgColor = useDerivedValue(() => {
@@ -46,17 +45,15 @@ export const useSwapInputStyles = ({
   }, [bgColor, isDarkMode]);
 
   const strokeColor = useDerivedValue(() => {
-    return isDarkMode
-      ? opacityWorklet(color.value === ETH_COLOR_DARK ? ETH_COLOR_DARK_ACCENT : color.value.toString(), 0.06)
-      : globalColors.white100;
+    return isDarkMode ? opacityWorklet(color === ETH_COLOR_DARK ? ETH_COLOR_DARK_ACCENT : color, 0.06) : globalColors.white100;
   }, [color, isDarkMode]);
 
   const expandedStrokeColor = useDerivedValue(() => {
-    return isDarkMode ? opacityWorklet(color.value.toString(), 0.1) : globalColors.white100;
+    return isDarkMode ? opacityWorklet(color, 0.1) : globalColors.white100;
   }, [color, isDarkMode]);
 
   const mixedShadowColor = useMemo(() => {
-    return isDarkMode ? 'transparent' : c.mix(color.value.toString(), globalColors.grey100, 0.84).hex();
+    return isDarkMode ? 'transparent' : c.mix(color, globalColors.grey100, 0.84).hex();
   }, [color, isDarkMode]);
 
   const containerStyle = useAnimatedStyle(() => {

@@ -2,6 +2,9 @@ import { createStore } from '../internal/createStore';
 import create from 'zustand';
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { isSameAsset } from '@/__swaps__/utils/assets';
+import { swapQuoteStore } from './quote';
+import { swapSortByStore } from './sortBy';
+import { priceForAsset } from '@/__swaps__/utils/swaps';
 
 export interface SwapAssetsState {
   assetToSell: ParsedSearchAsset | null;
@@ -54,5 +57,48 @@ export const swapAssetStore = createStore<SwapAssetsState>((set, get) => ({
   setAssetToSellPrice: (price: number) => set({ assetToSellPrice: price }),
   setAssetToBuyPrice: (price: number) => set({ assetToBuyPrice: price }),
 }));
+
+/**
+ * TODO:
+ * 1. get price if assetToBuy => assetToSell
+ * 2. trigger quote re-fetch if assetToSell && assetToBuy and inputAmount || outputAmount > 0
+ * 3. if !assetToBuy after swapping, open the token list for the user to select a token
+ * 4. if !assetToSell after swapping, open the user asset list for the user to select a token
+ */
+export const flipAssets = () => {
+  const assetToSell = swapAssetStore.getState().assetToSell;
+  const assetToBuy = swapAssetStore.getState().assetToBuy;
+
+  const assetToSellPrice = swapAssetStore.getState().assetToSellPrice;
+  const assetToBuyPrice = swapAssetStore.getState().assetToBuyPrice;
+
+  // Always reset quote no matter what
+  swapQuoteStore.setState({ quote: null });
+
+  if (assetToSell) {
+    swapAssetStore.setState({
+      assetToBuy: assetToSell,
+      assetToBuyPrice: assetToSellPrice,
+    });
+    swapSortByStore.setState({
+      outputChainId: assetToSell.chainId,
+    });
+  } else {
+    swapAssetStore.setState({
+      assetToBuy: null,
+      assetToBuyPrice: 0,
+    });
+  }
+
+  if (assetToBuy) {
+    swapAssetStore.setState({
+      assetToSell: assetToBuy,
+      assetToSellPrice: assetToBuyPrice,
+    });
+    swapSortByStore.setState({
+      outputChainId: assetToBuy.chainId,
+    });
+  }
+};
 
 export const useSwapAssets = create(swapAssetStore);

@@ -1,11 +1,10 @@
 import MaskedView from '@react-native-masked-view/masked-view';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, StatusBar } from 'react-native';
 import Animated, { runOnUI, useDerivedValue } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
 import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
-import { useTheme } from '@/theme';
 
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { SwapActionButton } from '@/__swaps__/screens/Swap/components/SwapActionButton';
@@ -20,17 +19,31 @@ import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider
 import { isSameAssetWorklet } from '@/__swaps__/utils/assets';
 import { useAssetsToSell } from '@/__swaps__/screens/Swap/hooks/useAssetsToSell';
 import { ethereumUtils } from '@/utils';
+import { useSwapAssets } from '@/state/swaps/assets';
+import { extractColorValueForColors } from '@/__swaps__/utils/swaps';
+import { TokenColors } from '@/graphql/__generated__/metadata';
+import { ChainId } from '@/__swaps__/types/chains';
 
 function SwapOutputActionButton() {
   const { isDarkMode } = useColorMode();
-  const { SwapNavigation, SwapInputController } = useSwapContext();
+  const { SwapNavigation } = useSwapContext();
+
+  const assetToBuyColors = useSwapAssets(state => state.assetToBuy?.colors);
+  const assetToBuySymbol = useSwapAssets(state => state.assetToBuy?.symbol);
+
+  const assetToBuyColor = useMemo(() => {
+    return extractColorValueForColors({
+      colors: assetToBuyColors as TokenColors,
+      isDarkMode,
+    });
+  }, [assetToBuyColors, isDarkMode]);
 
   return (
     <SwapActionButton
-      color={SwapInputController.bottomColor}
+      color={assetToBuyColor}
       disableShadow={isDarkMode}
       hugContent
-      label={SwapInputController.assetToBuySymbol}
+      label={assetToBuySymbol}
       onPress={runOnUI(SwapNavigation.handleOutputPress)}
       rightIcon={'􀆏'}
       small
@@ -67,42 +80,43 @@ function SwapOutputAmount() {
 }
 
 function SwapInputIcon() {
-  const { SwapInputController, AnimatedSwapStyles } = useSwapContext();
-  const theme = useTheme();
+  const { isDarkMode } = useColorMode();
+
+  const assetToBuyIconUrl = useSwapAssets(state => state.assetToBuy?.icon_url);
+  const assetToBuyChainId = useSwapAssets(state => state.assetToBuy?.chainId);
+  const assetToBuySymbol = useSwapAssets(state => state.assetToBuy?.symbol);
+  const assetToBuyAddress = useSwapAssets(state => state.assetToBuy?.address);
+  const assetToBuyMainnetAddress = useSwapAssets(state => state.assetToBuy?.mainnetAddress);
+
+  const assetToBuyColors = useSwapAssets(state => state.assetToBuy?.colors);
+
+  const assetToBuyColor = useMemo(() => {
+    return extractColorValueForColors({
+      colors: assetToBuyColors as TokenColors,
+      isDarkMode,
+    });
+  }, [assetToBuyColors, isDarkMode]);
 
   return (
     <Box paddingRight="10px">
-      {!SwapInputController.assetToBuy.value ? (
-        <Box
-          as={Animated.View}
-          borderRadius={18}
-          height={{ custom: 36 }}
-          style={[styles.solidColorCoinIcon, AnimatedSwapStyles.assetToBuyIconStyle]}
-          width={{ custom: 36 }}
-        />
-      ) : (
-        <SwapCoinIcon
-          color={SwapInputController.bottomColor.value}
-          iconUrl={SwapInputController.assetToBuy.value.icon_url}
-          address={SwapInputController.assetToBuy.value.address}
-          large
-          mainnetAddress={SwapInputController.assetToBuy.value.mainnetAddress}
-          network={ethereumUtils.getNetworkFromChainId(SwapInputController.assetToBuy.value.chainId)}
-          symbol={SwapInputController.assetToBuy.value.symbol}
-          theme={theme}
-        />
-      )}
+      <SwapCoinIcon
+        color={assetToBuyColor}
+        iconUrl={assetToBuyIconUrl}
+        address={assetToBuyAddress ?? ''}
+        large
+        mainnetAddress={assetToBuyMainnetAddress}
+        network={ethereumUtils.getNetworkFromChainId(assetToBuyChainId ?? ChainId.mainnet)}
+        symbol={assetToBuySymbol ?? ''}
+      />
     </Box>
   );
 }
 
 function OutputAssetBalanceBadge() {
-  const { SwapInputController } = useSwapContext();
-
+  const assetToBuy = useSwapAssets(state => state.assetToBuy);
   const userAssets = useAssetsToSell();
 
   const label = useDerivedValue(() => {
-    const assetToBuy = SwapInputController.assetToBuy.value;
     if (!assetToBuy) return 'No balance';
     const userAsset = userAssets.find(userAsset => isSameAssetWorklet(userAsset, assetToBuy));
     return userAsset?.balance.display ?? 'No balance';
@@ -112,10 +126,21 @@ function OutputAssetBalanceBadge() {
 }
 
 export function SwapOutputAsset() {
+  const { isDarkMode } = useColorMode();
+
   const { outputProgress, inputProgress, AnimatedSwapStyles, SwapTextStyles, SwapInputController, SwapNavigation } = useSwapContext();
 
+  const assetToBuyColors = useSwapAssets(state => state.assetToBuy?.colors);
+
+  const color = useMemo(() => {
+    return extractColorValueForColors({
+      colors: assetToBuyColors as TokenColors,
+      isDarkMode,
+    });
+  }, [assetToBuyColors, isDarkMode]);
+
   return (
-    <SwapInput bottomInput color={SwapInputController.bottomColor} otherInputProgress={inputProgress} progress={outputProgress}>
+    <SwapInput bottomInput color={color} otherInputProgress={inputProgress} progress={outputProgress}>
       <Box as={Animated.View} style={AnimatedSwapStyles.outputStyle}>
         <Stack space="16px">
           <Columns alignHorizontal="justify" alignVertical="center">
@@ -151,7 +176,7 @@ export function SwapOutputAsset() {
         width={{ custom: INPUT_INNER_WIDTH }}
       >
         <TokenList
-          color={SwapInputController.bottomColor.value}
+          color={color}
           handleExitSearch={runOnUI(SwapNavigation.handleExitSearch)}
           handleFocusSearch={runOnUI(SwapNavigation.handleFocusOutputSearch)}
           output

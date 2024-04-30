@@ -1,11 +1,11 @@
 /* eslint-disable no-nested-ternary */
 import c from 'chroma-js';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleProp, StyleSheet, TextStyle } from 'react-native';
 import Animated, {
   DerivedValue,
-  runOnJS,
-  useAnimatedReaction,
+  SharedValue,
+  isSharedValue,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
@@ -29,13 +29,13 @@ export const SwapActionButton = ({
   scaleTo,
   small,
 }: {
-  color?: DerivedValue<string | undefined>;
+  color?: string;
   borderRadius?: number;
   disableShadow?: boolean;
   hugContent?: boolean;
   icon?: string | DerivedValue<string | undefined>;
   iconStyle?: StyleProp<TextStyle>;
-  label: string | DerivedValue<string | undefined>;
+  label: string | SharedValue<string> | undefined;
   onLongPress?: () => void;
   onPress?: () => void;
   outline?: boolean;
@@ -49,27 +49,18 @@ export const SwapActionButton = ({
 
   const textColorValue = useSharedValue(globalColors.white100);
 
-  const textColor = (color: string) => {
+  const textColor = useMemo(() => {
     const contrastWithWhite = c.contrast(color || fallbackColor, globalColors.white100);
     if (contrastWithWhite < (isDarkMode ? 2.6 : 2)) {
-      textColorValue.value = globalColors.grey100;
+      return globalColors.grey100;
     } else {
-      textColorValue.value = globalColors.white100;
+      return globalColors.white100;
     }
-  };
-
-  useAnimatedReaction(
-    () => color?.value,
-    (current, previous) => {
-      if (previous && current !== previous && current !== undefined) {
-        runOnJS(textColor)(current);
-      }
-    }
-  );
+  }, [color, fallbackColor, isDarkMode]);
 
   const textStyles = useAnimatedStyle(() => {
     return {
-      color: textColorValue.value,
+      color: textColor,
     };
   });
 
@@ -86,11 +77,11 @@ export const SwapActionButton = ({
 
   const buttonWrapperStyles = useAnimatedStyle(() => {
     return {
-      backgroundColor: outline ? 'transparent' : color?.value || fallbackColor,
+      backgroundColor: outline ? 'transparent' : color || fallbackColor,
       borderColor: outline ? separatorSecondary : undefined,
       borderRadius: borderRadius ?? 24,
       height: small ? 36 : 48,
-      shadowColor: disableShadow || outline ? 'transparent' : color?.value || fallbackColor,
+      shadowColor: disableShadow || outline ? 'transparent' : color || fallbackColor,
       shadowOffset: {
         width: 0,
         height: isDarkMode ? 13 : small ? 6 : 10,
@@ -106,8 +97,13 @@ export const SwapActionButton = ({
   });
 
   const labelValue = useDerivedValue(() => {
+    if (isSharedValue(label)) {
+      return label.value;
+    }
+
     if (typeof label === 'string') return label;
-    return label?.value || '';
+
+    return label || '';
   });
 
   const rightIconValue = useDerivedValue(() => {

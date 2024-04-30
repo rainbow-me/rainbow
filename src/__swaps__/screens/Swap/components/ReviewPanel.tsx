@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import * as i18n from '@/languages';
 
 import { AnimatedText, Box, Inline, Separator, Stack, Text, globalColors, useColorMode } from '@/design-system';
@@ -16,7 +16,7 @@ import { fadeConfig } from '../constants';
 import { ethereumUtils } from '@/utils';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ChainId } from '@/__swaps__/types/chains';
-import { chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
+import { chainNameFromChainId } from '@/__swaps__/utils/chains';
 import { AnimatedSwitch } from './AnimatedSwitch';
 import { GasButton } from './GasButton';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -25,17 +25,21 @@ import { convertRawAmountToNativeDisplay } from '@/__swaps__/utils/numbers';
 import { useAccountSettings } from '@/hooks';
 import { FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
 import { supportedNativeCurrencies } from '@/references';
+import { swapAssetStore, useSwapAssets } from '@/state/swaps/assets';
+import { useSwapQuoteStore } from '@/state/swaps/quote';
+import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
+import { swapSettingsStore, useSwapSettings } from '@/state/swaps/settings';
 
 const SLIPPAGE_STEP = 0.5;
 
 const RainbowFee = () => {
   const { isDarkMode } = useColorMode();
-  const { SwapInputController } = useSwapContext();
   const { nativeCurrency: currentCurrency } = useAccountSettings();
 
+  const quote = useSwapQuoteStore(state => state.quote);
   const rainbowFee = useSharedValue(i18n.t(i18n.l.swap.unknown));
 
-  const [nativeChainId, setNativeChainId] = useState(SwapInputController.assetToSell.value?.chainId ?? ChainId.mainnet);
+  const nativeChainId = useSwapAssets(state => state.assetToSell?.chainId) ?? ChainId.mainnet;
   const nativeAsset = useNativeAssetForNetwork(ethereumUtils.getNetworkFromChainId(nativeChainId));
 
   const updateRainbowFee = ({
@@ -63,17 +67,8 @@ const RainbowFee = () => {
   };
 
   useAnimatedReaction(
-    () => SwapInputController.assetToSell.value?.chainId ?? ChainId.mainnet,
-    (current, previous) => {
-      if (!previous || previous !== current) {
-        runOnJS(setNativeChainId)(current);
-      }
-    }
-  );
-
-  useAnimatedReaction(
     () => ({
-      fee: SwapInputController.fee.value,
+      quote,
       nativeAsset,
       currentCurrency,
     }),
@@ -82,10 +77,14 @@ const RainbowFee = () => {
         !previous ||
         previous.nativeAsset !== current.nativeAsset ||
         previous.currentCurrency !== current.currentCurrency ||
-        previous.fee !== current.fee
+        previous.quote !== current.quote
       ) {
+        if (!current.quote) return;
+
+        const fee = (current.quote as Quote | CrosschainQuote).feeInEth.toString();
+
         runOnJS(updateRainbowFee)({
-          fee: current.fee,
+          fee,
           nativeAsset: current.nativeAsset,
           currentCurrency: current.currentCurrency,
         });
@@ -101,54 +100,36 @@ export function ReviewPanel() {
   const { reviewProgress, SwapInputController } = useSwapContext();
 
   const unknown = i18n.t(i18n.l.swap.unknown);
+  const outputChainId = useSwapAssets(state => state.assetToBuy?.chainId) ?? ChainId.mainnet;
+  const outputAssetSymbol = useSwapAssets(state => state.assetToBuy?.symbol);
+  const slippage = useSwapSettings(state => state.slippage_in_bips);
+  const chainName = useMemo(() => (outputChainId === ChainId.mainnet ? 'ethereum' : chainNameFromChainId(outputChainId)), [outputChainId]);
 
-  const chainName = useDerivedValue(() =>
-    SwapInputController.outputChainId.value === ChainId.mainnet
-      ? 'ethereum'
-      : chainNameFromChainIdWorklet(SwapInputController.outputChainId.value)
-  );
-
-  const slippageText = useDerivedValue(() => `${SwapInputController.slippage.value}%`);
-
-  const [chain, setChain] = useState(
-    ethereumUtils.getNetworkFromChainId(SwapInputController.assetToSell.value?.chainId ?? ChainId.mainnet)
-  );
+  const slippageText = useDerivedValue(() => `${slippage}%`);
 
   const minimumReceived = useDerivedValue(() => {
-    if (!SwapInputController.inputValues.value.outputAmount || !SwapInputController.assetToBuy.value) {
+    if (!SwapInputController.inputValues.value.outputAmount || !outputAssetSymbol) {
       return unknown;
     }
-    return `${SwapInputController.inputValues.value.outputAmount} ${SwapInputController.assetToBuy.value.symbol}`;
+    return `${SwapInputController.inputValues.value.outputAmount} ${outputAssetSymbol}`;
   });
 
-  const flashbots = useDerivedValue(() => SwapInputController.flashbots.value);
+  const flashbots = useSwapSettings(state => state.flashbots);
 
-  const updateChainFromNetwork = useCallback((chainId: ChainId) => {
-    setChain(ethereumUtils.getNetworkFromChainId(chainId));
+  const onSetSlippage = useCallback((operation: 'increment' | 'decrement') => {
+    const value = operation === 'increment' ? SLIPPAGE_STEP : -SLIPPAGE_STEP;
+    const currentValue = swapSettingsStore.getState().slippage_in_bips;
+
+    swapSettingsStore.setState({
+      slippage_in_bips: Math.max(0.5, currentValue + value),
+    });
   }, []);
 
-  useAnimatedReaction(
-    () => SwapInputController.assetToSell.value?.chainId ?? ChainId.mainnet,
-    (current, previous) => {
-      if (!previous || previous !== current) {
-        runOnJS(updateChainFromNetwork)(current);
-      }
-    }
-  );
-
-  const onSetSlippage = useCallback(
-    (operation: 'increment' | 'decrement') => {
-      'worklet';
-      const value = operation === 'increment' ? SLIPPAGE_STEP : -SLIPPAGE_STEP;
-      SwapInputController.slippage.value = `${Math.max(0.5, Number(SwapInputController.slippage.value) + value)}`;
-    },
-    [SwapInputController.slippage]
-  );
-
   const onSetFlashbots = useCallback(() => {
-    'worklet';
-    SwapInputController.flashbots.value = !SwapInputController.flashbots.value;
-  }, [SwapInputController.flashbots]);
+    swapSettingsStore.setState({
+      flashbots: !swapSettingsStore.getState().flashbots,
+    });
+  }, []);
 
   // TODO: Comes from gas store
   const estimatedGasFee = useSharedValue('$2.25');
@@ -180,15 +161,16 @@ export function ReviewPanel() {
             </Inline>
 
             <Inline alignVertical="center" horizontalSpace="6px">
-              <ChainImage chain={chain} size={16} />
-              <AnimatedText
+              <ChainImage chain={ethereumUtils.getNetworkFromChainId(outputChainId)} size={16} />
+              <Text
                 align="right"
                 color={isDarkMode ? 'labelSecondary' : 'label'}
                 size="15pt"
                 weight="heavy"
                 style={{ textTransform: 'capitalize' }}
-                text={chainName}
-              />
+              >
+                {chainName}
+              </Text>
             </Inline>
           </Inline>
 
@@ -317,7 +299,7 @@ export function ReviewPanel() {
           <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
             <Stack space="6px">
               <Inline alignVertical="center" horizontalSpace="6px">
-                <ChainImage chain={chain} size={16} />
+                <ChainImage chain={ethereumUtils.getNetworkFromChainId(outputChainId)} size={16} />
                 <Inline horizontalSpace="4px">
                   <AnimatedText align="left" color={'label'} size="15pt" weight="heavy" text={estimatedGasFee} />
                   <AnimatedText align="right" color={'labelTertiary'} size="15pt" weight="bold" text={estimatedArrivalTime} />

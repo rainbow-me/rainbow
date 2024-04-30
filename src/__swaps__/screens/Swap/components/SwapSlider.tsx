@@ -34,10 +34,9 @@ import {
   snappySpringConfig,
   springConfig,
 } from '@/__swaps__/screens/Swap/constants';
-import { clamp, extractColorValueForColors, opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { clamp, extractColorValueForColors, opacity } from '@/__swaps__/utils/swaps';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { SwapCoinIcon } from '@/__swaps__/screens/Swap/components/SwapCoinIcon';
-import { useTheme } from '@/theme';
 import { useSwapAssets } from '@/state/swaps/assets';
 import { ethereumUtils } from '@/utils';
 import { TokenColors } from '@/graphql/__generated__/metadata';
@@ -57,7 +56,6 @@ export const SwapSlider = ({
   snapPoints = [0, 0.25, 0.5, 0.75, 1], // %
   width = SLIDER_WIDTH,
 }: SwapSliderProps) => {
-  const theme = useTheme();
   const { isDarkMode } = useColorMode();
   const { SwapInputController, sliderXPosition, sliderPressProgress } = useSwapContext();
 
@@ -68,6 +66,7 @@ export const SwapSlider = ({
   const assetToSellMainnetAddress = useSwapAssets(state => state.assetToSell?.mainnetAddress);
 
   const assetToSellColors = useSwapAssets(state => state.assetToSell?.colors);
+  const assetToBuyColors = useSwapAssets(state => state.assetToBuy?.colors);
 
   const assetToSellColor = useMemo(() => {
     return extractColorValueForColors({
@@ -76,10 +75,16 @@ export const SwapSlider = ({
     });
   }, [assetToSellColors, isDarkMode]);
 
+  const assetToBuyColor = useMemo(() => {
+    return extractColorValueForColors({
+      colors: assetToBuyColors as TokenColors,
+      isDarkMode,
+    });
+  }, [assetToBuyColors, isDarkMode]);
+
   const panRef = useRef();
   const tapRef = useRef();
 
-  const fillSecondary = useForegroundColor('fillSecondary');
   const labelSecondary = useForegroundColor('labelSecondary');
   const separatorSecondary = useForegroundColor('separatorSecondary');
   const zeroAmountColor = opacity(labelSecondary, 0.2);
@@ -94,22 +99,14 @@ export const SwapSlider = ({
     [SwapInputController]
   );
 
-  const colors = useDerivedValue(() => ({
-    inactiveColorLeft: opacityWorklet(dualColor ? SwapInputController.bottomColor.value : SwapInputController.topColor.value, 0.9),
-    activeColorLeft: dualColor ? SwapInputController.bottomColor.value : SwapInputController.topColor.value,
-    inactiveColorRight: dualColor ? opacityWorklet(SwapInputController.topColor.value, 0.9) : separatorSecondary,
-    activeColorRight: dualColor ? SwapInputController.topColor.value : fillSecondary,
-  }));
-
-  // const { inactiveColorLeft, activeColorLeft, inactiveColorRight, activeColorRight } = useMemo(
-  //   () => ({
-  //     inactiveColorLeft: opacityWorklet(dualColor ? SwapInputController.bottomColor.value : SwapInputController.topColor.value, 0.9),
-  //     activeColorLeft: dualColor ? SwapInputController.bottomColor.value : SwapInputController.topColor.value,
-  //     inactiveColorRight: dualColor ? opacityWorklet(SwapInputController.topColor.value, 0.9) : separatorSecondary,
-  //     activeColorRight: dualColor ? SwapInputController.topColor.value : fillSecondary,
-  //   }),
-  //   [SwapInputController.bottomColor.value, SwapInputController.topColor.value, dualColor, fillSecondary, separatorSecondary]
-  // );
+  const { inactiveColorLeft, activeColorLeft, inactiveColorRight } = useMemo(
+    () => ({
+      inactiveColorLeft: opacity(dualColor ? assetToBuyColor : assetToSellColor, 0.9),
+      activeColorLeft: dualColor ? assetToBuyColor : assetToSellColor,
+      inactiveColorRight: dualColor ? opacity(assetToSellColor, 0.9) : separatorSecondary,
+    }),
+    [assetToBuyColor, assetToSellColor, dualColor, separatorSecondary]
+  );
 
   // This is the percentage of the slider from the left
   const xPercentage = useDerivedValue(() => {
@@ -305,11 +302,7 @@ export const SwapSlider = ({
 
     return {
       backgroundColor: withSpring(
-        interpolateColor(
-          sliderPressProgress.value,
-          [collapsedPercentage, 1],
-          [colors.value.inactiveColorLeft, colors.value.activeColorLeft]
-        ),
+        interpolateColor(sliderPressProgress.value, [collapsedPercentage, 1], [inactiveColorLeft, activeColorLeft]),
         springConfig
       ),
       borderWidth: interpolate(
@@ -330,7 +323,7 @@ export const SwapSlider = ({
         [THICK_BORDER_WIDTH, THICK_BORDER_WIDTH, 0, 0],
         'clamp'
       ),
-      backgroundColor: colors.value.inactiveColorRight,
+      backgroundColor: inactiveColorRight,
       width: `${(1 - uiXPercentage.value - SCRUBBER_WIDTH / width) * 100}%`,
     };
   });
@@ -375,7 +368,7 @@ export const SwapSlider = ({
 
   const maxTextColor = useAnimatedStyle(() => {
     return {
-      color: SwapInputController.bottomColor.value,
+      color: assetToBuyColor,
     };
   });
 
@@ -399,7 +392,6 @@ export const SwapSlider = ({
                       network={ethereumUtils.getNetworkFromChainId(Number(assetToSellChainId))}
                       small
                       symbol={assetToSellSymbol ?? ''}
-                      theme={theme}
                     />
                   </Bleed>
                   <Inline alignVertical="bottom" wrap={false}>

@@ -5,7 +5,6 @@ import Animated, { runOnUI, useDerivedValue } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
 import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
-import { useTheme } from '@/theme';
 
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { SwapActionButton } from '@/__swaps__/screens/Swap/components/SwapActionButton';
@@ -27,14 +26,24 @@ import { TokenColors } from '@/graphql/__generated__/metadata';
 
 function SwapInputActionButton() {
   const { isDarkMode } = useColorMode();
-  const { SwapNavigation, SwapInputController } = useSwapContext();
+  const { SwapNavigation } = useSwapContext();
+
+  const assetToSellColors = useSwapAssets(state => state.assetToSell?.colors);
+  const assetToSellSymbol = useSwapAssets(state => state.assetToSell?.symbol);
+
+  const assetToSellColor = useMemo(() => {
+    return extractColorValueForColors({
+      colors: assetToSellColors as TokenColors,
+      isDarkMode,
+    });
+  }, [assetToSellColors, isDarkMode]);
 
   return (
     <SwapActionButton
-      color={SwapInputController.topColor}
+      color={assetToSellColor}
       disableShadow={isDarkMode}
       hugContent
-      label={SwapInputController.assetToSellSymbol}
+      label={assetToSellSymbol}
       onPress={runOnUI(SwapNavigation.handleInputPress)}
       rightIcon={'􀆏'}
       small
@@ -87,7 +96,6 @@ function SwapInputIcon() {
       isDarkMode,
     });
   }, [assetToSellColors, isDarkMode]);
-  const theme = useTheme();
 
   return (
     <Box paddingRight="10px">
@@ -99,19 +107,16 @@ function SwapInputIcon() {
         mainnetAddress={assetToSellMainnetAddress ?? ''}
         network={ethereumUtils.getNetworkFromChainId(assetToSellChainId ?? ChainId.mainnet)}
         symbol={assetToSellSymbol ?? ''}
-        theme={theme}
       />
     </Box>
   );
 }
 
 function InputAssetBalanceBadge() {
-  const { SwapInputController } = useSwapContext();
-
+  const assetToSell = useSwapAssets(state => state.assetToSell);
   const userAssets = useAssetsToSell();
 
   const label = useDerivedValue(() => {
-    const assetToSell = SwapInputController.assetToSell.value;
     if (!assetToSell) return 'No balance';
     const userAsset = userAssets.find(userAsset => isSameAssetWorklet(userAsset, assetToSell));
     return userAsset?.balance.display ?? 'No balance';
@@ -121,10 +126,20 @@ function InputAssetBalanceBadge() {
 }
 
 export function SwapInputAsset() {
+  const { isDarkMode } = useColorMode();
   const { outputProgress, inputProgress, AnimatedSwapStyles, SwapTextStyles, SwapInputController, SwapNavigation } = useSwapContext();
 
+  const assetToSellColors = useSwapAssets(state => state.assetToSell?.colors);
+
+  const color = useMemo(() => {
+    return extractColorValueForColors({
+      colors: assetToSellColors as TokenColors,
+      isDarkMode,
+    });
+  }, [assetToSellColors, isDarkMode]);
+
   return (
-    <SwapInput color={SwapInputController.topColor} otherInputProgress={outputProgress} progress={inputProgress}>
+    <SwapInput color={color} otherInputProgress={outputProgress} progress={inputProgress}>
       <Box as={Animated.View} style={AnimatedSwapStyles.inputStyle}>
         <Stack space="16px">
           <Columns alignHorizontal="justify" alignVertical="center">
@@ -159,7 +174,7 @@ export function SwapInputAsset() {
         width={{ custom: INPUT_INNER_WIDTH }}
       >
         <TokenList
-          color={SwapInputController.topColor.value}
+          color={color}
           handleExitSearch={runOnUI(SwapNavigation.handleExitSearch)}
           handleFocusSearch={runOnUI(SwapNavigation.handleFocusInputSearch)}
         />

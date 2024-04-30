@@ -46,7 +46,7 @@ export const swapQuoteStore = createStore<SwapQuoteStore>(set => ({
   clearQuote: () => set({ quote: null }),
 }));
 
-export const useSwapSearchStore = create(swapQuoteStore);
+export const useSwapQuoteStore = create(swapQuoteStore);
 
 export const pollSwapQuote = (quoteParams: QuoteParams) => {
   const { getQuote, pollRef, setPollRef } = swapQuoteStore.getState();

@@ -183,7 +183,18 @@ export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
         >
           <HitSlop space="10px">
             <Inline alignVertical="center" space="6px" wrap={false}>
-              {output && <ChainImage chain={ethereumUtils.getNetworkFromChainId(outputChainId ?? ChainId.mainnet)} size={16} />}
+              <Bleed vertical="2px">
+                {(output || sortBy !== 'all') && (
+                  <ChainImage
+                    chain={
+                      output
+                        ? ethereumUtils.getNetworkFromChainId(outputChainId ?? ChainId.mainnet)
+                        : ethereumUtils.getNetworkFromChainId(sortBy as ChainId)
+                    }
+                    size={16}
+                  />
+                )}
+              </Bleed>
 
               <Text
                 align="right"

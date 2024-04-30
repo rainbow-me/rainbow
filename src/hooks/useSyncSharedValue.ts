@@ -3,9 +3,9 @@
 import { SharedValue, runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { deepEqualWorklet, shallowEqualWorklet } from '@/worklets/comparisons';
 
-type SetStateType<T, D> = D extends 'sharedToState' ? (value: T) => void : never;
+export type SetStateType<T, D> = D extends 'sharedToState' ? (value: T) => void : never;
 
-interface SyncParams<T, D extends 'sharedToState' | 'stateToShared'> {
+export interface SyncParams<T, D extends 'sharedToState' | 'stateToShared'> {
   compareDepth?: 'shallow' | 'deep';
   setState: SetStateType<T, D>;
   sharedValue: SharedValue<T>;

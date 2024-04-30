@@ -23,6 +23,7 @@ export const TokenList = ({
   const { inputProgress, outputProgress } = useSwapContext();
   const { width: deviceWidth } = useDimensions();
 
+  // TODO: fix this since it's referencing a shared value on the JS thread
   const isFocused = output ? outputProgress.value === 2 : inputProgress.value === 2;
 
   return (

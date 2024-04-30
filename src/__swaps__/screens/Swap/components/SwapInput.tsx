@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import Animated, { DerivedValue, SharedValue } from 'react-native-reanimated';
+import Animated, { SharedValue } from 'react-native-reanimated';
 import { Box } from '@/design-system';
 import { BASE_INPUT_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { useSwapInputStyles } from '@/__swaps__/screens/Swap/hooks/useSwapInputStyles';
@@ -13,7 +13,7 @@ export const SwapInput = ({
   progress,
 }: {
   children?: ReactNode;
-  color: DerivedValue<string | number>;
+  color: string;
   bottomInput?: boolean;
   otherInputProgress: SharedValue<number>;
   progress: SharedValue<number>;

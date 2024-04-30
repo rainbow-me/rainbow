@@ -49,6 +49,7 @@ export const CoinRow = ({
     );
   };
 
+  // TODO: actually calculate this from incoming token data
   const percentChange = useMemo(() => {
     if (isTrending) {
       const rawChange = Math.random() * 30;

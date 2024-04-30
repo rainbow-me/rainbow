@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import {
   Easing,
   SharedValue,
@@ -22,15 +23,15 @@ import {
   slowFadeConfig,
 } from '@/__swaps__/screens/Swap/constants';
 import { inputKeys, inputMethods } from '@/__swaps__/types/swap';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { extractColorValueForColors, opacity } from '@/__swaps__/utils/swaps';
+import { useSwapAssets } from '@/state/swaps/assets';
+import { TokenColors } from '@/graphql/__generated__/metadata';
 
 export function useSwapTextStyles({
   focusedInput,
   inputMethod,
   inputProgress,
   inputValues,
-  topColor,
-  bottomColor,
   isQuoteStale,
   outputProgress,
   sliderPressProgress,
@@ -39,13 +40,28 @@ export function useSwapTextStyles({
   inputMethod: SharedValue<inputMethods>;
   inputProgress: SharedValue<number>;
   inputValues: SharedValue<{ [key in inputKeys]: number | string }>;
-  topColor: SharedValue<string>;
-  bottomColor: SharedValue<string>;
   isQuoteStale: SharedValue<number>;
   outputProgress: SharedValue<number>;
   sliderPressProgress: SharedValue<number>;
 }) {
   const { isDarkMode } = useColorMode();
+
+  const assetToSellColors = useSwapAssets(state => state.assetToSell?.colors);
+  const assetToBuyColors = useSwapAssets(state => state.assetToBuy?.colors);
+
+  const topColor = useMemo(() => {
+    return extractColorValueForColors({
+      colors: assetToSellColors as TokenColors,
+      isDarkMode,
+    });
+  }, [assetToSellColors, isDarkMode]);
+
+  const bottomColor = useMemo(() => {
+    return extractColorValueForColors({
+      colors: assetToBuyColors as TokenColors,
+      isDarkMode,
+    });
+  }, [assetToBuyColors, isDarkMode]);
 
   const labelSecondary = useForegroundColor('labelSecondary');
   const labelTertiary = useForegroundColor('labelTertiary');
@@ -75,7 +91,7 @@ export function useSwapTextStyles({
     const isOutputZero = Number(inputValues.value.outputAmount) === 0;
 
     // eslint-disable-next-line no-nested-ternary
-    const zeroOrAssetColor = isInputZero ? zeroAmountColor : topColor.value === ETH_COLOR_DARK ? ETH_COLOR_DARK_ACCENT : topColor.value;
+    const zeroOrAssetColor = isInputZero ? zeroAmountColor : topColor === ETH_COLOR_DARK ? ETH_COLOR_DARK_ACCENT : topColor;
     const opacity = isInputStale.value !== 1 || (isInputZero && isOutputZero) ? withSpring(1, sliderConfig) : pulsingOpacity.value;
 
     return {
@@ -108,11 +124,7 @@ export function useSwapTextStyles({
       (inputMethod.value === 'slider' && Number(inputValues.value.outputAmount) === 0);
 
     // eslint-disable-next-line no-nested-ternary
-    const zeroOrAssetColor = isOutputZero
-      ? zeroAmountColor
-      : bottomColor.value === ETH_COLOR_DARK
-        ? ETH_COLOR_DARK_ACCENT
-        : bottomColor.value;
+    const zeroOrAssetColor = isOutputZero ? zeroAmountColor : bottomColor === ETH_COLOR_DARK ? ETH_COLOR_DARK_ACCENT : bottomColor;
     const opacity = isOutputStale.value !== 1 || (isInputZero && isOutputZero) ? withSpring(1, sliderConfig) : pulsingOpacity.value;
 
     return {

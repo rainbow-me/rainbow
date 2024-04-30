@@ -7,6 +7,7 @@ import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapI
 import { BigNumberish } from '@/__swaps__/utils/hex';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { getCrossChainTimeEstimate, getQuoteServiceTime } from '@/__swaps__/utils/swaps';
+import { useSwapQuoteStore } from '@/state/swaps/quote';
 
 const highPriceImpactThreshold = 0.05;
 const severePriceImpactThreshold = 0.1;
@@ -44,6 +45,8 @@ type UsePriceImpactWarningProps = {
 
 export const useSwapWarning = ({ SwapInputController, isFetching, sliderXPosition }: UsePriceImpactWarningProps) => {
   const { nativeCurrency: currentCurrency } = useAccountSettings();
+
+  const quote = useSwapQuoteStore(state => state.quote);
 
   const timeEstimate = useSharedValue<SwapTimeEstimate | null>(null);
 
@@ -170,7 +173,7 @@ export const useSwapWarning = ({ SwapInputController, isFetching, sliderXPositio
     () => ({
       inputNativeValue: SwapInputController.inputValues.value.inputNativeValue,
       outputNativeValue: SwapInputController.inputValues.value.outputNativeValue,
-      quote: SwapInputController.quote.value,
+      quote,
       isFetching: isFetching.value,
       sliderXPosition: sliderXPosition.value,
     }),

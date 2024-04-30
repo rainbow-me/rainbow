@@ -1,142 +1,125 @@
-import React, { useState } from 'react';
-import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
-import { AnimatedText, Box, Inline, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
+import React, { useMemo, useState } from 'react';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import { Box, Inline, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity, priceForAsset, valueBasedDecimalFormatter } from '@/__swaps__/utils/swaps';
+import { opacity, valueBasedDecimalFormatter } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { useSwapAssets } from '@/state/swaps/assets';
+import { ParsedSearchAsset } from '@/__swaps__/types/assets';
+
+type ExchangeRateBubbleInfo = {
+  fromAssetText: string;
+  toAssetText: string;
+};
+
+const getExchangeRateText = ({
+  assetToSell,
+  assetToBuy,
+  assetToSellPrice,
+  assetToBuyPrice,
+  exchangeRateIndex,
+}: {
+  assetToSell: ParsedSearchAsset | null;
+  assetToBuy: ParsedSearchAsset | null;
+  assetToSellPrice: number;
+  assetToBuyPrice: number;
+  exchangeRateIndex: number;
+}): ExchangeRateBubbleInfo => {
+  if (!assetToSell || !assetToBuy || !assetToSellPrice || !assetToBuyPrice) {
+    return {
+      fromAssetText: '',
+      toAssetText: '',
+    };
+  }
+
+  switch (exchangeRateIndex) {
+    // 1 assetToSell => x assetToBuy
+    default:
+    case 0: {
+      const formattedRate = valueBasedDecimalFormatter(
+        assetToSellPrice / assetToBuyPrice,
+        assetToBuyPrice,
+        'up',
+        -1,
+        assetToBuy.type === 'stablecoin' ?? false,
+        false
+      );
+
+      return {
+        fromAssetText: `1 ${assetToSell.symbol}`,
+        toAssetText: `${formattedRate} ${assetToBuy.symbol}`,
+      };
+    }
+    // 1 assetToBuy => x assetToSell
+    case 1: {
+      const formattedRate = valueBasedDecimalFormatter(
+        assetToBuyPrice / assetToSellPrice,
+        assetToSellPrice,
+        'up',
+        -1,
+        assetToSell.type === 'stablecoin' ?? false,
+        false
+      );
+      return {
+        fromAssetText: `1 ${assetToBuy.symbol}`,
+        toAssetText: `${formattedRate} ${assetToSell.symbol}`,
+      };
+    }
+    // assetToSell => native currency
+    case 2: {
+      return {
+        fromAssetText: `1 ${assetToSell.symbol}`,
+        toAssetText: `$${assetToSellPrice.toLocaleString('en-US', {
+          useGrouping: true,
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}`,
+      };
+    }
+    // assetToBuy => native currency
+    case 3: {
+      return {
+        fromAssetText: `1 ${assetToBuy.symbol}`,
+        toAssetText: `$${assetToBuyPrice.toLocaleString('en-US', {
+          useGrouping: true,
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}`,
+      };
+    }
+  }
+};
 
 export const ExchangeRateBubble = () => {
   const { isDarkMode } = useColorMode();
-  const { AnimatedSwapStyles, SwapInputController } = useSwapContext();
+  const { AnimatedSwapStyles } = useSwapContext();
   const [exchangeRateIndex, setExchangeRateIndex] = useState<number>(0);
 
-  const assetToSellPrice = useSharedValue(0);
-  const assetToBuyPrice = useSharedValue(0);
-  const assetToSellSymbol = useSharedValue('');
-  const assetToBuySymbol = useSharedValue('');
-  const fromAssetText = useSharedValue('');
-  const toAssetText = useSharedValue('');
+  const assetToSell = useSwapAssets(state => state.assetToSell);
+  const assetToBuy = useSwapAssets(state => state.assetToBuy);
+  const assetToSellPrice = useSwapAssets(state => state.assetToSellPrice);
+  const assetToBuyPrice = useSwapAssets(state => state.assetToBuyPrice);
 
   const fillTertiary = useForegroundColor('fillTertiary');
 
-  useAnimatedReaction(
-    () => ({
-      assetToSell: SwapInputController.assetToSell.value,
-      assetToBuy: SwapInputController.assetToBuy.value,
-      assetToSellPrice: SwapInputController.assetToSellPrice.value,
-      assetToBuyPrice: SwapInputController.assetToBuyPrice.value,
-      exchangeRateIndex,
-    }),
-    (current, previous) => {
-      if (current.assetToSell && (!previous?.assetToSell || current.assetToSell !== previous.assetToSell)) {
-        assetToSellSymbol.value = current.assetToSell.symbol;
-
-        // try to set price immediately
-        const price = priceForAsset({
-          asset: current.assetToSell,
-          assetType: 'assetToSell',
-          assetToSellPrice: SwapInputController.assetToSellPrice,
-          assetToBuyPrice: SwapInputController.assetToBuyPrice,
-        });
-
-        if (price) {
-          assetToSellPrice.value = price;
-        }
-      }
-
-      if (current.assetToBuy && (!previous?.assetToBuy || current.assetToBuy !== previous.assetToBuy)) {
-        assetToBuySymbol.value = current.assetToBuy.symbol;
-
-        // try to set price immediately
-        const price = priceForAsset({
-          asset: current.assetToBuy,
-          assetType: 'assetToBuy',
-          assetToSellPrice: SwapInputController.assetToSellPrice,
-          assetToBuyPrice: SwapInputController.assetToBuyPrice,
-        });
-
-        if (price) {
-          assetToBuyPrice.value = price;
-        }
-      }
-
-      if (current.assetToSell && current.assetToBuy) {
-        runOnJS(SwapInputController.fetchAssetPrices)({
-          assetToSell: current.assetToSell,
-          assetToBuy: current.assetToBuy,
-        });
-      }
-
-      if (current.assetToSellPrice && (!previous?.assetToSellPrice || current.assetToSellPrice !== previous.assetToSellPrice)) {
-        assetToSellPrice.value = current.assetToSellPrice;
-      }
-
-      if (current.assetToBuyPrice && (!previous?.assetToBuyPrice || current.assetToBuyPrice !== previous.assetToBuyPrice)) {
-        assetToBuyPrice.value = current.assetToBuyPrice;
-      }
-
-      if (assetToSellPrice.value && assetToBuyPrice.value) {
-        switch (exchangeRateIndex) {
-          // 1 assetToSell => x assetToBuy
-          case 0: {
-            const formattedRate = valueBasedDecimalFormatter(
-              assetToSellPrice.value / assetToBuyPrice.value,
-              assetToBuyPrice.value,
-              'up',
-              -1,
-              current.assetToBuy?.type === 'stablecoin' ?? false,
-              false
-            );
-
-            fromAssetText.value = `1 ${assetToSellSymbol.value}`;
-            toAssetText.value = `${formattedRate} ${assetToBuySymbol.value}`;
-            break;
-          }
-          // 1 assetToBuy => x assetToSell
-          case 1: {
-            const formattedRate = valueBasedDecimalFormatter(
-              assetToBuyPrice.value / assetToSellPrice.value,
-              assetToSellPrice.value,
-              'up',
-              -1,
-              current.assetToSell?.type === 'stablecoin' ?? false,
-              false
-            );
-            fromAssetText.value = `1 ${assetToBuySymbol.value}`;
-            toAssetText.value = `${formattedRate} ${assetToSellSymbol.value}`;
-            break;
-          }
-          // assetToSell => native currency
-          case 2: {
-            fromAssetText.value = `1 ${assetToSellSymbol.value}`;
-            toAssetText.value = `$${assetToSellPrice.value.toLocaleString('en-US', {
-              useGrouping: true,
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}`;
-            break;
-          }
-          // assetToBuy => native currency
-          case 3: {
-            fromAssetText.value = `1 ${assetToBuySymbol.value}`;
-            toAssetText.value = `$${assetToBuyPrice.value.toLocaleString('en-US', {
-              useGrouping: true,
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}`;
-            break;
-          }
-        }
-      }
-    }
+  const { fromAssetText, toAssetText } = useMemo(
+    () =>
+      getExchangeRateText({
+        assetToSell,
+        assetToBuy,
+        assetToSellPrice,
+        assetToBuyPrice,
+        exchangeRateIndex,
+      }),
+    [assetToSell, assetToBuy, assetToSellPrice, assetToBuyPrice, exchangeRateIndex]
   );
 
   const WrapperStyles = useAnimatedStyle(() => {
     return {
       borderColor: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR,
       borderWidth: THICK_BORDER_WIDTH,
-      opacity: fromAssetText.value && toAssetText.value ? 1 : 0,
+      opacity: fromAssetText && toAssetText ? 1 : 0,
     };
   });
 
@@ -160,14 +143,9 @@ export const ExchangeRateBubble = () => {
           style={WrapperStyles}
         >
           <Inline alignHorizontal="center" alignVertical="center" space="6px" wrap={false}>
-            <AnimatedText
-              align="center"
-              color="labelQuaternary"
-              size="13pt"
-              style={{ opacity: isDarkMode ? 0.6 : 0.75 }}
-              weight="heavy"
-              text={fromAssetText}
-            />
+            <Text align="center" color="labelQuaternary" size="13pt" style={{ opacity: isDarkMode ? 0.6 : 0.75 }} weight="heavy">
+              {fromAssetText}
+            </Text>
             <Box
               borderRadius={10}
               height={{ custom: 20 }}
@@ -179,14 +157,9 @@ export const ExchangeRateBubble = () => {
                 􀄭
               </TextIcon>
             </Box>
-            <AnimatedText
-              align="center"
-              color="labelQuaternary"
-              size="13pt"
-              style={{ opacity: isDarkMode ? 0.6 : 0.75 }}
-              weight="heavy"
-              text={toAssetText}
-            />
+            <Text align="center" color="labelQuaternary" size="13pt" style={{ opacity: isDarkMode ? 0.6 : 0.75 }} weight="heavy">
+              {toAssetText}
+            </Text>
           </Inline>
         </Box>
       </Box>

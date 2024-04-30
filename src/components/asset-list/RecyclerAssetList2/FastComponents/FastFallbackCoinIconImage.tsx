@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Network } from '@/networks/types';
 import { ImageWithCachedMetadata, ImgixImage } from '@/components/images';
-import { ThemeContextProps } from '@/theme';
+import { useTheme } from '@/theme';
 
 const ImageState = {
   ERROR: 'ERROR',
@@ -16,18 +16,16 @@ export const FastFallbackCoinIconImage = React.memo(function FastFallbackCoinIco
   size = 40,
   icon,
   shadowColor,
-  theme,
   children,
 }: {
   size?: number;
   icon?: string;
-  theme: ThemeContextProps;
   network: Network;
   symbol: string;
   shadowColor: string;
   children: () => React.ReactNode;
 }) {
-  const { colors } = theme;
+  const { colors } = useTheme();
 
   const key = `${icon}`;
 

@@ -70,7 +70,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   });
 
   const AnimatedSwapStyles = useAnimatedSwapStyles({
-    SwapInputController,
     SwapWarning,
     inputProgress,
     outputProgress,

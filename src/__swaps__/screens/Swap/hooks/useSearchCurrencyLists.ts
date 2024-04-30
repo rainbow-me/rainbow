@@ -183,29 +183,6 @@ export function useSearchCurrencyLists() {
     }
   }, [favorites, keys, toChainId, searchQuery, queryIsAddress]);
 
-  // const { favorites } = useFavoriteAssets();
-
-  // const favoritesList = useMemo(() => {
-  //   const favoritesByChain = favorites[toChainId] || [];
-  //   if (searchQuery === '') {
-  //     return favoritesByChain;
-  //   } else {
-  //     const formattedQuery = queryIsAddress
-  //       ? addHexPrefix(searchQuery).toLowerCase()
-  //       : searchQuery;
-  //     return filterList<SearchAsset>(
-  //       favoritesByChain || [],
-  //       formattedQuery,
-  //       keys,
-  //       {
-  //         threshold: queryIsAddress
-  //           ? rankings.CASE_SENSITIVE_EQUAL
-  //           : rankings.CONTAINS,
-  //       },
-  //     );
-  //   }
-  // }, [favorites, keys, toChainId, searchQuery, queryIsAddress]);
-
   // static verified asset lists prefetched to display curated lists
   // we only display crosschain exact matches if located here
   const verifiedAssets = useMemo(

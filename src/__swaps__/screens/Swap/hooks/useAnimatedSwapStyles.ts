@@ -1,4 +1,5 @@
 /* eslint-disable no-nested-ternary */
+import { useMemo } from 'react';
 import { SharedValue, interpolate, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
 import { globalColors, useColorMode } from '@/design-system';
 import {
@@ -9,24 +10,22 @@ import {
   fadeConfig,
   springConfig,
 } from '@/__swaps__/screens/Swap/constants';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
-import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
+import { extractColorValueForColors, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { SwapWarningType, useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 import { spinnerExitConfig } from '@/components/animations/AnimatedSpinner';
 import { NavigationSteps } from './useSwapNavigation';
 import { IS_ANDROID } from '@/env';
 import { safeAreaInsetValues } from '@/utils';
-import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
+import { useSwapAssets } from '@/state/swaps/assets';
+import { TokenColors } from '@/graphql/__generated__/metadata';
 
 export function useAnimatedSwapStyles({
-  SwapInputController,
   SwapWarning,
   inputProgress,
   outputProgress,
   reviewProgress,
   isFetching,
 }: {
-  SwapInputController: ReturnType<typeof useSwapInputsController>;
   SwapWarning: ReturnType<typeof useSwapWarning>;
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
@@ -34,6 +33,23 @@ export function useAnimatedSwapStyles({
   isFetching: SharedValue<boolean>;
 }) {
   const { isDarkMode } = useColorMode();
+
+  const assetToBuyColors = useSwapAssets(state => state.assetToBuy?.colors);
+  const assetToSellColors = useSwapAssets(state => state.assetToSell?.colors);
+
+  const assetToBuyColor = useMemo(() => {
+    return extractColorValueForColors({
+      colors: assetToBuyColors as TokenColors,
+      isDarkMode,
+    });
+  }, [assetToBuyColors, isDarkMode]);
+
+  const assetToSellColor = useMemo(() => {
+    return extractColorValueForColors({
+      colors: assetToSellColors as TokenColors,
+      isDarkMode,
+    });
+  }, [assetToSellColors, isDarkMode]);
 
   const flipButtonStyle = useAnimatedStyle(() => {
     return {
@@ -140,36 +156,36 @@ export function useAnimatedSwapStyles({
           ? isDarkMode
             ? '#191A1C'
             : globalColors.white100
-          : opacityWorklet(SwapInputController.bottomColor.value, 0.03),
+          : opacityWorklet(assetToBuyColor, 0.03),
       borderTopColor:
         reviewProgress.value === NavigationSteps.SHOW_REVIEW
           ? opacityWorklet(globalColors.darkGrey, 0.2)
-          : opacityWorklet(SwapInputController.bottomColor.value, 0.04),
+          : opacityWorklet(assetToBuyColor, 0.04),
       paddingTop: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 28 : 16 - THICK_BORDER_WIDTH,
     };
   });
 
   const assetToSellIconStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: SwapInputController.topColor.value,
+      backgroundColor: assetToSellColor,
     };
   });
 
   const assetToSellCaretStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: SwapInputController.topColor.value,
+      backgroundColor: assetToSellColor,
     };
   });
 
   const assetToBuyIconStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: SwapInputController.bottomColor.value,
+      backgroundColor: assetToBuyColor,
     };
   });
 
   const assetToBuyCaretStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: SwapInputController.bottomColor.value,
+      backgroundColor: assetToBuyColor,
     };
   });
 
@@ -181,13 +197,13 @@ export function useAnimatedSwapStyles({
 
   const searchInputAssetButtonStyle = useAnimatedStyle(() => {
     return {
-      color: SwapInputController.topColor.value,
+      color: assetToSellColor,
     };
   });
 
   const searchOutputAssetButtonStyle = useAnimatedStyle(() => {
     return {
-      color: SwapInputController.bottomColor.value,
+      color: assetToBuyColor,
     };
   });
 
@@ -200,16 +216,16 @@ export function useAnimatedSwapStyles({
 
   const searchInputAssetButtonWrapperStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: opacityWorklet(SwapInputController.topColor.value, isDarkMode ? 0.1 : 0.08),
-      borderColor: opacityWorklet(SwapInputController.topColor.value, isDarkMode ? 0.06 : 0.01),
+      backgroundColor: opacityWorklet(assetToSellColor, isDarkMode ? 0.1 : 0.08),
+      borderColor: opacityWorklet(assetToSellColor, isDarkMode ? 0.06 : 0.01),
       borderWidth: THICK_BORDER_WIDTH,
     };
   });
 
   const searchOutputAssetButtonWrapperStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: opacityWorklet(SwapInputController.bottomColor.value, isDarkMode ? 0.1 : 0.08),
-      borderColor: opacityWorklet(SwapInputController.bottomColor.value, isDarkMode ? 0.06 : 0.01),
+      backgroundColor: opacityWorklet(assetToBuyColor, isDarkMode ? 0.1 : 0.08),
+      borderColor: opacityWorklet(assetToBuyColor, isDarkMode ? 0.06 : 0.01),
       borderWidth: THICK_BORDER_WIDTH,
     };
   });
