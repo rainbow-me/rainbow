@@ -16,9 +16,6 @@ jobs:
 
       - name: Set up github keys
         run:  git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
-     
-      - name: clean ios app step
-        run: yarn clean:ios  > /dev/null 2>&1 || true
 
       - name: Set up ENV vars & scripts
         run: |
@@ -28,26 +25,39 @@ jobs:
           eval $CI_SCRIPTS
           sed -i''-e "s/\IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
       
+      - name: Cache Yarn Dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            **/node_modules
+            ~/.cache
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      
+      - name: Cache Cocoapods
+        uses: actions/cache@v2
+        with:
+          path: ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+      
       - name: Install deps via Yarn
         run: yarn setup-ci
 
       - name: Check for frozen lockfile
         run: yarn check-lockfile
 
-      - name: Audit CI
-        run:  yarn audit-ci --config audit-ci.jsonc
-
-      - name: Lint
-        run: yarn lint:ci
+      - name: Audit & Lint CI
+        run:  yarn audit-ci --config audit-ci.jsonc && yarn lint:ci
 
       - name: Install Pods
         run: yarn install-pods
 
-      - name: Installing Maestro
-        run: curl -Ls "https://get.maestro.mobile.dev" | bash
-
-      - name: Installing Maestro dependencies
+      - name: Installing Maestro & dependencies
         run: |
+          curl -Ls "https://get.maestro.mobile.dev" | bash
           brew tap facebook/fb
           brew install facebook/fb/idb-companion
 
@@ -55,16 +65,16 @@ jobs:
         working-directory: ios
         run: |
           xcrun xcodebuild \
-            -project "Rainbow.xcodeproj" \
             -scheme "Rainbow" \
+            -workspace "Rainbow.xcworkspace" \
             -configuration "Release" \
             -sdk "iphonesimulator" \
             -destination "platform=iOS Simulator,name=iPhone 15 Pro" \
-            -derivedDataPath "../build_output"
+            -derivedDataPath "temp_build"
       
       - name: Setup e2e tests
         env:
-          APP_PATH: './build_output/Build/Products/Release-iphonesimulator/Rainbow.app'
+          APP_PATH: './ios/temp_build/Build/Products/Release-iphonesimulator/Rainbow.app'
       
         run: |
           echo "Launching iOS Simulator"
@@ -84,6 +94,14 @@ jobs:
             exit 1
           fi
           done
+
+      - name: Shutdown and clean up simulator
+        if: always()
+        run: |
+          echo "Shutting down all simulators"
+          xcrun simctl shutdown all
+          echo "Erasing all simulators"
+          xcrun simctl erase all
      
       - name: Upload Test Artifacts
         if: failure()
