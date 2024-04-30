@@ -74,16 +74,23 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
 
   const handleSelectToken = useCallback(
     (token: SearchAsset) => {
-      const userAsset = userAssets.find(asset => isSameAsset(asset, token));
-      const parsedAsset = parseSearchAsset({
-        assetWithPrice: undefined,
-        searchAsset: token,
-        userAsset,
-      });
+      const currentAsset = swapAssetStore.getState().assetToBuy;
+      if (currentAsset && !isSameAsset(currentAsset, token)) {
+        const userAsset = userAssets.find(asset => isSameAsset(asset, token));
+        const parsedAsset = parseSearchAsset({
+          assetWithPrice: undefined,
+          searchAsset: token,
+          userAsset,
+        });
 
-      swapAssetStore.setState({
-        assetToBuy: parsedAsset,
-      });
+        swapAssetStore.setState({
+          assetToBuy: parsedAsset,
+          assetToBuyPrice: parsedAsset.native.price?.amount ?? 0,
+        });
+      }
+
+      // TODO: Fetch asset price if = 0
+      // TODO: Trigger asset price refetching on interval
 
       const assetToSell = swapAssetStore.getState().assetToSell;
       if (!assetToSell) {
@@ -107,8 +114,6 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
     return bridgeSectionsColorsByChain[outputChainId || ChainId.mainnet] as TextColor;
   });
 
-  if (!section.data.length) return null;
-
   return (
     <Box key={section.id} testID={`${section.id}-token-to-buy-section`}>
       <Stack space="8px">
@@ -116,7 +121,6 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
           <Box borderRadius={12} height={{ custom: 52 }}>
             <Inset horizontal="20px" vertical="8px">
               <Inline space="8px" alignVertical="center">
-                {/* <SwapCoinIcon  /> */}
                 <Text size="icon 14px" weight="semibold" color={'labelQuaternary'}>
                   {i18n.t(i18n.l.swap.tokens_input.nothing_found)}
                 </Text>
@@ -140,7 +144,7 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
 
         <AnimatedFlashListComponent
           // TODO: this is a hacky fix until we can figure out why these lists render really slowly...
-          data={section.data.slice(0, 5)}
+          data={section.data.slice(0, 10)}
           ListEmptyComponent={<ListEmpty />}
           keyExtractor={item => `${item.uniqueId}-${section.id}`}
           renderItem={({ item }) => (

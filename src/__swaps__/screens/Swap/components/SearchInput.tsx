@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
-import { TextInput } from 'react-native';
-import Animated, { useAnimatedRef, useDerivedValue } from 'react-native-reanimated';
+import { NativeSyntheticEvent, TextInput, TextInputChangeEventData } from 'react-native';
+import Animated, { useAnimatedProps, useAnimatedRef, useDerivedValue } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Input } from '@/components/inputs';
 import { AnimatedText, Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
@@ -39,13 +39,22 @@ export const SearchInput = ({
     return 'Close';
   });
 
-  const onChangeSearchQuery = useCallback((query: string) => {
-    swapSearchStore.setState({ query });
+  const onSearchQueryChange = useCallback((event: NativeSyntheticEvent<TextInputChangeEventData>) => {
+    swapSearchStore.setState({ query: event.nativeEvent.text });
   }, []);
 
   const initialValue = useMemo(() => {
     return swapSearchStore.getState().query;
   }, []);
+
+  const searchInputValue = useAnimatedProps(() => {
+    const isFocused = inputProgress.value === 1 || outputProgress.value === 1;
+
+    // Removing the value when the input is focused allows the input to be reset to the correct value on blur
+    const query = isFocused ? undefined : initialValue;
+
+    return { defaultValue: initialValue, text: query };
+  });
 
   return (
     <Box width="full">
@@ -73,16 +82,17 @@ export const SearchInput = ({
                   </Box>
                 </Column>
                 <AnimatedInput
-                  onChange={e => {
-                    onChangeSearchQuery(e.nativeEvent.text);
-                  }}
+                  animatedProps={searchInputValue}
+                  onChange={onSearchQueryChange}
                   onBlur={() => {
-                    onChangeSearchQuery('');
+                    onSearchQueryChange({
+                      nativeEvent: {
+                        text: '',
+                      },
+                    } as NativeSyntheticEvent<TextInputChangeEventData>);
                     handleExitSearch();
                   }}
-                  onFocus={() => {
-                    handleFocusSearch();
-                  }}
+                  onFocus={handleFocusSearch}
                   placeholder={output ? 'Find a token to buy' : 'Search your tokens'}
                   placeholderTextColor={isDarkMode ? opacity(labelQuaternary, 0.3) : labelQuaternary}
                   ref={inputRef}
@@ -95,7 +105,6 @@ export const SearchInput = ({
                     height: 44,
                     zIndex: 10,
                   }}
-                  defaultValue={initialValue}
                 />
               </Columns>
             </Box>

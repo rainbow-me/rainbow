@@ -4,7 +4,6 @@ import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { isSameAsset } from '@/__swaps__/utils/assets';
 import { swapQuoteStore } from './quote';
 import { swapSortByStore } from './sortBy';
-import { priceForAsset } from '@/__swaps__/utils/swaps';
 
 export interface SwapAssetsState {
   assetToSell: ParsedSearchAsset | null;
@@ -36,8 +35,6 @@ export const swapAssetStore = createStore<SwapAssetsState>((set, get) => ({
     if (assetToBuy && isSameAsset(asset, assetToBuy)) {
       set({ assetToBuy: null, assetToBuyPrice: 0 });
     }
-
-    console.log(JSON.stringify(asset, null, 2));
 
     set({ assetToSell: asset, assetToSellPrice: asset.native.price?.amount ?? 0 });
   },
@@ -100,6 +97,12 @@ export const flipAssets = () => {
     swapSortByStore.setState({
       outputChainId: assetToBuy.chainId,
     });
+  }
+
+  const currentAssetToSell = swapAssetStore.getState().assetToSell;
+  const currentAssetToBuy = swapAssetStore.getState().assetToBuy;
+  if (currentAssetToSell && currentAssetToBuy) {
+    // TODO: Fetch quote here?
   }
 };
 

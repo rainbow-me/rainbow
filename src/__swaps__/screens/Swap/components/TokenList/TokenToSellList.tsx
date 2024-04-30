@@ -35,6 +35,9 @@ export const TokenToSellList = () => {
         });
       }
 
+      // TODO: Fetch asset price if = 0
+      // TODO: Trigger asset price refetching on interval
+
       const assetToBuy = swapAssetStore.getState().assetToBuy;
       if (!assetToBuy) {
         runOnUI(SwapNavigation.handleOutputPress)();

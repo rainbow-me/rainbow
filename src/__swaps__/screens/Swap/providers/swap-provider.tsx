@@ -59,8 +59,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     focusedInput,
     isFetching,
     sliderXPosition,
-    inputProgress,
-    outputProgress,
   });
 
   const SwapWarning = useSwapWarning({

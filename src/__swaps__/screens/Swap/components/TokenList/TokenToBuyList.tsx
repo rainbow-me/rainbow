@@ -11,10 +11,20 @@ export const TokenToBuyList = () => {
   const { sections, loading } = useAssetsToBuySections();
   const assetsCount = useMemo(() => sections?.reduce((count, section) => count + section.data.length, 0), [sections]);
 
+  console.log('rendering token buy list', loading);
+
   return (
     <Stack space="32px">
       <ChainSelection output />
-      {!loading && sections.map(section => <TokenToBuySection key={section.id} section={section} />)}
+      {!loading && (
+        <Stack space="20px">
+          {sections
+            .filter(section => section.data.length)
+            .map(section => (
+              <TokenToBuySection key={section.id} section={section} />
+            ))}
+        </Stack>
+      )}
 
       {!assetsCount && <ListEmpty output />}
     </Stack>

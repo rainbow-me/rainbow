@@ -3,6 +3,8 @@ import * as i18n from '@/languages';
 import { Box, Stack, Text } from '@/design-system';
 import { useSwapAssets } from '@/state/swaps/assets';
 import { isL2Chain } from '@/__swaps__/utils/chains';
+import { ChainId } from '@/__swaps__/types/chains';
+import { useSwapSortByStore } from '@/state/swaps/sortBy';
 
 type ListEmptyProps = {
   output?: boolean;
@@ -10,11 +12,15 @@ type ListEmptyProps = {
 };
 
 export const ListEmpty = ({ output = false, action = 'swap' }: ListEmptyProps) => {
-  const assetChainId = useSwapAssets(state => (output ? state.assetToSell?.chainId : state.assetToBuy?.chainId));
+  const assetToSellChainId = useSwapAssets(state => state.assetToSell?.chainId) ?? ChainId.mainnet;
+  const outputChainId = useSwapSortByStore(state => state.outputChainId);
 
   const isL2 = useMemo(() => {
-    return assetChainId && isL2Chain(assetChainId);
-  }, [assetChainId]);
+    if (output) {
+      return isL2Chain(outputChainId);
+    }
+    return assetToSellChainId && isL2Chain(assetToSellChainId);
+  }, [assetToSellChainId, output, outputChainId]);
 
   return (
     <Box alignItems="center" style={{ paddingTop: 91 }}>
