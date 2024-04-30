@@ -62,11 +62,15 @@ import { Navigation } from '@/navigation';
 
 const AnimatedFasterImage = Animated.createAnimatedComponent(FasterImageView);
 
+const USER_AGENT = {
+  ios: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Mobile/15E148 Safari/604.1',
+  android: 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Mobile Safari/53',
+};
+
 export const BrowserTab = React.memo(
   function BrowserTab({
     tabId,
     tabState,
-    injectedJS,
     isActiveTab,
     activeTabRef,
     animatedActiveTabIndex,
@@ -706,7 +710,6 @@ export const BrowserTab = React.memo(
                 <Freeze freeze={!isActiveTab}>
                   <DappBrowserWebview
                     webviewDebuggingEnabled={IS_DEV}
-                    injectedJavaScriptBeforeContentLoaded={injectedJS || ''}
                     allowsInlineMediaPlayback
                     fraudulentWebsiteWarningEnabled
                     allowsBackForwardNavigationGestures
@@ -730,7 +733,7 @@ export const BrowserTab = React.memo(
                     ref={webViewRef}
                     source={{ uri: tabUrl || RAINBOW_HOME }}
                     style={styles.webViewStyle}
-                    userAgent="Mozilla/5.0 (iPhone; CPU iPhone OS 17_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Mobile/15E148 Safari/604.1"
+                    userAgent={USER_AGENT[IS_IOS ? 'ios' : 'android']}
                   />
                 </Freeze>
               )}
