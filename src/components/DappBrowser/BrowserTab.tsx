@@ -39,6 +39,7 @@ import { useBrowserWorkletsContext } from './BrowserWorkletsContext';
 import { CloseTabButton } from './CloseTabButton';
 import DappBrowserWebview from './DappBrowserWebview';
 import { COLLAPSED_WEBVIEW_HEIGHT_UNSCALED, TAB_VIEW_COLUMN_WIDTH, TOP_INSET, WEBVIEW_HEIGHT } from './Dimensions';
+import { ErrorPage } from './ErrorPage';
 import { Homepage } from './Homepage';
 import { WebViewBorder } from './WebViewBorder';
 import {
@@ -367,6 +368,7 @@ const TabWebViewComponent = (props: WebViewProps, ref: React.Ref<WebView>) => {
       mediaPlaybackRequiresUserAction
       originWhitelist={['*']}
       ref={ref}
+      renderError={() => <ErrorPage />}
       renderLoading={() => <></>}
       style={styles.webViewStyle}
       userAgent={SAFARI_USER_AGENT}
