@@ -73,8 +73,6 @@ jobs:
             -derivedDataPath "temp_build"
       
       - name: Setup e2e tests
-        env:
-          APP_PATH: './ios/temp_build/Build/Products/Release-iphonesimulator/Rainbow.app'
       
         run: |
           echo "Shutting down any running simulators..."
@@ -82,7 +80,8 @@ jobs:
           echo "Launching iOS Simulator"
           xcrun simctl boot "iPhone 15 Pro"
           echo "Installing app on Simulator"
-          xcrun simctl install booted "${{ env.APP_PATH }}"
+          xcrun simctl install booted ./ios/temp_build/Build/Products/Release-iphonesimulator/Rainbow.app
+
               
       - name: Run e2e tests (3 retries)
         timeout-minutes: 10 
