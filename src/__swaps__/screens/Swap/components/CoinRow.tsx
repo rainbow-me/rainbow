@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Box, HitSlop, Inline, Stack, Text } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
@@ -8,8 +8,9 @@ import { CoinRowButton } from '@/__swaps__/screens/Swap/components/CoinRowButton
 import { BalancePill } from '@/__swaps__/screens/Swap/components/BalancePill';
 import { ChainId } from '@/__swaps__/types/chains';
 import { ethereumUtils } from '@/utils';
-import { toggleFavorite, useFavorites } from '@/resources/favorites';
+import { isFavorite, toggleFavorite } from '@/resources/favorites';
 import { ETH_ADDRESS } from '@/references';
+import { AddressZero } from '@ethersproject/constants';
 
 export const CoinRow = ({
   address,
@@ -39,15 +40,8 @@ export const CoinRow = ({
   symbol: string;
 }) => {
   const theme = useTheme();
-  const { favoritesMetadata } = useFavorites();
 
-  const favorites = Object.values(favoritesMetadata);
-
-  const isFavorite = (address: string) => {
-    return favorites.find(fav =>
-      fav.address === ETH_ADDRESS ? '0x0000000000000000000000000000000000000000' === address : fav.address === address
-    );
-  };
+  const [isFavorited, setIsFavorited] = useState<boolean>(isFavorite(address));
 
   const percentChange = useMemo(() => {
     if (isTrending) {
@@ -108,8 +102,10 @@ export const CoinRow = ({
             <Inline space="8px">
               <CoinRowButton icon="􀅳" outline size="icon 14px" />
               <CoinRowButton
-                color={isFavorite(address) ? '#FFCB0F' : undefined}
-                onPress={() => toggleFavorite(address)}
+                color={isFavorited ? '#FFCB0F' : undefined}
+                onPress={async () => {
+                  setIsFavorited(await toggleFavorite(address === AddressZero ? ETH_ADDRESS : address));
+                }}
                 icon="􀋃"
                 weight="black"
               />
