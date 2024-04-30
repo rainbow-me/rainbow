@@ -174,6 +174,7 @@ export const ControlPanel = () => {
 
   const handleNetworkSwitch = useCallback(
     (selectedItemId: string) => {
+      console.log('switching to network', selectedItemId);
       updateActiveSessionNetwork({ host: activeTabHost, network: selectedItemId as Network });
       const chainId = RainbowNetworks.find(({ value }) => value === (selectedItemId as Network))?.id as number;
       activeTabRef.current?.injectJavaScript(`window.ethereum.emit('chainChanged', ${toHex(chainId)}); true;`);
