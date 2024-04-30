@@ -66,7 +66,7 @@ interface BrowserContextType {
   goBack: () => void;
   goForward: () => void;
   goToUrl: (url: string, tabId?: string) => void;
-  onRefresh: () => void;
+  refreshPage: () => void;
 }
 
 const BrowserContext = createContext<BrowserContextType | undefined>(undefined);
@@ -141,7 +141,7 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
     }
   }, [activeTabRef]);
 
-  const onRefresh = useCallback(() => {
+  const refreshPage = useCallback(() => {
     if (activeTabRef.current) {
       activeTabRef.current.reload();
     }
@@ -150,7 +150,7 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
   const goToUrl = useCallback(
     (url: string, tabId?: string) => {
       if (normalizeUrlWorklet(url) === normalizeUrlWorklet(activeTabInfo.value.url)) {
-        onRefresh();
+        refreshPage();
       } else {
         goToPage(url);
       }
@@ -158,7 +158,7 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
         runOnUI(workletsContext.updateTabUrlWorklet)(url, tabId);
       }
     },
-    [activeTabInfo, goToPage, onRefresh, workletsContext]
+    [activeTabInfo, goToPage, refreshPage, workletsContext]
   );
 
   return (
@@ -184,7 +184,7 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
         goBack,
         goForward,
         goToUrl,
-        onRefresh,
+        refreshPage,
       }}
     >
       {children}
