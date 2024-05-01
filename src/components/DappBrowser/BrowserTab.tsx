@@ -304,12 +304,7 @@ const FreezableWebViewComponent = ({
     (syntheticEvent: { nativeEvent: { targetUrl: string } }) => {
       const { nativeEvent } = syntheticEvent;
       const { targetUrl } = nativeEvent;
-      console.log('Intercepted OpenWindow for', targetUrl);
       setParams({ url: targetUrl });
-      // Clear it rigth after, since this is handled inside a worklet and we can't do it there
-      setTimeout(() => {
-        setParams({ url: undefined });
-      }, 1000);
     },
     [setParams]
   );

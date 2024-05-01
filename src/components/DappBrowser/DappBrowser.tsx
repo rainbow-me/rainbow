@@ -29,6 +29,7 @@ import { useScreenshotAndScrollTriggers } from './hooks/useScreenshotAndScrollTr
 import { pruneScreenshots } from './screenshots';
 import { Search } from './search/Search';
 import { SearchContextProvider } from './search/SearchContext';
+import { useNavigation } from '@/navigation';
 
 export type DappBrowserParams = {
   url: string;
@@ -77,14 +78,7 @@ const NewTabTrigger = () => {
   const { newTabWorklet } = useBrowserWorkletsContext();
   const route = useRoute<RouteProp<RouteParams, 'DappBrowserParams'>>();
   const { goToUrl } = useBrowserContext();
-  // This is a hack for opening a new tab with a URL
-  useEffect(() => {
-    if (route.params?.url) {
-      setTimeout(() => {
-        goToUrl(route.params?.url);
-      }, 50);
-    }
-  }, [goToUrl, route.params?.url]);
+  const { setParams } = useNavigation();
 
   useAnimatedReaction(
     () => route.params?.url,
@@ -95,6 +89,17 @@ const NewTabTrigger = () => {
     },
     [newTabWorklet, route.params?.url]
   );
+
+  // TODO: make newTabWorklet work without this.
+  // In the meantime, this is am ugly hack for opening a new tab with a URL
+  useEffect(() => {
+    if (route.params?.url) {
+      setTimeout(() => {
+        goToUrl(route.params?.url);
+        setParams({ url: undefined });
+      }, 50);
+    }
+  }, [goToUrl, route.params?.url, setParams]);
 
   return null;
 };
