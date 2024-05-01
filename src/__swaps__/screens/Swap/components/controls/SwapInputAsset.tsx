@@ -1,10 +1,19 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import React, { useMemo } from 'react';
 import { StyleSheet, StatusBar } from 'react-native';
-import Animated, { runOnUI, useDerivedValue } from 'react-native-reanimated';
+import Animated, {
+  interpolateColor,
+  runOnUI,
+  useAnimatedStyle,
+  useDerivedValue,
+  withRepeat,
+  withSequence,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
-import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
+import { AnimatedText, Box, Column, Columns, Stack, useColorMode, useForegroundColor } from '@/design-system';
 
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { SwapActionButton } from '@/__swaps__/screens/Swap/components/SwapActionButton';
@@ -13,7 +22,17 @@ import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
 import { SwapInput } from '@/__swaps__/screens/Swap/components/SwapInput';
 import { BalanceBadge } from '@/__swaps__/screens/Swap/components/BalanceBadge';
 import { TokenList } from '@/__swaps__/screens/Swap/components/TokenList/TokenList';
-import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import {
+  BASE_INPUT_WIDTH,
+  ETH_COLOR_DARK,
+  ETH_COLOR_DARK_ACCENT,
+  INPUT_INNER_WIDTH,
+  INPUT_PADDING,
+  THICK_BORDER_WIDTH,
+  pulsingConfig,
+  sliderConfig,
+  slowFadeConfig,
+} from '@/__swaps__/screens/Swap/constants';
 import { IS_ANDROID } from '@/env';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { useAssetsToSell } from '@/__swaps__/screens/Swap/hooks/useAssetsToSell';
@@ -21,7 +40,15 @@ import { isSameAssetWorklet } from '@/__swaps__/utils/assets';
 import { ethereumUtils } from '@/utils';
 import { useSwapAssets } from '@/state/swaps/assets';
 import { ChainId } from '@/__swaps__/types/chains';
-import { extractColorValueForColors } from '@/__swaps__/utils/swaps';
+import {
+  addCommasToNumber,
+  countDecimalPlaces,
+  extractColorValueForColors,
+  findNiceIncrement,
+  niceIncrementFormatter,
+  valueBasedDecimalFormatter,
+  opacity,
+} from '@/__swaps__/utils/swaps';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 
 function SwapInputActionButton() {
@@ -52,7 +79,96 @@ function SwapInputActionButton() {
 }
 
 function SwapInputAmount() {
-  const { focusedInput, SwapTextStyles, SwapInputController, AnimatedSwapStyles } = useSwapContext();
+  const { isDarkMode } = useColorMode();
+  const { focusedInput, sliderXPosition, SwapTextStyles, SwapInputController } = useSwapContext();
+
+  const inputAssetBalance = useSwapAssets(state => state.assetToSell?.balance.amount);
+  const inputAssetNativePrice = useSwapAssets(state => state.assetToSellPrice);
+  const inputAssetStablecoin = useSwapAssets(state => state.assetToSell?.type === 'stablecoin');
+
+  const assetToSellColors = useSwapAssets(state => state.assetToSell?.colors);
+
+  const topColor = useMemo(() => {
+    return extractColorValueForColors({
+      colors: assetToSellColors as TokenColors,
+      isDarkMode,
+    });
+  }, [assetToSellColors, isDarkMode]);
+
+  const niceIncrement = useMemo(() => findNiceIncrement(Number(inputAssetBalance)), [inputAssetBalance]);
+  const incrementDecimalPlaces = useMemo(() => countDecimalPlaces(niceIncrement), [niceIncrement]);
+
+  const formattedInputAmount = useDerivedValue(() => {
+    if (SwapInputController.inputMethod.value === 'slider' && SwapInputController.percentageToSwap.value === 0) return '0';
+    if (SwapInputController.inputMethod.value === 'inputAmount' || typeof SwapInputController.inputValues.value.inputAmount === 'string') {
+      if (Number(SwapInputController.inputValues.value.inputAmount) === 0) return '0';
+
+      return addCommasToNumber(SwapInputController.inputValues.value.inputAmount);
+    }
+
+    if (SwapInputController.inputMethod.value === 'outputAmount') {
+      if (!Number(inputAssetBalance) || Number(SwapInputController.inputValues.value.inputAmount) === 0) return '0';
+
+      return valueBasedDecimalFormatter(
+        SwapInputController.inputValues.value.inputAmount,
+        Number(inputAssetBalance),
+        'up',
+        -1,
+        inputAssetStablecoin,
+        false
+      );
+    }
+
+    if (!Number(inputAssetBalance) || !Number(inputAssetNativePrice)) return '0';
+
+    return niceIncrementFormatter(
+      incrementDecimalPlaces,
+      Number(inputAssetBalance),
+      Number(inputAssetNativePrice),
+      niceIncrement,
+      SwapInputController.percentageToSwap.value,
+      sliderXPosition.value
+    );
+  });
+
+  const labelSecondary = useForegroundColor('labelSecondary');
+  const zeroAmountColor = opacity(labelSecondary, 0.2);
+
+  const isInputStale = useDerivedValue(() => {
+    const isAdjustingOutputValue =
+      SwapInputController.inputMethod.value === 'outputAmount' || SwapInputController.inputMethod.value === 'outputNativeValue';
+    return SwapInputController.isQuoteStale.value === 1 && isAdjustingOutputValue ? 1 : 0;
+  });
+
+  const pulsingOpacity = useDerivedValue(() => {
+    return SwapInputController.isQuoteStale.value === 1
+      ? withRepeat(withSequence(withTiming(0.5, pulsingConfig), withTiming(1, pulsingConfig)), -1, true)
+      : withSpring(1, sliderConfig);
+  }, []);
+
+  const inputAmountTextStyle = useAnimatedStyle(() => {
+    const isInputZero =
+      (SwapInputController.inputValues.value.inputAmount === 0 && SwapInputController.inputMethod.value !== 'slider') ||
+      (SwapInputController.inputMethod.value === 'slider' && Number(SwapInputController.inputValues.value.inputAmount) === 0);
+    const isOutputZero = Number(SwapInputController.inputValues.value.outputAmount) === 0;
+
+    // eslint-disable-next-line no-nested-ternary
+    const zeroOrAssetColor = isInputZero ? zeroAmountColor : topColor === ETH_COLOR_DARK ? ETH_COLOR_DARK_ACCENT : topColor;
+    const opacity = isInputStale.value !== 1 || (isInputZero && isOutputZero) ? withSpring(1, sliderConfig) : pulsingOpacity.value;
+
+    return {
+      color: withTiming(interpolateColor(isInputStale.value, [0, 1], [zeroOrAssetColor, zeroAmountColor]), slowFadeConfig),
+      flexGrow: 0,
+      flexShrink: 1,
+      opacity,
+    };
+  }, [isDarkMode, topColor]);
+
+  const assetToSellCaretStyle = useAnimatedStyle(() => {
+    return {
+      backgroundColor: topColor,
+    };
+  });
 
   return (
     <GestureHandlerV1Button
@@ -67,15 +183,46 @@ function SwapInputAmount() {
           ellipsizeMode="clip"
           numberOfLines={1}
           size="30pt"
-          style={SwapTextStyles.inputAmountTextStyle}
-          text={SwapInputController.formattedInputAmount}
+          style={inputAmountTextStyle}
+          text={formattedInputAmount}
           weight="bold"
         />
         <Animated.View style={[styles.caretContainer, SwapTextStyles.inputCaretStyle]}>
-          <Box as={Animated.View} borderRadius={1} style={[styles.caret, AnimatedSwapStyles.assetToSellCaretStyle]} />
+          <Box as={Animated.View} borderRadius={1} style={[styles.caret, assetToSellCaretStyle]} />
         </Animated.View>
       </MaskedView>
     </GestureHandlerV1Button>
+  );
+}
+
+function SwapInputNativeAmount() {
+  const { SwapTextStyles, SwapInputController } = useSwapContext();
+
+  const formattedInputNativeValue = useDerivedValue(() => {
+    if (
+      (SwapInputController.inputMethod.value === 'slider' && SwapInputController.percentageToSwap.value === 0) ||
+      Number(SwapInputController.inputValues.value.inputNativeValue) === 0 ||
+      Number.isNaN(SwapInputController.inputValues.value.inputNativeValue)
+    )
+      return '$0.00';
+
+    const nativeValue = `$${SwapInputController.inputValues.value.inputNativeValue.toLocaleString('en-US', {
+      useGrouping: true,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
+
+    return nativeValue || '$0.00';
+  });
+
+  return (
+    <AnimatedText
+      numberOfLines={1}
+      size="17pt"
+      style={SwapTextStyles.inputNativeValueStyle}
+      text={formattedInputNativeValue}
+      weight="heavy"
+    />
   );
 }
 
@@ -127,7 +274,7 @@ function InputAssetBalanceBadge() {
 
 export function SwapInputAsset() {
   const { isDarkMode } = useColorMode();
-  const { outputProgress, inputProgress, AnimatedSwapStyles, SwapTextStyles, SwapInputController, SwapNavigation } = useSwapContext();
+  const { outputProgress, inputProgress, AnimatedSwapStyles, SwapNavigation } = useSwapContext();
 
   const assetToSellColors = useSwapAssets(state => state.assetToSell?.colors);
 
@@ -152,13 +299,7 @@ export function SwapInputAsset() {
             </Column>
           </Columns>
           <Columns alignHorizontal="justify" alignVertical="center" space="10px">
-            <AnimatedText
-              numberOfLines={1}
-              size="17pt"
-              style={SwapTextStyles.inputNativeValueStyle}
-              text={SwapInputController.formattedInputNativeValue}
-              weight="heavy"
-            />
+            <SwapInputNativeAmount />
             <Column width="content">
               <InputAssetBalanceBadge />
             </Column>

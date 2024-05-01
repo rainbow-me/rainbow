@@ -40,6 +40,7 @@ import { SwapCoinIcon } from '@/__swaps__/screens/Swap/components/SwapCoinIcon';
 import { useSwapAssets } from '@/state/swaps/assets';
 import { ethereumUtils } from '@/utils';
 import { TokenColors } from '@/graphql/__generated__/metadata';
+import { useDebouncedCallback } from 'use-debounce';
 
 type SwapSliderProps = {
   dualColor?: boolean;
@@ -57,7 +58,7 @@ export const SwapSlider = ({
   width = SLIDER_WIDTH,
 }: SwapSliderProps) => {
   const { isDarkMode } = useColorMode();
-  const { SwapInputController, sliderXPosition, sliderPressProgress } = useSwapContext();
+  const { isFetching, SwapInputController, sliderXPosition, sliderPressProgress } = useSwapContext();
 
   const assetToSellIconUrl = useSwapAssets(state => state.assetToSell?.icon_url);
   const assetToSellChainId = useSwapAssets(state => state.assetToSell?.chainId);
@@ -91,14 +92,6 @@ export const SwapSlider = ({
 
   const overshoot = useSharedValue(0);
 
-  // Callback function to handle percentage change once slider is at rest
-  const onChangeWrapper = useCallback(
-    (percentage: number) => {
-      SwapInputController.onChangedPercentage(percentage);
-    },
-    [SwapInputController]
-  );
-
   const { inactiveColorLeft, activeColorLeft, inactiveColorRight } = useMemo(
     () => ({
       inactiveColorLeft: opacity(dualColor ? assetToBuyColor : assetToSellColor, 0.9),
@@ -121,6 +114,31 @@ export const SwapSlider = ({
   const percentageText = useDerivedValue(() => {
     return `${Math.round((xPercentage.value ?? initialPercentage) * 100)}%`;
   }, [xPercentage.value]);
+
+  const onChangedPercentage = useDebouncedCallback((percentage: number, setStale = true) => {
+    SwapInputController.resetTimers();
+
+    if (percentage > 0) {
+      if (setStale) SwapInputController.isQuoteStale.value = 1;
+      // isFetching.value = true;
+      // TODO: Trigger quote fetch here
+    } else {
+      isFetching.value = false;
+      SwapInputController.isQuoteStale.value = 0;
+    }
+
+    return () => {
+      SwapInputController.resetTimers();
+    };
+  }, 200);
+
+  // Callback function to handle percentage change once slider is at rest
+  const onChangeWrapper = useCallback(
+    (percentage: number) => {
+      onChangedPercentage(percentage);
+    },
+    [onChangedPercentage]
+  );
 
   useAnimatedReaction(
     () => ({ x: sliderXPosition.value }),

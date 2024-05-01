@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import {
   Easing,
   SharedValue,
@@ -13,8 +12,6 @@ import {
 import { useColorMode, useForegroundColor } from '@/design-system';
 
 import {
-  ETH_COLOR_DARK,
-  ETH_COLOR_DARK_ACCENT,
   SLIDER_COLLAPSED_HEIGHT,
   SLIDER_HEIGHT,
   caretConfig,
@@ -23,9 +20,7 @@ import {
   slowFadeConfig,
 } from '@/__swaps__/screens/Swap/constants';
 import { inputKeys, inputMethods } from '@/__swaps__/types/swap';
-import { extractColorValueForColors, opacity } from '@/__swaps__/utils/swaps';
-import { useSwapAssets } from '@/state/swaps/assets';
-import { TokenColors } from '@/graphql/__generated__/metadata';
+import { opacity } from '@/__swaps__/utils/swaps';
 
 export function useSwapTextStyles({
   focusedInput,
@@ -45,23 +40,6 @@ export function useSwapTextStyles({
   sliderPressProgress: SharedValue<number>;
 }) {
   const { isDarkMode } = useColorMode();
-
-  const assetToSellColors = useSwapAssets(state => state.assetToSell?.colors);
-  const assetToBuyColors = useSwapAssets(state => state.assetToBuy?.colors);
-
-  const topColor = useMemo(() => {
-    return extractColorValueForColors({
-      colors: assetToSellColors as TokenColors,
-      isDarkMode,
-    });
-  }, [assetToSellColors, isDarkMode]);
-
-  const bottomColor = useMemo(() => {
-    return extractColorValueForColors({
-      colors: assetToBuyColors as TokenColors,
-      isDarkMode,
-    });
-  }, [assetToBuyColors, isDarkMode]);
 
   const labelSecondary = useForegroundColor('labelSecondary');
   const labelTertiary = useForegroundColor('labelTertiary');
@@ -84,24 +62,6 @@ export function useSwapTextStyles({
       : withSpring(1, sliderConfig);
   }, []);
 
-  const inputAmountTextStyle = useAnimatedStyle(() => {
-    const isInputZero =
-      (inputValues.value.inputAmount === 0 && inputMethod.value !== 'slider') ||
-      (inputMethod.value === 'slider' && Number(inputValues.value.inputAmount) === 0);
-    const isOutputZero = Number(inputValues.value.outputAmount) === 0;
-
-    // eslint-disable-next-line no-nested-ternary
-    const zeroOrAssetColor = isInputZero ? zeroAmountColor : topColor === ETH_COLOR_DARK ? ETH_COLOR_DARK_ACCENT : topColor;
-    const opacity = isInputStale.value !== 1 || (isInputZero && isOutputZero) ? withSpring(1, sliderConfig) : pulsingOpacity.value;
-
-    return {
-      color: withTiming(interpolateColor(isInputStale.value, [0, 1], [zeroOrAssetColor, zeroAmountColor]), slowFadeConfig),
-      flexGrow: 0,
-      flexShrink: 1,
-      opacity,
-    };
-  }, [isDarkMode, topColor]);
-
   const inputNativeValueStyle = useAnimatedStyle(() => {
     const isInputZero =
       Number(inputValues.value.inputAmount) === 0 || (inputMethod.value === 'slider' && Number(inputValues.value.inputAmount) === 0);
@@ -115,25 +75,6 @@ export function useSwapTextStyles({
       opacity,
     };
   }, [isDarkMode]);
-
-  const outputAmountTextStyle = useAnimatedStyle(() => {
-    const isInputZero =
-      Number(inputValues.value.inputAmount) === 0 || (inputMethod.value === 'slider' && Number(inputValues.value.inputAmount) === 0);
-    const isOutputZero =
-      (inputValues.value.outputAmount === 0 && inputMethod.value !== 'slider') ||
-      (inputMethod.value === 'slider' && Number(inputValues.value.outputAmount) === 0);
-
-    // eslint-disable-next-line no-nested-ternary
-    const zeroOrAssetColor = isOutputZero ? zeroAmountColor : bottomColor === ETH_COLOR_DARK ? ETH_COLOR_DARK_ACCENT : bottomColor;
-    const opacity = isOutputStale.value !== 1 || (isInputZero && isOutputZero) ? withSpring(1, sliderConfig) : pulsingOpacity.value;
-
-    return {
-      color: withTiming(interpolateColor(isOutputStale.value, [0, 1], [zeroOrAssetColor, zeroAmountColor]), slowFadeConfig),
-      flexGrow: 0,
-      flexShrink: 1,
-      opacity,
-    };
-  }, [bottomColor, isDarkMode]);
 
   const outputNativeValueStyle = useAnimatedStyle(() => {
     const isInputZero =
@@ -217,10 +158,9 @@ export function useSwapTextStyles({
   });
 
   return {
-    inputAmountTextStyle,
     inputCaretStyle,
     inputNativeValueStyle,
-    outputAmountTextStyle,
+    // outputAmountTextStyle,
     outputCaretStyle,
     outputNativeValueStyle,
   };

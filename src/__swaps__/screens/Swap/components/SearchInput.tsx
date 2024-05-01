@@ -1,11 +1,11 @@
 import React, { useCallback, useMemo } from 'react';
 import { NativeSyntheticEvent, TextInput, TextInputChangeEventData } from 'react-native';
-import Animated, { useAnimatedProps, useAnimatedRef, useDerivedValue } from 'react-native-reanimated';
+import Animated, { useAnimatedProps, useAnimatedRef, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Input } from '@/components/inputs';
 import { AnimatedText, Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { swapSearchStore } from '@/state/swaps/search';
 
@@ -54,6 +54,20 @@ export const SearchInput = ({
     const query = isFocused ? undefined : initialValue;
 
     return { defaultValue: initialValue, text: query };
+  });
+
+  const assetButtonStyles = useAnimatedStyle(() => {
+    return {
+      color,
+    };
+  });
+
+  const buttonWrapperStyles = useAnimatedStyle(() => {
+    return {
+      backgroundColor: opacityWorklet(color, isDarkMode ? 0.1 : 0.08),
+      borderColor: opacityWorklet(color, isDarkMode ? 0.06 : 0.01),
+      borderWidth: THICK_BORDER_WIDTH,
+    };
   });
 
   return (
@@ -125,17 +139,9 @@ export const SearchInput = ({
               height={{ custom: 36 }}
               justifyContent="center"
               paddingHorizontal={{ custom: 12 - THICK_BORDER_WIDTH }}
-              style={
-                output ? AnimatedSwapStyles.searchOutputAssetButtonWrapperStyle : AnimatedSwapStyles.searchInputAssetButtonWrapperStyle
-              }
+              style={buttonWrapperStyles}
             >
-              <AnimatedText
-                text={btnText}
-                align="center"
-                style={output ? AnimatedSwapStyles.searchOutputAssetButtonStyle : AnimatedSwapStyles.searchInputAssetButtonStyle}
-                size="17pt"
-                weight="heavy"
-              />
+              <AnimatedText text={btnText} align="center" style={assetButtonStyles} size="17pt" weight="heavy" />
             </Box>
           </ButtonPressAnimation>
         </Column>

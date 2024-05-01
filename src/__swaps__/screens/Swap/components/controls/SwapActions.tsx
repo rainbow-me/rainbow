@@ -11,7 +11,7 @@ import { IS_ANDROID } from '@/env';
 import { useSwapContext, NavigationSteps } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import Animated, { runOnJS, runOnUI, useAnimatedReaction, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { StyleSheet } from 'react-native';
-import { extractColorValueForColors, opacity } from '@/__swaps__/utils/swaps';
+import { extractColorValueForColors, opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { ReviewPanel } from '../ReviewPanel';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import { useSwapActionsGestureHandler } from './useSwapActionsGestureHandler';
@@ -58,6 +58,32 @@ export function SwapActions() {
     };
   });
 
+  const swapActionWrapperStyle = useAnimatedStyle(() => {
+    return {
+      position: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 'absolute' : 'relative',
+      bottom: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 0 : undefined,
+      height: withSpring(
+        reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 407.68 + safeAreaInsetValues.bottom + 16 : 114,
+        springConfig
+      ),
+      borderTopLeftRadius: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? (IS_ANDROID ? 20 : 40) : 0,
+      borderTopRightRadius: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? (IS_ANDROID ? 20 : 40) : 0,
+      borderWidth: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? THICK_BORDER_WIDTH : 0,
+      borderColor: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? opacityWorklet(globalColors.darkGrey, 0.2) : undefined,
+      backgroundColor:
+        reviewProgress.value === NavigationSteps.SHOW_REVIEW
+          ? isDarkMode
+            ? '#191A1C'
+            : globalColors.white100
+          : opacityWorklet(assetToBuyColor, 0.03),
+      borderTopColor:
+        reviewProgress.value === NavigationSteps.SHOW_REVIEW
+          ? opacityWorklet(globalColors.darkGrey, 0.2)
+          : opacityWorklet(assetToBuyColor, 0.04),
+      paddingTop: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 28 : 16 - THICK_BORDER_WIDTH,
+    };
+  });
+
   return (
     // @ts-expect-error Property 'children' does not exist on type
     <PanGestureHandler maxPointers={1} onGestureEvent={swipeToDismissGestureHandler} enabled={enabled}>
@@ -67,12 +93,7 @@ export function SwapActions() {
           custom: IS_ANDROID ? getSoftMenuBarHeight() - 24 : safeAreaInsetValues.bottom + 16,
         }}
         paddingHorizontal="20px"
-        style={[
-          AnimatedSwapStyles.swapActionWrapperStyle,
-          AnimatedSwapStyles.keyboardStyle,
-          gestureHandlerStyles,
-          styles.swapActionsWrapper,
-        ]}
+        style={[swapActionWrapperStyle, AnimatedSwapStyles.keyboardStyle, gestureHandlerStyles, styles.swapActionsWrapper]}
         width="full"
         zIndex={11}
       >
