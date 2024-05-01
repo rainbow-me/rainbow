@@ -64,6 +64,8 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ trans
 
   const formattedHash = shortenTxHashString(hash);
 
+  console.log(transaction);
+
   const onViewOnBlockExplorerPress = () => {
     ethereumUtils.openTransactionInBlockExplorer(hash, network);
   };

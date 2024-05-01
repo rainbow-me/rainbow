@@ -89,7 +89,7 @@ const ActivityList = ({
   sections,
   transactionsCount,
 }) => {
-  const { setScrollToTopRef } = useSectionListScrollToTopContext();
+  const { scrollToTopRef } = useSectionListScrollToTopContext();
 
   const pendingTransactionsCount = useMemo(() => {
     let currentPendingTransactionsCount = 0;
@@ -106,7 +106,7 @@ const ActivityList = ({
 
   const handleListRef = ref => {
     if (!ref) return;
-    setScrollToTopRef(ref);
+    scrollToTopRef.current = ref;
   };
 
   if (network === networkTypes.mainnet || sections.length) {
